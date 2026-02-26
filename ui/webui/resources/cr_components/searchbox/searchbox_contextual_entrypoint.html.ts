@@ -5,35 +5,39 @@
 import {html, nothing} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {SearchboxElement} from './searchbox.js';
-import {getHtml as getDropdownHtml} from './searchbox_searchbox_dropdown.html.js';
+import {getHtml as getRecentTabChipHtml} from './searchbox_recent_tab_chip.html.js';
 
 export function getHtml(this: SearchboxElement) {
   // clang-format off
   return html`
-<contextual-entrypoint-and-carousel id="context"
-    part="contextual-entrypoint-and-carousel"
-    exportparts="composebox-entrypoint, context-menu-entrypoint-icon, voice-icon, context-menu-and-tools"
-    .tabSuggestions="${this.tabSuggestions_}"
-    .recentTabForChip="${this.recentTabForChip_}"
-    entrypoint-name="Realbox"
-    @add-tab-context="${this.addTabContext_}"
-    @add-file-context="${this.addFileContext_}"
-    @set-tool-mode="${this.onSetToolMode_}"
-    @model-click="${this.onModelClick_}"
-    @get-tab-preview="${this.getTabPreview_}"
-    @context-menu-container-click="${this.onContextMenuContainerClick_}"
-    @context-menu-entrypoint-click="${this.onContextMenuEntrypointClick_}"
-    @context-menu-closed="${this.onContextMenuClosed_}"
-    @context-menu-opened="${this.onContextMenuOpened_}"
-    ?show-dropdown="${this.dropdownIsVisible}"
-    ?show-recent-tab-chip="${!this.useCompactLayout_() &&
-        this.computeShowRecentTabChip_()}"
-    .inputState="${this.inputState_}"
-    ?show-model-picker="${this.showModelPicker_}"
-    searchbox-layout-mode="${this.searchboxLayoutMode}"
-    context-menu-glif-animation-state="${this.contextMenuGlifAnimationState}">
-  ${!this.useCompactLayout_() ? getDropdownHtml.bind(this)() : nothing}
-</contextual-entrypoint-and-carousel>
+<cr-composebox-file-inputs @on-file-change="${this.onFileChange_}">
+  <div class="context-menu-container" id="contextMenuContainer"
+      @mousedown="${this.onContextMenuContainerMouseDown_}"
+      @click="${this.onContextMenuContainerClick_}">
+    <cr-composebox-contextual-entrypoint-and-menu id="context"
+        exportparts="context-menu-entrypoint-icon"
+        class="upload-button"
+        @add-tab-context="${this.addTabContext_}"
+        @tool-click="${this.onToolClick_}"
+        @deep-search-click="${this.handleDeepSearchClick_}"
+        @create-image-click="${this.handleImageGenClick_}"
+        @model-click="${this.onModelClick_}"
+        @get-tab-preview="${this.getTabPreview_}"
+        @context-menu-entrypoint-click="${this.onContextMenuEntrypointClick_}"
+        @context-menu-closed="${this.onContextMenuClosed_}"
+        @context-menu-opened="${this.onContextMenuOpened_}"
+        .showModelPicker="${this.showModelPicker_}"
+        .inputState="${this.inputState_}"
+        .searchboxLayoutMode="${this.searchboxLayoutMode}"
+        .tabSuggestions="${this.tabSuggestions_}"
+        ?show-context-menu-description="${
+            !this.useCompactLayout_() && !this.computeShowRecentTabChip_()}"
+        glif-animation-state="${this.contextMenuGlifAnimationState}">
+    </cr-composebox-contextual-entrypoint-and-menu>
+    ${this.useCompactLayout_() ? nothing : getRecentTabChipHtml.bind(this)()}
+  </div>
+</cr-composebox-file-inputs>
 `;
   // clang-format on
 }
+

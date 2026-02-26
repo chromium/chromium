@@ -5,8 +5,9 @@
 /* #css_wrapper_metadata_start
  * #type=style-lit
  * #import=//resources/cr_elements/cr_icons_lit.css.js
+ * #import=//resources/cr_components/composebox/composebox_shared_style.css.js
  * #scheme=relative
- * #include=cr-icons-lit
+ * #include=cr-icons-lit composebox-shared-style
  * #css_wrapper_metadata_end */
 
 :host {
@@ -315,10 +316,6 @@ cr-searchbox-icon {
   display: none;
 }
 
-:host([searchbox-layout-mode^='Tall']) contextual-entrypoint-and-carousel {
-  z-index: 100;
-}
-
 :is(input, textarea),
 cr-searchbox-icon,
 .searchbox-icon-button {
@@ -369,46 +366,35 @@ cr-searchbox-dropdown::part(dropdown-content) {
   padding-top: unset;
 }
 
-:host([ntp-realbox-next-enabled]) contextual-entrypoint-and-carousel::part(context-menu-entrypoint-icon) {
+:host([ntp-realbox-next-enabled]) cr-composebox-contextual-entrypoint-and-menu::part(context-menu-entrypoint-icon) {
   --cr-icon-button-icon-size: 24px;
   --cr-icon-button-margin-start: 2px;
   --cr-icon-button-size: 36px;
 }
 
-:host([ntp-realbox-next-enabled]:not([context-menu-glif-animation-state='ineligible'])) contextual-entrypoint-and-carousel::part(context-menu-entrypoint-icon) {
+:host([ntp-realbox-next-enabled]:not([context-menu-glif-animation-state='ineligible'])) cr-composebox-contextual-entrypoint-and-menu::part(context-menu-entrypoint-icon) {
   /* Account for the margin of the glow container */
   --cr-icon-button-margin-start: 0px;
 }
 
-:host([ntp-realbox-next-enabled][searchbox-layout-mode^='Tall']) contextual-entrypoint-and-carousel::part(context-menu-entrypoint-icon) {
+:host([ntp-realbox-next-enabled][searchbox-layout-mode^='Tall']) cr-composebox-contextual-entrypoint-and-menu::part(context-menu-entrypoint-icon) {
   --cr-icon-button-icon-size: 20px;
 }
 
-:host([ntp-realbox-next-enabled][searchbox-layout-mode='Compact']) contextual-entrypoint-and-carousel::part(context-menu-and-tools) {
+:host([ntp-realbox-next-enabled][searchbox-layout-mode='Compact']) .context-menu-container {
   padding-block: 10px;
 }
 
-:host([ntp-realbox-next-enabled]) contextual-entrypoint-and-carousel {
-  position: relative;
-}
-
-:host([ntp-realbox-next-enabled]) contextual-entrypoint-and-carousel::part(composebox-entrypoint) {
+:host([ntp-realbox-next-enabled]) cr-composebox-contextual-entrypoint-and-menu {
+  color: var(--color-searchbox-results-foreground);
   padding-inline-end: 6px;
-  z-index: 100;
-}
-
-:host-context([ntp-realbox-next-enabled][context-menu-glif-animation-state='ineligible']) contextual-entrypoint-and-carousel::part(composebox-entrypoint) {
-  padding-inline-end: 14px;
-}
-
-:host([ntp-realbox-next-enabled]) contextual-entrypoint-and-carousel::part(tool-chips-container) {
-  --contextual-entrypoint-and-carousel-context-menu-container-margin-bottom: 6px;
+  padding-inline-start: 8px;
   position: relative;
   z-index: 100;
 }
 
-:host([ntp-realbox-next-enabled]) contextual-entrypoint-and-carousel::part(cr-composebox-file-carousel) {
-  margin-top: 16px;
+:host-context([ntp-realbox-next-enabled][context-menu-glif-animation-state='ineligible']) cr-composebox-contextual-entrypoint-and-menu {
+  padding-inline-end: 14px;
 }
 
 #inputContainer {
@@ -505,7 +491,7 @@ cr-searchbox-dropdown::part(dropdown-content) {
   --cr-button-height: 36px;
 }
 
-:host-context([searchbox-layout-mode='TallTopContext']) contextual-entrypoint-and-carousel::part(carousel-divider) {
+:host-context([searchbox-layout-mode='TallTopContext']) .carousel-divider {
   margin-top: 10px;
 }
 
@@ -537,32 +523,6 @@ cr-searchbox-dropdown::part(dropdown-content) {
       + var(--cr-searchbox-icon-spacing) + var(--cr-compose-button-width));
 }
 
-:host([ntp-realbox-next-enabled]) contextual-entrypoint-and-carousel::part(voice-icon) {
-  --cr-icon-button-fill-color: var(--color-composebox-font-light);
-  --cr-icon-button-hover-background-color: var(--color-composebox-context-entrypoint-hover-background);
-  --cr-icon-button-margin-end: 0px;
-  --cr-icon-button-margin-start: 0px;
-  --cr-icon-button-size: 36px;
-}
-
-:host([searchbox-layout-mode='TallBottomContext']) contextual-entrypoint-and-carousel::part(voice-icon) {
-  bottom: 10px;
-  inset-inline-end: 14px;
-  position: absolute;
-}
-
-:host([searchbox-layout-mode='TallTopContext']) contextual-entrypoint-and-carousel::part(voice-icon) {
-  margin-inline-end: 14px;
-  margin-inline-start: auto;
-  position: static;
-}
-
-:host([searchbox-layout-mode='Compact']) contextual-entrypoint-and-carousel::part(voice-icon) {
-  margin-inline-end: calc(var(--cr-compose-button-width));
-  margin-inline-start: auto;
-  z-index: 100;
-}
-
 :host([ntp-realbox-next-enabled][is-dragging-file]) {
   --cr-searchbox-compose-button-z-index: 99;
 }
@@ -578,7 +538,7 @@ cr-searchbox-dropdown::part(dropdown-content) {
   padding-bottom: 10px;
 }
 
-#recentTabChipContainer {
+:host([ntp-realbox-next-enabled][searchbox-layout-mode='Compact']) #recentTabChipContainer {
   padding-block: 6px;
   padding-inline: 16px;
 }

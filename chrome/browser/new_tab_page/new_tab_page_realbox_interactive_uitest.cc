@@ -304,7 +304,7 @@ IN_PROC_BROWSER_TEST_P(NtpRealboxUiTest, DISABLED_Screenshots) {
   const DeepQuery kSearchboxContainer = {"ntp-app", "#content"};
   const DeepQuery kRealbox = {"ntp-app", "cr-searchbox", "#inputWrapper"};
   const DeepQuery kContextMenuEntrypoint = {
-      "ntp-app", "cr-searchbox", "contextual-entrypoint-and-carousel"};
+      "ntp-app", "cr-searchbox", "#context"};
 
   RunTestSequence(
       // 1. Open 1P new tab page.
@@ -361,14 +361,12 @@ IN_PROC_BROWSER_TEST_P(NtpRealboxNextUiTest,
   const DeepQuery kRealbox = {"ntp-app", "cr-searchbox", "#inputWrapper"};
   const DeepQuery kContextualEntrypoint = {"ntp-app",
                                            "cr-searchbox",
-                                           "contextual-entrypoint-and-carousel",
-                                           "#contextEntrypoint",
+                                           "#context",
                                            "#entrypointButton",
                                            "#entrypoint"};
   const DeepQuery kContextMenuDialog = {"ntp-app",
                                         "cr-searchbox",
-                                        "contextual-entrypoint-and-carousel",
-                                        "#contextEntrypoint",
+                                        "#context",
                                         "#menu",
                                         "#menu",
                                         "#dialog"};
@@ -380,38 +378,32 @@ IN_PROC_BROWSER_TEST_P(NtpRealboxNextUiTest,
 
   const DeepQuery kImageUploadItem = {"ntp-app",
                                       "cr-searchbox",
-                                      "contextual-entrypoint-and-carousel",
-                                      "#contextEntrypoint",
+                                      "#context",
                                       "#menu",
                                       "#imageUpload"};
   const DeepQuery kFileUploadItem = {"ntp-app",
                                      "cr-searchbox",
-                                     "contextual-entrypoint-and-carousel",
-                                     "#contextEntrypoint",
+                                     "#context",
                                      "#menu",
                                      "#fileUpload"};
   const DeepQuery kCreateImagesItem = {"ntp-app",
                                        "cr-searchbox",
-                                       "contextual-entrypoint-and-carousel",
-                                       "#contextEntrypoint",
+                                       "#context",
                                        "#menu",
                                        "button[data-mode='4']"};
   const DeepQuery kCanvasItem = {"ntp-app",
                                  "cr-searchbox",
-                                 "contextual-entrypoint-and-carousel",
-                                 "#contextEntrypoint",
+                                 "#context",
                                  "#menu",
                                  "button[data-mode='2']"};
   const DeepQuery kFastModelItem = {"ntp-app",
                                     "cr-searchbox",
-                                    "contextual-entrypoint-and-carousel",
-                                    "#contextEntrypoint",
+                                    "#context",
                                     "#menu",
                                     "button[data-model='1']"};
   const DeepQuery kProModelItem = {"ntp-app",
                                    "cr-searchbox",
-                                   "contextual-entrypoint-and-carousel",
-                                   "#contextEntrypoint",
+                                   "#context",
                                    "#menu",
                                    "button[data-model='2']"};
 

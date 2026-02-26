@@ -9,7 +9,7 @@ import {BrowserProxyImpl, MetricsReporterImpl, SearchboxBrowserProxy} from 'chro
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PageMetricsCallbackRouter} from 'chrome://resources/js/metrics_reporter.mojom-webui.js';
 import {ToolMode} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
-import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestSearchboxBrowserProxy} from 'chrome://webui-test/cr_components/searchbox/test_searchbox_browser_proxy.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
@@ -50,8 +50,8 @@ suite('NewTabPageRealboxTabsTest', () => {
   });
 
   test('getRecentTabs only fires when context menu is open', async () => {
-    const contextElement =
-        realbox.shadowRoot.querySelector('contextual-entrypoint-and-carousel');
+    const contextElement = realbox.shadowRoot.querySelector(
+        'cr-composebox-contextual-entrypoint-and-menu');
     assertTrue(!!contextElement);
     contextElement.dispatchEvent(new CustomEvent('context-menu-opened'));
     await microtasksFinished();
@@ -159,8 +159,8 @@ suite('NewTabPageRealboxNextTest', () => {
       searchboxLayoutMode: 'TallBottomContext',
       ntpRealboxNextEnabled: true,
     });
-    const contextElement =
-        realbox.shadowRoot.querySelector('contextual-entrypoint-and-carousel');
+    const contextElement = realbox.shadowRoot.querySelector(
+        'cr-composebox-contextual-entrypoint-and-menu');
     assertTrue(!!contextElement);
 
     // Act & Assert.
@@ -183,15 +183,12 @@ suite('NewTabPageRealboxNextTest', () => {
     });
     realbox = await createAndAppendRealbox(
         {ntpRealboxNextEnabled: true, searchboxLayoutMode: 'Compact'});
-    const contextElement =
-        realbox.shadowRoot.querySelector('contextual-entrypoint-and-carousel');
-    assertTrue(contextElement !== null);
-    const entrypointAndMenu = contextElement.shadowRoot.querySelector(
+    const contextElement = realbox.shadowRoot.querySelector(
         'cr-composebox-contextual-entrypoint-and-menu');
-    assertTrue(entrypointAndMenu !== null);
-    const contextMenuEntrypoint = entrypointAndMenu.shadowRoot.querySelector(
+    assertTrue(!!contextElement);
+    const contextMenuEntrypoint = contextElement.shadowRoot.querySelector(
         'cr-composebox-context-menu-entrypoint');
-    assertTrue(contextMenuEntrypoint !== null);
+    assertTrue(!!contextMenuEntrypoint);
 
     testProxy.handler.setResultFor(
         'getRecentTabs', Promise.resolve({tabs: []}));
@@ -229,15 +226,12 @@ suite('NewTabPageRealboxNextTest', () => {
     });
     realbox = await createAndAppendRealbox(
         {ntpRealboxNextEnabled: true, searchboxLayoutMode: 'Compact'});
-    const contextElement =
-        realbox.shadowRoot.querySelector('contextual-entrypoint-and-carousel');
-    assertTrue(contextElement !== null);
-    const entrypointAndMenu = contextElement.shadowRoot.querySelector(
+    const contextElement = realbox.shadowRoot.querySelector(
         'cr-composebox-contextual-entrypoint-and-menu');
-    assertTrue(entrypointAndMenu !== null);
-    const contextMenuEntrypoint = entrypointAndMenu.shadowRoot.querySelector(
+    assertTrue(!!contextElement);
+    const contextMenuEntrypoint = contextElement.shadowRoot.querySelector(
         'cr-composebox-context-menu-entrypoint');
-    assertTrue(contextMenuEntrypoint !== null);
+    assertTrue(!!contextMenuEntrypoint);
 
     testProxy.handler.setResultFor(
         'getRecentTabs', Promise.resolve({tabs: []}));
@@ -275,7 +269,7 @@ suite('NewTabPageRealboxNextTest', () => {
           ntpRealboxNextEnabled: true,
         });
         const contextElement = realbox.shadowRoot.querySelector(
-            'contextual-entrypoint-and-carousel');
+            'cr-composebox-contextual-entrypoint-and-menu');
         assertTrue(!!contextElement);
         contextElement.dispatchEvent(
             new CustomEvent('context-menu-container-click'));
@@ -283,13 +277,9 @@ suite('NewTabPageRealboxNextTest', () => {
         assertEquals(1, testProxy.handler.getCallCount('queryAutocomplete'));
       });
 
-  test('pasting files adds them to contextual entrypoint', async () => {
+  test('pasting files opens composebox', async () => {
     loadTimeData.overrideValues({composeboxFileMaxCount: 2});
     realbox = await createAndAppendRealbox({ntpRealboxNextEnabled: true});
-    let passedFileList: FileList|null = null;
-    realbox.$.context.addPastedFiles = (files: FileList|null) => {
-      passedFileList = files;
-    };
 
     const pngFile = new File([''], 'pasted.png', {type: 'image/png'});
     const pdfFile = new File([''], 'pasted.pdf', {type: 'application/pdf'});
@@ -304,19 +294,19 @@ suite('NewTabPageRealboxNextTest', () => {
       composed: true,
     });
 
+    const whenOpenComposeBox = eventToPromise('open-composebox', realbox);
     realbox.$.input.dispatchEvent(pasteEvent);
     await microtasksFinished();
+    const event = await whenOpenComposeBox;
 
-    assertNotEquals(null, passedFileList);
-    assertEquals(2, passedFileList!.length);
-    const file1 = passedFileList!.item(0);
-    assertNotEquals(null, file1);
-    assertEquals('pasted.png', file1!.name);
-    assertEquals('image/png', file1!.type);
-    const file2 = passedFileList!.item(1);
-    assertNotEquals(null, file2);
-    assertEquals('pasted.pdf', file2!.name);
-    assertEquals('application/pdf', file2!.type);
+    assertTrue(!!event);
+    assertEquals(event.detail.contextFiles.length, 2);
+    const file1 = event.detail.contextFiles[0];
+    assertEquals('pasted.png', file1.file.name);
+    assertEquals('image/png', file1.file.type);
+    const file2 = event.detail.contextFiles[1];
+    assertEquals('pasted.pdf', file2.file.name);
+    assertEquals('application/pdf', file2.file.type);
     assertFalse((realbox as any).pastedInInput_);
   });
 
@@ -324,10 +314,10 @@ suite('NewTabPageRealboxNextTest', () => {
     // Re-create realbox to pick up new loadTimeData.
     realbox = await createAndAppendRealbox({ntpRealboxNextEnabled: true});
 
-    let addFilesCalled = false;
-    realbox.$.context.addPastedFiles = (_files: FileList|null) => {
-      addFilesCalled = true;
-    };
+    let openComposeboxCalled = false;
+    realbox.addEventListener('open-composebox', () => {
+      openComposeboxCalled = true;
+    });
 
     const dataTransfer = new DataTransfer();
     dataTransfer.setData('text/plain', 'hello');
@@ -342,7 +332,7 @@ suite('NewTabPageRealboxNextTest', () => {
     await microtasksFinished();
 
     assertFalse(pasteEvent.defaultPrevented);
-    assertFalse(addFilesCalled);
+    assertFalse(openComposeboxCalled);
     assertTrue((realbox as any).pastedInInput_);
   });
 });
