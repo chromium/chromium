@@ -4,10 +4,15 @@
 
 package org.chromium.chrome.browser.media;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
+import android.app.Activity;
 import android.content.Context;
 
 import androidx.activity.result.ActivityResult;
+import androidx.fragment.app.FragmentActivity;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.media.MediaCapturePickerHeadlessFragment.CaptureAction;
@@ -36,15 +41,18 @@ public class MediaCapturePickerInvoker {
             android.content.Intent intent =
                     impl.createScreenCaptureIntent(context, params, delegate);
             if (intent != null) {
-                var fragment = MediaCapturePickerHeadlessFragment.getInstanceForCurrentActivity();
-                if (fragment != null) {
-                    fragment.startAndroidCapturePrompt(
-                            (action, result) ->
-                                    onPickAndroidCapturePrompt(
-                                            action, result, params.webContents, delegate, impl),
-                            intent);
-                    return;
-                }
+                Activity activity = ContextUtils.activityFromContext(context);
+                // We should always get a non-null ChromeActivity which is a FragmentActivity.
+                // Crash here if this is not true for investigation.
+                MediaCapturePickerHeadlessFragment fragment =
+                        MediaCapturePickerHeadlessFragment.getInstance(
+                                assumeNonNull((FragmentActivity) activity));
+                fragment.startAndroidCapturePrompt(
+                        (action, result) ->
+                                onPickAndroidCapturePrompt(
+                                        action, result, params.webContents, delegate, impl),
+                        intent);
+                return;
             }
         }
         delegate.onCancel();

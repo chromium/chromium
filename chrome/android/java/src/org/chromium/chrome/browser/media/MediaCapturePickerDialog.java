@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.media;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -15,9 +16,11 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 
 import androidx.annotation.IntDef;
+import androidx.fragment.app.FragmentActivity;
 
 import com.google.android.material.materialswitch.MaterialSwitch;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -183,8 +186,12 @@ public class MediaCapturePickerDialog implements MediaCapturePickerTabObserver.D
                 ServiceLoaderUtil.maybeCreate(MediaCapturePickerDelegate.class);
         Intent intent = impl == null ? null : impl.createScreenCaptureIntent(mContext, mParams);
 
-        var fragment = MediaCapturePickerHeadlessFragment.getInstanceForCurrentActivity();
-        assumeNonNull(fragment);
+        Activity activity = ContextUtils.activityFromContext(mContext);
+        // We should always get a non-null ChromeActivity which is a FragmentActivity.
+        // Crash here if this is not true for investigation.
+        MediaCapturePickerHeadlessFragment fragment =
+                MediaCapturePickerHeadlessFragment.getInstance(
+                        assumeNonNull((FragmentActivity) activity));
         fragment.startAndroidCapturePrompt(
                 (action, result) -> {
                     if (action != CaptureAction.CAPTURE_CANCELLED) {
