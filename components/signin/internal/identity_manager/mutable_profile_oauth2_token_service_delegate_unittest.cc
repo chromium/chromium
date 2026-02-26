@@ -78,6 +78,8 @@ using TokenWithBindingKey = TokenServiceTable::TokenWithBindingKey;
 using ::testing::_;
 using ::testing::ElementsAre;
 using ::testing::Eq;
+using ::testing::Field;
+using ::testing::IsEmpty;
 using ::testing::Key;
 using ::testing::SizeIs;
 
@@ -994,6 +996,80 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
             GoogleServiceAuthError::NONE);
 
   oauth2_service_delegate_->RemoveObserver(&observer);
+}
+
+TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
+       LoadTokenWithInvalidAccountId) {
+  InitializeOAuth2ServiceDelegate(signin::AccountConsistencyMethod::kDice);
+  std::map<std::string, TokenWithBindingKey> tokens;
+  // Account ID without the "AccountId-" prefix.
+  tokens["invalid_account_id"] = TokenWithBindingKey("refresh_token");
+
+  base::HistogramTester histogram_tester;
+  oauth2_service_delegate_->LoadAllCredentialsIntoMemory(tokens);
+
+  EXPECT_THAT(oauth2_service_delegate_->GetAccounts(), IsEmpty());
+
+  histogram_tester.ExpectUniqueSample(
+      "Signin.LoadTokenFromDB",
+      LoadTokenFromDBStatus::kTokenRevokedInvalidAccountId, 1);
+}
+
+TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
+       LoadTokenWithInvalidCharacters) {
+  InitializeOAuth2ServiceDelegate(signin::AccountConsistencyMethod::kDice);
+  std::map<std::string, TokenWithBindingKey> tokens;
+  const CoreAccountId account_id =
+      CoreAccountId::FromGaiaId(GaiaId("account_id"));
+  // Token with a non-printable character.
+  tokens["AccountId-account_id"] = TokenWithBindingKey("invalid\ntoken");
+
+  base::HistogramTester histogram_tester;
+  oauth2_service_delegate_->LoadAllCredentialsIntoMemory(tokens);
+
+  EXPECT_THAT(oauth2_service_delegate_->GetAccounts(), IsEmpty());
+  EXPECT_FALSE(oauth2_service_delegate_->RefreshTokenIsAvailable(account_id));
+
+  histogram_tester.ExpectUniqueSample(
+      "Signin.LoadTokenFromDB",
+      LoadTokenFromDBStatus::kTokenRevokedInvalidTokenCharacters, 1);
+
+  // Verify that the token is removed from the database.
+  token_web_data_->GetAllTokens(this);
+  EXPECT_THAT(token_web_data_result_.Get()->GetValue().tokens, SizeIs(0));
+}
+
+TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
+       LoadPrimaryTokenWithInvalidCharacters) {
+  InitializeOAuth2ServiceDelegate(signin::AccountConsistencyMethod::kDice);
+  std::map<std::string, TokenWithBindingKey> tokens;
+  const CoreAccountId account_id =
+      CoreAccountId::FromGaiaId(GaiaId("account_id"));
+  // Token with a non-printable character.
+  tokens["AccountId-account_id"] = TokenWithBindingKey("invalid\ntoken");
+
+  oauth2_service_delegate_->loading_primary_account_id_ = account_id;
+
+  base::HistogramTester histogram_tester;
+  oauth2_service_delegate_->LoadAllCredentialsIntoMemory(tokens);
+
+  // Primary account must be kept.
+  EXPECT_THAT(oauth2_service_delegate_->GetAccounts(), ElementsAre(account_id));
+  EXPECT_TRUE(oauth2_service_delegate_->RefreshTokenIsAvailable(account_id));
+  EXPECT_EQ(oauth2_service_delegate_->GetRefreshToken(account_id),
+            GaiaConstants::kInvalidRefreshToken);
+
+  histogram_tester.ExpectUniqueSample(
+      "Signin.LoadTokenFromDB",
+      LoadTokenFromDBStatus::kTokenRevokedInvalidTokenCharacters, 1);
+
+  // Verify that the token is updated to invalid in the database.
+  token_web_data_->GetAllTokens(this);
+  EXPECT_THAT(
+      token_web_data_result_.Get()->GetValue().tokens,
+      ElementsAre(Pair("AccountId-account_id",
+                       Field(&TokenWithBindingKey::token,
+                             Eq(GaiaConstants::kInvalidRefreshToken)))));
 }
 
 TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, LoadInvalidToken) {

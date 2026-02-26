@@ -54,6 +54,35 @@ enum class RevokeAllTokensOnLoad {
   kExplicitRevoke = 2
 };
 
+// Enum for the Signin.LoadTokenFromDB histogram.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(LoadTokenFromDBStatus)
+enum class LoadTokenFromDBStatus {
+  // Token was loaded.
+  kTokenLoaded = 0,
+
+  // DEPRECATED
+  // Token was revoked as part of Dice migration.
+  // kTokenRevokedDiceMigration = 1,
+
+  // Token was revoked because it is a secondary account and account consistency
+  // is disabled.
+  kTokenRevokedSecondaryAccount = 2,
+
+  // Token was revoked on load due to cookie settings.
+  kTokenRevokedOnLoad = 3,
+
+  // Token was revoked because it contained invalid characters.
+  kTokenRevokedInvalidTokenCharacters = 4,
+
+  // Token was revoked because the account ID was invalid.
+  kTokenRevokedInvalidAccountId = 5,
+
+  kMaxValue = kTokenRevokedInvalidAccountId
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:SigninLoadTokenFromDB)
+
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 // LINT.IfChange(AccountMoveDecision)
@@ -164,6 +193,12 @@ class MutableProfileOAuth2TokenServiceDelegate
                            UpdateInvalidToken);
   FRIEND_TEST_ALL_PREFIXES(MutableProfileOAuth2TokenServiceDelegateTest,
                            LoadInvalidToken);
+  FRIEND_TEST_ALL_PREFIXES(MutableProfileOAuth2TokenServiceDelegateTest,
+                           LoadTokenWithInvalidAccountId);
+  FRIEND_TEST_ALL_PREFIXES(MutableProfileOAuth2TokenServiceDelegateTest,
+                           LoadTokenWithInvalidCharacters);
+  FRIEND_TEST_ALL_PREFIXES(MutableProfileOAuth2TokenServiceDelegateTest,
+                           LoadPrimaryTokenWithInvalidCharacters);
   FRIEND_TEST_ALL_PREFIXES(
       MutableProfileOAuth2TokenServiceDelegateTest,
       LoadAllCredentialsIntoMemoryAccountAvailabilityPrimaryAvailable);
