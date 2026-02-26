@@ -43,6 +43,7 @@ class VerticalTabLinkDropHandler {
   std::optional<BrowserRootView::DropIndex> GetDropIndexForSplit(
       const TabCollectionNode& node,
       std::optional<DragPositionHint> position_hint) const;
+  std::optional<BrowserRootView::DropIndex> GetDropIndexForPinned() const;
   std::optional<BrowserRootView::DropIndex> GetDropIndexForUnpinned() const;
 
   const raw_ref<TabStripModel> tab_strip_model_;

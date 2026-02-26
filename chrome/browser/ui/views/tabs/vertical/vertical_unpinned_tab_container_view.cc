@@ -188,7 +188,7 @@ VerticalUnpinnedTabContainerView::GetLinkDropIndex(
             group_view->group_header()->bounds().CenterPoint().y();
         return GetDragHandler().GetLinkDropIndexForNode(
             *group_view->collection_node(),
-            is_leading ? DragPositionHint::kTop : DragPositionHint::kBottom);
+            is_leading ? DragPositionHint::kBefore : DragPositionHint::kAfter);
       }
       // Recursive call into the group view.
       gfx::Point loc_in_group =
@@ -204,9 +204,9 @@ VerticalUnpinnedTabContainerView::GetLinkDropIndex(
     constexpr double kDragOverMargins = 0.2;
     std::optional<DragPositionHint> hint;
     if (loc_in_child.y() < view->height() * kDragOverMargins) {
-      hint = DragPositionHint::kTop;
+      hint = DragPositionHint::kBefore;
     } else if (loc_in_child.y() > view->height() * (1 - kDragOverMargins)) {
-      hint = DragPositionHint::kBottom;
+      hint = DragPositionHint::kAfter;
     } else if (child_node->type() == TabCollectionNode::Type::SPLIT) {
       // If landing in the middle of the split, let the split view decide which
       // tab to replace.

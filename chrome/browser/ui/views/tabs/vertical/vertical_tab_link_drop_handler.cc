@@ -44,7 +44,7 @@ VerticalTabLinkDropHandler::GetDropIndexForNode(
     case TabCollectionNode::Type::SPLIT:
       return GetDropIndexForSplit(node, position_hint);
     case TabCollectionNode::Type::PINNED:
-      return std::nullopt;
+      return GetDropIndexForPinned();
     case TabCollectionNode::Type::UNPINNED:
       return GetDropIndexForUnpinned();
     default:
@@ -86,7 +86,7 @@ VerticalTabLinkDropHandler::GetDropIndexForTab(
     }
   }
 
-  if (position_hint == DragPositionHint::kBottom) {
+  if (position_hint == DragPositionHint::kAfter) {
     index++;
   }
 
@@ -106,7 +106,7 @@ VerticalTabLinkDropHandler::GetDropIndexForGroup(
                                 ->GetTabGroup(group.id())
                                 ->visual_data()
                                 ->is_collapsed();
-  int index = static_cast<int>(position_hint == DragPositionHint::kBottom
+  int index = static_cast<int>(position_hint == DragPositionHint::kAfter
                                    ? group.ListTabs().end()
                                    : group.ListTabs().start());
   if (is_collapsed) {
@@ -140,13 +140,21 @@ VerticalTabLinkDropHandler::GetDropIndexForSplit(
       std::get<const tabs::TabInterface*>(first_tab_node->GetNodeData());
   CHECK(tab_interface);
   int index = tab_strip_model_->GetIndexOfTab(tab_interface);
-  if (position_hint == DragPositionHint::kBottom) {
+  if (position_hint == DragPositionHint::kAfter) {
     // If it's after the split, it should probably be after all tabs in the
     // split.
     index += node.children().size();
   }
   return BrowserRootView::DropIndex{
       .index = index,
+      .relative_to_index =
+          BrowserRootView::DropIndex::RelativeToIndex::kInsertBeforeIndex};
+}
+
+std::optional<BrowserRootView::DropIndex>
+VerticalTabLinkDropHandler::GetDropIndexForPinned() const {
+  return BrowserRootView::DropIndex{
+      .index = tab_strip_model_->IndexOfFirstNonPinnedTab(),
       .relative_to_index =
           BrowserRootView::DropIndex::RelativeToIndex::kInsertBeforeIndex};
 }
