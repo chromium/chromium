@@ -108,9 +108,9 @@ class SkillsServiceChecker : public StatusChangeChecker,
   }
 
   // skills::SkillsService::Observer overrides.
-  void OnSkillUpdated(
-      std::string_view skill_id,
-      skills::SkillsService::UpdateSource update_source) override {
+  void OnSkillUpdated(std::string_view skill_id,
+                      skills::SkillsService::UpdateSource update_source,
+                      bool is_position_changed) override {
     CheckExitCondition();
   }
 

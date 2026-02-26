@@ -118,7 +118,8 @@ void SkillsPageHandler::DeleteSkill(const std::string& skill_id) {
 
 void SkillsPageHandler::OnSkillUpdated(
     std::string_view skill_id,
-    SkillsService::UpdateSource update_source) {
+    SkillsService::UpdateSource update_source,
+    bool is_position_changed) {
   if (auto* service =
           SkillsServiceFactory::GetForProfile(base::to_address(profile_))) {
     const auto* skill = service->GetSkillById(skill_id);

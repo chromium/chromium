@@ -66,8 +66,11 @@ class SkillsService : public KeyedService {
   class Observer : public base::CheckedObserver {
    public:
     // Called whenever a skill is created, updated or deleted.
+    // `is_position_changed` is true if the skill's position is changed (always
+    // false for deletions and true for creations).
     virtual void OnSkillUpdated(std::string_view skill_id,
-                                UpdateSource update_source) {}
+                                UpdateSource update_source,
+                                bool is_position_changed) {}
 
     // Called when the service status is changed.
     virtual void OnStatusChanged() {}

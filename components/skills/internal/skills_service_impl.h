@@ -89,7 +89,8 @@ class SkillsServiceImpl : public SkillsService {
 
  private:
   void NotifySkillChanged(std::string_view skill_id,
-                          UpdateSource update_source);
+                          UpdateSource update_source,
+                          bool is_position_changed);
 
   // Adds a skill to the service and returns the created skill.
   const Skill* AddSkillImpl(std::unique_ptr<Skill> skill,
@@ -97,6 +98,10 @@ class SkillsServiceImpl : public SkillsService {
 
   // Returns a mutable skill with the given ID or nullptr if not found.
   Skill* GetMutableSkillById(std::string_view skill_id);
+
+  // Returns the position of the skill with the given ID or nullopt if not
+  // found.
+  std::optional<size_t> GetSkillPosition(std::string_view skill_id) const;
 
   // Updates an existing `skill` with the given data. `update_time` is used only
   // if the skill is actually updated with new data or if updated from sync.

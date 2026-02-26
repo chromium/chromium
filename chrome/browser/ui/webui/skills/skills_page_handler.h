@@ -57,7 +57,8 @@ class SkillsPageHandler : public skills::mojom::PageHandler,
 
   // skills::SkillsService::Observer:
   void OnSkillUpdated(std::string_view skill_id,
-                      SkillsService::UpdateSource update_source) override;
+                      SkillsService::UpdateSource update_source,
+                      bool is_position_changed) override;
   void OnDiscoverySkillsUpdated(
       const SkillsService::SkillsMap* skills_map) override;
   void OnSkillsServiceShuttingDown() override;

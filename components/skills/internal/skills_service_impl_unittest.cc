@@ -91,7 +91,8 @@ class MockObserver : public SkillsService::Observer {
   MOCK_METHOD(void,
               OnSkillUpdated,
               (std::string_view skill_id,
-               SkillsService::UpdateSource update_source));
+               SkillsService::UpdateSource update_source,
+               bool is_position_changed));
   MOCK_METHOD(void, OnStatusChanged, ());
 };
 
@@ -324,7 +325,8 @@ TEST_F(SkillsServiceImplTest, DeleteSkill) {
   ASSERT_NE(nullptr, service().GetSkillById(skill_id));
 
   EXPECT_CALL(mock_observer_,
-              OnSkillUpdated(skill_id, SkillsService::UpdateSource::kLocal));
+              OnSkillUpdated(skill_id, SkillsService::UpdateSource::kLocal,
+                             /*is_position_changed=*/false));
   service().DeleteSkill(skill_id, SkillsService::UpdateSource::kLocal);
   EXPECT_EQ(nullptr, service().GetSkillById(skill_id));
 }
@@ -340,7 +342,8 @@ TEST_F(SkillsServiceImplTest, DeleteSkillFromSync) {
   ASSERT_NE(nullptr, service().GetSkillById(skill_id));
 
   EXPECT_CALL(mock_observer_,
-              OnSkillUpdated(skill_id, SkillsService::UpdateSource::kSync));
+              OnSkillUpdated(skill_id, SkillsService::UpdateSource::kSync,
+                             /*is_position_changed=*/false));
   service().DeleteSkill(skill_id, SkillsService::UpdateSource::kSync);
   EXPECT_EQ(nullptr, service().GetSkillById(skill_id));
 }
@@ -350,16 +353,19 @@ TEST_F(SkillsServiceImplTest, Observer) {
   InitService();
 
   EXPECT_CALL(mock_observer_,
-              OnSkillUpdated(_, SkillsService::UpdateSource::kLocal));
+              OnSkillUpdated(_, SkillsService::UpdateSource::kLocal,
+                             /*is_position_changed=*/true));
   const Skill* skill =
       service().AddSkill(/*source_skill_id=*/"", "name", "icon", "prompt");
 
   EXPECT_CALL(mock_observer_,
-              OnSkillUpdated(skill->id, SkillsService::UpdateSource::kLocal));
+              OnSkillUpdated(skill->id, SkillsService::UpdateSource::kLocal,
+                             /*is_position_changed=*/false));
   service().UpdateSkill(skill->id, "updated_name", "icon", "prompt");
 
   EXPECT_CALL(mock_observer_,
-              OnSkillUpdated(skill->id, SkillsService::UpdateSource::kLocal));
+              OnSkillUpdated(skill->id, SkillsService::UpdateSource::kLocal,
+                             /*is_position_changed=*/false));
   service().DeleteSkill(skill->id, SkillsService::UpdateSource::kLocal);
 }
 
@@ -398,7 +404,8 @@ TEST_F(SkillsServiceImplTest, UpdateExistingSkillFromSync) {
 
   const base::Time new_update_time = skill->last_update_time + base::Hours(1);
   EXPECT_CALL(mock_observer_,
-              OnSkillUpdated(skill->id, SkillsService::UpdateSource::kSync));
+              OnSkillUpdated(skill->id, SkillsService::UpdateSource::kSync,
+                             /*is_position_changed=*/false));
   const Skill* updated_skill = service().AddOrUpdateSkillFromSync(
       skill->id, /*source_skill_id=*/"", "sync name", "sync icon",
       "sync prompt", "sync description", initial_creation_time,
@@ -421,7 +428,8 @@ TEST_F(SkillsServiceImplTest, AddSkillFromSync) {
   InitService();
 
   EXPECT_CALL(mock_observer_,
-              OnSkillUpdated(_, SkillsService::UpdateSource::kSync));
+              OnSkillUpdated(_, SkillsService::UpdateSource::kSync,
+                             /*is_position_changed=*/true));
 
   const Skill* skill = service().AddOrUpdateSkillFromSync(
       "id", "source_skill_id", "name", "icon", "prompt", "description",

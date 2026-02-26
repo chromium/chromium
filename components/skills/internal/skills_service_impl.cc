@@ -56,9 +56,10 @@ void SkillsServiceImpl::Shutdown() {
 }
 
 void SkillsServiceImpl::NotifySkillChanged(std::string_view skill_id,
-                                           UpdateSource update_source) {
+                                           UpdateSource update_source,
+                                           bool is_position_changed) {
   for (Observer& observer : observers_) {
-    observer.OnSkillUpdated(skill_id, update_source);
+    observer.OnSkillUpdated(skill_id, update_source, is_position_changed);
   }
 }
 
@@ -139,17 +140,17 @@ void SkillsServiceImpl::DeleteSkill(std::string_view skill_id,
       });
 
   if (num_erased > 0) {
-    NotifySkillChanged(id_copy, update_source);
+    NotifySkillChanged(id_copy, update_source, /*is_position_changed=*/false);
   }
 }
 
 const Skill* SkillsServiceImpl::GetSkillById(std::string_view skill_id) const {
-  for (const std::unique_ptr<Skill>& skill : skills_) {
-    if (skill->id == skill_id) {
-      return skill.get();
-    }
+  std::optional<size_t> skill_position = GetSkillPosition(skill_id);
+  if (!skill_position.has_value()) {
+    return nullptr;
   }
-  return nullptr;
+
+  return skills_[*skill_position].get();
 }
 
 const std::vector<std::unique_ptr<Skill>>& SkillsServiceImpl::GetSkills()
@@ -232,7 +233,8 @@ const Skill* SkillsServiceImpl::AddSkillImpl(std::unique_ptr<Skill> skill,
   const Skill* skill_ptr = skill.get();
   skills_.push_back(std::move(skill));
   SortSkills();
-  NotifySkillChanged(skill_ptr->id, update_source);
+  NotifySkillChanged(skill_ptr->id, update_source,
+                     /*is_position_changed=*/true);
   return skill_ptr;
 }
 
@@ -263,6 +265,16 @@ Skill* SkillsServiceImpl::GetMutableSkillById(std::string_view skill_id) {
   return const_cast<Skill*>(GetSkillById(skill_id));
 }
 
+std::optional<size_t> SkillsServiceImpl::GetSkillPosition(
+    std::string_view skill_id) const {
+  for (size_t i = 0; i < skills_.size(); ++i) {
+    if (skills_[i]->id == skill_id) {
+      return i;
+    }
+  }
+  return std::nullopt;
+}
+
 void SkillsServiceImpl::UpdateSkillImpl(Skill* skill,
                                         std::string_view name,
                                         std::string_view icon,
@@ -273,6 +285,8 @@ void SkillsServiceImpl::UpdateSkillImpl(Skill* skill,
   CHECK(skill);
 
   // Update the existing skill.
+  std::optional<size_t> old_position = GetSkillPosition(skill->id);
+
   bool is_changed = false;
   if (skill->name != name) {
     skill->name = name;
@@ -302,7 +316,10 @@ void SkillsServiceImpl::UpdateSkillImpl(Skill* skill,
   if (is_changed) {
     skill->last_update_time = update_time;
     SortSkills();
-    NotifySkillChanged(skill->id, update_source);
+
+    const bool is_position_changed =
+        old_position != GetSkillPosition(skill->id);
+    NotifySkillChanged(skill->id, update_source, is_position_changed);
   }
 }
 

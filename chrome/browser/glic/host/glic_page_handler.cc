@@ -2086,12 +2086,21 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
 // from Skills backend.
 #if !BUILDFLAG(IS_ANDROID)
   // SkillsService::Observer implementation.
-  void OnSkillUpdated(
-      std::string_view skill_id,
-      skills::SkillsService::UpdateSource update_source) override {
+  void OnSkillUpdated(std::string_view skill_id,
+                      skills::SkillsService::UpdateSource update_source,
+                      bool is_position_changed) override {
     if (!web_client_) {
       return;
     }
+
+    if (is_position_changed) {
+      // Update all the skill previews for simplicity as updating the position
+      // is not frequent.
+      host().skills_manager().UpdateSkillPreviews(std::nullopt);
+      web_client_->NotifySkillPreviewsChanged(GetSkillPreviewsList());
+      return;
+    }
+
     mojom::SkillPtr skill = GetSkillById(skill_id);
     if (!skill) {
       web_client_->NotifySkillDeleted(skill_id.data());

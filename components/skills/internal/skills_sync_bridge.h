@@ -62,7 +62,8 @@ class SkillsSyncBridge : public syncer::DataTypeSyncBridge,
 
   // SkillsService::Observer implementation.
   void OnSkillUpdated(std::string_view skill_id,
-                      SkillsService::UpdateSource update_source) override;
+                      SkillsService::UpdateSource update_source,
+                      bool is_position_changed) override;
 
  private:
   // Loads the data already stored in the DataTypeStore.

@@ -442,7 +442,8 @@ TEST_F(SkillsSyncBridgeTest, ApplyIncrementalSyncChanges_Delete) {
       .WillByDefault(Return(stored_skill.get()));
 
   // Simulate creating a skill locally.
-  bridge().OnSkillUpdated(guid, SkillsService::UpdateSource::kLocal);
+  bridge().OnSkillUpdated(guid, SkillsService::UpdateSource::kLocal,
+                          /*is_position_changed=*/false);
   ASSERT_THAT(GetAllLocalDataFromStore(), ElementsAre(Pair(guid, _)));
 
   EXPECT_CALL(mock_skills_service(),
@@ -501,7 +502,8 @@ TEST_F(SkillsSyncBridgeTest, ShouldPropagateUpdatesToSync) {
                   Pointee(EntityDataHasSkillSpecifics(
                       base::test::EqualsProto(expected_specifics))),
                   _));
-  bridge().OnSkillUpdated(kSkillId, SkillsService::UpdateSource::kLocal);
+  bridge().OnSkillUpdated(kSkillId, SkillsService::UpdateSource::kLocal,
+                          /*is_position_changed=*/false);
 }
 
 TEST_F(SkillsSyncBridgeTest, ShouldPropagateUpdatesToSyncWithUnknownFields) {
@@ -525,7 +527,8 @@ TEST_F(SkillsSyncBridgeTest, ShouldPropagateUpdatesToSyncWithUnknownFields) {
                   Pointee(EntityDataHasSkillSpecifics(
                       syncer::test::HasUnknownField("unknown_field"))),
                   _));
-  bridge().OnSkillUpdated(kSkillId, SkillsService::UpdateSource::kLocal);
+  bridge().OnSkillUpdated(kSkillId, SkillsService::UpdateSource::kLocal,
+                          /*is_position_changed=*/false);
 }
 
 TEST_F(SkillsSyncBridgeTest, ShouldPropagateDeletionsToSync) {
@@ -537,7 +540,8 @@ TEST_F(SkillsSyncBridgeTest, ShouldPropagateDeletionsToSync) {
       .WillByDefault(Return(nullptr));
 
   EXPECT_CALL(mock_processor(), Delete(kSkillId, _, _));
-  bridge().OnSkillUpdated(kSkillId, SkillsService::UpdateSource::kLocal);
+  bridge().OnSkillUpdated(kSkillId, SkillsService::UpdateSource::kLocal,
+                          /*is_position_changed=*/false);
 }
 
 TEST_F(SkillsSyncBridgeTest, ShouldReloadDataOnRestart) {
@@ -549,7 +553,8 @@ TEST_F(SkillsSyncBridgeTest, ShouldReloadDataOnRestart) {
   skill.source_skill_id = "source_skill_id";
   ON_CALL(mock_skills_service(), GetSkillById(kSkillId))
       .WillByDefault(Return(&skill));
-  bridge().OnSkillUpdated(kSkillId, SkillsService::UpdateSource::kLocal);
+  bridge().OnSkillUpdated(kSkillId, SkillsService::UpdateSource::kLocal,
+                          /*is_position_changed=*/false);
 
   // Simulate a browser restart.
   EXPECT_CALL(mock_skills_service(),
@@ -578,8 +583,10 @@ TEST_F(SkillsSyncBridgeTest, ShouldDeleteAllDataOnDisableSync) {
   ON_CALL(mock_skills_service(), GetSkillById(kSkillId2))
       .WillByDefault(Return(skills[1].get()));
   ON_CALL(mock_skills_service(), GetSkills()).WillByDefault(ReturnRef(skills));
-  bridge().OnSkillUpdated(kSkillId1, SkillsService::UpdateSource::kLocal);
-  bridge().OnSkillUpdated(kSkillId2, SkillsService::UpdateSource::kLocal);
+  bridge().OnSkillUpdated(kSkillId1, SkillsService::UpdateSource::kLocal,
+                          /*is_position_changed=*/false);
+  bridge().OnSkillUpdated(kSkillId2, SkillsService::UpdateSource::kLocal,
+                          /*is_position_changed=*/false);
 
   ASSERT_THAT(GetAllLocalDataFromStore(),
               UnorderedElementsAre(Pair(kSkillId1, _), Pair(kSkillId2, _)));

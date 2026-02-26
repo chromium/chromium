@@ -313,9 +313,9 @@ bool SkillsSyncBridge::IsEntityDataValid(
   return true;
 }
 
-void SkillsSyncBridge::OnSkillUpdated(
-    std::string_view skill_id,
-    SkillsService::UpdateSource update_source) {
+void SkillsSyncBridge::OnSkillUpdated(std::string_view skill_id,
+                                      SkillsService::UpdateSource update_source,
+                                      bool is_position_changed) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   CHECK(store_);
