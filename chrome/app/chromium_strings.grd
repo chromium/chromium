@@ -2950,6 +2950,9 @@ Chromium is unable to recover your settings.
           Cleared Chromium data
         </message>
       </if>
+      <message name="IDS_SKILL_SAVED_TOAST_BUTTON" desc="Text on the toast action button after a skill is saved">
+        Try with Gemini in Chromium
+      </message>
 
       <!-- Glic Strings -->
       <if expr="enable_glic">
