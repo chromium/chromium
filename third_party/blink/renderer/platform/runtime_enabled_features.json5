@@ -2639,6 +2639,13 @@
       status: "experimental",
     },
     {
+      // Adds the filter attribute to the input element, which targets a
+      // listbox select element to perform filtering.
+      name: "FilterableSelect",
+      status: "experimental",
+      depends_on: ["CustomizableSelectListbox"],
+    },
+    {
       // Fix for https://crbug.com/41153707
       name: "FilterContainerLevelStyles",
       status: "stable"

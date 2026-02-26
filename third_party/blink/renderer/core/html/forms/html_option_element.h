@@ -134,6 +134,16 @@ class CORE_EXPORT HTMLOptionElement final : public HTMLElement {
   void UpdateMutationObserver(bool in_style_recalc);
   bool HasMutationObserver() const { return text_observer_; }
 
+  // Returns true if this option is in a state which supports the :active-option
+  // pseudo-element, meaning that this option is visible and not disabled.
+  bool SupportsActiveOptionPseudo();
+
+  // Helper to choose the option for customizable select event handling in
+  // DefaultEventHandler. Depending on the state of OwnerSelectElement, it may
+  // toggle selectedness and dirtiness, deselect other options, close the
+  // select's picker, and set default handled on the event.
+  void ChooseOption(Event&);
+
   // This constant is a distance in pixels (post zoom, page-relative). It is
   // used in multiple cases (select popups, submenu popups) where we support
   // mousedown -> popup opens -> drag into popup -> mouseup on item in popup
@@ -164,12 +174,6 @@ class CORE_EXPORT HTMLOptionElement final : public HTMLElement {
   void DefaultEventHandlerInternal(Event&);
 
   void RecalcOwnerSelectElement() const;
-
-  // Helper to choose the option for customizable select event handling in
-  // DefaultEventHandler. Depending on the state of OwnerSelectElement, it may
-  // toggle selectedness and dirtiness, deselect other options, close the
-  // select's picker, and set default handled on the event.
-  void ChooseOption(Event&);
 
   bool IsVisibleInViewport();
   bool NeedsMutationObserver();

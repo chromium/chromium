@@ -81,6 +81,7 @@ class TextFieldInputType : public InputType,
 
   void HandleKeydownEventForSpinButton(KeyboardEvent&);
   bool HandleKeydownForCustomizableCombobox(KeyboardEvent&);
+  bool HandleKeydownForFilterableSelect(KeyboardEvent&);
   Element* ContainerElement() const;
 
  private:

@@ -996,7 +996,7 @@ void HTMLSelectElement::SelectOption(HTMLOptionElement* element,
   SetAutofillState(element ? autofill_state : WebAutofillState::kNotFilled);
 }
 
-void HTMLSelectElement::SelectOptionFromPopoverPickerOrBaseListbox(
+void HTMLSelectElement::SelectOptionFromPopoverPickerOrListbox(
     HTMLOptionElement* option) {
   if (!UsesMenuList() || IsMultiple()) {
     option->SetSelectedState(!option->Selected());
@@ -1464,6 +1464,7 @@ void HTMLSelectElement::Trace(Visitor* visitor) const {
   visitor->Trace(descendant_selectedcontents_);
   visitor->Trace(select_type_);
   visitor->Trace(descendants_observer_);
+  visitor->Trace(active_option_);
   HTMLFormControlElementWithState::Trace(visitor);
 }
 
@@ -2083,6 +2084,62 @@ bool HTMLSelectElement::ShouldIgnoreDescendantsForOptionTraversals(
   // this method doesn't have enough context to handle that case.
   return IsA<HTMLDataListElement>(element) || IsA<HTMLSelectElement>(element) ||
          IsA<HTMLOptionElement>(element) || IsA<HTMLHRElement>(element);
+}
+
+void HTMLSelectElement::StartFiltering() {
+  CHECK(RuntimeEnabledFeatures::FilterableSelectEnabled());
+  CHECK(!UsesMenuList());
+  CHECK(!active_option_);
+  for (HTMLOptionElement& option : GetOptionList()) {
+    if (option.SupportsActiveOptionPseudo()) {
+      active_option_ = option;
+      active_option_->PseudoStateChanged(CSSSelector::kPseudoActiveOption);
+      break;
+    }
+  }
+}
+
+void HTMLSelectElement::StopFiltering() {
+  CHECK(RuntimeEnabledFeatures::FilterableSelectEnabled());
+  CHECK(!UsesMenuList());
+  if (active_option_) {
+    HTMLOptionElement* old_active_option = active_option_;
+    active_option_ = nullptr;
+    old_active_option->PseudoStateChanged(CSSSelector::kPseudoActiveOption);
+  }
+}
+
+namespace {
+
+bool SupportsActive(HTMLOptionElement& option) {
+  return option.SupportsActiveOptionPseudo();
+}
+
+}  // namespace
+
+void HTMLSelectElement::MoveActiveOptionForwards() {
+  CHECK(RuntimeEnabledFeatures::FilterableSelectEnabled());
+  CHECK(!UsesMenuList());
+  CHECK(active_option_);
+  if (HTMLOptionElement* new_option =
+          GetOptionList().FindNextOption(*active_option_, &SupportsActive)) {
+    active_option_ = new_option;
+  }
+}
+
+void HTMLSelectElement::MoveActiveOptionBackwards() {
+  CHECK(RuntimeEnabledFeatures::FilterableSelectEnabled());
+  CHECK(!UsesMenuList());
+  CHECK(active_option_);
+  if (HTMLOptionElement* new_option = GetOptionList().FindPreviousOption(
+          *active_option_, &SupportsActive)) {
+    active_option_ = new_option;
+  }
+}
+
+void HTMLSelectElement::ToggleActiveOption(Event& event) {
+  CHECK(active_option_);
+  active_option_->ChooseOption(event);
 }
 
 }  // namespace blink

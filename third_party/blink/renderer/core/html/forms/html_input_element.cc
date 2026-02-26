@@ -71,6 +71,7 @@
 #include "third_party/blink/renderer/core/html/forms/html_data_list_options_collection.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_option_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/forms/input_type.h"
 #include "third_party/blink/renderer/core/html/forms/radio_button_group_scope.h"
 #include "third_party/blink/renderer/core/html/forms/search_input_type.h"
@@ -2547,6 +2548,20 @@ bool HTMLInputElement::IsBaseAppearanceCombobox() const {
     return IsAppearanceBase() && datalist->IsAppearanceBase();
   }
   return false;
+}
+
+HTMLSelectElement* HTMLInputElement::FilterTarget() const {
+  if (!RuntimeEnabledFeatures::FilterableSelectEnabled()) {
+    return nullptr;
+  }
+  if (auto* select = DynamicTo<HTMLSelectElement>(
+          GetElementAttributeResolvingReferenceTarget(
+              html_names::kFilterAttr))) {
+    if (!select->UsesMenuList()) {
+      return select;
+    }
+  }
+  return nullptr;
 }
 
 }  // namespace blink

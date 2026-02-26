@@ -46,22 +46,6 @@
 
 namespace blink {
 
-namespace {
-
-// Returns true if the provided option element can have the :active-option
-// pseudo-class. Different from IsFocusable because these option elements are
-// not supposed to be keyboard focusable.
-bool CanOptionBeActive(HTMLOptionElement& option) {
-  if (option.IsDisabledFormControl()) {
-    return false;
-  }
-  option.GetDocument().UpdateStyleAndLayoutForNode(
-      &option, DocumentUpdateReason::kPopover);
-  return option.GetLayoutObject();
-}
-
-}  // namespace
-
 HTMLDataListElement::HTMLDataListElement(Document& document)
     : HTMLElement(html_names::kDatalistTag, document) {
   UseCounter::Count(document, WebFeature::kDataListElement);
@@ -129,7 +113,7 @@ void HTMLDataListElement::ShowPopoverInternal(Element* invoker,
         IsAppearanceBase()) {
       for (Element* element_option : *options()) {
         HTMLOptionElement* option = To<HTMLOptionElement>(element_option);
-        if (CanOptionBeActive(*option)) {
+        if (option->SupportsActiveOptionPseudo()) {
           CHECK(!active_option_);
           active_option_ = option;
           active_option_->PseudoStateChanged(CSSSelector::kPseudoActiveOption);
@@ -196,7 +180,7 @@ void HTMLDataListElement::MoveActiveOption(Direction direction) {
 
     HTMLOptionElement* next_option = option_list->Item(index);
     CHECK(next_option);
-    if (CanOptionBeActive(*next_option)) {
+    if (next_option->SupportsActiveOptionPseudo()) {
       active_option_ = next_option;
       active_option_->PseudoStateChanged(CSSSelector::kPseudoActiveOption);
       next_option->PseudoStateChanged(CSSSelector::kPseudoActiveOption);

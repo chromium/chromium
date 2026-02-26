@@ -2545,15 +2545,19 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       }
       return element.HasFocusWithin();
     case CSSSelector::kPseudoActiveOption:
-      if (!RuntimeEnabledFeatures::CustomizableComboboxEnabled()) {
-        return false;
-      }
-      // This will only match for a base appearance combobox because
-      // HTMLDataListElement::ActiveOption will only return an option if the
-      // datalist is being rendered with base appearance.
       if (auto* option = DynamicTo<HTMLOptionElement>(element)) {
-        if (HTMLDataListElement* datalist = option->OwnerDataListElement()) {
-          return datalist->ActiveOption() == option;
+        if (RuntimeEnabledFeatures::CustomizableComboboxEnabled()) {
+          // This will only match for a base appearance combobox because
+          // HTMLDataListElement::ActiveOption will only return an option if the
+          // datalist is being rendered with base appearance.
+          if (HTMLDataListElement* datalist = option->OwnerDataListElement()) {
+            return datalist->ActiveOption() == option;
+          }
+        }
+        if (RuntimeEnabledFeatures::FilterableSelectEnabled()) {
+          if (HTMLSelectElement* select = option->OwnerSelectElement()) {
+            return option == select->ActiveOption();
+          }
         }
       }
       return false;

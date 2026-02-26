@@ -854,7 +854,8 @@ CSSSelector::PseudoType CSSSelector::NameToPseudoType(
   }
 
   if (match->type == CSSSelector::kPseudoActiveOption &&
-      !RuntimeEnabledFeatures::CustomizableComboboxEnabled()) {
+      !RuntimeEnabledFeatures::CustomizableComboboxEnabled() &&
+      !RuntimeEnabledFeatures::FilterableSelectEnabled()) {
     return CSSSelector::kPseudoUnknown;
   }
   if (match->type == CSSSelector::kPseudoAnimatedImage &&

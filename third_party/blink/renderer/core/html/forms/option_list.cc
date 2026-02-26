@@ -100,9 +100,10 @@ unsigned OptionList::size() const {
   return count;
 }
 
-HTMLOptionElement* OptionList::FindFocusableOption(HTMLOptionElement& option,
-                                                   bool forward,
-                                                   bool inclusive) {
+HTMLOptionElement* OptionList::FindOption(HTMLOptionElement& option,
+                                          OptionMatchingPredicate predicate,
+                                          bool forward,
+                                          bool inclusive) {
   DCHECK_EQ(option.OwnerSelectElement(), select_);
   DCHECK(!Empty());
   OptionListIterator option_list_iterator = begin();
@@ -122,7 +123,7 @@ HTMLOptionElement* OptionList::FindFocusableOption(HTMLOptionElement& option,
       return nullptr;
     }
     inclusive = false;
-    if (option_list_iterator->IsFocusable()) {
+    if (predicate(*option_list_iterator)) {
       return &*option_list_iterator;
     }
   }

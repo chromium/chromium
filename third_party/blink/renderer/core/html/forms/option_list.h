@@ -87,20 +87,24 @@ class OptionList final {
     return !Iterator(select_, OptionListIterator::StartingPoint::kStart);
   }
   unsigned size() const;
+
   typedef bool (*OptionMatchingPredicate)(HTMLOptionElement& option);
-  HTMLOptionElement* NextFocusableOption(HTMLOptionElement& option,
-                                         bool inclusive = false) {
-    return FindFocusableOption(option, /*forward*/ true, inclusive);
+  HTMLOptionElement* FindNextOption(HTMLOptionElement& option,
+                                    OptionMatchingPredicate predicate,
+                                    bool inclusive = false) {
+    return FindOption(option, predicate, /*forward*/ true, inclusive);
   }
-  HTMLOptionElement* PreviousFocusableOption(HTMLOptionElement& option,
-                                             bool inclusive = false) {
-    return FindFocusableOption(option, /*forward*/ false, inclusive);
+  HTMLOptionElement* FindPreviousOption(HTMLOptionElement& option,
+                                        OptionMatchingPredicate predicate,
+                                        bool inclusive = false) {
+    return FindOption(option, predicate, /*forward*/ false, inclusive);
   }
 
  private:
-  HTMLOptionElement* FindFocusableOption(HTMLOptionElement& option,
-                                         bool forward,
-                                         bool inclusive);
+  HTMLOptionElement* FindOption(HTMLOptionElement& option,
+                                OptionMatchingPredicate predicate,
+                                bool forward,
+                                bool inclusive);
 
   const HTMLSelectElement& select_;
 };
