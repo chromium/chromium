@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/tabs/tab_group_theme.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_group_accessibility.h"
+#include "chrome/browser/ui/views/tabs/tab_hover_card_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_types.h"
 #include "chrome/browser/ui/views/tabs/vertical/tab_collection_animating_layout_manager.h"
 #include "chrome/browser/ui/views/tabs/vertical/tab_collection_node.h"
@@ -396,6 +397,20 @@ bool VerticalTabGroupView::ContinueHeaderDrag(const ui::MouseEvent& event) {
 
 void VerticalTabGroupView::CancelHeaderDrag() {
   GetDragHandler().EndDrag(EndDragReason::kCancel);
+}
+
+void VerticalTabGroupView::HideHoverCard() const {
+  if (!collection_node_) {
+    return;
+  }
+
+  TabHoverCardController* hover_card_controller =
+      collection_node_->GetController()->GetHoverCardController();
+
+  if (hover_card_controller && hover_card_controller->IsHoverCardVisible()) {
+    hover_card_controller->UpdateHoverCard(
+        nullptr, TabSlotController::HoverCardUpdateType::kEvent);
+  }
 }
 
 BEGIN_METADATA(VerticalTabGroupView)

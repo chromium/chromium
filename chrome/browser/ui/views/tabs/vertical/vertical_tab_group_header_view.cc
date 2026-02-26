@@ -243,6 +243,7 @@ void VerticalTabGroupHeaderView::OnMouseMoved(const ui::MouseEvent& event) {
 }
 
 void VerticalTabGroupHeaderView::OnMouseEntered(const ui::MouseEvent& event) {
+  delegate_->HideHoverCard();
   UpdateEditorBubbleButtonVisibility();
 }
 

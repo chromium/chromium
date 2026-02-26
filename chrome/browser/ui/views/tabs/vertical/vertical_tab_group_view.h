@@ -57,6 +57,7 @@ class VerticalTabGroupView
   void InitHeaderDrag(const ui::MouseEvent& event) override;
   bool ContinueHeaderDrag(const ui::MouseEvent& event) override;
   void CancelHeaderDrag() override;
+  void HideHoverCard() const override;
 
   // TabCollectionAnimatingLayoutManager::Delegate:
   bool IsViewDragging(const views::View& child_view) const override;

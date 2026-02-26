@@ -199,7 +199,7 @@ void VerticalTabStripView::OnMouseExited(const ui::MouseEvent& event) {
 
   if (TabHoverCardController* hover_card_controller =
           collection_node_->GetController()->GetHoverCardController();
-      hover_card_controller && hover_card_controller->IsHoverCardVisible()) {
+      hover_card_controller) {
     hover_card_controller->UpdateHoverCard(
         nullptr, TabSlotController::HoverCardUpdateType::kHover);
   }
