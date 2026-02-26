@@ -178,12 +178,15 @@ class MockTriggerableClientSocket : public TransportClientSocket {
  public:
   // |connect_error| indicates whether the socket should successfully complete
   // or fail.
-  MockTriggerableClientSocket(const AddressList& addrlist,
-                              Error connect_error,
-                              net::NetLog* net_log)
+  MockTriggerableClientSocket(
+      const AddressList& addrlist,
+      Error connect_error,
+      net::NetLog* net_log,
+      std::optional<base::TimeDelta> connect_autocallback_delay = std::nullopt)
       : connect_error_(connect_error),
         addrlist_(addrlist),
-        net_log_(NetLogWithSource::Make(net_log, NetLogSourceType::SOCKET)) {}
+        net_log_(NetLogWithSource::Make(net_log, NetLogSourceType::SOCKET)),
+        connect_autocallback_delay_(connect_autocallback_delay) {}
 
   MockTriggerableClientSocket(const MockTriggerableClientSocket&) = delete;
   MockTriggerableClientSocket& operator=(const MockTriggerableClientSocket&) =
@@ -202,9 +205,8 @@ class MockTriggerableClientSocket : public TransportClientSocket {
       Error connect_error,
       net::NetLog* net_log) {
     auto socket = std::make_unique<MockTriggerableClientSocket>(
-        addrlist, connect_error, net_log);
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, socket->GetConnectCallback());
+        addrlist, connect_error, net_log,
+        /*connect_autocallback_delay=*/base::TimeDelta());
     return std::move(socket);
   }
 
@@ -214,9 +216,7 @@ class MockTriggerableClientSocket : public TransportClientSocket {
       const base::TimeDelta& delay,
       net::NetLog* net_log) {
     auto socket = std::make_unique<MockTriggerableClientSocket>(
-        addrlist, connect_error, net_log);
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE, socket->GetConnectCallback(), delay);
+        addrlist, connect_error, net_log, /*connect_autocallback_delay=*/delay);
     return std::move(socket);
   }
 
@@ -236,6 +236,10 @@ class MockTriggerableClientSocket : public TransportClientSocket {
   int Connect(CompletionOnceCallback callback) override {
     DCHECK(callback_.is_null());
     callback_ = std::move(callback);
+    if (connect_autocallback_delay_) {
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+          FROM_HERE, GetConnectCallback(), *connect_autocallback_delay_);
+    }
     return ERR_IO_PENDING;
   }
 
@@ -296,6 +300,10 @@ class MockTriggerableClientSocket : public TransportClientSocket {
   const AddressList addrlist_;
   NetLogWithSource net_log_;
   CompletionOnceCallback callback_;
+
+  // If non-null, posts a task with this delay to run the connect callback on
+  // Connect().
+  const std::optional<base::TimeDelta> connect_autocallback_delay_;
 
   base::WeakPtrFactory<MockTriggerableClientSocket> weak_factory_{this};
 };

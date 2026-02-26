@@ -15,7 +15,6 @@
 #include "net/base/address_list.h"
 #include "net/base/load_states.h"
 #include "net/socket/transport_connect_job.h"
-#include "net/socket/websocket_endpoint_lock_manager.h"
 
 namespace net {
 
@@ -55,8 +54,7 @@ class TransportConnectSubJob {
  private:
   enum State {
     STATE_NONE,
-    STATE_OBTAIN_LOCK,
-    STATE_OBTAIN_LOCK_COMPLETE,
+    STATE_TRANSPORT_CONNECT,
     STATE_TRANSPORT_CONNECT_COMPLETE,
     STATE_DONE,
   };
@@ -65,8 +63,7 @@ class TransportConnectSubJob {
 
   void OnIOComplete(int result);
   int DoLoop(int result);
-  int DoEndpointLock();
-  int DoEndpointLockComplete();
+  int DoTransportConnect();
   int DoTransportConnectComplete(int result);
 
   const raw_ptr<TransportConnectJob> parent_job_;
@@ -76,10 +73,6 @@ class TransportConnectSubJob {
 
   State next_state_ = STATE_NONE;
   const SubJobType type_;
-
-  // TODO(crbug.com/483395706): Move managing this into the socket class, and
-  // get rid of the unique_ptr.
-  std::unique_ptr<WebSocketEndpointLockManager::EndpointLock> endpoint_lock_;
 
   std::unique_ptr<StreamSocket> transport_socket_;
 };

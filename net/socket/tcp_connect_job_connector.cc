@@ -19,6 +19,7 @@
 #include "net/socket/connection_attempts.h"
 #include "net/socket/socket_performance_watcher.h"
 #include "net/socket/socket_performance_watcher_factory.h"
+#include "net/socket/websocket_stream_socket.h"
 
 namespace net {
 
@@ -170,7 +171,15 @@ int TcpConnectJob::Connector::DoTcpConnect() {
 
   transport_socket_->ApplySocketTag(parent_->socket_tag());
 
-  // TODO(https://crbug.com/484073410): Wire up websocket lock here, if needed.
+  // If there's a `websocket_endpoint_lock_manager`, then this is a WebSocket
+  // connection attempt, and a lock must be obtained on the destination endpoint
+  // before connecting. Wrap `socket` in a `WebSocketStreamSocket`, which will
+  // wait for the lock before connecting, and then release it on destruction.
+  if (parent_->websocket_endpoint_lock_manager()) {
+    transport_socket_ = std::make_unique<WebSocketStreamSocket>(
+        *parent_->websocket_endpoint_lock_manager(), *current_address_,
+        std::move(transport_socket_));
+  }
 
   return transport_socket_->Connect(base::BindOnce(
       &TcpConnectJob::Connector::OnIOComplete, base::Unretained(this)));

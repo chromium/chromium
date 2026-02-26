@@ -440,7 +440,9 @@ TEST_F(WebSocketTransportClientSocketPoolTest, CancelRequest) {
 
   ReleaseAllConnections(ClientSocketPoolTest::KEEP_ALIVE);
 
-  EXPECT_EQ(5, client_socket_factory_.allocation_count());
+  // Six sockets should be created, though only 5 of them should have been
+  // connected.
+  EXPECT_EQ(6, client_socket_factory_.allocation_count());
 
   EXPECT_EQ(1, GetOrderOfRequest(1));
   EXPECT_EQ(2, GetOrderOfRequest(2));
@@ -1262,10 +1264,10 @@ TEST_F(WebSocketTransportClientSocketPoolTest, EndpointLockIsOnlyReleasedOnce) {
   request(0)->handle()->Reset();
   // Second socket should have been released.
   EXPECT_THAT(request(1)->WaitForResult(), IsOk());
-  // Third socket should still be waiting for endpoint.
+  // Third socket should still be waiting for endpoint, but load state reports
+  // LOAD_STATE_CONNECTING.
   ASSERT_FALSE(request(2)->handle()->is_initialized());
-  EXPECT_EQ(LOAD_STATE_WAITING_FOR_AVAILABLE_SOCKET,
-            request(2)->handle()->GetLoadState());
+  EXPECT_EQ(LOAD_STATE_CONNECTING, request(2)->handle()->GetLoadState());
 }
 
 // Make sure that WebSocket requests use the correct NetworkAnonymizationKey.
@@ -1402,11 +1404,12 @@ TEST_F(WebSocketTransportClientSocketPoolTest, LoadState) {
   EXPECT_THAT(connect_job_v6_and_v4.GetLoadState(), LOAD_STATE_RESOLVING_HOST);
 
   // When DNS is resolved, it should attempt to connect to the IPv6 address, but
-  // `connect_job_v6_only` holds the lock.
+  // `connect_job_v6_only` holds the lock. GetLoadState() reports
+  // LOAD_STATE_CONNECTING despite the fact that it's actually waiting on the
+  // lock.
   host_resolver_->ResolveOnlyRequestNow();
   RunUntilIdle();
-  EXPECT_THAT(connect_job_v6_and_v4.GetLoadState(),
-              LOAD_STATE_WAITING_FOR_AVAILABLE_SOCKET);
+  EXPECT_THAT(connect_job_v6_and_v4.GetLoadState(), LOAD_STATE_CONNECTING);
 
   // After the IPv6 fallback timeout, it should attempt to connect to the IPv4
   // address. This lock is available, so `GetLoadState` should report it is now
