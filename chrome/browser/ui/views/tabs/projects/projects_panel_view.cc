@@ -194,7 +194,12 @@ ProjectsPanelView::ProjectsPanelView(BrowserWindowInterface* browser,
   SetProperty(views::kElementIdentifierKey, kProjectsPanelViewElementId);
 }
 
-ProjectsPanelView::~ProjectsPanelView() = default;
+ProjectsPanelView::~ProjectsPanelView() {
+  // Owned by subviews which are cleaned up after ProjectsPanelView is
+  // cleaned up. Avoid dangling pointer.
+  tab_groups_view_ = nullptr;
+  threads_view_ = nullptr;
+}
 
 bool ProjectsPanelView::IsPositionInWindowCaption(const gfx::Point& point) {
   gfx::Point point_in_target = point;
