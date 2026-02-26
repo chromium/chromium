@@ -67,6 +67,12 @@ enum class EntryPointOption {
   kToolbarPermanent
 };
 
+// Enum of expand button UI option
+enum class ExpandButtonOption {
+  kSidePanelExpandButton,
+  kToolbarCloseButton,
+};
+
 // Whether to only consider titles for similarity.
 extern const base::FeatureParam<bool> kOnlyUseTitlesForSimilarity;
 // Minimum score to consider a tab relevant.
@@ -80,6 +86,9 @@ extern const base::FeatureParam<double>
 
 // Controls whether the contextual task page action should show
 extern const base::FeatureParam<EntryPointOption, true> kShowEntryPoint;
+
+// UI Options to expand the contextual tasks side panel to tab.
+extern const base::FeatureParam<ExpandButtonOption, true> kExpandButtonOptions;
 
 // If true, the side panel is task scoped. Meaning that for all tabs associated
 // with the same task, they will share the same side panel. If the side panel
@@ -218,6 +227,9 @@ extern bool ShouldEnableCookieSync();
 // Returns whether the input plate can be locked and unlocked by a message
 // from AIM.
 extern bool ShouldEnableLockAndUnlockInputCapability();
+
+// Returns the UI option to expand contextual tasks side panel to tab.
+extern ExpandButtonOption GetExpandButtonOption();
 
 namespace flag_descriptions {
 

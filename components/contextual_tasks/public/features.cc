@@ -130,6 +130,16 @@ const base::FeatureParam<EntryPointOption> kShowEntryPoint(
     EntryPointOption::kToolbarPermanent,
     &kEntryPointOptions);
 
+constexpr base::FeatureParam<ExpandButtonOption>::Option kExpandButtonOption[] =
+    {{ExpandButtonOption::kSidePanelExpandButton, "side-panel-expand-button"},
+     {ExpandButtonOption::kToolbarCloseButton, "toolbar-close-button"}};
+
+const base::FeatureParam<ExpandButtonOption> kExpandButtonOptions(
+    &kContextualTasks,
+    "ContextualTasksExpandButtonOptions",
+    ExpandButtonOption::kSidePanelExpandButton,
+    &kExpandButtonOption);
+
 const base::FeatureParam<bool> kTaskScopedSidePanel(
     &kContextualTasks,
     "ContextualTasksTaskScopedSidePanel",
@@ -384,6 +394,10 @@ bool ShouldEnableCookieSync() {
 bool ShouldEnableLockAndUnlockInputCapability() {
   return base::FeatureList::IsEnabled(kContextualTasks) &&
          kContextualTasksLockAndUnlockInputCapability.Get();
+}
+
+ExpandButtonOption GetExpandButtonOption() {
+  return kExpandButtonOptions.Get();
 }
 
 namespace flag_descriptions {
