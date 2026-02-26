@@ -123,6 +123,14 @@ template("ipcz_source_set") {
           deps += [ "${dep}_chromium" ]
         }
       }
+
+      # ChromeOS profiling data indicates that ipcz consumes 1.5% of Chrome's
+      # cycles on that platform; per go/cr-os, it shouldn't be optimized for
+      # size on that platform.
+      if (target_name == "ipcz" && is_chromeos) {
+        configs -= [ "//build/config/compiler:default_optimization" ]
+        configs += [ "//build/config/compiler:optimize_speed" ]
+      }
     }
   }
 }
