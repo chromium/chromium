@@ -414,7 +414,9 @@ export class SlimWebViewElement extends CrLitElement {
   }
 
   private maybeSetupEventDispatcher() {
-    if (this.guestInstanceId === null || this.eventDispatcher !== null) {
+    if (this.guestInstanceId === null ||
+        this.guestInstanceId === GUEST_INSTANCE_ID_PENDING ||
+        this.eventDispatcher !== null) {
       return;
     }
     this.eventDispatcher = new EventDispatcher(
