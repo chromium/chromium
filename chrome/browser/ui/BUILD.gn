@@ -1178,6 +1178,8 @@ static_library("ui") {
       "webui/history/navigation_handler.h",
       "webui/history_clusters/history_clusters_handler.cc",
       "webui/history_clusters/history_clusters_handler.h",
+      "webui/image/image_navigation_throttle.cc",
+      "webui/image/image_navigation_throttle.h",
       "webui/inspect/inspect_ui.cc",
       "webui/inspect/inspect_ui.h",
       "webui/management/management_ui.cc",
