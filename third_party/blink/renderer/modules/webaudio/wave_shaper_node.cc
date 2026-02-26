@@ -40,7 +40,7 @@ WaveShaperNode::WaveShaperNode(BaseAudioContext& context) : AudioNode(context) {
 
 WaveShaperNode* WaveShaperNode::Create(BaseAudioContext& context,
                                        ExceptionState& exception_state) {
-  DCHECK(IsMainThread());
+  CHECK(IsMainThread());
 
   return MakeGarbageCollected<WaveShaperNode>(context);
 }
@@ -71,7 +71,7 @@ WaveShaperHandler& WaveShaperNode::GetWaveShaperHandler() const {
 void WaveShaperNode::SetCurveImpl(const float* curve_data,
                                   size_t curve_length,
                                   ExceptionState& exception_state) {
-  DCHECK(IsMainThread());
+  CHECK(IsMainThread());
 
   unsigned length = static_cast<unsigned>(curve_length);
 
@@ -101,7 +101,7 @@ void WaveShaperNode::SetCurveImpl(const float* curve_data,
 
 void WaveShaperNode::setCurve(NotShared<DOMFloat32Array> curve,
                               ExceptionState& exception_state) {
-  DCHECK(IsMainThread());
+  CHECK(IsMainThread());
 
   if (curve) {
     SetCurveImpl(curve->Data(), curve->length(), exception_state);
@@ -112,7 +112,7 @@ void WaveShaperNode::setCurve(NotShared<DOMFloat32Array> curve,
 
 void WaveShaperNode::setCurve(const Vector<float>& curve,
                               ExceptionState& exception_state) {
-  DCHECK(IsMainThread());
+  CHECK(IsMainThread());
 
   SetCurveImpl(curve.data(), curve.size(), exception_state);
 }
@@ -123,16 +123,14 @@ NotShared<DOMFloat32Array> WaveShaperNode::curve() const {
     return NotShared<DOMFloat32Array>(nullptr);
   }
 
-  unsigned size = curve->size();
-
-  NotShared<DOMFloat32Array> result(DOMFloat32Array::Create(size));
-  UNSAFE_TODO(memcpy(result->Data(), curve->data(), sizeof(float) * size));
+  NotShared<DOMFloat32Array> result(DOMFloat32Array::Create(curve->size()));
+  result->AsSpan().copy_from(*curve);
 
   return result;
 }
 
 void WaveShaperNode::setOversample(const V8OverSampleType& type) {
-  DCHECK(IsMainThread());
+  CHECK(IsMainThread());
 
   // This is to synchronize with the changes made in
   // AudioBasicProcessorNode::checkNumberOfChannelsForInput() where we can
