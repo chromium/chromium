@@ -4629,7 +4629,7 @@
       "//ash/quick_pair/OWNERS",
       "jackshira@google.com"
     ],
-    "expiry_milestone": 145
+    "expiry_milestone": 155
   },
   {
     "name": "fast-pair-handshake-long-term-refactor",
