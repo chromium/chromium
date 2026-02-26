@@ -9,8 +9,6 @@
 
 :host {
   display: flex;
-  /* Overridden by app.ts */
-  --toolbar-icon-default-margin: 0px;
   gap: var(--toolbar-icon-default-margin);
 }
 

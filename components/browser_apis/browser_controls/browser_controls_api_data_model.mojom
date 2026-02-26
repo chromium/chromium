@@ -39,14 +39,6 @@ enum ToolbarButtonType {
   kSplitTabs,
 };
 
-struct LayoutConstants {
-  int32 toolbar_button_height;
-  int32 toolbar_button_icon_size;
-  int32 toolbar_icon_default_margin;
-  int32 location_bar_height;
-  int32 location_bar_margin;
-};
-
 struct SplitTabsControlState {
   bool is_current_tab_split;
   SplitTabActiveLocation location;
@@ -57,5 +49,7 @@ struct SplitTabsControlState {
 struct NavigationControlsState {
   ReloadControlState reload_control_state;
   SplitTabsControlState split_tabs_control_state;
-  LayoutConstants layout_constants;
+  // This is incremented every time a settings change may change the layout
+  // constants.
+  int32 layout_constants_version = 0;
 };

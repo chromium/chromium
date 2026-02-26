@@ -70,7 +70,12 @@ enum class LayoutConstant {
 
   // The leading edge space in the omnibox from the LHS icons used in Chrome
   // with the chrome refresh flag.
-  kLocationBarLeadingDecorationEdgePadding,
+  // TODO(manukh): See comment in `LocationBarView::Layout()`. We have too
+  // many feature permutations that would affect this and other layout
+  // constants, so instead of spreading the permutation logic here and
+  // elsewhere, it's consolidated in `Layout()` and will be moved back
+  // here once we decide on a permutation.
+  // kLocationBarLeadingDecorationEdgePadding,
 
   // The trailing edge space in the omnibox from the RHS icons used in Chrome
   // with the chrome refresh flag.
@@ -242,6 +247,8 @@ enum class LayoutConstant {
 
   // The size of page action icons in a web app title bar.
   kWebAppPageActionIconSize,
+
+  kLast = kWebAppPageActionIconSize
 };
 
 enum LayoutInset {

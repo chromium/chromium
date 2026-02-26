@@ -15,7 +15,6 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
-#include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/frame/browser_widget.h"
@@ -28,6 +27,7 @@
 #include "chrome/browser/ui/webui/webui_toolbar/adapters/browser_controls_adapter_impl.h"
 #include "chrome/browser/ui/webui/webui_toolbar/browser_controls_service.h"
 #include "chrome/browser/ui/webui/webui_toolbar/utils/split_tabs_utils.h"
+#include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_layout_css_helper.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -64,18 +64,6 @@ WebUIToolbarUI::WebUIToolbarUI(content::WebUI* web_ui)
   };
   source->AddLocalizedStrings(kStrings);
 
-  source->AddInteger(
-      "toolbarIconDefaultMargin",
-      GetLayoutConstant(LayoutConstant::kToolbarIconDefaultMargin));
-  source->AddInteger("toolbarButtonHeight",
-                     GetLayoutConstant(LayoutConstant::kToolbarButtonHeight));
-  source->AddInteger("toolbarButtonIconSize",
-                     GetLayoutConstant(LayoutConstant::kToolbarButtonIconSize));
-  source->AddInteger("locationBarHeight",
-                     GetLayoutConstant(LayoutConstant::kLocationBarHeight));
-  source->AddInteger("locationBarMargin",
-                     GetLayoutConstant(LayoutConstant::kLocationBarMargin));
-
   const auto& typography_provider = views::TypographyProvider::Get();
   AddFontVariables("omniboxPrimary",
                    typography_provider.GetFont(CONTEXT_OMNIBOX_PRIMARY,
@@ -84,6 +72,8 @@ WebUIToolbarUI::WebUIToolbarUI(content::WebUI* web_ui)
 
   webui::SetupWebUIDataSource(source, kWebuiToolbarResources,
                               IDR_WEBUI_TOOLBAR_WEBUI_TOOLBAR_HTML);
+
+  WebUIToolbarLayoutCssHelper::SetAsRequestFilter(source);
 
   source->AddBoolean("enableReloadButton",
                      features::IsWebUIReloadButtonEnabled());
@@ -217,6 +207,8 @@ void WebUIToolbarUI::PopulateLocalResourceLoaderConfig(
   CHECK(theme_colors_manager);
   theme_colors_manager->PopulateLocalResourceLoaderConfig(
       config, requesting_origin, web_ui()->GetWebContents());
+
+  WebUIToolbarLayoutCssHelper::PopulateLocalResourceLoaderConfig(config);
 }
 
 const std::vector<ui::ElementIdentifier>

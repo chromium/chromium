@@ -66,7 +66,7 @@ class ToolbarDependencyProvider : public WebUIToolbarUI::DependencyProvider {
           return browser_controls_api::mojom::NavigationControlsState::New(
               browser_controls_api::mojom::ReloadControlState::New(),
               browser_controls_api::mojom::SplitTabsControlState::New(),
-              browser_controls_api::mojom::LayoutConstants::New());
+              /*layout_constants_version=*/0);
         }));
   }
 };

@@ -60,13 +60,6 @@ int GetLayoutConstant(LayoutConstant constant) {
       return touch_ui ? 3 : 2;
     case LayoutConstant::kLocationBarPageInfoIconVerticalPadding:
       return touch_ui ? 3 : 5;
-    case LayoutConstant::kLocationBarLeadingDecorationEdgePadding:
-      // TODO(manukh): See comment in `LocationBarView::Layout()`. We have too
-      //   many feature permutations that would affect this and other layout
-      //   constants, so instead of spreading the permutation logic here and
-      //   elsewhere, it's consolidated in `Layout()` and will be moved back
-      //   here once we decide on a permutation.
-      NOTREACHED();
     case LayoutConstant::kLocationBarTrailingDecorationEdgePadding:
       return touch_ui ? 3 : 12;
     case LayoutConstant::kLocationBarTrailingDecorationInnerPadding:
