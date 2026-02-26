@@ -45,7 +45,7 @@ namespace {
 constexpr unsigned kDefaultFFTSize = 2048;
 constexpr unsigned kInputBufferSize = RealtimeAnalyser::kMaxFFTSize * 2;
 
-void ApplyWindow(float* p, size_t n) {
+void ApplyWindow(base::span<float> p) {
   DCHECK(IsMainThread());
 
   // Blackman window
@@ -54,11 +54,12 @@ void ApplyWindow(float* p, size_t n) {
   constexpr double a1 = 0.5;
   constexpr double a2 = 0.5 * alpha;
 
+  const size_t n = p.size();
   for (unsigned i = 0; i < n; ++i) {
     const double x = static_cast<double>(i) / static_cast<double>(n);
     const double window =
         a0 - a1 * cos(kTwoPiDouble * x) + a2 * cos(kTwoPiDouble * 2.0 * x);
-    UNSAFE_TODO(p[i]) *= static_cast<float>(window);
+    p[i] *= static_cast<float>(window);
   }
 }
 
@@ -112,13 +113,11 @@ void RealtimeAnalyser::GetFloatFrequencyData(DOMFloat32Array* destination_array,
   const size_t source_length = magnitude_buffer_.size();
   const size_t len = std::min(source_length, destination_array->length());
   if (len > 0) {
-    const float* source = magnitude_buffer_.Data();
-    float* destination = destination_array->Data();
-
+    base::span<float> destination = destination_array->AsSpan();
     for (unsigned i = 0; i < len; ++i) {
-      const float linear_value = UNSAFE_TODO(source[i]);
+      const float linear_value = magnitude_buffer_[i];
       const double db_mag = audio_utilities::LinearToDecibels(linear_value);
-      UNSAFE_TODO(destination[i]) = static_cast<float>(db_mag);
+      destination[i] = static_cast<float>(db_mag);
     }
   }
 }
@@ -147,11 +146,9 @@ void RealtimeAnalyser::GetByteFrequencyData(DOMUint8Array* destination_array,
                                        : 1.0 / (max_decibels_ - min_decibels_);
     const double min_decibels = min_decibels_;
 
-    const float* source = magnitude_buffer_.Data();
-    unsigned char* destination = destination_array->Data();
-
+    base::span<unsigned char> destination = destination_array->AsSpan();
     for (unsigned i = 0; i < len; ++i) {
-      const float linear_value = UNSAFE_TODO(source[i]);
+      const float linear_value = magnitude_buffer_[i];
       const double db_mag = audio_utilities::LinearToDecibels(linear_value);
 
       // The range m_minDecibels to m_maxDecibels will be scaled to byte values
@@ -160,7 +157,7 @@ void RealtimeAnalyser::GetByteFrequencyData(DOMUint8Array* destination_array,
           UCHAR_MAX * (db_mag - min_decibels) * range_scale_factor;
 
       // Clip to valid range.
-      UNSAFE_TODO(destination[i]) =
+      destination[i] =
           static_cast<unsigned char>(ClampTo(scaled_value, 0, UCHAR_MAX));
     }
   }
@@ -178,18 +175,16 @@ void RealtimeAnalyser::GetFloatTimeDomainData(
     DCHECK_EQ(input_buffer_.size(), kInputBufferSize);
     DCHECK_GT(input_buffer_.size(), fft_size);
 
-    const float* input_buffer = input_buffer_.Data();
-    float* destination = destination_array->Data();
-
     const unsigned write_index = GetWriteIndex();
 
+    base::span<float> destination = destination_array->AsSpan();
     for (unsigned i = 0; i < len; ++i) {
       // Buffer access is protected due to modulo operation.
-      float value = UNSAFE_TODO(
-          input_buffer[(i + write_index - fft_size + kInputBufferSize) %
-                       kInputBufferSize]);
+      float value =
+          input_buffer_[(i + write_index - fft_size + kInputBufferSize) %
+                        kInputBufferSize];
 
-      UNSAFE_TODO(destination[i]) = value;
+      destination[i] = value;
     }
   }
 }
@@ -205,22 +200,20 @@ void RealtimeAnalyser::GetByteTimeDomainData(DOMUint8Array* destination_array) {
     DCHECK_EQ(input_buffer_.size(), kInputBufferSize);
     DCHECK_GT(input_buffer_.size(), fft_size);
 
-    const float* input_buffer = input_buffer_.Data();
-    unsigned char* destination = destination_array->Data();
-
     const unsigned write_index = GetWriteIndex();
 
+    base::span<unsigned char> destination = destination_array->AsSpan();
     for (unsigned i = 0; i < len; ++i) {
       // Buffer access is protected due to modulo operation.
-      const float value = UNSAFE_TODO(
-          input_buffer[(i + write_index - fft_size + kInputBufferSize) %
-                       kInputBufferSize]);
+      const float value =
+          input_buffer_[(i + write_index - fft_size + kInputBufferSize) %
+                        kInputBufferSize];
 
       // Scale from nominal -1 -> +1 to unsigned byte.
       const double scaled_value = 128 * (value + 1);
 
       // Clip to valid range.
-      UNSAFE_TODO(destination[i]) =
+      destination[i] =
           static_cast<unsigned char>(ClampTo(scaled_value, 0, UCHAR_MAX));
     }
   }
@@ -261,28 +254,27 @@ void RealtimeAnalyser::DoFFTAnalysis() {
   const uint32_t fft_size = FftSize();
 
   AudioFloatArray temporary_buffer(fft_size);
-  float* input_buffer = input_buffer_.Data();
-  float* temp_p = temporary_buffer.Data();
+  base::span<const float> input_buffer = input_buffer_.as_span();
+  base::span<float> temp_span = temporary_buffer.as_span();
 
   // Take the previous fftSize values from the input buffer and copy into the
   // temporary buffer.
   const unsigned write_index = GetWriteIndex();
   if (write_index < fft_size) {
-    UNSAFE_TODO(memcpy(temp_p,
-                       input_buffer + write_index - fft_size + kInputBufferSize,
-                       sizeof(*temp_p) * (fft_size - write_index)));
-    UNSAFE_TODO(memcpy(temp_p + fft_size - write_index, input_buffer,
-                       sizeof(*temp_p) * write_index));
+    temp_span.first(fft_size - write_index)
+        .copy_from(input_buffer.subspan(
+            write_index - fft_size + kInputBufferSize, fft_size - write_index));
+    temp_span.subspan(fft_size - write_index)
+        .copy_from(input_buffer.first(write_index));
   } else {
-    UNSAFE_TODO(memcpy(temp_p, input_buffer + write_index - fft_size,
-                       sizeof(*temp_p) * fft_size));
+    temp_span.copy_from(input_buffer.subspan(write_index - fft_size, fft_size));
   }
 
   // Window the input samples.
-  ApplyWindow(temp_p, fft_size);
+  ApplyWindow(temp_span);
 
   // Do the analysis.
-  analysis_frame_->DoFFT(temp_p);
+  analysis_frame_->DoFFT(temp_span.data());
 
   const AudioFloatArray& real = analysis_frame_->RealData();
   AudioFloatArray& imag = analysis_frame_->ImagData();
@@ -300,20 +292,15 @@ void RealtimeAnalyser::DoFFTAnalysis() {
 
   // Convert the analysis data from complex to magnitude and average with the
   // previous result.
-  float* destination = magnitude_buffer_.Data();
-  const size_t n = magnitude_buffer_.size();
+  base::span<float> destination = magnitude_buffer_.as_span();
+  const size_t n = destination.size();
   DCHECK_GE(real.size(), n);
-  const float* real_p_data = real.Data();
   DCHECK_GE(imag.size(), n);
-  const float* imag_p_data = imag.Data();
   for (size_t i = 0; i < n; ++i) {
-    std::complex<double> c(UNSAFE_TODO(real_p_data[i]),
-                           UNSAFE_TODO(imag_p_data[i]));
+    std::complex<double> c(real[i], imag[i]);
     double scalar_magnitude = abs(c) * magnitude_scale;
-    UNSAFE_TODO(destination[i]) =
-        EnsureFinite(static_cast<float>(k * UNSAFE_TODO(destination[i]) +
-                                        (1 - k) * scalar_magnitude),
-                     0);
+    destination[i] = EnsureFinite(
+        static_cast<float>(k * destination[i] + (1 - k) * scalar_magnitude), 0);
   }
 }
 
