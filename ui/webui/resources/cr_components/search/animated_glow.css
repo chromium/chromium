@@ -16,7 +16,7 @@
   --drag-placeholder-line-height: 24px;
   --drag-placeholder-font-size: 16px;
 
-  --end-angle-expand_: 245deg;
+  --end-angle-expand_: 250deg;
   --end-angle-listen_: 210deg;
   --end-angle-submit_: 330deg;
 
@@ -56,7 +56,7 @@
   --search-animated-glow-expand-duration: 600ms;
   --search-animated-glow-standard-curve: cubic-bezier(0.4, 0, 0.2, 1);
 
-  --start-angle-expand_: 30deg;
+  --start-angle-expand_: 90deg;
   --start-angle-submit_: 200deg;
   --start-angle-listen_: 35deg;
   border-radius: inherit;
