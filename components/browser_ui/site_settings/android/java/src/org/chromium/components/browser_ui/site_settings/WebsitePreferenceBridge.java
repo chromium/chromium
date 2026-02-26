@@ -12,6 +12,7 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingSource;
 import org.chromium.components.content_settings.ContentSettingsType;
@@ -414,6 +415,40 @@ public class WebsitePreferenceBridge {
                         browserContextHandle, contentSettingType, primaryUrl, secondaryUrl);
     }
 
+    /** Returns the GeolocationSetting for a specific site. */
+    public static @Nullable GeolocationSetting getGeolocationSettingForOrigin(
+            BrowserContextHandle browserContextHandle,
+            @ContentSettingsType.EnumType int contentSettingsType,
+            String origin,
+            String embedder) {
+        return WebsitePreferenceBridgeJni.get()
+                .getGeolocationSettingForOrigin(
+                        browserContextHandle, contentSettingsType, origin, embedder);
+    }
+
+    /** Returns the permission setting for a specific site. */
+    public static @ContentSetting int getPermissionSettingForOrigin(
+            BrowserContextHandle browserContextHandle,
+            @ContentSettingsType.EnumType int contentSettingsType,
+            String origin,
+            String embedder) {
+        return WebsitePreferenceBridgeJni.get()
+                .getPermissionSettingForOrigin(
+                        browserContextHandle, contentSettingsType, origin, embedder);
+    }
+
+    /** Sets the permission setting for a specific site. */
+    public static void setPermissionSettingForOrigin(
+            BrowserContextHandle browserContextHandle,
+            @ContentSettingsType.EnumType int contentSettingsType,
+            String origin,
+            String embedder,
+            @ContentSetting int value) {
+        WebsitePreferenceBridgeJni.get()
+                .setPermissionSettingForOrigin(
+                        browserContextHandle, contentSettingsType, origin, embedder, value);
+    }
+
     /**
      * @return Whether the ContentSettings is global setting.
      */
@@ -520,6 +555,12 @@ public class WebsitePreferenceBridge {
             BrowserContextHandle browserContextHandle, String origin, int type, int action) {
         WebsitePreferenceBridgeJni.get()
                 .recordHeuristicActionForTesting(browserContextHandle, origin, type, action);
+    }
+
+    /** Resets notification settings for the given profile. */
+    public static void resetNotificationsSettingsForTest(
+            BrowserContextHandle browserContextHandle) {
+        WebsitePreferenceBridgeJni.get().resetNotificationsSettingsForTest(browserContextHandle);
     }
 
     @NativeMethods
