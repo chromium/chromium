@@ -873,6 +873,7 @@ void ComposeboxQueryController::
         lens::LensOverlayClientContext client_context,
         scoped_refptr<lens::RefCountedLensOverlayClientLogs> client_logs,
         RequestBodyProtoCreatedCallback callback,
+        std::optional<std::string> file_name,
         lens::ImageData image_data) {
   lens::LensOverlayServerRequest request;
   auto* objects_request = request.mutable_objects_request();
@@ -881,6 +882,11 @@ void ComposeboxQueryController::
   objects_request->mutable_request_context()
       ->mutable_client_context()
       ->CopyFrom(client_context);
+
+  if (file_name.has_value()) {
+    image_data.mutable_image_metadata()->set_file_name(file_name.value());
+  }
+
   objects_request->mutable_image_data()->CopyFrom(image_data);
   request.mutable_client_logs()->CopyFrom(client_logs->client_logs());
   std::move(callback).Run(std::move(request), /*error_type=*/std::nullopt);
@@ -1325,6 +1331,7 @@ void ComposeboxQueryController::ProcessDecodedImageAndContinue(
     lens::LensOverlayRequestId request_id,
     const lens::ImageEncodingOptions& image_options,
     RequestBodyProtoCreatedCallback callback,
+    std::optional<std::string> file_name,
     const SkBitmap& bitmap) {
 #if !BUILDFLAG(IS_IOS)
   scoped_refptr<lens::RefCountedLensOverlayClientLogs> ref_counted_logs =
@@ -1351,7 +1358,7 @@ void ComposeboxQueryController::ProcessDecodedImageAndContinue(
       base::BindOnce(&ComposeboxQueryController::
                          CreateFileUploadRequestProtoWithImageDataAndContinue,
                      request_id, CreateClientContext(), ref_counted_logs,
-                     std::move(callback)));
+                     std::move(callback), file_name));
 #endif  // !BUILDFLAG(IS_IOS)
 }
 
@@ -1359,6 +1366,7 @@ void ComposeboxQueryController::CreateImageUploadRequest(
     lens::LensOverlayRequestId request_id,
     const std::vector<uint8_t>& image_data,
     std::optional<lens::ImageEncodingOptions> image_options,
+    std::optional<std::string> file_name,
     RequestBodyProtoCreatedCallback callback) {
 #if !BUILDFLAG(IS_IOS)
   CHECK(image_options.has_value());
@@ -1369,7 +1377,7 @@ void ComposeboxQueryController::CreateImageUploadRequest(
       /*desired_image_frame_size=*/gfx::Size(),
       base::BindOnce(&ComposeboxQueryController::ProcessDecodedImageAndContinue,
                      weak_ptr_factory_.GetWeakPtr(), request_id,
-                     image_options.value(), std::move(callback)));
+                     image_options.value(), std::move(callback), file_name));
 #endif  // !BUILDFLAG(IS_IOS)
 }
 
@@ -1394,7 +1402,7 @@ void ComposeboxQueryController::CreateUploadRequestBodiesAndContinue(
         GetRequestIdForViewportImage(file_token),
         // Pass ownership of the viewport screenshot bytes to the callback.
         std::move(contextual_input_data->viewport_screenshot_bytes.value()),
-        std::move(image_options),
+        std::move(image_options), /*file_name=*/std::nullopt,
         base::BindOnce(
             &ComposeboxQueryController::
                 AddPageIndexToImageUploadRequestAndContinue,
@@ -1426,6 +1434,7 @@ void ComposeboxQueryController::CreateUploadRequestBodiesAndContinue(
                     &ComposeboxQueryController::OnUploadRequestBodyReady,
                     weak_ptr_factory_.GetWeakPtr(), file_token,
                     file_info->num_outstanding_network_requests_++))),
+        /*file_name=*/std::nullopt,
         // Pass ownership of the viewport screenshot to the
         // callback.
         std::move(*contextual_input_data->viewport_screenshot));
@@ -1482,7 +1491,7 @@ void ComposeboxQueryController::CreateUploadRequestBodiesAndContinue(
             file_info->request_id.value(),
             // Pass ownership of the contextual input data to the callback.
             std::move(contextual_input_data->context_input->front().bytes_),
-            std::move(image_options),
+            std::move(image_options), contextual_input_data->file_name,
             base::BindOnce(
                 &ComposeboxQueryController::
                     AddLensUsageIntentToUploadRequestAndContinue,

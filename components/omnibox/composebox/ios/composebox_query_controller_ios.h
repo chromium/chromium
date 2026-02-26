@@ -21,6 +21,7 @@ class ComposeboxQueryControllerIOS : public ComposeboxQueryController {
       lens::LensOverlayRequestId request_id,
       const std::vector<uint8_t>& image_data,
       std::optional<lens::ImageEncodingOptions> options,
+      std::optional<std::string> file_name,
       RequestBodyProtoCreatedCallback callback) override;
 };
 

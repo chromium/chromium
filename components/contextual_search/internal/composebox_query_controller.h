@@ -207,6 +207,7 @@ class ComposeboxQueryController
       lens::LensOverlayClientContext client_context,
       scoped_refptr<lens::RefCountedLensOverlayClientLogs> client_logs,
       RequestBodyProtoCreatedCallback callback,
+      std::optional<std::string> file_name,
       lens::ImageData image_data);
 
   // Creates the request body proto for an image and calls the callback with the
@@ -215,6 +216,7 @@ class ComposeboxQueryController
       lens::LensOverlayRequestId request_id,
       const std::vector<uint8_t>& image_data,
       std::optional<lens::ImageEncodingOptions> options,
+      std::optional<std::string> file_name,
       RequestBodyProtoCreatedCallback callback);
 
   // Returns the EndpointFetcher to use with the given params. Protected to
@@ -366,6 +368,7 @@ class ComposeboxQueryController
   void ProcessDecodedImageAndContinue(lens::LensOverlayRequestId request_id,
                                       const lens::ImageEncodingOptions& options,
                                       RequestBodyProtoCreatedCallback callback,
+                                      std::optional<std::string> file_name,
                                       const SkBitmap& bitmap);
 
   // Creates the request body protos for the file and viewport upload requests
