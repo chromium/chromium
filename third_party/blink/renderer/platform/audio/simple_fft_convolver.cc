@@ -19,7 +19,7 @@ SimpleFFTConvolver::SimpleFFTConvolver(
                     input_block_size),  // 2nd half of buffer is always zeroed
       output_buffer_(2 * input_block_size),
       last_overlap_buffer_(input_block_size) {
-  DCHECK_LE(convolution_kernel_size_, FftSize() / 2);
+  CHECK_LE(convolution_kernel_size_, FftSize() / 2);
   // Do padded FFT to get frequency-domain version of the convolution kernel.
   // This FFT and caching is done once in here so that it does not have to be
   // done repeatedly in |Process|.
@@ -29,7 +29,7 @@ SimpleFFTConvolver::SimpleFFTConvolver(
 void SimpleFFTConvolver::Process(const float* source_p,
                                  float* dest_p,
                                  uint32_t frames_to_process) {
-  unsigned half_size = FftSize() / 2;
+  const unsigned half_size = FftSize() / 2;
 
   // frames_to_process must be exactly half_size.
   DCHECK(source_p);
@@ -50,8 +50,8 @@ void SimpleFFTConvolver::Process(const float* source_p,
                     dest_p, 1, half_size);
 
   // Finally, save 2nd half for the next time.
-  last_overlap_buffer_.CopyToRange(
-      UNSAFE_TODO(output_buffer_.Data() + half_size), 0, half_size);
+  last_overlap_buffer_.as_span().copy_from(
+      output_buffer_.as_span().subspan(half_size, half_size));
 }
 
 void SimpleFFTConvolver::Reset() {
