@@ -2,7 +2,7 @@
   "$build/chromium_tests_builder_config": {
     "builder_config": {
       "additional_exclusions": [
-        "infra/config/generated/builders/try/linux_chromium_compile_rel_ng/gn-args.json"
+        "infra/config/generated/builders/try/linux-webium-product-rel/gn-args.json"
       ],
       "builder_db": {
         "entries": [
@@ -30,68 +30,6 @@
                   "chromium_with_telemetry_dependencies"
                 ],
                 "config": "chromium"
-              }
-            }
-          },
-          {
-            "builder_id": {
-              "bucket": "ci",
-              "builder": "Linux Tests",
-              "project": "chromium"
-            },
-            "builder_spec": {
-              "builder_group": "chromium.linux",
-              "execution_mode": "TEST",
-              "legacy_chromium_config": {
-                "apply_configs": [
-                  "mb"
-                ],
-                "build_config": "Release",
-                "config": "chromium",
-                "target_bits": 64,
-                "target_platform": "linux"
-              },
-              "legacy_gclient_config": {
-                "apply_configs": [
-                  "use_clang_coverage"
-                ],
-                "config": "chromium"
-              },
-              "parent": {
-                "bucket": "ci",
-                "builder": "Linux Builder",
-                "project": "chromium"
-              }
-            }
-          },
-          {
-            "builder_id": {
-              "bucket": "ci",
-              "builder": "linux-oi-rel",
-              "project": "chromium"
-            },
-            "builder_spec": {
-              "builder_group": "chromium.linux",
-              "execution_mode": "TEST",
-              "legacy_chromium_config": {
-                "apply_configs": [
-                  "mb"
-                ],
-                "build_config": "Release",
-                "config": "chromium",
-                "target_bits": 64,
-                "target_platform": "linux"
-              },
-              "legacy_gclient_config": {
-                "apply_configs": [
-                  "use_clang_coverage"
-                ],
-                "config": "chromium"
-              },
-              "parent": {
-                "bucket": "ci",
-                "builder": "Linux Builder",
-                "project": "chromium"
               }
             }
           },
@@ -138,22 +76,11 @@
       "builder_ids_in_scope_for_testing": [
         {
           "bucket": "ci",
-          "builder": "Linux Tests",
-          "project": "chromium"
-        },
-        {
-          "bucket": "ci",
-          "builder": "linux-oi-rel",
-          "project": "chromium"
-        },
-        {
-          "bucket": "ci",
           "builder": "linux-webium-product-rel",
           "project": "chromium"
         }
       ],
-      "is_compile_only": true,
-      "targets_spec_directory": "infra/config/generated/builders/try/linux_chromium_compile_rel_ng/targets"
+      "targets_spec_directory": "infra/config/generated/builders/try/linux-webium-product-rel/targets"
     }
   },
   "$build/siso": {

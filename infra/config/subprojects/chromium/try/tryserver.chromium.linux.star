@@ -981,6 +981,21 @@ try_.builder(
 )
 
 try_.builder(
+    name = "linux-webium-product-rel",
+    mirrors = [
+        "ci/linux-webium-product-rel",
+    ],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/Linux Builder",
+            "release_try_builder",
+        ],
+    ),
+    contact_team_email = "chrome-webium-product-eng@google.com",
+    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
+)
+
+try_.builder(
     name = "network_service_linux",
     mirrors = [
         "ci/Network Service Linux",
