@@ -210,16 +210,34 @@ AutofillAiImportDataBubbleView::GetLocalEntitySubtitle() const {
 std::unique_ptr<views::StyledLabel>
 AutofillAiImportDataBubbleView::GetWalletableEntitySubtitle() const {
   std::vector<size_t> offsets;
+  std::u16string formatted_text;
+  gfx::Range link_range;
+
   const std::u16string google_wallet_text =
       l10n_util::GetStringUTF16(IDS_AUTOFILL_GOOGLE_WALLET_TITLE);
-  std::u16string formatted_text = l10n_util::GetStringFUTF16(
-      controller_->IsSavePrompt()
-          ? IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE
-          : IDS_AUTOFILL_AI_UPDATE_ENTITY_TO_WALLET_DIALOG_SUBTITLE,
-      {google_wallet_text, controller_->GetPrimaryAccountEmail()}, &offsets);
+  const std::u16string account_email = controller_->GetPrimaryAccountEmail();
 
-  gfx::Range go_to_wallet_range(offsets[0],
-                                offsets[0] + google_wallet_text.size());
+  if (controller_->IsSavePrompt() &&
+      base::FeatureList::IsEnabled(features::kAutofillAiWalletPrivatePasses)) {
+    const std::u16string manage_info_text =
+        l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_YOUR_INFO_LINK);
+
+    formatted_text = l10n_util::GetStringFUTF16(
+        IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE_NEW,
+        {manage_info_text, google_wallet_text, account_email}, &offsets);
+
+    link_range = gfx::Range(offsets[0], offsets[0] + manage_info_text.size());
+
+  } else {
+    formatted_text = l10n_util::GetStringFUTF16(
+        controller_->IsSavePrompt()
+            ? IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE
+            : IDS_AUTOFILL_AI_UPDATE_ENTITY_TO_WALLET_DIALOG_SUBTITLE,
+        {google_wallet_text, account_email}, &offsets);
+
+    link_range = gfx::Range(offsets[0], offsets[0] + google_wallet_text.size());
+  }
+
   auto go_to_wallet =
       views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
           &AutofillAiImportDataController::OnGoToWalletLinkClicked,
@@ -231,7 +249,7 @@ AutofillAiImportDataBubbleView::GetWalletableEntitySubtitle() const {
       .SetDefaultEnabledColorId(ui::kColorSysOnSurfaceSubtle)
       .SetAccessibleRole(ax::mojom::Role::kDetails)
       .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
-      .AddStyleRange(go_to_wallet_range, go_to_wallet)
+      .AddStyleRange(link_range, go_to_wallet)
       .Build();
 }
 
