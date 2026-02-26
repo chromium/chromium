@@ -713,6 +713,7 @@ if (!is_android) {
       "//chrome/browser/glic/browser_ui:interactive_ui_tests",
       "//chrome/browser/glic/fre",
       "//chrome/browser/glic/fre:interactive_ui_tests",
+      "//chrome/browser/glic/selection:interactive_ui_tests",
       "//chrome/browser/glic/test_support",
       "//chrome/browser/optimization_guide",
       "//chrome/browser/permissions:test_support",

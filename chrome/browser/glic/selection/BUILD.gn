@@ -6,6 +6,7 @@ import("//chrome/common/features.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 
 assert(enable_glic)
+assert(!is_android)
 
 source_set("selection") {
   sources = [
@@ -15,15 +16,18 @@ source_set("selection") {
     "selection_overlay_untrusted_ui.h",
   ]
 
+  public_deps = [ "//chrome/browser/ui/lens" ]
+
   deps = [
     ":mojo_bindings",
     "//base",
     "//chrome/browser/glic",
     "//chrome/browser/glic:mojo_bindings",
+    "//chrome/browser/resources/glic/selection_overlay:resources",
     "//chrome/browser/ui:browser_element_identifiers",
-    "//chrome/browser/ui/lens",
     "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/ui/webui/top_chrome",
+    "//chrome/common:chrome_features",
     "//mojo/public/mojom/base",
   ]
 }
@@ -36,4 +40,21 @@ mojom("mojo_bindings") {
     "//ui/gfx/geometry/mojom",
   ]
   webui_module_path = "/"
+}
+
+source_set("interactive_ui_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [ "selection_overlay_interactive_uitests.cc" ]
+  deps = [
+    ":selection",
+    "//chrome/browser/glic",
+    "//chrome/browser/glic/test_support",
+    "//chrome/browser/ui:browser_element_identifiers",
+    "//chrome/common:constants",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
+    "//testing/gtest",
+    "//ui/base/interaction",
+  ]
 }
