@@ -120,7 +120,11 @@ class ContextualSearchSessionHandle {
   // controller, which may be shared with other session handles.
   void ClearFiles();
 
-  // Returns the search url for a new query for opening.
+  // Returns the search url for a new query for opening. If the request info
+  // contains file tokens, only those provided tokens are used. If the request
+  // info does not contain file tokens, the uploaded context tokens are moved to
+  // the request. In both cases, the files tokens that are used are considered
+  // submitted and will be cleared from the context controller.
   virtual void CreateSearchUrl(
       std::unique_ptr<contextual_search::ContextualSearchContextController::
                           CreateSearchUrlRequestInfo> search_url_request_info,
