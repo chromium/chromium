@@ -33,6 +33,8 @@ constexpr char kFromIndexKey[] = "fromIndex";
 constexpr char kMutedInfoKey[] = "mutedInfo";
 constexpr char kNewPositionKey[] = "newPosition";
 constexpr char kNewWindowIdKey[] = "newWindowId";
+constexpr char kOldPositionKey[] = "oldPosition";
+constexpr char kOldWindowIdKey[] = "oldWindowId";
 constexpr char kPinnedKey[] = "pinned";
 constexpr char kTabIdKey[] = "tabId";
 constexpr char kToIndexKey[] = "toIndex";
@@ -234,7 +236,8 @@ void TabsEventRouter::TrackTabList(TabListInterface& tab_list) {
 }
 
 void TabsEventRouter::RegisterForTabNotifications(
-    content::WebContents& web_contents) {
+    content::WebContents& web_contents,
+    int tab_index) {
   favicon_scoped_observations_.AddObservation(
       favicon::ContentFaviconDriver::FromWebContents(&web_contents));
 
@@ -246,7 +249,9 @@ void TabsEventRouter::RegisterForTabNotifications(
 
   int tab_id = ExtensionTabUtil::GetTabId(&web_contents);
   DCHECK(tab_entries_.find(tab_id) == tab_entries_.end());
-  tab_entries_[tab_id] = std::make_unique<TabEntry>(*this, web_contents);
+  auto tab_entry = std::make_unique<TabEntry>(*this, web_contents);
+  tab_entry->set_last_known_index(tab_index);
+  tab_entries_[tab_id] = std::move(tab_entry);
 }
 
 void TabsEventRouter::UnregisterForTabNotifications(
@@ -319,6 +324,53 @@ void TabsEventRouter::DispatchTabCreatedEvent(content::WebContents* contents,
   EventRouter::Get(profile)->BroadcastEvent(std::move(event));
 }
 
+void TabsEventRouter::DispatchTabRemovedEvent(
+    content::WebContents& web_contents,
+    bool is_window_closing) {
+  int tab_id = ExtensionTabUtil::GetTabId(&web_contents);
+
+  base::ListValue args;
+  args.Append(tab_id);
+
+  base::DictValue object_args;
+  object_args.Set(tabs_constants::kWindowIdKey,
+                  ExtensionTabUtil::GetWindowIdOfTab(&web_contents));
+  object_args.Set(tabs_constants::kIsWindowClosingKey, is_window_closing);
+  args.Append(std::move(object_args));
+
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents.GetBrowserContext());
+  DispatchEvent(profile, events::TABS_ON_REMOVED,
+                api::tabs::OnRemoved::kEventName, std::move(args),
+                EventRouter::UserGestureState::kUnknown);
+
+  UnregisterForTabNotifications(web_contents, /*expect_registered=*/true);
+}
+
+void TabsEventRouter::DispatchTabDetachedEvent(
+    content::WebContents& web_contents) {
+  TabEntry* tab_entry = GetTabEntry(web_contents);
+  if (!tab_entry) {
+    // The tab was removed. Don't send detach event.
+    return;
+  }
+
+  base::ListValue args;
+  args.Append(ExtensionTabUtil::GetTabId(&web_contents));
+
+  base::DictValue object_args;
+  object_args.Set(kOldWindowIdKey,
+                  ExtensionTabUtil::GetWindowIdOfTab(&web_contents));
+  object_args.Set(kOldPositionKey, tab_entry->last_known_index());
+  args.Append(std::move(object_args));
+
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents.GetBrowserContext());
+  DispatchEvent(profile, events::TABS_ON_DETACHED,
+                api::tabs::OnDetached::kEventName, std::move(args),
+                EventRouter::UserGestureState::kUnknown);
+}
+
 void TabsEventRouter::DispatchEvent(
     Profile* profile,
     events::HistogramValue histogram_value,
@@ -336,15 +388,37 @@ void TabsEventRouter::DispatchEvent(
   event_router->BroadcastEvent(std::move(event));
 }
 
+void TabsEventRouter::UpdateTabIndices(TabListInterface& tab_list) {
+  std::vector<tabs::TabInterface*> tabs = tab_list.GetAllTabs();
+  for (size_t i = 0; i < tabs.size(); ++i) {
+    content::WebContents* web_contents = tabs[i]->GetContents();
+    CHECK(web_contents);
+    TabEntry* tab_entry = GetTabEntry(*web_contents);
+    if (!tab_entry) {
+      // We're not yet tracking this tab; this can happen when this is called
+      // from adding a new tab. The index for that tab will be updated when it's
+      // added to the set of tracked tabs.
+      continue;
+    }
+    tab_entry->set_last_known_index(i);
+  }
+}
+
 void TabsEventRouter::OnTabAdded(TabListInterface& tab_list,
                                  tabs::TabInterface* tab,
                                  int index) {
   content::WebContents* contents = tab->GetContents();
   CHECK(contents);
 
+  // Adding a new tab can affect the indices of all existing tabs in the tab
+  // list. Update them.
+  UpdateTabIndices(tab_list);
+
   // Check if we've ever seen this tab.
-  if (GetTabEntry(*contents)) {
-    // This is a known tab. Dispatch `onAttached`.
+  TabEntry* tab_entry = GetTabEntry(*contents);
+  if (tab_entry) {
+    // This is a known tab. Update the tab index and dispatch `onAttached`.
+    tab_entry->set_last_known_index(index);
     int tab_id = ExtensionTabUtil::GetTabId(contents);
     base::ListValue args;
     args.Append(tab_id);
@@ -365,7 +439,7 @@ void TabsEventRouter::OnTabAdded(TabListInterface& tab_list,
   }
 
   // We've never seen this tab. Begin tracking it.
-  RegisterForTabNotifications(*contents);
+  RegisterForTabNotifications(*contents, index);
 
   // If we're still initializing the event router, assume this is
   // bootstrapping instead of a new tab.
@@ -412,6 +486,27 @@ void TabsEventRouter::OnActiveTabChanged(TabListInterface& tab_list,
       std::move(on_activated_args), EventRouter::UserGestureState::kUnknown);
 }
 
+void TabsEventRouter::OnTabRemoved(TabListInterface& tab_list,
+                                   tabs::TabInterface* tab,
+                                   TabRemovedReason removed_reason) {
+  content::WebContents* web_contents = tab->GetContents();
+  CHECK(web_contents);
+
+  // Removing a tab can affect the indices of all existing tabs in the tab
+  // list. Update them.
+  UpdateTabIndices(tab_list);
+
+  switch (removed_reason) {
+    case TabRemovedReason::kDeleted:
+    case TabRemovedReason::kInsertedIntoSidePanel:
+      DispatchTabRemovedEvent(*web_contents, tab_list.IsClosingAllTabs());
+      break;
+    case TabRemovedReason::kInsertedIntoOtherTabStrip:
+      DispatchTabDetachedEvent(*web_contents);
+      break;
+  }
+}
+
 void TabsEventRouter::OnTabMoved(TabListInterface& tab_list,
                                  tabs::TabInterface* tab,
                                  int from_index,
@@ -419,6 +514,10 @@ void TabsEventRouter::OnTabMoved(TabListInterface& tab_list,
   CHECK(tab);
   content::WebContents* web_contents = tab->GetContents();
   CHECK(web_contents);
+
+  // Moving tab can affect the indices of all existing tabs in the tab list
+  // (not just the one being moved). Update them.
+  UpdateTabIndices(tab_list);
 
   base::ListValue args;
   args.Append(ExtensionTabUtil::GetTabId(web_contents));

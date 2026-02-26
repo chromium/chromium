@@ -53,8 +53,6 @@ namespace {
 
 constexpr char kGroupIdKey[] = "groupId";
 constexpr char kSplitIdKey[] = "splitViewId";
-constexpr char kOldPositionKey[] = "oldPosition";
-constexpr char kOldWindowIdKey[] = "oldWindowId";
 constexpr char kFrozenKey[] = "frozen";
 constexpr char kDiscardedKey[] = "discarded";
 constexpr char kTabIdsKey[] = "tabIds";
@@ -117,21 +115,9 @@ void TabsEventRouterPlatformDelegate::OnTabStripModelChanged(
   switch (change.type()) {
     case TabStripModelChange::kInserted:
     case TabStripModelChange::kMoved:
+    case TabStripModelChange::kRemoved: {
       // These are handled via the TabsEventRouter's observation of
       // TabListInterface.
-      break;
-    case TabStripModelChange::kRemoved: {
-      for (const auto& contents : change.GetRemove()->contents) {
-        if (contents.remove_reason == TabRemovedReason::kDeleted ||
-            contents.remove_reason ==
-                TabRemovedReason::kInsertedIntoSidePanel) {
-          DispatchTabClosingAt(tab_strip_model, contents.contents,
-                               contents.index);
-        }
-
-        DispatchTabDetachedAt(contents.contents, contents.index,
-                              selection.old_contents == contents.contents);
-      }
       break;
     }
     case TabStripModelChange::kReplaced: {
@@ -251,54 +237,6 @@ void TabsEventRouterPlatformDelegate::OnLifecycleUnitStateChanged(
   }
 }
 
-void TabsEventRouterPlatformDelegate::DispatchTabClosingAt(
-    TabStripModel* tab_strip_model,
-    WebContents* contents,
-    int index) {
-  int tab_id = ExtensionTabUtil::GetTabId(contents);
-
-  base::ListValue args;
-  args.Append(tab_id);
-
-  base::DictValue object_args;
-  object_args.Set(tabs_constants::kWindowIdKey,
-                  ExtensionTabUtil::GetWindowIdOfTab(contents));
-  object_args.Set(tabs_constants::kIsWindowClosingKey,
-                  tab_strip_model->closing_all());
-  args.Append(std::move(object_args));
-
-  Profile* profile = Profile::FromBrowserContext(contents->GetBrowserContext());
-  router_->DispatchEvent(profile, events::TABS_ON_REMOVED,
-                         api::tabs::OnRemoved::kEventName, std::move(args),
-                         EventRouter::UserGestureState::kUnknown);
-
-  router_->UnregisterForTabNotifications(*contents, /*expect_registered=*/true);
-}
-
-void TabsEventRouterPlatformDelegate::DispatchTabDetachedAt(
-    WebContents* contents,
-    int index,
-    bool was_active) {
-  if (!router_->GetTabEntry(*contents)) {
-    // The tab was removed. Don't send detach event.
-    return;
-  }
-
-  base::ListValue args;
-  args.Append(ExtensionTabUtil::GetTabId(contents));
-
-  base::DictValue object_args;
-  object_args.Set(kOldWindowIdKey,
-                  ExtensionTabUtil::GetWindowIdOfTab(contents));
-  object_args.Set(kOldPositionKey, index);
-  args.Append(std::move(object_args));
-
-  Profile* profile = Profile::FromBrowserContext(contents->GetBrowserContext());
-  router_->DispatchEvent(profile, events::TABS_ON_DETACHED,
-                         api::tabs::OnDetached::kEventName, std::move(args),
-                         EventRouter::UserGestureState::kUnknown);
-}
-
 void TabsEventRouterPlatformDelegate::DispatchTabSelectionChanged(
     TabStripModel* tab_strip_model,
     const ui::ListSelectionModel& old_model) {
@@ -364,7 +302,7 @@ void TabsEventRouterPlatformDelegate::DispatchTabReplacedAt(
                                          /*expect_registered=*/true);
 
   if (!router_->GetTabEntry(*new_contents)) {
-    router_->RegisterForTabNotifications(*new_contents);
+    router_->RegisterForTabNotifications(*new_contents, index);
   }
 }
 

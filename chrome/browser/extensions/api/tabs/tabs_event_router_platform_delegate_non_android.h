@@ -82,12 +82,6 @@ class TabsEventRouterPlatformDelegate
                              content::WebContents* contents,
                              int index,
                              bool active);
-  void DispatchTabClosingAt(TabStripModel* tab_strip_model,
-                            content::WebContents* contents,
-                            int index);
-  void DispatchTabDetachedAt(content::WebContents* contents,
-                             int index,
-                             bool was_active);
   void DispatchTabSelectionChanged(TabStripModel* tab_strip_model,
                                    const ui::ListSelectionModel& old_model);
   void DispatchTabReplacedAt(content::WebContents* old_contents,
