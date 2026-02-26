@@ -134,8 +134,8 @@ class Responder final {
       base::OnceClosure on_complete,
       SessionAccessor::Ptr session)
       : responder_(std::move(responder)),
-        on_complete_(std::move(on_complete)),
-        session_(std::move(session)) {
+        session_(std::move(session)),
+        on_complete_(std::move(on_complete)) {
     responder_.set_disconnect_handler(
         base::BindOnce(&Responder::Cancel, base::Unretained(this)));
   }
@@ -213,10 +213,12 @@ class Responder final {
   }
 
   void Cancel() {
-    session_ = nullptr;
+    // Must call `cancel_` before `session_` is destroyed or else `session_`'s
+    // destructor will block cancel until the decode task is complete.
     if (cancel_) {
       cancel_();
     }
+    session_ = nullptr;
     if (!on_complete_.is_null()) {
       std::move(on_complete_).Run();
     }
@@ -227,9 +229,9 @@ class Responder final {
   int num_output_tokens_ = 0;
   std::string output_so_far_;
   mojo::Remote<on_device_model::mojom::StreamingResponder> responder_;
+  SessionAccessor::Ptr session_;
   ChromeMLCancelFn cancel_;
   base::OnceClosure on_complete_;
-  SessionAccessor::Ptr session_;
   base::WeakPtrFactory<Responder> weak_ptr_factory_{this};
 };
 
