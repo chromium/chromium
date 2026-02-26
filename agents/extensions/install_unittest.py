@@ -59,10 +59,11 @@ class InstallTest(fake_filesystem_unittest.TestCase):
         self.mock_run_command = self.mock_run_command_patcher.start()
         self.addCleanup(self.mock_run_command_patcher.stop)
 
-        self.mock_check_version = unittest.mock.patch(
-            'install.check_gemini_version')
-        self.mock_check_version.start()
-        self.addCleanup(self.mock_check_version.stop)
+        self.mock_get_version_patcher = unittest.mock.patch(
+            'agents.common.gemini_helpers.get_gemini_version')
+        self.mock_get_version = self.mock_get_version_patcher.start()
+        self.addCleanup(self.mock_get_version_patcher.stop)
+        self.mock_get_version.return_value = '0.9.0'
 
         self.mock_get_project_root_patcher = unittest.mock.patch(
             'install.get_project_root')
@@ -143,12 +144,11 @@ class InstallTest(fake_filesystem_unittest.TestCase):
         with unittest.mock.patch('sys.argv',
                                  ['install.py', 'add', 'sample_1']):
             install.main()
-        self.mock_run_command.assert_called_once_with(
-            [
-                'gemini', 'extensions', 'link',
-                str(self.source_extensions_dir / 'sample_1')
-            ],
-            skip_prompt=False)
+        self.mock_run_command.assert_called_once_with([
+            'gemini', 'extensions', 'link',
+            str(self.source_extensions_dir / 'sample_1')
+        ],
+                                                      skip_prompt=False)
 
     @unittest.mock.patch('install.find_extensions_dir_for_extension')
     def test_add_extension_skip_prompt(self, mock_find_dir):
@@ -158,12 +158,11 @@ class InstallTest(fake_filesystem_unittest.TestCase):
                 'sys.argv',
             ['install.py', 'add', '--skip-prompt', 'sample_1']):
             install.main()
-        self.mock_run_command.assert_called_once_with(
-            [
-                'gemini', 'extensions', 'link',
-                str(self.source_extensions_dir / 'sample_1')
-            ],
-            skip_prompt=True)
+        self.mock_run_command.assert_called_once_with([
+            'gemini', 'extensions', 'link',
+            str(self.source_extensions_dir / 'sample_1')
+        ],
+                                                      skip_prompt=True)
 
     def test_add_test_extension(self):
         """Tests add command with a test extension."""
@@ -172,12 +171,11 @@ class InstallTest(fake_filesystem_unittest.TestCase):
                 str(self.testing_extensions_dir), 'add', 'test_sample'
         ]):
             install.main()
-        self.mock_run_command.assert_called_once_with(
-            [
-                'gemini', 'extensions', 'link',
-                str(self.testing_extensions_dir / 'test_sample')
-            ],
-            skip_prompt=False)
+        self.mock_run_command.assert_called_once_with([
+            'gemini', 'extensions', 'link',
+            str(self.testing_extensions_dir / 'test_sample')
+        ],
+                                                      skip_prompt=False)
 
     def test_add_test_extension_without_flag_fails(self):
         """Tests add command with a test extension."""
@@ -185,7 +183,6 @@ class InstallTest(fake_filesystem_unittest.TestCase):
                                  ['install.py', 'add', 'test_sample']):
             with self.assertRaises(SystemExit):
                 install.main()
-
 
     def test_add_invalid_extension(self):
         """Tests add command with an invalid extension."""
@@ -244,7 +241,8 @@ class InstallTest(fake_filesystem_unittest.TestCase):
 
     def test_list_extensions(self):
         """Tests the list command, showing all extensions."""
-        self.mock_subprocess_run.return_value.stdout = """
+        self.mock_subprocess_run.return_value.stdout = ''
+        self.mock_subprocess_run.return_value.stderr = """
 ✓ user-enabled (1.0.0)
  ID: abc
  Path: /path/to/user-enabled
@@ -483,6 +481,32 @@ class InstallTest(fake_filesystem_unittest.TestCase):
         with unittest.mock.patch('install._PROJECT_ROOT', self.project_root):
             project_root = install.get_project_root()
             self.assertEqual(project_root, self.project_root)
+
+    def test_error_raised_and_handled(self):
+        """Tests that install.Error is raised and handled in main."""
+        with unittest.mock.patch('install.get_project_root',
+                                 return_value=None):
+            with unittest.mock.patch('sys.stderr',
+                                     new_callable=io.StringIO) as mock_stderr:
+                with unittest.mock.patch('sys.argv', ['install.py', 'fix']):
+                    with self.assertRaises(SystemExit) as e:
+                        install.main()
+                    self.assertEqual(e.exception.code, 1)
+                    self.assertIn("Error: Could not determine project root.",
+                                  mock_stderr.getvalue())
+
+    def test_check_gemini_version_raises_error(self):
+        """Tests that check_gemini_version raises install.Error."""
+        self.mock_get_version.return_value = None
+        with self.assertRaises(install.Error) as cm:
+            install.check_gemini_version()
+        self.assertIn("Could not determine Gemini CLI version",
+                      str(cm.exception))
+
+        self.mock_get_version.return_value = "0.7.0"
+        with self.assertRaises(install.Error) as cm:
+            install.check_gemini_version()
+        self.assertIn("is too old", str(cm.exception))
 
 
 if __name__ == '__main__':
