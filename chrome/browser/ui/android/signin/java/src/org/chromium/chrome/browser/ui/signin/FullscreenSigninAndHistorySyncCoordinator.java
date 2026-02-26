@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.ui.signin;
 import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
-import android.accounts.Account;
 import android.app.Activity;
 import android.os.SystemClock;
 import android.view.LayoutInflater;
@@ -46,6 +45,7 @@ import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.metrics.SignoutReason;
+import org.chromium.google_apis.gaia.CoreAccountId;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
@@ -259,11 +259,10 @@ public final class FullscreenSigninAndHistorySyncCoordinator extends SigninAndHi
     }
 
     @Override
-    public void displayDeviceLockPage(Account selectedAccount) {
-        String accountName = selectedAccount == null ? null : selectedAccount.name;
+    public void displayDeviceLockPage(CoreAccountId selectedAccountId) {
         mDeviceLockActivityLauncher.launchDeviceLockActivity(
                 mActivity,
-                accountName,
+                selectedAccountId,
                 /* requireDeviceLockReauthentication= */ true,
                 mWindowAndroid,
                 (resultCode, data) -> {

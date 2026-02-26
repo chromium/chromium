@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.ui.signin.fullscreen_signin;
 
-import android.accounts.Account;
 import android.content.Context;
 
 import androidx.annotation.MainThread;
@@ -17,6 +16,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
+import org.chromium.google_apis.gaia.CoreAccountId;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -43,7 +43,7 @@ public class FullscreenSigninCoordinator {
         void advanceToNextPage();
 
         /** Called to display the device lock page */
-        void displayDeviceLockPage(Account selectedAccount);
+        void displayDeviceLockPage(CoreAccountId selectedAccountId);
 
         /**
          * Records histograms corresponding to the user accepting sign-in.

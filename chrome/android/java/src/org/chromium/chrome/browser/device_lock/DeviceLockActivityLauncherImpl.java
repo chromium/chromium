@@ -10,7 +10,7 @@ import android.content.Intent;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
-import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher.Source;
+import org.chromium.google_apis.gaia.CoreAccountId;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
@@ -34,14 +34,14 @@ public class DeviceLockActivityLauncherImpl implements DeviceLockActivityLaunche
     @Override
     public void launchDeviceLockActivity(
             Context context,
-            @Nullable String selectedAccount,
+            @Nullable CoreAccountId selectedAccountId,
             boolean requireDeviceLockReauthentication,
             WindowAndroid windowAndroid,
             WindowAndroid.IntentCallback callback,
             @Source String source) {
         Intent intent =
                 DeviceLockActivity.createIntent(
-                        context, selectedAccount, requireDeviceLockReauthentication, source);
+                        context, selectedAccountId, requireDeviceLockReauthentication, source);
         windowAndroid.showIntent(intent, callback, null);
     }
 

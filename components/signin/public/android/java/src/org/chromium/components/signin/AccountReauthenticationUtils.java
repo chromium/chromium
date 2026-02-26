@@ -4,7 +4,6 @@
 
 package org.chromium.components.signin;
 
-import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.Activity;
 
@@ -14,6 +13,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.google_apis.gaia.CoreAccountId;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -74,21 +74,21 @@ public class AccountReauthenticationUtils {
      * Confirms whether the account has recently been authenticated on this device.
      *
      * @param accountManagerFacade The {@link AccountManagerFacade} to use to confirm
-     *         authentication.
-     * @param account The {@link Account} to confirm authentication for.
+     *     authentication.
+     * @param accountId The {@link CoreAccountId} to confirm authentication for.
      * @param callback The callback to indicate whether the device had a recent authentication for
-     *         the given account, there was no recent authentication, or if confirmation was
-     *         interrupted by an exception.
-     * @param recentTimeWindowMillis The time window in milliseconds for which a previous
-     *         successful authentication can be considered recent.
+     *     the given account, there was no recent authentication, or if confirmation was interrupted
+     *     by an exception.
+     * @param recentTimeWindowMillis The time window in milliseconds for which a previous successful
+     *     authentication can be considered recent.
      */
     public void confirmRecentAuthentication(
             AccountManagerFacade accountManagerFacade,
-            Account account,
+            CoreAccountId accountId,
             @RecentAuthenticationResult Callback<Integer> callback,
             long recentTimeWindowMillis) {
         accountManagerFacade.confirmCredentials(
-                account,
+                accountId,
                 null,
                 (response) -> {
                     if (response == null) {
@@ -113,25 +113,25 @@ public class AccountReauthenticationUtils {
      * re-authentication challenge for the user to confirm their credentials.
      *
      * @param accountManagerFacade The {@link AccountManagerFacade} to use to confirm
-     *         authentication.
-     * @param account The {@link Account} to confirm authentication for.
+     *     authentication.
+     * @param accountId The {@link CoreAccountId} to confirm authentication for.
      * @param activity The {@link Activity} context to use for launching a new authenticator-defined
-     *         sub-Activity to prompt the user to confirm their password.
+     *     sub-Activity to prompt the user to confirm their password.
      * @param callback The callback to indicate whether the device had a recent authentication for
-     *         the given account or if the user successfully confirmed their credentials.
-     * @param recentTimeWindowMillis The time window in milliseconds for which a previous
-     *         successful authentication can be considered recent.
+     *     the given account or if the user successfully confirmed their credentials.
+     * @param recentTimeWindowMillis The time window in milliseconds for which a previous successful
+     *     authentication can be considered recent.
      */
     public void confirmCredentialsOrRecentAuthentication(
             AccountManagerFacade accountManagerFacade,
-            Account account,
+            CoreAccountId accountId,
             Activity activity,
             @ConfirmationResult Callback<Integer> callback,
             long recentTimeWindowMillis) {
         logAccountReauthenticationEvent(AccountReauthenticationEvent.STARTED);
         confirmRecentAuthentication(
                 accountManagerFacade,
-                account,
+                accountId,
                 (recentAuthenticationResult) -> {
                     if (RecentAuthenticationResult.HAS_RECENT_AUTHENTICATION
                             == recentAuthenticationResult) {
@@ -141,7 +141,7 @@ public class AccountReauthenticationUtils {
                         return;
                     }
                     accountManagerFacade.confirmCredentials(
-                            account,
+                            accountId,
                             activity,
                             (response) -> {
                                 if (response == null) {

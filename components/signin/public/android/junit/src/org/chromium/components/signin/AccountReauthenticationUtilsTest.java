@@ -7,8 +7,8 @@ package org.chromium.components.signin;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doReturn;
 
-import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.os.Bundle;
 
@@ -17,16 +17,21 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.mockito.stubbing.Answer;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.FakeTimeTestRule;
+import org.chromium.base.Promise;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.components.signin.test.util.TestAccounts;
+import org.chromium.google_apis.gaia.CoreAccountId;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -36,10 +41,11 @@ import java.util.concurrent.atomic.AtomicReference;
 public class AccountReauthenticationUtilsTest {
     private static final long MOCK_RECENT_TIME_WINDOW_MILLIS = 10 * 60 * 1000; // 10 minutes
 
-    @Rule public FakeTimeTestRule mFakeTimeTestRule = new FakeTimeTestRule();
+    @Rule public final FakeTimeTestRule mFakeTimeTestRule = new FakeTimeTestRule();
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private AccountManagerFacade mAccountManagerFacade;
-    @Mock private Account mAccount;
+    private final CoreAccountId mAccountId = TestAccounts.ACCOUNT1.getId();
 
     private final @AccountReauthenticationUtils.RecentAuthenticationResult AtomicReference<Integer>
             mRecentAuthenticationResult = new AtomicReference<>();
@@ -98,19 +104,21 @@ public class AccountReauthenticationUtilsTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
+        doReturn(Promise.fulfilled(List.of(TestAccounts.ACCOUNT1)))
+                .when(mAccountManagerFacade)
+                .getAccounts();
     }
 
     @Test
     public void testConfirmRecentAuthentication_recentAuthentication_triggersCallback() {
         doAnswer(mRecentAuthenticationAnswer)
                 .when(mAccountManagerFacade)
-                .confirmCredentials(any(Account.class), any(), any());
+                .confirmCredentials(any(CoreAccountId.class), any(), any());
 
         new AccountReauthenticationUtils()
                 .confirmRecentAuthentication(
                         mAccountManagerFacade,
-                        mAccount,
+                        mAccountId,
                         mRecentAuthenticationResult::set,
                         MOCK_RECENT_TIME_WINDOW_MILLIS);
         assertEquals(
@@ -124,12 +132,12 @@ public class AccountReauthenticationUtilsTest {
     public void testConfirmRecentAuthentication_oldAuthentication_triggersCallback() {
         doAnswer(mOldAuthenticationAnswer)
                 .when(mAccountManagerFacade)
-                .confirmCredentials(any(Account.class), any(), any());
+                .confirmCredentials(any(CoreAccountId.class), any(), any());
 
         new AccountReauthenticationUtils()
                 .confirmRecentAuthentication(
                         mAccountManagerFacade,
-                        mAccount,
+                        mAccountId,
                         mRecentAuthenticationResult::set,
                         MOCK_RECENT_TIME_WINDOW_MILLIS);
         assertEquals(
@@ -143,12 +151,12 @@ public class AccountReauthenticationUtilsTest {
     public void testConfirmRecentAuthentication_noPreviousAuthentication_triggersCallback() {
         doAnswer(mEmptyBundleAnswer)
                 .when(mAccountManagerFacade)
-                .confirmCredentials(any(Account.class), any(), any());
+                .confirmCredentials(any(CoreAccountId.class), any(), any());
 
         new AccountReauthenticationUtils()
                 .confirmRecentAuthentication(
                         mAccountManagerFacade,
-                        mAccount,
+                        mAccountId,
                         mRecentAuthenticationResult::set,
                         MOCK_RECENT_TIME_WINDOW_MILLIS);
         assertEquals(
@@ -162,12 +170,12 @@ public class AccountReauthenticationUtilsTest {
     public void testConfirmRecentAuthentication_nullResponse_triggersCallback() {
         doAnswer(mErrorAnswer)
                 .when(mAccountManagerFacade)
-                .confirmCredentials(any(Account.class), any(), any());
+                .confirmCredentials(any(CoreAccountId.class), any(), any());
 
         new AccountReauthenticationUtils()
                 .confirmRecentAuthentication(
                         mAccountManagerFacade,
-                        mAccount,
+                        mAccountId,
                         mRecentAuthenticationResult::set,
                         MOCK_RECENT_TIME_WINDOW_MILLIS);
         assertEquals(
@@ -183,7 +191,7 @@ public class AccountReauthenticationUtilsTest {
         doAnswer(mEmptyBundleAnswer)
                 .doAnswer(mConfirmationSuccessAnswer)
                 .when(mAccountManagerFacade)
-                .confirmCredentials(any(Account.class), any(), any());
+                .confirmCredentials(any(CoreAccountId.class), any(), any());
         HistogramWatcher accountReauthenticationHistogram =
                 HistogramWatcher.newBuilder()
                         .expectIntRecords(
@@ -195,7 +203,7 @@ public class AccountReauthenticationUtilsTest {
         new AccountReauthenticationUtils()
                 .confirmCredentialsOrRecentAuthentication(
                         mAccountManagerFacade,
-                        mAccount,
+                        mAccountId,
                         null,
                         mRecentConfirmationResult::set,
                         MOCK_RECENT_TIME_WINDOW_MILLIS);
@@ -210,7 +218,7 @@ public class AccountReauthenticationUtilsTest {
             testConfirmCredentialsOrRecentAuthentication_recentAuthentication_triggersCallback() {
         doAnswer(mRecentAuthenticationAnswer)
                 .when(mAccountManagerFacade)
-                .confirmCredentials(any(Account.class), any(), any());
+                .confirmCredentials(any(CoreAccountId.class), any(), any());
         HistogramWatcher accountReauthenticationHistogram =
                 HistogramWatcher.newBuilder()
                         .expectIntRecords(
@@ -223,7 +231,7 @@ public class AccountReauthenticationUtilsTest {
         new AccountReauthenticationUtils()
                 .confirmCredentialsOrRecentAuthentication(
                         mAccountManagerFacade,
-                        mAccount,
+                        mAccountId,
                         null,
                         mRecentConfirmationResult::set,
                         MOCK_RECENT_TIME_WINDOW_MILLIS);
@@ -239,7 +247,7 @@ public class AccountReauthenticationUtilsTest {
         doAnswer(mEmptyBundleAnswer)
                 .doAnswer(mConfirmationRejectedAnswer)
                 .when(mAccountManagerFacade)
-                .confirmCredentials(any(Account.class), any(), any());
+                .confirmCredentials(any(CoreAccountId.class), any(), any());
         HistogramWatcher accountReauthenticationHistogram =
                 HistogramWatcher.newBuilder()
                         .expectIntRecords(
@@ -251,7 +259,7 @@ public class AccountReauthenticationUtilsTest {
         new AccountReauthenticationUtils()
                 .confirmCredentialsOrRecentAuthentication(
                         mAccountManagerFacade,
-                        mAccount,
+                        mAccountId,
                         null,
                         mRecentConfirmationResult::set,
                         MOCK_RECENT_TIME_WINDOW_MILLIS);
@@ -266,7 +274,7 @@ public class AccountReauthenticationUtilsTest {
         doAnswer(mEmptyBundleAnswer)
                 .doAnswer(mErrorAnswer)
                 .when(mAccountManagerFacade)
-                .confirmCredentials(any(Account.class), any(), any());
+                .confirmCredentials(any(CoreAccountId.class), any(), any());
         HistogramWatcher accountReauthenticationHistogram =
                 HistogramWatcher.newBuilder()
                         .expectIntRecords(
@@ -278,7 +286,7 @@ public class AccountReauthenticationUtilsTest {
         new AccountReauthenticationUtils()
                 .confirmCredentialsOrRecentAuthentication(
                         mAccountManagerFacade,
-                        mAccount,
+                        mAccountId,
                         null,
                         mRecentConfirmationResult::set,
                         MOCK_RECENT_TIME_WINDOW_MILLIS);

@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.ui.signin.fullscreen_signin;
 import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
-import android.accounts.Account;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
@@ -204,10 +203,6 @@ public class FullscreenSigninMediator
     void reset() {
         mModel.set(FullscreenSigninProperties.SHOW_SIGNIN_PROGRESS_SPINNER_WITH_TEXT, false);
         mModel.set(FullscreenSigninProperties.SHOW_SIGNIN_PROGRESS_SPINNER, false);
-    }
-
-    private Account getSelectedAccount() {
-        return CoreAccountInfo.getAndroidAccountFrom(assertNonNull(mSelectedAccount));
     }
 
     private void onNativeLoaded() {
@@ -439,7 +434,7 @@ public class FullscreenSigninMediator
         }
 
         if (DeviceInfo.isAutomotive()) {
-            mDelegate.displayDeviceLockPage(getSelectedAccount());
+            mDelegate.displayDeviceLockPage(mSelectedAccount.getId());
             return;
         }
         proceedWithSignIn();

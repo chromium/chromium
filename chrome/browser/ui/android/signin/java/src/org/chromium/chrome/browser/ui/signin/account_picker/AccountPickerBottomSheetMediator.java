@@ -586,9 +586,11 @@ public class AccountPickerBottomSheetMediator
 
     void launchDeviceLockIfNeededAndSignIn() {
         if (DeviceInfo.isAutomotive()) {
+            var selectedAccountId =
+                    mSelectedAccount == null ? null : assertNonNull(mSelectedAccount).getId();
             mDeviceLockActivityLauncher.launchDeviceLockActivity(
                     mActivity,
-                    CoreAccountInfo.getEmailFrom(mSelectedAccount),
+                    selectedAccountId,
                     /* requireDeviceLockReauthentication= */ true,
                     mWindowAndroid,
                     (resultCode, data) -> {

@@ -18,6 +18,7 @@ android_library("java") {
     "//base:base_java",
     "//build/android:build_java",
     "//components/browser_ui/widget/android:java",
+    "//google_apis/gaia/android:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_java",

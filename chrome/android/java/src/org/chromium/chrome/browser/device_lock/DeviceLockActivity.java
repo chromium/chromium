@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.device_lock;
 import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
-import android.accounts.Account;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -25,7 +24,8 @@ import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.device_lock.DeviceLockCoordinator;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
-import org.chromium.components.signin.AccountUtils;
+import org.chromium.google_apis.gaia.CoreAccountId;
+import org.chromium.google_apis.gaia.GaiaId;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.WindowAndroid;
@@ -39,8 +39,8 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 public class DeviceLockActivity extends SynchronousInitializationActivity
         implements DeviceLockCoordinator.Delegate {
     private static final String ARGUMENT_FRAGMENT_ARGS = "DeviceLockActivity.FragmentArgs";
-    private static final String ARGUMENT_SELECTED_ACCOUNT =
-            "DeviceLockActivity.FragmentArgs.SelectedAccount";
+    private static final String ARGUMENT_SELECTED_ACCOUNT_GAIA_ID =
+            "DeviceLockActivity.FragmentArgs.SelectedAccountGaiaId";
     private static final String ARGUMENT_SOURCE = "DeviceLockActivity.FragmentArgs.Source";
     private static final String ARGUMENT_REQUIRE_DEVICE_LOCK_REAUTHENTICATION =
             "DeviceLockActivity.FragmentArgs.RequireDeviceLockReauthentication";
@@ -79,15 +79,14 @@ public class DeviceLockActivity extends SynchronousInitializationActivity
 
         Bundle fragmentArgs = getIntent().getBundleExtra(ARGUMENT_FRAGMENT_ARGS);
         assumeNonNull(fragmentArgs);
-        @Nullable
-        String selectedAccountEmail = fragmentArgs.getString(ARGUMENT_SELECTED_ACCOUNT, null);
+        @Nullable String selectedAccountGaiaId =
+                fragmentArgs.getString(ARGUMENT_SELECTED_ACCOUNT_GAIA_ID, null);
+        @Nullable CoreAccountId selectedAccountId =
+                selectedAccountGaiaId == null
+                        ? null
+                        : new CoreAccountId(new GaiaId(selectedAccountGaiaId));
         boolean requireDeviceLockReauthentication =
                 fragmentArgs.getBoolean(ARGUMENT_REQUIRE_DEVICE_LOCK_REAUTHENTICATION, true);
-        @Nullable
-        Account selectedAccount =
-                selectedAccountEmail != null
-                        ? AccountUtils.createAccountFromEmail(selectedAccountEmail)
-                        : null;
 
         assert profile != null;
         ReauthenticatorBridge reauthenticatorBridge =
@@ -96,7 +95,7 @@ public class DeviceLockActivity extends SynchronousInitializationActivity
                         : null;
         mDeviceLockCoordinator =
                 new DeviceLockCoordinator(
-                        this, mWindowAndroid, reauthenticatorBridge, this, selectedAccount);
+                        this, mWindowAndroid, reauthenticatorBridge, this, selectedAccountId);
     }
 
     @CallSuper
@@ -113,11 +112,14 @@ public class DeviceLockActivity extends SynchronousInitializationActivity
     }
 
     protected static Bundle createArguments(
-            @Nullable String selectedAccount,
+            @Nullable CoreAccountId selectedAccountId,
             @DeviceLockActivityLauncher.Source String source,
             boolean requireDeviceLockReauthentication) {
         Bundle result = new Bundle();
-        result.putString(ARGUMENT_SELECTED_ACCOUNT, selectedAccount);
+        if (selectedAccountId != null) {
+            result.putString(
+                    ARGUMENT_SELECTED_ACCOUNT_GAIA_ID, selectedAccountId.getId().toString());
+        }
         result.putString(ARGUMENT_SOURCE, source);
         result.putBoolean(
                 ARGUMENT_REQUIRE_DEVICE_LOCK_REAUTHENTICATION, requireDeviceLockReauthentication);
@@ -127,14 +129,14 @@ public class DeviceLockActivity extends SynchronousInitializationActivity
     /** Creates a new intent to start the {@link DeviceLockActivity}. */
     protected static Intent createIntent(
             Context context,
-            @Nullable String selectedAccount,
+            @Nullable CoreAccountId selectedAccountId,
             boolean requireDeviceLockReauthentication,
             @DeviceLockActivityLauncher.Source String source) {
         Intent intent = new Intent(context, DeviceLockActivity.class);
         intent.putExtra(
                 ARGUMENT_FRAGMENT_ARGS,
                 DeviceLockActivity.createArguments(
-                        selectedAccount, source, requireDeviceLockReauthentication));
+                        selectedAccountId, source, requireDeviceLockReauthentication));
         return intent;
     }
 

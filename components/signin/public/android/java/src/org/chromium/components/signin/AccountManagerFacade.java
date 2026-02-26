@@ -4,7 +4,6 @@
 
 package org.chromium.components.signin;
 
-import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.Activity;
 import android.content.Intent;
@@ -20,6 +19,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.components.signin.base.AccountCapabilities;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.google_apis.gaia.CoreAccountId;
 import org.chromium.google_apis.gaia.GoogleServiceAuthError;
 
 import java.util.List;
@@ -154,17 +154,20 @@ public interface AccountManagerFacade {
             CoreAccountInfo accountInfo, Activity activity, @Nullable Callback<Boolean> callback);
 
     /**
-     * Asks the user to confirm their knowledge of the password to the given account.
+     * Asks the user to confirm their knowledge of the password to the given account. If the account
+     * doesn't exist will cause an assertion error.
      *
-     * @param account The {@link Account} to confirm the credentials for.
+     * @param accountId The {@link CoreAccountId} to confirm the credentials for.
      * @param activity The {@link Activity} context to use for launching a new authenticator-defined
      *     sub-Activity to prompt the user to confirm the account's password.
      * @param callback The callback to indicate whether the user successfully confirmed their
      *     knowledge of the account's credentials.
      */
-    @AnyThread
+    @MainThread
     void confirmCredentials(
-            Account account, @Nullable Activity activity, Callback<@Nullable Bundle> callback);
+            CoreAccountId accountId,
+            @Nullable Activity activity,
+            Callback<@Nullable Bundle> callback);
 
     /** Whether fetching the list of accounts from the device eventually succeeded. */
     boolean didAccountFetchSucceed();

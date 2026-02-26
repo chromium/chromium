@@ -4,6 +4,7 @@
 
 package org.chromium.components.signin;
 
+import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.components.signin.AccountCapabilitiesConstants.IS_SUBJECT_TO_PARENTAL_CONTROLS_CAPABILITY_NAME;
 
@@ -35,6 +36,7 @@ import org.chromium.components.signin.ConnectionRetry.AuthTask;
 import org.chromium.components.signin.base.AccountCapabilities;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.google_apis.gaia.CoreAccountId;
 import org.chromium.google_apis.gaia.GaiaId;
 import org.chromium.google_apis.gaia.GoogleServiceAuthError;
 import org.chromium.google_apis.gaia.GoogleServiceAuthErrorState;
@@ -472,14 +474,31 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
     @Override
     public void updateCredentials(
             CoreAccountInfo accountInfo, Activity activity, @Nullable Callback<Boolean> callback) {
+        ThreadUtils.assertOnUiThread();
+
         mDelegate.updateCredentials(
                 CoreAccountInfo.getAndroidAccountFrom(accountInfo), activity, callback);
     }
 
     @Override
     public void confirmCredentials(
-            Account account, @Nullable Activity activity, Callback<@Nullable Bundle> callback) {
-        mDelegate.confirmCredentials(account, activity, callback);
+            CoreAccountId accountId,
+            @Nullable Activity activity,
+            Callback<@Nullable Bundle> callback) {
+        ThreadUtils.assertOnUiThread();
+        assert accountId != null;
+
+        getAccounts()
+                .then(
+                        accounts -> {
+                            var accountInfo =
+                                    AccountUtils.findAccountByAccountId(accounts, accountId);
+                            mDelegate.confirmCredentials(
+                                    CoreAccountInfo.getAndroidAccountFrom(
+                                            assertNonNull(accountInfo)),
+                                    activity,
+                                    callback);
+                        });
     }
 
     @Override

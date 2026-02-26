@@ -10,6 +10,7 @@ import androidx.annotation.StringDef;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.google_apis.gaia.CoreAccountId;
 import org.chromium.ui.base.WindowAndroid;
 
 import java.lang.annotation.Retention;
@@ -45,17 +46,16 @@ public interface DeviceLockActivityLauncher {
      * Launches the {@link DeviceLockActivity} to set a device lock for data privacy.
      *
      * @param context The context to launch the {@link DeviceLockActivity} with.
-     * @param selectedAccount The account that will be used for the reauthentication challenge, or
-     *     null if reauthentication is not needed.
+     * @param selectedAccountId The {@link CoreAccountId} that will be used for the reauthentication
+     *     challenge, or null if reauthentication is not needed.
      * @param requireDeviceLockReauthentication Whether or not the reauthentication of the device
      *     lock credentials should be required (if a device lock is already present).
      * @param windowAndroid The host activity's {@link WindowAndroid}.
      * @param callback A callback to run after the {@link DeviceLockActivity} finishes.
-     * @param flow Which flow the user took to arrive at the device lock UI.
      */
     void launchDeviceLockActivity(
             Context context,
-            @Nullable String selectedAccount,
+            @Nullable CoreAccountId selectedAccountId,
             boolean requireDeviceLockReauthentication,
             WindowAndroid windowAndroid,
             WindowAndroid.IntentCallback callback,

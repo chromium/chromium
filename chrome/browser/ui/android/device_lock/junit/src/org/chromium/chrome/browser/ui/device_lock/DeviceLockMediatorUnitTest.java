@@ -26,7 +26,6 @@ import static org.chromium.chrome.browser.ui.device_lock.DeviceLockProperties.PR
 import static org.chromium.chrome.browser.ui.device_lock.DeviceLockProperties.UI_ENABLED;
 import static org.chromium.components.browser_ui.device_lock.DeviceLockBridge.DEVICE_LOCK_PAGE_HAS_BEEN_PASSED;
 
-import android.accounts.Account;
 import android.app.Activity;
 import android.app.KeyguardManager;
 import android.content.Context;
@@ -57,6 +56,8 @@ import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.components.browser_ui.device_lock.DeviceLockDialogMetrics;
 import org.chromium.components.signin.AccountReauthenticationUtils;
+import org.chromium.google_apis.gaia.CoreAccountId;
+import org.chromium.google_apis.gaia.GaiaId;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -70,7 +71,6 @@ public class DeviceLockMediatorUnitTest {
     public final AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
 
     @Mock public Activity mActivity;
-    @Mock public Account mAccount;
     @Mock private DeviceLockCoordinator.Delegate mDelegate;
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private ReauthenticatorBridge mDeviceLockAuthenticatorBridge;
@@ -78,6 +78,8 @@ public class DeviceLockMediatorUnitTest {
     @Mock private KeyguardManager mKeyguardManager;
     @Mock private PackageManager mPackageManager;
     @Mock private View mView;
+
+    private final CoreAccountId mAccountId = new CoreAccountId(new GaiaId("account-id"));
 
     private final Answer<Object> mSuccessfulDeviceLockCreation =
             (invocation) -> {
@@ -154,7 +156,7 @@ public class DeviceLockMediatorUnitTest {
                         mDeviceLockAuthenticatorBridge,
                         mAccountReauthenticationUtils,
                         mActivity,
-                        mAccount);
+                        mAccountId);
 
         assertTrue(
                 "PropertyModel PREEXISTING_DEVICE_LOCK should be True",
@@ -172,7 +174,7 @@ public class DeviceLockMediatorUnitTest {
                         mDeviceLockAuthenticatorBridge,
                         mAccountReauthenticationUtils,
                         mActivity,
-                        mAccount);
+                        mAccountId);
 
         assertFalse(
                 "PropertyModel PREEXISTING_DEVICE_LOCK should be True",
@@ -199,7 +201,7 @@ public class DeviceLockMediatorUnitTest {
                         mDeviceLockAuthenticatorBridge,
                         mAccountReauthenticationUtils,
                         mActivity,
-                        mAccount);
+                        mAccountId);
 
         assertTrue(
                 "PropertyModel DEVICE_SUPPORTS_PIN_CREATION_INTENT should be True",
@@ -216,7 +218,7 @@ public class DeviceLockMediatorUnitTest {
                         mDeviceLockAuthenticatorBridge,
                         mAccountReauthenticationUtils,
                         mActivity,
-                        mAccount);
+                        mAccountId);
 
         assertFalse(
                 "PropertyModel DEVICE_SUPPORTS_PIN_CREATION_INTENT should be False",
@@ -227,7 +229,7 @@ public class DeviceLockMediatorUnitTest {
     public void
             testCreateDeviceLockOnClick_deviceLockCreatedSuccessfully_callsDelegateOnDeviceLockReady() {
         testOnClick(
-                mAccount,
+                mAccountId,
                 mDeviceLockAuthenticatorBridge,
                 ON_CREATE_DEVICE_LOCK_CLICKED,
                 mSuccessfulDeviceLockCreation,
@@ -283,7 +285,7 @@ public class DeviceLockMediatorUnitTest {
                         .build();
 
         testOnClick(
-                mAccount,
+                mAccountId,
                 mDeviceLockAuthenticatorBridge,
                 ON_CREATE_DEVICE_LOCK_CLICKED,
                 /* deviceLockCreationResult= */ null,
@@ -311,7 +313,7 @@ public class DeviceLockMediatorUnitTest {
                         .build();
 
         testOnClick(
-                mAccount,
+                mAccountId,
                 mDeviceLockAuthenticatorBridge,
                 ON_CREATE_DEVICE_LOCK_CLICKED,
                 mFailedDeviceLockCreation,
@@ -339,7 +341,7 @@ public class DeviceLockMediatorUnitTest {
                         .build();
 
         testOnClick(
-                mAccount,
+                mAccountId,
                 mDeviceLockAuthenticatorBridge,
                 ON_CREATE_DEVICE_LOCK_CLICKED,
                 mSuccessfulDeviceLockCreation,
@@ -368,7 +370,7 @@ public class DeviceLockMediatorUnitTest {
                         .build();
 
         testOnClick(
-                mAccount,
+                mAccountId,
                 mDeviceLockAuthenticatorBridge,
                 ON_GO_TO_OS_SETTINGS_CLICKED,
                 mSuccessfulDeviceLockCreation,
@@ -397,7 +399,7 @@ public class DeviceLockMediatorUnitTest {
                         .build();
 
         testOnClick(
-                mAccount,
+                mAccountId,
                 mDeviceLockAuthenticatorBridge,
                 ON_GO_TO_OS_SETTINGS_CLICKED,
                 /* deviceLockCreationResult= */ null,
@@ -425,7 +427,7 @@ public class DeviceLockMediatorUnitTest {
                         .build();
 
         testOnClick(
-                mAccount,
+                mAccountId,
                 mDeviceLockAuthenticatorBridge,
                 ON_GO_TO_OS_SETTINGS_CLICKED,
                 mFailedDeviceLockCreation,
@@ -453,7 +455,7 @@ public class DeviceLockMediatorUnitTest {
                         .build();
 
         testOnClick(
-                mAccount,
+                mAccountId,
                 mDeviceLockAuthenticatorBridge,
                 ON_GO_TO_OS_SETTINGS_CLICKED,
                 mSuccessfulDeviceLockCreation,
@@ -481,7 +483,7 @@ public class DeviceLockMediatorUnitTest {
                         .build();
 
         testOnClick(
-                mAccount,
+                mAccountId,
                 mDeviceLockAuthenticatorBridge,
                 ON_USER_UNDERSTANDS_CLICKED,
                 /* deviceLockCreationResult= */ null,
@@ -509,7 +511,7 @@ public class DeviceLockMediatorUnitTest {
                         .build();
 
         testOnClick(
-                mAccount,
+                mAccountId,
                 /* deviceLockAuthenticatorBridge= */ null,
                 ON_USER_UNDERSTANDS_CLICKED,
                 /* deviceLockCreationResult= */ null,
@@ -536,7 +538,7 @@ public class DeviceLockMediatorUnitTest {
                         .build();
 
         testOnClick(
-                mAccount,
+                mAccountId,
                 mDeviceLockAuthenticatorBridge,
                 ON_USER_UNDERSTANDS_CLICKED,
                 /* deviceLockCreationResult= */ null,
@@ -563,7 +565,7 @@ public class DeviceLockMediatorUnitTest {
                         .build();
 
         testOnClick(
-                mAccount,
+                mAccountId,
                 mDeviceLockAuthenticatorBridge,
                 ON_USER_UNDERSTANDS_CLICKED,
                 /* deviceLockCreationResult= */ null,
@@ -590,7 +592,7 @@ public class DeviceLockMediatorUnitTest {
                         .build();
 
         testOnClick(
-                mAccount,
+                mAccountId,
                 mDeviceLockAuthenticatorBridge,
                 ON_USER_UNDERSTANDS_CLICKED,
                 /* deviceLockCreationResult= */ null,
@@ -616,7 +618,7 @@ public class DeviceLockMediatorUnitTest {
                         .build();
 
         testOnClick(
-                mAccount,
+                mAccountId,
                 mDeviceLockAuthenticatorBridge,
                 ON_DISMISS_CLICKED,
                 /* deviceLockCreationResult= */ null,
@@ -632,7 +634,7 @@ public class DeviceLockMediatorUnitTest {
     }
 
     private void testOnClick(
-            Account account,
+            CoreAccountId accountId,
             ReauthenticatorBridge deviceLockAuthenticatorBridge,
             PropertyModel.ReadableObjectPropertyKey<View.OnClickListener> onClick,
             Answer<Object> deviceLockCreationResult,
@@ -668,7 +670,7 @@ public class DeviceLockMediatorUnitTest {
                         deviceLockAuthenticatorBridge,
                         mAccountReauthenticationUtils,
                         mActivity,
-                        account);
+                        accountId);
         deviceLockMediator.getModel().get(onClick).onClick(mView);
 
         verify(mWindowAndroid, times(deviceLockCreationCalls))

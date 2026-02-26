@@ -29,6 +29,8 @@ import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.chrome.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
+import org.chromium.google_apis.gaia.CoreAccountId;
+import org.chromium.google_apis.gaia.GaiaId;
 import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.WindowAndroid.IntentCallback;
 
@@ -98,7 +100,7 @@ public class DeviceLockActivityTest {
         Intent intent =
                 DeviceLockActivity.createIntent(
                         ContextUtils.getApplicationContext(),
-                        "testSelectedAccount",
+                        new CoreAccountId(new GaiaId("accountId")),
                         true,
                         DeviceLockActivityLauncher.Source.ACCOUNT_PICKER);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

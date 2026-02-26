@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.ui.device_lock;
 
-import android.accounts.Account;
 import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +14,7 @@ import org.chromium.chrome.browser.device_reauth.DeviceAuthSource;
 import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
+import org.chromium.google_apis.gaia.CoreAccountId;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -54,21 +54,21 @@ public class DeviceLockCoordinator {
      * @param windowAndroid Used to launch Intents with callbacks.
      * @param profile The Profile associated with this session.
      * @param activity The activity hosting this page.
-     * @param account The account that will be used for the reauthentication challenge, or null if
-     *     reauthentication is not needed.
+     * @param accountId The account id that will be used for the reauthentication challenge, or null
+     *     if reauthentication is not needed.
      */
     public DeviceLockCoordinator(
             Delegate delegate,
             WindowAndroid windowAndroid,
             Profile profile,
             Activity activity,
-            @Nullable Account account) {
+            @Nullable CoreAccountId accountId) {
         this(
                 delegate,
                 windowAndroid,
                 createDeviceLockAuthenticatorBridge(activity, profile),
                 activity,
-                account);
+                accountId);
     }
 
     /**
@@ -79,15 +79,15 @@ public class DeviceLockCoordinator {
      * @param deviceLockAuthenticatorBridge The {@link ReauthenticatorBridge} used to confirm device
      *     lock credentials.
      * @param activity The activity hosting this page.
-     * @param account The account that will be used for the reauthentication challenge, or null if
-     *     reauthentication is not needed.
+     * @param accountId The account email that will be used for the reauthentication challenge, or
+     *     null if reauthentication is not needed.
      */
     public DeviceLockCoordinator(
             Delegate delegate,
             WindowAndroid windowAndroid,
             @Nullable ReauthenticatorBridge deviceLockAuthenticatorBridge,
             Activity activity,
-            @Nullable Account account) {
+            @Nullable CoreAccountId accountId) {
         mView = DeviceLockView.create(LayoutInflater.from(activity));
         mWindowAndroid = windowAndroid;
         mDeviceLockAuthenticatorBridge = deviceLockAuthenticatorBridge;
@@ -97,7 +97,7 @@ public class DeviceLockCoordinator {
                         mWindowAndroid,
                         mDeviceLockAuthenticatorBridge,
                         activity,
-                        account);
+                        accountId);
         mPropertyModelChangeProcessor =
                 PropertyModelChangeProcessor.create(
                         mMediator.getModel(), mView, DeviceLockViewBinder::bind);
