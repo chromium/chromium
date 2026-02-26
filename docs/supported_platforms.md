@@ -211,7 +211,10 @@ embedder code for Cronet lives in //components/cronet. Details are [here](https:
 
 ### Fuchsia WebEngine
 
-The embedder code for Fuchsia WebEngine lives in //fuchsia_web. Details are
+Fuchsia WebEngine is an application running on the Fuchsia operating system for
+displaying web content and running cast applications (sometimes being referred
+as a Cast Receiver). The embedder code for Fuchsia WebEngine lives in
+//fuchsia_web. Details, including information on platform support, are
 [here](https://chromium.googlesource.com/chromium/src/+/main/fuchsia_web/README.md).
 
 ### Headless
