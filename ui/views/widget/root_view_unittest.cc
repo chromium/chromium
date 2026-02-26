@@ -23,6 +23,7 @@
 #include "ui/gfx/native_ui_types.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/context_menu_controller.h"
+#include "ui/views/focus/focus_manager.h"
 #include "ui/views/test/ax_event_counter.h"
 #include "ui/views/test/test_views.h"
 #include "ui/views/test/views_test_base.h"
@@ -219,6 +220,69 @@ TEST_F(RootViewTest, ContextMenuFromKeyEvent) {
   controller.Reset();
 #endif
 }
+
+#if BUILDFLAG(IS_MAC)
+TEST_F(RootViewTest, ContextMenuFromKeyEventMac) {
+  RootViewTestState state(this);
+  internal::RootView* root_view = state.GetRootView();
+
+  TestContextMenuController controller;
+  View* focused_view = root_view->GetContentsView();
+  focused_view->set_context_menu_controller(&controller);
+  focused_view->SetFocusBehavior(View::FocusBehavior::ALWAYS);
+  focused_view->RequestFocus();
+
+  auto expect_menu_shown = [&](ui::KeyEvent event) {
+    ui::EventDispatchDetails details = root_view->OnEventFromSource(&event);
+    EXPECT_FALSE(details.target_destroyed);
+    EXPECT_FALSE(details.dispatcher_destroyed);
+    EXPECT_EQ(1, controller.show_context_menu_calls());
+    EXPECT_EQ(focused_view, controller.menu_source_view());
+    EXPECT_EQ(ui::mojom::MenuSourceType::kKeyboard,
+              controller.menu_source_type());
+    controller.Reset();
+  };
+
+  auto expect_menu_not_shown = [&](ui::KeyEvent event) {
+    ui::EventDispatchDetails details = root_view->OnEventFromSource(&event);
+    EXPECT_FALSE(details.target_destroyed);
+    EXPECT_FALSE(details.dispatcher_destroyed);
+    EXPECT_EQ(0, controller.show_context_menu_calls());
+    EXPECT_EQ(nullptr, controller.menu_source_view());
+    EXPECT_EQ(ui::mojom::MenuSourceType::kNone, controller.menu_source_type());
+    controller.Reset();
+  };
+
+  expect_menu_shown(ui::KeyEvent(ui::EventType::kKeyPressed, ui::VKEY_APPS,
+                                 ui::EF_CONTROL_DOWN));
+
+  expect_menu_not_shown(ui::KeyEvent(ui::EventType::kKeyPressed, ui::VKEY_F10,
+                                     ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN));
+  expect_menu_not_shown(ui::KeyEvent(ui::EventType::kKeyPressed, ui::VKEY_F10,
+                                     ui::EF_SHIFT_DOWN));
+  expect_menu_not_shown(ui::KeyEvent(ui::EventType::kKeyPressed, ui::VKEY_APPS,
+                                     ui::EF_COMMAND_DOWN));
+  expect_menu_not_shown(
+      ui::KeyEvent(ui::EventType::kKeyReleased, ui::VKEY_APPS, ui::EF_NONE));
+  expect_menu_not_shown(ui::KeyEvent(ui::EventType::kKeyPressed, ui::VKEY_APPS,
+                                     ui::EF_COMMAND_DOWN));
+  expect_menu_not_shown(
+      ui::KeyEvent(ui::EventType::kKeyPressed, ui::VKEY_F10, ui::EF_NONE));
+  expect_menu_not_shown(ui::KeyEvent(ui::EventType::kKeyReleased, ui::VKEY_F10,
+                                     ui::EF_SHIFT_DOWN));
+  expect_menu_not_shown(
+      ui::KeyEvent(ui::EventType::kKeyPressed, ui::VKEY_A, ui::EF_NONE));
+
+  focused_view->SetEnabled(false);
+  expect_menu_not_shown(
+      ui::KeyEvent(ui::EventType::kKeyPressed, ui::VKEY_APPS, ui::EF_NONE));
+  focused_view->SetEnabled(true);
+
+  root_view->GetFocusManager()->ClearFocus();
+  expect_menu_not_shown(
+      ui::KeyEvent(ui::EventType::kKeyPressed, ui::VKEY_APPS, ui::EF_NONE));
+}
+#endif  // BUILDFLAG(IS_MAC)
 
 // View which handles all gesture events.
 class GestureHandlingView : public View {

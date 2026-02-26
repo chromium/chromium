@@ -839,6 +839,26 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
   return YES;
 }
 
+- (void)contextMenuKeyDown:(NSEvent*)event {
+  int event_flags = [event isARepeat] ? ui::EF_IS_REPEAT : ui::EF_NONE;
+  ui::KeyEvent context_menu_event(ui::EventType::kKeyPressed, ui::VKEY_APPS,
+                                  ui::DomCode::CONTEXT_MENU, event_flags);
+
+  context_menu_event.SetNativeEvent(base::apple::OwnedNSEvent(event));
+  if ([self dispatchKeyEventToMenuController:&context_menu_event]) {
+    return;
+  }
+
+  [self dispatchKeyEvent:&context_menu_event];
+  if (context_menu_event.handled()) {
+    return;
+  }
+
+  if (@available(macOS 15.0, *)) {
+    [super contextMenuKeyDown:event];
+  }
+}
+
 - (void)keyDown:(NSEvent*)theEvent {
   BOOL hadMarkedTextAtKeyDown = [self hasMarkedText];
 

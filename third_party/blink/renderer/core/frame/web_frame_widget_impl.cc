@@ -998,29 +998,33 @@ WebInputEventResult WebFrameWidgetImpl::HandleKeyEvent(
     return result;
   }
 
-#if !BUILDFLAG(IS_MAC)
   const WebInputEvent::Type kContextMenuKeyTriggeringEventType =
 #if BUILDFLAG(IS_WIN)
       WebInputEvent::Type::kKeyUp;
 #else
       WebInputEvent::Type::kRawKeyDown;
 #endif
+
   const WebInputEvent::Type kShiftF10TriggeringEventType =
       WebInputEvent::Type::kRawKeyDown;
 
   bool is_unmodified_menu_key =
       !(event.GetModifiers() & WebInputEvent::kInputModifiers) &&
       event.windows_key_code == VKEY_APPS;
+#if BUILDFLAG(IS_MAC)
+  bool is_shift_f10 = false;
+#else
   bool is_shift_f10 = (event.GetModifiers() & WebInputEvent::kInputModifiers) ==
                           WebInputEvent::kShiftKey &&
                       event.windows_key_code == VKEY_F10;
+#endif
+
   if ((is_unmodified_menu_key &&
        event.GetType() == kContextMenuKeyTriggeringEventType) ||
       (is_shift_f10 && event.GetType() == kShiftF10TriggeringEventType)) {
     View()->SendContextMenuEvent();
     return WebInputEventResult::kHandledSystem;
   }
-#endif  // !BUILDFLAG(IS_MAC)
 
   return WebInputEventResult::kNotHandled;
 }

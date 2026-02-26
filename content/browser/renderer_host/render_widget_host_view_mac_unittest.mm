@@ -662,6 +662,28 @@ TEST_F(RenderWidgetHostViewMacTest, FilterNonPrintableCharacter) {
   EXPECT_EQ("RawKeyDown Char", GetMessageNames(events));
 }
 
+TEST_F(RenderWidgetHostViewMacTest, ContextMenuKeyDownSendsContextMenuKey) {
+  if (@available(macOS 15.0, *)) {
+    NSEvent* event = cocoa_test_event_utils::KeyEventWithKeyCode(
+        ui::VKEY_CONTROL, ui::VKEY_RETURN, NSEventTypeKeyDown,
+        NSEventModifierFlagControl);
+    [rwhv_mac_->GetInProcessNSView() contextMenuKeyDown:event];
+  } else {
+    GTEST_SKIP() << "Requires macOS 15 context menu key API.";
+  }
+
+  base::RunLoop run_loop;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
+  MockWidgetInputHandler::MessageVector events =
+      host_->GetAndResetDispatchedMessages();
+  ASSERT_EQ("RawKeyDown", GetMessageNames(events));
+  EXPECT_EQ(ui::VKEY_APPS, static_cast<const blink::WebKeyboardEvent&>(
+                               events[0]->ToEvent()->Event()->Event())
+                               .windows_key_code);
+}
+
 // Test that invalid |keyCode| shouldn't generate key events.
 // https://crbug.com/601964
 TEST_F(RenderWidgetHostViewMacTest, InvalidKeyCode) {

@@ -210,8 +210,6 @@ class PreEventDispatchHandler : public ui::EventHandler {
   // ui::EventHandler:
   void OnKeyEvent(ui::KeyEvent* event) override {
     CHECK_EQ(ui::EP_PRETARGET, event->phase());
-// macOS doesn't have keyboard-triggered context menus.
-#if !BUILDFLAG(IS_MAC)
     if (event->handled()) {
       return;
     }
@@ -220,10 +218,23 @@ class PreEventDispatchHandler : public ui::EventHandler {
     if (owner_->GetFocusManager()) {  // Can be NULL in unittests.
       v = owner_->GetFocusManager()->GetFocusedView();
     }
+    bool is_shift_f10 =
+#if BUILDFLAG(IS_MAC)
+        false;
+#else
+        event->key_code() == ui::VKEY_F10 && event->IsShiftDown();
+#endif
+
     // Special case to handle keyboard-triggered context menus.
+    bool is_valid_menu_key = event->key_code() == ui::VKEY_APPS;
+#if BUILDFLAG(IS_MAC)
+    // ui::VKEY_APPS aliases right command on macOS. Avoid using command
+    // modifier transitions as context menu triggers.
+    is_valid_menu_key &=
+        event->type() == ui::EventType::kKeyPressed && !event->IsCommandDown();
+#endif
     if (v && v->GetEnabledInViewsSubtree() &&
-        ((event->key_code() == ui::VKEY_APPS) ||
-         (event->key_code() == ui::VKEY_F10 && event->IsShiftDown()))) {
+        (is_valid_menu_key || is_shift_f10)) {
       // Clamp the menu location within the visible bounds of each ancestor view
       // to avoid showing the menu over a completely different view or window.
       gfx::Point location = v->GetKeyboardContextMenuLocation();
@@ -235,7 +246,6 @@ class PreEventDispatchHandler : public ui::EventHandler {
       v->ShowContextMenu(location, ui::mojom::MenuSourceType::kKeyboard);
       event->StopPropagation();
     }
-#endif
   }
 
   std::string_view GetLogContext() const override {

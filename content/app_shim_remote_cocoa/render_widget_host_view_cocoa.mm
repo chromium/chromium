@@ -127,6 +127,19 @@ BOOL EventIsReservedBySystem(NSEvent* event) {
   return content::GetSystemHotkeyMap()->IsEventReserved(event);
 }
 
+NSEvent* CreateContextMenuKeyDownEvent(NSEvent* source_event) {
+  return [NSEvent keyEventWithType:NSEventTypeKeyDown
+                          location:source_event.locationInWindow
+                     modifierFlags:0
+                         timestamp:source_event.timestamp
+                      windowNumber:source_event.windowNumber
+                           context:nil
+                        characters:@""
+       charactersIgnoringModifiers:@""
+                         isARepeat:source_event.isARepeat
+                           keyCode:kVK_ContextualMenu];
+}
+
 // Extract underline information from an attributed string. Inspired by
 // `extractUnderlines` in
 // https://github.com/WebKit/WebKit/blob/main/Source/WebKitLegacy/mac/WebView/WebHTMLView.mm
@@ -1211,6 +1224,22 @@ static NSWindow* __weak _deferredResignKeyWindow;
   // equivalent that Cocoa uses for toggling the input language. In this case,
   // that's actually a good thing, though -- see http://crbug.com/26115 .)
   return YES;
+}
+
+- (void)contextMenuKeyDown:(NSEvent*)event {
+  // Preserve existing Ctrl+Return behavior while typing in inputs.
+  if (_textInputType == ui::TEXT_INPUT_TYPE_NONE) {
+    NSEvent* context_menu_event = CreateContextMenuKeyDownEvent(event);
+
+    if (context_menu_event) {
+      [self keyEvent:context_menu_event wasKeyEquivalent:NO];
+      return;
+    }
+  }
+
+  if (@available(macOS 15.0, *)) {
+    [super contextMenuKeyDown:event];
+  }
 }
 
 - (EventHandled)keyEvent:(NSEvent*)theEvent {
