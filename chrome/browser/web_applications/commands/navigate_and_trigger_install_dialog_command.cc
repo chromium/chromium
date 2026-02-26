@@ -16,6 +16,7 @@
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/locks/noop_lock.h"
 #include "chrome/browser/web_applications/locks/web_app_lock_manager.h"
+#include "chrome/browser/web_applications/scheduler/navigate_and_trigger_install_dialog_result.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -44,12 +45,12 @@ NavigateAndTriggerInstallDialogCommand::NavigateAndTriggerInstallDialogCommand(
     std::unique_ptr<webapps::WebAppUrlLoader> url_loader,
     std::unique_ptr<WebAppDataRetriever> data_retriever,
     Profile* profile)
-    : WebAppCommand<NoopLock, NavigateAndTriggerInstallDialogCommandResult>(
+    : WebAppCommand<NoopLock, NavigateAndTriggerInstallDialogResult>(
           "NavigateAndTriggerInstallDialogCommand",
           NoopLockDescription(),
           std::move(callback),
           /*args_for_shutdown=*/
-          NavigateAndTriggerInstallDialogCommandResult::kShutdown),
+          NavigateAndTriggerInstallDialogResult::kShutdown),
       install_url_(install_url),
       origin_url_(origin_url),
       is_renderer_initiated_(is_renderer_initiated),
@@ -92,9 +93,8 @@ void NavigateAndTriggerInstallDialogCommand::StartWithLock(
     // Browser may be shutting down.
     // TODO(b/331691742): Avoid starting commands when the browser is shutting
     // down.
-    CompleteAndSelfDestruct(
-        CommandResult::kFailure,
-        NavigateAndTriggerInstallDialogCommandResult::kFailure);
+    CompleteAndSelfDestruct(CommandResult::kFailure,
+                            NavigateAndTriggerInstallDialogResult::kFailure);
     return;
   }
   web_contents_ = new_tab->GetWeakPtr();
@@ -110,15 +110,13 @@ void NavigateAndTriggerInstallDialogCommand::OnUrlLoaded(
   GetMutableDebugValue().Set("WebAppUrlLoader::Result", base::ToString(result));
   if (IsWebContentsDestroyed()) {
     GetMutableDebugValue().Set("web_contents_destroyed", true);
-    CompleteAndSelfDestruct(
-        CommandResult::kSuccess,
-        NavigateAndTriggerInstallDialogCommandResult::kFailure);
+    CompleteAndSelfDestruct(CommandResult::kSuccess,
+                            NavigateAndTriggerInstallDialogResult::kFailure);
     return;
   }
   if (result != webapps::WebAppUrlLoaderResult::kUrlLoaded) {
-    CompleteAndSelfDestruct(
-        CommandResult::kFailure,
-        NavigateAndTriggerInstallDialogCommandResult::kFailure);
+    CompleteAndSelfDestruct(CommandResult::kFailure,
+                            NavigateAndTriggerInstallDialogResult::kFailure);
     return;
   }
   data_retriever_->CheckInstallabilityAndRetrieveManifest(
@@ -136,15 +134,13 @@ void NavigateAndTriggerInstallDialogCommand::OnInstallabilityChecked(
                              GetErrorMessage(error_code));
   if (IsWebContentsDestroyed()) {
     GetMutableDebugValue().Set("web_contents_destroyed", true);
-    CompleteAndSelfDestruct(
-        CommandResult::kSuccess,
-        NavigateAndTriggerInstallDialogCommandResult::kFailure);
+    CompleteAndSelfDestruct(CommandResult::kSuccess,
+                            NavigateAndTriggerInstallDialogResult::kFailure);
     return;
   }
   if (error_code != webapps::InstallableStatusCode::NO_ERROR_DETECTED) {
-    CompleteAndSelfDestruct(
-        CommandResult::kFailure,
-        NavigateAndTriggerInstallDialogCommandResult::kFailure);
+    CompleteAndSelfDestruct(CommandResult::kFailure,
+                            NavigateAndTriggerInstallDialogResult::kFailure);
     return;
   }
   CHECK(opt_manifest);
@@ -162,9 +158,8 @@ void NavigateAndTriggerInstallDialogCommand::OnAppLockGranted() {
 
   if (IsWebContentsDestroyed()) {
     GetMutableDebugValue().Set("web_contents_destroyed", true);
-    CompleteAndSelfDestruct(
-        CommandResult::kSuccess,
-        NavigateAndTriggerInstallDialogCommandResult::kFailure);
+    CompleteAndSelfDestruct(CommandResult::kSuccess,
+                            NavigateAndTriggerInstallDialogResult::kFailure);
     return;
   }
   CHECK(!app_id_.empty());
@@ -193,14 +188,13 @@ void NavigateAndTriggerInstallDialogCommand::OnAppLockGranted() {
     // went wrong, this is still considered a success.
     CompleteAndSelfDestruct(
         CommandResult::kSuccess,
-        NavigateAndTriggerInstallDialogCommandResult::kAlreadyInstalled);
+        NavigateAndTriggerInstallDialogResult::kAlreadyInstalled);
     return;
   }
   ui_manager_->TriggerInstallDialog(web_contents_.get(), source_,
                                     base::DoNothing());
-  CompleteAndSelfDestruct(
-      CommandResult::kSuccess,
-      NavigateAndTriggerInstallDialogCommandResult::kDialogShown);
+  CompleteAndSelfDestruct(CommandResult::kSuccess,
+                          NavigateAndTriggerInstallDialogResult::kDialogShown);
 }
 
 }  // namespace web_app

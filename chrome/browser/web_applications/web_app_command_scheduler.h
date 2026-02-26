@@ -22,6 +22,7 @@
 #include "chrome/browser/web_applications/scheduler/fetch_installability_for_chrome_management_result.h"
 #include "chrome/browser/web_applications/scheduler/install_migrate_to_app_result.h"
 #include "chrome/browser/web_applications/scheduler/manifest_silent_update_result.h"
+#include "chrome/browser/web_applications/scheduler/navigate_and_trigger_install_dialog_result.h"
 #include "chrome/browser/web_applications/scheduler/web_app_install_from_migrate_from_field_result.h"
 #include "chrome/browser/web_applications/ui_manager/update_dialog_types.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
@@ -289,9 +290,6 @@ class WebAppCommandScheduler {
   // command was able to trigger the install dialog. This opens a new tab,
   // navigates to `install_url`, and if the site is installable, it triggers
   // the install dialog for the user.
-  using NavigateAndTriggerInstallDialogCommandCallback =
-      base::OnceCallback<void(
-          NavigateAndTriggerInstallDialogCommandResult result)>;
   void ScheduleNavigateAndTriggerInstallDialog(
       const GURL& install_url,
       const GURL& origin_url,

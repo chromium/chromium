@@ -9,6 +9,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
+#include "chrome/browser/web_applications/scheduler/navigate_and_trigger_install_dialog_result.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/test/base/chrome_test_utils.h"
@@ -43,9 +44,7 @@ IN_PROC_BROWSER_TEST_F(NavigateAndTriggerInstallDialogCommandTest,
   provider().scheduler().ScheduleNavigateAndTriggerInstallDialog(
       test_url, kOriginUrl, /*is_renderer_initiated=*/true,
       base::BindLambdaForTesting(
-          [&](NavigateAndTriggerInstallDialogCommandResult result) {
-            loop.Quit();
-          }));
+          [&](NavigateAndTriggerInstallDialogResult result) { loop.Quit(); }));
   navigation_observer.Wait();
   // The browser should now have 2 tabs.
   EXPECT_EQ(2, browser()->tab_strip_model()->count());
@@ -69,9 +68,8 @@ IN_PROC_BROWSER_TEST_F(NavigateAndTriggerInstallDialogCommandTest,
   provider().scheduler().ScheduleNavigateAndTriggerInstallDialog(
       test_url, kOriginUrl, /*is_renderer_initiated=*/true,
       base::BindLambdaForTesting(
-          [&](NavigateAndTriggerInstallDialogCommandResult result) {
-            EXPECT_EQ(result,
-                      NavigateAndTriggerInstallDialogCommandResult::kFailure);
+          [&](NavigateAndTriggerInstallDialogResult result) {
+            EXPECT_EQ(result, NavigateAndTriggerInstallDialogResult::kFailure);
             loop.Quit();
           }));
   navigation_observer.Wait();
@@ -92,9 +90,8 @@ IN_PROC_BROWSER_TEST_F(NavigateAndTriggerInstallDialogCommandTest,
   provider().scheduler().ScheduleNavigateAndTriggerInstallDialog(
       test_url, kOriginUrl, /*is_renderer_initiated=*/true,
       base::BindLambdaForTesting(
-          [&](NavigateAndTriggerInstallDialogCommandResult result) {
-            EXPECT_EQ(result,
-                      NavigateAndTriggerInstallDialogCommandResult::kFailure);
+          [&](NavigateAndTriggerInstallDialogResult result) {
+            EXPECT_EQ(result, NavigateAndTriggerInstallDialogResult::kFailure);
             loop.Quit();
           }));
 
@@ -113,9 +110,9 @@ IN_PROC_BROWSER_TEST_F(NavigateAndTriggerInstallDialogCommandTest,
   provider().scheduler().ScheduleNavigateAndTriggerInstallDialog(
       test_url, kOriginUrl, /*is_renderer_initiated=*/true,
       base::BindLambdaForTesting(
-          [&](NavigateAndTriggerInstallDialogCommandResult result) {
-            EXPECT_EQ(result, NavigateAndTriggerInstallDialogCommandResult::
-                                  kAlreadyInstalled);
+          [&](NavigateAndTriggerInstallDialogResult result) {
+            EXPECT_EQ(result,
+                      NavigateAndTriggerInstallDialogResult::kAlreadyInstalled);
             loop.Quit();
           }));
 
@@ -132,10 +129,9 @@ IN_PROC_BROWSER_TEST_F(NavigateAndTriggerInstallDialogCommandTest,
   provider().scheduler().ScheduleNavigateAndTriggerInstallDialog(
       test_url, kOriginUrl, /*is_renderer_initiated=*/true,
       base::BindLambdaForTesting(
-          [&](NavigateAndTriggerInstallDialogCommandResult result) {
-            EXPECT_EQ(
-                result,
-                NavigateAndTriggerInstallDialogCommandResult::kDialogShown);
+          [&](NavigateAndTriggerInstallDialogResult result) {
+            EXPECT_EQ(result,
+                      NavigateAndTriggerInstallDialogResult::kDialogShown);
             loop.Quit();
           }));
 
