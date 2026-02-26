@@ -1621,8 +1621,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.WelcomeScreen.AcceptChromeVoxHint" enum="BooleanEnabled"
-    expires_after="2026-04-01">
-  <owner>akihiroota@google.com</owner>
+    expires_after="2027-03-01">
+  <owner>katie@chromium.org</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
     Whether or not the user accepted the ChromeVox hint. Recorded when the user
@@ -1631,8 +1631,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.WelcomeScreen.ChromeVoxHintSpokenSuccess"
-    enum="BooleanEnabled" expires_after="2026-04-01">
-  <owner>akihiroota@google.com</owner>
+    enum="BooleanEnabled" expires_after="2027-03-01">
+  <owner>katie@chromium.org</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
     Whether or not the ChromeVox hint was successfully spoken. Recorded when the

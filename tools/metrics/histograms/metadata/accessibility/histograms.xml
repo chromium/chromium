@@ -1025,7 +1025,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Accessibility.ChromeVox.StartUpSpeechDelay" units="ms"
     expires_after="2026-06-01">
-  <owner>akihiroota@chromium.org</owner>
+  <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
     The duration of time from when ChromeVox was first loaded to when the
@@ -1132,7 +1132,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Accessibility.CrosDictation.MacroFailed"
     enum="CrosDictationMacroName" expires_after="2026-06-01">
-  <owner>akihiroota@chromium.org</owner>
+  <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
     Recorded whenever Dictation fails to perform a macro. Warning: this
@@ -1142,14 +1142,14 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Accessibility.CrosDictation.MacroRecognized"
     enum="CrosDictationMacroName" expires_after="2026-06-01">
-  <owner>akihiroota@chromium.org</owner>
+  <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>Recorded whenever Dictation recognizes a macro.</summary>
 </histogram>
 
 <histogram name="Accessibility.CrosDictation.MacroSucceeded"
     enum="CrosDictationMacroName" expires_after="2026-06-01">
-  <owner>akihiroota@chromium.org</owner>
+  <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
     Recorded whenever Dictation successfully performs a macro. Warning: this
@@ -1159,7 +1159,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Accessibility.CrosDictation.PumpkinSucceeded"
     enum="BooleanUsage" expires_after="2026-06-01">
-  <owner>akihiroota@chromium.org</owner>
+  <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
     Records whether Pumpkin successfully parsed a command. This histogram is
@@ -1187,7 +1187,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Accessibility.CrosDictation.UsedPumpkin" enum="BooleanUsage"
     expires_after="2026-06-01">
-  <owner>akihiroota@chromium.org</owner>
+  <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
     Records whether Pumpkin was used to parse a command. If Pumpkin was not
@@ -1710,7 +1710,7 @@ even if they fit the naming pattern. -->
 
 <histogram name="Accessibility.DlcInstallerFaceGazeAssetsInstallationDuration"
     units="ms" expires_after="2026-08-02">
-  <owner>akihiroota@chromium.org</owner>
+  <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
     The FaceGaze assets DLC installation is triggered when one of the features
@@ -1723,7 +1723,7 @@ even if they fit the naming pattern. -->
 
 <histogram name="Accessibility.DlcInstallerFaceGazeAssetsSuccess"
     enum="BooleanSuccess" expires_after="2026-06-01">
-  <owner>akihiroota@chromium.org</owner>
+  <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
     The FaceGaze assets DLC installation is triggered when one of the features
@@ -1735,7 +1735,7 @@ even if they fit the naming pattern. -->
 
 <histogram name="Accessibility.DlcInstallerPumpkinInstallationDuration"
     units="ms" expires_after="2026-06-01">
-  <owner>akihiroota@chromium.org</owner>
+  <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
     The Pumpkin DLC installation is triggered when one of the features using the
@@ -1805,7 +1805,7 @@ even if they fit the naming pattern. -->
 
 <histogram name="Accessibility.FaceGaze.AverageFaceLandmarkerLatency"
     units="ms" expires_after="2026-08-02">
-  <owner>akihiroota@chromium.org</owner>
+  <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
     The time it takes for the FaceLandmarker API to process a single video
@@ -4355,7 +4355,7 @@ even if they fit the naming pattern. -->
 
 <histogram name="PumpkinInstaller.InstallationSuccess" enum="BooleanSuccess"
     expires_after="2025-05-04">
-  <owner>akihiroota@chromium.org</owner>
+  <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
     Pumpkin installation is triggered when one of the features using Pumpkin
@@ -4445,7 +4445,7 @@ even if they fit the naming pattern. -->
 <histogram name="TextToSpeech.ExtensionNetworkSpeechSynthesis.Playback"
     enum="AudioPlayback" expires_after="2026-06-01">
   <owner>dtseng@chromium.org</owner>
-  <owner>akihiroota@chromium.org</owner>
+  <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
     Counts when playback starts and stops on the audio element via the
@@ -4455,7 +4455,7 @@ even if they fit the naming pattern. -->
 
 <histogram name="TextToSpeech.Settings.GetVoiceBytes"
     enum="TextToSpeechGetVoiceBytes" expires_after="2026-06-01">
-  <owner>akihiroota@chromium.org</owner>
+  <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
     When the user requests a download of a text-to-speech voice, records the
