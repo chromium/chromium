@@ -9,6 +9,9 @@ import("//build/config/sysroot.gni")
 declare_args() {
   enable_linux_installer =
       is_linux && !is_component_build && use_sysroot && !using_sanitizer
+
+  # Controls the number of threads used to run xz while producing a Debian package.
+  linux_debian_pkg_xz_nthreads = 0
 }
 
 enable_mac_installer = is_mac && !is_chrome_for_testing

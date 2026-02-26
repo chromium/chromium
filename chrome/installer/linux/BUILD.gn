@@ -10,6 +10,7 @@ import("//build/linux/strip_binary.gni")
 import("//build/timestamp.gni")
 import("//build/util/lastchange.gni")
 import("//build/util/process_version.gni")
+import("//chrome/installer/installers.gni")
 import("//chrome/version.gni")
 import("//components/optimization_guide/features.gni")
 import("//third_party/angle/gni/angle.gni")
@@ -529,6 +530,8 @@ template("linux_package") {
       rebase_path(sysroot, root_build_dir),
       "-t",
       target_os,
+      "--xz-nthreads",
+      "$linux_debian_pkg_xz_nthreads",
     ]
     if (is_official_build) {
       args += [ "-f" ]

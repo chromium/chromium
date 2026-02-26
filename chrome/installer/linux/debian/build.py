@@ -19,6 +19,13 @@ import installer
 def parse_args() -> argparse.Namespace:
     parser = installer.parse_common_args()
     parser.add_argument("-s", "--sysroot", required=True, help="sysroot")
+    parser.add_argument(
+        "-T",
+        "--xz-nthreads",
+        required=False,
+        help="Number of threads to run xz",
+        type=int,
+        default=0)
     return parser.parse_args()
 
 
@@ -203,7 +210,7 @@ def main() -> None:
             installer.run_command([
                 "xz",
                 "-z9",
-                "-T0",
+                f"-T{args.xz_nthreads}",
                 "--lzma2=dict=256MiB",
                 str(tmp_file_dir / "data.tar"),
             ])
