@@ -326,6 +326,7 @@ class CORE_EXPORT CSSSelector {
     kPseudoStart,
     kPseudoState,
     kPseudoTarget,
+    kPseudoTextField,
     kPseudoToolFormActive,
     kPseudoToolSubmitActive,
     kPseudoUnknown,

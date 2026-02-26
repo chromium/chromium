@@ -472,6 +472,9 @@ void HTMLInputElement::UpdateType(const AtomicString& type_attribute_value) {
   if (input_type_->ShouldRespectListAttribute() !=
       new_type->ShouldRespectListAttribute())
     PseudoStateChanged(CSSSelector::kPseudoHasDatalist);
+  if (input_type_->IsTextFieldInputType() != new_type->IsTextFieldInputType()) {
+    PseudoStateChanged(CSSSelector::kPseudoTextField);
+  }
 
   bool placeholder_changed =
       input_type_->SupportsPlaceholder() != new_type->SupportsPlaceholder();

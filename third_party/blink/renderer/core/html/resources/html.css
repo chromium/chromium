@@ -2351,11 +2351,11 @@ select:-internal-select-has-slotted-button::-internal-select-button-slot {
 }
 
 @supports blink-feature(CustomizableCombobox) {
-  /* This should be set as an inline style in DataListIndicatorElement, but
-   * -internal-auto-base() can only be used in the UA stylesheet. The series of
-   * :not() selectors are here in order to match the text input type, which can
-   * be type=text or any other invalid type attribute. */
-  input:not([type="date" i]):not([type="datetime-local" i]):not([type="month" i]):not([type="week" i]):not([type="time" i])::-webkit-calendar-picker-indicator {
+  /* This would be set as an inline style in DataListIndicatorElement, but
+   * -internal-auto-base() can only be used in the UA stylesheet.
+   * :-internal-text-field is needed for this because many attribute selectors
+   * would not be performant enough. */
+  input:-internal-text-field::-webkit-calendar-picker-indicator {
     display: -internal-auto-base(list-item, none);
   }
 

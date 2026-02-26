@@ -510,6 +510,7 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
     case kPseudoTargetCurrent:
     case kPseudoTargetBefore:
     case kPseudoTargetAfter:
+    case kPseudoTextField:
     case kPseudoToolFormActive:
     case kPseudoToolSubmitActive:
     case kPseudoUnknown:
@@ -592,6 +593,7 @@ constexpr static NameToPseudoStruct kPseudoTypeWithoutArgumentsMap[] = {
      CSSSelector::kPseudoHostHasNonAutoAppearance},
     {"-internal-spatial-navigation-focus",
      CSSSelector::kPseudoSpatialNavigationFocus},
+    {"-internal-text-field", CSSSelector::kPseudoTextField},
     {"-internal-video-persistent", CSSSelector::kPseudoVideoPersistent},
     {"-internal-video-persistent-ancestor",
      CSSSelector::kPseudoVideoPersistentAncestor},
@@ -1093,6 +1095,7 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
     case kPseudoTargetCurrent:
     case kPseudoTargetBefore:
     case kPseudoTargetAfter:
+    case kPseudoTextField:
     case kPseudoUnknown:
     case kPseudoUnparsed:
     case kPseudoUserInvalid:
@@ -1869,6 +1872,7 @@ bool CSSSelector::IsAllowedAfterPart() const {
     case kPseudoTargetCurrent:
     case kPseudoTargetBefore:
     case kPseudoTargetAfter:
+    case kPseudoTextField:
     case kPseudoToolFormActive:
     case kPseudoToolSubmitActive:
     case kPseudoVideoPersistent:
@@ -2220,6 +2224,7 @@ bool CSSSelector::SupportsPseudoStateChange(PseudoType type) {
     case CSSSelector::kPseudoTargetAfter:
     case CSSSelector::kPseudoTargetBefore:
     case CSSSelector::kPseudoTargetCurrent:
+    case CSSSelector::kPseudoTextField:
     case CSSSelector::kPseudoToolFormActive:
     case CSSSelector::kPseudoToolSubmitActive:
     case CSSSelector::kPseudoUserInvalid:

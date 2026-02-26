@@ -823,6 +823,7 @@ SelectorChecker::FeaturelessMatch SelectorChecker::MatchShadowHost(
     case CSSSelector::kPseudoTargetCurrent:
     case CSSSelector::kPseudoTargetBefore:
     case CSSSelector::kPseudoTargetAfter:
+    case CSSSelector::kPseudoTextField:
     case CSSSelector::kPseudoToolFormActive:
     case CSSSelector::kPseudoToolSubmitActive:
     case CSSSelector::kPseudoViewTransition:
@@ -2846,6 +2847,12 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
                    : order_result == 1;
       }
       break;
+    }
+    case CSSSelector::kPseudoTextField: {
+      if (auto* input = DynamicTo<HTMLInputElement>(element)) {
+        return input->IsTextField();
+      }
+      return false;
     }
     case CSSSelector::kPseudoIndeterminate: {
       probe::ForcePseudoState(&element, CSSSelector::kPseudoIndeterminate,
