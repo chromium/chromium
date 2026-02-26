@@ -161,6 +161,14 @@ class SessionsEventRouter : public sessions::TabRestoreServiceObserver {
       sessions::TabRestoreService* service) override;
 
  private:
+#if BUILDFLAG(IS_ANDROID)
+  // Callback for when the recently closed list is updated on the Java side.
+  void OnRecentlyClosedUpdated(int64_t j_browser_context);
+#endif  // BUILDFLAG(IS_ANDROID)
+
+  // Broadcasts the API OnChanged event to JS.
+  static void BroadcastOnChangedEvent(Profile* profile);
+
   raw_ptr<Profile> profile_;
 
   // TabRestoreService that we are observing.

@@ -59,6 +59,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/api_test_utils.h"
+#include "extensions/browser/test_event_router_observer.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_builder.h"
 #include "google_apis/gaia/gaia_id.h"
@@ -899,6 +900,41 @@ IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, CheckActiveTabStatus) {
   ASSERT_TRUE(tab_active_status) << "Active state for the tab is missing.";
 
   EXPECT_TRUE(*tab_active_status) << "The selected tab should be active.";
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, OnChangedEvent) {
+  // Simulate a listener being added (otherwise events won't fire).
+  EventListenerInfo info(api::sessions::OnChanged::kEventName, "extension_id",
+                         GURL(), nullptr, profile());
+  SessionsAPI::GetFactoryInstance()->Get(profile())->OnListenerAdded(info);
+
+  // Open a second window.
+  BrowserWindowInterface* browser2 =
+      CreateBrowserWindowWithType(BrowserWindowInterface::TYPE_NORMAL);
+
+  // Platforms like Win/Mac/Linux create browsers with no tabs, whereas Android
+  // creates browsers with a single tab. Ensure there is one tab.
+  auto* tab_list2 = TabListInterface::From(browser2);
+  if (tab_list2->GetTabCount() == 0) {
+    tab_list2->OpenTab(GURL("about:blank"), /*index=*/-1);
+  }
+  ASSERT_EQ(1, tab_list2->GetTabCount());
+
+  // Navigate the tab, otherwise window close does not persist it in the tab
+  // restore service.
+  content::WebContents* contents0 = tab_list2->GetTab(0)->GetContents();
+  ASSERT_TRUE(NavigateToURL(contents0, GURL("chrome://version/")));
+
+  // Listen for events.
+  TestEventRouterObserver event_observer(EventRouter::Get(profile()));
+
+  // Close the second window and wait for it to close.
+  BrowserClosedWaiter waiter(browser2);
+  browser2->GetWindow()->Close();
+  waiter.Wait();
+
+  // An OnChanged event should fire.
+  event_observer.WaitForEventWithName(api::sessions::OnChanged::kEventName);
 }
 
 }  // namespace extensions

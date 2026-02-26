@@ -13,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/functional/callback.h"
 #include "base/i18n/rtl.h"
 #include "base/lazy_instance.h"
 #include "base/memory/raw_ptr.h"
@@ -1049,30 +1050,68 @@ ExtensionFunction::ResponseAction SessionsRestoreFunction::Run() {
 SessionsEventRouter::SessionsEventRouter(Profile* profile)
     : profile_(profile),
       tab_restore_service_(TabRestoreServiceFactory::GetForProfile(profile)) {
+  CHECK(profile_);
   // TabRestoreServiceFactory::GetForProfile() can return nullptr (i.e., when in
   // incognito mode)
   if (tab_restore_service_) {
     tab_restore_service_->LoadTabsFromLastSession();
     tab_restore_service_->AddObserver(this);
   }
+
+#if BUILDFLAG(IS_ANDROID)
+  JNIEnv* env = base::android::AttachCurrentThread();
+  // Unretained is safe because the callback is cleared during destruction.
+  auto callback = base::BindRepeating(
+      &SessionsEventRouter::OnRecentlyClosedUpdated, base::Unretained(this));
+  // Register a callback for updates to Java RecentlyClosedEntriesManager.
+  // Limit the updates to the current profile.
+  Java_RecentlyClosedEntriesManager_setNativeUpdatedCallback(
+      env, profile_, base::android::ToJniCallback(env, std::move(callback)));
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 SessionsEventRouter::~SessionsEventRouter() {
   if (tab_restore_service_) {
     tab_restore_service_->RemoveObserver(this);
   }
+
+#if BUILDFLAG(IS_ANDROID)
+  // Clear the Java callback for this profile.
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_RecentlyClosedEntriesManager_setNativeUpdatedCallback(env, profile_,
+                                                             nullptr);
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 void SessionsEventRouter::TabRestoreServiceChanged(
     sessions::TabRestoreService* service) {
-  EventRouter::Get(profile_)->BroadcastEvent(std::make_unique<Event>(
-      events::SESSIONS_ON_CHANGED, api::sessions::OnChanged::kEventName,
-      base::ListValue()));
+  BroadcastOnChangedEvent(profile_);
 }
 
 void SessionsEventRouter::TabRestoreServiceDestroyed(
     sessions::TabRestoreService* service) {
   tab_restore_service_ = nullptr;
+}
+
+#if BUILDFLAG(IS_ANDROID)
+void SessionsEventRouter::OnRecentlyClosedUpdated(int64_t j_browser_context) {
+  content::BrowserContext* browser_context =
+      reinterpret_cast<content::BrowserContext*>(j_browser_context);
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  // If something went wrong on the Java side, don't broadcast.
+  if (!profile) {
+    return;
+  }
+  BroadcastOnChangedEvent(profile);
+}
+#endif  // BUILDFLAG(IS_ANDROID)
+
+// static
+void SessionsEventRouter::BroadcastOnChangedEvent(Profile* profile) {
+  CHECK(profile);
+  EventRouter::Get(profile)->BroadcastEvent(std::make_unique<Event>(
+      events::SESSIONS_ON_CHANGED, api::sessions::OnChanged::kEventName,
+      base::ListValue()));
 }
 
 SessionsAPI::SessionsAPI(content::BrowserContext* context)

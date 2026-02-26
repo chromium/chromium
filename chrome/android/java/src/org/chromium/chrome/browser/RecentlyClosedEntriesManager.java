@@ -9,9 +9,11 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 
 import org.chromium.base.Callback;
 import org.chromium.base.JniOnceCallback;
+import org.chromium.base.JniRepeatingCallback;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.task.PostTask;
@@ -60,6 +62,7 @@ public class RecentlyClosedEntriesManager {
     private static @Nullable Integer sMaxEntriesForTests;
 
     private final TabModel mRegularTabModel;
+    private final Profile mProfile;
 
     private final MultiInstanceManager mMultiInstanceManager;
 
@@ -67,6 +70,9 @@ public class RecentlyClosedEntriesManager {
 
     private List<RecentlyClosedEntry> mRecentlyClosedEntries = new ArrayList<>();
     private @Nullable Callback<List<RecentlyClosedEntry>> mEntriesUpdatedCallback;
+
+    /** Callback to native for updates to the entry list. */
+    private @Nullable JniRepeatingCallback<Long> mNativeUpdatedCallback;
 
     /**
      * Helper class for the getRecentlyClosedWindowInternal() method. Calls a callback when the tab
@@ -129,12 +135,11 @@ public class RecentlyClosedEntriesManager {
         mMultiInstanceManager = multiInstanceManager;
         mRegularTabModel = tabModelSelector.getModel(/* incognito= */ false);
         // TODO: Move this profile extraction logic inside RecentlyClosedTabManager.
-        Profile profile = mRegularTabModel.getProfile();
-        assumeNonNull(profile);
+        mProfile = assumeNonNull(mRegularTabModel.getProfile());
         mRecentlyClosedTabManager =
                 sRecentlyClosedTabManagerForTests != null
                         ? sRecentlyClosedTabManagerForTests
-                        : new RecentlyClosedBridge(profile, tabModelSelector);
+                        : new RecentlyClosedBridge(mProfile, tabModelSelector);
         mRecentlyClosedTabManager.setEntriesUpdatedRunnable(this::updateRecentlyClosedEntries);
     }
 
@@ -143,6 +148,26 @@ public class RecentlyClosedEntriesManager {
      */
     public List<RecentlyClosedEntry> getRecentlyClosedEntries() {
         return mRecentlyClosedEntries;
+    }
+
+    /**
+     * Sets a callback to be fired on updates. Callbacks are scoped to the provided {@code profile}.
+     * The callback is fired with the native browser context of the RecentlyClosedEntriesManager
+     * being updated.
+     */
+    @CalledByNative
+    public static void setNativeUpdatedCallback(
+            @JniType("Profile*") Profile profile, @Nullable JniRepeatingCallback<Long> callback) {
+        // All managers are notified about each window update, so just use the first one that
+        // matches the browser context.
+        Set<RecentlyClosedEntriesManager> managers =
+                RecentlyClosedEntriesManagerTrackerImpl.getInstance().getManagers();
+        for (RecentlyClosedEntriesManager manager : managers) {
+            if (manager.mProfile == profile) {
+                manager.mNativeUpdatedCallback = callback;
+                return;
+            }
+        }
     }
 
     /**
@@ -434,6 +459,10 @@ public class RecentlyClosedEntriesManager {
         if (mEntriesUpdatedCallback != null) {
             mEntriesUpdatedCallback.onResult(mRecentlyClosedEntries);
         }
+
+        if (mNativeUpdatedCallback != null) {
+            mNativeUpdatedCallback.onResult(mProfile.getNativeBrowserContextPointer());
+        }
     }
 
     /**
@@ -446,6 +475,10 @@ public class RecentlyClosedEntriesManager {
         removeWindowEntries(Collections.singletonList(instanceId));
         if (mEntriesUpdatedCallback != null) {
             mEntriesUpdatedCallback.onResult(mRecentlyClosedEntries);
+        }
+
+        if (mNativeUpdatedCallback != null) {
+            mNativeUpdatedCallback.onResult(mProfile.getNativeBrowserContextPointer());
         }
     }
 
@@ -467,6 +500,11 @@ public class RecentlyClosedEntriesManager {
         }
 
         mEntriesUpdatedCallback = null;
+
+        if (mNativeUpdatedCallback != null) {
+            mNativeUpdatedCallback.destroy();
+            mNativeUpdatedCallback = null;
+        }
     }
 
     private void getRecentlyClosedTabsAndWindows(
