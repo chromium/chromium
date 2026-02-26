@@ -333,6 +333,18 @@ struct COMPONENT_EXPORT(SQL) DatabaseOptions {
     return *this;
   }
 
+  // If true, the database will aggressively release its cached memory after
+  // writes are committed. This historically mitigated memory usage by releasing
+  // dirty cache pages that are no longer needed (especially in memory-mapped
+  // mode where the OS manages the cache). If false, memory consumption may
+  // increase, and callers should ensure that they configure `set_cache_size`
+  // appropriately to constrain memory growth. True by default.
+  DatabaseOptions& set_release_memory_after_writes(
+      bool release_memory_after_writes) {
+    release_memory_after_writes_ = release_memory_after_writes;
+    return *this;
+  }
+
  private:
   friend class Database;
   FRIEND_TEST_ALL_PREFIXES(DatabaseOptionsTest,
@@ -342,6 +354,7 @@ struct COMPONENT_EXPORT(SQL) DatabaseOptions {
 
   bool exclusive_locking_ = true;
   bool exclusive_database_file_lock_ = false;
+  bool release_memory_after_writes_ = true;
   bool wal_mode_ = false;
   bool flush_to_media_ = false;
   int page_size_ = kDefaultPageSize;

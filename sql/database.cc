@@ -753,6 +753,10 @@ void Database::ReleaseCacheMemoryIfNeeded(bool implicit_change_performed) {
     return;
   }
 
+  if (!options_.release_memory_after_writes_) {
+    return;
+  }
+
   TRACE_EVENT0("sql", "Database::ReleaseCacheMemoryIfNeeded");
   // The database could have been closed during a transaction as part of error
   // recovery.

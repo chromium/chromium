@@ -24,6 +24,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
@@ -54,6 +55,7 @@
 #include "sql/database_memory_dump_provider.h"
 #include "sql/meta_table.h"
 #include "sql/recovery.h"
+#include "sql/sqlite_result_code.h"
 #include "sql/statement.h"
 #include "sql/statement_id.h"
 #include "sql/test/scoped_error_expecter.h"
@@ -200,6 +202,35 @@ class SQLDatabaseTest : public Test, public WithParamInterface<bool> {
 TEST_P(SQLDatabaseTest, Execute_ValidStatement) {
   ASSERT_TRUE(db_->Execute("CREATE TABLE data(contents TEXT)"));
   EXPECT_EQ(SQLITE_OK, db_->GetErrorCode());
+}
+
+TEST_P(SQLDatabaseTest, ReleaseCacheMemoryIfNeeded) {
+  db_.reset();
+  ASSERT_TRUE(base::DeleteFile(db_path_));
+
+  auto run_test = [&](bool release_memory) -> int {
+    DatabaseOptions options = GetDBOptions();
+    options.set_release_memory_after_writes(release_memory);
+    Database db(options, test::kTestTag);
+    EXPECT_TRUE(db.Open(db_path_));
+    EXPECT_TRUE(db.Execute("CREATE TABLE data(contents TEXT)"));
+    for (int i = 0; i < 1000; ++i) {
+      EXPECT_TRUE(db.Execute("INSERT INTO data VALUES('Hello world')"));
+    }
+    int current_memory_usage = 0;
+    int highwater = 0;
+    CHECK_EQ(ToSqliteResultCode(sqlite3_status(
+                 SQLITE_STATUS_MEMORY_USED, &current_memory_usage, &highwater,
+                 /*resetFlag=*/0)),
+             SqliteResultCode::kOk);
+    return current_memory_usage;
+  };
+
+  const int memory_usage_without_release = run_test(false);
+  ASSERT_TRUE(base::DeleteFile(db_path_));
+  const int memory_usage_with_release = run_test(true);
+
+  EXPECT_LT(memory_usage_with_release, memory_usage_without_release);
 }
 
 TEST_P(SQLDatabaseTest, Execute_InvalidStatement) {
