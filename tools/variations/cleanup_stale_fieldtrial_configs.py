@@ -138,22 +138,25 @@ def main():
     studies = json.load(fin)
   print('Loaded config from', input_path)
 
-  bash_list_files = subprocess.Popen(['find', '.', '-type', 'f'],
-                                     stdout=subprocess.PIPE)
-  bash_code_files = subprocess.Popen(['grep', '-E', '\\.(h|cc)$'],
-                                     stdin=bash_list_files.stdout,
-                                     stdout=subprocess.PIPE)
-  bash_filtered_code_files = subprocess.Popen(
-      ('grep', '-Ev', '(/out/|/build/|/gen/)'),
-      stdin=bash_code_files.stdout,
-      stdout=subprocess.PIPE)
-  filtered_code_files = bash_filtered_code_files.stdout.read()
+  # Use single find command to get all files to scan for studies.
+  # For all files...
+  command = ['find', '.', '-type', 'f']
+  # except for the generated files...
+  command.extend(['-not', '-path', './out/*'])
+  command.extend(['-not', '-path', './build/*'])
+  command.extend(['-not', '-path', './gen/*'])
+  # pick headers, objective-c and c++ modules.
+  command.extend(
+      ['(', '-name', '*.h', '-o', '-name', '*.cc', '-o', '-name', '*.mm', ')'])
+
+  all_files = subprocess.Popen(command,
+                               stdout=subprocess.PIPE,
+                               stderr=subprocess.DEVNULL).stdout.read()
 
   threads = []
   clean_studies = {}
   for study_name, configs in studies.items():
-    args = (thread_limiter, clean_studies, study_name, configs,
-            filtered_code_files)
+    args = (thread_limiter, clean_studies, study_name, configs, all_files)
     threads.append(threading.Thread(target=thread_func, args=args))
 
   # Start all threads, then join all threads.
