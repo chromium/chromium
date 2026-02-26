@@ -11876,12 +11876,9 @@
             ]
         }
     ],
-    "GlicEntrypointVariations": [
+    "GlicEntrypointVariationsChromeOS": [
         {
             "platforms": [
-                "linux",
-                "mac",
-                "windows",
                 "chromeos"
             ],
             "experiments": [
