@@ -301,7 +301,10 @@ SqlPersistentStore::Backend::Backend(
                   // This callback is only called while the `db_` instance
                   // is alive, and never during destructor, so it's safe
                   // to use base::Unretained.
-                  base::Unretained(this))),
+                  base::Unretained(this)))
+              .set_release_memory_after_writes(
+                  net::features::kSqlDiskCacheReleaseMemoryAfterWrites.Get())
+              .set_cache_size(net::features::kSqlDiskCacheCacheSize.Get()),
           // Tag for metrics collection.
           sql::Database::Tag("HttpCacheDiskCache")) {
 }

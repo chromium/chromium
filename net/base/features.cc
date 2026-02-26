@@ -505,6 +505,16 @@ BASE_FEATURE_PARAM(bool,
                    &kDiskCacheBackendExperiment,
                    "SqlDiskCacheSizeAndPriorityAwareEviction",
                    true);
+BASE_FEATURE_PARAM(bool,
+                   kSqlDiskCacheReleaseMemoryAfterWrites,
+                   &kDiskCacheBackendExperiment,
+                   "SqlDiskCacheReleaseMemoryAfterWrites",
+                   true);
+BASE_FEATURE_PARAM(int,
+                   kSqlDiskCacheCacheSize,
+                   &kDiskCacheBackendExperiment,
+                   "SqlDiskCacheCacheSize",
+                   0);
 #endif  // ENABLE_DISK_CACHE_SQL_BACKEND
 
 BASE_FEATURE(kIgnoreHSTSForLocalhost, base::FEATURE_ENABLED_BY_DEFAULT);

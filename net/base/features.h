@@ -566,6 +566,12 @@ NET_EXPORT BASE_DECLARE_FEATURE_PARAM(bool, kSqlDiskCacheSerialCheckpoint);
 NET_EXPORT BASE_DECLARE_FEATURE_PARAM(
     bool,
     kSqlDiskCacheSizeAndPriorityAwareEviction);
+// Whether to aggressively release SQLite's cached memory after writes.
+NET_EXPORT BASE_DECLARE_FEATURE_PARAM(bool,
+                                      kSqlDiskCacheReleaseMemoryAfterWrites);
+// The size of in-memory cache of SQLite database. 0 invokes SQLite's default.
+// See https://sqlite.org/pragma.html#pragma_cache_size for more details.
+NET_EXPORT BASE_DECLARE_FEATURE_PARAM(int, kSqlDiskCacheCacheSize);
 #endif  // ENABLE_DISK_CACHE_SQL_BACKEND
 
 // If enabled, ignore Strict-Transport-Security for [*.]localhost hosts.
