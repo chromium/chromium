@@ -14,7 +14,16 @@
 
 namespace base {
 class DictValue;
-}
+}  // namespace base
+
+namespace blink {
+enum class PermissionType;
+}  // namespace blink
+
+namespace content {
+struct PermissionResult;
+class RenderFrameHost;
+}  // namespace content
 
 namespace guest_view {
 
@@ -25,12 +34,16 @@ enum class PageHandler_PermissionResponseAction;
 class SlimWebViewGuest;
 
 enum class SlimWebViewPermissionType {
+  kGeolocation,
   kMedia,
 };
 
 class SlimWebViewPermissionHelper {
  public:
   using PermissionResponseAction = mojom::PageHandler_PermissionResponseAction;
+
+  static SlimWebViewPermissionHelper* FromRenderFrameHost(
+      content::RenderFrameHost* render_frame_host);
 
   enum class SetPermissionResult {
     kInvalid,
@@ -43,6 +56,10 @@ class SlimWebViewPermissionHelper {
   explicit SlimWebViewPermissionHelper(SlimWebViewGuest* guest);
   ~SlimWebViewPermissionHelper();
 
+  void RequestGeolocationPermission(
+      const GURL& requesting_frame_url,
+      bool user_gesture,
+      base::OnceCallback<void(content::PermissionResult)> callback);
   void RequestMediaAccessPermission(const content::MediaStreamRequest& request,
                                     content::MediaResponseCallback callback);
   void RequestPermission(SlimWebViewPermissionType permission_type,
@@ -56,9 +73,17 @@ class SlimWebViewPermissionHelper {
   struct PermissionResponseInfo;
   using RequestMap = absl::flat_hash_map<int, PermissionResponseInfo>;
 
+  void OnGeolocationPermissionResponse(
+      bool user_gesture,
+      base::OnceCallback<void(content::PermissionResult)> callback,
+      bool allow);
   void OnMediaPermissionResponse(const content::MediaStreamRequest& request,
                                  content::MediaResponseCallback callback,
                                  bool allow);
+  void RequestEmbedderFramePermission(
+      bool user_gesture,
+      base::OnceCallback<void(content::PermissionResult)> callback,
+      blink::PermissionType permission_type);
 
   int next_request_id_ = kInstanceIDNone;
   RequestMap pending_requests_;

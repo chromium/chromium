@@ -100,6 +100,7 @@ export class NewWindowEvent extends Event {
 }
 
 export interface PermissionRequest {
+  url: string;
   allow(): void;
   deny(): void;
 }
@@ -123,7 +124,9 @@ export class PermissionRequestEvent extends Event {
     this.permission = args.getString('permission');
     this.requestId = args.getInt('requestId');
     this.guestInstanceId = guestInstanceId;
+    const requestInfo = args.getDict('requestInfo');
     this.request = {
+      url: requestInfo.getString('url'),
       allow: this.allow.bind(this),
       deny: this.deny.bind(this),
     };

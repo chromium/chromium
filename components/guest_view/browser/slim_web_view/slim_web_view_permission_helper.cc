@@ -10,6 +10,11 @@
 #include "components/guest_view/browser/slim_web_view/slim_web_view.mojom.h"
 #include "components/guest_view/browser/slim_web_view/slim_web_view_constants.h"
 #include "components/guest_view/browser/slim_web_view/slim_web_view_guest.h"
+#include "content/public/browser/browser_context.h"
+#include "content/public/browser/permission_controller.h"
+#include "content/public/browser/permission_descriptor_util.h"
+#include "content/public/browser/permission_request_description.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 
 namespace guest_view {
@@ -22,10 +27,20 @@ std::string SlimWebViewPermissionTypeToString(
   switch (permission_type) {
     case SlimWebViewPermissionType::kMedia:
       return "media";
+    case SlimWebViewPermissionType::kGeolocation:
+      return "geolocation";
   }
 }
 
 }  // namespace
+
+// static
+SlimWebViewPermissionHelper* SlimWebViewPermissionHelper::FromRenderFrameHost(
+    content::RenderFrameHost* render_frame_host) {
+  SlimWebViewGuest* guest =
+      SlimWebViewGuest::FromRenderFrameHost(render_frame_host);
+  return guest ? &guest->permission_helper() : nullptr;
+}
 
 struct SlimWebViewPermissionHelper::PermissionResponseInfo {
   PermissionResponseCallback callback;
@@ -39,11 +54,29 @@ SlimWebViewPermissionHelper::SlimWebViewPermissionHelper(
 
 SlimWebViewPermissionHelper::~SlimWebViewPermissionHelper() = default;
 
+void SlimWebViewPermissionHelper::RequestGeolocationPermission(
+    const GURL& requesting_frame_url,
+    bool user_gesture,
+    base::OnceCallback<void(content::PermissionResult)> callback) {
+  CHECK(!guest_->IsOwnedByControlledFrameEmbedder());
+  base::DictValue request_info;
+  request_info.Set(guest_view::kUrl, requesting_frame_url.spec());
+
+  PermissionResponseCallback permission_callback = base::BindOnce(
+      &SlimWebViewPermissionHelper::OnGeolocationPermissionResponse,
+      weak_factory_.GetWeakPtr(), user_gesture, std::move(callback));
+  RequestPermission(SlimWebViewPermissionType::kGeolocation,
+                    std::move(request_info), std::move(permission_callback),
+                    /*allowed_by_default=*/false);
+}
+
 void SlimWebViewPermissionHelper::RequestMediaAccessPermission(
     const content::MediaStreamRequest& request,
     content::MediaResponseCallback callback) {
+  base::DictValue request_info;
+  request_info.Set(guest_view::kUrl, request.security_origin.spec());
   RequestPermission(
-      SlimWebViewPermissionType::kMedia, base::DictValue(),
+      SlimWebViewPermissionType::kMedia, std::move(request_info),
       base::BindOnce(&SlimWebViewPermissionHelper::OnMediaPermissionResponse,
                      weak_factory_.GetWeakPtr(), request, std::move(callback)),
       /*allowed_by_default=*/false);
@@ -92,6 +125,22 @@ SlimWebViewPermissionHelper::SetPermission(int request_id,
   return allow ? SetPermissionResult::kAllowed : SetPermissionResult::kDenied;
 }
 
+void SlimWebViewPermissionHelper::OnGeolocationPermissionResponse(
+    bool user_gesture,
+    base::OnceCallback<void(content::PermissionResult)> callback,
+    bool allow) {
+  if (!allow) {
+    std::move(callback).Run(content::PermissionResult(
+        blink::mojom::PermissionStatus::DENIED,
+        content::PermissionStatusSource::UNSPECIFIED));
+    return;
+  }
+  // The <webview> embedder has responded to the permission request. We now need
+  // to make sure that the embedder has geolocation permission.
+  RequestEmbedderFramePermission(user_gesture, std::move(callback),
+                                 blink::PermissionType::GEOLOCATION);
+}
+
 void SlimWebViewPermissionHelper::OnMediaPermissionResponse(
     const content::MediaStreamRequest& request,
     content::MediaResponseCallback callback,
@@ -127,6 +176,27 @@ void SlimWebViewPermissionHelper::OnMediaPermissionResponse(
 
   guest_->embedder_web_contents()->GetDelegate()->RequestMediaAccessPermission(
       guest_->embedder_web_contents(), embedder_request, std::move(callback));
+}
+
+void SlimWebViewPermissionHelper::RequestEmbedderFramePermission(
+    bool user_gesture,
+    base::OnceCallback<void(content::PermissionResult)> callback,
+    blink::PermissionType permission_type) {
+  if (!guest_->attached()) {
+    std::move(callback).Run(content::PermissionResult(
+        blink::mojom::PermissionStatus::DENIED,
+        content::PermissionStatusSource::UNSPECIFIED));
+    return;
+  }
+  guest_->browser_context()
+      ->GetPermissionController()
+      ->RequestPermissionFromCurrentDocument(
+          guest_->embedder_rfh(),
+          content::PermissionRequestDescription(
+              content::PermissionDescriptorUtil::
+                  CreatePermissionDescriptorForPermissionType(permission_type),
+              user_gesture),
+          std::move(callback));
 }
 
 }  // namespace guest_view

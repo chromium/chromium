@@ -495,6 +495,8 @@ static_library("browser") {
     "geolocation/geolocation_permission_context_delegate.h",
     "geolocation/geolocation_permission_context_extensions.cc",
     "geolocation/geolocation_permission_context_extensions.h",
+    "geolocation/geolocation_permission_context_slim_web_view.cc",
+    "geolocation/geolocation_permission_context_slim_web_view.h",
     "global_features.cc",
     "heavy_ad_intervention/heavy_ad_service_factory.cc",
     "heavy_ad_intervention/heavy_ad_service_factory.h",
@@ -7553,8 +7555,13 @@ static_library("browser") {
       "//extensions/browser/updater",
       "//extensions/strings",
     ]
-  } else if (is_android) {
-    deps += [ "//chrome/browser/android/guest_view" ]
+  } else {
+    if (enable_guest_view) {
+      deps += [ "//components/guest_view/browser/slim_web_view" ]
+    }
+    if (is_android) {
+      deps += [ "//chrome/browser/android/guest_view" ]
+    }
   }
 
   if (enable_extensions) {
