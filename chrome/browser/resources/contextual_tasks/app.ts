@@ -72,6 +72,7 @@ export interface ContextualTasksAppElement {
     composeboxHeaderWrapper: HTMLElement,
     composeboxHeader: HTMLElement,
     flexCenterContainer: HTMLElement,
+    nameShimmer: HTMLElement,
   };
 }
 
@@ -371,6 +372,11 @@ export class ContextualTasksAppElement extends CrLitElement {
           this.forcedComposeboxBounds_ = null;
           // </if>
         }
+
+        if (this.isZeroState_) {
+          this.playZeroStateAnimations_();
+        }
+
       }),
       callbackRouter.onLensOverlayStateChanged.addListener(
           (isOverlayShowing: boolean, maybeShowOverlayHintText: boolean) => {
@@ -542,6 +548,29 @@ export class ContextualTasksAppElement extends CrLitElement {
     if (changedPrivateProperties.has('isShownInTab_')) {
       this.updateCommonSearchParams();
     }
+  }
+
+  private async playZeroStateAnimations_() {
+    await this.updateComplete;
+
+    const restartAnimations = (element: HTMLElement) => {
+      element.getAnimations().forEach(animation => {
+        animation.cancel();
+        animation.play();
+      });
+    };
+
+    restartAnimations(this.$.composebox);
+    restartAnimations(this.$.composeboxHeaderWrapper);
+
+    if (this.$.nameShimmer) {
+      restartAnimations(this.$.nameShimmer);
+    }
+
+    // Restart the composebox glow animation.
+    // <if expr="not is_android">
+    this.$.composebox.startExpandAnimation();
+    // </if>
   }
 
   // <if expr="not is_android">

@@ -33,7 +33,8 @@ export function getHtml(this: ContextualTasksAppElement) {
         ?hidden="${this.enableBasicMode_ && this.isInBasicMode_ && !this.enableBasicModeZOrder_}">
       <h1 class="thread-header" id="composeboxHeader">
           ${this.friendlyZeroStateGaiaName_
-            ? html`<span>${this.friendlyZeroStateTitleBeforeName_}</span><span class="name-shimmer">
+            ? html`<span>${this.friendlyZeroStateTitleBeforeName_}</span><span
+              id="nameShimmer" class="name-shimmer">
               ${this.friendlyZeroStateGaiaName_}</span><span>${this.friendlyZeroStateTitleAfterName_}</span>`
             : html`<span>${this.friendlyZeroStateTitle}</span>`
           }

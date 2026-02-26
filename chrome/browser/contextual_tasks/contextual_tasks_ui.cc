@@ -205,9 +205,7 @@ void AddZeroStateStrings(content::WebUIDataSource* source, Profile* profile) {
 }
 
 ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
-    : ui::MojoWebUIController(web_ui,
-                              /*enable_chrome_send=*/false,
-                              /*enable_chrome_histograms=*/true),
+    : ui::MojoWebUIController(web_ui),
       ui_service_(contextual_tasks::ContextualTasksUiServiceFactory::
                       GetForBrowserContext(
                           web_ui->GetWebContents()->GetBrowserContext())),
@@ -968,9 +966,12 @@ void ContextualTasksUI::FrameNavObserver::DidFinishNavigation(
   // accordingly.
   const bool is_zero_state = ContextualTasksUI::IsZeroState(url, ui_service_);
 
-  if (!base::FeatureList::IsEnabled(
-          contextual_tasks::kEnableNotifyZeroStateRenderedCapability) ||
-      !navigation_handle->IsSameDocument()) {
+  // Check if the zero state status has changed since the last navigation.
+  const bool has_zero_state_changed =
+      is_zero_state !=
+      ContextualTasksUI::IsZeroState(last_committed_url_, ui_service_);
+
+  if (!navigation_handle->IsSameDocument() || has_zero_state_changed) {
     task_info_delegate_->OnZeroStateChange(is_zero_state);
   }
 
