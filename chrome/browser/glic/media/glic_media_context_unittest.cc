@@ -498,6 +498,23 @@ TEST_F(GlicMediaContextTest, GetTranscriptChunks_ReturnsCorrectChunks) {
   EXPECT_EQ(it->GetEndTime(), base::Seconds(3));
 }
 
+TEST_F(GlicMediaContextTest, GetTranscriptChunks) {
+  context()->OnResult(CreateSpeechRecognitionResult("Non-final one. ", false));
+  // No transcripts are returned if we don't have any final chunks.
+  auto chunks = context()->GetTranscriptChunks();
+  EXPECT_EQ(chunks.size(), 0u);
+
+  context()->OnResult(CreateSpeechRecognitionResult("Final one. ", true));
+  // Returns one chunk when there's a single final chunk.
+  chunks = context()->GetTranscriptChunks();
+  EXPECT_EQ(chunks.size(), 1u);
+
+  context()->OnResult(CreateSpeechRecognitionResult("Non-final one. ", false));
+  // Returns two chunks when there's a final chunk followed by a nonfinal chunk.
+  chunks = context()->GetTranscriptChunks();
+  EXPECT_EQ(chunks.size(), 2u);
+}
+
 TEST_F(GlicMediaContextTest, ContextShouldTruncateLeastRecentlyAdded) {
   // Send a long string, then a short one. The context should truncate the long
   // one first, even though it has a later timestamp.
@@ -574,8 +591,10 @@ TEST_F(GlicMediaContextTest, NonFinalChunkWithTimestamp_UpdatesInPlace) {
 
   // The chunk should be updated in place.
   EXPECT_EQ(context()->GetContext(), "Hello world");
+
+  // No transcripts are returned if we don't have any final chunks.
   auto chunks = context()->GetTranscriptChunks();
-  EXPECT_EQ(chunks.size(), 1u);
+  EXPECT_EQ(chunks.size(), 0u);
 }
 
 TEST_F(GlicMediaContextTest, TranscriptSwitchesWithMediaSessionTitle) {
