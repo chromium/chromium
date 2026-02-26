@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/new_tab_page/action_chips/action_chips_generator.h"
 
 #include <algorithm>
+#include <cstdint>
 #include <memory>
 #include <optional>
 #include <string>
@@ -78,14 +79,94 @@ enum class ChipsGenerationScenario {
   kDeepDive,
 };
 
+template <typename T>
+void AssignMojoField(const T& source, T& dest) {
+  dest = source;
+}
+
+template <typename T>
+void AssignMojoField(const T& source, std::optional<T>& dest) {
+  dest = source;
+}
+
+template <typename ProtoEnum, typename MojoEnum>
+  requires std::is_enum_v<ProtoEnum> && std::is_enum_v<MojoEnum>
+void AssignMojoField(const ProtoEnum& source, MojoEnum& dest) {
+  dest = static_cast<MojoEnum>(source);
+}
+
+template <typename Proto, typename MojoPtr>
+void SyncProtoToMojo(const Proto& a, MojoPtr& b);
+
+template <typename ProtoChild, typename MojoChildPtr>
+void AssignMojoField(const ProtoChild& source, MojoChildPtr& dest) {
+  if (!dest) {
+    dest = MojoChildPtr::element_type::New();
+  }
+  SyncProtoToMojo(source, dest);
+}
+
+// Specializations for known mappings.
+
+// Helper to make static_assert dependent on template parameters.
+// This is necessary because static_assert(false, ...) would be evaluated at
+// definition time, causing compilation failure even if the function is never
+// instantiated. By making it dependent on T, evaluation is deferred to
+// instantiation time.
+template <typename... T>
+struct AlwaysFalse : std::false_type {};
+
+template <typename ProtoA, typename MojoBPtr>
+void SyncProtoToMojo(const ProtoA& a, MojoBPtr& b) {
+  static_assert(AlwaysFalse<ProtoA, MojoBPtr>::value,
+                "SyncProtoToMojo is not implemented to convert from the given "
+                "Proto type to the given Mojo type. Please add a "
+                "specialization.");
+}
+
+template <>
+void SyncProtoToMojo<omnibox::FormattedString,
+                     action_chips::mojom::FormattedStringPtr>(
+    const omnibox::FormattedString& a,
+    action_chips::mojom::FormattedStringPtr& b) {
+  if (a.has_text()) {
+    AssignMojoField(a.text(), b->text);
+  }
+  if (a.has_a11y_text()) {
+    AssignMojoField(a.a11y_text(), b->a11y_text);
+  }
+}
+
+template <>
+void SyncProtoToMojo<omnibox::SuggestTemplateInfo,
+                     action_chips::mojom::SuggestTemplateInfoPtr>(
+    const omnibox::SuggestTemplateInfo& a,
+    action_chips::mojom::SuggestTemplateInfoPtr& b) {
+  if (a.has_type_icon()) {
+    AssignMojoField(a.type_icon(), b->type_icon);
+  }
+
+  if (a.has_primary_text()) {
+    AssignMojoField(a.primary_text(), b->primary_text);
+  }
+  if (a.has_secondary_text()) {
+    AssignMojoField(a.secondary_text(), b->secondary_text);
+  }
+}
+
 // Creates a SuggestTemplateInfoPtr from an omnibox::SuggestTemplateInfo.
 // Returns nullptr if we cannot handle the proto (e.g., the enum is not
 // available on our side).
 SuggestTemplateInfoPtr CreateSuggestTemplateInfo(
     const omnibox::SuggestTemplateInfo& suggest_template_info) {
+  static_assert(
+      static_cast<int32_t>(omnibox::SuggestTemplateInfo::IconType_MAX) ==
+          static_cast<int32_t>(action_chips::mojom::IconType::kMaxValue),
+      "IconType enum values must match between omnibox and action chips.");
   // The remote endpoint may send the icon type unknown to us.
   // When this occurs, we get the following:
-  // - the default value of the enum (when the closed enum is used as in proto2)
+  // - the default value of the enum (when the closed enum is used as in
+  //   proto2)
   // - the actual (invalid) value (when the open enum is used)
   if (suggest_template_info.type_icon() ==
           omnibox::SuggestTemplateInfo::ICON_TYPE_UNSPECIFIED ||
@@ -94,11 +175,11 @@ SuggestTemplateInfoPtr CreateSuggestTemplateInfo(
     VLOG(1) << "Invalid icon type is returned from the remote endpoint.";
     return nullptr;
   }
+
   SuggestTemplateInfoPtr mojom_suggest_template_info =
       SuggestTemplateInfo::New();
-  // Assumption: The mojom enum values are in sync with the proto enum values.
-  mojom_suggest_template_info->type_icon =
-      static_cast<IconType>(suggest_template_info.type_icon());
+  SyncProtoToMojo(suggest_template_info, mojom_suggest_template_info);
+
   return mojom_suggest_template_info;
 }
 
@@ -333,8 +414,10 @@ std::optional<ParsedActionChipData> ExtractActionChipData(
     return std::nullopt;
   }
 
-  if (!suggestion.suggestion_group_id().has_value()) {
-    VLOG(1) << "A suggestion did not have a group ID. Its match_contents was: "
+  if (!suggestion.suggestion_group_id().has_value() ||
+      suggestion.suggestion_group_id().value() == omnibox::GROUP_INVALID) {
+    VLOG(1) << "A suggestion did not have a valid group ID. Its "
+               "match_contents was: "
             << suggestion.match_contents();
     return std::nullopt;
   }

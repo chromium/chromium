@@ -39,6 +39,7 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="Banana"/>
   <int value="8" label="Favicon"/>
   <int value="9" label="Notes Spark"/>
+  <int value="10" label="Draft Spark"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/ui/webui/new_tab_page/action_chips/action_chips.mojom:IconType) -->

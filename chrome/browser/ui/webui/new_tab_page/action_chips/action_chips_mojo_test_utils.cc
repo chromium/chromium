@@ -26,11 +26,60 @@ void PrintTo(const TabInfoPtr& tab, std::ostream* os) {
   }
 }
 
+void PrintTo(const FormattedString& str, std::ostream* os) {
+  *os << "FormattedString{\n"
+      << "  text: \"" << str.text << "\",\n";
+  if (str.a11y_text) {
+    *os << "  a11y_text: \"" << *str.a11y_text << "\"\n";
+  } else {
+    *os << "  a11y_text: null\n";
+  }
+  *os << "}";
+}
+
+void PrintTo(const FormattedStringPtr& str, std::ostream* os) {
+  if (str.is_null()) {
+    *os << "nullptr";
+  } else {
+    PrintTo(*str, os);
+  }
+}
+
+void PrintTo(const SuggestTemplateInfo& info, std::ostream* os) {
+  *os << "SuggestTemplateInfo{\n"
+      << "  type_icon: " << info.type_icon << ",\n"
+      << "  primary_text: ";
+  if (info.primary_text.is_null()) {
+    *os << "nullptr";
+  } else {
+    PrintTo(*info.primary_text, os);
+  }
+  *os << ",\n"
+      << "  secondary_text: ";
+  if (info.secondary_text.is_null()) {
+    *os << "nullptr";
+  } else {
+    PrintTo(*info.secondary_text, os);
+  }
+  *os << "\n}";
+}
+
+void PrintTo(const SuggestTemplateInfoPtr& info, std::ostream* os) {
+  if (info.is_null()) {
+    *os << "nullptr";
+  } else {
+    PrintTo(*info, os);
+  }
+}
+
 void PrintTo(const ActionChip& chip, std::ostream* os) {
   *os << "ActionChip{\n"
       << "  title: \"" << chip.title << "\",\n"
       << "  subtitle: \"" << chip.subtitle << "\",\n"
       << "  suggestion: \"" << chip.suggestion << "\",\n"
+      << "  suggest_template_info: ";
+  PrintTo(chip.suggest_template_info, os);
+  *os << ",\n"
       << "  tab_info: ";
   if (chip.tab.is_null()) {
     *os << "nullptr";
