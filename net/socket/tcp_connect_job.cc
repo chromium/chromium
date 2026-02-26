@@ -173,9 +173,7 @@ int TcpConnectJob::ConnectInternal() {
 }
 
 void TcpConnectJob::ChangePriorityInternal(RequestPriority priority) {
-  // TODO(https://crbug.com/484073410): Test this method.
   if (dns_request_) {
-    DCHECK(dns_request_);
     // Only need to change the priority of the DNS request. The TCP connection
     // attempts doesn't have priorities.
     dns_request_->ChangeRequestPriority(priority);

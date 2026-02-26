@@ -136,7 +136,7 @@ class TcpConnectJobTest : public TestWithTaskEnvironment {
 
     test_delegate_ = std::make_unique<TestConnectJobDelegate>();
     connect_job_ = std::make_unique<TcpConnectJob>(
-        DEFAULT_PRIORITY, SocketTag(), &common_connect_job_params_,
+        initial_priority_, SocketTag(), &common_connect_job_params_,
         SocketParams(), test_delegate_.get(), /*net_log=*/nullptr,
         service_endpoint_override_);
   }
@@ -351,6 +351,9 @@ class TcpConnectJobTest : public TestWithTaskEnvironment {
   std::unique_ptr<TestConnectJobDelegate> test_delegate_;
   std::unique_ptr<TcpConnectJob> connect_job_;
 
+  // Priority used when making a new ConnectJob.
+  RequestPriority initial_priority_ = DEFAULT_PRIORITY;
+
   // These are all related to testing OnHostResolutionCallback support.
   OnHostResolutionCallback on_host_resolution_callback_;
   // Cached information from all previous `OnHostResolutionCallback` calls.
@@ -360,6 +363,66 @@ class TcpConnectJobTest : public TestWithTaskEnvironment {
   // Invoked asynchronously after last OnHostResolutionCallback invocation.
   base::OnceClosure last_host_resolution_callback_;
 };
+
+// Test that the priority is correctly plumbed down to the
+// ServiceEndpointRequest, both for the initial priority, and when modifying the
+// priority.
+TEST_F(TcpConnectJobTest, Priority) {
+  // Not a full list.
+  const auto kPriorities =
+      std::to_array<RequestPriority>({IDLE, MEDIUM, HIGHEST});
+
+  for (RequestPriority initial_priority : kPriorities) {
+    initial_priority_ = initial_priority;
+
+    MockConnectCompleter connect_completer;
+    AddConnect(MockConnect(&connect_completer), kIpV4Endpoint1);
+
+    // Start request, make sure initial priority is passed along.
+    auto request = host_resolver_.AddFakeRequest();
+    EXPECT_THAT(InitAndStart(), IsError(ERR_IO_PENDING));
+    EXPECT_EQ(request->priority(), initial_priority);
+
+    // Change priority before any DNS results have been received.
+    for (RequestPriority priority : kPriorities) {
+      connect_job_->ChangePriority(priority);
+      EXPECT_EQ(request->priority(), priority);
+    }
+
+    // Simulate update. It doesn't provide any IPs, so we shouldn't try to
+    // connect to anything.
+    request->set_crypto_ready(true).CallOnServiceEndpointsUpdated();
+
+    // Changing priority should still work.
+    for (RequestPriority priority : kPriorities) {
+      connect_job_->ChangePriority(priority);
+      EXPECT_EQ(request->priority(), priority);
+    }
+
+    // DNS requests completes, and we start to connect.
+    request->add_endpoint(CreateServiceEndpoint({kIpV4Endpoint1}))
+        .CallOnServiceEndpointRequestFinished(OK);
+
+    // Changing priority should still work not crash, even after the DNS request
+    // is complete. While the request still exists here, and its priority is
+    // updated, don't check it, since it doesn't matter any more, and we could
+    // theoretically change behavior.
+    for (RequestPriority priority : kPriorities) {
+      connect_job_->ChangePriority(priority);
+    }
+
+    // The request fails.
+    connect_completer.WaitForConnectAndComplete(ERR_FAILED);
+    WaitForError(ERR_FAILED, /*expected_connection_attempts=*/{
+                     {kIpV4Endpoint1, ERR_FAILED}});
+
+    // Changing priority should still not crash, even after the DNS request was
+    // destroyed. Can't check the request's priority, since it's been destroyed.
+    for (RequestPriority priority : kPriorities) {
+      connect_job_->ChangePriority(priority);
+    }
+  }
+}
 
 TEST_F(TcpConnectJobTest, DnsErrorSync) {
   // Use something other than ERR_NAME_NOT_RESOLVED because that's the default
@@ -1504,16 +1567,35 @@ TEST_F(TcpConnectJobTest, ServiceEndpointOverride) {
       expected_connection_attempts.emplace_back(kIpV6Endpoint2, ERR_FAILED);
       AddConnect(MockConnect(io_mode, final_connect_result), kIpV4Endpoint2);
 
-      if (final_connect_result == OK) {
-        InitRunAndExpectSuccess(kIpV4Endpoint2, service_endpoint,
-                                io_mode == SYNCHRONOUS,
-                                expected_connection_attempts);
-        EXPECT_EQ(kDnsAliases, test_delegate_->socket()->GetDnsAliases());
-      } else {
+      if (final_connect_result != OK) {
         expected_connection_attempts.emplace_back(kIpV4Endpoint2,
                                                   ERR_UNEXPECTED);
-        InitRunAndExpectError(ERR_UNEXPECTED, io_mode == SYNCHRONOUS,
-                              expected_connection_attempts);
+      }
+
+      // Split out sync and async cases, so can set the priority in the async
+      // cases, and make sure there's no crash.
+      if (io_mode == SYNCHRONOUS) {
+        if (final_connect_result == OK) {
+          InitRunAndExpectSuccess(kIpV4Endpoint2, service_endpoint,
+                                  /*expect_sync_result=*/true,
+                                  expected_connection_attempts);
+          EXPECT_EQ(kDnsAliases, test_delegate_->socket()->GetDnsAliases());
+        } else {
+          connect_job_->ChangePriority(HIGHEST);
+          InitRunAndExpectError(ERR_UNEXPECTED, /*expect_sync_result=*/true,
+                                expected_connection_attempts);
+        }
+      } else {
+        EXPECT_THAT(InitAndStart(), IsError(ERR_IO_PENDING));
+        // This should not dereference the null ServiceEndpointRequest.
+        connect_job_->ChangePriority(HIGHEST);
+        if (final_connect_result == OK) {
+          WaitForSuccess(kIpV4Endpoint2, service_endpoint,
+                         expected_connection_attempts);
+          EXPECT_EQ(kDnsAliases, test_delegate_->socket()->GetDnsAliases());
+        } else {
+          WaitForError(ERR_UNEXPECTED, expected_connection_attempts);
+        }
       }
       ASSERT_TRUE(client_socket_factory_.AllDataProvidersUsed());
     }
