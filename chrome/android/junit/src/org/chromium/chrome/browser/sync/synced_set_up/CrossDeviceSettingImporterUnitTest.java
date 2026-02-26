@@ -15,6 +15,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.chrome.browser.flags.ChromeFeatureList.CROSS_DEVICE_PREF_TRACKER_EXTRA_LOGS;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.XPLAT_SYNCED_SETUP;
 import static org.chromium.chrome.browser.ntp_customization.ntp_cards.NtpCardsMediator.MODULE_TYPE_TO_USER_PREFS_KEY;
 
@@ -80,6 +81,7 @@ import java.util.function.Supplier;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @EnableFeatures(XPLAT_SYNCED_SETUP)
+@DisableFeatures(CROSS_DEVICE_PREF_TRACKER_EXTRA_LOGS)
 public class CrossDeviceSettingImporterUnitTest {
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
