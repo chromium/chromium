@@ -622,9 +622,9 @@ class POLICY_EXPORT SingleDeprecatedPolicyToMultipleNewPolicyHandler
 };
 
 // A schema policy handler for complex policies that only accept cloud sources.
-// Deprecated. Prefer using CloudPolicyChecker
+// Deprecated. Prefer using CloudOnlyPolicyChecker
 // TODO(crbug.com/467340943): Make all cloud policy only policies using
-// CloudPolicyChecker instead.
+// CloudOnlyPolicyChecker instead.
 class POLICY_EXPORT CloudOnlyPolicyHandler
     : public SchemaValidatingPolicyHandler {
  public:
