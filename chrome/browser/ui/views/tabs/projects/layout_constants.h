@@ -10,6 +10,9 @@
 
 namespace projects_panel {
 
+// The corner radius of a list item.
+inline constexpr int kListItemCornerRadius = 8;
+
 // The focus ring halo inset for a list item. This contains the focus ring
 // within the bounds of the item so the halo isn't clipped by the container.
 inline constexpr float kListItemFocusRingHaloInset =

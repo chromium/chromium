@@ -268,6 +268,11 @@ void ProjectsPanelTabGroupsView::WriteDragDataForView(
   auto* item = static_cast<ProjectsPanelTabGroupsItemView*>(sender);
   item->SetIsDragging(true);
 
+  gfx::ImageSkia drag_image = item->GetDragImage();
+  if (!drag_image.isNull() && !drag_image.size().IsEmpty()) {
+    data->provider().SetDragImage(drag_image, press_pt.OffsetFromOrigin());
+  }
+
   base::Pickle data_pickle;
   data_pickle.WriteString(item->guid().AsLowercaseString());
   data->SetPickledData(tab_groups::SavedTabGroupDragData::GetFormatType(),

@@ -167,6 +167,9 @@ TEST_F(ProjectsPanelTabGroupsViewTest, WriteDragData) {
   std::vector<tab_groups::SavedTabGroup> groups = {CreateGroup(u"Group 1")};
   tab_groups_view_->SetTabGroups(groups);
 
+  // Set the size of the view so the drag image is not empty.
+  tab_groups_view_->SetSize(gfx::Size(100, 100));
+
   auto* item_view = tab_groups_view_->item_views_for_testing()[0];
 
   ui::OSExchangeData data;

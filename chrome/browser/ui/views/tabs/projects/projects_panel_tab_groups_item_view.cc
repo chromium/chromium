@@ -15,6 +15,9 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_provider.h"
+#include "ui/compositor/canvas_painter.h"
+#include "ui/gfx/canvas.h"
+#include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
@@ -24,12 +27,17 @@
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/drag_utils.h"
 #include "ui/views/layout/flex_layout.h"
+#include "ui/views/paint_info.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/vector_icons.h"
 #include "ui/views/view_class_properties.h"
 
 namespace {
+
+// Background color of the dragging image for this item.
+constexpr auto kDraggingImageBackgroundColor = ui::kColorSysSurface2;
 
 // The size of the more button.
 constexpr auto kMoreButtonSize = gfx::Size(24, 24);
@@ -164,6 +172,24 @@ void ProjectsPanelTabGroupsItemView::SetIsDragging(bool dragging) {
   }
   dragging_ = dragging;
   UpdateHoverState();
+  SchedulePaint();
+}
+
+gfx::ImageSkia ProjectsPanelTabGroupsItemView::GetDragImage() {
+  SkBitmap bitmap;
+  const float raster_scale = ScaleFactorForDragFromWidget(GetWidget());
+  const SkColor clear_color =
+      GetColorProvider()->GetColor(kDraggingImageBackgroundColor);
+  Paint(views::PaintInfo::CreateRootPaintInfo(
+      ui::CanvasPainter(&bitmap, size(), raster_scale, clear_color,
+                        /*is_pixel_canvas=*/true)
+          .context(),
+      size()));
+  const gfx::ImageSkia image =
+      gfx::ImageSkia::CreateFromBitmap(bitmap, raster_scale);
+
+  return gfx::ImageSkiaOperations::CreateImageWithRoundRectClip(
+      projects_panel::kListItemCornerRadius, image);
 }
 
 void ProjectsPanelTabGroupsItemView::OnThemeChanged() {

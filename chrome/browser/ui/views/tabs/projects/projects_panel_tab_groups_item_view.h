@@ -47,7 +47,10 @@ class ProjectsPanelTabGroupsItemView : public views::Button {
   void SetIsDragging(bool dragging);
   bool is_dragging() const { return dragging_; }
 
-  // views::View
+  // Returns the image used during dragging.
+  gfx::ImageSkia GetDragImage();
+
+  // views::View:
   void OnThemeChanged() override;
   void OnMouseEntered(const ui::MouseEvent& event) override;
   void OnMouseExited(const ui::MouseEvent& event) override;
