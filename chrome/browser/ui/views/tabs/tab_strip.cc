@@ -592,7 +592,8 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
     int x = 0;
     for (const TabSlotView* view : views) {
       const int width = view->width();
-      bounds.emplace_back(x, height() - view->height(), width, view->height());
+      bounds.emplace_back(x, std::max(0, height() - view->height()), width,
+                          view->height());
       x += width - overlap;
     }
 
