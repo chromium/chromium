@@ -594,29 +594,27 @@ const jingle_xmpp::XmlElement* FindAuthenticatorMessage(
   return message->FirstNamed(kQNameAuthentication);
 }
 
-}  // namespace
-
-std::unique_ptr<jingle_xmpp::XmlElement> JingleMessageReplyToXml(
-    const JingleMessageReply& reply) {
+std::unique_ptr<XmlElement> CreateIqElement(std::string_view type,
+                                            std::string_view id,
+                                            const SignalingAddress& to,
+                                            const SignalingAddress& from) {
   auto iq = std::make_unique<XmlElement>(kQNameIq, /*useDefaultNs=*/true);
-  iq->SetAttr(kQNameId, reply.message_id);
-  if (!reply.to.empty()) {
-    reply.to.SetInMessage(iq.get(), SignalingAddress::TO);
+  iq->SetAttr(kQNameType, std::string(type));
+  if (!id.empty()) {
+    iq->SetAttr(kQNameId, std::string(id));
   }
-  if (!reply.from.empty()) {
-    reply.from.SetInMessage(iq.get(), SignalingAddress::FROM);
+  if (!to.empty()) {
+    to.SetInMessage(iq.get(), SignalingAddress::TO);
   }
+  if (!from.empty()) {
+    from.SetInMessage(iq.get(), SignalingAddress::FROM);
+  }
+  return iq;
+}
 
-  if (reply.type == JingleMessageReply::REPLY_RESULT) {
-    iq->SetAttr(kQNameType, "result");
-    iq->AddElement(new XmlElement(kQNameJingle,
-                                  /*useDefaultNs=*/true));
-    return iq;
-  }
-
+std::unique_ptr<XmlElement> CreateErrorElement(
+    const JingleMessageReply& reply) {
   DCHECK_EQ(reply.type, JingleMessageReply::REPLY_ERROR);
-
-  iq->SetAttr(kQNameType, "error");
   auto error = std::make_unique<XmlElement>(QName(kJabberNamespace, "error"));
 
   std::string type_attr;
@@ -658,8 +656,6 @@ std::unique_ptr<jingle_xmpp::XmlElement> JingleMessageReplyToXml(
 
   error->SetAttr(QName(kEmptyNamespace, "type"), type_attr);
 
-  // If the error name is not in the standard namespace, we have to first add
-  // some error from that namespace.
   if (name.Namespace() != kJabberNamespace) {
     error->AddElement(
         new XmlElement(QName(kJabberNamespace, "undefined-condition")));
@@ -667,8 +663,6 @@ std::unique_ptr<jingle_xmpp::XmlElement> JingleMessageReplyToXml(
   error->AddElement(new XmlElement(name));
 
   if (!error_text.empty()) {
-    // It's okay to always use English here. This text is for debugging purposes
-    // only.
     auto text_elem =
         std::make_unique<XmlElement>(QName(kJabberNamespace, "text"));
     text_elem->SetAttr(QName(kXmlNamespace, "lang"), "en");
@@ -676,45 +670,94 @@ std::unique_ptr<jingle_xmpp::XmlElement> JingleMessageReplyToXml(
     error->AddElement(text_elem.release());
   }
 
-  iq->AddElement(error.release());
+  return error;
+}
+
+template <typename CredentialsContainer, typename CandidatesContainer>
+void FormatIceTransportChildren(XmlElement* element,
+                                const CredentialsContainer& credentials,
+                                const CandidatesContainer& candidates) {
+  for (const auto& cred : credentials) {
+    element->AddElement(FormatIceCredentials(cred));
+  }
+  for (const auto& candidate : candidates) {
+    element->AddElement(FormatIceCandidate(candidate));
+  }
+}
+
+template <typename CredentialsContainer, typename CandidatesContainer>
+bool ParseIceTransportChildren(const XmlElement* element,
+                               CredentialsContainer& credentials,
+                               CandidatesContainer& candidates) {
+  for (const XmlElement* credentials_tag =
+           element->FirstNamed(kQNameIceCredentials);
+       credentials_tag;
+       credentials_tag = credentials_tag->NextNamed(kQNameIceCredentials)) {
+    IceTransportInfo::IceCredentials cred;
+    if (!ParseIceCredentials(credentials_tag, &cred)) {
+      return false;
+    }
+    credentials.push_back(std::move(cred));
+  }
+
+  for (const XmlElement* candidate_tag =
+           element->FirstNamed(kQNameIceCandidate);
+       candidate_tag;
+       candidate_tag = candidate_tag->NextNamed(kQNameIceCandidate)) {
+    IceTransportInfo::NamedCandidate candidate;
+    if (!ParseIceCandidate(candidate_tag, &candidate)) {
+      return false;
+    }
+    candidates.push_back(std::move(candidate));
+  }
+  return true;
+}
+
+void AddChannelConfigs(XmlElement* element,
+                       const std::list<ChannelConfig>& configs,
+                       const jingle_xmpp::StaticQName& qname) {
+  for (const auto& config : configs) {
+    element->AddElement(FormatChannelConfig(config, qname));
+  }
+}
+
+}  // namespace
+
+std::unique_ptr<jingle_xmpp::XmlElement> JingleMessageReplyToXml(
+    const JingleMessageReply& reply) {
+  auto iq = CreateIqElement(
+      reply.type == JingleMessageReply::REPLY_RESULT ? "result" : "error",
+      reply.message_id, reply.to, reply.from);
+
+  if (reply.type == JingleMessageReply::REPLY_RESULT) {
+    iq->AddElement(new XmlElement(kQNameJingle,
+                                  /*useDefaultNs=*/true));
+  } else {
+    iq->AddElement(CreateErrorElement(reply).release());
+  }
+
   return iq;
 }
 
 std::unique_ptr<jingle_xmpp::XmlElement> JingleMessageReplyToXml(
     const JingleMessageReply& reply,
     const JingleMessage& original_message) {
-  auto iq = std::make_unique<XmlElement>(kQNameIq, /*useDefaultNs=*/true);
-  iq->SetAttr(kQNameId, original_message.message_id);
-
-  if (!original_message.from.empty()) {
-    original_message.from.SetInMessage(iq.get(), SignalingAddress::TO);
-  }
+  auto iq = CreateIqElement(
+      reply.type == JingleMessageReply::REPLY_RESULT ? "result" : "error",
+      original_message.message_id, original_message.from, SignalingAddress());
 
   if (reply.type == JingleMessageReply::REPLY_RESULT) {
-    iq->SetAttr(kQNameType, "result");
     iq->AddElement(new XmlElement(kQNameJingle,
                                   /*useDefaultNs=*/true));
-    return iq;
+  } else {
+    std::unique_ptr<XmlElement> original_xml =
+        JingleMessageToXml(original_message);
+    for (const XmlElement* child = original_xml->FirstElement(); child;
+         child = child->NextElement()) {
+      iq->AddElement(new XmlElement(*child));
+    }
+    iq->AddElement(CreateErrorElement(reply).release());
   }
-
-  DCHECK_EQ(reply.type, JingleMessageReply::REPLY_ERROR);
-  iq->SetAttr(kQNameType, "error");
-
-  std::unique_ptr<XmlElement> original_xml =
-      JingleMessageToXml(original_message);
-  for (const XmlElement* child = original_xml->FirstElement(); child;
-       child = child->NextElement()) {
-    iq->AddElement(new XmlElement(*child));
-  }
-
-  JingleMessageReply temp_reply = reply;
-  temp_reply.to = SignalingAddress();
-  temp_reply.message_id = "";
-  std::unique_ptr<XmlElement> reply_xml = JingleMessageReplyToXml(temp_reply);
-  const XmlElement* error_tag =
-      reply_xml->FirstNamed(QName(kJabberNamespace, "error"));
-  DCHECK(error_tag);
-  iq->AddElement(new XmlElement(*error_tag));
 
   return iq;
 }
@@ -722,38 +765,23 @@ std::unique_ptr<jingle_xmpp::XmlElement> JingleMessageReplyToXml(
 std::unique_ptr<jingle_xmpp::XmlElement> JingleMessageReplyToXml(
     const JingleMessageReply& reply,
     const jingle_xmpp::XmlElement* request_stanza) {
-  auto iq = std::make_unique<XmlElement>(kQNameIq, /*useDefaultNs=*/true);
-  iq->SetAttr(kQNameId, request_stanza->Attr(kQNameId));
-
   SignalingAddress original_from =
       SignalingAddress::Parse(request_stanza, SignalingAddress::FROM);
-  if (!original_from.empty()) {
-    original_from.SetInMessage(iq.get(), SignalingAddress::TO);
-  }
+
+  auto iq = CreateIqElement(
+      reply.type == JingleMessageReply::REPLY_RESULT ? "result" : "error",
+      request_stanza->Attr(kQNameId), original_from, SignalingAddress());
 
   if (reply.type == JingleMessageReply::REPLY_RESULT) {
-    iq->SetAttr(kQNameType, "result");
     iq->AddElement(new XmlElement(kQNameJingle,
                                   /*useDefaultNs=*/true));
-    return iq;
+  } else {
+    for (const XmlElement* child = request_stanza->FirstElement(); child;
+         child = child->NextElement()) {
+      iq->AddElement(new XmlElement(*child));
+    }
+    iq->AddElement(CreateErrorElement(reply).release());
   }
-
-  DCHECK_EQ(reply.type, JingleMessageReply::REPLY_ERROR);
-  iq->SetAttr(kQNameType, "error");
-
-  for (const XmlElement* child = request_stanza->FirstElement(); child;
-       child = child->NextElement()) {
-    iq->AddElement(new XmlElement(*child));
-  }
-
-  JingleMessageReply temp_reply = reply;
-  temp_reply.to = SignalingAddress();
-  temp_reply.message_id = "";
-  std::unique_ptr<XmlElement> reply_xml = JingleMessageReplyToXml(temp_reply);
-  const XmlElement* error_tag =
-      reply_xml->FirstNamed(QName(kJabberNamespace, "error"));
-  DCHECK(error_tag);
-  iq->AddElement(new XmlElement(*error_tag));
 
   return iq;
 }
@@ -813,13 +841,9 @@ bool IsJingleMessage(const jingle_xmpp::XmlElement* stanza) {
 
 std::unique_ptr<jingle_xmpp::XmlElement> JingleMessageToXml(
     const JingleMessage& message) {
-  auto root = std::make_unique<XmlElement>(kQNameIq, /*useDefaultNs=*/true);
-
   DCHECK(!message.to.empty());
-  root->SetAttr(kQNameType, "set");
-  if (!message.message_id.empty()) {
-    root->SetAttr(kQNameId, message.message_id);
-  }
+  auto root =
+      CreateIqElement("set", message.message_id, message.to, message.from);
 
   auto jingle_el =
       std::make_unique<XmlElement>(kQNameJingle, /*useDefaultNs=*/true);
@@ -831,11 +855,6 @@ std::unique_ptr<jingle_xmpp::XmlElement> JingleMessageToXml(
   root->AddElement(jingle_el.release());
 
   jingle_tag->AddAttr(kQNameSid, message.sid);
-
-  message.to.SetInMessage(root.get(), SignalingAddress::TO);
-  if (!message.from.empty()) {
-    message.from.SetInMessage(root.get(), SignalingAddress::FROM);
-  }
 
   const char* action_attr =
       ValueToNameUnchecked(kActionTypes, message.action());
@@ -1045,12 +1064,8 @@ std::unique_ptr<jingle_xmpp::XmlElement> JingleTransportInfoToXml(
       QName(transport.xml_namespace, "transport"), /*useDefaultNs=*/true);
 
   if (transport.xml_namespace == kIceTransportNamespace) {
-    for (const auto& credentials : transport.ice_credentials) {
-      result->AddElement(FormatIceCredentials(credentials));
-    }
-    for (const auto& candidate : transport.candidates) {
-      result->AddElement(FormatIceCandidate(candidate));
-    }
+    FormatIceTransportChildren(result.get(), transport.ice_credentials,
+                               transport.candidates);
   } else if (transport.xml_namespace == kWebrtcTransportNamespace) {
     if (transport.session_description) {
       result->AddElement(
@@ -1076,26 +1091,9 @@ bool JingleTransportInfoFromXml(const jingle_xmpp::XmlElement* element,
   transport->session_description.reset();
 
   if (transport->xml_namespace == kIceTransportNamespace) {
-    for (const XmlElement* credentials_tag =
-             element->FirstNamed(kQNameIceCredentials);
-         credentials_tag;
-         credentials_tag = credentials_tag->NextNamed(kQNameIceCredentials)) {
-      IceTransportInfo::IceCredentials credentials;
-      if (!ParseIceCredentials(credentials_tag, &credentials)) {
-        return false;
-      }
-      transport->ice_credentials.push_back(credentials);
-    }
-
-    for (const XmlElement* candidate_tag =
-             element->FirstNamed(kQNameIceCandidate);
-         candidate_tag;
-         candidate_tag = candidate_tag->NextNamed(kQNameIceCandidate)) {
-      IceTransportInfo::NamedCandidate candidate;
-      if (!ParseIceCandidate(candidate_tag, &candidate)) {
-        return false;
-      }
-      transport->candidates.push_back(std::move(candidate));
+    if (!ParseIceTransportChildren(element, transport->ice_credentials,
+                                   transport->candidates)) {
+      return false;
     }
   } else if (transport->xml_namespace == kWebrtcTransportNamespace) {
     const XmlElement* session_description_tag =
@@ -1130,12 +1128,8 @@ std::unique_ptr<jingle_xmpp::XmlElement> IceTransportInfoToXml(
     const IceTransportInfo& transport) {
   auto result =
       std::make_unique<XmlElement>(kQNameIceTransport, /*useDefaultNs=*/true);
-  for (const auto& credentials : transport.ice_credentials) {
-    result->AddElement(FormatIceCredentials(credentials));
-  }
-  for (const auto& candidate : transport.candidates) {
-    result->AddElement(FormatIceCandidate(candidate));
-  }
+  FormatIceTransportChildren(result.get(), transport.ice_credentials,
+                             transport.candidates);
   return result;
 }
 
@@ -1148,29 +1142,8 @@ bool IceTransportInfoFromXml(const jingle_xmpp::XmlElement* element,
   transport->ice_credentials.clear();
   transport->candidates.clear();
 
-  for (const XmlElement* credentials_tag =
-           element->FirstNamed(kQNameIceCredentials);
-       credentials_tag;
-       credentials_tag = credentials_tag->NextNamed(kQNameIceCredentials)) {
-    IceTransportInfo::IceCredentials credentials;
-    if (!ParseIceCredentials(credentials_tag, &credentials)) {
-      return false;
-    }
-    transport->ice_credentials.push_back(credentials);
-  }
-
-  for (const XmlElement* candidate_tag =
-           element->FirstNamed(kQNameIceCandidate);
-       candidate_tag;
-       candidate_tag = candidate_tag->NextNamed(kQNameIceCandidate)) {
-    IceTransportInfo::NamedCandidate candidate;
-    if (!ParseIceCandidate(candidate_tag, &candidate)) {
-      return false;
-    }
-    transport->candidates.push_back(candidate);
-  }
-
-  return true;
+  return ParseIceTransportChildren(element, transport->ice_credentials,
+                                   transport->candidates);
 }
 
 std::unique_ptr<jingle_xmpp::XmlElement> AttachmentToXml(
@@ -1457,21 +1430,14 @@ std::unique_ptr<jingle_xmpp::XmlElement> ContentDescriptionToXml(
   if (description.config()->ice_supported()) {
     root->AddElement(new jingle_xmpp::XmlElement(kQNameStandardIce));
 
-    for (const auto& channel_config : description.config()->control_configs()) {
-      root->AddElement(FormatChannelConfig(channel_config, kQNameControl));
-    }
-
-    for (const auto& channel_config : description.config()->event_configs()) {
-      root->AddElement(FormatChannelConfig(channel_config, kQNameEvent));
-    }
-
-    for (const auto& channel_config : description.config()->video_configs()) {
-      root->AddElement(FormatChannelConfig(channel_config, kQNameVideo));
-    }
-
-    for (const auto& channel_config : description.config()->audio_configs()) {
-      root->AddElement(FormatChannelConfig(channel_config, kQNameAudio));
-    }
+    AddChannelConfigs(root.get(), description.config()->control_configs(),
+                      kQNameControl);
+    AddChannelConfigs(root.get(), description.config()->event_configs(),
+                      kQNameEvent);
+    AddChannelConfigs(root.get(), description.config()->video_configs(),
+                      kQNameVideo);
+    AddChannelConfigs(root.get(), description.config()->audio_configs(),
+                      kQNameAudio);
   }
 
   auto authentication_xml =
