@@ -69,7 +69,6 @@ function createImageDoodle(width: number = 500, height: number = 200): Doodle {
       shareUrl: 'https://foo.com',
     },
     description: 'Dummy',
-    interactive: null,
   };
 }
 

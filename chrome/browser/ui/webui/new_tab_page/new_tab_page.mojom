@@ -110,21 +110,10 @@ struct AllModeImageDoodle {
   url.mojom.Url share_url;
 };
 
-// An interactive doodle.
-struct InteractiveDoodle {
-  // URL pointing to doodle page.
-  url.mojom.Url url;
-  // Initial width and height of the doodle iframe in pixels.
-  uint32 width;
-  uint32 height;
-};
-
 // A doodle. Retrieved from the Google doodle server.
 struct Doodle {
   // Set for simple and animated doodles.
   AllModeImageDoodle? image;
-  // Set for interactive doodles.
-  InteractiveDoodle? interactive;
   // Localized description of the doodle.
   string description;
 };

@@ -838,7 +838,6 @@ TEST_F(NewTabPageHandlerTest, GetAnimatedDoodle) {
 
   ASSERT_TRUE(doodle);
   ASSERT_TRUE(doodle->image);
-  ASSERT_FALSE(doodle->interactive);
   EXPECT_EQ("data:light_mime_type;base64,bGlnaHQgaW1hZ2U=",
             doodle->image->light->image_url);
   EXPECT_EQ("https://doodle.com/light_animation",
@@ -863,22 +862,6 @@ TEST_F(NewTabPageHandlerTest, GetAnimatedDoodle) {
             doodle->image->dark->animation_impression_log_url);
   EXPECT_EQ("https://doodle.com/on_click_url", doodle->image->on_click_url);
   EXPECT_EQ("https://doodle.com/short_link", doodle->image->share_url);
-  EXPECT_EQ("alt text", doodle->description);
-}
-
-TEST_F(NewTabPageHandlerTest, GetInteractiveDoodle) {
-  search_provider_logos::EncodedLogo logo;
-  logo.metadata.type = search_provider_logos::LogoType::INTERACTIVE;
-  logo.metadata.full_page_url = GURL("https://doodle.com/full_page_url");
-  logo.metadata.iframe_width_px = 1;
-  logo.metadata.iframe_height_px = 2;
-  logo.metadata.alt_text = "alt text";
-
-  auto doodle = GetDoodle(logo);
-
-  EXPECT_EQ("https://doodle.com/full_page_url", doodle->interactive->url);
-  EXPECT_EQ(1u, doodle->interactive->width);
-  EXPECT_EQ(2u, doodle->interactive->height);
   EXPECT_EQ("alt text", doodle->description);
 }
 

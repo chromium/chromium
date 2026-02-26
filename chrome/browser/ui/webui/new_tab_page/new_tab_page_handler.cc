@@ -1199,13 +1199,6 @@ void NewTabPageHandler::OnLogoAvailable(
     }
     image_doodle->share_url = logo->metadata.short_link;
     doodle->image = std::move(image_doodle);
-  } else if (logo->metadata.type ==
-             search_provider_logos::LogoType::INTERACTIVE) {
-    auto interactive_doodle = new_tab_page::mojom::InteractiveDoodle::New();
-    interactive_doodle->url = logo->metadata.full_page_url;
-    interactive_doodle->width = logo->metadata.iframe_width_px;
-    interactive_doodle->height = logo->metadata.iframe_height_px;
-    doodle->interactive = std::move(interactive_doodle);
   } else {
     std::move(callback).Run(nullptr);
     return;
