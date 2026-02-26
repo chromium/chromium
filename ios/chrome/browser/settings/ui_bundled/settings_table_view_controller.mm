@@ -468,6 +468,10 @@ struct EnhancedSafeBrowsingActivePromoData
 
 - (void)viewIsAppearing:(BOOL)animated {
   [super viewIsAppearing:animated];
+  if (_settingsAreDismissed) {
+    return;
+  }
+
   // Update the `_safetyCheckItem` icon when returning to this view controller.
   [self updateSafetyCheckItemTrailingIcon];
   if (IsBottomOmniboxAvailable()) {
@@ -487,6 +491,10 @@ struct EnhancedSafeBrowsingActivePromoData
 
 - (void)viewDidAppear:(BOOL)animated {
   [super viewDidAppear:animated];
+  if (_settingsAreDismissed) {
+    return;
+  }
+
   [self maybeShowSigninIPH];
 }
 
