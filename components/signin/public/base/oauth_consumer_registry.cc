@@ -7,6 +7,7 @@
 #include "base/feature_list.h"
 #include "base/notreached.h"
 #include "components/contextual_tasks/public/features.h"
+#include "components/wallet/core/common/wallet_features.h"
 #include "google_apis/gaia/gaia_constants.h"
 
 namespace {
@@ -119,6 +120,7 @@ constexpr char kAshAutotestPrivateApiName[] = "ash_autotest_private_api";
 constexpr char kSyncDeviceStatisticsMetricsName[] =
     "sync_device_statistics_metrics";
 constexpr char kLegionServiceName[] = "legion_service";
+constexpr char kWalletPassesName[] = "wallet_passes";
 
 }  // namespace
 
@@ -537,6 +539,13 @@ OAuthConsumer OAuthConsumerRegistry::GetOAuthConsumerFromId(
       return OAuthConsumer(
           /*name=*/kLegionServiceName,
           /*scopes=*/{GaiaConstants::kLegionAuthScope});
+    case OAuthConsumerId::kWalletPasses: {
+      CHECK(
+          base::FeatureList::IsEnabled(wallet::kWalletApiPrivatePassesEnabled));
+      return signin::OAuthConsumer(
+          /*name=*/kWalletPassesName,
+          /*scopes=*/{GaiaConstants::kWalletPassesOAuth2Scope});
+    }
   }
 }
 
