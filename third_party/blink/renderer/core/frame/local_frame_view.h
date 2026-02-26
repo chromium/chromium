@@ -827,7 +827,7 @@ class CORE_EXPORT LocalFrameView final
   void NotifyVideoIsDominantVisibleStatus(HTMLVideoElement* element,
                                           bool is_dominant);
 
-  void DidPaintCanvasChild(HTMLCanvasElement& canvas, const Element& child);
+  void DidPaintCanvasChild(HTMLCanvasElement& canvas, Element& child);
   void RequestCanvasOnpaint(HTMLCanvasElement&);
 
   bool HasDominantVideoElement() const;
@@ -1143,6 +1143,8 @@ class CORE_EXPORT LocalFrameView final
 
   void EnqueueScrollSnapChangingFromImplIfNecessary();
 
+  void RunCanvasOnpaintSteps();
+
   typedef HeapHashSet<Member<LayoutEmbeddedContent>> EmbeddedContentSet;
   EmbeddedContentSet part_update_set_;
 
@@ -1314,13 +1316,13 @@ class CORE_EXPORT LocalFrameView final
 
   HeapHashSet<WeakMember<LifecycleNotificationObserver>> lifecycle_observers_;
 
-  // Set of Element children of <canvas> which painted in the current paint
-  // lifecycle update. This is cleared at the end of the lifecycle update. Used
-  // for `CanvasDrawElement`.
-  HeapHashSet<Member<const Element>> painted_canvas_child_elements_;
-  // Set of <canvas> elements which need to fire onpaint on the next lifecycle
+  // Map of canvas elements which need onpaint. The value is a set of children
+  // of the <canvas> which painted during the current paint lifecycle update.
+  // The set of children may be empty if the onpaint event has been requested
+  // with `requestPaint`. This map is cleared at the end of the lifecycle
   // update.
-  HeapHashSet<Member<HTMLCanvasElement>> canvas_elements_needing_onpaint_;
+  HeapHashMap<Member<HTMLCanvasElement>, HeapLinkedHashSet<Member<Element>>>
+      canvas_elements_needing_onpaint_;
   // True if we have canvas work, performed in the post-lifecycle steps, that
   // needs to happen prior to the impl commit. Cleared in DidBeginMainFrame.
   bool needs_post_lifecycle_steps_before_impl_commit_ = false;

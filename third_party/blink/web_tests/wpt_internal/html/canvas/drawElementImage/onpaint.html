@@ -63,8 +63,10 @@
     await waitForOneFrame();
 
     let onPaintCount = 0;
-    canvas.onpaint = () => {
+    let lastChanged = [];
+    canvas.onpaint = (event) => {
       onPaintCount++;
+      lastChanged = event.changedElements;
     };
 
     // 1. Make a change that causes a repaint.
@@ -73,6 +75,7 @@
     // 2. Wait a frame and assert that onpaint fires.
     await waitForOneFrame();
     assert_equals(onPaintCount, 1, 'onpaint should fire after a child changes.');
+    assert_array_equals(lastChanged, [child]);
 
     // 3. Wait another frame and assert that onpaint does not fire again.
     await waitForOneFrame();
@@ -84,8 +87,10 @@
     await waitForOneFrame();
 
     let onPaintCount = 0;
-    canvas.onpaint = () => {
+    let lastChanged = [];
+    canvas.onpaint = (event) => {
       onPaintCount++;
+      lastChanged = event.changedElements;
     };
 
     // 1. Make a change that causes a repaint.
@@ -94,6 +99,7 @@
     // 2. Wait a frame and assert that onpaint fires.
     await waitForOneFrame();
     assert_equals(onPaintCount, 1, 'onpaint should fire after a repaint.');
+    assert_array_equals(lastChanged, [child]);
 
     // 3. Wait another frame and assert that onpaint does not fire again.
     await waitForOneFrame();
@@ -156,8 +162,10 @@
     await waitForOneFrame();
 
     let onPaintCount = 0;
-    canvas.onpaint = () => {
+    let lastChanged = [];
+    canvas.onpaint = (event) => {
       onPaintCount++;
+      lastChanged = event.changedElements;
       child.style.transform = `translateX(${onPaintCount}px)`;
     };
 
@@ -168,6 +176,7 @@
     await waitForOneFrame();
     assert_equals(onPaintCount, 1, 'onpaint should fire after a repaint.');
     assert_equals(child.style.transform, 'translateX(1px)');
+    assert_array_equals(lastChanged, [child]);
 
     // 3. Wait another frame and assert that onpaint does not fire again.
     await waitForOneFrame();

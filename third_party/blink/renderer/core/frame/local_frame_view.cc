@@ -99,6 +99,7 @@
 #include "third_party/blink/renderer/core/fullscreen/fullscreen.h"
 #include "third_party/blink/renderer/core/highlight/highlight_registry.h"
 #include "third_party/blink/renderer/core/html/anchor_element_viewport_position_tracker.h"
+#include "third_party/blink/renderer/core/html/canvas/canvas_paint_event.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/core/html/fenced_frame/document_fenced_frames.h"
 #include "third_party/blink/renderer/core/html/fenced_frame/html_fenced_frame_element.h"
@@ -343,7 +344,6 @@ void LocalFrameView::Trace(Visitor* visitor) const {
   visitor->Trace(mobile_friendliness_checker_);
   visitor->Trace(tap_friendliness_checker_);
   visitor->Trace(lifecycle_observers_);
-  visitor->Trace(painted_canvas_child_elements_);
   visitor->Trace(canvas_elements_needing_onpaint_);
   visitor->Trace(fullscreen_video_elements_);
   visitor->Trace(pending_transform_updates_);
@@ -989,7 +989,23 @@ bool LocalFrameView::InvalidationDisallowed() const {
 }
 
 void LocalFrameView::WillBeginImplCommit() {
-  if (needs_post_lifecycle_steps_before_impl_commit_) {
+  bool needs_post_lifecycle_steps_before_impl_commit = false;
+  if (RuntimeEnabledFeatures::CanvasDrawElementEnabled()) {
+    ForAllNonThrottledLocalFrameViews(
+        [&needs_post_lifecycle_steps_before_impl_commit](
+            LocalFrameView& frame_view) -> bool {
+          if (!needs_post_lifecycle_steps_before_impl_commit &&
+              frame_view.canvas_elements_needing_onpaint_.empty()) {
+            // Keep traversing
+            return true;
+          }
+          needs_post_lifecycle_steps_before_impl_commit = true;
+          // Stop traversing
+          return false;
+        });
+  }
+
+  if (needs_post_lifecycle_steps_before_impl_commit) {
     RunPostLifecycleSteps();
     did_run_post_lifecycle_steps_before_impl_commit_ = true;
   }
@@ -999,7 +1015,6 @@ void LocalFrameView::DidBeginMainFrame() {
   if (!did_run_post_lifecycle_steps_before_impl_commit_) {
     RunPostLifecycleSteps();
   }
-  needs_post_lifecycle_steps_before_impl_commit_ = false;
   did_run_post_lifecycle_steps_before_impl_commit_ = false;
 }
 
@@ -1025,25 +1040,32 @@ void LocalFrameView::RunPostLifecycleSteps() {
     });
   }
 
-  if (RuntimeEnabledFeatures::CanvasDrawElementEnabled()) {
-    ForAllNonThrottledLocalFrameViews([](LocalFrameView& frame_view) {
-      if (frame_view.canvas_elements_needing_onpaint_.empty()) {
-        CHECK(frame_view.painted_canvas_child_elements_.empty());
-        return;
-      }
-      HeapHashSet<Member<HTMLCanvasElement>> painted_canvases;
-      painted_canvases.swap(frame_view.canvas_elements_needing_onpaint_);
-      // TODO(https://crbug.com/484345338): Pass the changed children to the
-      // onpaint event.
-      frame_view.painted_canvas_child_elements_.clear();
+  RunCanvasOnpaintSteps();
+}
 
-      // Script is allowed during onpaint.
-      ScriptForbiddenScope::AllowUserAgentScript allow_script;
-      for (const auto& canvas : painted_canvases) {
-        canvas->DispatchEvent(*Event::Create(event_type_names::kPaint));
-      }
-    });
+void LocalFrameView::RunCanvasOnpaintSteps() {
+  if (!RuntimeEnabledFeatures::CanvasDrawElementEnabled()) {
+    return;
   }
+
+  ForAllNonThrottledLocalFrameViews([](LocalFrameView& frame_view) {
+    if (frame_view.canvas_elements_needing_onpaint_.empty()) {
+      return;
+    }
+    HeapHashMap<Member<HTMLCanvasElement>, HeapLinkedHashSet<Member<Element>>>
+        canvas_elements_needing_onpaint;
+    canvas_elements_needing_onpaint.swap(
+        frame_view.canvas_elements_needing_onpaint_);
+
+    for (const auto& entry : canvas_elements_needing_onpaint) {
+      HTMLCanvasElement* canvas = entry.key;
+      const HeapVector<Member<Element>> children(entry.value);
+      CanvasPaintEventInit* init = CanvasPaintEventInit::Create();
+      init->setChangedElements(std::move(children));
+      canvas->DispatchEvent(
+          *CanvasPaintEvent::Create(event_type_names::kPaint, init));
+    }
+  });
 }
 
 void LocalFrameView::RunIntersectionObserverSteps() {
@@ -5025,21 +5047,23 @@ bool LocalFrameView::HasDominantVideoElement() const {
 }
 
 void LocalFrameView::DidPaintCanvasChild(HTMLCanvasElement& canvas,
-                                         const Element& child) {
+                                         Element& child) {
   DCHECK(RuntimeEnabledFeatures::CanvasDrawElementEnabled());
   if (IsUpdatingLifecycle()) {
-    painted_canvas_child_elements_.insert(&child);
-    canvas_elements_needing_onpaint_.insert(&canvas);
-    LocalFrameView* root_view = GetFrame().LocalFrameRoot().View();
-    root_view->needs_post_lifecycle_steps_before_impl_commit_ = true;
+    // HeapHashMap::insert does nothing if key is already present, so this
+    // won't overwrite an existing set if one exists.
+    canvas_elements_needing_onpaint_
+        .insert(&canvas, HeapLinkedHashSet<Member<Element>>())
+        .stored_value->value.insert(&child);
   }
 }
 
 void LocalFrameView::RequestCanvasOnpaint(HTMLCanvasElement& canvas) {
   DCHECK(RuntimeEnabledFeatures::CanvasDrawElementEnabled());
-  canvas_elements_needing_onpaint_.insert(&canvas);
-  LocalFrameView* root_view = GetFrame().LocalFrameRoot().View();
-  root_view->needs_post_lifecycle_steps_before_impl_commit_ = true;
+  // HeapHashMap::insert does nothing if key is already present, so this
+  // won't overwrite an existing set if one exists.
+  canvas_elements_needing_onpaint_.insert(&canvas,
+                                          HeapLinkedHashSet<Member<Element>>());
   ScheduleAnimation();
 }
 

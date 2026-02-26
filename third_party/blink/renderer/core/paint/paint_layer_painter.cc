@@ -635,7 +635,7 @@ PaintResult PaintLayerPainter::PaintChildren(
     }
 
     if (painting_canvas_child && child->SelfOrDescendantNeedsRepaint()) {
-      const auto* child_el = To<Element>(child->GetLayoutObject().GetNode());
+      auto* child_el = To<Element>(child->GetLayoutObject().GetNode());
       layout_object.GetFrameView()->DidPaintCanvasChild(*canvas, *child_el);
     }
   }
