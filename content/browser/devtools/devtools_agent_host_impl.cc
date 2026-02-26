@@ -60,10 +60,18 @@ DevToolsMap& GetDevtoolsInstances() {
   return *instance;
 }
 
-base::ObserverList<DevToolsAgentHostObserver>::Unchecked&
+// TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
+base::ObserverList<
+    DevToolsAgentHostObserver,
+    /*check_empty=*/false,
+    /*reentrancy=*/
+    base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>::Unchecked&
 GetDevtoolsObservers() {
-  static base::NoDestructor<
-      base::ObserverList<DevToolsAgentHostObserver>::Unchecked>
+  static base::NoDestructor<base::ObserverList<
+      DevToolsAgentHostObserver,
+      /*check_empty=*/false,
+      /*reentrancy=*/
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>::Unchecked>
       instance;
   return *instance;
 }
