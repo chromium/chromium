@@ -1414,7 +1414,7 @@ TEST_F(AmountExtractionManagerTest, AiAmountExtraction_LatencyMetrics_Failure) {
                                           .GetMainFrameDriver()
                                           ->GetPageUkmSourceId());
   histogram_tester.ExpectUniqueTimeSample(
-      "Autofill.AiAmountExtraction.Latency.Failed", kLatency, 1);
+      "Autofill.AiAmountExtraction.Latency.Failure", kLatency, 1);
 }
 
 TEST_F(AmountExtractionManagerTest,
