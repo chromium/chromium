@@ -27,7 +27,7 @@ webapps::WebappUninstallSource ConvertUninstallSourceToWebAppUninstallSource(
     case apps::UninstallSource::kShelf:
       return webapps::WebappUninstallSource::kShelf;
     case apps::UninstallSource::kMigration:
-      return webapps::WebappUninstallSource::kMigration;
+      return webapps::WebappUninstallSource::kUninstallAndReplaceMigration;
     case apps::UninstallSource::kUnknown:
       return webapps::WebappUninstallSource::kUnknown;
   }

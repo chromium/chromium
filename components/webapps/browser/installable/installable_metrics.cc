@@ -113,8 +113,8 @@ std::ostream& operator<<(std::ostream& os, WebappUninstallSource source) {
       return os << "Sync";
     case webapps::WebappUninstallSource::kAppManagement:
       return os << "App Management";
-    case webapps::WebappUninstallSource::kMigration:
-      return os << "Migration";
+    case webapps::WebappUninstallSource::kUninstallAndReplaceMigration:
+      return os << "Uninstall and Replace migration";
     case webapps::WebappUninstallSource::kAppList:
       return os << "App List";
     case webapps::WebappUninstallSource::kShelf:
@@ -159,7 +159,7 @@ std::ostream& operator<<(std::ostream& os, WebappUninstallSource source) {
 bool IsUserUninstall(WebappUninstallSource source) {
   switch (source) {
     case webapps::WebappUninstallSource::kSync:
-    case webapps::WebappUninstallSource::kMigration:
+    case webapps::WebappUninstallSource::kUninstallAndReplaceMigration:
     case webapps::WebappUninstallSource::kInternalPreinstalled:
     case webapps::WebappUninstallSource::kExternalPreinstalled:
     case webapps::WebappUninstallSource::kExternalPolicy:

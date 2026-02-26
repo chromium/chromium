@@ -362,7 +362,8 @@ INSTANTIATE_TEST_SUITE_P(
         UninstallSources({webapps::WebappUninstallSource::kAppsPage}),
         UninstallSources({webapps::WebappUninstallSource::kOsSettings}),
         UninstallSources({webapps::WebappUninstallSource::kAppManagement}),
-        UninstallSources({webapps::WebappUninstallSource::kMigration}),
+        UninstallSources(
+            {webapps::WebappUninstallSource::kUninstallAndReplaceMigration}),
         UninstallSources({webapps::WebappUninstallSource::kAppList}),
         UninstallSources({webapps::WebappUninstallSource::kShelf}),
         UninstallSources({webapps::WebappUninstallSource::kSync}),

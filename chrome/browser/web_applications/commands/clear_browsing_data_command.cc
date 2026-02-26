@@ -69,7 +69,7 @@ void ClearWebAppBrowsingData(const base::Time& begin_time,
   for (const WebApp& web_app :
        registrar->GetApps(WebAppFilter::IsAppSuggestedForMigration())) {
     scheduler->RemoveUserUninstallableManagements(
-        web_app.app_id(), webapps::WebappUninstallSource::kMigration,
+        web_app.app_id(), webapps::WebappUninstallSource::kAppMigration,
         base::DoNothing());
   }
 }

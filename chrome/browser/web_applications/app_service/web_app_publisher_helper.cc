@@ -317,7 +317,7 @@ apps::Readiness ConvertWebappUninstallSourceToReadiness(
     case webapps::WebappUninstallSource::kDevtools:
     case webapps::WebappUninstallSource::kAppMigration:
       return apps::Readiness::kUninstalledByUser;
-    case webapps::WebappUninstallSource::kMigration:
+    case webapps::WebappUninstallSource::kUninstallAndReplaceMigration:
     case webapps::WebappUninstallSource::kInternalPreinstalled:
     case webapps::WebappUninstallSource::kExternalPreinstalled:
     case webapps::WebappUninstallSource::kExternalPolicy:

@@ -191,8 +191,12 @@ enum class WebappUninstallSource {
   kAppManagement = 5,
 
   // Uninstalled because this app was replaced by another app specified via
-  // policy, maintaining app list positions and shelf pins.
-  kMigration = 6,
+  // policy, maintaining app list positions and shelf pins, for the
+  // `uninstall_and_replace` feature supported by web app policies via
+  // ExternalInstallOptions.
+  // This should not be mixed up with 'kAppMigration`, which is specifically
+  // related to the app origin migration feature for PWAs.
+  kUninstallAndReplaceMigration = 6,
 
   // App List (Launcher in ChromeOS).
   kAppList = 7,
@@ -253,7 +257,10 @@ enum class WebappUninstallSource {
   // When IWA is blocklisted it is automatically removed from the device.
   kIwaBlocklisted = 24,
 
-  // Removed because this app was migrated to be a different PWA.
+  // Removed because this app was migrated to be a different PWA, as per the app
+  // origin migration feature.
+  // To measure uninstalls via the `uninstall_and_replace` web app policy, use
+  // `kUninstallAndReplaceMigration` listed above instead.
   kAppMigration = 25,
 
   // Add any new values above this one.
