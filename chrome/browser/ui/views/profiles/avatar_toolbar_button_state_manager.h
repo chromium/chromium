@@ -32,6 +32,15 @@ class ColorProvider;
 
 class StateObserver;
 
+// Type of avatar icon returned by StateProvider::GetAvatarIcon().
+enum class AvatarIconType {
+  // The default placeholder silhouette (a pre-rasterized bitmap that cannot
+  // be re-colored by the view framework on state changes).
+  kPlaceholder,
+  // Any other icon (GAIA picture, account image, vector icon, etc.).
+  kNonPlaceholder,
+};
+
 // Provides the information needed to display a specific button state.
 // This class provides a default implementation for button appearance/behavior,
 // the derived classes can override any of the `StateProvider` methods to
@@ -75,8 +84,8 @@ class StateProvider {
   virtual std::optional<SkColor> GetHighlightTextColor(
       const ui::ColorProvider& color_provider) const;
 
-  // Returns the avatar icon.
-  virtual ui::ImageModel GetAvatarIcon(
+  // Returns the avatar icon and its type.
+  virtual std::pair<ui::ImageModel, AvatarIconType> GetAvatarIcon(
       int icon_size,
       SkColor /*icon_color*/,
       const ui::ColorProvider& color_provider) const;

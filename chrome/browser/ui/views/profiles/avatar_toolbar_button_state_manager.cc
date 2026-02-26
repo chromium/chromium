@@ -134,13 +134,15 @@ std::u16string GetShortProfileName(Profile& profile) {
   return signin_ui_util::GetShortProfileIdentityToDisplay(*entry, &profile);
 }
 
-gfx::Image GetProfileAvatarImage(Profile& profile,
-                                 const ui::ColorProvider& color_provider,
-                                 int preferred_size) {
+std::pair<gfx::Image, AvatarIconType> GetProfileAvatarImage(
+    Profile& profile,
+    const ui::ColorProvider& color_provider,
+    int preferred_size) {
   ProfileAttributesEntry* entry = GetProfileAttributesEntry(profile);
   if (!entry) {  // This can happen if the user deletes the current profile.
-    return ui::ResourceBundle::GetSharedInstance().GetImageNamed(
-        profiles::GetPlaceholderAvatarIconResourceID());
+    return {ui::ResourceBundle::GetSharedInstance().GetImageNamed(
+                profiles::GetPlaceholderAvatarIconResourceID()),
+            AvatarIconType::kPlaceholder};
   }
 
   // TODO(crbug.com/40102223): it should suffice to call entry->GetAvatarIcon().
@@ -149,7 +151,7 @@ gfx::Image GetProfileAvatarImage(Profile& profile,
   // being up to date (as the storage also observes IdentityManager so there's
   // no guarantee on the order of notifications).
   if (entry->IsUsingGAIAPicture() && entry->GetGAIAPicture()) {
-    return *entry->GetGAIAPicture();
+    return {*entry->GetGAIAPicture(), AvatarIconType::kNonPlaceholder};
   }
 
   // Show |user_identity_image| when the following conditions are satisfied:
@@ -162,14 +164,23 @@ gfx::Image GetProfileAvatarImage(Profile& profile,
       !IdentityManagerFactory::GetForProfile(&profile)->HasPrimaryAccount(
           signin::ConsentLevel::kSync) &&
       entry->IsUsingDefaultAvatar()) {
-    return gaia_account_image;
+    return {gaia_account_image, AvatarIconType::kNonPlaceholder};
   }
 
-  return entry->GetAvatarIcon(
-      preferred_size, /*use_high_res_file=*/true,
-      GetPlaceholderAvatarIconParamsDependingOnTheme(
-          ThemeServiceFactory::GetForProfile(&profile),
-          /*background_color_id=*/kColorToolbar, color_provider));
+  // At this point, no GAIA picture or account image overrides the avatar,
+  // so the icon type depends solely on the avatar index.
+  // TODO(crbug.com/487495473): Propagate returning AvatarIconType from
+  // ProfileAttributesEntry::GetAvatarIcon() instead of checking the index here.
+  const AvatarIconType icon_type =
+      entry->GetAvatarIconIndex() == profiles::GetPlaceholderAvatarIndex()
+          ? AvatarIconType::kPlaceholder
+          : AvatarIconType::kNonPlaceholder;
+  return {entry->GetAvatarIcon(
+              preferred_size, /*use_high_res_file=*/true,
+              GetPlaceholderAvatarIconParamsDependingOnTheme(
+                  ThemeServiceFactory::GetForProfile(&profile),
+                  /*background_color_id=*/kColorToolbar, color_provider)),
+          icon_type};
 }
 
 ui::ImageModel GetAvatarImageWithDottedRing(
@@ -179,7 +190,7 @@ ui::ImageModel GetAvatarImageWithDottedRing(
   // Square image with a dotted ring.
   gfx::ImageSkia image_with_ring = profiles::GetAvatarWithDottedRing(
       ui::ImageModel::FromImage(
-          GetProfileAvatarImage(profile, color_provider, icon_size)),
+          GetProfileAvatarImage(profile, color_provider, icon_size).first),
       icon_size,
       /*has_padding=*/false, /*has_background=*/false, color_provider);
   // Crop to a circle.
@@ -252,11 +263,12 @@ class GuestStateProvider : public PrivateBaseStateProvider {
     return color_provider.GetColor(kColorAvatarButtonHighlightGuestForeground);
   }
 
-  ui::ImageModel GetAvatarIcon(
+  std::pair<ui::ImageModel, AvatarIconType> GetAvatarIcon(
       int icon_size,
       SkColor /*icon_color*/,
       const ui::ColorProvider& /*color_provider*/) const override {
-    return profiles::GetGuestAvatar(icon_size);
+    return {profiles::GetGuestAvatar(icon_size),
+            AvatarIconType::kNonPlaceholder};
   }
 
   std::u16string GetAvatarTooltipText() const override {
@@ -293,12 +305,13 @@ class IncognitoStateProvider : public PrivateBaseStateProvider {
         kColorAvatarButtonHighlightIncognitoForeground);
   }
 
-  ui::ImageModel GetAvatarIcon(
+  std::pair<ui::ImageModel, AvatarIconType> GetAvatarIcon(
       int icon_size,
       SkColor icon_color,
       const ui::ColorProvider& /*color_provider*/) const override {
-    return ui::ImageModel::FromVectorIcon(kIncognitoRefreshMenuIcon, icon_color,
-                                          icon_size);
+    return {ui::ImageModel::FromVectorIcon(kIncognitoRefreshMenuIcon,
+                                           icon_color, icon_size),
+            AvatarIconType::kNonPlaceholder};
   }
 
   std::u16string GetAvatarTooltipText() const override {
@@ -1235,11 +1248,12 @@ class PasskeyStateProvider : public StateProvider,
     return color_provider.GetColor(kColorAvatarButtonHighlightPasskeysLocked);
   }
 
-  ui::ImageModel GetAvatarIcon(
+  std::pair<ui::ImageModel, AvatarIconType> GetAvatarIcon(
       int icon_size,
       SkColor /*icon_color*/,
       const ui::ColorProvider& color_provider) const override {
-    return GetAvatarImageWithDottedRing(profile(), color_provider, icon_size);
+    return {GetAvatarImageWithDottedRing(profile(), color_provider, icon_size),
+            AvatarIconType::kNonPlaceholder};
   }
 
   std::u16string GetAvatarTooltipText() const final {
@@ -1356,11 +1370,12 @@ class SyncErrorBaseStateProvider : public StateProvider,
     return color_provider.GetColor(kColorAvatarButtonHighlightSyncPaused);
   }
 
-  ui::ImageModel GetAvatarIcon(
+  std::pair<ui::ImageModel, AvatarIconType> GetAvatarIcon(
       int icon_size,
       SkColor /*icon_color*/,
       const ui::ColorProvider& color_provider) const override {
-    return GetAvatarImageWithDottedRing(profile(), color_provider, icon_size);
+    return {GetAvatarImageWithDottedRing(profile(), color_provider, icon_size),
+            AvatarIconType::kNonPlaceholder};
   }
 
   std::u16string GetAvatarTooltipText() const final {
@@ -1470,7 +1485,7 @@ class SyncPausedStateProvider : public SyncErrorBaseStateProvider {
     return l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SYNC_PAUSED);
   }
 
-  ui::ImageModel GetAvatarIcon(
+  std::pair<ui::ImageModel, AvatarIconType> GetAvatarIcon(
       int icon_size,
       SkColor icon_color,
       const ui::ColorProvider& color_provider) const override {
@@ -1567,7 +1582,7 @@ class GenericSyncErrorStateProvider : public SyncErrorBaseStateProvider {
     return SyncErrorBaseStateProvider::GetHighlightTextColor(color_provider);
   }
 
-  ui::ImageModel GetAvatarIcon(
+  std::pair<ui::ImageModel, AvatarIconType> GetAvatarIcon(
       int icon_size,
       SkColor icon_color,
       const ui::ColorProvider& color_provider) const override {
@@ -1674,11 +1689,12 @@ class SigninPendingStateProvider : public StateProvider,
     return color_provider.GetColor(kColorAvatarButtonHighlightSigninPaused);
   }
 
-  ui::ImageModel GetAvatarIcon(
+  std::pair<ui::ImageModel, AvatarIconType> GetAvatarIcon(
       int icon_size,
       SkColor /*icon_color*/,
       const ui::ColorProvider& color_provider) const override {
-    return GetAvatarImageWithDottedRing(profile(), color_provider, icon_size);
+    return {GetAvatarImageWithDottedRing(profile(), color_provider, icon_size),
+            AvatarIconType::kNonPlaceholder};
   }
 
   std::optional<std::u16string> GetAccessibilityLabel() const override {
@@ -1886,13 +1902,15 @@ std::optional<SkColor> StateProvider::GetHighlightTextColor(
   return color_provider.GetColor(kColorAvatarButtonHighlightDefaultForeground);
 }
 
-ui::ImageModel StateProvider::GetAvatarIcon(
+std::pair<ui::ImageModel, AvatarIconType> StateProvider::GetAvatarIcon(
     int icon_size,
     SkColor /*icon_color*/,
     const ui::ColorProvider& color_provider) const {
-  return ui::ImageModel::FromImage(profiles::GetSizedAvatarIcon(
-      GetProfileAvatarImage(profile(), color_provider, icon_size), icon_size,
-      icon_size, profiles::SHAPE_CIRCLE));
+  auto [image, icon_type] =
+      GetProfileAvatarImage(profile(), color_provider, icon_size);
+  return {ui::ImageModel::FromImage(profiles::GetSizedAvatarIcon(
+              image, icon_size, icon_size, profiles::SHAPE_CIRCLE)),
+          icon_type};
 }
 
 std::u16string StateProvider::GetAvatarTooltipText() const {
