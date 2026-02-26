@@ -8,7 +8,6 @@
 #include "chrome/browser/ash/app_list/arc/arc_app_test.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chromeos/ash/experiences/arc/arc_features.h"
 #include "chromeos/ash/experiences/arc/test/fake_app_instance.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -22,8 +21,6 @@ namespace arc {
 class ArcPackageInstallPiroirtyHanlderTest : public testing::Test {
  public:
   void SetUp() override {
-    feature_list_.InitAndEnableFeature(arc::kSyncInstallPriority);
-
     arc_app_test_ = std::make_unique<ArcAppTest>();
     arc_app_test_->PreProfileSetUp();
     testing_profile_ = std::make_unique<TestingProfile>();
@@ -40,7 +37,6 @@ class ArcPackageInstallPiroirtyHanlderTest : public testing::Test {
   ArcAppTest* arc_app_test() { return arc_app_test_.get(); }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> testing_profile_;
   std::unique_ptr<ArcAppTest> arc_app_test_;

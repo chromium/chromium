@@ -48,7 +48,6 @@
 #include "chrome/browser/ui/ash/shelf/shelf_controller_helper.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/ash/experiences/arc/arc_features.h"
 #include "chromeos/ash/experiences/arc/mojom/app.mojom.h"
 #include "chromeos/ash/experiences/arc/session/connection_holder.h"
 #include "chromeos/ash/experiences/arc/test/arc_util_test_support.h"
@@ -86,11 +85,6 @@ class AppServicePromiseAppItemBrowserTest
     : public extensions::PlatformAppBrowserTest,
       public PromiseAppRegistryCache::Observer {
  public:
-  AppServicePromiseAppItemBrowserTest() {
-    scoped_feature_list_.InitWithFeatures({arc::kSyncInstallPriority}, {});
-  }
-  ~AppServicePromiseAppItemBrowserTest() override = default;
-
   // extensions::PlatformAppBrowserTest:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     arc::SetArcAvailableCommandLineForTesting(command_line);
@@ -256,7 +250,6 @@ class AppServicePromiseAppItemBrowserTest
                           PromiseAppRegistryCache::Observer>
       obs_{this};
 
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<base::RunLoop> wait_run_loop_;
   net::EmbeddedTestServer https_server_;
 

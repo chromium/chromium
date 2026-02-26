@@ -6568,13 +6568,6 @@ inline constexpr char kArcRtVcpuQuadCoreDesc[] =
     "Enable ARC real time vCPU on a device with 3+ logical cores online to "
     "reduce media playback glitch.";
 
-inline constexpr char kArcSyncInstallPriorityName[] =
-    "Enable supporting install priority for synced ARC apps.";
-inline constexpr char kArcSyncInstallPriorityDescription[] =
-    "Enable supporting install priority for synced ARC apps. Pass install "
-    "priority to Play instead of using default install priority specified "
-    "in Play";
-
 inline constexpr char kArcVmMemorySizeName[] =
     "Enable custom ARCVM memory size";
 inline constexpr char kArcVmMemorySizeDesc[] =

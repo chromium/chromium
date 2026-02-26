@@ -258,12 +258,6 @@ BASE_FEATURE(kSkipDropCaches,
              "ArcSkipDropPageCache",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// When enabled, ARC will pass install priority to Play in sync install
-// requests.
-BASE_FEATURE(kSyncInstallPriority,
-             "ArcSyncInstallPriority",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, ARC will not be throttled when there is active audio stream
 // from ARC.
 BASE_FEATURE(kUnthrottleOnActiveAudioV2,

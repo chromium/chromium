@@ -603,10 +603,8 @@ ArcAppListPrefs::ArcAppListPrefs(
     net_host->SetArcAppMetadataProvider(this);
   }
 
-  if (base::FeatureList::IsEnabled(arc::kSyncInstallPriority)) {
-    install_priority_handler_ =
-        std::make_unique<arc::ArcPackageInstallPriorityHandler>(profile);
-  }
+  install_priority_handler_ =
+      std::make_unique<arc::ArcPackageInstallPriorityHandler>(profile);
 }
 
 ArcAppListPrefs::~ArcAppListPrefs() {
@@ -1561,10 +1559,7 @@ void ArcAppListPrefs::Shutdown() {
   if (policy_bridge)
     policy_bridge->RemoveObserver(this);
 
-  // TODO(lgcheng) remove the check once the feature is enabled.
-  if (install_priority_handler_) {
-    install_priority_handler_->Shutdown();
-  }
+  install_priority_handler_->Shutdown();
 
   arc::ArcSessionManager* arc_session_manager = arc::ArcSessionManager::Get();
   if (arc_session_manager) {
@@ -1675,10 +1670,7 @@ void ArcAppListPrefs::OnConnectionClosed() {
   package_list_initial_refreshed_ = false;
   app_list_refreshed_callback_.Reset();
 
-  // TODO(lgcheng) remove the check once the feature is enabled.
-  if (install_priority_handler_) {
-    install_priority_handler_->Clear();
-  }
+  install_priority_handler_->Clear();
 
   for (auto& observer : observer_list_)
     observer.OnAppConnectionClosed();
@@ -2487,10 +2479,7 @@ void ArcAppListPrefs::OnPackageAdded(
   packages_to_be_added_.erase(package_info->package_name);
   UpdateArcPackagesIsUpToDatePref();
 
-  // TODO(lgcheng) remove the check once the feature is enabled.
-  if (install_priority_handler_) {
-    install_priority_handler_->ClearPackage(package_info->package_name);
-  }
+  install_priority_handler_->ClearPackage(package_info->package_name);
 
   for (auto& observer : observer_list_)
     observer.OnPackageInstalled(*package_info);
