@@ -125,6 +125,20 @@ public final class DeviceInfo {
         return getInstance().mIDeviceInfo.isAutomotive;
     }
 
+    /**
+     * Checks whether the current device is a foldable device.
+     *
+     * <p><b>Limitation:</b> This implementation relies entirely on the presence of the {@code
+     * PackageManager.FEATURE_SENSOR_HINGE_ANGLE} system feature to identify foldables. Because this
+     * feature was officially introduced in Android 11 (API level 30), early foldable devices that
+     * launched on Android 9 or 10 (such as the original Samsung Galaxy Fold, Z Fold2, and Z Flip)
+     * use proprietary implementations instead of the standard AOSP hinge sensor feature.
+     * Consequently, this method will incorrectly return {@code false} for those specific legacy
+     * devices.
+     *
+     * @return {@code true} if the device is recognized by the OS as having a hinge angle sensor,
+     *     {@code false} otherwise (including on legacy Samsung foldables).
+     */
     public static boolean isFoldable() {
         return getInstance().mIDeviceInfo.isFoldable;
     }
