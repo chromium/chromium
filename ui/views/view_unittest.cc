@@ -2970,6 +2970,10 @@ TEST_F(ViewTest, GetCanProcessEventsWithinSubtree) {
 
   v_grandchild->SetCanProcessEventsWithinSubtree(false);
 
+  EXPECT_TRUE(v->GetCanProcessEventsWithinSubtree());
+  EXPECT_TRUE(v_child->GetCanProcessEventsWithinSubtree());
+  EXPECT_FALSE(v_grandchild->GetCanProcessEventsWithinSubtree());
+
   result_view = root_view->GetEventHandlerForRect(rect_in_v_grandchild);
   EXPECT_EQ(v_child, result_view);
   result_view = nullptr;
@@ -3008,6 +3012,10 @@ TEST_F(ViewTest, GetCanProcessEventsWithinSubtree) {
   v_grandchild->Reset();
   v_child->SetCanProcessEventsWithinSubtree(false);
 
+  EXPECT_TRUE(v->GetCanProcessEventsWithinSubtree());
+  EXPECT_FALSE(v_child->GetCanProcessEventsWithinSubtree());
+  EXPECT_FALSE(v_grandchild->GetCanProcessEventsWithinSubtree());
+
   result_view = root_view->GetEventHandlerForRect(rect_in_v_grandchild);
   EXPECT_EQ(v, result_view);
   result_view = nullptr;
@@ -3036,6 +3044,10 @@ TEST_F(ViewTest, GetCanProcessEventsWithinSubtree) {
   v_child->Reset();
   v->SetCanProcessEventsWithinSubtree(false);
 
+  EXPECT_FALSE(v->GetCanProcessEventsWithinSubtree());
+  EXPECT_FALSE(v_child->GetCanProcessEventsWithinSubtree());
+  EXPECT_FALSE(v_grandchild->GetCanProcessEventsWithinSubtree());
+
   result_view = root_view->GetEventHandlerForRect(rect_in_v_grandchild);
   EXPECT_EQ(root_view, result_view);
   result_view = nullptr;
@@ -3055,6 +3067,53 @@ TEST_F(ViewTest, GetCanProcessEventsWithinSubtree) {
   result_view = nullptr;
   result_view = root_view->GetTooltipHandlerForPoint(point_in_v);
   EXPECT_EQ(root_view, result_view);
+
+  widget->CloseNow();
+}
+
+TEST_F(ViewTest, CanProcessEventsWithinSubtree_DirectEvents) {
+  auto widget = std::make_unique<Widget>();
+  Widget::InitParams params = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_POPUP);
+  widget->Init(std::move(params));
+  View* root_view = widget->GetRootView();
+
+  TestView* parent = root_view->AddChildView(std::make_unique<TestView>());
+  parent->SetBounds(0, 0, 100, 100);
+
+  TestView* child = parent->AddChildView(std::make_unique<TestView>());
+  child->SetBounds(0, 0, 50, 50);
+
+  ui::MouseEvent mouse_event(ui::EventType::kMousePressed, gfx::Point(10, 10),
+                             gfx::Point(10, 10), base::TimeTicks::Now(),
+                             ui::EF_LEFT_MOUSE_BUTTON,
+                             ui::EF_LEFT_MOUSE_BUTTON);
+
+  // Both should accept events.
+  EXPECT_TRUE(parent->CanAcceptEvent(mouse_event));
+  EXPECT_TRUE(child->CanAcceptEvent(mouse_event));
+
+  // Sending event directly should dispatch to TestView's overrides.
+  child->Reset();
+  child->OnEvent(&mouse_event);
+  EXPECT_EQ(ui::EventType::kMousePressed, child->last_mouse_event_type_);
+
+  // Disable processing on the parent.
+  parent->SetCanProcessEventsWithinSubtree(false);
+
+  // Now, both the parent and the child should reject the event via
+  // CanAcceptEvent.
+  EXPECT_FALSE(parent->CanAcceptEvent(mouse_event));
+  EXPECT_FALSE(child->CanAcceptEvent(mouse_event));
+
+  // The event should be "eaten" by OnEvent without dispatching to OnMouseEvent.
+  child->Reset();
+  ui::MouseEvent mouse_event2(ui::EventType::kMouseReleased, gfx::Point(10, 10),
+                              gfx::Point(10, 10), base::TimeTicks::Now(),
+                              ui::EF_LEFT_MOUSE_BUTTON,
+                              ui::EF_LEFT_MOUSE_BUTTON);
+  child->OnEvent(&mouse_event2);
+  EXPECT_EQ(ui::EventType::kUnknown, child->last_mouse_event_type_);
 
   widget->CloseNow();
 }
