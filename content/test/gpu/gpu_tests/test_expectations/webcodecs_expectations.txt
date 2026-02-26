@@ -346,6 +346,9 @@ crbug.com/473593123 [ mac apple-angle-metal-renderer:-apple-m2 ] WebCodecs_Encod
 # Mac ASAN Intel flaky timeouts
 crbug.com/476389233 [ mac intel-0x3e9b asan angle-opengl graphite-disabled ] WebCodecs_EncodingRateControl_hvc1.1.6.L123.00_prefer-software_* [ Slow ]
 
+# EncodingError: Decoding error.
+crbug.com/487768758 [ amd-0x7480 linux ] WebCodecs_cropEncode_hw_decoder_prefer-software [ Failure ]
+
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################
