@@ -1582,7 +1582,7 @@ void AccessibilityManager::UpdateBrailleImeState() {
     return;
   PrefService* pref_service = profile_->GetPrefs();
   std::string preload_engines_str =
-      pref_service->GetString(::prefs::kLanguagePreloadEngines);
+      pref_service->GetString(ash::prefs::kLanguagePreloadEngines);
   std::vector<std::string_view> preload_engines = base::SplitStringPiece(
       preload_engines_str, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
   std::vector<std::string_view>::iterator it = std::ranges::find(
@@ -1596,7 +1596,7 @@ void AccessibilityManager::UpdateBrailleImeState() {
     preload_engines.push_back(extension_ime_util::kBrailleImeEngineId);
   else
     preload_engines.erase(it);
-  pref_service->SetString(::prefs::kLanguagePreloadEngines,
+  pref_service->SetString(ash::prefs::kLanguagePreloadEngines,
                           base::JoinString(preload_engines, ","));
   braille_ime_current_ = false;
 }

@@ -7,12 +7,12 @@
 #include <string>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "base/feature_list.h"
 #include "base/strings/strcat.h"
 #include "base/values.h"
 #include "chrome/browser/ash/input_method/input_method_settings.h"
 #include "chrome/browser/ash/input_method/input_method_settings_consts.h"
-#include "chrome/common/pref_names.h"
 #include "components/prefs/scoped_user_pref_update.h"
 
 namespace ash::input_method {
@@ -23,7 +23,7 @@ AutocorrectPreference GetAutocorrectPrefFor(
     const PrefService& pref_service,
     const std::string& engine_id) {
   const base::DictValue& input_method_settings =
-      pref_service.GetDict(prefs::kLanguageInputMethodSpecificSettings);
+      pref_service.GetDict(ash::prefs::kLanguageInputMethodSpecificSettings);
   const base::Value* autocorrect_level = input_method_settings.FindByDottedPath(
       base::StrCat({engine_id, ".", autocorrect_pref_path}));
 
@@ -46,7 +46,7 @@ bool IsPkAutocorrectEnabledByDefault(const PrefService& pref_service,
   }
 
   const base::DictValue& settings =
-      pref_service.GetDict(prefs::kLanguageInputMethodSpecificSettings);
+      pref_service.GetDict(ash::prefs::kLanguageInputMethodSpecificSettings);
   const base::Value* enabled_by_default = settings.FindByDottedPath(
       base::StrCat({engine_id, ".", kPkAutocorrectEnabledByDefaultPrefName}));
 
@@ -88,7 +88,7 @@ bool SetPhysicalKeyboardAutocorrectAsEnabledByDefault(
   }
   base::Value* result =
       ScopedDictPrefUpdate(pref_service,
-                           prefs::kLanguageInputMethodSpecificSettings)
+                           ash::prefs::kLanguageInputMethodSpecificSettings)
           ->SetByDottedPath(
               base::StrCat(
                   {engine_id, ".", kPkAutocorrectEnabledByDefaultPrefName}),

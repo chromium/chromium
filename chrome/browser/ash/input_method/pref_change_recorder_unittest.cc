@@ -7,12 +7,12 @@
 #include <optional>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/input_method/autocorrect_enums.h"
 #include "chrome/browser/ash/input_method/autocorrect_prefs.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/test/browser_task_environment.h"
@@ -34,14 +34,14 @@ class FakeInputMethodOptions {
 
   void SetPkAutocorrectLevel(int autocorrect_level) {
     ScopedDictPrefUpdate(pref_service_,
-                         prefs::kLanguageInputMethodSpecificSettings)
+                         ash::prefs::kLanguageInputMethodSpecificSettings)
         ->SetByDottedPath(engine_id_ + ".physicalKeyboardAutoCorrectionLevel",
                           base::Value(autocorrect_level));
   }
 
   void SetVkAutocorrectLevel(int autocorrect_level) {
     ScopedDictPrefUpdate(pref_service_,
-                         prefs::kLanguageInputMethodSpecificSettings)
+                         ash::prefs::kLanguageInputMethodSpecificSettings)
         ->SetByDottedPath(engine_id_ + ".virtualKeyboardAutoCorrectionLevel",
                           base::Value(autocorrect_level));
   }

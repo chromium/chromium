@@ -7,12 +7,12 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/values.h"
 #include "chrome/browser/ash/input_method/autocorrect_prefs.h"
-#include "chrome/common/pref_names.h"
 
 namespace ash::input_method {
 namespace {
@@ -35,8 +35,8 @@ struct AutocorrectPrefChange {
 AutocorrectPrefs ExtractAutocorrectPrefs(PrefService* pref_service) {
   AutocorrectPrefs autocorrect_prefs;
 
-  for (const auto [engine_id, _] :
-       pref_service->GetDict(prefs::kLanguageInputMethodSpecificSettings)) {
+  for (const auto [engine_id, _] : pref_service->GetDict(
+           ash::prefs::kLanguageInputMethodSpecificSettings)) {
     autocorrect_prefs.insert(
         {base::StrCat({engine_id, ".VirtualKeyboard"}),
          AutocorrectPrefDetails{

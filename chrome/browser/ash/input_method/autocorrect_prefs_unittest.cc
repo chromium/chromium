@@ -10,7 +10,6 @@
 #include "base/strings/strcat.h"
 #include "base/values.h"
 #include "chrome/browser/ash/input_method/autocorrect_enums.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -25,7 +24,7 @@ constexpr char kFranceFrench[] = "xkb:fr::fra";
 
 void SetManagedPkAutocorrectAllowed(Profile& profile, bool allowed) {
   profile.GetPrefs()->SetBoolean(
-      prefs::kManagedPhysicalKeyboardAutocorrectAllowed, allowed);
+      ash::prefs::kManagedPhysicalKeyboardAutocorrectAllowed, allowed);
 }
 
 void SetAutocorrectLevelTo(Profile& profile,
@@ -35,7 +34,7 @@ void SetAutocorrectLevelTo(Profile& profile,
   base::DictValue input_method_setting;
   input_method_setting.SetByDottedPath(
       base::StrCat({engine_id, ".", pref_name}), autocorrect_level);
-  profile.GetPrefs()->Set(::prefs::kLanguageInputMethodSpecificSettings,
+  profile.GetPrefs()->Set(ash::prefs::kLanguageInputMethodSpecificSettings,
                           base::Value(std::move(input_method_setting)));
 }
 

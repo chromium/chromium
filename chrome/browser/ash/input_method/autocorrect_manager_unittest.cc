@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/input_method/autocorrect_manager.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "base/functional/callback_helpers.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -14,7 +15,6 @@
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/ui/ash/input_method/suggestion_details.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/services/ime/public/cpp/autocorrect.h"
@@ -424,7 +424,7 @@ void SetAutocorrectPreferenceTo(Profile& profile,
   base::DictValue input_method_setting;
   input_method_setting.SetByDottedPath(
       engine_id + ".physicalKeyboardAutoCorrectionLevel", autocorrect_level);
-  profile.GetPrefs()->Set(::prefs::kLanguageInputMethodSpecificSettings,
+  profile.GetPrefs()->Set(ash::prefs::kLanguageInputMethodSpecificSettings,
                           base::Value(std::move(input_method_setting)));
 }
 

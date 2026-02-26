@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/input_method/input_method_persistence.h"
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/logging.h"
@@ -15,7 +16,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/login/login_screen_client_impl.h"
-#include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/language_preferences/language_preferences.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
@@ -123,7 +123,8 @@ void InputMethodPersistence::SetUserLastLoginInputMethodId(
 
   // TODO(https://crbug.com/1121565): Create more general fix for all the data
   // that is required on the lock screen.
-  profile->GetPrefs()->SetString(prefs::kLastLoginInputMethod, input_method_id);
+  profile->GetPrefs()->SetString(ash::prefs::kLastLoginInputMethod,
+                                 input_method_id);
   SetUserLastInputMethodPreference(*local_state_, GetUserAccount(profile),
                                    input_method_id);
 }
@@ -145,14 +146,15 @@ void InputMethodPersistence::PersistUserInputMethod(
   SetUserLastLoginInputMethodId(input_method_id, profile);
 
   const std::string current_input_method_id_on_pref =
-      user_prefs->GetString(::prefs::kLanguageCurrentInputMethod);
+      user_prefs->GetString(ash::prefs::kLanguageCurrentInputMethod);
   if (current_input_method_id_on_pref == input_method_id) {
     return;
   }
 
-  user_prefs->SetString(::prefs::kLanguagePreviousInputMethod,
+  user_prefs->SetString(ash::prefs::kLanguagePreviousInputMethod,
                         current_input_method_id_on_pref);
-  user_prefs->SetString(::prefs::kLanguageCurrentInputMethod, input_method_id);
+  user_prefs->SetString(ash::prefs::kLanguageCurrentInputMethod,
+                        input_method_id);
 }
 
 // static

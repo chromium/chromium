@@ -18,7 +18,6 @@
 #include "chrome/browser/ash/input_method/autocorrect_prefs.h"
 #include "chrome/browser/ash/input_method/input_method_settings_consts.h"
 #include "chrome/browser/ash/input_method/japanese_settings.h"
-#include "chrome/common/pref_names.h"
 #include "components/prefs/scoped_user_pref_update.h"
 
 namespace ash {
@@ -339,7 +338,7 @@ mojom::InputMethodSettingsPtr CreateSettingsFromPrefs(
       engine_id == kJapaneseUsEngineId ? kJapaneseEngineId : engine_id;
 
   const base::DictValue* ime_prefs_ptr =
-      prefs.GetDict(::prefs::kLanguageInputMethodSpecificSettings)
+      prefs.GetDict(ash::prefs::kLanguageInputMethodSpecificSettings)
           .FindDict(lookup_engine_id);
 
   base::DictValue default_dict;
@@ -408,19 +407,20 @@ bool IsAutocorrectSupported(const std::string& engine_id) {
 
 bool IsPhysicalKeyboardAutocorrectAllowed(const PrefService& prefs) {
   if (!prefs.FindPreference(
-          prefs::kManagedPhysicalKeyboardAutocorrectAllowed)) {
+          ash::prefs::kManagedPhysicalKeyboardAutocorrectAllowed)) {
     return true;
   }
-  return prefs.GetBoolean(prefs::kManagedPhysicalKeyboardAutocorrectAllowed);
+  return prefs.GetBoolean(
+      ash::prefs::kManagedPhysicalKeyboardAutocorrectAllowed);
 }
 
 bool IsPhysicalKeyboardPredictiveWritingAllowed(const PrefService& prefs) {
   if (!prefs.FindPreference(
-          prefs::kManagedPhysicalKeyboardPredictiveWritingAllowed)) {
+          ash::prefs::kManagedPhysicalKeyboardPredictiveWritingAllowed)) {
     return true;
   }
   return prefs.GetBoolean(
-      prefs::kManagedPhysicalKeyboardPredictiveWritingAllowed);
+      ash::prefs::kManagedPhysicalKeyboardPredictiveWritingAllowed);
 }
 
 }  // namespace input_method

@@ -22,7 +22,6 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -122,13 +121,13 @@ class NativeInputMethodEngineWithoutImeServiceTest
 
     profile_ = browser()->profile();
     prefs_ = profile_->GetPrefs();
-    prefs_->Set(::prefs::kLanguageInputMethodSpecificSettings,
+    prefs_->Set(ash::prefs::kLanguageInputMethodSpecificSettings,
                 base::Value(base::Value::Type::DICT));
     engine_->Initialize(std::move(observer), /*extension_id=*/"", profile_);
 
     // Ensure predictive writing is off to stop tests from attempting to
     // load the shared library.
-    prefs_->SetBoolean(prefs::kAssistPredictiveWritingEnabled, false);
+    prefs_->SetBoolean(ash::prefs::kAssistPredictiveWritingEnabled, false);
 
     InProcessBrowserTest::SetUpOnMainThread();
   }
@@ -220,7 +219,7 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineWithoutImeServiceTest,
     base::DictValue pinyin1;
     pinyin1.Set("foo", true);
     settings.SetByDottedPath("pinyin", std::move(pinyin1));
-    prefs_->Set(::prefs::kLanguageInputMethodSpecificSettings,
+    prefs_->Set(ash::prefs::kLanguageInputMethodSpecificSettings,
                 base::Value(std::move(settings)));
     EXPECT_EQ(observer_->changed_engine_id(), "pinyin");
     observer_->ClearChangedEngineId();
@@ -231,7 +230,7 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineWithoutImeServiceTest,
     base::DictValue pinyin2;
     pinyin2.Set("foo", false);
     settings.SetByDottedPath("pinyin", std::move(pinyin2));
-    prefs_->Set(::prefs::kLanguageInputMethodSpecificSettings,
+    prefs_->Set(ash::prefs::kLanguageInputMethodSpecificSettings,
                 base::Value(std::move(settings)));
     EXPECT_EQ(observer_->changed_engine_id(), "pinyin");
   }

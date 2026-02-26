@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/input_method/input_method_persistence.h"
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/command_line.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -11,7 +12,6 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_switches.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -59,10 +59,12 @@ class InputMethodPersistenceTest : public testing::Test {
   void VerifyPrefs(const std::string& current_input_method,
                    const std::string& previous_input_method,
                    const std::string& preferred_keyboard_layout) {
-    EXPECT_EQ(current_input_method,
-              mock_user_prefs_->GetString(prefs::kLanguageCurrentInputMethod));
-    EXPECT_EQ(previous_input_method,
-              mock_user_prefs_->GetString(prefs::kLanguagePreviousInputMethod));
+    EXPECT_EQ(
+        current_input_method,
+        mock_user_prefs_->GetString(ash::prefs::kLanguageCurrentInputMethod));
+    EXPECT_EQ(
+        previous_input_method,
+        mock_user_prefs_->GetString(ash::prefs::kLanguagePreviousInputMethod));
     EXPECT_EQ(preferred_keyboard_layout,
               g_browser_process->local_state()->GetString(
                   language_prefs::kPreferredKeyboardLayout));

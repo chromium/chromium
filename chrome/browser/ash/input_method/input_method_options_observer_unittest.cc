@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/input_method/input_method_options_observer.h"
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/functional/callback.h"
 #include "base/test/bind.h"
 #include "chrome/common/pref_names.h"
@@ -17,14 +18,14 @@ namespace {
 
 void SetAutocorrectLevel(PrefService* pref_service, int autocorrect_level) {
   ScopedDictPrefUpdate(pref_service,
-                       prefs::kLanguageInputMethodSpecificSettings)
+                       ash::prefs::kLanguageInputMethodSpecificSettings)
       ->SetByDottedPath("xkb:us::eng.physicalKeyboardAutoCorrectionLevel",
                         base::Value(autocorrect_level));
 }
 
 void SetPredictiveWriting(PrefService* pref_service, bool enabled) {
   ScopedDictPrefUpdate(pref_service,
-                       prefs::kLanguageInputMethodSpecificSettings)
+                       ash::prefs::kLanguageInputMethodSpecificSettings)
       ->SetByDottedPath("xkb:us::eng.physicalKeyboardEnabledPredictiveWriting",
                         base::Value(enabled));
 }
@@ -62,10 +63,11 @@ TEST_F(InputMethodOptionsObserverTest,
       [&](const std::string& pref_path) { num_calls_received++; }));
 
   // Update some random preferences that should not be observed.
-  pref_service->Set(prefs::kLabsAdvancedFilesystemEnabled, base::Value(true));
-  pref_service->Set(prefs::kLabsAdvancedFilesystemEnabled, base::Value(false));
-  pref_service->Set(prefs::kShowMobileDataNotification, base::Value(true));
-  pref_service->Set(prefs::kShowMobileDataNotification, base::Value(false));
+  pref_service->Set(::prefs::kLabsAdvancedFilesystemEnabled, base::Value(true));
+  pref_service->Set(::prefs::kLabsAdvancedFilesystemEnabled,
+                    base::Value(false));
+  pref_service->Set(::prefs::kShowMobileDataNotification, base::Value(true));
+  pref_service->Set(::prefs::kShowMobileDataNotification, base::Value(false));
 
   EXPECT_EQ(num_calls_received, 0);
 }

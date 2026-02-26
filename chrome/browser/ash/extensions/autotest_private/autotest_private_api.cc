@@ -554,7 +554,7 @@ std::string SetAllowedPref(Profile* profile,
     DCHECK(value.is_list());
   } else if (pref_name == ash::prefs::kEnableAutoScreenLock) {
     DCHECK(value.is_bool());
-  } else if (pref_name == prefs::kLanguagePreloadEngines) {
+  } else if (pref_name == ash::prefs::kLanguagePreloadEngines) {
     DCHECK(value.is_string());
   } else if (pref_name == plugin_vm::prefs::kPluginVmCameraAllowed) {
     DCHECK(value.is_bool());

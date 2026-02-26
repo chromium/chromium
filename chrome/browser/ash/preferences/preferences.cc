@@ -268,15 +268,15 @@ void Preferences::RegisterProfilePrefs(
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
   // We don't sync ::prefs::kLanguageCurrentInputMethod and PreviousInputMethod
   // because they're just used to track the logout state of the device.
-  registry->RegisterStringPref(::prefs::kLanguageCurrentInputMethod, "");
-  registry->RegisterStringPref(::prefs::kLanguagePreviousInputMethod, "");
-  registry->RegisterListPref(::prefs::kLanguageAllowedInputMethods);
+  registry->RegisterStringPref(ash::prefs::kLanguageCurrentInputMethod, "");
+  registry->RegisterStringPref(ash::prefs::kLanguagePreviousInputMethod, "");
+  registry->RegisterListPref(ash::prefs::kLanguageAllowedInputMethods);
   registry->RegisterBooleanPref(
-      ::prefs::kLanguageAllowedInputMethodsForceEnabled, false);
+      ash::prefs::kLanguageAllowedInputMethodsForceEnabled, false);
   registry->RegisterListPref(::prefs::kAllowedLanguages);
-  registry->RegisterStringPref(::prefs::kLanguagePreloadEngines,
+  registry->RegisterStringPref(ash::prefs::kLanguagePreloadEngines,
                                hardware_keyboard_id);
-  registry->RegisterStringPref(::prefs::kLanguageEnabledImes, "");
+  registry->RegisterStringPref(ash::prefs::kLanguageEnabledImes, "");
   registry->RegisterDictionaryPref(prefs::kAssistiveInputFeatureSettings);
   registry->RegisterBooleanPref(prefs::kAssistPersonalInfoEnabled, true);
   registry->RegisterBooleanPref(prefs::kAssistPredictiveWritingEnabled, true);
@@ -306,7 +306,7 @@ void Preferences::RegisterProfilePrefs(
   registry->RegisterDictionaryPref(prefs::kEmojiPickerHistory);
   registry->RegisterDictionaryPref(prefs::kEmojiPickerPreferences);
   registry->RegisterDictionaryPref(
-      ::prefs::kLanguageInputMethodSpecificSettings);
+      ash::prefs::kLanguageInputMethodSpecificSettings);
   registry->RegisterBooleanPref(prefs::kLastUsedImeShortcutReminderDismissed,
                                 false);
   registry->RegisterBooleanPref(prefs::kNextImeShortcutReminderDismissed,
@@ -436,7 +436,7 @@ void Preferences::RegisterProfilePrefs(
   registry->RegisterBooleanPref(
       chromeos::prefs::kCaptivePortalAuthenticationIgnoresProxy, true);
 
-  registry->RegisterBooleanPref(::prefs::kLanguageImeMenuActivated, false);
+  registry->RegisterBooleanPref(ash::prefs::kLanguageImeMenuActivated, false);
 
   registry->RegisterInt64Pref(::prefs::kHatsLastInteractionTimestamp, 0);
 
@@ -725,20 +725,21 @@ void Preferences::InitUserPrefs(sync_preferences::PrefServiceSyncable* prefs) {
       prefs::kTouchpadHapticClickSensitivity, prefs, callback);
   download_default_directory_.Init(::prefs::kDownloadDefaultDirectory, prefs,
                                    callback);
-  preload_engines_.Init(::prefs::kLanguagePreloadEngines, prefs, callback);
-  enabled_imes_.Init(::prefs::kLanguageEnabledImes, prefs, callback);
-  current_input_method_.Init(::prefs::kLanguageCurrentInputMethod, prefs,
+  preload_engines_.Init(ash::prefs::kLanguagePreloadEngines, prefs, callback);
+  enabled_imes_.Init(ash::prefs::kLanguageEnabledImes, prefs, callback);
+  current_input_method_.Init(ash::prefs::kLanguageCurrentInputMethod, prefs,
                              callback);
-  previous_input_method_.Init(::prefs::kLanguagePreviousInputMethod, prefs,
+  previous_input_method_.Init(ash::prefs::kLanguagePreviousInputMethod, prefs,
                               callback);
-  allowed_input_methods_.Init(::prefs::kLanguageAllowedInputMethods, prefs,
+  allowed_input_methods_.Init(ash::prefs::kLanguageAllowedInputMethods, prefs,
                               callback);
   allowed_input_methods_force_enabled_.Init(
-      ::prefs::kLanguageAllowedInputMethodsForceEnabled, prefs, callback);
+      ash::prefs::kLanguageAllowedInputMethodsForceEnabled, prefs, callback);
   allowed_languages_.Init(::prefs::kAllowedLanguages, prefs, callback);
   preferred_languages_.Init(language::prefs::kPreferredLanguages, prefs,
                             callback);
-  ime_menu_activated_.Init(::prefs::kLanguageImeMenuActivated, prefs, callback);
+  ime_menu_activated_.Init(ash::prefs::kLanguageImeMenuActivated, prefs,
+                           callback);
   // Notifies the system tray to remove the IME items.
   if (ime_menu_activated_.GetValue()) {
     input_method::InputMethodManager::Get()->ImeMenuActivationChanged(true);
@@ -1180,8 +1181,8 @@ void Preferences::ApplyPreferences(ApplyReason reason,
   }
 
   if (reason != REASON_PREF_CHANGED ||
-      pref_name == ::prefs::kLanguageAllowedInputMethods ||
-      pref_name == ::prefs::kLanguageAllowedInputMethodsForceEnabled) {
+      pref_name == ash::prefs::kLanguageAllowedInputMethods ||
+      pref_name == ash::prefs::kLanguageAllowedInputMethodsForceEnabled) {
     const std::vector<std::string> allowed_input_methods =
         allowed_input_methods_.GetValue();
     const bool allowed_input_methods_force_enabled =
@@ -1223,7 +1224,7 @@ void Preferences::ApplyPreferences(ApplyReason reason,
     locale_util::RemoveDisallowedLanguagesFromPreferred(prefs_);
   }
 
-  if (pref_name == ::prefs::kLanguagePreloadEngines &&
+  if (pref_name == ash::prefs::kLanguagePreloadEngines &&
       reason == REASON_PREF_CHANGED) {
     SetLanguageConfigStringListAsCSV(language_prefs::kGeneralSectionName,
                                      language_prefs::kPreloadEnginesConfigName,
@@ -1231,7 +1232,7 @@ void Preferences::ApplyPreferences(ApplyReason reason,
   }
 
   if ((reason == REASON_INITIALIZATION) ||
-      (pref_name == ::prefs::kLanguageEnabledImes &&
+      (pref_name == ash::prefs::kLanguageEnabledImes &&
        reason == REASON_PREF_CHANGED)) {
     std::string value(enabled_imes_.GetValue());
 
@@ -1243,7 +1244,7 @@ void Preferences::ApplyPreferences(ApplyReason reason,
     ime_state_->SetEnabledExtensionImes(split_values);
   }
 
-  if (pref_name == ::prefs::kLanguageImeMenuActivated &&
+  if (pref_name == ash::prefs::kLanguageImeMenuActivated &&
       (reason == REASON_PREF_CHANGED || reason == REASON_ACTIVE_USER_CHANGED)) {
     const bool activated = ime_menu_activated_.GetValue();
     input_method::InputMethodManager::Get()->ImeMenuActivationChanged(

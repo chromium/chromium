@@ -11,6 +11,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -36,7 +37,6 @@
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/extensions/api/input_method_private.h"
-#include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/language_packs/handwriting.h"
 #include "chromeos/ash/components/language_packs/language_pack_manager.h"
 #include "chromeos/components/kiosk/kiosk_utils.h"
@@ -132,7 +132,7 @@ InputMethodPrivateGetInputMethodConfigFunction::Run() {
   output.Set("isImeMenuActivated",
              Profile::FromBrowserContext(browser_context())
                  ->GetPrefs()
-                 ->GetBoolean(prefs::kLanguageImeMenuActivated));
+                 ->GetBoolean(ash::prefs::kLanguageImeMenuActivated));
   return RespondNow(WithArguments(std::move(output)));
 }
 
@@ -373,7 +373,7 @@ ExtensionFunction::ResponseAction InputMethodPrivateGetSettingsFunction::Run() {
   const base::DictValue& input_methods =
       Profile::FromBrowserContext(browser_context())
           ->GetPrefs()
-          ->GetDict(prefs::kLanguageInputMethodSpecificSettings);
+          ->GetDict(ash::prefs::kLanguageInputMethodSpecificSettings);
   const base::DictValue* engine_result =
       input_methods.FindDictByDottedPath(params->engine_id);
   base::Value result;
@@ -401,7 +401,7 @@ ExtensionFunction::ResponseAction InputMethodPrivateSetSettingsFunction::Run() {
 
   ScopedDictPrefUpdate update(
       Profile::FromBrowserContext(browser_context())->GetPrefs(),
-      prefs::kLanguageInputMethodSpecificSettings);
+      ash::prefs::kLanguageInputMethodSpecificSettings);
   update->SetByDottedPath(params->engine_id, params->settings.ToValue());
 
   // The router will only send the event to extensions that are listening.

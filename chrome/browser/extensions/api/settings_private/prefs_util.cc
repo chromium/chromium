@@ -478,7 +478,7 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
   (*s_allowlist)[translate::prefs::kPrefAlwaysTranslateList] =
       settings_api::PrefType::kList;
 #if BUILDFLAG(IS_CHROMEOS)
-  (*s_allowlist)[::prefs::kLanguageImeMenuActivated] =
+  (*s_allowlist)[ash::prefs::kLanguageImeMenuActivated] =
       settings_api::PrefType::kBoolean;
   (*s_allowlist)[ash::prefs::kAssistPersonalInfoEnabled] =
       settings_api::PrefType::kBoolean;
@@ -487,7 +487,7 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
   (*s_allowlist)[ash::prefs::kOrcaEnabled] = settings_api::PrefType::kBoolean;
   (*s_allowlist)[ash::prefs::kEmojiSuggestionEnabled] =
       settings_api::PrefType::kBoolean;
-  (*s_allowlist)[::prefs::kLanguageInputMethodSpecificSettings] =
+  (*s_allowlist)[ash::prefs::kLanguageInputMethodSpecificSettings] =
       settings_api::PrefType::kDictionary;
   (*s_allowlist)[ash::prefs::kLastUsedImeShortcutReminderDismissed] =
       settings_api::PrefType::kBoolean;
@@ -1053,13 +1053,13 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::kBoolean;
 
   // Input method settings.
-  (*s_allowlist)[::prefs::kLanguagePreloadEngines] =
+  (*s_allowlist)[ash::prefs::kLanguagePreloadEngines] =
       settings_api::PrefType::kString;
-  (*s_allowlist)[::prefs::kLanguageEnabledImes] =
+  (*s_allowlist)[ash::prefs::kLanguageEnabledImes] =
       settings_api::PrefType::kString;
-  (*s_allowlist)[::prefs::kLanguageAllowedInputMethods] =
+  (*s_allowlist)[ash::prefs::kLanguageAllowedInputMethods] =
       settings_api::PrefType::kList;
-  (*s_allowlist)[::prefs::kLanguageAllowedInputMethodsForceEnabled] =
+  (*s_allowlist)[ash::prefs::kLanguageAllowedInputMethodsForceEnabled] =
       settings_api::PrefType::kBoolean;
 
   // Device settings.

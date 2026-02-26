@@ -21,7 +21,6 @@
 #include "chrome/browser/ash/input_method/fake_suggestion_handler.h"
 #include "chrome/browser/ash/input_method/get_current_window_properties.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/account_id/account_id.h"
@@ -99,9 +98,9 @@ void SetInputMethodOptions(Profile& profile,
       std::string(kUsEnglishEngineId) +
           ".physicalKeyboardEnablePredictiveWriting",
       predictive_writing_enabled);
-  profile.GetPrefs()->Set(::prefs::kLanguageInputMethodSpecificSettings,
+  profile.GetPrefs()->Set(ash::prefs::kLanguageInputMethodSpecificSettings,
                           base::Value(std::move(input_method_setting)));
-  profile.GetPrefs()->Set(::ash::prefs::kLongPressDiacriticsEnabled,
+  profile.GetPrefs()->Set(ash::prefs::kLongPressDiacriticsEnabled,
                           base::Value(diacritics_on_longpress_enabled));
 }
 
@@ -149,7 +148,8 @@ class AssistiveSuggesterTest : public testing::Test {
 
     // Emoji is default to true now, so need to set emoji pref false to test
     // IsAssistiveFeatureEnabled correctly.
-    profile_->GetPrefs()->SetBoolean(prefs::kEmojiSuggestionEnabled, false);
+    profile_->GetPrefs()->SetBoolean(ash::prefs::kEmojiSuggestionEnabled,
+                                     false);
 
     browser_controller_ = std::make_unique<BrowserControllerImpl>();
   }
@@ -168,9 +168,9 @@ TEST_F(AssistiveSuggesterTest, EmojiSuggestion_UserPrefEnabledFalse) {
   feature_list.InitWithFeatures(
       /*enabled_features=*/{},
       /*disabled_features=*/{features::kAssistMultiWord});
-  profile_->GetPrefs()->SetBoolean(prefs::kEmojiSuggestionEnterpriseAllowed,
-                                   true);
-  profile_->GetPrefs()->SetBoolean(prefs::kEmojiSuggestionEnabled, false);
+  profile_->GetPrefs()->SetBoolean(
+      ash::prefs::kEmojiSuggestionEnterpriseAllowed, true);
+  profile_->GetPrefs()->SetBoolean(ash::prefs::kEmojiSuggestionEnabled, false);
 
   EXPECT_FALSE(assistive_suggester_->IsAssistiveFeatureEnabled());
 }
@@ -180,9 +180,9 @@ TEST_F(AssistiveSuggesterTest, EmojiSuggestion_EnterprisePrefEnabledFalse) {
   feature_list.InitWithFeatures(
       /*enabled_features=*/{},
       /*disabled_features=*/{features::kAssistMultiWord});
-  profile_->GetPrefs()->SetBoolean(prefs::kEmojiSuggestionEnterpriseAllowed,
-                                   false);
-  profile_->GetPrefs()->SetBoolean(prefs::kEmojiSuggestionEnabled, true);
+  profile_->GetPrefs()->SetBoolean(
+      ash::prefs::kEmojiSuggestionEnterpriseAllowed, false);
+  profile_->GetPrefs()->SetBoolean(ash::prefs::kEmojiSuggestionEnabled, true);
 
   EXPECT_FALSE(assistive_suggester_->IsAssistiveFeatureEnabled());
 }
@@ -192,9 +192,9 @@ TEST_F(AssistiveSuggesterTest, EmojiSuggestion_BothPrefsEnabledFalse) {
   feature_list.InitWithFeatures(
       /*enabled_features=*/{},
       /*disabled_features=*/{features::kAssistMultiWord});
-  profile_->GetPrefs()->SetBoolean(prefs::kEmojiSuggestionEnterpriseAllowed,
-                                   false);
-  profile_->GetPrefs()->SetBoolean(prefs::kEmojiSuggestionEnabled, false);
+  profile_->GetPrefs()->SetBoolean(
+      ash::prefs::kEmojiSuggestionEnterpriseAllowed, false);
+  profile_->GetPrefs()->SetBoolean(ash::prefs::kEmojiSuggestionEnabled, false);
 
   EXPECT_FALSE(assistive_suggester_->IsAssistiveFeatureEnabled());
 }
@@ -1102,9 +1102,9 @@ class AssistiveSuggesterEmojiTest : public testing::Test {
         ChromeKeyboardControllerClient::CreateForTest();
     chrome_keyboard_controller_client_->set_keyboard_visible_for_test(false);
 
-    profile_->GetPrefs()->SetBoolean(prefs::kEmojiSuggestionEnterpriseAllowed,
-                                     true);
-    profile_->GetPrefs()->SetBoolean(prefs::kEmojiSuggestionEnabled, true);
+    profile_->GetPrefs()->SetBoolean(
+        ash::prefs::kEmojiSuggestionEnterpriseAllowed, true);
+    profile_->GetPrefs()->SetBoolean(ash::prefs::kEmojiSuggestionEnabled, true);
   }
 
   content::BrowserTaskEnvironment task_environment_;
@@ -1120,9 +1120,9 @@ class AssistiveSuggesterEmojiTest : public testing::Test {
 };
 
 TEST_F(AssistiveSuggesterEmojiTest, ShouldNotSuggestWhenEmojiDisabled) {
-  profile_->GetPrefs()->SetBoolean(prefs::kEmojiSuggestionEnterpriseAllowed,
-                                   false);
-  profile_->GetPrefs()->SetBoolean(prefs::kEmojiSuggestionEnabled, false);
+  profile_->GetPrefs()->SetBoolean(
+      ash::prefs::kEmojiSuggestionEnterpriseAllowed, false);
+  profile_->GetPrefs()->SetBoolean(ash::prefs::kEmojiSuggestionEnabled, false);
 
   assistive_suggester_->OnActivate(kUsEnglishEngineId);
   assistive_suggester_->OnFocus(5, empty_context);

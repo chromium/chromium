@@ -25,7 +25,6 @@
 #include "chrome/browser/ui/ash/input_method/input_method_menu_item.h"
 #include "chrome/browser/ui/ash/input_method/input_method_menu_manager.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
-#include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
@@ -121,13 +120,13 @@ void InputMethodEngine::Initialize(
     profile_observation_.Observe(profile);
     input_method_settings_snapshot_ =
         profile->GetPrefs()
-            ->GetDict(::prefs::kLanguageInputMethodSpecificSettings)
+            ->GetDict(ash::prefs::kLanguageInputMethodSpecificSettings)
             .Clone();
 
     pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
     pref_change_registrar_->Init(profile->GetPrefs());
     pref_change_registrar_->Add(
-        ::prefs::kLanguageInputMethodSpecificSettings,
+        ash::prefs::kLanguageInputMethodSpecificSettings,
         base::BindRepeating(&InputMethodEngine::OnInputMethodOptionsChanged,
                             base::Unretained(this)));
     pref_change_registrar_->Add(
@@ -1024,7 +1023,7 @@ void InputMethodEngine::HideInputView() {
 
 void InputMethodEngine::OnInputMethodOptionsChanged() {
   const base::DictValue& new_settings = profile_->GetPrefs()->GetDict(
-      ::prefs::kLanguageInputMethodSpecificSettings);
+      ash::prefs::kLanguageInputMethodSpecificSettings);
   const base::DictValue& old_settings = input_method_settings_snapshot_;
   for (const auto&& [path, value] : new_settings) {
     if (const base::Value* old_value = old_settings.Find(path)) {

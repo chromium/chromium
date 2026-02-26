@@ -23,7 +23,6 @@
 #include "base/test/scoped_command_line.h"
 #include "chrome/browser/ash/arc/input_method_manager/test_input_method_manager_bridge.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client_test_helper.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
 #include "chromeos/ui/base/app_types.h"
@@ -266,7 +265,7 @@ class ArcInputMethodManagerServiceTest : public testing::Test {
 
   std::vector<std::string> GetEnabledInputMethodIds() {
     return base::SplitString(
-        profile()->GetPrefs()->GetString(prefs::kLanguageEnabledImes), ",",
+        profile()->GetPrefs()->GetString(ash::prefs::kLanguageEnabledImes), ",",
         base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   }
 
@@ -404,7 +403,7 @@ TEST_F(ArcInputMethodManagerServiceTest, EnableIme_WithPrefs) {
   // toggling to the laptop mode. In that case, the prefs still have the IME's
   // ID.
   profile()->GetPrefs()->SetString(
-      prefs::kLanguageEnabledImes,
+      ash::prefs::kLanguageEnabledImes,
       base::StringPrintf("%s,%s", component_extension_ime_id.c_str(),
                          arc_ime_id.c_str()));
   imm()->state()->RemoveEnabledInputMethodId(arc_ime_id);
@@ -484,10 +483,11 @@ TEST_F(ArcInputMethodManagerServiceTest, OnImeDisabled) {
   // Enable one non-ARC IME, then remove an ARC IME. This usually does not
   // happen, but confirm that OnImeDisabled() does not do anything bad even
   // if the IPC is called that way.
-  profile()->GetPrefs()->SetString(prefs::kLanguageEnabledImes, kNonArcIme);
+  profile()->GetPrefs()->SetString(ash::prefs::kLanguageEnabledImes,
+                                   kNonArcIme);
   service()->OnImeDisabled(kArcImeX);
   EXPECT_EQ(kNonArcIme,
-            profile()->GetPrefs()->GetString(prefs::kLanguageEnabledImes));
+            profile()->GetPrefs()->GetString(ash::prefs::kLanguageEnabledImes));
 
   // Enable two IMEs (one non-ARC and one ARC), remove the ARC IME, and then
   // confirm the non-ARC one remains.
@@ -501,10 +501,10 @@ TEST_F(ArcInputMethodManagerServiceTest, OnImeDisabled) {
   std::string pref_str =
       base::StringPrintf("%s,%s", kNonArcIme, arc_ime_x_component.c_str());
   EXPECT_EQ(pref_str,
-            profile()->GetPrefs()->GetString(prefs::kLanguageEnabledImes));
+            profile()->GetPrefs()->GetString(ash::prefs::kLanguageEnabledImes));
   service()->OnImeDisabled(kArcImeX);
   EXPECT_EQ(kNonArcIme,
-            profile()->GetPrefs()->GetString(prefs::kLanguageEnabledImes));
+            profile()->GetPrefs()->GetString(ash::prefs::kLanguageEnabledImes));
 
   // Enable two ARC IMEs along with one non-ARC one, remove one of two ARC IMEs,
   // then confirm one non-ARC IME and one ARC IME still remain.
@@ -519,12 +519,12 @@ TEST_F(ArcInputMethodManagerServiceTest, OnImeDisabled) {
       base::StringPrintf("%s,%s,%s", kNonArcIme, arc_ime_x_component.c_str(),
                          arc_ime_y_component.c_str());
   EXPECT_EQ(pref_str,
-            profile()->GetPrefs()->GetString(prefs::kLanguageEnabledImes));
+            profile()->GetPrefs()->GetString(ash::prefs::kLanguageEnabledImes));
   service()->OnImeDisabled(kArcImeX);
   pref_str =
       base::StringPrintf("%s,%s", kNonArcIme, arc_ime_y_component.c_str());
   EXPECT_EQ(pref_str,
-            profile()->GetPrefs()->GetString(prefs::kLanguageEnabledImes));
+            profile()->GetPrefs()->GetString(ash::prefs::kLanguageEnabledImes));
 }
 
 TEST_F(ArcInputMethodManagerServiceTest, OnImeInfoChanged) {
@@ -573,15 +573,18 @@ TEST_F(ArcInputMethodManagerServiceTest, OnImeInfoChanged) {
 
     // Emulate enabling ARC IME from chrome://settings.
     const std::string& arc_ime_id = std::get<1>(added_extensions[0])[0].id();
-    profile()->GetPrefs()->SetString(prefs::kLanguageEnabledImes, arc_ime_id);
-    EXPECT_EQ(arc_ime_id,
-              profile()->GetPrefs()->GetString(prefs::kLanguageEnabledImes));
+    profile()->GetPrefs()->SetString(ash::prefs::kLanguageEnabledImes,
+                                     arc_ime_id);
+    EXPECT_EQ(arc_ime_id, profile()->GetPrefs()->GetString(
+                              ash::prefs::kLanguageEnabledImes));
 
     // Removing the ARC IME should clear the pref
     std::vector<mojom::ImeInfoPtr> empty_info_array;
     service()->OnImeInfoChanged(std::move(empty_info_array));
-    EXPECT_TRUE(
-        profile()->GetPrefs()->GetString(prefs::kLanguageEnabledImes).empty());
+    EXPECT_TRUE(profile()
+                    ->GetPrefs()
+                    ->GetString(ash::prefs::kLanguageEnabledImes)
+                    .empty());
     added_extensions.clear();
   }
 
@@ -603,8 +606,8 @@ TEST_F(ArcInputMethodManagerServiceTest, OnImeInfoChanged) {
 
     // Already enabled IME should be added to the pref automatically.
     const std::string& arc_ime_id2 = std::get<1>(added_extensions[0])[1].id();
-    EXPECT_EQ(arc_ime_id2,
-              profile()->GetPrefs()->GetString(prefs::kLanguageEnabledImes));
+    EXPECT_EQ(arc_ime_id2, profile()->GetPrefs()->GetString(
+                               ash::prefs::kLanguageEnabledImes));
 
     added_extensions.clear();
   }
@@ -636,7 +639,7 @@ TEST_F(ArcInputMethodManagerServiceTest, EnableArcIMEsOnlyInTabletMode) {
   imm()->state()->AddEnabledInputMethodId(component_extension_ime_id);
   // Update the prefs because the testee checks them.
   profile()->GetPrefs()->SetString(
-      prefs::kLanguageEnabledImes,
+      ash::prefs::kLanguageEnabledImes,
       base::StringPrintf("%s,%s", extension_ime_id.c_str(),
                          component_extension_ime_id.c_str()));
   service()->ImeMenuListChanged();
@@ -745,7 +748,7 @@ TEST_F(ArcInputMethodManagerServiceTest,
   imm()->state()->AddEnabledInputMethodId(component_extension_ime_id);
   // Update the prefs because the testee checks them.
   profile()->GetPrefs()->SetString(
-      prefs::kLanguageEnabledImes,
+      ash::prefs::kLanguageEnabledImes,
       base::StringPrintf("%s,%s", extension_ime_id.c_str(),
                          component_extension_ime_id.c_str()));
   service()->ImeMenuListChanged();
@@ -846,7 +849,7 @@ TEST_F(ArcInputMethodManagerServiceTest,
   imm()->state()->AddEnabledInputMethodId(component_extension_ime_id);
   // Update the prefs because the testee checks them.
   profile()->GetPrefs()->SetString(
-      prefs::kLanguageEnabledImes,
+      ash::prefs::kLanguageEnabledImes,
       base::StringPrintf("%s,%s", extension_ime_id.c_str(),
                          component_extension_ime_id.c_str()));
   service()->ImeMenuListChanged();

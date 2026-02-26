@@ -15,7 +15,6 @@
 #include "chrome/browser/ash/input_method/input_method_settings.h"
 #include "chrome/browser/ash/input_method/stub_input_method_engine_observer.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client_test_helper.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/services/ime/public/cpp/autocorrect.h"
 #include "chromeos/ash/services/ime/public/mojom/input_engine.mojom.h"
@@ -147,7 +146,7 @@ class MockInputMethod : public ime::mojom::InputMethod {
 };
 
 void SetEmptyPrefs(Profile& profile) {
-  profile.GetPrefs()->SetDict(::prefs::kLanguageInputMethodSpecificSettings,
+  profile.GetPrefs()->SetDict(ash::prefs::kLanguageInputMethodSpecificSettings,
                               base::DictValue());
 }
 
@@ -161,14 +160,14 @@ void SetInputMethodOptions(Profile& profile,
   input_method_setting.SetByDottedPath(
       std::string(kEngineIdUs) + ".physicalKeyboardEnablePredictiveWriting",
       base::Value(predictive_writing_enabled));
-  profile.GetPrefs()->SetDict(::prefs::kLanguageInputMethodSpecificSettings,
+  profile.GetPrefs()->SetDict(ash::prefs::kLanguageInputMethodSpecificSettings,
                               std::move(input_method_setting));
 }
 
 void SetPinyinLayoutPrefs(Profile& profile, const std::string& layout) {
   base::DictValue input_method_setting;
   input_method_setting.SetByDottedPath("zh-t-i0-pinyin.xkbLayout", layout);
-  profile.GetPrefs()->SetDict(::prefs::kLanguageInputMethodSpecificSettings,
+  profile.GetPrefs()->SetDict(ash::prefs::kLanguageInputMethodSpecificSettings,
                               std::move(input_method_setting));
 }
 

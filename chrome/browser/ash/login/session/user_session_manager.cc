@@ -347,7 +347,7 @@ void InitLocaleAndInputMethodsForNewUser(
 
   // Save the input methods in the user's preferences.
   StringPrefMember language_preload_engines;
-  language_preload_engines.Init(::prefs::kLanguagePreloadEngines, prefs);
+  language_preload_engines.Init(ash::prefs::kLanguagePreloadEngines, prefs);
   language_preload_engines.SetValue(base::JoinString(input_method_ids, ","));
   BootTimesRecorder::Get()->AddLoginTimeMarker("IMEStarted", false);
 
@@ -379,7 +379,7 @@ void InitLocaleAndInputMethodsForNewUser(
 
   // Indicate that we need to merge the syncable input methods when we sync,
   // since we have not applied the synced prefs before.
-  prefs->SetBoolean(::prefs::kLanguageShouldMergeInputMethods, true);
+  prefs->SetBoolean(ash::prefs::kLanguageShouldMergeInputMethods, true);
 }
 
 bool IsKioskProfile(Profile* profile) {

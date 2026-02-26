@@ -48,6 +48,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/ime/ash/component_extension_ime_manager.h"
 #include "ui/base/ime/ash/extension_ime_util.h"
@@ -800,8 +801,8 @@ LanguageSettingsPrivateAddInputMethodFunction::Run() {
   PrefService* prefs =
       Profile::FromBrowserContext(browser_context())->GetPrefs();
   const char* pref_name = is_component_extension_ime
-                              ? prefs::kLanguagePreloadEngines
-                              : prefs::kLanguageEnabledImes;
+                              ? ash::prefs::kLanguagePreloadEngines
+                              : ash::prefs::kLanguageEnabledImes;
 
   // Get the input methods we are adding to.
   base::flat_set<std::string> input_method_set(
@@ -831,14 +832,14 @@ LanguageSettingsPrivateAddInputMethodFunction::Run() {
   // As pref_name and input_method_set only refer to the preference related to
   // the list of IMEs for which this newly-added IME is in, we need the other
   // IME list to calculate the total number of IMEs.
-  const char* other_ime_list_pref_name = is_component_extension_ime
-                                             ? prefs::kLanguageEnabledImes
-                                             : prefs::kLanguagePreloadEngines;
+  const char* other_ime_list_pref_name =
+      is_component_extension_ime ? ash::prefs::kLanguageEnabledImes
+                                 : ash::prefs::kLanguagePreloadEngines;
   base::flat_set<std::string> other_input_method_set(
       GetIMEsFromPref(prefs, other_ime_list_pref_name));
   if (input_method_set.size() + other_input_method_set.size() ==
       kNumImesToAutoEnableImeMenu) {
-    prefs->SetBoolean(prefs::kLanguageImeMenuActivated, true);
+    prefs->SetBoolean(ash::prefs::kLanguageImeMenuActivated, true);
   }
 #endif
   return RespondNow(NoArguments());
@@ -874,8 +875,8 @@ LanguageSettingsPrivateRemoveInputMethodFunction::Run() {
   PrefService* prefs =
       Profile::FromBrowserContext(browser_context())->GetPrefs();
   const char* pref_name = is_component_extension_ime
-                              ? prefs::kLanguagePreloadEngines
-                              : prefs::kLanguageEnabledImes;
+                              ? ash::prefs::kLanguagePreloadEngines
+                              : ash::prefs::kLanguageEnabledImes;
 
   std::string input_method_ids = prefs->GetString(pref_name);
   std::vector<std::string> input_method_list = base::SplitString(

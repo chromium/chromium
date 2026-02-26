@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "base/containers/to_vector.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/memory/ptr_util.h"
@@ -167,11 +168,11 @@ class PreferencesTest : public testing::Test {
         chrome::kInitialProfile);
     pref_service_ = test_profile_->GetTestingPrefService();
 
-    previous_input_method_.Init(
-        prefs::kLanguagePreviousInputMethod, pref_service_);
+    previous_input_method_.Init(ash::prefs::kLanguagePreviousInputMethod,
+                                pref_service_);
     previous_input_method_.SetValue("KeyboardA");
-    current_input_method_.Init(
-        prefs::kLanguageCurrentInputMethod, pref_service_);
+    current_input_method_.Init(ash::prefs::kLanguageCurrentInputMethod,
+                               pref_service_);
     current_input_method_.SetValue("KeyboardB");
     consumer_auto_update_toggle_.Init(::prefs::kConsumerAutoUpdateToggle,
                                       g_browser_process->local_state());
@@ -283,11 +284,11 @@ class InputMethodPreferencesTest : public PreferencesTest {
                               pref_service_);
     preferred_languages_syncable_.Init(
         language::prefs::kPreferredLanguagesSyncable, pref_service_);
-    preload_engines_.Init(prefs::kLanguagePreloadEngines, pref_service_);
-    preload_engines_syncable_.Init(prefs::kLanguagePreloadEnginesSyncable,
+    preload_engines_.Init(ash::prefs::kLanguagePreloadEngines, pref_service_);
+    preload_engines_syncable_.Init(ash::prefs::kLanguagePreloadEnginesSyncable,
                                    pref_service_);
-    enabled_imes_.Init(prefs::kLanguageEnabledImes, pref_service_);
-    enabled_imes_syncable_.Init(prefs::kLanguageEnabledImesSyncable,
+    enabled_imes_.Init(ash::prefs::kLanguageEnabledImes, pref_service_);
+    enabled_imes_syncable_.Init(ash::prefs::kLanguageEnabledImesSyncable,
                                 pref_service_);
 
     // Initialize component and 3rd-party input method extensions.

@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/values.h"
 #include "chrome/browser/ash/input_method/native_input_method_engine.h"
 #include "chrome/browser/ash/input_method/stub_input_method_engine_observer.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "mojo/core/embedder/embedder.h"
@@ -85,7 +85,7 @@ class NativeInputMethodEngineWithImeServiceTest
     auto observer = std::make_unique<TestObserver>();
     Profile* profile = browser()->profile();
     PrefService* prefs = profile->GetPrefs();
-    prefs->Set(::prefs::kLanguageInputMethodSpecificSettings, base::Value());
+    prefs->Set(ash::prefs::kLanguageInputMethodSpecificSettings, base::Value());
     engine_->Initialize(std::move(observer), /*extension_id=*/"", profile);
 
     InProcessBrowserTest::SetUpOnMainThread();

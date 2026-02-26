@@ -13,6 +13,7 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/compiler_specific.h"
@@ -783,7 +784,7 @@ void InputMethodManagerImpl::StateImpl::SetInputMethodLoginDefaultFromVPD(
   manager_->GetMigratedInputMethodIDs(&input_method_ids);
 
   PrefService* local_state = &manager_->local_state_.get();
-  local_state->SetString(prefs::kHardwareKeyboardLayout,
+  local_state->SetString(::prefs::kHardwareKeyboardLayout,
                          base::JoinString(input_method_ids, ","));
 
   // This asks the file thread to save the prefs (i.e. doesn't block).
@@ -1316,7 +1317,7 @@ scoped_refptr<InputMethodManager::State> InputMethodManagerImpl::CreateNewState(
   std::string initial_input_method_id;
   if (user_prefs) {
     initial_input_method_id =
-        user_prefs->GetString(prefs::kLanguageCurrentInputMethod);
+        user_prefs->GetString(ash::prefs::kLanguageCurrentInputMethod);
   }
   if (initial_input_method_id.empty()) {
     initial_input_method_id =

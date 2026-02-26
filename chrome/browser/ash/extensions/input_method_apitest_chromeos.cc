@@ -5,6 +5,7 @@
 #include <optional>
 #include <vector>
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/memory/ref_counted.h"
@@ -13,7 +14,6 @@
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/prefs/pref_service.h"
@@ -126,8 +126,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionInputMethodApiTest, ImeMenuActivation) {
   // Listener for IME menu event ready.
   ExtensionTestMessageListener event_listener("event_ready");
 
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kLanguageImeMenuActivated,
-                                               true);
+  browser()->profile()->GetPrefs()->SetBoolean(
+      ash::prefs::kLanguageImeMenuActivated, true);
 
   // Test the initial state and add listener for IME menu activation change.
   ASSERT_TRUE(
@@ -135,8 +135,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionInputMethodApiTest, ImeMenuActivation) {
   ASSERT_TRUE(config_listener.WaitUntilSatisfied()) << message_;
 
   // Trigger chrome.inputMethodPrivate.onImeMenuActivationChanged() event.
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kLanguageImeMenuActivated,
-                                               false);
+  browser()->profile()->GetPrefs()->SetBoolean(
+      ash::prefs::kLanguageImeMenuActivated, false);
   // Test that the extension gets the IME activation change event properly.
   ASSERT_TRUE(event_listener.WaitUntilSatisfied()) << message_;
 }
@@ -145,8 +145,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionInputMethodApiTest, ImeMenuAPITest) {
   ExtensionTestMessageListener activated_listener("activated");
   ExtensionTestMessageListener menu_listener("get_menu_update");
   ExtensionTestMessageListener list_listenter("list_change");
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kLanguageImeMenuActivated,
-                                               true);
+  browser()->profile()->GetPrefs()->SetBoolean(
+      ash::prefs::kLanguageImeMenuActivated, true);
   ASSERT_TRUE(
       LoadExtension(test_data_dir_.AppendASCII("input_method/ime_menu2")));
 

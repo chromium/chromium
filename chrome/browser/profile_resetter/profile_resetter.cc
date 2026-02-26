@@ -57,6 +57,7 @@
 #include "extensions/common/manifest.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "ash/constants/ash_pref_names.h"
 #include "chrome/browser/ash/input_method/input_method_manager_impl.h"
 #include "chromeos/ash/components/network/managed_network_configuration_handler.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
@@ -548,9 +549,9 @@ void ProfileResetter::ResetKeyboardInputSettings() {
     manager->GetInputMethodUtil()->GetInputMethodIdsFromLanguageCode(
         locale, ash::input_method::kAllInputMethods, &input_method_ids);
     // Save the input method in the user's preference kLanguagePreloadEngines.
-    prefs->SetString(prefs::kLanguagePreloadEngines, input_method_ids.empty()
-                                                         ? std::string()
-                                                         : input_method_ids[0]);
+    prefs->SetString(
+        ash::prefs::kLanguagePreloadEngines,
+        input_method_ids.empty() ? std::string() : input_method_ids[0]);
   }
 
   // 2. Call to reset spell check languages, matching the default language and

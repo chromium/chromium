@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/input_method/input_method_options_observer.h"
 
-#include "chrome/common/pref_names.h"
+#include "ash/constants/ash_pref_names.h"
 
 namespace ash::input_method {
 
@@ -14,7 +14,7 @@ InputMethodOptionsObserver::InputMethodOptionsObserver(PrefService* prefs) {
 
 void InputMethodOptionsObserver::Observe(
     InputMethodOptionsObserver::OnInputMethodOptionsChanged callback) {
-  pref_change_registrar_.Add(prefs::kLanguageInputMethodSpecificSettings,
+  pref_change_registrar_.Add(ash::prefs::kLanguageInputMethodSpecificSettings,
                              std::move(callback));
 }
 

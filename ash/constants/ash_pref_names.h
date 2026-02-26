@@ -2748,14 +2748,52 @@ inline constexpr char kSchedulerConfiguration[] =
 // Language related Prefs
 //-----------------------------------------------------------------------------
 
+// A list pref set to the allowed input methods (see policy
+// "AllowedInputMethods").
+inline constexpr char kLanguageAllowedInputMethods[] =
+    "settings.language.allowed_input_methods";
+
+// A boolean pref that enforces allowed input methods to be enabled (see policy
+// "AllowedInputMethodsForceEnabled").
+inline constexpr char kLanguageAllowedInputMethodsForceEnabled[] =
+    "settings.language.allowed_input_methods_force_enabled";
+
 // A string pref set to the current input method.
 inline constexpr char kLanguageCurrentInputMethod[] =
     "settings.language.current_input_method";
+
+// A string pref (comma-separated list) set to the extension and ARC IMEs to be
+// enabled.
+inline constexpr char kLanguageEnabledImes[] =
+    "settings.language.enabled_extension_imes";
+inline constexpr char kLanguageEnabledImesSyncable[] =
+    "settings.language.enabled_extension_imes_syncable";
+
+// A boolean pref set to true if the IME menu is activated.
+inline constexpr char kLanguageImeMenuActivated[] =
+    "settings.language.ime_menu_activated";
+
+// A dictionary of input method IDs and their settings. Each value is itself a
+// dictionary of key / value string pairs, with each pair representing a setting
+// and its value.
+inline constexpr char kLanguageInputMethodSpecificSettings[] =
+    "settings.language.input_method_specific_settings";
 
 // A string pref (comma-separated list) that corresponds to the set of enabled
 // 1P input method engine IDs.
 inline constexpr char kLanguagePreloadEngines[] =
     "settings.language.preload_engines";
+inline constexpr char kLanguagePreloadEnginesSyncable[] =
+    "settings.language.preload_engines_syncable";
+
+// A string pref set to the previous input method.
+inline constexpr char kLanguagePreviousInputMethod[] =
+    "settings.language.previous_input_method";
+
+// A boolean pref to indicate whether we still need to add the globally synced
+// input methods. False after the initial post-OOBE sync.
+inline constexpr char kLanguageShouldMergeInputMethods[] =
+    "settings.language.merge_input_methods";
 
 // NOTE: New prefs should start with the "ash." prefix. Existing prefs moved
 // into this file should not be renamed, since they may be synced.

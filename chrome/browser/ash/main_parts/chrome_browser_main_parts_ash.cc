@@ -15,6 +15,7 @@
 #include "ash/accelerators/shortcut_input_handler.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_paths.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/keyboard/ui/resources/keyboard_resource_util.h"
 #include "ash/public/ash_interfaces.h"
@@ -1235,7 +1236,7 @@ void GuestLanguageSetCallbackData::Callback(
           result.loaded_locale);
   if (!locale_default_input_method.empty()) {
     PrefService* user_prefs = self->profile->GetPrefs();
-    user_prefs->SetString(prefs::kLanguagePreviousInputMethod,
+    user_prefs->SetString(ash::prefs::kLanguagePreviousInputMethod,
                           locale_default_input_method);
     ime_state->EnableInputMethod(locale_default_input_method);
   }

@@ -6,8 +6,8 @@
 
 #include <optional>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/strings/stringprintf.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/crx_file/id_util.h"
 #include "components/prefs/pref_service.h"
@@ -45,7 +45,7 @@ TEST_F(InputMethodPrefsTest, GetEnabledImes) {
       aeiu::GetArcInputMethodID(GenerateId("test.arc.ime"), "us");
 
   profile()->GetPrefs()->SetString(
-      prefs::kLanguageEnabledImes,
+      ash::prefs::kLanguageEnabledImes,
       base::StringPrintf("%s,%s", component_extension_ime_id.c_str(),
                          arc_ime_id.c_str()));
 
@@ -72,7 +72,7 @@ TEST_F(InputMethodPrefsTest, UpdateEnabledImes) {
   PrefService* pref_service = profile()->GetPrefs();
 
   // Enabled one component extension IME.
-  pref_service->SetString(prefs::kLanguageEnabledImes,
+  pref_service->SetString(ash::prefs::kLanguageEnabledImes,
                           component_extension_ime_id);
 
   InputMethodPrefs prefs(profile());
@@ -93,8 +93,9 @@ TEST_F(InputMethodPrefsTest, UpdateEnabledImes) {
 
   // Enable both IMEs and set current/previous IME.
   prefs.UpdateEnabledImes({arc_ime_descriptor1, arc_ime_descriptor2});
-  pref_service->SetString(prefs::kLanguageCurrentInputMethod, arc_ime_id1);
-  pref_service->SetString(prefs::kLanguagePreviousInputMethod, arc_ime_id2);
+  pref_service->SetString(ash::prefs::kLanguageCurrentInputMethod, arc_ime_id1);
+  pref_service->SetString(ash::prefs::kLanguagePreviousInputMethod,
+                          arc_ime_id2);
 
   {
     const std::set<std::string> imes = prefs.GetEnabledImes();
@@ -110,8 +111,10 @@ TEST_F(InputMethodPrefsTest, UpdateEnabledImes) {
     const std::set<std::string> imes = prefs.GetEnabledImes();
     EXPECT_EQ(1u, imes.size());
     EXPECT_TRUE(imes.count(component_extension_ime_id) > 0);
-    EXPECT_EQ("", pref_service->GetString(prefs::kLanguageCurrentInputMethod));
-    EXPECT_EQ("", pref_service->GetString(prefs::kLanguagePreviousInputMethod));
+    EXPECT_EQ("",
+              pref_service->GetString(ash::prefs::kLanguageCurrentInputMethod));
+    EXPECT_EQ(
+        "", pref_service->GetString(ash::prefs::kLanguagePreviousInputMethod));
   }
 }
 

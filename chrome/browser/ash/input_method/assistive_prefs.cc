@@ -10,7 +10,6 @@
 #include "base/values.h"
 #include "chrome/browser/ash/input_method/input_method_settings.h"
 #include "chrome/browser/ash/input_method/input_method_settings_consts.h"
-#include "chrome/common/pref_names.h"
 #include "components/prefs/scoped_user_pref_update.h"
 
 namespace ash {
@@ -22,7 +21,7 @@ bool IsPredictiveWritingPrefEnabled(const PrefService& pref_service,
     return false;
   }
   const base::DictValue& input_method_settings =
-      pref_service.GetDict(::prefs::kLanguageInputMethodSpecificSettings);
+      pref_service.GetDict(ash::prefs::kLanguageInputMethodSpecificSettings);
   std::optional<bool> predictive_writing_setting =
       input_method_settings.FindBoolByDottedPath(
           base::StrCat({engine_id, ".", kPkEnablePredictiveWritingPrefName}));
@@ -33,7 +32,7 @@ bool IsPredictiveWritingPrefEnabled(const PrefService& pref_service,
 
 bool IsDiacriticsOnLongpressPrefEnabled(PrefService* pref_service,
                                         const std::string& engine_id) {
-  return pref_service->GetBoolean(::ash::prefs::kLongPressDiacriticsEnabled);
+  return pref_service->GetBoolean(ash::prefs::kLongPressDiacriticsEnabled);
 }
 
 int GetPrefValue(const std::string& pref_name, Profile& profile) {
@@ -53,7 +52,7 @@ void IncrementPrefValueUntilCapped(const std::string& pref_name,
   int value = GetPrefValue(pref_name, profile);
   if (value < max_value) {
     ScopedDictPrefUpdate update(profile.GetPrefs(),
-                                prefs::kAssistiveInputFeatureSettings);
+                                ash::prefs::kAssistiveInputFeatureSettings);
     update->Set(pref_name, value + 1);
   }
 }

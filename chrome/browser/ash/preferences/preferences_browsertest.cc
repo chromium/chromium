@@ -21,7 +21,6 @@
 #include "chrome/browser/ash/system/fake_input_device_settings.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/ash/login/user_adding_screen.h"
-#include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
@@ -61,84 +60,85 @@ class PreferencesTest : public LoginManagerTest {
   // |variant| value. For opposite |variant| values all preferences receive
   // different values.
   void SetPrefs(PrefService* prefs, bool variant) {
-    prefs->SetBoolean(prefs::kMouseReverseScroll, variant);
-    prefs->SetBoolean(prefs::kNaturalScroll, variant);
-    prefs->SetBoolean(prefs::kTapToClickEnabled, variant);
-    prefs->SetBoolean(prefs::kPrimaryMouseButtonRight, !variant);
-    prefs->SetBoolean(prefs::kPrimaryPointingStickButtonRight, !variant);
-    prefs->SetBoolean(prefs::kMouseAcceleration, variant);
-    prefs->SetBoolean(prefs::kMouseScrollAcceleration, variant);
-    prefs->SetBoolean(prefs::kPointingStickAcceleration, variant);
-    prefs->SetBoolean(prefs::kTouchpadAcceleration, variant);
-    prefs->SetBoolean(prefs::kTouchpadScrollAcceleration, variant);
-    prefs->SetBoolean(prefs::kTouchpadHapticFeedback, variant);
-    prefs->SetBoolean(prefs::kEnableTouchpadThreeFingerClick, !variant);
-    prefs->SetInteger(prefs::kMouseSensitivity, !variant);
-    prefs->SetInteger(prefs::kMouseScrollSensitivity, variant ? 1 : 4);
-    prefs->SetInteger(prefs::kPointingStickSensitivity, !variant);
-    prefs->SetInteger(prefs::kTouchpadSensitivity, variant);
-    prefs->SetInteger(prefs::kTouchpadHapticClickSensitivity, variant ? 1 : 3);
-    prefs->SetInteger(prefs::kTouchpadScrollSensitivity, variant ? 1 : 4);
-    prefs->SetBoolean(prefs::kXkbAutoRepeatEnabled, variant);
-    prefs->SetInteger(prefs::kXkbAutoRepeatDelay, variant ? 100 : 500);
-    prefs->SetInteger(prefs::kXkbAutoRepeatInterval, variant ? 1 : 4);
+    prefs->SetBoolean(ash::prefs::kMouseReverseScroll, variant);
+    prefs->SetBoolean(ash::prefs::kNaturalScroll, variant);
+    prefs->SetBoolean(ash::prefs::kTapToClickEnabled, variant);
+    prefs->SetBoolean(ash::prefs::kPrimaryMouseButtonRight, !variant);
+    prefs->SetBoolean(ash::prefs::kPrimaryPointingStickButtonRight, !variant);
+    prefs->SetBoolean(ash::prefs::kMouseAcceleration, variant);
+    prefs->SetBoolean(ash::prefs::kMouseScrollAcceleration, variant);
+    prefs->SetBoolean(ash::prefs::kPointingStickAcceleration, variant);
+    prefs->SetBoolean(ash::prefs::kTouchpadAcceleration, variant);
+    prefs->SetBoolean(ash::prefs::kTouchpadScrollAcceleration, variant);
+    prefs->SetBoolean(ash::prefs::kTouchpadHapticFeedback, variant);
+    prefs->SetBoolean(ash::prefs::kEnableTouchpadThreeFingerClick, !variant);
+    prefs->SetInteger(ash::prefs::kMouseSensitivity, !variant);
+    prefs->SetInteger(ash::prefs::kMouseScrollSensitivity, variant ? 1 : 4);
+    prefs->SetInteger(ash::prefs::kPointingStickSensitivity, !variant);
+    prefs->SetInteger(ash::prefs::kTouchpadSensitivity, variant);
+    prefs->SetInteger(ash::prefs::kTouchpadHapticClickSensitivity,
+                      variant ? 1 : 3);
+    prefs->SetInteger(ash::prefs::kTouchpadScrollSensitivity, variant ? 1 : 4);
+    prefs->SetBoolean(ash::prefs::kXkbAutoRepeatEnabled, variant);
+    prefs->SetInteger(ash::prefs::kXkbAutoRepeatDelay, variant ? 100 : 500);
+    prefs->SetInteger(ash::prefs::kXkbAutoRepeatInterval, variant ? 1 : 4);
     prefs->SetString(
-        ::prefs::kLanguagePreloadEngines,
+        ash::prefs::kLanguagePreloadEngines,
         variant ? "xkb:us::eng,xkb:us:dvorak:eng" : "xkb:us::eng,xkb:ru::rus");
   }
 
   void CheckSettingsCorrespondToPrefs(PrefService* prefs) {
-    EXPECT_EQ(prefs->GetBoolean(prefs::kTapToClickEnabled),
+    EXPECT_EQ(prefs->GetBoolean(ash::prefs::kTapToClickEnabled),
               input_settings_->current_touchpad_settings().GetTapToClick());
     EXPECT_EQ(
-        prefs->GetBoolean(prefs::kPrimaryMouseButtonRight),
+        prefs->GetBoolean(ash::prefs::kPrimaryMouseButtonRight),
         input_settings_->current_mouse_settings().GetPrimaryButtonRight());
-    EXPECT_EQ(prefs->GetBoolean(prefs::kPrimaryPointingStickButtonRight),
+    EXPECT_EQ(prefs->GetBoolean(ash::prefs::kPrimaryPointingStickButtonRight),
               input_settings_->current_pointing_stick_settings()
                   .GetPrimaryButtonRight());
-    EXPECT_EQ(prefs->GetBoolean(prefs::kMouseReverseScroll),
+    EXPECT_EQ(prefs->GetBoolean(ash::prefs::kMouseReverseScroll),
               input_settings_->current_mouse_settings().GetReverseScroll());
-    EXPECT_EQ(prefs->GetBoolean(prefs::kMouseAcceleration),
+    EXPECT_EQ(prefs->GetBoolean(ash::prefs::kMouseAcceleration),
               input_settings_->current_mouse_settings().GetAcceleration());
     EXPECT_EQ(
-        prefs->GetBoolean(prefs::kMouseScrollAcceleration),
+        prefs->GetBoolean(ash::prefs::kMouseScrollAcceleration),
         input_settings_->current_mouse_settings().GetScrollAcceleration());
     EXPECT_EQ(
-        prefs->GetBoolean(prefs::kPointingStickAcceleration),
+        prefs->GetBoolean(ash::prefs::kPointingStickAcceleration),
         input_settings_->current_pointing_stick_settings().GetAcceleration());
-    EXPECT_EQ(prefs->GetBoolean(prefs::kTouchpadAcceleration),
+    EXPECT_EQ(prefs->GetBoolean(ash::prefs::kTouchpadAcceleration),
               input_settings_->current_touchpad_settings().GetAcceleration());
     EXPECT_EQ(
-        prefs->GetBoolean(prefs::kTouchpadScrollAcceleration),
+        prefs->GetBoolean(ash::prefs::kTouchpadScrollAcceleration),
         input_settings_->current_touchpad_settings().GetScrollAcceleration());
-    EXPECT_EQ(prefs->GetBoolean(prefs::kTouchpadHapticFeedback),
+    EXPECT_EQ(prefs->GetBoolean(ash::prefs::kTouchpadHapticFeedback),
               input_settings_->current_touchpad_settings().GetHapticFeedback());
     EXPECT_EQ(
-        prefs->GetBoolean(prefs::kEnableTouchpadThreeFingerClick),
+        prefs->GetBoolean(ash::prefs::kEnableTouchpadThreeFingerClick),
         input_settings_->current_touchpad_settings().GetThreeFingerClick());
-    EXPECT_EQ(prefs->GetInteger(prefs::kMouseSensitivity),
+    EXPECT_EQ(prefs->GetInteger(ash::prefs::kMouseSensitivity),
               input_settings_->current_mouse_settings().GetSensitivity());
-    EXPECT_EQ(prefs->GetInteger(prefs::kMouseScrollSensitivity),
+    EXPECT_EQ(prefs->GetInteger(ash::prefs::kMouseScrollSensitivity),
               input_settings_->current_mouse_settings().GetScrollSensitivity());
     EXPECT_EQ(
-        prefs->GetInteger(prefs::kPointingStickSensitivity),
+        prefs->GetInteger(ash::prefs::kPointingStickSensitivity),
         input_settings_->current_pointing_stick_settings().GetSensitivity());
-    EXPECT_EQ(prefs->GetInteger(prefs::kTouchpadSensitivity),
+    EXPECT_EQ(prefs->GetInteger(ash::prefs::kTouchpadSensitivity),
               input_settings_->current_touchpad_settings().GetSensitivity());
-    EXPECT_EQ(prefs->GetInteger(prefs::kTouchpadHapticClickSensitivity),
+    EXPECT_EQ(prefs->GetInteger(ash::prefs::kTouchpadHapticClickSensitivity),
               input_settings_->current_touchpad_settings()
                   .GetHapticClickSensitivity());
     EXPECT_EQ(
-        prefs->GetInteger(prefs::kTouchpadScrollSensitivity),
+        prefs->GetInteger(ash::prefs::kTouchpadScrollSensitivity),
         input_settings_->current_touchpad_settings().GetScrollSensitivity());
-    EXPECT_EQ(prefs->GetBoolean(prefs::kXkbAutoRepeatEnabled),
+    EXPECT_EQ(prefs->GetBoolean(ash::prefs::kXkbAutoRepeatEnabled),
               keyboard_->GetAutoRepeatEnabled());
     input_method::AutoRepeatRate rate = keyboard_->last_auto_repeat_rate_;
-    EXPECT_EQ(prefs->GetInteger(prefs::kXkbAutoRepeatDelay),
+    EXPECT_EQ(prefs->GetInteger(ash::prefs::kXkbAutoRepeatDelay),
               rate.initial_delay.InMilliseconds());
-    EXPECT_EQ(prefs->GetInteger(prefs::kXkbAutoRepeatInterval),
+    EXPECT_EQ(prefs->GetInteger(ash::prefs::kXkbAutoRepeatInterval),
               rate.repeat_interval.InMilliseconds());
-    EXPECT_EQ(prefs->GetString(::prefs::kLanguageCurrentInputMethod),
+    EXPECT_EQ(prefs->GetString(ash::prefs::kLanguageCurrentInputMethod),
               input_method::InputMethodManager::Get()
                   ->GetActiveIMEState()
                   ->GetCurrentInputMethod()
@@ -147,13 +147,14 @@ class PreferencesTest : public LoginManagerTest {
 
   void CheckLocalStateCorrespondsToPrefs(PrefService* prefs) {
     PrefService* local_state = g_browser_process->local_state();
-    EXPECT_EQ(local_state->GetBoolean(prefs::kOwnerTapToClickEnabled),
-              prefs->GetBoolean(prefs::kTapToClickEnabled));
-    EXPECT_EQ(local_state->GetBoolean(prefs::kOwnerPrimaryMouseButtonRight),
-              prefs->GetBoolean(prefs::kPrimaryMouseButtonRight));
+    EXPECT_EQ(local_state->GetBoolean(ash::prefs::kOwnerTapToClickEnabled),
+              prefs->GetBoolean(ash::prefs::kTapToClickEnabled));
     EXPECT_EQ(
-        local_state->GetBoolean(prefs::kOwnerPrimaryPointingStickButtonRight),
-        prefs->GetBoolean(prefs::kPrimaryPointingStickButtonRight));
+        local_state->GetBoolean(ash::prefs::kOwnerPrimaryMouseButtonRight),
+        prefs->GetBoolean(ash::prefs::kPrimaryMouseButtonRight));
+    EXPECT_EQ(local_state->GetBoolean(
+                  ash::prefs::kOwnerPrimaryPointingStickButtonRight),
+              prefs->GetBoolean(ash::prefs::kPrimaryPointingStickButtonRight));
   }
 
   LoginManagerMixin login_mixin_{&mixin_host_};
@@ -222,11 +223,11 @@ IN_PROC_BROWSER_TEST_F(PreferencesTest, MultiProfiles) {
   // state prefs and vice versa.
   EXPECT_EQ(user_manager->GetOwnerAccountId(), users[0].account_id);
   CheckLocalStateCorrespondsToPrefs(prefs1);
-  prefs2->SetBoolean(prefs::kTapToClickEnabled,
-                     !prefs1->GetBoolean(prefs::kTapToClickEnabled));
+  prefs2->SetBoolean(ash::prefs::kTapToClickEnabled,
+                     !prefs1->GetBoolean(ash::prefs::kTapToClickEnabled));
   CheckLocalStateCorrespondsToPrefs(prefs1);
-  prefs1->SetBoolean(prefs::kTapToClickEnabled,
-                     !prefs1->GetBoolean(prefs::kTapToClickEnabled));
+  prefs1->SetBoolean(ash::prefs::kTapToClickEnabled,
+                     !prefs1->GetBoolean(ash::prefs::kTapToClickEnabled));
   CheckLocalStateCorrespondsToPrefs(prefs1);
 
   // Switch user back.

@@ -6,7 +6,6 @@
 
 #include "ash/constants/ash_pref_names.h"
 #include "base/values.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -19,14 +18,14 @@ constexpr char kUsEnglish[] = "xkb:us::eng";
 
 void SetManagedPkPredictiveWritingAllowed(Profile& profile, bool allowed) {
   profile.GetPrefs()->SetBoolean(
-      prefs::kManagedPhysicalKeyboardPredictiveWritingAllowed, allowed);
+      ash::prefs::kManagedPhysicalKeyboardPredictiveWritingAllowed, allowed);
 }
 
 void SetPredictiveWritingEnabled(Profile& profile, bool enabled) {
   base::DictValue input_method_setting;
   input_method_setting.SetByDottedPath(
       "xkb:us::eng.physicalKeyboardEnabledPredictiveWriting", enabled);
-  profile.GetPrefs()->Set(::prefs::kLanguageInputMethodSpecificSettings,
+  profile.GetPrefs()->Set(ash::prefs::kLanguageInputMethodSpecificSettings,
                           base::Value(std::move(input_method_setting)));
 }
 

@@ -6,11 +6,11 @@
 
 #include <string_view>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_map.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/pref_names.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/language/core/common/locale_util.h"
 #include "components/prefs/pref_service.h"
@@ -32,7 +32,7 @@ std::string GetUserLangOrLocaleFromSystem(
   // Convert from the ID used in the pref to a language identifier.
   std::vector<std::string> input_method_ids;
   input_method_ids.push_back(
-      profile->GetPrefs()->GetString(::prefs::kLanguageCurrentInputMethod));
+      profile->GetPrefs()->GetString(ash::prefs::kLanguageCurrentInputMethod));
   std::vector<std::string> languages;
   input_method::InputMethodManager::Get()
       ->GetInputMethodUtil()

@@ -25,7 +25,6 @@
 #include "chrome/browser/spellchecker/spellcheck_factory.h"
 #include "chrome/browser/spellchecker/spellcheck_service.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/crx_file/id_util.h"
@@ -40,6 +39,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ui/base/ime/ash/component_extension_ime_manager.h"
 #include "ui/base/ime/ash/extension_ime_util.h"
 #include "ui/base/ime/ash/fake_input_method_delegate.h"
@@ -510,9 +510,10 @@ TEST_F(LanguageSettingsPrivateApiTest, GetInputMethodListsTest) {
 
   // Initialize relevant prefs.
   StringPrefMember enabled_imes;
-  enabled_imes.Init(prefs::kLanguageEnabledImes, profile()->GetPrefs());
+  enabled_imes.Init(ash::prefs::kLanguageEnabledImes, profile()->GetPrefs());
   StringPrefMember preload_engines;
-  preload_engines.Init(prefs::kLanguagePreloadEngines, profile()->GetPrefs());
+  preload_engines.Init(ash::prefs::kLanguagePreloadEngines,
+                       profile()->GetPrefs());
 
   enabled_imes.SetValue(
       base::JoinString({GetExtensionImeId(), GetArcImeId()}, ","));
@@ -567,11 +568,12 @@ TEST_F(LanguageSettingsPrivateApiTest, AddInputMethodTest) {
   profile()->GetPrefs()->SetString(language::prefs::kPreferredLanguages,
                                    "en-US");
   StringPrefMember enabled_imes;
-  enabled_imes.Init(prefs::kLanguageEnabledImes, profile()->GetPrefs());
+  enabled_imes.Init(ash::prefs::kLanguageEnabledImes, profile()->GetPrefs());
   StringPrefMember preload_engines;
-  preload_engines.Init(prefs::kLanguagePreloadEngines, profile()->GetPrefs());
+  preload_engines.Init(ash::prefs::kLanguagePreloadEngines,
+                       profile()->GetPrefs());
   BooleanPrefMember language_menu_enabled;
-  language_menu_enabled.Init(prefs::kLanguageImeMenuActivated,
+  language_menu_enabled.Init(ash::prefs::kLanguageImeMenuActivated,
                              profile()->GetPrefs());
   enabled_imes.SetValue(std::string());
   preload_engines.SetValue(std::string());
@@ -650,9 +652,10 @@ TEST_F(LanguageSettingsPrivateApiTest, RemoveInputMethodTest) {
 
   // Initialize relevant prefs.
   StringPrefMember enabled_imes;
-  enabled_imes.Init(prefs::kLanguageEnabledImes, profile()->GetPrefs());
+  enabled_imes.Init(ash::prefs::kLanguageEnabledImes, profile()->GetPrefs());
   StringPrefMember preload_engines;
-  preload_engines.Init(prefs::kLanguagePreloadEngines, profile()->GetPrefs());
+  preload_engines.Init(ash::prefs::kLanguagePreloadEngines,
+                       profile()->GetPrefs());
 
   enabled_imes.SetValue(
       base::JoinString({GetExtensionImeId(), GetArcImeId()}, ","));

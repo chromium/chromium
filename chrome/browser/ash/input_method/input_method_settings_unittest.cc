@@ -10,7 +10,6 @@
 #include "base/strings/strcat.h"
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/common/pref_names.h"
 #include "chromeos/ash/services/ime/public/mojom/input_method.mojom-shared.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
@@ -36,8 +35,8 @@ constexpr char kVietnameseTelexEngineId[] = "vkd_vi_telex";
 void RegisterTestingPrefs(TestingPrefServiceSimple& prefs,
                           const base::DictValue& dict) {
   prefs.registry()->RegisterDictionaryPref(
-      ::prefs::kLanguageInputMethodSpecificSettings);
-  prefs.Set(::prefs::kLanguageInputMethodSpecificSettings,
+      ash::prefs::kLanguageInputMethodSpecificSettings);
+  prefs.Set(ash::prefs::kLanguageInputMethodSpecificSettings,
             base::Value(dict.Clone()));
 }
 
