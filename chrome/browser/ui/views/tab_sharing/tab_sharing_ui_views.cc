@@ -516,12 +516,21 @@ void TabSharingUIViews::CreateInfobarForWebContents(WebContents* contents) {
           ? TabSharingInfoBarDelegate::ButtonState::ENABLED
           : TabSharingInfoBarDelegate::ButtonState::DISABLED;
 
-  infobars_[contents] = TabSharingInfoBarDelegate::Create(
+  infobars::InfoBar* infobar = TabSharingInfoBarDelegate::Create(
       infobar_manager, old_infobar, GetGlobalId(shared_tab_), capturer_,
       shared_tab_name_, capturer_name_, contents,
       GetTabRole(is_capturing_tab, is_captured_tab),
       share_this_tab_instead_button_state, focus_target,
       captured_surface_control_active_, this, capture_type_);
+
+  // Avoid creating entries with null infobar pointer. This happens when Chrome
+  // for Testing or Chrome Headless Mode are running with infobars disabled
+  // using --disable-infobars switch. See http://crbug.com/483918494.
+  if (infobar) {
+    infobars_[contents] = infobar;
+  } else {
+    infobar_manager->RemoveObserver(this);
+  }
 }
 
 void TabSharingUIViews::RemoveInfobarsForAllTabs() {
@@ -529,6 +538,7 @@ void TabSharingUIViews::RemoveInfobarsForAllTabs() {
   TabStripModelObserver::StopObservingAll(this);
 
   for (const auto& infobars_entry : infobars_) {
+    CHECK(infobars_entry.second);
     infobars_entry.second->owner()->RemoveObserver(this);
     infobars_entry.second->RemoveSelf();
   }
