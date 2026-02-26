@@ -467,6 +467,10 @@ class WebIdlSchemaTest(unittest.TestCase):
             'description': 'An ExampleType passed to the event listener.'
         }], event_two['parameters'])
 
+    event_max_listeners = getEvent(schema, 'onTestMaxListeners')
+    self.assertEqual('onTestMaxListeners', event_max_listeners.get('name'))
+    self.assertEqual({'maxListeners': 1}, event_max_listeners.get('options'))
+
   # Tests that Dictionaries and Enums defined on the top level of the IDL file
   # are processed into types on the resulting namespace.
   def testApiTypesOnNamespace(self):

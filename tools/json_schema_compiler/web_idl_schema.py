@@ -151,6 +151,24 @@ def AddCommonExtendedAttributeProperties(node: IDLNode, properties: dict):
     properties['nocompile'] = True
 
 
+def AddEventOptionsExtendedAttributes(node: IDLNode, properties: dict):
+  """Looks for event option extended attributes and adds them to properties.
+
+  Extracts extended attributes that are only specific to Event definitions.
+  TODO(crbug.com/487746350): Add support for declarative event related
+  properties (`supportsFilters`, `supportsListeners`, `supportsRules`) to this
+  function as required for WebIDL schema conversions.
+
+  Args:
+    node: The IDLNode to look for the extended attributes on.
+    properties: The object to add the associated key value pairs to.
+  """
+  if (value := GetExtendedAttributeValue(node, 'maxListeners')) is not None:
+    if 'options' not in properties:
+      properties['options'] = {}
+    properties['options']['maxListeners'] = int(value)
+
+
 def _ExtractNodeComment(node: IDLNode) -> str:
   """Extract contiguous file comments above a node and return them as a string.
 
@@ -814,6 +832,7 @@ class Event:
     properties['parameters'] = parameters
 
     AddCommonExtendedAttributeProperties(self.node, properties)
+    AddEventOptionsExtendedAttributes(self.node, properties)
 
     return properties
 

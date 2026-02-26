@@ -274,7 +274,7 @@ interface OnFooEvent : ExtensionEvent {
 };
 ```
 
-3. **Add Event Attribute.** In the main API interface (e.g., `Alarms`), add a `static attribute` for the event. The general descriptive comment for the event (e.g., "Fired when...") should be moved above this new attribute.
+3. **Add Event Attribute.** In the main API interface (e.g., `Alarms`), add a `static attribute` for the event. The general descriptive comment for the event (e.g., "Fired when...") and any extended attributes which were on the original event definition (e.g. `[maxListeners=1]`) should be moved to this new attribute definition.
 ```
 // Fired when something interesting happens.
 static attribute OnFooEvent onFoo;
