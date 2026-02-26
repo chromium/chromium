@@ -48,4 +48,19 @@ public class EducationalTipSetupListBottomSheetListItemView extends ConstraintLa
     void setDescription(String text) {
         mDescription.setText(text);
     }
+
+    /** Updates the UI to reflect a list item that has been completed. */
+    void displayAsCompleted() {
+        int disabledColor = getContext().getColor(R.color.default_text_color_disabled_list);
+        mTitle.setTextColor(disabledColor);
+        mTitle.setPaintFlags(mTitle.getPaintFlags() | android.graphics.Paint.STRIKE_THRU_TEXT_FLAG);
+        mDescription.setTextColor(disabledColor);
+        mDescription.setPaintFlags(
+                mDescription.getPaintFlags() | android.graphics.Paint.STRIKE_THRU_TEXT_FLAG);
+
+        // Disable clicks on the item layout
+        this.setOnClickListener(null);
+        this.setClickable(false);
+        findViewById(R.id.chevron).setVisibility(INVISIBLE);
+    }
 }

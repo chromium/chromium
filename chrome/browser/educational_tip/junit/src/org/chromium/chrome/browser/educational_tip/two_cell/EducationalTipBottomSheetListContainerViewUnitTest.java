@@ -24,6 +24,8 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.educational_tip.EducationalTipCardProvider;
+import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
+import org.chromium.chrome.browser.setup_list.SetupListModuleUtils;
 import org.chromium.ui.shadows.ShadowAppCompatResources;
 
 import java.util.ArrayList;
@@ -49,6 +51,14 @@ public class EducationalTipBottomSheetListContainerViewUnitTest {
         Context context = ApplicationProvider.getApplicationContext();
         mContainerView = new EducationalTipBottomSheetListContainerView(context, null);
         mListOfEducationalTipCardProvider = createListOfEducationalTipCardProvider();
+
+        // TODO(crbug.com/479597724): Update test after creating cached completion state to module
+        // type map.
+        List<Integer> moduleTypeList = new ArrayList<>();
+        for (int i = 0; i < 5; i++) {
+            moduleTypeList.add(ModuleDelegate.ModuleType.DEFAULT_BROWSER_PROMO);
+        }
+        SetupListModuleUtils.setRankedModuleTypesForTesting(moduleTypeList);
     }
 
     @Test

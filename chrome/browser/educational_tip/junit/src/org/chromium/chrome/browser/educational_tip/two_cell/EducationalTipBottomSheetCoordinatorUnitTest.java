@@ -34,6 +34,7 @@ import org.chromium.chrome.browser.educational_tip.EducationalTipCardProvider;
 import org.chromium.chrome.browser.educational_tip.EducationalTipCardProviderFactory;
 import org.chromium.chrome.browser.educational_tip.R;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
+import org.chromium.chrome.browser.setup_list.SetupListModuleUtils;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.shadows.ShadowAppCompatResources;
@@ -66,6 +67,14 @@ public class EducationalTipBottomSheetCoordinatorUnitTest {
         mListOfEducationalTipCardProvider = createListOfEducationalTipCardProvider();
         when(mEducationalTipCardProviderSupplier.get())
                 .thenReturn(mListOfEducationalTipCardProvider);
+
+        // TODO(crbug.com/479597724): Update test after creating cached completion state to module
+        // type map.
+        List<Integer> moduleTypeList = new ArrayList<>();
+        for (int i = 0; i < 5; i++) {
+            moduleTypeList.add(ModuleType.DEFAULT_BROWSER_PROMO);
+        }
+        SetupListModuleUtils.setRankedModuleTypesForTesting(moduleTypeList);
     }
 
     @Test

@@ -14,6 +14,8 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.educational_tip.EducationalTipCardProvider;
 import org.chromium.chrome.browser.educational_tip.R;
+import org.chromium.chrome.browser.setup_list.SetupListCompletable;
+import org.chromium.chrome.browser.setup_list.SetupListModuleUtils;
 
 import java.util.List;
 
@@ -32,18 +34,30 @@ public class EducationalTipBottomSheetListContainerView extends LinearLayout {
         super(context, attrs);
     }
 
-    /** Adds list items views to this container view. */
+    /**
+     * Adds list items views to this container view. Creates each list item view based on their
+     * corresponding {@link EducationalTipCardProvider}
+     *
+     * @param rankedEducationalTips list of {@link EducationalTipCardProvider} that will be
+     *     displayed in the container.
+     */
     public void renderSetUpList(List<EducationalTipCardProvider> rankedEducationalTips) {
         // Clears all previous list items.
         destroy();
 
+        List<Integer> rankedModuleTypes = SetupListModuleUtils.getRankedModuleTypes();
         for (int i = 0; i < rankedEducationalTips.size(); i++) {
             EducationalTipCardProvider educationalTip = rankedEducationalTips.get(i);
             EducationalTipSetupListBottomSheetListItemView listItemView =
                     (EducationalTipSetupListBottomSheetListItemView) createListItemView();
-            listItemView.setIcon(educationalTip.getCardImage());
-            listItemView.setTitle(educationalTip.getCardTitle());
-            listItemView.setDescription(educationalTip.getCardDescription());
+            // TODO(crbug.com/479597724): Create cached completion state to module type map.
+            SetupListCompletable.CompletionState itemCompletionState = null;
+            if (i < rankedModuleTypes.size()) {
+                itemCompletionState =
+                        SetupListCompletable.getCompletionState(
+                                educationalTip, rankedModuleTypes.get(i));
+            }
+
             listItemView.setOnClickListener(
                     view -> {
                         educationalTip.onCardClicked();
@@ -52,6 +66,14 @@ public class EducationalTipBottomSheetListContainerView extends LinearLayout {
                             mDismissBottomSheetRunnable.run();
                         }
                     });
+            if (itemCompletionState != null && itemCompletionState.isCompleted) {
+                listItemView.setIcon(itemCompletionState.iconRes);
+                listItemView.displayAsCompleted();
+            } else {
+                listItemView.setIcon(educationalTip.getCardImage());
+            }
+            listItemView.setTitle(educationalTip.getCardTitle());
+            listItemView.setDescription(educationalTip.getCardDescription());
             // Set the custom border radius for first and last list items.
             if (i == 0) {
                 listItemView.setBackground(
