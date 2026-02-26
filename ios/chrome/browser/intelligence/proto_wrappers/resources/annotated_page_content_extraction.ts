@@ -4,7 +4,7 @@
 
 import {APC_NODE_DEPTH_COST, getRemoteFrameRemoteToken, MAX_APC_RESPONSE_DEPTH, NONCE_ATTR} from '//ios/chrome/browser/intelligence/proto_wrappers/resources/common.js';
 import {getNodeId, getOrCreateNodeId} from '//ios/chrome/browser/intelligence/proto_wrappers/resources/dom_node_ids.js';
-import {FormControlType, PageContentAnchorRel, PageContentAnnotatedRole, PageContentAttributeType, PageContentRedactionDecision, PageContentTextSize} from '//ios/chrome/browser/intelligence/proto_wrappers/resources/page_content_types.js';
+import {FormControlType, PageContentAnchorRel, PageContentAnnotatedRole, PageContentAttributeType, PageContentRedactionDecision, PageContentTableRowType, PageContentTextSize} from '//ios/chrome/browser/intelligence/proto_wrappers/resources/page_content_types.js';
 import type {PageContent, PageContentAttributes, PageContentFormControlData, PageContentFormData, PageContentFrameData, PageContentFrameInteractionInfo, PageContentNode, PageContentPageInteractionInfo} from '//ios/chrome/browser/intelligence/proto_wrappers/resources/page_content_types.js';
 
 // Set of DOM Node IDs that are considered interactive (focused, selection
@@ -846,14 +846,30 @@ function getBasicContentForNonGenericElement(
           attributeType: PageContentAttributeType.TABLE,
         },
       };
-    case TAG_TR:
+    case TAG_TR: {
+      let rowType = PageContentTableRowType.BODY;
+      // Use closest to find the nearest table section or table ancestor.
+      // This handles cases where TR might be nested in a generic container
+      // within a section. We include 'table' to ensure we stop at the nearest
+      // table boundary and don't match a section from an outer table if this
+      // row is inside a nested table.
+      const section = domNode.closest('thead, tfoot, table');
+      if (section && section.tagName === 'THEAD') {
+        rowType = PageContentTableRowType.HEADER;
+      } else if (section && section.tagName === 'TFOOT') {
+        rowType = PageContentTableRowType.FOOTER;
+      }
       return {
         childrenNodes: [],
         contentAttributes: {
           ...BASIC_CONTENT_ATTRIBUTES,
           attributeType: PageContentAttributeType.TABLE_ROW,
+          tableRowData: {
+            rowType: rowType,
+          },
         },
       };
+    }
     case TAG_TD:
     case TAG_TH:
       return {

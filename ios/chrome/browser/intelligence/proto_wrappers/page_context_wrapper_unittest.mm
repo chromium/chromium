@@ -3391,6 +3391,253 @@ TEST_P(PageContextWrapperTest, PopulatePageContext_RichExtraction_Text_Size) {
   }
 }
 
+// Tests that Table Row data is extracted correctly.
+TEST_P(PageContextWrapperTest, PopulatePageContext_RichExtraction_TableRow) {
+  if (!IsRefactored()) {
+    return;
+  }
+
+  auto page_structure =
+      HtmlPage("RichExtraction_TableRow", RawHtml("<table>"
+                                                  "  <thead>"
+                                                  "    <tr><td>Header</td></tr>"
+                                                  "  </thead>"
+                                                  "  <tbody>"
+                                                  "    <tr><td>Body 1</td></tr>"
+                                                  "    <tr><td>Body 2</td></tr>"
+                                                  "  </tbody>"
+                                                  "  <tfoot>"
+                                                  "    <tr><td>Footer</td></tr>"
+                                                  "  </tfoot>"
+                                                  "</table>"));
+
+  std::string main_html = page_helper_->Build(page_structure);
+  web::test::LoadHtml(base::SysUTF8ToNSString(main_html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  PageContextWrapperConfig config =
+      PageContextWrapperConfigBuilder().SetUseRichExtraction(true).Build();
+
+  PageContextWrapperCallbackResponse response = RunPageContextWrapperWithConfig(
+      web_state(), config, ^(PageContextWrapper* wrapper) {
+        wrapper.shouldGetAnnotatedPageContent = YES;
+      });
+
+  ASSERT_TRUE(response.has_value());
+  const auto& page_context = *response.value();
+  const auto& root_node = page_context.annotated_page_content().root_node();
+
+  // Root -> Table -> TRs
+  ASSERT_EQ(root_node.children_nodes_size(), 1);
+  const auto& table_node = root_node.children_nodes(0);
+  EXPECT_EQ(table_node.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_TABLE);
+
+  // We have 4 TRs (Header, Body 1, Body 2, Footer) under the Table if
+  // thead/tbody/tfoot are pruned. We need to test the row_type.
+  ASSERT_EQ(table_node.children_nodes_size(), 4);
+
+  // TR 0 (Header)
+  const auto& tr1 = table_node.children_nodes(0);
+  EXPECT_EQ(tr1.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_TABLE_ROW);
+  EXPECT_EQ(tr1.content_attributes().table_row_data().type(),
+            optimization_guide::proto::TableRowType::TABLE_ROW_TYPE_HEADER);
+
+  // TR 1 (Body 1)
+  const auto& tr2 = table_node.children_nodes(1);
+  EXPECT_EQ(tr2.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_TABLE_ROW);
+  EXPECT_EQ(tr2.content_attributes().table_row_data().type(),
+            optimization_guide::proto::TableRowType::TABLE_ROW_TYPE_BODY);
+
+  // TR 2 (Body 2)
+  const auto& tr3 = table_node.children_nodes(2);
+  EXPECT_EQ(tr3.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_TABLE_ROW);
+  EXPECT_EQ(tr3.content_attributes().table_row_data().type(),
+            optimization_guide::proto::TableRowType::TABLE_ROW_TYPE_BODY);
+
+  // TR 3 (Footer)
+  const auto& tr4 = table_node.children_nodes(3);
+  EXPECT_EQ(tr4.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_TABLE_ROW);
+  EXPECT_EQ(tr4.content_attributes().table_row_data().type(),
+            optimization_guide::proto::TableRowType::TABLE_ROW_TYPE_FOOTER);
+}
+
+// Tests that table rows are correctly classified as header, body, or footer.
+TEST_P(PageContextWrapperTest, PopulatePageContext_TableRow_Sections) {
+  if (!IsRefactored()) {
+    return;
+  }
+
+  // Load the page with standard HTML structure.
+  web::test::LoadHtml(@"<html><body>"
+                       "<table>"
+                       "  <thead><tr><th>Header</th></tr></thead>"
+                       "  <tbody><tr><td>Body</td></tr></tbody>"
+                       "  <tfoot><tr><td>Footer</td></tr></tfoot>"
+                       "</table>"
+                       "</body></html>",
+                      web_state());
+
+  PageContextWrapperConfigBuilder builder;
+  builder.SetUseRefactoredExtractor(IsRefactored());
+  builder.SetUseRichExtraction(true);
+  PageContextWrapperCallbackResponse response = RunPageContextWrapperWithConfig(
+      web_state(), builder.Build(), ^(PageContextWrapper* wrapper) {
+        wrapper.shouldGetAnnotatedPageContent = YES;
+      });
+
+  ASSERT_TRUE(response.has_value());
+  std::unique_ptr<optimization_guide::proto::PageContext> page_context =
+      std::move(response.value());
+
+  ASSERT_TRUE(page_context);
+  ASSERT_TRUE(page_context->has_annotated_page_content());
+
+  const auto& root_node = page_context->annotated_page_content().root_node();
+  ASSERT_EQ(root_node.children_nodes_size(), 1);  // The table
+
+  const auto& table_node = root_node.children_nodes(0);
+  EXPECT_EQ(table_node.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_TABLE);
+
+  // Expecting 3 rows.
+  ASSERT_EQ(table_node.children_nodes_size(), 3);
+
+  // Row 1: Header
+  const auto& row1 = table_node.children_nodes(0);
+  EXPECT_EQ(row1.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_TABLE_ROW);
+  EXPECT_EQ(row1.content_attributes().table_row_data().type(),
+            optimization_guide::proto::TABLE_ROW_TYPE_HEADER);
+
+  // Row 2: Body
+  const auto& row2 = table_node.children_nodes(1);
+  EXPECT_EQ(row2.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_TABLE_ROW);
+  EXPECT_EQ(row2.content_attributes().table_row_data().type(),
+            optimization_guide::proto::TABLE_ROW_TYPE_BODY);
+
+  // Row 3: Footer
+  const auto& row3 = table_node.children_nodes(2);
+  EXPECT_EQ(row3.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_TABLE_ROW);
+  EXPECT_EQ(row3.content_attributes().table_row_data().type(),
+            optimization_guide::proto::TABLE_ROW_TYPE_FOOTER);
+}
+
+// Tests that table rows are correctly classified even if nested within generic
+// containers inside sections. This simulates the case where TR is not a direct
+// child of THEAD/TFOOT/TBODY.
+TEST_P(PageContextWrapperTest, PopulatePageContext_TableRow_NestedSections) {
+  if (!IsRefactored()) {
+    return;  // Only relevant for the TS implementation.
+  }
+
+  // Use JavaScript to construct the nested structure.
+  // Use HtmlPage to set up a valid page state (URL, title, etc).
+
+  // Load a blank page to initialize the WebView.
+  web::test::LoadHtml(@"<html><body></body></html>", web_state());
+
+  // Use JavaScript to construct the nested structure.
+  // The HTML parser would normally "fix" invalid table structures (foster
+  // parenting), moving TRs out of DIVs. By creating nodes programmatically, we
+  // can force the nesting we want to test.
+  //
+  // DOM Structure created:
+  // TABLE
+  //   THEAD
+  //     DIV
+  //       DIV
+  //         TR
+  //           TD: Header Cell Nested
+  //   TBODY
+  //     DIV
+  //       TR
+  //         TD: Body Cell Nested
+  //
+  // This verifies that `closest` works even if the hierarchy is
+  // deeper/unconventional.
+  web::test::ExecuteJavaScript(base::SysUTF8ToNSString(
+                                   R"(
+      (function() {
+        var table = document.createElement('table');
+        var thead = document.createElement('thead');
+        var tbody = document.createElement('tbody');
+        var div1 = document.createElement('div');
+        var div2 = document.createElement('div');
+        var tr = document.createElement('tr');
+        var td = document.createElement('td');
+        td.innerText = 'Header Cell Nested';
+        tr.appendChild(td);
+        div2.appendChild(tr);
+        div1.appendChild(div2);
+        thead.appendChild(div1);
+        table.appendChild(thead);
+        var div_body = document.createElement('div');
+        var tr2 = document.createElement('tr');
+        var td2 = document.createElement('td');
+        td2.innerText = 'Body Cell Nested';
+        tr2.appendChild(td2);
+        div_body.appendChild(tr2);
+        tbody.appendChild(div_body);
+        table.appendChild(tbody);
+        document.body.appendChild(table);
+        return true;
+      })();
+      )"),
+                               web_state());
+
+  PageContextWrapperConfigBuilder builder;
+  builder.SetUseRefactoredExtractor(IsRefactored());
+  builder.SetUseRichExtraction(true);
+  PageContextWrapperCallbackResponse response = RunPageContextWrapperWithConfig(
+      web_state(), builder.Build(), ^(PageContextWrapper* wrapper) {
+        wrapper.shouldGetAnnotatedPageContent = YES;
+      });
+
+  ASSERT_TRUE(response.has_value());
+  std::unique_ptr<optimization_guide::proto::PageContext> page_context =
+      std::move(response.value());
+
+  ASSERT_TRUE(page_context);
+  const auto& root_node = page_context->annotated_page_content().root_node();
+
+  // We look for rows traversing the tree.
+  bool found_header_row = false;
+  bool found_body_row = false;
+
+  // Helper to traverse and find rows.
+  std::vector<const optimization_guide::proto::ContentNode*> stack;
+  stack.push_back(&root_node);
+
+  while (!stack.empty()) {
+    const auto* node = stack.back();
+    stack.pop_back();
+
+    if (node->content_attributes().attribute_type() ==
+        optimization_guide::proto::CONTENT_ATTRIBUTE_TABLE_ROW) {
+      if (node->content_attributes().table_row_data().type() ==
+          optimization_guide::proto::TABLE_ROW_TYPE_HEADER) {
+        found_header_row = true;
+      } else if (node->content_attributes().table_row_data().type() ==
+                 optimization_guide::proto::TABLE_ROW_TYPE_BODY) {
+        found_body_row = true;
+      }
+    }
+
+    for (const auto& child : node->children_nodes()) {
+      stack.push_back(&child);
+    }
+  }
+  EXPECT_TRUE(found_header_row);
+  EXPECT_TRUE(found_body_row);
+}
+
 // Tests the extraction of form control attributes (input, textarea, select,
 // button).
 TEST_P(PageContextWrapperTest,

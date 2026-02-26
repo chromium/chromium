@@ -33,6 +33,8 @@ constexpr char kImageInfoKey[] = "imageInfo";
 constexpr char kImageCaptionKey[] = "imageCaption";
 constexpr char kAnnotatedRolesKey[] = "annotatedRoles";
 constexpr char kIframeDataKey[] = "iframeData";
+constexpr char kTableRowDataKey[] = "tableRowData";
+constexpr char kRowTypeKey[] = "rowType";
 constexpr char kCanvasDataKey[] = "canvasData";
 constexpr char kVideoDataKey[] = "videoData";
 constexpr char kLayoutSizeKey[] = "layoutSize";
@@ -274,6 +276,21 @@ void PopulateIframeData(
   }
 }
 
+// Populates the table row data of the `destination_node` from the
+// `table_row_data` content.
+void PopulateTableRowData(
+    const base::DictValue& table_row_data,
+    optimization_guide::proto::ContentNode* destination_node) {
+  if (std::optional<int> row_type = ReadJsNumber(table_row_data, kRowTypeKey)) {
+    if (optimization_guide::proto::TableRowType_IsValid(*row_type)) {
+      destination_node->mutable_content_attributes()
+          ->mutable_table_row_data()
+          ->set_type(
+              static_cast<optimization_guide::proto::TableRowType>(*row_type));
+    }
+  }
+}
+
 // Populates the form control data of the `destination_node` from the
 // `form_control_data` content.
 void PopulateFormControlData(
@@ -479,6 +496,14 @@ void PopulateAPCNodeFromContentTree(
           }
         }
         PopulateIframeData(*iframe_data, destination_node, origin);
+      }
+      break;
+    }
+    case optimization_guide::proto::CONTENT_ATTRIBUTE_TABLE_ROW: {
+      const base::DictValue* table_row_data =
+          content_attributes->FindDict(kTableRowDataKey);
+      if (table_row_data) {
+        PopulateTableRowData(*table_row_data, destination_node);
       }
       break;
     }
