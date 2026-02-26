@@ -434,7 +434,9 @@ export class SlimWebViewElement extends CrLitElement {
     } catch (e) {
       assertNotReached(`Failed to parse URL for webview: ${e}`);
     }
-    assert(url.protocol === 'https:' || url.href === 'about:blank');
+    assert(
+        url.protocol === 'https:' || url.protocol === 'http:' ||
+        url.href === 'about:blank');
     BrowserProxyImpl.getInstance().handler.navigate(
         this.guestInstanceId, url.href);
   }
