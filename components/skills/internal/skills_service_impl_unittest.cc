@@ -478,5 +478,64 @@ TEST_F(SkillsServiceImplTest, FetchDiscoverySkills_Failure) {
   run_loop.Run();
 }
 
+TEST_F(SkillsServiceImplTest, AddSkillSortsByName) {
+  InitService();
+  service().AddSkill("source_id", "Name B", "icon", "prompt");
+  service().AddSkill("source_id", "Name A", "icon", "prompt");
+  service().AddSkill("source_id", "Name C", "icon", "prompt");
+
+  EXPECT_THAT(service().GetSkills(),
+              ElementsAre(Pointee(HasSkill("Name A", "icon", "prompt", "")),
+                          Pointee(HasSkill("Name B", "icon", "prompt", "")),
+                          Pointee(HasSkill("Name C", "icon", "prompt", ""))));
+}
+
+TEST_F(SkillsServiceImplTest, UpdateSkillSortsByName) {
+  InitService();
+  const Skill* skill1 =
+      service().AddSkill("source_id", "Name A", "icon", "prompt");
+  service().AddSkill("source_id", "Name B", "icon", "prompt");
+  service().AddSkill("source_id", "Name C", "icon", "prompt");
+
+  // Update "A" to "D". New order should be B, C, D.
+  service().UpdateSkill(skill1->id, "Name D", "icon", "prompt");
+
+  EXPECT_THAT(service().GetSkills(),
+              ElementsAre(Pointee(HasSkill("Name B", "icon", "prompt", "")),
+                          Pointee(HasSkill("Name C", "icon", "prompt", "")),
+                          Pointee(HasSkill("Name D", "icon", "prompt", ""))));
+}
+
+TEST_F(SkillsServiceImplTest, AddSkillFromSyncSortsByName) {
+  InitService();
+  service().AddSkill("source_id", "Name B", "icon", "prompt");
+
+  service().AddOrUpdateSkillFromSync(
+      "id_A", "source_id", "Name A", "icon", "prompt", "desc",
+      base::Time::Now(), base::Time::Now(), sync_pb::SKILL_SOURCE_USER_CREATED);
+
+  EXPECT_THAT(service().GetSkills(),
+              ElementsAre(Pointee(HasSkill("Name A", "icon", "prompt", "desc")),
+                          Pointee(HasSkill("Name B", "icon", "prompt", ""))));
+}
+
+TEST_F(SkillsServiceImplTest, UpdateSkillFromSyncSortsByName) {
+  InitService();
+  const Skill* skill1 =
+      service().AddSkill("source_id", "Name A", "icon", "prompt");
+  service().AddSkill("source_id", "Name B", "icon", "prompt");
+
+  // Update "A" to "C" via Sync. Order should become B, C.
+  service().AddOrUpdateSkillFromSync(skill1->id, "source_id", "Name C", "icon",
+                                     "prompt", "desc", base::Time::Now(),
+                                     base::Time::Now() + base::Seconds(1),
+                                     sync_pb::SKILL_SOURCE_USER_CREATED);
+
+  EXPECT_THAT(
+      service().GetSkills(),
+      ElementsAre(Pointee(HasSkill("Name B", "icon", "prompt", "")),
+                  Pointee(HasSkill("Name C", "icon", "prompt", "desc"))));
+}
+
 }  // namespace
 }  // namespace skills

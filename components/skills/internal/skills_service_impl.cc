@@ -231,6 +231,7 @@ const Skill* SkillsServiceImpl::AddSkillImpl(std::unique_ptr<Skill> skill,
 
   const Skill* skill_ptr = skill.get();
   skills_.push_back(std::move(skill));
+  SortSkills();
   NotifySkillChanged(skill_ptr->id, update_source);
   return skill_ptr;
 }
@@ -300,6 +301,7 @@ void SkillsServiceImpl::UpdateSkillImpl(Skill* skill,
 
   if (is_changed) {
     skill->last_update_time = update_time;
+    SortSkills();
     NotifySkillChanged(skill->id, update_source);
   }
 }
