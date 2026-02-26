@@ -601,6 +601,15 @@ void TabListBridge::OnTabStripModelChanged(
       }
     }
   }
+
+  if (selection.selection_changed()) {
+    std::set<tabs::TabInterface*> selected_tabs(
+        tab_strip_->selection_model().selected_tabs().begin(),
+        tab_strip_->selection_model().selected_tabs().end());
+    for (auto& observer : observers_) {
+      observer.OnHighlightedTabsChanged(*this, selected_tabs);
+    }
+  }
 }
 
 bool TabListBridge::IsThisTabListEditable() {

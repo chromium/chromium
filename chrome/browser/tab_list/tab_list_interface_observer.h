@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_TAB_LIST_TAB_LIST_INTERFACE_OBSERVER_H_
 #define CHROME_BROWSER_TAB_LIST_TAB_LIST_INTERFACE_OBSERVER_H_
 
+#include <set>
+
 #include "base/observer_list_types.h"
 #include "chrome/browser/tab_list/tab_removed_reason.h"
 
@@ -50,6 +52,11 @@ class TabListInterfaceObserver : public base::CheckedObserver {
                           tabs::TabInterface* tab,
                           int from_index,
                           int to_index) {}
+
+  // Called when the set of highlighted tabs changes in the tab list.
+  virtual void OnHighlightedTabsChanged(
+      TabListInterface& tab_list,
+      const std::set<tabs::TabInterface*>& highlighted_tabs) {}
 
   // Called when the TabListInterface is destroyed.
   virtual void OnTabListDestroyed(TabListInterface& tab_list) {}
