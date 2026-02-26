@@ -182,6 +182,11 @@ public class OmniboxFeatures {
     public static final CachedFlag sRemoveSearchReadyOmnibox =
             newFlag(OmniboxFeatureList.REMOVE_SEARCH_READY_OMNIBOX, FeatureState.DISABLED);
 
+    public static final CachedFlag sServeJavaCachedZeroSuggest =
+            newFlag(
+                    OmniboxFeatureList.SERVE_JAVA_CACHED_ZERO_SUGGEST,
+                    FeatureState.ENABLED_IN_PROD);
+
     public static final BooleanCachedFeatureParam sRemoveSroIncludingVerbatimMatch =
             newBooleanParam(
                     sRemoveSearchReadyOmnibox, "remove_sro_including_verbatim_match", false);

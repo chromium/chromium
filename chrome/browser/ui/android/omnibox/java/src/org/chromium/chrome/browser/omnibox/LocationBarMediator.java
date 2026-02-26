@@ -1073,18 +1073,19 @@ class LocationBarMediator
 
         // URL bar is now focused with the user text. This may be still a bit early for the
         // Autocomplete and Compose to kick in.
-        beginOrResumeInputWithNative();
+        beginOrResumeInputWithNative(session);
     }
 
-    private void beginOrResumeInputWithNative() {
+    private void beginOrResumeInputWithNative(FuseboxSessionState session) {
         if (!mNativeInitialized) {
-            mDeferredNativeRunnables.add(this::beginOrResumeInputWithNative);
+            mDeferredNativeRunnables.add(() -> beginOrResumeInputWithNative(session));
+            if (mAutocompleteCoordinator == null) return;
+            mAutocompleteCoordinator.serveCachedZeroSuggest(session.getAutocompleteInput());
             return;
         }
 
         if (mAutocompleteCoordinator == null) return;
-        var session = FuseboxSessionState.from(mLocationBarDataProvider);
-        if (session == null || !session.isSessionActive()) return;
+        if (!session.isSessionActive()) return;
         session.setProfile(mProfileSupplier.get());
         mAutocompleteCoordinator.beginInput(session);
         mFuseboxCoordinator.beginInput(session);

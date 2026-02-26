@@ -368,6 +368,10 @@ BASE_FEATURE(kOmniboxImprovementForLFF, DISABLED);
 // If enabled, disables ligatures in the URL bar on Android.
 BASE_FEATURE(kUrlBarWithoutLigatures, ENABLED);
 
+// If enabled, Java-cached ZPS will be served.
+// The cached ZPS made sense on sub-4GB Android Go devices
+BASE_FEATURE(kServeJavaCachedZeroSuggest, ENABLED);
+
 namespace android {
 static int64_t JNI_OmniboxFeatureMap_GetNativeMap(JNIEnv* env) {
   static const base::Feature* const kFeaturesExposedToJava[] = {
@@ -387,6 +391,7 @@ static int64_t JNI_OmniboxFeatureMap_GetNativeMap(JNIEnv* env) {
       &kOmniboxMultimodalInput,
       &kMultilineEditField,
       &kOmniboxImprovementForLFF,
+      &kServeJavaCachedZeroSuggest,
       &kRemoveSearchReadyOmnibox};
   static base::NoDestructor<base::android::FeatureMap> kFeatureMap(
       kFeaturesExposedToJava);

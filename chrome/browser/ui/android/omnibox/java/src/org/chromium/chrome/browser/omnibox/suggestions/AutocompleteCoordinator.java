@@ -41,6 +41,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
+import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.AsyncViewProvider;
@@ -265,6 +266,15 @@ public class AutocompleteCoordinator implements OmniboxSuggestionsVisualState {
     /** Ends the current omnibox session. */
     public void endInput() {
         mMediator.endInput();
+    }
+
+    /**
+     * Serve Java-cached ZPS before session can be started with Autocomplete support.
+     *
+     * @param input The input to serve ZPS for.
+     */
+    public void serveCachedZeroSuggest(AutocompleteInput input) {
+        mMediator.serveCachedZeroSuggest(input);
     }
 
     public void onUrlAnimationFinished() {

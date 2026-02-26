@@ -1399,7 +1399,7 @@ public class AutocompleteMediatorUnitTest {
 
         for (var pageClass : PageClassification.values()) {
             session.getAutocompleteInput().setPageClassification(pageClass.getNumber());
-            mMediator.startCachedZeroSuggest();
+            mMediator.serveCachedZeroSuggest(session.getAutocompleteInput());
 
             // Should only be invoked if page class is eligible.
             int numTimesInvoked = eligibleClasses.contains(pageClass.getNumber()) ? 1 : 0;

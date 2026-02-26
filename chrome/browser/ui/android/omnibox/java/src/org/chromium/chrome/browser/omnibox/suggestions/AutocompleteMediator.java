@@ -360,13 +360,7 @@ class AutocompleteMediator
         }
     }
 
-    /**
-     * Show cached zero suggest results. Enables Autocomplete subsystem to offer most recently
-     * presented suggestions in the event where Native counterpart is not yet initialized.
-     *
-     * <p>Note: the only supported page context right now is the ANDROID_SEARCH_WIDGET.
-     */
-    void startCachedZeroSuggest() {
+    private boolean shouldSuppressZeroSuggest() {
         boolean disableZps =
                 ChromeFeatureList.sOmniboxAutofocusOnIncognitoNtpNoZeroSuggest.getValue();
 
@@ -375,11 +369,22 @@ class AutocompleteMediator
         // any zero suggest results would have been shown.
         if (disableZps && isOmniboxAutofocusOnIncognitoNtpActive()) {
             recordZeroSuggestSuppressionMetric(true);
+            return true;
+        }
+        return false;
+    }
+
+    /** Kicks off a zero-suggest request. */
+    void startZeroSuggest() {
+        if (!isInInputSession()) return;
+        if (shouldSuppressZeroSuggest()) return;
+
+        if (OmniboxFeatures.sServeJavaCachedZeroSuggest.isEnabled() && mAutocomplete == null) {
+            serveCachedZeroSuggest(mAutocompleteInput);
             return;
         }
 
-        maybeServeCachedResult();
-        postAutocompleteRequest(this::startZeroSuggest, SCHEDULE_FOR_IMMEDIATE_EXECUTION);
+        postAutocompleteRequest(this::fetchZeroSuggest, SCHEDULE_FOR_IMMEDIATE_EXECUTION);
     }
 
     /** Save AutocompleteResult to Cache for early serving. */
@@ -394,17 +399,19 @@ class AutocompleteMediator
                 mAutocompleteInput.getPageClassification(), result);
     }
 
-    /** Serve AutocompleteResult from Cache if Autocomplete is not yet initialized. */
-    private void maybeServeCachedResult() {
-        if (!isInInputSession()
-                || !mAutocompleteInput.isInCacheableContext()
-                || mAutocomplete != null) {
+    /**
+     * Show cached zero suggest results. Enables Autocomplete subsystem to offer most recently
+     * presented suggestions in the event where Native counterpart is not yet initialized.
+     *
+     * @param input The AutocompleteInput for which to show cached suggestions.
+     */
+    public void serveCachedZeroSuggest(AutocompleteInput input) {
+        if (shouldSuppressZeroSuggest()) return;
+        if (input == null || !input.isInCacheableContext()) {
             return;
         }
         onSuggestionsReceived(
-                CachedZeroSuggestionsManager.readFromCache(
-                        mAutocompleteInput.getPageClassification()),
-                true);
+                CachedZeroSuggestionsManager.readFromCache(input.getPageClassification()), true);
     }
 
     /** Notify the mediator that a item selection is pending and should be accepted. */
@@ -977,7 +984,7 @@ class AutocompleteMediator
 
         if (isInZeroPrefixContext || isOnFocusContext) {
             clearSuggestions();
-            startCachedZeroSuggest();
+            startZeroSuggest();
         } else {
             boolean preventAutocomplete = !mUrlBarEditingTextProvider.shouldAutocomplete();
             int cursorPosition =
@@ -1278,7 +1285,7 @@ class AutocompleteMediator
      * incognito. This method should not be called directly. Schedule execution using
      * postAutocompleteRequest.
      */
-    private void startZeroSuggest() {
+    private void fetchZeroSuggest() {
         // Reset "edited" state in the omnibox if zero suggest is triggered -- new edits
         // now count as a new session.
         mNewOmniboxEditSessionTimestamp = -1;
