@@ -5116,6 +5116,7 @@ enum WebFeature {
   kModelContextExecuteTool = 5799,
   kModelContextExecuteDeclarativeTool = 5800,
   kModelContextExecuteDeclarativeAutosubmit = 5801,
+  kPrerender2CrossOriginIframes = 5802,
 
   // Add new features immediately above this line. Don't change the existing
   // numbers of any item, and don't reuse removed slots. Also don't add extra
