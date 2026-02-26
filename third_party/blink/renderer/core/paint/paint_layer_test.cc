@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/paint/paint_layer_paint_order_iterator.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
 namespace blink {
@@ -1957,6 +1958,7 @@ TEST_P(PaintLayerTest, HitTestPseudoElementWithContinuation) {
   )HTML");
   Element* target = GetDocument().getElementById(AtomicString("target"));
   PseudoElement* before = target->GetPseudoElement(kPseudoIdBefore);
+  ScopedPseudoElementsHitTestableForTest scoped_feature(true);
   HitTestRequest request(HitTestRequest::kReadOnly | HitTestRequest::kActive);
   HitTestLocation location(PhysicalOffset(10, 10));
   HitTestResult result(request, location);
@@ -1966,6 +1968,7 @@ TEST_P(PaintLayerTest, HitTestPseudoElementWithContinuation) {
   // inner_possibly_pseudo_node_ and accessed via InnerPossiblyPseudoNode().
   EXPECT_EQ(target, result.InnerNode());
   EXPECT_EQ(before, result.InnerPossiblyPseudoNode());
+  EXPECT_EQ(before, result.InnerPossiblyPseudoElement());
 }
 
 TEST_P(PaintLayerTest, HitTestFirstLetterPseudoElement) {

@@ -156,10 +156,10 @@ class CORE_EXPORT Event : public ScriptWrappable, public DOMOriginUtils {
   // retargeting. Can be a pseudo-element. Shouldn't we web exposed.
   EventTarget* RawTarget() const { return target_.Get(); }
 
-  void SetPseudoElementTarget(PseudoElement* pseudo_element_target) {
-    pseudo_element_target_ = pseudo_element_target;
-  }
-  PseudoElement* PseudoElementTarget() const { return pseudo_element_target_; }
+  // Converts |pseudo_element_target| to its CSSPseudoElement wrapper via
+  // CSSPseudoElement::From() and stores it. Called while the pseudo is still
+  // connected (during event path construction), so From() won't crash.
+  void SetPseudoElementTarget(PseudoElement* pseudo_element_target);
 
   EventTarget* currentTarget() const;
   void SetCurrentTarget(EventTarget* current_target) {
@@ -407,7 +407,10 @@ class CORE_EXPORT Event : public ScriptWrappable, public DOMOriginUtils {
 
   Member<EventTarget> current_target_;
   Member<EventTarget> target_;
-  Member<PseudoElement> pseudo_element_target_;
+  // Set eagerly in SetPseudoElementTarget() while the pseudo is connected.
+  // Storing CSSPseudoElement directly avoids calling From() on a possibly
+  // disconnected pseudo later during dispatch.
+  Member<CSSPseudoElement> pseudo_element_target_;
   Member<const Event> underlying_event_;
   Member<EventPath> event_path_;
   // The monotonic platform time in seconds, for input events it is the

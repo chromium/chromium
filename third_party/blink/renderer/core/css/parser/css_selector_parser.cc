@@ -1181,6 +1181,12 @@ bool IsPseudoClassValidAfterPseudoElement(
     case CSSSelector::kPseudoScrollButton:
       return pseudo_class == CSSSelector::kPseudoDisabled ||
              pseudo_class == CSSSelector::kPseudoEnabled;
+    case CSSSelector::kPseudoAfter:
+    case CSSSelector::kPseudoBefore:
+    case CSSSelector::kPseudoMarker: {
+      return pseudo_class == CSSSelector::kPseudoHover &&
+             RuntimeEnabledFeatures::PseudoElementsHoverableEnabled();
+    }
     default:
       return false;
   }

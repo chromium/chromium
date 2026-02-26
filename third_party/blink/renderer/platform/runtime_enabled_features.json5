@@ -4385,6 +4385,18 @@
       status: "stable",
     },
     {
+      // Support hit-testing for ::after, ::before, ::marker
+      // (e.g. for CSSPseudoElement).
+      name: "PseudoElementsHitTestable",
+      status: "experimental",
+    },
+    {
+      // Support :hover on ::after, ::before, ::marker.
+      name: "PseudoElementsHoverable",
+      depends_on: ["PseudoElementsHitTestable"],
+      status: "experimental",
+    },
+    {
       name: "PushMessageDataBytes",
       depends_on: ["PushMessaging"],
       status: "stable",

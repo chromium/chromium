@@ -62,6 +62,13 @@ class CSSPseudoElement final : public ScriptWrappable {
   // the sub-pseudo-element referenced in its argument, if such a
   // sub-pseudo-element could exist and would be valid, and null otherwise.
   CSSPseudoElement* pseudo(const AtomicString& type);
+  // PseudoId-based overload: avoids string parsing, for internal use.
+  CSSPseudoElement* pseudo(PseudoId pseudo_id);
+
+  // Returns the CSSPseudoElement proxy chain for the given PseudoElement,
+  // creating it if necessary. Handles nested pseudos (e.g. ::after::marker)
+  // by walking the parentElement() chain from innermost to outermost.
+  static CSSPseudoElement* From(PseudoElement* pseudo_element);
 
   // GeometryUtils methods
   // https://drafts.csswg.org/cssom-view/#the-geometryutils-interface

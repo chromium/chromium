@@ -59,6 +59,7 @@
 #include "third_party/blink/renderer/core/view_transition/view_transition_pseudo_element_base.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_utils.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -702,6 +703,10 @@ bool PseudoElement::SupportsHitTesting(PseudoId pseudo_id) {
   // originating) is determined by HasActivationBehavior() in
   // EventTargetRespectingTargetRules.
   switch (pseudo_id) {
+    case kPseudoIdBefore:
+    case kPseudoIdAfter:
+    case kPseudoIdMarker:
+      return RuntimeEnabledFeatures::PseudoElementsHitTestableEnabled();
     case kPseudoIdInterestHint:
     case kPseudoIdScrollMarker:
     case kPseudoIdScrollMarkerGroupBefore:

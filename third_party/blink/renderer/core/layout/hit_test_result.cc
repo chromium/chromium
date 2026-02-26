@@ -221,14 +221,30 @@ PositionWithAffinity HitTestResult::GetPosition() const {
   if (layout_object->ChildPaintBlockedByDisplayLock())
     return PositionWithAffinity(Position(*node, 0), TextAffinity::kDefault);
 
-  if (node->IsPseudoElement() && node->GetPseudoId() == kPseudoIdBefore) {
-    return PositionWithAffinity(
-        MostForwardCaretPosition(Position::FirstPositionInNode(*inner_node_)));
-  }
-
-  if (node->IsPseudoElement() && node->GetPseudoId() == kPseudoIdCheckMark) {
-    return PositionWithAffinity(
-        MostForwardCaretPosition(Position::FirstPositionInNode(*inner_node_)));
+  if (node->IsPseudoElement()) {
+    // Pseudo-elements can't serve as caret anchors.
+    switch (node->GetPseudoId()) {
+      case kPseudoIdBefore:
+      case kPseudoIdMarker: {
+        // Map to the beginning of the originating element.
+        const Node* originating =
+            &To<PseudoElement>(node)->UltimateOriginatingElement();
+        return PositionWithAffinity(MostForwardCaretPosition(
+            Position::FirstPositionInNode(*originating)));
+      }
+      case kPseudoIdAfter: {
+        // Map to the end of the originating element.
+        const Node* originating =
+            &To<PseudoElement>(node)->UltimateOriginatingElement();
+        return PositionWithAffinity(MostBackwardCaretPosition(
+            Position::LastPositionInNode(*originating)));
+      }
+      case kPseudoIdCheckMark:
+        return PositionWithAffinity(MostForwardCaretPosition(
+            Position::FirstPositionInNode(*inner_node_)));
+      default:
+        break;
+    }
   }
 
   return layout_object->PositionForPoint(LocalPoint());

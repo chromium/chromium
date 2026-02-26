@@ -65,31 +65,65 @@ PseudoId CSSPseudoElement::ConvertTypeToSupportedPseudoId(
     return kPseudoIdInvalid;
   }
   const CSSSelector& selector = vector.front();
-  PseudoId pseudo_id = CSSSelector::GetPseudoId(selector.GetPseudoType());
-  if (IsSupportedTypeForCSSPseudoElement(pseudo_id)) {
-    return pseudo_id;
-  }
-  return kPseudoIdInvalid;
+  return CSSSelector::GetPseudoId(selector.GetPseudoType());
 }
 
-CSSPseudoElement* CSSPseudoElement::pseudo(const AtomicString& type) {
-  PseudoId pseudo_id = ConvertTypeToSupportedPseudoId(type);
-  if (pseudo_id == kPseudoIdInvalid) {
+// static
+CSSPseudoElement* CSSPseudoElement::From(PseudoElement* pseudo_element) {
+  // Return nullptr for null or disconnected pseudo-elements. A disconnected
+  // pseudo cannot navigate to its originating element.
+  if (!pseudo_element || !pseudo_element->isConnected()) {
+    return nullptr;
+  }
+  // Build the pseudo-id chain from innermost to outermost by walking
+  // parentElement(). e.g. for ::after::marker: [kPseudoIdMarker,
+  // kPseudoIdAfter]
+  HeapVector<PseudoId> chain;
+  for (auto* p = pseudo_element; p;
+       p = DynamicTo<PseudoElement>(p->parentElement())) {
+    if (!p->isConnected() ||
+        !IsSupportedTypeForCSSPseudoElement(p->GetPseudoId())) {
+      return nullptr;
+    }
+    chain.push_back(p->GetPseudoId());
+  }
+  // Start from the outermost pseudo on the originating element.
+  CSSPseudoElement* css_pseudo =
+      pseudo_element->UltimateOriginatingElement().EnsureCSSPseudoElement(
+          chain.back());
+  // Walk inward through each nested level using PseudoId directly.
+  if (chain.size() > 1) {
+    for (wtf_size_t i = chain.size() - 1; i; --i) {
+      css_pseudo = css_pseudo->pseudo(chain[i - 1]);
+      if (!css_pseudo) {
+        return nullptr;
+      }
+    }
+  }
+  return css_pseudo;
+}
+
+CSSPseudoElement* CSSPseudoElement::pseudo(PseudoId pseudo_id) {
+  if (!IsSupportedTypeForCSSPseudoElement(pseudo_id)) {
     return nullptr;
   }
   if (!css_pseudo_elements_data_) {
     css_pseudo_elements_data_ =
         MakeGarbageCollected<CSSPseudoElementsCacheData>();
   }
-  if (CSSPseudoElement* css_pseudo_element =
+  if (CSSPseudoElement* existing =
           css_pseudo_elements_data_->GetCSSPseudoElement(pseudo_id)) {
-    return css_pseudo_element;
+    return existing;
   }
   auto* css_pseudo_element =
       MakeGarbageCollected<CSSPseudoElement>(*this, pseudo_id);
   css_pseudo_elements_data_->CacheCSSPseudoElement(pseudo_id,
                                                    *css_pseudo_element);
   return css_pseudo_element;
+}
+
+CSSPseudoElement* CSSPseudoElement::pseudo(const AtomicString& type) {
+  return pseudo(ConvertTypeToSupportedPseudoId(type));
 }
 
 namespace {
