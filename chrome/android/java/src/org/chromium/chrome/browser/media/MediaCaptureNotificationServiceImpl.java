@@ -150,14 +150,9 @@ public class MediaCaptureNotificationServiceImpl extends SplitCompatService.Impl
                 mSharedPreferences.readStringSet(
                         ChromePreferenceKeys.MEDIA_WEBRTC_NOTIFICATION_IDS, null);
         if (notificationIds == null) return;
-        // Manual notification cleanup is only required when background media capturing is disabled.
-        // When enabled, the foreground service manages the notification lifecycle.
-        if (!isBackgroundMediaCapturingEnabled()) {
-            Iterator<String> iterator = notificationIds.iterator();
-            while (iterator.hasNext()) {
-                mNotificationManager.cancel(
-                        NOTIFICATION_NAMESPACE, Integer.parseInt(iterator.next()));
-            }
+        Iterator<String> iterator = notificationIds.iterator();
+        while (iterator.hasNext()) {
+            mNotificationManager.cancel(NOTIFICATION_NAMESPACE, Integer.parseInt(iterator.next()));
         }
         mSharedPreferences.removeKey(ChromePreferenceKeys.MEDIA_WEBRTC_NOTIFICATION_IDS);
     }
@@ -251,8 +246,8 @@ public class MediaCaptureNotificationServiceImpl extends SplitCompatService.Impl
                 // by the foreground service. If disabled, we have to cancel the notification
                 // manually.
                 mNotificationManager.cancel(NOTIFICATION_NAMESPACE, notificationId);
+                updateSharedPreferencesEntry(notificationId, true);
             }
-            updateSharedPreferencesEntry(notificationId, true);
         }
     }
 
@@ -332,8 +327,8 @@ public class MediaCaptureNotificationServiceImpl extends SplitCompatService.Impl
             mNotifications.add(new Pair<>(notificationId, notification));
         } else {
             mNotificationManager.notify(notification);
+            updateSharedPreferencesEntry(notificationId, false);
         }
-        updateSharedPreferencesEntry(notificationId, false);
         NotificationUmaTracker.getInstance()
                 .onNotificationShown(
                         NotificationUmaTracker.SystemNotificationType.MEDIA_CAPTURE,
