@@ -916,6 +916,7 @@ android_library("crash_test_utils_java") {
 # robolectric tests
 robolectric_binary("android_webview_junit_tests") {
   sources = [
+    "../junit/src/org/chromium/android_webview/robolectric/AwContentRestrictionManagerBridgeTest.java",
     "../junit/src/org/chromium/android_webview/robolectric/AwDisplayCutoutControllerTest.java",
     "../junit/src/org/chromium/android_webview/robolectric/AwDisplayModeControllerTest.java",
     "../junit/src/org/chromium/android_webview/robolectric/AwHttpAuthHandlerTest.java",

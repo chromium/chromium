@@ -469,4 +469,9 @@ public interface AconfigFlaggedApiDelegate {
     default @Nullable SerialManager getSerialManager() {
         return null;
     }
+
+    /** Checks whether content restriction is supported and enabled for WebViews. */
+    default boolean isContentRestrictionEnabled() {
+        return false;
+    }
 }
