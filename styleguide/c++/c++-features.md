@@ -42,6 +42,7 @@ The current status of existing standards and Abseil features is:
     dates represent the start of the two-year TBD periods for certain parts of
     Abseil:_
       * absl::linked_hash_set & map: Initially added to third_party Dec 30, 2025
+      * absl::optional_ref: Initially added to third_party Feb 25, 2026
 
 ## Banned features and third-party code
 
@@ -2784,3 +2785,26 @@ amortized insertions and lookups, as well as iteration in the insertion order.
 **Documentation:**
 *   [linked_hash_set.h](https://source.chromium.org/chromium/chromium/src/+/main:third_party/abseil-cpp/absl/container/linked_hash_set.h)
 *   [linked_hash_map.h](https://source.chromium.org/chromium/chromium/src/+/main:third_party/abseil-cpp/absl/container/linked_hash_map.h)
+
+
+### absl::optional_ref <sup>[tbd]</sup>
+
+```c++
+   void ProcessT(absl::optional_ref<const T> input) {
+     if (!input.has_value()) {
+       // Handle empty case.
+       return;
+     }
+     const T& val = *input;
+     // Do something with val.
+   }
+
+   ProcessT(std::nullopt);
+   ProcessT(BuildT());
+```
+
+**Description:** A `std::optional`-like interface around `T*`.
+It is similar to C++26's `std::optional<T&>`, but with slight enhancements.
+
+**Documentation:**
+*   [optional_ref.h](https://source.chromium.org/chromium/chromium/src/+/main:third_party/abseil-cpp/absl/types/optional_ref.h)
