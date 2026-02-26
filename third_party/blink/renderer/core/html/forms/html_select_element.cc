@@ -2019,10 +2019,8 @@ HTMLSelectElement::AssociatedSelectAndOptgroupAndDatalist(
       // Descendants of <hr> elements are not <select> associated.
       return {nullptr, ancestor_optgroup, nullptr};
     } else if (auto* datalist = DynamicTo<HTMLDataListElement>(ancestor)) {
-      if (RuntimeEnabledFeatures::SelectDisallowDatalistEnabled()) {
-        // Descendants of <datalist> elements are not <select> associated.
-        return {nullptr, ancestor_optgroup, datalist};
-      }
+      // Descendants of <datalist> elements are not <select> associated.
+      return {nullptr, ancestor_optgroup, datalist};
     } else if (auto* select = DynamicTo<HTMLSelectElement>(ancestor)) {
       return {select, ancestor_optgroup, nullptr};
     }
@@ -2083,12 +2081,8 @@ bool HTMLSelectElement::ShouldIgnoreDescendantsForOptionTraversals(
     Element* element) {
   // Nested <optgroup>s also should be ignored in places that call this, but
   // this method doesn't have enough context to handle that case.
-  if (RuntimeEnabledFeatures::SelectDisallowDatalistEnabled() &&
-      IsA<HTMLDataListElement>(element)) {
-    return true;
-  }
-  return IsA<HTMLSelectElement>(element) || IsA<HTMLOptionElement>(element) ||
-         IsA<HTMLHRElement>(element);
+  return IsA<HTMLDataListElement>(element) || IsA<HTMLSelectElement>(element) ||
+         IsA<HTMLOptionElement>(element) || IsA<HTMLHRElement>(element);
 }
 
 }  // namespace blink
