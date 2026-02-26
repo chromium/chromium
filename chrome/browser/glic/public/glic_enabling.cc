@@ -66,7 +66,7 @@ namespace glic {
 
 // Comma separated list of countries to enable GLIC, by default, if country
 // filtering is enabled.
-constexpr char kDefaultEnabledCountries[] = "us,ca";
+constexpr char kDefaultEnabledCountries[] = "us";
 
 // Feature flag kGlicLocaleFiltering controls whether locale filtering is
 // applied client side. Two finch params are used to control this, both are a
