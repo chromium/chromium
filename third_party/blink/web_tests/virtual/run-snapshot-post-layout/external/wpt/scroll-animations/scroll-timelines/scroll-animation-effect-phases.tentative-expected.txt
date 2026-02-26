@@ -1,14 +1,6 @@
 This is a testharness.js-based test.
-[FAIL] Current times and effect phase in active range when delay = 0 and endDelay = 0 |
-  assert_approx_equals: values do not match for "timeline current time" expected 50 +/- 0.125 but got 0
-[FAIL] Current times and effect phase at effect end time when delay = 0 and endDelay = 0 |
-  assert_approx_equals: values do not match for "timeline current time" expected 100 +/- 0.125 but got 0
 [FAIL] Current times and effect phase before start delay when delay = 500 and endDelay = 0 |
   assert_approx_equals: values do not match for "timeline current time" expected 25 +/- 0.125 but got 0
-[FAIL] Current times and effect phase at start delay when delay = 500 and endDelay = 0 |
-  assert_approx_equals: values do not match for "timeline current time" expected 50 +/- 0.125 but got 0
-[FAIL] Current times and effect phase in active range when delay = 500 and endDelay = 0 |
-  assert_approx_equals: values do not match for "timeline current time" expected 75 +/- 0.125 but got 0
 [FAIL] Current times and effect phase at effect end time when delay = 500 and endDelay = 0 |
   assert_approx_equals: values do not match for "timeline current time" expected 100 +/- 0.125 but got 0
 [FAIL] Current times and effect phase in active range when delay = 0 and endDelay = 500 |
