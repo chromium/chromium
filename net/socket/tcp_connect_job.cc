@@ -94,7 +94,6 @@ TcpConnectJob::TcpConnectJob(
 TcpConnectJob::~TcpConnectJob() = default;
 
 LoadState TcpConnectJob::GetLoadState() const {
-  // TODO(https://crbug.com/484073410): Test this.
   LoadState load_state = primary_connector_->GetLoadState();
   // This method should return LOAD_STATE_CONNECTING in preference to
   // LOAD_STATE_WAITING_FOR_AVAILABLE_SOCKET when possible because "waiting

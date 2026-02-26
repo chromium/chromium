@@ -2424,5 +2424,102 @@ TEST_F(TcpConnectJobTest, TwoConnectorsEndpointIndexBackwards) {
                 {kIpV6Endpoint2, ERR_FAILED}});
 }
 
+////////////////////////
+// GetLoadState tests //
+////////////////////////
+
+TEST_F(TcpConnectJobTest, OneConnectorGetLoadState) {
+  const auto service_endpoint1 =
+      CreateServiceEndpoint({kIpV6Endpoint2}, {"h2"}, /*ech=*/true);
+  const auto service_endpoint2 =
+      CreateServiceEndpoint({kIpV4Endpoint1, kIpV6Endpoint1});
+  auto request = host_resolver_.AddFakeRequest();
+
+  // There are three attempts. The first connection attempt fails, the second
+  // pauses waiting for crypto ready, which disallows the address. The third
+  // succeeds.
+  std::array<MockConnectCompleter, 3> connect_completers;
+  AddConnect(MockConnect(&connect_completers[0]), kIpV6Endpoint1);
+  AddConnect(MockConnect(&connect_completers[1]), kIpV4Endpoint1);
+  AddConnect(MockConnect(&connect_completers[2]), kIpV6Endpoint2);
+
+  // Start the request, initially waiting on DNS.
+  EXPECT_THAT(InitAndStart(), IsError(ERR_IO_PENDING));
+  std::vector<ConnectionAttempt> expected_connection_attempts;
+  EXPECT_EQ(connect_job_->GetLoadState(), LOAD_STATE_RESOLVING_HOST);
+
+  // DNS request returns some IP addresses, but does not complete. We start
+  // connecting to the IPv6 endpoint.
+  request->add_endpoint(service_endpoint2).CallOnServiceEndpointsUpdated();
+  EXPECT_EQ(connect_job_->GetLoadState(), LOAD_STATE_CONNECTING);
+
+  // First IP fails to connect. We wait on the next one.
+  connect_completers[0].WaitForConnectAndComplete(ERR_FAILED);
+  EXPECT_EQ(connect_job_->GetLoadState(), LOAD_STATE_CONNECTING);
+
+  // Second IP connects successfully, but now we're back to waiting on the DNS
+  // request to reach crypto ready.
+  connect_completers[1].WaitForConnectAndComplete(OK);
+  EXPECT_EQ(connect_job_->GetLoadState(), LOAD_STATE_RESOLVING_HOST);
+
+  // The DNS request completes, returning a new endpoint, and we learn the old
+  // endpoints are unusable.
+  request->set_endpoints({service_endpoint2, service_endpoint1})
+      .CallOnServiceEndpointRequestFinished(OK);
+  // We're back to connecting again.
+  EXPECT_EQ(connect_job_->GetLoadState(), LOAD_STATE_CONNECTING);
+
+  // Complete the final connection attempt, which should complete the request
+  // successfully.
+  connect_completers[2].WaitForConnectAndComplete(OK);
+
+  // There no failure record for kIpV6Endpoint1, since it actually succeeded, we
+  // just rejected the IP afterwards.
+  WaitForSuccess(
+      kIpV6Endpoint2, service_endpoint1,
+      /*expected_connection_attempts=*/{{kIpV6Endpoint1, ERR_FAILED}});
+}
+
+TEST_F(TcpConnectJobTest, TwoConnectorsGetLoadState) {
+  const auto service_endpoint =
+      CreateServiceEndpoint({kIpV4Endpoint1, kIpV6Endpoint1});
+  auto request = host_resolver_.AddFakeRequest();
+
+  std::array<MockConnectCompleter, 3> connect_completers;
+  AddConnect(MockConnect(&connect_completers[0]), kIpV6Endpoint1);
+  AddConnect(MockConnect(&connect_completers[1]), kIpV4Endpoint1);
+
+  // Start the request, initially waiting on DNS.
+  EXPECT_THAT(InitAndStart(), IsError(ERR_IO_PENDING));
+  std::vector<ConnectionAttempt> expected_connection_attempts;
+  EXPECT_EQ(connect_job_->GetLoadState(), LOAD_STATE_RESOLVING_HOST);
+
+  // DNS request returns some IP addresses, but does not complete. We start
+  // connecting to the IPv6 endpoint.
+  request->add_endpoint(service_endpoint).CallOnServiceEndpointsUpdated();
+  EXPECT_EQ(connect_job_->GetLoadState(), LOAD_STATE_CONNECTING);
+
+  // Connection succeeds, but still need to wait for crypto ready, which is part
+  // of the DNS request.
+  connect_completers[0].WaitForConnectAndComplete(OK);
+  EXPECT_EQ(connect_job_->GetLoadState(), LOAD_STATE_RESOLVING_HOST);
+
+  // Waiting takes a while, so we create a second connector, and return to
+  // connecting load state.
+  connect_completers[1].WaitForConnect();
+  EXPECT_TRUE(connect_job_->has_two_connectors_for_testing());
+  EXPECT_EQ(connect_job_->GetLoadState(), LOAD_STATE_CONNECTING);
+
+  // Second connection attempt also succeeds, and also must wait on crypto
+  // ready.
+  connect_completers[1].Complete(OK);
+  EXPECT_EQ(connect_job_->GetLoadState(), LOAD_STATE_RESOLVING_HOST);
+
+  // The DNS request completes. We can now return the primary connector's
+  // socket.
+  request->CallOnServiceEndpointRequestFinished(OK);
+  WaitForSuccess(kIpV6Endpoint1, service_endpoint);
+}
+
 }  // namespace
 }  // namespace net
