@@ -91,7 +91,7 @@ std::string VideoFrame::StorageTypeToString(
       return "DMABUFS";
 #endif
     case VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE:
-      return "GPU_MEMORY_BUFFER";
+      return "MAPPABLE_SHARED_IMAGE";
   }
 
   NOTREACHED() << "Invalid StorageType provided: " << storage_type;
