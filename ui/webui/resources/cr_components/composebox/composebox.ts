@@ -462,11 +462,10 @@ export class ComposeboxElement extends I18nMixinLit
         // focus leaves the match.
         this.input_ = this.lastQueriedInput_;
       }
-      this.submitEnabled_ = this.computeSubmitEnabled_();
-      this.canSubmitFilesAndInput_ =
-          this.submitEnabled_ && this.fileUploadsComplete;
     }
-    if (changedPrivateProperties.has('inputState_') ||
+
+    if (changedPrivateProperties.has('selectedMatchIndex_') ||
+        changedPrivateProperties.has('inputState_') ||
         changedPrivateProperties.has('isFollowupQuery')) {
       this.submitEnabled_ = this.computeSubmitEnabled_();
       this.canSubmitFilesAndInput_ =
