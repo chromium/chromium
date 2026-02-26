@@ -46,9 +46,12 @@ struct SceneInfo {
 }
 
 - (void)addTaskRequest:(TaskRequest*)task {
-  // TODO(crbug.com/462018636): Don't add the task if it requires an
-  // account/profile change and there is already a task in a queue requiring a
-  // change to a different account. Record metrics when this happens.
+  // Don't add the task if it requires an account/profile change and there is
+  // already a task in a queue requiring a change to a different account.
+  if ([self shouldDropTaskRequest:task]) {
+    return;
+  }
+
   SceneInfo& sceneInfo = _tasksPerScene[task.sceneSessionID];
   sceneInfo.AddTask(task);
   [self executeTasksForScene:task.sceneSessionID];
@@ -65,6 +68,24 @@ struct SceneInfo {
 }
 
 #pragma mark - Private
+
+// Returns whether the task should be dropped.
+- (BOOL)shouldDropTaskRequest:(TaskRequest*)task {
+  NSString* taskGaiaID = task.gaiaID;
+  if (!taskGaiaID) {
+    return NO;
+  }
+
+  SceneInfo& sceneInfo = _tasksPerScene[task.sceneSessionID];
+  for (TaskRequest* pendingTask in sceneInfo.pending_tasks) {
+    NSString* pendingGaiaID = pendingTask.gaiaID;
+    if (pendingGaiaID && ![pendingGaiaID isEqualToString:taskGaiaID]) {
+      // TODO(crbug.com/462018636): Record metrics when this happens.
+      return YES;
+    }
+  }
+  return NO;
+}
 
 // Internal logic to filter and execute tasks based on the current stage.
 - (void)executeTasksForScene:(std::string_view)sceneSessionID {

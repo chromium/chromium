@@ -13,6 +13,8 @@
 // task_request.mm, do not use it from the rest of the codebase.
 @interface TaskRequest ()
 
+@property(nonatomic, strong, readwrite) NSString* gaiaID;
+
 - (instancetype)initWithSceneState:(SceneState*)sceneState
                        isColdStart:(BOOL)isColdStart;
 

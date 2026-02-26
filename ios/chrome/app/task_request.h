@@ -35,6 +35,9 @@ using ShortcutCompletionHandler = void (^)(BOOL succeeded);
 // it can be safely executed.
 @interface TaskRequest : NSObject
 
+// Gaia ID associated with the task, if any.
+@property(nonatomic, readonly) NSString* gaiaID;
+
 // Minimum execution stage for a task.
 @property(nonatomic, assign) TaskExecutionStage minimumStage;
 

@@ -51,6 +51,7 @@
 @implementation TaskRequest
 
 @synthesize minimumStage = _minimumStage;
+@synthesize gaiaID = _gaiaID;
 
 - (std::string_view)sceneSessionID {
   return _sceneSessionID;

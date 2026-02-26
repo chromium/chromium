@@ -9,6 +9,8 @@
 
 @interface TaskRequest (Testing)
 
+@property(nonatomic, strong, readwrite) NSString* gaiaID;
+
 - (instancetype)initWithSceneID:(std::string_view)sceneID;
 
 + (instancetype)taskForTestingWithSceneID:(std::string_view)sceneID

@@ -141,3 +141,70 @@ TEST_F(TaskOrchestratorTest, TestMultipleStagesSameScene) {
                       forScene:scene_id];
   EXPECT_TRUE(task2WasExecuted);
 }
+
+// Tests that a task is dropped if there is already a pending task for the same
+// scene with a different Gaia ID.
+TEST_F(TaskOrchestratorTest, TestDropTaskRequestWithDifferentGaiaID) {
+  std::string scene_id = "scene1";
+  NSString* gaia_id1 = @"gaia1";
+  NSString* gaia_id2 = @"gaia2";
+
+  __block BOOL task1WasExecuted = NO;
+  TaskRequest* task1 = [TaskRequest taskForTestingWithSceneID:scene_id
+                                                 executeBlock:^{
+                                                   task1WasExecuted = YES;
+                                                 }];
+  task1.minimumStage = TaskExecutionStage::TaskExecutionUIReady;
+  task1.gaiaID = gaia_id1;
+
+  __block BOOL task2WasExecuted = NO;
+  TaskRequest* task2 = [TaskRequest taskForTestingWithSceneID:scene_id
+                                                 executeBlock:^{
+                                                   task2WasExecuted = YES;
+                                                 }];
+  task2.minimumStage = TaskExecutionStage::TaskExecutionUIReady;
+  task2.gaiaID = gaia_id2;
+
+  [orchestrator_ addTaskRequest:task1];
+  [orchestrator_ addTaskRequest:task2];
+
+  [orchestrator_ updateToStage:TaskExecutionStage::TaskExecutionUIReady
+                      forScene:scene_id];
+
+  // task1 should be executed, task2 should be dropped.
+  EXPECT_TRUE(task1WasExecuted);
+  EXPECT_FALSE(task2WasExecuted);
+}
+
+// Tests that a task is not dropped if it has the same Gaia ID as already
+// pending tasks for the same scene.
+TEST_F(TaskOrchestratorTest, TestNotDropTaskRequestWithSameGaiaID) {
+  std::string scene_id = "scene1";
+  NSString* gaia_id = @"gaia";
+
+  __block BOOL task1WasExecuted = NO;
+  TaskRequest* task1 = [TaskRequest taskForTestingWithSceneID:scene_id
+                                                 executeBlock:^{
+                                                   task1WasExecuted = YES;
+                                                 }];
+  task1.minimumStage = TaskExecutionStage::TaskExecutionUIReady;
+  task1.gaiaID = gaia_id;
+
+  __block BOOL task2WasExecuted = NO;
+  TaskRequest* task2 = [TaskRequest taskForTestingWithSceneID:scene_id
+                                                 executeBlock:^{
+                                                   task2WasExecuted = YES;
+                                                 }];
+  task2.minimumStage = TaskExecutionStage::TaskExecutionUIReady;
+  task2.gaiaID = gaia_id;
+
+  [orchestrator_ addTaskRequest:task1];
+  [orchestrator_ addTaskRequest:task2];
+
+  [orchestrator_ updateToStage:TaskExecutionStage::TaskExecutionUIReady
+                      forScene:scene_id];
+
+  // Both tasks should be executed.
+  EXPECT_TRUE(task1WasExecuted);
+  EXPECT_TRUE(task2WasExecuted);
+}

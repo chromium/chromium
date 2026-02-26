@@ -114,6 +114,9 @@ source_set("tasks_handling") {
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/signin/model:system_identity_manager",
+    "//ios/chrome/common/app_group",
+    "//net",
+    "//url",
   ]
 
   frameworks = [ "Foundation.framework" ]
