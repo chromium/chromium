@@ -385,6 +385,8 @@ public abstract class ChromeFeatureList {
     public static final String CONTROLS_VISIBILITY_FROM_NAVIGATIONS =
             "ControlsVisibilityFromNavigations";
     public static final String CORMORANT = "Cormorant";
+    public static final String CROSS_DEVICE_PREF_TRACKER_EXTRA_LOGS =
+            "CrossDevicePrefTrackerExtraLogs";
     public static final String CROSS_DEVICE_TAB_PANE_ANDROID = "CrossDeviceTabPaneAndroid";
     public static final String DARKEN_WEBSITES_CHECKBOX_IN_THEMES_SETTING =
             "DarkenWebsitesCheckboxInThemesSetting";

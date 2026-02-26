@@ -13,4 +13,7 @@ BASE_FEATURE(kEnableCrossDevicePrefTracker,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
+BASE_FEATURE(kCrossDevicePrefTrackerExtraLogs,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace sync_preferences::features
