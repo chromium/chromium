@@ -70,6 +70,8 @@ class MojoPageTimingSender : public PageTimingSender {
       const std::optional<blink::SubresourceLoadMetrics>&
           subresource_load_metrics,
       const mojom::SoftNavigationMetricsPtr& soft_navigation_metrics,
+      const mojom::LargestContentfulPaintTimingPtr&
+          soft_largest_contentful_paint,
       std::vector<mojom::CustomUserTimingMarkPtr> user_timings) override {
     DCHECK(page_load_metrics_);
     page_load_metrics_->UpdateTiming(
@@ -77,7 +79,7 @@ class MojoPageTimingSender : public PageTimingSender {
         metadata->Clone(), new_features, std::move(resources),
         render_data.Clone(), cpu_timing->Clone(), std::move(event_timings),
         subresource_load_metrics, soft_navigation_metrics->Clone(),
-        std::move(user_timings));
+        soft_largest_contentful_paint->Clone(), std::move(user_timings));
   }
 
   void SetUpDroppedFramesReporting(

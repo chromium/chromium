@@ -13,7 +13,6 @@ namespace page_load_metrics {
 // Initialize an empty PageLoadTiming with initialized empty sub-members.
 mojom::PageLoadTimingPtr CreatePageLoadTiming();
 mojom::LargestContentfulPaintTimingPtr CreateLargestContentfulPaintTiming();
-mojom::SoftNavigationMetricsPtr CreateSoftNavigationMetrics();
 
 bool IsEmpty(const mojom::DocumentTiming& timing);
 bool IsEmpty(const mojom::DomainLookupTiming& timing);

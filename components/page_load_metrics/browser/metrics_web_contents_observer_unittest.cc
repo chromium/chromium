@@ -126,15 +126,16 @@ class MetricsWebContentsObserverTest
 
   void SimulateCpuTimingUpdate(const mojom::CpuTiming& timing,
                                content::RenderFrameHost* render_frame_host) {
-    observer()->OnTimingUpdated(render_frame_host, previous_timing_->Clone(),
-                                mojom::FrameMetadataPtr(std::in_place),
-                                std::vector<blink::UseCounterFeature>(),
-                                std::vector<mojom::ResourceDataUpdatePtr>(),
-                                mojom::FrameRenderDataUpdatePtr(std::in_place),
-                                timing.Clone(),
-                                std::vector<mojom::EventTimingPtr>(),
-                                std::nullopt, CreateSoftNavigationMetrics(),
-                                std::vector<mojom::CustomUserTimingMarkPtr>());
+    observer()->OnTimingUpdated(
+        render_frame_host, previous_timing_->Clone(),
+        mojom::FrameMetadataPtr(std::in_place),
+        std::vector<blink::UseCounterFeature>(),
+        std::vector<mojom::ResourceDataUpdatePtr>(),
+        mojom::FrameRenderDataUpdatePtr(std::in_place), timing.Clone(),
+        std::vector<mojom::EventTimingPtr>(), std::nullopt,
+        mojom::SoftNavigationMetricsPtr(std::in_place),
+        mojom::LargestContentfulPaintTimingPtr(std::in_place),
+        std::vector<mojom::CustomUserTimingMarkPtr>());
   }
 
   void SimulateTimingUpdate(const mojom::PageLoadTiming& timing,
@@ -152,15 +153,17 @@ class MetricsWebContentsObserverTest
       const mojom::PageLoadTiming& timing,
       content::RenderFrameHost* render_frame_host) {
     previous_timing_ = timing.Clone();
-    observer()->OnTimingUpdated(render_frame_host, timing.Clone(),
-                                mojom::FrameMetadataPtr(std::in_place),
-                                std::vector<blink::UseCounterFeature>(),
-                                std::vector<mojom::ResourceDataUpdatePtr>(),
-                                mojom::FrameRenderDataUpdatePtr(std::in_place),
-                                mojom::CpuTimingPtr(std::in_place),
-                                std::vector<mojom::EventTimingPtr>(),
-                                std::nullopt, CreateSoftNavigationMetrics(),
-                                std::vector<mojom::CustomUserTimingMarkPtr>());
+    observer()->OnTimingUpdated(
+        render_frame_host, timing.Clone(),
+        mojom::FrameMetadataPtr(std::in_place),
+        std::vector<blink::UseCounterFeature>(),
+        std::vector<mojom::ResourceDataUpdatePtr>(),
+        mojom::FrameRenderDataUpdatePtr(std::in_place),
+        mojom::CpuTimingPtr(std::in_place),
+        std::vector<mojom::EventTimingPtr>(), std::nullopt,
+        mojom::SoftNavigationMetricsPtr(std::in_place),
+        mojom::LargestContentfulPaintTimingPtr(std::in_place),
+        std::vector<mojom::CustomUserTimingMarkPtr>());
   }
 
   void SimulateCustomUserTimingUpdate(

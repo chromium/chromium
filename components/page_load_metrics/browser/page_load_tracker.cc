@@ -305,7 +305,7 @@ PageLoadTracker::PageLoadTracker(
       is_origin_visit_(
           CalculateIsOriginVisit(*is_first_navigation_in_web_contents,
                                  navigation_handle->GetPageTransition())),
-      soft_navigation_metrics_(CreateSoftNavigationMetrics()),
+      soft_navigation_metrics_(mojom::SoftNavigationMetrics::New()),
       page_type_(CalculatePageType(navigation_handle)),
       parent_tracker_(std::move(parent_tracker)) {
   DCHECK(!navigation_handle->HasCommitted());
@@ -1488,20 +1488,22 @@ void PageLoadTracker::UpdateMetrics(
     std::vector<mojom::EventTimingPtr> event_timings,
     const std::optional<blink::SubresourceLoadMetrics>&
         subresource_load_metrics,
-    mojom::SoftNavigationMetricsPtr soft_navigation_metrics) {
+    mojom::SoftNavigationMetricsPtr soft_navigation_metrics,
+    mojom::LargestContentfulPaintTimingPtr soft_largest_contentful_paint) {
   if (parent_tracker_) {
     parent_tracker_->UpdateMetrics(
         render_frame_host, new_timing.Clone(), new_metadata.Clone(), features,
         resources, render_data.Clone(), cpu_timing.Clone(),
         mojo::Clone(event_timings), subresource_load_metrics,
-        soft_navigation_metrics.Clone());
+        soft_navigation_metrics.Clone(), soft_largest_contentful_paint.Clone());
   }
 
   metrics_update_dispatcher_.UpdateMetrics(
       render_frame_host, std::move(new_timing), std::move(new_metadata),
       std::move(features), resources, std::move(render_data),
       std::move(cpu_timing), std::move(event_timings), subresource_load_metrics,
-      std::move(soft_navigation_metrics), page_type_);
+      std::move(soft_navigation_metrics),
+      std::move(soft_largest_contentful_paint), page_type_);
 }
 
 void PageLoadTracker::AddCustomUserTimings(

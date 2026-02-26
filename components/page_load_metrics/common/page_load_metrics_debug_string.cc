@@ -334,11 +334,6 @@ std::string DebugString(
   entries.emplace_back(
       "start_time", base::NumberToString(
                         soft_navigation_metrics.start_time.InMillisecondsF()));
-  if (soft_navigation_metrics.largest_contentful_paint) {
-    entries.emplace_back(
-        "largest_contentful_paint",
-        DebugString(*soft_navigation_metrics.largest_contentful_paint));
-  }
   return EntriesToString(entries);
 }
 }  // namespace page_load_metrics

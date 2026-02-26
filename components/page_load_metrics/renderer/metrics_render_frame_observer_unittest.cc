@@ -92,7 +92,7 @@ TEST_F(MetricsRenderFrameObserverTest, SingleMetric) {
   timing.navigation_start = nav_start;
   observer_.SetFakePageLoadTiming(timing);
   validator_.ExpectPageLoadTiming(timing);
-  mojom::SoftNavigationMetricsPtr empty_softnav = CreateSoftNavigationMetrics();
+  auto empty_softnav = mojom::SoftNavigationMetrics::New();
   validator_.ExpectSoftNavigationMetrics(*empty_softnav);
 
   observer_.DidStartNavigation(GURL(), std::nullopt);
@@ -120,7 +120,7 @@ TEST_F(MetricsRenderFrameObserverTest,
   timing.navigation_start = nav_start;
   observer_.SetFakePageLoadTiming(timing);
   validator_.ExpectPageLoadTiming(timing);
-  mojom::SoftNavigationMetricsPtr empty_softnav = CreateSoftNavigationMetrics();
+  auto empty_softnav = mojom::SoftNavigationMetrics::New();
   validator_.ExpectSoftNavigationMetrics(*empty_softnav);
   observer_.DidStartNavigation(GURL(), std::nullopt);
   observer_.ReadyToCommitNavigation(nullptr);
@@ -141,7 +141,7 @@ TEST_F(MetricsRenderFrameObserverTest, SingleCpuMetric) {
   timing.navigation_start = nav_start;
   observer_.SetFakePageLoadTiming(timing);
   validator_.ExpectPageLoadTiming(timing);
-  mojom::SoftNavigationMetricsPtr empty_softnav = CreateSoftNavigationMetrics();
+  auto empty_softnav = mojom::SoftNavigationMetrics::New();
   validator_.ExpectSoftNavigationMetrics(*empty_softnav);
   observer_.DidStartNavigation(GURL(), std::nullopt);
   observer_.ReadyToCommitNavigation(nullptr);
@@ -163,9 +163,10 @@ TEST_F(MetricsRenderFrameObserverTest, MultipleMetricsAndSoftNavigations) {
   timing.navigation_start = base::Time::FromSecondsSinceUnixEpoch(42);
   observer_.SetFakePageLoadTiming(timing);
   validator_.ExpectPageLoadTiming(timing);
-  mojom::SoftNavigationMetricsPtr soft_navigation_metrics =
-      CreateSoftNavigationMetrics();
+  auto soft_navigation_metrics = mojom::SoftNavigationMetrics::New();
   validator_.ExpectSoftNavigationMetrics(*soft_navigation_metrics);
+  validator_.ExpectSoftLargestContentfulPaint(
+      *CreateLargestContentfulPaintTiming());
 
   observer_.DidStartNavigation(GURL(), std::nullopt);
   observer_.ReadyToCommitNavigation(nullptr);
@@ -180,6 +181,8 @@ TEST_F(MetricsRenderFrameObserverTest, MultipleMetricsAndSoftNavigations) {
   observer_.SetFakePageLoadTiming(timing);
   validator_.ExpectPageLoadTiming(timing);
   validator_.ExpectSoftNavigationMetrics(*soft_navigation_metrics);
+  validator_.ExpectSoftLargestContentfulPaint(
+      *CreateLargestContentfulPaintTiming());
 
   observer_.DidChangePerformanceTiming();
   observer_.GetMockTimer()->Fire();
@@ -199,6 +202,8 @@ TEST_F(MetricsRenderFrameObserverTest, MultipleMetricsAndSoftNavigations) {
   soft_navigation_metrics->count = 1;
   soft_navigation_metrics->start_time = base::Milliseconds(221.1);
   validator_.ExpectSoftNavigationMetrics(*soft_navigation_metrics);
+  validator_.ExpectSoftLargestContentfulPaint(
+      *CreateLargestContentfulPaintTiming());
 
   observer_.DidObserveSoftNavigation(blink::SoftNavigationMetricsForReporting{
       .count = soft_navigation_metrics->count,
@@ -216,21 +221,21 @@ TEST_F(MetricsRenderFrameObserverTest, MultipleMetricsAndSoftNavigations) {
   //
   // Soft LCP: 120 milliseconds after soft navigation start.
   //
+  auto soft_largest_contentful_paint = CreateLargestContentfulPaintTiming();
   base::TimeDelta soft_lcp = base::Milliseconds(120);
-  soft_navigation_metrics->largest_contentful_paint->largest_image_paint =
-      soft_lcp;
-  soft_navigation_metrics->largest_contentful_paint->largest_image_paint_size =
-      2500;
+  soft_largest_contentful_paint->largest_image_paint = soft_lcp;
+  soft_largest_contentful_paint->largest_image_paint_size = 2500;
 
   validator_.ExpectSoftNavigationMetrics(*soft_navigation_metrics);
+  validator_.ExpectSoftLargestContentfulPaint(*soft_largest_contentful_paint);
   observer_.DidObserveSoftLargestContentfulPaint(
       blink::LargestContentfulPaintDetailsForReporting{
           .image_paint_time =
               (timing.navigation_start - base::Time::UnixEpoch() +
                soft_navigation_metrics->start_time + soft_lcp)
                   .InSecondsF(),
-          .image_paint_size = soft_navigation_metrics->largest_contentful_paint
-                                  ->largest_image_paint_size});
+          .image_paint_size =
+              soft_largest_contentful_paint->largest_image_paint_size});
   validator_.ExpectPageLoadTiming(timing);
   observer_.GetMockTimer()->Fire();
   validator_.VerifyExpectedTimings();
@@ -245,7 +250,7 @@ TEST_F(MetricsRenderFrameObserverTest, MultipleMetricsAndSoftNavigations) {
   observer_.SetFakePageLoadTiming(timing);
   validator_.ExpectPageLoadTiming(timing);
 
-  soft_navigation_metrics = CreateSoftNavigationMetrics();
+  soft_navigation_metrics = mojom::SoftNavigationMetrics::New();
 
   soft_navigation_metrics->same_document_metrics_token =
       base::UnguessableToken::Create();
@@ -261,10 +266,13 @@ TEST_F(MetricsRenderFrameObserverTest, MultipleMetricsAndSoftNavigations) {
   });
 
   validator_.ExpectSoftNavigationMetrics(*soft_navigation_metrics);
+  validator_.ExpectSoftLargestContentfulPaint(
+      *CreateLargestContentfulPaintTiming());
 
   observer_.GetMockTimer()->Fire();
 
   validator_.VerifyExpectedSoftNavigationMetrics();
+  validator_.VerifyExpectedSoftLargestContentfulPaint();
 
   ASSERT_FALSE(observer_.GetMockTimer()->IsRunning());
 }
@@ -279,7 +287,8 @@ TEST_F(MetricsRenderFrameObserverTest, MultipleNavigations) {
   timing.navigation_start = nav_start;
   observer_.SetFakePageLoadTiming(timing);
   validator_.ExpectPageLoadTiming(timing);
-  mojom::SoftNavigationMetricsPtr empty_softnav = CreateSoftNavigationMetrics();
+  mojom::SoftNavigationMetricsPtr empty_softnav =
+      mojom::SoftNavigationMetrics::New();
   validator_.ExpectSoftNavigationMetrics(*empty_softnav);
   observer_.DidStartNavigation(GURL(), std::nullopt);
   observer_.ReadyToCommitNavigation(nullptr);

@@ -1852,8 +1852,7 @@ TEST_F(UkmPageLoadMetricsObserverTest, SoftNavigationCount) {
 
   auto soft_navigation_metrics =
       page_load_metrics::mojom::SoftNavigationMetrics(
-          1, base::Milliseconds(12), base::UnguessableToken::Create(),
-          page_load_metrics::mojom::LargestContentfulPaintTiming::New());
+          1, base::Milliseconds(12), base::UnguessableToken::Create());
 
   content::MockNavigationHandle navigation_handle;
   navigation_handle.set_has_committed(true);

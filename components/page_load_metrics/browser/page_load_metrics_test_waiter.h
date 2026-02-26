@@ -128,12 +128,6 @@ class PageLoadMetricsTestWaiter : public MetricsLifecycleObserver {
 
   void AddSoftNavigationCountExpectation(int expected_count);
 
-  void AddSoftNavigationImageLCPExpectation(
-      int expected_soft_nav_image_lcp_update);
-
-  void AddSoftNavigationTextLCPExpectation(
-      int expected_soft_nav_text_lcp_update);
-
   // Add a main/sub frame layout shift expectation.
   void AddPageLayoutShiftExpectation(
       ShiftFrame frame = ShiftFrame::LayoutShiftOnlyInMainFrame,
@@ -392,14 +386,6 @@ class PageLoadMetricsTestWaiter : public MetricsLifecycleObserver {
 
   uint64_t expected_soft_navigation_count_ = 0;
   uint64_t current_soft_navigation_count_ = 0;
-
-  uint64_t expected_soft_navigation_image_lcp_update_ = 0;
-  uint64_t observed_soft_navigation_image_lcp_update_ = 0;
-  uint64_t observed_soft_navigation_image_lcp_ = 0;
-
-  uint64_t expected_soft_navigation_text_lcp_update_ = 0;
-  uint64_t observed_soft_navigation_text_lcp_update_ = 0;
-  uint64_t observed_soft_navigation_text_lcp_ = 0;
 
   double expected_min_largest_contentful_paint_ = -1.0;
   double observed_largest_contentful_paint_ = 0.0;

@@ -330,37 +330,6 @@ void PageLoadMetricsTestWaiter::OnSoftNavigationMetricsUpdated(
   if (new_soft_navigation_metrics.count > current_soft_navigation_count_) {
     current_soft_navigation_count_ = new_soft_navigation_metrics.count;
   }
-
-  // Increment image lcp update counts.
-  if (new_soft_navigation_metrics.largest_contentful_paint) {
-    if (new_soft_navigation_metrics.largest_contentful_paint
-            ->largest_image_paint.has_value() &&
-        new_soft_navigation_metrics.largest_contentful_paint
-            ->largest_image_paint->is_positive() &&
-        new_soft_navigation_metrics.largest_contentful_paint
-                ->largest_image_paint->InMillisecondsF() !=
-            observed_soft_navigation_image_lcp_) {
-      observed_soft_navigation_image_lcp_update_++;
-      observed_soft_navigation_image_lcp_ =
-          new_soft_navigation_metrics.largest_contentful_paint
-              ->largest_image_paint->InMillisecondsF();
-    }
-  }
-
-  // Increment text lcp update counts.
-  if (new_soft_navigation_metrics.largest_contentful_paint) {
-    if (new_soft_navigation_metrics.largest_contentful_paint->largest_text_paint
-            .has_value() &&
-        new_soft_navigation_metrics.largest_contentful_paint->largest_text_paint
-            ->is_positive() &&
-        new_soft_navigation_metrics.largest_contentful_paint->largest_text_paint
-                ->InMillisecondsF() != observed_soft_navigation_text_lcp_) {
-      observed_soft_navigation_text_lcp_update_++;
-      observed_soft_navigation_text_lcp_ =
-          new_soft_navigation_metrics.largest_contentful_paint
-              ->largest_text_paint->InMillisecondsF();
-    }
-  }
 }
 
 void PageLoadMetricsTestWaiter::OnPageEventTimingUpdated(
@@ -747,30 +716,6 @@ bool PageLoadMetricsTestWaiter::SoftNavigationCountExpectationSatisfied()
   return current_soft_navigation_count_ >= expected_soft_navigation_count_;
 }
 
-void PageLoadMetricsTestWaiter::AddSoftNavigationImageLCPExpectation(
-    int expected_soft_navigation_image_lcp_update) {
-  expected_soft_navigation_image_lcp_update_ =
-      expected_soft_navigation_image_lcp_update;
-}
-
-void PageLoadMetricsTestWaiter::AddSoftNavigationTextLCPExpectation(
-    int expected_soft_navigation_text_lcp_update) {
-  expected_soft_navigation_text_lcp_update_ =
-      expected_soft_navigation_text_lcp_update;
-}
-
-bool PageLoadMetricsTestWaiter::SoftNavigationImageLCPExpectationSatisfied()
-    const {
-  return observed_soft_navigation_image_lcp_update_ >=
-         expected_soft_navigation_image_lcp_update_;
-}
-
-bool PageLoadMetricsTestWaiter::SoftNavigationTextLCPExpectationSatisfied()
-    const {
-  return observed_soft_navigation_text_lcp_update_ >=
-         expected_soft_navigation_text_lcp_update_;
-}
-
 bool PageLoadMetricsTestWaiter::ExpectationsSatisfied() const {
   return expected_.page_fields_.AreAllSetIn(observed_.page_fields_) &&
          expected_.subframe_fields_.AreAllSetIn(observed_.subframe_fields_) &&
@@ -790,9 +735,7 @@ bool PageLoadMetricsTestWaiter::ExpectationsSatisfied() const {
          NumLargestContentfulPaintImageSatisfied() &&
          NumLargestContentfulPaintTextSatisfied() &&
          LargestContentfulPaintGreaterThanExpectationSatisfied() &&
-         SoftNavigationCountExpectationSatisfied() &&
-         SoftNavigationImageLCPExpectationSatisfied() &&
-         SoftNavigationTextLCPExpectationSatisfied();
+         SoftNavigationCountExpectationSatisfied();
 }
 
 void PageLoadMetricsTestWaiter::AssertExpectationsSatisfied() const {

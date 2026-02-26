@@ -31,13 +31,6 @@ mojom::LargestContentfulPaintTimingPtr CreateLargestContentfulPaintTiming() {
   return timing;
 }
 
-mojom::SoftNavigationMetricsPtr CreateSoftNavigationMetrics() {
-  auto timing = mojom::SoftNavigationMetrics::New();
-  timing->start_time = base::Milliseconds(0);
-  timing->largest_contentful_paint = CreateLargestContentfulPaintTiming();
-  return timing;
-}
-
 bool IsEmpty(const page_load_metrics::mojom::DocumentTiming& timing) {
   return !timing.dom_content_loaded_event_start && !timing.load_event_start;
 }
@@ -84,10 +77,7 @@ bool IsEmpty(const mojom::MonotonicPaintTiming& timing) {
 }
 
 bool IsEmpty(const mojom::SoftNavigationMetrics& timing) {
-  return !timing.count && timing.start_time.is_zero() &&
-         !timing.same_document_metrics_token &&
-         (!timing.largest_contentful_paint ||
-          IsEmpty(*timing.largest_contentful_paint));
+  return !timing.count;
 }
 
 bool IsEmpty(const page_load_metrics::mojom::PageLoadTiming& timing) {

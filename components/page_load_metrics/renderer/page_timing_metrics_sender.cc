@@ -68,7 +68,8 @@ PageTimingMetricsSender::PageTimingMetricsSender(
       last_timing_(std::move(initial_timing)),
       last_cpu_timing_(mojom::CpuTiming::New()),
       metadata_(mojom::FrameMetadata::New()),
-      soft_navigation_metrics_(CreateSoftNavigationMetrics()),
+      soft_navigation_metrics_(mojom::SoftNavigationMetrics::New()),
+      soft_largest_contentful_paint_(CreateLargestContentfulPaintTiming()),
       buffer_timer_delay_ms_(GetBufferTimerDelayMillis(TimerType::kRenderer)),
       metadata_recorder_(initial_monotonic_timing, is_main_frame) {
   if (initial_request) {
@@ -135,13 +136,14 @@ void PageTimingMetricsSender::DidObserveSoftNavigation(
   CHECK(new_metrics.same_document_metrics_token !=
         soft_navigation_metrics_->same_document_metrics_token);
 
-  // Now that we've checked the invariants, start with a fresh Mojom
-  // message, including a cleared out largest_contentful_paint field.
-  soft_navigation_metrics_ = CreateSoftNavigationMetrics();
+  // Now that we've checked the invariants, start with a fresh Mojoms
+  // for soft navs and the soft LCP.
+  soft_navigation_metrics_ = mojom::SoftNavigationMetrics::New();
   soft_navigation_metrics_->count = new_metrics.count;
   soft_navigation_metrics_->start_time = new_metrics.start_time;
   soft_navigation_metrics_->same_document_metrics_token =
       new_metrics.same_document_metrics_token;
+  soft_largest_contentful_paint_ = CreateLargestContentfulPaintTiming();
 
   EnsureSendTimer();
 }
@@ -290,10 +292,10 @@ void PageTimingMetricsSender::Update(
 
 void PageTimingMetricsSender::DidObserveSoftLargestContentfulPaint(
     mojom::LargestContentfulPaintTimingPtr lcp) {
-  soft_navigation_metrics_->largest_contentful_paint = std::move(lcp);
+  soft_largest_contentful_paint_ = std::move(lcp);
   // Until we introduce multiple pending soft lcps, send this urgently
   // because the next arriving soft navigation will clear
-  // soft_navigation_metrics_.largest_contentful_paint.
+  // soft_largest_contentful_paint_.
   EnsureSendTimer(/*urgent=*/true);
 }
 
@@ -357,7 +359,7 @@ void PageTimingMetricsSender::SendNow() {
   sender_->SendTiming(last_timing_, metadata_, std::move(new_features_),
                       std::move(resources), render_data_, last_cpu_timing_,
                       std::move(event_timings_), subresource_load_metrics_,
-                      soft_navigation_metrics_,
+                      soft_navigation_metrics_, soft_largest_contentful_paint_,
                       std::move(custom_user_timings_));
 
   event_timings_.clear();

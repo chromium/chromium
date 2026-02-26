@@ -431,6 +431,7 @@ void PageLoadMetricsUpdateDispatcher::UpdateMetrics(
     const std::optional<blink::SubresourceLoadMetrics>&
         subresource_load_metrics,
     mojom::SoftNavigationMetricsPtr soft_navigation_metrics,
+    mojom::LargestContentfulPaintTimingPtr soft_largest_contentful_paint,
     internal::PageLoadTrackerPageType page_type) {
   if (embedder_interface_->IsExtensionUrl(
           render_frame_host->GetLastCommittedURL())) {
@@ -459,8 +460,7 @@ void PageLoadMetricsUpdateDispatcher::UpdateMetrics(
                                                        event_timings);
     UpdateSoftNavigationIntervalLayoutShift(*render_data);
     UpdateSoftNavigation(*soft_navigation_metrics);
-    UpdateSoftNavigationLargestContentfulPaint(
-        *soft_navigation_metrics->largest_contentful_paint);
+    UpdateSoftNavigationLargestContentfulPaint(*soft_largest_contentful_paint);
   } else {
     if (!render_frame_host->GetParentOrOuterDocument()) {
       // TODO(crbug.com/40065854): This can be removed once

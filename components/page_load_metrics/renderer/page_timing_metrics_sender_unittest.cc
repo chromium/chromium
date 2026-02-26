@@ -47,7 +47,7 @@ class PageTimingMetricsSenderTest : public testing::Test {
             PageTimingMetadataRecorder::MonotonicTiming())) {}
 
   mojom::SoftNavigationMetricsPtr CreateEmptySoftNavigationMetrics() {
-    return CreateSoftNavigationMetrics();
+    return mojom::SoftNavigationMetrics::New();
   }
 
  protected:

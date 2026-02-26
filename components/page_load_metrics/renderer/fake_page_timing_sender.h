@@ -51,6 +51,10 @@ class FakePageTimingSender : public PageTimingSender {
 
     void ExpectSoftNavigationMetrics(
         const mojom::SoftNavigationMetrics& soft_navigation_metrics);
+    void ExpectSoftLargestContentfulPaint(
+        const mojom::LargestContentfulPaintTiming&
+            soft_largest_contentful_paint);
+
     // CpuTimings that are expected to be sent through SendTiming() should be
     // passed to ExpectCpuTiming.
     void ExpectCpuTiming(const base::TimeDelta& timing);
@@ -60,6 +64,8 @@ class FakePageTimingSender : public PageTimingSender {
     void VerifyExpectedTimings() const;
 
     void VerifyExpectedSoftNavigationMetrics() const;
+
+    void VerifyExpectedSoftLargestContentfulPaint() const;
 
     // Forces verification that actual timings sent through SendTiming() match
     // expected timings provided via ExpectCpuTiming.
@@ -120,7 +126,9 @@ class FakePageTimingSender : public PageTimingSender {
         const std::vector<mojom::EventTimingPtr>& event_timings,
         const std::optional<blink::SubresourceLoadMetrics>&
             subresource_load_metrics,
-        const mojom::SoftNavigationMetricsPtr& soft_navigation_metrics);
+        const mojom::SoftNavigationMetricsPtr& soft_navigation_metrics,
+        const mojom::LargestContentfulPaintTimingPtr&
+            soft_largest_contentful_paint);
 
    private:
     std::vector<mojom::PageLoadTimingPtr> expected_timings_;
@@ -129,6 +137,10 @@ class FakePageTimingSender : public PageTimingSender {
         expected_soft_navigation_metrics_;
     std::vector<mojom::SoftNavigationMetricsPtr>
         actual_soft_navigation_metrics_;
+    std::vector<mojom::LargestContentfulPaintTimingPtr>
+        expected_soft_largest_contentful_paint_;
+    std::vector<mojom::LargestContentfulPaintTimingPtr>
+        actual_soft_largest_contentful_paint_;
     std::vector<mojom::CpuTimingPtr> expected_cpu_timings_;
     std::vector<mojom::CpuTimingPtr> actual_cpu_timings_;
     std::set<blink::UseCounterFeature> expected_features_;
@@ -165,6 +177,8 @@ class FakePageTimingSender : public PageTimingSender {
       const std::optional<blink::SubresourceLoadMetrics>&
           subresource_load_metrics,
       const mojom::SoftNavigationMetricsPtr& soft_navigation_metrics,
+      const mojom::LargestContentfulPaintTimingPtr&
+          soft_largest_contentful_paint,
       std::vector<mojom::CustomUserTimingMarkPtr> user_timings) override;
 
   void SetUpDroppedFramesReporting(
