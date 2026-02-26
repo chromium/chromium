@@ -339,4 +339,36 @@ TEST_F(StyleColorTest, UnresolvedRelativeColor_Resolve) {
                 .SerializeAsCSSColor());
 }
 
+TEST_F(StyleColorTest, UnresolvedContrastColor_ToCSSValue) {
+  StyleColor currentcolor;
+  StyleColor green(Color(0, 128, 0));
+
+  StyleColor::UnresolvedContrastColor* contrast_current =
+      MakeGarbageCollected<StyleColor::UnresolvedContrastColor>(currentcolor);
+
+  StyleColor::UnresolvedContrastColor* contrast_green =
+      MakeGarbageCollected<StyleColor::UnresolvedContrastColor>(green);
+
+  CSSValue* value = contrast_current->ToCSSValue();
+  EXPECT_TRUE(value->IsContrastColorValue());
+  EXPECT_EQ(value->CssText(), "contrast-color(currentcolor)");
+
+  value = contrast_green->ToCSSValue();
+  EXPECT_TRUE(value->IsContrastColorValue());
+  EXPECT_EQ(value->CssText(), "contrast-color(rgb(0, 128, 0))");
+}
+
+TEST_F(StyleColorTest, UnresolvedContrastColor_Resolve) {
+  StyleColor light(Color(220, 220, 220));
+  StyleColor dark(Color(20, 20, 20));
+
+  StyleColor::UnresolvedContrastColor* contrast_light =
+      MakeGarbageCollected<StyleColor::UnresolvedContrastColor>(light);
+  StyleColor::UnresolvedContrastColor* contrast_dark =
+      MakeGarbageCollected<StyleColor::UnresolvedContrastColor>(dark);
+
+  EXPECT_EQ(contrast_light->Resolve(Color::kBlack), Color::kBlack);
+  EXPECT_EQ(contrast_dark->Resolve(Color::kBlack), Color::kWhite);
+}
+
 }  // namespace blink

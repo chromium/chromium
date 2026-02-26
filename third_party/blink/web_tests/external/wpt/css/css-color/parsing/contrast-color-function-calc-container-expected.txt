@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Property background-color value 'contrast-color(color(srgb calc(1 + (sign(20cqw - 10px) * 1)) calc(1 + (sign(20cqw - 10px) * 1)) calc(1 + (sign(20cqw - 10px) * 1))))'
-  assert_in_array: value "color(srgb 0 0 0)" not in array ["rgb(0, 0, 0)", "rgb(255, 255, 255)"]
-Harness: the test ran to completion.
-

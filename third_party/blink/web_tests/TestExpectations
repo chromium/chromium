@@ -2285,9 +2285,6 @@ crbug.com/1371358 external/wpt/navigation-timing/prefetch-transfer-size-iframe.h
 crbug.com/1467328 virtual/forced-high-contrast-colors/fast/css/forced-colors-mode/forced-colors-mode-15.html [ Failure ]
 crbug.com/1467692 virtual/forced-high-contrast-colors/fast/css/forced-colors-mode/forced-colors-mode-16.html [ Failure ]
 
-# contrast-color()
-crbug.com/40142548 external/wpt/css/css-color/contrast-color-001.html [ Failure ]
-
 # external/wpt/css/css-borders/
 crbug.com/451531616 external/wpt/css/css-borders/outline-offset-rounding.tentative.html [ Failure ]
 crbug.com/330758166 external/wpt/css/css-borders/tentative/border-radius-side-shorthands/border-radius-side-shorthands-001.html [ Failure ]

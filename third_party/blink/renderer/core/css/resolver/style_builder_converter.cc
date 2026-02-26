@@ -2944,9 +2944,15 @@ StyleColor ResolveColorValueImpl(const CSSValue& value,
 
   if (auto* contrast_color_value =
           DynamicTo<cssvalue::CSSContrastColorValue>(value)) {
-    // TODO(crbug.com/40142548): Implement black/white result depending on color
-    // parameter.
-    return ResolveColorValueImpl(contrast_color_value->Color(), context);
+    const StyleColor param_color =
+        ResolveColorValueImpl(contrast_color_value->Color(), context);
+    const StyleColor::UnresolvedContrastColor* unresolved_contrast_color =
+        MakeGarbageCollected<StyleColor::UnresolvedContrastColor>(param_color);
+    if (param_color.IsAbsoluteColor()) {
+      return StyleColor(unresolved_contrast_color->Resolve(Color()));
+    } else {
+      return StyleColor(unresolved_contrast_color);
+    }
   }
 
   if (auto* unresolved_color_value =

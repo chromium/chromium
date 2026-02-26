@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/css/css_color.h"
 #include "third_party/blink/renderer/core/css/css_color_channel_keywords.h"
 #include "third_party/blink/renderer/core/css/css_color_mix_value.h"
+#include "third_party/blink/renderer/core/css/css_contrast_color_value.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_math_function_value.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
@@ -20,6 +21,7 @@
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
 #include "third_party/blink/renderer/platform/geometry/calculation_expression_node.h"
 #include "third_party/blink/renderer/platform/geometry/calculation_value.h"
+#include "ui/gfx/color_utils.h"
 
 namespace blink {
 
@@ -79,9 +81,54 @@ CORE_EXPORT bool StyleColor::UnresolvedColorFunction::operator==(
     case StyleColor::UnresolvedColorFunction::Type::kRelativeColor:
       return *To<UnresolvedRelativeColor>(this) ==
              To<UnresolvedRelativeColor>(other);
+    case StyleColor::UnresolvedColorFunction::Type::kContrastColor:
+      return *To<UnresolvedContrastColor>(this) ==
+             To<UnresolvedContrastColor>(other);
   }
 
   NOTREACHED();
+}
+
+StyleColor::UnresolvedContrastColor::UnresolvedContrastColor(
+    const StyleColor& param_color)
+    : UnresolvedColorFunction(UnresolvedColorFunction::Type::kContrastColor),
+      param_color_(param_color.color_or_unresolved_color_function_),
+      param_color_type_(ResolveColorOperandType(param_color)) {}
+
+Color StyleColor::UnresolvedContrastColor::Resolve(
+    const Color& current_color) const {
+  const SkColor resolved_param =
+      ResolveColorOperand(param_color_, param_color_type_, current_color)
+          .toSkColor4f()
+          .toSkColor();
+  float white_contrast =
+      color_utils::GetContrastRatio(SK_ColorWHITE, resolved_param);
+  float black_contrast =
+      color_utils::GetContrastRatio(SK_ColorBLACK, resolved_param);
+  // https://www.w3.org/TR/css-color-5/#contrast-color :
+  //
+  // contrast-color() resolves to either white or black, whichever produces
+  // maximum color contrast for text when the input color is used as a solid
+  // background. If both white and black produce the same contrast, it resolves
+  // to white.
+  return black_contrast > white_contrast ? Color::kBlack : Color::kWhite;
+}
+
+CSSValue* StyleColor::UnresolvedContrastColor::ToCSSValue() const {
+  return MakeGarbageCollected<cssvalue::CSSContrastColorValue>(
+      ConvertColorOperandToCSSValue(param_color_, param_color_type_));
+}
+
+bool StyleColor::UnresolvedContrastColor::operator==(
+    const UnresolvedContrastColor& other) const {
+  return param_color_type_ == other.param_color_type_ &&
+         ColorOrUnresolvedColorFunction::Equals(
+             param_color_, other.param_color_, param_color_type_);
+}
+
+void StyleColor::UnresolvedContrastColor::Trace(Visitor* visitor) const {
+  UnresolvedColorFunction::Trace(visitor);
+  visitor->Trace(param_color_);
 }
 
 StyleColor::UnresolvedColorMix::UnresolvedColorMix(
@@ -342,7 +389,9 @@ Color StyleColor::Resolve(const Color& current_color,
     Color result =
         color_or_unresolved_color_function_.unresolved_color_function->Resolve(
             current_color);
-    if (Color::IsLegacyColorSpace(result.GetColorSpace())) {
+    if (Color::IsLegacyColorSpace(result.GetColorSpace()) &&
+        color_or_unresolved_color_function_.unresolved_color_function
+                ->GetType() != UnresolvedColorFunction::Type::kContrastColor) {
       result.ConvertToColorSpace(Color::ColorSpace::kSRGB);
     }
     return result;

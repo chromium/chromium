@@ -113,7 +113,6 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 #include "ui/gfx/animation/keyframe/timing_function.h"
-#include "ui/gfx/color_utils.h"
 
 namespace blink {
 
