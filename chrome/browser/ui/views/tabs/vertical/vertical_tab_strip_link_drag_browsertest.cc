@@ -11,7 +11,6 @@
 #include "chrome/browser/ui/views/frame/browser_root_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/vertical_tab_strip_region_view.h"
-#include "chrome/browser/ui/views/tabs/vertical/vertical_pinned_tab_container_view.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_split_tab_view.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_group_view.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_view.h"
@@ -52,10 +51,6 @@ class VerticalTabStripLinkDragTest
     return region_view()->GetUnpinnedTabsContainer();
   }
 
-  VerticalPinnedTabContainerView* pinned_container() {
-    return region_view()->GetPinnedTabsContainer();
-  }
-
   std::optional<BrowserRootView::DropIndex> GetDropIndexAt(
       views::View* view,
       gfx::Point loc_in_view) {
@@ -73,21 +68,6 @@ class VerticalTabStripLinkDragTest
     EXPECT_TRUE(base::test::RunUntil([&]() {
       tab_views.clear();
       for (views::View* child : unpinned_container()->children()) {
-        if (auto* tab_view = views::AsViewClass<VerticalTabView>(child)) {
-          tab_views.push_back(tab_view);
-        }
-      }
-      return tab_views.size() == count &&
-             (count == 0 || tab_views[0]->height() > 20);
-    }));
-    return tab_views;
-  }
-
-  std::vector<VerticalTabView*> WaitForPinnedTabs(size_t count) {
-    std::vector<VerticalTabView*> tab_views;
-    EXPECT_TRUE(base::test::RunUntil([&]() {
-      tab_views.clear();
-      for (views::View* child : pinned_container()->children()) {
         if (auto* tab_view = views::AsViewClass<VerticalTabView>(child)) {
           tab_views.push_back(tab_view);
         }
@@ -324,85 +304,5 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripLinkDragTest, DropInCollapsedGroups) {
     auto drop_index = GetDropIndexAt(group_view->group_header(), location);
     ASSERT_TRUE(drop_index.has_value());
     EXPECT_EQ(drop_index->index, 2);
-  }
-}
-
-IN_PROC_BROWSER_TEST_F(VerticalTabStripLinkDragTest, DropInPinnedTabs) {
-  tab_strip_model()->AppendWebContents(
-      content::WebContents::Create(
-          content::WebContents::CreateParams(browser()->profile())),
-      /*foreground=*/true);
-  tab_strip_model()->SetTabPinned(0, true);
-  tab_strip_model()->SetTabPinned(1, true);
-  RunScheduledLayouts();
-
-  auto pinned_tab_views = WaitForPinnedTabs(2);
-
-  // Drop at the left of the first pinned tab.
-  {
-    gfx::Point location(2, pinned_tab_views[0]->height() / 2);
-    auto drop_index = GetDropIndexAt(pinned_tab_views[0], location);
-    ASSERT_TRUE(drop_index.has_value());
-    EXPECT_EQ(drop_index->index, 0);
-  }
-
-  // Drop at the right of the first pinned tab.
-  {
-    gfx::Point location(pinned_tab_views[0]->width() - 2,
-                        pinned_tab_views[0]->height() / 2);
-    auto drop_index = GetDropIndexAt(pinned_tab_views[0], location);
-    ASSERT_TRUE(drop_index.has_value());
-    EXPECT_EQ(drop_index->index, 1);
-  }
-
-  // Drop at the right of the last pinned tab.
-  {
-    gfx::Point location(pinned_tab_views[1]->width() - 2,
-                        pinned_tab_views[1]->height() / 2);
-    auto drop_index = GetDropIndexAt(pinned_tab_views[1], location);
-    ASSERT_TRUE(drop_index.has_value());
-    EXPECT_EQ(drop_index->index, 2);
-  }
-
-  // Drop in the middle of the first pinned tab -> replace.
-  {
-    gfx::Point location(pinned_tab_views[0]->width() / 2,
-                        pinned_tab_views[0]->height() / 2);
-    auto drop_index = GetDropIndexAt(pinned_tab_views[0], location);
-    ASSERT_TRUE(drop_index.has_value());
-    EXPECT_EQ(drop_index->index, 0);
-    EXPECT_EQ(drop_index->relative_to_index,
-              BrowserRootView::DropIndex::RelativeToIndex::kReplaceIndex);
-  }
-}
-
-IN_PROC_BROWSER_TEST_F(VerticalTabStripLinkDragTest,
-                       DropInPinnedTabsCollapsed) {
-  tab_strip_model()->AppendWebContents(
-      content::WebContents::Create(
-          content::WebContents::CreateParams(browser()->profile())),
-      /*foreground=*/true);
-  tab_strip_model()->SetTabPinned(0, true);
-  tab_strip_model()->SetTabPinned(1, true);
-  region_view()->OnResize(-1000, true);
-  RunScheduledLayouts();
-
-  auto pinned_tab_views = WaitForPinnedTabs(2);
-
-  // Drop at the top of the first pinned tab.
-  {
-    gfx::Point location(pinned_tab_views[0]->width() / 2, 2);
-    auto drop_index = GetDropIndexAt(pinned_tab_views[0], location);
-    ASSERT_TRUE(drop_index.has_value());
-    EXPECT_EQ(drop_index->index, 0);
-  }
-
-  // Drop at the bottom of the first pinned tab.
-  {
-    gfx::Point location(pinned_tab_views[0]->width() / 2,
-                        pinned_tab_views[0]->height() - 2);
-    auto drop_index = GetDropIndexAt(pinned_tab_views[0], location);
-    ASSERT_TRUE(drop_index.has_value());
-    EXPECT_EQ(drop_index->index, 1);
   }
 }

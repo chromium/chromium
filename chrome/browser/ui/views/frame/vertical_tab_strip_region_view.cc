@@ -407,17 +407,6 @@ views::View* VerticalTabStripRegionView::GetViewForDrop() {
 
 std::optional<BrowserRootView::DropIndex>
 VerticalTabStripRegionView::GetDropIndex(const ui::DropTargetEvent& event) {
-  // Check pinned tabs.
-  VerticalPinnedTabContainerView* pinned_container = GetPinnedTabsContainer();
-  if (pinned_container) {
-    gfx::Point loc_in_pinned = views::View::ConvertPointToTarget(
-        this, pinned_container, event.location());
-    if (loc_in_pinned.y() >= 0 &&
-        loc_in_pinned.y() < pinned_container->height()) {
-      return pinned_container->GetLinkDropIndex(loc_in_pinned);
-    }
-  }
-
   // Check unpinned tabs.
   VerticalUnpinnedTabContainerView* unpinned_container =
       GetUnpinnedTabsContainer();
@@ -437,6 +426,7 @@ VerticalTabStripRegionView::GetDropIndex(const ui::DropTargetEvent& event) {
         gfx::Point(0, unpinned_container->height()));
   }
 
+  // TODO(crbug.com/485262103): Handle dragging over pinned tabs.
   return std::nullopt;
 }
 

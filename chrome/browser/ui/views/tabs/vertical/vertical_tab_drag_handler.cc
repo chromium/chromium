@@ -374,14 +374,14 @@ void VerticalTabDragHandlerImpl::HandleDraggedTabsOutOfGroup(
   const auto& selection_model = tab_strip_model_->selection_model();
   int insertion_idx;
   switch (position_hint) {
-    case DragPositionHint::kAfter: {
+    case DragPositionHint::kBottom: {
       int last_tab_in_group =
           tab_strip_model_->GetIndexOfTab(tab_group.GetLastTab());
       insertion_idx =
           last_tab_in_group - selection_model.selected_tabs().size() + 1;
       break;
     }
-    case DragPositionHint::kBefore: {
+    case DragPositionHint::kTop: {
       int first_tab_in_group =
           tab_strip_model_->GetIndexOfTab(tab_group.GetFirstTab());
       insertion_idx = first_tab_in_group;

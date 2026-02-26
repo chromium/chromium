@@ -194,8 +194,8 @@ VerticalSplitTabView::GetLinkDropIndex(const gfx::Point& loc_in_view) {
   // drag position to place the new tab before/after the split.
   return drag_handler.GetLinkDropIndexForNode(*collection_node_,
                                               loc_in_view.y() < height() / 2
-                                                  ? DragPositionHint::kBefore
-                                                  : DragPositionHint::kAfter);
+                                                  ? DragPositionHint::kTop
+                                                  : DragPositionHint::kBottom);
 }
 
 double VerticalSplitTabView::GetHoverAnimationValue() const {
