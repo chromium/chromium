@@ -8,11 +8,11 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/intelligence/bwg/utils/bwg_constants.h"
+#import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/public/provider/chrome/browser/bwg/bwg_api.h"
 
 // TODO(crbug.com/481711842): Replace this enum and its gemini_metrics.h
-// equivalent with an enum in bwg_constants.h
+// equivalent with an enum in gemini_constants.h
 // Input type for BWG queries.
 // LINT.IfChange(BWGInputType)
 typedef NS_ENUM(NSInteger, BWGInputType) {
@@ -71,7 +71,7 @@ typedef NS_ENUM(NSInteger, BWGInputType) {
 // )
 
 // TODO(crbug.com/481711842): Replace this enum and its gemini_metrics.h
-// equivalent with an enum in bwg_constants.h
+// equivalent with an enum in gemini_constants.h
 // The feedback type for Gemini queries.
 // LINT.IfChange(GeminiFeedbackType)
 enum class GeminiFeedbackType {
@@ -86,7 +86,7 @@ enum class GeminiFeedbackType {
 // )
 
 // TODO(crbug.com/481711842): Replace this enum and its gemini_metrics.h
-// equivalent with an enum in bwg_constants.h
+// equivalent with an enum in gemini_constants.h
 // Cancellation types for a Gemini session.
 typedef NS_ENUM(NSInteger, GeminiCancelType) {
   // Unknown cancellation reason.

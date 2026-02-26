@@ -790,7 +790,7 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="Edit Menu (Explain)"/>
 </enum>
 
-<!-- LINT.ThenChange(/ios/chrome/browser/intelligence/bwg/utils/bwg_constants.h:EntryPoint) -->
+<!-- LINT.ThenChange(/ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h:EntryPoint) -->
 
 <!-- LINT.IfChange(IOSGeminiFeedback) -->
 
@@ -858,7 +858,7 @@ chromium-metrics-reviews@google.com.
   <int value="13" label="Keyboard"/>
 </enum>
 
-<!-- LINT.ThenChange(/ios/chrome/browser/intelligence/bwg/utils/bwg_constants.h:FloatyUpdateSource) -->
+<!-- LINT.ThenChange(/ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h:FloatyUpdateSource) -->
 
 <!-- LINT.IfChange(IOSGeminiFREAction) -->
 
@@ -893,7 +893,7 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Share"/>
 </enum>
 
-<!-- LINT.ThenChange(ios/chrome/browser/intelligence/bwg/utils/bwg_constants.h:ImageActionButtonType) -->
+<!-- LINT.ThenChange(ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h:ImageActionButtonType) -->
 
 <!-- LINT.IfChange(IOSGeminiIneligibilityReason) -->
 
@@ -916,7 +916,7 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Create Image Selected"/>
 </enum>
 
-<!-- LINT.ThenChange(ios/chrome/browser/intelligence/bwg/utils/bwg_constants.h:InputPlateAttachmentOption) -->
+<!-- LINT.ThenChange(ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h:InputPlateAttachmentOption) -->
 
 <!-- LINT.IfChange(IOSGeminiOSCameraAuthorizationInitialStatus) -->
 

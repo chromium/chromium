@@ -1,11 +1,11 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/intelligence/bwg/utils/bwg_constants.h"
+#import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 
-NSString* const kBWGPromoConsentFullDetentIdentifier =
-    @"BWGPromoConsentFullDetentIdentifier";
+NSString* const kGeminiPromoConsentFullDetentIdentifier =
+    @"GeminiPromoConsentFullDetentIdentifier";
 
 NSString* const kLottieAnimationFREBannerName = @"FRE_Banner";
 
@@ -29,24 +29,28 @@ const char kSecondBoxLink2URLNonManagedAccount[] =
     "13594961?hl=en#location_info&zippy=%2Cwhat-location-information-do-gemini-"
     "apps-collect-why-and-how-is-it-used";
 
-// Accessibility identifiers for bwg consent view.
-NSString* const kBwgFootNoteTextViewAccessibilityIdentifier =
-    @"footnote_text_view";
-NSString* const kBwgPrimaryButtonAccessibilityIdentifier = @"primary_button";
-NSString* const kBwgSecondaryButtonAccessibilityIdentifier =
-    @"secondary_button";
+// Accessibility identifiers for Gemini consent view.
+NSString* const kGeminiFootNoteTextViewAccessibilityIdentifier =
+    @"GeminiFootNoteTextViewAccessibilityIdentifier";
+NSString* const kGeminiPrimaryButtonAccessibilityIdentifier =
+    @"GeminiPrimaryButtonAccessibilityIdentifier";
+NSString* const kGeminiSecondaryButtonAccessibilityIdentifier =
+    @"GeminiSecondaryButtonAccessibilityIdentifier";
 
-// Action identifier on a tap on links in the footnote of the bwg consent view.
-NSString* const kBwgFirstFootnoteLinkAction = @"firstFootnoteLinkAction";
-NSString* const kBwgSecondFootnoteLinkAction = @"secondFootnoteLinkAction";
-NSString* const kBwgFootnoteLinkActionManagedAccount =
-    @"footnoteLinkActionManagedAccount";
-NSString* const kBwgSecondBoxLinkActionManagedAccount =
-    @"secondBoxLinkActionManagedAccount";
-NSString* const kBwgSecondBoxLink1ActionNonManagedAccount =
-    @"secondBoxLink1ActionNonManagedAccount";
-NSString* const kBwgSecondBoxLink2ActionNonManagedAccount =
-    @"secondBoxLink2ActionNonManagedAccount";
+// Action identifier on a tap on links in the footnote of the Gemini consent
+// view.
+NSString* const kGeminiFirstFootnoteLinkAction =
+    @"GeminiFirstFootnoteLinkAction";
+NSString* const kGeminiSecondFootnoteLinkAction =
+    @"GeminiSecondFootnoteLinkAction";
+NSString* const kGeminiFootnoteLinkActionManagedAccount =
+    @"GeminiFootnoteLinkActionManagedAccount";
+NSString* const kGeminiSecondBoxLinkActionManagedAccount =
+    @"GeminiSecondBoxLinkActionManagedAccount";
+NSString* const kGeminiSecondBoxLink1ActionNonManagedAccount =
+    @"GeminiSecondBoxLink1ActionNonManagedAccount";
+NSString* const kGeminiSecondBoxLink2ActionNonManagedAccount =
+    @"GeminiSecondBoxLink2ActionNonManagedAccount";
 
 const int kGeminiContextualCueChipSlidingWindow = 2;
 

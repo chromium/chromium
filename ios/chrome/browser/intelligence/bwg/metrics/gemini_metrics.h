@@ -148,7 +148,7 @@ extern const char kGeminiSessionLengthFREWithPromptHistogram[];
 extern const char kGeminiSessionLengthFREWithAbandonedHistogram[];
 
 // TODO(crbug.com/481711842): Replace this enum and its
-// gemini_session_delegate.h equivalent with an enum in bwg_constants.h
+// gemini_session_delegate.h equivalent with an enum in gemini_constants.h
 // Enum for the IOS.Gemini.FirstPrompt.SubmissionMethod histogram.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -224,7 +224,7 @@ enum class IOSGeminiSessionType {
 };
 
 // TODO(crbug.com/481711842): Replace this enum and its
-// gemini_session_delegate.h equivalent with an enum in bwg_constants.h
+// gemini_session_delegate.h equivalent with an enum in gemini_constants.h
 // Enum for the IOS.Gemini.Feedback histogram.
 // LINT.IfChange(IOSGeminiFeedback)
 enum class IOSGeminiFeedback {

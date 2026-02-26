@@ -4,7 +4,7 @@ include_rules = [
   "+components/saved_tab_groups/public",
   "+ios/chrome/browser/app_bar/coordinator/app_bar_coordinator.h",
   "+ios/chrome/browser/first_run/guided_tour/coordinator/guided_tour_coordinator.h",
-  "+ios/chrome/browser/intelligence/bwg/utils/bwg_constants.h",
+  "+ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h",
   "+ios/chrome/browser/intelligence/features/features.h",
   "+ios/chrome/browser/intelligence/page_action_menu/coordinator/page_action_menu_coordinator.h",
   "+ios/chrome/browser/settings/ui_bundled",

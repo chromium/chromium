@@ -9,7 +9,7 @@
 #import "ios/chrome/browser/intelligence/bwg/ui/bwg_promo_view_controller.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/bwg_promo_view_controller_delegate.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_consent_mutator.h"
-#import "ios/chrome/browser/intelligence/bwg/utils/bwg_constants.h"
+#import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -318,14 +318,14 @@ const CGFloat kSpacingAfterSecondaryButton = 32.0;
   };
   UISheetPresentationControllerDetent* detent =
       [UISheetPresentationControllerDetent
-          customDetentWithIdentifier:kBWGPromoConsentFullDetentIdentifier
+          customDetentWithIdentifier:kGeminiPromoConsentFullDetentIdentifier
                             resolver:resolver];
   self.sheetPresentationController.detents = @[ detent ];
 
   self.modalInPresentation = YES;
   self.modalPresentationStyle = UIModalPresentationPageSheet;
   self.sheetPresentationController.selectedDetentIdentifier =
-      kBWGPromoConsentFullDetentIdentifier;
+      kGeminiPromoConsentFullDetentIdentifier;
   [self configureCornerRadius];
 }
 

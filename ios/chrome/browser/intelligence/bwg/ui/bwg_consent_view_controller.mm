@@ -8,7 +8,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_consent_mutator.h"
-#import "ios/chrome/browser/intelligence/bwg/utils/bwg_constants.h"
+#import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/string_util.h"
@@ -148,12 +148,12 @@ const CGFloat kSpacingPrimarySecondaryButtonsIOS18 = 0;
 
     NSRange linkRange = [fullText rangeOfString:linkText];
 
-    return
-        [self createAttributedString:fullText
-                     withLinkActions:@[ kBwgFootnoteLinkActionManagedAccount ]
-                            inRanges:@[ [NSValue valueWithRange:linkRange] ]
-                      textAttributes:textAttributes
-                           fontStyle:fontStyle];
+    return [self
+        createAttributedString:fullText
+               withLinkActions:@[ kGeminiFootnoteLinkActionManagedAccount ]
+                      inRanges:@[ [NSValue valueWithRange:linkRange] ]
+                textAttributes:textAttributes
+                     fontStyle:fontStyle];
   }
 
   NSString* link1NSString =
@@ -175,7 +175,7 @@ const CGFloat kSpacingPrimarySecondaryButtonsIOS18 = 0;
   NSRange link2Range = [fullText rangeOfString:link2NSString];
 
   NSArray<NSString*>* linkActions =
-      @[ kBwgFirstFootnoteLinkAction, kBwgSecondFootnoteLinkAction ];
+      @[ kGeminiFirstFootnoteLinkAction, kGeminiSecondFootnoteLinkAction ];
   NSArray<NSValue*>* linkRanges = @[
     [NSValue valueWithRange:link1Range], [NSValue valueWithRange:link2Range]
   ];
@@ -210,12 +210,12 @@ const CGFloat kSpacingPrimarySecondaryButtonsIOS18 = 0;
 
     NSRange linkRange = [fullText rangeOfString:linkText];
 
-    return
-        [self createAttributedString:fullText
-                     withLinkActions:@[ kBwgSecondBoxLinkActionManagedAccount ]
-                            inRanges:@[ [NSValue valueWithRange:linkRange] ]
-                      textAttributes:textAttributes
-                           fontStyle:fontStyle];
+    return [self
+        createAttributedString:fullText
+               withLinkActions:@[ kGeminiSecondBoxLinkActionManagedAccount ]
+                      inRanges:@[ [NSValue valueWithRange:linkRange] ]
+                textAttributes:textAttributes
+                     fontStyle:fontStyle];
   }
 
   NSString* link1NSString = l10n_util::GetNSString(
@@ -238,8 +238,8 @@ const CGFloat kSpacingPrimarySecondaryButtonsIOS18 = 0;
   NSRange link2Range = [fullText rangeOfString:link2NSString];
 
   NSArray<NSString*>* linkActions = @[
-    kBwgSecondBoxLink1ActionNonManagedAccount,
-    kBwgSecondBoxLink2ActionNonManagedAccount
+    kGeminiSecondBoxLink1ActionNonManagedAccount,
+    kGeminiSecondBoxLink2ActionNonManagedAccount
   ];
   NSArray<NSValue*>* linkRanges = @[
     [NSValue valueWithRange:link1Range], [NSValue valueWithRange:link2Range]
@@ -479,7 +479,7 @@ const CGFloat kSpacingPrimarySecondaryButtonsIOS18 = 0;
       @{NSForegroundColorAttributeName : [UIColor colorNamed:kBlue600Color]};
   footNoteTextView.attributedText = [self createFootnoteAttributedText];
   footNoteTextView.accessibilityIdentifier =
-      kBwgFootNoteTextViewAccessibilityIdentifier;
+      kGeminiFootNoteTextViewAccessibilityIdentifier;
 
   return footNoteTextView;
 }
@@ -496,7 +496,7 @@ const CGFloat kSpacingPrimarySecondaryButtonsIOS18 = 0;
   primaryButton.accessibilityLabel =
       l10n_util::GetNSString(IDS_IOS_BWG_CONSENT_PRIMARY_BUTTON);
   primaryButton.accessibilityIdentifier =
-      kBwgPrimaryButtonAccessibilityIdentifier;
+      kGeminiPrimaryButtonAccessibilityIdentifier;
   return primaryButton;
 }
 
@@ -512,7 +512,7 @@ const CGFloat kSpacingPrimarySecondaryButtonsIOS18 = 0;
   secondaryButton.accessibilityLabel =
       l10n_util::GetNSString(IDS_IOS_BWG_CONSENT_SECONDARY_BUTTON);
   secondaryButton.accessibilityIdentifier =
-      kBwgSecondaryButtonAccessibilityIdentifier;
+      kGeminiSecondaryButtonAccessibilityIdentifier;
   return secondaryButton;
 }
 
@@ -540,28 +540,28 @@ const CGFloat kSpacingPrimarySecondaryButtonsIOS18 = 0;
 
   RecordFREConsentAction(IOSGeminiFREAction::kLinkClick);
   if ([textItem.link.absoluteString
-          isEqualToString:kBwgFirstFootnoteLinkAction]) {
+          isEqualToString:kGeminiFirstFootnoteLinkAction]) {
     __weak __typeof(self) weakSelf = self;
     return [UIAction actionWithHandler:^(UIAction* action) {
       [weakSelf.mutator openNewTabWithURL:GURL(kFirstFootnoteLinkURL)];
     }];
   }
   if ([textItem.link.absoluteString
-          isEqualToString:kBwgSecondFootnoteLinkAction]) {
+          isEqualToString:kGeminiSecondFootnoteLinkAction]) {
     __weak __typeof(self) weakSelf = self;
     return [UIAction actionWithHandler:^(UIAction* action) {
       [weakSelf.mutator openNewTabWithURL:GURL(kSecondFootnoteLinkURL)];
     }];
   }
   if ([textItem.link.absoluteString
-          isEqualToString:kBwgFootnoteLinkActionManagedAccount]) {
+          isEqualToString:kGeminiFootnoteLinkActionManagedAccount]) {
     __weak __typeof(self) weakSelf = self;
     return [UIAction actionWithHandler:^(UIAction* action) {
       [weakSelf.mutator openNewTabWithURL:GURL(kFootnoteLinkURLManagedAccount)];
     }];
   }
   if ([textItem.link.absoluteString
-          isEqualToString:kBwgSecondBoxLinkActionManagedAccount]) {
+          isEqualToString:kGeminiSecondBoxLinkActionManagedAccount]) {
     __weak __typeof(self) weakSelf = self;
     return [UIAction actionWithHandler:^(UIAction* action) {
       [weakSelf.mutator
@@ -569,7 +569,7 @@ const CGFloat kSpacingPrimarySecondaryButtonsIOS18 = 0;
     }];
   }
   if ([textItem.link.absoluteString
-          isEqualToString:kBwgSecondBoxLink1ActionNonManagedAccount]) {
+          isEqualToString:kGeminiSecondBoxLink1ActionNonManagedAccount]) {
     __weak __typeof(self) weakSelf = self;
     return [UIAction actionWithHandler:^(UIAction* action) {
       [weakSelf.mutator
@@ -577,7 +577,7 @@ const CGFloat kSpacingPrimarySecondaryButtonsIOS18 = 0;
     }];
   }
   if ([textItem.link.absoluteString
-          isEqualToString:kBwgSecondBoxLink2ActionNonManagedAccount]) {
+          isEqualToString:kGeminiSecondBoxLink2ActionNonManagedAccount]) {
     __weak __typeof(self) weakSelf = self;
     return [UIAction actionWithHandler:^(UIAction* action) {
       [weakSelf.mutator

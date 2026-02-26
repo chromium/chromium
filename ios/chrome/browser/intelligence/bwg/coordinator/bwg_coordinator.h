@@ -6,7 +6,7 @@
 #define IOS_CHROME_BROWSER_INTELLIGENCE_BWG_COORDINATOR_BWG_COORDINATOR_H_
 
 #import "base/ios/block_types.h"
-#import "ios/chrome/browser/intelligence/bwg/utils/bwg_constants.h"
+#import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/promos_manager/coordinator/promos_manager_ui_handler.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 

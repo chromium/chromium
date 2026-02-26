@@ -6,7 +6,7 @@ include_rules = [
   "+ios/chrome/browser/incognito_reauth/ui_bundled",
   "+ios/chrome/browser/intelligence/bwg/metrics",
   "+ios/chrome/browser/intelligence/bwg/model",
-  "+ios/chrome/browser/intelligence/bwg/utils/bwg_constants.h",
+  "+ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h",
   "+ios/chrome/browser/intelligence/features/features.h",
   "+ios/chrome/browser/lens/ui_bundled/lens_availability.h",
   "+ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h",
