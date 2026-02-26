@@ -114,13 +114,17 @@ void TabEventTrackerImpl::DidEnterTabSwitcher() {
 }
 
 int TabEventTrackerImpl::GetSelectedCount(int tab_id) const {
-  if (!closing_tabs_.contains(tab_id) &&
-      tab_id_selection_map_.contains(tab_id)) {
-    std::vector<TabSelection> selection_list = tab_id_selection_map_.at(tab_id);
-    std::erase_if(selection_list, [&](TabSelection selection) {
-      return base::Time::Now() - selection.time > kSelectionTimeWindow;
-    });
-    return selection_list.size();
+  if (!closing_tabs_.contains(tab_id)) {
+    if (auto it = tab_id_selection_map_.find(tab_id);
+        it != tab_id_selection_map_.end()) {
+      const std::vector<TabSelection>& selection_list = it->second;
+      const auto time_now = base::Time::Now();
+      return std::count_if(selection_list.begin(), selection_list.end(),
+                           [=](const TabSelection selection) {
+                             return time_now - selection.time <=
+                                    kSelectionTimeWindow;
+                           });
+    }
   }
   return 0;
 }
