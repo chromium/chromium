@@ -79,9 +79,9 @@ void SiteInstanceGroup::IncrementActiveFrameCount() {
 void SiteInstanceGroup::DecrementActiveFrameCount() {
   if (--active_frame_count_ == 0) {
     base::AutoReset<bool> scope(&is_notifying_observers_, true);
-    for (auto& observer : observers_) {
-      observer.ActiveFrameCountIsZero(this);
-    }
+    // Allow reentrancy because this can be called within RenderProcessExited.
+    observers_.NotifyAllowReentrancy(
+        &SiteInstanceGroup::Observer::ActiveFrameCountIsZero, this);
   }
 }
 
