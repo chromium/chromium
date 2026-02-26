@@ -23,6 +23,7 @@ import android.graphics.Rect;
 import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.os.Build.VERSION_CODES_FULL;
+import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.provider.Browser;
 import android.text.TextUtils;
@@ -455,45 +456,45 @@ public class MultiWindowUtils implements ActivityStateListener {
     }
 
     /**
-     * Creates and returns an {@link Intent} that instantiates a new Chrome instance.
+     * Creates a new ChromeTabbedActivity to replace a ChromeTabbedActivity2 that survived an
+     * upgrade from Android R.
+     *
      * @param context The application context of the activity firing the intent.
-     * @param instanceId ID of the new Chrome instance to be created.
-     * @param preferNew {@code true} if the new instance should be instanted as a fresh
-     *        new one not loading any tabs from a persistent disk file.
-     * @param openAdjacently {@code true} if the new instance shall be created in
-     *        the adjacent window of split-screen mode.
-     * @param addTrustedIntentExtras (@code true} if the TRUSTED_APPLICATION_CODE_EXTRA will be
-     *         added to the intent to identify it as coming from a trusted source. This should be
-     *         set to 'false' if the Intent could be received by an app besides Chrome (e.g. when
-     *         attaching to ClipData for a drag event).
-     * @param source The source of the new window intent.
-     * @return The created intent.
+     * @param windowId The id of the instance for which a new activity will be created. Set this to
+     *     {@code #INVALID_WINDOW_ID} to create a brand new window.
+     * @param startActivityOptions The {@link Bundle} that will be used to start the activity.
      */
-    public static Intent createNewWindowIntent(
+    public static void relaunchChromeTabbedActivity2(
+            Context context, int windowId, Bundle startActivityOptions) {
+        Intent intent =
+                createNewWindowIntent(
+                        context,
+                        windowId,
+                        /* preferNew= */ windowId == INVALID_WINDOW_ID,
+                        /* openAdjacently= */ false,
+                        NewWindowAppSource.OTHER);
+        context.startActivity(intent, startActivityOptions);
+    }
+
+    /* package */ static Intent createNewWindowIntent(
             Context context,
-            int instanceId,
+            int windowId,
             boolean preferNew,
             boolean openAdjacently,
-            boolean addTrustedIntentExtras,
             @NewWindowAppSource int source) {
         assert isMultiInstanceApi31Enabled();
         Intent intent = new Intent(context, ChromeTabbedActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
-        if (instanceId != INVALID_WINDOW_ID) {
-            intent.putExtra(IntentHandler.EXTRA_WINDOW_ID, instanceId);
+        if (windowId != INVALID_WINDOW_ID) {
+            intent.putExtra(IntentHandler.EXTRA_WINDOW_ID, windowId);
         }
         if (preferNew) intent.putExtra(IntentHandler.EXTRA_PREFER_NEW, true);
         if (openAdjacently) intent.addFlags(Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT);
         intent.putExtra(Browser.EXTRA_APPLICATION_ID, context.getPackageName());
         intent.putExtra(Browser.EXTRA_CREATE_NEW_TAB, true);
-        if (addTrustedIntentExtras) {
-            IntentUtils.addTrustedIntentExtras(intent);
-        }
-        RecordHistogram.recordEnumeratedHistogram(
-                MultiInstanceManager.NEW_WINDOW_APP_SOURCE_HISTOGRAM,
-                source,
-                NewWindowAppSource.NUM_ENTRIES);
+        IntentUtils.addTrustedIntentExtras(intent);
+        intent.putExtra(IntentHandler.EXTRA_NEW_WINDOW_APP_SOURCE, source);
         return intent;
     }
 

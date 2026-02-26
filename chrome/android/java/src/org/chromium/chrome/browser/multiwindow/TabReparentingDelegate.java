@@ -58,21 +58,20 @@ import java.util.List;
     }
 
     /* package */ void reparentTabsToNewWindow(
-            List<Tab> tabs, int windowId, boolean openAdjacently, @NewWindowAppSource int source) {
+            List<Tab> tabs,
+            int windowId,
+            boolean openAdjacently,
+            @Nullable Runnable finalizeCallback,
+            @NewWindowAppSource int source) {
         Intent intent =
                 MultiWindowUtils.createNewWindowIntent(
                         mActivity,
                         windowId,
                         /* preferNew= */ windowId == INVALID_WINDOW_ID,
                         openAdjacently,
-                        /* addTrustedIntentExtras= */ true,
                         source);
         ReparentingTabsTask.from(tabs)
-                .begin(
-                        mActivity,
-                        intent,
-                        /* startActivityOptions= */ null,
-                        /* finalizeCallback= */ null);
+                .begin(mActivity, intent, /* startActivityOptions= */ null, finalizeCallback);
     }
 
     /* package */ void reparentTabsToExistingWindow(
@@ -101,7 +100,6 @@ import java.util.List;
                         windowId,
                         /* preferNew= */ windowId == INVALID_WINDOW_ID,
                         openAdjacently,
-                        /* addTrustedIntentExtras= */ true,
                         source);
         intent.putExtra(IntentHandler.EXTRA_REPARENT_START_TIME, startTime);
 

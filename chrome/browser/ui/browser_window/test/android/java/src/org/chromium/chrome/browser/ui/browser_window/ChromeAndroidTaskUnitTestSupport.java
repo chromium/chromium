@@ -619,7 +619,8 @@ public final class ChromeAndroidTaskUnitTestSupport {
         var intent = new Intent();
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
-        when(mockMultiInstanceManager.createNewWindowIntent(anyBoolean())).thenReturn(intent);
+        when(mockMultiInstanceManager.createNewWindowIntent(anyBoolean(), anyInt()))
+                .thenReturn(intent);
         return mockMultiInstanceManager;
     }
 }

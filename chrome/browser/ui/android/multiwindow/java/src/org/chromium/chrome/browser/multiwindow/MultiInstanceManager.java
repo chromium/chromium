@@ -12,6 +12,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.CommandLine;
+import org.chromium.base.UnownedUserDataHost;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -180,19 +181,19 @@ public abstract class MultiInstanceManager {
      *
      * <ul>
      *   <li>The caller doesn't (need to) know the specifics of the {@link Intent}, such as flags,
-     *       Extras, the target {@link Activity}, the new window's instance ID, etc. An example of
-     *       this is the "open new window" option in the app menu.
-     *   <li>The caller is in a modularized target and can't depend on code at the "glue" layer,
-     *       such as {@link MultiWindowUtils#createNewWindowIntent}. In this case, the caller should
-     *       inject {@link MultiInstanceManager} at the "glue" layer, then use it in the caller's
-     *       internal logic to create the {@link Intent}.
+     *       Extras, the target {@link Activity}, the new window's instance ID, etc.
+     *   <li>The caller is in a modularized target and can't depend on code at the "glue" layer. In
+     *       this case, the caller should inject {@link MultiInstanceManager} at the "glue" layer,
+     *       then use it in the caller's internal logic to create the {@link Intent}.
      * </ul>
      *
      * @param isIncognito Whether the new window should be in the incognito mode.
+     * @param source The source of new window creation used for metrics.
      * @return The new {@link Intent} as described above, or {@code null} if the new window cannot
      *     be created.
      */
-    public abstract @Nullable Intent createNewWindowIntent(boolean isIncognito);
+    public abstract @Nullable Intent createNewWindowIntent(
+            boolean isIncognito, @NewWindowAppSource int source);
 
     /**
      * Merges tabs from a second ChromeTabbedActivity instance if necessary and calls
@@ -205,9 +206,12 @@ public abstract class MultiInstanceManager {
      * Moves the specified tabs to a new ChromeTabbedActivity instance.
      *
      * @param tabs The list of tabs to move.
+     * @param finalizeCallback A runnable that will be invoked after the tabs have finished
+     *     reparenting to the new window.
      * @param source The new window creation source used for metrics.
      */
-    public void moveTabsToNewWindow(List<Tab> tabs, @NewWindowAppSource int source) {
+    public void moveTabsToNewWindow(
+            List<Tab> tabs, @Nullable Runnable finalizeCallback, @NewWindowAppSource int source) {
         // Not implemented
     }
 
@@ -329,13 +333,19 @@ public abstract class MultiInstanceManager {
             int windowId, int taskId, boolean preferNew, boolean isIncognitoIntent);
 
     /**
-     * Initialize the manager with the allocated instance ID.
+     * Initialize the manager with the allocated instance ID, and perform other post-inflation
+     * activity startup tasks.
      *
      * @param instanceId Instance ID of the activity.
      * @param taskId Task ID of the activity.
-     * @param profileType The type of tab/profile the activity supports
+     * @param profileType The type of tab/profile the activity supports.
+     * @param host The {@link UnownedUserDataHost} to attach the current manager to.
      */
-    public void initialize(int instanceId, int taskId, @SupportedProfileType int profileType) {}
+    public void initialize(
+            int instanceId,
+            int taskId,
+            @SupportedProfileType int profileType,
+            UnownedUserDataHost host) {}
 
     /** Perform initialization tasks for the manager after the tab state is initialized. */
     public void onTabStateInitialized() {}

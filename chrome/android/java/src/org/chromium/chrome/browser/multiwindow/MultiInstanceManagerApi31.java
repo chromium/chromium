@@ -31,6 +31,7 @@ import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.TimeUtils;
+import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
@@ -236,18 +237,22 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
     @Override
     public void openNewWindow(boolean isIncognito) {
         RecordUserAction.record("Android.WindowManager.NewWindow");
-        openNewWindow(isIncognito, NewWindowAppSource.WINDOW_MANAGER);
+        Intent intent = createNewWindowIntent(isIncognito, NewWindowAppSource.WINDOW_MANAGER);
+        assert intent != null : "The Intent to open a new window must not be null";
+
+        mActivity.startActivity(intent);
     }
 
     @Override
-    public void moveTabsToNewWindow(List<Tab> tabs, @NewWindowAppSource int source) {
+    public void moveTabsToNewWindow(
+            List<Tab> tabs, @Nullable Runnable finalizeCallback, @NewWindowAppSource int source) {
         if (tabs.isEmpty()) return;
         boolean openAdjacently = MultiWindowUtils.shouldOpenInAdjacentWindow(mActivity);
         if (isInstanceLimitReached()) {
             showInstanceCreationLimitMessage();
         } else {
             mTabReparentingDelegate.reparentTabsToNewWindow(
-                    tabs, INVALID_WINDOW_ID, openAdjacently, source);
+                    tabs, INVALID_WINDOW_ID, openAdjacently, finalizeCallback, source);
         }
     }
 
@@ -286,7 +291,11 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
             boolean openAdjacently = assumeNonNull(selector).getTotalTabCount() > 1;
             // TODO (crbug.com/483801863): Revisit NewWindowAppSource used here.
             mTabReparentingDelegate.reparentTabsToNewWindow(
-                    tabs, destWindowId, openAdjacently, NewWindowAppSource.OTHER);
+                    tabs,
+                    destWindowId,
+                    openAdjacently,
+                    /* finalizeCallback= */ null,
+                    NewWindowAppSource.OTHER);
         }
     }
 
@@ -311,7 +320,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
         }
 
         if (instanceCount <= 1) {
-            moveTabsToNewWindow(tabs, source);
+            moveTabsToNewWindow(tabs, /* finalizeCallback= */ null, source);
 
             // Close the source instance window, if needed.
             closeChromeWindowIfEmpty(mInstanceId);
@@ -430,40 +439,22 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
     }
 
     @Override
-    public @Nullable Intent createNewWindowIntent(boolean isIncognito) {
-        Intent intent = new Intent(mActivity, ChromeTabbedActivity.class);
-
-        MultiWindowUtils.setOpenInOtherWindowIntentExtras(
-                intent, mActivity, ChromeTabbedActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
-        intent.putExtra(IntentHandler.EXTRA_PREFER_NEW, true);
+    public @Nullable Intent createNewWindowIntent(
+            boolean isIncognito, @NewWindowAppSource int source) {
+        boolean openAdjacently =
+                (mMultiWindowModeStateDispatcher.canEnterMultiWindowMode()
+                                || mMultiWindowModeStateDispatcher.isInMultiWindowMode()
+                                || mMultiWindowModeStateDispatcher.isInMultiDisplayMode())
+                        && MultiWindowUtils.shouldOpenInAdjacentWindow(mActivity);
+        Intent intent =
+                MultiWindowUtils.createNewWindowIntent(
+                        mActivity,
+                        /* windowId= */ INVALID_WINDOW_ID,
+                        /* preferNew= */ true,
+                        openAdjacently,
+                        source);
         intent.putExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_WINDOW, isIncognito);
-        IntentUtils.addTrustedIntentExtras(intent);
-        if (mMultiWindowModeStateDispatcher.canEnterMultiWindowMode()
-                || mMultiWindowModeStateDispatcher.isInMultiWindowMode()
-                || mMultiWindowModeStateDispatcher.isInMultiDisplayMode()) {
-            intent.addFlags(Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT);
-        }
-
-        // Remove LAUNCH_ADJACENT flag if shouldOpenInAdjacentWindow() is false.
-        if (!MultiWindowUtils.shouldOpenInAdjacentWindow(mActivity)) {
-            intent.setFlags(intent.getFlags() & ~Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT);
-        }
-
         return intent;
-    }
-
-    @Override
-    protected void openNewWindow(boolean incognito, @NewWindowAppSource int source) {
-        Intent intent = createNewWindowIntent(incognito);
-        assert intent != null : "The Intent to open a new window must not be null";
-
-        mActivity.startActivity(intent);
-        RecordHistogram.recordEnumeratedHistogram(
-                MultiInstanceManager.NEW_WINDOW_APP_SOURCE_HISTOGRAM,
-                source,
-                NewWindowAppSource.NUM_ENTRIES);
     }
 
     @Override
@@ -802,7 +793,12 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
     }
 
     @Override
-    public void initialize(int instanceId, int taskId, @SupportedProfileType int profileType) {
+    public void initialize(
+            int instanceId,
+            int taskId,
+            @SupportedProfileType int profileType,
+            UnownedUserDataHost host) {
+        super.initialize(instanceId, taskId, profileType, host);
         mInstanceId = instanceId;
         MultiInstancePersistentStore.writeTaskId(instanceId, taskId);
         MultiInstancePersistentStore.writeProfileType(instanceId, profileType);
@@ -1196,12 +1192,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
         boolean openAdjacently = MultiWindowUtils.shouldOpenInAdjacentWindow(mActivity);
         Intent intent =
                 MultiWindowUtils.createNewWindowIntent(
-                        mActivity,
-                        instanceId,
-                        /* preferNew= */ false,
-                        openAdjacently,
-                        /* addTrustedIntentExtras= */ true,
-                        source);
+                        mActivity, instanceId, /* preferNew= */ false, openAdjacently, source);
         MultiInstancePersistentStore.writeMarkedForDeletion(
                 instanceId, /* markedForDeletion= */ false);
         mActivity.startActivity(intent);

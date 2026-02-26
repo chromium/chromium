@@ -1241,7 +1241,9 @@ public class TabContextMenuCoordinatorUnitTest {
         StripLayoutContextMenuCoordinatorTestUtils.clickMoveToNewWindow(modelList, 1, mView);
         verify(mMultiInstanceManager)
                 .moveTabsToNewWindow(
-                        Collections.singletonList(mTabOutsideOfGroup), NewWindowAppSource.MENU);
+                        Collections.singletonList(mTabOutsideOfGroup),
+                        /* finalizeCallback= */ null,
+                        NewWindowAppSource.MENU);
     }
 
     @Test

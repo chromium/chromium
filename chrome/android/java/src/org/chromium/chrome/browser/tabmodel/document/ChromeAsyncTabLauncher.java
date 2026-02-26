@@ -14,7 +14,6 @@ import android.provider.Browser;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ActivityUtils;
@@ -121,11 +120,8 @@ public class ChromeAsyncTabLauncher implements AsyncTabLauncher {
             intent.setFlags(intent.getFlags() & ~Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT);
         }
         intent.putExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_WINDOW, mIsIncognito);
+        intent.putExtra(IntentHandler.EXTRA_NEW_WINDOW_APP_SOURCE, newWindowSource);
         activity.startActivity(intent);
-        RecordHistogram.recordEnumeratedHistogram(
-                MultiInstanceManager.NEW_WINDOW_APP_SOURCE_HISTOGRAM,
-                newWindowSource,
-                NewWindowAppSource.NUM_ENTRIES);
     }
 
     /**

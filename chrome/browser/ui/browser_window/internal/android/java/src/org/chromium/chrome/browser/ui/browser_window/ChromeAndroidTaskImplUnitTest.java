@@ -69,6 +69,7 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcherProvider;
 import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
 import org.chromium.chrome.browser.lifecycle.TopResumedActivityChangedWithNativeObserver;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabModel;
@@ -751,7 +752,8 @@ public class ChromeAndroidTaskImplUnitTest {
 
         // Assert.
         assertNotNull(intent);
-        verify(multiInstanceManager, times(1)).createNewWindowIntent(/* isIncognito= */ false);
+        verify(multiInstanceManager, times(1))
+                .createNewWindowIntent(/* isIncognito= */ false, NewWindowAppSource.OTHER);
     }
 
     @Test
@@ -767,7 +769,8 @@ public class ChromeAndroidTaskImplUnitTest {
 
         // Assert.
         assertNotNull(intent);
-        verify(multiInstanceManager, times(1)).createNewWindowIntent(/* isIncognito= */ true);
+        verify(multiInstanceManager, times(1))
+                .createNewWindowIntent(/* isIncognito= */ true, NewWindowAppSource.OTHER);
     }
 
     @Test

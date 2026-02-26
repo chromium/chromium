@@ -36,6 +36,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeaturesJni;
@@ -90,7 +91,9 @@ public class MultiInstanceManagerImplUnitTest {
 
         assertThrows(
                 AssertionError.class,
-                () -> multiInstanceManager.createNewWindowIntent(/* isIncognito= */ true));
+                () ->
+                        multiInstanceManager.createNewWindowIntent(
+                                /* isIncognito= */ true, NewWindowAppSource.OTHER));
     }
 
     @Test
@@ -108,7 +111,9 @@ public class MultiInstanceManagerImplUnitTest {
 
         assertThrows(
                 AssertionError.class,
-                () -> multiInstanceManager.createNewWindowIntent(/* isIncognito= */ false));
+                () ->
+                        multiInstanceManager.createNewWindowIntent(
+                                /* isIncognito= */ false, NewWindowAppSource.OTHER));
     }
 
     @Test
@@ -124,7 +129,9 @@ public class MultiInstanceManagerImplUnitTest {
                         mActivityLifecycleDispatcher,
                         mMenuOrKeyboardActionController);
 
-        assertNull(multiInstanceManager.createNewWindowIntent(/* isIncognito= */ false));
+        assertNull(
+                multiInstanceManager.createNewWindowIntent(
+                        /* isIncognito= */ false, NewWindowAppSource.OTHER));
     }
 
     @Test
@@ -152,7 +159,9 @@ public class MultiInstanceManagerImplUnitTest {
                         mActivityLifecycleDispatcher,
                         mMenuOrKeyboardActionController);
 
-        Intent intent = multiInstanceManager.createNewWindowIntent(/* isIncognito= */ false);
+        Intent intent =
+                multiInstanceManager.createNewWindowIntent(
+                        /* isIncognito= */ false, NewWindowAppSource.OTHER);
 
         assertNotNull(intent);
         assertEquals(0, (intent.getFlags() & Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT));
@@ -183,7 +192,9 @@ public class MultiInstanceManagerImplUnitTest {
                         mActivityLifecycleDispatcher,
                         mMenuOrKeyboardActionController);
 
-        Intent intent = multiInstanceManager.createNewWindowIntent(/* isIncognito= */ false);
+        Intent intent =
+                multiInstanceManager.createNewWindowIntent(
+                        /* isIncognito= */ false, NewWindowAppSource.OTHER);
 
         assertNotNull(intent);
         assertTrue((intent.getFlags() & Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT) != 0);
@@ -207,7 +218,9 @@ public class MultiInstanceManagerImplUnitTest {
                         mActivityLifecycleDispatcher,
                         mMenuOrKeyboardActionController);
 
-        Intent intent = multiInstanceManager.createNewWindowIntent(/* isIncognito= */ false);
+        Intent intent =
+                multiInstanceManager.createNewWindowIntent(
+                        /* isIncognito= */ false, NewWindowAppSource.OTHER);
 
         assertNotNull(intent);
         assertTrue((intent.getFlags() & Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT) != 0);

@@ -23,7 +23,7 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
 import org.chromium.base.ResettersForTesting;
-import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.BuildConfig;
@@ -31,6 +31,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTabsTask;
 import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
@@ -78,7 +79,6 @@ public class MultiInstanceManagerImpl extends MultiInstanceManager
                 MenuOrKeyboardActionController.MenuOrKeyboardActionHandler,
                 TopResumedActivityChangedObserver,
                 StartStopWithNativeObserver {
-
     private @Nullable Boolean mMergeTabsOnResume;
 
     /**
@@ -124,8 +124,18 @@ public class MultiInstanceManagerImpl extends MultiInstanceManager
     }
 
     @Override
+    public void initialize(
+            int instanceId,
+            int taskId,
+            @SupportedProfileType int profileType,
+            UnownedUserDataHost host) {
+        MultiInstanceManagerFactory.attachToHost(host, this);
+    }
+
+    @Override
     public void onDestroy() {
         mDestroyed = true;
+        MultiInstanceManagerFactory.detachFromAllHosts(this);
         mMultiWindowModeStateDispatcher.removeObserver(this);
         mMenuOrKeyboardActionController.unregisterMenuOrKeyboardActionHandler(this);
         mActivityLifecycleDispatcher.unregister(this);
@@ -469,7 +479,8 @@ public class MultiInstanceManagerImpl extends MultiInstanceManager
     }
 
     @Override
-    public @Nullable Intent createNewWindowIntent(boolean isIncognito) {
+    public @Nullable Intent createNewWindowIntent(
+            boolean isIncognito, @NewWindowAppSource int source) {
         assert !isIncognito : "Opening an incognito window isn't supported";
         assert mMultiWindowModeStateDispatcher.canEnterMultiWindowMode()
                         || mMultiWindowModeStateDispatcher.isInMultiWindowMode()
@@ -481,6 +492,7 @@ public class MultiInstanceManagerImpl extends MultiInstanceManager
             return null;
         }
 
+        intent.putExtra(IntentHandler.EXTRA_NEW_WINDOW_APP_SOURCE, source);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.addFlags(Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT);
 
@@ -491,18 +503,15 @@ public class MultiInstanceManagerImpl extends MultiInstanceManager
 
         return intent;
     }
-    protected void openNewWindow(boolean incognito, @NewWindowAppSource int source) {
-        Intent intent = createNewWindowIntent(incognito);
+
+    private void openNewWindow(boolean incognito, @NewWindowAppSource int source) {
+        Intent intent = createNewWindowIntent(incognito, source);
         if (intent == null) {
             return;
         }
 
         onMultiInstanceModeStarted();
         mActivity.startActivity(intent);
-        RecordHistogram.recordEnumeratedHistogram(
-                MultiInstanceManager.NEW_WINDOW_APP_SOURCE_HISTOGRAM,
-                source,
-                NewWindowAppSource.NUM_ENTRIES);
     }
 
     @Override

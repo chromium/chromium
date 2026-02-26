@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.net.Uri;
 
 import androidx.annotation.Nullable;
+import androidx.test.runner.lifecycle.Stage;
 
 import org.hamcrest.Matchers;
 import org.junit.Assert;
@@ -19,11 +20,13 @@ import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.ChromeTabbedActivity2;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content_public.browser.LoadUrlParams;
 
@@ -161,5 +164,25 @@ public class MultiWindowTestHelper {
                     int actualActiveTabId = activity.getActivityTab().getId();
                     Criteria.checkThat(actualActiveTabId, Matchers.is(expectedActiveTabId));
                 });
+    }
+
+    /**
+     * Creates a new ChromeTabbedActivity (API 31 only) for use in tests.
+     *
+     * @param context The context used to build the intent to start the new activity.
+     * @return The newly created ChromeTabbedActivity after it is resumed.
+     */
+    public static ChromeTabbedActivity createNewChromeTabbedActivity(Context context) {
+        Intent intent =
+                MultiWindowUtils.createNewWindowIntent(
+                        context,
+                        /* windowId= */ -1,
+                        /* preferNew= */ true,
+                        /* openAdjacently= */ false,
+                        NewWindowAppSource.OTHER);
+        return ApplicationTestUtils.waitForActivityWithClass(
+                ChromeTabbedActivity.class,
+                Stage.RESUMED,
+                () -> ContextUtils.getApplicationContext().startActivity(intent));
     }
 }

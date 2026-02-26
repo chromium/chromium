@@ -37,7 +37,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTabGroupTask;
@@ -130,18 +129,16 @@ public class TabReparentingDelegateUnitTest {
     @Test
     public void testReparentTabsToNewWindow() {
         // Setup.
-        var histogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecord(
-                                MultiInstanceManager.NEW_WINDOW_APP_SOURCE_HISTOGRAM,
-                                NewWindowAppSource.MENU)
-                        .build();
         List<Tab> tabs = List.of(mTab1, mTab2);
         boolean openAdjacently = true;
 
         // Act.
         mDelegate.reparentTabsToNewWindow(
-                tabs, INVALID_WINDOW_ID, openAdjacently, NewWindowAppSource.MENU);
+                tabs,
+                INVALID_WINDOW_ID,
+                openAdjacently,
+                /* finalizeCallback= */ null,
+                NewWindowAppSource.MENU);
 
         // Verify that the reparenting task is initiated.
         var intentCaptor = ArgumentCaptor.forClass(Intent.class);
@@ -162,7 +159,14 @@ public class TabReparentingDelegateUnitTest {
                 intentCaptor
                         .getValue()
                         .getIntExtra(IntentHandler.EXTRA_WINDOW_ID, INVALID_WINDOW_ID));
-        histogramWatcher.assertExpected();
+        assertEquals(
+                "New window source extra is incorrect.",
+                NewWindowAppSource.MENU,
+                intentCaptor
+                        .getValue()
+                        .getIntExtra(
+                                IntentHandler.EXTRA_NEW_WINDOW_APP_SOURCE,
+                                NewWindowAppSource.OTHER));
     }
 
     @Test
@@ -240,12 +244,6 @@ public class TabReparentingDelegateUnitTest {
         // Setup.
         TabGroupMetadata tabGroupMetadata = getTestTabGroupMetadata(/* isGroupShared= */ false);
         boolean openAdjacently = true;
-        var histogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecord(
-                                MultiInstanceManager.NEW_WINDOW_APP_SOURCE_HISTOGRAM,
-                                NewWindowAppSource.MENU)
-                        .build();
 
         // Act.
         mDelegate.reparentTabGroupToNewWindow(
@@ -291,11 +289,17 @@ public class TabReparentingDelegateUnitTest {
         assertTrue(
                 "EXTRA_REPARENT_START_TIME is not set.",
                 setupIntentCaptor.getValue().hasExtra(IntentHandler.EXTRA_REPARENT_START_TIME));
+        assertEquals(
+                "New window source extra is incorrect.",
+                NewWindowAppSource.MENU,
+                setupIntentCaptor
+                        .getValue()
+                        .getIntExtra(
+                                IntentHandler.EXTRA_NEW_WINDOW_APP_SOURCE,
+                                NewWindowAppSource.OTHER));
 
         // Verify that we resume the TabGroupSyncService to begin observing local changes.
         verify(mTabGroupSyncService).setLocalObservationMode(/* observeLocalChanges= */ true);
-
-        histogramWatcher.assertExpected();
     }
 
     @Test

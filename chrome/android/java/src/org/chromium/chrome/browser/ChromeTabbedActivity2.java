@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 
@@ -41,10 +40,8 @@ public class ChromeTabbedActivity2 extends ChromeTabbedActivity {
             if (savedInstanceState != null) {
                 windowId = savedInstanceState.getInt(WINDOW_INDEX, windowId);
             }
-            Intent newIntent =
-                    MultiWindowUtils.createNewWindowIntent(
-                            this, windowId, false, false, true, NewWindowAppSource.OTHER);
-            startActivity(newIntent, savedInstanceState);
+
+            MultiWindowUtils.relaunchChromeTabbedActivity2(this, windowId, savedInstanceState);
             return LaunchIntentDispatcher.Action.FINISH_ACTIVITY_REMOVE_TASK;
         }
         return super.maybeDispatchLaunchIntent(intent, savedInstanceState);

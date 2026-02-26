@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.tabmodel;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
-import android.content.Intent;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.VisibleForTesting;
@@ -16,22 +15,20 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.base.Token;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.WarmupManager;
-import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTask;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManagerFactory;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabLaunchType;
-import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
@@ -45,6 +42,7 @@ import org.chromium.url.GURL;
 import org.chromium.url.Origin;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -418,23 +416,14 @@ public abstract class TabModelJniBridge implements TabModelInternal {
         Tab tab = warmupManager.takeSpareTab(profile, /* initiallyHidden= */ false, launchType);
         tab.loadUrl(loadParams);
 
-        Intent intent =
-                MultiWindowUtils.createNewWindowIntent(
-                        parentTab.getContext(),
-                        TabWindowManager.INVALID_WINDOW_ID,
-                        /* preferNew= */ true,
-                        /* openAdjacently= */ true,
-                        /* addTrustedIntentExtras= */ true,
-                        NewWindowAppSource.OTHER);
+        var multiInstanceManager = MultiInstanceManagerFactory.from(tab.getWindowAndroid());
+        if (multiInstanceManager != null) {
+            multiInstanceManager.moveTabsToNewWindow(
+                    Collections.singletonList(tab),
+                    /* finalizeCallback= */ null,
+                    NewWindowAppSource.OTHER);
+        }
 
-        Activity activity = ContextUtils.activityFromContext(parentTab.getContext());
-
-        ReparentingTask.from(tab)
-                .begin(
-                        activity,
-                        intent,
-                        /* startActivityOptions= */ null,
-                        /* finalizeCallback= */ null);
         return tab;
     }
 

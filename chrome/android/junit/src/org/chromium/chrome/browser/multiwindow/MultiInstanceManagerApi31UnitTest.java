@@ -69,6 +69,7 @@ import org.chromium.base.DeviceInfo;
 import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.Token;
+import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
@@ -77,7 +78,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.IntentHandler;
@@ -226,6 +226,7 @@ public class MultiInstanceManagerApi31UnitTest {
             mModalDialogManagerSupplier = ObservableSuppliers.createMonotonic();
     private final OneshotSupplierImpl<ProfileProvider> mProfileProviderSupplier =
             new OneshotSupplierImpl<>();
+    private UnownedUserDataHost mUnownedUserDataHost;
 
     Activity mCurrentActivity;
     Activity[] mActivityPool;
@@ -341,35 +342,13 @@ public class MultiInstanceManagerApi31UnitTest {
             }
             return super.getInstanceInfo(persistedInstanceType);
         }
-
-        @Override
-        public @Nullable Intent createNewWindowIntent(boolean isIncognito) {
-            Intent intent = new Intent(mActivity, ChromeTabbedActivity.class);
-            MultiWindowUtils.setOpenInOtherWindowIntentExtras(
-                    intent, mActivity, ChromeTabbedActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
-            intent.putExtra(IntentHandler.EXTRA_PREFER_NEW, true);
-            intent.putExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_WINDOW, isIncognito);
-            if (mMultiWindowModeStateDispatcher.canEnterMultiWindowMode()
-                    || mMultiWindowModeStateDispatcher.isInMultiWindowMode()
-                    || mMultiWindowModeStateDispatcher.isInMultiDisplayMode()) {
-                intent.addFlags(Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT);
-            }
-
-            // Remove LAUNCH_ADJACENT flag if shouldOpenInAdjacentWindow() is false.
-            if (!MultiWindowUtils.shouldOpenInAdjacentWindow(mActivity)) {
-                intent.setFlags(intent.getFlags() & ~Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT);
-            }
-
-            return intent;
-        }
     }
 
     @Before
     public void setUp() {
         mTabModelOrchestratorSupplier.set(mTabModelOrchestrator);
         mModalDialogManagerSupplier.set(mModalDialogManager);
+        mUnownedUserDataHost = new UnownedUserDataHost();
 
         TabGroupSyncFeaturesJni.setInstanceForTesting(mTabGroupSyncFeaturesJniMock);
         when(mTabGroupSyncFeaturesJniMock.isTabGroupSyncEnabled(any())).thenReturn(true);
@@ -919,7 +898,10 @@ public class MultiInstanceManagerApi31UnitTest {
         // Setup 3 instances.
         assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mCurrentActivity));
         mMultiInstanceManager.initialize(
-                /* instanceId= */ 0, /* taskId= */ TASK_ID_56, SupportedProfileType.MIXED);
+                /* instanceId= */ 0,
+                /* taskId= */ TASK_ID_56,
+                SupportedProfileType.MIXED,
+                /* host= */ mUnownedUserDataHost);
         assertEquals(1, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask57));
         assertEquals(2, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask58));
 
@@ -1053,7 +1035,8 @@ public class MultiInstanceManagerApi31UnitTest {
         // Ensure the single instance at non-zero position is handled okay.
         int expected = 2;
         assertEquals(expected, allocInstanceIndex(expected, mActivityTask56));
-        mMultiInstanceManager.initialize(expected, TASK_ID_56, SupportedProfileType.MIXED);
+        mMultiInstanceManager.initialize(
+                expected, TASK_ID_56, SupportedProfileType.MIXED, /* host= */ mUnownedUserDataHost);
         int id = mMultiInstanceManager.getCurrentInstanceId();
         assertEquals("Current instanceId is not as expected", expected, id);
     }
@@ -1088,7 +1071,11 @@ public class MultiInstanceManagerApi31UnitTest {
                         mMenuOrKeyboardActionController,
                         mDesktopWindowStateManagerSupplier,
                         mTabReparentingDelegate);
-        multiInstanceManager.initialize(INSTANCE_ID_1, TASK_ID_57, SupportedProfileType.MIXED);
+        multiInstanceManager.initialize(
+                INSTANCE_ID_1,
+                TASK_ID_57,
+                SupportedProfileType.MIXED,
+                /* host= */ mUnownedUserDataHost);
         TabModelObserver tabModelObserver = multiInstanceManager.getTabModelObserverForTesting();
 
         when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
@@ -1193,7 +1180,11 @@ public class MultiInstanceManagerApi31UnitTest {
                         mMenuOrKeyboardActionController,
                         mDesktopWindowStateManagerSupplier,
                         mTabReparentingDelegate);
-        multiInstanceManager.initialize(INSTANCE_ID_1, TASK_ID_57, SupportedProfileType.MIXED);
+        multiInstanceManager.initialize(
+                INSTANCE_ID_1,
+                TASK_ID_57,
+                SupportedProfileType.MIXED,
+                /* host= */ mUnownedUserDataHost);
         TabModelObserver tabModelObserver = multiInstanceManager.getTabModelObserverForTesting();
 
         when(mTab1.isIncognito()).thenReturn(false);
@@ -1297,7 +1288,11 @@ public class MultiInstanceManagerApi31UnitTest {
                         mMenuOrKeyboardActionController,
                         mDesktopWindowStateManagerSupplier,
                         mTabReparentingDelegate);
-        multiInstanceManager.initialize(INSTANCE_ID_1, TASK_ID_57, SupportedProfileType.MIXED);
+        multiInstanceManager.initialize(
+                INSTANCE_ID_1,
+                TASK_ID_57,
+                SupportedProfileType.MIXED,
+                /* host= */ mUnownedUserDataHost);
         TabModelObserver tabModelObserver = multiInstanceManager.getTabModelObserverForTesting();
 
         when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
@@ -1543,10 +1538,12 @@ public class MultiInstanceManagerApi31UnitTest {
         MultiWindowTestUtils.enableMultiInstance();
         // Allocate and create two instances.
         assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mCurrentActivity, true));
-        mMultiInstanceManager.initialize(0, TASK_ID_56, SupportedProfileType.MIXED);
+        mMultiInstanceManager.initialize(
+                0, TASK_ID_56, SupportedProfileType.MIXED, /* host= */ mUnownedUserDataHost);
         assertEquals(1, allocInstanceIndex(PASSED_ID_INVALID, mTabbedActivityTask63, true));
         var multiInstanceManager = createTestMultiInstanceManager(mTabbedActivityTask63);
-        multiInstanceManager.initialize(1, TASK_ID_63, SupportedProfileType.MIXED);
+        multiInstanceManager.initialize(
+                1, TASK_ID_63, SupportedProfileType.MIXED, /* host= */ mUnownedUserDataHost);
         assertEquals(2, mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.ANY).size());
     }
 
@@ -1561,8 +1558,6 @@ public class MultiInstanceManagerApi31UnitTest {
         assertEquals(
                 mMultiInstanceManager.mMaxInstances,
                 mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.ANY).size());
-
-        doNothing().when(mMultiInstanceManager).openNewWindow(eq(false), anyInt());
     }
 
     @Test
@@ -1575,13 +1570,15 @@ public class MultiInstanceManagerApi31UnitTest {
                 MultiWindowUtils.OPEN_ADJACENTLY_PARAM,
                 true);
 
-        mMultiInstanceManager.moveTabsToNewWindow(tabs, NewWindowAppSource.KEYBOARD_SHORTCUT);
+        mMultiInstanceManager.moveTabsToNewWindow(
+                tabs, /* finalizeCallback= */ null, NewWindowAppSource.KEYBOARD_SHORTCUT);
 
         verify(mTabReparentingDelegate)
                 .reparentTabsToNewWindow(
                         tabs,
                         INVALID_WINDOW_ID,
                         /* openAdjacently= */ true,
+                        /* finalizeCallback= */ null,
                         NewWindowAppSource.KEYBOARD_SHORTCUT);
     }
 
@@ -1596,13 +1593,15 @@ public class MultiInstanceManagerApi31UnitTest {
                 MultiWindowUtils.OPEN_ADJACENTLY_PARAM,
                 false);
 
-        mMultiInstanceManager.moveTabsToNewWindow(tabs, NewWindowAppSource.KEYBOARD_SHORTCUT);
+        mMultiInstanceManager.moveTabsToNewWindow(
+                tabs, /* finalizeCallback= */ null, NewWindowAppSource.KEYBOARD_SHORTCUT);
 
         verify(mTabReparentingDelegate)
                 .reparentTabsToNewWindow(
                         tabs,
                         INVALID_WINDOW_ID,
                         /* openAdjacently= */ false,
+                        /* finalizeCallback= */ null,
                         NewWindowAppSource.KEYBOARD_SHORTCUT);
     }
 
@@ -1618,13 +1617,15 @@ public class MultiInstanceManagerApi31UnitTest {
                 MultiWindowUtils.OPEN_ADJACENTLY_PARAM,
                 false);
 
-        mMultiInstanceManager.moveTabsToNewWindow(tabs, NewWindowAppSource.KEYBOARD_SHORTCUT);
+        mMultiInstanceManager.moveTabsToNewWindow(
+                tabs, /* finalizeCallback= */ null, NewWindowAppSource.KEYBOARD_SHORTCUT);
 
         verify(mTabReparentingDelegate)
                 .reparentTabsToNewWindow(
                         tabs,
                         INVALID_WINDOW_ID,
                         /* openAdjacently= */ false,
+                        /* finalizeCallback= */ null,
                         NewWindowAppSource.KEYBOARD_SHORTCUT);
     }
 
@@ -1713,12 +1714,6 @@ public class MultiInstanceManagerApi31UnitTest {
     @EnableFeatures(ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT_EXPERIMENTAL)
     public void testOpenWindow_opensAdjacently_WithRobustWindowManagementExperimental() {
         setupTwoInstances();
-        var histogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecord(
-                                MultiInstanceManager.NEW_WINDOW_APP_SOURCE_HISTOGRAM,
-                                NewWindowAppSource.WINDOW_MANAGER)
-                        .build();
         FeatureOverrides.overrideParam(
                 ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT_EXPERIMENTAL,
                 MultiWindowUtils.OPEN_ADJACENTLY_PARAM,
@@ -1728,9 +1723,13 @@ public class MultiInstanceManagerApi31UnitTest {
         mMultiInstanceManager.openWindow(INSTANCE_ID_2, NewWindowAppSource.WINDOW_MANAGER);
 
         verify(mCurrentActivity).startActivity(intentCaptor.capture());
-        histogramWatcher.assertExpected();
         Intent intent = intentCaptor.getValue();
         assertNotEquals("Intent should not be null.", null, intent);
+        assertEquals(
+                "New window source extra is incorrect.",
+                NewWindowAppSource.WINDOW_MANAGER,
+                intent.getIntExtra(
+                        IntentHandler.EXTRA_NEW_WINDOW_APP_SOURCE, NewWindowAppSource.OTHER));
         int flags = intent.getFlags();
         assertTrue(
                 "FLAG_ACTIVITY_LAUNCH_ADJACENT should be set.",
@@ -1741,12 +1740,6 @@ public class MultiInstanceManagerApi31UnitTest {
     @EnableFeatures(ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT_EXPERIMENTAL)
     public void testOpenWindow_opensFullScreen_WithRobustWindowManagementExperimental() {
         setupTwoInstances();
-        var histogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecord(
-                                MultiInstanceManager.NEW_WINDOW_APP_SOURCE_HISTOGRAM,
-                                NewWindowAppSource.WINDOW_MANAGER)
-                        .build();
         FeatureOverrides.overrideParam(
                 ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT_EXPERIMENTAL,
                 MultiWindowUtils.OPEN_ADJACENTLY_PARAM,
@@ -1756,8 +1749,12 @@ public class MultiInstanceManagerApi31UnitTest {
         mMultiInstanceManager.openWindow(INSTANCE_ID_2, NewWindowAppSource.WINDOW_MANAGER);
 
         verify(mCurrentActivity).startActivity(intentCaptor.capture());
-        histogramWatcher.assertExpected();
         Intent intent = intentCaptor.getValue();
+        assertEquals(
+                "New window source extra is incorrect.",
+                NewWindowAppSource.WINDOW_MANAGER,
+                intent.getIntExtra(
+                        IntentHandler.EXTRA_NEW_WINDOW_APP_SOURCE, NewWindowAppSource.OTHER));
         assertNotEquals("Intent should not be null.", null, intent);
         int flags = intent.getFlags();
         assertFalse(
@@ -1772,11 +1769,12 @@ public class MultiInstanceManagerApi31UnitTest {
         when(mCurrentActivity.getResources()).thenReturn(mock(Resources.class));
 
         // Act.
-        mMultiInstanceManager.moveTabsToNewWindow(tabs, NewWindowAppSource.KEYBOARD_SHORTCUT);
+        mMultiInstanceManager.moveTabsToNewWindow(
+                tabs, /* finalizeCallback= */ null, NewWindowAppSource.KEYBOARD_SHORTCUT);
 
         // Verify that tab reparenting is not initiated, and a message is shown.
         verify(mTabReparentingDelegate, never())
-                .reparentTabsToNewWindow(any(), anyInt(), anyBoolean(), anyInt());
+                .reparentTabsToNewWindow(any(), anyInt(), anyBoolean(), any(), anyInt());
         verify(mMultiInstanceManager).showInstanceCreationLimitMessage();
     }
 
@@ -1967,7 +1965,8 @@ public class MultiInstanceManagerApi31UnitTest {
         MultiInstanceManagerApi31 multiInstanceManager0 =
                 createTestMultiInstanceManager(mTabbedActivityTask62);
         assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mTabbedActivityTask62));
-        multiInstanceManager0.initialize(0, TASK_ID_62, SupportedProfileType.MIXED);
+        multiInstanceManager0.initialize(
+                0, TASK_ID_62, SupportedProfileType.MIXED, /* host= */ mUnownedUserDataHost);
         multiInstanceManager0.onTopResumedActivityChanged(true);
         long instance0CreationTime = MultiInstancePersistentStore.readLastAccessedTime(0);
 
@@ -1976,7 +1975,8 @@ public class MultiInstanceManagerApi31UnitTest {
         MultiInstanceManagerApi31 multiInstanceManager1 =
                 createTestMultiInstanceManager(mTabbedActivityTask63);
         assertEquals(1, allocInstanceIndex(PASSED_ID_INVALID, mTabbedActivityTask63));
-        multiInstanceManager1.initialize(1, TASK_ID_63, SupportedProfileType.MIXED);
+        multiInstanceManager1.initialize(
+                1, TASK_ID_63, SupportedProfileType.MIXED, /* host= */ mUnownedUserDataHost);
         multiInstanceManager0.onTopResumedActivityChanged(false);
         multiInstanceManager1.onTopResumedActivityChanged(true);
         long instance1CreationTime = MultiInstancePersistentStore.readLastAccessedTime(1);
@@ -2140,9 +2140,11 @@ public class MultiInstanceManagerApi31UnitTest {
                 spy(createTestMultiInstanceManager(mTabbedActivityTask63));
 
         assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mTabbedActivityTask62));
-        multiInstanceManager62.initialize(0, TASK_ID_62, SupportedProfileType.MIXED);
+        multiInstanceManager62.initialize(
+                0, TASK_ID_62, SupportedProfileType.MIXED, /* host= */ mUnownedUserDataHost);
         assertEquals(1, allocInstanceIndex(PASSED_ID_INVALID, mTabbedActivityTask63));
-        multiInstanceManager63.initialize(1, TASK_ID_63, SupportedProfileType.MIXED);
+        multiInstanceManager63.initialize(
+                1, TASK_ID_63, SupportedProfileType.MIXED, /* host= */ mUnownedUserDataHost);
 
         // Setup AppTask's for both activities. Clear test AppTask ids that are set during the test
         // manager instantiation so that ids from the current mocked AppTasks are used.
@@ -2185,7 +2187,9 @@ public class MultiInstanceManagerApi31UnitTest {
 
     @Test
     public void testCreateNewWindowIntent_Incognito_OpenNewIncognitoWindowExtraIsTrue() {
-        Intent intent = mMultiInstanceManager.createNewWindowIntent(/* isIncognito= */ true);
+        Intent intent =
+                mMultiInstanceManager.createNewWindowIntent(
+                        /* isIncognito= */ true, NewWindowAppSource.OTHER);
 
         assertNotNull(intent);
         assertTrue(
@@ -2195,7 +2199,9 @@ public class MultiInstanceManagerApi31UnitTest {
 
     @Test
     public void testCreateNewWindowIntent_NotIncognito_OpenNewIncognitoWindowExtraIsFalse() {
-        Intent intent = mMultiInstanceManager.createNewWindowIntent(/* isIncognito= */ false);
+        Intent intent =
+                mMultiInstanceManager.createNewWindowIntent(
+                        /* isIncognito= */ false, NewWindowAppSource.OTHER);
         assertNotNull(intent);
         assertFalse(
                 intent.getBooleanExtra(
@@ -2216,7 +2222,9 @@ public class MultiInstanceManagerApi31UnitTest {
                 MultiWindowUtils.OPEN_ADJACENTLY_PARAM,
                 false);
 
-        Intent intent = mMultiInstanceManager.createNewWindowIntent(/* isIncognito= */ false);
+        Intent intent =
+                mMultiInstanceManager.createNewWindowIntent(
+                        /* isIncognito= */ false, NewWindowAppSource.OTHER);
 
         assertNotNull(intent);
         assertEquals(0, (intent.getFlags() & Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT));
@@ -2236,7 +2244,9 @@ public class MultiInstanceManagerApi31UnitTest {
                 MultiWindowUtils.OPEN_ADJACENTLY_PARAM,
                 true);
 
-        Intent intent = mMultiInstanceManager.createNewWindowIntent(/* isIncognito= */ false);
+        Intent intent =
+                mMultiInstanceManager.createNewWindowIntent(
+                        /* isIncognito= */ false, NewWindowAppSource.OTHER);
 
         assertNotNull(intent);
         assertTrue((intent.getFlags() & Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT) != 0);
@@ -2248,28 +2258,28 @@ public class MultiInstanceManagerApi31UnitTest {
         when(mMultiWindowModeStateDispatcher.isInMultiWindowMode()).thenReturn(true);
         when(mCurrentActivity.isInMultiWindowMode()).thenReturn(true);
 
-        Intent intent = mMultiInstanceManager.createNewWindowIntent(/* isIncognito= */ false);
+        Intent intent =
+                mMultiInstanceManager.createNewWindowIntent(
+                        /* isIncognito= */ false, NewWindowAppSource.OTHER);
 
         assertNotNull(intent);
         assertTrue((intent.getFlags() & Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT) != 0);
     }
 
     @Test
-    public void testOpenNewWindow_launchesIntentForChromeTabbedActivity() {
-        var histogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecord(
-                                MultiInstanceManager.NEW_WINDOW_APP_SOURCE_HISTOGRAM,
-                                NewWindowAppSource.OTHER)
-                        .build();
+    public void testOpenNewWindow() {
         ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
 
-        mMultiInstanceManager.openNewWindow(false, NewWindowAppSource.OTHER);
+        mMultiInstanceManager.openNewWindow(false);
 
         verify(mCurrentActivity).startActivity(intentCaptor.capture());
         Intent intent = intentCaptor.getValue();
         assertNotNull(intent.getComponent());
-        histogramWatcher.assertExpected();
+        assertEquals(
+                "New window source extra is incorrect.",
+                NewWindowAppSource.WINDOW_MANAGER,
+                intent.getIntExtra(
+                        IntentHandler.EXTRA_NEW_WINDOW_APP_SOURCE, NewWindowAppSource.OTHER));
         assertEquals(
                 "org.chromium.chrome.browser.ChromeTabbedActivity",
                 intent.getComponent().getClassName());
@@ -2293,7 +2303,11 @@ public class MultiInstanceManagerApi31UnitTest {
     public void testShowNameWindowDialog_UsesCustomTitle() {
         Activity realActivity = Robolectric.setupActivity(Activity.class);
         var manager = createTestMultiInstanceManager(realActivity);
-        manager.initialize(INSTANCE_ID_1, TASK_ID_56, SupportedProfileType.MIXED);
+        manager.initialize(
+                INSTANCE_ID_1,
+                TASK_ID_56,
+                SupportedProfileType.MIXED,
+                /* host= */ mUnownedUserDataHost);
 
         final String customTitle = "Custom Title";
         final String defaultTitle = "Default Title";
@@ -2316,7 +2330,11 @@ public class MultiInstanceManagerApi31UnitTest {
     public void testShowNameWindowDialog_UsesRegularTitleAsFallback() {
         Activity realActivity = Robolectric.setupActivity(Activity.class);
         var manager = createTestMultiInstanceManager(realActivity);
-        manager.initialize(INSTANCE_ID_1, TASK_ID_56, SupportedProfileType.MIXED);
+        manager.initialize(
+                INSTANCE_ID_1,
+                TASK_ID_56,
+                SupportedProfileType.MIXED,
+                /* host= */ mUnownedUserDataHost);
 
         final String defaultTitle = "Default Title";
         MultiInstancePersistentStore.writeActiveTabTitle(INSTANCE_ID_1, defaultTitle);
@@ -2338,7 +2356,11 @@ public class MultiInstanceManagerApi31UnitTest {
     public void testShowNameWindowDialog_DialogCallbackUpdatesTitle() {
         Activity realActivity = Robolectric.setupActivity(Activity.class);
         var manager = createTestMultiInstanceManager(realActivity);
-        manager.initialize(INSTANCE_ID_1, TASK_ID_56, SupportedProfileType.MIXED);
+        manager.initialize(
+                INSTANCE_ID_1,
+                TASK_ID_56,
+                SupportedProfileType.MIXED,
+                /* host= */ mUnownedUserDataHost);
         final String defaultTitle = "Default Title";
         MultiInstancePersistentStore.writeActiveTabTitle(INSTANCE_ID_1, defaultTitle);
 
@@ -2364,7 +2386,11 @@ public class MultiInstanceManagerApi31UnitTest {
     public void testShowNameWindowDialog_DialogCallbackIgnoresDefaultTitle() {
         Activity realActivity = Robolectric.setupActivity(Activity.class);
         var manager = createTestMultiInstanceManager(realActivity);
-        manager.initialize(INSTANCE_ID_1, TASK_ID_56, SupportedProfileType.MIXED);
+        manager.initialize(
+                INSTANCE_ID_1,
+                TASK_ID_56,
+                SupportedProfileType.MIXED,
+                /* host= */ mUnownedUserDataHost);
         final String defaultTitle = "Default Title";
         MultiInstancePersistentStore.writeActiveTabTitle(INSTANCE_ID_1, defaultTitle);
 
@@ -2436,6 +2462,7 @@ public class MultiInstanceManagerApi31UnitTest {
                         tabs,
                         INVALID_WINDOW_ID,
                         /* openAdjacently= */ true,
+                        /* finalizeCallback= */ null,
                         NewWindowAppSource.MENU);
     }
 
@@ -2475,6 +2502,7 @@ public class MultiInstanceManagerApi31UnitTest {
                         tabs,
                         INVALID_WINDOW_ID,
                         /* openAdjacently= */ true,
+                        /* finalizeCallback= */ null,
                         NewWindowAppSource.MENU);
     }
 
@@ -2712,7 +2740,10 @@ public class MultiInstanceManagerApi31UnitTest {
     public void testOnStopWithNative_updatesClosureTime() {
         assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask56));
         mMultiInstanceManager.initialize(
-                /* instanceId= */ 0, /* taskId= */ TASK_ID_56, SupportedProfileType.MIXED);
+                /* instanceId= */ 0,
+                /* taskId= */ TASK_ID_56,
+                SupportedProfileType.MIXED,
+                /* host= */ mUnownedUserDataHost);
         long initialTime = MultiInstancePersistentStore.readClosureTime(/* instanceId= */ 0);
 
         mFakeTimeTestRule.advanceMillis(100);
@@ -2729,10 +2760,16 @@ public class MultiInstanceManagerApi31UnitTest {
         var manager2 = createTestMultiInstanceManager(mTabbedActivityTask63);
         assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mTabbedActivityTask62));
         manager1.initialize(
-                /* instanceId= */ 0, /* taskId= */ TASK_ID_62, SupportedProfileType.MIXED);
+                /* instanceId= */ 0,
+                /* taskId= */ TASK_ID_62,
+                SupportedProfileType.MIXED,
+                /* host= */ mUnownedUserDataHost);
         assertEquals(1, allocInstanceIndex(PASSED_ID_INVALID, mTabbedActivityTask63));
         manager2.initialize(
-                /* instanceId= */ 1, /* taskId= */ TASK_ID_63, SupportedProfileType.MIXED);
+                /* instanceId= */ 1,
+                /* taskId= */ TASK_ID_63,
+                SupportedProfileType.MIXED,
+                /* host= */ mUnownedUserDataHost);
         long initialTime0 = MultiInstancePersistentStore.readClosureTime(/* instanceId= */ 0);
 
         mFakeTimeTestRule.advanceMillis(100);
@@ -2765,10 +2802,16 @@ public class MultiInstanceManagerApi31UnitTest {
         var manager2 = createTestMultiInstanceManager(mTabbedActivityTask63);
         assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mTabbedActivityTask62));
         manager1.initialize(
-                /* instanceId= */ 0, /* taskId= */ TASK_ID_62, SupportedProfileType.MIXED);
+                /* instanceId= */ 0,
+                /* taskId= */ TASK_ID_62,
+                SupportedProfileType.MIXED,
+                /* host= */ mUnownedUserDataHost);
         assertEquals(1, allocInstanceIndex(PASSED_ID_INVALID, mTabbedActivityTask63));
         manager2.initialize(
-                /* instanceId= */ 1, /* taskId= */ TASK_ID_63, SupportedProfileType.MIXED);
+                /* instanceId= */ 1,
+                /* taskId= */ TASK_ID_63,
+                SupportedProfileType.MIXED,
+                /* host= */ mUnownedUserDataHost);
 
         // Simulate that the activity is being destroyed but task is still alive.
         when(mTabbedActivityTask62.isFinishing()).thenReturn(false);
@@ -2795,10 +2838,16 @@ public class MultiInstanceManagerApi31UnitTest {
         var manager2 = createTestMultiInstanceManager(mTabbedActivityTask63);
         assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mTabbedActivityTask62));
         manager1.initialize(
-                /* instanceId= */ 0, /* taskId= */ TASK_ID_62, SupportedProfileType.MIXED);
+                /* instanceId= */ 0,
+                /* taskId= */ TASK_ID_62,
+                SupportedProfileType.MIXED,
+                /* host= */ mUnownedUserDataHost);
         assertEquals(1, allocInstanceIndex(PASSED_ID_INVALID, mTabbedActivityTask63));
         manager2.initialize(
-                /* instanceId= */ 1, /* taskId= */ TASK_ID_63, SupportedProfileType.MIXED);
+                /* instanceId= */ 1,
+                /* taskId= */ TASK_ID_63,
+                SupportedProfileType.MIXED,
+                /* host= */ mUnownedUserDataHost);
 
         // Destroy an instance with non-zero normal tab count.
         when(mTabbedActivityTask62.isFinishing()).thenReturn(true);

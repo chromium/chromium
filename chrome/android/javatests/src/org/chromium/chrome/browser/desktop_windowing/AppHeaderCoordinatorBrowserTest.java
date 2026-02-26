@@ -10,7 +10,6 @@ import static org.mockito.Mockito.doAnswer;
 
 import static org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderCoordinator.INSTANCE_STATE_KEY_IS_APP_IN_UNFOCUSED_DW;
 
-import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Rect;
 import android.os.Build;
@@ -22,7 +21,6 @@ import androidx.annotation.RequiresApi;
 import androidx.core.graphics.Insets;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.test.filters.MediumTest;
-import androidx.test.runner.lifecycle.Stage;
 
 import org.hamcrest.Matchers;
 import org.junit.Assert;
@@ -34,7 +32,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Batch;
@@ -52,9 +49,7 @@ import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperMa
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.hub.HubLayout;
-import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
-import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
-import org.chromium.chrome.browser.tabwindow.TabWindowManager;
+import org.chromium.chrome.browser.multiwindow.MultiWindowTestHelper;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.toolbar.top.ToolbarTablet;
@@ -322,19 +317,9 @@ public class AppHeaderCoordinatorBrowserTest {
 
         // Create a new (desktop) window, that should gain focus and cause the first activity to
         // lose focus.
-        Intent intent =
-                MultiWindowUtils.createNewWindowIntent(
-                        firstActivity.getApplicationContext(),
-                        TabWindowManager.INVALID_WINDOW_ID,
-                        true,
-                        false,
-                        true,
-                        NewWindowAppSource.OTHER);
         ChromeTabbedActivity secondActivity =
-                ApplicationTestUtils.waitForActivityWithClass(
-                        ChromeTabbedActivity.class,
-                        Stage.RESUMED,
-                        () -> ContextUtils.getApplicationContext().startActivity(intent));
+                MultiWindowTestHelper.createNewChromeTabbedActivity(
+                        firstActivity.getApplicationContext());
         triggerDesktopWindowingModeChange(secondActivity, true);
 
         // Trigger activity recreation in desktop windowing mode (an app theme change for eg. would

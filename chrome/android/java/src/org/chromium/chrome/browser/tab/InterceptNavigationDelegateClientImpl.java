@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.tab;
 
 import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
-import static org.chromium.chrome.browser.tabwindow.TabWindowManager.INVALID_WINDOW_ID;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -24,7 +23,7 @@ import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTask;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
-import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManagerFactory;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.components.external_intents.ExternalNavigationHandler;
 import org.chromium.components.external_intents.InterceptNavigationDelegateClient;
@@ -34,6 +33,8 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
+
+import java.util.Collections;
 
 /**
  * Class that provides embedder-level information to InterceptNavigationDelegateImpl based off a
@@ -229,20 +230,14 @@ public class InterceptNavigationDelegateClientImpl implements InterceptNavigatio
         PostTask.postTask(
                 TaskTraits.UI_DEFAULT,
                 () -> {
-                    Intent intent =
-                            MultiWindowUtils.createNewWindowIntent(
-                                    assumeNonNull(getActivity()),
-                                    INVALID_WINDOW_ID,
-                                    true,
-                                    true,
-                                    true,
-                                    NewWindowAppSource.OTHER);
-                    ReparentingTask.from(mTab)
-                            .begin(
-                                    ContextUtils.getApplicationContext(),
-                                    intent,
-                                    /* startActivityOptions= */ null,
-                                    cleanupPendingTabClosure());
+                    var multiInstanceManager =
+                            MultiInstanceManagerFactory.from(mTab.getWindowAndroid());
+                    if (multiInstanceManager != null) {
+                        multiInstanceManager.moveTabsToNewWindow(
+                                Collections.singletonList(mTab),
+                                cleanupPendingTabClosure(),
+                                NewWindowAppSource.OTHER);
+                    }
                 });
     }
 

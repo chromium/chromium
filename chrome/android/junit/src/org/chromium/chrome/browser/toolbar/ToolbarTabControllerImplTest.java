@@ -244,7 +244,9 @@ public class ToolbarTabControllerImplTest {
         inOrder.verify(mTab2).goBack();
         inOrder.verify(mMultiInstanceManager)
                 .moveTabsToNewWindow(
-                        Collections.singletonList(mTab2), NewWindowAppSource.KEYBOARD_SHORTCUT);
+                        Collections.singletonList(mTab2),
+                        /* finalizeCallback= */ null,
+                        NewWindowAppSource.KEYBOARD_SHORTCUT);
         inOrder.verifyNoMoreInteractions();
     }
 
@@ -304,7 +306,9 @@ public class ToolbarTabControllerImplTest {
         inOrder.verify(mTab2).goForward();
         inOrder.verify(mMultiInstanceManager)
                 .moveTabsToNewWindow(
-                        Collections.singletonList(mTab2), NewWindowAppSource.KEYBOARD_SHORTCUT);
+                        Collections.singletonList(mTab2),
+                        /* finalizeCallback= */ null,
+                        NewWindowAppSource.KEYBOARD_SHORTCUT);
         inOrder.verifyNoMoreInteractions();
     }
 

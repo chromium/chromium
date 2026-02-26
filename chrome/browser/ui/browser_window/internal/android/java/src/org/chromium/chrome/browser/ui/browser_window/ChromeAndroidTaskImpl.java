@@ -41,6 +41,7 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher.Activit
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcherProvider;
 import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
 import org.chromium.chrome.browser.lifecycle.TopResumedActivityChangedWithNativeObserver;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabModel;
@@ -577,8 +578,8 @@ final class ChromeAndroidTaskImpl
         if (multiInstanceManager == null) {
             return null;
         }
-
-        return multiInstanceManager.createNewWindowIntent(isIncognito);
+        // TODO (crbug.com/483801863): Use a non-generic source here.
+        return multiInstanceManager.createNewWindowIntent(isIncognito, NewWindowAppSource.OTHER);
     }
 
     @Override

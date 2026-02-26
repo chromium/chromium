@@ -115,7 +115,9 @@ public class ToolbarTabControllerImpl implements ToolbarTabController {
             if (mMultiInstanceManager == null) return false;
             // Move tab to a new window.
             mMultiInstanceManager.moveTabsToNewWindow(
-                    Collections.singletonList(newTab), NewWindowAppSource.KEYBOARD_SHORTCUT);
+                    Collections.singletonList(newTab),
+                    /* finalizeCallback= */ null,
+                    NewWindowAppSource.KEYBOARD_SHORTCUT);
             // Don't run mOnSuccessRunnable since nothing happened in the current tab.
             return true;
         }
@@ -156,7 +158,9 @@ public class ToolbarTabControllerImpl implements ToolbarTabController {
             if (mMultiInstanceManager == null) return false;
             // Move tab to a new window.
             mMultiInstanceManager.moveTabsToNewWindow(
-                    Collections.singletonList(newTab), NewWindowAppSource.KEYBOARD_SHORTCUT);
+                    Collections.singletonList(newTab),
+                    /* finalizeCallback= */ null,
+                    NewWindowAppSource.KEYBOARD_SHORTCUT);
             // Don't run mOnSuccessRunnable since nothing happened in the current tab.
             return true;
         }
