@@ -102,16 +102,8 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripControllerInteractiveUiTest,
           0));
 }
 
-// TODO(crbug.com/466106773): Unable to click middle mouse button on MacOS.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_VerifyClosingTabWithMiddleMouseButton \
-  DISABLED_VerifyClosingTabWithMiddleMouseButton
-#else
-#define MAYBE_VerifyClosingTabWithMiddleMouseButton \
-  VerifyClosingTabWithMiddleMouseButton
-#endif
 IN_PROC_BROWSER_TEST_F(VerticalTabStripControllerInteractiveUiTest,
-                       MAYBE_VerifyClosingTabWithMiddleMouseButton) {
+                       VerifyClosingTabWithMiddleMouseButton) {
   RunTestSequence(
       // Verify Vertical Tabs is showing.
       WaitForShow(kVerticalTabStripBottomContainerElementId),
@@ -125,7 +117,22 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripControllerInteractiveUiTest,
       NameDescendantViewByType<VerticalTabView>(kBrowserViewElementId,
                                                 kFirstTabName, 0),
       // Close tab at index 0 w/middle mouse button and verify tab count.
-      MoveMouseTo(kFirstTabName), ClickMouse(ui_controls::MIDDLE),
+      MoveMouseTo(kFirstTabName),
+#if BUILDFLAG(IS_MAC)
+      // Interactive tests on Mac don't support middle click so simulate the
+      // event.
+      WithView(kFirstTabName,
+               [](views::View* view) {
+                 gfx::Point point = view->bounds().CenterPoint();
+                 ui::MouseEvent event(ui::EventType::kMouseReleased, point,
+                                      point, ui::EventTimeForNow(),
+                                      ui::EF_MIDDLE_MOUSE_BUTTON,
+                                      ui::EF_MIDDLE_MOUSE_BUTTON);
+                 view->OnMouseReleased(event);
+               }),
+#else
+      ClickMouse(ui_controls::MIDDLE),
+#endif
       CheckResult([this]() { return browser()->tab_strip_model()->count(); },
                   1),
       WaitForHide(kFirstTabName));
