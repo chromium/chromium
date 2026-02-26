@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/core/css/cssom/css_numeric_value.h"
 #include "third_party/blink/renderer/core/dom/dom_token_list.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
@@ -2836,8 +2837,12 @@ TEST_P(CSSAnimationsTriggerTest, CoordinatedTimelineTriggerDeclarations) {
     return To<TimelineTrigger>(source->NamedTrigger(scoped_name));
   };
 
+  LocalDOMWindow* window = GetFrame().DomWindow();
   source->classList().Add(AtomicString("view"));
   UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(
+      window->getComputedStyle(source)->getPropertyValue("timeline-trigger"),
+      String("--trigger1 view(), --trigger2 view()"));
   test_timeline_type(get_trigger(AtomicString("--trigger1")),
                      /*is_view=*/true, /*is_scroll=*/true,
                      /*is_document=*/false);
@@ -2848,6 +2853,9 @@ TEST_P(CSSAnimationsTriggerTest, CoordinatedTimelineTriggerDeclarations) {
   source->classList().Remove(AtomicString("view"));
   source->classList().Add(AtomicString("view_auto"));
   UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(
+      window->getComputedStyle(source)->getPropertyValue("timeline-trigger"),
+      String("--trigger1 view(), --trigger2"));
   test_timeline_type(get_trigger(AtomicString("--trigger1")),
                      /*is_view=*/true,
                      /*is_scroll=*/true, /*is_document=*/false);
@@ -2858,6 +2866,9 @@ TEST_P(CSSAnimationsTriggerTest, CoordinatedTimelineTriggerDeclarations) {
   source->classList().Remove(AtomicString("view_auto"));
   source->classList().Add(AtomicString("auto_view"));
   UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(
+      window->getComputedStyle(source)->getPropertyValue("timeline-trigger"),
+      String("--trigger1, --trigger2 view()"));
   test_timeline_type(get_trigger(AtomicString("--trigger1")),
                      /*is_view=*/false,
                      /*is_scroll=*/false, /*is_document=*/true);

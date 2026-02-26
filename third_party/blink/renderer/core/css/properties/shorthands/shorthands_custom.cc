@@ -4765,7 +4765,7 @@ const CSSValue* TimelineTrigger::CSSValueFromComputedStyleInternal(
 
       const CSSValue* timeline_value =
           ComputedStyleUtils::ValueForAnimationTimeline(
-              animation_data->TimelineTriggerSourceList().at(i), style);
+              animation_data->GetTimelineTriggerSource(i), style);
       if (timeline_value &&
           (!timeline_value->IsIdentifierValue() ||
            To<CSSIdentifierValue>(timeline_value)->GetValueID() !=
@@ -4776,8 +4776,10 @@ const CSSValue* TimelineTrigger::CSSValueFromComputedStyleInternal(
       const CSSValueList* enter_range =
           SingleAnimationRangeCSSValueFromComputedStyle(
               style,
-              animation_data->TimelineTriggerActivationRangeStartList().at(i),
-              animation_data->TimelineTriggerActivationRangeEndList().at(i),
+              CSSAnimationData::GetRepeated(
+                  animation_data->TimelineTriggerActivationRangeStartList(), i),
+              CSSAnimationData::GetRepeated(
+                  animation_data->TimelineTriggerActivationRangeEndList(), i),
               default_start, default_end);
       DCHECK(enter_range->length());
       // Skip a value of 'normal' as that is the default for the enter range.
@@ -4798,8 +4800,10 @@ const CSSValue* TimelineTrigger::CSSValueFromComputedStyleInternal(
       const CSSValueList* exit_range =
           SingleTimelineTriggerExitRangeCSSValueFromComputedStyle(
               style,
-              animation_data->TimelineTriggerActiveRangeStartList().at(i),
-              animation_data->TimelineTriggerActiveRangeEndList().at(i),
+              CSSAnimationData::GetRepeated(
+                  animation_data->TimelineTriggerActiveRangeStartList(), i),
+              CSSAnimationData::GetRepeated(
+                  animation_data->TimelineTriggerActiveRangeEndList(), i),
               default_start, default_end);
       DCHECK(exit_range->length());
       // Skip a value of 'auto' as that is the default for the exit range.
