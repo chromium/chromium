@@ -1221,6 +1221,43 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebRTC.P2P.UDP.SendResult"
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2026-07-01">
+  <owner>hta@chromium.org</owner>
+  <owner>stevebe@microsoft.com</owner>
+  <owner>webrtc-dev@chromium.org</owner>
+  <summary>
+    Logs the result of sending a packet through a UDP socket. Records net::OK
+    after success. Records a network error code after failure.
+  </summary>
+</histogram>
+
+<histogram name="WebRTC.P2P.UDP.SendRetryDelay" units="ms"
+    expires_after="2026-07-01">
+  <owner>hta@chromium.org</owner>
+  <owner>stevebe@microsoft.com</owner>
+  <owner>webrtc-dev@chromium.org</owner>
+  <summary>
+    Logs the delay introduced by the retry timer after net::ERR_NO_BUFFER_SPACE.
+    The timer starts at 1 milliseconds. Each retry doubles the interval up to 12
+    times, which introduces a maximum delay of 4095 milliseconds.
+  </summary>
+</histogram>
+
+<histogram name="WebRTC.P2P.UDP.SendRetryResult"
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2026-07-01">
+  <owner>hta@chromium.org</owner>
+  <owner>stevebe@microsoft.com</owner>
+  <owner>webrtc-dev@chromium.org</owner>
+  <summary>
+    Logs the final result of retrying to send a packet after
+    net::ERR_NO_BUFFER_SPACE. Records net::OK to indicate recovery. Records
+    errors to indicate that the retry failed. Records net::ERR_NO_BUFFER_SPACE
+    to indicate that the retry timed out after 4095 milliseconds of repeated
+    net::ERR_NO_BUFFER_SPACE results.
+  </summary>
+</histogram>
+
 <histogram name="WebRTC.P2P.UDP.SetTosErrorCountByArgument"
     enum="SetTosArguments" expires_after="2026-03-01">
   <owner>frederikh@google.com</owner>

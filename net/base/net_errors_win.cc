@@ -54,6 +54,8 @@ Error MapSystemError(logging::SystemErrorCode os_error) {
       return ERR_INVALID_ARGUMENT;
     case WSAEADDRINUSE:
       return ERR_ADDRESS_IN_USE;
+    case WSAENOBUFS:
+      return ERR_NO_BUFFER_SPACE;
 
     // System errors.
     case ERROR_FILE_NOT_FOUND:  // The system cannot find the file specified.

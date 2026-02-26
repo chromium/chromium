@@ -14,9 +14,11 @@
 
 #include "base/component_export.h"
 #include "base/containers/circular_deque.h"
+#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/timer/timer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/backoff_entry.h"
@@ -34,6 +36,11 @@ class NetLog;
 }  // namespace net
 
 namespace network {
+
+// Retries to send a packet after an `ERR_NO_BUFFER_SPACE` result. The retry is
+// on a timer that doubles its interval for each retry iteration until
+// `kMaxSendRetries`.
+COMPONENT_EXPORT(NETWORK_SERVICE) BASE_DECLARE_FEATURE(kP2PSocketSendRetry);
 
 class P2PMessageThrottler;
 class ThrottlingP2PNetworkInterceptor;
@@ -61,6 +68,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) P2PSocketUdp : public P2PSocket {
   // Limit the maximum buffering time of batching received packets.
   static constexpr base::TimeDelta kUdpMaxBatchingRecvBuffering =
       base::Milliseconds(1);
+
+  // The maximum number of reties for sending a packet after
+  // `ERR_NO_BUFFER_SPACE`.
+  static constexpr int kMaxSendRetries = 12;
 
   using DatagramServerSocketFactory =
       base::RepeatingCallback<std::unique_ptr<net::DatagramServerSocket>(
@@ -118,12 +129,33 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) P2PSocketUdp : public P2PSocket {
                                       int32_t transport_sequence_number,
                                       int64_t send_time_ms,
                                       int result);
-  [[nodiscard]] bool DoSend(const P2PPendingPacket& packet);
+  [[nodiscard]] bool DoSend(P2PPendingPacket packet);
+
+  // Calls `DatagramServerSocket::SendTo()` with `packet`. Retries after a
+  // transient error.  Starts `send_retry_timer_` after `ERR_NO_BUFFER_SPACE` to
+  // re-run `DoSendToSocket()` after the timer interval.
+  [[nodiscard]] bool DoSendToSocket(const P2PPendingPacket& packet,
+                                    int64_t send_time_ms);
 
   void OnSend(uint64_t packet_id,
               int32_t transport_sequence_number,
               int64_t send_time_ms,
               int result);
+
+  // Drains `send_queue_` by sending each packet until stalled by an async send
+  // operation or a socket error.
+  void SendQueuedPackets();
+
+  // Returns true for `ERR_NO_BUFFER_SPACE` result codes when the
+  // `kP2PSocketSendRetry` feature is enabled and `send_retry_count_` is less
+  // than `kMaxSendRetries`.
+  bool IsRetryableSendError(int socket_result_code) const;
+
+  // Increments `send_retry_count_` and starts `send_retry_timer_` to retry
+  // sending a packet through `OnRetrySendToSocket()`.
+  void StartSendRetryTimer(P2PPendingPacket packet, int64_t send_time_ms);
+  void OnRetrySendToSocket(const P2PPendingPacket& packet,
+                           int64_t send_time_ms);
 
   void MaybeUpdateTos(net::DiffServCodePoint dscp, net::EcnCodePoint ecn);
   net::NetLog* net_log() const { return net_log_with_source_.net_log(); }
@@ -141,7 +173,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) P2PSocketUdp : public P2PSocket {
   scoped_refptr<net::IOBuffer> recv_buffer_;
   net::IPEndPoint recv_address_;
 
-  // Data of `pending_recieved_packets_` are raw pointers to buffers in
+  // Data of `pending_received_packets_` are raw pointers to buffers in
   // `pending_receive_buffers_`.
   std::vector<mojom::P2PReceivedPacketPtr> pending_received_packets_;
   std::vector<scoped_refptr<net::IOBuffer>> pending_received_buffers_;
@@ -168,6 +200,18 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) P2PSocketUdp : public P2PSocket {
 
   // Container for batching send completions.
   std::vector<::network::P2PSendPacketMetrics> send_completions_;
+
+  // Timer set when sending a packet should be retried after
+  // `ERR_NO_BUFFER_SPACE`.
+  base::OneShotTimer send_retry_timer_;
+
+  // The timestamp for the first retry.  Used to measure the total delay
+  // introduced by all retry attempts.
+  base::Time send_retry_start_time_;
+
+  // The number of consecutive retries for a packet.  Retries stop after
+  // `kMaxSendRetries`.
+  int send_retry_count_ = 0;
 };
 
 }  // namespace network
