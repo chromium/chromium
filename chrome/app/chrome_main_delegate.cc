@@ -982,16 +982,8 @@ void ChromeMainDelegate::CommonEarlyInitialization() {
     hang_watcher_process_type = base::HangWatcher::ProcessType::kUnknownProcess;
   }
 
-  const bool emit_crashes =
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
-    BUILDFLAG(IS_WIN)
-      IsCanaryDev();
-#else
-      false;
-#endif
-
   base::HangWatcher::InitializeOnMainThread(hang_watcher_process_type,
-                                            emit_crashes);
+                                            IsCanaryDev());
 
   base::features::Init();
 }
