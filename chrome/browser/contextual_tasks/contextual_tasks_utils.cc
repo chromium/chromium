@@ -4,7 +4,11 @@
 
 #include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
 
+#include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "build/build_config.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks.mojom.h"
+#include "components/contextual_search/contextual_search_metrics_recorder.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 
@@ -13,6 +17,22 @@
 #endif
 
 namespace contextual_tasks {
+
+void ShowAndRecordErrorPage(mojo::Remote<contextual_tasks::mojom::Page>& page,
+                            contextual_search::ContextualSearchSource source) {
+  if (page) {
+    page->ShowErrorPage();
+  }
+  RecordErrorPageShown(source);
+}
+
+void RecordErrorPageShown(contextual_search::ContextualSearchSource source) {
+  base::UmaHistogramEnumeration(
+      base::StrCat({"ContextualSearch.ErrorPageShown", ".",
+                    contextual_search::ContextualSearchMetricsRecorder::
+                        ContextualSearchSourceToString(source)}),
+      contextual_search::ContextualSearchErrorPage::kPageContextNotEligible);
+}
 
 ContextualTasksUIInterface* GetWebUiInterface(
     content::WebContents* web_contents) {

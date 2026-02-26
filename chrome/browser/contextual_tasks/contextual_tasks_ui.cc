@@ -27,6 +27,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
 #include "chrome/browser/contextual_tasks/entry_point_eligibility_manager.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -881,14 +882,8 @@ void ContextualTasksUI::OnPageContextEligibilityChecked(
   if (is_page_context_eligible) {
     page_->HideErrorPage();
   } else {
-    page_->ShowErrorPage();
-    base::UmaHistogramEnumeration(
-        base::StrCat({"ContextualSearch.ErrorPageShown", ".",
-                      contextual_search::ContextualSearchMetricsRecorder::
-                          ContextualSearchSourceToString(
-                              contextual_search::ContextualSearchSource::
-                                  kContextualTasks)}),
-        contextual_search::ContextualSearchErrorPage::kPageContextNotEligible);
+    contextual_tasks::ShowAndRecordErrorPage(
+        page_, contextual_search::ContextualSearchSource::kContextualTasks);
   }
 }
 

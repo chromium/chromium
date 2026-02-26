@@ -12,6 +12,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/contextual_tasks/ai_mode_context_library_converter.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
 #include "chrome/browser/feedback/public/feedback_source.h"
 #include "chrome/browser/feedback/show_feedback_page.h"
 #include "chrome/browser/global_features.h"
@@ -23,6 +24,7 @@
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/application_locale_storage/application_locale_storage.h"
+#include "components/contextual_search/contextual_search_metrics_recorder.h"
 #include "components/contextual_tasks/public/context_decoration_params.h"
 #include "components/contextual_tasks/public/contextual_task.h"
 #include "components/contextual_tasks/public/contextual_task_context.h"
@@ -221,6 +223,12 @@ void ContextualTasksPageHandler::IsZeroState(const GURL& url,
 void ContextualTasksPageHandler::IsAiPage(const GURL& url,
                                           IsAiPageCallback callback) {
   std::move(callback).Run(ui_service_->IsAiUrl(url));
+}
+
+void ContextualTasksPageHandler::IsPendingErrorPage(
+    const base::Uuid& task_id,
+    IsPendingErrorPageCallback callback) {
+  std::move(callback).Run(ui_service_->IsPendingErrorPage(task_id));
 }
 
 void ContextualTasksPageHandler::CloseSidePanel() {
