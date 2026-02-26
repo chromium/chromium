@@ -79,7 +79,10 @@ void RemoveObsoleteKioskCryptohomes() {
 }
 
 // Starts kiosk app launch and shows the splash screen.
-void StartKioskSession(KioskAppId app, bool is_auto_launch = false) {
+// `local_state` must be non-null and must outlive LoginDisplayHostWebUI.
+void StartKioskSession(PrefService* local_state,
+                       KioskAppId app,
+                       bool is_auto_launch = false) {
   // Kiosk app launcher starts with login state.
   CHECK_DEREF(session_manager::SessionManager::Get())
       .SetSessionState(session_manager::SessionState::LOGIN_PRIMARY);
@@ -89,7 +92,7 @@ void StartKioskSession(KioskAppId app, bool is_auto_launch = false) {
       ->SetInputMethodLoginDefault(/*is_in_oobe_context=*/false);
 
   // Manages its own lifetime. See ShutdownDisplayHost().
-  auto* display_host = new LoginDisplayHostWebUI();
+  auto* display_host = new LoginDisplayHostWebUI(local_state);
   display_host->StartKiosk(app, is_auto_launch);
 
   // Login screen is skipped but 'login-prompt-visible' signal is still needed.
@@ -97,11 +100,12 @@ void StartKioskSession(KioskAppId app, bool is_auto_launch = false) {
   SessionManagerClient::Get()->EmitLoginPromptVisible();
 }
 
-void StartAutoLaunchKioskSession() {
+// `local_state` must be non-null and must outlive LoginDisplayHostWebUI.
+void StartAutoLaunchKioskSession(PrefService* local_state) {
   auto app = KioskController::Get().GetAutoLaunchApp();
   CHECK(app.has_value());
 
-  StartKioskSession(app.value().id(), /*is_auto_launch=*/true);
+  StartKioskSession(local_state, app.value().id(), /*is_auto_launch=*/true);
 }
 
 // Starts the login/oobe screen.
@@ -454,7 +458,7 @@ void ChromeSessionManager::Initialize(
 
   if (ShouldAutoLaunchKioskApp(parsed_command_line, local_state_.get())) {
     VLOG(1) << "Starting Chrome with kiosk auto launch.";
-    StartAutoLaunchKioskSession();
+    StartAutoLaunchKioskSession(&local_state_.get());
   } else if (parsed_command_line.HasSwitch(switches::kLoginManager)) {
     oobe_configuration_->CheckConfiguration();
     if (is_running_test && !force_login_screen_in_test) {

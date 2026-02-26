@@ -9,6 +9,7 @@
 #include "base/memory/singleton.h"
 #include "base/observer_list.h"
 #include "chrome/browser/ash/login/screens/user_selection_screen.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/ash/login/login_display_host_mojo.h"
 #include "chrome/browser/ui/ash/login/user_adding_screen_input_methods_controller.h"
@@ -47,9 +48,12 @@ class UserAddingScreenImpl : public UserAddingScreen {
 };
 
 void UserAddingScreenImpl::Start() {
+  // TODO(crbug.com/403154552): Avoid g_browser_process.
+  PrefService* local_state = g_browser_process->local_state();
+
   CHECK(!IsRunning());
   display_host_ =
-      new LoginDisplayHostMojo(DisplayedScreen::USER_ADDING_SCREEN,
+      new LoginDisplayHostMojo(local_state, DisplayedScreen::USER_ADDING_SCREEN,
                                /*update_geolocation_usage_allowed=*/false);
 
   // This triggers input method manager to filter login screen methods. This

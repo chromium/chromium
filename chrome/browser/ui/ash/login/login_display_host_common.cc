@@ -109,7 +109,8 @@ void PushFrontImIfNotExists(const std::string& input_method_id,
   }
 }
 
-void SetGaiaInputMethods(const AccountId& account_id) {
+void SetGaiaInputMethods(const PrefService& local_state,
+                         const AccountId& account_id) {
   input_method::InputMethodManager* imm =
       input_method::InputMethodManager::Get();
 
@@ -134,8 +135,7 @@ void SetGaiaInputMethods(const AccountId& account_id) {
         lock_screen_utils::GetUserLastInputMethodId(
             user_manager::UserManager::Get()->GetOwnerAccountId());
     const std::string system_input_method_id =
-        g_browser_process->local_state()->GetString(
-            language_prefs::kPreferredKeyboardLayout);
+        local_state.GetString(language_prefs::kPreferredKeyboardLayout);
 
     PushFrontImIfNotExists(owner_input_method_id, &input_method_ids);
     PushFrontImIfNotExists(system_input_method_id, &input_method_ids);
@@ -226,8 +226,10 @@ CreateSecondDeviceAuthBroker() {
 }  // namespace
 
 LoginDisplayHostCommon::LoginDisplayHostCommon(
+    PrefService* local_state,
     bool update_geolocation_usage_allowed)
-    : keep_alive_(KeepAliveOrigin::LOGIN_DISPLAY_HOST_WEBUI,
+    : local_state_(CHECK_DEREF(local_state)),
+      keep_alive_(KeepAliveOrigin::LOGIN_DISPLAY_HOST_WEBUI,
                   KeepAliveRestartOption::DISABLED),
       login_ui_pref_controller_(std::make_unique<LoginUIPrefController>(
           update_geolocation_usage_allowed)),
@@ -246,10 +248,8 @@ LoginDisplayHostCommon::LoginDisplayHostCommon(
           base::BindRepeating(
               []() { return g_browser_process->metrics_service(); }))) {
   if (features::IsOobeCrosEventsEnabled()) {
-    // TODO(crbug.com/404133029): Avoid using g_browser_process.
-    const PrefService* local_state = g_browser_process->local_state();
     oobe_cros_events_metrics_ = std::make_unique<OobeCrosEventsMetrics>(
-        local_state, oobe_metrics_helper_.get());
+        &local_state_.get(), oobe_metrics_helper_.get());
   }
 
   browser_controller_observation_.Observe(BrowserController::GetInstance());
@@ -539,7 +539,7 @@ void LoginDisplayHostCommon::OnPowerwashAllowedCallback(
   }
   if (tpm_firmware_update_mode.has_value()) {
     // Force the TPM firmware update option to be enabled.
-    g_browser_process->local_state()->SetInteger(
+    local_state_->SetInteger(
         ::prefs::kFactoryResetTPMFirmwareUpdateMode,
         static_cast<int>(tpm_firmware_update_mode.value()));
   }
@@ -548,7 +548,7 @@ void LoginDisplayHostCommon::OnPowerwashAllowedCallback(
 
 void LoginDisplayHostCommon::StartUserOnboarding() {
   oobe_metrics_helper_->RecordOnboardingStart(
-      g_browser_process->local_state()->GetTime(prefs::kOobeStartTime));
+      local_state_->GetTime(prefs::kOobeStartTime));
   StartWizard(LocaleSwitchView::kScreenId);
 }
 
@@ -746,7 +746,7 @@ void LoginDisplayHostCommon::ShowGaiaDialogCommon(
   if (GetExistingUserController()->IsSigninInProgress()) {
     return;
   }
-  SetGaiaInputMethods(prefilled_account);
+  SetGaiaInputMethods(local_state_.get(), prefilled_account);
 
   if (!prefilled_account.is_valid()) {
     StartWizard(UserCreationView::kScreenId);
@@ -774,11 +774,9 @@ LoginDisplayHostCommon::GetQuickStartBootstrapController() {
             profile);
     CHECK(service);
 
-    // TODO(crbug.com/404133029): Avoid using g_browser_process.
-    PrefService* local_state = g_browser_process->local_state();
     bootstrap_controller_ =
         std::make_unique<ash::quick_start::TargetDeviceBootstrapController>(
-            local_state, CreateSecondDeviceAuthBroker(),
+            &local_state_.get(), CreateSecondDeviceAuthBroker(),
             std::make_unique<AccessibilityManagerWrapper>(), service);
   }
   return bootstrap_controller_->GetAsWeakPtrForClient();

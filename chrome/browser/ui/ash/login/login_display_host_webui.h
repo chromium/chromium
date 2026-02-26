@@ -35,6 +35,8 @@
 #include "ui/views/widget/widget_observer.h"
 #include "ui/views/widget/widget_removals_observer.h"
 
+class PrefService;
+
 namespace ash {
 class FocusRingController;
 class WebUILoginView;
@@ -58,7 +60,8 @@ class LoginDisplayHostWebUI : public LoginDisplayHostCommon,
                               public views::WidgetObserver,
                               public OobeUI::Observer {
  public:
-  LoginDisplayHostWebUI();
+  // `local_state` must be non-null and must outlive `this`.
+  explicit LoginDisplayHostWebUI(PrefService* local_state);
 
   LoginDisplayHostWebUI(const LoginDisplayHostWebUI&) = delete;
   LoginDisplayHostWebUI& operator=(const LoginDisplayHostWebUI&) = delete;
