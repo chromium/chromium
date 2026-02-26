@@ -570,9 +570,14 @@ public abstract class EditorViewBase extends AlwaysDismissedDialog
                 }
             case NOTICE:
                 {
+                    // Inflate the notice with the parent ViewGroup, but do not attach it. This is
+                    // done so that android:layout_margin* parameters take effect.
                     View noticeLayout =
                             LayoutInflater.from(getStyledContext())
-                                    .inflate(R.layout.autofill_editor_dialog_notice, null);
+                                    .inflate(
+                                            R.layout.autofill_editor_dialog_notice,
+                                            parent,
+                                            /* attachToRoot= */ false);
                     TextView textView = noticeLayout.findViewById(R.id.notice);
                     PropertyModelChangeProcessor.create(
                             editorItem.model,
