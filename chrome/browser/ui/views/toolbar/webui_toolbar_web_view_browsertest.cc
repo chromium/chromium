@@ -958,9 +958,10 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewSplitTabsBrowserTest,
 
   // Wait for the button to know it is in split state.
   ASSERT_TRUE(base::test::RunUntil([&]() {
-    return content::EvalJs(web_view->GetWebContents(),
-                           base::StrCat({GetButtonAppJS(kSplitTabsSelector),
-                                         ".state.isCurrentTabSplit"}))
+    return content::EvalJs(
+               web_view->GetWebContents(),
+               base::StrCat({GetButtonAppJS(kSplitTabsSelector),
+                             "?.state?.isCurrentTabSplit === true"}))
         .ExtractBool();
   }));
 
@@ -1113,11 +1114,12 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewSplitTabsBrowserTest,
 
   // Verify icon is 'split-scene-right' (kEnd) because new tab is active and on
   // the right.
-  EXPECT_EQ("split-tabs-button:split-scene-right",
-            content::EvalJs(web_view->GetWebContents(),
-                            base::StrCat({GetButtonIconJS(kSplitTabsSelector),
-                                          "?.getAttribute('iron-icon')"}))
-                .ExtractString());
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return content::EvalJs(web_view->GetWebContents(),
+                           base::StrCat({GetButtonIconJS(kSplitTabsSelector),
+                                         "?.getAttribute('iron-icon') || ''"}))
+               .ExtractString() == "split-tabs-button:split-scene-right";
+  }));
 
   // Activate the other tab (Left/Start).
   int other_index = tab_strip_model->active_index() == 0 ? 1 : 0;
@@ -1127,7 +1129,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewSplitTabsBrowserTest,
   EXPECT_TRUE(base::test::RunUntil([&]() {
     return content::EvalJs(web_view->GetWebContents(),
                            base::StrCat({GetButtonIconJS(kSplitTabsSelector),
-                                         "?.getAttribute('iron-icon')"}))
+                                         "?.getAttribute('iron-icon') || ''"}))
                .ExtractString() == "split-tabs-button:split-scene-left";
   }));
 }
