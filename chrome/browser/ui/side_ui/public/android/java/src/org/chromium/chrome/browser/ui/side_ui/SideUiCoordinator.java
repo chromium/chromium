@@ -45,31 +45,37 @@ public interface SideUiCoordinator {
 
     /**
      * POD-type that holds the info about the Side UI specs to be used by a {@link SideUiObserver}.
-     * More specifically, this holds the startX (in px) where start-anchored UI ends and the endX
-     * (in px) where end-anchored UI starts.
+     * Specifically, this holds the widths (in px) for the two parent ViewGroups (one for
+     * start-anchored UI and one for end-anchored UI) that hold a {@link SideUiContainer}'s View,
+     * based on the SideUiContainer's specified {@link AnchorSide}.
      */
     final class SideUiSpecs {
         /** A {@link SideUiSpecs} with a startX and endX of 0. */
-        static final SideUiSpecs EMPTY_SIDE_UI_SPECS =
+        public static final SideUiSpecs EMPTY_SIDE_UI_SPECS =
                 new SideUiSpecs(/* startX= */ 0, /* endX= */ 0);
 
-        final @Px int mStartX;
-        final @Px int mEndX;
+        public final @Px int mStartContainerWidth;
+        public final @Px int mEndContainerWidth;
 
         public SideUiSpecs(@Px int startX, @Px int endX) {
-            mStartX = startX;
-            mEndX = endX;
+            mStartContainerWidth = startX;
+            mEndContainerWidth = endX;
         }
 
         @Override
         public boolean equals(@Nullable Object obj) {
             if (!(obj instanceof SideUiSpecs that)) return false;
-            return (this.mStartX == that.mStartX) && (this.mEndX == that.mEndX);
+            return (this.mStartContainerWidth == that.mStartContainerWidth)
+                    && (this.mEndContainerWidth == that.mEndContainerWidth);
         }
 
         @Override
         public String toString() {
-            return String.format(Locale.ENGLISH, "[StartX: %d, EndX: %d]", mStartX, mEndX);
+            return String.format(
+                    Locale.ENGLISH,
+                    "[StartContainerWidth: %d, EndContainerWidth: %d]",
+                    mStartContainerWidth,
+                    mEndContainerWidth);
         }
     }
 
