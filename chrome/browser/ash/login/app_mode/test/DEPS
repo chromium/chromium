@@ -5,6 +5,10 @@ include_rules = [
 ]
 
 specific_include_rules = {
+  ".*browsertest\\.cc": [
+    "+chrome/browser/browser_process.h",
+    "+chrome/browser/browser_process_platform_part.h",
+  ],
   "web_kiosk_media_ui_browsertest\\.cc": [
     "+chrome/browser/ui/global_media_controls",
   ],

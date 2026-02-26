@@ -22,9 +22,6 @@ include_rules = [
   "+chrome/browser/ash/policy/remote_commands",
   "+chrome/browser/ash/policy/test_support",
   "+chrome/browser/ash/settings",
-  "+chrome/browser/browser_process.h",
-  "+chrome/browser/browser_process_platform_part.h",
-  "+chrome/browser/browser_process_platform_part_ash.h",
   "+chrome/browser/extensions/browsertest_util.h",
   "+chrome/browser/extensions/extension_service.h",
   "+chrome/browser/extensions/extension_service_test_base.h",
@@ -42,3 +39,9 @@ include_rules = [
   "+chrome/common/pref_names.h",
   "+chrome/test/base",
 ]
+
+specific_include_rules = {
+  "kiosk_launch_controller_unittest\\.cc": [
+    "+chrome/browser/browser_process_platform_part.h",
+  ]
+}

@@ -324,12 +324,14 @@ class KioskLaunchController::ScopedAcceleratorDisabler {
 
 KioskLaunchController::KioskLaunchController(
     PrefService* local_state,
+    const policy::PolicyService* policy_service,
     LoginDisplayHost* host,
     AppLaunchedCallback app_launched_callback,
     AppLaunchSplashScreen* splash_screen,
     LaunchCompleteCallback done_callback)
     : KioskLaunchController(
           local_state,
+          policy_service,
           host,
           splash_screen,
           /*profile_loader=*/base::BindOnce(&LoadProfile),
@@ -349,6 +351,7 @@ KioskLaunchController::KioskLaunchController(
 
 KioskLaunchController::KioskLaunchController(
     PrefService* local_state,
+    const policy::PolicyService* policy_service,
     LoginDisplayHost* host,
     AppLaunchSplashScreen* splash_screen,
     LoadProfileCallback profile_loader,
@@ -360,6 +363,7 @@ KioskLaunchController::KioskLaunchController(
     std::unique_ptr<NetworkUiController::NetworkMonitor> network_monitor,
     std::unique_ptr<AcceleratorController> accelerator_controller)
     : local_state_(CHECK_DEREF(local_state)),
+      policy_service_(CHECK_DEREF(policy_service)),
       host_(host),
       splash_screen_(splash_screen),
       app_launcher_factory_(std::move(app_launcher_factory)),
@@ -593,7 +597,7 @@ void KioskLaunchController::OnAppPrepared() {
   UpdateSplashScreenData(GetSplashScreenAppData());
 
   force_install_observer_ = std::make_unique<app_mode::ForceInstallObserver>(
-      profile_,
+      policy_service_.get(), profile_,
       base::BindOnce(&KioskLaunchController::FinishForcedExtensionsInstall,
                      weak_ptr_factory_.GetWeakPtr()));
 }

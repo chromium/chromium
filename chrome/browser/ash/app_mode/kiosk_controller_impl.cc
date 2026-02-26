@@ -126,19 +126,21 @@ KioskApp EmptyKioskApp(const KioskAppId& app_id) {
 }  // namespace
 
 KioskControllerImpl::KioskControllerImpl(
-    PrefService& local_state,
+    PrefService* local_state,
+    const policy::PolicyService* policy_service,
     scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
     user_manager::UserManager* user_manager)
-    : local_state_(local_state),
-      cryptohome_remover_(&local_state),
-      iwa_manager_(local_state, &cryptohome_remover_),
-      web_app_manager_(&local_state,
+    : local_state_(CHECK_DEREF(local_state)),
+      policy_service_(CHECK_DEREF(policy_service)),
+      cryptohome_remover_(local_state),
+      iwa_manager_(CHECK_DEREF(local_state), &cryptohome_remover_),
+      web_app_manager_(local_state,
                        shared_url_loader_factory,
                        &cryptohome_remover_),
-      chrome_app_manager_(&local_state,
+      chrome_app_manager_(local_state,
                           shared_url_loader_factory,
                           &cryptohome_remover_),
-      arcvm_app_manager_(&local_state, &cryptohome_remover_) {
+      arcvm_app_manager_(local_state, &cryptohome_remover_) {
   user_manager_observation_.Observe(user_manager);
 }
 
@@ -240,7 +242,7 @@ void KioskControllerImpl::StartSession(const KioskAppId& app_id,
       std::make_unique<chromeos::KioskAppLevelLogsManagerWrapper>(app_id);
 
   launch_controller_ = std::make_unique<KioskLaunchController>(
-      &local_state_.get(), host,
+      &local_state_.get(), &policy_service_.get(), host,
       /*app_launched_callback=*/
       base::BindOnce(&KioskControllerImpl::OnAppLaunched,
                      base::Unretained(this)),

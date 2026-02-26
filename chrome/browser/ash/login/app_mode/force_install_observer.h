@@ -15,6 +15,10 @@
 
 class Profile;
 
+namespace policy {
+class PolicyService;
+}  // namespace policy
+
 namespace app_mode {
 
 // Class that observes the installation of forced extensions for kiosks.
@@ -24,7 +28,9 @@ class ForceInstallObserver
   enum class Result { kSuccess, kTimeout, kInvalidPolicy };
   using ResultCallback = base::OnceCallback<void(Result)>;
 
-  ForceInstallObserver(Profile* profile, ResultCallback callback);
+  ForceInstallObserver(const policy::PolicyService& policy_service,
+                       Profile* profile,
+                       ResultCallback callback);
   ~ForceInstallObserver() override;
 
  private:

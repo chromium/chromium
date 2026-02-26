@@ -36,6 +36,10 @@ namespace app_mode {
 class ForceInstallObserver;
 }  // namespace app_mode
 
+namespace policy {
+class PolicyService;
+}  // namespace policy
+
 namespace ash {
 
 class KioskProfileLoadFailedObserver;
@@ -118,16 +122,20 @@ class KioskLaunchController : public KioskAppLauncher::Observer,
   using LaunchCompleteCallback =
       base::OnceCallback<void(KioskAppLaunchError::Error error)>;
 
-  // `local_state` must be non-null, and must outlive `this`.
+  // `local_state` and `policy_service` must be non-null, and must outlive
+  // `this`.
   KioskLaunchController(PrefService* local_state,
+                        const policy::PolicyService* policy_service,
                         LoginDisplayHost* host,
                         AppLaunchedCallback app_launched_callback,
                         AppLaunchSplashScreen* splash_screen,
                         LaunchCompleteCallback done_callback);
 
-  // `local_state` must be non-null, and must outlive `this`.
+  // `local_state` and `policy_service` must be non-null, and must outlive
+  // `this`.
   KioskLaunchController(
       PrefService* local_state,
+      const policy::PolicyService* policy_service,
       LoginDisplayHost* host,
       AppLaunchSplashScreen* splash_screen,
       kiosk::LoadProfileCallback profile_loader,
@@ -239,6 +247,7 @@ class KioskLaunchController : public KioskAppLauncher::Observer,
   const KioskAppId& kiosk_app_id() const;
 
   const raw_ref<PrefService> local_state_;
+  const raw_ref<const policy::PolicyService> policy_service_;
 
   bool auto_launch_ = false;  // Whether current app is being auto-launched.
 

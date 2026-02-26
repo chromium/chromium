@@ -13,15 +13,13 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/syslog_logging.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/forced_extensions/force_installed_tracker.h"
 #include "chrome/browser/extensions/policy_handlers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/policy/core/browser/policy_error_map.h"
 #include "components/policy/core/common/policy_namespace.h"
+#include "components/policy/core/common/policy_service.h"
 #include "components/policy/policy_constants.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/forced_extensions/install_stage_tracker.h"
@@ -42,14 +40,10 @@ extensions::ForceInstalledTracker* GetForceInstalledTracker(Profile* profile) {
   return service ? service->force_installed_tracker() : nullptr;
 }
 
-bool IsExtensionInstallForcelistPolicyValid() {
-  policy::PolicyService* policy_service = g_browser_process->platform_part()
-                                              ->browser_policy_connector_ash()
-                                              ->GetPolicyService();
-  DCHECK(policy_service);
-
+bool IsExtensionInstallForcelistPolicyValid(
+    const policy::PolicyService& policy_service) {
   const policy::PolicyMap& map =
-      policy_service->GetPolicies(policy::PolicyNamespace(
+      policy_service.GetPolicies(policy::PolicyNamespace(
           policy::PolicyDomain::POLICY_DOMAIN_CHROME, std::string()));
 
   extensions::ExtensionInstallForceListPolicyHandler handler;
@@ -66,10 +60,12 @@ void RecordKioskExtensionInstallTimedOut(bool timeout) {
 
 namespace app_mode {
 
-ForceInstallObserver::ForceInstallObserver(Profile* profile,
-                                           ResultCallback callback)
+ForceInstallObserver::ForceInstallObserver(
+    const policy::PolicyService& policy_service,
+    Profile* profile,
+    ResultCallback callback)
     : callback_(std::move(callback)) {
-  if (!IsExtensionInstallForcelistPolicyValid()) {
+  if (!IsExtensionInstallForcelistPolicyValid(policy_service)) {
     SYSLOG(WARNING) << "The ExtensionInstallForcelist policy value is invalid.";
     ReportInvalidPolicy();
     return;
