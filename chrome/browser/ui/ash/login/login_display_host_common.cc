@@ -774,9 +774,11 @@ LoginDisplayHostCommon::GetQuickStartBootstrapController() {
             profile);
     CHECK(service);
 
+    // TODO(crbug.com/404133029): Avoid using g_browser_process.
+    PrefService* local_state = g_browser_process->local_state();
     bootstrap_controller_ =
         std::make_unique<ash::quick_start::TargetDeviceBootstrapController>(
-            CreateSecondDeviceAuthBroker(),
+            local_state, CreateSecondDeviceAuthBroker(),
             std::make_unique<AccessibilityManagerWrapper>(), service);
   }
   return bootstrap_controller_->GetAsWeakPtrForClient();

@@ -140,6 +140,7 @@ class TargetDeviceBootstrapControllerTest : public testing::Test {
         std::make_unique<FakeQuickStartConnectivityService>();
 
     bootstrap_controller_ = std::make_unique<TargetDeviceBootstrapController>(
+        TestingBrowserProcess::GetGlobal()->local_state(),
         std::move(auth_broker), std::move(fake_accessibility_manager),
         fake_quick_start_connectivity_service_.get());
 
