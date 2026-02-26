@@ -1462,15 +1462,7 @@ scoped_refptr<Image> VideoFrame::GetSourceImageForCanvas(
                                                   orientation_enum);
   }
 
-  auto* execution_context =
-      ExecutionContext::From(v8::Isolate::GetCurrent()->GetCurrentContext());
-  auto& provider_cache = CanvasSnapshotProviderCache::From(*execution_context);
-
-  auto* snapshot_provider =
-      provider_cache.CreateProvider(*local_handle->frame());
-
-  auto image =
-      CreateImageFromVideoFrame(local_handle->frame(), snapshot_provider);
+  auto image = CreateImageFromVideoFrame(local_handle->frame());
   if (!image) {
     *status = kInvalidSourceImageStatus;
     return nullptr;
@@ -1532,6 +1524,17 @@ ImageBitmapSourceStatus VideoFrame::CheckUsability() const {
   return base::ok();
 }
 
+scoped_refptr<StaticBitmapImage> VideoFrame::CreateImageFromVideoFrame(
+    scoped_refptr<media::VideoFrame> frame) {
+  auto* execution_context =
+      ExecutionContext::From(v8::Isolate::GetCurrent()->GetCurrentContext());
+  auto& provider_cache = CanvasSnapshotProviderCache::From(*execution_context);
+
+  auto* snapshot_provider = provider_cache.CreateProvider(*frame);
+
+  return ::blink::CreateImageFromVideoFrame(frame, snapshot_provider);
+}
+
 ScriptPromise<ImageBitmap> VideoFrame::CreateImageBitmap(
     ScriptState* script_state,
     std::optional<gfx::Rect> crop_rect,
@@ -1559,15 +1562,7 @@ ScriptPromise<ImageBitmap> VideoFrame::CreateImageBitmap(
                                                  options, exception_state);
   }
 
-  auto* execution_context =
-      ExecutionContext::From(v8::Isolate::GetCurrent()->GetCurrentContext());
-  auto& provider_cache = CanvasSnapshotProviderCache::From(*execution_context);
-
-  auto* snapshot_provider =
-      provider_cache.CreateProvider(*local_handle->frame());
-
-  auto image =
-      CreateImageFromVideoFrame(local_handle->frame(), snapshot_provider);
+  auto image = CreateImageFromVideoFrame(local_handle->frame());
   if (!image) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,

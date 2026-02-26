@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/modules/webcodecs/video_frame_handle.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/graphics/predefined_color_space.h"
+#include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/skia/include/core/SkImage.h"
@@ -128,6 +129,9 @@ class MODULES_EXPORT VideoFrame final : public ScriptWrappable,
   void Trace(Visitor*) const override;
 
  private:
+  scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
+      scoped_refptr<media::VideoFrame> frame);
+
   // CanvasImageSource implementation
   scoped_refptr<Image> GetSourceImageForCanvas(SourceImageStatus*,
                                                const gfx::SizeF&) override;
