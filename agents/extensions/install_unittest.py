@@ -220,6 +220,42 @@ class InstallTest(fake_filesystem_unittest.TestCase):
         self.mock_run_command.assert_called_once_with(
             ['gemini', 'extensions', 'uninstall', 'sample-1'])
 
+    def test_enable_extension(self):
+        """Tests enable command."""
+        with unittest.mock.patch('sys.argv',
+                                 ['install.py', 'enable', 'sample_1']):
+            install.main()
+        self.mock_run_command.assert_called_once_with([
+            'gemini', 'extensions', 'enable', 'sample_1', '--scope=Workspace'
+        ])
+
+    def test_enable_extension_user_scope(self):
+        """Tests enable command with user scope."""
+        with unittest.mock.patch(
+                'sys.argv',
+            ['install.py', 'enable', '--scope=User', 'sample_1']):
+            install.main()
+        self.mock_run_command.assert_called_once_with(
+            ['gemini', 'extensions', 'enable', 'sample_1', '--scope=User'])
+
+    def test_disable_extension(self):
+        """Tests disable command."""
+        with unittest.mock.patch('sys.argv',
+                                 ['install.py', 'disable', 'sample_1']):
+            install.main()
+        self.mock_run_command.assert_called_once_with([
+            'gemini', 'extensions', 'disable', 'sample_1', '--scope=Workspace'
+        ])
+
+    def test_disable_extension_user_scope(self):
+        """Tests disable command with user scope."""
+        with unittest.mock.patch(
+                'sys.argv',
+            ['install.py', 'disable', '--scope=User', 'sample_1']):
+            install.main()
+        self.mock_run_command.assert_called_once_with(
+            ['gemini', 'extensions', 'disable', 'sample_1', '--scope=User'])
+
     @unittest.mock.patch('pathlib.Path.home')
     def test_remove_legacy_extension(self, mock_home):
         """Tests remove command for legacy extensions with underscores."""

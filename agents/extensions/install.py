@@ -349,8 +349,9 @@ def process_extensions(command: str,
                        project_root: Path | None = None,
                        extra_extensions_dirs: list[Path] | None = None,
                        copy: bool = False,
-                       skip_prompt: bool = False) -> None:
-    """Processes extension actions (add, update, remove)."""
+                       skip_prompt: bool = False,
+                       scope: str = 'Workspace') -> None:
+    """Processes extension actions (add, update, remove, enable, disable)."""
     if not project_root:
         project_root = get_project_root()
 
@@ -385,6 +386,16 @@ def process_extensions(command: str,
             else:
                 _run_command(
                     [gemini_cmd, 'extensions', 'uninstall', extension])
+        elif command == 'enable':
+            _run_command([
+                gemini_cmd, 'extensions', 'enable', extension,
+                f'--scope={scope}'
+            ])
+        elif command == 'disable':
+            _run_command([
+                gemini_cmd, 'extensions', 'disable', extension,
+                f'--scope={scope}'
+            ])
 
 
 def main() -> None:
@@ -448,6 +459,34 @@ def main() -> None:
             nargs='+',
             help='A list of extension directory names to remove.')
 
+        enable_parser = subparsers.add_parser('enable',
+                                              help='Enable extensions.')
+        enable_parser.add_argument(
+            '--scope',
+            choices=['User', 'Workspace'],
+            default='Workspace',
+            help='The scope for enabling the extension.',
+        )
+        enable_parser.add_argument(
+            'extensions',
+            nargs='+',
+            help='A list of extension names to enable.',
+        )
+
+        disable_parser = subparsers.add_parser('disable',
+                                               help='Disable extensions.')
+        disable_parser.add_argument(
+            '--scope',
+            choices=['User', 'Workspace'],
+            default='Workspace',
+            help='The scope for disabling the extension.',
+        )
+        disable_parser.add_argument(
+            'extensions',
+            nargs='+',
+            help='A list of extension names to disable.',
+        )
+
         subparsers.add_parser(
             'list', help='List all available and installed extensions.')
         subparsers.add_parser(
@@ -474,7 +513,8 @@ def main() -> None:
                            project_root=project_root,
                            extra_extensions_dirs=args.extra_extensions_dir,
                            copy=getattr(args, 'copy', False),
-                           skip_prompt=getattr(args, 'skip_prompt', False))
+                           skip_prompt=getattr(args, 'skip_prompt', False),
+                           scope=getattr(args, 'scope', 'Workspace'))
     except Error as e:
         print(f'Error: {e}', file=sys.stderr)
         sys.exit(1)
