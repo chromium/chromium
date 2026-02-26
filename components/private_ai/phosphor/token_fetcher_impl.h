@@ -80,6 +80,7 @@ class TokenFetcherImpl : public TokenFetcher {
   };
 
   void OnRequestOAuthTokenCompletedForGetAuthnTokens(
+      base::TimeTicks start_time,
       int batch_size,
       quiche::ProxyLayer proxy_layer,
       GetAuthnTokensCallback callback,

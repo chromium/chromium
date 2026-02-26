@@ -14,6 +14,7 @@
 #include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/rand_util.h"
 #include "base/sequence_checker.h"
@@ -70,6 +71,7 @@ void TokenFetcherImpl::GetAuthnTokens(int batch_size,
                                       quiche::ProxyLayer proxy_layer,
                                       GetAuthnTokensCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  base::TimeTicks start_time = base::TimeTicks::Now();
   if (batch_size <= 0) {
     LOG(ERROR) << "GetAuthnTokens called with non-positive batch_size.";
     GetAuthnTokensComplete(std::nullopt, std::move(callback),
@@ -87,19 +89,24 @@ void TokenFetcherImpl::GetAuthnTokens(int batch_size,
 
   auto request_token_callback = base::BindOnce(
       &TokenFetcherImpl::OnRequestOAuthTokenCompletedForGetAuthnTokens,
-      weak_ptr_factory_.GetWeakPtr(), batch_size, proxy_layer,
+      weak_ptr_factory_.GetWeakPtr(), start_time, batch_size, proxy_layer,
       std::move(callback));
 
   oauth_token_provider_->RequestOAuthToken(std::move(request_token_callback));
 }
 
 void TokenFetcherImpl::OnRequestOAuthTokenCompletedForGetAuthnTokens(
+    base::TimeTicks start_time,
     int batch_size,
     quiche::ProxyLayer proxy_layer,
     GetAuthnTokensCallback callback,
     GetAuthnTokensResult result,
     std::optional<std::string> access_token) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  base::UmaHistogramMediumTimes(
+      "PrivateAi.Phosphor.TokenFetcher.OAuthTokenFetchLatency",
+      base::TimeTicks::Now() - start_time);
+
   // If we fail to get an OAuth token don't attempt to fetch from Phosphor as
   // the request is guaranteed to fail.
   if (!access_token) {
@@ -126,6 +133,7 @@ void TokenFetcherImpl::OnFetchBlindSignedTokenCompleted(
     base::expected<std::vector<quiche::BlindSignToken>, absl::Status> tokens) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   using enum GetAuthnTokensResult;
+
   if (!tokens.has_value()) {
     // Apply the canonical mapping from abseil status to HTTP status.
     GetAuthnTokensResult result;
@@ -167,6 +175,9 @@ void TokenFetcherImpl::GetAuthnTokensComplete(
     GetAuthnTokensCallback callback,
     GetAuthnTokensResult result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  base::UmaHistogramEnumeration(
+      "PrivateAi.Phosphor.TokenFetcher.GetAuthnTokens.Result", result);
 
   std::optional<base::TimeDelta> backoff = CalculateBackoff(result);
   if (bsa_tokens.has_value()) {

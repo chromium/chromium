@@ -139,6 +139,82 @@ reviewer.
   </token>
 </histogram>
 
+<histogram name="PrivateAi.Phosphor.ConfigHttp.RequestLatency" units="ms"
+    expires_after="2026-12-01">
+  <owner>nikhiljakhar@google.com</owner>
+  <owner>arabm@google.com</owner>
+  <owner>dullweber@chromium.org</owner>
+  <owner>lamzin@google.com</owner>
+  <owner>saeideid@google.com</owner>
+  <summary>
+    Records the latency of HTTP requests made by the client to the Phosphor
+    server.
+  </summary>
+</histogram>
+
+<histogram name="PrivateAi.Phosphor.ConfigHttp.ResponseCode"
+    enum="HttpResponseCode" expires_after="2026-12-01">
+  <owner>nikhiljakhar@google.com</owner>
+  <owner>arabm@google.com</owner>
+  <owner>dullweber@chromium.org</owner>
+  <owner>lamzin@google.com</owner>
+  <owner>saeideid@google.com</owner>
+  <summary>
+    Records the HTTP response code received from Phosphor server. 0 indicates a
+    network error or no response.
+  </summary>
+</histogram>
+
+<histogram name="PrivateAi.Phosphor.FeatureTokenManager.ServedFromCache"
+    enum="Boolean" expires_after="2026-12-01">
+  <owner>nikhiljakhar@google.com</owner>
+  <owner>arabm@google.com</owner>
+  <owner>dullweber@chromium.org</owner>
+  <owner>lamzin@google.com</owner>
+  <owner>saeideid@google.com</owner>
+  <summary>
+    Records whether a requested auth token was served from the local cache
+    (true) or required a fetch (false).
+  </summary>
+</histogram>
+
+<histogram name="PrivateAi.Phosphor.FeatureTokenManager.TokensFetched"
+    units="count" expires_after="2026-12-01">
+  <owner>nikhiljakhar@google.com</owner>
+  <owner>arabm@google.com</owner>
+  <owner>dullweber@chromium.org</owner>
+  <owner>lamzin@google.com</owner>
+  <owner>saeideid@google.com</owner>
+  <summary>
+    Records the number of tokens successfully fetched in a batch by
+    FeatureTokenManager.
+  </summary>
+</histogram>
+
+<histogram name="PrivateAi.Phosphor.TokenFetcher.GetAuthnTokens.Result"
+    enum="PrivateAiPhosphorGetAuthnTokensResult" expires_after="2026-12-01">
+  <owner>nikhiljakhar@google.com</owner>
+  <owner>arabm@google.com</owner>
+  <owner>dullweber@chromium.org</owner>
+  <owner>lamzin@google.com</owner>
+  <owner>saeideid@google.com</owner>
+  <summary>
+    Records the result of the GetAuthnTokens operation in TokenFetcher.
+  </summary>
+</histogram>
+
+<histogram name="PrivateAi.Phosphor.TokenFetcher.OAuthTokenFetchLatency"
+    units="ms" expires_after="2026-12-01">
+  <owner>nikhiljakhar@google.com</owner>
+  <owner>arabm@google.com</owner>
+  <owner>dullweber@chromium.org</owner>
+  <owner>lamzin@google.com</owner>
+  <owner>saeideid@google.com</owner>
+  <summary>
+    Records the latency of fetching the OAuth token required for BSA.
+  </summary>
+</histogram>
+
 <histogram name="PrivateAi.SecureChannel.GetAttestationRequestLatency.{Status}"
     units="ms" expires_after="2026-11-25">
   <owner>nikhiljakhar@google.com</owner>

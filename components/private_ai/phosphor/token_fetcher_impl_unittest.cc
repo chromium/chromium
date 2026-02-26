@@ -12,6 +12,7 @@
 
 #include "base/base64.h"
 #include "base/strings/strcat.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -160,6 +161,7 @@ class TokenFetcherImplTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
   base::test::ScopedFeatureList feature_list_;
+  base::HistogramTester histogram_tester_;
   GetAuthnTokensFuture tokens_future_;
 
   base::test::TracingEnvironment tracing_environment_;
@@ -204,6 +206,12 @@ TEST_F(TokenFetcherImplTest, Success) {
       CreateMockBlindSignedAuthTokenForTesting("single-use-2", expiration_time_)
           .value());
   ExpectGetAuthnTokensResult(std::move(expected));
+
+  histogram_tester_.ExpectUniqueSample(
+      "PrivateAi.Phosphor.TokenFetcher.GetAuthnTokens.Result",
+      GetAuthnTokensResult::kSuccess, 1);
+  histogram_tester_.ExpectTotalCount(
+      "PrivateAi.Phosphor.TokenFetcher.OAuthTokenFetchLatency", 1);
 }
 
 // GetAuthnTokens() is called with a non-positive batch size.
@@ -211,10 +219,16 @@ TEST_F(TokenFetcherImplTest, NonPositiveBatchSize) {
   GetAuthnTokens(0);
   EXPECT_FALSE(bsa_->get_tokens_called());
   ExpectGetAuthnTokensResultFailed(default_bug_backoff_);
+  histogram_tester_.ExpectUniqueSample(
+      "PrivateAi.Phosphor.TokenFetcher.GetAuthnTokens.Result",
+      GetAuthnTokensResult::kFailedBSA400, 1);
 
   GetAuthnTokens(-1);
   EXPECT_FALSE(bsa_->get_tokens_called());
   ExpectGetAuthnTokensResultFailed(default_bug_backoff_ * 2);
+  histogram_tester_.ExpectUniqueSample(
+      "PrivateAi.Phosphor.TokenFetcher.GetAuthnTokens.Result",
+      GetAuthnTokensResult::kFailedBSA400, 2);
 }
 
 // BSA returns no tokens.
@@ -226,6 +240,10 @@ TEST_F(TokenFetcherImplTest, NoTokens) {
   EXPECT_EQ(bsa_->proxy_layer(), quiche::ProxyLayer::kTerminalLayer);
   EXPECT_EQ(bsa_->oauth_token(), "access_token");
   ExpectGetAuthnTokensResultFailed(default_transient_backoff_);
+
+  histogram_tester_.ExpectUniqueSample(
+      "PrivateAi.Phosphor.TokenFetcher.GetAuthnTokens.Result",
+      GetAuthnTokensResult::kFailedBSAOther, 1);
 }
 
 // BSA returns malformed tokens.
@@ -315,6 +333,10 @@ TEST_F(TokenFetcherImplTest, BlindSignedTokenError400) {
   EXPECT_EQ(bsa_->proxy_layer(), quiche::ProxyLayer::kTerminalLayer);
   EXPECT_EQ(bsa_->oauth_token(), "access_token");
   ExpectGetAuthnTokensResultFailed(default_bug_backoff_);
+
+  histogram_tester_.ExpectUniqueSample(
+      "PrivateAi.Phosphor.TokenFetcher.GetAuthnTokens.Result",
+      GetAuthnTokensResult::kFailedBSA400, 1);
 }
 
 // BSA returns a 401 error.
@@ -365,6 +387,12 @@ TEST_F(TokenFetcherImplTest, AuthTokenTransientError) {
 
   EXPECT_FALSE(bsa_->get_tokens_called());
   ExpectGetAuthnTokensResultFailed(default_transient_backoff_);
+
+  histogram_tester_.ExpectUniqueSample(
+      "PrivateAi.Phosphor.TokenFetcher.GetAuthnTokens.Result",
+      GetAuthnTokensResult::kFailedOAuthTokenTransient, 1);
+  histogram_tester_.ExpectTotalCount(
+      "PrivateAi.Phosphor.TokenFetcher.OAuthTokenFetchLatency", 1);
 }
 
 // Fetching OAuth token returns a persistent error.

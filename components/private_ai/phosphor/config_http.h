@@ -44,6 +44,7 @@ class ConfigHttp : public quiche::BlindSignMessageInterface {
   network::SharedURLLoaderFactory* GetOrCreateURLLoaderFactory();
 
   void OnDoRequestCompleted(
+      base::TimeTicks start_time,
       std::unique_ptr<network::SimpleURLLoader> url_loader,
       quiche::BlindSignMessageCallback callback,
       std::optional<std::string> response);

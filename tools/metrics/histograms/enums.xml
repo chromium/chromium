@@ -23954,6 +23954,23 @@ Called by update_net_error_codes.py.-->
 
 <!-- LINT.ThenChange(//components/private_ai/proto/private_ai.proto:FeatureName) -->
 
+<!-- LINT.IfChange(PrivateAiPhosphorGetAuthnTokensResult) -->
+
+<enum name="PrivateAiPhosphorGetAuthnTokensResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Failed: No Account"/>
+  <int value="2" label="Failed: Not Eligible"/>
+  <int value="3" label="Failed: OAuth Token (Deprecated)"/>
+  <int value="4" label="Failed: BSA 400"/>
+  <int value="5" label="Failed: BSA 401"/>
+  <int value="6" label="Failed: BSA 403"/>
+  <int value="7" label="Failed: BSA Other"/>
+  <int value="8" label="Failed: OAuth Token Transient"/>
+  <int value="9" label="Failed: OAuth Token Persistent"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/private_ai/phosphor/data_types.h:GetAuthnTokensResult) -->
+
 <enum name="ProbeResult">
   <int value="0" label="No internet"/>
   <int value="1" label="Server error"/>

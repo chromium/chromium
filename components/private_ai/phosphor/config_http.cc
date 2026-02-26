@@ -12,6 +12,7 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -154,19 +155,24 @@ void ConfigHttp::DoRequest(quiche::BlindSignMessageRequestType request_type,
   url_loader_ptr->DownloadToString(
       GetOrCreateURLLoaderFactory(),
       base::BindOnce(&ConfigHttp::OnDoRequestCompleted,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(url_loader),
-                     std::move(callback)),
+                     weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now(),
+                     std::move(url_loader), std::move(callback)),
       kPrivateAiRequestMaxBodySize);
 }
 
 void ConfigHttp::OnDoRequestCompleted(
+    base::TimeTicks start_time,
     std::unique_ptr<network::SimpleURLLoader> url_loader,
     quiche::BlindSignMessageCallback callback,
     std::optional<std::string> response) {
+  base::UmaHistogramMediumTimes("PrivateAi.Phosphor.ConfigHttp.RequestLatency",
+                                base::TimeTicks::Now() - start_time);
   int response_code = 0;
   if (url_loader->ResponseInfo() && url_loader->ResponseInfo()->headers) {
     response_code = url_loader->ResponseInfo()->headers->response_code();
   }
+  base::UmaHistogramSparse("PrivateAi.Phosphor.ConfigHttp.ResponseCode",
+                           response_code);
 
   // A response code of 0 can be returned if no HTTP response is received, for
   // example in the case of a network error. This is also used by unit tests

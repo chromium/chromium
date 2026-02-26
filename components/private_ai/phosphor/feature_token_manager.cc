@@ -16,6 +16,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -50,6 +51,9 @@ void FeatureTokenManager::GetAuthToken(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   RemoveExpiredTokens();
 
+  base::UmaHistogramBoolean(
+      "PrivateAi.Phosphor.FeatureTokenManager.ServedFromCache",
+      !cache_.empty());
   if (!cache_.empty()) {
     std::optional<BlindSignedAuthToken> result;
     result.emplace(std::move(cache_.front()));
@@ -80,6 +84,8 @@ void FeatureTokenManager::OnGotAuthTokens(
 
   if (!result.has_value()) {
     VLOG(2) << "Legion ATC::OnGotAuthTokens back off until " << result.error();
+    base::UmaHistogramCounts100(
+        "PrivateAi.Phosphor.FeatureTokenManager.TokensFetched", 0);
     try_get_auth_tokens_after_ = result.error();
     FailPendingCallbacks();
     ScheduleMaybeRefillCache();
@@ -87,6 +93,8 @@ void FeatureTokenManager::OnGotAuthTokens(
   }
 
   VLOG(2) << "Legion ATC::OnGotAuthTokens got " << result->size() << " tokens";
+  base::UmaHistogramCounts100(
+      "PrivateAi.Phosphor.FeatureTokenManager.TokensFetched", result->size());
   try_get_auth_tokens_after_.reset();
 
   RemoveExpiredTokens();
@@ -94,7 +102,6 @@ void FeatureTokenManager::OnGotAuthTokens(
   if (result->empty()) {
     VLOG(1) << "Legion ATC::OnGotAuthTokens got an empty list of tokens. "
                "Treating as a transient error.";
-    // TODO(b:457425177): Record a UMA metric for this case.
     try_get_auth_tokens_after_ =
         base::Time::Now() + kPrivateAiTryGetAuthTokensTransientBackoff.Get();
     FailPendingCallbacks();

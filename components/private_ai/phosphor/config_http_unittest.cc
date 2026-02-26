@@ -11,6 +11,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -42,6 +43,7 @@ class ConfigHttpTest : public testing::Test {
   }
 
   base::test::TaskEnvironment task_environment_;
+  base::HistogramTester histogram_tester_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   std::unique_ptr<ConfigHttp> http_fetcher_;
 };
@@ -72,6 +74,8 @@ TEST_F(ConfigHttpTest, DoRequestSendsCorrectRequestInitialData) {
 
         std::string response_str = "Response body";
         auto head = network::mojom::URLResponseHead::New();
+        head->headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
+        head->headers->ReplaceStatusLine("HTTP/1.1 200 OK");
         test_url_loader_factory_.AddResponse(
             request.url, std::move(head), response_str,
             network::URLLoaderCompletionStatus(net::OK));
@@ -99,6 +103,11 @@ TEST_F(ConfigHttpTest, DoRequestSendsCorrectRequestInitialData) {
 
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ("Response body", result->body());
+
+  histogram_tester_.ExpectTotalCount(
+      "PrivateAi.Phosphor.ConfigHttp.RequestLatency", 1);
+  histogram_tester_.ExpectUniqueSample(
+      "PrivateAi.Phosphor.ConfigHttp.ResponseCode", 200, 1);
 }
 
 TEST_F(ConfigHttpTest, DoRequestFailsToConnectReturnsFailureStatus) {
@@ -139,6 +148,11 @@ TEST_F(ConfigHttpTest, DoRequestFailsToConnectReturnsFailureStatus) {
   EXPECT_EQ("Failed Request to Authentication Server",
             result.error().message());
   EXPECT_EQ(absl::StatusCode::kInternal, result.error().code());
+
+  histogram_tester_.ExpectTotalCount(
+      "PrivateAi.Phosphor.ConfigHttp.RequestLatency", 1);
+  histogram_tester_.ExpectUniqueSample(
+      "PrivateAi.Phosphor.ConfigHttp.ResponseCode", 0, 1);
 }
 
 TEST_F(ConfigHttpTest, DoRequestInvalidFinchParametersFailsGracefully) {
@@ -218,6 +232,11 @@ TEST_F(ConfigHttpTest, DoRequestHttpFailureStatus) {
   EXPECT_EQ(quiche::BlindSignMessageResponse::HttpCodeToStatusCode(
                 net::HTTP_BAD_REQUEST),
             result.value().status_code());
+
+  histogram_tester_.ExpectTotalCount(
+      "PrivateAi.Phosphor.ConfigHttp.RequestLatency", 1);
+  histogram_tester_.ExpectUniqueSample(
+      "PrivateAi.Phosphor.ConfigHttp.ResponseCode", 400, 1);
 }
 
 TEST_F(ConfigHttpTest, DoRequestRetriesOnNetworkChangeThenSucceeds) {

@@ -18,6 +18,7 @@ namespace private_ai::phosphor {
 //
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// LINT.IfChange(GetAuthnTokensResult)
 enum class GetAuthnTokensResult {
   // The request was successful and resulted in new tokens.
   kSuccess = 0,
@@ -45,6 +46,7 @@ enum class GetAuthnTokensResult {
 
   kMaxValue = kFailedOAuthTokenPersistent,
 };
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:PrivateAiPhosphorGetAuthnTokensResult)
 
 // A blind-signed auth token for Legion proxies.
 struct BlindSignedAuthToken {
