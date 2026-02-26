@@ -12,7 +12,7 @@ namespace viz {
 enum class InputOnVizStateProcessingResult {
   kProcessedSuccessfully = 0,
   kCouldNotFindViewForFrameSinkId = 1,
-  kFrameSinkIdCorrespondsToChildView = 2,
+  // Obsolete: kFrameSinkIdCorrespondsToChildView = 2,
   kFrameSinkIdNotAttachedToRootCFS = 3,
   kDroppedOutOfOrderDownTime = 4,
   kDroppedTooManyPendingStates = 5,

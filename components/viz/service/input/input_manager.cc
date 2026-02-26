@@ -531,15 +531,7 @@ void InputManager::StateOnTouchTransfer(
 
   RenderInputRouterSupportBase* support_base = iter->second.rir_support.get();
   CHECK(support_base);
-  // TODO(crbug.com/404741207): Convert this to CHECK once the underlying
-  // reason for crash is fixed.
-  if (support_base->IsRenderInputRouterSupportChildFrame()) {
-    EmitStateProcessingResultHistogram(
-        InputOnVizStateProcessingResult::kFrameSinkIdCorrespondsToChildView);
-    android_state_transfer_handler_.StateOnTouchTransfer(
-        std::move(state), /* rir_support= */ nullptr);
-    return;
-  }
+  CHECK(!support_base->IsRenderInputRouterSupportChildFrame());
 
   auto* support_android = static_cast<RenderInputRouterSupportAndroid*>(
       iter->second.rir_support.get());
