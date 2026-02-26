@@ -37,40 +37,6 @@ REQUIRED_BUILD_DIRS = [
     'linux-chromeos-rel',
 ]
 
-# Tools allowed for all tasks:
-ALLOWED_TOOLS = [
-    # Basic:
-    "read_file",
-    "replace",
-    "write_file",
-    "run_shell_command(fdfind)",
-    "run_shell_command(rg)",
-
-    # Build/Test
-    "run_shell_command(autoninja)",
-    "run_shell_command(tools/autotest.py)",
-    "run_shell_command(./tools/autotest.py)",
-
-    # Investigate:
-    "remote_code_search",
-    "run_debugging_agent"
-    "run_shell_command(cat)",
-    "run_shell_command(git diff)",
-    "run_shell_command(git log)",
-    "run_shell_command(git show)",
-    "run_shell_command(head)",
-    "run_shell_command(ls)",
-    "run_shell_command(tail)",
-
-    # Cleanup:
-    "run_shell_command(git cl format)",
-
-    # Reporting:
-    "run_shell_command(touch gemini_out/commit_message.md)",
-    "run_shell_command(touch gemini_out/summary.json)",
-    "run_shell_command(mkdir -p gemini_out)",
-]
-
 def ensure_gn_build_dir():
     """Ensure that the required GN build directories exist."""
     for build_dir in REQUIRED_BUILD_DIRS:
@@ -180,7 +146,9 @@ def run_gemini(file):
     cmd.extend(['--output-format', 'stream-json'])
 
     cmd.extend(['--approval-mode', 'auto_edit'])
-    cmd.extend(['--allowed-tools', ','.join(ALLOWED_TOOLS)])
+
+    policy_file = os.path.join(SCRIPT_DIR, 'policy.toml')
+    cmd.extend(['--policy', policy_file])
 
     exit_code = 0
     TIMEOUT_SECONDS = 2700  # 45 minutes
