@@ -17,11 +17,11 @@ class MockBackend : public Backend {
 
   MOCK_METHOD((base::expected<std::optional<EntryMetadata>, TransactionError>),
               Find,
-              (std::string_view, BufferProvider buffer_provider),
+              (base::span<const uint8_t>, BufferProvider buffer_provider),
               (override));
   MOCK_METHOD((base::expected<void, TransactionError>),
               Insert,
-              (std::string_view key,
+              (base::span<const uint8_t> key,
                base::span<const uint8_t> content,
                EntryMetadata metadata),
               (override));

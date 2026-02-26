@@ -281,7 +281,7 @@ GpuPersistentCache::CacheLoadResult GpuPersistentCache::DiskCache::Load(
       result;
   {
     TRACE_EVENT0("gpu", "GpuPersistentCache::DiskCache::Cache::Find");
-    result = cache_->Find(key, buffer_provider);
+    result = cache_->Find(base::as_byte_span(key), buffer_provider);
   }
 
   // Notify other threads
@@ -345,7 +345,7 @@ void GpuPersistentCache::DiskCache::DoStoreToDisk(
   base::expected<void, persistent_cache::TransactionError> result;
   {
     TRACE_EVENT0("gpu", "GpuPersistentCache::DiskCache::Cache::Insert");
-    result = cache_->Insert(entry->Key(), entry->Data());
+    result = cache_->Insert(base::as_byte_span(entry->Key()), entry->Data());
   }
 
   // Unblock other threads.

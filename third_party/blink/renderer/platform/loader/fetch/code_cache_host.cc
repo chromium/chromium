@@ -9,6 +9,7 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -254,8 +255,9 @@ class CodeCacheWithPersistentCacheHostImpl
             };
 
             // Query the PersistentCache.
+            const std::string cache_key = UrlToCodeCacheKey(GURL(url));
             if (auto metadata_or_error = cache_->Find(
-                    UrlToCodeCacheKey(GURL(url)), std::move(buffer_provider));
+                    base::as_byte_span(cache_key), std::move(buffer_provider));
                 !metadata_or_error.has_value()) {
               switch (metadata_or_error.error()) {
                 case persistent_cache::TransactionError::kTransient:

@@ -9,14 +9,12 @@
 
 #include <memory>
 #include <optional>
-#include <string_view>
-#include <utility>
 
 #include "base/component_export.h"
 #include "base/containers/span.h"
-#include "base/files/file.h"
 #include "base/rand_util.h"
 #include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/types/expected.h"
 #include "components/persistent_cache/buffer_provider.h"
@@ -42,14 +40,15 @@ enum class TransactionError;
 //    }
 //
 //    // Add a key-value pair.
-//    persistent_cache->Insert("foo", base::byte_span_from_cstring("1"));
+//    base::span<const uint8_t> key = base::byte_span_from_cstring("key");
+//    persistent_cache->Insert(key, base::byte_span_from_cstring("1"));
 //
 //    // Retrieve a value.
 //    {
 //      base::HeapArray<uint8_t> content;
 //      ASSIGN_OR_RETURN(
 //          auto metadata,
-//          persistent_cache->Find("foo", [&content](size_t size) {
+//          persistent_cache->Find(key, [&content](size_t size) {
 //              content = base::HeapArray<uint8_t>::Uninit(size);
 //              return base::span(content);
 //          }),
@@ -63,7 +62,7 @@ enum class TransactionError;
 //    }
 //
 //    // Inserting again overwrites anything in there if present.
-//    persistent_cache->Insert("foo", base::byte_span_from_cstring("2"));
+//    persistent_cache->Insert(key, base::byte_span_from_cstring("2"));
 //
 //
 // Error Handling and Recovery:
@@ -117,7 +116,7 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) PersistentCache {
   //
   // Thread-safe.
   base::expected<std::optional<EntryMetadata>, TransactionError> Find(
-      std::string_view key,
+      base::span<const uint8_t> key,
       BufferProvider buffer_provider);
 
   // Used to add an entry containing `content` and associated with `key`.
@@ -129,7 +128,7 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) PersistentCache {
   //
   // Thread-safe.
   base::expected<void, TransactionError> Insert(
-      std::string_view key,
+      base::span<const uint8_t> key,
       base::span<const uint8_t> content,
       EntryMetadata metadata = EntryMetadata{});
 
@@ -151,7 +150,6 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) PersistentCache {
   const Client client_;
   std::unique_ptr<Backend> backend_;
 
-  static constexpr double kTimingLoggingProbability = 0.01;
   base::MetricsSubSampler metrics_subsampler_
       GUARDED_BY(metrics_subsampler_lock_);
   base::Lock metrics_subsampler_lock_;

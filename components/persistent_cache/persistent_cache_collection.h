@@ -84,12 +84,12 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) PersistentCacheCollection {
   // `BaseNameFromCacheId()` below for gory details.
   base::expected<std::optional<EntryMetadata>, TransactionError> Find(
       const std::string& cache_id,
-      std::string_view key,
+      base::span<const uint8_t> key,
       BufferProvider buffer_provider);
 
   base::expected<void, TransactionError> Insert(
       const std::string& cache_id,
-      std::string_view key,
+      base::span<const uint8_t> key,
       base::span<const uint8_t> content,
       EntryMetadata metadata = EntryMetadata{});
 

@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include <optional>
-#include <string_view>
 
 #include "base/component_export.h"
 #include "base/containers/span.h"
@@ -38,13 +37,13 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) Backend {
   //
   // Thread-safe.
   virtual base::expected<std::optional<EntryMetadata>, TransactionError> Find(
-      std::string_view key,
+      base::span<const uint8_t> key,
       BufferProvider buffer_provider) = 0;
 
   // See `PersistentCache::Insert()`.
   // Thread-safe.
   virtual base::expected<void, TransactionError> Insert(
-      std::string_view key,
+      base::span<const uint8_t> key,
       base::span<const uint8_t> content,
       EntryMetadata metadata) = 0;
 

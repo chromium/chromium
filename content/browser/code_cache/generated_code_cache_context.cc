@@ -6,6 +6,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -237,13 +238,13 @@ void GeneratedCodeCacheContext::InsertIntoPersistentCacheCollection(
   //
   // TODO(crbug.com/377475540): Make an explicit copy here once PersistentCache
   // handles taking ownership of the memory passed in.
-  RETURN_IF_ERROR(
-      persistent_cache_collection_->Insert(context_key, url, content, metadata),
-      [](persistent_cache::TransactionError error) {
-        // TODO(crbug.com/374930286): Handle or at least address
-        // permanent errors.
-        return;
-      });
+  RETURN_IF_ERROR(persistent_cache_collection_->Insert(
+                      context_key, base::as_byte_span(url), content, metadata),
+                  [](persistent_cache::TransactionError error) {
+                    // TODO(crbug.com/374930286): Handle or at least address
+                    // permanent errors.
+                    return;
+                  });
 }
 
 std::optional<GeneratedCodeCacheContext::MetadataAndContent>
@@ -265,17 +266,18 @@ GeneratedCodeCacheContext::FindInPersistentCacheCollection(
     return base::span(content_buffer);
   };
 
-  ASSIGN_OR_RETURN(std::optional<persistent_cache::EntryMetadata> metadata,
-                   persistent_cache_collection_->Find(
-                       context_key, url, std::move(buffer_provider)),
-                   // An adapter that is invoked on error. Its return value
-                   // percolates up out of this function.
-                   [](persistent_cache::TransactionError error)
-                       -> std::optional<MetadataAndContent> {
-                     // TODO(crbug.com/374930286): Handle or at least address
-                     // permanent errors.
-                     return std::nullopt;
-                   });
+  ASSIGN_OR_RETURN(
+      std::optional<persistent_cache::EntryMetadata> metadata,
+      persistent_cache_collection_->Find(context_key, base::as_byte_span(url),
+                                         std::move(buffer_provider)),
+      // An adapter that is invoked on error. Its return value
+      // percolates up out of this function.
+      [](persistent_cache::TransactionError error)
+          -> std::optional<MetadataAndContent> {
+        // TODO(crbug.com/374930286): Handle or at least address
+        // permanent errors.
+        return std::nullopt;
+      });
 
   if (!metadata.has_value()) {
     return std::nullopt;  // Cache miss.

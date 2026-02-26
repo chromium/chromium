@@ -9,6 +9,7 @@
 #include <array>
 #include <optional>
 
+#include "base/containers/span.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/test/gmock_expected_support.h"
@@ -122,7 +123,7 @@ TEST_F(SQLiteBackendImplTest,
       PersistentCache::Bind(Client::kTest, std::move(pending_backend));
   ASSERT_NE(cache, nullptr);
 
-  static constexpr char kKey[] = "key";
+  const base::span<const uint8_t> kKey = base::byte_span_from_cstring("key");
   EXPECT_OK(cache->Insert(kKey, base::byte_span_from_cstring("1")));
   EXPECT_THAT(cache->Find(kKey, [](size_t) { return base::span<uint8_t>(); }),
               ValueIs(Ne(std::nullopt)));

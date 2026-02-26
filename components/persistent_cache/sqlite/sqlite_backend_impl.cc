@@ -161,7 +161,7 @@ bool SqliteBackendImpl::Initialize() {
 
   // IMPORTANT: Revise the DROP TABLE statement above if more than the one
   // "entries" table is created here.
-  if (!db_->Execute("CREATE TABLE entries(key TEXT PRIMARY KEY "
+  if (!db_->Execute("CREATE TABLE entries(key BLOB PRIMARY KEY "
                     "UNIQUE NOT NULL, content BLOB NOT NULL,"
                     " input_signature INTEGER, write_timestamp INTEGER)")) {
     return false;
@@ -177,9 +177,10 @@ bool SqliteBackendImpl::Initialize() {
 }
 
 base::expected<std::optional<EntryMetadata>, TransactionError>
-SqliteBackendImpl::Find(std::string_view key, BufferProvider buffer_provider) {
+SqliteBackendImpl::Find(base::span<const uint8_t> key,
+                        BufferProvider buffer_provider) {
   base::AutoLock lock(lock_, base::subtle::LockTracking::kEnabled);
-  CHECK_GT(key.length(), 0ull);
+  CHECK_GT(key.size(), 0ull);
   TRACE_EVENT("persistent_cache", "Find");
 
   ASSIGN_OR_RETURN(auto metadata, FindImpl(key, buffer_provider),
@@ -190,12 +191,12 @@ SqliteBackendImpl::Find(std::string_view key, BufferProvider buffer_provider) {
 }
 
 base::expected<void, TransactionError> SqliteBackendImpl::Insert(
-    std::string_view key,
+    base::span<const uint8_t> key,
     base::span<const uint8_t> content,
     EntryMetadata metadata) {
   base::AutoLock lock(lock_, base::subtle::LockTracking::kEnabled);
 
-  CHECK_GT(key.length(), 0ull);
+  CHECK_GT(key.size(), 0ull);
   TRACE_EVENT("persistent_cache", "Insert");
 
   CHECK_EQ(metadata.write_timestamp, 0)
@@ -222,7 +223,7 @@ base::expected<void, int> SqliteBackendImpl::ExecuteStatementForTesting(
 }
 
 base::expected<std::optional<EntryMetadata>, int> SqliteBackendImpl::FindImpl(
-    std::string_view key,
+    base::span<const uint8_t> key,
     BufferProvider buffer_provider) {
   // Begin an explicit read transaction under which multiple statements will be
   // used to read from the database if the database may have multiple
@@ -244,7 +245,7 @@ base::expected<std::optional<EntryMetadata>, int> SqliteBackendImpl::FindImpl(
     return base::unexpected(db_->GetErrorCode());
   }
 
-  stm.BindString(0, key);
+  stm.BindBlob(0, key);
 
   if (!stm.Step()) {
     if (stm.Succeeded()) {
@@ -279,7 +280,7 @@ base::expected<std::optional<EntryMetadata>, int> SqliteBackendImpl::FindImpl(
 }
 
 base::expected<void, int> SqliteBackendImpl::InsertImpl(
-    std::string_view key,
+    base::span<const uint8_t> key,
     base::span<const uint8_t> content,
     EntryMetadata metadata) {
   // Use a transaction for insertions if the database may have multiple
@@ -299,7 +300,7 @@ base::expected<void, int> SqliteBackendImpl::InsertImpl(
           "write_timestamp) "
           "VALUES (?, ?, ?, strftime(\'%s\', \'now\'))"));
       stm.is_valid()) {
-    stm.BindString(0, key);
+    stm.BindBlob(0, key);
     stm.BindBlobForStreaming(1, content.size());
     stm.BindInt64(2, metadata.input_signature);
     if (!stm.Run()) {

@@ -32,7 +32,7 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) SqliteBackendImpl : public Backend {
   // This value is to be incremented when the database schema used by this class
   // evolves in a non-backwards compatible way. When this number changes all
   // existing databases will be cleared on the first call to `Bind()`.
-  static constexpr int kCurrentUserVersion = 1;
+  static constexpr int kCurrentUserVersion = 2;
 
   static std::unique_ptr<Backend> Bind(PendingBackend pending_backend,
                                        Client client);
@@ -47,9 +47,9 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) SqliteBackendImpl : public Backend {
 
   // `Backend`:
   [[nodiscard]] base::expected<std::optional<EntryMetadata>, TransactionError>
-  Find(std::string_view key, BufferProvider buffer_provider) override;
+  Find(base::span<const uint8_t> key, BufferProvider buffer_provider) override;
   base::expected<void, TransactionError> Insert(
-      std::string_view key,
+      base::span<const uint8_t> key,
       base::span<const uint8_t> content,
       EntryMetadata metadata) override;
   BackendType GetType() const override;
@@ -72,12 +72,12 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) SqliteBackendImpl : public Backend {
 
   // Returns a SQLite error code in case of failure.
   base::expected<std::optional<EntryMetadata>, int> FindImpl(
-      std::string_view key,
+      base::span<const uint8_t> key,
       BufferProvider buffer_provider) EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   // Inserts `content` and `metadata` into storage under `key`. Returns a SQLite
   // extended result code in case of error.
-  base::expected<void, int> InsertImpl(std::string_view key,
+  base::expected<void, int> InsertImpl(base::span<const uint8_t> key,
                                        base::span<const uint8_t> content,
                                        EntryMetadata metadata)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);

@@ -229,10 +229,10 @@ TEST_P(PersistentCachePerftest, Insert) {
 
   int success_count = 0;
   RunAndTimeTest("Insert", kIterationCount, [&] {
-    success_count =
-        std::ranges::count_if(keys, [&cache = *cache, &value](const auto& key) {
-          return cache.Insert(key, value.as_span()).has_value();
-        });
+    success_count = std::ranges::count_if(keys, [&cache = *cache,
+                                                 &value](const auto& key) {
+      return cache.Insert(base::as_byte_span(key), value.as_span()).has_value();
+    });
   });
   ASSERT_EQ(success_count, kIterationCount);
 }
@@ -248,7 +248,7 @@ TEST_P(PersistentCachePerftest, Find) {
 
   // Fill the cache.
   for (const auto& key : keys) {
-    ASSERT_OK(cache->Insert(key, value, {}));
+    ASSERT_OK(cache->Insert(base::as_byte_span(key), value, {}));
   }
 
   // Switch the cache back to using a rollback journal and close it. This will
@@ -265,12 +265,13 @@ TEST_P(PersistentCachePerftest, Find) {
 
   int success_count = 0;
   RunAndTimeTest("Find", kIterationCount, [&] {
-    success_count = std::ranges::count_if(keys, [&cache =
-                                                     *cache](const auto& key) {
-      return cache
-          .Find(key, [](size_t content_size) { return base::span<uint8_t>(); })
-          .has_value();
-    });
+    success_count =
+        std::ranges::count_if(keys, [&cache = *cache](const auto& key) {
+          return cache
+              .Find(base::as_byte_span(key),
+                    [](size_t content_size) { return base::span<uint8_t>(); })
+              .has_value();
+        });
   });
   ASSERT_EQ(success_count, kIterationCount);
 }

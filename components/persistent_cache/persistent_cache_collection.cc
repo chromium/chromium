@@ -56,7 +56,7 @@ PersistentCacheCollection::~PersistentCacheCollection() = default;
 
 base::expected<std::optional<EntryMetadata>, TransactionError>
 PersistentCacheCollection::Find(const std::string& cache_id,
-                                std::string_view key,
+                                base::span<const uint8_t> key,
                                 BufferProvider buffer_provider) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -74,7 +74,7 @@ PersistentCacheCollection::Find(const std::string& cache_id,
 
 base::expected<void, TransactionError> PersistentCacheCollection::Insert(
     const std::string& cache_id,
-    std::string_view key,
+    base::span<const uint8_t> key,
     base::span<const uint8_t> content,
     EntryMetadata metadata) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

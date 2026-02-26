@@ -35,12 +35,13 @@ PersistentCache::~PersistentCache() {
 }
 
 base::expected<std::optional<EntryMetadata>, TransactionError>
-PersistentCache::Find(std::string_view key, BufferProvider buffer_provider) {
+PersistentCache::Find(base::span<const uint8_t> key,
+                      BufferProvider buffer_provider) {
   NOTREACHED();
 }
 
 base::expected<void, TransactionError> PersistentCache::Insert(
-    std::string_view key,
+    base::span<const uint8_t> key,
     base::span<const uint8_t> content,
     EntryMetadata metadata) {
   NOTREACHED();

@@ -6,13 +6,10 @@
 
 #include <memory>
 #include <optional>
-#include <string>
 #include <utility>
 
 #include "base/check.h"
-#include "base/check_op.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/notreached.h"
 #include "base/synchronization/lock.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/types/expected.h"
@@ -49,7 +46,8 @@ PersistentCache::PersistentCache(Client client,
 PersistentCache::~PersistentCache() = default;
 
 base::expected<std::optional<EntryMetadata>, TransactionError>
-PersistentCache::Find(std::string_view key, BufferProvider buffer_provider) {
+PersistentCache::Find(base::span<const uint8_t> key,
+                      BufferProvider buffer_provider) {
   std::optional<base::ElapsedTimer> timer = MaybeGetTimerForHistogram();
 
   auto entry_metadata = backend_->Find(key, buffer_provider);
@@ -64,7 +62,7 @@ PersistentCache::Find(std::string_view key, BufferProvider buffer_provider) {
 }
 
 base::expected<void, TransactionError> PersistentCache::Insert(
-    std::string_view key,
+    base::span<const uint8_t> key,
     base::span<const uint8_t> content,
     EntryMetadata metadata) {
   std::optional<base::ElapsedTimer> timer = MaybeGetTimerForHistogram();
@@ -90,6 +88,7 @@ std::optional<base::ElapsedTimer> PersistentCache::MaybeGetTimerForHistogram() {
   std::optional<base::ElapsedTimer> timer;
 
   base::AutoLock lock(metrics_subsampler_lock_);
+  static constexpr double kTimingLoggingProbability = 0.01;
   if (metrics_subsampler_.ShouldSample(kTimingLoggingProbability)) {
     timer.emplace();
   }
