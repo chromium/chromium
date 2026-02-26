@@ -19,6 +19,7 @@
 #include "ui/events/event.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/cascading_property.h"
 #include "ui/views/focus/focus_manager_delegate.h"
 #include "ui/views/focus/focus_search.h"
 #include "ui/views/focus/native_view_focus_manager.h"
@@ -90,8 +91,7 @@ bool FocusManager::OnKeyEvent(const ui::KeyEvent& event) {
       bool next = is_right;
       View::Views views;
 
-      // Default to the parent if no owner is set.
-      View* group_owner = focused_view_->parent();
+      View* group_owner = nullptr;
       // Search for the owner in the focused view's hierarchy.
       for (View* potential_owner = focused_view_->parent();
            potential_owner != nullptr;
@@ -101,6 +101,17 @@ bool FocusManager::OnKeyEvent(const ui::KeyEvent& event) {
           break;
         }
       }
+      if (!group_owner) {
+        if (View* parent_group_view =
+                GetCascadingRadioGroupView(focused_view_)) {
+          group_owner = parent_group_view;
+        }
+      }
+      // Default to the parent if no other owner is found.
+      if (!group_owner) {
+        group_owner = focused_view_->parent();
+      }
+
       group_owner->GetViewsInGroup(focused_view_->GetGroup(), &views);
       // Remove any views except current, which are disabled or hidden.
       std::erase_if(views, [this](View* v) {

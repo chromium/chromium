@@ -155,6 +155,8 @@ TEST_F(RadioButtonTest, RadioGroupHierarchy) {
       .BuildChildren();
   SetCascadingRadioGroupView(&button_container(), kCascadingRadioGroupView);
 
+  // Ensure that selecting radio buttons deselects all others.
+
   button1->SetChecked(true);
   EXPECT_TRUE(button1->GetChecked());
   EXPECT_FALSE(button2->GetChecked());
@@ -169,6 +171,32 @@ TEST_F(RadioButtonTest, RadioGroupHierarchy) {
   EXPECT_FALSE(button1->GetChecked());
   EXPECT_FALSE(button2->GetChecked());
   EXPECT_TRUE(button3->GetChecked());
+
+  // Ensure that keyboard input can change the selected option.
+  // Start by tab-keying into the radio group.
+  button1->SetChecked(true);
+  auto* focus_manager = button_container().GetFocusManager();
+  ui::KeyEvent pressed_tab(ui::EventType::kKeyPressed, ui::VKEY_TAB,
+                           ui::EF_NONE);
+  focus_manager->OnKeyEvent(pressed_tab);
+  EXPECT_EQ(button1, focus_manager->GetFocusedView());
+  EXPECT_TRUE(button1->GetChecked());
+  EXPECT_FALSE(button2->GetChecked());
+  EXPECT_FALSE(button3->GetChecked());
+
+  focus_manager->OnKeyEvent(
+      ui::KeyEvent(ui::EventType::kKeyPressed, ui::VKEY_DOWN, ui::EF_NONE));
+  EXPECT_EQ(button2, focus_manager->GetFocusedView());
+  EXPECT_FALSE(button1->GetChecked());
+  EXPECT_TRUE(button2->GetChecked());
+  EXPECT_FALSE(button3->GetChecked());
+
+  focus_manager->OnKeyEvent(
+      ui::KeyEvent(ui::EventType::kKeyPressed, ui::VKEY_UP, ui::EF_NONE));
+  EXPECT_EQ(button1, focus_manager->GetFocusedView());
+  EXPECT_TRUE(button1->GetChecked());
+  EXPECT_FALSE(button2->GetChecked());
+  EXPECT_FALSE(button3->GetChecked());
 }
 
 }  // namespace views
