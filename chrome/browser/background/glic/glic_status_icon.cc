@@ -18,6 +18,7 @@
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/glic_settings_util.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/resources/glic_resources.h"
 #include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
@@ -46,6 +47,10 @@
 #include "ui/native_theme/native_theme.h"
 #include "ui/native_theme/native_theme_observer.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_MAC)
+#include "components/omnibox/browser/vector_icons.h"  // nogncheck
+#endif                                                // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_WIN)
 #include "chrome/browser/background/glic/glic_status_icon_win.h"
@@ -353,12 +358,16 @@ gfx::ImageSkia GlicStatusIcon::GetIcon() const {
   return gfx::CreateVectorIcon(icon,
                                in_dark_mode_ ? SK_ColorWHITE : SK_ColorBLACK);
 #else
-  // On Mac and Linux, theming is handled by the system and does not require
-  // different images for light/dark mode.
+#if BUILDFLAG(IS_MAC)
+  if (base::FeatureList::IsEnabled(features::kGlicChromeStatusIcon)) {
+    return gfx::CreateVectorIcon(omnibox::kProductChromeRefreshIcon,
+                                 SK_ColorWHITE);
+  }
+#endif  // BUILDFLAG(IS_MAC)
   const auto& icon =
       glic::GlicVectorIconManager::GetVectorIcon(IDR_GLIC_STATUS_ICON);
   return gfx::CreateVectorIcon(icon, SK_ColorWHITE);
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 std::unique_ptr<StatusIconMenuModel> GlicStatusIcon::CreateStatusIconMenu() {
