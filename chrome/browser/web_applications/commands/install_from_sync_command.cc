@@ -72,7 +72,7 @@ bool ShouldInstallFallbackNoManifestFetching() {
 #if BUILDFLAG(IS_CHROMEOS)
   return false;
 #else
-  return base::FeatureList::IsEnabled(features::kWebAppUsePrimaryIcon);
+  return true;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 

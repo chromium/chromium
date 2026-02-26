@@ -824,15 +824,13 @@ void ManifestToWebAppInstallInfoJob::ParseManifestAndPopulateInfo() {
   const std::vector<blink::Manifest::ImageResource>& icons =
       GetLocalizedIconsFromManifest(*manifest_, application_locale);
   UpdateWebAppInstallInfoIconsFromManifestIfNeeded(icons, &install_info());
-  if (base::FeatureList::IsEnabled(features::kWebAppUsePrimaryIcon)) {
-    if (options_.use_manifest_icons_as_trusted) {
-      install_info().trusted_icons = install_info().manifest_icons;
-    } else {
-      std::optional<apps::IconInfo> primary_icon_metadata =
-          GetTrustedIconsFromManifest(icons);
-      if (primary_icon_metadata) {
-        install_info().trusted_icons = {*primary_icon_metadata};
-      }
+  if (options_.use_manifest_icons_as_trusted) {
+    install_info().trusted_icons = install_info().manifest_icons;
+  } else {
+    std::optional<apps::IconInfo> primary_icon_metadata =
+        GetTrustedIconsFromManifest(icons);
+    if (primary_icon_metadata) {
+      install_info().trusted_icons = {*primary_icon_metadata};
     }
   }
 
@@ -930,12 +928,10 @@ void ManifestToWebAppInstallInfoJob::OnIconsFetchedGetInstallInfo(
   if (install_info().is_generated_icon) {
     debug_data_->Set("is_generated_icon", true);
   }
-  if (base::FeatureList::IsEnabled(features::kWebAppUsePrimaryIcon)) {
-    if (options_.use_manifest_icons_as_trusted) {
-      install_info().trusted_icon_bitmaps = install_info().icon_bitmaps;
-    } else {
-      PopulateTrustedIconBitmaps(install_info(), icons_map);
-    }
+  if (options_.use_manifest_icons_as_trusted) {
+    install_info().trusted_icon_bitmaps = install_info().icon_bitmaps;
+  } else {
+    PopulateTrustedIconBitmaps(install_info(), icons_map);
   }
   PopulateOtherIcons(&install_info(), icons_map);
   RecordDownloadedIconsResultAndHttpStatusCodes(result, icons_http_results);

@@ -223,8 +223,8 @@ void ManifestUpdateManager::OnManifestSeenOnPrimaryPage(
   if (!started_) {
     return;
   }
-  if (!base::FeatureList::IsEnabled(features::kWebAppPredictableAppUpdating) ||
-      !base::FeatureList::IsEnabled(features::kWebAppUsePrimaryIcon)) {
+
+  if (!base::FeatureList::IsEnabled(features::kWebAppPredictableAppUpdating)) {
     return;
   }
 
@@ -296,8 +296,8 @@ void ManifestUpdateManager::MaybeUpdate(
   if (!started_) {
     return;
   }
-  if (base::FeatureList::IsEnabled(features::kWebAppPredictableAppUpdating) &&
-      base::FeatureList::IsEnabled(features::kWebAppUsePrimaryIcon)) {
+
+  if (base::FeatureList::IsEnabled(features::kWebAppPredictableAppUpdating)) {
     return;
   }
 

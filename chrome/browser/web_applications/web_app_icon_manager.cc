@@ -1507,8 +1507,7 @@ WebAppIconManager::FindIconMatchBigger(
   if (!web_app)
     return std::nullopt;
 
-  if (base::FeatureList::IsEnabled(features::kWebAppUsePrimaryIcon) &&
-      !skip_trusted_icons_for_favicons) {
+  if (!skip_trusted_icons_for_favicons) {
     // Must iterate through purposes in order given.
     for (IconPurpose purpose : purposes) {
       if (purpose == IconPurpose::MONOCHROME) {
@@ -1559,14 +1558,8 @@ void WebAppIconManager::ReadTrustedIconsWithFallbackToManifestIcons(
     return;
   }
 
-  // If the trusted icon usage is not enabled in the web applications system,
-  // fallback to using the API to read manifest icons.
-  if (!base::FeatureList::IsEnabled(features::kWebAppUsePrimaryIcon)) {
-    ReadUntrustedIcons(app_id, purpose_for_fallback, icon_sizes,
-                       std::move(callback));
-    return;
-  }
-
+  // ReadTrustedIconsBlocking() already takes care of the fallback flow to
+  // reading manifest icon bitmaps.
   icon_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(
@@ -1651,21 +1644,19 @@ void WebAppIconManager::ReadIconsLastUpdateTime(
   bool consider_trusted_icons = false;
   IconPurpose purpose = IconPurpose::ANY;
 
-  if (base::FeatureList::IsEnabled(features::kWebAppUsePrimaryIcon)) {
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
-    if (!web_app->stored_trusted_icon_sizes(IconPurpose::MASKABLE).empty()) {
-      sizes_px = web_app->stored_trusted_icon_sizes(IconPurpose::MASKABLE);
-      consider_trusted_icons = true;
-      purpose = IconPurpose::MASKABLE;
-    }
+  if (!web_app->stored_trusted_icon_sizes(IconPurpose::MASKABLE).empty()) {
+    sizes_px = web_app->stored_trusted_icon_sizes(IconPurpose::MASKABLE);
+    consider_trusted_icons = true;
+    purpose = IconPurpose::MASKABLE;
+  }
 #endif  //  BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
 
-    if (sizes_px.empty() &&
-        !web_app->stored_trusted_icon_sizes(IconPurpose::ANY).empty()) {
-      sizes_px = web_app->stored_trusted_icon_sizes(IconPurpose::ANY);
-      consider_trusted_icons = true;
-      purpose = IconPurpose::ANY;
-    }
+  if (sizes_px.empty() &&
+      !web_app->stored_trusted_icon_sizes(IconPurpose::ANY).empty()) {
+    sizes_px = web_app->stored_trusted_icon_sizes(IconPurpose::ANY);
+    consider_trusted_icons = true;
+    purpose = IconPurpose::ANY;
   }
 
   if (sizes_px.empty()) {
@@ -1708,22 +1699,20 @@ void WebAppIconManager::ReadAllIcons(const webapps::AppId& app_id,
         std::vector<SquareSizePx>(sizes_px.begin(), sizes_px.end());
   }
 
-  if (base::FeatureList::IsEnabled(features::kWebAppUsePrimaryIcon)) {
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
-    if (!web_app->stored_trusted_icon_sizes(IconPurpose::MASKABLE).empty()) {
-      const SortedSizesPx& sizes_px =
-          web_app->stored_trusted_icon_sizes(IconPurpose::MASKABLE);
-      trusted_icon_purposes_to_sizes[IconPurpose::MASKABLE] =
-          std::vector<SquareSizePx>(sizes_px.begin(), sizes_px.end());
-    }
+  if (!web_app->stored_trusted_icon_sizes(IconPurpose::MASKABLE).empty()) {
+    const SortedSizesPx& sizes_px =
+        web_app->stored_trusted_icon_sizes(IconPurpose::MASKABLE);
+    trusted_icon_purposes_to_sizes[IconPurpose::MASKABLE] =
+        std::vector<SquareSizePx>(sizes_px.begin(), sizes_px.end());
+  }
 #endif  //  BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
 
-    if (trusted_icon_purposes_to_sizes.empty()) {
-      const SortedSizesPx& sizes_px =
-          web_app->stored_trusted_icon_sizes(IconPurpose::ANY);
-      trusted_icon_purposes_to_sizes[IconPurpose::ANY] =
-          std::vector<SquareSizePx>(sizes_px.begin(), sizes_px.end());
-    }
+  if (trusted_icon_purposes_to_sizes.empty()) {
+    const SortedSizesPx& sizes_px =
+        web_app->stored_trusted_icon_sizes(IconPurpose::ANY);
+    trusted_icon_purposes_to_sizes[IconPurpose::ANY] =
+        std::vector<SquareSizePx>(sizes_px.begin(), sizes_px.end());
   }
 
   icon_task_runner_->PostTaskAndReplyWithResult(
@@ -1772,21 +1761,18 @@ void WebAppIconManager::GetIconsSizeForApp(
     }
   }
 
-  // Populate trusted icon sizes too if enabled.
-  if (base::FeatureList::IsEnabled(features::kWebAppUsePrimaryIcon)) {
-    for (IconPurpose purpose : kIconPurposes) {
-      if (purpose == IconPurpose::MONOCHROME) {
-        continue;
-      }
-      for (SquareSizePx size : provider_->registrar_unsafe()
-                                   .GetAppById(app_id)
-                                   ->stored_trusted_icon_sizes(purpose)) {
-        IconId icon_id(app_id, purpose, size);
-        base::FilePath icon_path = GetIconsFileNameForChildDirectory(
-            web_apps_directory_, base::FilePath(kTrustedIconFolderName),
-            icon_id);
-        icon_paths.push_back(icon_path);
-      }
+  // Populate trusted icon sizes too.
+  for (IconPurpose purpose : kIconPurposes) {
+    if (purpose == IconPurpose::MONOCHROME) {
+      continue;
+    }
+    for (SquareSizePx size : provider_->registrar_unsafe()
+                                 .GetAppById(app_id)
+                                 ->stored_trusted_icon_sizes(purpose)) {
+      IconId icon_id(app_id, purpose, size);
+      base::FilePath icon_path = GetIconsFileNameForChildDirectory(
+          web_apps_directory_, base::FilePath(kTrustedIconFolderName), icon_id);
+      icon_paths.push_back(icon_path);
     }
   }
 
@@ -2074,8 +2060,7 @@ void WebAppIconManager::CheckForEmptyOrMissingIconFiles(
   for (const IconPurpose& purpose : kIconPurposes) {
     manifest_icon_purpose_to_sizes[purpose] =
         web_app->downloaded_icon_sizes(purpose);
-    if (base::FeatureList::IsEnabled(features::kWebAppUsePrimaryIcon) &&
-        purpose != IconPurpose::MONOCHROME) {
+    if (purpose != IconPurpose::MONOCHROME) {
       trusted_icon_purpose_to_sizes[purpose] =
           web_app->stored_trusted_icon_sizes(purpose);
     }
@@ -2176,8 +2161,7 @@ WebAppIconManager::FindIconMatchSmaller(
   if (!web_app)
     return std::nullopt;
 
-  if (base::FeatureList::IsEnabled(features::kWebAppUsePrimaryIcon) &&
-      !skip_trusted_icons_for_favicons) {
+  if (!skip_trusted_icons_for_favicons) {
     // Must iterate through purposes in order given.
     for (IconPurpose purpose : purposes) {
       if (purpose == IconPurpose::MONOCHROME) {

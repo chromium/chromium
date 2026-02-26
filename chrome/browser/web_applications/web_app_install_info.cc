@@ -427,14 +427,13 @@ void WebAppInstallInfo::SetManifestIdAndStartUrl(
 
 DialogImageInfo WebAppInstallInfo::GetIconBitmapsForSecureSurfaces() const {
   DialogImageInfo image_info;
-  if (!base::FeatureList::IsEnabled(features::kWebAppUsePrimaryIcon) ||
-      trusted_icon_bitmaps.empty()) {
+  if (trusted_icon_bitmaps.empty()) {
     image_info.bitmaps = icon_bitmaps.any;
     return image_info;
   }
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
-  if (!trusted_icon_bitmaps.empty() && !trusted_icon_bitmaps.maskable.empty()) {
+  if (!trusted_icon_bitmaps.maskable.empty()) {
     image_info.bitmaps = trusted_icon_bitmaps.maskable;
     image_info.is_maskable = true;
     return image_info;
