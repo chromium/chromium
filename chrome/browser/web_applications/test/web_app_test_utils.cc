@@ -99,11 +99,8 @@
 #include "components/webapps/isolated_web_apps/types/update_channel.h"
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/storage_partition.h"
-#include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
-#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
-#include "third_party/blink/public/common/permissions_policy/policy_helper_public.h"
 #include "third_party/blink/public/common/safe_url_pattern.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
@@ -258,38 +255,6 @@ apps::ShareTarget CreateRandomShareTarget(uint32_t suffix) {
   }
 
   return share_target;
-}
-
-network::ParsedPermissionsPolicy CreateRandomPermissionsPolicy(
-    RandomHelper& random) {
-  const int num_permissions_policy_declarations =
-      random.next_uint(test_features.size());
-
-  std::vector<std::string> available_features = test_features;
-
-  const auto suffix = random.next_uint();
-  std::default_random_engine rng;
-  std::shuffle(available_features.begin(), available_features.end(), rng);
-
-  network::ParsedPermissionsPolicy permissions_policy(
-      num_permissions_policy_declarations);
-  const auto& feature_name_map = blink::GetPermissionsPolicyNameToFeatureMap();
-  for (int i = 0; i < num_permissions_policy_declarations; ++i) {
-    permissions_policy[i].feature = feature_name_map.begin()->second;
-
-    for (unsigned int j = 0; j < random.next_uint(5); ++j) {
-      std::string suffix_str =
-          base::NumberToString(suffix) + base::NumberToString(j);
-
-      const auto origin =
-          url::Origin::Create(GURL("https://app-" + suffix_str + ".com/"));
-      permissions_policy[i].allowed_origins.emplace_back(
-          *network::OriginWithPossibleWildcards::FromOrigin(origin));
-      permissions_policy[i].matches_all_origins = random.next_bool();
-      permissions_policy[i].matches_opaque_src = random.next_bool();
-    }
-  }
-  return permissions_policy;
 }
 
 std::vector<apps::ProtocolHandlerInfo> CreateRandomProtocolHandlers(
@@ -1084,11 +1049,6 @@ std::unique_ptr<WebApp> CreateRandomWebApp(
   }
 
   app->SetManifestUpdateTime(random.next_time());
-
-
-  if (random.next_bool()) {
-    app->SetPermissionsPolicy(CreateRandomPermissionsPolicy(random));
-  }
 
   if (IsChromeOsDataMandatory()) {
     // Use a separate random generator for CrOS so the result is deterministic

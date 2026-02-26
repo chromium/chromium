@@ -37,9 +37,6 @@
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/web_contents.h"
-#include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
-#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
-#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -211,18 +208,6 @@ TEST_F(ManifestToWebAppInstallInfoJobTest, BasicFieldsPopulated) {
   }
 
   {
-    network::ParsedPermissionsPolicyDeclaration declaration;
-    declaration.feature = network::mojom::PermissionsPolicyFeature::kFullscreen;
-    declaration.allowed_origins = {
-        *network::OriginWithPossibleWildcards::FromOrigin(
-            url::Origin::Create(GURL("https://www.example.com")))};
-    declaration.matches_all_origins = false;
-    declaration.matches_opaque_src = false;
-
-    manifest->permissions_policy.push_back(std::move(declaration));
-  }
-
-  {
     blink::Manifest::RelatedApplication related_app;
     related_app.platform = u"platform";
     related_app.url = GURL("http://www.example.com");
@@ -292,17 +277,6 @@ TEST_F(ManifestToWebAppInstallInfoJobTest, BasicFieldsPopulated) {
 
   EXPECT_EQ(GURL("https://www.foo.bar/new-note-url"),
             web_app_info->note_taking_new_note_url);
-
-  // Check permissions policy was updated.
-  EXPECT_EQ(1u, web_app_info->permissions_policy.size());
-  auto declaration = web_app_info->permissions_policy[0];
-  EXPECT_EQ(declaration.feature,
-            network::mojom::PermissionsPolicyFeature::kFullscreen);
-  EXPECT_EQ(1u, declaration.allowed_origins.size());
-  EXPECT_EQ("https://www.example.com",
-            declaration.allowed_origins[0].Serialize());
-  EXPECT_FALSE(declaration.matches_all_origins);
-  EXPECT_FALSE(declaration.matches_opaque_src);
 
   // Check related applications were updated.
   ASSERT_EQ(1u, web_app_info->related_applications.size());

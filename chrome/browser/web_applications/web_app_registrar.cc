@@ -60,7 +60,6 @@
 #include "content/public/browser/isolated_web_apps_policy.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "content/public/common/content_features.h"
-#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
@@ -275,13 +274,6 @@ WebAppRegistrar::~WebAppRegistrar() {
   for (WebAppRegistrarObserver& observer : observers_) {
     observer.OnAppRegistrarDestroyed();
   }
-}
-
-network::ParsedPermissionsPolicy WebAppRegistrar::GetPermissionsPolicy(
-    const webapps::AppId& app_id) const {
-  auto* web_app = GetAppById(app_id);
-  return web_app ? web_app->permissions_policy()
-                 : network::ParsedPermissionsPolicy();
 }
 
 bool WebAppRegistrar::IsPlaceholderApp(

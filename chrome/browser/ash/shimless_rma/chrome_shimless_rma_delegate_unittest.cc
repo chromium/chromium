@@ -29,6 +29,8 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/install_isolated_web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install/isolated_web_app_install_source.h"
+#include "chrome/browser/web_applications/isolated_web_apps/iwa_permissions_policy_cache.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
@@ -38,6 +40,7 @@
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "components/webapps/isolated_web_apps/types/iwa_origin.h"
 #include "components/webapps/isolated_web_apps/types/iwa_version.h"
 #include "components/webapps/isolated_web_apps/types/storage_location.h"
 #include "content/public/test/browser_task_environment.h"
@@ -216,13 +219,14 @@ class ChromeShimlessRmaDelegatePrepareDiagnosticsAppProfileTest
         },
         {});
     ASSERT_TRUE(testing_profile_manager_.SetUp());
-    TestingProfile* profile = testing_profile_manager_.CreateTestingProfile(
+    profile_ = testing_profile_manager_.CreateTestingProfile(
         kShimlessRmaAppBrowserContextBaseName);
 
     fake_diagnostics_app_profile_helper_delegate_ =
-        std::make_unique<FakeDiagnosticsAppProfileHelperDelegate>(profile);
+        std::make_unique<FakeDiagnosticsAppProfileHelperDelegate>(profile_);
 
-    InitializeExtensionSystem(profile);
+    InitializeExtensionSystem(profile_);
+    ::web_app::test::AwaitStartWebAppProviderAndSubsystems(profile_);
 
     chrome_shimless_rma_delegate_
         .SetDiagnosticsAppProfileHelperDelegateForTesting(
@@ -260,19 +264,25 @@ class ChromeShimlessRmaDelegatePrepareDiagnosticsAppProfileTest
                                     BuildInstanceFor));
   }
 
-  void TearDown() override { extensions::ExtensionServiceTestBase::TearDown(); }
+  void TearDown() override {
+    profile_ = nullptr;
+    extensions::ExtensionServiceTestBase::TearDown();
+  }
 
-  using Result = base::expected<
+  using PrepareResult = base::expected<
       ChromeShimlessRmaDelegate::PrepareDiagnosticsAppBrowserContextResult,
       std::string>;
-  Result PrepareDiagnosticsAppBrowserContext(const base::FilePath& crx_path) {
-    base::test::TestFuture<Result> future;
+
+  PrepareResult PrepareDiagnosticsAppBrowserContext(
+      const base::FilePath& crx_path) {
+    base::test::TestFuture<PrepareResult> future;
     chrome_shimless_rma_delegate_.PrepareDiagnosticsAppBrowserContext(
         crx_path, base::FilePath{kFakeIwaPath}, future.GetCallback());
     return future.Get();
   }
 
  protected:
+  raw_ptr<TestingProfile> profile_;
   base::test::ScopedFeatureList feature_list_;
   TestingProfileManager testing_profile_manager_{
       TestingBrowserProcess::GetGlobal()};
@@ -346,16 +356,15 @@ TEST_F(ChromeShimlessRmaDelegatePrepareDiagnosticsAppProfileTest,
 // Verify that IWA with allowlisted permission policy will be installed.
 TEST_F(ChromeShimlessRmaDelegatePrepareDiagnosticsAppProfileTest,
        IWACanHaveAllowlistedPermissionsPolicy) {
-  fake_diagnostics_app_profile_helper_delegate_->web_app().SetPermissionsPolicy(
-      network::ParsedPermissionsPolicy{
-          {network::ParsedPermissionsPolicyDeclaration{
-               network::mojom::PermissionsPolicyFeature::kCamera},
-           network::ParsedPermissionsPolicyDeclaration{
-               network::mojom::PermissionsPolicyFeature::kFullscreen},
-           network::ParsedPermissionsPolicyDeclaration{
-               network::mojom::PermissionsPolicyFeature::kMicrophone},
-           network::ParsedPermissionsPolicyDeclaration{
-               network::mojom::PermissionsPolicyFeature::kHid}}});
+  web_app::IwaPermissionsPolicyCacheFactory::GetForProfile(profile_)
+      ->SetPolicyForTesting(
+          web_app::IwaOrigin::Create(
+              GURL(base::StrCat({"isolated-app://", kDevIwaId})))
+              .value(),
+          {{"camera", {}},
+           {"fullscreen", {}},
+           {"microphone", {}},
+           {"hid", {}}});
 
   auto result = PrepareDiagnosticsAppBrowserContext(
       base::PathService::CheckedGet(base::DIR_SRC_TEST_DATA_ROOT)
@@ -367,12 +376,12 @@ TEST_F(ChromeShimlessRmaDelegatePrepareDiagnosticsAppProfileTest,
 // Verify that IWA with not-allowlisted permission policy will be blocked.
 TEST_F(ChromeShimlessRmaDelegatePrepareDiagnosticsAppProfileTest,
        IWACannotHavePermissionsPolicyOutsideAllowlist) {
-  fake_diagnostics_app_profile_helper_delegate_->web_app().SetPermissionsPolicy(
-      network::ParsedPermissionsPolicy{
-          network::ParsedPermissionsPolicyDeclaration{
-              network::mojom::PermissionsPolicyFeature::kCamera},
-          {network::ParsedPermissionsPolicyDeclaration{
-              network::mojom::PermissionsPolicyFeature::kNotFound}}});
+  web_app::IwaPermissionsPolicyCacheFactory::GetForProfile(profile_)
+      ->SetPolicyForTesting(
+          web_app::IwaOrigin::Create(
+              GURL(base::StrCat({"isolated-app://", kDevIwaId})))
+              .value(),
+          {{"camera", {}}, {"unknown-feature", {}}});
 
   auto result = PrepareDiagnosticsAppBrowserContext(
       base::PathService::CheckedGet(base::DIR_SRC_TEST_DATA_ROOT)
@@ -390,10 +399,12 @@ TEST_F(ChromeShimlessRmaDelegatePrepareDiagnosticsAppProfileTest,
   scoped_list.InitAndDisableFeature(
       ash::features::kShimlessRMA3pDiagnosticsAllowPermissionPolicy);
 
-  fake_diagnostics_app_profile_helper_delegate_->web_app().SetPermissionsPolicy(
-      network::ParsedPermissionsPolicy{
-          {network::ParsedPermissionsPolicyDeclaration{
-              network::mojom::PermissionsPolicyFeature::kCamera}}});
+  web_app::IwaPermissionsPolicyCacheFactory::GetForProfile(profile_)
+      ->SetPolicyForTesting(
+          web_app::IwaOrigin::Create(
+              GURL(base::StrCat({"isolated-app://", kDevIwaId})))
+              .value(),
+          {{"camera", {}}});
 
   auto result = PrepareDiagnosticsAppBrowserContext(
       base::PathService::CheckedGet(base::DIR_SRC_TEST_DATA_ROOT)
@@ -407,10 +418,12 @@ TEST_F(ChromeShimlessRmaDelegatePrepareDiagnosticsAppProfileTest,
 // return the installed app origin.
 TEST_F(ChromeShimlessRmaDelegatePrepareDiagnosticsAppProfileTest,
        InstalledAppOriginNotSetAfterIwaInstallFailure) {
-  fake_diagnostics_app_profile_helper_delegate_->web_app().SetPermissionsPolicy(
-      network::ParsedPermissionsPolicy{
-          {network::ParsedPermissionsPolicyDeclaration{
-              network::mojom::PermissionsPolicyFeature::kNotFound}}});
+  web_app::IwaPermissionsPolicyCacheFactory::GetForProfile(profile_)
+      ->SetPolicyForTesting(
+          web_app::IwaOrigin::Create(
+              GURL(base::StrCat({"isolated-app://", kDevIwaId})))
+              .value(),
+          {{"unknown-feature", {}}});
 
   auto result = PrepareDiagnosticsAppBrowserContext(
       base::PathService::CheckedGet(base::DIR_SRC_TEST_DATA_ROOT)

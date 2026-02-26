@@ -31,7 +31,6 @@
 #include "components/services/app_service/public/cpp/share_target.h"
 #include "components/webapps/common/web_app_id.h"
 #include "components/webapps/isolated_web_apps/types/iwa_version.h"
-#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
@@ -452,10 +451,6 @@ struct WebAppInstallInfo {
 
   // A mapping from locales to translated fields.
   base::flat_map<std::string, blink::Manifest::TranslationItem> translations;
-
-  // The declared permissions policy to apply as the baseline policy for all
-  // documents belonging to the application.
-  network::ParsedPermissionsPolicy permissions_policy;
 
   // See ExternallyManagedAppManager for placeholder app documentation.
   // Intended to be a temporary app while we wait for the install_url to

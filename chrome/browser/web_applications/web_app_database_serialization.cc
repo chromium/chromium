@@ -61,10 +61,8 @@
 #include "components/webapps/isolated_web_apps/types/storage_location.h"
 #include "components/webapps/isolated_web_apps/types/update_channel.h"
 #include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
-#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
-#include "third_party/blink/public/common/permissions_policy/policy_helper_public.h"
 #include "third_party/blink/public/common/safe_url_pattern.h"
 #include "third_party/protobuf/src/google/protobuf/repeated_ptr_field.h"
 #include "url/gurl.h"
@@ -1122,36 +1120,6 @@ std::unique_ptr<WebApp> ParseWebAppProto(
     web_app->SetLaunchHandler(ProtoToLaunchHandler(proto.launch_handler()));
   }
 
-  if (proto.permissions_policy_size()) {
-    network::ParsedPermissionsPolicy policy;
-    const auto& name_to_feature_map =
-        blink::GetPermissionsPolicyNameToFeatureMap();
-    for (const auto& decl_proto : proto.permissions_policy()) {
-      network::ParsedPermissionsPolicyDeclaration decl;
-      const auto feature_enum = name_to_feature_map.find(decl_proto.feature());
-      if (feature_enum == name_to_feature_map.end()) {
-        continue;
-      }
-      decl.feature = feature_enum->second;
-
-      for (const std::string& origin : decl_proto.allowed_origins()) {
-        std::optional<network::OriginWithPossibleWildcards>
-            maybe_origin_with_possible_wildcards =
-                network::OriginWithPossibleWildcards::Parse(
-                    origin,
-                    network::OriginWithPossibleWildcards::NodeType::kHeader);
-        if (maybe_origin_with_possible_wildcards.has_value()) {
-          decl.allowed_origins.emplace_back(
-              *maybe_origin_with_possible_wildcards);
-        }
-      }
-      decl.matches_all_origins = decl_proto.matches_all_origins();
-      decl.matches_opaque_src = decl_proto.matches_opaque_src();
-      policy.push_back(decl);
-    }
-    web_app->SetPermissionsPolicy(policy);
-  }
-
   WebApp::ExternalConfigMap management_to_external_config;
   for (const auto& management_proto :
        proto.management_to_external_config_info()) {
@@ -1899,27 +1867,6 @@ std::unique_ptr<proto::WebApp> WebAppToProto(const WebApp& web_app) {
 
   if (web_app.parent_app_id_) {
     local_data->set_parent_app_id(*web_app.parent_app_id_);
-  }
-
-  if (!web_app.permissions_policy().empty()) {
-    auto& policy = *local_data->mutable_permissions_policy();
-    const auto& feature_to_name_map =
-        blink::GetPermissionsPolicyFeatureToNameMap();
-    for (const auto& decl : web_app.permissions_policy()) {
-      proto::WebAppPermissionsPolicy proto_policy;
-      const auto feature_name = feature_to_name_map.find(decl.feature);
-      if (feature_name == feature_to_name_map.end()) {
-        continue;
-      }
-      const std::string feature_string(feature_name->second);
-      proto_policy.set_feature(feature_string);
-      for (const auto& allowed_origin : GetSerializedAllowedOrigins(decl)) {
-        proto_policy.add_allowed_origins(allowed_origin);
-      }
-      proto_policy.set_matches_all_origins(decl.matches_all_origins);
-      proto_policy.set_matches_opaque_src(decl.matches_opaque_src);
-      policy.Add(std::move(proto_policy));
-    }
   }
 
   if (!web_app.management_to_external_config_map().empty()) {

@@ -67,6 +67,10 @@ class IwaPermissionsPolicyCache : public KeyedService,
   void ObtainManifestAndCache(const IwaOrigin& iwa_origin,
                               base::OnceCallback<void(bool success)> callback);
 
+  void SetPolicyForTesting(const IwaOrigin& iwa_origin, CacheEntry policy) {
+    SetPolicy(iwa_origin, std::move(policy));
+  }
+
  private:
   // Stores the policy for the given IWA origin and runs pending callbacks.
   void SetPolicy(const IwaOrigin& iwa_origin, CacheEntry policy);

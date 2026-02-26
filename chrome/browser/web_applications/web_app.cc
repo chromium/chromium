@@ -67,10 +67,8 @@
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/common/web_app_id.h"
 #include "components/webapps/isolated_web_apps/types/storage_location.h"
-#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
-#include "third_party/blink/public/common/permissions_policy/policy_helper_public.h"
 #include "third_party/blink/public/common/safe_url_pattern.h"
 #include "third_party/liburlpattern/options.h"
 #include "third_party/liburlpattern/pattern.h"
@@ -722,11 +720,6 @@ void WebApp::SetParentAppId(
   parent_app_id_ = parent_app_id;
 }
 
-void WebApp::SetPermissionsPolicy(
-    network::ParsedPermissionsPolicy permissions_policy) {
-  permissions_policy_ = std::move(permissions_policy);
-}
-
 void WebApp::SetLatestInstallSource(
     std::optional<webapps::WebappInstallSource> latest_install_source) {
   latest_install_source_ = latest_install_source;
@@ -1198,7 +1191,6 @@ bool WebApp::operator==(const WebApp& other) const {
         app.window_controls_overlay_enabled_,
         app.launch_handler_,
         app.parent_app_id_,
-        app.permissions_policy_,
         app.latest_install_source_,
         app.app_size_in_bytes_,
         app.data_size_in_bytes_,
@@ -1351,29 +1343,6 @@ base::Value WebApp::AsDebugValueWithOnlyPlatformAgnosticFields() const {
 
   root.Set("parent_app_id", OptionalToStringValue(parent_app_id_));
 
-  if (!permissions_policy_.empty()) {
-    base::ListValue policy_list;
-    const auto& feature_to_name_map =
-        blink::GetPermissionsPolicyFeatureToNameMap();
-    for (const auto& decl : permissions_policy_) {
-      base::DictValue json_decl;
-      const auto& feature_name = feature_to_name_map.find(decl.feature);
-      if (feature_name == feature_to_name_map.end()) {
-        continue;
-      }
-      json_decl.Set("feature", feature_name->second);
-      base::ListValue allowlist_json;
-      for (const auto& allowlist_item : GetSerializedAllowedOrigins(decl)) {
-        allowlist_json.Append(allowlist_item);
-      }
-      json_decl.Set("allowed_origins", std::move(allowlist_json));
-      json_decl.Set("matches_all_origins", decl.matches_all_origins);
-      json_decl.Set("matches_opaque_src", decl.matches_opaque_src);
-      policy_list.Append(std::move(json_decl));
-    }
-    root.Set("permissions_policy", std::move(policy_list));
-  }
-
   root.Set("protocol_handlers", ConvertDebugValueList(protocol_handlers_));
 
   root.Set("run_on_os_login_mode", base::ToString(run_on_os_login_mode_));
@@ -1517,22 +1486,6 @@ std::ostream& operator<<(
     std::ostream& out,
     const WebApp::ExternalManagementConfig& management_config) {
   return out << management_config.AsDebugValue().DebugString();
-}
-
-std::vector<std::string> GetSerializedAllowedOrigins(
-    const network::ParsedPermissionsPolicyDeclaration
-        permissions_policy_declaration) {
-  std::vector<std::string> allowed_origins;
-  if (permissions_policy_declaration.self_if_matches) {
-    CHECK(!permissions_policy_declaration.self_if_matches->opaque());
-    allowed_origins.push_back(
-        permissions_policy_declaration.self_if_matches->Serialize());
-  }
-  for (const auto& origin_with_possible_wildcards :
-       permissions_policy_declaration.allowed_origins) {
-    allowed_origins.push_back(origin_with_possible_wildcards.Serialize());
-  }
-  return allowed_origins;
 }
 
 }  // namespace web_app

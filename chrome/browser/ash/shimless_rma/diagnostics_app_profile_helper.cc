@@ -13,6 +13,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/webui/shimless_rma/backend/shimless_rma_delegate.h"
+#include "base/check_deref.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/files/file_path.h"
 #include "base/no_destructor.h"
@@ -28,6 +29,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/commands/install_isolated_web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install/isolated_web_app_install_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/iwa_permissions_policy_cache.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -52,6 +54,7 @@
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/verifier_formats.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
+#include "third_party/blink/public/common/permissions_policy/policy_helper_public.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/origin.h"
@@ -71,15 +74,11 @@ constexpr base::TimeDelta kExtensionReadyPollingTimeout = base::Seconds(3);
 
 // The set of allowlisted permission policy for diagnostics IWA.
 constexpr auto kAllowlistedPermissionPolicyStringMap =
-    base::MakeFixedFlatMap<network::mojom::PermissionsPolicyFeature, int>(
-        {{network::mojom::PermissionsPolicyFeature::kCamera,
-          IDS_ASH_SHIMLESS_RMA_APP_ACCESS_PERMISSION_CAMERA},
-         {network::mojom::PermissionsPolicyFeature::kMicrophone,
-          IDS_ASH_SHIMLESS_RMA_APP_ACCESS_PERMISSION_MICROPHONE},
-         {network::mojom::PermissionsPolicyFeature::kFullscreen,
-          IDS_ASH_SHIMLESS_RMA_APP_ACCESS_PERMISSION_FULLSCREEN},
-         {network::mojom::PermissionsPolicyFeature::kHid,
-          IDS_ASH_SHIMLESS_RMA_APP_ACCESS_PERMISSION_HID_DEVICES}});
+    base::MakeFixedFlatMap<std::string_view, int>(
+        {{"camera", IDS_ASH_SHIMLESS_RMA_APP_ACCESS_PERMISSION_CAMERA},
+         {"microphone", IDS_ASH_SHIMLESS_RMA_APP_ACCESS_PERMISSION_MICROPHONE},
+         {"fullscreen", IDS_ASH_SHIMLESS_RMA_APP_ACCESS_PERMISSION_FULLSCREEN},
+         {"hid", IDS_ASH_SHIMLESS_RMA_APP_ACCESS_PERMISSION_HID_DEVICES}});
 
 std::optional<url::Origin>& GetInstalledDiagnosticsAppOriginInternal() {
   static base::NoDestructor<std::optional<url::Origin>> g_origin;
@@ -158,6 +157,74 @@ void ReportSuccess(std::unique_ptr<PrepareDiagnosticsAppProfileState> state) {
               state->permission_message)));
 }
 
+void CompleteOnIsolatedWebAppInstalled(
+    std::unique_ptr<PrepareDiagnosticsAppProfileState> state) {
+  const web_app::WebApp* web_app = state->delegate->GetWebAppByIdUnsafe(
+      web_app::IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
+          *state->iwa_id)
+          .app_id(),
+      state->context);
+
+  if (!web_app) {
+    ReportError(std::move(state), "Failed to find installed IWA.");
+    return;
+  }
+
+  // Since this is after IWA installation, cache has to be already created.
+  auto* profile = Profile::FromBrowserContext(state->context);
+  auto* policy_cache =
+      web_app::IwaPermissionsPolicyCacheFactory::GetForProfile(profile);
+  CHECK(policy_cache);
+
+  const web_app::IwaPermissionsPolicyCache::CacheEntry* policy =
+      policy_cache->GetPolicy(
+          web_app::IwaOrigin::Create(web_app->start_url()).value());
+
+  if (policy && !policy->empty()) {
+    if (!ash::features::
+            IsShimlessRMA3pDiagnosticsAllowPermissionPolicyEnabled()) {
+      ReportError(std::move(state), k3pDiagErrorIWACannotHasPermissionPolicy);
+      return;
+    }
+
+    std::u16string permission_message;
+    for (const auto& permission_policy : *policy) {
+      if (!kAllowlistedPermissionPolicyStringMap.contains(
+              permission_policy.feature)) {
+        ReportError(std::move(state), k3pDiagErrorIWACannotHasPermissionPolicy);
+        return;
+      }
+      base::StrAppend(
+          &permission_message,
+          {u"- ",
+           l10n_util::GetStringUTF16(kAllowlistedPermissionPolicyStringMap.at(
+               permission_policy.feature)),
+           u"\n"});
+    }
+
+    state->permission_message = state->permission_message.value_or("");
+    base::StrAppend(&*state->permission_message,
+                    {base::UTF16ToUTF8(l10n_util::GetStringUTF16(
+                         IDS_ASH_SHIMLESS_RMA_APP_ACCESS_PERMISSION)),
+                     "\n", base::UTF16ToUTF8(permission_message)});
+  }
+
+  state->name = web_app->untranslated_name();
+  state->iwa_start_url = web_app->start_url();
+
+  ReportSuccess(std::move(state));
+}
+
+void OnPermissionsPoliciesObtained(
+    std::unique_ptr<PrepareDiagnosticsAppProfileState> state,
+    bool success) {
+  if (!success) {
+    ReportError(std::move(state), "Failed to parse IWA manifest.");
+    return;
+  }
+  CompleteOnIsolatedWebAppInstalled(std::move(state));
+}
+
 void OnIsolatedWebAppInstalled(
     std::unique_ptr<PrepareDiagnosticsAppProfileState> state,
     base::expected<web_app::InstallIsolatedWebAppCommandSuccess,
@@ -172,46 +239,15 @@ void OnIsolatedWebAppInstalled(
     return;
   }
 
-  const web_app::WebApp* web_app = state->delegate->GetWebAppByIdUnsafe(
-      web_app::IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
-          *state->iwa_id)
-          .app_id(),
-      state->context);
-  // TODO(b/294815884): Check this when installing the IWA after we can add
-  // custom checker. For now, we just install the IWA. Because we won't return
-  // the profile and won't launch the IWA it should be fine.
-  if (!web_app->permissions_policy().empty()) {
-    if (!ash::features::
-            IsShimlessRMA3pDiagnosticsAllowPermissionPolicyEnabled()) {
-      ReportError(std::move(state), k3pDiagErrorIWACannotHasPermissionPolicy);
-      return;
-    }
+  // Since this is after IWA installation, cache has to be already created.
+  auto* profile = Profile::FromBrowserContext(state->context);
+  auto* policy_cache =
+      web_app::IwaPermissionsPolicyCacheFactory::GetForProfile(profile);
+  CHECK(policy_cache);
 
-    std::u16string permission_message;
-    for (const auto& permission_policy : web_app->permissions_policy()) {
-      if (!kAllowlistedPermissionPolicyStringMap.contains(
-              permission_policy.feature)) {
-        ReportError(std::move(state), k3pDiagErrorIWACannotHasPermissionPolicy);
-        return;
-      }
-      base::StrAppend(
-          &permission_message,
-          {u"- ",
-           l10n_util::GetStringUTF16(kAllowlistedPermissionPolicyStringMap.at(
-               permission_policy.feature)),
-           u"\n"});
-    }
-    state->permission_message = state->permission_message.value_or("");
-    base::StrAppend(&*state->permission_message,
-                    {base::UTF16ToUTF8(l10n_util::GetStringUTF16(
-                         IDS_ASH_SHIMLESS_RMA_APP_ACCESS_PERMISSION)),
-                     "\n", base::UTF16ToUTF8(permission_message)});
-  }
-
-  state->name = web_app->untranslated_name();
-  state->iwa_start_url = web_app->start_url();
-
-  ReportSuccess(std::move(state));
+  policy_cache->ObtainManifestAndCache(
+      web_app::IwaOrigin(*state->iwa_id),
+      base::BindOnce(&OnPermissionsPoliciesObtained, std::move(state)));
 }
 
 void InstallIsolatedWebApp(

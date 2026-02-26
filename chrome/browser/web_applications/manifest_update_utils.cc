@@ -282,10 +282,6 @@ ManifestDataChanges GetManifestDataChanges(
     if (existing_web_app.launch_handler() != new_install_info.launch_handler) {
       return true;
     }
-    if (existing_web_app.permissions_policy() !=
-        new_install_info.permissions_policy) {
-      return true;
-    }
     if (existing_shortcuts_menu_icon_bitmaps &&
         *existing_shortcuts_menu_icon_bitmaps !=
             new_install_info.shortcuts_menu_icon_bitmaps) {

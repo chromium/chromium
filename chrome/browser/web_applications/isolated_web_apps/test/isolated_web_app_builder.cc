@@ -68,9 +68,6 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
-#include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
-#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
-#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "skia/ext/codec_utils.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
@@ -495,22 +492,6 @@ blink::mojom::ManifestPtr ManifestBuilder::ToBlinkManifest(
             base::UTF8ToUTF16(protocol_handler_pair.first),
             GURL(protocol_handler_pair.second));
     manifest->protocol_handlers.push_back(std::move(protocol_handler));
-  }
-
-  for (const auto& policy : permissions_policy_) {
-    network::ParsedPermissionsPolicyDeclaration decl;
-    decl.feature = policy.first;
-    if (policy.second.wildcard) {
-      decl.matches_all_origins = true;
-    }
-    if (policy.second.self) {
-      decl.self_if_matches = url::Origin::Create(base_url);
-    }
-    for (const auto& origin : policy.second.origins) {
-      decl.allowed_origins.push_back(
-          network::OriginWithPossibleWildcards::FromOrigin(origin).value());
-    }
-    manifest->permissions_policy.push_back(decl);
   }
 
   for (const auto& file_handler : file_handlers_) {

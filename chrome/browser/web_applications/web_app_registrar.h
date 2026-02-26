@@ -39,7 +39,6 @@
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "components/services/app_service/public/cpp/protocol_handler_info.h"
 #include "components/webapps/common/web_app_id.h"
-#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "third_party/blink/public/mojom/installedapp/related_application.mojom.h"
 #include "third_party/skia/include/core/SkColor.h"
 
@@ -225,13 +224,6 @@ class WebAppRegistrar {
   // after uninstall has begun but before the OS integration hooks for uninstall
   // have completed. It will return false after uninstallation has completed.
   bool IsUninstalling(const webapps::AppId& app_id) const;
-
-  // Returns the permissions policy declared as declared in the manifest for
-  // the app with |app_id|. This permissions policy is not yet parsed by the
-  // PermissionsPolicyParser, and thus may contain invalid permissions and/or
-  // origin allowlists.
-  network::ParsedPermissionsPolicy GetPermissionsPolicy(
-      const webapps::AppId& app_id) const;
 
   // Returns true if an installed app was installed via policy, regardless of
   // other install sources.

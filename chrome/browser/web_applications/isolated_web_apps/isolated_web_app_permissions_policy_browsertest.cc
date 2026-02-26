@@ -2,10 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/files/scoped_temp_file.h"
+#include "base/strings/string_util.h"
 #include "base/test/gmock_expected_support.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
+#include "chrome/browser/web_applications/isolated_web_apps/commands/install_isolated_web_app_command.h"
+#include "chrome/browser/web_applications/isolated_web_apps/install/isolated_web_app_install_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
+#include "chrome/browser/web_applications/web_app_command_scheduler.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
+#include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
+#include "components/web_package/test_support/signed_web_bundles/web_bundle_signer.h"
+#include "components/web_package/web_bundle_builder.h"
 #include "components/webapps/isolated_web_apps/test_support/signing_keys.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -17,8 +27,14 @@ namespace web_app {
 namespace {
 
 using testing::ElementsAre;
+using testing::HasSubstr;
 using testing::IsEmpty;
 using testing::UnorderedElementsAre;
+
+struct InvalidPermissionsPolicyTestCase {
+  std::string test_name;
+  std::string permissions_policy;
+};
 
 }  // namespace
 
@@ -55,6 +71,91 @@ class IsolatedWebAppGenericPermissionsPolicyBrowserTest
     return allowlist;
   }
 };
+
+class IsolatedWebAppInvalidPermissionsPolicyBrowserTest
+    : public IsolatedWebAppBrowserTestHarness,
+      public testing::WithParamInterface<InvalidPermissionsPolicyTestCase> {};
+
+IN_PROC_BROWSER_TEST_P(IsolatedWebAppInvalidPermissionsPolicyBrowserTest,
+                       InstallationFails) {
+  web_package::WebBundleBuilder builder;
+  builder.AddExchange("/", {{":status", "200"}, {"content-type", "text/html"}},
+                      "<html></html>");
+  builder.AddExchange(
+      "/.well-known/manifest.webmanifest",
+      {{":status", "200"}, {"content-type", "application/manifest+json"}},
+      base::ReplaceStringPlaceholders(
+          R"({
+        "name": "Invalid Policy App",
+        "version": "1.0.0",
+        "id": "/",
+        "scope": "/",
+        "start_url": "/",
+        "permissions_policy": $1
+      })",
+          {GetParam().permissions_policy}, nullptr));
+
+  auto key_pair = web_package::test::Ed25519KeyPair::CreateRandom();
+  auto bundle = web_package::test::WebBundleSigner::SignBundle(
+      builder.CreateBundle(),
+      std::vector<web_package::test::KeyPair>{key_pair});
+
+  base::test::TestFuture<base::expected<InstallIsolatedWebAppCommandSuccess,
+                                        InstallIsolatedWebAppCommandError>>
+      future;
+
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    base::ScopedTempFile bundle_file;
+    ASSERT_TRUE(bundle_file.Create());
+    ASSERT_TRUE(base::WriteFile(bundle_file.path(), bundle));
+
+    auto url_info = IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
+        web_package::SignedWebBundleId::CreateForPublicKey(
+            key_pair.public_key));
+
+    provider().scheduler().InstallIsolatedWebApp(
+        url_info,
+        IsolatedWebAppInstallSource::FromDevUi(IwaSourceBundleDevModeWithFileOp(
+            bundle_file.path(), IwaSourceBundleDevFileOp::kCopy)),
+        /*expected_version=*/std::nullopt,
+        /*optional_keep_alive=*/nullptr,
+        /*optional_profile_keep_alive=*/nullptr, future.GetCallback());
+
+    auto result = future.Get();
+    ASSERT_FALSE(result.has_value());
+    EXPECT_THAT(
+        result.error().message,
+        HasSubstr("App is not installable: The manifest could not be fetched, "
+                  "parsed, or the document is on an opaque origin"));
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    IsolatedWebAppInvalidPermissionsPolicyBrowserTest,
+    testing::Values(
+        InvalidPermissionsPolicyTestCase{
+            .test_name = "NotAnObject",
+            .permissions_policy = R"("not-an-object")"},
+        InvalidPermissionsPolicyTestCase{.test_name = "AnArray",
+                                         .permissions_policy = R"([])"},
+        InvalidPermissionsPolicyTestCase{
+            .test_name = "FeatureNotAnArray",
+            .permissions_policy = R"({"camera": "not-an-array"})"},
+        InvalidPermissionsPolicyTestCase{
+            .test_name = "FeatureAnObject",
+            .permissions_policy = R"({"camera": {}})"},
+        InvalidPermissionsPolicyTestCase{
+            .test_name = "AllowlistContainsNonString",
+            .permissions_policy =
+                R"({"camera": ["https://example.com", 123]})"},
+        InvalidPermissionsPolicyTestCase{
+            .test_name = "AllowlistContainsAnObject",
+            .permissions_policy = R"({"camera": [{}]})"}),
+    [](const testing::TestParamInfo<InvalidPermissionsPolicyTestCase>& info) {
+      return info.param.test_name;
+    });
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppGenericPermissionsPolicyBrowserTest,
                        ManifestPolicyIsApplied) {

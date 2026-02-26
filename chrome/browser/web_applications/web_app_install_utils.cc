@@ -61,7 +61,6 @@
 #include "content/public/common/content_features.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "net/http/http_util.h"
-#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
@@ -767,7 +766,6 @@ void SetWebAppManifestFields(const WebAppInstallInfo& web_app_info,
         web_app_info.shortcuts_menu_icon_bitmaps));
   }
 
-  web_app.SetPermissionsPolicy(web_app_info.permissions_policy);
   web_app.SetFileHandlers(web_app_info.file_handlers);
   web_app.SetShareTarget(web_app_info.share_target);
   web_app.SetProtocolHandlers(web_app_info.protocol_handlers);

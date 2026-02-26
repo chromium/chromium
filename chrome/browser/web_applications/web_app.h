@@ -42,7 +42,6 @@
 #include "components/sync/model/string_ordinal.h"
 #include "components/sync/protocol/web_app_specifics.pb.h"
 #include "components/webapps/common/web_app_id.h"
-#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "url/gurl.h"
@@ -296,10 +295,6 @@ class WebApp {
     return parent_app_id_;
   }
 
-  const network::ParsedPermissionsPolicy& permissions_policy() const {
-    return permissions_policy_;
-  }
-
   std::optional<webapps::WebappInstallSource> latest_install_source() const {
     return latest_install_source_;
   }
@@ -519,8 +514,6 @@ class WebApp {
   void SetWindowControlsOverlayEnabled(bool enabled);
   void SetLaunchHandler(std::optional<LaunchHandler> launch_handler);
   void SetParentAppId(const std::optional<webapps::AppId>& parent_app_id);
-  void SetPermissionsPolicy(
-      network::ParsedPermissionsPolicy permissions_policy);
   void SetLatestInstallSource(
       std::optional<webapps::WebappInstallSource> latest_install_source);
   void SetAppSizeInBytes(std::optional<int64_t> app_size_in_bytes);
@@ -704,7 +697,6 @@ class WebApp {
   bool window_controls_overlay_enabled_ = false;
   std::optional<LaunchHandler> launch_handler_;
   std::optional<webapps::AppId> parent_app_id_;
-  network::ParsedPermissionsPolicy permissions_policy_;
   // The source of the latest install. WebAppRegistrar provides range
   // validation. Optional only to support legacy installations, since this used
   // to be tracked as a pref. It might also be null if the value read from the
@@ -807,10 +799,6 @@ std::ostream& operator<<(std::ostream& out, const WebApp& app);
 std::ostream& operator<<(
     std::ostream& out,
     const WebApp::ExternalManagementConfig& management_config);
-
-std::vector<std::string> GetSerializedAllowedOrigins(
-    const network::ParsedPermissionsPolicyDeclaration
-        permissions_policy_declaration);
 
 }  // namespace web_app
 

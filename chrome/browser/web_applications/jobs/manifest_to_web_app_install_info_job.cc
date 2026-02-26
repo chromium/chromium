@@ -47,7 +47,6 @@
 #include "components/webapps/browser/installable/installable_evaluator.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/web_contents.h"
-#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/common/safe_url_pattern.h"
@@ -894,19 +893,6 @@ void ManifestToWebAppInstallInfoJob::ParseManifestAndPopulateInfo() {
   }
 
   install_info().translations = ToWebAppTranslations(manifest_->translations);
-
-  install_info().permissions_policy.clear();
-  for (const auto& decl : manifest_->permissions_policy) {
-    network::ParsedPermissionsPolicyDeclaration copy;
-    copy.feature = decl.feature;
-    copy.self_if_matches = decl.self_if_matches;
-    for (const auto& origin : decl.allowed_origins) {
-      copy.allowed_origins.push_back(origin);
-    }
-    copy.matches_all_origins = decl.matches_all_origins;
-    copy.matches_opaque_src = decl.matches_opaque_src;
-    install_info().permissions_policy.push_back(std::move(copy));
-  }
 
   install_info().tab_strip = manifest_->tab_strip;
 

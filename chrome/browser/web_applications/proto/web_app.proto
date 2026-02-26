@@ -117,13 +117,6 @@ message DownloadedShortcutsMenuIconSizes {
   repeated int32 icon_sizes_monochrome = 3;
 }
 
-message WebAppPermissionsPolicy {
-  optional string feature = 1;
-  repeated string allowed_origins = 2;
-  optional bool matches_all_origins = 3;
-  optional bool matches_opaque_src = 4;
-}
-
 // This enum should be synced with |WebAppManagement| in
 // chrome/browser/web_applications/web_app_constants.h as well as
 // with the Sources message defined above.
@@ -251,7 +244,7 @@ message WebApp {
   reserved "handle_links", "is_in_sync_install", "is_placeholder",
       "file_handler_os_integration_state",
       "run_on_os_login_os_integration_state", "url_handlers", "update_token",
-      "display_mode_override", "borderless_url_patterns";
+      "display_mode_override", "borderless_url_patterns", "permissions_policy";
   // Synced data. It is replicated across , all devices with WEB_APPS.
   //
   // |sync_data.name| and |sync_data.theme_color| are read by a device to
@@ -447,10 +440,7 @@ message WebApp {
   // Whether the app should show up in file-open intent and picking surfaces.
   optional bool handles_file_open_intents = 47;
 
-  reserved 48;
-
-  // Contains the permissions policy that should be applied to the web app.
-  repeated WebAppPermissionsPolicy permissions_policy = 49;
+  reserved 48, 49;
 
   // The source that triggered the latest install. This is a
   // `webapps::WebappInstallSource` encoded as an integer.

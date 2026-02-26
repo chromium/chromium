@@ -184,10 +184,6 @@ WebAppComparison WebAppComparison::CompareWebApps(
     if (existing_web_app.launch_handler() != new_install_info.launch_handler) {
       return false;
     }
-    if (existing_web_app.permissions_policy() !=
-        new_install_info.permissions_policy) {
-      return false;
-    }
     if (existing_web_app.scope_extensions() !=
         new_install_info.scope_extensions) {
       return false;

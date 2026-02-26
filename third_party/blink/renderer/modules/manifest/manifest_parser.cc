@@ -509,12 +509,7 @@ bool ManifestParser::Parse() {
                                   WebDXFeature::kAppShortcuts);
   }
 
-  manifest_->permissions_policy =
-      ParseIsolatedAppPermissions(root_object.get());
-  if (!manifest_->permissions_policy.empty()) {
-    UseCounter::Count(execution_context_,
-                      WebFeature::kWebAppManifestPermissionsPolicy);
-  }
+  CheckIsolatedAppPermissions(root_object.get());
 
   manifest_->update_manifest_url =
       ParseIsolatedAppUpdateManifestUrl(root_object.get());
@@ -2336,21 +2331,23 @@ String ManifestParser::ParseGCMSenderID(const JSONObject* object) {
   return gcm_sender_id.has_value() ? *gcm_sender_id : String();
 }
 
-Vector<network::ParsedPermissionsPolicyDeclaration>
-ManifestParser::ParseIsolatedAppPermissions(const JSONObject* object) {
-  PermissionsPolicyParser::Node policy{
-      network::OriginWithPossibleWildcards::NodeType::kHeader};
-
+// Errors here fail the whole manifest parsing because an IWA with manlformed
+// permissions_policy entry wouldn't be able to launch anyway. Hence, it's best
+// to fail early, during installation.
+void ManifestParser::CheckIsolatedAppPermissions(const JSONObject* object) {
   JSONValue* json_value = object->Get("permissions_policy");
   if (!json_value) {
-    return Vector<network::ParsedPermissionsPolicyDeclaration>();
+    return;
   }
 
-  JSONObject* permissions_dict = object->GetJSONObject("permissions_policy");
+  JSONObject* permissions_dict = JSONObject::Cast(json_value);
   if (!permissions_dict) {
     AddErrorInfo(
-        "property 'permissions_policy' ignored, type object expected.");
-    return Vector<network::ParsedPermissionsPolicyDeclaration>();
+        "property 'permissions_policy' invalid: object expected, found: " +
+            json_value->ToJSONString(),
+        /*critical=*/true);
+    failed_ = true;
+    return;
   }
 
   for (wtf_size_t i = 0; i < permissions_dict->size(); ++i) {
@@ -2360,57 +2357,29 @@ ManifestParser::ParseIsolatedAppPermissions(const JSONObject* object) {
     JSONArray* origin_allowlist = JSONArray::Cast(entry.second);
     if (!origin_allowlist) {
       AddErrorInfo(
-          StrCat({"permission '", feature,
-                  "' ignored, invalid allowlist: type array expected."}));
-      continue;
+          "property 'permissions_policy' invalid: allowlist for '" + feature +
+              "': array expected, found: " + entry.second->ToJSONString(),
+          /*critical=*/true);
+      failed_ = true;
+      return;
     }
 
-    Vector<String> allowlist = ParseOriginAllowlist(origin_allowlist, feature);
-    if (!allowlist.size()) {
-      continue;
-    }
-    PermissionsPolicyParser::Declaration new_policy;
-    new_policy.feature_name = feature;
-    for (const auto& origin : allowlist) {
-      // PermissionsPolicyParser expects 4 types of origin strings:
-      // - "self": wrapped in single quotes (as in a header)
-      // - "none": wrapped in single quotes (as in a header)
-      // - "*" (asterisk): not wrapped
-      // - "<origin>": actual origin names should not be wrapped in single
-      //        quotes
-      // The "src" origin string type can be ignored here as it's only used in
-      // the iframe "allow" attribute.
-      //
-      // Sidenote: Actual origin names ("<origin>") are parsed using
-      // OriginWithPossibleWildcards::Parse() which fails if the origin string
-      // contains any non-alphanumeric characters, such as a single quote. For
-      // this reason, actual origin names must not be wrapped since the parser
-      // will just drop them as being improperly formatted (i.e. they would be
-      // the equivalent to some manifest containing an origin wrapped in single
-      // quotes, which is invalid).
-      String wrapped_origin = origin;
-      if (EqualIgnoringAsciiCase(origin, "self") ||
-          EqualIgnoringAsciiCase(origin, "none")) {
-        wrapped_origin = StrCat({"'", origin, "'"});
-        ;
+    for (const JSONValue& origin_value : *origin_allowlist) {
+      String origin_string;
+      if (!origin_value.AsString(&origin_string)) {
+        AddErrorInfo("property 'permissions_policy' invalid: allowlist for '" +
+                         feature +
+                         "': invalid element: string expected, found: " +
+                         origin_value.ToJSONString(),
+                     /*critical=*/true);
+        failed_ = true;
+        return;
       }
-      new_policy.allowlist.push_back(wrapped_origin);
     }
-    policy.declarations.push_back(new_policy);
   }
 
-  PolicyParserMessageBuffer logger(
-      "Error with permissions_policy manifest field: ");
-  network::ParsedPermissionsPolicy parsed_policy =
-      PermissionsPolicyParser::ParsePolicyFromNode(
-          policy, *SecurityOrigin::Create(manifest_url_), logger,
-          execution_context_);
-
-  Vector<network::ParsedPermissionsPolicyDeclaration> out;
-  for (const auto& decl : parsed_policy) {
-    out.push_back(std::move(decl));
-  }
-  return out;
+  UseCounter::Count(execution_context_,
+                    WebFeature::kWebAppManifestPermissionsPolicy);
 }
 
 std::optional<KURL> ManifestParser::ParseIsolatedAppUpdateManifestUrl(
@@ -2422,40 +2391,6 @@ std::optional<KURL> ManifestParser::ParseIsolatedAppUpdateManifestUrl(
   }
 
   return url;
-}
-
-Vector<String> ManifestParser::ParseOriginAllowlist(
-    const JSONArray* json_allowlist,
-    const String& feature) {
-  Vector<String> out;
-  for (const JSONValue& json_value : *json_allowlist) {
-    String origin_string;
-    if (!json_value.AsString(&origin_string) || origin_string.IsNull()) {
-      AddErrorInfo(
-          "permissions_policy entry ignored, required property 'origin' "
-          "contains "
-          "an invalid element: type string expected.");
-      return Vector<String>();
-    }
-
-    if (!origin_string.length()) {
-      AddErrorInfo(
-          "permissions_policy entry ignored, required property 'origin' is "
-          "contains an empty string.");
-      return Vector<String>();
-    }
-
-    if (origin_string.length() > kMaxOriginLength) {
-      AddErrorInfo(
-          StrCat({"permissions_policy entry ignored, 'origin' exceeds maximum "
-                  "character length of ",
-                  String::Number(kMaxOriginLength), " ."}));
-      return Vector<String>();
-    }
-    out.push_back(origin_string);
-  }
-
-  return out;
 }
 
 mojom::blink::ManifestLaunchHandlerPtr ManifestParser::ParseLaunchHandler(

@@ -2510,9 +2510,6 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, ManifestWithUseCounterFields) {
       1);
   histogram_tester.ExpectBucketCount(
       kUseCounterHistogram,
-      blink::mojom::WebFeature::kWebAppManifestPermissionsPolicy, 1);
-  histogram_tester.ExpectBucketCount(
-      kUseCounterHistogram,
       blink::mojom::WebFeature::kWebAppManifestPrefer_Related_Applications, 1);
   histogram_tester.ExpectBucketCount(
       kUseCounterHistogram, blink::mojom::WebFeature::kWebAppManifestThemeColor,
