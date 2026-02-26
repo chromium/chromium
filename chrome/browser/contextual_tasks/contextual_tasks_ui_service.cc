@@ -128,8 +128,9 @@ enum class EntrypointSource {
   kFromWeb = 0,
   kFromOmnibox = 1,
   kFromNewTabPage = 2,
+  kFromLens = 3,
 
-  kMaxValue = kFromNewTabPage,
+  kMaxValue = kFromLens,
 };
 
 // LINT.ThenChange(//tools/metrics/histograms/metadata/contextual_tasks/enums.xml:EntrypointSource)
@@ -142,8 +143,9 @@ EntrypointSource ConvertContextualSearchSourceToEntrypointSource(
     case contextual_search::ContextualSearchSource::kNewTabPage:
       return EntrypointSource::kFromNewTabPage;
     case contextual_search::ContextualSearchSource::kLens:
+      return EntrypointSource::kFromLens;
     case contextual_search::ContextualSearchSource::kContextualTasks:
-      // These shouldn't happen but if they do - just fall through to say it's
+      // This shouldn't happen but is it does - just fall through to say it's
       // from web.
     case contextual_search::ContextualSearchSource::kUnknown:
       return EntrypointSource::kFromWeb;
