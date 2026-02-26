@@ -100,7 +100,7 @@ class ClientConnectionManager
           started_profiling_closure);
 
   // content::RenderProcessHostCreationObserver
-  void OnRenderProcessHostCreated(content::RenderProcessHost* host) override;
+  void OnRenderProcessLaunched(content::RenderProcessHost* host) override;
 
   // RenderProcessHostObserver:
   // RenderProcessHostDestroyed() corresponds to death of an underlying

@@ -260,7 +260,7 @@ void ClientConnectionManager::StartProfilingNonRendererChild(
                      std::move(started_profiling_closure)));
 }
 
-void ClientConnectionManager::OnRenderProcessHostCreated(
+void ClientConnectionManager::OnRenderProcessLaunched(
     content::RenderProcessHost* host) {
   if (ShouldProfileNewRenderer(host)) {
     StartProfilingRenderer(host, base::DoNothing());
