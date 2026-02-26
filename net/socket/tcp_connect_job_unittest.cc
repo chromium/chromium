@@ -5,6 +5,7 @@
 #include "net/socket/tcp_connect_job.h"
 
 #include <array>
+#include <list>
 #include <memory>
 #include <optional>
 #include <string>
@@ -13,6 +14,8 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
+#include "base/containers/to_vector.h"
+#include "base/functional/bind.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "net/base/address_list.h"
@@ -73,6 +76,9 @@ class TcpConnectJobTest : public TestWithTaskEnvironment {
 
   ~TcpConnectJobTest() override {
     EXPECT_TRUE(client_socket_factory_.AllDataProvidersUsed());
+    // These should have all been consumed.
+    EXPECT_TRUE(host_resolution_callback_results_.empty());
+    EXPECT_FALSE(last_host_resolution_callback_);
   }
 
   static IPEndPoint MakeIPEndPoint(std::string_view addr, int port) {
@@ -117,7 +123,7 @@ class TcpConnectJobTest : public TestWithTaskEnvironment {
   scoped_refptr<TransportSocketParams> SocketParams() {
     return base::MakeRefCounted<TransportSocketParams>(
         destination_, NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-        OnHostResolutionCallback(), GetSupportedAplns());
+        on_host_resolution_callback_, GetSupportedAplns());
   }
 
   // Initializes `test_delegate_` and `connect_job_`, tearing down old ones
@@ -125,8 +131,8 @@ class TcpConnectJobTest : public TestWithTaskEnvironment {
   void InitConnectJob() {
     // Destruction order is important here, as the ConnectJob references the
     // delegate.
-    test_delegate_.reset();
     connect_job_.reset();
+    test_delegate_.reset();
 
     test_delegate_ = std::make_unique<TestConnectJobDelegate>();
     connect_job_ = std::make_unique<TcpConnectJob>(
@@ -226,8 +232,47 @@ class TcpConnectJobTest : public TestWithTaskEnvironment {
     socket_data_.emplace_back(std::move(data));
   }
 
+  // When called, ConnectJobs will be created with a non-null
+  // OnHostResolutionCallback and `host_resolution_callback_info_` will added to
+  // with each callback invocation. `host_resolution_callback_results` must
+  // contain the return value for each callback invocation.
+  // `last_host_resolution_callback` will be invoked asynchronously just after
+  // the last result has been returned, if non-null. The length of
+  // `host_resolution_callback_results` must exactly match the number of
+  // OnHostResolutionCallback() invocations.
+  void EnableHostResolutionCallbacks(
+      std::list<OnHostResolutionCallbackResult>
+          host_resolution_callback_results,
+      base::OnceClosure last_host_resolution_callback = base::OnceClosure()) {
+    // All previous OnHostResolutionCallback information should have been
+    // consumed.
+    DCHECK(host_resolution_callback_results_.empty());
+    DCHECK(!last_host_resolution_callback_);
+
+    // Clear any information from previous callbacks.
+    host_resolution_callback_info_.clear();
+
+    host_resolution_callback_results_ =
+        std::move(host_resolution_callback_results);
+    last_host_resolution_callback_ = std::move(last_host_resolution_callback);
+    if (last_host_resolution_callback_) {
+      CHECK_GT(host_resolution_callback_results_.size(), 0u);
+    }
+    on_host_resolution_callback_ = base::BindRepeating(
+        &TcpConnectJobTest::OnHostResolution, base::Unretained(this));
+  }
+
  protected:
-  // IPs use by tests. Numbers are chose to make it easy to identify them from
+  // Stores the information passed to the OnHostResolutionCallback() for
+  // validation.
+  struct HostResolutionCallbackInfo {
+    std::vector<ServiceEndpoint> service_endpoints;
+    std::set<std::string> aliases;
+
+    bool operator==(const HostResolutionCallbackInfo&) const = default;
+  };
+
+  // IPs used by tests. Numbers are chosen to make it easy to identify them from
   // failure output.
   const IPEndPoint kIpV4Endpoint1 = MakeIPEndPoint("4.1.1.1", 41);
   const IPEndPoint kIpV4Endpoint2 = MakeIPEndPoint("4.2.2.2", 42);
@@ -237,6 +282,38 @@ class TcpConnectJobTest : public TestWithTaskEnvironment {
   const IPEndPoint kIpV6Endpoint2 = MakeIPEndPoint("6::2", 62);
   const IPEndPoint kIpV6Endpoint3 = MakeIPEndPoint("6::3", 63);
   const IPEndPoint kIpV6Endpoint4 = MakeIPEndPoint("6::4", 64);
+
+  OnHostResolutionCallbackResult OnHostResolution(
+      const HostPortPair& host_port_pair,
+      const HostResolverEndpointsOrServiceEndpoints& endpoint_results,
+      const std::set<std::string>& aliases) {
+    // These are the same for all tests, so can test them here.
+    EXPECT_EQ(host_port_pair.host(), kHostName);
+    EXPECT_EQ(host_port_pair.port(), 443);
+
+    CHECK(std::holds_alternative<base::span<const ServiceEndpoint>>(
+        endpoint_results));
+    auto service_endpoints =
+        std::get<base::span<const ServiceEndpoint>>(endpoint_results);
+    host_resolution_callback_info_.emplace_back(
+        base::ToVector(service_endpoints), aliases);
+
+    // Get result to return.
+    CHECK(!host_resolution_callback_results_.empty());
+    OnHostResolutionCallbackResult result =
+        host_resolution_callback_results_.front();
+    host_resolution_callback_results_.pop_front();
+
+    // If this was the last call, invoke `last_host_resolution_callback_`
+    // asynchronously.
+    if (host_resolution_callback_results_.empty() &&
+        last_host_resolution_callback_) {
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, std::move(last_host_resolution_callback_));
+    }
+
+    return result;
+  }
 
   // Common extended DNS error information for DNS error tests.
   // `is_secure_network_error` is set to true because the default is false.
@@ -273,6 +350,15 @@ class TcpConnectJobTest : public TestWithTaskEnvironment {
   // Use pointers so can easily re-initialize these.
   std::unique_ptr<TestConnectJobDelegate> test_delegate_;
   std::unique_ptr<TcpConnectJob> connect_job_;
+
+  // These are all related to testing OnHostResolutionCallback support.
+  OnHostResolutionCallback on_host_resolution_callback_;
+  // Cached information from all previous `OnHostResolutionCallback` calls.
+  std::vector<HostResolutionCallbackInfo> host_resolution_callback_info_;
+  // Return values for each OnHostResolutionCallback invocation.
+  std::list<OnHostResolutionCallbackResult> host_resolution_callback_results_;
+  // Invoked asynchronously after last OnHostResolutionCallback invocation.
+  base::OnceClosure last_host_resolution_callback_;
 };
 
 TEST_F(TcpConnectJobTest, DnsErrorSync) {
@@ -375,7 +461,7 @@ TEST_F(TcpConnectJobTest, DnsErrorAfterConnectComplete) {
 // Test the case where there's a DNS error after a connection error. The DNS
 // error should be the only error in ConnectionAttempts, and should be what the
 // ConnectJob fails with.
-TEST_F(TcpConnectJobTest, DnsErrorAfterConnectErrpr) {
+TEST_F(TcpConnectJobTest, DnsErrorAfterConnectError) {
   MockConnectCompleter connect_completer;
   AddConnect(MockConnect(&connect_completer), kIpV4Endpoint1);
   auto request = host_resolver_.AddFakeRequest();
@@ -1432,6 +1518,225 @@ TEST_F(TcpConnectJobTest, ServiceEndpointOverride) {
       ASSERT_TRUE(client_socket_factory_.AllDataProvidersUsed());
     }
   }
+}
+
+////////////////////////////////////
+// OnHostResolutionCallback tests //
+////////////////////////////////////
+
+TEST_F(TcpConnectJobTest, NoOnHostResolutionCallbackOnDnsError) {
+  host_resolver_.AddFakeRequest()
+      ->set_resolve_error_info(kResolveErrorInfo)
+      .CompleteStartAsynchronously(ERR_FAILED);
+  EnableHostResolutionCallbacks({});
+  InitRunAndExpectError(
+      ERR_FAILED, /*expect_sync_result=*/false,
+      /*expected_connection_attempts=*/{{IPEndPoint(), ERR_FAILED}});
+}
+
+TEST_F(TcpConnectJobTest, OnHostResolutionCallbackContinue) {
+  // Since the callback is passed the destination converted to a HostPort, want
+  // to test with all types of destinations.
+  const std::array<TransportSocketParams::Endpoint, 3> kDestinations = {
+      url::SchemeHostPort(url::kHttpsScheme, kHostName, 443),
+      url::SchemeHostPort(url::kHttpScheme, kHostName, 443),
+      HostPortPair(kHostName, 443),
+  };
+
+  for (const auto& destination : kDestinations) {
+    destination_ = destination;
+
+    const auto service_endpoint = CreateServiceEndpoint({kIpV4Endpoint1});
+    host_resolver_.AddFakeRequest()
+        ->add_endpoint(service_endpoint)
+        .set_aliases(kDnsAliases)
+        .CompleteStartAsynchronously(OK);
+    AddConnect(MockConnect(ASYNC, OK), kIpV4Endpoint1);
+
+    bool callback_run = false;
+    EnableHostResolutionCallbacks(
+        {OnHostResolutionCallbackResult::kContinue},
+        base::BindLambdaForTesting([&]() {
+          // The ConnectJob should have continued synchronously, so a task
+          // posted immediately from the OnHostResolutionCallback should be able
+          // to observe that the socket has already been created / the only data
+          // provider is already in use.
+          EXPECT_TRUE(client_socket_factory_.AllDataProvidersUsed());
+          callback_run = true;
+        }));
+
+    InitRunAndExpectSuccess(kIpV4Endpoint1, service_endpoint,
+                            /*expect_sync_result=*/false);
+    EXPECT_EQ(kDnsAliases, test_delegate_->socket()->GetDnsAliases());
+    const std::vector<HostResolutionCallbackInfo> expected_host_resolution_info{
+        {{service_endpoint}, kDnsAliases}};
+    EXPECT_THAT(host_resolution_callback_info_,
+                testing::ElementsAreArray(expected_host_resolution_info));
+    EXPECT_TRUE(callback_run);
+  }
+}
+
+TEST_F(TcpConnectJobTest, OnHostResolutionCallbackMayBeDeletedAsyncButItIsNot) {
+  // Since the callback is passed the destination converted to a HostPort, want
+  // to test with all types of destinations.
+  const std::array<TransportSocketParams::Endpoint, 3> kDestinations = {
+      url::SchemeHostPort(url::kHttpsScheme, kHostName, 443),
+      url::SchemeHostPort(url::kHttpScheme, kHostName, 443),
+      HostPortPair(kHostName, 443),
+  };
+
+  for (const auto& destination : kDestinations) {
+    destination_ = destination;
+
+    const auto service_endpoint = CreateServiceEndpoint({kIpV4Endpoint1});
+    host_resolver_.AddFakeRequest()
+        ->add_endpoint(service_endpoint)
+        .set_aliases(kDnsAliases)
+        .CompleteStartAsynchronously(OK);
+    AddConnect(MockConnect(ASYNC, OK), kIpV4Endpoint1);
+
+    bool callback_run = false;
+    EnableHostResolutionCallbacks(
+        {OnHostResolutionCallbackResult::kMayBeDeletedAsync},
+        base::BindLambdaForTesting([&]() {
+          // The ConnectJob will continue after receiving the kMayBeDeletedAsync
+          // message, but only after a post task, so a task posted immediately
+          // from the OnHostResolutionCallback should be able to observe that a
+          // socket has not yet been created. It will be created
+          // immediately after this task is run, from the next task.
+          EXPECT_FALSE(client_socket_factory_.AllDataProvidersUsed());
+          callback_run = true;
+        }));
+
+    InitRunAndExpectSuccess(kIpV4Endpoint1, service_endpoint,
+                            /*expect_sync_result=*/false);
+    EXPECT_EQ(kDnsAliases, test_delegate_->socket()->GetDnsAliases());
+    const std::vector<HostResolutionCallbackInfo> expected_host_resolution_info{
+        {{service_endpoint}, kDnsAliases}};
+    EXPECT_THAT(host_resolution_callback_info_,
+                testing::ElementsAreArray(expected_host_resolution_info));
+    EXPECT_TRUE(callback_run);
+    EXPECT_TRUE(client_socket_factory_.AllDataProvidersUsed());
+  }
+}
+
+TEST_F(TcpConnectJobTest, OnHostResolutionCallbackMayBeDeletedAsyncAndItIs) {
+  // Since the callback is passed the destination converted to a HostPort, want
+  // to test with all types of destinations.
+  const std::array<TransportSocketParams::Endpoint, 3> kDestinations = {
+      url::SchemeHostPort(url::kHttpsScheme, kHostName, 443),
+      url::SchemeHostPort(url::kHttpScheme, kHostName, 443),
+      HostPortPair(kHostName, 443),
+  };
+
+  for (const auto& destination : kDestinations) {
+    destination_ = destination;
+
+    const auto service_endpoint = CreateServiceEndpoint({kIpV4Endpoint1});
+    host_resolver_.AddFakeRequest()
+        ->add_endpoint(service_endpoint)
+        .set_aliases(kDnsAliases)
+        .CompleteStartAsynchronously(OK);
+    // Note that no mock connect data is added for this test. Therefore, if
+    // there's any actual connection attempt, the test will fail.
+
+    // The callback deletes the ConnectJob and TestDelegate, as
+    // kMayBeDeletedAsync implies might happen. The callback is called after a
+    // PostTask, which mimics actual behavior of the real SpdySessionPool.
+    base::RunLoop run_loop;
+    EnableHostResolutionCallbacks(
+        {OnHostResolutionCallbackResult::kMayBeDeletedAsync},
+        base::BindLambdaForTesting([&]() {
+          connect_job_.reset();
+          test_delegate_.reset();
+          run_loop.Quit();
+        }));
+
+    EXPECT_THAT(InitAndStart(), IsError(ERR_IO_PENDING));
+    run_loop.Run();
+    const std::vector<HostResolutionCallbackInfo> expected_host_resolution_info{
+        {{service_endpoint}, kDnsAliases}};
+    EXPECT_THAT(host_resolution_callback_info_,
+                testing::ElementsAreArray(expected_host_resolution_info));
+
+    // There should be no pending task that causes a crash.
+    FastForwardBy(base::Seconds(10));
+  }
+}
+
+// This test covers the case where multiple calls return kMayBeDeletedAsync,
+// while a Connector is busy doing different things.
+TEST_F(TcpConnectJobTest, OnHostResolutionCallbackMultipleMayBeDeletedAsync) {
+  // These are received in reverse order.
+  const auto service_endpoint1 = CreateServiceEndpoint({kIpV4Endpoint1});
+  const auto service_endpoint2 = CreateServiceEndpoint({kIpV4Endpoint2});
+  const auto service_endpoint3 = CreateServiceEndpoint({kIpV4Endpoint3});
+
+  auto request = host_resolver_.AddFakeRequest();
+
+  // There are 4 calls - one update per ServiceEndpoint, and then another on
+  // completion.
+  EnableHostResolutionCallbacks(
+      {OnHostResolutionCallbackResult::kMayBeDeletedAsync,
+       OnHostResolutionCallbackResult::kMayBeDeletedAsync,
+       OnHostResolutionCallbackResult::kMayBeDeletedAsync,
+       OnHostResolutionCallbackResult::kMayBeDeletedAsync});
+
+  MockConnectCompleter connect_completer1;
+  MockConnectCompleter connect_completer3;
+  AddConnect(MockConnect(&connect_completer1), kIpV4Endpoint3);
+  AddConnect(MockConnect(ASYNC, ERR_FAILED), kIpV4Endpoint2);
+  AddConnect(MockConnect(&connect_completer3), kIpV4Endpoint1);
+
+  EXPECT_THAT(InitAndStart(), IsError(ERR_IO_PENDING));
+
+  request->set_endpoints({service_endpoint3}).CallOnServiceEndpointsUpdated();
+  connect_completer1.WaitForConnect();
+
+  // Second update happens while still connecting to the first endpoint, so
+  // shouldn trigger any new connection attempts.
+  request->set_endpoints({service_endpoint2, service_endpoint3})
+      .CallOnServiceEndpointsUpdated();
+  // Complete all tasks, so make sure the async task triggered by the
+  // kMayBeDeletedAsync result has run.
+  FastForwardBy(base::Milliseconds(1));
+
+  // First connection attempt fails. This should trigger the second connection
+  // attempt, which also fails.
+  connect_completer1.Complete(ERR_FAILED);
+  // Complete all tasks, to make sure both connection attempts have failed.
+  FastForwardBy(base::Milliseconds(1));
+
+  // Third update happens while idle. It's the crypto complete message, and also
+  // adds all the aliases, but still waiting on more IPs to connect to, so
+  // nothing happens.
+  request->set_aliases(kDnsAliases)
+      .set_crypto_ready(true)
+      .CallOnServiceEndpointsUpdated();
+  // Complete all tasks, so make sure the async task triggered by the
+  // kMayBeDeletedAsync result has run.
+  FastForwardBy(base::Milliseconds(1));
+
+  EXPECT_FALSE(connect_completer3.is_connecting());
+
+  // Last update happens.
+  request
+      ->set_endpoints({service_endpoint1, service_endpoint2, service_endpoint3})
+      .CallOnServiceEndpointRequestFinished(OK);
+  // Request completes successfully.
+  connect_completer3.WaitForConnectAndComplete(OK);
+
+  WaitForSuccess(kIpV4Endpoint1, service_endpoint1,
+                 /*expected_connection_attempts=*/
+                 {{kIpV4Endpoint3, ERR_FAILED}, {kIpV4Endpoint2, ERR_FAILED}});
+
+  const std::vector<HostResolutionCallbackInfo> expected_host_resolution_info{
+      {{service_endpoint3}, /*dns_aliases=*/{}},
+      {{service_endpoint2, service_endpoint3}, /*dns_aliases=*/{}},
+      {{service_endpoint2, service_endpoint3}, kDnsAliases},
+      {{service_endpoint1, service_endpoint2, service_endpoint3}, kDnsAliases}};
+  EXPECT_THAT(host_resolution_callback_info_,
+              testing::ElementsAreArray(expected_host_resolution_info));
 }
 
 /////////////////////////////////////////////////////////////

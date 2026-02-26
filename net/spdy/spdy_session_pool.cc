@@ -304,7 +304,7 @@ base::WeakPtr<SpdySession> SpdySessionPool::RequestSession(
 OnHostResolutionCallbackResult SpdySessionPool::OnHostResolutionComplete(
     const SpdySessionKey& key,
     bool is_websocket,
-    const std::vector<HostResolverEndpointResult>& endpoint_results,
+    base::span<const HostResolverEndpointResult> endpoint_results,
     const std::set<std::string>& aliases) {
   // If there are no pending requests for that alias, nothing to do.
   if (spdy_session_request_map_.find(key) == spdy_session_request_map_.end())

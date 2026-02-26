@@ -9,7 +9,9 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <variant>
 
+#include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -123,6 +125,15 @@ enum class OnHostResolutionCallbackResult {
   kMayBeDeletedAsync,
 };
 
+// The output of a DNS lookup. Allows both the legacy format, and the new
+// format.
+//
+// TODO(https://crbug.com/484073410): Get rid of this and use base::span<const
+// ServiceEndpoint> directly, once TransportConnectJob has been removed.
+using HostResolverEndpointsOrServiceEndpoints =
+    std::variant<base::span<const HostResolverEndpointResult>,
+                 base::span<const ServiceEndpoint>>;
+
 // If non-null, invoked when host resolution completes. May not destroy the
 // ConnectJob synchronously, but may signal the ConnectJob may be destroyed
 // asynchronously. See OnHostResolutionCallbackResult above.
@@ -132,7 +143,7 @@ enum class OnHostResolutionCallbackResult {
 using OnHostResolutionCallback =
     base::RepeatingCallback<OnHostResolutionCallbackResult(
         const HostPortPair& host_port_pair,
-        const std::vector<HostResolverEndpointResult>& endpoint_results,
+        const HostResolverEndpointsOrServiceEndpoints& endpoint_results,
         const std::set<std::string>& aliases)>;
 
 // ConnectJob provides an abstract interface for "connecting" a socket.

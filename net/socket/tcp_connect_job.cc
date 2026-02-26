@@ -38,6 +38,22 @@
 
 namespace net {
 
+namespace {
+
+// Converts `endpoint` to a HostPortPair.
+HostPortPair ToLegacyDestinationEndpoint(
+    const TransportSocketParams::Endpoint& endpoint) {
+  if (std::holds_alternative<url::SchemeHostPort>(endpoint)) {
+    return HostPortPair::FromSchemeHostPort(
+        std::get<url::SchemeHostPort>(endpoint));
+  }
+
+  DCHECK(std::holds_alternative<HostPortPair>(endpoint));
+  return std::get<HostPortPair>(endpoint);
+}
+
+}  // namespace
+
 TcpConnectJob::ServiceEndpointOverride::ServiceEndpointOverride(
     ServiceEndpoint endpoint,
     std::set<std::string> dns_aliases)
@@ -204,9 +220,36 @@ int TcpConnectJob::DoServiceEndpointsUpdated(
     UpdateSvcbOptional();
   }
 
-  // TODO(https://crbug.com/484073410): Call `
-  // params_->host_resolution_callback()` here, if non-null, and delay next step
-  // if needed.
+  if (!params_->host_resolution_callback().is_null()) {
+    OnHostResolutionCallbackResult callback_result =
+        params_->host_resolution_callback().Run(
+            ToLegacyDestinationEndpoint(params_->destination()),
+            GetEndpointResults(), GetDnsAliasResults());
+
+    // Best effort to delay `this` to allow looking for H2 sessions that may
+    // result in cancelling this job. Both the slow timer, and previous calls to
+    // HandleServiceEndpointsUpdated() means that it's possible for work to
+    // continue even when this is hit, and we're nominally waiting for
+    // TryAdvanceWaitingConnectorsAsync() to be invoked.
+    //
+    // This is only intended to delay things long enough for a single PostTask,
+    // invoked by the callback, to run. That's a short enough delay that it's
+    // probably not worth trying to do better, though would could have
+    // DoTryAdvanceWaitingConnectors() and GetNextIPEndPoint() return
+    // ERR_IO_PENDING until the task posted here is run.
+    //
+    // This does rely on task scheduling order to work as expected - that is,
+    // for a task posted by the host resolution callback to be run strictly
+    // before this task ends up being executed, so need to be careful of
+    // priority inversion and starvation if modifying task priority here.
+    if (callback_result == OnHostResolutionCallbackResult::kMayBeDeletedAsync) {
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE,
+          base::BindOnce(&TcpConnectJob::TryAdvanceWaitingConnectorsAsync,
+                         weak_ptr_factory_.GetWeakPtr()));
+      return ERR_IO_PENDING;
+    }
+  }
 
   return DoTryAdvanceWaitingConnectors();
 }

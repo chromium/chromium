@@ -15,6 +15,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
@@ -286,7 +287,7 @@ class NET_EXPORT SpdySessionPool
   OnHostResolutionCallbackResult OnHostResolutionComplete(
       const SpdySessionKey& key,
       bool is_websocket,
-      const std::vector<HostResolverEndpointResult>& endpoint_results,
+      base::span<const HostResolverEndpointResult> endpoint_results,
       const std::set<std::string>& aliases);
 
   // Remove all mappings and aliases for the given session, which must

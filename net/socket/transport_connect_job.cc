@@ -10,7 +10,6 @@
 #include <variant>
 
 #include "base/check_op.h"
-#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -292,8 +291,7 @@ int TransportConnectJob::DoResolveHostComplete(int result) {
     OnHostResolutionCallbackResult callback_result =
         params_->host_resolution_callback().Run(
             ToLegacyDestinationEndpoint(params_->destination()),
-            base::ToVector(request_->GetEndpointResults()),
-            request_->GetDnsAliasResults());
+            request_->GetEndpointResults(), request_->GetDnsAliasResults());
     if (callback_result == OnHostResolutionCallbackResult::kMayBeDeletedAsync) {
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(&TransportConnectJob::OnIOComplete,
