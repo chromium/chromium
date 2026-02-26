@@ -27,6 +27,7 @@
 #import "ios/chrome/browser/discover_feed/model/discover_feed_visibility_observer.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/home_customization/model/home_background_customization_service_factory.h"
+#import "ios/chrome/browser/home_customization/model/home_background_image_service_factory.h"
 #import "ios/chrome/browser/home_customization/model/user_uploaded_image_manager_factory.h"
 #import "ios/chrome/browser/image_fetcher/model/image_fetcher_service_factory.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
@@ -93,8 +94,7 @@ class NewTabPageMediatorTest : public PlatformTest {
               return std::make_unique<HomeBackgroundCustomizationService>(
                   profile->GetPrefs(),
                   UserUploadedImageManagerFactory::GetForProfile(profile),
-                  nullptr);  // HomeBackgroundImageService is not needed for
-                             // this test.
+                  HomeBackgroundImageServiceFactory::GetForProfile(profile));
             }));
     test_profile_builder.AddTestingFactory(
         NTPBackgroundImageCacheServiceFactory::GetInstance(),

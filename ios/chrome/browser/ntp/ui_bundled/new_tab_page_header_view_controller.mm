@@ -1028,7 +1028,12 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
 // Sets the background using the current color palette, or defaults if none is
 // set.
 - (void)applyBackgroundTheme {
-  [self updateIdentityDiscState];
+  // `self.identityDiscButton` should not be updated if the view has not been
+  // created or initialized yet.
+  if (self.identityDiscButton && self.identityDiscImage &&
+      self.identityDiscAccessibilityLabel) {
+    [self updateIdentityDiscState];
+  }
 
   BOOL hasBlurredBackground =
       [self.traitCollection boolForNewTabPageImageBackgroundTrait];

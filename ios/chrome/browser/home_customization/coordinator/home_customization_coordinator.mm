@@ -174,6 +174,7 @@ CGFloat const kSheetCornerRadius = 30;
   }
 
   _mediator = nil;
+  _backgroundConfigurationMediator = nil;
   _mainViewController = nil;
   _magicStackViewController = nil;
   _discoverViewController = nil;
