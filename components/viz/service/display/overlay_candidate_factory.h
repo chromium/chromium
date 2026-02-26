@@ -70,7 +70,6 @@ class VIZ_SERVICE_EXPORT OverlayCandidateFactory {
       const SurfaceDamageRectList* surface_damage_rect_list,
       const SkM44* output_color_matrix,
       const gfx::RectF primary_rect,
-      const OverlayProcessorInterface::FilterOperationsMap* render_pass_filters,
       const OverlayContext& context);
 
   OverlayCandidateFactory(const OverlayCandidateFactory&) = delete;
@@ -101,13 +100,9 @@ class VIZ_SERVICE_EXPORT OverlayCandidateFactory {
   // and |quad_list_end| have an associated filter and occlude |quad|.
   // |quad| should normally be at |quad_list_end| since we only want to check
   // for occlusion with quads above it.
-  static bool IsOccludedByFilteredQuad(
-      const DrawQuad& quad,
-      QuadList::ConstIterator quad_list_begin,
-      QuadList::ConstIterator quad_list_end,
-      const base::flat_map<AggregatedRenderPassId,
-                           raw_ptr<cc::FilterOperations, CtnExperimental>>&
-          render_pass_backdrop_filters);
+  static bool IsOccludedByFilteredQuad(const DrawQuad& quad,
+                                       QuadList::ConstIterator quad_list_begin,
+                                       QuadList::ConstIterator quad_list_end);
 
   // Returns true if any of the quads in the list given by |quad_list_begin|
   // and |quad_list_end| occlude |quad|.
@@ -172,8 +167,6 @@ class VIZ_SERVICE_EXPORT OverlayCandidateFactory {
   raw_ptr<const DisplayResourceProvider> resource_provider_;
   raw_ptr<const SurfaceDamageRectList> surface_damage_rect_list_;
   const gfx::RectF primary_rect_;
-  raw_ptr<const OverlayProcessorInterface::FilterOperationsMap>
-      render_pass_filters_;
   const OverlayContext context_;
 
   // The union of all surface damages that are not specifically assigned to a

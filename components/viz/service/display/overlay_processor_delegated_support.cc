@@ -106,6 +106,9 @@ TryPromoteDrawQuadForDelegation(
       case OverlayCandidate::CandidateStatus::kFailRpdqWithTransform:
         return base::unexpected(
             DelegationStatus::kCompositedCandidateRpdqWithTransform);
+      case OverlayCandidate::CandidateStatus::kFailBackdropFilter:
+        return base::unexpected(
+            DelegationStatus::kCompositedCandidateBackdropFilter);
       default:
         return base::unexpected(DelegationStatus::kCompositedCandidateFailed);
     }

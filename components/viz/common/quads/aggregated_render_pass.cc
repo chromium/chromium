@@ -15,6 +15,7 @@
 #include "cc/base/math_util.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/quads/aggregated_render_pass_draw_quad.h"
+#include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/quads/compositor_render_pass_draw_quad.h"
 #include "components/viz/common/quads/debug_border_draw_quad.h"
 #include "components/viz/common/quads/draw_quad.h"
@@ -61,9 +62,6 @@ void AggregatedRenderPass::SetAll(
     const gfx::Rect& output_rect,
     const gfx::Rect& damage_rect,
     const gfx::Transform& transform_to_root_target,
-    const cc::FilterOperations& pass_filters,
-    const cc::FilterOperations& pass_backdrop_filters,
-    const std::optional<SkPath>& pass_backdrop_filter_bounds,
     gfx::ContentColorUsage color_usage,
     bool has_transparent_background,
     bool cache_render_pass,
@@ -75,9 +73,6 @@ void AggregatedRenderPass::SetAll(
   this->output_rect = output_rect;
   this->damage_rect = damage_rect;
   this->transform_to_root_target = transform_to_root_target;
-  this->filters = pass_filters;
-  this->backdrop_filters = pass_backdrop_filters;
-  this->backdrop_filter_bounds = pass_backdrop_filter_bounds;
   content_color_usage = color_usage;
   this->has_transparent_background = has_transparent_background;
   this->cache_render_pass = cache_render_pass;
@@ -92,15 +87,19 @@ void AggregatedRenderPass::SetAll(
 AggregatedRenderPassDrawQuad*
 AggregatedRenderPass::CopyFromAndAppendRenderPassDrawQuad(
     const CompositorRenderPassDrawQuad* quad,
+    const CompositorRenderPass& render_pass,
     AggregatedRenderPassId render_pass_id) {
   DCHECK(!shared_quad_state_list.empty());
+  CHECK_EQ(quad->render_pass_id, render_pass.id);
   auto* copy_quad = CreateAndAppendDrawQuad<AggregatedRenderPassDrawQuad>();
   copy_quad->SetAll(
       shared_quad_state_list.back(), quad->rect, quad->visible_rect,
       quad->needs_blending, render_pass_id, quad->mask_resource_id(),
       quad->mask_uv_rect, quad->mask_texture_size, quad->filters_scale,
       quad->filters_origin, quad->tex_coord_rect, quad->force_anti_aliasing_off,
-      quad->backdrop_filter_quality, quad->intersects_damage_under);
+      quad->backdrop_filter_quality, quad->intersects_damage_under,
+      render_pass.filters, render_pass.backdrop_filters,
+      render_pass.backdrop_filter_bounds);
   return copy_quad;
 }
 
@@ -157,7 +156,6 @@ std::unique_ptr<AggregatedRenderPass> AggregatedRenderPass::Copy(
   auto copy_pass = std::make_unique<AggregatedRenderPass>(
       shared_quad_state_list.size(), quad_list.size());
   copy_pass->SetAll(new_id, output_rect, damage_rect, transform_to_root_target,
-                    filters, backdrop_filters, backdrop_filter_bounds,
                     content_color_usage, has_transparent_background,
                     cache_render_pass, has_damage_from_contributing_content,
                     generate_mipmap);
@@ -172,7 +170,6 @@ std::unique_ptr<AggregatedRenderPass> AggregatedRenderPass::DeepCopy() const {
   auto copy_pass = std::make_unique<AggregatedRenderPass>(
       shared_quad_state_list.size(), quad_list.size());
   copy_pass->SetAll(id, output_rect, damage_rect, transform_to_root_target,
-                    filters, backdrop_filters, backdrop_filter_bounds,
                     content_color_usage, has_transparent_background,
                     cache_render_pass, has_damage_from_contributing_content,
                     generate_mipmap);

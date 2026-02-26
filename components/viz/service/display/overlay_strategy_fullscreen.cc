@@ -55,9 +55,6 @@ OverlayStrategyFullscreen::~OverlayStrategyFullscreen() = default;
 
 void OverlayStrategyFullscreen::Propose(
     const SkM44& output_color_matrix,
-    const OverlayProcessorInterface::FilterOperationsMap& render_pass_filters,
-    const OverlayProcessorInterface::FilterOperationsMap&
-        render_pass_backdrop_filters,
     const DisplayResourceProvider* resource_provider,
     AggregatedRenderPassList* render_pass_list,
     SurfaceDamageRectList* surface_damage_rect_list,
@@ -104,8 +101,7 @@ void OverlayStrategyFullscreen::Propose(
 
   OverlayCandidateFactory candidate_factory = OverlayCandidateFactory(
       render_pass, resource_provider, surface_damage_rect_list,
-      &output_color_matrix, GetPrimaryPlaneDisplayRect(primary_plane),
-      &render_pass_filters, context);
+      &output_color_matrix, GetPrimaryPlaneDisplayRect(primary_plane), context);
   if (candidate_factory.FromDrawQuad(quad, candidate) !=
       OverlayCandidate::CandidateStatus::kSuccess) {
     return;
@@ -162,9 +158,6 @@ void OverlayStrategyFullscreen::Propose(
 
 bool OverlayStrategyFullscreen::Attempt(
     const SkM44& output_color_matrix,
-    const OverlayProcessorInterface::FilterOperationsMap& render_pass_filters,
-    const OverlayProcessorInterface::FilterOperationsMap&
-        render_pass_backdrop_filters,
     const DisplayResourceProvider* resource_provider,
     AggregatedRenderPassList* render_pass_list,
     SurfaceDamageRectList* surface_damage_rect_list,

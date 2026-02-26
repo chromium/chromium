@@ -116,17 +116,15 @@ class CopyOutputScalingPixelTest
           i % 2 == 0 ? x_block : (viewport_size.width() - 2 * x_block),
           i / 2 == 0 ? y_block : (viewport_size.height() - 2 * y_block),
           x_block, y_block);
-      smaller_passes[i] =
-          AddRenderPass(&list, pass_id, smaller_pass_rects[i], gfx::Transform(),
-                        cc::FilterOperations());
+      smaller_passes[i] = cc::AddRenderPass(
+          &list, pass_id, smaller_pass_rects[i], gfx::Transform());
       cc::AddQuad(smaller_passes[i], smaller_pass_rects[i],
                   smaller_pass_colors[i]);
     }
 
     // Create the root render pass and add all the child passes to it.
-    auto* root_pass =
-        cc::AddRenderPass(&list, pass_id, gfx::Rect(viewport_size),
-                          gfx::Transform(), cc::FilterOperations());
+    auto* root_pass = cc::AddRenderPass(
+        &list, pass_id, gfx::Rect(viewport_size), gfx::Transform());
     for (int i = 0; i < 4; ++i)
       cc::AddRenderPassQuad(root_pass, smaller_passes[i]);
     cc::AddQuad(root_pass, gfx::Rect(viewport_size), root_pass_color);

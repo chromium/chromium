@@ -40,6 +40,13 @@ class VIZ_COMMON_EXPORT AggregatedRenderPassDrawQuad
               const gfx::RectF& tex_coord_rect,
               bool force_anti_aliasing_off);
 
+  void SetFilters(cc::FilterOperations filters,
+                  cc::FilterOperations backdrop_filters,
+                  std::optional<SkPath> backdrop_filter_bounds,
+                  const gfx::Vector2dF& filters_scale,
+                  const gfx::PointF& filters_origin,
+                  const float backdrop_filter_quality);
+
   void SetAll(const AggregatedRenderPassDrawQuad& other);
 
   void SetAll(const SharedQuadState* shared_quad_state,
@@ -55,9 +62,24 @@ class VIZ_COMMON_EXPORT AggregatedRenderPassDrawQuad
               const gfx::RectF& tex_coord_rect,
               bool force_anti_aliasing_off,
               float backdrop_filter_quality,
-              bool intersects_damage_under);
+              bool intersects_damage_under,
+              cc::FilterOperations filters,
+              cc::FilterOperations backdrop_filters,
+              std::optional<SkPath> backdrop_filter_bounds);
 
   AggregatedRenderPassId render_pass_id;
+
+  // Post-processing filters, applied to the pixels in the render pass' texture.
+  cc::FilterOperations filters;
+
+  // Post-processing filters, applied to the pixels showing through the
+  // backdrop of the render pass, from behind it.
+  cc::FilterOperations backdrop_filters;
+
+  // Clipping bounds for backdrop filter. If defined, is in a coordinate space
+  // equivalent to render pass physical pixels after applying
+  // `RenderPassDrawQuad::filter_scale`.
+  std::optional<SkPath> backdrop_filter_bounds;
 
   static const AggregatedRenderPassDrawQuad* MaterialCast(const DrawQuad*);
 

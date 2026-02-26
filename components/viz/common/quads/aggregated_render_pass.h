@@ -28,6 +28,7 @@
 
 namespace viz {
 class AggregatedRenderPass;
+class CompositorRenderPass;
 class CompositorRenderPassDrawQuad;
 class AggregatedRenderPassDrawQuad;
 
@@ -56,17 +57,17 @@ class VIZ_COMMON_EXPORT AggregatedRenderPass : public RenderPassInternal {
               const gfx::Rect& output_rect,
               const gfx::Rect& damage_rect,
               const gfx::Transform& transform_to_root_target,
-              const cc::FilterOperations& pass_filters,
-              const cc::FilterOperations& pass_backdrop_filters,
-              const std::optional<SkPath>& pass_backdrop_filter_bounds,
               gfx::ContentColorUsage color_usage,
               bool has_transparent_background,
               bool cache_render_pass,
               bool has_damage_from_contributing_content,
               bool generate_mipmap);
 
+  // TODO(crbug.com/444264038): Remove the `render_pass` parameter once the
+  // filter data is moved to CompositorRenderPassDrawQuad.
   AggregatedRenderPassDrawQuad* CopyFromAndAppendRenderPassDrawQuad(
       const CompositorRenderPassDrawQuad* quad,
+      const CompositorRenderPass& render_pass,
       AggregatedRenderPassId render_pass_id);
   AggregatedRenderPassDrawQuad* CopyFromAndAppendRenderPassDrawQuad(
       const AggregatedRenderPassDrawQuad* quad);
@@ -130,21 +131,6 @@ class VIZ_COMMON_EXPORT AggregatedRenderPass : public RenderPassInternal {
   // overlays since a 30fps capture on a 60fps monitor can make a copy request
   // every other frame.
   bool video_capture_enabled = false;
-
-  // TODO(crbug.com/444264038): Move these to RenderPassDrawQuadInternal.
-  // Post-processing filters, applied to the pixels in the render pass' texture.
-  cc::FilterOperations filters;
-
-  // TODO(crbug.com/444264038): Move these to RenderPassDrawQuadInternal.
-  // Post-processing filters, applied to the pixels showing through the
-  // backdrop of the render pass, from behind it.
-  cc::FilterOperations backdrop_filters;
-
-  // TODO(crbug.com/444264038): Move these to RenderPassDrawQuadInternal.
-  // Clipping bounds for backdrop filter. If defined, is in a coordinate space
-  // equivalent to render pass physical pixels after applying
-  // `RenderPassDrawQuad::filter_scale`.
-  std::optional<SkPath> backdrop_filter_bounds;
 
   void AsValueInto(base::trace_event::TracedValue* dict) const;
 

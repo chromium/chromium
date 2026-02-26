@@ -232,11 +232,9 @@ DCLayerResult IsUnderlayAllowed(const DrawQuad* quad) {
 }
 
 // Any occluding quads in the quad list on top of the overlay/underlay
-bool IsOccluded(
-    const gfx::RectF& target_quad,
-    QuadList::ConstIterator quad_list_begin,
-    QuadList::ConstIterator quad_list_end,
-    const DCLayerOverlayProcessor::FilterOperationsMap& render_pass_filters) {
+bool IsOccluded(const gfx::RectF& target_quad,
+                QuadList::ConstIterator quad_list_begin,
+                QuadList::ConstIterator quad_list_end) {
   // If the current quad |quad_list_end| has rounded corners, force it
   // to underlay mode.
   if (quad_list_end->shared_quad_state->mask_filter_info.HasRoundedCorners()) {
@@ -254,14 +252,11 @@ bool IsOccluded(
     // Expand the overlap_rect for the render pass draw quad with pixel moving
     // foreground filters.
     bool has_pixel_moving_filter = false;
-    if (!render_pass_filters.empty() &&
-        quad->material == DrawQuad::Material::kAggregatedRenderPass) {
+    if (quad->material == DrawQuad::Material::kAggregatedRenderPass) {
       const auto* rpdq = AggregatedRenderPassDrawQuad::MaterialCast(quad);
-      auto render_pass_it = render_pass_filters.find(rpdq->render_pass_id);
-      if (render_pass_it != render_pass_filters.end()) {
-        auto* filters = render_pass_it->second.get();
-        overlap_rect = gfx::RectF(
-            GetTargetExpandedRectForPixelMovingFilters(*rpdq, *filters));
+      if (!rpdq->filters.IsEmpty()) {
+        overlap_rect =
+            gfx::RectF(GetTargetExpandedRectForPixelMovingFilters(*rpdq));
         has_pixel_moving_filter = true;
       }
     }
@@ -827,7 +822,6 @@ void DCLayerOverlayProcessor::RemoveClearVideoQuadCandidatesIfMoving(
 void DCLayerOverlayProcessor::CollectCandidates(
     const DisplayResourceProvider* resource_provider,
     AggregatedRenderPass* render_pass,
-    const FilterOperationsMap& render_pass_backdrop_filters,
     RenderPassOverlayData& overlay_data,
     RenderPassCurrentFrameState& render_pass_state,
     GlobalOverlayState& global_overlay_state) {
@@ -855,9 +849,7 @@ void DCLayerOverlayProcessor::CollectCandidates(
   for (auto it = quad_list->begin(); it != quad_list->end(); ++it) {
     if (it->material == DrawQuad::Material::kAggregatedRenderPass) {
       const auto* rpdq = AggregatedRenderPassDrawQuad::MaterialCast(*it);
-      auto render_pass_it =
-          render_pass_backdrop_filters.find(rpdq->render_pass_id);
-      if (render_pass_it != render_pass_backdrop_filters.end()) {
+      if (!rpdq->backdrop_filters.IsEmpty()) {
         backdrop_filter_rects.push_back(ClippedQuadRectangle(rpdq));
       }
       continue;
@@ -909,7 +901,6 @@ void DCLayerOverlayProcessor::CollectCandidates(
 void DCLayerOverlayProcessor::PromoteCandidates(
     const DisplayResourceProvider* resource_provider,
     AggregatedRenderPass* render_pass,
-    const FilterOperationsMap& render_pass_filters,
     const RenderPassPreviousFrameState& previous_frame_state,
     bool is_page_fullscreen_mode,
     RenderPassOverlayData& overlay_data,
@@ -944,7 +935,7 @@ void DCLayerOverlayProcessor::PromoteCandidates(
 
     // Quad is considered an "overlay" if it has no occluders.
     bool is_overlay = !IsOccluded(gfx::RectF(quad_rect_in_target_space),
-                                  quad_list->begin(), it, render_pass_filters);
+                                  quad_list->begin(), it);
 
     // When the the render pass has capture, always treat the overlay as the
     // "underlay" case, so we always replace the video quad with a hole punch.
@@ -1007,8 +998,6 @@ void DCLayerOverlayProcessor::PromoteCandidates(
 
 void DCLayerOverlayProcessor::Process(
     const DisplayResourceProvider* resource_provider,
-    const FilterOperationsMap& render_pass_filters,
-    const FilterOperationsMap& render_pass_backdrop_filters,
     const SurfaceDamageRectList& surface_damage_rect_list_in_root_space,
     bool is_page_fullscreen_mode,
     RenderPassOverlayDataMap& render_pass_overlay_data_map) {
@@ -1037,8 +1026,7 @@ void DCLayerOverlayProcessor::Process(
       rect.Intersect(render_pass->output_rect);
     }
 
-    CollectCandidates(resource_provider, render_pass,
-                      render_pass_backdrop_filters, overlay_data,
+    CollectCandidates(resource_provider, render_pass, overlay_data,
                       current_frame_state, global_overlay_state);
   }
 
@@ -1097,7 +1085,7 @@ void DCLayerOverlayProcessor::Process(
     previous_frame_render_pass_states_.emplace(render_pass->id,
                                                RenderPassPreviousFrameState());
 
-    PromoteCandidates(resource_provider, render_pass, render_pass_filters,
+    PromoteCandidates(resource_provider, render_pass,
                       previous_frame_render_pass_states[render_pass->id],
                       is_page_fullscreen_mode, overlay_data,
                       render_pass_state_map[render_pass], global_overlay_state);
@@ -1112,18 +1100,6 @@ void DCLayerOverlayProcessor::Process(
     RecordOverlayHistograms(render_pass_overlay_data_map,
                             global_overlay_state.has_occluding_damage_rect);
   }
-}
-
-void DCLayerOverlayProcessor::Process(
-    const DisplayResourceProvider* resource_provider,
-    const SurfaceDamageRectList& surface_damage_rect_list_in_root_space,
-    bool is_page_fullscreen_mode,
-    RenderPassOverlayDataMap& render_pass_overlay_data_map) {
-  // By default, call the other overload with empty filter maps.
-  Process(resource_provider, /*render_pass_filters=*/{},
-          /*render_pass_backdrop_filters=*/{},
-          surface_damage_rect_list_in_root_space, is_page_fullscreen_mode,
-          render_pass_overlay_data_map);
 }
 
 bool DCLayerOverlayProcessor::ShouldSkipOverlay(

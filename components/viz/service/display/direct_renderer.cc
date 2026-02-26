@@ -254,22 +254,28 @@ void DirectRenderer::DrawFrame(
   output_surface_->SetNeedsMeasureNextDrawLatency();
   BeginDrawingFrame();
 
-  // RenderPass owns filters, backdrop_filters, etc., and will outlive this
-  // function call. So it is safe to store pointers in these maps.
+  // Determine the output rects for render passes with pixel-moving backdrop
+  // filters.
+  // TODO(crbug.com/444264038): Move this logic to
+  // `DirectRenderer::ComputeScissorRectForRenderPass` and remove the class
+  // member `backdrop_filter_output_rects_`.
+  base::flat_map<AggregatedRenderPassId, gfx::Rect>
+      backdrop_filter_output_rect_candidates;
   for (const auto& pass : *render_passes_in_draw_order) {
-    if (!pass->filters.IsEmpty()) {
-      render_pass_filters_[pass->id] = &pass->filters;
-      if (pass->filters.HasFilterThatMovesPixels())
-        has_pixel_moving_foreground_filters_ = true;
-    }
-    if (!pass->backdrop_filters.IsEmpty()) {
-      render_pass_backdrop_filters_[pass->id] = &pass->backdrop_filters;
-      render_pass_backdrop_filter_bounds_[pass->id] =
-          pass->backdrop_filter_bounds;
-      if (pass->backdrop_filters.HasFilterThatMovesPixels()) {
-        backdrop_filter_output_rects_[pass->id] =
-            cc::MathUtil::MapEnclosingClippedRect(
-                pass->transform_to_root_target, pass->output_rect);
+    backdrop_filter_output_rect_candidates[pass->id] =
+        cc::MathUtil::MapEnclosingClippedRect(pass->transform_to_root_target,
+                                              pass->output_rect);
+    for (auto* quad : pass->quad_list) {
+      if (auto* rpdq = quad->DynamicCast<AggregatedRenderPassDrawQuad>()) {
+        if (rpdq->filters.HasFilterThatMovesPixels()) {
+          has_pixel_moving_foreground_filters_ = true;
+        }
+        if (rpdq->backdrop_filters.HasFilterThatMovesPixels()) {
+          // This is correct because an RPDQ can only embed a RenderPass that
+          // comes first in draw list.
+          backdrop_filter_output_rects_[rpdq->render_pass_id] =
+              backdrop_filter_output_rect_candidates[rpdq->render_pass_id];
+        }
       }
     }
   }
@@ -296,8 +302,7 @@ void DirectRenderer::DrawFrame(
     base::ElapsedTimer overlay_processing_timer;
     overlay_processor_->ProcessForOverlays(
         resource_provider_, render_passes_in_draw_order,
-        output_surface_->color_matrix(), render_pass_filters_,
-        render_pass_backdrop_filters_, std::move(surface_damage_rect_list),
+        output_surface_->color_matrix(), std::move(surface_damage_rect_list),
         OverlayProcessorInterface::PrimaryPlaneParams{
             .viewport_size = device_viewport_size,
             .resource_size_in_pixels = surface_resource_size,
@@ -462,9 +467,6 @@ void DirectRenderer::DrawFrame(
   current_frame()->root_render_pass = nullptr;
 
   render_passes_in_draw_order->clear();
-  render_pass_filters_.clear();
-  render_pass_backdrop_filters_.clear();
-  render_pass_backdrop_filter_bounds_.clear();
   render_pass_bypass_quads_.clear();
   backdrop_filter_output_rects_.clear();
   has_pixel_moving_foreground_filters_ = false;
@@ -507,11 +509,7 @@ bool DirectRenderer::ShouldSkipQuad(const DrawQuad& quad,
   if (rpdq) {
     // Render pass draw quads can have pixel-moving filters that expand their
     // visible bounds.
-    auto filter_it = render_pass_filters_.find(rpdq->render_pass_id);
-    if (filter_it != render_pass_filters_.end()) {
-      target_rect =
-          GetExpandedRectForPixelMovingFilters(*rpdq, *filter_it->second);
-    }
+    target_rect = GetExpandedRectForPixelMovingFilters(*rpdq);
   }
 
   target_rect = cc::MathUtil::MapEnclosingClippedRect(
@@ -567,26 +565,6 @@ void DirectRenderer::DoDrawPolygon(const DrawPolygon& poly,
   for (size_t i = 0; i < quads.size(); ++i) {
     DoDrawQuad(poly.original_ref(), &quads[i]);
   }
-}
-
-const cc::FilterOperations* DirectRenderer::FiltersForPass(
-    AggregatedRenderPassId render_pass_id) const {
-  auto it = render_pass_filters_.find(render_pass_id);
-  return it == render_pass_filters_.end() ? nullptr : it->second;
-}
-
-const cc::FilterOperations* DirectRenderer::BackdropFiltersForPass(
-    AggregatedRenderPassId render_pass_id) const {
-  auto it = render_pass_backdrop_filters_.find(render_pass_id);
-  return it == render_pass_backdrop_filters_.end() ? nullptr : it->second;
-}
-
-const std::optional<SkPath> DirectRenderer::BackdropFilterBoundsForPass(
-    AggregatedRenderPassId render_pass_id) const {
-  auto it = render_pass_backdrop_filter_bounds_.find(render_pass_id);
-  return it == render_pass_backdrop_filter_bounds_.end()
-             ? std::optional<SkPath>()
-             : it->second;
 }
 
 bool DirectRenderer::SupportsBGRA() const {
@@ -1005,13 +983,9 @@ gfx::Rect DirectRenderer::ComputeScissorRectForRenderPass(
             }
 
             // For render pass with pixel moving foreground filters.
-            const cc::FilterOperations* foreground_filters =
-                FiltersForPass(rpdq->render_pass_id);
-            if (foreground_filters &&
-                foreground_filters->HasFilterThatMovesPixels()) {
+            if (rpdq->filters.HasFilterThatMovesPixels()) {
               gfx::Rect expanded_rect =
-                  GetTargetExpandedRectForPixelMovingFilters(
-                      *rpdq, *foreground_filters);
+                  GetTargetExpandedRectForPixelMovingFilters(*rpdq);
 
               // Expanding damage outside of the 'clip_rect' can cause parts of
               // the root to be rendered that may never have been included due

@@ -44,9 +44,6 @@ OverlayStrategyUnderlayCast::~OverlayStrategyUnderlayCast() = default;
 
 void OverlayStrategyUnderlayCast::Propose(
     const SkM44& output_color_matrix,
-    const OverlayProcessorInterface::FilterOperationsMap& render_pass_filters,
-    const OverlayProcessorInterface::FilterOperationsMap&
-        render_pass_backdrop_filters,
     const DisplayResourceProvider* resource_provider,
     AggregatedRenderPassList* render_pass_list,
     SurfaceDamageRectList* surface_damage_rect_list,
@@ -63,8 +60,7 @@ void OverlayStrategyUnderlayCast::Propose(
   context.supports_mask_filter = true;
   OverlayCandidateFactory candidate_factory = OverlayCandidateFactory(
       render_pass, resource_provider, surface_damage_rect_list,
-      &output_color_matrix, GetPrimaryPlaneDisplayRect(primary_plane),
-      &render_pass_filters, context);
+      &output_color_matrix, GetPrimaryPlaneDisplayRect(primary_plane), context);
 
   // Original code did reverse iteration.
   // Here we do forward but find the last one. which should be the same thing.
@@ -94,9 +90,6 @@ void OverlayStrategyUnderlayCast::Propose(
 
 bool OverlayStrategyUnderlayCast::Attempt(
     const SkM44& output_color_matrix,
-    const OverlayProcessorInterface::FilterOperationsMap& render_pass_filters,
-    const OverlayProcessorInterface::FilterOperationsMap&
-        render_pass_backdrop_filters,
     const DisplayResourceProvider* resource_provider,
     AggregatedRenderPassList* render_pass_list,
     SurfaceDamageRectList* surface_damage_rect_list,
@@ -116,8 +109,7 @@ bool OverlayStrategyUnderlayCast::Attempt(
 
   OverlayCandidateFactory candidate_factory = OverlayCandidateFactory(
       render_pass, resource_provider, surface_damage_rect_list,
-      &output_color_matrix, GetPrimaryPlaneDisplayRect(primary_plane),
-      &render_pass_filters, context);
+      &output_color_matrix, GetPrimaryPlaneDisplayRect(primary_plane), context);
 
   for (const auto* quad : base::Reversed(quad_list)) {
     if (OverlayCandidate::IsInvisibleQuad(quad))

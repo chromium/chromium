@@ -65,12 +65,6 @@ TEST(CompositorRenderPassTest,
   gfx::Transform transform_to_root =
       gfx::Transform::Affine(1.0, 0.5, 0.5, -0.5, -1.0, 0.0);
   gfx::Rect damage_rect(56, 123, 19, 43);
-  cc::FilterOperations filters;
-  filters.Append(cc::FilterOperation::CreateOpacityFilter(0.5));
-  cc::FilterOperations backdrop_filters;
-  backdrop_filters.Append(cc::FilterOperation::CreateInvertFilter(1.0));
-  std::optional<SkPath> backdrop_filter_bounds(SkPath::RRect(
-      SkRRect(gfx::RRectF{10, 20, 130, 140, 1, 2, 3, 4, 5, 6, 7, 8})));
   gfx::ContentColorUsage content_color_usage = gfx::ContentColorUsage::kHDR;
   bool has_transparent_background = true;
   bool cache_render_pass = false;
@@ -79,7 +73,6 @@ TEST(CompositorRenderPassTest,
 
   auto pass = std::make_unique<AggregatedRenderPass>();
   pass->SetAll(render_pass_id, output_rect, damage_rect, transform_to_root,
-               filters, backdrop_filters, backdrop_filter_bounds,
                content_color_usage, has_transparent_background,
                cache_render_pass, has_damage_from_contributing_content,
                generate_mipmap);
@@ -104,9 +97,6 @@ TEST(CompositorRenderPassTest,
   EXPECT_EQ(pass->output_rect, copy->output_rect);
   EXPECT_EQ(pass->transform_to_root_target, copy->transform_to_root_target);
   EXPECT_EQ(pass->damage_rect, copy->damage_rect);
-  EXPECT_EQ(pass->filters, copy->filters);
-  EXPECT_EQ(pass->backdrop_filters, copy->backdrop_filters);
-  EXPECT_EQ(pass->backdrop_filter_bounds, copy->backdrop_filter_bounds.value());
   EXPECT_EQ(pass->content_color_usage, copy->content_color_usage);
   EXPECT_EQ(pass->has_transparent_background, copy->has_transparent_background);
   EXPECT_EQ(pass->cache_render_pass, copy->cache_render_pass);
