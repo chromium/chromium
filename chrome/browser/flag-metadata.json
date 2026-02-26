@@ -2517,32 +2517,32 @@
   },
   {
     "name": "eche-swa",
-    "owners": [ "nayebi@google.com" ],
+    "owners": [ "jonmann@chromium.org", "crisrael@google.com" ],
     "expiry_milestone": 125
   },
   {
     "name": "eche-swa-check-android-network-info",
-    "owners": [ "corakwue@google.com", "ftsui@google.com" ],
+    "owners": [ "jonmann@chromium.org", "crisrael@google.com" ],
     "expiry_milestone": 125
   },
   {
     "name": "eche-swa-debug-mode",
-    "owners": [ "nayebi@google.com" ],
+    "owners": [ "jonmann@chromium.org", "crisrael@google.com" ],
     "expiry_milestone": 125
   },
   {
     "name": "eche-swa-disable-stun-server",
-    "owners": [ "nayebi@google.com", "mavishsu@google.com", "ftsui@google.com" ],
+    "owners": [ "jonmann@chromium.org", "crisrael@google.com" ],
     "expiry_milestone": 140
   },
   {
     "name": "eche-swa-measure-latency",
-    "owners": [ "paulzchen@google.com", "guanrulee@google.com", "nayebi@google.com" ],
+    "owners": [ "jonmann@chromium.org", "crisrael@google.com" ],
     "expiry_milestone": 125
   },
   {
     "name": "eche-swa-send-start-signaling",
-    "owners": [ "nayebi@google.com", "mavishsu@google.com" ],
+    "owners": [ "jonmann@chromium.org", "crisrael@google.com" ],
     "expiry_milestone": 125
   },
   {
@@ -3868,7 +3868,7 @@
   },
   {
     "name": "enable-phone-hub-call-notification",
-    "owners": [ "jonmann@chromium.org", "nayebi@chromium.org" ],
+    "owners": [ "jonmann@chromium.org", "crisrael@google.com" ],
     "expiry_milestone": 125
   },
   {
