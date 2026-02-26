@@ -106,6 +106,17 @@ which _are_ valid. As a rule:
       branch](https://chromiumdash.appspot.com/branches)
     * Set the component to `Chromium > Blink > JavaScript`
     * You are now done triaging this bug, congratulations!
+* If the bug is a privacy bug, rather than a security bug:
+    * Add yourself and any other security team members who may need
+      ongoing access to CC
+    * Change the type from `Vulnerability` to `Privacy Issue`
+    * Remove security@ from collaborators
+    * Change the Issue Access Level to `Limited Visibility + Googlers`
+    * Set the component to something sensible, maybe [Chromium >
+      Privacy](https://issues.chromium.org/components/1457231/edit) or
+      [Chromium > UI > Settings >
+      Privacy](https://issues.chromium.org/components/1457044/edit).
+    * You are now done triaging this bug, congratulations!
 
 Now, move on to...
 
