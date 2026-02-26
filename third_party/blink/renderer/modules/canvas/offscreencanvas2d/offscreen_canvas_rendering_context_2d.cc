@@ -220,21 +220,21 @@ OffscreenCanvasRenderingContext2D::GetOrCreateResourceProvider() {
   const bool use_shared_image =
       use_gpu_raster || (host->HasPlaceholderCanvas() &&
                          SharedGpuContext::IsGpuCompositingEnabled());
-  const bool use_scanout =
-      use_shared_image && host->HasPlaceholderCanvas() &&
-      SharedGpuContext::MaySupportImageChromium() &&
-      RuntimeEnabledFeatures::Canvas2dImageChromiumEnabled();
-
-  gpu::SharedImageUsageSet shared_image_usage_flags =
-      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
-  if (use_scanout) {
-    shared_image_usage_flags |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
-  }
-
   const SkAlphaType alpha_type = GetAlphaType();
   const viz::SharedImageFormat format = GetSharedImageFormat();
   const gfx::ColorSpace color_space = GetColorSpace();
   if (use_shared_image) {
+    const bool use_scanout =
+        host->HasPlaceholderCanvas() &&
+        SharedGpuContext::MaySupportImageChromium() &&
+        RuntimeEnabledFeatures::Canvas2dImageChromiumEnabled();
+
+    gpu::SharedImageUsageSet shared_image_usage_flags =
+        gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
+    if (use_scanout) {
+      shared_image_usage_flags |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
+    }
+
     provider = Canvas2DResourceProviderSharedImage::CreateWithClear(
         host->Size(), format, alpha_type, color_space,
         SharedGpuContext::ContextProviderWrapper(),
