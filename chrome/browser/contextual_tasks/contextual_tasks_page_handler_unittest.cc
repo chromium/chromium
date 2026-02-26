@@ -75,7 +75,10 @@ class MockPage : public mojom::Page {
   MOCK_METHOD(void, RestoreInput, (), (override));
   MOCK_METHOD(void, OnZeroStateChange, (bool is_zero_state), (override));
   MOCK_METHOD(void, OnAiPageStatusChanged, (bool is_ai_page), (override));
-  MOCK_METHOD(void, OnLensOverlayStateChanged, (bool is_showing), (override));
+  MOCK_METHOD(void,
+              OnLensOverlayStateChanged,
+              (bool is_showing, bool maybe_show_overlay_hint_text),
+              (override));
   MOCK_METHOD(void, ShowErrorPage, (), (override));
   MOCK_METHOD(void, HideErrorPage, (), (override));
   MOCK_METHOD(void, ShowOauthErrorDialog, (), (override));

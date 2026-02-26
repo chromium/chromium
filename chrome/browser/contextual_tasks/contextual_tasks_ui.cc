@@ -57,6 +57,7 @@
 #include "components/contextual_tasks/public/prefs.h"
 #include "components/contextual_tasks/public/utils.h"
 #include "components/lens/lens_features.h"
+#include "components/lens/lens_overlay_invocation_source.h"
 #include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/omnibox/browser/searchbox.mojom-forward.h"
 #include "components/omnibox/common/logger.h"
@@ -450,7 +451,8 @@ void ContextualTasksUI::CreatePageHandler(
   if (auto* browser = GetBrowser()) {
     if (auto* controller = LensSearchController::FromTabWebContents(
             browser->GetTabStripModel()->GetActiveWebContents())) {
-      OnLensOverlayStateChanged(controller->IsShowingUI());
+      OnLensOverlayStateChanged(controller->IsShowingUI(),
+                                controller->invocation_source());
     }
   }
 }
@@ -796,10 +798,16 @@ void ContextualTasksUI::OnSidePanelStateChanged() {
   PostMessageToWebview(message);
 }
 
-void ContextualTasksUI::OnLensOverlayStateChanged(bool is_showing) {
+void ContextualTasksUI::OnLensOverlayStateChanged(
+    bool is_showing,
+    std::optional<lens::LensOverlayInvocationSource> invocation_source) {
   is_lens_overlay_showing_ = is_showing;
   if (page_) {
-    page_->OnLensOverlayStateChanged(is_showing);
+    bool maybe_show_overlay_hint_text =
+        is_showing && invocation_source.has_value() &&
+        invocation_source.value() ==
+            lens::LensOverlayInvocationSource::kContextualTasksComposebox;
+    page_->OnLensOverlayStateChanged(is_showing, maybe_show_overlay_hint_text);
   }
 }
 

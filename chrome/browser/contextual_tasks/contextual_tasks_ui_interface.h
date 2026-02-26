@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_UI_INTERFACE_H_
 
 #include "chrome/browser/contextual_tasks/task_info_delegate.h"
+#include "components/lens/lens_overlay_invocation_source.h"
 #include "content/public/browser/page_navigator.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -57,7 +58,9 @@ class ContextualTasksUIInterface : public TaskInfoDelegate {
   virtual void OnActiveTabContextStatusChanged() = 0;
 
   // Notifies the UI that the Lens overlay state has changed.
-  virtual void OnLensOverlayStateChanged(bool is_showing) = 0;
+  virtual void OnLensOverlayStateChanged(
+      bool is_showing,
+      std::optional<lens::LensOverlayInvocationSource> invocation_source) = 0;
 
   // Returns whether the Lens overlay is currently showing.
   virtual bool IsLensOverlayShowing() const = 0;

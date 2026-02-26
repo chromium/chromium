@@ -27,6 +27,7 @@
 #include "components/contextual_search/contextual_search_session_handle.h"
 #include "components/contextual_tasks/public/contextual_task_context.h"
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
+#include "components/lens/lens_overlay_invocation_source.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -142,7 +143,10 @@ class ContextualTasksUI
   void CloseSidePanel() override;
   void OnSidePanelStateChanged() override;
   void OnActiveTabContextStatusChanged() override;
-  void OnLensOverlayStateChanged(bool is_showing) override;
+  void OnLensOverlayStateChanged(
+      bool is_showing,
+      std::optional<lens::LensOverlayInvocationSource> invocation_source)
+      override;
   bool IsLensOverlayShowing() const override;
   void OnPageContextEligibilityChecked(bool is_page_context_eligible) override;
   bool IsActiveTabContextSuggestionShowing() const override;

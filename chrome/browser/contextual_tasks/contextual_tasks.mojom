@@ -205,7 +205,10 @@ interface Page {
   OnAiPageStatusChanged(bool is_ai_page);
 
   // Called by the browser process (C++) when the Lens overlay is shown/hidden.
-  OnLensOverlayStateChanged(bool is_showing);
+  // This also passes whether the overlay hint text should be shown for the
+  // current overlay invocation. This hint text could still be overridden by
+  // other hint texts and is not guaranteed to be shown.
+  OnLensOverlayStateChanged(bool is_showing, bool maybe_show_overlay_hint_text);
 
   // Called by the browser process (C++) to notify the UI to show the error
   // page.

@@ -44,6 +44,7 @@ source_set("contextual_tasks") {
     "//chrome/browser/ui/browser_window",
     "//components/contextual_tasks/public",
     "//components/keyed_service/core",
+    "//components/lens:lens_url_utils",
     "//components/passage_embeddings/content",
     "//components/passage_embeddings/core:passage_embeddings_types",
     "//content/public/browser",

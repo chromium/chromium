@@ -176,7 +176,8 @@ class ContextualTasksUiService : public KeyedService {
   // in the side panel since the Lens button is always hidden in a tab.
   virtual void OnLensOverlayStateChanged(
       BrowserWindowInterface* browser_window_interface,
-      bool is_showing);
+      bool is_showing,
+      std::optional<lens::LensOverlayInvocationSource> invocation_source);
 
   // Associates a WebContents with a task, assuming the URL of the WebContents'
   // main frame or side panel is a contextual task URL.
