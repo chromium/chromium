@@ -40,7 +40,7 @@
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{閉じたタブとグループは、[最近使ったタブ] と [タブグループ] で再度開くことができます。シークレット タブは使用できなくなります。}other{閉じたタブとグループは、[最近使ったタブ] と [タブグループ] で再度開くことができます。# 個のシークレット タブは使用できなくなります。}}</translation>
 <translation id="2153899164605463849">{TAB_COUNT,plural, =1{サイトのミュートを解除}other{サイトのミュートを解除}}</translation>
 <translation id="2162620598375156287">現在の価格は <ph name="SOURCE_WEBSITE" /> で <ph name="CURRENT_PRICE" /></translation>
-<translation id="22623456902492423">{TABS_COUNT,plural, =1{タブのグループ化を解除する}other{タブのグループ化を解除する}}</translation>
+<translation id="22623456902492423">{TABS_COUNT,plural, =1{タブのグループ化を解除}other{タブのグループ化を解除}}</translation>
 <translation id="2271452184061378400">タブグループはここに保存されます</translation>
 <translation id="2277224997687551299">グループ名を編集</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{タブをブックマークに追加}other{タブをブックマークに追加}}</translation>
@@ -88,7 +88,7 @@
 <translation id="3849789634341518784">{TAB_COUNT,plural, =1{タブの固定を解除}other{タブの固定を解除}}</translation>
 <translation id="3940195383040445971">タブで価格をトラッキング</translation>
 <translation id="3940717704786481856">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> 個の新しいタブを開き、<ph name="ANY_CLOSED" /> 個のタブを閉じました}other{<ph name="MANY_ADDED" /> 個の新しいタブを開き、<ph name="ANY_CLOSED" /> 個のタブを閉じました}}</translation>
-<translation id="3954615705217314756">{TABS_COUNT,plural, =1{タブをグループ化する}other{タブをグループ化する}}</translation>
+<translation id="3954615705217314756">{TABS_COUNT,plural, =1{タブをグループ化}other{タブをグループ化}}</translation>
 <translation id="3962134438902735041">{TABS_COUNT,plural, =1{選択した <ph name="TABS_COUNT_ONE" /> 個のタブの固定を解除}other{選択した <ph name="TABS_COUNT_MANY" /> 個のタブの固定を解除}}</translation>
 <translation id="4009732926939031387">{NUM_DAYS,plural, =1{<ph name="NUM_DAYS_ONE" /> 日前に作成}other{<ph name="NUM_DAYS_MANY" /> 日前に作成}}</translation>
 <translation id="4076226664360336092">タブグループのリストが画面全体に表示されています</translation>
@@ -169,7 +169,7 @@
 <translation id="6957436309971790274">アクティブでない状態で 21 日経過</translation>
 <translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{共有タブグループ <ph name="TITLE_OF_GROUP" />（タブの数: <ph name="TABS_COUNT_ONE" />、色: <ph name="COLOR_NAME" />）を開きます。}other{共有タブグループ <ph name="TITLE_OF_GROUP" />（タブの数: <ph name="TABS_COUNT_MANY" />、色: <ph name="COLOR_NAME" />）を開きます。}}</translation>
 <translation id="709473454666962555">タブグループを選択します</translation>
-<translation id="7100731960740376323">{TABS_COUNT,plural, =1{タブを共有する}other{タブを共有する}}</translation>
+<translation id="7100731960740376323">{TABS_COUNT,plural, =1{タブを共有}other{タブを共有}}</translation>
 <translation id="7129458170538955174">このショップに関する情報が画面の下半分に表示されています</translation>
 <translation id="7204204600596740190">複数選択モード</translation>
 <translation id="7211038039686180558">タブグループは自動的に保存され、ログインしているすべてのデバイスで更新されます</translation>

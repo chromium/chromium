@@ -47,7 +47,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="146866447420868597">¿Iniciar sesión en Chrome?</translation>
 <translation id="1476347941828409626">&amp;Gestionar perfiles de Chrome</translation>
 <translation id="1492280395845991349">Reinicia para finalizar la actualización de Chrome</translation>
-<translation id="1496875977627931224">Hola, <ph name="USER_NAME" />,<ph name="LINE_BREAK" />¿en qué estás pensando hoy?</translation>
+<translation id="1496875977627931224">Hola, <ph name="USER_NAME" />,<ph name="LINE_BREAK" />¿qué tienes en mente hoy?</translation>
 <translation id="1497802159252041924">Error de instalación: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1507198376417198979">Personaliza tu nuevo perfil de Chrome.</translation>
 <translation id="1518627427551567882">Esta página está protegida</translation>
@@ -374,7 +374,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="5139423532931106058">Personalizar tu perfil de Chrome</translation>
 <translation id="5163087008893166964">Te damos la bienvenida a Chrome. Se ha abierto una nueva ventana del navegador.</translation>
 <translation id="5166439563123238795">Chrome necesita permiso para hacer seguimiento de tus manos</translation>
-<translation id="5167819546851111585">¿En qué estás pensando hoy?</translation>
+<translation id="5167819546851111585">¿Qué tienes en mente hoy?</translation>
 <translation id="5170938038195470297">No se puede usar tu perfil porque se corresponde con una versión más reciente de Google Chrome.
 
 Puede que algunas funciones no estén disponibles. Especifica otro directorio de perfil o usa una versión más reciente de Chrome.</translation>

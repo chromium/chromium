@@ -183,7 +183,7 @@
 <translation id="7489558427602531799">Premjesti grupu kartica udesno</translation>
 <translation id="7501728912575021674">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> stavka}one{<ph name="TABS_COUNT_MANY" /> stavka}few{<ph name="TABS_COUNT_MANY" /> stavke}other{<ph name="TABS_COUNT_MANY" /> stavki}}</translation>
 <translation id="7507010952168401940">{TABS_COUNT,plural, =1{Vrati <ph name="TABS_COUNT_ONE" /> odabranu stavku}one{Vrati <ph name="TABS_COUNT_MANY" /> odabranu stavku}few{Vrati <ph name="TABS_COUNT_MANY" /> odabrane stavke}other{Vrati <ph name="TABS_COUNT_MANY" /> odabranih stavki}}</translation>
-<translation id="753732157349120914">Prebacivanje između kartica</translation>
+<translation id="753732157349120914">Prikaz za odabir kartice</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> recenzija s Googlea}one{<ph name="REVIEWS_COUNT_MANY" /> recenzija s Googlea}few{<ph name="REVIEWS_COUNT_MANY" /> recenzije s Googlea}other{<ph name="REVIEWS_COUNT_MANY" /> recenzija s Googlea}}</translation>
 <translation id="7559245342362162951">Prikaži kartice grupe u rešetki na cijelom zaslonu</translation>
 <translation id="7658239707568436148">Odustani</translation>

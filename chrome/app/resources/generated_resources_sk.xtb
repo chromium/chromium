@@ -7120,7 +7120,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="5876851302954717356">Nová karta vpravo</translation>
 <translation id="5877064549588274448">Kanál sa zmenil. Ak chcete zmeny použiť, reštartujte zariadenie.</translation>
 <translation id="5877584842898320529">Vybraná tlačiareň nie je k dispozícii alebo nie je správne nainštalovaná. <ph name="BR" />Skontrolujte tlačiareň alebo skúste vybrať inú.</translation>
-<translation id="5878945009165002849">Blokovať výzvy na prihlásenie zo služieb identity</translation>
+<translation id="5878945009165002849">Blokovať výzvy na prihlásenie od služieb identity</translation>
 <translation id="5881710783061958569">Ak áno, upravte svoje uložené heslo v službe <ph name="BRAND" /> tak, aby sa zhodovalo s týmto novým heslom.</translation>
 <translation id="5882919346125742463">Známe siete</translation>
 <translation id="5883356647197510494">Automaticky blokované: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>

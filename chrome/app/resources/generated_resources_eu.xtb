@@ -258,7 +258,7 @@ Egiaztatu pasahitzak <ph name="GOOGLE_PASSWORD_MANAGER" /> zerbitzuan.</translat
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> <ph name="DESK_TITLE" /> lan-eremukoa da</translation>
 <translation id="1167008614036441342">Kendu egin da txartela, azkenaldian erabili ez duzulako</translation>
 <translation id="1168020859489941584"><ph name="TIME_REMAINING" /> igarotakoan irekiko da…</translation>
-<translation id="1168704243733734901">Azkenaldiko AA bidez sortutako <ph name="INDEX" />garren gaia, <ph name="SUBJECT" /> erakusten duena, <ph name="STYLE" /> estiloan, <ph name="MOOD" />.</translation>
+<translation id="1168704243733734901">Azkenaldiko AA bidezko <ph name="INDEX" />garren gaia, <ph name="SUBJECT" /> erakusten duena, <ph name="STYLE" /> estiloan, <ph name="MOOD" />.</translation>
 <translation id="1168799042879144934">Galdetu Google-ri aurreko orriari buruz</translation>
 <translation id="116896278675803795">Aldatu hizkuntza automatikoki, hautatutako edukiaren arabera</translation>
 <translation id="1169266963600477608">Jokoak kontrolatzeko aukerak</translation>
@@ -3029,7 +3029,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3031532026314193077">Eskuineko botoiarekin klik egiteko, erabili ukipen-panela eta teklatua</translation>
 <translation id="3031557471081358569">Hautatu inportatu beharreko elementuak:</translation>
 <translation id="3032204772252313646">Azpititulu automatikoak</translation>
-<translation id="3032272345862007156">Azkenaldiko AA bidez sortutako gaia (<ph name="INDEX" />)</translation>
+<translation id="3032272345862007156">Azkenaldiko AA bidezko gaia (<ph name="INDEX" />)</translation>
 <translation id="3033167916029856961">Ez molestatzeko modua gaituta dago</translation>
 <translation id="3033348223765101500">Kontrolatu datuak</translation>
 <translation id="3036327949511794916">Pasatu egin da <ph name="DEVICE_TYPE" /> hau itzultzeko epemuga.</translation>
@@ -5220,7 +5220,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="4549791035683739768">Segurtasun-giltzak ez dauka hatz-markarik gordeta</translation>
 <translation id="4550737096585299960">Saiatu berriro minutu batzuk barru.</translation>
 <translation id="4550926046134589611">Onartzen diren esteka batzuek <ph name="APP_NAME" /> aplikazioan irekitzen jarraituko dute.</translation>
-<translation id="4551379727767354516">AA bidez azkenaldian sortutako gaiak</translation>
+<translation id="4551379727767354516">Azkenaldiko AA bidezko gaiak</translation>
 <translation id="4551763574344810652">Sakatu <ph name="MODIFIER_KEY_DESCRIPTION" /> desegiteko</translation>
 <translation id="4553526521109675518">Gailuaren hizkuntza aldatzeko, Chromebook berrabiarazi egin behar duzu. <ph name="BEGIN_LINK_LEARN_MORE" />Lortu informazio gehiago<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4554591392113183336">Kanpoko luzapena lehendik dagoenaren bertsio berean edo zaharragoan dago.</translation>
@@ -6295,7 +6295,7 @@ Pantaila txikitzeko, berriz, erabili Ktrl + Alt + Txikitu distira.</translat
 <translation id="5297082477358294722">Gorde da pasahitza. Ikusi eta kudeatu gordetako pasahitzak hemen: <ph name="SAVED_PASSWORDS_STORE" />.</translation>
 <translation id="5297548311167268289">Hasi saioa <ph name="RP_ID" /> webgunean</translation>
 <translation id="5297946558563358707">Beste norbaitek pantailari begiratzen dionean, erakutsi Pribatutasun-begia ikonoa pantailaren behealdean, eskuinetara</translation>
-<translation id="5297984209202974345">Azkenaldiko AA bidez sortutako <ph name="INDEX" />garren gaia, <ph name="SUBJECT" /> erakusten duena, <ph name="STYLE" /> estiloan</translation>
+<translation id="5297984209202974345">Azkenaldiko AA bidezko <ph name="INDEX" />garren gaia, <ph name="SUBJECT" /> erakusten duena, <ph name="STYLE" /> estiloan</translation>
 <translation id="5298219193514155779">Gaiaren sortzailea:</translation>
 <translation id="5298315677001348398">Aurrera egin nahi duzu, eta software honi gailuan aldaketak egiteko baimena eman?</translation>
 <translation id="5299109548848736476">Ez egin jarraipenik</translation>
@@ -9119,7 +9119,7 @@ Arriskuan dauden # pasahitz gehiago dauzkazu. Google-ren Pasahitz-kudeatzailea z
 <translation id="7287411021188441799">Leheneratu atzeko plano lehenetsia</translation>
 <translation id="7287949630503871403">Aplikazioan gordetako datuak</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" /> × <ph name="VERTICAL_DPI" /> dpi</translation>
-<translation id="7288761372977133974">Azkenaldiko AA bidez sortutako <ph name="INDEX" />garren gaia, <ph name="SUBJECT" /> erakusten duena</translation>
+<translation id="7288761372977133974">Azkenaldiko AA bidezko <ph name="INDEX" />garren gaia, <ph name="SUBJECT" /> erakusten duena</translation>
 <translation id="7289049772085228972">Chrome-ren segurtasun sendoena daukazu</translation>
 <translation id="7289303553784750393">Internetera konektatuta egon arren arazoak badirau, <ph name="SITE_ETLD_PLUS_ONE" /> webgunean aurrera egiteko beste modu batzuk proba ditzakezu.</translation>
 <translation id="7289386924227731009"><ph name="WINDOW_TITLE" />. Baimena eskatu da. Erantzuteko, sakatu F6.</translation>
@@ -9916,7 +9916,7 @@ Esleipen bat kentzeko, berriz, sakatu esleipen bat daukan erabilerraztasun-eteng
 <translation id="7825289983414309119">Mendia</translation>
 <translation id="782590969421016895">Erabili oraingo orriak</translation>
 <translation id="7825973332242257878">Fitxa taldeak</translation>
-<translation id="7826039927887234077">Azkenaldiko AA bidez sortutako <ph name="INDEX" />garren gaia, <ph name="SUBJECT" /> erakusten duena, <ph name="MOOD" />.</translation>
+<translation id="7826039927887234077">Azkenaldiko AA bidezko <ph name="INDEX" />garren gaia, <ph name="SUBJECT" /> erakusten duena, <ph name="MOOD" />.</translation>
 <translation id="7826174860695147464">Arakatzaile zaharrekiko bateragarritasuna (LBS) - Barnekoak</translation>
 <translation id="7826249772873145665">Desgaitu da ADB arazketa</translation>
 <translation id="7826254698725248775">Gailu-identifikatzailea gatazkatsua da.</translation>
