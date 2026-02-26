@@ -75,19 +75,6 @@ bool AnchorPositionScrollData::IsActive() const {
   return anchored_element_->GetAnchorPositionScrollData() == this;
 }
 
-PhysicalOffset AnchorPositionScrollData::TotalOffset(
-    const LayoutObject* anchor_object) const {
-  if (!anchor_object ||
-      (default_anchor_adjustment_data_.anchor_element &&
-       anchor_object ==
-           default_anchor_adjustment_data_.anchor_element->GetLayoutObject())) {
-    return default_anchor_adjustment_data_.TotalOffset();
-  }
-
-  return ComputeAdjustmentContainersData(anchored_element_, *anchor_object)
-      .TotalOffset();
-}
-
 PhysicalOffset
 AnchorPositionScrollData::SpeculativeDefaultAnchorRememberedOffset() const {
   OutOfFlowData* out_of_flow_data = anchored_element_->GetOutOfFlowData();
@@ -105,12 +92,29 @@ AnchorPositionScrollData::SpeculativeDefaultAnchorRememberedOffset() const {
   return PhysicalOffset();
 }
 
+PhysicalOffset AnchorPositionScrollData::
+    SpeculativeDefaultAnchorRememberedOffsetIncludingChained() const {
+  OutOfFlowData* out_of_flow_data = anchored_element_->GetOutOfFlowData();
+
+  const OutOfFlowData::RememberedScrollOffsets* offsets =
+      out_of_flow_data
+          ? out_of_flow_data->GetSpeculativeRememberedScrollOffsets()
+          : nullptr;
+
+  if (offsets) {
+    return offsets
+        ->GetOffsetForAnchorForRangeAdjustment(
+            default_anchor_adjustment_data_.anchor_element)
+        .value_or(PhysicalOffset());
+  }
+  return PhysicalOffset();
+}
+
 // static
 AnchorPositionScrollData::AdjustmentData
 AnchorPositionScrollData::ComputeAdjustmentContainersData(
     const Element* anchored_element,
     const LayoutObject& anchor) {
-  CHECK(anchored_element->GetLayoutObject());
   AnchorPositionScrollData::AdjustmentData result;
 
   auto may_need_scroll_adjustment = [](const LayoutBox* box) -> bool {
@@ -130,11 +134,15 @@ AnchorPositionScrollData::ComputeAdjustmentContainersData(
     return box->HasScrollableOverflow();
   };
 
+  const LayoutObject* anchored_layout_object =
+      anchored_element->GetLayoutObject();
+  CHECK(anchored_layout_object);
+
   const auto* anchor_element = DynamicTo<Element>(anchor.GetNode());
   CHECK(anchor_element);
   result.anchor_element = anchor_element;
-  const auto* bounding_container = ContainerIgnoreLayoutViewForFixedPos(
-      *anchored_element->GetLayoutObject());
+  const auto* bounding_container =
+      ContainerIgnoreLayoutViewForFixedPos(*anchored_layout_object);
 
   if (bounding_container && bounding_container->IsScrollContainer()) {
     const ScrollableArea* scrollable_area =
@@ -228,10 +236,12 @@ AnchorPositionScrollData::ComputeDefaultAnchorAdjustmentData() const {
   // scroll container always scrolls the anchored element.
   if (!needs_scroll_adjustment_in_x) {
     result.accumulated_adjustment.left = LayoutUnit();
+    result.accumulated_range_adjustment_offset.left = LayoutUnit();
     result.accumulated_adjustment_scroll_origin.set_x(0);
   }
   if (!needs_scroll_adjustment_in_y) {
     result.accumulated_adjustment.top = LayoutUnit();
+    result.accumulated_range_adjustment_offset.top = LayoutUnit();
     result.accumulated_adjustment_scroll_origin.set_y(0);
   }
   result.needs_scroll_adjustment_in_x = needs_scroll_adjustment_in_x;
@@ -291,14 +301,9 @@ bool AnchorPositionScrollData::IsFallbackPositionValid(
     const LayoutObject* new_object =
         new_element ? new_element->GetLayoutObject() : nullptr;
     if (new_object != range_object) {
-      // The range was calculated with a different anchor object. Check if the
-      // anchored element (which previously overflowed with the try option that
-      // specified that anchor) will become non-overflowing with that option.
-      // TODO(vmpstr): Should we just assume that a new anchor object is a
-      // reason to recalculate remembered offsets / ranges?
-      if (range.Contains(TotalOffset(range_object))) {
-        return false;
-      }
+      // The range was calculated with a different anchor object.
+      // Pessimistically assume that we need a new try fallback position.
+      return false;
     } else {
       // The range was calculated with the same anchor object as this data.
       // Check if the overflow status of the anchored element will change with
@@ -407,6 +412,16 @@ void AnchorPositionScrollData::InvalidatePaint() {
   }
   CHECK(anchored_element_->GetLayoutObject());
   anchored_element_->GetLayoutObject()->SetNeedsPaintPropertyUpdate();
+  // Since paint property tree building uses offsets that include chained
+  // offsets, we must also invalidate dependent anchors so they can recompute
+  // their property tree state.
+  for (auto& dependent : dependent_anchors_) {
+    if (const auto* box = dependent->GetLayoutBox()) {
+      if (auto* data = box->GetAnchorPositionScrollData()) {
+        data->InvalidatePaint();
+      }
+    }
+  }
 }
 
 void AnchorPositionScrollData::Trace(Visitor* visitor) const {

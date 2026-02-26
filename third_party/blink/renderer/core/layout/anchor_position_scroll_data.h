@@ -68,24 +68,15 @@ class AnchorPositionScrollData
     return default_anchor_adjustment_data_.needs_scroll_adjustment_in_y;
   }
 
-  // Returns the total offset of the anchored element from the layout location
-  // due to scroll and other adjustments from the containers between the given
-  // `anchor_object` and the anchored element and the scroll container of the
-  // anchored element itself. There are two cases:
-  // 1. If `anchor_object` is nullptr or the anchor object used to create the
-  //    snapshot, the result will be from the last snapshotted result.
-  // 2. Otherwise the result will be calculated on the fly, which may use stale
-  //    layout data if this is called during layout.
-  // UpdateSnapshot() (called after the first layout during a lifecycle update)
-  // will reschedule layout, or ShouldScheduleNextService() (called at the end
-  // of a lifecycle update) will schedule another lifecycle update,
-  // if the final layout data may cause layout changes.
-  PhysicalOffset TotalOffset(const LayoutObject* anchor_object = nullptr) const;
-
   PhysicalOffset AccumulatedAdjustment() const {
     return default_anchor_adjustment_data_.accumulated_adjustment;
   }
+  PhysicalOffset AccumulatedAdjustmentIncludingChained() const {
+    return default_anchor_adjustment_data_.accumulated_range_adjustment_offset;
+  }
   PhysicalOffset SpeculativeDefaultAnchorRememberedOffset() const;
+  PhysicalOffset SpeculativeDefaultAnchorRememberedOffsetIncludingChained()
+      const;
   gfx::Vector2d AccumulatedAdjustmentScrollOrigin() const {
     return default_anchor_adjustment_data_.accumulated_adjustment_scroll_origin;
   }
@@ -100,13 +91,14 @@ class AnchorPositionScrollData
   }
 
   // Utility function that returns AccumulatedAdjustment() rounded as a
-  // PhysicalOffset.
+  // PhysicalOffset. This includes chained anchors' offsets. This is used in
+  // things like getBoundingClientRect.
   // TODO(crbug.com/1309178): It's conceptually wrong to use
   // Physical/LogicalOffset, which only represents the location of a box within
   // a container, to represent a scroll offset. Stop using this function.
   PhysicalOffset TranslationAsPhysicalOffset() const {
-    return -AccumulatedAdjustment() +
-           SpeculativeDefaultAnchorRememberedOffset();
+    return -AccumulatedAdjustmentIncludingChained() +
+           SpeculativeDefaultAnchorRememberedOffsetIncludingChained();
   }
 
   // Returns whether `anchored_element_` is still an anchor-positioned element

@@ -957,13 +957,14 @@ void FragmentPaintPropertyTreeBuilder::UpdateAnchorPositionScrollTranslation() {
       const auto& box = To<LayoutBox>(object_);
       const AnchorPositionScrollData& anchor_position_scroll_data =
           *box.GetAnchorPositionScrollData();
-      PhysicalOffset remembered_offset =
-          anchor_position_scroll_data
-              .SpeculativeDefaultAnchorRememberedOffset();
 
+      // The translation offset is used for hit-testing, so it needs to include
+      // any scroll offset adjustment that would have happened in the chained
+      // anchor. Hence, these values required chained offsets.
       gfx::Vector2dF translation_offset(
-          -anchor_position_scroll_data.AccumulatedAdjustment() +
-          remembered_offset);
+          -anchor_position_scroll_data.AccumulatedAdjustmentIncludingChained() +
+          anchor_position_scroll_data
+              .SpeculativeDefaultAnchorRememberedOffsetIncludingChained());
       TransformPaintPropertyNode::State state{
           {gfx::Transform::MakeTranslation(translation_offset)}};
 
@@ -993,9 +994,14 @@ void FragmentPaintPropertyTreeBuilder::UpdateAnchorPositionScrollTranslation() {
           std::vector<CompositorElementId>(
               anchor_position_scroll_data.AdjustmentContainerIds().begin(),
               anchor_position_scroll_data.AdjustmentContainerIds().end());
+      // Accumulated scroll origin does *not* include chained anchors, because
+      // one of the `adjustment_container_ids` includes a chained anchor,
+      // meaning that the compositor should account for the chaining part of the
+      // offset already.
       state.anchor_position_scroll_data->accumulated_scroll_origin =
           anchor_position_scroll_data.AccumulatedAdjustmentScrollOrigin() +
-          ToRoundedVector2d(remembered_offset);
+          ToRoundedVector2d(anchor_position_scroll_data
+                                .SpeculativeDefaultAnchorRememberedOffset());
       state.anchor_position_scroll_data->needs_scroll_adjustment_in_x =
           anchor_position_scroll_data.NeedsScrollAdjustmentInX();
       state.anchor_position_scroll_data->needs_scroll_adjustment_in_y =
