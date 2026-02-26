@@ -17,6 +17,7 @@ import 'chrome://resources/cr_elements/md_select.css.js';
 import '../settings_shared.css.js';
 import './passwords_shared.css.js';
 
+import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
@@ -655,6 +656,8 @@ export class SettingsAutofillAiAddOrEditDialogElement extends
 
     if (this.enableSavePrivatePassesToWallet_) {
       this.saveInProgress_ = true;
+      getAnnouncerInstance().announce(
+          this.i18n('saveToWalletLoadingStateA11y'));
 
       try {
         await this.entityDataManager_.addOrUpdateEntityInstance(entityToSave);
