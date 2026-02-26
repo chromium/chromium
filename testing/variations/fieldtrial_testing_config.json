@@ -14989,7 +14989,8 @@
                     "enable_features": [
                         "ImmersiveReadAnything",
                         "ReadAnythingImagesViaAlgorithm",
-                        "ReadAnythingWithReadability"
+                        "ReadAnythingWithReadability",
+                        "ReadAnythingWithReadabilityAllowLinks"
                     ]
                 }
             ]
