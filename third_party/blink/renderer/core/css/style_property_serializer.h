@@ -180,17 +180,23 @@ class CORE_EXPORT StylePropertySerializer {
     void Trace(Visitor*) const;
 
    private:
+    // Number of CSS longhand property IDs in the expansion range.
+    static constexpr unsigned kAllLonghandCount =
+        kIntLastCSSProperty - kIntFirstCSSProperty + 1;
     bool HasExpandedAllProperty() const {
       return HasAllProperty() && need_to_expand_all_;
     }
     bool HasAllProperty() const { return all_index_ != -1; }
     bool IsIndexInPropertySet(unsigned index) const {
-      return index < property_set_->PropertyCount();
-    }
-    CSSPropertyID IndexToPropertyID(unsigned index) const {
-      // Iterating over "all"-expanded longhands is done using indices greater
-      // than, or equal to, the property set size. Map the index to the property
-      // ID based on the property set size.
+      if (!HasExpandedAllProperty()) {
+        return index < property_set_->PropertyCount();
+      }
+      // When expanding "all", the index range is split into two parts:
+      //
+      // [0, kAllLonghandCount)      → all-expansion longhands (emitted first)
+      // [kAllLonghandCount, kAllLonghandCount + property_set_->PropertyCount())
+      //                             → actual property-set entries (custom props
+      //                               + explicit overrides, emitted at the end)
       //
       // For this property set:
       //
@@ -200,23 +206,35 @@ class CORE_EXPORT StylePropertySerializer {
       //   background-color: green;
       // }
       //
-      // We end up with indices (This method is supposed to do the mapping from
-      // index to property ID for the enumerated properties from color and
-      // onwards):
+      // Indices:
+      //   0 .. (kAllLonghandCount-1): expanded longhands (color, display, ...)
+      //   kAllLonghandCount + 0: --foo
+      //   kAllLonghandCount + 1: all
+      //   kAllLonghandCount + 2: background-color
       //
-      // 0: --foo
-      // 1: all
-      // 2: background-color
-      // 3: color (this is kIntFirstCSSProperty)
-      // 4: ...
-      //
-      DCHECK_GE(index, property_set_->PropertyCount());
-      return static_cast<CSSPropertyID>(index - property_set_->PropertyCount() +
-                                        kIntFirstCSSProperty);
+      return index >= kAllLonghandCount;
+    }
+    CSSPropertyID IndexToPropertyID(unsigned index) const {
+      DCHECK(!IsIndexInPropertySet(index));
+      return static_cast<CSSPropertyID>(index + kIntFirstCSSProperty);
     }
     Member<const CSSPropertyValueSet> property_set_;
     int all_index_;
+    // Bitset of named longhands in the property set whose value explicitly
+    // differs from that of "all" and is not overridden by !important.
+    //
+    // Used when "all" is not expanded to determine which longhands need to be
+    // emitted during serialization.
     std::bitset<kNumCSSProperties> longhand_property_used_;
+    // Bitset of all named longhands that appear after the "all" declaration
+    // in the property set, regardless of whether their computed value matches
+    // that of "all".
+    //
+    // When expanding "all", this ensures that related longhands (e.g. those
+    // originating from a border shorthand, including border-width-*) are
+    // emitted together at the end of the serialized cssText so that
+    // shorthands can be reconstructed correctly.
+    std::bitset<kNumCSSProperties> longhand_after_all_;
     bool need_to_expand_all_;
   };
 

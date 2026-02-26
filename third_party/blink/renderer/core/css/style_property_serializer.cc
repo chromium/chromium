@@ -135,6 +135,9 @@ StylePropertySerializer::CSSPropertyValueSetForSerializer::
       if (static_cast<unsigned>(all_index_) >= i) {
         continue;
       }
+      if (IsCSSPropertyIDWithName(property.PropertyID())) {
+        longhand_after_all_.set(GetCSSPropertyIDIndex(property.PropertyID()));
+      }
       if (property.Value() == all_property.Value() &&
           property.IsImportant() == all_property.IsImportant()) {
         continue;
@@ -161,7 +164,7 @@ StylePropertySerializer::CSSPropertyValueSetForSerializer::PropertyCount()
     // When expanding all:* we need to serialize all properties set by the "all"
     // property, but also still walk the actual property set to include any
     // custom property declarations.
-    count += kIntLastCSSProperty - kIntFirstCSSProperty + 1;
+    count += kAllLonghandCount;
   }
   return count;
 }
@@ -169,25 +172,18 @@ StylePropertySerializer::CSSPropertyValueSetForSerializer::PropertyCount()
 StylePropertySerializer::PropertyValueForSerializer
 StylePropertySerializer::CSSPropertyValueSetForSerializer::PropertyAt(
     unsigned index) const {
-  if (IsIndexInPropertySet(index)) {
+  if (!HasExpandedAllProperty()) {
+    DCHECK(IsIndexInPropertySet(index));
     return StylePropertySerializer::PropertyValueForSerializer(
         property_set_->PropertyAt(index));
   }
 
-  // When expanding "all" into longhands, PropertyAt() is called with indices
-  // outside the size of the property_set_ to serialize all longshands.
-  DCHECK(HasExpandedAllProperty());
-  CSSPropertyID property_id = IndexToPropertyID(index);
-  DCHECK(IsCSSPropertyIDWithName(property_id));
-  if (longhand_property_used_.test(GetCSSPropertyIDIndex(property_id))) {
-    // A property declaration for property_id overrides the "all" declaration.
-    // Access that declaration from the property set.
-    int real_index = property_set_->FindPropertyIndex(property_id);
-    DCHECK_NE(real_index, -1);
+  if (IsIndexInPropertySet(index)) {
     return StylePropertySerializer::PropertyValueForSerializer(
-        property_set_->PropertyAt(real_index));
+        property_set_->PropertyAt(index - kAllLonghandCount));
   }
 
+  CSSPropertyID property_id = IndexToPropertyID(index);
   const CSSPropertyValue& property = property_set_->PropertyAt(all_index_);
   return StylePropertySerializer::PropertyValueForSerializer(
       CSSProperty::Get(property_id).GetCSSPropertyName(), property.Value(),
@@ -216,11 +212,29 @@ bool StylePropertySerializer::CSSPropertyValueSetForSerializer::
         GetCSSPropertyIDIndex(property.PropertyID()));
   }
 
-  // Custom property declarations are never overridden by "all" and are only
-  // traversed for the indices into the property set.
   if (IsIndexInPropertySet(index)) {
-    return property_set_->PropertyAt(index).PropertyID() ==
-           CSSPropertyID::kVariable;
+    const CSSPropertyValue& property =
+        property_set_->PropertyAt(index - kAllLonghandCount);
+    // Custom property declarations are never overridden by "all" and are only
+    // traversed in the in-set range.
+    if (property.PropertyID() == CSSPropertyID::kVariable) {
+      return true;
+    }
+    if (property.PropertyID() == CSSPropertyID::kAll) {
+      return false;
+    }
+    if (!IsCSSPropertyIDWithName(property.PropertyID())) {
+      return false;
+    }
+    if (property.IsAffectedByAll()) {
+      return longhand_after_all_.test(
+          GetCSSPropertyIDIndex(property.PropertyID()));
+    }
+    // The all property is a shorthand that resets all CSS properties except
+    // direction and unicode-bidi. It only accepts the CSS-wide keywords.
+    // c.f. https://drafts.csswg.org/css-cascade/#all-shorthand
+    return longhand_property_used_.test(
+        GetCSSPropertyIDIndex(property.PropertyID()));
   }
 
   CSSPropertyID property_id = IndexToPropertyID(index);
@@ -240,7 +254,12 @@ bool StylePropertySerializer::CSSPropertyValueSetForSerializer::
   // direction and unicode-bidi. It only accepts the CSS-wide keywords.
   // c.f. https://drafts.csswg.org/css-cascade/#all-shorthand
   if (!property_class.IsAffectedByAll()) {
-    return longhand_property_used_.test(GetCSSPropertyIDIndex(property_id));
+    return false;
+  }
+
+  // Skip properties that appear after "all" in the property set.
+  if (longhand_after_all_.test(GetCSSPropertyIDIndex(property_id))) {
+    return false;
   }
 
   return true;
@@ -252,7 +271,15 @@ int StylePropertySerializer::CSSPropertyValueSetForSerializer::
   if (!HasExpandedAllProperty()) {
     return property_set_->FindPropertyIndex(property_id);
   }
-  return GetCSSPropertyIDIndex(property_id) + property_set_->PropertyCount();
+
+  if (IsCSSPropertyIDWithName(property_id) &&
+      longhand_after_all_.test(GetCSSPropertyIDIndex(property_id))) {
+    int real_index = property_set_->FindPropertyIndex(property_id);
+    DCHECK_GE(real_index, 0);
+    return static_cast<int>(kAllLonghandCount) + real_index;
+  }
+
+  return GetCSSPropertyIDIndex(property_id);
 }
 
 const CSSValue*
