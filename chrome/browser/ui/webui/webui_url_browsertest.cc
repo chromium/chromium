@@ -93,6 +93,7 @@ class WebUIUrlNoConsoleErrorsTest : public WebUIAllUrlsBrowserTest {
 // re-enable the test.
 IN_PROC_BROWSER_TEST_P(WebUIUrlNoConsoleErrorsTest, DISABLED_NoConsoleErrors) {
   CheckNoConsoleErrors(GetParam());
+  WaitBeforeNavigation();
 }
 
 INSTANTIATE_TEST_SUITE_P(,

@@ -231,12 +231,14 @@ class ChromeURLDataManagerWebUITrustedTypesTest
 IN_PROC_BROWSER_TEST_P(ChromeURLDataManagerWebUITrustedTypesTest,
                        NoTrustedTypesViolation) {
   CheckNoTrustedTypesViolation(GetParam());
+  WaitBeforeNavigation();
 }
 
 // Verify that Trusted Types checks are actually enabled for all `kChromeUrls`.
 IN_PROC_BROWSER_TEST_P(ChromeURLDataManagerWebUITrustedTypesTest,
                        TrustedTypesEnabled) {
   CheckTrustedTypesEnabled(GetParam());
+  WaitBeforeNavigation();
 }
 
 INSTANTIATE_TEST_SUITE_P(,

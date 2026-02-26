@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/web_ui_all_urls_browser_test.h"
 
 #include "base/strings/string_util.h"
+#include "base/test/bind.h"
 #include "chrome/browser/ui/webui/webui_urls_for_test.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -90,6 +91,19 @@ void WebUIAllUrlsBrowserTest::SetUpOnMainThread() {
   service->RegisterProvider(std::move(fake_provider));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+void WebUIAllUrlsBrowserTest::WaitBeforeNavigation() {
+  // A number of these tests are flaky due to navigating to and from the
+  // page faster than expected. This adds a small delay to ensure any
+  // crashes represent a real bug and are not just a reflection of the
+  // test navigating to and then away from a URL quicker than expected.
+  base::RunLoop ui_thread_delayed_task_loop;
+  content::GetUIThreadTaskRunner()->PostDelayedTask(
+      FROM_HERE,
+      base::BindLambdaForTesting([&]() { ui_thread_delayed_task_loop.Quit(); }),
+      base::Milliseconds(10));
+  ui_thread_delayed_task_loop.Run();
+}
 
 std::string WebUIAllUrlsBrowserTest::ParamInfoToString(
     const ::testing::TestParamInfo<const char*>& info) {

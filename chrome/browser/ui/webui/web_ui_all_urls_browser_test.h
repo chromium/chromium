@@ -28,6 +28,7 @@ class WebUIAllUrlsBrowserTest
 #if BUILDFLAG(IS_CHROMEOS)
   void SetUpOnMainThread() override;
 #endif
+  void WaitBeforeNavigation();
 
  private:
   base::test::ScopedFeatureList feature_list_;
