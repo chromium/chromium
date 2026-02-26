@@ -14,6 +14,7 @@
 #include "base/strings/string_util.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
+#include "components/optimization_guide/content/browser/media_transcript_provider.h"
 #include "content/public/browser/document_picture_in_picture_window_controller.h"
 #include "content/public/browser/media_session.h"
 #include "content/public/browser/render_frame_host.h"
@@ -138,6 +139,16 @@ void GlicMediaContext::HandleFinalResult(Transcript* transcript,
     // chunk can be added in media time order.
     transcript->transcript_chunks_.erase(transcript->nonfinal_chunk_it_);
     transcript->nonfinal_chunk_it_ = transcript->transcript_chunks_.end();
+  }
+
+  if (transcript->next_sequence_number_ == 0) {
+    content::WebContents* web_contents =
+        content::WebContents::FromRenderFrameHost(&render_frame_host());
+
+    if (auto* provider =
+            optimization_guide::MediaTranscriptProvider::GetFor(web_contents)) {
+      provider->OnTranscriptionBeginForFrame(&render_frame_host());
+    }
   }
 
   // Process final result.

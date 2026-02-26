@@ -4,27 +4,13 @@
 
 #include "components/optimization_guide/content/browser/media_transcript_provider.h"
 
+#include "components/optimization_guide/content/browser/mock_media_transcript_provider.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace optimization_guide {
-
-namespace {
-
-class TestMediaTranscriptProvider : public MediaTranscriptProvider {
- public:
-  TestMediaTranscriptProvider() = default;
-  ~TestMediaTranscriptProvider() override = default;
-
-  // MediaTranscriptProvider:
-  std::vector<proto::MediaTranscript> GetTranscriptsForFrame(
-      content::RenderFrameHost* rfh) override {
-    return {};
-  }
-};
-
-}  // namespace
 
 class MediaTranscriptProviderTest : public content::RenderViewHostTestHarness {
 };
@@ -38,14 +24,14 @@ TEST_F(MediaTranscriptProviderTest, GetForNoProviderSet) {
 }
 
 TEST_F(MediaTranscriptProviderTest, SetAndGet) {
-  auto provider = std::make_unique<TestMediaTranscriptProvider>();
+  auto provider = std::make_unique<MockMediaTranscriptProvider>();
   MediaTranscriptProvider* provider_ptr = provider.get();
   MediaTranscriptProvider::SetFor(web_contents(), std::move(provider));
   EXPECT_EQ(provider_ptr, MediaTranscriptProvider::GetFor(web_contents()));
 }
 
 TEST_F(MediaTranscriptProviderTest, SetAndClear) {
-  auto provider = std::make_unique<TestMediaTranscriptProvider>();
+  auto provider = std::make_unique<MockMediaTranscriptProvider>();
   MediaTranscriptProvider::SetFor(web_contents(), std::move(provider));
   ASSERT_NE(nullptr, MediaTranscriptProvider::GetFor(web_contents()));
 
@@ -56,11 +42,11 @@ TEST_F(MediaTranscriptProviderTest, SetAndClear) {
 TEST_F(MediaTranscriptProviderTest, MultipleWebContents) {
   std::unique_ptr<content::WebContents> web_contents2 = CreateTestWebContents();
 
-  auto provider1 = std::make_unique<TestMediaTranscriptProvider>();
+  auto provider1 = std::make_unique<MockMediaTranscriptProvider>();
   MediaTranscriptProvider* provider1_ptr = provider1.get();
   MediaTranscriptProvider::SetFor(web_contents(), std::move(provider1));
 
-  auto provider2 = std::make_unique<TestMediaTranscriptProvider>();
+  auto provider2 = std::make_unique<MockMediaTranscriptProvider>();
   MediaTranscriptProvider* provider2_ptr = provider2.get();
   MediaTranscriptProvider::SetFor(web_contents2.get(), std::move(provider2));
 

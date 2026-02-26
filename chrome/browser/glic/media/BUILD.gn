@@ -64,6 +64,7 @@ if (!is_android) {
       "//components/live_caption",
       "//components/live_caption:constants",
       "//components/optimization_guide/content/browser",
+      "//components/optimization_guide/content/browser:test_support",
       "//testing/gmock",
       "//testing/gtest",
     ]

@@ -27,6 +27,10 @@ class MockMediaTranscriptProvider : public MediaTranscriptProvider {
               GetTranscriptsForFrame,
               (content::RenderFrameHost*),
               (override));
+  MOCK_METHOD(void,
+              OnTranscriptionBeginForFrame,
+              (content::RenderFrameHost*),
+              (override));
 };
 
 }  // namespace optimization_guide

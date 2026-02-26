@@ -36,6 +36,9 @@ class MediaTranscriptProvider : public base::SupportsUserData::Data {
   virtual std::vector<optimization_guide::proto::MediaTranscript>
   GetTranscriptsForFrame(content::RenderFrameHost* rfh) = 0;
 
+  // Notifies that transcription has begun for a frame.
+  virtual void OnTranscriptionBeginForFrame(content::RenderFrameHost* rfh) = 0;
+
  private:
   // The key for storing the `MediaTranscriptProvider` in a `WebContents`.
   static const void* UserDataKey();

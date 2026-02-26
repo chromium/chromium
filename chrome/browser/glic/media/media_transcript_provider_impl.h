@@ -24,6 +24,7 @@ class MediaTranscriptProviderImpl
   // optimization_guide::MediaTranscriptProvider:
   std::vector<optimization_guide::proto::MediaTranscript>
   GetTranscriptsForFrame(content::RenderFrameHost* rfh) override;
+  void OnTranscriptionBeginForFrame(content::RenderFrameHost* rfh) override;
 };
 
 }  // namespace glic
