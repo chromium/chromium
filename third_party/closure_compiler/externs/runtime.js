@@ -536,8 +536,8 @@ chrome.runtime.onUserScriptConnect;
 chrome.runtime.onConnectNative;
 
 /**
- * Fired when a message is sent from either an extension process (by
- * $(ref:runtime.sendMessage)) or a content script (by $(ref:tabs.sendMessage)).
+ * Fired when a message is sent from either $(ref:runtime.sendMessage) or
+ * $(ref:tabs.sendMessage).
  * @type {!ChromeEvent}
  * @see https://developer.chrome.com/extensions/runtime#event-onMessage
  */

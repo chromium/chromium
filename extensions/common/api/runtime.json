@@ -724,7 +724,7 @@
         "options": {
           "unmanaged": true
         },
-        "description": "Fired when a message is sent from either an extension process (by $(ref:runtime.sendMessage)) or a content script (by $(ref:tabs.sendMessage)).",
+        "description": "Fired when a message is sent from either $(ref:runtime.sendMessage) or $(ref:tabs.sendMessage).",
         "parameters": [
           {"name": "message", "type": "any", "optional": true, "description": "The message sent by the calling script."},
           {"name": "sender", "$ref": "MessageSender" },
