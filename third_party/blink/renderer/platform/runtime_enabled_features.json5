@@ -830,6 +830,13 @@
       name: "BlockingFocusWithoutUserActivation",
       status: "experimental",
     },
+    {
+      // Prevents the popup document for the select element from being opened
+      // if the corresponding OS window is not focused. Enabled in M147, can be
+      // removed in M150.
+      name: "BlockSelectPopupUnfocusedWindow",
+      status: "stable",
+    },
     // Makes <body> marginwidth/marginheight take precedence over
     // left/right/top/bottom presentational margin attributes, and prevents
     // iframe marginwidth/marginheight injection when body margin attrs exist.

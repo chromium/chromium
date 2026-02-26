@@ -5729,6 +5729,16 @@ void WebContentsImpl::ShowCreatedWidget(int process_id,
     return;
   }
 
+  RenderWidgetHostImpl* rwh = GetPrimaryMainFrame()->GetRenderWidgetHost();
+  if (base::FeatureList::IsEnabled(
+          blink::features::kBlockSelectPopupUnfocusedWindow) &&
+      !rwh->is_active()) {
+    // If the OS window isn't focused, then don't open select element popups for
+    // it: https://issues.chromium.org/issues/365089001
+    widget_host_view->host()->ShutdownAndDestroyWidget(true);
+    return;
+  }
+
   // GetOutermostWebContents() returns |this| if there are no outer WebContents.
   auto* outer_web_contents = GetOuterWebContents();
   auto* outermost_web_contents = GetOutermostWebContents();

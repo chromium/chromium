@@ -39,7 +39,8 @@ class CORE_EXPORT InternalPopupMenu final : public PopupMenu,
 
  private:
   FRIEND_TEST_ALL_PREFIXES(InternalPopupMenuTest, ShowSelectDisplayNone);
-
+  FRIEND_TEST_ALL_PREFIXES(InternalPopupMenuTest,
+                           MediaFeatureOverridesPropagation);
   class ItemIterationContext;
   void AddOption(ItemIterationContext&, HTMLOptionElement&);
   void AddOptGroup(ItemIterationContext&, HTMLOptGroupElement&);

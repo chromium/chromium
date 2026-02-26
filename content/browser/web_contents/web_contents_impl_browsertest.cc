@@ -7419,6 +7419,37 @@ IN_PROC_BROWSER_TEST_F(WebContentsFencedFrameBrowserTest, DoNotUpdateAXTree) {
   EXPECT_NE(nullptr, fenced_frame_rfh);
 }
 
+IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
+                       ShowPickerBlockedWhenUnfocused) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url(embedded_test_server()->GetURL("/title1.html"));
+  ASSERT_TRUE(NavigateToURL(shell(), url));
 
+  WebContentsImpl* web_contents =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+  RenderWidgetHostImpl* rwh =
+      web_contents->GetPrimaryMainFrame()->GetRenderWidgetHost();
+
+  EXPECT_TRUE(ExecJs(web_contents, R"(
+    document.body.innerHTML = "<select><option>option";
+  )"));
+
+  // Unfortunately, calling window.open() and waiting for it to load in this
+  // test does not make the RenderWidgetHost lose focus. Instead, we can
+  // simulate that by calling SetActive(false) here.
+  rwh->SetActive(false);
+
+  ShowPopupWidgetWaiter waiter(web_contents,
+                               web_contents->GetPrimaryMainFrame());
+  EXPECT_TRUE(
+      ExecJs(web_contents, "document.querySelector('select').showPicker()"));
+  waiter.Wait();
+
+  // Now check if the widget was destroyed. When ShowCreatedWidget calls
+  // ShutdownAndDestroyWidget, the RenderWidgetHost is destroyed.
+  RenderWidgetHost* popup_rwh = RenderWidgetHost::FromID(
+      rwh->GetProcess()->GetDeprecatedID(), waiter.last_routing_id());
+  EXPECT_FALSE(popup_rwh);
+}
 
 }  // namespace content
