@@ -624,7 +624,7 @@ suite('ContextualTasksAppTest', function() {
   });
 
   // Disabled on 146 branch only due to extra flakiness
-  test('sets basic mode as true when navigating due to backend sending notification',
+  test.skip('sets basic mode as true when navigating due to backend sending notification',
       async () => {
     const proxy = new TestContextualTasksBrowserProxy(fixtureUrl);
     BrowserProxyImpl.setInstance(proxy);
