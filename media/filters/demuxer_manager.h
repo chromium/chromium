@@ -175,7 +175,7 @@ class MEDIA_EXPORT DemuxerManager {
   void DemuxerRequestsSeek(base::TimeDelta time);
 
   // This is usually just the WebMediaPlayerImpl.
-  raw_ptr<Client, DanglingUntriaged> client_;
+  raw_ptr<Client> client_ = nullptr;
 
   // The demuxers need access the the media task runner and media log.
   const scoped_refptr<base::SequencedTaskRunner> media_task_runner_;
