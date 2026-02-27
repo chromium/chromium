@@ -4,6 +4,7 @@ name: Puppeteer CI
 permissions: read-all
 
 on:
+  merge_group:
   push:
     branches:
       - main
@@ -27,8 +28,8 @@ jobs:
   puppeteer-test:
     name: Run Puppeteer tests (${{ matrix.shard }})
     runs-on: ubuntu-latest
-    # Run on manual dispatch, push to main, or if the PR has the 'puppeteer' label.
-    if: ${{ github.event_name == 'workflow_dispatch' || github.event_name == 'push' || contains(github.event.pull_request.labels.*.name, 'puppeteer') }}
+    # Run on manual dispatch, push to main, merge_group, or if the PR has the 'puppeteer' label.
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event_name == 'push' || github.event_name == 'merge_group' || contains(github.event.pull_request.labels.*.name, 'puppeteer') }}
     strategy:
       fail-fast: false
       matrix:
