@@ -52,6 +52,7 @@ import org.chromium.ui.KeyboardVisibilityDelegate.KeyboardVisibilityListener;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.insets.InsetObserver;
+import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -868,7 +869,21 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
             Log.i(TAG, "Current %s showing a NTP", isNtpShowing ? "is" : "isn't");
         }
 
-        if (isNtpShowing) {
+        boolean isEmptyUrl = false;
+        if (!isNtpShowing) {
+            Tab tab = mActiveTabSupplier.get();
+            if (tab != null) {
+                GURL url = tab.getUrl();
+                isEmptyUrl = url.isEmpty();
+                Log.i(
+                        TAG,
+                        "URL of the current tab: [isEmpty: %b] [isValid: %b]",
+                        isEmptyUrl,
+                        url.isValid());
+            }
+        }
+
+        if (isNtpShowing || isEmptyUrl) {
             // On certain devices, the toolbar position could switch from top to bottom, and then
             // back to the top when creating a NTP. Force calling onToEdgeChange() will reset the
             // correct top padding which has been set on the toolbar. Since the toolbar is always

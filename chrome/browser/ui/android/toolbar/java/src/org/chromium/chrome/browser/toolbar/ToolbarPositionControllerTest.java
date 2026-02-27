@@ -87,6 +87,7 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.insets.InsetObserver;
 import org.chromium.url.GURL;
+import org.chromium.url.JUnitTestGURLs;
 
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -96,6 +97,8 @@ import java.util.concurrent.atomic.AtomicReference;
 public class ToolbarPositionControllerTest {
 
     @Rule public MockitoRule mMockitoJUnit = MockitoJUnit.rule();
+    @Mock Tab mTab;
+
     private static final int TOOLBAR_HEIGHT = 56;
     private static final int CONTROL_CONTAINER_ID = 12356;
     private static final int STATUS_BAR_HEIGHT = 10;
@@ -1163,7 +1166,8 @@ public class ToolbarPositionControllerTest {
         // maybeForceToolbarLayoutUpdateAndCapture calls onToEdgeChange(0, false,
         // LayoutType.BROWSING).
         // Set mTopInset to something non-zero first.
-        mActivityTabSupplier.set(mock(Tab.class));
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.URL_1);
+        mActivityTabSupplier.set(mTab);
         mController.onToEdgeChange(50, true, LayoutType.BROWSING);
         mController.maybeForceBottomToolbarLayoutUpdateAndCapture(/* isNtpShowing= */ false);
         verify(mControlContainer).doSynchronousLayoutAndCapture();
