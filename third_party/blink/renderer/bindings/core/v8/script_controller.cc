@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
 
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/compiler_specific.h"
@@ -210,7 +211,7 @@ Vector<const char*>& RegisteredExtensionNames() {
 void ScriptController::RegisterExtensionIfNeeded(
     std::unique_ptr<v8::Extension> extension) {
   for (const auto* extension_name : RegisteredExtensionNames()) {
-    if (!UNSAFE_TODO(strcmp(extension_name, extension->name()))) {
+    if (std::string_view(extension_name) == extension->name()) {
       return;
     }
   }
