@@ -4,47 +4,9 @@
 
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_desktop_view_controller.h"
 
-#include "base/time/time.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/extensions/extension_tab_util.h"
-#include "chrome/browser/extensions/extension_ui_util.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/extensions/extensions_toolbar_view_model.h"
 #include "chrome/browser/ui/extensions/settings_api_bubble_helpers.h"
-#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
-#include "chrome/browser/ui/views/extensions/extensions_request_access_button.h"
-#include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_desktop.h"
-#include "chrome/common/pref_names.h"
-#include "components/feature_engagement/public/feature_constants.h"
-#include "components/user_education/common/feature_promo/feature_promo_controller.h"
-#include "extensions/browser/extension_util.h"
-#include "extensions/common/extension_features.h"
-
-namespace {
-// Only attempt to launch the Extensions Zero State Promo IPH after this
-// timestamp, in order to reduce the cadence with which the this IPH calls
-// the User Educations system.
-std::optional<base::TimeTicks> g_zero_state_promo_next_show_time_opt =
-    std::nullopt;
-
-// The interval of time to wait for between attempting to launch the Zero
-// State Promo.
-constexpr base::TimeDelta kZeroStatePromoIntervalBetweenLaunchAttempt =
-    base::Minutes(2);
-}  // namespace
-
-bool ArePromotionsEnabled() {
-  PrefService* local_state = g_browser_process->local_state();
-  return local_state && local_state->GetBoolean(prefs::kPromotionsEnabled);
-}
-
-// static
-void ExtensionsToolbarDesktopViewController::WakeZeroStatePromoForTesting() {
-  g_zero_state_promo_next_show_time_opt = base::TimeTicks::Now();
-}
 
 ExtensionsToolbarDesktopViewController::ExtensionsToolbarDesktopViewController(
     Browser* browser,
@@ -78,57 +40,6 @@ void ExtensionsToolbarDesktopViewController::
                          kFlexOrderExtensionsButton));
 }
 
-void ExtensionsToolbarDesktopViewController::MaybeShowIPH() {
-  // Extensions menu IPH, with priority order. These depend on the new access
-  // control feature.
-  content::WebContents* web_contents =
-      extensions_container_->GetCurrentWebContents();
-  if (!web_contents) {
-    return;
-  }
-
-  if (base::FeatureList::IsEnabled(
-          extensions_features::kExtensionsMenuAccessControl)) {
-    ExtensionsRequestAccessButton* request_access_button =
-        extensions_container_->GetRequestAccessButton();
-    if (request_access_button->GetVisible()) {
-      const int extensions_size = request_access_button->GetExtensionsCount();
-      user_education::FeaturePromoParams params(
-          feature_engagement::kIPHExtensionsRequestAccessButtonFeature);
-      params.body_params = extensions_size;
-      params.title_params = extensions_size;
-      BrowserUserEducationInterface::From(browser_)->MaybeShowFeaturePromo(
-          std::move(params));
-    }
-
-    if (extensions_container_->GetToolbarViewModel()->GetButtonState(
-            *web_contents) ==
-        ExtensionsToolbarViewModel::ExtensionsToolbarButtonState::
-            kAnyExtensionHasAccess) {
-      BrowserUserEducationInterface::From(browser_)->MaybeShowFeaturePromo(
-          feature_engagement::kIPHExtensionsMenuFeature);
-    }
-  }
-
-  // The Extensions Zero State promo prompts users without extensions to
-  // explore the Chrome Web Store. Only triggered for normal browser types.
-  if (browser_->type() == Browser::TYPE_NORMAL) {
-    if (!g_zero_state_promo_next_show_time_opt.has_value()) {
-      g_zero_state_promo_next_show_time_opt =
-          base::TimeTicks::Now() + kZeroStatePromoIntervalBetweenLaunchAttempt;
-    } else if (base::TimeTicks::Now() >=
-                   g_zero_state_promo_next_show_time_opt.value() &&
-               ArePromotionsEnabled() &&
-               !extensions::util::AnyCurrentlyInstalledExtensionIsFromWebstore(
-                   browser_->profile())) {
-      g_zero_state_promo_next_show_time_opt =
-          base::TimeTicks::Now() + kZeroStatePromoIntervalBetweenLaunchAttempt;
-      BrowserUserEducationInterface::From(browser_)->MaybeShowFeaturePromo(
-          feature_engagement::kIPHExtensionsZeroStatePromoFeature);
-    }
-  }
-}
-
 void ExtensionsToolbarDesktopViewController::OnTabStripModelChanged(
     TabStripModel* tab_strip_model,
     const TabStripModelChange& change,
@@ -137,51 +48,6 @@ void ExtensionsToolbarDesktopViewController::OnTabStripModelChanged(
     return;
   }
 
-  // Close Extensions menu IPH if it is open.
-  BrowserUserEducationInterface::From(browser_)->NotifyFeaturePromoFeatureUsed(
-      feature_engagement::kIPHExtensionsMenuFeature,
-      FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
-
   extensions::MaybeShowExtensionControlledNewTabPage(browser_,
                                                      selection.new_contents);
-
-  // Request access button confirmation is tab-specific. Therefore, we need to
-  // reset if the active tab changes.
-  if (extensions_container_->GetRequestAccessButton()) {
-    extensions_container_->CollapseConfirmation();
-  }
-
-  MaybeShowIPH();
-}
-
-void ExtensionsToolbarDesktopViewController::OnTabChangedAt(
-    tabs::TabInterface* tab,
-    int index,
-    TabChangeType change_type) {
-  // Ignore changes that don't affect all the tab contents (e.g loading
-  // changes).
-  if (change_type != TabChangeType::kAll) {
-    return;
-  }
-
-  // Close Extensions menu IPH if it is open.
-  BrowserUserEducationInterface::From(browser_)->AbortFeaturePromo(
-      feature_engagement::kIPHExtensionsMenuFeature);
-
-  // Request access button confirmation is tab-specific for a specific origin.
-  // Therefore, we need to reset it if it's currently showing, we are on the
-  // same tab and we have navigated to another origin.
-  // Note: When we switch tabs, `OnTabStripModelChanged` is called before
-  // `TabChangedAt` and takes care of resetting the confirmation if shown.
-  ExtensionsRequestAccessButton* request_access_button =
-      extensions_container_->GetRequestAccessButton();
-  if (request_access_button && request_access_button->IsShowingConfirmation() &&
-      !request_access_button->IsShowingConfirmationFor(
-          tab->GetContents()
-              ->GetPrimaryMainFrame()
-              ->GetLastCommittedOrigin())) {
-    extensions_container_->CollapseConfirmation();
-  }
-
-  MaybeShowIPH();
 }

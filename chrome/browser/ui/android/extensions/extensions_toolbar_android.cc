@@ -138,7 +138,8 @@ void ExtensionsToolbarAndroid::OnPinnedActionsChanged() {
                                                       java_object_);
 }
 
-void ExtensionsToolbarAndroid::OnActiveWebContentsChanged() {
+void ExtensionsToolbarAndroid::OnActiveWebContentsChanged(
+    bool /*is_same_document*/) {
   Java_ExtensionsToolbarBridge_onActiveWebContentsChanged(AttachCurrentThread(),
                                                           java_object_);
 }

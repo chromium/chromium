@@ -20,13 +20,6 @@ class ExtensionsToolbarDesktopViewController final
   static constexpr int kFlexOrderRequestAccessButton = 2;
   static constexpr int kFlexOrderActionView = 3;
 
-  // In a live environment, the Extensions Zero State Promo IPH will only open
-  // after at least 10 minutes into the browsing session.
-  //
-  // This function sets the Zero State Promo show timer so that the IPH can
-  // show immediately.
-  static void WakeZeroStatePromoForTesting();
-
   ExtensionsToolbarDesktopViewController(
       Browser* browser,
       ExtensionsToolbarDesktop* extensions_container);
@@ -44,17 +37,11 @@ class ExtensionsToolbarDesktopViewController final
   void WindowControlsOverlayEnabledChanged(bool enabled);
 
  private:
-  // Maybe displays the In-Product-Help with a specific priority order.
-  void MaybeShowIPH();
-
   // TabStripModelObserver:
   void OnTabStripModelChanged(
       TabStripModel* tab_strip_model,
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override;
-  void OnTabChangedAt(tabs::TabInterface* tab,
-                      int index,
-                      TabChangeType change_type) override;
 
   const raw_ptr<Browser> browser_;
 

@@ -299,8 +299,11 @@ void ExtensionsToolbarViewModel::OnToolbarPinnedActionsChanged() {
 
 void ExtensionsToolbarViewModel::DidFinishNavigation(
     content::NavigationHandle* handle) {
+  if (!handle->IsInPrimaryMainFrame() || !handle->HasCommitted()) {
+    return;
+  }
   for (Observer& obs : observers_) {
-    obs.OnActiveWebContentsChanged();
+    obs.OnActiveWebContentsChanged(handle->IsSameDocument());
   }
 }
 
@@ -309,7 +312,7 @@ void ExtensionsToolbarViewModel::OnActiveTabChanged(TabListInterface& tab_list,
   content::WebContents* contents = tab->GetContents();
   WebContentsObserver::Observe(contents);
   for (Observer& obs : observers_) {
-    obs.OnActiveWebContentsChanged();
+    obs.OnActiveWebContentsChanged(/*is_same_document=*/false);
   }
 }
 

@@ -83,8 +83,9 @@ class ExtensionsToolbarViewModel
     virtual void OnPinnedActionsChanged() = 0;
 
     // Called when the active WebContents is changed (e.g. tab change or page
-    // navigation).
-    virtual void OnActiveWebContentsChanged() = 0;
+    // navigation). `is_same_document` is true if the change was due to a
+    // same-document navigation.
+    virtual void OnActiveWebContentsChanged(bool is_same_document) = 0;
 
     // Called when the extensions that should be displayed in the request
     // access button to be recomputed.

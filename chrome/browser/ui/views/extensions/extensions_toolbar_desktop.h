@@ -14,6 +14,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/extensions/extensions_toolbar_view_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
@@ -71,6 +72,13 @@ class ExtensionsToolbarDesktop : public ToolbarIconContainerView,
   };
 
   static void SetOnVisibleCallbackForTesting(base::OnceClosure callback);
+
+  // In a live environment, the Extensions Zero State Promo IPH will only open
+  // after at least 10 minutes into the browsing session.
+  //
+  // This function sets the Zero State Promo show timer so that the IPH can
+  // show immediately.
+  static void WakeZeroStatePromoForTesting();
 
   ExtensionsMenuCoordinator* GetExtensionsMenuCoordinatorForTesting() {
     return extensions_menu_coordinator_.get();
@@ -233,7 +241,7 @@ class ExtensionsToolbarDesktop : public ToolbarIconContainerView,
   void OnActionRemoved(const ToolbarActionsModel::ActionId& action_id) override;
   void OnActionUpdated(const ToolbarActionsModel::ActionId& action_id) override;
   void OnPinnedActionsChanged() override;
-  void OnActiveWebContentsChanged() override;
+  void OnActiveWebContentsChanged(bool is_same_document) override;
   void OnRequestAccessButtonParamsChanged(
       content::WebContents* web_contents) override;
   void OnToolbarControlStateUpdated() override;
@@ -327,6 +335,13 @@ class ExtensionsToolbarDesktop : public ToolbarIconContainerView,
 
   // Updates the `request_access_button_` given the current `web_contents`.
   void UpdateRequestAccessButton(content::WebContents& web_contents);
+
+  // Maybe displays the In-Product-Help with a specific priority order.
+  void MaybeShowIPH();
+
+  // Tracks the previously active web contents to differentiate tab switches
+  // from navigations.
+  base::WeakPtr<content::WebContents> active_web_contents_;
 
   const raw_ptr<Browser> browser_;
   const raw_ptr<ToolbarActionsModel> model_;

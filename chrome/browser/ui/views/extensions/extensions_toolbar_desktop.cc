@@ -11,8 +11,10 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/no_destructor.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -25,6 +27,7 @@
 #include "chrome/browser/ui/toolbar/toolbar_action_hover_card_types.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/extensions/browser_action_drag_data.h"
 #include "chrome/browser/ui/views/extensions/extension_action_delegate_desktop.h"
@@ -41,8 +44,10 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/event_constants.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "components/prefs/pref_service.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/browser/extension_util.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/extension_id.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
@@ -64,11 +69,32 @@ base::OnceClosure& GetOnVisibleCallbackForTesting() {
   return *callback;
 }
 
+// Only attempt to launch the Extensions Zero State Promo IPH after this
+// timestamp, in order to reduce the cadence with which the this IPH calls
+// the User Educations system.
+std::optional<base::TimeTicks> g_zero_state_promo_next_show_time_opt =
+    std::nullopt;
+
+// The interval of time to wait for between attempting to launch the Zero
+// State Promo.
+constexpr base::TimeDelta kZeroStatePromoIntervalBetweenLaunchAttempt =
+    base::Minutes(2);
+
+bool ArePromotionsEnabled() {
+  PrefService* local_state = g_browser_process->local_state();
+  return local_state && local_state->GetBoolean(prefs::kPromotionsEnabled);
+}
+
 }  // namespace
 
 void ExtensionsToolbarDesktop::SetOnVisibleCallbackForTesting(
     base::OnceClosure callback) {
   GetOnVisibleCallbackForTesting() = std::move(callback);
+}
+
+// static
+void ExtensionsToolbarDesktop::WakeZeroStatePromoForTesting() {
+  g_zero_state_promo_next_show_time_opt = base::TimeTicks::Now();
 }
 
 struct ExtensionsToolbarDesktop::DropInfo {
@@ -716,15 +742,38 @@ void ExtensionsToolbarDesktop::OnPinnedActionsChanged() {
   drop_weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
-void ExtensionsToolbarDesktop::OnActiveWebContentsChanged() {
-  // TODO(evasu): Call MaybeShowIPH() here instead of calling it directly
-  // from TabStripModelObserver methods in
-  // ExtensionsToolbarDesktopViewController (OnTabStripModelChanged and
-  // OnTabChangedAt). This leverages the existing TabListInterfaceObserver
-  // implementation in ExtensionsToolbarViewModel, which already notifies
-  // ExtensionsToolbarDesktop of active web contents changes.
+void ExtensionsToolbarDesktop::OnActiveWebContentsChanged(
+    bool is_same_document) {
+  content::WebContents* current_web_contents = GetCurrentWebContents();
+  if (active_web_contents_.get() != current_web_contents) {
+    // Tab switched
+    BrowserUserEducationInterface::From(browser_)
+        ->NotifyFeaturePromoFeatureUsed(
+            feature_engagement::kIPHExtensionsMenuFeature,
+            FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
+    if (request_access_button_) {
+      CollapseConfirmation();
+    }
+  } else {
+    // Navigation
+    if (!is_same_document) {
+      BrowserUserEducationInterface::From(browser_)->AbortFeaturePromo(
+          feature_engagement::kIPHExtensionsMenuFeature);
+    }
+    if (request_access_button_ &&
+        request_access_button_->IsShowingConfirmation() &&
+        current_web_contents &&
+        !request_access_button_->IsShowingConfirmationFor(
+            current_web_contents->GetPrimaryMainFrame()
+                ->GetLastCommittedOrigin())) {
+      CollapseConfirmation();
+    }
+  }
+  active_web_contents_ =
+      current_web_contents ? current_web_contents->GetWeakPtr() : nullptr;
 
   UpdateAllIcons();
+  MaybeShowIPH();
 }
 
 void ExtensionsToolbarDesktop::HideActivePopup() {
@@ -1090,6 +1139,55 @@ void ExtensionsToolbarDesktop::UpdateCloseSidePanelButtonIcon() {
       prefs::kSidePanelHorizontalAlignment);
   close_side_panel_button_->SetVectorIcon(
       is_right_aligned ? kRightPanelCloseIcon : kLeftPanelCloseIcon);
+}
+
+void ExtensionsToolbarDesktop::MaybeShowIPH() {
+  // Extensions menu IPH, with priority order. These depend on the new access
+  // control feature.
+  content::WebContents* web_contents = GetCurrentWebContents();
+  if (!web_contents) {
+    return;
+  }
+
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kExtensionsMenuAccessControl)) {
+    ExtensionsRequestAccessButton* request_access_button =
+        GetRequestAccessButton();
+    if (request_access_button && request_access_button->GetVisible()) {
+      const int extensions_size = request_access_button->GetExtensionsCount();
+      user_education::FeaturePromoParams params(
+          feature_engagement::kIPHExtensionsRequestAccessButtonFeature);
+      params.body_params = extensions_size;
+      params.title_params = extensions_size;
+      BrowserUserEducationInterface::From(browser_)->MaybeShowFeaturePromo(
+          std::move(params));
+    }
+
+    if (toolbar_view_model_->GetButtonState(*web_contents) ==
+        ExtensionsToolbarViewModel::ExtensionsToolbarButtonState::
+            kAnyExtensionHasAccess) {
+      BrowserUserEducationInterface::From(browser_)->MaybeShowFeaturePromo(
+          feature_engagement::kIPHExtensionsMenuFeature);
+    }
+  }
+
+  // The Extensions Zero State promo prompts users without extensions to
+  // explore the Chrome Web Store. Only triggered for normal browser types.
+  if (browser_->type() == Browser::TYPE_NORMAL) {
+    if (!g_zero_state_promo_next_show_time_opt.has_value()) {
+      g_zero_state_promo_next_show_time_opt =
+          base::TimeTicks::Now() + kZeroStatePromoIntervalBetweenLaunchAttempt;
+    } else if (base::TimeTicks::Now() >=
+                   g_zero_state_promo_next_show_time_opt.value() &&
+               ArePromotionsEnabled() &&
+               !extensions::util::AnyCurrentlyInstalledExtensionIsFromWebstore(
+                   browser_->profile())) {
+      g_zero_state_promo_next_show_time_opt =
+          base::TimeTicks::Now() + kZeroStatePromoIntervalBetweenLaunchAttempt;
+      BrowserUserEducationInterface::From(browser_)->MaybeShowFeaturePromo(
+          feature_engagement::kIPHExtensionsZeroStatePromoFeature);
+    }
+  }
 }
 
 BEGIN_METADATA(ExtensionsToolbarDesktop)
