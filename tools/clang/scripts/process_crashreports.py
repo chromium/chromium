@@ -155,12 +155,19 @@ def main():
   parser.add_argument('--source',  default='user-' + getpass.getuser(),
                       help='Source of the crash -- usually a bot name. '
                            'Leave empty to use your username.')
+  parser.add_argument('--download-only',
+                      action='store_true',
+                      help='Download crash reports from RBE and exit without '
+                      'processing or uploading them')
   args = parser.parse_args()
 
   # If the crash happened on RBE, the crash report is on the RBE worker.
   # Siso logs the digest of the crash report in siso_output.
   # We need to fetch it to the local machine to process and upload it.
   FetchRbeCrashReports()
+
+  if args.download_only:
+    return
 
   # When clang notices that it crashes, it tries to write a .sh file containing
   # the command used to invoke clang, a source file containing the whole
