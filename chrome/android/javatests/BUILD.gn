@@ -455,6 +455,18 @@ android_library("chrome_test_java_helper") {
   }
 }
 
+android_library("chrome_test_java_org.chromium.chrome.browser.actor") {
+  resources_package = "org.chromium.chrome.test"
+
+  sources = [ "src/org/chromium/chrome/browser/actor/ActorOverlayPTTest.java" ]
+
+  deps = [
+    ":chrome_test_java_helper",
+    "//chrome/browser/actor/android:java",
+    "//chrome/test/android:chrome_java_transit",
+  ]
+}
+
 # Partition tests into one target per-package to keep incremental build times down.
 android_library("chrome_test_java_org.chromium.chrome.browser") {
   resources_package = "org.chromium.chrome.test"

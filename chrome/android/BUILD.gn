@@ -1396,6 +1396,7 @@ if (_is_default_toolchain) {
 
     deps = [
       "javatests:chrome_test_java_org.chromium.chrome.browser",
+      "javatests:chrome_test_java_org.chromium.chrome.browser.actor",
       "javatests:chrome_test_java_org.chromium.chrome.browser.app",
       "javatests:chrome_test_java_org.chromium.chrome.browser.appearance",
       "javatests:chrome_test_java_org.chromium.chrome.browser.autofill",

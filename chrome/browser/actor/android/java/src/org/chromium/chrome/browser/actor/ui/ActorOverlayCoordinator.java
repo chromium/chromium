@@ -88,6 +88,11 @@ public class ActorOverlayCoordinator {
         return mModel;
     }
 
+    /** Sets the visibility of the overlay for testing purposes. */
+    public void showOverlayForTesting(boolean visible) {
+        mMediator.setOverlayVisible(visible);
+    }
+
     /** Cleans up the coordinator. */
     public void destroy() {
         mMediator.destroy();

@@ -1916,6 +1916,10 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         return mSystemUiCoordinator;
     }
 
+    public ActorOverlayCoordinator getActorOverlayCoordinatorForTesting() {
+        return mActorOverlayCoordinator;
+    }
+
     /** Called when a link is copied through context menu. */
     public void onContextMenuCopyLink() {
         // The iph controller will be null before tracker fully initialized.
