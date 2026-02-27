@@ -145,7 +145,8 @@ void ExtensionsMenuDelegateAndroid::OnActionAdded(
 void ExtensionsMenuDelegateAndroid::OnActionRemoved(
     const ToolbarActionsModel::ActionId& action_id,
     int index) {
-  // TODO(crbug.com/473213114)
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_ExtensionsMenuBridge_onActionRemoved(env, java_object_, index);
 }
 
 void ExtensionsMenuDelegateAndroid::OnActionUpdated(
