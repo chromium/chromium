@@ -10,7 +10,6 @@
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/branding_buildflags.h"
-#include "chrome/browser/task_manager/common/task_manager_features.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/color/chrome_color_provider_utils.h"
@@ -700,28 +699,26 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorTabThrobberPreconnect] = {ui::kColorThrobberPreconnect};
   mixer[kColorTaskManagerBackground] = {ui::kColorDialogBackground};
 #if !BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(features::kTaskManagerDesktopRefresh)) {
-    mixer[kColorTaskManagerBackground] = {ui::kColorSysSurface};
+  mixer[kColorTaskManagerBackground] = {ui::kColorSysSurface};
 
-    mixer[kColorTaskManagerTableBackground] = {ui::kColorSysSurface3};
-    mixer[kColorTaskManagerTableHeaderBackground] = {
-        kColorTaskManagerTableBackground};
-    mixer[kColorTaskManagerTableBackgroundAlternate] = {
-        kColorTaskManagerTableBackground};
+  mixer[kColorTaskManagerTableBackground] = {ui::kColorSysSurface3};
+  mixer[kColorTaskManagerTableHeaderBackground] = {
+      kColorTaskManagerTableBackground};
+  mixer[kColorTaskManagerTableBackgroundAlternate] = {
+      kColorTaskManagerTableBackground};
 #if BUILDFLAG(IS_MAC)
-    // Only macOS has alternating row colors by default.
-    mixer[kColorTaskManagerTableBackgroundAlternate] = {ui::kColorSysSurface1};
+  // Only macOS has alternating row colors by default.
+  mixer[kColorTaskManagerTableBackgroundAlternate] = {ui::kColorSysSurface1};
 #endif
-    mixer[kColorTaskManagerTableBackgroundSelectedFocused] = {
-        ui::kColorSysTonalContainer};
-    mixer[kColorTaskManagerTableBackgroundSelectedUnfocused] = {
-        kColorTaskManagerTableBackgroundSelectedFocused};
+  mixer[kColorTaskManagerTableBackgroundSelectedFocused] = {
+      ui::kColorSysTonalContainer};
+  mixer[kColorTaskManagerTableBackgroundSelectedUnfocused] = {
+      kColorTaskManagerTableBackgroundSelectedFocused};
 
-    mixer[kColorTaskManagerSearchBarBackground] = {SK_ColorTRANSPARENT};
-    mixer[kColorTaskManagerSearchBarTransparent] = {SK_ColorTRANSPARENT};
-    mixer[kColorTaskManagerSearchBarPlaceholderText] = {
-        ui::kColorTextfieldForeground};
-  }
+  mixer[kColorTaskManagerSearchBarBackground] = {SK_ColorTRANSPARENT};
+  mixer[kColorTaskManagerSearchBarTransparent] = {SK_ColorTRANSPARENT};
+  mixer[kColorTaskManagerSearchBarPlaceholderText] = {
+      ui::kColorTextfieldForeground};
 #endif  // !BUILDFLAG(IS_ANDROID)
   mixer[kColorThumbnailTabBackground] =
       ui::PickGoogleColor(ui::kColorAccent, ui::kColorFrameActive,

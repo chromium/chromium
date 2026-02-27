@@ -50,12 +50,9 @@ namespace task_manager {
 
 namespace {
 
-#if BUILDFLAG(IS_MAC)
-// Match Activity Monitor's default refresh rate.
+// Standardize the refresh time to 2 seconds, which matches MacOS's Activity
+// Monitor refresh rate.
 constexpr base::TimeDelta kRefreshTime = base::Seconds(2);
-#else
-constexpr base::TimeDelta kRefreshTime = base::Seconds(1);
-#endif  // BUILDFLAG(IS_MAC)
 
 // The columns that are shared by a group will show the value of the column
 // only once per group.
@@ -343,11 +340,7 @@ TableSortDescriptor::TableSortDescriptor(int col_id, bool ascending)
 TaskManagerTableModel::TaskManagerTableModel(
     TableViewDelegate* delegate,
     DisplayCategory initial_display_category)
-    : TaskManagerObserver(
-          base::FeatureList::IsEnabled(features::kTaskManagerDesktopRefresh)
-              ? base::Seconds(2)
-              : kRefreshTime,
-          REFRESH_TYPE_NONE),
+    : TaskManagerObserver(kRefreshTime, REFRESH_TYPE_NONE),
       table_view_delegate_(delegate),
       table_model_observer_(nullptr),
       stringifier_(new TaskManagerValuesStringifier),
@@ -358,10 +351,6 @@ TaskManagerTableModel::TaskManagerTableModel(
 
 TaskManagerTableModel::~TaskManagerTableModel() {
   StopUpdating();
-
-  if (!base::FeatureList::IsEnabled(features::kTaskManagerDesktopRefresh)) {
-    return;
-  }
 
   // A tab switch isn't performed when the table model closes, so we need to
   // collect the remaining elapsed time in the current tab.
@@ -688,36 +677,18 @@ int TaskManagerTableModel::CompareValues(size_t row1,
 std::u16string TaskManagerTableModel::GetAXNameForHeader(
     const std::vector<std::u16string>& visible_column_titles,
     const std::vector<std::u16string>& visible_column_sortable) {
-  // Gate the header change for task manager behind feature flag. Clean it up
-  // once refreshed task manager is launched.
-  // TODO(crbug.com/364926055): Chromium Task Manager Refresh Cleanup.
-  if (!base::FeatureList::IsEnabled(features::kTaskManagerDesktopRefresh)) {
-    return TableModel::GetAXNameForHeader(visible_column_titles,
-                                          visible_column_sortable);
-  }
   return FormatListToString(visible_column_sortable);
 }
 
 std::u16string TaskManagerTableModel::GetAXNameForHeaderCell(
     const std::u16string& visible_column_title,
     const std::u16string& visible_column_sortable) {
-  if (!base::FeatureList::IsEnabled(features::kTaskManagerDesktopRefresh)) {
-    return TableModel::GetAXNameForHeaderCell(visible_column_title,
-                                              visible_column_sortable);
-  }
   return visible_column_sortable;
 }
 
 std::u16string TaskManagerTableModel::GetAXNameForRow(
     size_t row,
     const std::vector<int>& visible_column_ids) {
-  // Gate the row change for task manager behind feature flag. Clean it up
-  // once refreshed task manager is launched.
-  // TODO(crbug.com/364926055): Chromium Task Manager Refresh Cleanup.
-  if (!base::FeatureList::IsEnabled(features::kTaskManagerDesktopRefresh)) {
-    return TableModel::GetAXNameForRow(row, visible_column_ids);
-  }
-
   DCHECK_LT(row, RowCount());
   DCHECK(!visible_column_ids.empty());
 
@@ -882,9 +853,7 @@ void TaskManagerTableModel::OnTasksRefreshed(const TaskIdList& task_ids) {
 
 void TaskManagerTableModel::OnTasksRefreshedWithBackgroundCalculations(
     const TaskIdList& task_ids) {
-  if (base::FeatureList::IsEnabled(features::kTaskManagerDesktopRefresh)) {
-    OnRefresh(task_ids);
-  }
+  OnRefresh(task_ids);
 }
 
 void TaskManagerTableModel::ActivateTask(size_t row_index) {
@@ -1170,12 +1139,6 @@ bool TaskManagerTableModel::ShouldKeepTaskForSupportedType(
 }
 
 bool TaskManagerTableModel::ShouldKeepTask(TaskId task_id) const {
-  // TODO(crbug.com/364926055): Remove when the refreshed Task Manager launches.
-  // Used for backward compatibility with the prod. task manager.
-  if (!base::FeatureList::IsEnabled(features::kTaskManagerDesktopRefresh)) {
-    return true;
-  }
-
   if (!search_terms_.empty() &&
       !matched_process_set_.contains(
           observed_task_manager()->GetProcessId(task_id))) {

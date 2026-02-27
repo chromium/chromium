@@ -30,13 +30,6 @@ ChromeVoxDesktopAutomationHandlerTest = class extends ChromeVoxE2ETest {
     };
   }
 
-  /** @override */
-  testGenCppIncludes() {
-    super.testGenCppIncludes();
-    GEN(`
-  #include "chrome/browser/task_manager/common/task_manager_features.h"
-      `);
-  }
 };
 
 AX_TEST_F(
@@ -480,75 +473,9 @@ AX_TEST_F(
       assertFalse(DesktopAutomationInterface.instance.isSubMenuShowing_);
     });
 
-/**
- * Test fixture for DesktopAutomationHandler without TaskManagerDesktopRefresh.
- * `features::kTaskManagerDesktopRefresh` is included in the base fixture which
- * inherits from ChromeVoxE2ETest.
- */
-ChromeVoxDesktopAutomationHandlerWithoutTaskManagerDesktopRefreshTest =
-    class extends ChromeVoxDesktopAutomationHandlerTest {
-  /** @override */
-  get featureList() {
-    let list = super.featureList || {};
-    list.disabled = list.disabled || [];
-    list.disabled.push('features::kTaskManagerDesktopRefresh');
-    return list;
-  }
-};
-
 TEST_F(
-    'ChromeVoxDesktopAutomationHandlerWithoutTaskManagerDesktopRefreshTest',
-    'TaskManagerTableView', function() {
-      // TODO(crbug.com/397484647): Merge this test with the
-      // TaskManagerDesktopRefresh version, and reintegrate it back into
-      // ChromeVoxDesktopAutomationHandlerTest after the flag is enabled by
-      // default.
-
-      const mockFeedback = this.createMockFeedback();
-      this.runWithLoadedDesktop(desktop => {
-        mockFeedback
-            .call(() => {
-              EventGenerator.sendKeyPress(KeyCode.ESCAPE, {search: true});
-            })
-            .expectSpeech('Task Manager, window')
-            .call(() => {
-              EventGenerator.sendKeyPress(KeyCode.DOWN);
-            })
-            .expectSpeech('Browser', /row [0-9]+ column 1/, 'Task')
-            .call(() => {
-              EventGenerator.sendKeyPress(KeyCode.DOWN);
-            })
-            // Make sure it doesn't repeat the previous line!
-            .expectNextSpeechUtteranceIsNot('Browser')
-            .expectSpeech(/row [0-9]+ column 1/)
-
-            .replay();
-      });
-    });
-
-/**
- * Test fixture for DesktopAutomationHandler incl. TaskManagerDesktopRefresh.
- * `features::kTaskManagerDesktopRefresh` is included in the base fixture which
- * inherits from ChromeVoxE2ETest.
- */
-ChromeVoxDesktopAutomationHandlerWithTaskManagerDesktopRefreshTest =
-    class extends ChromeVoxDesktopAutomationHandlerTest {
-  /** @override */
-  get featureList() {
-    let list = super.featureList || {};
-    list.enabled = list.enabled || [];
-    list.enabled.push('features::kTaskManagerDesktopRefresh');
-    return list;
-  }
-};
-
-TEST_F(
-    'ChromeVoxDesktopAutomationHandlerWithTaskManagerDesktopRefreshTest',
-    'TaskManagerTableView', function() {
-      // TODO(crbug.com/397484647): Merge this test with the production
-      // (ChromeVoxDesktopAutomationHandlerWithoutTaskManagerDesktopRefreshTest.
-      // TaskManagerTableView) version after the flag is enabled by default.
-
+    'ChromeVoxDesktopAutomationHandlerTest', 'TaskManagerTableView',
+    function() {
       const mockFeedback = this.createMockFeedback();
       this.runWithLoadedDesktop(desktop => {
         mockFeedback

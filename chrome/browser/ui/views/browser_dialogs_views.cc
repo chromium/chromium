@@ -47,7 +47,6 @@ std::unique_ptr<SelectAudioOutputPicker> SelectAudioOutputPicker::Create(
 
 namespace chrome {
 
-#if !BUILDFLAG(IS_MAC)
 task_manager::TaskManagerTableModel* ShowTaskManager(
     Browser* browser,
     task_manager::StartAction start_action) {
@@ -57,7 +56,6 @@ task_manager::TaskManagerTableModel* ShowTaskManager(
 void HideTaskManager() {
   task_manager::TaskManagerView::Hide();
 }
-#endif
 
 views::Widget* ShowBrowserModal(Browser* browser,
                                 std::unique_ptr<ui::DialogModel> dialog_model) {
