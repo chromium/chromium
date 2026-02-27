@@ -9763,3 +9763,6 @@ crbug.com/486315292 external/wpt/geolocation/enabled-by-permissions-policy.https
 
 # Gardener 2026-02-27: Flaky on several Linux bots
 crbug.com/487829615 [ Linux ] virtual/run-snapshot-post-layout/external/wpt/scroll-animations/scroll-timelines/scroll-animation-effect-phases.tentative.html [ Pass Failure ]
+
+# Gardener 2026-02-27: Flaky on headless_shell_wpt_tests Mac bot
+crbug.com/488351815 [ Mac ] external/wpt/html/semantics/forms/the-textarea-element/wrapping-transformation.window.html [ Failure Pass ]
