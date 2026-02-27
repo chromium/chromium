@@ -7090,6 +7090,7 @@ test("unit_tests") {
     "//chrome/app/vector_icons",
     "//chrome/browser:active_use_util",
     "//chrome/browser:buildflags",
+    "//chrome/browser:flags",
     "//chrome/browser:font_pref",
     "//chrome/browser:global_features",
     "//chrome/browser:primitives",
@@ -7132,6 +7133,7 @@ test("unit_tests") {
     "//chrome/browser/crash_upload_list:unit_tests",
     "//chrome/browser/custom_handlers",
     "//chrome/browser/data_saver",
+    "//chrome/browser/data_sharing",
     "//chrome/browser/devtools",
     "//chrome/browser/diagnostics:unit_tests",
     "//chrome/browser/download",
@@ -7270,6 +7272,7 @@ test("unit_tests") {
     "//chrome/browser/web_share_target:unit_tests",
     "//chrome/browser/webauthn",
     "//chrome/browser/webauthn:chrome_web_authentication_delegate",
+    "//chrome/browser/webdata_services",
     "//chrome/browser/webid",
     "//chrome/browser/webid:unit_tests",
     "//chrome/common:test_support",
@@ -7651,18 +7654,6 @@ test("unit_tests") {
   # TODO(413315837): Remove this dependency when
   # privacy_sandbox_service_impl_unittest.cc gets modularized.
   deps += [ "//chrome/browser/privacy_sandbox:test_support" ]
-
-  # TODO(417228688): Remove this dependency when
-  # serial_chooser_context_unittest.cc gets modularized.
-  deps += [
-    "//chrome/browser:flags",
-    "//chrome/browser/data_sharing",
-    "//chrome/browser/history",
-    "//chrome/browser/serial",
-    "//chrome/browser/ui/toolbar:test_support",
-    "//chrome/browser/usb",
-    "//chrome/browser/webdata_services",
-  ]
 
   if (enable_captive_portal_detection) {
     deps += [ "//chrome/browser/captive_portal" ]
@@ -8224,6 +8215,7 @@ test("unit_tests") {
       "//chrome/browser/ui/serial",
       "//chrome/browser/ui/serial:test_support",
       "//chrome/browser/ui/tabs:tab_enums",
+      "//chrome/browser/usb",
       "//chrome/common/wallet:mojo_bindings",
       "//chrome/services/media_gallery_util:unit_tests",
       "//components/back_forward_cache",
@@ -8614,6 +8606,7 @@ test("unit_tests") {
       "//chrome/browser/record_replay:unit_tests",
       "//chrome/browser/resource_coordinator",
       "//chrome/browser/send_tab_to_self:unit_tests",
+      "//chrome/browser/serial",
       "//chrome/browser/signin:signin_promo",
       "//chrome/browser/tab_group_sync:factories",
       "//chrome/browser/task_manager/common",
@@ -8685,6 +8678,7 @@ test("unit_tests") {
       "//chrome/browser/ui/webui/skills:unit_tests",
       "//chrome/browser/ui/webui/webui_toolbar",
       "//chrome/browser/ui/webui/webui_toolbar:unit_tests",
+      "//chrome/browser/usb",
       "//chrome/browser/usb:unit_tests",
       "//chrome/browser/user_education",
       "//chrome/browser/user_education:unit_tests",
@@ -10707,6 +10701,7 @@ test("unit_tests") {
       "//chrome/browser/ui/tab_contents",
       "//chrome/browser/ui/tabs:tab_enums",
       "//chrome/browser/ui/toasts",
+      "//chrome/browser/ui/toolbar:test_support",
       "//chrome/browser/ui/toolbar:unit_tests",
       "//chrome/browser/ui/toolbar/cast",
       "//chrome/browser/ui/views",
