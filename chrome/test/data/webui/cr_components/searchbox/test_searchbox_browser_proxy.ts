@@ -167,6 +167,10 @@ class FakePageHandler extends TestBrowserProxy implements PageHandlerInterface {
 
   getInputState() {
     this.methodCalled('getInputState');
+    if (this.results_.has('getInputState')) {
+      return this.results_.get('getInputState');
+    }
+
     return Promise.resolve({
       state: {
         allowedModels: [],
