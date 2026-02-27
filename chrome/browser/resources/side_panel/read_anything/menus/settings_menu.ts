@@ -353,6 +353,12 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
       return;
     }
 
+    const activeItems =
+        this.shadowRoot?.querySelectorAll<HTMLElement>('.active');
+    for (const activeItem of activeItems) {
+      activeItem.classList.remove('active');
+    }
+
     const index = Number.parseInt(currentTarget.dataset['index']!);
     const item = this.options_[index];
     if (!item || item.itemType === SettingsItemType.TOGGLE) {
@@ -381,16 +387,11 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
     }, delay);
   }
 
-  protected onMenuItemLeave_(e: PointerEvent) {
+  protected onMenuItemLeave_() {
     // Clear the open timer so that submenus aren't opened after the cursor
     // stops hovering.
     this.clearOpenTimer_();
-
-    const currentTarget = e.currentTarget as HTMLElement;
-    if (currentTarget) {
-      currentTarget.classList.remove('active');
-      this.startCloseTimer_();
-    }
+    this.startCloseTimer_();
   }
 
   private startCloseTimer_() {
@@ -487,6 +488,13 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
     // we should cancel the close timer, as the user intentionally moved into
     // the submenu.
     if (e.type === 'pointermove' && isInsideSubmenu) {
+      if (this.currentOpenId_) {
+        const activeItem = this.shadowRoot?.querySelector<HTMLElement>(
+            `#${this.currentOpenId_}`);
+        if (activeItem) {
+          activeItem.classList.add('active');
+        }
+      }
       this.clearCloseTimer_();
     }
 
