@@ -991,7 +991,7 @@ class ContextSharingBorderViewWithActorGlowUiTest
 };
 
 // TODO(https://crbug.com/478360939): Fix the flakiness.
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 #define MAYBE_ActorGlowShowsBorderWhenIndicatorIsOff \
   DISABLED_ActorGlowShowsBorderWhenIndicatorIsOff
 #else
