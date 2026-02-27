@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/frame/frame.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/performance_entry_names.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
@@ -155,6 +156,11 @@ bool PerformanceEventTiming::HasKnownEndTime() const {
 }
 
 bool PerformanceEventTiming::IsReadyForReporting() const {
+  return !reporting_info_.processing_end_time.is_null() && HasKnownEndTime() &&
+         HasKnownInteractionID();
+}
+
+bool PerformanceEventTiming::IsReadyForReportingForIssue328902994() const {
   return !reporting_info_.processing_end_time.is_null() && HasKnownEndTime();
 }
 

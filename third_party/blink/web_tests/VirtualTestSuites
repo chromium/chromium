@@ -973,6 +973,22 @@
     "expires": "Dec 1, 2026"
   },
   {
+    "prefix": "event-timing-strict-order-disabled",
+    "owners": [
+      "mmocny@chromium.org"
+    ],
+    "platforms": [
+      "Linux"
+    ],
+    "bases": [
+      "external/wpt/event-timing"
+    ],
+    "args": [
+      "--disable-features=EventTimingReportingInStrictOrderOnly"
+    ],
+    "expires": "Dec 1, 2026"
+  },
+  {
     "prefix": "exotic-color-space",
     "owners": [
       "ccameron@chromium.org"

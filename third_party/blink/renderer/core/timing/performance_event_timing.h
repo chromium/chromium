@@ -140,8 +140,7 @@ class CORE_EXPORT PerformanceEventTiming final : public PerformanceEntry {
     return interaction_id_;
   }
 
-  void SetInteractionIdInfo(
-      std::optional<PerformanceTimelineEntryIdInfo> interaction_id) {
+  void SetInteractionIdInfo(PerformanceTimelineEntryIdInfo interaction_id) {
     interaction_id_ = interaction_id;
   }
 
@@ -153,7 +152,16 @@ class CORE_EXPORT PerformanceEventTiming final : public PerformanceEntry {
 
   bool IsReadyForReporting() const;
 
+  // TODO(crbug.com/328902994): Temporary method for kill-switch purposes.
+  // Returns true if the entry has an end time, even if interactionId is not yet
+  // assigned.
+  bool IsReadyForReportingForIssue328902994() const;
+
   base::TimeTicks GetEndTime() const;
+
+  base::TimeDelta GetExactDuration() const {
+    return GetEndTime() - GetEventTimingReportingInfo()->creation_time;
+  }
 
   void UpdateFallbackTime(base::TimeTicks fallback_time, FallbackReason reason);
 
@@ -172,6 +180,9 @@ class CORE_EXPORT PerformanceEventTiming final : public PerformanceEntry {
 
   // Getters and setters of the EventTimingReportingInfo object.
   EventTimingReportingInfo* GetEventTimingReportingInfo() {
+    return &reporting_info_;
+  }
+  const EventTimingReportingInfo* GetEventTimingReportingInfo() const {
     return &reporting_info_;
   }
 
