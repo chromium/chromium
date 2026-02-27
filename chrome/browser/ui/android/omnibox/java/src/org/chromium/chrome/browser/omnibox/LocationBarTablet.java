@@ -475,16 +475,21 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
         Resources resources = getResources();
         int screenWidthDp = resources.getConfiguration().screenWidthDp;
         int windowWidthPx = DisplayUtil.dpToPx(mWindowAndroid.getDisplay(), screenWidthDp);
-        int measuredWidth = getMeasuredWidth();
+        int measuredWidthWithoutExpansion =
+                getMeasuredWidth()
+                        + Math.min(0, layoutParams.leftMargin)
+                        + Math.min(0, layoutParams.rightMargin);
         int minTabletWidthPx = resources.getDimensionPixelSize(R.dimen.fusebox_min_tablet_width);
         boolean isPhoneWidthScreen = screenWidthDp < DeviceFormFactor.MINIMUM_TABLET_WIDTH_DP;
         int targetWidthPx =
                 isPhoneWidthScreen
                         ? windowWidthPx
-                        : Math.max(minTabletWidthPx, measuredWidth + 2 * minHorizontalExpansionPx);
+                        : Math.max(
+                                minTabletWidthPx,
+                                measuredWidthWithoutExpansion + 2 * minHorizontalExpansionPx);
 
         ViewUtils.getRelativeLayoutPosition(getRootView(), this, mPositionArray);
-        int currentLeft = mPositionArray[0];
+        int currentLeft = mPositionArray[0] - layoutParams.leftMargin;
         // Our view is relatively centered already; make it exactly centered when expanded.
         boolean isViewApproximatelyCentered =
                 windowWidthPx - 2 * currentLeft <= minTabletWidthPx || isPhoneWidthScreen;
@@ -492,16 +497,16 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
             int targetLeft = (windowWidthPx - targetWidthPx) / 2;
             int targetRight = targetLeft + targetWidthPx;
 
-            int currentRight = currentLeft + measuredWidth;
+            int currentRight = currentLeft + measuredWidthWithoutExpansion;
             int shiftLeft = targetLeft - currentLeft;
             int shiftRight = targetRight - currentRight;
 
-            layoutParams.leftMargin += shiftLeft;
-            layoutParams.rightMargin -= shiftRight;
+            layoutParams.leftMargin = shiftLeft;
+            layoutParams.rightMargin = -shiftRight;
         } else {
             // Our view is relatively off-center. Leave it that way, expanding symmetrically from
             // our current position.
-            int expansionPx = (targetWidthPx - measuredWidth) / 2;
+            int expansionPx = (targetWidthPx - measuredWidthWithoutExpansion) / 2;
             layoutParams.leftMargin = -expansionPx;
             layoutParams.rightMargin = -expansionPx;
         }
