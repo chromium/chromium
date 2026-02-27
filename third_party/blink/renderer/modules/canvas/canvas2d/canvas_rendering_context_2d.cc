@@ -1335,9 +1335,8 @@ CanvasRenderingContext2D::CreateCanvasResourceProvider() {
     // mappable buffers are supported, in which case the created SharedImage
     // could be mapped onto the CPU for software raster writes and then read by
     // the display compositor.
-    bool native_mappable_si_supported =
-        SharedGpuContext::NativeMappableSharedImagesSupportedForCanvas2D();
-    if (use_gpu_raster || native_mappable_si_supported) {
+    if (use_gpu_raster ||
+        SharedGpuContext::NativeMappableSharedImagesSupportedForCanvas2D()) {
       gpu::SharedImageUsageSet shared_image_usage_flags =
           gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
 
