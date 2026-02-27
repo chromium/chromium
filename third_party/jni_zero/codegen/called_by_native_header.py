@@ -213,6 +213,8 @@ def _param_type_cpp(java_type):
   if type_str := java_type.converted_type:
     if java_type.is_primitive():
       return type_str
+    if type_str.endswith('&&'):
+      return type_str
     return f'{type_str} const&'
   ret = java_type.to_cpp()
   if java_type.is_primitive():
@@ -224,19 +226,21 @@ def _param_type_cpp(java_type):
 
 def _prep_param(sb, param):
   """Returns the snippet to use for the parameter."""
-  orig_name = param.cpp_name()
+  ret = param.cpp_name()
   java_type = param.java_type
 
   if converted_type := java_type.converted_type:
+    if not java_type.is_primitive():
+      ret = f'std::move({ret})'
     converted_name = f'converted_{param.name}'
-    convert_type.to_jni_assignment(sb, converted_name, orig_name, java_type)
-    orig_name = converted_name
+    convert_type.to_jni_assignment(sb, converted_name, ret, java_type)
+    ret = converted_name
 
   if java_type.is_primitive():
     if java_type.primitive_name == 'int' and not converted_type:
-      return f'as_jint({orig_name})'
-    return orig_name
-  return f'{orig_name}.obj()'
+      return f'as_jint({ret})'
+    return ret
+  return f'{ret}.obj()'
 
 
 def _jni_function_name(called_by_native):
@@ -434,4 +438,9 @@ def mirrored_cpp_method_definition(sb, cbn):
         plist.append('env')
         if not is_static:
           plist.append('this_obj')
-        plist.extend(f'{p.cpp_name()}' for p in cbn.params)
+        for p in cbn.params:
+          expr = p.cpp_name()
+          if java_type := p.java_type.converted_type:
+            if not p.java_type.is_primitive():
+              expr = f'std::move({expr})'
+          plist.append(expr)

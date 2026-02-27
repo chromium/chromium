@@ -14,14 +14,10 @@
 namespace base::android {
 
 namespace {
-int g_once_closure_run_count = 0;
+int g_run_count = 0;
 bool g_once_callback_result = false;
-int g_repeating_closure_run_count = 0;
-int g_repeating_callback_result_count = 0;
 bool g_once_callback2_result1 = false;
 int g_once_callback2_result2 = 0;
-int g_repeating_callback2_result_count = 0;
-int g_repeating_callback_with_subtype_run_count = 0;
 
 std::string& GetOnceCallbackWithSubtypeResult() {
   static base::NoDestructor<std::string> instance;
@@ -29,24 +25,63 @@ std::string& GetOnceCallbackWithSubtypeResult() {
 }
 }  // namespace
 
+static void JNI_JniCallbacksTest_TriggerOnceClosure(JNIEnv* env) {
+  base::OnceClosure closure = base::BindOnce([]() { g_run_count++; });
+  Java_JniCallbacksTest_callOnceClosure(env, std::move(closure));
+}
+
+static void JNI_JniCallbacksTest_TriggerOnceCallback(JNIEnv* env) {
+  base::OnceCallback<void(int32_t)> callback =
+      base::BindOnce([](int32_t r) { g_once_callback2_result2 = r; });
+  Java_JniCallbacksTest_callOnceCallback(env, std::move(callback));
+}
+
+static void JNI_JniCallbacksTest_TriggerOnceCallback2(JNIEnv* env) {
+  base::OnceCallback<void(bool, int32_t)> callback =
+      base::BindOnce([](bool r1, int32_t r2) {
+        g_once_callback2_result1 = r1;
+        g_once_callback2_result2 = r2;
+      });
+  Java_JniCallbacksTest_callOnceCallback2(env, std::move(callback));
+}
+
+static void JNI_JniCallbacksTest_TriggerRepeatingClosure(JNIEnv* env) {
+  base::RepeatingClosure closure = base::BindRepeating([]() { g_run_count++; });
+  Java_JniCallbacksTest_callRepeatingClosure(env, closure);
+}
+
+static void JNI_JniCallbacksTest_TriggerRepeatingClosureMoveOnly(JNIEnv* env) {
+  base::RepeatingClosure closure = base::BindRepeating([]() { g_run_count++; });
+  Java_JniCallbacksTest_callRepeatingClosure(env, std::move(closure));
+}
+
+static void JNI_JniCallbacksTest_TriggerRepeatingCallback(JNIEnv* env) {
+  // Test using std::move() with a const& param.
+  base::RepeatingCallback<void(int32_t)> callback =
+      base::BindRepeating([](int32_t r) { g_run_count++; });
+  Java_JniCallbacksTest_callRepeatingCallback(env, std::move(callback));
+}
+
+static void JNI_JniCallbacksTest_TriggerRepeatingCallback2(JNIEnv* env) {
+  base::RepeatingCallback<void(bool, int32_t)> callback =
+      base::BindRepeating([](bool r1, int32_t r2) { g_run_count++; });
+  Java_JniCallbacksTest_callRepeatingCallback2(env, callback);
+}
+
 static void JNI_JniCallbacksTest_ResetCounters(JNIEnv* env) {
-  g_once_closure_run_count = 0;
+  g_run_count = 0;
   g_once_callback_result = false;
   g_once_callback2_result1 = false;
   g_once_callback2_result2 = 0;
-  g_repeating_closure_run_count = 0;
-  g_repeating_callback_result_count = 0;
-  g_repeating_callback2_result_count = 0;
   GetOnceCallbackWithSubtypeResult().clear();
-  g_repeating_callback_with_subtype_run_count = 0;
 }
 
 static base::OnceClosure JNI_JniCallbacksTest_GetOnceClosure(JNIEnv* env) {
-  return base::BindOnce([]() { g_once_closure_run_count++; });
+  return base::BindOnce([]() { g_run_count++; });
 }
 
-static jint JNI_JniCallbacksTest_GetOnceClosureRunCount(JNIEnv* env) {
-  return g_once_closure_run_count;
+static jint JNI_JniCallbacksTest_GetRunCount(JNIEnv* env) {
+  return g_run_count;
 }
 
 static base::OnceCallback<void(bool)> JNI_JniCallbacksTest_GetOnceCallback(
@@ -60,21 +95,12 @@ static jboolean JNI_JniCallbacksTest_GetOnceCallbackResult(JNIEnv* env) {
 
 static base::RepeatingClosure JNI_JniCallbacksTest_GetRepeatingClosure(
     JNIEnv* env) {
-  return base::BindRepeating([]() { g_repeating_closure_run_count++; });
-}
-
-static jint JNI_JniCallbacksTest_GetRepeatingClosureRunCount(JNIEnv* env) {
-  return g_repeating_closure_run_count;
+  return base::BindRepeating([]() { g_run_count++; });
 }
 
 static base::RepeatingCallback<void(bool)>
 JNI_JniCallbacksTest_GetRepeatingCallback(JNIEnv* env) {
-  return base::BindRepeating(
-      [](bool r) { g_repeating_callback_result_count++; });
-}
-
-static jint JNI_JniCallbacksTest_GetRepeatingCallbackResultCount(JNIEnv* env) {
-  return g_repeating_callback_result_count;
+  return base::BindRepeating([](bool r) { g_run_count++; });
 }
 
 static base::OnceCallback<void(bool, const jni_zero::JavaRef<jobject>&)>
@@ -96,12 +122,7 @@ static jint JNI_JniCallbacksTest_GetOnceCallback2Result2(JNIEnv* env) {
 
 static base::RepeatingCallback<void(bool, int32_t)>
 JNI_JniCallbacksTest_GetRepeatingCallback2(JNIEnv* env) {
-  return base::BindRepeating(
-      [](bool r1, int32_t r2) { g_repeating_callback2_result_count++; });
-}
-
-static jint JNI_JniCallbacksTest_GetRepeatingCallback2ResultCount(JNIEnv* env) {
-  return g_repeating_callback2_result_count;
+  return base::BindRepeating([](bool r1, int32_t r2) { g_run_count++; });
 }
 
 static base::OnceCallback<void(const jni_zero::JavaRef<jstring>&)>
@@ -119,14 +140,8 @@ JNI_JniCallbacksTest_GetOnceCallbackWithSubtypeResult(JNIEnv* env) {
 
 static base::RepeatingCallback<void(const jni_zero::JavaRef<jstring>&)>
 JNI_JniCallbacksTest_GetRepeatingCallbackWithSubtype(JNIEnv* env) {
-  return base::BindRepeating([](const jni_zero::JavaRef<jstring>& r) {
-    g_repeating_callback_with_subtype_run_count++;
-  });
-}
-
-static jint JNI_JniCallbacksTest_GetRepeatingCallbackWithSubtypeRunCount(
-    JNIEnv* env) {
-  return g_repeating_callback_with_subtype_run_count;
+  return base::BindRepeating(
+      [](const jni_zero::JavaRef<jstring>& r) { g_run_count++; });
 }
 
 static void JNI_JniCallbacksTest_PassOnceClosure(JNIEnv* env,

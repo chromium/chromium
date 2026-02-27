@@ -4,6 +4,7 @@
 
 package org.chromium.base;
 
+import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
@@ -18,17 +19,118 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 @JNINamespace("base::android")
 @RunWith(BaseRobolectricTestRunner.class)
 public class JniCallbacksTest {
+    private static int sRunCount;
 
     @After
     public void tearDown() {
         JniCallbacksTestJni.get().resetCounters();
+        sRunCount = 0;
+    }
+
+    @CalledByNative
+    static void callOnceClosure(@JniType("base::OnceClosure&&") Runnable r) {
+        sRunCount++;
+        r.run();
+    }
+
+    @CalledByNative
+    static void callOnceCallback(
+            @JniType("base::OnceCallback<void(int32_t)>&&") Callback<Integer> c) {
+        sRunCount++;
+        c.onResult(42);
+    }
+
+    @CalledByNative
+    static void callOnceCallback2(
+            @JniType("base::OnceCallback<void(bool, int32_t)>&&") Callback2<Boolean, Integer> c) {
+        sRunCount++;
+        c.onResult(true, 100);
+    }
+
+    @CalledByNative
+    static void callRepeatingClosure(@JniType("base::RepeatingClosure") JniRepeatingRunnable r) {
+        sRunCount++;
+        r.run();
+        r.run();
+        r.destroy();
+    }
+
+    @CalledByNative
+    static void callRepeatingClosureMoveOnly(
+            @JniType("base::RepeatingClosure&&") JniRepeatingRunnable r) {
+        sRunCount++;
+        r.run();
+        r.run();
+        r.destroy();
+    }
+
+    @CalledByNative
+    static void callRepeatingCallback(
+            @JniType("base::RepeatingCallback<void(int32_t)>") JniRepeatingCallback<Integer> c) {
+        sRunCount++;
+        c.onResult(1);
+        c.onResult(2);
+        c.destroy();
+    }
+
+    @CalledByNative
+    static void callRepeatingCallback2(
+            @JniType("base::RepeatingCallback<void(bool, int32_t)>")
+                    JniRepeatingCallback2<Boolean, Integer> c) {
+        sRunCount++;
+        c.onResult(true, 1);
+        c.onResult(false, 2);
+        c.destroy();
+    }
+
+    @Test
+    public void testCalledByNativeOnceClosure() {
+        JniCallbacksTestJni.get().triggerOnceClosure();
+        Assert.assertEquals(1, sRunCount);
+        Assert.assertEquals(1, JniCallbacksTestJni.get().getRunCount());
+    }
+
+    @Test
+    public void testCalledByNativeOnceCallback() {
+        JniCallbacksTestJni.get().triggerOnceCallback();
+        Assert.assertEquals(1, sRunCount);
+        Assert.assertEquals(42, JniCallbacksTestJni.get().getOnceCallback2Result2());
+    }
+
+    @Test
+    public void testCalledByNativeOnceCallback2() {
+        JniCallbacksTestJni.get().triggerOnceCallback2();
+        Assert.assertEquals(1, sRunCount);
+        Assert.assertTrue(JniCallbacksTestJni.get().getOnceCallback2Result1());
+        Assert.assertEquals(100, JniCallbacksTestJni.get().getOnceCallback2Result2());
+    }
+
+    @Test
+    public void testCalledByNativeRepeatingClosure() {
+        JniCallbacksTestJni.get().triggerRepeatingClosure();
+        Assert.assertEquals(1, sRunCount);
+        Assert.assertEquals(2, JniCallbacksTestJni.get().getRunCount());
+    }
+
+    @Test
+    public void testCalledByNativeRepeatingCallback() {
+        JniCallbacksTestJni.get().triggerRepeatingCallback();
+        Assert.assertEquals(1, sRunCount);
+        Assert.assertEquals(2, JniCallbacksTestJni.get().getRunCount());
+    }
+
+    @Test
+    public void testCalledByNativeRepeatingCallback2() {
+        JniCallbacksTestJni.get().triggerRepeatingCallback2();
+        Assert.assertEquals(1, sRunCount);
+        Assert.assertEquals(2, JniCallbacksTestJni.get().getRunCount());
     }
 
     @Test
     public void testNativeToOnceClosure() {
         Runnable r = JniCallbacksTestJni.get().getOnceClosure();
         r.run();
-        Assert.assertEquals(1, JniCallbacksTestJni.get().getOnceClosureRunCount());
+        Assert.assertEquals(1, JniCallbacksTestJni.get().getRunCount());
     }
 
     @Test
@@ -43,7 +145,7 @@ public class JniCallbacksTest {
         JniRepeatingRunnable r = JniCallbacksTestJni.get().getRepeatingClosure();
         r.run();
         r.run();
-        Assert.assertEquals(2, JniCallbacksTestJni.get().getRepeatingClosureRunCount());
+        Assert.assertEquals(2, JniCallbacksTestJni.get().getRunCount());
         r.destroy();
     }
 
@@ -52,7 +154,7 @@ public class JniCallbacksTest {
         JniRepeatingCallback<Boolean> c = JniCallbacksTestJni.get().getRepeatingCallback();
         c.onResult(true);
         c.onResult(false);
-        Assert.assertEquals(2, JniCallbacksTestJni.get().getRepeatingCallbackResultCount());
+        Assert.assertEquals(2, JniCallbacksTestJni.get().getRunCount());
         c.destroy();
     }
 
@@ -70,7 +172,7 @@ public class JniCallbacksTest {
                 JniCallbacksTestJni.get().getRepeatingCallback2();
         c.onResult(true, 1);
         c.onResult(false, 2);
-        Assert.assertEquals(2, JniCallbacksTestJni.get().getRepeatingCallback2ResultCount());
+        Assert.assertEquals(2, JniCallbacksTestJni.get().getRunCount());
         c.destroy();
     }
 
@@ -166,7 +268,7 @@ public class JniCallbacksTest {
                 JniCallbacksTestJni.get().getRepeatingCallbackWithSubtype();
         c.onResult("s1");
         c.onResult("s2");
-        Assert.assertEquals(2, JniCallbacksTestJni.get().getRepeatingCallbackWithSubtypeRunCount());
+        Assert.assertEquals(2, JniCallbacksTestJni.get().getRunCount());
         c.destroy();
     }
 
@@ -182,10 +284,24 @@ public class JniCallbacksTest {
     interface Natives {
         void resetCounters();
 
+        void triggerOnceClosure();
+
+        void triggerOnceCallback();
+
+        void triggerOnceCallback2();
+
+        void triggerRepeatingClosure();
+
+        void triggerRepeatingClosureMoveOnly();
+
+        void triggerRepeatingCallback();
+
+        void triggerRepeatingCallback2();
+
         @JniType("base::OnceClosure")
         Runnable getOnceClosure();
 
-        int getOnceClosureRunCount();
+        int getRunCount();
 
         @JniType("base::OnceCallback<void(bool)>")
         Callback<Boolean> getOnceCallback();
@@ -195,12 +311,8 @@ public class JniCallbacksTest {
         @JniType("base::RepeatingClosure")
         JniRepeatingRunnable getRepeatingClosure();
 
-        int getRepeatingClosureRunCount();
-
         @JniType("base::RepeatingCallback<void(bool)>")
         JniRepeatingCallback<Boolean> getRepeatingCallback();
-
-        int getRepeatingCallbackResultCount();
 
         @JniType("base::OnceCallback<void(bool, jni_zero::JavaRef<jobject>)>")
         Callback2<Boolean, Integer> getOnceCallback2();
@@ -212,8 +324,6 @@ public class JniCallbacksTest {
         @JniType("base::RepeatingCallback<void(bool, int32_t)>")
         JniRepeatingCallback2<Boolean, Integer> getRepeatingCallback2();
 
-        int getRepeatingCallback2ResultCount();
-
         @JniType("base::OnceCallback<void(const jni_zero::JavaRef<jstring>&)>")
         Callback<String> getOnceCallbackWithSubtype();
 
@@ -221,8 +331,6 @@ public class JniCallbacksTest {
 
         @JniType("base::RepeatingCallback<void(const jni_zero::JavaRef<jstring>&)>")
         JniRepeatingCallback<String> getRepeatingCallbackWithSubtype();
-
-        int getRepeatingCallbackWithSubtypeRunCount();
 
         void passOnceClosure(@JniType("base::OnceClosure") Runnable r);
 

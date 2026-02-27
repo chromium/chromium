@@ -184,7 +184,10 @@ JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProcessor
     }
   };
   auto return_value = dependent_context(0);
-  auto converted_ret = jni_zero::ToJniArray(env, return_value, static_cast<jclass>(__arrayClazz)).Release();
+  auto converted_ret = jni_zero::ToJniArray(
+      env,
+      std::move(return_value),
+      static_cast<jclass>(__arrayClazz)).Release();
   return converted_ret;
 }
 
@@ -210,7 +213,7 @@ JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProcessor
     }
   };
   auto return_value = dependent_context(0);
-  auto converted_ret = jni_zero::ToJniArray(env, return_value).Release();
+  auto converted_ret = jni_zero::ToJniArray(env, std::move(return_value)).Release();
   return converted_ret;
 }
 
@@ -236,7 +239,7 @@ JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProcessor
     }
   };
   auto return_value = dependent_context(0);
-  auto converted_ret = jni_zero::ToJniType(env, return_value).Release();
+  auto converted_ret = jni_zero::ToJniType(env, std::move(return_value)).Release();
   return converted_ret;
 }
 
@@ -263,7 +266,10 @@ JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProcessor
     }
   };
   auto return_value = dependent_context(0);
-  auto converted_ret = jni_zero::ToJniArray(env, return_value, jni_zero::g_string_class).Release();
+  auto converted_ret = jni_zero::ToJniArray(
+      env,
+      std::move(return_value),
+      jni_zero::g_string_class).Release();
   return converted_ret;
 }
 
@@ -695,7 +701,7 @@ JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProcessor
     }
   };
   auto return_value = dependent_context(0);
-  auto converted_ret = jni_zero::ToJniArray(env, return_value).Release();
+  auto converted_ret = jni_zero::ToJniArray(env, std::move(return_value)).Release();
   return converted_ret;
 }
 

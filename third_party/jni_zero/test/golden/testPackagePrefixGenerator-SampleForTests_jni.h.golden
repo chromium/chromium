@@ -403,7 +403,7 @@ JNI_ZERO_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_org_jni_1zero_GEN
     }
   };
   auto return_value = dependent_context(0);
-  auto converted_ret = jni_zero::ToJniList(env, return_value).Release();
+  auto converted_ret = jni_zero::ToJniList(env, std::move(return_value)).Release();
   return converted_ret;
 }
 
@@ -435,7 +435,7 @@ JNI_ZERO_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_org_jni_1zero_GEN
     }
   };
   auto return_value = dependent_context(0);
-  auto converted_ret = jni_zero::ToJniType(env, return_value).Release();
+  auto converted_ret = jni_zero::ToJniType(env, std::move(return_value)).Release();
   return converted_ret;
 }
 
@@ -583,7 +583,7 @@ JNI_ZERO_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_org_jni_1zero_GEN
     }
   };
   auto return_value = dependent_context(0);
-  auto converted_ret = jni_zero::ToJniArray(env, return_value).Release();
+  auto converted_ret = jni_zero::ToJniArray(env, std::move(return_value)).Release();
   return converted_ret;
 }
 
@@ -637,7 +637,7 @@ JNI_ZERO_BOUNDARY_EXPORT jint Java_this_is_a_package_prefix_org_jni_1zero_GEN_1J
   auto return_value = dependent_context(0);
   auto converted_ret = jni_zero::internal::PrimitiveConvert<MyEnum, jint>::ToJniType(
       env,
-      return_value);
+      std::move(return_value));
   return static_cast<jint>(converted_ret);
 }
 
@@ -748,9 +748,11 @@ static std::string Java_SampleForTests_getFirstString(
       &cached_method_id);
   jni_zero::ScopedJavaLocalRef<jobject> converted_array = jni_zero::ToJniArray(
       env,
-      array,
+      std::move(array),
       jni_zero::g_string_class);
-  jni_zero::ScopedJavaLocalRef<jobject> converted_finalArg = jni_zero::ToJniType(env, finalArg);
+  jni_zero::ScopedJavaLocalRef<jobject> converted_finalArg = jni_zero::ToJniType(
+      env,
+      std::move(finalArg));
   auto _ret = env->CallObjectMethod(
       obj.obj(),
       call_context.method_id(),
@@ -884,7 +886,7 @@ static std::vector<int32_t> Java_SampleForTests_jniTypesAndAnnotations(
       "(I[IIJ)[I",
       &cached_method_id);
   jint converted_foo = jni_zero::internal::PrimitiveConvert<MyEnum, jint>::ToJniType(env, foo);
-  jni_zero::ScopedJavaLocalRef<jobject> converted_bar = jni_zero::ToJniArray(env, bar);
+  jni_zero::ScopedJavaLocalRef<jobject> converted_bar = jni_zero::ToJniArray(env, std::move(bar));
   jlong converted_bat = jni_zero::internal::PrimitiveConvert<long, jlong>::ToJniType(env, bat);
   auto _ret = env->CallObjectMethod(
       obj.obj(),
@@ -911,7 +913,9 @@ static std::vector<jni_zero::ScopedJavaLocalRef<jobject>> Java_SampleForTests_li
       "listTest1",
       "(Ljava/util/List;)Ljava/util/Collection;",
       &cached_method_id);
-  jni_zero::ScopedJavaLocalRef<jobject> converted_items = jni_zero::ToJniList(env, items);
+  jni_zero::ScopedJavaLocalRef<jobject> converted_items = jni_zero::ToJniList(
+      env,
+      std::move(items));
   auto _ret = env->CallStaticObjectMethod(clazz, call_context.method_id(), converted_items.obj());
   return jni_zero::FromJniCollection<std::vector<jni_zero::ScopedJavaLocalRef<jobject>>>(
       env,
@@ -931,7 +935,7 @@ static std::map<std::string, std::string> Java_SampleForTests_mapTest1(
       "mapTest1",
       "(Ljava/util/Map;)Ljava/util/Map;",
       &cached_method_id);
-  jni_zero::ScopedJavaLocalRef<jobject> converted_arg0 = jni_zero::ToJniType(env, arg0);
+  jni_zero::ScopedJavaLocalRef<jobject> converted_arg0 = jni_zero::ToJniType(env, std::move(arg0));
   auto _ret = env->CallStaticObjectMethod(clazz, call_context.method_id(), converted_arg0.obj());
   return jni_zero::FromJniType<std::map<std::string, std::string>>(
       env,
@@ -1024,13 +1028,13 @@ static std::vector<bool> Java_SampleForTests_primitiveArrays(
       "primitiveArrays",
       "([B[C[S[I[J[F[D)[Z",
       &cached_method_id);
-  jni_zero::ScopedJavaLocalRef<jobject> converted_b = jni_zero::ToJniArray(env, b);
-  jni_zero::ScopedJavaLocalRef<jobject> converted_c = jni_zero::ToJniArray(env, c);
-  jni_zero::ScopedJavaLocalRef<jobject> converted_s = jni_zero::ToJniArray(env, s);
-  jni_zero::ScopedJavaLocalRef<jobject> converted_i = jni_zero::ToJniArray(env, i);
-  jni_zero::ScopedJavaLocalRef<jobject> converted_l = jni_zero::ToJniArray(env, l);
-  jni_zero::ScopedJavaLocalRef<jobject> converted_f = jni_zero::ToJniArray(env, f);
-  jni_zero::ScopedJavaLocalRef<jobject> converted_d = jni_zero::ToJniArray(env, d);
+  jni_zero::ScopedJavaLocalRef<jobject> converted_b = jni_zero::ToJniArray(env, std::move(b));
+  jni_zero::ScopedJavaLocalRef<jobject> converted_c = jni_zero::ToJniArray(env, std::move(c));
+  jni_zero::ScopedJavaLocalRef<jobject> converted_s = jni_zero::ToJniArray(env, std::move(s));
+  jni_zero::ScopedJavaLocalRef<jobject> converted_i = jni_zero::ToJniArray(env, std::move(i));
+  jni_zero::ScopedJavaLocalRef<jobject> converted_l = jni_zero::ToJniArray(env, std::move(l));
+  jni_zero::ScopedJavaLocalRef<jobject> converted_f = jni_zero::ToJniArray(env, std::move(f));
+  jni_zero::ScopedJavaLocalRef<jobject> converted_d = jni_zero::ToJniArray(env, std::move(d));
   auto _ret = env->CallStaticObjectMethod(
       clazz,
       call_context.method_id(),
@@ -1150,7 +1154,7 @@ inline std::string _JSampleForTests::getFirstString(
     std::vector<const char*> const& array,
     const char* const& finalArg) {
   auto this_obj = jni_zero::internal::AsJavaRef<JSampleForTests>(this);
-  return Java_SampleForTests_getFirstString(env, this_obj, array, finalArg);
+  return Java_SampleForTests_getFirstString(env, this_obj, std::move(array), std::move(finalArg));
 }
 
 inline jni_zero::ScopedJavaLocalRef<jobject> _JSampleForTests::getInnerEnum(JNIEnv* env) {
@@ -1191,19 +1195,19 @@ inline std::vector<int32_t> _JSampleForTests::jniTypesAndAnnotations(
     JniIntWrapper baz,
     long bat) {
   auto this_obj = jni_zero::internal::AsJavaRef<JSampleForTests>(this);
-  return Java_SampleForTests_jniTypesAndAnnotations(env, this_obj, foo, bar, baz, bat);
+  return Java_SampleForTests_jniTypesAndAnnotations(env, this_obj, foo, std::move(bar), baz, bat);
 }
 
 inline std::vector<jni_zero::ScopedJavaLocalRef<jobject>> _JSampleForTests::listTest1(
     JNIEnv* env,
     std::vector<std::string> const& items) {
-  return Java_SampleForTests_listTest1(env, items);
+  return Java_SampleForTests_listTest1(env, std::move(items));
 }
 
 inline std::map<std::string, std::string> _JSampleForTests::mapTest1(
     JNIEnv* env,
     std::map<std::string, std::string> const& arg0) {
-  return Java_SampleForTests_mapTest1(env, arg0);
+  return Java_SampleForTests_mapTest1(env, std::move(arg0));
 }
 
 inline void _JSampleForTests::methodThatThrowsException(JNIEnv* env) {
@@ -1238,7 +1242,15 @@ inline std::vector<bool> _JSampleForTests::primitiveArrays(
     std::vector<int64_t> const& l,
     std::vector<float> const& f,
     std::vector<double> const& d) {
-  return Java_SampleForTests_primitiveArrays(env, b, c, s, i, l, f, d);
+  return Java_SampleForTests_primitiveArrays(
+      env,
+      std::move(b),
+      std::move(c),
+      std::move(s),
+      std::move(i),
+      std::move(l),
+      std::move(f),
+      std::move(d));
 }
 
 inline jboolean _JSampleForTests::staticJavaMethod(JNIEnv* env) {

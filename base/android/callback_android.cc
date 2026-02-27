@@ -171,6 +171,47 @@ void RunByteArrayCallbackAndroid(const JavaRef<jobject>& callback,
   Java_Helper_onObjectResultFromNative(env, callback, j_bytes);
 }
 
+ScopedJavaLocalRef<jobject> ToJniCallback(JNIEnv* env,
+                                          base::OnceClosure&& callback) {
+  return ToJniCallback(env, base::BindOnce(
+                                [](base::OnceClosure captured_callback,
+                                   const jni_zero::JavaRef<jobject>& j_null) {
+                                  // For callbacks with no parameters, the
+                                  // parameter from Java should be null.
+                                  CHECK(!j_null);
+                                  std::move(captured_callback).Run();
+                                },
+                                std::move(callback)));
+}
+
+ScopedJavaLocalRef<jobject> ToJniCallback(
+    JNIEnv* env,
+    const base::RepeatingClosure& callback) {
+  return ToJniCallback(env,
+                       base::BindRepeating(
+                           [](const base::RepeatingClosure& captured_callback,
+                              const jni_zero::JavaRef<jobject>& j_null) {
+                             // For callbacks with no parameters, the parameter
+                             // from Java should be null.
+                             CHECK(!j_null);
+                             captured_callback.Run();
+                           },
+                           callback));
+}
+
+ScopedJavaLocalRef<jobject> ToJniCallback(JNIEnv* env,
+                                          base::RepeatingClosure&& callback) {
+  return ToJniCallback(env, base::BindRepeating(
+                                [](base::RepeatingClosure captured_callback,
+                                   const jni_zero::JavaRef<jobject>& j_null) {
+                                  // For callbacks with no parameters, the
+                                  // parameter from Java should be null.
+                                  CHECK(!j_null);
+                                  captured_callback.Run();
+                                },
+                                std::move(callback)));
+}
+
 ScopedJavaLocalRef<jobject> ToJniCallback(
     JNIEnv* env,
     JniOnceWrappedCallbackType&& callback) {
@@ -205,35 +246,6 @@ ScopedJavaLocalRef<jobject> ToJniCallback(
     JNIEnv* env,
     const JniRepeatingWrappedCallback2Type& callback) {
   return JniRepeatingCallback2(callback).TransferToJava(env);
-}
-
-ScopedJavaLocalRef<jobject> ToJniCallback(
-    JNIEnv* env,
-    base::OnceCallback<void()>&& callback) {
-  return ToJniCallback(env, base::BindOnce(
-                                [](base::OnceCallback<void()> captured_callback,
-                                   const jni_zero::JavaRef<jobject>& j_null) {
-                                  // For callbacks with no parameters, the
-                                  // parameter from Java should be null.
-                                  CHECK(!j_null);
-                                  std::move(captured_callback).Run();
-                                },
-                                std::move(callback)));
-}
-
-ScopedJavaLocalRef<jobject> ToJniCallback(
-    JNIEnv* env,
-    const base::RepeatingCallback<void()>& callback) {
-  return ToJniCallback(
-      env, base::BindRepeating(
-               [](const base::RepeatingCallback<void()>& captured_callback,
-                  const jni_zero::JavaRef<jobject>& j_null) {
-                 // For callbacks with no parameters, the parameter from Java
-                 // should be null.
-                 CHECK(!j_null);
-                 captured_callback.Run();
-               },
-               callback));
 }
 
 static void JNI_JniCallbackImpl_OnResult(

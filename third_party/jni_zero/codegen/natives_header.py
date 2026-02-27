@@ -259,7 +259,7 @@ def entry_point_method(sb,
       else:
         clazz_snippet = None
       convert_type.to_jni_expression(sb,
-                                     'return_value',
+                                     'std::move(return_value)',
                                      return_type,
                                      clazz_snippet=clazz_snippet)
       if not return_type.is_primitive():
