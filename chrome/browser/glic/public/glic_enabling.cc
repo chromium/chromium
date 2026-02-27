@@ -8,11 +8,13 @@
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/browser_management/browser_management_service.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
+#include "chrome/browser/glic/glic_enums.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_user_status_code.h"
 #include "chrome/browser/glic/glic_user_status_fetcher.h"
@@ -103,10 +105,12 @@ std::vector<std::string> GetFieldTrialParamAsSplitString(
                            base::SPLIT_WANT_NONEMPTY);
 }
 
-std::optional<bool> GetCountryEnablement(
-    GlicGlobalEnabling::Delegate& delegate) {
+bool GetCountryEnablement(GlicGlobalEnabling::Delegate& delegate) {
   if (!base::FeatureList::IsEnabled(features::kGlicCountryFiltering)) {
-    return std::nullopt;
+    base::UmaHistogramEnumeration(
+        "Glic.CountryFilteringResult",
+        GlicFilteringResult::kAllowedFilteringDisabled);
+    return true;
   }
   std::vector<std::string> enabled_countries = GetFieldTrialParamAsSplitString(
       features::kGlicCountryFiltering, "enabled_countries",
@@ -121,20 +125,36 @@ std::optional<bool> GetCountryEnablement(
   };
 
   if (std::ranges::any_of(disabled_countries, country_matches)) {
+    base::UmaHistogramEnumeration("Glic.CountryFilteringResult",
+                                  GlicFilteringResult::kBlockedInExclusionList);
     return false;
   }
 
   if (enabled_countries.size() == 1 && enabled_countries[0] == "*") {
+    base::UmaHistogramEnumeration(
+        "Glic.CountryFilteringResult",
+        GlicFilteringResult::kAllowedWildcardInclusion);
     return true;
   }
 
-  return std::ranges::any_of(enabled_countries, country_matches);
+  if (std::ranges::any_of(enabled_countries, country_matches)) {
+    base::UmaHistogramEnumeration("Glic.CountryFilteringResult",
+                                  GlicFilteringResult::kAllowedInInclusionList);
+    return true;
+  }
+
+  base::UmaHistogramEnumeration(
+      "Glic.CountryFilteringResult",
+      GlicFilteringResult::kBlockedNotInInclusionList);
+  return false;
 }
 
-std::optional<bool> GetLocaleEnablement(
-    GlicGlobalEnabling::Delegate& delegate) {
+bool GetLocaleEnablement(GlicGlobalEnabling::Delegate& delegate) {
   if (!base::FeatureList::IsEnabled(features::kGlicLocaleFiltering)) {
-    return std::nullopt;
+    base::UmaHistogramEnumeration(
+        "Glic.LocaleFilteringResult",
+        GlicFilteringResult::kAllowedFilteringDisabled);
+    return true;
   }
   auto normalize_locale = [&](const std::string& locale) {
     std::string out;
@@ -155,14 +175,28 @@ std::optional<bool> GetLocaleEnablement(
   };
 
   if (std::ranges::any_of(disabled_locales, matches_locale)) {
+    base::UmaHistogramEnumeration("Glic.LocaleFilteringResult",
+                                  GlicFilteringResult::kBlockedInExclusionList);
     return false;
   }
 
   if (enabled_locales.size() == 1 && enabled_locales[0] == "*") {
+    base::UmaHistogramEnumeration(
+        "Glic.LocaleFilteringResult",
+        GlicFilteringResult::kAllowedWildcardInclusion);
     return true;
   }
 
-  return std::ranges::any_of(enabled_locales, matches_locale);
+  if (std::ranges::any_of(enabled_locales, matches_locale)) {
+    base::UmaHistogramEnumeration("Glic.LocaleFilteringResult",
+                                  GlicFilteringResult::kAllowedInInclusionList);
+    return true;
+  }
+
+  base::UmaHistogramEnumeration(
+      "Glic.LocaleFilteringResult",
+      GlicFilteringResult::kBlockedNotInInclusionList);
+  return false;
 }
 
 bool g_bypass_enablement_checks_for_testing = false;

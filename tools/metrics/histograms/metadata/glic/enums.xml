@@ -230,6 +230,28 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/glic/glic_metrics.h:EntryPointStatus) -->
 
+<!-- LINT.IfChange(GlicFilteringResult) -->
+
+<enum name="GlicFilteringResult">
+  <int value="0" label="Allowed - filtering disabled">
+    Allowed as the filtering feature is disabled by flag.
+  </int>
+  <int value="1" label="Blocked - in exclusion list">
+    Blocked as the item is in the exclusion list.
+  </int>
+  <int value="2" label="Allowed - wildcard inclusion">
+    Allowed as the inclusion list is set to the wildcard character '*'.
+  </int>
+  <int value="3" label="Allowed - in inclusion list">
+    Allowed as the item is in the inclusion list.
+  </int>
+  <int value="4" label="Blocked - not in inclusion list">
+    Blocked as the item is not in the inclusion list.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/glic/glic_enums.h:GlicFilteringResult) -->
+
 <!-- LINT.IfChange(GlicFreWebviewLoadAbortReason) -->
 
 <enum name="GlicFreWebviewLoadAbortReason">

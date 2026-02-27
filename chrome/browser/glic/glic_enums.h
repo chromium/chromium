@@ -27,6 +27,20 @@ enum class GlicGetContextFromTabError {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicGetContextFromTabError)
 
+// Represents the result of country or locale filtering.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(GlicFilteringResult)
+enum class GlicFilteringResult {
+  kAllowedFilteringDisabled = 0,
+  kBlockedInExclusionList = 1,
+  kAllowedWildcardInclusion = 2,
+  kAllowedInInclusionList = 3,
+  kBlockedNotInInclusionList = 4,
+  kMaxValue = kBlockedNotInInclusionList,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicFilteringResult)
+
 }  // namespace glic
 
 #endif  // CHROME_BROWSER_GLIC_GLIC_ENUMS_H_

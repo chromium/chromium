@@ -341,6 +341,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Glic.CountryFilteringResult" enum="GlicFilteringResult"
+    expires_after="2026-08-01">
+  <owner>harringtond@chromium.org</owner>
+  <owner>carlosk@chromium.org</owner>
+  <summary>
+    Records the outcome of the country filtering check for Glic enablement.
+    Recorded once per call to GetCountryEnablement, which happens once at
+    browser process startup.
+  </summary>
+</histogram>
+
 <histogram name="Glic.DetachedFromBrowser" enum="GlicAttachChangeReason"
     expires_after="2026-01-15">
   <owner>dullweber@chromium.org</owner>
@@ -1315,6 +1326,17 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the target of a conversation switch. Recorded each time
     SwitchConversation is called.
+  </summary>
+</histogram>
+
+<histogram name="Glic.LocaleFilteringResult" enum="GlicFilteringResult"
+    expires_after="2026-08-01">
+  <owner>harringtond@chromium.org</owner>
+  <owner>carlosk@chromium.org</owner>
+  <summary>
+    Records the outcome of the locale filtering check for Glic enablement.
+    Recorded once per call to GetLocaleEnablement, which happens once at browser
+    process startup.
   </summary>
 </histogram>
 
