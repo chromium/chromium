@@ -11,7 +11,6 @@ import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
-import android.view.ViewStub;
 import android.widget.ImageButton;
 
 import androidx.annotation.ColorInt;
@@ -74,7 +73,6 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuButtonHelper;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.widget.ClipDrawableProgressBar.DrawingInfo;
-import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.ui.resources.ResourceManager;
@@ -110,7 +108,6 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
     private OptionalBrowsingModeButtonController mOptionalButtonController;
 
     private @Nullable SigninButtonCoordinator mSigninButtonCoordinator;
-    private @Nullable NullableObservableSupplier<Tab> mTabSupplier;
 
     private final MenuButtonCoordinator mMenuButtonCoordinator;
     private @Nullable ReloadButtonCoordinator mReloadButtonCoordinator;
@@ -235,13 +232,8 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
                         () -> toolbarDataProvider.getTab());
 
         if (SigninFeatureMap.sSigninLevelUpButton.isEnabled()) {
-            mTabSupplier = tabSupplier;
-            ViewStub signinButtonStub = mToolbarLayout.findViewById(R.id.signin_button_stub);
-            if (signinButtonStub != null) {
-                mSigninButtonCoordinator =
-                        new SigninButtonCoordinator(
-                                toolbarLayout.getContext(), signinButtonStub, profileSupplier);
-            }
+            mSigninButtonCoordinator =
+                    new SigninButtonCoordinator(toolbarLayout.getContext(), profileSupplier);
         }
         mResourceManagerSupplier = resourceManagerSupplier;
         mTabCountSupplier = tabCountSupplier;
@@ -617,16 +609,6 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
         mToolbarLayout.updateButtonVisibility();
         if (mOptionalButtonController != null) {
             mOptionalButtonController.updateButtonVisibility();
-        }
-        if (mSigninButtonCoordinator != null && mTabSupplier != null) {
-            @Nullable Tab tab = mTabSupplier.get();
-
-            // Should only show the signin button when on the NTP and not incognito.
-            if (tab != null && UrlUtilities.isNtpUrl(tab.getUrl()) && !tab.isOffTheRecord()) {
-                mSigninButtonCoordinator.updateButtonVisibility(true);
-            } else {
-                mSigninButtonCoordinator.updateButtonVisibility(false);
-            }
         }
     }
 
