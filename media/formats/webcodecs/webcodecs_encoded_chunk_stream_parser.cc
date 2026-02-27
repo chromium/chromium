@@ -81,7 +81,7 @@ bool WebCodecsEncodedChunkStreamParser::GetGenerateTimestampsFlag() const {
 
 bool WebCodecsEncodedChunkStreamParser::AppendToParseBuffer(
     base::span<const uint8_t> /* buf */) {
-  // TODO(crbug.com/40155657): Protect against app reaching this (and similer
+  // TODO(crbug.com/40155657): Protect against app reaching this (and similar
   // inverse case in other parsers) simply by using the wrong append method on
   // the SourceBuffer. Maybe a better MEDIA_LOG here would be sufficient?  Or
   // instead have the top-level SourceBuffer throw synchronous exception when
@@ -92,7 +92,7 @@ bool WebCodecsEncodedChunkStreamParser::AppendToParseBuffer(
 
 StreamParser::ParseStatus WebCodecsEncodedChunkStreamParser::Parse(
     int /* max_pending_bytes_to_inspect */) {
-  // TODO(crbug.com/40155657): Protect against app reaching this (and similer
+  // TODO(crbug.com/40155657): Protect against app reaching this (and similar
   // inverse case in other parsers) simply by using the wrong append method on
   // the SourceBuffer. Maybe a better MEDIA_LOG here would be sufficient?  Or
   // instead have the top-level SourceBuffer throw synchronous exception when
