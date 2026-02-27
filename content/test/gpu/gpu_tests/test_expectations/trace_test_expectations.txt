@@ -308,6 +308,10 @@ crbug.com/474873836 [ angle-metal intel-0x3e9b no-asan no-clang-coverage release
 # Slow on DCHECK builds being used on fuchsia builders.
 crbug.com/425745937 [ fuchsia web-engine-shell ] TraceTest_Canvas2DBlitText [ Slow ]
 
+# Flaky crashes possibly caused by timeouts, speculative Slow expectation
+[ mac amd-0x7340 debug ] WebGLCanvasCaptureTraceTest_VideoStreamFrom2DAlphaCanvas [ Slow ]
+[ mac amd-0x7340 debug ] WebGLCanvasCaptureTraceTest_VideoStreamFromWebGLAlphaCanvas [ Slow ]
+
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################
