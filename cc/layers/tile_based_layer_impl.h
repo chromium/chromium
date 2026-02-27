@@ -94,14 +94,6 @@ class CC_EXPORT TileBasedLayerImpl : public LayerImpl {
   }
 
  private:
-  // A helper for AppendQuads() that returns true if the current
-  // tile should be skipped. `visible_geometry_rect` is an out-param that will
-  // be populated when the tile should not be skipped.
-  bool ShouldSkipTile(const gfx::Rect& geometry_rect,
-                      const gfx::Rect& scaled_recorded_bounds,
-                      const Occlusion& scaled_occlusion,
-                      gfx::Rect& visible_geometry_rect) const;
-
   // Invoked when the draw mode is DRAW_MODE_RESOURCELESS_SOFTWARE.
   virtual void AppendQuadsForResourcelessSoftwareDraw(
       const AppendQuadsContext& context,
@@ -328,9 +320,22 @@ void TileBasedLayerImpl<Tiling>::AppendQuads(
   for (auto iter = Cover(shared_quad_state->visible_quad_layer_rect,
                          max_contents_scale, ideal_scale_key);
        iter; ++iter) {
-    gfx::Rect visible_geometry_rect;
-    if (ShouldSkipTile(iter.geometry_rect(), scaled_recorded_bounds,
-                       scaled_occlusion, visible_geometry_rect)) {
+    const gfx::Rect& geometry_rect = iter.geometry_rect();
+    if (!scaled_recorded_bounds.Intersects(geometry_rect)) {
+      // This happens when the tiling rect is snapped to be bigger than the
+      // recorded bounds, and CoverageIterator returns a "missing" tile
+      // to cover some of the empty area. The tile should be ignored, otherwise
+      // it would be mistakenly treated as checkerboarded and drawn with the
+      // safe background color.
+      // TODO(crbug.com/328677988): Ideally we should check intersection with
+      // visible_geometry_rect and remove the visible_geometry_rect.IsEmpty()
+      // condition below.
+      continue;
+    }
+
+    gfx::Rect visible_geometry_rect =
+        scaled_occlusion.GetUnoccludedContentRect(geometry_rect);
+    if (visible_geometry_rect.IsEmpty()) {
       continue;
     }
 
@@ -418,28 +423,6 @@ template <typename Tiling>
 std::unique_ptr<AppendQuadsCustomSharedData>
 TileBasedLayerImpl<Tiling>::WillAppendQuads(float max_contents_scale) {
   return nullptr;
-}
-
-template <typename Tiling>
-bool TileBasedLayerImpl<Tiling>::ShouldSkipTile(
-    const gfx::Rect& geometry_rect,
-    const gfx::Rect& scaled_recorded_bounds,
-    const Occlusion& scaled_occlusion,
-    gfx::Rect& visible_geometry_rect) const {
-  if (!scaled_recorded_bounds.Intersects(geometry_rect)) {
-    // This happens when the tiling rect is snapped to be bigger than the
-    // recorded bounds, and CoverageIterator returns a "missing" tile
-    // to cover some of the empty area. The tile should be ignored, otherwise
-    // it would be mistakenly treated as checkerboarded and drawn with the
-    // safe background color.
-    // TODO(crbug.com/328677988): Ideally we should check intersection with
-    // visible_geometry_rect and remove the visible_geometry_rect.IsEmpty()
-    // condition below.
-    return true;
-  }
-  visible_geometry_rect =
-      scaled_occlusion.GetUnoccludedContentRect(geometry_rect);
-  return visible_geometry_rect.IsEmpty();
 }
 
 }  // namespace cc
