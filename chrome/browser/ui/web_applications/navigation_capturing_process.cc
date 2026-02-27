@@ -832,9 +832,6 @@ NavigationCapturingProcess::HandleIsolatedWebAppNavigation(
   const webapps::AppId& iwa_id = *first_navigation_app_id_;
   const DisplayMode& app_display_mode = *first_navigation_app_display_mode_;
 
-  CHECK(app_display_mode == DisplayMode::kStandalone ||
-        app_display_mode == DisplayMode::kUnframed);
-
   // Prefer `params.browser` if it's a compatible IWA browser.
   bool iwa_browser =
       params.browser &&
