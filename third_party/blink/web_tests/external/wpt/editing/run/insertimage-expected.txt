@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 18 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 17 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [["insertimage",""]] "foo[bar]baz": execCommand("insertimage", false, "") return value
   assert_equals: expected false but got true
 [FAIL] [["insertimage",""]] "foo[bar]baz" compare innerHTML
@@ -34,7 +34,5 @@ Found 18 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_in_array: Unexpected innerHTML (after normalizing inline style) value "<div><img src=\\"/img/lion.svg\\"><b></b></div>" not in array ["<div><img src=\\"/img/lion.svg\\"></div>", "<div><img src=\\"/img/lion.svg\\"><b><br></b></div>"]
 [FAIL] [["insertimage","/img/lion.svg"]] "<div><span>{}<br></span></div>" compare innerHTML
   assert_in_array: Unexpected innerHTML (after normalizing inline style) value "<div><img src=\\"/img/lion.svg\\"><span></span></div>" not in array ["<div><img src=\\"/img/lion.svg\\"></div>", "<div><img src=\\"/img/lion.svg\\"><span><br></span></div>"]
-[FAIL] [["insertimage","/img/lion.svg"]] "<div><span>A[]B</span></div>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div><span>A</span><img src=\\"/img/lion.svg\\"><span>B</span></div>" but got "<div><span>A</span><img src=\\"/img/lion.svg\\">B</div>"
 Harness: the test ran to completion.
 

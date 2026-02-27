@@ -108,6 +108,8 @@ class ReplacementFragment final {
     return has_interchange_newline_at_end_;
   }
 
+  bool HasBlockLevelContent() const;
+
   void RemoveNode(Node*);
   void RemoveNodePreservingChildren(ContainerNode*);
 
@@ -805,6 +807,21 @@ static bool IsProhibitedParagraphChild(const AtomicString& name) {
   return elements.Contains(name);
 }
 
+bool ReplacementFragment::HasBlockLevelContent() const {
+  if (!fragment_) {
+    return false;
+  }
+  for (const Node* node = fragment_->firstChild(); node;
+       node = NodeTraversal::Next(*node, fragment_)) {
+    const auto* element = DynamicTo<Element>(node);
+    if (element &&
+        IsProhibitedParagraphChild(element->TagQName().LocalName())) {
+      return true;
+    }
+  }
+  return false;
+}
+
 void ReplaceSelectionCommand::
     MakeInsertedContentRoundTrippableWithHTMLTreeBuilder(
         const InsertedNodes& inserted_nodes,
@@ -1271,11 +1288,23 @@ void ReplaceSelectionCommand::InsertParagraphSeparatorIfNeeds(
     // not
     //   <div>xbar<div>bar</div><div>bazx</div></div>
     // Don't do this if the selection started in a Mail blockquote.
+    //
+    // When SkipParagraphSplitForInlineInsertHTML is enabled, skip the
+    // paragraph split for insertHTML commands (InputType::kNone) whose
+    // fragment contains only inline content, since splitting incorrectly
+    // pushes inline elements outside their containing block.
+    // See https://crbug.com/41024699.
     const VisiblePosition visible_start_position =
         EndingVisibleSelection().VisibleStart();
     if (prevent_nesting_ && !start_is_inside_mail_blockquote &&
         !IsEndOfParagraph(visible_start_position) &&
-        !IsStartOfParagraph(visible_start_position)) {
+        !IsStartOfParagraph(visible_start_position) &&
+        (!RuntimeEnabledFeatures::
+             SkipParagraphSplitForInlineInsertHTMLEnabled() ||
+         fragment.HasBlockLevelContent() ||
+         input_type_ == InputEvent::InputType::kInsertFromPaste ||
+         input_type_ == InputEvent::InputType::kInsertFromDrop ||
+         input_type_ == InputEvent::InputType::kInsertReplacementText)) {
       InsertParagraphSeparator(editing_state);
       if (editing_state->IsAborted())
         return;

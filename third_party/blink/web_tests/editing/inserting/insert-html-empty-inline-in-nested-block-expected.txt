@@ -1,0 +1,12 @@
+Bug 41024699: execCommand('insertHTML') with an empty inline element should insert content at the caret position inside a nested block, not outside it.
+
+text
+text
+tehelloxt
+PASS document.getElementById('test1').innerHTML is "<div id=\"inner1\">te<span class=\"new\"></span>xt</div>"
+PASS document.getElementById('test2').innerHTML is "<div id=\"inner2\">te<img>xt</div>"
+PASS document.getElementById('test3').innerHTML is "<div id=\"inner3\">te<span class=\"inserted\">hello</span>xt</div>"
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

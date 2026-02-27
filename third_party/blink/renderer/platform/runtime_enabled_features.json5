@@ -5157,6 +5157,14 @@
       status: "stable",
     },
     {
+      // Skips paragraph split in insertHTML when the fragment contains only
+      // inline content, preventing inline elements from being inserted
+      // outside their containing block.
+      // See https://crbug.com/41024699.
+      name: "SkipParagraphSplitForInlineInsertHTML",
+      status: "stable",
+    },
+    {
       // Skip lines that contain only pseudo-element content (like ::before
       // or ::after) when determining valid caret positions for line
       // navigation. Pseudo-elements don't have DOM nodes for caret positioning,

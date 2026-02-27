@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/editing/commands/replace_selection_command.h"
 
+#include <memory>
+
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
@@ -20,9 +22,8 @@
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
+#include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-
-#include <memory>
 
 namespace blink {
 
@@ -300,7 +301,7 @@ TEST_F(ReplaceSelectionCommandTest, InsertImageInNonEditableBlock2) {
   EXPECT_TRUE(command.Apply());
   EXPECT_EQ(
       "<strong xml:space><div contenteditable=\"false\">"
-      "<span contenteditable><div>a</div><img>|<div>b</div></span>"
+      "<span contenteditable><div>a<img>|b</div></span>"
       "</div></strong>",
       GetSelectionTextFromBody());
 }
@@ -350,6 +351,122 @@ TEST_F(ReplaceSelectionCommandTest, TrivialFragmentTextDataForInputEvent) {
   String result = command.TextDataForInputEvent();
   EXPECT_EQ("test content", result) << "TextDataForInputEvent should return "
                                        "the correct trivial text after Apply";
+}
+
+// This is a regression test for https://crbug.com/41024699
+// Tests that execCommand('insertHTML') with an empty inline element inserts
+// content at the caret position inside the nested block, not outside it.
+TEST_F(ReplaceSelectionCommandTest,
+       InsertHTMLEmptyInlineInNestedBlock_EmptySpan) {
+  Document& doc = GetDocument();
+  doc.setDesignMode("on");
+  SetBodyContent("<div id='outer'><div id='inner'>text</div></div>");
+
+  Element* inner = GetElementById("inner");
+  ASSERT_TRUE(inner);
+  ASSERT_TRUE(inner->firstChild());
+
+  // Place the caret in the middle of "text" (between "te" and "xt").
+  doc.GetFrame()->Selection().SetSelection(
+      SelectionInDOMTree::Builder()
+          .Collapse(Position(inner->firstChild(), 2))
+          .Build(),
+      SetSelectionOptions());
+
+  DocumentFragment* fragment = doc.createDocumentFragment();
+  Element* span = doc.CreateRawElement(html_names::kSpanTag);
+  span->setAttribute(html_names::kClassAttr, AtomicString("new"));
+  fragment->AppendChild(span);
+
+  ReplaceSelectionCommand::CommandOptions options =
+      ReplaceSelectionCommand::kPreventNesting |
+      ReplaceSelectionCommand::kSanitizeFragment;
+  auto* command = MakeGarbageCollected<ReplaceSelectionCommand>(
+      doc, fragment, options, EditCommand::PasswordEchoBehavior::kDoNotEcho);
+
+  EXPECT_TRUE(command->Apply()) << "the replace command should have succeeded";
+
+  // The empty span should be inserted at the caret position inside the inner
+  // div, not outside of it.
+  EXPECT_EQ(
+      "<div id=\"outer\"><div id=\"inner\">te"
+      "<span class=\"new\"></span>xt</div></div>",
+      doc.body()->GetInnerHTMLString());
+}
+
+// This is a regression test for https://crbug.com/41024699
+// Tests the same bug with a void element (<img>).
+TEST_F(ReplaceSelectionCommandTest,
+       InsertHTMLEmptyInlineInNestedBlock_ImgElement) {
+  Document& doc = GetDocument();
+  doc.setDesignMode("on");
+  SetBodyContent("<div id='outer'><div id='inner'>text</div></div>");
+
+  Element* inner = GetElementById("inner");
+  ASSERT_TRUE(inner);
+  ASSERT_TRUE(inner->firstChild());
+
+  // Place the caret in the middle of "text" (between "te" and "xt").
+  doc.GetFrame()->Selection().SetSelection(
+      SelectionInDOMTree::Builder()
+          .Collapse(Position(inner->firstChild(), 2))
+          .Build(),
+      SetSelectionOptions());
+
+  DocumentFragment* fragment = doc.createDocumentFragment();
+  fragment->AppendChild(doc.CreateRawElement(html_names::kImgTag));
+
+  ReplaceSelectionCommand::CommandOptions options =
+      ReplaceSelectionCommand::kPreventNesting |
+      ReplaceSelectionCommand::kSanitizeFragment;
+  auto* command = MakeGarbageCollected<ReplaceSelectionCommand>(
+      doc, fragment, options, EditCommand::PasswordEchoBehavior::kDoNotEcho);
+
+  EXPECT_TRUE(command->Apply()) << "the replace command should have succeeded";
+
+  // The <img> should be inserted at the caret position inside the inner div.
+  EXPECT_EQ("<div id=\"outer\"><div id=\"inner\">te<img>xt</div></div>",
+            doc.body()->GetInnerHTMLString());
+}
+
+// This is a regression test for https://crbug.com/41024699
+// Tests that block-level content still triggers paragraph splitting (regression
+// guard).
+TEST_F(ReplaceSelectionCommandTest,
+       InsertHTMLBlockContentInNestedBlock_StillSplits) {
+  Document& doc = GetDocument();
+  doc.setDesignMode("on");
+  SetBodyContent("<div id='outer'><div id='inner'>text</div></div>");
+
+  Element* inner = GetElementById("inner");
+  ASSERT_TRUE(inner);
+  ASSERT_TRUE(inner->firstChild());
+
+  // Place the caret in the middle of "text" (between "te" and "xt").
+  doc.GetFrame()->Selection().SetSelection(
+      SelectionInDOMTree::Builder()
+          .Collapse(Position(inner->firstChild(), 2))
+          .Build(),
+      SetSelectionOptions());
+
+  DocumentFragment* fragment = doc.createDocumentFragment();
+  fragment->ParseHTML("<div>bar</div>", inner, /*registry*/ nullptr);
+
+  ReplaceSelectionCommand::CommandOptions options =
+      ReplaceSelectionCommand::kPreventNesting |
+      ReplaceSelectionCommand::kSanitizeFragment;
+  auto* command = MakeGarbageCollected<ReplaceSelectionCommand>(
+      doc, fragment, options, EditCommand::PasswordEchoBehavior::kDoNotEcho);
+
+  EXPECT_TRUE(command->Apply()) << "the replace command should have succeeded";
+
+  // Block content should still be handled by the paragraph splitting logic.
+  // The inserted <div>bar</div> should NOT be nested inside the inner div.
+  // The block-level <div> gets unwrapped by
+  // MakeInsertedContentRoundTrippableWithHTMLTreeBuilder, so "bar" ends up as
+  // inline text merged into the existing content.
+  EXPECT_EQ("<div id=\"outer\"><div id=\"inner\">tebarxt</div></div>",
+            doc.body()->GetInnerHTMLString());
 }
 
 }  // namespace blink

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<body>
+<p>Bug <a href="https://crbug.com/41024699">41024699</a>:
+execCommand('insertHTML') with an empty inline element should insert content
+at the caret position inside a nested block, not outside it.</p>
+
+<div id="test1" contenteditable="true"><div id="inner1">text</div></div>
+<div id="test2" contenteditable="true"><div id="inner2">text</div></div>
+<div id="test3" contenteditable="true"><div id="inner3">text</div></div>
+<div id="console"></div>
+
+<script src="../../resources/js-test.js"></script>
+<script>
+if (window.testRunner)
+    testRunner.dumpAsText();
+
+// Test 1: Empty <span> inserted in middle of text in nested block.
+(function() {
+    var inner = document.getElementById("inner1");
+    var selection = window.getSelection();
+    selection.collapse(inner.firstChild, 2);
+    document.execCommand('insertHTML', false, '<span class="new"></span>');
+
+    shouldBeEqualToString("document.getElementById('test1').innerHTML",
+        '<div id="inner1">te<span class="new"></span>xt</div>');
+})();
+
+// Test 2: <img> element inserted in middle of text in nested block.
+(function() {
+    var inner = document.getElementById("inner2");
+    var selection = window.getSelection();
+    selection.collapse(inner.firstChild, 2);
+    document.execCommand('insertHTML', false, '<img>');
+
+    shouldBeEqualToString("document.getElementById('test2').innerHTML",
+        '<div id="inner2">te<img>xt</div>');
+})();
+
+// Test 3: Non-empty inline <span> inserted in middle of text in nested block.
+(function() {
+    var inner = document.getElementById("inner3");
+    var selection = window.getSelection();
+    selection.collapse(inner.firstChild, 2);
+    document.execCommand('insertHTML', false, '<span class="inserted">hello</span>');
+
+    shouldBeEqualToString("document.getElementById('test3').innerHTML",
+        '<div id="inner3">te<span class="inserted">hello</span>xt</div>');
+})();
+</script>
+</body>
+</html>
