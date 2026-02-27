@@ -21,8 +21,6 @@ import android.content.ContentResolver;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Handler;
-import android.os.Looper;
 import android.text.SpannableString;
 import android.text.style.RelativeSizeSpan;
 import android.widget.TextView;
@@ -39,8 +37,6 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowToast;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.task.test.ShadowPostTask;
-import org.chromium.base.task.test.ShadowPostTask.TestImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.ui.R;
@@ -50,9 +46,7 @@ import org.chromium.url.JUnitTestGURLs;
 
 /** Tests logic in the Clipboard class. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        manifest = Config.NONE,
-        shadows = {ShadowPostTask.class})
+@Config(manifest = Config.NONE)
 public class ClipboardTest {
     private static final String PLAIN_TEXT = "plain";
     private static final String HTML_TEXT = "<span style=\"color: red;\">HTML</span>";
@@ -60,13 +54,6 @@ public class ClipboardTest {
 
     @Before
     public void setup() {
-        ShadowPostTask.setTestImpl(
-                new TestImpl() {
-                    @Override
-                    public void postDelayedTask(int taskTraits, Runnable task, long delay) {
-                        new Handler(Looper.getMainLooper()).postDelayed(task, delay);
-                    }
-                });
         mTempImageUri = Uri.parse("content://tmp/test/image.jpg");
         ClipboardImpl.setSkipImageMimeTypeCheckForTesting(true);
     }

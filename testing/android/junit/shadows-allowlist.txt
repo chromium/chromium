@@ -8,7 +8,6 @@
 
 # TODO(https://crbug.com/341267427): Reduce this list.
 +org.chromium.base.task.AsyncTask
-+org.chromium.base.task.PostTask
 
 # Disallow new shadows of chrome-authored code.
 -com.google.android.apps.chrome
