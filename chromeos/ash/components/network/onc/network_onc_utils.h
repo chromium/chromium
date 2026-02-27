@@ -61,12 +61,6 @@ int ImportNetworksForUser(const user_manager::User* user,
                           const base::ListValue& network_configs,
                           std::string* error);
 
-// Convenience function to retrieve the "AllowOnlyPolicyNetworksToAutoconnect"
-// setting from the global network configuration (see
-// GetGlobalConfigFromPolicy).
-COMPONENT_EXPORT(CHROMEOS_NETWORK)
-bool PolicyAllowsOnlyPolicyNetworksToAutoconnect(bool for_active_user);
-
 // Returns the effective (user or device) policy for network |network|. Both
 // |profile_prefs| and |local_state_prefs| might be NULL. Returns NULL if no
 // applicable policy is found. Sets |onc_source| accordingly.

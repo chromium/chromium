@@ -65,13 +65,6 @@ net::CertType GetCertType(CERTCertificate* cert_handle) {
   return net::OTHER_CERT;
 }
 
-std::string GetCertTokenName(CERTCertificate* cert_handle) {
-  std::string token;
-  if (cert_handle->slot)
-    token = PK11_GetTokenName(cert_handle->slot);
-  return token;
-}
-
 std::string GetIssuerDisplayName(CERTCertificate* cert_handle) {
   return net::x509_util::GetCERTNameDisplayName(&cert_handle->issuer);
 }

@@ -308,25 +308,6 @@ const base::DictValue* GetPolicyForNetworkFromPref(
                                            network);
 }
 
-// Returns the global network configuration dictionary from the ONC policy of
-// the active user if |for_active_user| is true, or from device policy if it is
-// false.
-const base::DictValue* GetGlobalConfigFromPolicy(bool for_active_user) {
-  std::string username_hash;
-  if (for_active_user) {
-    const user_manager::User* user =
-        user_manager::UserManager::Get()->GetActiveUser();
-    if (!user) {
-      LOG(ERROR) << "No user logged in yet.";
-      return nullptr;
-    }
-    username_hash = user->username_hash();
-  }
-  return NetworkHandler::Get()
-      ->managed_network_configuration_handler()
-      ->GetGlobalConfigFromPolicy(username_hash);
-}
-
 // Replaces user-specific string placeholders in |network_configs|, which must
 // be a list of ONC NetworkConfigurations. Currently only user name placeholders
 // are implemented, which are replaced by attributes from |user|.
@@ -544,18 +525,6 @@ int ImportNetworksForUser(const user_manager::User* user,
   if (ethernet_not_found)
     *error = "No Ethernet available to configure.";
   return networks_created;
-}
-
-bool PolicyAllowsOnlyPolicyNetworksToAutoconnect(bool for_active_user) {
-  const base::DictValue* global_config =
-      GetGlobalConfigFromPolicy(for_active_user);
-  if (!global_config)
-    return false;  // By default, all networks are allowed to autoconnect.
-
-  return global_config
-      ->FindBool(
-          ::onc::global_network_config::kAllowOnlyPolicyNetworksToAutoconnect)
-      .value_or(false);
 }
 
 const base::DictValue* GetPolicyForNetwork(const PrefService* profile_prefs,

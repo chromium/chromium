@@ -19,11 +19,6 @@ namespace ash::certificate {
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
 net::CertType GetCertType(CERTCertificate* cert_handle);
 
-// Extracts the token name from |cert|->slot if it exists or returns an empty
-// string.
-COMPONENT_EXPORT(CHROMEOS_NETWORK)
-std::string GetCertTokenName(CERTCertificate* cert_handle);
-
 // Returns a name that can be used to represent the issuer of |cert_handle|.
 // It tries in this order: CN, O and OU and returns the first non-empty one
 // found.
