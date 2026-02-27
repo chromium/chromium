@@ -22,6 +22,15 @@ std::unique_ptr<syncer::EntityData> CreateEntityDataFromSpecifics(
   return entity_data;
 }
 
+void ApplyEntityProtoToTrimmedSpecifics(
+    const sync_pb::GeminiThreadSpecifics& specifics,
+    sync_pb::GeminiThreadSpecifics* mutable_base_specifics) {
+  mutable_base_specifics->set_conversation_id(specifics.conversation_id());
+  mutable_base_specifics->set_title(specifics.title());
+  mutable_base_specifics->set_last_turn_time_unix_epoch_millis(
+      specifics.last_turn_time_unix_epoch_millis());
+}
+
 }  // namespace
 
 namespace contextual_tasks {
@@ -86,9 +95,19 @@ GeminiThreadSyncBridge::ApplyIncrementalSyncChanges(
 
 std::unique_ptr<syncer::DataBatch> GeminiThreadSyncBridge::GetDataForCommit(
     StorageKeyList storage_keys) {
-  // TODO(crbug.com/483958666) Implement
-  NOTIMPLEMENTED();
-  return nullptr;
+  auto batch = std::make_unique<syncer::MutableDataBatch>();
+  for (const auto& key : storage_keys) {
+    auto it = gemini_thread_specifics_.find(key);
+    if (it != gemini_thread_specifics_.end()) {
+      auto entity_data = std::make_unique<syncer::EntityData>();
+      entity_data->specifics =
+          change_processor()->GetPossiblyTrimmedRemoteSpecifics(key);
+      ApplyEntityProtoToTrimmedSpecifics(
+          it->second, entity_data->specifics.mutable_gemini_thread());
+      batch->Put(key, std::move(entity_data));
+    }
+  }
+  return batch;
 }
 
 std::unique_ptr<syncer::DataBatch>
@@ -120,6 +139,25 @@ void GeminiThreadSyncBridge::ApplyDisableSyncChanges(
 bool GeminiThreadSyncBridge::IsEntityDataValid(
     const syncer::EntityData& entity_data) const {
   return !entity_data.specifics.gemini_thread().conversation_id().empty();
+}
+
+sync_pb::EntitySpecifics
+GeminiThreadSyncBridge::TrimAllSupportedFieldsFromRemoteSpecifics(
+    const sync_pb::EntitySpecifics& entity_specifics) const {
+  // LINT.IfChange(TrimAllSupportedFieldsFromRemoteSpecifics)
+  sync_pb::GeminiThreadSpecifics trimmed_specifics =
+      entity_specifics.gemini_thread();
+  trimmed_specifics.clear_conversation_id();
+  trimmed_specifics.clear_title();
+  trimmed_specifics.clear_last_turn_time_unix_epoch_millis();
+  // LINT.ThenChange(//components/sync/protocol/gemini_thread_specifics.proto)
+
+  sync_pb::EntitySpecifics trimmed_entity_specifics;
+  if (trimmed_specifics.ByteSizeLong() > 0) {
+    *trimmed_entity_specifics.mutable_gemini_thread() =
+        std::move(trimmed_specifics);
+  }
+  return trimmed_entity_specifics;
 }
 
 void GeminiThreadSyncBridge::OnDataTypeStoreCreated(

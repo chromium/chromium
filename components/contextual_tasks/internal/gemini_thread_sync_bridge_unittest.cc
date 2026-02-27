@@ -173,6 +173,23 @@ TEST_F(GeminiThreadSyncBridgeTest, DisableSyncChanges) {
   VerifyTestGeminiSpecificsRemoved(bridge());
 }
 
+TEST_F(GeminiThreadSyncBridgeTest, TrimAllSupportedFieldsFromRemoteSpecifics) {
+  sync_pb::EntitySpecifics specifics;
+  sync_pb::GeminiThreadSpecifics* gemini_specifics =
+      specifics.mutable_gemini_thread();
+  gemini_specifics->set_conversation_id(kMockConversationId);
+  gemini_specifics->set_title(kMockTitle);
+  gemini_specifics->set_last_turn_time_unix_epoch_millis(
+      kMockLastTurnTimeUnixEpochMillis);
+
+  sync_pb::EntitySpecifics trimmed_specifics =
+      bridge_->TrimAllSupportedFieldsFromRemoteSpecifics(specifics);
+  EXPECT_FALSE(trimmed_specifics.ai_thread().has_conversation_turn_id());
+  EXPECT_FALSE(trimmed_specifics.ai_thread().has_title());
+  EXPECT_FALSE(
+      trimmed_specifics.ai_thread().has_last_turn_time_unix_epoch_millis());
+}
+
 TEST_F(GeminiThreadSyncBridgeWithInitSpecificsTest, TestReadAllData) {
   EXPECT_TRUE(gemini_thread_specifics().find(kInitConversationId) !=
               gemini_thread_specifics().end());
