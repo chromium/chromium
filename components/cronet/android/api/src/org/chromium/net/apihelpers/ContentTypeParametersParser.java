@@ -21,10 +21,10 @@ final class ContentTypeParametersParser {
     private final String mHeaderValue;
     private int mCurrentPosition;
 
-    ContentTypeParametersParser(String mHeaderValue) {
-        this.mHeaderValue = mHeaderValue;
-        int semicolonIndex = mHeaderValue.indexOf(';');
-        mCurrentPosition = semicolonIndex != -1 ? semicolonIndex + 1 : mHeaderValue.length();
+    ContentTypeParametersParser(String headerValue) {
+        this.mHeaderValue = headerValue;
+        int semicolonIndex = headerValue.indexOf(';');
+        mCurrentPosition = semicolonIndex != -1 ? semicolonIndex + 1 : headerValue.length();
     }
 
     @Nullable

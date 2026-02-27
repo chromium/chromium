@@ -127,10 +127,10 @@ public class CookieSettings extends BaseSiteSettingsFragment
     }
 
     private void setupAllowRwsPreference() {
-        var mManagedPreferenceDelegate =
+        var managedPreferenceDelegate =
                 new RwsCookieSettingsManagedPreferenceDelegate(
                         getSiteSettingsDelegate().getManagedPreferenceDelegate());
-        mAllowRwsPreference.setManagedPreferenceDelegate(mManagedPreferenceDelegate);
+        mAllowRwsPreference.setManagedPreferenceDelegate(managedPreferenceDelegate);
         mAllowRwsPreference.setChecked(
                 getSiteSettingsDelegate().isRelatedWebsiteSetsDataAccessEnabled());
 

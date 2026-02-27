@@ -65,11 +65,11 @@ public class ColorPickerDialogRenderTest {
                 () -> {
                     Activity activity = mActivityTestRule.getActivity();
                     ColorPickerDialogView dialog = new ColorPickerDialogView(activity);
-                    ColorPickerCoordinator mColorPickerCoordinator =
+                    ColorPickerCoordinator colorPickerCoordinator =
                             new ColorPickerCoordinator(activity, (i) -> {}, dialog);
                     mView = dialog.getContentView();
                     mView.setBackgroundResource(R.color.default_bg_color_baseline);
-                    mColorPickerCoordinator.show(Color.RED);
+                    colorPickerCoordinator.show(Color.RED);
                 });
     }
 

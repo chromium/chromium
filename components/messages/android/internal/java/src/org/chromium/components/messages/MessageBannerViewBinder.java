@@ -124,7 +124,7 @@ public class MessageBannerViewBinder {
                 // reset to its default outline provider.
                 view.setOutlineProvider(ViewOutlineProvider.BACKGROUND);
             } else {
-                ViewOutlineProvider mViewOutlineProvider =
+                ViewOutlineProvider viewOutlineProvider =
                         new ViewOutlineProvider() {
                             @Override
                             public void getOutline(final View view, final Outline outline) {
@@ -140,7 +140,7 @@ public class MessageBannerViewBinder {
                                         cornerRadius);
                             }
                         };
-                view.setOutlineProvider(mViewOutlineProvider);
+                view.setOutlineProvider(viewOutlineProvider);
                 view.setClipToOutline(true);
             }
         } else if (propertyKey == TRANSLATION_X) {

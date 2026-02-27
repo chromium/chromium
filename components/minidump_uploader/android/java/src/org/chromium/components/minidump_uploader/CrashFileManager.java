@@ -182,9 +182,9 @@ public class CrashFileManager {
         return MINIDUMP_SANS_LOGCAT_PATTERN.matcher(path).find();
     }
 
-    public static @Nullable String tryIncrementAttemptNumber(File mFileToUpload) {
-        String newName = filenameWithIncrementedAttemptNumber(mFileToUpload.getPath());
-        return mFileToUpload.renameTo(new File(newName)) ? newName : null;
+    public static @Nullable String tryIncrementAttemptNumber(File fileToUpload) {
+        String newName = filenameWithIncrementedAttemptNumber(fileToUpload.getPath());
+        return fileToUpload.renameTo(new File(newName)) ? newName : null;
     }
 
     /**

@@ -67,14 +67,14 @@ public class PermissionInfo implements Serializable {
     /** Returns the ContentSetting value using the minimal set of defining parameters. */
     public static @ContentSetting @Nullable Integer getContentSetting(
             BrowserContextHandle browserContextHandle,
-            @ContentSettingsType.EnumType int mContentSettingsType,
+            @ContentSettingsType.EnumType int contentSettingsType,
             String origin,
             @Nullable String embeddingOrigin) {
-        assert mContentSettingsType != ContentSettingsType.GEOLOCATION_WITH_OPTIONS;
+        assert contentSettingsType != ContentSettingsType.GEOLOCATION_WITH_OPTIONS;
         return WebsitePreferenceBridgeJni.get()
                 .getPermissionSettingForOrigin(
                         browserContextHandle,
-                        mContentSettingsType,
+                        contentSettingsType,
                         origin,
                         embeddingOrigin != null ? embeddingOrigin : origin);
     }

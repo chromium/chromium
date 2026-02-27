@@ -54,7 +54,7 @@ public class PlayerFrameScaleControllerTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         mDidScale = false;
-        Callback<Boolean> mScaleListener = (Boolean didFinish) -> mDidScale = true;
+        Callback<Boolean> scaleListener = (Boolean didFinish) -> mDidScale = true;
         mViewport = new PlayerFrameViewport();
         mBitmapScaleMatrix = new Matrix();
         Size contentSize = new Size(CONTENT_WIDTH, CONTENT_HEIGHT);
@@ -63,7 +63,7 @@ public class PlayerFrameScaleControllerTest {
         when(mMediatorDelegateMock.getMinScaleFactor()).thenReturn(1f);
         mScaleController =
                 new PlayerFrameScaleController(
-                        mBitmapScaleMatrix, mMediatorDelegateMock, null, mScaleListener);
+                        mBitmapScaleMatrix, mMediatorDelegateMock, null, scaleListener);
         mViewport.setScale(1f);
         mViewport.setSize(100, 100);
     }

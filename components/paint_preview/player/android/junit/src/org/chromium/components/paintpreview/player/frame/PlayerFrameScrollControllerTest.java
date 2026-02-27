@@ -49,15 +49,15 @@ public class PlayerFrameScrollControllerTest {
         MockitoAnnotations.initMocks(this);
         mScroller = new OverScroller(ContextUtils.getApplicationContext());
         mDidScroll = false;
-        Runnable mOnScrollListener = () -> mDidScroll = true;
-        Runnable mOnFlingListener = () -> mDidFling = true;
+        Runnable onScrollListener = () -> mDidScroll = true;
+        Runnable onFlingListener = () -> mDidFling = true;
         mViewport = new PlayerFrameViewport();
         when(mMediatorDelegateMock.getViewport()).thenReturn(mViewport);
         when(mMediatorDelegateMock.getContentSize())
                 .thenReturn(new Size(CONTENT_WIDTH, CONTENT_HEIGHT));
         mScrollController =
                 new PlayerFrameScrollController(
-                        mScroller, mMediatorDelegateMock, mOnScrollListener, mOnFlingListener);
+                        mScroller, mMediatorDelegateMock, onScrollListener, onFlingListener);
     }
 
     /** Test that scrolling updates the viewport correctly and triggers expected callbacks. */
