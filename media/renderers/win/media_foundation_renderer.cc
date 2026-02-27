@@ -1378,6 +1378,11 @@ void MediaFoundationRenderer::SetGpuProcessAdapterLuid(
   gpu_process_adapter_luid_ = gpu_process_adapter_luid;
 }
 
+MediaEngineNotifyImpl* MediaFoundationRenderer::GetMediaEngineNotifyForTesting()
+    const {
+  return mf_media_engine_notify_.Get();
+}
+
 base::TimeDelta MediaFoundationRenderer::GetMediaTime() {
 // GetCurrentTime is expanded as GetTickCount in base/win/windows_types.h
 #undef GetCurrentTime
@@ -1588,18 +1593,13 @@ void MediaFoundationRenderer::OnError(PipelineStatus status,
                                       ErrorReason reason,
                                       HRESULT hresult,
                                       PipelineStatusCallback status_cb) {
-  const std::string error =
-      "MediaFoundationRenderer error: " + GetErrorReasonString(reason) + " (" +
-      PrintHr(hresult) + ")";
+  if (had_error_) {
+    DVLOG_FUNC(1) << "Error already reported, ignore all subsequent errors!";
+    CHECK(!status_cb);
+    return;
+  }
 
-  DLOG(ERROR) << error;
-
-  // Report to MediaLog so the error will show up in media internals and
-  // MediaError.message.
-  MEDIA_LOG(ERROR, media_log_) << error;
-
-  // Report the error to UMA.
-  ReportErrorReason(reason);
+  had_error_ = true;
 
   // DRM_E_TEE_INVALID_HWDRM_STATE can happen during OS sleep/resume, or moving
   // video to different graphics adapters. This is not an error, so special case
@@ -1617,6 +1617,20 @@ void MediaFoundationRenderer::OnError(PipelineStatus status,
       hresult = DRM_E_TEE_INVALID_HWDRM_STATE;
     }
   }
+
+  // Log the error with details after adjusting the error code.
+  const std::string error =
+      "MediaFoundationRenderer error: " + GetErrorReasonString(reason) + " (" +
+      PrintHr(hresult) + ")";
+
+  DLOG(ERROR) << error;
+
+  // Report to MediaLog so the error will show up in media internals and
+  // MediaError.message.
+  MEDIA_LOG(ERROR, media_log_) << error;
+
+  // Report the error to UMA.
+  ReportErrorReason(reason);
 
   if (hresult == DRM_E_TEE_INVALID_HWDRM_STATE) {
     // TODO(crbug.com/40870069): Remove these after the investigation is done.

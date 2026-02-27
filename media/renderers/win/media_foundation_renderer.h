@@ -121,6 +121,8 @@ class MEDIA_EXPORT MediaFoundationRenderer
 
   void SetGpuProcessAdapterLuid(LUID gpu_process_adapter_luid);
 
+  MediaEngineNotifyImpl* GetMediaEngineNotifyForTesting() const;
+
  private:
   enum class StopSendingStatisticsReason {
     kPlaybackEnded = 0,          // Playback ended
@@ -245,6 +247,7 @@ class MEDIA_EXPORT MediaFoundationRenderer
 
   bool has_reported_playing_ = false;
   bool has_reported_significant_playback_ = false;
+  bool had_error_ = false;
 
   // Value saved from last call to SetLatencyHint(). Latency hint can only be
   // used to determine real-time mode on MediaEngine creation.

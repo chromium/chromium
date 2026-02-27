@@ -229,4 +229,46 @@ TEST_F(MediaFoundationRendererTest, DirectCompositionHandle) {
   task_environment_.RunUntilIdle();
 }
 
+TEST_F(MediaFoundationRendererTest, IgnoreSubsequentErrorsAfterFirstError) {
+  AddStream(DemuxerStream::AUDIO, /*encrypted=*/false);
+  AddStream(DemuxerStream::VIDEO, /*encrypted=*/false);
+
+  EXPECT_CALL(set_cdm_cb_, Run(true));
+  EXPECT_CALL(renderer_init_cb_, Run(HasStatusCode(PIPELINE_OK)));
+
+  mf_renderer_->Initialize(&media_resource_, &renderer_client_,
+                           renderer_init_cb_.Get());
+  mf_renderer_->SetCdm(&cdm_context_, set_cdm_cb_.Get());
+
+  testing::InSequence s;
+
+  // We only expect one error to be reported.
+  EXPECT_CALL(renderer_client_, OnError(_)).Times(1);
+
+  // After the error, no other event calls to the client should be made.
+  EXPECT_CALL(renderer_client_, OnWaiting(_)).Times(0);
+
+  MediaEngineNotifyImpl* media_engine_notify =
+      mf_renderer_->GetMediaEngineNotifyForTesting();
+  ASSERT_TRUE(media_engine_notify);
+
+  // Simulate the first error event.
+  media_engine_notify->EventNotify(MF_MEDIA_ENGINE_EVENT_ERROR,
+                                   MF_MEDIA_ENGINE_ERR_DECODE, E_FAIL);
+  task_environment_.RunUntilIdle();
+
+  // Simulate a subsequent error. This should be ignored because the renderer
+  // is already in an error state.
+  media_engine_notify->EventNotify(MF_MEDIA_ENGINE_EVENT_ERROR,
+                                   MF_MEDIA_ENGINE_ERR_DECODE, E_UNEXPECTED);
+  task_environment_.RunUntilIdle();
+
+  // Simulate a subsequent event. This should be ignored because the renderer
+  // is already in an error state.
+  media_engine_notify->EventNotify(MF_MEDIA_ENGINE_EVENT_WAITING, 0L, 0L);
+  task_environment_.RunUntilIdle();
+
+  testing::Mock::VerifyAndClearExpectations(&renderer_client_);
+}
+
 }  // namespace media

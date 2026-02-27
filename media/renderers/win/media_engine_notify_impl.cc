@@ -144,11 +144,17 @@ HRESULT MediaEngineNotifyImpl::EventNotify(DWORD event_code,
   DVLOG_FUNC(3) << "event=" << MediaEngineEventToString(event);
 
   base::AutoLock lock(lock_);
-  if (has_shutdown_)
+  if (has_shutdown_or_error_) {
+    DVLOG_FUNC(3)
+        << "Shutdown or error already reported, ignore all subsequent events!";
+    // TODO(crbug.com/488401846): Add UMA to check how often this happens.
     return S_OK;
+  }
 
   switch (event) {
     case MF_MEDIA_ENGINE_EVENT_ERROR: {
+      has_shutdown_or_error_ = true;
+
       // |param1| - A member of the MF_MEDIA_ENGINE_ERR enumeration.
       // |param2| - An HRESULT error code, or zero.
       MF_MEDIA_ENGINE_ERR error = static_cast<MF_MEDIA_ENGINE_ERR>(param1);
@@ -214,7 +220,7 @@ void MediaEngineNotifyImpl::Shutdown() {
   DVLOG_FUNC(1);
 
   base::AutoLock lock(lock_);
-  has_shutdown_ = true;
+  has_shutdown_or_error_ = true;
 }
 
 }  // namespace media
