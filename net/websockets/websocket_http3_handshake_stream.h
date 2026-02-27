@@ -131,8 +131,6 @@ class NET_EXPORT_PRIVATE WebSocketHttp3HandshakeStream final
 
   HandshakeResult result_ = HandshakeResult::HTTP3_INCOMPLETE;
 
-  std::unique_ptr<WebSocketSpdyStreamAdapter> adapter_;
-
   // True if `stream_` has been created then closed.
   bool stream_closed_ = false;
 
