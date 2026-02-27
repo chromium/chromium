@@ -25,6 +25,15 @@ import java.util.Set;
 /** Tests for {@link AutocompleteMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class AutocompleteInputUnitTest {
+    @Test
+    public void testReset_clearsKeyword() {
+        AutocompleteInput input = new AutocompleteInput();
+        input.setKeyword("history");
+        assertEquals("history", input.getKeyword());
+
+        input.reset();
+        assertEquals(null, input.getKeyword());
+    }
 
     private final AutocompleteInput mInput = new AutocompleteInput();
 

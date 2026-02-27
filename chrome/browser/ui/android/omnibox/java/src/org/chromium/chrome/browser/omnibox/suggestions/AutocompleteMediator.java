@@ -544,6 +544,7 @@ class AutocompleteMediator
                     .getRequestTypeSupplier()
                     .removeObserver(mOnAutocompleteRequestTypeChanged);
             mAutocompleteInput.getKeywordSupplier().removeObserver(mOnKeywordChanged);
+            mUrlBarEditingTextProvider.setSiteSearchChip(null);
         }
         mAutocompleteInput = input;
         mOmniboxActionDelegate.setAutocompleteInput(input);
@@ -1055,6 +1056,11 @@ class AutocompleteMediator
 
     private void onKeywordChanged(@Nullable String keyword) {
         mUrlBarEditingTextProvider.setSiteSearchChip(keyword);
+        if (isInInputSession()) {
+            onTextChanged(
+                    mUrlBarEditingTextProvider.getTextWithoutAutocomplete(),
+                    /* isOnFocusContext= */ false);
+        }
     }
 
     private void onFuseboxStateChanged(@FuseboxState int fuseboxState) {

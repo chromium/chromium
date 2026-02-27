@@ -311,6 +311,18 @@ public class AutocompleteMediatorUnitTest {
 
     @Test
     @SmallTest
+    public void endInput_clearsSiteSearchChip() {
+        var session = createEmptySession();
+        mMediator.beginInput(session);
+        session.getAutocompleteInput().setKeyword("history");
+        verify(mTextStateProvider).setSiteSearchChip("history");
+
+        mMediator.endInput();
+        verify(mTextStateProvider).setSiteSearchChip(null);
+    }
+
+    @Test
+    @SmallTest
     public void updateSuggestionsList_worksWithNullList() {
         mMediator.onNativeInitialized();
 

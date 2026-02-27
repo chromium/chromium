@@ -348,6 +348,7 @@ public class AutocompleteInput implements UserData {
         mPageClassification = PageClassification.BLANK_VALUE;
         mFocusReason = OmniboxFocusReason.OMNIBOX_TAP;
         mRequestTypeSupplier.set(AutocompleteRequestType.SEARCH);
+        mCurrentKeyword.set(null);
         mUrlFocusTime = 0;
         mSuggestionsListScrolled = false;
         mSuppressAutomaticSuggestionsUntilUserStartsTyping = false;
