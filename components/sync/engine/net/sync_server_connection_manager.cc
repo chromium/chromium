@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "components/sync/engine/cancelation_signal.h"
 #include "components/sync/engine/net/http_post_provider.h"
 #include "components/sync/engine/net/http_post_provider_factory.h"
@@ -132,6 +133,9 @@ SyncServerConnectionManager::~SyncServerConnectionManager() = default;
 HttpResponse SyncServerConnectionManager::PostBuffer(
     const std::string& buffer_in,
     std::string* buffer_out) {
+  base::UmaHistogramBoolean("Sync.URLFetchAccessToken",
+                            !HasInvalidAccessToken());
+
   if (HasInvalidAccessToken()) {
     ClearAccessToken();
 
