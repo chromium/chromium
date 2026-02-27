@@ -228,6 +228,11 @@ class AutofillBottomSheetTabHelper
   // Send command to show the Credential Bottom Sheet.
   void ShowCredentialBottomSheet(const autofill::FormActivityParams& params);
 
+  // Conditionally show the payments bottom sheet based on the Autofill
+  // suggestions that can be retrieved for the form that corresponds to
+  // `params`.
+  void MaybeShowPaymentsBottomSheet(const autofill::FormActivityParams params);
+
   // Send command to show the Payments Bottom Sheet. Detach all listeners if
   // `detach`.
   void ShowPaymentsBottomSheet(const autofill::FormActivityParams& params,

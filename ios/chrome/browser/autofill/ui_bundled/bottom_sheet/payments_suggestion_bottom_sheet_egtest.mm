@@ -115,10 +115,13 @@ id<GREYMatcher> KeyboardAccessoryCreditCardSuggestionChip() {
   if ([self isRunningTest:@selector
             (testOpenPaymentsBottomSheetUseCreditCardOnV3)] ||
       [self isRunningTest:@selector
-            (testAttemptToOpenPaymentsBottomSheetWithoutCreditCardOnV3)] ||
-      [self isRunningTest:@selector
-            (FLAKY_testPaymentsBottomSheetNotShownAfterFieldTypeChanges)]) {
+            (testAttemptToOpenPaymentsBottomSheetWithoutCreditCardOnV3)]) {
     config.features_enabled.push_back(kAutofillPaymentsSheetV3Ios);
+  }
+  if ([self isRunningTest:@selector
+            (FLAKY_testPaymentsBottomSheetNotShownAfterFieldTypeChanges)]) {
+    config.features_enabled.push_back(
+        kAutofillPaymentsSheetDetachInvalidatedListenersIos);
   }
 
   if ([self shouldUseNewBlur]) {

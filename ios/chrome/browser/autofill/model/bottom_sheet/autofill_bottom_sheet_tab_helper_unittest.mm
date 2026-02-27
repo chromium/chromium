@@ -172,11 +172,13 @@ TEST_F(AutofillBottomSheetTabHelperTest,
   EXPECT_OCMOCK_VERIFY(generation_provider_mock);
 }
 
-// Tests that we detach the listeners when Payment Sheet V3 is enabled and the
-// form is not a CC form.
-TEST_F(AutofillBottomSheetTabHelperTest,
-       UpdateListenersForPaymentsForm_V3_DetachWhenNotCreditCard) {
-  scoped_feature_list_.InitAndEnableFeature(kAutofillPaymentsSheetV3Ios);
+// Tests that we detach the listeners when the invalidation of listeners is
+// enabled and the form is not a CC form.
+TEST_F(
+    AutofillBottomSheetTabHelperTest,
+    UpdateListenersForPaymentsForm_ListenersInvalidation_DetachWhenNotCreditCard) {
+  scoped_feature_list_.InitAndEnableFeature(
+      kAutofillPaymentsSheetDetachInvalidatedListenersIos);
 
   // Using LoadHtml to fake a real page load. This instantiates the main
   // web::WebFrame and sets up the JS features needed by AttachListeners.

@@ -40,6 +40,11 @@ BASE_DECLARE_FEATURE(kAutofillExtractFullUrlOnIOs);
 // propagated.
 BASE_DECLARE_FEATURE(kAutofillFormSubmissionEventsInCaptureMode);
 
+// Detaches the listeners for the payments suggestion bottom sheet when the
+// listeners are invalidated (i.e. the field type is no longer a credit card
+// field). This can be used in combination with kAutofillPaymentsSheetV3Ios.
+BASE_DECLARE_FEATURE(kAutofillPaymentsSheetDetachInvalidatedListenersIos);
+
 // Enables the stateless version of the payments suggestion bottom sheet that
 // can directly pick the Autofill suggestions provider instead of intermediating
 // via the FormSuggestionController.

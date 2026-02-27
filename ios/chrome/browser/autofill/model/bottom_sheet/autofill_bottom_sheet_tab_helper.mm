@@ -106,6 +106,12 @@ bool UseV3() {
          base::FeatureList::IsEnabled(kAutofillPaymentsSheetV3Ios);
 }
 
+bool UseListenersInvalidation() {
+  return base::FeatureList::IsEnabled(kStatelessFormSuggestionController) &&
+         base::FeatureList::IsEnabled(
+             kAutofillPaymentsSheetDetachInvalidatedListenersIos);
+}
+
 }  // namespace
 
 AutofillBottomSheetTabHelper::~AutofillBottomSheetTabHelper() = default;
@@ -200,7 +206,7 @@ void AutofillBottomSheetTabHelper::OnFormMessageReceived(
   if (is_password_related) {
     ShowCredentialBottomSheet(params);
   } else if (is_payments_related) {
-    ShowPaymentsBottomSheet(params, /*detach=*/true);
+    MaybeShowPaymentsBottomSheet(params);
   } else if (is_password_generation_related) {
     ShowProactivePasswordGenerationBottomSheet(params);
   }
@@ -223,6 +229,50 @@ void AutofillBottomSheetTabHelper::ShowCredentialBottomSheet(
   // keyboard from popping up over the bottom sheet. Postpone refocus for
   // later once the bottom sheet is dismissed.
   DetachPasswordListenersForAllFrames(/*refocus=*/false);
+}
+
+void AutofillBottomSheetTabHelper::MaybeShowPaymentsBottomSheet(
+    autofill::FormActivityParams params) {
+  if (!UseV3()) {
+    // Use the status quo logic for triggering the payments bottom sheet if
+    // V3 isn't enabled.
+    ShowPaymentsBottomSheet(std::move(params), /*detach=*/true);
+    return;
+  }
+
+  // In V3, first try to retrieve credit card suggestions before
+  // considering triggering the payments bottom sheet. Credit card suggestions
+  // are a good proxy for knowing that the type of the field is "settled" since
+  // we known that the PWM was tested for suggestions (including the server
+  // predictions) before getting the credit card suggestions.
+
+  if (!web_state_) {
+    return;
+  }
+  FormSuggestionTabHelper* tabHelper =
+      FormSuggestionTabHelper::FromWebState(web_state_);
+  if (!tabHelper) {
+    return;
+  }
+  id<FormInputSuggestionsProvider> provider =
+      tabHelper->GetAccessoryViewProvider();
+
+  // Force this bit to true as retrieving Autofill suggestions for a form
+  // requires a user manual gesture and we consider the signal to trigger
+  // the bottom sheet as a valid signal as a manual gesture.
+  params.has_user_gesture = true;
+
+  auto completion = base::CallbackToBlock(base::BindOnce(
+      &AutofillBottomSheetTabHelper::
+          OnSuggestionsRetrievedForPaymentsBottomSheet,
+      weak_factory_.GetWeakPtr(), params, base::TimeTicks::Now()));
+  [provider retrieveSuggestionsForForm:params
+                              webState:web_state_
+              accessoryViewUpdateBlock:completion];
+
+  // Detach the listeners immediately since there is no guarantee that
+  // ShowPaymentsBottomSheet() will be called to trigger the sheet.
+  DetachPaymentsListenersForAllFrames(/*refocus=*/false);
 }
 
 void AutofillBottomSheetTabHelper::OnSuggestionsRetrievedForPaymentsBottomSheet(
@@ -547,8 +597,8 @@ void AutofillBottomSheetTabHelper::UpdateListenersForPaymentsForm(
 
   bool should_attach_listeners = is_cc_form && has_cc_cards;
 
-  if (!should_attach_listeners && !UseV3()) {
-    // Do not detach listeners when not using V3.
+  if (!should_attach_listeners && !UseListenersInvalidation()) {
+    // Do not detach listeners if they can't be invalidated.
     return;
   }
 
@@ -566,13 +616,13 @@ void AutofillBottomSheetTabHelper::UpdateListenersForPaymentsForm(
                                          field->Type().GetCreditCardType())) {
         fields_to_attach_by_frame[field_id.frame_token].push_back(
             field_id.renderer_id);
-      } else if (UseV3()) {
+      } else if (UseListenersInvalidation()) {
         fields_to_detach_by_frame[field_id.frame_token].push_back(
             field_id.renderer_id);
       }
     }
 
-    if (UseV3()) {
+    if (UseListenersInvalidation()) {
       for (const auto& [frame, renderer_ids] : fields_to_detach_by_frame) {
         std::string renderer_form_frame_id =
             base::ToLowerASCII(frame.ToString());
@@ -606,7 +656,7 @@ void AutofillBottomSheetTabHelper::UpdateListenersForPaymentsForm(
       if (should_attach_listeners && IsPaymentsBottomSheetTriggeringField(
                                          field->Type().GetCreditCardType())) {
         fields_to_attach.push_back(field->renderer_id());
-      } else if (UseV3()) {
+      } else if (UseListenersInvalidation()) {
         fields_to_detach.push_back(field->renderer_id());
       }
     }
@@ -620,7 +670,7 @@ void AutofillBottomSheetTabHelper::UpdateListenersForPaymentsForm(
     }
     std::string frame_id = frame->GetFrameId();
 
-    if (UseV3()) {
+    if (UseListenersInvalidation()) {
       auto& registered_ids = registered_payments_renderer_ids_[frame_id];
       std::set<autofill::FieldRendererId> ids_to_detach;
       for (auto id : fields_to_detach) {
