@@ -88,8 +88,6 @@ target(tracing_lib_type, "cpp") {
       "stack_sampling/tracing_sampler_profiler.h",
       "system_metrics_sampler.cc",
       "system_metrics_sampler.h",
-      "trace_event_args_allowlist.cc",
-      "trace_event_args_allowlist.h",
       "trace_startup.cc",
       "trace_startup.h",
       "trace_startup_config.cc",

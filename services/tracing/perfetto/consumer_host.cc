@@ -29,7 +29,6 @@
 #include "services/tracing/perfetto/perfetto_service.h"
 #include "services/tracing/perfetto/privacy_filtering_check.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_session.h"
-#include "services/tracing/public/cpp/trace_event_args_allowlist.h"
 #include "third_party/perfetto/include/perfetto/ext/trace_processor/export_json.h"
 #include "third_party/perfetto/include/perfetto/ext/tracing/core/observable_events.h"
 #include "third_party/perfetto/include/perfetto/ext/tracing/core/slice.h"
@@ -432,48 +431,7 @@ void ConsumerHost::TracingSession::DisableTracingAndEmitJson(
 }
 
 void ConsumerHost::TracingSession::ExportJson() {
-  // In legacy backend, the trace event agent sets the predicate used by
-  // TraceLog. For perfetto backend, ensure that predicate is always set
-  // before creating the exporter. The agent can be created later than this
-  // point.
-  if (base::trace_event::TraceLog::GetInstance()
-          ->GetArgumentFilterPredicate()
-          .is_null()) {
-    base::trace_event::TraceLog::GetInstance()->SetArgumentFilterPredicate(
-        base::BindRepeating(&IsTraceEventArgsAllowlisted));
-    base::trace_event::TraceLog::GetInstance()->SetMetadataFilterPredicate(
-        base::BindRepeating(&IsMetadataAllowlisted));
-  }
-
-  perfetto::trace_processor::json::ArgumentFilterPredicate argument_filter;
-  perfetto::trace_processor::json::MetadataFilterPredicate metadata_filter;
   perfetto::trace_processor::json::LabelFilterPredicate label_filter;
-
-  if (privacy_filtering_enabled_) {
-    auto* trace_log = base::trace_event::TraceLog::GetInstance();
-    base::trace_event::ArgumentFilterPredicate argument_filter_predicate =
-        trace_log->GetArgumentFilterPredicate();
-    argument_filter =
-        [argument_filter_predicate](
-            const char* category_group_name, const char* event_name,
-            perfetto::trace_processor::json::ArgumentNameFilterPredicate*
-                name_filter) {
-          base::trace_event::ArgumentNameFilterPredicate name_filter_predicate;
-          bool result = argument_filter_predicate.Run(
-              category_group_name, event_name, &name_filter_predicate);
-          if (name_filter_predicate) {
-            *name_filter = [name_filter_predicate](const char* arg_name) {
-              return name_filter_predicate.Run(arg_name);
-            };
-          }
-          return result;
-        };
-    base::trace_event::MetadataFilterPredicate metadata_filter_predicate =
-        trace_log->GetMetadataFilterPredicate();
-    metadata_filter = [metadata_filter_predicate](const char* metadata_name) {
-      return metadata_filter_predicate.Run(metadata_name);
-    };
-  }
 
   if (!json_agent_label_filter_.empty()) {
     label_filter = [this](const char* label) {
@@ -484,8 +442,7 @@ void ConsumerHost::TracingSession::ExportJson() {
   JsonStringOutputWriter output_writer(base::BindRepeating(
       &ConsumerHost::TracingSession::OnJSONTraceData, base::Unretained(this)));
   auto status = perfetto::trace_processor::json::ExportJson(
-      trace_processor_.get(), &output_writer, argument_filter, metadata_filter,
-      label_filter);
+      trace_processor_.get(), &output_writer, nullptr, nullptr, label_filter);
   DCHECK(status.ok()) << status.message();
 }
 

@@ -232,8 +232,6 @@ source_set("browser") {
     "supervised_user/aw_supervised_user_url_classifier.h",
     "tracing/aw_background_tracing_metrics_provider.cc",
     "tracing/aw_background_tracing_metrics_provider.h",
-    "tracing/aw_trace_event_args_allowlist.cc",
-    "tracing/aw_trace_event_args_allowlist.h",
     "tracing/aw_tracing_controller.cc",
     "tracing/aw_tracing_controller.h",
     "tracing/aw_tracing_delegate.cc",

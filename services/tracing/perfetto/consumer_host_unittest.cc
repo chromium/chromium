@@ -703,27 +703,4 @@ TEST_F(TracingConsumerTest, NoPrivacyFilterWithJsonConversion) {
   EXPECT_FALSE(base_config.IsArgumentFilterEnabled());
 }
 
-TEST_F(TracingConsumerTest, PrivacyFilterConfigInJson) {
-  EnableTracingWithDataSourceName(kDataSourceName,
-                                  /* enable_privacy_filtering =*/true,
-                                  /* convert_to_legacy_json =*/true);
-
-  threaded_perfetto_service()->CreateProducer();
-  auto config =
-      threaded_perfetto_service()->GetDataSourceConfig(kDataSourceName);
-  EXPECT_TRUE(config.chrome_config().privacy_filtering_enabled());
-
-  base::RunLoop no_more_data;
-  ExpectPackets("\"trace_processor_stats\":\"__stripped__\"",
-                no_more_data.QuitClosure());
-
-  base::RunLoop write_done;
-  DisableTracingAndEmitJson(write_done.QuitClosure());
-
-  no_more_data.Run();
-  write_done.Run();
-
-  EXPECT_EQ(1u, matching_packet_count());
-}
-
 }  // namespace tracing

@@ -471,32 +471,6 @@ void TraceLog::SetEnabledImpl(const TraceConfig& trace_config,
   tracing_session_->StartBlocking();
 }
 
-void TraceLog::SetArgumentFilterPredicate(
-    const ArgumentFilterPredicate& argument_filter_predicate) {
-  AutoLock lock(lock_);
-  DCHECK(!argument_filter_predicate.is_null());
-  // Replace the existing argument filter.
-  argument_filter_predicate_ = argument_filter_predicate;
-}
-
-ArgumentFilterPredicate TraceLog::GetArgumentFilterPredicate() const {
-  AutoLock lock(lock_);
-  return argument_filter_predicate_;
-}
-
-void TraceLog::SetMetadataFilterPredicate(
-    const MetadataFilterPredicate& metadata_filter_predicate) {
-  AutoLock lock(lock_);
-  DCHECK(!metadata_filter_predicate.is_null());
-  // Replace the existing argument filter.
-  metadata_filter_predicate_ = metadata_filter_predicate;
-}
-
-MetadataFilterPredicate TraceLog::GetMetadataFilterPredicate() const {
-  AutoLock lock(lock_);
-  return metadata_filter_predicate_;
-}
-
 void TraceLog::SetDisabled() {
   AutoLock lock(lock_);
   SetDisabledWhileLocked();
