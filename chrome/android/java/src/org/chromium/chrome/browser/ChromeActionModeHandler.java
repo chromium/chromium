@@ -215,12 +215,12 @@ public class ChromeActionModeHandler {
                     view.getResources()
                             .getDimensionPixelSize(R.dimen.iph_shared_highlighting_padding_top);
             Rect anchorRect = new Rect(view.getWidth() / 2, padding, view.getWidth() / 2, padding);
-            UserEducationHelper mUserEducationHelper =
+            UserEducationHelper userEducationHelper =
                     new UserEducationHelper(
                             assertNonNull(TabUtils.getActivity(mTab)),
                             mTab.getProfile(),
                             new Handler());
-            mUserEducationHelper.requestShowIph(
+            userEducationHelper.requestShowIph(
                     new IphCommandBuilder(
                                     view.getResources(),
                                     FeatureConstants.SHARED_HIGHLIGHTING_BUILDER_FEATURE,

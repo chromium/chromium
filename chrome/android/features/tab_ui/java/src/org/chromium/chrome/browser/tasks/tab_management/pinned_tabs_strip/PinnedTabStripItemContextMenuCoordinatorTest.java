@@ -319,7 +319,7 @@ public class PinnedTabStripItemContextMenuCoordinatorTest {
         assertEquals(0, mMenuItemList.size());
     }
 
-    private int getMenuItemTitleId(int mMenuItemListIndex) {
-        return mMenuItemList.get(mMenuItemListIndex).model.get(ListMenuItemProperties.TITLE_ID);
+    private int getMenuItemTitleId(int menuItemListIndex) {
+        return mMenuItemList.get(menuItemListIndex).model.get(ListMenuItemProperties.TITLE_ID);
     }
 }

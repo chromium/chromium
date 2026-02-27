@@ -28,24 +28,24 @@ public class CompositorAnimationHandlerTest {
     public void testConcurrentAnimationsFinishSeparately() {
         mAnimations = new CompositorAnimationHandler(CallbackUtils.emptyRunnable());
 
-        CompositorAnimator mFastAnimation =
+        CompositorAnimator fastAnimation =
                 CompositorAnimator.ofFloat(mAnimations, 0.f, 1.f, FAST_DURATION_MS, null);
-        CompositorAnimator mSlowAnimation =
+        CompositorAnimator slowAnimation =
                 CompositorAnimator.ofFloat(mAnimations, 0.f, 1.f, SLOW_DURATION_MS, null);
 
-        mFastAnimation.start();
-        mSlowAnimation.start();
+        fastAnimation.start();
+        slowAnimation.start();
 
         CompositorAnimationHandler.setTestingMode(true);
 
         // Advances time to check that the fast animation will finish first.
         mAnimations.pushUpdateInTestingMode(1 + FAST_DURATION_MS);
-        Assert.assertFalse(mFastAnimation.isRunning());
-        Assert.assertTrue(mSlowAnimation.isRunning());
+        Assert.assertFalse(fastAnimation.isRunning());
+        Assert.assertTrue(slowAnimation.isRunning());
 
         // Advances time to check that all animations are finished.
         mAnimations.pushUpdateInTestingMode(1 + SLOW_DURATION_MS);
-        Assert.assertFalse(mFastAnimation.isRunning());
-        Assert.assertFalse(mSlowAnimation.isRunning());
+        Assert.assertFalse(fastAnimation.isRunning());
+        Assert.assertFalse(slowAnimation.isRunning());
     }
 }

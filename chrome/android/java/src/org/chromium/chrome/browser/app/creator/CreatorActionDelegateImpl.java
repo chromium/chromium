@@ -145,7 +145,7 @@ public class CreatorActionDelegateImpl implements FeedActionDelegate {
     @Override
     public void showSignInInterstitial(
             @SigninAccessPoint int signinAccessPoint,
-            @Nullable BottomSheetController mBottomSheetController) {
+            @Nullable BottomSheetController bottomSheetController) {
         AccountPickerBottomSheetStrings strings =
                 new AccountPickerBottomSheetStrings.Builder(
                                 mActivity.getString(

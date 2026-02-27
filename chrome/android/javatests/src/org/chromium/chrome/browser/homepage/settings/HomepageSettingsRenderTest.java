@@ -95,8 +95,8 @@ public class HomepageSettingsRenderTest {
         PartnerBrowserCustomizations.setInstanceForTesting(mMockPartnerBrowserCustomizations);
 
         mSettingsRule.launchActivity(null);
-        Activity mActivity = mSettingsRule.getActivity();
-        mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
+        Activity activity = mSettingsRule.getActivity();
+        activity.setTheme(R.style.Theme_BrowserUI_DayNight);
     }
 
     @After

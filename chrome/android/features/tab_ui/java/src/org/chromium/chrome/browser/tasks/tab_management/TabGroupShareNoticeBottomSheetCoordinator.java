@@ -82,12 +82,12 @@ public class TabGroupShareNoticeBottomSheetCoordinator {
         mView = new TabGroupShareNoticeBottomSheetView(mContext);
 
         TabGroupShareNoticeBottomSheetCoordinatorDelegate delegate = initDelegate();
-        TabGroupShareNoticeBottomSheetMediator mMediator =
+        TabGroupShareNoticeBottomSheetMediator mediator =
                 new TabGroupShareNoticeBottomSheetMediator(mBottomSheetController, delegate);
 
         PropertyModelChangeProcessor.create(
-                mMediator.getModel(), mView, TabGroupShareNoticeBottomSheetViewBinder::bind);
-        mMediator.requestShowContent();
+                mediator.getModel(), mView, TabGroupShareNoticeBottomSheetViewBinder::bind);
+        mediator.requestShowContent();
     }
 
     /** Returns whether the user has read the notice. */

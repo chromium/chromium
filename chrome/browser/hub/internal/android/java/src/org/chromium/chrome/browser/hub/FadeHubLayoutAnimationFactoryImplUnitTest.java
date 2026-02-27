@@ -122,7 +122,7 @@ public class FadeHubLayoutAnimationFactoryImplUnitTest {
         HubLayoutAnimationRunner runner =
                 HubLayoutAnimationRunnerFactory.createHubLayoutAnimationRunner(animatorProvider);
 
-        HubLayoutAnimationListener mListener =
+        HubLayoutAnimationListener listener =
                 spy(
                         new HubLayoutAnimationListener() {
                             @Override
@@ -145,15 +145,15 @@ public class FadeHubLayoutAnimationFactoryImplUnitTest {
                                 assertEquals(1.0f, mHubContainerView.getAlpha(), FLOAT_TOLERANCE);
                             }
                         });
-        runner.addListener(mListener);
+        runner.addListener(listener);
 
         runner.runWithWaitForAnimatorTimeout(TIMEOUT_MS);
 
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
-        verify(mListener).beforeStart();
-        verify(mListener).onEnd(eq(false));
-        verify(mListener).afterEnd();
+        verify(listener).beforeStart();
+        verify(listener).onEnd(eq(false));
+        verify(listener).afterEnd();
         verify(mOnAlphaChange, atLeast(3)).accept(anyDouble());
     }
 

@@ -134,7 +134,7 @@ public class OfflinePageSavePageLaterEvaluationTest {
                         ContextUtils.getApplicationContext()
                                 .getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.cancelAll();
-        final Semaphore mClearingSemaphore = new Semaphore(0);
+        final Semaphore clearingSemaphore = new Semaphore(0);
         PostTask.runOrPostTask(
                 TaskTraits.UI_DEFAULT,
                 () -> {
@@ -152,14 +152,14 @@ public class OfflinePageSavePageLaterEvaluationTest {
                                             new Callback<>() {
                                                 @Override
                                                 public void onResult(Integer removedCount) {
-                                                    mClearingSemaphore.release();
+                                                    clearingSemaphore.release();
                                                 }
                                             });
                                 }
                             });
                 });
         checkTrue(
-                mClearingSemaphore.tryAcquire(REMOVE_REQUESTS_TIMEOUT_MS, TimeUnit.MILLISECONDS),
+                clearingSemaphore.tryAcquire(REMOVE_REQUESTS_TIMEOUT_MS, TimeUnit.MILLISECONDS),
                 "Timed out when clearing remaining requests!");
         mBridge.closeLog();
         mBridge.destroy();

@@ -61,8 +61,8 @@ public class BackPressManagerTest {
 
         private final Boolean mReturnValue;
 
-        private EscModifyingBackPressHandler(Boolean mReturnValue) {
-            this.mReturnValue = mReturnValue;
+        private EscModifyingBackPressHandler(Boolean returnValue) {
+            mReturnValue = returnValue;
         }
 
         @Override

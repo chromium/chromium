@@ -140,9 +140,9 @@ public class ContextMenuCoordinatorTest {
                 displayContextMenuDialogAtLocation(triggeringTouchXDp, triggeringTouchYDp);
         dialog.show();
 
-        WebContentsObserver mWebContentsObserver = mCoordinator.getWebContentsObserverForTesting();
+        WebContentsObserver webContentsObserver = mCoordinator.getWebContentsObserverForTesting();
 
-        mWebContentsObserver.onVisibilityChanged(Visibility.HIDDEN);
+        webContentsObserver.onVisibilityChanged(Visibility.HIDDEN);
 
         Assert.assertTrue(dialog.isDismissedForTesting());
     }
@@ -156,9 +156,9 @@ public class ContextMenuCoordinatorTest {
                 displayContextMenuDialogAtLocation(triggeringTouchXDp, triggeringTouchYDp);
         dialog.show();
 
-        WebContentsObserver mWebContentsObserver = mCoordinator.getWebContentsObserverForTesting();
+        WebContentsObserver webContentsObserver = mCoordinator.getWebContentsObserverForTesting();
 
-        mWebContentsObserver.onVisibilityChanged(Visibility.VISIBLE);
+        webContentsObserver.onVisibilityChanged(Visibility.VISIBLE);
 
         Assert.assertFalse(dialog.isDismissedForTesting());
     }

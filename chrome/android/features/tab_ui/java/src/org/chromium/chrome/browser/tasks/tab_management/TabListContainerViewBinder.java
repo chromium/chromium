@@ -82,11 +82,11 @@ class TabListContainerViewBinder {
         ViewHolder(
                 TabListRecyclerView tabListRecyclerView,
                 ImageView paneHairline,
-                LinearLayout mSupplementaryContainer) {
-            this.mTabListRecyclerView = tabListRecyclerView;
-            this.mPaneHairline = paneHairline;
-            this.mSupplementaryContainer = mSupplementaryContainer;
-            this.mSearchBoxGapPx =
+                LinearLayout supplementaryContainer) {
+            mTabListRecyclerView = tabListRecyclerView;
+            mPaneHairline = paneHairline;
+            mSupplementaryContainer = supplementaryContainer;
+            mSearchBoxGapPx =
                     tabListRecyclerView
                             .getResources()
                             .getDimensionPixelSize(R.dimen.hub_search_box_gap);

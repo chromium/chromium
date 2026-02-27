@@ -144,12 +144,11 @@ public class BrowsingDataRemoverIntegrationTest {
         Set<String> savedLinks = new HashSet<>();
         savedLinks.add(relationship);
 
-        ChromeVerificationResultStore mStore =
-                ChromeVerificationResultStore.getInstanceForTesting();
+        ChromeVerificationResultStore store = ChromeVerificationResultStore.getInstanceForTesting();
 
-        mStore.setRelationships(savedLinks);
+        store.setRelationships(savedLinks);
 
-        Assert.assertTrue(mStore.getRelationships().contains(relationship));
+        Assert.assertTrue(store.getRelationships().contains(relationship));
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -161,7 +160,7 @@ public class BrowsingDataRemoverIntegrationTest {
                 });
 
         callbackHelper.waitForCallback(0);
-        Assert.assertTrue(mStore.getRelationships().isEmpty());
+        Assert.assertTrue(store.getRelationships().isEmpty());
     }
 
     @Test

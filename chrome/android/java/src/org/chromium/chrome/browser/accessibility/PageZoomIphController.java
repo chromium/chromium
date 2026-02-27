@@ -26,23 +26,23 @@ public class PageZoomIphController {
     private final UserEducationHelper mUserEducationHelper;
 
     public PageZoomIphController(
-            Activity mActivity,
+            Activity activity,
             Profile profile,
-            AppMenuHandler mAppMenuHandler,
-            View mToolbarMenuButton) {
+            AppMenuHandler appMenuHandler,
+            View toolbarMenuButton) {
         this(
-                mAppMenuHandler,
-                mToolbarMenuButton,
-                new UserEducationHelper(mActivity, profile, new Handler(Looper.getMainLooper())));
+                appMenuHandler,
+                toolbarMenuButton,
+                new UserEducationHelper(activity, profile, new Handler(Looper.getMainLooper())));
     }
 
     protected PageZoomIphController(
-            AppMenuHandler mAppMenuHandler,
-            View mToolbarMenuButton,
-            UserEducationHelper mUserEducationHelper) {
-        this.mAppMenuHandler = mAppMenuHandler;
-        this.mToolbarMenuButton = mToolbarMenuButton;
-        this.mUserEducationHelper = mUserEducationHelper;
+            AppMenuHandler appMenuHandler,
+            View toolbarMenuButton,
+            UserEducationHelper userEducationHelper) {
+        mAppMenuHandler = appMenuHandler;
+        mToolbarMenuButton = toolbarMenuButton;
+        mUserEducationHelper = userEducationHelper;
     }
 
     /**

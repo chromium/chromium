@@ -236,7 +236,7 @@ public class BookmarkUtilsTest {
                                 "Bookmarks.AddedPerProfileType", BrowserProfileType.REGULAR)
                         .build();
         UserActionTester userActionTester = new UserActionTester();
-        BookmarkModel mMockBookmarkModel = mock(BookmarkModel.class);
+        BookmarkModel mockBookmarkModel = mock(BookmarkModel.class);
         BookmarkId root = new BookmarkId(0, BookmarkType.NORMAL);
         BookmarkUtils.setLastUsedParent(root);
         assertTrue(BookmarkUtils.getLastUsedParent().equals(root));
@@ -245,10 +245,10 @@ public class BookmarkUtilsTest {
         BookmarkItem parentBookmarkItem =
                 new BookmarkItem(
                         parent, "parent", null, false, null, false, false, 0, false, 0, false);
-        when(mMockBookmarkModel.getBookmarkById(parent)).thenReturn(parentBookmarkItem);
-        when(mMockBookmarkModel.getDefaultBookmarkFolder()).thenReturn(parent);
+        when(mockBookmarkModel.getBookmarkById(parent)).thenReturn(parentBookmarkItem);
+        when(mockBookmarkModel.getDefaultBookmarkFolder()).thenReturn(parent);
         BookmarkId addedBookmark = new BookmarkId(2, BookmarkType.NORMAL);
-        when(mMockBookmarkModel.addBookmark(
+        when(mockBookmarkModel.addBookmark(
                         any(BookmarkId.class), anyInt(), anyString(), any(GURL.class)))
                 .thenReturn(addedBookmark);
 
@@ -256,14 +256,14 @@ public class BookmarkUtilsTest {
                 BookmarkUtils.addBookmarkInternal(
                         null,
                         mProfile,
-                        mMockBookmarkModel,
+                        mockBookmarkModel,
                         "Test title",
                         new GURL("https://test.com"),
                         parent,
                         BookmarkType.NORMAL);
-        verify(mMockBookmarkModel).getBookmarkById(parent);
-        verify(mMockBookmarkModel).getDefaultBookmarkFolder();
-        verify(mMockBookmarkModel)
+        verify(mockBookmarkModel).getBookmarkById(parent);
+        verify(mockBookmarkModel).getDefaultBookmarkFolder();
+        verify(mockBookmarkModel)
                 .addBookmark(parent, 0, "Test title", new GURL("https://test.com"));
         assertTrue(bookmark.equals(addedBookmark));
         // Ensure that cached bookmark parent is not set to parent bookmark folder
@@ -283,17 +283,17 @@ public class BookmarkUtilsTest {
                         .expectIntRecords("BookmarkAdded.Failure")
                         .build();
         UserActionTester userActionTester = new UserActionTester();
-        BookmarkModel mMockBookmarkModel = mock(BookmarkModel.class);
+        BookmarkModel mockBookmarkModel = mock(BookmarkModel.class);
         BookmarkId parent = new BookmarkId(0, BookmarkType.NORMAL);
         BookmarkItem parentBookmarkItem =
                 new BookmarkItem(
                         parent, "parent", null, false, null, false, false, 0, false, 0, false);
-        when(mMockBookmarkModel.getBookmarkById(parent)).thenReturn(parentBookmarkItem);
-        when(mMockBookmarkModel.getDefaultBookmarkFolder()).thenReturn(parent);
+        when(mockBookmarkModel.getBookmarkById(parent)).thenReturn(parentBookmarkItem);
+        when(mockBookmarkModel.getDefaultBookmarkFolder()).thenReturn(parent);
         BookmarkUtils.setLastUsedParent(parent);
         assertTrue(BookmarkUtils.getLastUsedParent() != null);
         // Simulate failing to add bookmark by returning null in addBookmark
-        when(mMockBookmarkModel.addBookmark(
+        when(mockBookmarkModel.addBookmark(
                         any(BookmarkId.class), anyInt(), anyString(), any(GURL.class)))
                 .thenReturn(null);
 
@@ -301,14 +301,14 @@ public class BookmarkUtilsTest {
                 BookmarkUtils.addBookmarkInternal(
                         null,
                         mProfile,
-                        mMockBookmarkModel,
+                        mockBookmarkModel,
                         "Test title",
                         new GURL("https://test.com"),
                         parent,
                         BookmarkType.NORMAL);
-        verify(mMockBookmarkModel).getBookmarkById(parent);
-        verify(mMockBookmarkModel).getDefaultBookmarkFolder();
-        verify(mMockBookmarkModel)
+        verify(mockBookmarkModel).getBookmarkById(parent);
+        verify(mockBookmarkModel).getDefaultBookmarkFolder();
+        verify(mockBookmarkModel)
                 .addBookmark(parent, 0, "Test title", new GURL("https://test.com"));
         assertTrue(bookmark == null);
         // Ensure that cached bookmark parent is reset to default after failing to add bookmark
@@ -327,12 +327,12 @@ public class BookmarkUtilsTest {
                                 "Bookmarks.AddedPerProfileType", BrowserProfileType.REGULAR)
                         .build();
         UserActionTester userActionTester = new UserActionTester();
-        BookmarkModel mMockBookmarkModel = mock(BookmarkModel.class);
+        BookmarkModel mockBookmarkModel = mock(BookmarkModel.class);
         assertNull(BookmarkUtils.getLastUsedParent());
 
         // Create a default folder ("Mobile bookmarks").
         BookmarkId mobileBookmarkFolder = new BookmarkId(1, BookmarkType.NORMAL);
-        when(mMockBookmarkModel.getDefaultBookmarkFolder()).thenReturn(mobileBookmarkFolder);
+        when(mockBookmarkModel.getDefaultBookmarkFolder()).thenReturn(mobileBookmarkFolder);
         BookmarkItem mobileBookmarkFolderItem =
                 new BookmarkItem(
                         mobileBookmarkFolder,
@@ -346,12 +346,12 @@ public class BookmarkUtilsTest {
                         false,
                         0,
                         false);
-        when(mMockBookmarkModel.getBookmarkById(mobileBookmarkFolder))
+        when(mockBookmarkModel.getBookmarkById(mobileBookmarkFolder))
                 .thenReturn(mobileBookmarkFolderItem);
 
         // Create a desktop folder ("Bookmark bar").
         BookmarkId bookmarkBarFolder = new BookmarkId(2, BookmarkType.NORMAL);
-        when(mMockBookmarkModel.getDesktopFolderId()).thenReturn(bookmarkBarFolder);
+        when(mockBookmarkModel.getDesktopFolderId()).thenReturn(bookmarkBarFolder);
         BookmarkItem bookmarkBarFolderItem =
                 new BookmarkItem(
                         bookmarkBarFolder,
@@ -365,12 +365,12 @@ public class BookmarkUtilsTest {
                         false,
                         0,
                         false);
-        when(mMockBookmarkModel.getBookmarkById(bookmarkBarFolder))
+        when(mockBookmarkModel.getBookmarkById(bookmarkBarFolder))
                 .thenReturn(bookmarkBarFolderItem);
 
         // Mock adding a new bookmark.
         BookmarkId newBookmark = new BookmarkId(3, BookmarkType.NORMAL);
-        when(mMockBookmarkModel.addBookmark(
+        when(mockBookmarkModel.addBookmark(
                         any(BookmarkId.class), anyInt(), anyString(), any(GURL.class)))
                 .thenReturn(newBookmark);
 
@@ -378,7 +378,7 @@ public class BookmarkUtilsTest {
                 BookmarkUtils.addBookmarkInternal(
                         null,
                         mProfile,
-                        mMockBookmarkModel,
+                        mockBookmarkModel,
                         "Test title",
                         new GURL("https://test.com"),
                         null,
@@ -388,9 +388,9 @@ public class BookmarkUtilsTest {
         // In this case we should not be adding to the defaultBookmarkFolder, and should instead be
         // adding to the desktopFolderId (bookmark bar). The last used parent should not update
         // when we save for this case.
-        verify(mMockBookmarkModel).getDesktopFolderId();
-        verify(mMockBookmarkModel).getBookmarkById(bookmarkBarFolder);
-        verify(mMockBookmarkModel)
+        verify(mockBookmarkModel).getDesktopFolderId();
+        verify(mockBookmarkModel).getBookmarkById(bookmarkBarFolder);
+        verify(mockBookmarkModel)
                 .addBookmark(bookmarkBarFolder, 0, "Test title", new GURL("https://test.com"));
         assertTrue(bookmark.equals(newBookmark));
         // Ensure that cached bookmark parent is not set to parent bookmark folder

@@ -116,11 +116,11 @@ public interface FeedActionDelegate {
      * Shows a sign in interstitial as a result of a feed user action.
      *
      * @param signinAccessPoint the entry point for the signin.
-     * @param mBottomSheetController bottomsheet controller attached to the activity.
+     * @param bottomSheetController bottomsheet controller attached to the activity.
      */
     default void showSignInInterstitial(
             @SigninAccessPoint int signinAccessPoint,
-            BottomSheetController mBottomSheetController) {}
+            BottomSheetController bottomSheetController) {}
 
     /** Cleans up resources used by the delegate. */
     default void destroy() {}

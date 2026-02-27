@@ -75,8 +75,8 @@ public class FeedOptionsCoordinator {
     }
 
     /** Sets listener for feed options. */
-    public void setOptionsListener(OptionChangedListener mOptionsListener) {
-        this.mOptionsListener = mOptionsListener;
+    public void setOptionsListener(OptionChangedListener optionsListener) {
+        this.mOptionsListener = optionsListener;
     }
 
     /** Returns the view that this coordinator manages. */

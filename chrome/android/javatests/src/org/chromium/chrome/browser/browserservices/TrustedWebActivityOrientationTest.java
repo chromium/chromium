@@ -83,10 +83,10 @@ public class TrustedWebActivityOrientationTest {
     @Test
     @MediumTest
     public void defaultOrientationIsSet() throws TimeoutException {
-        final String mTestPage =
+        final String testPage =
                 mEmbeddedTestServerRule.getServer().getURL("/chrome/test/data/android/simple.html");
 
-        Intent intent = createTrustedWebActivityIntent(mTestPage);
+        Intent intent = createTrustedWebActivityIntent(testPage);
         intent.putExtra(
                 TrustedWebActivityIntentBuilder.EXTRA_SCREEN_ORIENTATION,
                 ScreenOrientation.LANDSCAPE);

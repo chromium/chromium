@@ -81,10 +81,10 @@ public class FaviconHelper {
      * @param setIconCallback Callback called with fetched icons. May be called with null.
      */
     public void fetchFavicon(String origin, Callback<Drawable> setIconCallback) {
-        final LargeIconBridge mIconBridge = new LargeIconBridge(mProfile);
+        final LargeIconBridge iconBridge = new LargeIconBridge(mProfile);
         final GURL gurlOrigin = new GURL(origin);
         if (!gurlOrigin.isValid()) return;
-        mIconBridge.getLargeIconForUrl(
+        iconBridge.getLargeIconForUrl(
                 gurlOrigin,
                 mDesiredSize,
                 (icon, fallbackColor, isFallbackColorDefault, iconType) -> {

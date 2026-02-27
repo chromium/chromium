@@ -276,10 +276,10 @@ public class TabGridDialogView extends FrameLayout {
                 ViewUtils.dpToPx(
                         getContext(),
                         getContext().getResources().getConfiguration().screenHeightDp);
-        final float mDialogInitYPos = mDialogContainerView.getY();
+        final float dialogInitYPos = mDialogContainerView.getY();
         mYTranslateAnimation =
                 ObjectAnimator.ofFloat(
-                        mDialogContainerView, View.TRANSLATION_Y, mDialogInitYPos, screenHeightPx);
+                        mDialogContainerView, View.TRANSLATION_Y, dialogInitYPos, screenHeightPx);
         mYTranslateAnimation.setInterpolator(Interpolators.EMPHASIZED_ACCELERATE);
         mYTranslateAnimation.setDuration(Y_TRANSLATE_DURATION_MS);
         mYTranslateAnimation.addListener(
@@ -287,7 +287,7 @@ public class TabGridDialogView extends FrameLayout {
                     @Override
                     public void onAnimationEnd(Animator animation) {
                         updateItemViewAlpha();
-                        mDialogContainerView.setY(mDialogInitYPos);
+                        mDialogContainerView.setY(dialogInitYPos);
                     }
                 });
 

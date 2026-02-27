@@ -323,9 +323,9 @@ class DownloadInterstitialMediator {
     }
 
     private void startRename(String name, RenameDialogManager.RenameCallback callback) {
-        RenameDialogManager mRenameDialogManager =
+        RenameDialogManager renameDialogManager =
                 new RenameDialogManager(mContextSupplier.get(), mModalDialogManager);
-        mRenameDialogManager.startRename(name, callback);
+        renameDialogManager.startRename(name, callback);
         UmaHelper.logUiAction(UmaHelper.Action.RENAMED);
     }
 

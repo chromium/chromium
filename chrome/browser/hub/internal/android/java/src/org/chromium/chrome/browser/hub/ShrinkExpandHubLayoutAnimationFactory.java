@@ -82,14 +82,14 @@ public class ShrinkExpandHubLayoutAnimationFactory {
      *     animating area. This is possible if the thumbnail was captured for a different aspect
      *     ratio than the one that will be shown i.e. different orientation or multi-window.
      * @param durationMs The duration in milliseconds of the animation.
-     * @param mOnAlphaChange Observer to notify when alpha changes during animations.
+     * @param onAlphaChange Observer to notify when alpha changes during animations.
      */
     public static HubLayoutAnimatorProvider createExpandTabAnimatorProvider(
             HubContainerView hubContainerView,
             SyncOneshotSupplier<ShrinkExpandAnimationData> animationDataSupplier,
             @ColorInt int backgroundColor,
             long durationMs,
-            DoubleConsumer mOnAlphaChange) {
+            DoubleConsumer onAlphaChange) {
         return new ShrinkExpandHubLayoutAnimatorProvider(
                 HubLayoutAnimationType.EXPAND_TAB,
                 /* needsBitmap= */ true,
@@ -97,6 +97,6 @@ public class ShrinkExpandHubLayoutAnimationFactory {
                 animationDataSupplier,
                 backgroundColor,
                 durationMs,
-                mOnAlphaChange);
+                onAlphaChange);
     }
 }

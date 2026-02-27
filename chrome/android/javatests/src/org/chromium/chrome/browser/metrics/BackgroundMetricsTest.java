@@ -59,12 +59,12 @@ public final class BackgroundMetricsTest {
     }
 
     private void loadNative() {
-        final AtomicBoolean mNativeLoaded = new AtomicBoolean();
+        final AtomicBoolean nativeLoaded = new AtomicBoolean();
         final BrowserParts parts =
                 new EmptyBrowserParts() {
                     @Override
                     public void finishNativeInitialization() {
-                        mNativeLoaded.set(true);
+                        nativeLoaded.set(true);
                     }
                 };
         PostTask.postTask(
@@ -75,7 +75,7 @@ public final class BackgroundMetricsTest {
                     ChromeBrowserInitializer.getInstance().handlePostNativeStartup(true, parts);
                 });
         CriteriaHelper.pollUiThread(
-                () -> mNativeLoaded.get(), "Failed while waiting for starting native.");
+                () -> nativeLoaded.get(), "Failed while waiting for starting native.");
     }
 
     @Test

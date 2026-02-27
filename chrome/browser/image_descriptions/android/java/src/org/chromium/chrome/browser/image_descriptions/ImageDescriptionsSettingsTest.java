@@ -81,14 +81,14 @@ public class ImageDescriptionsSettingsTest {
 
     private void launchSettings() {
         mSettingsActivityTestRule.startSettingsActivity(new Bundle());
-        ImageDescriptionsSettings mImageDescriptionsSettings =
+        ImageDescriptionsSettings imageDescriptionsSettings =
                 mSettingsActivityTestRule.getFragment();
 
         mDescriptionsSwitch =
-                mImageDescriptionsSettings.findPreference(
+                imageDescriptionsSettings.findPreference(
                         ImageDescriptionsSettings.IMAGE_DESCRIPTIONS);
         mDataPolicyPreference =
-                mImageDescriptionsSettings.findPreference(
+                imageDescriptionsSettings.findPreference(
                         ImageDescriptionsSettings.IMAGE_DESCRIPTIONS_DATA_POLICY);
     }
 

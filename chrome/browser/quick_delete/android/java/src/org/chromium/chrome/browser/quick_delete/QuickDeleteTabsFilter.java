@@ -53,13 +53,13 @@ class QuickDeleteTabsFilter {
     }
 
     private List<Tab> getListOfAllTabsToBeClosed() {
-        List<Tab> mTabList = new ArrayList<>();
+        List<Tab> tabList = new ArrayList<>();
         TabModel tabModel = mTabGroupModelFilter.getTabModel();
         for (Tab tab : tabModel) {
             if (tab == null || tab.isCustomTab()) continue;
-            mTabList.add(tab);
+            tabList.add(tab);
         }
-        return mTabList;
+        return tabList;
     }
 
     private long getCurrentTime() {
@@ -153,7 +153,7 @@ class QuickDeleteTabsFilter {
             return;
         }
 
-        List<Tab> mTabList = new ArrayList<>();
+        List<Tab> tabList = new ArrayList<>();
         TabModel tabModel = mTabGroupModelFilter.getTabModel();
         for (Tab tab : tabModel) {
             if (tab == null || tab.isCustomTab()) continue;
@@ -162,10 +162,10 @@ class QuickDeleteTabsFilter {
             final long currentTime = getCurrentTime();
 
             if (recentNavigationTime > currentTime - getTimePeriodToMilliseconds(timePeriod)) {
-                mTabList.add(tab);
+                tabList.add(tab);
             }
         }
 
-        mTabs = mTabList;
+        mTabs = tabList;
     }
 }

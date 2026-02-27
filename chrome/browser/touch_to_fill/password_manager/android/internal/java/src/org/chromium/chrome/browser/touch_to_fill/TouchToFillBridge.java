@@ -74,7 +74,7 @@ class TouchToFillBridge implements TouchToFillComponent.Delegate {
             String formattedUsername,
             String originUrl,
             String displayName,
-            @GetLoginMatchType int mMatchType,
+            @GetLoginMatchType int matchType,
             long lastUsedMsSinceEpoch,
             boolean isShared,
             String senderName,
@@ -88,7 +88,7 @@ class TouchToFillBridge implements TouchToFillComponent.Delegate {
                         .setFormattedUsername(formattedUsername)
                         .setOriginUrl(originUrl)
                         .setDisplayName(displayName)
-                        .setMatchType(mMatchType)
+                        .setMatchType(matchType)
                         .setLastUsedMsSinceEpoch(lastUsedMsSinceEpoch)
                         .setIsShared(isShared)
                         .setSenderName(senderName)

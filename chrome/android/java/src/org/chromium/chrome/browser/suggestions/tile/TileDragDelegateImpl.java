@@ -107,8 +107,8 @@ class TileDragDelegateImpl implements TileDragDelegate, TileDragSession.Delegate
         mMvTilesLayout = mvTilesLayout;
         Resources res = mMvTilesLayout.getResources();
         mTileWidthPx = res.getDimensionPixelSize(R.dimen.tile_view_width);
-        float mDominateThresholdPx = DOMINATE_TRESHOLD_RATIO * mTileWidthPx;
-        mDominateThresholdPxSquared = mDominateThresholdPx * mDominateThresholdPx;
+        float dominateThresholdPx = DOMINATE_TRESHOLD_RATIO * mTileWidthPx;
+        mDominateThresholdPxSquared = dominateThresholdPx * dominateThresholdPx;
         mPhase = DragPhase.NONE;
     }
 

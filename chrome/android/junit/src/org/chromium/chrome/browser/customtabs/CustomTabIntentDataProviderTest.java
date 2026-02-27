@@ -159,14 +159,14 @@ public class CustomTabIntentDataProviderTest {
      */
     @Test
     public void defaultOrientationIsSet() {
-        CustomTabsSession mSession =
+        CustomTabsSession session =
                 CustomTabsSession.createMockSessionForTesting(
                         new ComponentName(mContext, ChromeLauncherActivity.class));
 
         TrustedWebActivityIntentBuilder twaBuilder =
                 new TrustedWebActivityIntentBuilder(getLaunchingUrl())
                         .setScreenOrientation(ScreenOrientation.LANDSCAPE);
-        Intent intent = twaBuilder.build(mSession).getIntent();
+        Intent intent = twaBuilder.build(session).getIntent();
         CustomTabIntentDataProvider customTabIntentDataProvider =
                 new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
         assertEquals(
@@ -176,7 +176,7 @@ public class CustomTabIntentDataProviderTest {
         twaBuilder =
                 new TrustedWebActivityIntentBuilder(getLaunchingUrl())
                         .setScreenOrientation(ScreenOrientation.PORTRAIT);
-        intent = twaBuilder.build(mSession).getIntent();
+        intent = twaBuilder.build(session).getIntent();
         customTabIntentDataProvider =
                 new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
         assertEquals(
@@ -2099,11 +2099,11 @@ public class CustomTabIntentDataProviderTest {
     @Test
     @EnableFeatures(ChromeFeatureList.CCT_ADAPTIVE_BUTTON)
     public void testIsOptionalButtonSupported_trustedWebActivity() {
-        CustomTabsSession mSession =
+        CustomTabsSession session =
                 CustomTabsSession.createMockSessionForTesting(
                         new ComponentName(mContext, ChromeLauncherActivity.class));
         var twaBuilder = new TrustedWebActivityIntentBuilder(getLaunchingUrl());
-        Intent intent = twaBuilder.build(mSession).getIntent();
+        Intent intent = twaBuilder.build(session).getIntent();
         var dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
         assertTrue("IntentDataProvider should be for TWA", dataProvider.isTrustedWebActivity());
         assertFalse(

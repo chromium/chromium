@@ -306,9 +306,9 @@ public class NotificationContentDetectionManager {
 
         SuspiciousNotificationWarningDetailsForOrigin(
                 String warningNotificationId,
-                Map<String, WarningNotificationWrapperAttributes> mOriginalNotificationBackups) {
-            this.mWarningNotificationId = warningNotificationId;
-            this.mOriginalNotificationBackups = mOriginalNotificationBackups;
+                Map<String, WarningNotificationWrapperAttributes> originalNotificationBackups) {
+            mWarningNotificationId = warningNotificationId;
+            mOriginalNotificationBackups = originalNotificationBackups;
         }
 
         void updateBackupsAndShowWarning(

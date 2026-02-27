@@ -24,8 +24,8 @@ public class ChromeAccessibilitySettingsDelegate implements AccessibilitySetting
             implements IntegerPreferenceDelegate {
         private final BrowserContextHandle mBrowserContextHandle;
 
-        public TextSizeContrastAccessibilityDelegate(BrowserContextHandle mBrowserContextHandle) {
-            this.mBrowserContextHandle = mBrowserContextHandle;
+        public TextSizeContrastAccessibilityDelegate(BrowserContextHandle browserContextHandle) {
+            mBrowserContextHandle = browserContextHandle;
         }
 
         @Override
@@ -46,9 +46,9 @@ public class ChromeAccessibilitySettingsDelegate implements AccessibilitySetting
         private final String mPreferenceKey;
 
         public ChromeBooleanPreferenceDelegate(
-                BrowserContextHandle mBrowserContextHandle, String mPreferenceKey) {
-            this.mBrowserContextHandle = mBrowserContextHandle;
-            this.mPreferenceKey = mPreferenceKey;
+                BrowserContextHandle browserContextHandle, String preferenceKey) {
+            mBrowserContextHandle = browserContextHandle;
+            mPreferenceKey = preferenceKey;
         }
 
         @Override

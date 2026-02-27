@@ -44,8 +44,8 @@ public class NativeViewListRenderer extends RecyclerView.Adapter<NativeViewListR
     private @Nullable ListLayoutHelper mLayoutHelper;
     private @MonotonicNonNull RecyclerView mView;
 
-    public NativeViewListRenderer(Context mContext) {
-        this.mContext = mContext;
+    public NativeViewListRenderer(Context context) {
+        mContext = context;
     }
 
     /* RecyclerView.Adapter methods */

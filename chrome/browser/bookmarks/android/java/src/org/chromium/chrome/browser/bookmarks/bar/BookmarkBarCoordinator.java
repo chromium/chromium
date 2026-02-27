@@ -748,8 +748,8 @@ public class BookmarkBarCoordinator
         private final Runnable mPostAnimationRunnable;
         private boolean mIsDestroyed;
 
-        BookmarkButtonItemAnimator(Runnable mPostAnimationRunnable) {
-            this.mPostAnimationRunnable = mPostAnimationRunnable;
+        BookmarkButtonItemAnimator(Runnable postAnimationRunnable) {
+            mPostAnimationRunnable = postAnimationRunnable;
         }
 
         @Override

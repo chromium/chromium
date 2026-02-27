@@ -58,8 +58,8 @@ public class PasswordManagerUnavailableDialogTest {
     @Test
     public void showsAndHidesDialog() {
         mCoordinator.showDialog(mActivity, mModalDialogManager, mLaunchGmsCoreUpdate);
-        PropertyModel mDialogModel = mModalDialogManager.getShownDialogModel();
-        assertNotNull(mDialogModel);
+        PropertyModel dialogModel = mModalDialogManager.getShownDialogModel();
+        assertNotNull(dialogModel);
 
         mModalDialogManager.clickNegativeButton();
         assertNull(mModalDialogManager.getShownDialogModel());
@@ -68,8 +68,8 @@ public class PasswordManagerUnavailableDialogTest {
     @Test
     public void launchesGmsCoreUpdateIfUpdateDialog() {
         mCoordinator.showDialog(mActivity, mModalDialogManager, mLaunchGmsCoreUpdate);
-        PropertyModel mDialogModel = mModalDialogManager.getShownDialogModel();
-        assertNotNull(mDialogModel);
+        PropertyModel dialogModel = mModalDialogManager.getShownDialogModel();
+        assertNotNull(dialogModel);
 
         mModalDialogManager.clickPositiveButton();
         verify(mLaunchGmsCoreUpdate).onResult(any());
@@ -79,56 +79,56 @@ public class PasswordManagerUnavailableDialogTest {
     @Test
     public void setsCorrectContentsForUpdateDialog() {
         mCoordinator.showDialog(mActivity, mModalDialogManager, mLaunchGmsCoreUpdate);
-        PropertyModel mDialogModel = mModalDialogManager.getShownDialogModel();
-        assertNotNull(mDialogModel);
+        PropertyModel dialogModel = mModalDialogManager.getShownDialogModel();
+        assertNotNull(dialogModel);
 
         assertEquals(
                 mActivity.getResources().getString(R.string.access_loss_update_gms_title),
-                mDialogModel.get(ModalDialogProperties.TITLE));
+                dialogModel.get(ModalDialogProperties.TITLE));
         assertEquals(
                 mActivity.getResources().getString(R.string.pwm_disabled_update_dialog_description),
-                mDialogModel.get(ModalDialogProperties.MESSAGE_PARAGRAPHS).get(0));
-        assertEquals(1, mDialogModel.get(ModalDialogProperties.MESSAGE_PARAGRAPHS).size());
+                dialogModel.get(ModalDialogProperties.MESSAGE_PARAGRAPHS).get(0));
+        assertEquals(1, dialogModel.get(ModalDialogProperties.MESSAGE_PARAGRAPHS).size());
         assertEquals(
                 mActivity
                         .getResources()
                         .getString(R.string.pwd_access_loss_warning_update_gms_core_button_text),
-                mDialogModel.get(ModalDialogProperties.POSITIVE_BUTTON_TEXT));
+                dialogModel.get(ModalDialogProperties.POSITIVE_BUTTON_TEXT));
         assertEquals(
                 mActivity.getResources().getString(R.string.pwm_disabled_update_dialog_cancel),
-                mDialogModel.get(ModalDialogProperties.NEGATIVE_BUTTON_TEXT));
+                dialogModel.get(ModalDialogProperties.NEGATIVE_BUTTON_TEXT));
         assertEquals(
                 ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE,
-                mDialogModel.get(ModalDialogProperties.BUTTON_STYLES));
+                dialogModel.get(ModalDialogProperties.BUTTON_STYLES));
     }
 
     @Test
     public void setsCorrectContentsForNonUpdateDialog() {
         mCoordinator.showDialog(mActivity, mModalDialogManager, null);
-        PropertyModel mDialogModel = mModalDialogManager.getShownDialogModel();
-        assertNotNull(mDialogModel);
+        PropertyModel dialogModel = mModalDialogManager.getShownDialogModel();
+        assertNotNull(dialogModel);
 
         assertEquals(
                 mActivity.getResources().getString(R.string.pwm_disabled_no_gms_dialog_title),
-                mDialogModel.get(ModalDialogProperties.TITLE));
+                dialogModel.get(ModalDialogProperties.TITLE));
         assertEquals(
                 mActivity
                         .getResources()
                         .getString(R.string.pwm_disabled_no_gms_dialog_description_paragraph1),
-                mDialogModel.get(ModalDialogProperties.MESSAGE_PARAGRAPHS).get(0));
+                dialogModel.get(ModalDialogProperties.MESSAGE_PARAGRAPHS).get(0));
         assertEquals(
                 mActivity
                         .getResources()
                         .getString(R.string.pwm_disabled_no_gms_dialog_description_paragraph2),
-                mDialogModel.get(ModalDialogProperties.MESSAGE_PARAGRAPHS).get(1));
-        assertEquals(2, mDialogModel.get(ModalDialogProperties.MESSAGE_PARAGRAPHS).size());
+                dialogModel.get(ModalDialogProperties.MESSAGE_PARAGRAPHS).get(1));
+        assertEquals(2, dialogModel.get(ModalDialogProperties.MESSAGE_PARAGRAPHS).size());
         assertEquals(
                 mActivity.getResources().getString(R.string.pwm_disabled_no_gms_dialog_button_text),
-                mDialogModel.get(ModalDialogProperties.POSITIVE_BUTTON_TEXT));
-        assertNull(mDialogModel.get(ModalDialogProperties.NEGATIVE_BUTTON_TEXT));
+                dialogModel.get(ModalDialogProperties.POSITIVE_BUTTON_TEXT));
+        assertNull(dialogModel.get(ModalDialogProperties.NEGATIVE_BUTTON_TEXT));
         assertEquals(
                 ModalDialogProperties.ButtonStyles.PRIMARY_OUTLINE_NEGATIVE_OUTLINE,
-                mDialogModel.get(ModalDialogProperties.BUTTON_STYLES));
+                dialogModel.get(ModalDialogProperties.BUTTON_STYLES));
     }
 
     @Test
@@ -150,8 +150,8 @@ public class PasswordManagerUnavailableDialogTest {
                                 .OLD_GMS_NO_PASSWORDS_DIALOG_DISMISSAL_REASON_HISTOGRAM,
                         true);
         mCoordinator.showDialog(mActivity, mModalDialogManager, mLaunchGmsCoreUpdate);
-        PropertyModel mDialogModel = mModalDialogManager.getShownDialogModel();
-        assertNotNull(mDialogModel);
+        PropertyModel dialogModel = mModalDialogManager.getShownDialogModel();
+        assertNotNull(dialogModel);
 
         mModalDialogManager.clickPositiveButton();
         histogramWatcher.assertExpected();
@@ -165,8 +165,8 @@ public class PasswordManagerUnavailableDialogTest {
                                 .OLD_GMS_NO_PASSWORDS_DIALOG_DISMISSAL_REASON_HISTOGRAM,
                         false);
         mCoordinator.showDialog(mActivity, mModalDialogManager, mLaunchGmsCoreUpdate);
-        PropertyModel mDialogModel = mModalDialogManager.getShownDialogModel();
-        assertNotNull(mDialogModel);
+        PropertyModel dialogModel = mModalDialogManager.getShownDialogModel();
+        assertNotNull(dialogModel);
 
         mModalDialogManager.clickNegativeButton();
         histogramWatcher.assertExpected();
@@ -180,11 +180,11 @@ public class PasswordManagerUnavailableDialogTest {
                                 .OLD_GMS_NO_PASSWORDS_DIALOG_DISMISSAL_REASON_HISTOGRAM,
                         false);
         mCoordinator.showDialog(mActivity, mModalDialogManager, mLaunchGmsCoreUpdate);
-        PropertyModel mDialogModel = mModalDialogManager.getShownDialogModel();
-        assertNotNull(mDialogModel);
+        PropertyModel dialogModel = mModalDialogManager.getShownDialogModel();
+        assertNotNull(dialogModel);
 
         mModalDialogManager.dismissDialog(
-                mDialogModel, DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE);
+                dialogModel, DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE);
         histogramWatcher.assertExpected();
     }
 }

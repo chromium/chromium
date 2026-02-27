@@ -198,31 +198,30 @@ class QrCodeShareMediator {
         int textBottomPadding =
                 mContext.getResources().getDimensionPixelSize(R.dimen.url_box_bottom_padding);
 
-        TextPaint mTextPaint = new TextPaint();
-        mTextPaint.setAntiAlias(true);
-        mTextPaint.setColor(android.graphics.Color.BLACK);
-        mTextPaint.setTextSize(fontSize);
+        TextPaint textPaint = new TextPaint();
+        textPaint.setAntiAlias(true);
+        textPaint.setColor(android.graphics.Color.BLACK);
+        textPaint.setTextSize(fontSize);
 
         // Text is as wide as the QR code.
-        FixedLineCountLayout mTextLayout =
+        FixedLineCountLayout textLayout =
                 new FixedLineCountLayout(
-                        url, mTextPaint, qrCodeSize, Alignment.ALIGN_CENTER, 1.0f, 0.0f, true, 2);
+                        url, textPaint, qrCodeSize, Alignment.ALIGN_CENTER, 1.0f, 0.0f, true, 2);
 
         // New bitmap should be long enough to fit the url with its margins, the QR code bitmap and
         // equal padding from the bottom.
-        int height =
-                (textTopPadding + mTextLayout.getHeight() + textBottomPadding) * 2 + qrCodeSize;
+        int height = (textTopPadding + textLayout.getHeight() + textBottomPadding) * 2 + qrCodeSize;
         int width = qrCodeSize + 2 * sidePadding;
         Bitmap newBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(newBitmap);
         canvas.drawColor(android.graphics.Color.WHITE);
         canvas.translate(sidePadding, textTopPadding);
-        mTextLayout.draw(canvas);
+        textLayout.draw(canvas);
         canvas.drawBitmap(
                 Bitmap.createScaledBitmap(bitmap, qrCodeSize, qrCodeSize, false),
                 0,
-                mTextLayout.getHeight() + textBottomPadding,
-                mTextPaint);
+                textLayout.getHeight() + textBottomPadding,
+                textPaint);
         return newBitmap;
     }
 

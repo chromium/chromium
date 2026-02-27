@@ -431,7 +431,7 @@ public class AccountSelectionViewTest extends AccountSelectionJUnitTestBase {
 
     @Test
     public void testErrorText() {
-        final TokenError[] mErrors =
+        final TokenError[] errors =
                 new TokenError[] {
                     new TokenError(
                             AccountSelectionViewBinder.GENERIC,
@@ -531,7 +531,7 @@ public class AccountSelectionViewTest extends AccountSelectionJUnitTestBase {
                             /* clickableText= */ false)
                 };
 
-        for (TokenError error : mErrors) {
+        for (TokenError error : errors) {
             ErrorProperties.Properties properties = new ErrorProperties.Properties();
             properties.mIdpForDisplay = TEST_IDP_ETLD_PLUS_ONE;
             properties.mRpForDisplay = TEST_RP_ETLD_PLUS_ONE;

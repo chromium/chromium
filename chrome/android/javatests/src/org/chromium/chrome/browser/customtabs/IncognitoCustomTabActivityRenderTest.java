@@ -87,9 +87,9 @@ public class IncognitoCustomTabActivityRenderTest {
                         ApplicationProvider.getApplicationContext(), url);
     }
 
-    private void startActivity(String renderTestId, int mScreenOrientation) throws IOException {
+    private void startActivity(String renderTestId, int screenOrientation) throws IOException {
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(mIntent);
-        mCustomTabActivityTestRule.getActivity().setRequestedOrientation(mScreenOrientation);
+        mCustomTabActivityTestRule.getActivity().setRequestedOrientation(screenOrientation);
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         View toolbarView = mCustomTabActivityTestRule.getActivity().findViewById(R.id.toolbar);
         mRenderTestRule.render(toolbarView, renderTestId);

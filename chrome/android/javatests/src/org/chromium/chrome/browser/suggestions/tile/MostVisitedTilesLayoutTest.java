@@ -273,9 +273,9 @@ public class MostVisitedTilesLayoutTest {
     private List<SiteSuggestion> makeAndSetUpFakeSuggestions(int count) {
         List<SiteSuggestion> siteSuggestions = makeFakeSuggestions(count);
 
-        FakeMostVisitedSites mMostVisitedSites = new FakeMostVisitedSites();
-        mMostVisitedSites.setTileSuggestions(siteSuggestions);
-        mSuggestionsDeps.getFactory().mostVisitedSites = mMostVisitedSites;
+        FakeMostVisitedSites mostVisitedSites = new FakeMostVisitedSites();
+        mostVisitedSites.setTileSuggestions(siteSuggestions);
+        mSuggestionsDeps.getFactory().mostVisitedSites = mostVisitedSites;
 
         return siteSuggestions;
     }

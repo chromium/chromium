@@ -33,22 +33,22 @@ public class SadTabView extends ScrollView {
         int width = MeasureSpec.getSize(widthMeasureSpec);
         int height = MeasureSpec.getSize(heightMeasureSpec);
 
-        final ButtonCompat mButton = (ButtonCompat) findViewById(R.id.sad_tab_button);
+        final ButtonCompat button = (ButtonCompat) findViewById(R.id.sad_tab_button);
 
-        final LinearLayout.LayoutParams mButtonParams =
-                (LinearLayout.LayoutParams) mButton.getLayoutParams();
+        final LinearLayout.LayoutParams buttonParams =
+                (LinearLayout.LayoutParams) button.getLayoutParams();
 
-        if ((width > height || width > mThresholdPx) && mButton.getWidth() <= width) {
+        if ((width > height || width > mThresholdPx) && button.getWidth() <= width) {
             // Orientation is landscape
-            mButtonParams.width = LinearLayout.LayoutParams.WRAP_CONTENT;
-            mButtonParams.gravity = Gravity.END;
+            buttonParams.width = LinearLayout.LayoutParams.WRAP_CONTENT;
+            buttonParams.gravity = Gravity.END;
         } else {
             // Orientation is portrait
-            mButtonParams.width = LinearLayout.LayoutParams.MATCH_PARENT;
-            mButtonParams.gravity = Gravity.FILL_HORIZONTAL;
+            buttonParams.width = LinearLayout.LayoutParams.MATCH_PARENT;
+            buttonParams.gravity = Gravity.FILL_HORIZONTAL;
         }
 
-        mButton.setLayoutParams(mButtonParams);
+        button.setLayoutParams(buttonParams);
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 }

@@ -45,10 +45,10 @@ public class PaymentRequestMetricsTest {
 
     @Before
     public void setUp() throws TimeoutException {
-        AutofillTestHelper mHelper = new AutofillTestHelper();
+        AutofillTestHelper helper = new AutofillTestHelper();
         // The user has a shipping address and a credit card associated with that address on disk.
-        String mBillingAddressId =
-                mHelper.setProfile(
+        String billingAddressId =
+                helper.setProfile(
                         AutofillProfile.builder()
                                 .setFullName("Jon Doe")
                                 .setCompanyName("Google")
@@ -60,7 +60,7 @@ public class PaymentRequestMetricsTest {
                                 .setPhoneNumber("650-253-0000")
                                 .setLanguageCode("en-US")
                                 .build());
-        mHelper.setCreditCard(
+        helper.setCreditCard(
                 new CreditCard(
                         "",
                         "https://example.test",
@@ -72,7 +72,7 @@ public class PaymentRequestMetricsTest {
                         "2050",
                         "visa",
                         R.drawable.visa_card,
-                        mBillingAddressId,
+                        billingAddressId,
                         /* serverId= */ ""));
     }
 

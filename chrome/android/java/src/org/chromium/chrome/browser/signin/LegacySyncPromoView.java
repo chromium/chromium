@@ -185,19 +185,19 @@ public class LegacySyncPromoView extends FrameLayout
         private int mEmptyStateDescriptionText;
         private int mEmptyStateImageResource;
 
-        public ViewState(int mDescriptionText, ButtonState mPositiveButtonState) {
-            this.mDescriptionText = mDescriptionText;
-            this.mPositiveButtonState = mPositiveButtonState;
+        public ViewState(int descriptionText, ButtonState positiveButtonState) {
+            mDescriptionText = descriptionText;
+            mPositiveButtonState = positiveButtonState;
         }
 
         // Initialize empty State view resources.
         public ViewState(
-                int mEmptyStateTitleText,
-                int mEmptyStateDescriptionText,
-                int mEmptyStateImageResource) {
-            this.mEmptyStateTitleText = mEmptyStateTitleText;
-            this.mEmptyStateDescriptionText = mEmptyStateDescriptionText;
-            this.mEmptyStateImageResource = mEmptyStateImageResource;
+                int emptyStateTitleText,
+                int emptyStateDescriptionText,
+                int emptyStateImageResource) {
+            mEmptyStateTitleText = emptyStateTitleText;
+            mEmptyStateDescriptionText = emptyStateDescriptionText;
+            mEmptyStateImageResource = emptyStateImageResource;
         }
 
         // Apply empty state view resources.

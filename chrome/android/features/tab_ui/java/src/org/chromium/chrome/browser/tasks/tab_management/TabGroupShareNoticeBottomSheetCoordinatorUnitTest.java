@@ -44,12 +44,12 @@ public class TabGroupShareNoticeBottomSheetCoordinatorUnitTest {
     @Before
     public void setUp() {
         TrackerFactory.setTrackerForTests(mTracker);
-        Context mContext =
+        Context context =
                 new ContextThemeWrapper(
                         ContextUtils.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
         mCoordinator =
                 new TabGroupShareNoticeBottomSheetCoordinator(
-                        mBottomSheetController, mContext, mProfile);
+                        mBottomSheetController, context, mProfile);
         when(mTracker.shouldTriggerHelpUi(FeatureConstants.TAB_GROUP_SHARE_NOTICE_FEATURE))
                 .thenReturn(true);
         when(mBottomSheetController.requestShowContent(any(), eq(true))).thenReturn(true);

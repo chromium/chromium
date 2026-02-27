@@ -7,6 +7,8 @@ package org.chromium.chrome.modules.readaloud;
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
+import com.google.common.collect.ImmutableList;
+
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
@@ -14,9 +16,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 import java.util.Locale;
-
-import com.google.common.collect.ImmutableList;
-
 
 /** Encapsulates information about the playback being requested. */
 @NullMarked
@@ -308,28 +307,34 @@ public class PlaybackArgs {
     }
 
     public PlaybackArgs(
-            String mSource,
+            String source,
             boolean isUrl,
             @Nullable String language,
             List<PlaybackVoice> voices,
             long dateModifiedMsSinceEpoch) {
-        this(mSource, isUrl, language, voices, dateModifiedMsSinceEpoch, ImmutableList.of(PlaybackMode.UNSPECIFIED));
+        this(
+                source,
+                isUrl,
+                language,
+                voices,
+                dateModifiedMsSinceEpoch,
+                ImmutableList.of(PlaybackMode.UNSPECIFIED));
     }
 
     public PlaybackArgs(
-            String mSource,
+            String source,
             boolean isUrl,
             @Nullable String language,
             List<PlaybackVoice> voices,
             long dateModifiedMsSinceEpoch,
             List<PlaybackMode> playbackModes) {
-        this.mUrl = mSource;
-        this.mSource = mSource;
-        this.mIsSourceUrl = isUrl;
-        this.mLanguage = language;
-        this.mVoices = voices;
-        this.mDateModifiedMsSinceEpoch = dateModifiedMsSinceEpoch;
-        this.mPlaybackModes = playbackModes;
+        mUrl = source;
+        mSource = source;
+        mIsSourceUrl = isUrl;
+        mLanguage = language;
+        mVoices = voices;
+        mDateModifiedMsSinceEpoch = dateModifiedMsSinceEpoch;
+        mPlaybackModes = playbackModes;
     }
 
     /** Returns the URL of the playback page. */

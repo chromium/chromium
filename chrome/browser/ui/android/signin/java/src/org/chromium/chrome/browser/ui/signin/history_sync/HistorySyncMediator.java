@@ -49,7 +49,7 @@ class HistorySyncMediator implements ProfileDataCache.Observer, SigninManager.Si
             @SigninAccessPoint int accessPoint,
             boolean showEmailInFooter,
             boolean shouldSignOutOnDecline,
-            boolean mUseLandscapeLayout) {
+            boolean useLandscapeLayout) {
         mAccessPoint = accessPoint;
         mDelegate = delegate;
         mShouldSignOutOnDecline = shouldSignOutOnDecline;
@@ -89,7 +89,7 @@ class HistorySyncMediator implements ProfileDataCache.Observer, SigninManager.Si
                         mConfig.subtitle,
                         declineButtonText,
                         footerString,
-                        mUseLandscapeLayout);
+                        useLandscapeLayout);
     }
 
     /** Implements {@link ProfileDataCache.Observer}. */

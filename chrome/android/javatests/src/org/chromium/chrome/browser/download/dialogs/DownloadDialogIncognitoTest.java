@@ -61,11 +61,11 @@ public class DownloadDialogIncognitoTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    AppModalPresenter mAppModalPresenter =
+                    AppModalPresenter appModalPresenter =
                             new AppModalPresenter(mActivityTestRule.getActivity());
                     mModalDialogManager =
                             new ModalDialogManager(
-                                    mAppModalPresenter, ModalDialogManager.ModalDialogType.APP);
+                                    appModalPresenter, ModalDialogManager.ModalDialogType.APP);
                 });
         ModalDialogView.disableButtonTapProtectionForTesting();
     }
@@ -140,12 +140,12 @@ public class DownloadDialogIncognitoTest {
     }
 
     private void showDuplicateDialog(OtrProfileId otrProfileId) {
-        Context mContext = mActivityTestRule.getActivity().getApplicationContext();
+        Context context = mActivityTestRule.getActivity().getApplicationContext();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     new DuplicateDownloadDialog()
                             .show(
-                                    mContext,
+                                    context,
                                     mModalDialogManager,
                                     DOWNLOAD_PATH,
                                     PAGE_URL,
@@ -159,10 +159,10 @@ public class DownloadDialogIncognitoTest {
     private void showInsecureDownloadDialog() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    Context mContext = mActivityTestRule.getActivity().getApplicationContext();
+                    Context context = mActivityTestRule.getActivity().getApplicationContext();
                     new InsecureDownloadDialog()
                             .show(
-                                    mContext,
+                                    context,
                                     mModalDialogManager,
                                     FILE_NAME,
                                     TOTAL_BYTES,
@@ -173,10 +173,10 @@ public class DownloadDialogIncognitoTest {
     private void showDangerousContentDialog() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    Context mContext = mActivityTestRule.getActivity().getApplicationContext();
+                    Context context = mActivityTestRule.getActivity().getApplicationContext();
                     new DangerousDownloadDialog()
                             .show(
-                                    mContext,
+                                    context,
                                     mModalDialogManager,
                                     FILE_NAME,
                                     TOTAL_BYTES,

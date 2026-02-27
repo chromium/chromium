@@ -82,9 +82,9 @@ public class LinkToTextIphController {
     }
 
     private void showMessageIph(Tab tab) {
-        MessageDispatcher mMessageDispatcher =
+        MessageDispatcher messageDispatcher =
                 MessageDispatcherProvider.from(tab.getWindowAndroid());
-        if (mMessageDispatcher == null) return;
+        if (messageDispatcher == null) return;
         PropertyModel model =
                 new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
                         .with(
@@ -109,7 +109,7 @@ public class LinkToTextIphController {
                                 MessageBannerProperties.ON_PRIMARY_ACTION,
                                 this::onMessageButtonClicked)
                         .build();
-        mMessageDispatcher.enqueueMessage(
+        messageDispatcher.enqueueMessage(
                 model, assumeNonNull(tab.getWebContents()), MessageScopeType.NAVIGATION, false);
     }
 

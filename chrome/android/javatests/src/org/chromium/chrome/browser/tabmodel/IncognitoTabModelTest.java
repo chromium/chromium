@@ -201,14 +201,14 @@ public class IncognitoTabModelTest {
                     assertThat(mRegularTabModel.getCount()).isEqualTo(1);
                     assertThat(mIncognitoTabModel.getCount()).isEqualTo(0);
 
-                    Tab mTab = mRegularTabModel.getTabAt(0);
-                    assertFalse(mTab.isHidden());
+                    Tab tab = mRegularTabModel.getTabAt(0);
+                    assertFalse(tab.isHidden());
                     mActivityTestRule
                             .getActivity()
                             .getTabModelSelectorSupplier()
                             .get()
                             .selectModel(true);
-                    assertTrue(mTab.isHidden());
+                    assertTrue(tab.isHidden());
                 });
     }
 
