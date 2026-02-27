@@ -335,7 +335,11 @@ class OnDeviceInternalsToolsElement extends CrLitElement {
     this.contextText_ = '';
   }
 
-  protected startNewSession_() {
+  protected onStartNewSessionClick_() {
+    this.startNewSession_();
+  }
+
+  private startNewSession_() {
     if (this.model_ === null) {
       return;
     }
@@ -525,23 +529,24 @@ class OnDeviceInternalsToolsElement extends CrLitElement {
     this.contextExpanded_ = e.detail.value;
   }
 
-  protected onContextTextChanged_(e: CustomEvent<{value: string}>) {
+  protected onContextTextValueChanged_(e: CustomEvent<{value: string}>) {
     this.contextText_ = e.detail.value;
   }
 
-  protected onTextChanged_(e: CustomEvent<{value: string}>) {
+  protected onTextValueChanged_(e: CustomEvent<{value: string}>) {
     this.text_ = e.detail.value;
   }
 
-  protected onTopKChanged_(e: CustomEvent<{value: number}>) {
+  protected onTopKValueChanged_(e: CustomEvent<{value: number}>) {
     this.topK_ = e.detail.value;
   }
 
-  protected onTemperatureChanged_(e: CustomEvent<{value: number}>) {
+  protected onTemperatureValueChanged_(e: CustomEvent<{value: number}>) {
     this.temperature_ = e.detail.value;
   }
 
-  protected onUsePlatformModelChanged_(e: CustomEvent<{value: boolean}>) {
+  protected onUsePlatformModelCheckedChanged_(
+      e: CustomEvent<{value: boolean}>) {
     this.usePlatformModel_ = e.detail.value;
   }
 }

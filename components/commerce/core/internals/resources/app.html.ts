@@ -16,7 +16,7 @@ export function getHtml(this: CommerceInternalsAppElement) {
   <h2>Utilities</h2>
   <div class="utils">
     <a href="view_product.html">Product URL Viewer</a>
-    <button @click="${this.resetPriceTrackingEmailPreference_}">
+    <button @click="${this.onResetPriceTrackingEmailPreferenceClick_}">
       Reset price tracking email preference
     </button>
   </div>`;

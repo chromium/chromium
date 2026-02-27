@@ -9,7 +9,9 @@ import type {EligibilityListElement} from './eligibility_list.js';
 export function getHtml(this: EligibilityListElement) {
   // clang-format off
   return html`
-  <button @click="${this.refreshDetails_}">Refresh eligibility details</button>
+  <button @click="${this.onRefreshDetailsClick_}">
+    Refresh eligibility details
+  </button>
   <ul>
     <li><b>Country</b>: ${this.country_}</li>
     <li><b>Locale</b>: ${this.locale_}</li>

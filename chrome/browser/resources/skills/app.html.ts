@@ -15,7 +15,7 @@ export function getHtml(this: SkillsAppElement) {
 <cr-toolbar id="toolbar" page-name="$i18n{skillsTitle}"
     clear-label="$i18n{delete}" ?autofocus="${true}"
     search-prompt="$i18n{searchBarPlaceholderText}"
-    @cr-toolbar-menu-click="${this.onMenuButtonClick_}"
+    @cr-toolbar-menu-click="${this.onCrToolbarMenuClick_}"
     menu-label="$i18n{mainMenu}" @search-changed="${this.onSearchChanged_}"
     role="banner" .narrow="${this.narrow_}"
     @narrow-changed="${this.onNarrowChanged_}" narrow-threshold="980"

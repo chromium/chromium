@@ -187,11 +187,15 @@ export class PrintPreviewAdvancedSettingsItemElement extends
     return false;
   }
 
+  protected onSelectChange_(e: Event) {
+    this.onUserInput_(e);
+  }
+
   protected onUserInput_(e: Event) {
     this.currentValue_ = (e.target! as CrInputElement).value;
   }
 
-  protected onCheckboxInput_(e: Event) {
+  protected onCheckboxChange_(e: Event) {
     this.currentValue_ =
         (e.target! as CrCheckboxElement).checked ? 'true' : 'false';
   }

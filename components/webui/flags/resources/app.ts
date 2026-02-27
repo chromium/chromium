@@ -546,7 +546,7 @@ export class FlagsAppElement extends CrLitElement {
         this.data.showDevChannelPromotion;
   }
 
-  protected onSelectedTabIndexChanged_(e: CustomEvent<{value: number}>) {
+  protected onTabsSelectedChanged_(e: CustomEvent<{value: number}>) {
     this.selectedTabIndex_ = e.detail.value;
   }
 

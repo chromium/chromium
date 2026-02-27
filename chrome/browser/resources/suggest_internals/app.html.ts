@@ -10,9 +10,9 @@ export function getHtml(this: AppElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
 <cr-toolbar page-name="Suggest Debug Tool" search-prompt="Filter requests"
-    clear-label="Clear filter" @search-changed="${this.onFilterChanged_}"
+    clear-label="Clear filter" @search-changed="${this.onSearchChanged_}"
     always-show-logo show-search show-menu
-    @cr-toolbar-menu-click="${this.showOutputControls_}">
+    @cr-toolbar-menu-click="${this.onCrToolbarMenuClick_}">
 </cr-toolbar>
 <cr-drawer id="drawer" heading="Output controls">
   <div slot="body">
@@ -27,7 +27,7 @@ export function getHtml(this: AppElement) {
       <cr-icon icon="suggest:file-upload" slot="suffix-icon"></cr-icon>
     </cr-button>
     <input id="fileInput" type="file" accept=".json" style="display: none;"
-      @change="${this.onImportFile_}">
+      @change="${this.onImportFileChange_}">
     <cr-button title="Clear the result list" @click="${this.onClearClick_}">
       Clear
       <cr-icon icon="cr:delete" slot="suffix-icon"></cr-icon>
@@ -39,7 +39,7 @@ export function getHtml(this: AppElement) {
     <suggest-request .request="${this.hardcodedRequest_}"
         @show-toast="${this.onShowToast_}"
         @open-hardcode-response-dialog="${this.onOpenHardcodeResponseDialog_}"
-        @chip-click="${this.populateSearchInput_}">
+        @chip-click="${this.onChipClick_}">
     </suggest-request>
   ` : ''}
   ${this.requests_.filter(
@@ -47,7 +47,7 @@ export function getHtml(this: AppElement) {
     <suggest-request .request="${request}"
         @show-toast="${this.onShowToast_}"
         @open-hardcode-response-dialog="${this.onOpenHardcodeResponseDialog_}"
-        @chip-click="${this.populateSearchInput_}">
+        @chip-click="${this.onChipClick_}">
     </suggest-request>
   `)}
 </div>
@@ -57,22 +57,22 @@ export function getHtml(this: AppElement) {
   </div>
   <div slot="body">
     <cr-input type="text" label="Delay" value="${this.responseDelay_}"
-        @value-changed="${this.onResponseDelayChanged_}"
+        @value-changed="${this.onResponseDelayValueChanged_}"
         placeholder="optional delay in milliseconds"
         pattern="[0-9]+"
         error-message="must be a positive integer"
         auto-validate>
     </cr-input>
     <cr-textarea label="Response" value="${this.responseText_}"
-        @value-changed="${this.onResponseTextChanged_}" autogrow>
+        @value-changed="${this.onResponseTextValueChanged_}" autogrow>
     </cr-textarea>
   </div>
   <div slot="button-container">
-    <cr-button class="cancel-button" @click="${this.onCloseDialogs_}">
+    <cr-button class="cancel-button" @click="${this.onCloseDialogsClick_}">
       Cancel
     </cr-button>
     <cr-button class="action-button"
-        @click="${this.onConfirmHardcodeResponseDialog_}">
+        @click="${this.onConfirmHardcodeResponseDialogClick_}">
       Confirm
     </cr-button>
   </div>

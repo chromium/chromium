@@ -201,7 +201,7 @@ export class TraceRecorderElement extends CrLitElement {
     }
   }
 
-  protected async startTracing_(): Promise<void> {
+  protected async onStartTracingClick_(): Promise<void> {
     const bigBufferConfig = this.serializeTraceConfigToBigBuffer_();
     if (!bigBufferConfig) {
       return;
@@ -224,7 +224,7 @@ export class TraceRecorderElement extends CrLitElement {
     }
   }
 
-  protected async stopTracing_(): Promise<void> {
+  protected async onStopTracingClick_(): Promise<void> {
     if (this.bufferPollIntervalId_ !== null) {
       window.clearInterval(this.bufferPollIntervalId_);
       this.bufferPollIntervalId_ = null;
@@ -240,12 +240,12 @@ export class TraceRecorderElement extends CrLitElement {
     }
   }
 
-  protected async cloneTraceSession_(): Promise<void> {
+  protected async onCloneTraceSessionClick_(): Promise<void> {
     const {trace, uuid} = await this.browserProxy_.handler.cloneTraceSession();
     this.downloadData_(trace, uuid);
   }
 
-  protected privacyFilterDidChange_(event: CustomEvent<boolean>) {
+  protected onPrivacyFilterChange_(event: CustomEvent<boolean>) {
     if (this.privacyFilterEnabled_ === event.detail) {
       return;
     }
@@ -300,13 +300,13 @@ export class TraceRecorderElement extends CrLitElement {
     return this.disabledTags.has(tagName);
   }
 
-  protected onBufferSizeChanged_(e: Event): void {
+  protected onBufferSizeCrSliderValueChanged_(e: Event): void {
     const slider = e.target as CrSliderElement;
     this.bufferSizeMb = Math.floor(slider.value);
     this.updateBufferConfigField_('sizeKb', this.bufferSizeMb * 1024);
   }
 
-  protected onBufferFillPolicyChanged_(e: Event) {
+  protected onBufferFillPolicyChange_(e: Event) {
     const selectElement = e.target as HTMLSelectElement;
     const policyValue =
         Number(selectElement.value) as TraceConfig_BufferConfig_FillPolicy;
@@ -397,12 +397,12 @@ export class TraceRecorderElement extends CrLitElement {
   }
   // </if>
 
-  protected onTagsChangeTrue_(event: Event) {
+  protected onTagsTrueChange_(event: Event) {
     const tagName = (event.currentTarget as HTMLElement).dataset['tag']!;
     this.onTagsChange_(event, tagName, true);
   }
 
-  protected onTagsChangeFalse_(event: Event) {
+  protected onTagsFalseChange_(event: Event) {
     const tagName = (event.currentTarget as HTMLElement).dataset['tag']!;
     this.onTagsChange_(event, tagName, false);
   }

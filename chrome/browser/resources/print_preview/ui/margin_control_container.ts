@@ -426,7 +426,7 @@ export class PrintPreviewMarginControlContainerElement extends
   /**
    * @param e Fired when pointerdown occurs on a margin control.
    */
-  protected onPointerDown_(e: PointerEvent) {
+  protected onPointerdown_(e: PointerEvent) {
     const control = e.target as PrintPreviewMarginControlElement;
     if (!control.shouldDrag(e)) {
       return;

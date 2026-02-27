@@ -66,7 +66,7 @@ export function getHtml(this: AppElement) {
 
     <cr-tabs id="tabs" .tabNames="${this.tabNames_}"
         .selected="${this.selectedTabIndex_}"
-        @selected-changed="${this.onSelectedTabIndexChanged_}">
+        @selected-changed="${this.onTabsSelectedChanged_}">
     </cr-tabs>
 
     <div id="tabpanels">

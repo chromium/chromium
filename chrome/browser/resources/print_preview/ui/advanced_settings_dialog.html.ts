@@ -9,7 +9,7 @@ import type {AdvancedSettingsDialogElement} from './advanced_settings_dialog.js'
 export function getHtml(this: AdvancedSettingsDialogElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
-<cr-dialog id="dialog" @close="${this.onCloseOrCancel_}">
+<cr-dialog id="dialog" @close="${this.onClose_}">
   <div slot="title">
     ${this.i18n('advancedSettingsDialogTitle', this.destination?.displayName || '')}
   </div>

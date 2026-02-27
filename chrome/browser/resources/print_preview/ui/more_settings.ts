@@ -55,7 +55,7 @@ class PrintPreviewMoreSettingsElement extends CrLitElement {
   /**
    * Toggles the expand button within the element being listened to.
    */
-  protected toggleExpandButton_(e: Event) {
+  protected onExpandButtonClick_(e: Event) {
     // The expand button handles toggling itself.
     const expandButtonTag = 'CR-EXPAND-BUTTON';
     if ((e.target as HTMLElement).tagName === expandButtonTag) {
@@ -76,7 +76,7 @@ class PrintPreviewMoreSettingsElement extends CrLitElement {
             PrintSettingsUiBucket.LESS_SETTINGS_CLICKED);
   }
 
-  protected onSettingsExpandedByUserChanged_(e: CustomEvent<{value: boolean}>) {
+  protected onExpandedChanged_(e: CustomEvent<{value: boolean}>) {
     this.settingsExpandedByUser = e.detail.value;
   }
 }

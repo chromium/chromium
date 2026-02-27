@@ -157,7 +157,7 @@ export class PrintPreviewAdvancedSettingsDialogElement extends
     return !!this.searchQuery_ && !this.hasMatching_;
   }
 
-  protected onCloseOrCancel_() {
+  protected onClose_() {
     if (this.searchQuery_) {
       this.$.searchBox.setValue('');
     }

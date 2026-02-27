@@ -34,7 +34,7 @@ export function getHtml(this: PagesSettingsElement) {
   </div>
 </print-preview-settings-section>
 <cr-collapse ?opened="${this.shouldShowInput_()}"
-    @transitionend="${this.onCollapseChanged_}">
+    @transitionend="${this.onTransitionend_}">
   <print-preview-settings-section id="customInputWrapper">
     <div slot="title"></div>
     <div slot="controls">

@@ -52,7 +52,7 @@ export function getHtml(this: OnDeviceInternalsModelStatusElement) {
           <span>${this.readableLoadMax}</span>
         </div>
         <cr-button class="cr-button-gap"
-            @click="${this.uninstallDefaultModel_}">Uninstall</cr-button>
+            @click="${this.onUninstallDefaultModelClick_}">Uninstall</cr-button>
       </div>
     </div>
     <div class="cr-row">

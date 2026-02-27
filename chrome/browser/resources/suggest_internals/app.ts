@@ -119,11 +119,11 @@ class SuggestInternalsAppElement extends CrLitElement {
     this.hardcodedRequest_ = null;
   }
 
-  protected onCloseDialogs_() {
+  protected onCloseDialogsClick_() {
     this.$.hardcodeResponseDialog.close();
   }
 
-  protected async onConfirmHardcodeResponseDialog_() {
+  protected async onConfirmHardcodeResponseDialogClick_() {
     const responseDelayMs = Math.max(0, parseInt(this.responseDelay_) || 0);
     await this.pageHandler_
         .hardcodeResponse(
@@ -146,7 +146,7 @@ class SuggestInternalsAppElement extends CrLitElement {
     a.click();
   }
 
-  protected onFilterChanged_(e: CustomEvent<string>) {
+  protected onSearchChanged_(e: CustomEvent<string>) {
     this.filter_ = e.detail ?? '';
   }
 
@@ -154,7 +154,7 @@ class SuggestInternalsAppElement extends CrLitElement {
     this.$.fileInput.click();
   }
 
-  protected onImportFile_(event: Event) {
+  protected onImportFileChange_(event: Event) {
     const file = (event.target as HTMLInputElement).files?.[0];
     if (!file) {
       return;
@@ -234,7 +234,7 @@ class SuggestInternalsAppElement extends CrLitElement {
     return request.url.toLowerCase().includes(filter);
   }
 
-  protected showOutputControls_() {
+  protected onCrToolbarMenuClick_() {
     this.$.drawer.openDrawer();
   }
 
@@ -244,7 +244,7 @@ class SuggestInternalsAppElement extends CrLitElement {
         (_key, value) => typeof value === 'bigint' ? value.toString() : value);
   }
 
-  protected populateSearchInput_(e: CustomEvent<string>) {
+  protected onChipClick_(e: CustomEvent<string>) {
     // Populate the searchbar with the pgcl of the selected chip.
     const toolbar = this.shadowRoot.querySelector<HTMLElement>('cr-toolbar')!;
     const searchbar =
@@ -253,11 +253,11 @@ class SuggestInternalsAppElement extends CrLitElement {
     searchbar.setValue('pgcl=' + e.detail);
   }
 
-  protected onResponseDelayChanged_(e: CustomEvent<{value: string}>) {
+  protected onResponseDelayValueChanged_(e: CustomEvent<{value: string}>) {
     this.responseDelay_ = e.detail.value;
   }
 
-  protected onResponseTextChanged_(e: CustomEvent<{value: string}>) {
+  protected onResponseTextValueChanged_(e: CustomEvent<{value: string}>) {
     this.responseText_ = e.detail.value;
   }
 }

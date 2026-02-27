@@ -52,7 +52,7 @@ export class PrivateStateTokensListItemElement extends CrLitElement {
         {detail: {id: this.issuerOrigin, expanded: this.expanded}}));
   }
 
-  protected updateMetadataUrlParams() {
+  protected onUpdateMetadataUrlParamsClick_() {
     const metadataUrlParam = new URLSearchParams(window.location.search);
     metadataUrlParam.set('id', this.index.toString());
     window.history.pushState(

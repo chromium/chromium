@@ -44,8 +44,8 @@ export function getHtml(this: TraceReportListElement) {
       ${this.traces_.map((traceReport: ClientTraceReport) => html`
         <trace-report
             .trace="${traceReport}"
-            @show-toast="${this.showToastHandler_}"
-            @refresh-traces-request="${this.onRefreshTracesClick_}">
+            @show-toast="${this.onShowToast_}"
+            @refresh-traces-request="${this.onRefreshTracesRequest_}">
         </trace-report>
       `)}
     `}

@@ -108,7 +108,7 @@ export class SkillsAppElement extends CrLitElement {
 
   // Called when the page is narrow & the menu button appears.
   // Clicking it should open a cr-drawer.
-  protected onMenuButtonClick_() {
+  protected onCrToolbarMenuClick_() {
     this.$.drawer.openDrawer();
     this.isDrawerOpen_ = this.$.drawer.open;
   }

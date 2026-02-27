@@ -17,7 +17,7 @@ ${this.marginSides_.map(item => html`
       .measurementSystem="${this.measurementSystem}"
       .scaleTransform="${this.scaleTransform_}"
       .pageSize="${this.pageSize}"
-      @pointerdown="${this.onPointerDown_}"
+      @pointerdown="${this.onPointerdown_}"
       @text-change="${this.onTextChange_}" @text-blur="${this.onTextBlur_}"
       @text-focus="${this.onTextFocus_}"
       @transition-end="${this.onTransitionEnd_}">

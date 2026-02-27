@@ -25,7 +25,7 @@ export function getHtml(this: PrintPreviewDestinationListElement) {
           @focus="${this.onDestinationRowFocus_}">
         <print-preview-destination-list-item class="list-item"
             .searchQuery="${this.searchQuery}" .destination="${item}"
-            @click="${this.onDestinationSelected_}"
+            @click="${this.onDestinationClick_}"
             @keydown="${this.onKeydown_}" tabindex="-1"
             role="gridcell">
         </print-preview-destination-list-item>

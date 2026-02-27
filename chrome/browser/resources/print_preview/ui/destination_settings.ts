@@ -376,7 +376,7 @@ export class PrintPreviewDestinationSettingsElement extends
    * @param e Event containing the key of the recent destination that was
    *     selected, or "seeMore".
    */
-  protected onSelectedDestinationOptionChange_(e: CustomEvent<string>) {
+  protected onSelectedOptionChange_(e: CustomEvent<string>) {
     const value = e.detail;
     if (value === 'seeMore') {
       this.destinationStore_!.startLoadAllDestinations();

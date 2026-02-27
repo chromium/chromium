@@ -9,10 +9,10 @@ import type {MoreSettingsElement} from './more_settings.js';
 export function getHtml(this: MoreSettingsElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
-<div @click="${this.toggleExpandButton_}" actionable>
+<div @click="${this.onExpandButtonClick_}" actionable>
   <cr-expand-button aria-label="$i18n{moreOptionsLabel}"
       ?expanded="${this.settingsExpandedByUser}"
-      @expanded-changed="${this.onSettingsExpandedByUserChanged_}"
+      @expanded-changed="${this.onExpandedChanged_}"
       ?disabled="${this.disabled}">
     <div id="label">$i18n{moreOptionsLabel}</div>
   </cr-expand-button>

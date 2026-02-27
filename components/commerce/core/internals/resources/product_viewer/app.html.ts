@@ -16,7 +16,7 @@ export function getHtml(this: ProductViewerAppElement) {
   <div class="url-input">
     <span>Product URL: </span>
     <input id="productUrl" type="text">
-    <button @click="${this.loadProduct_}">Load product</button>
+    <button @click="${this.onLoadProductClick_}">Load product</button>
   </div>
   <div>
     ${this.product_ ? html`

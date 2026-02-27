@@ -102,7 +102,7 @@ export class RelatedWebsiteSetsAppElement extends CrLitElement {
     this.narrow_ = e.detail.value;
   }
 
-  protected onMenuButtonClick_() {
+  protected onCrToolbarMenuClick_() {
     this.showDrawerMenu_();
   }
 

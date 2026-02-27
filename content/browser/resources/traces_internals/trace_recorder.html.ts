@@ -26,17 +26,17 @@ export function getHtml(this: TraceRecorderElement) {
       </div>
       <div id="action-panel">
         <cr-button
-            @click="${this.startTracing_}"
+            @click="${this.onStartTracingClick_}"
             ?disabled="${!this.isStartTracingEnabled}">
           Start Tracing
         </cr-button>
         <cr-button
-            @click="${this.stopTracing_}"
+            @click="${this.onStopTracingClick_}"
             ?disabled="${!this.isRecording}">
           Stop Tracing
         </cr-button>
         <cr-button
-            @click="${this.cloneTraceSession_}"
+            @click="${this.onCloneTraceSessionClick_}"
             ?disabled="${!this.isRecording}">
           Snapshot Trace
         </cr-button>
@@ -52,7 +52,7 @@ export function getHtml(this: TraceRecorderElement) {
       <cr-toggle
           class="config-toggle"
           ?checked="${this.privacyFilterEnabled_}"
-          @change="${this.privacyFilterDidChange_}">
+          @change="${this.onPrivacyFilterChange_}">
       </cr-toggle>
     </div>
 
@@ -69,13 +69,13 @@ export function getHtml(this: TraceRecorderElement) {
                 min="4"
                 max="512"
                 .value="${this.bufferSizeMb}"
-                @cr-slider-value-changed="${this.onBufferSizeChanged_}">
+                @cr-slider-value-changed="${this.onBufferSizeCrSliderValueChanged_}">
             </cr-slider>
           </div>
           <div class="buffer-row-container">
             <h3>Recording mode</h3>
             <select class="md-select" value="${this.bufferFillPolicy}"
-                @change="${this.onBufferFillPolicyChanged_}">
+                @change="${this.onBufferFillPolicyChange_}">
               <option value="${this.fillPolicyEnum.RING_BUFFER}">
                 RING BUFFER
               </option>
@@ -105,11 +105,11 @@ export function getHtml(this: TraceRecorderElement) {
               <input
                 type="checkbox" data-tag="${tagName}"
                 .checked="${this.isTagEnabled(tagName)}"
-                @change="${this.onTagsChangeTrue_}"/>
+                @change="${this.onTagsTrueChange_}"/>
               <input
                 type="checkbox" data-tag="${tagName}"
                 .checked="${this.isTagDisabled(tagName)}"
-                @change="${this.onTagsChangeFalse_}"/>
+                @change="${this.onTagsFalseChange_}"/>
               <div>${tagName}</div>
             </div>
           `)}

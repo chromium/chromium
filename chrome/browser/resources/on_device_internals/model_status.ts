@@ -120,7 +120,7 @@ export class OnDeviceInternalsModelStatusElement extends CrLitElement {
     this.pageData_ = (await this.proxy_.handler.getPageData()).pageData;
   }
 
-  protected uninstallDefaultModel_() {
+  protected onUninstallDefaultModelClick_() {
     this.proxy_.handler.uninstallDefaultModel();
   }
 }

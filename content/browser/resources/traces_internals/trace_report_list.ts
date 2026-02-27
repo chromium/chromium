@@ -95,7 +95,7 @@ export class TraceReportListElement extends CrLitElement {
     return this.traces_.length > 0;
   }
 
-  protected showToastHandler_(e: CustomEvent<Notification>): void {
+  protected onShowToast_(e: CustomEvent<Notification>): void {
     assert(e.detail);
     this.notification_ = e.detail;
     this.$.toast.show();
@@ -135,8 +135,12 @@ export class TraceReportListElement extends CrLitElement {
     return this.notification_?.type || '';
   }
 
-  protected onRefreshTracesClick_(): Promise<void> {
-    return this.initializeList();
+  protected onRefreshTracesClick_(): void {
+    this.initializeList();
+  }
+
+  protected onRefreshTracesRequest_(): void {
+    this.onRefreshTracesClick_();
   }
 
   protected async onDeleteAllTracesClick_(): Promise<void> {

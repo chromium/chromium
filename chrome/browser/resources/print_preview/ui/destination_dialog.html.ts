@@ -9,7 +9,7 @@ import type {DestinationDialogElement} from './destination_dialog.js';
 export function getHtml(this: DestinationDialogElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
-<cr-dialog id="dialog" @close="${this.onCloseOrCancel_}">
+<cr-dialog id="dialog" @close="${this.onClose_}">
   <div slot="title" id="header">$i18n{destinationSearchTitle}</div>
   <div slot="body">
     <print-preview-search-box id="searchBox"

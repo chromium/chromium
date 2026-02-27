@@ -28,7 +28,7 @@ export class CommerceInternalsAppElement extends CrLitElement {
   private commerceInternalsApi_: CommerceInternalsApiProxy =
       CommerceInternalsApiProxy.getInstance();
 
-  protected resetPriceTrackingEmailPreference_() {
+  protected onResetPriceTrackingEmailPreferenceClick_() {
     this.commerceInternalsApi_.resetPriceTrackingEmailPref();
   }
 }

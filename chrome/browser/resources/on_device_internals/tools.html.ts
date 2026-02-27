@@ -29,7 +29,7 @@ export function getHtml(this: ToolsElement) {
 <div class="model-options">
   <cr-checkbox ?hidden="${!this.showPlatformModelCheckbox_}"
       ?checked="${this.usePlatformModel_}"
-      @checked-changed="${this.onUsePlatformModelChanged_}">
+      @checked-changed="${this.onUsePlatformModelCheckedChanged_}">
     Use ChromeOS Platform Model
   </cr-checkbox>
   <select id="performanceHintSelect" class="md-select"
@@ -50,28 +50,28 @@ export function getHtml(this: ToolsElement) {
 </cr-expand-button>
 <cr-collapse id="expandedContent" ?opened="${this.contextExpanded_}">
   <cr-textarea type="text" label="Context" .value="${this.contextText_}"
-      @value-changed="${this.onContextTextChanged_}">
+      @value-changed="${this.onContextTextValueChanged_}">
   </cr-textarea>
   <cr-button @click="${this.onAddContextClick_}">Add</cr-button>
-  <cr-button class="cr-button-gap" @click="${this.startNewSession_}">
+  <cr-button class="cr-button-gap" @click="${this.onStartNewSessionClick_}">
     New session
   </cr-button>
 </cr-collapse>
 <div class="output-options">
   <cr-input id="topKInput" type="number" min="1" max="128" label="Top K"
       error-message="Top K must be between 1 and 128" auto-validate
-      .value="${this.topK_}" @value-changed="${this.onTopKChanged_}">
+      .value="${this.topK_}" @value-changed="${this.onTopKValueChanged_}">
   </cr-input>
   <cr-input id="temperatureInput" type="number" min="0" max="2"
       label="Temperature" auto-validate
       error-message="Temperature must be between 0 and 2"
       .value="${this.temperature_}"
-      @value-changed="${this.onTemperatureChanged_}">
+      @value-changed="${this.onTemperatureValueChanged_}">
   </cr-input>
 </div>
 <cr-textarea type="text" id="textInput" label="Input"
     placeholder="Place control tokens {$SYSTEM, $MODEL, $USER, $END} on their own lines, in between lines of text."
-    .value="${this.text_}" @value-changed="${this.onTextChanged_}">
+    .value="${this.text_}" @value-changed="${this.onTextValueChanged_}">
 </cr-textarea>
 <div class="multimodal-buttons" >
   <div class="image-buttons" ?hidden="${!this.imagesEnabled_()}">

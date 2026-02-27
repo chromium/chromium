@@ -80,7 +80,7 @@ export class SiteFaviconElement extends CrLitElement {
     return getFaviconForPageURL(url, false);
   }
 
-  protected onLoadSuccess_() {
+  protected onLoad_() {
     this.showDownloadedIcon_ = true;
     this.faviconDownloadTimeout_ && clearTimeout(this.faviconDownloadTimeout_);
     this.faviconDownloadTimeout_ = null;

@@ -24,7 +24,7 @@ export function getHtml(this: TracingScenariosConfigElement) {
     <cr-toggle
         class="config-toggle"
         ?checked="${this.privacyFilterEnabled_}"
-        @change="${this.privacyFilterDidChange_}">
+        @change="${this.onPrivacyFilterChange_}">
     </cr-toggle>
   </div>
   <if expr="is_win">
@@ -58,7 +58,7 @@ export function getHtml(this: TracingScenariosConfigElement) {
     </a>
   </h3>
   <input type="file" class="action-button" name="Choose File"
-      @change="${this.onAddConfig_}">
+      @change="${this.onAddConfigChange_}">
   </input>
   ${this.isLoading_ ? html`<div class="spinner"></div>` : html`
   ${this.shouldShowFieldConfig_() ? html`
@@ -80,14 +80,14 @@ export function getHtml(this: TracingScenariosConfigElement) {
       <tracing-scenario
           .scenario="${item}"
           .enabled="${this.isScenarioEnabled_(item)}"
-          @value-changed="${this.valueDidChange_}"
+          @value-changed="${this.onValueChanged_}"
           data-key="${item.scenarioName}">
       </tracing-scenario>`)}
     </div>
   ` : ''}
   <div class="action-panel">
     <cr-button class="action-button"
-        @click="${this.resetAllClick_}">
+        @click="${this.onResetAllClick_}">
       Reset
     </cr-button>
     <cr-button class="cancel-button"

@@ -56,8 +56,7 @@ export class SkillsSidebarElement extends CrLitElement {
 
   protected accessor selectedPage: Page = Page.USER_SKILLS;
 
-  protected onMenuItemActivate_(e: CustomEvent<{item: HTMLAnchorElement}>):
-      void {
+  protected onIronActivate_(e: CustomEvent<{item: HTMLAnchorElement}>): void {
     const newUrl = new URL(e.detail.item.href);
     this.fire('route-click', {path: newUrl.pathname});
   }

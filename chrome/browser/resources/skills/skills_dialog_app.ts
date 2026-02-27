@@ -252,7 +252,7 @@ export class SkillsDialogAppElement extends CrLitElement {
     SkillsDialogBrowserProxy.getInstance().handler.showEmojiPicker();
   }
 
-  protected onEmojiKeyDown_(e: KeyboardEvent) {
+  protected onEmojiKeydown_(e: KeyboardEvent) {
     if (e.key === 'Tab') {
       return;
     }
@@ -266,7 +266,7 @@ export class SkillsDialogAppElement extends CrLitElement {
     e.preventDefault();
   }
 
-  protected onEmojiChanged_(e: Event) {
+  protected onEmojiInput_(e: Event) {
     const input = e.target as HTMLInputElement;
     const rawValue = input.value;
 
@@ -299,7 +299,7 @@ export class SkillsDialogAppElement extends CrLitElement {
     return !this.canRedoRefine_ || this.isRefineLoading_;
   }
 
-  protected onNameChanged_(e: CustomEvent<{value: string}>) {
+  protected onNameValueChanged_(e: CustomEvent<{value: string}>) {
     this.skill_ = {...this.skill_, name: e.detail.value};
   }
 
@@ -392,7 +392,7 @@ export class SkillsDialogAppElement extends CrLitElement {
   }
 
   /** Submits skill and closes the dialog. */
-  protected submitSkill_(): Promise<void> {
+  protected onSubmitSkillClick_() {
     this.hasSaveError_ = false;
     const isFirstParty = this.skill_.source === SkillSource.kFirstParty;
     const skill = {
@@ -408,15 +408,22 @@ export class SkillsDialogAppElement extends CrLitElement {
       }),
     };
 
-    return SkillsDialogBrowserProxy.getInstance()
-        .handler.submitSkill(skill)
-        .then(({success}) => {
+    SkillsDialogBrowserProxy.getInstance().handler.submitSkill(skill).then(
+        ({success}) => {
           this.hasSaveError_ = !success;
         });
   }
 
+  protected onCancelClick_(e: Event) {
+    this.cancel_(e);
+  }
+
+  protected onClose_(e: Event) {
+    this.cancel_(e);
+  }
+
   /** Click listener for the cancel button and closing dialog. */
-  protected cancel_(e: Event) {
+  private cancel_(e: Event) {
     e.preventDefault();
     SkillsDialogBrowserProxy.getInstance().handler.closeDialog();
   }

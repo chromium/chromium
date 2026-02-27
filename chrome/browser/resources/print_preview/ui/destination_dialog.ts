@@ -115,7 +115,7 @@ export class PrintPreviewDestinationDialogElement extends CrLitElement {
         this.destinationStore.isPrintDestinationSearchInProgress;
   }
 
-  protected onCloseOrCancel_() {
+  protected onClose_() {
     if (this.searchQuery_) {
       this.$.searchBox.setValue('');
     }

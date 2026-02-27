@@ -11,7 +11,7 @@ export function getHtml(this: RelatedWebsiteSetsAppElement) {
   return html`
 <related-website-sets-toolbar id="toolbar" .pageName="${this.pageTitle_}"
     ?narrow="${this.narrow_}" @narrow-changed="${this.onNarrowChanged_}"
-    @cr-toolbar-menu-click="${this.onMenuButtonClick_}"
+    @cr-toolbar-menu-click="${this.onCrToolbarMenuClick_}"
     @search-changed="${this.onSearchChanged_}">
 </related-website-sets-toolbar>
 <div id="container" role="group">

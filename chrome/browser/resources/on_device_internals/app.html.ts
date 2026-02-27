@@ -11,7 +11,7 @@ export function getHtml(this: OnDeviceInternalsAppElement) {
 <h1>On-Device Internals</h1>
 <cr-tabs id="tabs" .tabNames="${['Tools', 'Event Logs', 'Model Status']}"
     .selected="${this.selectedTabIndex_}"
-    @selected-changed="${this.onSelectedIndexChange_}">
+    @selected-changed="${this.onSelectedChanged_}">
 </cr-tabs>
 <cr-page-selector .selected="${this.selectedTabIndex_}">
   <on-device-internals-tools class="tab-contents"></on-device-internals-tools>

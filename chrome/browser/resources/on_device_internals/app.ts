@@ -42,7 +42,7 @@ export class OnDeviceInternalsAppElement extends CrLitElement {
 
   protected accessor selectedTabIndex_: number = 0;
 
-  protected onSelectedIndexChange_(e: CustomEvent<{value: number}>) {
+  protected onSelectedChanged_(e: CustomEvent<{value: number}>) {
     this.selectedTabIndex_ = e.detail.value;
   }
 }

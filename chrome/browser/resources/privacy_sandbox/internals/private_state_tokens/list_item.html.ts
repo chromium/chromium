@@ -17,7 +17,7 @@ ${this.redemptions.length === 0 ? html`
       <span></span>
     </div>
     <cr-icon-button iron-icon="cr:info-outline"
-        @click="${this.updateMetadataUrlParams}">
+        @click="${this.onUpdateMetadataUrlParamsClick_}">
     </cr-icon-button>
   </div>
 ` : html`
@@ -29,7 +29,7 @@ ${this.redemptions.length === 0 ? html`
     <span id='tokenText'>${this.getNumTokensString_()}</span>
     <span>${this.getRedemptionsString_()}</span>
     <cr-icon-button iron-icon="cr:info-outline"
-        @click="${this.updateMetadataUrlParams}">
+        @click="${this.onUpdateMetadataUrlParamsClick_}">
     </cr-icon-button>
   </cr-expand-button>
   <cr-collapse id="expandedContent" ?opened="${this.expanded}">

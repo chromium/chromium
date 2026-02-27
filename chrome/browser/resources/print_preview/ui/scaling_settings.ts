@@ -225,7 +225,7 @@ export class PrintPreviewScalingSettingsElement extends
         this.getSettingValue(this.settingKey_) === ScalingType.CUSTOM;
   }
 
-  protected onCollapseChanged_() {
+  protected onTransitionend_() {
     if (this.customSelected_ && this.userSelectedCustomScaling_) {
       this.shadowRoot.querySelector('print-preview-number-settings-section')!
           .getInput()

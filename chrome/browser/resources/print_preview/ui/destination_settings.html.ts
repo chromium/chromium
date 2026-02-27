@@ -17,7 +17,7 @@ export function getHtml(this: DestinationSettingsElement) {
     ?no-destinations="${this.noDestinations_}"
     ?pdf-printer-disabled="${this.pdfPrinterDisabled_}"
     .recentDestinationList="${this.displayedDestinations_}"
-    @selected-option-change="${this.onSelectedDestinationOptionChange_}">
+    @selected-option-change="${this.onSelectedOptionChange_}">
 </print-preview-destination-select>
 <cr-lazy-render-lit id="destinationDialog" .template="${() => html`
   <print-preview-destination-dialog

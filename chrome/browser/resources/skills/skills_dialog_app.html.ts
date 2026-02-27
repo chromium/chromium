@@ -11,7 +11,7 @@ export function getHtml(this: SkillsDialogAppElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
 ${this.shouldShowErrorPage_ ? html`<error-page></error-page>` : html`
-  <cr-dialog id="dialog" show-on-attach hide-backdrop @close="${this.cancel_}">
+  <cr-dialog id="dialog" show-on-attach hide-backdrop @close="${this.onClose_}">
     <div slot="title">
       <h1 id="header">${this.dialogTitle_}</h1>
       <p class="description">$i18n{skillDescription}</p>
@@ -34,16 +34,19 @@ ${this.shouldShowErrorPage_ ? html`<error-page></error-page>` : html`
             `
             : html`
             <cr-input class="stroked" id="nameText" type="text"
-                placeholder="$i18n{namePlaceholder}" .value="${this.skill_.name}"
-                @value-changed="${this.onNameChanged_}" aria-labelledby="nameLabel">
+                placeholder="$i18n{namePlaceholder}"
+                .value="${this.skill_.name}"
+                @value-changed="${this.onNameValueChanged_}"
+                aria-labelledby="nameLabel">
               <div class="emoji-prefix-container" slot="inline-prefix">
                 <cr-icon id="emojiZeroStateIcon" icon="skills:add-reaction"
                     ?hidden="${this.skill_.icon}" aria-hidden="true">
                 </cr-icon>
                 <input id="emojiTrigger" class="emoji-trigger" type="text"
                   .value="${this.skill_.icon}" @click="${this.onEmojiBtnClick_}"
-                  @input="${this.onEmojiChanged_}" @keydown="${this.onEmojiKeyDown_}"
-                  title="$i18n{chooseIcon}" aria-label="$i18n{chooseIcon}">
+                  @input="${this.onEmojiInput_}"
+                  @keydown="${this.onEmojiKeydown_}" title="$i18n{chooseIcon}"
+                  aria-label="$i18n{chooseIcon}">
               </div>
             </cr-input>
             `}
@@ -104,12 +107,12 @@ ${this.shouldShowErrorPage_ ? html`<error-page></error-page>` : html`
       </div>
       <div class="buttons-group">
         <cr-button id="cancelButton" class="cancel-button"
-            @click="${this.cancel_}">
+            @click="${this.onCancelClick_}">
           $i18n{cancel}
         </cr-button>
         <cr-button  id="saveButton" class="action-button"
             ?disabled="${this.isSaveButtonDisabled}"
-            @click="${this.submitSkill_}">
+            @click="${this.onSubmitSkillClick_}">
           $i18n{save}
         </cr-button>
       </div>

@@ -57,7 +57,11 @@ export class EligibilityListElement extends CrLitElement {
     this.refreshDetails_();
   }
 
-  protected async refreshDetails_() {
+  protected onRefreshDetailsClick_() {
+    this.refreshDetails_();
+  }
+
+  private async refreshDetails_() {
     const details =
         (await this.commerceInternalsApi_.getShoppingEligibilityDetails())
             .details;
