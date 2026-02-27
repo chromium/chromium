@@ -1064,6 +1064,53 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, AudibilityStatePropagates) {
   EXPECT_FALSE(guest_contents->IsCurrentlyAudible());
 }
 
+IN_PROC_BROWSER_TEST_P(WebViewTest, CanDragEnterDelegation) {
+  // TODO(crbug.com/40202416): This test doesn't apply for MPArch and
+  // can be removed when the InnerWebContents version is removed.
+  SKIP_FOR_MPARCH();
+
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  LoadAppWithGuest("web_view/simple");
+
+  guest_view::GuestViewBase* guest = GetGuestView();
+  ASSERT_TRUE(guest);
+
+  content::WebContents* embedder = guest->owner_web_contents();
+
+  class MockDelegate : public content::WebContentsDelegate {
+   public:
+    bool CanDragEnter(content::WebContents* source,
+                      const content::DropData& data,
+                      blink::DragOperationsMask operations_allowed) override {
+      called = true;
+      return expected_return_value;
+    }
+    bool called = false;
+    bool expected_return_value = false;
+  };
+
+  MockDelegate delegate;
+  content::WebContentsDelegate* original_delegate = embedder->GetDelegate();
+  embedder->SetDelegate(&delegate);
+
+  content::DropData drop_data;
+  drop_data.url_infos.emplace_back(GURL("https://example.com"),
+                                   std::u16string());
+
+  delegate.expected_return_value = true;
+  EXPECT_TRUE(guest->web_contents()->GetDelegate()->CanDragEnter(
+      guest->web_contents(), drop_data, blink::kDragOperationCopy));
+  EXPECT_TRUE(delegate.called);
+
+  delegate.called = false;
+  delegate.expected_return_value = false;
+  EXPECT_FALSE(guest->web_contents()->GetDelegate()->CanDragEnter(
+      guest->web_contents(), drop_data, blink::kDragOperationCopy));
+  EXPECT_TRUE(delegate.called);
+
+  embedder->SetDelegate(original_delegate);
+}
+
 IN_PROC_BROWSER_TEST_P(WebViewTest, SetAudioMuted) {
   ASSERT_TRUE(StartEmbeddedTestServer());
 

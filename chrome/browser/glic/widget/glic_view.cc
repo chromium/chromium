@@ -23,7 +23,9 @@
 #include "chrome/common/chrome_switches.h"
 #include "components/input/native_web_keyboard_event.h"
 #include "content/public/browser/file_select_listener.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/drop_data.h"
 #include "third_party/blink/public/mojom/page/draggable_region.mojom.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -84,6 +86,19 @@ void GlicView::RunFileChooser(
     const blink::mojom::FileChooserParams& params) {
   FileSelectHelper::RunFileChooser(render_frame_host, std::move(listener),
                                    params);
+}
+
+bool GlicView::CanDragEnter(content::WebContents* source,
+                            const content::DropData& data,
+                            blink::DragOperationsMask operations_allowed) {
+  if (!base::FeatureList::IsEnabled(features::kGlicDragAndDropFileUpload)) {
+    return false;
+  }
+  // Check for local files or URLs.
+  bool has_files = !data.filenames.empty() || !data.file_system_files.empty();
+  bool has_url = !data.url_infos.empty();
+
+  return has_files || has_url;
 }
 
 void GlicView::SetWebContents(content::WebContents* web_contents) {

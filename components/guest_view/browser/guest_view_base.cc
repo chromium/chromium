@@ -30,6 +30,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
+#include "third_party/blink/public/common/page/drag_operation.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 
@@ -1021,6 +1022,19 @@ void GuestViewBase::UpdateTargetURL(WebContents* source, const GURL& url) {
 
   embedder_web_contents()->GetDelegate()->UpdateTargetURL(
       embedder_web_contents(), url);
+}
+
+bool GuestViewBase::CanDragEnter(WebContents* source,
+                                 const content::DropData& data,
+                                 blink::DragOperationsMask operations_allowed) {
+  CHECK(!base::FeatureList::IsEnabled(features::kGuestViewMPArch));
+
+  if (!attached() || !embedder_web_contents()->GetDelegate()) {
+    return false;
+  }
+
+  return embedder_web_contents()->GetDelegate()->CanDragEnter(
+      embedder_web_contents(), data, operations_allowed);
 }
 
 void GuestViewBase::DraggableRegionsChanged(

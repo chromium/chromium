@@ -45,6 +45,9 @@ class GlicView : public views::WebView {
   void RunFileChooser(content::RenderFrameHost* render_frame_host,
                       scoped_refptr<content::FileSelectListener> listener,
                       const blink::mojom::FileChooserParams& params) override;
+  bool CanDragEnter(content::WebContents* source,
+                    const content::DropData& data,
+                    blink::DragOperationsMask operations_allowed) override;
 
   // views::WebView:
   void SetWebContents(content::WebContents* web_contents) override;
