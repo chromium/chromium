@@ -9,7 +9,6 @@
 #include <algorithm>
 
 #include "base/check_op.h"
-#include "base/containers/span_reader.h"
 #include "base/trace_event/trace_event.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_sample_types.h"
@@ -109,7 +108,6 @@ void AudioBlockFifo::PushInternal(base::span<const uint8_t> source,
 
   int frames_to_push = frames;
 
-  base::SpanReader span_reader(source);
   const size_t bytes_per_frame = channels_ * bytes_per_sample;
   while (frames_to_push) {
     // Get the current write block.
@@ -122,28 +120,28 @@ void AudioBlockFifo::PushInternal(base::span<const uint8_t> source,
 
     if (!push_silence) {
       CHECK_GT(bytes_per_frame, 0u);
-      auto data_for_current_block = span_reader.Read(
+      auto data_for_current_block = source.take_first(
           base::CheckMul<size_t>(bytes_per_frame, push_frames).ValueOrDie());
       // Deinterleave the content to the FIFO.
       switch (sample_format) {
         case kSampleFormatU8:
-          current_block->FromInterleavedPartial<UnsignedInt8SampleTypeTraits>(
-              data_for_current_block->data(), write_pos_, push_frames);
+          current_block
+              ->FromInterleavedBytesPartial<UnsignedInt8SampleTypeTraits>(
+                  data_for_current_block, write_pos_);
           break;
         case kSampleFormatS16:
-          current_block->FromInterleavedPartial<SignedInt16SampleTypeTraits>(
-              reinterpret_cast<const int16_t*>(data_for_current_block->data()),
-              write_pos_, push_frames);
+          current_block
+              ->FromInterleavedBytesPartial<SignedInt16SampleTypeTraits>(
+                  data_for_current_block, write_pos_);
           break;
         case kSampleFormatS32:
-          current_block->FromInterleavedPartial<SignedInt32SampleTypeTraits>(
-              reinterpret_cast<const int32_t*>(data_for_current_block->data()),
-              write_pos_, push_frames);
+          current_block
+              ->FromInterleavedBytesPartial<SignedInt32SampleTypeTraits>(
+                  data_for_current_block, write_pos_);
           break;
         case kSampleFormatF32:
-          current_block->FromInterleavedPartial<Float32SampleTypeTraits>(
-              reinterpret_cast<const float*>(data_for_current_block->data()),
-              write_pos_, push_frames);
+          current_block->FromInterleavedBytesPartial<Float32SampleTypeTraits>(
+              data_for_current_block, write_pos_);
           break;
         default:
           NOTREACHED() << "Unsupported sample format encountered: "
@@ -166,7 +164,7 @@ void AudioBlockFifo::PushInternal(base::span<const uint8_t> source,
     DCHECK_GE(frames_to_push, 0);
   }
 
-  CHECK_EQ(span_reader.remaining(), 0u);
+  CHECK(source.empty());
 }
 
 }  // namespace media
