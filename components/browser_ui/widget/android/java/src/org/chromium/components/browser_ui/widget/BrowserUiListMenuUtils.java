@@ -22,15 +22,13 @@ import org.chromium.ui.modelutil.MVCListAdapter;
 @NullMarked
 public class BrowserUiListMenuUtils {
 
-    /** @return The default icon tint color state list for list menu item icons. */
-    @ColorRes
-    public static int getDefaultIconTintColorStateListId() {
+    /** Returns the default icon tint color state list for list menu item icons. */
+    public static @ColorRes int getDefaultIconTintColorStateListId() {
         return R.color.default_icon_color_secondary_tint_list;
     }
 
-    /** @return The default text appearance style for list menu item text. */
-    @StyleRes
-    public static int getDefaultTextAppearanceStyle() {
+    /** Returns the default text appearance style for list menu item text. */
+    public static @StyleRes int getDefaultTextAppearanceStyle() {
         return R.style.TextAppearance_BrowserUIListMenuItem;
     }
 
