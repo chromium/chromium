@@ -62,9 +62,11 @@ source_set("impl") {
     "//chrome/browser:browser_process",
     "//chrome/browser:flags",
     "//chrome/browser/autocomplete:aim_eligibility_service",
+    "//chrome/browser/background/glic",
     "//chrome/browser/contextual_cueing",
     "//chrome/browser/devtools",
     "//chrome/browser/gcm",
+    "//chrome/browser/glic",
     "//chrome/browser/gpu",
     "//chrome/browser/media/prefs",
     "//chrome/browser/media/router:media_router_feature",
@@ -375,13 +377,6 @@ source_set("impl") {
 
   if (is_mac) {
     deps += [ "//chrome/browser/web_applications" ]
-  }
-
-  if (enable_glic) {
-    deps += [
-      "//chrome/browser/background/glic",
-      "//chrome/browser/glic",
-    ]
   }
 
   if (!is_android && !is_chromeos) {
