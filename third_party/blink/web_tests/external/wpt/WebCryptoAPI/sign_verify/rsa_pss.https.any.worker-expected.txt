@@ -1,0 +1,36 @@
+This is a testharness.js-based test.
+Found 16 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] RSA-PSS with SHA-1 and no salt verification with altered signature during call
+  assert_true: Signature verified expected true got false
+[FAIL] RSA-PSS with SHA-256 and no salt verification with altered signature during call
+  assert_true: Signature verified expected true got false
+[FAIL] RSA-PSS with SHA-384 and no salt verification with altered signature during call
+  assert_true: Signature verified expected true got false
+[FAIL] RSA-PSS with SHA-512 and no salt verification with altered signature during call
+  assert_true: Signature verified expected true got false
+[FAIL] RSA-PSS with SHA-1, salted verification with altered signature during call
+  assert_true: Signature verified expected true got false
+[FAIL] RSA-PSS with SHA-256, salted verification with altered signature during call
+  assert_true: Signature verified expected true got false
+[FAIL] RSA-PSS with SHA-384, salted verification with altered signature during call
+  assert_true: Signature verified expected true got false
+[FAIL] RSA-PSS with SHA-512, salted verification with altered signature during call
+  assert_true: Signature verified expected true got false
+[FAIL] RSA-PSS with SHA-1 and no salt with altered plaintext during call
+  assert_true: Signature verified expected true got false
+[FAIL] RSA-PSS with SHA-256 and no salt with altered plaintext during call
+  assert_true: Signature verified expected true got false
+[FAIL] RSA-PSS with SHA-384 and no salt with altered plaintext during call
+  assert_true: Signature verified expected true got false
+[FAIL] RSA-PSS with SHA-512 and no salt with altered plaintext during call
+  assert_true: Signature verified expected true got false
+[FAIL] RSA-PSS with SHA-1, salted with altered plaintext during call
+  assert_true: Signature verified expected true got false
+[FAIL] RSA-PSS with SHA-256, salted with altered plaintext during call
+  assert_true: Signature verified expected true got false
+[FAIL] RSA-PSS with SHA-384, salted with altered plaintext during call
+  assert_true: Signature verified expected true got false
+[FAIL] RSA-PSS with SHA-512, salted with altered plaintext during call
+  assert_true: Signature verified expected true got false
+Harness: the test ran to completion.
+

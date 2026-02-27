@@ -1,0 +1,52 @@
+This is a testharness.js-based test.
+Found 24 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] ECDSA P-256 with SHA-1 verification with altered signature during call
+  assert_true: Signature verified expected true got false
+[FAIL] ECDSA P-256 with SHA-256 verification with altered signature during call
+  assert_true: Signature verified expected true got false
+[FAIL] ECDSA P-256 with SHA-384 verification with altered signature during call
+  assert_true: Signature verified expected true got false
+[FAIL] ECDSA P-256 with SHA-512 verification with altered signature during call
+  assert_true: Signature verified expected true got false
+[FAIL] ECDSA P-384 with SHA-1 verification with altered signature during call
+  assert_true: Signature verified expected true got false
+[FAIL] ECDSA P-384 with SHA-256 verification with altered signature during call
+  assert_true: Signature verified expected true got false
+[FAIL] ECDSA P-384 with SHA-384 verification with altered signature during call
+  assert_true: Signature verified expected true got false
+[FAIL] ECDSA P-384 with SHA-512 verification with altered signature during call
+  assert_true: Signature verified expected true got false
+[FAIL] ECDSA P-521 with SHA-1 verification with altered signature during call
+  assert_true: Signature verified expected true got false
+[FAIL] ECDSA P-521 with SHA-256 verification with altered signature during call
+  assert_true: Signature verified expected true got false
+[FAIL] ECDSA P-521 with SHA-384 verification with altered signature during call
+  assert_true: Signature verified expected true got false
+[FAIL] ECDSA P-521 with SHA-512 verification with altered signature during call
+  assert_true: Signature verified expected true got false
+[FAIL] ECDSA P-256 with SHA-1 with altered plaintext during call
+  assert_true: Signature verified expected true got false
+[FAIL] ECDSA P-256 with SHA-256 with altered plaintext during call
+  assert_true: Signature verified expected true got false
+[FAIL] ECDSA P-256 with SHA-384 with altered plaintext during call
+  assert_true: Signature verified expected true got false
+[FAIL] ECDSA P-256 with SHA-512 with altered plaintext during call
+  assert_true: Signature verified expected true got false
+[FAIL] ECDSA P-384 with SHA-1 with altered plaintext during call
+  assert_true: Signature verified expected true got false
+[FAIL] ECDSA P-384 with SHA-256 with altered plaintext during call
+  assert_true: Signature verified expected true got false
+[FAIL] ECDSA P-384 with SHA-384 with altered plaintext during call
+  assert_true: Signature verified expected true got false
+[FAIL] ECDSA P-384 with SHA-512 with altered plaintext during call
+  assert_true: Signature verified expected true got false
+[FAIL] ECDSA P-521 with SHA-1 with altered plaintext during call
+  assert_true: Signature verified expected true got false
+[FAIL] ECDSA P-521 with SHA-256 with altered plaintext during call
+  assert_true: Signature verified expected true got false
+[FAIL] ECDSA P-521 with SHA-384 with altered plaintext during call
+  assert_true: Signature verified expected true got false
+[FAIL] ECDSA P-521 with SHA-512 with altered plaintext during call
+  assert_true: Signature verified expected true got false
+Harness: the test ran to completion.
+

@@ -1,11 +1,23 @@
 This is a testharness.js-based test.
 [FAIL] importKey step: AES-CTR 192-bit key
   assert_unreached: importKey failed for AES-CTR 192-bit key Reached unreachable code
-[FAIL] importKey step: AES-CTR 192-bit key with altered plaintext
+[FAIL] AES-CTR 128-bit key with altered plaintext during call
+  assert_true: Should return expected result expected true got false
+[FAIL] importKey step: AES-CTR 192-bit key with altered plaintext during call
+  assert_unreached: importKey failed for AES-CTR 192-bit key Reached unreachable code
+[FAIL] AES-CTR 256-bit key with altered plaintext during call
+  assert_true: Should return expected result expected true got false
+[FAIL] importKey step: AES-CTR 192-bit key with altered plaintext after call
   assert_unreached: importKey failed for AES-CTR 192-bit key Reached unreachable code
 [FAIL] importKey step for decryption: AES-CTR 192-bit key
   assert_unreached: importKey failed for AES-CTR 192-bit key Reached unreachable code
-[FAIL] importKey step for decryption: AES-CTR 192-bit key with altered ciphertext
+[FAIL] AES-CTR 128-bit key decryption with altered ciphertext during call
+  assert_true: Should return expected result expected true got false
+[FAIL] importKey step for decryption: AES-CTR 192-bit key with altered ciphertext during call
+  assert_unreached: importKey failed for AES-CTR 192-bit key Reached unreachable code
+[FAIL] AES-CTR 256-bit key decryption with altered ciphertext during call
+  assert_true: Should return expected result expected true got false
+[FAIL] importKey step for decryption: AES-CTR 192-bit key with altered ciphertext after call
   assert_unreached: importKey failed for AES-CTR 192-bit key Reached unreachable code
 [FAIL] importKey step: AES-CTR 192-bit key without encrypt usage
   assert_unreached: importKey failed for AES-CTR 192-bit key Reached unreachable code

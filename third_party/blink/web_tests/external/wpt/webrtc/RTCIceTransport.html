@@ -504,6 +504,55 @@ if (rest) {
 
     assert_equals(sender.transport.iceTransport.getRemoteCandidates().length, 0);
   }, 'RTCIceTransport does not expose remote peer-reflexive candidates.');
+
+  promise_test(async t => {
+    const pc1 = new RTCPeerConnection();
+    t.add_cleanup(() => pc1.close());
+    const pc2 = new RTCPeerConnection();
+    t.add_cleanup(() => pc2.close());
+    const {sender} = pc1.addTransceiver('audio');
+
+    await pc1.setLocalDescription();
+    const {iceTransport: iceTransport1} = sender.transport;
+    assert_equals(iceTransport1.role, 'unknown', 'offerer role should be unknown after setLocalDescription');
+
+    await pc2.setRemoteDescription(pc1.localDescription);
+    await pc2.setLocalDescription();
+    const {iceTransport: iceTransport2} = pc2.getTransceivers()[0].sender.transport;
+    assert_equals(iceTransport2.role, 'controlled', 'answerer role should be controlled after setLocalDescription(answer)');
+    assert_equals(iceTransport1.role, 'unknown', 'offerer role should still be unknown before setRemoteDescription(answer)');
+
+    await pc1.setRemoteDescription(pc2.localDescription);
+    assert_equals(iceTransport1.role, 'controlling', 'offerer role should be controlling after setRemoteDescription(answer)');
+  }, 'RTCIceTransport.role should be "unknown" before the answer is applied');
+
+  promise_test(async t => {
+    const pc1 = new RTCPeerConnection();
+    t.add_cleanup(() => pc1.close());
+    const pc2 = new RTCPeerConnection();
+    t.add_cleanup(() => pc2.close());
+    const {sender} = pc1.addTransceiver('audio');
+
+    await pc1.setLocalDescription();
+    const {iceTransport: iceTransport1} = sender.transport;
+    await pc2.setRemoteDescription(pc1.localDescription);
+    await pc2.setLocalDescription();
+    const {iceTransport: iceTransport2} = pc2.getTransceivers()[0].sender.transport;
+    await pc1.setRemoteDescription(pc2.localDescription);
+
+    assert_equals(iceTransport1.role, 'controlling');
+    assert_equals(iceTransport2.role, 'controlled');
+
+    // ICE restart initiated by the answerer; pc2 becomes the new offerer
+    pc2.restartIce();
+    await pc2.setLocalDescription();
+    await pc1.setRemoteDescription(pc2.localDescription);
+    await pc1.setLocalDescription();
+    await pc2.setRemoteDescription(pc1.localDescription);
+
+    assert_equals(iceTransport1.role, 'controlling', 'offerer role should not change after answerer-initiated ICE restart');
+    assert_equals(iceTransport2.role, 'controlled', 'answerer role should not change after answerer-initiated ICE restart');
+  }, 'RTCIceTransport.role should not change when the answerer initiates an ICE restart');
 }
 
 </script>

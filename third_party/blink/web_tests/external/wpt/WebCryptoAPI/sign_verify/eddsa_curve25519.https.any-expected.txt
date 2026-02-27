@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] EdDSA Ed25519 verification with altered signature during call
+  assert_true: Signature verified expected true got false
+[FAIL] EdDSA Ed25519 with altered data during call
+  assert_true: Signature verified expected true got false
+Harness: the test ran to completion.
+

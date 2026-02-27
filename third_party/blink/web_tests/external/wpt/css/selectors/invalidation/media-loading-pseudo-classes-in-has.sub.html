@@ -20,7 +20,6 @@
 
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="/common/media.js"></script>
 <script>
 const BLUE = "rgb(0, 0, 255)";
 const GREEN = "rgb(0, 128, 0)";
@@ -41,11 +40,12 @@ function assert_stalled_state(stalled) {
 
 promise_test(async (t) => {
     assert_implements(CSS.supports("selector(:stalled)"), ":stalled is not supported");
+    const key = "{{uuid()}}";
     const video = document.querySelector("video");
     assert_stalled_state(false);
     await new Promise((r) => {
         video.addEventListener("stalled", r, { once: true });
-        video.src = `${getVideoURI("/media/counting")}?pipe=trickle(100:d1:r2)&random=${Math.random()}`;
+        video.src = `../media/support/stall-resume.py?key=${key}`;
     });
     assert_stalled_state(false);
     const promise = video.play();
@@ -61,11 +61,12 @@ promise_test(async (t) => {
 
 promise_test(async (t) => {
     assert_implements(CSS.supports("selector(:buffering)"), ":buffering is not supported");
+    const key = "{{uuid()}}";
     const video = document.querySelector("video");
     assert_buffering_state(false);
     await new Promise((r) => {
         video.addEventListener("stalled", r, { once: true });
-        video.src = `${getVideoURI("/media/counting")}?pipe=trickle(100:d1:r2)&random=${Math.random()}`;
+        video.src = `../media/support/stall-resume.py?key=${key}`;
     });
     video.currentTime = 10;
     assert_buffering_state(false);

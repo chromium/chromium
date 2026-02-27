@@ -1,0 +1,28 @@
+This is a testharness.js-based test.
+Found 12 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] SHA-1 with short source data and altered buffer during call
+  assert_true: digest() yielded expected result for sha-1:short expected true got false
+[FAIL] SHA-256 with short source data and altered buffer during call
+  assert_true: digest() yielded expected result for sha-256:short expected true got false
+[FAIL] SHA-384 with short source data and altered buffer during call
+  assert_true: digest() yielded expected result for sha-384:short expected true got false
+[FAIL] SHA-512 with short source data and altered buffer during call
+  assert_true: digest() yielded expected result for sha-512:short expected true got false
+[FAIL] SHA-1 with medium source data and altered buffer during call
+  assert_true: digest() yielded expected result for sha-1:medium expected true got false
+[FAIL] SHA-256 with medium source data and altered buffer during call
+  assert_true: digest() yielded expected result for sha-256:medium expected true got false
+[FAIL] SHA-384 with medium source data and altered buffer during call
+  assert_true: digest() yielded expected result for sha-384:medium expected true got false
+[FAIL] SHA-512 with medium source data and altered buffer during call
+  assert_true: digest() yielded expected result for sha-512:medium expected true got false
+[FAIL] SHA-1 with long source data and altered buffer during call
+  assert_true: digest() yielded expected result for sha-1:long expected true got false
+[FAIL] SHA-256 with long source data and altered buffer during call
+  assert_true: digest() yielded expected result for sha-256:long expected true got false
+[FAIL] SHA-384 with long source data and altered buffer during call
+  assert_true: digest() yielded expected result for sha-384:long expected true got false
+[FAIL] SHA-512 with long source data and altered buffer during call
+  assert_true: digest() yielded expected result for sha-512:long expected true got false
+Harness: the test ran to completion.
+

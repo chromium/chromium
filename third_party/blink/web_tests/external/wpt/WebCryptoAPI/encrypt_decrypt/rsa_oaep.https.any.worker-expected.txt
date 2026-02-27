@@ -1,0 +1,52 @@
+This is a testharness.js-based test.
+Found 24 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] RSA-OAEP with SHA-1 and no label decryption with altered ciphertext during call
+  assert_unreached: Decryption should not throw error RSA-OAEP with SHA-1 and no label: ' Reached unreachable code
+[FAIL] RSA-OAEP with SHA-256 and no label decryption with altered ciphertext during call
+  assert_unreached: Decryption should not throw error RSA-OAEP with SHA-256 and no label: ' Reached unreachable code
+[FAIL] RSA-OAEP with SHA-384 and no label decryption with altered ciphertext during call
+  assert_unreached: Decryption should not throw error RSA-OAEP with SHA-384 and no label: ' Reached unreachable code
+[FAIL] RSA-OAEP with SHA-512 and no label decryption with altered ciphertext during call
+  assert_unreached: Decryption should not throw error RSA-OAEP with SHA-512 and no label: ' Reached unreachable code
+[FAIL] RSA-OAEP with SHA-1 and empty label decryption with altered ciphertext during call
+  assert_unreached: Decryption should not throw error RSA-OAEP with SHA-1 and empty label: ' Reached unreachable code
+[FAIL] RSA-OAEP with SHA-256 and empty label decryption with altered ciphertext during call
+  assert_unreached: Decryption should not throw error RSA-OAEP with SHA-256 and empty label: ' Reached unreachable code
+[FAIL] RSA-OAEP with SHA-384 and empty label decryption with altered ciphertext during call
+  assert_unreached: Decryption should not throw error RSA-OAEP with SHA-384 and empty label: ' Reached unreachable code
+[FAIL] RSA-OAEP with SHA-512 and empty label decryption with altered ciphertext during call
+  assert_unreached: Decryption should not throw error RSA-OAEP with SHA-512 and empty label: ' Reached unreachable code
+[FAIL] RSA-OAEP with SHA-1 and a label decryption with altered ciphertext during call
+  assert_unreached: Decryption should not throw error RSA-OAEP with SHA-1 and a label: ' Reached unreachable code
+[FAIL] RSA-OAEP with SHA-256 and a label decryption with altered ciphertext during call
+  assert_unreached: Decryption should not throw error RSA-OAEP with SHA-256 and a label: ' Reached unreachable code
+[FAIL] RSA-OAEP with SHA-384 and a label decryption with altered ciphertext during call
+  assert_unreached: Decryption should not throw error RSA-OAEP with SHA-384 and a label: ' Reached unreachable code
+[FAIL] RSA-OAEP with SHA-512 and a label decryption with altered ciphertext during call
+  assert_unreached: Decryption should not throw error RSA-OAEP with SHA-512 and a label: ' Reached unreachable code
+[FAIL] RSA-OAEP with SHA-1 and no label with altered plaintext during call
+  assert_unreached: decrypt error for test RSA-OAEP with SHA-1 and no label: 'assert_true: Round trip returns original plaintext expected true got false' Reached unreachable code
+[FAIL] RSA-OAEP with SHA-256 and no label with altered plaintext during call
+  assert_unreached: decrypt error for test RSA-OAEP with SHA-256 and no label: 'assert_true: Round trip returns original plaintext expected true got false' Reached unreachable code
+[FAIL] RSA-OAEP with SHA-384 and no label with altered plaintext during call
+  assert_unreached: decrypt error for test RSA-OAEP with SHA-384 and no label: 'assert_true: Round trip returns original plaintext expected true got false' Reached unreachable code
+[FAIL] RSA-OAEP with SHA-512 and no label with altered plaintext during call
+  assert_unreached: decrypt error for test RSA-OAEP with SHA-512 and no label: 'assert_true: Round trip returns original plaintext expected true got false' Reached unreachable code
+[FAIL] RSA-OAEP with SHA-1 and empty label with altered plaintext during call
+  assert_unreached: decrypt error for test RSA-OAEP with SHA-1 and empty label: 'assert_true: Round trip returns original plaintext expected true got false' Reached unreachable code
+[FAIL] RSA-OAEP with SHA-256 and empty label with altered plaintext during call
+  assert_unreached: decrypt error for test RSA-OAEP with SHA-256 and empty label: 'assert_true: Round trip returns original plaintext expected true got false' Reached unreachable code
+[FAIL] RSA-OAEP with SHA-384 and empty label with altered plaintext during call
+  assert_unreached: decrypt error for test RSA-OAEP with SHA-384 and empty label: 'assert_true: Round trip returns original plaintext expected true got false' Reached unreachable code
+[FAIL] RSA-OAEP with SHA-512 and empty label with altered plaintext during call
+  assert_unreached: decrypt error for test RSA-OAEP with SHA-512 and empty label: 'assert_true: Round trip returns original plaintext expected true got false' Reached unreachable code
+[FAIL] RSA-OAEP with SHA-1 and a label with altered plaintext during call
+  assert_unreached: decrypt error for test RSA-OAEP with SHA-1 and a label: 'assert_true: Round trip returns original plaintext expected true got false' Reached unreachable code
+[FAIL] RSA-OAEP with SHA-256 and a label with altered plaintext during call
+  assert_unreached: decrypt error for test RSA-OAEP with SHA-256 and a label: 'assert_true: Round trip returns original plaintext expected true got false' Reached unreachable code
+[FAIL] RSA-OAEP with SHA-384 and a label with altered plaintext during call
+  assert_unreached: decrypt error for test RSA-OAEP with SHA-384 and a label: 'assert_true: Round trip returns original plaintext expected true got false' Reached unreachable code
+[FAIL] RSA-OAEP with SHA-512 and a label with altered plaintext during call
+  assert_unreached: decrypt error for test RSA-OAEP with SHA-512 and a label: 'assert_true: Round trip returns original plaintext expected true got false' Reached unreachable code
+Harness: the test ran to completion.
+

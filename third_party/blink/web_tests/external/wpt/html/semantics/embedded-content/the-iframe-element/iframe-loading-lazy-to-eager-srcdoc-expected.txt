@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Below-viewport srcdoc iframes with loading='lazy' load when set to loading='eager' or the `loading` attribute is removed
+  assert_unreached: Img in iframe_1 should not load before the window load event Reached unreachable code
+Harness: the test ran to completion.
+

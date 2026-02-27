@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Can set 'word-spacing' to the 'normal' keyword: normal
-  assert_equals: expected "CSSKeywordValue" but got "CSSUnitValue"
-Harness: the test ran to completion.
-
