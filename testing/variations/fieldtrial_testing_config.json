@@ -12537,28 +12537,6 @@
             ]
         }
     ],
-    "HandleNonDamagingInputsInScrollJankV4Metric": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Experiment_NewBehaviorCountDamagingScrolls",
-                    "params": {
-                        "histogram_emission_policy": "emit_for_damaging_scrolls"
-                    },
-                    "enable_features": [
-                        "HandleNonDamagingInputsInScrollJankV4Metric"
-                    ]
-                }
-            ]
-        }
-    ],
     "HangoutsExtensionV3": [
         {
             "platforms": [
