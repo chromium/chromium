@@ -85,6 +85,10 @@ class CaptureStream {
   // Sets the maximum rate at which new frames should be delivered.
   virtual void SetMaxFrameRate(std::uint32_t frame_rate) = 0;
 
+  // Sets the shared memory factory to use for creating frames.
+  virtual void SetSharedMemoryFactory(
+      std::unique_ptr<webrtc::SharedMemoryFactory> shared_memory_factory) = 0;
+
   // Gets the most recent mouse cursor shape, if one has been received since the
   // last call. Otherwise, returns nullptr. (May only return a value once each
   // time the cursor actually changes.)

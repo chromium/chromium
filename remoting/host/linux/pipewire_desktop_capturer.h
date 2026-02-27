@@ -61,8 +61,6 @@ class PipewireDesktopCapturer : public DesktopCapturer,
 
   base::WeakPtr<CaptureStream> stream_;
 
-  std::unique_ptr<webrtc::SharedMemoryFactory> shared_memory_factory_;
-
   // Per the webrtc::DesktopCapturer interface, callback is required to remain
   // valid until this is destroyed.
   raw_ptr<Callback> callback_ = nullptr;

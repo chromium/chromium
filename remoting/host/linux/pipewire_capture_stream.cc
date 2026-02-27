@@ -220,6 +220,12 @@ void PipewireCaptureStream::SetMaxFrameRate(std::uint32_t frame_rate) {
   stream_->UpdateScreenCastStreamFrameRate(frame_rate);
 }
 
+void PipewireCaptureStream::SetSharedMemoryFactory(
+    std::unique_ptr<webrtc::SharedMemoryFactory> shared_memory_factory) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  stream_->SetSharedMemoryFactory(std::move(shared_memory_factory));
+}
+
 std::unique_ptr<webrtc::MouseCursor> PipewireCaptureStream::CaptureCursor() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return stream_->CaptureCursor();

@@ -51,6 +51,8 @@ class PipewireCaptureStream : public CaptureStream {
   void SetUseDamageRegion(bool use_damage_region) override;
   void SetResolution(const webrtc::DesktopSize& new_resolution) override;
   void SetMaxFrameRate(std::uint32_t frame_rate) override;
+  void SetSharedMemoryFactory(std::unique_ptr<webrtc::SharedMemoryFactory>
+                                  shared_memory_factory) override;
   std::unique_ptr<webrtc::MouseCursor> CaptureCursor() override;
   std::optional<webrtc::DesktopVector> CaptureCursorPosition() override;
   CursorObserver::Subscription AddCursorObserver(
