@@ -80,10 +80,8 @@ void SetRuntimeFeatureDefaultsForPlatform(
   // (since the entire concept of creating accelerated overlays makes sense only
   // when GPU compositing is enabled), so there is no need to explicitly guard
   // by switches::kDisableGpu.
-  const bool enable_canvas_2d_image_chromium =
-      command_line.HasSwitch(
-          blink::switches::kEnableGpuMemoryBufferCompositorResources) &&
-      !command_line.HasSwitch(switches::kDisable2dCanvasImageChromium);
+  const bool enable_canvas_2d_image_chromium = command_line.HasSwitch(
+      blink::switches::kEnableGpuMemoryBufferCompositorResources);
 #else
   constexpr bool enable_canvas_2d_image_chromium = false;
 #endif

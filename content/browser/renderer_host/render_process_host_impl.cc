@@ -3668,7 +3668,6 @@ void RenderProcessHostImpl::PropagateBrowserCommandLineToRenderer(
       switches::kAudioBufferSize,
       switches::kAutoplayPolicy,
       switches::kBackgroundThreadPoolFieldTrial,
-      switches::kDisable2dCanvasImageChromium,
       switches::kDisableYUVImageDecoding,
       switches::kDisableAcceleratedVideoDecode,
       switches::kDisableAcceleratedVideoEncode,
