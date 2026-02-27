@@ -41,6 +41,11 @@ class PrivacyHubSpeakOnMuteControllerTest : public AshTestBase {
         Shell::Get()->privacy_hub_controller()->speak_on_mute_controller();
   }
 
+  void TearDown() override {
+    speak_on_mute_controller_ = nullptr;
+    AshTestBase::TearDown();
+  }
+
   void SetUserPref(bool enabled) {
     Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
         prefs::kUserSpeakOnMuteDetectionEnabled, enabled);
@@ -58,7 +63,7 @@ class PrivacyHubSpeakOnMuteControllerTest : public AshTestBase {
   }
 
  private:
-  raw_ptr<SpeakOnMuteDetectionPrivacySwitchController, DanglingUntriaged>
+  raw_ptr<SpeakOnMuteDetectionPrivacySwitchController>
       speak_on_mute_controller_;
   // Instantiates a fake controller (the real one is created in
   // ChromeBrowserMainExtraPartsAsh::PreProfileInit() which is not called in
