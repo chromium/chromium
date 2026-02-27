@@ -274,12 +274,81 @@ TEST_F(AccessibilityTest, FocusgroupItemExplicitRolePreserved) {
 TEST_F(AccessibilityTest, FocusgroupItemNativeSemanticsPreserved) {
   SetBodyInnerHTML(R"HTML(
       <div id="fg" focusgroup="radiogroup">
-        <button id="child">Button</button>
+        <a href="#" id="child">Link</a>
       </div>)HTML");
   const AXObject* child = GetAXObjectByElementId("child");
   ASSERT_NE(nullptr, child);
-  // Native button semantics should remain, not replaced by radio.
-  EXPECT_EQ(ax::mojom::Role::kButton,
+  // Native link semantics should remain, not replaced by radio.
+  EXPECT_EQ(ax::mojom::Role::kLink, child->ComputeFinalRoleForSerialization());
+}
+
+TEST_F(AccessibilityTest, FocusgroupButtonChildInferredRoleTablist) {
+  SetBodyInnerHTML(R"HTML(
+      <div id="fg" focusgroup="tablist">
+        <button id="child">Tab</button>
+      </div>)HTML");
+  const AXObject* child = GetAXObjectByElementId("child");
+  ASSERT_NE(nullptr, child);
+  // Button inside tablist should be inferred as tab.
+  EXPECT_EQ(ax::mojom::Role::kTab, child->ComputeFinalRoleForSerialization());
+}
+
+TEST_F(AccessibilityTest, FocusgroupButtonChildInferredRoleRadiogroup) {
+  SetBodyInnerHTML(R"HTML(
+      <div id="fg" focusgroup="radiogroup">
+        <button id="child">Radio</button>
+      </div>)HTML");
+  const AXObject* child = GetAXObjectByElementId("child");
+  ASSERT_NE(nullptr, child);
+  // Button inside radiogroup should be inferred as radio.
+  EXPECT_EQ(ax::mojom::Role::kRadioButton,
+            child->ComputeFinalRoleForSerialization());
+}
+
+TEST_F(AccessibilityTest, FocusgroupButtonChildInferredRoleMenu) {
+  SetBodyInnerHTML(R"HTML(
+      <div id="fg" focusgroup="menu">
+        <button id="child">Menu Item</button>
+      </div>)HTML");
+  const AXObject* child = GetAXObjectByElementId("child");
+  ASSERT_NE(nullptr, child);
+  // Button inside menu should be inferred as menuitem.
+  EXPECT_EQ(ax::mojom::Role::kMenuItem,
+            child->ComputeFinalRoleForSerialization());
+}
+
+TEST_F(AccessibilityTest, FocusgroupButtonExplicitRolePreserved) {
+  SetBodyInnerHTML(R"HTML(
+      <div id="fg" focusgroup="tablist">
+        <button id="child" role="listitem">List Item</button>
+      </div>)HTML");
+  const AXObject* child = GetAXObjectByElementId("child");
+  ASSERT_NE(nullptr, child);
+  // Explicit author role on button should be preserved over inference.
+  EXPECT_EQ(ax::mojom::Role::kListItem,
+            child->ComputeFinalRoleForSerialization());
+}
+
+TEST_F(AccessibilityTest, FocusgroupLinkNativeSemanticsPreserved) {
+  SetBodyInnerHTML(R"HTML(
+      <div id="fg" focusgroup="tablist">
+        <a href="#" id="child">Link</a>
+      </div>)HTML");
+  const AXObject* child = GetAXObjectByElementId("child");
+  ASSERT_NE(nullptr, child);
+  // Native link semantics should be preserved, not replaced by tab.
+  EXPECT_EQ(ax::mojom::Role::kLink, child->ComputeFinalRoleForSerialization());
+}
+
+TEST_F(AccessibilityTest, FocusgroupInputNativeSemanticsPreserved) {
+  SetBodyInnerHTML(R"HTML(
+      <div id="fg" focusgroup="tablist">
+        <input id="child" type="text">
+      </div>)HTML");
+  const AXObject* child = GetAXObjectByElementId("child");
+  ASSERT_NE(nullptr, child);
+  // Native input semantics should be preserved, not replaced by tab.
+  EXPECT_EQ(ax::mojom::Role::kTextField,
             child->ComputeFinalRoleForSerialization());
 }
 
