@@ -9,7 +9,7 @@
 
 // Use to record various CPU related histograms based on data from |metrics|
 // suffixed with |histogram_suffix|.
-void RecordProcessHistograms(const char* histogram_suffix,
+void RecordProcessHistograms(const std::string_view histogram_suffix,
                              const ProcessMonitor::Metrics& metrics);
 
 #endif  // CHROME_BROWSER_METRICS_POWER_PROCESS_METRICS_RECORDER_UTIL_H_

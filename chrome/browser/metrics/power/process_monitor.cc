@@ -248,7 +248,7 @@ void ProcessMonitor::SampleAllProcesses(Observer* observer) {
   // Aggregate all metrics into a single sum, but also per their process type.
   Metrics aggregated_metrics;
   std::array<Metrics, MonitoredProcessType::kCount> per_type_metrics;
-  std::map<ProcessInfo::Key, Metrics> utility_process_metrics;
+  std::map<ProcessInfo::Key, Metrics> per_utility_subtype_metrics;
   for (auto* process_info : process_infos) {
     Metrics metrics = SampleMetrics(*process_info->process_metrics);
 
@@ -269,16 +269,15 @@ void ProcessMonitor::SampleAllProcesses(Observer* observer) {
     per_type_metrics[process_info->key.type] += metrics;
 
     if (process_info->key.type == MonitoredProcessType::kUtility) {
-      utility_process_metrics[process_info->key] += metrics;
+      per_utility_subtype_metrics[process_info->key] += metrics;
     }
   }
 
   for (auto& [key, metrics] : exited_processes_metrics_) {
-    // Add the metrics for the processes that exited during this interval and
-    // zero out.
+    // Add the metrics for the processes that exited during this interval.
     per_type_metrics[key.type] += metrics;
     if (key.type == MonitoredProcessType::kUtility) {
-      utility_process_metrics[key] += metrics;
+      per_utility_subtype_metrics[key] += metrics;
     }
     metrics = Metrics();
   }
@@ -289,7 +288,7 @@ void ProcessMonitor::SampleAllProcesses(Observer* observer) {
         per_type_metrics[type]);
   }
 
-  for (auto& [key, metrics] : utility_process_metrics) {
+  for (auto& [key, metrics] : per_utility_subtype_metrics) {
     observer->OnMetricsSampled(key, metrics);
   }
 

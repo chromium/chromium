@@ -39,7 +39,7 @@ bool HasConstantRateTSC() {
 }
 #endif  // BUILDFLAG(IS_WIN)
 
-void RecordAverageCPUUsage(const char* histogram_suffix,
+void RecordAverageCPUUsage(const std::string_view histogram_suffix,
                            const std::optional<double>& cpu_usage) {
 #if BUILDFLAG(IS_WIN)
   // Skip recording the average CPU usage if the CPU doesn't support constant
@@ -61,7 +61,7 @@ void RecordAverageCPUUsage(const char* histogram_suffix,
 
 }  // namespace
 
-void RecordProcessHistograms(const char* histogram_suffix,
+void RecordProcessHistograms(const std::string_view histogram_suffix,
                              const ProcessMonitor::Metrics& metrics) {
   RecordAverageCPUUsage(histogram_suffix, metrics.cpu_usage);
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \

@@ -220,6 +220,47 @@ class PowerMetricsReporterWithoutBatteryLevelProviderUnitTest
 
 }  // namespace
 
+#if !(BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64))
+// Windows ARM64 does not support Constant Rate TSC so
+// PerformanceMonitor.AverageCPU9.* is not recorded there.
+TEST_F(PowerMetricsReporterUnitTest,
+       UtilityProcessesWithSubtypeReportedInSuffixedHistogram) {
+  base::HistogramTester tester;
+  // Sampling for utility processes without a subtype records only in the
+  // top-level histogram. This happens once for the aggregate of all utility
+  // processes.
+  power_metrics_reporter_->OnMetricsSampled(
+      ProcessInfo::Key(MonitoredProcessType::kUtility, std::nullopt),
+      GetFakeProcessMetrics());
+  tester.ExpectTotalCount("PerformanceMonitor.AverageCPU9.UtilityProcess", 1);
+  tester.ExpectTotalCount("PerformanceMonitor.AverageCPU9.UtilityProcess.Test",
+                          0);
+  tester.ExpectTotalCount(
+      "PerformanceMonitor.AverageCPU9.UtilityProcess.Unknown", 0);
+
+  // Sampling for a utility process with a defined subtype records it only in
+  // that suffixes histogram.
+  power_metrics_reporter_->OnMetricsSampled(
+      ProcessInfo::Key(MonitoredProcessType::kUtility, "Test"),
+      GetFakeProcessMetrics());
+  tester.ExpectTotalCount("PerformanceMonitor.AverageCPU9.UtilityProcess", 1);
+  tester.ExpectTotalCount("PerformanceMonitor.AverageCPU9.UtilityProcess.Test",
+                          1);
+  tester.ExpectTotalCount(
+      "PerformanceMonitor.AverageCPU9.UtilityProcess.Unknown", 0);
+
+  // Sampling with an empty string subtype records to the "Unknown" suffix only.
+  power_metrics_reporter_->OnMetricsSampled(
+      ProcessInfo::Key(MonitoredProcessType::kUtility, ""),
+      GetFakeProcessMetrics());
+  tester.ExpectTotalCount("PerformanceMonitor.AverageCPU9.UtilityProcess", 1);
+  tester.ExpectTotalCount("PerformanceMonitor.AverageCPU9.UtilityProcess.Test",
+                          1);
+  tester.ExpectTotalCount(
+      "PerformanceMonitor.AverageCPU9.UtilityProcess.Unknown", 1);
+}
+#endif
+
 TEST_F(PowerMetricsReporterWithoutBatteryLevelProviderUnitTest,
        CPUTimeRecorded) {
   process_monitor_.SetMetricsToReturn(GetFakeProcessMetrics());
