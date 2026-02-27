@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+Found 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] Property view-transition-name value 'ident("myident" random(30, 10))'
+  assert_true: 'ident("myident" random(30, 10))' is a supported value for view-transition-name. expected true got false
+[FAIL] Shared by property 'view-transition-name' with values 'ident("myident" random(1, 100))', 'ident("myident" random(element-shared, 1, 100))'
+  assert_false: ident("myident" random(1, 100)) values on different elements should not be equal expected false got true
+Harness: the test ran to completion.
+

@@ -122,12 +122,7 @@ static bool ConsumeVariableReference(CSSParserTokenStream& stream,
     }
   } else if (stream.Peek().GetType() == kFunctionToken &&
              RuntimeEnabledFeatures::CSSIdentFunctionEnabled()) {
-    // Since we don't create calc() expression nodes at this time we don't need
-    // to store property info for random().
-    CSSParserLocalContext local_context =
-        CSSParserLocalContext::CreateWithoutPropertyForSubstitutions();
-    if (!css_parsing_utils::ConsumeIdentFunction(stream, context,
-                                                 local_context)) {
+    if (!css_parsing_utils::ConsumeIdentFunction(stream, context)) {
       // It's a bit wasteful to create a CSSCustomIdentValue just to discard it,
       // but with the new "argument grammar" parsing approach described in
       // Issue 11500 we will eventually end up accepting any

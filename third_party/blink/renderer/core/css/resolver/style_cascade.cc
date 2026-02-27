@@ -100,10 +100,8 @@ AtomicString ConsumeAndComputeVariableName(CSSParserTokenStream& stream,
   }
   // ident()
   DCHECK_EQ(stream.Peek().FunctionId(), CSSValueID::kIdent);
-  CSSParserLocalContext local_context =
-      CSSParserLocalContext::CreateWithoutPropertyForSubstitutions();
   CSSFunctionValue* ident_function =
-      css_parsing_utils::ConsumeIdentFunction(stream, context, local_context);
+      css_parsing_utils::ConsumeIdentFunction(stream, context);
   DCHECK(ident_function);
   AtomicString computed_ident = CSSCustomIdentValue::ComputeIdent(
       *ident_function, state.CssToLengthConversionData());
