@@ -76,6 +76,7 @@ import org.chromium.chrome.browser.autofill.AutofillClientProviderUtils;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManager;
 import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManagerFactory;
+import org.chromium.chrome.browser.autofill.editors.address.AddressEditorMediator;
 import org.chromium.chrome.browser.autofill.editors.address.EditorDialogView;
 import org.chromium.chrome.browser.autofill.options.AutofillOptionsFragment;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -480,11 +481,11 @@ public class AutofillProfilesFragmentTest {
         HistogramWatcher deletionCanceledHistogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectBooleanRecordTimes(
-                                EditorDialogView.PROFILE_DELETED_HISTOGRAM,
+                                AddressEditorMediator.PROFILE_DELETED_HISTOGRAM,
                                 /* value= */ false,
                                 /* times= */ 1)
                         .expectBooleanRecordTimes(
-                                EditorDialogView.PROFILE_DELETED_SETTINGS_HISTOGRAM,
+                                AddressEditorMediator.PROFILE_DELETED_SETTINGS_HISTOGRAM,
                                 /* value= */ false,
                                 /* times= */ 1)
                         .build();
@@ -516,11 +517,11 @@ public class AutofillProfilesFragmentTest {
         HistogramWatcher deletionConfirmedHistogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectBooleanRecordTimes(
-                                EditorDialogView.PROFILE_DELETED_HISTOGRAM,
+                                AddressEditorMediator.PROFILE_DELETED_HISTOGRAM,
                                 /* value= */ true,
                                 /* times= */ 1)
                         .expectBooleanRecordTimes(
-                                EditorDialogView.PROFILE_DELETED_SETTINGS_HISTOGRAM,
+                                AddressEditorMediator.PROFILE_DELETED_SETTINGS_HISTOGRAM,
                                 /* value= */ true,
                                 /* times= */ 1)
                         .build();

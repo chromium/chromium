@@ -7,10 +7,10 @@ package org.chromium.chrome.browser.autofill.editors.address;
 import static org.chromium.chrome.browser.autofill.editors.address.EditorProperties.ALLOW_DELETE;
 import static org.chromium.chrome.browser.autofill.editors.address.EditorProperties.CANCEL_RUNNABLE;
 import static org.chromium.chrome.browser.autofill.editors.address.EditorProperties.CUSTOM_DONE_BUTTON_TEXT;
+import static org.chromium.chrome.browser.autofill.editors.address.EditorProperties.DELETE_CALLBACK;
 import static org.chromium.chrome.browser.autofill.editors.address.EditorProperties.DELETE_CONFIRMATION_PRIMARY_BUTTON_TEXT_ID;
 import static org.chromium.chrome.browser.autofill.editors.address.EditorProperties.DELETE_CONFIRMATION_TEXT;
 import static org.chromium.chrome.browser.autofill.editors.address.EditorProperties.DELETE_CONFIRMATION_TITLE;
-import static org.chromium.chrome.browser.autofill.editors.address.EditorProperties.DELETE_RUNNABLE;
 import static org.chromium.chrome.browser.autofill.editors.address.EditorProperties.DONE_RUNNABLE;
 import static org.chromium.chrome.browser.autofill.editors.address.EditorProperties.EDITOR_FIELDS;
 import static org.chromium.chrome.browser.autofill.editors.address.EditorProperties.EDITOR_TITLE;
@@ -59,8 +59,8 @@ public class EditorDialogViewBinder {
             view.setCancelRunnable(model.get(CANCEL_RUNNABLE));
         } else if (propertyKey == ALLOW_DELETE) {
             view.setAllowDelete(model.get(ALLOW_DELETE));
-        } else if (propertyKey == DELETE_RUNNABLE) {
-            view.setDeleteRunnable(model.get(DELETE_RUNNABLE));
+        } else if (propertyKey == DELETE_CALLBACK) {
+            view.setDeleteCallback(model.get(DELETE_CALLBACK));
         } else if (propertyKey == VALIDATE_ON_SHOW) {
             view.setValidateOnShow(model.get(VALIDATE_ON_SHOW));
         } else if (propertyKey == VISIBLE) {

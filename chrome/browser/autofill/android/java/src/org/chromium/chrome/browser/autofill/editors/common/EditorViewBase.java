@@ -126,7 +126,7 @@ public abstract class EditorViewBase extends AlwaysDismissedDialog
 
     private @Nullable Callback<Activity> mOpenHelpCallback;
 
-    private @Nullable Runnable mDeleteRunnable;
+    private @Nullable Callback<Boolean> mDeleteCallback;
     private @Nullable Runnable mDoneRunnable;
     private @Nullable Runnable mCancelRunnable;
 
@@ -245,8 +245,8 @@ public abstract class EditorViewBase extends AlwaysDismissedDialog
         toolbar.setShowDeleteMenuItem(allowDelete);
     }
 
-    public void setDeleteRunnable(Runnable deleteRunnable) {
-        mDeleteRunnable = deleteRunnable;
+    public void setDeleteCallback(Callback<Boolean> deleteCallback) {
+        mDeleteCallback = deleteCallback;
     }
 
     public void setDoneRunnable(Runnable doneRunnable) {
@@ -410,7 +410,9 @@ public abstract class EditorViewBase extends AlwaysDismissedDialog
                                     mDeleteConfirmationText,
                                     mDeleteConfirmationPrimaryButtonText);
                         } else {
-                            handleDelete();
+                            assert mDeleteCallback != null;
+                            mDeleteCallback.onResult(true);
+                            animateOutDialog();
                         }
                     } else if (item.getItemId() == R.id.help_menu_id) {
                         assumeNonNull(mOpenHelpCallback).onResult(mActivity);
@@ -618,12 +620,6 @@ public abstract class EditorViewBase extends AlwaysDismissedDialog
         }
     }
 
-    private void handleDelete() {
-        assert mDeleteRunnable != null;
-        mDeleteRunnable.run();
-        animateOutDialog();
-    }
-
     private void handleDeleteWithConfirmation(
             String confirmationTitle, CharSequence confirmationText, int primaryButtonText) {
         boolean canShowConfirmation = mActivity instanceof ModalDialogManagerHolder;
@@ -636,11 +632,11 @@ public abstract class EditorViewBase extends AlwaysDismissedDialog
         var confirmationDialog = new ActionConfirmationDialog(mContext, modalDialogManager);
         ConfirmationDialogHandler confirmationDialogHandler =
                 (dismissHandler, buttonClickResult, stopShowing) -> {
+                    assert mDeleteCallback != null;
+                    mDeleteCallback.onResult(buttonClickResult == ButtonClickResult.POSITIVE);
                     if (buttonClickResult == ButtonClickResult.POSITIVE) {
-                        recordDeletionHistogram(true);
-                        handleDelete();
+                        animateOutDialog();
                     } else {
-                        recordDeletionHistogram(false);
                         if (sObserverForTest != null) {
                             sObserverForTest.onEditorReadyToEdit();
                         }
@@ -675,9 +671,6 @@ public abstract class EditorViewBase extends AlwaysDismissedDialog
 
     /** Called when the editor is shown to initialize the view focus. */
     protected abstract void initFocus();
-
-    /** Called when the user attempted to delete the edited entry. */
-    protected abstract void recordDeletionHistogram(boolean deleted);
 
     public static void setEditorObserverForTest(EditorObserverForTest observerForTest) {
         sObserverForTest = observerForTest;

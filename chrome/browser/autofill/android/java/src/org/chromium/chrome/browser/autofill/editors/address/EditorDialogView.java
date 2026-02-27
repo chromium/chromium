@@ -8,11 +8,7 @@ import android.app.Activity;
 import android.os.Handler;
 import android.widget.EditText;
 
-import androidx.annotation.VisibleForTesting;
-
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.autofill.editors.common.EditorViewBase;
 import org.chromium.chrome.browser.autofill.editors.common.field.FieldView;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
@@ -31,16 +27,7 @@ import java.util.List;
 public class EditorDialogView extends EditorViewBase {
     private final Handler mHandler;
 
-    private @Nullable String mProfileRecordTypeSuffix;
-
     private boolean mValidateOnShow;
-
-    @VisibleForTesting
-    public static final String PROFILE_DELETED_HISTOGRAM = "Autofill.ProfileDeleted.Any.Total";
-
-    @VisibleForTesting
-    public static final String PROFILE_DELETED_SETTINGS_HISTOGRAM =
-            "Autofill.ProfileDeleted.Settings.Total";
 
     /**
      * Builds the editor dialog.
@@ -50,15 +37,6 @@ public class EditorDialogView extends EditorViewBase {
     public EditorDialogView(Activity activity) {
         super(activity);
         mHandler = new Handler();
-    }
-
-    /**
-     * Sets the suffix to be appended to the profile deletion histogram.
-     *
-     * @param suffix The suffix to append, e.g., the profile's record type.
-     */
-    public void setProfileRecordTypeSuffix(@Nullable String suffix) {
-        mProfileRecordTypeSuffix = suffix;
     }
 
     public void setValidateOnShow(boolean validateOnShow) {
@@ -103,18 +81,5 @@ public class EditorDialogView extends EditorViewBase {
                     }
                     if (sObserverForTest != null) sObserverForTest.onEditorReadyToEdit();
                 });
-    }
-
-    @Override
-    protected void recordDeletionHistogram(boolean deleted) {
-        RecordHistogram.recordBooleanHistogram(PROFILE_DELETED_HISTOGRAM, deleted);
-        RecordHistogram.recordBooleanHistogram(PROFILE_DELETED_SETTINGS_HISTOGRAM, deleted);
-
-        if (mProfileRecordTypeSuffix != null && !mProfileRecordTypeSuffix.isEmpty()) {
-            RecordHistogram.recordBooleanHistogram(
-                    PROFILE_DELETED_HISTOGRAM + "." + mProfileRecordTypeSuffix, deleted);
-            RecordHistogram.recordBooleanHistogram(
-                    PROFILE_DELETED_SETTINGS_HISTOGRAM + "." + mProfileRecordTypeSuffix, deleted);
-        }
     }
 }

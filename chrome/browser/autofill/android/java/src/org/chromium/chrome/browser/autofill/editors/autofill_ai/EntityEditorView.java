@@ -26,9 +26,4 @@ public class EntityEditorView extends EditorViewBase {
     protected void initFocus() {
         // TODO: crbug.com/476755159 - Implement.
     }
-
-    @Override
-    protected void recordDeletionHistogram(boolean deleted) {
-        // TODO: crbug.com/476755159 - Record deletion histograms.
-    }
 }

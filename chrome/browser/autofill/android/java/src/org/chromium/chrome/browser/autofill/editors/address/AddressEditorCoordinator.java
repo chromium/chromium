@@ -105,7 +105,6 @@ public class AddressEditorCoordinator {
                         promptMode,
                         saveToDisk);
         mEditorDialog = new EditorDialogView(activity);
-        mEditorDialog.setProfileRecordTypeSuffix(mMediator.getProfileRecordTypeSuffix());
     }
 
     /**

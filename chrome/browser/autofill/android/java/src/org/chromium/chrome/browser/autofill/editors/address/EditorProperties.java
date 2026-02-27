@@ -51,7 +51,7 @@ public class EditorProperties {
 
     public static final ReadableBooleanPropertyKey ALLOW_DELETE =
             new ReadableBooleanPropertyKey("allow_delete");
-    public static final ReadableObjectPropertyKey<Runnable> DELETE_RUNNABLE =
+    public static final ReadableObjectPropertyKey<Callback<Boolean>> DELETE_CALLBACK =
             new ReadableObjectPropertyKey<>("delete_callback");
 
     public static final WritableBooleanPropertyKey VALIDATE_ON_SHOW =
@@ -74,7 +74,7 @@ public class EditorProperties {
         DONE_RUNNABLE,
         CANCEL_RUNNABLE,
         ALLOW_DELETE,
-        DELETE_RUNNABLE,
+        DELETE_CALLBACK,
         VALIDATE_ON_SHOW,
         VISIBLE,
         SHOW_BUTTONS

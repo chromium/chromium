@@ -246,7 +246,7 @@ public class EntityEditorModuleTest {
                 model.get(EntityEditorProperties.DELETE_CONFIRMATION_PRIMARY_BUTTON_TEXT_ID),
                 R.string.autofill_delete_suggestion_button);
 
-        model.get(EntityEditorProperties.DELETE_RUNNABLE).run();
+        model.get(EntityEditorProperties.DELETE_CALLBACK).onResult(true);
         verify(mDelegate).onDelete(LOCAL_PASSPORT);
     }
 

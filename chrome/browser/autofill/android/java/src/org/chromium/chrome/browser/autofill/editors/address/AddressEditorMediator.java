@@ -9,10 +9,10 @@ import static org.chromium.chrome.browser.autofill.editors.address.EditorPropert
 import static org.chromium.chrome.browser.autofill.editors.address.EditorProperties.ALL_KEYS;
 import static org.chromium.chrome.browser.autofill.editors.address.EditorProperties.CANCEL_RUNNABLE;
 import static org.chromium.chrome.browser.autofill.editors.address.EditorProperties.CUSTOM_DONE_BUTTON_TEXT;
+import static org.chromium.chrome.browser.autofill.editors.address.EditorProperties.DELETE_CALLBACK;
 import static org.chromium.chrome.browser.autofill.editors.address.EditorProperties.DELETE_CONFIRMATION_PRIMARY_BUTTON_TEXT_ID;
 import static org.chromium.chrome.browser.autofill.editors.address.EditorProperties.DELETE_CONFIRMATION_TEXT;
 import static org.chromium.chrome.browser.autofill.editors.address.EditorProperties.DELETE_CONFIRMATION_TITLE;
-import static org.chromium.chrome.browser.autofill.editors.address.EditorProperties.DELETE_RUNNABLE;
 import static org.chromium.chrome.browser.autofill.editors.address.EditorProperties.DONE_RUNNABLE;
 import static org.chromium.chrome.browser.autofill.editors.address.EditorProperties.EDITOR_FIELDS;
 import static org.chromium.chrome.browser.autofill.editors.address.EditorProperties.EDITOR_TITLE;
@@ -53,8 +53,10 @@ import android.text.style.ClickableSpan;
 import android.view.View;
 
 import androidx.annotation.StringRes;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.autofill.AddressValidationType;
@@ -95,7 +97,14 @@ import java.util.function.Predicate;
  * reacts to events like address country selection.
  */
 @NullMarked
-class AddressEditorMediator {
+public class AddressEditorMediator {
+    @VisibleForTesting
+    public static final String PROFILE_DELETED_HISTOGRAM = "Autofill.ProfileDeleted.Any.Total";
+
+    @VisibleForTesting
+    public static final String PROFILE_DELETED_SETTINGS_HISTOGRAM =
+            "Autofill.ProfileDeleted.Settings.Total";
+
     private final PhoneNumberUtil.CountryAwareFormatTextWatcher mPhoneFormatter =
             new PhoneNumberUtil.CountryAwareFormatTextWatcher();
     private final AutofillProfileBridge mAutofillProfileBridge = new AutofillProfileBridge();
@@ -236,7 +245,7 @@ class AddressEditorMediator {
                         // partial address).
                         .with(CANCEL_RUNNABLE, this::onCancelEditing)
                         .with(ALLOW_DELETE, mAllowDelete)
-                        .with(DELETE_RUNNABLE, () -> mDelegate.onDelete(mAddressToEdit))
+                        .with(DELETE_CALLBACK, this::onDelete)
                         .with(
                                 VALIDATE_ON_SHOW,
                                 mPromptMode
@@ -462,6 +471,22 @@ class AddressEditorMediator {
         mEditorModel.set(VISIBLE, false);
 
         mDelegate.onCancel();
+    }
+
+    private void onDelete(boolean userConfirmedDeletion) {
+        RecordHistogram.recordBooleanHistogram(PROFILE_DELETED_HISTOGRAM, userConfirmedDeletion);
+        RecordHistogram.recordBooleanHistogram(
+                PROFILE_DELETED_SETTINGS_HISTOGRAM, userConfirmedDeletion);
+
+        RecordHistogram.recordBooleanHistogram(
+                PROFILE_DELETED_HISTOGRAM + "." + getProfileRecordTypeSuffix(),
+                userConfirmedDeletion);
+        RecordHistogram.recordBooleanHistogram(
+                PROFILE_DELETED_SETTINGS_HISTOGRAM + "." + getProfileRecordTypeSuffix(),
+                userConfirmedDeletion);
+        if (userConfirmedDeletion) {
+            mDelegate.onDelete(mAddressToEdit);
+        }
     }
 
     /** Saves the edited profile on disk. */

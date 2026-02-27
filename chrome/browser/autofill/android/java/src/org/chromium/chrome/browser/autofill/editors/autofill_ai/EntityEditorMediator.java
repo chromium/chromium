@@ -7,10 +7,10 @@ package org.chromium.chrome.browser.autofill.editors.autofill_ai;
 import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEditorProperties.ALLOW_DELETE;
 import static org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEditorProperties.CANCEL_RUNNABLE;
+import static org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEditorProperties.DELETE_CALLBACK;
 import static org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEditorProperties.DELETE_CONFIRMATION_PRIMARY_BUTTON_TEXT_ID;
 import static org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEditorProperties.DELETE_CONFIRMATION_TEXT;
 import static org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEditorProperties.DELETE_CONFIRMATION_TITLE;
-import static org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEditorProperties.DELETE_RUNNABLE;
 import static org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEditorProperties.DONE_RUNNABLE;
 import static org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEditorProperties.EDITOR_FIELDS;
 import static org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEditorProperties.EDITOR_TITLE;
@@ -103,10 +103,17 @@ class EntityEditorMediator {
                 .with(
                         DELETE_CONFIRMATION_PRIMARY_BUTTON_TEXT_ID,
                         R.string.autofill_delete_suggestion_button)
-                .with(DELETE_RUNNABLE, () -> mDelegate.onDelete(mEntityInstance))
+                .with(DELETE_CALLBACK, this::onDelete)
                 .with(ALLOW_DELETE, mEntityInstance.getRecordType() == RecordType.LOCAL)
                 .with(EDITOR_FIELDS, getEditorFields())
                 .build();
+    }
+
+    private void onDelete(boolean userConfirmedDeletion) {
+        // TODO: crbug.com/476755159 - Record deletion histograms.
+        if (userConfirmedDeletion) {
+            mDelegate.onDelete(mEntityInstance);
+        }
     }
 
     private void onCancel() {
