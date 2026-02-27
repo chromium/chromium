@@ -270,7 +270,7 @@ def _run_copybara_to_aosp(config: str, copybara_binary: str,
         it might contain unreviewed changes on top of the aforementioned commit.
 
         """)
-  if not _is_currently_on_latest_stable():
+  if import_channel == 'stable' and not _is_currently_on_latest_stable():
     prefix = 'DO NOT ' + 'SUBMIT'
     commit_message += textwrap.dedent(f"""\
         {prefix}: This import targets the stable channel but was generated from
