@@ -42,20 +42,8 @@ struct LargestContentfulPaintDetailsForReporting {
 };
 
 struct SoftNavigationMetricsForReporting {
-  // A unique number assigned to this soft navigation from the start of the
-  // page load, 1, 2, 3, ... n. For the last soft navigation, it is synonymous
-  // with a count of the soft navigations for the page load.
-  uint64_t soft_navigation_offset = 0;
-
-  // The navigation start (time origin) relative to the start of the
-  // navigation. Note that this field is initially sent with an absolute time,
-  // and only MetricsRenderFrameObserver::DidObserveSoftNavigation makes it
-  // relative to navigation start.
+  uint64_t count = 0;
   base::TimeDelta start_time;
-
-  // The timestamp that we use for slicing the performance timeline. This is
-  // only a Chrome-internal mechanism and never recorded to UKM.
-  base::TimeTicks soft_navigation_slicing_time;
 
   // Identifies the same document navigation for the initial URL change.
   // This allows us to map to the UKM Source ID in the browser side,

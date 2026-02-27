@@ -199,14 +199,14 @@ TEST_F(MetricsRenderFrameObserverTest, MultipleMetricsAndSoftNavigations) {
 
   soft_navigation_metrics->same_document_metrics_token =
       base::UnguessableToken::Create();
-  soft_navigation_metrics->soft_navigation_offset = 1;
+  soft_navigation_metrics->count = 1;
   soft_navigation_metrics->start_time = base::Milliseconds(221.1);
   validator_.ExpectSoftNavigationMetrics(*soft_navigation_metrics);
   validator_.ExpectSoftLargestContentfulPaint(
       *CreateLargestContentfulPaintTiming());
 
   observer_.DidObserveSoftNavigation(blink::SoftNavigationMetricsForReporting{
-      .soft_navigation_offset = soft_navigation_metrics->soft_navigation_offset,
+      .count = soft_navigation_metrics->count,
       .start_time = timing.navigation_start - base::Time::UnixEpoch() +
                     soft_navigation_metrics->start_time,
       .same_document_metrics_token =
@@ -255,11 +255,11 @@ TEST_F(MetricsRenderFrameObserverTest, MultipleMetricsAndSoftNavigations) {
 
   soft_navigation_metrics->same_document_metrics_token =
       base::UnguessableToken::Create();
-  soft_navigation_metrics->soft_navigation_offset = 2;
+  soft_navigation_metrics->count = 2;
   soft_navigation_metrics->start_time = base::Milliseconds(4020.71);
 
   observer_.DidObserveSoftNavigation(blink::SoftNavigationMetricsForReporting{
-      .soft_navigation_offset = soft_navigation_metrics->soft_navigation_offset,
+      .count = soft_navigation_metrics->count,
       .start_time = timing.navigation_start - base::Time::UnixEpoch() +
                     soft_navigation_metrics->start_time,
       .same_document_metrics_token =
