@@ -321,14 +321,15 @@ JsSandboxIsolate::JsSandboxIsolate(
     const size_t max_heap_size_bytes)
     : j_isolate_(j_isolate),
       isolate_max_heap_size_bytes_(max_heap_size_bytes),
-      array_buffer_allocator_(std::make_unique<JsSandboxArrayBufferAllocator>(
-          *gin::ArrayBufferAllocator::SharedInstance(),
-          max_heap_size_bytes > 0
-              ? max_heap_size_bytes
-              : JsSandboxArrayBufferAllocator::kUnlimitedBudget,
+      memory_budget_(std::make_unique<JsSandboxMemoryBudget>(
+          max_heap_size_bytes > 0 ? max_heap_size_bytes
+                                  : JsSandboxMemoryBudget::kUnlimitedBudget,
           // This is a bit of an implementation detail - gin uses the same
           // underlying allocator for pages and array buffers.
           GetAllocatePageSize())),
+      array_buffer_allocator_(std::make_unique<JsSandboxArrayBufferAllocator>(
+          *gin::ArrayBufferAllocator::SharedInstance(),
+          *memory_budget_)),
       control_task_runner_(base::ThreadPool::CreateSequencedTaskRunner({})),
       isolate_task_runner_(base::ThreadPool::CreateSingleThreadTaskRunner(
           {base::TaskPriority::USER_BLOCKING,
@@ -966,6 +967,21 @@ void JsSandboxIsolate::GetNamedPort(gin::Arguments* args) {
   js_sandbox_isolate->MemoryLimitExceeded();
 }
 
+// Called from any thread.
+void JsSandboxIsolate::ExternalMemoryLimitExceeded() {
+  LOG(ERROR) << "Isolate crashed: attempted to allocate memory exceeding the "
+             << "isolate memory budget.";
+  // Intentionally bypass the control thread.
+  // TODO(b/435619571):
+  //  This will freeze the isolate thread and the app will crash the whole
+  //  process, but this isn't strictly necessary for external memory exhaustion
+  //  if V8 can terminate cleanly.
+  isolate_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&JsSandboxIsolate::MemoryLimitExceeded,
+                                base::Unretained(this)));
+  isolate_holder_->isolate()->TerminateExecution();
+}
+
 // Called from isolate thread.
 [[noreturn]] void JsSandboxIsolate::MemoryLimitExceeded() {
   ReportOutOfMemory();
@@ -983,8 +999,7 @@ void JsSandboxIsolate::ReportOutOfMemory() {
   // Note that we use our own memory accounting, and not V8's external memory
   // accounting, for non-heap usage. These numbers can differ, particularly as
   // our own memory accounting considers whole pages rather than just bytes.
-  const uint64_t non_v8_heap_usage =
-      uint64_t{array_buffer_allocator_->GetUsage()};
+  const uint64_t non_v8_heap_usage = uint64_t{memory_budget_->GetUsage()};
 
   std::ostringstream details;
   details << "Memory limit exceeded.\n";
@@ -1202,6 +1217,10 @@ v8::Isolate* JsSandboxIsolate::GetIsolate() {
 scoped_refptr<base::SingleThreadTaskRunner>
 JsSandboxIsolate::GetIsolateTaskRunner() {
   return isolate_task_runner_;
+}
+
+JsSandboxMemoryBudget* JsSandboxIsolate::GetMemoryBudget() {
+  return memory_budget_.get();
 }
 
 static void JNI_JsSandboxIsolate_InitializeEnvironment(JNIEnv* env) {

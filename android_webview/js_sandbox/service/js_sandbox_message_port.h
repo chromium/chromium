@@ -51,14 +51,15 @@ class JsSandboxMessagePort : public gin::Wrappable<JsSandboxMessagePort> {
   // JNI entry point for receiving string messages.
   // Called from a Binder thread.
   // Offloads string handling to the isolate thread.
-  void HandleString(JNIEnv* env, std::string string);
+  void HandleString(JNIEnv* env, std::string string, int64_t size);
 
   // JNI entry point for receiving array buffer messages.
   // Called from a Binder thread.
   // Offloads array buffer handling to the isolate thread.
   void HandleArrayBuffer(
       JNIEnv* env,
-      const base::android::JavaRef<jbyteArray>& j_array_buffer);
+      const base::android::JavaRef<jbyteArray>& j_array_buffer,
+      int64_t size);
 
   // Closes the message port.
   //
@@ -70,6 +71,13 @@ class JsSandboxMessagePort : public gin::Wrappable<JsSandboxMessagePort> {
   //
   // Called on the isolate thread.
   void Close();
+
+  // Attempts to reserve memory for the incoming message.
+  //
+  // If allocation fails, the sandbox is killed.
+  //
+  // This method is thread-safe.
+  bool TryAllocateMemoryBudget(JNIEnv* env, int64_t size);
 
  private:
   // Send a message to the other side of the message channel. This method does
@@ -105,10 +113,11 @@ class JsSandboxMessagePort : public gin::Wrappable<JsSandboxMessagePort> {
   void SetOnMessage(gin::Arguments* args);
 
   // Executes onmessage callback with the given String as a MessageEvent.
-  void HandleStringOnIsolateThread(std::string string);
+  void HandleStringOnIsolateThread(std::string string, size_t size);
   // Executes onmessage callback with the given ArrayBuffer as a MessageEvent.
   void HandleArrayBufferOnIsolateThread(
-      base::android::ScopedJavaGlobalRef<jbyteArray> j_array_buffer);
+      base::android::ScopedJavaGlobalRef<jbyteArray> j_array_buffer,
+      size_t size);
 
   // Java-side JsSandboxMessagePort object corresponding to this message port.
   base::android::ScopedJavaGlobalRef<jobject> j_js_sandbox_message_port_;
