@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_COMPOSEBOX_COORDINATOR_COMPOSEBOX_OMNIBOX_CLIENT_DELEGATE_H_
 #define IOS_CHROME_BROWSER_COMPOSEBOX_COORDINATOR_COMPOSEBOX_OMNIBOX_CLIENT_DELEGATE_H_
 
+#import "components/contextual_search/input_state_model.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_constants.h"
 #import "third_party/omnibox_proto/tool_mode.pb.h"
 
@@ -14,7 +15,8 @@ enum class WindowOpenDisposition;
 /// Delegate for ComposeboxOmniboxClient.
 @protocol ComposeboxOmniboxClientDelegate
 
-- (omnibox::ToolMode)composeboxToolMode;
+/// Returns the current input state of the composebox.
+- (contextual_search::InputState)inputState;
 
 /// Returns the current attached suggest input in the composebox.
 - (std::optional<lens::proto::LensOverlaySuggestInputs>)suggestInputs;

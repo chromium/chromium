@@ -155,18 +155,16 @@ GURL ComposeboxOmniboxClient::GetNavigationEntryURL() const {
 
 metrics::OmniboxEventProto::PageClassification
 ComposeboxOmniboxClient::GetPageClassification(bool is_prefetch) const {
-  BOOL is_in_ai_mode =
-      ([delegate_ composeboxMode] == ComposeboxMode::kAIM) ||
-      ([delegate_ composeboxMode] == ComposeboxMode::kImageGeneration) ||
-      ([delegate_ composeboxMode] == ComposeboxMode::kCanvas);
+  BOOL is_in_regular_search =
+      [delegate_ composeboxMode] == ComposeboxMode::kRegularSearch;
 
-  if (is_in_ai_mode) {
-    return location_bar_->GetLocationBarModel()
-        ->GetOmniboxComposeboxPageClassification();
+  if (is_in_regular_search) {
+    return location_bar_->GetLocationBarModel()->GetPageClassification(
+        is_prefetch);
   }
 
-  return location_bar_->GetLocationBarModel()->GetPageClassification(
-      is_prefetch);
+  return location_bar_->GetLocationBarModel()
+      ->GetOmniboxComposeboxPageClassification();
 }
 
 std::optional<lens::proto::LensOverlaySuggestInputs>
@@ -356,7 +354,5 @@ base::WeakPtr<OmniboxClient> ComposeboxOmniboxClient::AsWeakPtr() {
 }
 
 omnibox::InputState ComposeboxOmniboxClient::GetInputState() const {
-  omnibox::InputState input_state;
-  input_state.active_tool = [delegate_ composeboxToolMode];
-  return input_state;
+  return [delegate_ inputState];
 }
