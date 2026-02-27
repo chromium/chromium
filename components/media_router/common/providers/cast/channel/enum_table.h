@@ -14,6 +14,8 @@
 
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
 
@@ -194,11 +196,11 @@ class
 
  private:
   static const GenericEnumTableEntry* FindByString(
-      const GenericEnumTableEntry data[],
-      std::size_t size,
+      base::span<const GenericEnumTableEntry> data,
       std::string_view str);
-  static std::optional<std::string_view>
-  FindByValue(const GenericEnumTableEntry data[], std::size_t size, int value);
+  static std::optional<std::string_view> FindByValue(
+      base::span<const GenericEnumTableEntry> data,
+      int value);
 
   constexpr std::string_view str() const {
     DCHECK(has_str());
@@ -274,7 +276,7 @@ class EnumTable {
   // the corresponding table.  For best results, use an enum class and create a
   // constant named kMaxValue.  For more details, see
   // https://www.chromium.org/developers/coding-style/chromium-style-checker-errors#TOC-Enumerator-max-values
-  constexpr EnumTable(std::initializer_list<Entry> data, E max_value)
+  constexpr EnumTable(base::span<const Entry> data, E max_value)
       : EnumTable(data, true) {
 #ifndef NDEBUG
     // NOTE(jrw): This is compiled out when NDEBUG is defined, even if DCHECKS
@@ -288,7 +290,7 @@ class EnumTable {
                    << *found;
 
     const auto int_max_value = static_cast<int32_t>(max_value);
-    DCHECK(UNSAFE_TODO(data.end()[-1].value) == int_max_value)
+    DCHECK(data.back().value == int_max_value)
         << "Missing entry for enum value " << int_max_value;
 #endif  // NDEBUG
   }
@@ -314,16 +316,15 @@ class EnumTable {
     if (is_sorted_) {
       const std::size_t index = static_cast<std::size_t>(value);
       if (ANALYZER_ASSUME_TRUE(index < data_.size())) {
-        const auto& entry = UNSAFE_TODO(data_.begin()[index]);
+        const auto& entry = data_[index];
         if (ANALYZER_ASSUME_TRUE(entry.has_str())) {
           return entry.str();
         }
       }
       return std::nullopt;
     }
-    return GenericEnumTableEntry::FindByValue(
-        reinterpret_cast<const GenericEnumTableEntry*>(data_.begin()),
-        data_.size(), static_cast<int32_t>(value));
+    return GenericEnumTableEntry::FindByValue(DataAsGenericEntrySpan(),
+                                              static_cast<int32_t>(value));
   }
 
   // This overload of GetString is designed for cases where the argument is a
@@ -350,9 +351,8 @@ class EnumTable {
   // never be called with a literal string; it's simpler to just refer to the
   // enum value directly.
   std::optional<E> GetEnum(std::string_view str) const {
-    auto* entry = GenericEnumTableEntry::FindByString(
-        reinterpret_cast<const GenericEnumTableEntry*>(data_.begin()),
-        data_.size(), str);
+    auto* entry =
+        GenericEnumTableEntry::FindByString(DataAsGenericEntrySpan(), str);
     return entry ? static_cast<E>(entry->value) : std::optional<E>();
   }
 
@@ -366,10 +366,16 @@ class EnumTable {
 #ifdef ARCH_CPU_64_BITS
   alignas(std::hardware_destructive_interference_size)
 #endif
-      std::initializer_list<Entry> data_;
+      // Constructed from an std::initializer_list pointing at static read only
+      // data.
+      // TODO(crbug.com/486248358): Add a size_t template parameter so we can
+      // have a fixed-size span. We probably need to teach the compiler to
+      // deduce the size using something like std::to_array
+      // (e.g., base::to_enum_table)
+      RAW_PTR_EXCLUSION base::span<const Entry> data_;
   bool is_sorted_;
 
-  constexpr EnumTable(std::initializer_list<Entry> data, bool is_sorted)
+  constexpr EnumTable(base::span<const Entry> data, bool is_sorted)
       : data_(data), is_sorted_(is_sorted) {
 #ifndef NDEBUG
     // If the table is too large, it's probably time to update this class to do
@@ -378,8 +384,8 @@ class EnumTable {
 
     for (std::size_t i = 0; i < data.size(); i++) {
       for (std::size_t j = i + 1; j < data.size(); j++) {
-        const Entry& ei = UNSAFE_TODO(data.begin()[i]);
-        const Entry& ej = UNSAFE_TODO(data.begin()[j]);
+        const Entry& ei = data[i];
+        const Entry& ej = data[j];
         DCHECK(ei.value != ej.value)
             << "Found duplicate enum values at indices " << i << " and " << j;
         DCHECK(!(ei.has_str() && ej.has_str() && ei.str() == ej.str()))
@@ -389,10 +395,20 @@ class EnumTable {
 #endif  // NDEBUG
   }
 
+  base::span<const GenericEnumTableEntry> DataAsGenericEntrySpan() const {
+    // SAFETY: It is always safe to cast a child to a parent class especially
+    // when the objects are exactly the same size/layout.
+    // TODO(crbug.com/476400448): Use reinterpret_span once available.
+    static_assert(sizeof(GenericEnumTableEntry) == sizeof(data_[0]));
+    return UNSAFE_BUFFERS(
+        base::span(reinterpret_cast<const GenericEnumTableEntry*>(data_.data()),
+                   data_.size()));
+  }
+
 #ifndef NDEBUG
   // Finds and returns the first i for which data[i].value != i;
   constexpr static std::optional<std::size_t> FindNonConsecutiveEntry(
-      std::initializer_list<Entry> data) {
+      base::span<const Entry> data) {
     int32_t counter = 0;
     for (const auto& entry : data) {
       if (entry.value != counter) {
