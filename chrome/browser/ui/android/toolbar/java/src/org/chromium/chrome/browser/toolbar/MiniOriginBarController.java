@@ -32,6 +32,7 @@ import org.chromium.chrome.browser.omnibox.LocationBar;
 import org.chromium.components.browser_ui.widget.TouchEventObserver;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.KeyboardVisibilityDelegate.KeyboardVisibilityListener;
+import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.insets.InsetObserver.WindowInsetsAnimationListener;
@@ -127,7 +128,7 @@ public class MiniOriginBarController implements Observer {
     private float mStartingLocationBarX;
     // The final horizontal position of the location bar when the mini origin bar is in its
     // fully-minimized state.
-    private float mFinalLocationBarX;
+    private float mFinalLocationBarTranslationX;
     private boolean mShowingMiniOriginBar;
 
     /**
@@ -309,9 +310,17 @@ public class MiniOriginBarController implements Observer {
         locationBarView.measure(
                 MeasureSpec.makeMeasureSpec(controlContainerWidth, MeasureSpec.AT_MOST),
                 MeasureSpec.makeMeasureSpec(newLocationBarHeight, MeasureSpec.AT_MOST));
-        mStartingLocationBarX = mDefaultLocationBarLayoutParams.leftMargin;
+
+        boolean isRtl = LocalizationUtils.isLayoutRtl();
+        int viewWidth = locationBarView.getMeasuredWidth();
+        // The "resting position" of the left edge of the location bar assuming no translation.
+        float baseLayoutLeftX = isRtl ? controlContainerWidth - viewWidth : 0;
+
+        mStartingLocationBarX = mDefaultLocationBarLayoutParams.leftMargin - baseLayoutLeftX;
         float finalLocationBarWidth = locationBarView.getMeasuredWidth() * LOCATION_BAR_FINAL_SCALE;
-        mFinalLocationBarX = (controlContainerWidth - finalLocationBarWidth) / 2;
+        // The final x coordinate of the left edge that centers it horizontally.
+        float targetAbsoluteLeftX = (controlContainerWidth - finalLocationBarWidth) / 2f;
+        mFinalLocationBarTranslationX = targetAbsoluteLeftX - baseLayoutLeftX;
     }
 
     private void hideMiniOriginBar() {
@@ -460,7 +469,8 @@ public class MiniOriginBarController implements Observer {
     private void setMinimizationProgress(float minimizationProgress) {
         float translationX =
                 mStartingLocationBarX
-                        + minimizationProgress * (mFinalLocationBarX - mStartingLocationBarX);
+                        + minimizationProgress
+                                * (mFinalLocationBarTranslationX - mStartingLocationBarX);
         mLocationBar.getContainerView().setTranslationX(translationX);
 
         float scale = 1.0f - minimizationProgress / LOCATION_BAR_SCALE_DENOMINATOR;
