@@ -604,6 +604,9 @@ TEST_F(BookmarkProviderTest, KeywordModeExtractUserInput) {
   EXPECT_EQ(matches[0].keyword, u"@bookmarks");
   EXPECT_TRUE(PageTransitionCoreTypeIs(matches[0].transition,
                                        ui::PAGE_TRANSITION_KEYWORD));
+
+  // Ensure `fill_to_edit` includes the keyword.
+  EXPECT_EQ(matches[0].fill_into_edit, u"@bookmarks www.domain.com/http/");
 }
 
 TEST_F(BookmarkProviderTest, MaxMatches) {

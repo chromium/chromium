@@ -327,6 +327,7 @@ AutocompleteMatch HistoryQuickProvider::QuickMatchToACMatch(
   if (starter_pack_engine_) {
     match.keyword = starter_pack_engine_->keyword();
     match.transition = ui::PAGE_TRANSITION_KEYWORD;
+    match.fill_into_edit.insert(0, match.keyword + u" ");
   }
 
   if (autocomplete_input_.InKeywordMode()) {

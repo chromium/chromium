@@ -970,6 +970,9 @@ TEST_F(HistoryQuickProviderTest, KeywordModeExtractUserInput) {
   EXPECT_EQ(matches[0].keyword, u"@history");
   EXPECT_TRUE(PageTransitionCoreTypeIs(matches[0].transition,
                                        ui::PAGE_TRANSITION_KEYWORD));
+
+  // Ensure `fill_to_edit` includes the keyword.
+  EXPECT_EQ(matches[0].fill_into_edit, u"@history www.google.com");
 }
 
 TEST_F(HistoryQuickProviderTest,

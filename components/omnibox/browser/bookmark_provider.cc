@@ -112,6 +112,7 @@ void BookmarkProvider::DoAutocomplete(const AutocompleteInput& input) {
       if (starter_pack_engine) {
         match.keyword = starter_pack_engine->keyword();
         match.transition = ui::PAGE_TRANSITION_KEYWORD;
+        match.fill_into_edit.insert(0, match.keyword + u" ");
       }
 
       if (input.current_page_classification() ==

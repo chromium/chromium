@@ -204,6 +204,7 @@ AutocompleteMatch OpenTabProvider::CreateOpenTabMatch(
   if (template_url) {
     match.keyword = template_url->keyword();
     match.transition = ui::PAGE_TRANSITION_KEYWORD;
+    match.fill_into_edit.insert(0, match.keyword + u" ");
   }
 
   // For display in the suggestion UI, elide all optional parts. The user has

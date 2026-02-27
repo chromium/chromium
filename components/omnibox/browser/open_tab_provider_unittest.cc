@@ -9,16 +9,32 @@
 #include "base/test/task_environment.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/fake_autocomplete_provider_client.h"
+#include "components/search_engines/search_engines_test_environment.h"
+#include "components/search_engines/template_url_service.h"
+#include "components/search_engines/template_url_starter_pack_data.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 
 class OpenTabProviderTest : public testing::Test {
  public:
-  OpenTabProviderTest() { open_tab_provider_ = new OpenTabProvider(&client_); }
+  OpenTabProviderTest() {
+    client_.set_template_url_service(
+        search_engines_test_environment_.template_url_service());
+    open_tab_provider_ = new OpenTabProvider(&client_);
+  }
 
   FakeAutocompleteProviderClient& client() { return client_; }
 
   OpenTabProvider& open_tab_provider() { return *open_tab_provider_; }
+
+  void SetUpStarterPack() {
+    std::vector<std::unique_ptr<TemplateURLData>> turls =
+        template_url_starter_pack_data::GetStarterPackEngines();
+    for (auto& turl : turls) {
+      client().GetTemplateURLService()->Add(
+          std::make_unique<TemplateURL>(std::move(*turl)));
+    }
+  }
 
  private:
   base::test::TaskEnvironment task_environment_;
@@ -148,6 +164,33 @@ TEST_F(OpenTabProviderTest, TestZPS) {
 #else
   ASSERT_EQ(0UL, open_tab_provider().matches().size());
 #endif
+}
+
+TEST_F(OpenTabProviderTest, KeywordMode) {
+  SetUpStarterPack();
+
+  TabMatcher::TabWrapper open_tab(u"google", GURL("http://test.com/"),
+                                  base::Time());
+  static_cast<FakeTabMatcher&>(
+      const_cast<TabMatcher&>(client().GetTabMatcher()))
+      .AddOpenTab(open_tab);
+
+  // In keyword mode, "@tabs google" should match since we're only trying
+  // to match "google".
+  AutocompleteInput input(u"@tabs google", metrics::OmniboxEventProto::OTHER,
+                          TestSchemeClassifier());
+  input.set_prefer_keyword(true);
+  input.set_keyword_mode_entry_method(
+      metrics::OmniboxEventProto_KeywordModeEntryMethod_TAB);
+  open_tab_provider().Start(input, /*minimal_changes=*/false);
+
+  ASSERT_EQ(open_tab_provider().matches().size(), 1UL);
+  EXPECT_EQ(open_tab_provider().matches()[0].destination_url,
+            GURL("http://test.com/"));
+
+  // Ensure `fill_to_edit` includes the keyword.
+  EXPECT_EQ(open_tab_provider().matches()[0].fill_into_edit,
+            u"@tabs http://test.com/");
 }
 
 TEST_F(OpenTabProviderTest, TestZPS_WeightedByRecency) {
