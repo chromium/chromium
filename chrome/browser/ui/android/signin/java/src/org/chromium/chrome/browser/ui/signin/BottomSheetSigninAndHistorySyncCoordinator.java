@@ -486,16 +486,6 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
         onFlowComplete(flowResult);
     }
 
-    /** Implements {@link HistorySyncDelegate} */
-    @Override
-    public void recordHistorySyncOptIn(int accessPoint, boolean isHistorySyncAccepted) {
-        if (isHistorySyncAccepted) {
-            SigninMetricsUtils.logHistorySyncAcceptButtonClicked(accessPoint);
-        } else {
-            SigninMetricsUtils.logHistorySyncDeclineButtonClicked(accessPoint);
-        }
-    }
-
     /** Implements {@link ActivityResultTracker.ResultListener} */
     @Override
     public void onActivityResult(ActivityResult result, @Nullable Bundle savedInstanceData) {

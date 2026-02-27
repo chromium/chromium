@@ -40,10 +40,6 @@ public class HistorySyncCoordinator {
          * @param isHistorySyncAccepted Whether the user accepted history sync.
          */
         void dismissHistorySync(boolean didSignOut, boolean isHistorySyncAccepted);
-
-        // TODO(crbug.com/453950636): inline delegate implementation directly in HistorySyncMediator
-        void recordHistorySyncOptIn(
-                @SigninAccessPoint int accessPoint, boolean isHistorySyncAccepted);
     }
 
     private final Activity mActivity;

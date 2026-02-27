@@ -211,9 +211,12 @@ public class HistorySyncTest {
     @MediumTest
     public void testPositiveButtonWithNonMinorModeAccount() {
         HistogramWatcher histogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "Signin.SyncButtons.Shown",
-                        SyncButtonsType.HISTORY_SYNC_NOT_EQUAL_WEIGHTED);
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Signin.SyncButtons.Shown",
+                                SyncButtonsType.HISTORY_SYNC_NOT_EQUAL_WEIGHTED)
+                        .expectIntRecord("Signin.HistorySyncOptIn.Completed", SIGNIN_ACCESS_POINT)
+                        .build();
 
         mSigninTestRule.addAccountThenSignin(TestAccounts.AADC_ADULT_ACCOUNT);
         buildHistorySyncCoordinator();
@@ -222,8 +225,6 @@ public class HistorySyncTest {
 
         histogramWatcher.assertExpected();
         verify(mHistorySyncHelperMock).setHistoryAndTabsSync(true);
-        verify(mHistorySyncDelegateMock)
-                .recordHistorySyncOptIn(SIGNIN_ACCESS_POINT, /* isHistorySyncAccepted= */ true);
         verify(mHistorySyncDelegateMock)
                 .dismissHistorySync(/* didSignOut= */ false, /* isHistorySyncAccepted= */ true);
         verify(mHistorySyncHelperMock).clearHistorySyncDeclinedPrefs();
@@ -233,9 +234,12 @@ public class HistorySyncTest {
     @MediumTest
     public void testNegativeButtonNonMinorModeAccount() {
         HistogramWatcher histogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "Signin.SyncButtons.Shown",
-                        SyncButtonsType.HISTORY_SYNC_NOT_EQUAL_WEIGHTED);
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Signin.SyncButtons.Shown",
+                                SyncButtonsType.HISTORY_SYNC_NOT_EQUAL_WEIGHTED)
+                        .expectIntRecord("Signin.HistorySyncOptIn.Declined", SIGNIN_ACCESS_POINT)
+                        .build();
 
         mSigninTestRule.addAccountThenSignin(TestAccounts.AADC_ADULT_ACCOUNT);
         buildHistorySyncCoordinator();
@@ -245,8 +249,6 @@ public class HistorySyncTest {
         histogramWatcher.assertExpected();
         verifyNoInteractions(mSyncServiceMock);
         verify(mHistorySyncHelperMock, never()).setHistoryAndTabsSync(anyBoolean());
-        verify(mHistorySyncDelegateMock)
-                .recordHistorySyncOptIn(SIGNIN_ACCESS_POINT, /* isHistorySyncAccepted= */ false);
         verify(mHistorySyncDelegateMock)
                 .dismissHistorySync(/* didSignOut= */ false, /* isHistorySyncAccepted= */ false);
         assertNotNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
@@ -256,9 +258,12 @@ public class HistorySyncTest {
     @MediumTest
     public void testPositiveButtonWithMinorModeAccount() {
         HistogramWatcher histogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "Signin.SyncButtons.Shown",
-                        SyncButtonsType.HISTORY_SYNC_EQUAL_WEIGHTED_FROM_CAPABILITY);
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Signin.SyncButtons.Shown",
+                                SyncButtonsType.HISTORY_SYNC_EQUAL_WEIGHTED_FROM_CAPABILITY)
+                        .expectIntRecord("Signin.HistorySyncOptIn.Completed", SIGNIN_ACCESS_POINT)
+                        .build();
 
         mSigninTestRule.addAccountThenSignin(TestAccounts.AADC_MINOR_ACCOUNT);
         buildHistorySyncCoordinator();
@@ -268,8 +273,6 @@ public class HistorySyncTest {
         histogramWatcher.assertExpected();
         verify(mHistorySyncHelperMock).setHistoryAndTabsSync(true);
         verify(mHistorySyncDelegateMock)
-                .recordHistorySyncOptIn(SIGNIN_ACCESS_POINT, /* isHistorySyncAccepted= */ true);
-        verify(mHistorySyncDelegateMock)
                 .dismissHistorySync(/* didSignOut= */ false, /* isHistorySyncAccepted= */ true);
     }
 
@@ -277,9 +280,12 @@ public class HistorySyncTest {
     @MediumTest
     public void testNegativeButtonWithMinorModeAccount() {
         HistogramWatcher histogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "Signin.SyncButtons.Shown",
-                        SyncButtonsType.HISTORY_SYNC_EQUAL_WEIGHTED_FROM_CAPABILITY);
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Signin.SyncButtons.Shown",
+                                SyncButtonsType.HISTORY_SYNC_EQUAL_WEIGHTED_FROM_CAPABILITY)
+                        .expectIntRecord("Signin.HistorySyncOptIn.Declined", SIGNIN_ACCESS_POINT)
+                        .build();
 
         mSigninTestRule.addAccountThenSignin(TestAccounts.AADC_MINOR_ACCOUNT);
         buildHistorySyncCoordinator();
@@ -290,8 +296,6 @@ public class HistorySyncTest {
         verifyNoInteractions(mSyncServiceMock);
         verify(mHistorySyncHelperMock, never()).setHistoryAndTabsSync(anyBoolean());
         verify(mHistorySyncDelegateMock)
-                .recordHistorySyncOptIn(SIGNIN_ACCESS_POINT, /* isHistorySyncAccepted= */ false);
-        verify(mHistorySyncDelegateMock)
                 .dismissHistorySync(/* didSignOut= */ false, /* isHistorySyncAccepted= */ false);
         assertNotNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
         verify(mHistorySyncHelperMock).recordHistorySyncDeclinedPrefs();
@@ -300,16 +304,18 @@ public class HistorySyncTest {
     @Test
     @MediumTest
     public void testNegativeButton_shouldSignOutOnDecline() {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Signin.HistorySyncOptIn.Declined", SIGNIN_ACCESS_POINT);
         mSigninTestRule.addAccountThenSignin(TestAccounts.AADC_ADULT_ACCOUNT);
         buildHistorySyncCoordinator(
                 /* showEmailInFooter= */ false, /* shouldSignOutOnDecline= */ true);
 
         onView(withText(R.string.history_sync_secondary_action)).perform(click());
 
+        histogramWatcher.assertExpected();
         verifyNoInteractions(mSyncServiceMock);
         verify(mHistorySyncHelperMock, never()).setHistoryAndTabsSync(anyBoolean());
-        verify(mHistorySyncDelegateMock)
-                .recordHistorySyncOptIn(SIGNIN_ACCESS_POINT, /* isHistorySyncAccepted= */ false);
         verify(mHistorySyncDelegateMock, atLeastOnce())
                 .dismissHistorySync(/* didSignOut= */ true, /* isHistorySyncAccepted= */ false);
         CriteriaHelper.pollUiThread(

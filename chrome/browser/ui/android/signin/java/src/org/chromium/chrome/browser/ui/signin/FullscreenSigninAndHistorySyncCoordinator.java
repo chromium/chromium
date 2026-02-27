@@ -347,17 +347,6 @@ public final class FullscreenSigninAndHistorySyncCoordinator extends SigninAndHi
         mDelegate.onFlowComplete(flowResult);
     }
 
-    /** Implements {@link HistorySyncDelegate} */
-    @Override
-    public void recordHistorySyncOptIn(
-            @SigninAccessPoint int accessPoint, boolean isHistorySyncAccepted) {
-        if (isHistorySyncAccepted) {
-            SigninMetricsUtils.logHistorySyncAcceptButtonClicked(accessPoint);
-        } else {
-            SigninMetricsUtils.logHistorySyncDeclineButtonClicked(accessPoint);
-        }
-    }
-
     @EnsuresNonNull({"mFullscreenSigninView", "mHistorySyncView"})
     private void inflateViewBundle() {
         boolean useLandscapeLayout = SigninUtils.shouldShowDualPanesHorizontalLayout(mActivity);

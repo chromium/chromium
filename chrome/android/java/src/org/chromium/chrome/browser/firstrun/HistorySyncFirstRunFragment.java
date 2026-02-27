@@ -23,7 +23,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
-import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncCoordinator;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncView;
@@ -117,17 +116,6 @@ public class HistorySyncFirstRunFragment extends Fragment
         if (mHistorySyncCoordinator != null) {
             mHistorySyncCoordinator.destroy();
             mHistorySyncCoordinator = null;
-        }
-    }
-
-    /** Implements {@link HistorySyncDelegate} */
-    @Override
-    public void recordHistorySyncOptIn(
-            @SigninAccessPoint int accessPoint, boolean isHistorySyncAccepted) {
-        if (isHistorySyncAccepted) {
-            SigninMetricsUtils.logHistorySyncAcceptButtonClicked(accessPoint);
-        } else {
-            SigninMetricsUtils.logHistorySyncDeclineButtonClicked(accessPoint);
         }
     }
 
