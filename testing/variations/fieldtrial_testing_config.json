@@ -24093,12 +24093,7 @@
         {
             "platforms": [
                 "android",
-                "android_webview",
-                "chromeos",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
+                "android_webview"
             ],
             "experiments": [
                 {
