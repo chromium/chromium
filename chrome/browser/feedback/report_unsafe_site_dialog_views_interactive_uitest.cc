@@ -12,13 +12,22 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "components/url_formatter/elide_url.h"
 #include "content/public/test/browser_test.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/interactive_test.h"
 #include "ui/views/interaction/interactive_views_test.h"
+
+namespace {
+
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kDialogWebviewId);
+
+}  // anonymous namespace
 
 // Interactive UI tests for report-unsafe-site dialog.
 class ReportUnsafeSiteDialogInteractiveUiTest : public InteractiveBrowserTest {
@@ -28,6 +37,8 @@ class ReportUnsafeSiteDialogInteractiveUiTest : public InteractiveBrowserTest {
 
   void SetUpOnMainThread() override {
     InteractiveBrowserTest::SetUpOnMainThread();
+    ASSERT_TRUE(embedded_test_server()->Start());
+
     PrefService* prefs = GetProfile()->GetPrefs();
     prefs->SetBoolean(prefs::kUserFeedbackAllowed, true);
     safe_browsing::SetSafeBrowsingState(
@@ -43,13 +54,19 @@ class ReportUnsafeSiteDialogInteractiveUiTest : public InteractiveBrowserTest {
   }
 
   auto WaitForDialog() {
-    return InAnyContext(WaitForShow(
-        feedback::ReportUnsafeSiteDialogViews::kReportUnsafeSiteDialogId));
+    return InAnyContext(
+        WaitForShow(
+            feedback::ReportUnsafeSiteDialogViews::kReportUnsafeSiteDialogId),
+        InstrumentNonTabWebView(kDialogWebviewId,
+                                feedback::kReportUnsafeSiteWebviewElementId));
   }
 
   auto CloseDialog() {
     return InAnyContext(
-        PressButton(views::BubbleFrameView::kCloseButtonElementId),
+        ClickElement(kDialogWebviewId,
+                     {"report-unsafe-site-app", ".cancel-button"},
+                     ui_controls::LEFT, ui_controls::kNoAccelerator,
+                     ExecuteJsMode::kFireAndForget),
         WaitForHide(
             feedback::ReportUnsafeSiteDialogViews::kReportUnsafeSiteDialogId));
   }
@@ -72,13 +89,10 @@ IN_PROC_BROWSER_TEST_F(ReportUnsafeSiteDialogInteractiveUiTest,
 IN_PROC_BROWSER_TEST_F(ReportUnsafeSiteDialogInteractiveUiTest,
                        ClickOnUnsafeSitePolicy) {
   const GURL kExpectedLinkUrl("https://safebrowsing.google.com/#policies");
-  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kDialogWebviewId);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContents2Id);
   RunTestSequence(
       ExecuteReportUnsafeSiteCommand(), WaitForDialog(),
       InAnyContext(
-          InstrumentNonTabWebView(kDialogWebviewId,
-                                  feedback::kReportUnsafeSiteWebviewElementId),
           ClickElement(kDialogWebviewId,
                        {"report-unsafe-site-app", "#unsafe_site_policy_link"},
                        ui_controls::LEFT, ui_controls::kNoAccelerator,
@@ -95,4 +109,19 @@ IN_PROC_BROWSER_TEST_F(ReportUnsafeSiteDialogInteractiveUiTest,
 IN_PROC_BROWSER_TEST_F(ReportUnsafeSiteDialogInteractiveUiTest, ShowDialog) {
   RunTestSequence(ExecuteReportUnsafeSiteCommand(), WaitForDialog(),
                   CloseDialog());
+}
+
+IN_PROC_BROWSER_TEST_F(ReportUnsafeSiteDialogInteractiveUiTest, UrlInDialog) {
+  GURL url = embedded_test_server()->GetURL("/simple.html");
+  std::u16string formatted_origin =
+      url_formatter::FormatUrlForSecurityDisplay(url);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  RunTestSequence(
+      ExecuteReportUnsafeSiteCommand(), WaitForDialog(),
+      CheckJsResultAt(
+          kDialogWebviewId,
+          {"report-unsafe-site-app", ".url-input-container", "input"},
+          "(el) => el.value", ::testing::Eq(formatted_origin)),
+      CloseDialog());
 }

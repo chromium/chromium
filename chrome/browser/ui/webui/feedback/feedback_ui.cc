@@ -6,6 +6,7 @@
 
 #include "chrome/browser/feedback/report_unsafe_site_dialog.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/feedback/report_unsafe_site/report_unsafe_site_handler.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
@@ -24,6 +25,8 @@
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+namespace feedback_mojom = feedback::report_unsafe_site::mojom;
 
 void AddStringResources(content::WebUIDataSource* source,
                         const Profile* profile) {
@@ -96,7 +99,7 @@ void CreateAndAddFeedbackHTMLSource(Profile* profile) {
   AddStringResources(source, profile);
 }
 
-FeedbackUI::FeedbackUI(content::WebUI* web_ui) : WebDialogUI(web_ui) {
+FeedbackUI::FeedbackUI(content::WebUI* web_ui) : MojoWebDialogUI(web_ui) {
   CreateAndAddFeedbackHTMLSource(Profile::FromWebUI(web_ui));
 }
 
@@ -104,6 +107,21 @@ FeedbackUI::~FeedbackUI() = default;
 
 bool FeedbackUI::IsFeedbackEnabled(Profile* profile) {
   return profile->GetPrefs()->GetBoolean(prefs::kUserFeedbackAllowed);
+}
+
+void FeedbackUI::BindInterface(
+    mojo::PendingReceiver<feedback_mojom::PageHandlerFactory> receiver) {
+  if (report_unsafe_site_factory_receiver_.is_bound()) {
+    report_unsafe_site_factory_receiver_.reset();
+  }
+  report_unsafe_site_factory_receiver_.Bind(std::move(receiver));
+}
+
+void FeedbackUI::CreatePageHandler(
+    mojo::PendingReceiver<feedback_mojom::PageHandler> handler) {
+  report_unsafe_site_page_handler_ =
+      std::make_unique<ReportUnsafeSitePageHandler>(
+          embedder_, triggering_web_contents_, std::move(handler));
 }
 
 FeedbackUIConfig::FeedbackUIConfig()

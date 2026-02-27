@@ -1,0 +1,21 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module feedback.report_unsafe_site.mojom;
+
+// Browser side handler for receiving calls from the page.
+interface PageHandler {
+  // Closes the dialog.
+  CloseDialog();
+
+  // Gets the URL, formatted for display, of the triggering page. The returned
+  // URL should be used for display only.
+  GetPageUrl() => (string page_url);
+};
+
+// Used by the WebUI page to bootstrap bidirectional communication.
+interface PageHandlerFactory {
+  // Creates the page handler and binds the pending endpoints.
+  CreatePageHandler(pending_receiver<PageHandler> handler);
+};

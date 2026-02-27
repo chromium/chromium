@@ -36,6 +36,7 @@ build_webui("build") {
     "report_unsafe_site/icons.html.ts",
     "report_unsafe_site/report_unsafe_site_app.ts",
     "report_unsafe_site/report_unsafe_site_app.html.ts",
+    "report_unsafe_site/report_unsafe_site_browser_proxy.ts",
     "system_info_app.html.ts",
     "system_info_app.ts",
   ]
@@ -47,6 +48,9 @@ build_webui("build") {
     "feedback_shared_vars.css",
     "report_unsafe_site/report_unsafe_site_app.css",
   ]
+
+  mojo_files_deps = [ "//chrome/browser/ui/webui/feedback/report_unsafe_site:mojo_bindings_ts__generator" ]
+  mojo_files = [ "$root_gen_dir/chrome/browser/ui/webui/feedback/report_unsafe_site/report_unsafe_site.mojom-webui.ts" ]
 
   if (is_chromeos) {
     ts_files += [ "js/jelly_colors.ts" ]
@@ -62,6 +66,7 @@ build_webui("build") {
     "//third_party/lit/v3_0:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
+    "//ui/webui/resources/mojo:build_ts",
   ]
   if (is_chromeos) {
     ts_deps +=

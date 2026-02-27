@@ -16,7 +16,8 @@ export function getHtml(this: ReportUnsafeSiteAppElement) {
 
 <div class="main-content">
   <label class="url-input-container">
-    $i18n{reportUnsafeSiteDialogUrlLabel}<input type="text" readonly/>
+    $i18n{reportUnsafeSiteDialogUrlLabel}
+    <input type="text" .value="${this.pageUrl_}" readonly/>
   </label>
   <div class="two-cols">
     <div class="hidden-screenshot-image">
@@ -25,11 +26,13 @@ export function getHtml(this: ReportUnsafeSiteAppElement) {
     <div>
       <cr-checkbox>
         $i18n{reportUnsafeSiteDialogIncludeScreenshotCheckboxLabel}
-      </cr-checkox>
+      </cr-checkbox>
     </div>
   </div>
   <div class="button-container">
-    <cr-button class="cancel-button">$i18n{cancel}</cr-button>
+    <cr-button class="cancel-button" @click="${this.onCancelButtonClick_}">
+      $i18n{cancel}
+    </cr-button>
     <cr-button class="action-button">
       $i18n{reportUnsafeSiteDialogSendButtonLabel}
     </cr-button>

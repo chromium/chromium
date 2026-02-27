@@ -11,6 +11,7 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './report_unsafe_site_app.css.js';
 import {getHtml} from './report_unsafe_site_app.html.js';
+import {ReportUnsafeSiteBrowserProxyImpl} from './report_unsafe_site_browser_proxy.js';
 
 export class ReportUnsafeSiteAppElement extends CrLitElement {
   static get is() {
@@ -23,6 +24,30 @@ export class ReportUnsafeSiteAppElement extends CrLitElement {
 
   override render() {
     return getHtml.bind(this)();
+  }
+
+  static override get properties() {
+    return {
+      pageUrl_: {
+        type: String,
+      },
+    };
+  }
+
+  protected accessor pageUrl_: string = '';
+
+  override async connectedCallback() {
+    super.connectedCallback();
+    this.pageUrl_ = (await ReportUnsafeSiteBrowserProxyImpl.getInstance()
+                         .getPageHandler()
+                         .getPageUrl())
+                        .pageUrl;
+  }
+
+  protected onCancelButtonClick_() {
+    ReportUnsafeSiteBrowserProxyImpl.getInstance()
+        .getPageHandler()
+        .closeDialog();
   }
 }
 
