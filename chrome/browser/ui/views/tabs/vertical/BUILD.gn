@@ -91,6 +91,7 @@ source_set("impl") {
     "//chrome/browser/ui/views/tabs/shared",
     "//chrome/browser/ui/views/toolbar",
     "//components/contextual_tasks/public:feature_list",
+    "//components/performance_manager",
   ]
 
   if (enable_glic) {

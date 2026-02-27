@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/views/tabs/tab/alert_indicator_button.h"
 #include "chrome/browser/ui/views/tabs/tab/tab_context_menu_controller.h"
 #include "chrome/common/buildflags.h"
+#include "components/performance_manager/public/freezing/freezing.h"
 #include "components/tabs/public/tab_interface.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -66,6 +67,11 @@ class VerticalTabView : public views::View,
   ~VerticalTabView() override;
 
   void StepLoadingAnimation(const base::TimeDelta& elapsed_time);
+
+  void CreateFreezingVote();
+  void ReleaseFreezingVote();
+  bool HasFreezingVote() const { return freezing_vote_.has_value(); }
+
   void UpdateHovered(bool hovered);
   bool IsHoverAnimationActive() const;
 
@@ -225,6 +231,8 @@ class VerticalTabView : public views::View,
   std::optional<int> inactive_tab_fill_id_;
 
   base::CallbackListSubscription ax_name_changed_subscription_;
+
+  std::optional<performance_manager::freezing::FreezingVote> freezing_vote_;
 
   base::WeakPtrFactory<VerticalTabView> weak_ptr_factory_{this};
 };

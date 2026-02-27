@@ -242,6 +242,16 @@ void VerticalTabView::StepLoadingAnimation(
   icon_->StepLoadingAnimation(elapsed_time);
 }
 
+void VerticalTabView::CreateFreezingVote() {
+  if (!freezing_vote_.has_value()) {
+    freezing_vote_.emplace(GetTabInterface()->GetContents());
+  }
+}
+
+void VerticalTabView::ReleaseFreezingVote() {
+  freezing_vote_.reset();
+}
+
 void VerticalTabView::UpdateHovered(bool hovered) {
   if (hovered_ == hovered) {
     return;

@@ -21,13 +21,17 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/event_utils.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/vertical_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/tabs/tab/tab_context_menu_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_group_editor_bubble_view.h"
+#include "chrome/browser/ui/views/tabs/vertical/root_tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/vertical/tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_drag_handler.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_group_view.h"
+#include "chrome/browser/ui/views/tabs/vertical/vertical_tab_view.h"
 #include "components/tabs/public/tab_collection_types.h"
 #include "components/tabs/public/tab_group.h"
 #include "components/tabs/public/tab_interface.h"
@@ -203,6 +207,23 @@ void VerticalTabStripController::ToggleTabGroupCollapsedState(
                                        group->visual_data()->color(),
                                        !is_currently_collapsed),
         true);
+  }
+
+  if (should_toggle_group &&
+      base::FeatureList::IsEnabled(features::kTabGroupsCollapseFreezing)) {
+    gfx::Range tabs_in_group = group->ListTabs();
+    for (uint32_t i = tabs_in_group.start(); i < tabs_in_group.end(); ++i) {
+      views::View* const view =
+          browser_view_->tab_strip_view()->GetTabAnchorViewAt(i);
+      CHECK(views::IsViewClass<VerticalTabView>(view));
+      VerticalTabView* const tab_view =
+          views::AsViewClass<VerticalTabView>(view);
+      if (is_currently_collapsed) {
+        tab_view->ReleaseFreezingVote();
+      } else {
+        tab_view->CreateFreezingVote();
+      }
+    }
   }
 
   const bool is_implicit_action =
