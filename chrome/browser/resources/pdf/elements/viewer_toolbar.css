@@ -169,7 +169,6 @@ cr-progress,
   visibility: visible;
 }
 
-<if expr="enable_glic">
 #glic-controls {
   align-items: center;
   display: flex;
@@ -195,7 +194,6 @@ cr-progress,
   padding-inline-end: 12px;
   padding-inline-start: 8px;
 }
-</if>
 
 <if expr="enable_pdf_ink2">
 .annotate-button {

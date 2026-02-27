@@ -83,7 +83,6 @@ import {AnnotationMode} from '../constants.js';
             title="$i18n{annotationRedo}"></cr-icon-button>
       </span>` : ''}
 </if>
-<if expr="enable_glic">
     ${this.pdfGlicSummarizeEnabled_ ? html`
     <span id="glic-controls">
       <span class="vertical-separator"></span>
@@ -95,7 +94,6 @@ import {AnnotationMode} from '../constants.js';
         $i18n{glicSummarize}
       </cr-button>
     </span>` : ''}
-</if>
   </div>
   <div id="end">
 <if expr="enable_pdf_save_to_drive">

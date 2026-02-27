@@ -74,12 +74,10 @@ export {DefaultBrowserBrowserProxyImpl} from './default_browser_page/default_bro
 export type {DefaultBrowserBrowserProxy, DefaultBrowserInfo} from './default_browser_page/default_browser_browser_proxy.js';
 export {SettingsDefaultBrowserPageElement} from './default_browser_page/default_browser_page.js';
 // </if>
-// <if expr="enable_glic">
 export {GlicBrowserProxyImpl} from './glic_page/glic_browser_proxy.js';
 export type {GlicBrowserProxy} from './glic_page/glic_browser_proxy.js';
 export {SettingsGlicPageElement} from './glic_page/glic_page.js';
 export {SettingsGlicPageFeaturePrefName, SettingsGlicSubpageElement} from './glic_page/glic_subpage.js';
-// </if>
 export {loadTimeData} from './i18n_setup.js';
 // <if expr="not is_chromeos">
 export {convertLanguageCodeForChrome, convertLanguageCodeForTranslate, getBaseLanguage, isTranslateBaseLanguage} from './languages_page/languages_util.js';

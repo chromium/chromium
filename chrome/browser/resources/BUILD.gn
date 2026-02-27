@@ -20,6 +20,9 @@ assert(!is_fuchsia, "Fuchsia shouldn't use anything in //chrome")
 group("resources") {
   public_deps = [
     "contextual_tasks:resources",
+    "glic:resources",
+    "glic/fre:resources",
+    "glic/shared:resources",
     "saved_tab_groups_unsupported:resources",
     "segmentation_internals:resources",
     "//components/enterprise/connectors/resources",
@@ -44,6 +47,7 @@ group("resources") {
       "downloads:resources",
       "feedback:resources",
       "gaia_auth_host:resources",
+      "glic/selection_overlay:resources",
       "history:resources",
       "inspect:resources",
       "key_value_pair_viewer_shared:resources",
@@ -179,17 +183,6 @@ group("resources") {
 
   if (enable_compose) {
     public_deps += [ "compose:resources" ]
-  }
-
-  if (enable_glic) {
-    public_deps += [
-      "glic:resources",
-      "glic/fre:resources",
-      "glic/shared:resources",
-    ]
-    if (!is_android) {
-      public_deps += [ "glic/selection_overlay:resources" ]
-    }
   }
 
   if (enterprise_watermark) {

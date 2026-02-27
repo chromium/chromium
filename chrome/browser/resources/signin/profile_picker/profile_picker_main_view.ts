@@ -364,12 +364,10 @@ export class ProfilePickerMainViewElement extends
   }
 
   protected getTitle_(): TrustedHTML {
-    // <if expr="enable_glic">
     if (this.isProfileListLoadedAndEmptyAndGlic_()) {
       // Special styling through 'class' attribute in some version of the title.
       return this.i18nAdvanced('glicTitleNoProfile', {attrs: ['class']});
     }
-    // </if>
     const titleStringResouce = this.isProfilePickerTextVariationsEnabled_ &&
             this.profilesList_.length === 1 ?
         'mainViewSingleProfileTitle' :
@@ -378,14 +376,12 @@ export class ProfilePickerMainViewElement extends
   }
 
   protected getSubtitle_(): TrustedHTML {
-    // <if expr="enable_glic">
     if (this.isProfileListLoadedAndEmptyAndGlic_()) {
       // Special tagging through 'class' attribute in some version of the
       // subtitle.
       return this.i18nAdvanced(
           'mainViewSubtitleGlicNoProfile', {attrs: ['class']});
     }
-    // </if>
     const subtitleStringResource = this.isProfilePickerTextVariationsEnabled_ &&
             this.profilesList_.length === 1 ?
         'mainViewSingleProfileSubtitle' :

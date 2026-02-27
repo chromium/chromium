@@ -15,7 +15,6 @@
     show-all$="[[shouldShowAll]]">
   <settings-ai-info-card slot="view" id="aiInfoCard"></settings-ai-info-card>
 
-<if expr="enable_glic">
   <template is="dom-if" if="[[showGlicSettings_]]">
     <settings-glic-page slot="view" id="glic" prefs="{{prefs}}">
     </settings-glic-page>
@@ -25,7 +24,6 @@
         route-path$="[[routes_.GEMINI.path]]">
     </settings-glic-subpage>
   </template>
-</if>
 
   <template is="dom-if" if="[[showAiPageAiFeatureSection_]]">
     <settings-ai-page slot="view" id="parent" prefs="{{prefs}}">

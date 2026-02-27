@@ -42,12 +42,10 @@ ${isGlicVersion() ? html`
       </cr-button>
     </div>
   </div>
-<if expr="enable_glic">
   <div id="footer-text" class="subtitle"
       ?hidden="${this.shouldHideFooterText_()}">
     $i18nRaw{glicAddProfileHelper}
   </div>
-</if>
 </div>
 <div class="footer">
   <div class="footer-buttons-container">

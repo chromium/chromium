@@ -207,11 +207,9 @@ function createRoutes(): SettingsRoutes {
     if (loadTimeData.getBoolean('showComposeControl')) {
       r.OFFER_WRITING_HELP = r.AI.createChild('/ai/helpMeWrite');
     }
-    // <if expr="enable_glic">
     if (loadTimeData.getBoolean('showGlicSettings')) {
       r.GEMINI = r.AI.createChild('/ai/gemini');
     }
-    // </if>
   }
 
   if (visibility.appearance !== false) {

@@ -102,6 +102,8 @@ build_webui("build") {
     "controls/settings_slider.ts",
     "controls/settings_toggle_button.ts",
     "downloads_page/downloads_page.ts",
+    "glic_page/glic_page.ts",
+    "glic_page/glic_subpage.ts",
     "on_startup_page/on_startup_page.ts",
     "on_startup_page/startup_url_dialog.ts",
     "on_startup_page/startup_url_entry.ts",
@@ -263,13 +265,6 @@ build_webui("build") {
     "your_saved_info_page/your_saved_info_page.ts",
     "your_saved_info_page/your_saved_info_page_index.ts",
   ]
-
-  if (enable_glic) {
-    web_component_files += [
-      "glic_page/glic_page.ts",
-      "glic_page/glic_subpage.ts",
-    ]
-  }
 
   if (!is_chromeos) {
     web_component_files += [

@@ -109,9 +109,7 @@ export class ViewerToolbarElement extends CrLitElement {
       printingEnabled_: {type: Boolean},
       viewportZoomPercent_: {type: Number},
 
-      // <if expr="enable_glic">
       pdfGlicSummarizeEnabled_: {type: Boolean},
-      // </if> enable_glic
 
       // <if expr="enable_pdf_ink2">
       annotationAvailable: {type: Boolean},
@@ -156,9 +154,7 @@ export class ViewerToolbarElement extends CrLitElement {
   protected accessor printingEnabled_: boolean = false;
   private accessor viewportZoomPercent_: number = 0;
 
-  // <if expr="enable_glic">
   protected accessor pdfGlicSummarizeEnabled_: boolean = false;
-  // </if> enable_glic
 
   // <if expr="enable_pdf_save_to_drive">
   accessor pdfSaveToDriveEnabled: boolean = false;
@@ -231,10 +227,8 @@ export class ViewerToolbarElement extends CrLitElement {
 
   private updateLoadTimeData_() {
     this.printingEnabled_ = loadTimeData.getBoolean('printingEnabled');
-    // <if expr="enable_glic">
     this.pdfGlicSummarizeEnabled_ =
         loadTimeData.getBoolean('pdfGlicSummarizeEnabled');
-    // </if> enable_glic
     // <if expr="enable_pdf_ink2">
     this.pdfTextAnnotationsEnabled_ =
         loadTimeData.getBoolean('pdfTextAnnotationsEnabled');
@@ -262,11 +256,9 @@ export class ViewerToolbarElement extends CrLitElement {
                                                         'tooltipFitToWidth');
   }
 
-  // <if expr="enable_glic">
   protected onGlicSummarizeClick_() {
     this.fire('glic-summarize');
   }
-  // </if>
 
   // <if expr="enable_pdf_ink2">
   protected showInk2Buttons_(): boolean {
