@@ -204,6 +204,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Actor.NavigationGating.ActionNavigationsApprovedByServer"
+    enum="BooleanAllowed" expires_after="2027-02-20">
+  <owner>masnoble@google.com</owner>
+  <owner>dylancutler@google.com</owner>
+  <owner>cfredric@google.com</owner>
+  <summary>
+    Records whether the navigation was approved by the server via a
+    NavigationConfirmationRequest to glic every time the actor processes a
+    navigation that was caused by an action and was not blocklisted.
+  </summary>
+</histogram>
+
 <histogram name="Actor.NavigationGating.AllowListSize" units="origins"
     expires_after="2026-08-02">
   <owner>dylancutler@google.com</owner>

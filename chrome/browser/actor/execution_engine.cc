@@ -277,11 +277,22 @@ ExecutionEngine::ShouldDeferNavigation(
 
   switch (decision) {
     case GatingDecision::kAllowSameOrigin:
+      LogNavigationGating(
+          /*initiator_origin=*/navigation_handle.GetInitiatorOrigin(),
+          url::Origin::Create(navigation_handle.GetURL()),
+          /*applied_gate=*/false);
+      MaybeRecordNavigationConfirmationMetrics(
+          state(), url::Origin::Create(navigation_handle.GetURL()),
+          /*is_pre_approved=*/true);
+      return content::NavigationThrottle::PROCEED;
     case GatingDecision::kAllowByStaticList:
       LogNavigationGating(
           /*initiator_origin=*/navigation_handle.GetInitiatorOrigin(),
           url::Origin::Create(navigation_handle.GetURL()),
           /*applied_gate=*/false);
+      MaybeRecordNavigationConfirmationMetrics(
+          state(), url::Origin::Create(navigation_handle.GetURL()),
+          /*is_pre_approved=*/false);
       return content::NavigationThrottle::PROCEED;
     case GatingDecision::kBlockByStaticList:
       LogNavigationGating(
@@ -293,10 +304,15 @@ ExecutionEngine::ShouldDeferNavigation(
       bool skip_prompt = navigation_handle.IsInPrerenderedMainFrame();
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
-          base::BindOnce(&ExecutionEngine::CheckNavigationSensitiveUrlList,
-                         GetWeakPtr(), navigation_handle.GetInitiatorOrigin(),
-                         navigation_handle.GetURL(), skip_prompt,
-                         std::move(timer), std::move(callback)));
+          base::BindOnce(
+              &ExecutionEngine::CheckNavigationSensitiveUrlList, GetWeakPtr(),
+              navigation_handle.GetInitiatorOrigin(),
+              navigation_handle.GetURL(), skip_prompt, std::move(timer),
+              std::move(callback).Then(base::BindOnce(
+                  &ExecutionEngine::MaybeRecordNavigationConfirmationMetrics,
+                  GetWeakPtr(), state(),
+                  url::Origin::Create(navigation_handle.GetURL()),
+                  /*is_pre_approved=*/false))));
       return content::NavigationThrottle::DEFER;
     }
   }
@@ -468,6 +484,43 @@ void ExecutionEngine::SendNavigationConfirmationRequest(
       base::BindOnce(&ExecutionEngine::OnNavigationConfirmationDecision,
                      GetWeakPtr(), navigation_origin, std::move(timer),
                      std::move(callback)));
+}
+
+void ExecutionEngine::MaybeRecordNavigationConfirmationMetrics(
+    ExecutionEngine::State state_for_metrics,
+    const url::Origin& navigation_origin,
+    bool is_pre_approved) {
+  if (!base::FeatureList::IsEnabled(
+          kGlicRecordNavigationConfirmationRequestMetrics)) {
+    return;
+  }
+
+  // Record a metric if we can attribute this metric to an action (i.e. the
+  // execution engine is in a relevant state)
+  if (state_for_metrics != ExecutionEngine::State::kToolInvoke &&
+      state_for_metrics != ExecutionEngine::State::kUiPostInvoke) {
+    return;
+  }
+
+  if (is_pre_approved) {
+    UMA_HISTOGRAM_BOOLEAN(
+        "Actor.NavigationGating.ActionNavigationsApprovedByServer", true);
+    return;
+  }
+
+  if (!task_->delegate()) {
+    return;
+  }
+  task_->delegate()->RequestToConfirmNavigation(
+      task_->id(), navigation_origin,
+      base::BindOnce(
+          [](webui::mojom::NavigationConfirmationResponsePtr response) {
+            if (response->result->is_permission_granted()) {
+              UMA_HISTOGRAM_BOOLEAN(
+                  "Actor.NavigationGating.ActionNavigationsApprovedByServer",
+                  response->result->get_permission_granted());
+            }
+          }));
 }
 
 void ExecutionEngine::OnNavigationConfirmationDecision(

@@ -56,7 +56,7 @@ BASE_FEATURE_PARAM(bool,
                    kGlicConfirmNavigationToNewOrigins,
                    &kGlicCrossOriginNavigationGating,
                    "confirm_navigation_to_new_origins",
-                   true);
+                   false);
 BASE_FEATURE_PARAM(bool,
                    kGlicPromptUserForNavigationToNewOrigins,
                    &kGlicCrossOriginNavigationGating,
@@ -72,6 +72,9 @@ BASE_FEATURE_PARAM(bool,
                    &kGlicCrossOriginNavigationGating,
                    "include_hardcoded_block_list_entries",
                    true);
+
+BASE_FEATURE(kGlicRecordNavigationConfirmationRequestMetrics,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicEnableAutoLoginDialogs, base::FEATURE_ENABLED_BY_DEFAULT);
 

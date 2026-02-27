@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/strings/strcat.h"
+#include "base/task/current_thread.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -1463,6 +1464,252 @@ INSTANTIATE_TEST_SUITE_P(All,
                          testing::Bool(),
                          [](auto& info) {
                            return info.param ? "GateBySite" : "GateByOrigin";
+                         });
+
+class ExecutionEngineGatingConfirmationMetricBrowserTest
+    : public ExecutionEngineOriginGatingBrowserTestBase,
+      public testing::WithParamInterface<bool> {
+ public:
+  ExecutionEngineGatingConfirmationMetricBrowserTest() {
+    std::vector<base::test::FeatureRefAndParams> enabled_features = {
+        {kGlicCrossOriginNavigationGating,
+         {{"confirm_navigation_to_new_origins", "false"}}}};
+    std::vector<base::test::FeatureRef> disabled_features;
+
+    if (recording_metrics_enabled()) {
+      enabled_features.push_back(
+          {kGlicRecordNavigationConfirmationRequestMetrics, {}});
+    } else {
+      disabled_features.push_back(
+          kGlicRecordNavigationConfirmationRequestMetrics);
+    }
+
+    scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                       disabled_features);
+  }
+  ~ExecutionEngineGatingConfirmationMetricBrowserTest() override = default;
+
+  bool recording_metrics_enabled() { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(ExecutionEngineGatingConfirmationMetricBrowserTest,
+                       SameOriginNavigation) {
+  base::HistogramTester histogram_tester;
+  const GURL start_url =
+      embedded_https_test_server().GetURL("example.com", "/actor/link.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
+  OpenGlicAndCreateTask();
+
+  EXPECT_TRUE(content::ExecJs(web_contents(),
+                              content::JsReplace("setLink($1);", start_url)));
+  ClickTarget("#link", mojom::ActionResultCode::kOk);
+
+  actor_keyed_service().ResetForTesting();
+  if (recording_metrics_enabled()) {
+    base::test::RunUntil([&]() {
+      return histogram_tester
+                 .GetAllSamples(
+                     "Actor.NavigationGating.ActionNavigationsApprovedByServer")
+                 .size() == 1;
+    });
+    histogram_tester.ExpectBucketCount(
+        "Actor.NavigationGating.ActionNavigationsApprovedByServer", true, 1);
+  } else {
+    histogram_tester.ExpectTotalCount(
+        "Actor.NavigationGating.ActionNavigationsApprovedByServer", 0);
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(ExecutionEngineGatingConfirmationMetricBrowserTest,
+                       NovelNavigation) {
+  base::HistogramTester histogram_tester;
+  const GURL start_url =
+      embedded_https_test_server().GetURL("example.com", "/actor/link.html");
+  const GURL novel_url =
+      embedded_https_test_server().GetURL("foo.com", "/actor/blank.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
+  OpenGlicAndCreateTask();
+
+  RunTestSequence(CreateMockWebClientRequest(
+      content::JsReplace(kHandleNavigationConfirmationTempl, true)));
+
+  EXPECT_TRUE(content::ExecJs(web_contents(),
+                              content::JsReplace("setLink($1);", novel_url)));
+  ClickTarget("#link", mojom::ActionResultCode::kOk);
+
+  actor_keyed_service().ResetForTesting();
+  if (recording_metrics_enabled()) {
+    base::test::RunUntil([&]() {
+      return histogram_tester
+                 .GetAllSamples(
+                     "Actor.NavigationGating.ActionNavigationsApprovedByServer")
+                 .size() == 1;
+    });
+    histogram_tester.ExpectBucketCount(
+        "Actor.NavigationGating.ActionNavigationsApprovedByServer", true, 1);
+  } else {
+    histogram_tester.ExpectTotalCount(
+        "Actor.NavigationGating.ActionNavigationsApprovedByServer", 0);
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(ExecutionEngineGatingConfirmationMetricBrowserTest,
+                       NovelNavigation_denied) {
+  base::HistogramTester histogram_tester;
+  const GURL start_url =
+      embedded_https_test_server().GetURL("example.com", "/actor/link.html");
+  const GURL novel_url =
+      embedded_https_test_server().GetURL("foo.com", "/actor/blank.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
+  OpenGlicAndCreateTask();
+
+  RunTestSequence(CreateMockWebClientRequest(
+      content::JsReplace(kHandleNavigationConfirmationTempl, false)));
+
+  EXPECT_TRUE(content::ExecJs(web_contents(),
+                              content::JsReplace("setLink($1);", novel_url)));
+  ClickTarget("#link", mojom::ActionResultCode::kOk);
+
+  actor_keyed_service().ResetForTesting();
+  if (recording_metrics_enabled()) {
+    base::test::RunUntil([&]() {
+      return histogram_tester
+                 .GetAllSamples(
+                     "Actor.NavigationGating.ActionNavigationsApprovedByServer")
+                 .size() == 1;
+    });
+    histogram_tester.ExpectBucketCount(
+        "Actor.NavigationGating.ActionNavigationsApprovedByServer", false, 1);
+  } else {
+    histogram_tester.ExpectTotalCount(
+        "Actor.NavigationGating.ActionNavigationsApprovedByServer", 0);
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(ExecutionEngineGatingConfirmationMetricBrowserTest,
+                       SensitiveNavigation) {
+  base::HistogramTester histogram_tester;
+  const GURL start_url =
+      embedded_https_test_server().GetURL("example.com", "/actor/link.html");
+  const GURL sensitive_url = embedded_https_test_server().GetURL(
+      "blocked.example.com", "/actor/blank.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
+  OpenGlicAndCreateTask();
+
+  // We need to set up both the user AND navigation confirmation responses since
+  // the user confirmation is used for sensitive sites
+  RunTestSequence(CreateMockWebClientRequest(
+      content::JsReplace(kHandleNavigationConfirmationTempl, true)));
+  RunTestSequence(CreateMockWebClientRequest(
+      content::JsReplace(kHandleUserConfirmationDialogTempl, true)));
+
+  EXPECT_TRUE(content::ExecJs(
+      web_contents(), content::JsReplace("setLink($1);", sensitive_url)));
+  ClickTarget("#link", mojom::ActionResultCode::kOk);
+
+  actor_keyed_service().ResetForTesting();
+  if (recording_metrics_enabled()) {
+    base::test::RunUntil([&]() {
+      return histogram_tester
+                 .GetAllSamples(
+                     "Actor.NavigationGating.ActionNavigationsApprovedByServer")
+                 .size() == 1;
+    });
+    histogram_tester.ExpectBucketCount(
+        "Actor.NavigationGating.ActionNavigationsApprovedByServer", true, 1);
+  } else {
+    histogram_tester.ExpectTotalCount(
+        "Actor.NavigationGating.ActionNavigationsApprovedByServer", 0);
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(ExecutionEngineGatingConfirmationMetricBrowserTest,
+                       AllowlistedNavigation) {
+  base::HistogramTester histogram_tester;
+  const GURL start_url =
+      embedded_https_test_server().GetURL("example.com", "/actor/link.html");
+  const GURL allowlisted_url =
+      embedded_https_test_server().GetURL("foo.com", "/actor/blank.html");
+
+  SafetyListManager::GetInstance()->ParseSafetyLists(
+      content::JsReplace(R"json(
+    {
+      "navigation_allowed": [
+        { "from": "*", "to": $1 }
+      ]
+    }
+  )json",
+                         allowlisted_url.host()));
+
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
+  OpenGlicAndCreateTask();
+
+  RunTestSequence(CreateMockWebClientRequest(
+      content::JsReplace(kHandleNavigationConfirmationTempl, true)));
+
+  EXPECT_TRUE(content::ExecJs(
+      web_contents(), content::JsReplace("setLink($1);", allowlisted_url)));
+  ClickTarget("#link", mojom::ActionResultCode::kOk);
+
+  actor_keyed_service().ResetForTesting();
+  if (recording_metrics_enabled()) {
+    base::test::RunUntil([&]() {
+      return histogram_tester
+                 .GetAllSamples(
+                     "Actor.NavigationGating.ActionNavigationsApprovedByServer")
+                 .size() == 1;
+    });
+    histogram_tester.ExpectBucketCount(
+        "Actor.NavigationGating.ActionNavigationsApprovedByServer", true, 1);
+  } else {
+    histogram_tester.ExpectTotalCount(
+        "Actor.NavigationGating.ActionNavigationsApprovedByServer", 0);
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(ExecutionEngineGatingConfirmationMetricBrowserTest,
+                       BlocklistedNavigation) {
+  base::HistogramTester histogram_tester;
+  const GURL start_url =
+      embedded_https_test_server().GetURL("example.com", "/actor/link.html");
+  const GURL blocklisted_url =
+      embedded_https_test_server().GetURL("foo.com", "/actor/blank.html");
+
+  SafetyListManager::GetInstance()->ParseSafetyLists(
+      content::JsReplace(R"json(
+    {
+      "navigation_blocked": [
+        { "from": "*", "to": $1 }
+      ]
+    }
+  )json",
+                         blocklisted_url.host()));
+
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
+  OpenGlicAndCreateTask();
+
+  RunTestSequence(CreateMockWebClientRequest(
+      content::JsReplace(kHandleNavigationConfirmationTempl, true)));
+
+  EXPECT_TRUE(content::ExecJs(
+      web_contents(), content::JsReplace("setLink($1);", blocklisted_url)));
+  ClickTarget("#link", mojom::ActionResultCode::kTriggeredNavigationBlocked);
+
+  actor_keyed_service().ResetForTesting();
+
+  histogram_tester.ExpectTotalCount(
+      "Actor.NavigationGating.ActionNavigationsApprovedByServer", 0);
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ExecutionEngineGatingConfirmationMetricBrowserTest,
+                         testing::Bool(),
+                         [](const auto& info) {
+                           return info.param ? "MetricsEnabled"
+                                             : "MetricsDisabled";
                          });
 
 }  // namespace actor

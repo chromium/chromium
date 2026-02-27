@@ -334,6 +334,11 @@ class ExecutionEngine : public ToolDelegate {
       NavigationDecisionCallback callback,
       webui::mojom::NavigationConfirmationResponsePtr response);
 
+  void MaybeRecordNavigationConfirmationMetrics(
+      ExecutionEngine::State state_for_metrics,
+      const url::Origin& navigation_origin,
+      bool is_pre_approved);
+
   // Makes the web client confirm with the user that the actor is allowed to
   // navigate to this origin.
   void SendUserConfirmationDialogRequest(
