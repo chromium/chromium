@@ -142,8 +142,8 @@ static bool AllowMimeTypeAsScript(
     counter = kTextPlainFeatures[same_origin];
   } else if (mime_type.StartsWithIgnoringAsciiCase("text/xml")) {
     counter = kTextXmlFeatures[same_origin];
-  } else if (mime_type.DeprecatedStartsWithIgnoringCase("text/json") ||
-             mime_type.DeprecatedStartsWithIgnoringCase("application/json")) {
+  } else if (mime_type.StartsWithIgnoringAsciiCase("text/json") ||
+             mime_type.StartsWithIgnoringAsciiCase("application/json")) {
     counter = kJsonFeatures[same_origin];
   } else {
     counter = kUnknownFeatures[same_origin];
