@@ -103,7 +103,14 @@ class LaunchAppHelperTest : public ash::AshTestBase {
     toast_manager_ = Shell::Get()->toast_manager();
   }
 
-  void TearDown() override { AshTestBase::TearDown(); }
+  void TearDown() override {
+    toast_manager_ = nullptr;
+    launch_app_helper_.reset();
+    apps_launch_info_provider_.reset();
+    connection_handler_.reset();
+    fake_phone_hub_manager_.reset();
+    AshTestBase::TearDown();
+  }
 
   LaunchAppHelper::AppLaunchProhibitedReason ProhibitedByPolicy(
       FeatureStatus status) const {
@@ -157,7 +164,7 @@ class LaunchAppHelperTest : public ash::AshTestBase {
   std::unique_ptr<EcheConnectionStatusHandler> connection_handler_;
   std::unique_ptr<AppsLaunchInfoProvider> apps_launch_info_provider_;
   std::unique_ptr<LaunchAppHelper> launch_app_helper_;
-  raw_ptr<ToastManagerImpl, DanglingUntriaged> toast_manager_ = nullptr;
+  raw_ptr<ToastManagerImpl> toast_manager_ = nullptr;
 };
 
 TEST_F(LaunchAppHelperTest, TestProhibitedByPolicy) {
