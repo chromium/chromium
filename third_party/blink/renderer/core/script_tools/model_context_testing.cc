@@ -7,6 +7,8 @@
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
+#include "third_party/blink/renderer/core/dom/events/event.h"
+#include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/script_tools/model_context.h"
 
 namespace blink {
@@ -48,8 +50,11 @@ String GetToolErrorMessage(WebDocument::ScriptToolError error) {
 
 }  // namespace
 
-ModelContextTesting::ModelContextTesting(ModelContext* model_context)
-    : model_context_(model_context) {}
+ModelContextTesting::ModelContextTesting(ModelContext& model_context)
+    : model_context_(model_context) {
+  model_context_->SetToolsChangedCallback(blink::BindRepeating(
+      &ModelContextTesting::OnToolsChanged, WrapWeakPersistent(this)));
+}
 
 HeapVector<Member<RegisteredTool>> ModelContextTesting::listTools() {
   HeapVector<Member<RegisteredTool>> tools;
@@ -101,15 +106,7 @@ ScriptPromise<IDLNullable<IDLString>> ModelContextTesting::executeTool(
 
 void ModelContextTesting::registerToolsChangedCallback(
     V8ToolsChangedCallback* callback) {
-  if (!callback) {
-    tools_changed_callback_ = nullptr;
-    model_context_->SetToolsChangedCallback(std::nullopt);
-    return;
-  }
-
   tools_changed_callback_ = callback;
-  model_context_->SetToolsChangedCallback(blink::BindRepeating(
-      &ModelContextTesting::OnToolsChanged, WrapWeakPersistent(this)));
 }
 
 ScriptPromise<IDLString> ModelContextTesting::getCrossDocumentScriptToolResult(
@@ -136,6 +133,9 @@ ScriptPromise<IDLString> ModelContextTesting::getCrossDocumentScriptToolResult(
 }
 
 void ModelContextTesting::OnToolsChanged() {
+  // This is a non-cancelable and non-bubbling event.
+  DispatchEvent(*Event::Create(event_type_names::kToolchange));
+
   if (!tools_changed_callback_) {
     return;
   }
@@ -150,8 +150,16 @@ void ModelContextTesting::OnToolsChanged() {
   static_cast<void>(tools_changed_callback_->Invoke(nullptr));
 }
 
+const AtomicString& ModelContextTesting::InterfaceName() const {
+  return event_type_names::kToolchange;
+}
+
+ExecutionContext* ModelContextTesting::GetExecutionContext() const {
+  return model_context_->GetExecutionContext();
+}
+
 void ModelContextTesting::Trace(Visitor* visitor) const {
-  ScriptWrappable::Trace(visitor);
+  EventTarget::Trace(visitor);
   visitor->Trace(model_context_);
   visitor->Trace(tools_changed_callback_);
 }

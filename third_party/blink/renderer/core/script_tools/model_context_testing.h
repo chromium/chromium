@@ -10,16 +10,17 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_registered_tool.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_tools_changed_callback.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/dom/events/event_target.h"
 
 namespace blink {
 class ModelContext;
 class RegisteredTool;
 
-class CORE_EXPORT ModelContextTesting : public ScriptWrappable {
+class CORE_EXPORT ModelContextTesting : public EventTarget {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  explicit ModelContextTesting(ModelContext* model_context);
+  explicit ModelContextTesting(ModelContext& model_context);
 
   HeapVector<Member<RegisteredTool>> listTools();
   ScriptPromise<IDLNullable<IDLString>> executeTool(ScriptState* state,
@@ -28,6 +29,12 @@ class CORE_EXPORT ModelContextTesting : public ScriptWrappable {
                                                     const ExecuteToolOptions*);
   void registerToolsChangedCallback(V8ToolsChangedCallback* callback);
   ScriptPromise<IDLString> getCrossDocumentScriptToolResult(ScriptState* state);
+
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(toolchange, kToolchange)
+
+  // EventTarget:
+  const AtomicString& InterfaceName() const override;
+  ExecutionContext* GetExecutionContext() const override;
 
   void Trace(Visitor*) const override;
 

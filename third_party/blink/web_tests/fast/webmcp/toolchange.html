@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script>
+'use strict';
+
+function echo(obj) {
+  return obj.text;
+}
+
+function greet(obj) {
+  return `Hello, ${obj.name}!`;
+}
+
+promise_test(async t => {
+  assert_implements(navigator.modelContext, "modelContext API enabled");
+  assert_implements(navigator.modelContextTesting, "modelContextTesting API enabled");
+
+  await navigator.modelContext.registerTool({
+    execute: echo,
+    name: "echo",
+    description: "echo input",
+    inputSchema: {
+        type: "object",
+        properties: {
+            "text": {
+                description: "Value to echo",
+                type: "string",
+            }
+        },
+        required: ["text"]
+    },
+  });
+
+  // Initial tool count check
+  let tools = navigator.modelContextTesting.listTools();
+  assert_equals(tools.length, 1, "Initial tool list length");
+  assert_equals(tools[0].name, "echo", "Initial tool name");
+
+  const watcher = new EventWatcher(t, navigator.modelContextTesting, ['toolchange']);
+
+  // Test 1: Register a new tool
+  let eventPromise = watcher.wait_for('toolchange');
+  navigator.modelContext.registerTool({
+      execute: greet,
+      name: "greet",
+      description: "greet someone",
+      inputSchema: {
+          type: "object",
+          properties: {
+              "name": {
+                  description: "Name to greet",
+                  type: "string",
+              }
+          },
+          required: ["name"]
+      },
+  });
+  await eventPromise;
+
+  tools = navigator.modelContextTesting.listTools();
+  assert_equals(tools.length, 2, "Tool list has 2 tools after registration");
+
+  // Test 2: Unregister a tool
+  eventPromise = watcher.wait_for('toolchange');
+  navigator.modelContext.unregisterTool("greet");
+  await eventPromise;
+
+  tools = navigator.modelContextTesting.listTools();
+  assert_equals(tools.length, 1, "Tool list back to 1 tool after unregistration");
+  assert_equals(tools[0].name, "echo", "Remaining tool is echo");
+
+  // Test 3: provideContext
+  eventPromise = watcher.wait_for('toolchange');
+  navigator.modelContext.provideContext({
+      tools: [
+          {
+              execute: greet,
+              name: "greet",
+              description: "greet someone",
+              inputSchema: {
+                  type: "object",
+                  properties: {
+                      "name": {
+                          description: "Name to greet",
+                          type: "string",
+                      }
+                  },
+                  required: ["name"]
+              },
+          }
+      ]
+  });
+  await eventPromise;
+
+  // Test 4: clearContext
+  eventPromise = watcher.wait_for('toolchange');
+  navigator.modelContext.clearContext();
+  await eventPromise;
+
+  tools = navigator.modelContextTesting.listTools();
+  assert_equals(tools.length, 0, "Tool list empty after clearContext");
+
+}, "Test navigator.modelContextTesting toolchange events");
+</script>

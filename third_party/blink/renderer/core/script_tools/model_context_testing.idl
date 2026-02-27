@@ -16,10 +16,12 @@ callback ToolsChangedCallback = void ();
 
 [
     RuntimeEnabled=WebMCPTesting
-] interface ModelContextTesting {
+] interface ModelContextTesting : EventTarget {
   sequence<RegisteredTool> listTools();
   // Returns null when a navigation is triggered.
   [CallWith=ScriptState] Promise<DOMString?> executeTool(DOMString tool_name, DOMString input_arguments, optional ExecuteToolOptions options = {});
   undefined registerToolsChangedCallback(ToolsChangedCallback callback);
   [CallWith=ScriptState] Promise<DOMString> getCrossDocumentScriptToolResult();
+
+  attribute EventHandler ontoolchange;
 };

@@ -334,6 +334,7 @@
     "tonechange",
     "toolactivated",
     "toolcancel",
+    "toolchange",
     "touchcancel",
     "touchend",
     "touchmove",

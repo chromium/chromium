@@ -116,6 +116,8 @@ class CORE_EXPORT ModelContext : public ScriptWrappable {
   // Returns registered tools, sorted by CodeUnitCompareLessThan().
   HeapVector<Member<const ToolData>> ListTools() const;
 
+  ExecutionContext* GetExecutionContext() const;
+
   void Trace(Visitor*) const override;
 
  private:

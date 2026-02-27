@@ -547,6 +547,10 @@ HeapVector<Member<const ModelContext::ToolData>> ModelContext::ListTools()
   return tools;
 }
 
+ExecutionContext* ModelContext::GetExecutionContext() const {
+  return document_ ? document_->GetExecutionContext() : nullptr;
+}
+
 void ModelContext::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
   visitor->Trace(tool_map_);
