@@ -195,23 +195,13 @@ bool TileDisplayLayerImpl::AppendQuadForTile(
     AppendQuadsData* append_quads_data,
     viz::SharedQuadState* shared_quad_state,
     const Occlusion& scaled_occlusion,
+    const gfx::Rect& offset_geometry_rect,
+    const gfx::Rect& offset_visible_geometry_rect,
     const gfx::Rect& visible_geometry_rect,
-    const gfx::Vector2d& quad_offset,
+    bool needs_blending,
     const std::optional<gfx::Rect>& scaled_cull_rect,
     float max_contents_scale,
     AppendQuadsCustomSharedData* custom_data) {
-  const gfx::Rect geometry_rect = iter.geometry_rect();
-
-  gfx::Rect offset_geometry_rect = geometry_rect;
-  offset_geometry_rect.Offset(quad_offset);
-  gfx::Rect offset_visible_geometry_rect = visible_geometry_rect;
-  offset_visible_geometry_rect.Offset(quad_offset);
-
-  bool needs_blending = !contents_opaque();
-
-  uint64_t visible_geometry_area = visible_geometry_rect.size().Area64();
-  append_quads_data->visible_layer_area += visible_geometry_area;
-
   bool has_draw_quad = false;
   if (*iter) {
     if (auto resource = iter->resource()) {

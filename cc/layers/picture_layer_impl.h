@@ -430,8 +430,10 @@ class CC_EXPORT PictureLayerImpl
                          AppendQuadsData* append_quads_data,
                          viz::SharedQuadState* shared_quad_state,
                          const Occlusion& scaled_occlusion,
+                         const gfx::Rect& offset_geometry_rect,
+                         const gfx::Rect& offset_visible_geometry_rect,
                          const gfx::Rect& visible_geometry_rect,
-                         const gfx::Vector2d& quad_offset,
+                         bool needs_blending,
                          const std::optional<gfx::Rect>& scaled_cull_rect,
                          float max_contents_scale,
                          AppendQuadsCustomSharedData* custom_data) override;

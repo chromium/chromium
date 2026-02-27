@@ -129,8 +129,10 @@ class CC_EXPORT TileBasedLayerImpl : public LayerImpl {
       AppendQuadsData* append_quads_data,
       viz::SharedQuadState* shared_quad_state,
       const Occlusion& scaled_occlusion,
+      const gfx::Rect& offset_geometry_rect,
+      const gfx::Rect& offset_visible_geometry_rect,
       const gfx::Rect& visible_geometry_rect,
-      const gfx::Vector2d& quad_offset,
+      bool needs_blending,
       const std::optional<gfx::Rect>& scaled_cull_rect,
       float max_contents_scale,
       AppendQuadsCustomSharedData* custom_data) = 0;
@@ -339,10 +341,21 @@ void TileBasedLayerImpl<Tiling>::AppendQuads(
       continue;
     }
 
-    if (!AppendQuadForTile(iter, context, render_pass, append_quads_data,
-                           shared_quad_state, scaled_occlusion,
-                           visible_geometry_rect, quad_offset, scaled_cull_rect,
-                           max_contents_scale, custom_data.get())) {
+    gfx::Rect offset_geometry_rect = geometry_rect;
+    offset_geometry_rect.Offset(quad_offset);
+    gfx::Rect offset_visible_geometry_rect = visible_geometry_rect;
+    offset_visible_geometry_rect.Offset(quad_offset);
+
+    const bool needs_blending = !contents_opaque();
+
+    append_quads_data->visible_layer_area +=
+        visible_geometry_rect.size().Area64();
+
+    if (!AppendQuadForTile(
+            iter, context, render_pass, append_quads_data, shared_quad_state,
+            scaled_occlusion, offset_geometry_rect,
+            offset_visible_geometry_rect, visible_geometry_rect, needs_blending,
+            scaled_cull_rect, max_contents_scale, custom_data.get())) {
       missing_tile_count++;
     }
   }
