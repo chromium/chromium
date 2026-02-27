@@ -22,6 +22,7 @@ source_set("delegate") {
 
   deps = [
     "//base",
+    "//chrome/browser/glic",
     "//chrome/browser/translate",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/webid",
@@ -38,10 +39,6 @@ source_set("delegate") {
     "//content/public/common",
     "//third_party/re2",
   ]
-
-  if (enable_glic) {
-    deps += [ "//chrome/browser/glic" ]
-  }
 }
 
 if (!skip_android_unmigrated_actor_files) {

@@ -14,6 +14,8 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/types/expected.h"
+#include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/password_manager/actor_login/internal/actor_login_federated_credentials_fetcher.h"
 #include "chrome/browser/password_manager/actor_login/internal/actor_login_siwg_controller.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
@@ -36,11 +38,6 @@
 #include "content/public/browser/web_contents_user_data.h"
 #include "content/public/browser/webid/identity_credential_source.h"
 #include "url/origin.h"
-
-#if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/glic/public/glic_keyed_service.h"
-#include "chrome/browser/glic/public/glic_keyed_service_factory.h"
-#endif  // BUILDFLAG(ENABLE_GLIC)
 
 using password_manager::ContentPasswordManagerDriver;
 using password_manager::PasswordManagerDriver;
@@ -232,7 +229,6 @@ bool ActorLoginDelegateImpl::IsTaskInFocus() {
   if (tab_interface->IsActivated()) {
     return true;
   }
-#if BUILDFLAG(ENABLE_GLIC)
   glic::GlicKeyedService* glic_service =
       glic::GlicKeyedService::Get(web_contents()->GetBrowserContext());
   CHECK(glic_service);
@@ -247,9 +243,6 @@ bool ActorLoginDelegateImpl::IsTaskInFocus() {
   }
 
   return current_tab_instance->IsShowing();
-#else
-  NOTREACHED();
-#endif
 }
 
 void ActorLoginDelegateImpl::OnGetCredentialsCompleted(
