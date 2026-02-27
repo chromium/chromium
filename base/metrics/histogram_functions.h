@@ -77,17 +77,21 @@ BASE_EXPORT void UmaHistogramExactLinear(std::string_view name,
 template <typename T>
 void UmaHistogramEnumeration(std::string_view name, T sample) {
   static_assert(std::is_enum_v<T>, "T is not an enum.");
+  // kMaxValue is the max value in enum, so bucket count is one more than that.
   // This also ensures that an enumeration that doesn't define kMaxValue fails
   // with a semi-useful error ("no member named 'kMaxValue' in ...").
-  static_assert(static_cast<uintmax_t>(T::kMaxValue) <=
-                    static_cast<uintmax_t>(INT_MAX) - 1,
-                "Enumeration's kMaxValue is out of range of INT_MAX!");
+  constexpr auto kBucketCount = static_cast<int>(T::kMaxValue) + 1;
+  constexpr auto kBucketCountMax =
+      static_cast<int>(LinearHistogram::kBucketCount_MAX);
+  // Note: UmaHistogramExactLinear() adds 1 to the bucket count for the overflow
+  // bucket, so kBucketCount must be less than kBucketCount_MAX.
+  static_assert(kBucketCount < kBucketCountMax,
+                "Enumeration's kMaxValue is out of range of "
+                "LinearHistogram::kBucketCount_MAX. Use a sparse histogram "
+                "instead.");
   DCHECK_LE(static_cast<uintmax_t>(sample),
             static_cast<uintmax_t>(T::kMaxValue));
-  // While UmaHistogramExactLinear’s documentation states that the third
-  // argument should be 101 or less, a value up to 1001 is actually accepted.
-  return UmaHistogramExactLinear(name, static_cast<int>(sample),
-                                 static_cast<int>(T::kMaxValue) + 1);
+  return UmaHistogramExactLinear(name, static_cast<int>(sample), kBucketCount);
 }
 
 // Some legacy histograms may manually specify the enum size, with a kCount,
