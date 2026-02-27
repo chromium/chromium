@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.setup_list;
 
+import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.chrome.browser.firstrun.FirstRunStatus.isFirstRunTriggered;
 
 import android.content.SharedPreferences;
@@ -449,10 +450,9 @@ public class SetupListManager
         if (!mHasRegisteredIdentityObserver) {
             IdentityManager identityManager =
                     IdentityServicesProvider.get().getIdentityManager(mProfile);
-            if (identityManager != null) {
-                identityManager.addObserver(this);
-                mHasRegisteredIdentityObserver = true;
-            }
+            assertNonNull(identityManager);
+            identityManager.addObserver(this);
+            mHasRegisteredIdentityObserver = true;
         }
 
         for (int moduleType : BASE_SETUP_LIST_ORDER) {

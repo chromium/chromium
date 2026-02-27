@@ -9,6 +9,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import androidx.test.filters.SmallTest;
@@ -17,6 +18,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -601,15 +603,21 @@ public class SetupListManagerUnitTest {
 
         SetupListManager.setInstanceForTesting(new SetupListManager());
         SetupListManager manager = SetupListManager.getInstance();
+
+        // Capture the observer registered by the manager.
+        ArgumentCaptor<IdentityManager.Observer> observerCaptor =
+                ArgumentCaptor.forClass(IdentityManager.Observer.class);
         manager.maybePrimeCompletionStatus(mProfile);
+        verify(mIdentityManager).addObserver(observerCaptor.capture());
+        IdentityManager.Observer observer = observerCaptor.getValue();
 
         assertFalse(manager.isModuleCompleted(ModuleType.SIGN_IN_PROMO));
 
-        // 2. Act: Trigger a sign-in event.
+        // 2. Act: Trigger a sign-in event via the captured observer.
         PrimaryAccountChangeEvent event =
                 new PrimaryAccountChangeEvent(
                         PrimaryAccountChangeEvent.Type.SET, ConsentLevel.SIGNIN);
-        manager.onPrimaryAccountChanged(event);
+        observer.onPrimaryAccountChanged(event);
 
         // 3. Assert: Sign-In should be completed and awaiting animation.
         assertTrue(manager.isModuleCompleted(ModuleType.SIGN_IN_PROMO));
