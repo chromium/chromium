@@ -3,67 +3,112 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import datetime
 import os
+import shutil
+import sys
+import tempfile
 import unittest
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch, ANY
 
 import process_crashreports
 
 
-class TestFetchRbeCrashReports(unittest.TestCase):
+class TestProcessCrashreports(unittest.TestCase):
 
-  @patch('os.path.getmtime')
-  @patch('glob.glob')
-  @patch('builtins.open', create=True)
+  def setUp(self):
+    self.temp_dir = tempfile.mkdtemp()
+    self.out_dir = os.path.join(self.temp_dir, 'out')
+    self.crashreports_dir = os.path.join(self.out_dir, 'clang-crashreports')
+    os.makedirs(self.crashreports_dir)
+
+    # Pre-create standard crash files.
+    self.crash_sh = os.path.join(self.crashreports_dir, 'main-c2d3e4.sh')
+    self.crash_c = os.path.join(self.crashreports_dir, 'main-c2d3e4.c')
+    with open(self.crash_sh, 'w') as f:
+      f.write('crash script')
+    with open(self.crash_c, 'w') as f:
+      f.write('crash source')
+
+  def tearDown(self):
+    shutil.rmtree(self.temp_dir)
+
   @patch('subprocess.check_call')
-  @patch('os.path.exists')
-  def test_FetchRbeCrashReports(self, mock_exists, mock_check_call, mock_open,
-                                mock_glob, mock_getmtime):
-    # Setup mock Siso log content
-    # Format: path <tab> digest <tab> command
-    digest1 = "aaa/123"
-    cmd1 = (f"siso fetch -reapi_instance=test-instance -type=dir-extract "
-            f"{digest1} out/clang-crashreports/")
-    digest2 = "bbb/789"
-    cmd2 = (f"siso fetch -reapi_instance=test-instance -type=dir-extract "
-            f"{digest2} out/clang-crashreports/")
+  @patch('sys.argv', ['process_crashreports.py', '--source', 'test-bot'])
+  def test_main_local_crash(self, mock_check_call):
+    with patch('process_crashreports.CRASHREPORTS_DIR', self.crashreports_dir):
+      # Create mock siso_output (for local build with siso)
+      default_dir = os.path.join(self.out_dir, 'Default')
+      os.makedirs(default_dir)
+      siso_output = os.path.join(default_dir, 'siso_output')
+      # In a local crash, there are no auxiliary logs.
+      with open(siso_output, 'w') as f:
+        f.write("build started...\n")
+        f.write("build completed\n")
 
-    mock_log_content = [
-        "some log line\n", "auxiliary outputs:\n",
-        f"out/clang-crashreports/crash1.sh\t{digest1}\t{cmd1}\n",
-        "other/path\tdef/456\tsiso fetch ...\n",
-        f"out/clang-crashreports/crash2.sh\t{digest2}\t{cmd2}\n"
-    ]
+      process_crashreports.main()
 
-    # Mock glob to return multiple log files
-    mock_glob.return_value = ['out/Old/siso_output', 'out/Default/siso_output']
+      # We verify that exactly one command was run (gsutil), which also
+      # implicitly verifies that siso fetch was NOT called.
+      self.assertEqual(mock_check_call.call_count, 1)
 
-    def getmtime_side_effect(filename):
-      if filename == 'out/Old/siso_output':
-        return 1000
-      if filename == 'out/Default/siso_output':
-        return 2000
-      return 0
+      now = datetime.datetime.now()
+      expected_dest = ('gs://chrome-clang-crash-reports/v1/%04d/%02d/%02d/'
+                       'test-bot-main-c2d3e4.tgz' %
+                       (now.year, now.month, now.day))
 
-    mock_getmtime.side_effect = getmtime_side_effect
+      # Verify the gsutil command fully
+      mock_check_call.assert_called_once_with([
+          sys.executable, process_crashreports.GSUTIL, '-q', 'cp', ANY,
+          expected_dest
+      ])
 
-    mock_file = MagicMock()
-    mock_file.__iter__.return_value = iter(mock_log_content)
-    mock_open.return_value.__enter__.return_value = mock_file
-    mock_exists.return_value = True
+      # Verify files were deleted
+      self.assertFalse(os.path.exists(self.crash_sh))
+      self.assertFalse(os.path.exists(self.crash_c))
 
-    process_crashreports.FetchRbeCrashReports()
+  @patch('subprocess.check_call')
+  @patch('sys.argv', ['process_crashreports.py', '--source', 'test-bot'])
+  def test_main_rbe_crash(self, mock_check_call):
+    with patch('process_crashreports.CRASHREPORTS_DIR', self.crashreports_dir):
+      # Create mock siso_output
+      default_dir = os.path.join(self.out_dir, 'Default')
+      os.makedirs(default_dir)
+      siso_output = os.path.join(default_dir, 'siso_output')
 
-    mock_open.assert_called_with('out/Default/siso_output', 'r')
+      digest = "deadbeef/123"
+      fetch_cmd = (f"siso fetch -reapi_instance=test-instance "
+                   f"-type=dir-extract {digest} out/clang-crashreports/")
+      with open(siso_output, 'w') as f:
+        f.write("auxiliary outputs:\n")
+        f.write(f"out/clang-crashreports/\t{digest}\t{fetch_cmd}\n")
 
-    expected_cmd1 = cmd1.split(' ')
-    expected_cmd1[0] = process_crashreports.SISO_BINARY
-    expected_cmd2 = cmd2.split(' ')
-    expected_cmd2[0] = process_crashreports.SISO_BINARY
-    # Verify siso fetch was called for both digests
-    self.assertEqual(mock_check_call.call_count, 2)
-    self.assertEqual(mock_check_call.call_args_list[0][0][0], expected_cmd1)
-    self.assertEqual(mock_check_call.call_args_list[1][0][0], expected_cmd2)
+      process_crashreports.main()
+
+      # Verify siso fetch and gsutil were called
+      self.assertEqual(mock_check_call.call_count, 2)
+
+      now = datetime.datetime.now()
+      expected_dest = ('gs://chrome-clang-crash-reports/v1/%04d/%02d/%02d/'
+                       'test-bot-main-c2d3e4.tgz' %
+                       (now.year, now.month, now.day))
+
+      # Verify exact siso command
+      mock_check_call.assert_any_call([
+          process_crashreports.SISO_BINARY, 'fetch',
+          '-reapi_instance=test-instance', '-type=dir-extract', digest,
+          'out/clang-crashreports/'
+      ])
+
+      # Verify exact gsutil command
+      mock_check_call.assert_any_call([
+          sys.executable, process_crashreports.GSUTIL, '-q', 'cp', ANY,
+          expected_dest
+      ])
+
+      # Verify files were deleted
+      self.assertFalse(os.path.exists(self.crash_sh))
+      self.assertFalse(os.path.exists(self.crash_c))
 
 
 if __name__ == '__main__':
