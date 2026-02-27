@@ -70,6 +70,10 @@ void AnchorPositionVisibilityObserver::MonitorAnchor(const Element* anchor) {
       observer_->observe(const_cast<Element*>(anchor_element_.Get()));
       return;
     }
+  } else {
+    // If there is no anchor, reset kAnchorsCssVisible so a previously
+    // invisible anchor no longer hides the anchored element.
+    SetLayerInvisible(LayerPositionVisibility::kAnchorsCssVisible, false);
   }
 
   // Invalid situations.

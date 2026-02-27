@@ -4136,8 +4136,8 @@ void LocalFrame::ScheduleNextServiceForPostLayoutSnapshotClients() {
 
 void LocalFrame::CheckPositionAnchorsForCssVisibilityChanges() {
   for (auto& client : post_layout_snapshot_clients_) {
-    if (AnchorPositionScrollData* scroll_data =
-            DynamicTo<AnchorPositionScrollData>(client.Get())) {
+    auto* scroll_data = DynamicTo<AnchorPositionScrollData>(client.Get());
+    if (scroll_data && scroll_data->IsActive()) {
       if (auto* observer = scroll_data->GetAnchorPositionVisibilityObserver()) {
         observer->UpdateForCssAnchorVisibility();
       }
