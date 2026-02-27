@@ -139,6 +139,12 @@ std::string GetStringForDragAndDropType(ComposeboxDragAndDropType type) {
     case AutocompleteRequestType::kImageGeneration:
       suffix = ".ImageGeneration";
       break;
+    case AutocompleteRequestType::kCanvas:
+      suffix = ".Canvas";
+      break;
+    case AutocompleteRequestType::kDeepSearch:
+      suffix = ".DeepSearch";
+      break;
     default:
       break;
   }

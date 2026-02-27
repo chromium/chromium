@@ -19,7 +19,9 @@ import java.lang.annotation.Target;
     AutocompleteRequestType.SEARCH,
     AutocompleteRequestType.SEARCH_PREFETCH,
     AutocompleteRequestType.AI_MODE,
-    AutocompleteRequestType.IMAGE_GENERATION
+    AutocompleteRequestType.IMAGE_GENERATION,
+    AutocompleteRequestType.CANVAS,
+    AutocompleteRequestType.DEEP_SEARCH,
 })
 @Retention(RetentionPolicy.SOURCE)
 @Target({ElementType.TYPE_USE})
@@ -37,7 +39,13 @@ public @interface AutocompleteRequestType {
     /** Image generation. */
     int IMAGE_GENERATION = 3;
 
-    int COUNT = 4;
+    /** Canvas. */
+    int CANVAS = 4;
+
+    /** Deep search. */
+    int DEEP_SEARCH = 5;
+
+    int COUNT = 6;
     /* Note: account for new types in {@link FuseboxCoordinator#isConventionalFulfillmentType}. */
 }
 
