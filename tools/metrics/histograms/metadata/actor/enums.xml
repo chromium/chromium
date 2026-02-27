@@ -258,7 +258,7 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="kInvalidFromUrlPattern"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/actor/safety_list.h:SafetyListParseResult) -->
+<!-- LINT.ThenChange(//chrome/browser/actor/safety_list_manager.h:SafetyListParseResult) -->
 
 <!-- LINT.IfChange(SplitModeTimeOfUseFrameStatus) -->
 

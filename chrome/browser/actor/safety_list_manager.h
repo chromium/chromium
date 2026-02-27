@@ -7,7 +7,6 @@
 
 #include <string_view>
 
-#include "chrome/browser/actor/safety_list.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/host_indexed_content_settings.h"
 
@@ -20,6 +19,30 @@ namespace actor {
 
 class SafetyListManager {
  public:
+  // LINT.IfChange(ParseResult)
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class ParseResult {
+    // The Safety List was successfully parsed.
+    kSuccess = 0,
+    // The provided string was not valid JSON.
+    kInvalidJson = 1,
+    // The value associated with the key was not a list.
+    kJsonKeyValueNotAList = 2,
+    // A value in the list was not a dictionary.
+    kJsonListValueNotADictionary = 3,
+    // The `to` field was missing or not a string.
+    kInvalidToField = 4,
+    // The `to` field was not a valid URL pattern.
+    kInvalidToUrlPattern = 5,
+    // The `from` field was missing or not a string.
+    kInvalidFromField = 6,
+    // The `from` field was not a valid URL pattern.
+    kInvalidFromUrlPattern = 7,
+    kMaxValue = kInvalidFromUrlPattern,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/actor/enums.xml:SafetyListParseResult)
+
   // Verdicts that are supported by the safety lists.
   enum class Decision {
     // No decision was made by the safety lists.
@@ -52,8 +75,8 @@ class SafetyListManager {
   SafetyListManager();
 
   struct ParseStatus {
-    SafetyListParseResult allowed_result;
-    SafetyListParseResult blocked_result;
+    ParseResult allowed_result;
+    ParseResult blocked_result;
   };
 
   ParseStatus ParseSafetyListsInternal(std::string_view json_string);

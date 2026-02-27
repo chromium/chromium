@@ -17,6 +17,7 @@ namespace actor {
 namespace {
 
 using Decision = SafetyListManager::Decision;
+using ParseResult = SafetyListManager::ParseResult;
 
 class SafetyListManagerTest : public ::testing::Test,
                               public ::testing::WithParamInterface<bool> {
@@ -142,8 +143,8 @@ TEST_P(SafetyListManagerTest, ParseSafetyLists_Validity) {
   struct InvalidListTestCase {
     std::string_view desc;
     std::string_view json;
-    SafetyListParseResult expected_allowed;
-    SafetyListParseResult expected_blocked;
+    ParseResult expected_allowed;
+    ParseResult expected_blocked;
     size_t expected_allowed_count;
     size_t expected_blocked_count;
   } kTestCases[] = {
@@ -153,16 +154,16 @@ TEST_P(SafetyListManagerTest, ParseSafetyLists_Validity) {
             "navigation_allowed": [ "{}" ],
             "navigation_blocked": [ "{}" ]
           })json",
-          SafetyListParseResult::kJsonListValueNotADictionary,
-          SafetyListParseResult::kJsonListValueNotADictionary,
+          ParseResult::kJsonListValueNotADictionary,
+          ParseResult::kJsonListValueNotADictionary,
           0u,
           0u,
       },
       {
           "top_level_not_dictionary",
           R"json([])json",
-          SafetyListParseResult::kInvalidJson,
-          SafetyListParseResult::kInvalidJson,
+          ParseResult::kInvalidJson,
+          ParseResult::kInvalidJson,
           0u,
           0u,
       },
@@ -172,8 +173,8 @@ TEST_P(SafetyListManagerTest, ParseSafetyLists_Validity) {
             "navigation_allowed": 123,
             "navigation_blocked": 123
           })json",
-          SafetyListParseResult::kJsonKeyValueNotAList,
-          SafetyListParseResult::kJsonKeyValueNotAList,
+          ParseResult::kJsonKeyValueNotAList,
+          ParseResult::kJsonKeyValueNotAList,
           0u,
           0u,
       },
@@ -183,8 +184,8 @@ TEST_P(SafetyListManagerTest, ParseSafetyLists_Validity) {
             "navigation_allowed": [ { "from": "a.com" } ],
             "navigation_blocked": [ { "from": "a.com" } ]
           })json",
-          SafetyListParseResult::kInvalidToField,
-          SafetyListParseResult::kInvalidToField,
+          ParseResult::kInvalidToField,
+          ParseResult::kInvalidToField,
           0u,
           0u,
       },
@@ -194,8 +195,8 @@ TEST_P(SafetyListManagerTest, ParseSafetyLists_Validity) {
             "navigation_allowed": [ { "to": "b.com" } ],
             "navigation_blocked": [ { "to": "b.com" } ]
           })json",
-          SafetyListParseResult::kInvalidFromField,
-          SafetyListParseResult::kInvalidFromField,
+          ParseResult::kInvalidFromField,
+          ParseResult::kInvalidFromField,
           0u,
           0u,
       },
@@ -205,8 +206,8 @@ TEST_P(SafetyListManagerTest, ParseSafetyLists_Validity) {
             "navigation_allowed": [{"from": "a.com", "to": 123}],
             "navigation_blocked": [{"from": "a.com", "to": 123}]
           })json",
-          SafetyListParseResult::kInvalidToField,
-          SafetyListParseResult::kInvalidToField,
+          ParseResult::kInvalidToField,
+          ParseResult::kInvalidToField,
           0u,
           0u,
       },
@@ -216,8 +217,8 @@ TEST_P(SafetyListManagerTest, ParseSafetyLists_Validity) {
             "navigation_allowed": [{ "from": 123, "to": "b.com" }],
             "navigation_blocked": [{ "from": 123, "to": "b.com" }]
           })json",
-          SafetyListParseResult::kInvalidFromField,
-          SafetyListParseResult::kInvalidFromField,
+          ParseResult::kInvalidFromField,
+          ParseResult::kInvalidFromField,
           0u,
           0u,
       },
@@ -227,8 +228,8 @@ TEST_P(SafetyListManagerTest, ParseSafetyLists_Validity) {
             "navigation_allowed": [{ "from": "a.com", "to": "b.*.com" }],
             "navigation_blocked": [{ "from": "a.com", "to": "b.*.com" }]
           })json",
-          SafetyListParseResult::kInvalidToUrlPattern,
-          SafetyListParseResult::kInvalidToUrlPattern,
+          ParseResult::kInvalidToUrlPattern,
+          ParseResult::kInvalidToUrlPattern,
           0u,
           0u,
       },
@@ -238,16 +239,16 @@ TEST_P(SafetyListManagerTest, ParseSafetyLists_Validity) {
             "navigation_allowed": [{ "from": "a.*.com", "to": "b.com" }],
             "navigation_blocked": [{ "from": "a.*.com", "to": "b.com" }]
           })json",
-          SafetyListParseResult::kInvalidFromUrlPattern,
-          SafetyListParseResult::kInvalidFromUrlPattern,
+          ParseResult::kInvalidFromUrlPattern,
+          ParseResult::kInvalidFromUrlPattern,
           0u,
           0u,
       },
       {
           "empty_lists",
           R"json({ "navigation_allowed": [], "navigation_blocked": [] })json",
-          SafetyListParseResult::kSuccess,
-          SafetyListParseResult::kSuccess,
+          ParseResult::kSuccess,
+          ParseResult::kSuccess,
           0u,
           0u,
       },
@@ -257,8 +258,8 @@ TEST_P(SafetyListManagerTest, ParseSafetyLists_Validity) {
             "navigation_allowed": [{ "from": "a.com", "to": "b.com" }],
             "navigation_blocked": [{ "from": "a.com" }]
           })json",
-          SafetyListParseResult::kSuccess,
-          SafetyListParseResult::kInvalidToField,
+          ParseResult::kSuccess,
+          ParseResult::kInvalidToField,
           1u,
           0u,
       },
@@ -268,8 +269,8 @@ TEST_P(SafetyListManagerTest, ParseSafetyLists_Validity) {
             "navigation_allowed": 123,
             "navigation_blocked": [{ "from": "a.com", "to": "b.com" }]
           })json",
-          SafetyListParseResult::kJsonKeyValueNotAList,
-          SafetyListParseResult::kSuccess,
+          ParseResult::kJsonKeyValueNotAList,
+          ParseResult::kSuccess,
           0u,
           1u,
       },
@@ -279,8 +280,8 @@ TEST_P(SafetyListManagerTest, ParseSafetyLists_Validity) {
             "navigation_allowed": [{ "from": "a.com" }],
             "navigation_blocked": [{ "to": "b.com" }]
           })json",
-          SafetyListParseResult::kInvalidToField,
-          SafetyListParseResult::kInvalidFromField,
+          ParseResult::kInvalidToField,
+          ParseResult::kInvalidFromField,
           0u,
           0u,
       },
@@ -290,8 +291,8 @@ TEST_P(SafetyListManagerTest, ParseSafetyLists_Validity) {
             "navigation_allowed": 123,
             "navigation_blocked": [ "{}" ]
           })json",
-          SafetyListParseResult::kJsonKeyValueNotAList,
-          SafetyListParseResult::kJsonListValueNotADictionary,
+          ParseResult::kJsonKeyValueNotAList,
+          ParseResult::kJsonListValueNotADictionary,
           0u,
           0u,
       },
@@ -307,8 +308,8 @@ TEST_P(SafetyListManagerTest, ParseSafetyLists_Validity) {
               { "from": "g.com", "to": "h.com" }
             ]
           })json",
-          SafetyListParseResult::kSuccess,
-          SafetyListParseResult::kSuccess,
+          ParseResult::kSuccess,
+          ParseResult::kSuccess,
           2u,
           2u,
       },
@@ -324,8 +325,8 @@ TEST_P(SafetyListManagerTest, ParseSafetyLists_Validity) {
               { "to": "h.com" }
             ]
           })json",
-          SafetyListParseResult::kInvalidToField,
-          SafetyListParseResult::kInvalidToField,
+          ParseResult::kInvalidToField,
+          ParseResult::kInvalidToField,
           0u,
           0u,
       },
@@ -341,8 +342,8 @@ TEST_P(SafetyListManagerTest, ParseSafetyLists_Validity) {
               { "to": "h.com" }
             ]
           })json",
-          SafetyListParseResult::kInvalidToField,
-          SafetyListParseResult::kInvalidFromField,
+          ParseResult::kInvalidToField,
+          ParseResult::kInvalidFromField,
           0u,
           0u,
       },
@@ -357,8 +358,8 @@ TEST_P(SafetyListManagerTest, ParseSafetyLists_Validity) {
               { "from": "e.com", "to": "f.com" }
             ]
           })json",
-          SafetyListParseResult::kInvalidToField,
-          SafetyListParseResult::kSuccess,
+          ParseResult::kInvalidToField,
+          ParseResult::kSuccess,
           0u,
           1u,
       },
@@ -410,11 +411,11 @@ TEST_P(SafetyListManagerTest, ParseSafetyLists_ValidPatterns) {
                            GURL("https://not-allowed.com")),
             Decision::kBlock);
   histogram_tester_.ExpectUniqueSample(
-      "Actor.SafetyListParseResult.NavigationAllowed",
-      SafetyListParseResult::kSuccess, 1);
+      "Actor.SafetyListParseResult.NavigationAllowed", ParseResult::kSuccess,
+      1);
   histogram_tester_.ExpectUniqueSample(
-      "Actor.SafetyListParseResult.NavigationBlocked",
-      SafetyListParseResult::kSuccess, 1);
+      "Actor.SafetyListParseResult.NavigationBlocked", ParseResult::kSuccess,
+      1);
 }
 
 TEST_P(SafetyListManagerTest, ParseBlockLists_MultipleParses) {
@@ -451,11 +452,11 @@ TEST_P(SafetyListManagerTest, ParseBlockLists_MultipleParses) {
   EXPECT_EQ(manager().Find(GURL("http://bar.com"), GURL("https://sub.foo.com")),
             Decision::kBlock);
   histogram_tester_.ExpectBucketCount(
-      "Actor.SafetyListParseResult.NavigationAllowed",
-      SafetyListParseResult::kSuccess, 2);
+      "Actor.SafetyListParseResult.NavigationAllowed", ParseResult::kSuccess,
+      2);
   histogram_tester_.ExpectBucketCount(
-      "Actor.SafetyListParseResult.NavigationBlocked",
-      SafetyListParseResult::kSuccess, 2);
+      "Actor.SafetyListParseResult.NavigationBlocked", ParseResult::kSuccess,
+      2);
 }
 
 TEST_P(SafetyListManagerTest, ParseSafetyLists_BlockedListInvalid) {
@@ -469,10 +470,10 @@ TEST_P(SafetyListManagerTest, ParseSafetyLists_BlockedListInvalid) {
   )json");
   histogram_tester_.ExpectUniqueSample(
       "Actor.SafetyListParseResult.NavigationBlocked",
-      SafetyListParseResult::kInvalidFromUrlPattern, 1);
+      ParseResult::kInvalidFromUrlPattern, 1);
   histogram_tester_.ExpectUniqueSample(
-      "Actor.SafetyListParseResult.NavigationAllowed",
-      SafetyListParseResult::kSuccess, 1);
+      "Actor.SafetyListParseResult.NavigationAllowed", ParseResult::kSuccess,
+      1);
 }
 
 TEST_P(SafetyListManagerTest, Find) {

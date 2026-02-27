@@ -15,7 +15,6 @@
 #include "base/values.h"
 #include "chrome/browser/actor/actor_features.h"
 #include "chrome/browser/actor/actor_util.h"
-#include "chrome/browser/actor/safety_list.h"
 #include "components/content_settings/core/common/content_settings_metadata.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
@@ -32,6 +31,22 @@ constexpr std::string_view kAllowedHistogramName =
     "Actor.SafetyListParseResult.NavigationAllowed";
 constexpr std::string_view kBlockedHistogramName =
     "Actor.SafetyListParseResult.NavigationBlocked";
+
+struct SafetyListEntry {
+  ContentSettingsPattern source;
+  ContentSettingsPattern destination;
+};
+
+// Returns a span of elements from an expected vector. If the `expected` is an
+// error, then the result span is empty.
+//
+// This returns a span that references `elts`, so the span is only valid as long
+// as `elts` is valid.
+base::span<const SafetyListEntry> SpanOverExpected(
+    const base::expected<std::vector<SafetyListEntry>,
+                         SafetyListManager::ParseResult>& elts) {
+  return elts.has_value() ? *elts : base::span<const SafetyListEntry>();
+}
 
 void SetAll(base::span<const SafetyListEntry> entries,
             ContentSetting setting,
@@ -61,6 +76,48 @@ void MaybeSetHardcodedEntries(
         },
         ContentSetting::CONTENT_SETTING_BLOCK, indexed_settings);
   }
+}
+
+// Parses a list of entries from a JSON list. Returns the parsed vector on
+// success, or a ParseResult on failure. If the result is a ParseResult, the
+// enum value is guaranteed to not be `kSuccess`.
+base::expected<std::vector<SafetyListEntry>, SafetyListManager::ParseResult>
+ParseEntriesFromJson(const base::ListValue& list_data) {
+  std::vector<SafetyListEntry> entries;
+  entries.reserve(list_data.size());
+  for (const auto& navigation : list_data) {
+    const base::DictValue* navigation_dict = navigation.GetIfDict();
+    if (!navigation_dict) {
+      return base::unexpected(
+          SafetyListManager::ParseResult::kJsonListValueNotADictionary);
+    }
+
+    // Only parse entry if both fields exist.
+    const std::string* from = navigation_dict->FindString("from");
+    if (!from) {
+      return base::unexpected(
+          SafetyListManager::ParseResult::kInvalidFromField);
+    }
+    ContentSettingsPattern source = ContentSettingsPattern::FromString(*from);
+    if (!source.IsValid()) {
+      return base::unexpected(
+          SafetyListManager::ParseResult::kInvalidFromUrlPattern);
+    }
+
+    const std::string* to = navigation_dict->FindString("to");
+    if (!to) {
+      return base::unexpected(SafetyListManager::ParseResult::kInvalidToField);
+    }
+    ContentSettingsPattern destination =
+        ContentSettingsPattern::FromString(*to);
+    if (!destination.IsValid()) {
+      return base::unexpected(
+          SafetyListManager::ParseResult::kInvalidToUrlPattern);
+    }
+    entries.push_back(
+        SafetyListEntry{std::move(source), std::move(destination)});
+  }
+  return entries;
 }
 
 }  // namespace
@@ -112,46 +169,43 @@ SafetyListManager::ParseStatus SafetyListManager::ParseSafetyListsInternal(
   std::optional<base::Value> json =
       base::JSONReader::Read(json_string, base::JSON_PARSE_RFC);
   if (!json.has_value()) {
-    return {SafetyListParseResult::kInvalidJson,
-            SafetyListParseResult::kInvalidJson};
+    return {ParseResult::kInvalidJson, ParseResult::kInvalidJson};
   }
 
   base::DictValue* json_dict = json->GetIfDict();
   if (!json_dict) {
-    return {SafetyListParseResult::kInvalidJson,
-            SafetyListParseResult::kInvalidJson};
+    return {ParseResult::kInvalidJson, ParseResult::kInvalidJson};
   }
 
   auto parse_one_list = [&json_dict](std::string_view field_name)
-      -> base::expected<SafetyList, SafetyListParseResult> {
+      -> base::expected<std::vector<SafetyListEntry>,
+                        SafetyListManager::ParseResult> {
     if (const base::Value* value = json_dict->Find(field_name)) {
       if (const base::ListValue* list = value->GetIfList()) {
-        return SafetyList::ParseEntriesFromJson(*list);
+        return ParseEntriesFromJson(*list);
       }
-      return base::unexpected(SafetyListParseResult::kJsonKeyValueNotAList);
+      return base::unexpected(ParseResult::kJsonKeyValueNotAList);
     }
-    return SafetyList();
+    return std::vector<SafetyListEntry>();
   };
 
-  base::expected<SafetyList, SafetyListParseResult> allowed_result =
+  base::expected<std::vector<SafetyListEntry>, ParseResult> allowed_result =
       parse_one_list(kAllowedFieldName);
-  base::expected<SafetyList, SafetyListParseResult> blocked_result =
+  base::expected<std::vector<SafetyListEntry>, ParseResult> blocked_result =
       parse_one_list(kBlockedFieldName);
   if (allowed_result.has_value() || blocked_result.has_value()) {
     host_indexed_content_settings_.Clear();
-    if (allowed_result.has_value()) {
-      SetAll(allowed_result->entries(), ContentSetting::CONTENT_SETTING_ALLOW,
-             host_indexed_content_settings_);
-    }
-    if (blocked_result.has_value()) {
-      SetAll(blocked_result->entries(), ContentSetting::CONTENT_SETTING_BLOCK,
-             host_indexed_content_settings_);
-    }
+    SetAll(SpanOverExpected(allowed_result),
+           ContentSetting::CONTENT_SETTING_ALLOW,
+           host_indexed_content_settings_);
+    SetAll(SpanOverExpected(blocked_result),
+           ContentSetting::CONTENT_SETTING_BLOCK,
+           host_indexed_content_settings_);
     MaybeSetHardcodedEntries(host_indexed_content_settings_);
   }
 
-  return {allowed_result.error_or(SafetyListParseResult::kSuccess),
-          blocked_result.error_or(SafetyListParseResult::kSuccess)};
+  return {allowed_result.error_or(ParseResult::kSuccess),
+          blocked_result.error_or(ParseResult::kSuccess)};
 }
 
 void SafetyListManager::ParseSafetyLists(std::string_view json_string) {
