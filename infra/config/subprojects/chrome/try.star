@@ -475,7 +475,7 @@ chrome_internal_verifier(
     # setting to 50 on new builder for win-11.
     owner_whitelist = ["googlers", "project-chromium-robot-committers"],
     tryjob = try_.job(
-        experiment_percentage = 50,
+        experiment_percentage = 100,
     ),
 )
 
