@@ -47,7 +47,6 @@ public class WebApkInstallBroadcastReceiverTest {
     private static final String URL = "https://test.com";
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private final Bitmap mIcon = Bitmap.createBitmap(1, 1, Bitmap.Config.ALPHA_8);
-    private final byte[] mSerializedProto = new byte[] {1, 2};
 
     private Context mContext;
     private ShadowNotificationManager mShadowNotificationManager;
