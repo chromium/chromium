@@ -10,7 +10,7 @@ import type {TabSearchPageElement} from './tab_search_page.js';
 export function getHtml(this: TabSearchPageElement) {
   return html`<!--_html_template_start_-->
 <div id="tabSearchPage">
-  <div id="searchField" @keydown="${this.onSearchKeyDown_}"
+  <div id="searchField" @keydown="${this.onSearchKeydown_}"
       clear-label="$i18n{clearSearch}">
     <cr-icon id="searchIcon" icon="tab-search:search"></cr-icon>
     <div id="searchWrapper">
@@ -35,7 +35,7 @@ export function getHtml(this: TabSearchPageElement) {
         max-height="${this.listMaxHeight_}"
         item-size="${this.listItemSize_}"
         .items="${this.filteredItems_}"
-        @selected-change="${this.onSelectedChanged_}"
+        @selected-change="${this.onSelectedChange_}"
         role="listbox"
         .isSelectable="${(item: any) => {
           return item.constructor.name === 'TabData' ||
@@ -56,7 +56,7 @@ export function getHtml(this: TabSearchPageElement) {
                   ?expanded="${item.expanded}"
                   expand-title="$i18n{expandRecentlyClosed}"
                   collapse-title="$i18n{collapseRecentlyClosed}"
-                  @expanded-changed="${this.onTitleExpandChanged_}"
+                  @expanded-changed="${this.onTitleExpandedChanged_}"
                   no-hover>
               </cr-expand-button>` : ''}
           </div>`;
@@ -68,7 +68,7 @@ export function getHtml(this: TabSearchPageElement) {
             @click="${this.onItemClick_}"
             @close="${this.onItemClose_}"
             @focus="${this.onItemFocus_}"
-            @keydown="${this.onItemKeyDown_}"
+            @keydown="${this.onItemKeydown_}"
             role="option"
             tabindex="0">
         </tab-search-item>`;
@@ -80,7 +80,7 @@ export function getHtml(this: TabSearchPageElement) {
             aria-label="${this.ariaLabel_(item)}"
             @click="${this.onItemClick_}"
             @focus="${this.onItemFocus_}"
-            @keydown="${this.onItemKeyDown_}"
+            @keydown="${this.onItemKeydown_}"
             role="option" tabindex="0">
         </tab-search-group-item>`;
        default:

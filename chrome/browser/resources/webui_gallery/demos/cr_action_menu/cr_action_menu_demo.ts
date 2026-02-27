@@ -59,13 +59,13 @@ export class CrActionMenuDemoElement extends CrLitElement {
     this.$.menu.showAt(event.target as HTMLElement);
   }
 
-  protected onContextMenu_(event: MouseEvent) {
+  protected onDemosContextmenu_(event: MouseEvent) {
     event.preventDefault();
     this.$.menu.close();
     this.$.menu.showAtPosition({top: event.clientY, left: event.clientX});
   }
 
-  protected onShowMinMaxMenu_(event: MouseEvent) {
+  protected onShowMinMaxMenuClick_(event: MouseEvent) {
     const minMaxContainerRect = this.$.minMaxContainer.getBoundingClientRect();
     const config = {
       minX: minMaxContainerRect.left,
@@ -88,12 +88,12 @@ export class CrActionMenuDemoElement extends CrLitElement {
     return selectedAlignment === option;
   }
 
-  protected onCustomAlignmentXChanged_(e: Event) {
+  protected onCustomAlignmentXChange_(e: Event) {
     this.customAlignmentX_ =
         (e.target as HTMLSelectElement).value as AnchorAlignmentKey;
   }
 
-  protected onCustomAlignmentYChanged_(e: Event) {
+  protected onCustomAlignmentYChange_(e: Event) {
     this.customAlignmentY_ =
         (e.target as HTMLSelectElement).value as AnchorAlignmentKey;
   }

@@ -15,7 +15,7 @@ export function getHtml(this: AutoTabGroupsNotStartedElement) {
   <auto-tab-groups-not-started-image></auto-tab-groups-not-started-image>
   ${this.tabOrganizationUserInstructionEnabled_ ? html`
     <input id="userInstructionInput"
-    @input="${this.onUserInstructionInputChange_}">
+        @input="${this.onUserInstructionInputInput_}">
   ` : ''}
   <div class="auto-tab-groups-text-container">
     <div class="auto-tab-groups-body">
@@ -45,7 +45,7 @@ export function getHtml(this: AutoTabGroupsNotStartedElement) {
             role="link"
             tabindex="0"
             @click="${this.onLearnMoreClick_}"
-            @keydown="${this.onLearnMoreKeyDown_}">
+            @keydown="${this.onLearnMoreKeydown_}">
           $i18n{learnMore}
         </a>
       ` : ''}
@@ -55,7 +55,7 @@ export function getHtml(this: AutoTabGroupsNotStartedElement) {
     <div class="auto-tab-groups-header">Update model strategy preference</div>
     <cr-radio-group
         selected="${this.modelStrategy}"
-        @selected-changed="${this.onModelStrategyChange_}">
+        @selected-changed="${this.onModelStrategySelectedChanged_}">
       <cr-radio-button
           name="${TabOrganizationModelStrategy.kTopic}"
           label="Topic/Theme"></cr-radio-button>

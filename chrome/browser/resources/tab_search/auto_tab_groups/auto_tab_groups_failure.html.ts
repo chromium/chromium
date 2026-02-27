@@ -13,7 +13,7 @@ export function getHtml(this: AutoTabGroupsFailureElement) {
   <div class="auto-tab-groups-text-container">
     <div class="auto-tab-groups-body">
       <localized-link localized-string="${this.getBody_()}"
-          @link-clicked="${this.onCheckNow_}"></localized-link>
+          @link-clicked="${this.onLinkClicked_}"></localized-link>
     </div>
   </div>
   ${this.showFre ? html`
@@ -24,7 +24,7 @@ export function getHtml(this: AutoTabGroupsFailureElement) {
             role="link"
             tabindex="0"
             @click="${this.onTipClick_}"
-            @keydown="${this.onTipKeyDown_}"
+            @keydown="${this.onTipKeydown_}"
             aria-description="$i18n{tipAriaDescription}">
           $i18n{tipAction}
         </div>

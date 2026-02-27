@@ -106,7 +106,7 @@ export class SplitNewTabPageAppElement extends CrLitElement {
         'visibilitychange', this.visibilityChangedListener_);
   }
 
-  protected onClose_() {
+  protected onCloseClick_() {
     this.apiProxy_.closeWebUiTab();
   }
 
@@ -123,13 +123,13 @@ export class SplitNewTabPageAppElement extends CrLitElement {
     this.$.splitTabsList.setSelected(index);
   }
 
-  protected onTabFocusOut_(_: Event) {
+  protected onTabFocusout_(_: Event) {
     // Ensure that when a TabSearchItem loses focus, it resets the selected
     // item.
     this.$.splitTabsList.resetSelected();
   }
 
-  protected onTabKeyDown_(e: KeyboardEvent) {
+  protected onTabKeydown_(e: KeyboardEvent) {
     if (e.key !== 'Enter' && e.key !== ' ') {
       return;
     }

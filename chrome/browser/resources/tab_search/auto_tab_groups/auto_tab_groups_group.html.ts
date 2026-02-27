@@ -13,11 +13,11 @@ export function getHtml(this: AutoTabGroupsGroupElement) {
   <div class="group-header-row">
     ${this.showInput_ ? html`
       <cr-input id="input" type="text" .value="${this.name}"
-          @value-changed="${this.onNameChanged_}"
+          @value-changed="${this.onInputValueChanged_}"
           aria-label="${this.getInputAriaLabel_()}"
           @focus="${this.onInputFocus_}"
           @blur="${this.onInputBlur_}"
-          @keydown="${this.onInputKeyDown_}">
+          @keydown="${this.onInputKeydown_}">
       </cr-input>
     ` : html`
       <div class="group-name-row">
@@ -40,9 +40,9 @@ export function getHtml(this: AutoTabGroupsGroupElement) {
   </div>
   <div class="divider"></div>
   <cr-page-selector id="selector" role="listbox" show-all
-      @keydown="${this.onListKeyDown_}"
+      @keydown="${this.onSelectorKeydown_}"
       selectable="tab-search-item"
-      @iron-select="${this.onSelectedChanged_}">
+      @iron-select="${this.onSelectorIronSelect_}">
     ${this.tabDatas_.map((item, index) => html`
       ${this.showNewTabSectionHeader_(index) ? html`
         <auto-tab-groups-new-badge></auto-tab-groups-new-badge>
@@ -52,7 +52,7 @@ export function getHtml(this: AutoTabGroupsGroupElement) {
           size="compact"
           tabindex="${this.getTabIndex_(index)}"
           data-index="${index}"
-          @close="${this.onTabRemove_}"
+          @close="${this.onTabClose_}"
           @focus="${this.onTabFocus_}"
           @blur="${this.onTabBlur_}"
           close-button-icon="tab-search:remove"

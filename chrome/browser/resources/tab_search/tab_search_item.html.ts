@@ -42,7 +42,7 @@ ${this.isCloseable_() ? html`
     <cr-icon-button id="closeButton" role="${this.getCloseButtonRole_()}"
         aria-label="${this.ariaLabelForButton_()}"
         iron-icon="${this.closeButtonIcon}" ?noink="${!this.buttonRipples_}"
-        no-ripple-on-focus @click="${this.onItemClose_}"
+        no-ripple-on-focus @click="${this.onCloseButtonClick_}"
         title="${this.tooltipForButton_()}"
         @focus="${this.onCloseButtonFocus_}" @blur="${this.onCloseButtonBlur_}">
     </cr-icon-button>

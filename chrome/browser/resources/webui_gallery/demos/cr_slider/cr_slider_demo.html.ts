@@ -13,7 +13,7 @@ export function getHtml(this: CrSliderDemoElement) {
 <h2>Indiscrete</h2>
 <div class="demos">
   <cr-slider id="basicSlider" min="0" max="20" .value="${this.basicValue_}"
-      @cr-slider-value-changed="${this.onBasicValueChanged_}">
+      @cr-slider-value-changed="${this.onBasicCrSliderValueChanged_}">
   </cr-slider>
   <div>Value of slider: ${this.basicValue_}</div>
 </div>
@@ -23,12 +23,12 @@ export function getHtml(this: CrSliderDemoElement) {
   <cr-slider id="tickedSlider" .ticks="${this.ticks_}"
       marker-count="${this.getMarkerCount_()}"
       .value="${this.tickedValue_}"
-      @cr-slider-value-changed="${this.onTickedValueChanged_}">
+      @cr-slider-value-changed="${this.onTickedCrSliderValueChanged_}">
   </cr-slider>
   <div>Value of slider, the index of selected tick: ${this.tickedValue_}</div>
   <div>Value of selected tick: ${this.getTickValue_()}</div>
   <cr-checkbox ?checked="${this.showMarkers_}"
-      @checked-changed="${this.onShowMarkersChanged_}">
+      @checked-changed="${this.onShowMarkersCheckedChanged_}">
     Show markers
   </cr-checkbox>
 </div>

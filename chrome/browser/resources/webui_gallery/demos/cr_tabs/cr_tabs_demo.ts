@@ -55,7 +55,8 @@ export class CrTabsDemoElement extends CrLitElement {
     this.selectedTabIndex_ = 1;
   }
 
-  protected onSelectedTabIndexChanged_(e: CustomEvent<{value: number}>) {
+  protected onSelectedTabIndexSelectedChanged_(
+      e: CustomEvent<{value: number}>) {
     this.selectedTabIndex_ = e.detail.value;
   }
 }

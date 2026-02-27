@@ -23,9 +23,9 @@ export function getHtml(this: AutoTabGroupsResultsElement) {
   </div>
   <auto-tab-groups-results-actions show-clear
       ?multiple-organizations="${this.hasMultipleOrganizations_()}"
-      @create-group-click="${this.onCreateAllGroupsClick_}">
+      @create-group-click="${this.onCreateGroupClick_}">
   </auto-tab-groups-results-actions>
-  <div class="feedback" role="toolbar" @keydown="${this.onFeedbackKeyDown_}">
+  <div class="feedback" role="toolbar" @keydown="${this.onFeedbackKeydown_}">
     <div class="button-row">
       <div class="auto-tab-groups-body">
         $i18n{learnMoreDisclaimer1}
@@ -40,7 +40,7 @@ export function getHtml(this: AutoTabGroupsResultsElement) {
       $i18n{learnMoreDisclaimer2}
       <div id="learnMore" class="auto-tab-groups-link"
           @click="${this.onLearnMoreClick_}"
-          @keydown="${this.onLearnMoreKeyDown_}"
+          @keydown="${this.onLearnMoreKeydown_}"
           role="link"
           tabindex="0"
           aria-label="$i18n{learnMoreAriaLabel}">

@@ -178,7 +178,8 @@ export class WebuiGalleryAppElement extends CrLitElement {
         (e: Event) => this.onPathChanged_((e as CustomEvent<string>).detail));
   }
 
-  protected onMenuItemSelect_(e: CustomEvent<{item: HTMLAnchorElement}>): void {
+  protected onMenuItemIronSelect_(e: CustomEvent<{item: HTMLAnchorElement}>):
+      void {
     const newUrl = new URL(e.detail.item.href);
     CrRouter.getInstance().setPath(newUrl.pathname);
     this.onPathChanged_(newUrl.pathname);

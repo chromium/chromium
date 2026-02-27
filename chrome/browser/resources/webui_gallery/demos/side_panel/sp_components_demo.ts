@@ -92,19 +92,19 @@ export class SpComponentsDemoElement extends CrLitElement {
     return urls;
   }
 
-  protected onItemSizeChanged_() {
+  protected onItemSizeChange_() {
     this.itemSize_ = this.$.itemSizeSelect.value as CrUrlListItemSize;
   }
 
-  protected onUrlCountChanged_() {
+  protected onUrlCountCrSliderValueChanged_() {
     this.urlCount_ = this.$.urlCountSlider.value;
   }
 
-  protected onHideBackButtonChanged_(e: CustomEvent<{value: boolean}>) {
+  protected onHideBackButtonCheckedChanged_(e: CustomEvent<{value: boolean}>) {
     this.hideBackButton_ = e.detail.value;
   }
 
-  protected onShowBadgesChanged_(e: CustomEvent<{value: boolean}>) {
+  protected onShowBadgesCheckedChanged_(e: CustomEvent<{value: boolean}>) {
     this.showBadges_ = e.detail.value;
   }
 }

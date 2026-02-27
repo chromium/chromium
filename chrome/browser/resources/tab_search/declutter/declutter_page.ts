@@ -207,7 +207,7 @@ export class DeclutterPageElement extends CrLitElement {
     }
   }
 
-  protected onTabKeyDown_(e: KeyboardEvent) {
+  protected onTabKeydown_(e: KeyboardEvent) {
     if ((e.key !== 'ArrowUp' && e.key !== 'ArrowDown')) {
       return;
     }
@@ -234,13 +234,13 @@ export class DeclutterPageElement extends CrLitElement {
     e.stopPropagation();
   }
 
-  protected onStaleTabExclude_(e: Event) {
+  protected onStaleTabClose_(e: Event) {
     const tabData = (e.currentTarget as TabSearchItemElement).data;
     this.apiProxy_.excludeFromStaleTabs(tabData.tab.tabId);
     this.announceTabExcluded_();
   }
 
-  protected onDuplicateTabExclude_(e: Event) {
+  protected onDuplicateTabClose_(e: Event) {
     const tabData = (e.currentTarget as TabSearchItemElement).data;
     this.apiProxy_.excludeFromDuplicateTabs(tabData.tab.url);
     this.announceTabExcluded_();

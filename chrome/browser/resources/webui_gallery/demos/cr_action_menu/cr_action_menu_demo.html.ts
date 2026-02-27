@@ -22,7 +22,7 @@ export function getHtml(this: CrActionMenuDemoElement) {
 </div>
 
 <h2>As context menu</h2>
-<div class="demos" @contextmenu="${this.onContextMenu_}">
+<div class="demos" @contextmenu="${this.onDemosContextmenu_}">
   Right-click anywhere in this area.
 </div>
 
@@ -32,18 +32,18 @@ export function getHtml(this: CrActionMenuDemoElement) {
 
   <cr-icon-button class="min-max-anchor top-left"
       iron-icon="cr:add"
-      @click="${this.onShowMinMaxMenu_}">
+      @click="${this.onShowMinMaxMenuClick_}">
   </cr-icon-button>
   <cr-button class="min-max-anchor top-right"
-      @click="${this.onShowMinMaxMenu_}">
+      @click="${this.onShowMinMaxMenuClick_}">
     Open menu
   </cr-button>
   <cr-icon-button class="min-max-anchor bottom-left"
       iron-icon="cr20:menu"
-      @click="${this.onShowMinMaxMenu_}">
+      @click="${this.onShowMinMaxMenuClick_}">
   </cr-icon-button>
   <cr-button class="min-max-anchor bottom-right"
-      @click="${this.onShowMinMaxMenu_}">
+      @click="${this.onShowMinMaxMenuClick_}">
     Open menu
   </cr-icon-button>
 </div>
@@ -54,7 +54,7 @@ export function getHtml(this: CrActionMenuDemoElement) {
     <label id="alignmentXLabel">x alignment</label>
     <select aria-labelledby="alignmentXLabel"
         .value="${this.customAlignmentX_}"
-        @change="${this.onCustomAlignmentXChanged_}">
+        @change="${this.onCustomAlignmentXChange_}">
       ${this.alignmentOptions_.map(item => html`
         <option .value="${item}"
             ?selected="${this.isSelectedAlignment_(
@@ -69,7 +69,7 @@ export function getHtml(this: CrActionMenuDemoElement) {
     <label id="alignmentYLabel">y alignment</label>
     <select aria-labelledby="alignmentYLabel"
         .value="${this.customAlignmentY_}"
-        @change="${this.onCustomAlignmentYChanged_}">
+        @change="${this.onCustomAlignmentYChange_}">
       ${this.alignmentOptions_.map(item => html`
         <option .value="${item}"
             ?selected="${this.isSelectedAlignment_(

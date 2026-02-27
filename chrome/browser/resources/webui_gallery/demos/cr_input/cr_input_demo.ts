@@ -85,7 +85,8 @@ export class CrInputDemoElement extends CrLitElement {
     this.textareaValue_ = e.detail.value;
   }
 
-  protected onAutogrowTextareaChanged_(e: CustomEvent<{value: boolean}>) {
+  protected onAutogrowTextareaCheckedChanged_(
+      e: CustomEvent<{value: boolean}>) {
     this.autogrowTextarea_ = e.detail.value;
   }
 }

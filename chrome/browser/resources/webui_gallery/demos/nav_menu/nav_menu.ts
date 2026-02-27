@@ -74,7 +74,7 @@ export class NavMenuElement extends CrLitElement {
     e.preventDefault();
   }
 
-  protected onSelectedIndexChanged_(e: CustomEvent<{value: number}>) {
+  protected onSelectedIndexSelectedChanged_(e: CustomEvent<{value: number}>) {
     this.selectedIndex = e.detail.value;
   }
 }

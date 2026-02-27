@@ -52,7 +52,7 @@ export class CrToolbarDemoElement extends CrLitElement {
   protected accessor showSearch_: boolean = true;
   protected accessor showSlottedContent_: boolean = false;
 
-  protected onMenuClick_() {
+  protected onCrToolbarMenuClick_() {
     this.log_.push('Menu tapped.');
     this.requestUpdate();
   }
@@ -63,39 +63,40 @@ export class CrToolbarDemoElement extends CrLitElement {
     this.requestUpdate();
   }
 
-  protected onPageNameChanged_(e: CustomEvent<{value: string}>) {
+  protected onPageNameValueChanged_(e: CustomEvent<{value: string}>) {
     this.pageName_ = e.detail.value;
   }
 
-  protected onSearchPromptChanged_(e: CustomEvent<{value: string}>) {
+  protected onSearchPromptValueChanged_(e: CustomEvent<{value: string}>) {
     this.searchPrompt_ = e.detail.value;
   }
 
-  protected onClearLabelChanged_(e: CustomEvent<{value: string}>) {
+  protected onClearLabelValueChanged_(e: CustomEvent<{value: string}>) {
     this.clearLabel_ = e.detail.value;
   }
 
-  protected onNarrowThresholdChanged_(e: CustomEvent<{value: string}>) {
+  protected onNarrowThresholdValueChanged_(e: CustomEvent<{value: string}>) {
     this.narrowThreshold_ = Number(e.detail.value);
   }
 
-  protected onMenuLabelChanged_(e: CustomEvent<{value: string}>) {
+  protected onMenuLabelValueChanged_(e: CustomEvent<{value: string}>) {
     this.menuLabel_ = e.detail.value;
   }
 
-  protected onAlwaysShowLogoChanged_(e: CustomEvent<{value: boolean}>) {
+  protected onAlwaysShowLogoCheckedChanged_(e: CustomEvent<{value: boolean}>) {
     this.alwaysShowLogo_ = e.detail.value;
   }
 
-  protected onShowMenuChanged_(e: CustomEvent<{value: boolean}>) {
+  protected onShowMenuCheckedChanged_(e: CustomEvent<{value: boolean}>) {
     this.showMenu_ = e.detail.value;
   }
 
-  protected onShowSearchChanged_(e: CustomEvent<{value: boolean}>) {
+  protected onShowSearchCheckedChanged_(e: CustomEvent<{value: boolean}>) {
     this.showSearch_ = e.detail.value;
   }
 
-  protected onShowSlottedContentChanged_(e: CustomEvent<{value: boolean}>) {
+  protected onShowSlottedContentCheckedChanged_(
+      e: CustomEvent<{value: boolean}>) {
     this.showSlottedContent_ = e.detail.value;
   }
 

@@ -35,7 +35,7 @@ export class MdSelectDemoElement extends CrLitElement {
 
   protected accessor selectedOption_: string = 'two';
 
-  protected onSelectValueChanged_() {
+  protected onSelectValueChange_() {
     this.selectedOption_ = this.$.select.value;
   }
 }

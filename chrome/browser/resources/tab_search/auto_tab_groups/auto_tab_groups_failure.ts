@@ -54,7 +54,7 @@ export class AutoTabGroupsFailureElement extends CrLitElement {
     }
   }
 
-  protected onCheckNow_(e: CustomEvent<{event: Event}>) {
+  protected onLinkClicked_(e: CustomEvent<{event: Event}>) {
     // A place holder href with the value "#" is used to have a compliant link.
     // This prevents the browser from navigating the window to "#"
     e.detail.event.preventDefault();
@@ -66,7 +66,7 @@ export class AutoTabGroupsFailureElement extends CrLitElement {
     this.fire('tip-click');
   }
 
-  protected onTipKeyDown_(event: KeyboardEvent) {
+  protected onTipKeydown_(event: KeyboardEvent) {
     if (event.key === 'Enter') {
       this.onTipClick_();
     }

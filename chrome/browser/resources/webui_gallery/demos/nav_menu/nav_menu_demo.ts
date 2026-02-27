@@ -47,7 +47,7 @@ export class NavMenuDemoElement extends CrLitElement {
   protected accessor showIcons_: boolean = true;
   protected accessor showRipples_: boolean = true;
 
-  protected showDrawerMenu_() {
+  protected onShowDrawerMenuClick_() {
     this.$.drawer.openDrawer();
     this.isDrawerOpen_ = this.$.drawer.open;
   }
@@ -60,11 +60,11 @@ export class NavMenuDemoElement extends CrLitElement {
     this.selectedIndex_ = e.detail.value;
   }
 
-  protected onShowIconsChanged_(e: CustomEvent<{value: boolean}>) {
+  protected onShowIconsCheckedChanged_(e: CustomEvent<{value: boolean}>) {
     this.showIcons_ = e.detail.value;
   }
 
-  protected onShowRipplesChanged_(e: CustomEvent<{value: boolean}>) {
+  protected onShowRipplesCheckedChanged_(e: CustomEvent<{value: boolean}>) {
     this.showRipples_ = e.detail.value;
   }
 }

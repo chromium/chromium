@@ -158,7 +158,7 @@ export class TabSearchItemElement extends TabSearchItemBase {
     return this.role === 'option' ? 'option' : 'button';
   }
 
-  protected onItemClose_(e: Event) {
+  protected onCloseButtonClick_(e: Event) {
     this.dispatchEvent(new CustomEvent('close'));
     e.stopPropagation();
   }

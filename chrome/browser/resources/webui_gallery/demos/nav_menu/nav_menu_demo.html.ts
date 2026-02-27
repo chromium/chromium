@@ -7,18 +7,21 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {NavMenuDemoElement} from './nav_menu_demo.js';
 
 export function getHtml(this: NavMenuDemoElement) {
+  // clang-format off
   return html`
 <h1>Navigation menus</h1>
 <div class="demos">
   <cr-checkbox ?checked="${this.showIcons_}"
-      @checked-changed="${this.onShowIconsChanged_}">
+      @checked-changed="${this.onShowIconsCheckedChanged_}">
     Show icons
   </cr-checkbox>
   <cr-checkbox ?checked="${this.showRipples_}"
-      @checked-changed="${this.onShowRipplesChanged_}">
+      @checked-changed="${this.onShowRipplesCheckedChanged_}">
     Show ripples on click
   </cr-checkbox>
-  <cr-button @click="${this.showDrawerMenu_}">Show menu in a drawer</cr-button>
+  <cr-button @click="${this.onShowDrawerMenuClick_}">
+    Show menu in a drawer
+  </cr-button>
   <nav-menu ?hidden="${this.isDrawerOpen_}"
       ?show-icons="${this.showIcons_}" ?show-ripples="${this.showRipples_}"
       .selectedIndex="${this.selectedIndex_}"
@@ -36,4 +39,5 @@ export function getHtml(this: NavMenuDemoElement) {
     </nav-menu>
   </div>
 </cr-drawer>`;
+  // clang-format on
 }

@@ -11,13 +11,13 @@ export function getHtml(this: CrToastDemoElement) {
 <h1>cr-toast</h1>
 <div class="demos">
   <cr-input type="text" label="Toast message" .value="${this.message_}"
-      @value-changed="${this.onMessageChanged_}"></cr-input>
+      @value-changed="${this.onMessageValueChanged_}"></cr-input>
   <cr-checkbox ?checked="${this.showDismissButton_}"
-      @checked-changed="${this.onShowDismissButtonChanged_}">
+      @checked-changed="${this.onShowDismissButtonCheckedChanged_}">
     Show dismiss button
   </cr-checkbox>
   <cr-input type="number" label="Duration (ms)" .value="${this.duration_}"
-      @value-changed="${this.onDurationChanged_}">
+      @value-changed="${this.onDurationValueChanged_}">
   </cr-input>
 
   <cr-button @click="${this.onShowToastClick_}">Show toast</cr-button>

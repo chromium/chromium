@@ -171,14 +171,14 @@ export class AutoTabGroupsGroupElement extends CrLitElement {
     }
   }
 
-  protected onInputKeyDown_(event: KeyboardEvent) {
+  protected onInputKeydown_(event: KeyboardEvent) {
     if (event.key === 'Enter') {
       event.stopPropagation();
       this.showInput_ = false;
     }
   }
 
-  protected onListKeyDown_(event: KeyboardEvent) {
+  protected onSelectorKeydown_(event: KeyboardEvent) {
     const selector = this.$.selector;
     if (selector.selected === undefined) {
       return;
@@ -208,7 +208,7 @@ export class AutoTabGroupsGroupElement extends CrLitElement {
     }
   }
 
-  protected onSelectedChanged_() {
+  protected onSelectorIronSelect_() {
     if (this.$.selector.selectedItem) {
       const selectedItem = this.$.selector.selectedItem as TabSearchItemElement;
       const selectedItemCloseButton =
@@ -219,7 +219,7 @@ export class AutoTabGroupsGroupElement extends CrLitElement {
     }
   }
 
-  protected onTabRemove_(e: Event) {
+  protected onTabClose_(e: Event) {
     const index = getEventTargetIndex(e);
     const tab = this.tabs[index];
     this.fire('remove-tab', {organizationId: this.organizationId, tab});
@@ -265,7 +265,7 @@ export class AutoTabGroupsGroupElement extends CrLitElement {
     });
   }
 
-  protected onNameChanged_(e: CustomEvent<{value: string}>) {
+  protected onInputValueChanged_(e: CustomEvent<{value: string}>) {
     if (this.name !== e.detail.value) {
       this.name = e.detail.value;
       this.changedName_ = true;

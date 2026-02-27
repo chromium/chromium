@@ -13,7 +13,7 @@ ${(this.tabOrganizationEnabled_ || this.declutterEnabled_) ? html`
   <cr-tabs
       .tabNames="${this.tabNames_}"
       .selected="${this.sectionToIndex_(this.selectedTabSection_)}"
-      @selected-changed="${this.onSelectedTabIndexChanged_}">
+      @selected-changed="${this.onCrTabsSelectedChanged_}">
   </cr-tabs>
   <cr-page-selector
       .selected="${this.sectionToIndex_(this.selectedTabSection_)}">

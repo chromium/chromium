@@ -60,17 +60,17 @@ export class CrTooltipDemoElement extends CrLitElement {
         .forEach(tooltip => tooltip.updatePosition());
   }
 
-  protected hide_() {
+  protected onHideClick_() {
     this.$.manualTooltip.hide();
   }
 
-  protected showAtTarget1_() {
+  protected onShowAtTarget1Click_() {
     this.$.manualTooltip.target = this.$.target1;
     this.$.manualTooltip.updatePosition();
     this.$.manualTooltip.show();
   }
 
-  protected showAtTarget2_() {
+  protected onShowAtTarget2Click_() {
     this.$.manualTooltip.target = this.$.target2;
     this.$.manualTooltip.updatePosition();
     this.$.manualTooltip.show();

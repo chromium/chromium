@@ -12,7 +12,7 @@ export function getHtml(this: CrTabsDemoElement) {
 <div class="demos">
   <cr-tabs id="tabs" .tabNames="${this.tabNames_}"
       .selected="${this.selectedTabIndex_}"
-      @selected-changed="${this.onSelectedTabIndexChanged_}">
+      @selected-changed="${this.onSelectedTabIndexSelectedChanged_}">
   </cr-tabs>
   <cr-page-selector .selected="${this.selectedTabIndex_}">
     ${this.tabNames_.map(tabName => html`

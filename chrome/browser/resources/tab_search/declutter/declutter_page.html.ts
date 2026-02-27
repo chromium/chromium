@@ -54,8 +54,8 @@ export function getHtml(this: DeclutterPageElement) {
                   close-button-aria-label=
                       "${this.getCloseButtonAriaLabel_(item)}"
                   close-button-tooltip="${this.getCloseButtonTooltip_()}"
-                  role="option" @keydown="${this.onTabKeyDown_}"
-                  @close="${this.onStaleTabExclude_}"
+                  role="option" @keydown="${this.onTabKeydown_}"
+                  @close="${this.onStaleTabClose_}"
                   @focus="${this.onTabFocus_}" @blur="${this.onTabBlur_}"
                   size="${this.dedupeEnabled ? 'compact' : 'medium'}"
                   hide-url>
@@ -77,8 +77,8 @@ export function getHtml(this: DeclutterPageElement) {
                   close-button-aria-label=
                       "${this.getCloseButtonAriaLabel_(item)}"
                   close-button-tooltip="${this.getCloseButtonTooltip_()}"
-                  role="option" @keydown="${this.onTabKeyDown_}"
-                  @close="${this.onDuplicateTabExclude_}"
+                  role="option" @keydown="${this.onTabKeydown_}"
+                  @close="${this.onDuplicateTabClose_}"
                   @focus="${this.onTabFocus_}" @blur="${this.onTabBlur_}"
                   size="${this.dedupeEnabled ? 'compact' : 'medium'}"
                   hide-url>

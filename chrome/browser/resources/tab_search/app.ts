@@ -139,7 +139,7 @@ export class TabSearchAppElement extends CrLitElement {
     }
   }
 
-  protected onSelectedTabIndexChanged_(e: CustomEvent<{value: number}>) {
+  protected onCrTabsSelectedChanged_(e: CustomEvent<{value: number}>) {
     this.selectedTabSection_ = this.indexToSection(e.detail.value);
     if (this.selectedTabSection_ === TabSearchSection.kOrganize &&
         !this.declutterEnabled_) {

@@ -12,7 +12,7 @@ export function getHtml(this: CrA11yAnnouncerDemoElement) {
 
 <div class="demos">
   <cr-checkbox ?checked="${this.forceShowAnnouncer_}"
-      @checked-changed="${this.onForceShowAnnouncerChanged_}">
+      @checked-changed="${this.onForceShowAnnouncerCheckedChanged_}">
     Force show announcer
   </cr-checkbox>
 

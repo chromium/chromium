@@ -32,7 +32,8 @@ export class CrRadioDemoElement extends CrLitElement {
 
   protected accessor selectedRadioOption_: string|undefined;
 
-  protected onSelectedRadioOptionChanged_(e: CustomEvent<{value: string}>) {
+  protected onSelectedRadioOptionSelectedChanged_(
+      e: CustomEvent<{value: string}>) {
     this.selectedRadioOption_ = e.detail.value;
   }
 }

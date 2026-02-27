@@ -7,10 +7,11 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {NavMenuElement} from './nav_menu.js';
 
 export function getHtml(this: NavMenuElement) {
+  // clang-format off
   return html`
 <cr-menu-selector id="selector" selectable="a" selected-attribute="selected"
     selected="${this.selectedIndex}"
-    @selected-changed="${this.onSelectedIndexChanged_}"
+    @selected-changed="${this.onSelectedIndexSelectedChanged_}"
     @click="${this.onSelectorClick_}">
   ${this.menuItems_.map(item => html`
     <a role="menuitem" href="${item.path}" class="cr-nav-menu-item">
@@ -22,4 +23,5 @@ export function getHtml(this: NavMenuElement) {
     </a>
   `)}
 </cr-menu-selector>`;
+  // clang-format on
 }

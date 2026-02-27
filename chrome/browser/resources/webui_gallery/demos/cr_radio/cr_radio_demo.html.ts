@@ -11,7 +11,7 @@ export function getHtml(this: CrRadioDemoElement) {
 <h1>cr-radio-group and cr-radio-button</h1>
 <div class="demos">
   <cr-radio-group selected="${this.selectedRadioOption_}"
-      @selected-changed="${this.onSelectedRadioOptionChanged_}">
+      @selected-changed="${this.onSelectedRadioOptionSelectedChanged_}">
     <cr-radio-button name="option1" label="Option 1"></cr-radio-button>
     <cr-radio-button name="option2" label="Option 2"></cr-radio-button>
     <cr-radio-button name="option3" label="Option 3">

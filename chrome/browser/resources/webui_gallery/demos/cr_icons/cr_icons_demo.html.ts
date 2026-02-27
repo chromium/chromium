@@ -60,7 +60,7 @@ export function getHtml(this: CrIconsDemoElement) {
 <h1>Custom controls</h1>
 <div class="demos">
   <cr-input type="number" min="12" max="128" .value="${this.iconSize_}"
-      @value-changed="${this.onIconSizeChanged_}"
+      @value-changed="${this.onIconSizeValueChanged_}"
       label="Icon size"></cr-input>
 
   <label>

@@ -119,13 +119,13 @@ export class AutoTabGroupsNotStartedElement extends
     this.fire('learn-more-click');
   }
 
-  protected onLearnMoreKeyDown_(event: KeyboardEvent) {
+  protected onLearnMoreKeydown_(event: KeyboardEvent) {
     if (event.key === 'Enter') {
       this.onLearnMoreClick_();
     }
   }
 
-  protected onModelStrategyChange_(
+  protected onModelStrategySelectedChanged_(
       e: CustomEvent<{value: TabOrganizationModelStrategy}>) {
     const modelStrategy = e.detail.value;
     if (Number(modelStrategy) !== Number(this.modelStrategy)) {
@@ -133,7 +133,7 @@ export class AutoTabGroupsNotStartedElement extends
     }
   }
 
-  protected onUserInstructionInputChange_(e: KeyboardEvent) {
+  protected onUserInstructionInputInput_(e: KeyboardEvent) {
     const value = (e.target as HTMLInputElement).value;
     this.fire('user-instruction-input-change', {value: value});
   }

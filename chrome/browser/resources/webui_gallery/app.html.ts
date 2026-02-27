@@ -11,7 +11,7 @@ export function getHtml(this: WebuiGalleryAppElement) {
 <div id="sidebar">
   <h1>WebUI Gallery</h1>
   <cr-menu-selector id="selector" selectable="a" selected-attribute="selected"
-      @iron-select="${this.onMenuItemSelect_}">
+      @iron-select="${this.onMenuItemIronSelect_}">
     ${this.demos_.map(demo => html`
         <a role="menuitem" href="${demo.path}"
             class="cr-nav-menu-item" @click="${this.onMenuItemClick_}">

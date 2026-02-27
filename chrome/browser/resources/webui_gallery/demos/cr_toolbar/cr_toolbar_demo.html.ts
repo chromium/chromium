@@ -19,7 +19,7 @@ export function getHtml(this: CrToolbarDemoElement) {
     ?always-show-logo="${this.alwaysShowLogo_}"
     ?show-menu="${this.showMenu_}"
     ?show-search="${this.showSearch_}"
-    @cr-toolbar-menu-click="${this.onMenuClick_}"
+    @cr-toolbar-menu-click="${this.onCrToolbarMenuClick_}"
     @search-changed="${this.onSearchChanged_}">
   <div ?hidden="${!this.showSlottedContent_}">
     Slotted right-hand content
@@ -30,30 +30,30 @@ export function getHtml(this: CrToolbarDemoElement) {
   <h1>cr-toolbar</h1>
   <div class="demos">
     <cr-input label="Page name" .value="${this.pageName_}"
-        @value-changed="${this.onPageNameChanged_}"></cr-input>
+        @value-changed="${this.onPageNameValueChanged_}"></cr-input>
     <cr-input label="Search prompt" .value="${this.searchPrompt_}"
-        @value-changed="${this.onSearchPromptChanged_}"></cr-input>
+        @value-changed="${this.onSearchPromptValueChanged_}"></cr-input>
     <cr-input label="Clear label" .value="${this.clearLabel_}"
-        @value-changed="${this.onClearLabelChanged_}"></cr-input>
+        @value-changed="${this.onClearLabelValueChanged_}"></cr-input>
     <cr-input label="Menu label" .value="${this.menuLabel_}"
-        @value-changed="${this.onMenuLabelChanged_}"></cr-input>
+        @value-changed="${this.onMenuLabelValueChanged_}"></cr-input>
     <cr-input label="Max window width for narrow mode"
         .value="${this.narrowThreshold_}"
-        @value-changed="${this.onNarrowThresholdChanged_}"></cr-input>
+        @value-changed="${this.onNarrowThresholdValueChanged_}"></cr-input>
     <cr-checkbox ?checked="${this.alwaysShowLogo_}"
-        @checked-changed="${this.onAlwaysShowLogoChanged_}">
+        @checked-changed="${this.onAlwaysShowLogoCheckedChanged_}">
       Always show logo
     </cr-checkbox>
     <cr-checkbox ?checked="${this.showMenu_}"
-        @checked-changed="${this.onShowMenuChanged_}">
+        @checked-changed="${this.onShowMenuCheckedChanged_}">
       Show menu button
     </cr-checkbox>
     <cr-checkbox ?checked="${this.showSearch_}"
-        @checked-changed="${this.onShowSearchChanged_}">
+        @checked-changed="${this.onShowSearchCheckedChanged_}">
       Show search input
     </cr-checkbox>
     <cr-checkbox ?checked="${this.showSlottedContent_}"
-        @checked-changed="${this.onShowSlottedContentChanged_}">
+        @checked-changed="${this.onShowSlottedContentCheckedChanged_}">
       Show right-hand content
     </cr-checkbox>
   </div>

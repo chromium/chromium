@@ -523,7 +523,7 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
     });
   }
 
-  protected onItemKeyDown_(e: KeyboardEvent) {
+  protected onItemKeydown_(e: KeyboardEvent) {
     if (e.key !== 'Enter' && e.key !== ' ') {
       return;
     }
@@ -585,7 +585,7 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
     return item;
   }
 
-  protected async onTitleExpandChanged_(e: CustomEvent<{value: boolean}>) {
+  protected async onTitleExpandedChanged_(e: CustomEvent<{value: boolean}>) {
     // Instead of relying on two-way binding to update the `expanded` property,
     // we update the value directly as the `expanded-changed` event takes place
     // before a two way bound property update and we need the TitleItem
@@ -621,7 +621,7 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
   /**
    * Handles key events when the search field has focus.
    */
-  protected onSearchKeyDown_(e: KeyboardEvent) {
+  protected onSearchKeydown_(e: KeyboardEvent) {
     // In the event the search field has focus and the first item in the list is
     // selected and we receive a Shift+Tab navigation event, ensure All DOM
     // items are available so that the focus can transfer to the last item in
@@ -841,7 +841,7 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
     return this.searchText_;
   }
 
-  protected onSelectedChanged_(
+  protected onSelectedChange_(
       e: CustomEvent<
           {item: (TabSearchItemElement | TabSearchGroupItemElement | null)}>) {
     const itemData = e.detail.item ? e.detail.item.data : null;

@@ -93,7 +93,7 @@ export function getHtml(this: CrInputDemoElement) {
       ?autogrow="${this.autogrowTextarea_}">
   </cr-textarea>
   <cr-checkbox ?checked="${this.autogrowTextarea_}"
-      @checked-changed="${this.onAutogrowTextareaChanged_}">
+      @checked-changed="${this.onAutogrowTextareaCheckedChanged_}">
     Autogrow textarea
   </cr-checkbox>
 
