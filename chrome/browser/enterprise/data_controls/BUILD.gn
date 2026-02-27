@@ -28,6 +28,7 @@ source_set("data_controls") {
   deps = [
     "//base",
     "//chrome/app:generated_resources",
+    "//chrome/browser/glic",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/safe_browsing",
     "//components/enterprise/common/proto:dlp_policy_event_proto",
@@ -80,9 +81,6 @@ source_set("data_controls") {
       "//components/reporting/util:status",
       "//ui/views",
     ]
-  }
-  if (enable_glic) {
-    deps += [ "//chrome/browser/glic" ]
   }
   if (enable_extensions) {
     deps += [ "//chrome/browser/extensions" ]
