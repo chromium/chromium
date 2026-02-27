@@ -42,7 +42,7 @@ import org.chromium.chrome.test.OverrideContextWrapperTestRule;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-/** Tests for {@link RunOnNextLayoutDelegate}. */
+/** Tests for {@link ShrinkExpandImageView}. */
 // TODO(crbug.com/40286625): Move to hub/internal/ once TabSwitcherLayout no longer depends on this.
 @RunWith(BaseRobolectricTestRunner.class)
 public class ShrinkExpandImageViewUnitTest {

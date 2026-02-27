@@ -32,7 +32,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import java.util.ArrayList;
 import java.util.List;
 
-/** Unit tests for {@link TabGroupListBottomSheetRowMediator}. */
+/** Unit tests for {@link LocalTabGroupListBottomSheetRowMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class LocalTabGroupListBottomSheetRowMediatorUnitTest {

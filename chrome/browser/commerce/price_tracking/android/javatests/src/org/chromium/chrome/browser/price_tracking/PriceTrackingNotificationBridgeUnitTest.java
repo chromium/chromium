@@ -36,7 +36,7 @@ import org.chromium.components.optimization_guide.proto.CommonTypesProto.Any;
 import org.chromium.components.payments.ui.CurrencyFormatter;
 import org.chromium.components.payments.ui.CurrencyFormatterJni;
 
-/** Unit test for {@link PriceDropNotifier}. */
+/** Unit test for {@link PriceTrackingNotificationBridge}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class PriceTrackingNotificationBridgeUnitTest {

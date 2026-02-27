@@ -29,7 +29,7 @@ import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.net.NetError;
 
-/** Tests for some parts of {@link CustomTabsConnection}. */
+/** Tests for some parts of {@link CustomTabNavigationEventObserver}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class CustomTabNavigationEventObserverUnitTest {

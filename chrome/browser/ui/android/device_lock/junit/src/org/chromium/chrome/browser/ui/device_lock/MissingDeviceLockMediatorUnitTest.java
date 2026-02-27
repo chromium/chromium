@@ -40,7 +40,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 
-/** Unit tests for the {@link DeviceLockMediator}. */
+/** Unit tests for the {@link MissingDeviceLockMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class MissingDeviceLockMediatorUnitTest {

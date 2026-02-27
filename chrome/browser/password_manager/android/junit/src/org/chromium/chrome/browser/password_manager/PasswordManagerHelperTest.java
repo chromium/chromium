@@ -76,7 +76,7 @@ import java.util.Set;
 /**
  * Tests for password manager helper methods.
  *
- * <p>Tests related to password checkup can be found in {@link PasswordManagerCheckupHelperTest}
+ * <p>Tests related to password checkup can be found in {@link PasswordManagerHelper}
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(

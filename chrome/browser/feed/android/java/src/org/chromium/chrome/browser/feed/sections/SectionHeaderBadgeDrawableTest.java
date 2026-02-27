@@ -25,7 +25,7 @@ import org.robolectric.Robolectric;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.feed.test.R;
 
-/** Tests for the {@link SectionHeaderBadgeDrawabe} class. */
+/** Tests for the {@link SectionHeaderBadgeDrawable} class. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class SectionHeaderBadgeDrawableTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();

@@ -42,7 +42,7 @@ import org.chromium.components.paintpreview.player.PlayerManager;
 
 import java.util.concurrent.ExecutionException;
 
-/** Tests for the {@link TabbedPaintPreview} class. */
+/** Tests for the {@link StartupPaintPreview} class. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(PER_CLASS)
 public class StartupPaintPreviewTest {

@@ -37,7 +37,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.embedder_support.contextmenu.ChipRenderParams;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 
-/** Tests for ContextMenuHeader view and {@link ContextMenuHeaderViewBinder} */
+/** Tests for {@link ContextMenuChipController}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class ContextMenuChipControllerTest {

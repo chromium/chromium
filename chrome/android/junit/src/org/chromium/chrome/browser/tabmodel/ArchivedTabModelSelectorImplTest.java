@@ -48,7 +48,7 @@ import org.chromium.ui.base.WindowAndroid;
 
 import java.lang.ref.WeakReference;
 
-/** Unit tests for {@link TabModelSelectorImpl}. */
+/** Unit tests for {@link ArchivedTabModelSelectorImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class ArchivedTabModelSelectorImplTest {

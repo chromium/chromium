@@ -41,7 +41,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.components.prefs.PrefService;
 
-/** Unit tests for {@link FeedSurfaceLifecycleManager}. */
+/** Unit tests for {@link NtpFeedSurfaceLifecycleManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class NtpFeedSurfaceLifecycleManagerTest {

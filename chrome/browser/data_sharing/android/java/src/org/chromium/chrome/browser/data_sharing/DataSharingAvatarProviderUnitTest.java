@@ -31,7 +31,7 @@ import org.chromium.components.data_sharing.GroupMember;
 import org.chromium.components.data_sharing.SharedGroupTestHelper;
 import org.chromium.components.data_sharing.configs.DataSharingAvatarBitmapConfig;
 
-/** Unit tests for {@link DataSharingFaviconProvider}. */
+/** Unit tests for {@link DataSharingAvatarProvider}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class DataSharingAvatarProviderUnitTest {

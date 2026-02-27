@@ -41,7 +41,7 @@ import org.chromium.ui.base.TestActivity;
 
 import java.util.concurrent.TimeUnit;
 
-/** Unit test for {@link CustomTabToolbarAnimationDelegate}. */
+/** Unit test for {@link BrandingSecurityButtonAnimationDelegate}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(shadows = {ShadowLooper.class, ShadowDrawable.class})
 public class BrandingSecurityButtonAnimationDelegateUnitTest {

@@ -55,7 +55,7 @@ import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.base.TestActivity;
 
-/** Unit tests for {@link PaneManagerImpl}. */
+/** Unit tests for {@link HubManagerImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class HubManagerImplUnitTest {
     private static final int TAB_ID = 8;

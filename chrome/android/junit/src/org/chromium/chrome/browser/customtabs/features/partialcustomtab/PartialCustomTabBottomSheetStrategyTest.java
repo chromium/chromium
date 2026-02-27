@@ -70,7 +70,7 @@ import org.chromium.components.embedder_support.view.ContentView;
 
 import java.util.concurrent.TimeUnit;
 
-/** Tests for {@link PartialCustomTabHandleStrategy}. */
+/** Tests for {@link PartialCustomTabBottomSheetStrategy}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES})

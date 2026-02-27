@@ -14,7 +14,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
-/** Unit tests for {@link CompositorAnimator}. */
+/** Unit tests for {@link CompositorAnimationHandler}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class CompositorAnimationHandlerTest {

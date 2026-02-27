@@ -78,7 +78,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-/** Tests for {@link TabListMediator}. */
+/** Tests for {@link ArchivedTabsDialogCoordinator}. */
 @Batch(Batch.UNIT_TESTS)
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)

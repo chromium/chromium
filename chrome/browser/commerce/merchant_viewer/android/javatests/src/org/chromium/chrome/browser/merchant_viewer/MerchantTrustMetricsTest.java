@@ -16,7 +16,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
-/** Tests for {@link MerchantTrustMessageContext}. */
+/** Tests for {@link MerchantTrustMetrics}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class MerchantTrustMetricsTest {

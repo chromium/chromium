@@ -69,7 +69,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-/** Tests for {@link PasswordsCsvDownloadDialogController} */
+/** Tests for {@link PasswordCsvDownloadFlowController} */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(
         manifest = Config.NONE,

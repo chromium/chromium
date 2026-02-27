@@ -70,7 +70,7 @@ import java.lang.ref.WeakReference;
 import java.util.Set;
 import java.util.function.Supplier;
 
-/** Unit tests for {@link BottomBarConfig}. */
+/** Unit tests for {@link GoogleBottomBarActionsHandler}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(
         manifest = Config.NONE,

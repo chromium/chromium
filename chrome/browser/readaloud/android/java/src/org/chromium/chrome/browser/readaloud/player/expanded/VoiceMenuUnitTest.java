@@ -42,7 +42,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.List;
 
-/** Unit tests for {@link VoiceMenuSheetContent}. */
+/** Unit tests for {@link VoiceMenu}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class VoiceMenuUnitTest {
