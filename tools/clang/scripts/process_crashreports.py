@@ -22,13 +22,11 @@ import tempfile
 
 
 GCS_BUCKET = 'chrome-clang-crash-reports'
-THIS_DIR = os.path.dirname(__file__)
-CRASHREPORTS_DIR = os.path.abspath(
-    os.path.join(THIS_DIR, '..', '..', '..', 'out', 'clang-crashreports'))
-GSUTIL = os.path.join(
-    THIS_DIR, '..', '..', '..', 'third_party', 'depot_tools', 'gsutil.py')
-SISO_BINARY = os.path.join(THIS_DIR, '..', '..', '..', 'third_party',
-                           'depot_tools', 'siso')
+SRC_DIR = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), '..', '..', '..'))
+CRASHREPORTS_DIR = os.path.join(SRC_DIR, 'out', 'clang-crashreports')
+GSUTIL = os.path.join(SRC_DIR, 'third_party', 'depot_tools', 'gsutil.py')
+SISO_BINARY = os.path.join(SRC_DIR, 'third_party', 'siso', 'cipd', 'siso')
 
 
 def FetchRbeCrashReports():
