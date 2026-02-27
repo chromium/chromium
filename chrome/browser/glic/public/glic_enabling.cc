@@ -20,6 +20,7 @@
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/glic_features.mojom-features.h"
 #include "chrome/browser/glic/host/glic_synthetic_trial_manager.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/metrics/chrome_feature_list_creator.h"
 #include "chrome/browser/profiles/profile.h"
@@ -485,6 +486,15 @@ bool GlicEnabling::IsUnifiedFreEnabled(Profile* profile) {
 bool GlicEnabling::IsTrustFirstOnboardingEnabledForProfile(Profile* profile) {
   return IsMultiInstanceEnabled() && !HasConsentedForProfile(profile) &&
          base::FeatureList::IsEnabled(features::kGlicTrustFirstOnboarding);
+}
+
+bool GlicEnabling::ShouldBypassFreUi(
+    Profile* profile,
+    mojom::InvocationSource invocation_source) {
+  return invocation_source ==
+             mojom::InvocationSource::kAutoOpenedByContextualCue &&
+         base::FeatureList::IsEnabled(features::kAutoOpenGlicForPdf) &&
+         !HasConsentedForProfile(profile);
 }
 
 bool GlicEnabling::IsMultiInstanceEnabledByFlags() {

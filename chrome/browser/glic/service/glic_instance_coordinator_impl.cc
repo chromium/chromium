@@ -596,9 +596,19 @@ void GlicInstanceCoordinatorImpl::ToggleSidePanel(
   // If the tab is already bound, then it already has a pin trigger and this pin
   // trigger will not be used. If it's not already bound, then we know it's a
   // newly created instance, so we provide the instance creation trigger.
-  instance->Toggle(
-      ShowOptions::ForSidePanel(*tab, GlicPinTrigger::kInstanceCreation),
-      prevent_close, source, prompt_suggestion, auto_send);
+  ShowOptions options = ShowOptions::ForSidePanel(
+      *tab, GlicPinTrigger::kInstanceCreation, source);
+
+  // If the user has not consented, don't pin the tab.
+  if (GlicEnabling::ShouldBypassFreUi(profile_, source)) {
+    if (auto* side_panel_options =
+            std::get_if<SidePanelShowOptions>(&options.embedder_options)) {
+      side_panel_options->pin_on_bind = false;
+    }
+  }
+
+  instance->Toggle(std::move(options), prevent_close, source, prompt_suggestion,
+                   auto_send);
 }
 
 void GlicInstanceCoordinatorImpl::RemoveInstance(GlicInstanceImpl* instance) {

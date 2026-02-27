@@ -16,6 +16,7 @@
 #include "chrome/browser/contextual_cueing/contextual_cueing_service.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/context/glic_sharing_manager.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
@@ -261,6 +262,11 @@ void GlicZeroStateSuggestionsManager::ObserveZeroStateSuggestions(
         callback) {
   // Subscribe to changes in sharing.
   if (is_notifying) {
+    // Skip ZSS generation for unconsented users.
+    if (!GlicEnabling::HasConsentedForProfile(host().profile())) {
+      std::move(callback).Run(MakeEmptySuggestionsPtr());
+      return;
+    }
     // If there were previous subscriptions they will be unsubscribed when the
     // old values are destructed on assignment.
     // TODO: b/433738020 - Investigate whether we should listen to a different

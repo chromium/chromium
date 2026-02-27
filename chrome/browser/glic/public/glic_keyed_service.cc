@@ -45,6 +45,7 @@
 #include "chrome/browser/glic/host/glic_web_contents_warming_pool.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/host/webui_contents_container.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/service/glic_instance_coordinator_impl.h"
@@ -352,7 +353,9 @@ void GlicKeyedService::ToggleUIInternal(
   }
 
   // Show the FRE if not yet completed, and if we have a browser to use.
-  if (fre_controller_->ShouldShowFreDialog()) {
+  // Ignore ShouldBypassFreUi if auto_send is true.
+  if ((!GlicEnabling::ShouldBypassFreUi(profile_, source) || auto_send) &&
+      fre_controller_->ShouldShowFreDialog()) {
     fre_controller_->MarkFreStartAttempt();
 #if !BUILDFLAG(IS_ANDROID)  // Single instance only
     if (!GlicEnabling::IsUnifiedFreEnabled(profile_)) {

@@ -611,7 +611,8 @@ void GlicInstanceImpl::PrepareForOpen() {
   contextual_cueing::ContextualCueingService* contextual_cueing_service =
       contextual_cueing::ContextualCueingServiceFactory::GetForProfile(
           profile_);
-  if (contextual_cueing_service && active_web_contents) {
+  if (contextual_cueing_service && active_web_contents &&
+      GlicEnabling::HasConsentedForProfile(profile_)) {
     contextual_cueing_service->PrepareToFetchContextualGlicZeroStateSuggestions(
         active_web_contents);
   }

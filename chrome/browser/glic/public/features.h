@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_GLIC_PUBLIC_FEATURES_H_
 
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 
 namespace features {
 
@@ -13,6 +14,9 @@ BASE_DECLARE_FEATURE(kGlicTabRestoration);
 BASE_DECLARE_FEATURE(kGlicChromeStatusIcon);
 
 BASE_DECLARE_FEATURE(kGlicOrphanedReattachment);
+
+BASE_DECLARE_FEATURE(kAutoOpenGlicForPdf);
+extern const base::FeatureParam<std::string> kAutoOpenGlicForPdfArm;
 
 }  // namespace features
 
