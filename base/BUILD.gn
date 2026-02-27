@@ -5826,10 +5826,6 @@ if (is_android) {
 
   robolectric_library("base_junit_test_support") {
     sources = [
-      "//third_party/robolectric/custom_asynctask/java/src/org/chromium/base/task/test/ShadowAsyncTask.java",
-      "//third_party/robolectric/custom_asynctask/java/src/org/chromium/base/task/test/ShadowAsyncTaskBridge.java",
-      "test/android/junit/src/org/chromium/base/task/test/BackgroundShadowAsyncTask.java",
-      "test/android/junit/src/org/chromium/base/task/test/CustomShadowAsyncTask.java",
       "test/android/junit/src/org/chromium/base/test/BaseRobolectricAndroidConfigurer.java",
       "test/android/junit/src/org/chromium/base/test/BaseRobolectricTestListener.java",
       "test/android/junit/src/org/chromium/base/test/BaseRobolectricTestRule.java",

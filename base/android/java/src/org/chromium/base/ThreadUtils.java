@@ -340,19 +340,6 @@ public class ThreadUtils {
     }
 
     /**
-     * Disables thread asserts.
-     *
-     * <p>Can be used by tests where code that normally runs multi-threaded is going to run
-     * single-threaded for the test (otherwise asserts that are valid in production would fail in
-     * those tests).
-     */
-    @Deprecated
-    public static void setThreadAssertsDisabledForTesting(boolean disabled) {
-        sThreadAssertsDisabledForTesting = disabled;
-        ResettersForTesting.register(() -> sThreadAssertsDisabledForTesting = false);
-    }
-
-    /**
      * @return true iff the current thread is the main (UI) thread.
      */
     public static boolean runningOnUiThread() {

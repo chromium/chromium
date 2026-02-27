@@ -9,8 +9,6 @@ Shipped: no
 License Android Compatible: yes
 Description: Robolectric is a unit test framework for Android.
 Local Modifications:
-- Added custom_asynctask folder to have workable copies of shadows required
-  for our own implementation of AsyncTask.
 How To Update:
 - First CL:
   - Add new version and URL to 3pp/fetch.py for the android_all jar.

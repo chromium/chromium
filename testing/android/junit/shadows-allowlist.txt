@@ -3,12 +3,8 @@
 # found in the LICENSE file.
 #
 # Allowlist of classes that can be shadowed (by @Shadow).
-# Please do not add to this list. See:
 # https://chromium.googlesource.com/chromium/src/+/main/styleguide/java/java.md#testing
 
-# TODO(https://crbug.com/341267427): Reduce this list.
-+org.chromium.base.task.AsyncTask
-
-# Disallow new shadows of chrome-authored code.
+# Disallow shadows of chrome-authored code.
 -com.google.android.apps.chrome
 -org.chromium

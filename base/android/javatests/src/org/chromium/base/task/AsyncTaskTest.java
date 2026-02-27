@@ -26,11 +26,7 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-/**
- * Tests for our AsyncTask modifications
- *
- * <p>Not a robolectric test because the reflection doesn't work with ShadowAsyncTask.
- */
+/** Tests for our AsyncTask modifications */
 @RunWith(BaseJUnit4ClassRunner.class)
 public class AsyncTaskTest {
     private static class SpecialChromeAsyncTask extends BackgroundOnlyAsyncTask<Void> {
