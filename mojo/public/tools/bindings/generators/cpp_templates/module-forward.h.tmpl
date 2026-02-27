@@ -16,7 +16,7 @@
 #ifndef {{header_guard}}
 #define {{header_guard}}
 
-{% if all_enums|length -%}
+{% if all_enums|length or uses_stdint_types -%}
 #include <stdint.h>
 {%- endif %}
 

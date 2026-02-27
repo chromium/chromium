@@ -333,6 +333,17 @@ class Generator(generator.Generator):
     """
     return any(map(self._HasEstimateSizeMethods, self.module.interfaces))
 
+  def _UsesStdIntTypes(self):
+    """Returns whether this module has any constants that use types from
+    <stdint.h>.
+
+    When true, the generated headers need to include <stdint.h>.
+    """
+    for constant in self.module.constants:
+      if mojom.IsIntegralKind(constant.kind) and not mojom.IsBoolKind(constant.kind):
+        return True
+    return False
+
   def _GetDirectlyUsedKinds(self):
     for struct in self.module.structs + self.module.unions:
       for field in struct.fields:
@@ -437,6 +448,7 @@ class Generator(generator.Generator):
         "uses_interfaces": self._ReferencesAnyHandleOrInterfaceType(),
         "uses_message_size_estimator": self._UsesMessageSizeEstimator(),
         "uses_native_types": self._ReferencesAnyNativeType(),
+        "uses_stdint_types": self._UsesStdIntTypes(),
         "variant": self.variant,
         "send_validation_modules": self._GetSendValidationModules(),
     }
