@@ -32,14 +32,15 @@ import type {BigBuffer} from '//resources/mojo/mojo/public/mojom/base/big_buffer
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
+import {FILE_VALIDATION_ERRORS_MAP} from './common.js';
 import type {ComposeboxFile, ContextualUpload} from './common.js';
 import {getCss} from './composebox.css.js';
 import {getHtml} from './composebox.html.js';
 import type {PageHandlerRemote} from './composebox.mojom-webui.js';
 import type {ComposeboxDropdownElement} from './composebox_dropdown.js';
 import {ComposeboxProxyImpl} from './composebox_proxy.js';
-import {FileUploadStatus} from './composebox_query.mojom-webui.js';
 import type {FileUploadErrorType} from './composebox_query.mojom-webui.js';
+import {FileUploadStatus} from './composebox_query.mojom-webui.js';
 import type {ComposeboxVoiceSearchElement} from './composebox_voice_search.js';
 import type {ContextualEntrypointAndCarouselElement} from './contextual_entrypoint_and_carousel.js';
 import type {ErrorScrimElement} from './error_scrim.js';
@@ -709,8 +710,10 @@ export class ComposeboxElement extends I18nMixinLit
             },
             bigBuffer);
       } catch (e) {
-        // TODO(crbug.com/484429365): Notify the user the reason for the context
-        // upload failure.
+        const err = e as FileUploadErrorType;
+        if (FILE_VALIDATION_ERRORS_MAP.has(err)) {
+          this.errorMessage_ = this.i18n(FILE_VALIDATION_ERRORS_MAP.get(err)!);
+        }
         continue;
       }
 
@@ -807,8 +810,10 @@ export class ComposeboxElement extends I18nMixinLit
       this.focusInput();
 
     } catch (e) {
-      // TODO(crbug.com/484429365): Notify the user the reason for the context
-      // upload failure.
+      const err = e as FileUploadErrorType;
+      if (FILE_VALIDATION_ERRORS_MAP.has(err)) {
+        this.errorMessage_ = this.i18n(FILE_VALIDATION_ERRORS_MAP.get(err)!);
+      }
       return;
     }
   }

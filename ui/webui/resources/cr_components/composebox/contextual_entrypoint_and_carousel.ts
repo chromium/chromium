@@ -26,8 +26,9 @@ import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/ung
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
 import type {ComposeboxFile, ContextualUpload, TabUpload} from './common.js';
-import {GlifAnimationState, recordBoolean, recordContextAdditionMethod, recordEnumerationValue, recordUserAction, TabUploadOrigin} from './common.js';
-import {FileUploadErrorType, FileUploadStatus, InputType, ToolMode as ComposeboxToolMode} from './composebox_query.mojom-webui.js';
+import {FILE_VALIDATION_ERRORS_MAP, GlifAnimationState, recordBoolean, recordContextAdditionMethod, recordEnumerationValue, recordUserAction, TabUploadOrigin} from './common.js';
+import type {FileUploadErrorType} from './composebox_query.mojom-webui.js';
+import {FileUploadStatus, InputType, ToolMode as ComposeboxToolMode} from './composebox_query.mojom-webui.js';
 import {getCss} from './contextual_entrypoint_and_carousel.css.js';
 import {getHtml} from './contextual_entrypoint_and_carousel.html.js';
 import type {ContextualEntrypointAndMenuElement} from './contextual_entrypoint_and_menu.js';
@@ -45,16 +46,6 @@ export interface ContextualEntrypointAndCarouselElement {
   };
 }
 
-const FILE_VALIDATION_ERRORS_MAP = new Map<FileUploadErrorType, string>([
-  [
-    FileUploadErrorType.kImageProcessingError,
-    'composeFileTypesAllowedError',
-  ],
-  [
-    FileUploadErrorType.kUnknown,
-    'composeboxFileUploadValidationFailed',
-  ],
-]);
 
 // LINT.IfChange(FileValidationError)
 
