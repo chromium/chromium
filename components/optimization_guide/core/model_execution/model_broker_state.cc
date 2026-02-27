@@ -5,6 +5,7 @@
 #include "components/optimization_guide/core/model_execution/model_broker_state.h"
 
 #include <cstddef>
+#include <memory>
 
 #include "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"
 #include "components/optimization_guide/core/model_execution/on_device_asset_manager.h"
@@ -18,18 +19,20 @@ namespace optimization_guide {
 ModelBrokerState::ModelBrokerState(
     PrefService& local_state,
     OptimizationGuideModelProvider& model_provider,
-    std::unique_ptr<OnDeviceModelComponentStateManager::Delegate> delegate,
+    std::unique_ptr<OnDeviceModelComponentStateManager::Delegate> base_delegate,
+    std::unique_ptr<OnDeviceModelComponentStateManager::Delegate>
+        classifier_delegate,
     on_device_model::ServiceClient::LaunchFn launch_fn,
     component_updater::ComponentUpdateService* component_update_service)
     : service_client_(std::move(launch_fn)),
       usage_tracker_(&local_state),
       performance_classifier_(&local_state, service_client_.GetSafeRef()),
       download_progress_manager_(component_update_service,
-                                 {delegate->GetComponentId()}),
+                                 {base_delegate->GetComponentId()}),
       component_state_manager_(&local_state,
                                performance_classifier_.GetSafeRef(),
                                usage_tracker_,
-                               std::move(delegate)),
+                               std::move(base_delegate)),
       service_controller_(
           std::make_unique<OnDeviceModelAccessController>(local_state),
           performance_classifier_.GetSafeRef(),

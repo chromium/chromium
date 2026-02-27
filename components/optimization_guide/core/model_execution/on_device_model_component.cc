@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/memory/ptr_util.h"
@@ -213,7 +214,7 @@ OnDeviceModelComponentState::OnDeviceModelComponentState(
 OnDeviceModelComponentState::~OnDeviceModelComponentState() = default;
 
 OnDeviceModelRegistrationAttributes::OnDeviceModelRegistrationAttributes(
-    std::vector<proto::OnDeviceModelPerformanceHint> supported_hints)
+    base::flat_set<proto::OnDeviceModelPerformanceHint> supported_hints)
     : supported_hints(std::move(supported_hints)) {}
 OnDeviceModelRegistrationAttributes::OnDeviceModelRegistrationAttributes(
     const OnDeviceModelRegistrationAttributes&) = default;
@@ -529,7 +530,8 @@ void OnDeviceModelComponentStateManager::UpdateRegistration() {
       component_installer_state_ = ComponentInstallerState::kRegistering;
       delegate_->RegisterInstaller(
           GetWeakPtr(), OnDeviceModelRegistrationAttributes(
-                            performance_classifier_->GetPossibleHints()));
+                            base::flat_set<proto::OnDeviceModelPerformanceHint>(
+                                performance_classifier_->GetPossibleHints())));
     }
     return;
   }

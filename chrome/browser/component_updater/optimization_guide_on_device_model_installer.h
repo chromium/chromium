@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_COMPONENT_UPDATER_OPTIMIZATION_GUIDE_ON_DEVICE_MODEL_INSTALLER_H_
 #define CHROME_BROWSER_COMPONENT_UPDATER_OPTIMIZATION_GUIDE_ON_DEVICE_MODEL_INSTALLER_H_
 
+#include <memory>
 #include <string>
 
 #include "base/files/file_path.h"
@@ -58,68 +59,18 @@ class OptimizationGuideOnDeviceModelInstallerPolicy
       state_manager_;
 };
 
-// Installer policy for the On-Device Base Model.
-class OptimizationGuideOnDeviceBaseModelInstallerPolicy
-    : public OptimizationGuideOnDeviceModelInstallerPolicy {
- public:
-  explicit OptimizationGuideOnDeviceBaseModelInstallerPolicy(
-      base::WeakPtr<optimization_guide::OnDeviceModelComponentStateManager>
-          state_manager,
-      optimization_guide::OnDeviceModelRegistrationAttributes attributes);
-  ~OptimizationGuideOnDeviceBaseModelInstallerPolicy() override;
-
-  base::FilePath GetRelativeInstallDir() const override;
-  void GetHash(std::vector<uint8_t>* hash) const override;
-  std::string GetName() const override;
-  update_client::InstallerAttributes GetInstallerAttributes() const override;
-
-  static const std::string GetOnDeviceModelExtensionId();
-  static void UpdateOnDemand(OnDemandUpdater::Priority priority);
-
- private:
-  const optimization_guide::OnDeviceModelRegistrationAttributes attributes_;
+enum class OnDeviceModelType {
+  kBaseModel,
+  kClassifierModel,
 };
 
-// Installer policy for the On-Device Classifier Model.
-class OptimizationGuideOnDeviceClassifierModelInstallerPolicy
-    : public OptimizationGuideOnDeviceModelInstallerPolicy {
- public:
-  explicit OptimizationGuideOnDeviceClassifierModelInstallerPolicy(
-      base::WeakPtr<optimization_guide::OnDeviceModelComponentStateManager>
-          state_manager);
-  ~OptimizationGuideOnDeviceClassifierModelInstallerPolicy() override;
+// Returns the extension ID for the optimization guide on-device models.
+std::string GetOptimizationGuideOnDeviceModelExtensionId(
+    OnDeviceModelType type);
 
-  base::FilePath GetRelativeInstallDir() const override;
-  void GetHash(std::vector<uint8_t>* hash) const override;
-  std::string GetName() const override;
-
-  static const std::string GetExtensionId();
-  static void UpdateOnDemand();
-};
-
-// Register the on-device base model component, initiating download if needed.
-void RegisterOptimizationGuideOnDeviceBaseModelComponent(
-    ComponentUpdateService* cus,
-    base::WeakPtr<optimization_guide::OnDeviceModelComponentStateManager>
-        state_manager,
-    optimization_guide::OnDeviceModelRegistrationAttributes attributes);
-
-// Requests uninstallation of the on-device base model component.
-void UninstallOptimizationGuideOnDeviceBaseModelComponent(
-    base::WeakPtr<optimization_guide::OnDeviceModelComponentStateManager>
-        state_manager);
-
-// Register the on-device classifier model component, initiating download if
-// needed.
-void RegisterOptimizationGuideOnDeviceClassifierModelComponent(
-    ComponentUpdateService* cus,
-    base::WeakPtr<optimization_guide::OnDeviceModelComponentStateManager>
-        state_manager);
-
-// Requests uninstallation of the on-device classifier model component.
-void UninstallOptimizationGuideOnDeviceClassifierModelComponent(
-    base::WeakPtr<optimization_guide::OnDeviceModelComponentStateManager>
-        state_manager);
+std::unique_ptr<
+    optimization_guide::OnDeviceModelComponentStateManager::Delegate>
+CreateOptimizationGuideOnDeviceModelComponentDelegate(OnDeviceModelType type);
 
 }  // namespace component_updater
 

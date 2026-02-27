@@ -11,6 +11,7 @@
 
 #include "base/byte_count.h"
 #include "base/containers/enum_set.h"
+#include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -147,7 +148,7 @@ struct OnDeviceModelRegistrationAttributes {
   using Hint = optimization_guide::proto::OnDeviceModelPerformanceHint;
 
   explicit OnDeviceModelRegistrationAttributes(
-      std::vector<Hint> supported_hints);
+      base::flat_set<Hint> supported_hints);
   OnDeviceModelRegistrationAttributes(
       const OnDeviceModelRegistrationAttributes&);
   OnDeviceModelRegistrationAttributes& operator=(
@@ -157,7 +158,7 @@ struct OnDeviceModelRegistrationAttributes {
       OnDeviceModelRegistrationAttributes&&);
   ~OnDeviceModelRegistrationAttributes();
   // The performance hints that are supported by this device.
-  std::vector<Hint> supported_hints;
+  base::flat_set<Hint> supported_hints;
 };
 
 using MaybeOnDeviceModelComponentState =

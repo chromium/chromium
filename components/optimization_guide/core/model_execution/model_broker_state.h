@@ -27,7 +27,10 @@ class ModelBrokerState final : public OnDeviceCapability {
   ModelBrokerState(
       PrefService& local_state,
       OptimizationGuideModelProvider& model_provider,
-      std::unique_ptr<OnDeviceModelComponentStateManager::Delegate> delegate,
+      std::unique_ptr<OnDeviceModelComponentStateManager::Delegate>
+          base_delegate,
+      std::unique_ptr<OnDeviceModelComponentStateManager::Delegate>
+          classifier_delegate,
       on_device_model::ServiceClient::LaunchFn launch_fn,
       component_updater::ComponentUpdateService* component_update_service);
   ~ModelBrokerState() override;
@@ -89,6 +92,8 @@ class ModelBrokerState final : public OnDeviceCapability {
   OnDeviceModelComponentStateManager component_state_manager_;
   OnDeviceModelServiceController service_controller_;
   OnDeviceAssetManager asset_manager_;
+  std::unique_ptr<OnDeviceModelComponentStateManager::Delegate>
+      classifier_delegate_;
   base::WeakPtrFactory<ModelBrokerState> weak_ptr_factory_{this};
 };
 
