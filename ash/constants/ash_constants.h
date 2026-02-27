@@ -21,6 +21,9 @@ extern const base::FilePath::CharType kNssCertDbPath[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::FilePath::CharType kNssKeyDbPath[];
 
+inline constexpr base::FilePath::CharType kChromeOSAssetPath[] =
+    "/usr/share/chromeos-assets/";
+
 // The border thickness of keyboard focus for launcher items and system tray.
 constexpr int kFocusBorderThickness = 2;
 

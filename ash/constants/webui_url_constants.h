@@ -52,6 +52,7 @@ inline constexpr char kChromeUIBorealisInstallerURL[] =
 inline constexpr char kChromeUIBorealisMOTDHost[] = "borealis-motd";
 inline constexpr char kChromeUIBorealisMOTDURL[] = "chrome://borealis-motd";
 
+inline constexpr char kChromeUIChromeOSAssetHost[] = "chromeos-asset";
 inline constexpr char kChromeUICloudUploadHost[] = "cloud-upload";
 inline constexpr char kChromeUICloudUploadURL[] = "chrome://cloud-upload/";
 inline constexpr char kChromeUIConfirmPasswordChangeHost[] =

@@ -707,10 +707,6 @@ inline constexpr char kArcPrivacyPolicyPathFormat[] =
 // Relative to |kChromeOSAssetPath|.
 inline constexpr char kArcTermsPathFormat[] = "arc_tos/%s/terms.html";
 
-// TODO(crbug.com/485470549): move to ash/constants/webui_url_constants.h.
-inline constexpr char kChromeOSAssetHost[] = "chromeos-asset";
-inline constexpr char kChromeOSAssetPath[] = "/usr/share/chromeos-assets/";
-
 // Source for chrome://os-credits. On some devices, this will be compressed.
 // Check both.
 inline constexpr char kChromeOSCreditsPath[] =
