@@ -173,8 +173,8 @@ TEST_F(FontDataServiceImplUnitTest, MatchFamilyName) {
   EXPECT_TRUE(
       out_result->typeface_data->get_font_file()->file_handle.IsValid());
 #else
-  // For now, on Linux we always hit the memory region fallback, and therefore
-  // also adds to the cache.
+  // For now, on Linux/ChromeOS we always hit the memory region fallback, and
+  // therefore also adds to the cache.
   EXPECT_EQ(impl_.GetCacheSizeForTesting(), 1u);
   EXPECT_TRUE(out_result->typeface_data->is_region());
   EXPECT_TRUE(out_result->typeface_data->get_region().IsValid());
@@ -217,8 +217,8 @@ TEST_F(FontDataServiceImplUnitTest, MatchFamilyNameMemoryCacheSize) {
       &out_result);
   EXPECT_EQ(impl_.GetCacheSizeForTesting(), 2u);
 #if BUILDFLAG(IS_WIN)
-  // TODO(crbug.com/462090356): Find an available font in Linux with multiples
-  // axes.
+  // TODO(crbug.com/462090356): Find an available font in Linux/ChromeOS with
+  // multiples axes.
   EXPECT_EQ(out_result->variation_position->coordinateCount, 2u);
   EXPECT_EQ(out_result->variation_position->coordinates.size(), 2u);
 #endif
@@ -238,7 +238,7 @@ TEST_F(FontDataServiceImplUnitTest, MatchFamilyNameMemoryCacheSize) {
   EXPECT_EQ(out_result.get(), nullptr);
 }
 
-// The linux SkFontMgr doesn't support MatchFamilyStyleCharacter().
+// The Linux/ChromeOS SkFontMgr doesn't support MatchFamilyStyleCharacter().
 #if BUILDFLAG(IS_WIN)
 TEST_F(FontDataServiceImplUnitTest, MatchFamilyNameCharacterNoLanguageTags) {
   mojom::MatchFamilyNameResultPtr out_result;
@@ -256,7 +256,7 @@ TEST_F(FontDataServiceImplUnitTest, MatchFamilyNameCharacterNoLanguageTags) {
 }
 #endif
 
-// The linux SkFontMgr doesn't support MatchFamilyStyleCharacter().
+// The Linux/ChromeOS SkFontMgr doesn't support MatchFamilyStyleCharacter().
 #if BUILDFLAG(IS_WIN)
 TEST_F(FontDataServiceImplUnitTest, MatchFamilyNameCharacterWithLanguageTags) {
   mojom::MatchFamilyNameResultPtr out_result;
@@ -274,7 +274,7 @@ TEST_F(FontDataServiceImplUnitTest, MatchFamilyNameCharacterWithLanguageTags) {
 }
 #endif
 
-// The linux SkFontMgr doesn't support countFamilies().
+// The Linux/ChromeOS SkFontMgr doesn't support countFamilies().
 #if BUILDFLAG(IS_WIN)
 TEST_F(FontDataServiceImplUnitTest, GetAllFamilyNames) {
   std::vector<std::string> out_result;
@@ -303,7 +303,7 @@ TEST_F(FontDataServiceImplUnitTest, LegacyMakeTypefaceNullFamilyName) {
   EXPECT_TRUE(
       out_result->typeface_data->get_font_file()->file_handle.IsValid());
 #else
-  // For now, on Linux we always hit the memory region fallback.
+  // For now, on Linux/ChromeOS we always hit the memory region fallback.
   EXPECT_TRUE(out_result->typeface_data->is_region());
   EXPECT_TRUE(out_result->typeface_data->get_region().IsValid());
 #endif

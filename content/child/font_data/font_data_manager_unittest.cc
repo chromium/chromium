@@ -161,8 +161,8 @@ class TestFontServiceApp : public font_data_service::mojom::FontDataService {
   int32_t last_match_family_character_call_character_;
   size_t legacy_make_typeface_call_count_ = 0;
   base::MappedReadOnlyRegion memory_map_region_;
-#if BUILDFLAG(IS_LINUX)
-  // On Linux, only the shared memory fallback is supported.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  // On Linux/ChromeOS, only the shared memory fallback is supported.
   bool use_memory_fallback_ = true;
 #else
   bool use_memory_fallback_ = false;
@@ -306,8 +306,8 @@ TEST_F(FontDataManagerUnitTest, MatchFamilyStyleWithMemoryRegion) {
   EXPECT_EQ(test_font_data_service_app_.match_family_call_count(), 1u);
 }
 
-// TODO(crbug.com/462090356): Find an available font in Linux with multiples
-// axes.
+// TODO(crbug.com/462090356): Find an available font in Linux/ChromeOS with
+// multiples axes.
 #if BUILDFLAG(IS_WIN)
 TEST_F(FontDataManagerUnitTest, FontArgumentTest) {
   // Bahnschrift is a font family with 2 axes hence coordinate count should

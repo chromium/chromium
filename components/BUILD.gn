@@ -829,7 +829,7 @@ test("components_unittests") {
     ]
   }
 
-  if (is_win || is_linux) {
+  if (is_win || is_linux || is_chromeos) {
     deps += [ "//components/services/font_data:unit_tests" ]
   }
 

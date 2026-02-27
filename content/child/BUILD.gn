@@ -154,7 +154,7 @@ target(link_target_type, "child") {
     libs = [ "dwrite.lib" ]
   }
 
-  if (is_win || is_linux) {
+  if (is_win || is_linux || is_chromeos) {
     sources += [
       "font_data/font_data_manager.cc",
       "font_data/font_data_manager.h",

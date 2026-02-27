@@ -2658,7 +2658,7 @@ source_set("browser") {
     deps += [ "//components/stylus_handwriting/win" ]
   }
 
-  if (is_win || is_linux) {
+  if (is_win || is_linux || is_chromeos) {
     deps += [ "//components/services/font_data:lib" ]
   }
 
