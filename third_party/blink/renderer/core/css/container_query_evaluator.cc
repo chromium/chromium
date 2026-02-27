@@ -1028,6 +1028,7 @@ StyleRecalcChange ContainerQueryEvaluator::ApplyScrollStateAndStyleChanges(
   }
   if (old_style.InheritedVariables() != new_style.InheritedVariables() ||
       old_style.NonInheritedVariables() != new_style.NonInheritedVariables() ||
+      old_style.InitialData() != new_style.InitialData() ||
       DependsOnTreeCounting()) {
     switch (StyleContainerChanged()) {
       case ContainerQueryEvaluator::Change::kNone:
