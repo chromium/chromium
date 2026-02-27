@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html>
+<html class="reftest-wait">
 <title>Canvas.drawElementImage: non opaque element with compositing op</title>
 <link rel="help" href="https://github.com/WICG/html-in-canvas">
 <link rel="author" href="mailto:schenney@chromium.org">
 <link rel="match" href="shadow-non-opaque-element-ref.html">
 <meta name=fuzzy content="0-2;0-2185">
+<script src="/common/reftest-wait.js"></script>
 <style>
 #child {
   width: 100px;
@@ -39,9 +40,10 @@ function runTest() {
   context.shadowOffsetX = 20;
   context.shadowOffsetY = 10;
   context.drawElementImage(child, 20, 30);
+  takeScreenshot();
 }
 
-onload = () => runTest();
+onload = () => requestAnimationFrame(() => setTimeout(runTest));
 
 </script>
 </html>

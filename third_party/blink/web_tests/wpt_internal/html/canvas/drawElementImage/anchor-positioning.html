@@ -1,7 +1,9 @@
 <!DOCTYPE html>
+<html class="reftest-wait">
 <title>Canvas.drawElementImage with out-of-canvas anchored element</title>
 <link rel="help" href="https://github.com/WICG/html-in-canvas">
 <link rel="match" href="anchor-positioning-ref.html">
+<script src="/common/reftest-wait.js"></script>
 <style>
   #canvas {
     width: 200px;
@@ -37,6 +39,8 @@ function runTest() {
   var context = canvas.getContext('2d');
   let matrix = context.drawElementImage(anchor, 50, 50);
   anchor.style.transform = matrix.toString();
+  takeScreenshot();
 }
-onload = () => runTest();
+onload = () => requestAnimationFrame(() => setTimeout(runTest));
 </script>
+</html>

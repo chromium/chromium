@@ -29,10 +29,10 @@
 <script>
 function runTest() {
   canvas.getContext("2d").drawElementImage(child, 20, 30);
-  requestAnimationFrame(takeScreenshot);
+  takeScreenshot();
 }
 
-onload = () => runTest();
+onload = () => requestAnimationFrame(() => setTimeout(runTest));
 
 </script>
 </html>

@@ -35,7 +35,7 @@
   </div>
 </canvas>
 <script>
-  function runTest() {
+  async function runTest() {
     setSelection(editable, 5, 11)
 
     let r = new Range();
@@ -43,8 +43,11 @@
     r.setEnd(editable, 1);
     CSS.highlights.set("example-highlight", new Highlight(r));
 
+    await new Promise(requestAnimationFrame);
+    await new Promise(setTimeout);
+
     canvas.getContext("2d").drawElementImage(child, 0, 0);
   }
 
-  onload = () => runTest();
+  onload = runTest;
 </script>

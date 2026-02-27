@@ -194,6 +194,11 @@ bool CanvasRenderingContext::IsDrawElementImageEligible(
   return true;
 }
 
+std::optional<CanvasChildPaintRecord>
+CanvasRenderingContext::GetChildPaintRecord(Element* element) {
+  return Host()->GetCanvasChildPaintRecord(element->GetDomNodeId());
+}
+
 std::optional<cc::PaintRecord> CanvasRenderingContext::GetElementPaintRecord(
     Element* element,
     std::optional<CullRect> cull_rect,

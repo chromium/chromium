@@ -30,11 +30,14 @@
   </div>
 </canvas>
 <script>
-  function runTest() {
+  async function runTest() {
     setSelection(editable, 5, 11)
+
+    await new Promise(requestAnimationFrame);
+    await new Promise(setTimeout);
 
     canvas.getContext("2d").drawElementImage(child, 0, 0);
   }
 
-  onload = () => runTest();
+  onload = runTest;
 </script>

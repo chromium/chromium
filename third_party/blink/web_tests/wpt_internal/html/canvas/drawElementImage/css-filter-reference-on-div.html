@@ -1,10 +1,12 @@
 <!DOCTYPE html>
+<html class="reftest-wait">
 <head>
   <title>drawElementImage paints CSS reference filters</title>
   <link rel="help" href="https://github.com/WICG/html-in-canvas">
   <link rel="author" href="mailto:schenney@chromium.org">
   <link rel="match" href="css-filter-reference-on-div-ref.html">
   <meta name="assert" value="A div with a CSS filter referencing SVG paints with the filter.">
+  <script src="/common/reftest-wait.js"></script>
   <style>
     canvas {
       background: red;
@@ -29,9 +31,12 @@
   </svg>
 
   <script>
-    window.onload = () => {
-        var context = canvas.getContext("2d");
-        context.drawElementImage(child, 0, 0);
+    function runTest() {
+      var context = canvas.getContext("2d");
+      context.drawElementImage(child, 0, 0);
+      takeScreenshot();
     }
+    onload = () => requestAnimationFrame(() => setTimeout(runTest));
   </script>
 </body>
+</html>

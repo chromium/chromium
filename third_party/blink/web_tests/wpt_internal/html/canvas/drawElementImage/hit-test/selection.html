@@ -19,10 +19,12 @@
 </canvas>
 
 <script>
-  const ctx = canvas.getContext('2d');
-  ctx.drawElementImage(target, 0, 0);
-
   promise_test(async () => {
+    await new Promise(requestAnimationFrame);
+    await new Promise(setTimeout);
+    const ctx = canvas.getContext('2d');
+    ctx.drawElementImage(target, 0, 0);
+
     let doubleClickEventFired = false;
     canvas.addEventListener('dblclick', () => {
       doubleClickEventFired = true;
@@ -47,3 +49,4 @@
         '#target text should be selected by double-click.');
   }, 'Double-clicking on canvas should be able to modify selection.');
 </script>
+</html>

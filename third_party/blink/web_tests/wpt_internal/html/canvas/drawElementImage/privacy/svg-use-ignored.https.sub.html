@@ -19,10 +19,16 @@
 
   <script>
     window.onload = () => {
-      test(function(t) {
+      promise_test(async function(t) {
+        await new Promise(requestAnimationFrame);
+        await new Promise(setTimeout);
         var context = canvas.getContext("2d", { willReadFrequently: true });
         context.drawElementImage(document.getElementById("child-same"), 0, 0);
-        context.drawElementImage(document.getElementById("child-cross"), 0, 100);
+        assert_throws_dom(
+          "InvalidStateError",
+          () => context.drawElementImage(document.getElementById("child-cross"), 0, 100),
+          'drawElementImage cannot draw cross-origin svg `use`.'
+        );
 
         pixel = context.getImageData(50, 50, 1, 1).data;
         assert_equals(pixel[0], 0, "Same origin should draw red");
@@ -34,8 +40,6 @@
         assert_equals(pixel[0], 0, "Cross origin should not draw red");
         assert_equals(pixel[1], 0, "Cross origin should not draw green");
         assert_equals(pixel[2], 0, "Cross origin should not draw blue");
-
-        t.done();
       });
     }
   </script>

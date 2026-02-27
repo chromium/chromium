@@ -637,8 +637,10 @@ void PendingLayer::UpdateScrollbarLayer(PendingLayer* old_pending_layer) {
   cc_layer_ = std::move(scrollbar_layer);
 }
 
-void PendingLayer::UpdateContentLayer(PendingLayer* old_pending_layer,
-                                      bool tracks_raster_invalidations) {
+void PendingLayer::UpdateContentLayer(
+    PendingLayer* old_pending_layer,
+    PropertyTreeState property_state_for_paint,
+    bool tracks_raster_invalidations) {
   DCHECK(!ChunkRequiresOwnLayer());
   DCHECK(!cc_layer_);
   DCHECK(!content_layer_client_);
@@ -651,7 +653,7 @@ void PendingLayer::UpdateContentLayer(PendingLayer* old_pending_layer,
     content_layer_client_->GetRasterInvalidator().SetTracksRasterInvalidations(
         tracks_raster_invalidations);
   }
-  content_layer_client_->UpdateCcPictureLayer(*this);
+  content_layer_client_->UpdateCcPictureLayer(*this, property_state_for_paint);
 }
 
 void PendingLayer::UpdateSolidColorLayer(PendingLayer* old_pending_layer) {
@@ -702,10 +704,12 @@ SkColor4f PendingLayer::GetSolidColor() const {
   return chunks_[solid_color_chunk_index_].background_color.color;
 }
 
-void PendingLayer::UpdateCompositedLayer(PendingLayer* old_pending_layer,
-                                         cc::LayerSelection& layer_selection,
-                                         bool tracks_raster_invalidations,
-                                         cc::LayerTreeHost* layer_tree_host) {
+void PendingLayer::UpdateCompositedLayer(
+    PendingLayer* old_pending_layer,
+    PropertyTreeState property_state_for_paint,
+    cc::LayerSelection& layer_selection,
+    bool tracks_raster_invalidations,
+    cc::LayerTreeHost* layer_tree_host) {
   // This is used during PaintArifactCompositor::CollectPendingLayers() only.
   non_composited_scroll_translations_.clear();
 
@@ -724,7 +728,8 @@ void PendingLayer::UpdateCompositedLayer(PendingLayer* old_pending_layer,
       if (UsesSolidColorLayer()) {
         UpdateSolidColorLayer(old_pending_layer);
       } else {
-        UpdateContentLayer(old_pending_layer, tracks_raster_invalidations);
+        UpdateContentLayer(old_pending_layer, property_state_for_paint,
+                           tracks_raster_invalidations);
       }
       break;
   }
@@ -742,6 +747,7 @@ void PendingLayer::UpdateCompositedLayer(PendingLayer* old_pending_layer,
 
 void PendingLayer::UpdateCompositedLayerForRepaint(
     const PaintArtifact& repainted_artifact,
+    PropertyTreeState property_state_for_paint,
     cc::LayerSelection& layer_selection) {
   // Essentially replace the paint chunks of the pending layer with the
   // repainted chunks in |repainted_artifact|. The pending layer's paint
@@ -778,7 +784,8 @@ void PendingLayer::UpdateCompositedLayerForRepaint(
         content_layer_client_->GetRasterInvalidator().SetOldPaintArtifact(
             Chunks().GetPaintArtifact());
       } else {
-        content_layer_client_->UpdateCcPictureLayer(*this);
+        content_layer_client_->UpdateCcPictureLayer(*this,
+                                                    property_state_for_paint);
       }
     }
   }
@@ -852,6 +859,14 @@ SkColor4f PendingLayer::ComputeBackgroundColor() const {
         color.toSkColor(), background_color.toSkColor()));
   }
   return background_color;
+}
+
+std::optional<CanvasChildPaintRecord> PendingLayer::GetCanvasChildPaintRecord()
+    const {
+  if (!content_layer_client_) {
+    return std::nullopt;
+  }
+  return content_layer_client_->GetCanvasChildPaintRecord();
 }
 
 bool PendingLayer::HasVideo() const {

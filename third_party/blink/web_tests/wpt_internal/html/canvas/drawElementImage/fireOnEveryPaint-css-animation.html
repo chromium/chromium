@@ -43,6 +43,8 @@
         canvas.getContext('2d').drawElementImage(child, 0, 0);
       }
     });
+    // Wait a frame to cache initial paint
+    await waitForOneFrame();
     resizeObserver.observe(canvas, {fireOnEveryPaint: true});
 
     // 1. Wait a frame and assert that the initial observation occurred.

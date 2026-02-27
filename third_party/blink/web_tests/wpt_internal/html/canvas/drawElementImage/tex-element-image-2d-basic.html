@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html class="reftest-wait">
   <head>
     <meta charset="utf-8" />
     <title>Ensure texElementImage2D in texImage2D</title>
@@ -188,7 +188,7 @@
         }, "verify the texElementImage2D works as expected");
       }
 
-      onload = () => runTest();
+      onload = () => requestAnimationFrame(() => setTimeout(runTest));
     </script>
   </body>
 </html>

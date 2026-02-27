@@ -59,6 +59,7 @@ import { resizeToPixelGrid, computeScaledDestinationSize } from "/wpt_internal/r
 
 Promise.all(Array.from(document.querySelectorAll("canvas")).map(async cvs => {
   await resizeToPixelGrid(cvs);
+  await new Promise(setTimeout);
   const target = cvs.firstElementChild;
   const ctx = cvs.getContext("2d");
   if (target.hasAttribute("xscale") && target.hasAttribute("yscale")) {

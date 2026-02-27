@@ -347,7 +347,8 @@ CompositingReasons CompositingReasonFinder::DirectReasonsForPaintProperties(
   CompositingReasons reasons = CompositingReason::kNone;
 
   auto* element = DynamicTo<Element>(object.GetNode());
-  if (element && RuntimeEnabledFeatures::CanvasDrawElementEnabled()) {
+  if (element && IsA<LayoutBox>(object) &&
+      RuntimeEnabledFeatures::CanvasDrawElementEnabled()) {
     if (element->IsInCanvasSubtree()) [[unlikely]] {
       auto* canvas_parent =
           DynamicTo<HTMLCanvasElement>(element->parentElement());

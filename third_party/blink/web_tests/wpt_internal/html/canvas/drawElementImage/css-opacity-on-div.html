@@ -1,10 +1,12 @@
 <!DOCTYPE html>
+<html class="reftest-wait">
 <head>
   <title>drawElementImage paints CSS opacity</title>
   <link rel="help" href="https://github.com/WICG/html-in-canvas">
   <link rel="match" href="css-opacity-on-div-ref.html">
   <meta name="assert" value="A div with opacity paints with the opacity.">
   <meta name="fuzzy" content="maxDifference=0-1;totalPixels=0-10000">
+  <script src="/common/reftest-wait.js"></script>
   <style>
     div {
       width: 100px;
@@ -20,9 +22,12 @@
   </canvas>
 
   <script>
-    window.onload = () => {
+    function runTest() {
       var context = canvas.getContext("2d");
       context.drawElementImage(child, 0, 0);
+      takeScreenshot();
     }
+    onload = () => requestAnimationFrame(() => setTimeout(runTest));
   </script>
 </body>
+</html>

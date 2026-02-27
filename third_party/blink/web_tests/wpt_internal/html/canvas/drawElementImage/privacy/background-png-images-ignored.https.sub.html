@@ -37,24 +37,24 @@
   </canvas>
 
   <script>
-    window.onload = () => {
-      test(function(t) {
-        var context = canvas.getContext("2d");
-        context.drawElementImage(child, 0, 0);
+window.onload = () => {
+  promise_test(async function(t) {
+    await new Promise(requestAnimationFrame);
+    await new Promise(setTimeout);
+    var context = canvas.getContext("2d");
+    context.drawElementImage(child, 0, 0);
 
-        pixel = context.getImageData(50, 50, 1, 1).data;
-        assert_equals(pixel[0], 255, "Same origin should draw");
-        assert_equals(pixel[1], 0, "Same origin should draw");
-        assert_equals(pixel[2], 0, "Same origin should draw");
+    pixel = context.getImageData(50, 50, 1, 1).data;
+    assert_equals(pixel[0], 255, "Same origin should draw");
+    assert_equals(pixel[1], 0, "Same origin should draw");
+    assert_equals(pixel[2], 0, "Same origin should draw");
 
-        pixel = context.getImageData(50, 150, 1, 1).data;
-        assert_equals(pixel[0], 0, "Cross origin should not draw");
-        assert_equals(pixel[1], 128, "Cross origin should not draw");
-        assert_equals(pixel[2], 0, "Cross origin should not draw");
-
-        t.done();
-      });
-    }
+    pixel = context.getImageData(50, 150, 1, 1).data;
+    assert_equals(pixel[0], 0, "Cross origin should not draw");
+    assert_equals(pixel[1], 128, "Cross origin should not draw");
+    assert_equals(pixel[2], 0, "Cross origin should not draw");
+  });
+};
   </script>
 </body>
 </html>

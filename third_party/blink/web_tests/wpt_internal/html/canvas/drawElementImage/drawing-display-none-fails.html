@@ -13,9 +13,11 @@
 </canvas>
 
 <script>
-  test(function() {
+  promise_test(async function() {
     canvas_2d_div.getBoundingClientRect();
     canvas_2d_div.style.display = 'none';
+    await new Promise(requestAnimationFrame);
+    await new Promise(setTimeout);
     const context_2d = canvas_2d.getContext('2d');
     assert_throws_js(
       TypeError,
@@ -24,9 +26,11 @@
     );
   }, 'drawElementImage with display:none element');
 
-  test(function() {
+  promise_test(async function() {
     canvas_3d_div.getBoundingClientRect();
     canvas_3d_div.style.display = 'none';
+    await new Promise(requestAnimationFrame);
+    await new Promise(setTimeout);
     const context_gl = canvas_3d.getContext('webgl2');
     const tex = context_gl.createTexture();
     context_gl.bindTexture(context_gl.TEXTURE_2D, tex);

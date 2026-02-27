@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/html/canvas/ukm_parameters.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_external_memory_accounter.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_child_paint_record.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
@@ -150,6 +151,11 @@ class CORE_EXPORT CanvasRenderingContextHost
   void SetPreferred2DRasterMode(RasterModeHint);
 
   virtual void DiscardResources() = 0;
+
+  virtual std::optional<CanvasChildPaintRecord> GetCanvasChildPaintRecord(
+      DOMNodeId child_id) const {
+    return std::nullopt;
+  }
 
  protected:
   ~CanvasRenderingContextHost() override;

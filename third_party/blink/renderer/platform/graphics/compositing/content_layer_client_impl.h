@@ -8,6 +8,7 @@
 #include "base/dcheck_is_on.h"
 #include "cc/layers/content_layer_client.h"
 #include "cc/layers/picture_layer.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_child_paint_record.h"
 #include "third_party/blink/renderer/platform/graphics/compositing/layers_as_json.h"
 #include "third_party/blink/renderer/platform/graphics/paint/raster_invalidator.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -44,11 +45,14 @@ class PLATFORM_EXPORT ContentLayerClientImpl
 
   cc::Layer& Layer() const { return *cc_picture_layer_.get(); }
 
-  void UpdateCcPictureLayer(const PendingLayer&);
+  void UpdateCcPictureLayer(const PendingLayer&,
+                            PropertyTreeState property_state_for_paint);
 
   bool HasRasterInducingScroll() const;
 
   RasterInvalidator& GetRasterInvalidator() { return *raster_invalidator_; }
+
+  CanvasChildPaintRecord GetCanvasChildPaintRecord() const;
 
   size_t ApproximateUnsharedMemoryUsage() const;
 
@@ -59,6 +63,8 @@ class PLATFORM_EXPORT ContentLayerClientImpl
   scoped_refptr<cc::PictureLayer> cc_picture_layer_;
   scoped_refptr<cc::DisplayItemList> cc_display_item_list_;
   Member<RasterInvalidator> raster_invalidator_;
+  gfx::SizeF canvas_child_box_size_;
+  float canvas_child_effective_zoom_;
   // Used during UpdateCcPictureLayer().
   bool has_empty_invalidations_ = false;
 

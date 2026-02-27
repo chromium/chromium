@@ -62,6 +62,7 @@ import { resizeToPixelGrid, SimpleGLProgram } from "/wpt_internal/resources/canv
 
 Promise.all(Array.from(document.querySelectorAll("canvas")).map(async canvas => {
   await resizeToPixelGrid(canvas);
+  await new Promise(setTimeout);
   const prog = new SimpleGLProgram(canvas.getContext("webgl2"));
   const target = canvas.firstElementChild;
   const targetStyle = getComputedStyle(target);
