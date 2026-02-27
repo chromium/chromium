@@ -174,8 +174,6 @@ public class FeedSurfaceCoordinator
     // In New Tab Page, it does not track the header offset (no header) - instead, it
     // tracks scrolling events.
     private @Nullable ScrollableContainerDelegate mScrollableContainerDelegate;
-
-    private @Nullable HeaderIphScrollListener mHeaderIphScrollListener;
     private @Nullable RefreshIphScrollListener mRefreshIphScrollListener;
     private @Nullable FeedReliabilityLogger mReliabilityLogger;
     private final PrivacyPreferencesManagerImpl mPrivacyPreferencesManager;
@@ -190,7 +188,6 @@ public class FeedSurfaceCoordinator
 
     // Used to handle padding adjustment when edge to edge is enabled.
     private final EdgeToEdgePadAdjuster mEdgePadAdjuster;
-    private final boolean mIsNewTabPageCustomizationEnabled;
     private final boolean mIsNewTabPageCustomizationV2Enabled;
     private @Nullable ImageButton mNtpCustomizationButton;
     private @Nullable NtpCustomizationConfigManager mNtpCustomizationConfigManager;
@@ -225,7 +222,7 @@ public class FeedSurfaceCoordinator
                 mRecyclerView.post(mRecyclerView::invalidateItemDecorations);
                 updateNtpHeaderMargins();
             }
-            if (mIsNewTabPageCustomizationEnabled && mUseStaggeredLayout) {
+            if (mUseStaggeredLayout) {
                 updateNtpCustomizationButtonVisibility();
             }
         }
@@ -471,10 +468,8 @@ public class FeedSurfaceCoordinator
         mHeaderIndex = 0;
         mTabStripHeightSupplier = tabStripHeightSupplier;
         mUseStaggeredLayout = DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity);
-        mIsNewTabPageCustomizationEnabled = ChromeFeatureList.sNewTabPageCustomization.isEnabled();
         mIsNewTabPageCustomizationV2Enabled =
-                mIsNewTabPageCustomizationEnabled
-                        && NtpCustomizationUtils.isNtpThemeCustomizationEnabled();
+                NtpCustomizationUtils.isNtpThemeCustomizationEnabled();
         mDefaultBackgroundColor =
                 ContextCompat.getColor(mActivity, R.color.home_surface_background_color);
 
@@ -523,7 +518,7 @@ public class FeedSurfaceCoordinator
 
         // The NTP customization button needs to be added after the RecyclerView to make it float
         // above the RecyclerView.
-        if (mIsNewTabPageCustomizationEnabled && mUseStaggeredLayout) {
+        if (mUseStaggeredLayout) {
             mNtpCustomizationButton =
                     NtpCustomizationUtils.createNtpCustomizationButton(
                             mActivity,
@@ -1334,24 +1329,7 @@ public class FeedSurfaceCoordinator
             mScrollableContainerDelegate = new ScrollableContainerDelegateImpl();
         }
 
-        if (!mIsNewTabPageCustomizationEnabled) {
-            createHeaderIphScrollListener();
-        }
         createRefreshIphScrollListener();
-    }
-
-    private void createHeaderIphScrollListener() {
-        assumeNonNull(mScrollableContainerDelegate);
-        mHeaderIphScrollListener =
-                new HeaderIphScrollListener(
-                        this,
-                        mScrollableContainerDelegate,
-                        () -> {
-                            UserEducationHelper helper =
-                                    new UserEducationHelper(mActivity, mProfile, mHandler);
-                            ((SectionHeaderView) mHeaderView).showMenuIph(helper);
-                        });
-        mScrollableContainerDelegate.addScrollListener(mHeaderIphScrollListener);
     }
 
     private void createRefreshIphScrollListener() {
@@ -1375,10 +1353,6 @@ public class FeedSurfaceCoordinator
      */
     private void stopBubbleTriggering() {
         if (mMediator.hasStreams() && mScrollableContainerDelegate != null) {
-            if (mHeaderIphScrollListener != null) {
-                mScrollableContainerDelegate.removeScrollListener(mHeaderIphScrollListener);
-                mHeaderIphScrollListener = null;
-            }
             if (mRefreshIphScrollListener != null) {
                 mScrollableContainerDelegate.removeScrollListener(mRefreshIphScrollListener);
                 mRefreshIphScrollListener = null;

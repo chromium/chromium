@@ -35,18 +35,12 @@ import org.chromium.chrome.browser.feed.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.user_education.IphCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
-import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.components.browser_ui.widget.highlight.PulseDrawable;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.ui.base.DeviceFormFactor;
-import org.chromium.ui.listmenu.BasicListMenu;
-import org.chromium.ui.listmenu.ListMenu;
 import org.chromium.ui.listmenu.ListMenuButton;
-import org.chromium.ui.listmenu.ListMenuDelegate;
-import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
-import org.chromium.ui.widget.RectProvider;
 import org.chromium.ui.widget.ViewRectProvider;
 
 /**
@@ -134,13 +128,11 @@ public class SectionHeaderView extends LinearLayout {
     private @Px int mToolbarHeight;
     private final @Px int mTouchSize;
     private final boolean mIsTablet;
-    private final boolean mIsNewTabPageCustomizationEnabled;
 
     public SectionHeaderView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         mTouchSize = getResources().getDimensionPixelSize(R.dimen.feed_v2_header_menu_touch_size);
         mIsTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext());
-        mIsNewTabPageCustomizationEnabled = ChromeFeatureList.sNewTabPageCustomization.isEnabled();
     }
 
     public void setToolbarHeight(@Px int toolbarHeight) {
@@ -200,13 +192,9 @@ public class SectionHeaderView extends LinearLayout {
         mTitleView = findViewById(R.id.header_title);
 
         ListMenuButton menuView = findViewById(R.id.header_menu);
-        if (mIsNewTabPageCustomizationEnabled) {
-            // When NTP Customization is turned on, the section header menu is no longer visible.
-            // It's relocated to the NTP Customization Discover Feed bottom sheet.
-            menuView.setVisibility(View.INVISIBLE);
-        } else {
-            mMenuView = menuView;
-        }
+        // When NTP Customization is turned on, the section header menu is no longer visible.
+        // It's relocated to the NTP Customization Discover Feed bottom sheet.
+        menuView.setVisibility(View.INVISIBLE);
 
         mLeadingStatusIndicator = findViewById(R.id.section_status_indicator);
         mTabLayout = findViewById(R.id.tab_list_view);
@@ -240,26 +228,6 @@ public class SectionHeaderView extends LinearLayout {
                             .getDimensionPixelSize(R.dimen.feed_header_tab_layout_lateral_margin);
             indicatorViewMarginLayoutParams.setMarginEnd(
                     indicatorViewMarginLayoutParams.getMarginEnd() + tabLayoutLateralMargin);
-        }
-
-        if (!mIsNewTabPageCustomizationEnabled) {
-            // #getHitRect() will not be valid until the first layout pass completes. Additionally,
-            // if
-            // the header's enabled state changes, |mMenuView| will move slightly sideways, and the
-            // touch target needs to be adjusted. This is a bit chatty during animations, but it
-            // should
-            // also be fairly cheap.
-            assert mMenuView != null;
-            mMenuView.addOnLayoutChangeListener(
-                    (View v,
-                            int left,
-                            int top,
-                            int right,
-                            int bottom,
-                            int oldLeft,
-                            int oldTop,
-                            int oldRight,
-                            int oldBottom) -> adjustTouchDelegate(mMenuView));
         }
 
         // Ensures that the whole header doesn't get focused for a11y.
@@ -402,19 +370,10 @@ public class SectionHeaderView extends LinearLayout {
         }
     }
 
-    /** Sets the delegate for the gear/settings icon. */
-    void setMenuDelegate(ModelList listItems, ListMenu.Delegate listMenuDelegate) {
-        assumeNonNull(mMenuView);
-        mMenuView.setOnClickListener(
-                (v) -> {
-                    displayMenu(listItems, listMenuDelegate);
-                });
-    }
-
     /**
      * Sets whether to show tabs or normal title view.
      *
-     * Only works if there is both a tab and title view.
+     * <p>Only works if there is both a tab and title view.
      */
     void setTabMode(boolean isTabMode) {
         if (mTabLayout != null) {
@@ -584,43 +543,6 @@ public class SectionHeaderView extends LinearLayout {
         rect.bottom += halfHeightDelta;
 
         setTouchDelegate(new TouchDelegate(rect, view));
-    }
-
-    private void displayMenu(ModelList listItems, ListMenu.Delegate listMenuDelegate) {
-        if (listItems == null) {
-            assert false : "No list items model to display the menu";
-            return;
-        }
-
-        if (listMenuDelegate == null) {
-            assert false : "No list menu delegate for the menu";
-            return;
-        }
-
-        assert mMenuView != null;
-        BasicListMenu listMenu =
-                BrowserUiListMenuUtils.getBasicListMenu(
-                        mMenuView.getContext(), listItems, listMenuDelegate);
-
-        ListMenuDelegate delegate =
-                new ListMenuDelegate() {
-                    @Override
-                    public ListMenu getListMenu() {
-                        return listMenu;
-                    }
-
-                    @Override
-                    public RectProvider getRectProvider(View listMenuButton) {
-                        ViewRectProvider rectProvider = new ViewRectProvider(listMenuButton);
-                        rectProvider.setIncludePadding(true);
-                        rectProvider.setInsetPx(0, 0, 0, 0);
-                        return rectProvider;
-                    }
-                };
-
-        mMenuView.setDelegate(delegate);
-        mMenuView.tryToFitLargestItem(true);
-        mMenuView.showMenu();
     }
 
     private TabState getTabState(TabLayout.Tab tab) {

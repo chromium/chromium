@@ -37,11 +37,6 @@ public class SectionHeaderViewBinder
         } else if (key == SectionHeaderListProperties.ON_TAB_SELECTED_CALLBACK_KEY) {
             view.setTabChangeListener(
                     model.get(SectionHeaderListProperties.ON_TAB_SELECTED_CALLBACK_KEY));
-        } else if (key == SectionHeaderListProperties.MENU_DELEGATE_KEY
-                || key == SectionHeaderListProperties.MENU_MODEL_LIST_KEY) {
-            view.setMenuDelegate(
-                    model.get(SectionHeaderListProperties.MENU_MODEL_LIST_KEY),
-                    model.get(SectionHeaderListProperties.MENU_DELEGATE_KEY));
         } else if (key == SectionHeaderListProperties.IS_TAB_MODE_KEY) {
             view.setTabMode(model.get(SectionHeaderListProperties.IS_TAB_MODE_KEY));
         } else if (key == SectionHeaderListProperties.INDICATOR_VIEW_VISIBILITY_KEY) {

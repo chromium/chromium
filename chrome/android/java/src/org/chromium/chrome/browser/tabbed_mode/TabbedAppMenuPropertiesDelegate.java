@@ -1251,8 +1251,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
      */
     @Contract("null -> false")
     private boolean shouldShowNtpCustomizations(@Nullable Tab currentTab) {
-        return ChromeFeatureList.sNewTabPageCustomization.isEnabled()
-                && !isIncognitoShowing()
+        return !isIncognitoShowing()
                 && currentTab != null
                 && UrlUtilities.isNtpUrl(currentTab.getUrl());
     }

@@ -123,10 +123,7 @@ public class MultiColumnSettingsTest {
 
     @Test
     @Config(qualifiers = "w400dp-h600dp")
-    @EnableFeatures({
-        ChromeFeatureList.SETTINGS_MULTI_COLUMN,
-        ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION
-    })
+    @EnableFeatures({ChromeFeatureList.SETTINGS_MULTI_COLUMN})
     @DisableFeatures({
         ChromeFeatureList.DEFAULT_BROWSER_PROMO_ANDROID2,
         ChromeFeatureList.PLUS_ADDRESSES_ENABLED
@@ -140,10 +137,7 @@ public class MultiColumnSettingsTest {
 
     @Test
     @Config(qualifiers = "w840dp-h60dp")
-    @EnableFeatures({
-        ChromeFeatureList.SETTINGS_MULTI_COLUMN,
-        ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION
-    })
+    @EnableFeatures({ChromeFeatureList.SETTINGS_MULTI_COLUMN})
     @DisableFeatures({
         ChromeFeatureList.DEFAULT_BROWSER_PROMO_ANDROID2,
         ChromeFeatureList.PLUS_ADDRESSES_ENABLED

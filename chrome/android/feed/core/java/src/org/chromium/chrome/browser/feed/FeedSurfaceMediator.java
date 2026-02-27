@@ -60,7 +60,6 @@ import org.chromium.chrome.browser.ui.signin.signin_promo.SigninPromoCoordinator
 import org.chromium.chrome.browser.xsurface.ListLayoutHelper;
 import org.chromium.chrome.browser.xsurface.feed.FeedUserInteractionReliabilityLogger.ClosedReason;
 import org.chromium.chrome.browser.xsurface.feed.StreamType;
-import org.chromium.components.browser_ui.widget.ListItemBuilder;
 import org.chromium.components.browser_ui.widget.displaystyle.DisplayStyleObserver;
 import org.chromium.components.browser_ui.widget.displaystyle.HorizontalDisplayStyle;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
@@ -77,8 +76,6 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.listmenu.ListMenu;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
-import org.chromium.ui.modelutil.MVCListAdapter;
-import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyListModel;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -282,9 +279,6 @@ public class FeedSurfaceMediator
     private int mRestoreTabId;
     private int mHeaderCount;
 
-    /** The model representing feed-related cog menu items. */
-    private @Nullable ModelList mFeedMenuModel;
-
     /** Whether the Feed content is loading. */
     private boolean mIsLoadingFeed;
 
@@ -302,7 +296,6 @@ public class FeedSurfaceMediator
     private final boolean mIsNewTabSearchEngineUrlAndroidEnabled;
     private boolean mIsPropertiesInitializedForStream;
     private @ClosedReason int mClosedReason = ClosedReason.SUSPEND_APP;
-    private final boolean mIsNewTabPageCustomizationEnabled;
 
     /**
      * @param coordinator The {@link FeedSurfaceCoordinator} that interacts with this class.
@@ -339,7 +332,6 @@ public class FeedSurfaceMediator
         mOptionsCoordinator.setOptionsListener(this);
         mIsNewTabSearchEngineUrlAndroidEnabled =
                 DseNewTabUrlManager.isNewTabSearchEngineUrlAndroidEnabled();
-        mIsNewTabPageCustomizationEnabled = ChromeFeatureList.sNewTabPageCustomization.isEnabled();
         mUiConfig = uiConfig;
 
         /*
@@ -591,15 +583,6 @@ public class FeedSurfaceMediator
             mSectionHeaderModel.set(
                     SectionHeaderListProperties.ON_TAB_SELECTED_CALLBACK_KEY,
                     new FeedSurfaceHeaderSelectedCallback());
-
-            if (!mIsNewTabPageCustomizationEnabled) {
-                // Build menu after section enabled key is set.
-                mFeedMenuModel = buildMenuItems();
-
-                mSectionHeaderModel.set(
-                        SectionHeaderListProperties.MENU_MODEL_LIST_KEY, mFeedMenuModel);
-                mSectionHeaderModel.set(SectionHeaderListProperties.MENU_DELEGATE_KEY, this);
-            }
 
             setUpWebFeedTab();
 
@@ -1090,12 +1073,6 @@ public class FeedSurfaceMediator
 
             setHeaderIndicatorState(suggestionsVisible);
 
-            if (!mIsNewTabPageCustomizationEnabled) {
-                // Update toggleswitch item, which is last item in list.
-                mSectionHeaderModel.set(
-                        SectionHeaderListProperties.MENU_MODEL_LIST_KEY, buildMenuItems());
-            }
-
             PropertyModel currentStreamHeaderModel =
                     mSectionHeaderModel
                             .get(SectionHeaderListProperties.SECTION_HEADERS_KEY)
@@ -1141,10 +1118,6 @@ public class FeedSurfaceMediator
         // which is called by the prefService observer.
         getPrefService().setBoolean(Pref.ARTICLES_LIST_VISIBLE, isExpanded);
 
-        if (!mIsNewTabPageCustomizationEnabled) {
-            FeedUma.recordArticlesListVisible(isExpanded);
-        }
-
         int streamType =
                 assumeNonNull(
                                 mTabToStreamMap.get(
@@ -1182,62 +1155,6 @@ public class FeedSurfaceMediator
         return isExpanded
                 ? res.getString(R.string.ntp_discover_on_branded)
                 : res.getString(R.string.ntp_discover_off_branded);
-    }
-
-    private ModelList buildMenuItems() {
-        assert mSectionHeaderModel != null;
-
-        ModelList itemList = new ModelList();
-        int iconId = 0;
-
-        if (FeedServiceBridge.isSignedIn()) {
-            if (WebFeedBridge.isWebFeedEnabled()) {
-                itemList.add(
-                        new ListItemBuilder()
-                                .withTitleRes(R.string.ntp_manage_feed)
-                                .withMenuId(R.id.ntp_feed_header_menu_item_manage)
-                                .withStartIconRes(iconId)
-                                .build());
-            } else {
-                itemList.add(
-                        new ListItemBuilder()
-                                .withTitleRes(R.string.ntp_manage_my_activity)
-                                .withMenuId(R.id.ntp_feed_header_menu_item_activity)
-                                .withStartIconRes(iconId)
-                                .build());
-                itemList.add(
-                        new ListItemBuilder()
-                                .withTitleRes(R.string.ntp_manage_interests)
-                                .withMenuId(R.id.ntp_feed_header_menu_item_interest)
-                                .withStartIconRes(iconId)
-                                .build());
-            }
-        }
-        itemList.add(
-                new ListItemBuilder()
-                        .withTitleRes(R.string.learn_more)
-                        .withMenuId(R.id.ntp_feed_header_menu_item_learn)
-                        .withStartIconRes(iconId)
-                        .build());
-        itemList.add(
-                getMenuToggleSwitch(
-                        mSectionHeaderModel.get(SectionHeaderListProperties.IS_SECTION_ENABLED_KEY),
-                        iconId));
-        return itemList;
-    }
-
-    /**
-     * Returns the menu list item that represents turning the feed on/off.
-     *
-     * @param isEnabled Whether the feed section is currently enabled.
-     * @param iconId IconId for the list item if any.
-     */
-    private MVCListAdapter.ListItem getMenuToggleSwitch(boolean isEnabled, int iconId) {
-        return new ListItemBuilder()
-                .withTitleRes(isEnabled ? R.string.ntp_turn_off_feed : R.string.ntp_turn_on_feed)
-                .withMenuId(R.id.ntp_feed_header_menu_item_toggle_switch)
-                .withStartIconRes(iconId)
-                .build();
     }
 
     /** Whether a new thumbnail should be captured. */
@@ -1370,6 +1287,7 @@ public class FeedSurfaceMediator
         showOrHideFeed();
     }
 
+    // TODO(crbug.com/376238770): Remove the feed menu related code
     @Override
     public void onItemSelected(PropertyModel item, View view) {
         assert mSectionHeaderModel != null;

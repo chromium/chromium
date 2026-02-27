@@ -9,8 +9,6 @@ import android.view.View;
 import androidx.annotation.Px;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.ui.listmenu.ListMenu;
-import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyListModel;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -28,16 +26,9 @@ public class SectionHeaderListProperties {
     public static final PropertyModel.WritableObjectPropertyKey<OnSectionHeaderSelectedListener>
             ON_TAB_SELECTED_CALLBACK_KEY = new PropertyModel.WritableObjectPropertyKey<>();
 
-    /** The model of the menu items to show in the overflow menu to manage the feed. */
-    public static final PropertyModel.WritableObjectPropertyKey<MVCListAdapter.ModelList>
-            MENU_MODEL_LIST_KEY = new PropertyModel.WritableObjectPropertyKey<>();
-
-    public static final PropertyModel.WritableObjectPropertyKey<ListMenu.Delegate>
-            MENU_DELEGATE_KEY = new PropertyModel.WritableObjectPropertyKey<>();
-
     /**
-     * Whether to show tabs or not. Tabs will have all headers shown each in a TabLayout.
-     * No tabs means only the 1st header will be shown in a left-aligned TextView.
+     * Whether to show tabs or not. Tabs will have all headers shown each in a TabLayout. No tabs
+     * means only the 1st header will be shown in a left-aligned TextView.
      */
     public static final PropertyModel.WritableBooleanPropertyKey IS_TAB_MODE_KEY =
             new PropertyModel.WritableBooleanPropertyKey();
@@ -76,8 +67,6 @@ public class SectionHeaderListProperties {
                         SECTION_HEADERS_KEY,
                         CURRENT_TAB_INDEX_KEY,
                         ON_TAB_SELECTED_CALLBACK_KEY,
-                        MENU_MODEL_LIST_KEY,
-                        MENU_DELEGATE_KEY,
                         IS_TAB_MODE_KEY,
                         IS_LOGO_KEY,
                         INDICATOR_VIEW_VISIBILITY_KEY,

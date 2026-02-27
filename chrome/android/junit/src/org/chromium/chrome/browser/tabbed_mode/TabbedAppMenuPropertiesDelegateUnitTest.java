@@ -166,7 +166,6 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 @DisableFeatures({
     ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_PAGE_SUMMARY,
-    ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION,
     ChromeFeatureList.FEED_AUDIO_OVERVIEWS,
     ChromeFeatureList.GLIC,
     ChromeFeatureList.TASK_MANAGER_CLANK,
@@ -589,6 +588,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                 R.id.all_bookmarks_menu_id,
                                 R.id.divider_line_id,
                                 R.id.preferences_id,
+                                R.id.ntp_customization_id,
                                 R.id.help_id));
 
         if (ExtensionsBuildflags.ENABLE_DESKTOP_ANDROID_EXTENSIONS) {
@@ -1945,7 +1945,6 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION})
     public void testCustomizeNewTabPageOption() {
         MockTab ntpTab = new MockTab(1, mProfile);
         ntpTab.setUrl(new GURL(getOriginalNativeNtpUrl()));
