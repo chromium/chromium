@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.tasks.tab_management;
+package org.chromium.chrome.browser.tasks.tab_management.color_picker;
 
-import static org.chromium.chrome.browser.tasks.tab_management.ColorPickerItemProperties.COLOR_ID;
-import static org.chromium.chrome.browser.tasks.tab_management.ColorPickerItemProperties.COLOR_PICKER_TYPE;
-import static org.chromium.chrome.browser.tasks.tab_management.ColorPickerItemProperties.IS_INCOGNITO;
-import static org.chromium.chrome.browser.tasks.tab_management.ColorPickerItemProperties.IS_SELECTED;
-import static org.chromium.chrome.browser.tasks.tab_management.ColorPickerItemProperties.ON_CLICK_LISTENER;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiThemeProvider.getColorPickerDialogBackgroundColor;
+import static org.chromium.chrome.browser.tasks.tab_management.color_picker.ColorPickerItemProperties.COLOR_ID;
+import static org.chromium.chrome.browser.tasks.tab_management.color_picker.ColorPickerItemProperties.COLOR_PICKER_TYPE;
+import static org.chromium.chrome.browser.tasks.tab_management.color_picker.ColorPickerItemProperties.IS_INCOGNITO;
+import static org.chromium.chrome.browser.tasks.tab_management.color_picker.ColorPickerItemProperties.IS_SELECTED;
+import static org.chromium.chrome.browser.tasks.tab_management.color_picker.ColorPickerItemProperties.ON_CLICK_LISTENER;
 
 import android.content.Context;
 import android.content.res.ColorStateList;

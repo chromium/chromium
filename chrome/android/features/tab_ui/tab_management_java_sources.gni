@@ -7,9 +7,6 @@
 public_tab_management_java_sources = [
   "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/CloseAllTabsDialog.java",
   "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/CloseAllTabsHelper.java",
-  "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/ColorPicker.java",
-  "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/ColorPickerContainer.java",
-  "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/ColorPickerType.java",
   "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/TabArchiveSettingsFragment.java",
   "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/TabGroupMenuActionHandler.java",
   "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/TabGroupUi.java",
@@ -20,6 +17,9 @@ public_tab_management_java_sources = [
   "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/TabUiThemeProvider.java",
   "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/TabsSettings.java",
   "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/UndoGroupSnackbarController.java",
+  "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/color_picker/ColorPicker.java",
+  "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/color_picker/ColorPickerContainer.java",
+  "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/color_picker/ColorPickerType.java",
 ]
 
 # TODO(crbug.com/40259582): Modularize tab_ui/ or figure out a mechanism to enforce
@@ -36,10 +36,6 @@ internal_tab_management_java_sources = [
   "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/ArchivedTabsIphMessageCardViewModel.java",
   "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/ArchivedTabsMessageService.java",
   "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/CollaborationActivityMessageCardViewModel.java",
-  "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/ColorPickerCoordinator.java",
-  "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/ColorPickerItemProperties.java",
-  "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/ColorPickerItemViewBinder.java",
-  "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/ColorPickerMediator.java",
   "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/Corner.java",
   "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/FaviconResolver.java",
   "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/GroupSharedState.java",
@@ -221,6 +217,10 @@ internal_tab_management_java_sources = [
   "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/archived_tabs_auto_delete_promo/ArchivedTabsAutoDeletePromoProperties.java",
   "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/archived_tabs_auto_delete_promo/ArchivedTabsAutoDeletePromoSheetContent.java",
   "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/archived_tabs_auto_delete_promo/ArchivedTabsAutoDeletePromoViewBinder.java",
+  "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/color_picker/ColorPickerCoordinator.java",
+  "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/color_picker/ColorPickerItemProperties.java",
+  "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/color_picker/ColorPickerItemViewBinder.java",
+  "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/color_picker/ColorPickerMediator.java",
   "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/pinned_tabs_strip/PinnedTabStripAnimationManager.java",
   "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/pinned_tabs_strip/PinnedTabStripCoordinator.java",
   "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/pinned_tabs_strip/PinnedTabStripItemContextMenuCoordinator.java",
