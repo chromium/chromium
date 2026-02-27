@@ -13,6 +13,7 @@
 #include "ash/constants/personalization_entry_point.h"
 #include "ash/constants/url_constants.h"
 #include "ash/constants/web_app_id_constants.h"
+#include "ash/constants/webui_url_constants.h"
 #include "ash/public/cpp/locale_update_controller.h"
 #include "ash/public/cpp/login_types.h"
 #include "ash/public/cpp/new_window_delegate.h"
@@ -63,7 +64,6 @@
 #include "chrome/browser/ui/webui/ash/set_time/set_time_dialog.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/common/url_constants.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/network/network_handler.h"
@@ -556,14 +556,14 @@ void SystemTrayClientImpl::ShowGestureEducationHelp() {
   }
 
   ash::SystemAppLaunchParams params;
-  params.url = GURL(chrome::kChromeOSGestureEducationHelpURL);
+  params.url = GURL(ash::kChromeUIOSGestureEducationHelpURL);
   params.launch_source = apps::LaunchSource::kFromOtherApp;
   ash::LaunchSystemWebAppAsync(profile, ash::SystemWebAppType::HELP, params);
 }
 
 void SystemTrayClientImpl::ShowPaletteHelp() {
   ShowSingletonTab(ProfileManager::GetActiveUserProfile(),
-                   GURL(chrome::kChromePaletteHelpURL));
+                   GURL(ash::external_urls::kPaletteHelpURL));
 }
 
 void SystemTrayClientImpl::ShowPaletteSettings() {
@@ -880,7 +880,7 @@ void SystemTrayClientImpl::ShowRemapKeysSubpage(int device_id) {
 void SystemTrayClientImpl::ShowYouTubeMusicPremiumPage() {
   base::RecordAction(base::UserMetricsAction("ShowYouTubeMusicPremiumPage"));
 
-  const GURL official_url(chrome::kYoutubeMusicPremiumURL);
+  const GURL official_url(ash::external_urls::kYoutubeMusicPremiumURL);
 
   // Check YouTube Music web app installation.
   if (!IsAppInstalled(ash::kYoutubeMusicAppId)) {
@@ -910,7 +910,7 @@ void SystemTrayClientImpl::ShowYouTubeMusicPremiumPage() {
 }
 
 void SystemTrayClientImpl::ShowChromebookPerksYouTubePage() {
-  OpenInBrowser(GURL(chrome::kChromebookPerksYouTubePage));
+  OpenInBrowser(GURL(ash::external_urls::kChromebookPerksYouTubePage));
 }
 
 void SystemTrayClientImpl::ShowEolInfoPage() {

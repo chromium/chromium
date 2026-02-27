@@ -715,17 +715,6 @@ inline constexpr char kChromeOSCreditsPath[] =
 inline constexpr char kChromeOSCreditsCompressedPath[] =
     "/opt/google/chrome/resources/about_os_credits.html.gz";
 
-// Chrome OS tablet gestures education help link for Chrome.
-// TODO(carpenterr): Have a solution for plink mapping in Help App.
-// The magic numbers in this url are the topic and article ids currently
-// required to navigate directly to a help article in the Help App.
-inline constexpr char kChromeOSGestureEducationHelpURL[] =
-    "chrome://help-app/help/sub/3399710/id/9739838";
-
-// Palette help link for Chrome.
-inline constexpr char kChromePaletteHelpURL[] =
-    "https://support.google.com/chromebook?p=stylus_help";
-
 // The URL for the help center article about redeeming Chromebook offers.
 inline constexpr char kEchoLearnMoreURL[] =
     "chrome://help-app/help/sub/3399709/id/2703646";
@@ -754,13 +743,6 @@ inline constexpr char kArcPrivacyPolicyURLPath[] = "arc/privacy_policy";
 inline constexpr char16_t kNearbyShareManageContactsURL[] =
     u"https://contacts.google.com";
 
-// The URL for the YoutTube Music Premium signup page.
-inline constexpr char kYoutubeMusicPremiumURL[] =
-    "https://music.youtube.com/music_premium";
-
-// The URL for the Chromebook Perks page for YouTube.
-inline constexpr char kChromebookPerksYouTubePage[] =
-    "https://www.google.com/chromebook/perks/?id=youtube.2020";
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_MAC)
