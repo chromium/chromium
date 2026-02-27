@@ -177,6 +177,12 @@ class ClientSideDetectionHost
 
   void RegisterAutofillManager();
 
+  // User requests to report a site as unsafe. The screenshot values come from
+  // the report dialog view.
+  void ReportUnsafeSite(std::optional<int> screenshot_width,
+                        std::optional<int> screenshot_height,
+                        const std::optional<std::string>& screenshot_data);
+
  protected:
   explicit ClientSideDetectionHost(
       content::WebContents* tab,
@@ -214,6 +220,10 @@ class ClientSideDetectionHost
   FRIEND_TEST_ALL_PREFIXES(
       ClientSideDetectionHostPrerenderBrowserTest,
       CheckDebuggingMetadataCacheAfterClearingCacheAfterNavigation);
+  FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionHostPrerenderBrowserTest,
+                           ReportUnsafeSiteWithScreenshot);
+  FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionHostPrerenderBrowserTest,
+                           ReportUnsafeSiteNoScreenshot);
   FRIEND_TEST_ALL_PREFIXES(
       ClientSideDetectionHostPrerenderExclusiveAccessBrowserTest,
       KeyboardLockTriggersPreclassificationCheck);
@@ -510,6 +520,10 @@ class ClientSideDetectionHost
       credit_card_form::FieldDetectionHeuristic field_heuristic,
       history::VisibleVisitCountToHostResult history_result);
 
+  // Fills in the screenshot data for the given `request`. Only fill if the
+  // report type is USER_REPORT.
+  void MaybeFillScreenshotData(ClientPhishingRequest* request);
+
   // This pointer may be nullptr if client-side phishing detection is
   // disabled.
   base::WeakPtr<ClientSideDetectionService> csd_service_;
@@ -613,6 +627,12 @@ class ClientSideDetectionHost
 
   // The last text that was copied to the clipboard.
   std::u16string last_copied_text_;
+
+  // The high resolution screenshot of the current tab. These fields should only
+  // be populated when a user reports a site as unsafe.
+  std::optional<int> screenshot_width_;
+  std::optional<int> screenshot_height_;
+  std::optional<std::string> screenshot_data_;
 
   base::CancelableTaskTracker task_tracker_;
 

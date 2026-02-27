@@ -174,14 +174,19 @@ class ClientSideDetectionServiceTest
     ValidateModel(model_file_path, {additional_files_path});
   }
 
-  bool SendClientReportPhishingRequest(const GURL& phishing_url,
-                                       float score,
-                                       const std::string& access_token) {
+  bool SendClientReportPhishingRequest(
+      const GURL& phishing_url,
+      float score,
+      const std::string& access_token,
+      std::optional<ClientSideDetectionType> detection_type = std::nullopt) {
     std::unique_ptr<ClientPhishingRequest> request =
         std::make_unique<ClientPhishingRequest>(ClientPhishingRequest());
     request->set_url(phishing_url.spec());
     request->set_client_score(score);
     request->set_is_phishing(true);  // client thinks the URL is phishing.
+    if (detection_type.has_value()) {
+      request->set_client_side_detection_type(detection_type.value());
+    }
 
     base::RunLoop run_loop;
     csd_service_->SendClientReportPhishingRequest(
@@ -348,9 +353,16 @@ TEST_P(ClientSideDetectionServiceTest, SendClientReportPhishingRequest) {
       /*sample=*/net::HTTP_OK,
       /*expected_bucket_count=*/1);
 
+  // Triggering user report should not contribute to ping count.
+  ClientPhishingResponse response;
+  response.set_phishy(true);
+  SetClientReportPhishingResponse(response.SerializeAsString(), net::OK);
+  EXPECT_TRUE(SendClientReportPhishingRequest(
+      url, score, access_token, ClientSideDetectionType::USER_REPORT));
+  EXPECT_FALSE(AtPhishingReportLimit());
+
   // Normal behavior with no access token.
   histogram_tester = std::make_unique<base::HistogramTester>();
-  ClientPhishingResponse response;
   response.set_phishy(true);
   SetClientReportPhishingResponse(response.SerializeAsString(), net::OK);
   EXPECT_TRUE(SendClientReportPhishingRequest(url, score, access_token));
@@ -375,6 +387,13 @@ TEST_P(ClientSideDetectionServiceTest, SendClientReportPhishingRequest) {
       /*expected_bucket_count=*/1);
 
   // We have sent 3 pings so far, which is the cap.
+  EXPECT_TRUE(AtPhishingReportLimit());
+
+  // Even if we are at the limit, user report should still be triggered.
+  response.set_phishy(true);
+  SetClientReportPhishingResponse(response.SerializeAsString(), net::OK);
+  EXPECT_TRUE(SendClientReportPhishingRequest(
+      url, score, access_token, ClientSideDetectionType::USER_REPORT));
   EXPECT_TRUE(AtPhishingReportLimit());
 
   GURL third_url("http://c.com/");

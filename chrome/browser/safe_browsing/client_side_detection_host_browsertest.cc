@@ -480,6 +480,95 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostPrerenderBrowserTest,
       .Run(prerender_url, true, net::HTTP_OK, std::nullopt);
 }
 
+IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostPrerenderBrowserTest,
+                       ReportUnsafeSiteWithScreenshot) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+
+  FakeClientSideDetectionService fake_csd_service;
+  fake_csd_service.SetModel(client_side_model());
+
+  std::unique_ptr<ClientSideDetectionHost> csd_host =
+      ChromeClientSideDetectionHostDelegate::CreateHost(
+          browser()->tab_strip_model()->GetActiveWebContents());
+  csd_host->set_client_side_detection_service(fake_csd_service.GetWeakPtr());
+
+  fake_csd_service.SendModelToRenderers();
+
+  GURL page_url(embedded_test_server()->GetURL("/safe_browsing/malware.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
+
+  base::RunLoop run_loop;
+  fake_csd_service.SetRequestCallback(run_loop.QuitClosure());
+
+  const int screenshot_width = 200;
+  const int screenshot_height = 300;
+  const std::string screenshot_data = "screenshot_data";
+  csd_host->ReportUnsafeSite(screenshot_width, screenshot_height,
+                             screenshot_data);
+
+  // Bypass the pre-classification check to directly test the screenshot
+  // plumbing.
+  csd_host->OnPhishingPreClassificationDone(
+      ClientSideDetectionType::USER_REPORT, /*should_classify=*/true,
+      /*is_sample_ping=*/false,
+      /*did_match_high_confidence_allowlist=*/false);
+
+  run_loop.Run();
+
+  const ClientPhishingRequest& saved_request = fake_csd_service.saved_request();
+  EXPECT_EQ(saved_request.visual_features().high_res_screenshot().width(),
+            screenshot_width);
+  EXPECT_EQ(saved_request.visual_features().high_res_screenshot().height(),
+            screenshot_height);
+  EXPECT_EQ(saved_request.visual_features().high_res_screenshot().data(),
+            screenshot_data);
+  EXPECT_EQ(saved_request.client_side_detection_type(),
+            ClientSideDetectionType::USER_REPORT);
+}
+
+IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostPrerenderBrowserTest,
+                       ReportUnsafeSiteNoScreenshot) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+
+  FakeClientSideDetectionService fake_csd_service;
+  fake_csd_service.SetModel(client_side_model());
+
+  std::unique_ptr<ClientSideDetectionHost> csd_host =
+      ChromeClientSideDetectionHostDelegate::CreateHost(
+          browser()->tab_strip_model()->GetActiveWebContents());
+  csd_host->set_client_side_detection_service(fake_csd_service.GetWeakPtr());
+
+  fake_csd_service.SendModelToRenderers();
+
+  GURL page_url(embedded_test_server()->GetURL("/safe_browsing/malware.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
+
+  base::RunLoop run_loop;
+  fake_csd_service.SetRequestCallback(run_loop.QuitClosure());
+
+  csd_host->ReportUnsafeSite(/*screenshot_width=*/std::nullopt,
+                             /*screenshot_height=*/std::nullopt,
+                             /*screenshot_data=*/std::nullopt);
+
+  // Bypass the pre-classification check to directly test the screenshot
+  // plumbing.
+  csd_host->OnPhishingPreClassificationDone(
+      ClientSideDetectionType::USER_REPORT, /*should_classify=*/true,
+      /*is_sample_ping=*/false,
+      /*did_match_high_confidence_allowlist=*/false);
+
+  run_loop.Run();
+
+  const ClientPhishingRequest& saved_request = fake_csd_service.saved_request();
+  EXPECT_FALSE(saved_request.visual_features().has_high_res_screenshot());
+  EXPECT_EQ(saved_request.client_side_detection_type(),
+            ClientSideDetectionType::USER_REPORT);
+}
+
 IN_PROC_BROWSER_TEST_F(
     ClientSideDetectionHostPrerenderBrowserTest,
     ClassifyPrerenderedPageAfterActivationAndCheckDebuggingMetadataCache) {

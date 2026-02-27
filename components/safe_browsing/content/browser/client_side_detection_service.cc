@@ -271,10 +271,13 @@ void ClientSideDetectionService::StartClientReportPhishingRequest(
     return;
   }
 
-  // Record that we made a request. Logged before the request is made
-  // to ensure it gets recorded. If this returns false due to being at ping cap
-  // or prefs are null, abandon the request.
-  if (!AddPhishingReport(base::Time::Now())) {
+  // If the report was not requested by the user, record that we made a request.
+  // Logged before the request is made to ensure it gets recorded. If this
+  // returns false due to being at ping cap or prefs are null, abandon the
+  // request.
+  if (request->client_side_detection_type() !=
+          ClientSideDetectionType::USER_REPORT &&
+      !AddPhishingReport(base::Time::Now())) {
     if (!callback.is_null()) {
       std::move(callback).Run(GURL(request->url()), false, std::nullopt,
                               std::nullopt);
