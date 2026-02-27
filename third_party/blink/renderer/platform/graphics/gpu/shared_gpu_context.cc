@@ -28,6 +28,13 @@ namespace blink {
 
 namespace {
 
+namespace {
+
+std::optional<bool>
+    g_native_mappable_shared_images_supported_for_canvas_2d_for_testing;
+
+}
+
 bool Canvas2dImageChromiumEnabled() {
   return RuntimeEnabledFeatures::Canvas2dImageChromiumEnabled();
 }
@@ -240,6 +247,7 @@ void SharedGpuContext::Reset() {
   this_ptr->shared_image_interface_provider_.reset();
   this_ptr->context_provider_wrapper_.reset();
   this_ptr->context_provider_factory_.Reset();
+  g_native_mappable_shared_images_supported_for_canvas_2d_for_testing.reset();
 }
 
 bool SharedGpuContext::IsValidWithoutRestoringForTesting() {
@@ -283,7 +291,17 @@ bool SharedGpuContext::MaySupportImageChromium() {
 #endif  // BUILDFLAG(IS_ANDROID)
 
 bool SharedGpuContext::NativeMappableSharedImagesSupportedForCanvas2D() {
+  if (g_native_mappable_shared_images_supported_for_canvas_2d_for_testing) {
+    return g_native_mappable_shared_images_supported_for_canvas_2d_for_testing
+        .value();
+  }
+
   return MaySupportImageChromium() && Canvas2dImageChromiumEnabled();
+}
+
+void SharedGpuContext::
+    SetNativeMappableSharedImagesSupportedForCanvas2DForTesting(bool enable) {
+  g_native_mappable_shared_images_supported_for_canvas_2d_for_testing = enable;
 }
 
 bool SharedGpuContext::OverlaysSupportedForCanvas2D() {

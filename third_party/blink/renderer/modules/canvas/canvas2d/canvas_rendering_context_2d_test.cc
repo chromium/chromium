@@ -1532,7 +1532,8 @@ TEST_P(CanvasRenderingContext2DTest,
        UnacceleratedLowLatencyIsNotSingleBuffered) {
   // Ensure that the context will create a SharedImage provider for the test to
   // be meaningful.
-  ScopedCanvas2dImageChromiumForTest canvas_2d_image_chromium(true);
+  SharedGpuContext::SetNativeMappableSharedImagesSupportedForCanvas2DForTesting(
+      true);
   ScopedTestingPlatformSupport<GpuCompositingTestPlatform> platform;
   const_cast<gpu::Capabilities&>(SharedGpuContext::ContextProviderWrapper()
                                      ->ContextProvider()
@@ -1715,12 +1716,12 @@ TEST_P(CanvasRenderingContext2DTest, AutoFlushDelayedByLayer) {
 }
 
 TEST_P(CanvasRenderingContext2DTest,
-       SoftwareCanvasIsCompositedIfImageChromium) {
-  ScopedCanvas2dImageChromiumForTest canvas_2d_image_chromium(true);
+       SoftwareCanvasIsCompositedIfNativeMappableBuffersAreSupported) {
+  SharedGpuContext::SetNativeMappableSharedImagesSupportedForCanvas2DForTesting(
+      true);
 
   // Ensure that support for BGRA overlays is present, as otherwise compositing
-  // will not occur irrespective of whether `ScopedCanvas2dImageChromium` is
-  // enabled.
+  // will not occur regardless.
   ScopedTestingPlatformSupport<GpuCompositingTestPlatform> platform;
   const_cast<gpu::Capabilities&>(SharedGpuContext::ContextProviderWrapper()
                                      ->ContextProvider()
@@ -1737,15 +1738,15 @@ TEST_P(CanvasRenderingContext2DTest,
 }
 
 TEST_P(CanvasRenderingContext2DTest,
-       SoftwareCanvasIsNotCompositedIfNotImageChromium) {
-  ScopedCanvas2dImageChromiumForTest canvas_2d_image_chromium(false);
+       SoftwareCanvasIsNotCompositedIfNativeMappableBuffersAreNotSupported) {
+  SharedGpuContext::SetNativeMappableSharedImagesSupportedForCanvas2DForTesting(
+      false);
 
   CreateContext(kNonOpaque);
   EXPECT_TRUE(Context2D()->GetOrCreateResourceProvider());
 
   // Ensure that support for BGRA overlays is present, as otherwise compositing
-  // will not occur irrespective of whether `ScopedCanvas2dImageChromium` is
-  // enabled.
+  // will not occur regardless.
   ScopedTestingPlatformSupport<GpuCompositingTestPlatform> platform;
   const_cast<gpu::Capabilities&>(SharedGpuContext::ContextProviderWrapper()
                                      ->ContextProvider()

@@ -66,6 +66,12 @@ class PLATFORM_EXPORT SharedGpuContext {
   // Whether native mappable SharedImages are supported for Canvas2D.
   static bool NativeMappableSharedImagesSupportedForCanvas2D();
 
+  // Forces NativeMappableSharedImagesSupportedForCanvas2D() to return the
+  // passed-in value. Cleared on the next invocation of Reset() of the global
+  // context.
+  static void SetNativeMappableSharedImagesSupportedForCanvas2DForTesting(
+      bool enable);
+
   // Whether SharedImages used for canvas2D content may be placed into overlays.
   static bool OverlaysSupportedForCanvas2D();
 
