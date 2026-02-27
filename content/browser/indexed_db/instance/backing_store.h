@@ -273,6 +273,11 @@ class BackingStore {
   // Get tasks to be run after a BackingStore no longer has any connections.
   virtual void StartPreCloseTasks(base::OnceClosure on_done) = 0;
   virtual void StopPreCloseTasks() = 0;
+
+  // Called when the bucket has been idle for some time so that the backing
+  // store can perform maintenance without adversely impacting client requests.
+  virtual void RunIdleTasks() = 0;
+
   // Estimate the total size of all databases (including blobs) in this store.
   // `write_in_progress` is true iff the last readwrite transaction did not
   // flush changes to disk (i.e., had relaxed durability).

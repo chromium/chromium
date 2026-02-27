@@ -53,6 +53,12 @@ uint64_t BackingStoreImpl::SumSizesOfDatabaseFiles(
   return total_size;
 }
 
+void BackingStoreImpl::RunIdleTasks() {
+  for (auto& [_, connection] : open_connections_) {
+    connection->PerformIdleMaintenance();
+  }
+}
+
 bool BackingStoreImpl::CanOpportunisticallyClose() const {
   // There's not much of a point in deleting `this` since it doesn't use many
   // resources (just a tiny amount of memory). But for now, match the logic of

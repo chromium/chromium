@@ -321,6 +321,7 @@ chromium-metrics-reviews@google.com.
     <variant name="PutRecord"/>
     <variant name="RenameIndex"/>
     <variant name="RenameObjectStore"/>
+    <variant name="RunIdleTasks"/>
     <variant name="SetIndexKeys"/>
   </token>
 </histogram>
@@ -509,6 +510,23 @@ chromium-metrics-reviews@google.com.
     PartitionedLockManager when GetUnacquirableLocks() takes over 2ms to
     complete. This is intended to facilitate tracking down performance issues.
     See crbug.com/384476946
+  </summary>
+</histogram>
+
+<histogram
+    name="IndexedDB.IdleTasksCompletionToNextActivity.{IndexedDBBackingStoreType}"
+    units="ms" expires_after="2026-10-01">
+  <owner>leimy@chromium.org</owner>
+  <owner>evanstade@microsoft.com</owner>
+  <owner>abhishek.shanthkumar@microsoft.com</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    The time between the completion of idle maintenance tasks and the next
+    client-initiated activity in a bucket with an {IndexedDBBackingStoreType}
+    backing store. Logged when the first activity occurs after idle tasks were
+    scheduled and completed. Used to evaluate whether the idle timeout is
+    well-tuned: very small values indicate the timeout may be too short and
+    maintenance is delaying active work.
   </summary>
 </histogram>
 

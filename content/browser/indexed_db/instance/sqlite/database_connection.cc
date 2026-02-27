@@ -1273,6 +1273,17 @@ Status DatabaseConnection::Init(std::optional<std::u16string_view> name) {
   return Status::OK();
 }
 
+void DatabaseConnection::PerformIdleMaintenance() {
+  if (active_rw_transaction_) {
+    return;
+  }
+  if (in_memory()) {
+    db_->TrimMemory();
+    return;
+  }
+  db_->CheckpointDatabase(/*truncate=*/false);
+}
+
 bool DatabaseConnection::IsZygotic() const {
   return metadata().version == blink::IndexedDBDatabaseMetadata::NO_VERSION;
 }

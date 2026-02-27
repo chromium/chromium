@@ -109,6 +109,9 @@ BASE_FEATURE_ENUM_PARAM(SqliteRolloutStage,
 // the backing store.
 const int64_t kBackingStoreGracePeriodSeconds = 2;
 
+// Duration of inactivity after which idle tasks are run.
+constexpr base::TimeDelta kIdleTimeout = base::Seconds(5);
+
 std::optional<bool> g_should_use_sqlite_for_testing;
 
 base::OnceClosure& GetTeardownExtraStepForTesting() {
@@ -256,6 +259,10 @@ BucketContext::BucketContext(
         file_system_access_context)
     : bucket_info_(std::move(bucket_info)),
       data_path_(data_path),
+      idle_timer_(FROM_HERE,
+                  kIdleTimeout,
+                  base::BindRepeating(&BucketContext::RunIdleTasks,
+                                      base::Unretained(this))),
       quota_manager_proxy_(std::move(quota_manager_proxy)),
       blob_storage_context_(std::move(blob_storage_context)),
       file_system_access_context_(std::move(file_system_access_context)),
@@ -519,6 +526,13 @@ void BucketContext::QueueRunTasks() {
 
 void BucketContext::RunTasks() {
   task_run_queued_ = false;
+  if (last_idle_tasks_completion_time_) {
+    base::UmaHistogramMediumTimes(
+        base::StrCat({"IndexedDB.IdleTasksCompletionToNextActivity",
+                      ToVariantSuffix(in_memory())}),
+        base::TimeTicks::Now() - *last_idle_tasks_completion_time_);
+    last_idle_tasks_completion_time_.reset();
+  }
 
   for (auto db_it = databases_.begin(); db_it != databases_.end();) {
     Database& db = *db_it->second;
@@ -536,16 +550,34 @@ void BucketContext::RunTasks() {
   }
   if (CanClose() && closing_stage_ == ClosingState::kClosed) {
     ResetBackingStore();
-  } else if (IsUsingSqlite()) {
-    // Since a `Database` may have just been destroyed, there may no longer be
-    // a need to keep `this` around. Note that this isn't necessary in LevelDB
-    // due to differences in `CanClose()`, although it likely wouldn't be
-    // harmful for LevelDB either. To be on the safe side, don't risk changing
-    // longstanding LevelDB behavior.
-    // TODO(crbug.com/419203257): consider revisiting this logic along with
-    // `CanOpportunisticallyClose()`.
-    MaybeStartClosing();
+  } else {
+    // Run idle tasks after a delay if there are no more immediate tasks to run.
+    idle_timer_.Reset();
+    if (IsUsingSqlite()) {
+      // Since a `Database` may have just been destroyed, there may no longer be
+      // a need to keep `this` around. Note that this isn't necessary in LevelDB
+      // due to differences in `CanClose()`, although it likely wouldn't be
+      // harmful for LevelDB either. To be on the safe side, don't risk changing
+      // longstanding LevelDB behavior.
+      // TODO(crbug.com/419203257): consider revisiting this logic along with
+      // `CanOpportunisticallyClose()`.
+      MaybeStartClosing();
+    }
   }
+}
+
+void BucketContext::RunIdleTasks() {
+  // Though the idle timer is stopped before resetting the backing store, an
+  // already posted task may run after the backing store has been reset.
+  if (!backing_store_) {
+    return;
+  }
+  base::TimeTicks start = base::TimeTicks::Now();
+  backing_store()->RunIdleTasks();
+  base::TimeTicks end = base::TimeTicks::Now();
+  LogDuration(end - start, "IndexedDB.BackendDuration.RunIdleTasks",
+              in_memory());
+  last_idle_tasks_completion_time_ = end;
 }
 
 void BucketContext::AddReceiver(
@@ -909,6 +941,11 @@ void BucketContext::InsertTeardownStepForTesting(
   GetTeardownExtraStepForTesting() = std::move(on_teardown);
 }
 
+// static
+base::TimeDelta BucketContext::GetIdleTimeoutForTesting() {
+  return kIdleTimeout;
+}
+
 void BucketContext::HandleBackingStoreCorruption(
     const std::string& error_message) {
   std::string sanitized_error_message = SanitizeErrorMessage(error_message);
@@ -1185,6 +1222,7 @@ BucketContext::InitBackingStore(bool create_if_missing) {
 void BucketContext::ResetBackingStore() {
   file_reader_map_.clear();
   weak_factory_.InvalidateWeakPtrs();
+  idle_timer_.Stop();
 
   std::optional<bool> was_using_sqlite;
   if (backing_store_) {

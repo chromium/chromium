@@ -4160,9 +4160,7 @@ const blink::IndexedDBDatabaseMetadata& BackingStore::Database::GetMetadata()
 const IndexedDBDataLossInfo& BackingStore::Database::GetDataLossInfo() const {
   // Data loss is logged when the backing store is opened, not on a per-DB
   // level.
-  constexpr static const IndexedDBDataLossInfo kNoDataLossInfo{
-      blink::mojom::IDBDataLoss::None, {}};
-  return kNoDataLossInfo;
+  NOTREACHED();
 }
 
 BackingStore::Transaction::BlobWriteState::BlobWriteState() = default;

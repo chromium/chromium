@@ -3159,4 +3159,65 @@ TEST_P(IndexedDBTest, ForceCloseWithQueuedDelete) {
   force_close_loop.Run();
 }
 
+TEST_P(IndexedDBTest, IdleTasksHistograms) {
+  const base::TimeDelta kTimeout = BucketContext::GetIdleTimeoutForTesting();
+  storage::BucketInfo bucket_info = InitBucket(GetTestStorageKey());
+
+  mojo::Remote<blink::mojom::IDBFactory> factory_remote;
+  mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
+      checker_remote;
+  BindFactory(std::move(checker_remote),
+              factory_remote.BindNewPipeAndPassReceiver(), bucket_info);
+
+  // Create a database and fast forward by the idle timeout, which should
+  // trigger idle tasks.
+  mojo::AssociatedRemote<blink::mojom::IDBDatabase> connection;
+  {
+    base::HistogramTester histograms;
+    connection =
+        CreateDatabase(factory_remote, kDatabaseName, /*transaction_id=*/1);
+    task_environment_.FastForwardBy(kTimeout);
+    histograms.ExpectTotalCount(
+        "IndexedDB.IdleTasksCompletionToNextActivity.OnDisk", 0);
+    histograms.ExpectTotalCount("IndexedDB.BackendDuration.RunIdleTasks.OnDisk",
+                                1);
+  }
+
+  // Create another database, which should restart (reset) the timer.
+  mojo::AssociatedRemote<blink::mojom::IDBDatabase> other_connection;
+  {
+    base::HistogramTester histograms;
+    other_connection =
+        CreateDatabase(factory_remote, u"other_db", /*transaction_id=*/2);
+    histograms.ExpectTotalCount(
+        "IndexedDB.IdleTasksCompletionToNextActivity.OnDisk", 1);
+    histograms.ExpectTotalCount("IndexedDB.BackendDuration.RunIdleTasks.OnDisk",
+                                0);
+  }
+
+  // After a delay, perform some more activity.
+  {
+    base::HistogramTester histograms;
+    const base::TimeDelta kDelay = kTimeout / 3;
+    task_environment_.FastForwardBy(kDelay);
+
+    MockMojoFactoryClient client;
+    base::RunLoop delete_loop;
+    EXPECT_CALL(client, DeleteSuccess)
+        .WillOnce(base::test::RunClosure(delete_loop.QuitClosure()));
+    factory_remote->DeleteDatabase(client.CreateInterfacePtrAndBind(),
+                                   kDatabaseName, /*force_close=*/false);
+    connection.reset();
+    delete_loop.Run();
+
+    // The new activity should have pushed the idle timer further by `kDelay`.
+    task_environment_.FastForwardBy(kTimeout - kDelay);
+    histograms.ExpectTotalCount("IndexedDB.BackendDuration.RunIdleTasks.OnDisk",
+                                0);
+    task_environment_.FastForwardBy(kDelay);
+    histograms.ExpectTotalCount("IndexedDB.BackendDuration.RunIdleTasks.OnDisk",
+                                1);
+  }
+}
+
 }  // namespace content::indexed_db

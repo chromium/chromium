@@ -175,6 +175,8 @@ class CONTENT_EXPORT BucketContext
   // crbug.com/340398745.
   static void InsertTeardownStepForTesting(base::OnceClosure on_teardown);
 
+  static base::TimeDelta GetIdleTimeoutForTesting();
+
   // Whether the backing store is using SQLite. `CHECK`s that the backing store
   // exists.
   bool IsUsingSqlite();
@@ -364,6 +366,7 @@ class CONTENT_EXPORT BucketContext
   void StartClosing();
   void CloseNow();
   void StartPreCloseTasks();
+  void RunIdleTasks();
 
   void RunTasks();
 
@@ -415,6 +418,8 @@ class CONTENT_EXPORT BucketContext
   bool running_tasks_ = false;
 
   ClosingState closing_stage_ = ClosingState::kNotClosing;
+  base::RetainingOneShotTimer idle_timer_;
+  std::optional<base::TimeTicks> last_idle_tasks_completion_time_;
   base::OneShotTimer close_timer_;
   std::unique_ptr<PartitionedLockManager> lock_manager_;
   // <BackingStore, is_sqlite>. Set only after a successful call to

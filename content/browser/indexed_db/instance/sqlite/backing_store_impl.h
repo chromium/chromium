@@ -68,6 +68,7 @@ class CONTENT_EXPORT BackingStoreImpl : public BackingStore {
       override;
   void StartPreCloseTasks(base::OnceClosure on_done) override;
   void StopPreCloseTasks() override;
+  void RunIdleTasks() override;
   uint64_t EstimateSize(bool write_in_progress) const override;
   StatusOr<bool> DatabaseExists(std::u16string_view name) override;
   StatusOr<std::vector<blink::mojom::IDBNameAndVersionPtr>>

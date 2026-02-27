@@ -113,6 +113,12 @@ class CONTENT_EXPORT DatabaseConnection {
   // (i.e., excluding free pages) multiplied by the page size.
   uint64_t GetSize() const;
 
+  // Called when the BucketContext is not currently serving requests. Relatively
+  // low-cost maintenance such as WAL checkpointing and memory trimming are
+  // performed here but NOT vacuuming since the "idle time" is shared by all
+  // open `DatabaseConnection` instances.
+  void PerformIdleMaintenance();
+
   std::unique_ptr<BackingStoreDatabaseImpl> CreateDatabaseWrapper();
 
   // Exposed to `BackingStoreDatabaseImpl`.
