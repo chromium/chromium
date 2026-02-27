@@ -675,6 +675,8 @@ void RemoveAttachmentWithTitle(NSString* title) {
     EARL_GREY_TEST_SKIPPED(@"Skipped for iPad as composebox is not available.");
   }
 
+  [ComposeboxAppInterface setCreateImagesEligible:YES];
+
   // Add a tab and attach it.
   [ChromeEarlGrey closeAllNormalTabs];
   GURL URL = self.testServer->GetURL(base::StringPrintf(kPageURL, 1));

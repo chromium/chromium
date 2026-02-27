@@ -75,6 +75,9 @@ enum class ComposeboxModelOption;
 // Sets whether the deep search actions are hidden.
 - (void)hideDeepSearchActions:(BOOL)hidden;
 
+// Sets whether the deep search actions are disabled.
+- (void)disableDeepSearchActions:(BOOL)disabled;
+
 // Sets whether the create image actions are disabled.
 - (void)disableCreateImageActions:(BOOL)disabled;
 
@@ -93,6 +96,9 @@ enum class ComposeboxModelOption;
 // Sets the list of allowed models.
 - (void)setAllowedModels:
     (std::unordered_set<ComposeboxModelOption>)allowedModels;
+// Sets the list of disabled models.
+- (void)setDisabledModels:
+    (std::unordered_set<ComposeboxModelOption>)disabledModels;
 
 // Sets the remaining capacity for attachments.
 - (void)setRemainingAttachmentCapacity:(NSUInteger)capacity;

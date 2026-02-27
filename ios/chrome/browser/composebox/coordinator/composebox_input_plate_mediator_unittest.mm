@@ -102,9 +102,14 @@
 - (void)setAllowedModels:
     (std::unordered_set<ComposeboxModelOption>)allowedModels {
 }
+- (void)setDisabledModels:
+    (std::unordered_set<ComposeboxModelOption>)disabledModels {
+}
 - (void)hideCanvasActions:(BOOL)hidden {
 }
 - (void)hideDeepSearchActions:(BOOL)hidden {
+}
+- (void)disableDeepSearchActions:(BOOL)disabled {
 }
 - (void)setRemainingAttachmentCapacity:(NSUInteger)capacity {
 }
