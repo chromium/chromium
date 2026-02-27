@@ -87,7 +87,7 @@ class CONTENT_EXPORT V8ValueConverterImpl : public V8ValueConverter {
   bool avoid_identity_hash_for_testing_;
 
   // Strategy object that changes the converter's behavior.
-  raw_ptr<Strategy, DanglingUntriaged> strategy_;
+  raw_ptr<Strategy> strategy_;
 };
 
 }  // namespace content

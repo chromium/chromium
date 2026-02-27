@@ -19,12 +19,9 @@ class ActivityLogConverterStrategyTest : public testing::Test {
       : isolate_(v8::Isolate::GetCurrent()),
         handle_scope_(isolate_),
         context_(isolate_, v8::Context::New(isolate_)),
-        context_scope_(context()) {}
-
- protected:
-  void SetUp() override {
-    converter_ = content::V8ValueConverter::Create();
-    strategy_ = std::make_unique<ActivityLogConverterStrategy>();
+        context_scope_(context()),
+        strategy_(std::make_unique<ActivityLogConverterStrategy>()),
+        converter_(content::V8ValueConverter::Create()) {
     converter_->SetFunctionAllowed(true);
     converter_->SetStrategy(strategy_.get());
   }
@@ -81,8 +78,8 @@ class ActivityLogConverterStrategyTest : public testing::Test {
   v8::HandleScope handle_scope_;
   v8::Global<v8::Context> context_;
   v8::Context::Scope context_scope_;
+  const std::unique_ptr<ActivityLogConverterStrategy> strategy_;
   std::unique_ptr<content::V8ValueConverter> converter_;
-  std::unique_ptr<ActivityLogConverterStrategy> strategy_;
 };
 
 TEST_F(ActivityLogConverterStrategyTest, ConversionTest) {
