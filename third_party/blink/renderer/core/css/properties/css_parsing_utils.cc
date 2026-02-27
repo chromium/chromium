@@ -2122,6 +2122,8 @@ CSSValue* ConsumeContrastColorFunction(
     return nullptr;
   }
 
+  context.Count(WebDXFeature::kContrastColor);
+
   guard.Release();
   stream.ConsumeWhitespace();
 

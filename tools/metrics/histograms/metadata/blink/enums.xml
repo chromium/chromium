@@ -8855,6 +8855,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="427" label="DRAFT_WebMCP"/>
   <int value="428" label="DRAFT_LoadingLazyMedia"/>
   <int value="429" label="ManifestLocalization"/>
+  <int value="430" label="ContrastColor"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->
