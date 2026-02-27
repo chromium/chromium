@@ -2031,6 +2031,16 @@ base::DictValue DevToolsUIBindings::GetHostConfigDictionary(Profile* profile) {
                       std::move(devtools_animation_styles_in_styles_tab_dict));
   }
 
+#if BUILDFLAG(ENABLE_JXL_DECODER)
+  const bool jpeg_xl_image_format_enabled =
+      base::FeatureList::IsEnabled(blink::features::kJXLImageFormat);
+#else
+  const bool jpeg_xl_image_format_enabled = false;
+#endif
+  response_dict.Set(
+      "devToolsJpegXlImageFormat",
+      base::DictValue().Set("enabled", jpeg_xl_image_format_enabled));
+
   base::DictValue deep_links_via_extensibility_api_dict;
   deep_links_via_extensibility_api_dict.Set(
       "enabled",
