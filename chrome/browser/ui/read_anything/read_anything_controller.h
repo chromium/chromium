@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
+#include "chrome/browser/ui/tabs/contents_observing_tab_feature.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_untrusted_ui.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
 #include "chrome/common/read_anything/read_anything.mojom.h"
@@ -90,13 +91,13 @@ class ReadAnythingControllerGlue
 //
 // It acts as the primary entry point for all Reading Mode commands and is
 // responsible for orchestrating the display of the Reading Mode UI.
-class ReadAnythingController {
+class ReadAnythingController : public tabs::ContentsObservingTabFeature {
  public:
   using Observer = ReadAnythingLifecycleObserver;
 
   ReadAnythingController(const ReadAnythingController&) = delete;
   ReadAnythingController& operator=(const ReadAnythingController&) = delete;
-  ~ReadAnythingController();
+  ~ReadAnythingController() override;
 
   using PresentationState = read_anything::mojom::ReadAnythingPresentationState;
 
@@ -196,13 +197,11 @@ class ReadAnythingController {
   void TabWillDetach(tabs::TabInterface* tab,
                      tabs::TabInterface::DetachReason reason);
 
-  std::unique_ptr<WebContentsObserverInstance> main_page_observer_;
   std::unique_ptr<WebContentsObserverInstance> ra_web_ui_observer_;
   std::unique_ptr<ReadAnythingOmniboxController> omnibox_controller_;
 
-  // Callback for when main_page_observer_ receives a PrimaryPageChanged event.
-  void OnMainPagePrimaryPageChanged();
-
+  // content::WebContentsObserver:
+  void PrimaryPageChanged(content::Page& page) override;
   // Callback for when ra_web_ui_observer_ receives a OnVisibilityChanged
   // event.
   void OnReadAnythingVisibilityChanged(content::Visibility visibility);

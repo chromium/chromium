@@ -95,7 +95,8 @@ ReadAnythingController* ReadAnythingController::From(tabs::TabInterface* tab) {
 ReadAnythingController::ReadAnythingController(
     tabs::TabInterface* tab,
     SidePanelRegistry* side_panel_registry)
-    : tab_(tab),
+    : tabs::ContentsObservingTabFeature(*tab),
+      tab_(tab),
       scoped_unowned_user_data_(tab->GetUnownedUserDataHost(), *this),
       read_anything_side_panel_controller_(
           std::make_unique<ReadAnythingSidePanelController>(
@@ -109,14 +110,6 @@ ReadAnythingController::ReadAnythingController(
   tab_subscriptions_.push_back(
       tab_->RegisterWillDetach(base::BindRepeating(
           &ReadAnythingController::TabWillDetach, weak_factory_.GetWeakPtr())));
-
-  main_page_observer_ = std::make_unique<WebContentsObserverInstance>(
-      /*web_contents=*/tab_->GetContents(),
-      /*primary_page_changed_callback=*/
-      base::BindRepeating(&ReadAnythingController::OnMainPagePrimaryPageChanged,
-                          base::Unretained(this)),
-      /*renderer_crashed_callback=*/base::DoNothing(),
-      /*visibility_changed_callback=*/base::DoNothing());
 
   if (features::IsReadAnythingOmniboxChipEnabled() &&
       base::FeatureList::IsEnabled(features::kPageActionsMigration)) {
@@ -418,11 +411,12 @@ void ReadAnythingController::SetPresentationState(PresentationState new_state) {
   observers_.Notify(&Observer::OnReadingModePresenterChanged);
 }
 
-void ReadAnythingController::OnMainPagePrimaryPageChanged() {
+void ReadAnythingController::PrimaryPageChanged(content::Page& page) {
   if (GetPresentationState() == PresentationState::kInImmersiveOverlay) {
     CloseImmersiveUI();
   }
 }
+
 void ReadAnythingController::OnReadAnythingVisibilityChanged(
     content::Visibility visibility) {
   if (visibility == content::Visibility::VISIBLE) {
