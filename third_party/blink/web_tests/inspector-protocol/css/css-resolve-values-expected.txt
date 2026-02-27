@@ -10,10 +10,15 @@ Test invalid property name
 {"input": [invalid,1em,1rem,calc(3px + 3px),calc(1em + 1px),random(10px, 30px)]}
 {"code":-32000,"message":"Could not resolve property name."}
 
+Running test: testDescriptor
+Test descriptor name
+{"input": [invalid,1em,1rem,calc(3px + 3px),calc(1em + 1px),random(10px, 30px)]}
+{"code":-32000,"message":"Property name must be a longhand property."}
+
 Running test: testShorthandProperty
 Test shorthand property
 {"input": [calc(1em + 10px),calc(1em + 3em),calc(3px + 2.54cm),clamp(10px, calc(10rem + 10rex), 30px),max(100px, 30em),calc(100px * cos(60deg))]}
-{"code":-32000,"message":"Property name should not be a shorthand."}
+{"code":-32000,"message":"Property name must be a longhand property."}
 
 Running test: testResolveValuesSimple
 Test resolveValues for width property

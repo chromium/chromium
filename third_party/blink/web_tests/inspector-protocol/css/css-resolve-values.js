@@ -65,6 +65,10 @@
       testRunner.log('Test invalid property name');
       await testResolveValues('.outer', testValues, "invalid");
     },
+    async function testDescriptor() {
+      testRunner.log('Test descriptor name');
+      await testResolveValues('.outer', testValues, "initial-value");
+    },
     async function testShorthandProperty() {
       testRunner.log('Test shorthand property');
       await testResolveValues('.inner', lengthExpressions, "margin");

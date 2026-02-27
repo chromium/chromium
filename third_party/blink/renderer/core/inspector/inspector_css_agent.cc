@@ -2459,9 +2459,12 @@ protocol::Response InspectorCSSAgent::resolveValues(
     }
   }
 
-  if (property_name && CSSProperty::Get(property_name->Id()).IsShorthand()) {
-    return protocol::Response::ServerError(
-        "Property name should not be a shorthand.");
+  if (property_name) {
+    const CSSProperty& property = CSSProperty::Get(property_name->Id());
+    if (!property.IsProperty() || property.IsShorthand()) {
+      return protocol::Response::ServerError(
+          "Property name must be a longhand property.");
+    }
   }
 
   CSSParserLocalContext local_context =
