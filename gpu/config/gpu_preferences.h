@@ -82,11 +82,9 @@ enum class SkiaBackendType {
   kGraphiteDawnMetal = 5,
   kGraphiteDawnD3D11 = 6,
   kGraphiteDawnD3D12 = 7,
-  // This can be commented out (not reassigned) once kMaxValue moves past it.
-  kDeprecatedGraphiteMetal = 8,
-  // It's not clear what granularity of kGraphiteDawnGL* backend dawn will
-  // provided yet so those values are to be added later.
-  kMaxValue = kDeprecatedGraphiteMetal
+  //  kDeprecatedGraphiteMetal = 8,
+  kGraphiteDawnOpenGLES = 9,
+  kMaxValue = kGraphiteDawnOpenGLES
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/gpu/enums.xml:SkiaBackendType)
 
