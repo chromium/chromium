@@ -7658,14 +7658,6 @@ test("unit_tests") {
   # unit_tests than in base_unittests.
   deps += [ "//base:path_service_unittest" ]
 
-  # TODO(413315837): Remove this when privacy_sandbox_service_impl_unittest.cc
-  # gets build off of c/b/privacy_sandbox/BUILD.gn.
-  deps += [ "//chrome/browser/privacy_sandbox:headers" ]
-
-  # TODO(413315837): Remove this dependency when
-  # privacy_sandbox_service_impl_unittest.cc gets modularized.
-  deps += [ "//chrome/browser/privacy_sandbox:test_support" ]
-
   if (enable_captive_portal_detection) {
     deps += [ "//chrome/browser/captive_portal" ]
   }
@@ -8614,6 +8606,7 @@ test("unit_tests") {
       "//chrome/browser/password_manager/password_change:unit_tests",
       "//chrome/browser/predictors:unit_tests",
       "//chrome/browser/predictors/lcp_critical_path_predictor:unit_tests",
+      "//chrome/browser/privacy_sandbox:test_support",
       "//chrome/browser/private_ai:unit_tests",
       "//chrome/browser/record_replay:unit_tests",
       "//chrome/browser/resource_coordinator",
