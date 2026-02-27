@@ -383,10 +383,7 @@ struct BLINK_EXPORT WebNavigationParams {
 
   // The origin in which a navigation should commit. When provided, Blink
   // should use this origin directly and not compute locally the new document
-  // origin. It is currently only specified on error document navigations, where
-  // the origin should be an opaque origin based on the URL that failed to load.
-  //
-  // TODO(https://crbug.com/888079): Always provide origin_to_commit.
+  // origin.
   WebSecurityOrigin origin_to_commit;
 
   // The storage key of the document that will be created by the navigation.
