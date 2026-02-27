@@ -3452,7 +3452,7 @@ bool CSSParserImpl::ConsumeVariableValue(CSSParserTokenStream& stream,
   }
   parsed_properties_.push_back(
       CSSPropertyValue(CSSPropertyName(variable_name), *value, important));
-  context_->Count(context_->Mode(), CSSPropertyID::kVariable);
+  context_->Count(CSSPropertyID::kVariable);
   return true;
 }
 

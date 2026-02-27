@@ -91,7 +91,7 @@ bool CSSPropertyParser::ParseValue(
 
   // This doesn't count UA style sheets
   if (parse_success) {
-    context->Count(context->Mode(), unresolved_property);
+    context->Count(unresolved_property);
   }
 
   return parse_success;

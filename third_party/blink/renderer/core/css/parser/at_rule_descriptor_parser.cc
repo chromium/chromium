@@ -619,7 +619,7 @@ bool AtRuleDescriptorParser::ParseDescriptorValue(
                              ? CSSPropertyName(variable_name)
                              : CSSPropertyName(equivalent_property_id);
   parsed_descriptors.push_back(CSSPropertyValue(name, *result));
-  context.Count(context.Mode(), equivalent_property_id);
+  context.Count(equivalent_property_id);
   return true;
 }
 

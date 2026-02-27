@@ -229,13 +229,13 @@ void CSSParserContext::Count(WebDXFeature feature) const {
 }
 
 void CSSParserContext::CountDeprecation(WebFeature feature) const {
-  if (IsUseCounterRecordingEnabled() && document_) {
+  if (IsUseCounterRecordingEnabled()) {
     Deprecation::CountDeprecation(document_->GetExecutionContext(), feature);
   }
 }
 
-void CSSParserContext::Count(CSSParserMode mode, CSSPropertyID property) const {
-  if (IsUseCounterRecordingEnabled() && IsUseCounterEnabledForMode(mode)) {
+void CSSParserContext::Count(CSSPropertyID property) const {
+  if (IsUseCounterRecordingEnabled()) {
     document_->CountProperty(property);
   }
 }
