@@ -108,6 +108,7 @@ filegroup {
     name: "${GN2BP_MODULE_PREFIX}net_unittests_data",
     srcs: [
         "net/data/**/*",
+        "net/base/registry_controlled_domains/**/*",
         "net/third_party/quiche/src/quiche/common/platform/api/testdir/**/*",
         "third_party/anonymous_tokens/src/anonymous_tokens/testdata/**/*",
     ],
