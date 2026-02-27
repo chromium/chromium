@@ -88,11 +88,8 @@ std::optional<std::vector<uint8_t>> Crypter::Encrypt(
     return std::nullopt;
   }
 
-  crypto::Aead aes_key(crypto::Aead::AES_256_GCM);
-  aes_key.Init(write_key_);
-  DCHECK_EQ(nonce.size(), aes_key.NonceLength());
-
-  return aes_key.Seal(padded_message, nonce, {});
+  return crypto::aead::Seal(crypto::aead::AES_256_GCM, write_key_,
+                            padded_message, nonce, {});
 }
 
 std::optional<std::vector<uint8_t>> Crypter::Decrypt(
@@ -102,12 +99,8 @@ std::optional<std::vector<uint8_t>> Crypter::Decrypt(
     return std::nullopt;
   }
 
-  crypto::Aead aes_key(crypto::Aead::AES_256_GCM);
-  aes_key.Init(read_key_);
-  DCHECK_EQ(nonce.size(), aes_key.NonceLength());
-
-  std::optional<std::vector<uint8_t>> plaintext =
-      aes_key.Open(ciphertext, nonce, {});
+  std::optional<std::vector<uint8_t>> plaintext = crypto::aead::Open(
+      crypto::aead::AES_256_GCM, read_key_, ciphertext, nonce, {});
 
   if (!plaintext) {
     return std::nullopt;

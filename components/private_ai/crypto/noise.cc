@@ -104,9 +104,8 @@ std::vector<uint8_t> Noise::EncryptAndHash(
       base::U32ToBigEndian(symmetric_nonce_));
   symmetric_nonce_++;
 
-  crypto::Aead aead(crypto::Aead::AES_256_GCM);
-  aead.Init(symmetric_key_);
-  std::vector<uint8_t> ciphertext = aead.Seal(plaintext, nonce, h_);
+  std::vector<uint8_t> ciphertext = crypto::aead::Seal(
+      crypto::aead::AES_256_GCM, symmetric_key_, plaintext, nonce, h_);
   MixHash(ciphertext);
   return ciphertext;
 }
@@ -118,9 +117,8 @@ std::optional<std::vector<uint8_t>> Noise::DecryptAndHash(
       base::U32ToBigEndian(symmetric_nonce_));
   symmetric_nonce_++;
 
-  crypto::Aead aead(crypto::Aead::AES_256_GCM);
-  aead.Init(symmetric_key_);
-  auto plaintext = aead.Open(ciphertext, nonce, h_);
+  auto plaintext = crypto::aead::Open(crypto::aead::AES_256_GCM, symmetric_key_,
+                                      ciphertext, nonce, h_);
   if (plaintext) {
     MixHash(ciphertext);
   }
