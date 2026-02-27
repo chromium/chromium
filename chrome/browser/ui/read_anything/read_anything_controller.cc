@@ -97,11 +97,13 @@ ReadAnythingController::ReadAnythingController(
     SidePanelRegistry* side_panel_registry)
     : tabs::ContentsObservingTabFeature(*tab),
       tab_(tab),
+      side_panel_registry_(side_panel_registry),
       scoped_unowned_user_data_(tab->GetUnownedUserDataHost(), *this),
       read_anything_side_panel_controller_(
           std::make_unique<ReadAnythingSidePanelController>(
               tab,
-              side_panel_registry)),
+              side_panel_registry,
+              tab->GetContents())),
       distillation_state_locked_for_testing_(freeze_distillation_for_testing_) {
   // This controller should only be instantiated if
   // IsImmersiveReadAnythingEnabled is enabled
@@ -130,10 +132,6 @@ ReadAnythingController::~ReadAnythingController() {
   // doesn't seem to be reliably called when a tab is closed, so we need to do
   // this here too.
   ReleaseMainContentsCapture();
-
-  // This method is transiently used to reset features that do not handle tab
-  // discarding themselves.
-  read_anything_side_panel_controller_->ResetForTabDiscard();
 
   if (ra_web_ui_observer_ && ra_web_ui_observer_->web_contents()) {
     ra_web_ui_observer_->web_contents()->RemoveUserData(
@@ -409,6 +407,27 @@ void ReadAnythingController::SetPresentationState(PresentationState new_state) {
   }
   presentation_state_ = new_state;
   observers_.Notify(&Observer::OnReadingModePresenterChanged);
+}
+
+void ReadAnythingController::OnDiscardContents(
+    tabs::TabInterface* tab,
+    content::WebContents* old_contents,
+    content::WebContents* new_contents) {
+  tabs::ContentsObservingTabFeature::OnDiscardContents(tab, old_contents,
+                                                       new_contents);
+
+  // OnDiscardContents shouldn't be called when tab is active, which means
+  // Reading Mode shouldn't be active.
+  CHECK(GetPresentationState() == PresentationState::kUndefined ||
+        GetPresentationState() == PresentationState::kInactive);
+
+  web_ui_wrapper_.reset();
+  ra_web_ui_observer_.reset();
+
+  read_anything_side_panel_controller_->ResetForTabDiscard();
+  read_anything_side_panel_controller_ =
+      std::make_unique<ReadAnythingSidePanelController>(
+          tab_, side_panel_registry_, new_contents);
 }
 
 void ReadAnythingController::PrimaryPageChanged(content::Page& page) {

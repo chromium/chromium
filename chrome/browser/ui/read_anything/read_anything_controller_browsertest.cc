@@ -1869,3 +1869,68 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
   // We expect no crashes here.
   tab->Close();
 }
+
+IN_PROC_BROWSER_TEST_F(
+    ReadAnythingControllerBrowserTest,
+    CloseBackgroundTabWithSidePanelOpenOnForegroundTab_DoesNotCrash) {
+  // 1. Get the active tab (Tab A) and controller.
+  tabs::TabInterface* tab_a = browser()->tab_strip_model()->GetActiveTab();
+  ASSERT_TRUE(tab_a);
+  auto* controller_a = ReadAnythingController::From(tab_a);
+  ASSERT_TRUE(controller_a);
+
+  // 2. Open the Reading Mode Side Panel on Tab A.
+  controller_a->ShowSidePanelUI(SidePanelOpenTrigger::kAppMenu);
+
+  // 3. Wait for the side panel to be fully visible.
+  auto* side_panel_ui = browser()->GetFeatures().side_panel_ui();
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return side_panel_ui->IsSidePanelEntryShowing(
+        SidePanelEntryKey(SidePanelEntryId::kReadAnything));
+  }));
+
+  // 4. Create a new tab (Tab B) in the background.
+  chrome::AddTabAt(browser(), GURL("about:blank"), /*index=*/1,
+                   /*foreground=*/false);
+  tabs::TabInterface* tab_b = browser()->tab_strip_model()->GetTabAtIndex(1);
+  ASSERT_TRUE(tab_b);
+  ASSERT_NE(tab_a, tab_b);
+
+  // 5. Close Tab B (the background tab).
+  // This triggers a scenario that previously crashed (where Tab B deregistered
+  // its entry, but the SidePanelCoordinator sees the side panel is open for Tab
+  // A and tries to close it, iterating over all tabs including the one being
+  // destroyed).
+  tab_b->Close();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ReadAnythingControllerBrowserTest,
+    OnDiscardContents_InternalControllersTrackNewWebContents) {
+  tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
+  ASSERT_TRUE(tab);
+  auto* controller = ReadAnythingController::From(tab);
+  ASSERT_TRUE(controller);
+
+  // Initial state check
+  content::WebContents* old_contents = tab->GetContents();
+  auto* old_side_panel_ptr = controller->GetSidePanelControllerForTesting();
+  ASSERT_EQ(old_side_panel_ptr->web_contents(), old_contents);
+
+  // Create and discard with new contents
+  std::unique_ptr<content::WebContents> new_contents =
+      content::WebContents::Create(
+          content::WebContents::CreateParams(browser()->profile()));
+  content::WebContents* new_contents_ptr = new_contents.get();
+
+  browser()->tab_strip_model()->DiscardWebContentsAt(0,
+                                                     std::move(new_contents));
+
+  // Verify new controller is observing the new contents
+  EXPECT_EQ(controller->GetSidePanelControllerForTesting()->web_contents(),
+            new_contents_ptr);
+
+  // Verify that the new contents can be navigated without crashing the
+  // controllers
+  ASSERT_TRUE(content::NavigateToURL(new_contents_ptr, GURL("about:blank")));
+}

@@ -192,7 +192,16 @@ class ReadAnythingController : public tabs::ContentsObservingTabFeature {
   // omnibox entry point.
   void SetDwellTimeForTesting(base::TimeTicks test_time);
 
+  ReadAnythingSidePanelController* GetSidePanelControllerForTesting() {
+    return read_anything_side_panel_controller_.get();
+  }
+
  private:
+  // tabs::ContentsObservingTabFeature:
+  void OnDiscardContents(tabs::TabInterface* tab,
+                         content::WebContents* old_contents,
+                         content::WebContents* new_contents) override;
+
   // Called when the tab will detach.
   void TabWillDetach(tabs::TabInterface* tab,
                      tabs::TabInterface::DetachReason reason);
@@ -215,6 +224,7 @@ class ReadAnythingController : public tabs::ContentsObservingTabFeature {
   SidePanelUI* GetSidePanelUI();
 
   raw_ptr<tabs::TabInterface> tab_ = nullptr;
+  raw_ptr<SidePanelRegistry> side_panel_registry_ = nullptr;
   ui::ScopedUnownedUserData<ReadAnythingController> scoped_unowned_user_data_;
 
   std::unique_ptr<WebUIContentsWrapperT<ReadAnythingUntrustedUI>>

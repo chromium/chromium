@@ -68,7 +68,8 @@ class ReadAnythingSidePanelController : public SidePanelEntryObserver,
  public:
   using Observer = ReadAnythingLifecycleObserver;
   ReadAnythingSidePanelController(tabs::TabInterface* tab,
-                                  SidePanelRegistry* side_panel_registry);
+                                  SidePanelRegistry* side_panel_registry,
+                                  content::WebContents* web_contents);
   ReadAnythingSidePanelController(const ReadAnythingSidePanelController&) =
       delete;
   ReadAnythingSidePanelController& operator=(

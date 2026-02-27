@@ -73,7 +73,8 @@ ReadAnythingSidePanelControllerGlue::ReadAnythingSidePanelControllerGlue(
 
 ReadAnythingSidePanelController::ReadAnythingSidePanelController(
     tabs::TabInterface* tab,
-    SidePanelRegistry* side_panel_registry)
+    SidePanelRegistry* side_panel_registry,
+    content::WebContents* web_contents)
     : tab_(tab), side_panel_registry_(side_panel_registry) {
   CHECK(!side_panel_registry_->GetEntryForKey(
       SidePanelEntry::Key(SidePanelEntry::Id::kReadAnything)));
@@ -94,7 +95,7 @@ ReadAnythingSidePanelController::ReadAnythingSidePanelController(
   tab_subscriptions_.push_back(tab_->RegisterDidActivate(
       base::BindRepeating(&ReadAnythingSidePanelController::TabForegrounded,
                           weak_factory_.GetWeakPtr())));
-  Observe(tab_->GetContents());
+  Observe(web_contents);
 
   // We do not know if the current tab is in the process of loading a page.
   // Assume that a page just finished loading to populate initial state.
@@ -180,7 +181,7 @@ void ReadAnythingSidePanelController::OnEntryShown(SidePanelEntry* entry) {
           ? read_anything::SidePanelToReadAnythingOpenTrigger(
                 open_trigger.value())
           : std::optional<ReadAnythingOpenTrigger>();
-  if (auto* contents = tab_->GetContents()) {
+  if (auto* contents = web_contents()) {
     if (content::RenderFrameHost* main_frame =
             contents->GetPrimaryMainFrame()) {
       ukm::SourceId source_id = main_frame->GetPageUkmSourceId();
@@ -206,14 +207,11 @@ void ReadAnythingSidePanelController::OnEntryShown(SidePanelEntry* entry) {
 void ReadAnythingSidePanelController::OnEntryHidden(SidePanelEntry* entry) {
   CHECK_EQ(entry->key().id(), SidePanelEntry::Id::kReadAnything);
 
-  // Get the object that represents the content of the current tab
-  content::WebContents* web_contents = tab_->GetContents();
-
   // Build and record UKM record for SidePanelClosed to true on the current
   // source id
-  if (web_contents) {
+  if (web_contents()) {
     if (content::RenderFrameHost* main_frame =
-            web_contents->GetPrimaryMainFrame()) {
+            web_contents()->GetPrimaryMainFrame()) {
       ukm::SourceId source_id = main_frame->GetPageUkmSourceId();
       ukm::builders::Accessibility_ReadAnything_SidePanel(source_id)
           .SetClosed(true)
@@ -300,7 +298,7 @@ int ReadAnythingSidePanelController::GetPreferredDefaultWidth() {
 }
 
 bool ReadAnythingSidePanelController::IsActivePageDistillable() const {
-  auto url = tab_->GetContents()->GetLastCommittedURL();
+  auto url = web_contents()->GetLastCommittedURL();
 
   for (const std::string& distillable_domain : a11y::GetDistillableDomains()) {
     // If the url's domain is found in distillable domains AND the url has a
