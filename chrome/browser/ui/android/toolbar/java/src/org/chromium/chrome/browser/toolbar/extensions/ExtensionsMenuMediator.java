@@ -141,6 +141,7 @@ class ExtensionsMenuMediator implements Destroyable, ExtensionsMenuBridge.Observ
                 buttonView,
                 contextMenuBridge,
                 new RelativeViewRectProvider(buttonView, mRootView),
+                /* dismissRunnable= */ null,
                 mRootView);
     }
 

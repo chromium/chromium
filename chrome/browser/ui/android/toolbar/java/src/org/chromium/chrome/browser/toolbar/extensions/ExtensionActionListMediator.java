@@ -56,6 +56,7 @@ class ExtensionActionListMediator implements Destroyable {
 
     @Nullable private ExtensionActionPopup mCurrentPopup;
     @Nullable private String mCurrentPopupActionId;
+    @Nullable private String mCurrentContextMenuActionId;
 
     // The maximum width that the icons can take up. It is set when the toolbar requests us to be a
     // certain size. Until then, we assume we have infinite space.
@@ -87,7 +88,11 @@ class ExtensionActionListMediator implements Destroyable {
     @Override
     public void destroy() {
         closePopup();
-        assert mCurrentPopup == null;
+        assert !isPopupOpen();
+
+        closeContextMenu();
+        assert !isContextMenuOpen();
+
         mExtensionsToolbarBridge.removeObserver(mToolbarObserver);
         mExtensionsToolbarBridge.setDelegate(null);
         LifetimeAssert.setSafeToGc(mLifetimeAssert, true);
@@ -178,7 +183,7 @@ class ExtensionActionListMediator implements Destroyable {
                         .with(
                                 ExtensionActionButtonProperties.ON_LONG_CLICK_LISTENER,
                                 (view) -> {
-                                    onContextClick(actionId);
+                                    requestShowContextMenu(actionId);
                                     return true;
                                 })
                         .with(ExtensionActionButtonProperties.TITLE, action.getTitle())
@@ -200,7 +205,7 @@ class ExtensionActionListMediator implements Destroyable {
         Tab currentTab = mCurrentTabSupplier.get();
         WebContents webContents = currentTab != null ? currentTab.getWebContents() : null;
 
-        int index = findIndexForId(actionId, 0);
+        int index = findIndexForId(actionId);
         if (index == -1) {
             return;
         }
@@ -230,8 +235,14 @@ class ExtensionActionListMediator implements Destroyable {
         }
     }
 
-    // Finds the model for {@code actionId} inside {@code mModels}, and returns
-    // the index if it exists. If not, returns -1.
+    // Finds the model for {@code actionId} inside {@code mModels}, and returns the index if it
+    // exists. If not, returns -1.
+    private int findIndexForId(String actionId) {
+        return findIndexForId(actionId, /* startIndex= */ 0);
+    }
+
+    // Finds the model for {@code actionId} inside {@code mModels} after {@code startIndex}, and
+    // returns the index if it exists. If not, returns -1.
     private int findIndexForId(String actionId, int startIndex) {
         for (int i = startIndex; i < mModels.size(); i++) {
             if (getActionIdForIndex(i).equals(actionId)) {
@@ -248,16 +259,40 @@ class ExtensionActionListMediator implements Destroyable {
     }
 
     private void onPrimaryClick(String actionId) {
+        if (isPopupOpen()) {
+            boolean closeOnly = actionId.equals(mCurrentPopupActionId);
+            closePopup();
+            if (closeOnly) {
+                return;
+            }
+        }
+        if (isContextMenuOpen()) {
+            closeContextMenu();
+            return;
+        }
         mExtensionsToolbarBridge.executeUserAction(actionId, InvocationSource.TOOLBAR_BUTTON);
     }
 
-    private void triggerPopup(String actionId, long nativeHostPtr) {
-        // TODO(crbug.com/385987224): Do not open a popup again when the user clicks the action
-        // button while its popup is open.
+    private boolean isPopupOpen() {
+        return mCurrentPopupActionId != null;
+    }
+
+    private void requestShowPopup(String actionId, long nativeHostPtr) {
         closePopup();
+        closeContextMenu();
 
         ExtensionActionPopupContents contents = ExtensionActionPopupContents.create(nativeHostPtr);
 
+        if (findIndexForId(actionId) == -1) {
+            // TODO(crbug.com/483194547): Implement popping out actions.
+            contents.destroy();
+            return;
+        } else {
+            showPopupOnReadyAnchor(actionId, contents);
+        }
+    }
+
+    private void showPopupOnReadyAnchor(String actionId, ExtensionActionPopupContents contents) {
         View buttonView = mActionAnchorViewProvider.getButtonViewForId(actionId);
         if (buttonView == null) {
             contents.destroy();
@@ -269,10 +304,49 @@ class ExtensionActionListMediator implements Destroyable {
                 new ExtensionActionPopup(mContext, mWindowAndroid, buttonView, actionId, contents);
         mCurrentPopup.loadInitialPage();
         mCurrentPopup.addOnDismissListener(this::closePopup);
+        assert mCurrentContextMenuActionId == null;
         mCurrentPopupActionId = actionId;
     }
 
-    private void onContextClick(String actionId) {
+    private void closePopup() {
+        if (!isPopupOpen()) {
+            return;
+        }
+
+        // Clear mCurrentPopup now to avoid calling closePopup recursively via OnDismissListener.
+        assert mCurrentPopup != null;
+        ExtensionActionPopup popup = mCurrentPopup;
+
+        mCurrentPopup = null;
+        mCurrentPopupActionId = null;
+
+        popup.destroy();
+    }
+
+    private boolean isContextMenuOpen() {
+        return mCurrentContextMenuActionId != null;
+    }
+
+    @VisibleForTesting
+    void requestShowContextMenu(String actionId) {
+        closePopup();
+        closeContextMenu();
+
+        if (findIndexForId(actionId) == -1) {
+            // TODO(crbug.com/483194547): Implement popping out actions.
+            return;
+        } else {
+            showContextMenuOnReadyAnchor(actionId);
+        }
+    }
+
+    private void showContextMenuOnReadyAnchor(String actionId) {
+        ListMenuButton buttonView =
+                (ListMenuButton) mActionAnchorViewProvider.getButtonViewForId(actionId);
+        if (buttonView == null) {
+            return;
+        }
+
         Tab currentTab = mCurrentTabSupplier.get();
         if (currentTab == null) {
             return;
@@ -283,30 +357,40 @@ class ExtensionActionListMediator implements Destroyable {
             return;
         }
 
-        ListMenuButton buttonView =
-                (ListMenuButton) mActionAnchorViewProvider.getButtonViewForId(actionId);
-        if (buttonView == null) {
-            return;
-        }
-
         ExtensionActionContextMenuBridge bridge =
                 new ExtensionActionContextMenuBridge(
                         mTask, mProfile, actionId, webContents, ContextMenuSource.TOOLBAR_ACTION);
 
         ExtensionActionContextMenuUtils.showContextMenu(
-                mContext, buttonView, bridge, MenuBuilderHelper.getRectProvider(buttonView), null);
+                mContext,
+                buttonView,
+                bridge,
+                MenuBuilderHelper.getRectProvider(buttonView),
+                this::cleanUpAfterContextMenuClose,
+                /* rootView= */ null);
+        assert mCurrentPopupActionId == null;
+        mCurrentContextMenuActionId = actionId;
     }
 
-    private void closePopup() {
-        if (mCurrentPopup == null) {
+    private void closeContextMenu() {
+        if (mCurrentContextMenuActionId == null) {
             return;
         }
 
-        // Clear mCurrentPopup now to avoid calling closePopup recursively via OnDismissListener.
-        ExtensionActionPopup popup = mCurrentPopup;
-        mCurrentPopup = null;
-        popup.destroy();
-        mCurrentPopupActionId = null;
+        ListMenuButton buttonView =
+                (ListMenuButton)
+                        mActionAnchorViewProvider.getButtonViewForId(mCurrentContextMenuActionId);
+        if (buttonView != null) {
+            // We expect the View to exist if {@code mCurrentContextMenuActionId} is non-null, but
+            // {@link RecyclerView} may have already destroyed it. In this case, we don't need to
+            // call {@link ListMenuButton#dismiss()} because {@link
+            // ListMenuButton#onDetachedFromWindow()} calls it automatically.
+            buttonView.dismiss();
+        }
+    }
+
+    private void cleanUpAfterContextMenuClose() {
+        mCurrentContextMenuActionId = null;
     }
 
     /** Updates the list of displayed actions to fit within the provided width constraint. */
@@ -364,7 +448,7 @@ class ExtensionActionListMediator implements Destroyable {
     private class ToolbarDelegate implements ExtensionsToolbarBridge.Delegate {
         @Override
         public void triggerPopup(String actionId, long nativeHostPtr) {
-            ExtensionActionListMediator.this.triggerPopup(actionId, nativeHostPtr);
+            ExtensionActionListMediator.this.requestShowPopup(actionId, nativeHostPtr);
         }
     }
 }
