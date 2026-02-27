@@ -169,5 +169,23 @@ public class WebContentsAccessibilityE2ETest {
                                 "",
                                 EVENT_TIMEOUT_MS);
         Assert.assertTrue("Service did not receive WINDOW_STATE_CHANGED", wscReceived);
+
+        // Ask the service to wait for a text selection changed on the omnibox.
+        boolean tscReceived =
+                getAccessibilityHelperService()
+                        .waitForEvent(
+                                AccessibilityEvent.TYPE_VIEW_TEXT_SELECTION_CHANGED,
+                                "android.widget.EditText",
+                                url,
+                                EVENT_TIMEOUT_MS);
+        Assert.assertTrue("Service did not receive TEXT_SELECTION_CHANGED", tscReceived);
+
+        // Finally, wait for the page to settle. This appears to be the last event accessibility
+        // sends for a page load.
+        boolean vsReceived =
+                getAccessibilityHelperService()
+                        .waitForEvent(
+                                AccessibilityEvent.TYPE_VIEW_SCROLLED, "", "", EVENT_TIMEOUT_MS);
+        Assert.assertTrue("Service did not receive VIEW_SCROLLED", vsReceived);
     }
 }
