@@ -51,9 +51,8 @@ BASE_EXPORT bool WasLaunchedAsLoginItemRestoreState();
 // 'Login Item' with 'hide on startup' flag. Used to suppress opening windows.
 BASE_EXPORT bool WasLaunchedAsHiddenLoginItem();
 
-// Remove the quarantine attribute from the given file, and returns true if
-// successful. It is not an error to attempt to remove a quarantine attribute
-// from a file if that file exists but does not have a quarantine attribute.
+// Remove the quarantine xattr from the given file. Returns false if there was
+// an error, or true otherwise.
 BASE_EXPORT bool RemoveQuarantineAttribute(const FilePath& file_path);
 
 // Sets the tags on a given file or folder.
