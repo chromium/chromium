@@ -54,6 +54,7 @@
 #include "third_party/blink/renderer/modules/webcodecs/video_frame_init_util.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame_rect_util.h"
 #include "third_party/blink/renderer/platform/geometry/geometry_hash_traits.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_non2d_snapshot_provider_bitmap.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_snapshot_provider.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
@@ -1524,6 +1525,10 @@ ImageBitmapSourceStatus VideoFrame::CheckUsability() const {
   return base::ok();
 }
 
+// Killswitch guarding WebCodecs not caching the SkSurface used for
+// VideoFrame->StaticBitmapImage software draws.
+BASE_FEATURE(kWebCodecsDrawCacheSkSurface, base::FEATURE_DISABLED_BY_DEFAULT);
+
 scoped_refptr<StaticBitmapImage> VideoFrame::CreateImageFromVideoFrame(
     scoped_refptr<media::VideoFrame> frame) {
   auto* execution_context =
@@ -1531,8 +1536,28 @@ scoped_refptr<StaticBitmapImage> VideoFrame::CreateImageFromVideoFrame(
   auto& provider_cache = CanvasSnapshotProviderCache::From(*execution_context);
 
   auto* snapshot_provider = provider_cache.CreateProvider(*frame);
+  if (!snapshot_provider) {
+    return nullptr;
+  }
 
-  return ::blink::CreateImageFromVideoFrame(frame, snapshot_provider);
+  std::optional<CanvasSnapshotProvider::Info> sw_draw_info;
+  CanvasNon2DResourceProviderSharedImage* snapshot_provider_si = nullptr;
+  sk_sp<SkSurface> sw_draw_surface;
+
+  if (snapshot_provider->IsExternalBitmapProvider()) {
+    auto* snapshot_provider_bitmap =
+        static_cast<CanvasNon2DSnapshotProviderBitmap*>(snapshot_provider);
+    sw_draw_info = snapshot_provider_bitmap->Info();
+    if (base::FeatureList::IsEnabled(kWebCodecsDrawCacheSkSurface)) {
+      sw_draw_surface = snapshot_provider_bitmap->GetCachedSurface();
+    }
+  } else {
+    snapshot_provider_si =
+        static_cast<CanvasNon2DResourceProviderSharedImage*>(snapshot_provider);
+  }
+
+  return ::blink::CreateImageFromVideoFrame(
+      frame, snapshot_provider_si, std::move(sw_draw_info), sw_draw_surface);
 }
 
 ScriptPromise<ImageBitmap> VideoFrame::CreateImageBitmap(
