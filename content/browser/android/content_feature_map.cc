@@ -39,6 +39,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kAccessibilityAtomicLiveRegions,
     &features::kAccessibilityDeprecateJavaNodeCache,
     &features::kAccessibilityDeprecateTypeAnnounce,
+    &features::kAccessibilityExposeNonAtomicTextFieldChildren,
     &features::kAccessibilityExtendedSelection,
     &features::kAccessibilityImeGetFormattedText,
     &features::kAccessibilityImproveLiveRegionAnnounce,

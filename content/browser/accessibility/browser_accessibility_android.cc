@@ -19,6 +19,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "content/browser/accessibility/ax_style_data.h"
 #include "content/browser/accessibility/browser_accessibility_manager_android.h"
+#include "content/common/features.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "skia/ext/skia_utils_base.h"
@@ -755,6 +756,16 @@ bool BrowserAccessibilityAndroid::IsChildOfLeaf() const {
 bool BrowserAccessibilityAndroid::IsLeaf() const {
   if (GetLeafMap().contains(this)) {
     return GetLeafMap()[this];
+  }
+
+  // Non-atomic text fields (e.g. contenteditable) should not be leaves when
+  // this flag is enabled, allowing their internal structure to be exposed.
+  // Atomic text fields like <textarea> remain leaves to maintain existing
+  // behavior.
+  if (base::FeatureList::IsEnabled(
+          features::kAccessibilityExposeNonAtomicTextFieldChildren) &&
+      GetData().IsNonAtomicTextField()) {
+    return false;
   }
 
   if (BrowserAccessibility::IsLeaf()) {
@@ -2747,6 +2758,12 @@ const std::vector<int> BrowserAccessibilityAndroid::GetLabelledByAndroidIds()
 }
 
 bool BrowserAccessibilityAndroid::ShouldExposeEditableValue() const {
+  if (base::FeatureList::IsEnabled(
+          features::kAccessibilityExposeNonAtomicTextFieldChildren) &&
+      HasState(ax::mojom::State::kEditable)) {
+    return true;
+  }
+
   // For now, only expose editable value for text field since talkback
   // only uses the editable value for `EditText`.
   return IsTextField();

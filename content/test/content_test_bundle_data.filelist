@@ -3690,6 +3690,8 @@ data/accessibility/html/contenteditable-font-size-expected-blink.txt
 data/accessibility/html/contenteditable-font-size.html
 data/accessibility/html/contenteditable-li-contains-presentation-expected-blink.txt
 data/accessibility/html/contenteditable-li-contains-presentation.html
+data/accessibility/html/contenteditable-multi-node-expected-android-external.txt
+data/accessibility/html/contenteditable-multi-node.html
 data/accessibility/html/contenteditable-on-disallowed-element-expected-auralinux.txt
 data/accessibility/html/contenteditable-on-disallowed-element-expected-blink.txt
 data/accessibility/html/contenteditable-on-disallowed-element-expected-mac.txt
