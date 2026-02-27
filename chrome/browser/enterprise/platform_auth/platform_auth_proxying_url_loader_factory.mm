@@ -78,33 +78,35 @@ void ProxyingURLLoaderFactory::MaybeProxyRequest(
     ChromeContentBrowserClient::URLLoaderFactoryType type,
     content::BrowserContext* context,
     network::URLLoaderFactoryBuilder& factory_builder) {
-  if (!context->IsOffTheRecord() &&
-      enterprise_auth::PlatformAuthProviderManager::GetInstance().IsEnabled() &&
-      request_initiator.scheme() == url::kHttpsScheme &&
-      type == ChromeContentBrowserClient::URLLoaderFactoryType::
-                  kDocumentSubResource &&
-      g_browser_process->local_state()
-          ->GetList(prefs::kExtensibleEnterpriseSSOEnabledIdps)
-          .contains(kOktaIdentityProvider) &&
-      g_browser_process->local_state()
-          ->GetList(prefs::kExtensibleEnterpriseSSOConfiguredHosts)
-          .contains(request_initiator.host())) {
-    auto [loader_receiver, target_factory] = factory_builder.Append();
-
-    // Cache configured hosts for a quicker lookup later on.
-    // TODO: b/433226247 - Combine this with the lookup above.
-    const base::ListValue& configured_hosts_pref =
-        g_browser_process->local_state()->GetList(
-            prefs::kExtensibleEnterpriseSSOConfiguredHosts);
-    base::flat_set<std::string> configured_hosts;
-    configured_hosts.reserve(configured_hosts_pref.size());
-    for (const base::Value& host : configured_hosts_pref) {
-      configured_hosts.insert(host.GetString());
-    }
-    new ProxyingURLLoaderFactory(
-        std::move(loader_receiver), std::move(target_factory),
-        std::move(configured_hosts), request_initiator);
+  if (context->IsOffTheRecord() ||
+      !enterprise_auth::PlatformAuthProviderManager::GetInstance()
+           .IsEnabled() ||
+      request_initiator.scheme() != url::kHttpsScheme ||
+      type != ChromeContentBrowserClient::URLLoaderFactoryType::
+                  kDocumentSubResource ||
+      !g_browser_process->local_state()
+           ->GetList(prefs::kExtensibleEnterpriseSSOEnabledIdps)
+           .contains(kOktaIdentityProvider)) {
+    return;
   }
+
+  const base::ListValue& configured_hosts_pref =
+      g_browser_process->local_state()->GetList(
+          prefs::kExtensibleEnterpriseSSOConfiguredHosts);
+  if (!configured_hosts_pref.contains(request_initiator.host())) {
+    return;
+  }
+
+  // Cache configured hosts for a quicker lookup later on.
+  base::flat_set<std::string> configured_hosts;
+  configured_hosts.reserve(configured_hosts_pref.size());
+  for (const base::Value& host : configured_hosts_pref) {
+    configured_hosts.insert(host.GetString());
+  }
+  auto [loader_receiver, target_factory] = factory_builder.Append();
+  new ProxyingURLLoaderFactory(std::move(loader_receiver),
+                               std::move(target_factory),
+                               std::move(configured_hosts), request_initiator);
 }
 
 void ProxyingURLLoaderFactory::CreateLoaderAndStart(

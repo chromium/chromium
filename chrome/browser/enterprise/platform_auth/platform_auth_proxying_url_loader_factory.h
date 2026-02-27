@@ -37,6 +37,14 @@ class ProxyingURLLoaderFactory : public network::mojom::URLLoaderFactory {
   ProxyingURLLoaderFactory(const ProxyingURLLoaderFactory&) = delete;
   ProxyingURLLoaderFactory& operator=(const ProxyingURLLoaderFactory&) = delete;
 
+  // Injects this factory into the factory_builder if all apply:
+  //    - PlatformAuthProviderManager is enabled
+  //    - `type` is kDocumentSubresource
+  //    - `request_initiator.scheme()` is HTTPS
+  //    - prefs::kExtensibleEnterpriseSSOEnabledIdps contains
+  //      kOktaIdentityProvider
+  //    - prefs::kExtensibleEnterpriseSSOConfiguredHosts contains
+  //      `request_initiator.host()`
   static void MaybeProxyRequest(
       const url::Origin& request_initiator,
       ChromeContentBrowserClient::URLLoaderFactoryType type,
