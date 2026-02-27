@@ -30,14 +30,14 @@ namespace {
 // complete faster.
 
 // The number of dialogs shown from browser start that use prolonged latency.
-size_t prolonged_latency_dialog_count = 5;
+size_t prolonged_latency_dialog_count = 1;
 size_t dialog_shown_count = 0;
 
 // These latencies will be used for the initial dialogs.
-base::TimeDelta success_dialog_timeout_ = base::Seconds(1);
+base::TimeDelta success_dialog_timeout_ = base::Seconds(2);
 
 // Shortened latencies to be used for subsequent dialogs.
-base::TimeDelta short_success_dialog_timeout_ = base::Seconds(0.2);
+base::TimeDelta short_success_dialog_timeout_ = base::Seconds(0);
 
 base::TimeDelta show_dialog_delay_ = base::Seconds(1);
 
@@ -243,11 +243,18 @@ void ContentAnalysisDialogController::UpdateDialog() {
 
   // Schedule the dialog to close itself in the success case.
   if (dialog_delegate_->is_success()) {
-    content::GetUIThreadTaskRunner({})->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(&ContentAnalysisDialogDelegate::CancelDialog,
-                       dialog_delegate_->GetWeakPtr()),
-        GetSuccessDialogTimeout());
+    if (GetSuccessDialogTimeout() == base::Seconds(0)) {
+      content::GetUIThreadTaskRunner({})->PostTask(
+          FROM_HERE,
+          base::BindOnce(&ContentAnalysisDialogDelegate::CancelDialog,
+                         dialog_delegate_->GetWeakPtr()));
+    } else {
+      content::GetUIThreadTaskRunner({})->PostDelayedTask(
+          FROM_HERE,
+          base::BindOnce(&ContentAnalysisDialogDelegate::CancelDialog,
+                         dialog_delegate_->GetWeakPtr()),
+          GetSuccessDialogTimeout());
+    }
   }
 
   if (observer_for_testing) {

@@ -61,11 +61,14 @@ class ContentAnalysisDialogBehaviorBrowserTest
     : public test::DeepScanningBrowserTestBase,
       public ContentAnalysisDialogController::TestObserver,
       public testing::WithParamInterface<
-          std::tuple<bool, bool, base::TimeDelta>> {
+          std::tuple<bool, bool, base::TimeDelta, bool>> {
  public:
   ContentAnalysisDialogBehaviorBrowserTest()
       : ax_event_counter_(views::AXUpdateNotifier::Get()) {
     ContentAnalysisDialogController::SetObserverForTesting(this);
+    if (std::get<3>(GetParam())) {
+      ContentAnalysisDialogController::SetDialogShownCountForTesting(1);
+    }
 
     expected_scan_result_ = dlp_success() && malware_success();
   }
@@ -679,7 +682,8 @@ INSTANTIATE_TEST_SUITE_P(
         /*dlp_success*/ testing::Bool(),
         /*malware_success*/ testing::Bool(),
         /*response_delay*/
-        testing::Values(kNoDelay, kSmallDelay, kNormalDelay)));
+        testing::Values(kNoDelay, kSmallDelay, kNormalDelay),
+        /*shown_dialog_count*/ testing::Bool()));
 
 IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogCancelPendingScanBrowserTest,
                        Test) {
@@ -1291,15 +1295,15 @@ IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogPlainTests,
                        LatencyChangesAfterProlongedCount) {
   ContentAnalysisDialogController::SetDialogShownCountForTesting(0);
   EXPECT_EQ(ContentAnalysisDialogController::GetSuccessDialogTimeout(),
-            base::Seconds(1));
+            base::Seconds(2));
 
-  ContentAnalysisDialogController::SetDialogShownCountForTesting(5);
+  ContentAnalysisDialogController::SetDialogShownCountForTesting(1);
   EXPECT_EQ(ContentAnalysisDialogController::GetSuccessDialogTimeout(),
-            base::Seconds(1));
+            base::Seconds(2));
 
-  ContentAnalysisDialogController::SetDialogShownCountForTesting(6);
+  ContentAnalysisDialogController::SetDialogShownCountForTesting(2);
   EXPECT_EQ(ContentAnalysisDialogController::GetSuccessDialogTimeout(),
-            base::Seconds(0.2));
+            base::Seconds(0));
 
   ContentAnalysisDialogController::SetDialogShownCountForTesting(0);
 }
