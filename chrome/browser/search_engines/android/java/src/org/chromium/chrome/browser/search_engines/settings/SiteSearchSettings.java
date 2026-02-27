@@ -86,7 +86,8 @@ public class SiteSearchSettings extends ChromeBaseSettingsFragment {
         SearchEngineListPreference extensionsPref = findPreference(EXTENSIONS_PREF_KEY);
         if (mExtensionSearchEngineCoordinator == null) {
             mExtensionSearchEngineCoordinator =
-                    new ExtensionSearchEngineCoordinator(getContext(), extensionsPref);
+                    new ExtensionSearchEngineCoordinator(
+                            getContext(), getProfile(), extensionsPref);
         }
     }
 

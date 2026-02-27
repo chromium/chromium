@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.search_engines.settings.extensions;
 import android.content.Context;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.settings.common.SearchEngineListPreference;
 import org.chromium.chrome.browser.search_engines.settings.common.SiteSearchProperties;
 import org.chromium.chrome.browser.search_engines.settings.common.SiteSearchViewBinder;
@@ -19,12 +20,15 @@ import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 public class ExtensionSearchEngineCoordinator {
     private final ModelList mModelList;
     private final SimpleRecyclerViewAdapter mAdapter;
+    private final ExtensionSearchEngineMediator mMediator;
     private final PropertyModel mPropertyModel;
     private final PropertyModelChangeProcessor mPropertyModelChangeProcessor;
 
-    public ExtensionSearchEngineCoordinator(Context context, SearchEngineListPreference pref) {
+    public ExtensionSearchEngineCoordinator(
+            Context context, Profile profile, SearchEngineListPreference pref) {
         mModelList = new ModelList();
         mAdapter = new ExtensionSearchEngineAdapter(context, mModelList);
+        mMediator = new ExtensionSearchEngineMediator(context, mModelList, profile);
 
         mPropertyModel =
                 new PropertyModel.Builder(SiteSearchProperties.ALL_KEYS)
@@ -40,5 +44,6 @@ public class ExtensionSearchEngineCoordinator {
         mPropertyModel.set(SiteSearchProperties.ADAPTER, null);
         mPropertyModelChangeProcessor.destroy();
         mAdapter.destroy();
+        mMediator.destroy();
     }
 }
