@@ -158,7 +158,8 @@ ContextualTasksComposeboxHandler::ContextualTasksComposeboxHandler(
     mojo::PendingRemote<composebox::mojom::Page> pending_page,
     mojo::PendingReceiver<searchbox::mojom::PageHandler>
         pending_searchbox_handler,
-    GetSessionHandleCallback get_session_callback)
+    GetSessionHandleCallback get_session_callback,
+    GetInputStateModelCallback get_input_model_callback)
     : ComposeboxHandler(
           std::move(pending_handler),
           std::move(pending_page),
@@ -170,6 +171,7 @@ ContextualTasksComposeboxHandler::ContextualTasksComposeboxHandler(
                                                              web_contents,
                                                              this)),
           std::move(get_session_callback)),
+      get_input_model_callback_(std::move(get_input_model_callback)),
       web_ui_interface_(web_ui_interface),
       contextual_tasks_service_(
           contextual_tasks::ContextualTasksServiceFactory::GetForProfile(
@@ -443,6 +445,28 @@ void ContextualTasksComposeboxHandler::OnTabContextualizationFetched(
 void ContextualTasksComposeboxHandler::OnTaskChanged() {
   ClearFiles(/*should_block_auto_suggested_tabs=*/false);
   InitializeInputStateModel();
+}
+
+void ContextualTasksComposeboxHandler::InitializeInputStateModel() {
+  if (get_input_model_callback_) {
+    std::unique_ptr<contextual_search::InputStateModel> current_input_state =
+        std::move(get_input_model_callback_).Run();
+
+    if (current_input_state) {
+      ResetInputStateModel();
+      input_state_model_ = std::move(current_input_state);
+
+      input_state_subscription_ =
+          input_state_model_->subscribe(base::BindRepeating(
+              &ContextualTasksComposeboxHandler::OnInputStateChanged,
+              weak_ptr_factory_.GetWeakPtr()));
+
+      input_state_model_->Initialize();
+      return;
+    }
+  }
+
+  ContextualSearchboxHandler::InitializeInputStateModel();
 }
 
 void ContextualTasksComposeboxHandler::AddFileContextFromBrowser(

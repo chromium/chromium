@@ -66,6 +66,15 @@ class ContextualSearchWebContentsHelper
                                                     : nullptr;
   }
 
+  std::unique_ptr<contextual_search::InputStateModel> GetInputStateModelForTask(
+      const base::Uuid& task_id) {
+    // Return and transfer ownership of the model if it matches the task.
+    if (input_state_model_ && task_id_ == task_id) {
+      return std::move(input_state_model_);
+    }
+    return nullptr;
+  }
+
  private:
   explicit ContextualSearchWebContentsHelper(
       content::WebContents* web_contents);

@@ -487,6 +487,10 @@ const std::optional<base::Uuid>& ContextualTasksUI::GetTaskId() {
 void ContextualTasksUI::SetTaskId(std::optional<base::Uuid> id) {
   task_id_ = id;
   PushTaskDetailsToPage();
+  // Initialize input state once task id is available.
+  if (composebox_handler_) {
+    composebox_handler_->InitializeInputStateModel();
+  }
 }
 
 const std::optional<std::string>& ContextualTasksUI::GetThreadId() {
@@ -612,7 +616,9 @@ void ContextualTasksUI::CreatePageHandler(
       std::move(pending_searchbox_handler),
       base::BindRepeating(
           &ContextualTasksUI::GetOrCreateContextualSessionHandle,
-          base::Unretained(this)));
+          base::Unretained(this)),
+      base::BindRepeating(&ContextualTasksUI::GetInputStateModel,
+                          base::Unretained(this)));
   composebox_handler_->SetPage(std::move(pending_searchbox_page));
 }
 
@@ -665,6 +671,19 @@ ContextualTasksUI::GetOrCreateContextualSessionHandle() {
       /*browser_window=*/browser_window_interface, contextual_tasks_service_,
       controller, web_contents, task_id_.value());
   return helper->session_handle();
+}
+
+std::unique_ptr<contextual_search::InputStateModel>
+ContextualTasksUI::GetInputStateModel() {
+  if (!task_id_.has_value()) {
+    return nullptr;
+  }
+
+  content::WebContents* web_contents = web_ui()->GetWebContents();
+  auto* helper = ContextualSearchWebContentsHelper::GetOrCreateForWebContents(
+      web_contents);
+
+  return helper->GetInputStateModelForTask(task_id_.value());
 }
 
 void ContextualTasksUI::PostMessageToWebview(

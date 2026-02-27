@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/webui/cr_components/composebox/composebox_handler.h"
 #include "components/contextual_search/contextual_search_context_controller.h"
@@ -49,6 +50,9 @@ class ContextualTasksComposeboxHandler : public ComposeboxHandler,
                                          public ui::SelectFileDialog::Listener {
  public:
   friend class ContextualTasksComposeboxHandlerTest;
+  using GetInputStateModelCallback =
+      base::OnceCallback<std::unique_ptr<contextual_search::InputStateModel>()>;
+
   ContextualTasksComposeboxHandler(
       contextual_tasks::ContextualTasksUIInterface* web_ui_interface,
       Profile* profile,
@@ -57,7 +61,8 @@ class ContextualTasksComposeboxHandler : public ComposeboxHandler,
       mojo::PendingRemote<composebox::mojom::Page> pending_page,
       mojo::PendingReceiver<searchbox::mojom::PageHandler>
           pending_searchbox_handler,
-      GetSessionHandleCallback get_session_callback);
+      GetSessionHandleCallback get_session_callback,
+      GetInputStateModelCallback get_input_model_callback);
   ~ContextualTasksComposeboxHandler() override;
 
   // composebox::mojom::PageHandler:
@@ -78,6 +83,10 @@ class ContextualTasksComposeboxHandler : public ComposeboxHandler,
                      AddTabContextCallback callback) override;
 
   void OnTaskChanged();
+
+  // We override this method to inject an existing `InputStateModel` if one is
+  // provided by the ContextualTasksUI via the `get_input_model_callback_`.
+  void InitializeInputStateModel() override;
 
   void AddFileContextFromBrowser(
       searchbox::mojom::SelectedFileInfoPtr file_info,
@@ -140,6 +149,8 @@ class ContextualTasksComposeboxHandler : public ComposeboxHandler,
   // Called when a non-delayed context upload (file or tab) has finished.
   // Potentially submits query if no other context is uploading.
   void MarkContextUploadFinished(const base::UnguessableToken& token);
+
+  GetInputStateModelCallback get_input_model_callback_;
 
   // Called when a delayed context upload (tab) has finished.
   // Potentially submits query if no other context is uploading.

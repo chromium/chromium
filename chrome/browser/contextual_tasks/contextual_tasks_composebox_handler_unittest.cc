@@ -153,6 +153,10 @@ class TestContextualTasksComposeboxHandler
     mock_contextual_tasks_service_ = contextual_tasks_service;
   }
 
+  contextual_search::InputStateModel* GetInputStateModelForTesting() {
+    return input_state_model_.get();
+  }
+
  private:
   raw_ptr<contextual_tasks::ContextualTasksService>
       mock_contextual_tasks_service_ = nullptr;
@@ -269,7 +273,9 @@ class ContextualTasksComposeboxHandlerTest
         mojo::PendingReceiver<searchbox::mojom::PageHandler>(),
         base::BindRepeating(
             &ContextualTasksUI::GetOrCreateContextualSessionHandle,
-            base::Unretained(mock_ui_.get())));
+            base::Unretained(mock_ui_.get())),
+        base::BindRepeating(&ContextualTasksUI::GetInputStateModel,
+                            base::Unretained(mock_ui_.get())));
     handler_->SetMockContextualTasksService(mock_contextual_tasks_service_ptr_);
 
     auto searchbox_page_remote =
@@ -2596,8 +2602,9 @@ TEST_F(ContextualTasksComposeboxHandlerTest, AddFileContext_NullSessionHandle) {
       base::BindRepeating(
           []() -> contextual_search::ContextualSearchSessionHandle* {
             return nullptr;
-          }));
-
+          }),
+      base::BindRepeating(&ContextualTasksUI::GetInputStateModel,
+                          base::Unretained(mock_ui_.get())));
   auto file_info = searchbox::mojom::SelectedFileInfo::New();
   std::vector<uint8_t> data = {0x1};
   mojo_base::BigBuffer file_bytes(data);
@@ -2641,4 +2648,41 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
   handler_->OnFileUploadStatusChanged(
       other_token, lens::MimeType::kUnknown,
       contextual_search::FileUploadStatus::kUploadSuccessful, std::nullopt);
+}
+
+TEST_F(ContextualTasksComposeboxHandlerTest, ActiveModelIsPassed) {
+  // 1. Arrange: Setup a mock callback to simulate ContextualTasksUI returning a
+  // model. We explicitly set a distinct state (MODEL_MODE_GEMINI_PRO) to verify
+  // it gets passed correctly.
+  auto mock_callback = base::BindLambdaForTesting(
+      [this]() -> std::unique_ptr<contextual_search::InputStateModel> {
+        omnibox::SearchboxConfig config;
+        auto model = std::make_unique<contextual_search::InputStateModel>(
+            *session_handle_, config, false);
+        model->setActiveModel(omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
+        return model;
+      });
+
+  mojo::PendingRemote<composebox::mojom::Page> page_remote;
+  auto custom_handler = std::make_unique<TestContextualTasksComposeboxHandler>(
+      mock_ui_.get(), profile(), web_contents(),
+      mojo::PendingReceiver<composebox::mojom::PageHandler>(),
+      std::move(page_remote),
+      mojo::PendingReceiver<searchbox::mojom::PageHandler>(),
+      base::BindRepeating(
+          &ContextualTasksUI::GetOrCreateContextualSessionHandle,
+          base::Unretained(mock_ui_.get())),
+      std::move(mock_callback));
+
+  // 2. Act: Trigger the handler to fetch the model via the callback.
+  custom_handler->InitializeInputStateModel();
+
+  // 3. Assert: Verify the handler successfully took ownership of the model
+  // and the internal state matches exactly what the callback provided.
+  contextual_search::InputStateModel* handler_model =
+      custom_handler->GetInputStateModelForTesting();
+
+  ASSERT_NE(handler_model, nullptr);
+  EXPECT_EQ(handler_model->get_state_for_testing().active_model,
+            omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
 }
