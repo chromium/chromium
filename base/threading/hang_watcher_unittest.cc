@@ -701,7 +701,7 @@ INSTANTIATE_TEST_SUITE_P(
          .thread_type = HangWatcher::ThreadType::kIOThread,
          .enabled_feature = raw_ref(kEnableHangWatcher),
          .feature_param = kRendererProcessIoThreadLogLevelParam,
-         .emits_crash_by_default = false},
+         .emits_crash_by_default = true},
         {.test_name = "RendererCompositorThreadCrashReportsDisabledByDefault",
          .process_type = HangWatcher::ProcessType::kRendererProcess,
          .thread_type = HangWatcher::ThreadType::kCompositorThread,
@@ -721,7 +721,7 @@ INSTANTIATE_TEST_SUITE_P(
          .thread_type = HangWatcher::ThreadType::kMainThread,
          .enabled_feature = raw_ref(kEnableHangWatcher),
          .feature_param = kUtilityProcessMainThreadLogLevelParam,
-         .emits_crash_by_default = false},
+         .emits_crash_by_default = true},
         {.test_name = "UtilityIoThreadCrashReportsDisabledByDefault",
          .process_type = HangWatcher::ProcessType::kUtilityProcess,
          .thread_type = HangWatcher::ThreadType::kIOThread,
@@ -754,10 +754,8 @@ TEST_P(HangWatcherLogLevelTest, CrashReportingEnabledByDefaultForSomeThreads) {
             GetParam().emits_crash_by_default ? 1 : 0);
 }
 
-// Tests that crashes are reported for certain processes and threads, even if
-// the log level is `kUmaOnly`.
-TEST_P(HangWatcherLogLevelTest,
-       CrashesReportedForSomeThreadsAtUmaOnlyLogLevel) {
+// Tests that crash reporting is always disabled at log level `kUmaOnly`.
+TEST_P(HangWatcherLogLevelTest, CrashesAreNotReportedAtUmaOnlyLogLevel) {
   SingleThreadTaskEnvironment task_env(TaskEnvironment::TimeSource::MOCK_TIME);
   ScopedFeatureList enable_hang_watcher;
   enable_hang_watcher.InitWithFeaturesAndParameters(
@@ -770,8 +768,7 @@ TEST_P(HangWatcherLogLevelTest,
   task_env.FastForwardBy(base::Seconds(11));
   hang_watcher.TriggerSynchronousMonitoring();
 
-  EXPECT_EQ(hang_watcher.GetHangCount(),
-            GetParam().emits_crash_by_default ? 1 : 0);
+  EXPECT_EQ(hang_watcher.GetHangCount(), 0);
 }
 
 // Tests that crash reporting is enabled for all process and threads at log
@@ -827,10 +824,12 @@ TEST_P(HangWatcherLogLevelTest,
   EXPECT_EQ(hang_watcher.GetHangCount(), 0);
 }
 
-// Tests that crash reporting is always enabled at log level `kUmaAndCrash`,
-// even if `emit_crashes == false`.
+// Tests that setting `emit_crashes` to `false` disables crash reporting for
+// process and threads that has crash reporting enabled by default. On the other
+// hand, processes and threads that have crash reporting disabled by default are
+// entirely controlled via the feature param.
 TEST_P(HangWatcherLogLevelTest,
-       CrashReportingEnabledAtUmaAndCrashLogLevelIfEmitCrashesIsFalse) {
+       LaunchedCrashReportingIsDisabledIfEmitCrashesIsFalse) {
   SingleThreadTaskEnvironment task_env(TaskEnvironment::TimeSource::MOCK_TIME);
   ScopedFeatureList enable_hang_watcher;
   enable_hang_watcher.InitWithFeaturesAndParameters(
@@ -843,7 +842,8 @@ TEST_P(HangWatcherLogLevelTest,
   task_env.FastForwardBy(base::Seconds(11));
   hang_watcher.TriggerSynchronousMonitoring();
 
-  EXPECT_EQ(hang_watcher.GetHangCount(), 1);
+  EXPECT_EQ(hang_watcher.GetHangCount(),
+            GetParam().emits_crash_by_default ? 0 : 1);
 }
 
 // Test that hangs get recorded for the browser process.
