@@ -10,12 +10,15 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
+#include "chrome/browser/web_applications/scheduler/manifest_silent_update_result.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
+#include "chrome/browser/web_applications/test/fake_web_contents_manager.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -27,6 +30,7 @@
 #include "components/webapps/browser/install_result_code.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "url/gurl.h"
@@ -90,8 +94,8 @@ class ShortcutSubManagerTestBase : public WebAppTest {
         result;
     fake_provider().scheduler().InstallFromInfoWithParams(
         std::move(info), /*overwrite_existing_manifest_fields=*/true,
-        webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
-        result.GetCallback(), WebAppInstallParams());
+        webapps::WebappInstallSource::EXTERNAL_POLICY, result.GetCallback(),
+        WebAppInstallParams());
     bool success = result.Wait();
     EXPECT_TRUE(success);
     if (!success) {
@@ -251,25 +255,45 @@ class ShortcutSubManagerExecuteTest : public ShortcutSubManagerTestBase {
 
   webapps::AppId UpdateInstalledWebAppWithNewIcons(
       std::map<SquareSizePx, SkBitmap> updated_icons) {
-    std::unique_ptr<WebAppInstallInfo> updated_info =
-        WebAppInstallInfo::CreateWithStartUrlForTesting(kWebAppUrl);
-    updated_info->title = u"New App";
-    updated_info->user_display_mode =
-        web_app::mojom::UserDisplayMode::kStandalone;
-    updated_info->icon_bitmaps.any = updated_icons;
-    updated_info->trusted_icon_bitmaps.any = updated_icons;
+    auto& manager = static_cast<FakeWebContentsManager&>(
+        fake_provider().web_contents_manager());
+    manager.SetUrlLoaded(web_contents(), kWebAppUrl);
 
-    base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
-        update_future;
-    fake_provider().install_finalizer().FinalizeUpdate(
-        *updated_info, update_future.GetCallback());
-    bool success = update_future.Wait();
-    if (!success) {
-      return webapps::AppId();
+    // Page state.
+    auto& page_state = manager.GetOrCreatePageState(kWebAppUrl);
+    page_state.valid_manifest_for_web_app = true;
+    page_state.has_service_worker = true;
+    page_state.url_load_result = webapps::WebAppUrlLoaderResult::kUrlLoaded;
+    page_state.error_code = webapps::InstallableStatusCode::NO_ERROR_DETECTED;
+
+    // Create fake manifest.
+    auto manifest = blink::mojom::Manifest::New();
+    manifest->start_url = kWebAppUrl;
+    manifest->id = GenerateManifestIdFromStartUrlOnly(kWebAppUrl);
+    manifest->scope = kWebAppUrl.GetWithoutFilename();
+    manifest->name = u"New App";
+
+    for (const auto& [size, bitmap] : updated_icons) {
+      blink::Manifest::ImageResource icon;
+      icon.src =
+          kWebAppUrl.Resolve("icon" + base::NumberToString(size) + ".png");
+      icon.sizes.push_back(gfx::Size(size, size));
+      icon.purpose.push_back(blink::mojom::ManifestImageResource_Purpose::ANY);
+      manifest->icons.push_back(std::move(icon));
+
+      manager.GetOrCreateIconState(manifest->icons.back().src).bitmaps = {
+          bitmap};
     }
-    EXPECT_EQ(update_future.Get<webapps::InstallResultCode>(),
-              webapps::InstallResultCode::kSuccessAlreadyInstalled);
-    return update_future.Get<webapps::AppId>();
+    page_state.manifest_before_default_processing = std::move(manifest);
+
+    base::test::TestFuture<ManifestSilentUpdateCompletionInfo> update_future;
+    fake_provider().scheduler().ScheduleManifestSilentUpdate(
+        *web_contents(), std::nullopt, update_future.GetCallback());
+
+    EXPECT_TRUE(update_future.Wait());
+    EXPECT_TRUE(update_future.Take().result ==
+                ManifestSilentUpdateCheckResult::kAppSilentlyUpdated);
+    return GenerateAppId(std::nullopt, kWebAppUrl);
   }
 
   webapps::AppId InstallWebAppNoIntegration(
@@ -286,8 +310,7 @@ class ShortcutSubManagerExecuteTest : public ShortcutSubManagerTestBase {
     // InstallFromInfoNoIntegrationForTesting() does not trigger OS integration.
     fake_provider().scheduler().InstallFromInfoNoIntegrationForTesting(
         std::move(info), /*overwrite_existing_manifest_fields=*/true,
-        webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
-        result.GetCallback());
+        webapps::WebappInstallSource::EXTERNAL_POLICY, result.GetCallback());
     bool success = result.Wait();
     EXPECT_TRUE(success);
     if (!success) {

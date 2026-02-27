@@ -191,7 +191,9 @@ class FinalizeInstallJob {
   const raw_ref<Profile> profile_;
   raw_ptr<WebAppProvider> provider_ = nullptr;
   raw_ptr<base::Clock> clock_;
+  // TODO(crbug.com/259703817): Transition this to a const raw_ref.
   raw_ptr<Lock> lock_ = nullptr;
+  // TODO(crbug.com/259703817): Transition this to a const raw_ref.
   raw_ptr<WithAppResources> resources_lock_ = nullptr;
 
   WebAppInstallInfo web_app_info_;
