@@ -33,15 +33,13 @@ source_set("ai") {
   public_deps = [
     "//base",
     "//chrome/browser/actor",
+    "//chrome/browser/glic",
     "//chrome/browser/profiles:profile",
     "//components/component_updater",
     "//components/on_device_ai",
     "//components/optimization_guide/core",
     "//content/public/browser",
   ]
-  if (enable_glic) {
-    public_deps += [ "//chrome/browser/glic" ]
-  }
 }
 
 source_set("impl") {
