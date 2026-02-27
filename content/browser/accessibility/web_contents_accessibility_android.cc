@@ -2436,10 +2436,12 @@ void WebContentsAccessibilityAndroid::OnAutofillPopupDisplayed(JNIEnv* env) {
 
   DeleteAutofillPopupProxy();
 
-  // The node is isolated (tree is nullptr) and its id is not important,
-  // it should only be not equal to kInvalidAXNodeID to be considered valid.
+  // The node has no parent in the tree, and its id is not important as long as
+  // it is valid.
   ui::AXNodeID id = ~ui::kInvalidAXNodeID;
-  g_autofill_popup_proxy_node_ax_node = new ui::AXNode(nullptr, nullptr, id, 0);
+  g_autofill_popup_proxy_node_ax_node =
+      new ui::AXNode(root_manager->ax_tree(), /*parent=*/nullptr, id,
+                     /*index_in_parent=*/0);
   ui::AXNodeData ax_node_data;
   ax_node_data.id = id;
   ax_node_data.role = ax::mojom::Role::kMenu;
