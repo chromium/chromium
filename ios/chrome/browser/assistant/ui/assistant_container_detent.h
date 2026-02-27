@@ -14,12 +14,12 @@
 @property(nonatomic, readonly, copy) NSString* identifier;
 
 // The resolved value for the detent.
-@property(nonatomic, readonly) CGFloat value;
+@property(nonatomic, readonly) NSInteger value;
 
-// Creates a new detent with a given identifier and a block providing a float
+// Creates a new detent with a given identifier and a block providing an integer
 // value for the detent.
 - (instancetype)initWithIdentifier:(NSString*)identifier
-                     valueResolver:(CGFloat (^)())valueResolver;
+                     valueResolver:(NSInteger (^)())valueResolver;
 
 // Unavailable.
 - (instancetype)init NS_UNAVAILABLE;

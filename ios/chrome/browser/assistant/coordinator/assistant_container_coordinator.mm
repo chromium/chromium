@@ -27,6 +27,8 @@
   BOOL _dismissalInProgress;
   // Completion block to be executed after dismissal.
   ProceduralBlock _dismissalCompletion;
+  // The available detents for the container.
+  NSArray<AssistantContainerDetent*>* _detents;
 }
 
 - (void)start {
@@ -59,6 +61,10 @@
 
   _containerViewController = [[AssistantContainerViewController alloc]
       initWithViewController:_contentViewController];
+  _containerViewController.delegate = _delegate;
+  if (_detents) {
+    _containerViewController.detents = _detents;
+  }
 
   // Resolve layout guide.
   GuideName* guideName = kAppBarGuide;
@@ -91,7 +97,8 @@
 
 - (void)setAssistantContainerDetents:
     (NSArray<AssistantContainerDetent*>*)detents {
-  // TODO(crbug.com/390204874): Implement detent updates.
+  _detents = detents;
+  [_containerViewController setDetents:detents];
 }
 
 - (void)dismissAssistantContainerAnimated:(BOOL)animated
@@ -176,6 +183,7 @@
   _animator = nil;
   _contentViewController = nil;
   _delegate = nil;
+  _detents = nil;
 
   if (_dismissalCompletion) {
     ProceduralBlock completion = _dismissalCompletion;

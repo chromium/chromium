@@ -9,6 +9,8 @@ source_set("ui") {
     "assistant_container_delegate.h",
     "assistant_container_detent.h",
     "assistant_container_detent.mm",
+    "assistant_container_detent_utils.h",
+    "assistant_container_detent_utils.mm",
     "assistant_container_view.h",
     "assistant_container_view.mm",
     "assistant_container_view_controller.h",

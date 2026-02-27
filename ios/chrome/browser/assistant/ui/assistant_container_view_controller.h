@@ -7,6 +7,9 @@
 
 #import <UIKit/UIKit.h>
 
+@class AssistantContainerDetent;
+@protocol AssistantContainerDelegate;
+
 // View Controller for the Assistant Container.
 @interface AssistantContainerViewController : UIViewController
 
@@ -19,6 +22,12 @@
 // Whether to anchor to the bottom of the view (YES) or the top (NO).
 // Defaults to NO.
 @property(nonatomic, assign) BOOL anchorToBottom;
+
+// The available detents for the container.
+@property(nonatomic, strong) NSArray<AssistantContainerDetent*>* detents;
+
+// The delegate for the container events.
+@property(nonatomic, weak) id<AssistantContainerDelegate> delegate;
 
 // Default initializer.
 - (instancetype)initWithViewController:(UIViewController*)viewController

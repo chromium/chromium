@@ -4,6 +4,11 @@
 
 #import "ios/chrome/browser/assistant/ui/assistant_container_view_controller.h"
 
+#import <algorithm>
+
+#import "base/check.h"
+#import "ios/chrome/browser/assistant/ui/assistant_container_delegate.h"
+#import "ios/chrome/browser/assistant/ui/assistant_container_detent.h"
 #import "ios/chrome/browser/assistant/ui/assistant_container_view.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -12,13 +17,14 @@ namespace {
 
 // Margin for the container content relative to the screen edges.
 constexpr CGFloat kContainerMargin = 5.0;
+// Used as the fallback height when no detents are provided.
 constexpr CGFloat kMinContainerHeight = 60.0;
-
 // Constants used for the container resizing animation.
 constexpr CGFloat kRubberBandCoefficient = 8.0;
 constexpr CGFloat kFlingVelocityThreshold = 1000.0;
 constexpr CGFloat kSpringDuration = 0.3;
 constexpr CGFloat kSpringDamping = 0.85;
+constexpr CGFloat kMomentumProjectionSeconds = 0.2;
 
 }  // namespace
 
@@ -69,8 +75,13 @@ constexpr CGFloat kSpringDamping = 0.85;
   }
 
   // Create and activate the height constraint.
-  CGFloat preferredHeight = [_assistantContainerView preferredHeight];
-  CGFloat initialHeight = MAX(preferredHeight, kMinContainerHeight);
+  CGFloat initialHeight = kMinContainerHeight;
+  if (self.detents.count == 1) {
+    initialHeight = MAX(self.detents.firstObject.value, kMinContainerHeight);
+  } else {
+    CGFloat preferredHeight = [_assistantContainerView preferredHeight];
+    initialHeight = MAX(preferredHeight, kMinContainerHeight);
+  }
   _heightConstraint =
       [self.view.heightAnchor constraintEqualToConstant:initialHeight];
   _heightConstraint.active = YES;
@@ -93,6 +104,22 @@ constexpr CGFloat kSpringDamping = 0.85;
   _hasAppeared = YES;
 }
 
+#pragma mark - Properties
+
+- (void)setIsAnimating:(BOOL)isAnimating {
+  if (_isAnimating == isAnimating) {
+    return;
+  }
+  _isAnimating = isAnimating;
+  [self updatePanGestureEnabledState];
+}
+
+- (void)setDetents:(NSArray<AssistantContainerDetent*>*)detents {
+  _detents = [detents copy];
+  [self updatePanGestureEnabledState];
+  [self.view setNeedsLayout];
+}
+
 #pragma mark - Private
 
 // Adds gesture recognizers to the view.
@@ -101,89 +128,294 @@ constexpr CGFloat kSpringDamping = 0.85;
       initWithTarget:self
               action:@selector(handlePanGesture:)];
   [_assistantContainerView.headerView addGestureRecognizer:_headerPanGesture];
+  [self updatePanGestureEnabledState];
+}
+
+// Updates the pan gesture enabled state based on animation and detents.
+- (void)updatePanGestureEnabledState {
+  // Prevent the gesture recognizer from interfering with the animation.
+  if (self.isAnimating) {
+    _headerPanGesture.enabled = NO;
+    return;
+  }
+
+  _headerPanGesture.enabled = YES;
 }
 
 // Handles the pan gesture on the header to resize the container.
 - (void)handlePanGesture:(UIPanGestureRecognizer*)gesture {
+  if (gesture != _headerPanGesture) {
+    return;
+  }
+
   UIView* superview = self.view.superview;
   if (!superview) {
     return;
   }
 
-  // Calculate limits.
-  CGFloat maxHeight = [self maxHeight];
-  CGFloat minHeight = kMinContainerHeight;
-
   if (gesture.state == UIGestureRecognizerStateBegan) {
-    _initialConstraintHeight = _heightConstraint.constant;
+    [self handlePanGestureBegan:gesture];
   } else if (gesture.state == UIGestureRecognizerStateChanged) {
-    CGPoint translation = [gesture translationInView:superview];
-    CGFloat newHeight = _initialConstraintHeight - translation.y;
-
-    // Damped elastic effect when dragging beyond limits.
-    // Logarithmic decay for a "stiffer" feel as you pull further.
-    if (newHeight < minHeight) {
-      CGFloat diff = minHeight - newHeight;
-      // log(1 + diff) ensures continuous function starting at 0.
-      newHeight = minHeight - (kRubberBandCoefficient * log(1.0 + diff));
-    } else if (newHeight > maxHeight) {
-      CGFloat diff = newHeight - maxHeight;
-      newHeight = maxHeight + (kRubberBandCoefficient * log(1.0 + diff));
-    }
-
-    _heightConstraint.constant = newHeight;
-    _hasUserResized = YES;
-
+    [self handlePanGestureChanged:gesture];
   } else if (gesture.state == UIGestureRecognizerStateEnded ||
              gesture.state == UIGestureRecognizerStateCancelled) {
-    CGPoint velocity = [gesture velocityInView:superview];
+    [self handlePanGestureEnded:gesture];
+  }
+}
 
-    // Fling Down: animate to Min Height (Content Size).
-    if (velocity.y > kFlingVelocityThreshold) {
-      _heightConstraint.constant = minHeight;
-      _hasUserResized = YES;
+// Handles the state when the pan gesture begins.
+- (void)handlePanGestureBegan:(UIPanGestureRecognizer*)gesture {
+  CHECK(gesture == _headerPanGesture);
+  _initialConstraintHeight = _heightConstraint.constant;
+}
+
+// Calculates the effective minimum height based on detents.
+- (NSInteger)effectiveMinHeight {
+  NSInteger absoluteMax = [self absoluteMaxHeight];
+
+  if (self.detents.count == 0) {
+    return round(kMinContainerHeight);
+  }
+
+  NSInteger minVal = NSIntegerMax;
+  for (AssistantContainerDetent* detent in self.detents) {
+    if (detent.value < minVal) {
+      minVal = detent.value;
     }
-    // Fling Up: animate to Max Height.
-    else if (velocity.y < -kFlingVelocityThreshold) {
-      _heightConstraint.constant = maxHeight;
-      _hasUserResized = YES;
-    } else {
-      // Low Velocity: stay at current height (already there), or snap back if
-      // out of bounds.
-      CGFloat current = _heightConstraint.constant;
-      if (current < minHeight) {
-        _heightConstraint.constant = minHeight;
-      } else if (current > maxHeight) {
-        _heightConstraint.constant = maxHeight;
+  }
+  return MIN(minVal, absoluteMax);
+}
+
+// Calculates the effective maximum height based on detents and safe area.
+- (NSInteger)effectiveMaxHeight {
+  NSInteger absoluteMax = [self absoluteMaxHeight];
+
+  if (self.detents.count == 0) {
+    return absoluteMax;
+  }
+
+  NSInteger maxVal = 0;
+  for (AssistantContainerDetent* detent in self.detents) {
+    if (detent.value > maxVal) {
+      maxVal = detent.value;
+    }
+  }
+  return MIN(absoluteMax, maxVal);
+}
+
+// Handles the state when the pan gesture changes (drags).
+- (void)handlePanGestureChanged:(UIPanGestureRecognizer*)gesture {
+  CHECK(gesture == _headerPanGesture);
+
+  UIView* superview = self.view.superview;
+  CGPoint translation = [gesture translationInView:superview];
+  NSInteger newHeight = round(_initialConstraintHeight - translation.y);
+
+  if (round(_heightConstraint.constant) == newHeight) {
+    return;
+  }
+
+  NSInteger maxHeight = [self effectiveMaxHeight];
+  NSInteger minHeight = [self effectiveMinHeight];
+
+  // Apply logarithmic decay for a "stiffer" feel beyond limits.
+  if (newHeight < minHeight) {
+    CGFloat diff = minHeight - newHeight;
+    newHeight = minHeight - (kRubberBandCoefficient * log(1.0 + diff));
+  } else if (newHeight > maxHeight) {
+    CGFloat diff = newHeight - maxHeight;
+    newHeight = maxHeight + (kRubberBandCoefficient * log(1.0 + diff));
+  }
+
+  _heightConstraint.constant = newHeight;
+  _hasUserResized = YES;
+  if ([self.delegate respondsToSelector:@selector(assistantContainer:
+                                                     didUpdateHeight:)]) {
+    [self.delegate assistantContainer:self didUpdateHeight:newHeight];
+  }
+}
+
+// Handles the state when the pan gesture ends or is cancelled.
+- (void)handlePanGestureEnded:(UIPanGestureRecognizer*)gesture {
+  CHECK(gesture == _headerPanGesture);
+
+  UIView* superview = self.view.superview;
+  CGPoint velocity = [gesture velocityInView:superview];
+
+  // Calculate target height based on gesture end state.
+  CGFloat currentHeight = _heightConstraint.constant;
+  NSInteger targetHeight = [self targetHeightForCurrentHeight:currentHeight
+                                                     velocity:velocity];
+
+  _heightConstraint.constant = targetHeight;
+  _hasUserResized = YES;
+
+  // Current height from visual frame (approximate start of animation).
+  CGFloat currentFrameHeight = self.view.frame.size.height;
+  CGFloat distance = targetHeight - currentFrameHeight;
+  CGFloat springVelocity = 0.0;
+
+  // Invert velocity so positive values indicate upward expansion.
+  CGFloat containerVelocity = -velocity.y;
+
+  if (ABS(distance) > 1.0) {
+    springVelocity = containerVelocity / distance;
+  }
+
+  // Animate the snap.
+  [self animateLayoutIfNeededWithInitialVelocity:springVelocity];
+}
+
+// Calculates the target height based on the current height and velocity of the
+// gesture.
+- (NSInteger)targetHeightForCurrentHeight:(CGFloat)currentHeight
+                                 velocity:(CGPoint)velocity {
+  NSInteger maxHeight = [self effectiveMaxHeight];
+  NSInteger minHeight = [self effectiveMinHeight];
+
+  // If detents are available, use them to determine the target height.
+  if (self.detents.count > 0) {
+    // Find min and max detent values.
+    NSInteger minDetentValue = minHeight;
+    NSInteger maxDetentValue = maxHeight;
+
+    // Logic for low velocity.
+    // If the user stops dragging with little momentum, and the view is within
+    // the valid range [minDetent, maxDetent], we let it stay there.
+    // If it's outside that range, we snap to the nearest valid detent.
+    if (ABS(velocity.y) <= kFlingVelocityThreshold) {
+      if (currentHeight >= minDetentValue && currentHeight <= maxDetentValue) {
+        return currentHeight;
       }
     }
 
-    CGFloat targetHeight = _heightConstraint.constant;
-    // Current height from visual frame (approximate start of animation).
-    CGFloat currentHeight = self.view.frame.size.height;
-    CGFloat distance = targetHeight - currentHeight;
-    CGFloat springVelocity = 0.0;
+    // High velocity (fling) or out of bounds.
+    // Snap to the most appropriate detent.
+    NSInteger bestDetentValue = 0;
+    NSInteger minDistance = NSIntegerMax;
 
-    // According to the gesture recognizer, positive velocity means gesture
-    // moving down the screen (towards positive y), but it's easier to think
-    // about positive velocity meaning container getting taller.
-    CGFloat containerVelocity = -velocity.y;
+    // Project height based on velocity to simulate momentum.
+    NSInteger projectedHeight =
+        round(currentHeight - (velocity.y * kMomentumProjectionSeconds));
 
-    if (ABS(distance) > 1.0) {
-      springVelocity = containerVelocity / distance;
+    for (AssistantContainerDetent* detent in self.detents) {
+      NSInteger val = detent.value;
+      // Clamp detent value to safe limits.
+      val = std::clamp(val, minHeight, maxHeight);
+
+      NSInteger diff = ABS(projectedHeight - val);
+      if (diff < minDistance) {
+        minDistance = diff;
+        bestDetentValue = val;
+      }
+    }
+    CHECK(bestDetentValue);
+    return bestDetentValue;
+  }
+
+  // Fallback behavior (no detents): Fling to min/max.
+  if (velocity.y > kFlingVelocityThreshold) {
+    return minHeight;
+  } else if (velocity.y < -kFlingVelocityThreshold) {
+    return maxHeight;
+  } else {
+    // Snap to nearest limit.
+    if (ABS(currentHeight - minHeight) < ABS(currentHeight - maxHeight)) {
+      return minHeight;
+    } else {
+      return maxHeight;
+    }
+  }
+}
+
+// Updates the height constraint based on preferred content size and detents.
+- (void)updateHeightConstraint {
+  // If we are currently dragging, do not interfere with the constraint.
+  if (_headerPanGesture.state == UIGestureRecognizerStateBegan ||
+      _headerPanGesture.state == UIGestureRecognizerStateChanged ||
+      self.isAnimating) {
+    return;
+  }
+
+  UIView* superview = self.view.superview;
+  if (!superview) {
+    return;
+  }
+
+  // Calculate limits consistent with gesture logic.
+  NSInteger maxHeight = [self effectiveMaxHeight];
+  NSInteger minHeight = [self effectiveMinHeight];
+
+  NSInteger preferredHeight = round([_assistantContainerView preferredHeight]);
+
+  // If detents are available, use them to determine the target height.
+  // We snap to the nearest detent.
+  if (self.detents.count > 0) {
+    NSInteger currentHeight = round(_heightConstraint.constant);
+    NSInteger nearestDetentValue = 0;
+    NSInteger minDistance = NSIntegerMax;
+    AssistantContainerDetent* matchedDetent = nil;
+
+    for (AssistantContainerDetent* detent in self.detents) {
+      NSInteger val = detent.value;
+      val = MAX(minHeight, MIN(val, maxHeight));
+
+      NSInteger diff = ABS(currentHeight - val);
+      if (diff < minDistance) {
+        minDistance = diff;
+        nearestDetentValue = val;
+        matchedDetent = detent;
+      }
     }
 
-    // Animate the snap.
-    [self animateLayoutIfNeededWithInitialVelocity:springVelocity];
+    if (matchedDetent) {
+      if (round(_heightConstraint.constant) != nearestDetentValue) {
+        _heightConstraint.constant = nearestDetentValue;
+        // Animate only if visible.
+        if (_hasAppeared && !self.isAnimating) {
+          [self animateLayoutIfNeededWithInitialVelocity:0];
+        }
+      }
+      if ([self.delegate respondsToSelector:@selector(assistantContainer:
+                                                         didChangeDetent:)]) {
+        [self.delegate assistantContainer:self didChangeDetent:matchedDetent];
+      }
+      return;
+    }
+  }
+  CHECK(!self.detents.count);
+
+  // Fallback to default logic if no detents.
+  // Use the user's explicit size if available, clamped to new bounds.
+  // Otherwise, default to the preferred height.
+  NSInteger target = 0;
+  if (_hasUserResized) {
+    // Re-clamp current user height with new bounds.
+    // (e.g. content might have grown => minHeight grew => push up user height).
+    NSInteger current = round(_heightConstraint.constant);
+    target = MAX(minHeight, MIN(current, maxHeight));
+  } else {
+    target = MIN(preferredHeight, maxHeight);
+  }
+
+  // Ensure we never break the min height limit.
+  target = MAX(target, minHeight);
+
+  if (round(_heightConstraint.constant) != target) {
+    _heightConstraint.constant = target;
+    // Animate only if visible, auto-sizing, and idle.
+    if (_hasAppeared && !_hasUserResized && !self.isAnimating) {
+      [self animateLayoutIfNeededWithInitialVelocity:0];
+    }
   }
 }
 
 // Calculates the maximum allowable height for the container, respecting the
 // safe area.
-- (CGFloat)maxHeight {
+- (NSInteger)absoluteMaxHeight {
   UIView* superview = self.view.superview;
   if (!superview) {
-    return 0.0;
+    return 0;
   }
 
   // We use the view's frame max Y because the container is anchored to a view
@@ -191,7 +423,7 @@ constexpr CGFloat kSpringDamping = 0.85;
   CGFloat bottomY = CGRectGetMaxY(self.view.frame);
   CGFloat safeAreaTop = superview.safeAreaInsets.top;
 
-  return bottomY - safeAreaTop - kContainerMargin;
+  return round(bottomY - safeAreaTop - kContainerMargin);
 }
 
 // Lays out the view anchored to the guide/view within the parent view.
@@ -221,9 +453,13 @@ constexpr CGFloat kSpringDamping = 0.85;
 
   // Update its value if the user hasn't resized it (e.g. content changed).
   if (!_hasUserResized) {
-    CGFloat preferredHeight = [_assistantContainerView preferredHeight];
-    CGFloat initialHeight = MAX(preferredHeight, kMinContainerHeight);
-    _heightConstraint.constant = initialHeight;
+    if (self.detents.count == 1) {
+      _heightConstraint.constant = self.detents.firstObject.value;
+    } else {
+      CGFloat preferredHeight = [_assistantContainerView preferredHeight];
+      CGFloat initialHeight = MAX(preferredHeight, kMinContainerHeight);
+      _heightConstraint.constant = initialHeight;
+    }
   }
 }
 
@@ -239,57 +475,6 @@ constexpr CGFloat kSpringDamping = 0.85;
                      [self.view.superview layoutIfNeeded];
                    }
                    completion:nil];
-}
-
-// Updates the height constraint based on preferred content size and detents.
-- (void)updateHeightConstraint {
-  // If we are currently dragging, DO NOT interfere with the constraint.
-  if (_headerPanGesture.state == UIGestureRecognizerStateBegan ||
-      _headerPanGesture.state == UIGestureRecognizerStateChanged ||
-      self.isAnimating) {
-    return;
-  }
-
-  UIView* superview = self.view.superview;
-  if (!superview) {
-    return;
-  }
-
-  // Calculate limits consistent with gesture logic.
-  CGFloat maxHeight = [self maxHeight];
-
-  CGFloat preferredHeight = [_assistantContainerView preferredHeight];
-  CGFloat minHeight = kMinContainerHeight;
-
-  // If user has never resized, we default to preferred height (min logic).
-  // But strictly speaking, the initial state IS the preferred height.
-  // The constraint logic should ensure:
-  // 1. Constraint Height >= Preferred Height (Min).
-  // 2. Constraint Height <= Max Height.
-
-  // If the user explicitly resized to be LARGER, we preserve that preference
-  // as long as it fits within the new bounds.
-  CGFloat target = 0.0;
-  if (_hasUserResized) {
-    // Re-clamp current user height with NEW bounds.
-    // (e.g. content might have grown => minHeight grew => push up user height).
-    CGFloat current = _heightConstraint.constant;
-    target = MAX(minHeight, MIN(current, maxHeight));
-  } else {
-    target = MIN(preferredHeight, maxHeight);
-  }
-
-  // Ensure we never break the min height limit.
-  target = MAX(target, kMinContainerHeight);
-  if (ABS(_heightConstraint.constant - target) > 0.1) {
-    // Animate only if visible, auto-sizing, and idle.
-    if (_hasAppeared && !_hasUserResized && !self.isAnimating) {
-      _heightConstraint.constant = target;
-      [self animateLayoutIfNeededWithInitialVelocity:0];
-    } else {
-      _heightConstraint.constant = target;
-    }
-  }
 }
 
 @end

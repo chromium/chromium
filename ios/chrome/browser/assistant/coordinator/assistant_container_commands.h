@@ -26,6 +26,8 @@
                                completion:(ProceduralBlock)completion;
 
 // Sets the available detents for the container.
+// The container dynamically adjusts its height within the range defined by
+// these values.
 - (void)setAssistantContainerDetents:
     (NSArray<AssistantContainerDetent*>*)detents;
 

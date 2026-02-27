@@ -7,11 +7,11 @@
 #import "base/check.h"
 
 @implementation AssistantContainerDetent {
-  CGFloat (^_valueResolver)();
+  NSInteger (^_valueResolver)();
 }
 
 - (instancetype)initWithIdentifier:(NSString*)identifier
-                     valueResolver:(CGFloat (^)())valueResolver {
+                     valueResolver:(NSInteger (^)())valueResolver {
   self = [super init];
   if (self) {
     CHECK(valueResolver);
@@ -21,7 +21,7 @@
   return self;
 }
 
-- (CGFloat)value {
+- (NSInteger)value {
   return _valueResolver();
 }
 
