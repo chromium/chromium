@@ -59,14 +59,12 @@ NetworkCertificateHandler::Certificate::Certificate(const Certificate& other) =
     default;
 
 NetworkCertificateHandler::NetworkCertificateHandler() {
-  NetworkCertLoader::Get()->AddObserver(this);
+  observation_.Observe(NetworkCertLoader::Get());
   if (NetworkCertLoader::Get()->initial_load_finished())
     OnCertificatesLoaded();
 }
 
-NetworkCertificateHandler::~NetworkCertificateHandler() {
-  NetworkCertLoader::Get()->RemoveObserver(this);
-}
+NetworkCertificateHandler::~NetworkCertificateHandler() = default;
 
 void NetworkCertificateHandler::AddObserver(Observer* observer) {
   observer_list_.AddObserver(observer);

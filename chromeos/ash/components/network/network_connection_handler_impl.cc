@@ -249,10 +249,7 @@ NetworkConnectionHandlerImpl::ConnectRequest::ConnectRequest(ConnectRequest&&) =
 
 NetworkConnectionHandlerImpl::NetworkConnectionHandlerImpl() = default;
 
-NetworkConnectionHandlerImpl::~NetworkConnectionHandlerImpl() {
-  if (network_cert_loader_)
-    network_cert_loader_->RemoveObserver(this);
-}
+NetworkConnectionHandlerImpl::~NetworkConnectionHandlerImpl() = default;
 
 void NetworkConnectionHandlerImpl::Init(
     NetworkStateHandler* network_state_handler,
@@ -261,7 +258,7 @@ void NetworkConnectionHandlerImpl::Init(
     CellularConnectionHandler* cellular_connection_handler) {
   if (NetworkCertLoader::IsInitialized()) {
     network_cert_loader_ = NetworkCertLoader::Get();
-    network_cert_loader_->AddObserver(this);
+    network_cert_loader_observer_.Observe(network_cert_loader_);
     if (network_cert_loader_->initial_load_finished()) {
       NET_LOG(EVENT) << "Certificates Loaded";
       certificates_loaded_ = true;

@@ -32,11 +32,7 @@ constexpr base::TimeDelta kProfileRefreshCallbackDelay =
 
 CellularESimProfileHandler::CellularESimProfileHandler() = default;
 
-CellularESimProfileHandler::~CellularESimProfileHandler() {
-  HermesManagerClient::Get()->RemoveObserver(this);
-  HermesEuiccClient::Get()->RemoveObserver(this);
-  HermesProfileClient::Get()->RemoveObserver(this);
-}
+CellularESimProfileHandler::~CellularESimProfileHandler() = default;
 
 CellularESimProfileHandler::RequestAvailableProfilesInfo::
     RequestAvailableProfilesInfo() = default;
@@ -49,9 +45,9 @@ void CellularESimProfileHandler::Init(
     CellularInhibitor* cellular_inhibitor) {
   network_state_handler_ = network_state_handler;
   cellular_inhibitor_ = cellular_inhibitor;
-  HermesManagerClient::Get()->AddObserver(this);
-  HermesEuiccClient::Get()->AddObserver(this);
-  HermesProfileClient::Get()->AddObserver(this);
+  hermes_manager_client_observer_.Observe(HermesManagerClient::Get());
+  hermes_euicc_client_observer_.Observe(HermesEuiccClient::Get());
+  hermes_profile_client_observer_.Observe(HermesProfileClient::Get());
   InitInternal();
 }
 

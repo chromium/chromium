@@ -8,16 +8,7 @@
 namespace ash {
 
 HotspotEnabledStateNotifier::HotspotEnabledStateNotifier() = default;
-
-HotspotEnabledStateNotifier::~HotspotEnabledStateNotifier() {
-  if (hotspot_state_handler_ && hotspot_state_handler_->HasObserver(this)) {
-    hotspot_state_handler_->RemoveObserver(this);
-  }
-
-  if (hotspot_controller_ && hotspot_controller_->HasObserver(this)) {
-    hotspot_controller_->RemoveObserver(this);
-  }
-}
+HotspotEnabledStateNotifier::~HotspotEnabledStateNotifier() = default;
 
 void HotspotEnabledStateNotifier::Init(
     HotspotStateHandler* hotspot_state_handler,
@@ -69,11 +60,12 @@ void HotspotEnabledStateNotifier::OnHotspotTurnedOff(
 void HotspotEnabledStateNotifier::ObserveEnabledStateChanges(
     mojo::PendingRemote<hotspot_config::mojom::HotspotEnabledStateObserver>
         observer) {
-  if (hotspot_state_handler_ && !hotspot_state_handler_->HasObserver(this)) {
-    hotspot_state_handler_->AddObserver(this);
+  if (hotspot_state_handler_ &&
+      !hotspot_state_handler_observation_.IsObserving()) {
+    hotspot_state_handler_observation_.Observe(hotspot_state_handler_);
   }
-  if (hotspot_controller_ && !hotspot_controller_->HasObserver(this)) {
-    hotspot_controller_->AddObserver(this);
+  if (hotspot_controller_ && !hotspot_controller_observation_.IsObserving()) {
+    hotspot_controller_observation_.Observe(hotspot_controller_);
   }
   observers_.Add(std::move(observer));
 }

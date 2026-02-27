@@ -10,6 +10,7 @@
 
 #include "base/component_export.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation.h"
 #include "chromeos/ash/components/network/network_cert_loader.h"
 
 namespace ash {
@@ -95,6 +96,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkCertificateHandler
       const NetworkCertLoader::NetworkCertList& client_certs);
 
   base::ObserverList<Observer> observer_list_;
+
+  base::ScopedObservation<NetworkCertLoader, NetworkCertLoader::Observer>
+      observation_{this};
 
   std::vector<Certificate> server_ca_certificates_;
   std::vector<Certificate> client_certificates_;

@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/components/network/client_cert_resolver.h"
 #include "chromeos/ash/components/network/network_connection_observer.h"
@@ -143,29 +144,29 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) AutoConnectHandler
   void CheckWifiEnabled();
 
   // Local references to the associated handler instances.
-  raw_ptr<ClientCertResolver> client_cert_resolver_;
-  raw_ptr<NetworkConnectionHandler> network_connection_handler_;
-  raw_ptr<NetworkStateHandler> network_state_handler_;
-  NetworkStateHandlerScopedObservation network_state_handler_observer_{this};
-  raw_ptr<ManagedNetworkConfigurationHandler> managed_configuration_handler_;
+  raw_ptr<ClientCertResolver> client_cert_resolver_ = nullptr;
+  raw_ptr<NetworkConnectionHandler> network_connection_handler_ = nullptr;
+  raw_ptr<NetworkStateHandler> network_state_handler_ = nullptr;
+  raw_ptr<ManagedNetworkConfigurationHandler> managed_configuration_handler_ =
+      nullptr;
 
   // Whether a request to connect to the best network is pending. If true, once
   // all requirements are met (like policy loaded, certificate patterns being
   // resolved), a scan will be requested and ConnectToBestServices will be
   // triggered once it completes.
-  bool request_best_connection_pending_;
+  bool request_best_connection_pending_ = false;
 
   // Whether the device policy, which might be empty, is already applied.
-  bool device_policy_applied_;
+  bool device_policy_applied_ = false;
 
   // Whether the user policy of the first user who logged in is already applied.
   // The policy might be empty.
-  bool user_policy_applied_;
+  bool user_policy_applied_ = false;
 
   // Whether at least once client certificate patterns were checked and if any
   // existed resolved. Even if there are no certificate patterns, this will be
   // eventually true.
-  bool client_certs_resolved_;
+  bool client_certs_resolved_ = false;
 
   // Tracks the state of wifi enablement, so actions can be taken when wifi gets
   // enabled. It will be initialized to the initial wifi enablement state in
@@ -181,14 +182,23 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) AutoConnectHandler
 
   // Whether the autoconnect policy was applied already, see
   // DisconnectWiFiIfPolicyRequires() and DisconnectCellularIfPolicyRequires().
-  bool applied_autoconnect_policy_on_wifi;
-  bool applied_autoconnect_policy_on_cellular;
+  bool applied_autoconnect_policy_on_wifi = false;
+  bool applied_autoconnect_policy_on_cellular = false;
 
   // The bitwise OR of all AutoConnectReason which have triggered auto-
   // connection.
-  int auto_connect_reasons_;
+  int auto_connect_reasons_ = 0;
 
   base::ObserverList<Observer> observer_list_;
+
+  base::ScopedObservation<ClientCertResolver, ClientCertResolver::Observer>
+      client_cert_resolver_observer_{this};
+  base::ScopedObservation<NetworkConnectionHandler, NetworkConnectionObserver>
+      network_connection_handler_observer_{this};
+  base::ScopedObservation<ManagedNetworkConfigurationHandler,
+                          NetworkPolicyObserver>
+      managed_configuration_handler_observer_{this};
+  NetworkStateHandlerScopedObservation network_state_handler_observer_{this};
 
   base::WeakPtrFactory<AutoConnectHandler> weak_ptr_factory_{this};
 };

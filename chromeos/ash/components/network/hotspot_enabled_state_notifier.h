@@ -50,6 +50,11 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotEnabledStateNotifier
   raw_ptr<HotspotStateHandler> hotspot_state_handler_;
   mojo::RemoteSet<hotspot_config::mojom::HotspotEnabledStateObserver>
       observers_;
+
+  base::ScopedObservation<HotspotController, HotspotController::Observer>
+      hotspot_controller_observation_{this};
+  base::ScopedObservation<HotspotStateHandler, HotspotStateHandler::Observer>
+      hotspot_state_handler_observation_{this};
 };
 
 }  // namespace ash

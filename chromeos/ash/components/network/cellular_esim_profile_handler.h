@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "base/scoped_observation.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_euicc_client.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_manager_client.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_profile_client.h"
@@ -208,6 +209,13 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimProfileHandler
 
   // When a profile refresh is in progress, the callback.
   RefreshProfilesCallback callback_;
+
+  base::ScopedObservation<HermesManagerClient, HermesManagerClient::Observer>
+      hermes_manager_client_observer_{this};
+  base::ScopedObservation<HermesEuiccClient, HermesEuiccClient::Observer>
+      hermes_euicc_client_observer_{this};
+  base::ScopedObservation<HermesProfileClient, HermesProfileClient::Observer>
+      hermes_profile_client_observer_{this};
 
   base::WeakPtrFactory<CellularESimProfileHandler> weak_ptr_factory_{this};
 };
