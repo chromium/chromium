@@ -67,8 +67,9 @@ class JingleSessionManager : public SessionManager,
       SessionsMap;
 
   IqSender* iq_sender() { return iq_sender_.get(); }
-  void SendReply(const JingleMessage& original_message,
-                 JingleMessageReply::ErrorType error);
+  void SendReply(
+      const JingleMessage& original_message,
+      std::optional<JingleMessageReply::ErrorType> error = std::nullopt);
 
   // Called by JingleSession when it is being destroyed.
   void SessionDestroyed(JingleSession* session);

@@ -370,7 +370,7 @@ struct JingleMessageReply {
     REPLY_ERROR,
   };
   enum ErrorType {
-    NONE,
+    UNSPECIFIED,
     BAD_REQUEST,
     NOT_IMPLEMENTED,
     INVALID_SID,
@@ -387,8 +387,8 @@ struct JingleMessageReply {
   JingleMessageReply& operator=(JingleMessageReply&&);
   ~JingleMessageReply();
 
-  ReplyType type;
-  ErrorType error_type;
+  ReplyType reply_type = REPLY_RESULT;
+  std::optional<ErrorType> error_type;
   std::string text;
 
   std::string message_id;

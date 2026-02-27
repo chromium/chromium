@@ -125,15 +125,14 @@ void JingleMessage::SetPayload(Payload payload) {
   action_ = ActionFromPayload(payload_);
 }
 
-JingleMessageReply::JingleMessageReply()
-    : type(REPLY_RESULT), error_type(NONE) {}
+JingleMessageReply::JingleMessageReply() = default;
 
 JingleMessageReply::JingleMessageReply(ErrorType error)
-    : type(error != NONE ? REPLY_ERROR : REPLY_RESULT), error_type(error) {}
+    : JingleMessageReply(error, std::string()) {}
 
 JingleMessageReply::JingleMessageReply(ErrorType error,
                                        const std::string& text_value)
-    : type(REPLY_ERROR), error_type(error), text(text_value) {}
+    : reply_type(REPLY_ERROR), error_type(error), text(text_value) {}
 
 JingleMessageReply::JingleMessageReply(const JingleMessageReply&) = default;
 

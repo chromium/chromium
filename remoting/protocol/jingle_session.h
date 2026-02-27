@@ -54,8 +54,9 @@ class JingleSession : public Session {
  private:
   friend class JingleSessionManager;
 
-  using ReplyCallback = base::OnceCallback<void(const JingleMessage&,
-                                                JingleMessageReply::ErrorType)>;
+  using ReplyCallback =
+      base::OnceCallback<void(const JingleMessage&,
+                              std::optional<JingleMessageReply::ErrorType>)>;
 
   explicit JingleSession(JingleSessionManager* session_manager);
 

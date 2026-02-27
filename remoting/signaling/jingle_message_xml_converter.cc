@@ -614,13 +614,15 @@ std::unique_ptr<XmlElement> CreateIqElement(std::string_view type,
 
 std::unique_ptr<XmlElement> CreateErrorElement(
     const JingleMessageReply& reply) {
-  DCHECK_EQ(reply.type, JingleMessageReply::REPLY_ERROR);
+  DCHECK_EQ(reply.reply_type, JingleMessageReply::REPLY_ERROR);
   auto error = std::make_unique<XmlElement>(QName(kJabberNamespace, "error"));
+
+  DCHECK(reply.error_type.has_value());
 
   std::string type_attr;
   std::string error_text;
   QName name;
-  switch (reply.error_type) {
+  switch (*reply.error_type) {
     case JingleMessageReply::BAD_REQUEST:
       type_attr = "modify";
       name = QName(kJabberNamespace, "bad-request");
@@ -642,9 +644,9 @@ std::unique_ptr<XmlElement> CreateErrorElement(
       type_attr = "modify";
       name = QName(kJabberNamespace, "feature-not-implemented");
       break;
-    case JingleMessageReply::NONE:
+    case JingleMessageReply::UNSPECIFIED:
       type_attr = "cancel";
-      name = QName(kJabberNamespace, "undefined-condition");
+      name = QName(kJabberNamespace, "unspecified-error");
       break;
     default:
       NOTREACHED();
@@ -725,11 +727,15 @@ void AddChannelConfigs(XmlElement* element,
 
 std::unique_ptr<jingle_xmpp::XmlElement> JingleMessageReplyToXml(
     const JingleMessageReply& reply) {
-  auto iq = CreateIqElement(
-      reply.type == JingleMessageReply::REPLY_RESULT ? "result" : "error",
-      reply.message_id, reply.to, reply.from);
+  auto iq =
+      CreateIqElement((reply.reply_type == JingleMessageReply::REPLY_RESULT ||
+                       !reply.error_type.has_value())
+                          ? "result"
+                          : "error",
+                      reply.message_id, reply.to, reply.from);
 
-  if (reply.type == JingleMessageReply::REPLY_RESULT) {
+  if (reply.reply_type == JingleMessageReply::REPLY_RESULT ||
+      !reply.error_type.has_value()) {
     iq->AddElement(new XmlElement(kQNameJingle,
                                   /*useDefaultNs=*/true));
   } else {
@@ -743,10 +749,14 @@ std::unique_ptr<jingle_xmpp::XmlElement> JingleMessageReplyToXml(
     const JingleMessageReply& reply,
     const JingleMessage& original_message) {
   auto iq = CreateIqElement(
-      reply.type == JingleMessageReply::REPLY_RESULT ? "result" : "error",
+      (reply.reply_type == JingleMessageReply::REPLY_RESULT ||
+       !reply.error_type.has_value())
+          ? "result"
+          : "error",
       original_message.message_id, original_message.from, SignalingAddress());
 
-  if (reply.type == JingleMessageReply::REPLY_RESULT) {
+  if (reply.reply_type == JingleMessageReply::REPLY_RESULT ||
+      !reply.error_type.has_value()) {
     iq->AddElement(new XmlElement(kQNameJingle,
                                   /*useDefaultNs=*/true));
   } else {
@@ -769,10 +779,14 @@ std::unique_ptr<jingle_xmpp::XmlElement> JingleMessageReplyToXml(
       SignalingAddress::Parse(request_stanza, SignalingAddress::FROM);
 
   auto iq = CreateIqElement(
-      reply.type == JingleMessageReply::REPLY_RESULT ? "result" : "error",
+      (reply.reply_type == JingleMessageReply::REPLY_RESULT ||
+       !reply.error_type.has_value())
+          ? "result"
+          : "error",
       request_stanza->Attr(kQNameId), original_from, SignalingAddress());
 
-  if (reply.type == JingleMessageReply::REPLY_RESULT) {
+  if (reply.reply_type == JingleMessageReply::REPLY_RESULT ||
+      !reply.error_type.has_value()) {
     iq->AddElement(new XmlElement(kQNameJingle,
                                   /*useDefaultNs=*/true));
   } else {
@@ -794,8 +808,8 @@ bool JingleMessageReplyFromXml(const jingle_xmpp::XmlElement* stanza,
 
   const std::string& type = stanza->Attr(kQNameType);
   if (type == "result") {
-    reply->type = JingleMessageReply::REPLY_RESULT;
-    reply->error_type = JingleMessageReply::NONE;
+    reply->reply_type = JingleMessageReply::REPLY_RESULT;
+    reply->error_type.reset();
     return true;
   }
 
@@ -803,7 +817,7 @@ bool JingleMessageReplyFromXml(const jingle_xmpp::XmlElement* stanza,
     return false;
   }
 
-  reply->type = JingleMessageReply::REPLY_ERROR;
+  reply->reply_type = JingleMessageReply::REPLY_ERROR;
 
   const XmlElement* error_tag =
       stanza->FirstNamed(QName(kJabberNamespace, "error"));
@@ -822,6 +836,8 @@ bool JingleMessageReplyFromXml(const jingle_xmpp::XmlElement* stanza,
     } else if (error_tag->FirstNamed(
                    QName(kJabberNamespace, "feature-not-implemented"))) {
       reply->error_type = JingleMessageReply::UNSUPPORTED_INFO;
+    } else {
+      reply->error_type = JingleMessageReply::UNSPECIFIED;
     }
 
     const XmlElement* text_tag =
@@ -829,6 +845,8 @@ bool JingleMessageReplyFromXml(const jingle_xmpp::XmlElement* stanza,
     if (text_tag) {
       reply->text = text_tag->BodyText();
     }
+  } else {
+    reply->error_type = JingleMessageReply::UNSPECIFIED;
   }
 
   return true;

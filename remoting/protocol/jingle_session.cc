@@ -518,7 +518,7 @@ void JingleSession::OnMessageResponse(JingleMessage::ActionType request_type,
 
   std::string type_str = JingleMessage::GetActionName(request_type);
 
-  if (response.type != JingleMessageReply::REPLY_RESULT) {
+  if (response.reply_type != JingleMessageReply::REPLY_RESULT) {
     if (response.text == "timeout") {
       Close(ErrorCode::SIGNALING_TIMEOUT,
             base::StringPrintf("%s request timed out.", type_str), FROM_HERE);
@@ -549,7 +549,7 @@ void JingleSession::OnTransportInfoResponse(
   transport_info_requests_.erase(transport_info_requests_.begin(),
                                  request_it + 1);
 
-  if (response.type != JingleMessageReply::REPLY_RESULT) {
+  if (response.reply_type != JingleMessageReply::REPLY_RESULT) {
     if (response.text == "timeout") {
       LOG(ERROR) << "transport-info request has timed out.";
     } else {
@@ -622,7 +622,7 @@ void JingleSession::OnAccept(std::unique_ptr<JingleMessage> message,
     return;
   }
 
-  std::move(reply_callback).Run(*message, JingleMessageReply::NONE);
+  std::move(reply_callback).Run(*message, std::nullopt);
 
   const JingleAuthentication& auth_message =
       message->description->authentication();
@@ -673,7 +673,7 @@ void JingleSession::OnSessionInfo(std::unique_ptr<JingleMessage> message,
     return;
   }
 
-  std::move(reply_callback).Run(*message, JingleMessageReply::NONE);
+  std::move(reply_callback).Run(*message, std::nullopt);
 
   authenticator_->ProcessMessage(
       *auth_message, base::BindOnce(&JingleSession::ProcessAuthenticationStep,
@@ -692,10 +692,11 @@ void JingleSession::OnTransportInfo(std::unique_ptr<JingleMessage> message,
         PendingMessage{std::move(message), std::move(reply_callback)});
   } else if (state_ == AUTHENTICATED) {
     std::move(reply_callback)
-        .Run(*message, transport_->ProcessTransportInfo(
-                           std::get<JingleTransportInfo>(message->payload()))
-                           ? JingleMessageReply::NONE
-                           : JingleMessageReply::BAD_REQUEST);
+        .Run(*message,
+             transport_->ProcessTransportInfo(
+                 std::get<JingleTransportInfo>(message->payload()))
+                 ? std::nullopt
+                 : std::make_optional(JingleMessageReply::BAD_REQUEST));
   } else {
     LOG(ERROR) << "Received unexpected transport-info message.";
     std::move(reply_callback)
@@ -712,7 +713,7 @@ void JingleSession::OnTerminate(std::unique_ptr<JingleMessage> message,
     return;
   }
 
-  std::move(reply_callback).Run(*message, JingleMessageReply::NONE);
+  std::move(reply_callback).Run(*message, std::nullopt);
 
   error_ = message->error_code;
   if (error_ == ErrorCode::UNKNOWN_ERROR) {
@@ -853,8 +854,8 @@ void JingleSession::OnAuthenticated() {
         .Run(*message.message,
              transport_->ProcessTransportInfo(
                  std::get<JingleTransportInfo>(message.message->payload()))
-                 ? JingleMessageReply::NONE
-                 : JingleMessageReply::BAD_REQUEST);
+                 ? std::nullopt
+                 : std::make_optional(JingleMessageReply::BAD_REQUEST));
     if (!self) {
       return;
     }

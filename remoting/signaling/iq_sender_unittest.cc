@@ -40,8 +40,8 @@ const char kStanzaId[] = "123";
 const char kTo[] = "user@domain.com";
 
 MATCHER_P(ReplyEq, expected, "") {
-  return arg.type == expected.type && arg.error_type == expected.error_type &&
-         arg.text == expected.text;
+  return arg.reply_type == expected.reply_type &&
+         arg.error_type == expected.error_type && arg.text == expected.text;
 }
 
 }  // namespace
@@ -132,7 +132,7 @@ TEST_F(IqSenderTest, Timeout) {
   request_->SetTimeout(base::Milliseconds(2));
 
   JingleMessageReply expected_reply;
-  expected_reply.type = JingleMessageReply::REPLY_ERROR;
+  expected_reply.reply_type = JingleMessageReply::REPLY_ERROR;
   expected_reply.error_type = JingleMessageReply::UNEXPECTED_REQUEST;
   expected_reply.text = "timeout";
 

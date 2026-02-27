@@ -486,7 +486,7 @@ TEST(JingleMessageReplyTest, ToXml) {
   // clang-format on
 
   struct TestCase {
-    const JingleMessageReply::ErrorType error;
+    const std::optional<JingleMessageReply::ErrorType> error;
     std::string error_text;
     std::string expected_text;
     std::string incoming_message;
@@ -575,7 +575,7 @@ TEST(JingleMessageReplyTest, ToXml) {
          "</error>"
        "</iq>",
        kTestIncomingMessage2},
-      {JingleMessageReply::NONE, "",
+      {std::nullopt, "",
        "<iq xmlns='jabber:client' to='remoting@bot.talk.google.com' "
            "id='4' type='result'>"
          "<jingle xmlns='urn:xmpp:jingle:1'/>"
@@ -591,10 +591,14 @@ TEST(JingleMessageReplyTest, ToXml) {
 
     SCOPED_TRACE(testing::Message() << "Running test case: " << i);
     JingleMessageReply reply_msg;
-    if (tests[i].error_text.empty()) {
-      reply_msg = JingleMessageReply(tests[i].error);
+    if (tests[i].error) {
+      if (tests[i].error_text.empty()) {
+        reply_msg = JingleMessageReply(*tests[i].error);
+      } else {
+        reply_msg = JingleMessageReply(*tests[i].error, tests[i].error_text);
+      }
     } else {
-      reply_msg = JingleMessageReply(tests[i].error, tests[i].error_text);
+      reply_msg = JingleMessageReply();
     }
     std::unique_ptr<XmlElement> reply(
         JingleMessageReplyToXml(reply_msg, incoming_message.get()));

@@ -171,7 +171,7 @@ void IqRequest::CallCallback(const JingleMessageReply& reply) {
 
 void IqRequest::OnTimeout() {
   JingleMessageReply reply;
-  reply.type = JingleMessageReply::REPLY_ERROR;
+  reply.reply_type = JingleMessageReply::REPLY_ERROR;
   reply.error_type = JingleMessageReply::UNEXPECTED_REQUEST;
   reply.text = "timeout";
   CallCallback(reply);

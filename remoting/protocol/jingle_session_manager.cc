@@ -89,7 +89,7 @@ bool JingleSessionManager::OnSignalStrategyIncomingMessage(
     // Description must be present in session-initiate messages.
     DCHECK(message->description.get());
 
-    SendReply(*message, JingleMessageReply::NONE);
+    SendReply(*message);
 
     std::unique_ptr<Authenticator> authenticator =
         authenticator_factory_->CreateAuthenticator(
@@ -153,9 +153,13 @@ bool JingleSessionManager::OnSignalStrategyIncomingMessage(
   return true;
 }
 
-void JingleSessionManager::SendReply(const JingleMessage& original_message,
-                                     JingleMessageReply::ErrorType error) {
-  JingleMessageReply reply(error);
+void JingleSessionManager::SendReply(
+    const JingleMessage& original_message,
+    std::optional<JingleMessageReply::ErrorType> error) {
+  JingleMessageReply reply;
+  if (error.has_value()) {
+    reply = JingleMessageReply(*error);
+  }
   reply.message_id = original_message.message_id;
   reply.to = original_message.from;
   // TODO: joedow - Add overload for SendMessage which accepts a JingleMessage
