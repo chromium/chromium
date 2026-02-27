@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/tabs/glic/glic_actor_task_icon.h"
+#include "chrome/browser/ui/views/tabs/glic/tab_strip_glic_actor_task_icon.h"
 
 #include <string>
 
@@ -43,7 +43,7 @@ const gfx::VectorIcon& GetTaskIcon() {
 
 constexpr int kActorNudgeLabelMargin = 6;
 
-GlicActorTaskIcon::GlicActorTaskIcon(
+TabStripGlicActorTaskIcon::TabStripGlicActorTaskIcon(
     BrowserWindowInterface* browser_window_interface,
     PressedCallback pressed_callback)
     : TabStripNudgeButton(browser_window_interface,
@@ -66,12 +66,12 @@ GlicActorTaskIcon::GlicActorTaskIcon(
 
   SetTaskIconToDefault();
 
-    // The task icon will only ever be shown with the GlicButton, so can always
-    // set the corner radii for split button styling.
-    SetLeftRightCornerRadii(kSplitButtonFlatEdgeRadius,
-                            kSplitButtonRoundedEdgeRadius);
-    TabStripControlButton::SetInkdropHoverColorId(
-        kColorTabBackgroundInactiveHoverFrameActive);
+  // The task icon will only ever be shown with the GlicButton, so can always
+  // set the corner radii for split button styling.
+  SetLeftRightCornerRadii(kSplitButtonFlatEdgeRadius,
+                          kSplitButtonRoundedEdgeRadius);
+  TabStripControlButton::SetInkdropHoverColorId(
+      kColorTabBackgroundInactiveHoverFrameActive);
 
   UpdateColors();
 
@@ -83,7 +83,7 @@ GlicActorTaskIcon::GlicActorTaskIcon(
       views::BoxLayout::MainAxisAlignment::kStart);
 }
 
-gfx::Size GlicActorTaskIcon::CalculatePreferredSize(
+gfx::Size TabStripGlicActorTaskIcon::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
   const int full_width =
       GetLayoutManager()->GetPreferredSize(this, available_size).width();
@@ -99,21 +99,21 @@ gfx::Size GlicActorTaskIcon::CalculatePreferredSize(
       break;
     case AnimationMode::kNudge:
       int min_width = 0;
-        min_width = icon_only_width;
+      min_width = icon_only_width;
       width = std::lerp(min_width, full_width, GetWidthFactor());
       break;
   }
   return gfx::Size(width, height);
 }
 
-void GlicActorTaskIcon::SetAnimationMode(AnimationMode mode) {
+void TabStripGlicActorTaskIcon::SetAnimationMode(AnimationMode mode) {
   if (animation_mode_ != mode) {
     animation_mode_ = mode;
     PreferredSizeChanged();
   }
 }
 
-void GlicActorTaskIcon::SetIsShowingNudge(bool is_showing) {
+void TabStripGlicActorTaskIcon::SetIsShowingNudge(bool is_showing) {
   if (!is_showing) {
     SetText(std::u16string());
   }
@@ -121,7 +121,7 @@ void GlicActorTaskIcon::SetIsShowingNudge(bool is_showing) {
   PreferredSizeChanged();
 }
 
-void GlicActorTaskIcon::SetDefaultColors() {
+void TabStripGlicActorTaskIcon::SetDefaultColors() {
   if (ShouldUseGlicButtonAltIconBackgroundColor()) {
     SetForegroundFrameActiveColorId(ui::kColorSysOnSurface);
     SetBackgroundFrameActiveColorId(ui::kColorSysBase);
@@ -135,35 +135,36 @@ void GlicActorTaskIcon::SetDefaultColors() {
       kColorNewTabButtonCRBackgroundFrameInactive);
 }
 
-void GlicActorTaskIcon::SetPressedColor(bool is_pressed) {
+void TabStripGlicActorTaskIcon::SetPressedColor(bool is_pressed) {
   SetHighlighted(is_pressed);
   UpdateColors();
 }
 
-void GlicActorTaskIcon::NotifyClick(const ui::Event& event) {
+void TabStripGlicActorTaskIcon::NotifyClick(const ui::Event& event) {
   // TabStripControlButton manipulates the ink drop in its NotifyClick(), so
   // if we're using the ink drop to show the button's pressed state, skip
   // TabStripControlButton::NotifyClick() and just call the base
   // NotifyClick().
-    LabelButton::NotifyClick(event);
+  LabelButton::NotifyClick(event);
 }
 
-void GlicActorTaskIcon::SetTaskIconToDefault() {
+void TabStripGlicActorTaskIcon::SetTaskIconToDefault() {
   SetText(std::u16string());
   SetTooltipText(l10n_util::GetStringUTF16(IDS_ACTOR_TASK_INDICATOR_TOOLTIP));
   SetDefaultColors();
 }
 
-void GlicActorTaskIcon::ShowNudgeLabel(const std::u16string nudge_label) {
+void TabStripGlicActorTaskIcon::ShowNudgeLabel(
+    const std::u16string nudge_label) {
   SetText(nudge_label);
   SetTooltipText(nudge_label);
 }
 
-void GlicActorTaskIcon::RefreshBackground() {
+void TabStripGlicActorTaskIcon::RefreshBackground() {
   UpdateColors();
 }
 
-void GlicActorTaskIcon::AddedToWidget() {
+void TabStripGlicActorTaskIcon::AddedToWidget() {
   TabStripNudgeButton::AddedToWidget();
   views::Widget* widget = GetWidget();
   if (!widget) {
@@ -172,46 +173,46 @@ void GlicActorTaskIcon::AddedToWidget() {
 
   window_did_become_active_subscription_ =
       browser_window_interface_->RegisterDidBecomeActive(base::BindRepeating(
-          &GlicActorTaskIcon::OnBrowserWindowDidBecomeActive,
+          &TabStripGlicActorTaskIcon::OnBrowserWindowDidBecomeActive,
           base::Unretained(this)));
   window_did_become_inactive_subscription_ =
       browser_window_interface_->RegisterDidBecomeInactive(base::BindRepeating(
-          &GlicActorTaskIcon::OnBrowserWindowDidBecomeInactive,
+          &TabStripGlicActorTaskIcon::OnBrowserWindowDidBecomeInactive,
           base::Unretained(this)));
 
   UpdateInkdropHoverColor(browser_window_interface_->IsActive());
 }
 
-void GlicActorTaskIcon::RemovedFromWidget() {
+void TabStripGlicActorTaskIcon::RemovedFromWidget() {
   window_did_become_active_subscription_ = {};
   window_did_become_inactive_subscription_ = {};
   TabStripNudgeButton::RemovedFromWidget();
 }
 
-void GlicActorTaskIcon::OnBrowserWindowDidBecomeActive(
+void TabStripGlicActorTaskIcon::OnBrowserWindowDidBecomeActive(
     BrowserWindowInterface* bwi) {
   UpdateInkdropHoverColor(true);
 }
 
-void GlicActorTaskIcon::OnBrowserWindowDidBecomeInactive(
+void TabStripGlicActorTaskIcon::OnBrowserWindowDidBecomeInactive(
     BrowserWindowInterface* bwi) {
   UpdateInkdropHoverColor(false);
 }
 
-void GlicActorTaskIcon::UpdateInkdropHoverColor(bool is_frame_active) {
-    SetInkdropHoverColorId(is_frame_active
-                               ? kColorTabBackgroundInactiveHoverFrameActive
-                               : kColorTabBackgroundInactiveHoverFrameInactive);
-    UpdateColors();
+void TabStripGlicActorTaskIcon::UpdateInkdropHoverColor(bool is_frame_active) {
+  SetInkdropHoverColorId(is_frame_active
+                             ? kColorTabBackgroundInactiveHoverFrameActive
+                             : kColorTabBackgroundInactiveHoverFrameInactive);
+  UpdateColors();
 }
 
-gfx::Rect GlicActorTaskIcon::GetAnchorBoundsInScreen() const {
+gfx::Rect TabStripGlicActorTaskIcon::GetAnchorBoundsInScreen() const {
   gfx::Rect bounds = GetBoundsInScreen();
   bounds.Inset(GetInsets());
   return bounds;
 }
 
-bool GlicActorTaskIcon::ShouldUseGlicButtonAltIconBackgroundColor() {
+bool TabStripGlicActorTaskIcon::ShouldUseGlicButtonAltIconBackgroundColor() {
   // LINT.IfChange(ShouldUseGlicButtonAltIconBackgroundColor)
   return base::FeatureList::IsEnabled(
              kGlicActorTaskIconUseGlicButtonAltIconBackgroundColor) &&
@@ -220,9 +221,9 @@ bool GlicActorTaskIcon::ShouldUseGlicButtonAltIconBackgroundColor() {
   // LINT.ThenChange(//chrome/browser/ui/views/tabs/glic/tab_strip_glic_button.cc:ShouldUseAltIcon)
 }
 
-GlicActorTaskIcon::~GlicActorTaskIcon() = default;
+TabStripGlicActorTaskIcon::~TabStripGlicActorTaskIcon() = default;
 
-BEGIN_METADATA(GlicActorTaskIcon)
+BEGIN_METADATA(TabStripGlicActorTaskIcon)
 END_METADATA
 
 }  // namespace glic

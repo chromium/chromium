@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_TABS_GLIC_GLIC_ACTOR_TASK_ICON_H_
-#define CHROME_BROWSER_UI_VIEWS_TABS_GLIC_GLIC_ACTOR_TASK_ICON_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_TABS_GLIC_TAB_STRIP_GLIC_ACTOR_TASK_ICON_H_
+#define CHROME_BROWSER_UI_VIEWS_TABS_GLIC_TAB_STRIP_GLIC_ACTOR_TASK_ICON_H_
 
 #include <string>
 
@@ -14,15 +14,17 @@ class BrowserWindowInterface;
 
 namespace glic {
 
-class GlicActorTaskIcon : public TabStripNudgeButton {
-  METADATA_HEADER(GlicActorTaskIcon, TabStripNudgeButton)
+class TabStripGlicActorTaskIcon : public TabStripNudgeButton {
+  METADATA_HEADER(TabStripGlicActorTaskIcon, TabStripNudgeButton)
 
  public:
-  explicit GlicActorTaskIcon(BrowserWindowInterface* browser_window_interface,
-                             PressedCallback pressed_callback);
-  GlicActorTaskIcon(const GlicActorTaskIcon&) = delete;
-  GlicActorTaskIcon& operator=(const GlicActorTaskIcon&) = delete;
-  ~GlicActorTaskIcon() override;
+  explicit TabStripGlicActorTaskIcon(
+      BrowserWindowInterface* browser_window_interface,
+      PressedCallback pressed_callback);
+  TabStripGlicActorTaskIcon(const TabStripGlicActorTaskIcon&) = delete;
+  TabStripGlicActorTaskIcon& operator=(const TabStripGlicActorTaskIcon&) =
+      delete;
+  ~TabStripGlicActorTaskIcon() override;
 
   // TabStripControlButton:
   gfx::Size CalculatePreferredSize(
@@ -87,4 +89,4 @@ class GlicActorTaskIcon : public TabStripNudgeButton {
 
 }  // namespace glic
 
-#endif  // CHROME_BROWSER_UI_VIEWS_TABS_GLIC_GLIC_ACTOR_TASK_ICON_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_TABS_GLIC_TAB_STRIP_GLIC_ACTOR_TASK_ICON_H_

@@ -11,8 +11,8 @@ source_set("glic") {
 
   if (!is_android) {
     sources += [
-      "glic_actor_task_icon.h",
       "glic_and_actor_buttons_container.h",
+      "tab_strip_glic_actor_task_icon.h",
       "tab_strip_glic_button.h",
     ]
     deps = [
@@ -35,8 +35,8 @@ source_set("glic") {
 if (!is_android) {
   source_set("impl") {
     sources = [
-      "glic_actor_task_icon.cc",
       "glic_and_actor_buttons_container.cc",
+      "tab_strip_glic_actor_task_icon.cc",
       "tab_strip_glic_button.cc",
     ]
     deps = [

@@ -31,7 +31,7 @@
 #include "chrome/browser/ui/views/controls/rich_hover_button.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
-#include "chrome/browser/ui/views/tabs/glic/glic_actor_task_icon.h"
+#include "chrome/browser/ui/views/tabs/glic/tab_strip_glic_actor_task_icon.h"
 #include "chrome/browser/ui/views/tabs/glic/tab_strip_glic_button.h"
 #include "chrome/browser/ui/views/tabs/tab_search_button.h"
 #include "chrome/common/actor.mojom.h"
@@ -154,7 +154,7 @@ class TabStripActionContainerBrowserTest : public InProcessBrowserTest {
         tab_strip_action_container()->GetGlicButton());
   }
 
-  glic::GlicActorTaskIcon* GlicActorTaskIcon() {
+  glic::TabStripGlicActorTaskIcon* GlicActorTaskIcon() {
     return tab_strip_action_container()->glic_actor_task_icon();
   }
 

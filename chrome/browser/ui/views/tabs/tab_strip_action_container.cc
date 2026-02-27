@@ -23,7 +23,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/tabs/glic/glic_actor_task_icon.h"
+#include "chrome/browser/ui/views/tabs/glic/tab_strip_glic_actor_task_icon.h"
 #include "chrome/browser/ui/views/tabs/glic/tab_strip_glic_button.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_nudge_button.h"
 #include "chrome/common/chrome_features.h"
@@ -106,7 +106,7 @@ void EstablishPrivateAiConnection(Profile* profile) {
 #endif  // !BUILDFLAG(IS_ANDROID)
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
-using TaskIconAnimationMode = glic::GlicActorTaskIcon::AnimationMode;
+using TaskIconAnimationMode = glic::TabStripGlicActorTaskIcon::AnimationMode;
 }  // namespace
 
 TabStripActionContainer::TabStripNudgeAnimationSession::
@@ -361,10 +361,10 @@ TabStripActionContainer::CreateGlicButton() {
   return glic_button;
 }
 
-std::unique_ptr<glic::GlicActorTaskIcon>
+std::unique_ptr<glic::TabStripGlicActorTaskIcon>
 TabStripActionContainer::CreateGlicActorTaskIcon() {
-  std::unique_ptr<glic::GlicActorTaskIcon> glic_actor_task_icon =
-      std::make_unique<glic::GlicActorTaskIcon>(
+  std::unique_ptr<glic::TabStripGlicActorTaskIcon> glic_actor_task_icon =
+      std::make_unique<glic::TabStripGlicActorTaskIcon>(
           browser_window_interface_,
           base::BindRepeating(
               &TabStripActionContainer::OnGlicActorTaskIconClicked,
