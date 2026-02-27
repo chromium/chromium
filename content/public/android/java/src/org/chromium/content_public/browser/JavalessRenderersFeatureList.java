@@ -7,7 +7,9 @@ package org.chromium.content_public.browser;
 import android.text.TextUtils;
 
 import org.chromium.base.CommandLine;
+import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.EnsuresNonNull;
+import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.cached_flags.BooleanCachedFeatureParam;
@@ -44,15 +46,16 @@ public class JavalessRenderersFeatureList {
             List.of(sJavalessRendererEnable);
 
     private static @Nullable Boolean sEnabled;
-    private static @Nullable String sGroup;
+    private static @MonotonicNonNull String sGroup;
     private static @Nullable BiConsumer<String, String> sCallback;
 
     // Should be run only once, and will only run once both callback and group are set, then unsets
     // callback to ensure it never runs again.
     private static void maybeRunCallback() {
         if (sCallback != null && sGroup != null) {
-            sCallback.accept("JavalessRenderersSynthetic", sGroup);
+            BiConsumer<String, String> callback = sCallback;
             sCallback = null;
+            ThreadUtils.runOnUiThread(() -> callback.accept("JavalessRenderersSynthetic", sGroup));
         }
     }
 
