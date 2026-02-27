@@ -685,7 +685,8 @@ class CORE_EXPORT StyleCascade {
                                           const CSSSyntaxDefinition* type,
                                           CascadeResolver&,
                                           const CSSParserContext&,
-                                          FunctionContext*);
+                                          FunctionContext*,
+                                          const CSSPropertyName*);
 
   // Find the type associated with a given local variable (or custom property).
   // The return value may be a pointer directly into a PropertyRegistration;
@@ -758,6 +759,9 @@ class CORE_EXPORT StyleCascade {
   CSSVariableData* GetEnvironmentVariable(const AtomicString&,
                                           Vector<unsigned>) const;
   const CSSParserContext* GetParserContext(const CSSUnparsedDeclarationValue&);
+  static CSSParserLocalContext GetCSSParserLocalContext(
+      FunctionContext* function_context,
+      const CSSPropertyName* property_name);
 
   // Detects if the given property/data depends on the font-size property
   // of the Element we're calculating the style for.
