@@ -59,6 +59,8 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin_presenter.h"
 #import "ios/chrome/browser/autocomplete/model/autocomplete_browser_agent.h"
 #import "ios/chrome/browser/autofill/authentication/coordinator/card_unmask_authentication_coordinator.h"
+#import "ios/chrome/browser/autofill/autofill_ai/coordinator/autofill_ai_save_entity_coordinator.h"
+#import "ios/chrome/browser/autofill/autofill_ai/public/save_entity_params.h"
 #import "ios/chrome/browser/autofill/form_input_accessory/coordinator/form_input_accessory_coordinator.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_edit_profile_coordinator.h"
@@ -530,6 +532,9 @@ const char kChromeAppStoreUrl[] =
 
 @property(nonatomic, strong)
     AutofillEditProfileCoordinator* autofillEditProfileCoordinator;
+
+@property(nonatomic, strong)
+    AutofillAISaveEntityCoordinator* autofillAISaveEntityCoordinator;
 
 @property(nonatomic, strong)
     SaveCardBottomSheetCoordinator* saveCardBottomSheetCoordinator;
@@ -1668,6 +1673,7 @@ const char kChromeAppStoreUrl[] =
   [self dismissAutofillErrorDialog];
 
   [self dismissAutofillProgressDialog];
+  [self dismissSaveEntityDialog];
 
   [self.printCoordinator stop];
   self.printCoordinator = nil;
@@ -2271,6 +2277,25 @@ const char kChromeAppStoreUrl[] =
 - (void)dismissAutofillProgressDialog {
   [self.autofillProgressDialogCoordinator stop];
   self.autofillProgressDialogCoordinator = nil;
+}
+
+- (void)showSaveEntityDialog:(autofill::SaveEntityParams)params {
+  if (_autofillAISaveEntityCoordinator) {
+    std::move(params.callback)
+        .Run(autofill::AutofillClient::AutofillAiBubbleResult::kUnknown);
+    return;
+  }
+
+  _autofillAISaveEntityCoordinator = [[AutofillAISaveEntityCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser
+                          params:std::move(params)];
+  [_autofillAISaveEntityCoordinator start];
+}
+
+- (void)dismissSaveEntityDialog {
+  [_autofillAISaveEntityCoordinator stop];
+  _autofillAISaveEntityCoordinator = nil;
 }
 
 #pragma mark - IOSPasskeyClientCommands

@@ -10,6 +10,7 @@
 namespace autofill {
 struct AutofillErrorDialogContext;
 struct FormActivityParams;
+struct SaveEntityParams;
 class VirtualCardEnrollUiModel;
 }  // namespace autofill
 namespace web {
@@ -65,6 +66,10 @@ class WebState;
 // Commands to manage the Autofill progress dialog.
 - (void)showAutofillProgressDialog;
 - (void)dismissAutofillProgressDialog;
+
+// Commands to manage the Autofill save entity dialog.
+- (void)showSaveEntityDialog:(autofill::SaveEntityParams)params;
+- (void)dismissSaveEntityDialog;
 
 @end
 

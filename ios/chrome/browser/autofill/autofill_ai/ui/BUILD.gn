@@ -1,0 +1,19 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("ui") {
+  sources = [
+    "autofill_ai_constants.mm",
+    "autofill_ai_save_entity_consumer.h",
+    "autofill_ai_save_entity_table_view_controller.h",
+    "autofill_ai_save_entity_table_view_controller.mm",
+  ]
+  deps = [
+    "//components/autofill/core/browser",
+    "//ios/chrome/browser/autofill/autofill_ai/public",
+    "//ios/chrome/browser/shared/ui/table_view",
+    "//ios/chrome/browser/shared/ui/table_view:utils",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

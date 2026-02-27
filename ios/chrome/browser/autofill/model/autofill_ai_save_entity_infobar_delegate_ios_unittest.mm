@@ -10,6 +10,7 @@
 #import "components/autofill/core/browser/test_utils/entity_data_test_utils.h"
 #import "components/grit/components_scaled_resources.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/autofill/autofill_ai/public/save_entity_params.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
@@ -56,9 +57,10 @@ class AutofillAiSaveEntityInfoBarDelegateIOSTest
 // the device.
 TEST_P(AutofillAiSaveEntityInfoBarDelegateIOSTest, GetMessageTextSave) {
   EntityInstance entity = GetEntityInstanceForType(GetParam());
-  AutofillAiSaveEntityInfoBarDelegateIOS delegate(
-      entity, std::nullopt, kTestUserEmail, base::DoNothing(),
-      base::DoNothing());
+  SaveEntityParams params(entity, std::nullopt, kTestUserEmail,
+                          base::DoNothing());
+  AutofillAiSaveEntityInfoBarDelegateIOS delegate(std::move(params),
+                                                  base::DoNothing());
 
   std::u16string expected_text =
       l10n_util::GetStringUTF16(IDS_IOS_INFOBAR_MESSAGE_SAVE_TO_DEVICE);
@@ -70,8 +72,9 @@ TEST_P(AutofillAiSaveEntityInfoBarDelegateIOSTest, GetMessageTextSave) {
 // to save the new entity to the device.
 TEST_P(AutofillAiSaveEntityInfoBarDelegateIOSTest, GetMessageTextUpdate) {
   EntityInstance entity = GetEntityInstanceForType(GetParam());
-  AutofillAiSaveEntityInfoBarDelegateIOS delegate(
-      entity, entity, kTestUserEmail, base::DoNothing(), base::DoNothing());
+  SaveEntityParams params(entity, entity, kTestUserEmail, base::DoNothing());
+  AutofillAiSaveEntityInfoBarDelegateIOS delegate(std::move(params),
+                                                  base::DoNothing());
 
   EXPECT_EQ(delegate.GetMessageText(),
             l10n_util::GetStringUTF16(IDS_IOS_INFOBAR_MESSAGE_SAVE_TO_DEVICE));
@@ -80,9 +83,10 @@ TEST_P(AutofillAiSaveEntityInfoBarDelegateIOSTest, GetMessageTextUpdate) {
 // Tests that the button labels are correct for the save case.
 TEST_P(AutofillAiSaveEntityInfoBarDelegateIOSTest, GetButtonLabelSave) {
   EntityInstance entity = GetEntityInstanceForType(GetParam());
-  AutofillAiSaveEntityInfoBarDelegateIOS delegate(
-      entity, std::nullopt, kTestUserEmail, base::DoNothing(),
-      base::DoNothing());
+  SaveEntityParams params(entity, std::nullopt, kTestUserEmail,
+                          base::DoNothing());
+  AutofillAiSaveEntityInfoBarDelegateIOS delegate(std::move(params),
+                                                  base::DoNothing());
 
   EXPECT_EQ(delegate.GetButtonLabel(ConfirmInfoBarDelegate::BUTTON_OK),
             l10n_util::GetStringUTF16(
@@ -95,8 +99,9 @@ TEST_P(AutofillAiSaveEntityInfoBarDelegateIOSTest, GetButtonLabelSave) {
 // Tests that the button labels are correct for the update case.
 TEST_P(AutofillAiSaveEntityInfoBarDelegateIOSTest, GetButtonLabelUpdate) {
   EntityInstance entity = GetEntityInstanceForType(GetParam());
-  AutofillAiSaveEntityInfoBarDelegateIOS delegate(
-      entity, entity, kTestUserEmail, base::DoNothing(), base::DoNothing());
+  SaveEntityParams params(entity, entity, kTestUserEmail, base::DoNothing());
+  AutofillAiSaveEntityInfoBarDelegateIOS delegate(std::move(params),
+                                                  base::DoNothing());
 
   EXPECT_EQ(delegate.GetButtonLabel(ConfirmInfoBarDelegate::BUTTON_OK),
             l10n_util::GetStringUTF16(
@@ -110,9 +115,10 @@ TEST_P(AutofillAiSaveEntityInfoBarDelegateIOSTest, GetButtonLabelUpdate) {
 // the same icon, we don't need to test it separately.
 TEST_P(AutofillAiSaveEntityInfoBarDelegateIOSTest, GetIcon) {
   EntityInstance entity = GetEntityInstanceForType(GetParam());
-  AutofillAiSaveEntityInfoBarDelegateIOS delegate(
-      entity, std::nullopt, kTestUserEmail, base::DoNothing(),
-      base::DoNothing());
+  SaveEntityParams params(entity, std::nullopt, kTestUserEmail,
+                          base::DoNothing());
+  AutofillAiSaveEntityInfoBarDelegateIOS delegate(std::move(params),
+                                                  base::DoNothing());
 
   // Since we use SF Symbols, we just check that it's not empty and not the
   // default if it's a known type.

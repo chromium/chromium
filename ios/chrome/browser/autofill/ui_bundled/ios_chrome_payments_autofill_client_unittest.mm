@@ -19,6 +19,7 @@
 #import "components/autofill/ios/browser/autofill_agent.h"
 #import "components/autofill/ios/browser/test_autofill_client_ios.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/autofill/autofill_ai/public/save_entity_params.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/autofill/ui_bundled/chrome_autofill_client_ios.h"
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
@@ -116,6 +117,14 @@
 - (void)showAutofillProgressDialog {
 }
 - (void)dismissAutofillProgressDialog {
+}
+
+- (void)showSaveEntityDialog:(autofill::SaveEntityParams)params {
+  std::move(params.callback)
+      .Run(autofill::AutofillClient::AutofillAiBubbleResult::kUnknown);
+}
+
+- (void)dismissSaveEntityDialog {
 }
 
 @end

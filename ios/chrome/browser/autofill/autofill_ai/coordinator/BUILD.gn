@@ -1,0 +1,23 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("coordinator") {
+  sources = [
+    "autofill_ai_save_entity_coordinator.h",
+    "autofill_ai_save_entity_coordinator.mm",
+    "autofill_ai_save_entity_mediator.h",
+    "autofill_ai_save_entity_mediator.mm",
+    "autofill_ai_save_entity_mutator.h",
+  ]
+  deps = [
+    "//components/autofill/core/browser",
+    "//ios/chrome/browser/autofill/autofill_ai/public",
+    "//ios/chrome/browser/autofill/autofill_ai/ui",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/ui/table_view",
+    "//ios/chrome/browser/shared/ui/table_view:utils",
+  ]
+}

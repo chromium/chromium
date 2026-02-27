@@ -1,0 +1,17 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("public") {
+  sources = [
+    "autofill_ai_constants.h",
+    "save_entity_params.h",
+    "save_entity_params.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/autofill/core/browser",
+    "//ios/chrome/app/strings:ios_strings__strings_grit",
+  ]
+  frameworks = [ "Foundation.framework" ]
+}

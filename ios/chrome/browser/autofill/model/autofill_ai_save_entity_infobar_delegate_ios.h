@@ -6,25 +6,18 @@
 #define IOS_CHROME_BROWSER_AUTOFILL_MODEL_AUTOFILL_AI_SAVE_ENTITY_INFOBAR_DELEGATE_IOS_H_
 
 #import "base/functional/callback_forward.h"
-#import "base/functional/callback_helpers.h"
-#import "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #import "components/autofill/core/browser/foundations/autofill_client.h"
 #import "components/infobars/core/confirm_infobar_delegate.h"
+#import "ios/chrome/browser/autofill/autofill_ai/public/save_entity_params.h"
 
 namespace autofill {
-
-class EntityInstance;
 
 // Infobar delegate that prompts the user to save or update an Autofill AI
 // entity.
 class AutofillAiSaveEntityInfoBarDelegateIOS : public ConfirmInfoBarDelegate {
  public:
-  AutofillAiSaveEntityInfoBarDelegateIOS(
-      EntityInstance new_entity,
-      std::optional<EntityInstance> old_entity,
-      std::u16string user_email,
-      base::OnceClosure on_accept_action,
-      AutofillClient::EntityImportPromptResultCallback callback);
+  AutofillAiSaveEntityInfoBarDelegateIOS(SaveEntityParams params,
+                                         base::OnceClosure on_accept_action);
 
   AutofillAiSaveEntityInfoBarDelegateIOS(
       const AutofillAiSaveEntityInfoBarDelegateIOS&) = delete;
@@ -32,6 +25,13 @@ class AutofillAiSaveEntityInfoBarDelegateIOS : public ConfirmInfoBarDelegate {
       const AutofillAiSaveEntityInfoBarDelegateIOS&) = delete;
 
   ~AutofillAiSaveEntityInfoBarDelegateIOS() override;
+
+  // Returns the parameters for the save entity infobar. This call takes the
+  // ownership of the parameters from the infobar delegate. Without this call,
+  // the deconstructor of the infobar delegate calls the callback in the
+  // `SaveEntityParams` with `kUnknown`. With this call, the callback is not
+  // called.
+  SaveEntityParams ExtractParams() { return std::move(params_); }
 
   // ConfirmInfoBarDelegate implementation.
   infobars::InfoBarDelegate::InfoBarIdentifier GetIdentifier() const override;
@@ -48,13 +48,10 @@ class AutofillAiSaveEntityInfoBarDelegateIOS : public ConfirmInfoBarDelegate {
 
  private:
   // Returns whether this is an update prompt.
-  bool IsUpdate() const { return old_entity_.has_value(); }
+  bool IsUpdate() const { return params_.old_entity.has_value(); }
 
-  EntityInstance new_entity_;
-  std::optional<EntityInstance> old_entity_;
-  AutofillClient::EntityImportPromptResultCallback callback_;
+  SaveEntityParams params_;
   base::OnceClosure accept_callback_;
-  std::u16string user_email_;
 };
 
 }  // namespace autofill

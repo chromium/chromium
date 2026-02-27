@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/autofill/model/autofill_ai_save_entity_infobar_delegate_ios.h"
 
 #import "base/feature_list.h"
-#import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #import "components/autofill/ios/common/features.h"
 #import "components/grit/components_scaled_resources.h"
@@ -21,21 +20,16 @@
 namespace autofill {
 
 AutofillAiSaveEntityInfoBarDelegateIOS::AutofillAiSaveEntityInfoBarDelegateIOS(
-    EntityInstance new_entity,
-    std::optional<EntityInstance> old_entity,
-    std::u16string user_email,
-    base::OnceClosure on_accept_action,
-    AutofillClient::EntityImportPromptResultCallback callback)
-    : new_entity_(std::move(new_entity)),
-      old_entity_(std::move(old_entity)),
-      callback_(std::move(callback)),
-      accept_callback_(std::move(on_accept_action)),
-      user_email_(std::move(user_email)) {}
+    SaveEntityParams params,
+    base::OnceClosure on_accept_action)
+    : params_(std::move(params)),
+      accept_callback_(std::move(on_accept_action)) {}
 
 AutofillAiSaveEntityInfoBarDelegateIOS::
     ~AutofillAiSaveEntityInfoBarDelegateIOS() {
-  if (!callback_.is_null() && accept_callback_) {
-    std::move(callback_).Run(AutofillClient::AutofillAiBubbleResult::kUnknown);
+  if (!params_.callback.is_null() && accept_callback_) {
+    std::move(params_.callback)
+        .Run(AutofillClient::AutofillAiBubbleResult::kUnknown);
   }
 }
 
@@ -50,15 +44,16 @@ int AutofillAiSaveEntityInfoBarDelegateIOS::GetIconId() const {
 }
 
 ui::ImageModel AutofillAiSaveEntityInfoBarDelegateIOS::GetIcon() const {
-  if (new_entity_.record_type() == EntityInstance::RecordType::kServerWallet) {
+  if (params_.new_entity.record_type() ==
+      EntityInstance::RecordType::kServerWallet) {
 #if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
     return ui::ImageModel::FromImage(gfx::Image(CustomSymbolWithPointSize(
         kGoogleWalletSymbol, kInfobarSymbolPointSize)));
 #endif
   }
 
-  UIImage* image = DefaultIconForAutofillAiEntityType(new_entity_.type().name(),
-                                                      kInfobarSymbolPointSize);
+  UIImage* image = DefaultIconForAutofillAiEntityType(
+      params_.new_entity.type().name(), kInfobarSymbolPointSize);
   if (image) {
     return ui::ImageModel::FromImage(gfx::Image(image));
   }
@@ -67,16 +62,11 @@ ui::ImageModel AutofillAiSaveEntityInfoBarDelegateIOS::GetIcon() const {
 }
 
 std::u16string AutofillAiSaveEntityInfoBarDelegateIOS::GetTitleText() const {
-  return new_entity_.type().GetNameForI18n();
+  return params_.GetTitleText();
 }
 
 std::u16string AutofillAiSaveEntityInfoBarDelegateIOS::GetMessageText() const {
-  if (new_entity_.record_type() == EntityInstance::RecordType::kServerWallet) {
-    return l10n_util::GetStringFUTF16(IDS_IOS_INFOBAR_MESSAGE_SAVE_TO_WALLET,
-                                      user_email_);
-  } else {
-    return l10n_util::GetStringUTF16(IDS_IOS_INFOBAR_MESSAGE_SAVE_TO_DEVICE);
-  }
+  return params_.GetMessageText();
 }
 
 std::u16string AutofillAiSaveEntityInfoBarDelegateIOS::GetButtonLabel(
@@ -100,16 +90,17 @@ bool AutofillAiSaveEntityInfoBarDelegateIOS::Accept() {
 }
 
 bool AutofillAiSaveEntityInfoBarDelegateIOS::Cancel() {
-  if (!callback_.is_null()) {
-    std::move(callback_).Run(
-        AutofillClient::AutofillAiBubbleResult::kCancelled);
+  if (!params_.callback.is_null()) {
+    std::move(params_.callback)
+        .Run(AutofillClient::AutofillAiBubbleResult::kCancelled);
   }
   return true;
 }
 
 void AutofillAiSaveEntityInfoBarDelegateIOS::InfoBarDismissed() {
-  if (!callback_.is_null()) {
-    std::move(callback_).Run(AutofillClient::AutofillAiBubbleResult::kClosed);
+  if (!params_.callback.is_null()) {
+    std::move(params_.callback)
+        .Run(AutofillClient::AutofillAiBubbleResult::kClosed);
   }
 }
 

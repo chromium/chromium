@@ -1,0 +1,8 @@
+include_rules = [
+  "+ios/chrome/browser/autofill/autofill_ai/public",
+  "+ios/chrome/browser/autofill/autofill_ai/ui",
+  "+ios/chrome/browser/shared/coordinator/chrome_coordinator",
+  "+ios/chrome/browser/shared/model/browser",
+  "+ios/chrome/browser/shared/public/commands",
+  "+ios/chrome/browser/shared/ui/table_view",
+]
