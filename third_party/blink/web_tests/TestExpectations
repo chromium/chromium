@@ -2578,8 +2578,10 @@ crbug.com/925997 [ Webview ] external/wpt/mediasession/idlharness.window.html [ 
 crbug.com/334063352 [ Webview ] external/wpt/picture-in-picture/idlharness.window.html [ Failure ]
 crbug.com/421921 [ Webview ] external/wpt/push-api/idlharness.https.any.serviceworker.html [ Failure ]
 
+# Timeout on Android but flakes on other platforms
+crbug.com/477638183 external/wpt/visual-viewport/resize-event-order.html [ Pass Failure Timeout ]
+
 # Other failing/timeout tests
-[ Android ] external/wpt/visual-viewport/resize-event-order.html [ Timeout ]
 [ Android ] external/wpt/visual-viewport/viewport-resize-event-on-load-overflowing-page.html [ Failure ]
 [ Webview ] external/wpt/compat/idlharness.window.html [ Failure ]
 [ Webview ] external/wpt/html-media-capture/idlharness.window.html [ Failure ]
