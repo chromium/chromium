@@ -12,8 +12,6 @@
 #include "base/values.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 
-class GURL;
-
 namespace actor {
 
 // LINT.IfChange(SafetyListParseResult)
@@ -58,25 +56,6 @@ class SafetyList {
   SafetyList& operator=(const SafetyList&);
 
   const std::vector<SafetyListEntry>& entries() const { return entries_; }
-
-  size_t size() const { return entries_.size(); }
-
-  bool ContainsUrlPairWithWildcardSource(const GURL& source,
-                                         const GURL& destination) const;
-
-  bool ContainsUrlPair(const GURL& source, const GURL& destination) const;
-
-  // SafetyList may contain rules intended to block actor from visiting a
-  // blocked site. These rules have a {source, destination} pair where `source`
-  // is always wildcard. If a rule forbids self-navigation, the origin is
-  // assumed to be off limits altogether.
-  //
-  // Just in case, to prevent rules which do not have wildcard in their
-  // `source` from erroneously applying, we still pass `url` as the `source`
-  // argument for ContainsUrlPair.
-  bool ContainsEntryMatchingSelfNavigation(const GURL& url) const {
-    return ContainsUrlPair(url, url);
-  }
 
   // Parses a list of entries from a JSON list. Returns the parsed SafetyList
   // on success, or a SafetyListParseResult on failure. If the result is a

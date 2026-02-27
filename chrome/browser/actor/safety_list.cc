@@ -17,29 +17,6 @@
 
 namespace actor {
 
-bool SafetyList::ContainsUrlPair(const GURL& source,
-                                 const GURL& destination) const {
-  return std::ranges::any_of(entries_, [&](const SafetyListEntry& entry) {
-    return entry.source.Matches(source) &&
-           entry.destination.Matches(destination);
-  });
-}
-
-bool SafetyList::ContainsUrlPairWithWildcardSource(
-    const GURL& source,
-    const GURL& destination) const {
-  return std::ranges::any_of(entries_, [&](const SafetyListEntry& entry) {
-    // A full wildcard [*] is not included in `HasDomainWildcard()`, so we check
-    // for that as well.
-    bool has_domain_wildcard =
-        entry.source.GetScope() ==
-            ContentSettingsPattern::Scope::kFullWildcard ||
-        entry.source.HasDomainWildcard();
-    return has_domain_wildcard && entry.source.Matches(source) &&
-           entry.destination.Matches(destination);
-  });
-}
-
 SafetyList::SafetyList(std::vector<SafetyListEntry> entries)
     : entries_(std::move(entries)) {}
 

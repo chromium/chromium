@@ -16,7 +16,10 @@
 #include "chrome/browser/actor/actor_features.h"
 #include "chrome/browser/actor/actor_util.h"
 #include "chrome/browser/actor/safety_list.h"
+#include "components/content_settings/core/common/content_settings_metadata.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
+#include "components/content_settings/core/common/content_settings_utils.h"
+#include "components/content_settings/core/common/host_indexed_content_settings.h"
 
 namespace actor {
 
@@ -30,15 +33,33 @@ constexpr std::string_view kAllowedHistogramName =
 constexpr std::string_view kBlockedHistogramName =
     "Actor.SafetyListParseResult.NavigationBlocked";
 
-void MaybeAppendHardcodedEntries(std::vector<SafetyListEntry>& entries) {
+void SetAll(base::span<const SafetyListEntry> entries,
+            ContentSetting setting,
+            content_settings::HostIndexedContentSettings& indexed_settings) {
+  const base::Value setting_value =
+      content_settings::ContentSettingToValue(setting);
+  for (const auto& entry : entries) {
+    indexed_settings.SetValue(entry.source, entry.destination,
+                              setting_value.Clone(), {});
+  }
+}
+
+void MaybeSetHardcodedEntries(
+    content_settings::HostIndexedContentSettings& indexed_settings) {
   if (IsNavigationGatingEnabled() &&
       kGlicIncludeHardcodedBlockListEntries.Get()) {
-    entries.emplace_back(
-        ContentSettingsPattern::FromString("*"),
-        ContentSettingsPattern::FromString("[*.]googleplex.com"));
-    entries.emplace_back(
-        ContentSettingsPattern::FromString("*"),
-        ContentSettingsPattern::FromString("[*.]corp.google.com"));
+    SetAll(
+        {
+            {
+                ContentSettingsPattern::FromString("*"),
+                ContentSettingsPattern::FromString("[*.]googleplex.com"),
+            },
+            {
+                ContentSettingsPattern::FromString("*"),
+                ContentSettingsPattern::FromString("[*.]corp.google.com"),
+            },
+        },
+        ContentSetting::CONTENT_SETTING_BLOCK, indexed_settings);
   }
 }
 
@@ -55,10 +76,34 @@ SafetyListManager SafetyListManager::CreateForTesting() {
   return SafetyListManager();
 }
 
+SafetyListManager::Decision SafetyListManager::Find(
+    const GURL& source,
+    const GURL& destination) const {
+  const content_settings::RuleEntry* rule_entry =
+      host_indexed_content_settings_.Find(source, destination);
+
+  if (!rule_entry) {
+    return Decision::kNone;
+  }
+  ContentSetting setting =
+      content_settings::ParseContentSettingValue(rule_entry->second.value)
+          .value();
+  switch (setting) {
+    case CONTENT_SETTING_ALLOW:
+      return Decision::kAllow;
+    case CONTENT_SETTING_BLOCK:
+      return Decision::kBlock;
+    case CONTENT_SETTING_DEFAULT:
+    case CONTENT_SETTING_ASK:
+    case CONTENT_SETTING_SESSION_ONLY:
+    case CONTENT_SETTING_NUM_SETTINGS:
+      NOTREACHED();
+  }
+  NOTREACHED();
+}
+
 SafetyListManager::SafetyListManager() {
-  std::vector<SafetyListEntry> entries;
-  MaybeAppendHardcodedEntries(entries);
-  blocked_ = SafetyList(std::move(entries));
+  MaybeSetHardcodedEntries(host_indexed_content_settings_);
 }
 SafetyListManager::~SafetyListManager() = default;
 
@@ -90,16 +135,19 @@ SafetyListManager::ParseStatus SafetyListManager::ParseSafetyListsInternal(
 
   base::expected<SafetyList, SafetyListParseResult> allowed_result =
       parse_one_list(kAllowedFieldName);
-  if (allowed_result.has_value()) {
-    allowed_ = std::move(allowed_result.value());
-  }
-
   base::expected<SafetyList, SafetyListParseResult> blocked_result =
       parse_one_list(kBlockedFieldName);
-  if (blocked_result.has_value()) {
-    std::vector<SafetyListEntry> entries = blocked_result->entries();
-    MaybeAppendHardcodedEntries(entries);
-    blocked_ = SafetyList(std::move(entries));
+  if (allowed_result.has_value() || blocked_result.has_value()) {
+    host_indexed_content_settings_.Clear();
+    if (allowed_result.has_value()) {
+      SetAll(allowed_result->entries(), ContentSetting::CONTENT_SETTING_ALLOW,
+             host_indexed_content_settings_);
+    }
+    if (blocked_result.has_value()) {
+      SetAll(blocked_result->entries(), ContentSetting::CONTENT_SETTING_BLOCK,
+             host_indexed_content_settings_);
+    }
+    MaybeSetHardcodedEntries(host_indexed_content_settings_);
   }
 
   return {allowed_result.error_or(SafetyListParseResult::kSuccess),

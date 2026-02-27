@@ -358,22 +358,20 @@ ExecutionEngine::GatingDecision ExecutionEngine::DetermineGatingDecision(
     // it is already on the blocklist, and navigation gating prevents the actor
     // from navigating to a blocked origin after. We apply a CHECK to enforce
     // this invariant.
-    CHECK(!safety_list_manager.get_blocked_list()
-               .ContainsUrlPairWithWildcardSource(source_url, destination_url));
+    CHECK(safety_list_manager.Find(source_url, destination_url) !=
+          SafetyListManager::Decision::kBlock);
     return GatingDecision::kAllowSameOrigin;
   }
 
-  if (safety_list_manager.get_blocked_list().ContainsUrlPair(source_url,
-                                                             destination_url)) {
-    return GatingDecision::kBlockByStaticList;
+  switch (safety_list_manager.Find(source_url, destination_url)) {
+    case SafetyListManager::Decision::kNone:
+      return GatingDecision::kNeedsAsyncCheck;
+    case SafetyListManager::Decision::kAllow:
+      return GatingDecision::kAllowByStaticList;
+    case SafetyListManager::Decision::kBlock:
+      return GatingDecision::kBlockByStaticList;
   }
-
-  if (safety_list_manager.get_allowed_list().ContainsUrlPair(source_url,
-                                                             destination_url)) {
-    return GatingDecision::kAllowByStaticList;
-  }
-
-  return GatingDecision::kNeedsAsyncCheck;
+  NOTREACHED();
 }
 
 void ExecutionEngine::CheckNavigationSensitiveUrlList(
@@ -764,8 +762,8 @@ void ExecutionEngine::SafetyChecksForNextAction() {
       *SafetyListManager::GetInstance();
   const GURL& url =
       tab->GetContents()->GetPrimaryMainFrame()->GetLastCommittedURL();
-  if (safety_list_manager.get_blocked_list()
-          .ContainsEntryMatchingSelfNavigation(url)) {
+  if (safety_list_manager.Find(url, url) ==
+      SafetyListManager::Decision::kBlock) {
     OnMayActOnTabDecision(
         tab->GetContents()->GetPrimaryMainFrame()->GetLastCommittedOrigin(),
         MayActOnUrlBlockReason::kBlockedByStaticList);
