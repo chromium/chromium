@@ -1110,7 +1110,7 @@ base::OnceClosure DatabaseConnection::GetCleanupTask(bool force_closing) && {
 #endif
 
     // Determine whether to vacuum.
-    if (!should_delete_db && !should_attempt_recovery) {
+    if (!had_sql_error && !should_delete_db && !should_attempt_recovery) {
       unsigned int freelist_percentage =
           base::ClampDiv(GetFreelistCount(*db_) * 100, GetPageCount(*db_));
       base::UmaHistogramPercentage("IndexedDB.SQLite.FreelistPercentageAtClose",
