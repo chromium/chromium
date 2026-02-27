@@ -374,7 +374,7 @@ CSSParserToken CSSTokenizer::ConsumeNumericToken() {
 CSSParserToken CSSTokenizer::ConsumeIdentLikeToken() {
   StringView name = ConsumeName();
   if (ConsumeIfNext('(')) {
-    if (EqualIgnoringASCIICase(name, "url")) {
+    if (EqualIgnoringAsciiCase(name, "url")) {
       // The spec is slightly different so as to avoid dropping whitespace
       // tokens, but they wouldn't be used and this is easier.
       input_.AdvanceUntilNonWhitespace();

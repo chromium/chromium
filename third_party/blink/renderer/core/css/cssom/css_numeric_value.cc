@@ -323,10 +323,10 @@ CSSPrimitiveValue::UnitType CSSNumericValue::UnitFromName(const String& name) {
   if (name.empty()) {
     return CSSPrimitiveValue::UnitType::kUnknown;
   }
-  if (EqualIgnoringASCIICase(name, "number")) {
+  if (EqualIgnoringAsciiCase(name, "number")) {
     return CSSPrimitiveValue::UnitType::kNumber;
   }
-  if (EqualIgnoringASCIICase(name, "percent") || name == "%") {
+  if (EqualIgnoringAsciiCase(name, "percent") || name == "%") {
     return CSSPrimitiveValue::UnitType::kPercentage;
   }
   return CSSPrimitiveValue::StringToUnitType(name);

@@ -14,161 +14,161 @@
 namespace blink {
 
 CSSAtRuleID CssAtRuleID(StringView name) {
-  if (EqualIgnoringASCIICase(name, "view-transition")) {
+  if (EqualIgnoringAsciiCase(name, "view-transition")) {
     return CSSAtRuleID::kCSSAtRuleViewTransition;
   }
-  if (EqualIgnoringASCIICase(name, "charset")) {
+  if (EqualIgnoringAsciiCase(name, "charset")) {
     return CSSAtRuleID::kCSSAtRuleCharset;
   }
-  if (EqualIgnoringASCIICase(name, "font-face")) {
+  if (EqualIgnoringAsciiCase(name, "font-face")) {
     return CSSAtRuleID::kCSSAtRuleFontFace;
   }
-  if (EqualIgnoringASCIICase(name, "font-palette-values")) {
+  if (EqualIgnoringAsciiCase(name, "font-palette-values")) {
     return CSSAtRuleID::kCSSAtRuleFontPaletteValues;
   }
-  if (EqualIgnoringASCIICase(name, "font-feature-values")) {
+  if (EqualIgnoringAsciiCase(name, "font-feature-values")) {
     return CSSAtRuleID::kCSSAtRuleFontFeatureValues;
   }
-  if (EqualIgnoringASCIICase(name, "stylistic")) {
+  if (EqualIgnoringAsciiCase(name, "stylistic")) {
     return CSSAtRuleID::kCSSAtRuleStylistic;
   }
-  if (EqualIgnoringASCIICase(name, "styleset")) {
+  if (EqualIgnoringAsciiCase(name, "styleset")) {
     return CSSAtRuleID::kCSSAtRuleStyleset;
   }
-  if (EqualIgnoringASCIICase(name, "character-variant")) {
+  if (EqualIgnoringAsciiCase(name, "character-variant")) {
     return CSSAtRuleID::kCSSAtRuleCharacterVariant;
   }
-  if (EqualIgnoringASCIICase(name, "swash")) {
+  if (EqualIgnoringAsciiCase(name, "swash")) {
     return CSSAtRuleID::kCSSAtRuleSwash;
   }
-  if (EqualIgnoringASCIICase(name, "ornaments")) {
+  if (EqualIgnoringAsciiCase(name, "ornaments")) {
     return CSSAtRuleID::kCSSAtRuleOrnaments;
   }
-  if (EqualIgnoringASCIICase(name, "annotation")) {
+  if (EqualIgnoringAsciiCase(name, "annotation")) {
     return CSSAtRuleID::kCSSAtRuleAnnotation;
   }
-  if (EqualIgnoringASCIICase(name, "import")) {
+  if (EqualIgnoringAsciiCase(name, "import")) {
     return CSSAtRuleID::kCSSAtRuleImport;
   }
-  if (EqualIgnoringASCIICase(name, "keyframes")) {
+  if (EqualIgnoringAsciiCase(name, "keyframes")) {
     return CSSAtRuleID::kCSSAtRuleKeyframes;
   }
-  if (EqualIgnoringASCIICase(name, "layer")) {
+  if (EqualIgnoringAsciiCase(name, "layer")) {
     return CSSAtRuleID::kCSSAtRuleLayer;
   }
-  if (EqualIgnoringASCIICase(name, "media")) {
+  if (EqualIgnoringAsciiCase(name, "media")) {
     return CSSAtRuleID::kCSSAtRuleMedia;
   }
-  if (EqualIgnoringASCIICase(name, "namespace")) {
+  if (EqualIgnoringAsciiCase(name, "namespace")) {
     return CSSAtRuleID::kCSSAtRuleNamespace;
   }
-  if (EqualIgnoringASCIICase(name, "page")) {
+  if (EqualIgnoringAsciiCase(name, "page")) {
     return CSSAtRuleID::kCSSAtRulePage;
   }
-  if (EqualIgnoringASCIICase(name, "position-try")) {
+  if (EqualIgnoringAsciiCase(name, "position-try")) {
     return CSSAtRuleID::kCSSAtRulePositionTry;
   }
-  if (EqualIgnoringASCIICase(name, "property")) {
+  if (EqualIgnoringAsciiCase(name, "property")) {
     return CSSAtRuleID::kCSSAtRuleProperty;
   }
   if (RuntimeEnabledFeatures::RouteMatchingEnabled()) {
-    if (EqualIgnoringASCIICase(name, "route")) {
+    if (EqualIgnoringAsciiCase(name, "route")) {
       return CSSAtRuleID::kCSSAtRuleRoute;
     }
-    if (EqualIgnoringASCIICase(name, "navigation")) {
+    if (EqualIgnoringAsciiCase(name, "navigation")) {
       return CSSAtRuleID::kCSSAtRuleNavigation;
     }
   }
-  if (EqualIgnoringASCIICase(name, "container")) {
+  if (EqualIgnoringAsciiCase(name, "container")) {
     return CSSAtRuleID::kCSSAtRuleContainer;
   }
-  if (EqualIgnoringASCIICase(name, "counter-style")) {
+  if (EqualIgnoringAsciiCase(name, "counter-style")) {
     return CSSAtRuleID::kCSSAtRuleCounterStyle;
   }
-  if (EqualIgnoringASCIICase(name, "scope")) {
+  if (EqualIgnoringAsciiCase(name, "scope")) {
     return CSSAtRuleID::kCSSAtRuleScope;
   }
-  if (EqualIgnoringASCIICase(name, "supports")) {
+  if (EqualIgnoringAsciiCase(name, "supports")) {
     return CSSAtRuleID::kCSSAtRuleSupports;
   }
-  if (EqualIgnoringASCIICase(name, "starting-style")) {
+  if (EqualIgnoringAsciiCase(name, "starting-style")) {
     return CSSAtRuleID::kCSSAtRuleStartingStyle;
   }
-  if (EqualIgnoringASCIICase(name, "-webkit-keyframes")) {
+  if (EqualIgnoringAsciiCase(name, "-webkit-keyframes")) {
     return CSSAtRuleID::kCSSAtRuleWebkitKeyframes;
   }
 
   // https://www.w3.org/TR/css-page-3/#syntax-page-selector
-  if (EqualIgnoringASCIICase(name, "top-left-corner")) {
+  if (EqualIgnoringAsciiCase(name, "top-left-corner")) {
     return CSSAtRuleID::kCSSAtRuleTopLeftCorner;
   }
-  if (EqualIgnoringASCIICase(name, "top-left")) {
+  if (EqualIgnoringAsciiCase(name, "top-left")) {
     return CSSAtRuleID::kCSSAtRuleTopLeft;
   }
-  if (EqualIgnoringASCIICase(name, "top-center")) {
+  if (EqualIgnoringAsciiCase(name, "top-center")) {
     return CSSAtRuleID::kCSSAtRuleTopCenter;
   }
-  if (EqualIgnoringASCIICase(name, "top-right")) {
+  if (EqualIgnoringAsciiCase(name, "top-right")) {
     return CSSAtRuleID::kCSSAtRuleTopRight;
   }
-  if (EqualIgnoringASCIICase(name, "top-right-corner")) {
+  if (EqualIgnoringAsciiCase(name, "top-right-corner")) {
     return CSSAtRuleID::kCSSAtRuleTopRightCorner;
   }
-  if (EqualIgnoringASCIICase(name, "bottom-left-corner")) {
+  if (EqualIgnoringAsciiCase(name, "bottom-left-corner")) {
     return CSSAtRuleID::kCSSAtRuleBottomLeftCorner;
   }
-  if (EqualIgnoringASCIICase(name, "bottom-left")) {
+  if (EqualIgnoringAsciiCase(name, "bottom-left")) {
     return CSSAtRuleID::kCSSAtRuleBottomLeft;
   }
-  if (EqualIgnoringASCIICase(name, "bottom-center")) {
+  if (EqualIgnoringAsciiCase(name, "bottom-center")) {
     return CSSAtRuleID::kCSSAtRuleBottomCenter;
   }
-  if (EqualIgnoringASCIICase(name, "bottom-right")) {
+  if (EqualIgnoringAsciiCase(name, "bottom-right")) {
     return CSSAtRuleID::kCSSAtRuleBottomRight;
   }
-  if (EqualIgnoringASCIICase(name, "bottom-right-corner")) {
+  if (EqualIgnoringAsciiCase(name, "bottom-right-corner")) {
     return CSSAtRuleID::kCSSAtRuleBottomRightCorner;
   }
-  if (EqualIgnoringASCIICase(name, "left-top")) {
+  if (EqualIgnoringAsciiCase(name, "left-top")) {
     return CSSAtRuleID::kCSSAtRuleLeftTop;
   }
-  if (EqualIgnoringASCIICase(name, "left-middle")) {
+  if (EqualIgnoringAsciiCase(name, "left-middle")) {
     return CSSAtRuleID::kCSSAtRuleLeftMiddle;
   }
-  if (EqualIgnoringASCIICase(name, "left-bottom")) {
+  if (EqualIgnoringAsciiCase(name, "left-bottom")) {
     return CSSAtRuleID::kCSSAtRuleLeftBottom;
   }
-  if (EqualIgnoringASCIICase(name, "right-top")) {
+  if (EqualIgnoringAsciiCase(name, "right-top")) {
     return CSSAtRuleID::kCSSAtRuleRightTop;
   }
-  if (EqualIgnoringASCIICase(name, "right-middle")) {
+  if (EqualIgnoringAsciiCase(name, "right-middle")) {
     return CSSAtRuleID::kCSSAtRuleRightMiddle;
   }
-  if (EqualIgnoringASCIICase(name, "right-bottom")) {
+  if (EqualIgnoringAsciiCase(name, "right-bottom")) {
     return CSSAtRuleID::kCSSAtRuleRightBottom;
   }
 
   if (RuntimeEnabledFeatures::CSSFunctionsEnabled() &&
-      EqualIgnoringASCIICase(name, "function")) {
+      EqualIgnoringAsciiCase(name, "function")) {
     return CSSAtRuleID::kCSSAtRuleFunction;
   }
   if (RuntimeEnabledFeatures::CSSMixinsEnabled()) {
-    if (EqualIgnoringASCIICase(name, "mixin")) {
+    if (EqualIgnoringAsciiCase(name, "mixin")) {
       return CSSAtRuleID::kCSSAtRuleMixin;
     }
-    if (EqualIgnoringASCIICase(name, "apply")) {
+    if (EqualIgnoringAsciiCase(name, "apply")) {
       return CSSAtRuleID::kCSSAtRuleApplyMixin;
     }
-    if (EqualIgnoringASCIICase(name, "contents")) {
+    if (EqualIgnoringAsciiCase(name, "contents")) {
       return CSSAtRuleID::kCSSAtRuleContents;
     }
-    if (EqualIgnoringASCIICase(name, "result")) {
+    if (EqualIgnoringAsciiCase(name, "result")) {
       return CSSAtRuleID::kCSSAtRuleResult;
     }
   }
 
   if (RuntimeEnabledFeatures::CSSCustomMediaEnabled()) {
-    if (EqualIgnoringASCIICase(name, "custom-media")) {
+    if (EqualIgnoringAsciiCase(name, "custom-media")) {
       return CSSAtRuleID::kCSSAtRuleCustomMedia;
     }
   }

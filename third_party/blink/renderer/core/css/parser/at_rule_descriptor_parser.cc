@@ -84,10 +84,10 @@ CSSValueList* ConsumeFontFaceUnicodeRange(CSSParserTokenStream& stream) {
 bool IsSupportedFontFormat(String font_format) {
   return css_parsing_utils::IsSupportedKeywordFormat(
              css_parsing_utils::FontFormatToId(font_format)) ||
-         EqualIgnoringASCIICase(font_format, "woff-variations") ||
-         EqualIgnoringASCIICase(font_format, "truetype-variations") ||
-         EqualIgnoringASCIICase(font_format, "opentype-variations") ||
-         EqualIgnoringASCIICase(font_format, "woff2-variations");
+         EqualIgnoringAsciiCase(font_format, "woff-variations") ||
+         EqualIgnoringAsciiCase(font_format, "truetype-variations") ||
+         EqualIgnoringAsciiCase(font_format, "opentype-variations") ||
+         EqualIgnoringAsciiCase(font_format, "woff2-variations");
 }
 
 CSSFontFaceSrcValue::FontTechnology ValueIDToTechnology(CSSValueID valueID) {

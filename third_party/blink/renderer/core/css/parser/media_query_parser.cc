@@ -177,11 +177,11 @@ namespace {
 
 bool IsRestrictorOrLogicalOperator(const CSSParserToken& token) {
   // FIXME: it would be more efficient to use lower-case always for tokenValue.
-  return EqualIgnoringASCIICase(token.Value(), "not") ||
-         EqualIgnoringASCIICase(token.Value(), "and") ||
-         EqualIgnoringASCIICase(token.Value(), "or") ||
-         EqualIgnoringASCIICase(token.Value(), "only") ||
-         EqualIgnoringASCIICase(token.Value(), "layer");
+  return EqualIgnoringAsciiCase(token.Value(), "not") ||
+         EqualIgnoringAsciiCase(token.Value(), "and") ||
+         EqualIgnoringAsciiCase(token.Value(), "or") ||
+         EqualIgnoringAsciiCase(token.Value(), "only") ||
+         EqualIgnoringAsciiCase(token.Value(), "layer");
 }
 
 bool ConsumeUntilCommaInclusive(CSSParserTokenStream& stream) {
