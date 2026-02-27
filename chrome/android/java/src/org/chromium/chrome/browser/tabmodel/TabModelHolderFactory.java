@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tabmodel;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
+import static org.chromium.chrome.browser.tab.TabStateStorageServiceFactory.createBatch;
 
 import org.chromium.base.Holder;
 import org.chromium.build.annotations.NullMarked;
@@ -122,6 +123,7 @@ public class TabModelHolderFactory {
                         asyncTabParamsManager,
                         tabRemover,
                         tabUngrouper,
+                        () -> createBatch(profile),
                         supportUndo);
         filterHolder.value = regularTabModel;
 
