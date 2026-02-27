@@ -76,6 +76,7 @@
 #include "third_party/blink/renderer/core/speculation_rules/document_speculation_rules.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "ui/accessibility/ax_mode.h"
@@ -445,6 +446,13 @@ void WebDocument::GetCrossDocumentScriptToolResult(
         },
         std::move(result_callback)));
   }
+}
+
+bool WebDocument::IsAutofillEventEnabled() const {
+  const Document* document = ConstUnwrap<Document>();
+  CHECK(document);
+  return RuntimeEnabledFeatures::AutofillEventEnabled(
+      document->GetExecutionContext());
 }
 
 void WebDocument::DispatchAutofillEvent(

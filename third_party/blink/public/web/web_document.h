@@ -268,6 +268,10 @@ class BLINK_EXPORT WebDocument : public WebNode {
   // Cancels a script tool with the given execution ID.
   void CancelScriptTool(uint32_t execution_id);
 
+  // Returns whether the AutofillEvent runtime feature is enabled for this
+  // document's execution context (including origin trial tokens).
+  bool IsAutofillEventEnabled() const;
+
   // Dispatches an autofill event on the document with the given field data.
   // This is called by the autofill agent before filling form fields.
   // The `fill_id` is passed so that refill requests can be associated with

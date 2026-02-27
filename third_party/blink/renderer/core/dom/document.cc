@@ -4673,7 +4673,7 @@ void Document::DispatchAutofillEvent(
     HeapVector<std::pair<Member<Element>, String>> autofill_values,
     const base::UnguessableToken& fill_id,
     bool supports_refill) {
-  if (!RuntimeEnabledFeatures::AutofillEventEnabled()) {
+  if (!RuntimeEnabledFeatures::AutofillEventEnabled(GetExecutionContext())) {
     return;
   }
 
