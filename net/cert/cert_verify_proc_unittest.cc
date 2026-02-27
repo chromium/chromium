@@ -5297,7 +5297,7 @@ TEST_P(CertVerifyProcConstraintsTrustedSelfSignedTest, WeakSignatureAlgorithm) {
   if (VerifyProcTypeIsBuiltin()) {
     // Attempts to verify as anchor of itself, which fails due to the weak
     // signature algorithm.
-    EXPECT_THAT(Verify(), IsError(ERR_CERT_WEAK_SIGNATURE_ALGORITHM));
+    EXPECT_THAT(Verify(), IsError(ERR_CERT_INVALID));
 
     // Signature not checked when verified as a directly trusted leaf without
     // require_leaf_selfsigned.
@@ -5406,10 +5406,13 @@ TEST_P(CertVerifyProcInternalTest, Sha1LeafNonSha1Intermediate) {
   int error = Verify(cert.get(), "www.example.com", flags, &verify_result);
   if (VerifyProcTypeIsAndroidQOrLater()) {
     EXPECT_THAT(error, IsError(ERR_CERT_AUTHORITY_INVALID));
-  } else if (verify_proc_type() == CERT_VERIFY_PROC_IOS) {
-    EXPECT_THAT(error, IsError(ERR_CERT_INVALID));
-  } else {
+  } else if (verify_proc_type() == CERT_VERIFY_PROC_ANDROID) {
+    // Old versions of android that don't reject SHA-1, where it is enforced in
+    // the CertVerifyProc wrapper. Only cronet supports android versions this
+    // old.
     EXPECT_THAT(error, IsError(ERR_CERT_WEAK_SIGNATURE_ALGORITHM));
+  } else {
+    EXPECT_THAT(error, IsError(ERR_CERT_INVALID));
   }
   EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_WEAK_SIGNATURE_ALGORITHM);
 }
@@ -5435,12 +5438,15 @@ TEST_P(CertVerifyProcInternalTest, NonSha1LeafSha1Intermediate) {
     // in the returned chain since it doesn't want to check the algorithm on
     // the root certificate. Thus the result does not get the
     // CERT_STATUS_WEAK_SIGNATURE_ALGORITHM status set.
-  } else if (verify_proc_type() == CERT_VERIFY_PROC_IOS) {
-    EXPECT_THAT(error, IsError(ERR_CERT_INVALID));
+  } else if (verify_proc_type() == CERT_VERIFY_PROC_ANDROID) {
+    // Old versions of android that don't reject SHA-1, where it is enforced in
+    // the CertVerifyProc wrapper. Only cronet supports android versions this
+    // old.
+    EXPECT_THAT(error, IsError(ERR_CERT_WEAK_SIGNATURE_ALGORITHM));
     EXPECT_TRUE(verify_result.cert_status &
                 CERT_STATUS_WEAK_SIGNATURE_ALGORITHM);
   } else {
-    EXPECT_THAT(error, IsError(ERR_CERT_WEAK_SIGNATURE_ALGORITHM));
+    EXPECT_THAT(error, IsError(ERR_CERT_INVALID));
     EXPECT_TRUE(verify_result.cert_status &
                 CERT_STATUS_WEAK_SIGNATURE_ALGORITHM);
   }

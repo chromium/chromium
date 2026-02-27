@@ -4027,8 +4027,6 @@ EVENT_TYPE(CERT_VERIFY_PROC_ADDITIONAL_CERT)
 // CertVerifyProcBuiltin.
 // The BEGIN phase contains the following information:
 // {
-//      "digest_policy": <Specifies which digest methods are accepted in this
-//                        attempt.>
 //      "is_ev_attempt": <True if this is an EV verification attempt.>
 //      "is_qwac_attempt": <True if this is a QWAC verification attempt.>
 //      "is_network_time_attempt": <True if this attempt used the network time.>

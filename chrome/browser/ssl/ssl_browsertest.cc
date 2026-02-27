@@ -1527,7 +1527,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, SHA1IsDefaultDisabled) {
 
   ssl_test_util::CheckAuthenticationBrokenState(
       browser()->tab_strip_model()->GetActiveWebContents(),
-      net::CERT_STATUS_WEAK_SIGNATURE_ALGORITHM,
+      net::CERT_STATUS_INVALID | net::CERT_STATUS_WEAK_SIGNATURE_ALGORITHM,
       AuthState::SHOWING_INTERSTITIAL);
 }
 
