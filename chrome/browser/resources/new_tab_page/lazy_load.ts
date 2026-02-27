@@ -28,7 +28,6 @@ export type {ComposeboxFile} from 'chrome://resources/cr_components/composebox/c
 export {ComposeboxElement, VoiceSearchAction} from 'chrome://resources/cr_components/composebox/composebox.js';
 export {ComposeboxFileInputsElement} from 'chrome://resources/cr_components/composebox/composebox_file_inputs.js';
 export {ComposeboxProxyImpl} from 'chrome://resources/cr_components/composebox/composebox_proxy.js';
-export {ContextualEntrypointAndCarouselElement} from 'chrome://resources/cr_components/composebox/contextual_entrypoint_and_carousel.js';
 export {ErrorScrimElement} from 'chrome://resources/cr_components/composebox/error_scrim.js';
 export {ComposeboxFileCarouselElement} from 'chrome://resources/cr_components/composebox/file_carousel.js';
 export {ComposeboxFileThumbnailElement} from 'chrome://resources/cr_components/composebox/file_thumbnail.js';

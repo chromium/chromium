@@ -5,12 +5,12 @@
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {ToolMode as ComposeboxToolMode} from './composebox_query.mojom-webui.js';
-import type {ContextualEntrypointAndCarouselElement} from './contextual_entrypoint_and_carousel.js';
+import type {ComposeboxElement} from './composebox.js';
 
-export function getHtml(this: ContextualEntrypointAndCarouselElement) {
+export function getHtml(this: ComposeboxElement) {
   // clang-format off
   return html`
-${this.activeTool_ === ComposeboxToolMode.kDeepSearch ? html`
+${this.activeToolMode_ === ComposeboxToolMode.kDeepSearch ? html`
   <cr-composebox-tool-chip
       id="deepSearchChip"
       exportparts="tool-chip-label"
@@ -24,7 +24,7 @@ ${this.activeTool_ === ComposeboxToolMode.kDeepSearch ? html`
       @click="${this.handleDeepSearchClick_}">
   </cr-composebox-tool-chip>
 ` : ''}
-${this.activeTool_ === ComposeboxToolMode.kImageGen ? html`
+${this.activeToolMode_ === ComposeboxToolMode.kImageGen ? html`
   <cr-composebox-tool-chip
       id="nanoBananaChip"
       exportparts="tool-chip-label"
@@ -38,7 +38,7 @@ ${this.activeTool_ === ComposeboxToolMode.kImageGen ? html`
       @click="${this.handleImageGenClick_}">
   </cr-composebox-tool-chip>
 ` : ''}
-${this.activeTool_ === ComposeboxToolMode.kCanvas ? html`
+${this.activeToolMode_ === ComposeboxToolMode.kCanvas ? html`
   <cr-composebox-tool-chip
       id="canvasChip"
       exportparts="tool-chip-label"

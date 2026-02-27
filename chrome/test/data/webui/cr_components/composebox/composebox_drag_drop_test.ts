@@ -19,7 +19,7 @@ import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as 
 import {InputType, ToolMode as ComposeboxToolMode} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
-import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {installMock} from './composebox_test_utils.js';
 
@@ -322,7 +322,6 @@ suite('ComposeboxDragAndDrop', () => {
     assertEquals(1, searchboxHandler.getCallCount(ADD_FILE_CONTEXT_FN));
     assertFalse(composeboxElement.hasAttribute('is-dragging-file'));
 
-    const context = composeboxElement.$.context;
     // Mock backend response: manually add file to frontend to render it in the
     // frontend
     const mockAddedFile: ComposeboxFile = {
@@ -336,13 +335,14 @@ suite('ComposeboxDragAndDrop', () => {
       url: null,
       tabId: null,
     };
-    context.onFileContextAdded(mockAddedFile);
+    composeboxElement.addFileContextForTesting(mockAddedFile);
     await microtasksFinished();
-    await context.updateComplete;
+    await composeboxElement.updateComplete;
     await microtasksFinished();
 
     const carousel: ComposeboxFileCarouselElement|null =
-        context.shadowRoot.querySelector('cr-composebox-file-carousel');
+        composeboxElement.shadowRoot.querySelector(
+            'cr-composebox-file-carousel');
 
     assertTrue(!!carousel, 'Carousel should render');
 
@@ -395,7 +395,6 @@ suite('ComposeboxDragAndDrop', () => {
     assertEquals(1, searchboxHandler.getCallCount(ADD_FILE_CONTEXT_FN));
 
     // Mock adding file in frontend from backend
-    const context = composeboxElement.$.context;
     const mockAddedFile: ComposeboxFile = {
       uuid: sharedToken,
       name: 'a.pdf',
@@ -407,13 +406,14 @@ suite('ComposeboxDragAndDrop', () => {
       url: null,
       tabId: null,
     };
-    context.onFileContextAdded(mockAddedFile);
+    composeboxElement.addFileContextForTesting(mockAddedFile);
     await microtasksFinished();
-    await context.updateComplete;
+    await composeboxElement.updateComplete;
     await microtasksFinished();
 
     const carousel: ComposeboxFileCarouselElement|null =
-        context.shadowRoot.querySelector('cr-composebox-file-carousel');
+        composeboxElement.shadowRoot.querySelector(
+            'cr-composebox-file-carousel');
 
     assertTrue(!!carousel, 'Carousel should render');
 
@@ -426,14 +426,17 @@ suite('ComposeboxDragAndDrop', () => {
     await createComposeboxElement();
     await microtasksFinished();
 
-    composeboxElement.$.context.setInitialMode(ComposeboxToolMode.kDeepSearch);
+    const contextEntrypoint =
+        composeboxElement.shadowRoot.querySelector('#contextEntrypoint');
+    assertTrue(!!contextEntrypoint);
+    contextEntrypoint.dispatchEvent(
+        new CustomEvent('tool-click', {
+          detail: {tool: ComposeboxToolMode.kDeepSearch},
+        }));
     await microtasksFinished();
 
-    const validationErrorPromise =
-        eventToPromise('on-file-validation-error', composeboxElement.$.context);
     const imageFile = new File([''], 'test.png', {type: 'image/png'});
     await dispatchDragAndDropEvent(composeboxElement, [imageFile]);
-    await validationErrorPromise;
     assertEquals(0, searchboxHandler.getCallCount(ADD_FILE_CONTEXT_FN));
   });
 
@@ -466,15 +469,18 @@ suite('ComposeboxDragAndDrop', () => {
     await createComposeboxElement();
     await microtasksFinished();
 
-    composeboxElement.$.context.setInitialMode(ComposeboxToolMode.kImageGen);
+    const contextEntrypoint =
+        composeboxElement.shadowRoot.querySelector('#contextEntrypoint');
+    assertTrue(!!contextEntrypoint);
+    contextEntrypoint.dispatchEvent(
+        new CustomEvent('tool-click', {
+          detail: {tool: ComposeboxToolMode.kImageGen},
+        }));
     await microtasksFinished();
 
     // 1. Drop a PDF (should be blocked).
-    const validationErrorPromise =
-        eventToPromise('on-file-validation-error', composeboxElement.$.context);
     const pdfFile = new File([''], 'test.pdf', {type: 'application/pdf'});
     await dispatchDragAndDropEvent(composeboxElement, [pdfFile]);
-    await validationErrorPromise;
     assertEquals(0, searchboxHandler.getCallCount(ADD_FILE_CONTEXT_FN));
 
     // 2. Drop an image (should be allowed).
@@ -515,7 +521,13 @@ suite('ComposeboxDragAndDrop', () => {
     await createComposeboxElement();
     await microtasksFinished();
 
-    composeboxElement.$.context.setInitialMode(ComposeboxToolMode.kCanvas);
+    const contextEntrypoint =
+        composeboxElement.shadowRoot.querySelector('#contextEntrypoint');
+    assertTrue(!!contextEntrypoint);
+    contextEntrypoint.dispatchEvent(
+        new CustomEvent('tool-click', {
+          detail: {tool: ComposeboxToolMode.kCanvas},
+        }));
     await microtasksFinished();
 
     // 1. Drop an image.

@@ -5,10 +5,11 @@
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {ToolMode as ComposeboxToolMode} from './composebox_query.mojom-webui.js';
-import type {ContextualEntrypointAndCarouselElement} from './contextual_entrypoint_and_carousel.js';
-import {getHtml as getToolChipsHtml} from './contextual_entrypoint_and_carousel_tool_chips.html.js';
+import type {ComposeboxElement} from './composebox.js';
+import {getHtml as getSubmitButtonHtml} from './composebox_submit_button.html.js';
+import {getHtml as getToolChipsHtml} from './composebox_tool_chips.html.js';
 
-export function getHtml(this: ContextualEntrypointAndCarouselElement) {
+export function getHtml(this: ComposeboxElement) {
   // clang-format off
   return html`
 <div class="context-menu-container" id="contextMenuContainer"
@@ -26,18 +27,21 @@ export function getHtml(this: ContextualEntrypointAndCarouselElement) {
         @tool-click="${this.onToolClick_}"
         @deep-search-click="${this.handleDeepSearchClick_}"
         @create-image-click="${this.handleImageGenClick_}"
-        .showModelPicker="${this.showModelPicker}"
-        .inputState="${this.inputState}"
+        @model-click="${this.onModelClick_}"
+        @get-tab-preview="${this.getTabPreview_}"
+        @context-menu-closed="${this.onContextMenuClosed_ }"
+        @context-menu-opened="${this.onContextMenuOpened_}"
+        .showModelPicker="${this.showModelPicker_}"
+        .inputState="${this.inputState_}"
         .searchboxLayoutMode="${this.searchboxLayoutMode}"
-        .tabSuggestions="${this.tabSuggestions}"
+        .tabSuggestions="${this.tabSuggestions_}"
         .inCreateImageMode="${
-            this.activeTool_ === ComposeboxToolMode.kImageGen}"
-        .hasImageFiles="${this.hasImageFiles()}"
+            this.activeToolMode_ === ComposeboxToolMode.kImageGen}"
+        .hasImageFiles="${this.hasImageFiles_()}"
         .disabledTabIds="${this.addedTabsIds_}"
         .fileNum="${this.files_.size}"
         ?upload-button-disabled="${this.uploadButtonDisabled_}"
-        ?show-context-menu-description="${this.showContextMenuDescription_}"
-        glif-animation-state="${this.contextMenuGlifAnimationState}">
+        ?show-context-menu-description="${this.showContextMenuDescription_}">
     </cr-composebox-contextual-entrypoint-and-menu>
   ` : html`
     <cr-composebox-contextual-entrypoint-button
@@ -45,30 +49,29 @@ export function getHtml(this: ContextualEntrypointAndCarouselElement) {
         part="composebox-entrypoint"
         exportparts="context-menu-entrypoint-icon"
         class="upload-button no-overlap"
-        .inputState="${this.inputState}"
+        .inputState="${this.inputState_}"
         ?upload-button-disabled="${this.uploadButtonDisabled_}"
-        ?show-context-menu-description="${this.showContextMenuDescription_}"
-        glif-animation-state="${this.contextMenuGlifAnimationState}">
+        ?show-context-menu-description="${this.showContextMenuDescription_}">
     </cr-composebox-contextual-entrypoint-button>
   `}
-  ${this.searchboxLayoutMode === 'Compact' && this.showVoiceSearch ? html`
+  ${this.searchboxLayoutMode === 'Compact' && this.shouldShowVoiceSearch_() ? html`
     <cr-icon-button id="voiceSearchButton" class="voice-icon"
         part="voice-icon" iron-icon="cr:mic"
-        @click="${this.onVoiceSearchClick_}"
+        @click="${this.openAimVoiceSearch_}"
         title="${this.i18n('voiceSearchButtonLabel')}">
     </cr-icon-button>
   ` : ''}
   ${this.searchboxLayoutMode !== 'Compact' ? getToolChipsHtml.bind(this)() : ''}
   ${this.searchboxLayoutMode === 'TallTopContext' ? html`
-    ${this.showVoiceSearch ? html`
+    ${this.shouldShowVoiceSearch_() ? html`
       <cr-icon-button id="voiceSearchButton" class="voice-icon"
           part="voice-icon" iron-icon="cr:mic"
-          @click="${this.onVoiceSearchClick_}"
+          @click="${this.openAimVoiceSearch_}"
           title="${this.i18n('voiceSearchButtonLabel')}">
       </cr-icon-button>
     ` : ''}
-    ${this.submitButtonShown ? html`
-      <slot name="submit-button"></slot>
+    ${this.shouldShowSubmitButton_ ? html`
+      ${getSubmitButtonHtml.bind(this)()}
     ` : ''}
   ` : ''}
 </div>
