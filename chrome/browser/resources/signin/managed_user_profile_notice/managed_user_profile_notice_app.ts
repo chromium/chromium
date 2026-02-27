@@ -194,7 +194,7 @@ export class ManagedUserProfileNoticeAppElement extends
   }
 
   /** Called when the proceed button is clicked. */
-  protected onProceed_() {
+  protected onProceedClick_() {
     this.disableProceedButton_ = true;
     const linkData = this.selectedDataHandling_ === BrowsingDataHandling.MERGE;
     this.managedUserProfileNoticeBrowserProxy_.proceed(
@@ -202,7 +202,7 @@ export class ManagedUserProfileNoticeAppElement extends
   }
 
   /** Called when the cancel button is clicked. */
-  protected onCancel_() {
+  protected onCancelClick_() {
     if (this.allowValuePropStateBackFromDisclosure_()) {
       this.updateCurrentState_(State.VALUE_PROPOSITION);
       return;
@@ -306,7 +306,7 @@ export class ManagedUserProfileNoticeAppElement extends
     this.processingSubtitle_ = this.i18n('longProcessingSubtitle');
   }
 
-  protected onDataHandlingChanged_(
+  protected onSelectedDataHandlingChanged_(
       e: CustomEvent<{value: BrowsingDataHandling}>) {
     this.selectedDataHandling_ = e.detail.value;
   }

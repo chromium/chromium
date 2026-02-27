@@ -155,7 +155,7 @@ export class ProfileCardMenuElement extends ProfileCardMenuElementBase {
                                       'removeWarningLocalProfileTitle');
   }
 
-  protected onMoreActionsButtonClicked_(e: Event) {
+  protected onMoreActionsButtonClick_(e: Event) {
     e.stopPropagation();
     e.preventDefault();
     this.$.actionMenu.showAt(this.$.moreActionsButton);
@@ -163,7 +163,7 @@ export class ProfileCardMenuElement extends ProfileCardMenuElementBase {
         'ProfilePicker_ThreeDottedMenuClicked');
   }
 
-  protected onRemoveButtonClicked_(e: Event) {
+  protected onRemoveButtonClick_(e: Event) {
     e.stopPropagation();
     e.preventDefault();
     this.manageProfilesBrowserProxy_.getProfileStatistics(
@@ -201,14 +201,14 @@ export class ProfileCardMenuElement extends ProfileCardMenuElementBase {
                                    count.toString();
   }
 
-  protected onRemoveConfirmationClicked_(e: Event) {
+  protected onRemoveConfirmationClick_(e: Event) {
     e.stopPropagation();
     e.preventDefault();
     this.manageProfilesBrowserProxy_.removeProfile(
         this.profileState.profilePath);
   }
 
-  protected onRemoveCancelClicked_() {
+  protected onRemoveCancelClick_() {
     this.$.removeConfirmationDialog.cancel();
     this.manageProfilesBrowserProxy_.closeProfileStatistics();
   }
@@ -230,7 +230,7 @@ export class ProfileCardMenuElement extends ProfileCardMenuElementBase {
     }
   }
 
-  protected onCustomizeButtonClicked_() {
+  protected onCustomizeButtonClick_() {
     this.manageProfilesBrowserProxy_.openManageProfileSettingsSubPage(
         this.profileState.profilePath);
     this.$.actionMenu.close();

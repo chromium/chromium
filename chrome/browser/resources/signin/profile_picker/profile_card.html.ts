@@ -34,12 +34,12 @@ export function getHtml(this: ProfileCardElement) {
     <cr-input class="profile-card-info prominent-text" id="nameInput"
         aria-label="$i18n{profileCardInputLabel}"
         .value="${this.profileState.localProfileName}"
-        @change="${this.onProfileNameChanged_}"
+        @change="${this.onProfileNameChange_}"
         @keydown="${this.onProfileNameKeydown_}"
         @blur="${this.onProfileNameInputBlur_}" pattern="${this.pattern_}"
         auto-validate spellcheck="false"
-        @pointerenter="${this.onNameInputPointerEnter_}"
-        @pointerleave="${this.onNameInputPointerLeave_}"
+        @pointerenter="${this.onNameInputPointerenter_}"
+        @pointerleave="${this.onNameInputPointerleave_}"
         ?disabled="${
       isGlicVersion() || this.profileState.hasEnterpriseLabel}" required>
     </cr-input>

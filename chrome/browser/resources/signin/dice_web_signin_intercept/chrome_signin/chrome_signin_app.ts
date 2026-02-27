@@ -84,11 +84,11 @@ export class ChromeSigninAppElement extends ChromeSigninAppElementBase {
     this.diceWebSigninInterceptBrowserProxy_.initializedWithHeight(height);
   }
 
-  protected onCancel_() {
+  protected onCancelClick_() {
     this.diceWebSigninInterceptBrowserProxy_.cancel();
   }
 
-  protected onAccept_() {
+  protected onAcceptClick_() {
     this.diceWebSigninInterceptBrowserProxy_.accept();
   }
 

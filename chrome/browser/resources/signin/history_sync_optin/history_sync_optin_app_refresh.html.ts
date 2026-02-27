@@ -28,12 +28,12 @@ export function getHtml(this: HistorySyncOptinAppRefreshElement) {
     <div id="buttonRow">
       <cr-button id="rejectButton" class="${this.getRejectButtonClass_()}"
           aria-label="$i18n{historySyncOptInRejectButtonLabel}"
-          @click="${this.onReject_}" ?disabled="${this.buttonsDisabled_}">
+          @click="${this.onRejectClick_}" ?disabled="${this.buttonsDisabled_}">
         $i18n{historySyncOptInRejectButtonLabel}
       </cr-button>
       <cr-button id="acceptButton" class="${this.getAcceptButtonClass_()}"
           aria-label="$i18n{historySyncOptInAcceptButtonLabel}"
-          @click="${this.onAccept_}" ?disabled="${this.buttonsDisabled_}">
+          @click="${this.onAcceptClick_}" ?disabled="${this.buttonsDisabled_}">
         $i18n{historySyncOptInAcceptButtonLabel}
       </cr-button>
     </div>

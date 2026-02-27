@@ -86,7 +86,7 @@ export class SyncConfirmationAppElement extends SyncConfirmationAppElementBase {
     this.syncConfirmationBrowserProxy_.requestAccountInfo();
   }
 
-  protected onConfirm_(e: Event) {
+  protected onConfirmClick_(e: Event) {
     this.anyButtonClicked_ = true;
     this.syncConfirmationBrowserProxy_.confirm(
         this.getConsentDescription_(),
@@ -94,12 +94,12 @@ export class SyncConfirmationAppElement extends SyncConfirmationAppElementBase {
         this.screenMode_);
   }
 
-  protected onUndo_() {
+  protected onUndoClick_() {
     this.anyButtonClicked_ = true;
     this.syncConfirmationBrowserProxy_.undo(this.screenMode_);
   }
 
-  protected onGoToSettings_(e: Event) {
+  protected onGoToSettingsClick_(e: Event) {
     this.anyButtonClicked_ = true;
     this.syncConfirmationBrowserProxy_.goToSettings(
         this.getConsentDescription_(),
@@ -180,7 +180,7 @@ export class SyncConfirmationAppElement extends SyncConfirmationAppElementBase {
   /**
    * Called when the link to the device's sync settings is clicked.
    */
-  protected onDisclaimerClicked_(event: CustomEvent<{event: Event}>) {
+  protected onDisclaimerLinkClicked_(event: CustomEvent<{event: Event}>) {
     // Prevent the default link click behavior.
     event.detail.event.preventDefault();
 

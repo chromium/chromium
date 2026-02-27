@@ -132,18 +132,18 @@ export class ProfileCardElement extends ProfileCardElementBase {
         this.profileState.profilePath);
   }
 
-  protected onNameInputPointerEnter_() {
+  protected onNameInputPointerenter_() {
     this.fire('toggle-drag', {toggle: false});
   }
 
-  protected onNameInputPointerLeave_() {
+  protected onNameInputPointerleave_() {
     this.fire('toggle-drag', {toggle: true});
   }
 
   /**
    * Handler for when the profile name field is changed, then blurred.
    */
-  protected onProfileNameChanged_(event: Event) {
+  protected onProfileNameChange_(event: Event) {
     const target = event.target as CrInputElement;
 
     if (target.invalid) {

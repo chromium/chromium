@@ -26,7 +26,7 @@ export function getHtml(this: BatchUploadAppElement) {
       ${this.dataSections_.map((section, sectionIndex) =>
       html`
       <data-section .dataContainer="${section}" data-index="${sectionIndex}"
-          @update-view-height="${this.updateViewHeight_}"
+          @update-view-height="${this.onUpdateViewHeight_}"
           @toggle-changed="${this.onSectionToggleChanged_}">
       </data-section>
       `)}
@@ -36,11 +36,11 @@ export function getHtml(this: BatchUploadAppElement) {
   <div id="action-row">
     <cr-button id="saveButton" class="action-button"
         ?disabled="${!this.isSaveEnabled_}"
-        @click="${this.saveToAccount_}">
+        @click="${this.onSaveClick_}">
       ${this.i18n('saveToAccount')}
     </cr-button>
     <cr-button id="cancelButton" class="tonal-button"
-        @click="${this.close_}">
+        @click="${this.onCancelClick_}">
       ${this.i18n('cancel')}
     </cr-button>
   </div>

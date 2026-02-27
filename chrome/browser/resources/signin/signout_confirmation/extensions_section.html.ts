@@ -26,7 +26,7 @@ export function getHtml(this: ExtensionsSectionElement) {
     </div>
     <cr-expand-button id="expandButton" no-hover
         ?expanded="${this.expanded_}"
-        @expanded-changed="${this.onExpandChanged_}"
+        @expanded-changed="${this.onExpandedChanged_}"
         role="button"
         aria-label="${this.title_}">
     </cr-expand-button>

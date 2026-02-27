@@ -18,11 +18,11 @@ export function getHtml(this: SigninErrorDialogElement) {
         </div>
       </div>
       <div slot="button-container" class="button-container">
-        <cr-button id="ok-button" @click="${this.onOkButtonClicked_}">
+        <cr-button id="ok-button" @click="${this.onOkButtonClick_}">
           ${this.i18n('ok')}
         </cr-button>
         <cr-button id="button-sign-in" class="action-button"
-            @click="${this.onReauthClicked_}"
+            @click="${this.onReauthClick_}"
             ?hidden="${!this.shouldShowSigninButton_}">
           ${this.i18n('needsSigninPrompt')}
         </cr-button>

@@ -93,7 +93,7 @@ export class ExtensionsSectionElement extends CrLitElement {
     return this.$.checkbox.checked;
   }
 
-  protected onExpandChanged_(e: CustomEvent<{value: boolean}>) {
+  protected onExpandedChanged_(e: CustomEvent<{value: boolean}>) {
     this.expanded_ = e.detail.value;
 
     // Stagger the update by `this.updateHeightInterval_` so it will fire its

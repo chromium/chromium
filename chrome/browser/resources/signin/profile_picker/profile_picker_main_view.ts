@@ -262,7 +262,7 @@ export class ProfilePickerMainViewElement extends
   /**
    * Called when the user modifies 'Ask on startup' preference.
    */
-  protected onAskOnStartupChangedByUser_(e: CustomEvent<{value: boolean}>) {
+  protected onAskOnStartupCheckedChanged_(e: CustomEvent<{value: boolean}>) {
     if (this.hideAskOnStartup_) {
       return;
     }
@@ -333,7 +333,7 @@ export class ProfilePickerMainViewElement extends
     return !isAskOnStartupAllowed() || !shouldShowBasedOnProfilesCount;
   }
 
-  protected toggleDrag_(e: Event) {
+  protected onToggleDrag_(e: Event) {
     if (!this.dragDelegate_) {
       return;
     }
@@ -342,7 +342,11 @@ export class ProfilePickerMainViewElement extends
     this.dragDelegate_.toggleDrag(customEvent.detail.toggle);
   }
 
-  protected disableAllPickerButtons_() {
+  protected onDisableAllPickerButtons_() {
+    this.disableAllPickerButtons_();
+  }
+
+  private disableAllPickerButtons_() {
     this.pickerButtonsDisabled_ = true;
     if (this.dragDelegate_) {
       this.dragDelegate_.toggleDrag(false);

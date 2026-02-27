@@ -24,10 +24,10 @@ export function getHtml(this: SyncDisabledConfirmationAppElement) {
   </div>
   <div class="action-container">
     <cr-button class="action-button" id="confirmButton"
-        consent-confirmation @click="${this.onConfirm_}">
+        consent-confirmation @click="${this.onConfirmClick_}">
       $i18n{syncDisabledConfirmationConfirmLabel}
     </cr-button>
-    <cr-button id="undoButton" @click="${this.onUndo_}"
+    <cr-button id="undoButton" @click="${this.onUndoClick_}"
         ?hidden="${this.signoutDisallowed_}">
       $i18n{syncDisabledConfirmationUndoLabel}
     </cr-button>

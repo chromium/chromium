@@ -93,12 +93,12 @@ export class HistorySyncOptinAppElement extends HistorySyncOptinAppElementBase {
     this.onScreenModeDataReceivedListenerId_ = null;
   }
 
-  protected onReject_() {
+  protected onRejectClick_() {
     this.buttonsDisabled_ = true;
     this.historySyncOptInBrowserProxy_.handler.reject();
   }
 
-  protected onAccept_() {
+  protected onAcceptClick_() {
     this.buttonsDisabled_ = true;
     this.historySyncOptInBrowserProxy_.handler.accept();
   }

@@ -61,7 +61,7 @@ export function getHtml(this: SyncConfirmationAppElement) {
           consent-description
           ?hidden="${!this.useClickableSyncInfoDesc_}"
           localized-string="$i18n{syncConfirmationSyncInfoDesc}"
-          @link-clicked="${this.onDisclaimerClicked_}">
+          @link-clicked="${this.onDisclaimerLinkClicked_}">
       </localized-link>
   </div>
 </div>
@@ -71,24 +71,24 @@ export function getHtml(this: SyncConfirmationAppElement) {
       ${this.getMaybeDialogClass_()}">
     <cr-button id="confirmButton"
         class="${this.getConfirmButtonClass_()}"
-        @click="${this.onConfirm_}"
+        @click="${this.onConfirmClick_}"
         ?disabled="${this.anyButtonClicked_}" consent-confirmation
         ?autofocus="${this.isModalDialog_}">
       $i18n{syncConfirmationConfirmLabel}
     </cr-button>
     <if expr="is_macosx or is_linux or is_chromeos">
-      <cr-button id="settingsButton" @click="${this.onGoToSettings_}"
+      <cr-button id="settingsButton" @click="${this.onGoToSettingsClick_}"
           ?disabled="${this.anyButtonClicked_}" consent-confirmation>
         $i18n{syncConfirmationSettingsLabel}
       </cr-button>
     </if>
     <cr-button id="notNowButton"
         class="${this.getNotNowButtonClass_()}"
-        @click="${this.onUndo_}" ?disabled="${this.anyButtonClicked_}">
+        @click="${this.onUndoClick_}" ?disabled="${this.anyButtonClicked_}">
       $i18n{syncConfirmationUndoLabel}
     </cr-button>
     <if expr="not (is_macosx or is_linux or is_chromeos)">
-      <cr-button id="settingsButton" @click="${this.onGoToSettings_}"
+      <cr-button id="settingsButton" @click="${this.onGoToSettingsClick_}"
           ?disabled="${this.anyButtonClicked_}" consent-confirmation>
         $i18n{syncConfirmationSettingsLabel}
       </cr-button>

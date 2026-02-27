@@ -92,12 +92,12 @@ export class DiceWebSigninInterceptAppElement extends
     this.diceWebSigninInterceptBrowserProxy_.initializedWithHeight(height);
   }
 
-  protected onAccept_() {
+  protected onAcceptClick_() {
     this.acceptButtonClicked_ = true;
     this.diceWebSigninInterceptBrowserProxy_.accept();
   }
 
-  protected onCancel_() {
+  protected onCancelClick_() {
     this.diceWebSigninInterceptBrowserProxy_.cancel();
   }
 

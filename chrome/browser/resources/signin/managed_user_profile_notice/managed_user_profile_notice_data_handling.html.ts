@@ -15,7 +15,7 @@ export function getHtml(this: ManagedUserProfileNoticeDataHandlingElement) {
     <h1 class="title" tabindex="-1">${this.title}</h1>
   </div>
   <cr-radio-group .selected="${this.selectedDataHandling}"
-      @selected-changed="${this.onSelectedRadioOptionChanged_}">
+      @selected-changed="${this.onSelectedChanged_}">
     <cr-radio-button name="${BrowsingDataHandling.SEPARATE}"
         label="${this.separateDataChoiceTitle}">
       <p>${this.separateDataChoiceDetails}</p>

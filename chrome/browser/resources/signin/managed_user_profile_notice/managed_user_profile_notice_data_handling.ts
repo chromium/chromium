@@ -51,8 +51,7 @@ export class ManagedUserProfileNoticeDataHandlingElement extends CrLitElement {
     titleElement.focus();
   }
 
-  protected onSelectedRadioOptionChanged_(
-      e: CustomEvent<{value: BrowsingDataHandling}>) {
+  protected onSelectedChanged_(e: CustomEvent<{value: BrowsingDataHandling}>) {
     this.selectedDataHandling = e.detail.value;
   }
 }

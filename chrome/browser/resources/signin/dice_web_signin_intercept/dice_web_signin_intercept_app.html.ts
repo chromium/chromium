@@ -78,12 +78,13 @@ export function getHtml(this: DiceWebSigninInterceptAppElement) {
     ${this.acceptButtonClicked_ ? html`<div class="spinner"></div>` : ''}
     <div class="action-container">
       <cr-button id="acceptButton" class="action-button" autofocus
-          @click="${this.onAccept_}" ?disabled="${this.acceptButtonClicked_}">
+          @click="${this.onAcceptClick_}"
+          ?disabled="${this.acceptButtonClicked_}">
         ${this.interceptionParameters_.confirmButtonLabel}
       </cr-button>
       <cr-button id="cancelButton"
           class="${this.getCancelButtonClass_()}"
-          @click="${this.onCancel_}"
+          @click="${this.onCancelClick_}"
           ?disabled="${this.acceptButtonClicked_}">
         ${this.interceptionParameters_.cancelButtonLabel}
       </cr-button>

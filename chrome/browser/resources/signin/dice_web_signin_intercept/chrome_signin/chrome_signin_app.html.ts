@@ -6,6 +6,7 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {ChromeSigninAppElement} from './chrome_signin_app.js';
 
 export function getHtml(this: ChromeSigninAppElement) {
+  // clang-format off
   return html`<!--_html_template_start_-->
 <div role="dialog" id="interceptDialog" aria-labelledby="title"
     aria-describedby="contents">
@@ -40,12 +41,12 @@ export function getHtml(this: ChromeSigninAppElement) {
       <div id="button-container">
         <cr-button id="accept-button" class="action-button"
             aria-label="${this.getAcceptButtonAriaLabel_()}"
-            @click="${this.onAccept_}">
+            @click="${this.onAcceptClick_}">
           <div id="acceppt-button-content">
             ${this.i18n('chromeSigninAcceptText', this.interceptionParameters_.givenName)}
           </div>
         </cr-button>
-        <cr-button id="cancel-button" @click="${this.onCancel_}">
+        <cr-button id="cancel-button" @click="${this.onCancelClick_}">
           $i18n{chromeSigninDeclineText}
         </cr-button>
       </div>
@@ -55,4 +56,5 @@ export function getHtml(this: ChromeSigninAppElement) {
 
 </div>
 <!--_html_template_end_-->`;
+  // clang-format on
 }

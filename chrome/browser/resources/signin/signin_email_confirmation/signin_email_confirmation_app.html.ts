@@ -33,10 +33,10 @@ export function getHtml(this: SigninEmailConfirmationAppElement) {
   </div>
   <div class="action-container">
     <cr-button class="action-button" id="confirmButton"
-        @click="${this.onConfirm_}" autofocus>
+        @click="${this.onConfirmClick_}" autofocus>
       $i18n{signinEmailConfirmationConfirmLabel}
     </cr-button>
-    <cr-button id="closeButton" @click="${this.onCancel_}">
+    <cr-button id="closeButton" @click="${this.onCancelClick_}">
       $i18n{signinEmailConfirmationCloseLabel}
     </cr-button>
   </div>

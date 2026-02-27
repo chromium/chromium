@@ -126,7 +126,7 @@ export class ProfileCustomizationAppElement extends
    * Called when the Done button is clicked. Sends the profile name back to
    * native.
    */
-  protected onDoneCustomizationClicked_() {
+  protected onDoneCustomizationClick_() {
     this.profileCustomizationBrowserProxy_.done(this.profileName_);
   }
 
@@ -155,11 +155,11 @@ export class ProfileCustomizationAppElement extends
     return !this.isLocalProfileCreation_;
   }
 
-  protected onSkipCustomizationClicked_() {
+  protected onSkipCustomizationClick_() {
     this.profileCustomizationBrowserProxy_.skip();
   }
 
-  protected onDeleteProfileClicked_() {
+  protected onDeleteProfileClick_() {
     this.profileCustomizationBrowserProxy_.deleteProfile();
   }
 
@@ -185,7 +185,7 @@ export class ProfileCustomizationAppElement extends
     this.availableIcons_ = icons;
   }
 
-  protected onSelectAvatarConfirmClicked_() {
+  protected onSelectAvatarConfirmClick_() {
     assert(this.isLocalProfileCreation_);
     assert(this.selectedAvatar_);
     this.profileCustomizationBrowserProxy_.setAvatarIcon(
@@ -194,7 +194,7 @@ export class ProfileCustomizationAppElement extends
     this.closeSelectAvatar_();
   }
 
-  protected onSelectAvatarBackClicked_() {
+  protected onSelectAvatarBackClick_() {
     assert(this.isLocalProfileCreation_);
     this.closeSelectAvatar_();
     this.selectedAvatar_ = this.confirmedAvatar_;
@@ -204,11 +204,11 @@ export class ProfileCustomizationAppElement extends
     this.$.viewManager.switchView('customizeDialog', 'fade-in', 'fade-out');
   }
 
-  protected validateInputOnBlur_() {
+  protected onNameInputBlur_() {
     this.$.nameInput.validate();
   }
 
-  protected onProfileNameChanged_(e: CustomEvent<{value: string}>) {
+  protected onProfileNameValueChanged_(e: CustomEvent<{value: string}>) {
     this.profileName_ = e.detail.value;
   }
 

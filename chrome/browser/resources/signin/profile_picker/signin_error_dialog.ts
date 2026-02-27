@@ -69,12 +69,12 @@ export class SigninErrorDialogElement extends SigninErrorDialogElementBase {
     this.$.dialog.showModal();
   }
 
-  protected onOkButtonClicked_() {
+  protected onOkButtonClick_() {
     this.$.dialog.close();
     this.clearErrorDialogInfo_();
   }
 
-  protected onReauthClicked_() {
+  protected onReauthClick_() {
     this.$.dialog.close();
     this.manageProfilesBrowserProxy_.launchSelectedProfile(
         this.forceSigninErrorProfilePath_);

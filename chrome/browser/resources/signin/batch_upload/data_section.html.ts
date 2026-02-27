@@ -15,14 +15,14 @@ export function getHtml(this: DataSectionElement) {
         <cr-expand-button id="expandButton" no-hover
             ?hidden="${this.disabled_ || this.isThemeSection()}"
             ?expanded="${this.expanded_}"
-            @expanded-changed="${this.onExpandChanged_}"
+            @expanded-changed="${this.onExpandedChanged_}"
             aria-label="${this.titleWithoutCount_}">
         </cr-expand-button>
         <div id="separator"
             ?hidden="${this.disabled_ || this.isThemeSection()}">
         </div>
         <cr-toggle id="toggle"
-            @checked-changed="${this.onToggleChanged_}"
+            @checked-changed="${this.onToggleCheckedChanged_}"
             ?checked="${!this.disabled_}"
             aria-label="${this.getToggleAriaLabel_()}">
         </cr-toggle>
@@ -35,8 +35,8 @@ export function getHtml(this: DataSectionElement) {
             <cr-checkbox class="item-checkbox"
                 data-id="${item.id}"
                 ?checked="${this.isCheckboxChecked_(item.id)}"
-                @change="${this.onCheckedChanged_}"
-                @focus="${this.onCheckboxFocused_}">
+                @change="${this.onCheckboxChange_}"
+                @focus="${this.onCheckboxFocus_}">
                 ${item.title}, ${item.subtitle}
             </cr-checkbox>
             <div class="data-item-content">
