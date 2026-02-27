@@ -283,9 +283,6 @@ IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType, Reload) {
   ASSERT_TRUE(RunExtensionTest("tabs/reload")) << message_;
 }
 
-// TODO(https://crbug.com/371432155): Enable these tests.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-
 class ExtensionApiCaptureTest : public ExtensionApiTabTest {
  public:
   ExtensionApiCaptureTest() = default;
@@ -301,7 +298,8 @@ class ExtensionApiCaptureTest : public ExtensionApiTabTest {
 };
 
 // https://crbug.com/1450747 Flaky on Mac.
-#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/488154807): Flaky on desktop Android.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
 #define MAYBE_CaptureVisibleTabJpeg DISABLED_CaptureVisibleTabJpeg
 #else
 #define MAYBE_CaptureVisibleTabJpeg CaptureVisibleTabJpeg
@@ -327,7 +325,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiCaptureTest, MAYBE_CaptureVisibleTabJpeg) {
 
 // https://crbug.com/1450933 Flaky on Mac.
 // TODO(crbug.com/451698327): Disabled on Linux dbg due to flakiness.
-#if BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_LINUX) && !defined(NDEBUG))
+// TODO(crbug.com/488154807): Flaky on desktop Android.
+#if BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_LINUX) && !defined(NDEBUG)) || \
+    BUILDFLAG(IS_ANDROID)
 #define MAYBE_CaptureVisibleTabPng DISABLED_CaptureVisibleTabPng
 #else
 #define MAYBE_CaptureVisibleTabPng CaptureVisibleTabPng
@@ -359,7 +359,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiCaptureTest,
 }
 
 // https://crbug.com/1107934 Flaky on Windows, Linux, ChromeOS.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+// TODO(crbug.com/488154807): Flaky on desktop Android.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_ANDROID)
 #define MAYBE_CaptureVisibleFile DISABLED_CaptureVisibleFile
 #else
 #define MAYBE_CaptureVisibleFile CaptureVisibleFile
@@ -382,6 +384,12 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiCaptureTest, MAYBE_CaptureVisibleDisabled) {
       << message_;
 }
 
+// TODO(https://crbug.com/371432155): Enable these tests.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+
+// TODO(crbug.com/447214377): Fails on desktop Android with message:
+// Cannot access contents of url "". Extension manifest must request permission
+// to access this host.
 IN_PROC_BROWSER_TEST_F(ExtensionApiCaptureTest, CaptureNullWindow) {
   ASSERT_TRUE(RunExtensionTest("tabs/capture_visible_tab_null_window"))
       << message_;
