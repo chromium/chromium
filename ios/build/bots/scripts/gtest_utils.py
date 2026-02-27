@@ -386,6 +386,12 @@ class GTestLogParser(object):
     # Code below tries to detect such cases and recognize a mixed line as two
     # separate lines.
 
+    # HACK: Workaround for interleaved "Content Rule List" errors that mangle
+    # test names (crbug.com/467732058). This ensures a space exists between
+    # the test name and the error message so the regex parser stops at the
+    # correct boundary.
+    line = line.replace('Content Rule List', ' Content Rule List')
+
     # List of regexps that parses expects to find at the start of a line but
     # which can be somewhere in the middle.
     gtest_regexps = [
