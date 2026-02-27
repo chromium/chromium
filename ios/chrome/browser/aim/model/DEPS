@@ -1,5 +1,6 @@
 include_rules = [
   # keep-sorted start
+    "+components/contextual_tasks/public/features.h",
     "+ios/chrome/browser/signin/model/identity_manager_factory.h",
   # keep-sorted end
 ]

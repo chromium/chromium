@@ -10,6 +10,7 @@ source_set("aim_availability") {
     "ios_chrome_aim_eligibility_service_factory.mm",
   ]
   deps = [
+    "//components/contextual_tasks/public:feature_list",
     "//components/omnibox/browser",
     "//components/search",
     "//ios/chrome/app:tests_hook",

@@ -11,12 +11,12 @@ MockAimEligibilityService::MockAimEligibilityService(
     TemplateURLService* template_url_service,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     signin::IdentityManager* identity_manager,
-    bool is_off_the_record)
+    Configuration configuration)
     : AimEligibilityService(pref_service,
                             template_url_service,
                             url_loader_factory,
                             identity_manager,
-                            is_off_the_record,
-                            "en-US") {}
+                            "en-US",
+                            std::move(configuration)) {}
 
 MockAimEligibilityService::~MockAimEligibilityService() = default;

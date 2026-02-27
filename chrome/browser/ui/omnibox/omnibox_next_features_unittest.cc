@@ -255,7 +255,7 @@ class TestingAimEligibilityService : public ChromeAimEligibilityService {
                                     /*template_url_service=*/nullptr,
                                     /*url_loader_factory=*/nullptr,
                                     /*identity_manager=*/nullptr,
-                                    /*is_off_the_record=*/false),
+                                    /*configuration=*/{}),
         is_aim_eligible_(is_aim_eligible) {}
 
   bool IsAimEligible() const override { return is_aim_eligible_; }

@@ -15,12 +15,12 @@ MockIOSChromeAimEligibilityService::MockIOSChromeAimEligibilityService(
     TemplateURLService* template_url_service,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     signin::IdentityManager* identity_manager,
-    bool is_off_the_record)
+    Configuration configuration)
     : MockAimEligibilityService(pref_service,
                                 template_url_service,
                                 url_loader_factory,
                                 identity_manager,
-                                is_off_the_record) {
+                                std::move(configuration)) {
   ON_CALL(*this, IsAimEligible).WillByDefault(testing::Return(true));
   ON_CALL(*this, IsCreateImagesEligible).WillByDefault(testing::Return(true));
   ON_CALL(*this, IsAimLocallyEligible).WillByDefault(testing::Return(true));
@@ -35,10 +35,11 @@ MockIOSChromeAimEligibilityService::~MockIOSChromeAimEligibilityService() =
 std::unique_ptr<MockIOSChromeAimEligibilityService>
 MockIOSChromeAimEligibilityService::CreateTestingProfileService(
     ProfileIOS* profile) {
+  Configuration config;
+  config.is_off_the_record = profile->IsOffTheRecord();
   return std::make_unique<MockIOSChromeAimEligibilityService>(
       *profile->GetPrefs(),
       ios::TemplateURLServiceFactory::GetForProfile(profile),
       profile->GetSharedURLLoaderFactory(),
-      IdentityManagerFactory::GetForProfile(profile),
-      profile->IsOffTheRecord());
+      IdentityManagerFactory::GetForProfile(profile), std::move(config));
 }

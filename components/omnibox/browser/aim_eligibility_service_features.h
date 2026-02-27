@@ -24,6 +24,14 @@ BASE_DECLARE_FEATURE(kAimCoBrowseEligibilityCheckEnabled);
 // fetch new AIM Eligibility responses.
 BASE_DECLARE_FEATURE(kAimCoBrowseAutomatedFetchRequestEnabled);
 
+// If enabled, adds the User-Agent header suffix for Co-Browse to all AIM
+// Eligibility Service requests.
+BASE_DECLARE_FEATURE(kAimServerEligibilitySendCoBrowseUserAgentSuffixEnabled);
+
+// If enabled, adds the Sec-CH-UA-Full-Version-List header to all AIM
+// Eligibility Service requests.
+BASE_DECLARE_FEATURE(kAimServerEligibilitySendFullVersionListEnabled);
+
 // If enabled, uses a custom retry policy for the server request.
 BASE_DECLARE_FEATURE(kAimServerEligibilityCustomRetryPolicyEnabled);
 

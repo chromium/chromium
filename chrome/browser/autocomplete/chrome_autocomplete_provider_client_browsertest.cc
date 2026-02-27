@@ -90,7 +90,8 @@ class ChromeAutocompleteProviderClientTest : public InProcessBrowserTest {
                   profile->GetDefaultStoragePartition()
                       ->GetURLLoaderFactoryForBrowserProcess(),
                   IdentityManagerFactory::GetForProfile(profile),
-                  profile->IsOffTheRecord());
+                  AimEligibilityService::Configuration{
+                      .is_off_the_record = profile->IsOffTheRecord()});
           ON_CALL(*service, IsAimEligible())
               .WillByDefault(testing::Return(true));
           return service;

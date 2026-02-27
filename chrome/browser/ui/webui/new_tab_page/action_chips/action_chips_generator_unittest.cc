@@ -236,7 +236,8 @@ class GeneratorFixture {
     AimEligibilityService::RegisterProfilePrefs(pref_service_.registry());
 
     mock_aim_eligibility_service_ = std::make_unique<MockAimEligibilityService>(
-        pref_service_, nullptr, nullptr, nullptr, false);
+        pref_service_, nullptr, nullptr, nullptr,
+        AimEligibilityService::Configuration{});
 
     generator_ = std::make_unique<ActionChipsGeneratorImpl>(
         FakeTabIdGenerator::Get(), &mock_optimization_guide_,

@@ -15,7 +15,7 @@ class MockAimEligibilityService : public AimEligibilityService {
       TemplateURLService* template_url_service,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       signin::IdentityManager* identity_manager,
-      bool is_off_the_record = false);
+      Configuration configuration = {});
   ~MockAimEligibilityService() override;
 
   MOCK_METHOD(bool, IsServerEligibilityEnabled, (), (const, override));
