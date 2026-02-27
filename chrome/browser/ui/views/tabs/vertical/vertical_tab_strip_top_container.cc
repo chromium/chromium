@@ -70,28 +70,6 @@ views::ProposedLayout VerticalTabStripTopContainer::CalculateProposedLayout(
                                                  : parent()->width(),
                 toolbar_height_);
 
-  std::vector<views::View*> container_views;
-
-  CHECK(combo_button_);
-  container_views.push_back(combo_button_);
-
-  if (collapse_button_ && collapse_button_->GetVisible()) {
-    container_views.push_back(collapse_button_);
-  }
-
-  if (unfocus_button_ && unfocus_button_->GetVisible()) {
-    container_views.push_back(unfocus_button_);
-  }
-
-  const int padding =
-      GetLayoutConstant(LayoutConstant::kVerticalTabStripTopButtonPadding);
-
-  int min_height = 0;
-  for (views::View* container_view : container_views) {
-    const auto preferred = container_view->GetPreferredSize();
-    min_height = std::max(min_height, preferred.height());
-  }
-
   // If we're trying to get the minimum size, it will ask for layout for size
   // bounds {0, 0}, but overflow is based on available size.
   const int available_width =
@@ -129,7 +107,8 @@ views::ProposedLayout VerticalTabStripTopContainer::CalculateProposedLayout(
     }
 
     if (combo_button_) {
-      const gfx::Size pref_size = combo_button_->GetPreferredSize();
+      const gfx::Size pref_size = combo_button_->GetPreferredSizeForOrientation(
+          views::LayoutOrientation::kVertical);
       gfx::Rect bounds(std::max(0, (host_size.width() - pref_size.width()) / 2),
                        current_y, pref_size.width(), pref_size.height());
       layout.child_layouts.emplace_back(combo_button_.get(),
@@ -146,6 +125,24 @@ views::ProposedLayout VerticalTabStripTopContainer::CalculateProposedLayout(
     // If the vertical tab strip is uncollapsed, then lay out the buttons
     // horizontally. The exact y-level of the buttons depends on if they can lay
     // on one line or not.
+    const int padding =
+        GetLayoutConstant(LayoutConstant::kVerticalTabStripTopButtonPadding);
+    int min_height = 0;
+    if (unfocus_button_ && unfocus_button_->GetVisible()) {
+      min_height =
+          std::max(min_height, unfocus_button_->GetPreferredSize().height());
+    }
+    if (collapse_button_ && collapse_button_->GetVisible()) {
+      min_height =
+          std::max(min_height, collapse_button_->GetPreferredSize().height());
+    }
+    if (combo_button_) {
+      min_height =
+          std::max(min_height, combo_button_
+                                   ->GetPreferredSizeForOrientation(
+                                       views::LayoutOrientation::kHorizontal)
+                                   .height());
+    }
 
     // Guarantee that the height of the container is at least the height of the
     // buttons plus padding. Use the same padding as the toolbar for approximate
@@ -198,16 +195,14 @@ views::ProposedLayout VerticalTabStripTopContainer::CalculateProposedLayout(
     int right_alignment = host_size.width();
 
     if (combo_button_) {
-      const gfx::Size pref_size = combo_button_->GetPreferredSize();
+      const gfx::Size pref_size = combo_button_->GetPreferredSizeForOrientation(
+          views::LayoutOrientation::kHorizontal);
       right_alignment -= pref_size.width();
       gfx::Rect bounds(right_alignment,
                        std::max(0, y_baseline - pref_size.height() / 2),
                        pref_size.width(), pref_size.height());
       layout.child_layouts.emplace_back(combo_button_.get(),
                                         combo_button_->GetVisible(), bounds);
-
-      right_alignment -= GetLayoutConstant(
-          LayoutConstant::kVerticalTabStripFlatEdgeButtonPadding);
     }
   }
 
@@ -282,21 +277,10 @@ int VerticalTabStripTopContainer::GetPreferredWidth() const {
       GetLayoutConstant(LayoutConstant::kVerticalTabStripTopButtonPadding);
 
   // Combo Button
-  bool start_button_present = combo_button_->start_button() &&
-                              combo_button_->start_button()->GetVisible();
-  bool end_button_present =
-      combo_button_->end_button() && combo_button_->end_button()->GetVisible();
-  if (start_button_present) {
-    total_width += combo_button_->start_button()->GetPreferredSize().width();
-  }
-  if (end_button_present) {
-    total_width += combo_button_->end_button()->GetPreferredSize().width();
-  }
-  if (start_button_present && end_button_present) {
-    // Represents the padding between the two buttons.
-    total_width += GetLayoutConstant(
-        LayoutConstant::kVerticalTabStripFlatEdgeButtonPadding);
-  }
+  total_width += combo_button_
+                     ->GetPreferredSizeForOrientation(
+                         views::LayoutOrientation::kHorizontal)
+                     .width();
 
   // Collapse Button
   if (collapse_button_ && collapse_button_->GetVisible()) {

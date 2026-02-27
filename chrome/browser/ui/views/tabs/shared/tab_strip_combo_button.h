@@ -77,6 +77,9 @@ class TabStripComboButton : public views::View,
   void AnimationProgressed(const gfx::Animation* animation) override;
   void AnimationEnded(const gfx::Animation* animation) override;
 
+  gfx::Size GetPreferredSizeForOrientation(
+      views::LayoutOrientation orientation);
+
  protected:
   // views::View:
   void ChildVisibilityChanged(views::View* child) override;

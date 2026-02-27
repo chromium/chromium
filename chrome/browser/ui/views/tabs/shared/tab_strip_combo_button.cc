@@ -31,6 +31,7 @@
 #include "ui/views/controls/menu/menu_model_adapter.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/layout_types.h"
 #include "ui/views/view_class_properties.h"
 
 namespace {
@@ -410,6 +411,40 @@ void TabStripComboButton::AnimationEnded(const gfx::Animation* animation) {
       GetEndButtonActionItem()->SetVisible(false);
     }
   }
+}
+
+gfx::Size TabStripComboButton::GetPreferredSizeForOrientation(
+    views::LayoutOrientation orientation) {
+  int width = 0;
+  int height = 0;
+  const int spacing =
+      GetLayoutConstant(LayoutConstant::kVerticalTabStripFlatEdgeButtonPadding);
+  bool has_visible_child = false;
+
+  for (views::View* child : children()) {
+    if (!child->GetVisible()) {
+      continue;
+    }
+
+    gfx::Size child_size = child->GetPreferredSize();
+
+    if (orientation == views::LayoutOrientation::kHorizontal) {
+      if (has_visible_child) {
+        width += spacing;
+      }
+      width += child_size.width();
+      height = std::max(height, child_size.height());
+    } else {
+      if (has_visible_child) {
+        width += spacing;
+      }
+      height += child_size.height();
+      width = std::max(width, child_size.width());
+    }
+    has_visible_child = true;
+  }
+
+  return gfx::Size(width, height);
 }
 
 void TabStripComboButton::OnMenuClosed() {
