@@ -118,12 +118,12 @@ IndexedDBExternalObject& IndexedDBExternalObject::operator=(
 
 void IndexedDBExternalObject::Clone(
     mojo::PendingReceiver<blink::mojom::Blob> receiver) const {
-  DCHECK(is_remote_valid());
+  CHECK(is_remote_valid());
   blob_remote_->Clone(std::move(receiver));
 }
 
 void IndexedDBExternalObject::set_size(int64_t size) {
-  DCHECK_EQ(-1, size_);
+  CHECK_EQ(-1, size_);
   size_ = size;
 }
 
@@ -133,14 +133,14 @@ void IndexedDBExternalObject::set_indexed_db_file_path(
 }
 
 void IndexedDBExternalObject::set_last_modified(const base::Time& time) {
-  DCHECK(base::Time().is_null());
-  DCHECK_EQ(object_type_, ObjectType::kFile);
+  CHECK(base::Time().is_null());
+  CHECK_EQ(object_type_, ObjectType::kFile);
   last_modified_ = time;
 }
 
 void IndexedDBExternalObject::set_serialized_file_system_access_handle(
     std::vector<uint8_t> token) {
-  DCHECK_EQ(object_type_, ObjectType::kFileSystemAccessHandle);
+  CHECK_EQ(object_type_, ObjectType::kFileSystemAccessHandle);
   serialized_file_system_access_handle_ = std::move(token);
 }
 
@@ -150,13 +150,13 @@ void IndexedDBExternalObject::set_blob_number(int64_t blob_number) {
 
 void IndexedDBExternalObject::set_mark_used_callback(
     base::RepeatingClosure mark_used_callback) {
-  DCHECK(!mark_used_callback_);
+  CHECK(!mark_used_callback_);
   mark_used_callback_ = std::move(mark_used_callback);
 }
 
 void IndexedDBExternalObject::set_release_callback(
     base::RepeatingClosure release_callback) {
-  DCHECK(!release_callback_);
+  CHECK(!release_callback_);
   release_callback_ = std::move(release_callback);
 }
 

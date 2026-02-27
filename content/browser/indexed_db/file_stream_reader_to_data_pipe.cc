@@ -97,7 +97,7 @@ void FileStreamReaderToDataPipe::ReadMore() {
   // capacity of 2MB (i.e. `BeginWrite()` will return MOJO_RESULT_SHOULD_WAIT at
   // some point when reading in a very large file).
   while (true) {
-    DCHECK(!pending_write_);
+    CHECK(!pending_write_);
     MojoResult mojo_result =
         network::NetToMojoPendingBuffer::BeginWrite(&dest_, &pending_write_);
     switch (mojo_result) {
@@ -155,7 +155,7 @@ void FileStreamReaderToDataPipe::OnDataPipeWritable(MojoResult result) {
     OnComplete(net::ERR_ABORTED);
     return;
   }
-  DCHECK_EQ(result, MOJO_RESULT_OK) << result;
+  CHECK_EQ(result, MOJO_RESULT_OK) << result;
 
   ReadMore();
 }
