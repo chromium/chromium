@@ -2294,12 +2294,6 @@ ExtensionFunction::ResponseAction TabsUpdateFunction::Run() {
     return RespondNow(Error(ExtensionTabUtil::kNoCurrentWindowError));
   }
 
-  // TODO(https://crbug.com/447211263): Support on desktop android.
-#if !BUILDFLAG(IS_ANDROID)
-  Browser* browser = window->GetBrowser();
-  TabStripModel* tab_strip = browser->tab_strip_model();
-#endif
-
   // Cache the original web contents.
   content::WebContents* original_contents = contents;
 
@@ -2311,13 +2305,12 @@ ExtensionFunction::ResponseAction TabsUpdateFunction::Run() {
     return RespondNow(Error(std::move(error)));
   }
 
-  // TODO(https://crbug.com/447211263): Support on desktop android.
-#if !BUILDFLAG(IS_ANDROID)
   // Update the highlighted tab.
-  if (!UpdateHighlightedTab(*params, tab_strip, tab_index, error)) {
+  ::tabs::TabInterface* target_tab = tab_list->GetTab(tab_index);
+  CHECK(target_tab);
+  if (!UpdateHighlightedTab(*params, *tab_list, *target_tab, error)) {
     return RespondNow(Error(std::move(error)));
   }
-#endif
 
   if (params->update_properties.muted &&
       !SetTabAudioMuted(contents, *params->update_properties.muted,
@@ -2356,6 +2349,12 @@ ExtensionFunction::ResponseAction TabsUpdateFunction::Run() {
 #endif
 
   if (params->update_properties.pinned) {
+    // TODO(https://crbug.com/447211263): Support on desktop android.
+#if !BUILDFLAG(IS_ANDROID)
+    Browser* browser = window->GetBrowser();
+    TabStripModel* tab_strip = browser->tab_strip_model();
+#endif
+
     // Bug fix for crbug.com/1197888. Don't let the extension update the tab if
     // the user is dragging tabs.
     if (!ExtensionTabUtil::IsTabStripEditable()) {
@@ -2464,15 +2463,19 @@ bool TabsUpdateFunction::UpdateActiveTab(
   return true;
 }
 
-// TODO(https://crbug.com/447211263): Support on desktop android.
-#if !BUILDFLAG(IS_ANDROID)
 bool TabsUpdateFunction::UpdateHighlightedTab(
     const api::tabs::Update::Params& params,
-    TabStripModel* tab_strip,
-    int tab_index,
+    TabListInterface& tab_list,
+    ::tabs::TabInterface& target_tab,
     std::string& error) {
   if (!params.update_properties.highlighted.has_value()) {
     // Nothing to highlight.
+    return true;
+  }
+
+  bool highlighted = params.update_properties.highlighted.value();
+  if (target_tab.IsSelected() == highlighted) {
+    // Tab state is already correct.
     return true;
   }
 
@@ -2483,14 +2486,59 @@ bool TabsUpdateFunction::UpdateHighlightedTab(
     return false;
   }
 
-  if (params.update_properties.highlighted.value()) {
-    tab_strip->SelectTabAt(tab_index);
-  } else {
-    tab_strip->DeselectTabAt(tab_index);
+  // Generate the set of tabs that should be selected. This should be the
+  // current selection, plus or minus the updated tab.
+  std::set<::tabs::TabHandle> selected_tabs;
+  for (::tabs::TabInterface* tab : tab_list.GetAllTabs()) {
+    if (tab->IsSelected()) {
+      selected_tabs.insert(tab->GetHandle());
+    }
   }
+
+  // Get the list of tabs affected by this update call. This is the specified
+  // tab, along with any other tabs in that tab's split.
+  std::set<::tabs::TabHandle> affected_tabs;
+  std::optional<split_tabs::SplitTabId> split_id = target_tab.GetSplit();
+  if (split_id) {
+    for (::tabs::TabInterface* tab : tab_list.GetAllTabs()) {
+      if (tab->GetSplit() == split_id) {
+        affected_tabs.insert(tab->GetHandle());
+      }
+    }
+  } else {
+    affected_tabs.insert(target_tab.GetHandle());
+  }
+
+  // Add or remove the affected tabs from the split.
+  if (highlighted) {
+    selected_tabs.insert(affected_tabs.begin(), affected_tabs.end());
+  } else {
+    for (auto& tab : affected_tabs) {
+      selected_tabs.erase(tab);
+    }
+  }
+
+  if (selected_tabs.size() == 0) {
+    // We don't allow no tabs to be selected.
+    // TODO(devlin): Should this be an error? It's historically been silently
+    // swallowed.
+    return true;
+  }
+
+  // Determine the new active tab. This is the currently-active tab, unless that
+  // tab is the one being unselected, in which case we fall back to the first
+  // tab in the selection.
+  ::tabs::TabInterface* active_tab = tab_list.GetActiveTab();
+  ::tabs::TabHandle tab_to_activate = active_tab->GetHandle();
+  if (highlighted) {
+    tab_to_activate = target_tab.GetHandle();
+  } else if (!selected_tabs.contains(tab_to_activate)) {
+    tab_to_activate = *selected_tabs.begin();
+  }
+
+  tab_list.HighlightTabs(tab_to_activate, selected_tabs);
   return true;
 }
-#endif  // BUILDFLAG(IS_ANDROID)
 
 bool TabsUpdateFunction::UpdateURL(content::WebContents* web_contents,
                                    const std::string& url_string,

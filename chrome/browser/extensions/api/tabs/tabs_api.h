@@ -45,7 +45,6 @@ class GURL;
 class SessionID;
 class SkBitmap;
 class TabListInterface;
-class TabStripModel;
 
 namespace base {
 class TaskRunner;
@@ -372,15 +371,12 @@ class TabsUpdateFunction : public ExtensionFunction {
                        int tab_index,
                        std::string& error);
 
-  // TODO(https://crbug.com/447211263): Support on desktop android.
-#if !BUILDFLAG(IS_ANDROID)
   // Updates the highlight state of the given tab. Returns true on success or if
   // there was nothing to do. Returns false on failure with an error.
   bool UpdateHighlightedTab(const api::tabs::Update::Params& params,
-                            TabStripModel* tab_strip,
-                            int tab_index,
+                            TabListInterface& tab_list,
+                            ::tabs::TabInterface& target_tab,
                             std::string& error);
-#endif
 
   DECLARE_EXTENSION_FUNCTION("tabs.update", TABS_UPDATE)
 };

@@ -293,7 +293,7 @@ TEST_F(TabsApiUnitTest, IsTabStripEditable) {
   // Bug fix for crbug.com/1198717. Error updating tabs while drag in progress.
   {
     std::string args =
-        base::StringPrintf("[%d, {\"highlighted\": true}]", tab_ids[0]);
+        base::StringPrintf("[%d, {\"highlighted\": true}]", tab_ids[1]);
     auto function = base::MakeRefCounted<TabsUpdateFunction>();
     function->set_extension(extension);
     std::string error = api_test_utils::RunFunctionAndReturnError(
