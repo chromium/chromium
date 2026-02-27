@@ -9,6 +9,7 @@
 #include <optional>
 
 #include "base/functional/callback.h"
+#include "base/test/test_future.h"
 #include "components/private_ai/phosphor/token_manager.h"
 
 namespace private_ai {
@@ -28,9 +29,6 @@ class FakeTokenManager : public phosphor::TokenManager {
   void SetReturnToken(bool return_token);
   void RunPendingCallbacks();
   void RunPendingProxyCallbacks();
-  void WaitForPendingCallback();
-  size_t GetPendingCallbackCount();
-  size_t GetPendingProxyCallbackCount();
 
   // An alternative to RunPending*Callbacks that allows custom token values.
   void RespondToGetAuthToken(
@@ -45,8 +43,8 @@ class FakeTokenManager : public phosphor::TokenManager {
   std::optional<phosphor::BlindSignedAuthToken> GetToken();
 
   bool return_token_ = true;
-  std::deque<GetAuthTokenCallback> pending_callbacks_;
-  std::deque<GetAuthTokenCallback> pending_proxy_callbacks_;
+  base::test::TestFuture<GetAuthTokenCallback> callback_future_;
+  base::test::TestFuture<GetAuthTokenCallback> proxy_callback_future_;
 };
 
 }  // namespace private_ai

@@ -20,13 +20,15 @@ FakeTokenManager::FakeTokenManager() = default;
 FakeTokenManager::~FakeTokenManager() = default;
 
 void FakeTokenManager::GetAuthToken(GetAuthTokenCallback callback) {
-  pending_callbacks_.push_back(std::move(callback));
+  CHECK(!callback_future_.IsReady());
+  callback_future_.SetValue(std::move(callback));
 }
 
 void FakeTokenManager::PrefetchAuthTokens() {}
 
 void FakeTokenManager::GetAuthTokenForProxy(GetAuthTokenCallback callback) {
-  pending_proxy_callbacks_.push_back(std::move(callback));
+  CHECK(!proxy_callback_future_.IsReady());
+  proxy_callback_future_.SetValue(std::move(callback));
 }
 
 void FakeTokenManager::PrefetchAuthTokensForProxy() {}
@@ -36,14 +38,10 @@ void FakeTokenManager::SetReturnToken(bool return_token) {
 }
 
 void FakeTokenManager::RunPendingCallbacks() {
-  while (!pending_callbacks_.empty()) {
-    std::move(pending_callbacks_.front()).Run(GetToken());
-    pending_callbacks_.pop_front();
-  }
+  callback_future_.Take().Run(GetToken());
 }
 
 void FakeTokenManager::RunPendingProxyCallbacks() {
-  while (!pending_proxy_callbacks_.empty()) {
     std::optional<phosphor::BlindSignedAuthToken> token;
     if (return_token_) {
       token = phosphor::BlindSignedAuthToken{
@@ -51,35 +49,17 @@ void FakeTokenManager::RunPendingProxyCallbacks() {
           .encoded_extensions = "proxy_extensions",
           .expiration = base::Time::Now() + base::Minutes(1)};
     }
-    std::move(pending_proxy_callbacks_.front()).Run(std::move(token));
-    pending_proxy_callbacks_.pop_front();
-  }
-}
-
-void FakeTokenManager::WaitForPendingCallback() {
-  CHECK(base::test::RunUntil([&]() { return !pending_callbacks_.empty(); }));
-}
-
-size_t FakeTokenManager::GetPendingCallbackCount() {
-  return pending_callbacks_.size();
-}
-
-size_t FakeTokenManager::GetPendingProxyCallbackCount() {
-  return pending_proxy_callbacks_.size();
+    proxy_callback_future_.Take().Run(std::move(token));
 }
 
 void FakeTokenManager::RespondToGetAuthToken(
     std::optional<phosphor::BlindSignedAuthToken> token) {
-  CHECK(!pending_callbacks_.empty());
-  std::move(pending_callbacks_.front()).Run(std::move(token));
-  pending_callbacks_.pop_front();
+  callback_future_.Take().Run(token);
 }
 
 void FakeTokenManager::RespondToGetAuthTokenForProxy(
     std::optional<phosphor::BlindSignedAuthToken> token) {
-  CHECK(!pending_proxy_callbacks_.empty());
-  std::move(pending_proxy_callbacks_.front()).Run(std::move(token));
-  pending_proxy_callbacks_.pop_front();
+  proxy_callback_future_.Take().Run(std::move(token));
 }
 
 std::optional<phosphor::BlindSignedAuthToken> FakeTokenManager::GetToken() {

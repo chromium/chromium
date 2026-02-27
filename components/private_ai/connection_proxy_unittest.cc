@@ -83,7 +83,6 @@ class ConnectionProxyTest : public testing::Test {
 
 TEST_F(ConnectionProxyTest, Success) {
   CreateConnectionProxy();
-  ASSERT_EQ(token_manager_.GetPendingProxyCallbackCount(), 1u);
 
   // Send a request. It should be buffered.
   base::test::TestFuture<base::expected<proto::PrivateAiResponse, ErrorCode>>
@@ -119,7 +118,6 @@ TEST_F(ConnectionProxyTest, Success) {
 
 TEST_F(ConnectionProxyTest, SendAfterInitialization) {
   CreateConnectionProxy();
-  ASSERT_EQ(token_manager_.GetPendingProxyCallbackCount(), 1u);
 
   // Provide the token to complete initialization.
   base::test::TestFuture<void> inner_connection_created_future;
@@ -161,7 +159,6 @@ TEST_F(ConnectionProxyTest, FailsWithEmptyProxyUrl) {
 
 TEST_F(ConnectionProxyTest, ProxyTokenFailure) {
   CreateConnectionProxy();
-  ASSERT_EQ(token_manager_.GetPendingProxyCallbackCount(), 1u);
 
   base::test::TestFuture<base::expected<proto::PrivateAiResponse, ErrorCode>>
       future;

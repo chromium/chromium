@@ -34,7 +34,6 @@ class ConnectionTokenAttestationTest : public testing::Test {
         std::move(fake_connection), &token_manager_, &logger_,
         base::BindOnce(&ConnectionTokenAttestationTest::OnDisconnect,
                        base::Unretained(this)));
-    token_manager_.WaitForPendingCallback();
   }
 
   void OnDisconnect(ErrorCode error_code) {

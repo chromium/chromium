@@ -10,6 +10,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/run_until.h"
 #include "base/test/task_environment.h"
@@ -18,6 +19,7 @@
 #include "components/private_ai/client_impl.h"
 #include "components/private_ai/common/private_ai_logger.h"
 #include "components/private_ai/connection_basic.h"
+#include "components/private_ai/connection_factory_impl.h"
 #include "components/private_ai/connection_metrics.h"
 #include "components/private_ai/connection_timeout.h"
 #include "components/private_ai/connection_token_attestation.h"
@@ -38,48 +40,6 @@ namespace {
 using ::testing::_;
 using ::testing::Invoke;
 
-class IntegrationConnectionFactory : public ConnectionFactory {
- public:
-  IntegrationConnectionFactory(
-      FakeSecureChannelFactory::OnCreatedCallback on_secure_channel_created,
-      FakeSecureChannelFactory::OnDestroyedCallback on_secure_channel_destroyed,
-      FakeTokenManager* token_manager,
-      PrivateAiLogger* logger)
-      : on_secure_channel_created_(std::move(on_secure_channel_created)),
-        on_secure_channel_destroyed_(std::move(on_secure_channel_destroyed)),
-        token_manager_(token_manager),
-        logger_(logger) {}
-
-  std::unique_ptr<Connection> Create(
-      base::OnceCallback<void(ErrorCode)> on_disconnect) override {
-    auto split_on_disconnect =
-        base::SplitOnceCallback(std::move(on_disconnect));
-
-    auto secure_channel_factory = std::make_unique<FakeSecureChannelFactory>(
-        on_secure_channel_created_, on_secure_channel_destroyed_);
-
-    std::unique_ptr<Connection> connection =
-        std::make_unique<ConnectionBasic>(std::move(secure_channel_factory),
-                                          std::move(split_on_disconnect.first));
-
-    connection = std::make_unique<ConnectionMetrics>(std::move(connection));
-
-    connection = std::make_unique<ConnectionTimeout>(std::move(connection));
-
-    connection = std::make_unique<ConnectionTokenAttestation>(
-        std::move(connection), token_manager_, logger_,
-        std::move(split_on_disconnect.second));
-    token_manager_->WaitForPendingCallback();
-    return connection;
-  }
-
- private:
-  FakeSecureChannelFactory::OnCreatedCallback on_secure_channel_created_;
-  FakeSecureChannelFactory::OnDestroyedCallback on_secure_channel_destroyed_;
-  raw_ptr<FakeTokenManager> token_manager_;
-  raw_ptr<PrivateAiLogger> logger_;
-};
-
 }  // namespace
 
 class ClientImplIntegrationTest : public testing::Test {
@@ -87,14 +47,21 @@ class ClientImplIntegrationTest : public testing::Test {
   void SetUp() override {
     auto logger = std::make_unique<PrivateAiLogger>();
     PrivateAiLogger* logger_ptr = logger.get();
-    auto factory = std::make_unique<IntegrationConnectionFactory>(
-        base::BindRepeating(
-            &ClientImplIntegrationTest::on_secure_channel_created,
-            base::Unretained(this)),
-        base::BindRepeating(
-            &ClientImplIntegrationTest::on_secure_channel_destroyed,
-            base::Unretained(this)),
-        &token_manager_, logger_ptr);
+    GURL url("wss://example.com?key=test-api-key");
+
+    auto factory = std::make_unique<ConnectionFactoryImpl>(
+        url, &test_network_context_, logger_ptr);
+    factory->EnableTokenAttestation(&token_manager_);
+    factory->SetSecureChannelFactoryForTesting(base::BindLambdaForTesting(
+        [this]() -> std::unique_ptr<SecureChannel::Factory> {
+          return std::make_unique<FakeSecureChannelFactory>(
+              base::BindRepeating(
+                  &ClientImplIntegrationTest::on_secure_channel_created,
+                  base::Unretained(this)),
+              base::BindRepeating(
+                  &ClientImplIntegrationTest::on_secure_channel_destroyed,
+                  base::Unretained(this)));
+        }));
 
     client_ =
         std::make_unique<ClientImpl>(std::move(factory), std::move(logger));
@@ -126,6 +93,7 @@ class ClientImplIntegrationTest : public testing::Test {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
+  network::TestNetworkContext test_network_context_;
   FakeTokenManager token_manager_;
   std::vector<raw_ptr<FakeSecureChannel>> secure_channels_;
   std::unique_ptr<ClientImpl> client_;
@@ -137,7 +105,6 @@ TEST_F(ClientImplIntegrationTest, FullStackSuccess) {
                            "hello", future.GetCallback(), /*options=*/{});
 
   // 1. Attestation starts. FakeTokenManager gets a request.
-  EXPECT_EQ(token_manager_.GetPendingCallbackCount(), 1u);
   token_manager_.RunPendingCallbacks();
 
   // 2. SecureChannel (Basic) is created and gets the attestation request.
@@ -176,7 +143,6 @@ TEST_F(ClientImplIntegrationTest, AttestationFailure) {
                            "hello", future.GetCallback(), /*options=*/{});
 
   // 1. Attestation starts.
-  EXPECT_EQ(token_manager_.GetPendingCallbackCount(), 1u);
   // Simulate token fetch failure.
   token_manager_.RespondToGetAuthToken(std::nullopt);
 
@@ -223,7 +189,6 @@ TEST_F(ClientImplIntegrationTest, ConcurrentRequestsDuringAttestation) {
                            "request2", future2.GetCallback(), /*options=*/{});
 
   // 1. Attestation starts (only one token fetch should be triggered).
-  EXPECT_EQ(token_manager_.GetPendingCallbackCount(), 1u);
   token_manager_.RunPendingCallbacks();
 
   auto* channel = last_secure_channel();
@@ -326,8 +291,8 @@ TEST_F(ClientImplIntegrationTest, AttestationTimedOut) {
   auto* channel = last_secure_channel();
   ASSERT_TRUE(channel);
 
-  // 2. Wait for the attestation timeout (60 seconds).
-  task_environment_.FastForwardBy(base::Seconds(61));
+  // 2. Wait for the request to time out.
+  task_environment_.FastForwardBy(base::Seconds(10));
 
   // 3. Result should be kClientAttestationFailed because
   // ConnectionTokenAttestation converts any error during attestation response
@@ -335,7 +300,7 @@ TEST_F(ClientImplIntegrationTest, AttestationTimedOut) {
   ASSERT_TRUE(future.IsReady());
   auto result = future.Get();
   ASSERT_FALSE(result.has_value());
-  EXPECT_EQ(result.error(), ErrorCode::kClientAttestationFailed);
+  EXPECT_EQ(result.error(), ErrorCode::kTimeout);
 }
 
 }  // namespace private_ai
