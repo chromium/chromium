@@ -287,6 +287,11 @@ FocusedTabData GlicFocusedTabManager::ImplToPublic(FocusedTabDataImpl impl) {
       return FocusedTabData(std::string("focused tab disappeared"),
                             /*unfocused_tab=*/nullptr);
     }
+    // TODO(crbug.com/485529659): Confirm whether crash persists.
+    if (contents->IsBeingDestroyed()) {
+      return FocusedTabData(std::string("focused tab being destroyed"),
+                            /*unfocused_tab=*/nullptr);
+    }
     return FocusedTabData(tabs::TabInterface::GetFromContents(contents));
   }
   const NoFocusedTabData* no_focus = impl.no_focus();
