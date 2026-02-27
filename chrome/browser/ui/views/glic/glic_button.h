@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/views/glic/glic_base_shim.h"
 #include "chrome/browser/ui/views/glic/glic_button_interface.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_features.h"
@@ -79,72 +80,8 @@ inline constexpr int kCollapsedWidth = 41;
 inline constexpr int kSplitButtonFlatEdgeRadius = 2;
 
 template <typename T>
-class GlicButtonShim : public T {
- public:
-  using T::T;
-
-  virtual void UpdateColors() {
-    if constexpr (requires { this->T::UpdateColors(); }) {
-      this->T::UpdateColors();
-    }
-  }
-
-  virtual void SetCloseButtonFocusBehavior(
-      views::View::FocusBehavior focus_behavior) {
-    if constexpr (requires {
-                    this->T::SetCloseButtonFocusBehavior(focus_behavior);
-                  }) {
-      T::SetCloseButtonFocusBehavior(focus_behavior);
-    }
-  }
-
-  virtual void SetForegroundFrameActiveColorId(ui::ColorId new_color_id) {
-    if constexpr (requires {
-                    this->T::SetForegroundFrameActiveColorId(new_color_id);
-                  }) {
-      T::SetForegroundFrameActiveColorId(new_color_id);
-    }
-  }
-
-  virtual void SetForegroundFrameInactiveColorId(ui::ColorId new_color_id) {
-    if constexpr (requires {
-                    this->T::SetForegroundFrameInactiveColorId(new_color_id);
-                  }) {
-      T::SetForegroundFrameInactiveColorId(new_color_id);
-    }
-  }
-
-  virtual void SetBackgroundFrameActiveColorId(ui::ColorId new_color_id) {
-    if constexpr (requires {
-                    this->T::SetBackgroundFrameActiveColorId(new_color_id);
-                  }) {
-      T::SetBackgroundFrameActiveColorId(new_color_id);
-    }
-  }
-
-  virtual void SetBackgroundFrameInactiveColorId(ui::ColorId new_color_id) {
-    if constexpr (requires {
-                    this->T::SetBackgroundFrameInactiveColorId(new_color_id);
-                  }) {
-      T::SetBackgroundFrameInactiveColorId(new_color_id);
-    }
-  }
-
-  virtual void SetLeftRightCornerRadii(int left, int right) {
-    if constexpr (requires { this->T::SetLeftRightCornerRadii(left, right); }) {
-      T::SetLeftRightCornerRadii(left, right);
-    }
-  }
-  virtual void SetInkdropHoverColorId(const ChromeColorIds new_color_id) {
-    if constexpr (requires { this->T::SetInkdropHoverColorId(new_color_id); }) {
-      T::SetInkdropHoverColorId(new_color_id);
-    }
-  }
-};
-
-template <typename T>
   requires std::derived_from<T, views::LabelButton>
-class GlicButton : public GlicButtonShim<T>,
+class GlicButton : public GlicBaseShim<T>,
                    public ui::SimpleMenuModel::Delegate {
  public:
   // These states represent the button's width and label contents.
@@ -258,7 +195,7 @@ class GlicButton : public GlicButtonShim<T>,
                       base::RepeatingClosure expansion_animation_done_callback,
                       const std::u16string& tooltip,
                       BaseArgs&&... base_args)
-      : GlicButtonShim<T>(std::move(base_args)...),
+      : GlicBaseShim<T>(std::move(base_args)...),
         browser_window_interface_(browser_window_interface),
         menu_model_(CreateMenuModel()),
         profile_(browser_window_interface
@@ -371,7 +308,7 @@ class GlicButton : public GlicButtonShim<T>,
             : GetLabelText());
   }
 
-  virtual void SetIsShowingNudge(bool is_showing) {
+  void SetIsShowingNudge(bool is_showing) override {
     if (is_showing) {
       SetCloseButtonFocusBehavior(views::View::FocusBehavior::ALWAYS);
       AnnounceNudgeShown();
@@ -655,16 +592,16 @@ class GlicButton : public GlicButtonShim<T>,
   }
 
   void SetForegroundFrameActiveColorId(ui::ColorId new_color_id) override {
-    GlicButtonShim<T>::SetForegroundFrameActiveColorId(new_color_id);
+    GlicBaseShim<T>::SetForegroundFrameActiveColorId(new_color_id);
   }
   void SetForegroundFrameInactiveColorId(ui::ColorId new_color_id) override {
-    GlicButtonShim<T>::SetForegroundFrameInactiveColorId(new_color_id);
+    GlicBaseShim<T>::SetForegroundFrameInactiveColorId(new_color_id);
   }
   void SetBackgroundFrameActiveColorId(ui::ColorId new_color_id) override {
-    GlicButtonShim<T>::SetBackgroundFrameActiveColorId(new_color_id);
+    GlicBaseShim<T>::SetBackgroundFrameActiveColorId(new_color_id);
   }
   void SetBackgroundFrameInactiveColorId(ui::ColorId new_color_id) override {
-    GlicButtonShim<T>::SetBackgroundFrameInactiveColorId(new_color_id);
+    GlicBaseShim<T>::SetBackgroundFrameInactiveColorId(new_color_id);
   }
 
   // Callback when the context menu closes.
@@ -768,19 +705,19 @@ class GlicButton : public GlicButtonShim<T>,
 
   // Must be implemented by any subclass that does not have T implementing the
   // class.
-  void UpdateColors() override { GlicButtonShim<T>::UpdateColors(); }
+  void UpdateColors() override { GlicBaseShim<T>::UpdateColors(); }
 
   void SetCloseButtonFocusBehavior(
       views::View::FocusBehavior focus_behavior) override {
-    GlicButtonShim<T>::SetCloseButtonFocusBehavior(focus_behavior);
+    GlicBaseShim<T>::SetCloseButtonFocusBehavior(focus_behavior);
   }
 
   void SetLeftRightCornerRadii(int left, int right) override {
-    GlicButtonShim<T>::SetLeftRightCornerRadii(left, right);
+    GlicBaseShim<T>::SetLeftRightCornerRadii(left, right);
   }
 
   void SetInkdropHoverColorId(const ChromeColorIds new_color_id) override {
-    GlicButtonShim<T>::SetInkdropHoverColorId(new_color_id);
+    GlicBaseShim<T>::SetInkdropHoverColorId(new_color_id);
   }
 
   // Called every time the contextual cue is shown to make a screen reader
