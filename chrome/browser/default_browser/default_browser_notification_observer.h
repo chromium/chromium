@@ -15,7 +15,17 @@ namespace default_browser {
 // when Chrome is no longer the default browser.
 class DefaultBrowserNotificationObserver {
  public:
-  explicit DefaultBrowserNotificationObserver(DefaultBrowserManager& manager);
+  using RegisterCallback = base::OnceCallback<base::CallbackListSubscription(
+      base::RepeatingCallback<void(DefaultBrowserState)>)>;
+
+  // Signature to provide the initial async check
+  using InitialStateCheckCallback =
+      base::OnceCallback<void(base::OnceCallback<void(DefaultBrowserState)>)>;
+
+  DefaultBrowserNotificationObserver(
+      RegisterCallback register_callback,
+      InitialStateCheckCallback initial_state_check_callback,
+      DefaultBrowserManager& manager);
 
   DefaultBrowserNotificationObserver(
       const DefaultBrowserNotificationObserver&) = delete;
@@ -31,6 +41,12 @@ class DefaultBrowserNotificationObserver {
 
   // The observer is automatically unregistered when this object is destroyed.
   base::CallbackListSubscription default_browser_change_subscription_;
+
+  // Track the last known state to detect transitions.
+  // Initialize to UNKNOWN so we don't fire on the very first check
+  // unless we've confirmed a transition from IS_DEFAULT.
+  shell_integration::DefaultWebClientState last_state_ =
+      shell_integration::UNKNOWN_DEFAULT;
 
   // The default browser manager that provides default browser state updates
   // and coordinates shell integration. It outlive this object.

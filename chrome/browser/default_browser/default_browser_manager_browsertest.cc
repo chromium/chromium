@@ -370,6 +370,72 @@ IN_PROC_BROWSER_TEST_F(DefaultBrowserManagerWinBrowserTest,
       DefaultBrowserInteractionType::kAccepted, 0);
 }
 
+IN_PROC_BROWSER_TEST_F(DefaultBrowserManagerWinBrowserTest,
+                       NoNotificationWhenRemainingNotDefault) {
+  fake_shell_delegate_ptr_->set_default_state(shell_integration::NOT_DEFAULT);
+  CreateDefaultBrowserKey(L"EdgeHTML");
+
+  content::RunAllTasksUntilIdle();
+
+  base::test::TestFuture<DefaultBrowserState> monitor_future;
+  auto* manager = DefaultBrowserManager::From(g_browser_process);
+  base::CallbackListSubscription sub = manager->RegisterDefaultBrowserChanged(
+      monitor_future.GetRepeatingCallback());
+
+  ChangeDefaultBrowserProgId(L"VanadiumHTML");
+
+  EXPECT_EQ(monitor_future.Take(), shell_integration::NOT_DEFAULT);
+  content::RunAllTasksUntilIdle();
+
+  auto notification = display_service_tester_->GetNotification(
+      DefaultBrowserManager::kNotificationId);
+  EXPECT_FALSE(notification.has_value());
+}
+
+IN_PROC_BROWSER_TEST_F(DefaultBrowserManagerWinBrowserTest,
+                       NoNotificationWhenBecomingDefault) {
+  fake_shell_delegate_ptr_->set_default_state(shell_integration::NOT_DEFAULT);
+  CreateDefaultBrowserKey(L"EdgeHTML");
+  content::RunAllTasksUntilIdle();
+
+  base::test::TestFuture<DefaultBrowserState> monitor_future;
+  auto* manager = DefaultBrowserManager::From(g_browser_process);
+  base::CallbackListSubscription sub = manager->RegisterDefaultBrowserChanged(
+      monitor_future.GetRepeatingCallback());
+
+  fake_shell_delegate_ptr_->set_default_state(shell_integration::IS_DEFAULT);
+  ChangeDefaultBrowserProgId(L"ChromeHTML");
+
+  EXPECT_EQ(monitor_future.Take(), shell_integration::IS_DEFAULT);
+  content::RunAllTasksUntilIdle();
+
+  auto notification = display_service_tester_->GetNotification(
+      DefaultBrowserManager::kNotificationId);
+  EXPECT_FALSE(notification.has_value());
+}
+
+IN_PROC_BROWSER_TEST_F(DefaultBrowserManagerWinBrowserTest,
+                       NotificationShownOnTransitionFromDefault) {
+  fake_shell_delegate_ptr_->set_default_state(shell_integration::IS_DEFAULT);
+  CreateDefaultBrowserKey(L"ChromeHTML");
+  content::RunAllTasksUntilIdle();
+
+  base::test::TestFuture<DefaultBrowserState> monitor_future;
+  auto* manager = DefaultBrowserManager::From(g_browser_process);
+  base::CallbackListSubscription sub = manager->RegisterDefaultBrowserChanged(
+      monitor_future.GetRepeatingCallback());
+
+  fake_shell_delegate_ptr_->set_default_state(shell_integration::NOT_DEFAULT);
+  ChangeDefaultBrowserProgId(L"VanadiumHTML");
+
+  EXPECT_EQ(monitor_future.Take(), shell_integration::NOT_DEFAULT);
+  content::RunAllTasksUntilIdle();
+
+  auto notification = display_service_tester_->GetNotification(
+      DefaultBrowserManager::kNotificationId);
+  EXPECT_TRUE(notification.has_value());
+}
+
 #endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace default_browser

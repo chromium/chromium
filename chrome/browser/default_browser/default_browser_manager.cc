@@ -157,7 +157,13 @@ DefaultBrowserManager::DefaultBrowserManager(
                             base::Unretained(this)));
     if (IsDefaultBrowserChangedOsNotificationEnabled()) {
       notification_observer_ =
-          std::make_unique<DefaultBrowserNotificationObserver>(*this);
+          std::make_unique<DefaultBrowserNotificationObserver>(
+              base::BindOnce(
+                  &DefaultBrowserManager::RegisterDefaultBrowserChanged,
+                  base::Unretained(this)),
+              base::BindOnce(&DefaultBrowserManager::GetDefaultBrowserState,
+                             base::Unretained(this)),
+              *this);
     }
 
     monitor_->StartMonitor();

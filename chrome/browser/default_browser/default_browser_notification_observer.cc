@@ -30,10 +30,18 @@
 namespace default_browser {
 
 DefaultBrowserNotificationObserver::DefaultBrowserNotificationObserver(
+    RegisterCallback register_callback,
+    InitialStateCheckCallback initial_state_check_callback,
     DefaultBrowserManager& manager)
     : manager_(manager) {
   default_browser_change_subscription_ =
-      manager.RegisterDefaultBrowserChanged(base::BindRepeating(
+      std::move(register_callback)
+          .Run(base::BindRepeating(
+              &DefaultBrowserNotificationObserver::OnDefaultBrowserStateChanged,
+              base::Unretained(this)));
+
+  std::move(initial_state_check_callback)
+      .Run(base::BindOnce(
           &DefaultBrowserNotificationObserver::OnDefaultBrowserStateChanged,
           base::Unretained(this)));
 }
@@ -43,7 +51,12 @@ DefaultBrowserNotificationObserver::~DefaultBrowserNotificationObserver() =
 
 void DefaultBrowserNotificationObserver::OnDefaultBrowserStateChanged(
     DefaultBrowserState state) {
-  if (state != shell_integration::NOT_DEFAULT) {
+  bool lost_default_status = (last_state_ == shell_integration::IS_DEFAULT &&
+                              state == shell_integration::NOT_DEFAULT);
+
+  last_state_ = state;
+
+  if (!lost_default_status) {
     return;
   }
 
