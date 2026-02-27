@@ -1218,6 +1218,13 @@ IN_PROC_BROWSER_TEST_P(TaskManagerOOPIFBrowserTest,
   }
 }
 
+// TODO(crbug.com/488090097): Re-enable this test on Linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_CrossSiteIframeBecomesSameSite \
+  DISABLED_CrossSiteIframeBecomesSameSite
+#else
+#define MAYBE_CrossSiteIframeBecomesSameSite CrossSiteIframeBecomesSameSite
+#endif
 // Tests what happens when a tab navigates a cross-frame iframe (to b.com)
 // back to the site of the parent document (a.com).
 IN_PROC_BROWSER_TEST_P(TaskManagerOOPIFBrowserTest,
