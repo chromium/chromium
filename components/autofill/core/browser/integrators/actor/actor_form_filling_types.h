@@ -13,6 +13,7 @@
 #include "base/types/id_type.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "ui/gfx/image/image.h"
+#include "url/origin.h"
 
 namespace autofill {
 
@@ -78,6 +79,7 @@ struct ActorFormFillingRequest {
   using RequestedData =
       optimization_guide::proto::FormFillingRequest_RequestedData;
   RequestedData requested_data;
+  url::Origin request_origin;
   std::vector<ActorSuggestion> suggestions;
 };
 

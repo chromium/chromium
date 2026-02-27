@@ -7,5 +7,6 @@ static_library("actor_form_filling_types") {
     "//base",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//ui/gfx",
+    "//url",
   ]
 }

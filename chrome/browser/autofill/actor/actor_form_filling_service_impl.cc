@@ -585,6 +585,8 @@ void ActorFormFillingServiceImpl::GetSuggestions(
         return;
       }
     }
+    url::Origin origin =
+        tab.GetContents()->GetPrimaryMainFrame()->GetLastCommittedOrigin();
 
     for (const SubRequest& sub_request : sub_requests) {
       std::vector<ActorSuggestionWithFillData> suggestion_data;
@@ -621,6 +623,7 @@ void ActorFormFillingServiceImpl::GetSuggestions(
 
       requests.emplace_back();
       requests.back().requested_data = sub_request.requested_data;
+      requests.back().request_origin = origin;
       requests.back().suggestions.reserve(suggestion_data.size());
       for (ActorSuggestionWithFillData& entry : suggestion_data) {
         entry.suggestion.id =

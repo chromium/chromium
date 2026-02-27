@@ -109,6 +109,12 @@ gfx::Image CreateTestImage(int width, int height) {
                      Each(NonEmptyActorSuggestion())));
 }
 
+[[nodiscard]] Matcher<ActorFormFillingRequest>
+IsActorFormFillingRequestWithOrigin(const url::Origin request_origin) {
+  return Field("request_origin", &ActorFormFillingRequest::request_origin,
+               request_origin);
+}
+
 // Returns a fill-request with a non-sensical (because null) field id.
 FillRequest UnfindableFillRequest() {
   return {ActorFormFillingRequest::RequestedData::
@@ -409,6 +415,24 @@ TEST_F(ActorFormFillingServiceTest, SimpleAddressForm) {
   ExpectFillSuggestionsOutcome(/*is_payments_fill=*/false,
                                kActorFormFillingSuccessForMetrics,
                                histogram_tester);
+}
+
+// Tests that the origin of the web contents is returned in the form filling
+// request.
+TEST_F(ActorFormFillingServiceTest, SpecificOriginAddressForm) {
+  const GURL url("https://example.test");
+  NavigateAndCommit(url);
+
+  FormData form = SeeForm({.fields = {{.server_type = NAME_FULL},
+                                      {.server_type = ADDRESS_HOME_LINE1}}});
+
+  GetSuggestionsFuture future;
+  service().GetSuggestions(tab(),
+                           {AddressFillRequest({form.fields()[0].global_id()})},
+                           future.GetCallback());
+  EXPECT_THAT(future.Get(),
+              ValueIs(ElementsAre(IsActorFormFillingRequestWithOrigin(
+                  url::Origin::Create(url)))));
 }
 
 // Tests that a suggestion is returned when invoking on a contact form and
