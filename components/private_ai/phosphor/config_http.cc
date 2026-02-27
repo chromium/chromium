@@ -31,15 +31,15 @@ namespace private_ai::phosphor {
 
 namespace {
 constexpr net::NetworkTrafficAnnotationTag kGetTokenTrafficAnnotation =
-    net::DefineNetworkTrafficAnnotation("legion_service_get_token",
+    net::DefineNetworkTrafficAnnotation("private_ai_get_token",
                                         R"(
     semantics {
-      sender: "Legion Service Client"
+      sender: "PrivateAI Service Client"
       description:
         "Request to a Google auth server to obtain an authorization token "
-        "for Legion client attestation."
+        "for PrivateAI client attestation."
       trigger:
-        "The Legion Service is out of client attestation tokens."
+        "The PrivateAI Service is out of client attestation tokens."
       data:
         "Sign-in OAuth Token"
       destination: GOOGLE_OWNED_SERVICE

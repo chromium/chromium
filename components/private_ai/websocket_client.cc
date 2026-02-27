@@ -31,16 +31,16 @@ namespace {
 constexpr size_t kMaxIncomingMessageSize = 1 << 20;
 
 constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
-    net::DefineNetworkTrafficAnnotation("legion_client", R"(
+    net::DefineNetworkTrafficAnnotation("private_ai_client", R"(
         semantics {
-          sender: "Legion Client"
+          sender: "PrivateAI Client"
           description:
             "This traffic creates an encrypted session with the "
-            "legion service and carries the request and response over that "
+            "PrivateAI service and carries the request and response over that "
             "session. "
             "The feature is under development and behind a feature flag."
           trigger:
-            "A feature that uses the legion component is triggered. "
+            "A feature that uses the PrivateAI component is triggered. "
             "The feature determines which data to send."
           user_data {
             type: PROFILE_DATA
