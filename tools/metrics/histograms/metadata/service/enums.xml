@@ -336,6 +336,7 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="CachedResponseHeadCleared"/>
   <int value="1" label="HeaderInconsistent"/>
   <int value="2" label="Redirect"/>
+  <int value="3" label="Intercepted"/>
 </enum>
 
 <!-- LINT.ThenChange(//content/browser/service_worker/service_worker_synthetic_response_manager.cc:SyntheticResponseReloadReason) -->

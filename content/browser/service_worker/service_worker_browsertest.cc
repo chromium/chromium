@@ -8288,13 +8288,7 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerSyntheticResponseBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), url));
   // 2. Enable interception
   browser_client->set_intercept(true);
-  // 3. Second navigation triggers the crash in CHECK(!body.is_valid())
-  if (GetProcessingMode() ==
-      blink::features::ServiceWorkerSyntheticResponseProcessingMode::
-          kNetworkService) {
-    // EXPECT_DEATH({ (void)NavigateToURL(shell(), url); }, "");
-  } else {
-    EXPECT_TRUE(NavigateToURL(shell(), url));
-  }
+  // 3. Second navigation triggers the interception.
+  EXPECT_TRUE(NavigateToURL(shell(), url));
 }
 }  // namespace content

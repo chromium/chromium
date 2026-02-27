@@ -57,7 +57,8 @@ enum class SyntheticResponseReloadReason {
   kCachedResponseHeadCleared = 0,
   kHeaderInconsistent = 1,
   kRedirect = 2,
-  kMaxValue = kRedirect,
+  kIntercepted = 3,
+  kMaxValue = kIntercepted,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/service/enums.xml:SyntheticResponseReloadReason)
 
@@ -288,9 +289,10 @@ void ServiceWorkerSyntheticResponseManager::StartRequest(
       // synthetic response.
       request.trusted_params->expected_response_headers_for_synthetic_response =
           response_head->headers;
-      request.trusted_params->response_body_stream =
+      shared_producer_ =
           base::MakeRefCounted<network::SharedDataPipeProducerHandle>(
               write_buffer_manager_->ReleaseProducerHandle());
+      request.trusted_params->response_body_stream = shared_producer_;
     }
   }
 
@@ -450,21 +452,33 @@ void ServiceWorkerSyntheticResponseManager::OnReceiveResponse(
     case SyntheticResponseStatus::kReady: {
       CHECK(write_buffer_manager_.has_value());
       if (IsServiceWorkerSyntheticResponseNetworkService()) {
-        CHECK(!body.is_valid());
-        // In the NetworkService mode, the fallback logic is executed in the
-        // network service. If the fallback is triggered, the network service
-        // provides a fake 200 OK response with the fallback body. This fake
-        // response does not have the opt-in header. We detect this to clear
-        // the stored response head so that the next navigation (reloading)
-        // won't trigger the synthetic response again.
-        if (!response_head->headers->HasHeader(kOptInHeaderName)) {
+        if (body.is_valid()) {
+          // If the network request was intercepted by an embedder (e.g. Search
+          // Prefetch), it might provide its own response body through the
+          // `body` handle. However, `ServiceWorkerSyntheticResponseManager`
+          // expects to use the data pipe provided to the network service via
+          // `trusted_params->response_body_stream`. To handle this
+          // inconsistency, we reclaim the original producer handle from
+          // `shared_producer_` and write a fallback body (meta refresh) to
+          // trigger a reload.
+          CHECK(shared_producer_);
+          version_->ResetResponseHeadForSyntheticResponse();
+          NotifyReloading(std::move(shared_producer_->pipe));
+          RecordReloadReason(SyntheticResponseReloadReason::kIntercepted);
+        } else if (!response_head->headers->HasHeader(kOptInHeaderName)) {
+          // In the NetworkService mode, the fallback logic is executed in the
+          // network service. If the fallback is triggered, the network service
+          // provides a fake 200 OK response with the fallback body. This fake
+          // response does not have the opt-in header. We detect this to clear
+          // the stored response head so that the next navigation (reloading)
+          // won't trigger the synthetic response again.
           version_->ResetResponseHeadForSyntheticResponse();
           // We don't need to call NotifyReloading() here because the response
           // body (meta refresh) is already populated by the network service.
           RecordReloadReason(
               SyntheticResponseReloadReason::kHeaderInconsistent);
         }
-        break;
+        return;
       }
       bool is_header_consistent = false;
       if (version_->GetResponseHeadForSyntheticResponse()) {
@@ -480,7 +494,7 @@ void ServiceWorkerSyntheticResponseManager::OnReceiveResponse(
           // here rather than resetting it in order to improve the synthetic
           // response coverage. Revisit this after collecting coverage data.
           version_->ResetResponseHeadForSyntheticResponse();
-          NotifyReloading();
+          NotifyReloading(write_buffer_manager_->ReleaseProducerHandle());
           RecordReloadReason(
               SyntheticResponseReloadReason::kHeaderInconsistent);
         }
@@ -488,7 +502,7 @@ void ServiceWorkerSyntheticResponseManager::OnReceiveResponse(
         // The cached response head may have been cleared by another request
         // that detected a header inconsistency. Tell the client to reload to
         // get the latest version.
-        NotifyReloading();
+        NotifyReloading(write_buffer_manager_->ReleaseProducerHandle());
         RecordReloadReason(
             SyntheticResponseReloadReason::kCachedResponseHeadCleared);
       }
@@ -525,7 +539,7 @@ void ServiceWorkerSyntheticResponseManager::OnReceiveRedirect(
     // Instead, we reload the navigation as a fallback. In the next navigation,
     // the synthetic response is not enabled because it's a reload navigation.
     version_->ResetResponseHeadForSyntheticResponse();
-    NotifyReloading();
+    NotifyReloading(write_buffer_manager_->ReleaseProducerHandle());
     RecordReloadReason(SyntheticResponseReloadReason::kRedirect);
     return;
   }
@@ -568,10 +582,10 @@ bool ServiceWorkerSyntheticResponseManager::CheckHeaderConsistency(
   return result;
 }
 
-void ServiceWorkerSyntheticResponseManager::NotifyReloading() {
+void ServiceWorkerSyntheticResponseManager::NotifyReloading(
+    mojo::ScopedDataPipeProducerHandle producer) {
   TRACE_EVENT("ServiceWorker",
               "ServiceWorkerSyntheticResponseManager::NotifyReloading");
-  auto producer = write_buffer_manager_->ReleaseProducerHandle();
   CHECK(producer.is_valid());
   auto [result, written_bytes] =
       network::WriteSyntheticResponseFallbackBody(producer);

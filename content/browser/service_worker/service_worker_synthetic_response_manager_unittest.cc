@@ -98,7 +98,8 @@ class ServiceWorkerSyntheticResponseManagerTest : public testing::Test {
   }
 
   void CallNotifyReloading(ServiceWorkerSyntheticResponseManager* manager) {
-    manager->NotifyReloading();
+    manager->NotifyReloading(
+        manager->write_buffer_manager_->ReleaseProducerHandle());
   }
 
  protected:
