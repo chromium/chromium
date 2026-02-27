@@ -144,4 +144,19 @@ public class DateFieldViewTest {
         assertEquals(
                 0, mDateFieldView.getYearPickerForTest().getDropdown().getSelectedItemPosition());
     }
+
+    @Test
+    public void testSetErrorMessage() {
+        mDateFieldView = new DateFieldView(mActivity, /* value= */ "2026-02-15");
+
+        TextView errorMessage = mDateFieldView.findViewById(R.id.date_field_error_message);
+        assertEquals(View.GONE, errorMessage.getVisibility());
+
+        mDateFieldView.setErrorMessage("Test error message");
+        assertEquals(View.VISIBLE, errorMessage.getVisibility());
+        assertEquals("Test error message", errorMessage.getText());
+
+        mDateFieldView.setErrorMessage(null);
+        assertEquals(View.GONE, errorMessage.getVisibility());
+    }
 }

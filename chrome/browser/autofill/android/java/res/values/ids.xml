@@ -12,4 +12,5 @@ found in the LICENSE file.
     <item type="id" name="date_field_month_dropdown" />
     <item type="id" name="date_field_day_dropdown" />
     <item type="id" name="date_field_year_dropdown" />
+    <item type="id" name="date_field_error_message" />
 </resources>

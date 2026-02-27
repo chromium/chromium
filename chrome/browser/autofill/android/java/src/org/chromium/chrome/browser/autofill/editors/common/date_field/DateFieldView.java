@@ -11,6 +11,7 @@ import static org.chromium.chrome.browser.autofill.editors.common.field.FieldPro
 import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.VALUE;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -48,6 +49,7 @@ public class DateFieldView extends LinearLayout implements FieldView {
     private final DropdownFieldView mMonthDropdown;
     private final DropdownFieldView mDayDropdown;
     private final DropdownFieldView mYearDropdown;
+    private final TextView mErrorMessage;
 
     public DateFieldView(Context context, String value) {
         super(context);
@@ -56,6 +58,18 @@ public class DateFieldView extends LinearLayout implements FieldView {
         mLabel = new TextView(context, null, 0, R.style.TextAppearance_TextMediumThick_Primary);
         mLabel.setVisibility(View.GONE);
         mLabel.setId(R.id.date_field_label);
+        mLabel.setTextAlignment(View.TEXT_ALIGNMENT_VIEW_START);
+
+        mErrorMessage = new TextView(context, null, 0, R.style.TextAppearance_ErrorCaption);
+        mErrorMessage.setVisibility(View.GONE);
+        mErrorMessage.setId(R.id.date_field_error_message);
+        mErrorMessage.setTextAlignment(View.TEXT_ALIGNMENT_VIEW_START);
+        mErrorMessage.setPadding(
+                0,
+                context.getResources()
+                        .getDimensionPixelSize(R.dimen.pref_autofill_field_top_margin),
+                0,
+                0);
 
         mSpinnerGroup = new LinearLayout(context);
         mSpinnerGroup.setOrientation(LinearLayout.HORIZONTAL);
@@ -152,6 +166,7 @@ public class DateFieldView extends LinearLayout implements FieldView {
 
         addView(mLabel);
         addView(mSpinnerGroup);
+        addView(mErrorMessage);
 
         setPaddingRelative(
                 /* start= */ 0,
@@ -220,6 +235,11 @@ public class DateFieldView extends LinearLayout implements FieldView {
         }
         Locale locale = context.getResources().getConfiguration().getLocales().get(0);
         return DateTimeFormatter.ofPattern("MMM", locale).format(getDateWithMonth(month));
+    }
+
+    public void setErrorMessage(@Nullable String errorMessage) {
+        mErrorMessage.setVisibility(TextUtils.isEmpty(errorMessage) ? View.GONE : View.VISIBLE);
+        mErrorMessage.setText(errorMessage);
     }
 
     private static List<DropdownKeyValue> getDayDropdownValues() {

@@ -26,7 +26,7 @@ public class DateFieldViewBinder {
         } else if (key == VALIDATOR) {
             // TODO: crbug.com/476755159 - Implement validation.
         } else if (key == ERROR_MESSAGE) {
-            // TODO: crbug.com/476755159 - Implement error message.
+            view.setErrorMessage(model.get(ERROR_MESSAGE));
         } else if (key == FOCUSED) {
             // TODO: crbug.com/476755159 - Implement focusability.
         } else {
