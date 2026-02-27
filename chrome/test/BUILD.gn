@@ -9893,6 +9893,7 @@ test("unit_tests") {
       "../renderer/extensions/api/identity_hooks_delegate_unittest.cc",
       "../renderer/extensions/api/tabs_hooks_delegate_unittest.cc",
       "../renderer/extensions/chrome_native_extension_bindings_system_unittest.cc",
+      "../renderer/extensions/chrome_policy_activity_log_filter_delegate_unittest.cc",
       "../renderer/extensions/custom_types_unittest.cc",
       "../renderer/extensions/renderer_permissions_policy_delegate_unittest.cc",
     ]

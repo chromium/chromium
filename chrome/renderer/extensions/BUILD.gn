@@ -14,6 +14,7 @@ source_set("extensions") {
     "api/extension_hooks_delegate.h",
     "api/tabs_hooks_delegate.h",
     "chrome_extensions_renderer_client.h",
+    "chrome_policy_activity_log_filter_delegate.h",
     "renderer_permissions_policy_delegate.h",
   ]
 
@@ -27,6 +28,7 @@ source_set("extensions") {
     "api/page_capture_custom_bindings.h",
     "api/tabs_hooks_delegate.cc",
     "chrome_extensions_renderer_client.cc",
+    "chrome_policy_activity_log_filter_delegate.cc",
     "chrome_resource_request_policy_delegate.cc",
     "chrome_resource_request_policy_delegate.h",
     "renderer_permissions_policy_delegate.cc",

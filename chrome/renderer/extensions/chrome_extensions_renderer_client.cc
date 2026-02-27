@@ -9,6 +9,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "chrome/common/chrome_isolated_world_ids.h"
+#include "chrome/renderer/extensions/chrome_policy_activity_log_filter_delegate.h"
 #include "chrome/renderer/extensions/chrome_resource_request_policy_delegate.h"
 #include "chrome/renderer/extensions/renderer_permissions_policy_delegate.h"
 #include "chrome/renderer/process_state.h"
@@ -68,6 +69,32 @@ bool ChromeExtensionsRendererClient::IsIncognitoProcess() const {
 
 int ChromeExtensionsRendererClient::GetLowestIsolatedWorldId() const {
   return ISOLATED_WORLD_ID_EXTENSIONS;
+}
+
+bool ChromeExtensionsRendererClient::IsPolicyActivityLoggingEnabled() const {
+  return policy_activity_logging_enabled_;
+}
+
+void ChromeExtensionsRendererClient::SetPolicyActivityLoggingEnabled(
+    bool enabled) {
+  policy_activity_logging_enabled_ = enabled;
+  if (enabled) {
+    if (!policy_activity_log_filter_) {
+      policy_activity_log_filter_ =
+          std::make_unique<extensions::ChromePolicyActivityLogFilterDelegate>();
+    }
+  } else {
+    policy_activity_log_filter_.reset();
+  }
+}
+
+extensions::PolicyActivityLogFilter*
+ChromeExtensionsRendererClient::GetPolicyActivityLogFilter() {
+  if (!policy_activity_logging_enabled_) {
+    return nullptr;
+  }
+  CHECK(policy_activity_log_filter_);
+  return policy_activity_log_filter_.get();
 }
 
 void ChromeExtensionsRendererClient::FinishInitialization() {

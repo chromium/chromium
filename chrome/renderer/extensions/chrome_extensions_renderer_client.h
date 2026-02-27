@@ -52,6 +52,9 @@ class ChromeExtensionsRendererClient
   // extensions::ExtensionsRendererClient implementation.
   bool IsIncognitoProcess() const override;
   int GetLowestIsolatedWorldId() const override;
+  bool IsPolicyActivityLoggingEnabled() const override;
+  void SetPolicyActivityLoggingEnabled(bool enabled) override;
+  extensions::PolicyActivityLogFilter* GetPolicyActivityLogFilter() override;
 
   static void DidBlockMimeHandlerViewForDisallowedPlugin(
       const blink::WebElement& plugin_element);
@@ -72,6 +75,15 @@ class ChromeExtensionsRendererClient
   std::unique_ptr<ukm::MojoUkmRecorder> ukm_recorder_;
   std::unique_ptr<extensions::RendererPermissionsPolicyDelegate>
       permissions_policy_delegate_;
+
+  // Whether policy-driven activity logging is enabled by an administrator.
+  // This state is synced from the browser process via Mojo.
+  bool policy_activity_logging_enabled_ = false;
+
+  // The filter used to identify high-risk DOM events. This is lazily created
+  // when the policy is enabled and destroyed when the policy is disabled.
+  std::unique_ptr<extensions::PolicyActivityLogFilter>
+      policy_activity_log_filter_;
 };
 
 #endif  // CHROME_RENDERER_EXTENSIONS_CHROME_EXTENSIONS_RENDERER_CLIENT_H_

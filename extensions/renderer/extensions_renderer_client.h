@@ -46,6 +46,7 @@ namespace extensions {
 class Extension;
 class ExtensionsRendererAPIProvider;
 class Dispatcher;
+class PolicyActivityLogFilter;
 
 // Interface to allow the extensions module to make render-process-specific
 // queries of the embedder. Should be Set() once in the render process.
@@ -65,6 +66,19 @@ class ExtensionsRendererClient {
   // Must be greater than 0. See blink::WebFrame::executeScriptInIsolatedWorld
   // (third_party/WebKit/public/web/WebFrame.h) for additional context.
   virtual int GetLowestIsolatedWorldId() const = 0;
+
+  // Returns true if policy-driven activity logging is currently enabled.
+  // This state is used to gate the attachment of DOMActivityLoggers to
+  // extension V8 contexts.
+  virtual bool IsPolicyActivityLoggingEnabled() const;
+
+  // Updates the policy-driven activity logging state.
+  virtual void SetPolicyActivityLoggingEnabled(bool enabled);
+
+  // Returns the filter used to identify high-risk events for enterprise
+  // telemetry. Returns nullptr if policy-driven logging is disabled or
+  // if the embedder does not provide a filter.
+  virtual PolicyActivityLogFilter* GetPolicyActivityLogFilter();
 
   // Notifies the client when an extension is added or removed.
   // TODO(devlin): Make a RendererExtensionRegistryObserver?
