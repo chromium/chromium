@@ -25,7 +25,6 @@
 #include "third_party/blink/public/platform/web_audio_bus.h"
 
 #include "base/memory/scoped_refptr.h"
-#include "base/numerics/safe_conversions.h"
 #include "media/base/audio_bus.h"
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
 
@@ -43,29 +42,6 @@ void WebAudioBus::Initialize(unsigned number_of_channels,
 
   audio_bus->AddRef();
   private_ = audio_bus.get();
-}
-
-bool WebAudioBus::TryInitialize(unsigned number_of_channels,
-                                size_t length,
-                                double sample_rate) {
-  if (!base::IsValueInRangeForNumericType<wtf_size_t>(length)) {
-    return false;
-  }
-  wtf_size_t length_wtf = static_cast<wtf_size_t>(length);
-  scoped_refptr<AudioBus> audio_bus =
-      AudioBus::TryCreate(number_of_channels, length_wtf);
-  if (!audio_bus) {
-    return false;
-  }
-  audio_bus->SetSampleRate(sample_rate);
-
-  if (private_) {
-    private_->Release();
-  }
-
-  audio_bus->AddRef();
-  private_ = audio_bus.get();
-  return true;
 }
 
 void WebAudioBus::ResizeSmaller(size_t new_length) {
