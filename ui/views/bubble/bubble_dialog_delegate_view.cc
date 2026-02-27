@@ -708,13 +708,54 @@ BubbleDialogDelegate::PreventCloseOnDeactivate() {
 }
 
 void BubbleDialogDelegate::SetHighlightedButton(Button* highlighted_button) {
+  // Destroy old highlights after creating the new one, so if it didn't
+  // change, this has no effect.
+  auto old_button_highlight = std::move(button_anchor_highlight_);
+  auto old_element_highlight = std::move(element_anchor_highlight_);
+
   bool visible = GetWidget() && GetWidget()->IsVisible();
-  // If the Widget is visible, ensure the old highlight (if any) is removed
-  // when the highlighted view changes.
-  if (visible && highlighted_button != highlighted_button_tracker_.view()) {
-    UpdateHighlightedButton(false);
-  }
+
   highlighted_button_tracker_.SetView(highlighted_button);
+  highlighted_element_tracker_ = nullptr;
+  highlighted_element_shown_subscription_ = std::nullopt;
+
+  if (visible) {
+    UpdateHighlightedButton(true);
+  }
+}
+
+void BubbleDialogDelegate::SetHighlightedElement(ui::ElementIdentifier id) {
+  auto* element_tracker = ui::ElementTracker::GetElementTracker();
+
+  auto* parent_widget =
+      anchor_widget() ? anchor_widget()
+                      : views::Widget::GetWidgetForNativeView(parent_window());
+  auto context = views::ElementTrackerViews::GetContextForWidget(parent_widget);
+
+  // `highlighted_button_tracker_` will deal with the hiding part.
+  // Unretained is safe because `highlighted_element_shown_` owns the
+  // callback subscription.
+  highlighted_element_shown_subscription_ =
+      element_tracker->AddElementShownCallback(
+          id, context,
+          base::BindRepeating(
+              &BubbleDialogDelegate::SetResolvedHighlightedElement,
+              base::Unretained(this)));
+  SetResolvedHighlightedElement(element_tracker->GetUniqueElement(id, context));
+}
+
+void BubbleDialogDelegate::SetResolvedHighlightedElement(
+    ui::TrackedElement* highlighted_element) {
+  // Destroy old highlights after creating the new one, so if it didn't
+  // change, this has no effect.
+  auto old_button_highlight = std::move(button_anchor_highlight_);
+  auto old_element_highlight = std::move(element_anchor_highlight_);
+
+  bool visible = GetWidget() && GetWidget()->IsVisible();
+
+  highlighted_button_tracker_.SetView(nullptr);
+  highlighted_element_tracker_ = highlighted_element;
+
   if (visible) {
     UpdateHighlightedButton(true);
   }
@@ -1275,11 +1316,24 @@ void BubbleDialogDelegate::SetAnchoredDialogKey() {
 void BubbleDialogDelegate::UpdateHighlightedButton(bool highlighted) {
   Button* button = Button::AsButton(highlighted_button_tracker_.view());
   button = button ? button : Button::AsButton(GetAnchorView());
-  if (button && highlight_button_when_shown_) {
+
+  ui::TrackedElement* element = highlighted_element_tracker_.get();
+  element = element ? element : anchor_tracked_element_.get();
+
+  if (highlight_button_when_shown_) {
     if (highlighted) {
-      button_anchor_highlight_ = button->AddAnchorHighlight();
+      if (button) {
+        button_anchor_highlight_ = button->AddAnchorHighlight();
+        element_anchor_highlight_.reset();
+      } else if (element) {
+        element_anchor_highlight_ =
+            ui::ElementHighlighter::GetElementHighlighter()->AddHighlight(
+                element);
+        button_anchor_highlight_.reset();
+      }
     } else {
       button_anchor_highlight_.reset();
+      element_anchor_highlight_.reset();
     }
   }
 }

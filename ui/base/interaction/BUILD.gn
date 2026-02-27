@@ -10,6 +10,7 @@ component("interaction") {
 
   public = [
     "element_events.h",
+    "element_highlighter.h",
     "element_identifier.h",
     "element_specifier.h",
     "element_tracker.h",
@@ -29,6 +30,7 @@ component("interaction") {
 
   sources = [
     "element_events.cc",
+    "element_highlighter.cc",
     "element_identifier.cc",
     "element_specifier.cc",
     "element_tracker.cc",
@@ -89,6 +91,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "element_highlighter_unittest.cc",
     "element_identifier_unittest.cc",
     "element_tracker_unittest.cc",
     "framework_specific_implementation_unittest.cc",

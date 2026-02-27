@@ -154,6 +154,7 @@
 #include "components/search/search.h"
 #include "content/public/common/content_constants.h"
 #include "extensions/common/extension_features.h"
+#include "ui/views/interaction/element_highlighter_views.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/extension_browser_window_helper.h"
@@ -260,6 +261,9 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
         GetUserDataFactory().CreateInstance<BrowserElementsViewsImpl>(*browser,
                                                                       *browser);
   }
+
+  ui::ElementHighlighter::GetElementHighlighter()
+      ->MaybeRegisterBackend<views::ElementHighlighterViews>();
 
   // Initialize bookmark bar controller for all browser types.
   bookmark_bar_controller_ =
