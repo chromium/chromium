@@ -213,9 +213,11 @@ export class ComposeboxElement extends I18nMixinLit
       },
       enableCarouselScrolling: {type: Boolean},
       inputPlaceholderOverride: {type: String},
+      isFollowupQuery: {type: Boolean},
     };
   }
 
+  accessor isFollowupQuery: boolean = false;
   accessor inputPlaceholderOverride: string = '';
   accessor suggestionActivityEnabled: boolean = true;
   accessor disableCaretColorAnimation: boolean = false;
@@ -464,6 +466,12 @@ export class ComposeboxElement extends I18nMixinLit
       this.canSubmitFilesAndInput_ =
           this.submitEnabled_ && this.fileUploadsComplete;
     }
+    if (changedPrivateProperties.has('inputState_') ||
+        changedPrivateProperties.has('isFollowupQuery')) {
+      this.submitEnabled_ = this.computeSubmitEnabled_();
+      this.canSubmitFilesAndInput_ =
+          this.submitEnabled_ && this.fileUploadsComplete;
+    }
     if (changedPrivateProperties.has('smartComposeInlineHint_')) {
       if (this.smartComposeInlineHint_) {
         this.adjustInputForSmartCompose();
@@ -633,10 +641,31 @@ export class ComposeboxElement extends I18nMixinLit
     return this.showZps && !this.lastQueriedInput_;
   }
 
+  private hasValidQuery_() {
+    // If there are files or an autocomplete match is selected, it's a valid
+    // query.
+    if (this.contextFilesSize_ > 0 ||
+        (this.selectedMatchIndex_ >= 0 && !!this.result_)) {
+      return true;
+    }
+
+    if (this.input_.trim().length > 0) {
+      return true;
+    }
+
+    // TODO(crbug.com/485648942): Update to drive Deep Search behavior from the
+    // PEC API's ToolSubstateConfig.
+    // Allow empty query for Deep Search follow-ups.
+    if (this.inputState_?.activeTool === ToolMode.kDeepSearch &&
+        this.isFollowupQuery) {
+      return true;
+    }
+
+    return false;
+  }
+
   private computeSubmitEnabled_() {
-    return this.input_.trim().length > 0 ||
-        (this.contextFilesSize_ > 0 && this.$.context.hasDeletableFiles()) ||
-        !!this.selectedMatch_;
+    return this.hasValidQuery_();
   }
 
   protected shouldShowSuggestionActivityLink_() {
@@ -1273,14 +1302,8 @@ export class ComposeboxElement extends I18nMixinLit
       return;
     }
 
-    // Users are allowed to submit queries that consist of only files with no
-    // input. `selectedMatchIndex_` will be >= 0 when there is non-empty input
-    // since the verbatim match is present.
-    assert(
-        (this.selectedMatchIndex_ >= 0 && this.result_) ||
-            this.contextFilesSize_ > 0,
-        'Cannot submit query with no autocomplete matches and no files in ' +
-            'context.');
+    // Sanity check the query.
+    assert(this.hasValidQuery_(), 'Cannot submit query without a valid query.');
 
     // If there is a match that is selected, open that match, else follow the
     // non-autocomplete submission flow. The non-autocomplete submission flow
