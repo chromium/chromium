@@ -60,6 +60,11 @@ public:
     controller_ = GeolocationPrivacySwitchController::Get();
   }
 
+  void TearDown() override {
+    controller_ = nullptr;
+    AshTestBase::TearDown();
+  }
+
   void SetAccessLevel(GeolocationAccessLevel access_level) {
     Shell::Get()->session_controller()->GetActivePrefService()->SetInteger(
         prefs::kUserGeolocationAccessLevel, static_cast<int>(access_level));
@@ -72,7 +77,7 @@ public:
   }
 
  protected:
-  raw_ptr<GeolocationPrivacySwitchController, DanglingUntriaged> controller_;
+  raw_ptr<GeolocationPrivacySwitchController> controller_;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
