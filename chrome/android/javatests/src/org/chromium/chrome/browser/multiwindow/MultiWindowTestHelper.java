@@ -179,7 +179,7 @@ public class MultiWindowTestHelper {
                         /* windowId= */ -1,
                         /* preferNew= */ true,
                         /* openAdjacently= */ false,
-                        NewWindowAppSource.OTHER);
+                        NewWindowAppSource.MENU);
         return ApplicationTestUtils.waitForActivityWithClass(
                 ChromeTabbedActivity.class,
                 Stage.RESUMED,

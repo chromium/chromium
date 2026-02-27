@@ -753,7 +753,8 @@ public class ChromeAndroidTaskImplUnitTest {
         // Assert.
         assertNotNull(intent);
         verify(multiInstanceManager, times(1))
-                .createNewWindowIntent(/* isIncognito= */ false, NewWindowAppSource.OTHER);
+                .createNewWindowIntent(
+                        /* isIncognito= */ false, NewWindowAppSource.BROWSER_WINDOW_CREATOR);
     }
 
     @Test
@@ -770,7 +771,8 @@ public class ChromeAndroidTaskImplUnitTest {
         // Assert.
         assertNotNull(intent);
         verify(multiInstanceManager, times(1))
-                .createNewWindowIntent(/* isIncognito= */ true, NewWindowAppSource.OTHER);
+                .createNewWindowIntent(
+                        /* isIncognito= */ true, NewWindowAppSource.BROWSER_WINDOW_CREATOR);
     }
 
     @Test

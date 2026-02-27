@@ -332,7 +332,7 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
                 activity,
                 mTab.getParentId(),
                 otherWindowActivity,
-                NewWindowAppSource.MENU,
+                NewWindowAppSource.URL_LAUNCH,
                 /* preferNew= */ false);
     }
 

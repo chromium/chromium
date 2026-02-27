@@ -236,7 +236,7 @@ public class InterceptNavigationDelegateClientImpl implements InterceptNavigatio
                         multiInstanceManager.moveTabsToNewWindow(
                                 Collections.singletonList(mTab),
                                 cleanupPendingTabClosure(),
-                                NewWindowAppSource.OTHER);
+                                NewWindowAppSource.EXTERNAL_NAVIGATION);
                     }
                 });
     }

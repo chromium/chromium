@@ -578,8 +578,9 @@ final class ChromeAndroidTaskImpl
         if (multiInstanceManager == null) {
             return null;
         }
-        // TODO (crbug.com/483801863): Use a non-generic source here.
-        return multiInstanceManager.createNewWindowIntent(isIncognito, NewWindowAppSource.OTHER);
+
+        return multiInstanceManager.createNewWindowIntent(
+                isIncognito, NewWindowAppSource.BROWSER_WINDOW_CREATOR);
     }
 
     @Override

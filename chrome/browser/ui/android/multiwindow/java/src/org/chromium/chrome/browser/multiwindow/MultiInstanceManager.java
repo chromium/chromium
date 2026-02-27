@@ -40,30 +40,48 @@ public abstract class MultiInstanceManager {
     public static final int INVALID_TASK_ID = -1; // Defined in android.app.ActivityTaskManager.
     public static final int INVALID_WINDOW_ID = -1;
     public static final String NEW_WINDOW_APP_SOURCE_HISTOGRAM =
-            "Android.MultiWindowMode.NewWindow.AppSource2";
+            "Android.MultiWindowMode.NewWindow.AppSource3";
 
     @VisibleForTesting
     static final String CLOSE_WINDOW_APP_SOURCE_HISTOGRAM =
             "Android.MultiWindowMode.CloseWindow.AppSource2";
 
     // These values are persisted to logs. Entries should not be renumbered and numeric values
-    // should never be reused.
+    // should never be reused. If none of the existing values are suitable for a feature that
+    // creates a new window, update the enum.
     // LINT.IfChange(NewWindowAppSource)
     @IntDef({
-        NewWindowAppSource.OTHER,
+        NewWindowAppSource.UNKNOWN,
         NewWindowAppSource.MENU,
         NewWindowAppSource.WINDOW_MANAGER,
         NewWindowAppSource.KEYBOARD_SHORTCUT,
-        NewWindowAppSource.RECENT_TABS
+        NewWindowAppSource.RECENT_TABS,
+        NewWindowAppSource.DRAG_DROP_LAUNCHER,
+        NewWindowAppSource.TAB_REPARENTING_TO_INSTANCE_WITH_NO_ACTIVITY,
+        NewWindowAppSource.URL_LAUNCH,
+        NewWindowAppSource.NEW_TAB_FOR_DIFFERENT_PROFILE_TYPE,
+        NewWindowAppSource.EXTERNAL_NAVIGATION,
+        NewWindowAppSource.DEV_TOOLS,
+        NewWindowAppSource.BROWSER_WINDOW_CREATOR,
+        NewWindowAppSource.ANDROID_S_UPDATE
     })
     public @interface NewWindowAppSource {
-        int OTHER = 0;
+        int UNKNOWN = 0;
         int MENU = 1;
         int WINDOW_MANAGER = 2;
         int KEYBOARD_SHORTCUT = 3;
         int RECENT_TABS = 4;
-        int NUM_ENTRIES = 5;
+        int DRAG_DROP_LAUNCHER = 5;
+        int TAB_REPARENTING_TO_INSTANCE_WITH_NO_ACTIVITY = 6;
+        int URL_LAUNCH = 7;
+        int NEW_TAB_FOR_DIFFERENT_PROFILE_TYPE = 8;
+        int EXTERNAL_NAVIGATION = 9;
+        int DEV_TOOLS = 10;
+        int BROWSER_WINDOW_CREATOR = 11;
+        int ANDROID_S_UPDATE = 12;
+        int NUM_ENTRIES = 13;
     }
+
     // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml)
 
     // These values are persisted to logs. Entries should not be renumbered and

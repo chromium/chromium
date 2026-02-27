@@ -3828,7 +3828,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
             RecordHistogram.recordEnumeratedHistogram(
                     MultiInstanceManager.NEW_WINDOW_APP_SOURCE_HISTOGRAM,
                     intent.getIntExtra(
-                            IntentHandler.EXTRA_NEW_WINDOW_APP_SOURCE, NewWindowAppSource.OTHER),
+                            IntentHandler.EXTRA_NEW_WINDOW_APP_SOURCE, NewWindowAppSource.UNKNOWN),
                     NewWindowAppSource.NUM_ENTRIES);
         }
 

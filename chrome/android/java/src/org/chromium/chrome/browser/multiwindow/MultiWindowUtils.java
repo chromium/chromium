@@ -123,9 +123,7 @@ public class MultiWindowUtils implements ActivityStateListener {
     private static @Nullable Integer sIncognitoInstanceCountForTesting;
     private static @Nullable Integer sInstanceCountForTesting;
     private static @Nullable Boolean sMultiInstanceApi31EnabledForTesting;
-    private final boolean mMultiInstanceApi31Enabled;
     private static @Nullable Boolean sIsMultiInstanceApi31Enabled;
-
 
     // Used to keep track of whether ChromeTabbedActivity2 is running. A tri-state Boolean is
     // used in case both activities die in the background and MultiWindowUtils is recreated.
@@ -171,9 +169,7 @@ public class MultiWindowUtils implements ActivityStateListener {
 
     // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:persistent_state_id_verification)
 
-    protected MultiWindowUtils() {
-        mMultiInstanceApi31Enabled = isMultiInstanceApi31Enabled();
-    }
+    protected MultiWindowUtils() {}
 
     /**
      * @return Whether the feature flag is on to enable instance switcher UI/menu.
@@ -409,7 +405,8 @@ public class MultiWindowUtils implements ActivityStateListener {
     public @Nullable Class<? extends Activity> getOpenInOtherWindowActivity(
             @Nullable Activity current) {
         // Use always ChromeTabbedActivity when multi-instance support in S+ is enabled.
-        if (mMultiInstanceApi31Enabled) return ChromeTabbedActivity.class;
+        if (isMultiInstanceApi31Enabled()) return ChromeTabbedActivity.class;
+
         if (current instanceof ChromeTabbedActivity2) {
             // If a second ChromeTabbedActivity is created, MultiWindowUtils needs to listen for
             // activity state changes to facilitate determining which ChromeTabbedActivity should
@@ -472,7 +469,7 @@ public class MultiWindowUtils implements ActivityStateListener {
                         windowId,
                         /* preferNew= */ windowId == INVALID_WINDOW_ID,
                         /* openAdjacently= */ false,
-                        NewWindowAppSource.OTHER);
+                        NewWindowAppSource.ANDROID_S_UPDATE);
         context.startActivity(intent, startActivityOptions);
     }
 
@@ -799,6 +796,7 @@ public class MultiWindowUtils implements ActivityStateListener {
 
     /**
      * Determines the correct ChromeTabbedActivity class to use for an incoming intent.
+     *
      * @param intent The incoming intent that is starting ChromeTabbedActivity.
      * @param context The current Context, used to retrieve the ActivityManager system service.
      * @return The ChromeTabbedActivity to use for the incoming intent.
@@ -806,7 +804,7 @@ public class MultiWindowUtils implements ActivityStateListener {
     public Class<? extends ChromeTabbedActivity> getTabbedActivityForIntent(
             @Nullable Intent intent, Context context) {
         // 0. Use always ChromeTabbedActivity when multi-instance support in S+ is enabled.
-        if (mMultiInstanceApi31Enabled) return ChromeTabbedActivity.class;
+        if (isMultiInstanceApi31Enabled()) return ChromeTabbedActivity.class;
 
         // 1. Exit early if ChromeTabbedActivity2 isn't running.
         if (mTabbedActivity2TaskRunning != null && !mTabbedActivity2TaskRunning) {
@@ -970,23 +968,24 @@ public class MultiWindowUtils implements ActivityStateListener {
 
     /**
      * Records user actions and ukms associated with entering and exiting Android N multi-window
-     * mode.
-     * For second activity, records separate user actions for entering/exiting multi-window mode to
-     * avoid recording the same action twice when two instances are running, but still records same
-     * UKM since two instances have two different tabs.
+     * mode. For second activity, records separate user actions for entering/exiting multi-window
+     * mode to avoid recording the same action twice when two instances are running, but still
+     * records same UKM since two instances have two different tabs.
+     *
      * @param isInMultiWindowMode True if the activity is in multi-window mode.
      * @param isDeferredStartup True if the activity is deferred startup.
      * @param isFirstActivity True if the activity is the first activity in multi-window mode.
      * @param tab The current activity {@link Tab}.
      */
-    public void recordMultiWindowModeChanged(
+    public static void recordMultiWindowModeChanged(
             boolean isInMultiWindowMode,
             boolean isDeferredStartup,
             boolean isFirstActivity,
             @Nullable Tab tab) {
+        boolean isMultiInstanceApi31Enabled = isMultiInstanceApi31Enabled();
         if (isFirstActivity) {
             if (isInMultiWindowMode) {
-                if (mMultiInstanceApi31Enabled) {
+                if (isMultiInstanceApi31Enabled) {
                     SharedPreferencesManager prefs = ChromeSharedPreferences.getInstance();
                     long startTime = prefs.readLong(ChromePreferenceKeys.MULTI_WINDOW_START_TIME);
                     if (startTime == 0) {
@@ -998,7 +997,7 @@ public class MultiWindowUtils implements ActivityStateListener {
                     RecordUserAction.record("Android.MultiWindowMode.Enter2");
                 }
             } else {
-                if (mMultiInstanceApi31Enabled) {
+                if (isMultiInstanceApi31Enabled) {
                     SharedPreferencesManager prefs = ChromeSharedPreferences.getInstance();
                     long startTime = prefs.readLong(ChromePreferenceKeys.MULTI_WINDOW_START_TIME);
                     if (startTime > 0) {

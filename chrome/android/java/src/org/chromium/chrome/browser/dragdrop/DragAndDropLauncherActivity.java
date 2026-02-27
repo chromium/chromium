@@ -41,14 +41,11 @@ import org.chromium.ui.dragdrop.DragDropMetricUtils.UrlIntentSource;
 import java.util.List;
 
 /** A helper activity for routing Chrome tab, tab group and link drag & drop launcher intents. */
-// TODO (crbug/331865433): Consider removing use of this trampoline activity.
 @NullMarked
 public class DragAndDropLauncherActivity extends Activity {
     static final String ACTION_DRAG_DROP_VIEW = "org.chromium.chrome.browser.dragdrop.action.VIEW";
     static final String LAUNCHED_FROM_LINK_USER_ACTION = "MobileNewInstanceLaunchedFromDraggedLink";
     static final String LAUNCHED_FROM_TAB_USER_ACTION = "MobileNewInstanceLaunchedFromDraggedTab";
-    static final String LAUNCHED_FROM_MULTI_TAB_USER_ACTION =
-            "MobileNewInstanceLaunchedFromDraggedMultiTab";
     static final String LAUNCHED_FROM_TAB_GROUP_USER_ACTION =
             "MobileNewInstanceLaunchedFromDraggedTabGroup";
 
@@ -211,7 +208,8 @@ public class DragAndDropLauncherActivity extends Activity {
         intent.putExtra(IntentHandler.EXTRA_PREFER_NEW, true);
         intent.putExtra(Browser.EXTRA_APPLICATION_ID, context.getPackageName());
         intent.putExtra(Browser.EXTRA_CREATE_NEW_TAB, true);
-        intent.putExtra(IntentHandler.EXTRA_NEW_WINDOW_APP_SOURCE, NewWindowAppSource.OTHER);
+        intent.putExtra(
+                IntentHandler.EXTRA_NEW_WINDOW_APP_SOURCE, NewWindowAppSource.DRAG_DROP_LAUNCHER);
         return intent;
     }
 

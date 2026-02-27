@@ -873,7 +873,7 @@ public class MultiInstanceManagerApi31Test {
                         instanceId,
                         /* preferNew= */ true,
                         /* openAdjacently= */ false,
-                        NewWindowAppSource.OTHER);
+                        NewWindowAppSource.UNKNOWN);
         if (addIncognitoExtras) {
             intent.putExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, true);
             intent.putExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_WINDOW, true);

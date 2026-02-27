@@ -28392,7 +28392,7 @@ should be able to be added at any place in this file.
 <action name="MobileMenuNewIncognitoWindow">
   <obsolete>
     Deprecated as of 01/2026 in favor of the enumerated histogram
-    Android.MultiWindowMode.NewWindow.AppSource2 that tracks various new window
+    Android.MultiWindowMode.NewWindow.AppSource* that tracks various new window
     creation sources.
   </obsolete>
   <owner>shuyng@google.com</owner>
@@ -28441,7 +28441,7 @@ should be able to be added at any place in this file.
 <action name="MobileMenuNewWindow">
   <obsolete>
     Deprecated as of 01/2026 in favor of the enumerated histogram
-    Android.MultiWindowMode.NewWindow.AppSource2 that tracks various new window
+    Android.MultiWindowMode.NewWindow.AppSource* that tracks various new window
     creation sources.
   </obsolete>
   <owner>jinsukkim@chromium.org</owner>

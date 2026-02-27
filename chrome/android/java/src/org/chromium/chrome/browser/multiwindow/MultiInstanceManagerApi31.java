@@ -288,13 +288,12 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
                     TabWindowManagerSingleton.getInstance()
                             .getTabModelSelectorById(getCurrentInstanceId());
             boolean openAdjacently = assumeNonNull(selector).getTotalTabCount() > 1;
-            // TODO (crbug.com/483801863): Revisit NewWindowAppSource used here.
             mTabReparentingDelegate.reparentTabsToNewWindow(
                     tabs,
                     destWindowId,
                     openAdjacently,
                     /* finalizeCallback= */ null,
-                    NewWindowAppSource.OTHER);
+                    NewWindowAppSource.TAB_REPARENTING_TO_INSTANCE_WITH_NO_ACTIVITY);
         }
     }
 
@@ -361,7 +360,6 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
      *     of window the URL can be opened in.
      */
     @Override
-    // TODO (crbug.com/460800897): Update conditional logic for opening URLs in other windows.
     public void openUrlInOtherWindow(
             LoadUrlParams loadUrlParams,
             int parentTabId,
@@ -381,14 +379,11 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
                 return;
             }
 
-            // TODO(crbug.com/458761856): Determine the correct NewWindowAppSource instead of assume
-            // its always NewWindowAppSource.OTHER.
-            launchTabInOtherWindow(
+            launchUrlInOtherWindow(
                     incognitoInstance,
                     loadUrlParams,
                     parentTabId,
                     /* otherActivity= */ null,
-                    NewWindowAppSource.OTHER,
                     preferNew);
             return;
         }
@@ -398,14 +393,13 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
                     ChromeTabbedActivity selectedActivity =
                             (ChromeTabbedActivity)
                                     MultiWindowUtils.getActivityById(instanceInfo.instanceId);
-                    launchTabInOtherWindow(
+                    launchUrlInOtherWindow(
                             /* isIncognito= */ selectedActivity != null
                                     && selectedActivity.isIncognitoWindow(),
                             loadUrlParams,
                             parentTabId,
                             selectedActivity,
-                            NewWindowAppSource.OTHER,
-                            preferNew);
+                            /* preferNew= */ false);
                 },
                 instanceType,
                 R.string.contextmenu_open_in_other_window);
@@ -425,17 +419,20 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
                 titleId);
     }
 
-    @VisibleForTesting
-    void launchTabInOtherWindow(
+    private void launchUrlInOtherWindow(
             boolean isIncognito,
             LoadUrlParams loadUrlParams,
             int parentId,
             @Nullable Activity otherActivity,
-            @NewWindowAppSource int newWindowSource,
             boolean preferNew) {
         ChromeAsyncTabLauncher chromeAsyncTabLauncher = new ChromeAsyncTabLauncher(isIncognito);
         chromeAsyncTabLauncher.launchTabInOtherWindow(
-                loadUrlParams, mActivity, parentId, otherActivity, newWindowSource, preferNew);
+                loadUrlParams,
+                mActivity,
+                parentId,
+                otherActivity,
+                NewWindowAppSource.URL_LAUNCH,
+                preferNew);
     }
 
     @Override
@@ -1128,7 +1125,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
         }
 
         RecordHistogram.recordEnumeratedHistogram(
-                "Android.MultiWindowMode.InactiveInstanceRestore.AppSource",
+                "Android.MultiWindowMode.InactiveInstanceRestore.AppSource2",
                 source,
                 NewWindowAppSource.NUM_ENTRIES);
     }
@@ -1471,12 +1468,11 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
             mTabReparentingDelegate.reparentTabGroupToExistingWindow(
                     (ChromeTabbedActivity) destActivity, tabGroupMetadata, destTabIndex);
         } else {
-            // TODO (crbug.com/483801863): Revisit NewWindowAppSource used here.
             mTabReparentingDelegate.reparentTabGroupToNewWindow(
                     tabGroupMetadata,
                     destWindowId,
                     /* openAdjacently= */ true,
-                    NewWindowAppSource.OTHER);
+                    NewWindowAppSource.TAB_REPARENTING_TO_INSTANCE_WITH_NO_ACTIVITY);
         }
     }
 
@@ -1571,8 +1567,8 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
 
     private boolean isInstanceLimitReached() {
         int instanceCount =
-                MultiWindowUtils.getInstanceCountWithFallback(
-                        MultiInstanceManager.PersistedInstanceType.ACTIVE);
+                MultiWindowUtils.getInstanceCountWithFallback(PersistedInstanceType.ACTIVE);
+        // TODO (crbug.com/460800897): Update conditional logic for opening URLs in other windows.
         return instanceCount >= getMaxInstances();
     }
 

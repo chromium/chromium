@@ -461,7 +461,8 @@ public class RecentlyClosedEntriesManagerUnitTest {
     @DisableFeatures(ChromeFeatureList.RECENTLY_CLOSED_TABS_AND_WINDOWS)
     public void testOpenMostRecentlyClosedEntry_FeatureDisabled() {
         when(mTabModel.getMostRecentClosureTime()).thenReturn(-1L);
-        mRecentlyClosedEntriesManager.openMostRecentlyClosedEntry(NewWindowAppSource.OTHER);
+        mRecentlyClosedEntriesManager.openMostRecentlyClosedEntry(
+                NewWindowAppSource.KEYBOARD_SHORTCUT);
         verify(mTabModel).openMostRecentlyClosedEntry();
     }
 
@@ -470,7 +471,8 @@ public class RecentlyClosedEntriesManagerUnitTest {
         when(mTabModel.getMostRecentClosureTime()).thenReturn(-1L);
         when(mMultiInstanceManager.getRecentlyClosedInstances()).thenReturn(new ArrayList<>());
 
-        mRecentlyClosedEntriesManager.openMostRecentlyClosedEntry(NewWindowAppSource.OTHER);
+        mRecentlyClosedEntriesManager.openMostRecentlyClosedEntry(
+                NewWindowAppSource.KEYBOARD_SHORTCUT);
         verify(mTabModel, never()).openMostRecentlyClosedEntry();
         verify(mMultiInstanceManager, never()).openWindow(anyInt(), anyInt());
     }
@@ -480,7 +482,8 @@ public class RecentlyClosedEntriesManagerUnitTest {
         when(mTabModel.getMostRecentClosureTime()).thenReturn(2L);
         when(mMultiInstanceManager.getRecentlyClosedInstances()).thenReturn(new ArrayList<>());
 
-        mRecentlyClosedEntriesManager.openMostRecentlyClosedEntry(NewWindowAppSource.OTHER);
+        mRecentlyClosedEntriesManager.openMostRecentlyClosedEntry(
+                NewWindowAppSource.KEYBOARD_SHORTCUT);
         verify(mTabModel).openMostRecentlyClosedEntry();
         verify(mMultiInstanceManager, never()).openWindow(anyInt(), anyInt());
     }
@@ -531,7 +534,8 @@ public class RecentlyClosedEntriesManagerUnitTest {
                         /* closureTime= */ 2));
         when(mMultiInstanceManager.getRecentlyClosedInstances()).thenReturn(instanceInfoList);
 
-        mRecentlyClosedEntriesManager.openMostRecentlyClosedEntry(NewWindowAppSource.OTHER);
+        mRecentlyClosedEntriesManager.openMostRecentlyClosedEntry(
+                NewWindowAppSource.KEYBOARD_SHORTCUT);
         verify(mTabModel).openMostRecentlyClosedEntry();
         verify(mMultiInstanceManager, never()).openWindow(anyInt(), anyInt());
     }
@@ -589,7 +593,8 @@ public class RecentlyClosedEntriesManagerUnitTest {
                         /* closureTime= */ 3));
         when(mMultiInstanceManager.getRecentlyClosedInstances()).thenReturn(instanceInfoList);
 
-        mRecentlyClosedEntriesManager.openMostRecentlyClosedEntry(NewWindowAppSource.OTHER);
+        mRecentlyClosedEntriesManager.openMostRecentlyClosedEntry(
+                NewWindowAppSource.KEYBOARD_SHORTCUT);
         verify(mTabModel).openMostRecentlyClosedEntry();
         verify(mMultiInstanceManager, never()).openWindow(anyInt(), anyInt());
     }

@@ -421,7 +421,7 @@ public abstract class TabModelJniBridge implements TabModelInternal {
             multiInstanceManager.moveTabsToNewWindow(
                     Collections.singletonList(tab),
                     /* finalizeCallback= */ null,
-                    NewWindowAppSource.OTHER);
+                    NewWindowAppSource.DEV_TOOLS);
         }
 
         return tab;

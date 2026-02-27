@@ -93,7 +93,7 @@ public class MultiInstanceManagerImplUnitTest {
                 AssertionError.class,
                 () ->
                         multiInstanceManager.createNewWindowIntent(
-                                /* isIncognito= */ true, NewWindowAppSource.OTHER));
+                                /* isIncognito= */ true, NewWindowAppSource.MENU));
     }
 
     @Test
@@ -113,7 +113,7 @@ public class MultiInstanceManagerImplUnitTest {
                 AssertionError.class,
                 () ->
                         multiInstanceManager.createNewWindowIntent(
-                                /* isIncognito= */ false, NewWindowAppSource.OTHER));
+                                /* isIncognito= */ false, NewWindowAppSource.MENU));
     }
 
     @Test
@@ -131,7 +131,7 @@ public class MultiInstanceManagerImplUnitTest {
 
         assertNull(
                 multiInstanceManager.createNewWindowIntent(
-                        /* isIncognito= */ false, NewWindowAppSource.OTHER));
+                        /* isIncognito= */ false, NewWindowAppSource.MENU));
     }
 
     @Test
@@ -161,7 +161,7 @@ public class MultiInstanceManagerImplUnitTest {
 
         Intent intent =
                 multiInstanceManager.createNewWindowIntent(
-                        /* isIncognito= */ false, NewWindowAppSource.OTHER);
+                        /* isIncognito= */ false, NewWindowAppSource.MENU);
 
         assertNotNull(intent);
         assertEquals(0, (intent.getFlags() & Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT));
@@ -194,7 +194,7 @@ public class MultiInstanceManagerImplUnitTest {
 
         Intent intent =
                 multiInstanceManager.createNewWindowIntent(
-                        /* isIncognito= */ false, NewWindowAppSource.OTHER);
+                        /* isIncognito= */ false, NewWindowAppSource.MENU);
 
         assertNotNull(intent);
         assertTrue((intent.getFlags() & Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT) != 0);
@@ -220,7 +220,7 @@ public class MultiInstanceManagerImplUnitTest {
 
         Intent intent =
                 multiInstanceManager.createNewWindowIntent(
-                        /* isIncognito= */ false, NewWindowAppSource.OTHER);
+                        /* isIncognito= */ false, NewWindowAppSource.MENU);
 
         assertNotNull(intent);
         assertTrue((intent.getFlags() & Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT) != 0);

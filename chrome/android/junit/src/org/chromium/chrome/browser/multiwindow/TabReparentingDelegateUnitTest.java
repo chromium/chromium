@@ -166,7 +166,7 @@ public class TabReparentingDelegateUnitTest {
                         .getValue()
                         .getIntExtra(
                                 IntentHandler.EXTRA_NEW_WINDOW_APP_SOURCE,
-                                NewWindowAppSource.OTHER));
+                                NewWindowAppSource.UNKNOWN));
     }
 
     @Test
@@ -296,7 +296,7 @@ public class TabReparentingDelegateUnitTest {
                         .getValue()
                         .getIntExtra(
                                 IntentHandler.EXTRA_NEW_WINDOW_APP_SOURCE,
-                                NewWindowAppSource.OTHER));
+                                NewWindowAppSource.UNKNOWN));
 
         // Verify that we resume the TabGroupSyncService to begin observing local changes.
         verify(mTabGroupSyncService).setLocalObservationMode(/* observeLocalChanges= */ true);

@@ -1454,11 +1454,25 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <enum name="NewWindowAppSource">
-  <int value="0" label="Undefined app source."/>
-  <int value="1" label="Menu option (eg. app menu, context menu, etc.)"/>
-  <int value="2" label="Window Manager in app menu."/>
-  <int value="3" label="Keyboard shortcut."/>
-  <int value="4" label="Recent Tabs page."/>
+  <int value="0" label="Unknown source"/>
+  <int value="1" label="App menu or strip tab / group context menu option"/>
+  <int value="2" label="In-app window manager"/>
+  <int value="3" label="Keyboard shortcut"/>
+  <int value="4" label="Recent Tabs page"/>
+  <int value="5" label="Dragged link or tab drop in OS launcher"/>
+  <int value="6"
+      label="Set of tabs or tab group reparenting to a new activity for an
+             existing instance"/>
+  <int value="7"
+      label="URL launch that may be triggered from a menu (eg. link context
+             menu) or keyboard shortcut (eg. load omnibox search result via
+             Shift + Enter)"/>
+  <int value="8" label="New tab launch for different profile type"/>
+  <int value="9" label="External navigation"/>
+  <int value="10" label="Dev tools"/>
+  <int value="11"
+      label="Browser window creation from native feature (eg. extensions)"/>
+  <int value="12" label="Upgrade to Android S multi-instance support"/>
 </enum>
 
 <enum name="NightMode">

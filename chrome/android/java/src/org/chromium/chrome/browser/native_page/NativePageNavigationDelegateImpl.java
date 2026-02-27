@@ -125,7 +125,7 @@ public class NativePageNavigationDelegateImpl implements NativePageNavigationDel
                 mActivity,
                 mHost.getParentId(),
                 MultiWindowUtils.getForegroundWindowActivity(mActivity),
-                NewWindowAppSource.OTHER,
+                NewWindowAppSource.URL_LAUNCH,
                 /* preferNew= */ false);
     }
 
