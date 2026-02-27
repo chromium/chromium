@@ -4,17 +4,22 @@
 
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 
+#include "base/callback_list.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/uuid.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/contextual_tasks/public/mock_contextual_tasks_service.h"
 #include "components/omnibox/browser/mock_aim_eligibility_service.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/search_engines/search_terms_data.h"
+#include "components/search_engines/template_url_data.h"
+#include "components/search_engines/template_url_service.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
@@ -62,9 +67,10 @@ constexpr char kLabsUrl[] = "https://labs.google.com/search";
 class MockUiServiceForUrlIntercept : public ContextualTasksUiService {
  public:
   explicit MockUiServiceForUrlIntercept(
+      Profile* profile,
       contextual_tasks::ContextualTasksService* contextual_tasks_service,
       AimEligibilityService* aim_eligibility_service)
-      : ContextualTasksUiService(nullptr,
+      : ContextualTasksUiService(profile,
                                  contextual_tasks_service,
                                  nullptr,
                                  aim_eligibility_service) {}
@@ -157,18 +163,19 @@ class ContextualTasksUiServiceTest : public content::RenderViewHostTestHarness {
         .WillByDefault(Return());
 
     service_for_nav_ = std::make_unique<MockUiServiceForUrlIntercept>(
-        contextual_tasks_service_.get(), aim_eligibility_service_.get());
+        profile_.get(), contextual_tasks_service_.get(),
+        aim_eligibility_service_.get());
+
+    ON_CALL(*service_for_nav_, IsUrlForPrimaryAccount(_))
+        .WillByDefault(Return(true));
+    ON_CALL(*service_for_nav_, IsSignedInToBrowserWithValidCredentials())
+        .WillByDefault(Return(true));
 
     // Create a real service for testing non-mocked methods like GetAccessToken.
     // We pass the IdentityManager from the test environment.
     real_service_ = std::make_unique<ContextualTasksUiService>(
         profile_.get(), contextual_tasks_service_.get(),
         identity_test_env_->identity_manager(), aim_eligibility_service_.get());
-
-    ON_CALL(*service_for_nav_, IsUrlForPrimaryAccount(_))
-        .WillByDefault(Return(true));
-    ON_CALL(*service_for_nav_, IsSignedInToBrowserWithValidCredentials())
-        .WillByDefault(Return(true));
 
     ON_CALL(*contextual_tasks_service_, GetFeatureEligibility)
         .WillByDefault([]() {
@@ -178,6 +185,35 @@ class ContextualTasksUiServiceTest : public content::RenderViewHostTestHarness {
           eligibility.context_sharing_enabled = true;
           return eligibility;
         });
+
+    TemplateURLServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+        profile_.get(),
+        base::BindRepeating(&TemplateURLServiceFactory::BuildInstanceFor));
+    TemplateURLService* template_url_service =
+        TemplateURLServiceFactory::GetForProfile(profile_.get());
+
+    // Set up default search provider.
+    TemplateURLData data;
+    data.SetShortName(u"TestEngine");
+    data.SetKeyword(u"TestEngine");
+    data.SetURL("https://www.google.com/search?q={searchTerms}");
+    TemplateURL* template_url =
+        template_url_service->Add(std::make_unique<TemplateURL>(data));
+    template_url_service->SetUserSelectedDefaultSearchProvider(template_url);
+
+    // Ensure template url service is fully loaded before executing any test
+    // logic.
+    if (!template_url_service->loaded()) {
+      base::test::TestFuture<bool> loaded_future;
+      base::CallbackListSubscription subscription =
+          template_url_service->RegisterOnLoadedCallback(base::BindOnce(
+              [](base::test::TestFuture<bool>* future) {
+                future->SetValue(true);
+              },
+              &loaded_future));
+      template_url_service->Load();
+      ASSERT_TRUE(loaded_future.Get());
+    }
   }
 
   void TearDown() override {
@@ -1120,6 +1156,36 @@ TEST_F(ContextualTasksUiServiceTest, GetAimUrlFromContextualTasksUrl) {
             ContextualTasksUiService::GetAimUrlFromContextualTasksUrl(GURL(
                 "chrome://"
                 "contextual-tasks?aim_url=https%3A%2F%2Fgoogle.com%2Fsearch")));
+}
+
+TEST_F(ContextualTasksUiServiceTest, HandleNavigation_VirtualUrlRewritten) {
+  GURL virtual_url("chrome://googlesearch/?udm=50&q=test+query");
+  auto web_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+
+  // Expect that the navigation to the virtual URL is intercepted.
+  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
+      .WillOnce([&](const GURL& url, base::WeakPtr<tabs::TabInterface> tab,
+                    bool is_to_new_tab) {
+        // Check that the base URL has been rewritten to the standard AIM Google
+        // URL.
+        EXPECT_EQ(url.scheme(), "https");
+        EXPECT_EQ(url.host(), "www.google.com");
+        EXPECT_EQ(url.path(), "/search");
+
+        // Verify that the entire query string is copied verbatim.
+        EXPECT_EQ(url.query(), virtual_url.query());
+      });
+
+  // Simulate navigation to the virtual URL.
+  EXPECT_TRUE(service_for_nav_->HandleNavigation(
+      CreateOpenUrlParams(virtual_url, false), web_contents.get(),
+      /*is_from_embedded_page=*/false, /*is_to_new_tab=*/false));
+
+  base::RunLoop run_loop;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
 }
 
 }  // namespace contextual_tasks

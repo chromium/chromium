@@ -15,6 +15,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
 #include "base/uuid.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/companion/text_finder/text_finder_manager.h"
@@ -28,6 +29,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_interface.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
@@ -44,6 +46,8 @@
 #include "components/contextual_tasks/public/features.h"
 #include "components/lens/lens_url_utils.h"
 #include "components/omnibox/browser/aim_eligibility_service.h"
+#include "components/search_engines/template_url_service.h"
+#include "components/search_engines/util.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/shared_highlighting/core/common/fragment_directives_utils.h"
 #include "components/signin/public/base/consent_level.h"
@@ -58,6 +62,7 @@
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/schemeful_site.h"
 #include "net/base/url_util.h"
+#include "third_party/omnibox_proto/chrome_aim_entry_point.pb.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 
@@ -726,6 +731,22 @@ bool ContextualTasksUiService::HandleNavigationImpl(
     return false;
   }
 
+  // If the target URL is a virtual contextual tasks URL, then replace it with
+  // the proper AIM URL.
+  if (IsContextualTasksVirtualUrl(url_params.url)) {
+    const GURL aim_url =
+        GetUrlForAim(TemplateURLServiceFactory::GetForProfile(profile_.get()),
+                     omnibox::UNKNOWN_AIM_ENTRY_POINT, base::Time::Now(), u"",
+                     std::nullopt, {});
+
+    GURL::Replacements replacements;
+    replacements.SetSchemeStr(aim_url.scheme());
+    replacements.SetHostStr(aim_url.host());
+    replacements.SetPathStr(aim_url.path());
+
+    url_params.url = url_params.url.ReplaceComponents(replacements);
+  }
+
   // Allow any navigation to the contextual tasks host.
   if (IsContextualTasksUrl(url_params.url)) {
     return false;
@@ -1194,6 +1215,11 @@ bool ContextualTasksUiService::IsPendingErrorPage(const base::Uuid& task_id) {
 bool ContextualTasksUiService::IsContextualTasksUrl(const GURL& url) {
   return url.scheme() == content::kChromeUIScheme &&
          url.host() == chrome::kChromeUIContextualTasksHost;
+}
+
+bool ContextualTasksUiService::IsContextualTasksVirtualUrl(const GURL& url) {
+  return url.scheme() == content::kChromeUIScheme &&
+         url.host() == chrome::kChromeUIContextualTasksVirtualHost;
 }
 
 bool ContextualTasksUiService::IsSearchResultsUrl(const GURL& url) {
