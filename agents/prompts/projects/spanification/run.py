@@ -150,6 +150,16 @@ def run_gemini(file):
     policy_file = os.path.join(SCRIPT_DIR, 'policy.toml')
     cmd.extend(['--policy', policy_file])
 
+    # The `--allowed-tools` is deprecated in favor of the policy file, but the
+    # policy engine isn't the only source of truth for allowed tools due to
+    # a bug in headless mode. So we need to specify both until the bug is fixed.
+    # See https://github.com/google-gemini/gemini-cli/issues/20058
+    ALLOWED_TOOLS = [
+        "read_file", "replace", "write_file", "run_shell_command",
+        "remote_code_search", "run_debugging_agent"
+    ]
+    cmd.extend(['--allowed-tools', ','.join(ALLOWED_TOOLS)])
+
     exit_code = 0
     TIMEOUT_SECONDS = 2700  # 45 minutes
     output = []

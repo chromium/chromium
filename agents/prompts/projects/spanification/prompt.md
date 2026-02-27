@@ -38,6 +38,7 @@ ______________________________________________________________________
 ## Investigate:
 
 - remote_code_search
+- codebase_investigator
 - run_debugging_agent
 - run_shell_command(git log)
 - run_shell_command(git diff)
@@ -46,6 +47,8 @@ ______________________________________________________________________
 - run_shell_command(cat)
 - run_shell_command(head)
 - run_shell_command(tail)
+- run_shell_command(gn)
+- run_shell_command(git grep)
 
 ## Cleanup:
 
@@ -78,8 +81,9 @@ ______________________________________________________________________
      local refactorings if they result in a cleaner, safer, and more idiomatic
      solution.** For example, changing a class member from a C-style array to
      `std::array` is a good refactoring.
-   - **If you change a function signature, you MUST find and update all its call
-     sites.** This is critical for success.
+   - **If you change a function signature, you MUST use the
+     `codebase_investigator` tool to find all its call sites and update them.**
+     This is critical for success.
    - **After fixing the initial compiler error, you MUST scan the entire file
      for any other instances of unsafe buffer patterns (e.g., `memcmp`,
      `strcmp`, pointer arithmetic) and fix them as well.**

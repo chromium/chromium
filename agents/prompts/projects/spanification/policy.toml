@@ -1,35 +1,55 @@
-[default]
-  [default.tools]
-    policy = "allow"
-    tools = [
-      # Basic:
-      "read_file",
-      "replace",
-      "write_file",
-      "run_shell_command(fdfind)",
-      "run_shell_command(rg)",
+# 1. Allow standard built-in and investigation tools
+[[rule]]
+toolName = [
+    "read_file",
+    "replace",
+    "write_file",
+    "remote_code_search",
+    "codebase_investigator",
+    "run_debugging_agent"
+]
+decision = "allow"
+priority = 100
 
-      # Build/Test
-      "run_shell_command(autoninja)",
-      "run_shell_command(tools/autotest.py)",
-      "run_shell_command(./tools/autotest.py)",
+# 2. Specifically trap and deny grep, instructing the AI to use rg
+[[rule]]
+toolName = "run_shell_command"
+commandPrefix = ["grep"]
+decision = "deny"
+priority = 200 # Higher priority overrides the allowlist
+deny_message = "grep is forbidden. You must use rg (ripgrep) instead."
 
-      # Investigate:
-      "remote_code_search",
-      "run_debugging_agent",
-      "run_shell_command(cat)",
-      "run_shell_command(git diff)",
-      "run_shell_command(git log)",
-      "run_shell_command(git show)",
-      "run_shell_command(head)",
-      "run_shell_command(ls)",
-      "run_shell_command(tail)",
+# 3. Allow specifically approved shell commands via command prefixes
+[[rule]]
+toolName = "run_shell_command"
+commandPrefix = [
+    "fdfind",
+    "rg",
+    "autoninja",
+    "tools/autotest.py",
+    "./tools/autotest.py",
+    "cat",
+    "git diff",
+    "git log",
+    "git show",
+    "git restore",
+    "git checkout",
+    "git status",
+    "git grep",
+    "head",
+    "ls",
+    "tail",
+    "git cl format",
+    "touch gemini_out/commit_message.md",
+    "touch gemini_out/summary.json",
+    "mkdir -p gemini_out"
+]
+decision = "allow"
+priority = 100
 
-      # Cleanup:
-      "run_shell_command(git cl format)",
-
-      # Reporting:
-      "run_shell_command(touch gemini_out/commit_message.md)",
-      "run_shell_command(touch gemini_out/summary.json)",
-      "run_shell_command(mkdir -p gemini_out)",
-    ]
+# 4. Catch-all deny for any shell command not in the allowlist above
+[[rule]]
+toolName = "run_shell_command"
+decision = "deny"
+priority = 50
+deny_message = "This shell command is not in the strict allowlist."
