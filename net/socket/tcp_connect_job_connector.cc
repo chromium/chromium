@@ -6,14 +6,19 @@
 
 #include <memory>
 #include <optional>
+#include <string_view>
 
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ref.h"
 #include "base/notreached.h"
 #include "base/types/expected.h"
+#include "base/values.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
+#include "net/log/net_log.h"
+#include "net/log/net_log_event_type.h"
+#include "net/log/net_log_source_type.h"
 #include "net/log/net_log_with_source.h"
 #include "net/socket/client_socket_factory.h"
 #include "net/socket/connection_attempts.h"
@@ -23,7 +28,9 @@
 
 namespace net {
 
-TcpConnectJob::Connector::Connector(TcpConnectJob* parent) : parent_(*parent) {}
+TcpConnectJob::Connector::Connector(TcpConnectJob* parent,
+                                    std::string_view name)
+    : parent_(*parent), name_(name) {}
 
 TcpConnectJob::Connector::~Connector() = default;
 
@@ -130,13 +137,14 @@ int TcpConnectJob::Connector::DoObtainIPEndPoint() {
       return ERR_IO_PENDING;
     }
 
-    // We failed to connect to any IP, and no more are coming.
-    next_state_ = State::kDone;
-
     // The parent class handles DNS errors itself, so this currently can only be
     // ERR_IO_PENDING or ERR_NAME_NOT_RESOLVED. ERR_NAME_NOT_RESOLVED means no
     // more IPs are incoming.
     CHECK_EQ(endpoint_info.error(), ERR_NAME_NOT_RESOLVED);
+
+    // We failed to connect to any IP, and no more are coming.
+    OnDone(endpoint_info.error());
+
     return endpoint_info.error();
   }
 
@@ -151,7 +159,6 @@ int TcpConnectJob::Connector::DoTcpConnect() {
   DCHECK(current_address_);
 
   next_state_ = State::kTcpConnectComplete;
-  AddressList one_address(*current_address_);
 
   // Create a `SocketPerformanceWatcher`, and pass the ownership.
   std::unique_ptr<SocketPerformanceWatcher> socket_performance_watcher;
@@ -165,7 +172,7 @@ int TcpConnectJob::Connector::DoTcpConnect() {
   const NetLogWithSource& net_log = parent_->net_log();
   transport_socket_ =
       parent_->client_socket_factory()->CreateTransportClientSocket(
-          one_address, std::move(socket_performance_watcher),
+          AddressList(*current_address_), std::move(socket_performance_watcher),
           parent_->network_quality_estimator(), net_log.net_log(),
           net_log.source());
 
@@ -181,11 +188,29 @@ int TcpConnectJob::Connector::DoTcpConnect() {
         std::move(transport_socket_));
   }
 
+  parent_->net_log().AddEvent(
+      NetLogEventType::TCP_CONNECT_JOB_CONNECTOR_CONNECT_START, [&] {
+        base::DictValue dict;
+        dict.Set("address", current_address_->ToString());
+        dict.Set("connector", name_);
+        transport_socket_->NetLog().source().AddToEventParameters(dict);
+        return dict;
+      });
+
   return transport_socket_->Connect(base::BindOnce(
       &TcpConnectJob::Connector::OnIOComplete, base::Unretained(this)));
 }
 
 int TcpConnectJob::Connector::DoTcpConnectComplete(int result) {
+  parent_->net_log().AddEvent(
+      NetLogEventType::TCP_CONNECT_JOB_CONNECTOR_CONNECT_COMPLETE, [&] {
+        base::DictValue dict = NetLogDict();
+        if (result) {
+          dict.Set("net_error", result);
+        }
+        return dict;
+      });
+
   // The connection attempt failed, no need to wait for crypto ready before
   // trying the next IP, if appropriate.
   if (result != OK) {
@@ -212,6 +237,12 @@ int TcpConnectJob::Connector::DoVerifyIPEndPointUsable() {
   // not usable.
   const ServiceEndpoint* service_endpoint =
       parent_->FindServiceEndpoint(*current_address_);
+
+  parent_->net_log().AddEvent(
+      NetLogEventType::TCP_CONNECT_JOB_VERIFY_IP_ENDPOINT_USABLE, [&] {
+        return NetLogDict().Set("is_usable", service_endpoint != nullptr);
+      });
+
   if (!service_endpoint) {
     // If the address is not usable, treat it as a failure of the current IP.
     //
@@ -223,7 +254,7 @@ int TcpConnectJob::Connector::DoVerifyIPEndPointUsable() {
   }
 
   final_service_endpoint_ = *service_endpoint;
-  next_state_ = State::kDone;
+  OnDone(OK);
   return OK;
 }
 
@@ -251,13 +282,31 @@ int TcpConnectJob::Connector::OnEndpointFailed(int error) {
 
   // Don't try the next address if entering suspend mode.
   if (error == ERR_NETWORK_IO_SUSPENDED) {
-    next_state_ = State::kDone;
+    OnDone(error);
     return error;
   }
 
   // Try falling back to the next address in the list.
   next_state_ = State::kObtainIPEndPoint;
   return OK;
+}
+
+void TcpConnectJob::Connector::OnDone(int result) {
+  DCHECK_NE(next_state_, State::kDone);
+  next_state_ = State::kDone;
+
+  parent_->net_log().AddEvent(NetLogEventType::TCP_CONNECT_JOB_CONNECTOR_DONE,
+                              [&] {
+                                base::DictValue dict = NetLogDict();
+                                if (result) {
+                                  dict.Set("net_error", result);
+                                }
+                                return dict;
+                              });
+}
+
+base::DictValue TcpConnectJob::Connector::NetLogDict() const {
+  return base::DictValue().Set("connector", name_);
 }
 
 }  // namespace net

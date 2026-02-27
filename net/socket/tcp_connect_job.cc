@@ -78,11 +78,11 @@ TcpConnectJob::TcpConnectJob(
                  common_connect_job_params,
                  delegate,
                  net_log,
-                 NetLogSourceType::TRANSPORT_CONNECT_JOB,
-                 NetLogEventType::TRANSPORT_CONNECT_JOB_CONNECT),
+                 NetLogSourceType::TCP_CONNECT_JOB,
+                 NetLogEventType::TCP_CONNECT_JOB_CONNECT),
       params_(params),
       endpoint_override_(std::move(endpoint_result_override)),
-      primary_connector_(std::make_unique<Connector>(this)) {
+      primary_connector_(std::make_unique<Connector>(this, "first")) {
   if (endpoint_override_) {
     UpdateSvcbOptional();
     DCHECK(!endpoint_override_->endpoints.front().ipv4_endpoints.empty() ||
@@ -336,10 +336,16 @@ void TcpConnectJob::OnSlow() {
   CHECK(!is_done_);
   DCHECK(!ipv4_connector_);
 
+  net_log().AddEvent(NetLogEventType::TCP_CONNECT_JOB_CREATE_SECOND_CONNECTOR);
+
   // Make a second connector, so have separate IPv4 and IPv6 connectors. The
   // `primary_connector_` may be waiting for an IP, or doing either a v4 or v6
   // lookup. If it's doing a v4 lookup, move it into `ipv4_connector_`.
-  ipv4_connector_ = std::make_unique<Connector>(this);
+  //
+  // Since the connectors may be flipped here, the static names of the
+  // connectors for logging purposes are "first" and "second", rather than
+  // "primary" and "ipv4".
+  ipv4_connector_ = std::make_unique<Connector>(this, "second");
   if (!primary_connector_->is_connecting_to_ipv6()) {
     std::swap(primary_connector_, ipv4_connector_);
   }

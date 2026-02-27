@@ -898,6 +898,9 @@ EVENT_TYPE(CONNECT_JOB_TIMED_OUT)
 // The start/end of the TransportConnectJob::Connect().
 EVENT_TYPE(TRANSPORT_CONNECT_JOB_CONNECT)
 
+// The start/end of the TcpConnectJob::Connect().
+EVENT_TYPE(TCP_CONNECT_JOB_CONNECT)
+
 // The start/end of the SSLConnectJob::Connect().
 EVENT_TYPE(SSL_CONNECT_JOB_CONNECT)
 
@@ -922,15 +925,57 @@ EVENT_TYPE(SSL_CONNECT_JOB_RESTART_WITH_ECH_CONFIG_LIST)
 EVENT_TYPE(TRANSPORT_CONNECT_JOB_IPV6_FALLBACK)
 
 // This event is logged whenever the ConnectJob attempts a new TCP connection.
-// association. The ConnectJob may attempt multiple addresses in parallel, so
-// this event does not log when the connection attempt succeeds or fails. The
-// source dependency may be used to determine this.
+// The ConnectJob may attempt multiple addresses in parallel, so this event does
+// not log when the connection attempt succeeds or fails. The source dependency
+// may be used to determine this.
 //
 //   {
 //     "address": <String of the network address being attempted>,
 //     "source_dependency": <The source identifier for the new socket.>,
 //   }
 EVENT_TYPE(TRANSPORT_CONNECT_JOB_CONNECT_ATTEMPT)
+
+// This event is logged whenever a TcpConnectJob::Connector attempts a new TCP
+// connection.
+//
+//   {
+//     "address": <The network address being attempted>,
+//     "connector": <Name of the Connector>,
+//     "source_dependency": <The source identifier for the new socket.>,
+//   }
+EVENT_TYPE(TCP_CONNECT_JOB_CONNECTOR_CONNECT_START)
+
+// This event is logged whenever a TcpConnectJob::Connector finishes trying to
+// establish a TCP connection to a particular address, either successfully or
+// with an error.
+//
+//   {
+//     "connector": <Name of the Connector>,
+//     "net_error": <Net error code, on error>,
+//   }
+EVENT_TYPE(TCP_CONNECT_JOB_CONNECTOR_CONNECT_COMPLETE)
+
+// This event is logged whenever a TcpConnectJob::Connector completely finishes
+// - it either gives up, or it finishes establishing a connection.
+//
+//   {
+//     "connector": <Name of the Connector>,
+//     "net_error": <Net error code, on error>,
+//   }
+EVENT_TYPE(TCP_CONNECT_JOB_CONNECTOR_DONE)
+
+// This event is logged whenever a TcpConnectJob::Connector determines whether a
+// successfully connected socket is usable or not.
+//
+//   {
+//     "connector": <Name of the Connector>,
+//     "is_usable": <true or false depending on if the endpoint is usable>,
+//   }
+EVENT_TYPE(TCP_CONNECT_JOB_VERIFY_IP_ENDPOINT_USABLE)
+
+// This event is logged when the TcpConnectJob slow timer triggers, and a second
+// connector is created.
+EVENT_TYPE(TCP_CONNECT_JOB_CREATE_SECOND_CONNECTOR)
 
 // This event is logged whenever the SSLConnectJob attempts a
 // SSLClientSocket::Connect().

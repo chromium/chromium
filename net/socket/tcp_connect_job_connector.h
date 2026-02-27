@@ -7,8 +7,10 @@
 
 #include <memory>
 #include <optional>
+#include <string_view>
 
 #include "base/memory/raw_ref.h"
+#include "base/values.h"
 #include "net/base/address_list.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/load_states.h"
@@ -34,9 +36,13 @@ class StreamSocket;
 // TryResumeIfWaiting() invoked. This allows for a simpler API from the
 // standpoint of the parent TcpConnectJob class, with sync and async host
 // resolutions needing to call the exact same connector method.
+//
+// `name` is a string identifying the connector, and is used for logging. It
+// must point at a statically allocated memory, as the Connector will not create
+// a copy of its value, but will use it in all logged events.
 class TcpConnectJob::Connector {
  public:
-  explicit Connector(TcpConnectJob* parent);
+  Connector(TcpConnectJob* parent, std::string_view name);
 
   Connector(const Connector&) = delete;
   Connector& operator=(const Connector&) = delete;
@@ -120,7 +126,16 @@ class TcpConnectJob::Connector {
   // sets state to complete. Must not be passed OK or ERR_IO_PENDING.
   int OnEndpointFailed(int error);
 
+  // Updates state_ to kDone and adds TCP_CONNECT_JOB_CONNECTOR_DONE event to
+  // the NetLog. Doesn't perform any other action.
+  void OnDone(int result);
+
+  // Creates a dictionary for use with NetLog containing `name_`.
+  base::DictValue NetLogDict() const;
+
   const raw_ref<TcpConnectJob> parent_;
+
+  const std::string_view name_;
 
   std::optional<IPEndPoint> current_address_;
 
