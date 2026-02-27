@@ -75,6 +75,7 @@
 #include "third_party/boringssl/src/pki/trust_store.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "base/android/android_info.h"
 #include "net/cert/cert_verify_proc_android.h"
 #elif BUILDFLAG(IS_IOS)
 #include "base/ios/ios_util.h"
@@ -456,6 +457,17 @@ class CertVerifyProcInternalTest
 #if BUILDFLAG(IS_IOS)
     if (verify_proc_type() == CERT_VERIFY_PROC_IOS &&
         !base::ios::IsRunningOnIOS16OrLater()) {
+      return true;
+    }
+#endif
+    return false;
+  }
+
+  bool VerifyProcTypeIsAndroidQOrLater() const {
+#if BUILDFLAG(IS_ANDROID)
+    if (verify_proc_type() == CERT_VERIFY_PROC_ANDROID &&
+        (base::android::android_info::sdk_int() >=
+         base::android::android_info::SDK_VERSION_Q)) {
       return true;
     }
 #endif
@@ -5377,6 +5389,61 @@ TEST(CertVerifyProcTest, RejectsPrivateSHA1UnlessFlag) {
       /*sct_list=*/std::string(), flags, &verify_result, NetLogWithSource());
   EXPECT_THAT(error, IsOk());
   EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_SHA1_SIGNATURE_PRESENT);
+}
+
+// Tests that a certificate chain with a SHA-1 leaf is rejected when verified
+// by the real verification implementation.
+TEST_P(CertVerifyProcInternalTest, Sha1LeafNonSha1Intermediate) {
+  auto [leaf, intermediate, root] = CertBuilder::CreateSimpleChain3();
+
+  leaf->SetSignatureAlgorithm(bssl::SignatureAlgorithm::kEcdsaSha1);
+
+  scoped_refptr<X509Certificate> cert = leaf->GetX509CertificateChain();
+  ScopedTestRoot scoped_test_root(root->GetX509Certificate());
+
+  CertVerifyResult verify_result;
+  int flags = 0;
+  int error = Verify(cert.get(), "www.example.com", flags, &verify_result);
+  if (VerifyProcTypeIsAndroidQOrLater()) {
+    EXPECT_THAT(error, IsError(ERR_CERT_AUTHORITY_INVALID));
+  } else if (verify_proc_type() == CERT_VERIFY_PROC_IOS) {
+    EXPECT_THAT(error, IsError(ERR_CERT_INVALID));
+  } else {
+    EXPECT_THAT(error, IsError(ERR_CERT_WEAK_SIGNATURE_ALGORITHM));
+  }
+  EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_WEAK_SIGNATURE_ALGORITHM);
+}
+
+// Tests that a certificate chain with a SHA-1 intermediate is rejected when
+// verified by the real verification implementation.
+TEST_P(CertVerifyProcInternalTest, NonSha1LeafSha1Intermediate) {
+  auto [leaf, intermediate, root] = CertBuilder::CreateSimpleChain3();
+
+  intermediate->SetSignatureAlgorithm(bssl::SignatureAlgorithm::kEcdsaSha1);
+
+  scoped_refptr<X509Certificate> cert = leaf->GetX509CertificateChain();
+  ScopedTestRoot scoped_test_root(root->GetX509Certificate());
+
+  CertVerifyResult verify_result;
+  int flags = 0;
+  int error = Verify(cert.get(), "www.example.com", flags, &verify_result);
+  if (VerifyProcTypeIsAndroidQOrLater()) {
+    EXPECT_THAT(error, IsError(ERR_CERT_AUTHORITY_INVALID));
+    // On Android >= version 10, the wrapped verifier fails at the
+    // intermediate, so the returned partial chain ends there. The
+    // InspectSignatureAlgorithmsInChain function does not check the last cert
+    // in the returned chain since it doesn't want to check the algorithm on
+    // the root certificate. Thus the result does not get the
+    // CERT_STATUS_WEAK_SIGNATURE_ALGORITHM status set.
+  } else if (verify_proc_type() == CERT_VERIFY_PROC_IOS) {
+    EXPECT_THAT(error, IsError(ERR_CERT_INVALID));
+    EXPECT_TRUE(verify_result.cert_status &
+                CERT_STATUS_WEAK_SIGNATURE_ALGORITHM);
+  } else {
+    EXPECT_THAT(error, IsError(ERR_CERT_WEAK_SIGNATURE_ALGORITHM));
+    EXPECT_TRUE(verify_result.cert_status &
+                CERT_STATUS_WEAK_SIGNATURE_ALGORITHM);
+  }
 }
 
 enum ExpectedAlgorithms {
