@@ -281,11 +281,11 @@ public class HierarchicalMenuControllerUnitTest {
                 1,
                 mModelList.size());
         // Assert correctness of contents
-        ListItem mSubmenuLevel1Header = mHeaderModelList.get(0);
+        ListItem submenuLevel1Header = mHeaderModelList.get(0);
         assertEquals(
                 "Expected header type to be SUBMENU_HEADER",
                 MENU_ITEM_SUBMENU_HEADER,
-                mSubmenuLevel1Header.type);
+                submenuLevel1Header.type);
         assertEquals(
                 "Expected title to be submenu header 1",
                 SUBMENU_LEVEL_1,

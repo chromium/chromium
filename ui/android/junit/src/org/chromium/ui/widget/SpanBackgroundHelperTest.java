@@ -89,8 +89,8 @@ public class SpanBackgroundHelperTest {
 
     @Before
     public void setup() {
-        Context mContext = ApplicationProvider.getApplicationContext();
-        mDrawable = spy(AppCompatResources.getDrawable(mContext, R.drawable.span_background));
+        Context context = ApplicationProvider.getApplicationContext();
+        mDrawable = spy(AppCompatResources.getDrawable(context, R.drawable.span_background));
         mSpanBackgroundHelper = new SpanBackgroundHelper(HORIZONTAL_PADDING, mDrawable);
     }
 

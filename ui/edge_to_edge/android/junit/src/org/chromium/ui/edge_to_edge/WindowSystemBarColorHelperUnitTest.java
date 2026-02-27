@@ -111,15 +111,15 @@ public class WindowSystemBarColorHelperUnitTest {
         WindowSystemBarColorHelper helper = new WindowSystemBarColorHelper(mWindow);
         assertEquals("getStatusBarColor is wrong.", Color.TRANSPARENT, helper.getStatusBarColor());
 
-        int mWindowStatusBarColor = Color.RED;
-        helper.setStatusBarColor(mWindowStatusBarColor);
-        verify(mWindow, times(1)).setStatusBarColor(mWindowStatusBarColor);
+        int windowStatusBarColor = Color.RED;
+        helper.setStatusBarColor(windowStatusBarColor);
+        verify(mWindow, times(1)).setStatusBarColor(windowStatusBarColor);
         assertEquals(
-                "getStatusBarColor is wrong.", mWindowStatusBarColor, helper.getStatusBarColor());
+                "getStatusBarColor is wrong.", windowStatusBarColor, helper.getStatusBarColor());
 
         // Setting the same color will be ignored.
-        helper.setStatusBarColor(mWindowStatusBarColor);
-        verify(mWindow, times(1)).setStatusBarColor(mWindowStatusBarColor);
+        helper.setStatusBarColor(windowStatusBarColor);
+        verify(mWindow, times(1)).setStatusBarColor(windowStatusBarColor);
     }
 
     @Test

@@ -322,10 +322,10 @@ public class DisplayAndroidManagerTest {
                 mBounds.clone());
     }
 
-    private void checkDisplays(String message, SparseArray<DisplayAndroid> mIdMap) {
+    private void checkDisplays(String message, SparseArray<DisplayAndroid> idMap) {
         final HashSet<Integer> actualDisplayIds = new HashSet<>();
-        for (int i = 0; i < mIdMap.size(); ++i) {
-            actualDisplayIds.add(mIdMap.valueAt(i).getDisplayId());
+        for (int i = 0; i < idMap.size(); ++i) {
+            actualDisplayIds.add(idMap.valueAt(i).getDisplayId());
         }
 
         final HashSet<Integer> expectedDisplayIds = new HashSet<>();
