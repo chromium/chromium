@@ -23,7 +23,7 @@ namespace net {
 //
 // This utility class knows nothing about network specifics; it is
 // intended for reuse in various networking scenarios.
-class NET_EXPORT BackoffEntry {
+class NET_EXPORT BackoffEntry final {
  public:
   // The set of parameters that define a back-off policy. When modifying this,
   // increment SERIALIZATION_VERSION_NUMBER in backoff_entry_serializer.cc.
@@ -72,7 +72,7 @@ class NET_EXPORT BackoffEntry {
   BackoffEntry(const Policy* policy, const base::TickClock* clock);
   BackoffEntry(const BackoffEntry&) = delete;
   BackoffEntry& operator=(const BackoffEntry&) = delete;
-  virtual ~BackoffEntry();
+  ~BackoffEntry();
 
   // Inform this item that a request for the network resource it is
   // tracking was made, and whether it failed or succeeded.
