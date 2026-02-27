@@ -1788,6 +1788,8 @@ generated_enumeration_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_payment_delegation.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_payment_shipping_type.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_payment_shipping_type.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_performance_preference.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_performance_preference.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_permission_name.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_permission_name.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_presentation_connection_close_reason.cc",

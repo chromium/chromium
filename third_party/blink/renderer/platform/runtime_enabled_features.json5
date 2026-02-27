@@ -470,6 +470,10 @@
       public: true,
     },
     {
+      name: "AISummarizationPerformancePreference",
+      status: "experimental",
+    },
+    {
       name: "AIWriterAPI",
       status: {
         "Win": "experimental",

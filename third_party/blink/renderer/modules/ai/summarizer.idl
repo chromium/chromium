@@ -7,11 +7,14 @@
 enum SummarizerType { "tldr", "key-points", "teaser", "headline" };
 enum SummarizerFormat { "plain-text", "markdown" };
 enum SummarizerLength { "short", "medium", "long" };
+enum PerformancePreference { "auto", "speed", "capability" };
 
 dictionary SummarizerCreateCoreOptions {
   SummarizerType type = "key-points";
   SummarizerFormat format = "markdown";
   SummarizerLength length = "short";
+  [RuntimeEnabled=AISummarizationPerformancePreference]
+  PerformancePreference preference = "auto";
 
   sequence<DOMString> expectedInputLanguages;
   sequence<DOMString> expectedContextLanguages;
