@@ -378,6 +378,8 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
   source->AddBoolean(
       "forceBasicModeIfOpeningThreadHistory",
       contextual_tasks::ShouldForceBasicModeIfOpeningThreadHistory());
+  source->AddBoolean("enableBasicMode",
+                     contextual_tasks::GetIsBasicModeEnabled());
   source->AddBoolean("enableBasicModeZOrder",
                      contextual_tasks::ShouldEnableBasicModeZOrder());
   source->AddBoolean(

@@ -31,7 +31,7 @@ export function getHtml(this: ContextualTasksAppElement) {
     html`<contextual-tasks-error-dialog></contextual-tasks-error-dialog>` : ''}
   <div id="flexCenterContainer">
     <div id="composeboxHeaderWrapper"
-        ?hidden="${this.isInBasicMode_ && !this.enableBasicModeZOrder_}">
+        ?hidden="${this.enableBasicMode_ && this.isInBasicMode_ && !this.enableBasicModeZOrder_}">
       <h1 class="thread-header" id="composeboxHeader">
           ${this.friendlyZeroStateGaiaName_
             ? html`<span>${this.friendlyZeroStateTitleBeforeName_}</span><span class="name-shimmer">
@@ -45,7 +45,7 @@ export function getHtml(this: ContextualTasksAppElement) {
     </div>
     <contextual-tasks-composebox id="composebox"
           style="${this.getComposeboxBoundsStyles()}"
-          ?hidden="${this.isInBasicMode_ && !this.enableBasicModeZOrder_}"
+          ?hidden="${this.enableBasicMode_ && this.isInBasicMode_ && !this.enableBasicModeZOrder_}"
           .isZeroState="${this.isZeroState_}"
           .isSidePanel="${!this.isShownInTab_}"
           .isLensOverlayShowing="${this.isLensOverlayShowing_}"
