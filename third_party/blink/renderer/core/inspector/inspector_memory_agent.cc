@@ -209,10 +209,10 @@ Vector<String> InspectorMemoryAgent::Symbolize(
     next_pos = text.find('\n', pos);
     if (next_pos == kNotFound)
       break;
-    String line = text.Substring(pos, next_pos - pos);
-    wtf_size_t space_pos = line.ReverseFind(' ');
-    String name = line.Substring(space_pos == kNotFound ? 0 : space_pos + 1);
-    symbols_cache_.insert(addresses_to_symbolize[i], name);
+    StringView line(text, pos, next_pos - pos);
+    wtf_size_t space_pos = line.rfind(' ');
+    StringView name = line.substr(space_pos == kNotFound ? 0 : space_pos + 1);
+    symbols_cache_.insert(addresses_to_symbolize[i], name.ToString());
   }
 #endif
 

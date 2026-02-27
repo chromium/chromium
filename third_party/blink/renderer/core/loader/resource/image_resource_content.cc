@@ -376,7 +376,7 @@ void ImageResourceContent::NotifyObservers(
 scoped_refptr<Image> ImageResourceContent::CreateImage(bool is_multipart) {
   String content_dpr_value =
       info_->GetResponse().HttpHeaderField(http_names::kContentDPR);
-  wtf_size_t comma = content_dpr_value.ReverseFind(',');
+  wtf_size_t comma = content_dpr_value.rfind(',');
   if (comma != kNotFound && comma < content_dpr_value.length() - 1) {
     content_dpr_value = content_dpr_value.Substring(comma + 1);
   }

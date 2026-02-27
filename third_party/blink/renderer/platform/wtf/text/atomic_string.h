@@ -150,8 +150,9 @@ class WTF_EXPORT AtomicString {
   bool ContainsIgnoringAsciiCase(const StringView& value) const;
 
   // Find the last instance of a single character.
-  wtf_size_t ReverseFind(UChar c, wtf_size_t start = UINT_MAX) const {
-    return string_.ReverseFind(c, start);
+  // Returns `npos` if it's not found in this string.
+  size_type rfind(UChar c, size_type start = npos) const {
+    return string_.rfind(c, start);
   }
   // Find the last instance of a substring.
   // If `this` string is null, this function returns kNotFound even if

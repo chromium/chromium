@@ -353,7 +353,7 @@ scoped_refptr<QuotesData> LayoutLocale::GetQuotesData() const {
 
   if (!quotes_data_) {
     // No exact match, try to find without subtags.
-    wtf_size_t hyphen_offset = normalized_lang.ReverseFind('_');
+    wtf_size_t hyphen_offset = normalized_lang.rfind('_');
     if (hyphen_offset == kNotFound) {
       return nullptr;
     }

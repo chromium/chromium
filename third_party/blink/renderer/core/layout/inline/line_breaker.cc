@@ -643,7 +643,7 @@ void LineBreaker::ComputeBaseDirection() {
     if (!current_.text_offset) {
       return;
     }
-    start_offset = text.ReverseFind(uchar::kLineFeed, current_.text_offset - 1);
+    start_offset = text.rfind(uchar::kLineFeed, current_.text_offset - 1);
     if (start_offset == kNotFound)
       return;
     ++start_offset;

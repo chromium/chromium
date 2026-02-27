@@ -266,8 +266,9 @@ class WTF_EXPORT String {
   bool contains(const StringView& value) const { return find(value) != npos; }
 
   // Find the last instance of a single character.
-  wtf_size_t ReverseFind(UChar c, unsigned start = UINT_MAX) const {
-    return impl_ ? impl_->ReverseFind(c, start) : kNotFound;
+  // Returns `npos` if it's not found in this string.
+  size_type rfind(UChar c, size_type start = npos) const {
+    return impl_ ? impl_->ReverseFind(c, start) : npos;
   }
   // Find the last instance of a substring.
   // If `this` string is null, this function returns kNotFound even if

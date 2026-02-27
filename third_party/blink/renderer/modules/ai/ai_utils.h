@@ -83,7 +83,7 @@ std::optional<String> LookupMatchingLocaleByBestFit(
     if (available_languages.contains(prefix.Ascii())) {
       return prefix;
     }
-    int pos = prefix.ReverseFind('-');
+    int pos = prefix.rfind('-');
     if (pos == -1) {
       pos = 0;
     }

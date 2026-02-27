@@ -54,18 +54,20 @@ String DOMFilePath::EnsureDirectoryPath(const String& path) {
 }
 
 String DOMFilePath::GetName(const String& path) {
-  int index = path.ReverseFind(DOMFilePath::kSeparator);
-  if (index != -1)
+  auto index = path.rfind(DOMFilePath::kSeparator);
+  if (index != String::npos) {
     return path.Substring(index + 1);
+  }
   return path;
 }
 
 String DOMFilePath::GetDirectory(const String& path) {
-  int index = path.ReverseFind(DOMFilePath::kSeparator);
+  auto index = path.rfind(DOMFilePath::kSeparator);
   if (!index)
     return DOMFilePath::kRoot;
-  if (index != -1)
+  if (index != String::npos) {
     return path.Substring(0, index);
+  }
   return ".";
 }
 
