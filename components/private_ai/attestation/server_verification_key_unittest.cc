@@ -43,7 +43,7 @@ TEST_F(ServerVerificationKeyTest, GetDevKeys) {
 
 TEST_F(ServerVerificationKeyTest, GetProdKeys) {
   base::FieldTrialParams params;
-  params["url"] = "legion.corp.google.com";
+  params["url"] = "private-ai.corp.google.com";
   feature_list_.InitAndEnableFeatureWithParameters(kPrivateAi, params);
 
   auto keys = GetServerVerificationKey();
