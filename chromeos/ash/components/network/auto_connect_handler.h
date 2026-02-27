@@ -101,11 +101,11 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) AutoConnectHandler
   // AllowOnlyPolicyNetworksToAutoconnect is enabled.
   void DisconnectCellularIfPolicyRequires();
 
-  // Disconnects the unmanaged network in the given |networks| list and removes
-  // the network configuration if it's either a Cellular type network or
-  // |available_only| is not set for WiFi type network. If
-  // |only_managed_autoconnect| is set to true, it also disables auto connect
-  // for the unmanaged network configuration.
+  // Disconnects unmanaged networks in |networks| according to policy. For
+  // blocked networks, WiFi configurations may be removed when |available_only|
+  // does not allow preserving them. Cellular configurations are not removed;
+  // AutoConnect is disabled instead. If |only_managed_autoconnect| is set to
+  // true, AutoConnect is disabled for unmanaged network configurations.
   void DisconnectAndRemoveConfigOrDisableAutoConnect(
       const NetworkStateHandler::NetworkStateList& networks,
       bool only_managed_autoconnect,
