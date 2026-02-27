@@ -202,7 +202,7 @@ class NetworkServiceHttpCacheEarlyInitTest : public testing::Test {
     mojo::Remote<network::mojom::URLLoaderFactory> loader_factory;
     network::mojom::URLLoaderFactoryParamsPtr params =
         network::mojom::URLLoaderFactoryParams::New();
-    params->process_id = network::OriginatingProcess::browser();
+    params->process_id = network::OriginatingProcessId::browser();
     network_context_->CreateURLLoaderFactory(
         loader_factory.BindNewPipeAndPassReceiver(), std::move(params));
 

@@ -18,9 +18,6 @@ using RendererProcessId = base::IdType<class RendererProcessTag,
                                        /*kFirstGeneratedId=*/1,
                                        /*kExtraInvalidValues=*/0>;
 
-// TODO(crbug.com/379869738) Remove this when all instances have been ported.
-using RendererProcess = RendererProcessId;
-
 }  // namespace network
 
 #endif  // SERVICES_NETWORK_PUBLIC_CPP_RENDERER_PROCESS_ID_H_

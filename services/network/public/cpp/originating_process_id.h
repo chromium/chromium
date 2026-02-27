@@ -62,9 +62,6 @@ class COMPONENT_EXPORT(NETWORK_CPP_BASE) OriginatingProcessId {
   std::optional<RendererProcessId> process_id_;
 };
 
-// TODO(crbug.com/379869738) Remove this when all instances have been ported.
-using OriginatingProcess = OriginatingProcessId;
-
 COMPONENT_EXPORT(NETWORK_CPP_BASE)
 void WriteIntoTracedValue(perfetto::TracedValue context,
                           const OriginatingProcessId& process);
