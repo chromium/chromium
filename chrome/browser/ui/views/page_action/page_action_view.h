@@ -5,7 +5,9 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PAGE_ACTION_PAGE_ACTION_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_PAGE_ACTION_PAGE_ACTION_VIEW_H_
 
+#include <memory>
 #include <optional>
+#include <string>
 
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
@@ -14,13 +16,16 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
+#include "chrome/browser/ui/views/page_action/anchored_message_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_model_observer.h"
 #include "chrome/browser/ui/views/page_action/page_action_triggers.h"
 #include "ui/actions/actions.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/models/image_model.h"
 #include "ui/events/event.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/views/view.h"
+#include "ui/views/widget/widget.h"
 
 namespace page_actions {
 
@@ -31,7 +36,8 @@ struct PageActionViewParams;
 // PageActionView is the view displaying the page action. There is one per
 // browser, per page action.
 class PageActionView : public IconLabelBubbleView,
-                       public PageActionModelObserver {
+                       public PageActionModelObserver,
+                       public views::WidgetObserver {
   METADATA_HEADER(PageActionView, IconLabelBubbleView)
  public:
   PageActionView(actions::ActionItem* action_item,
@@ -63,6 +69,7 @@ class PageActionView : public IconLabelBubbleView,
   using IsChipShowingChangedCallback =
       base::RepeatingCallback<void(bool is_chip_showing)>;
   void SetIsChipShowingChangedCallback(IsChipShowingChangedCallback callback);
+  void SetAnchoredMessageCloseCallback(base::RepeatingClosure callback);
 
   // PageActionModelObserver:
   void OnPageActionModelChanged(const PageActionModelInterface& model) override;
@@ -88,6 +95,7 @@ class PageActionView : public IconLabelBubbleView,
 
   views::View* GetLabelForTesting();
   gfx::SlideAnimation& GetSlideAnimationForTesting();
+  AnchoredMessageBubbleView* GetAnchoredMessageForTesting();
 
   static base::PassKey<PageActionView> PassKeyForTesting() { return PassKey(); }
 
@@ -111,6 +119,14 @@ class PageActionView : public IconLabelBubbleView,
   // Runs `is_chip_showing_changed_callback_` asynchronously to ensure that this
   // notification will happen after PageActionModel::NotifyChange().
   void NotifyIsChipShowingChange();
+
+  // views::WidgetObserver:
+  void OnWidgetDestroying(views::Widget* widget) override;
+
+  void CloseAnchoredMessage();
+  void AnchoredMessageClick();
+
+  void CreateAndShowAnchoredMessage(const PageActionModelInterface& model);
 
   base::WeakPtr<actions::ActionItem> action_item_ = nullptr;
   base::ScopedObservation<PageActionModelInterface, PageActionModelObserver>
@@ -145,6 +161,12 @@ class PageActionView : public IconLabelBubbleView,
 
   // If set, ensures this view is highlighted.
   std::optional<views::Button::ScopedAnchorHighlight> highlight_;
+
+  raw_ptr<AnchoredMessageBubbleView> anchored_message_ = nullptr;
+  std::unique_ptr<views::Widget> anchored_message_widget_;
+
+  base::RepeatingClosure anchored_message_close_callback_ = base::DoNothing();
+  base::WeakPtrFactory<PageActionView> weak_factory_{this};
 };
 
 }  // namespace page_actions

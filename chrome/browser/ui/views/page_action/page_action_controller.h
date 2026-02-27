@@ -203,12 +203,17 @@ class PageActionController {
       base::PassKey<PageActionView>,
       actions::ActionId action_id) = 0;
 
+  // Provides callback for when an anchored message is closed by used, either by
+  // interacting with it or clicking the close icon.
+  virtual base::RepeatingClosure GetAnchoredMessageCloseCallback(
+      base::PassKey<PageActionView>,
+      actions::ActionId action_id) = 0;
+
   // Subscribes this controller to get `page_action_view` complete chip
   // visibility change (it final state after animation).
-  virtual void RegisterIsChipShowingChangedCallback(
-      base::PassKey<PageActionView>,
-      actions::ActionId action_id,
-      PageActionView* page_action_view) = 0;
+  virtual void RegisterCallbacks(base::PassKey<PageActionView>,
+                                 actions::ActionId action_id,
+                                 PageActionView* page_action_view) = 0;
 
   static base::PassKey<PageActionController> PassKeyForTesting() {
     return base::PassKey<PageActionController>();
@@ -282,12 +287,14 @@ class PageActionControllerImpl : public PageActionController,
   base::RepeatingCallback<void(PageActionTrigger)> GetClickCallback(
       base::PassKey<PageActionView>,
       actions::ActionId action_id) override;
+  base::RepeatingClosure GetAnchoredMessageCloseCallback(
+      base::PassKey<PageActionView>,
+      actions::ActionId action_id) override;
   base::CallbackListSubscription RegisterOnWillDestroyCallback(
       base::OnceCallback<void(PageActionController&)> callback) override;
-  void RegisterIsChipShowingChangedCallback(
-      base::PassKey<PageActionView>,
-      actions::ActionId action_id,
-      PageActionView* page_action_view) override;
+  void RegisterCallbacks(base::PassKey<PageActionView>,
+                         actions::ActionId action_id,
+                         PageActionView* page_action_view) override;
 
   // PinnedToolbarActionsModel::Observer
   void OnActionsChanged() override;

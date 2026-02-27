@@ -759,5 +759,20 @@ TEST_F(PageActionControllerMockModelTest,
   Mock::VerifyAndClearExpectations(&models().Get(kFirstActionItemId));
 }
 
+TEST_F(PageActionControllerMockModelTest, ShowAnchoredMessage) {
+  controller().Initialize(tab_interface(), {kFirstActionItemId},
+                          properties_provider_);
+
+  EXPECT_CALL(models().Get(kFirstActionItemId),
+              SetShouldShowAnchoredMessage(_, true))
+      .Times(1);
+  controller().ShowAnchoredMessage(kFirstActionItemId);
+
+  EXPECT_CALL(models().Get(kFirstActionItemId),
+              SetShouldShowAnchoredMessage(_, false))
+      .Times(1);
+  controller().HideAnchoredMessage(kFirstActionItemId);
+}
+
 }  // namespace
 }  // namespace page_actions

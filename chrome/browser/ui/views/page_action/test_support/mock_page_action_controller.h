@@ -88,8 +88,12 @@ class MockPageActionController : public PageActionController {
               GetClickCallback,
               (base::PassKey<PageActionView>, actions::ActionId),
               (override));
+  MOCK_METHOD(base::RepeatingClosure,
+              GetAnchoredMessageCloseCallback,
+              (base::PassKey<PageActionView>, actions::ActionId),
+              (override));
   MOCK_METHOD(void,
-              RegisterIsChipShowingChangedCallback,
+              RegisterCallbacks,
               (base::PassKey<PageActionView>,
                actions::ActionId,
                PageActionView*),

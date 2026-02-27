@@ -7,6 +7,8 @@
 #include <memory>
 #include <utility>
 
+#include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/views/page_action/chip_selector.h"
 #include "chrome/browser/ui/views/page_action/page_action_metrics_recorder.h"
@@ -427,6 +429,14 @@ void PageActionControllerImpl::RecordClickMetric(
   id_and_recorder->second->RecordClick(trigger_source);
 }
 
+base::RepeatingClosure
+PageActionControllerImpl::GetAnchoredMessageCloseCallback(
+    base::PassKey<PageActionView>,
+    actions::ActionId action_id) {
+  return base::BindRepeating(&PageActionControllerImpl::HideAnchoredMessage,
+                             base::Unretained(this), action_id);
+}
+
 int PageActionControllerImpl::GetVisibleEphemeralPageActionsCount() const {
   int visible_ephemeral_page_actions_count = 0;
   for (auto& [id, model] : page_actions_) {
@@ -444,7 +454,7 @@ PageActionControllerImpl::RegisterOnWillDestroyCallback(
   return on_will_destroy_callback_list_.Add(std::move(callback));
 }
 
-void PageActionControllerImpl::RegisterIsChipShowingChangedCallback(
+void PageActionControllerImpl::RegisterCallbacks(
     base::PassKey<PageActionView>,
     actions::ActionId action_id,
     PageActionView* page_action_view) {
@@ -452,6 +462,9 @@ void PageActionControllerImpl::RegisterIsChipShowingChangedCallback(
   page_action_view->SetIsChipShowingChangedCallback(
       base::BindRepeating(&PageActionControllerImpl::OnIsChipShowingChanged,
                           weak_factory_.GetWeakPtr(), action_id));
+  page_action_view->SetAnchoredMessageCloseCallback(
+      base::BindRepeating(&PageActionControllerImpl::HideAnchoredMessage,
+                          base::Unretained(this), action_id));
 }
 
 void PageActionControllerImpl::OnIsChipShowingChanged(

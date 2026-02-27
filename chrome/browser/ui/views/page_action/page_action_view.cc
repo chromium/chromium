@@ -10,6 +10,7 @@
 #include "base/callback_list.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/memory/ptr_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
@@ -19,7 +20,9 @@
 #include "chrome/browser/ui/views/page_action/page_action_view_params.h"
 #include "ui/actions/actions.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model.h"
 #include "ui/color/color_id.h"
+#include "ui/events/event.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/geometry/insets.h"
@@ -27,6 +30,7 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/widget/widget_delegate.h"
 
 namespace page_actions {
 
@@ -66,6 +70,20 @@ PageActionView::~PageActionView() {
   // might attempt to trigger an ink drop change even though we're
   // mid-destruction. Disable the ink drop to prevent this.
   views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::OFF);
+
+  if (anchored_message_) {
+    CHECK(anchored_message_widget_);
+    anchored_message_ = nullptr;
+    anchored_message_widget_->RemoveObserver(this);
+    anchored_message_widget_ = nullptr;
+  }
+}
+
+void PageActionView::OnWidgetDestroying(views::Widget* widget) {
+  CHECK(anchored_message_);
+  CHECK(anchored_message_widget_);
+  anchored_message_ = nullptr;
+  anchored_message_widget_ = nullptr;
 }
 
 bool PageActionView::IsChipVisible() const {
@@ -82,12 +100,17 @@ void PageActionView::SetIsChipShowingChangedCallback(
   is_chip_showing_changed_callback_ = std::move(callback);
 }
 
+void PageActionView::SetAnchoredMessageCloseCallback(
+    base::RepeatingClosure callback) {
+  anchored_message_close_callback_ = std::move(callback);
+}
+
 void PageActionView::OnNewActiveController(PageActionController* controller) {
   observation_.Reset();
   action_item_controller_subscription_ = {};
   if (controller) {
-    controller->RegisterIsChipShowingChangedCallback(
-        PassKey(), action_item_->GetActionId().value(), this);
+    controller->RegisterCallbacks(PassKey(),
+                                  action_item_->GetActionId().value(), this);
 
     click_callback_ = controller->GetClickCallback(
         PassKey(), action_item_->GetActionId().value());
@@ -132,6 +155,14 @@ void PageActionView::OnPageActionModelChanged(
   } else {
     ResetSlideAnimation(/*show=*/false);
     NotifyIsChipShowingChange();
+  }
+
+  if (model.GetVisible() && model.ShouldShowAnchoredMessage()) {
+    CreateAndShowAnchoredMessage(model);
+  } else if (anchored_message_ && anchored_message_widget_) {
+    anchored_message_widget_->RemoveObserver(this);
+    anchored_message_ = nullptr;
+    anchored_message_widget_ = nullptr;
   }
 
   // Announce the chip only if announcements are enabled and the chip was
@@ -324,6 +355,54 @@ void PageActionView::NotifyIsChipShowingChange() {
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(is_chip_showing_changed_callback_, IsChipVisible()));
+}
+
+void PageActionView::CreateAndShowAnchoredMessage(
+    const PageActionModelInterface& model) {
+  const std::u16string chip_text(label()->GetText());
+
+  if (anchored_message_) {
+    return;
+  }
+
+  auto message_delegate = std::make_unique<AnchoredMessageBubbleView>(
+      this, model,
+      base::BindRepeating(&PageActionView::AnchoredMessageClick,
+                          base::Unretained(this)),
+      base::BindRepeating(&PageActionView::CloseAnchoredMessage,
+                          base::Unretained(this)));
+  anchored_message_ = message_delegate.get();
+
+  anchored_message_widget_ =
+      base::WrapUnique(views::BubbleDialogDelegate::CreateBubble(
+          std::move(message_delegate),
+          views::Widget::InitParams::CLIENT_OWNS_WIDGET));
+
+  if (anchored_message_widget_) {
+    anchored_message_widget_->AddObserver(this);
+    anchored_message_widget_->Show();
+  } else {
+    anchored_message_ = nullptr;
+  }
+}
+
+void PageActionView::CloseAnchoredMessage() {
+  anchored_message_close_callback_.Run();
+}
+
+void PageActionView::AnchoredMessageClick() {
+  CHECK(click_callback_);
+  click_callback_.Run(PageActionTrigger::kMouse);
+  action_item_->InvokeAction(
+      actions::ActionInvocationContext::Builder()
+          .SetProperty(kPageActionTriggerKey,
+                       static_cast<std::underlying_type_t<PageActionTrigger>>(
+                           PageActionTrigger::kMouse))
+          .Build());
+}
+
+AnchoredMessageBubbleView* PageActionView::GetAnchoredMessageForTesting() {
+  return anchored_message_;
 }
 
 BEGIN_METADATA(PageActionView)

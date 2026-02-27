@@ -45,6 +45,11 @@ bool IsAtMinimumSize(PageActionView* page_action) {
   return page_action->size() == page_action->GetMinimumSize();
 }
 
+bool IsAnchoredMessageVisible(PageActionView* page_action) {
+  auto* anchored_message = page_action->GetAnchoredMessageForTesting();
+  return anchored_message != nullptr && anchored_message->GetVisible();
+}
+
 bool IsIconCentered(PageActionView* page_action) {
   const auto* const image_container = page_action->GetImageContainerView();
   return image_container->x() ==
@@ -186,6 +191,20 @@ class PageActionUiTestBase {
     page_action_controller()->HideSuggestionChip(action_id);
   }
 
+  void ShowAnchoredMessage(actions::ActionId action_id,
+                           std::u16string text,
+                           bool close_icon) const {
+    EnsurePageActionEnabled(action_id);
+    page_action_controller()->SetAnchoredMessageText(action_id, text);
+    page_action_controller()->ShouldShowAnchoredMessageCloseIcon(action_id,
+                                                                 close_icon);
+    page_action_controller()->ShowAnchoredMessage(action_id);
+  }
+
+  void HideAnchoredMessage(actions::ActionId action_id) const {
+    page_action_controller()->HideAnchoredMessage(action_id);
+  }
+
   PageActionView* GetTranslatePageActionView() const {
     return GetPageActionView(kActionShowTranslate);
   }
@@ -209,6 +228,11 @@ class PageActionUiTestBase {
   void ShowTestSuggestionChip() const {
     ShowPageAction(kActionShowTranslate);
     ShowSuggestionChip(kActionShowTranslate);
+  }
+
+  void ShowTestAnchoredMessage(std::u16string text, bool close_icon) const {
+    ShowPageAction(kActionShowTranslate);
+    ShowAnchoredMessage(kActionShowTranslate, text, close_icon);
   }
 
   void ShowTranslatePageActionIcon() const {
@@ -994,6 +1018,54 @@ class PageActionPixelReorderTest : public PageActionPixelTestBase {
 };
 
 IN_PROC_BROWSER_TEST_F(PageActionPixelReorderTest, InvokeUi_Default) {
+  ShowAndVerifyUi();
+}
+
+class PageActionPixelShowAnchoredMessageTest : public PageActionPixelTestBase {
+ public:
+  PageActionPixelShowAnchoredMessageTest() = default;
+  PageActionPixelShowAnchoredMessageTest(
+      const PageActionPixelShowAnchoredMessageTest&) = delete;
+  PageActionPixelShowAnchoredMessageTest& operator=(
+      const PageActionPixelShowAnchoredMessageTest&) = delete;
+  ~PageActionPixelShowAnchoredMessageTest() override = default;
+
+  // UiBrowserTest:
+  void ShowUi(const std::string& name) override {
+    ShowTestAnchoredMessage(anchored_message_text_, close_icon_);
+    PageActionPixelTestBase::ShowUi(name);
+  }
+
+  bool VerifyUi() override {
+    PageActionView* test_view = GetTestPageActionView();
+    EXPECT_TRUE(test_view->GetVisible());
+    EXPECT_TRUE(IsAnchoredMessageVisible(test_view));
+    return true;
+  }
+
+  void Configure(std::u16string anchored_message_text, bool close_icon) {
+    anchored_message_text_ = anchored_message_text;
+    close_icon_ = close_icon;
+  }
+
+ private:
+  std::u16string anchored_message_text_ = u"";
+  bool close_icon_ = false;
+};
+
+IN_PROC_BROWSER_TEST_F(PageActionPixelShowAnchoredMessageTest,
+                       InvokeUi_Default) {
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(PageActionPixelShowAnchoredMessageTest,
+                       InvokeUi_CloseIcon) {
+  Configure(u"", true);
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(PageActionPixelShowAnchoredMessageTest, InvokeUi_Text) {
+  Configure(u"Anchored Message Text", false);
   ShowAndVerifyUi();
 }
 
