@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "extensions/browser/api/device_permissions_prompt.h"
+#include "extensions/browser/api/usb_device_permissions_prompt.h"
 
 #include <algorithm>
 #include <memory>

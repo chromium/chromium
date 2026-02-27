@@ -8,7 +8,7 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/permissions/chooser_controller.h"
-#include "extensions/browser/api/device_permissions_prompt.h"
+#include "extensions/browser/api/usb_device_permissions_prompt.h"
 
 namespace content {
 class RenderFrameHost;

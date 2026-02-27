@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_CHROME_DEVICE_PERMISSIONS_PROMPT_H_
 #define CHROME_BROWSER_EXTENSIONS_API_CHROME_DEVICE_PERMISSIONS_PROMPT_H_
 
-#include "extensions/browser/api/device_permissions_prompt.h"
+#include "extensions/browser/api/usb_device_permissions_prompt.h"
 
 class ChromeUsbDevicePermissionsPrompt
     : public extensions::UsbDevicePermissionsPrompt {

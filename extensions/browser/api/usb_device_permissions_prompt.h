@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef EXTENSIONS_BROWSER_API_DEVICE_PERMISSIONS_PROMPT_H_
-#define EXTENSIONS_BROWSER_API_DEVICE_PERMISSIONS_PROMPT_H_
+#ifndef EXTENSIONS_BROWSER_API_USB_DEVICE_PERMISSIONS_PROMPT_H_
+#define EXTENSIONS_BROWSER_API_USB_DEVICE_PERMISSIONS_PROMPT_H_
 
 #include <stddef.h>
 
@@ -22,13 +22,13 @@
 namespace content {
 class BrowserContext;
 class WebContents;
-}
+}  // namespace content
 
 namespace extensions {
 
 class Extension;
 
-// Platform-independent interface for displaing a UI for choosing devices
+// Platform-independent interface for displaying a UI for choosing devices
 // (similar to choosing files).
 class UsbDevicePermissionsPrompt {
  public:
@@ -168,4 +168,4 @@ class UsbDevicePermissionsPrompt {
 
 }  // namespace extensions
 
-#endif  // EXTENSIONS_BROWSER_API_DEVICE_PERMISSIONS_PROMPT_H_
+#endif  // EXTENSIONS_BROWSER_API_USB_DEVICE_PERMISSIONS_PROMPT_H_

@@ -792,8 +792,6 @@ source_set("browser_sources") {
     sources += [
       "api/device_permissions_manager.cc",
       "api/device_permissions_manager.h",
-      "api/device_permissions_prompt.cc",
-      "api/device_permissions_prompt.h",
       "api/hid/hid_api.cc",
       "api/hid/hid_api.h",
       "api/hid/hid_connection_resource.cc",
@@ -806,6 +804,8 @@ source_set("browser_sources") {
       "api/usb/usb_device_manager.h",
       "api/usb/usb_device_resource.cc",
       "api/usb/usb_device_resource.h",
+      "api/usb_device_permissions_prompt.cc",
+      "api/usb_device_permissions_prompt.h",
     ]
 
     deps += [ "//services/device/public/cpp/hid" ]
