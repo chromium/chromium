@@ -271,6 +271,10 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
             return;
         }
 
+        // Erase all attachments to avoid leaking them to other sessions when user switches tabs.
+        // TODO(crbug.com/474616308): remove when proper session persistence is available.
+        mModelList.clear();
+
         mInput = session.getAutocompleteInput();
         mMediator.beginInput(mInput);
         FuseboxMetrics.notifyOmniboxSessionStarted();
