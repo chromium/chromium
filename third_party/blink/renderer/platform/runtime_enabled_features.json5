@@ -5216,10 +5216,6 @@
       status: "stable",
     },
     {
-      name: "SoftNavigationEagerIcpEntryEmission",
-      status: "stable",
-    },
-    {
       name: "SoftNavigationHeuristics",
       status: "experimental",
       origin_trial_allows_third_party: true,
