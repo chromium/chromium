@@ -18,7 +18,7 @@ export function getHtml(this: AppElement) {
         <h2 slot="heading">$i18n{appearanceHeader}</h2>
       </sp-heading>
       <customize-chrome-appearance @edit-theme-click="${this.onEditThemeClick_}"
-          @wallpaper-search-click="${this.onWallpaperSearchSelect_}"
+          @wallpaper-search-click="${this.onWallpaperSearchClick_}"
           id="appearanceElement">
       </customize-chrome-appearance>
     </div>

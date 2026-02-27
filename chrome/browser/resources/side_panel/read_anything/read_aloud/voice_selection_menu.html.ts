@@ -14,7 +14,7 @@ export function getHtml(this: VoiceSelectionMenuElement) {
   .template='${() => html`
     <cr-action-menu
         @close="${this.onClose_}"
-        @keydown="${this.onVoiceMenuKeyDown_}"
+        @keydown="${this.onVoiceMenuKeydown_}"
         accessibility-label="$i18n{voiceSelectionLabel}"
         role-description="$i18n{menu}"
         ?non-modal="${this.nonModal}"
@@ -74,7 +74,7 @@ export function getHtml(this: VoiceSelectionMenuElement) {
       <button
           class="dropdown-item dropdown-voice-selection-button language-menu-button"
           tabindex="0"
-          @click="${this.openLanguageMenu_}">
+          @click="${this.onLanguageMenuClick_}">
         $i18n{readingModeLanguageMenu}
       </button>
 

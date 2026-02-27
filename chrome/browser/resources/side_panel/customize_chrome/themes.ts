@@ -180,11 +180,11 @@ export class ThemesElement extends ThemesElementBase {
     }
   }
 
-  protected onBackClick_() {
+  protected onBackButtonClick_() {
     this.dispatchEvent(new Event('back-click'));
   }
 
-  protected onSelectTheme_(e: Event) {
+  protected onThemeClick_(e: Event) {
     const index = Number((e.currentTarget as HTMLElement).dataset['index']);
     const theme = this.themes_[index]!;
 

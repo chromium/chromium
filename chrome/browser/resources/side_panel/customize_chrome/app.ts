@@ -298,6 +298,10 @@ export class AppElement extends AppElementBase {
     this.$.appearanceElement.focusOnThemeButton();
   }
 
+  protected onWallpaperSearchClick_() {
+    this.onWallpaperSearchSelect_();
+  }
+
   protected onWallpaperSearchSelect_() {
     this.page_ = CustomizeChromePage.WALLPAPER_SEARCH;
     const page =

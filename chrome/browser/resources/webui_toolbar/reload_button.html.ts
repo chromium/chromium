@@ -14,9 +14,9 @@ export function getHtml(this: ReloadButtonAppElement) {
     aria-label="${this.accName_}"
     aria-haspopup="${this.state.isDevtoolsConnected}"
     is-menu-open="${this.state.isContextMenuVisible}"
-    @pointerdown="${this.onReloadButtonPointerDown_}"
-    @pointerup="${this.onReloadButtonPointerUp_}"
-    @contextmenu="${this.onContextMenu_}">
+    @pointerdown="${this.onReloadButtonPointerdown_}"
+    @pointerup="${this.onReloadButtonPointerup_}"
+    @contextmenu="${this.onContextmenu_}">
 </cr-icon-button>
 <!--_html_template_end_-->`;
 }

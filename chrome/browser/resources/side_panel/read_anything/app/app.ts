@@ -367,7 +367,7 @@ export class AppElement extends AppElementBase implements SpeechListener,
     this.onTextLocationsChange_();
   }
 
-  protected onContainerScrollEnd_() {
+  protected onContainerScrollend_() {
     this.nodeStore_.estimateWordsSeenWithDelay();
     if (chrome.readingMode.isLineFocusEnabled) {
       this.lineFocusController_.onScrollEnd(this.$.containerScroller.scrollTop);
@@ -408,11 +408,19 @@ export class AppElement extends AppElementBase implements SpeechListener,
     return this.shadowRoot.getSelection();
   }
 
-  protected updateLinks_() {
+  protected onLinksToggle_() {
+    this.updateLinks_();
+  }
+
+  private updateLinks_() {
     this.contentController_.updateLinks(this.shadowRoot);
   }
 
-  protected updateImages_() {
+  protected onImagesToggle_() {
+    this.updateImages_();
+  }
+
+  private updateImages_() {
     this.contentController_.updateImages(this.shadowRoot);
   }
 
@@ -657,7 +665,7 @@ export class AppElement extends AppElementBase implements SpeechListener,
     this.styleUpdater_.setHighlight();
   }
 
-  protected onAllMenusClose_() {
+  protected onCloseAllMenus_() {
     if (chrome.readingMode.isLineFocusEnabled) {
       this.lineFocusController_.onAllMenusClose();
     }

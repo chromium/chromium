@@ -15,7 +15,7 @@ export function getHtml(this: DataExportDoneElement) {
 </div>
 <div>
   <cr-icon id="check-icon" icon="cr:check-circle"></cr-icon>
-  <a id="path-link" @click="${this.onFilePathClicked_}" href="#"
+  <a id="path-link" @click="${this.onFilePathClick_}" href="#"
       is="action-link" tabindex="0">
     ${this.path_}
   </a>

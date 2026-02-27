@@ -49,7 +49,7 @@ export function getHtml(this: SupportToolElement) {
 <cr-toast id="errorMessageToast" duration="0" tabindex="0"
     aria-labelledby="error-message">
   <span id="error-message">${this.errorMessage_}</span>
-  <cr-button @click="${this.onErrorMessageToastCloseClicked_}">
+  <cr-button @click="${this.onErrorMessageToastCloseClick_}">
     ${this.i18n('dismissButtonText')}
   </cr-button>
 </cr-toast>

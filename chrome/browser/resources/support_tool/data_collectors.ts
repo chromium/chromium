@@ -67,11 +67,11 @@ export class DataCollectorsElement extends DataCollectorsElementBase {
     return this.dataCollectors_;
   }
 
-  protected onAllSelectedChanged_(e: CustomEvent<{value: boolean}>) {
+  protected onAllSelectedCheckedChanged_(e: CustomEvent<{value: boolean}>) {
     this.allSelected_ = e.detail.value;
   }
 
-  protected onDataCollectorCheckboxChanged_(e: CustomEvent<{value: boolean}>) {
+  protected onDataCollectorCheckedChanged_(e: CustomEvent<{value: boolean}>) {
     const index = Number((e.target as HTMLElement).dataset['index']);
     const isIncluded = e.detail.value;
     this.dataCollectors_[index]!.isIncluded = isIncluded;

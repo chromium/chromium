@@ -272,7 +272,7 @@ export class CategoriesElement extends CategoriesElementBase {
     this.apiProxy_.handler.openChromeWebStore();
   }
 
-  protected onBackClick_() {
+  protected onBackButtonClick_() {
     this.dispatchEvent(new Event('back-click'));
   }
 }

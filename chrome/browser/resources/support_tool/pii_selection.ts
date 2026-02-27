@@ -83,7 +83,8 @@ export class PiiSelectionElement extends PiiSelectionElementBase {
         this.detectedPiiItems_.map(item => ({...item, keep: this.selectAll_}));
   }
 
-  protected onSelectedRadioButtonChanged_(event: CustomEvent<{value: string}>) {
+  protected onSelectedRadioButtonSelectedChanged_(
+      event: CustomEvent<{value: string}>) {
     this.selectedRadioButton_ = event.detail.value as PiiRadioButtons;
     switch (this.selectedRadioButton_) {
       case PiiRadioButtons.INCLUDE_ALL:

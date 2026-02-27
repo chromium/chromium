@@ -145,6 +145,14 @@ export class PowerBookmarkRowItemElement extends CrLitElement {
     return !this.isRenamingItem_() && !this.hasCheckbox;
   }
 
+  protected onClick_(event: MouseEvent) {
+    this.onRowClicked_(event);
+  }
+
+  protected onAuxclick_(event: MouseEvent) {
+    this.onRowClicked_(event);
+  }
+
   protected onRowClicked_(event: MouseEvent) {
     if (this.isRenamingItem_() || !this.bookmark || event.button === 2 ||
         this.hasActiveDrag) {
@@ -161,19 +169,19 @@ export class PowerBookmarkRowItemElement extends CrLitElement {
     this.fire('row-clicked', {bookmark: this.bookmark, event: event});
   }
 
-  protected onContextMenu_(event: MouseEvent) {
+  protected onContextmenu_(event: MouseEvent) {
     event.preventDefault();
     event.stopPropagation();
     this.fire('context-menu', {bookmark: this.bookmark, event: event});
   }
 
-  protected onTrailingIconClicked_(event: MouseEvent) {
+  protected onTrailingIconClick_(event: MouseEvent) {
     event.preventDefault();
     event.stopPropagation();
     this.fire('trailing-icon-clicked', {bookmark: this.bookmark, event: event});
   }
 
-  protected onCheckboxChange_(event: Event) {
+  protected onCheckboxCheckedChanged_(event: Event) {
     event.preventDefault();
     event.stopPropagation();
     this.fire('checkbox-change', {
@@ -182,7 +190,7 @@ export class PowerBookmarkRowItemElement extends CrLitElement {
     });
   }
 
-  protected onInputKeyDown_(event: KeyboardEvent) {
+  protected onInputKeydown_(event: KeyboardEvent) {
     if (event.key === 'Enter') {
       event.stopPropagation();
       this.onInputChange_(event);

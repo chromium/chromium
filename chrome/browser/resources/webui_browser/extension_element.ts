@@ -53,7 +53,7 @@ export class ExtensionElement extends CrLitElement {
     this.bar.onClick(this.extensionId);
   }
 
-  protected onContextMenu(event: PointerEvent) {
+  protected onContextmenu_(event: PointerEvent) {
     event.preventDefault();
     let sourceType: MenuSourceType = MenuSourceType.kNone;
     switch (event.pointerType) {

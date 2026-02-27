@@ -129,7 +129,7 @@ export class LanguageMenuElement extends LanguageMenuElementBase implements
   private notificationManager_: VoiceNotificationManager =
       VoiceNotificationManager.getInstance();
 
-  protected closeLanguageMenu_() {
+  protected onClose_() {
     this.notificationManager_.removeListener(this);
     this.notificationManager_.removeListener(this.getToast_());
     this.$.languageMenu.close();
@@ -264,7 +264,7 @@ export class LanguageMenuElement extends LanguageMenuElementBase implements
     this.languageSearchValue_ = e.detail.value;
   }
 
-  protected onKeyDown_(e: KeyboardEvent) {
+  protected onKeydown_(e: KeyboardEvent) {
     e.stopPropagation();
   }
 }

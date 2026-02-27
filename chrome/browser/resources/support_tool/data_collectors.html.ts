@@ -13,7 +13,7 @@ export function getHtml(this: DataCollectorsElement) {
 
 <cr-checkbox class="select-all-checkbox" id="selectAllCheckbox"
     ?checked="${this.allSelected_}"
-    @checked-changed="${this.onAllSelectedChanged_}" tabindex="0">
+    @checked-changed="${this.onAllSelectedCheckedChanged_}" tabindex="0">
   ${this.i18n('selectAll')}
 </cr-checkbox>
 
@@ -21,7 +21,7 @@ export function getHtml(this: DataCollectorsElement) {
   ${this.dataCollectors_.map((item, index) => html`
     <cr-checkbox class="data-collector-checkbox"
         ?checked="${item.isIncluded}" data-index="${index}"
-        @checked-changed="${this.onDataCollectorCheckboxChanged_}" tabindex="0">
+        @checked-changed="${this.onDataCollectorCheckedChanged_}" tabindex="0">
       ${item.name}
     </cr-checkbox>
   `)}

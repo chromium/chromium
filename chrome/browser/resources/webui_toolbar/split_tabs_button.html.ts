@@ -9,7 +9,7 @@ import type {SplitTabsButtonElement} from './split_tabs_button.js';
 export function getHtml(this: SplitTabsButtonElement) {
   return html`<!--_html_template_start_-->
 <cr-icon-button id="button" iron-icon="${this.getIcon()}"
-    @click="${this.onClick}" @contextmenu="${this.onContextMenu}"
+    @click="${this.onClick}" @contextmenu="${this.onContextmenu}"
     title="${this.getLabel()}" aria-label="${this.getLabel()}"
     aria-haspopup="${this.state.isCurrentTabSplit ? 'menu' : 'false'}"
     is-menu-open="${this.state.isContextMenuVisible}"

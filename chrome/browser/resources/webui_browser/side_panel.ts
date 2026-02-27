@@ -44,6 +44,10 @@ export class SidePanelElement extends CrLitElement {
     this.requestUpdate();
   }
 
+  protected onCloseClick_(_e: Event) {
+    this.close();
+  }
+
   async close() {
     this.showing_ = false;
     this.webView = null;

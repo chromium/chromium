@@ -267,7 +267,7 @@ export class WebuiBrowserAppElement extends CrLitElement {
         this.setReloadStopState.bind(this));
   }
 
-  protected onTabDragMouseDown_(e: MouseEvent) {
+  protected onTabDragMousedown_(e: MouseEvent) {
     if (e.target instanceof TabStripElement) {
       this.$.tabstrip.dragMouseDown(e);
       this.addEventListener('mouseup', this.onTabDragMouseUp_);

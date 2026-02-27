@@ -345,7 +345,7 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
     this.requestUpdate();
   }
 
-  protected onMenuItemHover_(e: PointerEvent) {
+  protected onPointerenter_(e: PointerEvent) {
     this.clearTimers_();
 
     const currentTarget = e.currentTarget as HTMLElement;
@@ -387,7 +387,7 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
     }, delay);
   }
 
-  protected onMenuItemLeave_() {
+  protected onPointerleave_() {
     // Clear the open timer so that submenus aren't opened after the cursor
     // stops hovering.
     this.clearOpenTimer_();
@@ -435,6 +435,10 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
           eventType, this.pointerEventCallback_, {capture: true});
     });
     this.fire(ToolbarEvent.SETTINGS_OPENED);
+  }
+
+  protected onClose_() {
+    this.close();
   }
 
   close() {

@@ -29,7 +29,7 @@ export function getHtml(this: UserEducationWhatsNewInternalsCardElement) {
       <p ?hidden="${!this.hasBeenUsed_()}">
         <b>Version used: </b>${this.formatVersionUsed_()}</p>` :
       ''}
-    <cr-button id='clear' @click='${this.clearData_}'>
+    <cr-button id='clear' @click='${this.onClearDataClick_}'>
       Clear Data
     </cr-button>
   </div>

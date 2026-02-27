@@ -24,7 +24,7 @@ export function getHtml(this: UserEducationInternalsElement) {
     <div role="navigation">
       <h2>Navigation</h2>
       <cr-menu-selector id="menu" selectable="a" attr-for-selected="href"
-          @iron-activate="${this.onSelectorActivate_}"
+          @iron-activate="${this.onSelectorIronActivate_}"
           @click="${this.onLinkClick_}"
           selected-attribute="selected">
         <a role="menuitem" href="#iph" class="cr-nav-menu-item">
@@ -74,8 +74,8 @@ export function getHtml(this: UserEducationInternalsElement) {
               ?hidden="${!this.promoFilter_(item)}"
               .promo="${item}"
               show-action
-              @promo-launch="${this.showFeaturePromo_}"
-              @clear-promo-data="${this.clearPromoData_}">
+              @promo-launch="${this.onFeaturePromoPromoLaunch_}"
+              @clear-promo-data="${this.onFeaturePromoClearPromoData_}">
           </user-education-internals-card>`)}
       </div>
       <div id="tutorials">
@@ -87,7 +87,7 @@ export function getHtml(this: UserEducationInternalsElement) {
               ?hidden="${!this.promoFilter_(item)}"
               .promo="${item}"
               show-action
-              @promo-launch="${this.startTutorial_}">
+              @promo-launch="${this.onTutorialPromoLaunch_}">
           </user-education-internals-card>`)}
       </div>
       <div id="newBadges">
@@ -98,7 +98,7 @@ export function getHtml(this: UserEducationInternalsElement) {
               id="${item.internalName}"
               ?hidden="${!this.promoFilter_(item)}"
               .promo="${item}"
-              @clear-promo-data="${this.clearNewBadgeData_}">
+              @clear-promo-data="${this.onNewBadgeClearPromoData_}">
           </user-education-internals-card>`)}
       </div>
       <div id="ntpPromos">
@@ -121,7 +121,7 @@ export function getHtml(this: UserEducationInternalsElement) {
             </p>
             <cr-button
                 id="clearNtpPromoPreferences"
-                @click="${this.clearNtpPromoPreferences_}">
+                @click="${this.onClearNtpPromoPreferencesClick_}">
               Clear All
             </cr-button>
           </div>
@@ -131,7 +131,7 @@ export function getHtml(this: UserEducationInternalsElement) {
               id="${item.internalName}"
               ?hidden="${!this.promoFilter_(item)}"
               .promo="${item}"
-              @clear-promo-data="${this.clearNtpPromoData_}">
+              @clear-promo-data="${this.onNtpPromoClearPromoData_}">
           </user-education-internals-card>`)}
       </div>
       <div id="whatsNew">
@@ -143,18 +143,16 @@ export function getHtml(this: UserEducationInternalsElement) {
               Providing a version override here will be used on the What's New
               page until reset by quitting the browser.
             </p>
-            <cr-input
-              id="whatsNewVersionOverride"
-              label="What's New Version Override (current: ${
-                  this.whatsNewVersionToRequest_})"
-              type="number"
-              min="${this.currentChromeVersion_ - 10}"
-              max="${this.currentChromeVersion_ + 10}"
-              error-message="Number must be within 10 of the current Chrome version (${
-                  this.currentChromeVersion_})"
-              .value="${this.whatsNewVersionToRequest_}">
+            <cr-input type="number" id="whatsNewVersionOverride"
+                label="What's New Version Override (current: ${
+                    this.whatsNewVersionToRequest_})"
+                min="${this.currentChromeVersion_ - 10}"
+                max="${this.currentChromeVersion_ + 10}"
+                error-message="Number must be within 10 of the current Chrome version (${
+                    this.currentChromeVersion_})"
+                .value="${this.whatsNewVersionToRequest_}">
               <cr-button slot="suffix"
-                  @click="${this.setWhatsNewVersionOverride_}">
+                  @click="${this.onWhatsNewVersionOverrideClick_}">
                 Set
               </cr-button>
             </cr-input>
@@ -167,7 +165,7 @@ export function getHtml(this: UserEducationInternalsElement) {
             </div>
             <h3>Staging Environment</h3>
             <cr-button id="launch-whats-new-staging"
-                @click="${this.launchWhatsNewStaging_}">
+                @click="${this.onLaunchWhatsNewStagingClick_}">
               Launch staging
             </cr-button>
             <div class="note">
@@ -210,7 +208,7 @@ export function getHtml(this: UserEducationInternalsElement) {
               ?hidden="${!this.whatsNewFilter_(item)}"
               .item="${item}"
               type="module"
-              @clear-whats-new-data="${this.clearWhatsNewData_}">
+              @clear-whats-new-data="${this.onClearWhatsNewData_}">
           </user-education-whats-new-internals-card>`)}
         ${this.whatsNewEditions_.length > 0 ? html`
           <h3 class="whats-new-section">Editions</h3>` :
@@ -221,7 +219,7 @@ export function getHtml(this: UserEducationInternalsElement) {
               ?hidden="${!this.whatsNewFilter_(item)}"
               .item="${item}"
               type="edition"
-              @clear-whats-new-data="${this.clearWhatsNewData_}">
+              @clear-whats-new-data="${this.onClearWhatsNewData_}">
           </user-education-whats-new-internals-card>`)}
       </div>
       <div id="advanced">
@@ -270,14 +268,16 @@ export function getHtml(this: UserEducationInternalsElement) {
               heavyweight promo, and/or profile creation times. The information
               above will be updated to show the current state of these values.
             </p>
-            <cr-button id="forceNewSession" @click="${this.forceNewSession_}">
+            <cr-button id="forceNewSession"
+                @click="${this.onForceNewSessionClick_}">
               Force New Session
             </cr-button>
             <cr-button id="removeGracePeriods"
-                       @click="${this.removeGracePeriods_}">
+                @click="${this.onRemoveGracePeriodsClick_}">
               Remove Grace Period
             </cr-button>
-            <cr-button id="clearSession" @click="${this.clearSessionData_}">
+            <cr-button id="clearSession"
+                @click="${this.onClearSessionDataClick_}">
               Clear Session Data
             </cr-button>
           </div>

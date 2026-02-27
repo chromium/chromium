@@ -152,7 +152,7 @@ export class SupportToolElement extends SupportToolElementBase {
     }
   }
 
-  protected onErrorMessageToastCloseClicked_() {
+  protected onErrorMessageToastCloseClick_() {
     this.$.errorMessageToast.hide();
   }
 

@@ -25,8 +25,8 @@ export function getHtml(this: ReadingListAppElement) {
         .minViewportHeight="${this.minViewportHeight_}"
         .scrollTarget="${this.scrollTarget_}"
         ?hidden="${!this.shouldShowList_()}"
-        @keydown="${this.onItemKeyDown_}"
-        @viewport-filled="${this.updateFocusedItem_}"
+        @keydown="${this.onItemKeydown_}"
+        @viewport-filled="${this.onViewportFilled_}"
         .restoreFocusElement="${this.focusedItem_}"
         .template="${
       (item: ReadLaterEntry, index: number) => !item.url ? html`

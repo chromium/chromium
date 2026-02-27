@@ -88,7 +88,7 @@ export class HistoryClustersAppElement extends CrLitElement {
   // Event Handlers
   //============================================================================
 
-  protected onContextMenu_(event: MouseEvent) {
+  protected onContextmenu_(event: MouseEvent) {
     BrowserProxyImpl.getInstance().handler.showContextMenuForSearchbox(
         this.query, {x: event.clientX, y: event.clientY});
   }
@@ -122,6 +122,10 @@ export class HistoryClustersAppElement extends CrLitElement {
         'sp-scroller sp-scroller-bottom-of-page';
   }
 
+  protected onHistoryEmbeddingsDisclaimerLinkAuxclick_(e: Event) {
+    this.onHistoryEmbeddingsDisclaimerLinkClick_(e);
+  }
+
   protected onHistoryEmbeddingsDisclaimerLinkClick_(e: Event) {
     e.preventDefault();
     this.historyEmbeddingsDisclaimerLinkClicked_ = true;
@@ -138,6 +142,11 @@ export class HistoryClustersAppElement extends CrLitElement {
     this.nonEmbeddingsResultClicked_ = false;
   }
 
+  protected onHistoryEmbeddingsAnswerClick_(
+      event: HistoryEmbeddingsResultClickEvent) {
+    this.onHistoryEmbeddingsResultClick_(event);
+  }
+
   protected onHistoryEmbeddingsResultClick_(
       event: HistoryEmbeddingsResultClickEvent) {
     BrowserProxyImpl.getInstance().handler.openHistoryUrl(
@@ -148,6 +157,11 @@ export class HistoryClustersAppElement extends CrLitElement {
           metaKey: event.detail.metaKey,
           shiftKey: event.detail.shiftKey,
         });
+  }
+
+  protected onAnswerContextMenu_(
+      event: HistoryEmbeddingsResultContextMenuEvent) {
+    this.onHistoryEmbeddingsResultContextMenu_(event);
   }
 
   protected onHistoryEmbeddingsResultContextMenu_(
@@ -165,7 +179,7 @@ export class HistoryClustersAppElement extends CrLitElement {
     this.hasHistoryEmbeddingsResults_ = !e.detail.value;
   }
 
-  protected onHistoryEmbeddingsItemRemoveClick_(
+  protected onHistoryEmbeddingsRemoveItemClick_(
       e: HistoryEmbeddingsMoreActionsClickEvent) {
     e.preventDefault();
     const historyEmbeddingsItem = e.detail;
@@ -183,11 +197,11 @@ export class HistoryClustersAppElement extends CrLitElement {
     }
   }
 
-  protected onClusterLinkClick_() {
+  protected onClusterRecordHistoryLinkClick_() {
     this.nonEmbeddingsResultClicked_ = true;
   }
 
-  protected onSearchCleared_() {
+  protected onSearchTermCleared_() {
     if (!this.enableHistoryEmbeddings_) {
       return;
     }
@@ -195,7 +209,7 @@ export class HistoryClustersAppElement extends CrLitElement {
     this.numCharsTypedInSearch_ = 0;
   }
 
-  protected onSearchNativeInput_(
+  protected onSearchTermNativeInput_(
       e: CustomEvent<{e: InputEvent, inputValue: string}>) {
     if (!this.enableHistoryEmbeddings_) {
       return;

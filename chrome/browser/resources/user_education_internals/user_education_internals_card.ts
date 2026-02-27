@@ -61,12 +61,12 @@ export class UserEducationInternalsCardElement extends CrLitElement {
   protected accessor instructionsExpanded_: boolean = false;
   protected accessor dataExpanded_: boolean = false;
 
-  protected launchPromo_() {
+  protected onLaunchPromoClick_() {
     assert(this.promo);
     this.fire(PROMO_LAUNCH_EVENT, this.promo.internalName);
   }
 
-  protected clearData_() {
+  protected onClearDataClick_() {
     assert(this.promo);
     if (confirm(
             'Clear all data associated with this User Education journey?\n' +
@@ -116,7 +116,7 @@ export class UserEducationInternalsCardElement extends CrLitElement {
     return this.promo.data.length;
   }
 
-  protected scrollToFollowedBy_() {
+  protected onScrollToFollowedByClick_() {
     assert(this.promo);
     const parent = this.parentElement;
     if (parent) {

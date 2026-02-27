@@ -97,7 +97,7 @@ export class SplitTabsButtonElement extends CrLitElement {
     }
   }
 
-  protected onContextMenu(e: MouseEvent) {
+  protected onContextmenu(e: MouseEvent) {
     e.preventDefault();
     this.browserProxy_.handler.showContextMenu(
         ContextMenuType.kSplitTabsContext, this.menuPosition(),

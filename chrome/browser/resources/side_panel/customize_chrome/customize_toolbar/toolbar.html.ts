@@ -9,7 +9,7 @@ import type {ToolbarElement} from './toolbar.js';
 export function getHtml(this: ToolbarElement) {
   return html`<!--_html_template_start_-->
 <div class="sp-card">
-  <sp-heading id="heading" @back-button-click="${this.onBackClick_}"
+  <sp-heading id="heading" @back-button-click="${this.onBackButtonClick_}"
       back-button-aria-label="$i18n{backButton}"
       back-button-title="$i18n{backButton}">
     <h2 slot="heading">$i18n{toolbarHeader}</h2>
@@ -21,7 +21,7 @@ export function getHtml(this: ToolbarElement) {
   </div>
   <div class="intro-text">$i18n{chooseToolbarIconsLabel}</div>
   <cr-button id="resetToDefaultButton" class="floating-button"
-      @click="${this.onResetToDefaultClicked_}"
+      @click="${this.onResetToDefaultClick_}"
       ?disabled="${this.resetToDefaultDisabled_}">
     <div id="resetToDefaultIcon" class="cr-icon" slot="prefix-icon"></div>
     $i18n{resetToDefaultButtonLabel}

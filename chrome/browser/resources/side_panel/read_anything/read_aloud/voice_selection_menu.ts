@@ -301,7 +301,7 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase
     );
   }
 
-  protected openLanguageMenu_() {
+  protected onLanguageMenuClick_() {
     this.showLanguageMenuDialog_ = true;
     this.fire(ToolbarEvent.LANGUAGE_MENU_OPEN);
   }
@@ -342,7 +342,7 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase
         Number.parseInt(currentElement.dataset['voiceIndex']!) === 0;
   }
 
-  protected onVoiceMenuKeyDown_(e: KeyboardEvent) {
+  protected onVoiceMenuKeydown_(e: KeyboardEvent) {
     const currentElement = e.target as HTMLElement;
     assert(currentElement, 'no key target');
 

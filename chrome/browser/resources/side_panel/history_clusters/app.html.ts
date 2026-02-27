@@ -13,10 +13,10 @@ export function getHtml(this: HistoryClustersAppElement) {
     @search-changed="${this.onSearchChanged_}"
     label="$i18n{historyClustersSearchPrompt}"
     clear-label="$i18n{clearSearch}"
-    @contextmenu="${this.onContextMenu_}"
+    @contextmenu="${this.onContextmenu_}"
     icon-override="${this.searchIcon_}"
-    @search-term-native-input="${this.onSearchNativeInput_}"
-    @search-term-cleared="${this.onSearchCleared_}">
+    @search-term-native-input="${this.onSearchTermNativeInput_}"
+    @search-term-cleared="${this.onSearchTermCleared_}">
 </cr-toolbar-search-field>
 ${this.enableHistoryEmbeddings_ ? html`
 <div id="historyEmbeddingsDisclaimer">
@@ -24,7 +24,7 @@ ${this.enableHistoryEmbeddings_ ? html`
   <a id="historyEmbeddingsDisclaimerLink" href="#"
       aria-describedby="historyEmbeddingsDisclaimer"
       @click="${this.onHistoryEmbeddingsDisclaimerLinkClick_}"
-      @auxclick="${this.onHistoryEmbeddingsDisclaimerLinkClick_}">
+      @auxclick="${this.onHistoryEmbeddingsDisclaimerLinkAuxclick_}">
     $i18n{learnMore}
   </a>
 </div>
@@ -37,19 +37,19 @@ ${this.enableHistoryEmbeddings_ ? html`
       ?force-suppress-logging="${this.historyEmbeddingsDisclaimerLinkClicked_}"
       ?other-history-result-clicked="${this.nonEmbeddingsResultClicked_}"
       .numCharsForQuery="${this.numCharsTypedInSearch_}"
-      @answer-click="${this.onHistoryEmbeddingsResultClick_}"
-      @answer-context-menu="${this.onHistoryEmbeddingsResultContextMenu_}"
+      @answer-click="${this.onHistoryEmbeddingsAnswerClick_}"
+      @answer-context-menu="${this.onAnswerContextMenu_}"
       @is-empty-changed="${this.onHistoryEmbeddingsIsEmptyChanged_}"
       @result-click="${this.onHistoryEmbeddingsResultClick_}"
       @result-context-menu="${this.onHistoryEmbeddingsResultContextMenu_}"
-      @remove-item-click="${this.onHistoryEmbeddingsItemRemoveClick_}">
+      @remove-item-click="${this.onHistoryEmbeddingsRemoveItemClick_}">
   </cr-history_embeddings>
   ` : ''}
   <history-clusters id="historyClusters"
       query="${this.query}"
       path="journeys"
       @query-changed-by-user="${this.onQueryChangedByUser_}"
-      @record-history-link-click="${this.onClusterLinkClick_}"
+      @record-history-link-click="${this.onClusterRecordHistoryLinkClick_}"
       class="${this.getClustersComponentClass_()}"
       .scrollTarget="${this.scrollTarget_}">
   </history-clusters>

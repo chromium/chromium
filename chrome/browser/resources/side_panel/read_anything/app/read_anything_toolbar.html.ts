@@ -12,7 +12,7 @@ export function getHtml(this: ReadAnythingToolbarElement) {
 <div id="toolbarContainer" class="${this.getToolbarContainerClass_()}"
     role="toolbar" aria-label="$i18n{readingModeReadAloudToolbarLabel}"
     tabindex="${this.isImmersiveEnabled_ ? 0 : -1}"
-    @keydown="${this.onToolbarKeyDown_}"
+    @keydown="${this.onToolbarKeydown_}"
     @reset-toolbar="${this.onResetToolbar_}"
     @toolbar-overflow="${this.onToolbarOverflow_}">
     <span id="audio-controls" class="audio-background-${this.getAudioState_()}">
@@ -162,7 +162,7 @@ export function getHtml(this: ReadAnythingToolbarElement) {
 
     <cr-lazy-render-lit id="moreOptionsMenu" .template='${() => html`
     <cr-action-menu id="more-options-menu-dialog"
-        @keydown="${this.onToolbarKeyDown_}"
+        @keydown="${this.onToolbarKeydown_}"
         role-description="$i18n{menu}">
       ${this.moreOptionsButtons_.map((item, index) => html`
       <cr-icon-button id="${item.id}" class="more-options-icon"
@@ -171,7 +171,7 @@ export function getHtml(this: ReadAnythingToolbarElement) {
           title="${item.ariaLabel}"
           aria-haspopup="menu"
           iron-icon="${item.icon}"
-          @click="${this.onTextStyleMenuButtonClickFromOverflow_}">
+          @click="${this.onTextStyleMenuButtonFromOverflowClick_}">
       </cr-icon-button>
       `)}
     </cr-action-menu>
@@ -179,7 +179,7 @@ export function getHtml(this: ReadAnythingToolbarElement) {
     </cr-lazy-render-lit>
   `}
   <cr-lazy-render-lit id="fontSizeMenu" .template='${() => html`
-  <cr-action-menu @keydown="${this.onFontSizeMenuKeyDown_}"
+  <cr-action-menu @keydown="${this.onFontSizeMenuKeydown_}"
       accessibility-label="$i18n{fontSizeTitle}"
       role-description="$i18n{menu}">
     <cr-icon-button class="font-size" role="menuitem"

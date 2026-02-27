@@ -22,7 +22,7 @@ export function getHtml(this: UrlGeneratorElement) {
 
 <cr-checkbox class="select-all-checkbox" id="selectAllCheckbox"
     ?checked="${this.selectAll_}"
-    @checked-changed="${this.onSelectAllCheckboxChanged_}" tabindex="0">
+    @checked-changed="${this.onSelectAllCheckboxCheckedChanged_}" tabindex="0">
   ${this.i18n('selectAll')}
 </cr-checkbox>
 
@@ -59,7 +59,7 @@ export function getHtml(this: UrlGeneratorElement) {
 <cr-toast id="errorMessageToast" duration="0" tabindex="0"
     aria-labelledby="error-message">
   <span id="error-message">${this.errorMessage_}</span>
-  <cr-button @click="${this.onErrorMessageToastCloseClicked_}">
+  <cr-button @click="${this.onErrorMessageToastCloseClick_}">
     ${this.i18n('dismissButtonText')}
   </cr-button>
 </cr-toast>

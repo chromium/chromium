@@ -221,7 +221,7 @@ export class ShortcutsElement extends CrLitElement {
     this.setShowEnterpriseShortcuts_(!this.showEnterpriseShortcuts_);
   }
 
-  protected onRadioSelectionChanged_(e: CustomEvent<{value: string}>) {
+  protected onRadioSelectionSelectedChanged_(e: CustomEvent<{value: string}>) {
     if (e.detail.value === this.radioSelection_) {
       return;
     }

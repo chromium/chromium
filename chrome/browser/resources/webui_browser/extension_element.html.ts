@@ -10,7 +10,7 @@ export function getHtml(this: ExtensionElement) {
   return html`
     <cr-button type="button"
       @click="${this.onClick}"
-      @contextmenu="${this.onContextMenu}">
+      @contextmenu="${this.onContextmenu_}">
       <div id="icon"></div>
     </cr-button>
   `;

@@ -16,7 +16,7 @@ export function getHtml(this: PiiSelectionElement) {
 </div>
 <div id="radio-group">
   <cr-radio-group .selected="${this.selectedRadioButton_}"
-      @selected-changed="${this.onSelectedRadioButtonChanged_}">
+      @selected-changed="${this.onSelectedRadioButtonSelectedChanged_}">
     <cr-radio-button name="${PiiRadioButtons.INCLUDE_ALL}" tabindex="0">
       ${this.i18n('includeAllPiiRadioButton')}
     </cr-radio-button>

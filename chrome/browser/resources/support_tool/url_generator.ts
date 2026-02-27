@@ -131,11 +131,12 @@ export class UrlGeneratorElement extends UrlGeneratorElementBase {
     this.showGenerationResult(result, this.i18n('tokenCopied'));
   }
 
-  protected onErrorMessageToastCloseClicked_() {
+  protected onErrorMessageToastCloseClick_() {
     this.$.errorMessageToast.hide();
   }
 
-  protected onSelectAllCheckboxChanged_(e: CustomEvent<{value: boolean}>) {
+  protected onSelectAllCheckboxCheckedChanged_(
+      e: CustomEvent<{value: boolean}>) {
     this.selectAll_ = e.detail.value;
   }
 

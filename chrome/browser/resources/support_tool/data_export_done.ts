@@ -37,7 +37,7 @@ export class DataExportDoneElement extends DataExportDoneElementBase {
   protected accessor path_: string = '';
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
 
-  protected onFilePathClicked_() {
+  protected onFilePathClick_() {
     this.browserProxy_.showExportedDataInFolder();
   }
 

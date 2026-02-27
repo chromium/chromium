@@ -10,7 +10,7 @@ export function getHtml(this: WallpaperSearchElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
 <div class="sp-card">
-  <sp-heading id="heading" @back-button-click="${this.onBackClick_}"
+  <sp-heading id="heading" @back-button-click="${this.onBackButtonClick_}"
       back-button-aria-label="$i18n{backButton}"
       back-button-title="$i18n{backButton}">
     <h2 slot="heading">$i18n{wallpaperSearchPageHeader}</h2>
@@ -32,7 +32,7 @@ export function getHtml(this: WallpaperSearchElement) {
           default-option-label="$i18n{wallpaperSearchSubjectDefaultOptionLabel}"
           .items="${this.comboboxItems_.a}"
           .value="${this.selectedDescriptorA_}"
-          @value-changed="${this.onSubjectDescriptorChange_}">
+          @value-changed="${this.onSubjectDescriptorValueChanged_}">
       </customize-chrome-combobox>
       <div id="optionalDetails">
         <div id="optionalDetailsLabel">$i18n{optionalDetailsLabel}</div>
@@ -41,14 +41,14 @@ export function getHtml(this: WallpaperSearchElement) {
             default-option-label="$i18n{wallpaperSearchStyleDefaultOptionLabel}"
             .items="${this.comboboxItems_.b}"
             .value="${this.selectedDescriptorB_}"
-            @value-changed="${this.onStyleDescriptorChange_}">
+            @value-changed="${this.onStyleDescriptorValueChanged_}">
         </customize-chrome-combobox>
         <customize-chrome-combobox id="descriptorComboboxC"
             label="$i18n{wallpaperSearchMoodLabel}"
             default-option-label="$i18n{wallpaperSearchMoodDefaultOptionLabel}"
             .items="${this.comboboxItems_.c}"
             .value="${this.selectedDescriptorC_}" right-align-dropbox
-            @value-changed="${this.onMoodDescriptorChange_}">
+            @value-changed="${this.onMoodDescriptorValueChanged_}">
         </customize-chrome-combobox>
         <cr-grid columns="6" id="descriptorMenuD" role="radiogroup">
           ${this.descriptorD_.map((item, index) => html`
@@ -86,7 +86,7 @@ export function getHtml(this: WallpaperSearchElement) {
             ?hidden="${!this.shouldShowDeleteSelectedHueButton_()}"
             title="$i18n{hueSliderDeleteTitle}"
             aria-label="$i18n{hueSliderDeleteA11yLabel}"
-            @click="${this.onSelectedHueDelete_}">
+            @click="${this.onSelectedHueDeleteClick_}">
         </cr-icon-button>
       </cr-theme-hue-slider-dialog>
       <div id="btnContainer">

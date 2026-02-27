@@ -540,7 +540,7 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
     return option.key === this.selectedDescriptorB_;
   }
 
-  protected onBackClick_() {
+  protected onBackButtonClick_() {
     this.dispatchEvent(new Event('back-click'));
   }
 
@@ -588,7 +588,7 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
         CustomizeChromeAction.WALLPAPER_SEARCH_COLOR_DESCRIPTOR_UPDATED);
   }
 
-  protected onMoodDescriptorChange_(e: CustomEvent<{value: string}>) {
+  protected onMoodDescriptorValueChanged_(e: CustomEvent<{value: string}>) {
     if (this.selectedDescriptorC_ !== e.detail.value) {
       recordCustomizeChromeAction(
           CustomizeChromeAction.WALLPAPER_SEARCH_MOOD_DESCRIPTOR_UPDATED);
@@ -596,7 +596,7 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
     this.selectedDescriptorC_ = e.detail.value;
   }
 
-  protected onStyleDescriptorChange_(e: CustomEvent<{value: string}>) {
+  protected onStyleDescriptorValueChanged_(e: CustomEvent<{value: string}>) {
     if (this.selectedDescriptorB_ !== e.detail.value) {
       recordCustomizeChromeAction(
           CustomizeChromeAction.WALLPAPER_SEARCH_STYLE_DESCRIPTOR_UPDATED);
@@ -604,7 +604,7 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
     this.selectedDescriptorB_ = e.detail.value;
   }
 
-  protected onSubjectDescriptorChange_(e: CustomEvent<{value: string}>) {
+  protected onSubjectDescriptorValueChanged_(e: CustomEvent<{value: string}>) {
     if (this.selectedDescriptorA_ !== e.detail.value) {
       recordCustomizeChromeAction(
           CustomizeChromeAction.WALLPAPER_SEARCH_SUBJECT_DESCRIPTOR_UPDATED);
@@ -685,7 +685,7 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
         CustomizeChromeAction.WALLPAPER_SEARCH_COLOR_DESCRIPTOR_UPDATED);
   }
 
-  protected onSelectedHueDelete_() {
+  protected onSelectedHueDeleteClick_() {
     this.selectedHue_ = null;
     this.selectedDescriptorD_ = null;
     this.$.hueSlider.hide();

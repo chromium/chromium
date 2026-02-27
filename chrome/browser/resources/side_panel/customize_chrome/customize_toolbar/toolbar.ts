@@ -88,11 +88,11 @@ export class ToolbarElement extends ToolbarElementBase {
     this.$.heading.getBackButton().focus();
   }
 
-  protected onBackClick_() {
+  protected onBackButtonClick_() {
     this.fire('back-click');
   }
 
-  protected onResetToDefaultClicked_() {
+  protected onResetToDefaultClick_() {
     this.apiProxy_.handler.resetToDefault();
     const announcer = getAnnouncerInstance();
     announcer.announce(this.i18n('resetToDefaultButtonAnnouncement'));

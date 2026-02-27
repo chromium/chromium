@@ -11,7 +11,7 @@ export function getHtml(this: SettingsMenuElement) {
   // clang-format off
   return html`
 <cr-lazy-render-lit id="lazyMenu" .template='${() => html`
-  <cr-action-menu id="settings-menu-dialog" @close="${this.close}" non-modal>
+  <cr-action-menu id="settings-menu-dialog" @close="${this.onClose_}" non-modal>
     ${this.options_.map((item, index) => html`
       ${item.showSeparator ? html`<hr class="separator" aria-hidden="true">` : ``}
       <button class="menu-row dropdown-item"
@@ -20,8 +20,8 @@ export function getHtml(this: SettingsMenuElement) {
           data-index="${index}"
           title="${item.ariaLabel || item.title}"
           aria-label="${item.ariaLabel || item.title}"
-          @pointerenter="${this.onMenuItemHover_}"
-          @pointerleave="${this.onMenuItemLeave_}"
+          @pointerenter="${this.onPointerenter_}"
+          @pointerleave="${this.onPointerleave_}"
           @click="${this.onMenuItemClick_}">
 
         <div class="start-container">

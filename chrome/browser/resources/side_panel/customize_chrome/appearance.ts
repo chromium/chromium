@@ -281,7 +281,7 @@ export class AppearanceElement extends AppearanceElementBase {
         !!this.managedByName_;
   }
 
-  protected onEditThemeClicked_() {
+  protected onEditThemeClick_() {
     recordCustomizeChromeAction(CustomizeChromeAction.EDIT_THEME_CLICKED);
     if (this.handleClickForManagedThemes_()) {
       return;
@@ -289,7 +289,7 @@ export class AppearanceElement extends AppearanceElementBase {
     this.dispatchEvent(new Event('edit-theme-click'));
   }
 
-  protected onWallpaperSearchClicked_() {
+  protected onWallpaperSearchClick_() {
     recordCustomizeChromeAction(
         CustomizeChromeAction.WALLPAPER_SEARCH_APPEARANCE_BUTTON_CLICKED);
     if (this.handleClickForManagedThemes_()) {
@@ -316,7 +316,7 @@ export class AppearanceElement extends AppearanceElementBase {
     }
   }
 
-  protected onSetClassicChromeClicked_() {
+  protected onSetClassicChromeClick_() {
     if (this.handleClickForManagedThemes_()) {
       return;
     }
@@ -330,11 +330,11 @@ export class AppearanceElement extends AppearanceElementBase {
     this.apiProxy_.handler.setFollowDeviceTheme(e.detail);
   }
 
-  protected onManagedDialogClosed_() {
+  protected onManagedDialogClose_() {
     this.showManagedDialog_ = false;
   }
 
-  protected onNewTabPageManageByButtonClicked_() {
+  protected onNewTabPageManageByButtonClick_() {
     this.apiProxy_.handler.openNtpManagedByPage();
   }
 

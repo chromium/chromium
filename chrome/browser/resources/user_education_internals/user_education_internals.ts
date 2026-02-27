@@ -179,7 +179,7 @@ export class UserEducationInternalsElement extends
     this.filter = e.detail.toLowerCase();
   }
 
-  protected startTutorial_(e: CustomEvent) {
+  protected onTutorialPromoLaunch_(e: CustomEvent) {
     const id = e.detail;
     this.featurePromoErrorMessage_ = '';
 
@@ -191,7 +191,7 @@ export class UserEducationInternalsElement extends
     });
   }
 
-  protected showFeaturePromo_(e: CustomEvent) {
+  protected onFeaturePromoPromoLaunch_(e: CustomEvent) {
     const id = e.detail;
     this.featurePromoErrorMessage_ = '';
 
@@ -209,7 +209,7 @@ export class UserEducationInternalsElement extends
     });
   }
 
-  protected clearPromoData_(e: CustomEvent) {
+  protected onFeaturePromoClearPromoData_(e: CustomEvent) {
     const id = e.detail;
     this.featurePromoErrorMessage_ = '';
 
@@ -226,7 +226,7 @@ export class UserEducationInternalsElement extends
     });
   }
 
-  protected clearSessionData_() {
+  protected onClearSessionDataClick_() {
     if (!confirm(
             'This will reset the browser to a "fresh profile" state,' +
             ' which may trigger multiple grace periods. Proceed?')) {
@@ -245,7 +245,7 @@ export class UserEducationInternalsElement extends
     });
   }
 
-  protected forceNewSession_() {
+  protected onForceNewSessionClick_() {
     this.handler_.forceNewSession().then(({errorMessage}) => {
       this.featurePromoErrorMessage_ = errorMessage;
       if (errorMessage !== '') {
@@ -259,7 +259,7 @@ export class UserEducationInternalsElement extends
     });
   }
 
-  protected removeGracePeriods_() {
+  protected onRemoveGracePeriodsClick_() {
     this.handler_.removeGracePeriods().then(({errorMessage}) => {
       this.featurePromoErrorMessage_ = errorMessage;
       if (errorMessage !== '') {
@@ -273,7 +273,7 @@ export class UserEducationInternalsElement extends
     });
   }
 
-  protected clearNewBadgeData_(e: CustomEvent) {
+  protected onNewBadgeClearPromoData_(e: CustomEvent) {
     const id = e.detail;
     this.featurePromoErrorMessage_ = '';
 
@@ -290,7 +290,7 @@ export class UserEducationInternalsElement extends
     });
   }
 
-  protected clearWhatsNewData_() {
+  protected onClearWhatsNewData_() {
     this.featurePromoErrorMessage_ = '';
 
     this.handler_.clearWhatsNewData().then(({errorMessage}) => {
@@ -310,7 +310,7 @@ export class UserEducationInternalsElement extends
     });
   }
 
-  protected clearNtpPromoData_(e: CustomEvent) {
+  protected onNtpPromoClearPromoData_(e: CustomEvent) {
     const id = e.detail;
     this.featurePromoErrorMessage_ = '';
     this.handler_.clearNtpPromoData(id).then(({errorMessage}) => {
@@ -326,7 +326,7 @@ export class UserEducationInternalsElement extends
     });
   }
 
-  protected clearNtpPromoPreferences_() {
+  protected onClearNtpPromoPreferencesClick_() {
     this.handler_.clearNtpPromoPreferences().then(({errorMessage}) => {
       this.featurePromoErrorMessage_ = errorMessage;
       if (errorMessage !== '') {
@@ -364,7 +364,7 @@ export class UserEducationInternalsElement extends
     event.preventDefault();
   }
 
-  protected onSelectorActivate_(event: CustomEvent<{selected: string}>) {
+  protected onSelectorIronActivate_(event: CustomEvent<{selected: string}>) {
     const url = event.detail.selected;
     this.$.menu.selected = url;
     const idx = url.lastIndexOf('#');
@@ -385,11 +385,11 @@ export class UserEducationInternalsElement extends
     this.ntpPromoPreferencesExpanded_ = e.detail.value;
   }
 
-  protected launchWhatsNewStaging_() {
+  protected onLaunchWhatsNewStagingClick_() {
     this.handler_.launchWhatsNewStaging();
   }
 
-  protected setWhatsNewVersionOverride_() {
+  protected onWhatsNewVersionOverrideClick_() {
     if (!this.$.whatsNewVersionOverride.validate()) {
       return;
     }

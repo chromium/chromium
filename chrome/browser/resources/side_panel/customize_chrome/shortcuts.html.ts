@@ -51,7 +51,8 @@ export function getHtml(this: ShortcutsElement) {
       ''}"
         ?disabled="${this.getRadioSelectionDisabled_()}"
         .selected="${this.radioSelection_}"
-         @selected-changed="${this.onRadioSelectionChanged_}" nested-selectable>
+         @selected-changed="${this.onRadioSelectionSelectedChanged_}"
+         nested-selectable>
       ${
       this.getRadioSelectionShortcutConfigs_()
           .map(item => html`

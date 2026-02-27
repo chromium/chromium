@@ -52,7 +52,7 @@ export class UserEducationWhatsNewInternalsCardElement extends CrLitElement {
   accessor type: 'module'|'edition' = 'module';
   protected accessor dataExpanded_: boolean = false;
 
-  protected clearData_() {
+  protected onClearDataClick_() {
     if (confirm(
             'Clear all What\'s New data?\n' +
             'This affects module order and edition use data.')) {
