@@ -15,19 +15,24 @@ function sanitizeLinks(element) {
 
     if (href) {
       let keepLink = false;
-      // Use a try-catch block to handle malformed URLs gracefully.
-      try {
-        if (href) {
+      if (href.startsWith('#')) {
+        if (href.length > 1) {
+          // Preserve non-empty #in-page links, don't open to new tab.
+          keepLink = true;
+        }
+      } else {
+        // Use a try-catch block to handle malformed URLs gracefully.
+        try {
           const url = new URL(href, window.location.href);
-          // In particular, reject javascript: and #in-page links.
+          // In particular, reject javascript:.
           if (url.protocol === 'http:' || url.protocol === 'https:') {
             keepLink = true;
             // Open to new tab.
             linkElement.target = '_blank';
           }
+        } catch (error) {
+          // URL is malformed.
         }
-      } catch (error) {
-        // URL is malformed.
       }
 
       if (!keepLink) {
