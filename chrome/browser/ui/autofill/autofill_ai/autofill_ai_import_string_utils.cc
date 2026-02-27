@@ -6,7 +6,9 @@
 
 #include <string>
 
+#include "base/feature_list.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -78,7 +80,10 @@ std::u16string GetPromptTitle(EntityTypeName type_name, bool is_save_prompt) {
             IDS_AUTOFILL_AI_SAVE_KNOWN_TRAVELER_NUMBER_ENTITY_DIALOG_TITLE);
       case EntityTypeName::kNationalIdCard:
         return l10n_util::GetStringUTF16(
-            IDS_AUTOFILL_AI_SAVE_NATIONAL_ID_CARD_ENTITY_DIALOG_TITLE);
+            base::FeatureList::IsEnabled(
+                features::kAutofillAiWalletPrivatePasses)
+                ? IDS_AUTOFILL_AI_SAVE_ID_CARD_ENTITY_DIALOG_TITLE
+                : IDS_AUTOFILL_AI_SAVE_NATIONAL_ID_CARD_ENTITY_DIALOG_TITLE);
       case EntityTypeName::kPassport:
         return l10n_util::GetStringUTF16(
             IDS_AUTOFILL_AI_SAVE_PASSPORT_ENTITY_DIALOG_TITLE);
@@ -103,7 +108,10 @@ std::u16string GetPromptTitle(EntityTypeName type_name, bool is_save_prompt) {
             IDS_AUTOFILL_AI_UPDATE_KNOWN_TRAVELER_NUMBER_ENTITY_DIALOG_TITLE);
       case EntityTypeName::kNationalIdCard:
         return l10n_util::GetStringUTF16(
-            IDS_AUTOFILL_AI_UPDATE_NATIONAL_ID_CARD_ENTITY_DIALOG_TITLE);
+            base::FeatureList::IsEnabled(
+                features::kAutofillAiWalletPrivatePasses)
+                ? IDS_AUTOFILL_AI_UPDATE_ID_CARD_ENTITY_DIALOG_TITLE
+                : IDS_AUTOFILL_AI_UPDATE_NATIONAL_ID_CARD_ENTITY_DIALOG_TITLE);
       case EntityTypeName::kPassport:
         return l10n_util::GetStringUTF16(
             IDS_AUTOFILL_AI_UPDATE_PASSPORT_ENTITY_DIALOG_TITLE);
