@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_TABS_VERTICAL_VERTICAL_TAB_STRIP_TOP_CONTAINER_H_
 
 #include "ui/views/layout/delegating_layout_manager.h"
+#include "ui/views/layout/layout_types.h"
 #include "ui/views/view.h"
 
 class TabStripComboButton;
@@ -85,6 +86,10 @@ class VerticalTabStripTopContainer : public views::View,
   // rendered inside of it becaused that area is reserved for outside UI
   // elements.
   int caption_button_width_ = 0;
+
+  // This is updated during layout calculation and then applied during layout.
+  mutable views::LayoutOrientation combo_button_orientation_ =
+      views::LayoutOrientation::kHorizontal;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_VERTICAL_VERTICAL_TAB_STRIP_TOP_CONTAINER_H_
