@@ -118,6 +118,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.ref.WeakReference;
 import java.nio.ByteBuffer;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -128,6 +130,10 @@ import java.util.Objects;
 class TabImpl implements Tab {
     /** Used for logging. */
     private static final String TAG = "Tab";
+
+    // Map from native tab pointer to TabImpl to allow scaling of unlimited tab objects.
+    // ScopedGlobalRef tables are finite.
+    private static final Map<Long, TabImpl> sTabMap = new HashMap<>();
 
     private static final String BACKGROUND_COLOR_CHANGE_PRE_OPTIMIZATION_HISTOGRAM =
             "Android.Tab.BackgroundColorChange.PreOptimization";
@@ -2056,6 +2062,8 @@ class TabImpl implements Tab {
     @CalledByNative
     private void clearNativePtr() {
         assert mNativeTabAndroid != 0;
+        var oldValue = sTabMap.remove(mNativeTabAndroid);
+        assert oldValue == this;
         mNativeTabAndroid = 0;
     }
 
@@ -2063,12 +2071,27 @@ class TabImpl implements Tab {
     private void setNativePtr(long nativePtr) {
         assert nativePtr != 0;
         assert mNativeTabAndroid == 0;
+        var oldValue = sTabMap.put(nativePtr, this);
+        assert oldValue == null;
         mNativeTabAndroid = nativePtr;
     }
 
     @CalledByNative
     private long getLastShownTimestamp() {
         return mTimestampMillis;
+    }
+
+    /**
+     * Returns the Java object associated with the given native pointer.
+     *
+     * <p>Ideally this should not be nullable; however, some native tests create a {@link
+     * TabAndroid} without a java counterpart.
+     *
+     * @param nativePtr The native pointer representing the native side of a {@link TabImpl} object.
+     */
+    @CalledByNative
+    private static @Nullable TabImpl getJavaObject(long nativePtr) {
+        return sTabMap.get(nativePtr);
     }
 
     @CalledByNative

@@ -13,7 +13,6 @@
 #include <string>
 #include <vector>
 
-#include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
@@ -287,12 +286,13 @@ class TabAndroid : public tabs::TabInterface,
  private:
   // This constructor bypassing JVM setup is for CreateForTesting only.
   TabAndroid(Profile* profile, int tab_id);
-  JavaObjectWeakGlobalRef weak_java_tab_;
 
   void UpdateProperties();
   void SetIsPinned(bool pinned);
   void SetIsDragging(bool dragging);
   void SetTabGroupId(std::optional<tab_groups::TabGroupId> tab_group_id);
+
+  base::android::ScopedJavaLocalRef<jobject> GetJavaObject(JNIEnv* env) const;
 
   int tab_id_;
 
