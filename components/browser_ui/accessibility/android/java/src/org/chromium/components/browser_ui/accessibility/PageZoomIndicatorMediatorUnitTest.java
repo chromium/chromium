@@ -22,7 +22,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.content_public.browser.HostZoomMap;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/** Unit tests for {@link PageZoomBarMediator}. */
+/** Unit tests for {@link PageZoomIndicatorMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class PageZoomIndicatorMediatorUnitTest {
 

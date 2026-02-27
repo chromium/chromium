@@ -33,7 +33,7 @@ import org.chromium.components.browser_ui.widget.test.R;
 import java.util.Arrays;
 import java.util.List;
 
-/** Tests for {@link RadioButtonLayout}. */
+/** Tests for {@link RadioButtonWithDescriptionLayout}. */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class RadioButtonWithDescriptionLayoutTest {

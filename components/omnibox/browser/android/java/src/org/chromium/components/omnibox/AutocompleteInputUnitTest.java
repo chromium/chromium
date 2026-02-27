@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-/** Tests for {@link AutocompleteMediator}. */
+/** Tests for {@link AutocompleteInput}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class AutocompleteInputUnitTest {
     @Test

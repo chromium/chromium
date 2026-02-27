@@ -34,7 +34,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/** Unit tests for {@link PageZoomMediator}. */
+/** Unit tests for {@link PageZoomBarMediator}. */
 @SmallTest
 @RunWith(BaseRobolectricTestRunner.class)
 @DisableFeatures({ContentFeatures.ANDROID_DESKTOP_ZOOM_SCALING})

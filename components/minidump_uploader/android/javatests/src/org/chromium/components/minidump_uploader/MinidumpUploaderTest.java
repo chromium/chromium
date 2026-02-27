@@ -23,7 +23,7 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-/** Unittests for {@link MinidumpUploadCallable}. */
+/** Unittests for {@link MinidumpUploader}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class MinidumpUploaderTest {
