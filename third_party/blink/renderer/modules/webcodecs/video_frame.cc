@@ -371,15 +371,15 @@ class CanvasSnapshotProviderCache
     }
 
     std::unique_ptr<CanvasSnapshotProvider> provider;
-    if (!ShouldCreateAcceleratedImages(GetRasterContextProvider().get())) {
-      provider =
-          CanvasNon2DSnapshotProviderBitmap::Create(required_provider_info);
-    } else {
+    if (ShouldCreateAcceleratedImages(GetRasterContextProvider().get())) {
       provider = CanvasNon2DResourceProviderSharedImage::Create(
           required_provider_info.size, required_provider_info.format,
           required_provider_info.alpha_type, required_provider_info.color_space,
           SharedGpuContext::ContextProviderWrapper(),
           gpu::SHARED_IMAGE_USAGE_DISPLAY_READ);
+    } else {
+      provider =
+          CanvasNon2DSnapshotProviderBitmap::Create(required_provider_info);
     }
 
     if (!provider) {
