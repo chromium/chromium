@@ -250,8 +250,7 @@ TEST_F(MediaItemUIViewTest, MetadataTest) {
   views::test::TestViewMetadata(container_view.get());
 }
 
-// TODO(crbug.com/483803918): Re-enable the test after code fix.
-TEST_F(MediaItemUIViewTest, DISABLED_UpdateView) {
+TEST_F(MediaItemUIViewTest, UpdateView) {
   auto footer_view = std::make_unique<NiceMock<test::MockMediaItemUIFooter>>();
   auto* footer_ptr = footer_view.get();
   item_ui()->UpdateFooterView(std::move(footer_view));

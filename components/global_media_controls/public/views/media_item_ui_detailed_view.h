@@ -108,6 +108,11 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIDetailedView
   void AddedToWidget() override;
   bool OnKeyPressed(const ui::KeyEvent& event) override;
 
+  // MediaItemUIDetailedView:
+  void UpdateFooterView(std::unique_ptr<MediaItemUIFooter> footer_view);
+  void UpdateDeviceSelector(
+      std::unique_ptr<MediaItemUIDeviceSelector> device_selector_view);
+
   // Helper functions for testing:
   views::ImageView* GetArtworkViewForTesting();
   views::Label* GetSourceLabelForTesting();
@@ -165,8 +170,11 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIDetailedView
   // Callback for when the start casting button is toggled by user.
   void StartCastingButtonPressed();
 
-  // Update the display states of UI elements for casting devices.
+  // Updates the display states of UI elements for casting devices.
   void UpdateCastingState();
+
+  // Creates a separator line between the media view and device selector view.
+  void CreateDeviceSelectorViewSeparator();
 
   // Updates the chapter list view's chapter items with the new `metadata`.
   void UpdateChapterListViewWithMetadata(
@@ -216,6 +224,7 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIDetailedView
   raw_ptr<MediaActionButton> start_casting_button_ = nullptr;
   raw_ptr<MediaActionButton> picture_in_picture_button_ = nullptr;
 
+  raw_ptr<views::View> button_container_ = nullptr;
   raw_ptr<MediaItemUIFooter> footer_view_ = nullptr;
   raw_ptr<MediaItemUIDeviceSelector> device_selector_view_ = nullptr;
   raw_ptr<views::BoxLayoutView> device_selector_view_separator_ = nullptr;

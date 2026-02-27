@@ -189,6 +189,9 @@ class MediaItemUIDetailedViewTest : public views::ViewsTestBase {
                        ui::EventTimeForNow(), 0, 0));
   }
 
+ protected:
+  raw_ptr<MockMediaItemUIDeviceSelector> device_selector_;
+
  private:
   void NotifyUpdatedActions() { view_->UpdateWithMediaActions(actions_); }
 
@@ -196,7 +199,6 @@ class MediaItemUIDetailedViewTest : public views::ViewsTestBase {
   std::unique_ptr<MockMediaNotificationContainer> container_;
   std::unique_ptr<MockMediaNotificationItem> item_;
   raw_ptr<MediaItemUIDetailedView> view_;
-  raw_ptr<MockMediaItemUIDeviceSelector> device_selector_;
   std::unique_ptr<views::Widget> widget_;
 };
 
@@ -461,6 +463,47 @@ TEST_F(MediaItemUIDetailedViewTest, ProgressViewCheck) {
                          ui::DomKey::ARROW_RIGHT,    ui::EventTimeForNow()};
   EXPECT_CALL(item(), SeekTo(testing::_));
   view->OnKeyPressed(key_event);
+}
+
+TEST_F(MediaItemUIDetailedViewTest, UpdateFooterView) {
+  EnableAction(MediaSessionAction::kEnterPictureInPicture);
+  EXPECT_TRUE(
+      IsActionButtonVisible(MediaSessionAction::kEnterPictureInPicture));
+
+  auto footer = std::make_unique<NiceMock<MockMediaItemUIFooter>>();
+  auto* footer_ptr = footer.get();
+
+  // Add a footer.
+  view()->UpdateFooterView(std::move(footer));
+  EXPECT_EQ(view()->GetFooterForTesting(), footer_ptr);
+  EXPECT_FALSE(
+      IsActionButtonVisible(MediaSessionAction::kEnterPictureInPicture));
+
+  // Remove the footer.
+  view()->UpdateFooterView(nullptr);
+  EXPECT_EQ(view()->GetFooterForTesting(), nullptr);
+  EXPECT_TRUE(
+      IsActionButtonVisible(MediaSessionAction::kEnterPictureInPicture));
+}
+
+TEST_F(MediaItemUIDetailedViewTest, UpdateDeviceSelector) {
+  // Initially there is a device selector from SetUp().
+  EXPECT_NE(view()->GetDeviceSelectorForTesting(), nullptr);
+  EXPECT_NE(view()->GetDeviceSelectorSeparatorForTesting(), nullptr);
+
+  // Remove the device selector.
+  device_selector_ = nullptr;
+  view()->UpdateDeviceSelector(nullptr);
+  EXPECT_EQ(view()->GetDeviceSelectorForTesting(), nullptr);
+  EXPECT_EQ(view()->GetDeviceSelectorSeparatorForTesting(), nullptr);
+
+  // Add a new device selector.
+  auto device_selector =
+      std::make_unique<NiceMock<MockMediaItemUIDeviceSelector>>();
+  device_selector_ = device_selector.get();
+  view()->UpdateDeviceSelector(std::move(device_selector));
+  EXPECT_EQ(view()->GetDeviceSelectorForTesting(), device_selector_);
+  EXPECT_NE(view()->GetDeviceSelectorSeparatorForTesting(), nullptr);
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

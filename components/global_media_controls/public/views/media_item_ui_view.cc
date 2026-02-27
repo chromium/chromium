@@ -202,12 +202,17 @@ void MediaItemUIView::SetScrollView(views::ScrollView* scroll_view) {
 
 void MediaItemUIView::UpdateFooterView(
     std::unique_ptr<MediaItemUIFooter> footer_view) {
-  // TODO(crbug.com/483803918): Update the view in MediaItemUIDetailedView.
+  footer_view_ = footer_view.get();
+  view_->UpdateFooterView(std::move(footer_view));
 }
 
 void MediaItemUIView::UpdateDeviceSelector(
     std::unique_ptr<MediaItemUIDeviceSelector> device_selector_view) {
-  // TODO(crbug.com/483803918): Update the view in MediaItemUIDetailedView.
+  if (device_selector_view) {
+    device_selector_view->SetMediaItemUIView(this);
+  }
+  device_selector_view_ = device_selector_view.get();
+  view_->UpdateDeviceSelector(std::move(device_selector_view));
 }
 
 void MediaItemUIView::ContainerClicked(bool activate_original_media) {
