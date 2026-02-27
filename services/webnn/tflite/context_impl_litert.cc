@@ -56,6 +56,7 @@ ContextImplLiteRt::ContextImplLiteRt(
     scoped_refptr<base::SingleThreadTaskRunner> main_task_runner)
     : WebNNContextImpl(std::move(receiver),
                        std::move(context_provider),
+                       ContextBackendUma::kLiteRT,
                        tflite::GraphBuilderTflite::GetContextProperties(),
                        std::move(options),
                        std::move(write_tensor_consumer),

@@ -60,6 +60,13 @@ chromium-metrics-reviews@google.com.
   <summary>Records the constant data sizes in KB.</summary>
 </histogram>
 
+<histogram name="WebNN.Context.Backend" enum="ContextBackendUma"
+    expires_after="2026-06-27">
+  <owner>reillyg@chromium.org</owner>
+  <owner>src/services/webnn/OWNERS</owner>
+  <summary>Records what backend WebNN is running on.</summary>
+</histogram>
+
 <histogram name="WebNN.CoreML.TimingMs.{WebNNCoreMLActions}" units="ms"
     expires_after="2026-06-27">
   <owner>reillyg@chromium.org</owner>

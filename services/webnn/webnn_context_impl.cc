@@ -9,6 +9,7 @@
 
 #include "base/atomic_sequence_num.h"
 #include "base/functional/callback_helpers.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/sequence_checker.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/bind_post_task.h"
@@ -47,6 +48,7 @@ namespace webnn {
 WebNNContextImpl::WebNNContextImpl(
     mojo::PendingReceiver<mojom::WebNNContext> receiver,
     base::WeakPtr<WebNNContextProviderImpl> context_provider,
+    WebNNContextImpl::ContextBackendUma backend_uma,
     ContextProperties properties,
     mojom::CreateContextOptionsPtr options,
     mojo::ScopedDataPipeConsumerHandle write_tensor_consumer,
@@ -72,6 +74,7 @@ WebNNContextImpl::WebNNContextImpl(
       main_task_runner_(std::move(main_task_runner)),
       owning_task_runner_(std::move(owning_task_runner)),
       tracing_id_(g_next_webnn_context_tracing_id.GetNext()) {
+  RecordContextBackendUma(backend_uma);
 #if BUILDFLAG(BUILD_TFLITE_WITH_XNNPACK)
   // Initialize XNNPACK
   const xnn_status status = xnn_initialize(/*allocator=*/nullptr);
@@ -102,6 +105,11 @@ WebNNContextImpl::~WebNNContextImpl() {
   const xnn_status status = xnn_deinitialize();
   CHECK_EQ(status, xnn_status_success);
 #endif  // BUILDFLAG(BUILD_TFLITE_WITH_XNNPACK)
+}
+
+// static
+void WebNNContextImpl::RecordContextBackendUma(ContextBackendUma backend_uma) {
+  base::UmaHistogramEnumeration("WebNN.Context.Backend", backend_uma);
 }
 
 void WebNNContextImpl::OnDisconnect() {

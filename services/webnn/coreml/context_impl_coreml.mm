@@ -54,6 +54,7 @@ ContextImplCoreml::ContextImplCoreml(
     scoped_refptr<base::SingleThreadTaskRunner> main_task_runner)
     : WebNNContextImpl(std::move(receiver),
                        std::move(context_provider),
+                       ContextBackendUma::kCoreML,
                        GraphBuilderCoreml::GetContextProperties(),
                        std::move(options),
                        mojo::ScopedDataPipeConsumerHandle(),

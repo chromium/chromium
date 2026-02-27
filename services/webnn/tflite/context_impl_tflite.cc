@@ -58,6 +58,7 @@ ContextImplTflite::ContextImplTflite(
     bool is_incognito)
     : WebNNContextImpl(std::move(receiver),
                        std::move(context_provider),
+                       ContextBackendUma::kTFLite,
                        GraphBuilderTflite::GetContextProperties(),
                        std::move(options),
                        std::move(write_tensor_consumer),

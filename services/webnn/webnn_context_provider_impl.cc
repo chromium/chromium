@@ -371,6 +371,8 @@ void WebNNContextProviderImpl::OnCreateWebNNContextImpl(
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
 
   if (!context_impl) {
+    WebNNContextImpl::RecordContextBackendUma(
+        WebNNContextImpl::ContextBackendUma::kNotSupported);
     // TODO(crbug.com/40206287): Supporting WebNN on the platform.
     std::move(callback).Run(ToError<mojom::CreateContextResult>(
         mojom::Error::Code::kNotSupportedError,

@@ -98,6 +98,7 @@ ContextImplOrt::ContextImplOrt(
     : WebNNContextImpl(
           std::move(receiver),
           std::move(context_provider),
+          ContextBackendUma::kONNXRuntime,
           GetContextProperties(ep_workarounds.resample2d_limit_to_nchw),
           std::move(options),
           std::move(write_tensor_consumer),

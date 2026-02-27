@@ -60,6 +60,23 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
                              mojo::Receiver<mojom::WebNNContext>>,
       public base::trace_event::MemoryDumpProvider {
  public:
+  // These values are persisted to logs. Entries should not be renumbered or
+  // removed and numeric values should never be reused.
+  //
+  // LINT.IfChange(ContextBackendUma)
+  enum class ContextBackendUma {
+    kNotSupported = 0,
+    kCoreML = 1,
+    kTFLite = 2,
+    kLiteRT = 3,
+    kONNXRuntime = 4,
+    kDirectML = 5,
+    kMaxValue = kDirectML,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/webnn/enums.xml:ContextBackendUma)
+
+  static void RecordContextBackendUma(ContextBackendUma backend_uma);
+
   using CreateGraphImplCallback = base::OnceCallback<void(
       base::expected<scoped_refptr<WebNNGraphImpl>, mojom::ErrorPtr>)>;
 
@@ -69,6 +86,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
   WebNNContextImpl(
       mojo::PendingReceiver<mojom::WebNNContext> receiver,
       base::WeakPtr<WebNNContextProviderImpl> context_provider,
+      WebNNContextImpl::ContextBackendUma backend_uma,
       ContextProperties properties,
       mojom::CreateContextOptionsPtr options,
       mojo::ScopedDataPipeConsumerHandle write_tensor_consumer,
