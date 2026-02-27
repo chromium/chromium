@@ -18,8 +18,6 @@ relative paths from this current file:
 - [copilot-instructions.md](../copilot-instructions.md)
 - [chromium.instructions.md](../instructions/chromium.instructions.md)
 - [embedder.instructions.md](../instructions/embedder.instructions.md)
-- [haystack.instructions.md](../instructions/haystack.instructions.md)
-- [haystack_readme.md](../resources/haystack_readme.md)
 
 ## Initial Interaction
 Let the user know that this prompt is designed to work with `Gemini 2.5 Pro`
@@ -39,7 +37,7 @@ If the user does have a `copilot-instructions.md` file, you will
 
 ### If the user does have a `embedder.instructions.md` file
 - ask if they want to use
-  [embedder.instructions](../instructions/embedders.instructions.md)
+  [embedder.instructions](../instructions/embedder.instructions.md)
 
 ### If the user does not have a `embedder.instructions.md` file
 - ask if they want to use
@@ -50,11 +48,6 @@ If the user does have a `copilot-instructions.md` file, you will
   other prompts such as `/autoninja` and `/gtest`.
   - You will need to ask for `${out_dir}` this is usually something like
     `debug_x64` or `release_x64` but it can be anything.
-- ask if they want to use
-  [haystack.instructions](../instructions/haystack.instructions.md)
-    - briefly explain it; if they choose to use it, mention it requires an
-      extension and MCP server, which you can help set up
-      after creating their instruction file
 - ask if they want user personalization
 
 ## Output Format
@@ -64,8 +57,7 @@ with multiple sections, the sections must be ordered as follows if they are to
 be included:
   1. Default chromium or embedder instructions
   2. Developer Prompt Variables
-  3. Haystack
-  4. User personalization
+  3. User personalization
 
 **Do not** include filepath syntax in the output, such as:
 `// filepath: ...\.github\instructions\haystack.instructions.md`
@@ -82,20 +74,6 @@ The developer prompt variables should be a version of the following code snippet
 ## Developer Prompt Variables
 `${out_dir}` = `out_dir`
 ```
-
-### Chromium Haystack
-
-If the user requests Chromium Haystack, you will need to help them set it up.
-You will do this by copying directly from
-[haystack](../instructions/haystack.instructions.md)
-
-Share a link to [haystack.readme.md](../resources/haystack_readme.md) in the
-code editor for the user to open preview, and instruct them to follow the steps
-to install the extension and set up the MCP server.
-
-Note that since you cannot render `vscode:extension` links,
-you will need to instruct the user to click on it from the readme, or search for
-the extension in the VS Code Marketplace.
 
 ### User Personalization
 If the user requests Personalization, you will need to help them set it up.
