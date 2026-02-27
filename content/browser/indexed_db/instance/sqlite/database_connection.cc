@@ -110,9 +110,6 @@ enum class CompressionType : uint8_t {
 // Used for tests.
 std::optional<base::ByteSize> g_max_blob_size_override;
 
-// Used for tests.
-const char* g_vfs_name_override = nullptr;
-
 // The maximum number of bytes that will be stored in a single SQLite BLOB
 // column. If a blob is larger than this, it will be chunked into multiple rows
 // in the `overflow_blob_chunks` table.
@@ -1161,21 +1158,16 @@ Status DatabaseConnection::Init(std::optional<std::u16string_view> name) {
 
   constexpr sql::Database::Tag kSqlTag = "IndexedDB";
   constexpr sql::Database::Tag kSqlTagInMemory = "IndexedDBEphemeral";
-  auto options =
-      sql::DatabaseOptions().set_wal_mode(true).set_enable_triggers(true);
-
-#if BUILDFLAG(IS_WIN)
-  // *Enforce* exclusivity on Windows, for the purposes of reliability.
-  options.set_exclusive_database_file_lock(
-      base::FeatureList::IsEnabled(kIdbSqliteExclusiveDatabaseFileLock));
-#endif
-
-  if (g_vfs_name_override) {
-    options.set_vfs_name_discouraged(g_vfs_name_override);
-  }
-
   db_ = std::make_unique<sql::Database>(
-      std::move(options), in_memory() ? kSqlTagInMemory : kSqlTag);
+      sql::DatabaseOptions()
+#if BUILDFLAG(IS_WIN)
+          // *Enforce* exclusivity on Windows, for the purposes of reliability.
+          .set_exclusive_database_file_lock(
+              base::FeatureList::IsEnabled(kIdbSqliteExclusiveDatabaseFileLock))
+#endif
+          .set_wal_mode(true)
+          .set_enable_triggers(true),
+      in_memory() ? kSqlTagInMemory : kSqlTag);
 
   if (in_memory()) {
     RETURN_STATUS_ON_ERROR(db_->OpenInMemory());
@@ -2715,11 +2707,6 @@ base::FilePath DatabaseConnection::GetBlobFilePath(int64_t blob_id) const {
 // static
 void DatabaseConnection::OverrideMaxBlobSizeForTesting(base::ByteSize size) {
   g_max_blob_size_override = size;
-}
-
-// static
-void DatabaseConnection::OverrideVfsNameForTesting(const char* vfs_name) {
-  g_vfs_name_override = vfs_name;
 }
 
 }  // namespace content::indexed_db::sqlite
