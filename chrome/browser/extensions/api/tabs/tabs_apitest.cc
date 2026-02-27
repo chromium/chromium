@@ -384,16 +384,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiCaptureTest, MAYBE_CaptureVisibleDisabled) {
       << message_;
 }
 
-// TODO(https://crbug.com/371432155): Enable these tests.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-
-// TODO(crbug.com/447214377): Fails on desktop Android with message:
-// Cannot access contents of url "". Extension manifest must request permission
-// to access this host.
 IN_PROC_BROWSER_TEST_F(ExtensionApiCaptureTest, CaptureNullWindow) {
   ASSERT_TRUE(RunExtensionTest("tabs/capture_visible_tab_null_window"))
       << message_;
 }
+
+// TODO(https://crbug.com/371432155): Enable these tests.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 
 IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType, OnCreated) {
   ASSERT_TRUE(RunExtensionTest("tabs/on_created")) << message_;
