@@ -529,6 +529,22 @@ void InputManager::StateOnTouchTransfer(
     return;
   }
 
+  TRACE_EVENT_INSTANT(
+      "input,input.scrolling", "TopControlsOffset",
+      [&](perfetto::EventContext ctx) {
+        auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+        auto* transfer_handler = event->set_input_transfer_handler();
+        auto* offset = transfer_handler->set_top_controls_offset();
+
+        const CompositorFrameMetadata* metadata =
+            GetLastActivatedFrameMetadata(state->root_widget_frame_sink_id);
+        if (metadata && metadata->top_controls_visible_height.has_value()) {
+          offset->set_viz_y_offset_px(
+              metadata->top_controls_visible_height.value());
+        }
+        offset->set_browser_y_offset_px(state->web_contents_offset.y());
+      });
+
   RenderInputRouterSupportBase* support_base = iter->second.rir_support.get();
   CHECK(support_base);
   CHECK(!support_base->IsRenderInputRouterSupportChildFrame());

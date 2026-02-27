@@ -2808,6 +2808,14 @@ message InputTransferHandler {
   // )
 
   optional VizSequenceDroppedReason viz_sequence_dropped_reason = 3;
+
+  message TopControlsOffset {
+    // The offset of top controls as per the metadata from last drawn frame.
+    optional float viz_y_offset_px = 1;
+    // The offset that sent over from Browser as part of state transfer.
+    optional float browser_y_offset_px = 2;
+  }
+  optional TopControlsOffset top_controls_offset = 4;
 };
 
 message ResponseInfo {
