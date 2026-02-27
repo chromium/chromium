@@ -8,7 +8,6 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/background_fetch/background_fetch_permission_context.h"
 #include "chrome/browser/background_sync/periodic_background_sync_permission_context.h"
-#include "chrome/browser/clipboard/chrome_clipboard_permission_context_delegate.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/display_capture/captured_surface_control_permission_context.h"
 #include "chrome/browser/display_capture/display_capture_permission_context.h"
@@ -40,6 +39,11 @@
 #include "components/permissions/contexts/window_management_permission_context.h"
 #include "components/permissions/permission_manager.h"
 #include "extensions/buildflags/buildflags.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/clipboard/chrome_clipboard_permission_context_delegate.h"
+#endif
+
 #include "services/device/public/cpp/device_features.h"
 #include "services/device/public/cpp/geolocation/buildflags.h"
 

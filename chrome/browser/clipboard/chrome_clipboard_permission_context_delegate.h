@@ -8,11 +8,21 @@
 #include <optional>
 #include <set>
 
+#include "base/containers/flat_map.h"
+#include "base/memory/weak_ptr.h"
 #include "components/content_settings/core/common/content_settings.h"
-#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/contexts/clipboard_permission_context_delegate.h"
-#include "content/public/browser/browser_context.h"
-#include "extensions/browser/guest_view/web_view/web_view_permission_helper.h"
+#include "url/origin.h"
+
+class GURL;
+
+namespace content {
+class RenderFrameHost;
+}
+
+namespace extensions {
+class WebViewPermissionHelper;
+}
 
 // The class adds logic to check permission for a frame inside of a WebView.
 class ChromeClipboardPermissionContextDelegate

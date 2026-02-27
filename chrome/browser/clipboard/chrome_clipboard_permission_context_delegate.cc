@@ -8,7 +8,6 @@
 
 #include "base/containers/map_util.h"
 #include "base/functional/bind.h"
-#include "chrome/browser/profiles/profile.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/permissions/content_setting_permission_context_base.h"
 #include "components/permissions/permission_decision.h"
@@ -20,6 +19,8 @@
 #include "content/public/browser/render_frame_host.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "extensions/browser/guest_view/web_view/web_view_permission_helper.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
+#include "url/gurl.h"
 
 ChromeClipboardPermissionContextDelegate::
     ChromeClipboardPermissionContextDelegate(Type type)

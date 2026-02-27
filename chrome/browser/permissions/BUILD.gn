@@ -6,6 +6,7 @@ import("//build/config/ui.gni")
 import("//components/optimization_guide/features.gni")
 import("//components/safe_browsing/buildflags.gni")
 import("//device/vr/buildflags/buildflags.gni")
+import("//extensions/buildflags/buildflags.gni")
 import("//services/device/public/cpp/geolocation/buildflags.gni")
 import("//third_party/protobuf/proto_library.gni")
 
@@ -154,6 +155,10 @@ source_set("permissions") {
     }
   }
   allow_circular_includes_from = []
+
+  if (enable_extensions) {
+    deps += [ "//chrome/browser/clipboard" ]
+  }
 
   if (is_chromeos) {
     deps += [
