@@ -1501,6 +1501,17 @@ void InjectNTP(Browser* browser) {
   }
 }
 
+// Dismisses modal dialogs via the scene handler and optionally dismisses the
+// omnibox.
+- (void)dismissModalDialogsWithCompletion:(ProceduralBlock)completion
+                           dismissOmnibox:(BOOL)dismissOmnibox {
+  id<SceneCommands> sceneHandler = HandlerForProtocol(
+      self.currentBrowserForURLLoading->GetCommandDispatcher(), SceneCommands);
+  [sceneHandler dismissModalDialogsWithCompletion:completion
+                                   dismissOmnibox:dismissOmnibox
+                                 dismissSnackbars:YES];
+}
+
 #pragma mark - TabGridCoordinatorDelegate
 
 - (void)tabGrid:(TabGridCoordinator*)tabGrid
@@ -2323,15 +2334,6 @@ void InjectNTP(Browser* browser) {
     };
   }
   [self displayCurrentBVC:completion];
-}
-
-// TODO(crbug.com/487346856): Remove this method from
-// SceneURLLoadingServiceDelegate.
-- (void)dismissModalDialogsWithCompletion:(ProceduralBlock)completion
-                           dismissOmnibox:(BOOL)dismissOmnibox {
-  id<SceneCommands> sceneHandler = HandlerForProtocol(
-      self.currentBrowserForURLLoading->GetCommandDispatcher(), SceneCommands);
-  [sceneHandler dismissModalDialogsWithCompletion:completion];
 }
 
 #pragma mark - SceneUIHandler

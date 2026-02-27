@@ -24,11 +24,6 @@ class UrlLoadingBrowserAgent;
 // `ApplicationMode::NORMAL`.
 - (void)setCurrentInterfaceForMode:(ApplicationMode)mode;
 
-// Dismisses all modal dialogs, excluding the omnibox if `dismissOmnibox` is
-// NO, then call `completion`.
-- (void)dismissModalDialogsWithCompletion:(ProceduralBlock)completion
-                           dismissOmnibox:(BOOL)dismissOmnibox;
-
 // Opens a tab in the target BVC, and switches to it in a way that's appropriate
 // to the current UI.
 // If the current tab in `targetMode` is a NTP, it can be reused to open URL.

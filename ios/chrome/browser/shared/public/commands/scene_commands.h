@@ -51,6 +51,12 @@ enum class TabGridOpeningMode {
 // modals are dismissed (animations done).
 - (void)dismissModalDialogsWithCompletion:(ProceduralBlock)completion;
 
+// Dismisses all modal dialogs and calls the completion block. Optionally does
+// not dismiss the omnibox or snackbars.
+- (void)dismissModalDialogsWithCompletion:(ProceduralBlock)completion
+                           dismissOmnibox:(BOOL)dismissOmnibox
+                         dismissSnackbars:(BOOL)dismissSnackbars;
+
 // Dismisses all modal dialogs (if any) before showing the Password Checkup page
 // for `referrer`.
 - (void)dismissModalsAndShowPasswordCheckupPageForReferrer:

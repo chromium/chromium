@@ -8,6 +8,8 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
@@ -29,6 +31,9 @@ void SceneUrlLoadingService::LoadUrlInNewTab(const UrlLoadParams& params) {
     UrlLoadParams saved_params = params;
     saved_params.web_params.transition_type = ui::PAGE_TRANSITION_TYPED;
 
+    id<SceneCommands> sceneHandler =
+        HandlerForProtocol(browser->GetCommandDispatcher(), SceneCommands);
+
     if (params.from_chrome) {
       auto dismiss_completion = ^{
         ApplicationModeForTabOpening mode =
@@ -41,8 +46,7 @@ void SceneUrlLoadingService::LoadUrlInNewTab(const UrlLoadParams& params) {
                        withUrlLoadParams:saved_params
                               completion:nil];
       };
-      [delegate_ dismissModalDialogsWithCompletion:dismiss_completion
-                                    dismissOmnibox:YES];
+      [sceneHandler dismissModalDialogsWithCompletion:dismiss_completion];
     } else {
       ApplicationMode mode = params.in_incognito ? ApplicationMode::INCOGNITO
                                                  : ApplicationMode::NORMAL;
@@ -62,8 +66,7 @@ void SceneUrlLoadingService::LoadUrlInNewTab(const UrlLoadParams& params) {
         [delegate_ setCurrentInterfaceForMode:mode];
         UrlLoadingBrowserAgent::FromBrowser(browser)->Load(saved_params);
       };
-      [delegate_ dismissModalDialogsWithCompletion:dismiss_completion
-                                    dismissOmnibox:YES];
+      [sceneHandler dismissModalDialogsWithCompletion:dismiss_completion];
     }
   } else {
     if (profile->IsOffTheRecord() != params.in_incognito) {

@@ -393,6 +393,79 @@ void OnListFamilyMembersResponse(
                          dismissSnackbars:YES];
 }
 
+- (void)dismissModalDialogsWithCompletion:(ProceduralBlock)completion
+                           dismissOmnibox:(BOOL)dismissOmnibox
+                         dismissSnackbars:(BOOL)dismissSnackbars {
+  // Disconnected scenes should no-op, since browser objects may not exist.
+  // See crbug.com/371847600.
+  if (self.sceneState.activationLevel == SceneActivationLevelDisconnected) {
+    return;
+  }
+  // During startup, there may be no current browser. Do nothing in that
+  // case.
+  if (!self.currentBrowser) {
+    return;
+  }
+
+  // Immediately hide modals from the provider (alert views, action sheets,
+  // popovers). They will be ultimately dismissed by their owners, but at least,
+  // they are not visible.
+  ios::provider::HideModalViewStack();
+
+  // Conditionally dismiss all snackbars.
+  if (dismissSnackbars) {
+    id<SnackbarCommands> snackbarHandler = HandlerForProtocol(
+        _regularBrowser->GetCommandDispatcher(), SnackbarCommands);
+    [snackbarHandler dismissAllSnackbars];
+  }
+
+  // Exit fullscreen mode for web page when we re-enter app through external
+  // intents.
+  web::WebState* webState =
+      _regularBrowser->GetWebStateList()->GetActiveWebState();
+  if (webState && webState->IsWebPageInFullscreenMode()) {
+    webState->CloseMediaPresentations();
+  }
+
+  // ChromeIdentityService is responsible for the dialogs displayed by the
+  // services it wraps.
+  GetApplicationContext()->GetSystemIdentityManager()->DismissDialogs();
+
+  // MailtoHandlerService is responsible for the dialogs displayed by the
+  // services it wraps.
+  MailtoHandlerServiceFactory::GetForProfile(self.currentBrowser->GetProfile())
+      ->DismissAllMailtoHandlerInterfaces();
+
+  id<BookmarksCommands> bookmarksHandler = HandlerForProtocol(
+      _regularBrowser->GetCommandDispatcher(), BookmarksCommands);
+  [bookmarksHandler dismissBookmarkModalControllerAnimated:NO];
+
+  id<BrowserCoordinatorCommands> browserCoordinatorHandler = HandlerForProtocol(
+      self.currentBrowser->GetCommandDispatcher(), BrowserCoordinatorCommands);
+  ProceduralBlock completionWithBVC = ^{
+    DCHECK(!self.isTabGridActive);
+    DCHECK(!self.isSigninInProgress);
+    [browserCoordinatorHandler
+        clearPresentedStateWithCompletion:completion
+                           dismissOmnibox:dismissOmnibox];
+  };
+  ProceduralBlock completionWithoutBVC = ^{
+    // The BVC may exist but tab switcher should be active.
+    DCHECK(self.isTabGridActive);
+    DCHECK(!self.isSigninInProgress);
+    [self stopChildCoordinatorsWithCompletion:completion];
+  };
+
+  // Select a completion based on whether the BVC is shown.
+  ProceduralBlock chosenCompletion =
+      self.isTabGridActive ? completionWithoutBVC : completionWithBVC;
+
+  [self closePresentedViews:NO completion:chosenCompletion];
+
+  // Verify that no modal views are left presented.
+  ios::provider::LogIfModalViewsArePresented();
+}
+
 - (void)dismissModalsAndShowPasswordCheckupPageForReferrer:
     (password_manager::PasswordCheckReferrer)referrer {
   __weak SceneCoordinator* weakSelf = self;
@@ -1781,80 +1854,6 @@ void OnListFamilyMembersResponse(
   [self.activeViewController presentViewController:_settingsNavigationController
                                           animated:YES
                                         completion:nil];
-}
-
-// Dismisses all modal dialogs.
-- (void)dismissModalDialogsWithCompletion:(ProceduralBlock)completion
-                           dismissOmnibox:(BOOL)dismissOmnibox
-                         dismissSnackbars:(BOOL)dismissSnackbars {
-  // Disconnected scenes should no-op, since browser objects may not exist.
-  // See crbug.com/371847600.
-  if (self.sceneState.activationLevel == SceneActivationLevelDisconnected) {
-    return;
-  }
-  // During startup, there may be no current browser. Do nothing in that
-  // case.
-  if (!self.currentBrowser) {
-    return;
-  }
-
-  // Immediately hide modals from the provider (alert views, action sheets,
-  // popovers). They will be ultimately dismissed by their owners, but at least,
-  // they are not visible.
-  ios::provider::HideModalViewStack();
-
-  // Conditionally dismiss all snackbars.
-  if (dismissSnackbars) {
-    id<SnackbarCommands> snackbarHandler = HandlerForProtocol(
-        _regularBrowser->GetCommandDispatcher(), SnackbarCommands);
-    [snackbarHandler dismissAllSnackbars];
-  }
-
-  // Exit fullscreen mode for web page when we re-enter app through external
-  // intents.
-  web::WebState* webState =
-      _regularBrowser->GetWebStateList()->GetActiveWebState();
-  if (webState && webState->IsWebPageInFullscreenMode()) {
-    webState->CloseMediaPresentations();
-  }
-
-  // ChromeIdentityService is responsible for the dialogs displayed by the
-  // services it wraps.
-  GetApplicationContext()->GetSystemIdentityManager()->DismissDialogs();
-
-  // MailtoHandlerService is responsible for the dialogs displayed by the
-  // services it wraps.
-  MailtoHandlerServiceFactory::GetForProfile(self.currentBrowser->GetProfile())
-      ->DismissAllMailtoHandlerInterfaces();
-
-  id<BookmarksCommands> bookmarksHandler = HandlerForProtocol(
-      _regularBrowser->GetCommandDispatcher(), BookmarksCommands);
-  [bookmarksHandler dismissBookmarkModalControllerAnimated:NO];
-
-  id<BrowserCoordinatorCommands> browserCoordinatorHandler = HandlerForProtocol(
-      self.currentBrowser->GetCommandDispatcher(), BrowserCoordinatorCommands);
-  ProceduralBlock completionWithBVC = ^{
-    DCHECK(!self.isTabGridActive);
-    DCHECK(!self.isSigninInProgress);
-    [browserCoordinatorHandler
-        clearPresentedStateWithCompletion:completion
-                           dismissOmnibox:dismissOmnibox];
-  };
-  ProceduralBlock completionWithoutBVC = ^{
-    // The BVC may exist but tab switcher should be active.
-    DCHECK(self.isTabGridActive);
-    DCHECK(!self.isSigninInProgress);
-    [self stopChildCoordinatorsWithCompletion:completion];
-  };
-
-  // Select a completion based on whether the BVC is shown.
-  ProceduralBlock chosenCompletion =
-      self.isTabGridActive ? completionWithoutBVC : completionWithBVC;
-
-  [self closePresentedViews:NO completion:chosenCompletion];
-
-  // Verify that no modal views are left presented.
-  ios::provider::LogIfModalViewsArePresented();
 }
 
 // Displays the Safari Data Import, from a `baseViewController`.
