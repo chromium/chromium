@@ -59,7 +59,6 @@ import org.chromium.components.embedder_support.delegate.WebContentsDelegateAndr
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.components.page_info.PageInfoController;
 import org.chromium.components.page_info.PageInfoController.OpenedFromSource;
-import org.chromium.components.security_state.SecurityStateModel;
 import org.chromium.components.thinwebview.ThinWebView;
 import org.chromium.components.thinwebview.ThinWebViewConstraints;
 import org.chromium.components.thinwebview.ThinWebViewFactory;
@@ -304,12 +303,8 @@ public class DocumentPictureInPictureActivity extends AsyncInitializationActivit
                         /* context= */ this,
                         /* delegate= */ this,
                         !assumeNonNull(mWindowOptions).disallowReturnToOpener,
-                        // TODO(crbug.com/479456911): Dynamically set the security level and
-                        // malicious content status if they can change in the same document pip
-                        // session.
-                        SecurityStateModel.getSecurityLevelForWebContents(mParentWebContents),
-                        SecurityStateModel.getMaliciousContentStatusForWebContents(mWebContents),
-                        mParentWebContents.getVisibleUrl());
+                        mParentWebContents,
+                        mWebContents);
 
         if (ChromeFeatureList.sAutoDocPipPermissionPromptAndroid.isEnabled()) {
             WebContents webContents = mParentWebContents;

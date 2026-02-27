@@ -15,6 +15,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.withSettings;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
@@ -44,6 +45,10 @@ import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateMa
 import org.chromium.components.omnibox.SecurityStatusIcon;
 import org.chromium.components.security_state.ConnectionMaliciousContentStatus;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
+import org.chromium.components.security_state.SecurityStateModel;
+import org.chromium.components.security_state.SecurityStateModelJni;
+import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
@@ -59,6 +64,10 @@ public class DocumentPictureInPictureHeaderMediatorUnitTest {
     @Mock private AppHeaderState mAppHeaderState;
     @Mock private ThemeColorProvider mThemeColorProvider;
     @Mock private DocumentPictureInPictureHeaderDelegate mDelegate;
+    @Mock private SecurityStateModel.Natives mSecurityStateModelNatives;
+
+    private WebContents mOpenerWebContents;
+    private WebContents mWebContents;
 
     private static final int DEFAULT_THEME_COLOR = Color.BLUE;
     private static final ColorStateList DEFAULT_FOCUS_TINT = ColorStateList.valueOf(Color.RED);
@@ -82,6 +91,15 @@ public class DocumentPictureInPictureHeaderMediatorUnitTest {
         when(mThemeColorProvider.getThemeColor()).thenReturn(DEFAULT_THEME_COLOR);
         when(mThemeColorProvider.getActivityFocusTint()).thenReturn(DEFAULT_FOCUS_TINT);
         when(mThemeColorProvider.getBrandedColorScheme()).thenReturn(DEFAULT_BRANDED_COLOR_SCHEME);
+        SecurityStateModelJni.setInstanceForTesting(mSecurityStateModelNatives);
+        mOpenerWebContents =
+                Mockito.mock(
+                        WebContents.class,
+                        withSettings().extraInterfaces(WebContentsObserver.Observable.class));
+        mWebContents =
+                Mockito.mock(
+                        WebContents.class,
+                        withSettings().extraInterfaces(WebContentsObserver.Observable.class));
     }
 
     private void createMediator() {
@@ -89,6 +107,11 @@ public class DocumentPictureInPictureHeaderMediatorUnitTest {
     }
 
     private void createMediator(boolean isBackToTabShown) {
+        createMediator(isBackToTabShown, HTTPS_URL);
+    }
+
+    private void createMediator(boolean isBackToTabShown, GURL url) {
+        when(mOpenerWebContents.getVisibleUrl()).thenReturn(url);
         mMediator =
                 new DocumentPictureInPictureHeaderMediator(
                         mModel,
@@ -97,9 +120,8 @@ public class DocumentPictureInPictureHeaderMediatorUnitTest {
                         mContext,
                         mDelegate,
                         isBackToTabShown,
-                        ConnectionSecurityLevel.SECURE,
-                        ConnectionMaliciousContentStatus.NONE,
-                        HTTPS_URL);
+                        mOpenerWebContents,
+                        mWebContents);
     }
 
     @Test
@@ -338,17 +360,11 @@ public class DocumentPictureInPictureHeaderMediatorUnitTest {
     public void testSecurityIconUpdates() {
         int securityLevel = ConnectionSecurityLevel.DANGEROUS;
         int maliciousContentStatus = ConnectionMaliciousContentStatus.NONE;
-        mMediator =
-                new DocumentPictureInPictureHeaderMediator(
-                        mModel,
-                        mDesktopWindowStateManager,
-                        mThemeColorProvider,
-                        mContext,
-                        mDelegate,
-                        /* isBackToTabShown= */ true,
-                        securityLevel,
-                        maliciousContentStatus,
-                        HTTPS_URL);
+        when(mSecurityStateModelNatives.getSecurityLevelForWebContents(mOpenerWebContents))
+                .thenReturn(securityLevel);
+        when(mSecurityStateModelNatives.getMaliciousContentStatusForWebContents(mWebContents))
+                .thenReturn(maliciousContentStatus);
+        createMediator();
 
         int expectedIcon =
                 SecurityStatusIcon.getSecurityIconResource(
@@ -366,20 +382,44 @@ public class DocumentPictureInPictureHeaderMediatorUnitTest {
     @Test
     @SmallTest
     public void testLocalFileUrl() {
-        mMediator =
-                new DocumentPictureInPictureHeaderMediator(
-                        mModel,
-                        mDesktopWindowStateManager,
-                        mThemeColorProvider,
-                        mContext,
-                        mDelegate,
-                        /* isBackToTabShown= */ true,
-                        ConnectionSecurityLevel.SECURE,
-                        ConnectionMaliciousContentStatus.NONE,
-                        LOCAL_FILE_URL);
+        createMediator(/* isBackToTabShown= */ true, LOCAL_FILE_URL);
 
         assertEquals(
                 LOCAL_FILE_URL.getPath(),
                 mModel.get(DocumentPictureInPictureHeaderProperties.URL_STRING));
+    }
+
+    @Test
+    @SmallTest
+    public void testSecurityStateChanged() {
+        createMediator();
+
+        // Capture the WebContentsObserver created by the mediator.
+        // The mediator creates a new WebContentsObserver, which registers itself to the
+        // WebContents.
+        var captor = org.mockito.ArgumentCaptor.forClass(WebContentsObserver.class);
+        verify((WebContentsObserver.Observable) mWebContents).addObserver(captor.capture());
+        var observer = captor.getValue();
+
+        // Simulate a security state change.
+        int securityLevel = ConnectionSecurityLevel.DANGEROUS;
+        int maliciousContentStatus = ConnectionMaliciousContentStatus.NONE;
+        when(mSecurityStateModelNatives.getSecurityLevelForWebContents(mOpenerWebContents))
+                .thenReturn(securityLevel);
+        when(mSecurityStateModelNatives.getMaliciousContentStatusForWebContents(mWebContents))
+                .thenReturn(maliciousContentStatus);
+
+        observer.didChangeVisibleSecurityState();
+
+        int expectedIcon =
+                SecurityStatusIcon.getSecurityIconResource(
+                        securityLevel,
+                        () -> maliciousContentStatus,
+                        /* isSmallDevice= */ false,
+                        /* skipIconForNeutralState= */ false,
+                        /* useLockIconForSecureState= */ false);
+        assertEquals(
+                expectedIcon,
+                (int) mModel.get(DocumentPictureInPictureHeaderProperties.SECURITY_ICON));
     }
 }

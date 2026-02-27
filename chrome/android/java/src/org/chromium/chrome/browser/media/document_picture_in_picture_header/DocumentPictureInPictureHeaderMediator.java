@@ -26,6 +26,9 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.omnibox.SecurityStatusIcon;
 import org.chromium.components.security_state.ConnectionMaliciousContentStatus;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
+import org.chromium.components.security_state.SecurityStateModel;
+import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
@@ -55,6 +58,10 @@ public class DocumentPictureInPictureHeaderMediator
     private final List<Rect> mNonDraggableAreas = new ArrayList<>();
     private final int mMinHeaderHeight;
     private final int mComponentSize;
+    private final WebContents mOpenerWebContents;
+    private final WebContents mWebContents;
+    private final WebContentsObserver mOpenerWebContentsObserver;
+    private final WebContentsObserver mWebContentsObserver;
 
     public DocumentPictureInPictureHeaderMediator(
             PropertyModel model,
@@ -63,13 +70,14 @@ public class DocumentPictureInPictureHeaderMediator
             Context context,
             DocumentPictureInPictureHeaderDelegate delegate,
             boolean isBackToTabShown,
-            @ConnectionSecurityLevel int securityLevel,
-            @ConnectionMaliciousContentStatus int maliciousContentStatus,
-            GURL url) {
+            WebContents openerWebContents,
+            WebContents webContents) {
         mModel = model;
         mThemeColorProvider = themeColorProvider;
         mContext = context;
         mDelegate = delegate;
+        mOpenerWebContents = openerWebContents;
+        mWebContents = webContents;
         mMinHeaderHeight =
                 mContext.getResources()
                         .getDimensionPixelSize(
@@ -95,18 +103,10 @@ public class DocumentPictureInPictureHeaderMediator
         mDesktopWindowStateManager.addObserver(this);
         onAppHeaderStateChanged(mDesktopWindowStateManager.getAppHeaderState());
 
+        updateSecurityIcon();
         mModel.set(
-                DocumentPictureInPictureHeaderProperties.SECURITY_ICON,
-                SecurityStatusIcon.getSecurityIconResource(
-                        securityLevel,
-                        () -> maliciousContentStatus,
-                        /* isSmallDevice= */ false,
-                        /* skipIconForNeutralState= */ false,
-                        /* useLockIconForSecureState= */ false));
-        mModel.set(
-                DocumentPictureInPictureHeaderProperties.SECURITY_ICON_CONTENT_DESCRIPTION_RES_ID,
-                SecurityStatusIcon.getSecurityIconContentDescriptionResourceId(securityLevel));
-        mModel.set(DocumentPictureInPictureHeaderProperties.URL_STRING, getUrlString(url));
+                DocumentPictureInPictureHeaderProperties.URL_STRING,
+                getUrlString(mOpenerWebContents.getVisibleUrl()));
 
         mThemeColorProvider.addThemeColorObserver(this);
         mThemeColorProvider.addTintObserver(this);
@@ -115,6 +115,21 @@ public class DocumentPictureInPictureHeaderMediator
                 mThemeColorProvider.getTint(),
                 mThemeColorProvider.getActivityFocusTint(),
                 mThemeColorProvider.getBrandedColorScheme());
+
+        mWebContentsObserver =
+                new WebContentsObserver(mWebContents) {
+                    @Override
+                    public void didChangeVisibleSecurityState() {
+                        updateSecurityIcon();
+                    }
+                };
+        mOpenerWebContentsObserver =
+                new WebContentsObserver(mOpenerWebContents) {
+                    @Override
+                    public void didChangeVisibleSecurityState() {
+                        updateSecurityIcon();
+                    }
+                };
     }
 
     // TODO(crbug.com/477855428): Resize pip window if width doesn't fit header content.
@@ -247,9 +262,31 @@ public class DocumentPictureInPictureHeaderMediator
         return url.getHost();
     }
 
+    private void updateSecurityIcon() {
+        @ConnectionSecurityLevel
+        int securityLevel = SecurityStateModel.getSecurityLevelForWebContents(mOpenerWebContents);
+        @ConnectionMaliciousContentStatus
+        int maliciousContentStatus =
+                SecurityStateModel.getMaliciousContentStatusForWebContents(mWebContents);
+
+        mModel.set(
+                DocumentPictureInPictureHeaderProperties.SECURITY_ICON,
+                SecurityStatusIcon.getSecurityIconResource(
+                        securityLevel,
+                        () -> maliciousContentStatus,
+                        /* isSmallDevice= */ false,
+                        /* skipIconForNeutralState= */ false,
+                        /* useLockIconForSecureState= */ false));
+        mModel.set(
+                DocumentPictureInPictureHeaderProperties.SECURITY_ICON_CONTENT_DESCRIPTION_RES_ID,
+                SecurityStatusIcon.getSecurityIconContentDescriptionResourceId(securityLevel));
+    }
+
     public void destroy() {
         mDesktopWindowStateManager.removeObserver(this);
         mThemeColorProvider.removeThemeColorObserver(this);
         mThemeColorProvider.removeTintObserver(this);
+        mOpenerWebContentsObserver.observe(null);
+        mWebContentsObserver.observe(null);
     }
 }
