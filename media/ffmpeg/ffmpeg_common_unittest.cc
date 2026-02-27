@@ -16,11 +16,17 @@
 #include "media/base/audio_decoder_config.h"
 #include "media/base/media.h"
 #include "media/base/media_util.h"
+#include "media/base/supported_types.h"
 #include "media/base/test_data_util.h"
 #include "media/base/video_decoder_config.h"
 #include "media/filters/ffmpeg_glue.h"
 #include "media/filters/in_memory_url_protocol.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(USE_PROPRIETARY_CODECS) && BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
+#include "media/formats/mp4/dolby_vision.h"
+#endif  // BUILDFLAG (USE_PROPRIETARY_CODECS) &&
+        // BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
 
 namespace media {
 
@@ -416,5 +422,61 @@ TEST_F(FFmpegCommonTest, VerifyAv1Profiles) {
   VerifyProfileTest("bear-av1.mp4", AV1PROFILE_PROFILE_MAIN);
 }
 #endif
+
+#if BUILDFLAG(USE_PROPRIETARY_CODECS) && BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
+TEST_F(FFmpegCommonTest, VerifyDolbyVisionColorSpaceInfo_Profile5) {
+  // Open a file to get a real AVStreams from FFmpeg.
+  base::MemoryMappedFile file;
+  ASSERT_TRUE(file.Initialize(
+      GetTestDataFilePath("glass-blowing2-dolby-vision-profile-5-frag.mp4")));
+  InMemoryUrlProtocol protocol(file.bytes(), false);
+  FFmpegGlue glue(&protocol);
+  ASSERT_TRUE(glue.OpenContext());
+  AVFormatContext* format_context = glue.format_context();
+  ASSERT_EQ(format_context->nb_streams, 1u);
+
+  AVStream* stream = format_context->streams[0];
+  AVCodecParameters* codec_parameters = stream->codecpar;
+  AVMediaType codec_type = codec_parameters->codec_type;
+  ASSERT_EQ(codec_type, AVMEDIA_TYPE_VIDEO);
+
+  UpdateDefaultDecoderSupportedVideoProfiles(
+      {VideoCodecProfile::DOLBYVISION_PROFILE5});
+
+  VideoDecoderConfig video_config;
+  EXPECT_TRUE(AVStreamToVideoDecoderConfig(stream, &video_config));
+  auto expected = mp4::ParseDolbyVisionColorSpace(
+      VideoCodecProfile::DOLBYVISION_PROFILE5, 0);
+  EXPECT_EQ(expected, video_config.color_space_info());
+}
+
+TEST_F(FFmpegCommonTest, VerifyDolbyVisionColorSpaceInfo_Profile8) {
+  // Open a file to get a real AVStreams from FFmpeg.
+  base::MemoryMappedFile file;
+  ASSERT_TRUE(file.Initialize(
+      GetTestDataFilePath("glass-blowing2-dolby-vision-profile-8-1-frag.mp4")));
+  InMemoryUrlProtocol protocol(file.bytes(), false);
+  FFmpegGlue glue(&protocol);
+  ASSERT_TRUE(glue.OpenContext());
+  AVFormatContext* format_context = glue.format_context();
+  ASSERT_EQ(format_context->nb_streams, 1u);
+
+  AVStream* stream = format_context->streams[0];
+  AVCodecParameters* codec_parameters = stream->codecpar;
+  AVMediaType codec_type = codec_parameters->codec_type;
+  ASSERT_EQ(codec_type, AVMEDIA_TYPE_VIDEO);
+
+  UpdateDefaultDecoderSupportedVideoProfiles(
+      {VideoCodecProfile::DOLBYVISION_PROFILE8});
+
+  VideoDecoderConfig video_config;
+  EXPECT_TRUE(AVStreamToVideoDecoderConfig(stream, &video_config));
+  auto expected =
+      mp4::ParseDolbyVisionColorSpace(VideoCodecProfile::DOLBYVISION_PROFILE8,
+                                      mp4::kDolbyVisionCompatibilityIdHDR10);
+  EXPECT_EQ(expected, video_config.color_space_info());
+}
+#endif  // BUILDFLAG (USE_PROPRIETARY_CODECS) &&
+        // BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
 
 }  // namespace media

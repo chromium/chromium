@@ -771,11 +771,11 @@ bool MP4StreamParser::ParseMoov(BoxReader* reader) {
       VideoCodecProfile video_codec_profile = entry.video_info.profile;
       VideoCodecLevel video_codec_level = entry.video_info.level;
       if (entry.dv_info.has_value()) {
-        DCHECK_EQ(entry.dv_info->codec, VideoCodec::kDolbyVision);
+        DCHECK_EQ(entry.dv_info->codec_info.codec, VideoCodec::kDolbyVision);
         if (has_dv_) {
-          video_codec = entry.dv_info->codec;
-          video_codec_profile = entry.dv_info->profile;
-          video_codec_level = entry.dv_info->level;
+          video_codec = entry.dv_info->codec_info.codec;
+          video_codec_profile = entry.dv_info->codec_info.profile;
+          video_codec_level = entry.dv_info->codec_info.level;
         } else {
           MEDIA_LOG(INFO, media_log_)
               << "Dolby Vision video track with track_id=" << video_track_id
@@ -798,6 +798,11 @@ bool MP4StreamParser::ParseMoov(BoxReader* reader) {
 
       if (entry.video_color_space.IsSpecified())
         video_config.set_color_space_info(entry.video_color_space);
+
+      if (entry.dv_info.has_value() && has_dv_ &&
+          entry.dv_info->color_space.IsSpecified()) {
+        video_config.set_color_space_info(entry.dv_info->color_space);
+      }
 
       if (!entry.hdr_metadata.IsEmpty() && entry.hdr_metadata.IsValid()) {
         video_config.set_hdr_metadata(entry.hdr_metadata);

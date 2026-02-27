@@ -669,6 +669,8 @@ TEST_F(MP4StreamParserTest, DemuxingDVProfile5WithHEVCMimeTypeSourceBuffer) {
 
   scoped_refptr<DecoderBuffer> buffer =
       ReadTestDataFile("glass-blowing2-dolby-vision-profile-5-frag.mp4");
+  EXPECT_MEDIA_LOG(testing::HasSubstr("Dolby Vision video track with track_id"))
+      .Times(testing::AtMost(1));
   EXPECT_EQ(expect_success, AppendAllDataThenParseInPieces(*buffer, 512));
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
   EXPECT_EQ(VideoCodec::kDolbyVision, video_decoder_config_.codec());

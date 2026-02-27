@@ -134,5 +134,45 @@ TEST_F(DOVIDecoderConfigurationRecordTest, ParseNotEnoughData) {
   EXPECT_FALSE(dv_config.ParseForTesting(kTestData.data(), kTestData.size()));
 }
 
+TEST(DolbyVisionColorSpaceTest, Profile5ReturnsIPTPQApproximation) {
+  EXPECT_EQ(ParseDolbyVisionColorSpace(DOLBYVISION_PROFILE5, 0),
+            VideoColorSpace(VideoColorSpace::PrimaryID::BT2020,
+                            VideoColorSpace::TransferID::SMPTEST2084,
+                            VideoColorSpace::MatrixID::BT2020_NCL,
+                            gfx::ColorSpace::RangeID::FULL));
+}
+
+TEST(DolbyVisionColorSpaceTest, Profile8Hdr10Compatibility) {
+  EXPECT_EQ(ParseDolbyVisionColorSpace(DOLBYVISION_PROFILE8,
+                                       kDolbyVisionCompatibilityIdHDR10),
+            VideoColorSpace(VideoColorSpace::PrimaryID::BT2020,
+                            VideoColorSpace::TransferID::SMPTEST2084,
+                            VideoColorSpace::MatrixID::BT2020_NCL,
+                            gfx::ColorSpace::RangeID::LIMITED));
+}
+
+TEST(DolbyVisionColorSpaceTest, Profile8SdrCompatibility) {
+  EXPECT_EQ(ParseDolbyVisionColorSpace(DOLBYVISION_PROFILE8,
+                                       kDolbyVisionCompatibilityIdSDR),
+            VideoColorSpace(VideoColorSpace::PrimaryID::BT709,
+                            VideoColorSpace::TransferID::BT709,
+                            VideoColorSpace::MatrixID::BT709,
+                            gfx::ColorSpace::RangeID::LIMITED));
+}
+
+TEST(DolbyVisionColorSpaceTest, Profile8HlgCompatibility) {
+  EXPECT_EQ(ParseDolbyVisionColorSpace(DOLBYVISION_PROFILE8,
+                                       kDolbyVisionCompatibilityIdHLG),
+            VideoColorSpace(VideoColorSpace::PrimaryID::BT2020,
+                            VideoColorSpace::TransferID::ARIB_STD_B67,
+                            VideoColorSpace::MatrixID::BT2020_NCL,
+                            gfx::ColorSpace::RangeID::LIMITED));
+}
+
+TEST(DolbyVisionColorSpaceTest, Profile8WithUnkownCompatibilityId) {
+  EXPECT_EQ(ParseDolbyVisionColorSpace(DOLBYVISION_PROFILE8, 8),
+            VideoColorSpace{});
+}
+
 }  // namespace mp4
 }  // namespace media

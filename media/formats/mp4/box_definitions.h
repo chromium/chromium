@@ -335,6 +335,11 @@ struct MEDIA_EXPORT ContentLightLevel : ContentLightLevelInformation {
   FourCC BoxType() const override;
 };
 
+struct MEDIA_EXPORT DolbyVisionInfo {
+  CodecProfileLevel codec_info;
+  VideoColorSpace color_space;
+};
+
 struct MEDIA_EXPORT VideoSampleEntry : Box {
   DECLARE_BOX_METHODS(VideoSampleEntry);
 
@@ -353,7 +358,7 @@ struct MEDIA_EXPORT VideoSampleEntry : Box {
   // When set and found on a Dolby Vision source buffer, `dv_info`
   // will be used to upgrade `video_info` from its backwards
   // compatible codec (e.g., H.264, H.265) to a Dolby Vision codec.
-  std::optional<CodecProfileLevel> dv_info;
+  std::optional<DolbyVisionInfo> dv_info;
   gfx::HDRMetadata hdr_metadata;
 
   bool IsFormatValid() const;

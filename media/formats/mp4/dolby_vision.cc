@@ -100,5 +100,41 @@ bool DOVIDecoderConfigurationRecord::Parse(BufferReader* reader,
   return true;
 }
 
+// Mappings are based on Dolby Vision Profiles and Levels Specification v1.5,
+// section 2.1 ("Dolby Vision bitstream profiles").
+VideoColorSpace ParseDolbyVisionColorSpace(VideoCodecProfile profile,
+                                           uint8_t compatibility_id) {
+  switch (profile) {
+    case VideoCodecProfile::DOLBYVISION_PROFILE5:
+      // Dolby Vision use IPT-PQ-C2 as matrix, but chromium has no definition
+      // for it, so use BT.2020 NCL as a close approximation.
+      return VideoColorSpace(VideoColorSpace::PrimaryID::BT2020,
+                             VideoColorSpace::TransferID::SMPTEST2084,
+                             VideoColorSpace::MatrixID::BT2020_NCL,
+                             gfx::ColorSpace::RangeID::FULL);
+    case VideoCodecProfile::DOLBYVISION_PROFILE8:
+      if (compatibility_id == kDolbyVisionCompatibilityIdHDR10) {
+        return VideoColorSpace(VideoColorSpace::PrimaryID::BT2020,
+                               VideoColorSpace::TransferID::SMPTEST2084,
+                               VideoColorSpace::MatrixID::BT2020_NCL,
+                               gfx::ColorSpace::RangeID::LIMITED);
+      } else if (compatibility_id == kDolbyVisionCompatibilityIdSDR) {
+        return VideoColorSpace(VideoColorSpace::PrimaryID::BT709,
+                               VideoColorSpace::TransferID::BT709,
+                               VideoColorSpace::MatrixID::BT709,
+                               gfx::ColorSpace::RangeID::LIMITED);
+      } else if (compatibility_id == kDolbyVisionCompatibilityIdHLG) {
+        return VideoColorSpace(VideoColorSpace::PrimaryID::BT2020,
+                               VideoColorSpace::TransferID::ARIB_STD_B67,
+                               VideoColorSpace::MatrixID::BT2020_NCL,
+                               gfx::ColorSpace::RangeID::LIMITED);
+      }
+      break;
+    default:
+      break;
+  }
+  return {};
+}
+
 }  // namespace mp4
 }  // namespace media
