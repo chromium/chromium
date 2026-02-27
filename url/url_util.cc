@@ -906,7 +906,7 @@ std::string DecodeUrlEscapeSequences(std::string_view input,
   return base::UTF16ToUTF8(output.view());
 }
 
-void EncodeURIComponent(std::string_view input, CanonOutput* output) {
+void EncodeUriComponent(std::string_view input, CanonOutput* output) {
   if (output->capacity() - output->length() < input.length() * 3) {
     size_t required_size = 0;
     for (unsigned char c : input) {

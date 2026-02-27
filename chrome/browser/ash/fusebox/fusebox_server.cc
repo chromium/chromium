@@ -157,10 +157,9 @@ base::expected<Parsed, ParseError> ParseFileSystemURL(
   if (slash == std::string_view::npos) {
     encoded = std::string(fs_url_as_string);
   } else {
-    url::RawCanonOutputT<char> canon_output;
-    url::EncodeURIComponent(fs_url_as_string.substr(slash + 1), &canon_output);
     encoded = base::StrCat(
-        {fs_url_as_string.substr(0, slash + 1), canon_output.view()});
+        {fs_url_as_string.substr(0, slash + 1),
+         url::UriComponentEncoder(fs_url_as_string.substr(slash + 1)).view()});
   }
 
   storage::FileSystemURL fs_url;

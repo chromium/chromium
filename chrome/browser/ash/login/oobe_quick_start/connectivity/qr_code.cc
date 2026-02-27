@@ -33,10 +33,8 @@ QRCode::~QRCode() = default;
 
 std::string QRCode::GetQRCodeURLString() {
   std::string shared_secret_str(shared_secret_.begin(), shared_secret_.end());
-  std::string shared_secret_base64 = base::Base64Encode(shared_secret_str);
-  url::RawCanonOutputT<char> shared_secret_base64_uriencoded;
-  url::EncodeURIComponent(shared_secret_base64,
-                          &shared_secret_base64_uriencoded);
+  url::UriComponentEncoder shared_secret_base64_uriencoded(
+      base::Base64Encode(shared_secret_str));
   return base::StrCat({"https://signin.google/qs/", advertising_id_.ToString(),
                        "?key=", shared_secret_base64_uriencoded.view(),
                        "&t=", kDeviceTypeQueryParamValue});

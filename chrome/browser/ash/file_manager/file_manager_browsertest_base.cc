@@ -1850,8 +1850,9 @@ class DocumentsProviderTestVolume : public TestVolume {
       file_system_instance_->AddRecentDocument(root_document_id_, document);
     }
 
-    std::string canonical_url = base::StrCat(
-        {"content://", authority_, "/document/", EncodeURI(entry.name_text)});
+    std::string canonical_url =
+        base::StrCat({"content://", authority_, "/document/",
+                      url::EncodeUriComponent(entry.name_text)});
     arc::FakeFileSystemInstance::File file(
         canonical_url, GetTestFileContent(entry.source_file_name),
         GetMimeType(entry), arc::FakeFileSystemInstance::File::Seekable::NO);
@@ -1909,12 +1910,6 @@ class DocumentsProviderTestVolume : public TestVolume {
     CHECK(base::ReadFileToString(path, &contents))
         << "failed reading test data file " << test_file_name;
     return contents;
-  }
-
-  std::string EncodeURI(const std::string& component) {
-    url::RawCanonOutputT<char> encoded;
-    url::EncodeURIComponent(component, &encoded);
-    return std::string(encoded.view());
   }
 };
 

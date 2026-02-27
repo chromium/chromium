@@ -380,7 +380,7 @@ TEST_F(URLUtilTest, TestEncodeURIComponent) {
 
   for (const auto& encode_case : encode_cases) {
     RawCanonOutputT<char> buffer;
-    EncodeURIComponent(encode_case.input, &buffer);
+    EncodeUriComponent(encode_case.input, &buffer);
     EXPECT_EQ(encode_case.output, buffer.view());
   }
 }
