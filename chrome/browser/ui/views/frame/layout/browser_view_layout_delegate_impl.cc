@@ -128,7 +128,7 @@ bool BrowserViewLayoutDelegateImpl::IsActiveTabSplit() const {
 bool BrowserViewLayoutDelegateImpl::IsActiveTabAtLeadingWindowEdge() const {
   if (auto* const frame = GetFrameView()) {
     const bool has_leading_search_button =
-        tabs::GetTabSearchPosition(browser_view_->GetProfile()) ==
+        tabs::GetTabSearchPosition(browser_view_->browser()) ==
         tabs::TabSearchPosition::kLeadingHorizontalTabstrip;
     if (!frame->CaptionButtonsOnLeadingEdge() && !has_leading_search_button) {
       return browser_view_->browser()->tab_strip_model()->IsTabInForeground(0);

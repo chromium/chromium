@@ -51,7 +51,7 @@ class PinnedToolbarActionsContainerTest : public TestWithBrowserView {
     ASSERT_TRUE(model_);
 
     model_->UpdatePinnedState(kActionShowChromeLabs, false);
-    if (tabs::GetTabSearchPosition(profile()) ==
+    if (tabs::GetTabSearchPosition(browser_view()->browser()) ==
         tabs::TabSearchPosition::kToolbarButton) {
       model_->UpdatePinnedState(kActionTabSearch, false);
     }
@@ -687,8 +687,9 @@ TEST_F(PinnedToolbarActionsContainerTest, ActiveActionSkipsExecution) {
 }
 
 TEST_F(PinnedToolbarActionsContainerTest, MetricsRecordedForPinnableActions) {
-  bool is_tab_search_pinnable = tabs::GetTabSearchPosition(profile()) ==
-                                tabs::TabSearchPosition::kToolbarButton;
+  bool is_tab_search_pinnable =
+      tabs::GetTabSearchPosition(browser_view()->browser()) ==
+      tabs::TabSearchPosition::kToolbarButton;
   // Verify all pinnable buttons have a suffix listed in actions.xml.
   actions::ActionItemVector action_items;
   actions::ActionManager::Get().GetActions(

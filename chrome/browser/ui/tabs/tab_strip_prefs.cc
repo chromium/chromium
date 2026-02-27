@@ -6,9 +6,12 @@
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tab_search_feature.h"
 #include "chrome/browser/ui/tabs/features.h"
+#include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/toolbar/toolbar_pref_names.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -67,10 +70,14 @@ void MigrateTabSearchPref(PrefService* profile_prefs) {
                             true);
 }
 
-TabSearchPosition GetTabSearchPosition(const Profile* profile) {
-  if (tabs::IsVerticalTabsFeatureEnabled() &&
-      profile->GetPrefs()->GetBoolean(prefs::kVerticalTabsEnabled)) {
-    return TabSearchPosition::kVerticalTabstrip;
+TabSearchPosition GetTabSearchPosition(
+    const BrowserWindowInterface* browser_window) {
+  if (browser_window) {
+    auto* const controller =
+        tabs::VerticalTabStripStateController::From(browser_window);
+    if (controller && controller->ShouldDisplayVerticalTabs()) {
+      return TabSearchPosition::kVerticalTabstrip;
+    }
   }
 
   if (base::FeatureList::IsEnabled(tabs::kHorizontalTabStripComboButton)) {

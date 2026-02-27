@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/tabs/features.h"
+#include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/vertical_tab_strip_region_view.h"
@@ -213,8 +214,8 @@ class InteractionTestUtilBrowserSelectTabTest
   ~InteractionTestUtilBrowserSelectTabTest() override = default;
 
   void SetVerticalTabsEnabled(bool enabled) {
-    browser()->profile()->GetPrefs()->SetBoolean(prefs::kVerticalTabsEnabled,
-                                                 enabled);
+    tabs::VerticalTabStripStateController::From(browser())
+        ->SetVerticalTabsEnabled(enabled);
     RunScheduledLayouts();
   }
 

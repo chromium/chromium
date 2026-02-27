@@ -155,9 +155,9 @@ std::unique_ptr<TabStrip> CreateTabStrip(
 class TabSearchPositionMetricsLogger {
  public:
   explicit TabSearchPositionMetricsLogger(
-      const Profile* profile,
+      const BrowserWindowInterface* browser_window,
       base::TimeDelta logging_interval = base::Hours(1))
-      : profile_(profile),
+      : browser_window_(browser_window),
         logging_interval_(logging_interval),
         weak_ptr_factory_(this) {
     LogMetrics();
@@ -172,7 +172,7 @@ class TabSearchPositionMetricsLogger {
   // Logs the UMA metric for the tab search position.
   void LogMetrics() {
     const tabs::TabSearchPosition position =
-        tabs::GetTabSearchPosition(profile_);
+        tabs::GetTabSearchPosition(browser_window_);
     if (position == tabs::TabSearchPosition::kLeadingHorizontalTabstrip ||
         position == tabs::TabSearchPosition::kTrailingHorizontalTabstrip) {
       base::UmaHistogramEnumeration(
@@ -198,8 +198,8 @@ class TabSearchPositionMetricsLogger {
     ScheduleNextLog();
   }
 
-  // Profile for checking the pref value.
-  const raw_ptr<const Profile> profile_;
+  // Browser window for checking the pref value.
+  const raw_ptr<const BrowserWindowInterface> browser_window_;
 
   // Time in which this metric should be logged. Default is hourly.
   const base::TimeDelta logging_interval_;
@@ -211,10 +211,11 @@ HorizontalTabStripRegionView::HorizontalTabStripRegionView(
     BrowserView* browser_view)
     : profile_(browser_view->GetProfile()),
       render_tab_search_before_tab_strip_(
-          tabs::GetTabSearchPosition(profile_) ==
+          tabs::GetTabSearchPosition(browser_view->browser()) ==
           tabs::TabSearchPosition::kLeadingHorizontalTabstrip),
       tab_search_position_metrics_logger_(
-          std::make_unique<TabSearchPositionMetricsLogger>(profile_)),
+          std::make_unique<TabSearchPositionMetricsLogger>(
+              browser_view->browser())),
 #if BUILDFLAG(IS_CHROMEOS)
       tab_scrubber_(std::make_unique<ash::TabScrubber>(browser_view)),
 #endif

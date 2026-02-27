@@ -14,6 +14,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/common/pref_names.h"
@@ -205,8 +206,8 @@ IN_PROC_BROWSER_TEST_F(BrowserRootViewWithVerticalTabsBrowserTest,
         AddTabAtIndex(0, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_LINK));
   }
 
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kVerticalTabsEnabled,
-                                               true);
+  tabs::VerticalTabStripStateController::From(browser())
+      ->SetVerticalTabsEnabled(true);
   RunScheduledLayouts();
 
   model->ActivateTabAt(1);
@@ -218,8 +219,8 @@ IN_PROC_BROWSER_TEST_F(BrowserRootViewWithVerticalTabsBrowserTest,
   PerformMouseWheelOnTabStrip(kWheelUp);
   EXPECT_EQ(1, model->active_index());
 
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kVerticalTabsEnabled,
-                                               false);
+  tabs::VerticalTabStripStateController::From(browser())
+      ->SetVerticalTabsEnabled(false);
   RunScheduledLayouts();
 
   // When Vertical Tabs is disabled, the active tab should change.

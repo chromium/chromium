@@ -32,7 +32,7 @@ import type {MetricsBrowserProxy} from '../metrics_browser_proxy.js';
 import {MetricsBrowserProxyImpl} from '../metrics_browser_proxy.js';
 import {pageVisibility} from '../page_visibility.js';
 import type {AppearancePageVisibility} from '../page_visibility.js';
-import {RelaunchMixin, RestartType} from '../relaunch_mixin.js';
+import {RelaunchMixin} from '../relaunch_mixin.js';
 import {routes} from '../route.js';
 import {Router} from '../router.js';
 import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
@@ -69,7 +69,6 @@ export interface SettingsAppearancePageElement {
     colorSchemeModeSelect: HTMLSelectElement,
     defaultFontSize: SettingsDropdownMenuElement,
     zoomLevel: HTMLSelectElement,
-    tabSearchPositionDropdown: SettingsDropdownMenuElement,
   };
 }
 
@@ -259,31 +258,9 @@ export class SettingsAppearancePageElement extends
         },
       },
 
-      showTabSearchPositionRestartButton_: {
-        type: Boolean,
-        value: false,
-      },
-
       showResetPinnedActionsButton_: {
         type: Boolean,
         value: false,
-      },
-
-      tabSearchOptions_: {
-        readOnly: true,
-        type: Array,
-        value() {
-          return [
-            {
-              value: 'true',
-              name: loadTimeData.getString('uiFeatureAlignRight'),
-            },
-            {
-              value: 'false',
-              name: loadTimeData.getString('uiFeatureAlignLeft'),
-            },
-          ];
-        },
       },
     };
   }
@@ -293,8 +270,6 @@ export class SettingsAppearancePageElement extends
       'defaultFontSizeChanged_(prefs.webkit.webprefs.default_font_size.value)',
       'themeChanged_(' +
           'prefs.extensions.theme.id.value, systemTheme_, isForcedTheme_)',
-      'updateShowTabSearchRestartButton_(' +
-          'prefs.tab_search.is_right_aligned.value)',
       // <if expr="is_linux">
       'systemThemePrefChanged_(prefs.extensions.theme.system_theme.value)',
       // </if>
@@ -327,11 +302,9 @@ export class SettingsAppearancePageElement extends
   declare private showTabStripComboButtonEnabled_: boolean;
   declare private showProjectsPanelEnabled_: boolean;
   declare private showEverythingMenuEnabled_: boolean;
-  declare private showTabSearchPositionRestartButton_: boolean;
   declare private showManagedThemeDialog_: boolean;
   declare private sidePanelOptions_: DropdownMenuOptionList;
   declare private tabStripOptions_: DropdownMenuOptionList;
-  declare private tabSearchOptions_: DropdownMenuOptionList;
   private appearanceBrowserProxy_: AppearanceBrowserProxy =
       AppearanceBrowserProxyImpl.getInstance();
   private colorSchemeModeHandler_: CustomizeColorSchemeModeHandlerInterface =
@@ -582,17 +555,6 @@ export class SettingsAppearancePageElement extends
 
   private onManagedDialogClosed_() {
     this.showManagedThemeDialog_ = false;
-  }
-
-  private onTabSearchPositionRestartClick_(e: Event) {
-    // Prevent event from bubbling up to the toggle button.
-    e.stopPropagation();
-    this.performRestart(RestartType.RESTART);
-  }
-
-  private updateShowTabSearchRestartButton_(newValue: boolean): void {
-    this.showTabSearchPositionRestartButton_ = newValue !==
-        loadTimeData.getBoolean('tabSearchIsRightAlignedAtStartup');
   }
 
   // SettingsViewMixin

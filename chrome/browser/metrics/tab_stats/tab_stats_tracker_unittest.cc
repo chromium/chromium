@@ -49,6 +49,7 @@
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_prefs.h"
+#include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/test/base/test_browser_window.h"
 #endif
 
@@ -868,7 +869,8 @@ TEST_F(TabStatsTrackerTest, HeartbeatMetrics) {
 
 #if !BUILDFLAG(IS_ANDROID)
 TEST_F(TabStatsTrackerTest, HeartbeatMetricsWithVerticalTabs) {
-  profile()->GetPrefs()->SetBoolean(prefs::kVerticalTabsEnabled, true);
+  tabs::VerticalTabStripStateController::From(browser_.get())
+      ->SetVerticalTabsEnabled(true);
 
   size_t expected_tab_count =
       tab_stats_tracker_->AddTabs(12, this, tab_strip_modifier_.get());

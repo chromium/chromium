@@ -87,6 +87,8 @@ class TabSearchBubbleHost : public views::WidgetObserver,
 
   const raw_ptr<Profile> profile_;
 
+  const raw_ptr<BrowserWindowInterface> browser_window_interface_;
+
   std::unique_ptr<WebUIBubbleManager> webui_bubble_manager_;
 
   views::WidgetOpenTimer widget_open_timer_;

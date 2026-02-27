@@ -68,6 +68,7 @@ TabSearchBubbleHost::TabSearchBubbleHost(
     BrowserWindowInterface* browser_window_interface)
     : button_(button),
       profile_(browser_window_interface->GetProfile()),
+      browser_window_interface_(browser_window_interface),
       webui_bubble_manager_(WebUIBubbleManager::Create<TabSearchUI>(
           button,
           browser_window_interface,
@@ -242,7 +243,8 @@ bool TabSearchBubbleHost::ShowTabSearchBubble(
       },
       *bubble_created_time_));
 
-  const tabs::TabSearchPosition position = tabs::GetTabSearchPosition(profile_);
+  const tabs::TabSearchPosition position =
+      tabs::GetTabSearchPosition(browser_window_interface_);
   webui_bubble_manager_->ShowBubble(
       std::nullopt,
       (position == tabs::TabSearchPosition::kLeadingHorizontalTabstrip ||

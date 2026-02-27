@@ -285,7 +285,7 @@ class PinnedSidePanelInteractiveTest : public InteractiveFeaturePromoTest {
     PinnedToolbarActionsModel* const actions_model =
         PinnedToolbarActionsModel::Get(browser()->profile());
     actions_model->UpdatePinnedState(kActionShowChromeLabs, false);
-    if (tabs::GetTabSearchPosition(browser()->profile()) ==
+    if (tabs::GetTabSearchPosition(browser()) ==
         tabs::TabSearchPosition::kToolbarButton) {
       actions_model->UpdatePinnedState(kActionTabSearch, false);
     }

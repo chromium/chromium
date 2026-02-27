@@ -67,6 +67,7 @@
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
+#include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #endif
 
 namespace metrics {
@@ -105,9 +106,9 @@ void UmaHistogramCounts10000WithTabStripModeVariant(
     return;
   }
 
-  const char* suffix = tabs::IsVerticalTabsFeatureEnabled() &&
-                               tab_strip.GetProfile()->GetPrefs()->GetBoolean(
-                                   prefs::kVerticalTabsEnabled)
+  auto* controller = tabs::VerticalTabStripStateController::From(
+      tab_strip.browser_window_interface());
+  const char* suffix = controller && controller->ShouldDisplayVerticalTabs()
                            ? ".VerticalTabStrip"
                            : ".HorizontalTabStrip";
 

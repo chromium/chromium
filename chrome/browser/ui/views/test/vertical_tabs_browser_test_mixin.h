@@ -67,14 +67,12 @@ class VerticalTabsBrowserTestMixin : public T {
   }
 
   void EnterVerticalTabsMode() {
-    T::browser()->profile()->GetPrefs()->SetBoolean(prefs::kVerticalTabsEnabled,
-                                                    true);
+    vertical_tab_strip_state_controller()->SetVerticalTabsEnabled(true);
     T::RunScheduledLayouts();
   }
 
   void ExitVerticalTabsMode() {
-    T::browser()->profile()->GetPrefs()->SetBoolean(prefs::kVerticalTabsEnabled,
-                                                    false);
+    vertical_tab_strip_state_controller()->SetVerticalTabsEnabled(false);
     T::RunScheduledLayouts();
   }
 

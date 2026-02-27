@@ -1913,8 +1913,7 @@ bool TabStrip::ShouldCompactLeadingEdge() const {
               ->browser_widget()
               ->GetFrameView()
               ->CaptionButtonsOnLeadingEdge() &&
-         (tabs::GetTabSearchPosition(
-              GetBrowserWindowInterface()->GetProfile()) ==
+         (tabs::GetTabSearchPosition(GetBrowserWindowInterface()) ==
           tabs::TabSearchPosition::kTrailingHorizontalTabstrip);
 }
 

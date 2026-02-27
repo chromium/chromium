@@ -585,11 +585,6 @@ void AddAppearanceStrings(content::WebUIDataSource* html_source,
       "showEverythingMenuEnabled",
       tab_groups::SavedTabGroupUtils::IsEnabledForProfile(profile));
 
-  html_source->AddBoolean(
-      "tabSearchIsRightAlignedAtStartup",
-      tabs::GetTabSearchPosition(profile) ==
-          tabs::TabSearchPosition::kTrailingHorizontalTabstrip);
-
 #if BUILDFLAG(IS_LINUX)
   bool show_custom_chrome_frame = ui::OzonePlatform::GetInstance()
                                       ->GetPlatformRuntimeProperties()

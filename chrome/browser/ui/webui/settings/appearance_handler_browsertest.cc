@@ -63,7 +63,7 @@ IN_PROC_BROWSER_TEST_F(AppearanceHandlerTest, ResetPinnedToolbarActions) {
 
   EXPECT_TRUE(prefs->GetBoolean(prefs::kShowHomeButton));
   EXPECT_FALSE(prefs->GetBoolean(prefs::kShowForwardButton));
-  if (tabs::GetTabSearchPosition(browser()->profile()) ==
+  if (tabs::GetTabSearchPosition(browser()) ==
       tabs::TabSearchPosition::kToolbarButton) {
     EXPECT_EQ(3u, actions_model->PinnedActionIds().size());
   } else {
@@ -80,7 +80,7 @@ IN_PROC_BROWSER_TEST_F(AppearanceHandlerTest, ResetPinnedToolbarActions) {
 
   EXPECT_FALSE(prefs->GetBoolean(prefs::kShowHomeButton));
   EXPECT_TRUE(prefs->GetBoolean(prefs::kShowForwardButton));
-  if (tabs::GetTabSearchPosition(browser()->profile()) ==
+  if (tabs::GetTabSearchPosition(browser()) ==
       tabs::TabSearchPosition::kToolbarButton) {
     ASSERT_EQ(2u, actions_model->PinnedActionIds().size());
     EXPECT_EQ(kActionShowChromeLabs, actions_model->PinnedActionIds()[0]);

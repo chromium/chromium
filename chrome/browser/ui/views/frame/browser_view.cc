@@ -1402,7 +1402,7 @@ bool BrowserView::ShouldDrawTabStrip() const {
 bool BrowserView::ShouldDrawVerticalTabStrip() const {
   auto* controller = tabs::VerticalTabStripStateController::From(browser_);
   return ShouldDrawTabStrip() && controller &&
-         controller->ShouldDisplayVerticalTabs();
+         controller->ShouldDisplayVerticalTabs() && browser_->is_type_normal();
 }
 
 bool BrowserView::ShouldDrawWebAppFrameToolbar() const {
@@ -3008,7 +3008,7 @@ void BrowserView::MaybeShowTabStripToolbarButtonIPH() {
   }
 
   bool should_show =
-      tabs::GetTabSearchPosition(browser()->profile()) ==
+      tabs::GetTabSearchPosition(browser()) ==
           tabs::TabSearchPosition::kToolbarButton &&
       toolbar_->pinned_toolbar_actions_container()->IsActionPinned(
           kActionTabSearch);
@@ -4401,7 +4401,7 @@ void BrowserView::UpdateTabSearchBubbleHost() {
     tab_search_bubble_host_ = std::make_unique<TabSearchBubbleHost>(
         combo_button->end_button(), browser_.get());
     combo_button->SetTabSearchBubbleHost(tab_search_bubble_host_.get());
-  } else if (tabs::GetTabSearchPosition(browser_->profile()) ==
+  } else if (tabs::GetTabSearchPosition(browser_) ==
              tabs::TabSearchPosition::kToolbarButton) {
     tab_search_bubble_host_ = std::make_unique<TabSearchBubbleHost>(
         toolbar_->tab_search_button(), browser_.get());
