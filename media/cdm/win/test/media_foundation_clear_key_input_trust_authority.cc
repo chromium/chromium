@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/cdm/win/test/media_foundation_clear_key_input_trust_authority.h"
 
 #include <mfapi.h>
@@ -17,6 +12,7 @@
 
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/notimplemented.h"
 #include "media/base/win/mf_helpers.h"
 #include "media/cdm/win/test/media_foundation_clear_key_activate.h"
@@ -113,7 +109,8 @@ STDMETHODIMP MediaFoundationClearKeyInputTrustAuthority::BindAccess(
   }
 
   for (DWORD i = 0; i < params->cActions; ++i) {
-    MFPOLICYMANAGER_ACTION action = params->rgOutputActions[i].Action;
+    MFPOLICYMANAGER_ACTION action =
+        UNSAFE_TODO(params->rgOutputActions[i]).Action;
     if (action != PEACTION_PLAY && action != PEACTION_EXTRACT &&
         action != PEACTION_NO) {
       return MF_E_UNEXPECTED;

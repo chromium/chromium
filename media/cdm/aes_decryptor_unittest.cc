@@ -2,12 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <string_view>
-
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
+#include "media/cdm/aes_decryptor.h"
 
 #include <stdint.h>
 
@@ -15,8 +10,10 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <string_view>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/debug/leak_annotations.h"
@@ -36,7 +33,6 @@
 #include "media/base/decryptor.h"
 #include "media/base/media_switches.h"
 #include "media/base/mock_filters.h"
-#include "media/cdm/aes_decryptor.h"
 #include "media/media_buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest-param-test.h"
@@ -283,7 +279,8 @@ scoped_refptr<DecoderBuffer> CreateEncryptedBuffer(
   CHECK(!data.empty());
   CHECK(!iv.empty());
   auto encrypted_buffer = base::MakeRefCounted<DecoderBuffer>(data.size());
-  memcpy(encrypted_buffer->writable_data(), data.data(), data.size());
+  UNSAFE_TODO(
+      memcpy(encrypted_buffer->writable_data(), data.data(), data.size()));
   std::string key_id_string(key_id.begin(), key_id.end());
   std::string iv_string(iv.begin(), iv.end());
   encrypted_buffer->set_decrypt_config(DecryptConfig::CreateCencConfig(
@@ -295,7 +292,8 @@ scoped_refptr<DecoderBuffer> CreateClearBuffer(
     const std::vector<uint8_t>& data) {
   CHECK(!data.empty());
   auto encrypted_buffer = base::MakeRefCounted<DecoderBuffer>(data.size());
-  memcpy(encrypted_buffer->writable_data(), data.data(), data.size());
+  UNSAFE_TODO(
+      memcpy(encrypted_buffer->writable_data(), data.data(), data.size()));
   return encrypted_buffer;
 }
 
@@ -312,7 +310,8 @@ enum class TestType {
 class AesDecryptorTest : public testing::TestWithParam<TestType> {
  public:
   AesDecryptorTest()
-      : original_data_(kOriginalData, kOriginalData + kOriginalDataSize),
+      : original_data_(kOriginalData,
+                       UNSAFE_TODO(kOriginalData + kOriginalDataSize)),
         encrypted_data_(kEncryptedData.data(),
                         base::span<const uint8_t>(kEncryptedData)
                             .subspan(std::size(kEncryptedData))

@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/cdm/win/media_foundation_cdm_session.h"
 
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/not_fatal_until.h"
@@ -94,7 +90,7 @@ CdmKeysInfo ToCdmKeysInfo(const MFMediaKeyStatus* key_statuses, int count) {
   CdmKeysInfo keys_info;
   keys_info.reserve(count);
   for (int i = 0; i < count; ++i) {
-    const auto& key_status = key_statuses[i];
+    const auto& key_status = UNSAFE_TODO(key_statuses[i]);
 
     if (key_status.cbKeyId != sizeof(GUID)) {
       DLOG(ERROR) << __func__ << ": Key ID with unsupported size ignored";
@@ -138,8 +134,9 @@ class SessionCallbacks final
                           DWORD message_size,
                           LPCWSTR destination_url) final {
     DVLOG_FUNC(2) << ": message size=" << message_size;
-    message_cb_.Run(ToCdmMessageType(message_type),
-                    std::vector<uint8_t>(message, message + message_size));
+    message_cb_.Run(
+        ToCdmMessageType(message_type),
+        std::vector<uint8_t>(message, UNSAFE_TODO(message + message_size)));
     return S_OK;
   }
 
@@ -291,7 +288,7 @@ void MediaFoundationCdmSession::OnSessionKeysChange() {
   // ScopedCoMem<MFMediaKeyStatus> only releases memory for |key_statuses|. We
   // need to manually release memory for |pbKeyId| here.
   for (UINT i = 0; i < count; ++i) {
-    const auto& key_status = key_statuses[i];
+    const auto& key_status = UNSAFE_TODO(key_statuses[i]);
     if (key_status.pbKeyId)
       CoTaskMemFree(key_status.pbKeyId);
   }

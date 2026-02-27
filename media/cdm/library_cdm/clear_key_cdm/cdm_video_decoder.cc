@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/cdm/library_cdm/clear_key_cdm/cdm_video_decoder.h"
 
 #include <memory>
@@ -14,6 +9,7 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/containers/queue.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -63,8 +59,9 @@ media::VideoDecoderConfig ToClearMediaVideoDecoderConfig(
       VideoDecoderConfig::AlphaMode::kIsOpaque,
       ToMediaColorSpace(config.color_space), kNoTransformation, coded_size,
       gfx::Rect(coded_size), coded_size,
-      std::vector<uint8_t>(config.extra_data,
-                           config.extra_data + config.extra_data_size),
+      std::vector<uint8_t>(
+          config.extra_data,
+          UNSAFE_TODO(config.extra_data + config.extra_data_size)),
       EncryptionScheme::kUnencrypted);
 
   return media_config;
@@ -133,7 +130,7 @@ bool ToCdmVideoFrame(const VideoFrame& video_frame,
     cdm_video_frame->SetStride(cdm_plane, row_bytes);
 
     libyuv::CopyPlane(src, src_stride, dst, row_bytes, row_bytes, rows);
-    dst += row_bytes * rows;
+    UNSAFE_TODO(dst += row_bytes * rows);
     offset += row_bytes * rows;
   }
 
