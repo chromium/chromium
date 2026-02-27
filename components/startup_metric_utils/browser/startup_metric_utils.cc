@@ -147,6 +147,31 @@ void BrowserStartupMetricRecorder::EmitHistogramWithTemperatureAndTraceEvent(
   GetCommon().EmitTraceEvent(histogram_basename, begin_ticks, end_ticks);
 }
 
+void BrowserStartupMetricRecorder::EmitBrowserWindowDisplayHistogram() {
+  if (is_browser_window_display_metric_emitted_) {
+    return;
+  }
+
+  // The metric requires the message loop to have started so that the startup
+  // temperature evaluation has run.
+  if (browser_window_display_ticks_.is_null() ||
+      message_loop_start_ticks_.is_null()) {
+    return;
+  }
+
+  // Skip logging if the main window startup was interrupted, e.g., by
+  // --silent-launch, profile picker, or bad flags prompt.
+  if (!ShouldLogStartupHistogram()) {
+    return;
+  }
+
+  is_browser_window_display_metric_emitted_ = true;
+
+  EmitHistogramWithTemperatureAndTraceEvent(
+      &base::UmaHistogramLongTimes, "Startup.BrowserWindowDisplay",
+      GetCommon().application_start_ticks_, browser_window_display_ticks_);
+}
+
 BrowserStartupMetricRecorder& GetBrowser() {
   // If this ceases to be true, Get{Common,Browser} need to be changed to use
   // base::NoDestructor.
@@ -247,6 +272,7 @@ void BrowserStartupMetricRecorder::ResetSessionForTesting() {
   is_privacy_sandbox_attestations_component_ready_recorded_ = false;
   is_privacy_sandbox_attestations_first_check_recorded_ = false;
   is_first_run_ = false;
+  is_browser_window_display_metric_emitted_ = false;
 }
 
 bool BrowserStartupMetricRecorder::WasMainWindowStartupInterrupted() const {
@@ -301,11 +327,7 @@ void BrowserStartupMetricRecorder::RecordBrowserMainMessageLoopStart(
   GetCommon().AddStartupEventsForTelemetry();
 
   // Record values stored prior to startup temperature evaluation.
-  if (ShouldLogStartupHistogram() && !browser_window_display_ticks_.is_null()) {
-    EmitHistogramWithTemperatureAndTraceEvent(
-        &base::UmaHistogramLongTimes, "Startup.BrowserWindowDisplay",
-        GetCommon().application_start_ticks_, browser_window_display_ticks_);
-  }
+  EmitBrowserWindowDisplayHistogram();
 
   // Process creation to application start. See comment above
   // RecordApplicationStart().
@@ -352,6 +374,7 @@ void BrowserStartupMetricRecorder::RecordBrowserWindowDisplay(
     base::TimeTicks ticks) {
   DCHECK(!ticks.is_null());
 
+  // Return if it has already been recorded.
   if (!browser_window_display_ticks_.is_null()) {
     return;
   }
@@ -364,6 +387,8 @@ void BrowserStartupMetricRecorder::RecordBrowserWindowDisplay(
   // these cases, the value will not be recorded, which is the desired behavior
   // for a non-conventional launch.
   browser_window_display_ticks_ = ticks;
+
+  EmitBrowserWindowDisplayHistogram();
 }
 
 void BrowserStartupMetricRecorder::RecordBrowserWindowFirstPaintTicks(
