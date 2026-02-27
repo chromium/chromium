@@ -14,13 +14,17 @@
 #import "ios/chrome/browser/promos_manager/coordinator/standard_promo_action_handler.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/credential_provider_promo_commands.h"
 #import "ios/chrome/browser/shared/public/commands/docking_promo_commands.h"
+#import "ios/chrome/browser/shared/public/commands/picture_in_picture_commands.h"
+#import "ios/chrome/browser/shared/public/commands/promos_manager_commands.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
@@ -80,6 +84,16 @@ class PromosManagerCoordinatorTest : public PlatformTest {
   void CreatePromosManagerCoordinator() {
     Browser* browser =
         scene_state_.browserProviderInterface.mainBrowserProvider.browser;
+    mock_pip_handler_ = OCMProtocolMock(@protocol(PictureInPictureCommands));
+    [browser->GetCommandDispatcher()
+        startDispatchingToTarget:mock_pip_handler_
+                     forProtocol:@protocol(PictureInPictureCommands)];
+    mock_promos_manager_handler_ =
+        OCMProtocolMock(@protocol(PromosManagerCommands));
+    [browser->GetCommandDispatcher()
+        startDispatchingToTarget:mock_promos_manager_handler_
+                     forProtocol:@protocol(PromosManagerCommands)];
+
     coordinator_ = [[PromosManagerCoordinator alloc]
             initWithBaseViewController:view_controller_
                                browser:browser
@@ -111,6 +125,8 @@ class PromosManagerCoordinatorTest : public PlatformTest {
   FakeStartupInformation* startup_information_;
   ProfileState* profile_state_;
   FakeSceneState* scene_state_;
+  id mock_pip_handler_;
+  id mock_promos_manager_handler_;
 };
 
 }  // namespace

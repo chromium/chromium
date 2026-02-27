@@ -53,9 +53,6 @@ NSString* kDefaultBrowserPromoDefaultAppsDestinationVideo =
   BOOL _firstInteractionRecorded;
   // The timestamp of the first primary button tap.
   base::Time _acceptanceTimestamp;
-  // Whether the promo destination is the default apps for
-  // Picture-in-Picture.
-  BOOL _defaultAppsDestinationForPictureInPicture;
 }
 
 #pragma mark - ChromeCoordinator
@@ -66,13 +63,6 @@ NSString* kDefaultBrowserPromoDefaultAppsDestinationVideo =
 
   _tracker = feature_engagement::TrackerFactory::GetForProfile(self.profile);
   _mediator = [[DefaultBrowserGenericPromoMediator alloc] init];
-
-  if (IsDefaultBrowserPictureInPictureEnabled() &&
-      IsDefaultAppsPictureInPictureVariant()) {
-    // Both Picture-in-Picture variants (`EnabledDefaultApps` and
-    // `DisabledDefaultApps`) use the "Default Apps" video.
-    _defaultAppsDestinationForPictureInPicture = YES;
-  }
 
   [self showPromo];
 }
@@ -105,11 +95,11 @@ NSString* kDefaultBrowserPromoDefaultAppsDestinationVideo =
 - (void)confirmationAlertPrimaryAction {
   if (IsDefaultBrowserPictureInPictureEnabled()) {
     [_handler hidePromo];
-    id<PictureInPictureCommands> pipHandler = HandlerForProtocol(
+    id<PictureInPictureCommands> PIPHandler = HandlerForProtocol(
         self.browser->GetCommandDispatcher(), PictureInPictureCommands);
-    OpenIOSDefaultBrowserSettingsPage(
-        _defaultAppsDestinationForPictureInPicture,
-        /*ui_application_to_use=*/nil, /*pip_handler=*/pipHandler);
+    OpenIOSDefaultBrowserSettingsPage(IsDefaultAppsPictureInPictureVariant(),
+                                      /*ui_application_to_use=*/nil,
+                                      PIPHandler);
     return;
   }
 
@@ -218,8 +208,9 @@ NSString* kDefaultBrowserPromoDefaultAppsDestinationVideo =
   _viewController = [[DefaultBrowserInstructionsViewController alloc]
           initWithDismissButton:YES
                hasRemindMeLater:hasRemindMeLater
-      useDefaultAppsDestination:_promoWasFromOffCycleTrigger ||
-                                _defaultAppsDestinationForPictureInPicture
+      useDefaultAppsDestination:IsDefaultBrowserPictureInPictureEnabled()
+                                    ? IsDefaultAppsPictureInPictureVariant()
+                                    : _promoWasFromOffCycleTrigger
                        hasSteps:NO
                   actionHandler:self
                       titleText:nil];

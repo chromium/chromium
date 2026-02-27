@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_DEFAULT_BROWSER_DEFAULT_BROWSER_SETTINGS_TABLE_VIEW_CONTROLLER_H_
 #define IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_DEFAULT_BROWSER_DEFAULT_BROWSER_SETTINGS_TABLE_VIEW_CONTROLLER_H_
 
+@protocol PictureInPictureCommands;
+
 #import "ios/chrome/browser/default_browser/model/promo_source.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_controller_protocol.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_root_table_view_controller.h"
@@ -16,11 +18,15 @@
     : SettingsRootTableViewController <SettingsControllerProtocol,
                                        ConfirmationAlertActionHandler>
 
-- (instancetype)init NS_DESIGNATED_INITIALIZER;
-- (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;
-
 // The feature that triggered this view controller.
 @property(nonatomic, assign) DefaultBrowserSettingsPageSource source;
+
+// The PictureInPictureCommands handler to use for Picture-in-Picture related
+// functionality.
+@property(nonatomic, weak) id<PictureInPictureCommands> PIPHandler;
+
+- (instancetype)init NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;
 
 @end
 

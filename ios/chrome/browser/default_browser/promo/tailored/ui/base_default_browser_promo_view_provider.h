@@ -5,6 +5,9 @@
 #ifndef IOS_CHROME_BROWSER_DEFAULT_BROWSER_PROMO_TAILORED_UI_BASE_DEFAULT_BROWSER_PROMO_VIEW_PROVIDER_H_
 #define IOS_CHROME_BROWSER_DEFAULT_BROWSER_PROMO_TAILORED_UI_BASE_DEFAULT_BROWSER_PROMO_VIEW_PROVIDER_H_
 
+@protocol PictureInPictureCommands;
+@protocol PromosManagerCommands;
+
 #import "base/feature_list.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/promos_manager/coordinator/standard_promo_view_provider.h"
@@ -14,6 +17,13 @@
 // instantiated.
 @interface BaseDefaultBrowserPromoViewProvider
     : NSObject <StandardPromoViewProvider>
+
+// The PictureInPictureCommands handler to use for Picture-in-Picture related
+// functionality.
+@property(nonatomic, weak) id<PictureInPictureCommands> PIPHandler;
+
+// The PromosManagerCommands handler to use for promo related functionality.
+@property(nonatomic, weak) id<PromosManagerCommands> promosManagerHandler;
 
 // Should be implemented in subclassses.
 - (UIImage*)promoImage;

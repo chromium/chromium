@@ -9,12 +9,15 @@
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/strcat.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
+#import "ios/chrome/browser/default_browser/promo/public/features.h"
 #import "ios/chrome/browser/default_browser/promo/ui/default_browser_instructions_view_controller.h"
 #import "ios/chrome/browser/intents/model/intents_donation_helper.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_item_type.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_prefs.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_table_view_controller_constants.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/public/commands/picture_in_picture_commands.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -69,12 +72,7 @@ enum class DefaultBrowserSettingsPageUsage {
   self.shouldHideDoneButton = YES;
   self.tableView.accessibilityIdentifier = kDefaultBrowserSettingsTableViewId;
 
-  BOOL isFromOneTimeDefaultBrowserNotification =
-      self.source == DefaultBrowserSettingsPageSource::kTipsNotification &&
-      base::FeatureList::IsEnabled(kIOSOneTimeDefaultBrowserNotification);
-  _useDefaultAppsDestination = IsDefaultAppsDestinationAvailable() &&
-                               (isFromOneTimeDefaultBrowserNotification ||
-                                IsUseDefaultAppsDestinationForPromosEnabled());
+  _useDefaultAppsDestination = [self shouldUseDefaultAppsDestination];
 
   [self addDefaultBrowserVideoInstructionsView];
 
@@ -113,6 +111,20 @@ enum class DefaultBrowserSettingsPageUsage {
 
 #pragma mark Private
 
+// Returns whether the Default Apps destination should be used.
+- (BOOL)shouldUseDefaultAppsDestination {
+  if (IsDefaultBrowserPictureInPictureEnabled()) {
+    return IsDefaultAppsPictureInPictureVariant();
+  }
+
+  BOOL isFromOneTimeDefaultBrowserNotification =
+      self.source == DefaultBrowserSettingsPageSource::kTipsNotification &&
+      base::FeatureList::IsEnabled(kIOSOneTimeDefaultBrowserNotification);
+  return IsDefaultAppsDestinationAvailable() &&
+         (isFromOneTimeDefaultBrowserNotification ||
+          IsUseDefaultAppsDestinationForPromosEnabled());
+}
+
 // Responds to user action to go to default browser iOS settings.
 - (void)openSettingsButtonPressed {
   // Record iOS settings opened only once per app settings display. As
@@ -138,7 +150,12 @@ enum class DefaultBrowserSettingsPageUsage {
                                         SetUpListItemType::kDefaultBrowser);
   }
 
-  OpenIOSDefaultBrowserSettingsPage(_useDefaultAppsDestination);
+  if (IsDefaultBrowserPictureInPictureEnabled()) {
+    [self.sceneHandler closePresentedViews];
+  }
+  OpenIOSDefaultBrowserSettingsPage(_useDefaultAppsDestination,
+                                    /*ui_application_to_use=*/nil,
+                                    self.PIPHandler);
 }
 
 // Adds default browser video instructions view as a background view.

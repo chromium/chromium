@@ -21,7 +21,6 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 
 using base::RecordAction;
@@ -88,11 +87,11 @@ using base::UserMetricsAction;
   [self logDefaultBrowserFullscreenPromoHistogramForAction:
             IOSDefaultBrowserPromoAction::kActionButton];
 
-  OpenIOSDefaultBrowserSettingsPage(/*force_default_apps_if_available=*/false,
-                                    _application);
-
   _markItemComplete = YES;
   [self.delegate setUpListDefaultBrowserPromoDidFinish:YES];
+
+  OpenIOSDefaultBrowserSettingsPage(/*force_default_apps_if_available=*/false,
+                                    _application);
 }
 
 - (void)didTapSecondaryActionButton {

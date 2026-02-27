@@ -3493,6 +3493,11 @@ const char kChromeAppStoreUrl[] =
   }
 }
 
+- (void)dismissCurrentPromo {
+  [self.promosManagerCoordinator stop];
+  self.promosManagerCoordinator = nil;
+}
+
 - (void)showWhatsNewPromo {
   [self showWhatsNew];
   self.whatsNewCoordinator.promosUIHandler = self.promosManagerCoordinator;

@@ -40,6 +40,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/picture_in_picture_commands.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
@@ -107,6 +108,12 @@ class NonModalDefaultBrowserPromoSchedulerSceneAgentTest : public PlatformTest {
                      forProtocol:@protocol(
                                      DefaultBrowserPromoNonModalCommands)];
 
+    pip_commands_handler_ =
+        OCMStrictProtocolMock(@protocol(PictureInPictureCommands));
+    [browser_->GetCommandDispatcher()
+        startDispatchingToTarget:pip_commands_handler_
+                     forProtocol:@protocol(PictureInPictureCommands)];
+
     scheduler_ = [[NonModalDefaultBrowserPromoSchedulerSceneAgent alloc] init];
     scheduler_.sceneState = scene_state_;
 
@@ -122,6 +129,7 @@ class NonModalDefaultBrowserPromoSchedulerSceneAgentTest : public PlatformTest {
     [scene_state_ shutdown];
     scene_state_ = nil;
     EXPECT_OCMOCK_VERIFY(promo_commands_handler_);
+    EXPECT_OCMOCK_VERIFY(pip_commands_handler_);
     EXPECT_OCMOCK_VERIFY(application_);
   }
 
@@ -145,6 +153,7 @@ class NonModalDefaultBrowserPromoSchedulerSceneAgentTest : public PlatformTest {
   raw_ptr<feature_engagement::test::MockTracker> mock_tracker_;
   FakeOverlayPresentationContext overlay_presentation_context_;
   id promo_commands_handler_;
+  id pip_commands_handler_;
   NonModalDefaultBrowserPromoSchedulerSceneAgent* scheduler_;
   id application_ = nil;
   base::RunLoop run_loop_;

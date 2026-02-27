@@ -24,6 +24,9 @@
 - (void)showPromo {
 }
 
+- (void)dismissCurrentPromo {
+}
+
 - (void)showAppStoreReviewPrompt {
 }
 

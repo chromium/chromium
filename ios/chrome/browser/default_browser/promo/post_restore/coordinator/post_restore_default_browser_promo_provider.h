@@ -5,6 +5,9 @@
 #ifndef IOS_CHROME_BROWSER_DEFAULT_BROWSER_PROMO_POST_RESTORE_COORDINATOR_POST_RESTORE_DEFAULT_BROWSER_PROMO_PROVIDER_H_
 #define IOS_CHROME_BROWSER_DEFAULT_BROWSER_PROMO_POST_RESTORE_COORDINATOR_POST_RESTORE_DEFAULT_BROWSER_PROMO_PROVIDER_H_
 
+@protocol PictureInPictureCommands;
+@protocol PromosManagerCommands;
+
 #import "ios/chrome/browser/promos_manager/coordinator/standard_promo_alert_provider.h"
 #import "ios/chrome/browser/shared/public/commands/promos_manager_commands.h"
 
@@ -16,6 +19,13 @@
 // controller style promo.
 @interface PostRestoreDefaultBrowserPromoProvider
     : NSObject <StandardPromoAlertProvider>
+
+// The PictureInPictureCommands handler to use for Picture-in-Picture related
+// functionality.
+@property(nonatomic, weak) id<PictureInPictureCommands> PIPHandler;
+
+// The PromosManagerCommands handler to use for promo related functionality.
+@property(nonatomic, weak) id<PromosManagerCommands> promosManagerHandler;
 
 // Delegate callback to tell the provider that the promo was displayed.
 - (void)promoWasDisplayed;

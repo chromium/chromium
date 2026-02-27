@@ -9,7 +9,10 @@
 #import "base/metrics/user_metrics_action.h"
 #import "base/notreached.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
+#import "ios/chrome/browser/default_browser/promo/public/features.h"
 #import "ios/chrome/browser/promos_manager/model/promo_config.h"
+#import "ios/chrome/browser/shared/public/commands/picture_in_picture_commands.h"
+#import "ios/chrome/browser/shared/public/commands/promos_manager_commands.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
@@ -80,7 +83,13 @@ constexpr CGFloat kHelpSymbolSize = 20;
       IOSDefaultBrowserPromoAction::kActionButton);
   LogUserInteractionWithTailoredFullscreenPromo();
 
-  OpenIOSDefaultBrowserSettingsPage();
+  if (IsDefaultBrowserPictureInPictureEnabled()) {
+    [self.promosManagerHandler dismissCurrentPromo];
+  }
+
+  OpenIOSDefaultBrowserSettingsPage(/*force_default_apps_if_available=*/false,
+                                    /*ui_application_to_use=*/nil,
+                                    self.PIPHandler);
 }
 
 // The "Secondary Action" was touched.

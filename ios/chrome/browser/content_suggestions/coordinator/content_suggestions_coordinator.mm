@@ -153,6 +153,7 @@
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_lens_input_selection_command.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/picture_in_picture_commands.h"
 #import "ios/chrome/browser/shared/public/commands/price_tracked_items_commands.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/search_image_with_lens_command.h"
@@ -762,7 +763,10 @@ using segmentation_platform::TipIdentifier;
 - (void)didTapDefaultBrowserPromo {
   [_magicStackRankingModel logMagicStackEngagementForType:
                                ContentSuggestionsModuleType::kDefaultBrowser];
-  OpenIOSDefaultBrowserSettingsPage();
+  id<PictureInPictureCommands> PIPHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), PictureInPictureCommands);
+  OpenIOSDefaultBrowserSettingsPage(/*force_default_apps_if_available=*/false,
+                                    /*ui_application_to_use=*/nil, PIPHandler);
 }
 
 - (void)openTipDestination:(segmentation_platform::TipIdentifier)tip {
