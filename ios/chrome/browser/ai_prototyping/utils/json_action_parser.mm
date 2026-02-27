@@ -15,6 +15,7 @@ namespace {
 enum class ActionType {
   kUnknown,
   kNavigate,
+  kClick,
 };
 
 // Based on the field names in
@@ -23,10 +24,13 @@ ActionType GetActionType(const std::string& key) {
   if (key == "navigate") {
     return ActionType::kNavigate;
   }
+  if (key == "click") {
+    return ActionType::kClick;
+  }
   return ActionType::kUnknown;
 }
 
-void MapNavigateAction(const base::DictValue& dict,
+bool MapNavigateAction(const base::DictValue& dict,
                        optimization_guide::proto::Action* action) {
   auto* navigate = action->mutable_navigate();
   if (const std::string* url = dict.FindString("url")) {
@@ -35,6 +39,51 @@ void MapNavigateAction(const base::DictValue& dict,
   if (std::optional<int> tab_id = dict.FindInt("tab_id")) {
     navigate->set_tab_id(*tab_id);
   }
+  return navigate->ByteSizeLong() > 0;
+}
+
+void MapCoordinate(const base::DictValue& dict,
+                   optimization_guide::proto::Coordinate* coordinate) {
+  if (std::optional<int> x = dict.FindInt("x")) {
+    coordinate->set_x(*x);
+  }
+  if (std::optional<int> y = dict.FindInt("y")) {
+    coordinate->set_y(*y);
+  }
+}
+
+void MapActionTarget(const base::DictValue& dict,
+                     optimization_guide::proto::ActionTarget* target) {
+  if (const base::DictValue* coordinate = dict.FindDict("coordinate")) {
+    MapCoordinate(*coordinate, target->mutable_coordinate());
+  }
+}
+
+bool MapClickAction(const base::DictValue& dict,
+                    optimization_guide::proto::Action* action) {
+  auto* click = action->mutable_click();
+  if (std::optional<int> tab_id = dict.FindInt("tab_id")) {
+    click->set_tab_id(*tab_id);
+  }
+  if (const base::DictValue* target = dict.FindDict("target")) {
+    MapActionTarget(*target, click->mutable_target());
+  }
+  if (std::optional<int> click_type = dict.FindInt("click_type")) {
+    if (optimization_guide::proto::ClickAction_ClickType_IsValid(*click_type)) {
+      click->set_click_type(
+          static_cast<optimization_guide::proto::ClickAction_ClickType>(
+              *click_type));
+    }
+  }
+  if (std::optional<int> click_count = dict.FindInt("click_count")) {
+    if (optimization_guide::proto::ClickAction_ClickCount_IsValid(
+            *click_count)) {
+      click->set_click_count(
+          static_cast<optimization_guide::proto::ClickAction_ClickCount>(
+              *click_count));
+    }
+  }
+  return click->ByteSizeLong() > 0;
 }
 
 }  // namespace
@@ -56,8 +105,9 @@ bool ParseActionFromDict(const base::DictValue& dict,
 
   switch (GetActionType(key)) {
     case ActionType::kNavigate:
-      MapNavigateAction(value.GetDict(), action);
-      return true;
+      return MapNavigateAction(value.GetDict(), action);
+    case ActionType::kClick:
+      return MapClickAction(value.GetDict(), action);
     case ActionType::kUnknown:
       return false;
   }

@@ -15,7 +15,12 @@ namespace ai_prototyping {
 // `dict`: The dictionary containing the action data (e.g.,
 //         {"navigate": {"url": "https://www.google.com", "tab_id": 123}} ).
 // `action`: The proto to populate.
-// Returns true if parsing was successful, false otherwise.
+//
+// This function attempts to map keys in the dictionary to fields in the
+// Action proto. It performs a best-effort parsing; if a field in the
+// dictionary does not match a field in the proto, it is ignored.
+//
+// Returns whether the action was parsed successfully.
 bool ParseActionFromDict(const base::DictValue& dict,
                          optimization_guide::proto::Action* action);
 

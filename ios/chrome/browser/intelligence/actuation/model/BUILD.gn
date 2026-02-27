@@ -28,6 +28,7 @@ source_set("model") {
     "//components/keyed_service/core",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//ios/chrome/browser/intelligence/actuation/model/tools:actuation_interface",
+    "//ios/chrome/browser/intelligence/actuation/model/tools:click_tool",
     "//ios/chrome/browser/intelligence/actuation/model/tools:navigate_tool",
     "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/shared/model/browser",

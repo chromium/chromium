@@ -11,8 +11,9 @@
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
-NSString* kToolNavigate = @"Navigate";
-}
+NSString* const kToolNavigate = @"Navigate";
+NSString* const kToolClick = @"Click";
+}  // namespace
 
 @interface AIPrototypingActuationViewController () <UITextViewDelegate> {
   UIButton* _toolPickerButton;
@@ -230,8 +231,28 @@ NSString* kToolNavigate = @"Navigate";
   _toolConfigs = @{
     kToolNavigate : @{
       @"ui" : @[ _tabIdContainer, _jsonContainer ],
-      @"json" : @"{\n  \"navigate\": {\n    \"tab_id\": %d,\n    \"url\": "
-                @"\"https://www.google.com\"\n  }\n}"
+      @"json" : @("{\n"
+                  "  \"navigate\": {\n"
+                  "    \"tab_id\": %d,\n"
+                  "    \"url\": \"https://www.google.com\"\n"
+                  "  }\n"
+                  "}")
+    },
+    kToolClick : @{
+      @"ui" : @[ _tabIdContainer, _jsonContainer ],
+      @"json" : @("{\n"
+                  "  \"click\": {\n"
+                  "    \"tab_id\": %d,\n"
+                  "    \"target\": {\n"
+                  "      \"coordinate\": {\n"
+                  "        \"x\": 200,\n"
+                  "        \"y\": 200\n"
+                  "      }\n"
+                  "    },\n"
+                  "    \"click_type\": 1,\n"
+                  "    \"click_count\": 1\n"
+                  "  }\n"
+                  "}")
     }
   };
 
