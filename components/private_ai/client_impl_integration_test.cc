@@ -259,7 +259,7 @@ TEST_F(ClientImplIntegrationTest, DisconnectDuringAttestation) {
   ASSERT_TRUE(future.IsReady());
   auto result = future.Get();
   ASSERT_FALSE(result.has_value());
-  EXPECT_EQ(result.error(), ErrorCode::kNetworkError);
+  EXPECT_EQ(result.error(), ErrorCode::kClientAttestationFailed);
 }
 
 TEST_F(ClientImplIntegrationTest, ClientDestroyedDuringAttestation) {

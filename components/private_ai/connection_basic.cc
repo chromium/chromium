@@ -96,6 +96,13 @@ void ConnectionBasic::OnResponseReceived(
 }
 
 void ConnectionBasic::CallOnDisconnect(ErrorCode error_code) {
+  // First reject pending requests so that higher layers like
+  // ConnectionTokenAttestation can report the correct error code.
+  auto pending_requests = std::move(pending_request_callbacks_);
+  for (auto& pending_request : pending_requests) {
+    std::move(pending_request.second).Run(base::unexpected(error_code));
+  }
+
   if (on_disconnect_) {
     std::move(on_disconnect_).Run(error_code);
   }
