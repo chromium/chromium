@@ -26,10 +26,8 @@ void ChromeGuestViewManagerDelegate::OnGuestAdded(
   // manager.
   task_manager::WebContentsTags::CreateForGuestContents(guest_web_contents);
 
-#if BUILDFLAG(ENABLE_GLIC)
   // Check if guest belongs to glic and apply specific customizations if so.
   glic::OnGuestAdded(guest_web_contents);
-#endif
 }
 
 void ChromeGuestViewManagerDelegate::DispatchEvent(

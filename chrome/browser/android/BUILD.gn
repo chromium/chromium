@@ -37,6 +37,7 @@ source_set("tabs_impl") {
     ":tabs_public",
     "//chrome/browser/actor",
     "//chrome/browser/contextual_search",
+    "//chrome/browser/glic",
     "//chrome/browser/sync",
     "//chrome/browser/ui/contextual_search",
     "//components/external_intents/android",
@@ -46,8 +47,4 @@ source_set("tabs_impl") {
     "//components/tabs:public",
     "//content/public/browser",
   ]
-
-  if (enable_glic) {
-    deps += [ "//chrome/browser/glic" ]
-  }
 }
