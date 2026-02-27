@@ -190,6 +190,9 @@ void DocumentTimeline::PauseAnimationsForTesting(
 void DocumentTimeline::SetPlaybackRate(double playback_rate) {
   if (!IsActive())
     return;
+
+  bool should_mark_pending = playback_rate != playback_rate_;
+
   base::TimeDelta current_time = CurrentPhaseAndTime().time.value();
   playback_rate_ = playback_rate;
   zero_time_ = playback_rate == 0 ? base::TimeTicks() + current_time
@@ -199,7 +202,9 @@ void DocumentTimeline::SetPlaybackRate(double playback_rate) {
 
   // Corresponding compositor animation may need to be restarted to pick up
   // the new playback rate. Marking the effect changed forces this.
-  MarkAnimationsCompositorPending(true);
+  if (should_mark_pending) {
+    MarkAnimationsCompositorPending(true);
+  }
 }
 
 double DocumentTimeline::PlaybackRate() const {
