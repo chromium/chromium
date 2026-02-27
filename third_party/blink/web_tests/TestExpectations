@@ -2579,7 +2579,7 @@ crbug.com/334063352 [ Webview ] external/wpt/picture-in-picture/idlharness.windo
 crbug.com/421921 [ Webview ] external/wpt/push-api/idlharness.https.any.serviceworker.html [ Failure ]
 
 # Timeout on Android but flakes on other platforms
-crbug.com/477638183 external/wpt/visual-viewport/resize-event-order.html [ Pass Failure Timeout ]
+crbug.com/477638183 external/wpt/visual-viewport/resize-event-order.html [ Failure Pass Timeout ]
 
 # Other failing/timeout tests
 [ Android ] external/wpt/visual-viewport/viewport-resize-event-on-load-overflowing-page.html [ Failure ]
@@ -2870,6 +2870,7 @@ crbug.com/488071544 external/wpt/webrtc/RTCPeerConnection-getStats.https.html?re
 crbug.com/476344902 virtual/webui-browser/external/wpt/html/browsers/windows/nested-browsing-contexts/window-top.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+external/wpt/webdriver/tests/bidi/emulation/set_network_conditions/user_contexts.py [ Failure ]
 crbug.com/488130147 [ Win ] external/wpt/WebCryptoAPI/encrypt_decrypt/aes_cbc.https.any.html [ Pass Timeout ]
 crbug.com/488130147 [ Win ] external/wpt/WebCryptoAPI/sign_verify/ecdsa.https.any.html [ Pass Timeout ]
 crbug.com/488171521 external/wpt/navigation-api/navigate-event/navigate-history-traversal-during-onnavigate-should-reject.html [ Timeout ]
@@ -9761,7 +9762,7 @@ crbug.com/486315292 external/wpt/geolocation/enabled-on-self-origin-by-permissio
 crbug.com/486315292 external/wpt/geolocation/enabled-by-permissions-policy.https.sub.html [ Failure Pass Timeout ]
 
 # Gardener 2026-02-27: Flaky on several Linux bots
-crbug.com/487829615 [ Linux ] virtual/run-snapshot-post-layout/external/wpt/scroll-animations/scroll-timelines/scroll-animation-effect-phases.tentative.html [ Pass Failure ]
+crbug.com/487829615 [ Linux ] virtual/run-snapshot-post-layout/external/wpt/scroll-animations/scroll-timelines/scroll-animation-effect-phases.tentative.html [ Failure Pass ]
 
 # Gardener 2026-02-27: Flaky on headless_shell_wpt_tests Mac bot
 crbug.com/488351815 [ Mac ] external/wpt/html/semantics/forms/the-textarea-element/wrapping-transformation.window.html [ Failure Pass ]

@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] TextDetector interface: operation availability(TextDetectorOptions)
+  assert_own_property: interface object missing static operation expected property "availability" missing
+[FAIL] TextDetector interface: operation create(optional TextDetectorCreateOptions)
+  assert_own_property: interface object missing static operation expected property "create" missing
+[FAIL] TextDetector interface: calling availability(TextDetectorOptions) on new TextDetector() with too few arguments must throw TypeError
+  assert_own_property: interface object must have static operation as own property expected property "availability" missing
+[FAIL] TextDetector interface: calling create(optional TextDetectorCreateOptions) on new TextDetector() with too few arguments must throw TypeError
+  assert_own_property: interface object must have static operation as own property expected property "create" missing
+Harness: the test ran to completion.
+
