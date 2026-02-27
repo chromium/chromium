@@ -2,6 +2,94 @@
 -- Use of this source code is governed by a BSD-style license that can be
 -- found in the LICENSE file.
 
+-- Finds the timestamps and durations of sub-slices of 'ScrollJankV4' main
+-- slices with the given `sub_slice_names`.
+--
+-- If available (in newer Chrome versions), we associate sub-slices with the
+-- main slice based on the `scroll_jank_v4.result_id` argument. Otherwise (in
+-- older Chrome versions), we associate sub-slices with the main slice based on
+-- the `descendant_slice` operator instead. We prefer the former approach
+-- because it's more robust. See below for more details.
+--
+-- The returned table is guaranteed to contain at most one row for each
+-- 'ScrollJankV4' slice ID in `scroll_jank_v4_slice`.
+CREATE PERFETTO MACRO _chrome_scroll_jank_v4_sub_slice(
+    -- Table which contains slice `id`s and `result_id`s (NULL if not available)
+    -- of 'SliceJankV4' slices.
+    scroll_jank_v4_slice TableOrSubquery,
+    -- Table which indicates whether `scroll_jank_v4.result_id` arguments are
+    -- available in the trace. Non-empty if they're available. Empty if they're
+    -- not available.
+    has_result_id TableOrSubquery,
+    -- The possible names of the sub-slices to filter for.
+    sub_slice_names Expr
+)
+RETURNS TableOrSubquery AS
+(
+  WITH
+    branches AS (
+      -- Main logic (newer Chrome versions): Associate sub-slices with the main
+      -- slice based on the `scroll_jank_v4.result_id` argument.
+      SELECT
+        *
+      FROM (
+        SELECT
+          main_slice.id,
+          sub_slice.ts,
+          sub_slice.dur
+        FROM $scroll_jank_v4_slice AS main_slice
+        JOIN args AS result_id_arg
+          ON result_id_arg.int_value = main_slice.result_id
+          AND result_id_arg.key = 'scroll_jank_v4.result_id'
+        JOIN slice AS sub_slice
+          ON sub_slice.arg_set_id = result_id_arg.arg_set_id
+          AND sub_slice.id != main_slice.id
+          AND sub_slice.name IN $sub_slice_names
+      )
+      WHERE
+        EXISTS(
+          SELECT
+            1
+          FROM $has_result_id
+        )
+      UNION ALL
+      -- Fallback logic (older Chrome versions): Associate sub-slices with the
+      -- main slice based on the `descendant_slice` operator. This usually
+      -- doesn't work for the final instant sub-slice ("Presentation",
+      -- "Extrapolated presentation" or "Begin frame") due to
+      -- https://github.com/google/perfetto/issues/4880.
+      SELECT
+        *
+      FROM (
+        SELECT
+          main_slice.id,
+          sub_slice.ts,
+          sub_slice.dur
+        FROM $scroll_jank_v4_slice AS main_slice, descendant_slice(main_slice.id) AS sub_slice
+        WHERE
+          sub_slice.name IN $sub_slice_names
+      )
+      WHERE
+        NOT EXISTS(
+          SELECT
+            1
+          FROM $has_result_id
+        )
+    )
+  -- Select the first sub-slice for each main slice to avoid double counting
+  -- 'ScrollJankV4' slices.
+  SELECT
+    id,
+    min(ts) AS ts,
+    -- Note: SQLite documentation guarantees to choose a `dur` from a row that
+    -- has `MIN(ts)`. See
+    -- https://sqlite.org/lang_select.html#bare_columns_in_an_aggregate_query.
+    dur
+  FROM branches
+  GROUP BY
+    id
+);
+
 -- Results of the Scroll Jank V4 metric for frames which contain one or more
 -- scroll updates.
 --
@@ -21,6 +109,8 @@ CREATE PERFETTO TABLE chrome_scroll_jank_v4_results (
   ts TIMESTAMP,
   -- The duration of the slice.
   dur DURATION,
+  -- ID of this frame's result.
+  result_id LONG,
   -- Whether this frame is janky. True if and only if there's at least one row
   -- with `id` in `chrome_scroll_jank_v4_reasons`. If true, then
   -- `vsyncs_since_previous_frame` must be greater than one.
@@ -189,6 +279,10 @@ CREATE PERFETTO TABLE chrome_scroll_jank_v4_results (
   vsync_interval DURATION,
   -- The begin frame timestamp, at which this frame started, according to the
   -- BeginFrameArgs.
+  --
+  -- In older Chrome versions, this column is incorrectly NULL for frames whose
+  -- `damage_type` is
+  -- 'NON_DAMAGING_WITHOUT_EXTRAPOLATED_PRESENTATION_TIMESTAMP'.
   begin_frame_ts TIMESTAMP,
   -- The presentation timestamp of the frame.
   --
@@ -201,70 +295,63 @@ CREATE PERFETTO TABLE chrome_scroll_jank_v4_results (
   --   * If `damage_type` is
   --     'NON_DAMAGING_WITHOUT_EXTRAPOLATED_PRESENTATION_TIMESTAMP', then
   --     `presentation_ts` is NULL.
+  --
+  -- In older Chrome versions, this column is incorrectly always NULL.
   presentation_ts TIMESTAMP
 ) AS
 WITH
-  intermediate_table AS (
+  scroll_jank_v4_slice AS (
     SELECT
-      scroll_slice.id,
-      scroll_slice.name,
-      scroll_slice.ts,
-      scroll_slice.dur,
-      extract_arg(scroll_slice.arg_set_id, 'scroll_jank_v4.is_janky') AS is_janky,
-      extract_arg(scroll_slice.arg_set_id, 'scroll_jank_v4.vsyncs_since_previous_frame') AS vsyncs_since_previous_frame,
-      extract_arg(scroll_slice.arg_set_id, 'scroll_jank_v4.running_delivery_cutoff_us') AS running_delivery_cutoff,
-      extract_arg(scroll_slice.arg_set_id, 'scroll_jank_v4.adjusted_delivery_cutoff_us') AS adjusted_delivery_cutoff,
-      extract_arg(scroll_slice.arg_set_id, 'scroll_jank_v4.current_delivery_cutoff_us') AS current_delivery_cutoff,
-      extract_arg(scroll_slice.arg_set_id, 'scroll_jank_v4.updates.real.first_event_latency_id') AS real_first_event_latency_id,
-      real_input_generation_slice.ts AS real_first_input_generation_ts,
-      real_input_generation_slice.ts + real_input_generation_slice.dur AS real_last_input_generation_ts,
-      extract_arg(scroll_slice.arg_set_id, 'scroll_jank_v4.updates.real.abs_total_raw_delta_pixels') AS real_abs_total_raw_delta_pixels,
-      extract_arg(
-        scroll_slice.arg_set_id,
-        'scroll_jank_v4.updates.real.max_abs_inertial_raw_delta_pixels'
-      ) AS real_max_abs_inertial_raw_delta_pixels,
-      extract_arg(scroll_slice.arg_set_id, 'scroll_jank_v4.updates.synthetic.first_event_latency_id') AS synthetic_first_event_latency_id,
-      synthetic_first_extrapolated_input_generation_slice.ts AS synthetic_first_extrapolated_input_generation_ts,
-      synthetic_first_original_begin_frame_slice.ts AS synthetic_first_original_begin_frame_ts,
-      extract_arg(scroll_slice.arg_set_id, 'scroll_jank_v4.updates.first_scroll_update_type') AS first_scroll_update_type,
-      extract_arg(scroll_slice.arg_set_id, 'scroll_jank_v4.damage_type') AS damage_type,
-      extract_arg(scroll_slice.arg_set_id, 'scroll_jank_v4.vsync_interval_us') AS vsync_interval,
-      begin_frame_slice.ts AS begin_frame_ts,
-      presentation_slice.ts AS presentation_ts
-    FROM slice AS scroll_slice
-    LEFT JOIN descendant_slice(scroll_slice.id) AS real_input_generation_slice
-      ON real_input_generation_slice.name = 'Real scroll update input generation'
-    LEFT JOIN descendant_slice(scroll_slice.id) AS synthetic_first_extrapolated_input_generation_slice
-      ON synthetic_first_extrapolated_input_generation_slice.name = 'Extrapolated first synthetic scroll update input generation'
-    LEFT JOIN descendant_slice(scroll_slice.id) AS synthetic_first_original_begin_frame_slice
-      ON synthetic_first_original_begin_frame_slice.name = 'First synthetic scroll update original begin frame'
-    LEFT JOIN descendant_slice(scroll_slice.id) AS begin_frame_slice
-      ON begin_frame_slice.name = 'Begin frame'
-    LEFT JOIN descendant_slice(scroll_slice.id) AS presentation_slice
-      ON presentation_slice.name IN ('Presentation', 'Extrapolated presentation')
+      id,
+      name,
+      ts,
+      dur,
+      extract_arg(arg_set_id, 'scroll_jank_v4.result_id') AS result_id,
+      extract_arg(arg_set_id, 'scroll_jank_v4.is_janky') AS is_janky,
+      extract_arg(arg_set_id, 'scroll_jank_v4.vsyncs_since_previous_frame') AS vsyncs_since_previous_frame,
+      extract_arg(arg_set_id, 'scroll_jank_v4.running_delivery_cutoff_us') AS running_delivery_cutoff,
+      extract_arg(arg_set_id, 'scroll_jank_v4.adjusted_delivery_cutoff_us') AS adjusted_delivery_cutoff,
+      extract_arg(arg_set_id, 'scroll_jank_v4.current_delivery_cutoff_us') AS current_delivery_cutoff,
+      extract_arg(arg_set_id, 'scroll_jank_v4.updates.real.first_event_latency_id') AS real_first_event_latency_id,
+      extract_arg(arg_set_id, 'scroll_jank_v4.updates.real.abs_total_raw_delta_pixels') AS real_abs_total_raw_delta_pixels,
+      extract_arg(arg_set_id, 'scroll_jank_v4.updates.real.max_abs_inertial_raw_delta_pixels') AS real_max_abs_inertial_raw_delta_pixels,
+      extract_arg(arg_set_id, 'scroll_jank_v4.updates.synthetic.first_event_latency_id') AS synthetic_first_event_latency_id,
+      extract_arg(arg_set_id, 'scroll_jank_v4.updates.first_scroll_update_type') AS first_scroll_update_type,
+      extract_arg(arg_set_id, 'scroll_jank_v4.damage_type') AS damage_type,
+      extract_arg(arg_set_id, 'scroll_jank_v4.vsync_interval_us') AS vsync_interval
+    FROM slice
     WHERE
-      scroll_slice.name = 'ScrollJankV4'
+      name = 'ScrollJankV4'
+  ),
+  has_result_id AS (
+    SELECT
+      1
+    FROM scroll_jank_v4_slice
+    WHERE
+      result_id IS NOT NULL
+    LIMIT 1
   )
 SELECT
-  id,
-  name,
-  ts,
-  dur,
-  is_janky,
-  vsyncs_since_previous_frame,
-  running_delivery_cutoff,
-  adjusted_delivery_cutoff,
-  current_delivery_cutoff,
-  real_first_event_latency_id,
-  real_first_input_generation_ts,
-  real_last_input_generation_ts,
-  real_abs_total_raw_delta_pixels,
-  real_max_abs_inertial_raw_delta_pixels,
-  synthetic_first_event_latency_id,
-  synthetic_first_extrapolated_input_generation_ts,
-  synthetic_first_original_begin_frame_ts,
-  first_scroll_update_type,
-  CASE first_scroll_update_type
+  scroll_jank_v4_slice.id,
+  scroll_jank_v4_slice.name,
+  scroll_jank_v4_slice.ts,
+  scroll_jank_v4_slice.dur,
+  scroll_jank_v4_slice.result_id,
+  scroll_jank_v4_slice.is_janky,
+  scroll_jank_v4_slice.vsyncs_since_previous_frame,
+  scroll_jank_v4_slice.running_delivery_cutoff,
+  scroll_jank_v4_slice.adjusted_delivery_cutoff,
+  scroll_jank_v4_slice.current_delivery_cutoff,
+  scroll_jank_v4_slice.real_first_event_latency_id,
+  real_input_generation_slice.ts AS real_first_input_generation_ts,
+  real_input_generation_slice.ts + real_input_generation_slice.dur AS real_last_input_generation_ts,
+  scroll_jank_v4_slice.real_abs_total_raw_delta_pixels,
+  scroll_jank_v4_slice.real_max_abs_inertial_raw_delta_pixels,
+  scroll_jank_v4_slice.synthetic_first_event_latency_id,
+  synthetic_first_extrapolated_input_generation_slice.ts AS synthetic_first_extrapolated_input_generation_ts,
+  synthetic_first_original_begin_frame_slice.ts AS synthetic_first_original_begin_frame_ts,
+  scroll_jank_v4_slice.first_scroll_update_type,
+  CASE scroll_jank_v4_slice.first_scroll_update_type
     WHEN 'REAL'
     THEN real_first_event_latency_id
     WHEN 'SYNTHETIC_WITH_EXTRAPOLATED_INPUT_GENERATION_TIMESTAMP'
@@ -273,13 +360,23 @@ SELECT
     THEN synthetic_first_event_latency_id
     ELSE coalesce(real_first_event_latency_id, synthetic_first_event_latency_id)
   END AS first_event_latency_id,
-  damage_type,
-  vsync_interval,
-  begin_frame_ts,
-  presentation_ts
-FROM intermediate_table
+  scroll_jank_v4_slice.damage_type,
+  scroll_jank_v4_slice.vsync_interval,
+  begin_frame_slice.ts AS begin_frame_ts,
+  presentation_slice.ts AS presentation_ts
+FROM scroll_jank_v4_slice
+LEFT JOIN _chrome_scroll_jank_v4_sub_slice!(scroll_jank_v4_slice, has_result_id, ('Real scroll update input generation')) AS real_input_generation_slice
+  USING (id)
+LEFT JOIN _chrome_scroll_jank_v4_sub_slice!(scroll_jank_v4_slice, has_result_id, ('Extrapolated first synthetic scroll update input generation')) AS synthetic_first_extrapolated_input_generation_slice
+  USING (id)
+LEFT JOIN _chrome_scroll_jank_v4_sub_slice!(scroll_jank_v4_slice, has_result_id, ('First synthetic scroll update original begin frame')) AS synthetic_first_original_begin_frame_slice
+  USING (id)
+LEFT JOIN _chrome_scroll_jank_v4_sub_slice!(scroll_jank_v4_slice, has_result_id, ('Begin frame')) AS begin_frame_slice
+  USING (id)
+LEFT JOIN _chrome_scroll_jank_v4_sub_slice!(scroll_jank_v4_slice, has_result_id, ('Presentation', 'Extrapolated presentation')) AS presentation_slice
+  USING (id)
 ORDER BY
-  ts ASC;
+  scroll_jank_v4_slice.ts ASC;
 
 -- Reasons why the Scroll Jank V4 metric marked frames as janky.
 --

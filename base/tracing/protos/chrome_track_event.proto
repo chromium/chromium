@@ -883,18 +883,16 @@ message EventLatency {
   // filled anymore in newer versions of Chrome.
   optional bool is_janky_scrolled_frame_v3 = 9 [deprecated = true];
 
-  // Result of the Scroll Jank V4 Metric for a scroll update. This is set only
-  // for scroll updates. See
+  // Result of the Scroll Jank V4 Metric for a frame that contains one or more
+  // scroll updates. See
   // cc::ScrollUpdateEventMetrics::ScrollJankV4MetricResults,
   // https://docs.google.com/document/d/1AaBvTIf8i-c-WTKkjaL4vyhQMkSdynxo3XEiwpofdeA
   // and the Event.ScrollJank.DelayedFramesPercentage4.FixedWindow histogram's
   // documentation for more information.
   //
-  // To simplify the documentation below, we use "this frame" to refer to the
-  // frame in which the scroll update was presented.
   // LINT.IfChange
   message ScrollJankV4Result {
-    // Next ID: 13
+    // Next ID: 14
 
     // This field is a new version of `EventLatency.is_janky_scrolled_frame`
     // based on the Event.ScrollJank.DelayedFramesPercentage4.FixedWindow
@@ -1109,6 +1107,10 @@ message EventLatency {
     // The VSync interval that this frame was produced for according to the
     // BeginFrameArgs.
     optional int64 vsync_interval_us = 12;
+
+    // The ID of this frame's result. Used to associate sub-slices (e.g.
+    // "Presentation") with the main slice ("ScrollJankV4").
+    optional int64 result_id = 13;
   }
   // LINT.ThenChange(//base/tracing/stdlib/chrome/scroll_jank_v4.sql)
 
