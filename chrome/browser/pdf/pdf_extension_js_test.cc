@@ -17,6 +17,7 @@
 #include "base/test/with_feature_override.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
+#include "build/config/coverage/buildflags.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/pdf/pdf_extension_test_base.h"
 #include "chrome/browser/pdf/pdf_extension_test_util.h"
@@ -401,7 +402,13 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionContentSettingJSTest, Beep) {
   RunTestsInJsModule("beep_test.js", "test-beep.pdf");
 }
 
-IN_PROC_BROWSER_TEST_P(PDFExtensionContentSettingJSTest, NoBeep) {
+#if BUILDFLAG(USE_JAVASCRIPT_COVERAGE)
+// TODO(crbug.com/481394108): Test fails with JS coverage turned on.
+#define MAYBE_NoBeep DISABLED_NoBeep
+#else
+#define MAYBE_NoBeep NoBeep
+#endif
+IN_PROC_BROWSER_TEST_P(PDFExtensionContentSettingJSTest, MAYBE_NoBeep) {
   SetPdfJavaScript(/*enabled=*/false);
   RunTestsInJsModule("nobeep_test.js", "test-beep.pdf");
 }
@@ -419,7 +426,13 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionContentSettingJSTest, BeepThenNoBeep) {
   EXPECT_EQ(1, CountPDFProcesses());
 }
 
-IN_PROC_BROWSER_TEST_P(PDFExtensionContentSettingJSTest, NoBeepThenBeep) {
+#if BUILDFLAG(USE_JAVASCRIPT_COVERAGE)
+// TODO(crbug.com/481394108): Test fails with JS coverage turned on.
+#define MAYBE_NoBeepThenBeep DISABLED_NoBeepThenBeep
+#else
+#define MAYBE_NoBeepThenBeep NoBeepThenBeep
+#endif
+IN_PROC_BROWSER_TEST_P(PDFExtensionContentSettingJSTest, MAYBE_NoBeepThenBeep) {
   content::RenderProcessHost::SetMaxRendererProcessCount(1);
 
   SetPdfJavaScript(/*enabled=*/false);

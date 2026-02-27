@@ -4402,6 +4402,7 @@ if (!is_android) {
         "../browser/pdf",
         "../browser/pdf:pdf_extension_test_utils",
         "../browser/ui/pdf",
+        "//build/config/coverage:buildflags",
         "//components/pdf/browser",
         "//components/pdf/common:constants",
         "//components/pdf/common:util",
