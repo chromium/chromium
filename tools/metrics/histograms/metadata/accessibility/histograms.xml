@@ -3424,6 +3424,19 @@ even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
+<histogram name="Accessibility.ReadAnything.WordsDistilledByReadability"
+    units="words" expires_after="2027-01-01">
+  <owner>martinglopez@google.com</owner>
+  <owner>chrome-irm-devs@google.com</owner>
+  <summary>
+    Records the word count of the distilled content when using the Readability
+    distillation algorithm. This is recorded when the content is successfully
+    updated in the Reading Mode panel. Uses built-in web segmenter to count
+    words using the page language. (See
+    https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/Segmenter)
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.ReadAnything.WordsHeard" units="words"
     expires_after="2026-08-01">
   <owner>kristislee@google.com</owner>

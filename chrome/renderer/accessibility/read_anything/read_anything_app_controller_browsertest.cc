@@ -5048,3 +5048,17 @@ TEST_F(ReadAnythingAppControllerReadabilityTest,
   EXPECT_EQ(model().current_content_distillation_method(),
             ReadAnythingAppModel::DistillationMethod::kScreen2x);
 }
+
+TEST_F(ReadAnythingAppControllerReadabilityTest,
+       OnDistilled_Readability_LogsMetric) {
+  base::HistogramTester histogram_tester;
+  const int word_count = 100;
+  // Ensure we are using Readability.
+  model().set_current_content_distillation_method(
+      ReadAnythingAppModel::DistillationMethod::kReadability);
+
+  controller().OnDistilled(word_count);
+
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.ReadAnything.WordsDistilledByReadability", word_count, 1);
+}

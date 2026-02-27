@@ -2141,6 +2141,12 @@ void ReadAnythingAppController::OnNoTextContent() {
 
 void ReadAnythingAppController::OnDistilled(int word_count) {
   model_.set_words_distilled(word_count);
+  if (model_.current_content_distillation_method() ==
+      ReadAnythingAppModel::DistillationMethod::kReadability) {
+    base::UmaHistogramCustomCounts(
+        "Accessibility.ReadAnything.WordsDistilledByReadability", word_count, 1,
+        kMaxWordsConsumed, kWordsConsumedBuckets);
+  }
 }
 
 void ReadAnythingAppController::UpdateWordsSeen(int words_seen) {
