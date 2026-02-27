@@ -11,13 +11,9 @@
 
 namespace ash {
 
-// Handles setting value for both shill::kTetheringAllowedProperty and
-// shill::kExperimentalTetheringFunctionality property depending on kHotspot
-// and kTetheringExperimentalCarriers flag. This Shill property value is
-// updated when the handler initializes or Shill signals a corresponding
-// property changed. Note, setting shill::kTetheringAllowedProperty value to
-// true is a pre-requisite of successfully enable/disable hotspot and check
-// tethering readiness in Shill.
+// Handles setting shill::kExperimentalTetheringFunctionality based on the
+// kTetheringExperimentalFunctionality feature flag. This manager property value
+// is updated when the handler initializes and when UpdateFlags() is called.
 class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotAllowedFlagHandler {
  public:
   HotspotAllowedFlagHandler();
@@ -28,8 +24,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotAllowedFlagHandler {
 
   void Init();
 
-  // Refreshes kTetheringAllowedProperty and kExperimentalTetheringFunctionality
-  // flags in shill based on user preferences
+  // Refreshes the kExperimentalTetheringFunctionality flags in shill based on
+  // the current feature flag state.
   void UpdateFlags();
 
  private:
