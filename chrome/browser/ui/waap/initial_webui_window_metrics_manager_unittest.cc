@@ -69,3 +69,38 @@ TEST_F(InitialWebUIWindowMetricsManagerTest,
       "FromConstructor",
       kTestLatency, 1);
 }
+
+TEST_F(InitialWebUIWindowMetricsManagerTest, RecordsFirstPaintGapDelta) {
+  const base::TimeTicks start_time = base::TimeTicks::Now();
+  InitialWebUIWindowMetricsManager manager(&browser_window_);
+  manager.SetWindowCreationInfo(
+      waap::NewWindowCreationSource::kBrowserInitiated, start_time);
+  manager.SkipStartupForTesting();
+
+  base::HistogramTester tester;
+
+  // Simulate presenting native window.
+  base::TimeTicks browser_window_time = start_time + kTestLatency;
+  manager.OnBrowserWindowFirstPresentation(browser_window_time);
+
+  // Still no metric because WebUI hasn't painted.
+  tester.ExpectTotalCount(
+      "InitialWebUI.NewWindow.AllSources.BrowserWindowToReloadButton."
+      "FirstPaintGap",
+      0);
+
+  // Simulate paint of WebUI reload button.
+  base::TimeDelta webui_delay = base::Milliseconds(50);
+  base::TimeTicks reload_button_time = browser_window_time + webui_delay;
+  manager.OnReloadButtonFirstPaint(reload_button_time);
+
+  // Now the gap metric should be emitted with the correct delta
+  tester.ExpectUniqueTimeSample(
+      "InitialWebUI.NewWindow.AllSources.BrowserWindowToReloadButton."
+      "FirstPaintGap",
+      webui_delay, 1);
+  tester.ExpectUniqueTimeSample(
+      "InitialWebUI.NewWindow.BrowserInitiated.BrowserWindowToReloadButton."
+      "FirstPaintGap",
+      webui_delay, 1);
+}
