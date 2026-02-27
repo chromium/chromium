@@ -31,6 +31,7 @@ import org.chromium.blink.mojom.GetCredentialOptions;
 import org.chromium.blink.mojom.Mediation;
 import org.chromium.blink.mojom.PublicKeyCredentialRequestOptions;
 import org.chromium.content_public.browser.RenderFrameHost;
+import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.device.DeviceFeatureList;
 import org.chromium.url.GURL;
@@ -69,6 +70,8 @@ public class AuthenticatorImplPasswordOnlyTest {
         when(mModeProviderMock.getWebauthnMode(any())).thenReturn(WebauthnMode.CHROME);
         when(mModeProviderMock.getGlobalWebauthnMode()).thenReturn(WebauthnMode.CHROME);
         AuthenticatorImpl.overrideFido2CredentialRequestForTesting(mFido2CredentialRequestMock);
+
+        when(mWebContents.getVisibility()).thenReturn(Visibility.VISIBLE);
 
         mAuthenticator =
                 new AuthenticatorImpl(

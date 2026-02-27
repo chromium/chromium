@@ -32,6 +32,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.components.password_manager.BrowserAssistedLoginType;
 import org.chromium.components.ukm.UkmRecorder;
 import org.chromium.content_public.browser.RenderFrameHost;
+import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.device.DeviceFeatureList;
 import org.chromium.device.DeviceFeatureMap;
@@ -177,6 +178,13 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
             return;
         }
 
+        if (mWebContents != null && mWebContents.getVisibility() != Visibility.VISIBLE) {
+            requestCallback.onComplete(
+                    WebauthnRequestResponse.forFailedMakeCredential(
+                            AuthenticatorStatus.NOT_FOCUSED, new RequestMetrics.Builder().build()));
+            return;
+        }
+
         if (mCreateConfirmationUiDelegate != null && !options.isConditional) {
             if (!mCreateConfirmationUiDelegate.show(
                     () -> continueMakeCredential(options),
@@ -256,6 +264,15 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
             mRequestCallback.onComplete(
                     WebauthnRequestResponse.forFailedGetCredential(
                             AuthenticatorStatus.NOT_IMPLEMENTED, metrics));
+            return;
+        }
+
+        if (mWebContents != null
+                && options.mediation != Mediation.CONDITIONAL
+                && mWebContents.getVisibility() != Visibility.VISIBLE) {
+            requestCallback.onComplete(
+                    WebauthnRequestResponse.forFailedGetCredential(
+                            AuthenticatorStatus.NOT_FOCUSED, new RequestMetrics.Builder().build()));
             return;
         }
 
