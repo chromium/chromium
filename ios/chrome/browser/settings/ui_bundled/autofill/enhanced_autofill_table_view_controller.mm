@@ -18,7 +18,6 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
-#import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -53,9 +52,6 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 
   // Whether Settings have been dismissed.
   BOOL _settingsAreDismissed;
-
-  // Reauthentication module.
-  ReauthenticationModule* _reauthenticationModule;
 }
 
 @end
@@ -106,17 +102,6 @@ UIImage* GetBrandedGoogleServicesSymbol() {
       toSectionWithIdentifier:SectionIdentifierThingsToConsider];
 }
 
-#pragma mark - properties
-
-- (ReauthenticationModule*)reauthenticationModule {
-  // TODO(crbug.com/480934776): Add scoped reauth module override for EG tests.
-
-  if (!_reauthenticationModule) {
-    _reauthenticationModule = [[ReauthenticationModule alloc] init];
-  }
-  return _reauthenticationModule;
-}
-
 #pragma mark - SettingsControllerProtocol
 
 - (void)reportDismissalUserAction {
@@ -135,7 +120,6 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   switchItem.text = l10n_util::GetNSString(IDS_SETTINGS_AUTOFILL_AI_PAGE_TITLE);
   switchItem.target = self;
   switchItem.selector = @selector(enhancedAutofillSwitchChanged:);
-  switchItem.enabled = [self.reauthenticationModule canAttemptReauth];
   switchItem.on = [self isEnhancedAutofillEnabled];
   switchItem.accessibilityIdentifier = kEnhancedAutofillSwitchViewId;
   return switchItem;
@@ -215,42 +199,7 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 #pragma mark - Switch Callbacks
 
 - (void)enhancedAutofillSwitchChanged:(UISwitch*)switchView {
-  if (![self.reauthenticationModule canAttemptReauth]) {
-    // This should normally not happen: the switch should not even be enabled.
-    // Early return to fallback gracefully just in case.
-    return;
-  }
-
-  NSString* reauthReason = l10n_util::GetNSString(
-      IDS_IOS_SETTINGS_ENHANCED_AUTOFILL_TOGGLE_REAUTH_REASON);
-
-  __weak __typeof(self) weakSelf = self;
-
-  // Just capture switchView directly. It will be strongly retained for the
-  // duration of the block, ensuring it isn't deallocated before the callback
-  // fires.
-  auto completionHandler = ^(ReauthenticationResult result) {
-    [weakSelf onReauthCompletedForEnhancedAutofillSwitch:switchView
-                                                  result:result];
-  };
-
-  [self.reauthenticationModule
-      attemptReauthWithLocalizedReason:reauthReason
-                  canReusePreviousAuth:YES
-                               handler:completionHandler];
-}
-
-// Called when the reauthentication process is completed for the Enhanced
-// Autofill toggle.
-- (void)onReauthCompletedForEnhancedAutofillSwitch:(UISwitch*)switchView
-                                            result:
-                                                (ReauthenticationResult)result {
   BOOL enabled = switchView.on;
-  if (result == ReauthenticationResult::kFailure) {
-    // Revert the switch if authentication wasn't successful.
-    enabled = !enabled;
-  }
-  [switchView setOn:enabled animated:YES];
   [self setSwitchItemOn:enabled itemType:ItemTypeEnhancedAutofillSwitch];
   [self setEnhancedAutofillEnabled:enabled];
 }

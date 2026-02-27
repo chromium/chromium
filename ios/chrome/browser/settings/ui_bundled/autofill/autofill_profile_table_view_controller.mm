@@ -70,6 +70,7 @@
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "net/base/apple/url_conversions.h"
@@ -216,6 +217,9 @@ NSString* GetFallbackDetailTextForLocalProfile(
 
   // A reference to the Wallet promo button item for quick access.
   TableViewTextItem* _walletPromoButtonItem;
+
+  // Reauthentication module.
+  ReauthenticationModule* _reauthenticationModule;
 }
 
 @property(nonatomic, getter=isAutofillProfileEnabled)
@@ -633,6 +637,7 @@ NSString* GetFallbackDetailTextForLocalProfile(
       l10n_util::GetNSString(IDS_IOS_AUTOFILL_VERIFICATION_INFO_LABEL);
   switchItem.on = autofill::prefs::IsAutofillAiReauthBeforeFillingEnabled(
       _browser->GetProfile()->GetPrefs());
+  switchItem.enabled = [self.reauthenticationModule canAttemptReauth];
   switchItem.target = self;
   switchItem.selector = @selector(verificationSwitchChanged:);
   return switchItem;
@@ -668,6 +673,15 @@ NSString* GetFallbackDetailTextForLocalProfile(
   item.accessibilityTraits |= UIAccessibilityTraitButton;
   item.titleNumberOfLines = 0;
   return item;
+}
+
+- (ReauthenticationModule*)reauthenticationModule {
+  // TODO(crbug.com/480934776): Add scoped reauth module override for EG tests.
+
+  if (!_reauthenticationModule) {
+    _reauthenticationModule = [[ReauthenticationModule alloc] init];
+  }
+  return _reauthenticationModule;
 }
 
 #pragma mark - SettingsControllerProtocol
@@ -1017,7 +1031,41 @@ NSString* GetFallbackDetailTextForLocalProfile(
 }
 
 - (void)verificationSwitchChanged:(UISwitch*)switchView {
+  if (![self.reauthenticationModule canAttemptReauth]) {
+    // This should normally not happen: the switch should not even be enabled.
+    // Early return to fallback gracefully just in case.
+    return;
+  }
+
+  NSString* reauthReason = l10n_util::GetNSString(
+      IDS_IOS_SETTINGS_AUTOFILL_VERIFICATION_TOGGLE_REAUTH_REASON);
+
+  __weak __typeof(self) weakSelf = self;
+
+  // Just capture switchView directly. It will be strongly retained for the
+  // duration of the block, ensuring it isn't deallocated before the callback
+  // fires.
+  auto completionHandler = ^(ReauthenticationResult result) {
+    [weakSelf onReauthCompletedForVerificationSwitch:switchView result:result];
+  };
+
+  [self.reauthenticationModule
+      attemptReauthWithLocalizedReason:reauthReason
+                  canReusePreviousAuth:YES
+                               handler:completionHandler];
+}
+
+// Called when the reauthentication process is completed for the Enhanced
+// Autofill User Verification toggle.
+- (void)onReauthCompletedForVerificationSwitch:(UISwitch*)switchView
+                                        result:(ReauthenticationResult)result {
   BOOL switchOn = [switchView isOn];
+  if (result == ReauthenticationResult::kFailure) {
+    // Revert the switch if authentication wasn't successful.
+    switchOn = !switchOn;
+  }
+
+  [switchView setOn:switchOn animated:YES];
   [self setSwitchItemOn:switchOn itemType:ItemTypeVerificationSwitch];
   autofill::prefs::SetAutofillAiReauthBeforeFillingEnabled(
       _browser->GetProfile()->GetPrefs(), switchOn);
