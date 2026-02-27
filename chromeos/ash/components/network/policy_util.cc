@@ -526,19 +526,6 @@ const std::string* GetIccidFromONC(const base::DictValue& onc_config) {
   return cellular_dict->FindString(::onc::cellular::kICCID);
 }
 
-const std::string* GetSMDPAddressFromONC(const base::DictValue& onc_config) {
-  const std::string* type = onc_config.FindString(::onc::network_config::kType);
-  const base::DictValue* cellular_dict =
-      onc_config.FindDict(::onc::network_config::kCellular);
-  const std::string* smdp_address = nullptr;
-
-  if (type && (*type == ::onc::network_type::kCellular) && cellular_dict) {
-    smdp_address = cellular_dict->FindString(::onc::cellular::kSMDPAddress);
-  }
-
-  return smdp_address;
-}
-
 std::optional<SmdxActivationCode> GetSmdxActivationCodeFromONC(
     const base::DictValue& onc_config) {
   const std::string* type = onc_config.FindString(::onc::network_config::kType);

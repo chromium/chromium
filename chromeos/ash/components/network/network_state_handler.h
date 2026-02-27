@@ -222,10 +222,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
   void SetShillConnectError(const std::string& service_path,
                             const std::string& shill_connect_error);
 
-  // Returns the aa:bb formatted hardware (MAC) address for the first connected
-  // network matching |type|, or an empty string if none is connected.
-  std::string FormattedHardwareAddressForType(const NetworkTypePattern& type);
-
   // Convenience method to call GetNetworkListByType(visible=true).
   void GetVisibleNetworkListByType(const NetworkTypePattern& type,
                                    NetworkStateList* list);

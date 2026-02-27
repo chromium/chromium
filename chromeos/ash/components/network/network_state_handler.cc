@@ -637,22 +637,6 @@ void NetworkStateHandler::SetShillConnectError(
   network->shill_connect_error_ = shill_connect_error;
 }
 
-std::string NetworkStateHandler::FormattedHardwareAddressForType(
-    const NetworkTypePattern& type) {
-  const NetworkState* network = ConnectedNetworkByType(type);
-  if (network && network->type() == kTypeTether) {
-    // If this is a Tether network, get the MAC address corresponding to that
-    // network instead.
-    network = GetNetworkStateFromGuid(network->tether_guid());
-  }
-  const DeviceState* device = network ? GetDeviceState(network->device_path())
-                                      : GetDeviceStateByType(type);
-  if (!device || device->mac_address().empty()) {
-    return std::string();
-  }
-  return network_util::FormattedMacAddress(device->mac_address());
-}
-
 void NetworkStateHandler::GetVisibleNetworkListByType(
     const NetworkTypePattern& type,
     NetworkStateList* list) {

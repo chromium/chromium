@@ -105,11 +105,6 @@ bool HasAnyRecommendedField(const base::DictValue& onc_config);
 // is not a Cellular type ONC or no ICCID field is found.
 const std::string* GetIccidFromONC(const base::DictValue& onc_config);
 
-// Returns the Cellular.SMDPAddress ONC field of the passed ONC
-// NetworkConfiguration if it is a Cellular NetworkConfiguration.
-// If there is no SMDPAddress, returns nullptr.
-const std::string* GetSMDPAddressFromONC(const base::DictValue& onc_config);
-
 // This function returns the SM-DX activation code found in |onc_config|. If
 // both an SM-DP+ activation code and an SM-DS activation code are provided, or
 // if neither are provided, this function returns |std::nullopt|.
