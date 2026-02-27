@@ -53,7 +53,7 @@ from pylib import constants
 @click.command(cls=Formatter,
                help=__doc__,
                context_settings=dict(ignore_unknown_options=True,
-                                     allow_interspersed_args=False,
+                                     allow_interspersed_args=True,
                                      help_option_names=['-h', '--help']))
 @autotest_options
 @click.argument('files', nargs=-1)
