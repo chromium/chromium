@@ -21,6 +21,7 @@ inline constexpr char16_t kChromeUIManagementURL16[] = u"chrome://management";
 inline constexpr char kChromeUINewTabURL[] = "chrome://newtab/";
 inline constexpr char kChromeUISettingsHost[] = "settings";
 inline constexpr char kChromeUISettingsURL[] = "chrome://settings/";
+inline constexpr char kChromeUITermsHost[] = "terms";
 inline constexpr char kChromeUITermsURL[] = "chrome://terms/";
 
 // Settings subpages that Chrome as a web browser provides. Please keep the

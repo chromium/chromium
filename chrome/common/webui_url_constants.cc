@@ -46,6 +46,8 @@ static_assert(std::string_view(kChromeUISettingsHost) ==
               ash::chrome_urls::kChromeUISettingsHost);
 static_assert(std::string_view(kChromeUISettingsURL) ==
               ash::chrome_urls::kChromeUISettingsURL);
+static_assert(std::string_view(kChromeUITermsHost) ==
+              ash::chrome_urls::kChromeUITermsHost);
 static_assert(std::string_view(kChromeUITermsURL) ==
               ash::chrome_urls::kChromeUITermsURL);
 

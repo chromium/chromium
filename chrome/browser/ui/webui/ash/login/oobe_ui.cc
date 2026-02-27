@@ -12,6 +12,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/constants/chrome_url_constants.h"
 #include "ash/constants/webui_url_constants.h"
 #include "ash/public/cpp/esim_manager.h"
 #include "ash/public/cpp/network_config_service.h"
@@ -140,7 +141,6 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/common/url_constants.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "chrome/grit/component_extension_resources.h"
@@ -595,8 +595,8 @@ void OobeUI::ConfigureOobeDisplay() {
 
   // Set up the chrome://terms/ data source, for EULA content.
   content::URLDataSource::Add(
-      profile,
-      std::make_unique<AboutUIHTMLSource>(chrome::kChromeUITermsHost, profile));
+      profile, std::make_unique<AboutUIHTMLSource>(
+                   ash::chrome_urls::kChromeUITermsHost, profile));
 
   content::WebContents* contents = web_ui()->GetWebContents();
 
