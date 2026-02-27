@@ -11,6 +11,8 @@
 #include "chrome/browser/actor/ui/actor_ui_state_manager_interface.h"
 #include "chrome/browser/actor/ui/task_list_bubble/actor_task_list_bubble.h"
 #include "chrome/browser/actor/ui/task_list_bubble/actor_task_list_bubble_controller.h"
+#include "chrome/browser/glic/host/glic_actor_interactive_uitest_common.h"
+#include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -29,10 +31,6 @@
 #include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
 #include "ui/views/test/widget_test.h"
-#if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/glic/host/glic_actor_interactive_uitest_common.h"
-#include "chrome/browser/glic/test_support/glic_test_environment.h"
-#endif
 
 class ActorTaskListBubbleInteractiveUiTest
     : public ActorUiInteractiveBrowserTest {
@@ -40,26 +38,21 @@ class ActorTaskListBubbleInteractiveUiTest
   ActorTaskListBubbleInteractiveUiTest() {
     feature_list_.InitWithFeaturesAndParameters(
         {
-#if BUILDFLAG(ENABLE_GLIC)
             {features::kGlicRollout, {}},
             {features::kGlicFreWarming, {}},
             {features::kGlicActor,
              {{features::kGlicActorPolicyControlExemption.name, "true"}}},
             {features::kGlicActorUi,
              {{features::kGlicActorUiTaskIconName, "true"}}},
-#endif  // BUILDFLAG(ENABLE_GLIC)
         },
         {});
   }
 
  protected:
-#if BUILDFLAG(ENABLE_GLIC)
   glic::GlicTestEnvironment glic_test_environment_;
-#endif
   base::test::ScopedFeatureList feature_list_;
 };
 
-#if BUILDFLAG(ENABLE_GLIC)
 IN_PROC_BROWSER_TEST_F(ActorTaskListBubbleInteractiveUiTest,
                        ShowBubbleWithTask) {
   gfx::ScopedAnimationDurationScaleMode disable_animations(
@@ -197,4 +190,3 @@ IN_PROC_BROWSER_TEST_F(GlicActorTaskListBubbleInteractiveUiTest,
                       task_id_.value());
           })));
 }
-#endif

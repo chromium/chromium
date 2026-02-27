@@ -114,7 +114,6 @@ void ActorUiTabController::SetActorTabIndicatorVisibility(
   // When GLIC isn't enabled, we never set the tab indicator.
   // TODO(crbug.com/461457730) remove GLIC dependency once the ACTOR_ACCESSING
   // alert migrates away from the GLIC_ACCESSING resources.
-#if BUILDFLAG(ENABLE_GLIC)
   if (tab_indicator_ != tab_indicator_status) {
     tab_indicator_ = tab_indicator_status;
     if (on_actor_tab_indicator_changed_callback_) {
@@ -124,7 +123,6 @@ void ActorUiTabController::SetActorTabIndicatorVisibility(
           base::to_address(tab_), TabChangeType::kAll);
     }
   }
-#endif
   std::move(callback).Run();
   return;
 }

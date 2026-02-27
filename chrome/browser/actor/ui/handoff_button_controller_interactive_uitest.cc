@@ -36,10 +36,8 @@
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/view_utils.h"
-#if BUILDFLAG(ENABLE_GLIC)
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/glic/widget/glic_view.h"
-#endif
 
 namespace actor::ui {
 namespace {
@@ -56,20 +54,14 @@ class ActorUiHandoffButtonControllerInteractiveUiTest
     feature_list_.InitWithFeaturesAndParameters(
         // Use a dummy URL so we don't make a network request.
         {
-#if BUILDFLAG(ENABLE_GLIC)
             {features::kGlicURLConfig,
-             { {features::kGlicGuestURL.name, "about:blank"} }},
-#endif
+             {{features::kGlicGuestURL.name, "about:blank"}}},
             {features::kGlicHandoffButtonShowInImmersiveMode, {}},
             {features::kGlicHandoffButtonHideWhenOmniboxPopupOpened, {}},
             {features::kGlicActorUi,
              {{features::kGlicActorUiHandoffButtonName, "true"}}},
         },
-        /*disabled_features=*/{
-#if BUILDFLAG(ENABLE_GLIC)
-            features::kGlicDetached
-#endif
-        });
+        /*disabled_features=*/{features::kGlicDetached});
     InteractiveBrowserTest::SetUp();
   }
 
@@ -94,9 +86,7 @@ class ActorUiHandoffButtonControllerInteractiveUiTest
 #endif  // BUILDFLAG(IS_MAC)
 
  protected:
-#if BUILDFLAG(ENABLE_GLIC)
   glic::GlicTestEnvironment glic_test_env_;
-#endif
   base::test::ScopedFeatureList feature_list_;
 };
 
@@ -224,7 +214,6 @@ IN_PROC_BROWSER_TEST_F(ActorUiHandoffButtonControllerInteractiveUiTest,
           WaitForShow(HandoffButtonController::kHandoffButtonElementId)));
 }
 
-#if BUILDFLAG(ENABLE_GLIC)
 IN_PROC_BROWSER_TEST_F(ActorUiHandoffButtonControllerInteractiveUiTest,
                        GlicSidePanelTogglesOnWhenButtonClicked) {
   StartActingOnTab();
@@ -240,7 +229,6 @@ IN_PROC_BROWSER_TEST_F(ActorUiHandoffButtonControllerInteractiveUiTest,
                   InAnyContext(WaitForShow(kSidePanelElementId)),
                   InAnyContext(WaitForShow(kGlicViewElementId)));
 }
-#endif
 
 // State identifier for polling the visible handoff button count
 using VisibleCountObserver = ::ui::test::PollingStateObserver<int>;
@@ -255,14 +243,11 @@ class ActorUiHandoffButtonSplitViewTest
 
   const std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
       override {
-    return {
-#if BUILDFLAG(ENABLE_GLIC)
-        {features::kGlicURLConfig,
-         { {features::kGlicGuestURL.name, "about:blank"} }},
-        {features::kGlic, {}},
-#endif
-        {features::kGlicActorUi,
-         {{features::kGlicActorUiHandoffButtonName, "true"}}}};
+    return {{features::kGlicURLConfig,
+             {{features::kGlicGuestURL.name, "about:blank"}}},
+            {features::kGlic, {}},
+            {features::kGlicActorUi,
+             {{features::kGlicActorUiHandoffButtonName, "true"}}}};
   }
 
   void SetUpOnMainThread() override {

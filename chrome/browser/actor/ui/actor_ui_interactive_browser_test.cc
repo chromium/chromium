@@ -19,11 +19,9 @@ ActorUiInteractiveBrowserTest::~ActorUiInteractiveBrowserTest() = default;
 void ActorUiInteractiveBrowserTest::SetUpCommandLine(
     base::CommandLine* command_line) {
   InteractiveBrowserTest::SetUpCommandLine(command_line);
-#if BUILDFLAG(ENABLE_GLIC)
   command_line->AppendSwitch(switches::kGlicDev);
   // Skips FRE experience.
   command_line->AppendSwitch(switches::kGlicAutomation);
-#endif
 }
 
 void ActorUiInteractiveBrowserTest::StartActingOnTab() {

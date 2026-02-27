@@ -244,6 +244,8 @@ if (!skip_android_unmigrated_actor_files) {
       ":ui",
       "//base/test:test_support",
       "//chrome/browser/actor",
+      "//chrome/browser/glic",
+      "//chrome/browser/glic/test_support",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui",
       "//chrome/browser/ui:ui_features",
@@ -254,13 +256,6 @@ if (!skip_android_unmigrated_actor_files) {
       "//content/test:test_support",
       "//ui/base/interaction",
     ]
-
-    if (enable_glic) {
-      deps += [
-        "//chrome/browser/glic",
-        "//chrome/browser/glic/test_support",
-      ]
-    }
   }
 }
 
@@ -302,6 +297,7 @@ source_set("ui") {
       "//chrome/app/vector_icons",
       "//chrome/browser/actor",
       "//chrome/browser/actor/resources:browser_resources",
+      "//chrome/browser/glic",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/tabs:tab_strip",
@@ -318,9 +314,6 @@ source_set("ui") {
     # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
     # enable the diagnostic by removing this line.
     configs += [ "//build/config/compiler:no_exit_time_destructors" ]
-    if (enable_glic) {
-      deps += [ "//chrome/browser/glic" ]
-    }
   }
 }
 

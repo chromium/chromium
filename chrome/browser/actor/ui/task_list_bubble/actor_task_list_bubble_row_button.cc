@@ -16,26 +16,19 @@
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
 #include "ui/views/layout/box_layout.h"
-#if BUILDFLAG(ENABLE_GLIC)
 #include "chrome/browser/glic/browser_ui/glic_vector_icon_manager.h"
-#endif
 
 namespace {
 const int kBubbleRowIconSize = 16;
 const int kRedirectIconSize = 20;
 
 const gfx::VectorIcon& GetRowIcon(actor::ActorTask::State state) {
-#if BUILDFLAG(ENABLE_GLIC)
-    if (tabs::GlicActorTaskIconManager::RequiresAttention(state)) {
-      return kHourglassIcon;
-    } else if (state == actor::ActorTask::State::kFinished) {
-      return kTaskSparkIcon;
-    }
-    return glic::GlicVectorIconManager::GetVectorIcon(
-        IDR_ACTOR_AUTO_BROWSE_ICON);
-#else
-  return kScreensaverAutoIcon;
-#endif
+  if (tabs::GlicActorTaskIconManager::RequiresAttention(state)) {
+    return kHourglassIcon;
+  } else if (state == actor::ActorTask::State::kFinished) {
+    return kTaskSparkIcon;
+  }
+  return glic::GlicVectorIconManager::GetVectorIcon(IDR_ACTOR_AUTO_BROWSE_ICON);
 }
 
 bool IsProcessedTabClosedRow(bool has_tab, bool requires_processing) {
@@ -48,12 +41,10 @@ ui::ColorId GetRowColor(actor::ActorTask::State state,
   if (IsProcessedTabClosedRow(has_tab, requires_processing)) {
     return ui::kColorSysStateDisabled;
   }
-#if BUILDFLAG(ENABLE_GLIC)
   if (requires_processing &&
       tabs::GlicActorTaskIconManager::RequiresAttention(state)) {
     return ui::kColorSysPrimary;
   }
-#endif
   return ui::kColorMenuIcon;
 }
 
@@ -62,12 +53,10 @@ std::u16string GetRowSubtitle(actor::ActorTask::State state, bool has_tab) {
     return l10n_util::GetStringUTF16(
         IDR_ACTOR_TASK_LIST_BUBBLE_ROW_TAB_CLOSED_SUBTITLE);
   }
-#if BUILDFLAG(ENABLE_GLIC)
   if (tabs::GlicActorTaskIconManager::RequiresAttention(state)) {
     return l10n_util::GetStringUTF16(
         IDR_ACTOR_TASK_LIST_BUBBLE_ROW_CHECK_TASK_SUBTITLE);
   }
-#endif
   if (state == actor::ActorTask::State::kFinished) {
     return l10n_util::GetStringUTF16(
         IDR_ACTOR_TASK_LIST_BUBBLE_ROW_COMPLETED_TASK_SUBTITLE);

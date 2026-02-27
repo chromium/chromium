@@ -15,6 +15,8 @@
 #include "chrome/browser/actor/ui/task_list_bubble/actor_task_list_bubble.h"
 #include "chrome/browser/actor/ui/task_list_bubble/actor_task_list_bubble_controller.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
+#include "chrome/browser/ui/tabs/glic_actor_task_icon_manager.h"
+#include "chrome/browser/ui/tabs/glic_actor_task_icon_manager_factory.h"
 #include "chrome/browser/ui/views/controls/rich_hover_button.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
@@ -28,10 +30,6 @@
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/unique_widget_ptr.h"
-#if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/ui/tabs/glic_actor_task_icon_manager.h"
-#include "chrome/browser/ui/tabs/glic_actor_task_icon_manager_factory.h"
-#endif
 
 class ActorTaskListBubbleControllerTest : public ChromeViewsTestBase {
  public:
@@ -46,7 +44,6 @@ class ActorTaskListBubbleControllerTest : public ChromeViewsTestBase {
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
 
-#if BUILDFLAG(ENABLE_GLIC)
     anchor_widget_ =
         CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET,
                          views::Widget::InitParams::TYPE_WINDOW);
@@ -75,10 +72,8 @@ class ActorTaskListBubbleControllerTest : public ChromeViewsTestBase {
     actor_task_list_bubble_controller_ =
         std::make_unique<ActorTaskListBubbleController>(
             browser_window_interface_.get());
-#endif
   }
 
-#if BUILDFLAG(ENABLE_GLIC)
   std::unique_ptr<KeyedService> BuildGlicActorTaskIconManager(
       content::BrowserContext* context) {
     Profile* profile = Profile::FromBrowserContext(context);
@@ -97,15 +92,12 @@ class ActorTaskListBubbleControllerTest : public ChromeViewsTestBase {
 
     return std::move(actor_keyed_service);
   }
-#endif
 
   void TearDown() override {
-#if BUILDFLAG(ENABLE_GLIC)
     actor_task_list_bubble_controller_.reset();
     browser_window_interface_.reset();
     profile_.reset();
     anchor_widget_.reset();
-#endif
     ChromeViewsTestBase::TearDown();
   }
 
@@ -132,19 +124,16 @@ class ActorTaskListBubbleControllerTest : public ChromeViewsTestBase {
         kActorTaskListBubbleView, context);
   }
 
-#if BUILDFLAG(ENABLE_GLIC)
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<ActorTaskListBubbleController>
       actor_task_list_bubble_controller_;
   std::unique_ptr<MockBrowserWindowInterface> browser_window_interface_;
   ui::UnownedUserDataHost user_data_host_;
   views::UniqueWidgetPtr anchor_widget_;
-#endif
   base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(ActorTaskListBubbleControllerTest, ShowBubbleRecordsHistogram) {
-#if BUILDFLAG(ENABLE_GLIC)
   actor::ActorKeyedService* actor_service =
       actor::ActorKeyedService::Get(profile_.get());
   tabs::GlicActorTaskIconManager* manager =
@@ -183,5 +172,4 @@ TEST_F(ActorTaskListBubbleControllerTest, ShowBubbleRecordsHistogram) {
   EXPECT_EQ(
       2u,
       histogram_tester.GetAllSamples("Actor.Ui.TaskListBubble.Rows").size());
-#endif
 }

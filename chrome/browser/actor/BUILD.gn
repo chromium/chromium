@@ -175,7 +175,9 @@ source_set("impl") {
     "//chrome/browser/actor/ui",
     "//chrome/browser/actor/ui:event_dispatcher",
     "//chrome/browser/affiliations",
+    "//chrome/browser/autofill/actor",
     "//chrome/browser/favicon",
+    "//chrome/browser/glic",
     "//chrome/browser/lookalikes",
     "//chrome/browser/optimization_guide",
     "//chrome/browser/page_content_annotations:fetcher",
@@ -190,6 +192,7 @@ source_set("impl") {
     "//chrome/browser/ui/tabs:tabs_public",
     "//chrome/common",
     "//components/affiliations/core/browser:affiliations",
+    "//components/autofill/core/browser",
     "//components/autofill/core/browser/integrators/actor:actor_form_filling_types",
     "//components/content_settings/core/common",
     "//components/favicon/core",
@@ -214,14 +217,6 @@ source_set("impl") {
   ]
 
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
-  if (enable_glic) {
-    deps += [
-      "//chrome/browser/autofill/actor",
-      "//chrome/browser/glic",
-      "//components/autofill/core/browser",
-    ]
-  }
 
   if (is_android) {
     deps += [
@@ -331,6 +326,7 @@ source_set("unit_tests") {
     "actor_task_metadata_unittest.cc",
     "actor_test_util_unittest.cc",
     "aggregated_journal_unittest.cc",
+    "execution_engine_unittest.cc",
     "origin_checker_unittest.cc",
     "safety_list_manager_unittest.cc",
     "shared_types_unittest.cc",
@@ -345,6 +341,7 @@ source_set("unit_tests") {
   deps = [
     ":actor",
     ":impl",
+    ":impl_test_support",
     ":test_support",
     ":variants",
     "ui:event_dispatcher",
@@ -357,19 +354,24 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
   data = [ "//tools/metrics/histograms/metadata/actor/histograms.xml" ]
-  if (enable_glic) {
-    sources += [ "execution_engine_unittest.cc" ]
-    deps += [ ":impl_test_support" ]
-  }
 }
 
 source_set("tools_test_support") {
   testonly = true
   public_deps = [ "//base/test:test_support" ]
+  sources = [
+    "tools/observation_delay_test_util.cc",
+    "tools/observation_delay_test_util.h",
+    "tools/page_stability_test_util.cc",
+    "tools/page_stability_test_util.h",
+    "tools/tools_test_util.cc",
+    "tools/tools_test_util.h",
+  ]
   deps = [
     ":actor",
     ":impl",
     ":test_support",
+    "//chrome/browser/glic",
     "//chrome/browser/optimization_guide:test_support",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/zoom",
@@ -380,18 +382,6 @@ source_set("tools_test_support") {
     deps += [ "//chrome/test:test_support_ui_android" ]
   } else {
     deps += [ "//chrome/test:test_support_ui" ]
-  }
-
-  if (enable_glic) {
-    sources = [
-      "tools/observation_delay_test_util.cc",
-      "tools/observation_delay_test_util.h",
-      "tools/page_stability_test_util.cc",
-      "tools/page_stability_test_util.h",
-      "tools/tools_test_util.cc",
-      "tools/tools_test_util.h",
-    ]
-    deps += [ "//chrome/browser/glic" ]
   }
 }
 
@@ -408,6 +398,7 @@ source_set("browser_tests") {
     "ui:event_dispatcher",
     "//chrome/browser/affiliations",
     "//chrome/browser/glic",
+    "//chrome/browser/glic/actor:browser_tests",
     "//chrome/browser/glic/test_support",
     "//chrome/browser/lookalikes:test_support",
     "//chrome/browser/optimization_guide",
@@ -434,13 +425,6 @@ source_set("browser_tests") {
     "//ui/base:ozone_buildflags",
   ]
 
-  if (enable_glic) {
-    deps += [
-      "//chrome/browser/glic",
-      "//chrome/browser/glic/actor:browser_tests",
-    ]
-  }
-
   if (is_android) {
     deps += [ "//chrome/test:test_support_ui_android" ]
   } else {
@@ -449,7 +433,7 @@ source_set("browser_tests") {
 
   # TODO(crbug.com/482145079): Migrate over history_tool, media_control_tool, and
   # attempt_form_filling_tool tests once flakiness is resolved.
-  if (!skip_android_unmigrated_actor_files && enable_glic) {
+  if (!skip_android_unmigrated_actor_files) {
     sources += [
       "execution_engine_browsertest.cc",
       "execution_engine_origin_gating_browsertest.cc",
@@ -491,12 +475,19 @@ if (!skip_android_unmigrated_actor_files) {
   source_set("interactive_ui_tests") {
     testonly = true
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [
+      "tools/attempt_login_tool_interactive_ui_test.cc",
+      "tools/select_tool_interactive_ui_test.cc",
+    ]
     deps = [
       ":actor",
       ":impl",
       ":test_support",
       ":tools_test_support",
       "//cc:test_support",
+      "//chrome/browser/glic",
+      "//chrome/browser/glic/test_support",
+      "//chrome/browser/optimization_guide:test_support",
       "//chrome/browser/ui:ui_features",
       "//components/favicon/core/test:test_support",
       "//content/test:browsertest_support",
@@ -505,19 +496,8 @@ if (!skip_android_unmigrated_actor_files) {
       "//ui/compositor",
       "//ui/gfx/codec",
     ]
-    if (enable_glic) {
-      sources = [
-        "tools/attempt_login_tool_interactive_ui_test.cc",
-        "tools/select_tool_interactive_ui_test.cc",
-      ]
-      deps += [
-        "//chrome/browser/glic",
-        "//chrome/browser/glic/test_support",
-        "//chrome/browser/optimization_guide:test_support",
-      ]
-      if (is_linux) {
-        deps += [ "//ui/ozone" ]
-      }
+    if (is_linux) {
+      deps += [ "//ui/ozone" ]
     }
   }
 }

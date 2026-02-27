@@ -25,29 +25,23 @@ source_set("ui") {
     "//content/public/browser",
     "//ui/views",
   ]
-  if (enable_glic) {
-    deps += [ "//chrome/browser/glic" ]
-  }
+  deps += [ "//chrome/browser/glic" ]
 }
 
 source_set("controller") {
   sources = [ "actor_task_list_bubble_controller.h" ]
   deps = [
     "//base",
+    "//chrome/browser/glic",
+    "//chrome/browser/glic:mojo_bindings",
     "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/tabs:glic",
     "//chrome/common",
     "//chrome/common:chrome_features",
     "//components/tabs:public",
     "//ui/base/unowned_user_data",
     "//ui/views",
   ]
-  if (enable_glic) {
-    deps += [
-      "//chrome/browser/glic",
-      "//chrome/browser/glic:mojo_bindings",
-      "//chrome/browser/ui/tabs:glic",
-    ]
-  }
 }
 
 source_set("controller_impl") {
@@ -59,19 +53,15 @@ source_set("controller_impl") {
     "//chrome/browser/actor",
     "//chrome/browser/actor/resources:grit",
     "//chrome/browser/actor/ui",
+    "//chrome/browser/glic",
+    "//chrome/browser/glic:mojo_bindings",
     "//chrome/browser/ui",
+    "//chrome/browser/ui/tabs:glic",
     "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/browser/ui/views/interaction",
     "//ui/base",
     "//ui/views",
   ]
-  if (enable_glic) {
-    deps += [
-      "//chrome/browser/glic",
-      "//chrome/browser/glic:mojo_bindings",
-      "//chrome/browser/ui/tabs:glic",
-    ]
-  }
 }
 
 source_set("unit_tests") {
@@ -87,15 +77,11 @@ source_set("unit_tests") {
     "//chrome/browser/actor",
     "//chrome/browser/actor:test_support",
     "//chrome/browser/actor/resources:grit_grit",
+    "//chrome/browser/glic/test_support",
+    "//chrome/browser/ui/tabs:glic",
     "//chrome/test:test_support",
     "//testing/gtest",
   ]
-  if (enable_glic) {
-    deps += [
-      "//chrome/browser/glic/test_support",
-      "//chrome/browser/ui/tabs:glic",
-    ]
-  }
 }
 
 source_set("interactive_ui_tests") {
@@ -110,17 +96,13 @@ source_set("interactive_ui_tests") {
     "//chrome/browser/actor",
     "//chrome/browser/actor/ui",
     "//chrome/browser/actor/ui:actor_ui_interactive_base",
+    "//chrome/browser/glic:interactive_ui_tests",
+    "//chrome/browser/glic/test_support",
     "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/tabs:glic",
     "//chrome/test:test_support",
     "//testing/gtest",
     "//ui/base/interaction:test_support",
     "//ui/events:test_support",
   ]
-  if (enable_glic) {
-    deps += [
-      "//chrome/browser/glic:interactive_ui_tests",
-      "//chrome/browser/glic/test_support",
-      "//chrome/browser/ui/tabs:glic",
-    ]
-  }
 }
