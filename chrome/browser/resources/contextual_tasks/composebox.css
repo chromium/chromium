@@ -250,6 +250,7 @@
   display: none;
   inset-inline-end: var(--cancel-button-inline-end);
   top: var(--cancel-button-top);
+  z-index: 2;
 }
 
 /* Only show when text is in there (when can submit). */
