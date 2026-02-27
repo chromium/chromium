@@ -303,9 +303,15 @@ WebInputEventResult GestureManager::HandleGestureTap(
   WebInputEventResult mouse_down_event_result =
       WebInputEventResult::kHandledSuppressed;
   suppress_selection_on_repeated_tap_down_ = true;
-  if (!suppress_mouse_events_from_gestures_) {
-    mouse_event_manager_->SetClickCount(gesture_event.TapCount());
 
+  // Always update the click count so that the click event dispatched below
+  // (which is NOT suppressed) carries the correct detail/click-count.
+  // Without this, cancelling pointerdown would prevent dblclick from firing
+  // because the click event's detail would not be 2.
+  // See crbug.com/427367148.
+  mouse_event_manager_->SetClickCount(gesture_event.TapCount());
+
+  if (!suppress_mouse_events_from_gestures_) {
     mouse_down_event_result =
         mouse_event_manager_->SetElementUnderMouseAndDispatchMouseEvent(
             current_hit_test.InnerPossiblyPseudoElement(),
