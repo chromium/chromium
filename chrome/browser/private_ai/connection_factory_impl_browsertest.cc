@@ -61,7 +61,7 @@ class ConnectionFactoryImplBrowserTest : public InProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(ConnectionFactoryImplBrowserTest,
                        CreateConnectionWithoutToken) {
-  GURL url("wss://legion.googleapis.com?key=test_api_key");
+  GURL url("wss://private-ai.googleapis.com?key=test_api_key");
 
   ConnectionFactoryImpl factory(url, GetNetworkContext(), GetLogger());
 
@@ -71,14 +71,14 @@ IN_PROC_BROWSER_TEST_F(ConnectionFactoryImplBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ConnectionFactoryImplBrowserTest,
                        FactoryCtorFailsWithoutApiKey) {
-  GURL url("wss://legion.googleapis.com");
+  GURL url("wss://private-ai.googleapis.com");
   EXPECT_CHECK_DEATH(
       ConnectionFactoryImpl(url, GetNetworkContext(), GetLogger()));
 }
 
 IN_PROC_BROWSER_TEST_F(ConnectionFactoryImplBrowserTest,
                        CreateConnectionWithToken) {
-  GURL url("wss://legion.googleapis.com?key=test_api_key");
+  GURL url("wss://private-ai.googleapis.com?key=test_api_key");
 
   ConnectionFactoryImpl factory(url, GetNetworkContext(), GetLogger());
   factory.EnableTokenAttestation(GetTokenManager());
@@ -89,7 +89,7 @@ IN_PROC_BROWSER_TEST_F(ConnectionFactoryImplBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ConnectionFactoryImplBrowserTest,
                        CreateConnectionWithProxyAndToken) {
-  GURL url("wss://legion.googleapis.com?key=test_api_key");
+  GURL url("wss://private-ai.googleapis.com?key=test_api_key");
 
   ConnectionFactoryImpl factory(url, GetNetworkContext(), GetLogger());
   factory.EnableTokenAttestation(GetTokenManager());

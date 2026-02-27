@@ -36,7 +36,7 @@ PrivateAiServiceFactory::~PrivateAiServiceFactory() = default;
 std::unique_ptr<KeyedService>
 PrivateAiServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  if (!PrivateAiService::CanLegionBeEnabled()) {
+  if (!PrivateAiService::CanPrivateAiBeEnabled()) {
     return nullptr;
   }
 

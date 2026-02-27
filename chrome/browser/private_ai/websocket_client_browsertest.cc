@@ -25,12 +25,12 @@ namespace {
 const base::FeatureParam<std::string> kTestFeatureName{
     &kPrivateAi, "test-feature-name", "FEATURE_NAME_UNSPECIFIED"};
 const base::FeatureParam<std::string> kTestQueryText{
-    &kPrivateAi, "test-query-text", "Hello Legion!"};
+    &kPrivateAi, "test-query-text", "Hello PrivateAI!"};
 
-// This class allows manual testing of the Legion Service.
-class LegionWebSocketClientBrowserTest : public InProcessBrowserTest {
+// This class allows manual testing of the PrivateAI Service.
+class PrivateAiWebSocketClientBrowserTest : public InProcessBrowserTest {
  public:
-  LegionWebSocketClientBrowserTest() {
+  PrivateAiWebSocketClientBrowserTest() {
     SetAllowNetworkAccessToHostResolutions();
   }
 
@@ -38,22 +38,24 @@ class LegionWebSocketClientBrowserTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(LegionWebSocketClientBrowserTest, MANUAL_Client) {
+IN_PROC_BROWSER_TEST_F(PrivateAiWebSocketClientBrowserTest, MANUAL_Client) {
   const std::string feature_name_str = kTestFeatureName.Get();
-  CHECK(!feature_name_str.empty())
-      << "Missing test-feature-name param for Legion feature. Please provide a "
-         "feature name."
-      << "--enable-features=Legion:test-feature-name/FEATURE_NAME_UNSPECIFIED";
+  CHECK(!feature_name_str.empty()) << "Missing test-feature-name param for "
+                                      "PrivateAI feature. Please provide a "
+                                      "feature name."
+                                   << "--enable-features=PrivateAi:test-"
+                                      "feature-name/FEATURE_NAME_UNSPECIFIED";
 
   proto::FeatureName feature_name;
   CHECK(proto::FeatureName_Parse(feature_name_str, &feature_name))
       << "Invalid feature name: " << feature_name_str;
 
   const std::string text = kTestQueryText.Get();
-  CHECK(!text.empty()) << "Missing test-query-text param for Legion feature. "
-                          "Please provide a query text."
-                       << "--enable-features=Legion:test-query-text/'Hello "
-                          "Legion!'";
+  CHECK(!text.empty())
+      << "Missing test-query-text param for PrivateAI feature. "
+         "Please provide a query text."
+      << "--enable-features=PrivateAi:test-query-text/'Hello "
+         "PrivateAI!'";
   auto* private_ai_service =
       PrivateAiServiceFactory::GetForProfile(browser()->profile());
   ASSERT_TRUE(private_ai_service);
@@ -69,7 +71,7 @@ IN_PROC_BROWSER_TEST_F(LegionWebSocketClientBrowserTest, MANUAL_Client) {
   ASSERT_FALSE(result.value().empty());
 
   // Log the response for manual verification.
-  LOG(INFO) << "Response from Legion: " << result.value();
+  LOG(INFO) << "Response from PrivateAI: " << result.value();
 }
 
 }  // namespace

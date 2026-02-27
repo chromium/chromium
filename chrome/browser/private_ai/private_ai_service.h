@@ -34,13 +34,13 @@ class TokenManager;
 class Client;
 
 // The `PrivateAiService` is a KeyedService responsible for managing
-// authentication tokens for the Legion feature. It observes the user's sign-in
-// state and, when a primary account is available, it can fetch OAuth2 access
-// tokens. These access tokens are then used by the underlying
+// authentication tokens for the PrivateAI feature. It observes the user's
+// sign-in state and, when a primary account is available, it can fetch OAuth2
+// access tokens. These access tokens are then used by the underlying
 // `phosphor::TokenManager` and `phosphor::TokenFetcher` to acquire and manage
-// authentication tokens for Legion. This service also creates and provides the
-// `Client`, which serves as the primary interface for interacting with
-// the Legion feature.
+// authentication tokens for PrivateAI. This service also creates and provides
+// the `Client`, which serves as the primary interface for interacting with the
+// PrivateAI feature.
 class PrivateAiService : public KeyedService,
                          public phosphor::OAuthTokenProvider,
                          public signin::IdentityManager::Observer {
@@ -55,7 +55,7 @@ class PrivateAiService : public KeyedService,
   // KeyedService override:
   void Shutdown() override;
 
-  static bool CanLegionBeEnabled();
+  static bool CanPrivateAiBeEnabled();
 
   // Returns `nullptr` if `PrivateAiService` is shutting down.
   phosphor::TokenManager* GetTokenManager();

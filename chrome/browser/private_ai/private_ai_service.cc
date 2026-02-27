@@ -26,7 +26,7 @@
 namespace private_ai {
 
 // static
-bool PrivateAiService::CanLegionBeEnabled() {
+bool PrivateAiService::CanPrivateAiBeEnabled() {
   return base::FeatureList::IsEnabled(kPrivateAi);
 }
 
