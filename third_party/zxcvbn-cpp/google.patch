@@ -2249,10 +2249,10 @@ index ceb43f440de62..0000000000000
 -
 -#endif
 diff --git a/third_party/zxcvbn-cpp/native-src/zxcvbn/util.cpp b/third_party/zxcvbn-cpp/native-src/zxcvbn/util.cpp
-index 084d3cc0cd7c8..7e34eacdac9b2 100644
+index 084d3cc0cd7c8..06bf202b6a69c 100644
 --- a/third_party/zxcvbn-cpp/native-src/zxcvbn/util.cpp
 +++ b/third_party/zxcvbn-cpp/native-src/zxcvbn/util.cpp
-@@ -1,74 +1,58 @@
+@@ -1,74 +1,57 @@
  #include <zxcvbn/util.hpp>
  
  #include <algorithm>
@@ -2311,8 +2311,6 @@ index 084d3cc0cd7c8..7e34eacdac9b2 100644
 +template<class It>
 +std::pair<char32_t, It> _utf8_decode(It it, It end) {
 +  assert(it != end);
-+  const char* src = &*it;
-+  size_t src_len = static_cast<size_t>(std::distance(it, end));
 +  size_t char_index = 0;
 +  base_icu::UChar32 code_point_out;
  
@@ -2339,7 +2337,8 @@ index 084d3cc0cd7c8..7e34eacdac9b2 100644
 -    start += (from_next - from);
 -  }
 -  return true;
-+  base::ReadUnicodeCharacter(src, src_len, &char_index, &code_point_out);
++  base::ReadUnicodeCharacter(std::string_view(it, end), &char_index,
++                             &code_point_out);
 +  return {code_point_out, it + ++char_index};
  }
  
@@ -2357,7 +2356,7 @@ index 084d3cc0cd7c8..7e34eacdac9b2 100644
  }
  
  std::string::iterator utf8_iter(std::string::iterator start,
-@@ -99,38 +83,6 @@ std::string::size_type character_len(const std::string & str) {
+@@ -99,38 +82,6 @@ std::string::size_type character_len(const std::string & str) {
    return character_len(str, 0, str.size());
  }
  

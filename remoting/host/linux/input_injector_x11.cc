@@ -236,8 +236,7 @@ void InputInjectorX11::Core::InjectTextEvent(const TextEvent& event) {
   const std::string text = event.text();
   for (size_t index = 0; index < text.size(); ++index) {
     base_icu::UChar32 code_point;
-    if (!base::ReadUnicodeCharacter(text.c_str(), text.size(), &index,
-                                    &code_point)) {
+    if (!base::ReadUnicodeCharacter(text, &index, &code_point)) {
       continue;
     }
     character_injector_->Inject(code_point);

@@ -87,8 +87,7 @@ void EiInputInjector::InjectTextEvent(const protocol::TextEvent& event) {
   const std::string& text = event.text();
   for (size_t index = 0; index < text.size(); ++index) {
     base_icu::UChar32 code_point;
-    if (!base::ReadUnicodeCharacter(text.c_str(), text.size(), &index,
-                                    &code_point)) {
+    if (!base::ReadUnicodeCharacter(text, &index, &code_point)) {
       LOG(ERROR) << "Invalid encoding at index: " << index
                  << " for text: " << text << ". Not injecting any text.";
       return;
