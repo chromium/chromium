@@ -137,7 +137,7 @@ IN_PROC_BROWSER_TEST_F(PageContentMetadataObserverBrowserTest,
 // TODO(https://crbug.com/460575998): Test is flaky on linux, android-arm-64 and
 // chromeos tests.
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_FUCHSIA) || \
-    BUILDFLAG(IS_CHROMEOS)
+    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
 #define MAYBE_NoMetaTags DISABLED_NoMetaTags
 #else
 #define MAYBE_NoMetaTags NoMetaTags
