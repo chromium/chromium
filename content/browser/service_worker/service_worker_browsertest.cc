@@ -113,6 +113,7 @@
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/service_worker_router_info.mojom-shared.h"
+#include "services/network/public/mojom/url_loader.mojom.h"
 #include "storage/browser/blob/blob_handle.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
@@ -8066,8 +8067,8 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerSyntheticResponseBrowserTest,
   mismatch_manager.ResumeNavigation();
   EXPECT_TRUE(mismatch_manager.WaitForNavigationFinished());
 
-  // 2. Immediately navigate to another URL to cancel the previous navigation's body load.
-  // This closes the consumer end of the data pipe in the renderer.
+  // 2. Immediately navigate to another URL to cancel the previous navigation's
+  // body load. This closes the consumer end of the data pipe in the renderer.
   // We use a cross-site URL to ensure a clean cancellation.
   GURL cancel_url("http://example.com");
   TestNavigationManager cancel_manager(web_contents(), cancel_url);
@@ -8195,4 +8196,105 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerSyntheticResponseBrowserTest,
                          "window.is_inline_script_executed"));
 }
 
+class InterceptorURLLoader : public network::mojom::URLLoader {
+ public:
+  InterceptorURLLoader(
+      mojo::PendingReceiver<network::mojom::URLLoader> receiver,
+      mojo::PendingRemote<network::mojom::URLLoaderClient> client)
+      : receiver_(this, std::move(receiver)), client_(std::move(client)) {
+    auto response = network::mojom::URLResponseHead::New();
+    response->headers = base::MakeRefCounted<net::HttpResponseHeaders>(
+        "HTTP/1.1 200 OK\r\n"
+        "Content-Type: text/html\r\n\r\n");
+
+    mojo::ScopedDataPipeProducerHandle producer;
+    mojo::ScopedDataPipeConsumerHandle consumer;
+    MojoCreateDataPipeOptions options;
+    options.struct_size = sizeof(MojoCreateDataPipeOptions);
+    options.flags = MOJO_CREATE_DATA_PIPE_FLAG_NONE;
+    options.element_num_bytes = 1;
+    options.capacity_num_bytes = 1024;
+    mojo::CreateDataPipe(&options, producer, consumer);
+
+    std::string body = "intercepted";
+    size_t size = body.size();
+    producer->WriteData(base::as_byte_span(body),
+                        MOJO_WRITE_DATA_FLAG_ALL_OR_NONE, size);
+
+    client_->OnReceiveResponse(std::move(response), std::move(consumer),
+                               std::nullopt);
+    network::URLLoaderCompletionStatus status(net::OK);
+    status.decoded_body_length = body.size();
+    client_->OnComplete(status);
+  }
+
+  void FollowRedirect(const std::vector<std::string>&,
+                      const net::HttpRequestHeaders&,
+                      const net::HttpRequestHeaders&,
+                      const std::optional<GURL>&) override {}
+  void SetPriority(net::RequestPriority, int32_t) override {}
+
+ private:
+  mojo::Receiver<network::mojom::URLLoader> receiver_;
+  mojo::Remote<network::mojom::URLLoaderClient> client_;
+};
+
+class MockContentBrowserClientWithInterceptor
+    : public MockContentBrowserClient {
+ public:
+  MockContentBrowserClientWithInterceptor() = default;
+  ~MockContentBrowserClientWithInterceptor() override = default;
+
+  void set_intercept(bool intercept) { intercept_ = intercept; }
+
+  URLLoaderRequestHandler
+  CreateURLLoaderHandlerForServiceWorkerNavigationPreload(
+      FrameTreeNodeId frame_tree_node_id,
+      const network::ResourceRequest& resource_request) override {
+    if (intercept_) {
+      return base::BindOnce(
+          &MockContentBrowserClientWithInterceptor::HandleRequest,
+          base::Unretained(this));
+    }
+    return {};
+  }
+
+  void HandleRequest(
+      const network::ResourceRequest& resource_request,
+      mojo::PendingReceiver<network::mojom::URLLoader> receiver,
+      mojo::PendingRemote<network::mojom::URLLoaderClient> client) {
+    loaders_.push_back(std::make_unique<InterceptorURLLoader>(
+        std::move(receiver), std::move(client)));
+  }
+
+ private:
+  bool intercept_ = false;
+  std::vector<std::unique_ptr<InterceptorURLLoader>> loaders_;
+};
+
+IN_PROC_BROWSER_TEST_P(ServiceWorkerSyntheticResponseBrowserTest,
+                       InterceptedByEmbedder) {
+  if (IsDryRunMode()) {
+    return;
+  }
+  SetUpMockContentBrowserClient();
+  auto browser_client =
+      std::make_unique<MockContentBrowserClientWithInterceptor>();
+  browser_client->set_synthetic_response_enabled(true);
+  GURL url =
+      https_server()->GetURL(kHostname, base::StrCat({kTargetPath, "foo"}));
+
+  // 1. Prime the Synthetic Response header cache
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+  // 2. Enable interception
+  browser_client->set_intercept(true);
+  // 3. Second navigation triggers the crash in CHECK(!body.is_valid())
+  if (GetProcessingMode() ==
+      blink::features::ServiceWorkerSyntheticResponseProcessingMode::
+          kNetworkService) {
+    // EXPECT_DEATH({ (void)NavigateToURL(shell(), url); }, "");
+  } else {
+    EXPECT_TRUE(NavigateToURL(shell(), url));
+  }
+}
 }  // namespace content
