@@ -35,16 +35,16 @@ ActorOverlayUI::ActorOverlayUI(content::WebUI* web_ui)
                               IDR_ACTOR_OVERLAY_ACTOR_OVERLAY_HTML);
   source->AddBoolean(
       "isMagicCursorEnabled",
-      base::FeatureList::IsEnabled(features::kGlicActorUiOverlayMagicCursor));
+      base::FeatureList::IsEnabled(features::kGlicActorUiMagicCursor));
   source->AddBoolean("isStandaloneBorderGlowEnabled",
                      features::kGlicActorUiStandaloneBorderGlow.Get());
   source->AddResourcePath("magic_cursor.svg", IDR_ACTOR_OVERLAY_MAGIC_CURSOR);
   source->AddDouble("magicCursorSpeed",
-                    features::kGlicActorUiOverlayMagicCursorSpeed.Get());
+                    features::kGlicActorUiMagicCursorSpeed.Get());
   source->AddInteger("magicCursorMinDurationMs",
-                     features::kGlicActorUiOverlayMagicCursorMinDuration.Get());
+                     features::kGlicActorUiMagicCursorMinDuration.Get());
   source->AddInteger("magicCursorMaxDurationMs",
-                     features::kGlicActorUiOverlayMagicCursorMaxDuration.Get());
+                     features::kGlicActorUiMagicCursorMaxDuration.Get());
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(ActorOverlayUI)

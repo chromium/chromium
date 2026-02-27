@@ -230,13 +230,13 @@ BASE_DECLARE_FEATURE(kGlicHandoffButtonResetFocusAndHoverStatus);
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kGlicHandoffButtonHideWhenOmniboxPopupOpened);
 COMPONENT_EXPORT(CHROME_FEATURES)
-BASE_DECLARE_FEATURE(kGlicActorUiOverlayMagicCursor);
+BASE_DECLARE_FEATURE(kGlicActorUiMagicCursor);
 COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::FeatureParam<double> kGlicActorUiOverlayMagicCursorSpeed;
+extern const base::FeatureParam<double> kGlicActorUiMagicCursorSpeed;
 COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::FeatureParam<int> kGlicActorUiOverlayMagicCursorMinDuration;
+extern const base::FeatureParam<int> kGlicActorUiMagicCursorMinDuration;
 COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::FeatureParam<int> kGlicActorUiOverlayMagicCursorMaxDuration;
+extern const base::FeatureParam<int> kGlicActorUiMagicCursorMaxDuration;
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kGlicActorSplitValidateAndExecute);
 

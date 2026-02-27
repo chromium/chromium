@@ -62,12 +62,12 @@ class ActorPageToolMagicCursorTest : public ActorPageToolBrowserTest,
     if (GetParam()) {
       feature_list_.InitWithFeatures(
           {features::kGlicActorSplitValidateAndExecute,
-           features::kGlicActorUiOverlayMagicCursor},
+           features::kGlicActorUiMagicCursor},
           {});
     } else {
       feature_list_.InitWithFeatures(
           {}, {features::kGlicActorSplitValidateAndExecute,
-               features::kGlicActorUiOverlayMagicCursor});
+               features::kGlicActorUiMagicCursor});
     }
   }
 
@@ -381,7 +381,7 @@ class ActorPageToolMagicCursorRendererResolvedTest
  public:
   ActorPageToolMagicCursorRendererResolvedTest() {
     feature_list_.InitWithFeatures({features::kGlicActorSplitValidateAndExecute,
-                                    features::kGlicActorUiOverlayMagicCursor},
+                                    features::kGlicActorUiMagicCursor},
                                    {});
   }
 

@@ -11648,7 +11648,7 @@
                         "magic-cursor-speed-px-per-ms": "1.5"
                     },
                     "enable_features": [
-                        "GlicActorUiOverlayMagicCursor"
+                        "GlicActorUiMagicCursor"
                     ]
                 }
             ]

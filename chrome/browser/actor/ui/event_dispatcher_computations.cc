@@ -84,7 +84,7 @@ PointTarget ComputeMouseTarget(tabs::TabInterface::Handle tab,
   ActorTabData* actor_tab_data = ActorTabData::From(tab.Get());
   if (base::FeatureList::IsEnabled(
           features::kGlicActorSplitValidateAndExecute) &&
-      base::FeatureList::IsEnabled(features::kGlicActorUiOverlayMagicCursor)) {
+      base::FeatureList::IsEnabled(features::kGlicActorUiMagicCursor)) {
     return FetchPointFromRenderer(actor_tab_data, target);
   }
 

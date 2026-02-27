@@ -90,7 +90,7 @@ class ActorUiDomNodeGeometryBrowserTest
   ActorUiDomNodeGeometryBrowserTest() {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kGlicActorUi,
-                              features::kGlicActorUiOverlayMagicCursor},
+                              features::kGlicActorUiMagicCursor},
         /*disabled_features=*/{});
   }
 
