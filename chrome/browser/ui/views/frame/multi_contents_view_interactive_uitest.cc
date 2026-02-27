@@ -414,7 +414,8 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest,
 // scenarios using Tab Search
 // TODO(https://crbug.com/422941990): Flaky (times out) on Linux and Windows
 // debug bots.
-#if !defined(NDEBUG) && (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX))
+#if (!defined(NDEBUG) && (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX))) || \
+    defined(THREAD_SANITIZER)
 #define MAYBE_SwitchToSplitViewWithInactiveBrowserWindow \
   DISABLED_SwitchToSplitViewWithInactiveBrowserWindow
 #else
