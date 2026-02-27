@@ -197,14 +197,6 @@ pa_buildflag_header("buildflags") {
   ]
 }
 
-# TODO(crbug.com/41481467): Remove this alias.
-# Temporary alias, the time to update partition_alloc dependants.
-# Currently needed by pdfium and dawn.
-source_set("partition_alloc_buildflags") {
-  public = [ "partition_alloc_buildflags.h" ]
-  public_deps = [ ":buildflags" ]
-}
-
 # Provides platform and architecture detections from the compiler defines.
 source_set("build_config") {
   sources = [
