@@ -502,6 +502,8 @@
 :host([is-zero-state]) #contextualTasksSuggestionsContainer::part(match-icon-container) {
   height: 24px;
   padding-inline-end: 8px;
+  /* This + 8px from suggestion container's
+   * indent start = 16px. */
   padding-inline-start: 8px;
   width: 24px;
 }
@@ -509,7 +511,6 @@
 :host([is-zero-state][is-side-panel])
     #contextualTasksSuggestionsContainer::part(match-icon-container) {
   padding-inline-end: 12px;
-  padding-inline-start: 12px;
 }
 
 :host([is-zero-state]) #contextualTasksSuggestionsContainer::part(match-icon) {
@@ -550,6 +551,21 @@
   --cr-composebox-dropdown-match-margin-start: 16px;
   --cr-composebox-match-remove-button-top: 0;
   display: none;
+}
+
+#suggestionActivity {
+  color: var(--color-composebox-suggestion-activity);
+  display: flex;
+  font-family: var(--google-sans-font);
+  font-size: 12px;
+  font-weight: 400;
+  justify-content: flex-start;
+  line-height: 16px;
+  padding-bottom: 10px;
+  padding-inline-end: 8px;
+  padding-inline-start: 20px;
+  padding-top: 8px;
+  position: relative;
 }
 
 #composeboxContainer:not(:has(#composebox[show-dropdown_])) ~ #contextualTasksSuggestionsContainer {

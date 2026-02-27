@@ -35,6 +35,7 @@
   --color-composebox-loading-start: rgba(241, 243, 244, 1);
   --color-composebox-pdf-chip-icon-background: rgba(219, 69, 55, 1);
   --color-composebox-pdf-chip-icon-border: rgba(255, 255, 255, 1);
+  --color-composebox-suggestion-activity: rgba(86, 89, 94, 1);
   --color-composebox-type-ahead: rgba(117, 117, 117, 1);
   --color-composebox-type-ahead-chip: rgba(117, 117, 117, 1);
   --color-composebox-voice-lens-button: rgba(10, 10, 10, 1);
@@ -194,6 +195,7 @@
   --color-composebox-input-plate-outline: rgba(45, 47, 56, 1);
   --color-composebox-loading-end: rgba(77, 81, 86, 1);
   --color-composebox-loading-start: rgba(60, 64, 67, 1);
+  --color-composebox-suggestion-activity: rgba(86, 89, 94, 1);
   --color-composebox-type-ahead: rgba(199, 199, 199, 1);
   --color-composebox-type-ahead-chip: rgba(199, 199, 199, 1);
   --color-composebox-voice-lens-button: rgba(191, 191, 191, 1);
