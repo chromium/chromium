@@ -23,8 +23,8 @@ using proto::SegmentId;
 // Default parameters for TipsNotificationsRanker model.
 constexpr SegmentId kSegmentId =
     SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_TIPS_NOTIFICATIONS_RANKER;
-// Update the model to include the customize MVT feature.
-constexpr int64_t kModelVersion = 8;
+// Update the model to include the recent tabs feature.
+constexpr int64_t kModelVersion = 9;
 // Store 28 buckets of input data (28 days).
 constexpr int64_t kSignalStorageLength = 28;
 // Wait until we have 0 days of data.
@@ -40,7 +40,8 @@ constexpr LabelPair<TipsNotificationsRanker::Label> kTipsNotificationsLabels[] =
      {TipsNotificationsRanker::kPasswordAutofillTipIdx, kPasswordAutofill},
      {TipsNotificationsRanker::kSigninTipIdx, kSignin},
      {TipsNotificationsRanker::kCreateTabGroupsTipIdx, kCreateTabGroups},
-     {TipsNotificationsRanker::kCustomizeMVTTipIdx, kCustomizeMVT}};
+     {TipsNotificationsRanker::kCustomizeMVTTipIdx, kCustomizeMVT},
+     {TipsNotificationsRanker::kRecentTabsTipIdx, kRecentTabs}};
 
 // Enum values for histograms.
 constexpr std::array<int32_t, 1> kEnumValueForQuickDeleteMagicStackImpression{
@@ -96,7 +97,7 @@ constexpr FeaturePair<TipsNotificationsRanker::Feature>
          features::InputContext(kGoogleLensTipShown)},
         {TipsNotificationsRanker::kBottomOmniboxTipShownIdx,
          features::InputContext(kBottomOmniboxTipShown)},
-        // V2 Tips: Password Autofill, Sign in, Create Tab Groups, Customize MVT
+        // V2 Tips: PW Autofill, Signin, Tab Groups, Customize MVT, Recent Tabs
         // Check that both the synced account and local passwords count have an
         // aggregate sum of 0 during the specified window across all instances.
         {TipsNotificationsRanker::kPasswordAutofillAccountPasswordsCountIdx,
@@ -121,6 +122,8 @@ constexpr FeaturePair<TipsNotificationsRanker::Feature>
          features::UserAction("MobileNTPShown", 7)},
         {TipsNotificationsRanker::kMVTPinnedCountIdx,
          features::UserAction("Suggestions.ContextMenu.PinItem", 28)},
+        {TipsNotificationsRanker::kRecentTabsUsedCountIdx,
+         features::UserAction("MobileMenuRecentTabs", 28)},
         {TipsNotificationsRanker::kPasswordAutofillTipShownIdx,
          features::InputContext(kPasswordAutofillTipShown)},
         {TipsNotificationsRanker::kSigninTipShownIdx,
@@ -128,7 +131,9 @@ constexpr FeaturePair<TipsNotificationsRanker::Feature>
         {TipsNotificationsRanker::kCreateTabGroupsTipShownIdx,
          features::InputContext(kCreateTabGroupsTipShown)},
         {TipsNotificationsRanker::kCustomizeMVTTipShownIdx,
-         features::InputContext(kCustomizeMVTTipShown)}};
+         features::InputContext(kCustomizeMVTTipShown)},
+        {TipsNotificationsRanker::kRecentTabsTipShownIdx,
+         features::InputContext(kRecentTabsTipShown)}};
 
 std::vector<int> GetTipsPriorityRankingList() {
   std::vector<int> tips_list;
@@ -139,6 +144,7 @@ std::vector<int> GetTipsPriorityRankingList() {
     tips_list.emplace_back(TipsNotificationsRanker::kSigninTipIdx);
     tips_list.emplace_back(TipsNotificationsRanker::kCreateTabGroupsTipIdx);
     tips_list.emplace_back(TipsNotificationsRanker::kCustomizeMVTTipIdx);
+    tips_list.emplace_back(TipsNotificationsRanker::kRecentTabsTipIdx);
   }
 
   if (features::kTrustAndSafety.Get()) {
@@ -240,6 +246,10 @@ bool IsCustomizeMVTTipEligible(float ntp_shown_count,
   return ntp_shown_count > 5 && mvt_pinned_count == 0 && tip_shown == 0;
 }
 
+bool IsRecentTabsTipEligible(float recent_tabs_used_count, float tip_shown) {
+  return recent_tabs_used_count == 0 && tip_shown == 0;
+}
+
 }  // namespace
 
 // static
@@ -311,7 +321,7 @@ void TipsNotificationsRanker::ExecuteModelWithInput(
   float lens_tip_shown = inputs[kGoogleLensTipShownIdx];
   float bottom_omnibox_tip_shown = inputs[kBottomOmniboxTipShownIdx];
 
-  // V2 Tips: Password Autofill, Sign in, Create Tab Groups, Customize MVT
+  // V2 Tips: PW Autofill, Signin, Create Tab Groups, Customize MVT, Recent Tabs
   float password_autofill_account_passwords_count =
       inputs[kPasswordAutofillAccountPasswordsCountIdx];
   float password_autofill_local_passwords_count =
@@ -321,10 +331,12 @@ void TipsNotificationsRanker::ExecuteModelWithInput(
   float tab_groups_created_count = inputs[kTabGroupsCreatedCountIdx];
   float ntp_shown_count = inputs[kNTPShownCountIdx];
   float mvt_pinned_count = inputs[kMVTPinnedCountIdx];
+  float recent_tabs_used_count = inputs[kRecentTabsUsedCountIdx];
   float password_autofill_tip_shown = inputs[kPasswordAutofillTipShownIdx];
   float signin_tip_shown = inputs[kSigninTipShownIdx];
   float create_tab_groups_tip_shown = inputs[kCreateTabGroupsTipShownIdx];
   float customize_mvt_tip_shown = inputs[kCustomizeMVTTipShownIdx];
+  float recent_tabs_tip_shown = inputs[kRecentTabsTipShownIdx];
 
   // Only choose an eligible tip if none have been shown for the last 7 days or
   // if the testing flags to instantly schedule a notification are active.
@@ -396,6 +408,13 @@ void TipsNotificationsRanker::ExecuteModelWithInput(
             if (IsCustomizeMVTTipEligible(ntp_shown_count, mvt_pinned_count,
                                           customize_mvt_tip_shown)) {
               response[kCustomizeMVTTipIdx] = 1;
+              has_eligible_tip = true;
+            }
+            break;
+          case kRecentTabsTipIdx:
+            if (IsRecentTabsTipEligible(recent_tabs_used_count,
+                                        recent_tabs_tip_shown)) {
+              response[kRecentTabsTipIdx] = 1;
               has_eligible_tip = true;
             }
             break;

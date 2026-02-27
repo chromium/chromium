@@ -719,6 +719,8 @@ TEST_F(SegmentationPlatformServiceFactoryTest, TestTipsNotificationsRanker) {
       kCreateTabGroupsTipShown, processing::ProcessedValue::FromFloat(1));
   input_context->metadata_args.emplace(
       kCustomizeMVTTipShown, processing::ProcessedValue::FromFloat(1));
+  input_context->metadata_args.emplace(
+      kRecentTabsTipShown, processing::ProcessedValue::FromFloat(1));
 
   ExpectGetClassificationResult(
       segmentation_platform::kTipsNotificationsRankerKey, prediction_options,
