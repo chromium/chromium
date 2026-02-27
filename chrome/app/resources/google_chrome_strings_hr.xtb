@@ -687,6 +687,9 @@
 <translation id="8041795619940733262">Postavite pitanje Googleu<ph name="LINE_BREAK" />o ovoj kartici</translation>
 <translation id="80471789339884597">Zahvaljujemo što ste izvršili instaliranje. Da biste mogli koristiti <ph name="BUNDLE_NAME" />, morate ponovno pokrenuti sve preglednike.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
+<translation id="8064965390968184078">1. Kliknite <ph name="BUTTON_LABEL" /> u nastavku
+2. Kliknite <ph name="BUTTON_2" /> u postavkama Windowsa
+3. Kliknite <ph name="BUTTON_3" /> u obavijesti Windowsa da biste prikvačili Chrome na traku sa zadacima radi brzog pristupa</translation>
 <translation id="8077579734294125741">Ostali profili na Chromeu</translation>
 <translation id="8086881907087796310">Instalacija nije uspjela jer vaše računalo ne zadovoljava minimalne zahtjeve za hardver.</translation>
 <translation id="8113883687556086139">Potvrdite svoj identitet kako biste upotrebljavali i spremali podatke iz Chromea na svojem računu, <ph name="ACCOUNT_EMAIL" /></translation>
@@ -765,6 +768,7 @@ Nove oznake ne mogu se spremiti na vaš račun dok neke ne izbrišete. Ako se sa
 <translation id="8914504000324227558">Ponovo pokrenite Chrome</translation>
 <translation id="8922193594870374009">Da biste poslali broj s uređaja <ph name="ORIGIN" /> na svoj Android telefon, prijavite se na Chrome na oba uređaja.</translation>
 <translation id="8922998289262614701">Uklonite podatke ove aplikacije iz Chromea</translation>
+<translation id="8925636929359899517">Podatke upotrebljavamo za poboljšanje ove usluge. Pročitajte <ph name="BEGIN_LINK1" />pravila o privatnosti<ph name="END_LINK1" /> i <ph name="BEGIN_LINK2" />uvjete pružanja usluge<ph name="END_LINK2" />.</translation>
 <translation id="8936233353620149764">Uključite/isključite Gemini u Chromeu</translation>
 <translation id="8948460679427074738">Ovo proširenje nije objavilo prakse u vezi s privatnošću, na primjer način na koji prikuplja i upotrebljava podatke. Chrome preporučuje da ga uklonite.</translation>
 <translation id="8958307504142971576">Sada imate više dostupnih značajki u Chromeu</translation>

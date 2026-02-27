@@ -691,6 +691,8 @@
 <translation id="8041795619940733262">এই ট্যাব সম্পর্কে<ph name="LINE_BREAK" />Google-কে জিজ্ঞাসা করুন</translation>
 <translation id="80471789339884597">ইনস্টল করার জন্য ধন্যবাদ। <ph name="BUNDLE_NAME" /> ব্যবহার করার আগে আপনাকে অবশ্যই সমস্ত ব্রাউজার রিস্টার্ট করতে হবে।</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
+<translation id="8064965390968184078">১. নিচে <ph name="BUTTON_LABEL" /> বোতামে ক্লিক করুন
+২. আপনার Windows সেটিংসে <ph name="BUTTON_2" /> বোতামে ক্লিক করুন দ্রুত অ্যাক্সেসের জন্য আপনার টাস্কবারে Chrome পিন করতে, Windows বিজ্ঞপ্তিতে <ph name="BUTTON_3" /> বিকল্পে ক্লিক করুন</translation>
 <translation id="8077579734294125741">অন্যান্য Chrome প্রোফাইল</translation>
 <translation id="8086881907087796310">ইনস্টলেশন করা যায়নি কারণ আপনার কম্পিউটার হার্ডওয়্যারের নূন্যতম প্রয়োজনীয় শর্ত পূরণ করে না।</translation>
 <translation id="8113883687556086139">আপনার অ্যাকাউন্ট, <ph name="ACCOUNT_EMAIL" />-এ Chrome ডেটা ব্যবহার ও সেভ করার জন্য আপনার পরিচয় যাচাই করুন</translation>
@@ -769,6 +771,7 @@
 <translation id="8914504000324227558">Chrome আবার লঞ্চ করুন</translation>
 <translation id="8922193594870374009"><ph name="ORIGIN" /> থেকে আপনার Android ফোনে একটি নম্বর পাঠাতে, উভয় ডিভাইসের Chrome-এ সাইন-ইন করুন।</translation>
 <translation id="8922998289262614701">Chrome থেকে এই অ্যাপের ডেটা সরিয়ে দিন</translation>
+<translation id="8925636929359899517">এই পরিষেবা উন্নত করতে আমরা তথ্য ব্যবহার করি। <ph name="BEGIN_LINK1" />গোপনীয়তা নীতি<ph name="END_LINK1" /> ও <ph name="BEGIN_LINK2" />পরিষেবার শর্তাবলী<ph name="END_LINK2" /> দেখুন।</translation>
 <translation id="8936233353620149764">Chrome-এ Gemini টগল করুন</translation>
 <translation id="8948460679427074738">এই এক্সটেনশন গোপনীয়তা অনুশীলন প্রকাশ করেনি, যেমন কীভাবে এটি ডেটা সংগ্রহ ও ব্যবহার করে। Chrome আপনাকে এটি সরিয়ে দেওয়ার সাজেশন দেয়।</translation>
 <translation id="8958307504142971576">Chrome-এ এখন আপনার কাছে আরও ফিচার উপলভ্য আছে</translation>

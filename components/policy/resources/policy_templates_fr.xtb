@@ -4539,7 +4539,7 @@ Si cette règle n'est pas configurée ou qu'elle est définie sur "False", le co
 
 Si l'utilisateur tente de lancer une Application Chrome désactivée, un message lui indique pourquoi elle n'a pas été lancée et lui suggère de contacter son service informatique.
 
-La valeur de cette règle sera respectée jusqu'à l'abandon des Applications Chrome dans les sessions Kiosque, qui devrait avoir lieu dans la version M151.</translation>
+La valeur de cette règle sera respectée jusqu'à la fin de la prise en charge des Applications Chrome dans les sessions Kiosque, qui devrait avoir lieu dans la version M151.</translation>
 <translation id="4157003184375321727">Indiquer la version du système d'exploitation et du micrologiciel</translation>
 <translation id="4157594634940419685">Autoriser l'accès à des imprimantes CUPS en natif</translation>
 <translation id="4158531549614162499">Activer la synchronisation de Google Drive via des connexions au réseau mobile</translation>

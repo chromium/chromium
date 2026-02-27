@@ -281,6 +281,7 @@
 <translation id="2205701497928406883"><ph name="TAB_TITLE" />, પિન કરેલું શેર કરતું ટૅબ</translation>
 <translation id="22091350895006575">વપરાશકર્તાનું નામ ઉમેરો</translation>
 <translation id="221494669172414749">Chromeને પ્રોફાઇલ લૉક વિના ખોલવાથી કારમાંથી તમારા સાચવેલા પાસવર્ડ અને ચુકવણી પદ્ધતિઓ કાઢી નાખવામાં આવે એમ બની શકે છે. પ્રોફાઇલ લૉકનો ઉપયોગ કરવાથી આ ડેટા સુરક્ષિત રહે છે.</translation>
+<translation id="2226826835915474236">નિષ્ક્રિય શૉર્ટકટ</translation>
 <translation id="2227179592712503583">સૂચન દૂર કરો</translation>
 <translation id="2227444325776770048"><ph name="USER_FULL_NAME" /> તરીકે ચાલુ રાખો</translation>
 <translation id="2230777942707397948">ખાલી વિન્ડો</translation>
@@ -923,6 +924,7 @@
 <translation id="4885273946141277891">અસમર્થિત સંખ્યામાં Chrome આવૃત્તિઓ.</translation>
 <translation id="4890973535105146893">તમારા Google એકાઉન્ટમાં કોઈ સાચવેલા પાસવર્ડ નથી</translation>
 <translation id="4905823827770127520">આ પેજની લિંક શામેલ કરો</translation>
+<translation id="4908601375231458049">ટૅબનું ગ્રૂપ કસ્ટમાઇઝ કરો અને 'થઈ ગયું' પર ક્લિક કરો</translation>
 <translation id="4908869848243824489">Googleનું Discover</translation>
 <translation id="4910889077668685004">ચુકવણી ઍપ્લિકેશનો</translation>
 <translation id="4911042367886397055">આપનું ફરી સ્વાગત છે, <ph name="USER_NAME" />!</translation>
@@ -1186,6 +1188,7 @@
 <translation id="6040143037577758943">બંધ કરો</translation>
 <translation id="604124094241169006">સ્વચલિત</translation>
 <translation id="6042308850641462728">વધુ</translation>
+<translation id="6047066316630165190">ગ્રિડ ટૅબ સ્વિચર ખોલો</translation>
 <translation id="604996488070107836">કોઇ અજાણી ભૂલને કારણે <ph name="FILE_NAME" /> ડાઉનલોડ નિષ્ફળ થયું.</translation>
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">તમારી સ્ટોરી અને પ્રવૃત્તિને અહીં નિયંત્રિત કરો</translation>
@@ -1259,6 +1262,7 @@
 <translation id="6301526076346731664">ડેવલપર ટૂલ ખોલો</translation>
 <translation id="630308129961693966">તમારા ઍડ્રેસ બારની સ્થિતિ પસંદ કરો</translation>
 <translation id="6303969859164067831">સાઇન આઉટ કરો અને સિંક બંધ કરો</translation>
+<translation id="6305257382500066042">હમણાં જ અજમાવી જુઓ</translation>
 <translation id="6307241780749477694">આ ડિવાઇસ પર તમારા બધા પાસવર્ડ મેળવવા માટે ખાતરી કરો કે તે તમે જ છો</translation>
 <translation id="6309082029962045994"><ph name="TAB_TITLE" />, એકથી વધુ પસંદ કરેલું પિન કરેલું સાંભળી શકાય તેવું ટૅબ</translation>
 <translation id="6312687380483398334">વેબ ઍપ (છોડો)</translation>
@@ -1655,6 +1659,7 @@
 <translation id="7740287852186792672">શોધ પરિણામો</translation>
 <translation id="774403695779169686"><ph name="TAB_TITLE" />, પસંદ કરેલું શેર કરતું છૂપું ટૅબ</translation>
 <translation id="774876555279732384"><ph name="BEGIN_LINK" />Android સેટિંગ<ph name="END_LINK" />માં ઑટોમૅટિક રીતે ભરવાની સુવિધાઓ પણ મેનેજ કરવામાં આવે છે.</translation>
+<translation id="7758884017823246335">સાઇટની શોધ ઉમેરો</translation>
 <translation id="7759809451544302770">વૈકલ્પિક</translation>
 <translation id="7762668264895820836">SD કાર્ડ <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">સરનામું ઉમેરો</translation>
@@ -1845,6 +1850,7 @@
 <translation id="8458341576712814616">શૉર્ટકટ</translation>
 <translation id="8458413889418591446">તમે મુલાકાત લીધેલી સાઇટ પર ઝડપથી પાછા જવા માટે, તમારા ઇતિહાસ અને ટૅબને સિંક કરો</translation>
 <translation id="84594714173170813">તમારા Google એકાઉન્ટમાં Chromeના ડેટાનો ઉપયોગ કરવાનું ચાલુ રાખો</translation>
+<translation id="8460008946585880786">એક ટૅબને બીજા ટૅબ પર ખેંચો અને છોડો</translation>
 <translation id="8460448946170646641">પ્રાઇવસી અને સુરક્ષા સંબંધિત મુખ્ય નિયંત્રણોનો રિવ્યૂ કરો</translation>
 <translation id="8460932807646981183">શોધ એન્જિન અને સાઇટમાં શોધવાની સુવિધા મેનેજ કરો</translation>
 <translation id="8473863474539038330">સરનામા અને વધુ</translation>
@@ -1886,6 +1892,7 @@
 <translation id="8634050254805484913">સાંકડી સ્ક્રીન પર છુપાવેલા</translation>
 <translation id="8635399646025169806">ટૅબનું ગ્રૂપ રાખીએ?</translation>
 <translation id="8636825310635137004">તમારા અન્ય ઉપકરણો પરથી તમારા ટૅબ્સ મેળવવા માટે, સમન્વયન ચાલુ કરો.</translation>
+<translation id="8639963783467694461">સ્વતઃભરો સેટિંગ્સ</translation>
 <translation id="8662474268934425487"><ph name="SITE_ETLD_PLUS_ONE" />માં સાઇન ઇન કરો</translation>
 <translation id="8664979001105139458">ફાઇલનું નામ પહેલેથી અસ્તિત્વમાં છે</translation>
 <translation id="8676276370198826499"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> વડે <ph name="SITE_ETLD_PLUS_ONE" /> માટે સાઇન અપ કરો</translation>
@@ -1934,6 +1941,7 @@
 <translation id="8865415417596392024">તમારા એકાઉન્ટમાંનો Chrome ડેટા</translation>
 <translation id="8872506776304248286">ઍપ્લિકેશનમાં ખોલો</translation>
 <translation id="8890668505403261809">તમારા છૂપા ટૅબ શોધો</translation>
+<translation id="8892234476517513962">તમે પહેલેથી જ સાઇન ઇન કરેલું છે</translation>
 <translation id="8894890673032951011"><ph name="TAB_TITLE" />, પસંદ કરેલું રેકોર્ડ કરતું છૂપું ટૅબ</translation>
 <translation id="8898822736010347272">વેબ પરના નવા જોખમો શોધી કાઢવા અને દરેક વ્યક્તિની સુરક્ષિતતામાં સહાય કરવા માટે, તમે મુલાકાત લેતા અમુક પેજના URLs, સિસ્ટમની મર્યાદિત માહિતી અને પેજનું અમુક કન્ટેન્ટ Googleને મોકલે છે.</translation>
 <translation id="8903921497873541725">ઝૂમ વધારો</translation>

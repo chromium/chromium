@@ -281,6 +281,7 @@
 <translation id="2205701497928406883"><ph name="TAB_TITLE" />，固定的分頁，正在分享內容</translation>
 <translation id="22091350895006575">新增使用者名稱</translation>
 <translation id="221494669172414749">如果不鎖定設定檔就開啟 Chrome，系統將移除車上儲存的密碼和付款方式。請使用設定檔鎖定功能，確保這類資料的安全。</translation>
+<translation id="2226826835915474236">已停用的搜尋捷徑</translation>
 <translation id="2227179592712503583">移除建議</translation>
 <translation id="2227444325776770048">以「<ph name="USER_FULL_NAME" />」的身分繼續</translation>
 <translation id="2230777942707397948">空白視窗</translation>
@@ -1655,6 +1656,7 @@
 <translation id="7740287852186792672">搜尋結果</translation>
 <translation id="774403695779169686"><ph name="TAB_TITLE" />，選取的無痕分頁，正在分享內容</translation>
 <translation id="774876555279732384">你也可以透過 <ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />管理自動填入服務。</translation>
+<translation id="7758884017823246335">新增網站搜尋引擎</translation>
 <translation id="7759809451544302770">選填</translation>
 <translation id="7762668264895820836">SD 卡 <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">新增地址</translation>
@@ -1886,6 +1888,7 @@
 <translation id="8634050254805484913">在窄螢幕上隱藏</translation>
 <translation id="8635399646025169806">要保留分頁群組嗎？</translation>
 <translation id="8636825310635137004">如要存取您在其他裝置上開啟的分頁，請開啟同步處理功能。</translation>
+<translation id="8639963783467694461">自動填入設定</translation>
 <translation id="8662474268934425487">登入 <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8664979001105139458">檔案名稱已存在</translation>
 <translation id="8676276370198826499">使用 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 註冊 <ph name="SITE_ETLD_PLUS_ONE" /></translation>
@@ -1934,6 +1937,7 @@
 <translation id="8865415417596392024">你帳戶中的 Chrome 資料</translation>
 <translation id="8872506776304248286">在應用程式中開啟</translation>
 <translation id="8890668505403261809">搜尋無痕分頁</translation>
+<translation id="8892234476517513962">你已成功登入</translation>
 <translation id="8894890673032951011"><ph name="TAB_TITLE" />，選取的無痕分頁，正在錄製媒體</translation>
 <translation id="8898822736010347272">將部分已造訪網頁的網址、特定的系統資訊和部分網頁內容傳送至 Google，以協助發現新威脅並保障所有網路使用者的安全。</translation>
 <translation id="8903921497873541725">放大</translation>

@@ -5561,6 +5561,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4732799736617504962">Свързаният микрофон поддържа само потискане на шума</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (лява)</translation>
 <translation id="4733793249294335256">Местоположение</translation>
+<translation id="4734965478015604180">Хоризонтално</translation>
 <translation id="473546211690256853">Този профил се управлява от <ph name="DOMAIN" /></translation>
 <translation id="4735506354605317060">Ограждане на курсора</translation>
 <translation id="4735793370946506039">Научете повече за подобрената защита от Безопасно сърфиране.</translation>
@@ -5828,6 +5829,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="4901154724271753917">Разгъване на наскоро затворените</translation>
 <translation id="4901309472892185668">Изберете състояние за експеримента „<ph name="EXPERIMENT_NAME" />“.</translation>
 <translation id="49027928311173603">Изтегленото от сървъра правило е невалидно: <ph name="VALIDATION_ERROR" />.</translation>
+<translation id="490375751687810070">Вертикално</translation>
 <translation id="4906490889887219338">Настройване или управление на споделени хранилища в мрежата. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
 <translation id="4906679076183257864">Възстановяване на настройката по подразбиране</translation>
 <translation id="4907129260985716018">Изберете кога това разширение да може да чете и променя данните от сайтовете</translation>

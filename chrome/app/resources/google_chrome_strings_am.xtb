@@ -695,6 +695,9 @@ Google Chrome ቅንጅቶችዎን ማስመለስ አልቻለም።</translat
 <translation id="8041795619940733262">ስለዚህ ትር<ph name="LINE_BREAK" />Googleን ይጠይቁ</translation>
 <translation id="80471789339884597">ሰለተጫኑ እናመሰግናለን። <ph name="BUNDLE_NAME" />ን ከመጠቀምዎ በፊት ሁሉንም አሳሾችዎን እንደገና ማስጀመር አለብዎት።</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
+<translation id="8064965390968184078">1. ከታች <ph name="BUTTON_LABEL" /> ላይ ጠቅ ያድርጉ
+2. በWindows ቅንብሮችዎ ውስጥ <ph name="BUTTON_2" /> ላይ ጠቅ ያድርጉ
+3. ለፈጣን መዳረሻ Chromeን በተግባር አሞሌዎ ላይ ለመሰካት በWindows ማሳወቂያ ውስጥ <ph name="BUTTON_3" /> ላይ ጠቅ ያድርጉ</translation>
 <translation id="8077579734294125741">ሌሎች የChrome መገለጫዎች</translation>
 <translation id="8086881907087796310">ኮምፒውተርዎ አነስተኛውን የሃርድዌር መስፈርቶች ስላላሟላ መጫኑ አልተሳካም።</translation>
 <translation id="8113883687556086139">በእርስዎ መለያ <ph name="ACCOUNT_EMAIL" /> ውስጥ Chrome ውሂብን ለመጠቀም እና ለማስቀመጥ እርስዎ መሆንዎን ያረጋግጡ</translation>
@@ -773,6 +776,7 @@ Google Chrome ቅንጅቶችዎን ማስመለስ አልቻለም።</translat
 <translation id="8914504000324227558">Chromeን ዳግም አስጀምር</translation>
 <translation id="8922193594870374009">አንድ ቁጥር ከ<ph name="ORIGIN" /> ወደ የእርስዎ Android ስልክ ለመላክ በሁለቱም መሣሪያዎች ላይ በመለያ ወደ Chrome ይግቡ።</translation>
 <translation id="8922998289262614701">የዚህን መተግበሪያ ውሂብ ከChrome ላይ ያስወግዱ</translation>
+<translation id="8925636929359899517">ይህን አገልግሎት ለማሻሻል መረጃ እንጠቀማለን። <ph name="BEGIN_LINK1" />የግላዊነት መመሪያን<ph name="END_LINK1" /> እና <ph name="BEGIN_LINK2" />የአገልግሎት ውልን<ph name="END_LINK2" /> ይመልከቱ።</translation>
 <translation id="8936233353620149764">Gemini በChrome ውስጥ ቀያይር</translation>
 <translation id="8948460679427074738">ይህ ቅጥያ እንደ ውሂብን እንዴት እንደሚሰበስብ እና እንደሚጠቀም ያሉ የግላዊነት ተግባሮችን አላተመም። Chrome እንዲያስወግዱት ይመክራል።</translation>
 <translation id="8958307504142971576">አሁን Chrome ውስጥ የሚገኙ ተጨማሪ ባህሪያት አሉዎት</translation>

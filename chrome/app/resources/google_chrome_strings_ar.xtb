@@ -691,6 +691,9 @@
 <translation id="8041795619940733262">‏طرح سؤال على Google<ph name="LINE_BREAK" />حول علامة التبويب هذه</translation>
 <translation id="80471789339884597">شكرًا على التثبيت. عليك إعادة تشغيل جميع المتصفِّحات قبل استخدام <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8064015586118426197">‏نظام التشغيل ChromeOS Flex</translation>
+<translation id="8064965390968184078">‏‫1. انقر على <ph name="BUTTON_LABEL" /> أدناه
+‫2. انقر على <ph name="BUTTON_2" /> في إعدادات Windows
+‫3. انقر على <ph name="BUTTON_3" /> في إشعار Windows لتثبيت Chrome في شريط التطبيقات والوصول إليه بسرعة</translation>
 <translation id="8077579734294125741">‏الملفات الشخصية الأخرى على Chrome</translation>
 <translation id="8086881907087796310">تعذّر تثبيت التطبيق لعدم استيفاء جهاز الكمبيوتر للحد الأدنى من متطلبات الأجهزة.</translation>
 <translation id="8113883687556086139">‏يُرجى إثبات هويتك لاستخدام بيانات Chrome وحفظها في حسابك (<ph name="ACCOUNT_EMAIL" />)</translation>
@@ -769,6 +772,7 @@
 <translation id="8914504000324227558">‏إعادة تشغيل Chrome</translation>
 <translation id="8922193594870374009">‏لإرسال رقم من <ph name="ORIGIN" /> إلى هاتفك الذي يعمل بنظام التشغيل Android، يُرجى تسجيل الدخول إلى متصفِّح Chrome على الجهازَين.</translation>
 <translation id="8922998289262614701">‏إزالة بيانات هذا التطبيق من Chrome</translation>
+<translation id="8925636929359899517">نستخدم المعلومات لتحسين هذه الخدمة. يُرجى مراجعة <ph name="BEGIN_LINK1" />سياسة الخصوصية<ph name="END_LINK1" /> و<ph name="BEGIN_LINK2" />بنود الخدمة<ph name="END_LINK2" />.</translation>
 <translation id="8936233353620149764">‏تفعيل "Gemini في Chrome" أو إيقافه</translation>
 <translation id="8948460679427074738">‏لم تنشر هذه الإضافة الممارسات المتعلقة بالخصوصية، مثل كيفية جمعها للبيانات واستخدامها. ينصح متصفِّح Chrome بإزالتها.</translation>
 <translation id="8958307504142971576">‏تتوفّر الآن ميزات إضافية في Chrome</translation>

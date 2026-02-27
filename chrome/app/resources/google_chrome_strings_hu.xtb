@@ -687,6 +687,9 @@
 <translation id="8041795619940733262">Kérdés a Google-nak<ph name="LINE_BREAK" />erről a lapról</translation>
 <translation id="80471789339884597">Köszönjük, hogy elvégezte a telepítést. A(z) <ph name="BUNDLE_NAME" /> használata előtt minden böngészőt újra kell indítania.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
+<translation id="8064965390968184078">1. Kattintson az alábbi <ph name="BUTTON_LABEL" /> gombra.
+2. Kattintson a Windows beállításaiban megtalálható <ph name="BUTTON_2" /> elemre.
+3. Kattintson a Windows értesítésében megtalálható <ph name="BUTTON_3" /> gombra, hogy kitűzhesse a Chrome-ot a tálcára a gyors hozzáférés érdekében.</translation>
 <translation id="8077579734294125741">Egyéb Chrome-profilok</translation>
 <translation id="8086881907087796310">A telepítés sikertelen volt, mert a számítógép nem felel meg a minimális hardverkövetelményeknek.</translation>
 <translation id="8113883687556086139">Igazolja személyazonosságát, ha a Chrome-adatokat szeretné használni és tárolni a fiókjában (<ph name="ACCOUNT_EMAIL" />)</translation>
@@ -765,6 +768,7 @@
 <translation id="8914504000324227558">A Chrome újraindítása</translation>
 <translation id="8922193594870374009">Ha innen: <ph name="ORIGIN" /> szeretne számot küldeni Android-telefonjára, jelentkezzen be a Chrome-ba mindkét eszközén.</translation>
 <translation id="8922998289262614701">Az alkalmazás adatainak eltávolítása a Chrome-ból</translation>
+<translation id="8925636929359899517">Ezeket az információkat a szolgáltatás továbbfejlesztésére használjuk fel. Lásd: <ph name="BEGIN_LINK1" />Adatvédelmi irányelvek<ph name="END_LINK1" /> és <ph name="BEGIN_LINK2" />Általános Szerződési Feltételek<ph name="END_LINK2" />.</translation>
 <translation id="8936233353620149764">A Gemini a Chrome-ban be- vagy kikapcsolása</translation>
 <translation id="8948460679427074738">Ez a bővítmény nem tett közzé adatvédelmi gyakorlatokat például arra vonatkozóan, hogy hogyan gyűjti és használja fel az adatokat. A Chrome az eltávolítását javasolja.</translation>
 <translation id="8958307504142971576">Mostantól több funkció áll rendelkezésére a Chrome-ban</translation>

@@ -695,6 +695,9 @@ Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 <translation id="8041795619940733262">Magtanong sa Google<ph name="LINE_BREAK" />tungkol sa tab na ito</translation>
 <translation id="80471789339884597">Salamat sa pag-install. Dapat mong i-restart ang lahat ng iyong browser bago gamitin ang <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
+<translation id="8064965390968184078">1. I-click ang <ph name="BUTTON_LABEL" /> sa ibaba
+2. I-click ang <ph name="BUTTON_2" /> sa iyong mga setting ng Windows
+3. I-click ang <ph name="BUTTON_3" /> sa notification ng Windows para i-pin ang Chrome sa iyong taskbar para sa mabilis na pag-access</translation>
 <translation id="8077579734294125741">Iba pang Profile sa Chrome</translation>
 <translation id="8086881907087796310">Hindi na-install dahil hindi natutugunan ng iyong computer ang mga minimum na requirement sa hardware.</translation>
 <translation id="8113883687556086139">I-verify na ikaw ito para magamit at ma-save ang data sa Chrome sa iyong account, <ph name="ACCOUNT_EMAIL" /></translation>
@@ -773,6 +776,7 @@ Hindi mase-save ang mga bagong bookmark sa iyong account hangga't hindi ka nagde
 <translation id="8914504000324227558">Muling ilunsad ang Chrome</translation>
 <translation id="8922193594870374009">Para magpadala ng numero sa iyong Android phone mula sa <ph name="ORIGIN" />, mag-sign in sa Chrome sa parehong device.</translation>
 <translation id="8922998289262614701">Alisin ang data ng app na ito sa Chrome</translation>
+<translation id="8925636929359899517">Ginagamit namin ang impormasyon para pahusayin ang serbisyong ito. Tingnan ang <ph name="BEGIN_LINK1" />Patakaran sa Privacy<ph name="END_LINK1" /> at <ph name="BEGIN_LINK2" />Mga Tuntunin ng Serbisyo<ph name="END_LINK2" />.</translation>
 <translation id="8936233353620149764">I-toggle ang Gemini sa Chrome</translation>
 <translation id="8948460679427074738">Hindi nag-publish ang extension na ito ng mga kagawian sa privacy, gaya ng kung paano ito nangongolekta at gumagamit ng data. Inirerekomenda ng Chrome na alisin mo ito.</translation>
 <translation id="8958307504142971576">Mayroon ka na ngayong mas maraming feature na available sa Chrome</translation>

@@ -32,7 +32,6 @@
 <translation id="1086486568852410168">Search with Google Lens</translation>
 <translation id="1096992026380844478">Your sync settings will be restored based on your last backup. <ph name="BEGIN_LINK" />See what you can sync<ph name="END_LINK" /></translation>
 <translation id="1103523840287552314">Always translate <ph name="LANGUAGE" /></translation>
-<translation id="110491332089958282">Share page content with Gemini to get more relevant answers. When you share a page with Gemini, the page's full content and URL are sent to Google. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="1110772719190051587">Unlock with Face ID</translation>
 <translation id="1112015203684611006">Printing failed.</translation>
 <translation id="1118569444314402022">Welcome back, <ph name="USER_NAME" /></translation>
@@ -96,6 +95,7 @@
 <translation id="1335767868357998043">Choose address bar position</translation>
 <translation id="1347468774581902829">Manage activity</translation>
 <translation id="1348596747084433075">https://www.amazon.com/Wife-Gifts/s?k=for+Wife+Gifts</translation>
+<translation id="1350281503816551185">Verify that it's you when filling sensitive info</translation>
 <translation id="1355337783640312381">To switch between accounts, tap your account icon</translation>
 <translation id="1358106883354237005">Managed account</translation>
 <translation id="1358214951266274152">Visit link that you copied</translation>
@@ -152,7 +152,6 @@
 <translation id="1521774566618522728">Active today</translation>
 <translation id="1523567067736644845">Unlock to show password</translation>
 <translation id="1524563461097350801">No, thanks</translation>
-<translation id="1528290585275339320">Turn on page content sharing</translation>
 <translation id="1531038290222364269">Show tabs</translation>
 <translation id="1536390784834419204">Translate page</translation>
 <translation id="1540800554400757039">Address 1</translation>
@@ -220,6 +219,7 @@
 <translation id="1767766085187034454">Google Translate</translation>
 <translation id="1771016937398045251">Tools menu</translation>
 <translation id="1772468122139624049">Can't reload tabs</translation>
+<translation id="1776240104318790173">Toggle enhanced autofill</translation>
 <translation id="1779354709911146450">Authentication error</translation>
 <translation id="1780152987505130652">Close group</translation>
 <translation id="178400879184240105">Your passwords are unique</translation>
@@ -258,6 +258,7 @@
 <translation id="1890237935065108104">This setting is unavailable.</translation>
 <translation id="1894023287452300670">Track price here</translation>
 <translation id="189531189292803889">Your iPad was recently restored, which might have changed your default browser.</translation>
+<translation id="1898804291554630487">Ask about this page</translation>
 <translation id="1901366738768303267">How do I use this feature?</translation>
 <translation id="1901600657316773839">Keep selection</translation>
 <translation id="1902277226107477495">Address detection off. Turn it back on in Settings.</translation>
@@ -368,6 +369,7 @@
 <translation id="2268044343513325586">Refine</translation>
 <translation id="2271452184061378400">Your tab groups are saved here</translation>
 <translation id="2273327106802955778">More menu</translation>
+<translation id="2283599456633275070">Travel</translation>
 <translation id="2287614783861766820">{count,plural, =1{This address will be deleted from this device.}other{These addresses will be deleted from this device.}}</translation>
 <translation id="2295236662082735391">Long-press an image on the web to edit with Gemini</translation>
 <translation id="2297989278479054870">After you sign out, the bookmarks, passwords and more in your Google Account will be removed from this device.</translation>
@@ -968,6 +970,7 @@
 <translation id="4607887340472970274">Price tracking</translation>
 <translation id="4619564267100705184">Verify that it's you</translation>
 <translation id="4621768135601674446">Open reading mode options</translation>
+<translation id="4623894491222334521">Identity docs</translation>
 <translation id="4627107755957573804">Allow sites and apps to upgrade existing accounts to use passkeys</translation>
 <translation id="4629065796475200039">Your password wasn't imported</translation>
 <translation id="4630212057753624203">Sample bubble</translation>
@@ -995,7 +998,6 @@
 <translation id="4676647168422678078">Apply your New Tab page preferences?</translation>
 <translation id="4682496302933121474">Translate page?</translation>
 <translation id="4682686630151240767">1. Open iPhone settings</translation>
-<translation id="4691892551491778176">When you use this feature, page content and URLs are sent to Google but won't be used to improve generative AI models. You can turn this off in settings at any time.</translation>
 <translation id="4697240968720007067">Get Google's best apps, in one tap</translation>
 <translation id="4699172675775169585">Cached images and files</translation>
 <translation id="4709570498586527752">The most relevant features for you at different times</translation>
@@ -1146,6 +1148,7 @@
 <translation id="5186185447130319458">Private</translation>
 <translation id="5189431381114029336">Save your first passkey</translation>
 <translation id="518997337573684769">Sending crash report…</translation>
+<translation id="519528950056409240">Allow Wallet to share data</translation>
 <translation id="519530786644929958">Download failed and cannot be retried.</translation>
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5200894869889836319">Options to set permissions</translation>
@@ -1322,7 +1325,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5803566855766646066">Are you sure that you want to discard this new card?</translation>
 <translation id="5804241973901381774">Permissions</translation>
 <translation id="58081802114142635">Your activity improves Google AI</translation>
-<translation id="5813223718099710537">When you use this feature, page content and URLs are sent to Google. You can turn this off in settings at any time.</translation>
 <translation id="5817176759448082654">Password Checkup</translation>
 <translation id="5818161931099046557">Edit in Google Account</translation>
 <translation id="5819208479324046259">Managed by <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
@@ -1348,6 +1350,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5899314093904173337">To share with people nearby, let them scan this QR code with their camera or QR scanner app</translation>
 <translation id="5902752768726620872">{count,plural, =1{{count} new tab}other{{count} new tabs}}</translation>
 <translation id="5911030830365207728">Google Translate</translation>
+<translation id="5912796581727968237">Open Google Wallet</translation>
 <translation id="5922999516621365983">Drag tab here to pin it.</translation>
 <translation id="5930982343430790032">{COUNT,plural, =1{Add up to 1 file, tab or image}other{Add up to {COUNT} files, tabs or images}}</translation>
 <translation id="5936006948844852401">Manage storage</translation>
@@ -1596,6 +1599,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6710079714193676716">Managed by your organisation. Some features may be unavailable. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="6713676799463473249">Modified on <ph name="LAST_MODIFICATION_DATE" /></translation>
 <translation id="6722623263381062480">Received tabs</translation>
+<translation id="6722638373100589752">To autofill your info, turn on 'Use passes across Google' in Wallet settings</translation>
 <translation id="6723740634201835758">In your Google Account</translation>
 <translation id="6724024423419410528">Colours</translation>
 <translation id="672735642903863329">Get your bookmarks, passwords and more on all your devices.</translation>
@@ -1728,6 +1732,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="7253951228444156601">Checking passwords…</translation>
 <translation id="7261217796641151584">Share group</translation>
 <translation id="7266578100016339897">This helps you stay organised. You can change this in settings at any time.</translation>
+<translation id="7268294318904284516">If you share this device, use your screen lock to verify that it's you when using sensitive info like passports</translation>
 <translation id="7272437679830969316">Can't verify your identity. Password not copied.</translation>
 <translation id="728025568708172005">Show me around</translation>
 <translation id="7280980607183752256">This file can't be imported</translation>
@@ -1938,7 +1943,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="798991908416757345">Tab groups are unavailable</translation>
 <translation id="7993170188789685695">Double-tap to close this notification.</translation>
 <translation id="7996239959906074962">Set up…</translation>
-<translation id="8001561107130904792">Page content sharing</translation>
 <translation id="800361585186029508">Opens the inputted URLs in Google Chrome.</translation>
 <translation id="8005666035647241369">To Google Password Manager on this device</translation>
 <translation id="8010488806779226127">Explore features that can help you do more as you browse</translation>
@@ -2019,7 +2023,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="826614135184049678">You were signed out of your account, <ph name="USER_NAME" />, as part of your iPad reset. To sign back in, tap 'Continue' below.</translation>
 <translation id="8273982424131314219">You'll fill info into <ph name="URL" /></translation>
 <translation id="8275068909952022340">More…</translation>
-<translation id="8277328362018795342">Your page content is shared for more relevant answers</translation>
 <translation id="8281781826761538115">Default - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Skip</translation>
 <translation id="8282657446819506217">Open in tab group</translation>
@@ -2125,7 +2128,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="8637431369725868556">Get protection from dangerous sites.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{No compromised passwords}=1{{COUNT} compromised password}other{{COUNT} compromised passwords}}</translation>
 <translation id="8643403533759285912">Delete group</translation>
-<translation id="8645245178269185266">Share page content with Gemini to get more relevant answers</translation>
 <translation id="8647280737650867362">Couldn't untrack the price.</translation>
 <translation id="8654802032646794042">Cancel</translation>
 <translation id="8660600697590740984">Lens copied image</translation>

@@ -281,6 +281,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="2205701497928406883"><ph name="TAB_TITLE" />, připnutá sdílející karta</translation>
 <translation id="22091350895006575">Přidat uživatelské jméno</translation>
 <translation id="221494669172414749">Otevřením Chromu bez zámku profilu odstraníte z auta uložená hesla a platební metody. Použití zámku profilu zajišťuje, aby tato data byla v bezpečí.</translation>
+<translation id="2226826835915474236">Neaktivní zkratky</translation>
 <translation id="2227179592712503583">Odebrat návrh</translation>
 <translation id="2227444325776770048">Pokračovat jako <ph name="USER_FULL_NAME" /></translation>
 <translation id="2230777942707397948">Prázdné okno</translation>
@@ -923,6 +924,7 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="4885273946141277891">Nepodporovaný počet instancí Chromu.</translation>
 <translation id="4890973535105146893">V účtu Google nemáte uložená žádná hesla</translation>
 <translation id="4905823827770127520">Zahrnout odkaz na stránku</translation>
+<translation id="4908601375231458049">Přizpůsobte si skupinu karet a klikněte na Hotovo</translation>
 <translation id="4908869848243824489">Kanál Objevit od Googlu</translation>
 <translation id="4910889077668685004">Platební aplikace</translation>
 <translation id="4911042367886397055">Vítejte zpět, <ph name="USER_NAME" />!</translation>
@@ -1186,6 +1188,7 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="6040143037577758943">Zavřít</translation>
 <translation id="604124094241169006">Automaticky</translation>
 <translation id="6042308850641462728">Více</translation>
+<translation id="6047066316630165190">Otevřete přepínač karet v mřížce</translation>
 <translation id="604996488070107836">Stažení souboru <ph name="FILE_NAME" /> se nezdařilo z důvodu neznámé chyby.</translation>
 <translation id="605721222689873409">RR</translation>
 <translation id="6059830886158432458">Zde můžete ovládat své příběhy a aktivity</translation>
@@ -1259,6 +1262,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="6301526076346731664">Otevřít Nástroje pro vývojáře</translation>
 <translation id="630308129961693966">Vyberte pozici adresního řádku</translation>
 <translation id="6303969859164067831">Odhlásit a vypnout synchronizaci</translation>
+<translation id="6305257382500066042">Vyzkoušet</translation>
 <translation id="6307241780749477694">Pokud na tomhle zařízení chcete mít všechna svá hesla, ověřte svou totožnost</translation>
 <translation id="6309082029962045994"><ph name="TAB_TITLE" />, jedna z několika vybraných slyšitelných připnutých karet</translation>
 <translation id="6312687380483398334">Webové aplikace (tiché)</translation>
@@ -1655,6 +1659,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="7740287852186792672">Výsledky vyhledávání</translation>
 <translation id="774403695779169686"><ph name="TAB_TITLE" />, vybraná sdílející anonymní karta</translation>
 <translation id="774876555279732384">Služby automatického vyplňování se spravují také v <ph name="BEGIN_LINK" />Nastavení Androidu<ph name="END_LINK" />.</translation>
+<translation id="7758884017823246335">Přidat vyhledávání na webu</translation>
 <translation id="7759809451544302770">Volitelné</translation>
 <translation id="7762668264895820836">SD karta <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">Přidat adresu</translation>
@@ -1845,6 +1850,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="8458341576712814616">Zkratka</translation>
 <translation id="8458413889418591446">Pokud chcete mít možnost rychle se vrátit na navštívené weby, synchronizujte svou historii a karty.</translation>
 <translation id="84594714173170813">Pokračujte v používání dat prohlížeče Chrome ve svém účtu Google</translation>
+<translation id="8460008946585880786">Přetáhněte jednu kartu na druhou</translation>
 <translation id="8460448946170646641">Zkontrolujte klíčové ovládací prvky ochrany soukromí a zabezpečení</translation>
 <translation id="8460932807646981183">Spravovat vyhledávače a vyhledávání na webu</translation>
 <translation id="8473863474539038330">Adresy a další</translation>
@@ -1886,6 +1892,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="8634050254805484913">Na úzkých obrazovkách skryto</translation>
 <translation id="8635399646025169806">Zachovat skupinu karet?</translation>
 <translation id="8636825310635137004">Chcete-li získat přístup ke kartám ze svých ostatních zařízení, zapněte synchronizaci.</translation>
+<translation id="8639963783467694461">Nastavení automatického vyplňování</translation>
 <translation id="8662474268934425487">Přihlášení na web <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8664979001105139458">Název souboru již existuje</translation>
 <translation id="8676276370198826499">Zaregistrujte se na webu <ph name="SITE_ETLD_PLUS_ONE" /> pomocí služby <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>

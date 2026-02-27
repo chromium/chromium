@@ -687,6 +687,9 @@
 <translation id="8041795619940733262">Întreabă Google<ph name="LINE_BREAK" />despre această filă</translation>
 <translation id="80471789339884597">Mulțumim pentru instalare. Înainte să folosești <ph name="BUNDLE_NAME" /> trebuie să repornești toate browserele.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
+<translation id="8064965390968184078">1. Dă clic pe <ph name="BUTTON_LABEL" /> mai jos.
+2. Dă clic pe <ph name="BUTTON_2" /> în setările Windows.
+3. Dă clic pe <ph name="BUTTON_3" /> în notificarea Windows ca să fixezi Chrome în bara de activități pentru acces rapid.</translation>
 <translation id="8077579734294125741">Alte profiluri Chrome</translation>
 <translation id="8086881907087796310">Nu s-a instalat deoarece computerul nu îndeplinește cerințele minime de hardware.</translation>
 <translation id="8113883687556086139">Confirmă-ți identitatea pentru a folosi și a salva datele Chrome în contul <ph name="ACCOUNT_EMAIL" /></translation>
@@ -765,6 +768,7 @@ Nu poți salva marcaje noi în cont până când nu ștergi câteva. Dacă te de
 <translation id="8914504000324227558">Relansați Chrome</translation>
 <translation id="8922193594870374009">Pentru a trimite un număr de pe <ph name="ORIGIN" /> pe telefonul Android, conectează-te la Chrome pe ambele dispozitive.</translation>
 <translation id="8922998289262614701">Elimină datele aplicației din Chrome</translation>
+<translation id="8925636929359899517">Folosim informații ca să îmbunătățim acest serviciu. Consultă <ph name="BEGIN_LINK1" />Politica de confidențialitate<ph name="END_LINK1" /> și <ph name="BEGIN_LINK2" />Termenii și condițiile<ph name="END_LINK2" />.</translation>
 <translation id="8936233353620149764">Activează / dezactivează Gemini în Chrome</translation>
 <translation id="8948460679427074738">Extensia nu a publicat practici de confidențialitate, cum ar fi modul în care colectează și folosește date. Chrome recomandă să o elimini.</translation>
 <translation id="8958307504142971576">Acum ai mai multe funcții disponibile în Chrome</translation>

@@ -588,6 +588,9 @@ Chromium ei saa teie seadeid taastada.</translation>
 <translation id="7384121030444253939">Seda laiendust enam ei toetata. Chromium soovitab selle eemaldada.</translation>
 <translation id="7413153308467572558">Jätkake sealt, kus pooleli jäite: Chromium taastab teie vahelehed iga kord, kui brauseri uuesti käivitate. Selle väljalülitamiseks avage</translation>
 <translation id="7427879960656355200">Paroolide importimine Chromiumi</translation>
+<translation id="744815265653811511">1. Klõpsake alloleval nupul <ph name="BUTTON_LABEL" />
+2. Klõpsake Windowsi seadetes nupul <ph name="BUTTON_2" />
+3. Kiireks juurdepääsuks klõpsake Windowsi märguandes nupul <ph name="BUTTON_3" />, et kinnitada Chromium tegumiribale</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Chromium Dev</translation>
 <translation id="7450541714075000668">Tekst on kopeeritud</translation>
 <translation id="7451052299415159299">Chromium vajab selle saidi puhul luba, et teie kaamerale juurde pääseda</translation>
@@ -603,6 +606,7 @@ Chromium ei saa teie seadeid taastada.</translation>
 <translation id="761356813943268536">Chromium kasutab kaamerat ja mikrofoni.</translation>
 <translation id="7617377681829253106">Chromium muutus just paremaks</translation>
 <translation id="7622753900276619808">Nüüd on teil Chromiumis rohkem funktsioone saadaval.</translation>
+<translation id="7624307931717240213">Kasutame teavet selle teenuse täiustamiseks. Vaadake privaatsuseeskirju ja teenusetingimusi.</translation>
 <translation id="7649070708921625228">Abi</translation>
 <translation id="7656340475565475526">Laske Chromiumil teie eest sirvida</translation>
 <translation id="7658239707568436148">Tühista</translation>

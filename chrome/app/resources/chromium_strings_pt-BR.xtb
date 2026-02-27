@@ -237,6 +237,7 @@
 <translation id="3509308970982693815">Feche todas as janelas do Chromium e tente novamente.</translation>
 <translation id="3522404737534491619">Para compartilhar a janela, use os Ajustes do Sistema para permitir a gravação de tela do Chromium</translation>
 <translation id="3530103706039034513">A conta <ph name="EXISTING_USER" /> já está conectada.  Para manter sua navegação separada, faça login no Chromium no seu perfil como <ph name="USER_EMAIL_ADDRESS" />.</translation>
+<translation id="3531741627422851418">QR code para baixar o navegador Chromium em dispositivos móveis</translation>
 <translation id="3561853857681580870">Para compartilhar a tela, use os Ajustes do Sistema para permitir a gravação de tela do Chromium.</translation>
 <translation id="3588112919289558122">A proteção reforçada desativa a otimização do JavaScript nos sites que o Chromium não reconhece.</translation>
 <translation id="3597003331831379823">Falha ao executar a configuração com privilégios elevados. <ph name="METAINSTALLER_ERROR" /></translation>
@@ -582,6 +583,9 @@ Exclua alguns dos favoritos da sua conta para poder salvar novos. Se você sair 
 <translation id="7384121030444253939">Essa extensão não é mais compatível. O Chromium recomenda que você a remova.</translation>
 <translation id="7413153308467572558">Continue de onde você parou: o Chromium restaura suas guias sempre que você reinicia. Para desativar essa opção, acesse as</translation>
 <translation id="7427879960656355200">Importar senhas para o Chromium</translation>
+<translation id="744815265653811511">1. Clique em <ph name="BUTTON_LABEL" /> abaixo
+2. Clique em <ph name="BUTTON_2" /> nas configurações do Windows
+3. Clique em <ph name="BUTTON_3" /> na notificação do Windows para fixar o Chromium na barra de tarefas e ter acesso rápido</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" />: Chromium Dev</translation>
 <translation id="7450541714075000668">Texto copiado</translation>
 <translation id="7451052299415159299">O Chromium precisa de permissão para este site acessar sua câmera</translation>
@@ -597,6 +601,7 @@ Exclua alguns dos favoritos da sua conta para poder salvar novos. Se você sair 
 <translation id="761356813943268536">O Chromium está usando sua câmera e seu microfone.</translation>
 <translation id="7617377681829253106">O Chromium ficou ainda melhor</translation>
 <translation id="7622753900276619808">Agora você tem mais recursos disponíveis no Chromium</translation>
+<translation id="7624307931717240213">Usamos as informações para melhorar este serviço. Consulte a Política de Privacidade e os Termos de Serviço.</translation>
 <translation id="7649070708921625228">Ajuda</translation>
 <translation id="7656340475565475526">Deixe o Chromium navegar por você</translation>
 <translation id="7658239707568436148">Cancelar</translation>

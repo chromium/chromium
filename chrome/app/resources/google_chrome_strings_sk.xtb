@@ -692,6 +692,9 @@ Prehliadač Google Chrome nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="8041795619940733262">Opýtajte sa Googlu<ph name="LINE_BREAK" />na túto kartu</translation>
 <translation id="80471789339884597">Ďakujeme za inštaláciu. Než začnete aplikáciu <ph name="BUNDLE_NAME" /> používať, musíte reštartovať všetky svoje prehliadače.</translation>
 <translation id="8064015586118426197">Chrome OS Flex</translation>
+<translation id="8064965390968184078">1. Nižšie kliknite na <ph name="BUTTON_LABEL" />.
+2. V nastaveniach systému Windows kliknite na <ph name="BUTTON_2" />.
+3. Kliknutím na <ph name="BUTTON_3" /> v upozornení systému Windows pripnite Chrome na panel aplikácií, aby ste k nemu mali rýchly prístup.</translation>
 <translation id="8077579734294125741">Ďalšie profily Chromu</translation>
 <translation id="8086881907087796310">Nepodarilo sa nainštalovať, pretože váš počítač nespĺňa minimálne požiadavky na hardvér.</translation>
 <translation id="8113883687556086139">Ak chcete používať a ukladať údaje Chromu vo svojom účte <ph name="ACCOUNT_EMAIL" />, overte svoju totožnosť</translation>
@@ -770,6 +773,7 @@ Nové záložky sa nebudú môcť ukladať do vášho účtu, kým niektoré neo
 <translation id="8914504000324227558">Znova spustiť prehliadač Chrome</translation>
 <translation id="8922193594870374009">Ak chcete zo zariadenia <ph name="ORIGIN" /> odoslať číslo do svojho telefónu s Androidom, prihláste sa v oboch zariadeniach do Chromu.</translation>
 <translation id="8922998289262614701">Odstrániť dáta tejto aplikácie z Chromu</translation>
+<translation id="8925636929359899517">Informácie používame na zlepšovanie tejto služby. Prečítajte si <ph name="BEGIN_LINK1" />pravidlá ochrany súkromia<ph name="END_LINK1" /> a <ph name="BEGIN_LINK2" />zmluvné podmienky<ph name="END_LINK2" />.</translation>
 <translation id="8936233353620149764">Prepnúť Gemini v Chrome</translation>
 <translation id="8948460679427074738">Toto rozšírenie nemá zverejnené spôsoby ochrany súkromia, napríklad to, ako zhromažďuje a používa údaje. Chrome odporúča, aby ste ho odstránili.</translation>
 <translation id="8958307504142971576">Teraz máte v Chrome k dispozícii viac funkcií</translation>

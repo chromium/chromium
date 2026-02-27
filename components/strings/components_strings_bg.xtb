@@ -910,7 +910,6 @@
 <translation id="2436976580469434549">Влакна и текстилни изкуства</translation>
 <translation id="243815215670139125">Тази карта не бе запазена в профила ви в Google. Вместо това е запазена в Chrome на това устройство.</translation>
 <translation id="2438874542388153331">Четворно перфориране отдясно</translation>
-<translation id="2440855519769445271">За да скриете опциите за плащане по-късно, отворете <ph name="BEGIN_LINK" />настройките за плащане<ph name="END_LINK" /></translation>
 <translation id="2441854154602066476">Списък с начини на плащане, които да бъдат попълнени при докосване. Клавиатурата е скрита.</translation>
 <translation id="2442865686365739754">Chrome <ph name="BEGIN_EMPHASIS" />няма да запазва<ph name="END_EMPHASIS" />:
 <ph name="BEGIN_LIST" />
@@ -947,6 +946,7 @@
 <translation id="248064299258688299">Разширението <ph name="EXTENSION_NAME" /> показва</translation>
 <translation id="2482878487686419369">Известия</translation>
 <translation id="248348093745724435">Правила за компютъра</translation>
+<translation id="248395913932153421">Ден</translation>
 <translation id="2485243023686553468">Смартфони</translation>
 <translation id="2491120439723279231">Сертификатът на сървъра съдържа грешки.</translation>
 <translation id="2491414235131909199">Тази страница е блокирана от разширение</translation>
@@ -2286,7 +2286,6 @@
 <translation id="4648262692072505866">Хеш стойността трябва да е във формат SHA-256.</translation>
 <translation id="4652266463001779298">Не е разрешено</translation>
 <translation id="4652440160515225514">Организацията ви е блокирала този сайт, защото нарушава правило.</translation>
-<translation id="4654457557264366314">Плановете за плащане зависят от това дали отговаряте на условията.</translation>
 <translation id="4658638640878098064">Телбодиране горе вляво</translation>
 <translation id="4658801711339831733">Сканираният файл е запазен в Google Диск</translation>
 <translation id="4660592918803576381">Отваряне в Диск</translation>
@@ -2597,7 +2596,6 @@
 <translation id="512756860033933700">Заключването на клавиатурата е разрешено</translation>
 <translation id="5127934926273826089">Цветя</translation>
 <translation id="5129534298163637277">Диалогов прозорец за потвърждаване</translation>
-<translation id="5129662217315786329">полски</translation>
 <translation id="5135404736266831032">Управление на адресите...</translation>
 <translation id="5136841603454277753">Въведете правилен код</translation>
 <translation id="5137761395480718572">Това приложение иска разрешение да инсталира идентификационните данни за Wi-Fi. След настройването устройството ви <ph name="DEVICE_TYPE" /> ще се свързва автоматично с участващите Wi-Fi мрежи. За да премахнете тези идентификационни данни, деинсталирайте приложението. <ph name="LEARN_MORE" /></translation>
@@ -3544,7 +3542,6 @@
 <translation id="6649510485211003056">195 x 270 мм</translation>
 <translation id="6651270836885078973">Управлява се от:</translation>
 <translation id="6652101503459149953">Използване на Windows Hello</translation>
-<translation id="6654224358955673568">Официално</translation>
 <translation id="6654244995031366386">Стъкло (текстурирано)</translation>
 <translation id="6655085656059574817">Когато профилът ви е свързан, можете да плащате по-бързо чрез <ph name="BNPL_ISSUER_NAME" />. Имате възможност да прекратите връзката с услугата, като посетите <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /></translation>
 <translation id="6656935431494847393">Включва информация като резервации на полети и данни за превозното средство</translation>
@@ -3716,7 +3713,6 @@
 <translation id="6926216138694948720">Бодиарт</translation>
 <translation id="692638818576287323">Търговски превозни средства</translation>
 <translation id="6927878187051807444">файловете от камерата и екранните снимки</translation>
-<translation id="6929949393612835405">Затваряне и връщане към „<ph name="OPENER_TITLE" />“</translation>
 <translation id="6930607614725241390">Търсене в страничния панел</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Основната търсеща машина ви дава възможност да търсите в мрежата и да се възползвате от функции на Chrome<ph name="END_BOLD" />, като например търсене от адресната лента и от изображенията в уеб страниците. Някои функции може да не са налице, ако не се поддържат от търсещата ви машина.</translation>
 <translation id="6934672428414710184">Това име е от профила ви в Google</translation>

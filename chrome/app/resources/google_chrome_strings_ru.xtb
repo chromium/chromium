@@ -686,6 +686,9 @@
 <translation id="8041795619940733262">Спросить Google<ph name="LINE_BREAK" />об этой вкладке</translation>
 <translation id="80471789339884597">Спасибо, что установили <ph name="BUNDLE_NAME" />. Чтобы изменения вступили в силу, перезапустите все открытые браузеры.</translation>
 <translation id="8064015586118426197">Chrome OS Flex</translation>
+<translation id="8064965390968184078">1. Нажмите "<ph name="BUTTON_LABEL" />" ниже.
+2. Выберите "<ph name="BUTTON_2" />" в настройках Windows.
+3. Чтобы закрепить Chrome на панели задач для быстрого доступа, нажмите "<ph name="BUTTON_3" />" в уведомлении Windows.</translation>
 <translation id="8077579734294125741">Другие профили Chrome</translation>
 <translation id="8086881907087796310">Установка не удалась, так как аппаратное обеспечение компьютера не соответствует минимальным требованиям.</translation>
 <translation id="8113883687556086139">Подтвердите свою личность, чтобы использовать и сохранять данные Chrome в аккаунте <ph name="ACCOUNT_EMAIL" />.</translation>

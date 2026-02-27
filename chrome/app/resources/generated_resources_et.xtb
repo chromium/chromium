@@ -5555,6 +5555,7 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="4732799736617504962">Ühendatud mikrofon saab toetada ainult müravähendust</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (vasak)</translation>
 <translation id="4733793249294335256">Asukoht</translation>
+<translation id="4734965478015604180">Horisontaalne</translation>
 <translation id="473546211690256853">Kontot haldab <ph name="DOMAIN" /></translation>
 <translation id="4735506354605317060">Hiirekursori rõngas</translation>
 <translation id="4735793370946506039">Vaadake lisateavet täiustatud ohutu sirvimise kohta.</translation>
@@ -5822,6 +5823,7 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="4901154724271753917">Laienda hiljuti suletud</translation>
 <translation id="4901309472892185668">Valige katse <ph name="EXPERIMENT_NAME" /> olek.</translation>
 <translation id="49027928311173603">Serverist alla laaditud reegel on kehtetu: <ph name="VALIDATION_ERROR" />.</translation>
+<translation id="490375751687810070">Vertikaalne</translation>
 <translation id="4906490889887219338">Seadistage või hallake failide võrguhoidlaid. <ph name="LINK_BEGIN" />Lisateave<ph name="LINK_END" /></translation>
 <translation id="4906679076183257864">Lähtesta vaikeseadetele</translation>
 <translation id="4907129260985716018">Valige, millal see laiendus saab teie saidi andmeid lugeda ja muuta</translation>
@@ -8494,6 +8496,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="678520006562636090">Proovige oma seadmes <ph name="DEVICE_TYPE" /> Google Lensi</translation>
 <translation id="6785594991951195537">Kas kasutada domeeni <ph name="PASSWORD_DOMAIN" /> parooli?</translation>
 <translation id="6785739405821760313">Kuvatud on salvestatud töölauad. Navigeerimiseks vajutage tabulaatorit.</translation>
+<translation id="6785779729084003225">Kasutage Gemini Chrome’is avamiseks klahvikombinatsiooni <ph name="FOCUS_TOGGLE_HOTKEY" />.</translation>
 <translation id="6785915470941880363">Tagurpidi kerimine (<ph name="LINK_BEGIN" />lisateave<ph name="LINK_END" />)</translation>
 <translation id="67862343314499040">Violetne</translation>
 <translation id="6786480815699355166">Tõlkida saab ainult toetatavaid reaalajas subtiitrite keeli</translation>

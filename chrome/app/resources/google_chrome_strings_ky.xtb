@@ -695,6 +695,9 @@ Google Chrome параметрлериңизди калыбына келтире
 <translation id="8041795619940733262">Google'дан<ph name="LINE_BREAK" />бул өтмөк жөнүндө суроо</translation>
 <translation id="80471789339884597">Орнотуп алганыңыз үчүн рахмат. <ph name="BUNDLE_NAME" /> топтомун колдонуп баштоодон мурда бардык серепчилерди өчүрүп күйгүзүңүз.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
+<translation id="8064965390968184078">1. Төмөндөгү <ph name="BUTTON_LABEL" /> баскычын чыкылдатыңыз
+2. Windows параметрлеринен <ph name="BUTTON_2" /> баскычын чыкылдатыңыз
+3. Ыкчам ачуу максатында Chrome'ду тапшырмалар тактасына кадоо үчүн Windows билдирмесиндеги <ph name="BUTTON_3" /> баскычын чыкылдатыңыз</translation>
 <translation id="8077579734294125741">Башка Chrome профилдери</translation>
 <translation id="8086881907087796310">Компьютериңиз аппараттык камсыздоого коюлган минималдуу талаптарга жооп бербегендиктер, орнотулбай калды.</translation>
 <translation id="8113883687556086139">Аккаунтуңузга (<ph name="ACCOUNT_EMAIL" />) Chrome маалыматын сактоо жана колдонуу үчүн өзүңүздү ырастаңыз</translation>
@@ -773,6 +776,7 @@ Google Chrome параметрлериңизди калыбына келтире
 <translation id="8914504000324227558">Chrome'ду кайрадан ишке киргизүү</translation>
 <translation id="8922193594870374009">Номерди <ph name="ORIGIN" /> сайтынан Android телефонуңузга жөнөтүү үчүн эки түзмөгүңүздөн тең Chrome'го кириңиз.</translation>
 <translation id="8922998289262614701">Бул колдонмодогу нерселерди Chrome'дон өчүрүү</translation>
+<translation id="8925636929359899517">Бул кызматты жакшыртуу үчүн маалыматты колдонобуз. <ph name="BEGIN_LINK1" />Купуялык эрежелерин<ph name="END_LINK1" /> жана <ph name="BEGIN_LINK2" />Тейлөө шарттарын<ph name="END_LINK2" /> карап чыгыңыз.</translation>
 <translation id="8936233353620149764">Chrome'догу Gemini'ды өчүрүү/күйгүзүү</translation>
 <translation id="8948460679427074738">Бул кеңейтүү маалыматты кантип чогултуу жана колдонуу сыяктуу купуялыкты камсыз кылуу ыкмаларын жарыялаган эмес. Chrome аны өчүрүүнү сунуштайт.</translation>
 <translation id="8958307504142971576">Эми Chrome'до көбүрөөк функцияларды колдоно аласыз</translation>

@@ -5547,6 +5547,7 @@ Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</
 <translation id="4732799736617504962">Bağlı mikrofon yalnızca gürültü giderme özelliğini destekleyebilir</translation>
 <translation id="4733161265940833579">%<ph name="BATTERY_PERCENTAGE" /> (Sol)</translation>
 <translation id="4733793249294335256">Konum</translation>
+<translation id="4734965478015604180">Yatay</translation>
 <translation id="473546211690256853">Bu hesap <ph name="DOMAIN" /> tarafından yönetiliyor.</translation>
 <translation id="4735506354605317060">İşaretçiyi daire içine al</translation>
 <translation id="4735793370946506039">Gelişmiş Güvenli Tarama hakkında daha fazla bilgi edinin.</translation>
@@ -5814,6 +5815,7 @@ Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</
 <translation id="4901154724271753917">Son kapatılanları genişlet</translation>
 <translation id="4901309472892185668"><ph name="EXPERIMENT_NAME" /> denemesi için deneme durumu seçin.</translation>
 <translation id="49027928311173603">Sunucudan indirilen politika geçersiz: <ph name="VALIDATION_ERROR" />.</translation>
+<translation id="490375751687810070">Dikey</translation>
 <translation id="4906490889887219338">Ağ dosya paylaşımlarını kurun veya yönetin. <ph name="LINK_BEGIN" />Daha fazla bilgi<ph name="LINK_END" /></translation>
 <translation id="4906679076183257864">Varsayılana Sıfırla</translation>
 <translation id="4907129260985716018">Bu uzantının site verilerinizi ne zaman okuyup değiştirebileceğini seçin</translation>
@@ -8486,6 +8488,7 @@ Sızdırılmış # şifreniz daha var. Google Şifre Yöneticisi bu şifreleri h
 <translation id="678520006562636090"><ph name="DEVICE_TYPE" /> cihazınızda Google Lens'i deneyin</translation>
 <translation id="6785594991951195537"><ph name="PASSWORD_DOMAIN" /> şifreniz kullanılsın mı?</translation>
 <translation id="6785739405821760313">Kayıtlı masalar gösteriliyor. Gezinmek için sekme tuşuna basın.</translation>
+<translation id="6785779729084003225">Chrome'da Gemini'ı açmak için <ph name="FOCUS_TOGGLE_HOTKEY" /> tuşlarını kullanın</translation>
 <translation id="6785915470941880363">Ters kaydırma <ph name="LINK_BEGIN" />Daha fazla bilgi<ph name="LINK_END" /></translation>
 <translation id="67862343314499040">Mor</translation>
 <translation id="6786480815699355166">Yalnızca desteklenen Canlı Altyazı dilleri için çeviri yapılabilir</translation>
@@ -8803,7 +8806,7 @@ Sızdırılmış # şifreniz daha var. Google Şifre Yöneticisi bu şifreleri h
 <translation id="6985607387932385770">Yazıcılar</translation>
 <translation id="6988094684494323731">Linux kapsayıcısı başlatılıyor</translation>
 <translation id="6988403677482707277">Sekme, sekme şeridinin başına taşındı</translation>
-<translation id="6988572888918530647">Google Hesabınızı Yönetin</translation>
+<translation id="6988572888918530647">Google Hesabınızı yönetin</translation>
 <translation id="6989274756151920076">Burada kal</translation>
 <translation id="6991665348624301627">Bir hedef seç</translation>
 <translation id="6992554835374084304">Gelişmiş yazım denetimini etkinleştirin</translation>

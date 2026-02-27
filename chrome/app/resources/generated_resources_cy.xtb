@@ -5567,6 +5567,7 @@ Defnyddiwch Ctrl + Alt + Lleihau disgleirdeb i bellhau.</translation>
 <translation id="4732799736617504962">Dim ond canslo sŵn y gall y meicroffon cysylltiedig ei gefnogi</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (Chwith)</translation>
 <translation id="4733793249294335256">Lleoliad</translation>
+<translation id="4734965478015604180">Llorweddol</translation>
 <translation id="473546211690256853">Rheolir y cyfrif hwn gan <ph name="DOMAIN" /></translation>
 <translation id="4735506354605317060">Pwyntydd cylchol</translation>
 <translation id="4735793370946506039">Dysgu rhagor am Gwell Pori'n Ddiogel.</translation>
@@ -5834,6 +5835,7 @@ Defnyddiwch Ctrl + Alt + Lleihau disgleirdeb i bellhau.</translation>
 <translation id="4901154724271753917">Ehangu caewyd yn ddiweddar</translation>
 <translation id="4901309472892185668">Dewiswch gyflwr arbrofi ar gyfer yr arbrawf <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="49027928311173603">Mae'r polisi a lawrlwythwyd o'r gweinydd yn annilys: <ph name="VALIDATION_ERROR" />.</translation>
+<translation id="490375751687810070">Fertigol</translation>
 <translation id="4906490889887219338">Gosod neu reoli cyfrannau ffeiliau rhwydwaith. <ph name="LINK_BEGIN" />Dysgu rhagor<ph name="LINK_END" /></translation>
 <translation id="4906679076183257864">Ailosod i'r Diofyn</translation>
 <translation id="4907129260985716018">Dewiswch pryd y gall yr estyniad hwn ddarllen a newid eich data gwefan</translation>

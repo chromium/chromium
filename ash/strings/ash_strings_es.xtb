@@ -426,6 +426,7 @@
 <translation id="2478076885740497414">Instalar aplicación</translation>
 <translation id="2482878487686419369">Notificaciones</translation>
 <translation id="2484513351006226581">Pulsa <ph name="KEYBOARD_SHORTCUT" /> para cambiar el diseño del teclado.</translation>
+<translation id="2485422356828889247">Desinstalar</translation>
 <translation id="2486214324139475545">Vista previa de <ph name="DESK_NAME" />. Escritorio activo.</translation>
 <translation id="2486405091093637109">Se ha cambiado la resolución de "<ph name="DISPLAY_NAME" />" a <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Si no confirmas, se restaurará la configuración anterior en <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2487915095798731898">Unirse</translation>

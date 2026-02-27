@@ -17,7 +17,6 @@
 <translation id="1138691154716715755">Korábban ebben a hónapban</translation>
 <translation id="1150565364351027703">Napszemüveg</translation>
 <translation id="115443833402798225">Hangul Ahnmatae</translation>
-<translation id="1155759005174418845">katalán</translation>
 <translation id="1168100932582989117">Google névszerverek</translation>
 <translation id="1170788066030116158">Készítés dátuma</translation>
 <translation id="1172970565351728681">Fennmaradó idő kb. <ph name="REMAINING_TIME" />…</translation>
@@ -61,12 +60,10 @@
 <translation id="146691674290220697"><ph name="NUMBER_OF_FILES" /> fájl másolása nem sikerült, mert titkosítva vannak.</translation>
 <translation id="1471718551822868769">szlovák</translation>
 <translation id="1482884275703521657">finn</translation>
-<translation id="148466539719134488">svájci</translation>
 <translation id="1497522201463361063">A(z) "<ph name="FILE_NAME" />" fájl nem nevezhető át. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1499943022354839699">angol (USA) billentyűzet Dvorak kiosztással</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> – gazdagép</translation>
 <translation id="1521655867290435174">Google Táblázatok</translation>
-<translation id="1547964879613821194">kanadai angol</translation>
 <translation id="1556189134700913550">Alkalmazás az összesre</translation>
 <translation id="1561842594491319104">Chrome-eszközök</translation>
 <translation id="1572585716423026576">Beállítás háttérként</translation>
@@ -120,8 +117,6 @@
 <translation id="1920670151694390848">malajálam, betű szerinti átírás</translation>
 <translation id="1920798810075583923">Görögdinnye</translation>
 <translation id="1924372192547904021"><ph name="DRIVE_NAME" /> formázva</translation>
-<translation id="1931134289871235022">szlovák</translation>
-<translation id="1936717151811561466">finn</translation>
 <translation id="1942765061641586207">Képfelbontás</translation>
 <translation id="1972984168337863910">A fájlokhoz tartozó visszajelzési párbeszédpanel kibontása</translation>
 <translation id="1995337122023280937">Ugrás a fájl helyéhez</translation>
@@ -199,7 +194,6 @@
 <translation id="2541377937973966830">Ennek a mappának a tartalma írásvédett. Bizonyos műveletek nem hajthatók végre.</translation>
 <translation id="2542049655219295786">Google-tábla</translation>
 <translation id="2544853746127077729">A hálózat elutasította a hitelesítési tanúsítványt</translation>
-<translation id="255937426064304553">USA nemzetközi</translation>
 <translation id="2563185590376525700">Béka</translation>
 <translation id="2578394532502990878">tamil, fonetikus</translation>
 <translation id="2579959351793446050">odia</translation>
@@ -220,7 +214,6 @@
 <translation id="2735623501230989521">A Parallels Desktop engedélyt kap arra, hogy hozzáférjen a fájlokhoz a következő mappában: <ph name="FOLDER_NAME" />.</translation>
 <translation id="2764206540577097904">Felhasználta Google Workspace-tárhelyét.</translation>
 <translation id="2771816809568414714">Sajt</translation>
-<translation id="2781645665747935084">belga</translation>
 <translation id="2802583107108007218">További információ ezekről a korlátozásokról</translation>
 <translation id="2803375539583399270">PIN-kód megadása</translation>
 <translation id="2819519502129272135">Fájlszinkronizálás kikapcsolva</translation>
@@ -228,15 +221,11 @@
 <translation id="2830077785865012357">kínai zujin</translation>
 <translation id="2843806747483486897">Alapértelmezés módosítása...</translation>
 <translation id="2873951654529031587">Kuka</translation>
-<translation id="288024221176729610">cseh</translation>
 <translation id="2887525882758501333">PDF-dokumentum</translation>
 <translation id="2888807692577297075">Nincs &lt;b&gt;„<ph name="SEARCH_STRING" />”&lt;/b&gt; keresésnek megfelelő elem</translation>
 <translation id="2894654529758326923">Információ</translation>
-<translation id="2902734494705624966">USA bővített</translation>
 <translation id="2904378509913846215">Már van „<ph name="FILENAME" />” nevű mappa. Szeretné lecserélni az áthelyezni kívánt mappára?</translation>
 <translation id="290843123675549676">marathi</translation>
-<translation id="2923240520113693977">észt</translation>
-<translation id="2938685643439809023">mongol</translation>
 <translation id="2943503720238418293">Rövidebb nevet adjon meg</translation>
 <translation id="2949781154072577687"><ph name="DRIVE_NAME" /> formázása…</translation>
 <translation id="2951236788251446349">Medúza</translation>
@@ -263,14 +252,10 @@
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (hardverrel támogatott)</translation>
 <translation id="3188257591659621405">Saját fájlok</translation>
 <translation id="3194553149358267393">Nincsenek új hangfájlok</translation>
-<translation id="3197563288998582412">egyesült királyságbeli Dvorak</translation>
 <translation id="3202131003361292969">Útvonal</translation>
 <translation id="3205852408225871810">portugál (Brazília)</translation>
-<translation id="3224239078034945833">kanadai többnyelvű</translation>
 <translation id="3236289833370040187">A tulajdonjogot átruházza a következőre: <ph name="DESTINATION_DOMAIN" />.</translation>
-<translation id="3241720467332021590">ír</translation>
 <translation id="3248185426436836442">Függőben</translation>
-<translation id="3252266817569339921">francia</translation>
 <translation id="3253225298092156258">Nem hozzáférhető</translation>
 <translation id="3254434849914415189">Válassza ki az alapértelmezett alkalmazást <ph name="FILE_TYPE" />-fájlokhoz:</translation>
 <translation id="3255159654094949700">arab</translation>
@@ -285,7 +270,6 @@
 <translation id="3293023191599135697">A WEP-hálózatok nem támogatottak</translation>
 <translation id="3295006446256079333">Ez a mennyiség</translation>
 <translation id="3295357220137379386">Az eszköz elfoglalt</translation>
-<translation id="3296763833017966289">grúz</translation>
 <translation id="3307875152560779385">ukrán</translation>
 <translation id="3326821416087822643"><ph name="FILE_NAME" /> tömörítése...</translation>
 <translation id="3335337277364016868">Felvétel éve</translation>
@@ -306,7 +290,6 @@
 <translation id="3486821258960016770">mongol</translation>
 <translation id="3509680540198371098"><ph name="NETWORK_INDEX" />. hálózat (összesen <ph name="NETWORK_COUNT" />), <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, jelerősség: <ph name="SIGNAL_STRENGTH" />%, részletek</translation>
 <translation id="3511705761158917664">Felkészülés <ph name="NUMBER_OF_ITEMS" /> elem szinkronizálására…</translation>
-<translation id="3522708245912499433">portugál</translation>
 <translation id="3523225005467146490">1 mappa megosztva a következővel: <ph name="VM_NAME" /></translation>
 <translation id="3524311639100184459">Figyelem: Ezek ideiglenes fájlok, és automatikusan törlésre kerülnek azért, hogy tárhely szabaduljon fel.  <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
 <translation id="3527085408025491307">Mappa</translation>
@@ -317,12 +300,9 @@
 <translation id="3556731189587832921">angol (USA) billentyűzet nemzetközi PC kiosztással</translation>
 <translation id="3557414470514932909"><ph name="FILE_NAME" /> áthelyezése a kukába</translation>
 <translation id="3567221313191587603">Válassza ki a kívánt fájlt, és kattintson a(z) <ph name="OFFLINE_CHECKBOX_NAME" /> melletti jelölőnégyzetre a fájlok offline hozzáféréséhez.</translation>
-<translation id="357479282490346887">litván</translation>
 <translation id="3587482841069643663">Mind</translation>
 <translation id="3592251141500063301">Nem sikerült a(z) <ph name="FILE_NAME" /> fájlt offline állapotban elérhetővé tenni</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
-<translation id="3603385196401704894">kanadai francia</translation>
-<translation id="3606220979431771195">Török F</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3619115746895587757">Cappuccino</translation>
 <translation id="3619593063686672873">Nincsenek új videók</translation>
@@ -343,7 +323,6 @@
 <translation id="3786301125658655746">Ön jelenleg offline állapotban van</translation>
 <translation id="3789841737615482174">Telepítés</translation>
 <translation id="3793469551756281394">Fennmaradó idő kb. <ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" />…</translation>
-<translation id="3801082500826908679">feröer-szigeteki</translation>
 <translation id="3809272675881623365">Nyúl</translation>
 <translation id="3810973564298564668">Kezelés</translation>
 <translation id="3811408895933919563">angol (Pakisztán)</translation>
@@ -351,10 +330,8 @@
 <translation id="3817579325494460411">Nincs megadva</translation>
 <translation id="3819448694985509187">Helytelen PIN-kód. 1 próbálkozási lehetősége maradt.</translation>
 <translation id="3830674330436234648">Nincs lejátszási lehetőség</translation>
-<translation id="383652340667548381">szerb</translation>
 <translation id="3839045880592694915">Szolgáltatója nem engedélyezi a modem csatlakoztatását. További információért forduljon a szolgáltatóhoz.</translation>
 <translation id="385051799172605136">Vissza</translation>
-<translation id="3855472144336161447">német Neo 2</translation>
 <translation id="3858860766373142691">Név</translation>
 <translation id="3899991606604168269">francia (Kanada), többnyelvű billentyűzettel</translation>
 <translation id="3901991538546252627">Csatlakozás a következőhöz: <ph name="NAME" /></translation>
@@ -394,7 +371,6 @@
 <translation id="4261901459838235729">Google-bemutató</translation>
 <translation id="4277536868133419688">A(z) <ph name="FILTER_NAME" /> szűrő be van kapcsolva.</translation>
 <translation id="4290535918735525311">1 mappa megosztva Linuxszal</translation>
-<translation id="4299729908419173967">brazil</translation>
 <translation id="4302605047395093221">Aki az eszközt szeretné használni, meg kell adnia a PIN-kódot a mobilhálózathoz való csatlakozáshoz</translation>
 <translation id="4303531889494116116">A hálózat le van terhelve. Próbálja újra később.</translation>
 <translation id="4309915981827077375">Általános információk</translation>
@@ -430,7 +406,6 @@
 <translation id="4472575034687746823">Kezdő lépések</translation>
 <translation id="4474142134969976028">Nincs egyezés</translation>
 <translation id="4477002475007461989">román</translation>
-<translation id="4477219268485577442">bolgár fonetikus</translation>
 <translation id="4508265954913339219">Aktiválás sikertelen</translation>
 <translation id="4509667233588080747">angol (USA) billentyűzet nemzetközi Workman kiosztással</translation>
 <translation id="4527800702232535228">Ez a mappa meg van osztva a Parallels Desktop rendszerrel</translation>
@@ -451,20 +426,17 @@
 <translation id="4658782175094886150">Ember a hóban</translation>
 <translation id="4669606053856530811">A(z) „<ph name="SOURCE_NAME" />” tagjai elveszítik hozzáférésüket, kivéve, ha meg vannak osztva velük ezek az elemek.</translation>
 <translation id="467809019005607715">Google Diák</translation>
-<translation id="4690246192099372265">svéd</translation>
 <translation id="4693155481716051732">Szusi</translation>
 <translation id="4694604912444486114">Majom</translation>
 <translation id="469612310041132144">kínai, gyors</translation>
 <translation id="4697043402264950621"><ph name="COLUMN_NAME" /> szerint rendezett, növekvő sorrendben lévő fájllista.</translation>
 <translation id="469897186246626197">Ez a fájl Windows rendszert futtató számítógéphez készült. Az Ön ChromeOS rendszert futtató eszközével nem kompatibilis. <ph name="BEGIN_LINK_HELP" />További információ<ph name="END_LINK_HELP" /> a fájlok ChromeOS-en való megnyitásáról.</translation>
 <translation id="4706042980341760088">tamil, írógép-billentyűzettel</translation>
-<translation id="4711094779914110278">török</translation>
 <translation id="4712283082407695269">„<ph name="PATH" />” megnyitása folyamatban</translation>
 <translation id="4720185134442950733">Mobiladat-hálózat</translation>
 <translation id="4725096204469550614">Korábban ebben az évben</translation>
 <translation id="4725511304875193254">Corgi</translation>
 <translation id="4737050008115666127">Leszállópálya</translation>
-<translation id="4747271164117300400">macedón</translation>
 <translation id="4759238208242260848">Letöltések</translation>
 <translation id="4779041693283480986">portugál (Portugália)</translation>
 <translation id="4779136857077979611">Onigiri</translation>
@@ -478,7 +450,6 @@
 <translation id="4826849268470072925">tamil, ITRANS</translation>
 <translation id="4843566743023903107">Chromebase-ek</translation>
 <translation id="4850886885716139402">Nézet</translation>
-<translation id="485316830061041779">német</translation>
 <translation id="4862885579661885411">Fájlbeállítások</translation>
 <translation id="4867079195717347957">Kattintson az oszlop csökkenő sorrendben való rendezéséhez.</translation>
 <translation id="4867297348137739678">Múlt héten</translation>
@@ -515,13 +486,11 @@
 <translation id="5081517858322016911">A törlésre kerülő fájlok mérete összesen <ph name="TOTAL_FILE_SIZE" /></translation>
 <translation id="508423945471810158"><ph name="NUMBER_OF_ITEMS" /> elem áthelyezése ide: <ph name="FOLDER_NAME" /></translation>
 <translation id="509429900233858213">Hiba történt.</translation>
-<translation id="5098629044894065541">héber</translation>
 <translation id="5102922915594634436">Szinkronizált mappák kezelése</translation>
 <translation id="5109254780565519649">Hiba történt. Előfordulhat, hogy egyes elemek visszaállítására nem került sor.</translation>
 <translation id="5110329002213341433">angol (Kanada)</translation>
 <translation id="5119780910075847424">A szinkronizálás szünetel</translation>
 <translation id="5123433949759960244">Kosárlabda</translation>
-<translation id="5129662217315786329">lengyel</translation>
 <translation id="5144820558584035333">Hangul 3 készlet (390)</translation>
 <translation id="5145331109270917438">Módosítás dátuma</translation>
 <translation id="515594325917491223">Sakk</translation>
@@ -530,12 +499,10 @@
        <ph name="LINE_BREAKS" />
        Ha használat közben távolítja el eszközét, az adatvesztést eredményezhet. Kérjük, várjon, amíg a művelet befejeződik, majd válassza le az eszközt a Fájlok alkalmazás használatával.</translation>
 <translation id="5163869187418756376">Nem sikerült a megosztás. Ellenőrizze a kapcsolatot, és később próbálkozzon újra.</translation>
-<translation id="516592729076796170">US Dvorak programozó</translation>
 <translation id="5177526793333269655">Indexképnézet</translation>
 <translation id="5181896909298187506">Nincsenek új fájlok</translation>
 <translation id="5194713942430106590">Kattintson az oszlop növekvő sorrendben való rendezéséhez.</translation>
 <translation id="5211614973734216083">feröeri</translation>
-<translation id="5218183485292899140">svájci francia</translation>
 <translation id="5234764350956374838">Elvetés</translation>
 <translation id="5253070652067921974">Létrehozta</translation>
 <translation id="5254207638927440400">Nem sikerült áthelyezni a fájlt. A fájl használatban van.</translation>
@@ -553,7 +520,6 @@
 <translation id="5305688511332277257">Nincs telepítve</translation>
 <translation id="5317780077021120954">Mentés</translation>
 <translation id="5318819489018851358">Megosztás a Linuxszal</translation>
-<translation id="5323213332664049067">latin-amerikai</translation>
 <translation id="5330145655348521461">Ezek a fájlok meg vannak nyitva egy másik asztalon. A megtekintésükhöz váltson át <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) profiljára.</translation>
 <translation id="5330512191124428349">Információk megtekintése</translation>
 <translation id="535792325654997756">Ember macskákkal</translation>
@@ -565,18 +531,15 @@
 <translation id="5411472733320185105">Ne használja a proxy-beállításokat ezekhez a hosztokhoz és domainekhez:</translation>
 <translation id="541890217011173530">szoráni kurd, angolalapú billentyűzettel</translation>
 <translation id="5422221874247253874">Hozzáférési pont</translation>
-<translation id="5428105026674456456">spanyol</translation>
 <translation id="5438282218546237410">Nincs találat a következő kifejezésre: <ph name="SEARCH_TERM" />.</translation>
 <translation id="5447680084201416734">Nincs elég tárhely.</translation>
 <translation id="5449551289610225147">Érvénytelen jelszó</translation>
 <translation id="5459064203055649751">„<ph name="FILENAME" />” nevű fájl már létezik. Szeretné lecserélni az áthelyezni kívánt fájlra?</translation>
 <translation id="5463231940765244860">PIN-kód megadása</translation>
-<translation id="5469868506864199649">olasz</translation>
 <translation id="5473333559083690127">Írja be újra az új PIN-kódot</translation>
 <translation id="5489067830765222292">lett</translation>
 <translation id="5489965683297092283">A(z) <ph name="FILTER_NAME" /> szűrő ki van kapcsolva.</translation>
 <translation id="5494920125229734069">Összes kiválasztása</translation>
-<translation id="5500122897333236901">izlandi</translation>
 <translation id="5508696409934741614">Pöttyök</translation>
 <translation id="5522908512596376669">A fájllista nézete listanézetre változott.</translation>
 <translation id="5524517123096967210">A fájl nem olvasható.</translation>
@@ -589,7 +552,6 @@
 <translation id="5583664733673201137">A központozás teljes szélességű</translation>
 <translation id="5596627076506792578">További lehetőségek</translation>
 <translation id="5602622065581044566">bolgár, fonetikus billentyűzettel</translation>
-<translation id="5605830556594064952">USA Dvorak</translation>
 <translation id="560739212255190568">A rendszergazda a következő proxy kényszerítése mellett proxy-felülbírálási szabályokat állított be</translation>
 <translation id="5618330573454123917">A fájl Macintosh-szoftvert használó számítógéphez készült. Az Ön ChromeOS rendszert futtató eszközével nem kompatibilis. <ph name="BEGIN_LINK_HELP" />További információ<ph name="END_LINK_HELP" /> a fájlok ChromeOS-en való megnyitásáról.</translation>
 <translation id="5625294776298156701">tamil, Tamil99-billentyűzettel</translation>
@@ -607,7 +569,6 @@
 <translation id="5724172041621205163">thai, pattachote-billentyűzettel</translation>
 <translation id="57383366388012121">Múlt hónap</translation>
 <translation id="575175778971367197">Ez a fájl jelenleg nem szinkronizálható.</translation>
-<translation id="5756666464756035725">Magyar QWERTY</translation>
 <translation id="5760252553414789727"><ph name="SELECTED_FILES_COUNT" /> elem kijelölve</translation>
 <translation id="5763377084591234761">német (Svájc)</translation>
 <translation id="5769519078756170258">A kizárandó gazdagép vagy domain</translation>
@@ -615,7 +576,6 @@
 <translation id="5776325638577448643">Törlés és formázás</translation>
 <translation id="57838592816432529">Némítás</translation>
 <translation id="5788127256798019331">Play-fájlok</translation>
-<translation id="5790193330357274855">kazah</translation>
 <translation id="5804245609861364054">kannada, betű szerinti átírás</translation>
 <translation id="5814126672212206791">Csatlakozás típusa</translation>
 <translation id="5817397429773072584">Hagyományos kínai</translation>
@@ -624,7 +584,6 @@
 <translation id="5832976493438355584">Zárolva</translation>
 <translation id="5833610766403489739">Ez a fájl elkóborolt valahová. Kérjük, ellenőrizze a letöltés helyének beállítását, és próbálja újra.</translation>
 <translation id="5838451609423551646">Összes bejegyzés eltávolítva a kijelöltek közül.</translation>
-<translation id="5838825566232597749">USA „Workman” nemzetközi</translation>
 <translation id="5845721951356578987">Ápoló</translation>
 <translation id="5858478190805449225">Az Akkumulátorkímélő mód be van kapcsolva. Próbálkozzon újra, amikor ki van kapcsolva az Akkumulátorkímélő mód.</translation>
 <translation id="5860491529813859533">Bekapcsolás</translation>
@@ -640,7 +599,6 @@
 <translation id="5957366693331451795">Chromeboxok</translation>
 <translation id="5982621672636444458">Rendezési beállítások</translation>
 <translation id="6011074160056912900">Ethernet-hálózat</translation>
-<translation id="60357267506638014">cseh QWERTY</translation>
 <translation id="603895874132768835">Addig nem tudja használni ezt a hálózatot, amíg új PIN-kódot nem állít be.</translation>
 <translation id="6040143037577758943">Bezárás</translation>
 <translation id="6055907707645252013">Hálózat: <ph name="NETWORK_TYPE" />, nincs csatlakoztatva</translation>
@@ -683,7 +641,6 @@
 <translation id="6320212353742551423"><ph name="ARCHIVE_TYPE" />-archívum</translation>
 <translation id="6321303798550928047">Integetés</translation>
 <translation id="6327785803543103246">Webproxy automatikus észlelése</translation>
-<translation id="6339145975392024142">Amerikai nemzetközi (PC)</translation>
 <translation id="6356685157277930264">Fájlokkal kapcsolatos visszajelzésre vonatkozó ablak</translation>
 <translation id="6358884629796491903">Sárkány</translation>
 <translation id="636254897931573416">Érvénytelen érték: Domainvégződés – egyezés</translation>
@@ -704,7 +661,6 @@
 <translation id="649877868557234318"><ph name="FILE_NAME" /> kicsomagolása ide: <ph name="FOLDER_NAME" /></translation>
 <translation id="6499681088828539489">Proxyk letiltása a megosztott hálózatoknál</translation>
 <translation id="6503285896705205014"><ph name="COUNT" /> fájl másolását rendszergazdai házirend tiltja</translation>
-<translation id="6509122719576673235">norvég</translation>
 <translation id="6528513914570774834">Engedélyezi a hálózat használatát az eszköz többi felhasználója számára</translation>
 <translation id="6549689063733911810">Legutóbbiak</translation>
 <translation id="6558280019477628686">Hiba történt. Előfordulhat, hogy egyes elemek nem törlődtek.</translation>
@@ -736,7 +692,6 @@
 <translation id="6806796368146926706">alfanumerikus, japán billentyűzettel</translation>
 <translation id="6808193438228982088">Róka</translation>
 <translation id="6823166707458800069">Az ebbe a mappába mentett minden fájlról online biztonsági másolat készül.</translation>
-<translation id="6825883775269213504">orosz</translation>
 <translation id="6847101934483209767"><ph name="ENTRY_NAME" /> eltávolítva a kijelöltek közül.</translation>
 <translation id="6848194403851638089">A(z) <ph name="ORGANIZATION_NAME" /> felhasználta a teljes Google Workspace-tárhelyét.</translation>
 <translation id="6856459657722366306"><ph name="NETWORK_INDEX" />. hálózat (összesen <ph name="NETWORK_COUNT" />), <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, jelerősség: <ph name="SIGNAL_STRENGTH" />%, részletek</translation>
@@ -750,7 +705,6 @@
 <translation id="6896758677409633944">Másolás</translation>
 <translation id="6898028766943174120">További almappák...</translation>
 <translation id="6915678159055240887">Chromebox</translation>
-<translation id="6918340160281024199">USA „Workman”</translation>
 <translation id="6930242544192836755">Időtartam</translation>
 <translation id="6935521024859866267">Fejjel lefelé</translation>
 <translation id="6943836128787782965">A HTTP-lekérés nem sikerült</translation>
@@ -760,7 +714,6 @@
 <translation id="696203921837389374">Szinkronizálás engedélyezése mobiladat-kapcsolaton</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6965648386495488594">Port</translation>
-<translation id="6970230597523682626">bolgár</translation>
 <translation id="6973630695168034713">Mappák</translation>
 <translation id="6976795442547527108">Oroszlán</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -821,20 +774,17 @@
 <translation id="7417705661718309329">Google-térkép</translation>
 <translation id="7419668828140929293">„<ph name="FILENAME" />” visszaállítása</translation>
 <translation id="7458955835361612701">Nincsenek új képek</translation>
-<translation id="7460898608667578234">ukrán</translation>
 <translation id="7469894403370665791">Automatikus kapcsolódás ehhez a hálózathoz</translation>
 <translation id="7486315294984620427">Ha fájlokat szeretne a Parallels Desktop felületére húzni, az adott fájlt előbb a Windows-fájlok közé kell másolni.</translation>
 <translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">malajálam, fonetikus</translation>
 <translation id="7505167922889582512">Rejtett fájlok megjelenítése</translation>
 <translation id="7514365320538308">Letöltés</translation>
-<translation id="751507702149411736">fehérorosz</translation>
 <translation id="7521790570754130607">A mobiladatok használatához PIN-kód megadása szükséges.</translation>
 <translation id="7532029025027028521">perzsa, betű szerinti átírás</translation>
 <translation id="7544830582642184299">A Linux-alkalmazások engedélyt kapnak arra, hogy hozzáférjenek az Ön fájljaihoz a Google Drive-fiókjában. A változtatások minden eszközön szinkronizálódnak.</translation>
 <translation id="7547009467130558110">Sportcipő</translation>
 <translation id="7547780573915868306">litván</translation>
-<translation id="7547811415869834682">holland</translation>
 <translation id="7551643184018910560">Rögzítés a polcra</translation>
 <translation id="7553492409867692754">A Linux-alkalmazások engedélyt kapnak a(z) <ph name="FOLDER_NAME" /> mappában lévő fájlokhoz való hozzáférésre.</translation>
 <translation id="7555339735447658365">Ön jelenleg offline állapotban van. A fájlok szinkronizálása folytatódik, amint létrejön az internetkapcsolat.</translation>
@@ -854,7 +804,6 @@
 <translation id="7693909743393669729">A meghajtó formázásával minden rajta tárolt adat, és ezzel együtt az összes meglévő partíció is törlődik (többek között az esetlegesen nem láthatók is). A művelet nem vonható vissza.</translation>
 <translation id="7695430100978772476">Nem sikerült a(z) <ph name="DRIVE_NAME" /> formázása</translation>
 <translation id="76959938259365003">Nem sikerült kiüríteni a kukát.</translation>
-<translation id="770015031906360009">görög</translation>
 <translation id="7705251383879779343"><ph name="FILE_NAME" /> a vágólapra másolva.</translation>
 <translation id="7707941139430559579">Nem sikerült áthelyezni a fájlt. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="7708271999969613024">A hálózat használatához meg kell adnia a szolgáltatótól kapott nyolcjegyű PUK-kódot.</translation>
@@ -883,7 +832,6 @@
 <translation id="7831491651892296503">Hiba történt a hálózat konfigurálásakor</translation>
 <translation id="7839804798877833423">E fájlok lekérése mintegy <ph name="FILE_SIZE" />-nyi mobiladat-forgalmat fog generálni.</translation>
 <translation id="7846076177841592234">Kijelölés törlése</translation>
-<translation id="7853966320808728790">Francia BÉPO</translation>
 <translation id="7857117644404132472">Kivétel hozzáadása</translation>
 <translation id="7868774406711971383">lengyel</translation>
 <translation id="7874321682039004450">filippínó</translation>
@@ -895,9 +843,7 @@
 <translation id="7925247922861151263">AAA-ellenőrzés sikertelen</translation>
 <translation id="7928710562641958568">Eszköz kiadása</translation>
 <translation id="7933875256234974853">Felkészülés Drive-fájlok szinkronizálására…</translation>
-<translation id="7943385054491506837">USA Colemak</translation>
 <translation id="7953739707111622108">Ezt az eszközt nem lehet megnyitni, mert a fájlrendszer nem ismerhető fel.</translation>
-<translation id="7969525169268594403">szlovén</translation>
 <translation id="7972920761225148017">francia (Svájc)</translation>
 <translation id="7973962044839454485">Nem sikerült a PPP-hitelesítés helytelen felhasználónév vagy jelszó miatt</translation>
 <translation id="7980421588063892270">angol (USA) billentyűzet Colemak kiosztással</translation>
@@ -908,7 +854,6 @@
 <translation id="803771048473350947">Fájl</translation>
 <translation id="8038111231936746805">(alapértelmezett)</translation>
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" /> hangfájl</translation>
-<translation id="8045462269890919536">román</translation>
 <translation id="8049184478152619004">PIN-feloldó kulcs (PUK-kód) megadása</translation>
 <translation id="8055538340801153769">Ez a mappa</translation>
 <translation id="807187749540895545"><ph name="FILE_NAME" /> kibontása…</translation>
@@ -940,11 +885,9 @@
 <translation id="8262872909443689080">Rendszergazda által beállított házirend</translation>
 <translation id="8264024885325823677">Ezt a beállítást a rendszergazdája kezeli.</translation>
 <translation id="8269755669432358899">A fájlokhoz tartozó visszajelzési párbeszédpanel összecsukása</translation>
-<translation id="8280151743281770066">örmény fonetikus</translation>
 <translation id="8285791779547722821">Titkosított <ph name="ORIGINAL_MIME_TYPE" /></translation>
 <translation id="8294431847097064396">Forrás</translation>
 <translation id="8297012244086013755">Hangul 3 készlet (nincs Shift)</translation>
-<translation id="8299269255470343364">japán</translation>
 <translation id="8300849813060516376">OTASP sikertelen</translation>
 <translation id="8312871300878166382">Beillesztés mappába</translation>
 <translation id="8329978297633540474">Egyszerű szöveg</translation>
@@ -966,7 +909,6 @@
 <translation id="8428213095426709021">Beállítások</translation>
 <translation id="8429998526804961548"><ph name="NUMBER_OF_ITEMS" /> mappa megosztva a következővel: <ph name="VM_NAME" /></translation>
 <translation id="8431909052837336408">SIM-kártya PIN-kódjának módosítása</translation>
-<translation id="8437209419043462667">USA</translation>
 <translation id="8452135315243592079">Hiányzó SIM-kártya</translation>
 <translation id="8456681095658380701">Érvénytelen név</translation>
 <translation id="8457767749626250697">A SIM zárolva van</translation>
@@ -981,14 +923,12 @@
 <translation id="8499098729323186194"><ph name="NUMBER_OF_ITEMS" /> elem kibontása…</translation>
 <translation id="8502913769543567768">Hálózat száma: <ph name="NETWORK_INDEX" />., összes hálózat: <ph name="NETWORK_COUNT" />, hálózat neve: <ph name="NETWORK_NAME" />, hálózat szolgáltatója: <ph name="NETWORK_PROVIDER_NAME" />, Aktiválás eszközbeállítás után, A rendszergazdája kezeli</translation>
 <translation id="8512483403832814140">Bármikor</translation>
-<translation id="8521441079177373948">egyesült királyságbeli</translation>
 <translation id="853494022971700746">francia (Franciaország)</translation>
 <translation id="8540608333167683902"><ph name="NETWORK_INDEX" />. hálózat (összesen <ph name="NETWORK_COUNT" />), <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, jelerősség: <ph name="SIGNAL_STRENGTH" />%, részletek</translation>
 <translation id="8545476925160229291">angol (USA)</translation>
 <translation id="854655314928502177">Webproxy automatikus észlelési URL-je:</translation>
 <translation id="8547747809824590510">A rendszergazda proxy-felülbírálási szabályokat állított be</translation>
 <translation id="8549186985808798022">olasz</translation>
-<translation id="8551494947769799688">lett</translation>
 <translation id="8560515948038859357">kantoni</translation>
 <translation id="8561206103590473338">Elefánt</translation>
 <translation id="8566466896628108558">Hálózat száma: <ph name="NETWORK_INDEX" />, összes hálózat: <ph name="NETWORK_COUNT" />, hálózat neve: <ph name="NETWORK_NAME" />, biztonsági állapot: <ph name="SECURITY_STATUS" />, jelerősség: <ph name="SIGNAL_STRENGTH" />%, rendszergazda tiltja, részletek</translation>
@@ -1011,7 +951,6 @@
 <translation id="8713112442029511308">máltai</translation>
 <translation id="8714406895390098252">Kerékpár</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> kijelölve.</translation>
-<translation id="872537912056138402">horvát</translation>
 <translation id="8743164338060742337"><ph name="NETWORK_INDEX" />. hálózat (összesen <ph name="NETWORK_COUNT" />), <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, jelerősség: <ph name="SIGNAL_STRENGTH" />%, a rendszergazdája kezeli, csatlakozás</translation>
 <translation id="8787254343425541995">Proxyk engedélyezése a megosztott hálózatoknál</translation>
 <translation id="8790981080411996443">Virágokat öntöző ember</translation>
@@ -1028,10 +967,8 @@
 <translation id="8873014196523807561">Az elemek visszaállításához húzza őket egy új mappába. Az elemek egy részének eredeti mappái törlésre kerültek.</translation>
 <translation id="8874184842967597500">Nincs csatl.</translation>
 <translation id="8876368061475701452">Várólistán</translation>
-<translation id="8900820606136623064">magyar</translation>
 <translation id="8903931173357132290">Diplomás</translation>
 <translation id="8912078710089354287">Kutya csóválja a farkát</translation>
-<translation id="8919081441417203123">dán</translation>
 <translation id="8949925099261528566">Csatlakozva, nincs internet-hozzáférés</translation>
 <translation id="8965697826696209160">Nincs elég tárhely.</translation>
 <translation id="8970887620466824814">Hiba történt.</translation>
@@ -1040,7 +977,6 @@
 <translation id="8998871447376656508">Nincs elég szabad tárhelye a Google Drive-on a feltöltés befejezéséhez.</translation>
 <translation id="9003940392834790328"><ph name="NETWORK_INDEX" />. hálózat (összesen <ph name="NETWORK_COUNT" />), <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, jelerősség: <ph name="SIGNAL_STRENGTH" />%, a rendszergazdája kezeli, részletek</translation>
 <translation id="9007990314804111233">Jelentkezzen be Microsoft-fiókjába</translation>
-<translation id="9017798300203431059">orosz fonetikus</translation>
 <translation id="9034924485347205037">Linux-fájlok</translation>
 <translation id="9035012421917565900">Az elemek nem helyezhetők vissza ide: „<ph name="DESTINATION_NAME" />”. Nem tudja visszavonni a műveletet.</translation>
 <translation id="9035689366572880647">Adja meg a jelenlegi PIN-kódot</translation>

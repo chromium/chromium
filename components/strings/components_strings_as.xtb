@@ -230,6 +230,7 @@
 <translation id="1358187717814494928">শ্বীট সৃষ্টি কৰক</translation>
 <translation id="1358223345833465883">Chromiumত আপোনাৰ সন্ধান ইঞ্জিন</translation>
 <translation id="1359836962251219822">পাকঘৰ আৰু ভোজনত ব্যৱহৃত আচবাব</translation>
+<translation id="136059610328993645">আপোনাৰ তথ্য <ph name="ACCOUNT" />ৰ বাবে Google Walletত ছেভ কৰা হয়। আপুনি ফৰ্মসমূহ দ্ৰুতভাৱে পূৰ কৰিবলৈ Googleৰ সমগ্ৰ সেৱাত এইটো ব্যৱহাৰ কৰিব পাৰে।</translation>
 <translation id="1360955481084547712">ব্যক্তিগতভাৱে ব্ৰাউজ কৰিবলৈ এখন নতুন ইনক’গনিট’ ৱিণ্ড’ খোলক</translation>
 <translation id="1361528602584216624">প্ৰতিটো Pixৰ সীমা R$<ph name="TRANSACTION_LIMIT" /></translation>
 <translation id="1363015776076529485">পূৰ্ণ উচ্চতাত খোলা পৰিশোধ প্ৰক্ৰিয়াকৰণ কৰিবলৈ বাছনি কৰাৰ বাবে পৰিশোধ পদ্ধতিসমূহ উপলব্ধ।</translation>
@@ -252,6 +253,7 @@
 <translation id="1392813880755413602">OpenDocument উপস্থাপন</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" />এ কোনো ডেটা পঠিওৱা নাই।</translation>
 <translation id="1393071644879491291">আপুনি চাবলৈ চেষ্টা কৰি থকা ছাইটটোত থকা আক্ৰমণকাৰীসকলে আপোনাক কোনো ছফ্টৱেৰ ইনষ্টল কৰিবলৈ বা আপোনাৰ পাছৱৰ্ড, ফট’ বা ক্ৰেডিট কাৰ্ডৰ নম্বৰৰ দৰে তথ্য ফাদিল কৰিবলৈ ছলনা কৰিব পাৰে। Chromeএ পুনৰ সুৰক্ষা ব্যৱস্থা গ্ৰহণ কৰিবলৈ দৃঢ়ভাৱে চুপাৰিছ কৰে। <ph name="BEGIN_LEARN_MORE_LINK" />এই সকীয়নিৰ বিষয়ে অধিক জানক<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="1402151528875251561">ছাইডৰ পেনেলত ইতিহাস দেখুৱাওক</translation>
 <translation id="1405567553485452995">পাতল সেউজীয়া</translation>
 <translation id="1406370515365284486">আপোনাৰ পৰিশোধ পদ্ধতি তথাপি ছেভ কৰা হ’ব</translation>
 <translation id="1406500794671479665">সত্যাপন কৰি থকা হৈছে…</translation>
@@ -910,7 +912,6 @@
 <translation id="2436976580469434549">ফাইবাৰ আৰু টেক্সটাইল আৰ্ট</translation>
 <translation id="243815215670139125">এই কাৰ্ডখন আপোনাৰ Google একাউণ্টত ছেভ কৰিব পৰা নগ’ল। তাৰ পৰিৱৰ্তে সেইখন এই ডিভাইচটোৰ Chromeত ছেভ কৰা হৈছে।</translation>
 <translation id="2438874542388153331">সোঁফালে চতুর্ভূজ আকাৰত পাঞ্চ কৰক</translation>
-<translation id="2440855519769445271">পাছত পৰিশোধ কৰাৰ বিকল্পসমূহ লুকুৱাবলৈ, <ph name="BEGIN_LINK" />পৰিশোধৰ ছেটিঙ<ph name="END_LINK" />লৈ যাওক</translation>
 <translation id="2441854154602066476">স্পৰ্শ কৰিলে পূৰ হ’বলগীয়া উপলব্ধ পৰিশোধ পদ্ধতিসমূহ। কীব’ৰ্ড লুকুওৱা হ’ল।</translation>
 <translation id="2442865686365739754">Chromeএ <ph name="BEGIN_EMPHASIS" />এই তথ্যসমূহ ছেভ নকৰিব<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
@@ -947,6 +948,7 @@
 <translation id="248064299258688299"><ph name="EXTENSION_NAME" /> এক্সটেনশ্বনটোৱে এইটো দেখুৱাইছে</translation>
 <translation id="2482878487686419369">জাননী</translation>
 <translation id="248348093745724435">মেচিনৰ নীতি</translation>
+<translation id="248395913932153421">দিন</translation>
 <translation id="2485243023686553468">স্মাৰ্টফ’ন</translation>
 <translation id="2491120439723279231">ছাৰ্ভাৰৰ প্ৰমাণপত্ৰত আসোঁৱাহ আছে।</translation>
 <translation id="2491414235131909199">এই পৃষ্ঠাখন কোনো এক্সটেনশ্বনে অৱৰোধ কৰিছে</translation>
@@ -1448,6 +1450,7 @@
 <translation id="33073482541490531">আপুনি এইমাত্ৰ ব্যৱহাৰ কৰা পাছৱৰ্ডটো এক ডেটা উলংঘনত বিচাৰি পোৱা গৈছে। Password Managerএ এই পাছৱৰ্ডটো এতিয়াই সলনি কৰাটো চুপাৰিছ কৰে।</translation>
 <translation id="3307649904964670439">Chrome কাষ্টমাইজ কৰাৰ বুটাম, আপোনাৰ ব্ৰাউজাৰৰ ৰূপ কাষ্টমাইজ কৰিবলৈ সক্ৰিয় কৰক</translation>
 <translation id="3308006649705061278">প্ৰতিষ্ঠানৰ ইউনিট (অ’ইউ)</translation>
+<translation id="3310946375819654151">Chromeএ <ph name="APP_NAME" />ত আপোনাৰ সংবেদনশীল তথ্য পূৰ কৰিবলৈ চেষ্টা কৰি আছে।</translation>
 <translation id="3312952471765023168">সফলতাৰে আপল’ড কৰা হ’ল</translation>
 <translation id="3318016344440038475">টিভিৰ হাস্য-ব্যংগৰ অনুষ্ঠান</translation>
 <translation id="3324687287337751929">৪ x ৬ ইঞ্চি</translation>
@@ -1737,6 +1740,7 @@
 <translation id="3752181611900535304">ঠিকনা একাউণ্টত ছেভ কৰিবনে?</translation>
 <translation id="3752543821772132562"><ph name="POLICY_NAME" /> ছেট কৰা হোৱা নাই বাবে উপেক্ষা কৰা হৈছে।</translation>
 <translation id="3754210790023674521">চিত্ৰৰ ভিতৰত চিত্ৰ ম’ডৰ পৰা বাহিৰ হওক</translation>
+<translation id="3754664361823138853">&amp;ইতিহাসৰ পৃষ্ঠা খোলক</translation>
 <translation id="3759461132968374835">আপোনাৰ শেহতীয়াকৈ ৰিপ’ৰ্ট কৰা কোনো ক্ৰেশ্ব নাই।  ক্ৰেশ্ব ৰিপ’ৰ্টিং অক্ষম কৰি ৰখাৰ সময়ত হোৱা ক্ৰেশ্ব ইয়াত দেখা পোৱা নাযাব।</translation>
 <translation id="3760561303380396507">CVCৰ পৰিৱৰ্তে Windows Hello ব্যৱহাৰ কৰিবনে?</translation>
 <translation id="3761171036307311438">কাৰ্ডত থকা নাম:</translation>
@@ -2282,7 +2286,6 @@
 <translation id="4648262692072505866">হেশ্বৰ ফৰ্মেট SHA-256 হ’বই লাগিব।</translation>
 <translation id="4652266463001779298">অনুমতি নাই</translation>
 <translation id="4652440160515225514">আপোনাৰ প্ৰতিষ্ঠানে এই ছাইটটো অৱৰোধ কৰিছে কাৰণ ই এটা নীতি উলংঘন কৰিছে।</translation>
-<translation id="4654457557264366314">পৰিশোধৰ আঁচনিসমূহ যোগ্যতাৰ অধীন।</translation>
 <translation id="4658638640878098064">ওপৰৰ বাওঁফালে ষ্টে'পল কৰক</translation>
 <translation id="4658801711339831733">স্কেন Google Driveত ছেভ কৰা হৈছে</translation>
 <translation id="4660592918803576381">Driveত খোলক</translation>
@@ -2593,7 +2596,6 @@
 <translation id="512756860033933700">কীব’ৰ্ড লক কৰাৰ অনুমতি আছে</translation>
 <translation id="5127934926273826089">ফুল</translation>
 <translation id="5129534298163637277">নিশ্চিতকৰণ ডায়লগ</translation>
-<translation id="5129662217315786329">প’লিশ্ব</translation>
 <translation id="5135404736266831032">ঠিকনাসমূহ পৰিচালনা কৰক...</translation>
 <translation id="5136841603454277753">শুদ্ধ ক’ডটো দিয়ক</translation>
 <translation id="5137761395480718572">এই এপ্‌টোৱে ৱাই-ফাই ক্ৰিডেনশ্বিয়েলসমূহ ইনষ্টল কৰাৰ অনুমতি বিচাৰি অনুৰোধ জনাইছে। ছেটআপ কৰা পাছত, অংশগ্ৰহণ কৰা ৱাই-ফাই নেটৱৰ্কসমূহৰ সৈতে আপোনাৰ <ph name="DEVICE_TYPE" /> স্বয়ংক্ৰিয়ভাৱে সংযুক্ত হ’ব। এই ক্ৰিডেনশ্বিয়েলসমূহ আঁতৰাবলৈ এপ্‌টো আনইনষ্টল কৰক। <ph name="LEARN_MORE" /></translation>
@@ -2749,6 +2751,7 @@
 <translation id="5385966243497224160">অনা-HTTPS URL পূৰ্বদৰ্শন কৰিব নোৱাৰি</translation>
 <translation id="5386426401304769735">এই ছাইটটোৰ প্ৰমাণপত্ৰৰ চ্চেইনত SHA-1 ব্যৱহাৰ কৰি ছাইন কৰা এখন প্ৰমাণপত্ৰ আছে।</translation>
 <translation id="5391010642126249196">আপুনি চাইছে</translation>
+<translation id="5391306025131596142">&amp;ইতিহাসৰ পৃষ্ঠা খোলক</translation>
 <translation id="539203134595252721">টেবল টেনিচ</translation>
 <translation id="5392506727170022660">মেটেল (ছেমি-গ্লছ)</translation>
 <translation id="5394069166371280357">পৰিয়ালৰ বাবে নিৰ্মাণ কৰা টিভি শ্ব’</translation>
@@ -3539,11 +3542,11 @@
 <translation id="6649510485211003056">১৯৫ x ২৭০ মি.মি.</translation>
 <translation id="6651270836885078973">ইয়াৰ দ্বাৰা পৰিচালিত:</translation>
 <translation id="6652101503459149953">Windows Hello ব্যৱহাৰ কৰক</translation>
-<translation id="6654224358955673568">গৃহীত ৰূপ দিয়ক</translation>
 <translation id="6654244995031366386">কাচ (বিন্যাসিত)</translation>
 <translation id="6655085656059574817">আপোনাৰ একাউণ্টটো লিংক কৰি ৰাখিলে <ph name="BNPL_ISSUER_NAME" />ক দ্ৰুতভাৱে পৰিশোধ কৰাত সহায় হয়, কিন্তু আপুনি <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" />লৈ গৈ সেইটো আনলিংক কৰিব পাৰে</translation>
 <translation id="6656935431494847393">বিমানৰ বুকিং আৰু বাহনৰ তথ্যৰ দৰে তথ্য অন্তৰ্ভুক্ত কৰে</translation>
 <translation id="6657585470893396449">পাছৱৰ্ড</translation>
+<translation id="6659156657345021268">আপোনাৰ তথ্য আপোনাৰ ডিভাইচত ছেভ কৰা হয়। আপুনি পৰৱৰ্তী সময়ত কোনো প্ৰাসংগিক ফৰ্ম পূৰ কৰোঁতে এই তথ্যখিনি Walletত ছেভ কৰাৰ সুযোগ পাব।</translation>
 <translation id="6659246032834639189">এয়া কম মূল্যৰ</translation>
 <translation id="6660413144148052430">অৱস্থান</translation>
 <translation id="6662457027866368246">প্ৰথম ৰোল</translation>
@@ -3711,7 +3714,6 @@
 <translation id="6926216138694948720">বডি আৰ্ট</translation>
 <translation id="692638818576287323">বাণিজ্যিক বাহন</translation>
 <translation id="6927878187051807444">কেমেৰা ফাইল আৰু স্ক্ৰীনশ্বট</translation>
-<translation id="6929949393612835405">বন্ধ কৰক আৰু "<ph name="OPENER_TITLE" />"লৈ উভতি যাওক</translation>
 <translation id="6930607614725241390">ছাইডৰ পেনেলত সন্ধান কৰক</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />আপোনাৰ ডিফ’ল্ট সন্ধানৰ ইঞ্জিনে আপোনাক ৱেব সন্ধান কৰিবলৈ দিয়ে আৰু Chromeৰ সুবিধাসমূহক আগবঢ়ায়<ph name="END_BOLD" /> যেনে, ঠিকনাৰ বাৰৰ পৰা আৰু ৱেব পৃষ্ঠাসমূহত প্ৰতিচ্ছবিৰ পৰা সন্ধান কৰা। আপোনাৰ সন্ধানৰ ইঞ্জিনে কোনো সুবিধা সমৰ্থন নকৰিলে সেইটো উপলব্ধ নহ’ব পাৰে।</translation>
 <translation id="6934672428414710184">এই নামটো আপোনাৰ Google একাউণ্টৰ</translation>
@@ -4949,6 +4951,7 @@
 <translation id="8894794286471754040">দীঘলীয়া কাষটো প্ৰথমে</translation>
 <translation id="8897221284075091877">এই সমলটো চাবলৈ বিচাৰিবলৈ, আপোনাৰ Google একাউণ্টেৰে অব্যাহত কৰক</translation>
 <translation id="8897428486789851669">সাঁতোৰ</translation>
+<translation id="8898854704577986668">ছাইডৰ পেনেলত ইতিহাস দেখুৱাওক</translation>
 <translation id="8899807382908246773">বিনা অনুমতিত দেখুওৱা বিজ্ঞাপন</translation>
 <translation id="8903921497873541725">জুম ইন কৰক</translation>
 <translation id="8903998444169664879">আপোনাৰ পৰিশোধৰ ছেটিং সলনি কৰিবলৈ এইগৰাকী আপুনিয়েই বুলি সত্যাপন কৰক</translation>

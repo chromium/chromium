@@ -910,7 +910,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2436976580469434549">Fibres i arts tèxtils</translation>
 <translation id="243815215670139125">Aquesta targeta no s'ha pogut desar al teu Compte de Google. S'ha desat a Chrome en aquest dispositiu.</translation>
 <translation id="2438874542388153331">Encunyació quàdruple a la dreta</translation>
-<translation id="2440855519769445271">Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />configuració de pagament<ph name="END_LINK" /></translation>
 <translation id="2441854154602066476">Formes de pagament disponibles que es poden emplenar amb un toc. El teclat està amagat.</translation>
 <translation id="2442865686365739754">Chrome <ph name="BEGIN_EMPHASIS" />no desarà<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
@@ -947,6 +946,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="248064299258688299">L'extensió <ph name="EXTENSION_NAME" /> diu</translation>
 <translation id="2482878487686419369">Notificacions</translation>
 <translation id="248348093745724435">Polítiques de l'ordinador</translation>
+<translation id="248395913932153421">Dia</translation>
 <translation id="2485243023686553468">Telèfons intel·ligents</translation>
 <translation id="2491120439723279231">El certificat del servidor conté errors.</translation>
 <translation id="2491414235131909199">Una extensió ha bloquejat aquesta pàgina</translation>
@@ -2286,7 +2286,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4648262692072505866">El valor resum ha de tenir el format SHA-256.</translation>
 <translation id="4652266463001779298">No permès</translation>
 <translation id="4652440160515225514">La teva organització ha bloquejat aquest lloc web perquè infringeix una política.</translation>
-<translation id="4654457557264366314">Els plans de pagament estan subjectes a la idoneïtat.</translation>
 <translation id="4658638640878098064">Grapat a la part superior esquerra</translation>
 <translation id="4658801711339831733">L'escaneig s'ha desat a Google Drive</translation>
 <translation id="4660592918803576381">Obre a Drive</translation>
@@ -2597,7 +2596,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="512756860033933700">S'ha permès el bloqueig del teclat</translation>
 <translation id="5127934926273826089">Flors</translation>
 <translation id="5129534298163637277">Quadre de diàleg de confirmació</translation>
-<translation id="5129662217315786329">Polonès</translation>
 <translation id="5135404736266831032">Gestiona les adreces...</translation>
 <translation id="5136841603454277753">Introdueix el codi correcte</translation>
 <translation id="5137761395480718572">Aquesta aplicació demana permís per instal·lar les credencials de la Wi-Fi. En finalitzar la configuració, <ph name="DEVICE_TYPE" /> es connectarà automàticament a les xarxes Wi-Fi disponibles. Per suprimir aquestes credencials, desinstal·la l'aplicació. <ph name="LEARN_MORE" />.</translation>
@@ -3544,7 +3542,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6649510485211003056">195 x 270 mm</translation>
 <translation id="6651270836885078973">Gestionades per:</translation>
 <translation id="6652101503459149953">Utilitza Windows Hello</translation>
-<translation id="6654224358955673568">Fes que soni més formal</translation>
 <translation id="6654244995031366386">Vidre (texturat)</translation>
 <translation id="6655085656059574817">Si mantens el compte enllaçat, podràs pagar més ràpidament amb <ph name="BNPL_ISSUER_NAME" />, però pots desenllaçar-lo a <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /></translation>
 <translation id="6656935431494847393">Inclou informació com ara les reserves de vols i les dades dels vehicles</translation>
@@ -3716,7 +3713,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6926216138694948720">Art corporal</translation>
 <translation id="692638818576287323">Vehicles comercials</translation>
 <translation id="6927878187051807444">fitxers de la càmera i captures de pantalla</translation>
-<translation id="6929949393612835405">Tanca i torna a "<ph name="OPENER_TITLE" />"</translation>
 <translation id="6930607614725241390">Cerca al tauler lateral</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />El motor de cerca predeterminat et permet fer cerques al web i proporciona les funcions de Chrome<ph name="END_BOLD" />, com ara la cerca des de la barra d'adreces i des d'imatges de pàgines web. Si el teu motor de cerca no admet una funció, és possible que no estigui disponible.</translation>
 <translation id="6934672428414710184">Aquest nom prové del teu Compte de Google</translation>

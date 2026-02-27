@@ -5548,6 +5548,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="4732799736617504962">El micrófono conectado solo admite la cancelación de ruido</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (izquierdo)</translation>
 <translation id="4733793249294335256">Ubicación</translation>
+<translation id="4734965478015604180">Horizontal</translation>
 <translation id="473546211690256853">Esta cuenta está administrada por <ph name="DOMAIN" />.</translation>
 <translation id="4735506354605317060">Marcar con círculo el puntero</translation>
 <translation id="4735793370946506039">Obtén más información sobre la Navegación segura mejorada.</translation>
@@ -5815,6 +5816,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="4901154724271753917">Expandir las pestañas cerradas recientemente</translation>
 <translation id="4901309472892185668">Selecciona el estado del experimento <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="49027928311173603">La política descargada del servidor no es válida: <ph name="VALIDATION_ERROR" />.</translation>
+<translation id="490375751687810070">Vertical</translation>
 <translation id="4906490889887219338">Configura o administra archivos compartidos de red. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="4906679076183257864">Restablecer valores predeterminados</translation>
 <translation id="4907129260985716018">Elige cuándo esta extensión puede leer y cambiar los datos de sitios.</translation>
@@ -8487,6 +8489,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="678520006562636090">Prueba Google Lens en tu <ph name="DEVICE_TYPE" /></translation>
 <translation id="6785594991951195537">Usa tu <ph name="PASSWORD_DOMAIN" /></translation>
 <translation id="6785739405821760313">Se muestran los escritorios guardados. Presiona Tab para navegar.</translation>
+<translation id="6785779729084003225">Usa <ph name="FOCUS_TOGGLE_HOTKEY" /> para abrir Gemini en Chrome</translation>
 <translation id="6785915470941880363">Desplazamiento inverso <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="67862343314499040">Violeta</translation>
 <translation id="6786480815699355166">Solo se pueden traducir los idiomas admitidos de Subtitulado instantáneo</translation>

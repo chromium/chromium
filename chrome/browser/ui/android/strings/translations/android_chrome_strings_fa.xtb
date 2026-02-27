@@ -281,6 +281,7 @@
 <translation id="2205701497928406883">‫<ph name="TAB_TITLE" />، زبانه هم‌رسانی سنجاق‌شده</translation>
 <translation id="22091350895006575">افزودن نام کاربری</translation>
 <translation id="221494669172414749">‏باز کردن Chrome بدون قفل نمایه باعث می‌شود گذرواژه‌ها و روش‌های پرداخت ذخیره‌شده‌تان از خودرو حذف شود. استفاده از قفل نمایه امنیت این داده‌ها را حفظ می‌کند.</translation>
+<translation id="2226826835915474236">میان‌برهای غیرفعال</translation>
 <translation id="2227179592712503583">حذف پیشنهاد</translation>
 <translation id="2227444325776770048">ادامه دادن به‌عنوان <ph name="USER_FULL_NAME" /></translation>
 <translation id="2230777942707397948">پنجره خالی</translation>
@@ -1465,7 +1466,7 @@
 <translation id="6980258170429555165">منو «<ph name="MENU_NAME" />» برجسته شده است.</translation>
 <translation id="6983306615164277634">برای تغییر جای نوار نشانی، می‌توانید آن را نیز لمس کنید و نگه دارید.</translation>
 <translation id="6987047470128880212">«حالت ناشناس» در این دستگاه دردسترس نیست</translation>
-<translation id="6989358895283601928">ذخیره و چاپ</translation>
+<translation id="6989358895283601928">ذخیره و چاپ کردن</translation>
 <translation id="6996145122199359148">بارگیری این صفحه</translation>
 <translation id="7013762323294215682">این گذرکلید در مدیر گذرواژه‌تان ذخیره خواهد شد. هر کسی که به آن دسترسی داشته باشد می‌تواند از این گذرکلید استفاده کند.</translation>
 <translation id="7020741890149022655">افزودن به فهرست خواندن <ph name="BEGIN_NEW" />جدید<ph name="END_NEW" /></translation>
@@ -1655,6 +1656,7 @@
 <translation id="7740287852186792672">نتایج جستجو</translation>
 <translation id="774403695779169686">‫<ph name="TAB_TITLE" />، زبانه ناشناس هم‌رسانی انتخابی</translation>
 <translation id="774876555279732384">‏سرویس‌های تکمیل خودکار در <ph name="BEGIN_LINK" />تنظیمات Android<ph name="END_LINK" /> هم مدیریت می‌شود.</translation>
+<translation id="7758884017823246335">افزودن جستجوی سایت</translation>
 <translation id="7759809451544302770">اختیاری</translation>
 <translation id="7762668264895820836">‏کارت SD <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">افزودن نشانی</translation>
@@ -1886,6 +1888,7 @@
 <translation id="8634050254805484913">در صفحه‌نمایش‌های باریک پنهان است</translation>
 <translation id="8635399646025169806">گروه زبانه نگه داشته شود؟</translation>
 <translation id="8636825310635137004">برای دسترسی به برگه‌هایتان در دستگاه‌های دیگر، همگام‌سازی را روشن کنید.</translation>
+<translation id="8639963783467694461">تنظیمات تکمیل خودکار</translation>
 <translation id="8662474268934425487">به سیستم <ph name="SITE_ETLD_PLUS_ONE" /> وارد شوید</translation>
 <translation id="8664979001105139458">نام فایل از قبل وجود دارد</translation>
 <translation id="8676276370198826499">ثبت‌نام در <ph name="SITE_ETLD_PLUS_ONE" /> با <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -1934,6 +1937,7 @@
 <translation id="8865415417596392024">‏داده‌های Chrome در حساب شما</translation>
 <translation id="8872506776304248286">باز کردن در برنامه</translation>
 <translation id="8890668505403261809">جستجوی زبانه‌های ناشناس</translation>
+<translation id="8892234476517513962">قبلاً به سیستم وارد شده‌اید</translation>
 <translation id="8894890673032951011">‫<ph name="TAB_TITLE" />، زبانه ناشناس ضبط انتخابی</translation>
 <translation id="8898822736010347272">‏نشانی‌های وب بعضی از صفحه‌هایی که بازدید می‌کنید، اطلاعات محدودی از سیستم، و برخی از محتوای صفحه را به Google ارسال می‌کند تا به کشف تهدیدهای جدید و محافظت از همه افراد در وب کمک کند.</translation>
 <translation id="8903921497873541725">بزرگ‌نمایی</translation>

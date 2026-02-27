@@ -32,7 +32,6 @@
 <translation id="1086486568852410168">Buscar con Google Lens</translation>
 <translation id="1096992026380844478">La configuración de sincronización se restablecerá en función de tu última copia de seguridad. <ph name="BEGIN_LINK" />Consulta lo que puedes sincronizar<ph name="END_LINK" /></translation>
 <translation id="1103523840287552314">Siempre traducir <ph name="LANGUAGE" /></translation>
-<translation id="110491332089958282">Comparte el contenido de la página con Gemini para obtener respuestas más pertinentes. Cuando compartes una página con Gemini, se envían a Google el contenido completo y la URL de la página. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="1110772719190051587">Desbloquea con Face ID</translation>
 <translation id="1112015203684611006">Se produjo un error en la impresión.</translation>
 <translation id="1118569444314402022">Te damos la bienvenida nuevamente, <ph name="USER_NAME" /></translation>
@@ -96,6 +95,7 @@
 <translation id="1335767868357998043">Elige la posición de la barra de direcciones</translation>
 <translation id="1347468774581902829">Administrar actividad</translation>
 <translation id="1348596747084433075">https://www.amazon.com/Wife-Gifts/s?k=for+Wife+Gifts</translation>
+<translation id="1350281503816551185">Verificar tu identidad cuando completes información sensible</translation>
 <translation id="1355337783640312381">Para cambiar de cuenta, presiona el ícono de tu cuenta</translation>
 <translation id="1358106883354237005">Cuenta administrada</translation>
 <translation id="1358214951266274152">Visita el vínculo que copiaste</translation>
@@ -152,7 +152,6 @@
 <translation id="1521774566618522728">Activo hoy</translation>
 <translation id="1523567067736644845">Desbloquea el dispositivo para mostrar la contraseña</translation>
 <translation id="1524563461097350801">No, gracias</translation>
-<translation id="1528290585275339320">Activa el uso compartido de contenido de la página</translation>
 <translation id="1531038290222364269">Mostrar las pestañas</translation>
 <translation id="1536390784834419204">Traducir la página</translation>
 <translation id="1540800554400757039">Dirección 1</translation>
@@ -220,6 +219,7 @@
 <translation id="1767766085187034454">Google Traductor</translation>
 <translation id="1771016937398045251">Menú Herramientas</translation>
 <translation id="1772468122139624049">No se pueden volver a cargar las pestañas</translation>
+<translation id="1776240104318790173">Activa o desactiva el autocompletado mejorado</translation>
 <translation id="1779354709911146450">Se produjo un error de autenticación</translation>
 <translation id="1780152987505130652">Cerrar grupo</translation>
 <translation id="178400879184240105">Tus contraseñas son únicas</translation>
@@ -258,6 +258,7 @@
 <translation id="1890237935065108104">Este parámetro de configuración no está disponible.</translation>
 <translation id="1894023287452300670">Seguir precio aquí</translation>
 <translation id="189531189292803889">Se restableció tu iPad recientemente y es posible que haya cambiado tu navegador predeterminado.</translation>
+<translation id="1898804291554630487">Solicita información sobre esta página</translation>
 <translation id="1901366738768303267">¿Cómo uso esta función?</translation>
 <translation id="1901600657316773839">Conservar la selección</translation>
 <translation id="1902277226107477495">La detección de direcciones está desactivada. Vuelve a activarla en Configuración.</translation>
@@ -368,6 +369,7 @@
 <translation id="2268044343513325586">Definir mejor</translation>
 <translation id="2271452184061378400">Tus grupos de pestañas se guardan aquí</translation>
 <translation id="2273327106802955778">Menú Más</translation>
+<translation id="2283599456633275070">Viajes</translation>
 <translation id="2287614783861766820">{count,plural, =1{Esta dirección se borrará de este dispositivo.}other{Estas direcciones se borrarán de este dispositivo.}}</translation>
 <translation id="2295236662082735391">Mantén presionada una imagen en la Web para editarla con Gemini</translation>
 <translation id="2297989278479054870">Después de salir, los favoritos, las contraseñas y otros datos de tu Cuenta de Google se quitarán de este dispositivo.</translation>
@@ -968,6 +970,7 @@
 <translation id="4607887340472970274">Seguimiento de precios</translation>
 <translation id="4619564267100705184">Verificar tu identidad</translation>
 <translation id="4621768135601674446">Abrir las opciones del Modo de lectura</translation>
+<translation id="4623894491222334521">Documentos de identidad</translation>
 <translation id="4627107755957573804">Permite que los sitios y las apps actualicen las cuentas existentes para usar llaves de acceso</translation>
 <translation id="4629065796475200039">No se importó tu contraseña</translation>
 <translation id="4630212057753624203">Cuadro de ejemplo</translation>
@@ -995,7 +998,6 @@
 <translation id="4676647168422678078">¿Quieres aplicar tus preferencias de la página Nueva pestaña?</translation>
 <translation id="4682496302933121474">¿Traducir página?</translation>
 <translation id="4682686630151240767">1. Abre Configuración en el iPhone.</translation>
-<translation id="4691892551491778176">Cuando usas esta función, el contenido de las páginas y las URLs se envían a Google, pero no se utilizarán para mejorar modelos de IA generativa. Puedes desactivar esto en la configuración en cualquier momento.</translation>
 <translation id="4697240968720007067">Obtén las mejores apps de Google con un solo toque</translation>
 <translation id="4699172675775169585">Imágenes y archivos almacenados en caché</translation>
 <translation id="4709570498586527752">Funciones más pertinentes para ti en diferentes momentos</translation>
@@ -1146,6 +1148,7 @@
 <translation id="5186185447130319458">Privado</translation>
 <translation id="5189431381114029336">Guarda tu primera llave de acceso</translation>
 <translation id="518997337573684769">Enviando informe de fallas…</translation>
+<translation id="519528950056409240">Permitir que la Billetera comparta datos</translation>
 <translation id="519530786644929958">Se produjo un error en la descarga y no se puede reintentar.</translation>
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5200894869889836319">Opciones para establecer permisos</translation>
@@ -1322,7 +1325,6 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="5803566855766646066">¿Confirmas que quieres descartar esta tarjeta nueva?</translation>
 <translation id="5804241973901381774">Permisos</translation>
 <translation id="58081802114142635">Tu actividad mejora la IA de Google</translation>
-<translation id="5813223718099710537">Cuando usas esta función, el contenido de las páginas y las URLs se envían a Google. Puedes desactivar esto en la configuración en cualquier momento.</translation>
 <translation id="5817176759448082654">Revisión de contraseñas</translation>
 <translation id="5818161931099046557">Editar en la Cuenta de Google</translation>
 <translation id="5819208479324046259">Administrado por <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
@@ -1348,6 +1350,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="5899314093904173337">Para habilitar el uso compartido con personas cercanas, permíteles que escaneen este código QR con la cámara o una app de lectura de código QR</translation>
 <translation id="5902752768726620872">{count,plural, =1{{count} pestaña nueva}other{{count} pestañas nuevas}}</translation>
 <translation id="5911030830365207728">Google Traductor</translation>
+<translation id="5912796581727968237">Abrir la Billetera de Google</translation>
 <translation id="5922999516621365983">Arrastra la pestaña aquí para fijarla.</translation>
 <translation id="5930982343430790032">{COUNT,plural, =1{Agrega hasta 1 archivo, pestaña o imagen}other{Agrega hasta {COUNT} archivos, pestañas o imágenes}}</translation>
 <translation id="5936006948844852401">Administrar almacenamiento</translation>
@@ -1596,6 +1599,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="6710079714193676716">Tu organización administra el navegador. Es posible que algunas funciones no estén disponibles. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="6713676799463473249">Modificado el <ph name="LAST_MODIFICATION_DATE" /></translation>
 <translation id="6722623263381062480">Pestañas recibidas</translation>
+<translation id="6722638373100589752">Para autocompletar tu información, activa la opción “Usar pases en todos los servicios de Google” en la configuración de la Billetera</translation>
 <translation id="6723740634201835758">En tu Cuenta de Google</translation>
 <translation id="6724024423419410528">Colores</translation>
 <translation id="672735642903863329">Accede a tus favoritos, contraseñas y más en todos tus dispositivos.</translation>
@@ -1728,6 +1732,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="7253951228444156601">Verificando contraseñas…</translation>
 <translation id="7261217796641151584">Compartir grupo</translation>
 <translation id="7266578100016339897">Esto te ayuda a mantener tu organización. Puedes cambiar esta opción en la configuración en cualquier momento.</translation>
+<translation id="7268294318904284516">Si compartes este dispositivo, usa el bloqueo de pantalla para verificar tu identidad cuando uses información sensible, como pasaportes</translation>
 <translation id="7272437679830969316">No se puede verificar tu identidad. La contraseña no se copió.</translation>
 <translation id="728025568708172005">Mostrar el lugar</translation>
 <translation id="7280980607183752256">No se puede importar este archivo</translation>
@@ -1938,7 +1943,6 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="798991908416757345">Los grupos de pestañas no están disponibles</translation>
 <translation id="7993170188789685695">Presiona dos veces para cerrar esta notificación.</translation>
 <translation id="7996239959906074962">Configuración…</translation>
-<translation id="8001561107130904792">Compartir el contenido de la página</translation>
 <translation id="800361585186029508">Abre las URL ingresadas en Google Chrome.</translation>
 <translation id="8005666035647241369">En el Administrador de contraseñas de Google en este dispositivo</translation>
 <translation id="8010488806779226127">Explora funciones que pueden ayudarte a hacer más mientras navegas</translation>
@@ -2019,7 +2023,6 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="826614135184049678">Saliste de tu cuenta <ph name="USER_NAME" /> como parte del restablecimiento de tu iPad. Para volver a acceder, presiona "Continuar".</translation>
 <translation id="8273982424131314219">Se rellenará la información en <ph name="URL" /></translation>
 <translation id="8275068909952022340">Más…</translation>
-<translation id="8277328362018795342">Se comparte el contenido de tus páginas para brindar respuestas más pertinentes</translation>
 <translation id="8281781826761538115">Predeterminado: <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Omitir</translation>
 <translation id="8282657446819506217">Abrir en el grupo de pestañas</translation>
@@ -2125,7 +2128,6 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="8637431369725868556">Obtén protección contra sitios peligrosos.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{No tienes contraseñas hackeadas}=1{{COUNT} contraseña hackeada}other{{COUNT} contraseñas hackeadas}}</translation>
 <translation id="8643403533759285912">Borrar grupo</translation>
-<translation id="8645245178269185266">Comparte el contenido de la página con Gemini para obtener respuestas más pertinentes</translation>
 <translation id="8647280737650867362">No se pudo anular el seguimiento del precio.</translation>
 <translation id="8654802032646794042">Cancelar</translation>
 <translation id="8660600697590740984">Imagen copiada de Lens</translation>

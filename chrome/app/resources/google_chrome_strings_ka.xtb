@@ -695,6 +695,9 @@ Google Chrome ვერ შეძლებს თქვენი პარამ
 <translation id="8041795619940733262">ჰკითხეთ Google-ს<ph name="LINE_BREAK" />ამ ჩანართის შესახებ</translation>
 <translation id="80471789339884597">გმადლობთ დაინსტალირებისთვის. <ph name="BUNDLE_NAME" />-ის გამოყენებამდე თქვენი ყველა ბრაუზერი უნდა გადატვირთოთ.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
+<translation id="8064965390968184078">1. დააწკაპუნეთ <ph name="BUTTON_LABEL" />-ზე ქვემოთ
+2. დააწკაპუნეთ <ph name="BUTTON_2" />ზე Windows-ის პარამეტრებში
+3. დააწკაპუნეთ <ph name="BUTTON_3" />-ზე Windows-ის შეტყობინებაში, რათა ჩაამაგროთ Chrome ამოცანათა ზოლში სწრაფი წვდომისთვის</translation>
 <translation id="8077579734294125741">სხვა Chrome პროფილები</translation>
 <translation id="8086881907087796310">ინსტალაცია ვერ მოხერხდა, რადგან თქვენი კომპიუტერი არ აკმაყოფილებს მინიმალურ მოთხოვნებს აპარატურის კუთხით.</translation>
 <translation id="8113883687556086139">დაადასტურეთ ვინაობა, რომ გამოიყენოთ და შეინახოთ თქვენი Chrome-ის მონაცემები თქვენს ანგარიშში, <ph name="ACCOUNT_EMAIL" /></translation>
@@ -773,6 +776,7 @@ Google Chrome ვერ შეძლებს თქვენი პარამ
 <translation id="8914504000324227558">Chrome-ის ხელახლა გაშვება</translation>
 <translation id="8922193594870374009"><ph name="ORIGIN" />-დან თქვენს Android ტელეფონზე ნომრის გასაგზავნად შედით Chrome-ში ორივე მოწყობილობაზე.</translation>
 <translation id="8922998289262614701">ამ აპის მონაცემების Chrome-იდან ამოშლა</translation>
+<translation id="8925636929359899517">ინფორმაციას ვიყენებთ ამ სერვისის გასაუმჯობესებლად. იხილეთ <ph name="BEGIN_LINK1" /> <ph name="END_LINK1" />კონფიდენციალურობის დებულება<ph name="BEGIN_LINK2" /> და <ph name="END_LINK2" />მომსახურების პირობები.</translation>
 <translation id="8936233353620149764">Gemini Chrome-შის ჩართვა/გამორთვა</translation>
 <translation id="8948460679427074738">ამ გაფართოებას არ გამოუქვეყნებია კონფიდენციალური ინფორმაციის გამოყენების პრაქტიკა, მაგალითად, მონაცემების შეგროვებისა და გამოყენების წესები. Chrome გირჩევთ მის ამოშლას.</translation>
 <translation id="8958307504142971576">ახლა თქვენთვის ხელმისაწვდომია მეტი ფუნქცია Chrome-ში</translation>

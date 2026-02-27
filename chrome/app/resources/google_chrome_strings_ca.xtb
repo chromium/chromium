@@ -399,7 +399,7 @@
 <translation id="5321325624576443340">Google Lens no està disponible. Torna-ho a provar més tard.</translation>
 <translation id="5334309298019785904">Chrome OS no ha pogut sincronitzar les teves dades perquè la sincronització no està disponible per al teu domini.</translation>
 <translation id="5334487786912937552">Chrome necessita permís d'accés a l'emmagatzematge per poder baixar fitxers</translation>
-<translation id="5337648990166757586">Opcional: ajuda a millorar les funcions i el rendiment de Chrome OS enviant automàticament dades de diagnòstic i d'ús a Google.</translation>
+<translation id="5337648990166757586">Opcional: ajuda a millorar les funcions i el rendiment de ChromeOS enviant automàticament dades de diagnòstic i d'ús a Google.</translation>
 <translation id="5346389065299425353">Aprofundeix en la cerca afegint diverses pestanyes, fitxers i eines</translation>
 <translation id="5353252989841766347">Exporteu contrasenyes de Chrome</translation>
 <translation id="5368118228313795342">Codi addicional: <ph name="EXTRA_CODE" />.</translation>
@@ -687,6 +687,9 @@
 <translation id="8041795619940733262">Pregunta a Google<ph name="LINE_BREAK" />sobre aquesta pestanya</translation>
 <translation id="80471789339884597">T'agraïm la instal·lació. Has de reiniciar tots els navegadors abans d'utilitzar <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
+<translation id="8064965390968184078">1. Fes clic a <ph name="BUTTON_LABEL" /> a continuació.
+2. Fes clic a <ph name="BUTTON_2" /> a la configuració de Windows.
+3. Fes clic a <ph name="BUTTON_3" /> a la notificació de Windows per fixar Chrome a la barra de tasques i accedir-hi ràpidament</translation>
 <translation id="8077579734294125741">Altres perfils de Chrome</translation>
 <translation id="8086881907087796310">La instal·lació ha fallat perquè l'ordinador no compleix els requisits mínims de maquinari.</translation>
 <translation id="8113883687556086139">Verifica la teva identitat per utilitzar i desar les dades de Chrome al teu compte, <ph name="ACCOUNT_EMAIL" /></translation>

@@ -281,6 +281,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="2205701497928406883"><ph name="TAB_TITLE" />, pestaña de uso compartido fijada</translation>
 <translation id="22091350895006575">Agregar nombre de usuario</translation>
 <translation id="221494669172414749">Si abres Chrome sin un bloqueo de perfil, se quitarán del automóvil las contraseñas y las formas de pago guardadas. El uso de un bloqueo de perfil mantiene estos datos seguros.</translation>
+<translation id="2226826835915474236">Atajos inactivos</translation>
 <translation id="2227179592712503583">Quitar sugerencia</translation>
 <translation id="2227444325776770048">Continuar como <ph name="USER_FULL_NAME" /></translation>
 <translation id="2230777942707397948">Ventana vacía</translation>
@@ -1655,6 +1656,7 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="7740287852186792672">Resultados de búsqueda</translation>
 <translation id="774403695779169686"><ph name="TAB_TITLE" />, pestaña de incógnito con uso compartido seleccionada</translation>
 <translation id="774876555279732384">Los servicios de autocompletado también se administran en la <ph name="BEGIN_LINK" />Configuración de Android<ph name="END_LINK" />.</translation>
+<translation id="7758884017823246335">Agrega búsquedas en el sitio</translation>
 <translation id="7759809451544302770">Opcional</translation>
 <translation id="7762668264895820836">Tarjeta SD <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">Agregar dirección</translation>
@@ -1886,6 +1888,7 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="8634050254805484913">Oculta en pantallas angostas</translation>
 <translation id="8635399646025169806">¿Quieres conservar el grupo de pestañas?</translation>
 <translation id="8636825310635137004">Activa la sincronización para obtener las pestañas de tus otros dispositivos.</translation>
+<translation id="8639963783467694461">Configuración de Autocompletar</translation>
 <translation id="8662474268934425487">Accede a <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8664979001105139458">Ya existe el nombre del archivo</translation>
 <translation id="8676276370198826499">Accede a <ph name="SITE_ETLD_PLUS_ONE" /> con <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -1934,6 +1937,7 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="8865415417596392024">Datos de Chrome de tu cuenta</translation>
 <translation id="8872506776304248286">Abrir en la app</translation>
 <translation id="8890668505403261809">Buscar en tus pestañas de incógnito</translation>
+<translation id="8892234476517513962">Ya accediste</translation>
 <translation id="8894890673032951011"><ph name="TAB_TITLE" />, pestaña de incógnito con grabación seleccionada</translation>
 <translation id="8898822736010347272">Envía a Google las URLs de algunas páginas que visitas, información limitada del sistema y parte del contenido de las páginas para ayudar a detectar nuevas amenazas y proteger a todos los usuarios en la Web.</translation>
 <translation id="8903921497873541725">Acercar</translation>

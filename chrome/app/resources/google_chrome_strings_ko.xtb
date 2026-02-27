@@ -694,6 +694,9 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="8041795619940733262">Google에 이 탭에 관해<ph name="LINE_BREAK" />질문하기</translation>
 <translation id="80471789339884597">설치해 주셔서 감사합니다. <ph name="BUNDLE_NAME" />을(를) 사용하려면 모든 브라우저를 다시 시작해야 합니다.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
+<translation id="8064965390968184078">1. 아래의 <ph name="BUTTON_LABEL" /> 버튼을 클릭합니다.
+2. Windows 설정에서 <ph name="BUTTON_2" /> 버튼을 클릭합니다.
+3. 빠른 액세스를 위해 Windows 알림에서 <ph name="BUTTON_3" /> 버튼을 클릭하여 Chrome을 작업 표시줄에 고정합니다.</translation>
 <translation id="8077579734294125741">기타 Chrome 프로필</translation>
 <translation id="8086881907087796310">컴퓨터가 최소 하드웨어 요구사항을 충족하지 않으므로 설치에 실패했습니다.</translation>
 <translation id="8113883687556086139"><ph name="ACCOUNT_EMAIL" /> 계정에서 Chrome 데이터를 사용하고 저장하려면 본인 인증을 완료하세요</translation>
@@ -772,6 +775,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="8914504000324227558">Chrome 다시 시작</translation>
 <translation id="8922193594870374009"><ph name="ORIGIN" />에서 Android 휴대전화로 번호를 전송하려면 두 기기 모두에서 Chrome에 로그인하세요.</translation>
 <translation id="8922998289262614701">Chrome에서 이 앱 데이터 삭제</translation>
+<translation id="8925636929359899517">이 정보는 서비스 개선에 사용됩니다. <ph name="BEGIN_LINK1" />개인정보처리방침<ph name="END_LINK1" /> 및 <ph name="BEGIN_LINK2" />서비스 약관<ph name="END_LINK2" />을 확인하세요.</translation>
 <translation id="8936233353620149764">Chrome의 Gemini 전환</translation>
 <translation id="8948460679427074738">이 확장 프로그램은 데이터 수집 및 사용 방식과 같은 개인 정보 보호 관행을 게시하지 않았습니다. Chrome에서 삭제할 것을 권장합니다.</translation>
 <translation id="8958307504142971576">이제 Chrome에서 더 많은 기능을 사용할 수 있습니다.</translation>

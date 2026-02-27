@@ -5551,6 +5551,7 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="4732799736617504962">El micrófono conectado solo admite la cancelación de ruido</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" /> % (izquierdo)</translation>
 <translation id="4733793249294335256">Ubicación</translation>
+<translation id="4734965478015604180">Horizontal</translation>
 <translation id="473546211690256853">Esta cuenta está administrada por <ph name="DOMAIN" /></translation>
 <translation id="4735506354605317060">Puntero circular</translation>
 <translation id="4735793370946506039">Más información sobre Navegación segura mejorada.</translation>
@@ -5817,6 +5818,7 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="4901154724271753917">Mostrar cerradas recientemente</translation>
 <translation id="4901309472892185668">Selecciona el estado del experimento <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="49027928311173603">La política que has descargado del servidor no es válida (<ph name="VALIDATION_ERROR" />).</translation>
+<translation id="490375751687810070">Vertical</translation>
 <translation id="4906490889887219338">Configurar o gestionar sistemas de archivos compartidos de red. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="4906679076183257864">Restablecer nivel de zoom predeterminado</translation>
 <translation id="4907129260985716018">Elige cuándo puede esta extensión leer y cambiar tus datos del sitio</translation>
@@ -8254,7 +8256,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="6619801788773578757">Añadir aplicación de kiosco</translation>
 <translation id="6619990499523117484">Confirma el número PIN</translation>
 <translation id="6620000730890558421">Mantén tus pestañas ordenadas con la IA</translation>
-<translation id="6621282332208609777">Pregunta a Google o escribe una URL</translation>
+<translation id="6621282332208609777">Preguntar a Google o escribir una URL</translation>
 <translation id="6621391692573306628">Para enviar esta pestaña a otro dispositivo, inicia sesión en Chrome en ambos dispositivos</translation>
 <translation id="6622980291894852883">Seguir bloqueando imágenes</translation>
 <translation id="6624036901798307345">En modo tablet, toca el botón del contador de pestañas situado en la barra de herramientas para abrir la nueva barra de pestañas donde se muestran miniaturas de cada pestaña.</translation>
@@ -8488,6 +8490,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="678520006562636090">Prueba Google Lens en tu <ph name="DEVICE_TYPE" /></translation>
 <translation id="6785594991951195537">Usa tu <ph name="PASSWORD_DOMAIN" /></translation>
 <translation id="6785739405821760313">Visualizando escritorios guardados. Pulsa el tabulador para desplazarte.</translation>
+<translation id="6785779729084003225">Usa <ph name="FOCUS_TOGGLE_HOTKEY" /> para abrir Gemini en Chrome</translation>
 <translation id="6785915470941880363">Desplazamiento inverso <ph name="LINK_BEGIN" />más información<ph name="LINK_END" /></translation>
 <translation id="67862343314499040">Violeta</translation>
 <translation id="6786480815699355166">Solo se pueden traducir los idiomas disponibles en Subtítulos automáticos</translation>

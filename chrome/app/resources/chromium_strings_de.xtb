@@ -587,6 +587,9 @@ Chromium kann deine Einstellungen nicht wiederherstellen.</translation>
 <translation id="7384121030444253939">Diese Erweiterung wird nicht mehr unterstützt. Chromium empfiehlt daher, sie zu entfernen.</translation>
 <translation id="7413153308467572558">Mach dort weiter, wo du aufgehört hast: Chromium stellt deine Tabs bei jedem Neustart wieder her. Wenn du diese Funktion deaktivieren möchtest, gehe zu</translation>
 <translation id="7427879960656355200">Passwörter in Chromium importieren</translation>
+<translation id="744815265653811511">1. Klicke unten auf <ph name="BUTTON_LABEL" />
+2. Klicke in den Windows-Einstellungen auf <ph name="BUTTON_2" />
+3. Klicke in der Windows-Benachrichtigung auf <ph name="BUTTON_3" />, um Chromium für den Schnellzugriff an die Taskleiste anzupinnen</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Chromium Dev</translation>
 <translation id="7450541714075000668">Text kopiert</translation>
 <translation id="7451052299415159299">Chromium benötigt für diese Website die Berechtigung, auf deine Kamera zuzugreifen</translation>
@@ -602,6 +605,7 @@ Chromium kann deine Einstellungen nicht wiederherstellen.</translation>
 <translation id="761356813943268536">Chromium verwendet deine Kamera und dein Mikrofon.</translation>
 <translation id="7617377681829253106">Chromium ist jetzt noch besser</translation>
 <translation id="7622753900276619808">Du hast jetzt Zugriff auf weitere Funktionen in Chromium</translation>
+<translation id="7624307931717240213">Wir verwenden Informationen, um diesen Dienst zu verbessern. Weitere Informationen findest du in der Datenschutzerklärung und den Nutzungsbedingungen.</translation>
 <translation id="7649070708921625228">Hilfe</translation>
 <translation id="7656340475565475526">Chromium für dich suchen lassen</translation>
 <translation id="7658239707568436148">Abbrechen</translation>

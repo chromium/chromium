@@ -688,6 +688,9 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="8041795619940733262">Google'a<ph name="LINE_BREAK" />bu sekme hakkında soru sorun</translation>
 <translation id="80471789339884597">Yüklediğiniz için teşekkür ederiz. <ph name="BUNDLE_NAME" /> uygulamasını kullanmadan önce tüm tarayıcılarınızı yeniden başlatmanız gerekir.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
+<translation id="8064965390968184078">1. Aşağıdaki <ph name="BUTTON_LABEL" /> düğmesini tıklayın.
+2. Windows ayarlarınızda <ph name="BUTTON_2" /> düğmesini tıklayın.
+3. Hızlı erişim için Chrome'u görev çubuğunuza sabitlemek isterseniz Windows bildiriminde <ph name="BUTTON_3" /> düğmesini tıklayın.</translation>
 <translation id="8077579734294125741">Diğer Chrome Profilleri</translation>
 <translation id="8086881907087796310">Bilgisayarınız minimum donanım gereksinimlerini karşılamadığından yükleme işlemi başarısız oldu.</translation>
 <translation id="8113883687556086139">Chrome verilerini kullanmak ve <ph name="ACCOUNT_EMAIL" /> hesabınıza kaydetmek için kimliğinizi doğrulayın</translation>
@@ -766,6 +769,7 @@ Bazı yer işaretlerini silene kadar hesabınıza yeni yer işaretleri kaydedile
 <translation id="8914504000324227558">Chrome'u Yeniden Başlat</translation>
 <translation id="8922193594870374009"><ph name="ORIGIN" /> sitesinden Android telefonunuza numara göndermek için iki cihazdan da Chrome'da oturum açın.</translation>
 <translation id="8922998289262614701">Bu uygulamanın verilerini Chrome'dan kaldır</translation>
+<translation id="8925636929359899517">Bilgileri bu hizmeti geliştirmek için kullanırız. <ph name="BEGIN_LINK1" />Gizlilik Politikası<ph name="END_LINK1" /> ve <ph name="BEGIN_LINK2" />Hizmet Şartları<ph name="END_LINK2" />'na göz atın.</translation>
 <translation id="8936233353620149764">Chrome'da Gemini'ı aç/kapat</translation>
 <translation id="8948460679427074738">Bu uzantı, verileri nasıl topladığı ve kullandığı gibi gizlilik uygulamalarını yayınlamadı. Chrome, bu uzantıyı kaldırmanızı önerir.</translation>
 <translation id="8958307504142971576">Artık Chrome'da daha fazla özellik kullanabilirsiniz</translation>

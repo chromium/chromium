@@ -581,6 +581,9 @@
 <translation id="7384121030444253939">この拡張機能は現在サポートされていません。代わりに削除することをおすすめします。</translation>
 <translation id="7413153308467572558">前回開いていたページを開く: Chromium で再起動するたびにタブが復元されます。この機能をオフにするには、</translation>
 <translation id="7427879960656355200">Chromium にパスワードをインポート</translation>
+<translation id="744815265653811511">1. 下の [<ph name="BUTTON_LABEL" />] をクリックします
+2.Windows の設定で [<ph name="BUTTON_2" />] をクリックします
+3.Windows の通知で [<ph name="BUTTON_3" />] をクリックすると、Chromium がタスクバーに固定され、すばやくアクセスできるようになります</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium Dev</translation>
 <translation id="7450541714075000668">テキストをコピーしました</translation>
 <translation id="7451052299415159299">このサイトを利用するには、Chromium でカメラの使用を許可する必要があります</translation>
@@ -596,6 +599,7 @@
 <translation id="761356813943268536">Chromium がカメラとマイクを使用しています。</translation>
 <translation id="7617377681829253106">進化する Chromium</translation>
 <translation id="7622753900276619808">Chromium で新機能をご利用いただけるようになりました</translation>
+<translation id="7624307931717240213">情報はこのサービスの改善に役立てられます。プライバシー ポリシーと利用規約をご確認ください。</translation>
 <translation id="7649070708921625228">ヘルプ</translation>
 <translation id="7656340475565475526">Chromium のブラウジング サポート</translation>
 <translation id="7658239707568436148">キャンセル</translation>

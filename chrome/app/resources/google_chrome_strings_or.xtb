@@ -694,6 +694,9 @@
 <translation id="8041795619940733262">ଏହି ଟାବ ବିଷୟରେ<ph name="LINE_BREAK" />Googleକୁ ପଚାରନ୍ତୁ</translation>
 <translation id="80471789339884597">ଇନଷ୍ଟଲ କରିଥିବା ଯୋଗୁଁ ଧନ୍ୟବାଦ । ଆପଣ <ph name="BUNDLE_NAME" /> ବ୍ୟବହାର କରିବା ପୂର୍ବରୁ ଆପଣଙ୍କ ସମସ୍ତ ବ୍ରାଉଜରକୁ ରିଷ୍ଟାର୍ଟ କରିବା ଆବଶ୍ୟକ।</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
+<translation id="8064965390968184078">1. ତଳେ <ph name="BUTTON_LABEL" />ରେ କ୍ଲିକ କରନ୍ତୁ
+2. ଆପଣଙ୍କ Windows ସେଟିଂସରେ <ph name="BUTTON_2" />ରେ କ୍ଲିକ କରନ୍ତୁ
+3. କ୍ୱିକ ଆକ୍ସେସ ପାଇଁ ଆପଣଙ୍କ ଟାସ୍କବାରରେ Chromeକୁ ପିନ କରିବାକୁ Windows ବିଜ୍ଞପ୍ତିରେ <ph name="BUTTON_3" />ରେ କ୍ଲିକ କରନ୍ତୁ</translation>
 <translation id="8077579734294125741">ଅନ୍ୟ Chrome ପ୍ରୋଫାଇଲଗୁଡ଼ିକ</translation>
 <translation id="8086881907087796310">ଆପଣଙ୍କ କମ୍ପ୍ୟୁଟର ସର୍ବନିମ୍ନ ହାର୍ଡୱେର ଆବଶ୍ୟକତାକୁ ପୂରଣ କରୁନଥିବା ଯୋଗୁଁ ଇନଷ୍ଟଲେସନ ବିଫଳ ହୋଇଛି।</translation>
 <translation id="8113883687556086139">ଆପଣଙ୍କ <ph name="ACCOUNT_EMAIL" /> ଆକାଉଣ୍ଟରେ Chrome ଡାଟାକୁ ବ୍ୟବହାର ଏବଂ ସେଭ କରିବା ପାଇଁ ଏହା ଆପଣ ବୋଲି ଯାଞ୍ଚ କରନ୍ତୁ</translation>
@@ -772,6 +775,7 @@
 <translation id="8914504000324227558">Chrome ପୁଣି ଲଞ୍ଚ କରନ୍ତୁ</translation>
 <translation id="8922193594870374009"><ph name="ORIGIN" />ରୁ ଆପଣଙ୍କ Android ଫୋନକୁ ଏକ ନମ୍ବର ପଠାଇବାକୁ, ଉଭୟ ଡିଭାଇସରେ Chromeରେ ସାଇନ୍ ଇନ୍ କରନ୍ତୁ।</translation>
 <translation id="8922998289262614701">Chromeରୁ ଏହି ଆପର ଡାଟାକୁ କାଢ଼ି ଦିଅନ୍ତୁ</translation>
+<translation id="8925636929359899517">ଏହି ସର୍ଭିସକୁ ଉନ୍ନତ କରିବା ପାଇଁ ଆମେ ସୂଚନା ବ୍ୟବହାର କରୁ। <ph name="BEGIN_LINK1" />ଗୋପନୀୟତା ନୀତି<ph name="END_LINK1" /> ଏବଂ <ph name="BEGIN_LINK2" />ସର୍ଭିସର ସର୍ତ୍ତାବଳୀ<ph name="END_LINK2" /> ଦେଖନ୍ତୁ।</translation>
 <translation id="8936233353620149764">Chromeରେ Geminiକୁ ଟୋଗଲ କରନ୍ତୁ</translation>
 <translation id="8948460679427074738">ଏହି ଏକ୍ସଟେନସନ ଏହା କିପରି ଡାଟା ସଂଗ୍ରହ ଏବଂ ବ୍ୟବହାର କରେ ପରି ଗୋପନୀୟତା କାର୍ଯ୍ୟଗୁଡ଼ିକ ପବ୍ଲିସ କରିନାହିଁ। ଆପଣ ଏହାକୁ କାଢ଼ି ଦିଅନ୍ତୁ ବୋଲି Chrome ସୁପାରିଶ କରେ।</translation>
 <translation id="8958307504142971576">ଆପଣଙ୍କ ପାଖରେ ବର୍ତ୍ତମାନ Chromeରେ ଅଧିକ ଫିଚର ଉପଲବ୍ଧ ଅଛି</translation>

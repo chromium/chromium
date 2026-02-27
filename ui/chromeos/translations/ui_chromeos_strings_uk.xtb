@@ -17,7 +17,6 @@
 <translation id="1138691154716715755">Раніше цього місяця</translation>
 <translation id="1150565364351027703">Сонцезахисні окуляри</translation>
 <translation id="115443833402798225">Клавіатура хангул (анмате)</translation>
-<translation id="1155759005174418845">Каталанська</translation>
 <translation id="1168100932582989117">Сервери імен Google</translation>
 <translation id="1170788066030116158">Дата створення</translation>
 <translation id="1172970565351728681">Залишилося приблизно <ph name="REMAINING_TIME" /></translation>
@@ -61,12 +60,10 @@
 <translation id="146691674290220697">Не вдалося скопіювати файли (<ph name="NUMBER_OF_FILES" />), оскільки вони зашифровані.</translation>
 <translation id="1471718551822868769">Словацька</translation>
 <translation id="1482884275703521657">Фінська</translation>
-<translation id="148466539719134488">Швейцарська</translation>
 <translation id="1497522201463361063">Не вдається перейменувати "<ph name="FILE_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1499943022354839699">Англійська (США), розкладка Дворака</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> – хост</translation>
 <translation id="1521655867290435174">Google Таблиці</translation>
-<translation id="1547964879613821194">Англійська (Канада)</translation>
 <translation id="1556189134700913550">Застосувати до всіх</translation>
 <translation id="1561842594491319104">Chrome</translation>
 <translation id="1572585716423026576">Зробити фоновим малюнком</translation>
@@ -120,8 +117,6 @@
 <translation id="1920670151694390848">Малаялам, транслітерація</translation>
 <translation id="1920798810075583923">Кавун</translation>
 <translation id="1924372192547904021">Диск "<ph name="DRIVE_NAME" />" відформатовано</translation>
-<translation id="1931134289871235022">Словацька</translation>
-<translation id="1936717151811561466">Фінська</translation>
 <translation id="1942765061641586207">Роздільна здатність зображення</translation>
 <translation id="1972984168337863910">Розгортаються панелі відгуків про файли</translation>
 <translation id="1995337122023280937">Відкрити місце розташування файлу</translation>
@@ -199,7 +194,6 @@
 <translation id="2541377937973966830">Вміст цієї папки можна лише переглядати. Деякі дії не підтримуються.</translation>
 <translation id="2542049655219295786">Таблиця Google</translation>
 <translation id="2544853746127077729">Сертифікат автентифікації відхилений мережею</translation>
-<translation id="255937426064304553">Міжнародна (США)</translation>
 <translation id="2563185590376525700">Жаба</translation>
 <translation id="2578394532502990878">Тамільська, фонетична розкладка</translation>
 <translation id="2579959351793446050">Орія</translation>
@@ -220,7 +214,6 @@
 <translation id="2735623501230989521">Надати додатку Parallels Desktop доступ до файлів у папці "<ph name="FOLDER_NAME" />"</translation>
 <translation id="2764206540577097904">Ваше індивідуальне сховище Google Workspace заповнено.</translation>
 <translation id="2771816809568414714">Сир</translation>
-<translation id="2781645665747935084">Бельгійська</translation>
 <translation id="2802583107108007218">Докладніше про ці обмеження</translation>
 <translation id="2803375539583399270">Введіть PIN-код</translation>
 <translation id="2819519502129272135">Синхронізацію файлів вимкнено</translation>
@@ -228,15 +221,11 @@
 <translation id="2830077785865012357">Китайська, чжуїнь</translation>
 <translation id="2843806747483486897">Змінити дію за умовчанням...</translation>
 <translation id="2873951654529031587">Кошик</translation>
-<translation id="288024221176729610">Чеська</translation>
 <translation id="2887525882758501333">Документ PDF</translation>
 <translation id="2888807692577297075">Немає елементів, які відповідають запиту &lt;b&gt;"<ph name="SEARCH_STRING" />"&lt;/b&gt;</translation>
 <translation id="2894654529758326923">Інформація</translation>
-<translation id="2902734494705624966">Американська розширена</translation>
 <translation id="2904378509913846215">Папка з назвою "<ph name="FILENAME" />" уже існує. Замінити її на папку, яку ви переносите?</translation>
 <translation id="290843123675549676">Маратхі</translation>
-<translation id="2923240520113693977">Естонська</translation>
-<translation id="2938685643439809023">Монгольська</translation>
 <translation id="2943503720238418293">Введіть коротшу назву</translation>
 <translation id="2949781154072577687">Форматування диска "<ph name="DRIVE_NAME" />"…</translation>
 <translation id="2951236788251446349">Медуза</translation>
@@ -263,14 +252,10 @@
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (з апаратною підтримкою)</translation>
 <translation id="3188257591659621405">Мої файли</translation>
 <translation id="3194553149358267393">Немає нещодавніх аудіофайлів</translation>
-<translation id="3197563288998582412">Розкладка Дворака (Велика Британія)</translation>
 <translation id="3202131003361292969">Шлях</translation>
 <translation id="3205852408225871810">Португальська (Бразилія)</translation>
-<translation id="3224239078034945833">Канадська (багатомовна)</translation>
 <translation id="3236289833370040187">Право власності буде передано в домен <ph name="DESTINATION_DOMAIN" />.</translation>
-<translation id="3241720467332021590">Ірландська</translation>
 <translation id="3248185426436836442">Очікування</translation>
-<translation id="3252266817569339921">Французька</translation>
 <translation id="3253225298092156258">Недоступно</translation>
 <translation id="3254434849914415189">Вибрати програму за умовчанням для файлів <ph name="FILE_TYPE" />:</translation>
 <translation id="3255159654094949700">Арабська</translation>
@@ -285,7 +270,6 @@
 <translation id="3293023191599135697">Мережі WEP не підтримуються</translation>
 <translation id="3295006446256079333">Цей том</translation>
 <translation id="3295357220137379386">Пристрій зайнятий</translation>
-<translation id="3296763833017966289">Грузинська</translation>
 <translation id="3307875152560779385">Українська</translation>
 <translation id="3326821416087822643">Архівування файлу <ph name="FILE_NAME" />…</translation>
 <translation id="3335337277364016868">Рік запису</translation>
@@ -306,7 +290,6 @@
 <translation id="3486821258960016770">Монгольська</translation>
 <translation id="3509680540198371098">Мережа <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, рівень сигналу – <ph name="SIGNAL_STRENGTH" />%. Докладніше</translation>
 <translation id="3511705761158917664">Підготовка до синхронізації файлів (<ph name="NUMBER_OF_ITEMS" />)…</translation>
-<translation id="3522708245912499433">Португальська</translation>
 <translation id="3523225005467146490"><ph name="VM_NAME" /> надано доступ до 1 папки</translation>
 <translation id="3524311639100184459">Увага: ці файли тимчасові й можуть автоматично видалятися, щоб звільнити місце на диску.  <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Папка</translation>
@@ -317,12 +300,9 @@
 <translation id="3556731189587832921">Англійська (США), міжнародна розкладка для ПК</translation>
 <translation id="3557414470514932909">Переміщення файлу "<ph name="FILE_NAME" />" у кошик</translation>
 <translation id="3567221313191587603">Виберіть файл і ввімкніть опцію "<ph name="OFFLINE_CHECKBOX_NAME" />", щоб мати доступ у режимі офлайн.</translation>
-<translation id="357479282490346887">Литовська</translation>
 <translation id="3587482841069643663">Все</translation>
 <translation id="3592251141500063301">Не вдалося завантажити файл "<ph name="FILE_NAME" />" для доступу офлайн</translation>
 <translation id="3601151620448429694">"<ph name="NETWORK_NAME" />" · <ph name="CARRIER_NAME" /></translation>
-<translation id="3603385196401704894">Французька (Канада)</translation>
-<translation id="3606220979431771195">Турецька клавіатура F</translation>
 <translation id="3616113530831147358">Аудіо</translation>
 <translation id="3619115746895587757">Капучино</translation>
 <translation id="3619593063686672873">Немає нещодавніх відео</translation>
@@ -343,7 +323,6 @@
 <translation id="3786301125658655746">Ви в режимі офлайн</translation>
 <translation id="3789841737615482174">Установити</translation>
 <translation id="3793469551756281394">Залишилося приблизно <ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" /></translation>
-<translation id="3801082500826908679">Фарерська</translation>
 <translation id="3809272675881623365">Кролик</translation>
 <translation id="3810973564298564668">Керувати</translation>
 <translation id="3811408895933919563">Англійська (Пакистан)</translation>
@@ -351,10 +330,8 @@
 <translation id="3817579325494460411">Не вказано</translation>
 <translation id="3819448694985509187">Неправильний PIN-код. Залишилась 1 спроба.</translation>
 <translation id="3830674330436234648">Немає даних для відтворення</translation>
-<translation id="383652340667548381">Сербська</translation>
 <translation id="3839045880592694915">Ваш оператор не дозволяє підключатися до модема. Щоб дізнатися більше, зв’яжіться зі своїм оператором.</translation>
 <translation id="385051799172605136">Назад</translation>
-<translation id="3855472144336161447">Німецька (Neo 2)</translation>
 <translation id="3858860766373142691">Назва</translation>
 <translation id="3899991606604168269">Французька (Канада), багатомовна розкладка</translation>
 <translation id="3901991538546252627">Під’єднання до <ph name="NAME" /></translation>
@@ -394,7 +371,6 @@
 <translation id="4261901459838235729">Презентація Google</translation>
 <translation id="4277536868133419688">Фільтр "<ph name="FILTER_NAME" />" увімкнено.</translation>
 <translation id="4290535918735525311">Linux має доступ до 1 папки</translation>
-<translation id="4299729908419173967">бразильська</translation>
 <translation id="4302605047395093221">Щоб під’єднатися до цієї мобільної мережі, усі користувачі пристрою мають вводити PIN-код</translation>
 <translation id="4303531889494116116">Ця мережа зайнята. Спробуйте пізніше.</translation>
 <translation id="4309915981827077375">Загальна інформація</translation>
@@ -430,7 +406,6 @@
 <translation id="4472575034687746823">Початок роботи</translation>
 <translation id="4474142134969976028">Немає результатів</translation>
 <translation id="4477002475007461989">Румунська</translation>
-<translation id="4477219268485577442">Болгарська (фонетична)</translation>
 <translation id="4508265954913339219">Помилка активації</translation>
 <translation id="4509667233588080747">Англійська (США), розкладка Workman International</translation>
 <translation id="4527800702232535228">Додаток Parallels Desktop має доступ до цієї папки</translation>
@@ -451,20 +426,17 @@
 <translation id="4658782175094886150">Людина в снігу</translation>
 <translation id="4669606053856530811">Учасники, які мають доступ до розташування "<ph name="SOURCE_NAME" />", втратять доступ до елементів, якими з ними не поділилися.</translation>
 <translation id="467809019005607715">Google Презентації</translation>
-<translation id="4690246192099372265">Шведська</translation>
 <translation id="4693155481716051732">Суші</translation>
 <translation id="4694604912444486114">Мавпа</translation>
 <translation id="469612310041132144">Китайська, спрощений стандарт цанцзе</translation>
 <translation id="4697043402264950621">Список файлів відсортовано в порядку зростання за таким критерієм: <ph name="COLUMN_NAME" />.</translation>
 <translation id="469897186246626197">Цей файл створено для ПК з програмним забезпеченням Windows. Він несумісний із вашим пристроєм, на якому встановлено ОС Chrome. <ph name="BEGIN_LINK_HELP" />Докладніше<ph name="END_LINK_HELP" /> про те, як відкривати файли в ОС Chrome.</translation>
 <translation id="4706042980341760088">Тамільська, друкарська розкладка</translation>
-<translation id="4711094779914110278">Турецька</translation>
 <translation id="4712283082407695269">Файл "<ph name="PATH" />" відкривається</translation>
 <translation id="4720185134442950733">Мережа мобільного передавання даних</translation>
 <translation id="4725096204469550614">Раніше цього року</translation>
 <translation id="4725511304875193254">Коргі</translation>
 <translation id="4737050008115666127">Посадка</translation>
-<translation id="4747271164117300400">Македонська</translation>
 <translation id="4759238208242260848">Завантаження</translation>
 <translation id="4779041693283480986">Португальська (Португалія)</translation>
 <translation id="4779136857077979611">Оніґірі</translation>
@@ -478,7 +450,6 @@
 <translation id="4826849268470072925">Тамільська, ITRANS</translation>
 <translation id="4843566743023903107">Chromebase</translation>
 <translation id="4850886885716139402">Перегляд</translation>
-<translation id="485316830061041779">Німецька</translation>
 <translation id="4862885579661885411">Налаштування файлів</translation>
 <translation id="4867079195717347957">Натисніть, щоб відсортувати стовпці в порядку спадання.</translation>
 <translation id="4867297348137739678">Минулого тижня</translation>
@@ -515,13 +486,11 @@
 <translation id="5081517858322016911">Буде видалено файли загальним обсягом <ph name="TOTAL_FILE_SIZE" /></translation>
 <translation id="508423945471810158">Переміщення елементів (<ph name="NUMBER_OF_ITEMS" />) у папку "<ph name="FOLDER_NAME" />"</translation>
 <translation id="509429900233858213">Сталася помилка.</translation>
-<translation id="5098629044894065541">Іврит</translation>
 <translation id="5102922915594634436">Керувати синхронізованими папками</translation>
 <translation id="5109254780565519649">Сталася помилка. Можливо, відновлено не всі елементи.</translation>
 <translation id="5110329002213341433">Англійська (Канада)</translation>
 <translation id="5119780910075847424">Cинхронізацію призупинено</translation>
 <translation id="5123433949759960244">Баскетбол</translation>
-<translation id="5129662217315786329">Польська</translation>
 <translation id="5144820558584035333">Клавіатура хангул із 3 наборами клавіш (390)</translation>
 <translation id="5145331109270917438">Дата змінення</translation>
 <translation id="515594325917491223">Шахи</translation>
@@ -530,12 +499,10 @@
    <ph name="LINE_BREAKS" />
    Видалення пристрою під час його використання може спричинити втрату даних. Зачекайте, доки операція завершиться, а потім відключіть пристрій за допомогою програми "Файли".</translation>
 <translation id="5163869187418756376">Помилка надання доступу. Перевірте з’єднання та повторіть спробу пізніше.</translation>
-<translation id="516592729076796170">Розкладка Дворака для програмістів (США)</translation>
 <translation id="5177526793333269655">Перегляд ескізів</translation>
 <translation id="5181896909298187506">Немає нещодавніх файлів</translation>
 <translation id="5194713942430106590">Натисніть, щоб відсортувати стовпці в порядку зростання.</translation>
 <translation id="5211614973734216083">Фарерська</translation>
-<translation id="5218183485292899140">Французька (Швейцарія)</translation>
 <translation id="5234764350956374838">Закрити</translation>
 <translation id="5253070652067921974">Автор:</translation>
 <translation id="5254207638927440400">Не вдалося перенести файл, оскільки він використовується.</translation>
@@ -553,7 +520,6 @@
 <translation id="5305688511332277257">Не встановлено жодного</translation>
 <translation id="5317780077021120954">Зберегти</translation>
 <translation id="5318819489018851358">Надати доступ додаткам Linux</translation>
-<translation id="5323213332664049067">латиноамериканська</translation>
 <translation id="5330145655348521461">Ці файли відкрито на іншому комп’ютері. Перейдіть до <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />), щоб переглянути їх.</translation>
 <translation id="5330512191124428349">Отримати інформацію</translation>
 <translation id="535792325654997756">Людина з котами</translation>
@@ -565,18 +531,15 @@
 <translation id="5411472733320185105">Не використовуйте налаштування проксі-сервера для таких хостів і доменів:</translation>
 <translation id="541890217011173530">Курдська сорані, розкладка на основі англійської</translation>
 <translation id="5422221874247253874">Точка доступу</translation>
-<translation id="5428105026674456456">Іспанська</translation>
 <translation id="5438282218546237410">Немає результатів для запиту "<ph name="SEARCH_TERM" />".</translation>
 <translation id="5447680084201416734">Недостатньо пам’яті.</translation>
 <translation id="5449551289610225147">Недійсний пароль</translation>
 <translation id="5459064203055649751">Файл із назвою "<ph name="FILENAME" />" уже існує. Замінити його на файл, який ви переносите?</translation>
 <translation id="5463231940765244860">Ввести</translation>
-<translation id="5469868506864199649">Італійська</translation>
 <translation id="5473333559083690127">Ще раз введіть новий PIN-код</translation>
 <translation id="5489067830765222292">Латвійська</translation>
 <translation id="5489965683297092283">Фільтр "<ph name="FILTER_NAME" />" вимкнено.</translation>
 <translation id="5494920125229734069">Вибрати все</translation>
-<translation id="5500122897333236901">Ісландська</translation>
 <translation id="5508696409934741614">Крапки</translation>
 <translation id="5522908512596376669">Список файлів тепер відображається у вигляді списку.</translation>
 <translation id="5524517123096967210">Файл неможливо прочитати.</translation>
@@ -589,7 +552,6 @@
 <translation id="5583664733673201137">Ширина розділових знаків – повна</translation>
 <translation id="5596627076506792578">Інші опції</translation>
 <translation id="5602622065581044566">Болгарська, фонетична розкладка</translation>
-<translation id="5605830556594064952">Розкладка Дворака (США)</translation>
 <translation id="560739212255190568">Ваш адміністратор налаштував правила перевизначення проксі-сервера й примусове застосування наведеного нижче проксі-сервера</translation>
 <translation id="5618330573454123917">Цей файл створено для комп’ютерів із програмним забезпеченням Macintosh. Він несумісний із вашим пристроєм, на якому встановлено ОС Chrome. <ph name="BEGIN_LINK_HELP" />Докладніше<ph name="END_LINK_HELP" /> про те, як відкривати файли в ОС Chrome.</translation>
 <translation id="5625294776298156701">Тамільська, розкладка Tamil99</translation>
@@ -607,7 +569,6 @@
 <translation id="5724172041621205163">Тайська, розкладка Pattachote</translation>
 <translation id="57383366388012121">Останній місяць</translation>
 <translation id="575175778971367197">Зараз неможливо синхронізувати цей файл</translation>
-<translation id="5756666464756035725">Угорська клавіатура QWERTY</translation>
 <translation id="5760252553414789727">Вибрано об’єктів: <ph name="SELECTED_FILES_COUNT" /></translation>
 <translation id="5763377084591234761">Німецька (Швейцарія)</translation>
 <translation id="5769519078756170258">Хост або домен для виключення</translation>
@@ -615,7 +576,6 @@
 <translation id="5776325638577448643">Очистити й відформатувати</translation>
 <translation id="57838592816432529">Вимкнути звук</translation>
 <translation id="5788127256798019331">Файли Play</translation>
-<translation id="5790193330357274855">Казахська</translation>
 <translation id="5804245609861364054">Каннада, транслітерація</translation>
 <translation id="5814126672212206791">Тип з’єднання</translation>
 <translation id="5817397429773072584">китайська (традиційна)</translation>
@@ -624,7 +584,6 @@
 <translation id="5832976493438355584">Заблоковано</translation>
 <translation id="5833610766403489739">Файл загубився. Перевірте налаштування папки завантаження та повторіть спробу.</translation>
 <translation id="5838451609423551646">З вибраного видалено всі записи.</translation>
-<translation id="5838825566232597749">US Workman, міжнародна</translation>
 <translation id="5845721951356578987">Медпрацівник</translation>
 <translation id="5858478190805449225">Режим енергозбереження ввімкнено. Вимкніть його й повторіть спробу.</translation>
 <translation id="5860491529813859533">Увімкнути</translation>
@@ -640,7 +599,6 @@
 <translation id="5957366693331451795">Chromebox</translation>
 <translation id="5982621672636444458">Параметри сортування</translation>
 <translation id="6011074160056912900">Мережа Ethernet</translation>
-<translation id="60357267506638014">Чеська (QWERTY)</translation>
 <translation id="603895874132768835">Ви не зможете користуватися цією мережею, доки не налаштуєте новий PIN-код</translation>
 <translation id="6040143037577758943">Закрити</translation>
 <translation id="6055907707645252013">Мережа <ph name="NETWORK_TYPE" />, не під'єднано до Інтернету</translation>
@@ -683,7 +641,6 @@
 <translation id="6320212353742551423">Архів .<ph name="ARCHIVE_TYPE" /></translation>
 <translation id="6321303798550928047">Помах рукою</translation>
 <translation id="6327785803543103246">Автоматичне виявлення веб-проксі</translation>
-<translation id="6339145975392024142">Американська міжнародна клавіатура (ПК)</translation>
 <translation id="6356685157277930264">Вікно відгуку про файли</translation>
 <translation id="6358884629796491903">Дракон</translation>
 <translation id="636254897931573416">Недійсне значення збігу із суфіксом домену</translation>
@@ -704,7 +661,6 @@
 <translation id="649877868557234318">Видобування файлу "<ph name="FILE_NAME" />" у папку "<ph name="FOLDER_NAME" />"</translation>
 <translation id="6499681088828539489">Заборонити проксі-сервери для спільних мереж</translation>
 <translation id="6503285896705205014">Адміністратор заборонив копіювати файли (<ph name="COUNT" />)</translation>
-<translation id="6509122719576673235">Норвезька</translation>
 <translation id="6528513914570774834">Надати іншим користувачам цього пристрою доступ до цієї мережі</translation>
 <translation id="6549689063733911810">Останні</translation>
 <translation id="6558280019477628686">Сталася помилка. Можливо, не всі елементи було видалено.</translation>
@@ -736,7 +692,6 @@
 <translation id="6806796368146926706">Буквено-цифрове введення, японська розкладка</translation>
 <translation id="6808193438228982088">Лисиця</translation>
 <translation id="6823166707458800069">Резервні копії всіх файлів, збережених у цій папці, автоматично створюються в мережі.</translation>
-<translation id="6825883775269213504">Російська</translation>
 <translation id="6847101934483209767">Видалено з вибраного: <ph name="ENTRY_NAME" />.</translation>
 <translation id="6848194403851638089">Сховище Google Workspace організації <ph name="ORGANIZATION_NAME" /> заповнено.</translation>
 <translation id="6856459657722366306">Мережа №<ph name="NETWORK_INDEX" />, загалом мереж: <ph name="NETWORK_COUNT" />, назва: <ph name="NETWORK_NAME" />, оператор: <ph name="NETWORK_PROVIDER_NAME" />, стан з'єднання: <ph name="CONNECTION_STATUS" />, рівень сигналу: <ph name="SIGNAL_STRENGTH" />%, відомості</translation>
@@ -750,7 +705,6 @@
 <translation id="6896758677409633944">Копіювати</translation>
 <translation id="6898028766943174120">Інші підпапки…</translation>
 <translation id="6915678159055240887">Chromebox</translation>
-<translation id="6918340160281024199">US Workman</translation>
 <translation id="6930242544192836755">Тривалість</translation>
 <translation id="6935521024859866267">Догори дригом</translation>
 <translation id="6943836128787782965">Помилка HTTP</translation>
@@ -760,7 +714,6 @@
 <translation id="696203921837389374">Увімкнути синхронізацію через мобільний Інтернет</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6965648386495488594">Порт</translation>
-<translation id="6970230597523682626">Болгарська</translation>
 <translation id="6973630695168034713">Папки</translation>
 <translation id="6976795442547527108">Лев</translation>
 <translation id="6979158407327259162">Диск Google</translation>
@@ -821,20 +774,17 @@
 <translation id="7417705661718309329">Карта Google</translation>
 <translation id="7419668828140929293">Відновлення файлу "<ph name="FILENAME" />"</translation>
 <translation id="7458955835361612701">Немає нещодавніх зображень</translation>
-<translation id="7460898608667578234">Українська</translation>
 <translation id="7469894403370665791">Автоматично з'єднувати з цією мережею</translation>
 <translation id="7486315294984620427">Щоб перетягнути файли в Parallels Desktop, спершу скопіюйте їх у папку "Файли Windows".</translation>
 <translation id="749452993132003881">Хірагана</translation>
 <translation id="7495372004724182530">Малаялам, фонетична розкладка</translation>
 <translation id="7505167922889582512">Показати сховані файли</translation>
 <translation id="7514365320538308">Завантажити</translation>
-<translation id="751507702149411736">Білоруська</translation>
 <translation id="7521790570754130607">Щоб використовувати мобільний Інтернет, введіть PIN-код</translation>
 <translation id="7532029025027028521">Перська, транслітерація</translation>
 <translation id="7544830582642184299">Надайте додаткам Linux доступ до файлів на Google Диску. Зміни буде синхронізовано на інших ваших пристроях.</translation>
 <translation id="7547009467130558110">Кросівка</translation>
 <translation id="7547780573915868306">Литовська</translation>
-<translation id="7547811415869834682">Нідерландська</translation>
 <translation id="7551643184018910560">Закріпити на панелі запуску</translation>
 <translation id="7553492409867692754">Надати додаткам Linux доступ до файлів у папці "<ph name="FOLDER_NAME" />"</translation>
 <translation id="7555339735447658365">Зараз ви не в мережі. Синхронізація файлів відновиться, коли пристрій підключиться до Інтернету.</translation>
@@ -854,7 +804,6 @@
 <translation id="7693909743393669729">Якщо відформатувати диск, усі наявні на ньому дані та розділи (зокрема, невидимі) буде видалено. Цю дію не можна відмінити.</translation>
 <translation id="7695430100978772476">Не вдалося відформатувати диск "<ph name="DRIVE_NAME" />"</translation>
 <translation id="76959938259365003">Не вдалось очистити кошик.</translation>
-<translation id="770015031906360009">Грецька</translation>
 <translation id="7705251383879779343">Файл "<ph name="FILE_NAME" />" скопійовано.</translation>
 <translation id="7707941139430559579">Не вдається перемістити файл. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="7708271999969613024">Щоб використовувати цю мережу, введіть 8-значний PUK-код, який надав оператор.</translation>
@@ -883,7 +832,6 @@
 <translation id="7831491651892296503">Помилка налаштування мережі</translation>
 <translation id="7839804798877833423">Для отримання цих файлів буде використано приблизно <ph name="FILE_SIZE" /> мобільного передавання даних.</translation>
 <translation id="7846076177841592234">Скасувати вибір</translation>
-<translation id="7853966320808728790">Французька клавіатура BÉPO</translation>
 <translation id="7857117644404132472">Додати виняток</translation>
 <translation id="7868774406711971383">Польська</translation>
 <translation id="7874321682039004450">Філіппінська</translation>
@@ -895,9 +843,7 @@
 <translation id="7925247922861151263">Помилка перевірки AAA</translation>
 <translation id="7928710562641958568">Витягнути пристрій</translation>
 <translation id="7933875256234974853">Підготовка до синхронізації файлів на Диску…</translation>
-<translation id="7943385054491506837">Розкладка Colemak (США)</translation>
 <translation id="7953739707111622108">Не вдається відкрити пристрій, оскільки його файлову систему не розпізнано.</translation>
-<translation id="7969525169268594403">Словенська</translation>
 <translation id="7972920761225148017">Французька (Швейцарія)</translation>
 <translation id="7973962044839454485">Помилка автентифікації PPP через неправильне ім’я користувача або пароль</translation>
 <translation id="7980421588063892270">Англійська (США), розкладка Colemak</translation>
@@ -908,7 +854,6 @@
 <translation id="803771048473350947">Файл</translation>
 <translation id="8038111231936746805">(за умовчанням)</translation>
 <translation id="8042602468072383151">Аудіо <ph name="AUDIO_TYPE" /></translation>
-<translation id="8045462269890919536">Румунська</translation>
 <translation id="8049184478152619004">Введіть PUK-код</translation>
 <translation id="8055538340801153769">Ця папка</translation>
 <translation id="807187749540895545">Видобування файлу "<ph name="FILE_NAME" />"…</translation>
@@ -940,11 +885,9 @@
 <translation id="8262872909443689080">Правило адміністратора</translation>
 <translation id="8264024885325823677">Цим налаштуванням керує адміністратор.</translation>
 <translation id="8269755669432358899">Згортаються панелі відгуків про файли</translation>
-<translation id="8280151743281770066">Вірменська (фонетична)</translation>
 <translation id="8285791779547722821"><ph name="ORIGINAL_MIME_TYPE" /> – зашифровано</translation>
 <translation id="8294431847097064396">Джерело</translation>
 <translation id="8297012244086013755">Клавіатура хангул із 3 наборами клавіш (без клавіші Shift)</translation>
-<translation id="8299269255470343364">Японська</translation>
 <translation id="8300849813060516376">Помилка OTASP</translation>
 <translation id="8312871300878166382">Вставити в папку</translation>
 <translation id="8329978297633540474">Звичайний текст</translation>
@@ -966,7 +909,6 @@
 <translation id="8428213095426709021">Налаштування</translation>
 <translation id="8429998526804961548"><ph name="VM_NAME" /> має доступ до стількох папок: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="8431909052837336408">Змінити PIN-код SIM-карти</translation>
-<translation id="8437209419043462667">Американська</translation>
 <translation id="8452135315243592079">Немає SIM-карти</translation>
 <translation id="8456681095658380701">Недійсне ім’я</translation>
 <translation id="8457767749626250697">SIM-карту заблоковано</translation>
@@ -981,14 +923,12 @@
 <translation id="8499098729323186194">Видобування елементів (<ph name="NUMBER_OF_ITEMS" />)…</translation>
 <translation id="8502913769543567768">Мережа № <ph name="NETWORK_INDEX" /> (усього: <ph name="NETWORK_COUNT" />); назва мережі: <ph name="NETWORK_NAME" />; оператор мережі: <ph name="NETWORK_PROVIDER_NAME" />. Активація доступна після налаштування пристрою. Мережею керує адміністратор.</translation>
 <translation id="8512483403832814140">За весь час</translation>
-<translation id="8521441079177373948">Англійська (Велика Британія)</translation>
 <translation id="853494022971700746">Французька (Франція)</translation>
 <translation id="8540608333167683902">Мережа <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, рівень сигналу – <ph name="SIGNAL_STRENGTH" />%. Докладніше</translation>
 <translation id="8545476925160229291">Англійська (США)</translation>
 <translation id="854655314928502177">URL-адреса автоматичного виявлення веб-проксі:</translation>
 <translation id="8547747809824590510">Ваш адміністратор налаштував правила перевизначення проксі-сервера</translation>
 <translation id="8549186985808798022">Італійська</translation>
-<translation id="8551494947769799688">Латвійська</translation>
 <translation id="8560515948038859357">Кантонський діалект</translation>
 <translation id="8561206103590473338">Слон</translation>
 <translation id="8566466896628108558">Мережа № <ph name="NETWORK_INDEX" />; загалом мереж: <ph name="NETWORK_COUNT" />; назва мережі: "<ph name="NETWORK_NAME" />"; стан безпеки: <ph name="SECURITY_STATUS" />; рівень сигналу: <ph name="SIGNAL_STRENGTH" />%; заблоковано адміністратором; відомості</translation>
@@ -1011,7 +951,6 @@
 <translation id="8713112442029511308">Мальтійська</translation>
 <translation id="8714406895390098252">Велосипед</translation>
 <translation id="8719721339511222681">Вибрано: <ph name="ENTRY_NAME" />.</translation>
-<translation id="872537912056138402">Хорватська</translation>
 <translation id="8743164338060742337">Мережа №<ph name="NETWORK_INDEX" />, загалом мереж: <ph name="NETWORK_COUNT" />, назва: <ph name="NETWORK_NAME" />, оператор: <ph name="NETWORK_PROVIDER_NAME" />, рівень сигналу: <ph name="SIGNAL_STRENGTH" />%, мережею керує адміністратор, підключитися</translation>
 <translation id="8787254343425541995">Дозволити проксі-сервери для спільних мереж</translation>
 <translation id="8790981080411996443">Людина, яка поливає квіти</translation>
@@ -1028,10 +967,8 @@
 <translation id="8873014196523807561">Щоб відновити ці файли, перетягніть їх у нову папку. Оригінальні папки, у яких містилися деякі з цих файлів, видалено.</translation>
 <translation id="8874184842967597500">Не під’єднано</translation>
 <translation id="8876368061475701452">У черзі</translation>
-<translation id="8900820606136623064">Угорська</translation>
 <translation id="8903931173357132290">Випускник</translation>
 <translation id="8912078710089354287">Собака, яка махає хвостом</translation>
-<translation id="8919081441417203123">Данська</translation>
 <translation id="8949925099261528566">Підключено, але немає доступу до Інтернету</translation>
 <translation id="8965697826696209160">Недостатньо місця.</translation>
 <translation id="8970887620466824814">Сталася помилка.</translation>
@@ -1040,7 +977,6 @@
 <translation id="8998871447376656508">Не вдалося завершити завантаження. На Google Диску недостатньо вільного місця.</translation>
 <translation id="9003940392834790328">Мережа <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, рівень сигналу – <ph name="SIGNAL_STRENGTH" />%. Мережею керує адміністратор. Докладніше</translation>
 <translation id="9007990314804111233">Увійдіть в обліковий запис Microsoft</translation>
-<translation id="9017798300203431059">Російська (фонетична)</translation>
 <translation id="9034924485347205037">Файли Linux</translation>
 <translation id="9035012421917565900">Елементи не можна перенести назад у розташування "<ph name="DESTINATION_NAME" />", тож ви не зможете відмінити цю дію.</translation>
 <translation id="9035689366572880647">Введіть поточний PIN-код</translation>

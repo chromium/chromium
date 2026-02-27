@@ -5553,6 +5553,7 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="4732799736617504962">O micrófono conectado só admite a cancelación de ruído</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" /> % (dispositivo esquerdo)</translation>
 <translation id="4733793249294335256">Localización</translation>
+<translation id="4734965478015604180">Horizontal</translation>
 <translation id="473546211690256853">Esta conta está xestionada por <ph name="DOMAIN" /></translation>
 <translation id="4735506354605317060">Destacar punteiro cun círculo</translation>
 <translation id="4735793370946506039">Obtén máis información sobre a función Navegación segura mellorada.</translation>
@@ -5820,6 +5821,7 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="4901154724271753917">Despregar as pestanas pechadas recentemente</translation>
 <translation id="4901309472892185668">Seleccionar estado do experimento <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="49027928311173603">A política descargada do servidor non é válida: <ph name="VALIDATION_ERROR" />.</translation>
+<translation id="490375751687810070">Vertical</translation>
 <translation id="4906490889887219338">Configurar ou xestionar sistemas de ficheiros compartidos en rede. <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
 <translation id="4906679076183257864">Restablecer valores predeterminados</translation>
 <translation id="4907129260985716018">Escolle cando esta extensión pode ler e cambiar os datos dos teus sitios</translation>
@@ -8489,6 +8491,7 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
 <translation id="678520006562636090">Proba Google Lens no teu <ph name="DEVICE_TYPE" /></translation>
 <translation id="6785594991951195537">Utilizar o teu <ph name="PASSWORD_DOMAIN" /></translation>
 <translation id="6785739405821760313">Vendo escritorios gardados. Para navegar, preme Tabulador.</translation>
+<translation id="6785779729084003225">Usa <ph name="FOCUS_TOGGLE_HOTKEY" /> para abrir Gemini en Chrome</translation>
 <translation id="6785915470941880363">Desprazamento inverso <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
 <translation id="67862343314499040">Violeta</translation>
 <translation id="6786480815699355166">Só se poden traducir os subtítulos instantáneos que estean nos idiomas ofrecidos</translation>

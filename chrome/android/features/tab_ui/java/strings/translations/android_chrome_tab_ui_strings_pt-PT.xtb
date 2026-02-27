@@ -2,7 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="pt-PT">
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Criado há <ph name="NUM_WEEKS_ONE" /> semana}other{Criado há <ph name="NUM_WEEKS_MANY" /> semanas}}</translation>
-<translation id="1063300264396686489">Abra automaticamente grupos de separadores de outros dispositivos</translation>
+<translation id="1063300264396686489">Abrir automaticamente grupos de separadores de outros dispositivos</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> dos seus separadores não foram utilizados recentemente. Quer fechá-los?</translation>
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{Criado há <ph name="NUM_YEARS_ONE" /> ano}other{Criado há <ph name="NUM_YEARS_MANY" /> anos}}</translation>
 <translation id="1137385688780024041">{DAY_COUNT,plural, =1{Os separadores e os grupos inativos são fechados após 1 mês}other{Os separadores e os grupos inativos são fechados após <ph name="MONTH_COUNT_MANY" /> meses}}</translation>

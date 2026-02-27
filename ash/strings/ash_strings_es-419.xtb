@@ -426,6 +426,7 @@ Se conectaron <ph name="DEVICECOUNT" /> dispositivos.</translation>
 <translation id="2478076885740497414">Instalar aplicación</translation>
 <translation id="2482878487686419369">Notificaciones</translation>
 <translation id="2484513351006226581">Presiona <ph name="KEYBOARD_SHORTCUT" /> para cambiar la configuración del teclado.</translation>
+<translation id="2485422356828889247">Desinstalar</translation>
 <translation id="2486214324139475545">Vista previa de <ph name="DESK_NAME" />. Escritorio activo.</translation>
 <translation id="2486405091093637109">Se cambió "<ph name="DISPLAY_NAME" />" a una resolución de <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Si no confirmas el cambio, se restablecerá la configuración anterior en <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2487915095798731898">Unirse</translation>

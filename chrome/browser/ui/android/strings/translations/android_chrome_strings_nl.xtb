@@ -281,6 +281,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="2205701497928406883"><ph name="TAB_TITLE" />, vastgezet tabblad voor content delen</translation>
 <translation id="22091350895006575">Gebruikersnaam toevoegen</translation>
 <translation id="221494669172414749">Als je Chrome opent zonder profielvergrendeling, worden je opgeslagen wachtwoorden en betaalmethoden uit de auto verwijderd. Met een profielvergrendeling beveilig je deze gegevens.</translation>
+<translation id="2226826835915474236">Inactieve snelkoppelingen</translation>
 <translation id="2227179592712503583">Suggestie verwijderen</translation>
 <translation id="2227444325776770048">Doorgaan als <ph name="USER_FULL_NAME" /></translation>
 <translation id="2230777942707397948">Leeg venster</translation>
@@ -1655,6 +1656,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="7740287852186792672">Zoekresultaten</translation>
 <translation id="774403695779169686"><ph name="TAB_TITLE" />, geselecteerd incognitotabblad voor content delen</translation>
 <translation id="774876555279732384">Services voor automatisch invullen worden ook beheerd in de <ph name="BEGIN_LINK" />Android-instellingen<ph name="END_LINK" />.</translation>
+<translation id="7758884017823246335">Zoekopdracht op site toevoegen</translation>
 <translation id="7759809451544302770">Optioneel</translation>
 <translation id="7762668264895820836">SD-kaart <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">Adres toevoegen</translation>
@@ -1886,6 +1888,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="8634050254805484913">Verborgen op smalle schermen</translation>
 <translation id="8635399646025169806">Tabbladgroep behouden?</translation>
 <translation id="8636825310635137004">Zet synchronisatie aan om de tabbladen op je andere apparaten te bekijken</translation>
+<translation id="8639963783467694461">Instellingen voor Automatisch invullen</translation>
 <translation id="8662474268934425487">Inloggen op <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8664979001105139458">Bestandsnaam bestaat al</translation>
 <translation id="8676276370198826499">Aanmelden bij <ph name="SITE_ETLD_PLUS_ONE" /> met <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -1934,6 +1937,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="8865415417596392024">Chrome-gegevens in je account</translation>
 <translation id="8872506776304248286">Openen in app</translation>
 <translation id="8890668505403261809">Zoek op je incognitotabbladen</translation>
+<translation id="8892234476517513962">Je bent al ingelogd</translation>
 <translation id="8894890673032951011"><ph name="TAB_TITLE" />, geselecteerd incognitotabblad voor opname</translation>
 <translation id="8898822736010347272">Stuurt URL's van sommige pagina's die je bezoekt, beperkte systeeminformatie en bepaalde paginacontent naar Google om nieuwe dreigingen te ontdekken en iedereen op internet te beschermen.</translation>
 <translation id="8903921497873541725">Inzoomen</translation>

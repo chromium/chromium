@@ -586,6 +586,9 @@ Bəzilərini silənə qədər yeni əlfəcinləri hesabınızda yadda saxlamaq o
 <translation id="7384121030444253939">Bu artırma artıq dəstəklənmir. Chromium onu silməyinizi tövsiyə edir.</translation>
 <translation id="7413153308467572558">Qaldığınız yerdən davam edin: Chromium hər dəfə yenidən başladıldıqda tablarınızı bərpa edir. Bunu deaktiv etmək üçün keçin:</translation>
 <translation id="7427879960656355200">Parolları Chromium-a import edin</translation>
+<translation id="744815265653811511">1. Aşağıdakı <ph name="BUTTON_LABEL" /> düyməsinə klikləyin
+2. Windows ayarlarında <ph name="BUTTON_2" /> düyməsinə klikləyin
+3. Sürətli giriş üçün Chromium-u tapşırıqlar panelinə bərkitmək məqsədilə Windows bildirişində <ph name="BUTTON_3" /> düyməsinə klikləyin</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium Dev</translation>
 <translation id="7450541714075000668">Mətn kopyalandı</translation>
 <translation id="7451052299415159299">Chromium bu sayt üçün kameraya giriş tələb edir</translation>
@@ -601,6 +604,7 @@ Bəzilərini silənə qədər yeni əlfəcinləri hesabınızda yadda saxlamaq o
 <translation id="761356813943268536">Chromium kameranızı və mikrofonunuzu işlədir.</translation>
 <translation id="7617377681829253106">Chromium daha da keyfiyyətli oldu</translation>
 <translation id="7622753900276619808">Artıq Chromium-da sizin üçün daha çox funksiya əlçatandır</translation>
+<translation id="7624307931717240213">Məlumatdan bu xidməti təkmilləşdirmək üçün istifadə edirik. Məxfilik Siyasətinə və Xidmət Şərtlərinə baxın.</translation>
 <translation id="7649070708921625228">Yardım</translation>
 <translation id="7656340475565475526">Chromium-a sizin üçün axtarış etməyə icazə verin</translation>
 <translation id="7658239707568436148">Ləğv edin</translation>

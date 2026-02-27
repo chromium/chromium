@@ -730,6 +730,7 @@
 <translation id="2166049586286450108">完整管理員存取權</translation>
 <translation id="2166378884831602661">這個網站無法提供安全連線</translation>
 <translation id="2168151236314517198">系統管理員政策禁止列印此內容</translation>
+<translation id="2171244127100824330">「<ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />」在 (帳戶：<ph name="ACCOUNT" />) 的趨勢</translation>
 <translation id="2172089022819052306">交通工具維修保養</translation>
 <translation id="2173302385160625112">檢查你的網際網路連線</translation>
 <translation id="2174875517416416684">交易未完成，系統未從你的帳戶中收取任何款項。</translation>
@@ -908,7 +909,6 @@
 <translation id="2436976580469434549">纖維與紡織藝術</translation>
 <translation id="243815215670139125">系統無法將這張卡片儲存到你的 Google 帳戶，因此改存到這部裝置的 Chrome。</translation>
 <translation id="2438874542388153331">四孔 (右側)</translation>
-<translation id="2440855519769445271">如要隱藏「先買後付」選項，請前往<ph name="BEGIN_LINK" />付款設定<ph name="END_LINK" /></translation>
 <translation id="2441854154602066476">付款方式已顯示在畫面上，輕觸即可填入。鍵盤已隱藏。</translation>
 <translation id="2442865686365739754">Chrome <ph name="BEGIN_EMPHASIS" />不會儲存<ph name="END_EMPHASIS" />：
           <ph name="BEGIN_LIST" />
@@ -945,6 +945,7 @@
 <translation id="248064299258688299">擴充功能「<ph name="EXTENSION_NAME" />」表示：</translation>
 <translation id="2482878487686419369">通知</translation>
 <translation id="248348093745724435">裝置政策</translation>
+<translation id="248395913932153421">日</translation>
 <translation id="2485243023686553468">智慧型手機</translation>
 <translation id="2491120439723279231">伺服器憑證含有錯誤。</translation>
 <translation id="2491414235131909199">擴充功能已封鎖這個網頁</translation>
@@ -2283,7 +2284,6 @@
 <translation id="4648262692072505866">雜湊的格式必須是 SHA-256。</translation>
 <translation id="4652266463001779298">不允許</translation>
 <translation id="4652440160515225514">這個網站由於違反某項政策規定，因此已遭貴機構封鎖。</translation>
-<translation id="4654457557264366314">付款方案須符合資格條件。</translation>
 <translation id="4658638640878098064">釘裝 (左上方)</translation>
 <translation id="4658801711339831733">掃描內容已儲存至 Google 雲端硬碟</translation>
 <translation id="4660592918803576381">在 Google 雲端硬碟開啟</translation>
@@ -2404,6 +2404,7 @@
 <translation id="4832388034239846146">如要共用分頁群組，請更新 Chrome</translation>
 <translation id="483241715238664915">開啟警告</translation>
 <translation id="4832961164064927107">烤肉與燒烤</translation>
+<translation id="4839984801146463230">儲存資訊可讓你更有效率，例如能更快填妥各項 Google 產品的表單。你可以在「<ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />」中<ph name="BEGIN_LINK" />管理<ph name="END_LINK" />「<ph name="ACCOUNT" />」的資訊</translation>
 <translation id="4840250757394056958">查看 Chrome 歷史記錄</translation>
 <translation id="484462545196658690">自動</translation>
 <translation id="4844937814014739139">捲動及縮放已分享的分頁</translation>
@@ -2593,7 +2594,6 @@
 <translation id="512756860033933700">允許鎖定鍵盤</translation>
 <translation id="5127934926273826089">花卉</translation>
 <translation id="5129534298163637277">確認對話方塊</translation>
-<translation id="5129662217315786329">波蘭文</translation>
 <translation id="5135404736266831032">管理地址...</translation>
 <translation id="5136841603454277753">請輸入正確的驗證碼</translation>
 <translation id="5137761395480718572">這個應用程式要求你授權安裝 Wi-Fi 憑證。設定完成後，<ph name="DEVICE_TYPE" /> 將自動連線到設定好的 Wi-Fi 網路。如要移除這些憑證，請解除安裝應用程式。<ph name="LEARN_MORE" /></translation>
@@ -2753,6 +2753,7 @@
 <translation id="5392506727170022660">金屬 (半光面)</translation>
 <translation id="5394069166371280357">適合闔家觀賞的電視節目</translation>
 <translation id="5396631636586785122">邊緣裝訂 (右側)</translation>
+<translation id="5396837962335265787"><ph name="ATTRIBUTE_NAME" />，原本為：<ph name="OLD_ATTRIBUTE_ATTRIBUTE" /></translation>
 <translation id="5397794290049113714">你</translation>
 <translation id="5398461103557553443">將 IBAN 儲存到 Google 錢包，下次就會自動填入</translation>
 <translation id="5398772614898833570">已封鎖廣告</translation>
@@ -3487,6 +3488,7 @@
 <translation id="6547208576736763147">雙孔 (左側)</translation>
 <translation id="6549443526281184652">變裝道具</translation>
 <translation id="6550245281449521513">不允許鎖定滑鼠</translation>
+<translation id="6551737294564628267"><ph name="ATTRIBUTE_NAME" />最新</translation>
 <translation id="6552566579578780089">付款方式</translation>
 <translation id="6554732001434021288">上次造訪日期：<ph name="NUM_DAYS" /> 天前</translation>
 <translation id="6556866813142980365">重做</translation>
@@ -3538,7 +3540,6 @@
 <translation id="6649510485211003056">195 x 270 公釐</translation>
 <translation id="6651270836885078973">管理網域/帳戶：</translation>
 <translation id="6652101503459149953">使用 Windows Hello</translation>
-<translation id="6654224358955673568">使用正式語氣</translation>
 <translation id="6654244995031366386">玻璃 (紋理)</translation>
 <translation id="6655085656059574817">保持帳戶連結有助於透過「<ph name="BNPL_ISSUER_NAME" />」快速付款。如要取消連結，可以前往 <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /></translation>
 <translation id="6656935431494847393">加入航班預訂和車輛資訊等相關細節</translation>
@@ -3710,7 +3711,6 @@
 <translation id="6926216138694948720">人體藝術</translation>
 <translation id="692638818576287323">商用車</translation>
 <translation id="6927878187051807444">相機檔案和螢幕截圖</translation>
-<translation id="6929949393612835405">關閉並返回「<ph name="OPENER_TITLE" />」</translation>
 <translation id="6930607614725241390">在側邊面板中搜尋</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />預設搜尋引擎可提供網路搜尋服務並支援 Chrome 的各項功能<ph name="END_BOLD" />，例如透過網址列和運用網頁上的圖片進行搜尋。請注意，如果搜尋引擎不支援某項功能，你可能就無法使用該功能。</translation>
 <translation id="6934672428414710184">這是你在 Google 帳戶中設定的名稱</translation>
@@ -4745,6 +4745,7 @@
 <translation id="8544217240017914508">Google Chrome 正嘗試修改填入付款方式的設定。</translation>
 <translation id="8544303911974837265">聚酯纖維</translation>
 <translation id="854548366864113872">高價選項</translation>
+<translation id="854583198371106098"><ph name="ATTRIBUTE_VALUE" />  <ph name="BEGIN_NEW" />最新<ph name="END_NEW" /></translation>
 <translation id="8546254312340305428">請提供要上傳的原因 (必填)</translation>
 <translation id="8546350655047701518">將記錄匯出成 JSON 檔</translation>
 <translation id="8546667245446052521">紙 (典藏用)</translation>

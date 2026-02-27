@@ -585,6 +585,9 @@ Chromium sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="7384121030444253939">Bu kengaytma endi dastaklanmaydi. Chromium uni olib tashlashni tavsiya qiladi.</translation>
 <translation id="7413153308467572558">Ishni kelgan joyidan davom ettiring: Chromium har safar qayta ishga tushganda oxirgi varaqlarni tiklashi mumkin. Faolsizlantirish uchun bu yerga kiring:</translation>
 <translation id="7427879960656355200">Chromiumga parollarni import qilish</translation>
+<translation id="744815265653811511">1. Quyida <ph name="BUTTON_LABEL" /> tugmasini bosing
+2. Windows sozlamalarida <ph name="BUTTON_2" /> tugmasini bosing
+3. Tezkor kirish uchun Chromiumni vazifalar paneliga mahkamlash uchun Windows bildirishnomasida <ph name="BUTTON_3" /> tugmasini bosing</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium Dev</translation>
 <translation id="7450541714075000668">Matn nusxalandi</translation>
 <translation id="7451052299415159299">Bu sayt kamerangizdan foydalanishi uchun Chromium brauzeriga ruxsat berishingiz lozim</translation>

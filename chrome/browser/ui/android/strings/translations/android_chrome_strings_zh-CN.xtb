@@ -281,6 +281,7 @@
 <translation id="2205701497928406883"><ph name="TAB_TITLE" />，已固定的标签页，正在共享内容</translation>
 <translation id="22091350895006575">添加用户名</translation>
 <translation id="221494669172414749">如果在不设置个人资料锁定的情况下打开 Chrome，您已保存的密码和付款方式将会从这部车载设备中移除。使用个人资料锁定功能可确保此类数据安全。</translation>
+<translation id="2226826835915474236">未使用的快捷字词</translation>
 <translation id="2227179592712503583">移除推荐内容</translation>
 <translation id="2227444325776770048">以<ph name="USER_FULL_NAME" />的身份继续</translation>
 <translation id="2230777942707397948">空白窗口</translation>
@@ -747,7 +748,7 @@
 <translation id="4225895483398857530">工具栏中的快捷方式</translation>
 <translation id="4232376164796433044">密码和自动填充</translation>
 <translation id="4242533952199664413">打开“设置”</translation>
-<translation id="424864128008805179">退出 Chrome？</translation>
+<translation id="424864128008805179">要在 Chrome 中退出账号吗？</translation>
 <translation id="4249955472157341256">按新近度排序</translation>
 <translation id="4255841059940367080">根据系统向 Google 发送的浏览数据，实时提供 AI 赋能的保护，防范危险的网站、下载内容和扩展程序</translation>
 <translation id="4256782883801055595">开源许可</translation>
@@ -1574,7 +1575,7 @@
 <translation id="7419565702166471774">一律使用安全连接</translation>
 <translation id="7421293530411019405">要退出标签页分组吗？</translation>
 <translation id="7435356471928173109">已被您的管理员关闭</translation>
-<translation id="7437998757836447326">在 Chrome 退出账号</translation>
+<translation id="7437998757836447326">在 Chrome 中退出账号</translation>
 <translation id="7439467816829380878">将标签页移至分组</translation>
 <translation id="7439749340204407129">打开书签管理器</translation>
 <translation id="7453810262525006706">合拢为侧边视图</translation>
@@ -1653,6 +1654,7 @@
 <translation id="7740287852186792672">搜索结果</translation>
 <translation id="774403695779169686"><ph name="TAB_TITLE" />，已选择的无痕式标签页，正在共享内容</translation>
 <translation id="774876555279732384">您也可以在 <ph name="BEGIN_LINK" />Android 设置<ph name="END_LINK" />中管理自动填充服务。</translation>
+<translation id="7758884017823246335">添加网站搜索引擎</translation>
 <translation id="7759809451544302770">选填</translation>
 <translation id="7762668264895820836">SD 卡 <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">添加地址</translation>
@@ -1884,6 +1886,7 @@
 <translation id="8634050254805484913">在窄屏设备上隐藏</translation>
 <translation id="8635399646025169806">要保留标签页分组吗？</translation>
 <translation id="8636825310635137004">要访问您从其他设备打开的标签页，请开启同步功能。</translation>
+<translation id="8639963783467694461">自动填充设置</translation>
 <translation id="8662474268934425487">登录 <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8664979001105139458">文件名已存在</translation>
 <translation id="8676276370198826499">通过 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 注册 <ph name="SITE_ETLD_PLUS_ONE" /></translation>
@@ -1932,6 +1935,7 @@
 <translation id="8865415417596392024">您账号中的 Chrome 数据</translation>
 <translation id="8872506776304248286">在应用中打开</translation>
 <translation id="8890668505403261809">搜索无痕式标签页</translation>
+<translation id="8892234476517513962">您已登录</translation>
 <translation id="8894890673032951011"><ph name="TAB_TITLE" />，已选择的无痕式标签页，正在录制内容</translation>
 <translation id="8898822736010347272">向 Google 发送您访问过的部分网页的网址、有限的系统信息以及部分网页内容，以便帮助我们发现新威胁并保护网络上的所有用户。</translation>
 <translation id="8903921497873541725">放大</translation>

@@ -695,6 +695,9 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="8041795619940733262">Pregúntalle a Google<ph name="LINE_BREAK" />sobre esta pestana</translation>
 <translation id="80471789339884597">Grazas por levar a cabo a instalación. Para utilizar <ph name="BUNDLE_NAME" />, debes reiniciar todos os teus navegadores.</translation>
 <translation id="8064015586118426197">Chrome OS Flex</translation>
+<translation id="8064965390968184078">1. Fai clic na opción <ph name="BUTTON_LABEL" /> que aparece máis abaixo
+2. Fai clic en <ph name="BUTTON_2" /> dentro da configuración de Windows
+3. Fai clic en <ph name="BUTTON_3" /> na notificación de Windows para fixar Chrome na barra de tarefas e poder acceder ao navegador rapidamente</translation>
 <translation id="8077579734294125741">Outros perfís de Chrome</translation>
 <translation id="8086881907087796310">Produciuse un erro na instalación porque o teu ordenador non cumpre os requisitos mínimos de hardware.</translation>
 <translation id="8113883687556086139">Verifica a túa identidade para usar e gardar os datos de Chrome na túa conta (<ph name="ACCOUNT_EMAIL" />)</translation>
@@ -773,6 +776,7 @@ Non poderás gardar máis ata que elimines uns cantos. Se pechas a sesión agora
 <translation id="8914504000324227558">Reiniciar Chrome</translation>
 <translation id="8922193594870374009">Para enviar un número desde <ph name="ORIGIN" /> ao teu teléfono Android, inicia sesión en Chrome nos dous dispositivos.</translation>
 <translation id="8922998289262614701">Quitar de Chrome os datos desta aplicación</translation>
+<translation id="8925636929359899517">Usamos a información para mellorar este servizo. Consulta a <ph name="BEGIN_LINK1" />Política de privacidade<ph name="END_LINK1" /> e as <ph name="BEGIN_LINK2" />Condicións de servizo<ph name="END_LINK2" />.</translation>
 <translation id="8936233353620149764">Activar ou desactivar Gemini en Chrome</translation>
 <translation id="8948460679427074738">Esta extensión non ten publicada ningunha práctica de privacidade (como, por exemplo, o modo en que recompila e usa os datos). Chrome recomenda que a quites.</translation>
 <translation id="8958307504142971576">Xa tes máis funcións dispoñibles en Chrome</translation>

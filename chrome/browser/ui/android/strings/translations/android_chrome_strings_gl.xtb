@@ -281,6 +281,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="2205701497928406883"><ph name="TAB_TITLE" />, pestana de uso compartido fixada</translation>
 <translation id="22091350895006575">Engadir nome de usuario</translation>
 <translation id="221494669172414749">Se abres Chrome sen un bloqueo de perfil, os teus métodos de pago e contrasinais gardados quitaranse do coche. O bloqueo de perfil protexe estes datos.</translation>
+<translation id="2226826835915474236">Atallos inactivos</translation>
 <translation id="2227179592712503583">Quitar suxestión</translation>
 <translation id="2227444325776770048">Continuar como <ph name="USER_FULL_NAME" /></translation>
 <translation id="2230777942707397948">Ventá baleira</translation>
@@ -1655,6 +1656,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="7740287852186792672">Resultados da busca</translation>
 <translation id="774403695779169686"><ph name="TAB_TITLE" />, pestana do modo de incógnito de uso compartido seleccionada</translation>
 <translation id="774876555279732384">Os servizos de autocompletar tamén se xestionan na <ph name="BEGIN_LINK" />configuración de Android<ph name="END_LINK" />.</translation>
+<translation id="7758884017823246335">Engadir unha busca do sitio</translation>
 <translation id="7759809451544302770">Opcionais</translation>
 <translation id="7762668264895820836">Tarxeta SD <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">Engadir enderezo</translation>
@@ -1886,6 +1888,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="8634050254805484913">Oculta en pantallas estreitas</translation>
 <translation id="8635399646025169806">Queres manter o grupo de pestanas?</translation>
 <translation id="8636825310635137004">Activa a sincronización para sincronizar as pestanas dos demais dispositivos.</translation>
+<translation id="8639963783467694461">Configuración de completado automático</translation>
 <translation id="8662474268934425487">Inicia sesión en <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8664979001105139458">Xa existe un ficheiro con este nome</translation>
 <translation id="8676276370198826499">Rexístrate en <ph name="SITE_ETLD_PLUS_ONE" /> con <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -1934,6 +1937,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="8865415417596392024">Datos de Chrome na túa conta</translation>
 <translation id="8872506776304248286">Abrir na aplicación</translation>
 <translation id="8890668505403261809">Busca as pestanas do modo de incógnito</translation>
+<translation id="8892234476517513962">Xa tes a sesión iniciada</translation>
 <translation id="8894890673032951011"><ph name="TAB_TITLE" />, pestana do modo de incógnito con gravación en curso seleccionada</translation>
 <translation id="8898822736010347272">Envía os URL dalgunhas páxinas que visites, información limitada do sistema e certo contido das páxinas a Google para axudar a descubrir novas ameazas e protexer todos os usuarios da Web.</translation>
 <translation id="8903921497873541725">Achegar</translation>

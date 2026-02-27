@@ -281,6 +281,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="2205701497928406883"><ph name="TAB_TITLE" />, pripeti zavihek za deljenje</translation>
 <translation id="22091350895006575">Dodajanje uporabniškega imena</translation>
 <translation id="221494669172414749">Če odprete Chrome brez zaklepanja profila, bodo shranjena gesla in plačilna sredstva odstranjena iz avtomobila. Z zaklepanjem profila poskrbite za varnost teh podatkov.</translation>
+<translation id="2226826835915474236">Neaktivne bližnjice</translation>
 <translation id="2227179592712503583">Odstrani predlog</translation>
 <translation id="2227444325776770048">Nadaljujte kot <ph name="USER_FULL_NAME" /></translation>
 <translation id="2230777942707397948">Prazno okno</translation>
@@ -923,6 +924,7 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="4885273946141277891">To število primerkov Chroma ni podprto.</translation>
 <translation id="4890973535105146893">V računu Google ni shranjenih gesel</translation>
 <translation id="4905823827770127520">Vključi povezavo na stran</translation>
+<translation id="4908601375231458049">Prilagodite skupino zavihkov in kliknite Končano</translation>
 <translation id="4908869848243824489">Googlovo Odkrivanje</translation>
 <translation id="4910889077668685004">Aplikacije za plačevanje</translation>
 <translation id="4911042367886397055">Dobrodošli nazaj, <ph name="USER_NAME" />!</translation>
@@ -1186,6 +1188,7 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="6040143037577758943">Zapri</translation>
 <translation id="604124094241169006">Samodejno</translation>
 <translation id="6042308850641462728">Več</translation>
+<translation id="6047066316630165190">Odprite preklopnik zavihkov v mreži</translation>
 <translation id="604996488070107836">Prenos datoteke <ph name="FILE_NAME" /> ni uspel zaradi neznane napake.</translation>
 <translation id="605721222689873409">LL</translation>
 <translation id="6059830886158432458">Nadzirajte članke in dejavnost tukaj</translation>
@@ -1259,6 +1262,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="6301526076346731664">Odpiranje orodij za razvijalce</translation>
 <translation id="630308129961693966">Izberite položaj naslovne vrstice</translation>
 <translation id="6303969859164067831">Odjava in izklop sinhronizacije</translation>
+<translation id="6305257382500066042">Preizkusite</translation>
 <translation id="6307241780749477694">Preverite, ali ste to vi, da boste imeli dostop do vseh gesel v tej napravi</translation>
 <translation id="6309082029962045994"><ph name="TAB_TITLE" />, večkrat izbrani pripeti zavihek z zvokom</translation>
 <translation id="6312687380483398334">Spletni programi (tiho)</translation>
@@ -1655,6 +1659,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="7740287852186792672">Rezultati iskanja</translation>
 <translation id="774403695779169686"><ph name="TAB_TITLE" />, izbrani anonimni zavihek za deljenje</translation>
 <translation id="774876555279732384">Storitve samodejnega izpolnjevanja lahko upravljate tudi v <ph name="BEGIN_LINK" />nastavitvah za Android<ph name="END_LINK" />.</translation>
+<translation id="7758884017823246335">Dodajte iskanje po spletnem mestu</translation>
 <translation id="7759809451544302770">Izbirno</translation>
 <translation id="7762668264895820836">Kartica SD <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">Dodaj naslov</translation>
@@ -1845,6 +1850,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="8458341576712814616">Bližnjica</translation>
 <translation id="8458413889418591446">Če se želite hitro vrniti na že obiskana spletna mesta, sinhronizirajte zgodovino in zavihke</translation>
 <translation id="84594714173170813">Še naprej uporabljajte podatke v Chromu v računu Google</translation>
+<translation id="8460008946585880786">Povlecite in spustite en zavihek na drugega</translation>
 <translation id="8460448946170646641">Pregled ključnih kontrolnikov varnosti in zasebnosti</translation>
 <translation id="8460932807646981183">Upravljanje iskalnikov in iskanja po spletnih mestih</translation>
 <translation id="8473863474539038330">Naslovi in drugo</translation>
@@ -1886,6 +1892,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="8634050254805484913">Skrito na ozkih zaslonih</translation>
 <translation id="8635399646025169806">Želite ohraniti skupino zavihkov?</translation>
 <translation id="8636825310635137004">Če želite dostopati do zavihkov iz drugih naprav, vklopite sinhronizacijo.</translation>
+<translation id="8639963783467694461">Nastavitve samodejnega izpolnjevanja</translation>
 <translation id="8662474268934425487">Prijava na <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8664979001105139458">Ime datoteke že obstaja</translation>
 <translation id="8676276370198826499">Registrirajte se na <ph name="SITE_ETLD_PLUS_ONE" /> z računom pri ponudniku <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -1934,6 +1941,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="8865415417596392024">Podatki v Chromu v računu</translation>
 <translation id="8872506776304248286">Odpri v aplikaciji</translation>
 <translation id="8890668505403261809">Iščite po anonimnih zavihkih</translation>
+<translation id="8892234476517513962">Ste že prijavljeni</translation>
 <translation id="8894890673032951011"><ph name="TAB_TITLE" />, izbrani anonimni zavihek za snemanje</translation>
 <translation id="8898822736010347272">Pošilja URL-je nekaterih strani, ki jih obiščete, omejene podatke o sistemu in nekatere vsebine strani Googlu zaradi pomoči pri odkrivanju novih groženj in zaščiti vseh uporabnikov v spletu.</translation>
 <translation id="8903921497873541725">Povečaj</translation>

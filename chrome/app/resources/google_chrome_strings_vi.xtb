@@ -691,6 +691,9 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="8041795619940733262">Hỏi Google<ph name="LINE_BREAK" />về thẻ này</translation>
 <translation id="80471789339884597">Cảm ơn bạn đã cài đặt. Bạn phải khởi động lại tất cả trình duyệt trước khi sử dụng <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
+<translation id="8064965390968184078">1. Nhấp vào <ph name="BUTTON_LABEL" /> bên dưới
+2. Nhấp vào <ph name="BUTTON_2" /> trong phần cài đặt Windows
+3. Nhấp vào <ph name="BUTTON_3" /> trong thông báo của Windows để ghim Chrome vào thanh tác vụ giúp truy cập nhanh</translation>
 <translation id="8077579734294125741">Các hồ sơ khác trên Chrome</translation>
 <translation id="8086881907087796310">Cài đặt không thành công vì máy tính của bạn không đáp ứng được các yêu cầu tối thiểu về phần cứng.</translation>
 <translation id="8113883687556086139">Xác minh danh tính của bạn để sử dụng và lưu dữ liệu trên Chrome vào tài khoản <ph name="ACCOUNT_EMAIL" /> của bạn</translation>
@@ -769,6 +772,7 @@ Bạn phải xoá bớt một số dấu trang thì mới có thể lưu dấu t
 <translation id="8914504000324227558">Chạy lại Chrome</translation>
 <translation id="8922193594870374009">Để gửi số điện thoại từ <ph name="ORIGIN" /> đến điện thoại Android của bạn, hãy đăng nhập vào Chrome trên cả hai thiết bị.</translation>
 <translation id="8922998289262614701">Xoá dữ liệu của ứng dụng này khỏi Chrome</translation>
+<translation id="8925636929359899517">Chúng tôi sử dụng thông tin để cải thiện dịch vụ này. Vui lòng xem <ph name="BEGIN_LINK1" />Chính sách quyền riêng tư<ph name="END_LINK1" /> và <ph name="BEGIN_LINK2" />Điều khoản dịch vụ<ph name="END_LINK2" />.</translation>
 <translation id="8936233353620149764">Bật/tắt Gemini trong Chrome</translation>
 <translation id="8948460679427074738">Tiện ích này chưa công bố các phương thức bảo vệ quyền riêng tư, chẳng hạn như cách tiện ích thu thập và sử dụng dữ liệu. Chrome khuyên bạn nên xoá tiện ích này.</translation>
 <translation id="8958307504142971576">Giờ đây, bạn có thể sử dụng nhiều tính năng hơn trong Chrome</translation>

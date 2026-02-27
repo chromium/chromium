@@ -5564,6 +5564,7 @@
 <translation id="4732799736617504962">कनेक्ट किया गया माइक, सिर्फ़ ग़ैर-ज़रूरी आवाज़ें कम करने की सुविधा के लिए इस्तेमाल किया जा सकता है</translation>
 <translation id="4733161265940833579">बाएं वायरलेस बड में <ph name="BATTERY_PERCENTAGE" />% बैटरी बची है</translation>
 <translation id="4733793249294335256">स्थान</translation>
+<translation id="4734965478015604180">हॉरिजेंटल व्यू</translation>
 <translation id="473546211690256853">यह खाता <ph name="DOMAIN" /> द्वारा प्रबंधित किया जाता है</translation>
 <translation id="4735506354605317060">माउस का कर्सर हाइलाइट करने की सुविधा से जुड़ी सेटिंग पर जाएं</translation>
 <translation id="4735793370946506039">बेहतर सुरक्षित ब्राउज़िंग के बारे में ज़्यादा जानें.</translation>
@@ -5830,6 +5831,7 @@
 <translation id="4901154724271753917">हाल ही में बंद किए गए टैब की सूची को बड़ा करें</translation>
 <translation id="4901309472892185668"><ph name="EXPERIMENT_NAME" /> एक्सपेरिमेंट के लिए, एक्सपेरिमेंट की स्थिति चुनें.</translation>
 <translation id="49027928311173603">सर्वर से डाउनलोड की गई नीति अमान्य है: <ph name="VALIDATION_ERROR" />.</translation>
+<translation id="490375751687810070">वर्टिकल व्यू</translation>
 <translation id="4906490889887219338">नेटवर्क फ़ाइल शेयर सेट अप या प्रबंधित करें. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
 <translation id="4906679076183257864">डिफ़ॉल्ट पर रीसेट करें</translation>
 <translation id="4907129260985716018">चुनें कि यह एक्सटेंशन कब आपके साइट डेटा को पढ़ और बदल सकता है</translation>
@@ -8503,6 +8505,7 @@
 <translation id="678520006562636090">अपने <ph name="DEVICE_TYPE" /> पर Google Lens आज़माएं</translation>
 <translation id="6785594991951195537">अपने <ph name="PASSWORD_DOMAIN" /> का इस्तेमाल करें</translation>
 <translation id="6785739405821760313">सेव किए गए डेस्क देखे जा रहे हैं. नेविगेट करने के लिए Tab दबाएं.</translation>
+<translation id="6785779729084003225"><ph name="FOCUS_TOGGLE_HOTKEY" /> की मदद से, Chrome में Gemini खोलें</translation>
 <translation id="6785915470941880363">उलटी दिशा में स्क्रोल करना <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
 <translation id="67862343314499040">बैंगनी</translation>
 <translation id="6786480815699355166">लाइव कैप्शन की सुविधा सिर्फ़ उन भाषाओं में उपलब्ध है जिनमें अनुवाद किया जा सकता है</translation>

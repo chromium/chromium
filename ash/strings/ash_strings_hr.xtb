@@ -426,6 +426,7 @@ Povezan je sljedeći broj uređaja: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2478076885740497414">Instaliranje aplikacije</translation>
 <translation id="2482878487686419369">Obavijesti</translation>
 <translation id="2484513351006226581">Pritisnite <ph name="KEYBOARD_SHORTCUT" /> da biste promijenili raspored tipkovnice.</translation>
+<translation id="2485422356828889247">Deinstaliraj</translation>
 <translation id="2486214324139475545">Pregled za <ph name="DESK_NAME" /> Aktivna radna površina.</translation>
 <translation id="2486405091093637109">Zaslon <ph name="DISPLAY_NAME" /> promijenjen je na <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Bez potvrđivanja, prethodne postavke vratit će se za <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2487915095798731898">Pridruži se</translation>

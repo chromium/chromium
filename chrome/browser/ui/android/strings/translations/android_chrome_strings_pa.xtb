@@ -281,6 +281,7 @@
 <translation id="2205701497928406883"><ph name="TAB_TITLE" />, ਪਿੰਨ ਕੀਤੀ ਗਈ ਸਾਂਝਾਕਰਨ ਟੈਬ</translation>
 <translation id="22091350895006575">ਵਰਤੋਂਕਾਰ ਨਾਮ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="221494669172414749">ਪ੍ਰੋਫਾਈਲ ਲਾਕ ਤੋਂ ਬਿਨਾਂ Chrome ਨੂੰ ਖੋਲ੍ਹਣ ਨਾਲ ਕਾਰ ਤੋਂ ਤੁਹਾਡੇ ਰੱਖਿਅਤ ਕੀਤੇ ਗਏ ਪਾਸਵਰਡ ਅਤੇ ਭੁਗਤਾਨ ਵਿਧੀਆਂ ਹਟ ਜਾਣਗੀਆਂ। ਪ੍ਰੋਫਾਈਲ ਲਾਕ ਵਰਤਣ ਨਾਲ ਇਹ ਡਾਟਾ ਸੁਰੱਖਿਅਤ ਰਹਿੰਦਾ ਹੈ।</translation>
+<translation id="2226826835915474236">ਅਕਿਰਿਆਸ਼ੀਲ ਸ਼ਾਰਟਕੱਟ</translation>
 <translation id="2227179592712503583">ਸੁਝਾਅ ਹਟਾਓ</translation>
 <translation id="2227444325776770048"><ph name="USER_FULL_NAME" /> ਵਜੋਂ ਜਾਰੀ ਰੱਖੋ</translation>
 <translation id="2230777942707397948">ਖਾਲੀ ਵਿੰਡੋ</translation>
@@ -923,6 +924,7 @@
 <translation id="4885273946141277891">Chrome ਦੇ ਕਈ ਅਸਮਰਥਿਤ ਵਰਜਨ</translation>
 <translation id="4890973535105146893">ਤੁਹਾਡੇ Google ਖਾਤੇ ਵਿੱਚ ਕੋਈ ਰੱਖਿਅਤ ਕੀਤਾ ਪਾਸਵਰਡ ਨਹੀਂ ਹੈ</translation>
 <translation id="4905823827770127520">ਪੰਨੇ ਵਿੱਚ ਕੋਈ ਲਿੰਕ ਸ਼ਾਮਲ ਕਰੋ</translation>
+<translation id="4908601375231458049">ਟੈਬ ਗਰੁੱਪ ਨੂੰ ਵਿਉਂਤਬੱਧ ਕਰੋ ਅਤੇ 'ਹੋ ਗਿਆ' 'ਤੇ ਕਲਿੱਕ ਕਰੋ</translation>
 <translation id="4908869848243824489">Google ਵੱਲੋਂ Discover</translation>
 <translation id="4910889077668685004">ਭੁਗਤਾਨ ਐਪਾਂ</translation>
 <translation id="4911042367886397055">ਮੁੜ ਜੀ ਆਇਆਂ ਨੂੰ, <ph name="USER_NAME" />!</translation>
@@ -1186,6 +1188,7 @@
 <translation id="6040143037577758943">ਬੰਦ ਕਰੋ</translation>
 <translation id="604124094241169006">ਆਟੋਮੈਟਿਕ</translation>
 <translation id="6042308850641462728">ਹੋਰ</translation>
+<translation id="6047066316630165190">ਗਰਿੱਡ ਟੈਬ ਸਵਿੱਚਰ ਖੋਲ੍ਹੋ</translation>
 <translation id="604996488070107836">ਇੱਕ ਅਗਿਆਤ ਗੜਬੜ ਕਾਰਨ <ph name="FILE_NAME" /> ਡਾਊਨਲੋਡ ਅਸਫ਼ਲ ਰਿਹਾ।</translation>
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">ਆਪਣੀਆਂ ਕਹਾਣੀਆਂ ਅਤੇ ਸਰਗਰਮੀ ਨੂੰ ਇੱਥੇ ਕੰਟਰੋਲ ਕਰੋ</translation>
@@ -1259,6 +1262,7 @@
 <translation id="6301526076346731664">ਵਿਕਾਸਕਾਰ ਟੂਲ ਖੋਲ੍ਹੋ</translation>
 <translation id="630308129961693966">ਆਪਣੇ ਪਤਾ ਬਾਰ ਦੀ ਸਥਿਤੀ ਚੁਣੋ</translation>
 <translation id="6303969859164067831">ਸਾਈਨ-ਆਊਟ ਕਰਕੇ ਸਿੰਕ ਬੰਦ ਕਰੋ</translation>
+<translation id="6305257382500066042">ਹੁਣੇ ਅਜ਼ਮਾਓ</translation>
 <translation id="6307241780749477694">ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਆਪਣੇ ਸਾਰੇ ਪਾਸਵਰਡ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ ਆਪਣੀ ਪਛਾਣ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ</translation>
 <translation id="6309082029962045994"><ph name="TAB_TITLE" />, ਇੱਕ ਤੋਂ ਵੱਧ ਚੁਣੀਆਂ ਗਈਆਂ ਅਜਿਹੀਆਂ ਸੁਣਨਯੋਗ ਟੈਬਾਂ, ਜਿਨ੍ਹਾਂ ਨੂੰ ਪਿੰਨ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="6312687380483398334">ਵੈੱਬ ਐਪਾਂ (ਸ਼ਾਂਤ)</translation>
@@ -1655,6 +1659,7 @@
 <translation id="7740287852186792672">ਨਤੀਜੇ ਖੋਜੋ</translation>
 <translation id="774403695779169686"><ph name="TAB_TITLE" />, ਚੁਣੀ ਗਈ ਅਜਿਹੀ ਇਨਕੋਗਨਿਟੋ ਟੈਬ, ਜਿਸਨੂੰ ਸਾਂਝਾ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="774876555279732384">ਆਟੋਫਿਲ ਸੇਵਾਵਾਂ ਦਾ ਪ੍ਰਬੰਧਨ <ph name="BEGIN_LINK" />Android ਸੈਟਿੰਗਾਂ<ph name="END_LINK" /> ਵਿੱਚ ਵੀ ਕੀਤਾ ਜਾਂਦਾ ਹੈ।</translation>
+<translation id="7758884017823246335">ਸਾਈਟ ਖੋਜ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="7759809451544302770">ਵਿਕਲਪਿਕ</translation>
 <translation id="7762668264895820836">SD ਕਾਰਡ <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">ਪਤਾ ਜੋੜੋ</translation>
@@ -1845,6 +1850,7 @@
 <translation id="8458341576712814616">ਸ਼ਾਰਟਕੱਟ</translation>
 <translation id="8458413889418591446">ਜੋ ਸਾਈਟਾਂ ਤੁਸੀਂ ਦੇਖੀਆਂ ਹਨ ਉਨ੍ਹਾਂ 'ਤੇ ਤੇਜ਼ੀ ਨਾਲ ਵਾਪਸ ਜਾਣ ਲਈ, ਆਪਣੇ ਇਤਿਹਾਸ ਅਤੇ ਟੈਬਾਂ ਨੂੰ ਸਿੰਕ ਕਰੋ</translation>
 <translation id="84594714173170813">ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ Chrome ਡਾਟਾ ਵਰਤਣਾ ਜਾਰੀ ਰੱਖੋ</translation>
+<translation id="8460008946585880786">ਇੱਕ ਟੈਬ ਨੂੰ ਦੂਜੀ ਟੈਬ 'ਤੇ ਘਸੀਟੋ ਅਤੇ ਛੱਡੋ</translation>
 <translation id="8460448946170646641">ਪ੍ਰਮੁੱਖ ਪਰਦੇਦਾਰੀ ਅਤੇ ਸੁਰੱਖਿਆ ਕੰਟਰੋਲਾਂ ਦੀ ਸਮੀਖਿਆ ਕਰੋ</translation>
 <translation id="8460932807646981183">ਖੋਜ ਇੰਜਣਾਂ ਅਤੇ ਸਾਈਟ ਖੋਜ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="8473863474539038330">ਪਤੇ ਅਤੇ ਹੋਰ</translation>
@@ -1886,6 +1892,7 @@
 <translation id="8634050254805484913">ਛੋਟੀਆਂ ਸਕ੍ਰੀਨਾਂ 'ਤੇ ਅਦਿੱਖ</translation>
 <translation id="8635399646025169806">ਕੀ ਟੈਬ ਗਰੁੱਪ ਨੂੰ ਬਣਾਈ ਰੱਖਣਾ ਹੈ?</translation>
 <translation id="8636825310635137004">ਆਪਣੀਆਂ ਹੋਰ ਡੀਵਾਈਸਾਂ ਤੋਂ ਆਪਣੀਆਂ ਟੈਬਾਂ ਨੂੰ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ,  ਸਿੰਕ ਚਾਲੂ ਕਰੋ।</translation>
+<translation id="8639963783467694461">ਆਟੋਫਿਲ ਸੈਟਿੰਗਾਂ</translation>
 <translation id="8662474268934425487"><ph name="SITE_ETLD_PLUS_ONE" /> ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="8664979001105139458">ਫ਼ਾਈਲ ਨਾਮ ਪਹਿਲਾਂ ਹੀ ਮੌਜੂਦ ਹੈ</translation>
 <translation id="8676276370198826499"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ਨਾਲ <ph name="SITE_ETLD_PLUS_ONE" /> 'ਤੇ ਸਾਈਨ-ਅੱਪ ਕਰੋ</translation>
@@ -1934,6 +1941,7 @@
 <translation id="8865415417596392024">ਤੁਹਾਡੇ ਖਾਤੇ ਵਿਚਲਾ Chrome ਡਾਟਾ</translation>
 <translation id="8872506776304248286">ਐਪ ਵਿੱਚ ਖੋਲ੍ਹੋ</translation>
 <translation id="8890668505403261809">ਆਪਣੀਆਂ ਇਨਕੋਗਨਿਟੋ ਟੈਬਾਂ ਖੋਜੋ</translation>
+<translation id="8892234476517513962">ਤੁਸੀਂ ਪਹਿਲਾਂ ਤੋਂ ਹੀ ਸਾਈਨ-ਇਨ ਹੋ</translation>
 <translation id="8894890673032951011"><ph name="TAB_TITLE" />, ਚੁਣੀ ਗਈ ਰਿਕਾਰਡਿੰਗ ਵਾਲੀ ਇਨਕੋਗਨਿਟੋ ਟੈਬ</translation>
 <translation id="8898822736010347272">ਵੈੱਬ 'ਤੇ ਨਵੇਂ ਖਤਰਿਆਂ ਨੂੰ ਲੱਭ ਕੇ ਹਰੇਕ ਦੀ ਸੁਰੱਖਿਆ ਕਰਨ ਵਿੱਚ ਮਦਦ ਕਰਨ ਲਈ ਤੁਹਾਡੇ ਵੱਲੋਂ ਦੇਖੇ ਗਏ ਕੁਝ ਪੰਨਿਆਂ ਦੇ URL, ਸੀਮਤ ਸਿਸਟਮ ਜਾਣਕਾਰੀ ਅਤੇ ਕੁਝ ਨਵੀਂ ਪੰਨਾ ਸਮੱਗਰੀ Google ਨੂੰ ਭੇਜੇ ਜਾਂਦੇ ਹਨ।</translation>
 <translation id="8903921497873541725">ਜ਼ੂਮ ਵਧਾਓ</translation>

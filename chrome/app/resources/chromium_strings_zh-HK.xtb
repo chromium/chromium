@@ -587,6 +587,9 @@ Chromium 無法復原您的設定。</translation>
 <translation id="7384121030444253939">此擴充程式不再受支援，Chromium 建議你將其移除。</translation>
 <translation id="7413153308467572558">開啟上次瀏覽的內容：Chromium 會在每次重新啟動後還原分頁。如要關閉此功能，請前往</translation>
 <translation id="7427879960656355200">匯入密碼至 Chromium</translation>
+<translation id="744815265653811511">1. 點擊下方的 [<ph name="BUTTON_LABEL" />]
+2. 在 Windows 設定中點擊 [<ph name="BUTTON_2" />]
+3.在 Windows 通知中點擊 [<ph name="BUTTON_3" />] 以將 Chromium 固定至工作列，方便快速取用</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium 開發人員版</translation>
 <translation id="7450541714075000668">已複製文字</translation>
 <translation id="7451052299415159299">Chromium 需要取得權限，才能讓這個網站存取您的相機</translation>

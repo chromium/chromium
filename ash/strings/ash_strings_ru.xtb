@@ -426,6 +426,7 @@
 <translation id="2478076885740497414">Установить приложение</translation>
 <translation id="2482878487686419369">Уведомления</translation>
 <translation id="2484513351006226581">Чтобы переключить раскладку клавиатуры, нажмите клавиши <ph name="KEYBOARD_SHORTCUT" />.</translation>
+<translation id="2485422356828889247">Удалить</translation>
 <translation id="2486214324139475545">Предпросмотр активного рабочего стола "<ph name="DESK_NAME" />".</translation>
 <translation id="2486405091093637109">Вы изменили разрешение экрана "<ph name="DISPLAY_NAME" />" на <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Гц). Если вы не подтвердите изменение, будут восстановлены предыдущие настройки. Оставшееся время: <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2487915095798731898">Присоединиться</translation>

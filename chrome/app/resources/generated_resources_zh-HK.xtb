@@ -5558,6 +5558,7 @@
 <translation id="4732799736617504962">已連接的麥克風僅支援消噪功能</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (左邊)</translation>
 <translation id="4733793249294335256">位置</translation>
+<translation id="4734965478015604180">橫向</translation>
 <translation id="473546211690256853">這個帳戶是由 <ph name="DOMAIN" /> 負責管理</translation>
 <translation id="4735506354605317060">圓形指標</translation>
 <translation id="4735793370946506039">進一步了解強化安全瀏覽功能。</translation>
@@ -5824,6 +5825,7 @@
 <translation id="4901154724271753917">展開最近關閉的分頁</translation>
 <translation id="4901309472892185668">選取「<ph name="EXPERIMENT_NAME" />」的實驗狀態。</translation>
 <translation id="49027928311173603">從伺服器下載的政策無效：<ph name="VALIDATION_ERROR" />。</translation>
+<translation id="490375751687810070">垂直</translation>
 <translation id="4906490889887219338">設定或管理網絡檔案共用功能。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="4906679076183257864">重設為預設值</translation>
 <translation id="4907129260985716018">選擇這個擴充程式何時可讀取並變更網站資料</translation>

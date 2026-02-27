@@ -1021,6 +1021,7 @@
 <translation id="1671525612731130246">Drive အကောင့်ရွေးရန်</translation>
 <translation id="1671749176392751693">ကာကွယ်ထားသော အကြောင်းအရာ သတ်မှတ်မှုစနစ်များကို ခွင့်ပြုလိုက်သည်</translation>
 <translation id="1673137583248014546"><ph name="URL" /> က သင့် 'လုံခြုံရေးကီး' ထုတ်လုပ်သူနှင့် မော်ဒယ်လ်ကို သိလိုပါသည်</translation>
+<translation id="1673855466663721679">ဘေးအကန့်တွင် ဝဘ်လိပ်စာများကို ပြပါ</translation>
 <translation id="1674073353928166410">(<ph name="URL_COUNT" />) ခုစလုံးကို ရုပ်ဖျက် ဝင်းဒိုးတွင် ဖွင့်ရန်</translation>
 <translation id="1674142805528405174">Google Password Manager က သင့်အကောင့်ကို လုံခြုံမှုမြင့်သည့် စကားဝှက်ဖြင့် အပ်ဒိတ်လုပ်နိုင်ပြီး ၎င်းကို သင့်အကောင့် <ph name="EMAIL" /> တွင် သိမ်းသည်။</translation>
 <translation id="1674945585974615438">မရင်းနှီးသော ဝဘ်ဆိုက်များတွင် JavaScript အကောင်းဆုံးချိန်ညှိစနစ်ကို အလိုအလျောက် ပိတ်ရန်</translation>
@@ -3455,6 +3456,7 @@
 <translation id="3312883087018430408">ဝဘ်ဆိုက်တစ်ခု သို့မဟုတ် Chrome ၏ တစ်စိတ်တစ်ဒေသကို ရှာရန် လိပ်စာ ဘားတွင် ၎င်း၏ ဖြတ်လမ်းလင့်ခ် ရိုက်ထည့်ပြီးနောက် ဦးစားပေးလက်ကွက်ဖြတ်လမ်း ထည့်ပါ။ ဥပမာ- Bookmarks ရှာရန် "@bookmarks" ဟု ရိုက်ထည့်ပြီး တဘ် သို့မဟုတ် စပေ့စ် နှိပ်ပါ။</translation>
 <translation id="3313622045786997898">အသိမှတ်ပြု လက်မှတ် တန်ဖိုး</translation>
 <translation id="3313950410573257029">ချိတ်ဆက်မှုကို စစ်ဆေးရန်</translation>
+<translation id="3314239811356311272">&amp;ဝဘ်လိပ်စာ စီမံစနစ် ဖွင့်ရန်</translation>
 <translation id="3315158641124845231">ဝှက်ရန် <ph name="PRODUCT_NAME" /></translation>
 <translation id="3317459757438853210">နှစ်ဖက်စလုံး</translation>
 <translation id="3317521105713541270">အဖွဲ့များဖွဲ့ရန်</translation>
@@ -3661,6 +3663,7 @@
 <translation id="3453597230179205517">တည်နေရာသုံးခွင့်ကို ပိတ်ထားသည်</translation>
 <translation id="3453612417627951340">စိစစ်ခံရန် လိုအပ်</translation>
 <translation id="3454213325559396544">ဤသည်မှာ <ph name="DEVICE_TYPE" /> အတွက် နောက်ဆုံးသော ဆော့ဖ်ဝဲနှင့် လုံခြုံရေး အလိုအလျောက်အပ်ဒိတ် ဖြစ်သည်။ အနာဂတ်အပ်ဒိတ်များ ရယူရန် မော်ဒယ်အသစ်သို့ အဆင့်မြှင့်တင်ပါ။</translation>
+<translation id="3454276058453724464">{FILE_LIMIT,plural, =1{သင့်မေးခွန်းနှင့် တွဲသုံးရန် .pdf ဖိုင် ၁ ဖိုင် အပ်လုဒ်လုပ်ပါ}other{သင့်မေးခွန်းနှင့် တွဲသုံးရန် .pdf ဖိုင် # ဖိုင်အထိ အပ်လုဒ်လုပ်ပါ}}</translation>
 <translation id="3454818737556063691">ဖိုင် ၁ ဖိုင်ကို <ph name="CLOUD_PROVIDER" /> သို့ ရွှေ့မလား။</translation>
 <translation id="3455436146814891176">အသွင်ဝှက်ရန် စကားဝှက်ကို စင့်ခ်လုပ်ရန်</translation>
 <translation id="345693547134384690">ပုံကို တဘ် အသစ်ထဲမှာ ဖွင့်ရန်</translation>
@@ -5033,6 +5036,7 @@
 <translation id="4364567974334641491"><ph name="APP_NAME" /> သည်ဝင်းဒိုးတစ်ခုကို မျှဝေနေပါသည်။</translation>
 <translation id="4364830672918311045">ပြသမှု သတိပေးချက်များ</translation>
 <translation id="4367971618859387374">ဖော်ပြချက်အမည်</translation>
+<translation id="4368888793624522796">တဘ်အုပ်စုများကို ရွှေ့ထားသည်</translation>
 <translation id="4368960422722232719">တဘ်ပေါ်မောက်စ်တင်ချိန် အစမ်းပြကွက်ကတ်တွင် မှတ်ဉာဏ်အသုံးပြုမှုကို ပြပါ</translation>
 <translation id="4369151461324628035">ဝဘ်ဆိုက်များအား အိမ်တွင်းကွန်ရက်ရှိ မည်သည့်စက်ကိုမဆို ချိတ်ဆက်ခွင့်မပြုပါနှင့်</translation>
 <translation id="4369215744064167350">ဝဘ်ဆိုက်တောင်းဆိုချက် အတည်ပြုလိုက်သည်</translation>
@@ -5421,6 +5425,7 @@
 <translation id="4634575639321169635">အလုပ် သို့မဟုတ် ကိုယ်ရေးကိုယ်တာအတွက် ဤစက်ကို စနစ်ထည့်သွင်းရန်</translation>
 <translation id="4635072447747973225">Crostini ဖယ်ရှားရန်</translation>
 <translation id="4635398712689569051"><ph name="PAGE_NAME" /> သည် 'ဧည့်သည်' အသုံးပြုသူများအတွက် မရနိုင်ပါ။</translation>
+<translation id="4635975718422788482">{FILE_LIMIT,plural, =1{သင့်မေးခွန်းနှင့် တွဲသုံးရန် ပုံ ၁ ပုံ အပ်လုဒ်လုပ်ပါ}other{သင့်မေးခွန်းနှင့် တွဲသုံးရန် ပုံ # ပုံအထိ အပ်လုဒ်လုပ်ပါ}}</translation>
 <translation id="4636187126182557415">စနစ်သတ်မှတ်ချက်များ</translation>
 <translation id="4636930964841734540">အချက်အလက်</translation>
 <translation id="4637083375689622795">နောက်ထပ် လုပ်ဆောင်ချက်များ၊ <ph name="EMAIL" /></translation>
@@ -5562,6 +5567,7 @@
 <translation id="4732799736617504962">ချိတ်ဆက်ထားသည့်မိုက်သည် ဆူညံသံဖယ်ရှားခြင်းကိုသာ ပံ့ပိုးနိုင်သည်</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (ဘယ်)</translation>
 <translation id="4733793249294335256">တည်နေရာ</translation>
+<translation id="4734965478015604180">အလျားလိုက်</translation>
 <translation id="473546211690256853">ဒီအကောင့်ကို <ph name="DOMAIN" />မှ စီမံကွပ်ကဲသည်</translation>
 <translation id="4735506354605317060">ညွှန်မြား အဝိုင်း</translation>
 <translation id="4735793370946506039">‘အရည်အသွေးမြှင့် ဘေးကင်းလုံခြုံသည့် အသုံးပြုမှု’ အကြောင်း ပိုမိုလေ့လာနိုင်သည်။</translation>
@@ -5829,6 +5835,7 @@
 <translation id="4901154724271753917">လတ်တလောပိတ်ထားသည်များကို ဖြန့်ရန်</translation>
 <translation id="4901309472892185668"><ph name="EXPERIMENT_NAME" /> စမ်းသပ်မှုအတွက် စမ်းသပ်မှုအခြေအနေကို ရွေးပါ။</translation>
 <translation id="49027928311173603">ဆာဗာမှ ဒေါင်းလုပ်လုပ်ထားသည့် ပေါ်လစီသည် မမှန်ကန်ပါ: <ph name="VALIDATION_ERROR" />။</translation>
+<translation id="490375751687810070">ဒေါင်လိုက်</translation>
 <translation id="4906490889887219338">ကွန်ရက် ဖိုင်မျှဝေမှုများကို စနစ်သတ်မှတ်ရန် သို့မဟုတ် စီမံရန်။ <ph name="LINK_BEGIN" />ပိုမိုလေ့လာရန်<ph name="LINK_END" /></translation>
 <translation id="4906679076183257864">ပုံသေသို့ ပြန်လည်သတ်မှတ်</translation>
 <translation id="4907129260985716018">ဤနောက်ဆက်တွဲက သင့်ဝဘ်ဆိုက်ဒေတာအား မည်သည့်အချိန်တွင် ဖတ်နိုင်၊ ပြောင်းနိုင်မည်ကို ရွေးပါ</translation>
@@ -6262,6 +6269,7 @@
 <translation id="5215502535566372932">နိုင်ငံ ရွေးပါ</translation>
 <translation id="5216674789212441076">တိုက်ရိုက်စာတန်းများကို အလိုအလျောက်ဘာသာပြန်သည်။ စာတန်းများကို ဘာသာပြန်ရန်အတွက် Google သို့ပို့သည်။</translation>
 <translation id="5216951551945455224">{NUM_TABS,plural, =1{Gemini နှင့် တဘ်မျှဝေခြင်းကို ရပ်ရန်}other{Gemini နှင့် တဘ် # ခု မျှဝေခြင်းကို ရပ်ရန်}}</translation>
+<translation id="5217883660859035687">သင့်ဝဘ်လိပ်စာများများအတွက် နေရာပိုရစေရန် တဘ်အုပ်စုများကို ရွှေ့နေသည်။</translation>
 <translation id="5220011581825921581">Search + အပေါ်ညွှန်မြား</translation>
 <translation id="5221516927483787768"><ph name="HOST_NAME" /> ကို ကာစ်လုပ်၍မရပါ</translation>
 <translation id="5221834113325601057">တဘ်ကို စာရင်းမှ ဖယ်ရှားလိုက်သည်</translation>
@@ -6946,6 +6954,7 @@
 <translation id="5697832193891326782">အီမိုဂျီ ရွေးချယ်စနစ်</translation>
 <translation id="5698136107297470317">သင်၏ <ph name="BRAND" /> ဒေတာကို ဖျက်ပါတော့မည်</translation>
 <translation id="5698878456427040674">ရွေးထားသည့် အကောင့်ကို ပံံ့ပိုးခြင်းရှိ၊ မရှိ ကြည့်ပါ။</translation>
+<translation id="5698900765010620315">ပြတ်သားမှုနိမ့်အမှောင်</translation>
 <translation id="5699227710146832453">ဤသည်မှ</translation>
 <translation id="570043786759263127">Google Play အက်ပ်နှင့် ဝန်ဆောင်မှုများ</translation>
 <translation id="5700761515355162635">ပြင်ပကုမ္ပဏီ၏ကွတ်ကီးများ ခွင့်ပြုထားသည်</translation>
@@ -8325,6 +8334,7 @@
 <translation id="6663190258859265334">သင့် <ph name="DEVICE_TYPE" /> ကို powerwash လုပ်ပြီးနောက် ယခင်ဗားရှင်းသို့ ပြန်သွားမည်။</translation>
 <translation id="6664774537677393800">သင့်ပရိုဖိုင်ကို ဖွင့်နေစဉ်တွင် တစ်စုံတစ်ခု မှားယွင်းသွားပါသည်။ ထွက်ပြီး ပြန်လည်၍ လက်မှတ်ထိုးဝင်ကြည့်ပါ။</translation>
 <translation id="6665874326033183068">သဘာဝပတ်ဝန်းကျင်</translation>
+<translation id="6666560794795912543">ဘေးအကန့်တွင် ‘ဝဘ်လိပ်စာများ’ ပြပါ</translation>
 <translation id="6667086124612170548">ဖိုင်သည် ဤစက်အတွက် ကြီးလွန်းနေသည်</translation>
 <translation id="6667092961374478614"><ph name="FEATURE_NAME" /> ရှာဖွေတွေ့နိုင်ခြေ</translation>
 <translation id="6667187897999649121">စကားဝှက်များကို မိသားစုဝင်များနှင့်သာ ယခုလောလောဆယ် မျှဝေနိုင်သည်။ Google တစ်ခုလုံးတွင် သင့်ကုန်ပစ္စည်းနှင့် စာရင်းသွင်းမှာယူခြင်းများကို အကောင်းဆုံးအသုံးချနိုင်ရန် အဖွဲ့ဝင် ၆ ဦးအထိဖြင့် <ph name="BEGIN_LINK" />မိသားစုအဖွဲ့ ဖွဲ့ပါ<ph name="END_LINK" />။</translation>
@@ -8499,6 +8509,7 @@
 <translation id="678520006562636090">သင့် <ph name="DEVICE_TYPE" /> တွင် Google Lens ကို စမ်းကြည့်ပါ</translation>
 <translation id="6785594991951195537">သင့် <ph name="PASSWORD_DOMAIN" /> သုံးခြင်း</translation>
 <translation id="6785739405821760313">သိမ်းထားသော မျက်နှာပြင်များ ကြည့်နေသည်။ ရွှေ့ရန် တဘ်ကိုနှိပ်ပါ။</translation>
+<translation id="6785779729084003225">Chrome ရှိ Gemini ကိုဖွင့်ရန် <ph name="FOCUS_TOGGLE_HOTKEY" /> သုံးပါ</translation>
 <translation id="6785915470941880363">ပြောင်းပြန်လှိမ့်ခြင်း <ph name="LINK_BEGIN" />ပိုမိုလေ့လာရန်<ph name="LINK_END" /></translation>
 <translation id="67862343314499040">ခရမ်းပြာ</translation>
 <translation id="6786480815699355166">ပံ့ပိုးထားသော တိုက်ရိုက်စာတန်း ဘာသာစကားများကိုသာ ပြန်ဆိုနိုင်သည်</translation>
@@ -9584,7 +9595,7 @@
 <translation id="7517959947270534934">သင့်မိသားစုဝင်သည် စကားဝှက်များကို ယခု မရယူနိုင်ပါ။ Chrome အပ်ဒိတ်လုပ်ပြီး သူ၏စကားဝှက်များ စင့်ခ်လုပ်ခိုင်းပါ။</translation>
 <translation id="7518079994230200553">ဤရွေးချယ်စရာကို ယခုမရနိုင်ပါ။</translation>
 <translation id="7520766081042531487">ရုပ်ဖျက်ဌာန-: <ph name="SUBFRAME_SITE" /></translation>
-<translation id="752098910262610337">ဖြတ်လမ်းလင့်ခ်များ ပြရန်</translation>
+<translation id="752098910262610337">ဖြတ်လမ်းများ ပြရန်</translation>
 <translation id="7521430434164837205">Microsoft 365 ဖိုင်</translation>
 <translation id="7523117833414447032">စာလုံးကြီးများကို ဖတ်သည့်အခါ</translation>
 <translation id="7523585675576642403">ပရိုဖိုင်ကို အမည်ပြောင်းရန်</translation>
@@ -9784,6 +9795,7 @@
 <translation id="7660146600670077843">တဘ်ပေါ်တွင် ညာဘက်ခလုတ်ကို နှိပ်ပြီး “အုပ်စုအသစ်တွင် တဘ်ထည့်ရန်” ကို ရွေးနိုင်သည်</translation>
 <translation id="7661451191293163002">မှတ်ပုံတင်ခြင်း အသိအမှတ်ပြုလက်မှတ်ကို ရယူ၍ မရပါ။</translation>
 <translation id="7662283695561029522">စီစဉ်သတ်မှတ်ရန် တို့ပါ</translation>
+<translation id="7662535435481776002">ပြတ်သားမှုနိမ့်အလင်း</translation>
 <translation id="7663719505383602579">လက်ခံသူ − <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7663774460282684730">လက်ကွက်ဖြတ်လမ်း ရနိုင်သည်</translation>
 <translation id="7663859337051362114">eSIM ပရိုဖိုင် ထည့်ရန်</translation>

@@ -5564,6 +5564,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="4732799736617504962">Туташкан микрофон чуу басар функциясын гана колдоого ала алат</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (cол)</translation>
 <translation id="4733793249294335256">Жайгашкан жер</translation>
+<translation id="4734965478015604180">Туурасынан</translation>
 <translation id="473546211690256853">Бул аккаунтту <ph name="DOMAIN" /> башкарат</translation>
 <translation id="4735506354605317060">Тегерек курсор</translation>
 <translation id="4735793370946506039">Өркүндөтүлгөн коопсуз серептөө жөнүндө кеңири маалымат алыңыз.</translation>
@@ -5831,6 +5832,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="4901154724271753917">Жакында жабылгандарды жайып көрсөтүү</translation>
 <translation id="4901309472892185668"><ph name="EXPERIMENT_NAME" /> тажрыйбасы үчүн абалды тандаңыз.</translation>
 <translation id="49027928311173603">Серверден жүктөлүп алынган саясат жараксыз: <ph name="VALIDATION_ERROR" />.</translation>
+<translation id="490375751687810070">Тигинен</translation>
 <translation id="4906490889887219338">Тармактын жалпы файлдарын жөндөңүз же башкарыңыз. <ph name="LINK_BEGIN" />Кеңири маалымат<ph name="LINK_END" /></translation>
 <translation id="4906679076183257864">Демейкиге кайтаруу</translation>
 <translation id="4907129260985716018">Бул кеңейтүү сайттагы маалыматыңызды качан окуп, өзгөртө аларын тандаңыз</translation>
@@ -8503,6 +8505,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="678520006562636090">Google Lens'ти <ph name="DEVICE_TYPE" /> түзмөгүңүздө колдонуп көрүңүз</translation>
 <translation id="6785594991951195537"><ph name="PASSWORD_DOMAIN" /> сырсөзүн колдонуу</translation>
 <translation id="6785739405821760313">Сакталган иш такталар көрсөтүлүүдө. Өтүү үчүн өтмөктү басыңыз.</translation>
+<translation id="6785779729084003225">Chrome'догу Gemini'ды ачуу үчүн <ph name="FOCUS_TOGGLE_HOTKEY" /> баскычтарын басыңыз</translation>
 <translation id="6785915470941880363">Артка сыдыруу жөнүндө <ph name="LINK_BEGIN" />кеиңир маалымат<ph name="LINK_END" /></translation>
 <translation id="67862343314499040">Кызгылт көк</translation>
 <translation id="6786480815699355166">Ыкчам коштомо жазуулар колдоого алынган тилдерге гана которулат</translation>

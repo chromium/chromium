@@ -5559,6 +5559,7 @@ Bonyeza kitufe cha Ctrl kisha Alt na kitufe cha Kupunguza Mwangaza kwa wakati mm
 <translation id="4732799736617504962">Maikrofoni iliyounganishwa inaweza tu kutumia kipengele cha udhibiti wa kelele</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (Kushoto)</translation>
 <translation id="4733793249294335256">Eneo</translation>
+<translation id="4734965478015604180">Kimlalo</translation>
 <translation id="473546211690256853">Akaunti hii inadhibitiwa na <ph name="DOMAIN" /></translation>
 <translation id="4735506354605317060">Kielekezi cha duara</translation>
 <translation id="4735793370946506039">Pata maelezo zaidi kuhusu Kipengele cha Kuvinjari Salama Kilichoboreshwa.</translation>
@@ -5826,6 +5827,7 @@ Bonyeza kitufe cha Ctrl kisha Alt na kitufe cha Kupunguza Mwangaza kwa wakati mm
 <translation id="4901154724271753917">Panua kichupo kilichofungwa hivi karibuni</translation>
 <translation id="4901309472892185668">Chagua hali ya jaribio la <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="49027928311173603">Sera iliyopakuliwa kutoka kwenye seva ni batili: <ph name="VALIDATION_ERROR" />.</translation>
+<translation id="490375751687810070">Wima</translation>
 <translation id="4906490889887219338">Dhibiti au uweke mipangilio ya faili za kushiriki katika mtandao. <ph name="LINK_BEGIN" />Pata maelezo zaidi<ph name="LINK_END" /></translation>
 <translation id="4906679076183257864">Rejesha kwenye Chaguomsingi</translation>
 <translation id="4907129260985716018">Chagua wakati kiendelezi hiki kinaweza kusoma na kubadilisha data ya tovuti yako</translation>
@@ -8498,6 +8500,7 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="678520006562636090">Jaribu Lenzi ya Google kwenye <ph name="DEVICE_TYPE" /> yako</translation>
 <translation id="6785594991951195537">Ungependa kutumia nenosiri lako la <ph name="PASSWORD_DOMAIN" />?</translation>
 <translation id="6785739405821760313">Unaangalia maeneokazi yaliyohifadhiwa. Bonyeza kichupo ili usogeze.</translation>
+<translation id="6785779729084003225">Tumia <ph name="FOCUS_TOGGLE_HOTKEY" /> kufungua Gemini kwenye Chrome</translation>
 <translation id="6785915470941880363">Kusogeza kinyume <ph name="LINK_BEGIN" />Pata maelezo zaidi<ph name="LINK_END" /></translation>
 <translation id="67862343314499040">Zambarau iliyokolea</translation>
 <translation id="6786480815699355166">Lugha zinazotumiwa na kipengele cha Manukuu Papo Hapo ndizo tu zinazoweza kutafsiriwa</translation>

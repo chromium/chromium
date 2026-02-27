@@ -426,6 +426,7 @@
 <translation id="2478076885740497414">アプリをインストール</translation>
 <translation id="2482878487686419369">通知</translation>
 <translation id="2484513351006226581">キーボード レイアウトを切り替えるには <ph name="KEYBOARD_SHORTCUT" /> キーを押します。</translation>
+<translation id="2485422356828889247">アンインストール</translation>
 <translation id="2486214324139475545"><ph name="DESK_NAME" /> のプレビュー。使用中のデスクです。</translation>
 <translation id="2486405091093637109">「<ph name="DISPLAY_NAME" />」の解像度を <ph name="RESOLUTION" />（<ph name="REFRESH_RATE" /> Hz）に変更しました。確定しない場合、<ph name="TIMEOUT_SECONDS" /> 秒後に以前の設定に戻ります。</translation>
 <translation id="2487915095798731898">参加</translation>

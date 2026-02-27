@@ -695,6 +695,9 @@ Google Chrome ne može vratiti vaše postavke.</translation>
 <translation id="8041795619940733262">Pitajte Google<ph name="LINE_BREAK" />o ovoj kartici</translation>
 <translation id="80471789339884597">Hvala što ste instalirali. Morate ponovo pokrenuti sve preglednike prije nego što možete koristiti <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
+<translation id="8064965390968184078">1. Kliknite na <ph name="BUTTON_LABEL" /> u nastavku
+2. Kliknite na <ph name="BUTTON_2" /> u postavkama Windowsa
+3. Kliknite na <ph name="BUTTON_3" /> u obavještenju Windowsa da zakačite Chrome na traku zadataka radi brzog pristupa</translation>
 <translation id="8077579734294125741">Drugi profili u Chromeu</translation>
 <translation id="8086881907087796310">Instalacija nije uspjela jer vaš računar ne ispunjava minimalne hardverske zahtjeve.</translation>
 <translation id="8113883687556086139">Potvrdite identitet da koristite i sačuvate podatke Chromea na računu <ph name="ACCOUNT_EMAIL" /></translation>
@@ -773,6 +776,7 @@ Nove oznake se ne mogu sačuvati na vaš račun dok ne izbrišete neke. Ako se s
 <translation id="8914504000324227558">Ponovo pokreni Chrome</translation>
 <translation id="8922193594870374009">Da pošaljete broj s uređaja <ph name="ORIGIN" /> na svoj Android telefon, prijavite se u Chrome na oba uređaja.</translation>
 <translation id="8922998289262614701">Ukloni podatke aplikacije iz Chromea</translation>
+<translation id="8925636929359899517">Koristimo informacije da poboljšamo ovu uslugu. Pogledajte <ph name="BEGIN_LINK1" />Pravila privatnosti<ph name="END_LINK1" /> i <ph name="BEGIN_LINK2" />Uslove korištenja usluge<ph name="END_LINK2" />.</translation>
 <translation id="8936233353620149764">Uključite/isključite Gemini u Chromeu</translation>
 <translation id="8948460679427074738">Ekstenzija nije objavila prakse u vezi s privatnošću, kao što je način na koji prikuplja i koristi podatke. Chrome vam preporučuje da je uklonite.</translation>
 <translation id="8958307504142971576">Sada imate više dostupnih funkcija u Chromeu</translation>

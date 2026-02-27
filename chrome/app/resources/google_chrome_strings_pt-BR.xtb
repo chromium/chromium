@@ -72,6 +72,7 @@
 <translation id="1698376642261615901">O Google Chrome é um navegador que executa páginas e aplicativos da web em alta velocidade. É rápido, estável e fácil de usar. Navegue pela web de forma segura com proteção contra malware e phishing integrada ao Google Chrome.</translation>
 <translation id="1713301662689114961">{0,plural, =1{O Chrome será reiniciado em 1 hora}one{O Chrome será reiniciado em # hora}other{O Chrome será reiniciado em # horas}}</translation>
 <translation id="1722488837206509557">Assim, você pode selecionar os dispositivos disponíveis e mostrar conteúdo neles.</translation>
+<translation id="177180974022074201">Teste com o Gemini no Chrome</translation>
 <translation id="1786003790898721085">Verifique se sua conta está conectada ao Chrome no <ph name="TARGET_DEVICE_NAME" /> e tente fazer o envio novamente.</translation>
 <translation id="1786044937610313874">Abrir atalhos no Chrome</translation>
 <translation id="178701303897325119">Essa extensão não é mais compatível. O Chrome recomenda que você a remova.</translation>
@@ -526,6 +527,7 @@
 <translation id="6481963882741794338">Vincular o Chrome e outros Serviços do Google para personalização e outras finalidades</translation>
 <translation id="648319183876919572">O recurso "Navegação segura com proteção reforçada" protege você ainda mais contra sites e downloads perigosos</translation>
 <translation id="6489302989675808168">Ativada: o Chrome não pode conferir a origem dessa extensão</translation>
+<translation id="6491330562720922580">QR code para baixar o navegador Chrome em dispositivos móveis</translation>
 <translation id="6493527311031785448">O Google Chrome está tentando <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="6497147134301593682">O Chrome foi fechado automaticamente</translation>
 <translation id="6506909944137591434">O Chrome precisa da permissão de acesso à câmera para criar um mapa 3D do ambiente</translation>
@@ -687,6 +689,9 @@
 <translation id="8041795619940733262">Pergunte ao Google<ph name="LINE_BREAK" />sobre esta guia</translation>
 <translation id="80471789339884597">Agradecemos por fazer a instalação. É necessário reiniciar todos os navegadores antes de utilizar o <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
+<translation id="8064965390968184078">1. Clique em <ph name="BUTTON_LABEL" /> abaixo
+2. Clique em <ph name="BUTTON_2" /> nas configurações do Windows
+3. Clique em <ph name="BUTTON_3" /> na notificação do Windows para fixar o Chrome na barra de tarefas e ter acesso rápido</translation>
 <translation id="8077579734294125741">Outros perfis do Chrome</translation>
 <translation id="8086881907087796310">A instalação falhou porque o computador não atende aos requisitos mínimos de hardware.</translation>
 <translation id="8113883687556086139">Confirme sua identidade para usar e salvar os dados do Chrome na sua conta <ph name="ACCOUNT_EMAIL" /></translation>
@@ -765,6 +770,7 @@ Exclua alguns dos favoritos da sua conta para poder salvar novos. Se você sair 
 <translation id="8914504000324227558">Reiniciar o Google Chrome</translation>
 <translation id="8922193594870374009">Para enviar um número de <ph name="ORIGIN" /> ao seu smartphone Android, faça login no Chrome nos dois dispositivos.</translation>
 <translation id="8922998289262614701">Remover os dados deste app do Chrome</translation>
+<translation id="8925636929359899517">Usamos as informações para melhorar este serviço. Consulte a <ph name="BEGIN_LINK1" />Política de Privacidade<ph name="END_LINK1" /> e os <ph name="BEGIN_LINK2" />Termos de Serviço<ph name="END_LINK2" />.</translation>
 <translation id="8936233353620149764">Ativar/desativar o Gemini no Chrome</translation>
 <translation id="8948460679427074738">Essa extensão não publicou práticas de privacidade, como a forma de coleta e usos dos dados. O Chrome recomenda que você a remova.</translation>
 <translation id="8958307504142971576">Agora você tem mais recursos disponíveis no Chrome</translation>

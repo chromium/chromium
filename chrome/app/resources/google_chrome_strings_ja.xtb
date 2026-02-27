@@ -686,6 +686,9 @@
 <translation id="8041795619940733262">このタブについて <ph name="LINE_BREAK" />Google に質問する</translation>
 <translation id="80471789339884597">インストールいただきありがとうございます。<ph name="BUNDLE_NAME" /> を使用するにはすべてのブラウザを再起動してください。</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
+<translation id="8064965390968184078">1. 下の [<ph name="BUTTON_LABEL" />] をクリックします
+2.Windows の設定で [<ph name="BUTTON_2" />] をクリックします
+3.Windows の通知で [<ph name="BUTTON_3" />] をクリックすると、Chrome がタスクバーに固定され、すばやくアクセスできるようになります</translation>
 <translation id="8077579734294125741">その他の Chrome プロファイル</translation>
 <translation id="8086881907087796310">パソコンがハードウェアの最小要件を満たしていないため、インストールできませんでした。</translation>
 <translation id="8113883687556086139">アカウント「<ph name="ACCOUNT_EMAIL" />」で Chrome のデータを使用、保存するには、本人確認を行ってください</translation>
@@ -764,6 +767,7 @@
 <translation id="8914504000324227558">Chrome の再起動</translation>
 <translation id="8922193594870374009"><ph name="ORIGIN" /> から Android スマートフォンに番号を送信するには、両方のデバイスで Chrome にログインしてください。</translation>
 <translation id="8922998289262614701">Chrome からこのアプリのデータを削除する</translation>
+<translation id="8925636929359899517">情報はこのサービスの改善に役立てられます。<ph name="BEGIN_LINK1" />プライバシー ポリシー<ph name="END_LINK1" />と<ph name="BEGIN_LINK2" />利用規約<ph name="END_LINK2" />をご確認ください。</translation>
 <translation id="8936233353620149764">Gemini in Chrome を切り替える</translation>
 <translation id="8948460679427074738">この拡張機能は、データの収集方法や使用方法などのプライバシー保護の取り組みを公開していません。削除することをおすすめします。</translation>
 <translation id="8958307504142971576">Chrome で新機能をご利用いただけるようになりました</translation>

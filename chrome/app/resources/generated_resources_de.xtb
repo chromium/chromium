@@ -3424,7 +3424,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
         <ph name="BREAK" />
         <ph name="BREAK" />
         Über das Kartenmenü kannst du die Einstellungen verwalten und unter „Chrome anpassen“ kannst du weitere Optionen aufrufen.</translation>
-<translation id="3308134619352333507">Schaltfläche ausblenden</translation>
+<translation id="3308134619352333507">Button ausblenden</translation>
 <translation id="3308604065765626613">{GROUP_COUNT,plural, =1{Die Tabs bleiben auf diesem Gerät geöffnet, aber die Gruppe wird endgültig gelöscht.}other{Die Tabs bleiben auf diesem Gerät geöffnet, aber die Gruppen werden endgültig gelöscht.}}</translation>
 <translation id="3308852433423051161">Google Assistant wird geladen...</translation>
 <translation id="3309124184713871355">Bauwerke</translation>
@@ -5546,6 +5546,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="4732799736617504962">Das verbundene Mikrofon unterstützt nur die Geräuschunterdrückung</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" /> % (links)</translation>
 <translation id="4733793249294335256">Speicherort</translation>
+<translation id="4734965478015604180">Horizontal</translation>
 <translation id="473546211690256853">Dieses Konto wird von <ph name="DOMAIN" /> verwaltet.</translation>
 <translation id="4735506354605317060">Cursor einkreisen</translation>
 <translation id="4735793370946506039">Weitere Informationen zu „Erweitertes Safe Browsing“.</translation>
@@ -5812,6 +5813,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="4901154724271753917">Kürzlich geschlossene Tabs maximieren</translation>
 <translation id="4901309472892185668">Wähle den Teststatus für den Test „<ph name="EXPERIMENT_NAME" />“ aus.</translation>
 <translation id="49027928311173603">Die vom Server heruntergeladene Richtlinie ist ungültig: <ph name="VALIDATION_ERROR" />.</translation>
+<translation id="490375751687810070">Vertikal</translation>
 <translation id="4906490889887219338">Netzwerkfreigaben einrichten oder verwalten. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="4906679076183257864">Auf Standardeinstellung zurücksetzen</translation>
 <translation id="4907129260985716018">Festlegen, wann diese Erweiterung deine Websitedaten lesen und ändern darf</translation>
@@ -8034,7 +8036,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6470120577693311302">Aufleuchten bei Benachrichtigungen</translation>
 <translation id="6470499912143282503">Wenn du Tabs teilen und mit anderen zusammenarbeiten möchtest, melde dich in Chrome an und synchronisiere deinen Verlauf und deine Tabs. Du kannst dann auch auf allen deinen Geräten auf deine Passwörter und weitere Daten zugreifen.</translation>
 <translation id="6470823736074966819">Benachrichtigungen stummschalten</translation>
-<translation id="6472893788822429178">Schaltfläche „Startseite“ anzeigen</translation>
+<translation id="6472893788822429178">Button „Startseite“ anzeigen</translation>
 <translation id="6473315466413288899">Option auswählen</translation>
 <translation id="6474498546677193336">Die Aufhebung der Freigabe ist nicht möglich, weil eine Anwendung diesen Ordner verwendet. Die Freigabe des Ordners wird aufgehoben, wenn Linux das nächste Mal heruntergefahren wird.</translation>
 <translation id="6474884162850599008">Verbindung zu Google Drive-Konto aufheben</translation>
@@ -8480,6 +8482,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="678520006562636090">Google Lens auf deinem <ph name="DEVICE_TYPE" /> ausprobieren</translation>
 <translation id="6785594991951195537">Mit deinem <ph name="PASSWORD_DOMAIN" /></translation>
 <translation id="6785739405821760313">Gespeicherte Desktops werden angezeigt. Drücke zum Navigieren die Tabulatortaste.</translation>
+<translation id="6785779729084003225">Du kannst Gemini in Chrome mit <ph name="FOCUS_TOGGLE_HOTKEY" /> öffnen</translation>
 <translation id="6785915470941880363">Scrollrichtung umkehren – <ph name="LINK_BEGIN" />weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="67862343314499040">Violett</translation>
 <translation id="6786480815699355166">Übersetzungen sind nur in die unterstützten Sprachen für automatische Untertitel möglich</translation>

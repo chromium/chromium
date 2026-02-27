@@ -5554,6 +5554,7 @@
 <translation id="4732799736617504962">لا يوفِّر الميكروفون المتّصل سوى ميزة إلغاء الضوضاء</translation>
 <translation id="4733161265940833579">%<ph name="BATTERY_PERCENTAGE" /> (السماعة اليسرى)</translation>
 <translation id="4733793249294335256">الموقع</translation>
+<translation id="4734965478015604180">أفقي</translation>
 <translation id="473546211690256853">تتم إدارة هذا الحساب من خلال <ph name="DOMAIN" /></translation>
 <translation id="4735506354605317060">وضع دائرة حول مؤشر الماوس أثناء تحرّكه</translation>
 <translation id="4735793370946506039">تعرَّف على مزيد من المعلومات حول ميزة "الحماية المحسّنة للتصفّح الآمن".</translation>
@@ -5821,6 +5822,7 @@
 <translation id="4901154724271753917">توسيع قائمة علامات التبويب التي تم إغلاقها مؤخرًا</translation>
 <translation id="4901309472892185668">يمكنك اختيار حالة للتجربة <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="49027928311173603">السياسة التي تم تنزيلها من الخادم غير صالحة: <ph name="VALIDATION_ERROR" />.</translation>
+<translation id="490375751687810070">عمودي</translation>
 <translation id="4906490889887219338">إعداد خوادم مشاركة الملفات على الشبكة أو إدارتها <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="4906679076183257864">إعادة ضبط على الإعدادات التلقائية</translation>
 <translation id="4907129260985716018">اختيار الوقت الذي يمكن للإضافة فيه قراءة بيانات الموقع الإلكتروني وتغييرها</translation>
@@ -8501,6 +8503,7 @@
 <translation id="678520006562636090">‏"عدسة Google" بانتظارك على <ph name="DEVICE_TYPE" /></translation>
 <translation id="6785594991951195537">هل تريد استخدام كلمة المرور الخاصة بـ <ph name="PASSWORD_DOMAIN" />؟</translation>
 <translation id="6785739405821760313">‏يتم عرض أسطح المكتب المحفوظة. اضغط على مفتاح التبويب (Tab) للتنقّل بينها.</translation>
+<translation id="6785779729084003225">‏يمكنك الآن استخدام <ph name="FOCUS_TOGGLE_HOTKEY" /> لفتح "Gemini في Chrome"</translation>
 <translation id="6785915470941880363"><ph name="LINK_BEGIN" />المزيد من المعلومات عن<ph name="LINK_END" /> المحتوى المتحرك باتجاه عكسي</translation>
 <translation id="67862343314499040">بنفسجي</translation>
 <translation id="6786480815699355166">يمكن ترجمة مقاطع الشرح باللغات المتاحة فقط في ميزة "النسخ النصي التلقائي"</translation>
@@ -8940,7 +8943,7 @@
 <translation id="7068591156533195518">تم حظر "<ph name="APP_NAME" />" وبعض التطبيقات الأخرى على <ph name="DEVICE_TYPE" /></translation>
 <translation id="706949303827219454">تُفتح صفحة إعدادات الأمان في علامة تبويب جديدة</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{هناك كلمة مرور جديدة لهذا الموقع الإلكتروني}zero{ما مِن كلمات مرور جديدة لهذا الموقع الإلكتروني}two{هناك كلمتا مرور جديدتان لهذا الموقع الإلكتروني}few{هناك كلمات مرور جديدة لهذا الموقع الإلكتروني}many{هناك كلمات مرور جديدة لهذا الموقع الإلكتروني}other{هناك كلمات مرور جديدة لهذا الموقع الإلكتروني}}</translation>
-<translation id="7070484045139057854">يمكن أن يؤدي ذلك إلى قراءة بيانات الموقع الإلكتروني وتغييرها</translation>
+<translation id="7070484045139057854">يمكن لهذه الإضافة قراءة بيانات الموقع الإلكتروني وتغييرها</translation>
 <translation id="7072010813301522126">اسم الاختصار</translation>
 <translation id="7072078320324181561">بإمكان التطبيقات والمواقع الإلكترونية التي لديها أذونات تحديد الموقع الجغرافي وكذلك خدمات النظام استخدام موقعك الجغرافي. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="7074703793383805632">مجموعة <ph name="GROUP_NAME" />‏ <ph name="SHARED_STATE" /> - <ph name="OPENED_STATE" /></translation>

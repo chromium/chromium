@@ -5549,6 +5549,7 @@
 <translation id="4732799736617504962">कनेक्ट गरिएको माइकमा "न्वाइज क्यान्सलेसन" सुविधा मात्र प्रयोग गर्न मिल्छ</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (बायाँ)</translation>
 <translation id="4733793249294335256">स्थान</translation>
+<translation id="4734965478015604180">तेर्सो</translation>
 <translation id="473546211690256853">यो खातालाई <ph name="DOMAIN" /> ले व्यवस्थित गरेको छ</translation>
 <translation id="4735506354605317060">गोलाकार पोइन्टर</translation>
 <translation id="4735793370946506039">परिष्कृत Safe Browsing का बारेमा थप जान्नुहोस्।</translation>
@@ -5816,6 +5817,7 @@
 <translation id="4901154724271753917">हालसालै बन्द गरिएका ट्याबहरूको सूची एक्स्पान्ड गर्नुहोस्</translation>
 <translation id="4901309472892185668">परीक्षणको चरणमा रहेको <ph name="EXPERIMENT_NAME" /> नामक सुविधाको स्थिति चयन गर्नुहोस्।</translation>
 <translation id="49027928311173603">सर्भरबाट डाउनलोड गरिएको नीति अवैध छ: <ph name="VALIDATION_ERROR" /></translation>
+<translation id="490375751687810070">ठाडो</translation>
 <translation id="4906490889887219338">नेटवर्कको फाइल आदान प्रदान गर्ने कार्य सेटअप वा व्यवस्थापन गर्नुहोस्। <ph name="LINK_BEGIN" />थप जान्नुहोस्<ph name="LINK_END" /></translation>
 <translation id="4906679076183257864">रिसेट गरी डिफल्ट बनाउनुहोस्</translation>
 <translation id="4907129260985716018">यो एक्स्टेन्सनले कुन अवस्थामा तपाईंको साइट डेटा हेर्न र परिवर्तन गर्न पाउँछ भन्ने कुरा छनौट गर्नुहोस्</translation>
@@ -8487,6 +8489,7 @@
 <translation id="678520006562636090">आफ्नो <ph name="DEVICE_TYPE" /> मा Google लेन्स प्रयोग गरी हेर्नुहोस्</translation>
 <translation id="6785594991951195537">आफ्नो <ph name="PASSWORD_DOMAIN" /> प्रयोग गर्नुहोस्</translation>
 <translation id="6785739405821760313">सेभ गरिएका डेस्कहरू देखाइँदै छ। तपाईं नेभिगेट गर्न चाहनुहुन्छ भने ट्याब की थिच्नुहोस्।</translation>
+<translation id="6785779729084003225">Chrome मा उपलब्ध Gemini खोल्न <ph name="FOCUS_TOGGLE_HOTKEY" /> प्रयोग गर्नुहोस्</translation>
 <translation id="6785915470941880363">विपरीत स्क्रोलिङ <ph name="LINK_BEGIN" />थप जान्नुहोस्<ph name="LINK_END" /></translation>
 <translation id="67862343314499040">हल्का निलो</translation>
 <translation id="6786480815699355166">लाइभ क्याप्सनमा प्रयोग गर्न मिल्ने भाषाहरूमा मात्र अनुवाद गर्न सकिन्छ</translation>

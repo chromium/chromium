@@ -426,6 +426,7 @@ Pripojených je viacero zariadení (<ph name="DEVICECOUNT" />).</translation>
 <translation id="2478076885740497414">Inštalovať aplikáciu</translation>
 <translation id="2482878487686419369">Upozornenia</translation>
 <translation id="2484513351006226581">Stlačením klávesov <ph name="KEYBOARD_SHORTCUT" /> zmeníte rozloženie klávesnice.</translation>
+<translation id="2485422356828889247">Odinštalovať</translation>
 <translation id="2486214324139475545">Ukážka plochy <ph name="DESK_NAME" />. Plocha je aktívna.</translation>
 <translation id="2486405091093637109">Rozlíšenie obrazovky <ph name="DISPLAY_NAME" /> bolo zmenené na <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Ak to nepotvrdíte, predchádzajúce nastavenia budú obnovené o <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2487915095798731898">Pripojiť sa</translation>

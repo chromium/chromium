@@ -753,7 +753,7 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="1504253885059472207">Épingler la vue fractionnée</translation>
 <translation id="1504551620756424144">Les dossiers partagés sont disponibles sous Windows dans <ph name="BASE_DIR" />.</translation>
 <translation id="1505494256539862015">d'exporter les mots de passe</translation>
-<translation id="1505654899813338756">Vous pouvez regrouper des onglets pour rassembler des pages similaires et les enregistrer sur vos différents appareils</translation>
+<translation id="1505654899813338756">Regroupez les onglets pour rassembler des pages similaires et les enregistrer sur vos différents appareils</translation>
 <translation id="1506061864768559482">Moteur de recherche</translation>
 <translation id="1506187449813838456">Lire un ton plus haut</translation>
 <translation id="1507170440449692343">L'accès à votre caméra est bloqué pour cette page</translation>
@@ -5550,6 +5550,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="4732799736617504962">Le micro connecté ne prend en charge que la suppression du bruit</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" /> % (gauche)</translation>
 <translation id="4733793249294335256">Emplacement</translation>
+<translation id="4734965478015604180">Horizontal</translation>
 <translation id="473546211690256853">Ce compte est géré par <ph name="DOMAIN" />.</translation>
 <translation id="4735506354605317060">Cercle autour du pointeur</translation>
 <translation id="4735793370946506039">En savoir plus sur la navigation sécurisée avec protection renforcée.</translation>
@@ -5816,6 +5817,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="4901154724271753917">Développer "Récemment fermés"</translation>
 <translation id="4901309472892185668">Sélectionnez l'état du test pour <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="49027928311173603">La règle téléchargée depuis le serveur n'est pas valide : <ph name="VALIDATION_ERROR" />.</translation>
+<translation id="490375751687810070">Vertical</translation>
 <translation id="4906490889887219338">Configurer ou gérer des partages de fichiers en réseau. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="4906679076183257864">Rétablir le niveau de zoom par défaut</translation>
 <translation id="4907129260985716018">Précisez quand cette extension peut lire et modifier les données de votre site</translation>
@@ -8490,6 +8492,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="678520006562636090">Essayez Google Lens sur votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="6785594991951195537">Utiliser votre <ph name="PASSWORD_DOMAIN" /></translation>
 <translation id="6785739405821760313">Affichage des bureaux enregistrés. Appuyez sur Tabulation pour naviguer.</translation>
+<translation id="6785779729084003225">Utilisez <ph name="FOCUS_TOGGLE_HOTKEY" /> pour ouvrir Gemini dans Chrome</translation>
 <translation id="6785915470941880363">Inverser le défilement <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="67862343314499040">Mauve</translation>
 <translation id="6786480815699355166">Seules les langues prises en charge par Sous-titres instantanés peuvent être traduites</translation>

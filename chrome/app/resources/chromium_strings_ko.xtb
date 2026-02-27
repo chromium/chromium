@@ -589,6 +589,9 @@ Chromium에서 설정을 복구할 수 없습니다.</translation>
 <translation id="7384121030444253939">이 확장 프로그램은 더 이상 지원되지 않습니다. 대신 Chromium에서는 이 프로그램을 삭제할 것을 권장합니다.</translation>
 <translation id="7413153308467572558">중단한 위치에서 계속하기: Chromium은 다시 시작할 때마다 탭을 복원합니다. 이 기능을 사용 중지하려면 다음으로 이동하세요.</translation>
 <translation id="7427879960656355200">Chromium으로 비밀번호 가져오기</translation>
+<translation id="744815265653811511">1. 아래의 <ph name="BUTTON_LABEL" /> 버튼을 클릭합니다.
+2. Windows 설정에서 <ph name="BUTTON_2" /> 버튼을 클릭합니다.
+3. 빠른 액세스를 위해 Windows 알림에서 <ph name="BUTTON_3" /> 버튼을 클릭하여 Chromium을 작업 표시줄에 고정합니다.</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - 개발자용 Chromium</translation>
 <translation id="7450541714075000668">텍스트 복사됨</translation>
 <translation id="7451052299415159299">이 사이트에서 카메라에 액세스하려면 Chromium에 권한이 필요합니다</translation>
@@ -604,6 +607,7 @@ Chromium에서 설정을 복구할 수 없습니다.</translation>
 <translation id="761356813943268536">Chromium이 카메라와 마이크를 사용 중입니다.</translation>
 <translation id="7617377681829253106">더욱 업그레이드된 Chromium</translation>
 <translation id="7622753900276619808">이제 Chromium에서 더 많은 기능을 사용할 수 있습니다.</translation>
+<translation id="7624307931717240213">이 정보는 서비스 개선에 사용됩니다. 개인정보처리방침 및 서비스 약관을 확인하세요.</translation>
 <translation id="7649070708921625228">도움말</translation>
 <translation id="7656340475565475526">Chromium이 대신 탐색하도록 허용</translation>
 <translation id="7658239707568436148">취소</translation>

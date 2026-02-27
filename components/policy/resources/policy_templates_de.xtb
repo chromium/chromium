@@ -4541,7 +4541,7 @@ Ist diese Richtlinie nicht konfiguriert oder auf „False“ gesetzt, wird das a
 
 Wenn versucht wird, eine deaktivierte Chrome-App zu starten, wird eine Meldung angezeigt, in der dem Nutzer erklärt wird, warum die App nicht gestartet wurde, und er aufgefordert wird, sich an die IT-Abteilung zu wenden.
 
-Der Wert dieser Richtlinie wird bis zur Einstellung von Chrome-Apps in Kiosksitzungen berücksichtigt, die voraussichtlich in M151 erfolgt.</translation>
+Der Wert dieser Richtlinie wird bis zur Einstellung von Chrome-Apps in Kiosksitzungen berücksichtigt, die voraussichtlich mit der Einführung von Version M151 erfolgt.</translation>
 <translation id="4157003184375321727">Betriebssystem- und Firmware-Version melden</translation>
 <translation id="4157594634940419685">Zugriff auf native CUPS-Drucker erlauben</translation>
 <translation id="4158531549614162499">Google Drive-Synchronisierung über Mobilfunkverbindungen aktivieren</translation>

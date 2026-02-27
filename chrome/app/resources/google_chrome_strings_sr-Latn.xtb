@@ -695,6 +695,9 @@ Google Chrome ne može da vrati podešavanja.</translation>
 <translation id="8041795619940733262">Upitaj Google<ph name="LINE_BREAK" />o ovoj kartici</translation>
 <translation id="80471789339884597">Hvala vam na instalaciji. Morate da restartujete sve pregledače pre nego što počnete da koristite <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8064015586118426197">Chrome OS Flex</translation>
+<translation id="8064965390968184078">1. Kliknite na <ph name="BUTTON_LABEL" /> u nastavku
+2. Kliknite na <ph name="BUTTON_2" /> u podešavanjima Windows-a
+3. Kliknite na <ph name="BUTTON_3" /> u Windows obaveštenju da biste zakačili Chrome na traku zadataka radi brzog pristupa</translation>
 <translation id="8077579734294125741">Drugi Chrome profili</translation>
 <translation id="8086881907087796310">Instaliranje nije uspelo zato što računar ne ispunjava minimalne zahteve za hardver.</translation>
 <translation id="8113883687556086139">Potvrdite identitet da biste koristili i sačuvali Chrome podatke na nalogu, <ph name="ACCOUNT_EMAIL" /></translation>
@@ -773,6 +776,7 @@ Ne možete da sačuvate nove obeleživače na nalogu dok ne izbrišete neke. Ako
 <translation id="8914504000324227558">Ponovo pokreni Chrome</translation>
 <translation id="8922193594870374009">Da biste poslali broj sa <ph name="ORIGIN" /> na Android telefon, prijavite se u Chrome na oba uređaja.</translation>
 <translation id="8922998289262614701">Ukloni podatke ove aplikacije iz Chrome-a</translation>
+<translation id="8925636929359899517">Informacije koristimo da bismo poboljšali ovu uslugu. Pogledajte <ph name="BEGIN_LINK1" />politiku privatnosti<ph name="END_LINK1" /> i <ph name="BEGIN_LINK2" />uslove korišćenja usluge<ph name="END_LINK2" />.</translation>
 <translation id="8936233353620149764">Uključite ili isključite Gemini u Chrome-u</translation>
 <translation id="8948460679427074738">Ovaj dodatak nije objavio prakse privatnosti, na primer, kako prikuplja i koristi podatke. Chrome preporučuje da ga uklonite.</translation>
 <translation id="8958307504142971576">Sada imate još funkcija dostupnih u Chrome-u</translation>

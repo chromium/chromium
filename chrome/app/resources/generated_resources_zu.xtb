@@ -5563,6 +5563,7 @@ Sebenzisa u-Ctrl + Alt + Brightness down ukuze uhlehlise isithombe.</translation
 <translation id="4732799736617504962">I-mic exhunyiwe ingakwazi ukusekela ukukhanselwa komsindo kuphela</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (Kwesobunxele)</translation>
 <translation id="4733793249294335256">Indawo</translation>
+<translation id="4734965478015604180">Okuvundlile</translation>
 <translation id="473546211690256853">Le akhawunti iphethwe yi-<ph name="DOMAIN" /></translation>
 <translation id="4735506354605317060">Kokolozela isikhombi</translation>
 <translation id="4735793370946506039">Funda kabanzi mayelana Nokuphequlula Ngokuphepha Okugqamile.</translation>
@@ -5830,6 +5831,7 @@ Sebenzisa u-Ctrl + Alt + Brightness down ukuze uhlehlise isithombe.</translation
 <translation id="4901154724271753917">Nweba okusanda kuvalwa</translation>
 <translation id="4901309472892185668">Khetha isimo sokuhlola sohlolo lwe-<ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="49027928311173603">Inqubomgomo elandwe kusuka kuseva ayivumelekile: <ph name="VALIDATION_ERROR" />.</translation>
+<translation id="490375751687810070">Okuqondile</translation>
 <translation id="4906490889887219338">Setha noma phatha ukwabelana kwefayela lenethiwekhi. <ph name="LINK_BEGIN" />Funda kabanzi<ph name="LINK_END" /></translation>
 <translation id="4906679076183257864">Sethela kabusha kokuzenzakalelayo</translation>
 <translation id="4907129260985716018">Khetha ukuthi lesi sandiso singafunda futhi siguqule idatha yesayithi lakho</translation>
@@ -8505,6 +8507,7 @@ Unamaphasiwedi onakalisiwe angu-# ngokwengeziwe. Umphathi Wephasiwedi Ye-Google 
 <translation id="678520006562636090">Zama iGoogle Lens ku-<ph name="DEVICE_TYPE" /> yakho</translation>
 <translation id="6785594991951195537">Sebenzisa i-<ph name="PASSWORD_DOMAIN" /> yakho</translation>
 <translation id="6785739405821760313">Ukubuka amadeski alondoloziwe. Cindezela ithebhu ukuze ufune.</translation>
+<translation id="6785779729084003225">Sebenzisa i-<ph name="FOCUS_TOGGLE_HOTKEY" /> ukuze uvule iGemini kuChrome</translation>
 <translation id="6785915470941880363">Skrolela emuva <ph name="LINK_BEGIN" />Funda kabanzi<ph name="LINK_END" /></translation>
 <translation id="67862343314499040">Okuvayolethi</translation>
 <translation id="6786480815699355166">Kungahunyushwa kuphela izilimi ezisekelwa Okushuthwe Bukhoma</translation>

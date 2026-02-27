@@ -687,6 +687,9 @@ Bəzi funksiyalar əlçatmaz ola bilər. Xüsusi profil direktoriyası göstəri
 <translation id="8041795619940733262">Google-dan<ph name="LINE_BREAK" />bu tab haqqında soruşun</translation>
 <translation id="80471789339884597">Quraşdırdığınız üçün təşəkkür edirik. <ph name="BUNDLE_NAME" /> istifadə etməzdən əvvəl bütün brauzerlərinizi yenidən başlatmalısınız.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
+<translation id="8064965390968184078">1. Aşağıdakı <ph name="BUTTON_LABEL" /> düyməsinə klikləyin
+2. Windows ayarlarında <ph name="BUTTON_2" /> düyməsinə klikləyin
+3. Sürətli giriş üçün Chrome-u tapşırıq panelinə bərkitmək məqsədilə Windows bildirişində <ph name="BUTTON_3" /> düyməsinə klikləyin</translation>
 <translation id="8077579734294125741">Digər Chrome profilləri</translation>
 <translation id="8086881907087796310">Kompüteriniz minimum avadanlıq tələblərinə cavab vermədiyi üçün quraşdırma alınmadı.</translation>
 <translation id="8113883687556086139">Chrome datasını hesabınızda (<ph name="ACCOUNT_EMAIL" />) istifadə etmək və yadda saxlamaq üçün kimliyinizi doğrulayın</translation>
@@ -765,6 +768,7 @@ Bəzilərini silənə qədər yeni əlfəcinləri hesabınızda yadda saxlamaq o
 <translation id="8914504000324227558">Chrome'u yenidən başladın</translation>
 <translation id="8922193594870374009"><ph name="ORIGIN" /> cihazından Android telefonunuza nömrə göndərmək üçün hər iki cihazda Chrome'a daxil olun.</translation>
 <translation id="8922998289262614701">Bu tətbiqin datası Chrome-dan silinsin?</translation>
+<translation id="8925636929359899517">Məlumatdan bu xidməti təkmilləşdirmək üçün istifadə edirik. <ph name="BEGIN_LINK1" />Məxfilik Siyasətinə<ph name="END_LINK1" /> və <ph name="BEGIN_LINK2" />Xidmət Şərtlərinə<ph name="END_LINK2" /> baxın.</translation>
 <translation id="8936233353620149764">Chrome-da Gemini-ı yandırın/söndürün</translation>
 <translation id="8948460679427074738">Bu artırma datanın toplanma və istifadə qaydası kimi məxfilik təcrübələrini dərc etməyib. Chrome onu silməyinizi tövsiyə edir.</translation>
 <translation id="8958307504142971576">Artıq Chrome-da sizin üçün daha çox funksiya əlçatandır</translation>

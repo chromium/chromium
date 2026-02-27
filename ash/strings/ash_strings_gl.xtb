@@ -426,6 +426,7 @@ Hai <ph name="DEVICECOUNT" /> dispositivos conectados.</translation>
 <translation id="2478076885740497414">Instalar aplicación</translation>
 <translation id="2482878487686419369">Notificacións</translation>
 <translation id="2484513351006226581">Para cambiar o deseño de teclado, preme <ph name="KEYBOARD_SHORTCUT" />.</translation>
+<translation id="2485422356828889247">Desinstalar</translation>
 <translation id="2486214324139475545">Vista previa de <ph name="DESK_NAME" />. Escritorio activo.</translation>
 <translation id="2486405091093637109">A resolución de <ph name="DISPLAY_NAME" /> pasou a ser <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Se non confirmas o cambio, a configuración anterior restaurarase dentro de <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2487915095798731898">Unirse</translation>

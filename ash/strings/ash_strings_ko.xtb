@@ -426,6 +426,7 @@
 <translation id="2478076885740497414">앱 설치</translation>
 <translation id="2482878487686419369">알림</translation>
 <translation id="2484513351006226581">키보드 레이아웃을 전환하려면 <ph name="KEYBOARD_SHORTCUT" />을(를) 누르세요.</translation>
+<translation id="2485422356828889247">제거</translation>
 <translation id="2486214324139475545"><ph name="DESK_NAME" /> 미리보기입니다. 활성 데스크입니다.</translation>
 <translation id="2486405091093637109">"<ph name="DISPLAY_NAME" />" 디스플레이가 <ph name="RESOLUTION" />(<ph name="REFRESH_RATE" />Hz) 해상도로 변경되었습니다. 확인하지 않으면 <ph name="TIMEOUT_SECONDS" /> 후 이전 설정으로 복원됩니다.</translation>
 <translation id="2487915095798731898">가입</translation>

@@ -281,6 +281,7 @@
 <translation id="2205701497928406883">‫<ph name="TAB_TITLE" />، پن کردہ اشتراک کا ٹیب</translation>
 <translation id="22091350895006575">صارف نام شامل کریں</translation>
 <translation id="221494669172414749">‏پروفائل لاک کے بغیر Chrome کھولنے سے، کار سے آپ کے محفوظ کردہ پاس ورڈز اور ادائیگی کے طریقے ہٹ جائیں گے۔ پروفائل لاک کا استعمال کرنے سے یہ ڈیٹا محفوظ رہتا ہے۔</translation>
+<translation id="2226826835915474236">غیر فعال شارٹ کٹس</translation>
 <translation id="2227179592712503583">تجویز ہٹائیں</translation>
 <translation id="2227444325776770048"><ph name="USER_FULL_NAME" /> کے بطور جاری رکھیں</translation>
 <translation id="2230777942707397948">خالی ونڈو</translation>
@@ -1655,6 +1656,7 @@
 <translation id="7740287852186792672">تلاش کے نتائج</translation>
 <translation id="774403695779169686">‫<ph name="TAB_TITLE" />، منتخب کردہ اشتراک کا پوشیدگی ٹیب</translation>
 <translation id="774876555279732384">‏آٹو فِل سروسز کا نظم <ph name="BEGIN_LINK" />Android کی ترتیبات<ph name="END_LINK" /> میں بھی کیا جاتا ہے۔</translation>
+<translation id="7758884017823246335">سائٹ کی تلاش شامل کریں</translation>
 <translation id="7759809451544302770">اختیاری</translation>
 <translation id="7762668264895820836">‏SD کارڈ <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">پتہ شامل کریں</translation>
@@ -1886,6 +1888,7 @@
 <translation id="8634050254805484913">باریک اسکرینز پر پوشیدہ</translation>
 <translation id="8635399646025169806">ٹیب گروپ کو برقرار رکھیں؟</translation>
 <translation id="8636825310635137004">اپنے دیگر آلات سے اپنے ٹیبز حاصل کرنے کیلئے، مطابقت پذیری کو آن کریں۔</translation>
+<translation id="8639963783467694461">آٹو فل ترتیبات</translation>
 <translation id="8662474268934425487"><ph name="SITE_ETLD_PLUS_ONE" /> میں سائن ان کریں</translation>
 <translation id="8664979001105139458">فائل کا نام پہلے سے موجود ہے</translation>
 <translation id="8676276370198826499"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> کے ساتھ <ph name="SITE_ETLD_PLUS_ONE" /> میں سائن اپ کریں</translation>
@@ -1934,6 +1937,7 @@
 <translation id="8865415417596392024">‏آپ کے اکاؤنٹ میں Chrome کا ڈیٹا</translation>
 <translation id="8872506776304248286">ایپ میں کھولیں</translation>
 <translation id="8890668505403261809">اپنے پوشیدگی ٹیبز تلاش کریں</translation>
+<translation id="8892234476517513962">آپ پہلے سے ہی سائن ان ہیں</translation>
 <translation id="8894890673032951011">‫<ph name="TAB_TITLE" />، منتخب کردہ ریکارڈنگ پوشیدگی ٹیب</translation>
 <translation id="8898822736010347272">‏آپ کے ملاحظہ کئے جانے والے چند صفحات کے URLs، سسٹم کی محدود معلومات اور صفحے کا کچھ مواد Google کو بھیجتا ہے تاکہ نئے خطرات کا پتا لگانے اور ویب پر موجود سبھی کی حفاظت میں مدد مل سکے۔</translation>
 <translation id="8903921497873541725">زوم ان کریں</translation>

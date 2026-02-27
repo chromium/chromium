@@ -281,6 +281,7 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="2205701497928406883"><ph name="TAB_TITLE" />, Umebandika Kichupo Kinachowasilisha</translation>
 <translation id="22091350895006575">Weka jina la mtumiaji</translation>
 <translation id="221494669172414749">Hatua ya kufungua Chrome bila kufuli la wasifu itaondoa manenosiri uliyohifadhi na njia za kulipa kwenye gari. Kutumia kufuli la wasifu huimarisha usalama wa data hii.</translation>
+<translation id="2226826835915474236">Njia za mkato ambazo hazitumiki</translation>
 <translation id="2227179592712503583">Ondoa pendekezo</translation>
 <translation id="2227444325776770048">Endelea ukitumia <ph name="USER_FULL_NAME" /></translation>
 <translation id="2230777942707397948">Dirisha tupu</translation>
@@ -1655,6 +1656,7 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />futa data ya Chrome kweny
 <translation id="7740287852186792672">Matokeo ya utafutaji</translation>
 <translation id="774403695779169686"><ph name="TAB_TITLE" />, Umechagua Kichupo cha Faragha Kinachowasilisha</translation>
 <translation id="774876555279732384">Huduma za kujaza kiotomatiki zinadhibitiwa pia katika <ph name="BEGIN_LINK" />Mipangilio ya Android<ph name="END_LINK" />.</translation>
+<translation id="7758884017823246335">Weka utafutaji wa tovuti</translation>
 <translation id="7759809451544302770">Ya hiari</translation>
 <translation id="7762668264895820836">Kadi ya SD ya <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">Ongeza anwani</translation>
@@ -1886,6 +1888,7 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />futa data ya Chrome kweny
 <translation id="8634050254805484913">Imefichwa kwenye skrini ndogo</translation>
 <translation id="8635399646025169806">Ungependa kuhifadhi kikundi cha vichupo?</translation>
 <translation id="8636825310635137004">Ili upate vichupo kutoka kwenye vifaa vyako vingine, washa kipengele cha usawazishaji.</translation>
+<translation id="8639963783467694461">Mipangilio ya Kujaza Kiotomatiki</translation>
 <translation id="8662474268934425487">Ingia katika akaunti ya <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8664979001105139458">Jina la faili tayari lipo</translation>
 <translation id="8676276370198826499">Jisajili katika <ph name="SITE_ETLD_PLUS_ONE" /> ukitumia <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -1934,6 +1937,7 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />futa data ya Chrome kweny
 <translation id="8865415417596392024">Data ya Chrome kwenye akaunti yako</translation>
 <translation id="8872506776304248286">Fungua katika programu</translation>
 <translation id="8890668505403261809">Tafuta kwenye vichupo vya Faragha</translation>
+<translation id="8892234476517513962">Tayari umeingia katika akaunti</translation>
 <translation id="8894890673032951011"><ph name="TAB_TITLE" />, Umechagua Kichupo cha Faragha Kinachorekodi</translation>
 <translation id="8898822736010347272">Hutuma URL za baadhi ya kurasa unazotembelea, maelezo machache ya mfumo na baadhi ya maudhui ya kurasa kwa Google, ili kusaidia kugundua na kuzuia vitisho vipya na kulinda kila mtu kwenye wavuti.</translation>
 <translation id="8903921497873541725">Kuza karibu</translation>

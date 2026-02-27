@@ -17,7 +17,6 @@
 <translation id="1138691154716715755">Sa unang bahagi ng buwang ito</translation>
 <translation id="1150565364351027703">Sunglasses</translation>
 <translation id="115443833402798225">Hangul Ahnmatae</translation>
-<translation id="1155759005174418845">Catalan</translation>
 <translation id="1168100932582989117">Mga server ng pangalan ng Google</translation>
 <translation id="1170788066030116158">Petsa ng pagkuha</translation>
 <translation id="1172970565351728681">Humigit-kumulang <ph name="REMAINING_TIME" /> ang natitira</translation>
@@ -61,12 +60,10 @@
 <translation id="146691674290220697">Hindi makopya ang <ph name="NUMBER_OF_FILES" /> (na) file dahil naka-encrypt ang mga ito.</translation>
 <translation id="1471718551822868769">Slovak</translation>
 <translation id="1482884275703521657">Finnish</translation>
-<translation id="148466539719134488">Swiss</translation>
 <translation id="1497522201463361063">Hindi mapalatan ang pangalan "<ph name="FILE_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1499943022354839699">English (US) na may Dvorak keyboard</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - Host</translation>
 <translation id="1521655867290435174">Google Sheets</translation>
-<translation id="1547964879613821194">Canadian English</translation>
 <translation id="1556189134700913550">Ilapat sa lahat</translation>
 <translation id="1561842594491319104">Mga Chrome device</translation>
 <translation id="1572585716423026576">Itakda bilang wallpaper</translation>
@@ -120,8 +117,6 @@
 <translation id="1920670151694390848">Malayalam Transliteration</translation>
 <translation id="1920798810075583923">Pakwan</translation>
 <translation id="1924372192547904021">Na-format ang <ph name="DRIVE_NAME" /></translation>
-<translation id="1931134289871235022">Slovak</translation>
-<translation id="1936717151811561466">Finnish</translation>
 <translation id="1942765061641586207">Resolution ng larawan</translation>
 <translation id="1972984168337863910">I-expand ang mga panel ng feedback ng mga file</translation>
 <translation id="1995337122023280937">Pumunta sa lokasyon ng file</translation>
@@ -199,7 +194,6 @@
 <translation id="2541377937973966830">Read only ang mga nilalaman ng folder na ito. Hindi sinusuportahan ang ilang aktibidad.</translation>
 <translation id="2542049655219295786">Talahanayan ng Google</translation>
 <translation id="2544853746127077729">Tinanggihan ng network ang certificate sa pagpapatunay</translation>
-<translation id="255937426064304553">US international</translation>
 <translation id="2563185590376525700">Palaka</translation>
 <translation id="2578394532502990878">Tamil Phonetic</translation>
 <translation id="2579959351793446050">Odia</translation>
@@ -220,7 +214,6 @@
 <translation id="2735623501230989521">Bigyan ng pahintulot ang Parallels Desktop na ma-access ang mga file sa folder na <ph name="FOLDER_NAME" /></translation>
 <translation id="2764206540577097904">Nagamit mo na ang lahat ng iyong indibidwal na storage sa Google Workspace.</translation>
 <translation id="2771816809568414714">Keso</translation>
-<translation id="2781645665747935084">Belgian</translation>
 <translation id="2802583107108007218">Matuto pa tungkol sa mga paghihigpit na ito</translation>
 <translation id="2803375539583399270">Ilagay ang PIN</translation>
 <translation id="2819519502129272135">Naka-off ang pag-sync ng file</translation>
@@ -228,15 +221,11 @@
 <translation id="2830077785865012357">Chinese Zhuyin</translation>
 <translation id="2843806747483486897">Baguhin ang default...</translation>
 <translation id="2873951654529031587">Trash</translation>
-<translation id="288024221176729610">Czech</translation>
 <translation id="2887525882758501333">PDF na dokumento</translation>
 <translation id="2888807692577297075">Walang mga item na tumutugma sa &lt;b&gt;"<ph name="SEARCH_STRING" />"&lt;/b&gt;</translation>
 <translation id="2894654529758326923">Impormasyon</translation>
-<translation id="2902734494705624966">US extended</translation>
 <translation id="2904378509913846215">Mayroon nang folder na may pangalang "<ph name="FILENAME" />." Gusto mo ba itong palitan ng folder na inililipat mo?</translation>
 <translation id="290843123675549676">Marathi</translation>
-<translation id="2923240520113693977">Estonian</translation>
-<translation id="2938685643439809023">Mongolian</translation>
 <translation id="2943503720238418293">Gumamit ng mas maikling pangalan</translation>
 <translation id="2949781154072577687">Fino-format ang <ph name="DRIVE_NAME" />...</translation>
 <translation id="2951236788251446349">Jellyfish</translation>
@@ -263,14 +252,10 @@
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (hardware-backed)</translation>
 <translation id="3188257591659621405">Aking mga file</translation>
 <translation id="3194553149358267393">Walang kamakailang audio file</translation>
-<translation id="3197563288998582412">UK Dvorak</translation>
 <translation id="3202131003361292969">Path</translation>
 <translation id="3205852408225871810">Portuguese (Brazil)</translation>
-<translation id="3224239078034945833">Canadian Multilingual</translation>
 <translation id="3236289833370040187">Ililipat ang pagmamay-ari sa <ph name="DESTINATION_DOMAIN" />.</translation>
-<translation id="3241720467332021590">Irish</translation>
 <translation id="3248185426436836442">Nakabinbin</translation>
-<translation id="3252266817569339921">Pranses</translation>
 <translation id="3253225298092156258">Hindi available</translation>
 <translation id="3254434849914415189">Piliin ang default na app para sa mga <ph name="FILE_TYPE" /> na file:</translation>
 <translation id="3255159654094949700">Arabic</translation>
@@ -285,7 +270,6 @@
 <translation id="3293023191599135697">Hindi sinusuportahan ang mga WEP network</translation>
 <translation id="3295006446256079333">Volume na ito</translation>
 <translation id="3295357220137379386">Busy ang device</translation>
-<translation id="3296763833017966289">Georgian</translation>
 <translation id="3307875152560779385">Ukrainian</translation>
 <translation id="3326821416087822643">Sini-zip ang <ph name="FILE_NAME" />...</translation>
 <translation id="3335337277364016868">Taon kung kailan na-record</translation>
@@ -306,7 +290,6 @@
 <translation id="3486821258960016770">Mongolian</translation>
 <translation id="3509680540198371098">Network <ph name="NETWORK_INDEX" /> ng <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Lakas ng Signal <ph name="SIGNAL_STRENGTH" />%, Mga Detalye</translation>
 <translation id="3511705761158917664">Inihahandang i-sync ang <ph name="NUMBER_OF_ITEMS" /> (na) item...</translation>
-<translation id="3522708245912499433">Portuguese</translation>
 <translation id="3523225005467146490">1 folder ang na-share sa <ph name="VM_NAME" /></translation>
 <translation id="3524311639100184459">Mag-ingat: Ang mga file na ito ay pansamantala lang at puwedeng awtomatikong ma-delete para magbakante ng espasyo sa disk.  <ph name="BEGIN_LINK" />Matuto Pa<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Folder</translation>
@@ -317,12 +300,9 @@
 <translation id="3556731189587832921">English (US) na may International PC keyboard</translation>
 <translation id="3557414470514932909">Inililipat ang <ph name="FILE_NAME" /> sa trash</translation>
 <translation id="3567221313191587603">Pumili ng file, at i-on ang <ph name="OFFLINE_CHECKBOX_NAME" /> para sa offline na pag-access sa iyong mga file.</translation>
-<translation id="357479282490346887">Lithuanian</translation>
 <translation id="3587482841069643663">Lahat</translation>
 <translation id="3592251141500063301">Hindi magawang available offline ang <ph name="FILE_NAME" /></translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
-<translation id="3603385196401704894">Canadian French</translation>
-<translation id="3606220979431771195">Turkish-F</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3619115746895587757">Cappuccino</translation>
 <translation id="3619593063686672873">Walang kamakailang video</translation>
@@ -343,7 +323,6 @@
 <translation id="3786301125658655746">Naka-offline ka</translation>
 <translation id="3789841737615482174">Mag-install</translation>
 <translation id="3793469551756281394">Humigit-kumulang <ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" /> ang natitira</translation>
-<translation id="3801082500826908679">Faroese</translation>
 <translation id="3809272675881623365">Kuneho</translation>
 <translation id="3810973564298564668">Pamahalaan</translation>
 <translation id="3811408895933919563">English (Pakistan)</translation>
@@ -351,10 +330,8 @@
 <translation id="3817579325494460411">Hindi naibigay</translation>
 <translation id="3819448694985509187">Mali ang PIN. Mayroon ka na lang 1 natitirang pagsubok.</translation>
 <translation id="3830674330436234648">Walang available na playback</translation>
-<translation id="383652340667548381">Serbian</translation>
 <translation id="3839045880592694915">Hindi pinapayagan ng iyong carrier na kumonekta ang modem mo. Makipag-ugnayan sa iyong carrier para sa higit pang detalye.</translation>
 <translation id="385051799172605136">Bumalik</translation>
-<translation id="3855472144336161447">German Neo 2</translation>
 <translation id="3858860766373142691">Pangalan</translation>
 <translation id="3899991606604168269">French (Canada) na may Multilingual keyboard</translation>
 <translation id="3901991538546252627">Kumokonekta sa <ph name="NAME" /></translation>
@@ -394,7 +371,6 @@
 <translation id="4261901459838235729">Presentation ng Google</translation>
 <translation id="4277536868133419688">Naka-on ang filter na <ph name="FILTER_NAME" />.</translation>
 <translation id="4290535918735525311">1 folder ang naibahagi sa Linux</translation>
-<translation id="4299729908419173967">Brazilian</translation>
 <translation id="4302605047395093221">Kakailanganin ng sinumang gumagamit ng device na ito na ilagay ang PIN para makakonekta sa mobile network na ito</translation>
 <translation id="4303531889494116116">Busy ang network na ito. Subukan ulit sa ibang pagkakataon.</translation>
 <translation id="4309915981827077375">Pangkalahatang impormasyon</translation>
@@ -430,7 +406,6 @@
 <translation id="4472575034687746823">Magsimula</translation>
 <translation id="4474142134969976028">Walang tumutugmang resulta</translation>
 <translation id="4477002475007461989">Romanian</translation>
-<translation id="4477219268485577442">Bulgarian phonetic</translation>
 <translation id="4508265954913339219">Nabigo ang pag-activate</translation>
 <translation id="4509667233588080747">English (US) na may Workman International keyboard</translation>
 <translation id="4527800702232535228">Nakabahagi ang folder sa Parallels Desktop</translation>
@@ -451,20 +426,17 @@
 <translation id="4658782175094886150">Tao sa snow</translation>
 <translation id="4669606053856530811">Mawawalan ng access ang mga miyembro ng '<ph name="SOURCE_NAME" />' maliban na lang kung ibinahagi sa kanila ang mga item na ito.</translation>
 <translation id="467809019005607715">Google Slides</translation>
-<translation id="4690246192099372265">Swedish</translation>
 <translation id="4693155481716051732">Sushi</translation>
 <translation id="4694604912444486114">Unggoy</translation>
 <translation id="469612310041132144">Chinese Quick</translation>
 <translation id="4697043402264950621">Nakabukud-bukod ang listahan ng file ayon sa <ph name="COLUMN_NAME" /> sa pataas na pagkakasunud-sunod.</translation>
 <translation id="469897186246626197">Idinisenyo ang file na ito para sa isang PC na gumagamit ng Windows software. Hindi ito compatible sa iyong device na gumagamit ng ChromeOS. <ph name="BEGIN_LINK_HELP" />Matuto Pa<ph name="END_LINK_HELP" /> tungkol sa pagbubukas ng mga file sa ChromeOS.</translation>
 <translation id="4706042980341760088">Tamil na may Typewriter keyboard</translation>
-<translation id="4711094779914110278">Turkish</translation>
 <translation id="4712283082407695269">Binubuksan ang "<ph name="PATH" />"</translation>
 <translation id="4720185134442950733">Network ng mobile data</translation>
 <translation id="4725096204469550614">Sa unang bahagi ng taong ito</translation>
 <translation id="4725511304875193254">Corgi</translation>
 <translation id="4737050008115666127">Landing</translation>
-<translation id="4747271164117300400">Macedonian</translation>
 <translation id="4759238208242260848">Mga Download </translation>
 <translation id="4779041693283480986">Portuguese (Portugal)</translation>
 <translation id="4779136857077979611">Onigiri</translation>
@@ -478,7 +450,6 @@
 <translation id="4826849268470072925">Tamil ITRANS</translation>
 <translation id="4843566743023903107">Mga Chromebase</translation>
 <translation id="4850886885716139402">View</translation>
-<translation id="485316830061041779">German</translation>
 <translation id="4862885579661885411">Mga setting ng Mga File</translation>
 <translation id="4867079195717347957">I-click para pagbukud-bukurin ang column sa pababang pagkakasunud-sunod.</translation>
 <translation id="4867297348137739678">Nakaraang linggo</translation>
@@ -515,13 +486,11 @@
 <translation id="5081517858322016911">Ide-delete ang <ph name="TOTAL_FILE_SIZE" /> ng mga file</translation>
 <translation id="508423945471810158">Inililipat ang <ph name="NUMBER_OF_ITEMS" /> (na) item sa <ph name="FOLDER_NAME" /></translation>
 <translation id="509429900233858213">May naganap na error.</translation>
-<translation id="5098629044894065541">Hebrew</translation>
 <translation id="5102922915594634436">Pamahalaan ang mga naka-sync na folder</translation>
 <translation id="5109254780565519649">Nagka-error. Posibleng hindi na-restore ang ilang item.</translation>
 <translation id="5110329002213341433">English (Canada)</translation>
 <translation id="5119780910075847424">Naka-pause ang pag-sync</translation>
 <translation id="5123433949759960244">Basketball</translation>
-<translation id="5129662217315786329">Polish</translation>
 <translation id="5144820558584035333">Hangul 3 Set (390)</translation>
 <translation id="5145331109270917438">Petsa ng pagbabago</translation>
 <translation id="515594325917491223">Chess</translation>
@@ -530,12 +499,10 @@
    <ph name="LINE_BREAKS" />
    Maaaring magsanhi ng pagkawala ng data ang pag-aalis sa iyong device habang ginagamit ito.  Mangyaring maghintay hanggang matapos ang operasyon, pagkatapos ay i-eject ang device gamit ang Files app.</translation>
 <translation id="5163869187418756376">Nabigo ang pagbabahagi. Suriin ang iyong koneksyon at subukan ulit sa ibang pagkakataon.</translation>
-<translation id="516592729076796170">US Programmer Dvorak</translation>
 <translation id="5177526793333269655">View na thumbnail</translation>
 <translation id="5181896909298187506">Walang kamakailang file</translation>
 <translation id="5194713942430106590">I-click para pagbukud-bukurin ang column sa pataas na pagkakasunud-sunod.</translation>
 <translation id="5211614973734216083">Faroese</translation>
-<translation id="5218183485292899140">Swiss French</translation>
 <translation id="5234764350956374838">Huwag pansinin</translation>
 <translation id="5253070652067921974">Ginawa ni</translation>
 <translation id="5254207638927440400">Hindi mailipat ang file. Ginagamit ang file.</translation>
@@ -553,7 +520,6 @@
 <translation id="5305688511332277257">Walang naka-install</translation>
 <translation id="5317780077021120954">I-save</translation>
 <translation id="5318819489018851358">Ibahagi sa Linux</translation>
-<translation id="5323213332664049067">Latin American</translation>
 <translation id="5330145655348521461">Ang mga file na ito na binuksan sa ibang desktop. Ilipat sa <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) upang tingnan ito.</translation>
 <translation id="5330512191124428349">Kumuha ng impormasyon</translation>
 <translation id="535792325654997756">Taong may mga pusa</translation>
@@ -565,18 +531,15 @@
 <translation id="5411472733320185105">Huwag gumamit ng mga setting ng proxy para sa mga host at domain na ito:</translation>
 <translation id="541890217011173530">Sorani Kurdish na may English-based keyboard</translation>
 <translation id="5422221874247253874">Access Point</translation>
-<translation id="5428105026674456456">Spanish</translation>
 <translation id="5438282218546237410">Walang resulta para sa <ph name="SEARCH_TERM" />.</translation>
 <translation id="5447680084201416734">Hindi sapat ang storage.</translation>
 <translation id="5449551289610225147">Di-wastong password</translation>
 <translation id="5459064203055649751">Mayroon nang file na may pangalang "<ph name="FILENAME" />." Gusto mo ba itong palitan ng file na inililipat mo?</translation>
 <translation id="5463231940765244860">Ilagay</translation>
-<translation id="5469868506864199649">Italyano</translation>
 <translation id="5473333559083690127">Muling ilagay ang bagong PIN</translation>
 <translation id="5489067830765222292">Latvian</translation>
 <translation id="5489965683297092283">Naka-off ang filter na <ph name="FILTER_NAME" />.</translation>
 <translation id="5494920125229734069">Piliin ang lahat</translation>
-<translation id="5500122897333236901">Icelandic</translation>
 <translation id="5508696409934741614">Mga Dot</translation>
 <translation id="5522908512596376669">Naging list view ang listahan ng file.</translation>
 <translation id="5524517123096967210">Hindi mabasa ang file.</translation>
@@ -589,7 +552,6 @@
 <translation id="5583664733673201137">Puno na ang lapad ng bantas</translation>
 <translation id="5596627076506792578">Higit pang opsyon</translation>
 <translation id="5602622065581044566">Bulgarian na may Phonetic keyboard</translation>
-<translation id="5605830556594064952">US Dvorak</translation>
 <translation id="560739212255190568">Nagtakda ang iyong admin ng mga panuntunan sa pag-override ng proxy bukod pa sa pagpapatupad ng sumusunod na proxy</translation>
 <translation id="5618330573454123917">Idinisenyo ang file na ito para sa isang computer na gumagamit ng Macintosh software. Hindi ito compatible sa iyong device na gumagamit ng ChromeOS. <ph name="BEGIN_LINK_HELP" />Matuto Pa<ph name="END_LINK_HELP" /> tungkol sa pagbubukas ng mga file sa ChromeOS.</translation>
 <translation id="5625294776298156701">Tamil na may Tamil99 keyboard</translation>
@@ -607,7 +569,6 @@
 <translation id="5724172041621205163">Thai na may Pattachote keyboard</translation>
 <translation id="57383366388012121">Nakaraang buwan</translation>
 <translation id="575175778971367197">Hindi ma-sync ang file na ito sa ngayon</translation>
-<translation id="5756666464756035725">Hungarian na QWERTY</translation>
 <translation id="5760252553414789727"><ph name="SELECTED_FILES_COUNT" /> (na) item ang napili</translation>
 <translation id="5763377084591234761">German (Switzerland)</translation>
 <translation id="5769519078756170258">Host o domain na hindi isasama</translation>
@@ -615,7 +576,6 @@
 <translation id="5776325638577448643">Burahin at I-format</translation>
 <translation id="57838592816432529">I-mute</translation>
 <translation id="5788127256798019331">Mga Play file</translation>
-<translation id="5790193330357274855">Kazakh</translation>
 <translation id="5804245609861364054">Kannada Transliteration</translation>
 <translation id="5814126672212206791">Uri ng koneksyon</translation>
 <translation id="5817397429773072584">Traditional Chinese</translation>
@@ -624,7 +584,6 @@
 <translation id="5832976493438355584">Naka-lock</translation>
 <translation id="5833610766403489739">Nawala ang file na ito. Pakitingnan ang iyong setting ng lokasyon ng pag-download at subukan ulit.</translation>
 <translation id="5838451609423551646">Inalis ang lahat ng entry sa pagpipilian.</translation>
-<translation id="5838825566232597749">US Workman international</translation>
 <translation id="5845721951356578987">Nurse</translation>
 <translation id="5858478190805449225">Naka-on ang battery saver mode. Subukan ulit kapag naka-off ang battery saver mode.</translation>
 <translation id="5860491529813859533">I-on</translation>
@@ -640,7 +599,6 @@
 <translation id="5957366693331451795">Mga Chromebox</translation>
 <translation id="5982621672636444458">Mga opsyon sa pag-uuri</translation>
 <translation id="6011074160056912900">Ethernet network</translation>
-<translation id="60357267506638014">Czech QWERTY</translation>
 <translation id="603895874132768835">Hindi mo magagamit ang network na ito hanggang sa mag-set up ka ng bagong PIN</translation>
 <translation id="6040143037577758943">Isara</translation>
 <translation id="6055907707645252013"><ph name="NETWORK_TYPE" /> network, hindi nakakonekta</translation>
@@ -683,7 +641,6 @@
 <translation id="6320212353742551423"><ph name="ARCHIVE_TYPE" /> na archive</translation>
 <translation id="6321303798550928047">Kumakaway</translation>
 <translation id="6327785803543103246">Web proxy autodiscovery</translation>
-<translation id="6339145975392024142">US international (PC)</translation>
 <translation id="6356685157277930264">Window ng feedback ng mga file</translation>
 <translation id="6358884629796491903">Dragon</translation>
 <translation id="636254897931573416">Invalid na value ng pagtugma ng domain suffix</translation>
@@ -704,7 +661,6 @@
 <translation id="649877868557234318">Ine-extract ang <ph name="FILE_NAME" /> sa <ph name="FOLDER_NAME" /></translation>
 <translation id="6499681088828539489">Huwag payagan ang mga proxy para sa mga nakabahaging network</translation>
 <translation id="6503285896705205014">Na-block ng patakaran ng administrator ang pagkopya ng <ph name="COUNT" /> (na) file</translation>
-<translation id="6509122719576673235">Norwegian</translation>
 <translation id="6528513914570774834">Payagan ang iba pang user ng device na ito na gamitin ang network na ito</translation>
 <translation id="6549689063733911810">Kamakailan</translation>
 <translation id="6558280019477628686">Nagka-error. Maaaring may ilang item na hindi na-delete.</translation>
@@ -736,7 +692,6 @@
 <translation id="6806796368146926706">Alphanumeric na may Japanese keyboard</translation>
 <translation id="6808193438228982088">Fox</translation>
 <translation id="6823166707458800069">Awtomatikong na-back up online ang lahat ng file na na-save sa folder na ito.</translation>
-<translation id="6825883775269213504">Russian</translation>
 <translation id="6847101934483209767">Inalis ang <ph name="ENTRY_NAME" /> sa pagpipilian.</translation>
 <translation id="6848194403851638089">Nagamit na ng <ph name="ORGANIZATION_NAME" /> ang buong storage nito sa Google Workspace.</translation>
 <translation id="6856459657722366306">Network <ph name="NETWORK_INDEX" /> sa <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, Lakas ng Signal <ph name="SIGNAL_STRENGTH" />%, Mga Detalye</translation>
@@ -750,7 +705,6 @@
 <translation id="6896758677409633944">Copy</translation>
 <translation id="6898028766943174120">Higit pang sub-folder...</translation>
 <translation id="6915678159055240887">Chromebox</translation>
-<translation id="6918340160281024199">US Workman</translation>
 <translation id="6930242544192836755">Tagal</translation>
 <translation id="6935521024859866267">Paru-paro</translation>
 <translation id="6943836128787782965">Nabigo ang pagkuha ng HTTP</translation>
@@ -760,7 +714,6 @@
 <translation id="696203921837389374">I-enable ang pagsi-sync gamit ang mobile data</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6965648386495488594">Port</translation>
-<translation id="6970230597523682626">Bulgarian</translation>
 <translation id="6973630695168034713">Mga Folder</translation>
 <translation id="6976795442547527108">Leon</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -821,20 +774,17 @@
 <translation id="7417705661718309329">Google map</translation>
 <translation id="7419668828140929293">Nire-restore ang "<ph name="FILENAME" />"</translation>
 <translation id="7458955835361612701">Walang kamakailang larawan</translation>
-<translation id="7460898608667578234">Ukrainian</translation>
 <translation id="7469894403370665791">Awtomatikong kumonekta sa network na ito</translation>
 <translation id="7486315294984620427">Para makapag-drop ng mga file sa Parallels Desktop, dapat kopyahin ang file sa mga Windows file.</translation>
 <translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">Malayalam Phonetic</translation>
 <translation id="7505167922889582512">Magpakita ng mga natatagong file</translation>
 <translation id="7514365320538308">I-download</translation>
-<translation id="751507702149411736">Belarusian</translation>
 <translation id="7521790570754130607">Kailangan ng PIN para magamit ang mobile data</translation>
 <translation id="7532029025027028521">Persian Transliteration</translation>
 <translation id="7544830582642184299">Bigyan ang mga Linux app ng pahintulot na ma-access ang mga file sa iyong Google Drive. Masi-sync sa iba mo pang device ang mga pagbabago.</translation>
 <translation id="7547009467130558110">Sneaker</translation>
 <translation id="7547780573915868306">Lithuanian</translation>
-<translation id="7547811415869834682">Dutch</translation>
 <translation id="7551643184018910560">I-pin sa shelf</translation>
 <translation id="7553492409867692754">Bigyan ng pahintulot ang mga Linux app na ma-access ang mga file sa folder na <ph name="FOLDER_NAME" /></translation>
 <translation id="7555339735447658365">Kasalukuyan kang offline. Magpapatuloy ang pag-sync ng file kapag nakakonekta ka sa internet</translation>
@@ -854,7 +804,6 @@
 <translation id="7693909743393669729">Kapag nag-format ng drive, mabubura ang lahat ng data na naka-store dito at maaalis ang lahat ng kasalukuyang partition, kasama ang mga partition na posibleng hindi nakikita. Hindi maa-undo ang pagkilos na ito.</translation>
 <translation id="7695430100978772476">Hindi ma-format ang <ph name="DRIVE_NAME" /></translation>
 <translation id="76959938259365003">Hindi naalis ang laman ng trash.</translation>
-<translation id="770015031906360009">Greko</translation>
 <translation id="7705251383879779343">Nakopya ang <ph name="FILE_NAME" />.</translation>
 <translation id="7707941139430559579">Hindi mailipat ang file. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="7708271999969613024">Para magamit ang network na ito, kailangan mong ilagay ang 8-digit na Personal Unblocking Key (PUK) na ibinigay ng carrier.</translation>
@@ -883,7 +832,6 @@
 <translation id="7831491651892296503">Nagkaroon ng error sa pag-configure sa network</translation>
 <translation id="7839804798877833423">Ang pagkuha sa mga file na ito ay gagamit ng humigit-kumulang <ph name="FILE_SIZE" /> (na) mobile data.</translation>
 <translation id="7846076177841592234">Kanselahin ang pinili</translation>
-<translation id="7853966320808728790">French na BÉPO</translation>
 <translation id="7857117644404132472">Magdagdag ng exception</translation>
 <translation id="7868774406711971383">Polish</translation>
 <translation id="7874321682039004450">Filipino</translation>
@@ -895,9 +843,7 @@
 <translation id="7925247922861151263">Nabigo ang pagsusuri sa AAA</translation>
 <translation id="7928710562641958568">I-eject ang device</translation>
 <translation id="7933875256234974853">Naghahandang mag-sync ng mga file sa Drive...</translation>
-<translation id="7943385054491506837">US Colemak</translation>
 <translation id="7953739707111622108">Hindi mabuksan ang device na ito dahil hindi nakilala ang filesystem nito.</translation>
-<translation id="7969525169268594403">Slovenian</translation>
 <translation id="7972920761225148017">French (Switzerland)</translation>
 <translation id="7973962044839454485">Nabigo ang pagpapatotoo sa PPP dahil sa hindi tamang username o password</translation>
 <translation id="7980421588063892270">English (US) na may Colemak keyboard</translation>
@@ -908,7 +854,6 @@
 <translation id="803771048473350947">File</translation>
 <translation id="8038111231936746805">(default)</translation>
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" /> na audio</translation>
-<translation id="8045462269890919536">Romanian</translation>
 <translation id="8049184478152619004">Ilagay ang Personal Unblocking Key (PUK)</translation>
 <translation id="8055538340801153769">Sa folder na ito</translation>
 <translation id="807187749540895545">Ine-extract ang <ph name="FILE_NAME" />...</translation>
@@ -940,11 +885,9 @@
 <translation id="8262872909443689080">Patakaran ng administrator</translation>
 <translation id="8264024885325823677">Pinapamahalaan ng iyong administrator ang setting na ito.</translation>
 <translation id="8269755669432358899">I-collapse ang mga panel ng feedback ng mga file</translation>
-<translation id="8280151743281770066">Armenian Phonetic</translation>
 <translation id="8285791779547722821">Naka-encrypt ang <ph name="ORIGINAL_MIME_TYPE" /></translation>
 <translation id="8294431847097064396">Pinagmulan</translation>
 <translation id="8297012244086013755">Hangul 3 Set (Walang Shift)</translation>
-<translation id="8299269255470343364">Japanese</translation>
 <translation id="8300849813060516376">Nabigo ang OTASP</translation>
 <translation id="8312871300878166382">I-paste sa loob ng folder</translation>
 <translation id="8329978297633540474">Plain text</translation>
@@ -966,7 +909,6 @@
 <translation id="8428213095426709021">Mga Setting</translation>
 <translation id="8429998526804961548"><ph name="NUMBER_OF_ITEMS" /> (na) folder ang na-share sa <ph name="VM_NAME" /></translation>
 <translation id="8431909052837336408">Palitan ang PIN ng SIM</translation>
-<translation id="8437209419043462667">US</translation>
 <translation id="8452135315243592079">Walang nakalagay na SIM card</translation>
 <translation id="8456681095658380701">Di-wastong pangalan</translation>
 <translation id="8457767749626250697">Naka-lock ang iyong SIM</translation>
@@ -981,14 +923,12 @@
 <translation id="8499098729323186194">Ine-extract ang <ph name="NUMBER_OF_ITEMS" /> (na) item...</translation>
 <translation id="8502913769543567768">Network <ph name="NETWORK_INDEX" /> sa <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, I-activate pagkatapos ng pag-set up ng device, Pinapamahalaan ng iyong Administrator</translation>
 <translation id="8512483403832814140">Anumang oras</translation>
-<translation id="8521441079177373948">UK</translation>
 <translation id="853494022971700746">French (France)</translation>
 <translation id="8540608333167683902">Network <ph name="NETWORK_INDEX" /> sa <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Lakas ng Signal <ph name="SIGNAL_STRENGTH" />%, Mga Detalye</translation>
 <translation id="8545476925160229291">English (US)</translation>
 <translation id="854655314928502177">URL ng Web Proxy Auto Discovery:</translation>
 <translation id="8547747809824590510">Nagtakda ang iyong admin ng mga panuntunan sa pag-override ng proxy</translation>
 <translation id="8549186985808798022">Italian</translation>
-<translation id="8551494947769799688">Latvian</translation>
 <translation id="8560515948038859357">Cantonese</translation>
 <translation id="8561206103590473338">Elepante</translation>
 <translation id="8566466896628108558">Network <ph name="NETWORK_INDEX" /> sa <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, Lakas ng Signal <ph name="SIGNAL_STRENGTH" />%, Na-block ng iyong Administrator, Mga Detalye</translation>
@@ -1011,7 +951,6 @@
 <translation id="8713112442029511308">Maltese</translation>
 <translation id="8714406895390098252">Bisikleta</translation>
 <translation id="8719721339511222681">Pinili ang <ph name="ENTRY_NAME" />.</translation>
-<translation id="872537912056138402">Croatian</translation>
 <translation id="8743164338060742337">Network <ph name="NETWORK_INDEX" /> sa <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /> Lakas ng Signal <ph name="SIGNAL_STRENGTH" />%, Pinapamahalaan ng iyong Administrator, Kumonekta</translation>
 <translation id="8787254343425541995">Payagan ang mga proxy para sa mga nakabahaging network</translation>
 <translation id="8790981080411996443">Taong nagdidilig ng halaman</translation>
@@ -1028,10 +967,8 @@
 <translation id="8873014196523807561">Para i-restore ang mga item na ito, i-drag ang mga ito sa bagong folder. Na-delete na ang mga orihinal na folder para sa ilan sa mga item na ito.</translation>
 <translation id="8874184842967597500">Hindi konekta</translation>
 <translation id="8876368061475701452">Naka-queue</translation>
-<translation id="8900820606136623064">Hungarian</translation>
 <translation id="8903931173357132290">Nagtapos</translation>
 <translation id="8912078710089354287">Asong kumakawag-kawag ang buntot</translation>
-<translation id="8919081441417203123">Danish</translation>
 <translation id="8949925099261528566">Nakakonekta, walang internet</translation>
 <translation id="8965697826696209160">Walang sapat na espasyo.</translation>
 <translation id="8970887620466824814">Nagkaproblema.</translation>
@@ -1040,7 +977,6 @@
 <translation id="8998871447376656508">Walang sapat na bakanteng espasyo sa iyong Google Drive para makumpleto ang pag-upload.</translation>
 <translation id="9003940392834790328">Network <ph name="NETWORK_INDEX" /> sa <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Lakas ng Signal <ph name="SIGNAL_STRENGTH" />%, Pinapamahalaan ng iyong Administrator, Mga Detalye</translation>
 <translation id="9007990314804111233">Mag-sign in sa iyong Microsoft account</translation>
-<translation id="9017798300203431059">Russian phonetic</translation>
 <translation id="9034924485347205037">Mga Linux file</translation>
 <translation id="9035012421917565900">Hindi na maibabalik ang mga item sa '<ph name="DESTINATION_NAME" />,' kaya hindi mo maa-undo ang pagkilos na ito.</translation>
 <translation id="9035689366572880647">Ilagay ang kasalukuyang PIN</translation>

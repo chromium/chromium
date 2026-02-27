@@ -281,6 +281,7 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="2205701497928406883"><ph name="TAB_TITLE" />, Tab Rhannu wedi'i Binio</translation>
 <translation id="22091350895006575">Ychwanegu enw defnyddiwr</translation>
 <translation id="221494669172414749">Bydd agor Chrome heb glo proffil yn tynnu'ch cyfrineiriau a'ch dulliau talu sydd wedi'u cadw o'r car. Mae defnyddio clo proffil yn cadw'r data hyn yn ddiogel.</translation>
+<translation id="2226826835915474236">Llwybrau byr anweithredol</translation>
 <translation id="2227179592712503583">Tynnu'r awgrym</translation>
 <translation id="2227444325776770048">Parhau fel <ph name="USER_FULL_NAME" /></translation>
 <translation id="2230777942707397948">Ffenestr wag</translation>
@@ -1656,6 +1657,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />dileu'r data Chrome yn eich cyfr
 <translation id="7740287852186792672">Canlyniadau chwilio</translation>
 <translation id="774403695779169686"><ph name="TAB_TITLE" />, Tab Anhysbys Rhannu a Ddewisir</translation>
 <translation id="774876555279732384">Mae gwasanaethau Awtolenwi hefyd yn cael eu rheoli mewn <ph name="BEGIN_LINK" />Gosodiadau Android<ph name="END_LINK" />.</translation>
+<translation id="7758884017823246335">Ychwanegu chwiliad gwefan</translation>
 <translation id="7759809451544302770">Dewisol</translation>
 <translation id="7762668264895820836">Cerdyn SD <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">Ychwanegu cyfeiriad</translation>
@@ -1887,6 +1889,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />dileu'r data Chrome yn eich cyfr
 <translation id="8634050254805484913">Wedi'i guddio ar sgriniau cul</translation>
 <translation id="8635399646025169806">Cadw'r grŵp tabiau?</translation>
 <translation id="8636825310635137004">I gael eich tabiau o'ch dyfeisiau eraill, trowch gysoni ymlaen.</translation>
+<translation id="8639963783467694461">Gosodiadau awtolenwi</translation>
 <translation id="8662474268934425487">Mewngofnodi i <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8664979001105139458">Mae'r enw ffeil eisoes yn bodoli</translation>
 <translation id="8676276370198826499">Cofrestru ar gyfer <ph name="SITE_ETLD_PLUS_ONE" /> gyda <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -1935,6 +1938,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />dileu'r data Chrome yn eich cyfr
 <translation id="8865415417596392024">Data Chrome yn eich cyfrif</translation>
 <translation id="8872506776304248286">Agor mewn ap</translation>
 <translation id="8890668505403261809">Chwilio eich tabiau Anhysbys</translation>
+<translation id="8892234476517513962">Rydych eisoes wedi mewngofnodi</translation>
 <translation id="8894890673032951011"><ph name="TAB_TITLE" />, Tab Anhysbys Recordio a Ddewisir</translation>
 <translation id="8898822736010347272">Yn anfon cyfeiriadau URL o rai tudalennau rydych yn ymweld â nhw, gwybodaeth system gyfyngedig, a rhywfaint o gynnwys tudalen at Google, i helpu i ddarganfod bygythiadau newydd ac i amddiffyn pawb ar y we.</translation>
 <translation id="8903921497873541725">Chwyddo</translation>

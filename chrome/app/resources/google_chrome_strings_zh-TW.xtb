@@ -688,6 +688,9 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="8041795619940733262">詢問 Google<ph name="LINE_BREAK" />這個分頁的內容</translation>
 <translation id="80471789339884597">感謝你安裝本服務。你必須重新啟動所有瀏覽器，才能使用 <ph name="BUNDLE_NAME" />。</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
+<translation id="8064965390968184078">1. 點選下方的「<ph name="BUTTON_LABEL" />」
+2. 在 Windows 設定中，點選「<ph name="BUTTON_2" />」
+3. 在 Windows 通知中點選「<ph name="BUTTON_3" />」，即可將 Chrom 釘選到工作列以便快速存取</translation>
 <translation id="8077579734294125741">其他 Chrome 設定檔</translation>
 <translation id="8086881907087796310">安裝失敗，因為電腦不符合最低硬體需求。</translation>
 <translation id="8113883687556086139">請驗證身分，才能將 Chrome 資料儲存到帳戶 (<ph name="ACCOUNT_EMAIL" />)，或使用帳戶中的 Chrome 資料</translation>
@@ -766,6 +769,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="8914504000324227558">重新啟動 Chrome</translation>
 <translation id="8922193594870374009">如要將號碼從 <ph name="ORIGIN" /> 傳送到 Android 手機，請在這兩部裝置上登入 Chrome。</translation>
 <translation id="8922998289262614701">從 Chrome 移除這個應用程式的資料</translation>
+<translation id="8925636929359899517">我們會使用資訊改善這項服務。請參閱《<ph name="BEGIN_LINK1" />隱私權政策<ph name="END_LINK1" />》和《<ph name="BEGIN_LINK2" />服務條款<ph name="END_LINK2" />》。</translation>
 <translation id="8936233353620149764">開啟/關閉 Chrome 內建的 Gemini</translation>
 <translation id="8948460679427074738">這項擴充功能尚未發布隱私權實務規範 (例如擴充功能如何收集和使用資料)，因此 Chrome 建議你移除。</translation>
 <translation id="8958307504142971576">現在可以使用更多 Chrome 功能</translation>

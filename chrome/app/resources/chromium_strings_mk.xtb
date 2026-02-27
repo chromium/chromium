@@ -590,6 +590,8 @@ Chromium не може да ги обнови вашите поставки.</tr
 <translation id="7384121030444253939">Екстензијава веќе не е поддржана. Затоа, Chromium препорачува да ја отстраните.</translation>
 <translation id="7413153308467572558">Продолжете каде што сте застанале: Chromium ги враќа вашите картички секогаш кога ќе рестартирате. За да го исклучите ова, одете во</translation>
 <translation id="7427879960656355200">Увезете ги лозинките во Chromium</translation>
+<translation id="744815265653811511">1. Кликнете <ph name="BUTTON_LABEL" /> подолу
+2. Кликнете <ph name="BUTTON_2" /> во поставките за Windows Кликнете <ph name="BUTTON_3" /> во известувањето на Windows за да го закачите Chromium на лентата со задачи за брз пристап</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium Dev</translation>
 <translation id="7450541714075000668">Текстот е копиран</translation>
 <translation id="7451052299415159299">На Chromium му треба дозвола за да пристапи до камерата за сајтов</translation>
@@ -605,6 +607,7 @@ Chromium не може да ги обнови вашите поставки.</tr
 <translation id="761356813943268536">Chromium ги користи фотоапаратот и микрофонот.</translation>
 <translation id="7617377681829253106">Chromium е подобрен</translation>
 <translation id="7622753900276619808">Отсега имате повеќе достапни функции во Chromium</translation>
+<translation id="7624307931717240213">Ги користиме податоците за да ја подобриме услугава. Погледнете ги „Политиката за приватност“ и „Условите за користење“.</translation>
 <translation id="7649070708921625228">Помош</translation>
 <translation id="7656340475565475526">Дозволете му на Chromium да прелистува наместо вас</translation>
 <translation id="7658239707568436148">Откажи</translation>

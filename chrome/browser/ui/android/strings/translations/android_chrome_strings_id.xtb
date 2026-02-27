@@ -281,6 +281,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="2205701497928406883"><ph name="TAB_TITLE" />, Tab yang sedang Berbagi dan Disematkan</translation>
 <translation id="22091350895006575">Tambahkan nama pengguna</translation>
 <translation id="221494669172414749">Membuka Chrome tanpa kunci profil akan menghapus sandi dan metode pembayaran tersimpan Anda dari mobil. Menggunakan kunci profil akan menjaga keamanan data ini.</translation>
+<translation id="2226826835915474236">Pintasan yang tidak aktif</translation>
 <translation id="2227179592712503583">Hapus saran</translation>
 <translation id="2227444325776770048">Lanjutkan sebagai <ph name="USER_FULL_NAME" /></translation>
 <translation id="2230777942707397948">Jendela kosong</translation>
@@ -1655,6 +1656,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="7740287852186792672">Hasil penelusuran</translation>
 <translation id="774403695779169686"><ph name="TAB_TITLE" />, Tab Samaran yang sedang Berbagi dan Dipilih</translation>
 <translation id="774876555279732384">Layanan isi otomatis juga dikelola di <ph name="BEGIN_LINK" />Setelan Android<ph name="END_LINK" />.</translation>
+<translation id="7758884017823246335">Tambahkan penelusuran situs</translation>
 <translation id="7759809451544302770">Opsional</translation>
 <translation id="7762668264895820836">Kartu SD <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">Tambahkan alamat</translation>
@@ -1886,6 +1888,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="8634050254805484913">Disembunyikan di layar sempit</translation>
 <translation id="8635399646025169806">Simpan grup tab?</translation>
 <translation id="8636825310635137004">Untuk mengakses tab Anda dari perangkat lainnya, aktifkan sinkronisasi.</translation>
+<translation id="8639963783467694461">Setelan Isi-otomatis</translation>
 <translation id="8662474268934425487">Login ke <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8664979001105139458">Nama file sudah ada</translation>
 <translation id="8676276370198826499">Daftar ke <ph name="SITE_ETLD_PLUS_ONE" /> dengan <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -1934,6 +1937,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="8865415417596392024">Data Chrome di akun Anda</translation>
 <translation id="8872506776304248286">Buka di aplikasi</translation>
 <translation id="8890668505403261809">Telusuri tab Samaran Anda</translation>
+<translation id="8892234476517513962">Anda sudah login</translation>
 <translation id="8894890673032951011"><ph name="TAB_TITLE" />, Tab Samaran yang Sedang Merekam dan Dipilih</translation>
 <translation id="8898822736010347272">Kirim URL beberapa halaman yang Anda kunjungi, informasi sistem terbatas, dan beberapa konten halaman ke Google untuk membantu menemukan ancaman baru dan melindungi semua orang di web.</translation>
 <translation id="8903921497873541725">Perbesar</translation>

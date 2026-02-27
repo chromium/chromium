@@ -32,7 +32,6 @@
 <translation id="1086486568852410168">Szukaj za pomocą Obiektywu Google</translation>
 <translation id="1096992026380844478">Ustawienia synchronizacji zostaną przywrócone na podstawie ostatniej kopii zapasowej. <ph name="BEGIN_LINK" />Zobacz, co możesz synchronizować<ph name="END_LINK" /></translation>
 <translation id="1103523840287552314">Zawsze tłumacz z języka: <ph name="LANGUAGE" /></translation>
-<translation id="110491332089958282">Udostępnij Gemini zawartość strony, aby otrzymywać trafniejsze odpowiedzi. Gdy udostępniasz stronę Gemini, jej pełna zawartość i adres URL są wysyłane do Google. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="1110772719190051587">Odblokuj za pomocą Face ID</translation>
 <translation id="1112015203684611006">Drukowanie nie udało się.</translation>
 <translation id="1118569444314402022">Witamy z powrotem, <ph name="USER_NAME" /></translation>
@@ -96,6 +95,7 @@
 <translation id="1335767868357998043">Wybierz pozycję paska adresu</translation>
 <translation id="1347468774581902829">Zarządzaj aktywnością</translation>
 <translation id="1348596747084433075">https://www.amazon.com/Wife-Gifts/s?k=for+Wife+Gifts</translation>
+<translation id="1350281503816551185">Potwierdzaj tożsamość podczas uzupełniania informacji poufnych</translation>
 <translation id="1355337783640312381">Aby przełączyć się między kontami, kliknij ikonę konta</translation>
 <translation id="1358106883354237005">Konto zarządzane</translation>
 <translation id="1358214951266274152">Otwórz skopiowany link</translation>
@@ -152,7 +152,6 @@
 <translation id="1521774566618522728">Aktywność: dzisiaj</translation>
 <translation id="1523567067736644845">Odblokuj, aby pokazać hasło</translation>
 <translation id="1524563461097350801">Nie, dziękuję</translation>
-<translation id="1528290585275339320">Włącz udostępnianie zawartości strony</translation>
 <translation id="1531038290222364269">Pokaż karty</translation>
 <translation id="1536390784834419204">Przetłumacz stronę</translation>
 <translation id="1540800554400757039">Adres 1</translation>
@@ -220,6 +219,7 @@
 <translation id="1767766085187034454">Tłumacz Google</translation>
 <translation id="1771016937398045251">Menu Narzędzia</translation>
 <translation id="1772468122139624049">Nie udało się ponownie wczytać kart</translation>
+<translation id="1776240104318790173">Włącz lub wyłącz ulepszone autouzupełnianie</translation>
 <translation id="1779354709911146450">Błąd uwierzytelniania</translation>
 <translation id="1780152987505130652">Zamknij grupę</translation>
 <translation id="178400879184240105">Twoje hasła są unikalne</translation>
@@ -258,6 +258,7 @@
 <translation id="1890237935065108104">To ustawienie jest niedostępne.</translation>
 <translation id="1894023287452300670">Tutaj możesz monitorować cenę</translation>
 <translation id="189531189292803889">Twój iPad został ostatnio przywrócony, co mogło spowodować zmianę przeglądarki domyślnej.</translation>
+<translation id="1898804291554630487">Zapytaj o tę stronę</translation>
 <translation id="1901366738768303267">Jak korzystać z tej funkcji?</translation>
 <translation id="1901600657316773839">Zachowaj wybór</translation>
 <translation id="1902277226107477495">Wykrywanie adresu jest wyłączone. Włącz je ponownie w Ustawieniach.</translation>
@@ -368,6 +369,7 @@
 <translation id="2268044343513325586">Zawęź</translation>
 <translation id="2271452184061378400">Tutaj są zapisane Twoje grupy kart</translation>
 <translation id="2273327106802955778">Menu Więcej</translation>
+<translation id="2283599456633275070">Podróże</translation>
 <translation id="2287614783861766820">{count,plural, =1{Ten adres zostanie usunięty z tego urządzenia.}few{Te adresy zostaną usunięte z tego urządzenia.}many{Te adresy zostaną usunięte z tego urządzenia.}other{Te adresy zostaną usunięte z tego urządzenia.}}</translation>
 <translation id="2295236662082735391">Przytrzymaj obraz na stronie, aby zacząć go edytować w Gemini</translation>
 <translation id="2297989278479054870">Po wylogowaniu z tego urządzenia zostaną usunięte zakładki, hasła i inne ustawienia na koncie Google.</translation>
@@ -968,6 +970,7 @@
 <translation id="4607887340472970274">Śledzenie cen</translation>
 <translation id="4619564267100705184">Potwierdź, że to Ty</translation>
 <translation id="4621768135601674446">Otwórz opcje Trybu czytania</translation>
+<translation id="4623894491222334521">Dokumenty tożsamości</translation>
 <translation id="4627107755957573804">Zezwalaj witrynom i aplikacjom na uaktualnianie istniejących kont, aby można było używać kluczy dostępu</translation>
 <translation id="4629065796475200039">Hasło nie zostało zaimportowane</translation>
 <translation id="4630212057753624203">Przykładowy dymek</translation>
@@ -995,7 +998,6 @@
 <translation id="4676647168422678078">Zastosować ustawienia strony nowej karty?</translation>
 <translation id="4682496302933121474">Przetłumaczyć stronę?</translation>
 <translation id="4682686630151240767">1. Otwórz Ustawienia na iPhonie.</translation>
-<translation id="4691892551491778176">Gdy korzystasz z tej funkcji, zawartość i adresy URL stron są wysyłane do Google, ale nie będą używane do ulepszania modeli generatywnej AI. Możesz w każdej chwili wyłączyć tę opcję w ustawieniach.</translation>
 <translation id="4697240968720007067">Pobierz najlepsze aplikacje Google jednym kliknięciem</translation>
 <translation id="4699172675775169585">Obrazy i pliki zapisane w pamięci podręcznej</translation>
 <translation id="4709570498586527752">Najbardziej przydatne funkcje w różnych momentach</translation>
@@ -1146,6 +1148,7 @@
 <translation id="5186185447130319458">Prywatna</translation>
 <translation id="5189431381114029336">Zapisz swój pierwszy klucz dostępu</translation>
 <translation id="518997337573684769">Wysyłam raport o awarii…</translation>
+<translation id="519528950056409240">Zezwól Portfelowi na udostępnianie danych</translation>
 <translation id="519530786644929958">Pobieranie się nie udało i nie można go powtórzyć.</translation>
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5200894869889836319">Opcje ustawiania uprawnień</translation>
@@ -1322,7 +1325,6 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="5803566855766646066">Czy na pewno chcesz zamknąć tę nową kartę?</translation>
 <translation id="5804241973901381774">Uprawnienia</translation>
 <translation id="58081802114142635">Twoja aktywność ulepsza działanie AI od Google</translation>
-<translation id="5813223718099710537">Gdy korzystasz z tej funkcji, zawartość i adresy URL stron są wysyłane do Google. Możesz w każdej chwili wyłączyć tę opcję w ustawieniach.</translation>
 <translation id="5817176759448082654">Sprawdzanie haseł</translation>
 <translation id="5818161931099046557">Edytuj na koncie Google</translation>
 <translation id="5819208479324046259">Przeglądarką zarządza <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
@@ -1348,6 +1350,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="5899314093904173337">Aby udostępnić ten kod QR osobom w pobliżu, pozwól im go zeskanować za pomocą aparatu lub aplikacji do skanowania kodów QR</translation>
 <translation id="5902752768726620872">{count,plural, =1{{count} nowa karta}few{{count} nowe karty}many{{count} nowych kart}other{{count} nowej karty}}</translation>
 <translation id="5911030830365207728">Tłumacz Google</translation>
+<translation id="5912796581727968237">Otwórz Portfel Google</translation>
 <translation id="5922999516621365983">Przeciągnij kartę tutaj, żeby ją przypiąć.</translation>
 <translation id="5930982343430790032">{COUNT,plural, =1{Dodaj maksymalnie 1 plik, kartę lub obraz}few{Dodaj maksymalnie {COUNT} pliki, karty lub obrazy}many{Dodaj maksymalnie {COUNT} plik, kartę lub obraz}other{Dodaj maksymalnie {COUNT} pliku, karty lub obrazu}}</translation>
 <translation id="5936006948844852401">Zarządzaj miejscem na dane</translation>
@@ -1596,6 +1599,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="6710079714193676716">Zarządzana przez Twoją organizację. Niektóre funkcje mogą być niedostępne. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="6713676799463473249">Zmodyfikowano <ph name="LAST_MODIFICATION_DATE" /></translation>
 <translation id="6722623263381062480">Odebrano karty</translation>
+<translation id="6722638373100589752">Aby automatycznie uzupełniać informacje, włącz opcję „Korzystanie z kart w Google” w ustawieniach Portfela</translation>
 <translation id="6723740634201835758">Na Twoim koncie Google</translation>
 <translation id="6724024423419410528">Kolory</translation>
 <translation id="672735642903863329">Korzystaj z zakładek, haseł i innych ustawień na wszystkich urządzeniach.</translation>
@@ -1728,6 +1732,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="7253951228444156601">Sprawdzam hasła…</translation>
 <translation id="7261217796641151584">Udostępnij grupę</translation>
 <translation id="7266578100016339897">To pomoże Ci zachować porządek. W dowolnej chwili możesz to zmienić w ustawieniach.</translation>
+<translation id="7268294318904284516">Jeśli udostępniasz to urządzenie, używaj blokady ekranu, aby potwierdzać swoją tożsamość podczas korzystania z informacji poufnych, takich jak paszporty</translation>
 <translation id="7272437679830969316">Nie można zweryfikować Twojej tożsamości. Hasło nie zostało skopiowane.</translation>
 <translation id="728025568708172005">Uruchom prezentację wstępną</translation>
 <translation id="7280980607183752256">Nie można zaimportować tego pliku</translation>
@@ -1938,7 +1943,6 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="798991908416757345">Grupy kart są niedostępne</translation>
 <translation id="7993170188789685695">Aby zamknąć to powiadomienie, kliknij dwukrotnie.</translation>
 <translation id="7996239959906074962">Skonfiguruj…</translation>
-<translation id="8001561107130904792">Udostępnianie zawartości strony</translation>
 <translation id="800361585186029508">Otwiera wpisane adresy URL w Google Chrome.</translation>
 <translation id="8005666035647241369">W menedżerze haseł Google w przypadku tego urządzenia</translation>
 <translation id="8010488806779226127">Poznaj funkcje, które ułatwią Ci korzystanie z przeglądarki</translation>
@@ -2019,7 +2023,6 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="826614135184049678">W ramach resetowania iPada nastąpiło wylogowanie z konta <ph name="USER_NAME" />. Aby ponownie się zalogować, kliknij „Dalej” poniżej.</translation>
 <translation id="8273982424131314219">Informacje zostaną podane na stronie <ph name="URL" /></translation>
 <translation id="8275068909952022340">Więcej…</translation>
-<translation id="8277328362018795342">Zawartość stron jest udostępniana – pozwala to Gemini udzielać Ci lepszych odpowiedzi</translation>
 <translation id="8281781826761538115">Domyślny – <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Pomiń</translation>
 <translation id="8282657446819506217">Otwórz w grupie kart</translation>
@@ -2125,7 +2128,6 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="8637431369725868556">Uzyskaj ochronę przed niebezpiecznymi stronami.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Brak przejętych haseł}=1{{COUNT} przejęte hasło}few{{COUNT} przejęte hasła}many{{COUNT} przejętych haseł}other{{COUNT} przejętego hasła}}</translation>
 <translation id="8643403533759285912">Usuń grupę</translation>
-<translation id="8645245178269185266">Udostępnij Gemini zawartość strony, aby otrzymywać trafniejsze odpowiedzi</translation>
 <translation id="8647280737650867362">Nie udało się zatrzymać śledzenia ceny.</translation>
 <translation id="8654802032646794042">Anuluj</translation>
 <translation id="8660600697590740984">Wyszukaj skopiowany obraz za pomocą Obiektywu</translation>

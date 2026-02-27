@@ -4942,7 +4942,7 @@
 <translation id="4306489587293957491">Մուտքագրեք</translation>
 <translation id="4306810703452026910">Chrome-ը այս կայքի ծանուցումներն այլևս չի նշի որպես սպամ</translation>
 <translation id="4307992518367153382">Հիմնական</translation>
-<translation id="4309035504231554969">Անհայտ պատճառով չհաջողվեց տեղադրել։</translation>
+<translation id="4309035504231554969">Անհայտ պատճառով չհաջողվեց տեղադրել թարմացումը։</translation>
 <translation id="4309165024397827958">Թույլ տվեք Android-ի հավելվածներին ու ծառայություններին օգտագործել սարքի գտնվելու վայրի մասին տվյալները։ Google-ը պարբերաբար հավաքում և անանուն օգտագործում է տեղադրության մասին տվյալները՝ տեղորոշման ճշգրտությունը և տեղորոշում օգտագործող ծառայությունների աշխատանքը բարելավելու համար։</translation>
 <translation id="4309183709806093061">Նաև հասանելի դարձնել համակարգի աուդիո տվյալները։ Արձագանքը կանխելու համար այս սարքի ձայնը կանջատվի։</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" /> ԿԲ (ակտիվ է <ph name="NUM_KILOBYTES_LIVE" /> ԿԲ)</translation>
@@ -5357,7 +5357,7 @@
 <translation id="4598556348158889687">Հիշողության կառավարում</translation>
 <translation id="4598776695426288251">Մի քանի սարքերի միջոցով հասանելի են Wi-Fi ցանցեր</translation>
 <translation id="4600071396330666617">Հուշումների թիվը</translation>
-<translation id="4600978165652322776">Ցանցի սխալ է առաջացել։ Ստուգեք ձեր ինտերնետ կապը և ցանցի կարգավորումները։</translation>
+<translation id="4600978165652322776">Ցանցի սխալ է առաջացել։ Ստուգեք ինտերնետ կապը և ցանցի կարգավորումները։</translation>
 <translation id="4601095002996233687">Կասկածելի ներբեռնումների մանրակրկիտ սկանավորում։</translation>
 <translation id="4601426376352205922">Նշել որպես չկարդացված</translation>
 <translation id="460190672235687855">Դիտել գաղտնաբառերը</translation>
@@ -5549,6 +5549,7 @@
 <translation id="4732799736617504962">Միացված խոսափողը կարող է աջակցել միայն աղմուկի նվազեցումը</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (ձախ)</translation>
 <translation id="4733793249294335256">Ներբեռնման տեղադրություն</translation>
+<translation id="4734965478015604180">Հորիզոնական</translation>
 <translation id="473546211690256853">Այս հաշիվը կառավարում է <ph name="DOMAIN" /> տիրույթը</translation>
 <translation id="4735506354605317060">Շրջանաձև ցուցիչ</translation>
 <translation id="4735793370946506039">Իմանալ ավելին բարելավված Ապահով դիտարկման մասին։</translation>
@@ -5816,6 +5817,7 @@
 <translation id="4901154724271753917">Ծավալել վերջերս փակվածները</translation>
 <translation id="4901309472892185668">Ընտրեք «<ph name="EXPERIMENT_NAME" />» փորձարկման կարգավիճակը։</translation>
 <translation id="49027928311173603">Սերվերից ներբեռնված քաղաքականությունն անվավեր է՝ <ph name="VALIDATION_ERROR" />:</translation>
+<translation id="490375751687810070">Ուղղաձիգ</translation>
 <translation id="4906490889887219338">Կարգավորել կամ կառավարել ցանցային պահոցը <ph name="LINK_BEGIN" />Իմանալ ավելին<ph name="LINK_END" /></translation>
 <translation id="4906679076183257864">Ըստ կանխադրման</translation>
 <translation id="4907129260985716018">Ընտրեք, թե երբ կարող է այս ընդլայնումը կարդալ և փոխել ձեր կայքի տվյալները</translation>
@@ -8486,6 +8488,7 @@
 <translation id="678520006562636090">Փորձեք Google Տեսապակին ձեր <ph name="DEVICE_TYPE" /> սարքում</translation>
 <translation id="6785594991951195537">Օգտագործեք <ph name="PASSWORD_DOMAIN" /> տիրույթի ձեր գաղտնաբառը</translation>
 <translation id="6785739405821760313">Պահված աշխատասեղանների դիտում։ Անցնելու համար սեղմեք Tab։</translation>
+<translation id="6785779729084003225">Օգտագործեք <ph name="FOCUS_TOGGLE_HOTKEY" /> դյուրանցումը՝ Gemini-ը Chrome-ում բացելու համար</translation>
 <translation id="6785915470941880363">Հակառակ ուղղությամբ ոլորում։ <ph name="LINK_BEGIN" />Իմանալ ավելին<ph name="LINK_END" /></translation>
 <translation id="67862343314499040">Բաց մանուշակագույն</translation>
 <translation id="6786480815699355166">Միայն Կենդանի ենթագրերի աջակցվող լեզուները կարող են թարգմանվել</translation>

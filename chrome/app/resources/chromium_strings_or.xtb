@@ -589,6 +589,9 @@ Chromium ଆପଣଙ୍କ ସେଟିଂସ୍‌କୁ ପୁନରୁଦ୍
 <translation id="7384121030444253939">ଏହି ଏକ୍ସଟେନସନ ଆଉ ସପୋର୍ଟ କରୁନାହିଁ। ଏହା ପରିବର୍ତ୍ତେ ଆପଣ ଏହାକୁ କାଢ଼ି ଦେବା ପାଇଁ Chromium ସୁପାରିଶ କରେ।</translation>
 <translation id="7413153308467572558">ଆପଣ ଯେଉଁଠି ଛାଡ଼ିଥିଲେ ସେଠାରୁ ଜାରି ରଖନ୍ତୁ: ଆପଣ ପ୍ରତ୍ୟେକ ଥର ରିଷ୍ଟାର୍ଟ କରିବା ସମୟରେ Chromium ଆପଣଙ୍କ ଟାବଗୁଡ଼ିକୁ ରିଷ୍ଟୋର କରେ। ଏହାକୁ ବନ୍ଦ କରିବା ପାଇଁ, ଏଠାକୁ ଯାଆନ୍ତୁ</translation>
 <translation id="7427879960656355200">Chromiumକୁ ପାସୱାର୍ଡଗୁଡ଼ିକୁ ଇମ୍ପୋର୍ଟ କରନ୍ତୁ</translation>
+<translation id="744815265653811511">1. ତଳେ <ph name="BUTTON_LABEL" />ରେ କ୍ଲିକ କରନ୍ତୁ
+2. ଆପଣଙ୍କ Windows ସେଟିଂସରେ <ph name="BUTTON_2" />ରେ କ୍ଲିକ କରନ୍ତୁ
+3. କ୍ୱିକ ଆକ୍ସେସ ପାଇଁ ଆପଣଙ୍କ ଟାସ୍କବାରରେ Chromiumକୁ ପିନ କରିବାକୁ Windows ବିଜ୍ଞପ୍ତିରେ <ph name="BUTTON_3" />କୁ କ୍ଲିକ କରନ୍ତୁ</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium ଡେଭ୍‌ଲପର୍‌</translation>
 <translation id="7450541714075000668">ଟେକ୍ସଟ୍ କପି କରାଯାଇଛି</translation>
 <translation id="7451052299415159299">ଏହି ସାଇଟ୍‌ପାଇଁ ଆପଣଙ୍କର କ୍ୟାମେରାକୁ ଆକ୍ସେସ୍ କରିବା ପାଇଁ Chromium ଆପଣଙ୍କ ଅନୁମତି ଆବଶ୍ୟକ କରୁଛି।</translation>
@@ -604,6 +607,7 @@ Chromium ଆପଣଙ୍କ ସେଟିଂସ୍‌କୁ ପୁନରୁଦ୍
 <translation id="761356813943268536">Chromium ଆପଣଙ୍କର କ୍ୟାମେରା ଏବଂ ମାଇକ୍ରୋଫୋନ୍‌ ବ୍ୟବହାର କରୁଛି।</translation>
 <translation id="7617377681829253106">Chromium ବର୍ତ୍ତମାନ ଆହୁରି ଉନ୍ନତ ହୋଇଛି</translation>
 <translation id="7622753900276619808">ଆପଣଙ୍କ ପାଖରେ ବର୍ତ୍ତମାନ Chromiumରେ ଅଧିକ ଫିଚର ଉପଲବ୍ଧ ଅଛି</translation>
+<translation id="7624307931717240213">ଏହି ସର୍ଭିସକୁ ଉନ୍ନତ କରିବା ପାଇଁ ଆମେ ସୂଚନା ବ୍ୟବହାର କରୁ। ଗୋପନୀୟତା ନୀତି ଏବଂ ସର୍ଭିସର ସର୍ତ୍ତାବଳୀ ଦେଖନ୍ତୁ।</translation>
 <translation id="7649070708921625228">ସହାୟତା</translation>
 <translation id="7656340475565475526">Chromiumକୁ ଆପଣଙ୍କ ପାଇଁ ବ୍ରାଉଜ କରିବାକୁ ଦିଅନ୍ତୁ</translation>
 <translation id="7658239707568436148">ବାତିଲ</translation>

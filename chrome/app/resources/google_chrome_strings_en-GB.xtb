@@ -695,6 +695,9 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="8041795619940733262">Ask Google<ph name="LINE_BREAK" />about this tab</translation>
 <translation id="80471789339884597">Thanks for installing. You must restart all your browsers before using <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8064015586118426197">Chrome OS Flex</translation>
+<translation id="8064965390968184078">1. Click <ph name="BUTTON_LABEL" /> below
+2. Click <ph name="BUTTON_2" /> in your Windows settings
+3. Click <ph name="BUTTON_3" /> in the Windows notification to pin Chrome to your taskbar for quick access</translation>
 <translation id="8077579734294125741">Other Chrome profiles</translation>
 <translation id="8086881907087796310">Installation failed because your computer does not meet the minimum hardware requirements.</translation>
 <translation id="8113883687556086139">Verify that it's you to use and save Chrome data in your account, <ph name="ACCOUNT_EMAIL" /></translation>
@@ -773,6 +776,7 @@ New bookmarks can't be saved in your account until you delete some. If you sign 
 <translation id="8914504000324227558">Relaunch Chrome</translation>
 <translation id="8922193594870374009">To send a number from <ph name="ORIGIN" /> to your Android phone, sign in to Chrome on both devices.</translation>
 <translation id="8922998289262614701">Remove this app's data from Chrome</translation>
+<translation id="8925636929359899517">We use info to improve this service. See <ph name="BEGIN_LINK1" />Privacy Policy<ph name="END_LINK1" /> and <ph name="BEGIN_LINK2" />Terms of Service<ph name="END_LINK2" />.</translation>
 <translation id="8936233353620149764">Toggle Gemini in Chrome</translation>
 <translation id="8948460679427074738">This extension hasn't published privacy practices, such as how it collects and uses data. Chrome recommends that you remove it.</translation>
 <translation id="8958307504142971576">You now have more features available in Chrome</translation>

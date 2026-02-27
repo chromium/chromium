@@ -281,6 +281,7 @@
 <translation id="2205701497928406883"><ph name="TAB_TITLE" />, замацаваная ўкладка, змесціва якой абагульваецца</translation>
 <translation id="22091350895006575">Дадаць імя карыстальніка</translation>
 <translation id="221494669172414749">Калі адкрыць Chrome без блакіроўкі профілю, паролі і спосабы аплаты, захаваныя для гэтага аўтамабіля, будуць выдалены. Блакіроўка профілю дазваляе абараніць гэты даныя.</translation>
+<translation id="2226826835915474236">Неактыўныя каманды</translation>
 <translation id="2227179592712503583">Выдаліць прапанову</translation>
 <translation id="2227444325776770048">Працягнуць як <ph name="USER_FULL_NAME" /></translation>
 <translation id="2230777942707397948">Пустое акно</translation>
@@ -1057,7 +1058,7 @@
 <translation id="5469852975082458401">Вы можаце перамяшчацца па старонках з дапамогай тэкставага курсора. Каб выключыць гэту функцыю, націсніце клавішу F7.</translation>
 <translation id="5471273988133666918">Не ўдаецца перамясціць укладку "<ph name="TAB_TITLE" />"</translation>
 <translation id="548278423535722844">Адкрыць у праграме карт</translation>
-<translation id="5489222148748465285">Дазволіць Chrome працягнуць пошук?</translation>
+<translation id="5489222148748465285">Chrome працягне пошук?</translation>
 <translation id="5494920125229734069">Выбраць усё</translation>
 <translation id="549660026907543296">Далучыцца як <ph name="MEMBER_FULL_NAME" /></translation>
 <translation id="5517326820028369152">Ніжні аркуш з нядаўнімі дзеяннямі</translation>
@@ -1655,6 +1656,7 @@
 <translation id="7740287852186792672">Вынікі пошуку</translation>
 <translation id="774403695779169686"><ph name="TAB_TITLE" />, выбраная ўкладка ў рэжыме інкогніта, змесціва якой абагульваецца</translation>
 <translation id="774876555279732384">Кіраваць службамі аўтазапаўнення таксама можна ў <ph name="BEGIN_LINK" />Наладах Android<ph name="END_LINK" />.</translation>
+<translation id="7758884017823246335">Дадайце магчымасць пошуку па сайце</translation>
 <translation id="7759809451544302770">Неабавязкова</translation>
 <translation id="7762668264895820836">SD-карта <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">Дадаць адрас</translation>
@@ -1886,6 +1888,7 @@
 <translation id="8634050254805484913">Схавана на вузкіх экранах</translation>
 <translation id="8635399646025169806">Захаваць групу ўкладак?</translation>
 <translation id="8636825310635137004">Каб глядзець укладкі са сваіх іншых прылад, уключыце сінхранізацыю.</translation>
+<translation id="8639963783467694461">Налады аўтазапаўнення</translation>
 <translation id="8662474268934425487">Выберыце ўліковы запіс для ўваходу ў <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8664979001105139458">Файл з такой назвай ужо існуе</translation>
 <translation id="8676276370198826499">Зарэгіструйцеся на вэб-сайце <ph name="SITE_ETLD_PLUS_ONE" /> праз сэрвіс "<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />"</translation>
@@ -1934,6 +1937,7 @@
 <translation id="8865415417596392024">Даныя Chrome у вашым уліковым запісе</translation>
 <translation id="8872506776304248286">Адкрыць у праграме</translation>
 <translation id="8890668505403261809">Шукайце па ўкладках у рэжыме інкогніта</translation>
+<translation id="8892234476517513962">Вы ўжо ўвайшлі</translation>
 <translation id="8894890673032951011"><ph name="TAB_TITLE" />, выбраная ўкладка ў рэжыме інкогніта, на якой ідзе запіс</translation>
 <translation id="8898822736010347272">Адпраўляе URL-адрасы некаторых наведаных вамі старонак, пэўную сістэмную інфармацыю і фрагменты змесціва старонак у сэрвісы Google, каб дапамагаць выяўляць новыя кіберпагрозы і абараняць усіх у інтэрнэце.</translation>
 <translation id="8903921497873541725">Павялічыць маштаб</translation>

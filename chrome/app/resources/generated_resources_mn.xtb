@@ -5559,6 +5559,7 @@
 <translation id="4732799736617504962">Холбогдсон микрофон зөвхөн орчны шуугианыг хаахыг дэмжих боломжтой</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (Зүүн)</translation>
 <translation id="4733793249294335256">Байршил</translation>
+<translation id="4734965478015604180">Хөндлөн</translation>
 <translation id="473546211690256853">Энэ дансыг удирдагч <ph name="DOMAIN" /></translation>
 <translation id="4735506354605317060">Заагчийг тодруулах</translation>
 <translation id="4735793370946506039">Сайжруулсан аюулгүй хөтчийн талаар нэмэлт мэдээлэл авна уу.</translation>
@@ -5826,6 +5827,7 @@
 <translation id="4901154724271753917">Саяхан хаагдсан табуудыг дэлгэх</translation>
 <translation id="4901309472892185668"><ph name="EXPERIMENT_NAME" /> туршилтад туршилтын төлөвийг сонгоно уу.</translation>
 <translation id="49027928311173603">Серверээс татсан бодлого хүчин төгөлдөр бус байна: <ph name="VALIDATION_ERROR" /> .</translation>
+<translation id="490375751687810070">Босоо</translation>
 <translation id="4906490889887219338">Сүлжээний файл хуваалцахыг тохируулах эсвэл удирдах. <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
 <translation id="4906679076183257864">Анхдагч хэлбэр рүү нь дахин сэргээх</translation>
 <translation id="4907129260985716018">Энэ өргөтгөл таны сайтын өгөгдлийг хэзээ уншиж, өөрчилж болохыг сонгоно уу</translation>

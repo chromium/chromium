@@ -1019,6 +1019,7 @@
 <translation id="1671525612731130246">Drive એકાઉન્ટ પસંદ કરો</translation>
 <translation id="1671749176392751693">સંરક્ષિત કન્ટેન્ટના ઓળખકર્તાઓને મંજૂરી આપી</translation>
 <translation id="1673137583248014546"><ph name="URL" /> તમારી સુરક્ષા કીની બનાવટ અને મૉડલ જોવા માગે છે</translation>
+<translation id="1673855466663721679">બાજુની પૅનલમાં બુકમાર્ક બતાવો</translation>
 <translation id="1674073353928166410">બધા (<ph name="URL_COUNT" />) URL છૂપી વિન્ડોમાં ખોલો</translation>
 <translation id="1674142805528405174">Google Password Manager તમારા એકાઉન્ટ <ph name="EMAIL" />માં સેવ કરેલા સશક્ત પાસવર્ડનો ઉપયોગ કરીને તમારા એકાઉન્ટને અપડેટ કરી શકે છે.</translation>
 <translation id="1674945585974615438">અપરિચિત સાઇટ પર JavaScript ઑપ્ટિમાઇઝર ઑટોમૅટિક રીતે બંધ કરો</translation>
@@ -3442,6 +3443,7 @@
 <translation id="3312883087018430408">કોઈ ચોક્કસ સાઇટમાં કે Chromeના ભાગમાં શોધવા માટે, ઍડ્રેસ બારમાં તેનો શૉર્ટકટ અને તે પછી તમારી પસંદગીનો કીબોર્ડ શૉર્ટકટ ટાઇપ કરો. ઉદાહરણ તરીકે, માત્ર બુકમાર્ક શોધવા માટે, "@bookmarks" ટાઇપ કરો, ત્યાર પછી Tab અથવા Space કી દબાવો.</translation>
 <translation id="3313622045786997898">પ્રમાણપત્ર હસ્તાક્ષર મૂલ્ય</translation>
 <translation id="3313950410573257029">કનેક્શન ચેક કરો</translation>
+<translation id="3314239811356311272">&amp;બુકમાર્ક મેનેજર ખોલો</translation>
 <translation id="3315158641124845231"><ph name="PRODUCT_NAME" /> છુપાવો</translation>
 <translation id="3317459757438853210">બંને બાજુ</translation>
 <translation id="3317521105713541270">ગ્રૂપ બનાવો</translation>
@@ -3648,6 +3650,7 @@
 <translation id="3453597230179205517">લોકેશન ઍક્સેસ બ્લૉક કરવામાં આવ્યો છે</translation>
 <translation id="3453612417627951340">પ્રમાણિતની જરૂર છે</translation>
 <translation id="3454213325559396544">આ <ph name="DEVICE_TYPE" /> માટે આ છેલ્લું ઑટોમૅટિક સૉફ્ટવેર અને સુરક્ષા અપડેટ છે. ભાવિ અપડેટ મેળવવા માટે, નવા મૉડલ પર અપગ્રેડ કરો.</translation>
+<translation id="3454276058453724464">{FILE_LIMIT,plural, =1{તમારા પ્રશ્ન સાથે ઉપયોગમાં લેવા માટે 1 .pdf અપલોડ કરો}one{તમારા પ્રશ્ન સાથે ઉપયોગમાં લેવા માટે વધુમાં વધુ # .pdf અપલોડ કરો}other{તમારા પ્રશ્ન સાથે ઉપયોગમાં લેવા માટે વધુમાં વધુ # .pdf અપલોડ કરો}}</translation>
 <translation id="3454818737556063691">ખોલવા માટે 1 ફાઇલને <ph name="CLOUD_PROVIDER" /> પર ખસેડીએ?</translation>
 <translation id="3455436146814891176">સિંક એન્ક્રિપ્શનનો પાસવર્ડ</translation>
 <translation id="345693547134384690">નવા ટૅબમાં &amp;છબી ખોલો</translation>
@@ -5021,6 +5024,7 @@
 <translation id="4364567974334641491"><ph name="APP_NAME" />, એક વિંડો શેર કરી રહી છે.</translation>
 <translation id="4364830672918311045">નોટિફિકેશન બતાવો</translation>
 <translation id="4367971618859387374">ડિસ્પ્લે નામ</translation>
+<translation id="4368888793624522796">ટૅબના ગ્રૂપ ખસેડવામાં આવ્યા છે</translation>
 <translation id="4368960422722232719">ટૅબ હોવર પ્રીવ્યૂ કાર્ડ પર મેમરીનો વપરાશ બતાવો</translation>
 <translation id="4369151461324628035">તમારા સ્થાનિક નેટવર્ક પરના કોઈપણ ડિવાઇસ સાથે સાઇટને કનેક્ટ થવાની મંજૂરી આપશો નહીં</translation>
 <translation id="4369215744064167350">વેબસાઇટ ઍક્સેસ કરવાની વિનંતી મંજૂર કરી</translation>
@@ -5409,6 +5413,7 @@
 <translation id="4634575639321169635">ઑફિસના કે વ્યક્તિગત ઉપયોગ માટે આ ડિવાઇસનું સેટઅપ કરો</translation>
 <translation id="4635072447747973225">Crostini અનઇન્સ્ટૉલ કરો</translation>
 <translation id="4635398712689569051">અતિથિ વપરાશકર્તાઓ માટે <ph name="PAGE_NAME" /> ઉપલબ્ધ નથી.</translation>
+<translation id="4635975718422788482">{FILE_LIMIT,plural, =1{તમારા પ્રશ્ન સાથે ઉપયોગમાં લેવા માટે 1 છબી અપલોડ કરો}one{તમારા પ્રશ્ન સાથે ઉપયોગમાં લેવા માટે વધુમાં વધુ # છબી અપલોડ કરો}other{તમારા પ્રશ્ન સાથે ઉપયોગમાં લેવા માટે વધુમાં વધુ # છબી અપલોડ કરો}}</translation>
 <translation id="4636187126182557415">સિસ્ટમ સંબંધિત પસંદગીઓ</translation>
 <translation id="4636930964841734540">માહિતી</translation>
 <translation id="4637083375689622795">વધુ ક્રિયાઓ, <ph name="EMAIL" /></translation>
@@ -5550,6 +5555,7 @@
 <translation id="4732799736617504962">કનેક્ટેડ માઇક માત્ર અવાજ રદ્દીકરણની સુવિધાને સપોર્ટ કરી શકે છે</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (ડાબે)</translation>
 <translation id="4733793249294335256">સ્થાન</translation>
+<translation id="4734965478015604180">હોરિઝોન્ટલ</translation>
 <translation id="473546211690256853">આ એકાઉન્ટ <ph name="DOMAIN" /> દ્વારા મેનેજ કરાય છે</translation>
 <translation id="4735506354605317060">વર્તુળાકાર પૉઇન્ટર</translation>
 <translation id="4735793370946506039">Safe Browsingમાં વધારેલી સુરક્ષા વિશે વધુ જાણો.</translation>
@@ -5817,6 +5823,7 @@
 <translation id="4901154724271753917">તાજેતરમાં બંધ કરવામાં આવેલી સૂચિ મોટી કરો</translation>
 <translation id="4901309472892185668"><ph name="EXPERIMENT_NAME" /> પ્રયોગ માટે, પ્રયોગનું સ્ટેટસ પસંદ કરો.</translation>
 <translation id="49027928311173603">સર્વરમાંથી ડાઉનલોડ કરેલી પૉલિસી અમાન્ય છે: <ph name="VALIDATION_ERROR" />.</translation>
+<translation id="490375751687810070">વર્ટિકલ</translation>
 <translation id="4906490889887219338">નેટવર્ક ફાઇલ શેર સેટઅપ કરો અથવા મેનેજ કરો. <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
 <translation id="4906679076183257864">ડિફૉલ્ટ પર રીસેટ કરો</translation>
 <translation id="4907129260985716018">આ એક્સ્ટેન્શન તમારી સાઇટનો ડેટા ક્યારે વાંચી અને તેમાં ફેરફાર કરી શકે તે પસંદ કરો</translation>
@@ -6250,6 +6257,7 @@
 <translation id="5215502535566372932">દેશ પસંદ કરો</translation>
 <translation id="5216674789212441076">લાઇવ કૅપ્શનનો ઑટોમૅટિક રીતે અનુવાદ કરો. અનુવાદ માટે કૅપ્શન Googleને મોકલવામાં આવે છે.</translation>
 <translation id="5216951551945455224">{NUM_TABS,plural, =1{Gemini સાથે ટૅબ શેર કરવાનું બંધ કરો}one{Gemini સાથે # ટૅબ શેર કરવાનું બંધ કરો}other{Gemini સાથે # ટૅબ શેર કરવાનું બંધ કરો}}</translation>
+<translation id="5217883660859035687">તમારા બુકમાર્કને વધુ જગ્યા આપવા માટે અમે ટૅબના ગ્રૂપને ખસેડી રહ્યાં છીએ.</translation>
 <translation id="5220011581825921581">search + ઉપરની ઍરો કી</translation>
 <translation id="5221516927483787768"><ph name="HOST_NAME" /> કાસ્ટ કરી શકતા નથી</translation>
 <translation id="5221834113325601057">સૂચિમાંથી ટૅબ બાકાત કર્યું</translation>
@@ -6934,6 +6942,7 @@
 <translation id="5697832193891326782">ઇમોજી પિકર</translation>
 <translation id="5698136107297470317">તમે તમારો <ph name="BRAND" />નો ડેટા ડિલીટ કરવા જઈ રહ્યાં છો</translation>
 <translation id="5698878456427040674">ચેક કરો કે પસંદ કરેલા એકાઉન્ટને સપોર્ટ આપવામાં આવે છે કે નહીં.</translation>
+<translation id="5698900765010620315">ઓછા કૉન્ટ્રાસ્ટવાળી ડાર્ક થીમ</translation>
 <translation id="5699227710146832453">તમારા આ ડિવાઇસમાંથી</translation>
 <translation id="570043786759263127">Google Play ઍપ અને સેવાઓ</translation>
 <translation id="5700761515355162635">ત્રીજા પક્ષની કુકીને મંજૂરી આપી</translation>
@@ -8319,6 +8328,7 @@ USB ડિવાઇસ</translation>
 <translation id="6663190258859265334">તમારા <ph name="DEVICE_TYPE" />ને પાવરવોશ કરો અને તેના પહેલાંના વર્ઝન પર પાછા ફરો.</translation>
 <translation id="6664774537677393800">તમારી પ્રોફાઇલ ખોલતી વખતે કંઈક ખોટું થયું. કૃપા કરીને સાઇન આઉટ કરો પછી ફરીથી સાઇન ઇન કરો.</translation>
 <translation id="6665874326033183068">વાઇલ્ડ</translation>
+<translation id="6666560794795912543">બાજુની પૅનલમાં બુકમાર્ક બતાવો</translation>
 <translation id="6667086124612170548">ફાઇલ આ ડિવાઇસ માટે ખૂબ મોટી છે</translation>
 <translation id="6667092961374478614"><ph name="FEATURE_NAME" /> માટેની શોધક્ષમતા</translation>
 <translation id="6667187897999649121">હાલમાં, તમે કુટુંબના સભ્યો સાથે માત્ર પાસવર્ડ શેર કરી શકશો. વધુમાં વધુ 6 સભ્ય ધરાવતું <ph name="BEGIN_LINK" />એક ફૅમિલી ગ્રૂપ બનાવો<ph name="END_LINK" /> અને સમગ્ર Google પર તમારી પ્રોડક્ટ અને સબ્સ્ક્રિપ્શનથી વધુ લાભ મેળવો.</translation>
@@ -9780,6 +9790,7 @@ USB ડિવાઇસ</translation>
 <translation id="7660146600670077843">કોઈ ટૅબ પર રાઇટ ક્લિક કરો અને "નવા ગ્રૂપમાં ટૅબ ઉમેરો" પસંદ કરો</translation>
 <translation id="7661451191293163002">નોંધણી પ્રમાણપત્ર મેળવી શકાયું નથી.</translation>
 <translation id="7662283695561029522">ગોઠવવા માટે ટૅપ કરો</translation>
+<translation id="7662535435481776002">ઓછા કૉન્ટ્રાસ્ટવાળી લાઇટ થીમ</translation>
 <translation id="7663719505383602579">પ્રાપ્તકર્તા: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7663774460282684730">કીબોર્ડ શૉર્ટકટ ઉપલબ્ધ છે</translation>
 <translation id="7663859337051362114">ઇ-સિમ પ્રોફાઇલ ઉમેરો</translation>

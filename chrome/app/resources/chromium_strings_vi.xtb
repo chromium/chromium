@@ -588,6 +588,9 @@ Chromium không thể khôi phục cài đặt của bạn.</translation>
 <translation id="7384121030444253939">Tiện ích này không còn được hỗ trợ nữa. Chromium khuyên bạn nên xoá tiện ích.</translation>
 <translation id="7413153308467572558">Tiếp tục từ nơi bạn đã dừng lại: Chromium khôi phục các thẻ của bạn mỗi khi bạn khởi động lại. Để tắt tính năng này, hãy chuyển đến</translation>
 <translation id="7427879960656355200">Nhập mật khẩu vào Chromium</translation>
+<translation id="744815265653811511">1. Nhấp vào <ph name="BUTTON_LABEL" /> bên dưới
+2. Nhấp vào <ph name="BUTTON_2" /> trong phần cài đặt Windows
+3. Nhấp vào <ph name="BUTTON_3" /> trong thông báo của Windows để ghim Chromium vào thanh tác vụ giúp truy cập nhanh</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium dành cho nhà phát triển</translation>
 <translation id="7450541714075000668">Đã sao chép văn bản</translation>
 <translation id="7451052299415159299">Chromium cần có quyền truy cập vào máy ảnh của bạn cho trang web này</translation>
@@ -603,6 +606,7 @@ Chromium không thể khôi phục cài đặt của bạn.</translation>
 <translation id="761356813943268536">Chromium đang sử dụng máy ảnh và micrô của bạn.</translation>
 <translation id="7617377681829253106">Chromium được cải tiến hơn</translation>
 <translation id="7622753900276619808">Giờ đây, bạn có thể sử dụng nhiều tính năng hơn trong Chromium</translation>
+<translation id="7624307931717240213">Chúng tôi sử dụng thông tin để cải thiện dịch vụ này. Vui lòng xem Chính sách quyền riêng tư và Điều khoản dịch vụ.</translation>
 <translation id="7649070708921625228">Trợ giúp</translation>
 <translation id="7656340475565475526">Để Chromium duyệt web giúp bạn</translation>
 <translation id="7658239707568436148">Huỷ</translation>

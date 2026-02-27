@@ -691,6 +691,9 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="8041795619940733262">Küsige Google'ilt<ph name="LINE_BREAK" />selle vahelehe kohta</translation>
 <translation id="80471789339884597">Täname teid installimise eest. Enne brauseri <ph name="BUNDLE_NAME" /> kasutamist peate taaskäivitama kõik brauserid.</translation>
 <translation id="8064015586118426197">Chrome OS Flex</translation>
+<translation id="8064965390968184078">1. Klõpsake alloleval nupul <ph name="BUTTON_LABEL" />
+2. Klõpsake Windowsi seadetes nupul <ph name="BUTTON_2" />
+3. Kiireks juurdepääsuks klõpsake Windowsi märguandes nupul <ph name="BUTTON_3" />, et kinnitada Chrome oma tegumiribale</translation>
 <translation id="8077579734294125741">Muud Chrome'i profiilid</translation>
 <translation id="8086881907087796310">Installimine ebaõnnestus, kuna arvuti ei vasta riistvara miinimumnõuetele.</translation>
 <translation id="8113883687556086139">Kinnitage oma isik, et Chrome'i andmeid kasutada ja oma kontole <ph name="ACCOUNT_EMAIL" /> salvestada</translation>
@@ -769,6 +772,7 @@ Uusi järjehoidjaid ei saa teie kontole salvestada, enne kui mõned kustutate. K
 <translation id="8914504000324227558">Käivita Chrome uuesti</translation>
 <translation id="8922193594870374009">Numbri saatmiseks asukohast <ph name="ORIGIN" /> Android-telefoni logige mõlemas seadmes Chrome'i sisse.</translation>
 <translation id="8922998289262614701">Eemalda selle rakenduse andmed Chrome’ist</translation>
+<translation id="8925636929359899517">Kasutame teavet selle teenuse täiustamiseks. Vaadake <ph name="BEGIN_LINK1" />privaatsuseeskirju<ph name="END_LINK1" /> ja <ph name="BEGIN_LINK2" />teenusetingimusi<ph name="END_LINK2" />.</translation>
 <translation id="8936233353620149764">Gemini sisse- ja väljalülitamine Chrome'is</translation>
 <translation id="8948460679427074738">See laiendus pole avaldanud privaatsuspõhimõtteid, milles kirjeldataks, kuidas laiendus andmeid kogub ja kasutab. Chrome soovitab selle eemaldada.</translation>
 <translation id="8958307504142971576">Nüüd on teil Chrome'is rohkem funktsioone saadaval.</translation>

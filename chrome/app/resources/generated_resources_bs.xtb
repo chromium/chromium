@@ -5563,6 +5563,7 @@ Koristite Ctrl + Alt + Smanjivanje osvjetljenja da umanjite.</translation>
 <translation id="4732799736617504962">Povezani mikrofon može podržati samo poništavanje buke</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (lijevo)</translation>
 <translation id="4733793249294335256">Lokacija</translation>
+<translation id="4734965478015604180">Horizontalno</translation>
 <translation id="473546211690256853">Ovim računom upravlja <ph name="DOMAIN" /></translation>
 <translation id="4735506354605317060">Zaokruži pokazivač</translation>
 <translation id="4735793370946506039">Saznajte više o poboljšanom Sigurnom pregledanju</translation>
@@ -5830,6 +5831,7 @@ Koristite Ctrl + Alt + Smanjivanje osvjetljenja da umanjite.</translation>
 <translation id="4901154724271753917">Proširite nedavno zatvoreno</translation>
 <translation id="4901309472892185668">Odaberite stanje za eksperiment <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="49027928311173603">Pravilo preuzeto sa servera je nevažeće: <ph name="VALIDATION_ERROR" />.</translation>
+<translation id="490375751687810070">Vertikalno</translation>
 <translation id="4906490889887219338">Postavite dijeljenje fajlova na mreži ili upravljajte njime. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="4906679076183257864">Vrati na zadano</translation>
 <translation id="4907129260985716018">Odaberite kada ova ekstenzija može čitati i izmjenjivati vaše podatke web lokacije</translation>
@@ -8506,6 +8508,7 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="678520006562636090">Isprobajte Google Objektiv na uređaju <ph name="DEVICE_TYPE" /></translation>
 <translation id="6785594991951195537">Koristite <ph name="PASSWORD_DOMAIN" /></translation>
 <translation id="6785739405821760313">Pregled sačuvanih radnih površina. Pritisnite karticu da navigirate.</translation>
+<translation id="6785779729084003225">Koristite <ph name="FOCUS_TOGGLE_HOTKEY" /> da otvorite Gemini u Chromeu</translation>
 <translation id="6785915470941880363">Klizanje unazad <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="67862343314499040">Ljubičasta</translation>
 <translation id="6786480815699355166">Mogu se prevoditi samo podržani jezici Automatskih titlova</translation>

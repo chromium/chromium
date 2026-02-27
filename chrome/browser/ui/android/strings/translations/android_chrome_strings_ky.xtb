@@ -281,6 +281,7 @@ Chrome'дун ишин жакшыртуу үчүн маалыматтарды к
 <translation id="2205701497928406883">Кадалган <ph name="TAB_TITLE" /> өтмөгүндө контент бөлүшүлүүдө</translation>
 <translation id="22091350895006575">Колдонуучунун атын кошуу</translation>
 <translation id="221494669172414749">Chrome профиль кулпусу жок ачылса, сакталган сырсөздөрүңүз жана төлөм ыкмаларыңыз унаадан өчүрүлөт. Профиль кулпусун колдонуу менен бул маалымат коопсуз сакталат.</translation>
+<translation id="2226826835915474236">Жигерсиз ыкчам баскычтар</translation>
 <translation id="2227179592712503583">Сунушту өчүрүү</translation>
 <translation id="2227444325776770048"><ph name="USER_FULL_NAME" /> катары улантуу</translation>
 <translation id="2230777942707397948">Бош терезе</translation>
@@ -1655,6 +1656,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="7740287852186792672">Издөө натыйжалары</translation>
 <translation id="774403695779169686"><ph name="TAB_TITLE" />, тандалган жашыруун өтмөктө контент бөлүшүлүүдө</translation>
 <translation id="774876555279732384">Автотолтуруу кызматтары да <ph name="BEGIN_LINK" />Android параметрлеринде<ph name="END_LINK" /> тескелет.</translation>
+<translation id="7758884017823246335">Сайттан издөөнү кошуу</translation>
 <translation id="7759809451544302770">Кошумча</translation>
 <translation id="7762668264895820836"><ph name="SD_CARD_NUMBER" />-SD-карта</translation>
 <translation id="7764225426217299476">Дарек кошуу</translation>
@@ -1886,6 +1888,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="8634050254805484913">Экраны ичке болгон экрандарда көрсөтүлбөйт</translation>
 <translation id="8635399646025169806">Өтмөктөр тобун калтырасызбы?</translation>
 <translation id="8636825310635137004">Өтмөктөрүңүздү башка түзмөктөрүңүздөн алуу үчүн шайкештирүүнү күйгүзүңүз.</translation>
+<translation id="8639963783467694461">Автотолтуруу параметрлери</translation>
 <translation id="8662474268934425487"><ph name="SITE_ETLD_PLUS_ONE" /> түзмөгүнө кириңиз</translation>
 <translation id="8664979001105139458">Мындай аталыштагы файл бар</translation>
 <translation id="8676276370198826499"><ph name="SITE_ETLD_PLUS_ONE" /> сайтында <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> аккаунту менен катталыңыз</translation>
@@ -1934,6 +1937,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="8865415417596392024">Аккаунтуңуздагы Chrome дайын-даректери</translation>
 <translation id="8872506776304248286">Колдонмосунда ачуу</translation>
 <translation id="8890668505403261809">Жашыруун өтмөктөрдөн издеңиз</translation>
+<translation id="8892234476517513962">Аккаунтуңузга кирип турасыз</translation>
 <translation id="8894890673032951011"><ph name="TAB_TITLE" />, тандалган жашыруун өтмөктө медиа жаздырылууда</translation>
 <translation id="8898822736010347272">Сиз баш баккан айрым барактардын URL даректерин, чектелген тутум маалыматын жана айрым барактардын мазмунун бардык колдонуучулар үчүн мүмкүн болгон коркунучтарды аныктап, бөгөттөө үчүн Google'га жөнөтөт.</translation>
 <translation id="8903921497873541725">Чоңойтуу</translation>

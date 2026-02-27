@@ -731,6 +731,7 @@
 <translation id="2166049586286450108">การเข้าถึงระดับผู้ดูแลระบบโดยสมบูรณ์</translation>
 <translation id="2166378884831602661">เว็บไซต์นี้ไม่สามารถให้การเชื่อมต่อที่ปลอดภัย</translation>
 <translation id="2168151236314517198">นโยบายของผู้ดูแลระบบบล็อกการพิมพ์เนื้อหานี้ไว้</translation>
+<translation id="2171244127100824330">ใน <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> สำหรับ <ph name="ACCOUNT" /></translation>
 <translation id="2172089022819052306">การซ่อมแซมและบำรุงรักษายานพาหนะ</translation>
 <translation id="2173302385160625112">ตรวจสอบการเชื่อมต่ออินเทอร์เน็ต</translation>
 <translation id="2174875517416416684">ทำธุรกรรมไม่สำเร็จ ไม่มีการถอนเงินออกจากบัญชีของคุณ</translation>
@@ -909,7 +910,6 @@
 <translation id="2436976580469434549">ศิลปะเส้นใยและสิ่งทอ</translation>
 <translation id="243815215670139125">บันทึกบัตรนี้ในบัญชี Google ไม่ได้ แต่บันทึกลงใน Chrome บนอุปกรณ์นี้แทน</translation>
 <translation id="2438874542388153331">เจาะรูด้านขวา 4 รู</translation>
-<translation id="2440855519769445271">หากต้องการซ่อนตัวเลือกการชำระเงินภายหลัง ให้ไปที่<ph name="BEGIN_LINK" />การตั้งค่าการชำระเงิน<ph name="END_LINK" /></translation>
 <translation id="2441854154602066476">วิธีการชำระเงินที่พร้อมใช้งานสำหรับการกรอกเมื่อแตะ แป้นพิมพ์ซ่อนอยู่</translation>
 <translation id="2442865686365739754">Chrome <ph name="BEGIN_EMPHASIS" />จะไม่บันทึก<ph name="END_EMPHASIS" />ข้อมูลต่อไปนี้
           <ph name="BEGIN_LIST" />
@@ -946,6 +946,7 @@
 <translation id="248064299258688299">ส่วนขยาย <ph name="EXTENSION_NAME" /> แจ้งว่า</translation>
 <translation id="2482878487686419369">การแจ้งเตือน</translation>
 <translation id="248348093745724435">นโยบายเครื่อง</translation>
+<translation id="248395913932153421">วัน</translation>
 <translation id="2485243023686553468">สมาร์ทโฟน</translation>
 <translation id="2491120439723279231">ใบรับรองของเซิร์ฟเวอร์มีข้อผิดพลาด</translation>
 <translation id="2491414235131909199">หน้านี้ถูกบล็อกโดยส่วนขยาย</translation>
@@ -2284,7 +2285,6 @@
 <translation id="4648262692072505866">แฮชต้องอยู่ในรูปแบบ SHA-256</translation>
 <translation id="4652266463001779298">ไม่อนุญาต</translation>
 <translation id="4652440160515225514">องค์กรของคุณบล็อกเว็บไซต์นี้เนื่องจากละเมิดนโยบาย</translation>
-<translation id="4654457557264366314">แพ็กเกจการชำระเงินขึ้นอยู่กับสิทธิ์</translation>
 <translation id="4658638640878098064">เย็บด้วยลวดเย็บกระดาษด้านซ้ายบน</translation>
 <translation id="4658801711339831733">บันทึกการสแกนไปยัง Google ไดรฟ์แล้ว</translation>
 <translation id="4660592918803576381">เปิดในไดรฟ์</translation>
@@ -2405,6 +2405,7 @@
 <translation id="4832388034239846146">หากต้องการแชร์กลุ่มแท็บ ให้อัปเดต Chrome</translation>
 <translation id="483241715238664915">เปิดคำเตือน</translation>
 <translation id="4832961164064927107">ปิ้งย่างและบาร์บีคิว</translation>
+<translation id="4839984801146463230">บันทึกข้อมูลเพื่อทำสิ่งต่างๆ ให้เสร็จเร็วขึ้น เช่น การกรอกแบบฟอร์มในผลิตภัณฑ์ต่างๆ ของ Google คุณสามารถ<ph name="BEGIN_LINK" />จัดการข้อมูล<ph name="END_LINK" />ใน <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> สำหรับ <ph name="ACCOUNT" /> ได้</translation>
 <translation id="4840250757394056958">ดูประวัติการเข้าชมใน Chrome</translation>
 <translation id="484462545196658690">อัตโนมัติ</translation>
 <translation id="4844937814014739139">เลื่อนและซูมแท็บที่แชร์</translation>
@@ -2594,7 +2595,6 @@
 <translation id="512756860033933700">อนุญาตให้ล็อกแป้นพิมพ์</translation>
 <translation id="5127934926273826089">ดอกไม้</translation>
 <translation id="5129534298163637277">กล่องโต้ตอบการยืนยัน</translation>
-<translation id="5129662217315786329">โปแลนด์</translation>
 <translation id="5135404736266831032">จัดการที่อยู่...</translation>
 <translation id="5136841603454277753">ป้อนรหัสที่ถูกต้อง</translation>
 <translation id="5137761395480718572">แอปนี้กำลังขอสิทธิ์ในการติดตั้งข้อมูลเข้าสู่ระบบ Wi-Fi หลังตั้งค่าแล้ว <ph name="DEVICE_TYPE" /> จะเชื่อมต่อกับเครือข่าย Wi-Fi ที่เข้าร่วมโดยอัตโนมัติ หากต้องการนำข้อมูลเข้าสู่ระบบเหล่านี้ออก ให้ถอนการติดตั้งแอป <ph name="LEARN_MORE" /></translation>
@@ -2754,6 +2754,7 @@
 <translation id="5392506727170022660">โลหะ (กึ่งเงา)</translation>
 <translation id="5394069166371280357">รายการทีวีสำหรับครอบครัว</translation>
 <translation id="5396631636586785122">เย็บขอบด้านขวา</translation>
+<translation id="5396837962335265787"><ph name="ATTRIBUTE_NAME" /> จากเดิม <ph name="OLD_ATTRIBUTE_ATTRIBUTE" /></translation>
 <translation id="5397794290049113714">คุณ</translation>
 <translation id="5398461103557553443">หากต้องการป้อน IBAN นี้โดยอัตโนมัติในครั้งถัดไป ให้บันทึกไว้ใน Google Wallet</translation>
 <translation id="5398772614898833570">บล็อกโฆษณา</translation>
@@ -3488,6 +3489,7 @@
 <translation id="6547208576736763147">เจาะรูด้านซ้าย 2 รู</translation>
 <translation id="6549443526281184652">เครื่องแต่งกาย</translation>
 <translation id="6550245281449521513">ไม่อนุญาตให้ล็อกเมาส์</translation>
+<translation id="6551737294564628267"><ph name="ATTRIBUTE_NAME" /> ใหม่</translation>
 <translation id="6552566579578780089">การชำระเงิน</translation>
 <translation id="6554732001434021288">เข้าชมล่าสุด <ph name="NUM_DAYS" /> วันที่ผ่านมา</translation>
 <translation id="6556866813142980365">ทำซ้ำ</translation>
@@ -3539,7 +3541,6 @@
 <translation id="6649510485211003056">195 x 270 มม.</translation>
 <translation id="6651270836885078973">จัดการโดย:</translation>
 <translation id="6652101503459149953">ใช้ Windows Hello</translation>
-<translation id="6654224358955673568">เพิ่มความเป็นทางการ</translation>
 <translation id="6654244995031366386">กระจก (ขรุขระ)</translation>
 <translation id="6655085656059574817">การลิงก์บัญชีไว้จะช่วยให้คุณชำระเงินด้วย <ph name="BNPL_ISSUER_NAME" /> ได้เร็วขึ้น ทั้งนี้ คุณสามารถยกเลิกการลิงก์ได้ที่ <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /></translation>
 <translation id="6656935431494847393">รวมถึงข้อมูล เช่น การจองเที่ยวบินและข้อมูลยานพาหนะ</translation>
@@ -3711,7 +3712,6 @@
 <translation id="6926216138694948720">รอยสัก</translation>
 <translation id="692638818576287323">ยานพาหนะเพื่อการพาณิชย์</translation>
 <translation id="6927878187051807444">ไฟล์กล้องและภาพหน้าจอ</translation>
-<translation id="6929949393612835405">ปิดและกลับไปที่ "<ph name="OPENER_TITLE" />"</translation>
 <translation id="6930607614725241390">ค้นหาในแผงด้านข้าง</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />เครื่องมือค้นหาเริ่มต้นจะให้คุณค้นหาเว็บและใช้งานฟีเจอร์ต่างๆ ของ Chrome<ph name="END_BOLD" /> เช่น การค้นหาจากแถบที่อยู่และภาพบนหน้าเว็บ ฟีเจอร์อาจไม่พร้อมใช้งาน หากเครื่องมือค้นหาของคุณไม่รองรับ</translation>
 <translation id="6934672428414710184">ชื่อนี้มาจากบัญชี Google ของคุณ</translation>
@@ -4746,6 +4746,7 @@
 <translation id="8544217240017914508">Google Chrome กำลังพยายามแก้ไขการตั้งค่าสำหรับการกรอกวิธีการชำระเงิน</translation>
 <translation id="8544303911974837265">ผ้าใยสังเคราะห์</translation>
 <translation id="854548366864113872">ตัวเลือกที่มีราคาสูง</translation>
+<translation id="854583198371106098"><ph name="ATTRIBUTE_VALUE" />  <ph name="BEGIN_NEW" />ใหม่<ph name="END_NEW" /></translation>
 <translation id="8546254312340305428">ระบุเหตุผลในการอัปโหลด (ต้องระบุ)</translation>
 <translation id="8546350655047701518">ส่งออกบันทึกเป็นไฟล์ JSON</translation>
 <translation id="8546667245446052521">กระดาษ (Archival)</translation>

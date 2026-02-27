@@ -281,6 +281,7 @@
 <translation id="2205701497928406883"><ph name="TAB_TITLE" />፣ ፒን የተደረገ እያጋራ ያለ ትር</translation>
 <translation id="22091350895006575">የተጠቃሚ ስም አክል</translation>
 <translation id="221494669172414749">Chrome ያለ የመገለጫ መቆለፊያ መክፈት የተቀመጡ የእርስዎን የይለፍ ቃላት እና የመክፈያ ዘዴዎችን ከመኪናው ያስወግዳል። የመገለጫ መቆለፊያን መጠቀም ይህን ውሂብ ደህንነቱ የተጠበቀ ያደርገዋል።</translation>
+<translation id="2226826835915474236">የቦዘኑ አቋራጮች</translation>
 <translation id="2227179592712503583">የአስተያየት ጥቆማን አስወግድ</translation>
 <translation id="2227444325776770048">እንደ <ph name="USER_FULL_NAME" /> ሆነው ይቀጥሉ</translation>
 <translation id="2230777942707397948">ባዶ መስኮት</translation>
@@ -1655,6 +1656,7 @@
 <translation id="7740287852186792672">የፍለጋ ውጤቶች</translation>
 <translation id="774403695779169686"><ph name="TAB_TITLE" />፣ የተመረጠ እያጋራ ያለ ማንነት የማያሳውቅ ትር</translation>
 <translation id="774876555279732384">እንዲሁም የራስ-ሙላ አገልግሎቶች <ph name="BEGIN_LINK" />Android ቅንብሮች<ph name="END_LINK" /> ውስጥ ይተዳደራሉ።</translation>
+<translation id="7758884017823246335">የጣቢያ ፍለጋን ያክሉ</translation>
 <translation id="7759809451544302770">አስገዳጅ ያልሆነ</translation>
 <translation id="7762668264895820836">ኤስዲ ካርድ <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">አድራሻ አክል</translation>
@@ -1886,6 +1888,7 @@
 <translation id="8634050254805484913">ጠባብ ማያ ገጾች ላይ የተደበቀ ነው</translation>
 <translation id="8635399646025169806">የትር ቡድን ይቆይ?</translation>
 <translation id="8636825310635137004">ትሮችዎን ከሌሎች መሣሪያዎችዎ ለማግኘት ስምረትን ያብሩ።</translation>
+<translation id="8639963783467694461">የራስ-ሙላ ቅንብሮች</translation>
 <translation id="8662474268934425487">ወደ <ph name="SITE_ETLD_PLUS_ONE" /> ይግቡ</translation>
 <translation id="8664979001105139458">የፋይል ስም አስቀድሞ አለ</translation>
 <translation id="8676276370198826499">በ<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> አማካኝነት ወደ <ph name="SITE_ETLD_PLUS_ONE" /> ይመዝገቡ</translation>
@@ -1934,6 +1937,7 @@
 <translation id="8865415417596392024">በመለያዎ ውስጥ የChrome ውሂብ</translation>
 <translation id="8872506776304248286">በመተግበሪያ ውስጥ ክፈት</translation>
 <translation id="8890668505403261809">ማንነት የማያሳውቅ ትሮችዎን ይፈልጉ</translation>
+<translation id="8892234476517513962">አስቀድመው ገብተዋል</translation>
 <translation id="8894890673032951011"><ph name="TAB_TITLE" />፣ የተመረጠ እየቀዳ ያለ ማንነት የማያሳውቅ ትር</translation>
 <translation id="8898822736010347272">አዲስ ስጋቶችን ለማግኘት እንዲያግዝ እና በድር ላይ ያለ ሁሉንም ሰው ለመጠበቅ የጎበኟቸው የአንዳንድ ገጾች ዩአርኤሎችን፣ የተወሰነ የስርዓት መረጃን እና አንዳንድ የገጽ ይዘትን ወደ Google ይልካል።</translation>
 <translation id="8903921497873541725">አጉላ</translation>

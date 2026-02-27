@@ -587,6 +587,9 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="7384121030444253939">此扩展程序已不再受支持。Chromium 建议您移除它。</translation>
 <translation id="7413153308467572558">从上次停下的地方继续：Chromium 会在您每次重启后恢复标签页。如需关闭此功能，请前往</translation>
 <translation id="7427879960656355200">将密码导入 Chromium</translation>
+<translation id="744815265653811511">1. 点击下方的“<ph name="BUTTON_LABEL" />”
+2. 在 Windows 设置中点击“<ph name="BUTTON_2" />”
+3. 点击 Windows 通知中的“<ph name="BUTTON_3" />”，将 Chromium 固定到任务栏，以便快速访问</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium 开发者版</translation>
 <translation id="7450541714075000668">已复制文字</translation>
 <translation id="7451052299415159299">Chromium 需要获得相应权限，才能允许此网站使用您的摄像头</translation>
@@ -602,6 +605,7 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="761356813943268536">Chromium 正在使用您的摄像头和麦克风。</translation>
 <translation id="7617377681829253106">Chromium现在更好用了</translation>
 <translation id="7622753900276619808">您现在可以在 Chromium 中使用更多功能了</translation>
+<translation id="7624307931717240213">我们会使用这些信息来改进此服务。请参阅《隐私权政策》和《服务条款》。</translation>
 <translation id="7649070708921625228">帮助</translation>
 <translation id="7656340475565475526">让 Chromium 代您浏览</translation>
 <translation id="7658239707568436148">取消</translation>

@@ -5563,6 +5563,7 @@
 <translation id="4732799736617504962">ໄມທີ່ເຊື່ອມຕໍ່ສາມາດຮອງຮັບການຕັດສຽງລົບກວນໄດ້ເທົ່ານັ້ນ</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (ຊ້າຍ)</translation>
 <translation id="4733793249294335256">ສະຖານທີ່</translation>
+<translation id="4734965478015604180">ລວງນອນ</translation>
 <translation id="473546211690256853">ບັນຊີນີ້ຖືກຈັດການໂດຍ <ph name="DOMAIN" /></translation>
 <translation id="4735506354605317060">ຕົວຊີ້ວົງມົນ</translation>
 <translation id="4735793370946506039">ສຶກສາເພີ່ມເຕີມກ່ຽວກັບ Safe Browsing ທີ່ປັບປຸງດີຂຶ້ນ.</translation>
@@ -5830,6 +5831,7 @@
 <translation id="4901154724271753917">ຂະຫຍາຍແຖບທີ່ປິດໄປຫຼ້າສຸດ</translation>
 <translation id="4901309472892185668">ເລືອກສະຖານະການທົດລອງສຳລັບການທົດລອງ <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="49027928311173603">ນະ​ໂຍ​ບາຍທີ່ດາວໂຫຼດຈາກເຊີບເວີໃຊ້ບໍ່ໄດ້: <ph name="VALIDATION_ERROR" />.</translation>
+<translation id="490375751687810070">ລວງຕັ້ງ</translation>
 <translation id="4906490889887219338">ຕັ້ງຄ່າ ຫຼື ຈັດການການແບ່ງປັນໄຟລ໌ຜ່ານເຄືອຂ່າຍ. <ph name="LINK_BEGIN" />ສຶກສາເພີ່ມເຕີມ<ph name="LINK_END" /></translation>
 <translation id="4906679076183257864">ຕັ້ງຄ່າເປັນມາດຕະຖານຄືນໃໝ່</translation>
 <translation id="4907129260985716018">ເລືອກວ່າສ່ວນຂະຫຍາຍນີ້ຈະສາມາດອ່ານ ແລະ ປ່ຽນຂໍ້ມູນເວັບໄຊຂອງທ່ານໄດ້ຕອນໃດ</translation>
@@ -8501,6 +8503,7 @@
 <translation id="678520006562636090">ລອງໃຊ້ Google Lens ຢູ່ <ph name="DEVICE_TYPE" /> ຂອງທ່ານ</translation>
 <translation id="6785594991951195537">ໃຊ້ <ph name="PASSWORD_DOMAIN" /> ຂອງທ່ານ</translation>
 <translation id="6785739405821760313">ກຳລັງເບິ່ງໂຕະທີ່ບັນທຶກໄວ້. ກົດ tab ເພື່ອນຳທາງ.</translation>
+<translation id="6785779729084003225">ໃຊ້ <ph name="FOCUS_TOGGLE_HOTKEY" /> ເພື່ອເປີດ Gemini ໃນ Chrome</translation>
 <translation id="6785915470941880363">ການເລື່ອນແບບກັບດ້ານ <ph name="LINK_BEGIN" />ເບິ່ງຂໍ້ມູນເພີ່ມເຕີມ<ph name="LINK_END" /></translation>
 <translation id="67862343314499040">ສີມ່ວງ</translation>
 <translation id="6786480815699355166">ໂດຍສາມາດແປໄດ້ສະເພາະພາສາຄຳບັນຍາຍສົດທີ່ຮອງຮັບເທົ່ານັ້ນ</translation>

@@ -695,6 +695,9 @@ Google Chrome haiwezi kufufua mipangilio yako.</translation>
 <translation id="8041795619940733262">Uliza Google<ph name="LINE_BREAK" />kuhusu kichupo hiki</translation>
 <translation id="80471789339884597">Asante kwa kusakinisha. Ni lazima uzime kisha uwashe tena vivinjari vyako kabla ya kutumia <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8064015586118426197">Arifa ya ChromeOS Flex</translation>
+<translation id="8064965390968184078">1. Bofya <ph name="BUTTON_LABEL" /> hapa chini
+2. Bofya <ph name="BUTTON_2" /> katika mipangilio yako ya Windows
+3. Bofya <ph name="BUTTON_3" /> kwenye arifa ya Windows ili ubandike Chrome kwenye upauzana wako ili uifikie kwa haraka</translation>
 <translation id="8077579734294125741">Wasifu Mwingine Kwenye Chrome</translation>
 <translation id="8086881907087796310">Imeshindwa kusakinisha kwa sababu kompyuta yako haitimizi masharti ya chini yanayohitajika ya maunzi.</translation>
 <translation id="8113883687556086139">Thibitisha kuwa ni wewe ili utumie na uhifadhi data ya Chrome katika akaunti yako, <ph name="ACCOUNT_EMAIL" /></translation>
@@ -773,6 +776,7 @@ Huwezi kuhifadhi alamisho mpya kwenye akaunti yako hadi ufute baadhi ya alamisho
 <translation id="8914504000324227558">Zindua upya Chrome</translation>
 <translation id="8922193594870374009">Ili uweze kutuma namba kwa simu yako ya Android kutoka <ph name="ORIGIN" />, ingia katika akaunti kwenye Chrome ukitumia vifaa vyote viwili.</translation>
 <translation id="8922998289262614701">Ondoa data ya programu hii kwenye Chrome</translation>
+<translation id="8925636929359899517">Tunatumia maelezo kuboresha huduma hii. Angalia <ph name="BEGIN_LINK1" />Sera ya Faragha<ph name="END_LINK1" /> na <ph name="BEGIN_LINK2" />Sheria na Masharti<ph name="END_LINK2" />.</translation>
 <translation id="8936233353620149764">Washa au uzime Gemini kwenye Chrome</translation>
 <translation id="8948460679427074738">Kiendelezi hiki hakijachapisha desturi za faragha, kama vile jinsi kinavyokusanya na kutumia data. Chrome inapendekeza ukiondoe.</translation>
 <translation id="8958307504142971576">Sasa una vipengele zaidi vinavyopatikana katika Chrome</translation>

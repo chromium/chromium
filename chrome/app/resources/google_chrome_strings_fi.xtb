@@ -687,6 +687,9 @@
 <translation id="8041795619940733262">Kysy Googlelta<ph name="LINE_BREAK" />tästä välilehdestä</translation>
 <translation id="80471789339884597">Kiitos asennuksesta. Kaikki selaimet pitää käynnistää uudelleen ennen kuin <ph name="BUNDLE_NAME" /> otetaan käyttöön.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
+<translation id="8064965390968184078">1. Klikkaa <ph name="BUTTON_LABEL" /> alta
+2. Klikkaa Windowsin asetuksista <ph name="BUTTON_2" />
+3. Klikkaa Windowsin ilmoituksesta <ph name="BUTTON_3" />, niin voit kiinnittää Chromen tehtäväpalkkiin nopeaa käyttöä varten</translation>
 <translation id="8077579734294125741">Muut Chrome-profiilit</translation>
 <translation id="8086881907087796310">Asennus epäonnistui, koska tietokoneesi ei täytä laitteiston vähimmäisvaatimuksia.</translation>
 <translation id="8113883687556086139">Vahvista henkilöllisyytesi, jotta voit käyttää ja tallentaa Chrome-dataa tililläsi: <ph name="ACCOUNT_EMAIL" /></translation>

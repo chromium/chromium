@@ -281,6 +281,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="2205701497928406883"><ph name="TAB_TITLE" />, fastgjort fane, der deler indhold</translation>
 <translation id="22091350895006575">Tilføj brugernavn</translation>
 <translation id="221494669172414749">Hvis du åbner Chrome uden en profillås, fjernes dine gemte adgangskoder og betalingsmetoder fra bilen. Du kan beskytte disse data ved at bruge en profillås.</translation>
+<translation id="2226826835915474236">Inaktive genveje</translation>
 <translation id="2227179592712503583">Fjern forslag</translation>
 <translation id="2227444325776770048">Fortsæt som <ph name="USER_FULL_NAME" /></translation>
 <translation id="2230777942707397948">Tomt vindue</translation>
@@ -1655,6 +1656,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="7740287852186792672">Søgeresultater</translation>
 <translation id="774403695779169686"><ph name="TAB_TITLE" />, valgt inkognitofane, der deler indhold</translation>
 <translation id="774876555279732384">Tjenester til autofyld administreres også i <ph name="BEGIN_LINK" />Android-indstillingerne<ph name="END_LINK" />.</translation>
+<translation id="7758884017823246335">Tilføj websitesøgning</translation>
 <translation id="7759809451544302770">Valgfrit</translation>
 <translation id="7762668264895820836">SD-kort <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">Tilføj adresse</translation>
@@ -1886,6 +1888,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="8634050254805484913">Skjult på smalle skærme</translation>
 <translation id="8635399646025169806">Vil du beholde fanegruppen?</translation>
 <translation id="8636825310635137004">Aktivér synkronisering for at få adgang til dine faner på dine andre enheder.</translation>
+<translation id="8639963783467694461">Indstillinger for AutoFyld</translation>
 <translation id="8662474268934425487">Log ind på <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8664979001105139458">Filnavnet findes allerede</translation>
 <translation id="8676276370198826499">Tilmeld dig <ph name="SITE_ETLD_PLUS_ONE" /> med <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -1934,6 +1937,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="8865415417596392024">Chrome-data på din konto</translation>
 <translation id="8872506776304248286">Åbn i app</translation>
 <translation id="8890668505403261809">Søg i dine inkognitofaner</translation>
+<translation id="8892234476517513962">Du er allerede logget ind</translation>
 <translation id="8894890673032951011"><ph name="TAB_TITLE" />, valgt inkognitofane, der optager</translation>
 <translation id="8898822736010347272">Sender webadresser på visse sider, du besøger, begrænsede systemoplysninger og indhold fra visse sider til Google med henblik på at opdage nye trusler og beskytte brugerne på nettet.</translation>
 <translation id="8903921497873541725">Zoom ind</translation>

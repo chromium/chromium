@@ -5564,6 +5564,7 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="4732799736617504962">Micrô đã kết nối chỉ có thể hỗ trợ tính năng khử tiếng ồn</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (Trái)</translation>
 <translation id="4733793249294335256">Vị trí</translation>
+<translation id="4734965478015604180">Ngang</translation>
 <translation id="473546211690256853">Tài khoản này do <ph name="DOMAIN" /> quản lý</translation>
 <translation id="4735506354605317060">Di chuyển con trỏ xung quanh</translation>
 <translation id="4735793370946506039">Tìm hiểu thêm về tính năng Duyệt web an toàn có tăng cường bảo vệ.</translation>
@@ -5772,7 +5773,7 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="4871322859485617074">Mã PIN chứa ký tự không hợp lệ</translation>
 <translation id="4871370605780490696">Thêm dấu trang</translation>
 <translation id="4871568871368204250">Tắt đồng bộ hóa</translation>
-<translation id="4871630917300912613">Hàng rào bảo vệ JavaScript</translation>
+<translation id="4871630917300912613">Cơ chế bảo vệ JavaScript</translation>
 <translation id="4871719318659334896">Đóng nhóm</translation>
 <translation id="4872192066608821120">Để nhập mật khẩu, hãy chọn một tệp CSV</translation>
 <translation id="4872212987539553601">Thiết lập quy trình mã hoá trên thiết bị</translation>
@@ -5831,6 +5832,7 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="4901154724271753917">Mở rộng thẻ đã đóng gần đây</translation>
 <translation id="4901309472892185668">Chọn trạng thái thử nghiệm cho quá trình thử nghiệm <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="49027928311173603">Chính sách được tải xuống từ máy chủ không hợp lệ: <ph name="VALIDATION_ERROR" />.</translation>
+<translation id="490375751687810070">Dọc</translation>
 <translation id="4906490889887219338">Thiết lập hoặc quản lý tính năng chia sẻ tệp trong mạng. <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
 <translation id="4906679076183257864">Đặt lại về mặc định</translation>
 <translation id="4907129260985716018">Chọn thời điểm tiện ích này có thể đọc và thay đổi dữ liệu trang web của bạn</translation>
@@ -6872,7 +6874,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5636996382092289526">Để sử dụng <ph name="NETWORK_ID" />, trước hết bạn cần <ph name="LINK_START" />truy cập vào trang đăng nhập của mạng<ph name="LINK_END" />. Trang này thường tự động mở sau vài giây. Nếu trang này không mở thì không thể sử dụng mạng này.</translation>
 <translation id="5637476008227280525">Bật dữ liệu di động</translation>
 <translation id="5638170200695981015">Chọn "Mở trong trình chỉnh sửa cơ bản" để sử dụng các tuỳ chọn xem và chỉnh sửa hạn chế.</translation>
-<translation id="5638202526629811571">Hãy cho cha mẹ hoặc người giám hộ xem màn hình này để họ có thể cho phép bạn thêm tiện ích này</translation>
+<translation id="5638202526629811571">Hãy cho cha mẹ hoặc người giám hộ xem màn hình này để họ cho phép bạn thêm tiện ích này</translation>
 <translation id="563821631542362636">Cho phép trang web lưu dữ liệu</translation>
 <translation id="5638309510554459422">Tìm tiện ích và chủ đề trong <ph name="BEGIN_LINK" />Cửa hàng Chrome trực tuyến<ph name="END_LINK" /></translation>
 <translation id="5639549361331209298">Tải lại trang này, giữ để xem các tùy chọn khác</translation>
@@ -8503,6 +8505,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="678520006562636090">Dùng thử Google Ống kính trên <ph name="DEVICE_TYPE" /></translation>
 <translation id="6785594991951195537">Sử dụng <ph name="PASSWORD_DOMAIN" /> của bạn</translation>
 <translation id="6785739405821760313">Đang xem không gian làm việc đã lưu. Hãy nhấn phím tab để di chuyển.</translation>
+<translation id="6785779729084003225">Dùng <ph name="FOCUS_TOGGLE_HOTKEY" /> để mở Gemini trong Chrome</translation>
 <translation id="6785915470941880363">Cuộn ngược <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
 <translation id="67862343314499040">Tím vi-ô-lét</translation>
 <translation id="6786480815699355166">Chỉ có thể dịch các ngôn ngữ được hỗ trợ cho tính năng Phụ đề trực tiếp</translation>

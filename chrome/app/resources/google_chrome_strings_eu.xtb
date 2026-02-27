@@ -694,6 +694,9 @@ Google Chrome-k ezin ditu berreskuratu zure ezarpenak.</translation>
 <translation id="8041795619940733262">Galdetu Google-ri<ph name="LINE_BREAK" />fitxa honi buruz</translation>
 <translation id="80471789339884597">Eskerrik asko instalatzeagatik. <ph name="BUNDLE_NAME" /> erabiltzeko, arakatzaile guztiak berrabiarazi behar dituzu.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
+<translation id="8064965390968184078">1. Sakatu beheko <ph name="BUTTON_LABEL" />.
+2. Sakatu <ph name="BUTTON_2" /> Windows-en ezarpenetan.
+3. Chrome zereginen barran ainguratzeko eta bizkor atzitzeko, sakatu <ph name="BUTTON_3" /> Windows-en jakinarazpenean.</translation>
 <translation id="8077579734294125741">Chrome-ko beste profilak</translation>
 <translation id="8086881907087796310">Instalazioak huts egin du, ordenagailuak hardwarearen gutxieneko eskakizunak betetzen ez dituelako.</translation>
 <translation id="8113883687556086139">Chrome-ko datuak zure kontuan (<ph name="ACCOUNT_EMAIL" />) erabiltzeko eta gordetzeko, egiaztatu zeu zarela</translation>
@@ -772,6 +775,7 @@ Laster-marka batzuk ezabatu arte, ezingo da beste laster-markarik gorde kontuan.
 <translation id="8914504000324227558">Berrabiarazi Chrome</translation>
 <translation id="8922193594870374009">Zenbaki bat <ph name="ORIGIN" /> webgunetik Android-eko telefonora bidaltzeko, hasi Chrome-ko saioa bi gailuetan.</translation>
 <translation id="8922998289262614701">Kendu aplikazio honetako datuak Chrome-tik</translation>
+<translation id="8925636929359899517">Zerbitzu hau hobetzeko erabiltzen dugu informazioa. Ikusi <ph name="BEGIN_LINK1" /><ph name="END_LINK1" />Pribatutasun-gidalerroak<ph name="BEGIN_LINK2" /> eta <ph name="END_LINK2" />Zerbitzu-baldintzak.</translation>
 <translation id="8936233353620149764">Aktibatu/Desaktibatu Chrome-ko Gemini</translation>
 <translation id="8948460679427074738">Luzapen honek ez du argitaratu pribatutasun-jardunbiderik (adibidez, datuak biltzeko eta erabiltzeko duen moduari buruz). Kentzea gomendatzen dizu Chrome-k.</translation>
 <translation id="8958307504142971576">Orain, eginbide gehiago dituzu Chrome-n</translation>

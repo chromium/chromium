@@ -17,7 +17,6 @@
 <translation id="1138691154716715755">Tidigare den här månaden</translation>
 <translation id="1150565364351027703">Solglasögon</translation>
 <translation id="115443833402798225">Hangul Ahnmatae</translation>
-<translation id="1155759005174418845">katalanska</translation>
 <translation id="1168100932582989117">Googles namnservrar</translation>
 <translation id="1170788066030116158">Fotodatum</translation>
 <translation id="1172970565351728681">Cirka <ph name="REMAINING_TIME" /> kvar</translation>
@@ -61,12 +60,10 @@
 <translation id="146691674290220697">Det gick inte att kopiera <ph name="NUMBER_OF_FILES" /> eftersom de är krypterade.</translation>
 <translation id="1471718551822868769">slovakiska</translation>
 <translation id="1482884275703521657">finska</translation>
-<translation id="148466539719134488">Schweiziska</translation>
 <translation id="1497522201463361063">Det gick inte att byta namn på <ph name="FILE_NAME" />. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1499943022354839699">engelska (USA) med Dvorak-tangentbord</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> – Värd</translation>
 <translation id="1521655867290435174">Google Kalkylark</translation>
-<translation id="1547964879613821194">Kanadensisk engelska</translation>
 <translation id="1556189134700913550">Ersätt alla</translation>
 <translation id="1561842594491319104">Chrome-enheter</translation>
 <translation id="1572585716423026576">Använd som bakgrund</translation>
@@ -120,8 +117,6 @@
 <translation id="1920670151694390848">malayalam, translitterering</translation>
 <translation id="1920798810075583923">Vattenmelon</translation>
 <translation id="1924372192547904021"><ph name="DRIVE_NAME" /> har formaterats</translation>
-<translation id="1931134289871235022">Slovakiska</translation>
-<translation id="1936717151811561466">finska</translation>
 <translation id="1942765061641586207">Bildupplösning</translation>
 <translation id="1972984168337863910">Utöka panel med information om filåtgärder</translation>
 <translation id="1995337122023280937">Gå till filens plats</translation>
@@ -199,7 +194,6 @@
 <translation id="2541377937973966830">Mappens innehåll är skrivskyddat. Vissa aktiviteter stöds inte.</translation>
 <translation id="2542049655219295786">Tabell i Google Dokument</translation>
 <translation id="2544853746127077729">Autentiseringscertifikatet godkändes inte av nätverket</translation>
-<translation id="255937426064304553">USA (internationell)</translation>
 <translation id="2563185590376525700">Groda</translation>
 <translation id="2578394532502990878">tamil, fonetiskt</translation>
 <translation id="2579959351793446050">odia</translation>
@@ -220,7 +214,6 @@
 <translation id="2735623501230989521">Ge Parallels Desktop behörighet att öppna filer i mappen <ph name="FOLDER_NAME" /></translation>
 <translation id="2764206540577097904">Du har använt hela ditt individuella lagringsutrymme i Google Workspace.</translation>
 <translation id="2771816809568414714">Ost</translation>
-<translation id="2781645665747935084">Belgiska</translation>
 <translation id="2802583107108007218">Läs mer om dessa begränsningar</translation>
 <translation id="2803375539583399270">Ange pinkod</translation>
 <translation id="2819519502129272135">Filsynkronisering har inaktiverats</translation>
@@ -228,15 +221,11 @@
 <translation id="2830077785865012357">kinesiska (zhuyin)</translation>
 <translation id="2843806747483486897">Ändra standard ...</translation>
 <translation id="2873951654529031587">Papperskorgen</translation>
-<translation id="288024221176729610">tjeckiska</translation>
 <translation id="2887525882758501333">PDF-dokument</translation>
 <translation id="2888807692577297075">Inga objekt matchar &lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;</translation>
 <translation id="2894654529758326923">Information</translation>
-<translation id="2902734494705624966">USA (utökat)</translation>
 <translation id="2904378509913846215">Det finns redan en mapp med namnet <ph name="FILENAME" />. Vill du ersätta den med mappen du flyttar?</translation>
 <translation id="290843123675549676">marathi</translation>
-<translation id="2923240520113693977">estniska</translation>
-<translation id="2938685643439809023">mongoliska</translation>
 <translation id="2943503720238418293">Ange ett kortare namn</translation>
 <translation id="2949781154072577687">Formaterar <ph name="DRIVE_NAME" /> …</translation>
 <translation id="2951236788251446349">Manet</translation>
@@ -263,14 +252,10 @@
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (med hårdvarustöd)</translation>
 <translation id="3188257591659621405">Mina filer</translation>
 <translation id="3194553149358267393">Inga nya ljudfiler</translation>
-<translation id="3197563288998582412">Storbritannien (dvorak)</translation>
 <translation id="3202131003361292969">Sökväg</translation>
 <translation id="3205852408225871810">portugisiska (Brasilien)</translation>
-<translation id="3224239078034945833">Kanadensiska (flerspråkig)</translation>
 <translation id="3236289833370040187"><ph name="DESTINATION_DOMAIN" /> blir den nya ägaren efter överföringen.</translation>
-<translation id="3241720467332021590">iriska</translation>
 <translation id="3248185426436836442">Väntar</translation>
-<translation id="3252266817569339921">franska</translation>
 <translation id="3253225298092156258">Inte tillgänglig</translation>
 <translation id="3254434849914415189">Välj standardapp för <ph name="FILE_TYPE" />-filer:</translation>
 <translation id="3255159654094949700">arabiska</translation>
@@ -285,7 +270,6 @@
 <translation id="3293023191599135697">WEP-nätverk stöds inte</translation>
 <translation id="3295006446256079333">Den här volymen</translation>
 <translation id="3295357220137379386">Enheten är upptagen</translation>
-<translation id="3296763833017966289">georgiska</translation>
 <translation id="3307875152560779385">ukrainska</translation>
 <translation id="3326821416087822643"><ph name="FILE_NAME" /> komprimeras ...</translation>
 <translation id="3335337277364016868">Inspelningsår</translation>
@@ -306,7 +290,6 @@
 <translation id="3486821258960016770">mongoliska</translation>
 <translation id="3509680540198371098">Nätverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Signalstyrka <ph name="SIGNAL_STRENGTH" /> %, information</translation>
 <translation id="3511705761158917664">Förbereder synkronisering av <ph name="NUMBER_OF_ITEMS" /> objekt …</translation>
-<translation id="3522708245912499433">portugisiska</translation>
 <translation id="3523225005467146490">1 mapp har delats med <ph name="VM_NAME" /></translation>
 <translation id="3524311639100184459">Obs! De här filerna är tillfälliga och kan tas bort automatiskt för att frigöra utrymme på hårddisken.  <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Mapp</translation>
@@ -317,12 +300,9 @@
 <translation id="3556731189587832921">engelska (USA) med internationellt PC-tangentbord</translation>
 <translation id="3557414470514932909">Flyttar <ph name="FILE_NAME" /> till papperskorgen</translation>
 <translation id="3567221313191587603">Välj en fil och aktivera <ph name="OFFLINE_CHECKBOX_NAME" /> för att få offlineåtkomst till filer.</translation>
-<translation id="357479282490346887">litauiska</translation>
 <translation id="3587482841069643663">Alla</translation>
 <translation id="3592251141500063301">Det gick inte att göra <ph name="FILE_NAME" /> tillgänglig offline</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
-<translation id="3603385196401704894">Kanadensisk franska</translation>
-<translation id="3606220979431771195">Turkiska F</translation>
 <translation id="3616113530831147358">Ljud</translation>
 <translation id="3619115746895587757">Cappuccino</translation>
 <translation id="3619593063686672873">Inga nya videor</translation>
@@ -343,7 +323,6 @@
 <translation id="3786301125658655746">Du är offline</translation>
 <translation id="3789841737615482174">Installera</translation>
 <translation id="3793469551756281394">Cirka <ph name="REMAINING_TIME_HOUR" /> och <ph name="REMAINING_TIME_MINUTE" /> kvar</translation>
-<translation id="3801082500826908679">färöiska</translation>
 <translation id="3809272675881623365">Kanin</translation>
 <translation id="3810973564298564668">Hantera</translation>
 <translation id="3811408895933919563">engelska (Pakistan)</translation>
@@ -351,10 +330,8 @@
 <translation id="3817579325494460411">Inte angiven</translation>
 <translation id="3819448694985509187">Fel pinkod. Du har 1 försök kvar</translation>
 <translation id="3830674330436234648">Ingen uppspelning är tillgänglig</translation>
-<translation id="383652340667548381">serbiska</translation>
 <translation id="3839045880592694915">Operatören tillåter inte att modemet ansluter. Kontakta mobiloperatören för mer information.</translation>
 <translation id="385051799172605136">Föregående</translation>
-<translation id="3855472144336161447">Tyska (neo 2)</translation>
 <translation id="3858860766373142691">Namn</translation>
 <translation id="3899991606604168269">franska (Kanada) med flerspråkigt tangentbord</translation>
 <translation id="3901991538546252627">Ansluter till <ph name="NAME" /></translation>
@@ -394,7 +371,6 @@
 <translation id="4261901459838235729">Presentation i Google Dokument</translation>
 <translation id="4277536868133419688">Filtret <ph name="FILTER_NAME" /> är på.</translation>
 <translation id="4290535918735525311">1 mapp delas med Linux</translation>
-<translation id="4299729908419173967">brasilianska</translation>
 <translation id="4302605047395093221">Alla som använder enheten måste ange pinkoden innan de kan ansluta till det här mobilnätverket.</translation>
 <translation id="4303531889494116116">Nätverket är upptaget. Försök igen senare.</translation>
 <translation id="4309915981827077375">Allmän information</translation>
@@ -430,7 +406,6 @@
 <translation id="4472575034687746823">Kom igång</translation>
 <translation id="4474142134969976028">Det finns inga matchande resultat</translation>
 <translation id="4477002475007461989">rumänska</translation>
-<translation id="4477219268485577442">Bulgariska (fonetiskt)</translation>
 <translation id="4508265954913339219">Aktiveringen misslyckades</translation>
 <translation id="4509667233588080747">engelska (USA) med Workman International-tangentbord</translation>
 <translation id="4527800702232535228">Den här mappen delas med Parallels Desktop</translation>
@@ -451,20 +426,17 @@
 <translation id="4658782175094886150">Person i snön</translation>
 <translation id="4669606053856530811">De som använder <ph name="SOURCE_NAME" /> förlorar åtkomsten till objekten såvida de inte delas med dem.</translation>
 <translation id="467809019005607715">Google Presentationer</translation>
-<translation id="4690246192099372265">svenska</translation>
 <translation id="4693155481716051732">Sushi</translation>
 <translation id="4694604912444486114">Apa</translation>
 <translation id="469612310041132144">kinesiska (snabb inmatningsmetod)</translation>
 <translation id="4697043402264950621">Fillistan har sorterats efter <ph name="COLUMN_NAME" /> i stigande ordning.</translation>
 <translation id="469897186246626197">Den här filen är avsedd för en Windows-dator. Den är inte kompatibel med din enhet, som har ChromeOS. <ph name="BEGIN_LINK_HELP" />Läs mer<ph name="END_LINK_HELP" /> om att öppna filer i ChromeOS.</translation>
 <translation id="4706042980341760088">tamilskt tangentbord (skrivmaskin)</translation>
-<translation id="4711094779914110278">turkiska</translation>
 <translation id="4712283082407695269">Öppnar <ph name="PATH" /></translation>
 <translation id="4720185134442950733">Mobilt datanätverk</translation>
 <translation id="4725096204469550614">Tidigare i år</translation>
 <translation id="4725511304875193254">Welsh corgi</translation>
 <translation id="4737050008115666127">Landning</translation>
-<translation id="4747271164117300400">makedonska</translation>
 <translation id="4759238208242260848">Nedladdningar</translation>
 <translation id="4779041693283480986">portugisiska (Portugal)</translation>
 <translation id="4779136857077979611">Onigiri (risbollar)</translation>
@@ -478,7 +450,6 @@
 <translation id="4826849268470072925">tamil (ITRANS)</translation>
 <translation id="4843566743023903107">Chromebase-modeller</translation>
 <translation id="4850886885716139402">Visa</translation>
-<translation id="485316830061041779">tyska</translation>
 <translation id="4862885579661885411">Inställningar för Filer</translation>
 <translation id="4867079195717347957">Klicka här om kolumnen ska sorteras i fallande ordning.</translation>
 <translation id="4867297348137739678">Förra veckan</translation>
@@ -515,13 +486,11 @@
 <translation id="5081517858322016911">Filer på sammanlagt <ph name="TOTAL_FILE_SIZE" /> tas bort</translation>
 <translation id="508423945471810158"><ph name="NUMBER_OF_ITEMS" /> objekt flyttas till <ph name="FOLDER_NAME" /></translation>
 <translation id="509429900233858213">Det har uppstått ett fel.</translation>
-<translation id="5098629044894065541">hebreiska</translation>
 <translation id="5102922915594634436">Hantera synkroniserade mappar</translation>
 <translation id="5109254780565519649">Ett fel har uppstått. Vissa objekt kanske inte har återställts.</translation>
 <translation id="5110329002213341433">engelska (Kanada)</translation>
 <translation id="5119780910075847424">Synkronisering har pausats</translation>
 <translation id="5123433949759960244">Basketboll</translation>
-<translation id="5129662217315786329">polska</translation>
 <translation id="5144820558584035333">Hangul 3 Set (390)</translation>
 <translation id="5145331109270917438">Ändringsdatum</translation>
 <translation id="515594325917491223">Schack</translation>
@@ -530,12 +499,10 @@
    <ph name="LINE_BREAKS" />
    Om du tar bort enheten medan den används kan du förlora data. Vänta tills åtgärden är slutförd och koppla sedan från enheten med appen Files.</translation>
 <translation id="5163869187418756376">Delningen misslyckades. Kontrollera anslutningen och försök igen senare.</translation>
-<translation id="516592729076796170">Dvorak för programmerare i USA</translation>
 <translation id="5177526793333269655">Miniatyrvy</translation>
 <translation id="5181896909298187506">Inga nya filer</translation>
 <translation id="5194713942430106590">Klicka här om kolumnen ska sorteras i stigande ordning.</translation>
 <translation id="5211614973734216083">färöiska</translation>
-<translation id="5218183485292899140">Schweizisk franska</translation>
 <translation id="5234764350956374838">Stäng</translation>
 <translation id="5253070652067921974">Skapad av</translation>
 <translation id="5254207638927440400">Det går inte att flytta filen. Filen används.</translation>
@@ -553,7 +520,6 @@
 <translation id="5305688511332277257">Ingen installerad</translation>
 <translation id="5317780077021120954">Spara</translation>
 <translation id="5318819489018851358">Dela med Linux</translation>
-<translation id="5323213332664049067">Latinamerikanskt</translation>
 <translation id="5330145655348521461">Filerna öppnades på ett annat skrivbord. Byt till <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) om du vill visa dem.</translation>
 <translation id="5330512191124428349">Mer information</translation>
 <translation id="535792325654997756">Person med katter</translation>
@@ -565,18 +531,15 @@
 <translation id="5411472733320185105">Använd inte proxyinställningar för dessa värdenheter och domäner:</translation>
 <translation id="541890217011173530">sorani/kurdiska med engelskt tangentbord</translation>
 <translation id="5422221874247253874">Åtkomstpunkt</translation>
-<translation id="5428105026674456456">spanska</translation>
 <translation id="5438282218546237410">Det finns inga resultat för <ph name="SEARCH_TERM" />.</translation>
 <translation id="5447680084201416734">Inte tillräckligt med utrymme.</translation>
 <translation id="5449551289610225147">Ogiltigt lösenord</translation>
 <translation id="5459064203055649751">Det finns redan en fil med namnet <ph name="FILENAME" />. Vill du ersätta den med filen du flyttar?</translation>
 <translation id="5463231940765244860">Ange</translation>
-<translation id="5469868506864199649">italienska</translation>
 <translation id="5473333559083690127">Ange ny pinkod igen</translation>
 <translation id="5489067830765222292">lettiska</translation>
 <translation id="5489965683297092283">Filtret <ph name="FILTER_NAME" /> är av.</translation>
 <translation id="5494920125229734069">Markera alla</translation>
-<translation id="5500122897333236901">isländska</translation>
 <translation id="5508696409934741614">Punkter</translation>
 <translation id="5522908512596376669">Fillistan har ändrats till listvy.</translation>
 <translation id="5524517123096967210">Det gick inte att läsa filen.</translation>
@@ -589,7 +552,6 @@
 <translation id="5583664733673201137">Punktbredden är full</translation>
 <translation id="5596627076506792578">Fler alternativ</translation>
 <translation id="5602622065581044566">bulgariskt fonetiskt tangentbord</translation>
-<translation id="5605830556594064952">USA (dvorak)</translation>
 <translation id="560739212255190568">Administratören har angett regler för åsidosättande av proxy utöver att tillämpa följande proxy</translation>
 <translation id="5618330573454123917">Den här filen är avsedd för en Macintosh. Den är inte kompatibel med din enhet, som har ChromeOS. <ph name="BEGIN_LINK_HELP" />Läs mer<ph name="END_LINK_HELP" /> om att öppna filer i ChromeOS.</translation>
 <translation id="5625294776298156701">tamilskt tangentbord (Tamil99)</translation>
@@ -607,7 +569,6 @@
 <translation id="5724172041621205163">thailändskt tangentbord (pattachote)</translation>
 <translation id="57383366388012121">Förra månaden</translation>
 <translation id="575175778971367197">Det går inte att synkronisera den här filen just nu</translation>
-<translation id="5756666464756035725">ungerska (QWERTY)</translation>
 <translation id="5760252553414789727"><ph name="SELECTED_FILES_COUNT" /> objekt har valts</translation>
 <translation id="5763377084591234761">tyska (Schweiz)</translation>
 <translation id="5769519078756170258">Värd eller domän som ska uteslutas</translation>
@@ -615,7 +576,6 @@
 <translation id="5776325638577448643">Ta bort och formatera</translation>
 <translation id="57838592816432529">Stäng av ljudet</translation>
 <translation id="5788127256798019331">Play-filer</translation>
-<translation id="5790193330357274855">kazakiska</translation>
 <translation id="5804245609861364054">kannada, translitterering</translation>
 <translation id="5814126672212206791">Anslutningstyp</translation>
 <translation id="5817397429773072584">kinesiska (traditionell)</translation>
@@ -624,7 +584,6 @@
 <translation id="5832976493438355584">Låst</translation>
 <translation id="5833610766403489739">Den här filen verkar ha gått sin väg. Kontrollera inställningen för nedladdade filer och försök igen.</translation>
 <translation id="5838451609423551646">Alla poster har avmarkerats.</translation>
-<translation id="5838825566232597749">US Workman (internationellt)</translation>
 <translation id="5845721951356578987">Sjuksköterska</translation>
 <translation id="5858478190805449225">Batterisparläget är aktiverat. Försök igen när batterisparläget är inaktiverat.</translation>
 <translation id="5860491529813859533">Aktivera</translation>
@@ -640,7 +599,6 @@
 <translation id="5957366693331451795">Chromebox-modeller</translation>
 <translation id="5982621672636444458">Sorteringsalternativ</translation>
 <translation id="6011074160056912900">Ethernet-nätverk</translation>
-<translation id="60357267506638014">Tjeckiska (QWERTY)</translation>
 <translation id="603895874132768835">Du kan inte använda det här nätverket förrän du har ställt in en ny pinkod.</translation>
 <translation id="6040143037577758943">Stäng</translation>
 <translation id="6055907707645252013">Nätverkstyp: <ph name="NETWORK_TYPE" />, inte anslutet</translation>
@@ -683,7 +641,6 @@
 <translation id="6320212353742551423"><ph name="ARCHIVE_TYPE" />-arkiv</translation>
 <translation id="6321303798550928047">Vinkar</translation>
 <translation id="6327785803543103246">Automatisk identifiering av webbproxy</translation>
-<translation id="6339145975392024142">Internationellt för USA (PC)</translation>
 <translation id="6356685157277930264">Feedback för filfönster</translation>
 <translation id="6358884629796491903">Drake</translation>
 <translation id="636254897931573416">Ogiltigt värde för matchning av domänsuffix</translation>
@@ -704,7 +661,6 @@
 <translation id="649877868557234318">Extraherar <ph name="FILE_NAME" /> till <ph name="FOLDER_NAME" /></translation>
 <translation id="6499681088828539489">Tillåt inte proxyservrar för delade nätverk</translation>
 <translation id="6503285896705205014">Möjligheten att kopiera <ph name="COUNT" /> filer blockeras av administratörspolicyn</translation>
-<translation id="6509122719576673235">norska</translation>
 <translation id="6528513914570774834">Tillåt att andra användare på den här enheten kan använda det här nätverket</translation>
 <translation id="6549689063733911810">Senaste</translation>
 <translation id="6558280019477628686">Ett fel uppstod. Vissa objekt kanske inte har raderats.</translation>
@@ -736,7 +692,6 @@
 <translation id="6806796368146926706">alfanumeriskt med japanskt tangentbord</translation>
 <translation id="6808193438228982088">Räv</translation>
 <translation id="6823166707458800069">Alla filer som sparas i den här mappen säkerhetskopieras online automatiskt.</translation>
-<translation id="6825883775269213504">ryska</translation>
 <translation id="6847101934483209767"><ph name="ENTRY_NAME" /> har avmarkerats.</translation>
 <translation id="6848194403851638089"><ph name="ORGANIZATION_NAME" /> har använt hela lagringsutrymmet i Google Workspace.</translation>
 <translation id="6856459657722366306">Nätverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, Signalstyrka <ph name="SIGNAL_STRENGTH" /> %, information</translation>
@@ -750,7 +705,6 @@
 <translation id="6896758677409633944">Kopiera</translation>
 <translation id="6898028766943174120">Fler undermappar …</translation>
 <translation id="6915678159055240887">Chromebox</translation>
-<translation id="6918340160281024199">US Workman</translation>
 <translation id="6930242544192836755">Varaktighet</translation>
 <translation id="6935521024859866267">Uppochned</translation>
 <translation id="6943836128787782965">HTTP GET misslyckades</translation>
@@ -760,7 +714,6 @@
 <translation id="696203921837389374">Aktivera synkronisering via mobildata</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6965648386495488594">Port</translation>
-<translation id="6970230597523682626">bulgariska</translation>
 <translation id="6973630695168034713">Mappar</translation>
 <translation id="6976795442547527108">Lejon</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -821,20 +774,17 @@
 <translation id="7417705661718309329">Google-karta</translation>
 <translation id="7419668828140929293">Återställer <ph name="FILENAME" /></translation>
 <translation id="7458955835361612701">Inga nya bilder</translation>
-<translation id="7460898608667578234">ukrainska</translation>
 <translation id="7469894403370665791">Anslut automatiskt till det här nätverket.</translation>
 <translation id="7486315294984620427">För att kunna släppa en fil i Parallels Desktop behöver du först kopiera den till Windows.</translation>
 <translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">malayalam, fonetiskt</translation>
 <translation id="7505167922889582512">Visa dolda filer</translation>
 <translation id="7514365320538308">Ladda ned</translation>
-<translation id="751507702149411736">vitryska</translation>
 <translation id="7521790570754130607">En pinkod krävs för att använda mobildata</translation>
 <translation id="7532029025027028521">persisk translitterering</translation>
 <translation id="7544830582642184299">Ge Linux-appar behörighet att öppna filer på din Google Drive. Ändringarna synkroniseras med dina andra enheter.</translation>
 <translation id="7547009467130558110">Gympasko</translation>
 <translation id="7547780573915868306">litauiska</translation>
-<translation id="7547811415869834682">nederländska</translation>
 <translation id="7551643184018910560">Fäst på hyllan</translation>
 <translation id="7553492409867692754">Ge Linux-appar behörighet att öppna filer i mappen <ph name="FOLDER_NAME" /></translation>
 <translation id="7555339735447658365">Du är offline för närvarande. Filsynkroniseringen återupptas när du ansluter till internet.</translation>
@@ -854,7 +804,6 @@
 <translation id="7693909743393669729">Om du formaterar en enhet raderas all data på den och alla partitioner tas bort, även sådana som inte visas. Det går inte att ångra åtgärden.</translation>
 <translation id="7695430100978772476">Det gick inte att formatera <ph name="DRIVE_NAME" /></translation>
 <translation id="76959938259365003">Det gick inte att tömma papperskorgen.</translation>
-<translation id="770015031906360009">grekiska</translation>
 <translation id="7705251383879779343"><ph name="FILE_NAME" /> har kopierats.</translation>
 <translation id="7707941139430559579">Det går inte att flytta filen. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="7708271999969613024">För att använda det här nätverket måste du ange den åttasiffriga PUK-koden (Personal Unblocking Key) som du har fått från operatören.</translation>
@@ -883,7 +832,6 @@
 <translation id="7831491651892296503">Fel i nätverkskonfigurationen</translation>
 <translation id="7839804798877833423">Att hämta dessa filer kräver ungefär <ph name="FILE_SIZE" /> mobildata.</translation>
 <translation id="7846076177841592234">Rensa val</translation>
-<translation id="7853966320808728790">franska (BÉPO)</translation>
 <translation id="7857117644404132472">Lägg till undantag</translation>
 <translation id="7868774406711971383">polska</translation>
 <translation id="7874321682039004450">filipino</translation>
@@ -895,9 +843,7 @@
 <translation id="7925247922861151263">Kontroll med AAA misslyckades</translation>
 <translation id="7928710562641958568">Mata ut enhet</translation>
 <translation id="7933875256234974853">Förbereder synkronisering av Drive-filer …</translation>
-<translation id="7943385054491506837">USA (colemak)</translation>
 <translation id="7953739707111622108">Enheten kan inte öppnas eftersom dess filsystem inte kunde identifieras.</translation>
-<translation id="7969525169268594403">slovenska</translation>
 <translation id="7972920761225148017">franska (Schweiz)</translation>
 <translation id="7973962044839454485">PPP-autentisering misslyckades på grund av felaktigt användarnamn eller lösenord</translation>
 <translation id="7980421588063892270">engelska (USA) med Colemak-tangentbord</translation>
@@ -908,7 +854,6 @@
 <translation id="803771048473350947">Arkiv</translation>
 <translation id="8038111231936746805">(standard)</translation>
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" />-ljud</translation>
-<translation id="8045462269890919536">rumänska</translation>
 <translation id="8049184478152619004">Ange PUK-kod (Personal Unblocking Key)</translation>
 <translation id="8055538340801153769">Denna mapp</translation>
 <translation id="807187749540895545"><ph name="FILE_NAME" /> extraheras …</translation>
@@ -940,11 +885,9 @@
 <translation id="8262872909443689080">Administratörspolicy</translation>
 <translation id="8264024885325823677">Den här inställningen hanteras av administratören.</translation>
 <translation id="8269755669432358899">Komprimera panel med information om filåtgärder</translation>
-<translation id="8280151743281770066">Armeniska (fonetiskt)</translation>
 <translation id="8285791779547722821">Krypterade <ph name="ORIGINAL_MIME_TYPE" /></translation>
 <translation id="8294431847097064396">Källa</translation>
 <translation id="8297012244086013755">Hangul 3 Set (utan skift)</translation>
-<translation id="8299269255470343364">japanska</translation>
 <translation id="8300849813060516376">Det gick inte att etablera tjänsten over-the-air.</translation>
 <translation id="8312871300878166382">Klistra in i mapp</translation>
 <translation id="8329978297633540474">Oformaterad text</translation>
@@ -966,7 +909,6 @@
 <translation id="8428213095426709021">Inställningar</translation>
 <translation id="8429998526804961548"><ph name="NUMBER_OF_ITEMS" /> mappar har delats med <ph name="VM_NAME" /></translation>
 <translation id="8431909052837336408">Ändra SIM-kortets pinkod</translation>
-<translation id="8437209419043462667">USA</translation>
 <translation id="8452135315243592079">SIM-kort saknas</translation>
 <translation id="8456681095658380701">Ogiltigt namn</translation>
 <translation id="8457767749626250697">SIM-kortet är låst</translation>
@@ -981,14 +923,12 @@
 <translation id="8499098729323186194"><ph name="NUMBER_OF_ITEMS" /> objekt extraheras …</translation>
 <translation id="8502913769543567768">Nätverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, Aktivera efter enhetskonfigureringen, Hanteras av administratören</translation>
 <translation id="8512483403832814140">När som helst</translation>
-<translation id="8521441079177373948">Storbritannien</translation>
 <translation id="853494022971700746">franska (Frankrike)</translation>
 <translation id="8540608333167683902">Nätverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, signalstyrka <ph name="SIGNAL_STRENGTH" /> %, information</translation>
 <translation id="8545476925160229291">engelska (USA)</translation>
 <translation id="854655314928502177">Webbadress för automatisk identifiering av webbproxy:</translation>
 <translation id="8547747809824590510">Administratören har angett regler för åsidosättande av proxy</translation>
 <translation id="8549186985808798022">italienska</translation>
-<translation id="8551494947769799688">lettiska</translation>
 <translation id="8560515948038859357">kantonesiska</translation>
 <translation id="8561206103590473338">Elefant</translation>
 <translation id="8566466896628108558">Nätverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, signalstyrka <ph name="SIGNAL_STRENGTH" /> %, blockerat av administratören, information</translation>
@@ -1011,7 +951,6 @@
 <translation id="8713112442029511308">maltesiska</translation>
 <translation id="8714406895390098252">Cykel</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> har markerats.</translation>
-<translation id="872537912056138402">kroatiska</translation>
 <translation id="8743164338060742337">Nätverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /> signalstyrka <ph name="SIGNAL_STRENGTH" /> %, hanteras av administratören, anslut</translation>
 <translation id="8787254343425541995">Tillåt proxyservrar för delade nätverk</translation>
 <translation id="8790981080411996443">Person som vattnar blommor</translation>
@@ -1028,10 +967,8 @@
 <translation id="8873014196523807561">Om du vill återställa objekten drar du dem till en ny mapp. De ursprungliga mapparna för vissa av dessa objekt har raderats.</translation>
 <translation id="8874184842967597500">Inte ansluten</translation>
 <translation id="8876368061475701452">I kö</translation>
-<translation id="8900820606136623064">ungerska</translation>
 <translation id="8903931173357132290">Kandidat</translation>
 <translation id="8912078710089354287">Hund som viftar på svansen</translation>
-<translation id="8919081441417203123">danska</translation>
 <translation id="8949925099261528566">Ansluten, inget internet</translation>
 <translation id="8965697826696209160">Det finns inte tillräckligt med ledigt utrymme.</translation>
 <translation id="8970887620466824814">Något gick fel.</translation>
@@ -1040,7 +977,6 @@
 <translation id="8998871447376656508">Det finns inte tillräckligt mycket ledigt utrymme på Google Drive för att slutföra uppladdningen.</translation>
 <translation id="9003940392834790328">Nätverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, signalstyrka <ph name="SIGNAL_STRENGTH" /> %, hanteras av administratören, information</translation>
 <translation id="9007990314804111233">Logga in på Microsoft-kontot</translation>
-<translation id="9017798300203431059">Ryska (fonetiskt)</translation>
 <translation id="9034924485347205037">Linux-filer</translation>
 <translation id="9035012421917565900">Eftersom det inte går att flytta tillbaka objekten till <ph name="DESTINATION_NAME" /> går det inte att ångra åtgärden.</translation>
 <translation id="9035689366572880647">Ange den nuvarande pinkoden</translation>

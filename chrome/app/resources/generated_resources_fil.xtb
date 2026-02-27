@@ -1023,6 +1023,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="1671525612731130246">Pumili ng Drive account</translation>
 <translation id="1671749176392751693">Pinapayagan ang mga identifier ng pinoprotektahang content</translation>
 <translation id="1673137583248014546">Gustong tingnan ng <ph name="URL" /> ang manufacturer at modelo ng iyong Security Key</translation>
+<translation id="1673855466663721679">Ipakita ang mga bookmark sa panel sa gilid</translation>
 <translation id="1674073353928166410">Buksan lahat (<ph name="URL_COUNT" />) sa Incognito window</translation>
 <translation id="1674142805528405174">Puwedeng i-update ng Google Password Manager ang account mo para magkaroon ng malakas na password na ise-save para sa iyo sa account mong <ph name="EMAIL" />.</translation>
 <translation id="1674945585974615438">Awtomatikong i-disable ang mga optimizer sa JavaScript sa mga hindi pamilyar na site</translation>
@@ -3457,6 +3458,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3312883087018430408">Para maghanap sa partikular na site o bahagi ng Chrome, i-type ang shortcut nito sa address bar, kasunod ang iyong gustong keyboard shortcut. Halimbawa, para maghanap lang sa Mga Bookmark, i-type ang "@bookmarks," at pagkatapos ay pindutin ang Tab o Space.</translation>
 <translation id="3313622045786997898">Certificate Signature Value</translation>
 <translation id="3313950410573257029">Suriin ang koneksyon</translation>
+<translation id="3314239811356311272">&amp;Buksan ang Manager ng Mga Bookmark</translation>
 <translation id="3315158641124845231">Itago ang <ph name="PRODUCT_NAME" /></translation>
 <translation id="3317459757438853210">Magkabilaan</translation>
 <translation id="3317521105713541270">Gumawa ng mga grupo</translation>
@@ -3663,6 +3665,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3453597230179205517">Naka-block ang access sa lokasyon</translation>
 <translation id="3453612417627951340">Nangangailangan ng pahintulot</translation>
 <translation id="3454213325559396544">Ito ang huling pag-update ng software at seguridad para sa ganitong <ph name="DEVICE_TYPE" />. Para makakuha ng mga update sa hinaharap, mag-upgrade sa mas bagong modelo.</translation>
+<translation id="3454276058453724464">{FILE_LIMIT,plural, =1{Mag-upload ng 1 .pdf file na gagamitin sa iyong tanong}one{Mag-upload ng hanggang # .pdf file na gagamitin sa iyong tanong}other{Mag-upload ng hanggang # na .pdf file na gagamitin sa iyong tanong}}</translation>
 <translation id="3454818737556063691">Ilipat ang 1 file sa <ph name="CLOUD_PROVIDER" /> para buksan?</translation>
 <translation id="3455436146814891176">I-sync ang password ng pag-encrypt</translation>
 <translation id="345693547134384690">Buksan ang &amp;imahe sa bagong tab</translation>
@@ -5036,6 +5039,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="4364567974334641491">Nagbabahagi ng window ang <ph name="APP_NAME" />.</translation>
 <translation id="4364830672918311045">Ipakita ang mga notification</translation>
 <translation id="4367971618859387374">Display name</translation>
+<translation id="4368888793624522796">Nailipat na ang mga grupo ng tab</translation>
 <translation id="4368960422722232719">Ipakita ang paggamit ng memory sa card ng preview na lalabas kapag nag-hover sa tab</translation>
 <translation id="4369151461324628035">Huwag payagan ang mga site na kumonekta sa anumang device sa iyong lokal na network</translation>
 <translation id="4369215744064167350">Inaprubahan ang kahilingan sa website</translation>
@@ -5424,6 +5428,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="4634575639321169635">I-set up ang device na ito para sa trabaho o personal na paggamit</translation>
 <translation id="4635072447747973225">I-uninstall ang Crostini</translation>
 <translation id="4635398712689569051">Hindi available ang <ph name="PAGE_NAME" /> sa mga Bisitang user.</translation>
+<translation id="4635975718422788482">{FILE_LIMIT,plural, =1{Mag-upload ng 1 larawang gagamitin sa iyong tanong}one{Mag-upload ng hanggang # larawang gagamitin sa iyong tanong}other{Mag-upload ng hanggang # na larawang gagamitin sa iyong tanong}}</translation>
 <translation id="4636187126182557415">Mga preference sa system</translation>
 <translation id="4636930964841734540">Impormasyon</translation>
 <translation id="4637083375689622795">Higit pang pagkilos, <ph name="EMAIL" /></translation>
@@ -5565,6 +5570,7 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="4732799736617504962">Pagkakansela ng ingay lang ang puwedeng suportahan ng nakakonektang mic</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (Kaliwa)</translation>
 <translation id="4733793249294335256">Lokasyon</translation>
+<translation id="4734965478015604180">Horizontal</translation>
 <translation id="473546211690256853">Pinamamahalaan ang account na ito ng <ph name="DOMAIN" /></translation>
 <translation id="4735506354605317060">Bilugan ang pointer</translation>
 <translation id="4735793370946506039">Matuto pa tungkol sa Pinahusay na Ligtas na Pag-browse.</translation>
@@ -5832,6 +5838,7 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="4901154724271753917">I-expand ang kamakailang isinara</translation>
 <translation id="4901309472892185668">Pumili ng status ng eksperimento para sa eksperimentong <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="49027928311173603">Di-wasto ang patakaran na-download mula sa server: <ph name="VALIDATION_ERROR" />.</translation>
+<translation id="490375751687810070">Vertical</translation>
 <translation id="4906490889887219338">Mag-set up o mamahala ng mga file share ng network. <ph name="LINK_BEGIN" />Matuto pa<ph name="LINK_END" /></translation>
 <translation id="4906679076183257864">I-reset sa Default</translation>
 <translation id="4907129260985716018">Piliin kung kailan mari-read at mababago ng extension na ito ang data ng iyong site</translation>
@@ -6265,6 +6272,7 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="5215502535566372932">Pumili ng bansa</translation>
 <translation id="5216674789212441076">Awtomatikong nagsasalin ng mga instant caption. Ipinapadala ang mga caption sa Google para sa pagsasalin.</translation>
 <translation id="5216951551945455224">{NUM_TABS,plural, =1{Ihinto ang Pag-share ng Tab sa Gemini}one{Ihinto ang Pag-share ng # Tab sa Gemini}other{Ihinto ang Pag-share ng # na Tab sa Gemini}}</translation>
+<translation id="5217883660859035687">Inililipat namin ang mga grupo ng tab para mabigyan ng mas malaking espasyo ang iyong mga bookmark.</translation>
 <translation id="5220011581825921581">search + pataas na arrow</translation>
 <translation id="5221516927483787768">Hindi ma-cast ang <ph name="HOST_NAME" /></translation>
 <translation id="5221834113325601057">Ibinukod ang tab mula sa listahan</translation>
@@ -6948,6 +6956,7 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="5697832193891326782">Picker ng Emoji</translation>
 <translation id="5698136107297470317">Ide-delete mo ang iyong data sa <ph name="BRAND" /></translation>
 <translation id="5698878456427040674">Tingnan kung sinusuportahan ang napiling account.</translation>
+<translation id="5698900765010620315">Madilim na may mababang contrast</translation>
 <translation id="5699227710146832453">Mula sa iyong</translation>
 <translation id="570043786759263127">Mga app at serbisyo ng Google Play</translation>
 <translation id="5700761515355162635">Pinapayagan ang third-party na cookies</translation>
@@ -8332,6 +8341,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="6663190258859265334">I-powerwash ang iyong <ph name="DEVICE_TYPE" /> at bumalik sa nakaraang bersyon.</translation>
 <translation id="6664774537677393800">Nagkaproblema sa pagbukas ng iyong profile. Mangyaring mag-sign out at pagkatapos ay muling mag-sign in.</translation>
 <translation id="6665874326033183068">Wild</translation>
+<translation id="6666560794795912543">Ipakita ang Mga Bookmark sa Panel sa Gilid</translation>
 <translation id="6667086124612170548">Masyadong malaki ang file para sa device na ito</translation>
 <translation id="6667092961374478614">Pagiging nahahanap ng <ph name="FEATURE_NAME" /></translation>
 <translation id="6667187897999649121">Sa ngayon, puwede ka lang mag-share ng mga password sa mga miyembro ng pamilya. <ph name="BEGIN_LINK" />Gumawa ng grupo ng pamilya<ph name="END_LINK" /> na may hanggang 6 na miyembro, at mas sulitin ang iyong mga produkto at subscription sa buong Google.</translation>
@@ -8506,6 +8516,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="678520006562636090">Subukan ang Google Lens sa iyong <ph name="DEVICE_TYPE" /></translation>
 <translation id="6785594991951195537">Gamitin ang iyong <ph name="PASSWORD_DOMAIN" /></translation>
 <translation id="6785739405821760313">Pagtingin sa mga naka-save na desk. Pindutin ang tab para mag-navigate.</translation>
+<translation id="6785779729084003225">Gamitin ang <ph name="FOCUS_TOGGLE_HOTKEY" /> para buksan ang Gemini sa Chrome</translation>
 <translation id="6785915470941880363">Reverse na pag-scroll <ph name="LINK_BEGIN" />Matuto pa<ph name="LINK_END" /></translation>
 <translation id="67862343314499040">Violet</translation>
 <translation id="6786480815699355166">Puwede lang isalin ang mga sinusuportahang wika para sa Instant Caption</translation>
@@ -9792,6 +9803,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7660146600670077843">Mag-right click sa isang tab at piliin ang "Idagdag ang Tab sa Bagong Grupo"</translation>
 <translation id="7661451191293163002">Walang makuhang certificate ng pagpaparehistro.</translation>
 <translation id="7662283695561029522">I-tap upang i-configure</translation>
+<translation id="7662535435481776002">Maliwanag na may mababang contrast</translation>
 <translation id="7663719505383602579">Tatanggap: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7663774460282684730">May available na keyboard shortcut</translation>
 <translation id="7663859337051362114">Idagdag ang profile ng eSIM</translation>

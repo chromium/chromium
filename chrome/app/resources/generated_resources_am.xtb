@@ -5558,6 +5558,7 @@
 <translation id="4732799736617504962">የተገናኘው ማይክሮፎን መደገፍ የሚችለው ጫጫታ ማስወገጃን ብቻ ነው</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (ግራ)</translation>
 <translation id="4733793249294335256">አካባቢ</translation>
+<translation id="4734965478015604180">አግድማዊ</translation>
 <translation id="473546211690256853">ይህ መለያ በ<ph name="DOMAIN" /> ነው የሚተዳደረው</translation>
 <translation id="4735506354605317060">ክብ ጠቋሚ</translation>
 <translation id="4735793370946506039">ስለ የተሻሻለ የደህንነት አሰሳ የበለጠ ይወቁ።</translation>
@@ -5825,6 +5826,7 @@
 <translation id="4901154724271753917">በቅርቡ የተዘጉትን ዘርጋ</translation>
 <translation id="4901309472892185668">ለ<ph name="EXPERIMENT_NAME" /> ሙከራ የሙከራ ሁኔታን ይምረጡ።</translation>
 <translation id="49027928311173603">ከአገልጋዩ የወረደው መመሪያ ልክ ያልሆነ ነው፦ <ph name="VALIDATION_ERROR" />።</translation>
+<translation id="490375751687810070">አቀባዊ</translation>
 <translation id="4906490889887219338">የአውታረ መረብ ፋይል ማጋራቶችን ያዋቅሩ ወይም ያቀናብሩ። <ph name="LINK_BEGIN" />የበለጠ ለመረዳት<ph name="LINK_END" /></translation>
 <translation id="4906679076183257864">ወደ ነባሪ ዳግም አስጀምር</translation>
 <translation id="4907129260985716018">ይህ ቅጥያ የጣቢያዎን ውሂብ ማንበብ እና መለወጥ በሚችልበት ጊዜ ይምረጡ</translation>
@@ -8499,6 +8501,7 @@
 <translation id="678520006562636090">በእርስዎ <ph name="DEVICE_TYPE" /> ላይ Google ሌንስን ይሞክሩ</translation>
 <translation id="6785594991951195537">የእርስዎን <ph name="PASSWORD_DOMAIN" /> ይጠቀሙ</translation>
 <translation id="6785739405821760313">የተቀመጡ ዴስኮችን በመመልከት ላይ። ለማሰስ ትርን ይጫኑ።</translation>
+<translation id="6785779729084003225">Gemini በChrome ውስጥ ለመክፈት <ph name="FOCUS_TOGGLE_HOTKEY" /> ይጠቀሙ</translation>
 <translation id="6785915470941880363">ወደኋላ ሽብለላ <ph name="LINK_BEGIN" />የበለጠ ለመረዳት<ph name="LINK_END" /></translation>
 <translation id="67862343314499040">ወይን ጠጅ</translation>
 <translation id="6786480815699355166">መተርጎም የሚችሉት የሚደገፉ የቀጥታ መግለጫ ጽሁፍ ቋንቋዎች ብቻ ናቸው</translation>

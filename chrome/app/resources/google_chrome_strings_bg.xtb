@@ -689,6 +689,9 @@
 <translation id="8041795619940733262">Попитайте Google<ph name="LINE_BREAK" />за този раздел</translation>
 <translation id="80471789339884597">Благодарим ви, че инсталирахте <ph name="BUNDLE_NAME" />. Трябва да рестартирате всичките си браузъри, преди да използвате това приложение.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
+<translation id="8064965390968184078">1. Кликнете върху „<ph name="BUTTON_LABEL" />“ по-долу.
+2. Кликнете върху „<ph name="BUTTON_2" />“ в настройките на Windows.
+3. Кликнете върху „<ph name="BUTTON_3" />“ в известието от Windows, за да фиксирате Chrome в лентата на задачите за бърз достъп.</translation>
 <translation id="8077579734294125741">Други потребителски профили в Chrome</translation>
 <translation id="8086881907087796310">Инсталирането не бе успешно, защото компютърът ви не отговаря на минималните изисквания за хардуера.</translation>
 <translation id="8113883687556086139">Потвърдете самоличността си, за да използвате и запазвате данните от Chrome в профила си (<ph name="ACCOUNT_EMAIL" />)</translation>

@@ -5565,6 +5565,7 @@
 <translation id="4732799736617504962">কানেক্ট করা মাইক শুধুমাত্র 'নয়েজ ক্যানসেলেশন' ফিচারের ক্ষেত্রে কাজ করে</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (বাঁদিক)</translation>
 <translation id="4733793249294335256">লোকেশন</translation>
+<translation id="4734965478015604180">অনুভূমিক</translation>
 <translation id="473546211690256853">এই অ্যাকাউন্টটি <ph name="DOMAIN" /> দ্বারা পরিচালিত</translation>
 <translation id="4735506354605317060">সার্কেল পয়েন্টার</translation>
 <translation id="4735793370946506039">উন্নত Safe Browsing সম্পর্কে আরও জানুন।</translation>
@@ -5832,6 +5833,7 @@
 <translation id="4901154724271753917">সম্প্রতি বন্ধ হওয়া বোতামগুলি বড় করুন</translation>
 <translation id="4901309472892185668"><ph name="EXPERIMENT_NAME" /> এক্সপেরিমেন্টের জন্য এক্সপেরিমেন্টের স্ট্যাটাস বেছে নিন।</translation>
 <translation id="49027928311173603">সার্ভার থেকে ডাউনলোড করা নীতিটি ভুল: <ph name="VALIDATION_ERROR" />৷</translation>
+<translation id="490375751687810070">উল্লম্ব</translation>
 <translation id="4906490889887219338">নেটওয়ার্ক ফাইল শেয়ার (SMB) সেট-আপ বা ম্যানেজ করুন। <ph name="LINK_BEGIN" />আরও জানুন<ph name="LINK_END" /></translation>
 <translation id="4906679076183257864">ডিফল্টে আবার সেট করুন</translation>
 <translation id="4907129260985716018">এই এক্সটেনশন কখন সাইট ডেটা পড়তে ও পরিবর্তন করতে পারবে সেটি বেছে নিন</translation>
@@ -8507,6 +8509,7 @@
 <translation id="678520006562636090">আপনার <ph name="DEVICE_TYPE" />-এ Google Lens ব্যবহার করে দেখুন</translation>
 <translation id="6785594991951195537"><ph name="PASSWORD_DOMAIN" /> ব্যবহার করুন</translation>
 <translation id="6785739405821760313">'সেভ করা ডেস্ক' মোডে দেখছেন। নেভিগেট করতে Tab প্রেস করুন।</translation>
+<translation id="6785779729084003225">Chrome-এ Gemini খুলতে <ph name="FOCUS_TOGGLE_HOTKEY" /> ব্যবহার করুন</translation>
 <translation id="6785915470941880363">রিভার্স স্ক্রলিং <ph name="LINK_BEGIN" />আরও জানুন<ph name="LINK_END" /></translation>
 <translation id="67862343314499040">বেগুনি</translation>
 <translation id="6786480815699355166">লাইভ ক্যাপশন শুধুমাত্র উপলভ্য ভাষাতে অনুবাদ করা যাবে</translation>

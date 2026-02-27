@@ -695,6 +695,8 @@ Google Chrome သည် သင်၏ ဆက်တင်များကို ပ
 <translation id="8041795619940733262">Google<ph name="LINE_BREAK" /> အား ဤတဘ်အကြောင်း မေးပါ</translation>
 <translation id="80471789339884597">ထည့်သွင်းသည့်အတွက် ကျေးဇူးတင်ပါသည်။ <ph name="BUNDLE_NAME" /> အသုံးမပြုမီ သင့်ဘရောင်ဇာအားလုံးကို ပြန်စရမည်။</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
+<translation id="8064965390968184078">၁။ အောက်ရှိ <ph name="BUTTON_LABEL" /> ကို နှိပ်ပါ
+၂။ သင့် Windows ဆက်တင်များတွင် <ph name="BUTTON_2" /> ကို နှိပ်ပါ အမြန်သုံးခွင့်အတွက် Chrome ကို သင့် Taskbar တွင် ပင်ထိုးရန် Windows အကြောင်းကြားချက်ရှိ <ph name="BUTTON_3" /> ကို နှိပ်ပါ</translation>
 <translation id="8077579734294125741">အခြား Chrome ပရိုဖိုင်များ</translation>
 <translation id="8086881907087796310">သင့်ကွန်ပျူတာသည် ဟာ့ဒ်ဝဲပိုင်း အနည်းဆုံးသတ်မှတ်ချက်နှင့် ကိုက်ညီမှုမရှိသောကြောင့် ထည့်သွင်း၍မရပါ။</translation>
 <translation id="8113883687556086139">သင်၏အကောင့် <ph name="ACCOUNT_EMAIL" /> တွင် Chrome ဒေတာ သုံးရန်နှင့် သိမ်းရန်အတွက် သင်ဖြစ်ကြောင်း အတည်ပြုပါ</translation>
@@ -773,6 +775,7 @@ Google Chrome သည် သင်၏ ဆက်တင်များကို ပ
 <translation id="8914504000324227558">Chromium ကို အသစ်တစ်ဖန် ပြန်စရန်</translation>
 <translation id="8922193594870374009"><ph name="ORIGIN" /> မှ သင်၏ Android ဖုန်းသို့ နံပါတ်တစ်ခုပို့ရန် စက်နှစ်ခုလုံးတွင် Chrome သို့ လက်မှတ်ထိုးဝင်ပါ။</translation>
 <translation id="8922998289262614701">ဤအက်ပ်၏ဒေတာကို Chrome မှ ဖယ်ရှားရန်</translation>
+<translation id="8925636929359899517">အချက်အလက်များကို ဤဝန်ဆောင်မှု ပိုကောင်းစေရန် သုံးသည်။ <ph name="BEGIN_LINK1" />ကိုယ်ရေးအချက်အလက်လုံခြုံမှုဆိုင်ရာ မူဝါဒ<ph name="END_LINK1" /> နှင့် <ph name="BEGIN_LINK2" />ဝန်ဆောင်မှုစည်းမျဉ်းများ<ph name="END_LINK2" /> ကိုကြည့်ပါ။</translation>
 <translation id="8936233353620149764">Chrome ရှိ Gemini ဖွင့်/ပိတ်ရန်</translation>
 <translation id="8948460679427074738">ဤနောက်ဆက်တွဲသည် ၎င်း၏ ဒေတာစုဆောင်းပုံ၊ အသုံးပြုပုံကဲ့သို့သော ကိုယ်ရေးအချက်အလက်လုံခြုံမှုဆိုင်ရာ လုပ်ဆောင်ချက်များကို မထုတ်ပြန်ပါ။ ၎င်းကို ဖယ်ရှားရန် Chrome က အကြံပြုပါသည်။</translation>
 <translation id="8958307504142971576">Chrome တွင် နောက်ထပ်တူးလ်များကို ရနိုင်ပါပြီ</translation>

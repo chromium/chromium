@@ -426,6 +426,7 @@
 <translation id="2478076885740497414">Εγκατάσταση εφαρμογής</translation>
 <translation id="2482878487686419369">Ειδοποιήσεις</translation>
 <translation id="2484513351006226581">Πατήστε <ph name="KEYBOARD_SHORTCUT" />, για να αλλάξετε διάταξη πληκτρολογίου.</translation>
+<translation id="2485422356828889247">Απεγκατάσταση</translation>
 <translation id="2486214324139475545">Προεπισκόπηση του <ph name="DESK_NAME" />. Ενεργό γραφείο.</translation>
 <translation id="2486405091093637109">Η ανάλυση "<ph name="DISPLAY_NAME" />" άλλαξε σε ανάλυση <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Χωρίς επιβεβαίωση, θα γίνει επαναφορά των προηγούμενων ρυθμίσεων σε <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2487915095798731898">Συμμετοχή</translation>

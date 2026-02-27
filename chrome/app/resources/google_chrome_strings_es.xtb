@@ -695,6 +695,9 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="8041795619940733262">Preguntar a Google<ph name="LINE_BREAK" />sobre esta pestaña</translation>
 <translation id="80471789339884597">Gracias por realizar la instalación. Debes reiniciar todos tus navegadores para poder usar <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
+<translation id="8064965390968184078">1. Haz clic en <ph name="BUTTON_LABEL" /> a continuación
+2. Haz clic en <ph name="BUTTON_2" /> en la configuración de Windows
+3. Haz clic en <ph name="BUTTON_3" /> en la notificación de Windows para fijar Chrome a la barra de tareas y que puedas acceder rápidamente</translation>
 <translation id="8077579734294125741">Otros perfiles de Chrome</translation>
 <translation id="8086881907087796310">No se ha podido realizar la instalación porque tu ordenador no cumple los requisitos mínimos de hardware.</translation>
 <translation id="8113883687556086139">Verifica que eres tú para usar y guardar los datos de Chrome en tu cuenta (<ph name="ACCOUNT_EMAIL" />)</translation>
@@ -773,6 +776,7 @@ No podrás guardar marcadores nuevos en tu cuenta hasta que elimines algunos. Si
 <translation id="8914504000324227558">Volver a iniciar Chrome</translation>
 <translation id="8922193594870374009">Para enviar un número desde <ph name="ORIGIN" /> a tu teléfono Android, inicia sesión en Chrome con ambos dispositivos.</translation>
 <translation id="8922998289262614701">Quitar datos de esta aplicación de Chrome</translation>
+<translation id="8925636929359899517">Usamos información para mejorar este servicio. Consulta la <ph name="BEGIN_LINK1" />Política de Privacidad<ph name="END_LINK1" /> y los <ph name="BEGIN_LINK2" />Términos del Servicio<ph name="END_LINK2" />.</translation>
 <translation id="8936233353620149764">Activar o desactivar Gemini en Chrome</translation>
 <translation id="8948460679427074738">Esta extensión no ha publicado sus prácticas de privacidad, como la forma en la que recoge y usa los datos. Chrome te recomienda que la elimines.</translation>
 <translation id="8958307504142971576">Ahora tienes más funciones disponibles en Chrome</translation>

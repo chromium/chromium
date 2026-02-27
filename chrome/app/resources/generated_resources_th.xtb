@@ -5549,6 +5549,7 @@
 <translation id="4732799736617504962">ไมค์ที่เชื่อมต่ออยู่รองรับการตัดเสียงรบกวนเท่านั้น</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (ซ้าย)</translation>
 <translation id="4733793249294335256">ตำแหน่ง</translation>
+<translation id="4734965478015604180">แนวนอน</translation>
 <translation id="473546211690256853">บัญชีนี้จัดการโดย <ph name="DOMAIN" /></translation>
 <translation id="4735506354605317060">ตัวชี้แบบวงกลม</translation>
 <translation id="4735793370946506039">ดูข้อมูลเพิ่มเติมเกี่ยวกับ Safe Browsing พร้อมการปกป้องที่ดียิ่งขึ้น</translation>
@@ -5815,6 +5816,7 @@
 <translation id="4901154724271753917">ขยายรายการแท็บที่เพิ่งปิดไป</translation>
 <translation id="4901309472892185668">เลือกสถานะการทดสอบสำหรับการทดสอบ<ph name="EXPERIMENT_NAME" /></translation>
 <translation id="49027928311173603">นโยบายที่ดาวน์โหลดจากเซิร์ฟเวอร์ไม่ถูกต้อง: <ph name="VALIDATION_ERROR" /></translation>
+<translation id="490375751687810070">แนวตั้ง</translation>
 <translation id="4906490889887219338">ตั้งค่าหรือจัดการพื้นที่แชร์ไฟล์ของเครือข่าย <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
 <translation id="4906679076183257864">รีเซ็ตเป็นค่าเริ่มต้น</translation>
 <translation id="4907129260985716018">เลือกว่าส่วนขยายนี้จะอ่านและเปลี่ยนแปลงข้อมูลเว็บไซต์ของคุณได้เมื่อใดบ้าง</translation>

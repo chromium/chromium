@@ -687,6 +687,9 @@
 <translation id="8041795619940733262">Spørg Google<ph name="LINE_BREAK" />om denne fane</translation>
 <translation id="80471789339884597">Tak for installationen. Du skal genstarte alle dine browsere, før du bruger <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
+<translation id="8064965390968184078">1. Klik på <ph name="BUTTON_LABEL" /> nedenfor
+2. Klik på <ph name="BUTTON_2" /> i dine Windows-indstillinger
+3. Klik på <ph name="BUTTON_3" /> i Windows-notifikationen for at fastgøre Chrome til proceslinjen, så du hurtigt kan tilgå browseren</translation>
 <translation id="8077579734294125741">Andre Chrome-profiler</translation>
 <translation id="8086881907087796310">Installationen mislykkedes, fordi din computer ikke opfylder minimumskravene til hardware.</translation>
 <translation id="8113883687556086139">Verificer din identitet for at bruge og gemme Chrome-data på din konto, <ph name="ACCOUNT_EMAIL" /></translation>
@@ -765,6 +768,7 @@ Nye bogmærker kan ikke gemmes på din konto, før du sletter nogle. Hvis du log
 <translation id="8914504000324227558">Genstart Chrome</translation>
 <translation id="8922193594870374009">Hvis du vil sende et nummer fra <ph name="ORIGIN" /> til din Android-telefon, skal du logge ind på Chrome på begge enheder.</translation>
 <translation id="8922998289262614701">Fjern denne apps data fra Chrome</translation>
+<translation id="8925636929359899517">Vi bruger oplysninger til at forbedre denne tjeneste. Se <ph name="BEGIN_LINK1" />privatlivspolitikken<ph name="END_LINK1" /> og <ph name="BEGIN_LINK2" />servicevilkårene<ph name="END_LINK2" />.</translation>
 <translation id="8936233353620149764">Slå Gemini i Chrome til/fra</translation>
 <translation id="8948460679427074738">Denne udvidelse har ikke offentliggjort privatlivsprocedurer, f.eks. hvordan den indsamler og bruger data. Chrome anbefaler, at du fjerner den.</translation>
 <translation id="8958307504142971576">Du har nu flere tilgængelige funktioner i Chrome</translation>

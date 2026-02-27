@@ -588,6 +588,9 @@ Chromium не може відновити ваші налаштування.</tr
 <translation id="7384121030444253939">Це розширення більше не підтримується. Chromium радить вилучити його.</translation>
 <translation id="7413153308467572558">Продовжуйте роботу з місця, де зупинилися: Chromium відновлює ваші вкладки після кожного перезапуску. Щоб вимкнути цю функцію, перейдіть у</translation>
 <translation id="7427879960656355200">Імпортувати паролі в Chromium</translation>
+<translation id="744815265653811511">1. Натисніть кнопку "<ph name="BUTTON_LABEL" />" нижче.
+2. Натисніть "<ph name="BUTTON_2" />" у налаштуваннях Windows.
+3. Коли у Windows з’явиться сповіщення, натисніть "<ph name="BUTTON_3" />", щоб закріпити Chromium на панелі завдань для швидкого доступу.</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Версія Chromium для розробників</translation>
 <translation id="7450541714075000668">Текст скопійовано</translation>
 <translation id="7451052299415159299">Chromium потрібен дозвіл на використання камери, щоб надати цьому сайту доступ до неї</translation>
@@ -603,6 +606,7 @@ Chromium не може відновити ваші налаштування.</tr
 <translation id="761356813943268536">Chromium використовує вашу камеру та мікрофон.</translation>
 <translation id="7617377681829253106">Chromium став ще кращим</translation>
 <translation id="7622753900276619808">Тепер у Chromium доступно більше функцій</translation>
+<translation id="7624307931717240213">Ми використовуємо цю інформацію, щоб покращувати сервіс. Перегляньте Політику конфіденційності й Умови використання.</translation>
 <translation id="7649070708921625228">Довідка</translation>
 <translation id="7656340475565475526">Дозвольте Chromium шукати інформацію для вас</translation>
 <translation id="7658239707568436148">Скасувати</translation>

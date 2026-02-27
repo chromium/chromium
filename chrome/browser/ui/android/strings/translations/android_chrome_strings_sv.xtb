@@ -281,6 +281,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="2205701497928406883"><ph name="TAB_TITLE" />, fäst flik som delas</translation>
 <translation id="22091350895006575">Lägg till användarnamn</translation>
 <translation id="221494669172414749">Om du öppnar Chrome utan ett profillås tas dina sparade lösenord och betalningsmetoder bort från bilen. Denna data skyddas om du använder ett profillås.</translation>
+<translation id="2226826835915474236">Inaktiva genvägar</translation>
 <translation id="2227179592712503583">Ta bort förslag</translation>
 <translation id="2227444325776770048">Fortsätt som <ph name="USER_FULL_NAME" /></translation>
 <translation id="2230777942707397948">Tomt fönster</translation>
@@ -1656,6 +1657,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="7740287852186792672">Sökresultat</translation>
 <translation id="774403695779169686"><ph name="TAB_TITLE" />, vald inkognitoflik som delas</translation>
 <translation id="774876555279732384">Autofylltjänster hanteras även i <ph name="BEGIN_LINK" />Android-inställningarna<ph name="END_LINK" />.</translation>
+<translation id="7758884017823246335">Lägg till webbplatssökning</translation>
 <translation id="7759809451544302770">Valfritt</translation>
 <translation id="7762668264895820836">SD-kort <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">Lägg till adress</translation>
@@ -1887,6 +1889,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="8634050254805484913">Dold på smala skärmar</translation>
 <translation id="8635399646025169806">Vill du behålla flikgruppen?</translation>
 <translation id="8636825310635137004">Aktivera synkronisering om du vill ha samma flikar tillgängliga på alla enheter.</translation>
+<translation id="8639963783467694461">Inställningar för Autofyll</translation>
 <translation id="8662474268934425487">Logga in på <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8664979001105139458">Filnamnet finns redan</translation>
 <translation id="8676276370198826499">Registrera dig för <ph name="SITE_ETLD_PLUS_ONE" /> med <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -1935,6 +1938,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="8865415417596392024">Chrome-data i ditt konto</translation>
 <translation id="8872506776304248286">Öppna i appen</translation>
 <translation id="8890668505403261809">Sök bland inkognitoflikar</translation>
+<translation id="8892234476517513962">Du är redan inloggad</translation>
 <translation id="8894890673032951011"><ph name="TAB_TITLE" />, vald inkognitoflik som spelas in</translation>
 <translation id="8898822736010347272">Skickar webbadresser till vissa sidor som du besöker, vissa systemuppgifter och visst sidinnehåll till Google för att upptäcka och blockera nya hot och skydda alla användare på internet.</translation>
 <translation id="8903921497873541725">Zooma in</translation>

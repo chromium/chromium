@@ -281,6 +281,7 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="2205701497928406883"><ph name="TAB_TITLE" />, Tab Perkongsian Yang Tersemat</translation>
 <translation id="22091350895006575">Tambahkan nama pengguna</translation>
 <translation id="221494669172414749">Tindakan membuka Chrome tanpa kunci profil akan mengalih keluar kata laluan dan kaedah pembayaran anda yang disimpan daripada kereta. Penggunaan kunci profil memastikan data ini selamat.</translation>
+<translation id="2226826835915474236">Pintasan tidak aktif</translation>
 <translation id="2227179592712503583">Alih keluar cadangan</translation>
 <translation id="2227444325776770048">Teruskan sebagai <ph name="USER_FULL_NAME" /></translation>
 <translation id="2230777942707397948">Tetingkap kosong</translation>
@@ -923,6 +924,7 @@ Google Account anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain
 <translation id="4885273946141277891">Bilangan kejadian Chrome tidak disokong.</translation>
 <translation id="4890973535105146893">Tiada kata laluan yang disimpan dalam Google Account anda</translation>
 <translation id="4905823827770127520">Sertakan pautan kepada halaman</translation>
+<translation id="4908601375231458049">Sesuaikan kumpulan tab dan tekan Selesai</translation>
 <translation id="4908869848243824489">Discover oleh Google</translation>
 <translation id="4910889077668685004">Apl pembayaran</translation>
 <translation id="4911042367886397055">Selamat kembali, <ph name="USER_NAME" />!</translation>
@@ -1186,6 +1188,7 @@ Google Account anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain
 <translation id="6040143037577758943">Tutup</translation>
 <translation id="604124094241169006">Automatik</translation>
 <translation id="6042308850641462728">Lagi</translation>
+<translation id="6047066316630165190">Buka penukar tab grid</translation>
 <translation id="604996488070107836">Muat turun <ph name="FILE_NAME" /> gagal disebabkan oleh ralat yang tidak diketahui.</translation>
 <translation id="605721222689873409">TT</translation>
 <translation id="6059830886158432458">Kawal cerita dan aktiviti anda di sini</translation>
@@ -1259,6 +1262,7 @@ Sebagai contoh, sesetengah laman web mungkin memberi respons kepada permintaan i
 <translation id="6301526076346731664">Buka Alatan Pembangun</translation>
 <translation id="630308129961693966">Pilih kedudukan bar alamat anda</translation>
 <translation id="6303969859164067831">Log keluar dan matikan penyegerakan</translation>
+<translation id="6305257382500066042">Cubalah sekarang</translation>
 <translation id="6307241780749477694">Sahkan identiti anda untuk mendapatkan akses kepada semua kata laluan anda pada peranti ini</translation>
 <translation id="6309082029962045994"><ph name="TAB_TITLE" />, Tab Boleh Dengar Yang Tersemat Dengan Berbilang Pilihan</translation>
 <translation id="6312687380483398334">Apl web (senyap)</translation>
@@ -1655,6 +1659,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chrome dalam ak
 <translation id="7740287852186792672">Hasil carian</translation>
 <translation id="774403695779169686"><ph name="TAB_TITLE" />, Tab Inkognito Perkongsian Yang Dipilih</translation>
 <translation id="774876555279732384">Perkhidmatan autolengkap juga diurus dalam <ph name="BEGIN_LINK" />Tetapan Android<ph name="END_LINK" />.</translation>
+<translation id="7758884017823246335">Tambahkan carian laman</translation>
 <translation id="7759809451544302770">Pilihan</translation>
 <translation id="7762668264895820836">Kad SD <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">Tambahkan alamat</translation>
@@ -1845,6 +1850,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chrome dalam ak
 <translation id="8458341576712814616">Pintasan</translation>
 <translation id="8458413889418591446">Untuk segera kembali kepada laman yang telah anda lawati, segerakkan sejarah dan tab anda</translation>
 <translation id="84594714173170813">Kekal menggunakan data Chrome dalam Google Account anda</translation>
+<translation id="8460008946585880786">Seret dan lepaskan satu tab ke atas tab yang lain</translation>
 <translation id="8460448946170646641">Semak privasi dan kawalan keselamatan utama</translation>
 <translation id="8460932807646981183">Urus enjin carian dan carian laman</translation>
 <translation id="8473863474539038330">Alamat dan pelbagai lagi</translation>
@@ -1886,6 +1892,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chrome dalam ak
 <translation id="8634050254805484913">Tersembunyi pada skrin sempit</translation>
 <translation id="8635399646025169806">Simpan kumpulan tab?</translation>
 <translation id="8636825310635137004">Hidupkan penyegerakan untuk mendapatkan tab daripada peranti anda yang lain.</translation>
+<translation id="8639963783467694461">Tetapan auto isi</translation>
 <translation id="8662474268934425487">Log masuk ke <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8664979001105139458">Nama fail sudah wujud</translation>
 <translation id="8676276370198826499">Daftar <ph name="SITE_ETLD_PLUS_ONE" /> dengan <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -1934,6 +1941,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chrome dalam ak
 <translation id="8865415417596392024">Data Chrome dalam akaun anda</translation>
 <translation id="8872506776304248286">Buka dalam apl</translation>
 <translation id="8890668505403261809">Cari tab Inkognito anda</translation>
+<translation id="8892234476517513962">Anda sudah log masuk</translation>
 <translation id="8894890673032951011"><ph name="TAB_TITLE" />, Tab Inkognito Rakaman Yang Dipilih</translation>
 <translation id="8898822736010347272">Menghantar URL sesetengah halaman yang anda lawati, maklumat sistem yang terhad dan sebahagian kandungan halaman kepada Google untuk menemukan ancaman baharu dan melindungi semua pengguna web.</translation>
 <translation id="8903921497873541725">Zum masuk</translation>

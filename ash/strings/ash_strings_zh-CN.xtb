@@ -426,6 +426,7 @@
 <translation id="2478076885740497414">安装应用</translation>
 <translation id="2482878487686419369">通知</translation>
 <translation id="2484513351006226581">按 <ph name="KEYBOARD_SHORTCUT" />键可切换键盘布局。</translation>
+<translation id="2485422356828889247">卸载</translation>
 <translation id="2486214324139475545">“<ph name="DESK_NAME" />”预览。活动桌面。</translation>
 <translation id="2486405091093637109">“<ph name="DISPLAY_NAME" />”的分辨率已更改为 <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz)。如果不确认，系统将在 <ph name="TIMEOUT_SECONDS" />后恢复以前的设置。</translation>
 <translation id="2487915095798731898">加入</translation>

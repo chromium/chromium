@@ -590,6 +590,9 @@ Chromium ne more obnoviti vaših nastavitev.</translation>
 <translation id="7384121030444253939">Ta razširitev ni več podprta. Chromium priporoča, da jo odstranite.</translation>
 <translation id="7413153308467572558">Nadaljujte, kjer ste končali: Chromium ob vsakem vnovičnem zagonu obnovi zavihke. Če želite to izklopiti, odprite</translation>
 <translation id="7427879960656355200">Uvoz gesel v Chromium</translation>
+<translation id="744815265653811511">1. Kliknite <ph name="BUTTON_LABEL" /> spodaj
+2. V nastavitvah sistema Windows kliknite <ph name="BUTTON_2" />
+3. Kliknite <ph name="BUTTON_3" /> v obvestilu sistema Windows, da Chromium pripnete v opravilno vrstico za hitri dostop</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – različica Chromiuma za razvijalce</translation>
 <translation id="7450541714075000668">Besedilo je kopirano.</translation>
 <translation id="7451052299415159299">Chromium potrebuje dovoljenje za dostop do fotoaparata za to spletno mesto</translation>

@@ -281,6 +281,7 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="2205701497928406883"><ph name="TAB_TITLE" />, kiinnitetty välilehti, jonka sisältöä jaetaan</translation>
 <translation id="22091350895006575">Lisää käyttäjätunnus</translation>
 <translation id="221494669172414749">Jos avaat Chromen ilman profiililukkoa, tallennetut salasanat ja maksutavat poistetaan autosta. Profiililukko suojaa tätä dataa.</translation>
+<translation id="2226826835915474236">Ei-aktiiviset pikakomennot</translation>
 <translation id="2227179592712503583">Poista ehdotus</translation>
 <translation id="2227444325776770048">Jatka tilillä <ph name="USER_FULL_NAME" /></translation>
 <translation id="2230777942707397948">Tyhjä ikkuna</translation>
@@ -1655,6 +1656,7 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />poista tilin Chrome-
 <translation id="7740287852186792672">Hakutulokset</translation>
 <translation id="774403695779169686"><ph name="TAB_TITLE" />, valittu incognito-välilehti, jonka sisältöä jaetaan</translation>
 <translation id="774876555279732384">Automaattisen täytön palveluja ylläpidetään myös <ph name="BEGIN_LINK" />Android-asetuksista<ph name="END_LINK" />.</translation>
+<translation id="7758884017823246335">Lisää sivustohaku</translation>
 <translation id="7759809451544302770">Valinnainen</translation>
 <translation id="7762668264895820836">SD-kortti <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">Lisää osoite</translation>
@@ -1886,6 +1888,7 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />poista tilin Chrome-
 <translation id="8634050254805484913">Piilotettu kapeilla näytöillä</translation>
 <translation id="8635399646025169806">Säilytetäänkö välilehtiryhmä?</translation>
 <translation id="8636825310635137004">Ota synkronointi käyttöön, niin voit käyttää välilehtiäsi kaikilla laitteilla.</translation>
+<translation id="8639963783467694461">Automaattisen täytön asetukset</translation>
 <translation id="8662474268934425487">Kirjaudu sisään: <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8664979001105139458">Tiedoston nimi on jo käytössä</translation>
 <translation id="8676276370198826499">Rekisteröidy palveluun <ph name="SITE_ETLD_PLUS_ONE" /> kumppanin <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> kanssa</translation>
@@ -1934,6 +1937,7 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />poista tilin Chrome-
 <translation id="8865415417596392024">Tilisi Chrome-data</translation>
 <translation id="8872506776304248286">Avaa sovelluksessa</translation>
 <translation id="8890668505403261809">Tee hakuja incognito-välilehdillä</translation>
+<translation id="8892234476517513962">Olet jo kirjautunut sisään</translation>
 <translation id="8894890673032951011"><ph name="TAB_TITLE" />, valittu incognito-välilehti, jolla tallennetaan mediaa</translation>
 <translation id="8898822736010347272">Lähettää Googlelle joidenkin vierailemiesi sivujen URL-osoitteita, rajallisia järjestelmätietoja ja osia sivujen sisällöstä auttaakseen löytämään uusia uhkia ja suojaamaan kaikkia verkon käyttäjiä.</translation>
 <translation id="8903921497873541725">Lähennä</translation>

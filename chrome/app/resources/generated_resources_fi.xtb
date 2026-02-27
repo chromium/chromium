@@ -2331,7 +2331,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2537927931785713436">Tarkistetaan virtuaalikoneen kuvaa</translation>
 <translation id="2538084450874617176">Kuka käyttää tätä laitetta: <ph name="DEVICE_TYPE" />?</translation>
 <translation id="2538361623464451692">Synkronointi pois käytöstä</translation>
-<translation id="2538655793265890607">Videokehys kopioitu</translation>
+<translation id="2538655793265890607">Videon yksittäiskuva kopioitu</translation>
 <translation id="2540449034743108469">Kuuntele laajennuksen toiminnot valitsemalla Aloita</translation>
 <translation id="2540651571961486573">Jotain meni pieleen. Virhekoodi: <ph name="ERROR_CODE" />.</translation>
 <translation id="2541002089857695151">Optimoidaanko koko näytön suoratoisto?</translation>
@@ -4783,7 +4783,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="4195814663415092787">Jatka siitä, mihin jäit</translation>
 <translation id="4198268995694216131">Lisää sivustoja</translation>
 <translation id="4198420883535766848">Poista välilehti listasta</translation>
-<translation id="4200609364258658652">Kopio&amp;i videokehys</translation>
+<translation id="4200609364258658652">Kopio&amp;i videon yksittäiskehys</translation>
 <translation id="4200689466366162458">Muokatut sanat</translation>
 <translation id="4200983522494130825">Uusi &amp;välilehti</translation>
 <translation id="4201546031411513170">Voit valita synkronoitavan sisällön asetuksissa.</translation>
@@ -5560,6 +5560,7 @@ Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="4732799736617504962">Yhdistetty mikrofoni voi tukea vain taustahälyn vaimennusta</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" /> % (vasen)</translation>
 <translation id="4733793249294335256">Sijainti</translation>
+<translation id="4734965478015604180">Vaakasuora</translation>
 <translation id="473546211690256853">Tätä tiliä hallitsee <ph name="DOMAIN" /></translation>
 <translation id="4735506354605317060">Ympyräosoitin</translation>
 <translation id="4735793370946506039">Lue lisää Parannetusta selaussuojasta.</translation>
@@ -5827,6 +5828,7 @@ Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="4901154724271753917">Laajenna äskettäin suljetut</translation>
 <translation id="4901309472892185668">Valitse kokeilutila tälle kokeilulle: <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="49027928311173603">Palvelimelta ladattu käytäntö on virheellinen: <ph name="VALIDATION_ERROR" />.</translation>
+<translation id="490375751687810070">Pystysuora</translation>
 <translation id="4906490889887219338">Aloita verkkotiedostojen jakaminen tai muuta sitä. <ph name="LINK_BEGIN" />Lue lisää<ph name="LINK_END" /></translation>
 <translation id="4906679076183257864">Palauta oletusarvo</translation>
 <translation id="4907129260985716018">Valitse, kun tämä laajennus voi lukea ja muuttaa sivustodataasi</translation>
@@ -6157,7 +6159,7 @@ Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="5147113439721488265">Suositus</translation>
 <translation id="5147516217412920887">Vahvista koodi seuraamalla puhelimen ohjeita</translation>
 <translation id="5148285448107770349">Salasanan vähimmäispituus on kahdeksan merkkiä</translation>
-<translation id="5149602533174716626">Kopio&amp;i videokehys</translation>
+<translation id="5149602533174716626">Kopio&amp;i videon yksittäiskuva</translation>
 <translation id="5150254825601720210">Netscape-varmenteen SSL-palvelimen nimi</translation>
 <translation id="5151354047782775295">Vapauta levytilaa, tai tiettyjä tietoja voidaan poistaa automaattisesti.</translation>
 <translation id="5153074793829217329">Ohjaa hiiren kohdistinta näppäimistöllä tai numeronäppäimistöllä</translation>
@@ -6962,7 +6964,7 @@ Voit määrittää samalle toiminnolle useita kytkimiä.</translation>
 <translation id="5711010025974903573">Palvelulokit</translation>
 <translation id="5711983031544731014">Avaaminen ei onnistu. Lisää salasana.</translation>
 <translation id="5712153969432126546">Sivustot julkaisevat joskus PDF-tiedostoja, kuten asiakirjoja, sopimuksia ja lomakkeita</translation>
-<translation id="571222594670061844">Sivustot voivat näyttää henkilöllisyyspalveluiden sisäänkirjautumiskehotteita</translation>
+<translation id="571222594670061844">Sivustot voivat näyttää identiteettipalveluiden sisäänkirjautumiskehotteita</translation>
 <translation id="5713033452812927234">Avataan edellisen laitteen ikkunoita</translation>
 <translation id="5713158217420111469">Yhdistetty: <ph name="DEVICE" /></translation>
 <translation id="5714100381896040477">Rajoita liikettä näytöllä</translation>
@@ -7206,7 +7208,7 @@ Voit määrittää samalle toiminnolle useita kytkimiä.</translation>
 <translation id="5876851302954717356">Uusi välilehti oikealle</translation>
 <translation id="5877064549588274448">Kanava vaihdettiin. Ota muutokset käyttöön käynnistämällä laite uudelleen.</translation>
 <translation id="5877584842898320529">Valittu tulostin ei ole käytettävissä tai sitä ei ole asennettu oikein. <ph name="BR" /> Tarkista tulostin tai valitse toinen tulostin.</translation>
-<translation id="5878945009165002849">Estä henkilöllisyyspalveluiden sisäänkirjautumiskehotteet</translation>
+<translation id="5878945009165002849">Estä identiteettipalveluiden sisäänkirjautumiskehotteet</translation>
 <translation id="5881710783061958569">Jos vaihdoit, päivitä muutos tallennettuihin salasanoihin (<ph name="BRAND" />).</translation>
 <translation id="5882919346125742463">Tunnetut verkot</translation>
 <translation id="5883356647197510494">Estetty automaattisesti: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
@@ -7418,7 +7420,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6022526133015258832">Avaa koko ruudulla</translation>
 <translation id="6022659036123304283">Tee Chromesta näköisesi</translation>
 <translation id="6023643151125006053">Verkkotunnuksen <ph name="SAML_DOMAIN" /> järjestelmänvalvoja on lukinnut laitteen (sarjanumero <ph name="SERIAL_NUMBER" />)</translation>
-<translation id="6024317249717725918">&amp;Hae videokehystä tällä: <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
+<translation id="6024317249717725918">&amp;Hae videon yksittäiskuvaa tällä: <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6025215716629925253">Pinon jälki</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> – USB-laite yhdistetty</translation>
 <translation id="6027143200498653403">Kun esität historiaasi koskevia kysymyksiä, voit saada tiettyyn avaamasi sivun sisältöön liittyviä vastauksia</translation>
@@ -11194,7 +11196,7 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="860907040896565281">Muokkaa pikanäppäintä…</translation>
 <translation id="8609465669617005112">Siirrä ylös</translation>
 <translation id="8611922158252451755">Kaikki linkin saaneet voivat muokata kaikkia välilehtiä, joten ne kannattaa jakaa harkiten. Linkki vanhenee 48 tunnin kuluttua.</translation>
-<translation id="8612252270453580753">&amp;Hae videokehystä tällä: <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
+<translation id="8612252270453580753">&amp;Hae videon yksittäiskuvaa tällä: <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="8613164732773110792">Vain pieniä kirjaimia, numeroita, alaviivoja ja yhdysviivoja</translation>
 <translation id="8613504115484579584">Kirjautumistavat</translation>
 <translation id="8613645710357126807">Laajennusten käyttö kielletty</translation>

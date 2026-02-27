@@ -5193,7 +5193,7 @@
 <translation id="4471354919263203780">Πραγματοποιείται λήψη των αρχείων αναγνώρισης ομιλίας… <ph name="PERCENT" />%</translation>
 <translation id="4472194221638903160">Ομαδοποίηση καρτελών με AI</translation>
 <translation id="4472298120638043495">Μπορείτε να χρησιμοποιήσετε τη γλώσσα του Λογαριασμού Google που προτιμάτε (<ph name="NEW_LOCALE_FROM_GAIA" />)</translation>
-<translation id="447252321002412580">Συμβάλλετε στη βελτίωση των λειτουργιών και της απόδοσης του Chrome</translation>
+<translation id="447252321002412580">Συμβάλετε στη βελτίωση των λειτουργιών και της απόδοσης του Chrome</translation>
 <translation id="4472533928615930332">Δημιουργήθηκε εικόνα <ph name="INDEX" /> σχετικά με <ph name="SUBJECT" />, σε στιλ <ph name="STYLE" /></translation>
 <translation id="4472575034687746823">Έναρξη</translation>
 <translation id="4473559657152613417">Κάντε δεξί κλικ σε μια καρτέλα και επιλέξτε Προσθήκη καρτέλας σε νέα ομάδα</translation>
@@ -5564,6 +5564,7 @@
 <translation id="4732799736617504962">Το συνδεδεμένο μικρόφωνο υποστηρίζει μόνο την εξουδετέρωση θορύβου</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (Αριστερό)</translation>
 <translation id="4733793249294335256">Τοποθεσία</translation>
+<translation id="4734965478015604180">Οριζόντια περιστροφή</translation>
 <translation id="473546211690256853">Η διαχείριση αυτού του λογαριασμού γίνεται από τον τομέα <ph name="DOMAIN" />.</translation>
 <translation id="4735506354605317060">Επισήμανση δείκτη με κύκλο</translation>
 <translation id="4735793370946506039">Μάθετε περισσότερα σχετικά με τη Βελτιωμένη Ασφαλή περιήγηση.</translation>
@@ -5831,6 +5832,7 @@
 <translation id="4901154724271753917">Ανάπτυξη στοιχείου που έκλεισε πρόσφατα</translation>
 <translation id="4901309472892185668">Επιλέξτε κατάσταση πειράματος για το πείραμα <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="49027928311173603">Η πολιτική της οποίας έγινε λήψη από το διακομιστή δεν είναι έγκυρη: <ph name="VALIDATION_ERROR" />.</translation>
+<translation id="490375751687810070">Κατακόρυφη περιστροφή</translation>
 <translation id="4906490889887219338">Ρύθμιση ή διαχείριση κοινής χρήσης αρχείων δικτύου. <ph name="LINK_BEGIN" />Μάθετε περισσότερα<ph name="LINK_END" /></translation>
 <translation id="4906679076183257864">Επαναφορά προεπιλογής</translation>
 <translation id="4907129260985716018">Επιλέξτε πότε αυτή η επέκταση μπορεί να διαβάσει και να αλλάξει τα δεδομένα του ιστοτόπου σας</translation>
@@ -8504,6 +8506,7 @@
 <translation id="678520006562636090">Δοκιμάστε το Google Lens σε <ph name="DEVICE_TYPE" /></translation>
 <translation id="6785594991951195537">Χρησιμοποιήστε τον κωδικό πρόσβασης για τον τομέα <ph name="PASSWORD_DOMAIN" /></translation>
 <translation id="6785739405821760313">Προβάλλονται αποθηκευμένα γραφεία. Πατήστε το πλήκτρο tab για πλοήγηση.</translation>
+<translation id="6785779729084003225">Χρησιμοποιήστε <ph name="FOCUS_TOGGLE_HOTKEY" /> για να ανοίξετε το Gemini στο Chrome</translation>
 <translation id="6785915470941880363">Αντίστροφη κύλιση <ph name="LINK_BEGIN" />Μάθετε περισσότερα<ph name="LINK_END" /></translation>
 <translation id="67862343314499040">Βιολετί</translation>
 <translation id="6786480815699355166">Μόνο οι υποστηριζόμενες γλώσσες των Ζωντανών υποτίτλων μπορούν να μεταφραστούν</translation>

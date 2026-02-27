@@ -589,6 +589,9 @@
 <translation id="7384121030444253939">Пашырэнне больш не падтрымліваецца. Chromium рэкамендуе выдаліць яго.</translation>
 <translation id="7413153308467572558">Працягвайце з месца, дзе вы спыніліся: Chromium аднаўляе ўкладкі пры кожным перазапуску. Выключыць гэту наладу можна тут:</translation>
 <translation id="7427879960656355200">Імпарт пароляў у Chromium</translation>
+<translation id="744815265653811511">1. Націсніце кнопку <ph name="BUTTON_LABEL" /> ніжэй.
+2. У наладах Windows націсніце кнопку <ph name="BUTTON_2" />.
+3. У апавяшчэнні Windows націсніце кнопку <ph name="BUTTON_3" />, каб замацаваць Chromium на панэлі задач для хуткага доступу.</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Chromium Dev</translation>
 <translation id="7450541714075000668">Тэкст скапіраваны</translation>
 <translation id="7451052299415159299">Chromium запытвае дазвол на доступ да вашай камеры для гэтага сайта</translation>
@@ -604,6 +607,7 @@
 <translation id="761356813943268536">Chromium выкарыстоўвае камеру і мікрафон.</translation>
 <translation id="7617377681829253106">Chromium стаў яшчэ лепшым</translation>
 <translation id="7622753900276619808">Цяпер для вас даступна больш функцый у Chromium</translation>
+<translation id="7624307931717240213">Мы выкарыстоўваем інфармацыю, каб палепшыць гэты сэрвіс. Азнаёмцеся з Палітыкай прыватнасці і Умовамі выкарыстання.</translation>
 <translation id="7649070708921625228">Даведка</translation>
 <translation id="7656340475565475526">Дазвольце Chromium праглядаць старонкі за вас</translation>
 <translation id="7658239707568436148">Скасаваць</translation>

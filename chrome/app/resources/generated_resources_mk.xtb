@@ -5565,6 +5565,7 @@
 <translation id="4732799736617504962">Поврзаниот микрофон може да поддржува само „Поништување шум“</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" /> % (лева)</translation>
 <translation id="4733793249294335256">Локација</translation>
+<translation id="4734965478015604180">Хоризонтално</translation>
 <translation id="473546211690256853">Оваа сметка е управувана од <ph name="DOMAIN" /></translation>
 <translation id="4735506354605317060">Заокружи го покажувачот</translation>
 <translation id="4735793370946506039">Дознајте повеќе за „Подобреното безбедно прелистување“.</translation>
@@ -5832,6 +5833,7 @@
 <translation id="4901154724271753917">Проширете ги неодамна затворените</translation>
 <translation id="4901309472892185668">Изберете состојба на експериментот за <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="49027928311173603">Правилото преземено од серверот е неважечко: <ph name="VALIDATION_ERROR" />.</translation>
+<translation id="490375751687810070">Вертикално</translation>
 <translation id="4906490889887219338">Поставете ги или управувајте со мрежните споделувања. <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
 <translation id="4906679076183257864">Ресетирај на стандардна вредност</translation>
 <translation id="4907129260985716018">Изберете кога екстензијава може да ги чита и изменува податоците од сајтот</translation>
@@ -8506,6 +8508,7 @@
 <translation id="678520006562636090">Испробајте ја Google Lens на вашиот <ph name="DEVICE_TYPE" /></translation>
 <translation id="6785594991951195537">Користете ја лозинката за <ph name="PASSWORD_DOMAIN" /></translation>
 <translation id="6785739405821760313">Се прикажуваат зачуваните работни површини. Притиснете Tab за навигација.</translation>
+<translation id="6785779729084003225">Користете <ph name="FOCUS_TOGGLE_HOTKEY" /> за да го отворите Gemini во Chrome</translation>
 <translation id="6785915470941880363">Обратно лизгање <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
 <translation id="67862343314499040">Виолетова</translation>
 <translation id="6786480815699355166">Може да се преведуваат само јазиците што се поддржани на „Автоматски титлови“</translation>

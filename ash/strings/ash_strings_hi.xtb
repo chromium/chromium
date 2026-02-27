@@ -426,6 +426,7 @@
 <translation id="2478076885740497414">ऐप्स इंस्टॉल करें</translation>
 <translation id="2482878487686419369">सूचनाएं</translation>
 <translation id="2484513351006226581">कीबोर्ड लेआउट स्विच करने के लिए <ph name="KEYBOARD_SHORTCUT" /> दबाएं.</translation>
+<translation id="2485422356828889247">विस्थापित करें</translation>
 <translation id="2486214324139475545"><ph name="DESK_NAME" /> की झलक. इस डेस्क का इस्तेमाल किया जा रहा है.</translation>
 <translation id="2486405091093637109">"<ph name="DISPLAY_NAME" />" को <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> हर्ट्ज़) रिज़ॉल्यूशन में सेट कर दिया गया है. अगर इसकी पुष्टि नहीं की जाती है, तो सेटिंग <ph name="TIMEOUT_SECONDS" /> में पहले जैसी कर दी जाएंगी.</translation>
 <translation id="2487915095798731898">जुड़ें</translation>

@@ -281,6 +281,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="2205701497928406883"><ph name="TAB_TITLE" />, Paylaşım Yapan Sabit Sekme</translation>
 <translation id="22091350895006575">Kullanıcı adı ekle</translation>
 <translation id="221494669172414749">Chrome'u profil kilidi olmadan açarsanız arabadaki kayıtlı şifreleriniz ve ödeme yöntemleriniz kaldırılır. Profil kilidi kullanmanız bu verilerin güvenliğini sağlar.</translation>
+<translation id="2226826835915474236">Etkin olmayan kısayollar</translation>
 <translation id="2227179592712503583">Öneriyi kaldır</translation>
 <translation id="2227444325776770048"><ph name="USER_FULL_NAME" /> olarak devam et</translation>
 <translation id="2230777942707397948">Boş pencere</translation>
@@ -1655,6 +1656,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chrome ver
 <translation id="7740287852186792672">Arama sonuçları</translation>
 <translation id="774403695779169686"><ph name="TAB_TITLE" />, Paylaşım Yapan Seçili Gizli Sekme</translation>
 <translation id="774876555279732384">Otomatik doldurma hizmetleri, <ph name="BEGIN_LINK" />Android Ayarları<ph name="END_LINK" />'nda da yönetilir.</translation>
+<translation id="7758884017823246335">Site arama ekle</translation>
 <translation id="7759809451544302770">İsteğe bağlı</translation>
 <translation id="7762668264895820836">SD Kart <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">Adres ekle</translation>
@@ -1886,6 +1888,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chrome ver
 <translation id="8634050254805484913">Dar ekranlarda gizlenir</translation>
 <translation id="8635399646025169806">Sekme grubu tutulsun mu?</translation>
 <translation id="8636825310635137004">Diğer cihazlarınızdaki sekmelerinize ulaşmak için senkronizasyonu etkinleştirin.</translation>
+<translation id="8639963783467694461">Otomatik doldurma ayarları</translation>
 <translation id="8662474268934425487"><ph name="SITE_ETLD_PLUS_ONE" /> ile oturum aç</translation>
 <translation id="8664979001105139458">Dosya adı zaten mevcut</translation>
 <translation id="8676276370198826499"><ph name="SITE_ETLD_PLUS_ONE" /> sitesine <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> kimliğinizle kaydolun</translation>
@@ -1934,6 +1937,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chrome ver
 <translation id="8865415417596392024">Hesabınızdaki Chrome verileri</translation>
 <translation id="8872506776304248286">Uygulamada aç</translation>
 <translation id="8890668505403261809">Gizli sekmelerinizde arayın</translation>
+<translation id="8892234476517513962">Oturumunuz zaten açık</translation>
 <translation id="8894890673032951011"><ph name="TAB_TITLE" />, Medya Kaydeden Seçili Gizli Sekme</translation>
 <translation id="8898822736010347272">Yeni tehditleri keşfetmeye ve web'deki herkesi korumaya yardımcı olmak için, ziyaret ettiğiniz bazı sayfaların URL'lerini, sınırlı sistem bilgilerini ve bazı sayfa içeriklerini Google'a gönderir.</translation>
 <translation id="8903921497873541725">Yakınlaştır</translation>

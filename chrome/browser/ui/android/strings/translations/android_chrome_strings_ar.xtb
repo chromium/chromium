@@ -281,6 +281,7 @@
 <translation id="2205701497928406883">‫"<ph name="TAB_TITLE" />"، علامة تبويب مثبَّتة تشارك محتواها</translation>
 <translation id="22091350895006575">إضافة اسم مستخدِم</translation>
 <translation id="221494669172414749">‏سيؤدي فتح Chrome بدون قفل للملف الشخصي إلى إزالة كلمات المرور وطُرق الدفع المحفوظة من السيارة. ويؤدي استخدام قفل للملف الشخصي إلى الحفاظ على أمان هذه البيانات.</translation>
+<translation id="2226826835915474236">الاختصارات غير النشطة</translation>
 <translation id="2227179592712503583">إزالة الاقتراح</translation>
 <translation id="2227444325776770048">المتابعة بحساب "<ph name="USER_FULL_NAME" />"</translation>
 <translation id="2230777942707397948">نافذة فارغة</translation>
@@ -1658,6 +1659,7 @@
 <translation id="7740287852186792672">نتائج البحث</translation>
 <translation id="774403695779169686">‫"<ph name="TAB_TITLE" />"، علامة تبويب تشارك محتواها وتم اختيارها في "وضع التصفّح المتخفي"</translation>
 <translation id="774876555279732384">‏تتم إدارة خدمات الملء التلقائي أيضًا في <ph name="BEGIN_LINK" />إعدادات Android<ph name="END_LINK" />.</translation>
+<translation id="7758884017823246335">إضافة محرّك بحث في المواقع الإلكترونية</translation>
 <translation id="7759809451544302770">اختياري</translation>
 <translation id="7762668264895820836">‏بطاقة SD <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">إضافة عنوان</translation>
@@ -1890,6 +1892,7 @@
 <translation id="8634050254805484913">هذا الشريط مخفي على الشاشات الضيقة</translation>
 <translation id="8635399646025169806">هل تريد الاحتفاظ بمجموعة علامات التبويب؟</translation>
 <translation id="8636825310635137004">للحصول على علامات التبويب من أجهزتك الأخرى، فعِّل المزامنة.</translation>
+<translation id="8639963783467694461">إعدادات الملء التلقائي</translation>
 <translation id="8662474268934425487">سجّل الدخول إلى <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8664979001105139458">اسم الملف موجود</translation>
 <translation id="8676276370198826499">الاشتراك في <ph name="SITE_ETLD_PLUS_ONE" /> باستخدام <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -1938,6 +1941,7 @@
 <translation id="8865415417596392024">‏بيانات Chrome في حسابك</translation>
 <translation id="8872506776304248286">فتح في التطبيق</translation>
 <translation id="8890668505403261809">البحث في علامات التبويب في وضع التصفّح المتخفي</translation>
+<translation id="8892234476517513962">سبق أن سجّلت الدخول</translation>
 <translation id="8894890673032951011">‫"<ph name="TAB_TITLE" />"، علامة تبويب تسجِّل وسائط وتم اختيارها في "وضع التصفّح المتخفي"</translation>
 <translation id="8898822736010347272">‏إرسال عناوين URL الخاصّة ببعض الصفحات التي تزورها، وعدد محدود من معلومات النظام، وبعض أنواع محتوى الصفحات إلى Google، وذلك للمساعدة على اكتشاف التهديدات الجديدة وتوفير الحماية لجميع المستخدمين على الويب</translation>
 <translation id="8903921497873541725">تكبير</translation>

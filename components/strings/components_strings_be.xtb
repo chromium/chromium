@@ -731,6 +731,7 @@
 <translation id="2166049586286450108">Поўны доступ адміністратара</translation>
 <translation id="2166378884831602661">Гэты сайт не можа забяспечыць бяспечнае падключэнне</translation>
 <translation id="2168151236314517198">Палітыка, зададзеная адміністратарам, блакіруе магчымасць друкавання гэтага змесціва</translation>
+<translation id="2171244127100824330">У сэрвісе "<ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />" для ўліковага запісу <ph name="ACCOUNT" /></translation>
 <translation id="2172089022819052306">Рамонт і абслугоўванне аўтамабіляў</translation>
 <translation id="2173302385160625112">Праверце падключэнне да інтэрнэту</translation>
 <translation id="2174875517416416684">Трансакцыя не выканана. Сродкі не спісаны з вашага рахунку.</translation>
@@ -909,7 +910,6 @@
 <translation id="2436976580469434549">Валаконнае і тэкстыльнае мастацтва</translation>
 <translation id="243815215670139125">Не ўдалося захаваць гэту картку ў вашым Уліковым запісе Google. Яна захавана ў Chrome на гэтай прыладзе.</translation>
 <translation id="2438874542388153331">Чатыры дзіркі справа</translation>
-<translation id="2440855519769445271">Каб схаваць параметры аплаты ў растэрміноўку, адкрыйце <ph name="BEGIN_LINK" />налады аплаты<ph name="END_LINK" /></translation>
 <translation id="2441854154602066476">Спіс даступных спосабаў аплаты, даныя якіх можна ўвесці націсканнем. Клавіятура схавана.</translation>
 <translation id="2442865686365739754">Chrome <ph name="BEGIN_EMPHASIS" />не будзе захоўваць<ph name="END_EMPHASIS" />:
 <ph name="BEGIN_LIST" />
@@ -947,6 +947,7 @@
 <translation id="248064299258688299">Паведамленне ад пашырэння "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="2482878487686419369">Апавяшчэнні</translation>
 <translation id="248348093745724435">Палітыкі прылады</translation>
+<translation id="248395913932153421">Дзень</translation>
 <translation id="2485243023686553468">Смартфоны</translation>
 <translation id="2491120439723279231">Ёсць памылкі ў сертыфікаце сервера.</translation>
 <translation id="2491414235131909199">Старонка заблакіравана пашырэннем</translation>
@@ -2285,7 +2286,6 @@
 <translation id="4648262692072505866">Хэш павінен мець фармат SHA-256.</translation>
 <translation id="4652266463001779298">Забаронена</translation>
 <translation id="4652440160515225514">Ваша арганізацыя заблакіравала гэты сайт, бо ён парушае адну з палітык.</translation>
-<translation id="4654457557264366314">Тарыфныя планы даступныя пры адпаведнасці патрабаванням.</translation>
 <translation id="4658638640878098064">Скаба зверху злева</translation>
 <translation id="4658801711339831733">Вынік сканіравання захаваны на Google Дыску</translation>
 <translation id="4660592918803576381">Адкрыць на Дыску</translation>
@@ -2406,6 +2406,7 @@
 <translation id="4832388034239846146">Абнавіце версію Chrome, каб абагульваць групы ўкладак</translation>
 <translation id="483241715238664915">Уключыць папярэджанні</translation>
 <translation id="4832961164064927107">Барбекю і грыль</translation>
+<translation id="4839984801146463230">Захавайце звесткі, каб паскорыць працу ў розных прадуктах Google, напрыклад запаўненне форм. Вы можаце <ph name="BEGIN_LINK" />кіраваць сваёй інфармацыяй<ph name="END_LINK" /> у сэрвісе "<ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />" для ўліковага запісу <ph name="ACCOUNT" /></translation>
 <translation id="4840250757394056958">Праглядзець гісторыю Chrome</translation>
 <translation id="484462545196658690">Аўтаматычна</translation>
 <translation id="4844937814014739139">Прагортванне і змяненне маштабу абагуленых укладак</translation>
@@ -2595,7 +2596,6 @@
 <translation id="512756860033933700">Блакіроўка клавіятуры дазволена</translation>
 <translation id="5127934926273826089">Кветкі</translation>
 <translation id="5129534298163637277">Дыялогавае акно пацвярджэння</translation>
-<translation id="5129662217315786329">Польская</translation>
 <translation id="5135404736266831032">Кіраваць адрасамі...</translation>
 <translation id="5136841603454277753">Увядзіце правільны код</translation>
 <translation id="5137761395480718572">Гэта праграма запытвае дазвол усталяваць уліковыя даныя Wi-Fi. Пасля наладжвання ваша прылада (<ph name="DEVICE_TYPE" />) зможа аўтаматычна падключацца да сетак Wi-Fi. Каб выдаліць гэтыя ўліковыя даныя, неабходна выдаліць праграму. <ph name="LEARN_MORE" /></translation>
@@ -2754,6 +2754,7 @@
 <translation id="5392506727170022660">Паўглянцавы метал</translation>
 <translation id="5394069166371280357">Сямейныя тэлеперадачы</translation>
 <translation id="5396631636586785122">Сшыванне па краі справа</translation>
+<translation id="5396837962335265787"><ph name="ATTRIBUTE_NAME" />, было раней: <ph name="OLD_ATTRIBUTE_ATTRIBUTE" /></translation>
 <translation id="5397794290049113714">Вы</translation>
 <translation id="5398461103557553443">Каб у наступны раз гэты нумар IBAN уводзіўся аўтаматычна, захавайце яго ў Google Кашальку</translation>
 <translation id="5398772614898833570">Рэклама заблакіравана</translation>
@@ -3488,6 +3489,7 @@
 <translation id="6547208576736763147">Дзве дзіркі злева</translation>
 <translation id="6549443526281184652">Касцюмы</translation>
 <translation id="6550245281449521513">Блакіроўка мышы не дазволена</translation>
+<translation id="6551737294564628267"><ph name="ATTRIBUTE_NAME" />, новае</translation>
 <translation id="6552566579578780089">Даныя для плацяжоў</translation>
 <translation id="6554732001434021288">Апошняе наведванне: <ph name="NUM_DAYS" /> сут таму</translation>
 <translation id="6556866813142980365">Узнавіць</translation>
@@ -3539,7 +3541,6 @@
 <translation id="6649510485211003056">195 x 270 мм</translation>
 <translation id="6651270836885078973">Прыладай кіруе:</translation>
 <translation id="6652101503459149953">Выкарыстоўваць Windows Hello</translation>
-<translation id="6654224358955673568">Дадаць фармальнасці</translation>
 <translation id="6654244995031366386">Тэкстураванае шкло</translation>
 <translation id="6655085656059574817">Прывязка ўліковага запісу паскарае працэс аплаты праз сэрвіс "<ph name="BNPL_ISSUER_NAME" />", але вы можаце выдаліць сувязь для свайго ўліковага запісу, перайшоўшы на сайт <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" />.</translation>
 <translation id="6656935431494847393">Уключае такую інфармацыю, як браніраванне авіябілетаў і звесткі пра транспартныя сродкі</translation>
@@ -3711,7 +3712,6 @@
 <translation id="6926216138694948720">Бодзі-арт</translation>
 <translation id="692638818576287323">Камерцыйны транспарт</translation>
 <translation id="6927878187051807444">файлы з камеры і здымкі экрана</translation>
-<translation id="6929949393612835405">Закрыць і вярнуцца ў праграму "<ph name="OPENER_TITLE" />"</translation>
 <translation id="6930607614725241390">Пошук на бакавой панэлі</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Стандартная пошукавая сістэма дае магчымасць шукаць інфармацыю ў інтэрнэце і карыстацца рознымі функцыямі Chrome<ph name="END_BOLD" /> (напрыклад, ажыццяўляць запыты з адраснага радка або з выкарыстаннем відарысаў на вэб-старонках). Пэўныя функцыі могуць быць недаступнымі, калі выбраная вамі пошукавая сістэма іх не падтрымлівае.</translation>
 <translation id="6934672428414710184">Гэта імя – з вашага Уліковага запісу Google</translation>
@@ -4746,6 +4746,7 @@
 <translation id="8544217240017914508">Google Chrome спрабуе замяніць налады запаўнення спосабаў аплаты.</translation>
 <translation id="8544303911974837265">Поліэстр</translation>
 <translation id="854548366864113872">Дарагі варыянт</translation>
+<translation id="854583198371106098"><ph name="ATTRIBUTE_VALUE" />  <ph name="BEGIN_NEW" />Новае<ph name="END_NEW" /></translation>
 <translation id="8546254312340305428">Укажыце, па якой прычыне вы хочаце запампаваць файл (абавязкова)</translation>
 <translation id="8546350655047701518">Экспартаваць журналы ў фармаце JSON</translation>
 <translation id="8546667245446052521">Папера архіўнай якасці</translation>

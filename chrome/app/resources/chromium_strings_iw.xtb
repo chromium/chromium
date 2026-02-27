@@ -586,6 +586,9 @@ Chromium לא יכול לשחזר את ההגדרות שלך.</translation>
 <translation id="7384121030444253939">‏התוסף הזה כבר לא נתמך. ההמלצה של Chromium היא להסיר אותו.</translation>
 <translation id="7413153308467572558">‏אפשר להמשיך מהמקום שבו הפסקת: Chromium משחזר את הכרטיסיות שלך בכל הפעלה מחדש. כדי להשבית את האפשרות הזו, צריך לעבור אל</translation>
 <translation id="7427879960656355200">‏ייבוא סיסמאות אל Chromium</translation>
+<translation id="744815265653811511">‏1. לוחצים על <ph name="BUTTON_LABEL" /> למטה
+2. לוחצים על <ph name="BUTTON_2" /> בהגדרות של Windows
+3. לוחצים על <ph name="BUTTON_3" /> בהתראה של Windows כדי להצמיד את Chromium לסרגל האפליקציות לגישה מהירה</translation>
 <translation id="7449453770951226939">‏<ph name="PAGE_TITLE" /> - Chromium בגרסת פיתוח</translation>
 <translation id="7450541714075000668">הטקסט הועתק</translation>
 <translation id="7451052299415159299">‏Chromium זקוק להרשאת גישה למצלמה בשביל האתר הזה</translation>
@@ -601,6 +604,7 @@ Chromium לא יכול לשחזר את ההגדרות שלך.</translation>
 <translation id="761356813943268536">‏Chromium משתמש במצלמה ובמיקרופון שלך.</translation>
 <translation id="7617377681829253106">‏Chromium השתפר</translation>
 <translation id="7622753900276619808">‏עכשיו יש לך יותר תכונות זמינות ב-Chromium</translation>
+<translation id="7624307931717240213">אנחנו משתמשים במידע כדי לשפר את השירות הזה. אפשר לקרוא את מדיניות הפרטיות והתנאים וההגבלות.</translation>
 <translation id="7649070708921625228">עזרה</translation>
 <translation id="7656340475565475526">‏רוצה ש-Chromium יחפש בשבילך?</translation>
 <translation id="7658239707568436148">ביטול</translation>

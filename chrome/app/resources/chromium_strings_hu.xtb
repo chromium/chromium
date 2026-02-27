@@ -586,6 +586,9 @@ A Chromium nem tudja visszaállítani a beállításait.</translation>
 <translation id="7384121030444253939">Ez a bővítmény már nem támogatott. A Chromium az eltávolítását javasolja.</translation>
 <translation id="7413153308467572558">Ott folytathatja, ahol abbahagyta: a Chromium minden újraindításkor visszaállítja a lapokat. A kikapcsoláshoz lépjen ide:</translation>
 <translation id="7427879960656355200">Jelszavak importálása a Chromiumba</translation>
+<translation id="744815265653811511">1. Kattintson az alábbi <ph name="BUTTON_LABEL" /> gombra.
+2. Kattintson a Windows beállításaiban megtalálható <ph name="BUTTON_2" /> elemre.
+3. Kattintson a Windows értesítésében megtalálható <ph name="BUTTON_3" /> lehetőségre, hogy kitűzhesse a Chromiumot a tálcára a gyors hozzáférés érdekében.</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Chromium Dev</translation>
 <translation id="7450541714075000668">Szöveg vágólapra másolva</translation>
 <translation id="7451052299415159299">A Chromiumnak engedélyre van szüksége ahhoz, hogy hozzáférjen a kamerához ennél a webhelynél</translation>
@@ -601,6 +604,7 @@ A Chromium nem tudja visszaállítani a beállításait.</translation>
 <translation id="761356813943268536">A Chromium használja a kamerát és a mikrofont.</translation>
 <translation id="7617377681829253106">A Chromium még jobb lett</translation>
 <translation id="7622753900276619808">Mostantól több funkció áll rendelkezésre a Chromiumban</translation>
+<translation id="7624307931717240213">Ezeket az információkat a szolgáltatás továbbfejlesztésére használjuk fel. Lásd: Adatvédelmi irányelvek és Általános Szerződési Feltételek.</translation>
 <translation id="7649070708921625228">Súgó</translation>
 <translation id="7656340475565475526">A Chromium böngészhet Ön helyett</translation>
 <translation id="7658239707568436148">Mégse</translation>

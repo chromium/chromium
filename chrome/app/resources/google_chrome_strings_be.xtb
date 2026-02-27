@@ -694,6 +694,9 @@
 <translation id="8041795619940733262">Спытацца ў Google<ph name="LINE_BREAK" />пра гэту ўкладку</translation>
 <translation id="80471789339884597">Дзякуй, што ўсталявалі <ph name="BUNDLE_NAME" />. Каб завяршыць усталяванне, перазапусціце ўсе свае браўзеры.</translation>
 <translation id="8064015586118426197">Chrome OS Flex</translation>
+<translation id="8064965390968184078">1. Націсніце кнопку <ph name="BUTTON_LABEL" /> ніжэй.
+2. У наладах Windows націсніце кнопку <ph name="BUTTON_2" />.
+3. У апавяшчэнні Windows націсніце кнопку <ph name="BUTTON_3" />, каб замацаваць Chrome на панэлі задач для хуткага доступу.</translation>
 <translation id="8077579734294125741">Іншыя профілі Chrome</translation>
 <translation id="8086881907087796310">Усталяваць праграму не ўдалося, бо апаратнае забеспячэнне камп’ютара не адпавядае неабходным мінімальным патрабаванням.</translation>
 <translation id="8113883687556086139">Каб выкарыстоўваць і захоўваць даныя Chrome ва Уліковым запісе <ph name="ACCOUNT_EMAIL" />, пацвердзіце сваю асобу</translation>
@@ -772,6 +775,7 @@
 <translation id="8914504000324227558">Перазапусціць Chrome</translation>
 <translation id="8922193594870374009">Каб адпраўляць нумары з <ph name="ORIGIN" /> на свой тэлефон Android, увайдзіце ў Chrome на абедзвюх прыладах.</translation>
 <translation id="8922998289262614701">Выдаліць даныя гэтай праграмы з Chrome</translation>
+<translation id="8925636929359899517">Мы выкарыстоўваем інфармацыю, каб палепшыць гэты сэрвіс. Азнаёмцеся з <ph name="BEGIN_LINK1" />Палітыкай прыватнасці<ph name="END_LINK1" /> і <ph name="BEGIN_LINK2" />Умовамі выкарыстання<ph name="END_LINK2" />.</translation>
 <translation id="8936233353620149764">Уключыць/выключыць Gemini ў Chrome</translation>
 <translation id="8948460679427074738">Для гэтага пашырэння не апублікаваны меры забеспячэння прыватнасці, напрыклад звесткі пра тое, як яно збірае і выкарыстоўвае даныя. Chrome рэкамендуе выдаліць яго.</translation>
 <translation id="8958307504142971576">Цяпер для вас даступна больш функцый у Chrome</translation>

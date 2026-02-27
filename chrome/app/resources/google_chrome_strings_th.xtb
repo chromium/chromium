@@ -686,6 +686,9 @@
 <translation id="8041795619940733262">ถาม Google<ph name="LINE_BREAK" />เกี่ยวกับแท็บนี้</translation>
 <translation id="80471789339884597">ขอขอบคุณที่ติดตั้ง คุณต้องรีสตาร์ทเบราว์เซอร์ทั้งหมดก่อนใช้ <ph name="BUNDLE_NAME" /></translation>
 <translation id="8064015586118426197">Chrome OS Flex</translation>
+<translation id="8064965390968184078">1. คลิก <ph name="BUTTON_LABEL" /> ด้านล่าง
+2. คลิก <ph name="BUTTON_2" /> ในการตั้งค่า Windows
+3. คลิก <ph name="BUTTON_3" /> ในการแจ้งเตือนของ Windows เพื่อปักหมุด Chrome ไว้ที่แถบงานเพื่อให้เข้าถึงได้รวดเร็ว</translation>
 <translation id="8077579734294125741">โปรไฟล์ Chrome อื่นๆ</translation>
 <translation id="8086881907087796310">การติดตั้งไม่สำเร็จเนื่องจากคอมพิวเตอร์ของคุณไม่เป็นไปตามข้อกำหนดขั้นต่ำสำหรับฮาร์ดแวร์</translation>
 <translation id="8113883687556086139">โปรดยืนยันว่าเป็นคุณเพื่อใช้และบันทึกข้อมูล Chrome ในบัญชี <ph name="ACCOUNT_EMAIL" /></translation>

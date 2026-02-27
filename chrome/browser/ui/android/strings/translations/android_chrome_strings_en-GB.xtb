@@ -281,6 +281,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="2205701497928406883"><ph name="TAB_TITLE" />, pinned sharing tab</translation>
 <translation id="22091350895006575">Add username</translation>
 <translation id="221494669172414749">Opening Chrome without a profile lock will remove your saved passwords and payment methods from the car. Using a profile lock keeps this data secure.</translation>
+<translation id="2226826835915474236">Inactive shortcuts</translation>
 <translation id="2227179592712503583">Remove suggestion</translation>
 <translation id="2227444325776770048">Continue as <ph name="USER_FULL_NAME" /></translation>
 <translation id="2230777942707397948">Empty window</translation>
@@ -1655,6 +1656,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="7740287852186792672">Search results</translation>
 <translation id="774403695779169686"><ph name="TAB_TITLE" />, selected sharing Incognito tab</translation>
 <translation id="774876555279732384">Autofill services are also managed in <ph name="BEGIN_LINK" />Android settings<ph name="END_LINK" />.</translation>
+<translation id="7758884017823246335">Add Site Search</translation>
 <translation id="7759809451544302770">Optional</translation>
 <translation id="7762668264895820836">SD Card <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">Add address</translation>
@@ -1886,6 +1888,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="8634050254805484913">Hidden on narrow screens</translation>
 <translation id="8635399646025169806">Keep tab group?</translation>
 <translation id="8636825310635137004">To get your tabs from your other devices, turn on sync.</translation>
+<translation id="8639963783467694461">Auto-fill settings</translation>
 <translation id="8662474268934425487">Sign in to <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8664979001105139458">File name already exists</translation>
 <translation id="8676276370198826499">Sign up to <ph name="SITE_ETLD_PLUS_ONE" /> with <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -1934,6 +1937,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="8865415417596392024">Chrome data in your account</translation>
 <translation id="8872506776304248286">Open in app</translation>
 <translation id="8890668505403261809">Search your Incognito tabs</translation>
+<translation id="8892234476517513962">You're already signed in</translation>
 <translation id="8894890673032951011"><ph name="TAB_TITLE" />, selected recording Incognito tab</translation>
 <translation id="8898822736010347272">Sends URLs of some pages that you visit, limited system information and some page content to Google, to help discover new threats and protect everyone on the web.</translation>
 <translation id="8903921497873541725">Zoom in</translation>

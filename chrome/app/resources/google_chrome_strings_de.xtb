@@ -686,6 +686,9 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, gespeicherte Passwörter und den 
 <translation id="8041795619940733262">Stelle Google Fragen<ph name="LINE_BREAK" />zu diesem Tab</translation>
 <translation id="80471789339884597">Vielen Dank für die Installation. Du musst alle Browser neu starten, bevor du <ph name="BUNDLE_NAME" /> verwenden kannst.</translation>
 <translation id="8064015586118426197">Chrome OS Flex</translation>
+<translation id="8064965390968184078">1. Klicke unten auf <ph name="BUTTON_LABEL" />
+2. Klicke in den Windows-Einstellungen auf <ph name="BUTTON_2" />
+3. Klicke in der Windows-Benachrichtigung auf <ph name="BUTTON_3" />, um Chrome für den Schnellzugriff an die Taskleiste anzupinnen</translation>
 <translation id="8077579734294125741">Andere Chrome-Profile</translation>
 <translation id="8086881907087796310">Die Installation ist fehlgeschlagen, da dein Computer die Mindestanforderungen an die Hardware nicht erfüllt.</translation>
 <translation id="8113883687556086139">Bestätige deine Identität, um Chrome-Daten in deinem Konto <ph name="ACCOUNT_EMAIL" /> zu verwenden und zu speichern</translation>
@@ -764,6 +767,7 @@ Du kannst erst neue Lesezeichen in deinem Konto speichern, wenn du einige gelös
 <translation id="8914504000324227558">Chrome neu starten</translation>
 <translation id="8922193594870374009">Wenn du eine Nummer von <ph name="ORIGIN" /> an dein Android-Smartphone senden möchtest, musst du dich auf beiden Geräten in Chrome anmelden.</translation>
 <translation id="8922998289262614701">Daten dieser App aus Chrome entfernen</translation>
+<translation id="8925636929359899517">Wir verwenden Informationen, um diesen Dienst zu verbessern. Weitere Informationen findest du in der <ph name="BEGIN_LINK1" />Datenschutzerklärung<ph name="END_LINK1" /> und den <ph name="BEGIN_LINK2" />Nutzungsbedingungen<ph name="END_LINK2" />.</translation>
 <translation id="8936233353620149764">Gemini in Chrome aktivieren / deaktivieren</translation>
 <translation id="8948460679427074738">Für diese Erweiterung wurden keine Informationen zum Umgang mit dem Datenschutz veröffentlicht, wie z. B. Informationen darüber, wie Daten erhoben und verwendet werden. Chrome empfiehlt daher, sie zu entfernen.</translation>
 <translation id="8958307504142971576">Du hast jetzt Zugriff auf weitere Funktionen in Chrome</translation>

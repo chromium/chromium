@@ -731,6 +731,7 @@
 <translation id="2166049586286450108">Повний адміністративний доступ</translation>
 <translation id="2166378884831602661">Цей сайт не може забезпечити захищене з’єднання</translation>
 <translation id="2168151236314517198">Адміністратор заборонив друкувати цей контент</translation>
+<translation id="2171244127100824330">У сервісі <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> для облікового запису <ph name="ACCOUNT" /></translation>
 <translation id="2172089022819052306">Ремонт і обслуговування транспортних засобів</translation>
 <translation id="2173302385160625112">Перевірте інтернет-з’єднання</translation>
 <translation id="2174875517416416684">Не вдалося здійснити трансакцію. З вашого рахунку не стягнено кошти.</translation>
@@ -909,7 +910,6 @@
 <translation id="2436976580469434549">Текстильне мистецтво</translation>
 <translation id="243815215670139125">Не вдалося зберегти цю картку у вашому обліковому записі Google. Натомість її збережено в Chrome на цьому пристрої.</translation>
 <translation id="2438874542388153331">Пробити чотири отвори праворуч</translation>
-<translation id="2440855519769445271">Щоб приховати варіанти оплати пізніше, перейдіть у <ph name="BEGIN_LINK" />налаштування платежів<ph name="END_LINK" /></translation>
 <translation id="2441854154602066476">Наявні способи оплати, дані яких заповнюються дотиком. Клавіатуру сховано.</translation>
 <translation id="2442865686365739754">Chrome <ph name="BEGIN_EMPHASIS" />не зберігатиме<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
@@ -946,6 +946,7 @@
 <translation id="248064299258688299">Повідомлення від розширення <ph name="EXTENSION_NAME" />:</translation>
 <translation id="2482878487686419369">Сповіщення</translation>
 <translation id="248348093745724435">Правила пристрою</translation>
+<translation id="248395913932153421">День</translation>
 <translation id="2485243023686553468">Смартфони</translation>
 <translation id="2491120439723279231">Сертифікат сервера містить помилки.</translation>
 <translation id="2491414235131909199">Розширення заблокувало цю сторінку</translation>
@@ -2285,7 +2286,6 @@
 <translation id="4648262692072505866">Хеш має бути у форматі SHA-256.</translation>
 <translation id="4652266463001779298">Заборонено</translation>
 <translation id="4652440160515225514">Ваша організація заблокувала цей сайт, оскільки він порушує правила.</translation>
-<translation id="4654457557264366314">Платіжні плани доступні за певних умов.</translation>
 <translation id="4658638640878098064">Скріпити вгорі ліворуч</translation>
 <translation id="4658801711339831733">Відсканований документ збережено на Google Диску</translation>
 <translation id="4660592918803576381">Відкрити на Диску</translation>
@@ -2406,6 +2406,7 @@
 <translation id="4832388034239846146">Щоб ділитися групами вкладок, оновіть Chrome</translation>
 <translation id="483241715238664915">Увімкнути попередження</translation>
 <translation id="4832961164064927107">Барбекю й гриль</translation>
+<translation id="4839984801146463230">Збережіть свою інформацію, щоб швидше виконувати завдання, наприклад заповнювати форми в продуктах Google. Ви можете <ph name="BEGIN_LINK" />керувати цією інформацією<ph name="END_LINK" /> в сервісі <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> для облікового запису <ph name="ACCOUNT" />.</translation>
 <translation id="4840250757394056958">Переглянути історію Chrome</translation>
 <translation id="484462545196658690">Автоматично</translation>
 <translation id="4844937814014739139">Зміна масштабу й прокручування спільних вкладок</translation>
@@ -2595,7 +2596,6 @@
 <translation id="512756860033933700">Блокування клавіатури дозволено</translation>
 <translation id="5127934926273826089">Квіти</translation>
 <translation id="5129534298163637277">Вікно підтвердження</translation>
-<translation id="5129662217315786329">Польська</translation>
 <translation id="5135404736266831032">Керувати адресами…</translation>
 <translation id="5136841603454277753">Введіть правильний код</translation>
 <translation id="5137761395480718572">Цей додаток запитує дозвіл установити облікові дані Wi-Fi. Після налаштування ваш пристрій <ph name="DEVICE_TYPE" /> автоматично підключатиметься до відповідних мереж Wi-Fi. Щоб вилучити ці облікові дані, видаліть додаток. <ph name="LEARN_MORE" /></translation>
@@ -2755,6 +2755,7 @@
 <translation id="5392506727170022660">Метал (напівглянцевий)</translation>
 <translation id="5394069166371280357">Сімейні телевізійні шоу</translation>
 <translation id="5396631636586785122">Зшити вздовж правого краю</translation>
+<translation id="5396837962335265787"><ph name="ATTRIBUTE_NAME" />, було: <ph name="OLD_ATTRIBUTE_ATTRIBUTE" /></translation>
 <translation id="5397794290049113714">Ви</translation>
 <translation id="5398461103557553443">Щоб наступного разу автоматично заповнити цей номер IBAN, збережіть його в Google Гаманці</translation>
 <translation id="5398772614898833570">Оголошення заблоковано</translation>
@@ -3489,6 +3490,7 @@
 <translation id="6547208576736763147">Пробити два отвори ліворуч</translation>
 <translation id="6549443526281184652">Костюми</translation>
 <translation id="6550245281449521513">Блокування миші заборонено</translation>
+<translation id="6551737294564628267"><ph name="ATTRIBUTE_NAME" />, нове</translation>
 <translation id="6552566579578780089">Способи оплати</translation>
 <translation id="6554732001434021288">Останнє відвідування: <ph name="NUM_DAYS" /> дн. тому</translation>
 <translation id="6556866813142980365">Повторити</translation>
@@ -3540,7 +3542,6 @@
 <translation id="6649510485211003056">195 x 270 мм</translation>
 <translation id="6651270836885078973">Керує:</translation>
 <translation id="6652101503459149953">Використовувати Windows Hello</translation>
-<translation id="6654224358955673568">Формальний стиль</translation>
 <translation id="6654244995031366386">Скло (текстуроване)</translation>
 <translation id="6655085656059574817">Зі зв’язаним обліковим записом ви зможете швидше оплачувати покупки через <ph name="BNPL_ISSUER_NAME" />. Щоб від’єднати його, перейдіть на сторінку <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" />.</translation>
 <translation id="6656935431494847393">Містить інформацію про бронювання авіаквитків і транспортні засоби</translation>
@@ -3712,7 +3713,6 @@
 <translation id="6926216138694948720">Боді-арт</translation>
 <translation id="692638818576287323">Комерційні транспортні засоби</translation>
 <translation id="6927878187051807444">файли з камери й знімки екрана</translation>
-<translation id="6929949393612835405">Закрити й повернутися до розділу "<ph name="OPENER_TITLE" />"</translation>
 <translation id="6930607614725241390">Пошук на бічній панелі</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Пошукова система за умовчанням дає змогу здійснювати пошук в Інтернеті й підтримує такі функції Chrome,<ph name="END_BOLD" /> як пошук з адресного рядка й за зображеннями на веб-сторінках. Функція може бути недоступна, якщо ваша пошукова система її не підтримує.</translation>
 <translation id="6934672428414710184">Це ім’я з вашого облікового запису Google</translation>
@@ -4747,6 +4747,7 @@
 <translation id="8544217240017914508">Google Chrome намагається змінити параметри заповнення способів оплати.</translation>
 <translation id="8544303911974837265">Поліестер</translation>
 <translation id="854548366864113872">Варіант із високою ціною</translation>
+<translation id="854583198371106098"><ph name="ATTRIBUTE_VALUE" />  <ph name="BEGIN_NEW" />Нове<ph name="END_NEW" /></translation>
 <translation id="8546254312340305428">Укажіть причину завантаження (обов’язково)</translation>
 <translation id="8546350655047701518">Експортувати журнали у формат JSON</translation>
 <translation id="8546667245446052521">Папір (архівний)</translation>

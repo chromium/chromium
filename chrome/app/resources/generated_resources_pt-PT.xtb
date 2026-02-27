@@ -5552,6 +5552,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="4732799736617504962">O microfone ligado só é compatível com o cancelamento de ruído</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (esquerdo)</translation>
 <translation id="4733793249294335256">Local</translation>
+<translation id="4734965478015604180">Horizontal</translation>
 <translation id="473546211690256853">Esta conta é gerida por <ph name="DOMAIN" /></translation>
 <translation id="4735506354605317060">Ponteiro circular</translation>
 <translation id="4735793370946506039">Saiba mais sobre a Navegação segura melhorada.</translation>
@@ -5819,6 +5820,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="4901154724271753917">Expanda os fechados recentemente</translation>
 <translation id="4901309472892185668">Selecione o estado da experiência <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="49027928311173603">A política transferida do servidor é inválida: <ph name="VALIDATION_ERROR" />.</translation>
+<translation id="490375751687810070">Vertical</translation>
 <translation id="4906490889887219338">Configure ou efetue a gestão de partilhas de ficheiros na rede. <ph name="LINK_BEGIN" />Saber mais<ph name="LINK_END" /></translation>
 <translation id="4906679076183257864">Repor Predefinição</translation>
 <translation id="4907129260985716018">Escolha quando esta extensão pode ler e alterar os seus dados de sites</translation>
@@ -8492,6 +8494,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="678520006562636090">Experimente o Google Lens no seu <ph name="DEVICE_TYPE" /></translation>
 <translation id="6785594991951195537">Use <ph name="PASSWORD_DOMAIN" /></translation>
 <translation id="6785739405821760313">A ver os espaços de trabalho guardados. Prima Tab para navegar.</translation>
+<translation id="6785779729084003225">Use <ph name="FOCUS_TOGGLE_HOTKEY" /> para abrir o Gemini no Chrome</translation>
 <translation id="6785915470941880363">Deslocamento invertido <ph name="LINK_BEGIN" />Saber mais<ph name="LINK_END" /></translation>
 <translation id="67862343314499040">Violeta</translation>
 <translation id="6786480815699355166">Apenas os idiomas das Legendas instantâneas suportados podem ser traduzidos</translation>

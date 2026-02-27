@@ -5551,6 +5551,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="4732799736617504962">සම්බන්ධිත මයික්‍රොෆෝනයට සහය විය හැක්කේ අනවශ්‍ය ශබ්ද ඉවත් කිරීම සඳහා පමණි</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (වම)</translation>
 <translation id="4733793249294335256">ස්ථානය</translation>
+<translation id="4734965478015604180">තිරස්</translation>
 <translation id="473546211690256853">මෙම ගිනුම පාලනය වන්නේ <ph name="DOMAIN" /> නි</translation>
 <translation id="4735506354605317060">රවුම් දර්ශකය</translation>
 <translation id="4735793370946506039">ඉහළ නැංවූ සුරක්ෂිත පිරික්සුම පිළිබඳව තව දැන ගන්න.</translation>
@@ -5818,6 +5819,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="4901154724271753917">මෑතක දී වසා දැමූ ඒවා පුළුල් කරන්න</translation>
 <translation id="4901309472892185668"><ph name="EXPERIMENT_NAME" /> අත්හදා බැලීම සඳහා අත්හදා බැලීමේ තත්ත්වය තෝරන්න.</translation>
 <translation id="49027928311173603">සේවාදායකයෙන් බාගත් ප්‍රතිපත්තිය අවලංගුයි: <ph name="VALIDATION_ERROR" />.</translation>
+<translation id="490375751687810070">සිරස්</translation>
 <translation id="4906490889887219338">ජාල ගොනු බෙදා ගැනීම් සකසන්න කළමනා කරන්න. <ph name="LINK_BEGIN" />තවත් දැන ගන්න<ph name="LINK_END" /></translation>
 <translation id="4906679076183257864">පෙරනිමියට නැවත සකසන්න</translation>
 <translation id="4907129260985716018">මෙම දිගුවට ඔබේ අඩවි දත්ත කියවීමට සහ වෙනස් කිරීමට හැකි විට අවස්ථාව තෝරන්න</translation>
@@ -8490,6 +8492,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="678520006562636090">ඔබේ <ph name="DEVICE_TYPE" /> මත Google Lens උත්සාහ කරන්න</translation>
 <translation id="6785594991951195537">ඔබේ <ph name="PASSWORD_DOMAIN" /> භාවිත කරන්න</translation>
 <translation id="6785739405821760313">සුරකින ලද මේස බැලීම. සංචාලනය කිරීමට පටිත්ත ඔබන්න.</translation>
+<translation id="6785779729084003225">Chrome හි Gemini විවෘත කිරීමට <ph name="FOCUS_TOGGLE_HOTKEY" /> භාවිතා කරන්න</translation>
 <translation id="6785915470941880363">ප්‍රතිවර්තන අනුචලනය <ph name="LINK_BEGIN" />තවත් දැන ගන්න<ph name="LINK_END" /></translation>
 <translation id="67862343314499040">ජම්බූල</translation>
 <translation id="6786480815699355166">පරිවර්තනය කළ හැක්කේ සහාය දක්වන සජීවී සිරස්තල භාෂා පමණි</translation>

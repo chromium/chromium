@@ -687,6 +687,9 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="8041795619940733262">Запитати Google<ph name="LINE_BREAK" />про цю вкладку</translation>
 <translation id="80471789339884597">Дякуємо за встановлення. Щоб почати використовувати пакет <ph name="BUNDLE_NAME" />, потрібно перезапустити всі веб-переглядачі.</translation>
 <translation id="8064015586118426197">ОС Chrome Flex</translation>
+<translation id="8064965390968184078">1. Натисніть кнопку "<ph name="BUTTON_LABEL" />" нижче.
+2. Натисніть "<ph name="BUTTON_2" />" у налаштуваннях Windows.
+3. Коли у Windows з’явиться сповіщення, натисніть "<ph name="BUTTON_3" />", щоб закріпити Chrome на панелі завдань для швидкого доступу.</translation>
 <translation id="8077579734294125741">Інші профілі Chrome</translation>
 <translation id="8086881907087796310">Не вдалося встановити, оскільки ваш комп’ютер не відповідає мінімальним вимогам до апаратного забезпечення.</translation>
 <translation id="8113883687556086139">Щоб використовувати й зберігати дані Chrome в обліковому записі <ph name="ACCOUNT_EMAIL" />, підтвердьте свою особу</translation>
@@ -765,6 +768,7 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="8914504000324227558">Перезапустити Chrome</translation>
 <translation id="8922193594870374009">Щоб надіслати номер із сайту <ph name="ORIGIN" /> на телефон Android, увійдіть у Chrome на обох пристроях.</translation>
 <translation id="8922998289262614701">Видалити дані цього додатка з Chrome</translation>
+<translation id="8925636929359899517">Ми використовуємо цю інформацію, щоб покращувати сервіс. Перегляньте <ph name="BEGIN_LINK1" />Політику конфіденційності<ph name="END_LINK1" /> й <ph name="BEGIN_LINK2" />Умови використання<ph name="END_LINK2" />.</translation>
 <translation id="8936233353620149764">Увімкнути або вимкнути Gemini у Chrome</translation>
 <translation id="8948460679427074738">Немає відомостей про конфіденційність цього розширення, зокрема про те, як воно збирає і використовує дані. Chrome радить вилучити його.</translation>
 <translation id="8958307504142971576">Тепер у Chrome доступно більше функцій</translation>

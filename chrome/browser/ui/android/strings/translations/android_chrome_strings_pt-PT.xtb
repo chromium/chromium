@@ -281,6 +281,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="2205701497928406883"><ph name="TAB_TITLE" />, separador a partilhar fixado</translation>
 <translation id="22091350895006575">Adicionar nome de utilizador</translation>
 <translation id="221494669172414749">Abrir o Chrome sem um bloqueio do perfil remove as palavras-passe guardadas e os métodos de pagamento do carro. A utilização de um bloqueio do perfil mantém estes dados seguros.</translation>
+<translation id="2226826835915474236">Atalhos inativos</translation>
 <translation id="2227179592712503583">Remover sugestão</translation>
 <translation id="2227444325776770048">Continuar como <ph name="USER_FULL_NAME" /></translation>
 <translation id="2230777942707397948">Janela vazia</translation>
@@ -1655,6 +1656,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />elimine os dados do Chrom
 <translation id="7740287852186792672">Resultados de pesquisa</translation>
 <translation id="774403695779169686"><ph name="TAB_TITLE" />, separador de navegação anónima a partilhar selecionado</translation>
 <translation id="774876555279732384">Os serviços de preenchimento automático também são geridos nas <ph name="BEGIN_LINK" />Definições do Android<ph name="END_LINK" />.</translation>
+<translation id="7758884017823246335">Adicione a pesquisa no site</translation>
 <translation id="7759809451544302770">Opcional</translation>
 <translation id="7762668264895820836">Cartão SD <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">Adicionar endereço</translation>
@@ -1886,6 +1888,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />elimine os dados do Chrom
 <translation id="8634050254805484913">Ocultada em ecrãs estreitos</translation>
 <translation id="8635399646025169806">Manter o grupo de separadores?</translation>
 <translation id="8636825310635137004">Para obter os separadores dos seus outros dispositivos, ative a sincronização.</translation>
+<translation id="8639963783467694461">Definições de Preenchimento automático</translation>
 <translation id="8662474268934425487">Inicie sessão em <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8664979001105139458">O nome do ficheiro já existe</translation>
 <translation id="8676276370198826499">Inscreva-se no <ph name="SITE_ETLD_PLUS_ONE" /> com o fornecedor <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -1934,6 +1937,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />elimine os dados do Chrom
 <translation id="8865415417596392024">Dados do Chrome na sua conta</translation>
 <translation id="8872506776304248286">Abrir na app</translation>
 <translation id="8890668505403261809">Pesquise nos seus separadores de navegação anónima</translation>
+<translation id="8892234476517513962">Já tem sessão iniciada</translation>
 <translation id="8894890673032951011"><ph name="TAB_TITLE" />, separador de navegação anónima a gravar selecionado</translation>
 <translation id="8898822736010347272">Envia URLs de algumas páginas que visita, informações limitadas do sistema e algum conteúdo das páginas para a Google para ajudar a detetar novas ameaças e a proteger todos os utilizadores na Web.</translation>
 <translation id="8903921497873541725">Ampliar</translation>

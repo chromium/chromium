@@ -588,6 +588,9 @@
 <translation id="7384121030444253939">‏لم تعُد هذه الإضافة متاحة. ينصح متصفّح Chromium بإزالتها.</translation>
 <translation id="7413153308467572558">‏المتابعة من حيث توقفت: يمكن لمتصفّح Chromium استعادة علامات التبويب كلما أعدت تشغيله. لإيقاف هذه الميزة، يُرجى الانتقال إلى</translation>
 <translation id="7427879960656355200">‏استيراد كلمات المرور إلى Chromium</translation>
+<translation id="744815265653811511">‏‫1. انقر على <ph name="BUTTON_LABEL" /> أدناه
+‫2. انقر على <ph name="BUTTON_2" /> في إعدادات Windows
+‫3. انقر على <ph name="BUTTON_3" /> في إشعار Windows لتثبيت Chromium في شريط التطبيقات والوصول إليه بسرعة</translation>
 <translation id="7449453770951226939">‏<ph name="PAGE_TITLE" /> - إصدار قناة مطوري البرامج من Chromium</translation>
 <translation id="7450541714075000668">تم نسخ النص.</translation>
 <translation id="7451052299415159299">‏يحتاج Chromium إلى إذن للوصول إلى الكاميرا من أجل الموقع الإلكتروني هذا.</translation>
@@ -603,6 +606,7 @@
 <translation id="761356813943268536">‏يستخدم Chromium الكاميرا والميكروفون.</translation>
 <translation id="7617377681829253106">‏Chromium أصبح أفضل</translation>
 <translation id="7622753900276619808">‏تتوفّر الآن ميزات إضافية في Chromium</translation>
+<translation id="7624307931717240213">نستخدم المعلومات لتحسين هذه الخدمة. يُرجى مراجعة "سياسة الخصوصية" و"بنود الخدمة".</translation>
 <translation id="7649070708921625228">مساعدة</translation>
 <translation id="7656340475565475526">‏ما رأيك بالاستفادة من قدرات Chromium في التصفّح؟</translation>
 <translation id="7658239707568436148">إلغاء</translation>

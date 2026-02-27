@@ -687,6 +687,9 @@
 <translation id="8041795619940733262">Spør Google<ph name="LINE_BREAK" />om denne fanen</translation>
 <translation id="80471789339884597">Installasjonen er fullført. Start alle nettlesere på nytt før du tar i bruk <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
+<translation id="8064965390968184078">1. Klikk på <ph name="BUTTON_LABEL" /> nedenfor
+2. Klikk på <ph name="BUTTON_2" /> i Windows-innstillingene
+3. Klikk på <ph name="BUTTON_3" /> i Windows-varselet for å feste Chrome til oppgavelinjen for rask tilgang</translation>
 <translation id="8077579734294125741">Andre Chrome-profiler</translation>
 <translation id="8086881907087796310">Installasjonen mislyktes fordi datamaskinen ikke oppfyller minimumskravene til maskinvare.</translation>
 <translation id="8113883687556086139">Bekreft at det er deg, for å bruke og lagre Chrome-data i kontoen din, <ph name="ACCOUNT_EMAIL" /></translation>
@@ -765,6 +768,7 @@ Du kan ikke lagre nye bokmerker i kontoen din før du sletter noen. Hvis du logg
 <translation id="8914504000324227558">Start Chrome på nytt</translation>
 <translation id="8922193594870374009">For å sende numre fra <ph name="ORIGIN" /> til Android-telefonen din, logg på Chrome på begge enhetene.</translation>
 <translation id="8922998289262614701">Fjern data for disse appene fra Chrome</translation>
+<translation id="8925636929359899517">Vi bruker informasjon til å forbedre denne tjenesten. Se <ph name="BEGIN_LINK1" />personvernreglene<ph name="END_LINK1" /> og <ph name="BEGIN_LINK2" />vilkårene for bruk<ph name="END_LINK2" />.</translation>
 <translation id="8936233353620149764">Slå av/på Gemini i Chrome</translation>
 <translation id="8948460679427074738">Denne utvidelsen har ikke publisert retningslinjer for personvern, for eksempel hvordan den samler inn og bruker data. Chrome anbefaler at du fjerner den.</translation>
 <translation id="8958307504142971576">Nå har du flere funksjoner tilgjengelig i Chrome</translation>

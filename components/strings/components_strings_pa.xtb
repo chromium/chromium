@@ -230,6 +230,7 @@
 <translation id="1358187717814494928">ਸ਼ੀਟ ਬਣਾਓ</translation>
 <translation id="1358223345833465883">Chromium ਵਿੱਚ ਤੁਹਾਡਾ ਖੋਜ ਇੰਜਣ</translation>
 <translation id="1359836962251219822">ਰਸੋਈ ਅਤੇ ਭੋਜਨ ਵਿਵਸਥਾ</translation>
+<translation id="136059610328993645">ਤੁਹਾਡੀ ਜਾਣਕਾਰੀ <ph name="ACCOUNT" /> ਲਈ Google Wallet ਵਿੱਚ ਰੱਖਿਅਤ ਹੋ ਜਾਂਦੀ ਹੈ। ਤੁਸੀਂ ਇਸਦੀ ਵਰਤੋਂ Google ਸੇਵਾਵਾਂ ਵਿੱਚ ਫ਼ਾਰਮਾਂ ਨੂੰ ਤੇਜ਼ੀ ਨਾਲ ਭਰਨ ਲਈ ਕਰ ਸਕਦੇ ਹੋ।</translation>
 <translation id="1360955481084547712">ਨਿੱਜੀ ਤੌਰ 'ਤੇ ਬ੍ਰਾਊਜ਼ ਕਰਨ ਲਈ ਨਵੀਂ ਇਨਕੋਗਨਿਟੋ ਵਿੰਡੋ ਖੋਲ੍ਹੋ</translation>
 <translation id="1361528602584216624">ਸੀਮਾ ਪ੍ਰਤੀ Pix R$ <ph name="TRANSACTION_LIMIT" /></translation>
 <translation id="1363015776076529485">ਭੁਗਤਾਨ ਕਰਨ ਲਈ ਚੋਣ ਕਰਨ ਵਾਸਤੇ ਉਪਲਬਧ ਭੁਗਤਾਨ ਵਿਧੀਆਂ ਦੀ ਸੂਚੀ ਪੂਰੀ ਸਕ੍ਰੀਨ 'ਤੇ ਖੁੱਲ੍ਹੀ ਹੋਈ ਹੈ।</translation>
@@ -252,6 +253,7 @@
 <translation id="1392813880755413602">OpenDocument ਪੇਸ਼ਕਾਰੀ</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> ਨੇ ਕੋਈ ਵੀ  ਡਾਟਾ  ਨਹੀਂ ਭੇਜਿਆ।</translation>
 <translation id="1393071644879491291">ਜਿਸ ਸਾਈਟ 'ਤੇ ਤੁਸੀਂ ਜਾਣ ਦੀ ਕੋਸ਼ਿਸ਼ ਕੀਤੀ, ਉਸ 'ਤੇ ਹਮਲਾਵਰ ਤੁਹਾਨੂੰ ਸਾਫ਼ਟਵੇਅਰ ਸਥਾਪਤ ਕਰਨ ਜਾਂ ਤੁਹਾਡੇ ਪਾਸਵਰਡਾਂ, ਫ਼ੋਨ ਜਾਂ ਕ੍ਰੈਡਿਟ ਕਾਰਡ ਨੰਬਰਾਂ ਵਰਗੀਆਂ ਚੀਜ਼ਾਂ ਨੂੰ ਜ਼ਾਹਰ ਕਰਨ ਲਈ ਭਰਮਾ ਸਕਦੇ ਹਨ। Chrome ਤੁਹਾਨੂੰ ਇਸ ਸਾਈਟ 'ਤੇ ਨਾ ਜਾਣ ਦੀ ਜ਼ੋਰਦਾਰ ਸਿਫ਼ਾਰਸ਼ ਕਰਦਾ ਹੈ। <ph name="BEGIN_LEARN_MORE_LINK" />ਇਸ ਚਿਤਾਵਨੀ ਬਾਰੇ ਹੋਰ ਜਾਣੋ<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="1402151528875251561">ਸਾਈਡ ਪੈਨਲ ਵਿੱਚ ਇਤਿਹਾਸ ਦਿਖਾਓ</translation>
 <translation id="1405567553485452995">ਹਲਕਾ ਹਰਾ</translation>
 <translation id="1406370515365284486">ਤੁਹਾਡੀਆਂ ਭੁਗਤਾਨ ਵਿਧੀਆਂ ਹਾਲੇ ਵੀ ਰੱਖਿਅਤ ਕੀਤੀਆਂ ਜਾਣਗੀਆਂ</translation>
 <translation id="1406500794671479665">ਪ੍ਰਮਾਣਿਤ ਕਰ ਰਿਹਾ ਹੈ...</translation>
@@ -910,7 +912,6 @@
 <translation id="2436976580469434549">ਫਾਈਬਰ ਅਤੇ ਟੈਕਸਟਾਈਲ ਸੰਬੰਧੀ ਕਲਾਵਾਂ</translation>
 <translation id="243815215670139125">ਇਸ ਕਾਰਡ ਨੂੰ ਤੁਹਾਡੇ Google ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ। ਇਸਦੀ ਬਜਾਏ ਇਸਨੂੰ ਇਸ ਡੀਵਾਈਸ 'ਤੇ Chrome ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ ਹੈ।</translation>
 <translation id="2438874542388153331">ਸੱਜੇ ਪਾਸੇ ਚਾਰ ਮੋਰੀਆਂ</translation>
-<translation id="2440855519769445271">ਬਾਅਦ ਵਿੱਚ ਭੁਗਤਾਨ ਕਰਨ ਸੰਬੰਧੀ ਵਿਕਲਪ ਲੁਕਾਉਣ ਲਈ, <ph name="BEGIN_LINK" />ਭੁਗਤਾਨ ਸੈਟਿੰਗਾਂ<ph name="END_LINK" /> 'ਤੇ ਜਾਓ</translation>
 <translation id="2441854154602066476">ਸਪਰਸ਼ ਕਰ ਕੇ ਭਰੇ ਜਾਣ ਵਾਲੀਆਂ ਉਪਲਬਧ ਭੁਗਤਾਨ ਵਿਧੀਆਂ ਦੀ ਸੂਚੀ। ਕੀ-ਬੋਰਡ ਅਦਿੱਖ ਹੈ।</translation>
 <translation id="2442865686365739754">Chrome <ph name="BEGIN_EMPHASIS" />ਅੱਗੇ ਦਿੱਤੀ ਜਾਣਕਾਰੀ ਨੂੰ ਰੱਖਿਅਤ ਨਹੀਂ ਕਰੇਗਾ<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
@@ -947,6 +948,7 @@
 <translation id="248064299258688299"><ph name="EXTENSION_NAME" /> ਐਕਸਟੈਂਸ਼ਨ ਇਹ ਕਹਿੰਦੀ ਹੈ</translation>
 <translation id="2482878487686419369">ਸੂਚਨਾਵਾਂ</translation>
 <translation id="248348093745724435">ਮਸ਼ੀਨ ਸੰਬੰਧੀ ਨੀਤੀਆਂ</translation>
+<translation id="248395913932153421">ਦਿਨ</translation>
 <translation id="2485243023686553468">ਸਮਾਰਟਫ਼ੋਨ</translation>
 <translation id="2491120439723279231">ਸਰਵਰ ਦੇ ਪ੍ਰਮਾਣ-ਪੱਤਰ ਵਿੱਚ ਗੜਬੜੀਆਂ ਹਨ।</translation>
 <translation id="2491414235131909199">ਇਸ ਪੰਨੇ ਨੂੰ ਕਿਸੇ ਐਕਸਟੈਂਸ਼ਨ ਵੱਲੋਂ ਬਲਾਕ ਕੀਤਾ ਗਿਆ ਹੈ</translation>
@@ -1448,6 +1450,7 @@
 <translation id="33073482541490531">ਤੁਹਾਡੇ ਵੱਲੋਂ ਹੁਣੇ ਹੀ ਵਰਤਿਆ ਗਿਆ ਪਾਸਵਰਡ ਡਾਟਾ ਉਲੰਘਣਾ ਵਿੱਚ ਮਿਲਿਆ ਸੀ। Password Manager ਇਸ ਪਾਸਵਰਡ ਨੂੰ ਹੁਣੇ ਬਦਲਣ ਦੀ ਸਿਫ਼ਾਰਸ਼ ਕਰਦਾ ਹੈ।</translation>
 <translation id="3307649904964670439">'Chrome ਨੂੰ ਵਿਉਂਤਬੱਧ ਕਰੋ' ਬਟਨ, ਆਪਣੇ ਬ੍ਰਾਊਜ਼ਰ ਦੀ ਦਿੱਖ ਨੂੰ ਵਿਉਂਤਬੱਧ ਕਰਨ ਲਈ ਇਸਨੂੰ ਕਿਰਿਆਸ਼ੀਲ ਕਰੋ</translation>
 <translation id="3308006649705061278">ਸੰਸਥਾਈ ਯੂਨਿਟ (OU)</translation>
+<translation id="3310946375819654151">Chrome <ph name="APP_NAME" /> 'ਤੇ ਤੁਹਾਡੀ ਸੰਵੇਦਨਸ਼ੀਲ ਜਾਣਕਾਰੀ ਨੂੰ ਭਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰ ਰਿਹਾ ਹੈ।</translation>
 <translation id="3312952471765023168">ਅੱਪਲੋਡ ਕਰਨਾ ਸਫਲ ਰਿਹਾ</translation>
 <translation id="3318016344440038475">ਟੀਵੀ ਕਾਮੇਡੀਆਂ</translation>
 <translation id="3324687287337751929">4 x 6 ਇੰਚ</translation>
@@ -1737,6 +1740,7 @@
 <translation id="3752181611900535304">ਕੀ ਖਾਤੇ ਵਿੱਚ ਪਤਾ ਰੱਖਿਅਤ ਕਰਨਾ ਹੈ?</translation>
 <translation id="3752543821772132562">ਅਣਡਿੱਠ ਕੀਤਾ ਗਿਆ ਕਿਉਂਕਿ <ph name="POLICY_NAME" /> ਸੈੱਟ ਨਹੀਂ ਹੈ।</translation>
 <translation id="3754210790023674521">ਤਸਵੀਰ-ਵਿੱਚ-ਤਸਵੀਰ ਮੋਡ ਤੋਂ ਬਾਹਰ ਜਾਓ</translation>
+<translation id="3754664361823138853">&amp;ਇਤਿਹਾਸ ਪੰਨਾ ਖੋਲ੍ਹੋ</translation>
 <translation id="3759461132968374835">ਹਾਲ ਹੀ 'ਚ ਤੁਹਾਡੇ ਕੋਲ ਕੋਈ ਵੀ ਕ੍ਰੈਸ਼ ਰਿਪੋਰਟਾਂ ਨਹੀਂ ਹਨ। ਕ੍ਰੈਸ਼ ਜਿਹੜੇ ਦੁਹਰਾਅ-ਸੰਖਿਆ ਹੋਏ ਸਨ ਜਦੋਂ ਕ੍ਰੈਸ਼ ਰਿਪੋਰਟਿੰਗ ਬੰਦ ਸੀ, ਇੱਥੇ ਪ੍ਰਗਟ ਨਹੀਂ ਹੋਣਗੇ।</translation>
 <translation id="3760561303380396507">ਕੀ CVC ਦੀ ਬਜਾਏ Windows Hello ਨੂੰ ਵਰਤਣਾ ਹੈ?</translation>
 <translation id="3761171036307311438">ਕਾਰਡ 'ਤੇ ਨਾਮ:</translation>
@@ -2283,7 +2287,6 @@
 <translation id="4648262692072505866">ਹੈਸ਼ ਦਾ ਫਾਰਮੈਟ SHA-256 ਹੋਣਾ ਲਾਜ਼ਮੀ ਹੈ।</translation>
 <translation id="4652266463001779298">ਇਜਾਜ਼ਤ ਨਹੀਂ ਹੈ</translation>
 <translation id="4652440160515225514">ਨੀਤੀ ਦੀ ਉਲੰਘਣਾ ਕਰਨ ਕਰਕੇ ਤੁਹਾਡੀ ਸੰਸਥਾ ਨੇ ਇਸ ਸਾਈਟ ਨੂੰ ਬਲਾਕ ਕਰ ਦਿੱਤਾ ਹੈ।</translation>
-<translation id="4654457557264366314">ਭੁਗਤਾਨ ਪਲਾਨ ਯੋਗਤਾ ਦੇ ਅਧੀਨ ਹੁੰਦੇ ਹਨ।</translation>
 <translation id="4658638640878098064">ਉੱਪਰ ਖੱਬੇ ਪਾਸੇ ਪਿੰਨ</translation>
 <translation id="4658801711339831733">ਸਕੈਨ ਨੂੰ Google Drive ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="4660592918803576381">Drive ਵਿੱਚ ਖੋਲ੍ਹੋ</translation>
@@ -2594,7 +2597,6 @@
 <translation id="512756860033933700">ਕੀ-ਬੋਰਡ ਲਾਕ ਦੀ ਆਗਿਆ ਹੈ</translation>
 <translation id="5127934926273826089">ਫੁੱਲ</translation>
 <translation id="5129534298163637277">ਤਸਦੀਕ ਵਿੰਡੋ</translation>
-<translation id="5129662217315786329">Polish</translation>
 <translation id="5135404736266831032">ਪਤਿਆਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ...</translation>
 <translation id="5136841603454277753">ਸਹੀ ਕੋਡ ਦਾਖਲ ਕਰੋ</translation>
 <translation id="5137761395480718572">ਇਹ ਐਪ ਵਾਈ-ਫਾਈ ਕ੍ਰੀਡੈਂਸ਼ੀਅਲਾਂ ਨੂੰ ਸਥਾਪਤ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਲਈ ਬੇਨਤੀ ਕਰ ਰਹੀ ਹੈ। ਸੈੱਟਅੱਪ ਤੋਂ ਬਾਅਦ, ਤੁਹਾਡਾ <ph name="DEVICE_TYPE" /> ਆਪਣੇ ਆਪ ਭਾਗ ਲੈਣ ਵਾਲੇ ਵਾਈ-ਫਾਈ ਨੈੱਟਵਰਕਾਂ ਨਾਲ ਕਨੈਕਟ ਹੋ ਜਾਵੇਗਾ। ਇਨ੍ਹਾਂ ਕ੍ਰੀਡੈਂਸ਼ੀਅਲਾਂ ਨੂੰ ਹਟਾਉਣ ਲਈ, ਐਪ ਨੂੰ ਅਣਸਥਾਪਤ ਕਰੋ। <ph name="LEARN_MORE" /></translation>
@@ -2750,6 +2752,7 @@
 <translation id="5385966243497224160">ਗੈਰ-HTTPS URL ਦੀ ਪੂਰਵ-ਝਲਕ ਨਹੀਂ ਦਿਖਾਈ ਜਾ ਸਕਦੀ</translation>
 <translation id="5386426401304769735">ਇਸ ਸਾਈਟ ਲਈ ਪ੍ਰਮਾਣ-ਪੱਤਰ ਲੜੀ ਵਿੱਚ SHA-1 ਦੀ ਵਰਤੋਂ ਕਰਕੇ ਹਸਤਾਖਰ ਕੀਤਾ ਪ੍ਰਮਾਣ-ਪੱਤਰ ਸ਼ਾਮਲ ਹੈ।</translation>
 <translation id="5391010642126249196">ਤੁਸੀਂ ਦੇਖੀਆਂ</translation>
+<translation id="5391306025131596142">&amp;ਇਤਿਹਾਸ ਪੰਨਾ ਖੋਲ੍ਹੋ</translation>
 <translation id="539203134595252721">ਟੇਬਲ ਟੈਨਿਸ</translation>
 <translation id="5392506727170022660">ਧਾਤ (ਸੇਮੀ-ਗਲੋਸ)</translation>
 <translation id="5394069166371280357">ਪਰਿਵਾਰਕ ਟੀਵੀ ਸ਼ੋਅ</translation>
@@ -3540,11 +3543,11 @@
 <translation id="6649510485211003056">195 x 270 ਮਿ.ਮੀ.</translation>
 <translation id="6651270836885078973">ਇਸ ਵੱਲੋਂ ਪ੍ਰਬੰਧਨ ਕੀਤਾ ਜਾਂਦਾ ਹੈ:</translation>
 <translation id="6652101503459149953">Windows Hello ਨੂੰ ਵਰਤੋ</translation>
-<translation id="6654224358955673568">ਰਸਮੀ ਬਣਾਓ</translation>
 <translation id="6654244995031366386">ਗਲਾਸ (ਟੈਕਸਚਰਡ)</translation>
 <translation id="6655085656059574817">ਆਪਣੇ ਖਾਤੇ ਨੂੰ ਲਿੰਕ ਰੱਖਣ ਨਾਲ ਤੁਹਾਨੂੰ <ph name="BNPL_ISSUER_NAME" /> ਨਾਲ ਤੇਜ਼ੀ ਨਾਲ ਭੁਗਤਾਨ ਕਰਨ ਵਿੱਚ ਮਦਦ ਮਿਲਦੀ ਹੈ, ਪਰ ਤੁਸੀਂ <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /> 'ਤੇ ਜਾ ਕੇ ਇਸਨੂੰ ਅਣਲਿੰਕ ਕਰ ਸਕਦੇ ਹੋ</translation>
 <translation id="6656935431494847393">ਇਸ ਵਿੱਚ ਉਡਾਣ ਬੁਕਿੰਗਾਂ ਅਤੇ ਵਾਹਨ ਦੀ ਜਾਣਕਾਰੀ ਵਰਗੀ ਜਾਣਕਾਰੀ ਸ਼ਾਮਲ ਹੈ</translation>
 <translation id="6657585470893396449">ਪਾਸਵਰਡ</translation>
+<translation id="6659156657345021268">ਤੁਹਾਡੀ ਜਾਣਕਾਰੀ ਸਿਰਫ਼ ਤੁਹਾਡੇ ਡੀਵਾਈਸ 'ਤੇ ਰੱਖਿਅਤ ਕੀਤੀ ਜਾਂਦੀ ਹੈ। ਅਗਲੀ ਵਾਰ ਜਦੋਂ ਤੁਸੀਂ ਕੋਈ ਢੁਕਵਾਂ ਫ਼ਾਰਮ ਭਰੋਗੇ, ਤਾਂ ਤੁਹਾਡੇ ਕੋਲ ਇਸਨੂੰ Wallet ਵਿੱਚ ਰੱਖਿਅਤ ਕਰਨ ਦਾ ਮੌਕਾ ਹੋਵੇਗਾ।</translation>
 <translation id="6659246032834639189">ਇਹ ਕੀਮਤ ਘੱਟ ਹੈ</translation>
 <translation id="6660413144148052430">ਟਿਕਾਣਾ</translation>
 <translation id="6662457027866368246">ਪਹਿਲਾ ਰੋਲ</translation>
@@ -3712,7 +3715,6 @@
 <translation id="6926216138694948720">ਸਰੀਰਕ ਕਲਾ</translation>
 <translation id="692638818576287323">ਵਪਾਰਕ ਵਾਹਨ</translation>
 <translation id="6927878187051807444">ਕੈਮਰਾ ਫ਼ਾਈਲਾਂ ਅਤੇ ਸਕ੍ਰੀਨਸ਼ਾਟ</translation>
-<translation id="6929949393612835405">ਬੰਦ ਕਰੋ ਅਤੇ "<ph name="OPENER_TITLE" />" 'ਤੇ ਵਾਪਸ ਜਾਓ</translation>
 <translation id="6930607614725241390">ਸਾਈਡ ਪੈਨਲ ਵਿੱਚ ਖੋਜੋ</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />ਤੁਹਾਡਾ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਖੋਜ ਇੰਜਣ ਤੁਹਾਨੂੰ ਵੈੱਬ 'ਤੇ ਖੋਜ ਕਰਨ ਅਤੇ Chrome ਦੀਆਂ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਦੀ ਵਰਤੋਂ ਕਰਨ ਦਿੰਦਾ ਹੈ<ph name="END_BOLD" /> ਜਿਵੇਂ ਕਿ ਪਤਾ ਬਾਰ ਅਤੇ ਵੈੱਬ ਪੰਨਿਆਂ 'ਤੇ ਮੌਜੂਦ ਚਿੱਤਰਾਂ ਦੀ ਮਦਦ ਨਾਲ ਖੋਜ ਕਰਨਾ। ਜੇ ਤੁਹਾਡਾ ਖੋਜ ਇੰਜਣ ਕਿਸੇ ਸੁਵਿਧਾ ਦਾ ਸਮਰਥਨ ਨਹੀਂ ਕਰਦਾ, ਤਾਂ ਹੋ ਸਕਦਾ ਹੈ ਕਿ ਇਹ ਵਿਸ਼ੇਸ਼ਤਾ ਉਪਲਬਧ ਨਾ ਹੋਵੇ।</translation>
 <translation id="6934672428414710184">ਇਹ ਨਾਮ ਤੁਹਾਡੇ Google ਖਾਤੇ ਤੋਂ ਲਿਆ ਗਿਆ ਹੈ</translation>
@@ -4950,6 +4952,7 @@
 <translation id="8894794286471754040">ਪਹਿਲਾਂ ਵੱਡੇ ਕਿਨਾਰੇ ਵਾਲੇ</translation>
 <translation id="8897221284075091877">ਇਸ ਸਮੱਗਰੀ ਨੂੰ ਦੇਖਣ ਦੀ ਅਗਿਆ ਲੈਣ ਲਈ, ਆਪਣੇ Google ਖਾਤੇ ਨਾਲ ਜਾਰੀ ਰੱਖੋ</translation>
 <translation id="8897428486789851669">ਤੈਰਾਕੀ</translation>
+<translation id="8898854704577986668">ਸਾਈਡ ਪੈਨਲ ਵਿੱਚ ਇਤਿਹਾਸ ਦਿਖਾਓ</translation>
 <translation id="8899807382908246773">ਦਖਲਅੰਦਾਜ਼ੀ ਵਾਲੇ ਵਿਗਿਆਪਨ</translation>
 <translation id="8903921497873541725">ਜ਼ੂਮ ਵਧਾਓ</translation>
 <translation id="8903998444169664879">ਆਪਣੀਆਂ ਭੁਗਤਾਨ ਸੈਟਿੰਗਾਂ ਨੂੰ ਬਦਲਣ ਲਈ ਆਪਣੀ ਪਛਾਣ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ</translation>

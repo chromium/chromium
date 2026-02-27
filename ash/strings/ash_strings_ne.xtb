@@ -426,6 +426,7 @@
 <translation id="2478076885740497414">एप स्थापना गर्नुहोस्</translation>
 <translation id="2482878487686419369">नोटिफिकेसनहरू</translation>
 <translation id="2484513351006226581">किबोर्डको लेआउट स्विच गर्न <ph name="KEYBOARD_SHORTCUT" /> मा थिच्नुहोस्।</translation>
+<translation id="2485422356828889247">विस्थापन गर्नुहोस्</translation>
 <translation id="2486214324139475545"><ph name="DESK_NAME" /> को प्रिभ्यू। सक्रिय डेस्क।</translation>
 <translation id="2486405091093637109">"<ph name="DISPLAY_NAME" />" को रिजोल्युसन बदलेर <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz) बनाइएको छ। पुष्टि गरिएन भने अबको <ph name="TIMEOUT_SECONDS" /> मा यसअघिका सेटिङ रिस्टोर गरिने छन्।</translation>
 <translation id="2487915095798731898">सामेल हुनुहोस्</translation>

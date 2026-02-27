@@ -281,6 +281,7 @@
 <translation id="2205701497928406883">Закрепленная вкладка "<ph name="TAB_TITLE" />" с доступом к экрану</translation>
 <translation id="22091350895006575">Добавить имя пользователя</translation>
 <translation id="221494669172414749">Если вы откроете Chrome без блокировки профиля, сохраненные пароли и способы оплаты будут удалены с автомобиля. Используйте блокировку профиля, чтобы защитить данные.</translation>
+<translation id="2226826835915474236">Неактивные быстрые команды</translation>
 <translation id="2227179592712503583">Удалить подсказку</translation>
 <translation id="2227444325776770048">Продолжить как <ph name="USER_FULL_NAME" /></translation>
 <translation id="2230777942707397948">Пустое окно</translation>
@@ -923,6 +924,7 @@
 <translation id="4885273946141277891">Конфликт версий Chrome</translation>
 <translation id="4890973535105146893">В аккаунте Google нет сохраненных паролей</translation>
 <translation id="4905823827770127520">Укажите ссылку на страницу</translation>
+<translation id="4908601375231458049">Настройте группу вкладок и нажмите "Готово".</translation>
 <translation id="4908869848243824489">Рекомендации от Google</translation>
 <translation id="4910889077668685004">Платежные приложения</translation>
 <translation id="4911042367886397055">С возвращением, <ph name="USER_NAME" />!</translation>
@@ -1186,6 +1188,7 @@
 <translation id="6040143037577758943">Закрыть</translation>
 <translation id="604124094241169006">Автоматически</translation>
 <translation id="6042308850641462728">Ещё</translation>
+<translation id="6047066316630165190">Откройте переключатель вкладок.</translation>
 <translation id="604996488070107836">Не удалось скачать файл <ph name="FILE_NAME" /> из-за неизвестной ошибки.</translation>
 <translation id="605721222689873409">ГГ</translation>
 <translation id="6059830886158432458">Управление рекомендациями</translation>
@@ -1259,6 +1262,7 @@
 <translation id="6301526076346731664">Открыть инструменты разработчика</translation>
 <translation id="630308129961693966">Выберите место адресной строки</translation>
 <translation id="6303969859164067831">Выйти из аккаунта и отключить синхронизацию</translation>
+<translation id="6305257382500066042">Попробовать</translation>
 <translation id="6307241780749477694">Подтвердите личность, чтобы получить доступ ко всем паролям на этом устройстве.</translation>
 <translation id="6309082029962045994">Выбранная вместе с несколькими другими и закрепленная вкладка "<ph name="TAB_TITLE" />" с включенным звуком</translation>
 <translation id="6312687380483398334">Веб-приложения (тихий режим)</translation>
@@ -1655,6 +1659,7 @@
 <translation id="7740287852186792672">Результаты поиска</translation>
 <translation id="774403695779169686">Выбранная вкладка инкогнито "<ph name="TAB_TITLE" />" с доступом к экрану</translation>
 <translation id="774876555279732384">Сервисами автозаполнения также можно управлять в <ph name="BEGIN_LINK" />настройках Android<ph name="END_LINK" />.</translation>
+<translation id="7758884017823246335">Добавить поиск по сайту</translation>
 <translation id="7759809451544302770">Необязательно</translation>
 <translation id="7762668264895820836">SD-карта <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">Добавить адрес</translation>
@@ -1845,6 +1850,7 @@
 <translation id="8458341576712814616">Быстрая команда</translation>
 <translation id="8458413889418591446">Чтобы быстро возвращаться к просмотренным сайтам, включите синхронизацию истории и вкладок.</translation>
 <translation id="84594714173170813">Продолжайте использовать данные Chrome в аккаунте Google.</translation>
+<translation id="8460008946585880786">Перетащите одну вкладку на другую.</translation>
 <translation id="8460448946170646641">Проверка основных настроек конфиденциальности и безопасности</translation>
 <translation id="8460932807646981183">Управление поисковыми системами и поиском по сайту</translation>
 <translation id="8473863474539038330">Адреса и другие данные</translation>
@@ -1886,6 +1892,7 @@
 <translation id="8634050254805484913">Не показывается на устройствах с узким экраном</translation>
 <translation id="8635399646025169806">Оставить группу вкладок?</translation>
 <translation id="8636825310635137004">Чтобы получить доступ к вкладкам на всех ваших устройствах, включите синхронизацию.</translation>
+<translation id="8639963783467694461">Настройки автозаполнения</translation>
 <translation id="8662474268934425487">Вход в <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8664979001105139458">Файл с таким именем уже существует.</translation>
 <translation id="8676276370198826499">Зарегистрируйтесь на <ph name="SITE_ETLD_PLUS_ONE" /> через <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -1934,6 +1941,7 @@
 <translation id="8865415417596392024">Данные Chrome в вашем аккаунте</translation>
 <translation id="8872506776304248286">Открыть в приложении</translation>
 <translation id="8890668505403261809">Поиск по вкладкам инкогнито</translation>
+<translation id="8892234476517513962">Вы уже вошли в аккаунт</translation>
 <translation id="8894890673032951011">Выбранная вкладка инкогнито "<ph name="TAB_TITLE" />", на которой ведется запись</translation>
 <translation id="8898822736010347272">Отправлять в Google URL и контент некоторых посещенных страниц, а также определенную информацию о системе (это помогает обнаруживать новые угрозы и защищать всех пользователей интернета)</translation>
 <translation id="8903921497873541725">Увеличить</translation>

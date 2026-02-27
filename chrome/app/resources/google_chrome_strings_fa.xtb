@@ -686,6 +686,9 @@
 <translation id="8041795619940733262">‏از Google<ph name="LINE_BREAK" />درباره این زبانه بپرسید</translation>
 <translation id="80471789339884597">بابت نصب از شما سپاس‌گزاریم. قبل‌از استفاده از <ph name="BUNDLE_NAME" />، باید همه مرورگرها را بازراه‌اندازی کنید.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
+<translation id="8064965390968184078">‏۱. روی <ph name="BUTTON_LABEL" /> در زیر کلیک کنید
+۲. روی <ph name="BUTTON_2" /> در تنظیمات Windows کلیک کنید
+۳. روی <ph name="BUTTON_3" /> در اعلان Windows کلیک کنید تا Chrome را برای دسترسی سریع به نوار وظیفه سنجاق کنید</translation>
 <translation id="8077579734294125741">‏دیگر نمایه‌های Chrome</translation>
 <translation id="8086881907087796310">نصب انجام نشد زیرا رایانه شما با حداقل شرایط سخت‌افزاری مطابقت ندارد.</translation>
 <translation id="8113883687556086139">‏برای استفاده از داده‌های Chrome و ذخیره کردن آن‌ها در حسابتان (<ph name="ACCOUNT_EMAIL" />)، هویت خود را درستی‌سنجی کنید</translation>
@@ -764,6 +767,7 @@
 <translation id="8914504000324227558">‏راه‌اندازی مجدد Chrome</translation>
 <translation id="8922193594870374009">‏برای ارسال شماره از <ph name="ORIGIN" /> به تلفن Android خود، در هر دو دستگاه به سیستم Chrome وارد شوید.</translation>
 <translation id="8922998289262614701">‏برداشتن داده‌های این برنامه از Chrome</translation>
+<translation id="8925636929359899517">ما از اطلاعات برای بهبود این سرویس استفاده می‌کنیم. به <ph name="BEGIN_LINK1" />«خط‌مشی رازداری»<ph name="END_LINK1" /> و <ph name="BEGIN_LINK2" />«شرایط خدمات»<ph name="END_LINK2" /> مراجعه کنید.</translation>
 <translation id="8936233353620149764">‏روشن/خاموش کردن Gemini در Chrome</translation>
 <translation id="8948460679427074738">‏این افزونه روش‌های اعمال حریم خصوصی، مثل نحوه جمع‌آوری و استفاده از داده‌ها را منتشر نکرده است. ‫Chrome توصیه می‌کند آن را حذف کنید.</translation>
 <translation id="8958307504142971576">‏اکنون ویژگی‌های بیشتری در Chrome دردسترس شما قرار دارد</translation>

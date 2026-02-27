@@ -5549,6 +5549,7 @@
 <translation id="4732799736617504962">Падключаны мікрафон падтрымлівае толькі падаўленне шуму</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (левы)</translation>
 <translation id="4733793249294335256">Месцазнаходжанне</translation>
+<translation id="4734965478015604180">Гарызантальна</translation>
 <translation id="473546211690256853">Гэты ўліковы запіс належыць дамену <ph name="DOMAIN" />.</translation>
 <translation id="4735506354605317060">Вылучэнне ўказальніка кружком</translation>
 <translation id="4735793370946506039">Даведацца больш пра Палепшаны Бяспечны прагляд.</translation>
@@ -5816,6 +5817,7 @@
 <translation id="4901154724271753917">Разгарнуць нядаўна закрытыя</translation>
 <translation id="4901309472892185668">Выберыце стан для эксперымента "<ph name="EXPERIMENT_NAME" />".</translation>
 <translation id="49027928311173603">Палітыка, спампаваная з сервера, памылковая: <ph name="VALIDATION_ERROR" />.</translation>
+<translation id="490375751687810070">Вертыкальна</translation>
 <translation id="4906490889887219338">Наладка сеткавых файлаабменнікаў і кіраванне імі. <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
 <translation id="4906679076183257864">Скінуць да стандартных налад</translation>
 <translation id="4907129260985716018">Выберыце, калі гэта пашырэнне можа счытваць і змяняць даныя сайта</translation>
@@ -8493,6 +8495,7 @@
 <translation id="678520006562636090">Паспрабуйце Google Аб’ектыў на прыладзе "<ph name="DEVICE_TYPE" />"</translation>
 <translation id="6785594991951195537">Выкарыстаць <ph name="PASSWORD_DOMAIN" /></translation>
 <translation id="6785739405821760313">Прагляд захаваных працоўных сталоў. Для навігацыі выкарыстоўвайце клавішу Tab.</translation>
+<translation id="6785779729084003225">Каб адкрыць Gemini ў Chrome, выкарыстоўвайце спалучэнне клавіш <ph name="FOCUS_TOGGLE_HOTKEY" /></translation>
 <translation id="6785915470941880363">Адваротная прагортка <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
 <translation id="67862343314499040">Фіялетавы</translation>
 <translation id="6786480815699355166">Пераклад аўтаматычных субцітраў даступны толькі для моў, якія падтрымліваюцца</translation>

@@ -5551,6 +5551,7 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="4732799736617504962">Microfonul conectat poate accepta doar anularea zgomotului</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" /> % (stânga)</translation>
 <translation id="4733793249294335256">Locație</translation>
+<translation id="4734965478015604180">Orizontal</translation>
 <translation id="473546211690256853">Acest cont este administrat de <ph name="DOMAIN" /></translation>
 <translation id="4735506354605317060">Indicator cerc</translation>
 <translation id="4735793370946506039">Află mai multe despre Navigarea sigură îmbunătățită.</translation>
@@ -5817,6 +5818,7 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="4901154724271753917">Extinde filele închise recent</translation>
 <translation id="4901309472892185668">Selectează starea experimentului pentru experimentul <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="49027928311173603">Politica descărcată de pe server este nevalidă: <ph name="VALIDATION_ERROR" />.</translation>
+<translation id="490375751687810070">Vertical</translation>
 <translation id="4906490889887219338">Configurează sau gestionează spații comune de stocare în rețea. <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
 <translation id="4906679076183257864">Resetați la valorile prestabilite</translation>
 <translation id="4907129260985716018">Alege când poate extensia să citească și să modifice datele privind site-urile</translation>
@@ -7130,7 +7132,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="583673505367439042">Site-urile pot solicita permisiunea de a modifica fișiere și dosare de pe dispozitiv</translation>
 <translation id="5836999627049108525">Limba din care se traduce</translation>
 <translation id="583756221537636748">Caz</translation>
-<translation id="5840656138956959276">Îmbunătățită: strictă</translation>
+<translation id="5840656138956959276">Îmbunătățite: stricte</translation>
 <translation id="5840680448799937675">Fișierele vor fi distribuite întotdeauna offline</translation>
 <translation id="5841270259333717135">Configurează setările de Ethernet</translation>
 <translation id="5841338463993781099">Salvezi în cont?</translation>
@@ -7955,7 +7957,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="6411135999030237579">Apasă lung pentru a repeta automat apăsarea tastei</translation>
 <translation id="6414618057231176439">Selectează versiunea de <ph name="VM_NAME" /> pe care dorești să o instalezi.</translation>
 <translation id="641469293210305670">Instalează actualizări și aplicații</translation>
-<translation id="6415434255504060856">Strictă pentru toate site-urile</translation>
+<translation id="6415434255504060856">Stricte pentru toate site-urile</translation>
 <translation id="6415757856498750027">Introdu „w” pentru a obține „ư”</translation>
 <translation id="6415816101512323589">Activezi recuperarea datelor locale pentru a-ți proteja datele?</translation>
 <translation id="6415900369006735853">Conectează-te la internet folosind telefonul</translation>
@@ -8490,6 +8492,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="678520006562636090">Încearcă Google Lens pe <ph name="DEVICE_TYPE" /></translation>
 <translation id="6785594991951195537">Folosește <ph name="PASSWORD_DOMAIN" /></translation>
 <translation id="6785739405821760313">Se afișează desktopurile salvate. Apasă tasta Tab pentru a naviga.</translation>
+<translation id="6785779729084003225">Folosește <ph name="FOCUS_TOGGLE_HOTKEY" /> ca să deschizi Gemini în Chrome</translation>
 <translation id="6785915470941880363">Derulare inversă <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
 <translation id="67862343314499040">Violet</translation>
 <translation id="6786480815699355166">Pot fi traduse doar limbile acceptate pentru Subtitrări live</translation>

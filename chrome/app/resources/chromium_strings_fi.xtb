@@ -588,6 +588,9 @@ Chromium ei voi palauttaa asetuksiasi.</translation>
 <translation id="7384121030444253939">Tätä laajennusta ei enää tueta. Chromium suosittelee sen poistamista.</translation>
 <translation id="7413153308467572558">Jatka siitä, mihin jäit: Chromium palauttaa välilehdet aina, kun käynnistät sen uudelleen. Voit laittaa asetuksen pois päältä täältä:</translation>
 <translation id="7427879960656355200">Tuo salasanoja Chromiumiin</translation>
+<translation id="744815265653811511">1. Klikkaa <ph name="BUTTON_LABEL" /> alta
+2. Klikkaa Windowsin asetuksista <ph name="BUTTON_2" />
+3. Klikkaa Windowsin ilmoituksessa olevaa <ph name="BUTTON_3" />, niin voit kiinnittää Chromiumin tehtäväpalkkiin nopeaa käyttöä varten</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Chromium Dev</translation>
 <translation id="7450541714075000668">Teksti kopioitu</translation>
 <translation id="7451052299415159299">Chromium tarvitsee oikeuden käyttää kameraasi tällä sivustolla.</translation>

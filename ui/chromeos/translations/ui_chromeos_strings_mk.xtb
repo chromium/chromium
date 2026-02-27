@@ -17,7 +17,6 @@
 <translation id="1138691154716715755">Претходно овој месец</translation>
 <translation id="1150565364351027703">Очила за сонце</translation>
 <translation id="115443833402798225">хангул, ахматае</translation>
-<translation id="1155759005174418845">каталонска</translation>
 <translation id="1168100932582989117">Сервери за име на Google</translation>
 <translation id="1170788066030116158">Датум на фотографирање</translation>
 <translation id="1172970565351728681">Преостануваат околу <ph name="REMAINING_TIME" /></translation>
@@ -61,12 +60,10 @@
 <translation id="146691674290220697"><ph name="NUMBER_OF_FILES" /> датотеки не можеше да се копираат бидејќи се шифрирани.</translation>
 <translation id="1471718551822868769">словачки</translation>
 <translation id="1482884275703521657">фински</translation>
-<translation id="148466539719134488">швајцарски</translation>
 <translation id="1497522201463361063">Не може да преименува „<ph name="FILE_NAME" />“. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1499943022354839699">англиски (САД) со тастатура Dvorak</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - домаќин</translation>
 <translation id="1521655867290435174">Табели на Google</translation>
-<translation id="1547964879613821194">канадско англиска</translation>
 <translation id="1556189134700913550">Примени на сите</translation>
 <translation id="1561842594491319104">Уреди со Chrome</translation>
 <translation id="1572585716423026576">Постави како тапет</translation>
@@ -120,8 +117,6 @@
 <translation id="1920670151694390848">транслитерација на малајалски</translation>
 <translation id="1920798810075583923">Лубеница</translation>
 <translation id="1924372192547904021"><ph name="DRIVE_NAME" /> е форматиран</translation>
-<translation id="1931134289871235022">Словачки</translation>
-<translation id="1936717151811561466">фински</translation>
 <translation id="1942765061641586207">Резолуција на слика</translation>
 <translation id="1972984168337863910">Проширете ги таблите со повратни информации за датотеките</translation>
 <translation id="1995337122023280937">Оди на локацијата на датотеката</translation>
@@ -199,7 +194,6 @@
 <translation id="2541377937973966830">Содржините во папкава се само за читање. Некои активности не се поддржани.</translation>
 <translation id="2542049655219295786">Табела на Google</translation>
 <translation id="2544853746127077729">Мрежата го отфрли сертификатот за автентикација</translation>
-<translation id="255937426064304553">Меѓународен англиски (САД)</translation>
 <translation id="2563185590376525700">Жаба</translation>
 <translation id="2578394532502990878">фонетски тамилски</translation>
 <translation id="2579959351793446050">одија</translation>
@@ -220,7 +214,6 @@
 <translation id="2735623501230989521">Дајте ѝ дозвола на Parallels Desktop да пристапува до датотеките во папката „<ph name="FOLDER_NAME" />“</translation>
 <translation id="2764206540577097904">Го искористивте целиот ваш индивидуален капацитет на Google Workspace.</translation>
 <translation id="2771816809568414714">Сирење</translation>
-<translation id="2781645665747935084">Белгиски</translation>
 <translation id="2802583107108007218">Дознајте повеќе за ограничувањава</translation>
 <translation id="2803375539583399270">Внесете PIN.</translation>
 <translation id="2819519502129272135">Синхронизацијата на датотеките е исклучена</translation>
@@ -228,15 +221,11 @@
 <translation id="2830077785865012357">кинески џујин</translation>
 <translation id="2843806747483486897">Промени зададени вредности…</translation>
 <translation id="2873951654529031587">Корпа</translation>
-<translation id="288024221176729610">Чешки</translation>
 <translation id="2887525882758501333">ПДФ-документ</translation>
 <translation id="2888807692577297075">Нема ставки што се совпаѓаат со &lt;b&gt;„<ph name="SEARCH_STRING" />“&lt;/b&gt;</translation>
 <translation id="2894654529758326923">Информации</translation>
-<translation id="2902734494705624966">САД продолжена</translation>
 <translation id="2904378509913846215">Веќе постои папка со име „<ph name="FILENAME" />“. Дали сакате да ја замените со таа што ја преместувате?</translation>
 <translation id="290843123675549676">марати</translation>
-<translation id="2923240520113693977">естонски</translation>
-<translation id="2938685643439809023">монголски</translation>
 <translation id="2943503720238418293">Користете пократко име</translation>
 <translation id="2949781154072577687">Се форматира <ph name="DRIVE_NAME" />…</translation>
 <translation id="2951236788251446349">Медуза</translation>
@@ -263,14 +252,10 @@
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (со хардверски бекап)</translation>
 <translation id="3188257591659621405">Мои датотеки</translation>
 <translation id="3194553149358267393">Нема неодамнешни аудиодатотеки</translation>
-<translation id="3197563288998582412">UK Dvorak</translation>
 <translation id="3202131003361292969">Патека</translation>
 <translation id="3205852408225871810">португалски (Бразил)</translation>
-<translation id="3224239078034945833">Канадски - повеќејазична</translation>
 <translation id="3236289833370040187">Сопственоста ќе се пренесе на <ph name="DESTINATION_DOMAIN" />.</translation>
-<translation id="3241720467332021590">ирски</translation>
 <translation id="3248185426436836442">Чека на ред</translation>
-<translation id="3252266817569339921">француски</translation>
 <translation id="3253225298092156258">Не е достапна</translation>
 <translation id="3254434849914415189">Одберете ја стандардната апликација за датотеките <ph name="FILE_TYPE" />:</translation>
 <translation id="3255159654094949700">арапски</translation>
@@ -285,7 +270,6 @@
 <translation id="3293023191599135697">WEP-мрежите не се поддржани</translation>
 <translation id="3295006446256079333">Овој диск</translation>
 <translation id="3295357220137379386">Уредот е зафатен</translation>
-<translation id="3296763833017966289">грузиски</translation>
 <translation id="3307875152560779385">украински</translation>
 <translation id="3326821416087822643"><ph name="FILE_NAME" /> се пакува...</translation>
 <translation id="3335337277364016868">Година на снимање</translation>
@@ -306,7 +290,6 @@
 <translation id="3486821258960016770">монголски</translation>
 <translation id="3509680540198371098">Мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, јачина на сигналот: <ph name="SIGNAL_STRENGTH" /> %, детали</translation>
 <translation id="3511705761158917664">Се подготвува синхронизација на <ph name="NUMBER_OF_ITEMS" /> ставки…</translation>
-<translation id="3522708245912499433">португалски</translation>
 <translation id="3523225005467146490">1 папка е споделена со <ph name="VM_NAME" /></translation>
 <translation id="3524311639100184459">Внимание: датотекиве се привремени и може да се бришат автоматски за да се ослободи простор на дискот.  <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Папка</translation>
@@ -317,12 +300,9 @@
 <translation id="3556731189587832921">англиски (САД) со меѓународна компјутерска тастатура</translation>
 <translation id="3557414470514932909">Се преместува <ph name="FILE_NAME" /> во корпата</translation>
 <translation id="3567221313191587603">Изберете датотека и вклучете „<ph name="OFFLINE_CHECKBOX_NAME" />“ за да имате офлајн пристап до датотеките.</translation>
-<translation id="357479282490346887">литвански</translation>
 <translation id="3587482841069643663">Сите</translation>
 <translation id="3592251141500063301"><ph name="FILE_NAME" /> не можеше да се направи да биде достапна офлајн</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
-<translation id="3603385196401704894">канадско француска</translation>
-<translation id="3606220979431771195">Турска-F</translation>
 <translation id="3616113530831147358">Аудио</translation>
 <translation id="3619115746895587757">Капучино</translation>
 <translation id="3619593063686672873">Нема неодамнешни видеа</translation>
@@ -343,7 +323,6 @@
 <translation id="3786301125658655746">Офлајн сте</translation>
 <translation id="3789841737615482174">Инсталирај</translation>
 <translation id="3793469551756281394">Преостануваат околу <ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" /></translation>
-<translation id="3801082500826908679">Фарски</translation>
 <translation id="3809272675881623365">Зајак</translation>
 <translation id="3810973564298564668">Управувај</translation>
 <translation id="3811408895933919563">англиски (Пакистан)</translation>
@@ -351,10 +330,8 @@
 <translation id="3817579325494460411">Не е обезбедена</translation>
 <translation id="3819448694985509187">Погрешен PIN. Имате уште 1 обид.</translation>
 <translation id="3830674330436234648">Не е достапна репродукција</translation>
-<translation id="383652340667548381">српска</translation>
 <translation id="3839045880592694915">Вашиот модем не може да се поврзе поради забрана од операторот. За повеќе детали, контактирајте со операторот.</translation>
 <translation id="385051799172605136">Назад</translation>
-<translation id="3855472144336161447">Германска Neo 2</translation>
 <translation id="3858860766373142691">Име</translation>
 <translation id="3899991606604168269">француски (Канада) со повеќејазична тастатура</translation>
 <translation id="3901991538546252627">Се поврзува со <ph name="NAME" /></translation>
@@ -394,7 +371,6 @@
 <translation id="4261901459838235729">Google презентација</translation>
 <translation id="4277536868133419688">Филтерот <ph name="FILTER_NAME" /> е вклучен.</translation>
 <translation id="4290535918735525311">1 папка е споделена со Linux</translation>
-<translation id="4299729908419173967">бразилски</translation>
 <translation id="4302605047395093221">Секој што ќе го користи уредов ќе треба да го внесе PIN-кодот за да се поврзе на оваа мобилна мрежа</translation>
 <translation id="4303531889494116116">Мрежава не е достапна. Обидете се повторно подоцна.</translation>
 <translation id="4309915981827077375">Општи информации</translation>
@@ -430,7 +406,6 @@
 <translation id="4472575034687746823">Започнете</translation>
 <translation id="4474142134969976028">Нема резултати што се совпаѓаат</translation>
 <translation id="4477002475007461989">романски</translation>
-<translation id="4477219268485577442">бугарска фонетска</translation>
 <translation id="4508265954913339219">Активирањето не успеа</translation>
 <translation id="4509667233588080747">англиски (САД) со меѓународна тастатура Workman</translation>
 <translation id="4527800702232535228">Папкава е споделена со Parallels Desktop</translation>
@@ -451,20 +426,17 @@
 <translation id="4658782175094886150">Човек во снег</translation>
 <translation id="4669606053856530811">Членовите на „<ph name="SOURCE_NAME" />“ ќе изгубат пристап освен ако ставкиве се споделени со нив.</translation>
 <translation id="467809019005607715">Google Slides</translation>
-<translation id="4690246192099372265">шведски</translation>
 <translation id="4693155481716051732">Суши</translation>
 <translation id="4694604912444486114">Мајмун</translation>
 <translation id="469612310041132144">кинески со брзо внесување</translation>
 <translation id="4697043402264950621">Списокот со датотеки е подреден според <ph name="COLUMN_NAME" /> по растечки редослед.</translation>
 <translation id="469897186246626197">Датотекава е создадена за компјутер што користи софтвер на Windows. Таа не е компатибилна со вашиот уред што извршува Chrome OS. <ph name="BEGIN_LINK_HELP" />Дознајте повеќе<ph name="END_LINK_HELP" /> за отворање датотеки во Chrome OS.</translation>
 <translation id="4706042980341760088">тамилски со тастатура Typewriter</translation>
-<translation id="4711094779914110278">турски</translation>
 <translation id="4712283082407695269">Се отвора „<ph name="PATH" />“</translation>
 <translation id="4720185134442950733">Мобилна мрежа на податоци</translation>
 <translation id="4725096204469550614">Претходно оваа година</translation>
 <translation id="4725511304875193254">Корги</translation>
 <translation id="4737050008115666127">Слетување</translation>
-<translation id="4747271164117300400">македонски</translation>
 <translation id="4759238208242260848">Преземања</translation>
 <translation id="4779041693283480986">португалски (Португалија)</translation>
 <translation id="4779136857077979611">Онигири</translation>
@@ -478,7 +450,6 @@
 <translation id="4826849268470072925">тамилски ITRANS</translation>
 <translation id="4843566743023903107">Уреди Chromebase</translation>
 <translation id="4850886885716139402">Приказ</translation>
-<translation id="485316830061041779">германски</translation>
 <translation id="4862885579661885411">Поставки за „Датотеки“</translation>
 <translation id="4867079195717347957">Кликнете за подредување на колоната по опаѓачки редослед.</translation>
 <translation id="4867297348137739678">Изминатата седмица</translation>
@@ -515,13 +486,11 @@
 <translation id="5081517858322016911"><ph name="TOTAL_FILE_SIZE" /> датотеки ќе се избришат</translation>
 <translation id="508423945471810158">Се преместуваат <ph name="NUMBER_OF_ITEMS" /> ставки во <ph name="FOLDER_NAME" /></translation>
 <translation id="509429900233858213">Настана грешка.</translation>
-<translation id="5098629044894065541">хебрејски</translation>
 <translation id="5102922915594634436">Управувајте со синхронизирани папки</translation>
 <translation id="5109254780565519649">Грешка. Некои ставки можеби не се вратени.</translation>
 <translation id="5110329002213341433">англиски (Канада)</translation>
 <translation id="5119780910075847424">Синхронизацијата е паузирана</translation>
 <translation id="5123433949759960244">Баскет</translation>
-<translation id="5129662217315786329">полски</translation>
 <translation id="5144820558584035333">хангул, 3-делна (390)</translation>
 <translation id="5145331109270917438">Датум на промена</translation>
 <translation id="515594325917491223">Шах</translation>
@@ -530,12 +499,10 @@
    <ph name="LINE_BREAKS" />
    Со отстранување на уредот додека се користи може да се предизвика загуба на податоци. Почекајте додека да заврши операцијата, па исфрлете го уредот со помош на апликацијата Датотеки.</translation>
 <translation id="5163869187418756376">Споделувањето не успеа. Проверете ја врската и обидете се повторно подоцна.</translation>
-<translation id="516592729076796170">US Programmer Dvorak</translation>
 <translation id="5177526793333269655">Приказ на сликичка</translation>
 <translation id="5181896909298187506">Нема неодамнешни датотеки</translation>
 <translation id="5194713942430106590">Кликнете за подредување на колоната по растечки редослед.</translation>
 <translation id="5211614973734216083">фарски</translation>
-<translation id="5218183485292899140">Швајцарско-француски</translation>
 <translation id="5234764350956374838">Отфрли</translation>
 <translation id="5253070652067921974">Создадена од</translation>
 <translation id="5254207638927440400">Не може да се премести датотеката. Датотеката се користи.</translation>
@@ -553,7 +520,6 @@
 <translation id="5305688511332277257">Нема инсталирано</translation>
 <translation id="5317780077021120954">Зачувај</translation>
 <translation id="5318819489018851358">Споделете со Linux</translation>
-<translation id="5323213332664049067">Латиноамерикански</translation>
 <translation id="5330145655348521461">Датотеките се отворија на друга работна површина. Поместете ја на <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) за да се прикаже.</translation>
 <translation id="5330512191124428349">Земете информации</translation>
 <translation id="535792325654997756">Човек со мачки</translation>
@@ -565,18 +531,15 @@
 <translation id="5411472733320185105">Не користете ги поставките за прокси на овие домаќини и домени:</translation>
 <translation id="541890217011173530">сорани курдски со тастатура заснована на англиски</translation>
 <translation id="5422221874247253874">Пристапна точка</translation>
-<translation id="5428105026674456456">шпански</translation>
 <translation id="5438282218546237410">Нема резултати за <ph name="SEARCH_TERM" />.</translation>
 <translation id="5447680084201416734">Нема доволно простор.</translation>
 <translation id="5449551289610225147">Погрешна лозинка</translation>
 <translation id="5459064203055649751">Веќе постои датотека со име „<ph name="FILENAME" />“. Дали сакате да ја замените со таа што ја преместувате?</translation>
 <translation id="5463231940765244860">Внеси</translation>
-<translation id="5469868506864199649">италијански</translation>
 <translation id="5473333559083690127">Внесете го новиот PIN повторно</translation>
 <translation id="5489067830765222292">летонски</translation>
 <translation id="5489965683297092283">Филтерот <ph name="FILTER_NAME" /> е исклучен.</translation>
 <translation id="5494920125229734069">Избери сè</translation>
-<translation id="5500122897333236901">Исландски</translation>
 <translation id="5508696409934741614">Точки</translation>
 <translation id="5522908512596376669">Списокот со датотеки се смени во преглед на список.</translation>
 <translation id="5524517123096967210">Датотеката не може да се прочита.</translation>
@@ -589,7 +552,6 @@
 <translation id="5583664733673201137">Ширината на интерпункцијата е полна</translation>
 <translation id="5596627076506792578">Повеќе опции</translation>
 <translation id="5602622065581044566">бугарски со фонетска тастатура</translation>
-<translation id="5605830556594064952">US Dvorak</translation>
 <translation id="560739212255190568">Администраторот постави правила за отфрлање прокси покрај наметнувањето на следново прокси</translation>
 <translation id="5618330573454123917">Датотекава е создадена за компјутер што користи софтвер на Macintosh. Таа не е компатибилна со вашиот уред што извршува Chrome OS. <ph name="BEGIN_LINK_HELP" />Дознајте повеќе<ph name="END_LINK_HELP" /> за отворање датотеки во Chrome OS.</translation>
 <translation id="5625294776298156701">тамилски со тастатура Tamil99</translation>
@@ -607,7 +569,6 @@
 <translation id="5724172041621205163">тајландски со тастатура Pattachote</translation>
 <translation id="57383366388012121">Изминатиот месец</translation>
 <translation id="575175778971367197">Датотекава не може да се синхронизира во моментов</translation>
-<translation id="5756666464756035725">Унгарска QWERTY</translation>
 <translation id="5760252553414789727">Избрани се <ph name="SELECTED_FILES_COUNT" /> ставки</translation>
 <translation id="5763377084591234761">германски (Швајцарија)</translation>
 <translation id="5769519078756170258">Хост или домен за исклучување</translation>
@@ -615,7 +576,6 @@
 <translation id="5776325638577448643">Избриши и форматирај</translation>
 <translation id="57838592816432529">Исклучи звук</translation>
 <translation id="5788127256798019331">Датотеки на Play</translation>
-<translation id="5790193330357274855">Казашки</translation>
 <translation id="5804245609861364054">транслитерација на канада</translation>
 <translation id="5814126672212206791">Тип врска</translation>
 <translation id="5817397429773072584">традиционален кинески</translation>
@@ -624,7 +584,6 @@
 <translation id="5832976493438355584">Заклучено</translation>
 <translation id="5833610766403489739">Датотеката отиде некаде. Проверете ја поставката во локацијата на преземање и обидете се повторно.</translation>
 <translation id="5838451609423551646">Ги отстранивте сите записи од изборот.</translation>
-<translation id="5838825566232597749">САД, меѓународна Workman</translation>
 <translation id="5845721951356578987">Медицинска сестра</translation>
 <translation id="5858478190805449225">Режимот „Штедач на батерија“ е вклучен. Обидете се повторно кога режимот „Штедач на батерија“ е исклучен.</translation>
 <translation id="5860491529813859533">Вклучи</translation>
@@ -640,7 +599,6 @@
 <translation id="5957366693331451795">Уреди Chromebox</translation>
 <translation id="5982621672636444458">Подреди опции</translation>
 <translation id="6011074160056912900">Етернет-мрежа</translation>
-<translation id="60357267506638014">чешка QWERTY</translation>
 <translation id="603895874132768835">Нема да може да ја користите мрежава додека не поставите нов PIN</translation>
 <translation id="6040143037577758943">Затвори</translation>
 <translation id="6055907707645252013">Мрежа со <ph name="NETWORK_TYPE" />, не е поврзана</translation>
@@ -683,7 +641,6 @@
 <translation id="6320212353742551423"><ph name="ARCHIVE_TYPE" />-архива</translation>
 <translation id="6321303798550928047">Мавтање</translation>
 <translation id="6327785803543103246">Автоматско откривање прокси на Интернет</translation>
-<translation id="6339145975392024142">САД, меѓународна (PC)</translation>
 <translation id="6356685157277930264">Прозорец со информации за датотеките</translation>
 <translation id="6358884629796491903">Змеј</translation>
 <translation id="636254897931573416">Неважечка вредност за совпаѓање на суфиксот на доменот</translation>
@@ -704,7 +661,6 @@
 <translation id="649877868557234318">Се извлекува <ph name="FILE_NAME" /> во <ph name="FOLDER_NAME" /></translation>
 <translation id="6499681088828539489">Не дозволувајте прокси за споделени мрежи</translation>
 <translation id="6503285896705205014">Администраторското правило го блокира копирањето на <ph name="COUNT" /> датотеки</translation>
-<translation id="6509122719576673235">норвешки</translation>
 <translation id="6528513914570774834">Дозволи други корисници на уредов да ја користат мрежава</translation>
 <translation id="6549689063733911810">Неодамнешни</translation>
 <translation id="6558280019477628686">Грешка. Некои ставки може да не се избришани.</translation>
@@ -736,7 +692,6 @@
 <translation id="6806796368146926706">алфанумерички со јапонска тастатура</translation>
 <translation id="6808193438228982088">Лисица</translation>
 <translation id="6823166707458800069">Автоматски се прави резервна копија онлајн од сите датотеки зачувани во папкава.</translation>
-<translation id="6825883775269213504">руски</translation>
 <translation id="6847101934483209767">Го отстранивте <ph name="ENTRY_NAME" /> од изборот.</translation>
 <translation id="6848194403851638089"><ph name="ORGANIZATION_NAME" /> го искористи целиот свој капацитет на Google Workspace.</translation>
 <translation id="6856459657722366306">Мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, јачина на сигналот: <ph name="SIGNAL_STRENGTH" /> %, детали</translation>
@@ -750,7 +705,6 @@
 <translation id="6896758677409633944">Копирај</translation>
 <translation id="6898028766943174120">Повеќе подредени папки…</translation>
 <translation id="6915678159055240887">Chromebox</translation>
-<translation id="6918340160281024199">САД, Workman</translation>
 <translation id="6930242544192836755">Времетраење</translation>
 <translation id="6935521024859866267">Превртено</translation>
 <translation id="6943836128787782965">HTTP не успеа</translation>
@@ -760,7 +714,6 @@
 <translation id="696203921837389374">Овозможи синхронизација преку мобилен интернет</translation>
 <translation id="6965382102122355670">Во ред</translation>
 <translation id="6965648386495488594">Порта</translation>
-<translation id="6970230597523682626">бугарски</translation>
 <translation id="6973630695168034713">Папки</translation>
 <translation id="6976795442547527108">Лав</translation>
 <translation id="6979158407327259162">Google Диск</translation>
@@ -821,20 +774,17 @@
 <translation id="7417705661718309329">Карта на Google</translation>
 <translation id="7419668828140929293">Се враќа „<ph name="FILENAME" />“</translation>
 <translation id="7458955835361612701">Нема неодамнешни слики</translation>
-<translation id="7460898608667578234">украинска</translation>
 <translation id="7469894403370665791">Автоматски поврзи се на мрежава</translation>
 <translation id="7486315294984620427">За да пуштите датотеки во Parallels Desktop, датотеката мора да се копира во датотеките на Windows.</translation>
 <translation id="749452993132003881">хирагана</translation>
 <translation id="7495372004724182530">фонетски малајалски</translation>
 <translation id="7505167922889582512">Прикажи скриени датотеки</translation>
 <translation id="7514365320538308">Преземи</translation>
-<translation id="751507702149411736">белоруска</translation>
 <translation id="7521790570754130607">Потребен е PIN за да користите мобилен интернет</translation>
 <translation id="7532029025027028521">транслитерација на персиски</translation>
 <translation id="7544830582642184299">Дајте им дозвола на апликациите на Linux да пристапуваат до датотеките во вашиот Google Drive. Промените ќе се синхронизираат со другите уреди.</translation>
 <translation id="7547009467130558110">Патика</translation>
 <translation id="7547780573915868306">литвански</translation>
-<translation id="7547811415869834682">Холандски</translation>
 <translation id="7551643184018910560">Прикачи на полицата</translation>
 <translation id="7553492409867692754">Дајте им дозвола на апликациите на Linux да пристапуваат до датотеки во папката „<ph name="FOLDER_NAME" />“</translation>
 <translation id="7555339735447658365">Во моментов сте офлајн. Синхронизацијата на датотеките ќе продолжи кога ќе се поврзете на интернет</translation>
@@ -854,7 +804,6 @@
 <translation id="7693909743393669729">Форматирањето на дискот ќе ги избрише сите податоци што се зачувани на него и ќе ги отстрани сите постојни партиции, вклучително и партициите што можеби не се видливи. Дејството не може да се врати.</translation>
 <translation id="7695430100978772476">Не може да се форматира <ph name="DRIVE_NAME" /></translation>
 <translation id="76959938259365003">Не успеа да се испразни корпата за отпадоци.</translation>
-<translation id="770015031906360009">Грчки</translation>
 <translation id="7705251383879779343">Копирано: <ph name="FILE_NAME" />.</translation>
 <translation id="7707941139430559579">Не може да се премести датотеката. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="7708271999969613024">За да ја користите мрежава, треба да го внесете 8-цифренот личен клуч за одблокирање (PUK) обезбеден од операторот.</translation>
@@ -883,7 +832,6 @@
 <translation id="7831491651892296503">Грешка при конфигурирање на мрежата</translation>
 <translation id="7839804798877833423">Земањето на овие датотеки ќе користи приближно <ph name="FILE_SIZE" /> од мобилните податоци.</translation>
 <translation id="7846076177841592234">Откажи избор</translation>
-<translation id="7853966320808728790">Француска BÉPO</translation>
 <translation id="7857117644404132472">Додајте исклучок</translation>
 <translation id="7868774406711971383">полски</translation>
 <translation id="7874321682039004450">филипински</translation>
@@ -895,9 +843,7 @@
 <translation id="7925247922861151263">AAA-проверката не успеа</translation>
 <translation id="7928710562641958568">Извади уред</translation>
 <translation id="7933875256234974853">Се подготвува за синхронизација на датотеките на Drive…</translation>
-<translation id="7943385054491506837">US Colemak</translation>
 <translation id="7953739707111622108">Уредов не може да се отвори зашто не се препозна системот на датотеки.</translation>
-<translation id="7969525169268594403">Словенечки</translation>
 <translation id="7972920761225148017">француски (Швајцарија)</translation>
 <translation id="7973962044839454485">PPP автентикацијата не успеа поради неправилно корисничко име и лозинка</translation>
 <translation id="7980421588063892270">англиска (САД) со тастатура Colemak</translation>
@@ -908,7 +854,6 @@
 <translation id="803771048473350947">Датотека</translation>
 <translation id="8038111231936746805">(стандардно)</translation>
 <translation id="8042602468072383151">Аудио: <ph name="AUDIO_TYPE" /></translation>
-<translation id="8045462269890919536">романски</translation>
 <translation id="8049184478152619004">Внесете личен клуч за одблокирање (PUK)</translation>
 <translation id="8055538340801153769">Папкава</translation>
 <translation id="807187749540895545">Се извлекува <ph name="FILE_NAME" />…</translation>
@@ -940,11 +885,9 @@
 <translation id="8262872909443689080">Администраторско правило</translation>
 <translation id="8264024885325823677">Администраторот управува со поставкава.</translation>
 <translation id="8269755669432358899">Соберете ги таблите со повратни информации за датотеките</translation>
-<translation id="8280151743281770066">ерменска фонетска</translation>
 <translation id="8285791779547722821">Шифрирано: <ph name="ORIGINAL_MIME_TYPE" /></translation>
 <translation id="8294431847097064396">Извор</translation>
 <translation id="8297012244086013755">хангул, 3-делна (без Shift)</translation>
-<translation id="8299269255470343364">јапонски</translation>
 <translation id="8300849813060516376">OTASP не успеа</translation>
 <translation id="8312871300878166382">Залепи во папка</translation>
 <translation id="8329978297633540474">Обичен текст</translation>
@@ -966,7 +909,6 @@
 <translation id="8428213095426709021">Поставки</translation>
 <translation id="8429998526804961548"><ph name="NUMBER_OF_ITEMS" /> папки се споделени со <ph name="VM_NAME" /></translation>
 <translation id="8431909052837336408">Променете PIN за SIM-картичката</translation>
-<translation id="8437209419043462667">US</translation>
 <translation id="8452135315243592079">Недостасува SIM-картичка</translation>
 <translation id="8456681095658380701">Неважечко име</translation>
 <translation id="8457767749626250697">Вашата SIM-картичка е заклучена</translation>
@@ -981,14 +923,12 @@
 <translation id="8499098729323186194">Се извлекуваат <ph name="NUMBER_OF_ITEMS" /> ставки…</translation>
 <translation id="8502913769543567768">Мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, Активирај по поставувањето на уредот, Управувано од вашиот администратор</translation>
 <translation id="8512483403832814140">Кога било</translation>
-<translation id="8521441079177373948">UK</translation>
 <translation id="853494022971700746">француски (Франција)</translation>
 <translation id="8540608333167683902">Мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, јачина на сигналот: <ph name="SIGNAL_STRENGTH" /> %, детали</translation>
 <translation id="8545476925160229291">англиски (САД)</translation>
 <translation id="854655314928502177">Автоматско откривање линк на прокси на веб:</translation>
 <translation id="8547747809824590510">Администраторот постави правила за отфрлање прокси</translation>
 <translation id="8549186985808798022">италијански</translation>
-<translation id="8551494947769799688">летонски</translation>
 <translation id="8560515948038859357">кантонски</translation>
 <translation id="8561206103590473338">Слон</translation>
 <translation id="8566466896628108558">Мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, јачина на сигналот: <ph name="SIGNAL_STRENGTH" /> %, блокирано од администраторот, детали</translation>
@@ -1011,7 +951,6 @@
 <translation id="8713112442029511308">малтешки</translation>
 <translation id="8714406895390098252">Велосипед</translation>
 <translation id="8719721339511222681">Избрано е <ph name="ENTRY_NAME" />.</translation>
-<translation id="872537912056138402">хрватска</translation>
 <translation id="8743164338060742337">Мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, јачина на сигналот: <ph name="SIGNAL_STRENGTH" /> %, управувана од администраторот, поврзи</translation>
 <translation id="8787254343425541995">Дозволи прокси за споделени мрежи</translation>
 <translation id="8790981080411996443">Човек што полева растенија</translation>
@@ -1028,10 +967,8 @@
 <translation id="8873014196523807561">За да ги вратите ставкиве, повлечете ги во нова папка. Оригиналните папки за некои од ставкиве се избришани.</translation>
 <translation id="8874184842967597500">Не е поврзано</translation>
 <translation id="8876368061475701452">Чека на ред</translation>
-<translation id="8900820606136623064">унгарски</translation>
 <translation id="8903931173357132290">Дипломец</translation>
 <translation id="8912078710089354287">Куче што мавта со опашката</translation>
-<translation id="8919081441417203123">дански</translation>
 <translation id="8949925099261528566">Поврзан, нема интернет</translation>
 <translation id="8965697826696209160">Нема доволно простор.</translation>
 <translation id="8970887620466824814">Нешто тргна наопаку.</translation>
@@ -1040,7 +977,6 @@
 <translation id="8998871447376656508">Нема доволно слободен простор на вашиот Google Drive за да се заврши прикачувањево.</translation>
 <translation id="9003940392834790328">Мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, јачина на сигналот: <ph name="SIGNAL_STRENGTH" /> %, управувана од администраторот, детали</translation>
 <translation id="9007990314804111233">Најавете се на вашата сметка на Microsoft</translation>
-<translation id="9017798300203431059">фонетски руски</translation>
 <translation id="9034924485347205037">Датотеки на Linux</translation>
 <translation id="9035012421917565900">Ставките не може да се преместат назад во „<ph name="DESTINATION_NAME" />“, па нема да може да го вратите дејствово.</translation>
 <translation id="9035689366572880647">Внесете го тековниот PIN-код</translation>

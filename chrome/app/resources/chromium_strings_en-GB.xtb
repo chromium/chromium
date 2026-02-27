@@ -590,6 +590,9 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="7384121030444253939">This extension is no longer supported. Chromium recommends that you remove it instead.</translation>
 <translation id="7413153308467572558">Continue where you left off: Chromium restores your tabs every time you restart. To turn this off, go to</translation>
 <translation id="7427879960656355200">Import passwords to Chromium</translation>
+<translation id="744815265653811511">1. Click <ph name="BUTTON_LABEL" /> below
+2. Click <ph name="BUTTON_2" /> in your Windows settings
+3. Click <ph name="BUTTON_3" /> in the Windows notification to pin Chromium to your taskbar for quick access</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Chromium Dev</translation>
 <translation id="7450541714075000668">Text copied</translation>
 <translation id="7451052299415159299">Chromium needs permission to access your camera for this site</translation>
@@ -605,6 +608,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="761356813943268536">Chromium is using your camera and microphone.</translation>
 <translation id="7617377681829253106">Chromium just got better</translation>
 <translation id="7622753900276619808">You now have more features available in Chromium</translation>
+<translation id="7624307931717240213">We use info to improve this service. See Privacy Policy and Terms of Service.</translation>
 <translation id="7649070708921625228">Help</translation>
 <translation id="7656340475565475526">Let Chromium browse for you</translation>
 <translation id="7658239707568436148">Cancel</translation>

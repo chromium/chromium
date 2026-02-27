@@ -281,6 +281,7 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="2205701497928406883"><ph name="TAB_TITLE" /> fitxa, ainguratuta, partekatzen</translation>
 <translation id="22091350895006575">Gehitu erabiltzaile-izena</translation>
 <translation id="221494669172414749">Profilaren blokeorik ez baduzu eta Chrome irekitzen baduzu, gorde dituzun pasahitzak eta ordainketa-metodoak kenduko dira autotik. Datu horiek babesteko balio du profilaren blokeoak.</translation>
+<translation id="2226826835915474236">Lasterbide inaktiboak</translation>
 <translation id="2227179592712503583">Kendu iradokizuna</translation>
 <translation id="2227444325776770048">Jarraitu <ph name="USER_FULL_NAME" /> gisa</translation>
 <translation id="2230777942707397948">Leiho hutsa</translation>
@@ -1655,6 +1656,7 @@ Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />ezabatu kontuko Chrome-ko datuak
 <translation id="7740287852186792672">Bilaketa-emaitzak</translation>
 <translation id="774403695779169686"><ph name="TAB_TITLE" /> fitxa, hautatuta, ezkutuko modukoa, partekatzen</translation>
 <translation id="774876555279732384">Automatikoki betetzeko zerbitzuak ere <ph name="BEGIN_LINK" />Android-en ezarpenetan<ph name="END_LINK" /> kudeatzen dira.</translation>
+<translation id="7758884017823246335">Gehitu webgune-bilaketa bat</translation>
 <translation id="7759809451544302770">Aukerakoa</translation>
 <translation id="7762668264895820836"><ph name="SD_CARD_NUMBER" />. SD txartela</translation>
 <translation id="7764225426217299476">Gehitu helbidea</translation>
@@ -1886,6 +1888,7 @@ Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />ezabatu kontuko Chrome-ko datuak
 <translation id="8634050254805484913">Pantaila estuetan ezkutatuta</translation>
 <translation id="8635399646025169806">Fitxa taldea mantendu nahi duzu?</translation>
 <translation id="8636825310635137004">Beste gailuetako fitxak eskura izateko, aktibatu sinkronizazioa.</translation>
+<translation id="8639963783467694461">Betetze automatikoaren ezarpenak</translation>
 <translation id="8662474268934425487">Hasi saioa <ph name="SITE_ETLD_PLUS_ONE" /> identitate-hornitzailean</translation>
 <translation id="8664979001105139458">Badago izen hori duen fitxategi bat</translation>
 <translation id="8676276370198826499">Erregistratu <ph name="SITE_ETLD_PLUS_ONE" /> webgunean <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> hornitzailearekin</translation>
@@ -1934,6 +1937,7 @@ Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />ezabatu kontuko Chrome-ko datuak
 <translation id="8865415417596392024">Kontuan gordeta dauzkazun Chrome-ko datuak</translation>
 <translation id="8872506776304248286">Ireki aplikazioan</translation>
 <translation id="8890668505403261809">Bilatu ezkutuko moduko fitxetan</translation>
+<translation id="8892234476517513962">Saioa hasita daukazu jada</translation>
 <translation id="8894890673032951011"><ph name="TAB_TITLE" /> fitxa, hautatuta, ezkutuko modukoa, grabatzen</translation>
 <translation id="8898822736010347272">Erabiltzen dituzun orri batzuen URLak, sistemari buruzko informazio mugatua eta orrietako eduki batzuk bidaltzen dizkio Google-ri mehatxuak aurkitzeko eta sarearen erabiltzaile guztiak babesteko.</translation>
 <translation id="8903921497873541725">Handitu</translation>

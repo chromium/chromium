@@ -281,6 +281,7 @@
 <translation id="2205701497928406883"><ph name="TAB_TITLE" />, අමුණන ලද බෙදා ගැනීමේ පටිත්ත</translation>
 <translation id="22091350895006575">පරිශීලක නාමය එක් කරන්න</translation>
 <translation id="221494669172414749">පැතිකඩ අගුලක් නොමැතිව Chrome විවෘත කිරීම ඔබේ සුරකින ලද මුරපද සහ ගෙවීම් ක්‍රම මෝටර් රථයෙන් ඉවත් කරනු ඇත. පැතිකඩ අගුලක් භාවිතා කිරීම මෙම දත්ත සුරක්ෂිතව තබා ගනී.</translation>
+<translation id="2226826835915474236">අක්‍රිය කෙටි මං</translation>
 <translation id="2227179592712503583">යෝජනාව ඉවත් කරන්න</translation>
 <translation id="2227444325776770048"><ph name="USER_FULL_NAME" /> ලෙස දිගටම කර ගෙන යන්න</translation>
 <translation id="2230777942707397948">හිස් කවුළුව</translation>
@@ -1655,6 +1656,7 @@
 <translation id="7740287852186792672">සෙවීම් ප්‍රතිඵල</translation>
 <translation id="774403695779169686"><ph name="TAB_TITLE" />, තෝරා ගත් බෙදා ගැනීමේ අප්‍රකට පටිත්ත</translation>
 <translation id="774876555279732384">ස්වයං පිරවුම් සේවා <ph name="BEGIN_LINK" />Android සැකසීම්<ph name="END_LINK" /> තුළ ද කළමනාකරණය කෙරේ.</translation>
+<translation id="7758884017823246335">වෙබ් අඩවි සෙවීම එක් කරන්න</translation>
 <translation id="7759809451544302770">වෛකල්පිත</translation>
 <translation id="7762668264895820836">SD පත <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">ලිපිනය එක් කරන්න</translation>
@@ -1886,6 +1888,7 @@
 <translation id="8634050254805484913">පටු තිර මත සැඟවී ඇත</translation>
 <translation id="8635399646025169806">පටිති සමූහය තබා ගන්න ද?</translation>
 <translation id="8636825310635137004">ඔබගේ වෙනත් උපාංග වෙතින් ඔබගේ ටැබ ලබා ගැනීමට, සමමුහුර්ත කිරීම ක්‍රියාත්මක කරන්න.</translation>
+<translation id="8639963783467694461">ස්වයං පිරවුම් සැකසුම්</translation>
 <translation id="8662474268934425487"><ph name="SITE_ETLD_PLUS_ONE" /> වෙත පුරන්න</translation>
 <translation id="8664979001105139458">ගොනු නාමය දැනටමත් පවතී</translation>
 <translation id="8676276370198826499"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> සමග <ph name="SITE_ETLD_PLUS_ONE" /> වෙත ලියාපදිංචි වන්න</translation>
@@ -1934,6 +1937,7 @@
 <translation id="8865415417596392024">ඔබේ ගිණුමේ Chrome දත්ත</translation>
 <translation id="8872506776304248286">යෙදුමෙහි විවෘත කරන්න</translation>
 <translation id="8890668505403261809">ඔබේ අප්‍රකට පටිති සොයන්න</translation>
+<translation id="8892234476517513962">ඔබ දැනටමත් පුරනය වී ඇත</translation>
 <translation id="8894890673032951011"><ph name="TAB_TITLE" />, තෝරා ගත් පටිගත කිරීමේ අප්‍රකට පටිත්ත</translation>
 <translation id="8898822736010347272">වෙබය මත නව තර්ජන සොයා ගෙන සියලු දෙනා ආරක්ෂා කිරීමට උදවු කිරීමට Google වෙත ඔබ පැමිණෙන සමහර පිටුවල URL, සීමිත පද්ධති තොරතුරු, සහ යම් පිටු අන්තර්ගතය යවයි.</translation>
 <translation id="8903921497873541725">විශාලනය කරන්න</translation>

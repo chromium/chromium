@@ -281,6 +281,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="2205701497928406883"><ph name="TAB_TITLE" />, pestanya de compartició fixada</translation>
 <translation id="22091350895006575">Afegeix un nom d'usuari</translation>
 <translation id="221494669172414749">Si obres Chrome sense un bloqueig de perfil, se suprimiran del cotxe les formes de pagament i les contrasenyes desades. Utilitza un bloqueig de perfil per protegir aquestes dades.</translation>
+<translation id="2226826835915474236">Dreceres inactives</translation>
 <translation id="2227179592712503583">Suprimeix el suggeriment</translation>
 <translation id="2227444325776770048">Continua com a <ph name="USER_FULL_NAME" /></translation>
 <translation id="2230777942707397948">Finestra buida</translation>
@@ -1645,7 +1646,7 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="7690596512217303514">El dispositiu no ha pogut obrir Chrome. Per resoldre el problema, baixa l'actualització més recent de Chrome de la botiga d'aplicacions.</translation>
 <translation id="7691043218961417207">Explora contingut i segueix-lo</translation>
 <translation id="7692761875510935111">Obre ràpidament al navegador. Mantén premuda aquesta drecera per editar-la.</translation>
-<translation id="7697383401610880082">Ansa per arrossegar</translation>
+<translation id="7697383401610880082">Ansa de posicionament</translation>
 <translation id="7698359219371678927">Crea una adreça electrònica a <ph name="APP_NAME" /></translation>
 <translation id="7702420606070050505">Full inferior de l'activitat recent obert a alçada completa</translation>
 <translation id="7707922173985738739">Utilitza dades mòbils</translation>
@@ -1655,6 +1656,7 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="7740287852186792672">Resultats de la cerca</translation>
 <translation id="774403695779169686"><ph name="TAB_TITLE" />, pestanya d'incògnit per compartir seleccionada</translation>
 <translation id="774876555279732384">Els serveis d'emplenament automàtic també es gestionen a <ph name="BEGIN_LINK" />Configuració d'Android<ph name="END_LINK" />.</translation>
+<translation id="7758884017823246335">Afegeix una cerca al lloc web</translation>
 <translation id="7759809451544302770">Opcional</translation>
 <translation id="7762668264895820836">Targeta SD <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">Afegeix una adreça</translation>
@@ -1886,6 +1888,7 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="8634050254805484913">S'amaga en pantalles estretes</translation>
 <translation id="8635399646025169806">Vols conservar el grup de pestanyes?</translation>
 <translation id="8636825310635137004">Activa la sincronització per accedir a les pestanyes dels altres dispositius que tinguis.</translation>
+<translation id="8639963783467694461">Configuració d'Emplenament automàtic</translation>
 <translation id="8662474268934425487">Inicia la sessió a <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8664979001105139458">El nom del fitxer ja existeix</translation>
 <translation id="8676276370198826499">Registra't a <ph name="SITE_ETLD_PLUS_ONE" /> amb <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -1934,6 +1937,7 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="8865415417596392024">Dades de Chrome al teu compte</translation>
 <translation id="8872506776304248286">Obre a l'aplicació</translation>
 <translation id="8890668505403261809">Cerca a les pestanyes d'incògnit</translation>
+<translation id="8892234476517513962">Ja has iniciat la sessió</translation>
 <translation id="8894890673032951011"><ph name="TAB_TITLE" />, pestanya d'incògnit de gravació seleccionada</translation>
 <translation id="8898822736010347272">Envia a Google els URL d'algunes pàgines que visites, informació limitada del sistema i part del contingut de les pàgines per ajudar a detectar amenaces noves i protegir tothom al web.</translation>
 <translation id="8903921497873541725">Amplia el zoom</translation>

@@ -694,6 +694,9 @@ I-<ph name="EXTENSION_NAME" /></translation>
 <translation id="8041795619940733262">Buza iGoogle<ph name="LINE_BREAK" />mayelana nale thebhu</translation>
 <translation id="80471789339884597">Siyabonga ngokufaka. Kufanele uqalise kabusha wonke amabhrawuza akho ngaphambi kokusebenzisa i-<ph name="BUNDLE_NAME" />.</translation>
 <translation id="8064015586118426197">I-ChromeOS Flex</translation>
+<translation id="8064965390968184078">1. Chofoza okuthi <ph name="BUTTON_LABEL" /> ngezansi
+2. Chofoza okuthi <ph name="BUTTON_2" /> kumasethingi akho eWindows
+3. Chofoza okuthi <ph name="BUTTON_3" /> esazisweni seWindows ukuze uphine iChrome kubha yakho yomsebenzi ukuze ufinyelele ngokushesha</translation>
 <translation id="8077579734294125741">Amanye Amaphrofayili e-Chrome</translation>
 <translation id="8086881907087796310">Ukufakwa kwehlulekile ngenxa yokuthi ikhompyutha yakho ayihlangabezani nezimfuneko zenani elincane lehadiwe.</translation>
 <translation id="8113883687556086139">Qinisekisa ukuthi nguwe ukuze usebenzise futhi ulondoloze idatha yeChrome ku-akhawunti yakho, <ph name="ACCOUNT_EMAIL" /></translation>
@@ -772,6 +775,7 @@ Amabhukhimakhi amasha awakwazi ukulondolozwa e-akhawuntini yakho uze usule amany
 <translation id="8914504000324227558">Phinda uqalise i-Chrome</translation>
 <translation id="8922193594870374009">Ukuze uthumele inombolo kusukela ku-<ph name="ORIGIN" /> kufoni yakho ye-Android, ngena ngemvume ku-Chrome kuwo womabili amadivayisi.</translation>
 <translation id="8922998289262614701">Susa idatha yale app kusukela kuChrome</translation>
+<translation id="8925636929359899517">Sisebenzisa ulwazi ukuthuthukisa le sevisi. Bheka <ph name="BEGIN_LINK1" />Inqubomgomo Yobumfihlo<ph name="END_LINK1" /> kanye <ph name="BEGIN_LINK2" />Nemigomo Yesevisi<ph name="END_LINK2" />.</translation>
 <translation id="8936233353620149764">Guqula iGemini kuChrome</translation>
 <translation id="8948460679427074738">Lesi sandiso asikashicileli izindlela zangasese zokuziphatha, njengokuthi siyiqoqa futhi siyisebenzise kanjani idatha. I-Chrome incoma ukuthi uyisuse.</translation>
 <translation id="8958307504142971576">Manje unezakhi eziningi ezitholakala kuChrome</translation>

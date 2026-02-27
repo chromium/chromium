@@ -589,6 +589,9 @@ Chromium est incapable de récupérer vos paramètres.</translation>
 <translation id="7384121030444253939">Cette extension n'est plus prise en charge. Chromium vous recommande de la retirer.</translation>
 <translation id="7413153308467572558">Reprenez là où vous en étiez : Chromium restaure vos onglets à chaque redémarrage. Pour désactiver cette option, accédez à</translation>
 <translation id="7427879960656355200">Importer des mots de passe dans Chromium</translation>
+<translation id="744815265653811511">1. Cliquez sur <ph name="BUTTON_LABEL" /> ci-dessous.
+2. Cliquez sur <ph name="BUTTON_2" /> dans vos paramètres Windows.
+3. Cliquez sur <ph name="BUTTON_3" /> dans la notification Windows pour épingler Chromium à votre barre des tâches pour un accès rapide.</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium pour les concepteurs</translation>
 <translation id="7450541714075000668">Texte copié</translation>
 <translation id="7451052299415159299">Chromium a besoin de votre autorisation pour accéder à votre appareil photo pour ce site</translation>

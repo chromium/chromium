@@ -687,6 +687,9 @@
 <translation id="8041795619940733262">‏אפשר לשאול את Google<ph name="LINE_BREAK" />לגבי הכרטיסייה הזו</translation>
 <translation id="80471789339884597">תודה שהתקנת. עליך להפעיל מחדש את כל הדפדפנים לפני השימוש ב-<ph name="BUNDLE_NAME" />.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
+<translation id="8064965390968184078">‏1. לוחצים על <ph name="BUTTON_LABEL" /> למטה
+2. לוחצים על <ph name="BUTTON_2" /> בהגדרות של Windows
+3. לוחצים על <ph name="BUTTON_3" /> בהתראה של Windows כדי להצמיד את Chrome לסרגל האפליקציות לגישה מהירה</translation>
 <translation id="8077579734294125741">‏פרופילים אחרים ב-Chrome</translation>
 <translation id="8086881907087796310">ההתקנה נכשלה כי המחשב לא עומד בדרישות החומרה המינימליות.</translation>
 <translation id="8113883687556086139">‏כדי להשתמש בנתונים של Chrome ולשמור אותם בחשבון <ph name="ACCOUNT_EMAIL" />, עליך לאמת את הזהות שלך</translation>
@@ -765,6 +768,7 @@
 <translation id="8914504000324227558">‏הפעלה מחדש של Chrome</translation>
 <translation id="8922193594870374009">‏כדי לשלוח מספר מ-<ph name="ORIGIN" /> לטלפון Android, יש להיכנס אל Chrome בשני המכשירים.</translation>
 <translation id="8922998289262614701">‏להסיר את הנתונים של האפליקציה הזאת מ-Chrome?</translation>
+<translation id="8925636929359899517">אנחנו משתמשים במידע כדי לשפר את השירות הזה. אפשר לקרוא את <ph name="BEGIN_LINK1" />מדיניות הפרטיות<ph name="END_LINK1" /> ו<ph name="BEGIN_LINK2" />התנאים וההגבלות<ph name="END_LINK2" />.</translation>
 <translation id="8936233353620149764">‏הפעלה או השבתה של Gemini ב-Chrome</translation>
 <translation id="8948460679427074738">‏לתוסף הזה לא פורסמו נוהלי פרטיות, למשל האופן שבו הוא אוסף נתונים ומשתמש בהם. ההמלצה של Chrome היא להסיר אותו.</translation>
 <translation id="8958307504142971576">‏עכשיו יש לך יותר תכונות זמינות ב-Chrome</translation>

@@ -426,6 +426,7 @@
 <translation id="2478076885740497414">App installieren</translation>
 <translation id="2482878487686419369">Benachrichtigungen</translation>
 <translation id="2484513351006226581">Drücke <ph name="KEYBOARD_SHORTCUT" />, um das Tastaturlayout zu ändern.</translation>
+<translation id="2485422356828889247">Deinstallieren</translation>
 <translation id="2486214324139475545">Vorschau für <ph name="DESK_NAME" />. Aktiver Desktop.</translation>
 <translation id="2486405091093637109">Die Auflösung von „<ph name="DISPLAY_NAME" />“ wurde in <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz) geändert. Wenn du nicht bestätigst, werden in <ph name="TIMEOUT_SECONDS" /> die vorherigen Einstellungen wiederhergestellt.</translation>
 <translation id="2487915095798731898">Teilnehmen</translation>
@@ -1369,7 +1370,7 @@ Keine Geräte verbunden.</translation>
 <translation id="5556459405103347317">Neu laden</translation>
 <translation id="5558091555391176027">Hohe Sichtbarkeit bei Nearby Share aktivieren/deaktivieren</translation>
 <translation id="5558314826121965174">Kreativität</translation>
-<translation id="556042886152191864">Schaltfläche</translation>
+<translation id="556042886152191864">Button</translation>
 <translation id="5570122939431135380">Neuen Tab in neuem Inkognitofenster öffnen</translation>
 <translation id="5571066253365925590">Bluetooth aktiviert</translation>
 <translation id="5572632238877308040">Essentials</translation>

@@ -2006,7 +2006,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2332742915001411729">Rétablir la valeur par défaut</translation>
 <translation id="2333166365943957309">Hiérarchie de l'IU</translation>
 <translation id="233375395665273385">Supprimer et se déconnecter</translation>
-<translation id="2334384018887664164">Vous pouvez ajouter à la liste verte les sites auxquels vous faites confiance dans les paramètres de contenu.</translation>
+<translation id="2334384018887664164">Vous pouvez ajouter à la liste verte les sites auxquels vous faites confiance dans les paramètres de contenu</translation>
 <translation id="233471714539944337">Contenu de nature délicate</translation>
 <translation id="2335758110242123814">Ouvrir le groupe</translation>
 <translation id="2336228925368920074">Ajouter tous les onglets aux favoris…</translation>
@@ -2102,7 +2102,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="240789602312469910">Envoyez les données d'utilisation et de diagnostic. Aidez-nous à améliorer l'expérience Android de votre enfant en envoyant automatiquement à Google des données de diagnostic, de l'appareil et d'utilisation des applis. L'envoi de ces données ne sera pas utilisé pour identifier votre enfant, mais pour assurer la stabilité du système et des applis, et pour apporter d'autres améliorations. Certaines données agrégées contribueront également à améliorer les applis Google et elles aideront nos partenaires, comme les développeurs Android. Ce <ph name="BEGIN_LINK1" />paramètre<ph name="END_LINK1" /> est appliqué par le propriétaire du compte. C'est à lui de choisir d'envoyer ou non à Google les données de diagnostic et d'utilisation de cet appareil. Si le paramètre relatif aux autres activités sur le Web et dans les applis est activé pour votre enfant, ces données peuvent être enregistrées dans son compte Google. <ph name="BEGIN_LINK2" />En savoir plus sur les mesures<ph name="BEGIN_LINK2_END" />En savoir plus<ph name="END_LINK2" /></translation>
 <translation id="2408018932941436077">Enregistrement de la carte en cours…</translation>
 <translation id="2408742686124047357">Épinglez Lentille Google sur votre barre d'outils pour un accès facile la prochaine fois</translation>
-<translation id="2408762424059547338">Vous protège mieux des attaques en désactivant l'optimisation JavaScript.</translation>
+<translation id="2408762424059547338">Vous protège mieux des attaques en désactivant l'optimisation JavaScript</translation>
 <translation id="2408955596600435184">Entrez votre NIP</translation>
 <translation id="2409268599591722235">Allons-y</translation>
 <translation id="2409378541210421746">Modifier la sélection de la langue</translation>
@@ -5554,6 +5554,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="4732799736617504962">Le micro connecté prend en charge uniquement la suppression du bruit</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" /> % (gauche)</translation>
 <translation id="4733793249294335256">Emplacement</translation>
+<translation id="4734965478015604180">Horizontal</translation>
 <translation id="473546211690256853">Ce compte est géré par <ph name="DOMAIN" /></translation>
 <translation id="4735506354605317060">Encercler le pointeur</translation>
 <translation id="4735793370946506039">Apprenez-en plus à propos de la navigation sécurisée améliorée.</translation>
@@ -5820,6 +5821,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="4901154724271753917">Agrandir les éléments récemment fermé</translation>
 <translation id="4901309472892185668">Sélectionner l'état de la fonctionnalité expérimentale <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="49027928311173603">La règle téléchargée du serveur n'est pas valide : <ph name="VALIDATION_ERROR" />.</translation>
+<translation id="490375751687810070">Vertical</translation>
 <translation id="4906490889887219338">Configurez ou gérez les partages de fichiers sur le réseau. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="4906679076183257864">Rétablir les paramètres par défaut</translation>
 <translation id="4907129260985716018">Choisir quand cette extension peut lire et modifier vos données relatives aux sites</translation>
@@ -8357,7 +8359,7 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="6686665106869989887">Onglet déplacé vers la droite</translation>
 <translation id="6686676261102452995">Vous avez ouvert ce document aujourd'hui</translation>
 <translation id="6686817083349815241">Enregistrer votre mot de passe</translation>
-<translation id="6686878118106035853">La protection améliorée personnalisée désactive l'optimisation JavaScript pour tous les sites.</translation>
+<translation id="6686878118106035853">La protection améliorée personnalisée désactive l'optimisation JavaScript pour tous les sites</translation>
 <translation id="6687008241368170505">Modifier le NIP du gestionnaire de mots de passe Google</translation>
 <translation id="6687079240787935001">Masquer <ph name="MODULE_TITLE" /></translation>
 <translation id="6689948774466767379">Touches de souris</translation>

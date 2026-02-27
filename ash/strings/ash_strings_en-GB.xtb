@@ -426,6 +426,7 @@
 <translation id="2478076885740497414">Install app</translation>
 <translation id="2482878487686419369">Notifications</translation>
 <translation id="2484513351006226581">Hit <ph name="KEYBOARD_SHORTCUT" /> to switch keyboard layout.</translation>
+<translation id="2485422356828889247">Uninstall</translation>
 <translation id="2486214324139475545"><ph name="DESK_NAME" /> preview. Active desk.</translation>
 <translation id="2486405091093637109">'<ph name="DISPLAY_NAME" />' was changed to <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz) resolution. Without confirming, the previous settings will be restored in <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2487915095798731898">Join</translation>

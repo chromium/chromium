@@ -5564,6 +5564,7 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="4732799736617504962">Die gekoppelde mikrofoon kan slegs geraasvermindering steun</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (links)</translation>
 <translation id="4733793249294335256">Ligging</translation>
+<translation id="4734965478015604180">Horisontaal</translation>
 <translation id="473546211690256853">Hierdie rekening word bestuur deur <ph name="DOMAIN" /></translation>
 <translation id="4735506354605317060">Omkring wyser</translation>
 <translation id="4735793370946506039">Kom meer te wete oor Verbeterde Veiligblaai.</translation>
@@ -5831,6 +5832,7 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="4901154724271753917">Vou Onlangs Toegemaak uit</translation>
 <translation id="4901309472892185668">Kies eksperimenttoestand vir die <ph name="EXPERIMENT_NAME" />-eksperiment.</translation>
 <translation id="49027928311173603">Die beleid wat van die bediener afgelaai is, is ongeldig: <ph name="VALIDATION_ERROR" />.</translation>
+<translation id="490375751687810070">Vertikaal</translation>
 <translation id="4906490889887219338">Stel netwerklêerdelings op of bestuur dit. <ph name="LINK_BEGIN" />Kom meer te wete<ph name="LINK_END" /></translation>
 <translation id="4906679076183257864">Stel terug na verstek</translation>
 <translation id="4907129260985716018">Kies wanneer hierdie uitbreiding jou werfdata kan lees en verander</translation>
@@ -8504,6 +8506,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="678520006562636090">Probeer Google Lens op jou <ph name="DEVICE_TYPE" /></translation>
 <translation id="6785594991951195537">Gebruik jou <ph name="PASSWORD_DOMAIN" /></translation>
 <translation id="6785739405821760313">Bekyk tans gestoorde lessenaars. Druk oortjie om te navigeer.</translation>
+<translation id="6785779729084003225">Gebruik <ph name="FOCUS_TOGGLE_HOTKEY" /> om Gemini in Chrome oop te maak</translation>
 <translation id="6785915470941880363">Omgekeerde rollees <ph name="LINK_BEGIN" />Kom meer te wete<ph name="LINK_END" /></translation>
 <translation id="67862343314499040">Pers</translation>
 <translation id="6786480815699355166">Slegs gesteunde Intydse Onderskrifte-tale kan vertaal word</translation>

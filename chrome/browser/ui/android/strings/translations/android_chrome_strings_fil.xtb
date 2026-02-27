@@ -281,6 +281,7 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="2205701497928406883"><ph name="TAB_TITLE" />, Naka-pin at Nagshe-share na Tab</translation>
 <translation id="22091350895006575">Magdagdag ng username</translation>
 <translation id="221494669172414749">Kapag binuksan ang Chrome nang walang lock ng profile, maaalis ang iyong mga naka-save na password at mga paraan ng pagbabayad sa kotse. Kapag gumamit ng lock ng profile, mananatiling secure ang data na ito.</translation>
+<translation id="2226826835915474236">Mga hindi aktibong shortcut</translation>
 <translation id="2227179592712503583">Alisin ang suhestyon</translation>
 <translation id="2227444325776770048">Magpatuloy bilang si <ph name="USER_FULL_NAME" /></translation>
 <translation id="2230777942707397948">Walang lamang window</translation>
@@ -923,6 +924,7 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="4885273946141277891">Hindi sinusuportahang bilang ng mga instance ng Chrome.</translation>
 <translation id="4890973535105146893">Walang naka-save na password sa iyong Google Account</translation>
 <translation id="4905823827770127520">Magsama ng link sa page</translation>
+<translation id="4908601375231458049">I-customize ang grupo ng tab at i-click ang Tapos na</translation>
 <translation id="4908869848243824489">Discover ng Google</translation>
 <translation id="4910889077668685004">Mga app sa pagbabayad</translation>
 <translation id="4911042367886397055">Maligayang pagbabalik, <ph name="USER_NAME" />!</translation>
@@ -1186,6 +1188,7 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="6040143037577758943">Isara</translation>
 <translation id="604124094241169006">Awtomatiko</translation>
 <translation id="6042308850641462728">Marami pang iba</translation>
+<translation id="6047066316630165190">Buksan ang grid na tab switcher</translation>
 <translation id="604996488070107836">Hindi na-download ang <ph name="FILE_NAME" /> dahil sa isang hindi alam na error.</translation>
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">Kontrolin ang iyong mga kuwento at aktibidad dito</translation>
@@ -1259,6 +1262,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="6301526076346731664">Buksan ang Mga Tool ng Developer</translation>
 <translation id="630308129961693966">Piliin ang address bar position</translation>
 <translation id="6303969859164067831">Mag-sign out at i-off ang pag-sync</translation>
+<translation id="6305257382500066042">Subukan ito ngayon</translation>
 <translation id="6307241780749477694">I-verify na ikaw ito para makuha ang lahat ng iyong password sa device na ito</translation>
 <translation id="6309082029962045994"><ph name="TAB_TITLE" />, Naka-multiselect at Naka-pin na Tab na May Naririnig na Audio</translation>
 <translation id="6312687380483398334">Mga web app (tahimik)</translation>
@@ -1655,6 +1659,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="7740287852186792672">Mga resulta sa paghahanap</translation>
 <translation id="774403695779169686"><ph name="TAB_TITLE" />, Piniling Nagshe-share na Tab na Incognito</translation>
 <translation id="774876555279732384">Pinapamahalaan din ang mga serbisyo ng autofill sa <ph name="BEGIN_LINK" />Mga Setting ng Android<ph name="END_LINK" />.</translation>
+<translation id="7758884017823246335">Magdagdag ng paghahanap sa site</translation>
 <translation id="7759809451544302770">Opsyonal</translation>
 <translation id="7762668264895820836">SD card <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">Magdagdag ng address</translation>
@@ -1845,6 +1850,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="8458341576712814616">Shortcut</translation>
 <translation id="8458413889418591446">Para mabilis na makabalik sa mga site na binisita mo, i-sync ang iyong history at mga tab</translation>
 <translation id="84594714173170813">Patuloy na gamitin ang data ng Chrome sa iyong Google Account</translation>
+<translation id="8460008946585880786">Mag-drag at mag-drop ng isang tab sa isa pa</translation>
 <translation id="8460448946170646641">Suriin ang mga pangunahing kontrol sa privacy at seguridad</translation>
 <translation id="8460932807646981183">Pamahalaan ang mga search engine at paghahanap sa site</translation>
 <translation id="8473863474539038330">Mga address at higit pa</translation>
@@ -1886,6 +1892,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="8634050254805484913">Naka-hide sa maliliit na screen</translation>
 <translation id="8635399646025169806">Panatilihin ang grupo ng tab?</translation>
 <translation id="8636825310635137004">Upang makuha ang iyong mga tab mula sa iba mo pang mga device, i-on ang pag-sync.</translation>
+<translation id="8639963783467694461">Mga setting ng autofill</translation>
 <translation id="8662474268934425487">Mag-sign in sa <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8664979001105139458">May ganito nang pangalan ng file</translation>
 <translation id="8676276370198826499">Mag-sign up sa <ph name="SITE_ETLD_PLUS_ONE" /> gamit ang <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -1934,6 +1941,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="8865415417596392024">Data ng Chrome sa iyong account</translation>
 <translation id="8872506776304248286">Buksan sa app</translation>
 <translation id="8890668505403261809">Maghanap sa iyong mga tab na Incognito</translation>
+<translation id="8892234476517513962">Naka-sign in ka na</translation>
 <translation id="8894890673032951011"><ph name="TAB_TITLE" />, Piniling Nagre-record na Tab na Incognito</translation>
 <translation id="8898822736010347272">Nagpapadala ng mga URL ng ilang page na binibisita mo, limitadong impormasyon ng system, at ilang content ng page sa Google, para makatulong na tumuklas ng mga bagong banta at protektahan ang lahat ng nasa web.</translation>
 <translation id="8903921497873541725">Mag-zoom in</translation>

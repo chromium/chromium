@@ -5546,6 +5546,7 @@
 <translation id="4732799736617504962">Қосылған микрофон шуды басуға ғана қолдау көрсетеді.</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (сол)</translation>
 <translation id="4733793249294335256">Орын</translation>
+<translation id="4734965478015604180">Көлденең</translation>
 <translation id="473546211690256853">Бұл аккаунтты <ph name="DOMAIN" /> басқарады</translation>
 <translation id="4735506354605317060">Меңзерді айналдыру</translation>
 <translation id="4735793370946506039">Күшейтілген Safe Browsing туралы толық ақпарат алыңыз.</translation>
@@ -5812,6 +5813,7 @@
 <translation id="4901154724271753917">Жақында жабылған беттерді жаю</translation>
 <translation id="4901309472892185668"><ph name="EXPERIMENT_NAME" /> экспериментінің күйін таңдаңыз.</translation>
 <translation id="49027928311173603">Серверден жүктелген саясат жарамсыз: <ph name="VALIDATION_ERROR" />.</translation>
+<translation id="490375751687810070">Тік</translation>
 <translation id="4906490889887219338">Желінің ортақ каталогтерін реттеу немесе басқару. <ph name="LINK_BEGIN" />Толығырақ<ph name="LINK_END" /></translation>
 <translation id="4906679076183257864">Әдепкі мәнге қалпына келтіру</translation>
 <translation id="4907129260985716018">Бұл кеңейтімнің сайт деректерін қашан оқитынын және өзгертетінін таңдаңыз</translation>
@@ -5898,7 +5900,7 @@
 <translation id="4968994772848295474">Қонақ режимінде веб-қолданбалар орнатылмайды</translation>
 <translation id="4971412780836297815">Аяқталғанда ашу</translation>
 <translation id="4972129977812092092">Принтер ақпаратын өзгерту</translation>
-<translation id="4972164225939028131">Құпия сөз дұрыс емес</translation>
+<translation id="4972164225939028131">Құпия сөз қате.</translation>
 <translation id="4972737347717125191">Сайттар виртуалдық шындық құрылғыларын және деректерді пайдалануға рұқсат сұрай алады.</translation>
 <translation id="4973325300212422370">{NUM_TABS,plural, =1{Сайттың дыбысын өшіру}other{Сайттардың дыбысын өшіру}}</translation>
 <translation id="497403230787583386">Қауіпсіздік тексерісі жүргізілді. Құжатыңыз басып шығарылады.</translation>
@@ -6741,7 +6743,7 @@
 <translation id="5562588178647493983">Қосымша ақпарат алу үшін әкімшіге хабарласыңыз.</translation>
 <translation id="556321030400250233">жергілікті немесе ортақ файл</translation>
 <translation id="5563234215388768762">Google-дан іздеңіз не URL мекенжайын теріңіз</translation>
-<translation id="5563698194918415761">Жаңарту желі саясаты немесе прокси сервері арқылы блокталды.</translation>
+<translation id="5563698194918415761">Жаңарту желі саясаты немесе прокси-сервер арқылы блокталды.</translation>
 <translation id="5563824734298958390">Қойындылар тобынан шығасыз ба?</translation>
 <translation id="5565735124758917034">Белсенді</translation>
 <translation id="5568069709869097550">Кіру мүмкін емес</translation>
@@ -8480,6 +8482,7 @@
 <translation id="678520006562636090">Google Lens-ді <ph name="DEVICE_TYPE" /> құрылғысында қолданып көріңіз</translation>
 <translation id="6785594991951195537"><ph name="PASSWORD_DOMAIN" /> доменін пайдалану</translation>
 <translation id="6785739405821760313">Сақталған жұмыс үстелдерін көру. Жылжу үшін Tab пернесін басыңыз.</translation>
+<translation id="6785779729084003225">Chrome-дағы Gemini-ды ашу үшін <ph name="FOCUS_TOGGLE_HOTKEY" /> пернелерін басыңыз</translation>
 <translation id="6785915470941880363">Кері айналдыру туралы <ph name="LINK_BEGIN" />қосымша ақпарат<ph name="LINK_END" /></translation>
 <translation id="67862343314499040">Ақшыл күлгін</translation>
 <translation id="6786480815699355166">Қолдау көрсетілетін автоматты субтитр тілдерін ғана аударуға болады.</translation>

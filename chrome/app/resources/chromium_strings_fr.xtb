@@ -588,6 +588,9 @@ Chromium ne peut pas récupérer vos paramètres.</translation>
 <translation id="7384121030444253939">Cette extension n'est plus prise en charge. Chromium vous recommande de la supprimer.</translation>
 <translation id="7413153308467572558">Reprenez là où vous en étiez : Chromium restaure vos onglets à chaque redémarrage. Pour désactiver cette option, accédez aux</translation>
 <translation id="7427879960656355200">Importer les mots de passe dans Chromium</translation>
+<translation id="744815265653811511">1. Cliquez sur <ph name="BUTTON_LABEL" /> ci-dessous
+2. Cliquez sur <ph name="BUTTON_2" /> dans les paramètres Windows
+3. Cliquez sur <ph name="BUTTON_3" /> dans la notification Windows pour épingler Chromium à la barre des tâches et y accéder rapidement</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Chromium pour les développeurs</translation>
 <translation id="7450541714075000668">Texte copié</translation>
 <translation id="7451052299415159299">Chromium a besoin de votre autorisation pour accéder à votre appareil photo pour ce site</translation>
@@ -603,6 +606,7 @@ Chromium ne peut pas récupérer vos paramètres.</translation>
 <translation id="761356813943268536">Votre webcam et votre micro sont en cours d'utilisation dans Chromium.</translation>
 <translation id="7617377681829253106">Chromium s'est amélioré</translation>
 <translation id="7622753900276619808">Vous disposez désormais de plus de fonctionnalités dans Chromium</translation>
+<translation id="7624307931717240213">Nous utilisons ces informations pour améliorer ce service. Consultez les règles de confidentialité et Conditions d'utilisation.</translation>
 <translation id="7649070708921625228">Aide</translation>
 <translation id="7656340475565475526">Laissez Chromium naviguer pour vous</translation>
 <translation id="7658239707568436148">Annuler</translation>

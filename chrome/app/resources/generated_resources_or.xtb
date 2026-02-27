@@ -2099,7 +2099,7 @@
 <translation id="240789602312469910">ବ୍ୟବହାର ଏବଂ ଡାଏଗ୍ନୋଷ୍ଟିକ ଡାଟା ପଠାନ୍ତୁ। ସ୍ଵଚାଳିତ ଭାବେ ଡାଏଗ୍ନୋଷ୍ଟିକ୍, ଡିଭାଇସ୍ ଏବଂ ଆପ୍ ବ୍ୟବହାର ଡାଟା Googleକୁ ପଠାଇ ଆପଣଙ୍କ ପିଲାର Android ଅନୁଭୂତିକୁ ଉନ୍ନତ କରିବାରେ ସାହାଯ୍ୟ କରନ୍ତୁ। ଆପଣଙ୍କ ପିଲାକୁ ଚିହ୍ନଟ କରିବାରେ ଏହାକୁ ବ୍ୟବହାର କରାଯିବ ନାହିଁ ଏବଂ ସିଷ୍ଟମ୍ ଓ ଆପର ସ୍ଥିରତା ତଥା ଅନ୍ୟ ଉନ୍ନତିଗୁଡ଼ିକରେ ସାହାଯ୍ୟ କରିବ। କିଛି ଏକତ୍ରିତ ଡାଟା Android ଡେଭେଲପର ପରି Google ଆପ୍ସ ଏବଂ ଏହାର ପାର୍ଟନରଗୁଡ଼ିକୁ ମଧ୍ୟ ସାହାଯ୍ୟ କରିବ। ଏହି <ph name="BEGIN_LINK1" />ସେଟିଂ<ph name="END_LINK1" /> ମାଲିକଙ୍କ ଦ୍ୱାରା ଲାଗୁ କରାଯାଇଛି। ଏହି ଡିଭାଇସ୍ ପାଇଁ ଡାଏଗ୍ନୋଷ୍ଟିକ୍ ଏବଂ ବ୍ୟବହାର ଡାଟା Googleକୁ ପଠାଇବା ନିମନ୍ତେ ମାଲିକ ବାଛିପାରନ୍ତି। ଯଦି ଆପଣଙ୍କର ପିଲା ପାଇଁ ଅତିରିକ୍ତ ୱେବ୍ ଏବଂ ଆପ୍ କାର୍ଯ୍ୟକଳାପ ସେଟିଂସ୍ ଚାଲୁ କରାଯାଏ, ତେବେ ଏହି ଡାଟା ସେମାନଙ୍କର Google ଆକାଉଣ୍ଟରେ ସେଭ୍ ହୋଇପାରେ। <ph name="BEGIN_LINK2" />ମେଟ୍ରିକ୍ସ ବିଷୟରେ ଅଧିକ ଜାଣନ୍ତୁ<ph name="BEGIN_LINK2_END" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK2" /></translation>
 <translation id="2408018932941436077">କାର୍ଡ ସେଭ୍ କରାଯାଉଛି</translation>
 <translation id="2408742686124047357">ପରବର୍ତ୍ତୀ ସମୟରେ ସହଜ ଆକ୍ସେସ ପାଇଁ ଆପଣଙ୍କ ଟୁଲ ବାରରେ Google Lens ପିନ କରନ୍ତୁ</translation>
-<translation id="2408762424059547338">JavaScript ଅପ୍ଟିମାଇଜେସନକୁ ବନ୍ଦ କରି ଆପଣଙ୍କୁ ଆକ୍ରମଣରୁ ବହୁତ ଭଲ ସୁରକ୍ଷା ଦିଏ</translation>
+<translation id="2408762424059547338">JavaScript ଅପ୍ଟିମାଇଜେସନକୁ ବନ୍ଦ କରି ଆପଣଙ୍କୁ ଆଟାକରୁ ବହୁତ ଭଲ ସୁରକ୍ଷା ଦିଏ</translation>
 <translation id="2408955596600435184">ଆପଣଙ୍କର PIN ଲେଖନ୍ତୁ</translation>
 <translation id="2409268599591722235">ଚାଲନ୍ତୁ ଆରମ୍ଭ କରିବା</translation>
 <translation id="2409378541210421746">ଭାଷା ଚୟନକୁ ଏଡିଟ କରନ୍ତୁ</translation>
@@ -5548,6 +5548,7 @@
 <translation id="4732799736617504962">କନେକ୍ଟ ହୋଇଥିବା ମାଇକଟି କେବଳ ନଏଜ ହ୍ରାସକୁ ସପୋର୍ଟ କରିପାରିବ</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (ବାମ)</translation>
 <translation id="4733793249294335256">ଲୋକେସନ୍</translation>
+<translation id="4734965478015604180">ଭୂସମାନ୍ତର</translation>
 <translation id="473546211690256853">ଏହି ଆକାଉଣ୍ଟ <ph name="DOMAIN" /> ଦ୍ଵାରା ପରିଚାଳିତ ହେଉଛି</translation>
 <translation id="4735506354605317060">ପଏଣ୍ଟରକୁ ସର୍କଲ କରନ୍ତୁ</translation>
 <translation id="4735793370946506039">ଉନ୍ନତ ସୁରକ୍ଷିତ ବ୍ରାଉଜିଂ ବିଷୟରେ ଅଧିକ ଜାଣନ୍ତୁ।</translation>
@@ -5814,6 +5815,7 @@
 <translation id="4901154724271753917">ବର୍ତ୍ତମାନ ବନ୍ଦ କରାଯାଇଥିବା ବିସ୍ତାର କରନ୍ତୁ</translation>
 <translation id="4901309472892185668"><ph name="EXPERIMENT_NAME" /> ପରୀକ୍ଷଣ ପାଇଁ ପରୀକ୍ଷଣର ସ୍ଥିତି ଚୟନ କରନ୍ତୁ।</translation>
 <translation id="49027928311173603">ସର୍ଭର୍‌ରୁ ଡାଉନ୍‌ଲୋଡ୍ ହୋଇଥିବା ନୀତି ଅବୈଧ ଅଟେ: <ph name="VALIDATION_ERROR" />।</translation>
+<translation id="490375751687810070">ଭୂଲମ୍ଵ</translation>
 <translation id="4906490889887219338">ନେଟ୍‍ୱାର୍କ ଫାଇଲ୍ ସେୟାର୍ ସେଟ୍ ଅପ୍ କରନ୍ତୁ କିମ୍ବା ପରିଚାଳନା କରନ୍ତୁ। <ph name="LINK_BEGIN" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="LINK_END" /></translation>
 <translation id="4906679076183257864">ଡିଫଲ୍ଟ ଭାବେ ରିସେଟ କରନ୍ତୁ</translation>
 <translation id="4907129260985716018">ଏହି ଏକ୍ସଟେନସନ କେତେବେଳେ ଆପଣଙ୍କ ସାଇଟ ଡାଟା ପଢ଼ିପାରିବ ଏବଂ ତା’କୁ ପରିବର୍ତ୍ତନ କରିପାରିବ ତାହା ବାଛନ୍ତୁ</translation>
@@ -8485,6 +8487,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="678520006562636090">ଆପଣଙ୍କ <ph name="DEVICE_TYPE" />ରେ Google Lens ବ୍ୟବହାର କରି ଦେଖନ୍ତୁ</translation>
 <translation id="6785594991951195537">ଆପଣଙ୍କ <ph name="PASSWORD_DOMAIN" /> ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="6785739405821760313">ସେଭ କରାଯାଇଥିବା ଡେସ୍କଗୁଡ଼ିକୁ ଦେଖିବା। ନାଭିଗେଟ କରିବା ପାଇଁ ଟାବକୁ ଦବାନ୍ତୁ।</translation>
+<translation id="6785779729084003225">Chromeରେ Gemini ଖୋଲିବା ପାଇଁ <ph name="FOCUS_TOGGLE_HOTKEY" />କୁ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="6785915470941880363">ଓଲଟା ସ୍କ୍ରଲିଂ <ph name="LINK_BEGIN" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="LINK_END" /></translation>
 <translation id="67862343314499040">ବାଇଗଣୀ</translation>
 <translation id="6786480815699355166">କେବଳ ସପୋର୍ଟ କରୁଥିବା ଲାଇଭ କେପ୍ସନ ଭାଷାଗୁଡ଼ିକରେ ଅନୁବାଦ କରାଯାଇପାରିବ</translation>

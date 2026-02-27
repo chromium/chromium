@@ -281,6 +281,7 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="2205701497928406883"><ph name="TAB_TITLE" />, prikvačena kartica koja dijeli sadržaj</translation>
 <translation id="22091350895006575">Dodajte korisničko ime</translation>
 <translation id="221494669172414749">Otvaranjem Chromea bez zaključavanja profila uklonit će se spremljene zaporke i načini plaćanja s automobila. Upotrebom zaključavanja profila štitite te podatke.</translation>
+<translation id="2226826835915474236">Neaktivni prečaci</translation>
 <translation id="2227179592712503583">Ukloni prijedlog</translation>
 <translation id="2227444325776770048">Nastavite kao <ph name="USER_FULL_NAME" /></translation>
 <translation id="2230777942707397948">Prazan prozor</translation>
@@ -1655,6 +1656,7 @@ Kako biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke C
 <translation id="7740287852186792672">Rezultati pretraživanja</translation>
 <translation id="774403695779169686"><ph name="TAB_TITLE" />, odabrana anonimna kartica koja dijeli sadržaj</translation>
 <translation id="774876555279732384">Uslugama automatskog popunjavanja upravlja se i u <ph name="BEGIN_LINK" />postavkama Androida<ph name="END_LINK" />.</translation>
+<translation id="7758884017823246335">Dodaj pretraživanje web-lokacija</translation>
 <translation id="7759809451544302770">Izborno</translation>
 <translation id="7762668264895820836">SD kartica <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">Dodajte adresu</translation>
@@ -1886,6 +1888,7 @@ Kako biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke C
 <translation id="8634050254805484913">Skriveno na uskim zaslonima</translation>
 <translation id="8635399646025169806">Sačuvati grupu kartica?</translation>
 <translation id="8636825310635137004">Da bi se prikazale kartice s vaših ostalih uređaja, uključite sinkronizaciju.</translation>
+<translation id="8639963783467694461">Postavke automatske ispune</translation>
 <translation id="8662474268934425487">Prijavite se na <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8664979001105139458">Već postoji datoteka s tim nazivom</translation>
 <translation id="8676276370198826499">Registrirajte se za <ph name="SITE_ETLD_PLUS_ONE" /> pomoću davatelja identiteta <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -1934,6 +1937,7 @@ Kako biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke C
 <translation id="8865415417596392024">Podaci iz Chromea na vašem računu</translation>
 <translation id="8872506776304248286">Otvori u aplikaciji</translation>
 <translation id="8890668505403261809">Pretražite svoje anonimne kartice</translation>
+<translation id="8892234476517513962">Već ste prijavljeni</translation>
 <translation id="8894890673032951011"><ph name="TAB_TITLE" />, odabrana anonimna kartica koja snima</translation>
 <translation id="8898822736010347272">Šalje URL-ove određenih stranica koje posjećujete, ograničene podatke o sustavu i sadržaj određenih stranica Googleu kako bi se pomoglo pri otkrivanju novih prijetnji i kako bi se zaštitili svi korisnici na webu.</translation>
 <translation id="8903921497873541725">Povećaj</translation>

@@ -5552,6 +5552,7 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="4732799736617504962">Qoşulmuş mikrofon yalnız səs-küyün ləğvini dəstəkləyə bilər</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% qalıb</translation>
 <translation id="4733793249294335256">Məkan</translation>
+<translation id="4734965478015604180">Üfüqi</translation>
 <translation id="473546211690256853">Bu hesab <ph name="DOMAIN" /> tərəfindən idarə olunur</translation>
 <translation id="4735506354605317060">Dairəvi göstərici</translation>
 <translation id="4735793370946506039">Qabaqcıl Güvənli Baxış haqqında ətraflı məlumat.</translation>
@@ -5819,6 +5820,7 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="4901154724271753917">Son bağlananı genişləndirin</translation>
 <translation id="4901309472892185668"><ph name="EXPERIMENT_NAME" /> təcrübəsi üçün təcrübə vəziyyətini seçin.</translation>
 <translation id="49027928311173603">Serverdən endirilmiş qaydalar güvənsizdir: <ph name="VALIDATION_ERROR" />.</translation>
+<translation id="490375751687810070">Vertikal</translation>
 <translation id="4906490889887219338">Şəbəkə fayl paylaşımlarını ayarlayın və ya idarə edin. <ph name="LINK_BEGIN" />Ətraflı məlumat<ph name="LINK_END" /></translation>
 <translation id="4906679076183257864">Defolta sıfırlandı</translation>
 <translation id="4907129260985716018">Bu artırmanın sayt datanızı nə vaxt oxuya və dəyişə biləcəyini seçin</translation>
@@ -8489,6 +8491,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="678520006562636090"><ph name="DEVICE_TYPE" /> cihazında Google Linzanı sınayın</translation>
 <translation id="6785594991951195537"><ph name="PASSWORD_DOMAIN" /> istifadə edin</translation>
 <translation id="6785739405821760313">Yadda saxlanmış masalara baxılır. Keçmək üçün taba basın.</translation>
+<translation id="6785779729084003225">Chrome-da Gemini-ı açmaq üçün <ph name="FOCUS_TOGGLE_HOTKEY" /> düyməsindən istifadə edin</translation>
 <translation id="6785915470941880363">Tərs sürüşdürmə <ph name="LINK_BEGIN" />Ətraflı məlumat<ph name="LINK_END" /></translation>
 <translation id="67862343314499040">Tünd-bənövşəyi</translation>
 <translation id="6786480815699355166">Yalnız dəstəklənən Canlı Subtitr dilləri tərcümə edilə bilər</translation>

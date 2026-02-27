@@ -910,7 +910,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="2436976580469434549">Celfyddydau Ffibr a Thecstilau</translation>
 <translation id="243815215670139125">Ni fu modd cadw'r cerdyn hwn yn eich Cyfrif Google. Mae wedi'i gadw i Chrome ar y ddyfais hon yn lle hynny.</translation>
 <translation id="2438874542388153331">Pedwar twll ar y dde</translation>
-<translation id="2440855519769445271">I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiadau talu<ph name="END_LINK" /></translation>
 <translation id="2441854154602066476">Dulliau talu sydd ar gael i'w llenwi ar gyffwrdd. Mae'r bysellfwrdd wedi'i guddio.</translation>
 <translation id="2442865686365739754"><ph name="BEGIN_EMPHASIS" />Ni fydd<ph name="END_EMPHASIS" /> Chrome yn cadw:
           <ph name="BEGIN_LIST" />
@@ -947,6 +946,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="248064299258688299">Mae'r estyniad <ph name="EXTENSION_NAME" /> yn dweud</translation>
 <translation id="2482878487686419369">Hysbysiadau</translation>
 <translation id="248348093745724435">Polisïau peiriant</translation>
+<translation id="248395913932153421">Diwrnod</translation>
 <translation id="2485243023686553468">Ffonau Clyfar</translation>
 <translation id="2491120439723279231">Mae tystysgrif y gweinydd yn cynnwys gwallau.</translation>
 <translation id="2491414235131909199">Mae'r dudalen hon wedi'i rhwystro gan estyniad</translation>
@@ -2286,7 +2286,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="4648262692072505866">Rhaid i'r hash fod yn y fformat SHA-256.</translation>
 <translation id="4652266463001779298">Ni chaniateir</translation>
 <translation id="4652440160515225514">Mae eich sefydliad wedi rhwystro'r wefan hon oherwydd ei bod yn torri polisi.</translation>
-<translation id="4654457557264366314">Mae cynlluniau talu yn amodol ar gymhwysedd.</translation>
 <translation id="4658638640878098064">Stapl ar y chwith uchaf</translation>
 <translation id="4658801711339831733">Sgan wedi'i gadw i Google Drive</translation>
 <translation id="4660592918803576381">Agor yn Drive</translation>
@@ -2597,7 +2596,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="512756860033933700">Caniateir clo bysellfwrdd</translation>
 <translation id="5127934926273826089">Blodau</translation>
 <translation id="5129534298163637277">Deialog cadarnhad</translation>
-<translation id="5129662217315786329">Pwyleg</translation>
 <translation id="5135404736266831032">Rheoli cyfeiriadau…</translation>
 <translation id="5136841603454277753">Rhowch y cod cywir</translation>
 <translation id="5137761395480718572">Mae'r ap hwn yn gofyn am ganiatâd i osod manylion Wi-Fi. Ar ôl gosod, bydd eich <ph name="DEVICE_TYPE" /> yn cysylltu'n awtomatig â'r rhwydweithiau Wi-Fi sy'n cymryd rhan. I dynnu'r manylion hyn, dadosodwch yr ap. <ph name="LEARN_MORE" /></translation>
@@ -3544,7 +3542,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="6649510485211003056">195 x 270 mm</translation>
 <translation id="6651270836885078973">Rheolir gan:</translation>
 <translation id="6652101503459149953">Defnyddio Windows Hello</translation>
-<translation id="6654224358955673568">Ffurfioli</translation>
 <translation id="6654244995031366386">Gwydr (Gwead)</translation>
 <translation id="6655085656059574817">Mae cadw'ch cyfrif yn gysylltiedig yn eich helpu i dalu'n gyflymach gyda <ph name="BNPL_ISSUER_NAME" />, ond gallwch ei ddatgysylltu trwy fynd i <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /></translation>
 <translation id="6656935431494847393">Yn cynnwys gwybodaeth megis archebion hedfan a gwybodaeth cerbyd</translation>
@@ -3716,7 +3713,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="6926216138694948720">Celf Corff</translation>
 <translation id="692638818576287323">Cerbydau Masnachol</translation>
 <translation id="6927878187051807444">ffeiliau camera a sgrinluniau</translation>
-<translation id="6929949393612835405">Cau a dychwelyd i "<ph name="OPENER_TITLE" />"</translation>
 <translation id="6930607614725241390">Chwilio yn y panel ochr</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Mae eich peiriant chwilio diofyn yn gadael i chi chwilio'r we ac yn pweru nodweddion Chrome<ph name="END_BOLD" /> fel chwilio o'r bar cyfeiriad ac o ddelweddau ar dudalennau gwe. Mae'n bosib na fydd nodwedd ar gael os nad yw'ch peiriant chwilio yn ei chefnogi.</translation>
 <translation id="6934672428414710184">Mae'r enw hwn yn dod o'ch Cyfrif Google</translation>

@@ -426,6 +426,7 @@
 <translation id="2478076885740497414">Инсталиране на приложението</translation>
 <translation id="2482878487686419369">Известия</translation>
 <translation id="2484513351006226581">Натиснете <ph name="KEYBOARD_SHORTCUT" /> за превключване на клавиатурната подредба.</translation>
+<translation id="2485422356828889247">Деинсталиране</translation>
 <translation id="2486214324139475545">Визуализация на <ph name="DESK_NAME" />. Активен работен кът.</translation>
 <translation id="2486405091093637109">Разделителната способност на <ph name="DISPLAY_NAME" /> бе променена на <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Ако не потвърдите, предишните настройки ще бъдат възстановени след <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2487915095798731898">Присъединяване</translation>

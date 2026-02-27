@@ -281,6 +281,7 @@
 <translation id="2205701497928406883"><ph name="TAB_TITLE" />, பின் செய்யப்பட்ட பகிரப்படுகின்ற பக்கம்</translation>
 <translation id="22091350895006575">பயனர்பெயரைச் சேருங்கள்</translation>
 <translation id="221494669172414749">சுயவிவரப் பூட்டு இல்லாமல் Chromeமைத் திறந்தால் நீங்கள் காரில் சேமித்துள்ள கடவுச்சொற்களும் பேமெண்ட் முறைகளும் அகற்றப்படும். சுயவிவரப் பூட்டைப் பயன்படுத்தினால் இந்தத் தரவு பாதுகாப்பாக இருக்கும்.</translation>
+<translation id="2226826835915474236">செயலற்ற ஷார்ட்கட்கள்</translation>
 <translation id="2227179592712503583">பரிந்துரையை அகற்று</translation>
 <translation id="2227444325776770048"><ph name="USER_FULL_NAME" /> ஆகத் தொடர்க</translation>
 <translation id="2230777942707397948">காலியான சாளரம்</translation>
@@ -1655,6 +1656,7 @@
 <translation id="7740287852186792672">தேடல் முடிவுகள்</translation>
 <translation id="774403695779169686"><ph name="TAB_TITLE" />, தேர்ந்தெடுக்கப்பட்ட பகிரப்படுகின்ற மறைநிலைப் பக்கம்</translation>
 <translation id="774876555279732384">தன்னிரப்பிச் சேவைகள் <ph name="BEGIN_LINK" />Android அமைப்புகளிலும்<ph name="END_LINK" /> நிர்வகிக்கப்படுகின்றன.</translation>
+<translation id="7758884017823246335">தளத் தேடலைச் சேர்த்தல்</translation>
 <translation id="7759809451544302770">விரும்பினால்</translation>
 <translation id="7762668264895820836">SD கார்டு <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">முகவரியைச் சேர்</translation>
@@ -1886,6 +1888,7 @@
 <translation id="8634050254805484913">சிறிய திரைகளில் காட்டப்படாது</translation>
 <translation id="8635399646025169806">பக்கக் குழுவை வைத்திருக்கவா?</translation>
 <translation id="8636825310635137004">உங்கள் பிற சாதனங்களிலிருந்து தாவல்களைப் பெற, ஒத்திசைவை இயக்கவும்.</translation>
+<translation id="8639963783467694461">தானியங்குநிரப்பி அமைப்புகள்</translation>
 <translation id="8662474268934425487"><ph name="SITE_ETLD_PLUS_ONE" /> கணக்கில் உள்நுழையுங்கள்</translation>
 <translation id="8664979001105139458">ஃபைல் பெயர் ஏற்கனவே உள்ளது</translation>
 <translation id="8676276370198826499"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> மூலம் <ph name="SITE_ETLD_PLUS_ONE" /> இணையதளத்தில் பதிவு செய்யுங்கள்</translation>
@@ -1934,6 +1937,7 @@
 <translation id="8865415417596392024">உங்கள் கணக்கில் உள்ள Chrome தரவு</translation>
 <translation id="8872506776304248286">பயன்பாட்டில் திற</translation>
 <translation id="8890668505403261809">மறைநிலைப் பக்கங்களைத் தேடுங்கள்</translation>
+<translation id="8892234476517513962">ஏற்கெனவே உள்நுழைந்துள்ளீர்கள்</translation>
 <translation id="8894890673032951011"><ph name="TAB_TITLE" />, தேர்ந்தெடுக்கப்பட்ட ரெக்கார்டு செய்யப்படுகின்ற மறைநிலைப் பக்கம்</translation>
 <translation id="8898822736010347272">இணையத்தில் புதிய அச்சுறுத்தல்களைக் கண்டறிவதற்காகவும் அனைத்துப் பயனர்களையும் பாதுகாப்பதற்காகவும், நீங்கள் பார்வையிடும் சில பக்கங்களின் URLகள், வரையறுக்கப்பட்ட சிஸ்டம் தகவல்கள், சில பக்கங்களின் உள்ளடக்கம் ஆகியவற்றை Googleளுக்கு அனுப்பும்.</translation>
 <translation id="8903921497873541725">பெரிதாக்கு</translation>

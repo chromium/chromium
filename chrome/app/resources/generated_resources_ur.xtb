@@ -5551,6 +5551,7 @@
 <translation id="4732799736617504962">منسلک کردہ مائیک صرف شور کم کرنے کو سپورٹ کر سکتا ہے</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (بائیں)</translation>
 <translation id="4733793249294335256">مقام</translation>
+<translation id="4734965478015604180">افقی</translation>
 <translation id="473546211690256853">یہ اکاؤنٹ <ph name="DOMAIN" /> کے زیر انتظام ہے۔</translation>
 <translation id="4735506354605317060">پوائنٹر پر چکر لگائیں</translation>
 <translation id="4735793370946506039">بہتر کردہ محفوظ براؤزنگ کے بارے میں مزید جانیں۔</translation>
@@ -5817,6 +5818,7 @@
 <translation id="4901154724271753917">حال ہی میں بند کو پھیلائیں</translation>
 <translation id="4901309472892185668"><ph name="EXPERIMENT_NAME" /> تجربے کے لیے تجربے کی حالت منتخب کریں۔</translation>
 <translation id="49027928311173603">سرور سے ڈاؤن لوڈ کردہ پالیسی غلط ہے: <ph name="VALIDATION_ERROR" />۔</translation>
+<translation id="490375751687810070">عمودی</translation>
 <translation id="4906490889887219338">نیٹ ورک فائل کے اشتراکات کو سیٹ اپ کریں یا ان کا نظم کریں۔ <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" /></translation>
 <translation id="4906679076183257864">ڈیفالٹ پر دوبارہ ترتیب دیں</translation>
 <translation id="4907129260985716018">منتخب کریں کہ یہ ایکسٹینشن آپ کی سائٹ کا ڈیٹا کب پڑھ اور اسے تبدیل کر سکتی ہے</translation>
@@ -8487,6 +8489,7 @@
 <translation id="678520006562636090">‏اپنے <ph name="DEVICE_TYPE" /> پر Google لینز آزمائیں</translation>
 <translation id="6785594991951195537">اپنا <ph name="PASSWORD_DOMAIN" /> استعمال کریں</translation>
 <translation id="6785739405821760313">محفوظ کردہ ڈیسکس دیکھی جا رہی ہیں۔ نیویگیٹ کرنے کے لیے ٹیب دبائیں۔</translation>
+<translation id="6785779729084003225">‏‫Chrome میں Gemini کھولنے کے لیے <ph name="FOCUS_TOGGLE_HOTKEY" /> کا استعمال کریں</translation>
 <translation id="6785915470941880363">سکرولنگ کو الٹائیں <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" /></translation>
 <translation id="67862343314499040">وائلیٹ</translation>
 <translation id="6786480815699355166">لائیو کیپشن کی صرف تعاون یافتہ زبانوں کا ترجمہ کیا جا سکتا ہے</translation>

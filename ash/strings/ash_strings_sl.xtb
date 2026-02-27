@@ -426,6 +426,7 @@ Povezanih je toliko naprav: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2478076885740497414">Namestitev aplikacije</translation>
 <translation id="2482878487686419369">Obvestila</translation>
 <translation id="2484513351006226581">Pritisnite <ph name="KEYBOARD_SHORTCUT" />, če želite preklopiti postavitev tipkovnice</translation>
+<translation id="2485422356828889247">Odmeščanje</translation>
 <translation id="2486214324139475545">Predogled namizja »<ph name="DESK_NAME" />«. Aktivno namizje.</translation>
 <translation id="2486405091093637109">Ločljivost zaslona »<ph name="DISPLAY_NAME" />« je bila spremenjena na <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Brez potrditve bodo prejšnje nastavitve obnovljene čez <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2487915095798731898">Pridruži se</translation>

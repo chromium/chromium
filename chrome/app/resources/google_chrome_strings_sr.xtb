@@ -695,6 +695,9 @@ Google Chrome не може да врати подешавања.</translation>
 <translation id="8041795619940733262">Упитај Google<ph name="LINE_BREAK" />о овој картици</translation>
 <translation id="80471789339884597">Хвала вам на инсталацији. Морате да рестартујете све прегледаче пре него што почнете да користите <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8064015586118426197">Chrome OS Flex</translation>
+<translation id="8064965390968184078">1. Кликните на <ph name="BUTTON_LABEL" /> у наставку
+2. Кликните на <ph name="BUTTON_2" /> у подешавањима Windows-а
+3. Кликните на <ph name="BUTTON_3" /> у Windows обавештењу да бисте закачили Chrome на траку задатака ради брзог приступа</translation>
 <translation id="8077579734294125741">Други Chrome профили</translation>
 <translation id="8086881907087796310">Инсталирање није успело зато што рачунар не испуњава минималне захтеве за хардвер.</translation>
 <translation id="8113883687556086139">Потврдите идентитет да бисте користили и сачували Chrome податке на налогу, <ph name="ACCOUNT_EMAIL" /></translation>
@@ -773,6 +776,7 @@ Google Chrome не може да врати подешавања.</translation>
 <translation id="8914504000324227558">Поново покрени Chrome</translation>
 <translation id="8922193594870374009">Да бисте послали број са <ph name="ORIGIN" /> на Android телефон, пријавите се у Chrome на оба уређаја.</translation>
 <translation id="8922998289262614701">Уклони податке ове апликације из Chrome-а</translation>
+<translation id="8925636929359899517">Информације користимо да бисмо побољшали ову услугу. Погледајте <ph name="BEGIN_LINK1" />политику приватности<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />услове коришћења услуге<ph name="END_LINK2" />.</translation>
 <translation id="8936233353620149764">Укључите или искључите Gemini у Chrome-у</translation>
 <translation id="8948460679427074738">Овај додатак није објавио праксе приватности, на пример, како прикупља и користи податке. Chrome препоручује да га уклоните.</translation>
 <translation id="8958307504142971576">Сада имате још функција доступних у Chrome-у</translation>

@@ -428,6 +428,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="1664389769577564606">Photopolymère pour flexographie</translation>
 <translation id="1667730174533834274">valider votre identité avant que ne vous ne modifiiez les paramètres</translation>
 <translation id="1668071460721346172">Recevoir un e-mail</translation>
+<translation id="1670861525135254448">Enregistrez le véhicule</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> vers <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1682696192498422849">Bord court en premier</translation>
 <translation id="168693727862418163">La valeur de la règle n'a pas été validée par rapport à son schéma et sera ignorée.</translation>
@@ -470,6 +471,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="1734878702283171397">Essayez de contacter l'administrateur système.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, date d'expiration : <ph name="CARD_EXPIRATION" /></translation>
 <translation id="1736420071277903564">Ordinateur</translation>
+<translation id="1739364174357629566">Mettez à jour le Known Traveler Number</translation>
 <translation id="1740404923954980840">Pour quitter le plein écran, faites glisser depuis le haut, puis appuyez sur le bouton Retour</translation>
 <translation id="1741474054575634405">Gérez les cartes de fidélité...</translation>
 <translation id="1741613555002899862">Cette règle doit être spécifiée avec une chaîne valide lorsque la règle DnsOverHttpsMode est définie sur <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
@@ -729,6 +731,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2166049586286450108">Accès administrateur complet</translation>
 <translation id="2166378884831602661">Ce site ne peut pas fournir de connexion sécurisée</translation>
 <translation id="2168151236314517198">Une règle de l'administrateur a bloqué l'impression de ce contenu</translation>
+<translation id="2171244127100824330">Dans <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> pour <ph name="ACCOUNT" /></translation>
 <translation id="2172089022819052306">Réparation et entretien de véhicules</translation>
 <translation id="2173302385160625112">Vérifiez votre connexion Internet</translation>
 <translation id="2174875517416416684">Votre transaction n'a pas abouti. Aucuns fonds n'ont été prélevés sur votre compte.</translation>
@@ -907,7 +910,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2436976580469434549">Arts de la fibre et du textile</translation>
 <translation id="243815215670139125">Impossible d'enregistrer cette carte dans votre compte Google. Elle a été enregistrée dans Chrome sur cet appareil à la place.</translation>
 <translation id="2438874542388153331">Quadruple perforation à droite</translation>
-<translation id="2440855519769445271">Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LINK" />paramètres de paiement<ph name="END_LINK" /></translation>
 <translation id="2441854154602066476">Liste des modes de paiement à saisir de façon tactile. Clavier masqué.</translation>
 <translation id="2442865686365739754">Chrome <ph name="BEGIN_EMPHASIS" />n'enregistrera pas<ph name="END_EMPHASIS" /> :
           <ph name="BEGIN_LIST" />
@@ -944,6 +946,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="248064299258688299">L'extension <ph name="EXTENSION_NAME" /> indique</translation>
 <translation id="2482878487686419369">Notifications</translation>
 <translation id="248348093745724435">Règles associées à la machine</translation>
+<translation id="248395913932153421">Jour</translation>
 <translation id="2485243023686553468">Smartphones</translation>
 <translation id="2491120439723279231">Le certificat du serveur contient des erreurs.</translation>
 <translation id="2491414235131909199">Cette page a été bloquée par une extension</translation>
@@ -1320,6 +1323,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3115363211799416195">{0,plural, =1{Télécharger le fichier confidentiel ?}one{Télécharger le fichier confidentiel ?}other{Télécharger les fichiers confidentiels ?}}</translation>
 <translation id="3115874930288085374"><ph name="ENROLLMENT_DOMAIN" /> vous demande de sauvegarder vos données et de retourner ce <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3116158981186517402">Plastifier</translation>
+<translation id="3116695032231023709">Enregistrez la carte d'identité</translation>
 <translation id="3119689199889622589">Aliments bio et naturels</translation>
 <translation id="3120730422813725195">Elo</translation>
 <translation id="31207688938192855"><ph name="BEGIN_LINK" />Essayez d'exécuter les diagnostics de connectivité<ph name="END_LINK" />.</translation>
@@ -1327,6 +1331,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3121994479408824897">Accéder à <ph name="DOMAIN" /></translation>
 <translation id="3122696783148405307">Afficher les résultats des 30 derniers jours</translation>
 <translation id="3126023634486644099">Étiquettes (permanentes)</translation>
+<translation id="3132345256151444894">Enregistrez le numéro de recours</translation>
 <translation id="3133565499688974786"><ph name="SEARCH_ENGINE_NAME" /> est désormais votre moteur de recherche par défaut</translation>
 <translation id="3134859781443140237">Réseau local</translation>
 <translation id="3137283076021007034"><ph name="KEYWORD" /> - Rechercher dans <ph name="KEYWORD_SHORT_NAME" /></translation>
@@ -2044,6 +2049,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="4233220688695460165">Chrome supprime automatiquement les thèmes et les sites qui suggèrent des annonces dans un délai de 30 jours. Vous pouvez aussi bloquer des thèmes et des sites spécifiques que vous n'aimez pas.</translation>
 <translation id="4235360514405112390">Valide</translation>
 <translation id="4239799716689808527">Étiquettes</translation>
+<translation id="424063167283213501">Enregistrez le Known Traveler Number</translation>
 <translation id="4241830393007970744">Des pirates informatiques sur le site que vous avez essayé de consulter peuvent vous inciter à installer des logiciels ou à révéler des infos, comme vos mots de passe, ou vos numéro de téléphone ou de carte de crédit.</translation>
 <translation id="4242380780309416996">Enveloppe (haute densité)</translation>
 <translation id="4242981939686657948">Pour rechercher plus efficacement dans votre historique de navigation, activez la</translation>
@@ -2280,7 +2286,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="4648262692072505866">Le hachage doit être au format SHA-256.</translation>
 <translation id="4652266463001779298">Non autorisé</translation>
 <translation id="4652440160515225514">Votre organisation a bloqué ce site, car il ne respecte pas une règle.</translation>
-<translation id="4654457557264366314">Les forfaits sont soumis à des critères d'éligibilité.</translation>
 <translation id="4658638640878098064">Agrafe en haut à gauche</translation>
 <translation id="4658801711339831733">Scan enregistré dans Google Drive</translation>
 <translation id="4660592918803576381">Ouvrir dans Drive</translation>
@@ -2306,6 +2311,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="4691093235373904540">Couverture de toits</translation>
 <translation id="4692623383562244444">Moteurs de recherche</translation>
 <translation id="4695702626068620848"><ph name="KEYWORD" /> – Demander à <ph name="KEYWORD_SHORT_NAME" /></translation>
+<translation id="4698308118265482293">Mettez à jour le passeport</translation>
 <translation id="4698692901173737941">Sports de combat</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Côté</translation>
@@ -2400,6 +2406,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="4832388034239846146">Pour partager des groupes d'onglets, mettez à jour Chrome</translation>
 <translation id="483241715238664915">Activer les avertissements</translation>
 <translation id="4832961164064927107">Barbecue et grillades</translation>
+<translation id="4839984801146463230">Enregistrez vos informations pour gagner du temps, par exemple en remplissant des formulaires dans les produits Google. Vous pouvez <ph name="BEGIN_LINK" />gérer vos informations<ph name="END_LINK" /> dans <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> pour <ph name="ACCOUNT" />.</translation>
 <translation id="4840250757394056958">Afficher votre historique Chrome</translation>
 <translation id="484462545196658690">Auto</translation>
 <translation id="4844937814014739139">Faire défiler les onglets partagés et zoomer dessus</translation>
@@ -2589,7 +2596,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="512756860033933700">Verrouillage du clavier autorisé</translation>
 <translation id="5127934926273826089">Fleurs</translation>
 <translation id="5129534298163637277">Boîte de dialogue de confirmation</translation>
-<translation id="5129662217315786329">Polonais</translation>
 <translation id="5135404736266831032">Gérer les adresses…</translation>
 <translation id="5136841603454277753">Saisissez le bon code</translation>
 <translation id="5137761395480718572">Cette appli demande l'autorisation d'installer des identifiants Wi-Fi. Après la configuration, votre <ph name="DEVICE_TYPE" /> se connectera automatiquement aux réseaux Wi-Fi participants. Pour supprimer ces identifiants, désinstallez l'appli. <ph name="LEARN_MORE" /></translation>
@@ -2749,6 +2755,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="5392506727170022660">Métal (semi-brillance)</translation>
 <translation id="5394069166371280357">Émissions TV pour la famille</translation>
 <translation id="5396631636586785122">Agrafage par le bord droit</translation>
+<translation id="5396837962335265787"><ph name="ATTRIBUTE_NAME" />, avant <ph name="OLD_ATTRIBUTE_ATTRIBUTE" /></translation>
 <translation id="5397794290049113714">Vous</translation>
 <translation id="5398461103557553443">Pour que cet IBAN soit complété automatiquement la prochaine fois, enregistrez-le dans Google Wallet</translation>
 <translation id="5398772614898833570">Annonces bloquées</translation>
@@ -3273,6 +3280,8 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="6236290670123303279">Gérer les paramètres</translation>
 <translation id="623825323736974198">Gérez les sites qui resteront toujours actifs et pour lesquels la mémoire ne sera pas libérée</translation>
 <translation id="6240447795304464094">Logo Google Pay</translation>
+<translation id="6240553182907836376">Mettez à jour la carte d'identité</translation>
+<translation id="6240601837375010619">Enregistrez le passeport</translation>
 <translation id="6240964651812394252">Pour utiliser le Gestionnaire de mots de passe de Google avec votre système d'exploitation, relancez Chrome et autorisez l'accès au gestionnaire de mots de passe de votre ordinateur. Vos onglets s'ouvriront alors de nouveau.</translation>
 <translation id="6241121617266208201">Masquer les suggestions</translation>
 <translation id="624499991300733384">Service de composition d'impression</translation>
@@ -3481,6 +3490,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="6547208576736763147">Double perforation à gauche</translation>
 <translation id="6549443526281184652">Costumes</translation>
 <translation id="6550245281449521513">Verrouillage de la souris non autorisé</translation>
+<translation id="6551737294564628267"><ph name="ATTRIBUTE_NAME" />, nouveau</translation>
 <translation id="6552566579578780089">Paiements</translation>
 <translation id="6554732001434021288">Dernière visite : il y a <ph name="NUM_DAYS" /> jours</translation>
 <translation id="6556866813142980365">Rétablir</translation>
@@ -3532,7 +3542,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="6649510485211003056">195 x 270 mm</translation>
 <translation id="6651270836885078973">Gérées par :</translation>
 <translation id="6652101503459149953">Utiliser Windows Hello</translation>
-<translation id="6654224358955673568">Rendre plus formel</translation>
 <translation id="6654244995031366386">Verre (texturé)</translation>
 <translation id="6655085656059574817">Garder votre compte lié vous permet de payer plus vite avec <ph name="BNPL_ISSUER_NAME" />, mais vous pouvez le dissocier en vous rendant sur <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" />.</translation>
 <translation id="6656935431494847393">Inclut des informations telles que les réservations de vols et les informations sur les véhicules</translation>
@@ -3637,6 +3646,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="681021252041861472">Champ obligatoire</translation>
 <translation id="6810899417690483278">ID de la personnalisation</translation>
 <translation id="6816109178681043245">Articles de sport</translation>
+<translation id="681631578600400068">Enregistrez le permis de conduire</translation>
 <translation id="6817217109584391709">JavaScript</translation>
 <translation id="6820143000046097424">ports série</translation>
 <translation id="6820686453637990663">CVC</translation>
@@ -3703,7 +3713,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="6926216138694948720">Tatouages/Piercings</translation>
 <translation id="692638818576287323">Véhicules commerciaux</translation>
 <translation id="6927878187051807444">fichiers de l'appareil photo et des captures d'écran</translation>
-<translation id="6929949393612835405">Fermer et revenir à "<ph name="OPENER_TITLE" />"</translation>
 <translation id="6930607614725241390">Rechercher dans le panneau latéral</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Votre moteur de recherche par défaut vous permet d'effectuer des recherches sur le Web et alimente des fonctionnalités Chrome<ph name="END_BOLD" /> telles que la recherche à partir de la barre d'adresse et d'images issues de pages Web. Une fonctionnalité peut ne pas être disponible si votre moteur de recherche ne la prend pas en charge.</translation>
 <translation id="6934672428414710184">Ce nom provient de votre compte Google</translation>
@@ -3849,6 +3858,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="7143668445748322952">fichiers de l'appareil photo, des téléchargements et des captures d'écran</translation>
 <translation id="7143682719845053166">PRC 32K</translation>
 <translation id="7144878232160441200">Réessayer</translation>
+<translation id="7145337554745942724">Mettez à jour le permis de conduire</translation>
 <translation id="7150146631451105528"><ph name="DATE" /></translation>
 <translation id="7152230779180489711">Dernière visite</translation>
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> et <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> autre}one{<ph name="PAYMENT_METHOD_PREVIEW" /> et <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> autre}other{<ph name="PAYMENT_METHOD_PREVIEW" /> et <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> autres}}</translation>
@@ -4043,6 +4053,7 @@ Informations supplémentaires :
 <translation id="7444176988908839653">{COUNT,plural, =0{Les cookies seront de nouveau bloqués aujourd'hui}=1{Les cookies seront de nouveau bloqués demain}one{Les cookies seront de nouveau bloqués dans # jour}other{Les cookies seront de nouveau bloqués dans # jours}}</translation>
 <translation id="7447234474237738389">Services d'habillement</translation>
 <translation id="7447625772313191651"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> mm)</translation>
+<translation id="7450486349221991286">Mettez à jour le véhicule</translation>
 <translation id="7450577240311017924">Bouton "Gérer la synchronisation" à activer pour gérer les infos que vous synchronisez dans les paramètres Chrome</translation>
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /> sur ce problème.</translation>
 <translation id="745208957946308667">Jeu du dino, appuyer sur la barre d'espace pour jouer</translation>
@@ -4737,6 +4748,7 @@ Informations supplémentaires :
 <translation id="8544217240017914508">Google Chrome tente de modifier les paramètres de saisie des modes de paiement.</translation>
 <translation id="8544303911974837265">Polyester</translation>
 <translation id="854548366864113872">Option à prix haut</translation>
+<translation id="854583198371106098"><ph name="ATTRIBUTE_VALUE" />  <ph name="BEGIN_NEW" />Nouveau<ph name="END_NEW" /></translation>
 <translation id="8546254312340305428">Indiquez le motif de l'importation (obligatoire)</translation>
 <translation id="8546350655047701518">Exporter les journaux en JSON</translation>
 <translation id="8546667245446052521">Papier (archive)</translation>
@@ -4890,6 +4902,7 @@ Informations supplémentaires :
 <translation id="8811725516933141693">Saisissez @gemini pour discuter avec Gemini</translation>
 <translation id="8813277370772331957">Plus tard</translation>
 <translation id="8814707942599948500">Enveloppe C8</translation>
+<translation id="881559332211266856">Mettez à jour le numéro de recours</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" /> : appuyer sur Tabulation, puis Entrée pour mettre à jour Chrome depuis les paramètres du navigateur</translation>
 <translation id="8819855907485254989">Enregistrez le titre de transport dans Wallet</translation>
 <translation id="8820817407110198400">Favoris</translation>

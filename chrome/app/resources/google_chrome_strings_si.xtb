@@ -694,6 +694,8 @@ Google Chrome හට ඔබගේ සැකසුම් ප්‍රතිසා
 <translation id="8041795619940733262">මෙම පටිත්ත ගැන<ph name="LINE_BREAK" />Google ගෙන් විමසන්න</translation>
 <translation id="80471789339884597">ස්ථාපනය කිරීම වෙනුවෙන් ස්තුතියි. ඔබ <ph name="BUNDLE_NAME" /> භාවිත කිරීමට පෙර ඔබගේ සියලුම බ්‍රව්සර යළි ආරම්භ කළ යුතුය.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
+<translation id="8064965390968184078">1. පහත <ph name="BUTTON_LABEL" /> ක්ලික් කරන්න ඔබේ Windows සැකසීම් තුළ <ph name="BUTTON_2" /> ක්ලික් කරන්න
+3. ඉක්මන් ප්‍රවේශය සඳහා Chrome ඔබේ කාර්ය තීරුවට ඇමිණීමට Windows දැනුම්දීම තුළ <ph name="BUTTON_3" /> ක්ලික් කරන්න</translation>
 <translation id="8077579734294125741">වෙනත් Chrome පැතිකඩ</translation>
 <translation id="8086881907087796310">ඔබේ පරිගණකය අවම දෘඪාංග අවශ්‍යතා සපුරා නොමැති නිසා ස්ථාපනය අසමත් විය.</translation>
 <translation id="8113883687556086139">ඔබේ ගිණුමේ, <ph name="ACCOUNT_EMAIL" /> Chrome දත්ත භාවිතා කර සුරැකීමට එය ඔබම බව සත්‍යාපනය කරන්න</translation>
@@ -772,6 +774,7 @@ Google Chrome හට ඔබගේ සැකසුම් ප්‍රතිසා
 <translation id="8914504000324227558">Chrome නැවත දියත් කරන්න</translation>
 <translation id="8922193594870374009"><ph name="ORIGIN" /> වෙතින් ඔබගේ Android දුරකථනයට අංකයක් යැවීමට, උපාංග දෙකෙහිම Chrome වෙත පුරන්න.</translation>
 <translation id="8922998289262614701">Chrome වෙතින් මෙම යෙදුම් දත්ත ඉවත් කරන්න</translation>
+<translation id="8925636929359899517">අපි මෙම සේවාව වැඩි දියුණු කිරීමට තතු භාවිතා කරමු. <ph name="BEGIN_LINK1" />පෞද්ගලිකත්ව ප්‍රතිපත්තිය<ph name="END_LINK1" /> සහ <ph name="BEGIN_LINK2" />සේවා නියම<ph name="END_LINK2" /> බලන්න.</translation>
 <translation id="8936233353620149764">Chrome හි Gemini ටොගල් කරන්න</translation>
 <translation id="8948460679427074738">මෙම දිගුව මෙය දත්ත රැස් කර භාවිත කරන ආකාරය වැනි පෞද්ගලිකත්ව පුරුදු ප්‍රකාශන කර නැත. Chrome ඔබ එය ඉවත් කිරීම නිර්දේශ කරයි.</translation>
 <translation id="8958307504142971576">දැන් ඔබට Chrome හි තවත් විශේෂාංග තිබේ</translation>

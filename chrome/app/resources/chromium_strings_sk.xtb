@@ -589,6 +589,9 @@ Prehliadač Chromium nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="7384121030444253939">Toto rozšírenie už nie je podporované. Chromium odporúča, aby ste ho odstránili.</translation>
 <translation id="7413153308467572558">Pokračujte tam, kde ste prestali: Chromium obnoví vaše karty pri každom reštarte. Ak to chcete vypnúť, prejdite do sekcie</translation>
 <translation id="7427879960656355200">Importovať heslá do prehliadača Chromium</translation>
+<translation id="744815265653811511">1. Nižšie kliknite na <ph name="BUTTON_LABEL" />.
+2. V nastaveniach systému Windows kliknite na <ph name="BUTTON_2" />.
+3. Kliknutím na <ph name="BUTTON_3" /> v upozornení systému Windows pripnite Chromium na panel aplikácií, aby ste k nemu mali rýchly prístup.</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Chromium Dev</translation>
 <translation id="7450541714075000668">Text bol skopírovaný</translation>
 <translation id="7451052299415159299">Chromium potrebuje povolenie pre tento web na prístup k fotoaparátu</translation>
@@ -604,6 +607,7 @@ Prehliadač Chromium nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="761356813943268536">Chromium používa vašu kameru a mikrofón.</translation>
 <translation id="7617377681829253106">Prehliadač Chromium bol práve vylepšený</translation>
 <translation id="7622753900276619808">Teraz máte v prehliadači Chromium k dispozícii viac funkcií</translation>
+<translation id="7624307931717240213">Informácie používame na zlepšovanie tejto služby. Prečítajte si pravidlá ochrany súkromia a zmluvné podmienky.</translation>
 <translation id="7649070708921625228">Pomocník</translation>
 <translation id="7656340475565475526">Nechajte Chromium prehliadať za vás</translation>
 <translation id="7658239707568436148">Zrušiť</translation>

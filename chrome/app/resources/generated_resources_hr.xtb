@@ -668,7 +668,7 @@ Zaporke uvijek možete provjeriti u odjeljku <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="144518587530125858">Nije uspjelo učitavanje putanje "<ph name="IMAGE_PATH" />" za temu.</translation>
 <translation id="1445330076053050041">Odaberite radnju za tipku <ph name="KEY_NAME" /></translation>
 <translation id="1447531650545977377">Uključite &amp;sinkronizaciju...</translation>
-<translation id="1447895950459090752">Zadržavanje lebdeće kartice pregleda</translation>
+<translation id="1447895950459090752">Lebdeća kartica pregleda</translation>
 <translation id="1448264954024227422">Ovaj račun možete koristiti s Android aplikacijama. Ako želite dodati račun za nekog drugog, umjesto toga <ph name="LINK_BEGIN" />dodajte novu osobu<ph name="LINK_END" /> na svoj <ph name="DEVICE_TYPE" />.
 
 Dopuštenja koja ste već dali aplikacijama mogu se primijeniti na ovaj račun. Dopuštenjima za Android aplikacije možete upravljati u <ph name="APPS_LINK_BEGIN" />postavkama aplikacija<ph name="APPS_LINK_END" />.</translation>
@@ -4515,7 +4515,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3995138139523574647">USB-C uređaj (stražnji desni priključak)</translation>
 <translation id="3995963973192100066">Reproduciraj animaciju</translation>
 <translation id="399788104667917863">Prikvači na alatnu traku</translation>
-<translation id="3998780825367526465">Prikaži slike pregleda kartice</translation>
+<translation id="3998780825367526465">Prikaži slike na pregledu kartice</translation>
 <translation id="3998976413398910035">Upravljajte pisačima</translation>
 <translation id="4000360130639414007">Nećete moći upotrebljavati Android aplikacije i Trgovinu Google Play</translation>
 <translation id="4001540981461989979">Isticanje pokazivača miša prilikom kretanja</translation>
@@ -5553,6 +5553,7 @@ Upotrijebite Ctrl + Alt + Smanjivanje svjetline za smanjivanje prikaza.</transla
 <translation id="4732799736617504962">Povezani mikrofon može podržavati samo uklanjanje buke</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (preostalo)</translation>
 <translation id="4733793249294335256">Lokacija</translation>
+<translation id="4734965478015604180">Vodoravno</translation>
 <translation id="473546211690256853">Ovim računom upravlja domena <ph name="DOMAIN" /></translation>
 <translation id="4735506354605317060">Kružni pokazivač</translation>
 <translation id="4735793370946506039">Saznajte više o poboljšanom sigurnom pregledavanju.</translation>
@@ -5819,6 +5820,7 @@ Upotrijebite Ctrl + Alt + Smanjivanje svjetline za smanjivanje prikaza.</transla
 <translation id="4901154724271753917">Proširivanje nedavno zatvorenog</translation>
 <translation id="4901309472892185668">Odaberite stanje za eksperiment <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="49027928311173603">Pravilo preuzeto s poslužitelja nije važeće: <ph name="VALIDATION_ERROR" />.</translation>
+<translation id="490375751687810070">Okomito</translation>
 <translation id="4906490889887219338">Postavite mrežna dijeljenja datoteka ili upravljajte njima. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="4906679076183257864">Vrati na zadano</translation>
 <translation id="4907129260985716018">Odaberite kad to proširenje može čitati i mijenjati vaše podatke web-lokacije</translation>
@@ -8491,6 +8493,7 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="678520006562636090">Isprobajte Google objektiv na uređaju <ph name="DEVICE_TYPE" /></translation>
 <translation id="6785594991951195537">Želite li upotrebljavati <ph name="PASSWORD_DOMAIN" /></translation>
 <translation id="6785739405821760313">Prikaz spremljenih radnih površina. Pritisnite karticu da biste se kretali.</translation>
+<translation id="6785779729084003225">Upotrijebite <ph name="FOCUS_TOGGLE_HOTKEY" /> za otvaranje Geminija u Chromeu</translation>
 <translation id="6785915470941880363">Pomicanje u obratnom smjeru <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="67862343314499040">Ljubičasta</translation>
 <translation id="6786480815699355166">Mogu se prevesti samo podržani jezici automatskih titlova</translation>

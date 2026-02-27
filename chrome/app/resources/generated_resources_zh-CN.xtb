@@ -226,7 +226,7 @@
 <translation id="1145593918056169051">打印机已停止运行</translation>
 <translation id="1147098843963878839">{SELECTED_ITEMS,plural, =0{扩展程序}=1{扩展程序 ({SELECTED_ITEMS})}other{扩展程序 ({SELECTED_ITEMS})}}</translation>
 <translation id="114715166554490743">头部指针</translation>
-<translation id="114721135501989771">在 Chrome 中畅享 Google 的智能技术</translation>
+<translation id="114721135501989771">在 Chrome 中畅享 Google 智能功能</translation>
 <translation id="1147322039136785890">现在轮到<ph name="SUPERVISED_USER_NAME" />使用了</translation>
 <translation id="1147991416141538220">要申请访问权限，请与此设备的管理员联系。</translation>
 <translation id="1148464196693569530">允许运行用户脚本</translation>
@@ -5540,6 +5540,7 @@
 <translation id="4732799736617504962">已连接的麦克风只能支持降噪</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />%（左侧）</translation>
 <translation id="4733793249294335256">位置</translation>
+<translation id="4734965478015604180">横向</translation>
 <translation id="473546211690256853">此账号由 <ph name="DOMAIN" /> 管理</translation>
 <translation id="4735506354605317060">圆圈指针</translation>
 <translation id="4735793370946506039">详细了解增强型安全浏览。</translation>
@@ -5806,6 +5807,7 @@
 <translation id="4901154724271753917">展开“最近关闭的标签页”部分</translation>
 <translation id="4901309472892185668">请为实验“<ph name="EXPERIMENT_NAME" />”选择实验状态。</translation>
 <translation id="49027928311173603">从服务器下载的策略无效：<ph name="VALIDATION_ERROR" />。</translation>
+<translation id="490375751687810070">纵向</translation>
 <translation id="4906490889887219338">设置或管理网络文件共享。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="4906679076183257864">重置为默认值</translation>
 <translation id="4907129260985716018">选择此扩展程序何时可以读取和更改您的网站数据</translation>
@@ -8474,6 +8476,7 @@
 <translation id="678520006562636090">在 <ph name="DEVICE_TYPE" /> 上试用 Google 智能镜头</translation>
 <translation id="6785594991951195537">使用您的 <ph name="PASSWORD_DOMAIN" /></translation>
 <translation id="6785739405821760313">正在查看已保存的桌面。按 Tab 键即可导航。</translation>
+<translation id="6785779729084003225">按下 <ph name="FOCUS_TOGGLE_HOTKEY" /> 即可打开 Chrome 中的 Gemini</translation>
 <translation id="6785915470941880363">反向滚动 <ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="67862343314499040">紫罗兰色</translation>
 <translation id="6786480815699355166">只能翻译支持的实时字幕语言</translation>

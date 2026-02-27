@@ -281,6 +281,7 @@
 <translation id="2205701497928406883"><ph name="TAB_TITLE" />, Бэхлэгдэж, хуваалцаж буй таб</translation>
 <translation id="22091350895006575">Хэрэглэгчийн нэр нэмэх</translation>
 <translation id="221494669172414749">Chrome-г профайлын түгжээгүйгээр нээх нь таны хадгалсан нууц үг болон төлбөрийн хэрэгслүүдийг автомашинаас хасна. Профайлын түгжээг ашиглах нь энэ өгөгдлийг аюулгүй байлгана.</translation>
+<translation id="2226826835915474236">Идэвхгүй товчлолууд</translation>
 <translation id="2227179592712503583">Зөвлөмжийг устгах</translation>
 <translation id="2227444325776770048"><ph name="USER_FULL_NAME" />-р үргэлжлүүлэх</translation>
 <translation id="2230777942707397948">Хоосон цонх</translation>
@@ -1655,6 +1656,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="7740287852186792672">Хайлтын үр дүн</translation>
 <translation id="774403695779169686"><ph name="TAB_TITLE" />, Сонгогдож, хуваалцаж буй нууцлалтай таб</translation>
 <translation id="774876555279732384">Автоматаар бөглөх хэсгийн үйлчилгээг мөн <ph name="BEGIN_LINK" />Android-н Тохиргоонд<ph name="END_LINK" /> удирддаг.</translation>
+<translation id="7758884017823246335">Сайтын хайлт нэмэх</translation>
 <translation id="7759809451544302770">Сонголтын</translation>
 <translation id="7762668264895820836">SD Карт <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">Хаяг нэмэх</translation>
@@ -1886,6 +1888,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="8634050254805484913">Нарийн дэлгэц дээр нуусан</translation>
 <translation id="8635399646025169806">Табын бүлгийг үлдээх үү?</translation>
 <translation id="8636825310635137004">Бусад төхөөрөмжөөс чихтэй хуудсаа авахын тулд синкийг асаана уу.</translation>
+<translation id="8639963783467694461">Тохиргоог автоматаар бөглөх</translation>
 <translation id="8662474268934425487"><ph name="SITE_ETLD_PLUS_ONE" />-д нэвтрэх</translation>
 <translation id="8664979001105139458">Файлын нэр ашиглалтад байна</translation>
 <translation id="8676276370198826499"><ph name="SITE_ETLD_PLUS_ONE" />-д <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-р бүртгүүлээрэй</translation>
@@ -1934,6 +1937,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="8865415417596392024">Таны бүртгэлийн Chrome-н өгөгдөл</translation>
 <translation id="8872506776304248286">Апп-д нээх</translation>
 <translation id="8890668505403261809">Нууцлалтай табуудаасаа хайх</translation>
+<translation id="8892234476517513962">Та аль хэдийн нэвтэрсэн байна</translation>
 <translation id="8894890673032951011"><ph name="TAB_TITLE" />, Сонгогдож, бичлэг хийж буй нууцлалтай таб</translation>
 <translation id="8898822736010347272">Шинэ аюул заналыг олж илрүүлэх болон веб дээрх бүх хүнийг хамгаалахад туслахын тулд таны зочилдог зарим хуудасны URL, системийн хязгаарлагдмал мэдээлэл болон хуудасны зарим контентыг Google рүү илгээдэг.</translation>
 <translation id="8903921497873541725">Томруулж харах</translation>

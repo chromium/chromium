@@ -731,6 +731,7 @@
 <translation id="2166049586286450108">Tam Admin Girişi</translation>
 <translation id="2166378884831602661">Bu sayt təhlükəsiz bağlantı təmin edə bilməz</translation>
 <translation id="2168151236314517198">Bu məzmunun çap edilməsi administrator siyasəti əsasında bloklanıb</translation>
+<translation id="2171244127100824330"><ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> tətbiqində <ph name="ACCOUNT" /> üçün</translation>
 <translation id="2172089022819052306">Avto Təmir və Texniki Qulluq</translation>
 <translation id="2173302385160625112">İnternet bağlantısını yoxlayın</translation>
 <translation id="2174875517416416684">Tranzaksiya alınmadı. Hesabınızdan heç bir vəsait çıxarılmadı.</translation>
@@ -909,7 +910,6 @@
 <translation id="2436976580469434549">İplik və Tekstil Sənəti</translation>
 <translation id="243815215670139125">Bu kartı Google Hesabınızda saxlamaq mümkün olmadı. Bu cihazda Chrome-da yadda saxlanılıb.</translation>
 <translation id="2438874542388153331">Sağdan dördlü deşik açın</translation>
-<translation id="2440855519769445271">Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəniş ayarlarına<ph name="END_LINK" /> keçin</translation>
 <translation id="2441854154602066476">Toxunaraq doldurulmaq üçün əlçatan ödəniş metodları. Gizlədilmiş klaviatura.</translation>
 <translation id="2442865686365739754">Chrome <ph name="BEGIN_EMPHASIS" />yadda saxlamayacaq<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
@@ -946,6 +946,7 @@
 <translation id="248064299258688299"><ph name="EXTENSION_NAME" /> artırmasında deyilir</translation>
 <translation id="2482878487686419369">Bildirişlər</translation>
 <translation id="248348093745724435">Cihaz siyasətləri</translation>
+<translation id="248395913932153421">Gün</translation>
 <translation id="2485243023686553468">Smartfonlar</translation>
 <translation id="2491120439723279231">Serverin sertifikatında xətalar var.</translation>
 <translation id="2491414235131909199">Bu səhifə artırma tərəfindən bloklanıb</translation>
@@ -2281,7 +2282,6 @@
 <translation id="4648262692072505866">Heş SHA-256 formatında olmalıdır.</translation>
 <translation id="4652266463001779298">İcazə verilmir</translation>
 <translation id="4652440160515225514">Siyasəti pozduğuna görə təşkilatınız bu saytı bloklayıb.</translation>
-<translation id="4654457557264366314">Ödəniş planları uyğunluqdan asılıdır.</translation>
 <translation id="4658638640878098064">Yuxarı soldan ştapel vurun</translation>
 <translation id="4658801711339831733">Skan Google Diskdə yadda saxlanıldı</translation>
 <translation id="4660592918803576381">Diskdə açın</translation>
@@ -2402,6 +2402,7 @@
 <translation id="4832388034239846146">Tab qruplarını paylaşmaq üçün Chrome-u güncəlləyin</translation>
 <translation id="483241715238664915">Xəbərdarlıqları aktiv edin</translation>
 <translation id="4832961164064927107">Barbekü və Qril</translation>
+<translation id="4839984801146463230">Məlumatlarınızı yadda saxlayın və Google məhsullarında formaları doldurmaq kimi işləri daha tez yerinə yetirin. <ph name="ACCOUNT" /> üçün <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> tətbiqində <ph name="BEGIN_LINK" />məlumatları idarə edə<ph name="END_LINK" /> bilərsiniz</translation>
 <translation id="4840250757394056958">Chrome tarixçənizə baxın</translation>
 <translation id="484462545196658690">Avtomatik</translation>
 <translation id="4844937814014739139">Paylaşılan tabların sürüşdürülməsi və miqyasının dəyişdirilməsi</translation>
@@ -2591,7 +2592,6 @@
 <translation id="512756860033933700">Klaviaturanın kilidlənməsinə icazə verilib</translation>
 <translation id="5127934926273826089">Güllər</translation>
 <translation id="5129534298163637277">Təsdiq pəncərəsi</translation>
-<translation id="5129662217315786329">Polyak</translation>
 <translation id="5135404736266831032">Ünvanları idarə edin...</translation>
 <translation id="5136841603454277753">Düzgün kodu daxil edin</translation>
 <translation id="5137761395480718572">Bu tətbiq Wi-Fi giriş məlumatlarını quraşdırmaq icazəsi tələb edir. Ayarlamadan sonra <ph name="DEVICE_TYPE" /> əlçatan Wi-Fi şəbəkələrinə avtomatik qoşulacaq. Bu giriş məlumatlarını silmək üçün tətbiqi sistemdən silin. <ph name="LEARN_MORE" /></translation>
@@ -2751,6 +2751,7 @@
 <translation id="5392506727170022660">Metal (yarıparlaq)</translation>
 <translation id="5394069166371280357">Ailəvi TV şouları</translation>
 <translation id="5396631636586785122">Sağdan kənarını tikin</translation>
+<translation id="5396837962335265787"><ph name="ATTRIBUTE_NAME" /> qiymətindən başlayaraq. Əvvəlki qiymət: <ph name="OLD_ATTRIBUTE_ATTRIBUTE" /></translation>
 <translation id="5397794290049113714">Siz</translation>
 <translation id="5398461103557553443">Növbəti dəfə bu IBAN-ı avtomatik doldurmaq üçün onu Google Pulqabıda yadda saxlayın</translation>
 <translation id="5398772614898833570">Reklamlar blok edildi</translation>
@@ -3485,6 +3486,7 @@
 <translation id="6547208576736763147">Soldan qoşa deşik açın</translation>
 <translation id="6549443526281184652">Kostyumlar</translation>
 <translation id="6550245281449521513">Maus kilidinə icazə verilmir</translation>
+<translation id="6551737294564628267"><ph name="ATTRIBUTE_NAME" />, yeni</translation>
 <translation id="6552566579578780089">Ödənişlər</translation>
 <translation id="6554732001434021288">Son ziyarət <ph name="NUM_DAYS" /> gün əvvəl olub</translation>
 <translation id="6556866813142980365">Yenidən edin</translation>
@@ -3536,7 +3538,6 @@
 <translation id="6649510485211003056">195 x 270 mm</translation>
 <translation id="6651270836885078973">İdarə edən:</translation>
 <translation id="6652101503459149953">Windows Hello işlədin</translation>
-<translation id="6654224358955673568">Rəsmiləşdirin</translation>
 <translation id="6654244995031366386">Şüşə (teksturalı)</translation>
 <translation id="6655085656059574817">Hesabınızı əlaqələndirilmiş formada saxlamaq <ph name="BNPL_ISSUER_NAME" /> ilə daha sürətli ödəniş etməyinizə kömək edir, lakin <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /> bölməsinə keçərək əlaqəni sonlandıra bilərsiniz</translation>
 <translation id="6656935431494847393">Uçuş rezervasiyaları və nəqliyyat vasitəsi məlumatları kimi məlumatlar daxildir</translation>
@@ -3708,7 +3709,6 @@
 <translation id="6926216138694948720">Bədənin Bəzədilməsi</translation>
 <translation id="692638818576287323">Ticari nəqliyyat vasitələri</translation>
 <translation id="6927878187051807444">kamera faylları və skrinşotlar</translation>
-<translation id="6929949393612835405">Bağlayın və "<ph name="OPENER_TITLE" />" başlığına qayıdın</translation>
 <translation id="6930607614725241390">Yan paneldə axtarış edin</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Defolt axtarış mexanizmi vebdə axtarış imkanı verir və Chrome funksiyalarını dəstəkləyir<ph name="END_BOLD" /> (ünvan panelindən və veb-səhifələrdəki şəkillərdən axtarmaq kimi). Axtarış mexanizmi dəstəkləməsə, funksiya əlçatan olmaya bilər.</translation>
 <translation id="6934672428414710184">Bu ad Sizin Google Hesabınızdandır.</translation>
@@ -4742,6 +4742,7 @@
 <translation id="8544217240017914508">Google Chrome ödəniş metodlarını doldurmaq üçün ayarlara dəyişiklik etməyə çalışır.</translation>
 <translation id="8544303911974837265">Poliefir</translation>
 <translation id="854548366864113872">Yüksək qiymət seçimi</translation>
+<translation id="854583198371106098"><ph name="ATTRIBUTE_VALUE" />  <ph name="BEGIN_NEW" />Yeni<ph name="END_NEW" /></translation>
 <translation id="8546254312340305428">Yükləmə səbəbini bildirin (tələb edilir)</translation>
 <translation id="8546350655047701518">Qeydləri JSON formatına eksport edin</translation>
 <translation id="8546667245446052521">Kağız (arxiv)</translation>

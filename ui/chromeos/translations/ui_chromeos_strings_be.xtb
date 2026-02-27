@@ -17,7 +17,6 @@
 <translation id="1138691154716715755">Раней у гэтым месяцы</translation>
 <translation id="1150565364351027703">Сонечныя акуляры</translation>
 <translation id="115443833402798225">Карэйскі алфавіт (хангыль), рэжым AhnMaTae</translation>
-<translation id="1155759005174418845">Каталанская</translation>
 <translation id="1168100932582989117">Серверы даменных імён Google</translation>
 <translation id="1170788066030116158">Дата здымка</translation>
 <translation id="1172970565351728681">Прыблізны час да завяршэння: <ph name="REMAINING_TIME" /></translation>
@@ -61,12 +60,10 @@
 <translation id="146691674290220697">Не ўдалося скапіраваць файлы (<ph name="NUMBER_OF_FILES" />), бо яны зашыфраваны.</translation>
 <translation id="1471718551822868769">Славацкая</translation>
 <translation id="1482884275703521657">Фінская</translation>
-<translation id="148466539719134488">Швейцарская</translation>
 <translation id="1497522201463361063">Не ўдалося перайменаваць файл "<ph name="FILE_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1499943022354839699">Англійская (ЗША) з раскладкай Дворака</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> – хост</translation>
 <translation id="1521655867290435174">Табліцы Google</translation>
-<translation id="1547964879613821194">Англійская (Канада)</translation>
 <translation id="1556189134700913550">Прымяніць да ўсяго</translation>
 <translation id="1561842594491319104">Chrome</translation>
 <translation id="1572585716423026576">Усталяваць як шпалеры</translation>
@@ -120,8 +117,6 @@
 <translation id="1920670151694390848">Малаялам (транслітарацыя)</translation>
 <translation id="1920798810075583923">Кавун</translation>
 <translation id="1924372192547904021">Дыск "<ph name="DRIVE_NAME" />" адфармаціраваны</translation>
-<translation id="1931134289871235022">Славацкая</translation>
-<translation id="1936717151811561466">Фінская</translation>
 <translation id="1942765061641586207">Раздзяляльнасць відарыса</translation>
 <translation id="1972984168337863910">Разгарнуць панэлі водгукаў для файлаў</translation>
 <translation id="1995337122023280937">Адкрыць месцазнаходжанне файла</translation>
@@ -199,7 +194,6 @@
 <translation id="2541377937973966830">Змесціва ў гэтай папцы – толькі для чытання. Некаторыя дзеянні не падтрымліваюцца.</translation>
 <translation id="2542049655219295786">Табліца Google</translation>
 <translation id="2544853746127077729">Сертыфікат аўтэнтыфікацыі адхілены сеткай</translation>
-<translation id="255937426064304553">ЗША, міжнародная</translation>
 <translation id="2563185590376525700">Жаба</translation>
 <translation id="2578394532502990878">Тамільская (фанетычная раскладка)</translation>
 <translation id="2579959351793446050">Орыя</translation>
@@ -220,7 +214,6 @@
 <translation id="2735623501230989521">Даць Parallels Desktop доступ да файлаў у папцы "<ph name="FOLDER_NAME" />"</translation>
 <translation id="2764206540577097904">Вы выкарысталі ўвесь даступны вам аб’ём індывідуальнага сховішча Google Workspace.</translation>
 <translation id="2771816809568414714">Сыр</translation>
-<translation id="2781645665747935084">Бельгійская</translation>
 <translation id="2802583107108007218">Даведацца больш пра гэтыя абмежаванні</translation>
 <translation id="2803375539583399270">Увядзіце PIN-код</translation>
 <translation id="2819519502129272135">Сінхранізацыя файлаў выключана</translation>
@@ -228,15 +221,11 @@
 <translation id="2830077785865012357">Кітайская (чжуінь)</translation>
 <translation id="2843806747483486897">Змяніць стандартнае дзеянне...</translation>
 <translation id="2873951654529031587">Сметніца</translation>
-<translation id="288024221176729610">Чэшская</translation>
 <translation id="2887525882758501333">Дакумент PDF</translation>
 <translation id="2888807692577297075">Няма элементаў, якія адпавядаюць запыту &lt;b&gt;"<ph name="SEARCH_STRING" />"&lt;/b&gt;</translation>
 <translation id="2894654529758326923">Інфармацыя</translation>
-<translation id="2902734494705624966">ЗША, пашыраная</translation>
 <translation id="2904378509913846215">Папка з назвай "<ph name="FILENAME" />" існуе. Замяніць яе папкай, якую вы перамяшчаеце?</translation>
 <translation id="290843123675549676">Маратхі</translation>
-<translation id="2923240520113693977">Эстонская</translation>
-<translation id="2938685643439809023">Мангольская</translation>
 <translation id="2943503720238418293">Выкарыстайце карацейшую назву</translation>
 <translation id="2949781154072577687">Фармаціруецца дыск "<ph name="DRIVE_NAME" />"...</translation>
 <translation id="2951236788251446349">Медуза</translation>
@@ -263,14 +252,10 @@
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (апаратна забяспечаны)</translation>
 <translation id="3188257591659621405">Мае файлы</translation>
 <translation id="3194553149358267393">Няма нядаўніх аўдыяфайлаў</translation>
-<translation id="3197563288998582412">Вялікабрытанія (раскладка Дворака)</translation>
 <translation id="3202131003361292969">Шлях</translation>
 <translation id="3205852408225871810">Партугальская (Бразілія)</translation>
-<translation id="3224239078034945833">Канадская шматмоўная</translation>
 <translation id="3236289833370040187">Права ўласнасці будзе перададзена дамену <ph name="DESTINATION_DOMAIN" />.</translation>
-<translation id="3241720467332021590">Ірландская</translation>
 <translation id="3248185426436836442">У чаканні</translation>
-<translation id="3252266817569339921">Французская</translation>
 <translation id="3253225298092156258">Недаступна</translation>
 <translation id="3254434849914415189">Выберыце стандартную праграму для файлаў <ph name="FILE_TYPE" />:</translation>
 <translation id="3255159654094949700">Арабская</translation>
@@ -285,7 +270,6 @@
 <translation id="3293023191599135697">Сеткі WEP не падтрымліваюцца</translation>
 <translation id="3295006446256079333">Гэты том</translation>
 <translation id="3295357220137379386">Прылада занятая</translation>
-<translation id="3296763833017966289">Грузінская</translation>
 <translation id="3307875152560779385">Украінская</translation>
 <translation id="3326821416087822643">Файл "<ph name="FILE_NAME" />" архівуецца...</translation>
 <translation id="3335337277364016868">Год запісу</translation>
@@ -306,7 +290,6 @@
 <translation id="3486821258960016770">Мангольская</translation>
 <translation id="3509680540198371098">Сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, магутнасць сігналу – <ph name="SIGNAL_STRENGTH" />%, падрабязныя звесткі</translation>
 <translation id="3511705761158917664">Ідзе падрыхтоўка да сінхранізацыі файлаў (<ph name="NUMBER_OF_ITEMS" />)…</translation>
-<translation id="3522708245912499433">Партугальская</translation>
 <translation id="3523225005467146490">1 папка абагулена з <ph name="VM_NAME" /></translation>
 <translation id="3524311639100184459">Увага! Гэта часовыя файлы, і яны могуць быць аўтаматычна выдалены для вызвалення месца на дыску.  <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Папка</translation>
@@ -317,12 +300,9 @@
 <translation id="3556731189587832921">Англійская (ЗША) з міжнароднай клавіятурай для ПК</translation>
 <translation id="3557414470514932909">Файл "<ph name="FILE_NAME" />" перамяшчаецца ў сметніцу</translation>
 <translation id="3567221313191587603">Каб зрабіць файл даступным па-за сеткай, выберыце яго і задайце для яго параметр "<ph name="OFFLINE_CHECKBOX_NAME" />".</translation>
-<translation id="357479282490346887">Літоўская</translation>
 <translation id="3587482841069643663">Усе</translation>
 <translation id="3592251141500063301">Не ўдалося зрабіць файл <ph name="FILE_NAME" /> даступным па-за сеткай</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
-<translation id="3603385196401704894">Французская (канадская)</translation>
-<translation id="3606220979431771195">Турэцкая-F</translation>
 <translation id="3616113530831147358">Аўдыя</translation>
 <translation id="3619115746895587757">Капучына</translation>
 <translation id="3619593063686672873">Няма нядаўніх відэа</translation>
@@ -343,7 +323,6 @@
 <translation id="3786301125658655746">Вы па-за сеткай</translation>
 <translation id="3789841737615482174">Усталяваць</translation>
 <translation id="3793469551756281394">Прыблізны час да завяршэння: <ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" /></translation>
-<translation id="3801082500826908679">Фарэрская</translation>
 <translation id="3809272675881623365">Трус</translation>
 <translation id="3810973564298564668">Кіраваць</translation>
 <translation id="3811408895933919563">англійская (Пакістан)</translation>
@@ -351,10 +330,8 @@
 <translation id="3817579325494460411">URL-адрас не ўказаны</translation>
 <translation id="3819448694985509187">Няправільны PIN-код. У вас засталася 1 спроба.</translation>
 <translation id="3830674330436234648">Прайграванне недаступна</translation>
-<translation id="383652340667548381">Сербская</translation>
 <translation id="3839045880592694915">Мадэм не мае дазволу аператара на падключэнне. Падрабязнасці можна атрымаць у аператара.</translation>
 <translation id="385051799172605136">Назад</translation>
-<translation id="3855472144336161447">Нямецкая (Neo 2)</translation>
 <translation id="3858860766373142691">Назва</translation>
 <translation id="3899991606604168269">Французская (Канада) з раскладкай для некалькіх моў</translation>
 <translation id="3901991538546252627">Ідзе падключэнне да сеткі <ph name="NAME" /></translation>
@@ -394,7 +371,6 @@
 <translation id="4261901459838235729">Прэзентацыя Google</translation>
 <translation id="4277536868133419688">Уключаны фільтр "<ph name="FILTER_NAME" />".</translation>
 <translation id="4290535918735525311">1 папка абагулена з Linux</translation>
-<translation id="4299729908419173967">Бразільская</translation>
 <translation id="4302605047395093221">Для падключэння да дадзенай мабільнай сеткі любы карыстальнік гэтай прылады павінен будзе ўвесці PIN-код</translation>
 <translation id="4303531889494116116">Гэта сетка занятая. Паўтарыце спробу пазней.</translation>
 <translation id="4309915981827077375">Агульныя звесткі</translation>
@@ -430,7 +406,6 @@
 <translation id="4472575034687746823">Пачаць</translation>
 <translation id="4474142134969976028">Адпаведных вынікаў няма</translation>
 <translation id="4477002475007461989">Румынская</translation>
-<translation id="4477219268485577442">Балгарская фанетычная</translation>
 <translation id="4508265954913339219">Не ўдалося актываваць</translation>
 <translation id="4509667233588080747">Англійская (ЗША) з міжнароднай раскладкай Workman</translation>
 <translation id="4527800702232535228">Гэта папка абагулена з Parallels Desktop</translation>
@@ -451,20 +426,17 @@
 <translation id="4658782175094886150">Чалавек у снезе</translation>
 <translation id="4669606053856530811">Удзельнікі дыска "<ph name="SOURCE_NAME" />" страцяць доступ да гэтых элементаў, калі гэтыя элементы не абагулены з імі.</translation>
 <translation id="467809019005607715">Прэзентацыі Google</translation>
-<translation id="4690246192099372265">Шведская</translation>
 <translation id="4693155481716051732">Сушы</translation>
 <translation id="4694604912444486114">Малпа</translation>
 <translation id="469612310041132144">Кітайская (хуткі метад уводу)</translation>
 <translation id="4697043402264950621">Файлы ў спісе адсартаваны па параметры "<ph name="COLUMN_NAME" />" (у пачатку будуць даўно змененыя).</translation>
 <translation id="469897186246626197">Гэты файл створаны для ПК з праграмным забеспячэннем Windows. Ён несумяшчальны з вашай прыладай Chrome OS. <ph name="BEGIN_LINK_HELP" />Даведайцеся больш<ph name="END_LINK_HELP" /> пра адкрыццё файлаў на Chrome OS.</translation>
 <translation id="4706042980341760088">Тамільская (раскладка пішучай машынкі)</translation>
-<translation id="4711094779914110278">Турэцкая</translation>
 <translation id="4712283082407695269">Ідзе адкрыццё архіва "<ph name="PATH" />"</translation>
 <translation id="4720185134442950733">Сетка мабільнай перадачы даных</translation>
 <translation id="4725096204469550614">Раней у гэтым годзе</translation>
 <translation id="4725511304875193254">Коргі</translation>
 <translation id="4737050008115666127">Пасадачная паласа</translation>
-<translation id="4747271164117300400">Македонская</translation>
 <translation id="4759238208242260848">Спампоўкі</translation>
 <translation id="4779041693283480986">Партугальская (Партугалія)</translation>
 <translation id="4779136857077979611">Рысавы шарык</translation>
@@ -478,7 +450,6 @@
 <translation id="4826849268470072925">Тамільская (раскладка ITRANS)</translation>
 <translation id="4843566743023903107">Chromebase</translation>
 <translation id="4850886885716139402">Праглядзець</translation>
-<translation id="485316830061041779">Нямецкая</translation>
 <translation id="4862885579661885411">Налады Файлаў</translation>
 <translation id="4867079195717347957">Каб адсартаваць слупок па ўбыванні, націсніце тут.</translation>
 <translation id="4867297348137739678">Мінулы тыдзень</translation>
@@ -515,13 +486,11 @@
 <translation id="5081517858322016911">Будуць выдалены файлы агульным памерам <ph name="TOTAL_FILE_SIZE" /></translation>
 <translation id="508423945471810158">Ідзе перамяшчэнне элементаў (<ph name="NUMBER_OF_ITEMS" />) у папку "<ph name="FOLDER_NAME" />"</translation>
 <translation id="509429900233858213">Адбылася памылка.</translation>
-<translation id="5098629044894065541">Іўрыт</translation>
 <translation id="5102922915594634436">Кіраваць сінхранізаванымі папкамі</translation>
 <translation id="5109254780565519649">Адбылася памылка. Некаторыя элементы маглі не аднавіцца.</translation>
 <translation id="5110329002213341433">Англійская (Канада)</translation>
 <translation id="5119780910075847424">Сінхранізацыя прыпынена</translation>
 <translation id="5123433949759960244">Баскетбол</translation>
-<translation id="5129662217315786329">Польская</translation>
 <translation id="5144820558584035333">Карэйскі алфавіт (хангыль), рэжым 3 Set (390)</translation>
 <translation id="5145331109270917438">Дата змянення</translation>
 <translation id="515594325917491223">Шахматы</translation>
@@ -530,12 +499,10 @@
    <ph name="LINE_BREAKS" />
    Выдаленне прылады падчас яе выкарыстання можа прывесці да страты даных.  Дачакайцеся заканчэння аперацыі, затым выміце прыладу, выкарыстаўшы праграму "Файлы".</translation>
 <translation id="5163869187418756376">Збой абагульвання. Праверце падключэнне і паўтарыце спробу пазней.</translation>
-<translation id="516592729076796170">Праграмісцкая Дворака для ЗША</translation>
 <translation id="5177526793333269655">Рэжым мініяцюр</translation>
 <translation id="5181896909298187506">Няма нядаўніх файлаў</translation>
 <translation id="5194713942430106590">Каб адсартаваць слупок па ўзрастанні, націсніце тут.</translation>
 <translation id="5211614973734216083">Фарэрская</translation>
-<translation id="5218183485292899140">Французская (Швейцарыя)</translation>
 <translation id="5234764350956374838">Адхіліць</translation>
 <translation id="5253070652067921974">Хто стварыў:</translation>
 <translation id="5254207638927440400">Не ўдалося перамясціць файл: ён выкарыстоўваецца.</translation>
@@ -553,7 +520,6 @@
 <translation id="5305688511332277257">Нічога не ўсталявана</translation>
 <translation id="5317780077021120954">Захаваць</translation>
 <translation id="5318819489018851358">Абагуліць з Linux</translation>
-<translation id="5323213332664049067">Лацінаамерыканская</translation>
 <translation id="5330145655348521461">Гэтыя файлы адкрыты на іншым працоўным стале. Каб бачыць яго, перайдзіце на профіль <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />).</translation>
 <translation id="5330512191124428349">Атрымаць інфармацыю</translation>
 <translation id="535792325654997756">Чалавек з катамі</translation>
@@ -565,18 +531,15 @@
 <translation id="5411472733320185105">Не выкарыстоўваць налады проксі-сервера для гэтых хостаў і даменаў:</translation>
 <translation id="541890217011173530">Курдская (сарані) (раскладка на аснове англійскай)</translation>
 <translation id="5422221874247253874">Пункт доступу</translation>
-<translation id="5428105026674456456">Іспанская</translation>
 <translation id="5438282218546237410">Няма вынікаў па запыце "<ph name="SEARCH_TERM" />".</translation>
 <translation id="5447680084201416734">Не хапае месца ў сховішчы.</translation>
 <translation id="5449551289610225147">Несапраўдны пароль</translation>
 <translation id="5459064203055649751">Файл з такой назвай (<ph name="FILENAME" />) ужо існуе. Замяніць яго файлам, які вы перамяшчаеце?</translation>
 <translation id="5463231940765244860">Увесці</translation>
-<translation id="5469868506864199649">Італьянская</translation>
 <translation id="5473333559083690127">Паўторна ўвядзіце новы PIN-код</translation>
 <translation id="5489067830765222292">Латышская</translation>
 <translation id="5489965683297092283">Выключаны фільтр "<ph name="FILTER_NAME" />".</translation>
 <translation id="5494920125229734069">Выбраць усё</translation>
-<translation id="5500122897333236901">Ісландская</translation>
 <translation id="5508696409934741614">Кропкі</translation>
 <translation id="5522908512596376669">Спіс файлаў перайшоў у рэжым спіса.</translation>
 <translation id="5524517123096967210">Не ўдалося прачытаць файл.</translation>
@@ -589,7 +552,6 @@
 <translation id="5583664733673201137">Шырыня знакаў пунктуацыі – поўная</translation>
 <translation id="5596627076506792578">Дадатковыя параметры</translation>
 <translation id="5602622065581044566">Балгарская (фанетычная раскладка)</translation>
-<translation id="5605830556594064952">ЗША (раскладка Дворака)</translation>
 <translation id="560739212255190568">Адміністратар наладзіў правілы перавызначэння проксі-сервера і прымусовае выкарыстанне наступнага проксі-сервера</translation>
 <translation id="5618330573454123917">Гэты файл прызначаны для камп’ютара з праграмным забеспячэннем Macintosh. Ён несумяшчальны з вашай прыладай Chrome OS. <ph name="BEGIN_LINK_HELP" />Даведайцеся больш<ph name="END_LINK_HELP" /> пра адкрыццё файлаў на Chrome OS.</translation>
 <translation id="5625294776298156701">Тамільская (раскладка Tamil99)</translation>
@@ -607,7 +569,6 @@
 <translation id="5724172041621205163">Тайская (раскладка Pattachote)</translation>
 <translation id="57383366388012121">Мінулы месяц</translation>
 <translation id="575175778971367197">Зараз сінхранізаваць гэты файл нельга</translation>
-<translation id="5756666464756035725">Венгерская QWERTY</translation>
 <translation id="5760252553414789727">Выбрана элементаў: <ph name="SELECTED_FILES_COUNT" /></translation>
 <translation id="5763377084591234761">Нямецкая (Швейцарыя)</translation>
 <translation id="5769519078756170258">Хост або дамен, які трэба дадаць у выключэнні</translation>
@@ -615,7 +576,6 @@
 <translation id="5776325638577448643">Сцерці даныя і фармаціраваць дыск</translation>
 <translation id="57838592816432529">Выключыць</translation>
 <translation id="5788127256798019331">Файлы Play</translation>
-<translation id="5790193330357274855">Казахская</translation>
 <translation id="5804245609861364054">Канада (транслітарацыя)</translation>
 <translation id="5814126672212206791">Тып падключэння</translation>
 <translation id="5817397429773072584">Традыцыйная кітайская</translation>
@@ -624,7 +584,6 @@
 <translation id="5832976493438355584">Заблакіравана</translation>
 <translation id="5833610766403489739">Гэты файл некуды знік. Праверце налады размяшчэння спамповак і паўтарыце спробу.</translation>
 <translation id="5838451609423551646">Скасаваны выбар усіх элементаў</translation>
-<translation id="5838825566232597749">ЗША (Workman, міжнародная)</translation>
 <translation id="5845721951356578987">Медработнік</translation>
 <translation id="5858478190805449225">Рэжым энергазберажэння ўключаны. Паўтарыце спробу, калі рэжым энергазберажэння будзе выключаны.</translation>
 <translation id="5860491529813859533">Уключыць</translation>
@@ -640,7 +599,6 @@
 <translation id="5957366693331451795">Chromebox</translation>
 <translation id="5982621672636444458">Параметры сартавання</translation>
 <translation id="6011074160056912900">Сетка Ethernet</translation>
-<translation id="60357267506638014">Чэшская QWERTY</translation>
 <translation id="603895874132768835">Вы не зможаце выкарыстоўваць гэту мабільную сетку, пакуль не наладзіце новы PIN-код</translation>
 <translation id="6040143037577758943">Закрыць</translation>
 <translation id="6055907707645252013">Тып сеткі – <ph name="NETWORK_TYPE" />, не падключана</translation>
@@ -683,7 +641,6 @@
 <translation id="6320212353742551423">Архіў <ph name="ARCHIVE_TYPE" /></translation>
 <translation id="6321303798550928047">Маханне</translation>
 <translation id="6327785803543103246">Аўтаматычная наладка проксі-сервера</translation>
-<translation id="6339145975392024142">ЗША, міжнародная (PC)</translation>
 <translation id="6356685157277930264">Акно водгукаў на праграму "Файлы"</translation>
 <translation id="6358884629796491903">Дракон</translation>
 <translation id="636254897931573416">Несапраўднае значэнне супадзення па суфіксе дамена</translation>
@@ -704,7 +661,6 @@
 <translation id="649877868557234318">Выманне файла "<ph name="FILE_NAME" />" ажыццяўляецца ў папку "<ph name="FOLDER_NAME" />"</translation>
 <translation id="6499681088828539489">Забараніць проксі-серверы для абагуленых сетак</translation>
 <translation id="6503285896705205014">Зададзеная адміністратарам палітыка блакіруе магчымасць капіраваць файлы (<ph name="COUNT" />)</translation>
-<translation id="6509122719576673235">Нарвежская</translation>
 <translation id="6528513914570774834">Дазволіць іншым карыстальнікам прылады выкарыстоўваць гэту сетку</translation>
 <translation id="6549689063733911810">Нядаўнія</translation>
 <translation id="6558280019477628686">Адбылася памылка. Некаторыя элементы маглі не выдаліцца.</translation>
@@ -736,7 +692,6 @@
 <translation id="6806796368146926706">Літарна-лічбавы ўвод з японскай клавіятурай</translation>
 <translation id="6808193438228982088">Ліса</translation>
 <translation id="6823166707458800069">Для ўсіх файлаў, захаваных у гэтай папцы, аўтаматычна ствараюцца рэзервовыя копіі ў інтэрнэце.</translation>
-<translation id="6825883775269213504">Руская</translation>
 <translation id="6847101934483209767">Выдалена з выбранага: <ph name="ENTRY_NAME" />.</translation>
 <translation id="6848194403851638089">Месца ў сховішчы Google Workspace, якое належыць арганізацыі "<ph name="ORGANIZATION_NAME" />", скончылася.</translation>
 <translation id="6856459657722366306">Сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, магутнасць сігналу – <ph name="SIGNAL_STRENGTH" />%, падрабязныя звесткі</translation>
@@ -750,7 +705,6 @@
 <translation id="6896758677409633944">Капіраваць</translation>
 <translation id="6898028766943174120">Іншыя ўкладзеныя папкі...</translation>
 <translation id="6915678159055240887">Chromebox</translation>
-<translation id="6918340160281024199">ЗША (Workman)</translation>
 <translation id="6930242544192836755">Працягласць</translation>
 <translation id="6935521024859866267">Дагары нагамі</translation>
 <translation id="6943836128787782965">Памылка метаду HTTP GET</translation>
@@ -760,7 +714,6 @@
 <translation id="696203921837389374">Уключыць сінхранізацыю пры мабільнай перадачы даных</translation>
 <translation id="6965382102122355670">ОК</translation>
 <translation id="6965648386495488594">Порт</translation>
-<translation id="6970230597523682626">Балгарская</translation>
 <translation id="6973630695168034713">Папкі</translation>
 <translation id="6976795442547527108">Леў</translation>
 <translation id="6979158407327259162">Google Дыск</translation>
@@ -821,20 +774,17 @@
 <translation id="7417705661718309329">Карта Google</translation>
 <translation id="7419668828140929293">Файл "<ph name="FILENAME" />" аднаўляецца</translation>
 <translation id="7458955835361612701">Няма нядаўніх відарысаў</translation>
-<translation id="7460898608667578234">Украінская</translation>
 <translation id="7469894403370665791">Падключацца да гэтай сеткі аўтаматычна</translation>
 <translation id="7486315294984620427">Каб перацягнуць файл у Parallels Desktop, яго неабходна скапіраваць у папку "Файлы Windows".</translation>
 <translation id="749452993132003881">Хірагана</translation>
 <translation id="7495372004724182530">Малаялам (фанетычная раскладка)</translation>
 <translation id="7505167922889582512">Паказаць схаваныя файлы</translation>
 <translation id="7514365320538308">Спампаваць</translation>
-<translation id="751507702149411736">Беларуская</translation>
 <translation id="7521790570754130607">Каб выкарыстоўваць мабільную перадачу даных, трэба ўвесці PIN-код</translation>
 <translation id="7532029025027028521">Персідская (транслітарацыя)</translation>
 <translation id="7544830582642184299">Даць праграмам Linux доступ да файлаў на Google Дыску. Змены будуць сінхранізавацца з іншымі прыладамі.</translation>
 <translation id="7547009467130558110">Красоўка</translation>
 <translation id="7547780573915868306">Літоўская</translation>
-<translation id="7547811415869834682">Галандская</translation>
 <translation id="7551643184018910560">Замацаваць на паліцы</translation>
 <translation id="7553492409867692754">Даць праграмам Linux доступ да файлаў у папцы "<ph name="FOLDER_NAME" />"</translation>
 <translation id="7555339735447658365">Вы зараз па-за сеткай. Сінхранізацыя файлаў узновіцца, калі вы падключыцеся да інтэрнэту.</translation>
@@ -854,7 +804,6 @@
 <translation id="7693909743393669729">Фармаціраванне дыска прывядзе да сцірання ўсіх захаваных на ім даных і выдалення ўсіх наяўных раздзелаў, у тым ліку нябачных. Гэта дзеянне немагчыма адрабіць.</translation>
 <translation id="7695430100978772476">Не ўдалося адфармаціраваць дыск "<ph name="DRIVE_NAME" />"</translation>
 <translation id="76959938259365003">Не ўдалося ачысціць сметніцу.</translation>
-<translation id="770015031906360009">Грэчаская</translation>
 <translation id="7705251383879779343">Элемент "<ph name="FILE_NAME" />" скапіраваны.</translation>
 <translation id="7707941139430559579">Не ўдалося перамясціць файл. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="7708271999969613024">Каб выкарыстоўваць гэту сетку, вам неабходна ўвесці 8-значны PUK-код, атрыманы ад аператара.</translation>
@@ -883,7 +832,6 @@
 <translation id="7831491651892296503">Памылка наладжвання сеткі</translation>
 <translation id="7839804798877833423">Каб атрымаць гэтыя файлы, будзе выкарыстана прыкладна <ph name="FILE_SIZE" /> мабільнага трафіка.</translation>
 <translation id="7846076177841592234">Скасаваць выбар</translation>
-<translation id="7853966320808728790">Французская раскладка клавіятуры BÉPO</translation>
 <translation id="7857117644404132472">Дадаць выключэнне</translation>
 <translation id="7868774406711971383">Польская</translation>
 <translation id="7874321682039004450">Філіпінская</translation>
@@ -895,9 +843,7 @@
 <translation id="7925247922861151263">Не ўдалося выканаць праверку AAA</translation>
 <translation id="7928710562641958568">Адключыць прыладу</translation>
 <translation id="7933875256234974853">Падрыхтоўка да сінхранізацыі файлаў Дыска...</translation>
-<translation id="7943385054491506837">ЗША (Colemak)</translation>
 <translation id="7953739707111622108">Не ўдалося адкрыць прыладу: файлавая сістэма не распазнана.</translation>
-<translation id="7969525169268594403">Славенская</translation>
 <translation id="7972920761225148017">Французская (Швейцарыя)</translation>
 <translation id="7973962044839454485">Не ўдалося выканаць аўтэнтыфікацыю PPP: няправільнае імя карыстальніка ці пароль</translation>
 <translation id="7980421588063892270">Англійская (ЗША) з раскладкай Colemak</translation>
@@ -908,7 +854,6 @@
 <translation id="803771048473350947">Файл</translation>
 <translation id="8038111231936746805">(стандартна)</translation>
 <translation id="8042602468072383151">Аўдыяфайл фармату <ph name="AUDIO_TYPE" /></translation>
-<translation id="8045462269890919536">Румынская</translation>
 <translation id="8049184478152619004">Увядзіце PUK-код</translation>
 <translation id="8055538340801153769">Гэта папка</translation>
 <translation id="807187749540895545">Вымаецца файл "<ph name="FILE_NAME" />"...</translation>
@@ -940,11 +885,9 @@
 <translation id="8262872909443689080">Палітыка адміністратара</translation>
 <translation id="8264024885325823677">Гэта налада знаходзіцца пад кіраваннем адміністратара.</translation>
 <translation id="8269755669432358899">Згарнуць панэлі водгукаў для файлаў</translation>
-<translation id="8280151743281770066">Армянская фанетычная</translation>
 <translation id="8285791779547722821">Зашыфраваны <ph name="ORIGINAL_MIME_TYPE" /></translation>
 <translation id="8294431847097064396">Крыніца</translation>
 <translation id="8297012244086013755">Карэйскі алфавіт (хангыль), рэжым 3 Set (без клавішы Shift)</translation>
-<translation id="8299269255470343364">Японская</translation>
 <translation id="8300849813060516376">Памылка OTASP</translation>
 <translation id="8312871300878166382">Уставіць у папку</translation>
 <translation id="8329978297633540474">Звычайны тэкст</translation>
@@ -966,7 +909,6 @@
 <translation id="8428213095426709021">Налады</translation>
 <translation id="8429998526804961548">З <ph name="VM_NAME" /> абагулена столькі папак: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="8431909052837336408">Змяненне PIN-кода SIM-карты</translation>
-<translation id="8437209419043462667">ЗША</translation>
 <translation id="8452135315243592079">Адсутнічае SIM-карта</translation>
 <translation id="8456681095658380701">Недапушчальная назва</translation>
 <translation id="8457767749626250697">Ваша SIM-карта заблакіравана</translation>
@@ -981,14 +923,12 @@
 <translation id="8499098729323186194">Вымаюцца элементы (<ph name="NUMBER_OF_ITEMS" />)...</translation>
 <translation id="8502913769543567768">Сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, актываваць пасля наладжвання прылады, знаходзіцца пад кіраваннем адміністратара</translation>
 <translation id="8512483403832814140">За любы час</translation>
-<translation id="8521441079177373948">Вялікабрытанія</translation>
 <translation id="853494022971700746">Французская (Францыя)</translation>
 <translation id="8540608333167683902">Сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, магутнасць сігналу – <ph name="SIGNAL_STRENGTH" />%, падрабязныя звесткі</translation>
 <translation id="8545476925160229291">Англійская (ЗША)</translation>
 <translation id="854655314928502177">URL-адрас аўтаматычнага выяўлення вэб-проксі:</translation>
 <translation id="8547747809824590510">Адміністратар наладзіў правілы перавызначэння проксі-сервера</translation>
 <translation id="8549186985808798022">Італьянская</translation>
-<translation id="8551494947769799688">Латышская</translation>
 <translation id="8560515948038859357">Кантонскі дыялект</translation>
 <translation id="8561206103590473338">Слон</translation>
 <translation id="8566466896628108558">Сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, заблакіравана адміністратарам, магутнасць сігналу – <ph name="SIGNAL_STRENGTH" />%, падрабязныя звесткі</translation>
@@ -1011,7 +951,6 @@
 <translation id="8713112442029511308">Мальтыйская</translation>
 <translation id="8714406895390098252">Веласіпед</translation>
 <translation id="8719721339511222681">Выбрана: <ph name="ENTRY_NAME" />.</translation>
-<translation id="872537912056138402">Харвацкая</translation>
 <translation id="8743164338060742337">Сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, магутнасць сігналу – <ph name="SIGNAL_STRENGTH" />%, знаходзіцца пад кіраваннем адміністратара, падключыцеся да сеткі</translation>
 <translation id="8787254343425541995">Дазволіць проксі-серверы для абагуленых сетак</translation>
 <translation id="8790981080411996443">Чалавек палівае кветкі</translation>
@@ -1028,10 +967,8 @@
 <translation id="8873014196523807561">Каб аднавіць гэтыя элементы, перацягніце іх у новую папку. Папкі, у якіх некаторыя з гэтых элементаў знаходзіліся раней, былі выдалены.</translation>
 <translation id="8874184842967597500">Не падключана</translation>
 <translation id="8876368061475701452">У чарзе</translation>
-<translation id="8900820606136623064">Венгерская</translation>
 <translation id="8903931173357132290">Выпускнік</translation>
 <translation id="8912078710089354287">Сабака віляе хвастом</translation>
-<translation id="8919081441417203123">Дацкая</translation>
 <translation id="8949925099261528566">Падключана, доступу да інтэрнэту няма</translation>
 <translation id="8965697826696209160">Недастаткова месца.</translation>
 <translation id="8970887620466824814">Нешта пайшло не так.</translation>
@@ -1040,7 +977,6 @@
 <translation id="8998871447376656508">Не ўдалося завяршыць запампоўванне: на Google Дыску недастаткова свабоднага месца.</translation>
 <translation id="9003940392834790328">Сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, магутнасць сігналу – <ph name="SIGNAL_STRENGTH" />%, знаходзіцца пад кіраваннем адміністратара, падрабязныя звесткі</translation>
 <translation id="9007990314804111233">Увайдзіце ў свой уліковы запіс Microsoft</translation>
-<translation id="9017798300203431059">Руская фанетычная</translation>
 <translation id="9034924485347205037">Файлы Linux</translation>
 <translation id="9035012421917565900">Немагчыма перамясціць элементы назад у "<ph name="DESTINATION_NAME" />", таму вы не зможаце адрабіць гэта дзеянне.</translation>
 <translation id="9035689366572880647">Увядзіце бягучы PIN-код</translation>

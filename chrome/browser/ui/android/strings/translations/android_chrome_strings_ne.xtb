@@ -281,6 +281,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="2205701497928406883"><ph name="TAB_TITLE" />, पिन गरिएको सेयरिङ ट्याब</translation>
 <translation id="22091350895006575">युजरनेम हाल्नुहोस्</translation>
 <translation id="221494669172414749">तपाईंले प्रोफाइल लकविनै Chrome खोल्नुभयो भने तपाईंले सेभ गरेका पासवर्ड तथा भुक्तानी विधिहरू कारबाट हट्ने छन्। प्रोफाइल लक प्रयोग गर्दा यो जानकारी सुरक्षित रहन्छ।</translation>
+<translation id="2226826835915474236">निष्क्रिय सर्टकटहरू</translation>
 <translation id="2227179592712503583">सुझाव हटाउनुहोस्</translation>
 <translation id="2227444325776770048"><ph name="USER_FULL_NAME" /> का रूपमा जारी राख्नुहोस्</translation>
 <translation id="2230777942707397948">खाली विन्डो</translation>
@@ -1654,6 +1655,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="7740287852186792672">खोजका परिणाम</translation>
 <translation id="774403695779169686"><ph name="TAB_TITLE" />, चयन गरिएको सेयरिङ इन्कोग्निटो ट्याब</translation>
 <translation id="774876555279732384">तपाईं <ph name="BEGIN_LINK" />Android का सेटिङ<ph name="END_LINK" />मा गई अटोफिल सेवाहरू व्यवस्थापन गर्न सक्नुहुन्छ।</translation>
+<translation id="7758884017823246335">साइट सर्च इन्जिन हाल्नुहोस्</translation>
 <translation id="7759809451544302770">वैकल्पिक</translation>
 <translation id="7762668264895820836">SD कार्ड <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">ठेगाना थप्नुहोस्</translation>
@@ -1885,6 +1887,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="8634050254805484913">साँघुरा स्क्रिनहरूमा लुकाइएको हुन्छ</translation>
 <translation id="8635399646025169806">ट्याब समूह राखिराख्न चाहनुहुन्छ?</translation>
 <translation id="8636825310635137004">आफ्ना अन्य यन्त्रहरूबाट आफ्ना ट्याबहरू प्राप्त गर्न सिंकलाई अन गर्नुहोस्।</translation>
+<translation id="8639963783467694461">सेटिङहरू स्वत: भर्नुहोस्</translation>
 <translation id="8662474268934425487"><ph name="SITE_ETLD_PLUS_ONE" /> मा साइन इन गर्नुहोस्</translation>
 <translation id="8664979001105139458">यो नामको फाइल पहिलेदेखि नै विद्यमान छ</translation>
 <translation id="8676276370198826499"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> प्रयोग गरी <ph name="SITE_ETLD_PLUS_ONE" /> मा साइन अप गर्नुहोस्</translation>
@@ -1933,6 +1936,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="8865415417596392024">तपाईंको खातामा रहेको Chrome को डेटा</translation>
 <translation id="8872506776304248286">एपमा खोल्नुहोस्</translation>
 <translation id="8890668505403261809">आफ्ना इन्कोग्निटो ट्याबहरू खोज्नुहोस्</translation>
+<translation id="8892234476517513962">तपाईं साइन इन अवस्थामै हुनुहुन्छ</translation>
 <translation id="8894890673032951011"><ph name="TAB_TITLE" />, चयन गरिएको रेकर्डिङ इन्कोग्निटो ट्याब</translation>
 <translation id="8898822736010347272">नयाँ खतराहरू पत्ता लगाउन र वेब प्रयोग गर्ने सम्पूर्ण प्रयोगकर्ताहरूलाई सुरक्षित राख्न Google लाई तपाईंले हेर्ने केही पृष्ठका URL, प्रणालीसम्बन्धी निश्चित जानकारी र पृष्ठका केही सामग्रीहरू पठाउँछ।</translation>
 <translation id="8903921497873541725">जुम इन</translation>

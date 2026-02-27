@@ -585,6 +585,9 @@ Chromium ayarlarınızı kurtaramıyor.</translation>
 <translation id="7384121030444253939">Bu uzantı artık desteklenmiyor. Chromium bunu kaldırmanızı öneriyor.</translation>
 <translation id="7413153308467572558">Kaldığınız yerden devam edin: Chromium tarayıcısını kapatıp yeniden açtığınız her seferinde sekmeleriniz geri yüklenir. Bu özelliği devre dışı bırakmak için şuraya gidin:</translation>
 <translation id="7427879960656355200">Şifreleri Chromium'a Aktar</translation>
+<translation id="744815265653811511">1. Aşağıdaki <ph name="BUTTON_LABEL" /> düğmesini tıklayın.
+2. Windows ayarlarınızda <ph name="BUTTON_2" /> düğmesini tıklayın.
+3. Hızlı erişim için Chromium'u görev çubuğunuza sabitlemek isterseniz Windows bildiriminde <ph name="BUTTON_3" /> düğmesini tıklayın.</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium Dev</translation>
 <translation id="7450541714075000668">Metin kopyalandı</translation>
 <translation id="7451052299415159299">Chromium'un bu sitede kameranıza erişmesi için izin gerekiyor</translation>
@@ -600,6 +603,7 @@ Chromium ayarlarınızı kurtaramıyor.</translation>
 <translation id="761356813943268536">Chromium kameranızı ve mikrofonunuzu kullanıyor.</translation>
 <translation id="7617377681829253106">Chromium daha da iyi bir hale geldi</translation>
 <translation id="7622753900276619808">Artık Chromium'da daha fazla özellik kullanabilirsiniz</translation>
+<translation id="7624307931717240213">Bilgileri bu hizmeti geliştirmek için kullanırız. Gizlilik Politikası ve Hizmet Şartları'na göz atın.</translation>
 <translation id="7649070708921625228">Yardım</translation>
 <translation id="7656340475565475526">Chromium'un sizin için göz atmasına izin verin</translation>
 <translation id="7658239707568436148">İptal</translation>

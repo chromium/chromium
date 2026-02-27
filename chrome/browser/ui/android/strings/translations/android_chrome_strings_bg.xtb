@@ -281,6 +281,7 @@
 <translation id="2205701497928406883"><ph name="TAB_TITLE" /> – фиксиран раздел, който споделя</translation>
 <translation id="22091350895006575">Добавяне на потребителското име</translation>
 <translation id="221494669172414749">Когато отворите Chrome без опция за заключване на потребителския профил, запазените ви пароли и начини на плащане ще бъдат премахнати от автомобила. Използването на опция за заключване на потребителския профил защитава тези данни.</translation>
+<translation id="2226826835915474236">Неактивни преки пътища</translation>
 <translation id="2227179592712503583">Премахване на предложението</translation>
 <translation id="2227444325776770048">Продължаване като <ph name="USER_FULL_NAME" /></translation>
 <translation id="2230777942707397948">Празен прозорец</translation>
@@ -1655,6 +1656,7 @@
 <translation id="7740287852186792672">Резултати от търсенето</translation>
 <translation id="774403695779169686"><ph name="TAB_TITLE" /> – избран раздел в режим „инкогнито“, който споделя</translation>
 <translation id="774876555279732384">Услугите за автоматично попълване се управляват и от <ph name="BEGIN_LINK" />настройките на Android<ph name="END_LINK" />.</translation>
+<translation id="7758884017823246335">Добавяне на функцията за търсене в сайта</translation>
 <translation id="7759809451544302770">По избор</translation>
 <translation id="7762668264895820836">SD карта <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">Добавяне на адрес</translation>
@@ -1886,6 +1888,7 @@
 <translation id="8634050254805484913">Скриване на тесни екрани</translation>
 <translation id="8635399646025169806">Искате ли да запазите групата раздели?</translation>
 <translation id="8636825310635137004">Включете синхронизирането, за да получите разделите си от другите си устройства.</translation>
+<translation id="8639963783467694461">Настройки за автоматично попълване</translation>
 <translation id="8662474268934425487">Вход в(ъв) <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8664979001105139458">Името на файла вече съществува</translation>
 <translation id="8676276370198826499">Регистрирайте се за <ph name="SITE_ETLD_PLUS_ONE" /> чрез <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -1934,6 +1937,7 @@
 <translation id="8865415417596392024">Данни в Chrome в профила ви</translation>
 <translation id="8872506776304248286">Отваряне в прилож.</translation>
 <translation id="8890668505403261809">Търсете в разделите си в режим „инкогнито“</translation>
+<translation id="8892234476517513962">Вече сте влезли в профила си</translation>
 <translation id="8894890673032951011"><ph name="TAB_TITLE" /> – избран раздел в режим „инкогнито“, който записва</translation>
 <translation id="8898822736010347272">Изпраща до Google URL адресите на някои от посетените от вас страници, ограничена системна информация и част от съдържанието на страниците, за да помага за откриването на нови заплахи и да защитава всички потребители на мрежата.</translation>
 <translation id="8903921497873541725">Увеличаване на мащаба</translation>

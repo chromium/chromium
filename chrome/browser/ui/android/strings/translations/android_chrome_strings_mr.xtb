@@ -281,6 +281,7 @@
 <translation id="2205701497928406883"><ph name="TAB_TITLE" />, पिन केलेला शेअर करत असलेला टॅब</translation>
 <translation id="22091350895006575">वापरकर्ता नाव जोडा</translation>
 <translation id="221494669172414749">प्रोफाइल लॉकशिवाय Chrome उघडल्याने तुमचे सेव्ह केलेले पासवर्ड आणि पेमेंट पद्धती कारमधून काढून टाकल्या जातील. प्रोफाइल लॉक वापरल्याने हा डेटा सुरक्षित राहतो.</translation>
+<translation id="2226826835915474236">इनॲक्टिव्ह शॉर्टकट</translation>
 <translation id="2227179592712503583">सूचना काढून टाका</translation>
 <translation id="2227444325776770048"><ph name="USER_FULL_NAME" /> म्हणून सुरू ठेवा</translation>
 <translation id="2230777942707397948">रिकामी विंडो</translation>
@@ -923,6 +924,7 @@
 <translation id="4885273946141277891">Chrome उदाहरणांची असमर्थित संख्या.</translation>
 <translation id="4890973535105146893">तुमच्या Google खाते मध्ये सेव्ह केलेले पासवर्ड नाहीत</translation>
 <translation id="4905823827770127520">पेजवर लिंकचा समावेश करा</translation>
+<translation id="4908601375231458049">टॅब गट कस्टमाइझ करा आणि पूर्ण झाले वर क्लिक करा</translation>
 <translation id="4908869848243824489">Google चे Discover</translation>
 <translation id="4910889077668685004">पेमेंट ॲप्स</translation>
 <translation id="4911042367886397055">तुमचे पुन्हा स्वागत आहे, <ph name="USER_NAME" /> !</translation>
@@ -1186,6 +1188,7 @@
 <translation id="6040143037577758943">बंद करा</translation>
 <translation id="604124094241169006">स्वयंचलित</translation>
 <translation id="6042308850641462728">अधिक</translation>
+<translation id="6047066316630165190">ग्रिड टॅब स्विचर उघडा</translation>
 <translation id="604996488070107836">अज्ञात एररमुळे <ph name="FILE_NAME" /> डाउनलोड करणे अयशस्वी झाले.</translation>
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">तुमच्या स्टोरी आणि अ‍ॅक्टिव्हिटी येथे नियंत्रित करा</translation>
@@ -1259,6 +1262,7 @@
 <translation id="6301526076346731664">डेव्हलपर टूल उघडा</translation>
 <translation id="630308129961693966">तुमच्या ॲड्रेस बारचे स्थान निवडा</translation>
 <translation id="6303969859164067831">साइन आउट करा आणि सिंक बंद करा</translation>
+<translation id="6305257382500066042">आता वापरून पहा</translation>
 <translation id="6307241780749477694">तुम्हाला या डिव्हाइसवर तुमचे सर्व पासवर्ड मिळवण्यासाठी तुम्हीच आहात याची पडताळणी करा</translation>
 <translation id="6309082029962045994"><ph name="TAB_TITLE" />, मल्टीसिलेक्ट केलेला पिन केलेला ऐकू येणारा टॅब</translation>
 <translation id="6312687380483398334">वेब अ‍ॅप्स (शांत)</translation>
@@ -1655,6 +1659,7 @@
 <translation id="7740287852186792672">शोध परिणाम</translation>
 <translation id="774403695779169686"><ph name="TAB_TITLE" />, निवडलेला शेअर करत असलेला गुप्त टॅब</translation>
 <translation id="774876555279732384">ऑटोफिल सेवा <ph name="BEGIN_LINK" />Android सेटिंग्ज<ph name="END_LINK" /> मध्येदेखील व्यवस्थापित केल्या जातात.</translation>
+<translation id="7758884017823246335">साइट शोध जोडा</translation>
 <translation id="7759809451544302770">पर्यायी</translation>
 <translation id="7762668264895820836">SD कार्ड <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">पत्ता जोडा</translation>
@@ -1845,6 +1850,7 @@
 <translation id="8458341576712814616">शॉर्टकट</translation>
 <translation id="8458413889418591446">तुम्ही भेट दिलेल्या साइटवर झटपट परत जाण्यासाठी तुमचा इतिहास आणि टॅब सिंक करा</translation>
 <translation id="84594714173170813">तुमच्या Google खाते मधील Chrome डेटा वापरणे सुरू ठेवा</translation>
+<translation id="8460008946585880786">एक टॅब दुसऱ्या टॅबवर ड्रॅग करून ड्रॉप करा</translation>
 <translation id="8460448946170646641">महत्त्वाच्या गोपनीयता आणि सुरक्षा नियंत्रणांचे पुनरावलोकन करा</translation>
 <translation id="8460932807646981183">शोध इंजीन आणि साइट शोध व्यवस्थापित करा</translation>
 <translation id="8473863474539038330">अ‍ॅड्रेस आणि बरेच काही</translation>
@@ -1886,6 +1892,7 @@
 <translation id="8634050254805484913">अरुंद स्क्रीनवर लपवला आहे</translation>
 <translation id="8635399646025169806">टॅब गट कायम ठेवायचा आहे का?</translation>
 <translation id="8636825310635137004">आपल्या इतर डिव्हाइसेस मधून तुमचे टॅब प्राप्त करण्यासाठी, सिंक सुरू करा</translation>
+<translation id="8639963783467694461">ऑटोफिल सेटिंग्ज</translation>
 <translation id="8662474268934425487"><ph name="SITE_ETLD_PLUS_ONE" /> मध्ये साइन इन करा</translation>
 <translation id="8664979001105139458">फाइलचे नाव आधीपासून अस्तित्वात आहे</translation>
 <translation id="8676276370198826499"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> सह <ph name="SITE_ETLD_PLUS_ONE" /> वर साइन अप करा</translation>
@@ -1934,6 +1941,7 @@
 <translation id="8865415417596392024">तुमच्या खात्यामधील Chrome डेटा</translation>
 <translation id="8872506776304248286">अनुप्रयोगामध्ये उघडा</translation>
 <translation id="8890668505403261809">तुमचे गुप्त टॅब शोधा</translation>
+<translation id="8892234476517513962">तुम्ही आधीपासून साइन इन केलेले आहे</translation>
 <translation id="8894890673032951011"><ph name="TAB_TITLE" />, निवडलेला रेकॉर्ड करत असलेला गुप्त टॅब</translation>
 <translation id="8898822736010347272">नवीन धोके शोधण्यात आणि वेबवरील प्रत्येकाचे संरक्षण करण्यात मदत करण्यासाठी, तुम्ही भेट देत असलेल्या काही पेजच्या URL, मर्यादित सिस्टीम माहिती आणि काही पेज आशय Google ला पाठवते.</translation>
 <translation id="8903921497873541725">झूम इन करा</translation>

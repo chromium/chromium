@@ -588,6 +588,9 @@ Chromium kan ikke gjenopprette innstillingen dine.</translation>
 <translation id="7384121030444253939">Denne utvidelsen støttes ikke lenger. Chromium anbefaler at du fjerner den i stedet.</translation>
 <translation id="7413153308467572558">Fortsett der du avsluttet: Chromium gjenoppretter fanene dine hver gang du starter på nytt. For å slå av dette, gå til</translation>
 <translation id="7427879960656355200">Importer passord til Chromium</translation>
+<translation id="744815265653811511">1. Klikk på <ph name="BUTTON_LABEL" /> nedenfor
+2. Klikk på <ph name="BUTTON_2" /> i Windows-innstillingene
+3. Klikk på <ph name="BUTTON_3" /> i Windows-varselet for å feste Chromium til oppgavelinjen for rask tilgang</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Chromium for utviklere</translation>
 <translation id="7450541714075000668">Teksten er kopiert</translation>
 <translation id="7451052299415159299">Chromium trenger tilgang til kameraet ditt for dette nettstedet</translation>
@@ -603,6 +606,7 @@ Chromium kan ikke gjenopprette innstillingen dine.</translation>
 <translation id="761356813943268536">Chromium bruker kameraet og mikrofonen din.</translation>
 <translation id="7617377681829253106">Nå er Chromium blitt enda bedre</translation>
 <translation id="7622753900276619808">Nå har du flere funksjoner tilgjengelig i Chromium</translation>
+<translation id="7624307931717240213">Vi bruker informasjon til å forbedre denne tjenesten. Se personvernreglene og vilkårene for bruk.</translation>
 <translation id="7649070708921625228">Hjelp</translation>
 <translation id="7656340475565475526">La Chromium surfe for deg</translation>
 <translation id="7658239707568436148">Avbryt</translation>

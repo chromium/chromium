@@ -5567,6 +5567,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="4732799736617504962">Prijungtas mikrofonas gali palaikyti tik triukšmo slopinimą</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" /> % (kairioji)</translation>
 <translation id="4733793249294335256">Vieta</translation>
+<translation id="4734965478015604180">Horizontaliai</translation>
 <translation id="473546211690256853">Šią paskyrą tvarko <ph name="DOMAIN" />.</translation>
 <translation id="4735506354605317060">Apskritimo rodyklė</translation>
 <translation id="4735793370946506039">Sužinokite daugiau apie Sustiprintą saugų naršymą.</translation>
@@ -5834,6 +5835,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="4901154724271753917">Išskleisti neseniai uždarytą</translation>
 <translation id="4901309472892185668">Pasirinkite eksperimento būseną, skirtą eksperimentui „<ph name="EXPERIMENT_NAME" />“.</translation>
 <translation id="49027928311173603">Iš serverio atsisiųsta politika netinkama: <ph name="VALIDATION_ERROR" />.</translation>
+<translation id="490375751687810070">Vertikaliai</translation>
 <translation id="4906490889887219338">Nustatykite arba tvarkykite tinklo failų bendrinimą. <ph name="LINK_BEGIN" />Sužinokite daugiau<ph name="LINK_END" /></translation>
 <translation id="4906679076183257864">Iš naujo nustatyti numatytąjį</translation>
 <translation id="4907129260985716018">Pasirinkite, kada šis plėtinys gali skaityti ir keisti svetainės duomenis</translation>

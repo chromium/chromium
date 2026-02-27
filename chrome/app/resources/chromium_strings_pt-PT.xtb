@@ -588,6 +588,9 @@ O Chromium não consegue recuperar as suas definições.</translation>
 <translation id="7384121030444253939">Esta extensão já não é suportada. O Chromium recomenda que a remova.</translation>
 <translation id="7413153308467572558">Continue a partir de onde ficou: o Chromium restaura os seus separadores sempre que reinicia. Para desativar esta opção, aceda às</translation>
 <translation id="7427879960656355200">Importe palavras-passe para o Chromium</translation>
+<translation id="744815265653811511">1. Clique em <ph name="BUTTON_LABEL" /> abaixo
+2. Clique em <ph name="BUTTON_2" /> nas definições do Windows
+3. Clique em <ph name="BUTTON_3" /> na notificação do Windows para afixar o Chromium à barra de tarefas para um acesso rápido</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Chromium Dev</translation>
 <translation id="7450541714075000668">Texto copiado</translation>
 <translation id="7451052299415159299">O Chromium necessita de autorização de acesso à câmara para este site.</translation>
@@ -603,6 +606,7 @@ O Chromium não consegue recuperar as suas definições.</translation>
 <translation id="761356813943268536">O Chromium está a utilizar a câmara e o microfone.</translation>
 <translation id="7617377681829253106">O Chromium está ainda melhor</translation>
 <translation id="7622753900276619808">Agora, tem mais funcionalidades disponíveis no Chromium</translation>
+<translation id="7624307931717240213">Usamos as informações para melhorar este serviço. Consulte a Política de Privacidade e os Termos de Utilização.</translation>
 <translation id="7649070708921625228">Ajuda</translation>
 <translation id="7656340475565475526">Permita que o Chromium procure por si</translation>
 <translation id="7658239707568436148">Cancelar</translation>

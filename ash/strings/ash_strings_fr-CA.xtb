@@ -426,6 +426,7 @@
 <translation id="2478076885740497414">Installer l'application</translation>
 <translation id="2482878487686419369">Notifications</translation>
 <translation id="2484513351006226581">Appuyez sur <ph name="KEYBOARD_SHORTCUT" /> pour changer la disposition du clavier.</translation>
+<translation id="2485422356828889247">Désinstaller</translation>
 <translation id="2486214324139475545">Aperçu du bureau <ph name="DESK_NAME" />. Bureau actif.</translation>
 <translation id="2486405091093637109">La résolution de « <ph name="DISPLAY_NAME" /> » a été remplacée par une résolution de <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Sans confirmation, les paramètres précédents seront restaurés dans <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2487915095798731898">Joindre</translation>

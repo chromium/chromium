@@ -281,6 +281,7 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="2205701497928406883"><ph name="TAB_TITLE" />, vasgespelde oortjie wat gedeel word</translation>
 <translation id="22091350895006575">Voeg gebruikernaam by</translation>
 <translation id="221494669172414749">As jy Chrome sonder ’n profielsluit oopmaak, sal jou gestoorde wagwoorde en betaalmetodes uit die motor verwyder word. Die gebruik van ’n profielsluit hou hierdie data veilig.</translation>
+<translation id="2226826835915474236">Onaktiewe kortpaaie</translation>
 <translation id="2227179592712503583">Verwyder voorstel</translation>
 <translation id="2227444325776770048">Gaan voort as <ph name="USER_FULL_NAME" /></translation>
 <translation id="2230777942707397948">Leë venster</translation>
@@ -1655,6 +1656,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="7740287852186792672">Soekresultate</translation>
 <translation id="774403695779169686"><ph name="TAB_TITLE" />, gekose Incognito-oortjie wat gedeel word</translation>
 <translation id="774876555279732384">Outovuldienste word ook in <ph name="BEGIN_LINK" />Android-instellings<ph name="END_LINK" /> bestuur.</translation>
+<translation id="7758884017823246335">Voeg werfsoektog by</translation>
 <translation id="7759809451544302770">Opsioneel</translation>
 <translation id="7762668264895820836">SD-kaart <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">Voeg adres by</translation>
@@ -1886,6 +1888,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="8634050254805484913">Word versteek op klein skerms</translation>
 <translation id="8635399646025169806">Hou oortjiegroep?</translation>
 <translation id="8636825310635137004">Skakel sinkronisering aan om jou oortjies van jou ander toestelle af te kry.</translation>
+<translation id="8639963783467694461">Outovul-instellings</translation>
 <translation id="8662474268934425487">Meld op <ph name="SITE_ETLD_PLUS_ONE" /> aan</translation>
 <translation id="8664979001105139458">Lêernaam bestaan reeds</translation>
 <translation id="8676276370198826499">Meld aan by <ph name="SITE_ETLD_PLUS_ONE" /> met <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -1934,6 +1937,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="8865415417596392024">Chrome-data in jou rekening</translation>
 <translation id="8872506776304248286">Maak in app oop</translation>
 <translation id="8890668505403261809">Soek deur jou Incognito-oortjies</translation>
+<translation id="8892234476517513962">Jy is reeds aangemeld</translation>
 <translation id="8894890673032951011"><ph name="TAB_TITLE" />, gekose Incognito-oortjie wat opgeneem word</translation>
 <translation id="8898822736010347272">Stuur URL'e van sommige bladsye wat jy besoek, beperkte stelselinligting en sekere bladsyinhoud na Google toe om te help om nuwe bedreigings te ontdek en almal op die web te beskerm.</translation>
 <translation id="8903921497873541725">Zoem in</translation>

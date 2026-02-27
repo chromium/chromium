@@ -585,6 +585,9 @@ Chromium nie może odzyskać ustawień.</translation>
 <translation id="7384121030444253939">To rozszerzenie nie jest już obsługiwane. Chromium zaleca jego usunięcie.</translation>
 <translation id="7413153308467572558">Wznawianie przeglądania od tego samego miejsca: Chromium po każdym ponownym uruchomieniu przywraca karty. Aby wyłączyć tę funkcję, otwórz</translation>
 <translation id="7427879960656355200">Importuj hasła do Chromium</translation>
+<translation id="744815265653811511">1. Kliknij <ph name="BUTTON_LABEL" /> poniżej
+2. Kliknij <ph name="BUTTON_2" /> w ustawieniach systemu Windows
+3. Kliknij <ph name="BUTTON_3" /> w powiadomieniu systemu Windows, aby przypiąć przeglądarkę Chromium do paska zadań i mieć do niej szybki dostęp</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Chromium Dev</translation>
 <translation id="7450541714075000668">Tekst został skopiowany</translation>
 <translation id="7451052299415159299">Chromium potrzebuje uprawnień dostępu do aparatu na tej stronie</translation>
@@ -600,6 +603,7 @@ Chromium nie może odzyskać ustawień.</translation>
 <translation id="761356813943268536">Chromium używa Twojej kamery i mikrofonu.</translation>
 <translation id="7617377681829253106">Przeglądarka Chromium jest jeszcze lepsza</translation>
 <translation id="7622753900276619808">Teraz masz do dyspozycji więcej funkcji w Chromium</translation>
+<translation id="7624307931717240213">Informacji używamy, aby ulepszyć tę usługę. Przeczytaj politykę prywatności i warunki korzystania z usługi.</translation>
 <translation id="7649070708921625228">Pomoc</translation>
 <translation id="7656340475565475526">Pozwól Chromium przeglądać strony za Ciebie</translation>
 <translation id="7658239707568436148">Anuluj</translation>

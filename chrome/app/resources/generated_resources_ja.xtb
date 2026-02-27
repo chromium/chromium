@@ -5540,6 +5540,7 @@
 <translation id="4732799736617504962">接続されているマイクはノイズ キャンセルのみをサポートしています</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />%（左）</translation>
 <translation id="4733793249294335256">保存先</translation>
+<translation id="4734965478015604180">横</translation>
 <translation id="473546211690256853">このアカウントは <ph name="DOMAIN" /> によって管理されています。</translation>
 <translation id="4735506354605317060">円ポインタ</translation>
 <translation id="4735793370946506039">セーフ ブラウジング保護強化機能の詳細。</translation>
@@ -5806,6 +5807,7 @@
 <translation id="4901154724271753917">最近閉じたタブを展開する</translation>
 <translation id="4901309472892185668"><ph name="EXPERIMENT_NAME" /> テストの試験運用機能の状態を選択します。</translation>
 <translation id="49027928311173603">サーバーからダウンロードされたポリシーが無効です: <ph name="VALIDATION_ERROR" />。</translation>
+<translation id="490375751687810070">縦</translation>
 <translation id="4906490889887219338">ネットワーク ファイル共有を設定または管理します。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="4906679076183257864">デフォルトに戻す</translation>
 <translation id="4907129260985716018">この拡張機能がサイトデータの読み取りと変更を行えるタイミングを選択してください</translation>
@@ -8472,6 +8474,7 @@
 <translation id="678520006562636090"><ph name="DEVICE_TYPE" /> で Google レンズを試す</translation>
 <translation id="6785594991951195537"><ph name="PASSWORD_DOMAIN" /> を使用する</translation>
 <translation id="6785739405821760313">保存したデスクを表示しています。Tab キーを押して移動できます。</translation>
+<translation id="6785779729084003225"><ph name="FOCUS_TOGGLE_HOTKEY" /> キーで Gemini in Chrome を開く</translation>
 <translation id="6785915470941880363">逆スクロール（<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" />）</translation>
 <translation id="67862343314499040">バイオレット</translation>
 <translation id="6786480815699355166">自動字幕起こしに対応している言語のみ翻訳できます</translation>
@@ -8575,7 +8578,7 @@
 <translation id="6841186874966388268">エラー</translation>
 <translation id="6842135459748401207"><ph name="USER_EMAIL" /> にログインしているデバイスのみ</translation>
 <translation id="6842136130964845393">保存したパスワードに常にアクセスできるようにするには、本人確認を行ってください</translation>
-<translation id="6842670680297285750">現在のタブで新しい分割表示</translation>
+<translation id="6842670680297285750">現在のタブで新しい分割ビュー</translation>
 <translation id="6842749380892715807">XML サイトリストの前回のダウンロードは <ph name="LAST_DATE_DOWNLOAD" /> に行われました。</translation>
 <translation id="6842868554183332230">チャットアプリのステータスを設定するため、サイトでデバイスのアクティブ状態を検出する場合があります。</translation>
 <translation id="6843264316370513305">ネットワークのデバッグ</translation>
@@ -9648,7 +9651,7 @@
 <translation id="7586498138629385861">Chrome アプリが開いている間 Chrome は実行され続けます。</translation>
 <translation id="7587297195142686341">Gemini によるログイン</translation>
 <translation id="7587806318633605613">候補の履歴</translation>
-<translation id="7589448773774086276">現在のタブで新しい分割表示</translation>
+<translation id="7589448773774086276">現在のタブで新しい分割ビュー</translation>
 <translation id="7589461650300748890">データが失われる危険があります。</translation>
 <translation id="7590883480672980941">入力設定</translation>
 <translation id="7592060599656252486">一部</translation>

@@ -426,6 +426,7 @@
 <translation id="2478076885740497414">安裝應用程式</translation>
 <translation id="2482878487686419369">通知</translation>
 <translation id="2484513351006226581">按下 <ph name="KEYBOARD_SHORTCUT" />可切換鍵盤配置。</translation>
+<translation id="2485422356828889247">解除安裝</translation>
 <translation id="2486214324139475545">「<ph name="DESK_NAME" />」預覽。使用中的桌面。</translation>
 <translation id="2486405091093637109">「<ph name="DISPLAY_NAME" />」的解析度已變更為 <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz)。如未在 <ph name="TIMEOUT_SECONDS" />內確認，系統將還原先前的設定。</translation>
 <translation id="2487915095798731898">加入</translation>

@@ -281,6 +281,7 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Nie jest on
 <translation id="2205701497928406883"><ph name="TAB_TITLE" />, przypięta karta udostępniania</translation>
 <translation id="22091350895006575">Dodaj nazwę użytkownika</translation>
 <translation id="221494669172414749">Otwarcie Chrome bez blokady profilu spowoduje usunięcie z samochodu zapisanych haseł i form płatności. Blokada profilu zapewnia bezpieczeństwo tych danych.</translation>
+<translation id="2226826835915474236">Nieaktywne skróty</translation>
 <translation id="2227179592712503583">Usuń sugestię</translation>
 <translation id="2227444325776770048">Kontynuuj jako <ph name="USER_FULL_NAME" /></translation>
 <translation id="2230777942707397948">Puste okno</translation>
@@ -923,6 +924,7 @@ Na stronie <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> n
 <translation id="4885273946141277891">Nieobsługiwana liczba wystąpień Chrome.</translation>
 <translation id="4890973535105146893">Na swoim koncie Google nie masz zapisanych haseł</translation>
 <translation id="4905823827770127520">Dołącz link do strony</translation>
+<translation id="4908601375231458049">Dostosuj grupę kart i kliknij Gotowe</translation>
 <translation id="4908869848243824489">Discover od Google</translation>
 <translation id="4910889077668685004">Aplikacje do płatności</translation>
 <translation id="4911042367886397055">Witaj ponownie, <ph name="USER_NAME" />!</translation>
@@ -1186,6 +1188,7 @@ Na stronie <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> n
 <translation id="6040143037577758943">Zamknij</translation>
 <translation id="604124094241169006">Automatyczne</translation>
 <translation id="6042308850641462728">Więcej</translation>
+<translation id="6047066316630165190">Otwórz przełącznik kart w formie siatki</translation>
 <translation id="604996488070107836">Nie udało się pobrać pliku <ph name="FILE_NAME" /> z powodu nieznanego błędu.</translation>
 <translation id="605721222689873409">RR</translation>
 <translation id="6059830886158432458">Tutaj możesz zarządzać wyświetlanymi wiadomościami i aktywnością</translation>
@@ -1259,6 +1262,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="6301526076346731664">Otwarcie narzędzi dla programistów</translation>
 <translation id="630308129961693966">Wybierz położenie paska adresu</translation>
 <translation id="6303969859164067831">Wyloguj się i wyłącz synchronizację</translation>
+<translation id="6305257382500066042">Wypróbuj</translation>
 <translation id="6307241780749477694">Aby pobrać wszystkie swoje hasła na to urządzenie, potwierdź swoją tożsamość</translation>
 <translation id="6309082029962045994"><ph name="TAB_TITLE" />, jedna z kilku wybranych przypiętych kart z dźwiękiem</translation>
 <translation id="6312687380483398334">Aplikacje internetowe (wyciszenie)</translation>
@@ -1655,6 +1659,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="7740287852186792672">Wyniki wyszukiwania</translation>
 <translation id="774403695779169686"><ph name="TAB_TITLE" />, wybrana karta incognito udostępniania</translation>
 <translation id="774876555279732384">Usługami autouzupełniania można też zarządzać w <ph name="BEGIN_LINK" />Ustawieniach Androida<ph name="END_LINK" />.</translation>
+<translation id="7758884017823246335">Dodaj wyszukiwanie w witrynie</translation>
 <translation id="7759809451544302770">Opcjonalne</translation>
 <translation id="7762668264895820836">Karta SD <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">Dodaj adres</translation>
@@ -1845,6 +1850,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="8458341576712814616">Skrót</translation>
 <translation id="8458413889418591446">Aby szybko wracać do odwiedzonych stron, włącz synchronizację historii i kart</translation>
 <translation id="84594714173170813">Nadal korzystaj z danych Chrome na koncie Google</translation>
+<translation id="8460008946585880786">Przeciągnij i upuść jedną kartę na drugą</translation>
 <translation id="8460448946170646641">Informacje o najważniejszych funkcjach prywatności i bezpieczeństwa</translation>
 <translation id="8460932807646981183">Zarządzanie wyszukiwarkami i wyszukiwaniem w witrynach</translation>
 <translation id="8473863474539038330">Adresy i ustawienia</translation>
@@ -1886,6 +1892,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="8634050254805484913">Ukryte na wąskich ekranach</translation>
 <translation id="8635399646025169806">Zachować grupę kart?</translation>
 <translation id="8636825310635137004">Aby korzystać z kart ze swoich innych urządzeń, włącz synchronizację</translation>
+<translation id="8639963783467694461">Ustawienia autouzupełniania</translation>
 <translation id="8662474268934425487">Zaloguj się w usłudze <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8664979001105139458">Ta nazwa pliku już istnieje</translation>
 <translation id="8676276370198826499">Zarejestruj się w witrynie <ph name="SITE_ETLD_PLUS_ONE" />, używając: <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -1934,6 +1941,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="8865415417596392024">Dane z Chrome na Twoim koncie</translation>
 <translation id="8872506776304248286">Otwórz w aplikacji</translation>
 <translation id="8890668505403261809">Wyszukaj na kartach incognito</translation>
+<translation id="8892234476517513962">Jesteś już zalogowany(-a)</translation>
 <translation id="8894890673032951011"><ph name="TAB_TITLE" />, wybrana karta incognito nagrywania</translation>
 <translation id="8898822736010347272">Wysyła do Google adresy URL niektórych odwiedzanych przez Ciebie stron, niektóre informacje o systemie i niektóre treści ze stron, by pomóc w wykrywaniu nowych zagrożeń i chronić wszystkich użytkowników internetu.</translation>
 <translation id="8903921497873541725">Powiększ</translation>

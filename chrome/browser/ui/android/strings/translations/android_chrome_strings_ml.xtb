@@ -281,6 +281,7 @@
 <translation id="2205701497928406883"><ph name="TAB_TITLE" />, പിൻ ചെയ്ത, ഉള്ളടക്കം പങ്കിടുന്ന ടാബ്</translation>
 <translation id="22091350895006575">ഉപയോക്തൃനാമം ചേർക്കുക</translation>
 <translation id="221494669172414749">പ്രൊഫൈൽ ലോക്ക് ഇല്ലാതെ Chrome തുറക്കുന്നത്, നിങ്ങളുടെ സംരക്ഷിച്ച പാസ്‌വേഡുകളും പേയ്‌മെന്റ് രീതികളും കാറിൽ നിന്ന് നീക്കം ചെയ്യും. പ്രൊഫൈൽ ലോക്ക് ഉപയോഗിക്കുന്നത്, ഈ ഡാറ്റ സുരക്ഷിതമാക്കി നിലനിർത്തുന്നു.</translation>
+<translation id="2226826835915474236">സജീവമല്ലാത്ത കുറുക്കുവഴികൾ</translation>
 <translation id="2227179592712503583">നിർദ്ദേശം നീക്കം ചെയ്യുക</translation>
 <translation id="2227444325776770048"><ph name="USER_FULL_NAME" /> എന്ന പേരിൽ തുടരുക</translation>
 <translation id="2230777942707397948">ശൂന്യമായ വിൻഡോ</translation>
@@ -1655,6 +1656,7 @@
 <translation id="7740287852186792672">തിരയൽ ഫലങ്ങള്‍</translation>
 <translation id="774403695779169686"><ph name="TAB_TITLE" />, തിരഞ്ഞെടുത്ത, ഉള്ളടക്കം പങ്കിടുന്ന അദൃശ്യ ടാബ്</translation>
 <translation id="774876555279732384">സ്വയമേവ പൂരിപ്പിക്കൽ സേവനങ്ങൾ <ph name="BEGIN_LINK" />Android ക്രമീകരണത്തിലും<ph name="END_LINK" /> മാനേജ് ചെയ്യാനാകും.</translation>
+<translation id="7758884017823246335">സൈറ്റ് തിരയൽ ചേർക്കുക</translation>
 <translation id="7759809451544302770">ഓപ്‌ഷണൽ</translation>
 <translation id="7762668264895820836">SD കാർഡ് <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">വിലാസം ചേർക്കുക</translation>
@@ -1886,6 +1888,7 @@
 <translation id="8634050254805484913">ഇടുങ്ങിയ സ്ക്രീനുകളിൽ മറച്ചിരിക്കുന്നു</translation>
 <translation id="8635399646025169806">ടാബ് ഗ്രൂപ്പ് നിലനിർത്തണോ?</translation>
 <translation id="8636825310635137004">നിങ്ങളുടെ മറ്റ് ഉപകരണങ്ങളിൽ നിന്നുള്ള ടാബുകൾ ലഭിക്കാൻ, സമന്വയിപ്പിക്കൽ ഓണാക്കുക.</translation>
+<translation id="8639963783467694461">സ്വയമേവ പൂരിപ്പിക്കൽ ക്രമീകരണങ്ങള്‍</translation>
 <translation id="8662474268934425487"><ph name="SITE_ETLD_PLUS_ONE" /> എന്നതിൽ സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="8664979001105139458">ഫയലിന്റെ പേര് ഇതിനകം നിലവിലുണ്ട്</translation>
 <translation id="8676276370198826499"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> എന്ന അക്കൗണ്ട് നൽകി <ph name="SITE_ETLD_PLUS_ONE" /> എന്നതിൽ സൈനപ്പ് ചെയ്യുക</translation>
@@ -1934,6 +1937,7 @@
 <translation id="8865415417596392024">നിങ്ങളുടെ അക്കൗണ്ടിലെ Chrome ഡാറ്റ</translation>
 <translation id="8872506776304248286">ആപ്പിൽ തുറക്കുക</translation>
 <translation id="8890668505403261809">നിങ്ങളുടെ അദൃശ്യ ടാബുകൾ തിരയുക</translation>
+<translation id="8892234476517513962">ഇതിനകം സൈൻ ഇൻ ചെയ്തിരിക്കുന്നു</translation>
 <translation id="8894890673032951011"><ph name="TAB_TITLE" />, തിരഞ്ഞെടുത്ത, മീഡിയ റെക്കോർഡ് ചെയ്യുന്ന അദൃശ്യ ടാബ്</translation>
 <translation id="8898822736010347272">വെബിലെ പുതിയ ഭീഷണികൾ കണ്ടെത്തി എല്ലാവരെയും പരിരക്ഷിക്കാൻ സഹായിക്കുന്നതിന് നിങ്ങൾ സന്ദർശിക്കുന്ന ചില പേജുകളുടെ URL-കൾ, പരിമിത സിസ്‌റ്റം വിവരങ്ങൾ, ചില പേജുകളുടെ ഉള്ളടക്കം എന്നിവ Google-ലേക്ക് അയയ്ക്കുന്നു.</translation>
 <translation id="8903921497873541725">സൂം ഇന്‍ ചെയ്യുക</translation>

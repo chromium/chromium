@@ -5564,6 +5564,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="4732799736617504962">The connected mic can only support noise cancellation</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (left)</translation>
 <translation id="4733793249294335256">Location</translation>
+<translation id="4734965478015604180">Horizontal</translation>
 <translation id="473546211690256853">This account is managed by <ph name="DOMAIN" /></translation>
 <translation id="4735506354605317060">Circle pointer</translation>
 <translation id="4735793370946506039">Learn more about Enhanced Safe Browsing.</translation>
@@ -5831,6 +5832,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="4901154724271753917">Expand recently closed</translation>
 <translation id="4901309472892185668">Select experiment state for the <ph name="EXPERIMENT_NAME" /> experiment.</translation>
 <translation id="49027928311173603">The policy downloaded from the server is invalid: <ph name="VALIDATION_ERROR" />.</translation>
+<translation id="490375751687810070">Vertical</translation>
 <translation id="4906490889887219338">Set up or manage network file shares. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="4906679076183257864">Reset to Default</translation>
 <translation id="4907129260985716018">Choose when this extension can read and change your site data</translation>
@@ -8503,6 +8505,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="678520006562636090">Try Google Lens on your <ph name="DEVICE_TYPE" /></translation>
 <translation id="6785594991951195537">Use your <ph name="PASSWORD_DOMAIN" /></translation>
 <translation id="6785739405821760313">Viewing saved desks. Press tab to navigate.</translation>
+<translation id="6785779729084003225">Use <ph name="FOCUS_TOGGLE_HOTKEY" /> to open Gemini in Chrome</translation>
 <translation id="6785915470941880363">Reverse scrolling <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="67862343314499040">Violet</translation>
 <translation id="6786480815699355166">Only supported Live Caption languages can be translated</translation>

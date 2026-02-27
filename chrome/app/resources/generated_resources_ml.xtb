@@ -5546,6 +5546,7 @@
 <translation id="4732799736617504962">കണക്റ്റ് ചെയ്ത മൈക്കിന് നോയ്‌സ് കാൻസലേഷൻ മാത്രമേ പിന്തുണയ്ക്കാനാകൂ</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (ഇടത്)</translation>
 <translation id="4733793249294335256">ലൊക്കേഷൻ</translation>
+<translation id="4734965478015604180">സമാന്തരം</translation>
 <translation id="473546211690256853"><ph name="DOMAIN" />, ഈ അക്കൗണ്ട് നിയന്ത്രിക്കുന്നു</translation>
 <translation id="4735506354605317060">സർക്കിൾ പോയിന്റർ</translation>
 <translation id="4735793370946506039">മെച്ചപ്പെടുത്തിയ സുരക്ഷിത ബ്രൗസിംഗിനെ കുറിച്ച് കൂടുതലറിയുക.</translation>
@@ -5813,6 +5814,7 @@
 <translation id="4901154724271753917">അടുത്തിടെ അടച്ചവ വികസിപ്പിക്കുക</translation>
 <translation id="4901309472892185668"><ph name="EXPERIMENT_NAME" /> പരീക്ഷണത്തിന്റെ പരീക്ഷണ നില തിരഞ്ഞെടുക്കുക.</translation>
 <translation id="49027928311173603">സെർവറിൽ നിന്നും ഡൗൺലോഡ് ചെയ്‌ത നയം അസാധുവാണ്: <ph name="VALIDATION_ERROR" />.</translation>
+<translation id="490375751687810070">ലംബം</translation>
 <translation id="4906490889887219338">നെറ്റ്‌വർക്ക് ഫയൽ പങ്കിടലുകൾ സജ്ജീകരിക്കുക അല്ലെങ്കിൽ മാനേജ് ചെയ്യുക. <ph name="LINK_BEGIN" />കൂടുതലറിയുക<ph name="LINK_END" /></translation>
 <translation id="4906679076183257864">സ്ഥിരമായതിലേക്ക് പുനഃസജ്ജമാക്കുക</translation>
 <translation id="4907129260985716018">ഈ വിപുലീകരണത്തിന് നിങ്ങളുടെ സൈറ്റ് ഡാറ്റ വായിക്കാനും മാറ്റാനും കഴിയുന്നത് എപ്പോഴെന്ന് തിരഞ്ഞെടുക്കുക</translation>
@@ -8485,6 +8487,7 @@
 <translation id="678520006562636090">നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> എന്നതിൽ Google Lens ഉപയോഗിച്ചുനോക്കൂ</translation>
 <translation id="6785594991951195537"><ph name="PASSWORD_DOMAIN" /> ഉപയോഗിക്കുക</translation>
 <translation id="6785739405821760313">സംരക്ഷിച്ച ഡെസ്ക്കുകൾ കാണുന്നു. നാവിഗേറ്റ് ചെയ്യാൻ ടാബ് അമർത്തുക.</translation>
+<translation id="6785779729084003225">Chrome-ൽ Gemini തുറക്കാൻ <ph name="FOCUS_TOGGLE_HOTKEY" /> ഉപയോഗിക്കുക</translation>
 <translation id="6785915470941880363">വിപരീതദിശയിലുള്ള സ്ക്രോൾ ചെയ്യൽ <ph name="LINK_BEGIN" />കൂടുതലറിയുക<ph name="LINK_END" /></translation>
 <translation id="67862343314499040">വയലറ്റ്</translation>
 <translation id="6786480815699355166">പിന്തുണയുള്ള തത്സമയ ക്യാപ്ഷൻ ഭാഷകൾ മാത്രമേ വിവർത്തനം ചെയ്യാൻ കഴിയൂ</translation>

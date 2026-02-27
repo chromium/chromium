@@ -230,6 +230,7 @@
 <translation id="1358187717814494928">શીટ બનાવો</translation>
 <translation id="1358223345833465883">Chromiumમાં તમારું શોધ એન્જિન</translation>
 <translation id="1359836962251219822">રસોડું અને ડાઇનિંગ રૂમ</translation>
+<translation id="136059610328993645"><ph name="ACCOUNT" /> માટેની તમારી માહિતી Google Walletમાં સાચવવામાં આવે છે. તમે વધુ ઝડપથી ફોર્મ ભરવા માટે Googleની બધી સેવાઓ પર તેનો ઉપયોગ કરી શકો છો.</translation>
 <translation id="1360955481084547712">ખાનગી રીતે બ્રાઉઝ કરવા માટે, કોઈ નવી છૂપી વિંડો ખોલો</translation>
 <translation id="1361528602584216624">પ્રતિ Pix R$ <ph name="TRANSACTION_LIMIT" />ની મર્યાદા</translation>
 <translation id="1363015776076529485">સંપૂર્ણ ઊંચાઈએ ખુલ્લી ચુકવણી સાથે આગળ વધવા પસંદ કરવા માટેની ઉપલબ્ધ ચુકવણી પદ્ધતિઓ.</translation>
@@ -252,6 +253,7 @@
 <translation id="1392813880755413602">OpenDocument પ્રસ્તુતિ</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> એ કોઈપણ ડેટા મોકલ્યો ન હતો.</translation>
 <translation id="1393071644879491291">તમે જેની મુલાકાત લેવાનો પ્રયાસ કર્યો હતો તે સાઇટ પરના અટૅક કરનારા લોકો યુક્તિ અજમાવીને તમને સૉફ્ટવેર ઇન્સ્ટૉલ કરવા કે તમારા પાસવર્ડ, ફોન કે ક્રેડિટ કાર્ડ નંબર જેવી બાબતો જણાવવા છેતરી શકે છે. Chrome દ્વારા સલામતી પર પાછા ફરવાનો સુઝાવ ભારપૂર્વક આપવામાં આવે છે. <ph name="BEGIN_LEARN_MORE_LINK" />આ ચેતવણી વિશે વધુ જાણો<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="1402151528875251561">બાજુની પૅનલમાં ઇતિહાસ બતાવો</translation>
 <translation id="1405567553485452995">આછો લીલો</translation>
 <translation id="1406370515365284486">તમારી ચુકવણી પદ્ધતિઓ હજી પણ સાચવવામાં આવશે</translation>
 <translation id="1406500794671479665">ચકાસી રહ્યું છે...</translation>
@@ -910,7 +912,6 @@
 <translation id="2436976580469434549">ફાઇબર અને ટેક્સટાઇલ આર્ટ</translation>
 <translation id="243815215670139125">આ કાર્ડ તમારા Google એકાઉન્ટમાં સાચવી શકાયું નથી. તેના બદલે તેને આ ડિવાઇસ પર Chromeમાં સાચવવામાં આવ્યું છે.</translation>
 <translation id="2438874542388153331">જમણી બાજુએ ચતુષ્કોણ કાણું પાડો</translation>
-<translation id="2440855519769445271">પછીથી ચુકવણી કરવાના વિકલ્પો છુપાવવા માટે, <ph name="BEGIN_LINK" />ચુકવણી માટેના સેટિંગ<ph name="END_LINK" /> પર જાઓ</translation>
 <translation id="2441854154602066476">ટચ કરીને ભરવાની ઉપલબ્ધ ચુકવણી પદ્ધતિઓ. કીબોર્ડ છુપાવેલું છે.</translation>
 <translation id="2442865686365739754">Chrome <ph name="BEGIN_EMPHASIS" />આ સાચવશે નહીં<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
@@ -947,6 +948,7 @@
 <translation id="248064299258688299"><ph name="EXTENSION_NAME" /> એક્સ્ટેન્શન કહે છે</translation>
 <translation id="2482878487686419369">નોટિફિકેશનો</translation>
 <translation id="248348093745724435">મશીન પૉલિસીઓ</translation>
+<translation id="248395913932153421">દિવસ</translation>
 <translation id="2485243023686553468">સ્માર્ટ ફોન</translation>
 <translation id="2491120439723279231">સર્વરના પ્રમાણપત્રમાં ભૂલો છે.</translation>
 <translation id="2491414235131909199">કોઈ એક્સ્ટેન્શન દ્વારા આ પેજને બ્લૉક કરવામાં આવ્યું છે</translation>
@@ -1450,6 +1452,7 @@
 <translation id="33073482541490531">તમે હાલમાં જ ઉપયોગમાં લીધેલો પાસવર્ડ ડેટા ઉલ્લંઘનમાં જોવા મળ્યો છે. Password Manager હમણાં જ આ પાસવર્ડ બદલવાનો સુઝાવ આપે છે.</translation>
 <translation id="3307649904964670439">'Chromeને કસ્ટમાઇઝ કરો' બટન, તમારા બ્રાઉઝરનો દેખાવ કસ્ટમાઇઝ કરવા માટે સક્રિય કરો</translation>
 <translation id="3308006649705061278">ઑર્ગેનાઇઝેશનલ યૂનિટ (OU)</translation>
+<translation id="3310946375819654151">Chrome <ph name="APP_NAME" /> પર તમારી સંવેદનશીલ માહિતી ભરવાનો પ્રયાસ કરી રહ્યું છે.</translation>
 <translation id="3312952471765023168">સફળતાપૂર્વક અપલોડ થઈ</translation>
 <translation id="3318016344440038475">ટીવી કૉમેડી</translation>
 <translation id="3324687287337751929">4 x 6 ઇંચ</translation>
@@ -1740,6 +1743,7 @@
 <translation id="3752181611900535304">એકાઉન્ટમાં સરનામું સાચવીએ?</translation>
 <translation id="3752543821772132562">અવગણવામાં આવી છે કારણ કે <ph name="POLICY_NAME" /> સેટ કરેલી નથી.</translation>
 <translation id="3754210790023674521">ચિત્રમાં ચિત્રમાંથી બહાર નીકળો</translation>
+<translation id="3754664361823138853">&amp;ઇતિહાસનું પેજ ખોલો</translation>
 <translation id="3759461132968374835">તમે હાલમાં ક્રૅશની જાણ કરી નથી. ક્રૅશની જાણ કરવાનું બંધ હતું ત્યારે થયેલા ક્રૅશ અહીં દેખાશે નહિ.</translation>
 <translation id="3760561303380396507">CVCને બદલે Windows Helloનો ઉપયોગ કરીએ?</translation>
 <translation id="3761171036307311438">કાર્ડ પરનું નામ:</translation>
@@ -2286,7 +2290,6 @@
 <translation id="4648262692072505866">હૅશનું ફૉર્મેટ SHA-256 હોવું આવશ્યક છે.</translation>
 <translation id="4652266463001779298">આ સાઇટને મંજૂરી નથી</translation>
 <translation id="4652440160515225514">આ સાઇટ કોઈ પૉલિસીનું ઉલ્લંઘન કરતી હોવાને કારણે તમારી સંસ્થા દ્વારા તેને બ્લૉક કરવામાં આવી છે.</translation>
-<translation id="4654457557264366314">ચુકવણીના પ્લાન યોગ્યતાને આધીન છે.</translation>
 <translation id="4658638640878098064">ઉપર ડાબી બાજુએ સ્ટેપલ લગાવો</translation>
 <translation id="4658801711339831733">સ્કૅન Google Driveમાં સાચવવામાં આવ્યું</translation>
 <translation id="4660592918803576381">Driveમાં ખોલો</translation>
@@ -2597,7 +2600,6 @@
 <translation id="512756860033933700">કીબોર્ડ લૉક કરવાની મંજૂરી છે</translation>
 <translation id="5127934926273826089">ફૂલો</translation>
 <translation id="5129534298163637277">કન્ફર્મેશન માટેનો સંવાદ</translation>
-<translation id="5129662217315786329">પોલીશ</translation>
 <translation id="5135404736266831032">સરનામા મેનેજ કરો…</translation>
 <translation id="5136841603454277753">યોગ્ય કોડ દાખલ કરો</translation>
 <translation id="5137761395480718572">આ ઍપ વાઇ-ફાઇની લૉગ ઇન વિગતો ઇન્સ્ટૉલ કરવાની પરવાનગી માટે વિનંતી કરી રહી છે. સેટઅપ પછી, તમારું <ph name="DEVICE_TYPE" /> સહભાગી વાઇ-ફાઇ નેટવર્ક સાથે ઑટોમૅટિક રીતે કનેક્ટ થઈ જશે. લૉગ ઇનની આ વિગતો કાઢી નાખવા માટે, ઍપને અનઇન્સ્ટૉલ કરો. <ph name="LEARN_MORE" /></translation>
@@ -2753,6 +2755,7 @@
 <translation id="5385966243497224160">HTTPS વિનાના URLનો પ્રીવ્યૂ કરી શકાતો નથી</translation>
 <translation id="5386426401304769735">આ સાઇટ માટેની પ્રમાણપત્ર શ્રૃંખલા SHA-1 નો ઉપયોગ કરીને સહી કરેલ પ્રમાણપત્ર ધરાવે છે.</translation>
 <translation id="5391010642126249196">તમે મુલાકાત લીધેલી સાઇટ</translation>
+<translation id="5391306025131596142">&amp;ઇતિહાસનું પેજ ખોલો</translation>
 <translation id="539203134595252721">ટેબલ ટેનિસ</translation>
 <translation id="5392506727170022660">ધાતુ (સેમી-ગ્લોસ)</translation>
 <translation id="5394069166371280357">કૌટુંબિક ટીવી શો</translation>
@@ -3544,11 +3547,11 @@
 <translation id="6649510485211003056">195 x 270 મિમી</translation>
 <translation id="6651270836885078973">આમના દ્વારા મેનેજ કરવામાં આવે છે:</translation>
 <translation id="6652101503459149953">Windows Helloનો ઉપયોગ કરો</translation>
-<translation id="6654224358955673568">ફોર્મલ બનાવો</translation>
 <translation id="6654244995031366386">કાચ (ટેક્ષચરવાળો)</translation>
 <translation id="6655085656059574817">તમારા એકાઉન્ટને લિંક કરેલું રાખવાથી તમને <ph name="BNPL_ISSUER_NAME" /> વડે ઝડપથી ચુકવણી કરવામાં મદદ મળે છે, પરંતુ તમે <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /> પર જઈને તેને અનલિંક કરી શકો છો</translation>
 <translation id="6656935431494847393">આમાં ફ્લાઇટ બુકિંગ અને વાહનની માહિતી જેવી માહિતી શામેલ છે</translation>
 <translation id="6657585470893396449">પાસવર્ડ</translation>
+<translation id="6659156657345021268">તમારી માહિતી ફક્ત તમારા ડિવાઇસમાં સાચવવામાં આવી છે. આગલી વખતે જ્યારે તમે સંબંધિત ફોર્મ ભરો, ત્યારે તમને તેને Walletમાં સાચવવાની તક મળશે.</translation>
 <translation id="6659246032834639189">આ કિંમત ઓછી છે</translation>
 <translation id="6660413144148052430">સ્થાન</translation>
 <translation id="6662457027866368246">પહેલો રોલ</translation>
@@ -3716,7 +3719,6 @@
 <translation id="6926216138694948720">બૉડી આર્ટ</translation>
 <translation id="692638818576287323">વ્યાવસાયિક વાહનો</translation>
 <translation id="6927878187051807444">કૅમેરાની ફાઇલો અને સ્ક્રીનશૉટ</translation>
-<translation id="6929949393612835405">બંધ કરો અને "<ph name="OPENER_TITLE" />" પર પાછા ફરો</translation>
 <translation id="6930607614725241390">બાજુની પૅનલમાં શોધો</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />તમારા ડિફૉલ્ટ શોધ એન્જિન વડે તમે વેબ પર શોધ કરી શકો છો તેમજ તે Chromeની સુવિધાઓને સશક્ત કરે છે<ph name="END_BOLD" /> જેમ કે, ઍડ્રેસ બારમાંથી તેમજ વેેબપેજ પરની છબીઓમાંથી શોધ કરવા જેવી સુવિધાઓ. તમારું શોધ એન્જિન સપોર્ટ ન કરતું હોય તેવી સુવિધા ઉપલબ્ધ ન હોય એમ બની શકે છે.</translation>
 <translation id="6934672428414710184">આ નામ તમારા Google એકાઉન્ટમાંથી લીધું છે</translation>
@@ -4955,6 +4957,7 @@
 <translation id="8894794286471754040">પહેલાં લાંબી કિનારી</translation>
 <translation id="8897221284075091877">આ કન્ટેન્ટ જોવાનું પૂછવા માટે, તમારા Google એકાઉન્ટ વડે ચાલુ રાખો</translation>
 <translation id="8897428486789851669">સ્વિમિંગ</translation>
+<translation id="8898854704577986668">બાજુની પૅનલમાં ઇતિહાસ બતાવો</translation>
 <translation id="8899807382908246773">ખલેલ પાડતી જાહેરાતો</translation>
 <translation id="8903921497873541725">ઝૂમ વધારો</translation>
 <translation id="8903998444169664879">તમારા ચુકવણીઓ માટેના સેટિંગ બદલવા માટે, આ તમે જ છો તેની ચકાસણી કરો</translation>

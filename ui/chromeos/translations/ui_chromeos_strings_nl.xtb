@@ -17,7 +17,6 @@
 <translation id="1138691154716715755">Eerder deze maand</translation>
 <translation id="1150565364351027703">Zonnebril</translation>
 <translation id="115443833402798225">Hangul Ahnmatae</translation>
-<translation id="1155759005174418845">Catalaans</translation>
 <translation id="1168100932582989117">Google-naamservers</translation>
 <translation id="1170788066030116158">Gemaakt op</translation>
 <translation id="1172970565351728681">Ongeveer <ph name="REMAINING_TIME" /> resterend</translation>
@@ -61,12 +60,10 @@
 <translation id="146691674290220697"><ph name="NUMBER_OF_FILES" /> bestanden kunnen niet worden gekopieerd omdat ze zijn versleuteld.</translation>
 <translation id="1471718551822868769">Slowaaks</translation>
 <translation id="1482884275703521657">Fins</translation>
-<translation id="148466539719134488">Zwitsers</translation>
 <translation id="1497522201463361063">Kan de naam van '<ph name="FILE_NAME" />' niet wijzigen. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1499943022354839699">Engels (VS) met Dvorak-toetsenbord</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" />: host</translation>
 <translation id="1521655867290435174">Google Spreadsheets</translation>
-<translation id="1547964879613821194">Canadees Engels</translation>
 <translation id="1556189134700913550">Op alles toepassen</translation>
 <translation id="1561842594491319104">Chrome-apparaten</translation>
 <translation id="1572585716423026576">Instellen als achtergrond</translation>
@@ -120,8 +117,6 @@
 <translation id="1920670151694390848">Malayalam (transliteratie)</translation>
 <translation id="1920798810075583923">Watermeloen</translation>
 <translation id="1924372192547904021"><ph name="DRIVE_NAME" /> is geformatteerd</translation>
-<translation id="1931134289871235022">Slowaaks</translation>
-<translation id="1936717151811561466">Fins</translation>
 <translation id="1942765061641586207">Afbeeldingsresolutie</translation>
 <translation id="1972984168337863910">Feedbackvensters voor bestanden uitvouwen</translation>
 <translation id="1995337122023280937">Naar bestandslocatie</translation>
@@ -199,7 +194,6 @@
 <translation id="2541377937973966830">De inhoud van deze map is alleen-lezen. Sommige activiteiten worden niet ondersteund.</translation>
 <translation id="2542049655219295786">Google-tabel</translation>
 <translation id="2544853746127077729">Verificatiecertificaat geweigerd door netwerk</translation>
-<translation id="255937426064304553">Verenigde Staten (internationaal)</translation>
 <translation id="2563185590376525700">Kikker</translation>
 <translation id="2578394532502990878">Tamil (fonetisch)</translation>
 <translation id="2579959351793446050">Odia</translation>
@@ -220,7 +214,6 @@
 <translation id="2735623501230989521">Parallels Desktop toegang geven tot bestanden in de map <ph name="FOLDER_NAME" /></translation>
 <translation id="2764206540577097904">Je persoonlijke Google Workspace-opslag is helemaal vol.</translation>
 <translation id="2771816809568414714">Kaas</translation>
-<translation id="2781645665747935084">Belgisch</translation>
 <translation id="2802583107108007218">Meer informatie over deze beperkingen</translation>
 <translation id="2803375539583399270">Pincode invoeren</translation>
 <translation id="2819519502129272135">Bestandssynchronisatie staat uit</translation>
@@ -228,15 +221,11 @@
 <translation id="2830077785865012357">Chinees (Zhuyin)</translation>
 <translation id="2843806747483486897">Standaardactie wijzigen...</translation>
 <translation id="2873951654529031587">Prullenbak</translation>
-<translation id="288024221176729610">Tsjechisch</translation>
 <translation id="2887525882758501333">Pdf-document</translation>
 <translation id="2888807692577297075">Er komen geen items overeen met &lt;b&gt;'<ph name="SEARCH_STRING" />'&lt;/b&gt;</translation>
 <translation id="2894654529758326923">Informatie</translation>
-<translation id="2902734494705624966">Uitgebreid Amerikaans</translation>
 <translation id="2904378509913846215">Er is al een map met de naam <ph name="FILENAME" />. Wil je deze vervangen door de map die je verplaatst?</translation>
 <translation id="290843123675549676">Marathi</translation>
-<translation id="2923240520113693977">Estlands</translation>
-<translation id="2938685643439809023">Mongools</translation>
 <translation id="2943503720238418293">Gebruik een kortere naam</translation>
 <translation id="2949781154072577687"><ph name="DRIVE_NAME" /> formatteren…</translation>
 <translation id="2951236788251446349">Kwal</translation>
@@ -263,14 +252,10 @@
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (met hardwareondersteuning)</translation>
 <translation id="3188257591659621405">Mijn bestanden</translation>
 <translation id="3194553149358267393">Geen recente audiobestanden</translation>
-<translation id="3197563288998582412">Brits Dvorak</translation>
 <translation id="3202131003361292969">Pad</translation>
 <translation id="3205852408225871810">Portugees (Brazilië)</translation>
-<translation id="3224239078034945833">Canadees meertalig</translation>
 <translation id="3236289833370040187">Eigendom wordt overgedragen aan <ph name="DESTINATION_DOMAIN" />.</translation>
-<translation id="3241720467332021590">Iers</translation>
 <translation id="3248185426436836442">In behandeling</translation>
-<translation id="3252266817569339921">Frans</translation>
 <translation id="3253225298092156258">Niet beschikbaar</translation>
 <translation id="3254434849914415189">Kies de standaardapp voor <ph name="FILE_TYPE" />-bestanden:</translation>
 <translation id="3255159654094949700">Arabisch</translation>
@@ -285,7 +270,6 @@
 <translation id="3293023191599135697">WEP-netwerken worden niet ondersteund</translation>
 <translation id="3295006446256079333">Dit volume</translation>
 <translation id="3295357220137379386">Apparaat is bezig</translation>
-<translation id="3296763833017966289">Georgisch</translation>
 <translation id="3307875152560779385">Oekraïens</translation>
 <translation id="3326821416087822643"><ph name="FILE_NAME" /> inpakken...</translation>
 <translation id="3335337277364016868">Opnamejaar</translation>
@@ -306,7 +290,6 @@
 <translation id="3486821258960016770">Mongools</translation>
 <translation id="3509680540198371098">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signaalsterkte <ph name="SIGNAL_STRENGTH" />%, details</translation>
 <translation id="3511705761158917664">Synchronisatie van <ph name="NUMBER_OF_ITEMS" /> items voorbereiden...</translation>
-<translation id="3522708245912499433">Portugees</translation>
 <translation id="3523225005467146490">1 map gedeeld met <ph name="VM_NAME" /></translation>
 <translation id="3524311639100184459">Let op: Deze bestanden zijn tijdelijk en kunnen automatisch worden verwijderd om schijfruimte vrij te maken.  <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Map</translation>
@@ -317,12 +300,9 @@
 <translation id="3556731189587832921">Engels (VS) met internationaal pc-toetsenbord</translation>
 <translation id="3557414470514932909"><ph name="FILE_NAME" /> naar de prullenbak verplaatsen</translation>
 <translation id="3567221313191587603">Selecteer een bestand en zet <ph name="OFFLINE_CHECKBOX_NAME" /> aan voor offline toegang tot je bestanden.</translation>
-<translation id="357479282490346887">Litouws</translation>
 <translation id="3587482841069643663">Alles</translation>
 <translation id="3592251141500063301">Kan <ph name="FILE_NAME" /> niet offline beschikbaar maken</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
-<translation id="3603385196401704894">Canadees Frans</translation>
-<translation id="3606220979431771195">Turks-F</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3619115746895587757">Cappuccino</translation>
 <translation id="3619593063686672873">Geen recente video's</translation>
@@ -343,7 +323,6 @@
 <translation id="3786301125658655746">Je bent offline</translation>
 <translation id="3789841737615482174">Installeren</translation>
 <translation id="3793469551756281394">Ongeveer <ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" /> resterend</translation>
-<translation id="3801082500826908679">Faeröers</translation>
 <translation id="3809272675881623365">Konijn</translation>
 <translation id="3810973564298564668">Beheren</translation>
 <translation id="3811408895933919563">Engels (Pakistan)</translation>
@@ -351,10 +330,8 @@
 <translation id="3817579325494460411">Niet opgegeven</translation>
 <translation id="3819448694985509187">Onjuiste pincode. Je hebt nog 1 poging.</translation>
 <translation id="3830674330436234648">Afspelen is niet beschikbaar</translation>
-<translation id="383652340667548381">Servisch</translation>
 <translation id="3839045880592694915">Je modem mag geen verbinding maken van je provider. Neem contact op met je provider voor meer informatie.</translation>
 <translation id="385051799172605136">Terug</translation>
-<translation id="3855472144336161447">Duits Neo 2</translation>
 <translation id="3858860766373142691">Naam</translation>
 <translation id="3899991606604168269">Frans (Canada) met meertalig toetsenbord</translation>
 <translation id="3901991538546252627">Verbinding maken met <ph name="NAME" /></translation>
@@ -394,7 +371,6 @@
 <translation id="4261901459838235729">Google-presentatie</translation>
 <translation id="4277536868133419688">Het filter <ph name="FILTER_NAME" /> staat aan.</translation>
 <translation id="4290535918735525311">1 map gedeeld met Linux</translation>
-<translation id="4299729908419173967">Braziliaans</translation>
 <translation id="4302605047395093221">Iedereen die dit apparaat gebruikt, moet de pincode invoeren om verbinding te maken met dit mobiele netwerk</translation>
 <translation id="4303531889494116116">Dit netwerk is bezig. Probeer het later opnieuw.</translation>
 <translation id="4309915981827077375">Algemene informatie</translation>
@@ -430,7 +406,6 @@
 <translation id="4472575034687746823">Aan de slag</translation>
 <translation id="4474142134969976028">Geen overeenkomende resultaten</translation>
 <translation id="4477002475007461989">Roemeens</translation>
-<translation id="4477219268485577442">Bulgaars fonetisch</translation>
 <translation id="4508265954913339219">Activering mislukt</translation>
 <translation id="4509667233588080747">Engels (VS) met Workman International-toetsenbord</translation>
 <translation id="4527800702232535228">Deze map is gedeeld met Parallels Desktop</translation>
@@ -451,20 +426,17 @@
 <translation id="4658782175094886150">Persoon in de sneeuw</translation>
 <translation id="4669606053856530811">Leden van '<ph name="SOURCE_NAME" />' hebben geen toegang meer, tenzij deze items met ze zijn gedeeld.</translation>
 <translation id="467809019005607715">Google Presentaties</translation>
-<translation id="4690246192099372265">Zweeds</translation>
 <translation id="4693155481716051732">Sushi</translation>
 <translation id="4694604912444486114">Aap</translation>
 <translation id="469612310041132144">Chinees (snel)</translation>
 <translation id="4697043402264950621">Lijst met bestanden gesorteerd op <ph name="COLUMN_NAME" /> in oplopende volgorde.</translation>
 <translation id="469897186246626197">Dit bestand is bedoeld voor een pc met Windows-software. Het is niet geschikt voor jouw apparaat, waarop Chrome OS wordt gebruikt. Bekijk <ph name="BEGIN_LINK_HELP" />meer informatie<ph name="END_LINK_HELP" /> over hoe je bestanden opent in Chrome OS.</translation>
 <translation id="4706042980341760088">Tamil met Typewriter-toetsenbord</translation>
-<translation id="4711094779914110278">Turks</translation>
 <translation id="4712283082407695269">'<ph name="PATH" />' openen</translation>
 <translation id="4720185134442950733">Mobiel datanetwerk</translation>
 <translation id="4725096204469550614">Eerder dit jaar</translation>
 <translation id="4725511304875193254">Corgi</translation>
 <translation id="4737050008115666127">Landen</translation>
-<translation id="4747271164117300400">Macedonisch</translation>
 <translation id="4759238208242260848">Downloads</translation>
 <translation id="4779041693283480986">Portugees (Portugal)</translation>
 <translation id="4779136857077979611">Onigiri</translation>
@@ -478,7 +450,6 @@
 <translation id="4826849268470072925">Tamil (ITRANS)</translation>
 <translation id="4843566743023903107">Chromebases</translation>
 <translation id="4850886885716139402">Weergave</translation>
-<translation id="485316830061041779">Duits</translation>
 <translation id="4862885579661885411">Instellingen voor Bestanden</translation>
 <translation id="4867079195717347957">Klik om de kolom in aflopende volgorde te sorteren.</translation>
 <translation id="4867297348137739678">Vorige week</translation>
@@ -515,13 +486,11 @@
 <translation id="5081517858322016911"><ph name="TOTAL_FILE_SIZE" /> van alle bestanden wordt verwijderd</translation>
 <translation id="508423945471810158"><ph name="NUMBER_OF_ITEMS" /> items verplaatsen naar <ph name="FOLDER_NAME" /></translation>
 <translation id="509429900233858213">Er is een fout opgetreden.</translation>
-<translation id="5098629044894065541">Hebreeuws</translation>
 <translation id="5102922915594634436">Gesynchroniseerde mappen beheren</translation>
 <translation id="5109254780565519649">Er is een fout opgetreden. Sommige items zijn misschien niet hersteld.</translation>
 <translation id="5110329002213341433">Engels (Canada)</translation>
 <translation id="5119780910075847424">Synchronisatie gepauzeerd</translation>
 <translation id="5123433949759960244">Basketbal</translation>
-<translation id="5129662217315786329">Pools</translation>
 <translation id="5144820558584035333">Hangul 3 Set (390)</translation>
 <translation id="5145331109270917438">Bijgewerkt op</translation>
 <translation id="515594325917491223">Schaken</translation>
@@ -531,12 +500,10 @@
    
        Als je je apparaat verwijdert terwijl het wordt gebruikt, raak je mogelijk gegevens kwijt. Wacht totdat de bewerking is voltooid en werp het apparaat vervolgens uit via de app Bestanden.</translation>
 <translation id="5163869187418756376">Delen mislukt. Controleer de verbinding en probeer het later opnieuw.</translation>
-<translation id="516592729076796170">Amerikaans Programmer Dvorak</translation>
 <translation id="5177526793333269655">Miniatuurweergave</translation>
 <translation id="5181896909298187506">Geen recente bestanden</translation>
 <translation id="5194713942430106590">Klik om de kolom in oplopende volgorde te sorteren.</translation>
 <translation id="5211614973734216083">Faeröers</translation>
-<translation id="5218183485292899140">Zwitsers Frans</translation>
 <translation id="5234764350956374838">Sluiten</translation>
 <translation id="5253070652067921974">Gemaakt door</translation>
 <translation id="5254207638927440400">Kan bestand niet verplaatsen. Bestand is in gebruik.</translation>
@@ -554,7 +521,6 @@
 <translation id="5305688511332277257">Geen certificaten geïnstalleerd</translation>
 <translation id="5317780077021120954">Opslaan</translation>
 <translation id="5318819489018851358">Delen met Linux</translation>
-<translation id="5323213332664049067">Latijns-Amerikaans</translation>
 <translation id="5330145655348521461">Deze bestanden zijn op een ander bureaublad geopend. Verplaats ze naar <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) om ze te bekijken.</translation>
 <translation id="5330512191124428349">Informatie ophalen</translation>
 <translation id="535792325654997756">Persoon met katten</translation>
@@ -566,18 +532,15 @@
 <translation id="5411472733320185105">De proxyinstellingen niet gebruiken voor deze hosts en domeinen:</translation>
 <translation id="541890217011173530">Koerdisch Sorani met Engels toetsenbord</translation>
 <translation id="5422221874247253874">Toegangspunt</translation>
-<translation id="5428105026674456456">Spaans</translation>
 <translation id="5438282218546237410">Geen resultaten voor <ph name="SEARCH_TERM" />.</translation>
 <translation id="5447680084201416734">Onvoldoende opslagruimte.</translation>
 <translation id="5449551289610225147">Ongeldig wachtwoord</translation>
 <translation id="5459064203055649751">Er is al een bestand met de naam <ph name="FILENAME" />. Wil je het vervangen door het bestand dat je verplaatst?</translation>
 <translation id="5463231940765244860">Opgeven</translation>
-<translation id="5469868506864199649">Italiaans</translation>
 <translation id="5473333559083690127">Pincode opnieuw opgeven</translation>
 <translation id="5489067830765222292">Lets</translation>
 <translation id="5489965683297092283">Het filter <ph name="FILTER_NAME" /> staat uit.</translation>
 <translation id="5494920125229734069">Alles selecteren</translation>
-<translation id="5500122897333236901">IJslands</translation>
 <translation id="5508696409934741614">Stippen</translation>
 <translation id="5522908512596376669">Bestandslijst is gewijzigd naar lijstweergave.</translation>
 <translation id="5524517123096967210">Het bestand kan niet worden gelezen.</translation>
@@ -590,7 +553,6 @@
 <translation id="5583664733673201137">Interpunctiebreedte: volledig (vol)</translation>
 <translation id="5596627076506792578">Meer opties</translation>
 <translation id="5602622065581044566">Bulgaars met fonetisch toetsenbord</translation>
-<translation id="5605830556594064952">Amerikaans Dvorak</translation>
 <translation id="560739212255190568">Je beheerder heeft regels voor proxyoverschrijving ingesteld en dwingt de volgende proxy af</translation>
 <translation id="5618330573454123917">Dit bestand is bedoeld voor een computer met Macintosh-software. Het is niet geschikt voor jouw apparaat, waarop Chrome OS wordt gebruikt. Bekijk <ph name="BEGIN_LINK_HELP" />meer informatie<ph name="END_LINK_HELP" /> over hoe je bestanden opent in Chrome OS.</translation>
 <translation id="5625294776298156701">Tamil met Tamil99-toetsenbord</translation>
@@ -608,7 +570,6 @@
 <translation id="5724172041621205163">Thai met Pattachote-toetsenbord</translation>
 <translation id="57383366388012121">Vorige maand</translation>
 <translation id="575175778971367197">Dit bestand kan op dit moment niet worden gesynchroniseerd</translation>
-<translation id="5756666464756035725">Hongaars QWERTY</translation>
 <translation id="5760252553414789727"><ph name="SELECTED_FILES_COUNT" /> items geselecteerd</translation>
 <translation id="5763377084591234761">Duits (Zwitserland)</translation>
 <translation id="5769519078756170258">Host of domein om uit te sluiten</translation>
@@ -616,7 +577,6 @@
 <translation id="5776325638577448643">Wissen en formatteren</translation>
 <translation id="57838592816432529">Geluid uitzetten</translation>
 <translation id="5788127256798019331">Play-bestanden</translation>
-<translation id="5790193330357274855">Kazachs</translation>
 <translation id="5804245609861364054">Kannada (transliteratie)</translation>
 <translation id="5814126672212206791">Verbindingstype</translation>
 <translation id="5817397429773072584">Traditioneel Chinees</translation>
@@ -625,7 +585,6 @@
 <translation id="5832976493438355584">Vergrendeld</translation>
 <translation id="5833610766403489739">Dit bestand staat ergens anders. Controleer je downloadlocatie-instelling en probeer het opnieuw.</translation>
 <translation id="5838451609423551646">Alle items uit selectie zijn verwijderd.</translation>
-<translation id="5838825566232597749">Amerikaans Workman (internationaal)</translation>
 <translation id="5845721951356578987">Verpleegkundige</translation>
 <translation id="5858478190805449225">Batterijbesparing aan. Probeer het opnieuw als Batterijbesparing uitstaat.</translation>
 <translation id="5860491529813859533">Aanzetten</translation>
@@ -641,7 +600,6 @@
 <translation id="5957366693331451795">Chromeboxes</translation>
 <translation id="5982621672636444458">Sorteeropties</translation>
 <translation id="6011074160056912900">Ethernet-netwerk</translation>
-<translation id="60357267506638014">Tsjechisch QWERTY</translation>
 <translation id="603895874132768835">Je kunt dit netwerk pas gebruiken nadat je een nieuwe pincode hebt ingesteld.</translation>
 <translation id="6040143037577758943">Sluiten</translation>
 <translation id="6055907707645252013">Netwerk: <ph name="NETWORK_TYPE" />, niet verbonden</translation>
@@ -684,7 +642,6 @@
 <translation id="6320212353742551423"><ph name="ARCHIVE_TYPE" />-archief</translation>
 <translation id="6321303798550928047">Zwaaien</translation>
 <translation id="6327785803543103246">Webproxy automatisch vinden</translation>
-<translation id="6339145975392024142">Amerikaans internationaal (pc)</translation>
 <translation id="6356685157277930264">Feedbackvenster voor bestanden</translation>
 <translation id="6358884629796491903">Draak</translation>
 <translation id="636254897931573416">Ongeldige invoer voor overeenkomst voor domeinextensie</translation>
@@ -705,7 +662,6 @@
 <translation id="649877868557234318"><ph name="FILE_NAME" /> uitpakken naar <ph name="FOLDER_NAME" /></translation>
 <translation id="6499681088828539489">Proxy's voor gedeelde netwerken niet toestaan</translation>
 <translation id="6503285896705205014"><ph name="COUNT" /> bestanden kopiëren is geblokkeerd door het beheerdersbeleid</translation>
-<translation id="6509122719576673235">Noors</translation>
 <translation id="6528513914570774834">Andere gebruikers van dit apparaat toestaan om dit netwerk te gebruiken</translation>
 <translation id="6549689063733911810">Recent</translation>
 <translation id="6558280019477628686">Er is een fout opgetreden. Sommige items zijn mogelijk niet verwijderd.</translation>
@@ -737,7 +693,6 @@
 <translation id="6806796368146926706">Alfanumeriek met Japans toetsenbord</translation>
 <translation id="6808193438228982088">Vos</translation>
 <translation id="6823166707458800069">Er wordt automatisch online een back-up gemaakt van alle bestanden die in deze map zijn opgeslagen.</translation>
-<translation id="6825883775269213504">Russisch</translation>
 <translation id="6847101934483209767"><ph name="ENTRY_NAME" /> is uit selectie verwijderd.</translation>
 <translation id="6848194403851638089">De Google Workspace-opslag van <ph name="ORGANIZATION_NAME" /> is helemaal vol.</translation>
 <translation id="6856459657722366306">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, signaalsterkte <ph name="SIGNAL_STRENGTH" />%, details</translation>
@@ -751,7 +706,6 @@
 <translation id="6896758677409633944">Kopiëren</translation>
 <translation id="6898028766943174120">Meer submappen…</translation>
 <translation id="6915678159055240887">Chromebox</translation>
-<translation id="6918340160281024199">Amerikaans Workman</translation>
 <translation id="6930242544192836755">Duur</translation>
 <translation id="6935521024859866267">Ondersteboven</translation>
 <translation id="6943836128787782965">Ophalen van HTTP mislukt</translation>
@@ -761,7 +715,6 @@
 <translation id="696203921837389374">Synchronisatie via mobiele data aanzetten</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6965648386495488594">Poort</translation>
-<translation id="6970230597523682626">Bulgaars</translation>
 <translation id="6973630695168034713">Mappen</translation>
 <translation id="6976795442547527108">Leeuw</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -822,20 +775,17 @@
 <translation id="7417705661718309329">Google-kaart</translation>
 <translation id="7419668828140929293"><ph name="FILENAME" /> herstellen</translation>
 <translation id="7458955835361612701">Geen recente afbeeldingen</translation>
-<translation id="7460898608667578234">Oekraïens</translation>
 <translation id="7469894403370665791">Automatisch verbinding maken met dit netwerk</translation>
 <translation id="7486315294984620427">Als je bestanden wilt neerzetten in Parallels Desktop, moet het bestand worden gekopieerd naar de map met Windows-bestanden.</translation>
 <translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">Malayalam (fonetisch)</translation>
 <translation id="7505167922889582512">Verborgen bestanden bekijken</translation>
 <translation id="7514365320538308">Downloaden</translation>
-<translation id="751507702149411736">Wit-Russisch</translation>
 <translation id="7521790570754130607">Een pincode is vereist om mobiele data te gebruiken</translation>
 <translation id="7532029025027028521">Perzisch (transliteratie)</translation>
 <translation id="7544830582642184299">Linux-apps toegang geven tot bestanden in je Google Drive. Wijzigingen worden gesynchroniseerd met je andere apparaten.</translation>
 <translation id="7547009467130558110">Sneaker</translation>
 <translation id="7547780573915868306">Litouws</translation>
-<translation id="7547811415869834682">Nederlands</translation>
 <translation id="7551643184018910560">Vastzetten op plank</translation>
 <translation id="7553492409867692754">Linux-apps toegang geven tot bestanden in de map <ph name="FOLDER_NAME" /></translation>
 <translation id="7555339735447658365">Je bent op dit moment offline. De synchronisatie wordt hervat als je verbinding hebt met internet.</translation>
@@ -855,7 +805,6 @@
 <translation id="7693909743393669729">Tijdens het formatteren van een schijf worden alle opgeslagen gegevens en alle bestaande partities verwijderd, inclusief partities die mogelijk niet zichtbaar zijn. Deze actie kan niet ongedaan worden gemaakt.</translation>
 <translation id="7695430100978772476">Formatteren van <ph name="DRIVE_NAME" /> is mislukt</translation>
 <translation id="76959938259365003">Kan de prullenbak niet leegmaken.</translation>
-<translation id="770015031906360009">Grieks</translation>
 <translation id="7705251383879779343"><ph name="FILE_NAME" /> gekopieerd.</translation>
 <translation id="7707941139430559579">Kan bestand niet verplaatsen. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="7708271999969613024">Als je dit netwerk wilt gebruiken, moet je de 8-cijferige pukcode opgeven die je van je provider hebt gekregen.</translation>
@@ -884,7 +833,6 @@
 <translation id="7831491651892296503">Fout bij configureren van netwerk</translation>
 <translation id="7839804798877833423">Voor het ophalen van deze bestanden wordt ongeveer <ph name="FILE_SIZE" /> aan mobiele data gebruikt.</translation>
 <translation id="7846076177841592234">Selectie opheffen</translation>
-<translation id="7853966320808728790">Franse BÉPO</translation>
 <translation id="7857117644404132472">Uitzondering toevoegen</translation>
 <translation id="7868774406711971383">Pools</translation>
 <translation id="7874321682039004450">Filipijns</translation>
@@ -896,9 +844,7 @@
 <translation id="7925247922861151263">AAA-controle mislukt</translation>
 <translation id="7928710562641958568">Apparaat uitwerpen</translation>
 <translation id="7933875256234974853">Synchronisatie van Drive-bestanden voorbereiden...</translation>
-<translation id="7943385054491506837">Amerikaans Colemak</translation>
 <translation id="7953739707111622108">Dit apparaat kan niet worden geopend omdat het bijbehorende bestandssysteem niet wordt herkend.</translation>
-<translation id="7969525169268594403">Sloveens</translation>
 <translation id="7972920761225148017">Frans (Zwitserland)</translation>
 <translation id="7973962044839454485">PPP-verificatie mislukt wegens een onjuiste gebruikersnaam of wachtwoord</translation>
 <translation id="7980421588063892270">Engels (VS) met Colemak-toetsenbord</translation>
@@ -909,7 +855,6 @@
 <translation id="803771048473350947">Archief</translation>
 <translation id="8038111231936746805">(standaard)</translation>
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" />-audio</translation>
-<translation id="8045462269890919536">Roemeens</translation>
 <translation id="8049184478152619004">Geef de pukcode op</translation>
 <translation id="8055538340801153769">Deze map</translation>
 <translation id="807187749540895545"><ph name="FILE_NAME" /> uitpakken...</translation>
@@ -941,11 +886,9 @@
 <translation id="8262872909443689080">Beheerdersbeleid</translation>
 <translation id="8264024885325823677">Deze instelling wordt beheerd door je beheerder.</translation>
 <translation id="8269755669432358899">Feedbackvensters voor bestanden samenvouwen</translation>
-<translation id="8280151743281770066">Armeens fonetisch</translation>
 <translation id="8285791779547722821">Versleutelde <ph name="ORIGINAL_MIME_TYPE" /></translation>
 <translation id="8294431847097064396">Bron</translation>
 <translation id="8297012244086013755">Hangul 3 Set (No Shift)</translation>
-<translation id="8299269255470343364">Japans</translation>
 <translation id="8300849813060516376">OTASP mislukt</translation>
 <translation id="8312871300878166382">Plakken in map</translation>
 <translation id="8329978297633540474">Platte tekst</translation>
@@ -967,7 +910,6 @@
 <translation id="8428213095426709021">Instellingen</translation>
 <translation id="8429998526804961548"><ph name="NUMBER_OF_ITEMS" /> mappen gedeeld met <ph name="VM_NAME" /></translation>
 <translation id="8431909052837336408">Pincode van simkaart wijzigen</translation>
-<translation id="8437209419043462667">Amerikaans</translation>
 <translation id="8452135315243592079">Simkaart ontbreekt</translation>
 <translation id="8456681095658380701">Ongeldige naam</translation>
 <translation id="8457767749626250697">Je simkaart is vergrendeld</translation>
@@ -982,14 +924,12 @@
 <translation id="8499098729323186194"><ph name="NUMBER_OF_ITEMS" /> items uitpakken...</translation>
 <translation id="8502913769543567768">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, activeren na apparaatinstelling, beheerd door je beheerder</translation>
 <translation id="8512483403832814140">Op elk moment</translation>
-<translation id="8521441079177373948">VK</translation>
 <translation id="853494022971700746">Frans (Frankrijk)</translation>
 <translation id="8540608333167683902">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, signaalsterkte <ph name="SIGNAL_STRENGTH" />%, details</translation>
 <translation id="8545476925160229291">Engels (VS)</translation>
 <translation id="854655314928502177">URL voor WPAD:</translation>
 <translation id="8547747809824590510">Je beheerder heeft regels voor proxyoverschrijving ingesteld</translation>
 <translation id="8549186985808798022">Italiaans</translation>
-<translation id="8551494947769799688">Lets</translation>
 <translation id="8560515948038859357">Kantonees</translation>
 <translation id="8561206103590473338">Olifant</translation>
 <translation id="8566466896628108558">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, signaalsterkte <ph name="SIGNAL_STRENGTH" />%, geblokkeerd door je beheerder, details</translation>
@@ -1012,7 +952,6 @@
 <translation id="8713112442029511308">Maltees</translation>
 <translation id="8714406895390098252">Fiets</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> is geselecteerd.</translation>
-<translation id="872537912056138402">Kroatisch</translation>
 <translation id="8743164338060742337">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, signaalsterkte <ph name="SIGNAL_STRENGTH" />%, beheerd door je beheerder, verbinden</translation>
 <translation id="8787254343425541995">Proxy's voor gedeelde netwerken toestaan</translation>
 <translation id="8790981080411996443">Persoon die de planten water geeft</translation>
@@ -1029,10 +968,8 @@
 <translation id="8873014196523807561">Als je deze items wilt herstellen, sleep je ze naar een nieuwe map. De oorspronkelijke mappen voor sommige van deze items zijn verwijderd.</translation>
 <translation id="8874184842967597500">Niet verbonden</translation>
 <translation id="8876368061475701452">In wachtrij</translation>
-<translation id="8900820606136623064">Hongaars</translation>
 <translation id="8903931173357132290">Afgestudeerde</translation>
 <translation id="8912078710089354287">Hond die kwispelt</translation>
-<translation id="8919081441417203123">Deens</translation>
 <translation id="8949925099261528566">Verbonden, geen internet</translation>
 <translation id="8965697826696209160">Er is onvoldoende ruimte.</translation>
 <translation id="8970887620466824814">Er is iets misgegaan.</translation>
@@ -1041,7 +978,6 @@
 <translation id="8998871447376656508">Er is onvoldoende ruimte in je Google Drive beschikbaar om de upload af te ronden.</translation>
 <translation id="9003940392834790328">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, signaalsterkte <ph name="SIGNAL_STRENGTH" />%, beheerd door je beheerder, details</translation>
 <translation id="9007990314804111233">Inloggen op je Microsoft-account</translation>
-<translation id="9017798300203431059">Russisch fonetisch</translation>
 <translation id="9034924485347205037">Linux-bestanden</translation>
 <translation id="9035012421917565900">De items kunnen niet worden teruggezet naar '<ph name="DESTINATION_NAME" />', dus je kunt deze actie niet ongedaan maken.</translation>
 <translation id="9035689366572880647">Geef je huidige pincode op</translation>

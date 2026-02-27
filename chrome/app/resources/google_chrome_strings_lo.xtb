@@ -695,6 +695,9 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="8041795619940733262">ຖາມ Google<ph name="LINE_BREAK" />ກ່ຽວກັບແຖບນີ້</translation>
 <translation id="80471789339884597">ຂໍຂອບໃຈສຳລັບການຕິດຕັ້ງ. ທ່ານຈະຕ້ອງຣີສະຕາດໂປຣແກຣມທ່ອງເວັບຂອງທ່ານທັງໝົດກ່ອນການໃຊ້ <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
+<translation id="8064965390968184078">1. ຄລິກ <ph name="BUTTON_LABEL" /> ທາງລຸ່ມ
+2. ຄລິກ <ph name="BUTTON_2" /> ໃນການຕັ້ງຄ່າ Windows ຂອງທ່ານ
+3. ຄລິກ <ph name="BUTTON_3" /> ໃນການແຈ້ງເຕືອນ Windows ເພື່ອປັກໝຸດ Chrome ໄວ້ຢູ່ແຖບໜ້າວຽກຂອງທ່ານເພື່ອໃຫ້ເຂົ້າເຖິງໄດ້ຢ່າງວ່ອງໄວ</translation>
 <translation id="8077579734294125741">ໂປຣໄຟລ໌ Chrome ອື່ນໆ</translation>
 <translation id="8086881907087796310">ການຕິດຕັ້ງບໍ່ສຳເລັດເນື່ອງຈາກຄອມພິວເຕີຂອງທ່ານບໍ່ເປັນໄປຕາມຂໍ້ກຳນົດຂັ້ນຕ່ຳສຳລັບຮາດແວ.</translation>
 <translation id="8113883687556086139">ຢັ້ງຢືນວ່າມັນແມ່ນທ່ານທີ່ຈະໃຊ້ ແລະ ບັນທຶກຂໍ້ມູນ Chrome ໃນບັນຊີຂອງທ່ານ, <ph name="ACCOUNT_EMAIL" /></translation>
@@ -773,6 +776,7 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="8914504000324227558">ເປີດໃຊ້ Chrome ຄືນໃໝ່</translation>
 <translation id="8922193594870374009">ເພື່ອສົ່ງເບີຈາກ <ph name="ORIGIN" /> ໃຫ້ໂທລະສັບ Android ຂອງທ່ານ, ກະລຸນາເຂົ້າສູ່ລະບົບ Chrome ຢູ່ໃນທັງສອງອຸປະກອນ.</translation>
 <translation id="8922998289262614701">ລຶບຂໍ້ມູນຂອງແອັບນີ້ອອກຈາກ Chrome</translation>
+<translation id="8925636929359899517">ພວກເຮົາໃຊ້ຂໍ້ມູນເພື່ອປັບປຸງບໍລິການນີ້. ເບິ່ງ <ph name="BEGIN_LINK1" />ນະໂຍບາຍຄວາມເປັນສ່ວນຕົວ<ph name="END_LINK1" /> ແລະ <ph name="BEGIN_LINK2" />ຂໍ້ກຳນົດບໍລິການ<ph name="END_LINK2" />.</translation>
 <translation id="8936233353620149764">ເປີດ/ປິດ Gemini ໃນ Chrome</translation>
 <translation id="8948460679427074738">ສ່ວນຂະຫຍາຍນີ້ບໍ່ໄດ້ເຜີຍແຜ່ຂໍ້ປະຕິບັດຄວາມເປັນສ່ວນຕົວ, ເຊັ່ນ: ວິທີທີ່ມັນຮວບຮວມ ແລະ ໃຊ້ຂໍ້ມູນ. Chrome ແນະນຳໃຫ້ທ່ານລຶບມັນອອກ.</translation>
 <translation id="8958307504142971576">ຕອນນີ້ທ່ານມີຄຸນສົມບັດເພີ່ມເຕີມໃນ Chrome</translation>

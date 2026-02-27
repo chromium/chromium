@@ -582,6 +582,9 @@ No se pueden guardar nuevos favoritos en tu cuenta hasta que borres algunos. Si 
 <translation id="7384121030444253939">Esta extensión ya no es compatible. Chromium te recomienda quitarla.</translation>
 <translation id="7413153308467572558">Retoma tu actividad desde donde la dejaste: Chromium restablece tus pestañas cada vez que reinicias. Para desactivar esta opción, ve a</translation>
 <translation id="7427879960656355200">Importar contraseñas a Chromium</translation>
+<translation id="744815265653811511">1. Haz clic en <ph name="BUTTON_LABEL" /> a continuación.
+2. Haz clic en <ph name="BUTTON_2" /> en la configuración de Windows.
+3. Haz clic en <ph name="BUTTON_3" /> en la notificación de Windows para fijar Chromium a la barra de tareas y acceder rápidamente.</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" />: Chromium para desarrolladores</translation>
 <translation id="7450541714075000668">Se copió el texto</translation>
 <translation id="7451052299415159299">Chromium necesita permiso para acceder a tu cámara para este sitio</translation>
@@ -597,6 +600,7 @@ No se pueden guardar nuevos favoritos en tu cuenta hasta que borres algunos. Si 
 <translation id="761356813943268536">Chromium está usando tu cámara y tu micrófono.</translation>
 <translation id="7617377681829253106">Chromium mejorado</translation>
 <translation id="7622753900276619808">Ahora tienes más funciones disponibles en Chromium</translation>
+<translation id="7624307931717240213">Usamos la información para mejorar este servicio. Consulta la Política de Privacidad y las Condiciones del Servicio.</translation>
 <translation id="7649070708921625228">Ayuda</translation>
 <translation id="7656340475565475526">Deja que Chromium navegue por ti</translation>
 <translation id="7658239707568436148">Cancelar</translation>

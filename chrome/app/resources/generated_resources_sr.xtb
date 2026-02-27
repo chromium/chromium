@@ -5178,7 +5178,7 @@
 <translation id="4471354919263203780">Преузимају се датотеке за препознавање говора... <ph name="PERCENT" />%</translation>
 <translation id="4472194221638903160">Групишите картице помоћу вештачке интелигенције</translation>
 <translation id="4472298120638043495">Можете да користите жељени језик Google налога (<ph name="NEW_LOCALE_FROM_GAIA" />)</translation>
-<translation id="447252321002412580">Помозите нам да побољшамо Chrome-ове функције и учинак</translation>
+<translation id="447252321002412580">Помозите нам да побољшамо Chrome-ове функције и перформансе</translation>
 <translation id="4472533928615930332">Генерисана је <ph name="INDEX" />. слика од <ph name="SUBJECT" />, у стилу <ph name="STYLE" /></translation>
 <translation id="4472575034687746823">Започнимо</translation>
 <translation id="4473559657152613417">Кликните десним тастером на картицу и изаберите Додај картицу у нову групу</translation>
@@ -5549,6 +5549,7 @@
 <translation id="4732799736617504962">Повезан микрофон може да подржава само поништавање буке</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (лева)</translation>
 <translation id="4733793249294335256">Локација</translation>
+<translation id="4734965478015604180">Хоризонтално</translation>
 <translation id="473546211690256853">Овим налогом управља <ph name="DOMAIN" /></translation>
 <translation id="4735506354605317060">Кружни показивач</translation>
 <translation id="4735793370946506039">Сазнајте више о побољшаном безбедном прегледању.</translation>
@@ -5816,6 +5817,7 @@
 <translation id="4901154724271753917">Прошири недавно затворено</translation>
 <translation id="4901309472892185668">Изаберите стање за експеримент <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="49027928311173603">Смернице преузете са сервера су неважеће: <ph name="VALIDATION_ERROR" />.</translation>
+<translation id="490375751687810070">Вертикално</translation>
 <translation id="4906490889887219338">Подесите дељења датотека на мрежи или управљајте њима. <ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /></translation>
 <translation id="4906679076183257864">Врати на подразумевану вредност</translation>
 <translation id="4907129260985716018">Одаберите када овај додатак може да чита и мења податке о сајтовима</translation>
@@ -8491,6 +8493,7 @@
 <translation id="678520006562636090">Испробајте Google објектив на: <ph name="DEVICE_TYPE" /></translation>
 <translation id="6785594991951195537">Користите <ph name="PASSWORD_DOMAIN" /></translation>
 <translation id="6785739405821760313">Приказују се сачуване радне површине. Притисните картицу да бисте се кретали.</translation>
+<translation id="6785779729084003225">Користите пречицу <ph name="FOCUS_TOGGLE_HOTKEY" /> да бисте отворили Gemini у Chrome-у</translation>
 <translation id="6785915470941880363">Обрнуто померање <ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /></translation>
 <translation id="67862343314499040">Љубичаста</translation>
 <translation id="6786480815699355166">Могу да се преводе само подржани језици титла уживо</translation>
