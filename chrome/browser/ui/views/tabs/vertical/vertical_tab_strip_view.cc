@@ -366,6 +366,12 @@ void VerticalTabStripView::DidPresentFramePostActivation(
     return;
   }
 
+  // Dragging a view out of the visible bounds will trigger a scroll naturally.
+  if (collection_node_ &&
+      collection_node_->GetController()->GetDragHandler().IsDragging()) {
+    return;
+  }
+
   // Get view bounds in its contents coordinates.
   gfx::Rect activated_view_bounds =
       GetVerticalTabStripViewTargetBounds(activated_view);

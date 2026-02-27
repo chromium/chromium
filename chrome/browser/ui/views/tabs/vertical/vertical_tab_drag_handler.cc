@@ -486,6 +486,10 @@ TabDragContext* VerticalTabDragHandlerImpl::GetDragContext() {
   return this;
 }
 
+bool VerticalTabDragHandlerImpl::IsDragging() const {
+  return drag_controller_ && drag_controller_->active();
+}
+
 bool VerticalTabDragHandlerImpl::IsViewDragging(const views::View& view) const {
   if (!drag_controller_) {
     return false;

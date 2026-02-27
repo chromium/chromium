@@ -65,6 +65,9 @@ class VerticalTabDragHandler {
   // Returns the drag context for this handler.
   virtual TabDragContext* GetDragContext() = 0;
 
+  // Whether this is is handling a drag.
+  virtual bool IsDragging() const = 0;
+
   // Returns true if `view` belongs to a TabCollectionNode currently being
   // dragged.
   virtual bool IsViewDragging(const views::View& view) const = 0;
@@ -123,6 +126,7 @@ class VerticalTabDragHandlerImpl : public VerticalTabDragHandler,
                                    DragPositionHint position_hint) override;
   void HandleDraggedTabsAtEndOfTabStrip() override;
   TabDragContext* GetDragContext() override;
+  bool IsDragging() const override;
   bool IsViewDragging(const views::View& view) const override;
   bool IsDraggingPinnedTabs() const override;
   bool IsDraggingGroups() const override;
