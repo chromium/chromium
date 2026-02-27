@@ -7,6 +7,7 @@
 #include <type_traits>
 
 #include "base/command_line.h"
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/dom_distiller/tab_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -106,6 +107,10 @@ void ReadAnythingEntryPointController::ShowUI(
   if (!bwi) {
     return;
   }
+  if (!IsUIShowing(bwi)) {
+    base::UmaHistogramEnumeration("Accessibility.ReadAnything.ShowTriggered",
+                                  open_trigger);
+  }
 
   if (features::IsImmersiveReadAnythingEnabled()) {
     // TODO(crbug.com/471001915): Once IRM flag is enabled by default, change
@@ -133,6 +138,11 @@ void ReadAnythingEntryPointController::ToggleUI(
     ReadAnythingOpenTrigger open_trigger) {
   if (!bwi) {
     return;
+  }
+
+  if (!IsUIShowing(bwi)) {
+    base::UmaHistogramEnumeration("Accessibility.ReadAnything.ShowTriggered",
+                                  open_trigger);
   }
 
   if (features::IsImmersiveReadAnythingEnabled()) {

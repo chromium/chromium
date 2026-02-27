@@ -3331,6 +3331,16 @@ even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
+<histogram name="Accessibility.ReadAnything.ShowTriggered"
+    enum="ReadAnythingOpenTrigger" expires_after="2027-01-01">
+  <owner>gusmartin@google.com</owner>
+  <owner>chrome-irm-devs@google.com</owner>
+  <summary>
+    Recorded when Reading Mode is opened. Tracks the trigger that caused it to
+    open.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.ReadAnything.SidePanelTriggeredByEmptyState"
     enum="ReadAnythingOpenTrigger" expires_after="2027-01-01">
   <owner>martinglopez@google.com</owner>
