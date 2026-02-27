@@ -3110,7 +3110,7 @@ deps = {
       'packages': [
           {
               'package': 'infra_internal/edit_monitor/linux-amd64',
-              'version': 'XK7IDuuFO0fkCRCvXemLOUZXoUo26i8PBEeS_kE0FBcC',
+              'version': 'I0yYDhQRh-e_LctRC54EGaEve_Wm9TIAv0OWh2U6QmYC',
           },
       ],
       'condition': 'host_os == "linux" and (checkout_src_internal or checkout_src_internal_infra)',
