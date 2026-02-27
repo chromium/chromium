@@ -6616,7 +6616,6 @@ test("unit_tests") {
     "../browser/chrome_content_browser_client_parts_unittest.cc",
     "../browser/chrome_content_browser_client_unittest.cc",
     "../browser/collaboration/collaboration_service_factory_unittest.cc",
-    "../browser/collaboration/comments/comments_service_factory_unittest.cc",
     "../browser/command_updater_impl_unittest.cc",
     "../browser/component_updater/chrome_component_updater_configurator_unittest.cc",
     "../browser/component_updater/crl_set_component_installer_unittest.cc",
@@ -7118,6 +7117,7 @@ test("unit_tests") {
     "//chrome/browser/browsing_data:constants",
     "//chrome/browser/btm:unit_tests",
     "//chrome/browser/chooser_controller:unit_tests",
+    "//chrome/browser/collaboration/comments:unit_tests",
     "//chrome/browser/collaboration/messaging:unit_tests",
     "//chrome/browser/commerce",
     "//chrome/browser/complex_tasks:unit_tests",
@@ -7653,6 +7653,7 @@ test("unit_tests") {
   # serial_chooser_context_unittest.cc gets modularized.
   deps += [
     "//chrome/browser:flags",
+    "//chrome/browser/collaboration/comments",
     "//chrome/browser/collaboration/messaging",
     "//chrome/browser/data_sharing",
     "//chrome/browser/history",
