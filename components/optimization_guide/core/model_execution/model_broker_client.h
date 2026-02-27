@@ -141,6 +141,9 @@ class ModelBrokerClient final {
   // Get or create the subscriber for the given key.
   ModelSubscriber& GetSubscriber(mojom::OnDeviceFeature feature);
 
+  // Request that the model assets for this feature be made available.
+  void RequestAssetsFor(mojom::OnDeviceFeature feature);
+
   // Whether the subscriber for this key already exists.
   bool HasSubscriber(mojom::OnDeviceFeature feature);
 

@@ -164,14 +164,10 @@ void OnDeviceSpeechRecognitionImpl::Install(
     model_broker_client_ =
         optimization_guide_keyed_service->CreateModelBrokerClient();
 
-    // Call `GetSubscriber()` to trigger the download and installation of
+    // Call `RequestAssetsFor()` to trigger the download and installation of
     // the model.
-    model_broker_client_
-        ->GetSubscriber(optimization_guide::mojom::OnDeviceFeature::
-                            kOnDeviceSpeechRecognition)
-        .WaitForClient(base::BindOnce(
-            &OnDeviceSpeechRecognitionImpl::OnModelClientAvailable,
-            weak_ptr_factory_.GetWeakPtr()));
+    model_broker_client_->RequestAssetsFor(
+        optimization_guide::mojom::OnDeviceFeature::kOnDeviceSpeechRecognition);
   } else {
     language_installation_callbacks_[language_names_key].push_back(
         std::move(callback));

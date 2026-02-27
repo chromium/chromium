@@ -416,6 +416,8 @@ void AIManager::CreateLanguageModel(
         blink::mojom::AIManagerCreateClientError::kUnableToCreateSession);
     return;
   }
+  model_broker_client_->RequestAssetsFor(
+      optimization_guide::mojom::OnDeviceFeature::kPromptApi);
   model_broker_client_
       ->GetSubscriber(optimization_guide::mojom::OnDeviceFeature::kPromptApi)
       .WaitForClient(base::BindOnce(&AIManager::CreateLanguageModelInternal,

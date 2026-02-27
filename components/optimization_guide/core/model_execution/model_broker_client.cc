@@ -198,11 +198,14 @@ ModelSubscriber& ModelBrokerClient::GetSubscriber(
     mojo::PendingRemote<mojom::ModelSubscriber> pending;
     ptr = std::make_unique<ModelSubscriber>(
         pending.InitWithNewPipeAndPassReceiver());
-    remote_->RequestAssetsFor(feature);
     remote_->Subscribe(mojom::ModelSubscriptionOptions::New(feature),
                        std::move(pending));
   }
   return *ptr;
+}
+
+void ModelBrokerClient::RequestAssetsFor(mojom::OnDeviceFeature feature) {
+  remote_->RequestAssetsFor(feature);
 }
 
 bool ModelBrokerClient::HasSubscriber(mojom::OnDeviceFeature feature) {
@@ -212,6 +215,7 @@ bool ModelBrokerClient::HasSubscriber(mojom::OnDeviceFeature feature) {
 void ModelBrokerClient::CreateSession(mojom::OnDeviceFeature feature,
                                       const SessionConfigParams& config_params,
                                       CreateSessionCallback callback) {
+  RequestAssetsFor(feature);
   GetSubscriber(feature).CreateSession(std::move(config_params),
                                        std::move(callback), logger_);
 }
