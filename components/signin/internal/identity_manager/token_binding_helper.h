@@ -114,6 +114,8 @@ class TokenBindingHelper {
   //
   // Unlike `SetBindingKey()`, this method does not add `wrapped_binding_key`
   // to the in-memory cache.
+  //
+  // `wrapped_binding_key` must not be empty.
   void CopyBindingKeyFromAnotherTokenService(
       base::span<const uint8_t> wrapped_binding_key);
 
