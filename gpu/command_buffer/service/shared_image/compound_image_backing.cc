@@ -321,6 +321,9 @@ class WrappedSkiaGraphiteCompoundImageRepresentation
   bool SupportsMultipleConcurrentReadAccess() final {
     return wrapped_->SupportsMultipleConcurrentReadAccess();
   }
+  bool SupportsDeferredGraphiteSubmit() final {
+    return wrapped_->SupportsDeferredGraphiteSubmit();
+  }
 
   std::vector<sk_sp<SkSurface>> BeginWriteAccess(
       const SkSurfaceProps& surface_props,
