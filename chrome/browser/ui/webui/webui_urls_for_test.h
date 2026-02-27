@@ -73,7 +73,6 @@ static const char* const kChromeUrls[] = {
     "chrome://extensions-internals",
     "chrome://extensions-zero-state",
     "chrome://family-link-user-internals",
-    "chrome://feedback",
     "chrome://flags",
     "chrome://gcm-internals",
     "chrome://gpu",
@@ -285,6 +284,8 @@ static constexpr const char* const kChromeUntestedUrls[] = {
 #endif
     // TODO(crbug.com/40710256): Test failure due to excessive output.
     "chrome://discards",
+    // TODO(crbug.com/487571789): TrustedTypesEnabled test is very flaky.
+    "chrome://feedback",
     "chrome://glic",
     "chrome://glic-fre",
     "chrome-untrusted://glic",
