@@ -96,6 +96,9 @@
 # Flaky on most bots: crbug.com/483506399
 -GlicInstanceCoordinatorBrowserTest.DeactivationWhenSwitchingToUnboundTab
 
+# Flaky on Linux: crbug.com/487897248
+-GlicInstanceCoordinatorBrowserTest.TabContentsDaisyChaining
+
 # Flaky on Linux: crbug.com/350991033, which was closed as a duplicate of restricted-access crbug.com/377951068
 -LensOverlayControllerContextualFeaturesDisabledTest.PreselectionToastOmniboxFocusState
 
@@ -136,6 +139,9 @@
 -PreviewBrowserTest.ZoomUsageRecordedOnCancel
 -PreviewBrowserTest.ZoomUsageRecordedOnPromoteToNewTab
 
+# Flaky on Linux: crbug.com/487944765
+-ProfileManagementDisclaimerServiceBrowserFocusBrowserTest.Test/Managed_EnforcedByPolicy_Cancel
+
 # Flaky on most bots: crbug.com/483092903
 -RecentActivityBubbleDialogViewActionBrowserTest.HandlesActionFocusTab
 -RecentActivityBubbleDialogViewActionBrowserTest.HandlesActionManageSharing
@@ -163,6 +169,9 @@
 # Flaky on most bots: crbug.com/483542950
 -SkillsBrowserTest.UserSkillsPage
 -SkillsBrowserTest.UserSkillsPage__UserSkillsPage_CopySkillInstructionsToClipboard
+
+# Flaky on most bots: crbug.com/487944774
+-SkillsInteractiveUiTest.UpdateSkillPreviews
 
 # Flaky on Linux: crbug.com/483092911
 -SSLUITestWithWebApps.InAppTestHTTPSExpiredCertAndPreviouslyProceeded

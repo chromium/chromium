@@ -1,3 +1,9 @@
+# Flaky on Linux: crbug.com/487897247
+-BackForwardCacheDrainedAsBytesConsumerTest.PageWithDrainedDatapipeAsBytesConsumerCannotProcessTooMuchData
+
+# Flaky on multiple bots: crbug.com/464319318
+-BackForwardCacheWithDedicatedWorkerBrowserTest.PageWithDrainedDatapipeRequestsForFetchShouldBeEvicted_Nested
+
 # These tests are run on the main builders and don't need to also be
 # run here.
 -Accessibility*
