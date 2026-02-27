@@ -42,7 +42,7 @@ constexpr base::FeatureParam<int> kReaderModeUseReadabilityHeuristicMinScore{
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
     /*default_value=*/50
 #else
-    /*default_value=*/75
+    /*default_value=*/100
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 };
 constexpr base::FeatureParam<int>
