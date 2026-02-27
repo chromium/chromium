@@ -217,7 +217,7 @@
     {
         "name": "runtime-annotation-android",
         "group": "androidx.compose.runtime",
-        "version": "1.11.0-alpha05"
+        "version": "1.11.0-alpha06"
     },
     {
         "name": "runtime-retain",
@@ -375,6 +375,11 @@
         "version": "1.18.0-rc01"
     },
     {
+        "name": "core-pip",
+        "group": "androidx.core",
+        "version": "1.0.0-SNAPSHOT"
+    },
+    {
         "name": "core-viewtree",
         "group": "androidx.core",
         "version": "1.1.0-SNAPSHOT"
@@ -417,7 +422,7 @@
     {
         "name": "datastore",
         "group": "androidx.datastore",
-        "version": "1.3.0-alpha05"
+        "version": "1.3.0-alpha06"
     },
     {
         "name": "datastore-android",
@@ -432,17 +437,17 @@
     {
         "name": "datastore-core-android",
         "group": "androidx.datastore",
-        "version": "1.3.0-alpha05"
+        "version": "1.3.0-alpha06"
     },
     {
         "name": "datastore-core-okio",
         "group": "androidx.datastore",
-        "version": "1.3.0-alpha05"
+        "version": "1.3.0-alpha06"
     },
     {
         "name": "datastore-core-okio-jvm",
         "group": "androidx.datastore",
-        "version": "1.3.0-alpha05"
+        "version": "1.3.0-alpha06"
     },
     {
         "name": "datastore-preferences",
@@ -452,27 +457,27 @@
     {
         "name": "datastore-preferences-android",
         "group": "androidx.datastore",
-        "version": "1.3.0-alpha05"
+        "version": "1.3.0-alpha06"
     },
     {
         "name": "datastore-preferences-core",
         "group": "androidx.datastore",
-        "version": "1.3.0-alpha05"
+        "version": "1.3.0-alpha06"
     },
     {
         "name": "datastore-preferences-core-android",
         "group": "androidx.datastore",
-        "version": "1.3.0-alpha05"
+        "version": "1.3.0-alpha06"
     },
     {
         "name": "datastore-preferences-external-protobuf",
         "group": "androidx.datastore",
-        "version": "1.3.0-alpha05"
+        "version": "1.3.0-alpha06"
     },
     {
         "name": "datastore-preferences-proto",
         "group": "androidx.datastore",
-        "version": "1.3.0-alpha05"
+        "version": "1.3.0-alpha06"
     },
     {
         "name": "documentfile",
@@ -602,7 +607,7 @@
     {
         "name": "lifecycle-common-jvm",
         "group": "androidx.lifecycle",
-        "version": "2.10.0"
+        "version": "2.11.0-alpha01"
     },
     {
         "name": "lifecycle-livedata",
@@ -637,7 +642,7 @@
     {
         "name": "lifecycle-runtime-android",
         "group": "androidx.lifecycle",
-        "version": "2.10.0"
+        "version": "2.11.0-alpha01"
     },
     {
         "name": "lifecycle-runtime-compose",
@@ -672,7 +677,7 @@
     {
         "name": "lifecycle-viewmodel-android",
         "group": "androidx.lifecycle",
-        "version": "2.10.0"
+        "version": "2.11.0-alpha01"
     },
     {
         "name": "lifecycle-viewmodel-compose",
@@ -697,7 +702,7 @@
     {
         "name": "lifecycle-viewmodel-savedstate-android",
         "group": "androidx.lifecycle",
-        "version": "2.10.0"
+        "version": "2.11.0-alpha01"
     },
     {
         "name": "loader",
@@ -807,7 +812,7 @@
     {
         "name": "navigationevent-android",
         "group": "androidx.navigationevent",
-        "version": "1.0.2"
+        "version": "1.1.0-alpha01"
     },
     {
         "name": "navigationevent-compose",
@@ -1067,7 +1072,7 @@
     {
         "name": "tracing-android",
         "group": "androidx.tracing",
-        "version": "2.0.0-alpha01"
+        "version": "2.0.0-alpha02"
     },
     {
         "name": "tracing-ktx",
