@@ -31,4 +31,9 @@ ShellWebViewGuestDelegate::GetDefaultUserAgentOverride() {
 
 void ShellWebViewGuestDelegate::SetClientHintsEnabled(bool enable) {}
 
+bool ShellWebViewGuestDelegate::ShouldForwardOpenUrlFromTabToOwnerWebContents(
+    const GURL& owner_url) {
+  return false;
+}
+
 }  // namespace extensions

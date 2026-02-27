@@ -50,6 +50,11 @@ class WebViewGuestDelegate {
   // Toggles whether to include special client hints brand in the user agent
   // override.
   virtual void SetClientHintsEnabled(bool enable) = 0;
+
+  // Whether should forward `OpenUrlFromTab` to the owner WebContents when it's
+  // renderer initiated.
+  virtual bool ShouldForwardOpenUrlFromTabToOwnerWebContents(
+      const GURL& owner_url) = 0;
 };
 
 }  // namespace extensions

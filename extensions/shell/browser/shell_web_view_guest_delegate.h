@@ -35,6 +35,8 @@ class ShellWebViewGuestDelegate : public WebViewGuestDelegate {
   std::optional<blink::UserAgentOverride> GetDefaultUserAgentOverride()
       override;
   void SetClientHintsEnabled(bool enable) override;
+  bool ShouldForwardOpenUrlFromTabToOwnerWebContents(
+      const GURL& owner_url) override;
 };
 
 }  // namespace extensions

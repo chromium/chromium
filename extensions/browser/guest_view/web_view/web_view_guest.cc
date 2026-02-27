@@ -2041,6 +2041,17 @@ WebContents* WebViewGuest::OpenURLFromTab(
     return web_contents();
   }
 
+  // Allow delegate to determine whether to redirect to owner_web_contents.
+  if (web_view_guest_delegate_ &&
+      web_view_guest_delegate_->ShouldForwardOpenUrlFromTabToOwnerWebContents(
+          owner_web_contents()->GetLastCommittedURL())) {
+    if (!owner_web_contents()->GetDelegate()) {
+      return nullptr;
+    }
+    return owner_web_contents()->GetDelegate()->OpenURLFromTab(
+        owner_web_contents(), params, std::move(navigation_handle_callback));
+  }
+
   // This code path is taken if Ctrl+Click, middle click or any of the
   // keyboard/mouse combinations are used to open a link in a new tab/window.
   // This code path is also taken on client-side redirects from about:blank.
