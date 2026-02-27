@@ -267,6 +267,26 @@ bool WasLaunchedAsHiddenLoginItem() {
 }
 
 bool RemoveQuarantineAttribute(const FilePath& file_path) {
+  // It is critical that NSURLQuarantinePropertiesKey not be used here; it is
+  // irredeemably broken.
+  //
+  // Before macOS 26.1, attempting to remove a quarantine attribute using
+  // NSURLQuarantinePropertiesKey would fail if the file didn't already have a
+  // quarantine attribute. But even after that, while
+  // NSURLQuarantinePropertiesKey appears to successfully remove the quarantine
+  // attribute in testing, in deployment it fails to reliably do so, and in the
+  // process that breaks the updater (no bug filed as it was caught early in a
+  // panic) and app links (https://crbug.com/488020336).
+  //
+  // It's not clear how to test NSURLQuarantinePropertiesKey for any further
+  // attempt to use it. The previous land/revert cycle
+  // (https://crrev.com/c/7551491 and https://crrev.com/c/7602582) came with
+  // extensive testing that passed, and in informal experience, things would
+  // work fine for, say, seven times before failing on the eighth.
+  //
+  // Given the criticality of the updater, it's hard to find an incentive to do
+  // experimentation in this area. Stay away.
+
   const char kQuarantineAttrName[] = "com.apple.quarantine";
   int status = removexattr(file_path.value().c_str(), kQuarantineAttrName, 0);
   return status == 0 || errno == ENOATTR;
