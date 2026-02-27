@@ -45,7 +45,8 @@ export function getHtml(this: SkillCardElement) {
       </cr-action-menu>
     `}
   </div>
-  <div id="cardBody">${this.getCardBodyText_()}</div>
+  <div id="${this.cardType}Body" class="card-body">${this.getCardBodyText_()}
+  </div>
   <div id="cardFooter">
     <!-- Show add for discoverable skills and edit for user skills. -->
     ${this.isDiscoverCard_() ? html`
