@@ -13,17 +13,28 @@
 #include "third_party/blink/renderer/core/annotation/annotation_agent_impl.h"
 #include "third_party/blink/renderer/core/annotation/annotation_selector.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
 #include "third_party/blink/renderer/core/editing/range_in_flat_tree.h"
 #include "third_party/blink/renderer/core/editing/selection_editor.h"
+#include "third_party/blink/renderer/core/editing/visible_position.h"
 #include "third_party/blink/renderer/core/editing/visible_units.h"
 #include "third_party/blink/renderer/core/fragment_directive/fragment_directive_utils.h"
 #include "third_party/blink/renderer/core/fragment_directive/text_fragment_anchor.h"
 #include "third_party/blink/renderer/core/fragment_directive/text_fragment_selector_generator.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/local_frame_view.h"
+#include "third_party/blink/renderer/core/frame/visual_viewport.h"
+#include "third_party/blink/renderer/core/input/event_handler.h"
+#include "third_party/blink/renderer/core/layout/hit_test_location.h"
+#include "third_party/blink/renderer/core/layout/hit_test_request.h"
+#include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
+#include "third_party/blink/renderer/core/page/page.h"
+#include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/point_conversions.h"
 
 namespace blink {
 
@@ -77,6 +88,41 @@ void TextFragmentHandler::RequestSelector(RequestSelectorCallback callback) {
   if (selector_ready_status_.value() ==
       shared_highlighting::LinkGenerationReadyStatus::kRequestedAfterReady)
     InvokeReplyCallback(preemptive_generation_result_.value(), error_);
+}
+
+void TextFragmentHandler::RequestSelectorForViewportCenter(
+    RequestSelectorForViewportCenterCallback callback) {
+  response_callback_ = std::move(callback);
+  selector_ready_status_ =
+      shared_highlighting::LinkGenerationReadyStatus::kRequestedBeforeReady;
+
+  if (!shared_highlighting::ShouldOfferLinkToText(
+          GURL(GetFrame()->GetDocument()->Url()))) {
+    error_ = shared_highlighting::LinkGenerationError::kBlockList;
+    InvokeReplyCallback(
+        TextFragmentSelector(TextFragmentSelector::SelectorType::kInvalid),
+        error_);
+    return;
+  }
+
+  RangeInFlatTree* range = GetRangeForViewportCenter();
+
+  if (!range) {
+    error_ = shared_highlighting::LinkGenerationError::kEmptySelection;
+    InvokeReplyCallback(
+        TextFragmentSelector(TextFragmentSelector::SelectorType::kInvalid),
+        error_);
+    return;
+  }
+
+  if (!GetTextFragmentSelectorGenerator()) {
+    text_fragment_selector_generator_ =
+        MakeGarbageCollected<TextFragmentSelectorGenerator>(GetFrame());
+  }
+
+  GetTextFragmentSelectorGenerator()->Generate(
+      *range, BindOnce(&TextFragmentHandler::DidFinishSelectorGeneration,
+                       WrapWeakPersistent(this)));
 }
 
 void TextFragmentHandler::GetExistingSelectors(
@@ -190,6 +236,53 @@ void TextFragmentHandler::StartGeneratingForCurrentSelection() {
       *current_selection_range,
       BindOnce(&TextFragmentHandler::DidFinishSelectorGeneration,
                WrapWeakPersistent(this)));
+}
+
+RangeInFlatTree* TextFragmentHandler::GetRangeForViewportCenter() {
+  LocalFrameView* view = GetFrame()->View();
+  if (!view) {
+    return nullptr;
+  }
+
+  // Hit-test at the center of the visual viewport.
+  VisualViewport& visual_viewport = GetFrame()->GetPage()->GetVisualViewport();
+  gfx::PointF center_in_viewport = visual_viewport.VisibleRect().CenterPoint();
+
+  HitTestLocation location(view->ViewportToFrame(center_in_viewport));
+
+  HitTestRequest::HitTestRequestType hit_type = HitTestRequest::kReadOnly |
+                                                HitTestRequest::kActive |
+                                                HitTestRequest::kIgnoreClipping;
+  HitTestResult result =
+      GetFrame()->GetEventHandler().HitTestResultAtLocation(location, hit_type);
+
+  if (result.InnerNodeFrame() != GetFrame()) {
+    // If the hit test lands in a subframe, we don't generate a selector.
+    // This keeps the selector generation focused on the current frame.
+    return nullptr;
+  }
+
+  PositionInFlatTree pos =
+      ToPositionInFlatTree(result.GetPosition().GetPosition());
+  if (pos.IsNull()) {
+    return nullptr;
+  }
+
+  // A hit-test at a single point results in a collapsed range. Expand to the
+  // surrounding word to provide the generator with a starting target range.
+  // A word is used (rather than a paragraph) to keep the generated selector
+  // short, as this is intended for scroll restoration where highlighting may
+  // be disabled.
+  PositionInFlatTree start =
+      StartOfWordPosition(pos, kPreviousWordIfOnBoundary);
+  PositionInFlatTree end = EndOfWordPosition(pos, kNextWordIfOnBoundary);
+  if (start.IsNull() || end.IsNull() || start > end) {
+    // This can happen if the hit test lands on a non-text element (like an
+    // image) where a surrounding word cannot be resolved.
+    return nullptr;
+  }
+
+  return MakeGarbageCollected<RangeInFlatTree>(start, end);
 }
 
 void TextFragmentHandler::Trace(Visitor* visitor) const {

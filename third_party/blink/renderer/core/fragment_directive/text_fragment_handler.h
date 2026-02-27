@@ -48,6 +48,8 @@ class CORE_EXPORT TextFragmentHandler final
   // mojom::blink::TextFragmentReceiver interface
   void Cancel() override;
   void RequestSelector(RequestSelectorCallback callback) override;
+  void RequestSelectorForViewportCenter(
+      RequestSelectorForViewportCenterCallback callback) override;
   void GetExistingSelectors(GetExistingSelectorsCallback callback) override;
   void RemoveFragments() override;
   void ExtractTextFragmentsMatches(
@@ -83,6 +85,9 @@ class CORE_EXPORT TextFragmentHandler final
   // This starts running the generator over the current selection.
   // The result will be returned by invoking DidFinishSelectorGeneration().
   void StartGeneratingForCurrentSelection();
+
+  // Returns the range of the paragraph at the viewport's geometric center.
+  RangeInFlatTree* GetRangeForViewportCenter();
 
   // Called to reply to the client's RequestSelector call with the result.
   void InvokeReplyCallback(const TextFragmentSelector& selector,
