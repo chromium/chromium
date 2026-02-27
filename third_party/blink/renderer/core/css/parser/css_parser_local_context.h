@@ -27,10 +27,10 @@ class CORE_EXPORT CSSParserLocalContext {
     return CSSParserLocalContext();
   }
 
-  // TODO(crbug.com/413385732): This constructor is used for substitution
-  // functions like var(), attr(), if(), @function, etc. This should be removed
-  // once we support property-dependent random inside them.
-  static CSSParserLocalContext CreateWithoutPropertyForSubstitutions() {
+  // Sometimes we just check if the value matches specified type or syntax, but
+  // we don't compute the value, for instance in attr() type(), hence we don't
+  // actually need property name there.
+  static CSSParserLocalContext CreateWithoutPropertyForSyntaxParsing() {
     return CSSParserLocalContext();
   }
 

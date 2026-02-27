@@ -2761,7 +2761,7 @@ CSSParserImpl::ConsumeFunctionParameters(CSSParserTokenStream& stream) {
     // We just check the syntax here, we don't actually parse calc()
     // expressions, so we don't need property context for random().
     CSSParserLocalContext local_context =
-        CSSParserLocalContext::CreateWithoutPropertyForSubstitutions();
+        CSSParserLocalContext::CreateWithoutPropertyForSyntaxParsing();
     // If a type and a default are both provided, the default must
     // parse successfully according to that type.
     //

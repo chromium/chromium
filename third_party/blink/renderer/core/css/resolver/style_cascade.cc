@@ -2080,7 +2080,7 @@ CSSParserLocalContext StyleCascade::GetCSSParserLocalContext(
   // context, but since we currently disallow random() inside if() style()
   // condition, we are using nullptr property_name for that case.
   if (!property_name) {
-    return CSSParserLocalContext::CreateWithoutPropertyForSubstitutions();
+    return CSSParserLocalContext::CreateWithoutPropertyForAtRules();
   }
   // TODO(crbug.com/413385732): We might have the same function name between
   // different tree scopes, then we need to make CSSParserLocalContext aware of
@@ -2404,7 +2404,7 @@ bool StyleCascade::ResolveAttrInto(CSSParserTokenStream& stream,
   // the CSSParserLocalContext here, since it's only needed for computing
   // random() values, not during parsing.
   CSSParserLocalContext local_context =
-      CSSParserLocalContext::CreateWithoutPropertyForSubstitutions();
+      CSSParserLocalContext::CreateWithoutPropertyForSyntaxParsing();
   // Parse value according to the attribute type.
   // https://drafts.csswg.org/css-values-5/#typedef-attr-type
   const CSSValue* substitution_value =
@@ -2583,8 +2583,14 @@ const CSSValue* StyleCascade::CoerceIntoNumericValueInternal(
 
   CSSSyntaxDefinition syntax_definition =
       CSSSyntaxDefinition::CreateNumericSyntax();
+  // TODO(crbug.com/413385732): We call this function only for evaluating
+  // style() inside @container query or if() function. Since random() is
+  // disallowed outside of an element context (including all at-rules), we use
+  // CSSParserLocalContext without a property name for now. Ideally, this
+  // constructor should be removed once random() is supported within style()
+  // queries.
   CSSParserLocalContext local_context =
-      CSSParserLocalContext::CreateWithoutPropertyForSubstitutions();
+      CSSParserLocalContext::CreateWithoutPropertyForAtRules();
   const CSSValue* parsed_value = syntax_definition.Parse(
       data->OriginalText(), context, local_context,
       /* is_animation_tainted= */ data->IsAnimationTainted(),
