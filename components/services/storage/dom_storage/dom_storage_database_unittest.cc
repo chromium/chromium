@@ -13,7 +13,6 @@
 #include "base/files/file_path.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/task_environment.h"
-#include "components/services/storage/dom_storage/dom_storage_constants.h"
 #include "components/services/storage/dom_storage/leveldb/local_storage_leveldb.h"
 #include "components/services/storage/dom_storage/leveldb/session_storage_leveldb.h"
 #include "components/services/storage/dom_storage/sqlite/local_storage_sqlite.h"
@@ -124,8 +123,7 @@ TEST_F(DomStorageDatabaseTest, MigrateLocalStorageWithSingleMap) {
   ASSERT_NO_FATAL_FAILURE(OpenLocalStorageLevelDB(&source));
 
   // Write a map with key/value pairs and usage metadata to `source`.
-  DomStorageDatabase::MapLocator map_locator{kLocalStorageSessionId,
-                                             kFirstStorageKey};
+  DomStorageDatabase::MapLocator map_locator{kFirstStorageKey};
   const std::map<DomStorageDatabase::Key, DomStorageDatabase::Value>
       kExpectedEntries = {
           {ToBytes("key_1"), ToBytes("value_1")},
@@ -158,7 +156,7 @@ TEST_F(DomStorageDatabaseTest, MigrateLocalStorageWithSingleMap) {
 
   const DomStorageDatabase::MapMetadata kExpectedMapMetadata[] = {
       {
-          .map_locator{kLocalStorageSessionId, kFirstStorageKey, /*map_id=*/1},
+          .map_locator{kFirstStorageKey, /*map_id=*/1},
           .last_accessed{kMapLastAccessed},
           .last_modified{kMapLastModified},
           .total_size{kMapTotalSize},
@@ -173,8 +171,7 @@ TEST_F(DomStorageDatabaseTest, MigrateLocalStorageWithMultipleMaps) {
   ASSERT_NO_FATAL_FAILURE(OpenLocalStorageLevelDB(&source));
 
   // Write key/value pairs and usage metadata for the first map.
-  DomStorageDatabase::MapLocator first_locator{kLocalStorageSessionId,
-                                               kFirstStorageKey};
+  DomStorageDatabase::MapLocator first_locator{kFirstStorageKey};
   const std::map<DomStorageDatabase::Key, DomStorageDatabase::Value>
       kFirstEntries = {
           {ToBytes("key_a"), ToBytes("value_a")},
@@ -187,8 +184,7 @@ TEST_F(DomStorageDatabaseTest, MigrateLocalStorageWithMultipleMaps) {
       *source, first_locator, kFirstEntries, std::move(first_usage)));
 
   // Write key/value pairs and usage metadata for the second map.
-  DomStorageDatabase::MapLocator second_locator{kLocalStorageSessionId,
-                                                kSecondStorageKey};
+  DomStorageDatabase::MapLocator second_locator{kSecondStorageKey};
   const std::map<DomStorageDatabase::Key, DomStorageDatabase::Value>
       kSecondEntries = {
           {ToBytes("key_b"), ToBytes("value_b")},
@@ -228,10 +224,6 @@ TEST_F(DomStorageDatabaseTest, MigrateLocalStorageWithMultipleMaps) {
   EXPECT_EQ(metadata.next_map_id, std::nullopt);
   ASSERT_EQ(metadata.map_metadata.size(), 2u);
 
-  // Each map must use local storage's global session ID.
-  ASSERT_EQ(metadata.map_metadata[0].map_locator.session_ids().size(), 1u);
-  ASSERT_EQ(metadata.map_metadata[1].map_locator.session_ids().size(), 1u);
-
   // Each map must have a unique ID.
   ASSERT_TRUE(metadata.map_metadata[0].map_locator.map_id().has_value());
   ASSERT_TRUE(metadata.map_metadata[1].map_locator.map_id().has_value());
@@ -247,8 +239,7 @@ TEST_F(DomStorageDatabaseTest, MigrateLocalStorageWithMultipleMaps) {
       metadata.map_metadata[0];
 
   actual_metadata_without_map_id.push_back({
-      .map_locator{first_actual.map_locator.session_ids()[0],
-                   first_actual.map_locator.storage_key()},
+      .map_locator{first_actual.map_locator.storage_key()},
       .last_accessed = first_actual.last_accessed,
       .last_modified = first_actual.last_modified,
       .total_size = first_actual.total_size,
@@ -258,8 +249,7 @@ TEST_F(DomStorageDatabaseTest, MigrateLocalStorageWithMultipleMaps) {
       metadata.map_metadata[1];
 
   actual_metadata_without_map_id.push_back({
-      .map_locator{second_actual.map_locator.session_ids()[0],
-                   second_actual.map_locator.storage_key()},
+      .map_locator{second_actual.map_locator.storage_key()},
       .last_accessed = second_actual.last_accessed,
       .last_modified = second_actual.last_modified,
       .total_size = second_actual.total_size,
@@ -267,12 +257,12 @@ TEST_F(DomStorageDatabaseTest, MigrateLocalStorageWithMultipleMaps) {
 
   const DomStorageDatabase::MapMetadata kExpectedMapMetadata[] = {
       {
-          .map_locator{kLocalStorageSessionId, kFirstStorageKey},
+          .map_locator{kFirstStorageKey},
           .last_modified{kMapLastModified},
           .total_size{kMapTotalSize},
       },
       {
-          .map_locator{kLocalStorageSessionId, kSecondStorageKey},
+          .map_locator{kSecondStorageKey},
           .last_accessed{kSecondLastAccessed},
       },
   };

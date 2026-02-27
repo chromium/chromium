@@ -8,14 +8,9 @@
 #include <optional>
 #include <vector>
 
-#include "base/barrier_closure.h"
-#include "base/memory/scoped_refptr.h"
-#include "base/task/sequenced_task_runner.h"
-#include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/test/with_feature_override.h"
-#include "components/services/storage/dom_storage/dom_storage_constants.h"
 #include "components/services/storage/dom_storage/dom_storage_database.h"
 #include "components/services/storage/dom_storage/features.h"
 #include "components/services/storage/dom_storage/test_support/dom_storage_database_testing.h"
@@ -72,20 +67,20 @@ TEST_P(AsyncDomStorageDatabaseTest,
   // Define test values to write to the database.
   const DomStorageDatabase::MapMetadata kInitialMapMetadataArray[] = {
       {
-          .map_locator{kLocalStorageSessionId, kFirstStorageKey},
+          .map_locator{kFirstStorageKey},
           .last_accessed{base::Time::Now() - base::Days(7)},
       },
       {
-          .map_locator{kLocalStorageSessionId, kSecondStorageKey},
+          .map_locator{kSecondStorageKey},
           .last_modified{base::Time::Now() - base::Seconds(12)},
           .total_size{104},
       },
       {
-          .map_locator{kLocalStorageSessionId, kThirdStorageKey},
+          .map_locator{kThirdStorageKey},
           .last_accessed{base::Time::Now() - base::Minutes(15)},
       },
       {
-          .map_locator{kLocalStorageSessionId, kFourthStorageKey},
+          .map_locator{kFourthStorageKey},
           .last_accessed{base::Time::Now() - base::Minutes(30)},
           .last_modified{base::Time::Now() - base::Seconds(47)},
           .total_size{211114},
@@ -125,8 +120,7 @@ TEST_P(AsyncDomStorageDatabaseTest,
             written_metadata_span[j];
 
         expected_map_metadata.push_back({
-            .map_locator{kLocalStorageSessionId,
-                         written_metadata.map_locator.storage_key(),
+            .map_locator{written_metadata.map_locator.storage_key(),
                          /*map_id=*/static_cast<int64_t>(j + 1)},
             .last_accessed = written_metadata.last_accessed,
             .last_modified = written_metadata.last_modified,
@@ -147,10 +141,10 @@ TEST_P(AsyncDomStorageDatabaseTest,
 
   // Delete the first and third storage keys.
   std::vector<DomStorageDatabase::MapLocator> maps_to_delete;
-  maps_to_delete.emplace_back(kLocalStorageSessionId, kFirstStorageKey);
-  maps_to_delete.emplace_back(kLocalStorageSessionId, kThirdStorageKey);
+  maps_to_delete.emplace_back(kFirstStorageKey);
+  maps_to_delete.emplace_back(kThirdStorageKey);
 
-  DeleteStorageKeysFromSessionSync(*database, kLocalStorageSessionId,
+  DeleteStorageKeysFromSessionSync(*database, /*session_id=*/std::string(),
                                    {kFirstStorageKey, kThirdStorageKey},
                                    std::move(maps_to_delete));
 
@@ -164,8 +158,7 @@ TEST_P(AsyncDomStorageDatabaseTest,
     // Copy the second and fourth `kInitialMapMetadata`, inserting the expected
     // `map_id`.
     expected_metadata_after_delete.push_back({
-        .map_locator{kLocalStorageSessionId,
-                     kInitialMapMetadata[1].map_locator.storage_key(),
+        .map_locator{kInitialMapMetadata[1].map_locator.storage_key(),
                      /*map_id=*/2},
         .last_accessed = kInitialMapMetadata[1].last_accessed,
         .last_modified = kInitialMapMetadata[1].last_modified,
@@ -173,8 +166,7 @@ TEST_P(AsyncDomStorageDatabaseTest,
     });
 
     expected_metadata_after_delete.push_back({
-        .map_locator{kLocalStorageSessionId,
-                     kInitialMapMetadata[3].map_locator.storage_key(),
+        .map_locator{kInitialMapMetadata[3].map_locator.storage_key(),
                      /*map_id=*/4},
         .last_accessed = kInitialMapMetadata[3].last_accessed,
         .last_modified = kInitialMapMetadata[3].last_modified,
@@ -199,7 +191,7 @@ TEST_P(AsyncDomStorageDatabaseTest, EnqueuePendingTasksWhileOpening) {
 
   const DomStorageDatabase::MapMetadata kInitialMapMetadata[] = {
       {
-          .map_locator{kLocalStorageSessionId, kStorageKey},
+          .map_locator{kStorageKey},
           .last_modified{base::Time::Now() - base::Seconds(12)},
           .total_size{104},
       },
@@ -238,7 +230,7 @@ TEST_P(AsyncDomStorageDatabaseTest, EnqueuePendingTasksWhileOpening) {
   if (IsSqliteEnabled()) {
     // Copy `kInitialMapMetadata`, inserting the expected map ID.
     expected_map_metadata.push_back(
-        {.map_locator{kLocalStorageSessionId, kStorageKey, /*map_id=*/1},
+        {.map_locator{kStorageKey, /*map_id=*/1},
          .last_modified = kInitialMapMetadata[0].last_modified,
          .total_size = kInitialMapMetadata[0].total_size});
   } else {

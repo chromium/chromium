@@ -10,7 +10,6 @@
 #include "base/test/gmock_expected_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "components/services/storage/dom_storage/dom_storage_constants.h"
 #include "components/services/storage/dom_storage/features.h"
 #include "components/services/storage/dom_storage/sqlite/sqlite_database_utils.h"
 #include "components/services/storage/dom_storage/test_support/dom_storage_database_testing.h"
@@ -69,14 +68,14 @@ class LocalStorageSqliteTest : public testing::Test {
   const blink::StorageKey kThirdStorageKey =
       blink::StorageKey::CreateFromStringForTesting(kThirdUrlString);
 
-  const DomStorageDatabase::MapLocator kFirstMapLocator{
-      kLocalStorageSessionId, kFirstStorageKey, /*map_id=*/1};
+  const DomStorageDatabase::MapLocator kFirstMapLocator{kFirstStorageKey,
+                                                        /*map_id=*/1};
 
-  const DomStorageDatabase::MapLocator kSecondMapLocator{
-      kLocalStorageSessionId, kSecondStorageKey, /*map_id=*/2};
+  const DomStorageDatabase::MapLocator kSecondMapLocator{kSecondStorageKey,
+                                                         /*map_id=*/2};
 
-  const DomStorageDatabase::MapLocator kThirdMapLocator{
-      kLocalStorageSessionId, kThirdStorageKey, /*map_id=*/3};
+  const DomStorageDatabase::MapLocator kThirdMapLocator{kThirdStorageKey,
+                                                        /*map_id=*/3};
 
   const base::Time kMapLastAccessed = base::Time::Now() - base::Minutes(10);
   const base::Time kMapLastModified = base::Time::Now();
@@ -446,10 +445,8 @@ TEST_F(LocalStorageSqliteTest, UpdateMaps) {
   std::unique_ptr<LocalStorageSqlite> database;
   ASSERT_NO_FATAL_FAILURE(OpenInMemory(&database));
 
-  DomStorageDatabase::MapLocator map1_locator{kLocalStorageSessionId,
-                                              kFirstStorageKey, /*map_id=*/1};
-  DomStorageDatabase::MapLocator map2_locator{kLocalStorageSessionId,
-                                              kSecondStorageKey, /*map_id=*/2};
+  DomStorageDatabase::MapLocator map1_locator{kFirstStorageKey, /*map_id=*/1};
+  DomStorageDatabase::MapLocator map2_locator{kSecondStorageKey, /*map_id=*/2};
   ASSERT_NO_FATAL_FAILURE(
       TestUpdateMaps(*database, map1_locator, map2_locator));
 }
@@ -541,7 +538,7 @@ TEST_F(LocalStorageSqliteTest, DeleteStorageKeysFromSessionWithMetadata) {
   maps_to_delete.push_back(kFirstMapLocator.Clone());
 
   DbStatus status = database->DeleteStorageKeysFromSession(
-      kLocalStorageSessionId, /*metadata_to_delete=*/{kFirstStorageKey},
+      /*session_id*/ std::string(), /*metadata_to_delete=*/{kFirstStorageKey},
       std::move(maps_to_delete));
   EXPECT_TRUE(status.ok()) << status.ToString();
 
@@ -581,7 +578,7 @@ TEST_F(LocalStorageSqliteTest, DeleteStorageKeysFromSessionWithMapKeyValues) {
   maps_to_delete.emplace_back(kFirstMapLocator.Clone());
 
   DbStatus status = database->DeleteStorageKeysFromSession(
-      kLocalStorageSessionId, /*metadata_to_delete=*/{kFirstStorageKey},
+      /*session_id*/ std::string(), /*metadata_to_delete=*/{kFirstStorageKey},
       std::move(maps_to_delete));
   EXPECT_TRUE(status.ok()) << status.ToString();
 
@@ -650,7 +647,7 @@ TEST_F(LocalStorageSqliteTest,
   maps_to_delete.emplace_back(kThirdMapLocator.Clone());
 
   DbStatus status = database->DeleteStorageKeysFromSession(
-      kLocalStorageSessionId,
+      /*session_id*/ std::string(),
       /*metadata_to_delete=*/{kFirstStorageKey, kThirdStorageKey},
       std::move(maps_to_delete));
   EXPECT_TRUE(status.ok()) << status.ToString();
@@ -710,7 +707,7 @@ TEST_F(LocalStorageSqliteTest,
   maps_to_delete.emplace_back(kSecondMapLocator.Clone());
 
   DbStatus status = database->DeleteStorageKeysFromSession(
-      kLocalStorageSessionId, /*metadata_to_delete=*/{kSecondStorageKey},
+      /*session_id*/ std::string(), /*metadata_to_delete=*/{kSecondStorageKey},
       std::move(maps_to_delete));
   EXPECT_TRUE(status.ok()) << status.ToString();
 
@@ -798,7 +795,7 @@ TEST_F(LocalStorageSqliteTest, PurgeOriginsWithMatchingThirdPartyContext) {
       blink::StorageKey::CreateFromStringForTesting("https://embedded.test");
 
   const DomStorageDatabase::MapLocator kFirstPartyMapLocator{
-      kLocalStorageSessionId, kFirstPartyStorageKey,
+      kFirstPartyStorageKey,
       /*map_id=*/1};
 
   // Create a third-party storage key where the top-level site is different
@@ -813,7 +810,7 @@ TEST_F(LocalStorageSqliteTest, PurgeOriginsWithMatchingThirdPartyContext) {
                                 blink::mojom::AncestorChainBit::kCrossSite);
 
   const DomStorageDatabase::MapLocator kThirdPartyMapLocator{
-      kLocalStorageSessionId, kThirdPartyStorageKey,
+      kThirdPartyStorageKey,
       /*map_id=*/2};
 
   // Insert metadata for two storage keys.
@@ -864,14 +861,14 @@ TEST_F(LocalStorageSqliteTest, PurgeOriginsWithMatchingThirdPartyContext) {
   ASSERT_OK_AND_ASSIGN(
       (std::map<DomStorageDatabase::Key, DomStorageDatabase::Value>
            actual_entries),
-      database->ReadMapKeyValues(DomStorageDatabase::MapLocator(
-          kLocalStorageSessionId, kThirdPartyStorageKey)));
+      database->ReadMapKeyValues(
+          DomStorageDatabase::MapLocator(kThirdPartyStorageKey)));
   EXPECT_EQ(actual_entries.size(), 0u);
 
   // Verify the first-party map's key/value pairs remain.
   ASSERT_OK_AND_ASSIGN(
       actual_entries, database->ReadMapKeyValues(DomStorageDatabase::MapLocator(
-                          kLocalStorageSessionId, kFirstPartyStorageKey)));
+                          kFirstPartyStorageKey)));
   EXPECT_EQ(actual_entries, kFirstPartyMapEntries);
 }
 

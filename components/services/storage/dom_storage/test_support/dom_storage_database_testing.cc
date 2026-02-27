@@ -80,25 +80,21 @@ void ExpectEqualsMapMetadataSpan(
 
 DomStorageDatabase::MapMetadata CloneMapMetadata(
     const DomStorageDatabase::MapMetadata& source) {
-  const std::vector<std::string>& source_session_ids =
-      source.map_locator.session_ids();
-  CHECK_GT(source_session_ids.size(), 0u);
-
   DomStorageDatabase::MapMetadata clone{
       .map_locator =
           source.map_locator.map_id().has_value()
-              ? DomStorageDatabase::MapLocator(source_session_ids[0],
-                                               source.map_locator.storage_key(),
+              ? DomStorageDatabase::MapLocator(source.map_locator.storage_key(),
                                                *source.map_locator.map_id())
               : DomStorageDatabase::MapLocator(
-                    source_session_ids[0], source.map_locator.storage_key()),
+                    source.map_locator.storage_key()),
       .last_accessed{source.last_accessed},
       .last_modified{source.last_modified},
       .total_size{source.total_size},
   };
 
-  for (size_t i = 1u; i < source_session_ids.size(); ++i) {
-    clone.map_locator.AddSession(source_session_ids[i]);
+  // Clone the session IDs.
+  for (const std::string& session_id : source.map_locator.session_ids()) {
+    clone.map_locator.AddSession(session_id);
   }
   return clone;
 }

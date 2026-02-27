@@ -46,7 +46,6 @@
 #include "build/build_config.h"
 #include "components/services/storage/dom_storage/async_dom_storage_database.h"
 #include "components/services/storage/dom_storage/db_status.h"
-#include "components/services/storage/dom_storage/dom_storage_constants.h"
 #include "components/services/storage/dom_storage/dom_storage_database.h"
 #include "components/services/storage/dom_storage/features.h"
 #include "components/services/storage/dom_storage/test_support/dom_storage_database_testing.h"
@@ -388,7 +387,6 @@ class RemoveLocalStorageTester {
                                       base::Time last_modified) {
     // Create an ID for the map using `origin`.
     storage::DomStorageDatabase::MapLocator map_locator{
-        storage::kLocalStorageSessionId,
         blink::StorageKey::CreateFirstParty(origin)};
 
     // Write a key/value pair to the database for the map.

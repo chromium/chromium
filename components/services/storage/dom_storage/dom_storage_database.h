@@ -73,8 +73,13 @@ class DomStorageDatabase {
   // `map_id`. Some maps are loaded on demand where `map_id` remains unknown
   // until the first read or write.
   //
-  // The number of sessions consuming a map can increase or decrease. A session
-  // can clone a map, which then shares the same map across multiple sessions.
+  // Local storage does not use `session_id`.  Instead, local storage contains a
+  // single global session where each `storage_key` owns one map of key value
+  // pairs.
+  //
+  // In session storage, each map must have at least one `session_id`. The
+  // number of sessions consuming a map can increase or decrease. A session can
+  // clone a map, which then shares the same map across multiple sessions.
   // Cloned maps have at least 2 IDs in `session_ids_`. A session may also stop
   // using a map by deleting it or forking it, which then removes an ID from
   // `session_ids_`. `session_ids_` is empty for an unused map.
@@ -86,10 +91,16 @@ class DomStorageDatabase {
   // Maps without sessions are not in use. They can be deleted.
   class MapLocator {
    public:
+    // Construct a map locator for the global session in local storage.
+    explicit MapLocator(blink::StorageKey storage_key);
+    MapLocator(blink::StorageKey storage_key, int64_t map_id);
+
+    // Construct a map locator for a specific `session_id` in session storage.
     MapLocator(std::string session_id, blink::StorageKey storage_key);
     MapLocator(std::string session_id,
                blink::StorageKey storage_key,
                int64_t map_id);
+
     ~MapLocator();
 
     MapLocator(MapLocator&&);

@@ -10,7 +10,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_view_util.h"
 #include "base/types/expected_macros.h"
-#include "components/services/storage/dom_storage/dom_storage_constants.h"
 #include "components/services/storage/dom_storage/leveldb/dom_storage_batch_operation_leveldb.h"
 #include "components/services/storage/dom_storage/leveldb/dom_storage_database_leveldb.h"
 #include "components/services/storage/dom_storage/leveldb/dom_storage_database_leveldb_utils.h"
@@ -65,7 +64,6 @@ std::optional<DomStorageDatabase::MapMetadata> TryParseWriteMetadata(
 
   return DomStorageDatabase::MapMetadata{
       .map_locator{
-          kLocalStorageSessionId,
           *std::move(storage_key),
       },
       .last_modified{
@@ -94,7 +92,6 @@ std::optional<DomStorageDatabase::MapMetadata> TryParseAccessMetadata(
 
   return DomStorageDatabase::MapMetadata{
       .map_locator{
-          kLocalStorageSessionId,
           *std::move(storage_key),
       },
       .last_accessed{
@@ -138,16 +135,15 @@ DomStorageDatabase::Key GetMapPrefix(const blink::StorageKey& storage_key) {
   const std::string serialized_storage_key =
       storage_key.SerializeForLocalStorage();
 
+  constexpr char kMapPrefixStart[] = {'_'};
+
   DomStorageDatabase::Key map_prefix;
-  map_prefix.reserve(/*kLocalStorageSessionId=*/1 +
+  map_prefix.reserve(std::size(kMapPrefixStart) +
                      serialized_storage_key.size() +
                      /*kLocalStorageKeyMapSeparator=*/1);
 
   // Append '_'.
-  static_assert(sizeof(kLocalStorageSessionId) == 2,
-                "kLocalStorageSessionId must use a single character null "
-                "terminated string");
-  map_prefix.push_back(kLocalStorageSessionId[0]);
+  map_prefix.push_back(kMapPrefixStart[0]);
 
   // Append `storage_key`.
   map_prefix.insert(map_prefix.end(), serialized_storage_key.begin(),
@@ -178,8 +174,7 @@ DbStatus LocalStorageLevelDB::Open(
 
 StatusOr<std::map<DomStorageDatabase::Key, DomStorageDatabase::Value>>
 LocalStorageLevelDB::ReadMapKeyValues(MapLocator map_locator) {
-  CHECK_EQ(map_locator.session_ids().size(), 1u);
-  CHECK_EQ(map_locator.session_ids()[0], kLocalStorageSessionId);
+  CHECK_EQ(map_locator.session_ids().size(), 0u);
   return leveldb_->GetMapKeyValues(GetMapPrefix(map_locator.storage_key()));
 }
 
@@ -190,8 +185,7 @@ DbStatus LocalStorageLevelDB::UpdateMaps(
 
   for (const MapBatchUpdate& map_update : map_updates) {
     const MapLocator& map_locator = map_update.map_locator;
-    CHECK_EQ(map_locator.session_ids().size(), 1u);
-    CHECK_EQ(map_locator.session_ids()[0], kLocalStorageSessionId);
+    CHECK_EQ(map_locator.session_ids().size(), 0u);
 
     DomStorageDatabase::Key map_prefix =
         GetMapPrefix(map_locator.storage_key());
@@ -313,7 +307,7 @@ DbStatus LocalStorageLevelDB::DeleteStorageKeysFromSession(
     std::vector<MapLocator> maps_to_delete) {
   // Local storage uses a single global session without clones.  To avoid
   // orphaned maps, each deleted storage key must also delete its map.
-  CHECK_EQ(session_id, kLocalStorageSessionId);
+  CHECK_EQ(session_id, std::string());
   CHECK_EQ(maps_to_delete.size(), metadata_to_delete.size());
 
   std::unique_ptr<DomStorageBatchOperationLevelDB> batch =
@@ -325,9 +319,8 @@ DbStatus LocalStorageLevelDB::DeleteStorageKeysFromSession(
 
   // Erase all map key/value pairs.
   for (const MapLocator& map : maps_to_delete) {
-    // A valid `map` must be in `storage_keys` and `kLocalStorageSessionId`.
-    CHECK_EQ(map.session_ids().size(), 1u);
-    CHECK_EQ(map.session_ids()[0], kLocalStorageSessionId);
+    // A valid `map` must be in `storage_keys`.
+    CHECK_EQ(map.session_ids().size(), 0u);
     DCHECK(std::ranges::contains(metadata_to_delete, map.storage_key()));
 
     DB_RETURN_IF_ERROR(batch->DeletePrefixed(GetMapPrefix(map.storage_key())));

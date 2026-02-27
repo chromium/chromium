@@ -111,6 +111,13 @@ bool DomStorageDatabase::KeyValuePair::operator==(
   return std::tie(key, value) == std::tie(rhs.key, rhs.value);
 }
 
+DomStorageDatabase::MapLocator::MapLocator(blink::StorageKey storage_key)
+    : storage_key_(storage_key) {}
+
+DomStorageDatabase::MapLocator::MapLocator(blink::StorageKey storage_key,
+                                           int64_t map_id)
+    : storage_key_(storage_key), map_id_(map_id) {}
+
 DomStorageDatabase::MapLocator::MapLocator(std::string session_id,
                                            blink::StorageKey storage_key)
     : storage_key_(storage_key) {
@@ -356,12 +363,12 @@ DbStatus PurgeOrigins(DomStorageDatabase& database,
           (storage_key.IsThirdPartyContext() &&
            storage_key.top_level_site().IsSameSiteWith(origin))) {
         metadata_to_delete.push_back(storage_key);
-        maps_to_delete.emplace_back(kLocalStorageSessionId, storage_key);
+        maps_to_delete.emplace_back(storage_key);
         break;
       }
     }
   }
-  return database.DeleteStorageKeysFromSession(kLocalStorageSessionId,
+  return database.DeleteStorageKeysFromSession(/*session_id=*/std::string(),
                                                std::move(metadata_to_delete),
                                                std::move(maps_to_delete));
 }

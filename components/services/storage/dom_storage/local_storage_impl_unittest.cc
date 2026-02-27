@@ -188,9 +188,8 @@ class LocalStorageImplTestBase : public testing::Test {
   void PutMapKeyValue(const blink::StorageKey& storage_key,
                       DomStorageDatabase::Key key,
                       DomStorageDatabase::Key value) {
-    FakeCommitter committer(
-        context()->GetDatabaseForTesting(),
-        /*map_locator=*/{kLocalStorageSessionId, storage_key});
+    FakeCommitter committer(context()->GetDatabaseForTesting(),
+                            DomStorageDatabase::MapLocator(storage_key));
     committer.PutMapKeyValueSync(std::move(key), std::move(value));
   }
 
@@ -216,8 +215,8 @@ class LocalStorageImplTestBase : public testing::Test {
 
     // Delete all of the storage keys and maps.
     ASSERT_NO_FATAL_FAILURE(DeleteStorageKeysFromSessionSync(
-        database, kLocalStorageSessionId, std::move(storage_keys_to_delete),
-        std::move(maps_to_delete)));
+        database, /*session_id=*/std::string(),
+        std::move(storage_keys_to_delete), std::move(maps_to_delete)));
 
     // Verify that no maps key/values or metadata exists in the database.
     DomStorageDatabase::Metadata empty_metadata;
@@ -301,8 +300,7 @@ class LocalStorageImplTestBase : public testing::Test {
   void ExpectMapEquals(blink::StorageKey storage_key,
                        std::map<DomStorageDatabase::Key,
                                 DomStorageDatabase::Value> expected_entries) {
-    DomStorageDatabase::MapLocator map_locator{kLocalStorageSessionId,
-                                               storage_key};
+    DomStorageDatabase::MapLocator map_locator{storage_key};
     std::map<DomStorageDatabase::Key, DomStorageDatabase::Value> actual_entries;
 
     ASSERT_NO_FATAL_FAILURE(
@@ -315,8 +313,7 @@ class LocalStorageImplTestBase : public testing::Test {
   void WaitForMapEntries(blink::StorageKey storage_key,
                          std::map<DomStorageDatabase::Key,
                                   DomStorageDatabase::Value> expected_entries) {
-    DomStorageDatabase::MapLocator map_locator{kLocalStorageSessionId,
-                                               storage_key};
+    DomStorageDatabase::MapLocator map_locator{storage_key};
     std::map<DomStorageDatabase::Key, DomStorageDatabase::Value> actual_entries;
 
     EXPECT_TRUE(base::test::RunUntil([&]() {
@@ -617,8 +614,9 @@ TEST_P(LocalStorageImplTest, GetStorageUsage_Data) {
 
   std::vector<mojom::StorageUsageInfoPtr> info = GetStorageUsageSync();
   ASSERT_EQ(2u, info.size());
-  if (info[0]->storage_key == storage_key2)
+  if (info[0]->storage_key == storage_key2) {
     std::swap(info[0], info[1]);
+  }
   EXPECT_EQ(storage_key1, info[0]->storage_key);
   EXPECT_EQ(storage_key2, info[1]->storage_key);
   EXPECT_LE(before_write, info[0]->last_modified);
@@ -1421,7 +1419,7 @@ class LocalStorageImplStaleDeletionTest
                             const base::Time& last_accessed) {
     DomStorageDatabase::Metadata access_metadata;
     access_metadata.map_metadata.push_back({
-        .map_locator{kLocalStorageSessionId, storage_key},
+        .map_locator{storage_key},
         .last_accessed{last_accessed},
     });
 
@@ -1434,7 +1432,7 @@ class LocalStorageImplStaleDeletionTest
                            uint64_t size_bytes) {
     DomStorageDatabase::Metadata write_metadata;
     write_metadata.map_metadata.push_back({
-        .map_locator{kLocalStorageSessionId, storage_key},
+        .map_locator{storage_key},
         .last_modified{last_modified},
         .total_size{size_bytes},
     });

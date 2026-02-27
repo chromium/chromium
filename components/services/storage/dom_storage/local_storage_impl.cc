@@ -13,19 +13,12 @@
 #include <string_view>
 #include <utility>
 
-#include "base/barrier_closure.h"
 #include "base/byte_size.h"
-#include "base/debug/dump_without_crashing.h"
-#include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/numerics/safe_conversions.h"
-#include "base/strings/string_number_conversions.h"
-#include "base/strings/string_view_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/task/thread_pool.h"
@@ -35,14 +28,10 @@
 #include "components/services/storage/dom_storage/db_status.h"
 #include "components/services/storage/dom_storage/dom_storage_constants.h"
 #include "components/services/storage/dom_storage/dom_storage_database.h"
-#include "components/services/storage/dom_storage/leveldb/local_storage_leveldb.h"
 #include "components/services/storage/dom_storage/leveldb_status_helper.h"
 #include "components/services/storage/dom_storage/storage_area_impl.h"
-#include "components/services/storage/public/cpp/constants.h"
-#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "storage/common/database/database_identifier.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
-#include "url/gurl.h"
 
 namespace storage {
 namespace {
@@ -101,8 +90,7 @@ class LocalStorageImpl::StorageAreaHolder final
         storage_key_(storage_key),
         area_(context_->database_.get(),
               base::MakeRefCounted<DomStorageDatabase::SharedMapLocator>(
-                  DomStorageDatabase::MapLocator(kLocalStorageSessionId,
-                                                 storage_key_)),
+                  DomStorageDatabase::MapLocator(storage_key_)),
               this,
               createOptions()) {}
 
@@ -127,7 +115,7 @@ class LocalStorageImpl::StorageAreaHolder final
     // Update the storage area map's last access time.
     DomStorageDatabase::Metadata usage;
     usage.map_metadata.push_back({
-        .map_locator{kLocalStorageSessionId, storage_key_},
+        .map_locator{storage_key_},
         .last_accessed{base::Time::Now()},
     });
     context_->database_->PutMetadata(
@@ -246,10 +234,10 @@ void LocalStorageImpl::DeleteStorage(const blink::StorageKey& storage_key,
     found->second->storage_area()->ScheduleImmediateCommit();
   } else if (database_) {
     std::vector<DomStorageDatabase::MapLocator> maps_to_delete;
-    maps_to_delete.emplace_back(kLocalStorageSessionId, storage_key);
+    maps_to_delete.emplace_back(storage_key);
 
     database_->DeleteStorageKeysFromSession(
-        kLocalStorageSessionId, /*metadata_to_delete=*/{storage_key},
+        /*session_id=*/std::string(), /*metadata_to_delete=*/{storage_key},
         std::move(maps_to_delete),
         base::BindOnce([](base::OnceClosure callback,
                           DbStatus) { std::move(callback).Run(); },
@@ -732,7 +720,7 @@ void LocalStorageImpl::OnGotMetaDataToDeleteStaleStorageAreas(
       // If the storage area has not been accessed or modified within 400 days
       // it can be cleared.
       stale_storage_keys.push_back(storage_key);
-      maps_to_delete.emplace_back(kLocalStorageSessionId, storage_key);
+      maps_to_delete.emplace_back(storage_key);
     } else if ((storage_key.nonce().has_value() ||
                 storage_key.top_level_site().opaque()) &&
                (base::Time::Now() - accessed_or_modified_time) >=
@@ -740,7 +728,7 @@ void LocalStorageImpl::OnGotMetaDataToDeleteStaleStorageAreas(
       // If the storage area has not been accessed or modified in this browsing
       // session and is transient (has a nonce) then it can be cleared.
       stale_storage_keys.push_back(storage_key);
-      maps_to_delete.emplace_back(kLocalStorageSessionId, storage_key);
+      maps_to_delete.emplace_back(storage_key);
       orphans_found++;
     }
   }
@@ -751,7 +739,7 @@ void LocalStorageImpl::OnGotMetaDataToDeleteStaleStorageAreas(
   // Delete stale storage areas and count results.
   size_t deleted_count = stale_storage_keys.size();
   database_->DeleteStorageKeysFromSession(
-      kLocalStorageSessionId,
+      /*session_id=*/std::string(),
       /*metadata_to_delete=*/std::move(stale_storage_keys),
       std::move(maps_to_delete),
       base::BindOnce(

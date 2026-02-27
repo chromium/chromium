@@ -7,7 +7,6 @@
 #include "base/byte_size.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/types/expected_macros.h"
-#include "components/services/storage/dom_storage/dom_storage_constants.h"
 #include "components/services/storage/dom_storage/sqlite/map_entries_table.h"
 #include "components/services/storage/dom_storage/sqlite/sqlite_database_macros.h"
 #include "components/services/storage/dom_storage/sqlite/sqlite_database_utils.h"
@@ -126,8 +125,7 @@ DbStatus LocalStorageSqlite::Open(
 
 StatusOr<std::map<DomStorageDatabase::Key, DomStorageDatabase::Value>>
 LocalStorageSqlite::ReadMapKeyValues(MapLocator map_locator) {
-  CHECK_EQ(map_locator.session_ids().size(), 1u);
-  CHECK_EQ(map_locator.session_ids()[0], kLocalStorageSessionId);
+  CHECK_EQ(map_locator.session_ids().size(), 0u);
 
   sql::Transaction transaction(database_.get());
   RETURN_UNEXPECTED_ON_ERROR(transaction.Begin());
@@ -153,8 +151,7 @@ DbStatus LocalStorageSqlite::UpdateMaps(
 
   for (MapBatchUpdate& map_update : map_updates) {
     const MapLocator& map_locator = map_update.map_locator;
-    CHECK_EQ(map_locator.session_ids().size(), 1u);
-    CHECK_EQ(map_locator.session_ids()[0], kLocalStorageSessionId);
+    CHECK_EQ(map_locator.session_ids().size(), 0u);
 
     const blink::StorageKey& storage_key = map_locator.storage_key();
     const std::optional<MapBatchUpdate::Usage>& map_usage =
@@ -192,8 +189,7 @@ DbStatus LocalStorageSqlite::UpdateMaps(
 
     // Update `map_locator` with the assigned `map_id` so that
     // `MapEntriesTable::UpdateMap()` can use `map_id` to write key/value pairs.
-    map_update.map_locator =
-        MapLocator(kLocalStorageSessionId, storage_key, map_id.value());
+    map_update.map_locator = MapLocator(storage_key, map_id.value());
 
     // Apply the key/value pair changes (additions, modifications, deletions)
     // to the `map_entries` table.
@@ -234,7 +230,6 @@ StatusOr<DomStorageDatabase::Metadata> LocalStorageSqlite::ReadAllMetadata() {
 
     map_metadata.push_back({
         .map_locator{
-            kLocalStorageSessionId,
             std::move(storage_key),
             /*map_id=*/statement.ColumnInt64(1),
         },
@@ -275,7 +270,7 @@ DbStatus LocalStorageSqlite::DeleteStorageKeysFromSession(
     std::vector<MapLocator> maps_to_delete) {
   // Local storage uses a single global session without clones.  To avoid
   // orphaned maps, each deleted storage key must also delete its map.
-  CHECK_EQ(session_id, kLocalStorageSessionId);
+  CHECK_EQ(session_id, std::string());
   CHECK_EQ(maps_to_delete.size(), metadata_to_delete.size());
 
   sql::Transaction transaction(database_.get());
@@ -285,10 +280,8 @@ DbStatus LocalStorageSqlite::DeleteStorageKeysFromSession(
 
   // Delete the key/value pairs in `maps_to_delete`.
   for (const MapLocator& map : maps_to_delete) {
-    // A valid `map` must be in `metadata_to_delete` and
-    // `kLocalStorageSessionId`.
-    CHECK_EQ(map.session_ids().size(), 1u);
-    CHECK_EQ(map.session_ids()[0], kLocalStorageSessionId);
+    // A valid `map` must be in `metadata_to_delete`.
+    CHECK_EQ(map.session_ids().size(), 0u);
     DCHECK(std::ranges::contains(metadata_to_delete, map.storage_key()));
 
     ASSIGN_OR_RETURN(std::optional<int64_t> map_id,

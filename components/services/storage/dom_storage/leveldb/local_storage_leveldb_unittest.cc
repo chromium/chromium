@@ -13,10 +13,8 @@
 
 #include "base/byte_size.h"
 #include "base/containers/span.h"
-#include "base/strings/strcat.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/task_environment.h"
-#include "components/services/storage/dom_storage/dom_storage_constants.h"
 #include "components/services/storage/dom_storage/dom_storage_database.h"
 #include "components/services/storage/dom_storage/leveldb/dom_storage_batch_operation_leveldb.h"
 #include "components/services/storage/dom_storage/leveldb/dom_storage_database_leveldb.h"
@@ -293,7 +291,7 @@ TEST_F(LocalStorageLevelDBTest, TryParseAccessMetadata) {
   ASSERT_NE(map_metadata, std::nullopt);
 
   const DomStorageDatabase::MapMetadata kExpectedMapMetadata{
-      .map_locator{kLocalStorageSessionId, kFakeUrlStorageKey},
+      .map_locator{kFakeUrlStorageKey},
       .last_accessed{kMapLastAccessed},
   };
   ExpectEqualsMapMetadata(*map_metadata, kExpectedMapMetadata);
@@ -327,7 +325,7 @@ TEST_F(LocalStorageLevelDBTest, TryWriteAccessMetadata) {
   ASSERT_NE(map_metadata, std::nullopt);
 
   const DomStorageDatabase::MapMetadata kExpectedMapMetadata{
-      .map_locator{kLocalStorageSessionId, kFakeUrlStorageKey},
+      .map_locator{kFakeUrlStorageKey},
       .last_modified{kMapLastModified},
       .total_size{kMapTotalSize},
   };
@@ -380,7 +378,7 @@ TEST_F(LocalStorageLevelDBTest, ReadAllMetadataWithAccessMetadata) {
 
   const DomStorageDatabase::MapMetadata kExpectedMapMetadata[] = {
       {
-          .map_locator{kLocalStorageSessionId, kFakeUrlStorageKey},
+          .map_locator{kFakeUrlStorageKey},
           .last_accessed{kMapLastAccessed},
       },
   };
@@ -406,7 +404,7 @@ TEST_F(LocalStorageLevelDBTest, ReadAllMetadataWithWriteMetadata) {
 
   const DomStorageDatabase::MapMetadata kExpectedMapMetadata[]{
       {
-          .map_locator{kLocalStorageSessionId, kFakeUrlStorageKey},
+          .map_locator{kFakeUrlStorageKey},
           .last_modified{kMapLastModified},
           .total_size{kMapTotalSize},
       },
@@ -437,7 +435,7 @@ TEST_F(LocalStorageLevelDBTest, ReadAllMetadataWithWriteAndAccessMetadata) {
 
   const DomStorageDatabase::MapMetadata kExpectedMapMetadata[] = {
       {
-          .map_locator{kLocalStorageSessionId, kFakeUrlStorageKey},
+          .map_locator{kFakeUrlStorageKey},
           .last_accessed{kMapLastAccessed},
           .last_modified{kMapLastModified},
           .total_size{kMapTotalSize},
@@ -492,24 +490,24 @@ TEST_F(LocalStorageLevelDBTest, ReadAllMetadataWithMultipleStorageKeys) {
 
   const DomStorageDatabase::MapMetadata kExpectedAllMapMetadata[] = {
       {
-          .map_locator{kLocalStorageSessionId, kFakeUrlStorageKey},
+          .map_locator{kFakeUrlStorageKey},
           .last_accessed{kMapLastAccessed},
           .last_modified{kMapLastModified},
           .total_size{kMapTotalSize},
       },
       {
-          .map_locator{kLocalStorageSessionId, kSecondStorageKey},
+          .map_locator{kSecondStorageKey},
           .last_accessed{kSecondLastAccessed},
           .last_modified{kSecondLastModified},
           .total_size{kSecondTotalSize},
       },
       {
-          .map_locator{kLocalStorageSessionId, kThirdStorageKey},
+          .map_locator{kThirdStorageKey},
           .last_modified{kThirdLastModified},
           .total_size{kThirdTotalSize},
       },
       {
-          .map_locator{kLocalStorageSessionId, kFourthStorageKey},
+          .map_locator{kFourthStorageKey},
           .last_accessed{kFourthLastAccessed},
       },
   };
@@ -542,7 +540,7 @@ TEST_F(LocalStorageLevelDBTest, PutMetadataWithWriteMetadata) {
   // Write the metadata.
   DomStorageDatabase::Metadata metadata;
   metadata.map_metadata.push_back({
-      .map_locator{kLocalStorageSessionId, kFakeUrlStorageKey},
+      .map_locator{kFakeUrlStorageKey},
       .last_modified{kMapLastModified},
       .total_size{kMapTotalSize},
   });
@@ -570,7 +568,7 @@ TEST_F(LocalStorageLevelDBTest, PutMetadataWithAccessMetadata) {
 
   DomStorageDatabase::Metadata metadata;
   metadata.map_metadata.push_back({
-      .map_locator{kLocalStorageSessionId, kFakeUrlStorageKey},
+      .map_locator{kFakeUrlStorageKey},
       .last_accessed{kMapLastAccessed},
   });
 
@@ -597,7 +595,7 @@ TEST_F(LocalStorageLevelDBTest, PutMetadataWithAccessAndWriteMetadata) {
 
   DomStorageDatabase::Metadata metadata;
   metadata.map_metadata.push_back({
-      .map_locator{kLocalStorageSessionId, kFakeUrlStorageKey},
+      .map_locator{kFakeUrlStorageKey},
       .last_accessed{kMapLastAccessed},
       .last_modified{kMapLastModified},
       .total_size{kMapTotalSize},
@@ -631,17 +629,17 @@ TEST_F(LocalStorageLevelDBTest, PutMetadataWithMultipleMaps) {
 
   DomStorageDatabase::Metadata metadata;
   metadata.map_metadata.push_back({
-      .map_locator{kLocalStorageSessionId, kFakeUrlStorageKey},
+      .map_locator{kFakeUrlStorageKey},
       .last_accessed{kMapLastAccessed},
       .last_modified{kMapLastModified},
       .total_size{kMapTotalSize},
   });
   metadata.map_metadata.push_back({
-      .map_locator{kLocalStorageSessionId, kSecondStorageKey},
+      .map_locator{kSecondStorageKey},
       .last_accessed{kSecondLastAccessed},
   });
   metadata.map_metadata.push_back({
-      .map_locator{kLocalStorageSessionId, kThirdStorageKey},
+      .map_locator{kThirdStorageKey},
       .last_modified{kThirdLastModified},
       .total_size{kThirdTotalSize},
   });
@@ -700,10 +698,10 @@ TEST_F(LocalStorageLevelDBTest,
                    }));
 
   std::vector<DomStorageDatabase::MapLocator> maps_to_delete;
-  maps_to_delete.emplace_back(kLocalStorageSessionId, kFakeUrlStorageKey);
+  maps_to_delete.emplace_back(kFakeUrlStorageKey);
 
   DbStatus status = local_storage_leveldb->DeleteStorageKeysFromSession(
-      kLocalStorageSessionId, /*metadata_to_delete=*/{kFakeUrlStorageKey},
+      /*session_id=*/std::string(), /*metadata_to_delete=*/{kFakeUrlStorageKey},
       std::move(maps_to_delete));
   EXPECT_TRUE(status.ok()) << status.ToString();
 
@@ -731,10 +729,10 @@ TEST_F(LocalStorageLevelDBTest, DeleteStorageKeysFromSessionWithWriteMetadata) {
       }));
 
   std::vector<DomStorageDatabase::MapLocator> maps_to_delete;
-  maps_to_delete.emplace_back(kLocalStorageSessionId, kFakeUrlStorageKey);
+  maps_to_delete.emplace_back(kFakeUrlStorageKey);
 
   DbStatus status = local_storage_leveldb->DeleteStorageKeysFromSession(
-      kLocalStorageSessionId, /*metadata_to_delete=*/{kFakeUrlStorageKey},
+      /*session_id=*/std::string(), /*metadata_to_delete=*/{kFakeUrlStorageKey},
       std::move(maps_to_delete));
   EXPECT_TRUE(status.ok()) << status.ToString();
 
@@ -766,10 +764,10 @@ TEST_F(LocalStorageLevelDBTest, DeleteStorageKeysFromSessionWithMapKeyValues) {
                    }));
 
   std::vector<DomStorageDatabase::MapLocator> maps_to_delete;
-  maps_to_delete.emplace_back(kLocalStorageSessionId, kFakeUrlStorageKey);
+  maps_to_delete.emplace_back(kFakeUrlStorageKey);
 
   DbStatus status = local_storage_leveldb->DeleteStorageKeysFromSession(
-      kLocalStorageSessionId, /*metadata_to_delete=*/{kFakeUrlStorageKey},
+      /*session_id=*/std::string(), /*metadata_to_delete=*/{kFakeUrlStorageKey},
       std::move(maps_to_delete));
   EXPECT_TRUE(status.ok()) << status.ToString();
 
@@ -847,11 +845,11 @@ TEST_F(LocalStorageLevelDBTest,
 
   // Erase the first and third storage keys.
   std::vector<DomStorageDatabase::MapLocator> maps_to_delete;
-  maps_to_delete.emplace_back(kLocalStorageSessionId, kFakeUrlStorageKey);
-  maps_to_delete.emplace_back(kLocalStorageSessionId, kThirdStorageKey);
+  maps_to_delete.emplace_back(kFakeUrlStorageKey);
+  maps_to_delete.emplace_back(kThirdStorageKey);
 
   DbStatus status = local_storage_leveldb->DeleteStorageKeysFromSession(
-      kLocalStorageSessionId,
+      /*session_id=*/std::string(),
       /*metadata_to_delete=*/{kFakeUrlStorageKey, kThirdStorageKey},
       std::move(maps_to_delete));
   EXPECT_TRUE(status.ok()) << status.ToString();
@@ -881,13 +879,13 @@ TEST_F(LocalStorageLevelDBTest,
 
   // Erase all the storage keys.
   maps_to_delete.clear();
-  maps_to_delete.emplace_back(kLocalStorageSessionId, kFakeUrlStorageKey);
-  maps_to_delete.emplace_back(kLocalStorageSessionId, kSecondStorageKey);
-  maps_to_delete.emplace_back(kLocalStorageSessionId, kThirdStorageKey);
-  maps_to_delete.emplace_back(kLocalStorageSessionId, kFourthStorageKey);
+  maps_to_delete.emplace_back(kFakeUrlStorageKey);
+  maps_to_delete.emplace_back(kSecondStorageKey);
+  maps_to_delete.emplace_back(kThirdStorageKey);
+  maps_to_delete.emplace_back(kFourthStorageKey);
 
   status = local_storage_leveldb->DeleteStorageKeysFromSession(
-      kLocalStorageSessionId,
+      /*session_id=*/std::string(),
       /*metadata_to_delete=*/
       {
           kFakeUrlStorageKey,
@@ -913,8 +911,7 @@ TEST_F(LocalStorageLevelDBTest, ReadMapKeyValuesWithEmpty) {
   ASSERT_NO_FATAL_FAILURE(OpenInMemory(&local_storage_leveldb));
 
   // An empty database must have no key/value pairs.
-  DomStorageDatabase::MapLocator map_locator{kLocalStorageSessionId,
-                                             kFakeUrlStorageKey};
+  DomStorageDatabase::MapLocator map_locator{kFakeUrlStorageKey};
   ASSERT_OK_AND_ASSIGN(
       (std::map<DomStorageDatabase::Key, DomStorageDatabase::Value> entries),
       local_storage_leveldb->ReadMapKeyValues(std::move(map_locator)));
@@ -945,8 +942,7 @@ TEST_F(LocalStorageLevelDBTest, ReadMapKeyValues) {
                    }));
 
   // Read the two key/value pairs from the database.
-  DomStorageDatabase::MapLocator map_locator{kLocalStorageSessionId,
-                                             kFakeUrlStorageKey};
+  DomStorageDatabase::MapLocator map_locator{kFakeUrlStorageKey};
   ASSERT_OK_AND_ASSIGN(
       (std::map<DomStorageDatabase::Key, DomStorageDatabase::Value> entries),
       local_storage_leveldb->ReadMapKeyValues(std::move(map_locator)));
@@ -980,8 +976,7 @@ TEST_F(LocalStorageLevelDBTest, ReadMapKeyValuesWithMultipleMaps) {
                    }));
 
   // Read the first map's key/value pair.
-  DomStorageDatabase::MapLocator map_locator{kLocalStorageSessionId,
-                                             kFakeUrlStorageKey};
+  DomStorageDatabase::MapLocator map_locator{kFakeUrlStorageKey};
   ASSERT_OK_AND_ASSIGN(
       (std::map<DomStorageDatabase::Key, DomStorageDatabase::Value> entries),
       local_storage_leveldb->ReadMapKeyValues(std::move(map_locator)));
@@ -990,8 +985,7 @@ TEST_F(LocalStorageLevelDBTest, ReadMapKeyValuesWithMultipleMaps) {
   EXPECT_EQ(entries[ToBytes(kScriptKey1)], kValue1);
 
   // Read the second map's key/value pair.
-  DomStorageDatabase::MapLocator other_map_locator{kLocalStorageSessionId,
-                                                   kSecondStorageKey};
+  DomStorageDatabase::MapLocator other_map_locator{kSecondStorageKey};
   ASSERT_OK_AND_ASSIGN(entries, local_storage_leveldb->ReadMapKeyValues(
                                     std::move(other_map_locator)));
 
@@ -1003,11 +997,9 @@ TEST_F(LocalStorageLevelDBTest, UpdateMaps) {
   std::unique_ptr<LocalStorageLevelDB> local_storage_leveldb;
   ASSERT_NO_FATAL_FAILURE(OpenInMemory(&local_storage_leveldb));
 
-  DomStorageDatabase::MapLocator map1_locator{kLocalStorageSessionId,
-                                              kFakeUrlStorageKey};
+  DomStorageDatabase::MapLocator map1_locator{kFakeUrlStorageKey};
 
-  DomStorageDatabase::MapLocator map2_locator{kLocalStorageSessionId,
-                                              kSecondStorageKey};
+  DomStorageDatabase::MapLocator map2_locator{kSecondStorageKey};
 
   ASSERT_NO_FATAL_FAILURE(
       TestUpdateMaps(*local_storage_leveldb, map1_locator, map2_locator));
@@ -1018,7 +1010,7 @@ TEST_F(LocalStorageLevelDBTest, UpdateMapsWithAccessMetadata) {
   ASSERT_NO_FATAL_FAILURE(OpenInMemory(&local_storage_leveldb));
 
   const DomStorageDatabase::MapMetadata kExpectedMapMetadata{
-      .map_locator{kLocalStorageSessionId, kFakeUrlStorageKey},
+      .map_locator{kFakeUrlStorageKey},
       .last_accessed{kMapLastAccessed},
   };
   ASSERT_NO_FATAL_FAILURE(
@@ -1030,7 +1022,7 @@ TEST_F(LocalStorageLevelDBTest, UpdateMapsWithWriteMetadata) {
   ASSERT_NO_FATAL_FAILURE(OpenInMemory(&local_storage_leveldb));
 
   const DomStorageDatabase::MapMetadata kExpectedMapMetadata{
-      .map_locator{kLocalStorageSessionId, kFakeUrlStorageKey},
+      .map_locator{kFakeUrlStorageKey},
       .last_modified{kMapLastModified},
       .total_size{kMapTotalSize},
   };
@@ -1043,7 +1035,7 @@ TEST_F(LocalStorageLevelDBTest, UpdateMapsClearsMetadata) {
   ASSERT_NO_FATAL_FAILURE(OpenInMemory(&local_storage_leveldb));
 
   const DomStorageDatabase::MapMetadata kExpectedMapMetadata{
-      .map_locator{kLocalStorageSessionId, kFakeUrlStorageKey},
+      .map_locator{kFakeUrlStorageKey},
       .last_accessed{kMapLastAccessed},
       .last_modified{kMapLastModified},
       .total_size{kMapTotalSize},
