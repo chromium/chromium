@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -32,6 +33,24 @@
 
 namespace content::indexed_db {
 
+namespace {
+
+// Whether to use a non-sequenced TaskRunner for cleanup tasks.
+//
+// A significant memory increase is associated with the versions in which
+// crrev.com/c/5954764 was landed in M132 and merged in M131. Our current theory
+// is that using a sequence significantly increases the duration of
+// Web-observable operations (closing a BucketContext?), causing pages to retry
+// operations and creating a large number of connections as a result. To test
+// that hypothesis, we'll run an experiment which reverts to the old behavior of
+// running cleanup tasks in parallel.
+//
+// TODO(crbug.com/381086791): Clean up after the bug is resolved.
+BASE_FEATURE(kNoSequenceForLevelDBCleanupTasks,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+}  // namespace
+
 LevelDBScopes::LevelDBScopes(std::vector<uint8_t> metadata_key_prefix,
                              size_t max_write_batch_size_bytes,
                              scoped_refptr<LevelDBState> level_db,
@@ -52,9 +71,13 @@ LevelDBScopes::LevelDBScopes(std::vector<uint8_t> metadata_key_prefix,
   // `LevelDBScopes` object is destroyed, such as when the database is being
   // deleted.
   // TODO(estade): consider making this BEST_EFFORT.
-  cleanup_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
-      {base::MayBlock(), base::TaskShutdownBehavior::BLOCK_SHUTDOWN,
-       base::TaskPriority::USER_VISIBLE});
+  constexpr base::TaskTraits kCleanupTraits = {
+      base::MayBlock(), base::TaskShutdownBehavior::BLOCK_SHUTDOWN,
+      base::TaskPriority::USER_VISIBLE};
+  cleanup_runner_ =
+      base::FeatureList::IsEnabled(kNoSequenceForLevelDBCleanupTasks)
+          ? base::ThreadPool::CreateTaskRunner(kCleanupTraits)
+          : base::ThreadPool::CreateSequencedTaskRunner(kCleanupTraits);
 }
 
 LevelDBScopes::~LevelDBScopes() = default;

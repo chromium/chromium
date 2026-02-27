@@ -6,6 +6,7 @@
 #define COMPONENTS_SERVICES_STORAGE_INDEXED_DB_SCOPES_LEVELDB_SCOPES_H_
 
 #include <stdint.h>
+
 #include <list>
 #include <memory>
 #include <string>
@@ -17,10 +18,8 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/task/task_runner.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock.h"
-#include "components/services/storage/indexed_db/locks/partitioned_lock_id.h"
-#include "components/services/storage/indexed_db/scopes/leveldb_scopes_coding.h"
-#include "third_party/leveldatabase/src/include/leveldb/options.h"
 #include "third_party/leveldatabase/src/include/leveldb/status.h"
 
 namespace content::indexed_db {
@@ -101,10 +100,8 @@ class LevelDBScopes {
   bool initialize_called_ = false;
 #endif
 
-  // This task runner executes cleanup tasks in the background. When `this` is
-  // deleted, existing cleanup tasks may be dropped. This allows for faster
-  // handling of database deletion. See crbug.com/370844779
-  scoped_refptr<base::SequencedTaskRunner> cleanup_runner_;
+  // This task runner executes cleanup tasks in the ThreadPool.
+  scoped_refptr<base::TaskRunner> cleanup_runner_;
 
   base::WeakPtrFactory<LevelDBScopes> weak_factory_{this};
 };
