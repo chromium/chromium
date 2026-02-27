@@ -370,8 +370,18 @@ class CanvasSnapshotProviderCache
       providers_.clear();
     }
 
-    auto provider = CreateSnapshotProviderForVideo(
-        required_provider_info, GetRasterContextProvider().get());
+    std::unique_ptr<CanvasSnapshotProvider> provider;
+    if (!ShouldCreateAcceleratedImages(GetRasterContextProvider().get())) {
+      provider =
+          CanvasNon2DSnapshotProviderBitmap::Create(required_provider_info);
+    } else {
+      provider = CanvasNon2DResourceProviderSharedImage::Create(
+          required_provider_info.size, required_provider_info.format,
+          required_provider_info.alpha_type, required_provider_info.color_space,
+          SharedGpuContext::ContextProviderWrapper(),
+          gpu::SHARED_IMAGE_USAGE_DISPLAY_READ);
+    }
+
     if (!provider) {
       return nullptr;
     }
