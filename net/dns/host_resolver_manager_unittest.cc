@@ -12420,6 +12420,60 @@ TEST_F(HostResolverManagerDnsTest, DohProbeRequest_InvalidateConfig) {
   EXPECT_FALSE(mock_dns_client_->factory()->doh_probes_running());
 }
 
+// Regression test for crbug.com/486443374.
+// Verifies that InvalidateCaches() correctly handles reentrant job removals
+// triggered by the destruction of DnsProbeRunner.
+TEST_F(HostResolverManagerDnsTest,
+       DohProbeRequest_CancelRunnerOnInvalidateDnsConfig) {
+  proc_->AddRuleForAllFamilies("host.test", "127.0.0.1");
+
+  ChangeDnsConfig(CreateValidDnsConfig());
+
+  // Start a normal DNS request to populate a job.
+  std::unique_ptr<HostResolver::ResolveHostRequest> request =
+      resolver_->CreateRequest(HostPortPair("host.test", 80),
+                               NetworkAnonymizationKey(), NetLogWithSource(),
+                               /*optional_parameters=*/std::nullopt,
+                               resolve_context_.get());
+  TestCompletionCallback callback;
+  int rv = request->Start(callback.callback());
+  ASSERT_THAT(rv, IsError(ERR_IO_PENDING));
+  proc_->SignalMultiple(1u);
+
+  // A mock DnsProbeRunner that triggers a reentrant job cancellation upon its
+  // destruction. This is used to verify that InvalidateCaches() handles
+  // reentrant job removals safely.
+  class ReentrantProbeRunner : public DnsProbeRunner {
+   public:
+    explicit ReentrantProbeRunner(
+        std::unique_ptr<HostResolver::ResolveHostRequest>& request)
+        : request_(request) {}
+    ~ReentrantProbeRunner() override { request_->reset(); }
+    void Start(bool network_change) override {}
+    base::TimeDelta GetDelayUntilNextProbeForTest(size_t) const override {
+      NOTREACHED();
+    }
+
+   private:
+    raw_ref<std::unique_ptr<HostResolver::ResolveHostRequest>> request_;
+  };
+
+  // Create a ProbeRequest and start it with a reentrant runner.
+  std::unique_ptr<HostResolver::ProbeRequest> probe_request =
+      resolver_->CreateDohProbeRequest(resolve_context_.get());
+  mock_dns_client_->factory()->SetNextDohProbeRunner(
+      std::make_unique<ReentrantProbeRunner>(request));
+
+  EXPECT_THAT(probe_request->Start(), IsError(ERR_IO_PENDING));
+
+  // Trigger InvalidateDnsConfig() which calls OnSystemDnsConfigChanged().
+  InvalidateDnsConfig();
+
+  // Ensure the DeleteSoon task runs.
+  callback.WaitForResult();
+  EXPECT_FALSE(request);
+}
+
 TEST_F(HostResolverManagerDnsTest, DohProbeRequest_RestartOnConnectionChange) {
   DestroyResolver();
   test::ScopedMockNetworkChangeNotifier notifier;

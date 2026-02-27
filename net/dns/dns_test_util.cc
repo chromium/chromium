@@ -703,6 +703,9 @@ std::unique_ptr<DnsTransaction> MockDnsTransactionFactory::CreateTransaction(
 
 std::unique_ptr<DnsProbeRunner> MockDnsTransactionFactory::CreateDohProbeRunner(
     ResolveContext* resolve_context) {
+  if (next_probe_runner_) {
+    return std::move(next_probe_runner_);
+  }
   return std::make_unique<MockDohProbeRunner>(weak_ptr_factory_.GetWeakPtr());
 }
 

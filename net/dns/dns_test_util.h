@@ -384,6 +384,11 @@ class MockDnsTransactionFactory : public DnsTransactionFactory {
   bool doh_probes_running() { return !running_doh_probe_runners_.empty(); }
   void CompleteDohProbeRuners() { running_doh_probe_runners_.clear(); }
 
+  void SetNextDohProbeRunner(
+      std::unique_ptr<DnsProbeRunner> next_probe_runner) {
+    next_probe_runner_ = std::move(next_probe_runner);
+  }
+
   void set_force_doh_server_available(bool available) {
     force_doh_server_available_ = available;
   }
@@ -397,6 +402,7 @@ class MockDnsTransactionFactory : public DnsTransactionFactory {
   DelayedTransactionList delayed_transactions_;
 
   bool force_doh_server_available_ = true;
+  std::unique_ptr<DnsProbeRunner> next_probe_runner_;
   std::set<raw_ptr<MockDohProbeRunner, SetExperimental>>
       running_doh_probe_runners_;
 

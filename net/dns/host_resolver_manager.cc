@@ -396,9 +396,17 @@ class HostResolverManager::ProbeRequestImpl
   }
 
   void CancelRunner() {
-    runner_.reset();
+    if (runner_) {
+      // Destroy the runner asynchronously to prevent its destructor from
+      // causing reentrant modifications to HostResolverManager::jobs_
+      // during InvalidateCaches().
+      base::SequencedTaskRunner::GetCurrentDefault()->DeleteSoon(
+          FROM_HERE, std::move(runner_));
+    }
 
-    // Cancel any asynchronous StartRunner() calls.
+    // Synchronously invalidate WeakPtrs to ensure that any previously posted
+    // asynchronous StartRunner() tasks (e.g., from the old session) are
+    // cancelled and do not execute unexpectedly in the new session.
     weak_ptr_factory_.InvalidateWeakPtrs();
   }
 
