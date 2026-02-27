@@ -368,6 +368,7 @@ class CORE_EXPORT InlineScriptStreamer final : public ScriptStreamer {
 // thread.
 class CORE_EXPORT BackgroundResourceScriptStreamer : public ScriptStreamer {
  public:
+  class BackgroundProcessor;
   // This is an utility structure to hold the decoded data and the streamed
   // source or consume code cache task which are passed from the background
   // thread to the main thread.
@@ -428,7 +429,6 @@ class CORE_EXPORT BackgroundResourceScriptStreamer : public ScriptStreamer {
   TakeConsumeCodeCacheTask();
 
  private:
-  class BackgroundProcessor;
   class BackgroundProcessorFactory;
 
   void OnResult(std::unique_ptr<Result> result,
