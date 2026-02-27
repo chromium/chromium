@@ -254,7 +254,7 @@ bool TabHoverCardController::IsHoverCardVisible() const {
 bool TabHoverCardController::IsHoverCardShowingForTab(
     HoverCardAnchorTarget* anchor_target) const {
   return IsHoverCardVisible() && !fade_animator_->IsFadingOut() &&
-         anchor_target == target_tab_;
+         GetTargetAnchorView() == anchor_target->GetAnchorView();
 }
 
 void TabHoverCardController::UpdateHoverCard(
@@ -570,9 +570,7 @@ void TabHoverCardController::UpdateCardContent(
     HoverCardAnchorTarget* anchor_target) {
   // If the hover card is transitioning between tabs, we need to do a
   // cross-fade.
-  CHECK(anchor_target);
-  CHECK(hover_card_);
-  if (target_tab_ != anchor_target) {
+  if (hover_card_->GetAnchorView() != anchor_target->GetAnchorView()) {
     hover_card_->SetTextFade(0.0);
   }
 
