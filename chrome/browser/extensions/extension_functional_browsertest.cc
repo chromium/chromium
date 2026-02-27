@@ -12,9 +12,7 @@
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/test/browser_test.h"
@@ -27,8 +25,10 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/test_extension_registry_observer.h"
-#include "testing/gmock/include/gmock/gmock.h"
+#include "extensions/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 using base::test::TestFuture;
 
@@ -111,10 +111,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionFunctionalTest,
 
   // Sanity-check test setup: 2 frames share a renderer process, but are not in
   // a related browsing instance.
+  TabListInterface* tab_list = GetTabListInterface();
   content::RenderFrameHost* tab1 =
-      browser()->tab_strip_model()->GetWebContentsAt(0)->GetPrimaryMainFrame();
+      tab_list->GetTab(0)->GetContents()->GetPrimaryMainFrame();
   content::RenderFrameHost* tab2 =
-      browser()->tab_strip_model()->GetWebContentsAt(1)->GetPrimaryMainFrame();
+      tab_list->GetTab(1)->GetContents()->GetPrimaryMainFrame();
   EXPECT_EQ(tab1->GetProcess(), tab2->GetProcess());
   EXPECT_FALSE(
       tab1->GetSiteInstance()->IsRelatedSiteInstance(tab2->GetSiteInstance()));
