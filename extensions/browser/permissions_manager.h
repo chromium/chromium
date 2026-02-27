@@ -17,7 +17,6 @@
 #include "extensions/common/extension_id.h"
 #include "url/origin.h"
 
-class ExtensionsMenuViewController;
 class BrowserContextKeyedServiceFactory;
 
 namespace content {
@@ -418,8 +417,7 @@ class PermissionsManager : public KeyedService {
 
   // Stores extensions whose site access was updated using the extensions
   // menu and previously had broad site access. This is done to preserve the
-  // previous site access state when toggling on the extension's site access
-  // using ExtensionsMenuViewController.
+  // previous site access state when toggling on the extension's site access.
   // The set only reflects site access changes made in the extensions menu. An
   // extension's site access could be changed elsewhere (e.g
   // chrome://extensions) but wouldn't be added/removed to/from this set. This
