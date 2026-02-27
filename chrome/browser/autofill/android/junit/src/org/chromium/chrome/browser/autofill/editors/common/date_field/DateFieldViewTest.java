@@ -20,6 +20,8 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.autofill.R;
 import org.chromium.chrome.browser.autofill.editors.common.field.FieldView;
 
+import java.time.LocalDate;
+
 /** Unit test for {@link DateFieldView}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class DateFieldViewTest {
@@ -75,16 +77,22 @@ public class DateFieldViewTest {
 
     @Test
     public void testNonEmptyInitialValue() {
-        mDateFieldView = new DateFieldView(mActivity, /* value= */ "2026-02-15");
-        assertEquals("Feb", mDateFieldView.getMonthPickerForTest().getDropdown().getSelectedItem());
+        mDateFieldView =
+                new DateFieldView(mActivity, /* value= */ LocalDate.of(2026, 2, 15).toString());
+        assertEquals(
+                DateFieldView.getMonthName(mActivity, /* month= */ 2),
+                mDateFieldView.getMonthPickerForTest().getDropdown().getSelectedItem());
         assertEquals("15", mDateFieldView.getDayPickerForTest().getDropdown().getSelectedItem());
         assertEquals("2026", mDateFieldView.getYearPickerForTest().getDropdown().getSelectedItem());
     }
 
     @Test
     public void testInitialValueNotInRange() {
-        mDateFieldView = new DateFieldView(mActivity, /* value= */ "1800-01-01");
-        assertEquals("Jan", mDateFieldView.getMonthPickerForTest().getDropdown().getSelectedItem());
+        mDateFieldView =
+                new DateFieldView(mActivity, /* value= */ LocalDate.of(1800, 1, 1).toString());
+        assertEquals(
+                DateFieldView.getMonthName(mActivity, /* month= */ 1),
+                mDateFieldView.getMonthPickerForTest().getDropdown().getSelectedItem());
         assertEquals("1", mDateFieldView.getDayPickerForTest().getDropdown().getSelectedItem());
         assertEquals("1800", mDateFieldView.getYearPickerForTest().getDropdown().getSelectedItem());
         // Make sure the hint is selected by checking the the selected item position is 0.
@@ -95,17 +103,22 @@ public class DateFieldViewTest {
     @Test
     public void testSetValue() {
         mDateFieldView = new DateFieldView(mActivity, /* value= */ "");
-        mDateFieldView.setValue("2026-03-16");
-        assertEquals("Mar", mDateFieldView.getMonthPickerForTest().getDropdown().getSelectedItem());
+        mDateFieldView.setValue(LocalDate.of(2026, 3, 16).toString());
+        assertEquals(
+                DateFieldView.getMonthName(mActivity, /* month= */ 3),
+                mDateFieldView.getMonthPickerForTest().getDropdown().getSelectedItem());
         assertEquals("16", mDateFieldView.getDayPickerForTest().getDropdown().getSelectedItem());
         assertEquals("2026", mDateFieldView.getYearPickerForTest().getDropdown().getSelectedItem());
     }
 
     @Test
     public void testSetValueNotInRange() {
-        mDateFieldView = new DateFieldView(mActivity, /* value= */ "2026-02-15");
-        mDateFieldView.setValue("1810-12-12");
-        assertEquals("Dec", mDateFieldView.getMonthPickerForTest().getDropdown().getSelectedItem());
+        mDateFieldView =
+                new DateFieldView(mActivity, /* value= */ LocalDate.of(2026, 2, 15).toString());
+        mDateFieldView.setValue(LocalDate.of(1810, 12, 12).toString());
+        assertEquals(
+                DateFieldView.getMonthName(mActivity, /* month= */ 12),
+                mDateFieldView.getMonthPickerForTest().getDropdown().getSelectedItem());
         assertEquals("12", mDateFieldView.getDayPickerForTest().getDropdown().getSelectedItem());
         assertEquals(
                 mActivity.getString(R.string.autofill_ai_entity_editor_date_field_year_label),
@@ -117,9 +130,12 @@ public class DateFieldViewTest {
 
     @Test
     public void testInitialAndUpdatedValuesNotInRange() {
-        mDateFieldView = new DateFieldView(mActivity, /* value= */ "1800-02-15");
-        mDateFieldView.setValue("1810-11-11");
-        assertEquals("Nov", mDateFieldView.getMonthPickerForTest().getDropdown().getSelectedItem());
+        mDateFieldView =
+                new DateFieldView(mActivity, /* value= */ LocalDate.of(1800, 2, 15).toString());
+        mDateFieldView.setValue(LocalDate.of(1810, 11, 11).toString());
+        assertEquals(
+                DateFieldView.getMonthName(mActivity, /* month= */ 11),
+                mDateFieldView.getMonthPickerForTest().getDropdown().getSelectedItem());
         assertEquals("11", mDateFieldView.getDayPickerForTest().getDropdown().getSelectedItem());
         // The initial "1800" year should be selected because it's a hint which is used whenever the
         // year is not within the range.

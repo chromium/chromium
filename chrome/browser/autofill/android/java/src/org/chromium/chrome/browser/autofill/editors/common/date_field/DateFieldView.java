@@ -15,6 +15,8 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.autofill.R;
@@ -29,8 +31,10 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * A view that combines three dropdowns for date selection (month, day, year).
@@ -200,21 +204,22 @@ public class DateFieldView extends LinearLayout implements FieldView {
         return true;
     }
 
-    private static List<DropdownKeyValue> getMonthDropdownValues() {
-        // TODO: crbug.com/476755159 - Add internationalization.
-        return List.of(
-                new DropdownKeyValue("1", "Jan"),
-                new DropdownKeyValue("2", "Feb"),
-                new DropdownKeyValue("3", "Mar"),
-                new DropdownKeyValue("4", "Apr"),
-                new DropdownKeyValue("5", "May"),
-                new DropdownKeyValue("6", "Jun"),
-                new DropdownKeyValue("7", "Jul"),
-                new DropdownKeyValue("8", "Aug"),
-                new DropdownKeyValue("9", "Sep"),
-                new DropdownKeyValue("10", "Oct"),
-                new DropdownKeyValue("11", "Nov"),
-                new DropdownKeyValue("12", "Dec"));
+    private List<DropdownKeyValue> getMonthDropdownValues() {
+        List<DropdownKeyValue> monthList = new ArrayList<>();
+        for (int month = 1; month <= 12; month++) {
+            monthList.add(
+                    new DropdownKeyValue(String.valueOf(month), getMonthName(getContext(), month)));
+        }
+        return monthList;
+    }
+
+    @VisibleForTesting
+    static final String getMonthName(Context context, int month) {
+        if (month < 1 || month > 12) {
+            return "";
+        }
+        Locale locale = context.getResources().getConfiguration().getLocales().get(0);
+        return DateTimeFormatter.ofPattern("MMM", locale).format(getDateWithMonth(month));
     }
 
     private static List<DropdownKeyValue> getDayDropdownValues() {
@@ -246,7 +251,15 @@ public class DateFieldView extends LinearLayout implements FieldView {
     }
 
     private static int getCurrentYear() {
-        return LocalDate.now(ZoneId.systemDefault()).getYear();
+        return getCurrentDate().getYear();
+    }
+
+    private static LocalDate getDateWithMonth(int month) {
+        return getCurrentDate().withMonth(month);
+    }
+
+    private static LocalDate getCurrentDate() {
+        return LocalDate.now(ZoneId.systemDefault());
     }
 
     DropdownFieldView getMonthPickerForTest() {
