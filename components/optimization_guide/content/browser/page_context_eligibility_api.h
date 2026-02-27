@@ -46,6 +46,16 @@ struct PageContextEligibilityAPI {
       const std::string& host,
       const std::string& path,
       const std::vector<optimization_guide::FrameMetadata>& frame_metadata);
+  // Whether the page is context eligible with account.
+  bool (*IsPageContextEligibleWithAccount)(
+      const std::string& host,
+      const std::string& path,
+      const std::string& account,
+      const std::vector<optimization_guide::FrameMetadata>& frame_metadata);
+  // Whether the page content should be reextracted.
+  bool (*ShouldReextractPageContent)(
+      const std::string& host,
+      const std::vector<std::string>& updated_meta_tags);
 };
 
 // Signature of the GetPageContextEligibilityAPI() function which the shared
