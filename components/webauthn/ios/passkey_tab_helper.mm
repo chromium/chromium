@@ -675,6 +675,11 @@ void PasskeyTabHelper::CompletePasskeyCreation(RegistrationRequestParams params,
       shared_key_list[0], std::move(client_data_json), params.RpId(),
       params.UserEntity(), extension_input_data);
 
+  if (!webauthn::passkey_model_utils::IsPasskeyValid(passkey)) {
+    DeferToRenderer(web_frame, passkey_request_id, params.Type());
+    return;
+  }
+
   // Add passkey to the passkey model and present the confirmation infobar.
   // TODO(crbug.com/460485333): Wait until success message from TypeScript code?
   AddNewPasskey(passkey);

@@ -205,6 +205,10 @@ PasskeyCreationOutput PerformPasskeyCreation(
           std::move(trusted_vault_keys[0]), /*trusted_vault_key_version=*/0,
           extension_input_data, &extension_output_data);
 
+  if (!webauthn::passkey_model_utils::IsPasskeyValid(passkey)) {
+    return {};
+  }
+
   base::span<const uint8_t> cred_id =
       base::as_byte_span(passkey.credential_id());
   webauthn::passkey_model_utils::SerializedAttestationObject
