@@ -59,6 +59,7 @@ source_set("impl") {
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/background",
     "//chrome/browser/extensions",
+    "//chrome/browser/glic",
     "//chrome/browser/lifetime:termination_notification",
     "//chrome/browser/profiles/keep_alive",
     "//chrome/browser/status_icons",
@@ -77,10 +78,6 @@ source_set("impl") {
 
   if (!is_android) {
     deps += [ "//components/keep_alive_registry" ]
-  }
-
-  if (enable_glic) {
-    deps += [ "//chrome/browser/glic" ]
   }
 
   if (!is_chromeos) {
