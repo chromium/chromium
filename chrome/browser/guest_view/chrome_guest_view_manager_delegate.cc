@@ -5,6 +5,7 @@
 #include "chrome/browser/guest_view/chrome_guest_view_manager_delegate.h"
 
 #include "build/build_config.h"
+#include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/task_manager/web_contents_tags.h"
 #include "chrome/common/buildflags.h"
 #include "components/captive_portal/core/buildflags.h"
@@ -14,10 +15,6 @@
 #include "chrome/browser/ash/app_mode/kiosk_controller.h"
 #include "chrome/browser/ash/app_mode/kiosk_system_session.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
-
-#if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/glic/host/guest_util.h"
-#endif
 
 #if BUILDFLAG(ENABLE_CAPTIVE_PORTAL_DETECTION)
 #include "chrome/browser/captive_portal/captive_portal_service_factory.h"
@@ -46,10 +43,8 @@ void ChromeGuestViewManagerDelegate::OnGuestAdded(
   ash::KioskController::Get().OnGuestAdded(guest_web_contents);
 #endif
 
-#if BUILDFLAG(ENABLE_GLIC)
   // Check if guest belongs to glic and apply specific customizations if so.
   glic::OnGuestAdded(guest_web_contents);
-#endif
 
 #if BUILDFLAG(ENABLE_CAPTIVE_PORTAL_DETECTION)
   // Attach Captive Portal helper to the WebView.
