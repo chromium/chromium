@@ -218,10 +218,10 @@ source_set("webrtc") {
       "display_media_access_handler.cc",
       "display_media_access_handler.h",
     ]
-    deps += [ "//chrome/browser/ui:url_identity" ]
-    if (enable_glic) {
-      deps += [ "//chrome/browser/glic" ]
-    }
+    deps += [
+      "//chrome/browser/glic",
+      "//chrome/browser/ui:url_identity",
+    ]
 
     if (is_win) {
       sources += [
