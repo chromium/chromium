@@ -1406,9 +1406,10 @@ export class ComposeboxElement extends I18nMixinLit
       }
     }
 
-    if (e.key === 'Enter' && this.canSubmitFilesAndInput_) {
-      if (this.shadowRoot.activeElement === this.$.matches || !e.shiftKey) {
-        e.preventDefault();
+    if (e.key === 'Enter' &&
+        (this.shadowRoot.activeElement === this.$.matches || !e.shiftKey)) {
+      e.preventDefault();
+      if (this.canSubmitFilesAndInput_) {
         this.submitQuery_(e);
       }
     }
