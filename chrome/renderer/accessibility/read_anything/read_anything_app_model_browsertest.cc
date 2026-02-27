@@ -750,10 +750,10 @@ TEST_F(ReadAnythingAppModelTest, Reset_ResetsState) {
 
   ApplyAccessibilityUpdates(tree_id_, {std::move(update)});
   ProcessDisplayNodes({3, 4});
-  model().set_distillation_in_progress(true);
+  model().set_screen2x_distiller_running(true);
 
   // Assert initial state before model().Resetting.
-  ASSERT_TRUE(model().distillation_in_progress());
+  ASSERT_TRUE(model().screen2x_distiller_running());
 
   ASSERT_TRUE(model().display_node_ids().contains(1));
   ASSERT_TRUE(model().display_node_ids().contains(3));
@@ -764,7 +764,7 @@ TEST_F(ReadAnythingAppModelTest, Reset_ResetsState) {
   model().Reset({1, 2});
 
   // Assert model().Reset state.
-  ASSERT_FALSE(model().distillation_in_progress());
+  ASSERT_FALSE(model().screen2x_distiller_running());
 
   ASSERT_TRUE(std::ranges::contains(model().content_node_ids(), 1));
   ASSERT_TRUE(std::ranges::contains(model().content_node_ids(), 2));

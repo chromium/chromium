@@ -1947,7 +1947,7 @@ TEST_F(ReadAnythingAppControllerTest,
   EXPECT_EQ(u"", controller().GetTextContent(4));
 
   // Send three updates while distilling.
-  model().set_distillation_in_progress(true);
+  model().set_screen2x_distiller_running(true);
   SendBatchUpdates();
 
   // The updates shouldn't be applied yet.
@@ -1958,7 +1958,7 @@ TEST_F(ReadAnythingAppControllerTest,
   // OnAXTreeDistilled would unserialize the pending updates. Since a11y events
   // happen asynchronously, they can come between the time distillation finishes
   // and pending updates are unserialized.
-  model().set_distillation_in_progress(false);
+  model().set_screen2x_distiller_running(false);
   ui::AXNodeData final_node = test::TextNode(/* id= */ 2, u"Final update");
   SendUpdateWithNodes({std::move(final_node)});
 
@@ -2321,7 +2321,7 @@ TEST_F(ReadAnythingAppControllerTest,
   // immediately after distilling.
   EXPECT_CALL(*distiller_, Distill).Times(0);
   controller().OnAXTreeDistilled(tree_id_, {1});
-  model().set_distillation_in_progress(true);
+  model().set_screen2x_distiller_running(true);
   AccessibilityEventReceived({std::move(updates[2])});
   Mock::VerifyAndClearExpectations(distiller_);
 }

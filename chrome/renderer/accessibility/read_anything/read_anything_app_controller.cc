@@ -553,7 +553,8 @@ void ReadAnythingAppController::OnStringAttributeChanged(
 }
 
 bool ReadAnythingAppController::IsUpdateProcessingPaused() const {
-  if (model_.distillation_in_progress() || read_aloud_model_.speech_playing()) {
+  if (model_.screen2x_distiller_running() ||
+      read_aloud_model_.speech_playing()) {
     return true;
   }
 
@@ -813,7 +814,7 @@ void ReadAnythingAppController::DistillNewTree() {
 
 void ReadAnythingAppController::RecordDistillationSuccess() {
   read_anything::mojom::DistillationStatus distillationStatus;
-  if (model_.distillation_in_progress()) {
+  if (model_.screen2x_distiller_running()) {
     distillationStatus =
         distillationsCompleted_ > 0
             ? read_anything::mojom::DistillationStatus::kRestarted
@@ -918,7 +919,7 @@ void ReadAnythingAppController::Distill(bool for_training_data) {
                         : tree_lang);
   }
   CHECK(serializer.SerializeChanges(tree->root(), &snapshot));
-  model_.set_distillation_in_progress(true);
+  model_.set_screen2x_distiller_running(true);
   if (features::IsImmersiveReadAnythingEnabled()) {
     SetDistillationState(read_anything::mojom::ReadAnythingDistillationState::
                              kDistillationInProgress);
@@ -936,8 +937,8 @@ void ReadAnythingAppController::OnAXTreeDistilled(
   // happen after a long time of inactivity. In this case, we shouldn't reset
   // the model since the last state is still the correct state and clearing the
   // model causes issues for read aloud.
-  if (!model_.distillation_in_progress() && tree_id == ui::AXTreeIDUnknown() &&
-      content_node_ids.empty()) {
+  if (!model_.screen2x_distiller_running() &&
+      tree_id == ui::AXTreeIDUnknown() && content_node_ids.empty()) {
     VLOG(1) << "Distillation terminated after the main content extractor "
                "disconnected";
     return;
@@ -946,7 +947,7 @@ void ReadAnythingAppController::OnAXTreeDistilled(
   // Reset distillation in progress, because distillation just finished. This
   // is needed for the IsUpdateProcessingPaused check below, because it will
   // consider the processing pipeline paused if distillation is in progress.
-  model_.set_distillation_in_progress(false);
+  model_.set_screen2x_distiller_running(false);
 
   // Update active distillation method now that screen2x distillation has
   // finished.
@@ -2187,7 +2188,7 @@ void ReadAnythingAppController::OnLinkClicked(ui::AXNodeID ax_node_id) const {
   // the tree may have changed in an unexpected way.
   // TODO(crbug.com/40802192): Consider how to show this in a more
   // user-friendly way.
-  if (model_.distillation_in_progress()) {
+  if (model_.screen2x_distiller_running()) {
     return;
   }
   page_handler_->OnLinkClicked(model_.active_tree_id(), ax_node_id);
@@ -2311,7 +2312,7 @@ void ReadAnythingAppController::OnSelectionChange(ui::AXNodeID anchor_node_id,
   // the tree may have changed in an unexpected way.
   // TODO(crbug.com/40802192): Consider how to show this in a more
   // user-friendly way.
-  if (model_.distillation_in_progress()) {
+  if (model_.screen2x_distiller_running()) {
     return;
   }
 

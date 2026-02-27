@@ -150,7 +150,7 @@ void ReadAnythingAppModel::OnSettingsRestoredFromPrefs(
 void ReadAnythingAppModel::Reset(std::vector<ui::AXNodeID> content_node_ids) {
   content_node_ids_ = std::move(content_node_ids);
   display_node_ids_.clear();
-  distillation_in_progress_ = false;
+  screen2x_distiller_running_ = false;
   requires_post_process_selection_ = false;
   selections_from_reading_mode_ = 0;
   ResetSelection();

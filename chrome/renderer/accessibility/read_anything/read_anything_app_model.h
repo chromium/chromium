@@ -310,9 +310,11 @@ class ReadAnythingAppModel {
   int start_offset() const { return start_.offset; }
   int end_offset() const { return end_.offset; }
 
-  bool distillation_in_progress() const { return distillation_in_progress_; }
-  void set_distillation_in_progress(bool distillation_in_progress) {
-    distillation_in_progress_ = distillation_in_progress;
+  bool screen2x_distiller_running() const {
+    return screen2x_distiller_running_;
+  }
+  void set_screen2x_distiller_running(bool screen2x_distiller_running) {
+    screen2x_distiller_running_ = screen2x_distiller_running;
   }
 
   bool should_extract_anchors_from_tree_for_readability() const {
@@ -613,7 +615,7 @@ class ReadAnythingAppModel {
   // Distillation is slow and happens out-of-process when Screen2x is running.
   // This boolean marks when distillation is in progress to avoid sending
   // new distillation requests during that time.
-  bool distillation_in_progress_ = false;
+  bool screen2x_distiller_running_ = false;
 
   // A mapping of a tree ID to a queue of pending updates on the active AXTree,
   // which will be unserialized once distillation completes.
