@@ -13,6 +13,7 @@
 #include "components/headless/screen_info/headless_screen_info.h"
 #include "ui/display/display_finder.h"
 #include "ui/display/display_list.h"
+#include "ui/display/headless/headless_screen_util.h"
 #include "ui/display/util/display_util.h"
 
 #if defined(USE_AURA)
@@ -98,8 +99,8 @@ void HeadlessScreen::CreateDisplayList(const gfx::Size& window_size,
     display.set_label(it.label);
     display.set_color_depth(it.color_depth);
 
-    display::HeadlessScreenManager::SetDisplayGeometry(
-        display, it.bounds, it.work_area_insets, it.device_pixel_ratio);
+    headless::SetDisplayGeometry(display, it.bounds, it.work_area_insets,
+                                 it.device_pixel_ratio);
 
     if (it.rotation) {
       CHECK(display::Display::IsValidRotation(it.rotation));
@@ -203,7 +204,7 @@ void HeadlessScreen::RemoveDisplay(int64_t display_id) {
 }
 
 void HeadlessScreen::SetPrimaryDisplay(int64_t display_id) {
-  display::HeadlessScreenManager::SetPrimaryDisplay(display_list(), display_id);
+  headless::SetPrimaryDisplay(display_list(), display_id);
 }
 
 display::Display HeadlessScreen::GetDisplayById(int64_t display_id) {

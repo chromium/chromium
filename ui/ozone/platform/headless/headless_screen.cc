@@ -17,6 +17,7 @@
 #include "components/headless/screen_info/headless_screen_info.h"
 #include "ui/display/display.h"
 #include "ui/display/headless/headless_screen_manager.h"
+#include "ui/display/headless/headless_screen_util.h"
 #include "ui/display/util/display_util.h"
 #include "ui/gfx/switches.h"
 #include "ui/ozone/platform/headless/headless_window.h"
@@ -124,8 +125,8 @@ void HeadlessScreen::CreateDisplayList() {
     display.set_label(it.label);
     display.set_color_depth(it.color_depth);
 
-    display::HeadlessScreenManager::SetDisplayGeometry(
-        display, it.bounds, it.work_area_insets, it.device_pixel_ratio);
+    headless::SetDisplayGeometry(display, it.bounds, it.work_area_insets,
+                                 it.device_pixel_ratio);
 
     if (it.rotation) {
       CHECK(display::Display::IsValidRotation(it.rotation));

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/display/headless/headless_screen_manager.h"
+#include "ui/display/headless/headless_screen_util.h"
 
 #include <vector>
 
@@ -32,9 +32,8 @@ class HeadlessDisplayGeometryTest : public ::testing::Test {
   void SetDisplayGeometry(const gfx::Rect& bounds_in_pixels,
                           const gfx::Insets& work_area_insets_pixels,
                           float device_pixel_ratio) {
-    HeadlessScreenManager::SetDisplayGeometry(display_, bounds_in_pixels,
-                                              work_area_insets_pixels,
-                                              device_pixel_ratio);
+    headless::SetDisplayGeometry(display_, bounds_in_pixels,
+                                 work_area_insets_pixels, device_pixel_ratio);
   }
 
   Display display_;
@@ -95,7 +94,7 @@ class HeadlessPrimaryDisplayTest : public ::testing::Test,
   const DisplayList::Displays& displays() { return display_list_.displays(); }
 
   void SetPrimaryDisplay(int64_t display_id) {
-    HeadlessScreenManager::SetPrimaryDisplay(display_list_, display_id);
+    headless::SetPrimaryDisplay(display_list_, display_id);
   }
 
   display::DisplayList display_list_;
