@@ -158,7 +158,6 @@ import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.dragdrop.DragDropGlobalState;
-import org.chromium.ui.dragdrop.DragDropGlobalState.TrackerToken;
 import org.chromium.ui.shadows.ShadowAppCompatResources;
 import org.chromium.ui.util.MotionEventUtils;
 import org.chromium.ui.widget.RectProvider;
@@ -7239,10 +7238,10 @@ public class StripLayoutHelperTest {
     private void setupDragDropState() {
         ChromeDropDataAndroid dropData =
                 new ChromeTabDropDataAndroid.Builder().withTab(mTab).build();
-        TrackerToken dragTrackerToken =
+        Token dragToken =
                 DragDropGlobalState.store(
                         /* dragSourceInstanceId= */ 1, dropData, /* dragShadowBuilder= */ null);
-        TabDragHandlerBase.setDragTrackerTokenForTesting(dragTrackerToken);
+        TabDragHandlerBase.setDragTokenForTesting(dragToken);
     }
 
     private class TestTabRemover implements TabRemover {

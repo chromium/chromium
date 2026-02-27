@@ -4,12 +4,12 @@
 
 package org.chromium.ui.dragdrop;
 
-import android.os.SystemClock;
 import android.view.DragEvent;
 import android.view.View.DragShadowBuilder;
 
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.Token;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
@@ -17,45 +17,28 @@ import org.chromium.build.annotations.Nullable;
  * Drag-Drop objects to be shared across instances. General usage:
  * <li>When drag starts, the client that puts the global instance will do {@link #store} and
  *     generate a tracker token for later use.
- * <li>During the drag, client that starts the drag can {@link #getState(TrackerToken)} to access /
- *     modify the global state.
+ * <li>During the drag, client that starts the drag can {@link #getState(Token)} to access / modify
+ *     the global state.
  * <li>When dropped, view that receive the drop can use {@link #getState(DragEvent)} to access /
  *     modify the global state.
- * <li>When drag ends, client that starts the drag need to do {@link #clear(TrackerToken)} to reset
- *     the global state.
+ * <li>When drag ends, client that starts the drag need to do {@link #clear(Token)} to reset the
+ *     global state.
  */
 @NullMarked
 public class DragDropGlobalState {
     private static final String TAG = "DnDGlobalState";
     private @Nullable static GlobalStateHolder sGlobalStateHolder;
 
-    /** Token used to retrieve from {@link DragDropGlobalState#getState(TrackerToken)}. */
-    public static final class TrackerToken {
-        final long mKey;
-
-        TrackerToken() {
-            this.mKey = SystemClock.elapsedRealtime();
-        }
-
-        @Override
-        public boolean equals(@Nullable Object obj) {
-            if (!(obj instanceof TrackerToken that)) {
-                return false;
-            }
-            return that.mKey == this.mKey;
-        }
-    }
-
     /**
      * Build a {@link DragDropGlobalState} to be stored in the static instance, and return the
-     * {@link TrackerToken} to retrieve and modify the state.
+     * {@link Token} to retrieve and modify the state.
      *
      * @param dragSourceInstanceId Instance Id from the source window
      * @param dropData {@link DropDataAndroid} used to start this drag and drop.
      * @param dragShadowBuilder {@link DragShadowBuilder} used for starting the drag and drop.
      * @return Token used to retrieve and clear the global state.
      */
-    public static TrackerToken store(
+    public static Token store(
             int dragSourceInstanceId,
             DropDataAndroid dropData,
             @Nullable DragShadowBuilder dragShadowBuilder) {
@@ -79,10 +62,10 @@ public class DragDropGlobalState {
     /**
      * Get the global state using tracker token without cleaning the global state.
      *
-     * @param token Token returned by {@link #store(int, ChromeDropDataAndroid, DragShadowBuilder)}
+     * @param token Token returned by {@link #store(int, DropDataAndroid, DragShadowBuilder)}
      * @return The stored global state.
      */
-    public static @Nullable DragDropGlobalState getState(TrackerToken token) {
+    public static @Nullable DragDropGlobalState getState(Token token) {
         if (sGlobalStateHolder == null || !sGlobalStateHolder.mToken.equals(token)) return null;
         return sGlobalStateHolder.mInstance;
     }
@@ -124,7 +107,7 @@ public class DragDropGlobalState {
      * Tokens are released when startDragAndDrop fails or by listeners on drag end event. If a
      * caller fails to release token, sHolder is not cleared and the next build call will fail.
      */
-    public static void clear(TrackerToken token) {
+    public static void clear(Token token) {
         assert sGlobalStateHolder == null || sGlobalStateHolder.mToken.equals(token)
                 : "Token mismatch.";
         sGlobalStateHolder = null;
@@ -161,14 +144,14 @@ public class DragDropGlobalState {
     /** Helper class to store the static instance of global state. */
     private static class GlobalStateHolder {
         final DragDropGlobalState mInstance;
-        final TrackerToken mToken;
+        final Token mToken;
         final @Nullable DragShadowBuilder mDragShadowBuilder;
         boolean mChromeHandledDrop;
 
         private GlobalStateHolder(
                 DragDropGlobalState instance, @Nullable DragShadowBuilder dragShadowBuilder) {
             mInstance = instance;
-            mToken = new TrackerToken();
+            mToken = Token.createRandom();
             mDragShadowBuilder = dragShadowBuilder;
         }
     }

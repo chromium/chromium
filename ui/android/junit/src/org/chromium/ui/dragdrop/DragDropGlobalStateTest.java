@@ -25,7 +25,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.shadows.ShadowSystemClock;
 
-import org.chromium.ui.dragdrop.DragDropGlobalState.TrackerToken;
+import org.chromium.base.Token;
 
 import java.util.concurrent.TimeUnit;
 
@@ -36,7 +36,7 @@ public final class DragDropGlobalStateTest {
     private static final String M_TEXT = "text";
     @Rule public MockitoRule mMockitoProcessorRule = MockitoJUnit.rule();
     private DropDataAndroid mDropData;
-    private TrackerToken mToken;
+    private Token mToken;
 
     @Before
     public void setup() {
@@ -84,7 +84,7 @@ public final class DragDropGlobalStateTest {
         mToken = DragDropGlobalState.store(INVALID_INSTANCE_ID, null, null);
 
         ShadowSystemClock.advanceBy(100, TimeUnit.SECONDS);
-        TrackerToken newToken = DragDropGlobalState.store(INSTANCE_ID, mDropData, null);
+        Token newToken = DragDropGlobalState.store(INSTANCE_ID, mDropData, null);
         try {
             DragDropGlobalState.clear(mToken);
         } catch (AssertionError error) {
