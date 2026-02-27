@@ -9,12 +9,6 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {getCss} from './auto_tab_groups_in_progress.css.js';
 import {getHtml} from './auto_tab_groups_in_progress.html.js';
 
-export interface AutoTabGroupsInProgressElement {
-  $: {
-    header: HTMLElement,
-  };
-}
-
 // Loading state for the auto tab groups UI.
 export class AutoTabGroupsInProgressElement extends CrLitElement {
   static get is() {

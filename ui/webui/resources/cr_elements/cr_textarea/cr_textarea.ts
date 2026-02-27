@@ -18,7 +18,6 @@ export interface CrTextareaElement {
     footerContainer: HTMLElement,
     input: HTMLTextAreaElement,
     label: HTMLElement,
-    mirror: HTMLElement,
     secondFooter: HTMLElement,
     underline: HTMLElement,
   };

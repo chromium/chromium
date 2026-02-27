@@ -22,7 +22,6 @@ const NON_SCROLLABLE_VERTICAL_SPACING: number = 198;
 export interface AutoTabGroupsResultsElement {
   $: {
     feedbackButtons: CrFeedbackButtonsElement,
-    header: HTMLElement,
     learnMore: HTMLElement,
     scrollable: HTMLElement,
   };

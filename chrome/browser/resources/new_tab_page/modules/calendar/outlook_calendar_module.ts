@@ -15,13 +15,11 @@ import {ParentTrustedDocumentProxy} from '../microsoft_auth_frame_connector.js';
 import {ModuleDescriptor} from '../module_descriptor.js';
 import type {MenuItem, ModuleHeaderElement} from '../module_header.js';
 
-import type {CalendarElement} from './calendar.js';
 import {getHtml} from './outlook_calendar_module.html.js';
 import {OutlookCalendarProxyImpl} from './outlook_calendar_proxy.js';
 
 export interface OutlookCalendarModuleElement {
   $: {
-    calendar: CalendarElement,
     moduleHeaderElementV2: ModuleHeaderElement,
   };
 }

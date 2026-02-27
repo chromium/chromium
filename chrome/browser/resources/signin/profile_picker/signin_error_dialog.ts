@@ -20,7 +20,6 @@ import type {ManageProfilesBrowserProxy} from './manage_profiles_browser_proxy.j
 export interface SigninErrorDialogElement {
   $: {
     dialog: CrDialogElement,
-    cancelButton: HTMLElement,
   };
 }
 

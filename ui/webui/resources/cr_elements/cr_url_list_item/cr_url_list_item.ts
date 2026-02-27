@@ -28,7 +28,6 @@ export interface CrUrlListItemElement {
     badges: HTMLSlotElement,
     button: HTMLElement,
     content: HTMLSlotElement,
-    description: HTMLSlotElement,
     metadata: HTMLElement,
     customIcon: HTMLSlotElement,
   };

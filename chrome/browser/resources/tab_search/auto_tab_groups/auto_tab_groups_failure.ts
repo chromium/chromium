@@ -13,12 +13,6 @@ import {TabOrganizationError} from '../tab_search.mojom-webui.js';
 import {getCss} from './auto_tab_groups_failure.css.js';
 import {getHtml} from './auto_tab_groups_failure.html.js';
 
-export interface AutoTabGroupsFailureElement {
-  $: {
-    header: HTMLElement,
-  };
-}
-
 // Failure state for the auto tab groups UI.
 export class AutoTabGroupsFailureElement extends CrLitElement {
   static get is() {

@@ -22,12 +22,6 @@ import {getHtml} from './auto_tab_groups_not_started.html.js';
 
 const AutoTabGroupsNotStartedElementBase = WebUiListenerMixinLit(CrLitElement);
 
-export interface AutoTabGroupsNotStartedElement {
-  $: {
-    header: HTMLElement,
-  };
-}
-
 // Not started state for the auto tab groups UI.
 export class AutoTabGroupsNotStartedElement extends
     AutoTabGroupsNotStartedElementBase {

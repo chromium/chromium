@@ -37,8 +37,6 @@ enum TracingState {
 export interface TraceRecorderElement {
   $: {
     toast: CrToastElement,
-    tickedSlider: CrSliderElement,
-    select: HTMLSelectElement,
   };
 }
 

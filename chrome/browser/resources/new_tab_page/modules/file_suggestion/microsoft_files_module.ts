@@ -17,13 +17,11 @@ import {ParentTrustedDocumentProxy} from '../microsoft_auth_frame_connector.js';
 import {ModuleDescriptor} from '../module_descriptor.js';
 import type {MenuItem, ModuleHeaderElement} from '../module_header.js';
 
-import type {FileSuggestionElement} from './file_suggestion.js';
 import {getHtml} from './microsoft_files_module.html.js';
 import {MicrosoftFilesProxyImpl} from './microsoft_files_proxy.js';
 
 export interface MicrosoftFilesModuleElement {
   $: {
-    fileSuggestion: FileSuggestionElement,
     moduleHeaderElementV2: ModuleHeaderElement,
   };
 }
