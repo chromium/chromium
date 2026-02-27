@@ -5,8 +5,11 @@
 #include "chrome/browser/accessibility_annotator/accessibility_annotator_backend_factory.h"
 
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sync/data_type_store_service_factory.h"
 #include "chrome/common/channel_info.h"
+#include "components/accessibility_annotator/core/accessibility_annotator_features.h"
 #include "components/accessibility_annotator/core/storage/accessibility_annotator_backend.h"
+#include "components/sync/model/data_type_store_service.h"
 
 // static
 accessibility_annotator::AccessibilityAnnotatorBackend*
@@ -25,7 +28,9 @@ AccessibilityAnnotatorBackendFactory::GetInstance() {
 AccessibilityAnnotatorBackendFactory::AccessibilityAnnotatorBackendFactory()
     : ProfileKeyedServiceFactory(
           "AccessibilityAnnotatorBackend",
-          ProfileSelections::BuildRedirectedInIncognito()) {}
+          ProfileSelections::BuildRedirectedInIncognito()) {
+  DependsOn(DataTypeStoreServiceFactory::GetInstance());
+}
 
 AccessibilityAnnotatorBackendFactory::~AccessibilityAnnotatorBackendFactory() =
     default;
@@ -33,7 +38,15 @@ AccessibilityAnnotatorBackendFactory::~AccessibilityAnnotatorBackendFactory() =
 std::unique_ptr<KeyedService>
 AccessibilityAnnotatorBackendFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
+  // TODO(crbug.com/486856790): Also check the kAccessibilityAnnotator feature
+  // once setup.
+  if (!base::FeatureList::IsEnabled(
+          accessibility_annotator::kContentAnnotator)) {
+    return nullptr;
+  }
   return std::make_unique<
       accessibility_annotator::AccessibilityAnnotatorBackend>(
-      chrome::GetChannel());
+      chrome::GetChannel(), DataTypeStoreServiceFactory::GetForProfile(
+                                Profile::FromBrowserContext(context))
+                                ->GetStoreFactory());
 }

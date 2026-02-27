@@ -17,7 +17,8 @@
 namespace accessibility_annotator {
 
 AccessibilityAnnotatorBackend::AccessibilityAnnotatorBackend(
-    version_info::Channel channel)
+    version_info::Channel channel,
+    syncer::RepeatingDataTypeStoreFactory data_type_store_factory)
     : db_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
            base::TaskShutdownBehavior::BLOCK_SHUTDOWN})) {
@@ -25,7 +26,8 @@ AccessibilityAnnotatorBackend::AccessibilityAnnotatorBackend(
       syncer::ACCESSIBILITY_ANNOTATION,
       base::BindRepeating(&syncer::ReportUnrecoverableError, channel));
   accessibility_annotation_sync_bridge_ =
-      std::make_unique<AccessibilityAnnotationSyncBridge>(std::move(processor));
+      std::make_unique<AccessibilityAnnotationSyncBridge>(
+          std::move(processor), data_type_store_factory);
 }
 
 AccessibilityAnnotatorBackend::~AccessibilityAnnotatorBackend() = default;

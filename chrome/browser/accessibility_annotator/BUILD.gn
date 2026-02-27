@@ -4,19 +4,33 @@
 
 source_set("accessibility_annotator") {
   sources = [
-    "accessibility_annotator_backend_factory.cc",
     "accessibility_annotator_backend_factory.h",
-    "accessibility_annotator_data_provider_factory.cc",
     "accessibility_annotator_data_provider_factory.h",
   ]
 
   deps = [
     "//base",
     "//chrome/browser/profiles:profile",
+    "//components/keyed_service/content",
+    "//content/public/browser",
+  ]
+}
+
+# This target is for all non-public files (all .c - including factories and
+# services - and non-public .h).
+source_set("impl") {
+  sources = [
+    "accessibility_annotator_backend_factory.cc",
+    "accessibility_annotator_data_provider_factory.cc",
+  ]
+  deps = [
+    ":accessibility_annotator",
+    "//chrome/browser/sync",
     "//chrome/common:channel_info",
     "//components/accessibility_annotator/core",
+    "//components/accessibility_annotator/core:features",
     "//components/accessibility_annotator/core/storage",
-    "//components/keyed_service/content",
+    "//components/keyed_service/core",
     "//content/public/browser",
   ]
 }
@@ -29,7 +43,9 @@ source_set("unit_tests") {
   ]
   deps = [
     ":accessibility_annotator",
+    ":impl",
     "//chrome/test:test_support",
+    "//components/accessibility_annotator/core:features",
     "//content/test:test_support",
     "//testing/gtest",
   ]

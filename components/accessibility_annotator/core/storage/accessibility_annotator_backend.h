@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/threading/sequence_bound.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/sync/model/data_type_store.h"
 
 namespace syncer {
 class DataTypeControllerDelegate;
@@ -27,7 +28,10 @@ class AccessibilityAnnotatorDatabase;
 
 class AccessibilityAnnotatorBackend : public KeyedService {
  public:
-  explicit AccessibilityAnnotatorBackend(version_info::Channel channel);
+  AccessibilityAnnotatorBackend(
+      version_info::Channel channel,
+      syncer::RepeatingDataTypeStoreFactory data_type_store_factory);
+
   ~AccessibilityAnnotatorBackend() override;
 
   AccessibilityAnnotatorBackend(const AccessibilityAnnotatorBackend&) = delete;
