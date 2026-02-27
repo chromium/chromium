@@ -60,15 +60,17 @@ function testGamepadStateAllDisconnected() {
 }
 
 async function onGamepadEvent(expectedEvent) {
-  await new Promise(resolve => {
-    window.addEventListener(expectedEvent, resolve, { once: true });
+  let gamepadEvent = await new Promise(resolve => {
+    window.addEventListener(expectedEvent, (e) => {
+      resolve(e);
+    }, {once: true});
   });
 
   // The gamepadController test API can be used to update gamepad state inside
   // a gamepad listener, which is normally not possible and may cause updates
   // to be delayed until the listener has exited. To avoid this in tests,
   // schedule the promise to resolve after a zero-length timeout.
-  return new Promise(resolve => setTimeout(resolve, 0));
+  return new Promise(resolve => setTimeout(() => resolve(gamepadEvent), 0));
 }
 
 async function onGamepadEventWithIndex(expectedEvent, gamepadIndex) {

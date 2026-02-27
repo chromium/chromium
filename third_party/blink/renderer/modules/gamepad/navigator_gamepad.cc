@@ -425,6 +425,7 @@ void NavigatorGamepad::MaybeDispatchGamepadEvents(
   }
 
   if (has_input_changed_event_listener_ && has_input_changed) {
+    is_gamepads_exposed_ = true;
     DispatchGamepadRawInputChangedEvent(index, compare_result);
   }
 }
