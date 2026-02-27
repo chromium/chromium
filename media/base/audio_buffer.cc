@@ -616,24 +616,21 @@ void AudioBuffer::ReadFrames(int frames_to_copy,
       SampleFormatToBytesPerChannel(sample_format_);
   const size_t frame_size = channel_count_ * bytes_per_channel;
   base::span<const uint8_t> source_data =
-      data_->span().subspan(source_offset * frame_size);
+      data_->span().subspan(source_offset * frame_size, frames * frame_size);
 
   if (sample_format_ == kSampleFormatF32) {
     dest->FromInterleavedPartial<Float32SampleTypeTraits>(
-        CastConstSpan<float>(source_data).data(), dest_frame_offset,
-        frames_to_copy);
+        CastConstSpan<float>(source_data), dest_offset);
   } else if (sample_format_ == kSampleFormatU8) {
-    dest->FromInterleavedPartial<UnsignedInt8SampleTypeTraits>(
-        source_data.data(), dest_frame_offset, frames_to_copy);
+    dest->FromInterleavedPartial<UnsignedInt8SampleTypeTraits>(source_data,
+                                                               dest_offset);
   } else if (sample_format_ == kSampleFormatS16) {
     dest->FromInterleavedPartial<SignedInt16SampleTypeTraits>(
-        CastConstSpan<int16_t>(source_data).data(), dest_frame_offset,
-        frames_to_copy);
+        CastConstSpan<int16_t>(source_data), dest_offset);
   } else if (sample_format_ == kSampleFormatS24 ||
              sample_format_ == kSampleFormatS32) {
     dest->FromInterleavedPartial<SignedInt32SampleTypeTraits>(
-        CastConstSpan<int32_t>(source_data).data(), dest_frame_offset,
-        frames_to_copy);
+        CastConstSpan<int32_t>(source_data), dest_offset);
   } else {
     NOTREACHED() << "Unsupported audio sample type: " << sample_format_;
   }
