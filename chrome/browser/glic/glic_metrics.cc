@@ -827,10 +827,10 @@ void GlicMetrics::LogGetContextForActorFromTabError(
 
 void GlicMetrics::OnActivateTabFromInstance(tabs::TabInterface* tab) {
 #if !BUILDFLAG(IS_ANDROID)
-  actor::TaskId task_id =
+  const actor::ActorTask* task =
       actor::ActorKeyedService::Get(profile_)->GetTaskFromTab(*tab);
   // Record user action if the tab is associated with an ActorTask.
-  if (!task_id.is_null()) {
+  if (task) {
     base::RecordAction(
         base::UserMetricsAction("Glic.Instance.TaskTabForegrounded"));
   }

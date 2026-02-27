@@ -598,15 +598,16 @@ bool ActorKeyedService::IsActiveOnTab(const tabs::TabInterface& tab) const {
   return false;
 }
 
-TaskId ActorKeyedService::GetTaskFromTab(const tabs::TabInterface& tab) const {
+ActorTask* ActorKeyedService::GetTaskFromTab(
+    const tabs::TabInterface& tab) const {
   tabs::TabHandle handle = tab.GetHandle();
-  for (auto [task_id, task] : GetActiveTasks()) {
+  for (const auto& [task_id, task] : active_tasks_) {
     if (task->HasTab(handle)) {
-      return task_id;
+      return task.get();
     }
   }
 
-  return TaskId();
+  return nullptr;
 }
 
 Profile* ActorKeyedService::GetProfile() {

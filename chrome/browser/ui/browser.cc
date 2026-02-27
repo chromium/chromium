@@ -436,13 +436,10 @@ bool HasActorTaskPreventingNewWebContents(Profile* profile,
     return false;
   }
 
-  const actor::TaskId task_id = actor_service->GetTaskFromTab(*tab_interface);
-  if (task_id.is_null()) {
+  const actor::ActorTask* task = actor_service->GetTaskFromTab(*tab_interface);
+  if (!task) {
     return false;
   }
-
-  const actor::ActorTask* task = actor_service->GetTask(task_id);
-  CHECK(task);
 
   return !task->GetExecutionEngine().TabsCanOpenNewWebContents();
 }

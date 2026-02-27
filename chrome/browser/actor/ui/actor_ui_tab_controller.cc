@@ -232,26 +232,18 @@ bool ActorUiTabController::ComputeHandoffButtonVisibility() {
 }
 
 void ActorUiTabController::SetActorTaskPaused() {
-  TaskId task_id = actor_keyed_service_->GetTaskFromTab(*tab_);
-  if (!task_id) {
-    VLOG(1) << "There is no active task acting on this tab.";
-    return;
-  }
-
-  if (auto* task = actor_keyed_service_->GetTask(task_id)) {
+  if (auto* task = actor_keyed_service_->GetTaskFromTab(*tab_)) {
     task->Pause(/*from_actor=*/false);
+  } else {
+    VLOG(1) << "There is no active task acting on this tab.";
   }
 }
 
 void ActorUiTabController::SetActorTaskResume() {
-  TaskId task_id = actor_keyed_service_->GetTaskFromTab(*tab_);
-  if (!task_id) {
-    VLOG(1) << "There is no active task acting on this tab.";
-    return;
-  }
-
-  if (auto* task = actor_keyed_service_->GetTask(task_id)) {
+  if (auto* task = actor_keyed_service_->GetTaskFromTab(*tab_)) {
     task->Resume();
+  } else {
+    VLOG(1) << "There is no active task acting on this tab.";
   }
 }
 

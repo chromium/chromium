@@ -64,22 +64,16 @@ void ActorUiTabControllerAndroid::OnUiTabStateChange(
 }
 
 void ActorUiTabControllerAndroid::SetActorTaskPaused() {
-  TaskId task_id = actor_keyed_service_->GetTaskFromTab(*tab_);
-  if (task_id) {
-    if (auto* task = actor_keyed_service_->GetTask(task_id)) {
-      // This call originates from the Android UI, so it represents an
-      // intentional user pause taskto the . Therefore, `from_actor` is false.
-      task->Pause(/*from_actor=*/false);
-    }
+  if (auto* task = actor_keyed_service_->GetTaskFromTab(*tab_)) {
+    // This call originates from the Android UI, so it represents an
+    // intentional user pause task. Therefore, `from_actor` is false.
+    task->Pause(/*from_actor=*/false);
   }
 }
 
 void ActorUiTabControllerAndroid::SetActorTaskResume() {
-  TaskId task_id = actor_keyed_service_->GetTaskFromTab(*tab_);
-  if (task_id) {
-    if (auto* task = actor_keyed_service_->GetTask(task_id)) {
-      task->Resume();
-    }
+  if (auto* task = actor_keyed_service_->GetTaskFromTab(*tab_)) {
+    task->Resume();
   }
 }
 
