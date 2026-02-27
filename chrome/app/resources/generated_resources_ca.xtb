@@ -4873,7 +4873,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="4298660926525614540">Noms d'emmagatzematge extraïble</translation>
 <translation id="4299022904780065004">Finestra d'&amp;incògnit nova</translation>
 <translation id="4300272766492248925">Obre l'aplicació</translation>
-<translation id="4301231341924904092">Canvia per mi</translation>
+<translation id="4301231341924904092">Canvia-la per mi</translation>
 <translation id="4301671483919369635">Aquesta pàgina té permís per editar fitxers</translation>
 <translation id="4301697210743228350">{COUNT,plural, =1{# contacte no està disponible. Per fer servir <ph name="FEATURE_NAME" /> amb aquesta persona, afegeix als teus contactes l'adreça electrònica associada al seu Compte de Google.}other{# contactes no estan disponibles. Per fer servir <ph name="FEATURE_NAME" /> amb aquestes persones, afegeix als teus contactes les adreces electròniques associades als seus Comptes de Google.}}</translation>
 <translation id="4303079906735388947">Configura un PIN nou per a la clau de seguretat</translation>
@@ -10411,7 +10411,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8146177459103116374">Si ja esteu registrat en aquest dispositiu, podeu <ph name="LINK2_START" />iniciar la sessió com a usuari existent<ph name="LINK2_END" />.</translation>
 <translation id="8146287226035613638">Afegeix i classifica els teus idiomes preferits. Quan sigui possible, els llocs web es mostraran en aquests idiomes. Aquestes preferències se sincronitzen amb la configuració del navegador. <ph name="BEGIN_LINK_LEARN_MORE" />Més informació<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8146793085009540321">No s'ha pogut iniciar la sessió. Contacteu amb l'administrador o torneu-ho a provar.</translation>
-<translation id="8147346945017130012">Ajuda a millorar les funcions i el rendiment de Chrome i Chrome OS enviant automàticament informes d'error i dades de diagnòstic i d'ús a Google.</translation>
+<translation id="8147346945017130012">Ajuda a millorar les funcions i el rendiment de Chrome i ChromeOS enviant automàticament informes d'error i dades de diagnòstic i d'ús a Google.</translation>
 <translation id="8147900440966275470">S'ha trobat <ph name="NUM" /> pestanya</translation>
 <translation id="814870937590541483">Més accions per als fitxers de Google Drive</translation>
 <translation id="8148760431881541277">Limita l'inici de sessió</translation>

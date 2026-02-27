@@ -6035,7 +6035,7 @@
 <translation id="5111326646107464148">ဝင်းဒိုးအသစ်တွင် အဖွဲ့ကို ဖွင့်ရန်</translation>
 <translation id="511147239888121455">သင်၏အရာများကို အရန်သိမ်းမလား။</translation>
 <translation id="5111646998522066203">ရုပ်ဖျက်မုဒ်မှ ထွက်ရန်</translation>
-<translation id="5111692334209731439">&amp;စာညှပ် မန်နေဂျာ</translation>
+<translation id="5111692334209731439">&amp;ဝဘ်လိပ်စာ စီမံစနစ်</translation>
 <translation id="5111794652433847656">ဤစက်တွင် <ph name="APP_NAME" /> အတွက် လျှို့ဝှက်ကီး မရှိပါ</translation>
 <translation id="5112577000029535889">ပြုစုသူ ကိရိယာများ</translation>
 <translation id="5112686815928391420">{NUM_OF_FILES,plural, =1{ဖိုင် ၁ ဖိုင်ရွှေ့လိုက်သည်}other{ဖိုင် {NUM_OF_FILES} ဖိုင်ရွှေ့လိုက်သည်}}</translation>
@@ -9483,7 +9483,7 @@
 <translation id="7517959947270534934">သင့်မိသားစုဝင်သည် စကားဝှက်များကို ယခု မရယူနိုင်ပါ။ Chrome အပ်ဒိတ်လုပ်ပြီး သူ၏စကားဝှက်များ စင့်ခ်လုပ်ခိုင်းပါ။</translation>
 <translation id="7518079994230200553">ဤရွေးချယ်စရာကို ယခုမရနိုင်ပါ။</translation>
 <translation id="7520766081042531487">ရုပ်ဖျက်ဌာန-: <ph name="SUBFRAME_SITE" /></translation>
-<translation id="752098910262610337">ဖြတ်လမ်းလင့်ခ်များ ပြရန်</translation>
+<translation id="752098910262610337">ဖြတ်လမ်းများ ပြရန်</translation>
 <translation id="7521430434164837205">Microsoft 365 ဖိုင်</translation>
 <translation id="7523117833414447032">စာလုံးကြီးများကို ဖတ်သည့်အခါ</translation>
 <translation id="7523585675576642403">ပရိုဖိုင်ကို အမည်ပြောင်းရန်</translation>
@@ -10378,7 +10378,7 @@
 <translation id="8110393529211831722">စာရင်းသွင်းမှုကို ဤစက်တွင်သာ ထည့်သွင်းထားပြီး သင့်အကောင့်အောက်ရှိ အခြားစက်များနှင့် စင့်ခ်လုပ်ထားခြင်း မရှိပါ။ <ph name="LINK_BEGIN" />ပိုမိုလေ့လာရန်<ph name="LINK_END" /></translation>
 <translation id="8110489095782891123">အဆက်အသွယ် စာရင်းကို ဒေါင်းလုဒ်လုပ်နေသည်...</translation>
 <translation id="8114925369073821854"><ph name="APP_NAME" /> မိုက်ခရိုဖုန်း ခွင့်ပြုချက်</translation>
-<translation id="8116972784401310538">&amp;စာညှပ် မန်နေဂျာ</translation>
+<translation id="8116972784401310538">&amp;ဝဘ်လိပ်စာ စီမံစနစ်</translation>
 <translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" /> က သင်လက်မှတ်ထိုးဝင်ပုံကို မှတ်ထားပြီး ရနိုင်တိုင်း အလိုအလျောက် လက်မှတ်ထိုးဝင်ပေးသည်။ ပိတ်ထားပါက အကြိမ်တိုင်း အတည်ပြုချက် တောင်းပါမည်။</translation>
 <translation id="8118362518458010043">Chrome ကပိတ်ထားသည်။ ဤနောက်ဆက်တွဲသည် လုံခြုံမှုမရှိနိုင်ပါ။</translation>
 <translation id="8118448640060360549">{EXTENSIONS_COUNT,plural, =1{လိပ်စာ # ခု}other{လိပ်စာ # ခု}}</translation>

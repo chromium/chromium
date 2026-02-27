@@ -3897,11 +3897,11 @@ Gegevensoverdracht met Takeout moet ook aanstaan voor een goede werking van de a
       Als je het beleid niet toepast of niet instelt, rapporteren ingeschreven apparaten de statistieken niet.</translation>
 <translation id="3729937245044939404">Dit beleid is beëindigd in M70. Gebruik in plaats hiervan <ph name="AUTOFILL_ADDRESS_ENABLED_POLICY_NAME" /> en <ph name="AUTOFILL_CREDIT_CARD_ENABLED_POLICY_NAME" />.
 
-Hiermee wordt de functie Automatisch aanvullen van <ph name="PRODUCT_NAME" /> geactiveerd en wordt gebruikers toegestaan webformulieren automatisch in te vullen met eerder opgeslagen informatie zoals adres- of creditcardgegevens.
+Hiermee wordt de functie Automatisch invullen van <ph name="PRODUCT_NAME" /> geactiveerd en wordt gebruikers toegestaan webformulieren automatisch in te vullen met eerder opgeslagen informatie zoals adres- of creditcardgegevens.
 
-Als je deze instelling uitzet, kunnen gebruikers de functie Automatisch aanvullen niet gebruiken.
+Als je deze instelling uitzet, kunnen gebruikers de functie Automatisch invullen niet gebruiken.
 
-Als je de instelling activeert of geen waarde instelt, kunnen gebruikers de opties voor Automatisch aanvullen zelf beheren. Zo kunnen ze profielen voor Automatisch aanvullen instellen en de functie naar wens aan- of uitzetten.</translation>
+Als je de instelling activeert of geen waarde instelt, kunnen gebruikers de opties voor Automatisch invullen zelf beheren. Zo kunnen ze profielen voor Automatisch invullen instellen en de functie naar wens aan- of uitzetten.</translation>
 <translation id="3733014427925403568">Dag van de week voor het interval.</translation>
 <translation id="3736879847913515635">'Persoon toevoegen' aanzetten in gebruikersbeheer</translation>
 <translation id="3744984310825999317">Toestaan dat <ph name="PEPPER_NAME" /> een nieuwe decoder gebruikt voor videodecodering met hardwareversnelling.</translation>
@@ -7420,8 +7420,8 @@ Als je de toegang tot Ontwikkelaarstools wilt beperken op basis van de pagina-UR
       Als je dit beleid instelt op False of niet instelt, kunnen sites alleen WebAssembly-modules naar vensters en werkrollen in dezelfde oorsprong sturen.</translation>
 <translation id="6008497706608447728">Lijst met geblokkeerde domeinen voor zwevende SSO-service</translation>
 <translation id="6009419785187615211">Dit beleid bepaalt hoe er wordt omgegaan met onveilige formulieren (formulieren die gegevens sturen via HTTP) die zijn ingesloten in beveiligde sites (HTTPS) in de browser.
-       Als je het beleid toepast of niet instelt, wordt er een waarschuwingsbericht op de volledige pagina weergegeven als er een onveilig formulier wordt gestuurd. Daarnaast wordt er een waarschuwingsballon naast de formuliervelden weergegeven als de focus erop wordt geplaatst en wordt automatisch aanvullen uitgezet voor deze formulieren.
-       Als je het beleid niet toepast, worden er geen waarschuwingen weergegeven voor onveilige formulieren en werkt automatisch aanvullen normaal.
+       Als je het beleid toepast of niet instelt, wordt er een waarschuwingsbericht op de volledige pagina weergegeven als er een onveilig formulier wordt gestuurd. Daarnaast wordt er een waarschuwingsballon naast de formuliervelden weergegeven als de focus erop wordt geplaatst en wordt automatisch invullen uitgezet voor deze formulieren.
+       Als je het beleid niet toepast, worden er geen waarschuwingen weergegeven voor onveilige formulieren en werkt automatisch invullen normaal.
 
        Dit beleid wordt verwijderd in Chrome 130.</translation>
 <translation id="6011193465932186973">Vingerafdruk</translation>
