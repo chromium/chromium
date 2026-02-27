@@ -12,6 +12,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/waitable_event.h"
 #include "components/bookmarks/browser/bookmark_client.h"
+#include "components/os_crypt/async/common/encryptor.h"
 
 namespace base {
 class FilePath;
@@ -36,9 +37,23 @@ class ModelLoader : public base::RefCountedThreadSafe<ModelLoader> {
   // `callback` is run once loading completes (on the main thread).
   // `local_or_syncable_file_path` must be non-empty and represents the
   // main (non-account) bookmarks, whereas `account_file_path` may be empty.
+  // Depending on the stage of encryption feature rollout, `encryptor`,
+  // `encrypted_local_or_syncable_file_path` and `encrypted_account_file_path`
+  // will be used to load the encrypted bookmarks file to either verify its
+  // content matches the unencrypted file, or to use it in place of the
+  // unencrypted content. If encryption is not enabled, these three parameters
+  // will not be used.
+  // `encryptor` can be null if encryption is not enabled.
+  // `encrypted_local_or_syncable_file_path` must be non-empty and
+  // `encrypted_account_file_path` should be empty only if
+  // `account_file_path` is empty.
   static scoped_refptr<ModelLoader> Create(
+      scoped_refptr<base::RefCountedData<const os_crypt_async::Encryptor>>
+          encryptor,
       const base::FilePath& local_or_syncable_file_path,
+      const base::FilePath& encrypted_local_or_syncable_file_path,
       const base::FilePath& account_file_path,
+      const base::FilePath& encrypted_account_file_path,
       LoadManagedNodeCallback load_managed_node_callback,
       LoadCallback callback);
 
@@ -68,8 +83,12 @@ class ModelLoader : public base::RefCountedThreadSafe<ModelLoader> {
 
   // Performs the load on a background thread.
   std::unique_ptr<BookmarkLoadDetails> DoLoadOnBackgroundThread(
+      scoped_refptr<base::RefCountedData<const os_crypt_async::Encryptor>>
+          encryptor,
       const base::FilePath& local_or_syncable_file_path,
+      const base::FilePath& encrypted_local_or_syncable_file_path,
       const base::FilePath& account_file_path,
+      const base::FilePath& encrypted_account_file_path,
       LoadManagedNodeCallback load_managed_node_callback);
 
   scoped_refptr<base::SequencedTaskRunner> backend_task_runner_;

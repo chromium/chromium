@@ -304,8 +304,9 @@ void BookmarkModel::ContinueLoadWithEncryptor(
 
   // Creating ModelLoader schedules the load on a backend task runner.
   model_loader_ = ModelLoader::Create(
-      local_or_syncable_file_path, account_file_path,
-      client_->GetLoadManagedNodeCallback(),
+      encryptor, local_or_syncable_file_path,
+      encrypted_local_or_syncable_file_path, account_file_path,
+      encrypted_account_file_path, client_->GetLoadManagedNodeCallback(),
       base::BindOnce(&BookmarkModel::DoneLoading, AsWeakPtr()));
 }
 

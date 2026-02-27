@@ -31,6 +31,12 @@ TEST_P(BookmarkFeaturesWithEncryptionTest,
             IsWriteBothReadOnlyClearStage());
 }
 
+TEST_P(BookmarkFeaturesWithEncryptionTest,
+       ShouldVerifyEncryptedBookmarksDataOnLoad) {
+  EXPECT_EQ(ShouldVerifyEncryptedBookmarksDataOnLoad(),
+            IsWriteBothReadOnlyClearStage());
+}
+
 INSTANTIATE_TEST_SUITE_P(
     BookmarkFeaturesWithEncryptionTest,
     BookmarkFeaturesWithEncryptionTest,

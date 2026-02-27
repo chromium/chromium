@@ -67,6 +67,16 @@ bool ShouldWriteEncryptedBookmarksToDisk() {
   NOTREACHED();
 }
 
+bool ShouldVerifyEncryptedBookmarksDataOnLoad() {
+  switch (GetBookmarkEncryptionStage()) {
+    case BookmarkEncryptionStage::kWriteBothReadOnlyClear:
+      return true;
+    case BookmarkEncryptionStage::kDisabled:
+      return false;
+  }
+  NOTREACHED();
+}
+
 std::string GetBookmarkEncryptionStageNameForTesting(  // IN-TEST
     BookmarkEncryptionStage stage) {
   for (const auto& pair : kBookmarkEncryptionStageMap) {

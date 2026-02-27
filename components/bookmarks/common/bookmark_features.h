@@ -21,6 +21,11 @@ BASE_DECLARE_FEATURE(kEnableBookmarkNodeDataNewPickleFormat);
 // returns true if encrypted bookmarks should be written to disk.
 bool ShouldWriteEncryptedBookmarksToDisk();
 
+// Based on kEncryptBookmarks and kBookmarkEncryptionStageParam, this function
+// returns true if encrypted bookmarks data should be verified when loading
+// unencrypted bookmarks data.
+bool ShouldVerifyEncryptedBookmarksDataOnLoad();
+
 // Flag to enable bookmark encryption. If false, no encryption will be performed
 // on bookmarks. If true, usage of encryption will be determined by
 // kBookmarkEncryptionStageParam.

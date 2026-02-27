@@ -3404,6 +3404,44 @@ TEST(BookmarkModelEncryptedStorageTest,
       model->client());
 }
 
+TEST(BookmarkModelEncryptedStorageTest, CheckEncryptedBookmarksFile) {
+  base::test::ScopedFeatureList features{
+      switches::kSyncEnableBookmarksInTransportMode};
+  base::test::ScopedFeatureList encryption_features;
+  test::InitFeaturesForBookmarkTestEncryptionStage(
+      encryption_features, BookmarkEncryptionStage::kWriteBothReadOnlyClear);
+
+  base::HistogramTester histogram_tester;
+  base::ScopedTempDir tmp_dir;
+  ASSERT_TRUE(tmp_dir.CreateUniqueTempDir());
+  base::test::TaskEnvironment task_environment{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  auto model =
+      std::make_unique<BookmarkModel>(std::make_unique<TestBookmarkClient>());
+  model->Load(tmp_dir.GetPath());
+  test::WaitForBookmarkModelToLoad(model.get());
+
+  // Create local-or-syncable bookmarks file.
+  model->AddURL(model->bookmark_bar_node(), 0, u"Foo", GURL("http://foo.com"));
+  task_environment.FastForwardUntilNoTasksRemain();
+  // Create account bookmarks file.
+  model->CreateAccountPermanentFolders();
+  task_environment.FastForwardUntilNoTasksRemain();
+
+  model =
+      std::make_unique<BookmarkModel>(std::make_unique<TestBookmarkClient>());
+  model->Load(tmp_dir.GetPath());
+  test::WaitForBookmarkModelToLoad(model.get());
+  task_environment.FastForwardUntilNoTasksRemain();
+
+  histogram_tester.ExpectTotalCount(
+      "Bookmarks.BookmarksFileLoadResult.LocalOrSyncable.Encrypted",
+      /*expected_count=*/1);
+  histogram_tester.ExpectTotalCount(
+      "Bookmarks.BookmarksFileLoadResult.Account.Encrypted",
+      /*expected_count=*/1);
+}
+
 TEST(BookmarkNodeTest, NodeMetaInfo) {
   BookmarkNode node(/*id=*/0, base::Uuid::GenerateRandomV4(), GURL());
   EXPECT_FALSE(node.GetMetaInfoMap());

@@ -9,6 +9,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/hash/hash.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/numerics/clamped_math.h"
@@ -19,22 +20,29 @@
 #include "components/bookmarks/browser/bookmark_load_details.h"
 #include "components/bookmarks/browser/titled_url_index.h"
 #include "components/bookmarks/browser/url_index.h"
+#include "components/bookmarks/common/bookmark_features.h"
 #include "components/bookmarks/common/bookmark_metrics.h"
 #include "components/bookmarks/common/url_load_stats.h"
 #include "components/bookmarks/common/user_folder_load_stats.h"
+#include "components/os_crypt/async/common/encryptor.h"
 
 namespace bookmarks {
 
 namespace {
 
-// Loads and deserializes a JSON file determined by `file_path` and returns it
-// in the form of a dictionary, or an error code if something fails.
+// Loads a JSON file determined by `file_path` and returns its content as a
+// string or an error code if something fails.
 // No kSuccess result is returned in case of success, it is implied by having a
-// DictValue returned.
-// This function does not decode the bookmarks data, so
-// kBookmarkCodecDecodingFailed is not a possible return value.
-base::expected<base::DictValue, metrics::BookmarksFileLoadResult>
-LoadFileToDict(const base::FilePath& file_path) {
+// string returned.
+// This function does not parse or decode the bookmarks data, so
+// kJSONParsingFailed and kBookmarkCodecDecodingFailed aren't possible return
+// values.
+base::expected<std::string, metrics::BookmarksFileLoadResult> ReadFile(
+    scoped_refptr<base::RefCountedData<const os_crypt_async::Encryptor>>
+        encryptor,
+    const base::FilePath& file_path,
+    metrics::StorageFileForUma storage_file_for_uma) {
+  const base::TimeTicks start_time = base::TimeTicks::Now();
   if (!base::PathExists(file_path)) {
     return base::unexpected(metrics::BookmarksFileLoadResult::kFileMissing);
   }
@@ -44,25 +52,92 @@ LoadFileToDict(const base::FilePath& file_path) {
         metrics::BookmarksFileLoadResult::kContentLoadingFailed);
   }
 
+  if (!encryptor) {
+    metrics::RecordTimeToReadFile(storage_file_for_uma,
+                                  metrics::EncryptionTypeForUma::kClearText,
+                                  base::TimeTicks::Now() - start_time);
+    return json_string;
+  }
+
+  std::string decrypted_json_string;
+  if (!encryptor->data.DecryptString(json_string, &decrypted_json_string)) {
+    return base::unexpected(
+        metrics::BookmarksFileLoadResult::kDecryptionFailed);
+  }
+  metrics::RecordTimeToReadFile(storage_file_for_uma,
+                                metrics::EncryptionTypeForUma::kEncrypted,
+                                base::TimeTicks::Now() - start_time);
+  return decrypted_json_string;
+}
+
+// Deserializes the given JSON string. Returns it in the form of a dictionary,
+// or the kJSONParsingFailed error code if something fails.
+base::expected<base::DictValue, metrics::BookmarksFileLoadResult>
+DeserializeStringToDict(std::string_view json_string) {
   // Titles may end up containing invalid utf and we shouldn't throw away
   // all bookmarks if some titles have invalid utf.
   JSONStringValueDeserializer deserializer(
       json_string, base::JSON_REPLACE_INVALID_CHARACTERS);
-
   std::unique_ptr<base::Value> root = deserializer.Deserialize(
       /*error_code=*/nullptr, /*error_message=*/nullptr);
   if (!root || !root->is_dict()) {
-    // The bookmark file exists but was not deserialized properly.
     return base::unexpected(
         metrics::BookmarksFileLoadResult::kJSONParsingFailed);
   }
-
   return std::move(*root).TakeDict();
 }
 
+void ReadEncryptedDataAndVerifyHashOnBackgroundSequence(
+    size_t json_string_hash,
+    scoped_refptr<base::RefCountedData<const os_crypt_async::Encryptor>>
+        encryptor,
+    const base::FilePath encrypted_file_path,
+    metrics::StorageFileForUma storage_file_for_uma) {
+  base::expected<std::string, metrics::BookmarksFileLoadResult>
+      encrypted_json_string =
+          ReadFile(encryptor, encrypted_file_path, storage_file_for_uma);
+  metrics::RecordBookmarksFileLoadResult(
+      storage_file_for_uma, metrics::EncryptionTypeForUma::kEncrypted,
+      encrypted_json_string.error_or(
+          metrics::BookmarksFileLoadResult::kSuccess));
+  // TODO(crbug.com/435317726): If comparison isn't successful, we
+  // should save the encrypted file to disk again.
+  if (encrypted_json_string.has_value()) {
+    const size_t encrypted_json_string_hash =
+        base::FastHash(encrypted_json_string.value());
+    metrics::RecordEncryptedBookmarksFileMatchesResult(
+        storage_file_for_uma, encrypted_json_string_hash == json_string_hash);
+  }
+}
+
+void MaybeScheduleReadEncryptedDataAndVerifyHash(
+    std::string_view json_string,
+    const scoped_refptr<base::RefCountedData<const os_crypt_async::Encryptor>>
+        encryptor,
+    const base::FilePath& encrypted_file_path,
+    metrics::StorageFileForUma storage_file_for_umage) {
+  if (!ShouldVerifyEncryptedBookmarksDataOnLoad()) {
+    return;
+  }
+  CHECK(encryptor);
+  CHECK(!encrypted_file_path.empty());
+  const size_t json_string_hash = base::FastHash(json_string);
+  // Validate the encrypted data on a different task in order not to impact the
+  // bookmarks load time.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&ReadEncryptedDataAndVerifyHashOnBackgroundSequence,
+                     json_string_hash, encryptor, encrypted_file_path,
+                     storage_file_for_umage));
+}
+
 std::unique_ptr<BookmarkLoadDetails> LoadBookmarks(
+    const scoped_refptr<base::RefCountedData<const os_crypt_async::Encryptor>>
+        encryptor,
     const base::FilePath& local_or_syncable_file_path,
-    const base::FilePath& account_file_path) {
+    const base::FilePath& encrypted_local_or_syncable_file_path,
+    const base::FilePath& account_file_path,
+    const base::FilePath& encrypted_account_file_path) {
   auto details = std::make_unique<BookmarkLoadDetails>();
 
   std::set<int64_t> ids_assigned_to_account_nodes;
@@ -89,8 +164,11 @@ std::unique_ptr<BookmarkLoadDetails> LoadBookmarks(
         BookmarkPermanentNode::CreateMobileBookmarks(0,
                                                      /*is_account_node=*/true);
 
+    const base::expected<std::string, metrics::BookmarksFileLoadResult>
+        json_string = ReadFile(/*encryptor=*/nullptr, account_file_path,
+                               metrics::StorageFileForUma::kAccount);
     base::expected<base::DictValue, metrics::BookmarksFileLoadResult>
-        root_dict = LoadFileToDict(account_file_path);
+        root_dict = json_string.and_then(DeserializeStringToDict);
     BookmarkCodec codec;
     if (!root_dict.has_value()) {
       metrics::RecordBookmarksFileLoadResult(
@@ -127,6 +205,9 @@ std::unique_ptr<BookmarkLoadDetails> LoadBookmarks(
           metrics::StorageFileForUma::kAccount,
           metrics::EncryptionTypeForUma::kClearText,
           metrics::BookmarksFileLoadResult::kSuccess);
+      MaybeScheduleReadEncryptedDataAndVerifyHash(
+          json_string.value(), encryptor, encrypted_account_file_path,
+          metrics::StorageFileForUma::kAccount);
     } else {
       // In the failure case, it is still possible that sync metadata was
       // decoded, which includes legit scenarios like sync metadata indicating
@@ -143,8 +224,12 @@ std::unique_ptr<BookmarkLoadDetails> LoadBookmarks(
   {
     std::string sync_metadata_str;
     int64_t max_node_id = 0;
+    const base::expected<std::string, metrics::BookmarksFileLoadResult>
+        json_string =
+            ReadFile(/*encryptor=*/nullptr, local_or_syncable_file_path,
+                     metrics::StorageFileForUma::kLocalOrSyncable);
     base::expected<base::DictValue, metrics::BookmarksFileLoadResult>
-        root_dict = LoadFileToDict(local_or_syncable_file_path);
+        root_dict = json_string.and_then(DeserializeStringToDict);
     BookmarkCodec codec;
     if (!root_dict.has_value()) {
       metrics::RecordBookmarksFileLoadResult(
@@ -173,6 +258,9 @@ std::unique_ptr<BookmarkLoadDetails> LoadBookmarks(
           metrics::StorageFileForUma::kLocalOrSyncable,
           metrics::EncryptionTypeForUma::kClearText,
           metrics::BookmarksFileLoadResult::kSuccess);
+      MaybeScheduleReadEncryptedDataAndVerifyHash(
+          json_string.value(), encryptor, encrypted_local_or_syncable_file_path,
+          metrics::StorageFileForUma::kLocalOrSyncable);
     } else {
       metrics::RecordBookmarksFileLoadResult(
           metrics::StorageFileForUma::kLocalOrSyncable,
@@ -203,9 +291,12 @@ uint64_t GetFileSizeOrZero(const base::FilePath& file_path) {
   return base::GetFileSize(file_path).value_or(0);
 }
 
-void RecordLoadMetrics(BookmarkLoadDetails* details,
-                       const base::FilePath& local_or_syncable_file_path,
-                       const base::FilePath& account_file_path) {
+void RecordLoadMetrics(
+    BookmarkLoadDetails* details,
+    const base::FilePath& local_or_syncable_file_path,
+    const base::FilePath& encrypted_local_or_syncable_file_path,
+    const base::FilePath& account_file_path,
+    const base::FilePath& encrypted_account_file_path) {
   UrlLoadStats url_stats = details->url_index()->ComputeStats();
   metrics::RecordUrlLoadStatsOnProfileLoad(url_stats);
 
@@ -218,11 +309,31 @@ void RecordLoadMetrics(BookmarkLoadDetails* details,
       account_file_path.empty() ? 0U : GetFileSizeOrZero(account_file_path);
 
   if (local_or_syncable_file_size != 0) {
-    metrics::RecordFileSizeAtStartup(local_or_syncable_file_size);
+    metrics::RecordFileSizeAtStartup(metrics::EncryptionTypeForUma::kClearText,
+                                     local_or_syncable_file_size);
   }
 
   if (account_file_size != 0) {
-    metrics::RecordFileSizeAtStartup(account_file_size);
+    metrics::RecordFileSizeAtStartup(metrics::EncryptionTypeForUma::kClearText,
+                                     account_file_size);
+  }
+
+  if (ShouldVerifyEncryptedBookmarksDataOnLoad()) {
+    const uint64_t encrypted_local_or_syncable_file_size =
+        GetFileSizeOrZero(encrypted_local_or_syncable_file_path);
+    if (encrypted_local_or_syncable_file_size != 0) {
+      metrics::RecordFileSizeAtStartup(
+          metrics::EncryptionTypeForUma::kEncrypted,
+          encrypted_local_or_syncable_file_size);
+    }
+
+    const uint64_t encrypted_account_file_size =
+        GetFileSizeOrZero(encrypted_account_file_path);
+    if (encrypted_account_file_size != 0) {
+      metrics::RecordFileSizeAtStartup(
+          metrics::EncryptionTypeForUma::kEncrypted,
+          encrypted_account_file_size);
+    }
   }
 
   const uint64_t sum_file_size =
@@ -239,8 +350,12 @@ void RecordLoadMetrics(BookmarkLoadDetails* details,
 
 // static
 scoped_refptr<ModelLoader> ModelLoader::Create(
+    scoped_refptr<base::RefCountedData<const os_crypt_async::Encryptor>>
+        encryptor,
     const base::FilePath& local_or_syncable_file_path,
+    const base::FilePath& encrypted_local_or_syncable_file_path,
     const base::FilePath& account_file_path,
+    const base::FilePath& encrypted_account_file_path,
     LoadManagedNodeCallback load_managed_node_callback,
     LoadCallback callback) {
   CHECK(!local_or_syncable_file_path.empty());
@@ -255,7 +370,9 @@ scoped_refptr<ModelLoader> ModelLoader::Create(
   model_loader->backend_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&ModelLoader::DoLoadOnBackgroundThread, model_loader,
-                     local_or_syncable_file_path, account_file_path,
+                     encryptor, local_or_syncable_file_path,
+                     encrypted_local_or_syncable_file_path, account_file_path,
+                     encrypted_account_file_path,
                      std::move(load_managed_node_callback)),
       std::move(callback));
   return model_loader;
@@ -272,11 +389,17 @@ ModelLoader::ModelLoader()
 ModelLoader::~ModelLoader() = default;
 
 std::unique_ptr<BookmarkLoadDetails> ModelLoader::DoLoadOnBackgroundThread(
+    const scoped_refptr<base::RefCountedData<const os_crypt_async::Encryptor>>
+        encryptor,
     const base::FilePath& local_or_syncable_file_path,
+    const base::FilePath& encrypted_local_or_syncable_file_path,
     const base::FilePath& account_file_path,
+    const base::FilePath& encrypted_account_file_path,
     LoadManagedNodeCallback load_managed_node_callback) {
   std::unique_ptr<BookmarkLoadDetails> details =
-      LoadBookmarks(local_or_syncable_file_path, account_file_path);
+      LoadBookmarks(encryptor, local_or_syncable_file_path,
+                    encrypted_local_or_syncable_file_path, account_file_path,
+                    encrypted_account_file_path);
   CHECK(details);
 
   details->PopulateNodeIdsForLocalOrSyncablePermanentNodes();
@@ -288,7 +411,8 @@ std::unique_ptr<BookmarkLoadDetails> ModelLoader::DoLoadOnBackgroundThread(
   details->CreateIndices();
 
   RecordLoadMetrics(details.get(), local_or_syncable_file_path,
-                    account_file_path);
+                    encrypted_local_or_syncable_file_path, account_file_path,
+                    encrypted_account_file_path);
 
   history_bookmark_model_ = details->url_index();
   loaded_signal_.Signal();

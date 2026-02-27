@@ -422,6 +422,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Bookmarks.EncryptedBookmarksFileMatchesResult.{BookmarksFileType}"
+    enum="BooleanMatched" expires_after="2027-02-24">
+  <owner>plcoirier@google.com</owner>
+  <owner>chrome-collections@google.com</owner>
+  <summary>
+    Records if the {BookmarksFileType} bookmarks encrypted file content matches
+    the unencrypted file content when the application starts.
+  </summary>
+</histogram>
+
 <histogram name="Bookmarks.EntryPoint" enum="BookmarksEntryPoint"
     expires_after="2026-07-26">
   <owner>ianwen@chromium.org</owner>
@@ -709,6 +720,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Bookmarks.Storage.EncryptedFileSizeAtStartup" units="KB"
+    expires_after="2027-02-24">
+  <owner>plcoirier@google.com</owner>
+  <owner>chrome-collections@google.com</owner>
+  <summary>
+    Size of the encrypted bookmarks file, recorded when the bookmarks model is
+    loaded.
+
+    This is similar to Bookmarks.Storage.FileSizeAtStartup2, but it is recorded
+    for the encrypted bookmarks file.
+  </summary>
+</histogram>
+
 <histogram name="Bookmarks.Storage.FileSizeAtStartup2" units="KB"
     expires_after="2026-07-19">
   <owner>wylieb@google.com</owner>
@@ -840,6 +864,17 @@ chromium-metrics-reviews@google.com.
 
     Warning: this histogram was expired from 2025-03-02 to 2025-07-08; data may
     be missing.
+  </summary>
+</histogram>
+
+<histogram name="Bookmarks.TimeToReadFile.{BookmarksFileType}.{EncryptionType}"
+    units="ms" expires_after="2027-02-24">
+  <owner>plcoirier@google.com</owner>
+  <owner>chrome-collections@google.com</owner>
+  <summary>
+    Records the duration it took to read and decrypt the {EncryptionType} file
+    of {BookmarksFileType} bookmarks. It does not include the time it took to
+    parse the JSON string or deserialize the JSON value.
   </summary>
 </histogram>
 

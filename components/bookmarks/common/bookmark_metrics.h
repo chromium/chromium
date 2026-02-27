@@ -122,7 +122,8 @@ void RecordTimeSinceLastScheduledSave(base::TimeDelta delta);
 void RecordTimeToLoadAtStartup(base::TimeDelta delta);
 
 // Records size of the bookmark file at startup.
-void RecordFileSizeAtStartup(int64_t total_bytes);
+void RecordFileSizeAtStartup(EncryptionTypeForUma encryption_type,
+                             int64_t total_bytes);
 
 // Records a bookmark URL edit.
 void RecordURLEdit(BookmarkEditSource source);
@@ -175,6 +176,13 @@ enum class BookmarksFileLoadResult {
 void RecordBookmarksFileLoadResult(StorageFileForUma storage_file,
                                    EncryptionTypeForUma encryption_type,
                                    BookmarksFileLoadResult result);
+
+void RecordEncryptedBookmarksFileMatchesResult(StorageFileForUma storage_file,
+                                               bool file_matches);
+
+void RecordTimeToReadFile(StorageFileForUma storage_file,
+                          EncryptionTypeForUma encryption_type,
+                          base::TimeDelta delta);
 
 }  // namespace metrics
 
