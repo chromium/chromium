@@ -217,7 +217,8 @@ class ExtensionsMenuMediator implements Destroyable, ExtensionsMenuBridge.Observ
             mActionModels.add(new ListItem(0, model));
         }
 
-        updateZeroState();
+        boolean isZeroState = entries.isEmpty();
+        mMenuPropertyModel.set(ExtensionsMenuProperties.IS_ZERO_STATE, isZeroState);
     }
 
     @Override
@@ -229,14 +230,6 @@ class ExtensionsMenuMediator implements Destroyable, ExtensionsMenuBridge.Observ
 
         Bitmap icon = mMenuBridge.getActionIcon(actionIndex);
         model.set(ExtensionsMenuItemProperties.ICON, icon);
-    }
-
-    @Override
-    public void onActionRemoved(int actionIndex) {
-        assert actionIndex >= 0 && actionIndex < mActionModels.size();
-        mActionModels.removeAt(actionIndex);
-
-        updateZeroState();
     }
 
     private boolean isMainPageVisible() {
@@ -255,11 +248,5 @@ class ExtensionsMenuMediator implements Destroyable, ExtensionsMenuBridge.Observ
     public void onReady() {
         onModelChanged();
         mOnReady.run();
-    }
-
-    /** Updates the zero state visibility. */
-    private void updateZeroState() {
-        boolean isZeroState = mActionModels.size() == 0;
-        mMenuPropertyModel.set(ExtensionsMenuProperties.IS_ZERO_STATE, isZeroState);
     }
 }

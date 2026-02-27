@@ -78,23 +78,11 @@ public class ExtensionsMenuBridge implements Destroyable {
     /**
      * Callback from native indicating that an extension icon has been updated.
      *
-     * @param actionIndex The index of the menu entry in the menu corresponding to the action
-     *     updated.
+     * @param actionIndex The index of the updated extension in the menu.
      */
     @CalledByNative
     public void onActionIconUpdated(int actionIndex) {
         mObserver.onActionIconUpdated(actionIndex);
-    }
-
-    /**
-     * Callback from native indicating that an action has been removed.
-     *
-     * @param actionIndex The index of the menu entry in the menu corresponding to the action
-     *     removed.
-     */
-    @CalledByNative
-    public void onActionRemoved(int actionIndex) {
-        mObserver.onActionRemoved(actionIndex);
     }
 
     /**
@@ -116,9 +104,6 @@ public class ExtensionsMenuBridge implements Destroyable {
     public interface Observer {
         /** Called when an extension icon has been updated on actionIndex. */
         void onActionIconUpdated(int actionIndex);
-
-        /** Called when an action has been removed from the menu. */
-        void onActionRemoved(int actionIndex);
 
         /** Called when the menu data is ready to be consumed. */
         void onReady();
