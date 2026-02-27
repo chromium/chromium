@@ -144,55 +144,6 @@ DeviceEntryUIType AudioDeviceEntryView::GetType() const {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// CastDeviceEntryView:
-
-CastDeviceEntryView::CastDeviceEntryView(
-    base::RepeatingClosure callback,
-    SkColor foreground_color,
-    SkColor background_color,
-    const global_media_controls::mojom::DevicePtr& device)
-    : DeviceEntryUI(device->id, device->name, GetVectorIcon(device->icon)),
-      HoverButton(std::move(callback),
-                  CreateIconView(device->icon),
-                  base::UTF8ToUTF16(device->name),
-                  base::UTF8ToUTF16(device->status_text)),
-      device_(device->Clone()) {
-  ChangeCastEntryColor(foreground_color, background_color);
-
-  SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
-  views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
-  SetHasInkDropActionOnClick(true);
-}
-
-CastDeviceEntryView::~CastDeviceEntryView() = default;
-
-void CastDeviceEntryView::OnColorsChanged(SkColor foreground_color,
-                                          SkColor background_color) {
-  ChangeCastEntryColor(foreground_color, background_color);
-}
-
-DeviceEntryUIType CastDeviceEntryView::GetType() const {
-  return DeviceEntryUIType::kCast;
-}
-
-void CastDeviceEntryView::ChangeCastEntryColor(SkColor foreground_color,
-                                               SkColor background_color) {
-  if (device_->icon == global_media_controls::mojom::IconType::kThrobber) {
-    // Do not pass in `icon_view()` here as we want to keep the throbber view
-    // with its color unchanged.
-    ChangeEntryColor(nullptr, title(), subtitle(), nullptr, foreground_color,
-                     background_color);
-  } else {
-    ChangeEntryColor(static_cast<views::ImageView*>(icon_view()), title(),
-                     subtitle(), &icon(), foreground_color, background_color);
-  }
-}
-
-std::string CastDeviceEntryView::GetStatusTextForTest() const {
-  return device_->status_text;
-}
-
-///////////////////////////////////////////////////////////////////////////////
 // CastDeviceEntryViewAsh:
 
 CastDeviceEntryViewAsh::CastDeviceEntryViewAsh(
@@ -218,9 +169,6 @@ DeviceEntryUIType CastDeviceEntryViewAsh::GetType() const {
 
 BEGIN_METADATA(AudioDeviceEntryView)
 ADD_PROPERTY_METADATA(bool, Highlighted)
-END_METADATA
-
-BEGIN_METADATA(CastDeviceEntryView)
 END_METADATA
 
 BEGIN_METADATA(CastDeviceEntryViewAsh)

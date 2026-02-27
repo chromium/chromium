@@ -23,6 +23,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/global_media_controls/public/test/mock_device_service.h"
+#include "components/media_message_center/notification_theme.h"
 #include "components/media_router/browser/presentation/start_presentation_context.h"
 #include "media/audio/audio_device_description.h"
 #include "media/base/media_switches.h"
@@ -43,7 +44,6 @@ using testing::NiceMock;
 namespace {
 
 constexpr char kItemId[] = "item_id";
-constexpr char kSinkFriendlyName[] = "Nest Hub";
 
 ui::MouseEvent pressed_event(ui::EventType::kMousePressed,
                              gfx::Point(),
@@ -51,18 +51,6 @@ ui::MouseEvent pressed_event(ui::EventType::kMousePressed,
                              ui::EventTimeForNow(),
                              ui::EF_LEFT_MOUSE_BUTTON,
                              ui::EF_LEFT_MOUSE_BUTTON);
-
-global_media_controls::mojom::DevicePtr CreateDevice() {
-  auto device = global_media_controls::mojom::Device::New();
-  device->name = kSinkFriendlyName;
-  return device;
-}
-
-std::vector<global_media_controls::mojom::DevicePtr> CreateDevices() {
-  std::vector<global_media_controls::mojom::DevicePtr> devices;
-  devices.push_back(CreateDevice());
-  return devices;
-}
 
 class MockMediaNotificationDeviceProvider
     : public MediaNotificationDeviceProvider {
@@ -196,6 +184,28 @@ class MediaItemUIDeviceSelectorViewTest : public ChromeViewsTestBase {
     provider->AddDevice("Earbuds", "3");
   }
 
+  global_media_controls::mojom::DevicePtr CreateDevice(
+      const std::string& id,
+      const std::string& name) {
+    auto device = global_media_controls::mojom::Device::New();
+    device->id = id;
+    device->name = name;
+    return device;
+  }
+
+  std::vector<global_media_controls::mojom::DevicePtr> CreateDevices(
+      std::vector<std::pair<std::string, std::string>> device_info) {
+    std::vector<global_media_controls::mojom::DevicePtr> devices;
+    for (const auto& info : device_info) {
+      devices.push_back(CreateDevice(info.first, info.second));
+    }
+    return devices;
+  }
+
+  std::vector<global_media_controls::mojom::DevicePtr> CreateDevices() {
+    return CreateDevices({{"id", "Nest Hub"}});
+  }
+
   void SimulateButtonClick(views::View* view) {
     views::test::ButtonTestApi(static_cast<views::Button*>(view))
         .NotifyClick(pressed_event);
@@ -213,10 +223,6 @@ class MediaItemUIDeviceSelectorViewTest : public ChromeViewsTestBase {
     return view_->GetEntryIsHighlightedForTesting(entry_view);
   }
 
-  std::string GetButtonText(views::View* view) {
-    return base::UTF16ToUTF8(static_cast<views::LabelButton*>(view)->GetText());
-  }
-
   views::View* GetDeviceEntryViewsContainer() {
     return view_->device_entry_views_container_;
   }
@@ -230,10 +236,11 @@ class MediaItemUIDeviceSelectorViewTest : public ChromeViewsTestBase {
       bool show_devices = false) {
     client_remote_.reset();
     device_list_host_ = std::make_unique<MockDeviceListHost>();
+    media_message_center::MediaColorTheme theme;
     auto device_selector_view = std::make_unique<MediaItemUIDeviceSelectorView>(
         kItemId, delegate, device_list_host_->PassRemote(),
         client_remote_.BindNewPipeAndPassReceiver(), has_audio_output,
-        entry_point, show_devices);
+        entry_point, theme, show_devices);
     device_selector_view->UpdateCurrentAudioDevice(current_device);
     return device_selector_view;
   }
@@ -265,36 +272,33 @@ TEST_F(MediaItemUIDeviceSelectorViewTest, DeviceButtonsCreated) {
   EXPECT_EQ(EntryLabelText(container_children.at(0)), "Speaker");
   EXPECT_EQ(EntryLabelText(container_children.at(1)), "Headphones");
   EXPECT_EQ(EntryLabelText(container_children.at(2)), "Earbuds");
-  EXPECT_EQ(EntryLabelText(container_children.at(3)), kSinkFriendlyName);
+  EXPECT_EQ(EntryLabelText(container_children.at(3)), "Nest Hub");
 }
 
-TEST_F(MediaItemUIDeviceSelectorViewTest, ExpandButtonAndLabelCreated) {
+TEST_F(MediaItemUIDeviceSelectorViewTest, MultipleCastDevices) {
   NiceMock<MockMediaItemUIDeviceSelectorDelegate> delegate;
-  AddAudioDevices(delegate);
   view_ = CreateDeviceSelectorView(&delegate);
-  EXPECT_EQ(view_->GetExpandDeviceSelectorLabelForTesting()->GetText(),
-            l10n_util::GetStringUTF16(IDS_GLOBAL_MEDIA_CONTROLS_DEVICES_LABEL));
-  EXPECT_TRUE(view_->GetDropdownButtonForTesting());
 
-  view_ = CreateDeviceSelectorView(
-      &delegate, "1", true,
-      global_media_controls::GlobalMediaControlsEntryPoint::kPresentation);
-  EXPECT_EQ(view_->GetExpandDeviceSelectorLabelForTesting()->GetText(),
-            l10n_util::GetStringUTF16(
-                IDS_GLOBAL_MEDIA_CONTROLS_DEVICES_LABEL_WITH_COLON));
-  EXPECT_FALSE(view_->GetDropdownButtonForTesting());
+  view_->OnDevicesUpdated(
+      CreateDevices({{"id1", "Device 1"}, {"id2", "Device 2"}}));
+
+  auto cast_views = view_->GetCastDeviceEntryViewsForTesting();
+  ASSERT_EQ(cast_views.size(), 2u);
+  EXPECT_EQ(EntryLabelText(cast_views[0]), "Device 1");
+  EXPECT_EQ(EntryLabelText(cast_views[1]), "Device 2");
 }
 
-TEST_F(MediaItemUIDeviceSelectorViewTest, ExpandButtonOpensEntryContainer) {
+TEST_F(MediaItemUIDeviceSelectorViewTest, CastDeviceButtonClickNotifiesHost) {
   NiceMock<MockMediaItemUIDeviceSelectorDelegate> delegate;
-  AddAudioDevices(delegate);
   view_ = CreateDeviceSelectorView(&delegate);
 
-  // Clicking on the dropdown button should expand the device list.
-  ASSERT_TRUE(view_->GetDropdownButtonForTesting());
-  EXPECT_FALSE(view_->GetDeviceEntryViewVisibilityForTesting());
-  SimulateButtonClick(view_->GetDropdownButtonForTesting());
-  EXPECT_TRUE(view_->GetDeviceEntryViewVisibilityForTesting());
+  view_->OnDevicesUpdated(CreateDevices({{"cast-id", "Cast Device"}}));
+  EXPECT_CALL(*device_list_host_, SelectDevice("cast-id")).Times(1);
+
+  auto cast_views = view_->GetCastDeviceEntryViewsForTesting();
+  ASSERT_EQ(cast_views.size(), 1u);
+  SimulateButtonClick(cast_views[0]);
+  client_remote_.FlushForTesting();
 }
 
 TEST_F(MediaItemUIDeviceSelectorViewTest, ExpandLabelOpensEntryContainer) {
@@ -353,9 +357,8 @@ TEST_F(MediaItemUIDeviceSelectorViewTest,
   // DeviceListHost::SelectDevice() should create a new route, which
   // triggers the MediaRouterUI to broadcast a sink update. As a result
   // MediaItemUIDeviceSelectorView::OnDevicesUpdated() may be called before
-  // SelectDevice() returns. This test verifies that the second the second call
-  // to OnDevicesUpdated() does not cause UaF error in
-  // RecordStartCastingMetrics().
+  // SelectDevice() returns. This test verifies that the second call to
+  // OnDevicesUpdated() does not cause UaF error in RecordStartCastingMetrics().
   EXPECT_CALL(*device_list_host_, SelectDevice(_))
       .WillOnce(
           Invoke(this, &MediaItemUIDeviceSelectorViewTest::OnDevicesUpdated));

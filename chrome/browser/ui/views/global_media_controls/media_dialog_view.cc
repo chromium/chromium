@@ -214,7 +214,7 @@ void MediaDialogView::RefreshMediaItem(
       BuildFooter(id, item, profile_, media_color_theme_));
   items_[id]->UpdateDeviceSelectorView(
       BuildDeviceSelector(id, item, service_, service_, profile_, entry_point_,
-                          show_devices, media_color_theme_));
+                          media_color_theme_, show_devices));
 
   UpdateBubbleSize();
 }
@@ -679,7 +679,7 @@ MediaDialogView::BuildMediaItemUIUpdatedView(
   return std::make_unique<global_media_controls::MediaItemUIUpdatedView>(
       id, item, media_color_theme_,
       BuildDeviceSelector(id, item, service_, service_, profile_, entry_point_,
-                          show_devices, media_color_theme_),
+                          media_color_theme_, show_devices),
       BuildFooter(id, item, profile_, media_color_theme_));
 }
 

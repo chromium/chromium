@@ -65,29 +65,6 @@ class AudioDeviceEntryView : public DeviceEntryUI, public HoverButton {
   bool GetHighlighted() const;
 };
 
-class CastDeviceEntryView : public DeviceEntryUI, public HoverButton {
-  METADATA_HEADER(CastDeviceEntryView, HoverButton)
-
- public:
-  CastDeviceEntryView(base::RepeatingClosure callback,
-                      SkColor foreground_color,
-                      SkColor background_color,
-                      const global_media_controls::mojom::DevicePtr& device);
-  ~CastDeviceEntryView() override;
-
-  // DeviceEntryUI
-  void OnColorsChanged(SkColor foreground_color,
-                       SkColor background_color) override;
-  DeviceEntryUIType GetType() const override;
-
-  std::string GetStatusTextForTest() const;
-
- private:
-  void ChangeCastEntryColor(SkColor foreground_color, SkColor background_color);
-
-  global_media_controls::mojom::DevicePtr device_;
-};
-
 // This media cast device entry UI only shows on Chrome OS ash.
 class CastDeviceEntryViewAsh : public DeviceEntryUI, public HoverButton {
   METADATA_HEADER(CastDeviceEntryViewAsh, HoverButton)

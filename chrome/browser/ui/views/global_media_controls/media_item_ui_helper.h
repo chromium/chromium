@@ -100,9 +100,8 @@ BuildDeviceSelector(
     MediaItemUIDeviceSelectorDelegate* selector_delegate,
     Profile* profile,
     global_media_controls::GlobalMediaControlsEntryPoint entry_point,
-    bool show_devices = false,
-    std::optional<media_message_center::MediaColorTheme> media_color_theme =
-        std::nullopt);
+    media_message_center::MediaColorTheme media_color_theme,
+    bool show_devices = false);
 
 // Returns the MediaItemUIFooter for Cast items or Media Session items with
 // associated Media Routes.
@@ -110,8 +109,7 @@ std::unique_ptr<global_media_controls::MediaItemUIFooter> BuildFooter(
     const std::string& id,
     base::WeakPtr<media_message_center::MediaNotificationItem> item,
     Profile* profile,
-    std::optional<media_message_center::MediaColorTheme> media_color_theme =
-        std::nullopt);
+    media_message_center::MediaColorTheme media_color_theme);
 
 // Returns the MediaColorTheme for the updated media UI.
 media_message_center::MediaColorTheme GetMediaColorTheme();

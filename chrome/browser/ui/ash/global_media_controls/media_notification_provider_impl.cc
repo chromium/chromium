@@ -185,7 +185,7 @@ MediaNotificationProviderImpl::BuildDeviceSelectorView(
 
   return BuildDeviceSelector(id, item, GetDeviceService(item),
                              &device_selector_delegate_, GetProfile(),
-                             entry_point, show_devices, media_color_theme_);
+                             entry_point, media_color_theme_, show_devices);
 }
 
 std::unique_ptr<global_media_controls::MediaItemUIFooter>

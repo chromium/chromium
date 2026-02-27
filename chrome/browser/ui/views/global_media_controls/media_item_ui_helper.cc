@@ -210,8 +210,8 @@ BuildDeviceSelector(
     MediaItemUIDeviceSelectorDelegate* selector_delegate,
     Profile* profile,
     global_media_controls::GlobalMediaControlsEntryPoint entry_point,
-    bool show_devices,
-    std::optional<media_message_center::MediaColorTheme> media_color_theme) {
+    media_message_center::MediaColorTheme media_color_theme,
+    bool show_devices) {
   if (!ShouldShowDeviceSelectorView(profile, device_service, id, item,
                                     selector_delegate)) {
     return nullptr;
@@ -219,54 +219,43 @@ BuildDeviceSelector(
 
   auto device_set = CreateHostAndClient(profile, id, item, device_service);
 
-#if !BUILDFLAG(IS_CHROMEOS)
-  if (media_color_theme.has_value()) {
-    return std::make_unique<CastDeviceSelectorView>(
-        std::move(device_set.host), std::move(device_set.client),
-        media_color_theme.value(), show_devices);
-  }
-#endif
-
+#if BUILDFLAG(IS_CHROMEOS)
   const bool is_local_media_session =
       item->GetSourceType() ==
       media_message_center::SourceType::kLocalMediaSession;
 
   return std::make_unique<MediaItemUIDeviceSelectorView>(
       id, selector_delegate, std::move(device_set.host),
-      std::move(device_set.client),
-      /*has_audio_output=*/is_local_media_session, entry_point, show_devices,
-      media_color_theme);
+      std::move(device_set.client), /*has_audio_output=*/is_local_media_session,
+      entry_point, media_color_theme, show_devices);
+#else
+  return std::make_unique<CastDeviceSelectorView>(
+      std::move(device_set.host), std::move(device_set.client),
+      media_color_theme, show_devices);
+#endif
 }
 
 std::unique_ptr<global_media_controls::MediaItemUIFooter> BuildFooter(
     const std::string& id,
     base::WeakPtr<media_message_center::MediaNotificationItem> item,
     Profile* profile,
-    std::optional<media_message_center::MediaColorTheme> media_color_theme) {
+    media_message_center::MediaColorTheme media_color_theme) {
   // Show a footer view for a Cast item.
   if (item->GetSourceType() == media_message_center::SourceType::kCast) {
     auto media_cast_item =
         static_cast<CastMediaNotificationItem*>(item.get())->GetWeakPtr();
 #if BUILDFLAG(IS_CHROMEOS)
-    if (media_color_theme.has_value()) {
-      return std::make_unique<MediaItemUICastFooterView>(
-          base::BindRepeating(&CastMediaNotificationItem::StopCasting,
-                              media_cast_item),
-          media_color_theme.value());
-    }
-#else
-    if (media_color_theme.has_value()) {
-      return std::make_unique<CastDeviceFooterView>(
-          media_cast_item->device_name(),
-          base::BindRepeating(&CastMediaNotificationItem::StopCasting,
-                              media_cast_item),
-          media_color_theme.value());
-    }
-#endif
-
-    return std::make_unique<MediaItemUILegacyCastFooterView>(
+    return std::make_unique<MediaItemUICastFooterView>(
         base::BindRepeating(&CastMediaNotificationItem::StopCasting,
-                            media_cast_item));
+                            media_cast_item),
+        media_color_theme);
+#else
+    return std::make_unique<CastDeviceFooterView>(
+        media_cast_item->device_name(),
+        base::BindRepeating(&CastMediaNotificationItem::StopCasting,
+                            media_cast_item),
+        media_color_theme);
+#endif
   }
 
   base::RepeatingClosure stop_casting_cb =
@@ -275,19 +264,17 @@ std::unique_ptr<global_media_controls::MediaItemUIFooter> BuildFooter(
     return nullptr;
   }
 
-#if !BUILDFLAG(IS_CHROMEOS)
-  if (media_color_theme.has_value()) {
-    auto* media_session_item =
-        static_cast<global_media_controls::MediaSessionNotificationItem*>(
-            item.get());
-    return std::make_unique<CastDeviceFooterView>(
-        media_session_item->device_name(), std::move(stop_casting_cb),
-        media_color_theme.value());
-  }
-#endif
-
+#if BUILDFLAG(IS_CHROMEOS)
   return std::make_unique<MediaItemUILegacyCastFooterView>(
       std::move(stop_casting_cb));
+#else
+  auto* media_session_item =
+      static_cast<global_media_controls::MediaSessionNotificationItem*>(
+          item.get());
+  return std::make_unique<CastDeviceFooterView>(
+      media_session_item->device_name(), std::move(stop_casting_cb),
+      media_color_theme);
+#endif
 }
 
 media_message_center::MediaColorTheme GetMediaColorTheme() {
