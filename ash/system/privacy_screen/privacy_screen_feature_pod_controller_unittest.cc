@@ -51,6 +51,8 @@ class PrivacyScreenFeaturePodControllerTest : public AshTestBase {
     display_change_observer_.reset();
     tile_.reset();
     controller_.reset();
+    native_display_delegate_ = nullptr;
+    logger_.reset();
     AshTestBase::TearDown();
   }
 
@@ -87,8 +89,8 @@ class PrivacyScreenFeaturePodControllerTest : public AshTestBase {
  private:
 
   std::unique_ptr<display::test::ActionLogger> logger_;
-  raw_ptr<display::test::TestNativeDisplayDelegate, DanglingUntriaged>
-      native_display_delegate_ = nullptr;
+  raw_ptr<display::test::TestNativeDisplayDelegate> native_display_delegate_ =
+      nullptr;
   std::unique_ptr<display::DisplayChangeObserver> display_change_observer_;
   std::unique_ptr<display::DisplayConfigurator::TestApi> test_api_;
 
