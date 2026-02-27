@@ -12,6 +12,7 @@
 #include <memory>
 #include <optional>
 #include <unordered_map>
+#include <utility>
 #include <vector>
 
 #include "base/gtest_prod_util.h"
@@ -173,16 +174,12 @@ class NET_EXPORT_PRIVATE NetworkQualityEstimator
       RTTAndThroughputEstimatesObserver* observer);
 
   // Notifies NetworkQualityEstimator that the response header of `request` has
-  // been received. Reports the total prefilter network bytes that have been
-  // read for the response of `request`.
-  void NotifyHeadersReceived(const URLRequest& request,
-                             int64_t prefilter_total_bytes_read);
+  // been received.
+  void NotifyHeadersReceived(URLRequest& request);
 
   // Notifies NetworkQualityEstimator that unfiltered bytes have been read for
-  // `request`. Reports the total prefilter network bytes that have been read
-  // for the response of `request`.
-  void NotifyBytesRead(const URLRequest& request,
-                       int64_t prefilter_total_bytes_read);
+  // `request`.
+  void NotifyBytesRead(const URLRequest& request);
 
   // Notifies NetworkQualityEstimator that the headers of `request` are about to
   // be sent.
@@ -482,6 +479,27 @@ class NET_EXPORT_PRIVATE NetworkQualityEstimator
   // for the same request.
   void WaitNotifyStartTransactionDone(const URLRequest& request);
 
+  // Notifies NetworkQualityEstimator that the response header of `request` has
+  // been received. This is the internal implementation that is called either
+  // synchronously or asynchronously.
+  void NotifyHeadersReceivedInternal(const URLRequest& request,
+                                     const base::TimeTicks& time);
+
+  // Asynchronously calls NotifyHeadersReceivedInternal.
+  void NotifyHeadersReceivedInternalAsync(base::WeakPtr<URLRequest> request);
+
+  // If NotifyHeadersReceived was called asynchronously and not called yet,
+  // this function calls NotifyHeadersReceivedInternal() immediately.
+  // This is to ensure that the function is completed before other notifications
+  // for the same request.
+  void WaitNotifyHeadersReceivedDone(const URLRequest& request);
+
+  // Calls WaitNotifyStartTransactionDone and then WaitNotifyHeadersReceivedDone
+  // if appropriate to ensure that any async/deferred event handlers run in the
+  // proper order. Each function will only be called if the feature flag that
+  // makes it async/deferred is enabled.
+  void WaitAsyncStepsDone(const URLRequest& request);
+
   // Notifies observers of a change in effective connection type.
   void NotifyObserversOfEffectiveConnectionTypeChanged();
 
@@ -649,6 +667,15 @@ class NET_EXPORT_PRIVATE NetworkQualityEstimator
   // is the time at which NotifyStartTransaction was called.
   std::unordered_map<raw_ptr<const URLRequest>, base::TimeTicks>
       waiting_async_notify_start_transactions_;
+
+  // A map of URLRequests for which NotifyHeadersReceived has been called
+  // asynchronously, but the asynchronous task has not yet completed. The value
+  // is the time at which NotifyHeadersReceived was called.
+  //
+  // TODO(https://crbug.com/481197117): Consider combining this with the map for
+  // NotifyStartTransaction above.
+  std::unordered_map<raw_ptr<const URLRequest>, base::TimeTicks>
+      waiting_async_notify_headers_received_;
 
   base::WeakPtrFactory<NetworkQualityEstimator> weak_ptr_factory_{this};
 };

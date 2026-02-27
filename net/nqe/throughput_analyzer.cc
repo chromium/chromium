@@ -171,7 +171,8 @@ void ThroughputAnalyzer::NotifyStartTransaction(const URLRequest& request,
   MaybeStartThroughputObservationWindow();
 }
 
-void ThroughputAnalyzer::NotifyBytesRead(const URLRequest& request) {
+void ThroughputAnalyzer::NotifyBytesRead(const URLRequest& request,
+                                         const base::TimeTicks& time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (disable_throughput_measurements_)
@@ -183,7 +184,7 @@ void ThroughputAnalyzer::NotifyBytesRead(const URLRequest& request) {
     return;
 
   // Update the time when the bytes were received for `request`.
-  requests_[&request] = tick_clock_->NowTicks();
+  requests_[&request] = time;
 }
 
 void ThroughputAnalyzer::NotifyRequestCompleted(const URLRequest& request) {

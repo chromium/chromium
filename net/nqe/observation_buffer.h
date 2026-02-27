@@ -97,6 +97,14 @@ class NET_EXPORT_PRIVATE ObservationBuffer {
       const DeletedObservationSources& deleted_observation_sources);
 
  private:
+  // Adds `observation` to `observations_`, maintaining the invariant that
+  // Observations are stored in non-decreasing order of their timestamps.
+  // This operation is O(n) in time and space, so this should only be called
+  // when `observation` has arrived asynchronously and would violate the
+  // invariant if naively added to the back of the deque. Assumes that
+  // `observations_` is in non-decreasing order before adding `observation`.
+  void AddObservationOutOfOrder(const Observation& observation);
+
   // Computes the weighted observations and stores them in
   // `weighted_observations` sorted by ascending `WeightedObservation.value`.
   // Only the observations with timestamp later than `begin_timestamp` are

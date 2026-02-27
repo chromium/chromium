@@ -17102,6 +17102,29 @@
             ]
         }
     ],
+    "NetworkQualityEstimatorAsyncNotifyHeadersReceived": [
+        {
+            "platforms": [
+                "android_webview",
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Experiment",
+                    "params": {
+                        "defer_until_next_step": "true"
+                    },
+                    "enable_features": [
+                        "NetworkQualityEstimatorAsyncNotifyHeadersReceived"
+                    ]
+                }
+            ]
+        }
+    ],
     "NetworkQualityEstimatorParameterTuning": [
         {
             "platforms": [

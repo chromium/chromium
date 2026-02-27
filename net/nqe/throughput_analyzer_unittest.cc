@@ -572,7 +572,8 @@ TEST_F(ThroughputAnalyzerTest, TestLastReceivedTimeIsUpdated) {
   EXPECT_EQ(1u, throughput_analyzer.CountActiveInFlightRequests());
 
   //  The request will be marked as hanging at t=9 seconds.
-  throughput_analyzer.NotifyBytesRead(*request_not_local);
+  throughput_analyzer.NotifyBytesRead(*request_not_local,
+                                      tick_clock.NowTicks());
   tick_clock.Advance(base::Milliseconds(4000));
   // Current time is t=8 seconds.
   throughput_analyzer.EraseHangingRequests(*some_other_request);
@@ -626,7 +627,8 @@ TEST_F(ThroughputAnalyzerTest, TestRequestDeletedImmediately) {
   // `request_not_local` should be deleted since it has been idle for 2.4
   // seconds.
   tick_clock.Advance(base::Milliseconds(500));
-  throughput_analyzer.NotifyBytesRead(*request_not_local);
+  throughput_analyzer.NotifyBytesRead(*request_not_local,
+                                      tick_clock.NowTicks());
   EXPECT_EQ(0u, throughput_analyzer.CountActiveInFlightRequests());
 }
 

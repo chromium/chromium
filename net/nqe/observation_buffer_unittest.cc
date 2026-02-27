@@ -12,8 +12,10 @@
 #include <utility>
 #include <vector>
 
+#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/time/time.h"
+#include "net/base/features.h"
 #include "net/nqe/network_quality_estimator_params.h"
 #include "net/nqe/network_quality_observation.h"
 #include "net/nqe/network_quality_observation_source.h"
@@ -37,6 +39,72 @@ TEST(NetworkQualityObservationBufferTest, BoundedBuffer) {
     // The number of entries should be at most the maximum buffer size.
     EXPECT_GE(300u, observation_buffer.Size());
   }
+}
+
+// Verify that an ObservationBuffer remains sorted no matter what order in which
+// Observations are inserted.
+TEST(NetworkQualityObservationBufferTest, AddOutOfOrderObservation) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kNetworkQualityEstimator, {{"ObservationBufferSize", "3"}});
+
+  std::map<std::string, std::string> variation_params;
+  NetworkQualityEstimatorParams params(variation_params);
+  base::SimpleTestTickClock tick_clock;
+  tick_clock.Advance(base::Minutes(1));
+  ObservationBuffer buffer(&params, &tick_clock, 1.0, 1.0);
+  ASSERT_EQ(3u, buffer.Capacity());
+
+  base::TimeTicks now = tick_clock.NowTicks();
+  base::TimeTicks t1 = now + base::Seconds(1);
+  base::TimeTicks t2 = now + base::Seconds(2);
+  base::TimeTicks t3 = now + base::Seconds(3);
+  base::TimeTicks t4 = now + base::Seconds(4);
+
+  // Buffer: [t2]
+  buffer.AddObservation(
+      Observation(2, t2, INT32_MIN, NETWORK_QUALITY_OBSERVATION_SOURCE_HTTP));
+  EXPECT_EQ(1u, buffer.Size());
+
+  // Out-of-order: Add t1 (front, not full).
+  // Buffer: [t1, t2]
+  buffer.AddObservation(
+      Observation(1, t1, INT32_MIN, NETWORK_QUALITY_OBSERVATION_SOURCE_HTTP));
+  EXPECT_EQ(2u, buffer.Size());
+
+  // In-order: Add t4.
+  // Buffer: [t1, t2, t4]
+  buffer.AddObservation(
+      Observation(4, t4, INT32_MIN, NETWORK_QUALITY_OBSERVATION_SOURCE_HTTP));
+  EXPECT_EQ(3u, buffer.Size());
+
+  // Out-of-order: Add t3 (middle, full).
+  // Expect t1 (oldest) to be evicted.
+  // Buffer: [t2, t3, t4]
+  std::optional<Observation> evicted = buffer.AddObservation(
+      Observation(3, t3, INT32_MIN, NETWORK_QUALITY_OBSERVATION_SOURCE_HTTP));
+  ASSERT_TRUE(evicted.has_value());
+  EXPECT_EQ(t1, evicted->timestamp());
+  EXPECT_EQ(3u, buffer.Size());
+
+  // Verify ordering by checking percentiles.
+  size_t observations_count = 0;
+  EXPECT_EQ(2, buffer.GetPercentile(base::TimeTicks(), INT32_MIN, 0,
+                                    &observations_count));
+  EXPECT_EQ(3, buffer.GetPercentile(base::TimeTicks(), INT32_MIN, 50,
+                                    &observations_count));
+  EXPECT_EQ(4, buffer.GetPercentile(base::TimeTicks(), INT32_MIN, 100,
+                                    &observations_count));
+
+  // Full and too old: Add t1 again.
+  // It should not be added and instead be returned as "evicted".
+  // Buffer: [t2, t3, t4]
+  evicted = buffer.AddObservation(
+      Observation(1, t1, INT32_MIN, NETWORK_QUALITY_OBSERVATION_SOURCE_HTTP));
+  ASSERT_TRUE(evicted.has_value());
+  EXPECT_EQ(t1, evicted->timestamp());
+  EXPECT_EQ(3u, buffer.Size());
+  EXPECT_EQ(2, buffer.GetPercentile(base::TimeTicks(), INT32_MIN, 0, nullptr));
 }
 
 // Verify that the percentiles are monotonically non-decreasing when a weight is
@@ -358,7 +426,6 @@ TEST(NetworkQualityObservationBufferTest, TestGetMedianRTTSince) {
     }
   }
 }
-
 
 }  // namespace
 

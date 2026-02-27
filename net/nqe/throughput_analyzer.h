@@ -76,7 +76,7 @@ class NET_EXPORT_PRIVATE ThroughputAnalyzer {
                               const base::TimeTicks& time);
 
   // Notifies `this` that unfiltered bytes have been read for `request`.
-  void NotifyBytesRead(const URLRequest& request);
+  void NotifyBytesRead(const URLRequest& request, const base::TimeTicks& time);
 
   // Notifies `this` that `request` has completed.
   void NotifyRequestCompleted(const URLRequest& request);

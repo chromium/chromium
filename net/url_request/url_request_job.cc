@@ -762,10 +762,10 @@ void URLRequestJob::RecordBytesRead(int bytes_read) {
   if (request_->context()->network_quality_estimator()) {
     if (prefilter_bytes_read() == bytes_read) {
       request_->context()->network_quality_estimator()->NotifyHeadersReceived(
-          *request_, prefilter_bytes_read());
+          *request_);
     } else {
       request_->context()->network_quality_estimator()->NotifyBytesRead(
-          *request_, prefilter_bytes_read());
+          *request_);
     }
   }
 
