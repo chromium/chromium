@@ -11,15 +11,15 @@
 
 namespace private_ai {
 
-// Test fixture for LegionCrypter tests.
-class LegionCrypterTest : public testing::Test {
+// Test fixture for PrivateAiCrypter tests.
+class PrivateAiCrypterTest : public testing::Test {
  protected:
   const std::array<uint8_t, 32> kKey1 = {1};
   const std::array<uint8_t, 32> kKey2 = {2};
 };
 
 // Tests that a message can be encrypted and then successfully decrypted.
-TEST_F(LegionCrypterTest, EncryptDecrypt) {
+TEST_F(PrivateAiCrypterTest, EncryptDecrypt) {
   Crypter crypter1(kKey1, kKey2);
   Crypter crypter2(kKey2, kKey1);
 
@@ -37,7 +37,7 @@ TEST_F(LegionCrypterTest, EncryptDecrypt) {
 }
 
 // Tests that an empty message can be encrypted and decrypted.
-TEST_F(LegionCrypterTest, EncryptDecryptEmpty) {
+TEST_F(PrivateAiCrypterTest, EncryptDecryptEmpty) {
   Crypter crypter1(kKey1, kKey2);
   Crypter crypter2(kKey2, kKey1);
 
@@ -56,7 +56,7 @@ TEST_F(LegionCrypterTest, EncryptDecryptEmpty) {
 }
 
 // Tests that decryption fails if the wrong key is used.
-TEST_F(LegionCrypterTest, BadKey) {
+TEST_F(PrivateAiCrypterTest, BadKey) {
   Crypter crypter1(kKey1, kKey2);
   std::array<uint8_t, 32> key3 = {3};
 
@@ -71,7 +71,7 @@ TEST_F(LegionCrypterTest, BadKey) {
 }
 
 // Tests that decryption fails if the ciphertext is modified.
-TEST_F(LegionCrypterTest, CorruptedCiphertext) {
+TEST_F(PrivateAiCrypterTest, CorruptedCiphertext) {
   Crypter crypter1(kKey1, kKey2);
   Crypter crypter2(kKey2, kKey1);
 
@@ -86,7 +86,7 @@ TEST_F(LegionCrypterTest, CorruptedCiphertext) {
 
 // Tests encryption and decryption for a range of message sizes to check the
 // padding logic.
-TEST_F(LegionCrypterTest, Padding) {
+TEST_F(PrivateAiCrypterTest, Padding) {
   for (size_t i = 0; i < 40; i++) {
     Crypter crypter1(kKey1, kKey2);
     Crypter crypter2(kKey2, kKey1);

@@ -45,7 +45,7 @@ class VerifyAttestationResponseTest : public ::testing::Test {
 
 TEST_F(VerifyAttestationResponseTest, Success) {
   base::FieldTrialParams params;
-  params["url"] = "staging-legion.corp.google.com";
+  params["url"] = "staging-private-ai.corp.google.com";
   feature_list_.InitWithFeaturesAndParameters(
       {{kPrivateAi, params}, {kPrivateAiServerAttestation, {}}}, {});
 
@@ -158,7 +158,7 @@ TEST_F(VerifyAttestationResponseTest, KeyNotFound) {
 
 TEST_F(VerifyAttestationResponseTest, WrongSignature) {
   base::FieldTrialParams params;
-  params["url"] = "staging-legion.corp.google.com";
+  params["url"] = "staging-private-ai.corp.google.com";
   feature_list_.InitWithFeaturesAndParameters(
       {{kPrivateAi, params}, {kPrivateAiServerAttestation, {}}}, {});
 

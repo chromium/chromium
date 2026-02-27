@@ -108,13 +108,13 @@ std::optional<std::vector<uint8_t>> Crypter::Decrypt(
   ++read_sequence_num_;
 
   if (plaintext->empty()) {
-    LOG(ERROR) << "Invalid legion message.";
+    LOG(ERROR) << "Invalid PrivateAI message.";
     return std::nullopt;
   }
 
   const size_t padding_length = (*plaintext)[plaintext->size() - 1];
   if (padding_length + 1 > plaintext->size()) {
-    LOG(ERROR) << "Invalid legion message.";
+    LOG(ERROR) << "Invalid PrivateAI message.";
     return std::nullopt;
   }
   plaintext->resize(plaintext->size() - padding_length - 1);

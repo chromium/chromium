@@ -63,13 +63,13 @@ class ClientImpl : public Client {
   Connection* GetOrCreateConnection();
 
   void SendRequest(proto::FeatureName feature_name,
-                   proto::PrivateAiRequest legion_request,
+                   proto::PrivateAiRequest private_ai_request,
                    OnRequestCompletedCallback callback,
                    const RequestOptions& options);
 
   void OnReponseReceived(
       OnRequestCompletedCallback cb,
-      base::expected<proto::PrivateAiResponse, ErrorCode> legion_response);
+      base::expected<proto::PrivateAiResponse, ErrorCode> private_ai_response);
 
   void OnConnectionDisconnected(ErrorCode error_code);
 

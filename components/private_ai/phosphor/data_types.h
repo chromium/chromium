@@ -48,7 +48,7 @@ enum class GetAuthnTokensResult {
 };
 // LINT.ThenChange(//tools/metrics/histograms/enums.xml:PrivateAiPhosphorGetAuthnTokensResult)
 
-// A blind-signed auth token for Legion proxies.
+// A blind-signed auth token for PrivateAI proxies.
 struct BlindSignedAuthToken {
   // The token value.
   std::string token;

@@ -20,8 +20,8 @@ enum class ProxyLayer;
 namespace private_ai::phosphor {
 
 // Interface that manages requesting and fetching blind-signed authentication
-// tokens for Legion. The primary user of this interface will be a token
-// manager responsible for caching tokens and providing them to the Legion
+// tokens for PrivateAI. The primary user of this interface will be a token
+// manager responsible for caching tokens and providing them to the PrivateAI
 // client.
 class TokenFetcher {
  public:

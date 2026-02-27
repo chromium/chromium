@@ -18,7 +18,7 @@
 namespace private_ai {
 
 // A very basic implementation of the `Connection` interface that sends
-// requests over a `SecureChannel`. It resolves Legion responses to the
+// requests over a `SecureChannel`. It resolves PrivateAI responses to the
 // corresponding callback based on the `request_id`.
 class ConnectionBasic : public Connection {
  public:
@@ -34,7 +34,7 @@ class ConnectionBasic : public Connection {
 
   // Connection override:
 
-  // Sends requests to the Legion server.
+  // Sends requests to the PrivateAI server.
   //
   // `timeout` is not handled in `ConnectionBasic`.
   void Send(proto::PrivateAiRequest request,

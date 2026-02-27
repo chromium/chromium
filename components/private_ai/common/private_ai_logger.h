@@ -16,7 +16,7 @@ class Location;
 
 namespace private_ai {
 
-// Handles logging in Legion and notifies observers.
+// Handles logging in PrivateAI and notifies observers.
 class PrivateAiLogger {
  public:
   class Observer : public base::CheckedObserver {

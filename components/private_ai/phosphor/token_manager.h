@@ -14,7 +14,7 @@
 
 namespace private_ai::phosphor {
 
-// Manages the cache of blind-signed auth tokens for Legion.
+// Manages the cache of blind-signed auth tokens for PrivateAI.
 class TokenManager {
  public:
   using GetAuthTokenCallback =

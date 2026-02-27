@@ -98,10 +98,10 @@ class ClientImplTest : public ::testing::Test {
 TEST_F(ClientImplTest, SendTextRequestSuccess) {
   const std::string kExpectedResponseText = "response text";
 
-  proto::PrivateAiResponse legion_response;
+  proto::PrivateAiResponse private_ai_response;
   {
     auto* generate_content_response =
-        legion_response.mutable_generate_content_response();
+        private_ai_response.mutable_generate_content_response();
     auto* candidate = generate_content_response->add_candidates();
     auto* content = candidate->mutable_content();
     content->set_role("model");
@@ -113,7 +113,8 @@ TEST_F(ClientImplTest, SendTextRequestSuccess) {
   client_->SendTextRequest(proto::FeatureName::FEATURE_NAME_UNSPECIFIED,
                            "some text", future.GetCallback(), /*options=*/{});
 
-  ResolvePendingRequest(factory_->last_connection(), base::ok(legion_response));
+  ResolvePendingRequest(factory_->last_connection(),
+                        base::ok(private_ai_response));
 
   const auto& result = future.Get();
   ASSERT_TRUE(result.has_value());
@@ -122,15 +123,16 @@ TEST_F(ClientImplTest, SendTextRequestSuccess) {
 
 // Test the successful request flow for paic requests.
 TEST_F(ClientImplTest, SendPaicRequestSuccess) {
-  proto::PrivateAiResponse legion_response;
-  legion_response.mutable_paic_response();
+  proto::PrivateAiResponse private_ai_response;
+  private_ai_response.mutable_paic_response();
 
   base::test::TestFuture<base::expected<proto::PaicMessage, ErrorCode>> future;
   client_->SendPaicRequest(proto::FeatureName::FEATURE_NAME_UNSPECIFIED,
                            proto::PaicMessage(), future.GetCallback(),
                            /*options=*/{});
 
-  ResolvePendingRequest(factory_->last_connection(), base::ok(legion_response));
+  ResolvePendingRequest(factory_->last_connection(),
+                        base::ok(private_ai_response));
 
   const auto& result = future.Get();
   ASSERT_TRUE(result.has_value());
@@ -153,8 +155,8 @@ TEST_F(ClientImplTest, ConnectionRecreation) {
 
   // A subsequent request should succeed on the new connection.
   const std::string kExpectedResponseText = "response text";
-  proto::PrivateAiResponse legion_response;
-  legion_response.mutable_generate_content_response()
+  proto::PrivateAiResponse private_ai_response;
+  private_ai_response.mutable_generate_content_response()
       ->add_candidates()
       ->mutable_content()
       ->add_parts()
@@ -168,7 +170,7 @@ TEST_F(ClientImplTest, ConnectionRecreation) {
   auto* second_connection = factory_->last_connection();
   ASSERT_NE(first_connection, second_connection);
 
-  ResolvePendingRequest(second_connection, base::ok(legion_response));
+  ResolvePendingRequest(second_connection, base::ok(private_ai_response));
 
   const auto& second_result = second_future.Get();
   ASSERT_TRUE(second_result.has_value());
@@ -192,14 +194,15 @@ TEST_F(ClientImplTest, SendTextRequestTimeout) {
 
 // Test that an empty response from the server is handled correctly.
 TEST_F(ClientImplTest, SendTextRequestEmptyResponse) {
-  proto::PrivateAiResponse legion_response;
-  legion_response.mutable_generate_content_response();
+  proto::PrivateAiResponse private_ai_response;
+  private_ai_response.mutable_generate_content_response();
 
   base::test::TestFuture<base::expected<std::string, ErrorCode>> future;
   client_->SendTextRequest(proto::FeatureName::FEATURE_NAME_UNSPECIFIED,
                            "some text", future.GetCallback(), /*options=*/{});
 
-  ResolvePendingRequest(factory_->last_connection(), base::ok(legion_response));
+  ResolvePendingRequest(factory_->last_connection(),
+                        base::ok(private_ai_response));
 
   const auto& result = future.Get();
   ASSERT_FALSE(result.has_value());

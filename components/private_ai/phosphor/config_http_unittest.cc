@@ -190,7 +190,7 @@ TEST_F(ConfigHttpTest, DoRequestInvalidFinchParametersFailsGracefully) {
 
   auto result = result_future.Get();
 
-  EXPECT_EQ("Invalid Legion Token URL", result.error().message());
+  EXPECT_EQ("Invalid PrivateAI Token URL", result.error().message());
   EXPECT_EQ(absl::StatusCode::kInternal, result.error().code());
 }
 

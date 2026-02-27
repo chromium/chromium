@@ -59,13 +59,13 @@ void FeatureTokenManager::GetAuthToken(
     result.emplace(std::move(cache_.front()));
     cache_.pop_front();
 
-    VLOG(2) << "Legion ATC::GetAuthToken with " << cache_.size()
+    VLOG(2) << "PrivateAI ATC::GetAuthToken with " << cache_.size()
             << " tokens available";
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), std::move(result)));
   } else {
-    VLOG(2)
-        << "Legion ATC::GetAuthToken with no tokens available, queuing request";
+    VLOG(2) << "PrivateAI ATC::GetAuthToken with no tokens available, queuing "
+               "request";
     pending_callbacks_.push_back(std::move(callback));
   }
   MaybeRefillCache();
@@ -83,7 +83,8 @@ void FeatureTokenManager::OnGotAuthTokens(
   fetching_auth_tokens_ = false;
 
   if (!result.has_value()) {
-    VLOG(2) << "Legion ATC::OnGotAuthTokens back off until " << result.error();
+    VLOG(2) << "PrivateAI ATC::OnGotAuthTokens back off until "
+            << result.error();
     base::UmaHistogramCounts100(
         "PrivateAi.Phosphor.FeatureTokenManager.TokensFetched", 0);
     try_get_auth_tokens_after_ = result.error();
@@ -92,7 +93,8 @@ void FeatureTokenManager::OnGotAuthTokens(
     return;
   }
 
-  VLOG(2) << "Legion ATC::OnGotAuthTokens got " << result->size() << " tokens";
+  VLOG(2) << "PrivateAI ATC::OnGotAuthTokens got " << result->size()
+          << " tokens";
   base::UmaHistogramCounts100(
       "PrivateAi.Phosphor.FeatureTokenManager.TokensFetched", result->size());
   try_get_auth_tokens_after_.reset();
@@ -100,7 +102,7 @@ void FeatureTokenManager::OnGotAuthTokens(
   RemoveExpiredTokens();
 
   if (result->empty()) {
-    VLOG(1) << "Legion ATC::OnGotAuthTokens got an empty list of tokens. "
+    VLOG(1) << "PrivateAI ATC::OnGotAuthTokens got an empty list of tokens. "
                "Treating as a transient error.";
     try_get_auth_tokens_after_ =
         base::Time::Now() + kPrivateAiTryGetAuthTokensTransientBackoff.Get();
@@ -147,7 +149,7 @@ void FeatureTokenManager::MaybeRefillCache() {
 
   if (NeedsRefill()) {
     fetching_auth_tokens_ = true;
-    VLOG(2) << "Legion ATC::MaybeRefillCache calling GetAuthnTokens";
+    VLOG(2) << "PrivateAI ATC::MaybeRefillCache calling GetAuthnTokens";
     // base::Unretained is unsafe here, because the FeatureTokenManager can be
     // destroyed while a token fetch is in progress.
     fetcher_->GetAuthnTokens(

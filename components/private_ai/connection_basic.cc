@@ -73,8 +73,8 @@ void ConnectionBasic::OnResponseReceived(
     return;
   }
 
-  proto::PrivateAiResponse legion_response;
-  if (!legion_response.ParseFromArray(result->data(), result->size())) {
+  proto::PrivateAiResponse private_ai_response;
+  if (!private_ai_response.ParseFromArray(result->data(), result->size())) {
     LOG(ERROR) << "Failed to parse PrivateAiResponse";
     // This is a protocol error. We don't know which request this response was
     // for, so we fail all of them.
@@ -82,17 +82,17 @@ void ConnectionBasic::OnResponseReceived(
     return;
   }
 
-  auto it = pending_request_callbacks_.find(legion_response.request_id());
+  auto it = pending_request_callbacks_.find(private_ai_response.request_id());
   if (it == pending_request_callbacks_.end()) {
     LOG(ERROR) << "Received PrivateAiResponse for unknown request_id: "
-               << legion_response.request_id();
+               << private_ai_response.request_id();
     return;
   }
 
   auto callback = std::move(it->second);
   pending_request_callbacks_.erase(it);
 
-  std::move(callback).Run(std::move(legion_response));
+  std::move(callback).Run(std::move(private_ai_response));
 }
 
 void ConnectionBasic::CallOnDisconnect(ErrorCode error_code) {

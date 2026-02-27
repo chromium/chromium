@@ -13,7 +13,7 @@
 
 namespace private_ai {
 
-// Interface for a connection between Chrome and Legion server,
+// Interface for a connection between Chrome and PrivateAI server,
 // sending requests, and receiving responses.
 //
 // Implementations of this interface should follow RAII, meaning that actual
@@ -28,8 +28,8 @@ class Connection {
 
   virtual ~Connection() = default;
 
-  // Sends a request to the Legion server and invokes `callback` when a response
-  // is received or an error occurs.
+  // Sends a request to the PrivateAI server and invokes `callback` when a
+  // response is received or an error occurs.
   //
   // `timeout` is a hint of how much time a caller is willing to wait for
   // a response.

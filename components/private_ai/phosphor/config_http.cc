@@ -61,7 +61,7 @@ constexpr net::NetworkTrafficAnnotationTag kGetTokenTrafficAnnotation =
       ""
     )");
 
-// The maximum size of the Legion requests - 256 KB (in practice these
+// The maximum size of the PrivateAI requests - 256 KB (in practice these
 // should be much smaller than this).
 const int kPrivateAiRequestMaxBodySize = 256 * 1024;
 const char kProtobufContentType[] = "application/x-protobuf";
@@ -122,7 +122,7 @@ void ConfigHttp::DoRequest(quiche::BlindSignMessageRequestType request_type,
   replacements.SetPathStr(path);
   GURL request_url = GetServerUrl().ReplaceComponents(replacements);
   if (!request_url.is_valid()) {
-    std::move(callback)(absl::InternalError("Invalid Legion Token URL"));
+    std::move(callback)(absl::InternalError("Invalid PrivateAI Token URL"));
     return;
   }
 

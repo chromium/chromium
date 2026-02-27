@@ -41,36 +41,37 @@ void ReceiveTextRequest(
 
 void ReceiveGenerateContentResponse(
     Client::OnGenerateContentRequestCompletedCallback cb,
-    base::expected<proto::PrivateAiResponse, ErrorCode> legion_response) {
-  if (!legion_response.has_value()) {
-    std::move(cb).Run(base::unexpected(legion_response.error()));
+    base::expected<proto::PrivateAiResponse, ErrorCode> private_ai_response) {
+  if (!private_ai_response.has_value()) {
+    std::move(cb).Run(base::unexpected(private_ai_response.error()));
     return;
   }
 
-  if (!legion_response->has_generate_content_response()) {
+  if (!private_ai_response->has_generate_content_response()) {
     LOG(ERROR) << "PrivateAiResponse did not contain a "
                   "generate_content_response";
     std::move(cb).Run(base::unexpected(ErrorCode::kNoResponse));
     return;
   }
-  std::move(cb).Run(std::move(legion_response->generate_content_response()));
+  std::move(cb).Run(
+      std::move(private_ai_response->generate_content_response()));
 }
 
 void ReceivePaicMessage(
     Client::OnPaicMessageRequestCompletedCallback cb,
-    base::expected<proto::PrivateAiResponse, ErrorCode> legion_response) {
-  if (!legion_response.has_value()) {
-    std::move(cb).Run(base::unexpected(legion_response.error()));
+    base::expected<proto::PrivateAiResponse, ErrorCode> private_ai_response) {
+  if (!private_ai_response.has_value()) {
+    std::move(cb).Run(base::unexpected(private_ai_response.error()));
     return;
   }
 
-  if (!legion_response->has_paic_response()) {
+  if (!private_ai_response->has_paic_response()) {
     LOG(ERROR) << "PrivateAiResponse did not contain a "
                   "paic_response";
     std::move(cb).Run(base::unexpected(ErrorCode::kNoResponse));
     return;
   }
-  std::move(cb).Run(std::move(legion_response->paic_response()));
+  std::move(cb).Run(std::move(private_ai_response->paic_response()));
 }
 
 }  // namespace
@@ -144,40 +145,40 @@ void ClientImpl::SendPaicRequest(proto::FeatureName feature_name,
                                  const proto::PaicMessage& request,
                                  OnPaicMessageRequestCompletedCallback callback,
                                  const RequestOptions& options) {
-  proto::PrivateAiRequest legion_request;
-  *legion_request.mutable_paic_request() = request;
+  proto::PrivateAiRequest private_ai_request;
+  *private_ai_request.mutable_paic_request() = request;
 
   auto response_callback =
       base::BindOnce(&ReceivePaicMessage, std::move(callback));
 
-  SendRequest(feature_name, std::move(legion_request),
+  SendRequest(feature_name, std::move(private_ai_request),
               std::move(response_callback), options);
 }
 
 void ClientImpl::SendRequest(proto::FeatureName feature_name,
-                             proto::PrivateAiRequest legion_request,
+                             proto::PrivateAiRequest private_ai_request,
                              OnRequestCompletedCallback callback,
                              const RequestOptions& options) {
   logger_->LogInfo(FROM_HERE, "SendRequest started.");
 
-  legion_request.set_feature_name(feature_name);
+  private_ai_request.set_feature_name(feature_name);
 
   GetOrCreateConnection()->Send(
-      std::move(legion_request), options.timeout,
+      std::move(private_ai_request), options.timeout,
       base::BindOnce(&ClientImpl::OnReponseReceived, weak_factory_.GetWeakPtr(),
                      std::move(callback)));
 }
 
 void ClientImpl::OnReponseReceived(
     OnRequestCompletedCallback cb,
-    base::expected<proto::PrivateAiResponse, ErrorCode> legion_response) {
-  if (legion_response.has_value()) {
+    base::expected<proto::PrivateAiResponse, ErrorCode> private_ai_response) {
+  if (private_ai_response.has_value()) {
     logger_->LogInfo(FROM_HERE, "Response received.");
   } else {
     logger_->LogError(FROM_HERE,
-                      "Error: " + base::ToString(legion_response.error()));
+                      "Error: " + base::ToString(private_ai_response.error()));
   }
-  std::move(cb).Run(legion_response);
+  std::move(cb).Run(private_ai_response);
 }
 
 void ClientImpl::OnConnectionDisconnected(ErrorCode error_code) {

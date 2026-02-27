@@ -7,7 +7,7 @@
 
 namespace private_ai {
 
-// Represents errors that can occur during a legion client operation.
+// Represents errors that can occur during a PrivateAI client operation.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 //

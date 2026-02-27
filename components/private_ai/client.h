@@ -25,7 +25,7 @@ namespace private_ai {
 
 class PrivateAiLogger;
 
-// Interface for the legion client.
+// Interface for the PrivateAI client.
 class Client {
  public:
   // Callback for when a `SendTextRequest` operation completes.
@@ -47,8 +47,8 @@ class Client {
   static constexpr base::TimeDelta kDefaultTimeout = base::Seconds(120);
 
   // Creates a client based on the provided configuration.
-  // `url`: The URL for the Legion service.
-  // `api_key`: The API key for the Legion service.
+  // `url`: The URL for the PrivateAI service.
+  // `api_key`: The API key for the PrivateAI service.
   // `proxy_url_string`: Optional URL for the proxy server.
   // `use_token_attestation`: Whether to use token attestation.
   // `network_context`: The network context to use for connections.

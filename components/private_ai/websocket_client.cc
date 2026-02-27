@@ -198,7 +198,7 @@ void WebSocketClient::OnFailure(const std::string& message,
                                 int response_code) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   logger_->LogError(
-      FROM_HERE, base::StrCat({"Legion service connection failed ", message,
+      FROM_HERE, base::StrCat({"PrivateAI service connection failed ", message,
                                " (net error:", base::NumberToString(net_error),
                                ", response code:",
                                base::NumberToString(response_code), ")"}));
