@@ -1330,7 +1330,6 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::kNumber;
 
   // Glic prefs
-#if BUILDFLAG(ENABLE_GLIC)
   if (glic::GlicEnabling::IsEnabledByFlags()) {
     (*s_allowlist)[glic::prefs::kGlicPinnedToTabstrip] =
         settings_api::PrefType::kBoolean;
@@ -1355,7 +1354,6 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
     (*s_allowlist)[glic::prefs::kGlicKeepSidepanelOpenOnNewTabsEnabled] =
         settings_api::PrefType::kBoolean;
   }
-#endif
 
   return *s_allowlist;
 }

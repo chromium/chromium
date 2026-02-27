@@ -37,10 +37,8 @@ class ChildProcessTask : public Task {
     // The "spare" render process, a render process used so that there is always
     // a render process ready to go.
     kSpareRenderProcess,
-#if BUILDFLAG(ENABLE_GLIC)
     // A render process used for chrome://glic.
     kGlicRenderProcess,
-#endif
     // A render process that is unknown and for which no provider is available.
     // Should not be used; all processes should be shown in the Task Manager.
     // See https://crbug.com/40528867 .

@@ -5,6 +5,10 @@
 #include "chrome/browser/task_manager/providers/render_process_host_task_provider.h"
 
 #include "base/process/process.h"
+#include "chrome/browser/glic/public/glic_enabling.h"  // nogncheck
+#include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/browser/task_manager/providers/child_process_task.h"
 #include "chrome/common/buildflags.h"
 #include "content/public/browser/browser_child_process_host_iterator.h"
@@ -18,13 +22,6 @@
 #include "extensions/browser/process_map.h"  // nogncheck
 #endif
 
-#if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/glic/public/glic_enabling.h"  // nogncheck
-#include "chrome/browser/glic/public/glic_keyed_service.h"
-#include "chrome/browser/glic/public/glic_keyed_service_factory.h"
-#include "chrome/browser/glic/widget/glic_window_controller.h"
-#endif
-
 using content::BrowserThread;
 using content::ChildProcessData;
 using content::RenderProcessHost;
@@ -33,7 +30,6 @@ namespace task_manager {
 
 namespace {
 
-#if BUILDFLAG(ENABLE_GLIC)
 bool IsHostForGlic(content::RenderProcessHost* host) {
   // This needs to match the GlicKeyedServiceFactory initialization logic in
   // EnsureBrowserContextKeyedServiceFactoriesBuilt().
@@ -45,7 +41,6 @@ bool IsHostForGlic(content::RenderProcessHost* host) {
       host->GetBrowserContext());
   return glic_service && glic_service->IsProcessHostForGlic(host);
 }
-#endif  // BUILDFLAG(ENABLE_GLIC)
 
 }  // namespace
 
@@ -101,11 +96,9 @@ void RenderProcessHostTaskProvider::CreateTask(
   data.SetProcess(host->GetProcess().Duplicate());
 
   auto subtype = ChildProcessTask::ProcessSubtype::kUnknownRenderProcess;
-#if BUILDFLAG(ENABLE_GLIC)
   if (IsHostForGlic(host)) {
     subtype = ChildProcessTask::ProcessSubtype::kGlicRenderProcess;
   }
-#endif
   std::unique_ptr<ChildProcessTask>& task =
       tasks_by_rph_id_[render_process_host_id];
   task = std::make_unique<ChildProcessTask>(data, subtype);

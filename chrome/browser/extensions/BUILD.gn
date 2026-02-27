@@ -917,6 +917,7 @@ source_set("extensions") {
       "//chrome/browser/chooser_controller",
       "//chrome/browser/device_identity",
       "//chrome/browser/feedback",
+      "//chrome/browser/glic",
       "//chrome/browser/importer",
       "//chrome/browser/lifetime:termination_notification",
       "//chrome/browser/picture_in_picture",
@@ -1552,10 +1553,6 @@ source_set("extensions") {
         "//components/enterprise/buildflags",
         "//components/enterprise/data_controls/core/browser",
       ]
-    }
-
-    if (enable_glic) {
-      deps += [ "//chrome/browser/glic" ]
     }
 
     if (!is_android && !is_chromeos) {
