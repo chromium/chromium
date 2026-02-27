@@ -80,7 +80,8 @@ import java.util.Map;
 /** Autofill profiles fragment, which allows the user to edit autofill profiles. */
 @NullMarked
 public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
-        implements PersonalDataManager.PersonalDataManagerObserver {
+        implements PersonalDataManager.PersonalDataManagerObserver,
+                EntityDataManager.EntityDataManagerObserver {
     private final Delegate mAddressEditorDelegate =
             new Delegate() {
                 // User has either created a new address, or edited an existing address.
@@ -149,6 +150,16 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
                         return;
                     }
                     entityDataManager.removeEntityInstance(entityInstance.getGUID());
+                }
+
+                @Override
+                public void onDone(EntityInstance entityInstance) {
+                    EntityDataManager entityDataManager =
+                            EntityDataManagerFactory.getForProfile(getProfile());
+                    if (entityDataManager == null) {
+                        return;
+                    }
+                    entityDataManager.addOrUpdateEntityInstance(entityInstance);
                 }
             };
 
@@ -436,14 +447,29 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
     }
 
     @Override
+    public void onEntityInstancesChanged() {
+        rebuildProfileList();
+        notifyPreferencesUpdated();
+        if (sObserverForTest != null) sObserverForTest.onEditorDismiss();
+    }
+
+    @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         PersonalDataManagerFactory.getForProfile(getProfile()).registerDataObserver(this);
+        EntityDataManager entityDataManager = EntityDataManagerFactory.getForProfile(getProfile());
+        if (entityDataManager != null) {
+            entityDataManager.registerDataObserver(this);
+        }
     }
 
     @Override
     public void onDestroyView() {
         PersonalDataManagerFactory.getForProfile(getProfile()).unregisterDataObserver(this);
+        EntityDataManager entityDataManager = EntityDataManagerFactory.getForProfile(getProfile());
+        if (entityDataManager != null) {
+            entityDataManager.unregisterDataObserver(this);
+        }
         super.onDestroyView();
     }
 

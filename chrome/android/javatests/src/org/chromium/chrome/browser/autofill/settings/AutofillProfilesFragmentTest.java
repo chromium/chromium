@@ -27,7 +27,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
@@ -57,6 +59,7 @@ import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -75,6 +78,7 @@ import org.chromium.chrome.browser.autofill.AndroidAutofillAvailabilityStatus;
 import org.chromium.chrome.browser.autofill.AutofillClientProviderUtils;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManager;
+import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManager.EntityDataManagerObserver;
 import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManagerFactory;
 import org.chromium.chrome.browser.autofill.editors.address.AddressEditorMediator;
 import org.chromium.chrome.browser.autofill.editors.address.EditorDialogView;
@@ -1119,6 +1123,52 @@ public class AutofillProfilesFragmentTest {
         ThreadUtils.runOnUiThreadBlocking(vehicleEntity::performClick);
 
         onView(withText("Edit Vehicle")).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"Preferences"})
+    public void testAutofillAiEntities_rebuildsOnEntityChange() throws Exception {
+        EntityInstanceWithLabels entity1 =
+                new EntityInstanceWithLabels(
+                        "guid1",
+                        /* entityInstanceLabel= */ "Vehicle",
+                        /* entityInstanceSubLabel= */ "Mercedez",
+                        /* storedInWallet= */ false);
+
+        when(sEntityDataManager.getEntitiesWithLabels()).thenReturn(Arrays.asList(entity1));
+        EntityDataManagerFactory.setInstanceForTesting(sEntityDataManager);
+
+        // Capture the observer registered by the fragment.
+        ArgumentCaptor<EntityDataManagerObserver> captor =
+                ArgumentCaptor.forClass(EntityDataManagerObserver.class);
+        verify(sEntityDataManager, atLeastOnce()).registerDataObserver(captor.capture());
+        EntityDataManagerObserver observer = captor.getValue();
+
+        // Initially check that the entity is rendered.
+        ThreadUtils.runOnUiThreadBlocking(() -> observer.onEntityInstancesChanged());
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Preference vehicleEntity =
+                            sSettingsActivityTestRule.getFragment().findPreference("guid1");
+                    Criteria.checkThat(
+                            "Vehicle entity should exist", vehicleEntity, Matchers.notNullValue());
+                });
+
+        // Change the entities and notify the observer.
+        when(sEntityDataManager.getEntitiesWithLabels()).thenReturn(Collections.emptyList());
+        ThreadUtils.runOnUiThreadBlocking(() -> observer.onEntityInstancesChanged());
+
+        // Verify that the entity is gone.
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Preference vehicleEntity =
+                            sSettingsActivityTestRule.getFragment().findPreference("guid1");
+                    Criteria.checkThat(
+                            "Vehicle entity should no longer exist",
+                            vehicleEntity,
+                            Matchers.nullValue());
+                });
     }
 
     private void checkPreferenceCount(int expectedPreferenceCount) {
