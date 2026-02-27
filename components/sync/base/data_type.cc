@@ -510,6 +510,11 @@ DataTypeSet AlwaysPreferredUserTypes() {
           kSyncSupportAlwaysSyncingPriorityPreferences)) {
     types.Remove(PRIORITY_PREFERENCES);
   }
+  // TODO(crbug.com/486856790): add ACCESSIBILITY_ANNOTATION to a corresponding
+  // UserSelectableType or another toggle once feature is finalized.
+  if (base::FeatureList::IsEnabled(kSyncAccessibilityAnnotation)) {
+    types.Put(ACCESSIBILITY_ANNOTATION);
+  }
   if (base::FeatureList::IsEnabled(syncer::kSyncAIThread)) {
     types.Put(AI_THREAD);
   }
