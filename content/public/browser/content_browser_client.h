@@ -3318,19 +3318,6 @@ class CONTENT_EXPORT ContentBrowserClient {
   // allows a prerender fall back to prefetch if available.
   virtual bool UsePrefetchPrerenderIntegration();
 
-  // Returns true if `PreloadServingMetrics` should be enabled, which record
-  // serving metrics of preloads.
-  //
-  // Some //content features enable the feature even if it's false. For
-  // details, see `PreloadServingMetricsCapsule::IsFeatureEnabled()`.
-  //
-  // We use `ContentBrowserClient` rather than //content public feature because
-  // we have mulitple preload triggers in //chrome that want to enable the
-  // feature, and we have a limitation: a feature cannot be used in mulitple
-  // experiments. For more details, see
-  // https://docs.google.com/document/d/1bBhfhO7BotUB7Myy_8mtFF_4lI5N8hUyNayV_gI019Y/edit?tab=t.0#heading=h.9osmajzfan4b
-  virtual bool UsePreloadServingMetrics();
-
 #if !BUILDFLAG(IS_ANDROID)
   // Gives the content embedder a chance to disallow a credential request,
   // for example if there's an active actor task in the tab associated with

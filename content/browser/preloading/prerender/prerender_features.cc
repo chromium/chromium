@@ -39,10 +39,6 @@ const base::FeatureParam<Prerender2FallbackPrefetchSchedulerPolicy>
         Prerender2FallbackPrefetchSchedulerPolicy::kNotUse,
         &kPrerender2FallbackPrefetchSchedulerPolicyOptios};
 
-const base::FeatureParam<bool> kPrerender2FallbackUsePreloadServingMetrics{
-    &kPrerender2FallbackPrefetchSpecRules,
-    "kPrerender2FallbackUsePreloadServingMetrics", false};
-
 BASE_FEATURE(kPrerender2NoVarySearch, base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<int>

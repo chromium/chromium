@@ -125,10 +125,6 @@ void PrefetchMatchResolver::FindPrefetch(
   })();
 
   auto prerender_host = ([&]() -> base::WeakPtr<PrerenderHost> {
-    if (!PreloadServingMetricsCapsule::IsFeatureEnabled()) {
-      return nullptr;
-    }
-
     PrerenderHostRegistry* prerender_host_registry =
         frame_tree_node->current_frame_host()
             ->delegate()
@@ -414,21 +410,18 @@ void PrefetchMatchResolver::RegisterCandidate(
 
   // If the navigation is prerender initial navigation and a prefetch ahead of
   // prerender is a candidate, capture it for `PreloadServingMetrics`.
-  if (PreloadServingMetricsCapsule::IsFeatureEnabled()) {
-    if (prerender_host_for_metrics_ &&
-        prefetch_container.HasPreloadPipelineInfoForMetrics(
-            prerender_host_for_metrics_->preload_pipeline_info())) {
-      // We expect at most one potentially matching prefetch-ahead-of-prerender
-      // to exist for a given prerender. The pipeline normally won't trigger a
-      // new prefetch if one already exists. Furthermore, even if another is
-      // triggered, it should be deduplicated against the existing one as they
-      // would share the same PrefetchKey. Therefore, this check should always
-      // be satisfied.
-      CHECK(!prefetch_ahead_of_prerender_for_metrics_);
+  if (prerender_host_for_metrics_ &&
+      prefetch_container.HasPreloadPipelineInfoForMetrics(
+          prerender_host_for_metrics_->preload_pipeline_info())) {
+    // We expect at most one potentially matching prefetch-ahead-of-prerender
+    // to exist for a given prerender. The pipeline normally won't trigger a
+    // new prefetch if one already exists. Furthermore, even if another is
+    // triggered, it should be deduplicated against the existing one as they
+    // would share the same PrefetchKey. Therefore, this check should always
+    // be satisfied.
+    CHECK(!prefetch_ahead_of_prerender_for_metrics_);
 
-      prefetch_ahead_of_prerender_for_metrics_ =
-          prefetch_container.GetWeakPtr();
-    }
+    prefetch_ahead_of_prerender_for_metrics_ = prefetch_container.GetWeakPtr();
   }
 }
 
@@ -496,25 +489,23 @@ void PrefetchMatchResolver::UnregisterCandidate(
   DVLOG(1) << "Serving " << prefetch_container
            << ": Unregistered from PMR: " << serving_result;
 
-  if (PreloadServingMetricsCapsule::IsFeatureEnabled()) {
-    if (&prefetch_container == prefetch_ahead_of_prerender_for_metrics_.get()) {
-      prefetch_match_metrics_
-          ->prefetch_potential_candidate_serving_result_ahead_of_prerender =
-          serving_result;
-      prefetch_match_metrics_->prefetch_container_metrics_ahead_of_prerender =
-          std::make_unique<PrefetchContainerMetrics>(
-              prefetch_container.GetPrefetchContainerMetrics());
-    }
-
-    // While `PrefetchMatchResolver` works well with multiple candidates, we
-    // have at most one candidate in almost all cases. So, we record the last
-    // `PrefetchPotentialCandidateServingResult`.
-    //
-    // For more details, see
-    // https://docs.google.com/document/d/1ITMr_qyysUPIMZpLkmpQABwtVseMBduRqxHGZxIJ1R0/edit?resourcekey=0-ccZ-G6JV4WO-1bP4TiNvjQ&tab=t.x99jls7s2xug
-    prefetch_match_metrics_->prefetch_potential_candidate_serving_result_last =
+  if (&prefetch_container == prefetch_ahead_of_prerender_for_metrics_.get()) {
+    prefetch_match_metrics_
+        ->prefetch_potential_candidate_serving_result_ahead_of_prerender =
         serving_result;
+    prefetch_match_metrics_->prefetch_container_metrics_ahead_of_prerender =
+        std::make_unique<PrefetchContainerMetrics>(
+            prefetch_container.GetPrefetchContainerMetrics());
   }
+
+  // While `PrefetchMatchResolver` works well with multiple candidates, we
+  // have at most one candidate in almost all cases. So, we record the last
+  // `PrefetchPotentialCandidateServingResult`.
+  //
+  // For more details, see
+  // https://docs.google.com/document/d/1ITMr_qyysUPIMZpLkmpQABwtVseMBduRqxHGZxIJ1R0/edit?resourcekey=0-ccZ-G6JV4WO-1bP4TiNvjQ&tab=t.x99jls7s2xug
+  prefetch_match_metrics_->prefetch_potential_candidate_serving_result_last =
+      serving_result;
 
   prefetch_container.OnUnregisterCandidate(navigated_key_.url(), is_served,
                                            serving_result, is_nav_prerender_,
@@ -811,26 +802,23 @@ void PrefetchMatchResolver::UnblockInternal(
   // been unblocking.
   CHECK_EQ(candidates_.size(), 0u);
 
-  if (PreloadServingMetricsCapsule::IsFeatureEnabled()) {
-    PrefetchContainer* prefetch_container =
-        serving_handle.GetPrefetchContainer();
-    prefetch_match_metrics_->prefetch_container_metrics =
-        prefetch_container
-            ? std::make_unique<PrefetchContainerMetrics>(
-                  prefetch_container->GetPrefetchContainerMetrics())
-            : std::unique_ptr<PrefetchContainerMetrics>(nullptr);
+  PrefetchContainer* prefetch_container = serving_handle.GetPrefetchContainer();
+  prefetch_match_metrics_->prefetch_container_metrics =
+      prefetch_container
+          ? std::make_unique<PrefetchContainerMetrics>(
+                prefetch_container->GetPrefetchContainerMetrics())
+          : std::unique_ptr<PrefetchContainerMetrics>(nullptr);
 
-    AttachPrefetchMatchPrerenderDebugMetrics();
+  AttachPrefetchMatchPrerenderDebugMetrics();
 
-    prefetch_match_metrics_->time_match_end = base::TimeTicks::Now();
+  prefetch_match_metrics_->time_match_end = base::TimeTicks::Now();
 
-    if (navigation_request_for_metrics_) {
-      auto& preload_serving_metrics_holder =
-          *PreloadServingMetricsHolder::GetOrCreateForNavigationHandle(
-              *navigation_request_for_metrics_.get());
-      preload_serving_metrics_holder.AddPrefetchMatchMetrics(
-          std::move(prefetch_match_metrics_));
-    }
+  if (navigation_request_for_metrics_) {
+    auto& preload_serving_metrics_holder =
+        *PreloadServingMetricsHolder::GetOrCreateForNavigationHandle(
+            *navigation_request_for_metrics_.get());
+    preload_serving_metrics_holder.AddPrefetchMatchMetrics(
+        std::move(prefetch_match_metrics_));
   }
 
   auto callback = std::move(callback_);

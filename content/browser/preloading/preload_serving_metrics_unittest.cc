@@ -45,7 +45,6 @@ TEST(PreloadServingMetricsTest, NavigationWithoutPreload) {
           {
               features::kPrerender2FallbackPrefetchSpecRules,
               {
-                  {"kPrerender2FallbackUsePreloadServingMetrics", "true"},
               },
           },
       },
@@ -242,7 +241,6 @@ TEST(PreloadServingMetricsTest, NavigationWithPrefetch) {
           {
               features::kPrerender2FallbackPrefetchSpecRules,
               {
-                  {"kPrerender2FallbackUsePreloadServingMetrics", "true"},
               },
           },
       },
@@ -474,7 +472,6 @@ TEST(PreloadServingMetricsTest,
           {
               features::kPrerender2FallbackPrefetchSpecRules,
               {
-                  {"kPrerender2FallbackUsePreloadServingMetrics", "true"},
               },
           },
       },
@@ -717,7 +714,6 @@ TEST(PreloadServingMetricsTest,
           {
               features::kPrerender2FallbackPrefetchSpecRules,
               {
-                  {"kPrerender2FallbackUsePreloadServingMetrics", "true"},
               },
           },
       },
@@ -1031,7 +1027,6 @@ TEST(
           {
               features::kPrerender2FallbackPrefetchSpecRules,
               {
-                  {"kPrerender2FallbackUsePreloadServingMetrics", "true"},
               },
           },
       },
@@ -1350,7 +1345,6 @@ TEST(PreloadServingMetricsTest, PrefetchMatchPrerenderDebugMetrics) {
           {
               features::kPrerender2FallbackPrefetchSpecRules,
               {
-                  {"kPrerender2FallbackUsePreloadServingMetrics", "true"},
               },
           },
       },

@@ -16,16 +16,6 @@
 
 namespace content {
 
-// static
-bool PreloadServingMetricsCapsule::IsFeatureEnabled() {
-  // The feature will be enabled with a kill switch `kPreloadServingMetrics`.
-  // For M141, we use `kPrerender2FallbackUsePreloadServingMetrics` etc. Keep
-  // them until `kPreloadServingMetrics` reaches to stable.
-  return base::FeatureList::IsEnabled(features::kPreloadServingMetrics) ||
-         features::kPrerender2FallbackUsePreloadServingMetrics.Get() ||
-         GetContentClient()->browser()->UsePreloadServingMetrics();
-}
-
 PreloadServingMetricsCapsule::~PreloadServingMetricsCapsule() = default;
 
 // static

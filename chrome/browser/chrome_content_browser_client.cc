@@ -8880,10 +8880,6 @@ bool ChromeContentBrowserClient::UsePrefetchPrerenderIntegration() {
          base::FeatureList::IsEnabled(features::kNewTabPageTriggerForPrefetch);
 }
 
-bool ChromeContentBrowserClient::UsePreloadServingMetrics() {
-  return features::kDsePreload2UsePreloadServingMetrics.Get();
-}
-
 #if !BUILDFLAG(IS_ANDROID)
 bool ChromeContentBrowserClient::ShouldDisallowCredentialRequest(
     content::WebContents* web_contents) {

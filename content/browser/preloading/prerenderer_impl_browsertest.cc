@@ -253,7 +253,6 @@ class PrerendererImplBrowserTestPrefetchAhead
              {
                  {"kPrerender2FallbackPrefetchSchedulerPolicy",
                   prefetch_scheduler_policy},
-                 {"kPrerender2FallbackUsePreloadServingMetrics", "true"},
              },
          },
          {

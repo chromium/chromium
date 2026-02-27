@@ -1988,10 +1988,6 @@ bool ContentBrowserClient::UsePrefetchPrerenderIntegration() {
   return false;
 }
 
-bool ContentBrowserClient::UsePreloadServingMetrics() {
-  return false;
-}
-
 #if !BUILDFLAG(IS_ANDROID)
 bool ContentBrowserClient::ShouldDisallowCredentialRequest(
     WebContents* web_contents) {

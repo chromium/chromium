@@ -789,17 +789,15 @@ void PrerenderHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
     return;
   }
 
-  if (PreloadServingMetricsCapsule::IsFeatureEnabled()) {
-    // If `DidFinishNavigation()` is called multiple times, ignore
-    // `PreloadServingMetrics` of that navigation and keep the first one.
-    if (!prerender_initial_preload_serving_metrics_) {
-      // Take `PreloadServingMetrics` of prerender initial navigation.
-      auto& initial_preload_serving_metrics_holder =
-          *PreloadServingMetricsHolder::GetOrCreateForNavigationHandle(
-              *navigation_handle);
-      prerender_initial_preload_serving_metrics_ =
-          initial_preload_serving_metrics_holder.Take();
-    }
+  // If `DidFinishNavigation()` is called multiple times, ignore
+  // `PreloadServingMetrics` of that navigation and keep the first one.
+  if (!prerender_initial_preload_serving_metrics_) {
+    // Take `PreloadServingMetrics` of prerender initial navigation.
+    auto& initial_preload_serving_metrics_holder =
+        *PreloadServingMetricsHolder::GetOrCreateForNavigationHandle(
+            *navigation_handle);
+    prerender_initial_preload_serving_metrics_ =
+        initial_preload_serving_metrics_holder.Take();
   }
 
   const bool is_prerender_main_frame =
@@ -971,14 +969,12 @@ std::unique_ptr<StoredPage> PrerenderHost::Activate(
 
   // Associate `PreloadServingMetrics` of prerender initial navigation to ones
   // of activation.
-  if (PreloadServingMetricsCapsule::IsFeatureEnabled()) {
-    auto& activation_preload_serving_metrics_holder =
-        *PreloadServingMetricsHolder::GetOrCreateForNavigationHandle(
-            navigation_request);
-    activation_preload_serving_metrics_holder
-        .SetPrerenderInitialPreloadServingMetrics(
-            std::move(prerender_initial_preload_serving_metrics_));
-  }
+  auto& activation_preload_serving_metrics_holder =
+      *PreloadServingMetricsHolder::GetOrCreateForNavigationHandle(
+          navigation_request);
+  activation_preload_serving_metrics_holder
+      .SetPrerenderInitialPreloadServingMetrics(
+          std::move(prerender_initial_preload_serving_metrics_));
 
   RecordActivation(navigation_request);
 
@@ -1918,10 +1914,6 @@ void PrerenderHost::AddAdditionalRequestHeaders(
 
 void PrerenderHost::OnWillBeCancelled(
     const PrerenderCancellationReason& reason) {
-  if (!PreloadServingMetricsCapsule::IsFeatureEnabled()) {
-    return;
-  }
-
   [&]() {
     // There are two cases:
     //

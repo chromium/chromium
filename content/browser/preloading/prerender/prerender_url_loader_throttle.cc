@@ -50,14 +50,12 @@ PrerenderURLLoaderThrottle::MaybeCreate(FrameTreeNodeId frame_tree_node_id) {
     return nullptr;
   }
 
-  if (PreloadServingMetricsCapsule::IsFeatureEnabled()) {
-    if (frame_tree_node->navigation_request()) {
-      auto& preload_serving_metrics_holder =
-          *PreloadServingMetricsHolder::GetOrCreateForNavigationHandle(
-              *frame_tree_node->navigation_request());
-      preload_serving_metrics_holder
-          .SetIsPrerenderAbortedByPrerenderURLLoaderThrottle(true);
-    }
+  if (frame_tree_node->navigation_request()) {
+    auto& preload_serving_metrics_holder =
+        *PreloadServingMetricsHolder::GetOrCreateForNavigationHandle(
+            *frame_tree_node->navigation_request());
+    preload_serving_metrics_holder
+        .SetIsPrerenderAbortedByPrerenderURLLoaderThrottle(true);
   }
 
   // If the prefetch ahead of prerender "failed", `PrerenderURLLoaderThrottle`

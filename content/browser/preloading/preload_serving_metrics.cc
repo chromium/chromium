@@ -309,8 +309,6 @@ void PreloadServingMetrics::RecordMetricsForNonPrerenderNavigationCommitted()
 
 void PreloadServingMetrics::RecordMetricsForPrerenderInitialNavigationFailed()
     const {
-  CHECK(PreloadServingMetricsCapsule::IsFeatureEnabled());
-
   RecordMetricsInternal(
       *this, "PreloadServingMetrics.ForPrerenderInitialNavigationFailed.",
       /*is_prerender_initial_navigation=*/true);
@@ -443,9 +441,7 @@ void PreloadServingMetrics::RecordFirstContentfulPaint(
       corrected_first_contentful_paint);
 }
 
-PreloadServingMetrics::PreloadServingMetrics() {
-  CHECK(PreloadServingMetricsCapsule::IsFeatureEnabled());
-}
+PreloadServingMetrics::PreloadServingMetrics() = default;
 
 PreloadServingMetrics::~PreloadServingMetrics() = default;
 
@@ -453,8 +449,6 @@ PreloadServingMetrics::~PreloadServingMetrics() = default;
 std::unique_ptr<PreloadServingMetricsCapsule>
 PreloadServingMetricsCapsuleImpl::TakeFromNavigationHandle(
     NavigationHandle& navigation_handle) {
-  CHECK(PreloadServingMetricsCapsule::IsFeatureEnabled());
-
   return base::WrapUnique(new PreloadServingMetricsCapsuleImpl(
       PreloadServingMetricsHolder::GetOrCreateForNavigationHandle(
           navigation_handle)
@@ -463,9 +457,7 @@ PreloadServingMetricsCapsuleImpl::TakeFromNavigationHandle(
 
 PreloadServingMetricsCapsuleImpl::PreloadServingMetricsCapsuleImpl(
     std::unique_ptr<PreloadServingMetrics> preload_serving_metrics)
-    : preload_serving_metrics_(std::move(preload_serving_metrics)) {
-  CHECK(PreloadServingMetricsCapsule::IsFeatureEnabled());
-}
+    : preload_serving_metrics_(std::move(preload_serving_metrics)) {}
 
 PreloadServingMetricsCapsuleImpl::~PreloadServingMetricsCapsuleImpl() = default;
 

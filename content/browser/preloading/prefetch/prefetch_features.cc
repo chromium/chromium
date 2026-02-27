@@ -75,8 +75,6 @@ const base::FeatureParam<size_t>
         &kPrefetchMultipleActiveSetSizeLimitForBase,
         "prefetch_multiple_active_set_size_limit_for_base_value", 2};
 
-BASE_FEATURE(kPreloadServingMetrics, base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kPrefetchFixHeaderUpdatesOnRedirect,
              base::FEATURE_ENABLED_BY_DEFAULT);
 

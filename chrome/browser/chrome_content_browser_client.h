@@ -1192,7 +1192,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       const ui::ClipboardSequenceNumberToken& seqno) override;
 
   bool UsePrefetchPrerenderIntegration() override;
-  bool UsePreloadServingMetrics() override;
+
 #if !BUILDFLAG(IS_ANDROID)
   bool ShouldDisallowCredentialRequest(
       content::WebContents* web_contents) override;

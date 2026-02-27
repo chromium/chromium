@@ -20346,8 +20346,7 @@
                     "name": "Enabled_NoTimeout_Burst",
                     "params": {
                         "kPrerender2FallbackPrefetchSchedulerPolicy": "Burst",
-                        "kPrerender2FallbackPrefetchUseBlockUntilHeadTimetout": "false",
-                        "kPrerender2FallbackUsePreloadServingMetrics": "true"
+                        "kPrerender2FallbackPrefetchUseBlockUntilHeadTimetout": "false"
                     },
                     "enable_features": [
                         "Prerender2FallbackPrefetchSpecRules"
