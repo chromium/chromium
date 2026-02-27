@@ -97,8 +97,8 @@ ScriptPromise<IDLUndefined> InstallEvent::addRoutes(
       MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
   if (!observer_->WaitUntil(script_state, lifetime_resolver->Promise(),
                             exception_state)) {
-    // If WaitUntil() returns false, it means the event is not active anymore.
-    // "InvalidStateError" has been thrown inside WaitUntil().
+    // WaitUntil() returns false if the event is not active, or if
+    // setting up promise handlers failed. See https://crbug.com/477424489.
     CHECK(exception_state.HadException());
     lifetime_resolver->Detach();
     return EmptyPromise();
