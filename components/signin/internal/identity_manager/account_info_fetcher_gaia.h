@@ -6,10 +6,13 @@
 #define COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_ACCOUNT_INFO_FETCHER_GAIA_H_
 
 #include <memory>
+#include <optional>
 
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/signin/internal/identity_manager/account_info_fetcher.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "google_apis/gaia/gaia_auth_consumer.h"
 #include "google_apis/gaia/gaia_oauth_client.h"
 #include "google_apis/gaia/oauth2_access_token_manager.h"
@@ -18,7 +21,6 @@ namespace network {
 class SharedURLLoaderFactory;
 }
 
-class AccountFetcherService;
 class ProfileOAuth2TokenService;
 
 // An account information fetcher that gets an OAuth token of appropriate
@@ -32,8 +34,8 @@ class AccountInfoFetcherGaia : public AccountInfoFetcher,
   AccountInfoFetcherGaia(
       ProfileOAuth2TokenService* token_service,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      AccountFetcherService* service,
-      const CoreAccountId& account_id);
+      const CoreAccountId& account_id,
+      base::OnceCallback<void(std::optional<AccountInfo>)> callback);
 
   AccountInfoFetcherGaia(const AccountInfoFetcherGaia&) = delete;
   AccountInfoFetcherGaia& operator=(const AccountInfoFetcherGaia&) = delete;
@@ -58,8 +60,8 @@ class AccountInfoFetcherGaia : public AccountInfoFetcher,
 
   raw_ptr<ProfileOAuth2TokenService> token_service_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-  raw_ptr<AccountFetcherService> service_;
   const CoreAccountId account_id_;
+  base::OnceCallback<void(std::optional<AccountInfo>)> callback_;
 
   std::unique_ptr<OAuth2AccessTokenManager::Request> login_token_request_;
   std::unique_ptr<gaia::GaiaOAuthClient> gaia_oauth_client_;

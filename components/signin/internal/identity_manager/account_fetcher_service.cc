@@ -175,9 +175,11 @@ void AccountFetcherService::StartFetchingUserInfo(
     DVLOG(1) << "StartFetching " << account_id;
     user_info_fetch_start_times_[account_id] = base::TimeTicks::Now();
     user_info_requests_.emplace(
-        account_id, std::make_unique<AccountInfoFetcherGaia>(
-                        token_service_, signin_client_->GetURLLoaderFactory(),
-                        this, account_id));
+        account_id,
+        std::make_unique<AccountInfoFetcherGaia>(
+            token_service_, signin_client_->GetURLLoaderFactory(), account_id,
+            base::BindOnce(&AccountFetcherService::OnUserInfoFetchCompleted,
+                           base::Unretained(this), account_id)));
   }
 }
 
@@ -250,13 +252,14 @@ void AccountFetcherService::RefreshAccountInfo(const CoreAccountId& account_id,
   FetchAccountImage(account_id);
 }
 
-void AccountFetcherService::OnUserInfoFetchSuccess(
+void AccountFetcherService::OnUserInfoFetchCompleted(
     const CoreAccountId& account_id,
-    const base::DictValue& user_info) {
-  std::optional<AccountInfo> fetched_account_info =
-      signin::AccountInfoFromUserInfo(user_info);
+    std::optional<AccountInfo> fetched_account_info) {
   if (!fetched_account_info) {
-    OnUserInfoFetchFailure(account_id);
+    LOG(WARNING) << "Failed to get UserInfo for " << account_id;
+    user_info_fetch_start_times_.erase(account_id);
+    // |account_id| is owned by the request. Cannot be used after this line.
+    user_info_requests_.erase(account_id);
     return;
   }
 
@@ -337,14 +340,6 @@ void AccountFetcherService::FetchAccountImage(const CoreAccountId& account_id) {
   user_avatar_fetch_start_times_[account_id] = base::TimeTicks::Now();
   GetOrCreateImageFetcher()->FetchImage(image_url_with_size,
                                         std::move(callback), std::move(params));
-}
-
-void AccountFetcherService::OnUserInfoFetchFailure(
-    const CoreAccountId& account_id) {
-  LOG(WARNING) << "Failed to get UserInfo for " << account_id;
-  user_info_fetch_start_times_.erase(account_id);
-  // |account_id| is owned by the request. Cannot be used after this line.
-  user_info_requests_.erase(account_id);
 }
 
 void AccountFetcherService::OnAccountCapabilitiesFetchComplete(

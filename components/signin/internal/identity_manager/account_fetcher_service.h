@@ -28,7 +28,6 @@ class AccountCapabilities;
 class AccountCapabilitiesFetcher;
 class AccountFetcherFactory;
 class AccountInfoFetcher;
-class AccountInfoFetcherGaia;
 class AccountTrackerService;
 class ProfileOAuth2TokenService;
 class PrefRegistrySimple;
@@ -119,8 +118,6 @@ class AccountFetcherService : public ProfileOAuth2TokenServiceObserver {
   void OnRefreshTokensLoaded() override;
 
  private:
-  friend class AccountInfoFetcherGaia;
-
   void RefreshAllAccountInfo(bool only_fetch_if_invalid);
 
 #if BUILDFLAG(IS_ANDROID)
@@ -150,12 +147,11 @@ class AccountFetcherService : public ProfileOAuth2TokenServiceObserver {
   void RefreshAccountInfo(const CoreAccountId& account_id,
                           bool only_fetch_if_invalid);
 
-  // Called by AccountInfoFetcherGaia.
-  void OnUserInfoFetchSuccess(const CoreAccountId& account_id,
-                              const base::DictValue& user_info);
-  void OnUserInfoFetchFailure(const CoreAccountId& account_id);
+  // Called by AccountInfoFetcher callback.
+  void OnUserInfoFetchCompleted(const CoreAccountId& account_id,
+                                std::optional<AccountInfo> account_info);
 
-  // Called by AccountCapabilitiesFetcher.
+  // Called by AccountCapabilitiesFetcher callback.
   void OnAccountCapabilitiesFetchComplete(
       const CoreAccountId& account_id,
       const std::optional<AccountCapabilities>& account_capabilities);
