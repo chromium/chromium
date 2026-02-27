@@ -147,10 +147,10 @@ swarming.pool_realm(
         "service-account-chromeperf",
     ],
     user_users = [
-        # Skia uses this pool directly.
-        "skia-external-ct-skps@skia-swarming-bots.iam.gserviceaccount.com",
-        # TODO(borenet): Remove the below after we're fully switched to Kitchen.
-        "chromium-swarm-bots@skia-swarming-bots.iam.gserviceaccount.com",
+        # TODO(b/486147856): Skia is temporarily using this pool to test on
+        # Intel Macs with discrete GPUs. Remove this once Skia has its own
+        # capacity in the Skia pool.
+        "task-scheduler@skia-infra-public.iam.gserviceaccount.com",
     ],
     owner_groups = [
         "mdb/chrome-infra-eng",
