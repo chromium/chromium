@@ -355,6 +355,38 @@ std::unique_ptr<PopupRowContentView> CreateFooterPopupRowContentView(
   return view;
 }
 
+std::unique_ptr<PopupRowContentView> CreateSaveAndFillRowContentView(
+    const Suggestion& suggestion) {
+  auto view = std::make_unique<PopupRowContentView>();
+
+  view->AddChildView(popup_cell_utils::GetIconImageView(suggestion));
+  popup_cell_utils::AddSpacerWithSize(
+      *view, PopupBaseView::ArrowHorizontalMargin(), /*resize=*/false);
+
+  auto* text_container =
+      view->AddChildView(std::make_unique<views::BoxLayoutView>());
+  text_container->SetOrientation(views::BoxLayout::Orientation::kVertical);
+  text_container->SetCrossAxisAlignment(
+      views::BoxLayout::CrossAxisAlignment::kStart);
+  text_container->SetInsideBorderInsets(
+      gfx::Insets(view->GetInsideBorderInsets())
+          .set_top_bottom(
+              kAutofillMultilineSuggestionAdditionalVerticalMargin,
+              kAutofillMultilineSuggestionAdditionalVerticalMargin));
+
+  text_container->AddChildView(
+      CreateMainTextLabel(suggestion, /*show_new_badge=*/std::nullopt));
+
+  auto* description_label =
+      text_container->AddChildView(std::make_unique<views::Label>(
+          suggestion.labels[0][0].value, views::style::CONTEXT_DIALOG_BODY_TEXT,
+          kMinorTextStyle));
+  description_label->SetMultiLine(true);
+  description_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  description_label->SetEnabledColor(ui::kColorLabelForegroundSecondary);
+  return view;
+}
+
 std::unique_ptr<views::Label> CreatePasswordDescriptionLabel(
     const Suggestion& suggestion) {
   if (suggestion.additional_label.empty()) {
@@ -658,6 +690,11 @@ std::unique_ptr<PopupRowView> CreatePopupRowView(
           CreatePasswordPopupRowContentView(suggestion, show_new_badge,
                                             std::move(filter_match),
                                             favicon_loader));
+    case SuggestionType::kSaveAndFillCreditCardEntry: {
+      return std::make_unique<PopupRowView>(
+          a11y_selection_delegate, selection_delegate, controller, line_number,
+          CreateSaveAndFillRowContentView(suggestion));
+    }
     case SuggestionType::kComposeResumeNudge:
     case SuggestionType::kComposeSavedStateNotification: {
       return std::make_unique<PopupRowView>(
