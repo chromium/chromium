@@ -82,6 +82,11 @@ IOWatcher* CurrentThread::GetIOWatcher() {
   return current_->GetMessagePump()->GetIOWatcher();
 }
 
+bool CurrentThread::IsAsyncIOSupported() const {
+  DCHECK(current_->IsBoundToCurrentThread());
+  return current_->GetMessagePump()->IsAsyncIOSupported();
+}
+
 void CurrentThread::AddTaskObserver(TaskObserver* task_observer) {
   DCHECK(current_->IsBoundToCurrentThread());
   current_->AddTaskObserver(task_observer);

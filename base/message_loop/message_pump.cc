@@ -293,4 +293,8 @@ IOWatcher* MessagePump::GetIOWatcher() {
   return io_watcher_.get();
 }
 
+bool MessagePump::IsAsyncIOSupported() {
+  return false;
+}
+
 }  // namespace base

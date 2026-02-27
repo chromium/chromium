@@ -114,7 +114,7 @@ CompositorFrameSinkImpl::CompositorFrameSinkImpl(
           frame_sink_manager,
           frame_sink_id,
           false /* is_root */)) {
-  if (mojo::IsDirectReceiverSupported() &&
+  if (mojo::IsDirectReceiverSupported() && mojo::IsAsyncIOSupported() &&
       features::IsVizDirectCompositorThreadIpcNonRootEnabled()) {
     compositor_frame_sink_receiver_.emplace<DirectReceiver>(
         mojo::DirectReceiverKey{}, this);

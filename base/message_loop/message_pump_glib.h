@@ -110,6 +110,7 @@ class BASE_EXPORT MessagePumpGlib : public MessagePump,
   void ScheduleDelayedWork(
       const Delegate::NextWorkInfo& next_work_info) override;
   IOWatcher* GetIOWatcher() override;
+  bool IsAsyncIOSupported() override;
 
   // Internal methods used for processing the FdWatchSource callbacks. As for
   // main pump callbacks, they are public for simplicity but should not be used

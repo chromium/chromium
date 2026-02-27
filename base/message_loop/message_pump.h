@@ -282,6 +282,10 @@ class BASE_EXPORT MessagePump {
   // returns a valid IOWatcher implementation to use. Otherwise returns null.
   virtual IOWatcher* GetIOWatcher();
 
+  // Returns true if the MessagePump implementation supports async IO event
+  // handling.
+  virtual bool IsAsyncIOSupported();
+
   // May cause the message pump to busy loop for the specified duration. May not
   // work for all message pump types, and is only an upper bound of busy looping
   // time. This may be used to avoid sleeping when a short wait is

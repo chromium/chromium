@@ -47,6 +47,7 @@ class BASE_EXPORT MessagePumpAndroid : public MessagePump {
   void ScheduleDelayedWork(
       const Delegate::NextWorkInfo& next_work_info) override;
   IOWatcher* GetIOWatcher() override;
+  bool IsAsyncIOSupported() override;
 
   // Attaches |delegate| to this native MessagePump. |delegate| will from then
   // on be invoked by the native loop to process application tasks.

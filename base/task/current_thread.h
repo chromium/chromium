@@ -222,6 +222,8 @@ class BASE_EXPORT CurrentThread {
   // Returns the IOWatcher instance exposed by this thread, if any.
   IOWatcher* GetIOWatcher();
 
+  bool IsAsyncIOSupported() const;
+
  protected:
   explicit CurrentThread(
       sequence_manager::internal::SequenceManagerImpl* sequence_manager)

@@ -832,6 +832,10 @@ IOWatcher* MessagePumpGlib::GetIOWatcher() {
   return io_watcher_.get();
 }
 
+bool MessagePumpGlib::IsAsyncIOSupported() {
+  return true;
+}
+
 bool MessagePumpGlib::HandleFdWatchCheck(FdWatchController* controller) {
   DCHECK(controller);
   gushort flags = controller->poll_fd_->revents;

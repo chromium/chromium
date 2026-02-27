@@ -630,6 +630,10 @@ IOWatcher* MessagePumpAndroid::GetIOWatcher() {
   return io_watcher_.get();
 }
 
+bool MessagePumpAndroid::IsAsyncIOSupported() {
+  return true;
+}
+
 void MessagePumpAndroid::QuitWhenIdle(base::OnceClosure callback) {
   DCHECK(!on_quit_callback_);
   DCHECK(run_loop_);

@@ -14,6 +14,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/synchronization/lock.h"
+#include "base/task/current_thread.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "mojo/core/embedder/embedder.h"
@@ -364,6 +365,14 @@ namespace mojo {
 
 bool IsDirectReceiverSupported() {
   return core::IsMojoIpczEnabled();
+}
+
+bool IsAsyncIOSupported() {
+  if (!base::CurrentThread::IsSet()) {
+    return false;
+  }
+  return base::CurrentIOThread::IsSet() ||
+         base::CurrentThread::Get()->IsAsyncIOSupported();
 }
 
 #if BUILDFLAG(IS_WIN)
