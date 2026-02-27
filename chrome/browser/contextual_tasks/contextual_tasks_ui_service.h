@@ -167,9 +167,9 @@ class ContextualTasksUiService : public KeyedService {
   // Returns whether the provided URL is to a contextual tasks WebUI page.
   static bool IsContextualTasksUrl(const GURL& url);
 
-  // Returns whether the provided URL represents a "virtual" contextual tasks
-  // URL that should lead to the contextual tasks WebUI page upon navigation.
-  bool IsContextualTasksVirtualUrl(const GURL& url);
+  // Returns whether the provided URL represents a contextual tasks "display
+  // URL" that should lead to the contextual tasks WebUI page upon navigation.
+  bool IsContextualTasksDisplayUrl(const GURL& url);
 
   // Returns whether the provided URL is a Google search results page. This
   // method does not check for the validity of any parameters that

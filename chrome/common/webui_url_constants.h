@@ -161,9 +161,6 @@ inline constexpr char kChromeUIGlicUntrustedHost[] = "glic";
 inline constexpr char kChromeUIGlicUntrustedURL[] = "chrome-untrusted://glic/";
 inline constexpr char kChromeUIGlicSelectionOverlayURL[] =
     "chrome-untrusted://glic/selection-overlay/";
-inline constexpr char kChromeUIContextualTasksVirtualHost[] = "googlesearch";
-inline constexpr char kChromeUIContextualTasksVirtualURL[] =
-    "chrome://googlesearch";
 inline constexpr char kChromeUIHangUIHost[] = "uithreadhang";
 inline constexpr char kChromeUIHelpHost[] = "help";
 inline constexpr char kChromeUIHelpURL[] = "chrome://help/";

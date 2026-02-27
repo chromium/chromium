@@ -6,6 +6,7 @@ include_rules = [
   "+components/browser_ui/widget/android/java",
   "+components/browser_ui/util/android",
   "+components/component_updater",
+  "+components/contextual_tasks/public",
   "+components/dom_distiller/core",
   "+components/embedder_support/android/java/src/org/chromium/components/embedder_support/util",
   "+components/favicon/core",

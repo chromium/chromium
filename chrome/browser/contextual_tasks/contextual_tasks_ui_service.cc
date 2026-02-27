@@ -731,9 +731,9 @@ bool ContextualTasksUiService::HandleNavigationImpl(
     return false;
   }
 
-  // If the target URL is a virtual contextual tasks URL, then replace it with
+  // If the target URL is a contextual tasks "display URL", then replace it with
   // the proper AIM URL.
-  if (IsContextualTasksVirtualUrl(url_params.url)) {
+  if (IsContextualTasksDisplayUrl(url_params.url)) {
     const GURL aim_url =
         GetUrlForAim(TemplateURLServiceFactory::GetForProfile(profile_.get()),
                      omnibox::UNKNOWN_AIM_ENTRY_POINT, base::Time::Now(), u"",
@@ -1212,9 +1212,11 @@ bool ContextualTasksUiService::IsContextualTasksUrl(const GURL& url) {
          url.host() == chrome::kChromeUIContextualTasksHost;
 }
 
-bool ContextualTasksUiService::IsContextualTasksVirtualUrl(const GURL& url) {
-  return url.scheme() == content::kChromeUIScheme &&
-         url.host() == chrome::kChromeUIContextualTasksVirtualHost;
+bool ContextualTasksUiService::IsContextualTasksDisplayUrl(const GURL& url) {
+  return url.scheme() ==
+             contextual_tasks::kContextualTasksDisplayUrlScheme.Get() &&
+         url.host() == contextual_tasks::kContextualTasksDisplayUrlHost.Get() &&
+         url.path() == contextual_tasks::kContextualTasksDisplayUrlPath.Get();
 }
 
 bool ContextualTasksUiService::IsSearchResultsUrl(const GURL& url) {

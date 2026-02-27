@@ -237,6 +237,26 @@ const base::FeatureParam<bool> kContextualTasksEnableNativeZeroStateSuggestions(
     "ContextualTasksEnableNativeZeroStateSuggestions",
     true);
 
+const base::FeatureParam<std::string> kContextualTasksDisplayUrlScheme(
+    &kContextualTasks,
+    "ContextualTasksDisplayUrlScheme",
+    "chrome");
+
+const base::FeatureParam<std::string> kContextualTasksDisplayUrlHost(
+    &kContextualTasks,
+    "ContextualTasksDisplayUrlHost",
+    "googlesearch");
+
+const base::FeatureParam<std::string> kContextualTasksDisplayUrlPath(
+    &kContextualTasks,
+    "ContextualTasksDisplayUrlPath",
+    "/");
+
+const base::FeatureParam<bool> kContextualTasksShowExpandedSecurityChip(
+    &kContextualTasks,
+    "ContextualTasksShowExpandedSecurityChip",
+    false);
+
 const base::FeatureParam<bool>
     kContextualTasksForceBasicModeIfOpeningThreadHistory(
         &kContextualTasks,

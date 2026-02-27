@@ -12,9 +12,11 @@
 
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
+#include "components/contextual_tasks/public/features.h"
 #include "components/dom_distiller/core/url_constants.h"
 #include "components/dom_distiller/core/url_utils.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
@@ -168,6 +170,8 @@ TEST_F(OmniboxTextUtilTest, AdjustTextForCopy) {
     const char* expected_url;
 
     const char* url_for_display = "";
+
+    const bool is_contextual_tasks_page = false;
   };
   auto input = std::to_array<Data>({
       // Test that http:// is inserted if all text is selected.
@@ -259,7 +263,25 @@ TEST_F(OmniboxTextUtilTest, AdjustTextForCopy) {
       {"https://ja.wikipedia.org/wiki/目次", 0, "", false,
        "https://wikipedia.org/wiki/目次", "https://wikipedia.org/wiki/目次",
        false, ""},
+      // "Origin-swapping" logic needs to transform the contextual tasks display
+      // URL into the corresponding AIM URL.
+      {"", 0, "", false, "chrome://googlesearch/?q=hello+world&udm=50",
+       "https://www.google.com/search?q=hello+world&udm=50", false, "",
+       "chrome://googlesearch/?q=hello+world&udm=50", true},
   });
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      /*enabled_features=*/
+      {{contextual_tasks::kContextualTasks,
+        {{contextual_tasks::kContextualTasksDisplayUrlScheme.name, "chrome"},
+         {contextual_tasks::kContextualTasksDisplayUrlHost.name,
+          "googlesearch"},
+         {contextual_tasks::kContextualTasksDisplayUrlPath.name, "/"}}}},
+      /*disabled_features=*/{});
+  ON_CALL(*client(), GetContextualTasksInnerFrameURL())
+      .WillByDefault(testing::Return(
+          GURL("https://www.google.com/search?q=hello+world&udm=50")));
 
   for (size_t i = 0; i < std::size(input); ++i) {
     location_bar_model()->set_formatted_full_url(
@@ -271,9 +293,13 @@ TEST_F(OmniboxTextUtilTest, AdjustTextForCopy) {
         url_formatter::FixupURL(input[i].url_for_editing));
 
     bool is_popup_open = input[i].is_match_selected_in_popup;
-    bool has_user_modified_text =
-        is_popup_open || (input[i].input != input[i].url_for_editing &&
-                          input[i].input != input[i].url_for_display);
+    // On-focus Omnibox behavior on the contextual tasks page is such that
+    // `user_input_in_progress` (and thus `has_user_modified_text`) is `true`
+    // when the user attempts to copy the text.
+    bool has_user_modified_text = is_popup_open ||
+                                  input[i].is_contextual_tasks_page ||
+                                  (input[i].input != input[i].url_for_editing &&
+                                   input[i].input != input[i].url_for_display);
 
     AutocompleteMatch match;
     match.type = AutocompleteMatchType::NAVSUGGEST;
