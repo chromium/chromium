@@ -18173,6 +18173,23 @@
             ]
         }
     ],
+    "OnDeviceModelLitertLmBackend": [
+        {
+            "platforms": [
+                "windows",
+                "mac",
+                "linux"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "OnDeviceModelLitertLmBackend"
+                    ]
+                }
+            ]
+        }
+    ],
     "OnDeviceStorage": [
         {
             "platforms": [
