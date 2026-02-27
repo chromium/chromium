@@ -11,15 +11,12 @@
 
 #include "base/gtest_prod_util.h"
 #include "build/build_config.h"
+#include "chrome/browser/glic/host/glic_synthetic_trial_manager.h"
 #include "chrome/browser/metrics/metrics_reporting_state.h"
 #include "chrome/browser/supervised_user/metrics_service_accessor_delegate.h"
 #include "chrome/common/buildflags.h"
 #include "components/metrics/metrics_service_accessor.h"
 #include "components/variations/synthetic_trials.h"
-
-#if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/glic/host/glic_synthetic_trial_manager.h"
-#endif
 
 class BrowserProcessImpl;
 class CampaignsManagerClientImpl;
@@ -168,9 +165,7 @@ class ChromeMetricsServiceAccessor : public metrics::MetricsServiceAccessor {
   friend class BrowserProcessImpl;
   friend class GlobalFeatures;
   friend class supervised_user::MetricsServiceAccessorDelegateImpl;
-#if BUILDFLAG(ENABLE_GLIC)
   friend class glic::GlicSyntheticTrialManager;
-#endif
   friend class OptimizationGuideKeyedService;
   friend class optimization_guide::ChromeOnDeviceModelServiceController;
   friend class WebUITabStripFieldTrial;
