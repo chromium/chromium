@@ -6,8 +6,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_NAVIGATION_API_NAVIGATION_TYPE_UTIL_H_
 
 #include "base/notreached.h"
-#include "third_party/blink/public/mojom/navigation/navigation_params.mojom-blink-forward.h"
-#include "third_party/blink/public/mojom/navigation/navigation_params.mojom-shared.h"
+#include "third_party/blink/public/mojom/navigation/navigation_type_for_navigation_api.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/navigation/navigation_type_for_navigation_api.mojom-shared.h"
 #include "third_party/blink/public/web/web_frame_load_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_navigation_type.h"
 

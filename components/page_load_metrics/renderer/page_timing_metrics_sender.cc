@@ -143,6 +143,7 @@ void PageTimingMetricsSender::DidObserveSoftNavigation(
   soft_navigation_metrics_->start_time = new_metrics.start_time;
   soft_navigation_metrics_->same_document_metrics_token =
       new_metrics.same_document_metrics_token;
+  soft_navigation_metrics_->navigation_type = new_metrics.navigation_type;
   soft_largest_contentful_paint_ = CreateLargestContentfulPaintTiming();
 
   EnsureSendTimer();

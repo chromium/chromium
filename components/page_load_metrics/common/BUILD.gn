@@ -84,5 +84,6 @@ source_set("unit_tests") {
     ":test_support",
     "//base/test:test_support",
     "//testing/gtest",
+    "//third_party/blink/public:blink_headers",
   ]
 }

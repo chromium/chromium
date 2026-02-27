@@ -45,12 +45,20 @@ base::TimeTicks SoftNavigationContext::TimeOrigin() const {
 
 void SoftNavigationContext::AddUrl(
     const String& url,
+    V8NavigationType::Enum navigation_type,
     base::UnguessableToken same_document_metrics_token) {
-  if (initial_url_.empty()) {
-    initial_url_ = url;
-    same_document_metrics_token_ = same_document_metrics_token;
-    url_change_time_ = base::TimeTicks::Now();
+  // The navigation layer should never pass an empty URL.
+  CHECK(!url.empty());
+
+  // An interaction can lead to multiple URL changes, e.g. because of
+  // client-side redirects. Subsequent URL changes are no-ops.
+  if (!initial_url_.empty()) {
+    return;
   }
+  initial_url_ = url;
+  navigation_type_ = navigation_type;
+  same_document_metrics_token_ = same_document_metrics_token;
+  url_change_time_ = base::TimeTicks::Now();
 }
 
 void SoftNavigationContext::AddModifiedNode(Node* node) {
@@ -250,7 +258,7 @@ void SoftNavigationContext::EmitSoftNavigation() {
   CHECK(performance);
   performance->AddSoftNavigationEntry(
       AtomicString(AttributionUrl()), TimeOrigin(),
-      FirstContentfulPaintTimingInfo(), NavigationId());
+      FirstContentfulPaintTimingInfo(), NavigationId(), NavigationType());
 
   // TODO(crbug.com/448974465): We currently don't emit ICP entries or record
   // metrics for soft navs that are interrupted by a new interaction when there

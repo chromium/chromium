@@ -4,12 +4,14 @@
 // found in the LICENSE file.
 #include "components/page_load_metrics/common/page_load_metrics_debug_string.h"
 
+#include <sstream>
 #include <string>
 
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
+#include "third_party/blink/public/mojom/navigation/navigation_type_for_navigation_api.mojom-shared.h"
 
 namespace page_load_metrics {
 namespace {
@@ -25,6 +27,14 @@ std::string EntriesToString(
 std::string ElementsToStringList(const std::vector<std::string>& elements) {
   return base::StrCat({"[", base::JoinString(elements, ", "), "]"});
 }
+
+std::string NavigationTypeToString(
+    blink::mojom::NavigationTypeForNavigationApi type) {
+  std::stringstream ss;
+  ss << type;
+  return ss.str();
+}
+
 }  // namespace
 
 std::string DebugString(const mojom::DocumentTiming& timing) {
@@ -334,6 +344,9 @@ std::string DebugString(
   entries.emplace_back(
       "start_time", base::NumberToString(
                         soft_navigation_metrics.start_time.InMillisecondsF()));
+  entries.emplace_back(
+      "navigation_type",
+      NavigationTypeToString(soft_navigation_metrics.navigation_type));
   return EntriesToString(entries);
 }
 }  // namespace page_load_metrics

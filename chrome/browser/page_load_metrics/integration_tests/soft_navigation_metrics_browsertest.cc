@@ -29,6 +29,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/performance/largest_contentful_paint_type.h"
 #include "third_party/blink/public/common/switches.h"
+#include "third_party/blink/public/mojom/navigation/navigation_type_for_navigation_api.mojom-shared.h"
 #include "ui/gfx/geometry/point_conversions.h"
 
 using page_load_metrics::PageLoadMetricsTestWaiter;
@@ -718,7 +719,24 @@ IN_PROC_BROWSER_TEST_P(SoftNavigationTest, BackButton) {
           absl::StrFormat("http://example.com:%d/page.html?id=1#text", port),
           absl::StrFormat("http://example.com:%d/page.html?id=2#text", port),
           absl::StrFormat("http://example.com:%d/page.html?id=1#text", port),
-          absl::StrFormat("http://example.com:%d/page.html?id=0#text", port)));
+          absl::StrFormat(
+              "http://example.com:%d/soft_navigation_basics.html#text", port)));
+
+  std::vector<int> navigation_types;
+  for (const auto& [source_id, type] : GetSoftNavigationMetrics(
+           ukm_recorder(),
+           ukm::builders::SoftNavigation::kNavigationTypeName)) {
+    navigation_types.push_back(type);
+  }
+  EXPECT_THAT(
+      navigation_types,
+      testing::ElementsAre(
+          static_cast<int>(blink::mojom::NavigationTypeForNavigationApi::kPush),
+          static_cast<int>(blink::mojom::NavigationTypeForNavigationApi::kPush),
+          static_cast<int>(
+              blink::mojom::NavigationTypeForNavigationApi::kTraverse),
+          static_cast<int>(
+              blink::mojom::NavigationTypeForNavigationApi::kTraverse)));
 }
 
 // TODO(crbug.com/334416161): Re-enable this test.

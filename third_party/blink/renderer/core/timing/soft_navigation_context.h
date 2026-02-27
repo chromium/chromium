@@ -11,6 +11,7 @@
 #include "base/unguessable_token.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/web/web_performance_metrics_for_reporting.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_navigation_type.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/paint/timing/largest_contentful_paint_calculator.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_record.h"
@@ -87,7 +88,15 @@ class CORE_EXPORT SoftNavigationContext
   // |same_document_metrics_token|, while also recording the UrlChangeTime() as
   // base::TimeTicks::Now().
   void AddUrl(const String& url,
+              V8NavigationType::Enum navigation_type,
               base::UnguessableToken same_document_metrics_token);
+
+  // Returns the type of the initial same document navigation (first call to
+  // `AddUrl()`). Must not be called before the URL is set.
+  V8NavigationType::Enum NavigationType() const {
+    CHECK(HasUrl());
+    return navigation_type_;
+  }
 
   base::UnguessableToken SameDocumentMetricsToken() const {
     return same_document_metrics_token_;
@@ -182,6 +191,7 @@ class CORE_EXPORT SoftNavigationContext
 
   String initial_url_;
   base::UnguessableToken same_document_metrics_token_;
+  V8NavigationType::Enum navigation_type_ = V8NavigationType::Enum::kPush;
 
   Member<LocalDOMWindow> window_;
   Member<LargestContentfulPaintCalculator> lcp_calculator_;

@@ -8,10 +8,13 @@
 <script>
   let currentPage = 0;
 
-  function loadPage() {
+  function navigate() {
     const hash = new URL(location.href).hash; // #image or #text in practice.
-
     history.pushState({}, "", "/page.html?id=" + currentPage + hash);
+  }
+
+  function loadPageContents() {
+    const hash = new URL(location.href).hash; // #image or #text in practice.
     let newContent;
     if (hash === "#image") {
       newContent = new Image();
@@ -26,12 +29,15 @@
 
   function loadNextPage() {
     currentPage++;
-    loadPage();
+    navigate();
+    loadPageContents();
+    updateUrl();
   }
 
   // Intercept the browser's back button to trigger a soft navigation.
   window.addEventListener('popstate', function(event) {
-    currentPage --;
-    loadPage();
+    // Don't navigate, rather let the browser update the URL.
+    currentPage--;
+    loadPageContents();
   });
 </script>

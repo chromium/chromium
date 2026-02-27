@@ -1,0 +1,21 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+// Maps to
+// https://html.spec.whatwg.org/multipage/nav-history-apis.html#dom-navigateevent-navigationtype-dev.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(NavigationTypeForNavigationApi)
+enum NavigationTypeForNavigationApi {
+  kPush,
+  kTraverse,
+  kReplace,
+  kReload,
+};
+
+// LINT.ThenChange(tools/metrics/histograms/enums.xml:NavigationTypeForNavigationApi)

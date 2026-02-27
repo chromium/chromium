@@ -11,7 +11,9 @@
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/scheduler/task_attribution_id.h"
+#include "third_party/blink/public/web/web_frame_load_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_navigation_type.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/html/html_div_element.h"
@@ -104,7 +106,7 @@ TEST_F(SoftNavigationHeuristicsTest, ResetHeuristicOnSetBecameEmpty) {
     // the context to avoid other objects holding a reference to it, which would
     // prevent garbage collection.
     root_task_state->GetSoftNavigationContext()->AddUrl(
-        "foo", base::UnguessableToken::Create());
+        "foo", V8NavigationType::Enum::kPush, base::UnguessableToken::Create());
   }
   EXPECT_TRUE(root_task_state);
   EXPECT_TRUE(heuristics->IsTrackingSoftNavigationsForTest());
@@ -176,7 +178,7 @@ TEST_F(SoftNavigationHeuristicsTest, EventAfterSoftNavDetection) {
 
   // Simulate default action link navigation after the click event.
   heuristics->SameDocumentNavigationCommitted(
-      "foo",
+      "foo", WebFrameLoadType::kStandard,
       /*same_document_metrics_token=*/base::UnguessableToken::Create());
   {
     auto* inner_event =
@@ -249,7 +251,7 @@ TEST_F(SoftNavigationHeuristicsTest, SoftNavigationEmittedOnlyOnce) {
 
     EXPECT_FALSE(context->SatisfiesSoftNavNonPaintCriteria());
     heuristics->SameDocumentNavigationCommitted(
-        "foo.html",
+        "foo.html", WebFrameLoadType::kStandard,
         /*same_document_metrics_token=*/base::UnguessableToken::Create());
     heuristics->ModifiedDOM(node1);
     EXPECT_FALSE(context->SatisfiesSoftNavNonPaintCriteria());
@@ -286,7 +288,7 @@ TEST_F(SoftNavigationHeuristicsTest, SoftNavigationEmittedOnlyOnce) {
                                                TaskScopeType::kCallback);
     EXPECT_EQ(tracker->CurrentTaskState()->GetSoftNavigationContext(), context);
     heuristics->SameDocumentNavigationCommitted(
-        "bar.html",
+        "bar.html", WebFrameLoadType::kStandard,
         /*same_document_metrics_token=*/base::UnguessableToken::Create());
     heuristics->ModifiedDOM(node2);
   }
@@ -364,7 +366,7 @@ TEST_F(SoftNavigationHeuristicsTest, AsyncSameDocumentNavigation) {
         tracker->SetCurrentTaskStateIfTopLevel(task_state,
                                                TaskScopeType::kPopState));
     heuristics->SameDocumentNavigationCommitted(
-        "foo.html",
+        "foo.html", WebFrameLoadType::kStandard,
         /*same_document_metrics_token=*/base::UnguessableToken::Create());
     EXPECT_TRUE(context->HasUrl());
     // UrlChangeTime is after ProcessingEnd and TimeOrigin, which are equal.
@@ -393,7 +395,7 @@ TEST_F(SoftNavigationHeuristicsTest, AsyncSameDocumentNavigationNoContext) {
   // Simulate committing the same-document navigation asynchronously without a
   // `SoftNavigationContext`. This shouldn't crash.
   heuristics->SameDocumentNavigationCommitted(
-      "foo.html",
+      "foo.html", WebFrameLoadType::kStandard,
       /*same_document_metrics_token=*/base::UnguessableToken::Create());
 }
 

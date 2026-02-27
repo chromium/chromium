@@ -24456,6 +24456,11 @@ be describing additional metrics about the same event.
       navigation. It is used to differentiate soft navigations.
     </summary>
   </metric>
+  <metric name="NavigationType" enum="NavigationTypeForNavigationApi">
+    <summary>
+      Type of the soft navigation. Corresponds to the first URL change.
+    </summary>
+  </metric>
   <metric name="PaintTiming.LargestContentfulPaint">
     <summary>
       Measures the LargestContentfulPaint in milliseconds from the start time of

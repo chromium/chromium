@@ -54,6 +54,7 @@
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_navigation_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
@@ -1520,12 +1521,13 @@ void WindowPerformance::AddSoftNavigationEntry(
     const AtomicString& name,
     base::TimeTicks timestamp,
     const DOMPaintTimingInfo& paint_timing_info,
-    uint32_t navigation_id) {
+    uint32_t navigation_id,
+    V8NavigationType::Enum navigation_type) {
   CHECK(RuntimeEnabledFeatures::SoftNavigationHeuristicsEnabled(
       GetExecutionContext()));
   SoftNavigationEntry* entry = MakeGarbageCollected<SoftNavigationEntry>(
       name, MonotonicTimeToDOMHighResTimeStamp(timestamp), paint_timing_info,
-      DomWindow(), navigation_id);
+      DomWindow(), navigation_id, navigation_type);
 
   if (HasObserverFor(PerformanceEntry::kSoftNavigation)) {
     UseCounter::Count(GetExecutionContext(),

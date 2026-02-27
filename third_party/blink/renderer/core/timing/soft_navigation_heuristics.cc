@@ -14,6 +14,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_navigation_type.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/node.h"
@@ -25,6 +26,7 @@
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/navigation_api/navigation_type_util.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_detector.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
@@ -290,7 +292,14 @@ SoftNavigationHeuristics::GetSoftNavigationContextForCurrentTask() const {
 
 void SoftNavigationHeuristics::SameDocumentNavigationCommitted(
     const String& url,
+    WebFrameLoadType load_type,
     base::UnguessableToken same_document_metrics_token) {
+  if (load_type == WebFrameLoadType::kReplaceCurrentItem &&
+      !RuntimeEnabledFeatures::
+          SoftNavigationDetectionIncludeReplaceStateEnabled()) {
+    return;
+  }
+
   SoftNavigationContext* context = GetSoftNavigationContextForCurrentTask();
   if (!context && !context_for_current_url_) {
     // If we don't have a context for this task, and we haven't had a context
@@ -308,7 +317,8 @@ void SoftNavigationHeuristics::SameDocumentNavigationCommitted(
     // the emitting of existing contexts.
     // TODO(crbug.com/353043684, crbug.com/40943017): Perhaps there should be
     // limits to how long we will keep the current context as active.
-    context_for_current_url_->AddUrl(url, same_document_metrics_token);
+    context_for_current_url_->AddUrl(url, ToV8NavigationType(load_type),
+                                     same_document_metrics_token);
 
     TRACE_EVENT_INSTANT("loading",
                         "SoftNavigationHeuristics::"
@@ -321,7 +331,8 @@ void SoftNavigationHeuristics::SameDocumentNavigationCommitted(
         SoftNavigationOutcome::
             kNoSoftNavContextDuringUrlChangeButMergingIntoPreviousContext);
   } else {
-    context->AddUrl(url, same_document_metrics_token);
+    context->AddUrl(url, ToV8NavigationType(load_type),
+                    same_document_metrics_token);
     // TODO(crbug.com/416705860): If we replace a previous context that is for a
     // previous URL change, maybe we should check if it was emitted?  If not,
     // we will no longer be attributing paints to it and so it will never meet
@@ -538,6 +549,8 @@ void SoftNavigationHeuristics::ReportSoftNavigationToMetrics(
         .count = soft_navigation_count_,
         .start_time = loader->GetTiming().MonotonicTimeToPseudoWallTime(
             context->TimeOrigin()),
+        .navigation_type =
+            ToNavigationTypeForNavigationApi(context->NavigationType()),
         .same_document_metrics_token = context->SameDocumentMetricsToken(),
     };
     // This notifies UKM about this soft navigation.

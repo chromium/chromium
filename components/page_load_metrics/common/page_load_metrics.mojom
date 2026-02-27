@@ -7,11 +7,12 @@ module page_load_metrics.mojom;
 import "mojo/public/mojom/base/byte_count.mojom";
 import "mojo/public/mojom/base/shared_memory.mojom";
 import "mojo/public/mojom/base/time.mojom";
+import "mojo/public/mojom/base/unguessable_token.mojom";
 import "services/network/public/mojom/request_priority.mojom";
 import "third_party/blink/public/mojom/loader/javascript_framework_detection.mojom";
+import "third_party/blink/public/mojom/navigation/navigation_type_for_navigation_api.mojom";
 import "third_party/blink/public/mojom/use_counter/use_counter_feature.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
-import "mojo/public/mojom/base/unguessable_token.mojom";
 
 // TimeDeltas below relative to navigation start.
 struct DocumentTiming {
@@ -637,6 +638,9 @@ struct SoftNavigationMetrics {
   // The start time of a soft navigation. It is the time the user initializes
   // the soft navigation. It is relative to navigation start.
   mojo_base.mojom.TimeDelta start_time;
+
+  // The type of the soft navigation.
+  blink.mojom.NavigationTypeForNavigationApi navigation_type;
 
   // Identifies the same document navigation for the initial URL change.
   // This allows us to map to the UKM Source ID in the browser side,

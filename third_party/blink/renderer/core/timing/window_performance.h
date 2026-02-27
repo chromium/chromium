@@ -35,6 +35,7 @@
 #include "base/time/time.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "third_party/blink/public/mojom/timing/resource_timing.mojom-blink-forward.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_navigation_type.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/events/pointer_event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
@@ -173,7 +174,8 @@ class CORE_EXPORT WindowPerformance final : public Performance,
   void AddSoftNavigationEntry(const AtomicString& name,
                               base::TimeTicks start_time,
                               const DOMPaintTimingInfo& paint_timing_info,
-                              uint32_t navigation_id);
+                              uint32_t navigation_id,
+                              V8NavigationType::Enum navigation_type);
 
   // For soft navigations and back-forward cache restoration. This increments
   // the navigation ID, as specified in

@@ -21433,6 +21433,13 @@ from previous Chrome versions.
   <int value="18" label="isolated-app"/>
 </enum>
 
+<enum name="NavigationTypeForNavigationApi">
+  <int value="0" label="push"/>
+  <int value="1" label="traverse"/>
+  <int value="2" label="reload"/>
+  <int value="3" label="replace"/>
+</enum>
+
 <enum name="NetErrorCodes">
 <!-- Generated from net/base/net_error_list.h.
 Called by update_net_error_codes.py.-->

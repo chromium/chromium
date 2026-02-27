@@ -5,6 +5,7 @@
 #include "components/page_load_metrics/common/page_load_metrics_debug_string.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/navigation/navigation_type_for_navigation_api.mojom-shared.h"
 
 namespace page_load_metrics {
 
@@ -12,9 +13,10 @@ TEST(PageLoadMetricsDebugStringTest, SoftNavigationMetrics) {
   mojom::SoftNavigationMetrics soft_navigation_metrics;
   soft_navigation_metrics.count = 1;
   soft_navigation_metrics.start_time = base::Milliseconds(123);
-
+  soft_navigation_metrics.navigation_type =
+      blink::mojom::NavigationTypeForNavigationApi::kReplace;
   EXPECT_EQ(DebugString(soft_navigation_metrics),
-            "{count: 1, start_time: 123}");
+            "{count: 1, start_time: 123, navigation_type: kReplace}");
 }
 
 TEST(PageLoadMetricsDebugStringTest, PageLoadTiming) {

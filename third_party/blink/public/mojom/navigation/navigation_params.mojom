@@ -31,6 +31,7 @@ import "third_party/blink/public/mojom/loader/mixed_content.mojom";
 import "third_party/blink/public/mojom/loader/referrer.mojom";
 import "third_party/blink/public/mojom/messaging/task_attribution_id.mojom";
 import "third_party/blink/public/mojom/navigation/navigation_api_history_entry_arrays.mojom";
+import "third_party/blink/public/mojom/navigation/navigation_type_for_navigation_api.mojom";
 import "third_party/blink/public/mojom/navigation/navigation_policy.mojom";
 import "third_party/blink/public/mojom/navigation/prefetched_signed_exchange_info.mojom";
 import "third_party/blink/public/mojom/navigation/renderer_content_settings.mojom";
@@ -82,15 +83,6 @@ enum NavigationType {
 
   // Navigation to another document.
   DIFFERENT_DOCUMENT,
-};
-
-// Maps to
-// https://html.spec.whatwg.org/multipage/nav-history-apis.html#dom-navigateevent-navigationtype-dev.
-enum NavigationTypeForNavigationApi {
-  kPush,
-  kTraverse,
-  kReplace,
-  kReload,
 };
 
 // Used by the renderer to indicate a case where a standard navigation that

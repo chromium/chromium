@@ -12,6 +12,7 @@
 #include "base/memory/stack_allocated.h"
 #include "base/unguessable_token.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/web/web_frame_load_type.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/paint/timing/lcp_objects.h"
@@ -112,6 +113,7 @@ class CORE_EXPORT SoftNavigationHeuristics
   // will be set before this is called.
   void SameDocumentNavigationCommitted(
       const String& url,
+      WebFrameLoadType,
       base::UnguessableToken same_document_metrics_token);
 
   bool ModifiedDOM(Node* node);

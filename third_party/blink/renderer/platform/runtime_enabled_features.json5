@@ -5208,6 +5208,10 @@
       status: "stable",
     },
     {
+      name: "SoftNavigationDetectionIncludeReplaceState",
+      status: "stable",
+    },
+    {
       name: "SoftNavigationEagerIcpEntryEmission",
       status: "stable",
     },

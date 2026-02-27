@@ -12,6 +12,7 @@
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "third_party/blink/public/common/performance/largest_contentful_paint_type.h"
+#include "third_party/blink/public/mojom/navigation/navigation_type_for_navigation_api.mojom-shared.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_private_ptr.h"
 #include "third_party/blink/public/platform/web_url_request.h"
@@ -44,6 +45,11 @@ struct LargestContentfulPaintDetailsForReporting {
 struct SoftNavigationMetricsForReporting {
   uint64_t count = 0;
   base::TimeDelta start_time;
+
+  // The type of soft navigation, set based on the type of same document
+  // navigation.
+  mojom::NavigationTypeForNavigationApi navigation_type =
+      mojom::NavigationTypeForNavigationApi::kPush;
 
   // Identifies the same document navigation for the initial URL change.
   // This allows us to map to the UKM Source ID in the browser side,

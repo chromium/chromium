@@ -1154,12 +1154,12 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
 
   if (SoftNavigationHeuristics* heuristics =
           frame_->DomWindow()->GetSoftNavigationHeuristics()) {
-    if (new_url != old_url && type != WebFrameLoadType::kReplaceCurrentItem) {
+    if (new_url != old_url) {
       // if `heuristics` exists it means we're in an outermost main frame.
       //
       // TODO(crbug.com/41494072): `heuristics` existing does not imply this
       // navigation was initiated in the main world.
-      heuristics->SameDocumentNavigationCommitted(new_url,
+      heuristics->SameDocumentNavigationCommitted(new_url, type,
                                                   same_document_metrics_token);
     }
   }

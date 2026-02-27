@@ -66,6 +66,7 @@
 #include "services/network/public/cpp/network_quality_tracker.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/performance/largest_contentful_paint_type.h"
+#include "third_party/blink/public/mojom/navigation/navigation_type_for_navigation_api.mojom-shared.h"
 #include "third_party/metrics_proto/system_profile.pb.h"
 
 using content::NavigationSimulator;
@@ -1852,7 +1853,9 @@ TEST_F(UkmPageLoadMetricsObserverTest, SoftNavigationCount) {
 
   auto soft_navigation_metrics =
       page_load_metrics::mojom::SoftNavigationMetrics(
-          1, base::Milliseconds(12), base::UnguessableToken::Create());
+          1, base::Milliseconds(12),
+          blink::mojom::NavigationTypeForNavigationApi::kPush,
+          base::UnguessableToken::Create());
 
   content::MockNavigationHandle navigation_handle;
   navigation_handle.set_has_committed(true);

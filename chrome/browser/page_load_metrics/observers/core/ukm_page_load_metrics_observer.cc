@@ -650,6 +650,8 @@ void UkmPageLoadMetricsObserver::RecordSoftNavigationMetrics(
   builder.SetStartTime(soft_navigation_metrics.start_time.InMillisecondsF());
   PAGE_LOAD_HISTOGRAM("PageLoad.SoftNavigation.StartTime",
                       soft_navigation_metrics.start_time);
+  builder.SetNavigationType(
+      static_cast<int>(soft_navigation_metrics.navigation_type));
 
   // All loading performance timings within the soft LCP object are relative to
   // the (hard) navigation start. Therefore, when we record the metric values

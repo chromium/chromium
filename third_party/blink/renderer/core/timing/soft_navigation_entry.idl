@@ -4,6 +4,7 @@
 
 [Exposed=Window, RuntimeEnabled=SoftNavigationHeuristics]
 interface SoftNavigationEntry : PerformanceEntry {
+  readonly attribute NavigationType navigationType;
 };
 
 SoftNavigationEntry includes PaintTimingMixin;
