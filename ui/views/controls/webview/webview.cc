@@ -185,7 +185,8 @@ void WebView::SetCrashedOverlayView(View* crashed_overlay_view) {
     if (old_view->owned_by_client()) {
       RemoveChildView(old_view);
     } else {
-      RemoveChildViewT(old_view);
+      std::move(return_crashed_overlay_to_owner_)
+          .Run(RemoveChildViewT(old_view));
     }
     // Show the hosted web contents view iff the crashed
     // overlay is NOT showing, to ensure hit testing is
@@ -206,7 +207,8 @@ void WebView::SetCrashedOverlayView(View* crashed_overlay_view) {
 }
 
 void WebView::TakeCrashedOverlayViewImpl(
-    std::unique_ptr<View> crashed_overlay_view) {
+    std::unique_ptr<View> crashed_overlay_view,
+    ReturnCrashOverlayToOwnerCallback return_to_owner) {
   if (crashed_overlay_view.get()) {
     CHECK(!crashed_overlay_view->owned_by_client());
   }
@@ -223,7 +225,8 @@ void WebView::TakeCrashedOverlayViewImpl(
     if (old_view->owned_by_client()) {
       RemoveChildView(old_view);
     } else {
-      RemoveChildViewT(old_view);
+      std::move(return_crashed_overlay_to_owner_)
+          .Run(RemoveChildViewT(old_view));
     }
     // Show the hosted web contents view iff the crashed
     // overlay is NOT showing, to ensure hit testing is
@@ -234,6 +237,7 @@ void WebView::TakeCrashedOverlayViewImpl(
   if (crashed_overlay_view) {
     crashed_overlay_view_.SetView(
         AddChildView(std::move(crashed_overlay_view)));
+    return_crashed_overlay_to_owner_ = std::move(return_to_owner);
     holder_->SetVisible(false);
     crashed_overlay_view_.view()->SetBoundsRect(GetLocalBounds());
   } else {
@@ -241,6 +245,26 @@ void WebView::TakeCrashedOverlayViewImpl(
   }
 
   UpdateCrashedOverlayView();
+}
+
+std::nullptr_t WebView::TakeCrashedOverlayView(std::nullptr_t) {
+  TakeCrashedOverlayView(std::unique_ptr<View>());
+  return nullptr;
+}
+
+std::unique_ptr<View> WebView::DetachCrashedOverlayViewImpl() {
+  if (!crashed_overlay_view_) {
+    return nullptr;
+  }
+  std::unique_ptr<View> old_view =
+      RemoveChildViewT(crashed_overlay_view_.view());
+  return_crashed_overlay_to_owner_.Reset();
+  // Show the hosted web contents view iff the crashed
+  // overlay is NOT showing, to ensure hit testing is
+  // correct on Mac. See https://crbug.com/896508
+  holder_->SetVisible(true);
+  UpdateCrashedOverlayView();
+  return old_view;
 }
 
 base::CallbackListSubscription WebView::AddWebContentsAttachedCallback(

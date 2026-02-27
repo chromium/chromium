@@ -413,7 +413,56 @@ TEST_F(WebViewUnitTest, TakeCrashedOverlayView) {
   SimulateRendererCrash(web_contents.get(), web_view);
   EXPECT_TRUE(crashed_overlay_view->IsDrawn());
 
+  web_view->DetachCrashedOverlayView();
+}
+
+// Tests crashed overlay ownership return upon setting the crash overlay view to
+// null.
+TEST_F(WebViewUnitTest, TakeCrashedOverlayViewSetNull) {
+  const std::unique_ptr<content::WebContents> web_contents =
+      CreateTestWebContents();
+
+  View* contents_view = top_level_widget()->GetContentsView();
+  auto* web_view = contents_view->AddChildView(
+      std::make_unique<WebView>(web_contents->GetBrowserContext()));
+  web_view->SetWebContents(web_contents.get());
+
+  std::unique_ptr<View> owner_after_new_webcontents;
+  View* crashed_overlay_view = web_view->TakeCrashedOverlayView(
+      std::make_unique<View>(),
+      base::BindOnce(
+          [](std::unique_ptr<View>* receiver, std::unique_ptr<View> view) {
+            *receiver = std::move(view);
+          },
+          &owner_after_new_webcontents));
+  ASSERT_FALSE(owner_after_new_webcontents.get());
   web_view->TakeCrashedOverlayView(nullptr);
+  EXPECT_EQ(crashed_overlay_view, owner_after_new_webcontents.get());
+}
+
+// Tests crashed overlay ownership return upon clearing the WebContents
+TEST_F(WebViewUnitTest, TakeCrashedOverlayViewReturnOwnership) {
+  const std::unique_ptr<content::WebContents> web_contents =
+      CreateTestWebContents();
+
+  View* contents_view = top_level_widget()->GetContentsView();
+  auto* web_view = contents_view->AddChildView(
+      std::make_unique<WebView>(web_contents->GetBrowserContext()));
+  web_view->SetWebContents(web_contents.get());
+
+  std::unique_ptr<View> owner_after_new_webcontents;
+  View* crashed_overlay_view = web_view->TakeCrashedOverlayView(
+      std::make_unique<View>(),
+      base::BindOnce(
+          [](std::unique_ptr<View>* receiver, std::unique_ptr<View> view) {
+            *receiver = std::move(view);
+          },
+          &owner_after_new_webcontents));
+  ASSERT_FALSE(owner_after_new_webcontents.get());
+  const std::unique_ptr<content::WebContents> web_contents_new =
+      CreateTestWebContents();
+  web_view->SetWebContents(web_contents_new.get());
+  EXPECT_EQ(crashed_overlay_view, owner_after_new_webcontents.get());
 }
 
 // Tests to make sure we can default construct the WebView class and set the
