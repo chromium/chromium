@@ -19,6 +19,6 @@
  },
  "web_accessible_resources": [{
      "matches": ["<all_urls>"],
-     "resources": ["_test_resources/api_test/service_worker/worker_fetch_headers/fetch_common_tests.js"]
+     "resources": ["_test_resources/api_test/fetch/fetch_headers/fetch_common_tests.js"]
    }]
 }

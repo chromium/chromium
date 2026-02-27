@@ -17,7 +17,7 @@ export function getCommonFetchHeaderTests() {
     async function fetchWithoutSettingForbiddenHeader() {
       chrome.test.getConfig(function(config) {
         var url = 'http://127.0.0.1:' + config.testServer.port +
-            '/fetch/fetch_allowed.html';
+            '/fetch_allowed.html';
         fetch(url, {
           method: 'GET',
           headers: {
@@ -43,7 +43,7 @@ export function getCommonFetchHeaderTests() {
     async function fetchAndSetForbiddenHeader() {
       chrome.test.getConfig(function(config) {
         var url = 'http://127.0.0.1:' + config.testServer.port +
-            '/fetch/fetch_forbidden.html';
+            '/fetch_forbidden.html';
         fetch(url, {
           method: 'GET',
           headers: {
