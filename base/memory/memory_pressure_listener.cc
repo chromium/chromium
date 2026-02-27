@@ -42,6 +42,10 @@ int GetMemoryLimitForMemoryPressureLevel(MemoryPressureLevel level) {
 
 // MemoryPressureListener ------------------------------------------------------
 
+MemoryPressureListener::MemoryPressureListener() {
+  DETACH_FROM_SEQUENCE(sequence_checker_);
+}
+
 // static
 void MemoryPressureListener::NotifyMemoryPressure(
     MemoryPressureLevel memory_pressure_level) {
@@ -69,6 +73,7 @@ void MemoryPressureListener::SimulatePressureNotificationAsync(
 }
 
 int MemoryPressureListener::GetMemoryLimit() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return GetMemoryLimitForMemoryPressureLevel(memory_pressure_level_);
 }
 
@@ -78,12 +83,14 @@ double MemoryPressureListener::GetMemoryLimitRatio() const {
 
 void MemoryPressureListener::SetInitialMemoryPressureLevel(
     MemoryPressureLevel memory_pressure_level) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   memory_pressure_level_ = memory_pressure_level;
 }
 
 void MemoryPressureListener::UpdateMemoryPressureLevel(
     MemoryPressureLevel memory_pressure_level,
     bool ignore_repeated_notifications) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (memory_pressure_level_ == memory_pressure_level &&
       ignore_repeated_notifications) {
     return;

@@ -11,6 +11,7 @@
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory_coordinator/memory_consumer.h"
 #include "gpu/command_buffer/service/decoder_context.h"
 #include "gpu/command_buffer/service/program_cache.h"
 #include "ui/gl/gl_bindings.h"
@@ -111,9 +112,11 @@ class GPU_GLES2_EXPORT PassthroughProgramCache
                         const void* value,
                         EGLsizeiANDROID value_size);
 
+  size_t TrimLocked(size_t limit) EXCLUSIVE_LOCKS_REQUIRED(lock_);
+
   // Return the current max_size_bytes(), which changes depending on the memory
   // pressure level.
-  size_t GetCurrentMaxSizeBytes() const;
+  size_t GetCurrentMaxSizeBytes() const EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   friend class ProgramCacheValue;
 
@@ -125,6 +128,12 @@ class GPU_GLES2_EXPORT PassthroughProgramCache
 
   base::AsyncMemoryPressureListenerRegistration
       memory_pressure_listener_registration_;
+
+  // The current memory limit ratio.
+  // MemoryPressureListener::GetMemoryLimitRatio() can't be used because it is
+  // not thread-safe.
+  double memory_limit_ratio_ GUARDED_BY(lock_) =
+      base::MemoryConsumer::kDefaultMemoryLimit / 100.0;
 
   // TODO(syoussefi): take compression from memory_program_cache, see
   // compress_program_binaries_

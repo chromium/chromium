@@ -122,17 +122,14 @@ void PassthroughProgramCache::LoadProgram(const std::string& key,
 
 size_t PassthroughProgramCache::Trim(size_t limit) {
   base::AutoLock auto_lock(lock_);
-  size_t initial_size = curr_size_bytes_;
-  while (curr_size_bytes_ > limit) {
-    DCHECK(!store_.empty());
-    store_.Erase(store_.rbegin());
-  }
-  return initial_size - curr_size_bytes_;
+  return TrimLocked(limit);
 }
 
 void PassthroughProgramCache::OnMemoryPressure(
     base::MemoryPressureLevel memory_pressure_level) {
-  Trim(GetCurrentMaxSizeBytes());
+  base::AutoLock auto_lock(lock_);
+  memory_limit_ratio_ = GetMemoryLimitRatio();
+  TrimLocked(GetCurrentMaxSizeBytes());
 }
 
 bool PassthroughProgramCache::CacheEnabled() const {
@@ -142,43 +139,37 @@ bool PassthroughProgramCache::CacheEnabled() const {
 void PassthroughProgramCache::Set(Key&& key,
                                   Value&& value,
                                   CacheProgramCallback callback) {
-  {
-    base::AutoLock auto_lock(lock_);
-    // If the value is so big it will never fit in the cache, throw it away.
-    if (value.size() > GetCurrentMaxSizeBytes()) {
-      return;
-    }
-
-    // Evict any cached program with the same key in favor of the least recently
-    // accessed.
-    ProgramLRUCache::iterator existing = store_.Peek(key);
-    if (existing != store_.end()) {
-      store_.Erase(existing);
-    }
-
-    // If the cache is overflowing, remove some old entries.
-    DCHECK(GetCurrentMaxSizeBytes() >= value.size());
+  base::AutoLock auto_lock(lock_);
+  // If the value is so big it will never fit in the cache, throw it away.
+  if (value.size() > GetCurrentMaxSizeBytes()) {
+    return;
   }
 
-  Trim(GetCurrentMaxSizeBytes() - value.size());
-
-  {
-    base::AutoLock auto_lock(lock_);
-
-    // If callback is set, notify that there was a new/updated blob entry so it
-    // can be stored in disk.  Note that this is done before the Put() call as
-    // that consumes `value`.
-    CacheProgramCallback callback_with_fallback =
-        callback ? callback : cache_program_callback_;
-    if (callback_with_fallback) {
-      // Convert the key and binary to base-64 string form.
-      std::string key_string_64 = base::Base64Encode(key);
-      std::string value_string_64 = base::Base64Encode(value);
-      callback_with_fallback.Run(key_string_64, value_string_64);
-    }
-
-    store_.Put(key, ProgramCacheValue(std::move(value), this));
+  // Evict any cached program with the same key in favor of the least recently
+  // accessed.
+  ProgramLRUCache::iterator existing = store_.Peek(key);
+  if (existing != store_.end()) {
+    store_.Erase(existing);
   }
+
+  // If the cache is overflowing, remove some old entries.
+  DCHECK(GetCurrentMaxSizeBytes() >= value.size());
+
+  TrimLocked(GetCurrentMaxSizeBytes() - value.size());
+
+  // If callback is set, notify that there was a new/updated blob entry so it
+  // can be stored in disk.  Note that this is done before the Put() call as
+  // that consumes `value`.
+  CacheProgramCallback callback_with_fallback =
+      callback ? callback : cache_program_callback_;
+  if (callback_with_fallback) {
+    // Convert the key and binary to base-64 string form.
+    std::string key_string_64 = base::Base64Encode(key);
+    std::string value_string_64 = base::Base64Encode(value);
+    callback_with_fallback.Run(key_string_64, value_string_64);
+  }
+
+  store_.Put(key, ProgramCacheValue(std::move(value), this));
 }
 
 size_t PassthroughProgramCache::Get(const Key& key,
@@ -244,11 +235,19 @@ void PassthroughProgramCache::BlobCacheSetImpl(const void* key,
   Set(std::move(entry_key), std::move(entry_value), CacheProgramCallback());
 }
 
+size_t PassthroughProgramCache::TrimLocked(size_t limit) {
+  size_t initial_size = curr_size_bytes_;
+  while (curr_size_bytes_ > limit) {
+    DCHECK(!store_.empty());
+    store_.Erase(store_.rbegin());
+  }
+  return initial_size - curr_size_bytes_;
+}
+
 size_t PassthroughProgramCache::GetCurrentMaxSizeBytes() const {
-  double memory_limit_ratio = GetMemoryLimitRatio();
-  CHECK_LE(memory_limit_ratio, 1.0);
+  CHECK_LE(memory_limit_ratio_, 1.0);
   // To match previous behavior, the size must be 1/4 at 50% memory limit.
-  return max_size_bytes() * std::pow(memory_limit_ratio, 2.0);
+  return max_size_bytes() * std::pow(memory_limit_ratio_, 2.0);
 }
 
 void PassthroughProgramCache::BlobCacheSet(const void* key,

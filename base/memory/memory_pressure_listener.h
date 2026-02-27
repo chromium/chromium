@@ -141,6 +141,8 @@ enum class MemoryPressureListenerTag {
 
 class BASE_EXPORT MemoryPressureListener : public CheckedObserver {
  public:
+  MemoryPressureListener();
+
   // Intended for use by the platform specific implementation.
   // Note: This simply forwards the call to MemoryPressureListenerRegistry to
   // avoid the need to refactor the whole codebase.
@@ -164,6 +166,7 @@ class BASE_EXPORT MemoryPressureListener : public CheckedObserver {
       OnceClosure on_notification_sent_callback);
 
   MemoryPressureLevel memory_pressure_level() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return memory_pressure_level_;
   }
 
@@ -198,7 +201,10 @@ class BASE_EXPORT MemoryPressureListener : public CheckedObserver {
 
   // Returns the current memory pressure level. This is initialized upon
   // registration by the registry.
-  MemoryPressureLevel memory_pressure_level_ = MEMORY_PRESSURE_LEVEL_NONE;
+  MemoryPressureLevel memory_pressure_level_
+      GUARDED_BY_CONTEXT(sequence_checker_) = MEMORY_PRESSURE_LEVEL_NONE;
+
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 // Used for listeners that live on the main thread and must be called
