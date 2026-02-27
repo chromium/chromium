@@ -254,8 +254,7 @@ static inline bool FeatureWithValidIdent(const String& media_feature,
     }
   }
 
-  if (RuntimeEnabledFeatures::CSSFallbackContainerQueriesEnabled() &&
-      media_feature == media_feature_names::kFallbackMediaFeature) {
+  if (media_feature == media_feature_names::kFallbackMediaFeature) {
     return ident == CSSValueID::kNone;
   }
 

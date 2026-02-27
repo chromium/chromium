@@ -1499,11 +1499,6 @@
       status: "stable",
     },
     {
-      // https://drafts.csswg.org/css-anchor-position-2/#anchored
-      name: "CSSFallbackContainerQueries",
-      status: "stable",
-    },
-    {
       // crbug.com/417306102
       name: "CssFitWidthText",
       status: "experimental",

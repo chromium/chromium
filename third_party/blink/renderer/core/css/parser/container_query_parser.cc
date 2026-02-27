@@ -187,8 +187,7 @@ const ConditionalExpNode* ContainerQueryParser::ConsumeFunction(
       guard.Release();
       return ConditionalExpNode::Function(query, AtomicString("scroll-state"));
     }
-  } else if (RuntimeEnabledFeatures::CSSFallbackContainerQueriesEnabled() &&
-             stream.Peek().FunctionId() == CSSValueID::kAnchored) {
+  } else if (stream.Peek().FunctionId() == CSSValueID::kAnchored) {
     // anchored(fallback: [<dashed-ident> || <try-tactic>] | <'position-area'>)
     CSSParserTokenStream::RestoringBlockGuard guard(stream);
     stream.ConsumeWhitespace();
