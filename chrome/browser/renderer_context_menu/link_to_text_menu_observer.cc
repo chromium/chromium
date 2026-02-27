@@ -148,6 +148,7 @@ void LinkToTextMenuObserver::InitMenu(
         break;
       case blink::mojom::AnnotationType::kTextFinder:
       case blink::mojom::AnnotationType::kUserNote:
+      case blink::mojom::AnnotationType::kScrollOnly:
         NOTIMPLEMENTED();
     }
   }
@@ -412,6 +413,7 @@ void LinkToTextMenuObserver::RemoveHighlights() {
     }
     case blink::mojom::AnnotationType::kTextFinder:
     case blink::mojom::AnnotationType::kUserNote:
+    case blink::mojom::AnnotationType::kScrollOnly:
       NOTIMPLEMENTED();
   }
 }

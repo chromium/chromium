@@ -12,16 +12,20 @@
 namespace blink {
 
 // static
-TextDirective* TextDirective::Create(const String& directive_value) {
+TextDirective* TextDirective::Create(const String& directive_value,
+                                     Behavior behavior) {
   auto selector = TextFragmentSelector::FromTextDirective(directive_value);
   if (selector.Type() == TextFragmentSelector::kInvalid)
     return nullptr;
 
-  return MakeGarbageCollected<TextDirective>(selector);
+  return MakeGarbageCollected<TextDirective>(selector, behavior);
 }
 
-TextDirective::TextDirective(const TextFragmentSelector& selector)
-    : SelectorDirective(Directive::kText), selector_(selector) {}
+TextDirective::TextDirective(const TextFragmentSelector& selector,
+                             Behavior behavior)
+    : SelectorDirective(Directive::kText),
+      selector_(selector),
+      behavior_(behavior) {}
 
 TextDirective::~TextDirective() = default;
 

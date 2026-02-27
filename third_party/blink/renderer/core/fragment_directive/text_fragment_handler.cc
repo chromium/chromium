@@ -84,8 +84,12 @@ void TextFragmentHandler::GetExistingSelectors(
   Vector<String> text_fragment_selectors;
 
   for (auto& annotation : annotation_agents_) {
-    if (annotation->IsAttached())
+    if (annotation->IsAttached() && !annotation->IsScrollOnly()) {
+      // kScrollOnly matches are internal "silent" scrolls used for
+      // restoration, and shouldn't be exposed as active highlights (e.g. for
+      // the "Link to Text" feature).
       text_fragment_selectors.push_back(annotation->GetSelector()->Serialize());
+    }
   }
 
   std::move(callback).Run(text_fragment_selectors);
@@ -111,7 +115,8 @@ void TextFragmentHandler::ExtractTextFragmentsMatches(
   Vector<String> text_fragment_matches;
 
   for (auto& annotation : annotation_agents_) {
-    if (annotation->IsAttached()) {
+    if (annotation->IsAttached() && !annotation->IsScrollOnly()) {
+      // kScrollOnly matches are not highlights.
       text_fragment_matches.push_back(
           PlainText(annotation->GetAttachedRange().ToEphemeralRange()));
     }
@@ -130,8 +135,10 @@ void TextFragmentHandler::ExtractFirstFragmentRect(
   }
 
   for (auto& annotation : annotation_agents_) {
-    if (!annotation->IsAttached())
+    if (!annotation->IsAttached() || annotation->IsScrollOnly()) {
+      // kScrollOnly matches are not highlights.
       continue;
+    }
 
     PhysicalRect bounding_box(
         ComputeTextRect(annotation->GetAttachedRange().ToEphemeralRange()));

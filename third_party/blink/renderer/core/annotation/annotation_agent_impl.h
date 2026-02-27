@@ -125,6 +125,10 @@ class CORE_EXPORT AnnotationAgentImpl final
 
   mojom::blink::AnnotationType GetType() const { return type_; }
 
+  bool IsScrollOnly() const {
+    return type_ == mojom::blink::AnnotationType::kScrollOnly;
+  }
+
   // Determine if `result` represents a click on an existing annotation, and
   // returns the type of the annotation if so (or std::nullopt if not).
   // Note: It is possible for the click to be above multiple annotations, in

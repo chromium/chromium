@@ -410,6 +410,14 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   // to ensure the token can only be used to invoke a single text fragment.
   bool ConsumeTextFragmentToken();
 
+  // Returns the text fragment to scroll to and clears it.
+  std::optional<String> TakeInternalScrollToTextFragment();
+
+  // For testing purposes.
+  void SetInternalScrollToTextFragment(const String& text_fragment) {
+    internal_scroll_to_text_fragment_ = text_fragment;
+  }
+
   // Notifies that the prerendering document this loader is working for is
   // activated.
   void NotifyPrerenderingDocumentActivated(
@@ -757,6 +765,10 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   // to invoke. This token may be instead consumed to pass this permission
   // through a redirect.
   bool has_text_fragment_token_ = false;
+
+  // If set, the document should attempt to scroll this text fragment into view
+  // upon load, without highlighting it.
+  std::optional<String> internal_scroll_to_text_fragment_;
 
   // See WebNavigationParams for definition.
   const bool was_discarded_ = false;

@@ -41,6 +41,8 @@ const char* ToString(mojom::blink::AnnotationType type) {
       return "TextFinder";
     case mojom::blink::AnnotationType::kGlic:
       return "Glic";
+    case mojom::blink::AnnotationType::kScrollOnly:
+      return "ScrollOnly";
   }
 }
 

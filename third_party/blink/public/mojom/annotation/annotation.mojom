@@ -50,6 +50,9 @@ enum AnnotationType {
   // Finds and highlights text for Glic. Has different scrolling and
   // highlighting properties from kSharedHighlight.
   kGlic,
+
+  // Text fragments that are scrolled into view but not highlighted.
+  kScrollOnly,
 };
 
 // RAII wrapper for managing a single annotation in the renderer from the

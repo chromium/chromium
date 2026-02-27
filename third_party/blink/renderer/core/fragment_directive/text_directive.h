@@ -24,12 +24,22 @@ class CORE_EXPORT TextDirective : public SelectorDirective {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static TextDirective* Create(const String& directive_value);
+  enum class Behavior {
+    kScrollAndHighlight,
+    kScrollOnly,
+  };
+
+  static TextDirective* Create(
+      const String& directive_value,
+      Behavior behavior = Behavior::kScrollAndHighlight);
   static Type ClassType() { return kText; }
-  explicit TextDirective(const TextFragmentSelector& selector);
+  explicit TextDirective(const TextFragmentSelector& selector,
+                         Behavior behavior = Behavior::kScrollAndHighlight);
   ~TextDirective() override;
 
   const TextFragmentSelector& GetSelector() const { return selector_; }
+
+  bool IsScrollOnly() const { return behavior_ == Behavior::kScrollOnly; }
 
   void Trace(Visitor*) const override;
 
@@ -45,6 +55,7 @@ class CORE_EXPORT TextDirective : public SelectorDirective {
 
  private:
   TextFragmentSelector selector_;
+  Behavior behavior_;
 };
 
 }  // namespace blink

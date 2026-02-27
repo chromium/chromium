@@ -42,6 +42,13 @@ void TextFragmentAnchorMetrics::ReportMetrics() {
 #ifndef NDEBUG
   DCHECK(!metrics_reported_);
 #endif
+  if (selector_count_ == 0) {
+#ifndef NDEBUG
+    metrics_reported_ = true;
+#endif
+    return;
+  }
+
   DCHECK_GT(selector_count_, 0);
   DCHECK_GE(matches_count_, 0);
   DCHECK_LE(matches_count_, selector_count_);

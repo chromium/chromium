@@ -405,6 +405,7 @@ struct SameSizeAsDocumentLoader
   bool is_browser_initiated;
   bool is_prerendering;
   bool has_text_fragment_token;
+  std::optional<String> internal_scroll_to_text_fragment;
   bool was_discarded;
   bool loading_main_document_from_mhtml_archive;
   bool loading_srcdoc;
@@ -636,6 +637,14 @@ DocumentLoader::DocumentLoader(
   has_text_fragment_token_ = TextFragmentAnchor::GenerateNewToken(*this) ||
                              params_->has_text_fragment_token;
 
+  if (params_->internal_scroll_to_text_fragment) {
+    // We store this in a separate member because params_ is cleared after
+    // StartLoading(), but we need this value later during fragment
+    // processing.
+    internal_scroll_to_text_fragment_ =
+        *params_->internal_scroll_to_text_fragment;
+  }
+
   document_policy_ = CreateDocumentPolicy();
 
   WebNavigationTimings& timings = params_->navigation_timings;
@@ -751,6 +760,10 @@ DocumentLoader::CreateWebNavigationParamsToCloneDocument() {
   params->should_have_sticky_user_activation =
       frame_->HasStickyUserActivation() && !frame_->IsMainFrame();
   params->has_text_fragment_token = has_text_fragment_token_;
+  if (internal_scroll_to_text_fragment_) {
+    params->internal_scroll_to_text_fragment =
+        WebString(*internal_scroll_to_text_fragment_);
+  }
   // Origin trials must still work on the cloned document.
   params->initiator_origin_trial_features =
       CopyInitiatorOriginTrials(initiator_origin_trial_features_);
@@ -3648,6 +3661,12 @@ bool DocumentLoader::ConsumeTextFragmentToken() {
   bool token_value = has_text_fragment_token_;
   has_text_fragment_token_ = false;
   return token_value;
+}
+
+std::optional<String> DocumentLoader::TakeInternalScrollToTextFragment() {
+  std::optional<String> result = std::move(internal_scroll_to_text_fragment_);
+  internal_scroll_to_text_fragment_.reset();
+  return result;
 }
 
 void DocumentLoader::NotifyPrerenderingDocumentActivated(

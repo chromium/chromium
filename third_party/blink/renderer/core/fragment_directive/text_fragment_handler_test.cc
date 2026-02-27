@@ -22,6 +22,8 @@
 #include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
 #include "third_party/blink/renderer/core/editing/selection_template.h"
 #include "third_party/blink/renderer/core/editing/visible_units.h"
+#include "third_party/blink/renderer/core/fragment_directive/fragment_directive.h"
+#include "third_party/blink/renderer/core/fragment_directive/text_directive.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/location.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
@@ -1124,6 +1126,78 @@ TEST_F(TextFragmentHandlerTest, InvalidateOverflowOnRemoval) {
   EXPECT_GT(removed_rect.Y(), marker_rect.Y());
   EXPECT_EQ(removed_rect.Width(), marker_rect.Width());
   EXPECT_GT(marker_rect.Height(), removed_rect.Height());
+}
+
+TEST_F(TextFragmentHandlerTest, ScrollDirectiveParsing) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+
+  // Set the text fragment to scroll to on the DocumentLoader.
+  GetDocument().Loader()->SetInternalScrollToTextFragment("test%20page");
+
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <p>This is a test page</p>
+  )HTML");
+  RunAsyncMatchingTasks();
+
+  Compositor().BeginFrame();
+
+  // Scroll directives use kScrollOnly annotation type, which
+  // does NOT add markers.
+  EXPECT_EQ(0u, GetDocument().Markers().Markers().size());
+
+  // And it should NOT apply :target to the common ancestor.
+  EXPECT_EQ(nullptr, GetDocument().CssTarget());
+
+  // However, it should still result in a match internally.
+  const auto& directives = GetDocument().fragmentDirective().items();
+  EXPECT_EQ(0u, directives.size());  // It's no longer added to the JS
+                                     // fragmentDirective items.
+
+  // Verify that the scroll directive is NOT returned by GetExistingSelectors.
+  bool callback_called = false;
+  GetDocument().GetFrame()->GetTextFragmentHandler()->GetExistingSelectors(
+      base::BindOnce(
+          [](bool* callback_called, const Vector<String>& selectors) {
+            *callback_called = true;
+            EXPECT_EQ(0u, selectors.size());
+          },
+          base::Unretained(&callback_called)));
+  EXPECT_TRUE(callback_called);
+}
+
+TEST_F(TextFragmentHandlerTest, GetExistingSelectorsMixedDirectives) {
+  SimRequest request(
+      "https://example.com/"
+      "test.html#:~:text=test",
+      "text/html");
+  LoadURL(
+      "https://example.com/"
+      "test.html#:~:text=test");
+
+  // Set the text fragment to scroll to on the DocumentLoader.
+  GetDocument().Loader()->SetInternalScrollToTextFragment("page");
+
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <p>This is a test page</p>
+  )HTML");
+  RunAsyncMatchingTasks();
+
+  Compositor().BeginFrame();
+
+  // Only the text directive should be returned.
+  bool callback_called = false;
+  GetDocument().GetFrame()->GetTextFragmentHandler()->GetExistingSelectors(
+      base::BindOnce(
+          [](bool* callback_called, const Vector<String>& selectors) {
+            *callback_called = true;
+            ASSERT_EQ(1u, selectors.size());
+            EXPECT_EQ("test", selectors[0]);
+          },
+          base::Unretained(&callback_called)));
+  EXPECT_TRUE(callback_called);
 }
 
 }  // namespace blink

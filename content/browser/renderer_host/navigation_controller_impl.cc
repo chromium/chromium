@@ -4507,7 +4507,9 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
 #else
           false,
 #endif
-          /*permissions_policy_override=*/std::nullopt);
+          /*permissions_policy_override=*/std::nullopt,
+          /*internal_scroll_to_text_fragment=*/
+          params.internal_scroll_to_text_fragment);
 
 #if BUILDFLAG(IS_ANDROID)
   if (ValidateDataURLAsString(params.data_url_as_string)) {

@@ -173,13 +173,27 @@ TextFragmentAnchor* TextFragmentAnchor::TryCreate(const KURL& url,
 
   HeapVector<Member<TextDirective>> text_directives =
       frame.GetDocument()->fragmentDirective().GetDirectives<TextDirective>();
-  if (text_directives.empty()) {
-    if (frame.GetDocument()
-            ->fragmentDirective()
-            .LastNavigationHadFragmentDirective()) {
-      UseCounter::Count(frame.GetDocument(),
-                        WebFeature::kInvalidFragmentDirective);
+
+  if (text_directives.empty() && frame.GetDocument()
+                                     ->fragmentDirective()
+                                     .LastNavigationHadFragmentDirective()) {
+    UseCounter::Count(frame.GetDocument(),
+                      WebFeature::kInvalidFragmentDirective);
+  }
+
+  if (frame.Loader().GetDocumentLoader()) {
+    std::optional<String> internal_scroll_to_text_fragment =
+        frame.Loader().GetDocumentLoader()->TakeInternalScrollToTextFragment();
+    if (internal_scroll_to_text_fragment) {
+      if (TextDirective* text_directive =
+              TextDirective::Create(*internal_scroll_to_text_fragment,
+                                    TextDirective::Behavior::kScrollOnly)) {
+        text_directives.push_back(text_directive);
+      }
     }
+  }
+
+  if (text_directives.empty()) {
     return nullptr;
   }
 
@@ -226,7 +240,13 @@ TextFragmentAnchor::TextFragmentAnchor(
   DCHECK(!text_directives.empty());
   DCHECK(frame_->View());
 
-  metrics_->DidCreateAnchor(text_directives.size());
+  int highlight_directive_count = 0;
+  for (const auto& directive : text_directives) {
+    if (!directive->IsScrollOnly()) {
+      highlight_directive_count++;
+    }
+  }
+  metrics_->DidCreateAnchor(highlight_directive_count);
 
   AnnotationAgentContainerImpl* annotation_container =
       AnnotationAgentContainerImpl::CreateIfNeeded(*frame_->GetDocument());
@@ -236,8 +256,14 @@ TextFragmentAnchor::TextFragmentAnchor(
   for (Member<TextDirective>& directive : text_directives) {
     auto* selector =
         MakeGarbageCollected<TextAnnotationSelector>(directive->GetSelector());
-    AnnotationAgentImpl* agent = annotation_container->CreateUnboundAgent(
-        mojom::blink::AnnotationType::kSharedHighlight, *selector);
+
+    mojom::blink::AnnotationType annotation_type =
+        directive->IsScrollOnly()
+            ? mojom::blink::AnnotationType::kScrollOnly
+            : mojom::blink::AnnotationType::kSharedHighlight;
+
+    AnnotationAgentImpl* agent =
+        annotation_container->CreateUnboundAgent(annotation_type, *selector);
 
     // TODO(bokan): This is a stepping stone in refactoring the
     // TextFragmentHandler. When we replace it with a browser-side manager it
@@ -388,12 +414,17 @@ void TextFragmentAnchor::UpdateCurrentState() {
     }
 
     if (matched_annotations_.insert(annotation).is_new_entry) {
-      metrics_->DidFindMatch();
-      const AnnotationSelector* selector = annotation->GetSelector();
-      // Selector must be a TextAnnotationSelector since this is the
-      // *Text*FragmentAnchor.
-      if (selector && !To<TextAnnotationSelector>(selector)->WasMatchUnique()) {
-        metrics_->DidFindAmbiguousMatch();
+      if (!annotation->IsScrollOnly()) {
+        // Internal "silent" scrolls are not counted in the standard
+        // SharedHighlight metrics.
+        metrics_->DidFindMatch();
+        const AnnotationSelector* selector = annotation->GetSelector();
+        // Selector must be a TextAnnotationSelector since this is the
+        // *Text*FragmentAnchor.
+        if (selector &&
+            !To<TextAnnotationSelector>(selector)->WasMatchUnique()) {
+          metrics_->DidFindAmbiguousMatch();
+        }
       }
     }
   }
@@ -425,10 +456,13 @@ void TextFragmentAnchor::ApplyEffectsToFirstMatch() {
   const RangeInFlatTree& range = first_match_->GetAttachedRange();
 
   // Apply :target pseudo-class.
-  ApplyTargetToCommonAncestor(range.ToEphemeralRange());
+  if (!first_match_->IsScrollOnly()) {
+    // Silent matches are intended to be invisible to the user, and :target
+    // often has visual effects (like the default yellow highlight).
+    ApplyTargetToCommonAncestor(range.ToEphemeralRange());
+  }
   frame_->GetDocument()->UpdateStyleAndLayout(
       DocumentUpdateReason::kFindInPage);
-
   // Scroll the match into view.
   if (!EnsureFirstMatchInViewIfNeeded())
     return;

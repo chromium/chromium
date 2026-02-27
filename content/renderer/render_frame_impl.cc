@@ -968,6 +968,12 @@ void FillMiscNavigationParams(
   navigation_params->has_text_fragment_token =
       common_params.text_fragment_token;
 
+  if (commit_params.internal_scroll_to_text_fragment) {
+    navigation_params->internal_scroll_to_text_fragment =
+        blink::WebString::FromUTF8(
+            *commit_params.internal_scroll_to_text_fragment);
+  }
+
   navigation_params->is_browser_initiated = commit_params.is_browser_initiated;
 
   navigation_params->is_cross_site_cross_browsing_context_group =

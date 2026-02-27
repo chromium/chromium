@@ -370,7 +370,9 @@ TEST_F(TextFragmentAnchorMetricsTest, InvalidFragmentDirective) {
       <!DOCTYPE html>
       <p id="element">This is a test page</p>
     )HTML");
-    if (GetDocument().GetFrame()->View()->GetFragmentAnchor()) {
+    FragmentAnchor* anchor =
+        GetDocument().GetFrame()->View()->GetFragmentAnchor();
+    if (anchor && anchor->IsTextFragmentAnchor()) {
       RunUntilTextFragmentFinalization();
     }
 
