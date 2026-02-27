@@ -76,19 +76,6 @@ void SetRuntimeFeatureDefaultsForPlatform(
 #endif
 
 #if BUILDFLAG(IS_APPLE)
-  // NOTE: Canvas2D checks this feature only when GPU compositing is enabled
-  // (since the entire concept of creating accelerated overlays makes sense only
-  // when GPU compositing is enabled), so there is no need to explicitly guard
-  // by switches::kDisableGpu.
-  const bool enable_canvas_2d_image_chromium = command_line.HasSwitch(
-      blink::switches::kEnableGpuMemoryBufferCompositorResources);
-#else
-  constexpr bool enable_canvas_2d_image_chromium = false;
-#endif
-  WebRuntimeFeatures::EnableCanvas2dImageChromium(
-      enable_canvas_2d_image_chromium);
-
-#if BUILDFLAG(IS_APPLE)
   const bool enable_web_gl_image_chromium =
       command_line.HasSwitch(
           blink::switches::kEnableGpuMemoryBufferCompositorResources) &&

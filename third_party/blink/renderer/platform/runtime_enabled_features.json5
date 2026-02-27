@@ -920,11 +920,6 @@
       status: "experimental",
     },
     {
-      name: "Canvas2dImageChromium",
-      base_feature: "none",
-      public: true,
-    },
-    {
       name: "Canvas2dLayers",
     },
     {

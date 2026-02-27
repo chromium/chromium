@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 
+#include "base/command_line.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
@@ -15,11 +16,11 @@
 #include "gpu/ipc/client/client_shared_image_interface.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_graphics_context_3d_provider.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgraphics_shared_image_interface_provider_impl.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/main_thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
@@ -36,7 +37,18 @@ std::optional<bool>
 }
 
 bool Canvas2dImageChromiumEnabled() {
-  return RuntimeEnabledFeatures::Canvas2dImageChromiumEnabled();
+#if BUILDFLAG(IS_APPLE)
+  // NOTE: Canvas2D checks this feature only when GPU compositing is enabled
+  // (since the entire concept of creating accelerated overlays makes sense only
+  // when GPU compositing is enabled), so there is no need to explicitly guard
+  // by switches::kDisableGpu.
+  static const bool enable_canvas_2d_image_chromium =
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kEnableGpuMemoryBufferCompositorResources);
+#else
+  constexpr bool enable_canvas_2d_image_chromium = false;
+#endif
+  return enable_canvas_2d_image_chromium;
 }
 
 }  // namespace
