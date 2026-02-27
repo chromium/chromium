@@ -11,7 +11,6 @@ import type {ContextualEntrypointAndMenuElement} from './contextual_entrypoint_a
 export function getHtml(this: ContextualEntrypointAndMenuElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
-  ${this.showModelPicker ?  html`
     <cr-composebox-contextual-entrypoint-button id="entrypointButton"
         exportparts="context-menu-entrypoint-icon, entrypoint-button"
         .inputState="${this.inputState}"
@@ -27,21 +26,6 @@ export function getHtml(this: ContextualEntrypointAndMenuElement) {
         .inputState="${this.inputState}"
         @close="${this.onMenuClose_}">
     </cr-composebox-contextual-action-menu>
-  ` : html`
-      <!-- TODO(crbug.com/476467436): Remove the context-menu-entrypoint option
-      once obsolete. -->
-    <cr-composebox-context-menu-entrypoint id="entrypointMenu"
-        exportparts="context-menu-entrypoint-icon"
-        .tabSuggestions="${this.tabSuggestions}"
-        .inCreateImageMode="${this.inCreateImageMode}"
-        .hasImageFiles="${this.hasImageFiles}"
-        .disabledTabIds="${this.disabledTabIds}"
-        .fileNum="${this.fileNum}"
-        .searchboxLayoutMode="${this.searchboxLayoutMode}"
-        ?upload-button-disabled="${this.uploadButtonDisabled}"
-        ?show-context-menu-description="${this.showContextMenuDescription}"
-        glif-animation-state="${this.glifAnimationState}">
-    </cr-composebox-context-menu-entrypoint>`}
   <!--_html_template_end_-->`;
   // clang-format on
 }
