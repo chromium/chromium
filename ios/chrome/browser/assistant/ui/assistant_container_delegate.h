@@ -50,13 +50,21 @@ enum class AssistantPresentationContext {
 
 // Called when the container updates its internal height dynamically.
 - (void)assistantContainer:(AssistantContainerViewController*)container
-           didUpdateHeight:(CGFloat)newHeight;
+           didUpdateHeight:(NSInteger)newHeight;
 
 #pragma mark - Context Changes
 
 // Called when the host environment's presentation context changes.
 - (void)assistantContainer:(AssistantContainerViewController*)container
           didChangeContext:(AssistantPresentationContext)newContext;
+
+#pragma mark - Gesture Handling
+
+// Asks the delegate if it should intercept the container's resizing pan
+// gesture. This is mainly used to avoid gesture conflicts with the embedder. If
+// this returns YES, the container will ignore the gesture. Defaults to NO.
+- (BOOL)assistantContainer:(AssistantContainerViewController*)container
+    shouldInterceptPanGesture:(UIPanGestureRecognizer*)gesture;
 
 @end
 

@@ -26,7 +26,13 @@ constexpr CGFloat kSpringDuration = 0.3;
 constexpr CGFloat kSpringDamping = 0.85;
 constexpr CGFloat kMomentumProjectionSeconds = 0.2;
 
+// The height of the top area that responds to the pan gesture.
+constexpr CGFloat kGestureTopAreaHeight = 44.0;
+
 }  // namespace
+
+@interface AssistantContainerViewController () <UIGestureRecognizerDelegate>
+@end
 
 @implementation AssistantContainerViewController {
   NSLayoutConstraint* _heightConstraint;
@@ -120,6 +126,30 @@ constexpr CGFloat kMomentumProjectionSeconds = 0.2;
   [self.view setNeedsLayout];
 }
 
+#pragma mark - UIGestureRecognizerDelegate
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer*)gestureRecognizer
+       shouldReceiveTouch:(UITouch*)touch {
+  if (gestureRecognizer != _headerPanGesture) {
+    return YES;
+  }
+  CGPoint location = [touch locationInView:self.view];
+  // Restrict the pan gesture to the top area.
+  return location.y <= kGestureTopAreaHeight;
+}
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer*)gestureRecognizer
+    shouldBeRequiredToFailByGestureRecognizer:
+        (UIGestureRecognizer*)otherGestureRecognizer {
+  if (gestureRecognizer == _headerPanGesture) {
+    // Ensures the container's resizing pan gesture has absolute priority over
+    // other gestures, like an embedded UIScrollView's content pan.
+    return
+        [otherGestureRecognizer isKindOfClass:[UIPanGestureRecognizer class]];
+  }
+  return NO;
+}
+
 #pragma mark - Private
 
 // Adds gesture recognizers to the view.
@@ -127,7 +157,8 @@ constexpr CGFloat kMomentumProjectionSeconds = 0.2;
   _headerPanGesture = [[UIPanGestureRecognizer alloc]
       initWithTarget:self
               action:@selector(handlePanGesture:)];
-  [_assistantContainerView.headerView addGestureRecognizer:_headerPanGesture];
+  _headerPanGesture.delegate = self;
+  [self.view addGestureRecognizer:_headerPanGesture];
   [self updatePanGestureEnabledState];
 }
 
@@ -146,6 +177,14 @@ constexpr CGFloat kMomentumProjectionSeconds = 0.2;
 - (void)handlePanGesture:(UIPanGestureRecognizer*)gesture {
   if (gesture != _headerPanGesture) {
     return;
+  }
+
+  if ([self.delegate respondsToSelector:@selector(assistantContainer:
+                                            shouldInterceptPanGesture:)]) {
+    if ([self.delegate assistantContainer:self
+                shouldInterceptPanGesture:gesture]) {
+      return;
+    }
   }
 
   UIView* superview = self.view.superview;

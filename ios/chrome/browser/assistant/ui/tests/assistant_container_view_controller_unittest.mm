@@ -4,15 +4,19 @@
 
 #import "ios/chrome/browser/assistant/ui/assistant_container_view_controller.h"
 
+#import "ios/chrome/browser/assistant/ui/assistant_container_delegate.h"
 #import "ios/chrome/browser/assistant/ui/assistant_container_detent.h"
 #import "ios/chrome/browser/assistant/ui/assistant_container_detent_utils.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
 
 // Expose private methods needed for testing.
 @interface AssistantContainerViewController (ExposedMethods)
 - (void)updateHeightConstraint;
 - (NSInteger)absoluteMaxHeight;
+- (void)handlePanGesture:(UIPanGestureRecognizer*)gesture;
 @end
 
 // Expose accessors for private properties.
@@ -126,6 +130,39 @@ TEST_F(AssistantContainerViewControllerTest, OneDetentPreventsResizing) {
 
   // Verify it snaps back to the single detent size.
   EXPECT_EQ(view_controller_.heightConstraint.constant, 100.0);
+}
+
+// Tests that the delegate can intercept the pan gesture.
+TEST_F(AssistantContainerViewControllerTest, DelegateInterceptsPanGesture) {
+  id delegate_mock =
+      OCMStrictProtocolMock(@protocol(AssistantContainerDelegate));
+  view_controller_.delegate = delegate_mock;
+
+  OCMExpect([delegate_mock
+                       assistantContainer:view_controller_
+                shouldInterceptPanGesture:view_controller_.headerPanGesture])
+      .andReturn(YES);
+
+  [view_controller_ handlePanGesture:view_controller_.headerPanGesture];
+
+  EXPECT_OCMOCK_VERIFY(delegate_mock);
+}
+
+// Tests that the container processes the pan gesture when the delegate allows
+// it.
+TEST_F(AssistantContainerViewControllerTest, DelegateAllowsPanGesture) {
+  id delegate_mock =
+      OCMStrictProtocolMock(@protocol(AssistantContainerDelegate));
+  view_controller_.delegate = delegate_mock;
+
+  OCMExpect([delegate_mock
+                       assistantContainer:view_controller_
+                shouldInterceptPanGesture:view_controller_.headerPanGesture])
+      .andReturn(NO);
+
+  [view_controller_ handlePanGesture:view_controller_.headerPanGesture];
+
+  EXPECT_OCMOCK_VERIFY(delegate_mock);
 }
 
 }  // namespace

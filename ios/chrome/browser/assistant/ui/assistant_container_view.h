@@ -12,10 +12,7 @@
 // The layout is structured as follows:
 //
 // +----------------------------------+
-// |            headerView            |
-// |         +-------------+          |
-// |         |   Grabber   |          |
-// |         +-------------+          |
+// |             Grabber              |
 // +----------------------------------+
 // |           scrollView             |
 // |  +----------------------------+  |
@@ -25,14 +22,11 @@
 // +----------------------------------+
 @interface AssistantContainerView : UIView
 
-// The header view (contains grabber).
-@property(nonatomic, strong, readonly) UIView* headerView;
-
 // The content view where subviews should be added.
 @property(nonatomic, strong, readonly) UIView* contentView;
 
 // Returns the preferred height of the container based on its content.
-- (CGFloat)preferredHeight;
+- (NSInteger)preferredHeight;
 
 @end
 
