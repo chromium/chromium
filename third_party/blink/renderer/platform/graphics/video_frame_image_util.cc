@@ -108,42 +108,6 @@ bool WillCreateAcceleratedImagesFromVideoFrame() {
   return ShouldCreateAcceleratedImages(GetRasterContextProvider().get());
 }
 
-// Killswitch guarding VideoFrameImage not caching the SkSurface used for
-// VideoFrame->StaticBitmapImage software draws.
-BASE_FEATURE(kVideoFrameImageUtilCacheSkSurface,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
-    scoped_refptr<media::VideoFrame> frame,
-    CanvasSnapshotProvider* snapshot_provider,
-    media::PaintCanvasVideoRenderer* video_renderer,
-    bool prefer_tagged_orientation,
-    bool reinterpret_video_as_srgb) {
-  DCHECK(frame);
-  if (!snapshot_provider) {
-    DLOG(ERROR) << "An external CanvasSnapshotProvider must be provided";
-    return nullptr;
-  }
-
-  std::optional<CanvasSnapshotProvider::Info> sw_draw_info;
-  sk_sp<SkSurface> sw_draw_surface;
-  CanvasNon2DResourceProviderSharedImage* si_provider = nullptr;
-  if (snapshot_provider->IsExternalBitmapProvider()) {
-    auto* bitmap_provider =
-        static_cast<CanvasNon2DSnapshotProviderBitmap*>(snapshot_provider);
-    sw_draw_info = bitmap_provider->Info();
-    if (base::FeatureList::IsEnabled(kVideoFrameImageUtilCacheSkSurface)) {
-      sw_draw_surface = bitmap_provider->GetCachedSurface();
-    }
-  } else {
-    si_provider =
-        static_cast<CanvasNon2DResourceProviderSharedImage*>(snapshot_provider);
-  }
-  return CreateImageFromVideoFrame(
-      std::move(frame), si_provider, std::move(sw_draw_info), sw_draw_surface,
-      video_renderer, prefer_tagged_orientation, reinterpret_video_as_srgb);
-}
-
 scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
     scoped_refptr<media::VideoFrame> frame,
     CanvasNon2DResourceProviderSharedImage* snapshot_provider,
