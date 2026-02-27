@@ -877,6 +877,54 @@ TEST_F(ChromeVoxMv3AccessibilityEventRewriterTest,
   EXPECT_EQ(0U, GetPendingKeyEventsSize());
 }
 
+TEST_F(ChromeVoxMv3AccessibilityEventRewriterTest,
+       ProcessPendingEventOutOfSync) {
+  AccessibilityController* controller = GetAccessibilityController();
+  controller->SetSpokenFeedbackEnabled(true, A11Y_NOTIFICATION_NONE);
+  accessibility_event_rewriter().SetSpokenFeedbackMv3KeyHandlingEnabled(true);
+
+  // Press three keys to queue three pending events.
+  generator().PressKey(ui::VKEY_A, ui::EF_NONE);
+  generator().PressKey(ui::VKEY_B, ui::EF_NONE);
+  generator().PressKey(ui::VKEY_C, ui::EF_NONE);
+  EXPECT_EQ(3U, GetPendingKeyEventsSize());
+  EXPECT_EQ(0, event_recorder().events_seen());
+
+  // Process the third event. This should also propagate the first two.
+  // ID 2 corresponds to VKEY_C.
+  accessibility_event_rewriter().ProcessPendingSpokenFeedbackEvent(2, true);
+  EXPECT_EQ(3, event_recorder().events_seen());
+  EXPECT_EQ(0U, GetPendingKeyEventsSize());
+}
+
+TEST_F(ChromeVoxMv3AccessibilityEventRewriterTest,
+       ProcessPendingEventOutOfSyncNoPropagate) {
+  AccessibilityController* controller = GetAccessibilityController();
+  controller->SetSpokenFeedbackEnabled(true, A11Y_NOTIFICATION_NONE);
+  accessibility_event_rewriter().SetSpokenFeedbackMv3KeyHandlingEnabled(true);
+
+  // Press three keys to queue three pending events.
+  generator().PressKey(ui::VKEY_A, ui::EF_NONE);
+  generator().PressKey(ui::VKEY_B, ui::EF_NONE);
+  generator().PressKey(ui::VKEY_C, ui::EF_NONE);
+  generator().PressKey(ui::VKEY_D, ui::EF_NONE);
+  EXPECT_EQ(4U, GetPendingKeyEventsSize());
+  EXPECT_EQ(0, event_recorder().events_seen());
+
+  // "Cancel" (do not propagate) the third event. The first two should still be
+  // propagated.
+  accessibility_event_rewriter().ProcessPendingSpokenFeedbackEvent(2, false);
+  EXPECT_EQ(2, event_recorder().events_seen());
+  // The final event is not propagated.
+  EXPECT_EQ(1U, GetPendingKeyEventsSize());
+
+  // Verify that only VKEY_A and VKEY_B were propagated.
+  const std::vector<ui::KeyEvent>& events = event_capturer().key_events();
+  ASSERT_EQ(2U, events.size());
+  EXPECT_EQ(ui::VKEY_A, events[0].key_code());
+  EXPECT_EQ(ui::VKEY_B, events[1].key_code());
+}
+
 class MouseKeysAccessibilityEventRewriterTest
     : public AccessibilityEventRewriterTestBase {
  public:
