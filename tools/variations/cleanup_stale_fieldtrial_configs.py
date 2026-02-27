@@ -35,12 +35,28 @@ THREAD_COUNT = 16
 # the literal would be counted as being used. Use this to skip removal of
 # studies (and studies that depend on features) that are not visible in code.
 # Eg. ChromeOS where experiments are passed from ash to platform services.
-_LITERAL_SKIP_REGEX_STRINGS = ['^CrOSLateBoot.*', '^CrOSEarlyBoot.*']
+_LITERAL_SKIP_REGEX_STRINGS = [
+    '^CrOSLateBoot.*', '^CrOSEarlyBoot.*', '^V8Flag_.*'
+]
 
 _LITERAL_SKIP_REGEXES = [
     re.compile(regexp_str) for regexp_str in _LITERAL_SKIP_REGEX_STRINGS
 ]
 _LITERAL_CACHE = {}
+
+_DECLARE_FEATURE_PATTERNS = [
+    # Basic form: BASE_FEATURE(kMyFeature...)
+    re.compile(r'BASE_FEATURE\s*\([^)]*\bk(\w+)[^)]*\)'),
+    # Extra pattern for net/dns
+    re.compile(r'MAKE_BASE_FEATURE_WITH_STATIC_STORAGE\s*\([^)]*\bk(\w+)[^)]*\)'
+               ),
+    # Quoted old-style form: BASE_FEATURE(.., "My-Feature",...)
+    re.compile(r'BASE_FEATURE\s*\([^)]*"([\w-]+)"[^)]*\)'),
+    # Forward declaration: BASE_DECLARE_FEATURE(kMyFeature...)
+    re.compile(r'BASE_DECLARE_FEATURE\s*\([^)]*\bk(\w+)[^)]*\)'),
+    # Java syntax: Flag.baseFeature("My-Feature")
+    re.compile(r'Flag\.baseFeature\s*\([^)]*"([\w-]+)"[^)]*\)'),
+]
 
 
 def is_literal_in_skiplist(literal):
@@ -51,54 +67,28 @@ def is_literal_in_skiplist(literal):
   return False
 
 
-def is_literal_in_git(literal):
-  git_grep_cmd = ('git', 'grep', '--threads', '2', '-l', '\"%s\"' % literal)
-  git_grep_proc = subprocess.Popen(git_grep_cmd, stdout=subprocess.PIPE)
-  # Check for >1 since fieldtrial_testing_config.json will always be a result.
-  return len(git_grep_proc.stdout.read().splitlines()) > 1
-
-
-def is_literal_in_files(literal, code_files):
-  bash_files_using_literal = subprocess.Popen(
-      ('xargs', 'grep', '-s', '-l', '\\\"%s\\\"' % literal),
-      stdin=subprocess.PIPE,
-      stdout=subprocess.PIPE)
-  files_using_literal = bash_files_using_literal.communicate(code_files)[0]
-  return len(files_using_literal.splitlines()) > 0
-
-
-def is_literal_used(literal, code_files):
-  """Check if a given string literal is used in the passed code files."""
-  if literal in _LITERAL_CACHE:
-    return _LITERAL_CACHE[literal]
-
-  used = is_literal_in_skiplist(literal) or is_literal_in_git(
-      literal) or is_literal_in_files(literal, code_files)
-  if not used:
-    print('Did not find', repr(literal))
-  _LITERAL_CACHE[literal] = used
-  return used
-
-
-def is_study_used(study_name, configs, code_files):
+def is_study_used(study_name: str, configs: list[dict],
+                  collected_features: set[str]) -> bool:
   """Checks if a given study is used in the codebase."""
   if study_name.startswith('WebRTC-'):
     return True  # Skip webrtc studies which give false positives.
 
-  if is_literal_used(study_name, code_files):
-    return True
+  # All features in the study, plus the study name itself.
+  features = {study_name}
   for config in configs:
     for experiment in config.get('experiments', []):
-      for feature in experiment.get('enable_features', []):
-        if is_literal_used(feature, code_files):
-          return True
-      for feature in experiment.get('disable_features', []):
-        if is_literal_used(feature, code_files):
-          return True
+      features.update(experiment.get('enable_features', []))
+      features.update(experiment.get('disable_features', []))
+
+  for feature in features:
+    if feature in collected_features or is_literal_in_skiplist(feature):
+      return True
+
   return False
 
 
-def thread_func(thread_limiter, studies_map, study_name, configs, code_files):
+def clean_up_studies_func(thread_limiter, studies_map, study_name, configs,
+                          collected_features):
   """Runs a limited number of tasks and updates the map with the results.
 
   Args:
@@ -113,10 +103,59 @@ def thread_func(thread_limiter, studies_map, study_name, configs, code_files):
   """
   thread_limiter.acquire()
   try:
-    if is_study_used(study_name, configs, code_files):
+    if is_study_used(study_name, configs, collected_features):
       studies_map[study_name] = configs
   finally:
     thread_limiter.release()
+
+
+def clean_up_studies(
+    studies: dict[str, list[dict]], collected_features: set[str],
+    thread_limiter: threading.BoundedSemaphore) -> dict[str, list[dict]]:
+  """Launches threads to clean up studies."""
+  threads = []
+  clean_studies = {}
+  for study_name, configs in studies.items():
+    args = (thread_limiter, clean_studies, study_name, configs,
+            collected_features)
+    threads.append(threading.Thread(target=clean_up_studies_func, args=args))
+  # Start all threads, then join all threads.
+  for t in threads:
+    t.start()
+  for t in threads:
+    t.join()
+
+  return clean_studies
+
+
+def collect_features_func(thread_limiter: threading.BoundedSemaphore,
+                          file_name: str, collected_features: set[str]):
+  """Opens a file and scans for BASE_FEATURE declarations."""
+  thread_limiter.acquire()
+  try:
+    with open(file_name, 'r', encoding='utf-8', errors='ignore') as file:
+      content = file.read()
+
+      for pattern in _DECLARE_FEATURE_PATTERNS:
+        collected_features.update(pattern.findall(content, re.ASCII))
+  finally:
+    thread_limiter.release()
+
+
+def collect_features(all_files: bytes,
+                     thread_limiter: threading.BoundedSemaphore) -> set[str]:
+  """Launches threads to collect features."""
+  collected_features = set()
+  threads = []
+  for file_name in all_files.splitlines():
+    args = (thread_limiter, file_name, collected_features)
+    threads.append(threading.Thread(target=collect_features_func, args=args))
+  # Start all threads, then join all threads.
+  for t in threads:
+    t.start()
+  for t in threads:
+    t.join()
+  return collected_features
 
 
 def main():
@@ -141,29 +180,24 @@ def main():
   # Use single find command to get all files to scan for studies.
   # For all files...
   command = ['find', '.', '-type', 'f']
-  # except for the generated files...
-  command.extend(['-not', '-path', './out/*'])
-  command.extend(['-not', '-path', './build/*'])
-  command.extend(['-not', '-path', './gen/*'])
   # pick headers, objective-c and c++ modules.
-  command.extend(
-      ['(', '-name', '*.h', '-o', '-name', '*.cc', '-o', '-name', '*.mm', ')'])
+  command.extend([
+      '(', '-name', '*.h', '-o', '-name', '*.cc', '-o', '-name', '*.mm', '-o',
+      '-name', '*.java', ')'
+  ])
 
   all_files = subprocess.Popen(command,
                                stdout=subprocess.PIPE,
                                stderr=subprocess.DEVNULL).stdout.read()
 
-  threads = []
-  clean_studies = {}
-  for study_name, configs in studies.items():
-    args = (thread_limiter, clean_studies, study_name, configs, all_files)
-    threads.append(threading.Thread(target=thread_func, args=args))
+  print(f'Scanning {len(all_files.splitlines())} source files')
 
-  # Start all threads, then join all threads.
-  for t in threads:
-    t.start()
-  for t in threads:
-    t.join()
+  # Collect all features used in the codebase, that are present in BASE_FEATURE
+  # statements.
+  collected_features = collect_features(all_files, thread_limiter)
+  print(f'Collected {len(collected_features)} features')
+
+  clean_studies = clean_up_studies(studies, collected_features, thread_limiter)
 
   with open(output_path, 'wt') as fout:
     json.dump(clean_studies, fout)
