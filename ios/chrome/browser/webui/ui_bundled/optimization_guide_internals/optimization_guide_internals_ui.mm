@@ -110,6 +110,10 @@ void OptimizationGuideInternalsUI::RequestMqlsLogs(
   }
   optimization_guide::ModelQualityLogsUploaderService* mqls_uploader_service =
       service->GetModelQualityLogsUploaderService();
+  if (!mqls_uploader_service) {
+    std::move(callback).Run({});
+    return;
+  }
   std::vector<optimization_guide_internals::mojom::MqlsLogPtr> mqls_logs =
       mqls_uploader_service->GetMqlsLogsForWebUI();
   std::move(callback).Run(std::move(mqls_logs));
