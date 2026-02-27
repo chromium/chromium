@@ -13,7 +13,8 @@ namespace vr {
 // are no runtimes available.
 
 // TODO(crbug.com/354355009): Hits a CHECK on Linux.
-#if BUILDFLAG(IS_LINUX)
+// TODO(crbug.com/477057997): Flaky on Mac.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 #define MAYBE_TestInlineIdentityAlwaysAvailable \
   DISABLED_TestInlineIdentityAlwaysAvailable
 #else
