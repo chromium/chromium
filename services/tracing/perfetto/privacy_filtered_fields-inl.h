@@ -364,15 +364,16 @@ constexpr MessageInfo kScrollUpdates = {kScrollUpdatesIndices,
                                         kScrollUpdatesComplexMessages};
 
 // Proto Message: ScrollJankV4Result
-constexpr int kScrollJankV4ResultIndices[] = {1, 2, 3,  4,  5,  6, 7,
-                                              8, 9, 10, 11, 12, -1};
+constexpr int kScrollJankV4ResultIndices[] = {1, 2, 3,  4,  5,  6,  7,
+                                              8, 9, 10, 11, 12, 13, -1};
 constexpr MessageInfo const* kScrollJankV4ResultComplexMessages[] = {
     nullptr, &kMissedVsyncsForJankReason,
     nullptr, nullptr,
     nullptr, nullptr,
     nullptr, nullptr,
     nullptr, &kScrollUpdates,
-    nullptr, nullptr};
+    nullptr, nullptr,
+    nullptr};
 constexpr MessageInfo kScrollJankV4Result = {
     kScrollJankV4ResultIndices, kScrollJankV4ResultComplexMessages};
 
