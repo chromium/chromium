@@ -321,10 +321,7 @@ void ReportingEventRouter::OnUrlFilteringInterstitial(
 
   std::optional<ReportingSettings> settings =
       reporting_client_->GetReportingSettings();
-  std::string active_user;
-  if (base::FeatureList::IsEnabled(kEnterpriseActiveUserDetection)) {
-    active_user = reporting_client_->GetContentAreaAccountEmail(url);
-  }
+  std::string active_user = reporting_client_->GetContentAreaAccountEmail(url);
 
   if (base::FeatureList::IsEnabled(
           policy::kUploadRealtimeReportingEventsUsingProto)) {

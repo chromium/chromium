@@ -77,7 +77,7 @@ class DataControlsClipboardUtilsBrowserTest
  public:
   DataControlsClipboardUtilsBrowserTest() {
     std::vector<base::test::FeatureRef> enabled_features = {
-        enterprise_connectors::kEnterpriseActiveUserDetection,
+        data_controls::kDataControlsDragEnforcement,
     };
     std::vector<base::test::FeatureRef> disabled_features = {};
 
@@ -85,8 +85,6 @@ class DataControlsClipboardUtilsBrowserTest
                              policy::kUploadRealtimeReportingEventsUsingProto)
                        : disabled_features.push_back(
                              policy::kUploadRealtimeReportingEventsUsingProto);
-
-    enabled_features.push_back(data_controls::kDataControlsDragEnforcement);
 
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
     active_user_test_mixin_ =

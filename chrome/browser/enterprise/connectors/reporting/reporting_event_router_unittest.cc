@@ -153,17 +153,20 @@ class ReportingEventRouterTest : public testing::TestWithParam<bool> {
     if (use_proto_format()) {
       scoped_feature_list_.InitWithFeatures(
           /*enabled_features=*/
-          {policy::kUploadRealtimeReportingEventsUsingProto,
-           safe_browsing::kEnhancedFieldsForSecOps,
-           enterprise_connectors::kEnterpriseActiveUserDetection},
+          {
+              policy::kUploadRealtimeReportingEventsUsingProto,
+              safe_browsing::kEnhancedFieldsForSecOps,
+          },
           /*disabled_features=*/{});
     } else {
       scoped_feature_list_.InitWithFeatures(
           /*enabled_features=*/
-          {safe_browsing::kEnhancedFieldsForSecOps,
-           enterprise_connectors::kEnterpriseActiveUserDetection},
+          {
+              safe_browsing::kEnhancedFieldsForSecOps,
+          },
           /*disabled_features=*/{
-              policy::kUploadRealtimeReportingEventsUsingProto});
+              policy::kUploadRealtimeReportingEventsUsingProto,
+          });
     }
   }
 

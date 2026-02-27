@@ -6,7 +6,6 @@
 
 #include "base/command_line.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/enterprise/connectors/test/active_user_test_mixin.h"
 #include "chrome/browser/profiles/profile.h"
@@ -17,7 +16,6 @@
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/enterprise/connectors/core/content_area_user_provider.h"
-#include "components/enterprise/connectors/core/features.h"
 #include "components/safe_browsing/content/browser/safe_browsing_navigation_observer_manager.h"
 #include "components/signin/public/identity_manager/test_identity_manager_observer.h"
 #include "content/public/browser/browser_context.h"
@@ -185,19 +183,7 @@ class ActiveUserEmailBrowserTest
   }
 
  protected:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      kEnterpriseActiveUserDetection};
-
   std::unique_ptr<test::ActiveUserTestMixin> active_user_test_mixin_;
-};
-
-class ActiveUserEmailFeatureDisabledBrowserTest
-    : public ActiveUserEmailBrowserTest {
- public:
-  ActiveUserEmailFeatureDisabledBrowserTest() {
-    scoped_feature_list_.Reset();
-    scoped_feature_list_.InitAndDisableFeature(kEnterpriseActiveUserDetection);
-  }
 };
 
 struct ActiveFrameUserTestCase {
@@ -296,9 +282,6 @@ class ActiveFrameUserEmailBrowserTest
   }
 
  protected:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      kEnterpriseActiveUserDetection};
-
   std::unique_ptr<test::ActiveUserTestMixin> active_user_test_mixin_;
 };
 
@@ -419,9 +402,6 @@ class ReferrerChainActiveUserEmailBrowserTest
   }
 
  protected:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      kEnterpriseActiveUserDetection};
-
   std::unique_ptr<test::ActiveUserTestMixin> active_user_test_mixin_;
 };
 
@@ -481,19 +461,6 @@ IN_PROC_BROWSER_TEST_P(ActiveUserEmailBrowserTest,
 
 INSTANTIATE_TEST_SUITE_P(,
                          ActiveUserEmailBrowserTest,
-                         testing::ValuesIn(TestCases()));
-
-IN_PROC_BROWSER_TEST_P(ActiveUserEmailFeatureDisabledBrowserTest,
-                       GetActiveUser) {
-  active_user_test_mixin_->SetFakeCookieValue();
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url()));
-  ASSERT_TRUE(ContentAreaUserProvider::GetUser(browser()->profile(),
-                                               /*web_contents=*/nullptr, url())
-                  .empty());
-}
-
-INSTANTIATE_TEST_SUITE_P(,
-                         ActiveUserEmailFeatureDisabledBrowserTest,
                          testing::ValuesIn(TestCases()));
 
 IN_PROC_BROWSER_TEST_P(ActiveFrameUserEmailBrowserTest, GetActiveUserForFrame) {

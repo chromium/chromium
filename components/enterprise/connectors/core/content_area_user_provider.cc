@@ -46,10 +46,6 @@ const std::set<std::string_view>& FrameWorkspaceDomains() {
 bool IncludeContentAreaAccountEmail(
     const GURL& url,
     const std::set<std::string_view>& allowed_domains) {
-  if (!base::FeatureList::IsEnabled(kEnterpriseActiveUserDetection)) {
-    return false;
-  }
-
   for (const auto& domain : allowed_domains) {
     if (url.DomainIs(domain)) {
       return true;
