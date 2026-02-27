@@ -86,6 +86,9 @@ static constexpr char kEligibilityRequestOAuthTokenFetchStatusHistogramName[] =
 // Histogram for whether the OAuth token was provided.
 static constexpr char kEligibilityRequestOAuthTokenProvidedHistogramName[] =
     "Omnibox.AimEligibility.EligibilityRequestOAuthTokenProvided";
+// Histogram for the eligibility request debounced.
+static constexpr char kEligibilityRequestDebouncedHistogramName[] =
+    "Omnibox.AimEligibility.EligibilityRequestDebounced";
 
 static constexpr char kRequestPath[] = "/async/folae";
 static constexpr char kRequestQuery[] = "async=_fmt:pb";
@@ -407,7 +410,7 @@ AimEligibilityService::AimEligibilityService(
     net::NetworkChangeNotifier::AddNetworkChangeObserver(this);
   } else if (startup_request_enabled) {
     startup_request_sent_ = true;
-    StartServerEligibilityRequest(RequestSource::kStartup, locale);
+    ScheduleServerEligibilityRequest(RequestSource::kStartup, locale);
   }
 
   if (identity_manager_) {
@@ -648,8 +651,8 @@ void AimEligibilityService::OnPrimaryAccountChanged(
   }
   // Change to the primary account might affect AIM eligibility.
   // Refresh the server eligibility state.
-  StartServerEligibilityRequest(RequestSource::kPrimaryAccountChange,
-                                GetLocale());
+  ScheduleServerEligibilityRequest(RequestSource::kPrimaryAccountChange,
+                                   GetLocale());
 }
 
 void AimEligibilityService::OnAccountsInCookieUpdated(
@@ -662,7 +665,7 @@ void AimEligibilityService::OnAccountsInCookieUpdated(
   }
   // Change to the accounts in the cookie jar might affect AIM eligibility.
   // Refresh the server eligibility state.
-  StartServerEligibilityRequest(RequestSource::kCookieChange, GetLocale());
+  ScheduleServerEligibilityRequest(RequestSource::kCookieChange, GetLocale());
 }
 
 void AimEligibilityService::OnNetworkChanged(
@@ -677,7 +680,8 @@ void AimEligibilityService::OnNetworkChanged(
   bool is_online = !net::NetworkChangeNotifier::IsOffline();
   if (is_online && !startup_request_sent_) {
     startup_request_sent_ = true;
-    StartServerEligibilityRequest(RequestSource::kNetworkChange, GetLocale());
+    ScheduleServerEligibilityRequest(RequestSource::kNetworkChange,
+                                     GetLocale());
   }
 }
 
@@ -812,6 +816,24 @@ GURL AimEligibilityService::GetRequestUrl(
   }
 
   return url;
+}
+
+void AimEligibilityService::ScheduleServerEligibilityRequest(
+    RequestSource request_source,
+    const std::string& locale) {
+  bool is_debounced = false;
+  if (base::FeatureList::IsEnabled(omnibox::kAimEligibilityServiceDebounce)) {
+    if (request_debounce_timer_.IsRunning()) {
+      is_debounced = true;
+    }
+    request_debounce_timer_.Start(
+        FROM_HERE, omnibox::kAimEligibilityServiceDebounceDelay.Get(),
+        base::BindOnce(&AimEligibilityService::StartServerEligibilityRequest,
+                       base::Unretained(this), request_source, locale));
+  } else {
+    StartServerEligibilityRequest(request_source, locale);
+  }
+  LogEligibilityRequestDebounced(is_debounced, request_source);
 }
 
 void AimEligibilityService::StartServerEligibilityRequest(
@@ -1151,4 +1173,14 @@ void AimEligibilityService::LogEligibilityResponseChanges(
   base::UmaHistogramBoolean(base::StrCat({prefix, ".is_cobrowse_eligible"}),
                             old_response.is_cobrowse_eligible() !=
                                 new_response.is_cobrowse_eligible());
+}
+
+void AimEligibilityService::LogEligibilityRequestDebounced(
+    bool is_debounced,
+    RequestSource request_source) const {
+  const auto& name = kEligibilityRequestDebouncedHistogramName;
+  const auto& sliced_name =
+      GetHistogramNameSlicedByRequestSource(name, request_source);
+  base::UmaHistogramBoolean(name, is_debounced);
+  base::UmaHistogramBoolean(sliced_name, is_debounced);
 }

@@ -16,6 +16,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/timer/timer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/omnibox/browser/aim_eligibility_service_features.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -284,6 +285,12 @@ class AimEligibilityService
                      signin::IdentityManager* identity_manager,
                      const std::string& locale);
 
+  // Schedules the server request to execute after a fixed period to ensure that
+  // a burst of rapid calls results in only a single server request within the
+  // debounce period.
+  void ScheduleServerEligibilityRequest(RequestSource request_source,
+                                        const std::string& locale);
+
   // Starts a server eligibility request, first fetching an access token if
   // OAuth is enabled and the user is logged in.
   void StartServerEligibilityRequest(RequestSource request_source,
@@ -356,6 +363,10 @@ class AimEligibilityService
       const omnibox::AimEligibilityResponse& old_response,
       const omnibox::AimEligibilityResponse& new_response) const;
 
+  // Records histogram for eligibility request debounced.
+  void LogEligibilityRequestDebounced(bool is_debounced,
+                                      RequestSource request_source) const;
+
   const raw_ref<PrefService, DanglingUntriaged> pref_service_;
   // Outlives `this` due to BCKSF dependency. Can be nullptr in tests.
   raw_ptr<TemplateURLService> template_url_service_;
@@ -382,6 +393,9 @@ class AimEligibilityService
 
   // Tracks whether the startup request has been sent.
   bool startup_request_sent_ = false;
+
+  // Used to debounce server eligibility requests to prevent multiple requests.
+  base::OneShotTimer request_debounce_timer_;
 
   // Used to store the default config when the response doesn't have one.
   mutable omnibox::SearchboxConfig fallback_config_;

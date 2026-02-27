@@ -72,6 +72,12 @@ extern const base::FeatureParam<AimServerEligibilityIncludeClientLocaleMode>
 // tokens for server requests.
 BASE_DECLARE_FEATURE(kAimEligibilityServiceOauth);
 
+// If enabled, debounces server requests by a short duration to prevent
+// duplicate requests.
+BASE_DECLARE_FEATURE(kAimEligibilityServiceDebounce);
+extern const base::FeatureParam<base::TimeDelta>
+    kAimEligibilityServiceDebounceDelay;
+
 }  // namespace omnibox
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_AIM_ELIGIBILITY_SERVICE_FEATURES_H_
