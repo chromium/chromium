@@ -15,6 +15,7 @@
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/ash/shimless_rma/chrome_shimless_rma_delegate.h"
 #include "chrome/browser/bluetooth/bluetooth_chooser_context_factory.h"
@@ -83,10 +84,6 @@
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/origin.h"
-
-#if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/actor/actor_keyed_service.h"
-#endif
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/resource_mapper.h"
@@ -908,7 +905,6 @@ bool ChromePermissionsClient::CanPromptSystemPermission(
 
 bool ChromePermissionsClient::IsActorOperatingOnWebContents(
     content::WebContents* web_contents) const {
-#if BUILDFLAG(ENABLE_GLIC)
   auto* actor_service =
       actor::ActorKeyedService::Get(web_contents->GetBrowserContext());
   if (!actor_service) {
@@ -918,7 +914,4 @@ bool ChromePermissionsClient::IsActorOperatingOnWebContents(
   const auto* tab_interface =
       tabs::TabInterface::MaybeGetFromContents(web_contents);
   return tab_interface && actor_service->IsActiveOnTab(*tab_interface);
-#else
-  return false;
-#endif
 }
