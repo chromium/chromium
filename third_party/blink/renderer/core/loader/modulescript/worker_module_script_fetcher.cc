@@ -195,6 +195,8 @@ void WorkerModuleScriptFetcher::NotifyClient(
         response_url, response_referrer_policy,
         ParseContentSecurityPolicyHeaders(
             ContentSecurityPolicyResponseHeaders(response)),
+        // TODO(crbug.com/488090079): Plumb Document Policy in Module Workers.
+        DocumentPolicy::DocumentPolicyBundle{},
         response_origin_trial_tokens.get());
   }
 

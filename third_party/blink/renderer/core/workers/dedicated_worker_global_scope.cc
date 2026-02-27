@@ -40,6 +40,7 @@
 #include "base/trace_event/typed_macros.h"
 #include "base/types/pass_key.h"
 #include "net/storage_access_api/status.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/worker_main_script_load_parameters.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom-blink.h"
@@ -50,6 +51,7 @@
 #include "third_party/blink/renderer/core/event_target_names.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/execution_context/security_context_init.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
@@ -92,6 +94,8 @@ DedicatedWorkerGlobalScope* DedicatedWorkerGlobalScope::Create(
   KURL response_script_url = creation_params->script_url;
   network::mojom::ReferrerPolicy response_referrer_policy =
       creation_params->referrer_policy;
+  DocumentPolicy::DocumentPolicyBundle response_document_policy =
+      std::move(creation_params->document_policy);
   const bool parent_is_isolated_context =
       creation_params->parent_is_isolated_context;
   base::TimeTicks start_time;
@@ -119,6 +123,7 @@ DedicatedWorkerGlobalScope* DedicatedWorkerGlobalScope::Create(
     // origin trial tokens in DedicatedWorkerGlobalScope's constructor.
     global_scope->Initialize(response_script_url, response_referrer_policy,
                              std::move(response_csp),
+                             std::move(response_document_policy),
                              nullptr /* response_origin_trial_tokens */);
     return global_scope;
   } else {
@@ -235,6 +240,7 @@ void DedicatedWorkerGlobalScope::Initialize(
     const KURL& response_url,
     network::mojom::ReferrerPolicy response_referrer_policy,
     Vector<network::mojom::blink::ContentSecurityPolicyPtr> response_csp,
+    DocumentPolicy::DocumentPolicyBundle response_document_policy,
     const Vector<String>* /* response_origin_trial_tokens */) {
   TRACE_EVENT("blink.worker", "DedicatedWorkerGlobalScope::Initialize",
               "response_url", response_url);
@@ -263,6 +269,22 @@ void DedicatedWorkerGlobalScope::Initialize(
           : std::move(response_csp);
   InitContentSecurityPolicyFromVector(std::move(csp_list));
   BindContentSecurityPolicyToExecutionContext();
+
+  // The following is the Document-Policy part of "Initialize worker
+  // global scope's policy container"
+  // https://html.spec.whatwg.org/#initialize-worker-policy-container
+  //
+  // For workers delivered from network schemes we use the parsed DP from the
+  // response headers.
+  // TODO(crbug.com/450845903): For local schemes DP is inherited from the
+  // owner.
+  if (base::FeatureList::IsEnabled(
+          features::kDocumentPolicyInDedicatedWorker)) {
+    SecurityContextInit security_init(GetExecutionContext());
+    security_init.ApplyDocumentPolicy(
+        response_document_policy.policy,
+        String(response_document_policy.report_only_header));
+  }
 
   // This should be called after OriginTrialContext::AddTokens() to install
   // origin trial features in JavaScript's global object.
@@ -480,6 +502,7 @@ void DedicatedWorkerGlobalScope::DidFetchClassicScript(
                  ? mojo::Clone(classic_script_loader->GetContentSecurityPolicy()
                                    ->GetParsedPolicies())
                  : Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
+             classic_script_loader->GetDocumentPolicy(),
              nullptr /* response_origin_trial_tokens */);
 
   // Step 12.7. "Asynchronously complete the perform the fetch steps with

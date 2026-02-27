@@ -15,6 +15,7 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy.h"
 #include "services/network/public/mojom/referrer_policy.mojom-blink-forward.h"
+#include "third_party/blink/public/common/permissions_policy/document_policy.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/blob/blob_url_store.mojom-blink-forward.h"
@@ -58,6 +59,7 @@ struct CORE_EXPORT GlobalScopeCreationParams final {
       Vector<network::mojom::blink::ContentSecurityPolicyPtr>
           response_content_security_policies,
       network::mojom::ReferrerPolicy referrer_policy,
+      DocumentPolicy::DocumentPolicyBundle document_policy,
       const SecurityOrigin*,
       bool starter_secure_context,
       HttpsState starter_https_state,
@@ -134,6 +136,8 @@ struct CORE_EXPORT GlobalScopeCreationParams final {
       response_content_security_policies;
 
   network::mojom::ReferrerPolicy referrer_policy;
+
+  DocumentPolicy::DocumentPolicyBundle document_policy;
 
   // Origin trial features to be inherited by worker/worklet from the document
   // loading it.

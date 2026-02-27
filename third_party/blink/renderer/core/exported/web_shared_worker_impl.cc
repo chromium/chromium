@@ -271,6 +271,7 @@ void WebSharedWorkerImpl::StartWorkerContext(
       ConvertToMojoBlink(content_security_policies),
       Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
       outside_settings_object->GetReferrerPolicy(),
+      DocumentPolicy::DocumentPolicyBundle{},
       outside_settings_object->GetSecurityOrigin(),
       is_constructor_secure_context, outside_settings_object->GetHttpsState(),
       MakeGarbageCollected<WorkerClients>(),

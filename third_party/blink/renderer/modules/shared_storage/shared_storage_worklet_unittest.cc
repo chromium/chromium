@@ -396,6 +396,7 @@ std::unique_ptr<GlobalScopeCreationParams> MakeTestGlobalScopeCreationParams() {
       /*response_content_security_policies=*/
       Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
       /*referrer_policy=*/network::mojom::ReferrerPolicy::kDefault,
+      /*document_policy=*/DocumentPolicy::DocumentPolicyBundle{},
       /*starter_origin=*/nullptr,
       /*starter_secure_context=*/false,
       /*starter_https_state=*/HttpsState::kNone,

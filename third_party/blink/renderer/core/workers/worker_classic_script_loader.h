@@ -33,6 +33,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink-forward.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-blink.h"
+#include "third_party/blink/public/common/permissions_policy/document_policy.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info_notifier.mojom-shared.h"
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/public/platform/web_url_request.h"
@@ -119,6 +120,10 @@ class CORE_EXPORT WorkerClassicScriptLoader final
 
   const String& GetReferrerPolicy() const { return referrer_policy_; }
 
+  DocumentPolicy::DocumentPolicyBundle GetDocumentPolicy() const {
+    return document_policy_;
+  }
+
   const Vector<String>* OriginTrialTokens() const {
     return origin_trial_tokens_.get();
   }
@@ -145,6 +150,7 @@ class CORE_EXPORT WorkerClassicScriptLoader final
   void NotifyFinished();
 
   void ProcessContentSecurityPolicy(const ResourceResponse&);
+  void ProcessDocumentPolicy(const ResourceResponse&);
 
   // Callbacks for loadAsynchronously().
   base::OnceClosure response_callback_;
@@ -175,6 +181,7 @@ class CORE_EXPORT WorkerClassicScriptLoader final
   Member<ContentSecurityPolicy> content_security_policy_;
   std::unique_ptr<Vector<String>> origin_trial_tokens_;
   String referrer_policy_;
+  DocumentPolicy::DocumentPolicyBundle document_policy_;
 
   Member<ResourceFetcher> fetch_client_settings_object_fetcher_;
 };

@@ -14,6 +14,7 @@
 #include "base/test/bind.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/v8_cache_options.mojom-blink.h"
 #include "third_party/blink/public/mojom/worker/dedicated_worker_host.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
@@ -228,6 +229,7 @@ class DedicatedWorkerThreadForTest final : public DedicatedWorkerThread {
     To<DedicatedWorkerGlobalScope>(GlobalScope())
         ->Initialize(script_url, network::mojom::ReferrerPolicy::kDefault,
                      Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
+                     DocumentPolicy::DocumentPolicyBundle{},
                      nullptr /* response_origin_trial_tokens */);
   }
 };
@@ -295,7 +297,8 @@ class DedicatedWorkerMessagingProxyForTest
           nullptr /* web_worker_fetch_context */,
           Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
           Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
-          network::mojom::ReferrerPolicy::kDefault, security_origin.get(),
+          network::mojom::ReferrerPolicy::kDefault,
+          DocumentPolicy::DocumentPolicyBundle{}, security_origin.get(),
           false /* starter_secure_context */,
           CalculateHttpsState(security_origin.get()),
           nullptr /* worker_clients */, nullptr /* content_settings_client */,
@@ -671,7 +674,8 @@ TEST_F(DedicatedWorkerTest, TopLevelFrameSecurityOrigin) {
   StartWorker(WorkerObject()->CreateGlobalScopeCreationParams(
       script_url, network::mojom::ReferrerPolicy::kDefault,
       Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
-      mojo::NullReceiver(), mojo::NullReceiver()));
+      DocumentPolicy::DocumentPolicyBundle{}, mojo::NullReceiver(),
+      mojo::NullReceiver()));
   base::RunLoop run_loop;
 
   PostCrossThreadTask(
@@ -699,6 +703,7 @@ TEST_F(DedicatedWorkerTest, TopLevelFrameSecurityOrigin) {
                   nested_worker_object->CreateGlobalScopeCreationParams(
                       script_url, network::mojom::ReferrerPolicy::kDefault,
                       Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
+                      DocumentPolicy::DocumentPolicyBundle{},
                       mojo::NullReceiver(), mojo::NullReceiver());
               ASSERT_TRUE(
                   nested_worker_params->top_level_frame_security_origin);
@@ -956,6 +961,58 @@ TEST_F(DedicatedWorkerTest, PostCustomEventNoMessage) {
   EXPECT_EQ(event->type(), kCustomEventName);
   EXPECT_EQ(event->DataAsSerializedScriptValue(), nullptr);
   EXPECT_EQ(event->ports(), nullptr);
+}
+
+class DedicatedWorkerDocumentPolicyTest
+    : public DedicatedWorkerTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  bool IsFeatureEnabled() const { return GetParam(); }
+};
+
+INSTANTIATE_TEST_SUITE_P(DocumentPolicyFeature,
+                         DedicatedWorkerDocumentPolicyTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "FeatureEnabled"
+                                             : "FeatureDisabled";
+                         });
+
+// Test that Document-Policy is set in DedicatedWorker.
+TEST_P(DedicatedWorkerDocumentPolicyTest, DocumentPolicyInDedicatedWorker) {
+  base::test::ScopedFeatureList feature_list;
+  if (IsFeatureEnabled()) {
+    feature_list.InitAndEnableFeature(
+        blink::features::kDocumentPolicyInDedicatedWorker);
+  } else {
+    feature_list.InitAndDisableFeature(
+        blink::features::kDocumentPolicyInDedicatedWorker);
+  }
+
+  StartWorker();
+  WaitUntilWorkerIsRunning();
+
+  base::RunLoop run_loop;
+  bool has_document_policy = false;
+
+  PostCrossThreadTask(
+      *GetWorkerThread()->GetTaskRunner(TaskType::kInternalTest), FROM_HERE,
+      CrossThreadBindOnce(
+          [](base::RepeatingClosure quit_closure, bool* out_has_policy,
+             DedicatedWorkerThreadForTest* worker_thread) {
+            DedicatedWorkerGlobalScope* global_scope =
+                To<DedicatedWorkerGlobalScope>(worker_thread->GlobalScope());
+            EXPECT_NE(global_scope, nullptr);
+            *out_has_policy =
+                (global_scope->GetSecurityContext().GetDocumentPolicy() !=
+                 nullptr);
+            quit_closure.Run();
+          },
+          run_loop.QuitClosure(), CrossThreadUnretained(&has_document_policy),
+          CrossThreadUnretained(GetWorkerThread())));
+
+  run_loop.Run();
+  EXPECT_EQ(has_document_policy, IsFeatureEnabled());
 }
 
 }  // namespace blink

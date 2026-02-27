@@ -215,6 +215,7 @@ class ThreadedWorkletMessagingProxyForTest
                             ->GetParsedPolicies()),
             Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
             GetExecutionContext()->GetReferrerPolicy(),
+            DocumentPolicy::DocumentPolicyBundle{},
             GetExecutionContext()->GetSecurityOrigin(),
             GetExecutionContext()->IsSecureContext(),
             GetExecutionContext()->GetHttpsState(), worker_clients,

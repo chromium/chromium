@@ -1927,6 +1927,9 @@ BASE_FEATURE_PARAM(int,
                    "DedicatedWorkerStartDelayInMs",
                    0);
 
+BASE_FEATURE(kDocumentPolicyInDedicatedWorker,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Fix for https://crbug.com/454354290.
 BASE_FEATURE(kUpdatedDeviceMemoryLimitsFor2026,
              base::FEATURE_ENABLED_BY_DEFAULT);

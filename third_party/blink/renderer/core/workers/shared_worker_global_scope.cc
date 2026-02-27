@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/core/workers/shared_worker_global_scope.h"
 
 #include <memory>
+
 #include "base/feature_list.h"
 #include "services/metrics/public/cpp/mojo_ukm_recorder.h"
 #include "third_party/blink/public/common/features.h"
@@ -82,6 +83,7 @@ void SharedWorkerGlobalScope::Initialize(
     const KURL& response_url,
     network::mojom::ReferrerPolicy response_referrer_policy,
     Vector<network::mojom::blink::ContentSecurityPolicyPtr> response_csp,
+    DocumentPolicy::DocumentPolicyBundle response_document_policy,
     const Vector<String>* response_origin_trial_tokens) {
   // Step 12.3. "Set worker global scope's url to response's url."
   InitializeURL(response_url);
@@ -110,6 +112,8 @@ void SharedWorkerGlobalScope::Initialize(
           : std::move(response_csp);
   InitContentSecurityPolicyFromVector(std::move(csp_headers));
   BindContentSecurityPolicyToExecutionContext();
+
+  // TODO(crbug.com/488089239): Enable Document Policy in Shared Workers.
 
   OriginTrialContext::AddTokens(this, response_origin_trial_tokens);
 
@@ -251,6 +255,7 @@ void SharedWorkerGlobalScope::DidFetchClassicScript(
                  ? mojo::Clone(classic_script_loader->GetContentSecurityPolicy()
                                    ->GetParsedPolicies())
                  : Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
+             classic_script_loader->GetDocumentPolicy(),
              classic_script_loader->OriginTrialTokens());
 
   // Step 12.7. "Asynchronously complete the perform the fetch steps with

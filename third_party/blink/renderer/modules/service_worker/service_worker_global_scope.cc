@@ -477,6 +477,7 @@ void ServiceWorkerGlobalScope::DidFetchClassicScript(
           ? mojo::Clone(classic_script_loader->GetContentSecurityPolicy()
                             ->GetParsedPolicies())
           : Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
+      classic_script_loader->GetDocumentPolicy(),
       classic_script_loader->OriginTrialTokens(),
       classic_script_loader->SourceText(),
       classic_script_loader->ReleaseCachedMetadata(), stack_id);
@@ -487,6 +488,7 @@ void ServiceWorkerGlobalScope::Initialize(
     const KURL& response_url,
     network::mojom::ReferrerPolicy response_referrer_policy,
     Vector<network::mojom::blink::ContentSecurityPolicyPtr> response_csp,
+    DocumentPolicy::DocumentPolicyBundle response_document_policy,
     const Vector<String>* response_origin_trial_tokens) {
   // Step 4.5. "Set workerGlobalScope's url to serviceWorker's script url."
   InitializeURL(response_url);
@@ -511,6 +513,8 @@ void ServiceWorkerGlobalScope::Initialize(
   //   policy, the user agent must monitor policy for serviceWorker."
   InitContentSecurityPolicyFromVector(std::move(response_csp));
   BindContentSecurityPolicyToExecutionContext();
+
+  // TODO(crbug.com/488089240): Enable Document Policy in Service Workers.
 
   OriginTrialContext::AddTokens(this, response_origin_trial_tokens);
 
@@ -551,12 +555,14 @@ void ServiceWorkerGlobalScope::LoadAndRunInstalledClassicScript(
         kDoNotSupportReferrerPolicyLegacyKeywords, &referrer_policy);
   }
 
-  RunClassicScript(script_url, referrer_policy,
-                   ParseContentSecurityPolicyHeaders(
-                       script_data->GetContentSecurityPolicyResponseHeaders()),
-                   script_data->CreateOriginTrialTokens().get(),
-                   script_data->TakeSourceText(), script_data->TakeMetaData(),
-                   stack_id);
+  RunClassicScript(
+      script_url, referrer_policy,
+      ParseContentSecurityPolicyHeaders(
+          script_data->GetContentSecurityPolicyResponseHeaders()),
+      // TODO(crbug.com/488089240): Plumb Document Policy in Service Workers.
+      DocumentPolicy::DocumentPolicyBundle{},
+      script_data->CreateOriginTrialTokens().get(),
+      script_data->TakeSourceText(), script_data->TakeMetaData(), stack_id);
 }
 
 // https://w3c.github.io/ServiceWorker/#run-service-worker-algorithm
@@ -564,13 +570,14 @@ void ServiceWorkerGlobalScope::RunClassicScript(
     const KURL& response_url,
     network::mojom::ReferrerPolicy response_referrer_policy,
     Vector<network::mojom::blink::ContentSecurityPolicyPtr> response_csp,
+    DocumentPolicy::DocumentPolicyBundle response_document_policy,
     const Vector<String>* response_origin_trial_tokens,
     const String& source_code,
     std::unique_ptr<Vector<uint8_t>> cached_meta_data,
     const v8_inspector::V8StackTraceId& stack_id) {
   // Step 4.5-4.11 are implemented in Initialize().
   Initialize(response_url, response_referrer_policy, std::move(response_csp),
-             response_origin_trial_tokens);
+             std::move(response_document_policy), response_origin_trial_tokens);
 
   // Step 4.12. "Let evaluationStatus be the result of running the classic
   // script script if script is a classic script, otherwise, the result of

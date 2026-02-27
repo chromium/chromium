@@ -203,16 +203,17 @@ void WebEmbeddedWorkerImpl::StartWorkerThread(
   std::unique_ptr<GlobalScopeCreationParams> global_scope_creation_params;
   std::unique_ptr<Vector<uint8_t>> cached_meta_data;
 
-  // We don't have to set ContentSecurityPolicy and ReferrerPolicy. They're
-  // served by the worker script loader or the installed scripts manager on the
-  // worker thread.
+  // We don't have to set ContentSecurityPolicy, ReferrerPolicy, or
+  // DocumentPolicy. They're served by the worker script loader or the
+  // installed scripts manager on the worker thread.
   global_scope_creation_params = std::make_unique<GlobalScopeCreationParams>(
       worker_start_data->script_url, worker_start_data->script_type,
       global_scope_name, worker_start_data->user_agent,
       worker_start_data->ua_metadata, std::move(web_worker_fetch_context),
       Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
       Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
-      network::mojom::ReferrerPolicy::kDefault, starter_origin.get(),
+      network::mojom::ReferrerPolicy::kDefault,
+      DocumentPolicy::DocumentPolicyBundle{}, starter_origin.get(),
       starter_secure_context, starter_https_state, nullptr /* worker_clients */,
       std::move(content_settings_proxy), nullptr /* inherited_trial_features */,
       worker_start_data->devtools_worker_token, std::move(worker_settings),

@@ -72,6 +72,8 @@ void InstalledServiceWorkerModuleScriptFetcher::Fetch(
         response_url, response_referrer_policy,
         ParseContentSecurityPolicyHeaders(
             script_data->GetContentSecurityPolicyResponseHeaders()),
+        // TODO(crbug.com/488089240): Plumb Document Policy in Service Workers.
+        DocumentPolicy::DocumentPolicyBundle{},
         script_data->CreateOriginTrialTokens().get());
   }
 

@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/loader/resource/script_resource.h"
 #include "third_party/blink/renderer/core/origin_trials/origin_trial_context.h"
+#include "third_party/blink/renderer/core/permissions_policy/document_policy_parser.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/platform/loader/fetch/detachable_use_counter.h"
@@ -237,6 +238,7 @@ void WorkerClassicScriptLoader::DidReceiveResponse(
 
   referrer_policy_ = response.HttpHeaderField(http_names::kReferrerPolicy);
   ProcessContentSecurityPolicy(response);
+  ProcessDocumentPolicy(response);
   origin_trial_tokens_ = OriginTrialContext::ParseHeaderValue(
       response.HttpHeaderField(http_names::kOriginTrial));
 
@@ -365,6 +367,28 @@ void WorkerClassicScriptLoader::ProcessContentSecurityPolicy(
     content_security_policy_ = MakeGarbageCollected<ContentSecurityPolicy>();
     content_security_policy_->AddPolicies(ParseContentSecurityPolicyHeaders(
         ContentSecurityPolicyResponseHeaders(response)));
+  }
+}
+
+void WorkerClassicScriptLoader::ProcessDocumentPolicy(
+    const ResourceResponse& response) {
+  if (!base::FeatureList::IsEnabled(
+          features::kDocumentPolicyInDedicatedWorker)) {
+    return;
+  }
+
+  if (!response.CurrentRequestUrl().ProtocolIs("blob") &&
+      !response.CurrentRequestUrl().ProtocolIs("file") &&
+      !response.CurrentRequestUrl().ProtocolIs("filesystem")) {
+    PolicyParserMessageBuffer header_logger("Document-Policy HTTP header: ");
+    document_policy_ = DocumentPolicy::DocumentPolicyBundle{
+        DocumentPolicyParser::Parse(
+            response.HttpHeaderField(http_names::kDocumentPolicy),
+            header_logger)
+            .value_or(DocumentPolicy::ParsedDocumentPolicy{}),
+        std::string(
+            response.HttpHeaderField(http_names::kDocumentPolicyReportOnly)
+                .Utf8())};
   }
 }
 

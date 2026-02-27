@@ -28,6 +28,7 @@ GlobalScopeCreationParams::GlobalScopeCreationParams(
     Vector<network::mojom::blink::ContentSecurityPolicyPtr>
         response_content_security_policies,
     network::mojom::ReferrerPolicy referrer_policy,
+    DocumentPolicy::DocumentPolicyBundle document_policy,
     const SecurityOrigin* starter_origin,
     bool starter_secure_context,
     HttpsState starter_https_state,
@@ -71,6 +72,7 @@ GlobalScopeCreationParams::GlobalScopeCreationParams(
       response_content_security_policies(
           std::move(response_content_security_policies)),
       referrer_policy(referrer_policy),
+      document_policy(std::move(document_policy)),
       starter_origin(starter_origin ? starter_origin->IsolatedCopy() : nullptr),
       origin_to_use(std::move(origin_to_use)),
       starter_secure_context(starter_secure_context),
