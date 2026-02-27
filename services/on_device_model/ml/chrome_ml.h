@@ -9,6 +9,7 @@
 #include <optional>
 
 #include "base/component_export.h"
+#include "base/memory/advanced_memory_safety_checks.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_native_library.h"
 #include "base/types/pass_key.h"
@@ -19,6 +20,9 @@ namespace ml {
 class ChromeMLHolder;
 
 class COMPONENT_EXPORT(ON_DEVICE_MODEL_ML) ChromeML {
+  // TODO(crbug.com/487051617): Remove this macro once the bug gets fixed.
+  ADVANCED_MEMORY_SAFETY_CHECKS();
+
  public:
   ~ChromeML();
   ChromeML(const ChromeML& other) = delete;
