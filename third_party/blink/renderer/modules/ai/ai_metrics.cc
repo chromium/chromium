@@ -85,10 +85,6 @@ AIMetrics::LanguageModelInputType AIMetrics::ToLanguageModelInputType(
       return MetricsEnum::kImage;
     case MojoEnum::kAudio:
       return MetricsEnum::kAudio;
-    case MojoEnum::kToolCall:
-      return MetricsEnum::kToolCall;
-    case MojoEnum::kToolResponse:
-      return MetricsEnum::kToolResponse;
   }
   NOTREACHED();
 }
@@ -125,6 +121,10 @@ AIMetrics::LanguageModelInputRole AIMetrics::ToLanguageModelInputRole(
       return MetricsEnum::kUser;
     case MojoEnum::kAssistant:
       return MetricsEnum::kAssistant;
+    case MojoEnum::kToolCall:
+      return MetricsEnum::kToolCall;
+    case MojoEnum::kToolResponse:
+      return MetricsEnum::kToolResponse;
   }
   NOTREACHED();
 }

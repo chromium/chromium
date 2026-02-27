@@ -212,7 +212,6 @@ ScriptPromise<IDLString> Translator::translate(
       AIMetrics::AISessionType::kTranslator,
       BindOnce(&ResolvePromiseOnCompletion<IDLString>,
                WrapPersistent(resolver)),
-      /*tool_call_callback=*/base::NullCallback(),
       /*overflow_callback=*/base::DoNothingWithBoundArgs(WrapPersistent(this)),
       BindOnce(&RejectPromiseOnError<IDLString>, WrapPersistent(resolver)),
       BindOnce(&RejectPromiseOnAbort<IDLString>, WrapPersistent(resolver),

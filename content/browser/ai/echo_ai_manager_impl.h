@@ -106,8 +106,7 @@ class EchoAIManagerImpl : public blink::mojom::AIManager {
       base::flat_set<blink::mojom::AILanguageModelPromptType>
           enabled_input_types,
       std::vector<blink::mojom::AILanguageModelPromptPtr> initial_prompts,
-      uint32_t initial_context_usage,
-      std::vector<blink::mojom::AILanguageModelToolDeclarationPtr> tools);
+      uint32_t initial_context_usage);
 
   void DoMockDownloadingAndReturn(base::OnceClosure callback);
 

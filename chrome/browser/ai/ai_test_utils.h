@@ -67,8 +67,6 @@ class AITestUtils {
     void OnStreaming(const std::string& text) override;
     void OnCompletion(
         blink::mojom::ModelExecutionContextInfoPtr context_info) override;
-    void OnToolCalls(
-        std::vector<blink::mojom::ToolCallPtr> tool_calls) override;
     void OnContextOverflow() override;
 
     std::optional<blink::mojom::ModelStreamingResponseStatus> error_status_;

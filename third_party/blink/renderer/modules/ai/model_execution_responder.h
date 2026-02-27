@@ -19,8 +19,6 @@
 #include "third_party/blink/renderer/modules/ai/ai_metrics.h"
 #include "third_party/blink/renderer/modules/ai/exception_helpers.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
-#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
-#include "third_party/blink/renderer/platform/heap/member.h"
 
 namespace base {
 class SequencedTaskRunner;
@@ -47,7 +45,7 @@ CreateModelExecutionStreamingResponder(
     base::RepeatingClosure overflow_callback);
 
 // Creates a ModelStreamingResponder that handles the streaming output of the
-// model execution.
+// model execution. Callbacks are run on completion, error, or abort.
 MODULES_EXPORT
 mojo::PendingRemote<blink::mojom::blink::ModelStreamingResponder>
 CreateModelExecutionResponder(
@@ -58,8 +56,6 @@ CreateModelExecutionResponder(
     base::OnceCallback<void(const String&,
                             mojom::blink::ModelExecutionContextInfoPtr)>
         complete_callback,
-    base::RepeatingCallback<void(Vector<mojom::blink::ToolCallPtr>)>
-        tool_call_callback,
     base::RepeatingClosure overflow_callback,
     base::OnceCallback<void(DOMException*)> error_callback,
     base::OnceCallback<void()> abort_callback);

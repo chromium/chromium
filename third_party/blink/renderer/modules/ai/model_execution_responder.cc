@@ -8,19 +8,13 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/mojom/ai/ai_common.mojom-blink.h"
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom-blink.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_value.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_language_model_message_content.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_language_model_tool_call.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_union_language_model_message_value.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_controller_with_script_scope.h"
 #include "third_party/blink/renderer/core/streams/underlying_source_base.h"
-#include "third_party/blink/renderer/modules/ai/ai_utils.h"
 #include "third_party/blink/renderer/modules/ai/exception_helpers.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/context_lifecycle_observer.h"
@@ -48,8 +42,6 @@ class Responder final : public GarbageCollected<Responder>,
             base::OnceCallback<void(const String&,
                                     mojom::blink::ModelExecutionContextInfoPtr)>
                 complete_callback,
-            base::RepeatingCallback<void(Vector<mojom::blink::ToolCallPtr>)>
-                tool_call_callback,
             base::RepeatingClosure overflow_callback,
             base::OnceCallback<void(DOMException* exception)> error_callback,
             base::OnceCallback<void()> abort_callback)
@@ -58,7 +50,6 @@ class Responder final : public GarbageCollected<Responder>,
         abort_signal_(signal),
         session_type_(session_type),
         complete_callback_(std::move(complete_callback)),
-        tool_call_callback_(std::move(tool_call_callback)),
         overflow_callback_(overflow_callback),
         error_callback_(std::move(error_callback)),
         abort_callback_(std::move(abort_callback)) {
@@ -126,15 +117,6 @@ class Responder final : public GarbageCollected<Responder>,
     }
   }
 
-  void OnToolCalls(Vector<mojom::blink::ToolCallPtr> tool_calls) override {
-    RecordResponseStatusMetrics(
-        mojom::blink::ModelStreamingResponseStatus::kOngoing);
-    ++response_callback_count_;
-    if (tool_call_callback_) {
-      tool_call_callback_.Run(std::move(tool_calls));
-    }
-  }
-
   // ContextLifecycleObserver implementation.
   void ContextDestroyed() override { Cleanup(); }
 
@@ -178,12 +160,10 @@ class Responder final : public GarbageCollected<Responder>,
   Member<AbortSignal::AlgorithmHandle> abort_handle_;
   const AIMetrics::AISessionType session_type_;
   // The callback invoked after the complete model response was received.
-  base::OnceCallback<void(const String&,
-                          mojom::blink::ModelExecutionContextInfoPtr)>
+  base::OnceCallback<void(
+      const String&,
+      mojom::blink::ModelExecutionContextInfoPtr context_info)>
       complete_callback_;
-  // The callback invoked when tool calls are received from the model.
-  base::RepeatingCallback<void(Vector<mojom::blink::ToolCallPtr>)>
-      tool_call_callback_;
   // A callback invoked anytime the model's token context window is exceeded.
   base::RepeatingClosure overflow_callback_;
   // Callback invoked on model error.
@@ -297,33 +277,6 @@ class StreamingResponder final
     }
   }
 
-  void OnToolCalls(Vector<mojom::blink::ToolCallPtr> tool_calls) override {
-    RecordResponseStatusMetrics(
-        mojom::blink::ModelStreamingResponseStatus::kOngoing);
-    ++response_callback_count_;
-
-    // For `Tool Use` Open-loop: Stream tool call messages as structured data.
-    // Each tool call becomes a separate chunk in the stream.
-    ExceptionState exception_state(script_state_->GetIsolate());
-    HeapVector<Member<LanguageModelMessageContent>> messages =
-        ConvertMojoToolCallsToMessages(script_state_, tool_calls,
-                                       exception_state);
-
-    if (exception_state.HadException()) {
-      Controller()->Error(DOMException::Create(
-          "Failed to convert tool call arguments",
-          DOMException::GetErrorName(DOMExceptionCode::kDataError)));
-      return;
-    }
-
-    ScriptState::Scope scope(script_state_);
-    for (const auto& message : messages) {
-      v8::Local<v8::Value> message_v8 =
-          ToV8Traits<LanguageModelMessageContent>::ToV8(script_state_, message);
-      Controller()->Enqueue(message_v8);
-    }
-  }
-
  private:
   void OnAborted() {
     auto reason = abort_signal_->reason(script_state_);
@@ -388,15 +341,12 @@ CreateModelExecutionResponder(
     base::OnceCallback<void(const String&,
                             mojom::blink::ModelExecutionContextInfoPtr)>
         complete_callback,
-    base::RepeatingCallback<void(Vector<mojom::blink::ToolCallPtr>)>
-        tool_call_callback,
     base::RepeatingClosure overflow_callback,
     base::OnceCallback<void(DOMException*)> error_callback,
     base::OnceCallback<void()> abort_callback) {
   Responder* responder = MakeGarbageCollected<Responder>(
       script_state, signal, session_type, std::move(complete_callback),
-      std::move(tool_call_callback), overflow_callback,
-      std::move(error_callback), std::move(abort_callback));
+      overflow_callback, std::move(error_callback), std::move(abort_callback));
   return responder->BindNewPipeAndPassRemote(task_runner);
 }
 
