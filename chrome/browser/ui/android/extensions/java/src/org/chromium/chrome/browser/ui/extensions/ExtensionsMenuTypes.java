@@ -63,16 +63,20 @@ public class ExtensionsMenuTypes {
     public static class MenuEntryState {
         public final String id;
         public final ControlState actionButton;
+        public final ControlState contextMenuButton;
 
-        // TODO(crbug.com/471016915): add context menu button.
         // TODO(crbug.com/471016915): add site permissions button.
         // TODO(crbug.com/471016915): add site access toggle.
         // TODO(crbug.com/471016915): add is enterprise boolean.
 
         @CalledByNative("MenuEntryState")
-        public MenuEntryState(@JniType("std::string") String id, ControlState actionButton) {
+        public MenuEntryState(
+                @JniType("std::string") String id,
+                ControlState actionButton,
+                ControlState contextMenuButton) {
             this.id = id;
             this.actionButton = actionButton;
+            this.contextMenuButton = contextMenuButton;
         }
     }
 

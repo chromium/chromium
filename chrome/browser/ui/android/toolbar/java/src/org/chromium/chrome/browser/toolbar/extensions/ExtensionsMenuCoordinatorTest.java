@@ -269,7 +269,10 @@ public class ExtensionsMenuCoordinatorTest {
         List<ExtensionsMenuTypes.MenuEntryState> mockEntries = new ArrayList<>();
         mockEntries.add(
                 ExtensionTestUtils.createSimpleMenuEntry(
-                        "id_a", "Extension A", ExtensionTestUtils.createSimpleIcon(Color.RED)));
+                        "id_a",
+                        "Extension A",
+                        ExtensionTestUtils.createSimpleIcon(Color.RED),
+                        /* isPinned= */ false));
         when(mExtensionsMenuBridgeJniMock.getMenuEntries(anyLong())).thenReturn(mockEntries);
         mSiteSettingsState = createSiteSettingsState("label", true);
         when(mExtensionsMenuBridgeJniMock.getSiteSettings(anyLong()))

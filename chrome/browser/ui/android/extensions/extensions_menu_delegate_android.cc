@@ -96,7 +96,8 @@ ExtensionsMenuDelegateAndroid::GetMenuEntries(JNIEnv* env) {
 
     base::android::ScopedJavaLocalRef<jobject> j_item =
         Java_MenuEntryState_Constructor(
-            env, id, CreateJavaControlState(env, state.action_button));
+            env, id, CreateJavaControlState(env, state.action_button),
+            CreateJavaControlState(env, state.context_menu_button));
     java_entries.push_back(std::move(j_item));
   }
 

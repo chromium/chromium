@@ -33,6 +33,10 @@ public class ExtensionsMenuItemViewBinder {
                 // TODO: Investigate the correct resizing method.
                 bitmap.setDensity(120);
             }
+        } else if (key == ExtensionsMenuItemProperties.CONTEXT_MENU_BUTTON_ICON) {
+            ImageView contextMenuView = view.findViewById(R.id.extensions_menu_item_context_menu);
+            contextMenuView.setImageResource(
+                    model.get(ExtensionsMenuItemProperties.CONTEXT_MENU_BUTTON_ICON));
         } else if (key == ExtensionsMenuItemProperties.CONTEXT_MENU_BUTTON_ON_CLICK) {
             view.findViewById(R.id.extensions_menu_item_context_menu)
                     .setOnClickListener(

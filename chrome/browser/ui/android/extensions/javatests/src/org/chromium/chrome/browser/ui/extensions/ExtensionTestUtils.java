@@ -120,16 +120,27 @@ public class ExtensionTestUtils {
      * host permissions. The entry will only have a disabled action button.
      */
     public static ExtensionsMenuTypes.MenuEntryState createSimpleMenuEntry(
-            String extensionId, String extensionName, @Nullable Bitmap extensionIcon) {
+            String extensionId,
+            String extensionName,
+            @Nullable Bitmap extensionIcon,
+            boolean isPinned) {
         ExtensionsMenuTypes.ControlState actionButton =
                 new ExtensionsMenuTypes.ControlState(
                         ExtensionsMenuTypes.ControlState.Status.DISABLED,
-                        /* text= */ extensionName,
+                        extensionName,
                         /* accessibleName= */ "",
                         /* tooltipText= */ "",
                         /* isOn= */ false,
                         extensionIcon);
-        return new ExtensionsMenuTypes.MenuEntryState(extensionId, actionButton);
+        ExtensionsMenuTypes.ControlState contextMenuButton =
+                new ExtensionsMenuTypes.ControlState(
+                        ExtensionsMenuTypes.ControlState.Status.ENABLED,
+                        /* text= */ "",
+                        /* accessibleName= */ "",
+                        /* tooltipText= */ "",
+                        /* isOn= */ isPinned,
+                        /* icon= */ null);
+        return new ExtensionsMenuTypes.MenuEntryState(extensionId, actionButton, contextMenuButton);
     }
 
     /** Helper to create a simple icon with the given color. */
