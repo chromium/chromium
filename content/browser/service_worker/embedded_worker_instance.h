@@ -281,7 +281,13 @@ class CONTENT_EXPORT EmbeddedWorkerInstance
   GetDipReporter();
 
  private:
-  typedef base::ObserverList<Listener>::Unchecked ListenerList;
+  // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
+  typedef base::ObserverList<
+      Listener,
+      /*check_empty=*/false,
+      /*reentrancy=*/
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>::Unchecked
+      ListenerList;
   struct StartInfo;
   class WorkerProcessHandle;
   friend class EmbeddedWorkerInstanceTestHarness;

@@ -789,7 +789,13 @@ class IdentityManager : public KeyedService,
 
   // Lists of observers.
   // Makes sure lists are empty on destruction.
-  base::ObserverList<Observer, true>::Unchecked observer_list_;
+  // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
+  base::ObserverList<
+      Observer,
+      /*check_empty=*/true,
+      /*reentrancy=*/
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>::Unchecked
+      observer_list_;
   base::ObserverList<DiagnosticsObserver, true>::Unchecked
       diagnostics_observation_list_;
 
