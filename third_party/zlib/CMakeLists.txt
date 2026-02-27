@@ -180,8 +180,8 @@ set(ZLIB_PRIVATE_HDRS
     inflate.h
     inftrees.h
     trees.h
-    zutil.h
-)
+    zutil.h)
+
 set(ZLIB_SRCS
     adler32.c
     compress.c
