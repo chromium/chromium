@@ -66,8 +66,9 @@ class MEDIA_EXPORT MediaFoundationRenderer
     kFailedToInitDCompTextureWrapper = 14,
     kFailedToSetPlaybackRate = 15,
     kFailedToGetMediaEngineEx = 16,
+    kFailedToSetOutputRect = 17,
     // Add new values here and update `kMaxValue`. Never reuse existing values.
-    kMaxValue = kFailedToGetMediaEngineEx,
+    kMaxValue = kFailedToSetOutputRect,
   };
 
   // An enum for recording MediaFoundationRenderer playback detected rendered

@@ -1440,6 +1440,7 @@ chromium-metrics-reviews@google.com.
   <int value="14" label="FailedToInitDCompTextureWrapper"/>
   <int value="15" label="FailedToSetPlaybackRate"/>
   <int value="16" label="FailedToGetMediaEngineEx"/>
+  <int value="17" label="FailedToSetOutputRect"/>
 </enum>
 
 <!-- LINT.IfChange(MediaFoundationRendererRenderedVideoFrameDetectionResult) -->
