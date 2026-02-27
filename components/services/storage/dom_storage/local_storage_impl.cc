@@ -103,6 +103,12 @@ class LocalStorageImpl::StorageAreaHolder final
     if (storage_area()->empty()) {
       return;
     }
+
+    if (!context_->database_) {
+      // The database does not exist.
+      return;
+    }
+
     // We should not write last_accessed if the data will be purged.
     if (context_->origins_to_purge_on_shutdown_.find(storage_key_.origin()) !=
             context_->origins_to_purge_on_shutdown_.end() ||
@@ -112,7 +118,7 @@ class LocalStorageImpl::StorageAreaHolder final
       return;
     }
 
-    // Update the storage area map's last access time.
+    // Update the storage area map's last access time in the database.
     DomStorageDatabase::Metadata usage;
     usage.map_metadata.push_back({
         .map_locator{storage_key_},
@@ -309,7 +315,8 @@ void LocalStorageImpl::ShutDown() {
       area->CancelAllPendingRequests();
     }
 
-    if (!force_keep_session_state_ && !origins_to_purge_on_shutdown_.empty()) {
+    if (database_ && !force_keep_session_state_ &&
+        !origins_to_purge_on_shutdown_.empty()) {
       database_->PurgeOriginsForShutdown(
           std::move(origins_to_purge_on_shutdown_));
     }
@@ -457,7 +464,7 @@ void LocalStorageImpl::PurgeAllStorageAreas() {
 }
 
 void LocalStorageImpl::InitiateConnection(bool in_memory_only) {
-  DCHECK_EQ(connection_state_, CONNECTION_IN_PROGRESS);
+  CHECK_EQ(connection_state_, CONNECTION_IN_PROGRESS);
 
   if (!storage_partition_directory_.empty() &&
       storage_partition_directory_.IsAbsolute() && !in_memory_only) {
@@ -491,7 +498,7 @@ void LocalStorageImpl::OnDatabaseOpened(DbStatus status) {
 }
 
 void LocalStorageImpl::OnConnectionFinished() {
-  DCHECK_EQ(connection_state_, CONNECTION_IN_PROGRESS);
+  CHECK_EQ(connection_state_, CONNECTION_IN_PROGRESS);
   // If connection was opened successfully, reset tried_to_recreate_during_open_
   // to enable recreating the database on future errors.
   if (database_)
@@ -562,7 +569,7 @@ void LocalStorageImpl::OnDBDestroyed(bool recreate_in_memory, DbStatus status) {
 
 LocalStorageImpl::StorageAreaHolder* LocalStorageImpl::GetOrCreateStorageArea(
     const blink::StorageKey& storage_key) {
-  DCHECK_EQ(connection_state_, CONNECTION_FINISHED);
+  CHECK_EQ(connection_state_, CONNECTION_FINISHED);
   auto found = areas_.find(storage_key);
   if (found != areas_.end()) {
     return found->second.get();
@@ -577,6 +584,8 @@ LocalStorageImpl::StorageAreaHolder* LocalStorageImpl::GetOrCreateStorageArea(
 }
 
 void LocalStorageImpl::RetrieveStorageUsage(GetUsageCallback callback) {
+  CHECK_EQ(connection_state_, ConnectionState::CONNECTION_FINISHED);
+
   if (!database_) {
     // If for whatever reason no database is available, no storage is
     // used, so return an array only containing the current areas.
@@ -644,9 +653,15 @@ void LocalStorageImpl::GetStatistics(size_t* total_cache_size,
 }
 
 void LocalStorageImpl::OnCommitResult(DbStatus status) {
-  DCHECK(connection_state_ == CONNECTION_FINISHED) << connection_state_;
   if (status.ok()) {
     commit_error_count_ = 0;
+    return;
+  }
+
+  if (connection_state_ != CONNECTION_FINISHED) {
+    // Previous commit errors deleted and recreated the database below.  Ignore
+    // additional errors from the old database while waiting for the new
+    // database to open.
     return;
   }
 
@@ -668,7 +683,7 @@ void LocalStorageImpl::OnCommitResult(DbStatus status) {
 }
 
 void LocalStorageImpl::DeleteStaleStorageAreas() {
-  if (!database_) {
+  if (!database_ || connection_state_ != CONNECTION_FINISHED) {
     // Due to the delay before LocalStorageImpl::DeleteStaleStorageAreas is invoked
     // it's possible `database_` existed before, but no longer.
     return;
@@ -680,7 +695,7 @@ void LocalStorageImpl::DeleteStaleStorageAreas() {
 
 void LocalStorageImpl::OnGotMetaDataToDeleteStaleStorageAreas(
     StatusOr<DomStorageDatabase::Metadata> all_metadata) {
-  if (!database_) {
+  if (!database_ || connection_state_ != CONNECTION_FINISHED) {
     // This method is provided as a callback to an off thread task. Between the
     // time that the task is posted and now when this callback is invoked, the
     // `database_` member may have been reset.
