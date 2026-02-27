@@ -15,7 +15,6 @@ import android.view.View;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.educational_tip.EducationTipModuleActionDelegate;
-import org.chromium.chrome.browser.educational_tip.EducationalTipCardProvider;
 import org.chromium.chrome.browser.educational_tip.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -35,20 +34,19 @@ public class EducationalTipBottomSheetCoordinator {
     private final BottomSheetContent mBottomSheetContent;
     private final BottomSheetController mBottomSheetController;
     private final PropertyModel mModel;
-    private final EducationTipModuleActionDelegate mActionDelegate;
 
-    private final Supplier<List<EducationalTipCardProvider>> mRankedEducationalTipProviderSupplier;
+    private final Supplier<List<EducationalTipBottomSheetItem>>
+            mRankedEducationalTipProviderSupplier;
 
     /**
      * @param actionDelegate The instance of {@link EducationTipModuleActionDelegate}.
      */
     public EducationalTipBottomSheetCoordinator(
             EducationTipModuleActionDelegate actionDelegate,
-            Supplier<List<EducationalTipCardProvider>> rankedEducationalTipProviderSupplier) {
-        mActionDelegate = actionDelegate;
+            Supplier<List<EducationalTipBottomSheetItem>> rankedEducationalTipProviderSupplier) {
         mRankedEducationalTipProviderSupplier = rankedEducationalTipProviderSupplier;
-        mContext = mActionDelegate.getContext();
-        mBottomSheetController = mActionDelegate.getBottomSheetController();
+        mContext = actionDelegate.getContext();
+        mBottomSheetController = actionDelegate.getBottomSheetController();
         View contentView =
                 LayoutInflater.from(mContext)
                         .inflate(

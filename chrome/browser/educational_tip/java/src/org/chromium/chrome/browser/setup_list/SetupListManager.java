@@ -560,6 +560,11 @@ public class SetupListManager
         return mModulesAwaitingCompletionAnimation.contains(moduleType);
     }
 
+    /** Returns the set of all module types currently awaiting completion animation. */
+    public Set<Integer> getModulesAwaitingCompletionAnimation() {
+        return mModulesAwaitingCompletionAnimation;
+    }
+
     /**
      * Called when the completion animation for a module has finished. This moves the module from
      * the active section to the completed section.

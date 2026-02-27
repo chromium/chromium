@@ -44,16 +44,14 @@ public class EducationalTipBottomSheetListContainerViewUnitTest {
     @Mock private EducationalTipCardProvider mEducationalTipCardProvider;
 
     private EducationalTipBottomSheetListContainerView mContainerView;
-    private List<EducationalTipCardProvider> mListOfEducationalTipCardProvider;
+    private List<EducationalTipBottomSheetItem> mListOfEducationalTipBottomSheetItem;
 
     @Before
     public void setUp() {
         Context context = ApplicationProvider.getApplicationContext();
         mContainerView = new EducationalTipBottomSheetListContainerView(context, null);
-        mListOfEducationalTipCardProvider = createListOfEducationalTipCardProvider();
+        mListOfEducationalTipBottomSheetItem = createListOfEducationalTipBottomSheetItem();
 
-        // TODO(crbug.com/479597724): Update test after creating cached completion state to module
-        // type map.
         List<Integer> moduleTypeList = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
             moduleTypeList.add(ModuleDelegate.ModuleType.DEFAULT_BROWSER_PROMO);
@@ -63,13 +61,13 @@ public class EducationalTipBottomSheetListContainerViewUnitTest {
 
     @Test
     public void testRenderSetUpList_numberOfListItemsCreated() {
-        mContainerView.renderSetUpList(mListOfEducationalTipCardProvider);
+        mContainerView.renderSetUpList(mListOfEducationalTipBottomSheetItem);
         Assert.assertEquals(
                 "All educational tip modules should be added",
                 EDUCATIONAL_TIP_MODULES_SIZE,
                 mContainerView.getChildCount());
 
-        mContainerView.renderSetUpList(mListOfEducationalTipCardProvider);
+        mContainerView.renderSetUpList(mListOfEducationalTipBottomSheetItem);
         Assert.assertEquals(
                 "Previous educational tip list items should be destroyed",
                 EDUCATIONAL_TIP_MODULES_SIZE,
@@ -78,7 +76,8 @@ public class EducationalTipBottomSheetListContainerViewUnitTest {
 
     @Test
     public void testEducationalTipCardProviderInRenderSetUpList() {
-        mContainerView.renderSetUpList(List.of(mEducationalTipCardProvider));
+        mContainerView.renderSetUpList(
+                List.of(new EducationalTipBottomSheetItem(mEducationalTipCardProvider, null)));
         verify(mEducationalTipCardProvider, times(1)).getCardImage();
         verify(mEducationalTipCardProvider, times(1)).getCardTitle();
         verify(mEducationalTipCardProvider, times(1)).getCardDescription();
@@ -88,7 +87,8 @@ public class EducationalTipBottomSheetListContainerViewUnitTest {
     public void testListItemOnClick() {
         Runnable mockDismissRunnable = mock(Runnable.class);
         mContainerView.setDismissBottomSheet(mockDismissRunnable);
-        mContainerView.renderSetUpList(List.of(mEducationalTipCardProvider));
+        mContainerView.renderSetUpList(
+                List.of(new EducationalTipBottomSheetItem(mEducationalTipCardProvider, null)));
 
         mContainerView.getChildAt(0).performClick();
 
@@ -96,10 +96,12 @@ public class EducationalTipBottomSheetListContainerViewUnitTest {
         verify(mockDismissRunnable, times(1)).run();
     }
 
-    private List<EducationalTipCardProvider> createListOfEducationalTipCardProvider() {
-        List<EducationalTipCardProvider> output = new ArrayList<>();
+    private List<EducationalTipBottomSheetItem> createListOfEducationalTipBottomSheetItem() {
+        List<EducationalTipBottomSheetItem> output = new ArrayList<>();
         for (int i = 0; i < EDUCATIONAL_TIP_MODULES_SIZE; i++) {
-            output.add(mock(EducationalTipCardProvider.class));
+            output.add(
+                    new EducationalTipBottomSheetItem(
+                            mock(EducationalTipCardProvider.class), null));
         }
         return output;
     }

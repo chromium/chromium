@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.educational_tip.two_cell;
 
 import android.content.Context;
+import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -53,10 +54,9 @@ public class EducationalTipSetupListBottomSheetListItemView extends ConstraintLa
     void displayAsCompleted() {
         int disabledColor = getContext().getColor(R.color.default_text_color_disabled_list);
         mTitle.setTextColor(disabledColor);
-        mTitle.setPaintFlags(mTitle.getPaintFlags() | android.graphics.Paint.STRIKE_THRU_TEXT_FLAG);
+        mTitle.setPaintFlags(mTitle.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
         mDescription.setTextColor(disabledColor);
-        mDescription.setPaintFlags(
-                mDescription.getPaintFlags() | android.graphics.Paint.STRIKE_THRU_TEXT_FLAG);
+        mDescription.setPaintFlags(mDescription.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
 
         // Disable clicks on the item layout
         this.setOnClickListener(null);

@@ -34,6 +34,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/educational_tip/cards/TipsNotificationsPromoCoordinator.java",
     "java/src/org/chromium/chrome/browser/educational_tip/two_cell/EducationalTipBottomSheetContent.java",
     "java/src/org/chromium/chrome/browser/educational_tip/two_cell/EducationalTipBottomSheetCoordinator.java",
+    "java/src/org/chromium/chrome/browser/educational_tip/two_cell/EducationalTipBottomSheetItem.java",
     "java/src/org/chromium/chrome/browser/educational_tip/two_cell/EducationalTipBottomSheetListContainerView.java",
     "java/src/org/chromium/chrome/browser/educational_tip/two_cell/EducationalTipBottomSheetProperties.java",
     "java/src/org/chromium/chrome/browser/educational_tip/two_cell/EducationalTipBottomSheetViewBinder.java",

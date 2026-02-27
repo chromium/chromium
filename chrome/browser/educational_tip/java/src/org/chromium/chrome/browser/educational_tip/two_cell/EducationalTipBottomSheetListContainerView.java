@@ -15,7 +15,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.educational_tip.EducationalTipCardProvider;
 import org.chromium.chrome.browser.educational_tip.R;
 import org.chromium.chrome.browser.setup_list.SetupListCompletable;
-import org.chromium.chrome.browser.setup_list.SetupListModuleUtils;
 
 import java.util.List;
 
@@ -41,39 +40,35 @@ public class EducationalTipBottomSheetListContainerView extends LinearLayout {
      * @param rankedEducationalTips list of {@link EducationalTipCardProvider} that will be
      *     displayed in the container.
      */
-    public void renderSetUpList(List<EducationalTipCardProvider> rankedEducationalTips) {
+    public void renderSetUpList(List<EducationalTipBottomSheetItem> rankedEducationalTips) {
         // Clears all previous list items.
         destroy();
 
-        List<Integer> rankedModuleTypes = SetupListModuleUtils.getRankedModuleTypes();
         for (int i = 0; i < rankedEducationalTips.size(); i++) {
-            EducationalTipCardProvider educationalTip = rankedEducationalTips.get(i);
+            EducationalTipBottomSheetItem item = rankedEducationalTips.get(i);
+            EducationalTipCardProvider educationalTip = item.provider;
             EducationalTipSetupListBottomSheetListItemView listItemView =
                     (EducationalTipSetupListBottomSheetListItemView) createListItemView();
-            // TODO(crbug.com/479597724): Create cached completion state to module type map.
-            SetupListCompletable.CompletionState itemCompletionState = null;
-            if (i < rankedModuleTypes.size()) {
-                itemCompletionState =
-                        SetupListCompletable.getCompletionState(
-                                educationalTip, rankedModuleTypes.get(i));
-            }
+            SetupListCompletable.CompletionState itemCompletionState = item.completionState;
 
-            listItemView.setOnClickListener(
-                    view -> {
-                        educationalTip.onCardClicked();
-                        if (mDismissBottomSheetRunnable != null) {
-                            // Bottom sheet should be dismissed after an item is clicked.
-                            mDismissBottomSheetRunnable.run();
-                        }
-                    });
+            listItemView.setTitle(educationalTip.getCardTitle());
+            listItemView.setDescription(educationalTip.getCardDescription());
             if (itemCompletionState != null && itemCompletionState.isCompleted) {
                 listItemView.setIcon(itemCompletionState.iconRes);
                 listItemView.displayAsCompleted();
             } else {
                 listItemView.setIcon(educationalTip.getCardImage());
+                listItemView.setOnClickListener(
+                        view -> {
+                            educationalTip.onCardClicked();
+                            if (mDismissBottomSheetRunnable != null) {
+                                // Bottom sheet should be dismissed after an item is clicked.
+                                mDismissBottomSheetRunnable.run();
+                            }
+                        });
             }
-            listItemView.setTitle(educationalTip.getCardTitle());
-            listItemView.setDescription(educationalTip.getCardDescription());
+            // TODO(crbug.com/469425754): Consider passing a Position enum to the list item view
+            // to let it handle its own background styling.
             // Set the custom border radius for first and last list items.
             if (i == 0) {
                 listItemView.setBackground(

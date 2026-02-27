@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.educational_tip.two_cell;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.browser.educational_tip.EducationalTipCardProvider;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
@@ -18,7 +17,7 @@ public class EducationalTipBottomSheetProperties {
             new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<String> BOTTOM_SHEET_DESCRIPTION =
             new WritableObjectPropertyKey<>();
-    public static final WritableObjectPropertyKey<List<EducationalTipCardProvider>>
+    public static final WritableObjectPropertyKey<List<EducationalTipBottomSheetItem>>
             BOTTOM_SHEET_LIST_ITEMS = new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<Runnable> BOTTOM_SHEET_LIST_ITEMS_ON_CLICK =
             new WritableObjectPropertyKey<>();

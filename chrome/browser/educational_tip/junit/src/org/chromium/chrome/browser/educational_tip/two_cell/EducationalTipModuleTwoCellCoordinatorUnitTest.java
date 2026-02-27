@@ -46,6 +46,7 @@ import org.chromium.ui.shadows.ShadowAppCompatResources;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 /** Unit tests for {@link EducationalTipModuleTwoCellCoordinator} */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -225,9 +226,8 @@ public class EducationalTipModuleTwoCellCoordinatorUnitTest {
                 new EducationalTipModuleTwoCellCoordinator(
                         MODULE_TYPE, mModuleDelegate, mActionDelegate);
 
-        when(mSetupListManager.isModuleAwaitingCompletionAnimation(
-                        ModuleType.ENHANCED_SAFE_BROWSING_PROMO))
-                .thenReturn(true);
+        when(mSetupListManager.getModulesAwaitingCompletionAnimation())
+                .thenReturn(Set.of(ModuleType.ENHANCED_SAFE_BROWSING_PROMO));
 
         mCoordinator.showModule();
         verify(mModuleDelegate).onDataReady(eq(MODULE_TYPE), mPropertyModelCaptor.capture());

@@ -29,14 +29,11 @@ public class EducationalTipBottomSheetViewBinder {
             description.setText(model.get(BOTTOM_SHEET_DESCRIPTION));
         } else if (propertyKey == BOTTOM_SHEET_LIST_ITEMS) {
             EducationalTipBottomSheetListContainerView listContainerView =
-                    (EducationalTipBottomSheetListContainerView)
-                            view.findViewById(R.id.setup_list_bottom_sheet_container_view);
-            // TODO(crbug.com/479597724): Pass ranked modules to the bottom sheet list container.
+                    view.findViewById(R.id.setup_list_bottom_sheet_container_view);
             listContainerView.renderSetUpList(model.get(BOTTOM_SHEET_LIST_ITEMS));
         } else if (propertyKey == BOTTOM_SHEET_LIST_ITEMS_ON_CLICK) {
             EducationalTipBottomSheetListContainerView listContainerView =
-                    (EducationalTipBottomSheetListContainerView)
-                            view.findViewById(R.id.setup_list_bottom_sheet_container_view);
+                    view.findViewById(R.id.setup_list_bottom_sheet_container_view);
             listContainerView.setDismissBottomSheet(model.get(BOTTOM_SHEET_LIST_ITEMS_ON_CLICK));
         }
     }
