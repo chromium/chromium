@@ -7,7 +7,6 @@ package org.chromium.components.browser_ui.settings;
 import static org.chromium.components.browser_ui.widget.containment.ContainmentUiUtils.parseContainmentAttributes;
 
 import android.content.Context;
-import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
@@ -33,9 +32,6 @@ public class ChromeSwitchPreference extends SwitchPreferenceCompat implements Co
     /** The View for this preference. */
     private @Nullable View mView;
 
-    /** The initial background resource for this preference. */
-    @Nullable private Drawable mInitialBackgroundDrawable;
-
     /** The color for tinting of the view's background. */
     @ColorInt @Nullable private Integer mBackgroundColorInt;
 
@@ -50,7 +46,7 @@ public class ChromeSwitchPreference extends SwitchPreferenceCompat implements Co
      */
     private @Nullable String mSummaryOverrideForScreenReader;
 
-    private boolean mUseSummaryAsTitle;
+    private final boolean mUseSummaryAsTitle;
     private final @BackgroundStyle int mBackgroundStyle;
 
     public ChromeSwitchPreference(Context context) {
@@ -144,17 +140,6 @@ public class ChromeSwitchPreference extends SwitchPreferenceCompat implements Co
         updateBackground();
     }
 
-    /**
-     * Resets the background to its initial resource after a color change. Does nothing if the color
-     * was never changed.
-     */
-    public void clearBackgroundColor() {
-        if (mView == null || mBackgroundColorInt == null || mInitialBackgroundDrawable == null)
-            return;
-        mView.setBackground(mInitialBackgroundDrawable);
-        mBackgroundColorInt = null;
-    }
-
     /** Returns the background color of the preference. */
     public @Nullable @ColorInt Integer getBackgroundColor() {
         return mBackgroundColorInt;
@@ -170,14 +155,8 @@ public class ChromeSwitchPreference extends SwitchPreferenceCompat implements Co
         mSummaryOverrideForScreenReader = text;
     }
 
-    /** Controls whether the summary is used as title when the title is empty. */
-    public void setUseSummaryAsTitle(boolean value) {
-        mUseSummaryAsTitle = value;
-    }
-
     private void updateBackground() {
         if (mView == null || mBackgroundColorInt == null) return;
-        mInitialBackgroundDrawable = mView.getBackground();
         mView.setBackgroundColor(mBackgroundColorInt);
     }
 
