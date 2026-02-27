@@ -29,6 +29,7 @@
 #include "content/public/common/content_constants.h"
 #include "extensions/buildflags/buildflags.h"
 #include "services/network/public/mojom/network_service.mojom.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/chrome_content_browser_client_extensions_part.h"
@@ -248,7 +249,7 @@ void ProcessMonitor::SampleAllProcesses(Observer* observer) {
   // Aggregate all metrics into a single sum, but also per their process type.
   Metrics aggregated_metrics;
   std::array<Metrics, MonitoredProcessType::kCount> per_type_metrics;
-  std::map<ProcessInfo::Key, Metrics> per_utility_subtype_metrics;
+  absl::flat_hash_map<ProcessInfo::Key, Metrics> per_utility_subtype_metrics;
   for (auto* process_info : process_infos) {
     Metrics metrics = SampleMetrics(*process_info->process_metrics);
 

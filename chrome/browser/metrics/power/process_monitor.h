@@ -63,6 +63,11 @@ struct ProcessInfo {
   std::optional<base::TimeTicks> first_sample_time;
 };
 
+template <typename H>
+H AbslHashValue(H h, const ProcessInfo::Key& k) {
+  return H::combine(std::move(h), k.type, k.subtype);  // Combine all members
+}
+
 // ProcessMonitor is a tool which allows the sampling of power-related metrics
 // for all Chrome processes. The metrics sampling is driven externally by
 // calling SampleAllProcesses() periodically.
