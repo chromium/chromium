@@ -11,6 +11,7 @@
 #include "base/command_line.h"
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/path_service.h"
@@ -70,8 +71,14 @@
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
+#include "base/android/callback_android.h"
+#include "base/android/jni_android.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
+#include "chrome/browser/ui/android/tab_model/tab_model.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/test/test_support_jni_headers/TabWindowManagerNativeTestSupport_jni.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
@@ -187,6 +194,18 @@ syncer::ClientTagHash TagHashFromSpecifics(
 
 // Closes a browser window and waits for it to finish closing.
 void CloseWindowAndWait(BrowserWindowInterface* window) {
+#if BUILDFLAG(IS_ANDROID)
+  // On Android, headless TabModelSelector creation happens after
+  // OnBrowserClosed(), so grab the ID here to check later.
+  JNIEnv* env = base::android::AttachCurrentThread();
+  TabListInterface* tab_list = TabListInterface::From(window);
+  ASSERT_TRUE(tab_list);
+  TabModel* tab_model = static_cast<TabModel*>(tab_list);
+  int window_id = Java_TabWindowManagerNativeTestSupport_getWindowIdForModel(
+      env, tab_model->GetJavaObject());
+  ASSERT_NE(window_id, -1);
+#endif
+
   // Close the window and wait for OnBrowserClosed() notification.
   BrowserClosedWaiter waiter(window);
   window->GetWindow()->Close();
@@ -194,12 +213,11 @@ void CloseWindowAndWait(BrowserWindowInterface* window) {
 
 #if BUILDFLAG(IS_ANDROID)
   // On Android we have to wait for the headless TabModelSelector to be created.
-  // This happens after OnBrowserClosed() and there's not a clean way to observe
-  // for the event, so sleep.
-  // TODO(crbug.com/486915945): Find a more elegant solution.
   base::RunLoop run_loop;
-  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE, run_loop.QuitClosure(), base::Seconds(1));
+  base::OnceClosure quit_closure = run_loop.QuitClosure();
+  Java_TabWindowManagerNativeTestSupport_waitForTabModelSelectorWithId(
+      env, window_id,
+      base::android::ToJniCallback(env, std::move(quit_closure)));
   run_loop.Run();
 #endif  // BUILDFLAG(IS_ANDROID)
 }
