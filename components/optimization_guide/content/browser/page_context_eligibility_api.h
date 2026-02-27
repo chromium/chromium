@@ -52,9 +52,10 @@ struct PageContextEligibilityAPI {
       const std::string& path,
       const std::string& account,
       const std::vector<optimization_guide::FrameMetadata>& frame_metadata);
-  // Whether the page content should be reextracted.
-  bool (*ShouldReextractPageContent)(
+  // Whether the page context should be reextracted.
+  bool (*ShouldReextractPageContext)(
       const std::string& host,
+      const std::string& path,
       const std::vector<std::string>& updated_meta_tags);
 };
 
