@@ -21,7 +21,6 @@
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/gtest_prod_util.h"
-#include "base/memory/memory_pressure_listener.h"
 #include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
@@ -104,8 +103,7 @@ class BASE_EXPORT [[maybe_unused, nodiscard]] WatchHangsInScope {
 // HangWatchStates for deadline overruns. This happens at a regular interval on
 // a separate thread. Only one instance of HangWatcher can exist at a time
 // within a single process. This instance must outlive all monitored threads.
-class BASE_EXPORT HangWatcher : public DelegateSimpleThread::Delegate,
-                                public base::MemoryPressureListener {
+class BASE_EXPORT HangWatcher : public DelegateSimpleThread::Delegate {
  public:
   // Describes the type of a process for logging purposes.
   enum class ProcessType {
@@ -283,14 +281,6 @@ class BASE_EXPORT HangWatcher : public DelegateSimpleThread::Delegate,
   // Use to assert that functions are called on the constructing thread.
   THREAD_CHECKER(constructing_thread_checker_);
 
-  // Invoked on memory pressure signal.
-  void OnMemoryPressure(MemoryPressureLevel memory_pressure_level) override;
-
-  // Returns a ScopedCrashKeyString that sets the crash key with the time since
-  // last critical memory pressure signal.
-  [[nodiscard]] debug::ScopedCrashKeyString
-  GetTimeSinceLastCriticalMemoryPressureCrashKey();
-
   // Invoke base::debug::DumpWithoutCrashing() insuring that the stack frame
   // right under it in the trace belongs to HangWatcher for easier attribution.
   NOINLINE static void RecordHang();
@@ -397,16 +387,6 @@ class BASE_EXPORT HangWatcher : public DelegateSimpleThread::Delegate,
   std::atomic<bool> capture_in_progress_{false};
 
   raw_ptr<const base::TickClock> tick_clock_;
-
-  // Registration to receive memory pressure signals.
-  base::MemoryPressureListenerRegistration
-      memory_pressure_listener_registration_;
-
-  // The last time at which a critical memory pressure signal was received, or
-  // null if no signal was ever received. Atomic because it's set and read from
-  // different threads.
-  std::atomic<base::TimeTicks> last_critical_memory_pressure_{
-      base::TimeTicks()};
 
   // The time after which all deadlines in |watch_states_| need to be for a hang
   // to be reported.
