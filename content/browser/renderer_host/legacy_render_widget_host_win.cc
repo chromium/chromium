@@ -362,8 +362,14 @@ LRESULT LegacyRenderWidgetHostHWND::OnKeyboardRange(UINT message,
   }
 
   bool msg_handled = false;
+  base::WeakPtr<LegacyRenderWidgetHostHWND> ref(
+      msg_handler_weak_factory_.GetWeakPtr());
   LRESULT ret = event_target->HandleKeyboardMessage(message, w_param, l_param,
                                                     &msg_handled);
+  // HandleKeyboardMessage() may result in |this| being deleted.
+  if (!ref) {
+    return 0;
+  }
   SetMsgHandled(msg_handled);
   return ret;
 }
@@ -400,8 +406,14 @@ LRESULT LegacyRenderWidgetHostHWND::OnMouseRange(UINT message,
   }
 
   bool msg_handled = false;
+  base::WeakPtr<LegacyRenderWidgetHostHWND> ref(
+      msg_handler_weak_factory_.GetWeakPtr());
   LRESULT ret =
       event_target->HandleMouseMessage(message, w_param, l_param, &msg_handled);
+  // HandleMouseMessage() may result in |this| being deleted.
+  if (!ref) {
+    return 0;
+  }
   SetMsgHandled(msg_handled);
   // If the parent did not handle non-client mouse messages, call
   // DefWindowProc() on the message with the parent window handle. This ensures
@@ -446,8 +458,14 @@ LRESULT LegacyRenderWidgetHostHWND::OnMouseLeave(UINT message,
   }
 
   bool msg_handled = false;
+  base::WeakPtr<LegacyRenderWidgetHostHWND> ref(
+      msg_handler_weak_factory_.GetWeakPtr());
   LRESULT ret =
       event_target->HandleMouseMessage(message, w_param, l_param, &msg_handled);
+  // HandleMouseMessage() may result in |this| being deleted.
+  if (!ref) {
+    return 0;
+  }
   SetMsgHandled(msg_handled);
   return ret;
 }
@@ -507,8 +525,15 @@ LRESULT LegacyRenderWidgetHostHWND::OnPointer(UINT message,
   }
 
   bool msg_handled = false;
+  base::WeakPtr<LegacyRenderWidgetHostHWND> ref(
+      msg_handler_weak_factory_.GetWeakPtr());
   LRESULT ret = event_target->HandlePointerMessage(message, w_param, l_param,
                                                    &msg_handled);
+  // HandlePointerMessage() may result in |this| being deleted.
+  if (!ref) {
+    return 0;
+  }
+
   SetMsgHandled(msg_handled);
 
   if (message == WM_POINTERDOWN) {
@@ -531,8 +556,14 @@ LRESULT LegacyRenderWidgetHostHWND::OnTouch(UINT message,
   }
 
   bool msg_handled = false;
+  base::WeakPtr<LegacyRenderWidgetHostHWND> ref(
+      msg_handler_weak_factory_.GetWeakPtr());
   LRESULT ret =
       event_target->HandleTouchMessage(message, w_param, l_param, &msg_handled);
+  // HandleTouchMessage() may result in |this| being deleted.
+  if (!ref) {
+    return 0;
+  }
   SetMsgHandled(msg_handled);
   return ret;
 }
@@ -546,8 +577,14 @@ LRESULT LegacyRenderWidgetHostHWND::OnInput(UINT message,
   }
 
   bool msg_handled = false;
+  base::WeakPtr<LegacyRenderWidgetHostHWND> ref(
+      msg_handler_weak_factory_.GetWeakPtr());
   LRESULT ret =
       event_target->HandleInputMessage(message, w_param, l_param, &msg_handled);
+  // HandleInputMessage() may result in |this| being deleted.
+  if (!ref) {
+    return 0;
+  }
   SetMsgHandled(msg_handled);
   return ret;
 }
@@ -561,8 +598,14 @@ LRESULT LegacyRenderWidgetHostHWND::OnScroll(UINT message,
   }
 
   bool msg_handled = false;
+  base::WeakPtr<LegacyRenderWidgetHostHWND> ref(
+      msg_handler_weak_factory_.GetWeakPtr());
   LRESULT ret = event_target->HandleScrollMessage(message, w_param, l_param,
                                                   &msg_handled);
+  // HandleScrollMessage() may result in |this| being deleted.
+  if (!ref) {
+    return 0;
+  }
   SetMsgHandled(msg_handled);
   return ret;
 }
@@ -576,8 +619,14 @@ LRESULT LegacyRenderWidgetHostHWND::OnNCHitTest(UINT message,
   }
 
   bool msg_handled = false;
+  base::WeakPtr<LegacyRenderWidgetHostHWND> ref(
+      msg_handler_weak_factory_.GetWeakPtr());
   LRESULT hit_test = event_target->HandleNcHitTestMessage(
       message, w_param, l_param, &msg_handled);
+  // HandleNcHitTestMessage() may result in |this| being deleted.
+  if (!ref) {
+    return HTNOWHERE;
+  }
   if (hit_test == HTNOWHERE) {
     // If the parent returns HTNOWHERE which can happen for popup windows, etc,
     // return HTCLIENT.
