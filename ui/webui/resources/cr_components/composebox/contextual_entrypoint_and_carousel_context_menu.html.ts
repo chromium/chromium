@@ -49,6 +49,7 @@ export function getHtml(this: ContextualEntrypointAndCarouselElement) {
           part="composebox-entrypoint"
           exportparts="context-menu-entrypoint-icon"
           class="upload-button no-overlap"
+          .inputState="${this.inputState}"
           ?upload-button-disabled="${this.uploadButtonDisabled_}"
           ?show-context-menu-description="${
                 this.shouldShowDescription_()}"

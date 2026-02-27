@@ -7,9 +7,10 @@ import 'chrome://resources/cr_components/composebox/contextual_entrypoint_and_me
 
 import type {ContextualEntrypointAndMenuElement} from 'chrome://resources/cr_components/composebox/contextual_entrypoint_and_menu.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {InputType, ModelMode, ToolMode} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {$$, eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
+
+import {createValidInputState} from './composebox_test_utils.js';
 
 suite('ContextualEntrypointAndMenu', () => {
   let entrypointAndMenu: ContextualEntrypointAndMenuElement;
@@ -23,35 +24,7 @@ suite('ContextualEntrypointAndMenu', () => {
     entrypointAndMenu =
         document.createElement('cr-composebox-contextual-entrypoint-and-menu');
     Object.assign(entrypointAndMenu, {
-      inputState: {
-        allowedModels: [ModelMode.kGeminiPro],
-        allowedTools: [ToolMode.kDeepSearch],
-        allowedInputTypes: [InputType.kBrowserTab],
-        activeModel: ModelMode.kUnspecified,
-        activeTool: ToolMode.kUnspecified,
-        disabledModels: [],
-        disabledTools: [],
-        disabledInputTypes: [],
-        toolConfigs: [
-          {
-            tool: ToolMode.kDeepSearch,
-            menuLabel: 'Deep Search',
-            chipLabel: 'Deep Search',
-            hintText: 'Deep Search hint',
-            disableActiveModelSelection: false,
-          },
-        ],
-        modelConfigs: [
-          {
-            model: ModelMode.kGeminiPro,
-            menuLabel: 'Gemini Pro',
-            hintText: 'Gemini Pro hint',
-          },
-        ],
-        modelSectionConfig: {
-          header: 'Models',
-        },
-      },
+      inputState: createValidInputState(),
       showModelPicker: true,
     });
     document.body.appendChild(entrypointAndMenu);
