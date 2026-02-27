@@ -18,6 +18,8 @@ class CORE_EXPORT HTMLUserMediaElement : public HTMLCapabilityElementBase {
 
   explicit HTMLUserMediaElement(Document& document);
 
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(stream, kStream)
+
   // HTML Element
   bool IsHTMLUserMediaElement() const final { return true; }
 

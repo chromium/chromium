@@ -318,6 +318,7 @@
     "statechange",
     "stop",
     "storage",
+    "stream",
     "submit",
     "success",
     "suspend",

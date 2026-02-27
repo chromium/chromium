@@ -5383,12 +5383,14 @@ interface HTMLUserMediaElement : HTMLElement
     getter isValid
     getter onpromptaction
     getter onpromptdismiss
+    getter onstream
     getter onvalidationstatuschange
     getter permissionStatus
     getter type
     method constructor
     setter onpromptaction
     setter onpromptdismiss
+    setter onstream
     setter onvalidationstatuschange
     setter type
 interface HTMLVideoElement : HTMLMediaElement
