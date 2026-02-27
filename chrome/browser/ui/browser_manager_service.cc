@@ -23,10 +23,19 @@ BrowserManagerService::BrowserManagerService(Profile* profile)
 BrowserManagerService::~BrowserManagerService() = default;
 
 void BrowserManagerService::Shutdown() {
-  // TODO(crbug.com/485265751): Make sure we emit browser-close events during
-  // shutdown instead of just clearing browsers.
+  CHECK(browsers_and_subscriptions_for_testing_.empty());
+
+  while (!browsers_and_subscriptions_.empty()) {
+    BrowserAndSubscriptions entry =
+        std::move(browsers_and_subscriptions_.back());
+    browsers_and_subscriptions_.pop_back();
+    std::erase(browsers_activation_order_, entry.browser.get());
+
+    // `entry` is destroyed here. Member destruction order ensures browser
+    // is released before subscriptions are destroyed.
+  }
+
   browsers_activation_order_.clear();
-  browsers_and_subscriptions_.clear();
 }
 
 bool BrowserManagerService::IsEmpty() const {
@@ -224,10 +233,10 @@ BrowserManagerService::BrowserAndSubscriptions::BrowserAndSubscriptions(
     base::CallbackListSubscription activated_subscription,
     base::CallbackListSubscription deactivated_subscription,
     base::CallbackListSubscription closed_subscription)
-    : browser(std::move(browser)),
-      activated_subscription(std::move(activated_subscription)),
+    : activated_subscription(std::move(activated_subscription)),
       deactivated_subscription(std::move(deactivated_subscription)),
-      closed_subscription(std::move(closed_subscription)) {}
+      closed_subscription(std::move(closed_subscription)),
+      browser(std::move(browser)) {}
 
 BrowserManagerService::BrowserAndSubscriptions::BrowserAndSubscriptions(
     BrowserAndSubscriptions&&) = default;

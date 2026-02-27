@@ -100,10 +100,13 @@ class BrowserManagerService : public KeyedService,
     BrowserAndSubscriptions& operator=(BrowserAndSubscriptions&&) = default;
     ~BrowserAndSubscriptions();
 
-    std::unique_ptr<BrowserWindowInterface> browser;
+    // ORDER MATTERS: `browser` is declared last so it is destroyed
+    // first. This ensures that when `~Browser()` fires close callbacks,
+    // the subscriptions are still alive.
     base::CallbackListSubscription activated_subscription;
     base::CallbackListSubscription deactivated_subscription;
     base::CallbackListSubscription closed_subscription;
+    std::unique_ptr<BrowserWindowInterface> browser;
   };
   std::vector<BrowserAndSubscriptions> browsers_and_subscriptions_;
 
