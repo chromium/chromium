@@ -1,11 +1,10 @@
 <!DOCTYPE html>
-<html class="reftest-wait">
+<html>
 <title>Canvas.drawElementImage: green rect with alpha</title>
 <link rel="help" href="https://github.com/WICG/html-in-canvas">
 <link rel="author" href="mailto:schenney@chromium.org">
 <link rel="match" href="global-alpha-basic-ref.html">
 <meta name=fuzzy content="1;2500">
-<script src="/common/reftest-wait.js"></script>
 <style>
 #child {
   width: 100px;
@@ -28,10 +27,9 @@ function runTest() {
   context.fillRect(70, 80, 110, 100);
   context.globalAlpha = 0.5;
   context.drawElementImage(child, 20, 30);
-  takeScreenshot();
 }
 
-onload = () => requestAnimationFrame(() => setTimeout(runTest));
+onload = () => runTest();
 
 </script>
 </html>

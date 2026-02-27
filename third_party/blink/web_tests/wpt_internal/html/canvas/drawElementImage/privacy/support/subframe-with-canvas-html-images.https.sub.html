@@ -31,9 +31,7 @@
   </canvas>
   <script>
     window.onload = function() {
-      promise_test(async function(t) {
-        await new Promise(requestAnimationFrame);
-        await new Promise(setTimeout);
+      test(function(t) {
         var context = canvas.getContext("2d");
         context.drawElementImage(child, 0, 0);
 

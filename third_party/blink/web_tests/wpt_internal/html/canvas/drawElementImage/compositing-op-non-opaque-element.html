@@ -1,10 +1,9 @@
 <!DOCTYPE html>
-<html class="reftest-wait">
+<html>
 <title>Canvas.drawElementImage: non opaque element with compositing op</title>
 <link rel="help" href="https://github.com/WICG/html-in-canvas">
 <link rel="author" href="mailto:schenney@chromium.org">
 <link rel="match" href="compositing-op-non-opaque-element-ref.html">
-<script src="/common/reftest-wait.js"></script>
 <style>
 #child {
   width: 100px;
@@ -38,10 +37,9 @@ function runTest() {
   context.fillRect(10, 10, 180, 180);
   context.globalCompositeOperation = "destination-out";
   context.drawElementImage(child, 20, 30);
-  takeScreenshot();
 }
 
-onload = () => requestAnimationFrame(() => setTimeout(runTest));
+onload = () => runTest();
 
 </script>
 </html>

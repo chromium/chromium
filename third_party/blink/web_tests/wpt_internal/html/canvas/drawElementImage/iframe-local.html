@@ -1,10 +1,9 @@
 <!DOCTYPE html>
-<html class="reftest-wait">
+<html>
 <title>Canvas.drawElementImage: same-origin iframe test</title>
 <link rel="help" href="https://github.com/WICG/html-in-canvas">
 <link rel="author" href="mailto:schenney@chromium.org">
 <link rel="match" href="basic-rect-ref.html">
-<script src="/common/reftest-wait.js"></script>
 <style>
 #child {
   width: 100px;
@@ -31,10 +30,9 @@ iframe {
 <script>
 function runTest() {
   canvas.getContext("2d").drawElementImage(child, 20, 30);
-  takeScreenshot();
 }
 
-onload = () => requestAnimationFrame(() => setTimeout(runTest));
+onload = () => runTest();
 
 </script>
 </html>

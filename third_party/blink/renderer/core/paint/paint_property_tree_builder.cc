@@ -1944,13 +1944,8 @@ void FragmentPaintPropertyTreeBuilder::UpdateEffect() {
 
         if (state.direct_compositing_reasons &
             CompositingReason::kCanvasChild) {
-          CHECK(IsA<LayoutBox>(object_));
-          auto& canvas_fragment = object_.Parent()->FirstFragment();
-          state.canvas_child_state = {
-              object_.GetNode()->GetDomNodeId(),
-              gfx::SizeF(DynamicTo<LayoutBox>(object_)->StitchedSize()),
-              object_.StyleRef().EffectiveZoom(),
-              canvas_fragment.ContentsEffect(), canvas_fragment.ContentsClip()};
+          state.canvas_child_id = CompositorElementIdFromDOMNodeId(
+              object_.GetNode()->GetDomNodeId());
         }
       } else {
         // The effect node CompositorElementId is used to uniquely identify

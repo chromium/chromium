@@ -384,7 +384,7 @@ void RemoteFrameView::Paint(const PaintInfo& paint_info,
     context.Restore();
   }
 
-  if (GetFrame().GetCcLayer() && !paint_info.IsPrivacyPreserving()) {
+  if (GetFrame().GetCcLayer()) {
     RecordForeignLayer(
         context, owner_layout_object, DisplayItem::kForeignLayerRemoteFrame,
         GetFrame().GetCcLayer(), FrameRect().origin() + paint_offset);
