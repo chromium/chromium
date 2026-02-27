@@ -20,9 +20,9 @@ BASE_DECLARE_FEATURE(kAimServerEligibilityEnabled);
 // to whether Co-Browse eligibility is enabled.
 BASE_DECLARE_FEATURE(kAimCoBrowseEligibilityCheckEnabled);
 
-// If enabled, allows the RequestType kCoBrowseAimUrlDetection to actually
-// fetch new AIM Eligibility responses.
-BASE_DECLARE_FEATURE(kAimCoBrowseAutomatedFetchRequestEnabled);
+// If enabled, creates the navigation throttle that fetches AIM eligibility
+// responses on AIM URL navigations.
+BASE_DECLARE_FEATURE(kAimUrlNavigationFetchEnabled);
 
 // If enabled, adds the User-Agent header suffix for Co-Browse to all AIM
 // Eligibility Service requests.

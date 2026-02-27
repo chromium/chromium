@@ -159,8 +159,6 @@ class ContextualTasksUiServiceTest : public content::RenderViewHostTestHarness {
         .WillByDefault(Return(true));
     ON_CALL(*aim_eligibility_service_, IsCobrowseEligible())
         .WillByDefault(Return(true));
-    ON_CALL(*aim_eligibility_service_, FetchEligibility(_))
-        .WillByDefault(Return());
 
     service_for_nav_ = std::make_unique<MockUiServiceForUrlIntercept>(
         profile_.get(), contextual_tasks_service_.get(),
@@ -340,17 +338,11 @@ TEST_F(ContextualTasksUiServiceTest, IsAiUrl_NoAimUrlParams) {
   EXPECT_FALSE(service_for_nav_->IsAiUrl(ai_url));
 }
 
-TEST_F(ContextualTasksUiServiceTest,
-       HandleNavigation_AiPage_TriggersFetchAndChecksCobrowse) {
+TEST_F(ContextualTasksUiServiceTest, HandleNavigation_AiPage_ChecksCobrowse) {
   GURL ai_url(kAiPageUrl);
   auto web_contents = content::WebContentsTester::CreateTestWebContents(
       profile_.get(), content::SiteInstance::Create(profile_.get()));
 
-  EXPECT_CALL(
-      *aim_eligibility_service_,
-      FetchEligibility(
-          AimEligibilityService::RequestSource::kCoBrowseAimUrlDetection))
-      .Times(1);
   EXPECT_CALL(*aim_eligibility_service_, IsCobrowseEligible())
       .WillOnce(Return(true));
   base::RunLoop run_loop;
@@ -361,28 +353,6 @@ TEST_F(ContextualTasksUiServiceTest,
       CreateOpenUrlParams(ai_url, false), web_contents.get(),
       /*is_from_embedded_page=*/false, /*is_to_new_tab=*/false));
 
-  run_loop.Run();
-}
-
-TEST_F(ContextualTasksUiServiceTest,
-       HandleNavigation_AiPage_NotCobrowseEligible) {
-  GURL ai_url(kAiPageUrl);
-  auto web_contents = content::WebContentsTester::CreateTestWebContents(
-      profile_.get(), content::SiteInstance::Create(profile_.get()));
-
-  EXPECT_CALL(*aim_eligibility_service_, FetchEligibility(_)).Times(1);
-  EXPECT_CALL(*aim_eligibility_service_, IsCobrowseEligible())
-      .WillOnce(Return(false));
-  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
-      .Times(0);
-
-  EXPECT_FALSE(service_for_nav_->HandleNavigation(
-      CreateOpenUrlParams(ai_url, false), web_contents.get(),
-      /*is_from_embedded_page=*/false, /*is_to_new_tab=*/false));
-
-  base::RunLoop run_loop;
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, run_loop.QuitClosure());
   run_loop.Run();
 }
 

@@ -664,11 +664,6 @@ void AimEligibilityService::StartServerEligibilityRequestForDebugging() {
 }
 
 void AimEligibilityService::FetchEligibility(RequestSource source) {
-  if (!base::FeatureList::IsEnabled(
-          omnibox::kAimCoBrowseAutomatedFetchRequestEnabled)) {
-    // Ignoring request.
-    return;
-  }
   StartServerEligibilityRequest(source, GetLocale());
 }
 
@@ -701,8 +696,8 @@ std::string AimEligibilityService::RequestSourceToString(RequestSource source) {
       return "NetworkChange";
     case RequestSource::kUser:
       return "User";
-    case RequestSource::kCoBrowseAimUrlDetection:
-      return "CoBrowseAimUrlDetection";
+    case RequestSource::kAimUrlNavigation:
+      return "AimUrlNavigation";
     case RequestSource::kRefreshTokenUpdated:
       return "RefreshTokenUpdated";
     case RequestSource::kRefreshTokenRemoved:
@@ -1011,7 +1006,7 @@ void AimEligibilityService::StartServerEligibilityRequest(
     request->method = "POST";
   }
 
-  if (request_source == RequestSource::kCoBrowseAimUrlDetection &&
+  if (request_source == RequestSource::kAimUrlNavigation &&
       base::FeatureList::IsEnabled(
           omnibox::kAimServerEligibilitySendCoBrowseUserAgentSuffixEnabled) &&
       !configuration_.user_agent_with_cobrowse_suffix.empty()) {

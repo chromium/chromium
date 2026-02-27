@@ -202,7 +202,7 @@ class AimEligibilityService
     kPrimaryAccountChange = 2,
     kNetworkChange = 3,
     kUser = 4,
-    kCoBrowseAimUrlDetection = 5,
+    kAimUrlNavigation = 5,
     kRefreshTokenUpdated = 6,
     kRefreshTokenRemoved = 7,
     kRefreshTokenError = 8,

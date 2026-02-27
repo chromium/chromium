@@ -821,7 +821,7 @@ bool ContextualTasksUiService::HandleNavigationImpl(
                   tab->GetWeakPtr()));
           return true;
         } else {
-          // Allow any navigations to an AI page.
+          // Allow any navigations to an AI page from embedded page.
           return false;
         }
       } else if (IsValidSearchResultsPage(url_params.url) || is_nav_to_ai) {
@@ -858,13 +858,6 @@ bool ContextualTasksUiService::HandleNavigationImpl(
   // Navigations to the AI URL in the topmost frame should always be
   // intercepted.
   if (is_nav_to_ai) {
-    // Matches Co-Browse URL pattern. Trigger background eligibility fetch.
-    // Since this eligibility check triggers asynchronous network activity, the
-    // result from this will not be applied until after the result is ready,
-    // e.g. in pratice typically the next time we get here.
-    aim_eligibility_service_->FetchEligibility(
-        AimEligibilityService::RequestSource::kCoBrowseAimUrlDetection);
-
     if (!aim_eligibility_service_->IsCobrowseEligible()) {
       return false;
     }
