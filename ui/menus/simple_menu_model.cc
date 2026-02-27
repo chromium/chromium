@@ -355,6 +355,10 @@ void SimpleMenuModel::SetMinorText(size_t index,
   items_[ValidateItemIndex(index)].minor_text = minor_text;
 }
 
+void SimpleMenuModel::SetMinorTextIsUrlAt(size_t index, bool is_url) {
+  items_[ValidateItemIndex(index)].minor_text_is_url = is_url;
+}
+
 void SimpleMenuModel::SetMinorIcon(size_t index,
                                    const ui::ImageModel& minor_icon) {
   items_[ValidateItemIndex(index)].minor_icon = minor_icon;
@@ -460,6 +464,10 @@ std::u16string SimpleMenuModel::GetLabelAt(size_t index) const {
 
 std::u16string SimpleMenuModel::GetMinorTextAt(size_t index) const {
   return items_[ValidateItemIndex(index)].minor_text;
+}
+
+bool SimpleMenuModel::GetMinorTextIsUrlAt(size_t index) const {
+  return items_[ValidateItemIndex(index)].minor_text_is_url;
 }
 
 ImageModel SimpleMenuModel::GetMinorIconAt(size_t index) const {

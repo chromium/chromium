@@ -180,6 +180,8 @@ void WebAppMenuModel::Build() {
           browser()->app_controller()->GetAppShortName();
       // For Isolated Web Apps, |GetAppShortName()| must be non-empty.
       display_text = short_name;
+    } else {
+      SetMinorTextIsUrlAt(app_info_index, true);
     }
     SetMinorText(app_info_index, display_text);
   }

@@ -227,6 +227,9 @@ class COMPONENT_EXPORT(UI_MENUS) SimpleMenuModel : public MenuModel {
   // Sets the minor text for the item at |index|.
   void SetMinorText(size_t index, const std::u16string& minor_text);
 
+  // Sets whether the minor text at |index| should be rendered as a URL.
+  void SetMinorTextIsUrlAt(size_t index, bool is_url);
+
   // Sets the minor icon for the item at |index|.
   void SetMinorIcon(size_t index, const ui::ImageModel& minor_icon);
 
@@ -277,6 +280,8 @@ class COMPONENT_EXPORT(UI_MENUS) SimpleMenuModel : public MenuModel {
   int GetCommandIdAt(size_t index) const override;
   std::u16string GetLabelAt(size_t index) const override;
   std::u16string GetMinorTextAt(size_t index) const override;
+  bool GetMinorTextIsUrlAt(size_t index) const override;
+
   ImageModel GetMinorIconAt(size_t index) const override;
   bool IsItemDynamicAt(size_t index) const override;
   // First defers to the delegate's GetAcceleratorForCommandId() method to
@@ -325,6 +330,7 @@ class COMPONENT_EXPORT(UI_MENUS) SimpleMenuModel : public MenuModel {
     std::u16string label;
     ui::Accelerator accelerator;
     std::u16string minor_text;
+    bool minor_text_is_url = false;
     ImageModel minor_icon;
     ImageModel icon;
     int group_id = -1;

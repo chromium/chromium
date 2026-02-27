@@ -75,6 +75,10 @@ std::u16string MenuModel::GetMinorTextAt(size_t index) const {
   return std::u16string();
 }
 
+bool MenuModel::GetMinorTextIsUrlAt(size_t index) const {
+  return false;
+}
+
 std::u16string MenuModel::GetSecondaryLabelAt(size_t index) const {
   return std::u16string();
 }

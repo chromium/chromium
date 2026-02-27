@@ -86,6 +86,10 @@ class COMPONENT_EXPORT(UI_BASE) MenuModel {
   // is rendered to the right of the label and using the font GetLabelFontAt().
   virtual std::u16string GetMinorTextAt(size_t index) const;
 
+  // Returns true if the minor text at the specified index should be treated as
+  // a URL when rendering the menu item.
+  virtual bool GetMinorTextIsUrlAt(size_t index) const;
+
   // Returns the minor icon of the item at the specified index. The minor icon
   // is rendered to the left of the minor text.
   virtual ImageModel GetMinorIconAt(size_t index) const;
