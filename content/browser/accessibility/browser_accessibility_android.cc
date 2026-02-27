@@ -803,7 +803,8 @@ bool BrowserAccessibilityAndroid::IsLeaf() const {
       GetNameFrom() == ax::mojom::NameFrom::kAttribute) {
     // We exclude menuItems and comboBoxMenuButtons to prevent double utterance.
     if (GetRole() != ax::mojom::Role::kMenuItem &&
-        GetRole() != ax::mojom::Role::kComboBoxMenuButton) {
+        GetRole() != ax::mojom::Role::kComboBoxMenuButton &&
+        GetRole() != ax::mojom::Role::kComboBoxSelect) {
       return false;
     }
   }
