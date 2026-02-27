@@ -223,31 +223,13 @@ OnDeviceTranslationServiceController::OnDeviceTranslationServiceController(
       service_idle_timeout_(kTranslationAPIServiceIdleTimeout.Get()),
       file_operation_proxy_(nullptr, base::OnTaskRunnerDeleter(nullptr)),
       language_packs_from_command_line_(GetLanguagePackInfoFromCommandLine()) {
-  // Initialize the pref change registrar.
-  pref_change_registrar_.Init(local_state);
-  if (!ComponentManager::HasTranslateKitLibraryPathFromCommandLine()) {
-    // Start listening to pref changes for TranslateKit binary path.
-    pref_change_registrar_.Add(
-        prefs::kTranslateKitBinaryPath,
-        base::BindRepeating(&OnDeviceTranslationServiceController::
-                                OnTranslateKitBinaryPathChanged,
-                            base::Unretained(this)));
-  }
-  if (!language_packs_from_command_line_.has_value()) {
-    // Start listening to pref changes for language pack keys.
-    for (const auto& it : kLanguagePackComponentConfigMap) {
-      pref_change_registrar_.Add(
-          GetComponentPathPrefName(*it.second),
-          base::BindRepeating(&OnDeviceTranslationServiceController::
-                                  OnLanguagePackKeyPrefChanged,
-                              base::Unretained(this)));
-    }
-  }
+  OnDeviceTranslationInstaller::GetInstance()->AddObserver(this);
 }
 
 OnDeviceTranslationServiceController::~OnDeviceTranslationServiceController() {
   manager_->OnServiceControllerDeleted(
       origin_, base::PassKey<OnDeviceTranslationServiceController>());
+  OnDeviceTranslationInstaller::GetInstance()->RemoveObserver(this);
 }
 
 void OnDeviceTranslationServiceController::CreateTranslator(
@@ -434,15 +416,22 @@ OnDeviceTranslationServiceController::CanTranslateImpl(
   return CanCreateTranslatorResult::kAfterDownloadLanguagePackNotReady;
 }
 
-// Called when the TranslateKitBinaryPath pref is changed.
-void OnDeviceTranslationServiceController::OnTranslateKitBinaryPathChanged(
-    const std::string& pref_name) {
+void OnDeviceTranslationServiceController::OnLanguagePackInstalled(
+    const LanguagePackKey lang_pack) {}
+
+void OnDeviceTranslationServiceController::OnLanguagePackInstallationChanged(
+    const LanguagePackKey lang_pack) {
   service_remote_.reset();
   MaybeRunPendingTasks();
 }
 
-// Called when the language pack key pref is changed.
-void OnDeviceTranslationServiceController::OnLanguagePackKeyPrefChanged(
+void OnDeviceTranslationServiceController::OnInstallationChanged() {
+  service_remote_.reset();
+  MaybeRunPendingTasks();
+}
+
+// Called when the TranslateKitBinaryPath pref is changed.
+void OnDeviceTranslationServiceController::OnTranslateKitBinaryPathChanged(
     const std::string& pref_name) {
   service_remote_.reset();
   MaybeRunPendingTasks();

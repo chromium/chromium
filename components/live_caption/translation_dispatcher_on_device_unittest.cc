@@ -7,6 +7,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "components/on_device_translation/service_controller.h"
+#include "components/on_device_translation/test/fake_installer.h"
 #include "components/on_device_translation/test/fake_service_controller_manager.h"
 #include "components/on_device_translation/test/fake_translator.h"
 #include "components/prefs/testing_pref_service.h"
@@ -15,9 +16,11 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using testing::_;
-
 namespace captions {
+namespace {
+
+using ::on_device_translation::FakeOnDeviceTranslationInstaller;
+using ::testing::_;
 
 using CreateTranslatorCallback = base::OnceCallback<void(
     base::expected<
@@ -54,6 +57,8 @@ class MockOnDeviceTranslationServiceController
 class TranslationDispatcherOnDeviceTest : public testing::Test {
  public:
   void SetUp() override {
+    fake_installer_ =
+        std::make_unique<FakeOnDeviceTranslationInstaller>(base::FilePath());
     service_controller_manager_ =
         std::make_unique<on_device_translation::FakeServiceControllerManager>(
             &local_state_);
@@ -90,6 +95,7 @@ class TranslationDispatcherOnDeviceTest : public testing::Test {
       translation_dispatcher_on_device_;
   std::string translated_text_;
   std::unique_ptr<on_device_translation::FakeTranslator> fake_translator_;
+  std::unique_ptr<FakeOnDeviceTranslationInstaller> fake_installer_;
 
   TranslationDispatcherOnDeviceTest() = default;
 };
@@ -171,4 +177,5 @@ TEST_F(TranslationDispatcherOnDeviceTest, GetTranslationFailureOnCanTranslate) {
   EXPECT_TRUE(translated_text_.empty());
 }
 
+}  // namespace
 }  // namespace captions
