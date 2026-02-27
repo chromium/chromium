@@ -4734,6 +4734,7 @@ static_library("ui") {
       "//chrome/browser/actor/resources:browser_resources",
       "//chrome/browser/actor/ui/task_list_bubble:controller",
       "//chrome/browser/apps:icon_standardizer",
+      "//chrome/browser/collaboration",
       "//chrome/browser/collaboration/messaging",
       "//chrome/browser/desktop_to_mobile_promos:utils",
       "//chrome/browser/infobars",

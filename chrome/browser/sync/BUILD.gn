@@ -89,6 +89,7 @@ source_set("sync") {
     "//chrome/browser:browser_process",
     "//chrome/browser/accessibility_annotator",
     "//chrome/browser/bookmarks",
+    "//chrome/browser/collaboration",
     "//chrome/browser/consent_auditor",
     "//chrome/browser/data_sharing",
 

@@ -290,6 +290,7 @@ source_set("profiles_extra_parts_impl") {
     "//chrome/browser/breadcrumbs",
     "//chrome/browser/btm",
     "//chrome/browser/client_hints",
+    "//chrome/browser/collaboration",
     "//chrome/browser/collaboration/comments",
     "//chrome/browser/collaboration/messaging",
     "//chrome/browser/commerce",

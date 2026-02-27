@@ -214,3 +214,59 @@ if (is_android) {
     ]
   }
 }
+
+source_set("collaboration") {
+  sources = [
+    "collaboration_service_factory.cc",
+    "collaboration_service_factory.h",
+    "delegate_factory.h",
+  ]
+  public_deps = [ "//chrome/browser/profiles:profile" ]
+  deps = [
+    "//base",
+    "//chrome/browser/data_sharing",
+    "//chrome/browser/signin",
+    "//chrome/browser/tab_group_sync:factories",
+    "//components/collaboration/internal:core_internal",
+    "//components/data_sharing/public:features",
+    "//content/public/browser",
+  ]
+
+  if (is_android) {
+    sources += [
+      "android/collaboration_controller_delegate_android.cc",
+      "android/collaboration_controller_delegate_android.h",
+      "android/collaboration_service_factory_android.cc",
+      "android/comments/comments_service_factory_android.cc",
+      "android/messaging/messaging_backend_service_factory_android.cc",
+    ]
+    deps += [
+      "//chrome/android:jni_headers",
+      "//chrome/browser/collaboration/comments",
+      "//chrome/browser/collaboration/messaging",
+      "//components/collaboration/internal:comments_internal",
+      "//components/collaboration/internal:messaging_internal",
+      "//components/collaboration/public:conversion_utils",
+      "//components/data_sharing/public:android_utils",
+      "//components/saved_tab_groups/public:conversion_utils",
+    ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "collaboration_service_factory_unittest.cc" ]
+  deps = [
+    ":collaboration",
+    "//base/test:test_support",
+    "//chrome/browser/sync",
+    "//chrome/browser/sync:factories",
+    "//chrome/test:test_support",
+    "//components/collaboration/internal:core_internal",
+    "//components/data_sharing/public:features",
+    "//components/sync:test_support",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

@@ -89,6 +89,7 @@ source_set("impl") {
     "//chrome/app:generated_resources",
     "//chrome/app/vector_icons",
     "//chrome/browser:browser_process",
+    "//chrome/browser/collaboration",
     "//chrome/browser/collaboration/messaging",
     "//chrome/browser/data_sharing",
     "//chrome/browser/favicon",
