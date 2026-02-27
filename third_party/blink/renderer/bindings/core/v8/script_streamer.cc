@@ -85,7 +85,7 @@ v8::ScriptType ScriptTypeForStreamingTask(ScriptResource* script_resource) {
         if (script_resource->Url()
                 .GetPath()
                 .ToString()
-                .DeprecatedEndsWithIgnoringCase(".mjs")) {
+                .EndsWithIgnoringAsciiCase(".mjs")) {
           return v8::ScriptType::kModule;
         }
       }
