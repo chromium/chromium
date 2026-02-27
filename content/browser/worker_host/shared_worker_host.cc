@@ -178,7 +178,8 @@ SharedWorkerHost::SharedWorkerHost(
       ukm_source_id_(ukm::ConvertToSourceId(ukm::AssignNewSourceId(),
                                             ukm::SourceIdType::WORKER_ID)),
       reporting_source_(base::UnguessableToken::Create()),
-      creator_policy_container_host_(std::move(creator_policy_container_host)) {
+      creator_policy_container_host_(std::move(creator_policy_container_host)),
+      network_restrictions_id_(base::UnguessableToken::Create()) {
   DCHECK(GetProcessHost());
   DCHECK(GetProcessHost()->IsInitializedAndNotDead());
 
@@ -222,6 +223,10 @@ SharedWorkerHost::~SharedWorkerHost() {
     if (auto* lock_manager = GetStoragePartitionImpl()->GetLockManager()) {
       lock_manager->RemoveLockObserver(token().value());
     }
+
+    GetStoragePartitionImpl()->ClearNoncesInNetworkContextAfterDelay({
+        network_restrictions_id_,
+    });
   }
 
   // Notify the service that each client still connected will be removed and
@@ -525,8 +530,6 @@ SharedWorkerHost::CreateNetworkFactoryParamsForSubresources() {
     dip_reporter_->Clone(dip_reporter.InitWithNewPipeAndPassReceiver());
   }
 
-  // TODO(crbug.com/447954811): Pass network_restrictions_id so script fetch
-  // can be restricted based on connection allowlist.
   network::mojom::URLLoaderFactoryParamsPtr factory_params =
       URLLoaderFactoryParamsHelper::CreateForWorker(
           GetProcessHost(), origin, GetStorageKey().ToPartialNetIsolationInfo(),
@@ -535,8 +538,7 @@ SharedWorkerHost::CreateNetworkFactoryParamsForSubresources() {
               ->CreateURLLoaderNetworkObserverForServiceOrSharedWorker(
                   ToOriginatingProcessId(GetProcessHost()->GetID()), origin),
           /*devtools_observer=*/mojo::NullRemote(),
-          mojo::Clone(worker_client_security_state_),
-          /*network_restrictions_id=*/std::nullopt,
+          mojo::Clone(worker_client_security_state_), network_restrictions_id_,
           /*debug_tag=*/
           "SharedWorkerHost::CreateNetworkFactoryForSubresource",
           instance_.DoesRequireCrossSiteRequestForCookies(),

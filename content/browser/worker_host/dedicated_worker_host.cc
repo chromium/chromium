@@ -174,6 +174,10 @@ DedicatedWorkerHost::~DedicatedWorkerHost() {
     lock_manager->RemoveLockObserver(GetToken().value());
   }
 
+  GetStoragePartitionImpl()->ClearNoncesInNetworkContextAfterDelay({
+      network_restrictions_id_,
+  });
+
   // Send any final reports and allow the reporting configuration to be
   // removed. Note that the RenderProcessHost and the associated
   // StoragePartition outlives `this`.

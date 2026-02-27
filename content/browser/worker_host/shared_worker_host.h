@@ -242,6 +242,14 @@ class CONTENT_EXPORT SharedWorkerHost
     return reporting_source_;
   }
 
+  const base::UnguessableToken& network_restrictions_id() const {
+    return network_restrictions_id_;
+  }
+
+  const PolicyContainerPolicies& creator_policies() const {
+    return creator_policy_container_host_->policies();
+  }
+
   void ReportNoBinderForInterface(const std::string& error);
 
   void CreateCodeCacheHost(
@@ -404,6 +412,8 @@ class CONTENT_EXPORT SharedWorkerHost
   std::unique_ptr<CrossOriginEmbedderPolicyReporter> coep_reporter_;
 
   std::unique_ptr<DocumentIsolationPolicyReporter> dip_reporter_;
+
+  const base::UnguessableToken network_restrictions_id_;
 
   base::WeakPtrFactory<SharedWorkerHost> weak_factory_{this};
 };
