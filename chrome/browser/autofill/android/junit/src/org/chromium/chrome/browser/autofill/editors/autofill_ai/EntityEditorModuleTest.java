@@ -9,6 +9,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -45,6 +46,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillProfileBridge;
 import org.chromium.chrome.browser.autofill.AutofillProfileBridgeJni;
@@ -117,6 +119,7 @@ public class EntityEditorModuleTest {
                     /* typeName= */ EntityTypeName.PASSPORT,
                     /* isReadOnly= */ false,
                     /* typeNameAsString= */ "Passport",
+                    /* typeNameAsMetricsString= */ "Passport",
                     /* addEntityTypeString= */ "Add passport",
                     /* editEntityTypeString= */ "Edit passport",
                     /* deleteEntityTypeString= */ "Delete passport",
@@ -246,6 +249,43 @@ public class EntityEditorModuleTest {
                 model.get(EntityEditorProperties.DELETE_CONFIRMATION_PRIMARY_BUTTON_TEXT_ID),
                 R.string.autofill_delete_suggestion_button);
 
+        HistogramWatcher deletionCancelledHistogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecordTimes(
+                                EntityEditorMediator.ENTITY_DELETED_HISTOGRAM
+                                        + LOCAL_PASSPORT
+                                                .getEntityType()
+                                                .getTypeNameAsMetricsString(),
+                                /* value= */ true,
+                                /* times= */ 1)
+                        .expectBooleanRecordTimes(
+                                EntityEditorMediator.ENTITY_DELETED_SETTINGS_HISTOGRAM
+                                        + LOCAL_PASSPORT
+                                                .getEntityType()
+                                                .getTypeNameAsMetricsString(),
+                                /* value= */ true,
+                                /* times= */ 1)
+                        .build();
+        model.get(EntityEditorProperties.DELETE_CALLBACK).onResult(false);
+        verify(mDelegate, never()).onDelete(LOCAL_PASSPORT);
+
+        HistogramWatcher deletionConfirmedHistogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecordTimes(
+                                EntityEditorMediator.ENTITY_DELETED_HISTOGRAM
+                                        + LOCAL_PASSPORT
+                                                .getEntityType()
+                                                .getTypeNameAsMetricsString(),
+                                /* value= */ true,
+                                /* times= */ 1)
+                        .expectBooleanRecordTimes(
+                                EntityEditorMediator.ENTITY_DELETED_SETTINGS_HISTOGRAM
+                                        + LOCAL_PASSPORT
+                                                .getEntityType()
+                                                .getTypeNameAsMetricsString(),
+                                /* value= */ true,
+                                /* times= */ 1)
+                        .build();
         model.get(EntityEditorProperties.DELETE_CALLBACK).onResult(true);
         verify(mDelegate).onDelete(LOCAL_PASSPORT);
     }

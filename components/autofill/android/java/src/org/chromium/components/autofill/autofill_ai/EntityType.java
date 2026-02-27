@@ -26,6 +26,8 @@ public class EntityType {
     // Used to sort entity types and groups and as title of each entity group in the list of
     // entities.
     private final String mTypeNameAsString;
+    // Used for histogram recording.
+    private final String mTypeNameAsMetricsString;
     // Used as title in the add entity dialog.
     private final String mAddEntityTypeString;
     // Used as title in the edit entity dialog.
@@ -40,6 +42,7 @@ public class EntityType {
             @EntityTypeName int typeName,
             boolean isReadOnly,
             @JniType("std::u16string") String typeNameAsString,
+            @JniType("std::string") String typeNameAsMetricsString,
             @JniType("std::string") String addEntityTypeString,
             @JniType("std::string") String editEntityTypeString,
             @JniType("std::string") String deleteEntityTypeString,
@@ -48,6 +51,7 @@ public class EntityType {
         mTypeName = typeName;
         mIsReadOnly = isReadOnly;
         mTypeNameAsString = typeNameAsString;
+        mTypeNameAsMetricsString = typeNameAsMetricsString;
         mAddEntityTypeString = addEntityTypeString;
         mEditEntityTypeString = editEntityTypeString;
         mDeleteEntityTypeString = deleteEntityTypeString;
@@ -65,6 +69,10 @@ public class EntityType {
 
     public String getTypeNameAsString() {
         return mTypeNameAsString;
+    }
+
+    public String getTypeNameAsMetricsString() {
+        return mTypeNameAsMetricsString;
     }
 
     public String getAddEntityTypeString() {

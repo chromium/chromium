@@ -34,6 +34,9 @@ import static org.chromium.chrome.browser.autofill.editors.common.text_field.Tex
 import android.content.Context;
 import android.text.TextUtils;
 
+import androidx.annotation.VisibleForTesting;
+
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.autofill.AutofillProfileBridge;
@@ -58,6 +61,12 @@ import java.util.Map;
 /** Mediator for the Entity Editor. */
 @NullMarked
 class EntityEditorMediator {
+    @VisibleForTesting
+    static final String ENTITY_DELETED_HISTOGRAM = "Autofill.Ai.EntityDeleted.Any.";
+
+    @VisibleForTesting
+    static final String ENTITY_DELETED_SETTINGS_HISTOGRAM = "Autofill.Ai.EntityDeleted.Settings.";
+
     private final Context mContext;
     private final Delegate mDelegate;
     private final IdentityManager mIdentityManager;
@@ -110,7 +119,13 @@ class EntityEditorMediator {
     }
 
     private void onDelete(boolean userConfirmedDeletion) {
-        // TODO: crbug.com/476755159 - Record deletion histograms.
+        RecordHistogram.recordBooleanHistogram(
+                ENTITY_DELETED_HISTOGRAM + mEntityInstance.getEntityType().getTypeNameAsString(),
+                userConfirmedDeletion);
+        RecordHistogram.recordBooleanHistogram(
+                ENTITY_DELETED_SETTINGS_HISTOGRAM
+                        + mEntityInstance.getEntityType().getTypeNameAsString(),
+                userConfirmedDeletion);
         if (userConfirmedDeletion) {
             mDelegate.onDelete(mEntityInstance);
         }
