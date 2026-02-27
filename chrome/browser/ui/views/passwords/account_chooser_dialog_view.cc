@@ -102,7 +102,10 @@ bool AccountChooserDialogView::ShouldShowCloseButton() const {
 
 void AccountChooserDialogView::WindowClosing() {
   if (controller_) {
-    controller_->OnCloseDialog();
+    // Clear the controller pointer before calling OnCloseDialog() to prevent
+    // re-entrancy issues during widget destruction. The controller tries
+    // deleting `this`.
+    std::exchange(controller_, nullptr)->OnCloseDialog();
   }
 }
 
