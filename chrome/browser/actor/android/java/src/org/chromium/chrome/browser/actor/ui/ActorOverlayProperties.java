@@ -4,8 +4,11 @@
 
 package org.chromium.chrome.browser.actor.ui;
 
+import android.view.View;
+
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 
@@ -24,6 +27,12 @@ class ActorOverlayProperties {
     /** The bottom margin of the overlay. */
     public static final WritableIntPropertyKey BOTTOM_MARGIN = new WritableIntPropertyKey();
 
+    /** The click listener for the overlay. */
+    public static final ReadableObjectPropertyKey<View.OnClickListener> ON_CLICK_LISTENER =
+            new ReadableObjectPropertyKey<>();
+
     /** All keys for the property model. */
-    public static final PropertyKey[] ALL_KEYS = {VISIBLE, CAN_SHOW, TOP_MARGIN, BOTTOM_MARGIN};
+    public static final PropertyKey[] ALL_KEYS = {
+        VISIBLE, CAN_SHOW, TOP_MARGIN, BOTTOM_MARGIN, ON_CLICK_LISTENER
+    };
 }

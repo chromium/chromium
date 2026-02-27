@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsV
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.ui.test.util.BlankUiTestActivity;
@@ -55,6 +56,7 @@ public class ActorOverlayViewRenderTest {
                     .build();
 
     @Mock private TabModelSelector mTabModelSelector;
+    @Mock private SnackbarManager mSnackbarManager;
     private TestBrowserControlsVisibilityManager mBrowserControlsVisibilityManager;
 
     private TabObscuringHandler mTabObscuringHandler;
@@ -90,7 +92,8 @@ public class ActorOverlayViewRenderTest {
                                     viewStub,
                                     mTabModelSelector,
                                     mBrowserControlsVisibilityManager,
-                                    mTabObscuringHandler);
+                                    mTabObscuringHandler,
+                                    mSnackbarManager);
                 });
     }
 

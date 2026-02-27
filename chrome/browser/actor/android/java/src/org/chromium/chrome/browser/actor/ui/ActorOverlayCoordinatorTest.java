@@ -6,7 +6,10 @@ package org.chromium.chrome.browser.actor.ui;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
+import android.app.Activity;
+import android.view.View.OnClickListener;
 import android.view.ViewStub;
 
 import org.junit.Assert;
@@ -19,6 +22,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.supplier.ObservableSuppliers;
@@ -30,6 +34,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 
 /** Tests for {@link ActorOverlayCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -40,6 +45,7 @@ public class ActorOverlayCoordinatorTest {
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private BrowserControlsVisibilityManager mBrowserControlsVisibilityManager;
     @Mock private Tab mTab;
+    @Mock private SnackbarManager mSnackbarManager;
 
     private TabObscuringHandler mTabObscuringHandler;
     private ActorOverlayCoordinator mCoordinator;
@@ -49,6 +55,8 @@ public class ActorOverlayCoordinatorTest {
 
     @Before
     public void setUp() {
+        Activity activity = Robolectric.buildActivity(Activity.class).get();
+        Mockito.when(mView.getContext()).thenReturn(activity);
         Mockito.when(mViewStub.inflate()).thenReturn(mView);
 
         mTabObscuringHandler = new TabObscuringHandler();
@@ -61,7 +69,8 @@ public class ActorOverlayCoordinatorTest {
                         mViewStub,
                         mTabModelSelector,
                         mBrowserControlsVisibilityManager,
-                        mTabObscuringHandler);
+                        mTabObscuringHandler,
+                        mSnackbarManager);
     }
 
     @Test
@@ -71,6 +80,24 @@ public class ActorOverlayCoordinatorTest {
         verify(mViewStub).inflate();
         verify(mTabModelSelector).addObserver(any(TabModelSelectorObserver.class));
         verify(mBrowserControlsVisibilityManager).addObserver(any());
+    }
+
+    @Test
+    public void testSnackbarOnClicked() {
+        OnClickListener clickListener =
+                mCoordinator.getModelForTesting().get(ActorOverlayProperties.ON_CLICK_LISTENER);
+        Assert.assertNotNull(clickListener);
+
+        // Snackbar should be shown if not already showing.
+        when(mSnackbarManager.isShowing()).thenReturn(false);
+        clickListener.onClick(mView);
+        verify(mSnackbarManager).showSnackbar(any());
+
+        // Snackbar should NOT be shown if already showing.
+        Mockito.clearInvocations(mSnackbarManager);
+        when(mSnackbarManager.isShowing()).thenReturn(true);
+        clickListener.onClick(mView);
+        verify(mSnackbarManager, Mockito.never()).showSnackbar(any());
     }
 
     @Test

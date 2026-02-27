@@ -29,6 +29,8 @@ class ActorOverlayViewBinder {
             view.setMargins(
                     model.get(ActorOverlayProperties.TOP_MARGIN),
                     model.get(ActorOverlayProperties.BOTTOM_MARGIN));
+        } else if (key == ActorOverlayProperties.ON_CLICK_LISTENER) {
+            view.setOnClickListener(model.get(ActorOverlayProperties.ON_CLICK_LISTENER));
         }
     }
 }
