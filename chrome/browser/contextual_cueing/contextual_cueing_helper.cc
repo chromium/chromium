@@ -15,6 +15,9 @@
 #include "chrome/browser/contextual_cueing/contextual_cueing_service_factory.h"
 #include "chrome/browser/contextual_cueing/zero_state_suggestions_page_data.h"
 #include "chrome/browser/glic/public/features.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -48,13 +51,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #endif
 
-#if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/glic/public/glic_enabling.h"
-#include "chrome/browser/glic/public/glic_keyed_service.h"
-#include "chrome/browser/glic/public/glic_keyed_service_factory.h"
-#endif
-
-#if BUILDFLAG(ENABLE_GLIC) && !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/glic/public/glic_side_panel_coordinator.h"
 #endif
 
@@ -330,7 +327,7 @@ bool ContextualCueingHelper::IsBrowserBlockingNudges(
   }
 #endif
 
-#if BUILDFLAG(ENABLE_GLIC) && !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // NEEDS_ANDROID_IMPL
   Profile* profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
@@ -362,7 +359,7 @@ bool ContextualCueingHelper::IsBrowserBlockingNudges(
     return true;
   }
 
-#endif  // BUILDFLAG(ENABLE_GLIC)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
   auto* controller = contextual_tasks::ContextualTasksPanelController::From(
@@ -470,7 +467,6 @@ void ContextualCueingHelper::MaybeCreateForWebContents(
     return;
   }
 
-#if BUILDFLAG(ENABLE_GLIC)
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   if (!glic::GlicEnabling::IsProfileEligible(profile)) {
@@ -492,7 +488,6 @@ void ContextualCueingHelper::MaybeCreateForWebContents(
   ContextualCueingHelper::CreateForWebContents(web_contents,
                                                optimization_guide_keyed_service,
                                                contextual_cueing_service);
-#endif  // BUILDFLAG(ENABLE_GLIC)
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(ContextualCueingHelper);

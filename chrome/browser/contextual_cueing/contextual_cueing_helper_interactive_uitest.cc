@@ -47,8 +47,6 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if BUILDFLAG(ENABLE_GLIC)
-
 class FakeGlicNudgeDelegate : public GlicNudgeDelegate {
  public:
   void OnTriggerGlicNudgeUI(std::string label) override {
@@ -820,5 +818,3 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingBypassNudgeCapsTest,
   ASSERT_TRUE(glic_service);
   EXPECT_TRUE(glic_service->IsWindowShowing());
 }
-
-#endif  // BUILDFLAG(ENABLE_GLIC)

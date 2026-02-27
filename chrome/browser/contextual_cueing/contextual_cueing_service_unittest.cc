@@ -11,6 +11,7 @@
 #include "chrome/browser/contextual_cueing/contextual_cueing_features.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_prefs.h"
 #include "chrome/browser/contextual_cueing/zero_state_suggestions_page_data.h"
+#include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/predictors/loading_predictor.h"
@@ -26,10 +27,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
-
-#if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/glic/glic_pref_names.h"
-#endif
 
 namespace contextual_cueing {
 
@@ -370,7 +367,6 @@ class MockLoadingPredictor : public predictors::LoadingPredictor {
               (override));
 };
 
-#if BUILDFLAG(ENABLE_GLIC)
 class ContextualCueingServiceTestZeroStateSuggestions : public testing::Test {
  public:
   ContextualCueingServiceTestZeroStateSuggestions() {
@@ -589,6 +585,5 @@ TEST_F(ContextualCueingServiceTestZeroStateSuggestions,
   EXPECT_EQ(pending_request->supported_tools_size(), 1);
   EXPECT_EQ("tool", pending_request->supported_tools(0));
 }
-#endif
 
 }  // namespace contextual_cueing

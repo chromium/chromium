@@ -13,6 +13,7 @@
 #include "chrome/browser/contextual_cueing/contextual_cueing_features.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_service_factory.h"
 #include "chrome/browser/extensions/keyed_services/browser_context_keyed_service_factories.h"
+#include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/optimization_guide/browser_test_util.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
@@ -35,10 +36,6 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 
-#if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/glic/glic_pref_names.h"
-#endif
-
 namespace contextual_cueing {
 
 using ::testing::_;
@@ -55,7 +52,6 @@ class ContextualCueingServiceBrowserTest : public InProcessBrowserTest {
   }
 };
 
-#if BUILDFLAG(ENABLE_GLIC)
 class ContextualCueingServiceBrowserTestZSSFlag
     : public ContextualCueingServiceBrowserTest {
  public:
@@ -403,8 +399,6 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingServiceBrowserTestAllowZSSForSrp,
       "ContextualCueing.GlicSuggestions.FocusedTabEligibleForSuggestions", true,
       1);
 }
-
-#endif  // ENABLE_GLIC
 
 class ContextualCueingServiceBrowserTestCCFlag
     : public ContextualCueingServiceBrowserTest {

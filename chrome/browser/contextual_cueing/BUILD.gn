@@ -38,7 +38,9 @@ source_set("impl") {
   ]
   deps = [
     "//chrome/browser:browser_process",
+    "//chrome/browser/actor",
     "//chrome/browser/contextual_cueing",
+    "//chrome/browser/glic",
     "//chrome/browser/optimization_guide",
     "//chrome/browser/page_content_annotations:extraction_service",
     "//chrome/browser/profiles:profile",
@@ -58,12 +60,6 @@ source_set("impl") {
     "//services/metrics/public/cpp:ukm_builders",
     "//url",
   ]
-  if (enable_glic) {
-    deps += [
-      "//chrome/browser/actor",
-      "//chrome/browser/glic",
-    ]
-  }
   if (!is_android) {
     deps += [
       "//chrome/browser/contextual_tasks:ui",
@@ -102,6 +98,8 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chrome/browser:global_features",
     "//chrome/browser/content_extraction",
+    "//chrome/browser/glic",
+    "//chrome/browser/glic/test_support",
     "//chrome/browser/optimization_guide:test_support",
     "//chrome/browser/page_content_annotations:extraction_service",
     "//chrome/browser/ui:ui_features",
@@ -112,12 +110,6 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
   ]
-  if (enable_glic) {
-    deps += [
-      "//chrome/browser/glic",
-      "//chrome/browser/glic/test_support",
-    ]
-  }
   if (is_chromeos) {
     deps += [ "//chrome/browser/ash/test:test_support" ]
   }
