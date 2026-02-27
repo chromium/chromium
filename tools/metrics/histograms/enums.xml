@@ -13845,6 +13845,8 @@ from previous Chrome versions.
   <int value="-190449995" label="CommerceLocalPDPDetection:enabled"/>
   <int value="-189740492"
       label="PolicyIndicationForManagedDefaultSearch:disabled"/>
+  <int value="-189735598"
+      label="SourceSpecificMulticastInDirectSockets:enabled"/>
   <int value="-189543840" label="PageActionsMigration:disabled"/>
   <int value="-188923198"
       label="BlockV8OptimizerOnUnfamiliarSitesSetting:disabled"/>
@@ -15179,6 +15181,8 @@ from previous Chrome versions.
   <int value="266322815" label="ChromeModernDesign:disabled"/>
   <int value="266702296" label="disable-plugin-power-saver"/>
   <int value="266787297" label="CreateShortcutIgnoresManifest:disabled"/>
+  <int value="266793022"
+      label="SourceSpecificMulticastInDirectSockets:disabled"/>
   <int value="267252476" label="WebXRDepthPerformance:disabled"/>
   <int value="267313220" label="ScreenSaverPreview:disabled"/>
   <int value="267332914" label="AvoidUnnecessaryBeforeUnloadCheck:disabled"/>

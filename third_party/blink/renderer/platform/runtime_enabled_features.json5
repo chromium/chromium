@@ -5226,6 +5226,12 @@
       status: "stable",
     },
     {
+      // Source-specific multicast support in the Direct Sockets API.
+      name: "SourceSpecificMulticastInDirectSockets",
+      status: "test",
+      depends_on: ["MulticastInDirectSockets"],
+    },
+    {
       // Whether spatial navigation should use cursor inheritance to exclude
       // nodes where cursor is inherited. Kill-switch that can be remove once
       // the change goes through a stable release.

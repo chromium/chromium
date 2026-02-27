@@ -8938,6 +8938,11 @@
     "expiry_milestone": 160
   },
   {
+    "name": "source-specific-multicast-in-direct-sockets",
+    "owners": [ "//content/browser/direct_sockets/OWNERS" ],
+    "expiry_milestone": 165
+  },
+  {
     "name": "spatial-entities-depth-hit-test",
     "owners": [ "alcooper@chromium.org", "bajones@chromium.org", "xr-dev@chromium.org" ],
     "expiry_milestone": 150

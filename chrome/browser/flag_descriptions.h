@@ -2879,6 +2879,14 @@ inline constexpr char kMultiInstanceSharedPrefsMigrationDescription[] =
     "potential downgrade. When disabled, we perform all operations on the old "
     "file and purges the new file.";
 
+inline constexpr char kSourceSpecificMulticastInDirectSocketsName[] =
+    "Source-Specific Multicast in Direct Sockets API";
+inline constexpr char kSourceSpecificMulticastInDirectSocketsDescription[] =
+    "Enables Source-Specific Multicast support in Direct Sockets API. See "
+    "https://github.com/WICG/direct-sockets/blob/main/docs/"
+    "multicast-explainer.md for "
+    "details.";
+
 inline constexpr char kCanvas2DLayersName[] =
     "Enables canvas 2D methods BeginLayer and EndLayer";
 inline constexpr char kCanvas2DLayersDescription[] =

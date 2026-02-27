@@ -12181,16 +12181,22 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
-    {"multicast-in-direct-sockets",
-     flag_descriptions::kMulticastInDirectSocketsName,
-     flag_descriptions::kMulticastInDirectSocketsDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(blink::features::kMulticastInDirectSockets)},
     {"controlled-frame-web-request-security-info",
      flag_descriptions::kControlledFrameWebRequestSecurityInfoName,
      flag_descriptions::kControlledFrameWebRequestSecurityInfoDescription,
      kOsDesktop,
      FEATURE_VALUE_TYPE(
          blink::features::kControlledFrameWebRequestSecurityInfo)},
+    {"multicast-in-direct-sockets",
+     flag_descriptions::kMulticastInDirectSocketsName,
+     flag_descriptions::kMulticastInDirectSocketsDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(blink::features::kMulticastInDirectSockets)},
+    {"source-specific-multicast-in-direct-sockets",
+     flag_descriptions::kSourceSpecificMulticastInDirectSocketsName,
+     flag_descriptions::kSourceSpecificMulticastInDirectSocketsDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(
+         blink::features::kSourceSpecificMulticastInDirectSockets)},
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
