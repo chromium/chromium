@@ -8,6 +8,7 @@
 #include "base/json/json_file_value_serializer.h"
 #include "base/json/values_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/metrics_hashes.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
@@ -24,6 +25,7 @@
 #include "components/history/core/browser/history_database_params.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/test/test_history_database.h"
+#include "components/metrics/dwa/dwa_recorder.h"
 #include "components/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations.h"
 #include "components/privacy_sandbox/privacy_sandbox_attestations/scoped_privacy_sandbox_attestations.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
@@ -39,6 +41,7 @@
 #include "content/public/test/test_utils.h"
 #include "content/public/test/web_contents_tester.h"
 #include "content/test/test_render_view_host.h"
+#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/mojom/browsing_topics/browsing_topics.mojom.h"
@@ -185,6 +188,7 @@ class BrowsingTopicsServiceImplTest
     scoped_feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
         {{network::features::kBrowsingTopics, {}},
+         {metrics::dwa::kDwaFeature, {}},
          {blink::features::kBrowsingTopicsParameters,
           {{"time_period_per_epoch",
             base::StrCat({base::NumberToString(kEpoch.InSeconds()), "s"})},
@@ -1404,6 +1408,11 @@ TEST_F(BrowsingTopicsServiceImplTest,
 TEST_F(BrowsingTopicsServiceImplTest, HandleTopicsWebApi_OneEpoch) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
+  metrics::dwa::DwaRecorder::Get()->EnableRecording();
+  metrics::dwa::DwaRecorder::Get()->Purge();
+  ASSERT_THAT(metrics::dwa::DwaRecorder::Get()->GetEntriesForTesting(),
+              testing::IsEmpty());
+
   base::queue<EpochTopics> mock_calculator_results;
   mock_calculator_results.emplace(
       CreateTestEpochTopics({{Topic(1), {GetHashedDomain("bar.com")}},
@@ -1428,27 +1437,45 @@ TEST_F(BrowsingTopicsServiceImplTest, HandleTopicsWebApi_OneEpoch) {
         /*get_topics=*/true,
         /*observe=*/true, result));
     EXPECT_TRUE(result.empty());
+
+    histogram_tester_.ExpectBucketCount(
+        "BrowsingTopics.Result.Status",
+        browsing_topics::ApiAccessResult::kSuccess, 1);
+    histogram_tester_.ExpectBucketCount("BrowsingTopics.Result.RealTopicCount",
+                                        0, 1);
+    histogram_tester_.ExpectBucketCount(
+        "BrowsingTopics.Result.FilteredTopicCount", 0, 1);
+    histogram_tester_.ExpectBucketCount("BrowsingTopics.Result.FakeTopicCount",
+                                        1, 0);
+
+    std::vector<ApiResultUkmMetrics> ukm_entries =
+        ReadApiResultUkmMetrics(ukm_recorder);
+    EXPECT_EQ(1u, ukm_entries.size());
+
+    // This is an empty event with no metrics.
+    EXPECT_FALSE(ukm_entries[0].failure_reason);
+    EXPECT_FALSE(ukm_entries[0].topic0.IsValid());
+    EXPECT_FALSE(ukm_entries[0].topic1.IsValid());
+    EXPECT_FALSE(ukm_entries[0].topic2.IsValid());
+
+    const auto& dwa_entries =
+        metrics::dwa::DwaRecorder::Get()->GetEntriesForTesting();
+    EXPECT_EQ(dwa_entries.size(), 1u);
+    EXPECT_THAT(dwa_entries[0]->event_hash,
+                base::HashMetricName("BrowsingTopics.Result"));
+    EXPECT_THAT(
+        dwa_entries[0]->content_hash,
+        base::HashMetricName(
+            net::registry_controlled_domains::GetDomainAndRegistry(
+                GURL("https://www.bar.com"),
+                net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES)));
+    EXPECT_EQ(dwa_entries[0]->metrics.size(), 1u);
+    EXPECT_EQ(
+        dwa_entries[0]->metrics.at(base::HashMetricName("RealTopicCount")), 0);
+
+    // Purge the recorder so we have a clean slate for the second call.
+    metrics::dwa::DwaRecorder::Get()->Purge();
   }
-
-  histogram_tester_.ExpectBucketCount(
-      "BrowsingTopics.Result.Status",
-      browsing_topics::ApiAccessResult::kSuccess, 1);
-  histogram_tester_.ExpectBucketCount("BrowsingTopics.Result.RealTopicCount", 0,
-                                      1);
-  histogram_tester_.ExpectBucketCount(
-      "BrowsingTopics.Result.FilteredTopicCount", 0, 1);
-  histogram_tester_.ExpectBucketCount("BrowsingTopics.Result.FakeTopicCount", 1,
-                                      0);
-
-  std::vector<ApiResultUkmMetrics> metrics_entries =
-      ReadApiResultUkmMetrics(ukm_recorder);
-  EXPECT_EQ(1u, metrics_entries.size());
-
-  // This is an empty event with no metrics.
-  EXPECT_FALSE(metrics_entries[0].failure_reason);
-  EXPECT_FALSE(metrics_entries[0].topic0.IsValid());
-  EXPECT_FALSE(metrics_entries[0].topic1.IsValid());
-  EXPECT_FALSE(metrics_entries[0].topic2.IsValid());
 
   // Advance to the time after the epoch switch time.
   task_environment()->AdvanceClock(kMaxEpochIntroductionDelay);
@@ -1467,6 +1494,21 @@ TEST_F(BrowsingTopicsServiceImplTest, HandleTopicsWebApi_OneEpoch) {
     EXPECT_EQ(result[0]->taxonomy_version, "1");
     EXPECT_EQ(result[0]->model_version, "5000000000");
     EXPECT_EQ(result[0]->version, "chrome.1:1:5000000000");
+
+    const auto& dwa_entries =
+        metrics::dwa::DwaRecorder::Get()->GetEntriesForTesting();
+    EXPECT_EQ(dwa_entries.size(), 1u);
+    EXPECT_THAT(dwa_entries[0]->event_hash,
+                base::HashMetricName("BrowsingTopics.Result"));
+    EXPECT_THAT(
+        dwa_entries[0]->content_hash,
+        base::HashMetricName(
+            net::registry_controlled_domains::GetDomainAndRegistry(
+                GURL("https://www.bar.com"),
+                net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES)));
+    EXPECT_EQ(dwa_entries[0]->metrics.size(), 1u);
+    EXPECT_EQ(
+        dwa_entries[0]->metrics.at(base::HashMetricName("RealTopicCount")), 1);
   }
 }
 

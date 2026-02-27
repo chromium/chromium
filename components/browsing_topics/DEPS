@@ -3,6 +3,8 @@ include_rules = [
   "+components/optimization_guide",
   "+components/keyed_service",
   "+components/privacy_sandbox",
+  "+components/metrics/private_metrics",
+  "+components/metrics/dwa",
   "+content/public/browser",
   "+components/content_settings/browser",
   "+content/public/test",

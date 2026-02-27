@@ -132,6 +132,22 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="BrowsingTopics.Result">
+  <owner>yaoxia@chromium.org</owner>
+  <owner>jkarlin@chromium.org</owner>
+  <summary>
+    Records the result of a Topics API call. Recorded only when the call is
+    successful (e.g., after the attestation check has passed). The DWA content
+    key for this event corresponds to the caller's origin.
+  </summary>
+  <metric name="RealTopicCount">
+    <summary>
+      The number of true, observed topics included in the result (excluding
+      randomly padded topics).
+    </summary>
+  </metric>
+</event>
+
 <event name="DwaTestMetric">
   <owner>zhouzj@google.com</owner>
   <summary>

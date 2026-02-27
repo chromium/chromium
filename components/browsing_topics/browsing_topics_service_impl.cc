@@ -20,6 +20,8 @@
 #include "components/browsing_topics/common/common_types.h"
 #include "components/browsing_topics/mojom/browsing_topics_internals.mojom.h"
 #include "components/browsing_topics/util.h"
+#include "components/metrics/dwa/dwa_builders.h"
+#include "components/metrics/dwa/dwa_recorder.h"
 #include "components/privacy_sandbox/canonical_topic.h"
 #include "content/public/browser/browsing_topics_site_data_manager.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
@@ -180,7 +182,8 @@ void RecordBrowsingTopicsApiResultMetrics(ApiAccessResult result,
 
 void RecordBrowsingTopicsApiResultMetrics(
     const std::vector<CandidateTopic>& valid_candidate_topics,
-    content::RenderFrameHost* main_frame) {
+    content::RenderFrameHost* main_frame,
+    const url::Origin& context_origin) {
   CHECK(!main_frame->IsInLifecycleState(
       content::RenderFrameHost::LifecycleState::kPrerendering));
   ukm::UkmRecorder* ukm_recorder = ukm::UkmRecorder::Get();
@@ -242,6 +245,11 @@ void RecordBrowsingTopicsApiResultMetrics(
                                 static_cast<NumberOfTopics>(filtered_count));
 
   builder.Record(ukm_recorder->Get());
+
+  dwa::builders::BrowsingTopics_Result()
+      .SetContent(context_origin.Serialize())
+      .SetRealTopicCount(real_count)
+      .Record(metrics::dwa::DwaRecorder::Get());
 }
 
 // Represents the action type of the request.
@@ -481,7 +489,8 @@ bool BrowsingTopicsServiceImpl::HandleTopicsWebApi(
     valid_candidate_topics.push_back(std::move(candidate_topic));
   }
 
-  RecordBrowsingTopicsApiResultMetrics(valid_candidate_topics, main_frame);
+  RecordBrowsingTopicsApiResultMetrics(valid_candidate_topics, main_frame,
+                                       context_origin);
 
   for (const CandidateTopic& candidate_topic : valid_candidate_topics) {
     if (candidate_topic.should_be_filtered()) {
