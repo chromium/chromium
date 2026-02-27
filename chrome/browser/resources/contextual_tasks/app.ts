@@ -207,6 +207,8 @@ export class ContextualTasksAppElement extends CrLitElement {
       loadTimeData.getBoolean('enableNativeZeroStateSuggestions');
   protected accessor isGhostLoaderVisible_: boolean = false;
   protected accessor isInputLocked_: boolean = false;
+  // The bounds of the composebox that are forced by the embedded page. These
+  // bounds are relative to the <webview> and not the viewport.
   protected accessor forcedComposeboxBounds_: Rect|null = null;
   // A list of occluders that are currently visible to the user. An occluder is
   // any element that is currently visible to the user that may be intersecting
@@ -235,6 +237,9 @@ export class ContextualTasksAppElement extends CrLitElement {
   // A callback to allow tests to wait until the popstate handler in this class
   // has finished running.
   private popStateFinishedCallbackForTesting_: (() => void)|null = null;
+  // A callback to allow tests to wait until the loadstart handler in this class
+  // has finished running.
+  private onLoadStartFinishedCallbackForTesting_: (() => void)|null = null;
   private forceBasicModeIfOpeningThreadHistory_: boolean =
       loadTimeData.getBoolean('forceBasicModeIfOpeningThreadHistory');
   // This is needed to keep navigations between non-AIM pages from triggering
@@ -482,6 +487,11 @@ export class ContextualTasksAppElement extends CrLitElement {
     if (!ev.isTopLevel) {
       return;
     }
+    // Reset the composebox bounds and the occluders since the embedded page is
+    // reloading.
+    this.forcedComposeboxBounds_ = null;
+    this.occluders_ = null;
+
     // Set frame loading to true initially to avoid race conditions.
     this.isFrameLoading = true;
     const wasAiPage = this.isAiPage_;
@@ -490,6 +500,9 @@ export class ContextualTasksAppElement extends CrLitElement {
     // If the frame is no longer loading after waiting for isAiPage,
     // then exit early to prevent racind.
     if (!this.isFrameLoading) {
+      if (this.onLoadStartFinishedCallbackForTesting_) {
+        this.onLoadStartFinishedCallbackForTesting_();
+      }
       return;
     }
 
@@ -502,6 +515,10 @@ export class ContextualTasksAppElement extends CrLitElement {
       this.isNavigatingFromAiPage_ = true;
       this.basicModeBeforeNavigation_ = this.isInBasicMode_;
       this.isInBasicMode_ = true;
+    }
+
+    if (this.onLoadStartFinishedCallbackForTesting_) {
+      this.onLoadStartFinishedCallbackForTesting_();
     }
   }
 
@@ -544,11 +561,56 @@ export class ContextualTasksAppElement extends CrLitElement {
 
   private onInputPlateBoundsUpdate_(inputRect?: Rect, occluders?: Rect[]) {
     if (inputRect !== undefined) {
+      const currentHeight = this.$.composebox.offsetHeight;
+      if (currentHeight !== inputRect.height) {
+        // If the height that the client reports for the composebox is different
+        // from the height that the server is reporting, update the server.
+        this.postMessageHandler_.sendObjectMessage({
+          type: 'composebox-height-update',
+          height: currentHeight,
+        });
+      }
       this.forcedComposeboxBounds_ = inputRect;
+      this.forcedComposeboxBounds_.height = currentHeight;
     }
     if (occluders !== undefined) {
       this.occluders_ = occluders;
     }
+  }
+
+  getComposeboxBoundsStyles() {
+    if (this.isZeroState_ || !this.forcedComposeboxBounds_) {
+      return '';
+    }
+
+    // Since this.forcedComposeboxBounds_ is relative to the <webview>, and
+    // the composebox is relative to the viewport, adjust the bounds to be
+    // relative to the viewport.
+    const frameRect = this.$.threadFrame.getBoundingClientRect();
+    const relativeRect = {
+      top: frameRect.top + this.forcedComposeboxBounds_.top,
+      left: frameRect.left + this.forcedComposeboxBounds_.left,
+      width: this.forcedComposeboxBounds_.width,
+      height: this.forcedComposeboxBounds_.height,
+      right: frameRect.left + this.forcedComposeboxBounds_.right,
+      bottom: frameRect.top + this.forcedComposeboxBounds_.bottom,
+    };
+
+    // Do not set height, since the expanding of the composebox is dynamic.
+    // Set the bottom of the rect instead of the top to allow the composebox to
+    // expand upwards.
+    const style: string[] = [
+      `--composebox-margin-bottom: 0;`,  // Need to remove margin on the child
+                                         // container.
+      `position: fixed;`,
+      `bottom: ${window.innerHeight - relativeRect.bottom}px;`,
+      `left: ${relativeRect.left}px;`,
+      `width: ${relativeRect.width}px;`,
+      `margin: 0;`,
+      `max-width: none;`,
+      `min-width: 0;`,
+    ];
+    return style.join(' ');
   }
 
   getThreadFrameStyles(): string {
@@ -751,6 +813,10 @@ export class ContextualTasksAppElement extends CrLitElement {
 
   setPopStateFinishedCallbackForTesting(callback: () => void) {
     this.popStateFinishedCallbackForTesting_ = callback;
+  }
+
+  setOnLoadStartFinishedCallbackForTesting(callback: () => void) {
+    this.onLoadStartFinishedCallbackForTesting_ = callback;
   }
 
   setMockPostMessageHandlerForTesting(

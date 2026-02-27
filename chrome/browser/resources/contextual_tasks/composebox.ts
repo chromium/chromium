@@ -26,7 +26,6 @@ import {getCss} from './composebox.css.js';
 import {getHtml} from './composebox.html.js';
 import {VoiceSearchState} from './constants.js';
 import type {ContextualTasksOnboardingTooltipElement} from './onboarding_tooltip.js';
-import type {Rect} from './post_message_handler.js';
 
 function recordVoiceSearchAction(voiceSearchState: VoiceSearchState) {
   // Safety return statement in rare case chrome metrics is not available.
@@ -112,7 +111,6 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
         type: Boolean,
         reflect: true,
       },
-      forcedComposeboxBounds: {type: Object},
       showSuggestionsActivityLink_: {
         type: Boolean,
         reflect: true,
@@ -125,7 +123,6 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
   accessor isSidePanel: boolean = false;
   accessor isLensOverlayShowing: boolean = false;
   accessor inputEnabled: boolean = true;
-  accessor forcedComposeboxBounds: Rect|null = null;
 
   protected accessor zeroStateSuggestions_: AutocompleteResult = {
     input: '',
@@ -295,26 +292,6 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
     return this.isLensOverlayShowing ?
         loadTimeData.getString('composeboxHintTextLensOverlay') :
         '';
-  }
-
-  protected getComposeboxBoundsStyles_() {
-    if (this.isZeroState || !this.forcedComposeboxBounds) {
-      return '';
-    }
-    // Do not set height, since the expanding of the composebox is dynamic.
-    // Set the bottom of the rect instead of the top to allow the composebox to
-    // expand upwards.
-    const rect = this.forcedComposeboxBounds;
-    const style: string[] = [
-      `position: fixed;`,
-      `bottom: ${window.innerHeight - rect.bottom}px;`,
-      `left: ${rect.left}px;`,
-      `width: ${rect.width}px;`,
-      `margin: 0;`,
-      `max-width: none;`,
-      `min-width: 0;`,
-    ];
-    return style.join(' ');
   }
 
   // Called when cr-composebox suggestion activity link should be

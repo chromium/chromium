@@ -44,9 +44,9 @@ export function getHtml(this: ContextualTasksAppElement) {
       </h1>
     </div>
     <contextual-tasks-composebox id="composebox"
+          style="${this.getComposeboxBoundsStyles()}"
           ?hidden="${this.isInBasicMode_ && !this.enableBasicModeZOrder_}"
           .isZeroState="${this.isZeroState_}"
-          .forcedComposeboxBounds="${this.forcedComposeboxBounds_}"
           .isSidePanel="${!this.isShownInTab_}"
           .isLensOverlayShowing="${this.isLensOverlayShowing_}"
           .enableNativeZeroStateSuggestions=
