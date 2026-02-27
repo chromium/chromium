@@ -614,7 +614,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, Texts) {
 
   bool called = false;
   base::RunLoop run_loop;
-  SetQuitClosure(run_loop.QuitClosure());
+  validator.SetDoneClosure(run_loop.QuitClosure());
 
   ContentAnalysisDelegate::Data data;
   data.text.emplace_back(text());
@@ -759,7 +759,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest,
 
   bool called = false;
   base::RunLoop run_loop;
-  SetQuitClosure(run_loop.QuitClosure());
+  validator.SetDoneClosure(run_loop.QuitClosure());
 
   ContentAnalysisDelegate::Data data;
   data.text.emplace_back(text());
@@ -972,7 +972,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest,
 
   bool called = false;
   base::RunLoop run_loop;
-  SetQuitClosure(run_loop.QuitClosure());
+  validator.SetDoneClosure(run_loop.QuitClosure());
 
   ContentAnalysisDelegate::Data data;
   data.image = image();
@@ -1115,7 +1115,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest,
 
   bool called = false;
   base::RunLoop run_loop;
-  SetQuitClosure(run_loop.QuitClosure());
+  validator.SetDoneClosure(run_loop.QuitClosure());
 
   ContentAnalysisDelegate::Data data;
   data.image = image();
@@ -2097,11 +2097,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
 
   // If the delivery is not delayed, put the quit closure right after the events
   // are reported instead of when the dialog closes.
-  if (expected_result()) {
-    validator.SetDoneClosure(run_loop.QuitClosure());
-  } else {
-    SetQuitClosure(run_loop.QuitClosure());
-  }
+  validator.SetDoneClosure(run_loop.QuitClosure());
 
   // Start test.
   ContentAnalysisDelegate::CreateForWebContents(
@@ -2558,7 +2554,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateFilesBrowserTest, FilesUpload) {
 
   bool called = false;
   base::RunLoop run_loop;
-  SetQuitClosure(run_loop.QuitClosure());
+  validator.SetDoneClosure(run_loop.QuitClosure());
 
   // Start test.
   ContentAnalysisDelegate::CreateForWebContents(
@@ -2721,7 +2717,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateFilesBrowserTest,
 
   bool called = false;
   base::RunLoop run_loop;
-  SetQuitClosure(run_loop.QuitClosure());
+  validator.SetDoneClosure(run_loop.QuitClosure());
 
   // Start test.
   ContentAnalysisDelegate::CreateForFilesInWebContents(

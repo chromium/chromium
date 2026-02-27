@@ -134,10 +134,6 @@ class ContentAnalysisDialogBehaviorBrowserTest
     // The dialog should not be updated if the failure was shown immediately.
     EXPECT_TRUE(pending_shown_);
 
-    // The dialog should only be updated after an initial delay.
-    base::TimeDelta delay = dialog_updated_timestamp_ - first_shown_timestamp_;
-    EXPECT_GE(delay,
-              ContentAnalysisDialogController::GetMinimumPendingDialogTime());
 
     // The dialog can only be updated to the success or failure case.
     EXPECT_TRUE(dialog_->is_result());
@@ -676,16 +672,6 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDialogBehaviorBrowserTest,
 //
 // The DLP/Malware success parameters determine how the response is populated,
 // and therefore what the dialog should show.
-//
-// The three different delays test three cases:
-// kNoDelay: The response is as fast as possible, and therefore the pending
-//           UI is not shown (kNoDelay < GetInitialUIDelay).
-// kSmallDelay: The response is not fast enough to prevent the pending UI from
-//              showing, but fast enough that it hasn't been show long enough
-//              (GetInitialDelay < kSmallDelay < GetMinimumPendingDialogTime).
-// kNormalDelay: The response is slow enough that the pending UI is shown for
-//               more than its minimum duration (GetMinimumPendingDialogTime <
-//               kNormalDelay).
 INSTANTIATE_TEST_SUITE_P(
     ,
     ContentAnalysisDialogBehaviorBrowserTest,
@@ -1037,8 +1023,6 @@ class ContentAnalysisDialogPlainTests : public InProcessBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogPlainTests, TestCustomMessage) {
-  enterprise_connectors::ContentAnalysisDialogController::
-      SetMinimumPendingDialogTimeForTesting(base::Milliseconds(0));
 
   std::unique_ptr<MockCustomMessageDelegate> delegate =
       std::make_unique<MockCustomMessageDelegate>(
@@ -1053,8 +1037,6 @@ IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogPlainTests, TestCustomMessage) {
 }
 
 IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogPlainTests, TestCustomRuleMessage) {
-  enterprise_connectors::ContentAnalysisDialogController::
-      SetMinimumPendingDialogTimeForTesting(base::Milliseconds(0));
 
   std::unique_ptr<MockCustomMessageDelegate> delegate =
       std::make_unique<MockCustomMessageDelegate>(
@@ -1071,8 +1053,6 @@ IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogPlainTests, TestCustomRuleMessage) {
 
 IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogPlainTests,
                        TestBypassJustification) {
-  enterprise_connectors::ContentAnalysisDialogController::
-      SetMinimumPendingDialogTimeForTesting(base::Milliseconds(0));
 
   std::unique_ptr<MockDelegate> delegate = std::make_unique<MockDelegate>();
   delegate->SetBypassRequiresJustification(true);
@@ -1089,8 +1069,6 @@ IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogPlainTests,
 
 IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogPlainTests,
                        TestBypassJustificationTooLongDisablesBypassButton) {
-  enterprise_connectors::ContentAnalysisDialogController::
-      SetMinimumPendingDialogTimeForTesting(base::Milliseconds(0));
 
   std::unique_ptr<MockDelegate> delegate = std::make_unique<MockDelegate>();
   delegate->SetBypassRequiresJustification(true);
@@ -1274,8 +1252,6 @@ IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogPlainTests,
 
 IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogPlainTests,
                        BypassJustificationLabelAndTextareaAccessibility) {
-  enterprise_connectors::ContentAnalysisDialogController::
-      SetMinimumPendingDialogTimeForTesting(base::Milliseconds(0));
   std::unique_ptr<MockDelegate> delegate = std::make_unique<MockDelegate>();
   delegate->SetBypassRequiresJustification(true);
   auto* controller = CreateContentAnalysisDialog(
@@ -1314,20 +1290,14 @@ IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogPlainTests,
 IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogPlainTests,
                        LatencyChangesAfterProlongedCount) {
   ContentAnalysisDialogController::SetDialogShownCountForTesting(0);
-  EXPECT_EQ(ContentAnalysisDialogController::GetMinimumPendingDialogTime(),
-            base::Seconds(2));
   EXPECT_EQ(ContentAnalysisDialogController::GetSuccessDialogTimeout(),
             base::Seconds(1));
 
   ContentAnalysisDialogController::SetDialogShownCountForTesting(5);
-  EXPECT_EQ(ContentAnalysisDialogController::GetMinimumPendingDialogTime(),
-            base::Seconds(2));
   EXPECT_EQ(ContentAnalysisDialogController::GetSuccessDialogTimeout(),
             base::Seconds(1));
 
   ContentAnalysisDialogController::SetDialogShownCountForTesting(6);
-  EXPECT_EQ(ContentAnalysisDialogController::GetMinimumPendingDialogTime(),
-            base::Seconds(0.4));
   EXPECT_EQ(ContentAnalysisDialogController::GetSuccessDialogTimeout(),
             base::Seconds(0.2));
 

@@ -1477,8 +1477,6 @@ class GlicInteractiveContextMenuPolicyTest
     // These overrides make the overall tests faster as the content analysis
     // dialog won't stay in each state for mandatory minimum times.
     enterprise_connectors::ContentAnalysisDialogController::
-        SetMinimumPendingDialogTimeForTesting(base::Milliseconds(0));
-    enterprise_connectors::ContentAnalysisDialogController::
         SetShowDialogDelayForTesting(base::Milliseconds(0));
     enterprise_connectors::ContentAnalysisDialogController::
         SetSuccessDialogTimeoutForTesting(base::Milliseconds(0));

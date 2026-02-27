@@ -31,7 +31,6 @@ namespace {
 
 constexpr char kDmToken[] = "dm_token";
 
-constexpr base::TimeDelta kMinimumPendingDelay = base::Milliseconds(400);
 constexpr base::TimeDelta kSuccessTimeout = base::Milliseconds(100);
 constexpr base::TimeDelta kShowDialogDelay = base::Milliseconds(0);
 
@@ -105,8 +104,6 @@ class UnresponsiveContentAnalysisDelegate : public FakeContentAnalysisDelegate {
 DeepScanningBrowserTestBase::DeepScanningBrowserTestBase() {
   // Change the time values of the upload UI to smaller ones to make tests
   // showing it run faster.
-  ContentAnalysisDialogController::SetMinimumPendingDialogTimeForTesting(
-      kMinimumPendingDelay);
   ContentAnalysisDialogController::SetSuccessDialogTimeoutForTesting(
       kSuccessTimeout);
   ContentAnalysisDialogController::SetShowDialogDelayForTesting(

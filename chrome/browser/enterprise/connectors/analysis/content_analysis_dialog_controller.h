@@ -78,12 +78,10 @@ class ContentAnalysisDialogController
 
   static void SetObserverForTesting(TestObserver* observer);
 
-  static void SetMinimumPendingDialogTimeForTesting(base::TimeDelta delta);
   static void SetSuccessDialogTimeoutForTesting(base::TimeDelta delta);
   static void SetShowDialogDelayForTesting(base::TimeDelta delta);
   static void SetDialogShownCountForTesting(size_t count);
 
-  static base::TimeDelta GetMinimumPendingDialogTime();
   static base::TimeDelta GetSuccessDialogTimeout();
   static base::TimeDelta ShowDialogDelay();
 
