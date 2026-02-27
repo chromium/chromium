@@ -85,7 +85,7 @@ TEST_F(AppInfoPermissionsPanelTest, RequiredPermissionsObtainedCorrectly) {
                                  // An valid permission with no message
                                  .Append("cookies")
                                  // A valid permission with a message
-                                 .Append("serial")))
+                                 .Append("clipboardRead")))
           .SetID(kTestExtensionId)
           .Build();
   AppInfoPermissionsPanel panel(&profile_, app.get());
@@ -93,7 +93,7 @@ TEST_F(AppInfoPermissionsPanelTest, RequiredPermissionsObtainedCorrectly) {
   EXPECT_TRUE(VerifyTwoPermissionMessages(
       panel.app_->permissions_data(),
       l10n_util::GetStringUTF8(IDS_EXTENSION_PROMPT_WARNING_DESKTOP_CAPTURE),
-      l10n_util::GetStringUTF8(IDS_EXTENSION_PROMPT_WARNING_SERIAL), false));
+      l10n_util::GetStringUTF8(IDS_EXTENSION_PROMPT_WARNING_CLIPBOARD), false));
 }
 
 // Tests that an app's optional permissions are detected and converted to
@@ -112,7 +112,7 @@ TEST_F(AppInfoPermissionsPanelTest, OptionalPermissionsObtainedCorrectly) {
                   // A valid permission with no message
                   .Append("idle")
                   // Another valid permission with a message
-                  .Append("serial")))
+                  .Append("desktopCapture")))
           .SetID(kTestExtensionId)
           .Build();
   AppInfoPermissionsPanel panel(&profile_, app.get());

@@ -478,8 +478,10 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceGuestBrowserTest,
 #if !BUILDFLAG(IS_ANDROID)
     "SafeSearch",
 #endif
+#if BUILDFLAG(IS_CHROMEOS)
     "SerialConnectionManager",
     "SerialPortManager",
+#endif
     "SettingsPrivateEventRouter",
     "SiteDataCacheFacadeFactory",
     "SiteEngagementService",
@@ -834,8 +836,10 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceGuestBrowserTest,
     "SendTabToSelfClientService",
 #endif  // !BUILDFLAG(IS_CHROMEOS)
     "SendTabToSelfSyncService",
+#if BUILDFLAG(IS_CHROMEOS)
     "SerialConnectionManager",
     "SerialPortManager",
+#endif
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     "ServerCertificateDatabaseService",
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)

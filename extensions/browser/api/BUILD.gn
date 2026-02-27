@@ -71,7 +71,6 @@ group("api_implementations") {
       "//extensions/browser/api/networking_private",
       "//extensions/browser/api/printer_provider",
       "//extensions/browser/api/protocol_handlers",
-      "//extensions/browser/api/serial",
       "//extensions/browser/api/socket",
       "//extensions/browser/api/sockets_tcp",
       "//extensions/browser/api/sockets_tcp_server",
@@ -87,6 +86,7 @@ group("api_implementations") {
         "//extensions/browser/api/clipboard",
         "//extensions/browser/api/diagnostics",
         "//extensions/browser/api/media_perception_private",
+        "//extensions/browser/api/serial",
         "//extensions/browser/api/virtual_keyboard",
         "//extensions/browser/api/webcam_private",
       ]

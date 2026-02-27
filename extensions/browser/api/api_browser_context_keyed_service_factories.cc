@@ -42,8 +42,6 @@
 #include "extensions/browser/api/networking_private/networking_private_event_router_factory.h"
 #include "extensions/browser/api/printer_provider/printer_provider_api_factory.h"
 #include "extensions/browser/api/protocol_handlers/protocol_handlers_manager.h"
-#include "extensions/browser/api/serial/serial_connection.h"
-#include "extensions/browser/api/serial/serial_port_manager.h"
 #include "extensions/browser/api/socket/socket.h"
 #include "extensions/browser/api/socket/tcp_socket.h"
 #include "extensions/browser/api/socket/udp_socket.h"
@@ -58,6 +56,8 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "extensions/browser/api/clipboard/clipboard_api.h"
+#include "extensions/browser/api/serial/serial_connection.h"
+#include "extensions/browser/api/serial/serial_port_manager.h"
 #include "extensions/browser/api/socket/app_firewall_hole_manager.h"
 #include "extensions/browser/api/webcam_private/webcam_private_api.h"
 #endif
@@ -103,11 +103,15 @@ void EnsureApiBrowserContextKeyedServiceFactoriesBuilt() {
   ApiResourceManager<ResumableTCPServerSocket>::GetFactoryInstance();
   ApiResourceManager<ResumableTCPSocket>::GetFactoryInstance();
   ApiResourceManager<ResumableUDPSocket>::GetFactoryInstance();
+#if BUILDFLAG(IS_CHROMEOS)
   ApiResourceManager<SerialConnection>::GetFactoryInstance();
+#endif
   ApiResourceManager<Socket>::GetFactoryInstance();
   ApiResourceManager<UsbDeviceResource>::GetFactoryInstance();
   api::BluetoothSocketEventDispatcher::GetFactoryInstance();
+#if BUILDFLAG(IS_CHROMEOS)
   api::SerialPortManager::GetFactoryInstance();
+#endif
   api::TCPServerSocketEventDispatcher::GetFactoryInstance();
   api::TCPSocketEventDispatcher::GetFactoryInstance();
   api::UDPSocketEventDispatcher::GetFactoryInstance();

@@ -86,7 +86,6 @@ if (enable_extensions) {
     "printer_provider_internal.idl",
     "printer_provider.idl",
     "scripts_internal.idl",
-    "serial.webidl",
     "socket.idl",
     "sockets_tcp_server.idl",
     "sockets_tcp.idl",
@@ -101,6 +100,7 @@ if (enable_extensions) {
     extensions_api_schema_files_ += [
       "diagnostics.webidl",
       "media_perception_private.webidl",
+      "serial.webidl",
       "webcam_private.webidl",
     ]
   }

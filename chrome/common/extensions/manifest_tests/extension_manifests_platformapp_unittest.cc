@@ -122,6 +122,8 @@ TEST_F(PlatformAppsManifestTest, PlatformAppContentSecurityPolicy) {
                                      "http://www.google.com", "default-src"));
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
+// Platform apps are only available on ChromeOS.
 TEST_F(PlatformAppsManifestTest, CertainApisRequirePlatformApps) {
   // Put APIs here that should be restricted to platform apps, but that haven't
   // yet graduated from experimental.
@@ -164,5 +166,6 @@ TEST_F(PlatformAppsManifestTest, CertainApisRequirePlatformApps) {
     LoadAndExpectSuccess(manifest);
   }
 }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace extensions

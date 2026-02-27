@@ -89,18 +89,6 @@ void SerialGetDevicesFunction::OnGotDevices(
     info.product_id = device->product_id;
     info.display_name = device->display_name;
     results.push_back(std::move(info));
-
-#if BUILDFLAG(IS_MAC)
-    if (device->alternate_path) {
-      extensions::api::serial::DeviceInfo alternate_info;
-      alternate_info.path = device->alternate_path->AsUTF8Unsafe();
-      alternate_info.vendor_id = device->vendor_id;
-      alternate_info.product_id = device->product_id;
-      alternate_info.display_name = device->display_name;
-
-      results.push_back(std::move(alternate_info));
-    }
-#endif  // BUILDFLAG(IS_MAC)
   }
   Respond(ArgumentList(serial::GetDevices::Results::Create(results)));
 }

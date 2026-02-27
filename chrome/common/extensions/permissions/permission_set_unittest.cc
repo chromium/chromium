@@ -1272,7 +1272,8 @@ TEST(PermissionsTest, GetWarningMessages_DeclarativeWebRequest) {
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 #if BUILDFLAG(ENABLE_PLATFORM_APPS)
-// "serial" is a platform app API.
+#if BUILDFLAG(IS_CHROMEOS)
+// "serial" is a platform app API only available on ChromeOS.
 TEST(PermissionsTest, GetWarningMessages_Serial) {
   scoped_refptr<Extension> extension =
       LoadManifest("permissions", "serial.json");
@@ -1283,6 +1284,7 @@ TEST(PermissionsTest, GetWarningMessages_Serial) {
   EXPECT_TRUE(VerifyOnePermissionMessage(extension->permissions_data(),
                                          "Access your serial devices"));
 }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // "socket" is a platform app API.
 TEST(PermissionsTest, GetWarningMessages_Socket_AnyHost) {

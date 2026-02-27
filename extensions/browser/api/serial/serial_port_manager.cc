@@ -202,17 +202,6 @@ void SerialPortManager::OnGotDevicesToGetPort(
                               std::move(callback));
       return;
     }
-
-#if BUILDFLAG(IS_MAC)
-    if (device->alternate_path &&
-        device->alternate_path->AsUTF8Unsafe() == path) {
-      port_manager_->OpenPort(device->token, /*use_alternate_path=*/true,
-                              std::move(options), std::move(client),
-                              /*watcher=*/mojo::NullRemote(),
-                              std::move(callback));
-      return;
-    }
-#endif  // BUILDFLAG(IS_MAC)
   }
 }
 

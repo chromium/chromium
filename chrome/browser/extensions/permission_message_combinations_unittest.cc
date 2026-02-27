@@ -245,6 +245,7 @@ TEST_F(PermissionMessageCombinationsUnittest, USBSerialBluetoothCoalescing) {
   ASSERT_TRUE(CheckManifestProducesPermissions(
       "Access USB devices from an unknown vendor"));
 
+#if BUILDFLAG(IS_CHROMEOS)
   // Test that the serial permission does not coalesce on its own.
   CreateAndInstall(
       "{"
@@ -258,6 +259,7 @@ TEST_F(PermissionMessageCombinationsUnittest, USBSerialBluetoothCoalescing) {
       "  ]"
       "}");
   ASSERT_TRUE(CheckManifestProducesPermissions("Access your serial devices"));
+#endif
 
   // Test that the bluetooth permission does not coalesce on its own.
   CreateAndInstall(
@@ -290,6 +292,7 @@ TEST_F(PermissionMessageCombinationsUnittest, USBSerialBluetoothCoalescing) {
       "Access information about Bluetooth devices paired with your system and "
       "discover nearby Bluetooth devices."));
 
+#if BUILDFLAG(IS_CHROMEOS)
   // Test that the USB and Serial permissions coalesce.
   CreateAndInstall(
       "{"
@@ -347,6 +350,7 @@ TEST_F(PermissionMessageCombinationsUnittest, USBSerialBluetoothCoalescing) {
   ASSERT_TRUE(CheckManifestProducesPermissions(
       "Access USB devices from an unknown vendor",
       "Access your Bluetooth and Serial devices"));
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -1037,12 +1041,12 @@ TEST_F(PermissionMessageCombinationsUnittest,
       "    }"
       "  },"
       "  'permissions': ["
-      "    'serial',"
+      "    'clipboardRead',"
       "    'http://www.blogger.com/',"
       "    'http://*.google.com/',"
       "  ]"
       "}");
-  ASSERT_TRUE(CheckManifestProducesPermissions("Access your serial devices"));
+  ASSERT_TRUE(CheckManifestProducesPermissions("Read data you copy and paste"));
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -1146,7 +1150,7 @@ TEST_F(PermissionMessageCombinationsUnittest, PermissionMessageCombos) {
       "    'alarms',"
       "    'power',"
       "    'cookies',"
-      "    'serial',"
+      "    'clipboardRead',"
       "    'usb',"
       "    'storage',"
       "    'gcm',"
@@ -1163,7 +1167,7 @@ TEST_F(PermissionMessageCombinationsUnittest, PermissionMessageCombos) {
       "}");
 
   ASSERT_TRUE(CheckManifestProducesPermissions(
-      "Access your serial devices", "Store data in your Google Drive account",
+      "Read data you copy and paste", "Store data in your Google Drive account",
       "Read and change your accessibility settings"));
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
