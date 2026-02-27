@@ -1362,9 +1362,9 @@ bool ProfileManager::AddKeepAlive(Profile* profile,
     return true;
   }
 
-  if (base::FeatureList::IsEnabled(features::kDestroyProfileOnBrowserClose)) {
-    DCHECK_NE(0, GetTotalRefCount(info->keep_alives))
-        << "AddKeepAlive() on a soon-to-be-deleted Profile is not allowed";
+  if (base::FeatureList::IsEnabled(features::kDestroyProfileOnBrowserClose) &&
+      GetTotalRefCount(info->keep_alives) == 0) {
+    return false;
   }
 
   info->keep_alives[origin]++;
