@@ -248,7 +248,8 @@ export class ContextualTasksAppElement extends CrLitElement {
   // Tracks the basic mode state before a navigation occurs. This is used to
   // restore the basic mode state after the navigation, to ensure that if
   // already in basic mode, the user is returned to basic mode.
-  private basicModeBeforeNavigation_ = this.isInBasicMode_;
+
+  private pendingBasicMode_: boolean|null = null;
 
   override async connectedCallback() {
     super.connectedCallback();
@@ -279,8 +280,12 @@ export class ContextualTasksAppElement extends CrLitElement {
       callbackRouter.hideInput.addListener(() => {
         // OnBeforeRequest will trigger before the navigation, so this is needed
         // to prevent the input from being hidden when navigating to a new
-        // page.
+        // page. However, while this guard prevents flickering, it also
+        // prevents legitimate changes when going from history page to old
+        // thread. Stash it. Whichever is the last basic mode signal is the
+        // legitimate one.
         if (this.isNavigatingFromAiPage_) {
+          this.pendingBasicMode_ = true;
           return;
         }
 
@@ -289,8 +294,12 @@ export class ContextualTasksAppElement extends CrLitElement {
       callbackRouter.restoreInput.addListener(() => {
         // OnBeforeRequest will trigger before the navigation, so this is needed
         // to prevent the input from being restored when navigating to a new
-        // page.
+        // page. However, while this guard prevents flickering, it also
+        // prevents legitimate changes when going from history page to old
+        // thread. Stash it. Whichever is the last basic mode signal is the
+        // legitimate one.
         if (this.isNavigatingFromAiPage_) {
+          this.pendingBasicMode_ = false;
           return;
         }
 
@@ -484,6 +493,7 @@ export class ContextualTasksAppElement extends CrLitElement {
   }
 
   private async onThreadFrameLoadStart(ev: chrome.webviewTag.LoadStartEvent) {
+    // If is from inner iframe and not from main webview URL:
     if (!ev.isTopLevel) {
       return;
     }
@@ -513,7 +523,6 @@ export class ContextualTasksAppElement extends CrLitElement {
       // Since this is a navigation from one AI page to another,
       // enter basic mode to avoid flickering between navigations.
       this.isNavigatingFromAiPage_ = true;
-      this.basicModeBeforeNavigation_ = this.isInBasicMode_;
       this.isInBasicMode_ = true;
     }
 
@@ -795,9 +804,14 @@ export class ContextualTasksAppElement extends CrLitElement {
     if (!this.isNavigatingFromAiPage_) {
       return;
     }
+    // If basic mode was changed while loading the
+    // thread frame, utilize that new value instead.
+    if (this.pendingBasicMode_ !== null) {
+      this.isInBasicMode_ = this.pendingBasicMode_;
+    }
 
-    this.isInBasicMode_ = this.basicModeBeforeNavigation_;
     this.isNavigatingFromAiPage_ = false;
+    this.pendingBasicMode_ = null;
   }
 
   private setIsGhostLoaderVisible(isVisible: boolean) {

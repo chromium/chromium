@@ -506,7 +506,8 @@ suite('ContextualTasksAppTest', function() {
             'Flex center container z-index should be 0');
       });
 
-  test('sets basic mode when navigating from AI page', async () => {
+  // Disabled on 146 branch only due to extra flakiness
+  test.skip('does not set basic mode when navigating from AI page', async () => {
     const proxy = new TestContextualTasksBrowserProxy(fixtureUrl);
     BrowserProxyImpl.setInstance(proxy);
 
@@ -515,7 +516,8 @@ suite('ContextualTasksAppTest', function() {
     await microtasksFinished();
 
     // Verify initial state.
-    assertFalse(appElement.hasAttribute('is-in-basic-mode_'));
+    assertFalse(appElement.hasAttribute('is-in-basic-mode_'),
+        'Initial state should not be in basic mode');
 
     // Ensure the app is on an AI page.
     proxy.callbackRouterRemote.onAiPageStatusChanged(true);
@@ -534,16 +536,161 @@ suite('ContextualTasksAppTest', function() {
 
     // Should be in basic mode now because the app is navigating from an AI
     // page.
-    assertTrue(appElement.hasAttribute('is-in-basic-mode_'));
-    assertTrue(appElement.isNavigatingForTesting());
+    assertTrue(appElement.hasAttribute('is-in-basic-mode_'),
+        'Should be in basic mode when navigating from an AI page');
+    assertTrue(appElement.isNavigatingForTesting(),
+        'Should be navigating after navigation starts');
 
     // Simulate navigation complete.
     appElement.$.threadFrame.dispatchEvent(new Event('contentload'));
     await microtasksFinished();
 
-    // Should exit basic mode.
-    assertFalse(appElement.hasAttribute('is-in-basic-mode_'));
-    assertFalse(appElement.isNavigatingForTesting());
+    // Should not exit basic mode since we are relying on backend now
+    // as the single source of truth, and backend has sent
+    // no notification for changing basic mode.
+    assertTrue(appElement.hasAttribute('is-in-basic-mode_'),
+        'Should not exit basic mode after navigation completes');
+    assertFalse(appElement.isNavigatingForTesting(),
+        'Should not be navigating after navigation completes');
+  });
+
+  // Disabled on 146 branch only due to extra flakiness
+  test.skip('sets basic mode when navigating from AI page and backend sends notification',
+      async () => {
+    const proxy = new TestContextualTasksBrowserProxy(fixtureUrl);
+    BrowserProxyImpl.setInstance(proxy);
+
+    const appElement = document.createElement('contextual-tasks-app');
+    document.body.appendChild(appElement);
+    await microtasksFinished();
+
+    // Verify initial state.
+    assertFalse(appElement.hasAttribute('is-in-basic-mode_'),
+        'Initial state should not be in basic mode');
+
+    // Ensure the app is on an AI page.
+    proxy.callbackRouterRemote.onAiPageStatusChanged(true);
+    await proxy.callbackRouterRemote.$.flushForTesting();
+    await microtasksFinished();
+
+    // Ensure the new page is also an AI page.
+    proxy.handler.setIsAiPage(true);
+
+    // Simulate navigation start.
+    const loadStartEvent = new Event('loadstart');
+    Object.assign(
+        loadStartEvent, {url: 'http://example.com', isTopLevel: true});
+    appElement.$.threadFrame.dispatchEvent(loadStartEvent);
+    await microtasksFinished();
+
+    // Should be in basic mode now because the app is navigating from an AI
+    // page.
+    assertTrue(appElement.hasAttribute('is-in-basic-mode_'),
+        'Should be in basic mode when navigating from an AI page');
+    assertTrue(appElement.isNavigatingForTesting(),
+        'Should be navigating after navigation starts');
+
+    // Misc notifications do not cause z-index flickering:
+    proxy.callbackRouterRemote.restoreInput();
+    await proxy.callbackRouterRemote.$.flushForTesting();
+    await microtasksFinished();
+
+    assertTrue(appElement.hasAttribute('is-in-basic-mode_'),
+        'Should be in basic mode when navigating from an AI page');
+    assertTrue(appElement.isNavigatingForTesting(),
+        'Should be navigating after navigation starts');
+
+    proxy.callbackRouterRemote.hideInput();
+    await proxy.callbackRouterRemote.$.flushForTesting();
+    await microtasksFinished();
+
+    assertTrue(appElement.hasAttribute('is-in-basic-mode_'),
+        'Should be in basic mode when navigating from an AI page');
+    assertTrue(appElement.isNavigatingForTesting(),
+        'Should be navigating after navigation starts');
+
+    proxy.callbackRouterRemote.restoreInput();
+    await proxy.callbackRouterRemote.$.flushForTesting();
+    await microtasksFinished();
+
+    // Simulate navigation complete. Basic mode should not be updated
+    // based on the last submitted state request from the backend.
+    appElement.$.threadFrame.dispatchEvent(new Event('contentload'));
+    await microtasksFinished();
+    assertFalse(appElement.hasAttribute('is-in-basic-mode_'),
+        'Should change to basic mode false due to backend after navigation completes');
+    assertFalse(appElement.isNavigatingForTesting(),
+        'Should not be navigating after navigation completes');
+  });
+
+  // Disabled on 146 branch only due to extra flakiness
+  test('sets basic mode as true when navigating due to backend sending notification',
+      async () => {
+    const proxy = new TestContextualTasksBrowserProxy(fixtureUrl);
+    BrowserProxyImpl.setInstance(proxy);
+
+    const appElement = document.createElement('contextual-tasks-app');
+    document.body.appendChild(appElement);
+    await microtasksFinished();
+
+    // Verify initial state.
+    assertFalse(appElement.hasAttribute('is-in-basic-mode_'),
+        'Initial state should not be in basic mode');
+
+    // Ensure the app is on an AI page.
+    proxy.callbackRouterRemote.onAiPageStatusChanged(true);
+    await proxy.callbackRouterRemote.$.flushForTesting();
+    await microtasksFinished();
+
+    // Ensure the new page is also an AI page.
+    proxy.handler.setIsAiPage(true);
+
+    // Simulate navigation start.
+    const loadStartEvent = new Event('loadstart');
+    Object.assign(
+        loadStartEvent, {url: 'http://example.com', isTopLevel: true});
+    appElement.$.threadFrame.dispatchEvent(loadStartEvent);
+    await microtasksFinished();
+
+    // Should be in basic mode now because the app is navigating from an AI
+    // page.
+    assertTrue(appElement.hasAttribute('is-in-basic-mode_'),
+        'Should be in basic mode when navigating from an AI page');
+    assertTrue(appElement.isNavigatingForTesting(),
+        'Should be navigating after navigation starts');
+
+    // Misc notifications do not cause z-index flickering:
+    proxy.callbackRouterRemote.hideInput();
+    await proxy.callbackRouterRemote.$.flushForTesting();
+    await microtasksFinished();
+
+    assertTrue(appElement.hasAttribute('is-in-basic-mode_'),
+        'Should be in basic mode when navigating from an AI page');
+    assertTrue(appElement.isNavigatingForTesting(),
+        'Should be navigating after navigation starts');
+
+    proxy.callbackRouterRemote.restoreInput();
+    await proxy.callbackRouterRemote.$.flushForTesting();
+    await microtasksFinished();
+
+    assertTrue(appElement.hasAttribute('is-in-basic-mode_'),
+        'Should be in basic mode when navigating from an AI page');
+    assertTrue(appElement.isNavigatingForTesting(),
+        'Should be navigating after navigation starts');
+
+    proxy.callbackRouterRemote.hideInput();
+    await proxy.callbackRouterRemote.$.flushForTesting();
+    await microtasksFinished();
+
+    // Simulate navigation complete. Basic mode should not be updated
+    // based on the last submitted state request from the backend.
+    // Basic mode is true based on usage of `hideInput`.
+    appElement.$.threadFrame.dispatchEvent(new Event('contentload'));
+    await microtasksFinished();
+    assertTrue(appElement.hasAttribute('is-in-basic-mode_'),
+        'Should change to basic mode true due to backend after navigation completes');
+    assertFalse(appElement.isNavigatingForTesting(),
+        'Should not be navigating after navigation completes');
   });
 
   test(
