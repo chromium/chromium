@@ -211,9 +211,16 @@ class ClipPathPaintDefinitionTest : public PageTestBase {
                                                      updates);
   }
 
-  void UpdateAndAdvanceTimeTo(int ms) {
-    GetDocument().GetPage()->Animator().ServiceScriptedAnimations(
-        base::TimeTicks() + base::Milliseconds(ms));
+  void UpdateAndAdvanceTimeTo(int ms, bool is_for_frame = true) {
+    if (is_for_frame) {
+      GetDocument().GetPage()->Animator().ServiceScriptedAnimations(
+          base::TimeTicks() + base::Milliseconds(ms));
+    } else {
+      GetDocument().GetPage()->Animator().Clock().UpdateTime(
+          base::TimeTicks() + base::Milliseconds(ms));
+      GetDocument().GetAnimationClock().UpdateTime(base::TimeTicks() +
+                                                   base::Milliseconds(ms));
+    }
   }
 
   // This creates and applies mutator events as would happen if there were a
@@ -1182,6 +1189,103 @@ TEST_F(ClipPathPaintDefinitionTest, TransitionRetarget) {
   // finished. By the end of this call, all strong references to the transition
   // will be gone.
   UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(element->GetElementAnimations()->CompositedClipPathStatus(),
+            CompositedPaintStatus::kNotComposited);
+
+  // Ensure the transition is garbage collected.
+  ThreadState::Current()->CollectAllGarbageForTesting();
+
+  // Force paint invalidation and run lifecycle to ensure no CHECK failures or
+  // other crashes occur during painting, even though the transition has been
+  // removed from memory.
+  element->GetLayoutObject()->SetShouldDoFullPaintInvalidation();
+  UpdateAllLifecyclePhasesForTest();
+}
+
+// Like TransitionRetarget, except the transition runs for such short a time
+// that it is cancelled within a second hit-test before the main frame.
+TEST_F(ClipPathPaintDefinitionTest, TransitionRetargetVerySmallDuration) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+        #target {
+            transition: 1s clip-path ease-in-out;
+            clip-path: circle(25% at 50% 50%);
+        }
+        #target.transition {
+             clip-path: circle(50% at 50% 50%);
+        }
+        #irrelevant {
+            width: 10px;
+            height: 10px;
+        }
+        #irrelevant.update {
+            width: 20px;
+            height: 20px;
+        }
+    </style>
+    <div id="target" style="width: 100px; height: 100px"></div>
+    <div id="irrelevant"></div>
+  )HTML");
+
+  Element* element = GetElementById("target");
+  Element* irrelevant = GetElementById("irrelevant");
+  element->setAttribute(html_names::kClassAttr, AtomicString("transition"));
+
+  // Init clock.
+  UpdateAndAdvanceTimeTo(0);
+
+  // Ensure transition starts as normal.
+  EnsureCCClipPathInvariantsHoldStyleAndLayout(
+      CompositedPaintStatus::kComposited, element,
+      UpdatesNeededForNextFrame::kAllUpdates);
+  Animation* animation = GetFirstAnimation(element);
+  EnsureCCClipPathInvariantsHoldThroughoutPainting(
+      CompositedPaintStatus::kComposited, element, animation,
+      UpdatesNeededForNextFrame::kAllUpdates);
+
+  // Simulate the animation being started on compositor, so that the animation
+  // receives a start time.
+  animation->NotifyReady(ANIMATION_TIME_DELTA_FROM_MILLISECONDS(0));
+
+  // Advance some small time such that cancelling the transition will require
+  // reversing it, but small enough that the next main frame may not catch it.
+  // (Since this is a test, we can control when exactly that is - this comment
+  // is included mainly to to associate this test with a real-world behavior)
+  UpdateAndAdvanceTimeTo(13);
+  UpdateAllLifecyclePhasesForTest();
+
+  // Cancel the transition by resetting the style.
+  element->setAttribute(html_names::kClassAttr, AtomicString(""));
+
+  // Run all lifecycle phases except paint. This should trigger a transition
+  // retarget, and resolve the clip path status of this brand new ransition as
+  // kComposited, as clip-path status is resolved early in pre-paint.
+  GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint(
+      DocumentUpdateReason::kTest);
+
+  // Transition retargeting will set a start time, but will still allow
+  // compositing.
+  animation = GetFirstAnimationForProperty(element, GetCSSPropertyClipPath());
+  EXPECT_TRUE(animation->StartTimeInternal().has_value());
+  EXPECT_EQ(element->GetElementAnimations()->CompositedClipPathStatus(),
+            CompositedPaintStatus::kComposited);
+
+  // Invalidate layout so that a 2nd hit test can cause an animation update.
+  // See: Document::UpdateStyleAndLayoutTreeForThisDocument.
+  irrelevant->setAttribute(html_names::kClassAttr, AtomicString("update"));
+
+  // Simulate another animation update on demand. Although infrequent, it
+  // sometimes occurs that there are two lifecycle updates from hit tests back
+  // to back. This seems to happen more often if I mix event types, but the
+  // necessary condition is that layout is invalidated as a result of the first
+  // hit test.
+  UpdateAndAdvanceTimeTo(26, false);
+  GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint(
+      DocumentUpdateReason::kTest);
+
+  // Aa status recalc + pre-paint results in kNotComposited. Because the
+  // transition was not idle at the time of the status recalc, we don't get
+  // kNoAnimation.
   EXPECT_EQ(element->GetElementAnimations()->CompositedClipPathStatus(),
             CompositedPaintStatus::kNotComposited);
 
