@@ -26,6 +26,14 @@
 
 namespace blink {
 
+namespace {
+
+bool Canvas2dImageChromiumEnabled() {
+  return RuntimeEnabledFeatures::Canvas2dImageChromiumEnabled();
+}
+
+}  // namespace
+
 SharedGpuContext* SharedGpuContext::GetInstanceForCurrentThread() {
   DEFINE_THREAD_SAFE_STATIC_LOCAL(ThreadSpecific<SharedGpuContext>,
                                   thread_specific_instance, ());
@@ -275,13 +283,11 @@ bool SharedGpuContext::MaySupportImageChromium() {
 #endif  // BUILDFLAG(IS_ANDROID)
 
 bool SharedGpuContext::NativeMappableSharedImagesSupportedForCanvas2D() {
-  return MaySupportImageChromium() &&
-         RuntimeEnabledFeatures::Canvas2dImageChromiumEnabled();
+  return MaySupportImageChromium() && Canvas2dImageChromiumEnabled();
 }
 
 bool SharedGpuContext::OverlaysSupportedForCanvas2D() {
-  return MaySupportImageChromium() &&
-         RuntimeEnabledFeatures::Canvas2dImageChromiumEnabled();
+  return MaySupportImageChromium() && Canvas2dImageChromiumEnabled();
 }
 
 bool SharedGpuContext::LowLatencyUsageSupportedForCanvas2D() {
@@ -293,7 +299,7 @@ bool SharedGpuContext::LowLatencyUsageSupportedForCanvas2D() {
 
   return can_use_swapchain ||
          (MaySupportImageChromium() &&
-          (RuntimeEnabledFeatures::Canvas2dImageChromiumEnabled() ||
+          (Canvas2dImageChromiumEnabled() ||
            base::FeatureList::IsEnabled(
                features::kLowLatencyCanvas2dImageChromium)));
 }
