@@ -19,6 +19,7 @@ struct SearchIntegrityReport {
   bool has_custom_option = false;
   bool is_default_custom = false;
   std::string referral_id;
+  bool is_default_custom_with_matching_policy_engine = false;
 };
 
 // Manages the Search Integrity feature, which detects non-standard search

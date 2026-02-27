@@ -10,6 +10,7 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/search_engines/template_url_service_test_util.h"
 #include "chrome/browser/search_integrity/search_integrity_allowlist.h"
 #include "chrome/test/base/testing_profile.h"
@@ -43,6 +44,10 @@ class SearchIntegrityTest : public testing::Test {
     return search_integrity_->CheckSearchEnginesReport();
   }
 
+  void TriggerAllowlistInitialized() {
+    search_integrity_->OnAllowlistInitialized("");
+  }
+
   TemplateURL* AddSearchEngine(const std::u16string& short_name,
                                const std::string& url,
                                bool created_by_policy = false,
@@ -74,7 +79,7 @@ TEST_F(SearchIntegrityTest, CheckCustomSearchEngines_ExtractsReferralId) {
   TemplateURL* turl =
       AddSearchEngine(u"Referral Engine", "http://custom.com?fr=test_ref");
   SetDefaultSearchProvider(turl);
-
+  TriggerAllowlistInitialized();
   SearchIntegrityReport report = CheckSearchEnginesReport();
 
   EXPECT_TRUE(report.has_custom_option);
@@ -98,6 +103,106 @@ TEST_F(SearchIntegrityTest, CheckDefaultSearchEngine_DefaultIsPolicy) {
   SearchIntegrityReport report = CheckSearchEnginesReport();
 
   EXPECT_FALSE(report.is_default_custom);
+}
+
+TEST_F(SearchIntegrityTest, CheckMatchingPolicyEngine_True) {
+  TemplateURL* custom_engine =
+      AddSearchEngine(u"Example", "http://custom.example.com?fr=123");
+  AddSearchEngine(u"Example", "http://policy.example.com",
+                  /*created_by_policy=*/true);
+  SetDefaultSearchProvider(custom_engine);
+
+  SearchIntegrityReport report = CheckSearchEnginesReport();
+
+  EXPECT_TRUE(report.is_default_custom);
+  EXPECT_TRUE(report.is_default_custom_with_matching_policy_engine);
+}
+
+TEST_F(SearchIntegrityTest, CheckMatchingPolicyEngine_False_DifferentName) {
+  TemplateURL* custom_engine =
+      AddSearchEngine(u"Example", "http://custom.example.com?fr=123");
+  AddSearchEngine(u"Other", "http://policy.other.com",
+                  /*created_by_policy=*/true, 0, 0);
+  SetDefaultSearchProvider(custom_engine);
+
+  SearchIntegrityReport report = CheckSearchEnginesReport();
+
+  EXPECT_TRUE(report.is_default_custom);
+  EXPECT_FALSE(report.is_default_custom_with_matching_policy_engine);
+}
+
+TEST_F(SearchIntegrityTest, CheckMatchingPolicyEngine_False_NotPolicy) {
+  TemplateURL* custom_engine =
+      AddSearchEngine(u"Example", "http://custom.example.com?fr=123");
+  AddSearchEngine(u"Example", "http://other.example.com",
+                  /*created_by_policy=*/false);
+  SetDefaultSearchProvider(custom_engine);
+
+  SearchIntegrityReport report = CheckSearchEnginesReport();
+
+  EXPECT_TRUE(report.is_default_custom);
+  EXPECT_FALSE(report.is_default_custom_with_matching_policy_engine);
+}
+
+TEST_F(SearchIntegrityTest, CheckMatchingPolicyEngine_False_SameUrl) {
+  TemplateURL* custom_engine =
+      AddSearchEngine(u"Example", "http://example.com");
+  AddSearchEngine(u"Example", "http://example.com",
+                  /*created_by_policy=*/true);
+  SetDefaultSearchProvider(custom_engine);
+
+  SearchIntegrityReport report = CheckSearchEnginesReport();
+
+  EXPECT_TRUE(report.is_default_custom);
+  EXPECT_FALSE(report.is_default_custom_with_matching_policy_engine);
+}
+
+TEST_F(SearchIntegrityTest, CheckMatchingPolicyEngine_TokenMatch) {
+  // "Google" and "Google Scholar" share the token "Google", so they should
+  // match.
+  TemplateURL* custom_engine =
+      AddSearchEngine(u"Google Scholar", "http://custom.google.com");
+  AddSearchEngine(u"Google", "http://policy.google.com",
+                  /*created_by_policy=*/true);
+  SetDefaultSearchProvider(custom_engine);
+
+  SearchIntegrityReport report = CheckSearchEnginesReport();
+
+  EXPECT_TRUE(report.is_default_custom);
+  EXPECT_TRUE(report.is_default_custom_with_matching_policy_engine);
+}
+
+TEST_F(SearchIntegrityTest, CheckMatchingPolicyEngine_TokenMismatch) {
+  // "E" and "Example" do not share any tokens, so they should not match.
+  TemplateURL* custom_engine =
+      AddSearchEngine(u"E", "http://custom.example.com");
+  AddSearchEngine(u"Example", "http://policy.example.com",
+                  /*created_by_policy=*/true);
+  SetDefaultSearchProvider(custom_engine);
+
+  SearchIntegrityReport report = CheckSearchEnginesReport();
+
+  EXPECT_TRUE(report.is_default_custom);
+  EXPECT_FALSE(report.is_default_custom_with_matching_policy_engine);
+}
+
+TEST_F(SearchIntegrityTest, Histograms_LoggedCorrectly) {
+  base::HistogramTester histogram_tester;
+
+  TemplateURL* custom_engine =
+      AddSearchEngine(u"Example", "http://custom.example.com?fr=123");
+  AddSearchEngine(u"Example", "http://policy.example.com",
+                  /*created_by_policy=*/true);
+  SetDefaultSearchProvider(custom_engine);
+
+  TriggerAllowlistInitialized();
+
+  histogram_tester.ExpectUniqueSample("Search.Integrity.HasCustomSearchEngine",
+                                      true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Search.Integrity.IsDefaultSearchEngineCustom", true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Search.Integrity.IsDefaultCustomWithMatchingPolicyEngine", true, 1);
 }
 
 }  // namespace search_integrity

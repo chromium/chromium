@@ -1103,6 +1103,52 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
   </summary>
 </histogram>
 
+<histogram name="Search.Integrity.HasCustomSearchEngine" enum="Boolean"
+    expires_after="2026-10-20">
+  <owner>musalmaan@chromium.org</owner>
+  <owner>iclelland@chromium.org</owner>
+  <owner>chrome-desktop-ui-waterloo@google.com</owner>
+  <summary>
+    Records whether a custom or non-standard search engine (one not present in
+    the official Chromium prepopulated list) is available in the user's
+    configured search engines list.
+
+    Recorded once per profile at startup when the prepopulated search engine
+    list is initialized and the configuration is checked.
+  </summary>
+</histogram>
+
+<histogram name="Search.Integrity.IsDefaultCustomWithMatchingPolicyEngine"
+    enum="Boolean" expires_after="2026-10-20">
+  <owner>musalmaan@chromium.org</owner>
+  <owner>iclelland@chromium.org</owner>
+  <owner>chrome-desktop-ui-waterloo@google.com</owner>
+  <summary>
+    Records whether the user's default search engine is a custom one that mimics
+    the name of an official, policy-enforced engine but uses a different URL.
+    This is used to detect potential patterns where third-party software
+    attempts to impersonate legitimate engines.
+
+    Recorded once per profile at startup when the search engine allowlist is
+    initialized and the configuration is checked. Only recorded if a custom
+    engine is set as the default.
+  </summary>
+</histogram>
+
+<histogram name="Search.Integrity.IsDefaultSearchEngineCustom" enum="Boolean"
+    expires_after="2026-10-20">
+  <owner>musalmaan@chromium.org</owner>
+  <owner>iclelland@chromium.org</owner>
+  <owner>chrome-desktop-ui-waterloo@google.com</owner>
+  <summary>
+    Records whether the user's currently active default search engine is a
+    custom or non-standard one (not in official Chromium prepopulated list).
+
+    Recorded once per profile at startup when the search engine allowlist is
+    initialized and the configuration is checked.
+  </summary>
+</histogram>
+
 <histogram name="Search.iOS.SelectDefaultSearchEngine"
     enum="OmniboxSearchEngineType" expires_after="2026-07-19">
   <owner>sczs@chromium.org</owner>

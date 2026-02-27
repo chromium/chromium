@@ -9,8 +9,12 @@
 #include <vector>
 
 #include "base/functional/bind.h"
+#include "base/i18n/case_conversion.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/path_service.h"
+#include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -22,6 +26,24 @@
 namespace search_integrity {
 
 namespace {
+
+// Returns true if candidate_name and default_name share at least one common
+// word.
+bool IsNameMatch(std::u16string_view candidate_name,
+                 std::u16string_view default_name) {
+  for (const auto& name_one : base::SplitStringPiece(
+           candidate_name, base::kWhitespaceUTF16, base::TRIM_WHITESPACE,
+           base::SPLIT_WANT_NONEMPTY)) {
+    for (const auto& name_two : base::SplitStringPiece(
+             default_name, base::kWhitespaceUTF16, base::TRIM_WHITESPACE,
+             base::SPLIT_WANT_NONEMPTY)) {
+      if (base::i18n::ToLower(name_one) == base::i18n::ToLower(name_two)) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
 
 // Returns true if the given search engine is a custom engine that is not in the
 // allowlist.
@@ -92,8 +114,13 @@ void SearchIntegrity::OnAllowlistInitialized(
 
   SearchIntegrityReport report = CheckSearchEnginesReport();
 
-  // TODO(crbug.com/482041973): Add histogram to track count of custom options
-  // and track count of default options.
+  base::UmaHistogramBoolean("Search.Integrity.HasCustomSearchEngine",
+                            report.has_custom_option);
+  base::UmaHistogramBoolean("Search.Integrity.IsDefaultSearchEngineCustom",
+                            report.is_default_custom);
+  base::UmaHistogramBoolean(
+      "Search.Integrity.IsDefaultCustomWithMatchingPolicyEngine",
+      report.is_default_custom_with_matching_policy_engine);
 }
 
 SearchIntegrityReport SearchIntegrity::CheckSearchEnginesReport() {
@@ -133,7 +160,27 @@ SearchIntegrityReport SearchIntegrity::CheckSearchEnginesReport() {
 
   if (IsDisallowedCustomSearchEngine(default_search_provider)) {
     report.is_default_custom = true;
+
+    const std::u16string& default_name = default_search_provider->short_name();
+
+    for (const TemplateURL* template_url : template_urls) {
+      // Avoid comparing the engine to itself.
+      if (template_url == default_search_provider) {
+        continue;
+      }
+
+      const std::u16string& candidate_name = template_url->short_name();
+      const bool names_match = IsNameMatch(candidate_name, default_name);
+
+      if (names_match &&
+          template_url->url() != default_search_provider->url() &&
+          !IsDisallowedCustomSearchEngine(template_url)) {
+        report.is_default_custom_with_matching_policy_engine = true;
+        break;
+      }
+    }
   }
+
   return report;
 }
 

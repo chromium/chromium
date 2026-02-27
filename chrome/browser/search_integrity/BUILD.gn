@@ -17,6 +17,7 @@ source_set("search_integrity") {
 
   deps = [
     "//base",
+    "//base:i18n",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/search_engines",
     "//chrome/common:constants",
