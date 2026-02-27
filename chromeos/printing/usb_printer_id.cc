@@ -25,30 +25,32 @@ UsbPrinterId::UsbPrinterId(base::span<const uint8_t> device_id_data) {
   id_mappings_ = BuildDeviceIdMapping(device_id_data);
 
   // Save original ID.
-  if (id_mappings_.contains(kChromeOsRawId)) {
-    raw_id_ = id_mappings_[kChromeOsRawId].front();
+  if (auto it = id_mappings_.find(kChromeOsRawId); it != id_mappings_.end()) {
+    raw_id_ = it->second.front();
   }
 
   // Save required mappings.
   // Save make_.
-  if (id_mappings_.contains(kManufacturer)) {
-    make_ = id_mappings_[kManufacturer].front();
-  } else if (id_mappings_.contains(kManufacturerAbbr)) {
-    make_ = id_mappings_[kManufacturerAbbr].front();
+  if (auto it = id_mappings_.find(kManufacturer); it != id_mappings_.end()) {
+    make_ = it->second.front();
+  } else if (it = id_mappings_.find(kManufacturerAbbr);
+             it != id_mappings_.end()) {
+    make_ = it->second.front();
   }
 
   // Save model_.
-  if (id_mappings_.contains(kModel)) {
-    model_ = id_mappings_[kModel].front();
-  } else if (id_mappings_.contains(kModelAbbr)) {
-    model_ = id_mappings_[kModelAbbr].front();
+  if (auto it = id_mappings_.find(kModel); it != id_mappings_.end()) {
+    model_ = it->second.front();
+  } else if (it = id_mappings_.find(kModelAbbr); it != id_mappings_.end()) {
+    model_ = it->second.front();
   }
 
   // Save command_set_.
-  if (id_mappings_.contains(kCommandSet)) {
-    command_set_ = id_mappings_[kCommandSet];
-  } else if (id_mappings_.contains(kCommandSetAbbr)) {
-    command_set_ = id_mappings_[kCommandSetAbbr];
+  if (auto it = id_mappings_.find(kCommandSet); it != id_mappings_.end()) {
+    command_set_ = it->second;
+  } else if (it = id_mappings_.find(kCommandSetAbbr);
+             it != id_mappings_.end()) {
+    command_set_ = it->second;
   }
 }
 
