@@ -925,6 +925,13 @@ void RestrictedCookieManager::AddChangeListener(
     mojo::PendingRemote<mojom::CookieChangeListener> mojo_listener,
     AddChangeListenerCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Speculative fix for crbug.com/488084020; no point in looking for
+  // cookies in such a context anyway.
+  if (url.is_empty()) {
+    std::move(callback).Run();
+    return;
+  }
+
   if (!ValidateAccessToCookiesAt(url, site_for_cookies, top_frame_origin)) {
     std::move(callback).Run();
     return;
