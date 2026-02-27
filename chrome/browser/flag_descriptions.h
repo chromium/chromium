@@ -5532,6 +5532,11 @@ inline constexpr char kNtpMvcRefactorName[] = "New Tab Page Refactor";
 inline constexpr char kNtpMvcRefactorDescription[] =
     "Enables the refactor of the new tab page for MVC compliance.";
 
+inline constexpr char kNtpSimplificationName[] =
+    "Ntp Simplification On Android Desktop";
+inline constexpr char kNtpSimplificationDescription[] =
+    "Enables the new tab page simplification on Android desktop.";
+
 inline constexpr char kOfflineAutoFetchName[] = "Offline Auto Fetch";
 inline constexpr char kOfflineAutoFetchDescription[] =
     "Enables auto fetch of content when Chrome is online";

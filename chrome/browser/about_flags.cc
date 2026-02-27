@@ -12991,6 +12991,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kNtpMvcRefactorDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kNtpMvcRefactor)},
 #endif
+
+#if BUILDFLAG(IS_ANDROID)
+    {"ntp-simplification", flag_descriptions::kNtpSimplificationName,
+     flag_descriptions::kNtpSimplificationDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kNtpSimplification)},
+#endif
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
