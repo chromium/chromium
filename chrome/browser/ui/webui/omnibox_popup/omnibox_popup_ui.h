@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
+#include "chrome/browser/ui/webui/omnibox_popup/mojom/omnibox_popup.mojom.h"
 #include "chrome/browser/ui/webui/omnibox_popup/mojom/omnibox_popup_aim.mojom.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_config.h"
@@ -27,6 +28,7 @@ class WebuiOmniboxHandler;
 
 class ComposeboxHandler;
 class OmniboxPopupAimHandler;
+class OmniboxPopupHandler;
 class OmniboxPopupUI;
 
 namespace contextual_search {
@@ -47,6 +49,7 @@ class OmniboxPopupUIConfig
 
 // The Web UI controller for the chrome://omnibox-popup.top-chrome.
 class OmniboxPopupUI : public TopChromeWebUIController,
+                       public omnibox_popup::mojom::PageHandlerFactory,
                        public omnibox_popup_aim::mojom::PageHandlerFactory,
                        public composebox::mojom::PageHandlerFactory {
  public:
@@ -67,6 +70,14 @@ class OmniboxPopupUI : public TopChromeWebUIController,
   void BindInterface(content::RenderFrameHost* host,
                      mojo::PendingReceiver<searchbox::mojom::PageHandler>
                          pending_page_handler);
+
+  // omnibox_popup::mojom::PageHandlerFactory:
+  void BindInterface(
+      mojo::PendingReceiver<omnibox_popup::mojom::PageHandlerFactory> receiver);
+  void CreatePageHandler(
+      mojo::PendingRemote<omnibox_popup::mojom::Page> page,
+      mojo::PendingReceiver<omnibox_popup::mojom::PageHandler> receiver)
+      override;
 
   // Instantiates the implementor of the
   // composebox::mojom::PageHandlerFactory mojo interface passing the
@@ -90,6 +101,7 @@ class OmniboxPopupUI : public TopChromeWebUIController,
           pending_searchbox_handler) override;
 
   WebuiOmniboxHandler* omnibox_handler() { return omnibox_handler_.get(); }
+  OmniboxPopupHandler* popup_handler() { return popup_handler_.get(); }
   OmniboxPopupAimHandler* popup_aim_handler() {
     return popup_aim_handler_.get();
   }
@@ -111,9 +123,13 @@ class OmniboxPopupUI : public TopChromeWebUIController,
 
   std::unique_ptr<OmniboxPopupAimHandler> popup_aim_handler_;
 
+  std::unique_ptr<OmniboxPopupHandler> popup_handler_;
+
   std::unique_ptr<ComposeboxHandler> composebox_handler_;
   mojo::Receiver<composebox::mojom::PageHandlerFactory>
       composebox_page_factory_receiver_{this};
+  mojo::Receiver<omnibox_popup::mojom::PageHandlerFactory>
+      popup_page_factory_receiver_{this};
   mojo::Receiver<omnibox_popup_aim::mojom::PageHandlerFactory>
       aim_page_factory_receiver_{this};
 

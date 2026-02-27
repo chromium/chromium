@@ -9,7 +9,6 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_base_content.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_ui.h"
-#include "chrome/browser/ui/webui/searchbox/webui_omnibox_handler.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
 #include "content/public/browser/render_frame_host.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -22,6 +21,7 @@
 
 class LocationBarView;
 class OmniboxPopupPresenterBase;
+class OmniboxPopupHandler;
 
 // The content WebView for the popup of a WebUI Omnibox.
 class OmniboxPopupWebUIContent : public OmniboxPopupWebUIBaseContent {
@@ -54,7 +54,7 @@ class OmniboxPopupWebUIContent : public OmniboxPopupWebUIBaseContent {
 
  private:
   // Returns the WebUI Omnibox Handler. Can return null.
-  WebuiOmniboxHandler* omnibox_handler();
+  OmniboxPopupHandler* popup_handler();
 
   // Indicate whether this WebUI content wants to receive activation and focus.
   bool wants_focus_ = false;

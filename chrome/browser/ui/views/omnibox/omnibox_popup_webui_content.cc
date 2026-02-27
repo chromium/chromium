@@ -18,9 +18,9 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_closer.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter.h"
 #include "chrome/browser/ui/views/omnibox/rounded_omnibox_results_frame.h"
+#include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_handler.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_ui.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_web_contents_helper.h"
-#include "chrome/browser/ui/webui/searchbox/webui_omnibox_handler.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -55,14 +55,17 @@ OmniboxPopupWebUIContent::~OmniboxPopupWebUIContent() = default;
 void OmniboxPopupWebUIContent::ShowUI() {
   OmniboxPopupWebUIBaseContent::ShowUI();
 
-  if (auto* handler = omnibox_handler()) {
+  if (auto* handler = popup_handler()) {
     handler->OnShow();
   }
 }
 
-WebuiOmniboxHandler* OmniboxPopupWebUIContent::omnibox_handler() {
+OmniboxPopupHandler* OmniboxPopupWebUIContent::popup_handler() {
   auto* webui_controller = contents_wrapper()->GetWebUIController();
-  return webui_controller ? webui_controller->omnibox_handler() : nullptr;
+  if (!webui_controller) {
+    return nullptr;
+  }
+  return webui_controller->popup_handler();
 }
 
 void OmniboxPopupWebUIContent::PrimaryMainFrameRenderProcessGone(

@@ -4,78 +4,31 @@
 
 import 'chrome://omnibox-popup.top-chrome/omnibox_popup.js';
 
-import {SearchboxBrowserProxy} from 'chrome://omnibox-popup.top-chrome/omnibox_popup.js';
+import {OmniboxPopupBrowserProxy, SearchboxBrowserProxy} from 'chrome://omnibox-popup.top-chrome/omnibox_popup.js';
 import type {OmniboxPopupAppElement} from 'chrome://omnibox-popup.top-chrome/omnibox_popup.js';
 import {createAutocompleteResultForTesting, createSearchMatchForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {PageCallbackRouter, PageHandlerRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import type {PageRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {SelectionDirection, SelectionLineState, SelectionStep} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {WindowOpenDisposition} from 'chrome://resources/mojo/ui/base/mojom/window_open_disposition.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
-import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-type Constructor<T> = new (...args: any[]) => T;
-type Installer<T> = (instance: T) => void;
-
-export function installMock<T extends object>(
-    clazz: Constructor<T>, installer?: Installer<T>): TestMock<T> {
-  installer = installer ||
-      (clazz as unknown as {setInstance: Installer<T>}).setInstance;
-  const mock = TestMock.fromClass(clazz);
-  installer(mock);
-  return mock;
-}
-
-// TODO(b/453041451): Create separate file for TestSearchboxBrowserProxy
-//  or reuse the one `cr-searchbox` tests use.
-class TestSearchboxBrowserProxy extends TestBrowserProxy {
-  callbackRouter: PageCallbackRouter;
-  handler: TestMock<PageHandlerRemote>&PageHandlerRemote;
-  page: PageRemote;
-
-  constructor() {
-    super();
-    this.callbackRouter = new PageCallbackRouter();
-    this.handler = TestMock.fromClass(PageHandlerRemote);
-    this.handler.setResultFor('getRecentTabs', Promise.resolve({tabs: []}));
-    this.handler.setResultFor('getInputState', Promise.resolve({
-      state: {
-        allowed_models: [],
-        allowed_tools: [],
-        allowed_input_types: [],
-        active_model: 0,  // kUnspecified
-        active_tool: 0,   // kUnspecified
-        disabled_models: [],
-        disabled_tools: [],
-        disabled_input_types: [],
-      },
-    }));
-    this.page = this.callbackRouter.$.bindNewPipeAndPassRemote();
-  }
-
-  getCallbackRouter() {
-    return this.callbackRouter;
-  }
-
-  initVisibilityPrefs() {
-    this.page.updateAimEligibility(true);
-    this.page.onShowAiModePrefChanged(true);
-    this.page.updateContentSharingPolicy(true);
-  }
-}
+import {TestOmniboxPopupBrowserProxy} from './test_omnibox_popup_browser_proxy.js';
+import {TestSearchboxBrowserProxy} from './test_searchbox_browser_proxy.js';
 
 suite('AppTest', function() {
   let app: OmniboxPopupAppElement;
   let testProxy: TestSearchboxBrowserProxy;
+  let omniboxPopupTestProxy: TestOmniboxPopupBrowserProxy;
 
   setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     testProxy = new TestSearchboxBrowserProxy();
     SearchboxBrowserProxy.setInstance(testProxy);
+
+    omniboxPopupTestProxy = new TestOmniboxPopupBrowserProxy();
+    OmniboxPopupBrowserProxy.setInstance(omniboxPopupTestProxy);
 
     app = document.createElement('omnibox-popup-app');
     document.body.appendChild(app);
@@ -212,7 +165,7 @@ suite('AppTest', function() {
       assertTrue(entrypointButton.matches(':focus-within'));
 
       // Act: Show the popup.
-      testProxy.page.onShow();
+      omniboxPopupTestProxy.page.onShow();
       await microtasksFinished();
 
       // Assert: The button is no longer focused.
@@ -243,7 +196,7 @@ suite('AppTest', function() {
       testProxy.initVisibilityPrefs();
       await microtasksFinished();
 
-      testProxy.page.onShow();
+      omniboxPopupTestProxy.page.onShow();
       await microtasksFinished();
 
       const recentTabChip = localApp.shadowRoot?.querySelector(

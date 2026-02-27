@@ -27,6 +27,7 @@
 #include "chrome/browser/ui/webui/omnibox/omnibox_ui.h"
 #include "components/enterprise/connectors/connectors_internals.mojom.h"
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/webui/omnibox_popup/mojom/omnibox_popup.mojom.h"
 #include "chrome/browser/ui/webui/omnibox_popup/mojom/omnibox_popup_aim.mojom.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_ui.h"
 #endif
@@ -84,6 +85,8 @@ void PopulateChromeWebUIFrameBindersPartsAllPlatforms(
 #if !BUILDFLAG(IS_ANDROID)
   RegisterWebUIControllerInterfaceBinder<
       omnibox_popup_aim::mojom::PageHandlerFactory, OmniboxPopupUI>(map);
+  RegisterWebUIControllerInterfaceBinder<
+      omnibox_popup::mojom::PageHandlerFactory, OmniboxPopupUI>(map);
 #endif
   RegisterWebUIControllerInterfaceBinder<::mojom::OmniboxPageHandler,
                                          OmniboxUI>(map);

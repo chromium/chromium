@@ -8527,6 +8527,7 @@ test("unit_tests") {
       "../browser/ui/webui/new_tab_page/untrusted_source_unittest.cc",
       "../browser/ui/webui/ntp_microsoft_auth/ntp_microsoft_auth_page_handler_unittest.cc",
       "../browser/ui/webui/ntp_microsoft_auth/ntp_microsoft_auth_response_capture_navigation_throttle_unittest.cc",
+      "../browser/ui/webui/omnibox_popup/omnibox_popup_handler_unittest.cc",
       "../browser/ui/webui/omnibox_popup/omnibox_popup_ui_unittest.cc",
       "../browser/ui/webui/password_manager/promo_cards_handler_unittest.cc",
       "../browser/ui/webui/password_manager/sync_handler_unittest.cc",
