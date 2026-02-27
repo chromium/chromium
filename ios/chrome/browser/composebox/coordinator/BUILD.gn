@@ -4,19 +4,67 @@
 
 source_set("coordinator") {
   sources = [
-    "composebox_availability.h",
-    "composebox_availability.mm",
     "composebox_coordinator.h",
     "composebox_coordinator.mm",
-    "composebox_entrypoint.h",
+    "composebox_navigation_mediator.h",
+    "composebox_navigation_mediator.mm",
+  ]
+  public_deps = [
+    ":availability",
+    ":entrypoint",
+  ]
+  deps = [
+    ":aim_deps",
+    ":clipboard_deps",
+    ":common_deps",
+    ":input_plate",
+    ":lens_deps",
+    ":mode_holder",
+    ":ntp_deps",
+    ":omnibox_deps",
+    ":search_deps",
+    ":shared_deps",
+    ":url_loading_deps",
+    "//components/prefs",
+    "//ios/chrome/app:tests_hook",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/composebox/debugger",
+    "//ios/chrome/browser/composebox/model",
+    "//ios/chrome/browser/composebox/public",
+    "//ios/chrome/browser/composebox/ui",
+    "//ios/chrome/browser/composebox/ui/presentation",
+    "//ios/chrome/browser/tabs/model",
+    "//ios/web",
+    "//ios/web/public",
+    "//ui/base",
+  ]
+  frameworks = [ "PDFKit.framework" ]
+}
+
+source_set("availability") {
+  sources = [
+    "composebox_availability.h",
+    "composebox_availability.mm",
+  ]
+  public_deps = [ ":entrypoint" ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
+  ]
+}
+
+source_set("entrypoint") {
+  sources = [ "composebox_entrypoint.h" ]
+}
+
+source_set("input_plate") {
+  sources = [
     "composebox_input_plate_coordinator.h",
     "composebox_input_plate_coordinator.mm",
     "composebox_input_plate_mediator.h",
     "composebox_input_plate_mediator.mm",
-    "composebox_mode_holder.h",
-    "composebox_mode_holder.mm",
-    "composebox_navigation_mediator.h",
-    "composebox_navigation_mediator.mm",
     "composebox_omnibox_client.h",
     "composebox_omnibox_client.mm",
     "composebox_omnibox_client_delegate.h",
@@ -28,37 +76,35 @@ source_set("coordinator") {
     "web_state_deferred_executor.h",
     "web_state_deferred_executor.mm",
   ]
+  public_deps = [
+    ":availability",
+    ":entrypoint",
+  ]
   deps = [
-    ":constants",
+    ":aim_deps",
+    ":bookmarks_deps",
+    ":common_deps",
+    ":intelligence_deps",
+    ":lens_deps",
+    ":location_bar_deps",
+    ":mode_holder",
+    ":ntp_deps",
+    ":omnibox_deps",
+    ":search_deps",
+    ":shared_deps",
+    ":tab_switcher_deps",
+    ":url_loading_deps",
     "//components/application_locale_storage",
     "//components/contextual_search:public",
     "//components/favicon/ios",
     "//components/feature_engagement/public",
-    "//components/lens",
-    "//components/omnibox/browser",
-    "//components/omnibox/browser:location_bar",
-    "//components/omnibox/common",
-    "//components/omnibox/composebox/ios",
-    "//components/open_from_clipboard",
-    "//components/open_from_clipboard:open_from_clipboard_impl",
     "//components/prefs",
-    "//components/search",
-    "//components/search_engines",
     "//ios/chrome/app:tests_hook",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/aim/debugger/coordinator",
-    "//ios/chrome/browser/aim/model:aim_availability",
     "//ios/chrome/browser/autocomplete/model",
-    "//ios/chrome/browser/bookmarks/model",
-    "//ios/chrome/browser/bookmarks/model:model_utils",
     "//ios/chrome/browser/composebox/debugger",
     "//ios/chrome/browser/composebox/model",
-    "//ios/chrome/browser/composebox/public:animation",
-    "//ios/chrome/browser/composebox/public:constants",
-    "//ios/chrome/browser/composebox/public:features",
-    "//ios/chrome/browser/composebox/public:input_plate_controls",
-    "//ios/chrome/browser/composebox/public:model_options",
-    "//ios/chrome/browser/composebox/public:theme",
+    "//ios/chrome/browser/composebox/public",
     "//ios/chrome/browser/composebox/ui",
     "//ios/chrome/browser/composebox/ui/presentation",
     "//ios/chrome/browser/default_browser/model:default_browser_interest_signals",
@@ -66,27 +112,68 @@ source_set("coordinator") {
     "//ios/chrome/browser/favicon/model",
     "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/https_upgrades/model",
-    "//ios/chrome/browser/intelligence/persist_tab_context/model",
-    "//ios/chrome/browser/intelligence/proto_wrappers",
     "//ios/chrome/browser/intents/model:model_donation_helper",
-    "//ios/chrome/browser/lens/ui_bundled:lens_availability",
-    "//ios/chrome/browser/lens/ui_bundled:lens_entrypoint",
-    "//ios/chrome/browser/location_bar/model",
-    "//ios/chrome/browser/location_bar/ui_bundled:location_bar_model_delegate",
-    "//ios/chrome/browser/location_bar/ui_bundled:protocols",
-    "//ios/chrome/browser/ntp/model",
-    "//ios/chrome/browser/ntp/model:util",
-    "//ios/chrome/browser/omnibox/coordinator",
-    "//ios/chrome/browser/omnibox/coordinator/popup",
-    "//ios/chrome/browser/omnibox/model",
-    "//ios/chrome/browser/omnibox/model/omnibox_position",
-    "//ios/chrome/browser/omnibox/public",
-    "//ios/chrome/browser/omnibox/public:features",
-    "//ios/chrome/browser/omnibox/ui",
-    "//ios/chrome/browser/omnibox/ui:omnibox_internal",
     "//ios/chrome/browser/prerender/model",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/snapshots/model",
+    "//ios/chrome/browser/tabs/model",
+    "//ios/chrome/browser/variations/model/client",
+    "//ios/chrome/browser/web/model",
+    "//ios/chrome/browser/web/model:page_placeholder",
+    "//ios/web",
+    "//ios/web/public",
+    "//ui/base",
+  ]
+  frameworks = [ "PDFKit.framework" ]
+}
+
+group("aim_deps") {
+  visibility = [ ":*" ]
+  public_deps = [
+    "//ios/chrome/browser/aim/debugger/coordinator",
+    "//ios/chrome/browser/aim/model:aim_availability",
+  ]
+}
+
+group("url_loading_deps") {
+  visibility = [ ":*" ]
+  public_deps = [
+    "//ios/chrome/browser/url_loading/model",
+    "//ios/chrome/browser/url_loading/model:url_loading_params_header",
+  ]
+}
+
+group("search_deps") {
+  visibility = [ ":*" ]
+  public_deps = [
+    "//components/search",
+    "//components/search_engines",
     "//ios/chrome/browser/search_engines/model",
     "//ios/chrome/browser/search_engines/model:template_url_service_factory",
+    "//ios/public/provider/chrome/browser/voice_search:voice_search_api",
+  ]
+}
+
+group("clipboard_deps") {
+  visibility = [ ":*" ]
+  public_deps = [
+    "//components/open_from_clipboard",
+    "//components/open_from_clipboard:open_from_clipboard_impl",
+  ]
+}
+
+group("lens_deps") {
+  visibility = [ ":*" ]
+  public_deps = [
+    "//components/lens",
+    "//ios/chrome/browser/lens/ui_bundled:lens_availability",
+    "//ios/chrome/browser/lens/ui_bundled:lens_entrypoint",
+  ]
+}
+
+group("shared_deps") {
+  visibility = [ ":*" ]
+  public_deps = [
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/coordinator/layout_guide",
     "//ios/chrome/browser/shared/model/application_context",
@@ -101,8 +188,23 @@ source_set("coordinator") {
     "//ios/chrome/browser/shared/public/features:system_flags",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/shared/ui/util:util_swift",
-    "//ios/chrome/browser/signin/model",
-    "//ios/chrome/browser/snapshots/model",
+  ]
+}
+
+group("common_deps") {
+  visibility = [ ":*" ]
+  public_deps = [
+    "//ios/chrome/common",
+    "//ios/chrome/common:string_conversions",
+    "//ios/chrome/common/ui/favicon",
+    "//ios/chrome/common/ui/util",
+    "//ios/chrome/common/ui/util:image_util",
+  ]
+}
+
+group("tab_switcher_deps") {
+  visibility = [ ":*" ]
+  public_deps = [
     "//ios/chrome/browser/tab_switcher/tab_grid/base_grid/coordinator:mediator",
     "//ios/chrome/browser/tab_switcher/tab_grid/base_grid/ui",
     "//ios/chrome/browser/tab_switcher/ui_bundled",
@@ -112,23 +214,72 @@ source_set("coordinator") {
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid:grid_item_identifier",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid:grid_utils",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid:selected_grid_items",
-    "//ios/chrome/browser/tabs/model",
-    "//ios/chrome/browser/url_loading/model",
-    "//ios/chrome/browser/url_loading/model:url_loading_params_header",
-    "//ios/chrome/browser/variations/model/client",
-    "//ios/chrome/browser/web/model",
-    "//ios/chrome/browser/web/model:page_placeholder",
-    "//ios/chrome/common",
-    "//ios/chrome/common:string_conversions",
-    "//ios/chrome/common/ui/favicon",
-    "//ios/chrome/common/ui/util",
-    "//ios/chrome/common/ui/util:image_util",
-    "//ios/public/provider/chrome/browser/voice_search:voice_search_api",
-    "//ios/web",
-    "//ios/web/public",
-    "//ui/base",
   ]
-  frameworks = [ "PDFKit.framework" ]
+}
+
+group("intelligence_deps") {
+  visibility = [ ":*" ]
+  public_deps = [
+    "//ios/chrome/browser/intelligence/persist_tab_context/model",
+    "//ios/chrome/browser/intelligence/proto_wrappers",
+  ]
+}
+
+group("ntp_deps") {
+  visibility = [ ":*" ]
+  public_deps = [
+    "//ios/chrome/browser/ntp/model",
+    "//ios/chrome/browser/ntp/model:util",
+  ]
+}
+
+group("location_bar_deps") {
+  visibility = [ ":*" ]
+  public_deps = [
+    "//ios/chrome/browser/location_bar/model",
+    "//ios/chrome/browser/location_bar/ui_bundled:location_bar_model_delegate",
+    "//ios/chrome/browser/location_bar/ui_bundled:protocols",
+  ]
+}
+
+group("omnibox_deps") {
+  visibility = [ ":*" ]
+  public_deps = [
+    "//components/omnibox/browser",
+    "//components/omnibox/browser:location_bar",
+    "//components/omnibox/common",
+    "//components/omnibox/composebox/ios",
+    "//ios/chrome/browser/omnibox/coordinator",
+    "//ios/chrome/browser/omnibox/coordinator/popup",
+    "//ios/chrome/browser/omnibox/model",
+    "//ios/chrome/browser/omnibox/model/omnibox_position",
+    "//ios/chrome/browser/omnibox/public",
+    "//ios/chrome/browser/omnibox/public:features",
+    "//ios/chrome/browser/omnibox/ui",
+    "//ios/chrome/browser/omnibox/ui:omnibox_internal",
+  ]
+}
+
+group("bookmarks_deps") {
+  visibility = [ ":*" ]
+  public_deps = [
+    "//ios/chrome/browser/bookmarks/model",
+    "//ios/chrome/browser/bookmarks/model:model_utils",
+  ]
+}
+
+source_set("mode_holder") {
+  visibility = [ ":*" ]
+  sources = [
+    "composebox_mode_holder.h",
+    "composebox_mode_holder.mm",
+  ]
+  public_deps = [ ":constants" ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
+  ]
 }
 
 source_set("constants") {
@@ -144,6 +295,9 @@ source_set("unit_tests") {
   sources = [ "composebox_input_plate_mediator_unittest.mm" ]
   deps = [
     ":coordinator",
+    ":input_plate",
+    ":lens_deps",
+    ":mode_holder",
     "//base",
     "//base/test:test_support",
     "//components/contextual_search:public",
@@ -156,12 +310,8 @@ source_set("unit_tests") {
     "//components/signin/public/identity_manager",
     "//components/variations",
     "//components/version_info:channel",
-    "//ios/chrome/browser/composebox/public:features",
-    "//ios/chrome/browser/composebox/public:input_plate_controls",
-    "//ios/chrome/browser/composebox/public:model_options",
+    "//ios/chrome/browser/composebox/public",
     "//ios/chrome/browser/composebox/ui",
-    "//ios/chrome/browser/lens/ui_bundled:lens_availability",
-    "//ios/chrome/browser/lens/ui_bundled:lens_entrypoint",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/model/web_state_list/test:test_support",

@@ -2,6 +2,18 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+group("public") {
+  public_deps = [
+    ":animation",
+    ":constants",
+    ":features",
+    ":input_plate_controls",
+    ":input_plate_position",
+    ":model_options",
+    ":theme",
+  ]
+}
+
 source_set("features") {
   sources = [
     "features.h",
