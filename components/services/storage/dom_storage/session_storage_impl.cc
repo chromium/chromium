@@ -752,7 +752,6 @@ void SessionStorageImpl::InitiateConnection(bool in_memory_only) {
 }
 
 void SessionStorageImpl::OnDatabaseOpened(DbStatus status) {
-  status.Log("Storage.SessionStorage.OpenDatabase", in_memory_);
   if (!status.ok()) {
     // If we failed to open the database, try to delete and recreate the
     // database, or ultimately fallback to an in-memory database.

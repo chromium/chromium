@@ -134,11 +134,14 @@ class AsyncDomStorageDatabase {
   void InitiateCommit();
 
  private:
+  AsyncDomStorageDatabase(StorageType storage_type, bool in_memory);
+
   void OnDatabaseOpened(
       StatusCallback callback,
       StatusOr<base::SequenceBound<DomStorageDatabase>> database);
 
-  explicit AsyncDomStorageDatabase();
+  std::string_view StorageTypeForHistograms() const;
+  std::string GetHistogram(std::string_view operation) const;
 
   base::SequenceBound<DomStorageDatabase> database_;
 
@@ -146,6 +149,9 @@ class AsyncDomStorageDatabase {
   std::vector<BoundDatabaseTask> tasks_to_run_on_open_;
 
   std::set<raw_ptr<Committer>> committers_;
+
+  const StorageType storage_type_;
+  const bool in_memory_;
 
   base::WeakPtrFactory<AsyncDomStorageDatabase> weak_ptr_factory_{this};
 };

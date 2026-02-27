@@ -309,6 +309,7 @@ class DomStorageDatabase {
   // NOTE: If `RewriteDB()` fails, this DomStorageDatabase may no longer
   // be usable; in such cases, all future operations will return an IOError
   // status.
+  // TODO(crbug.com/485785252): Also implement this for the SQLite backend.
   virtual DbStatus RewriteDB() = 0;
 
   // Test-only functions.

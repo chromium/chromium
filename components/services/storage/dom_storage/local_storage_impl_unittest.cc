@@ -416,6 +416,9 @@ TEST_P(LocalStorageImplTest, Basic) {
   mojo::Remote<blink::mojom::StorageArea> area;
   context()->BindStorageArea(storage_key, area.BindNewPipeAndPassReceiver());
 
+  // Start histogram recording after setup to isolate the Put commit.
+  base::HistogramTester histograms;
+
   base::test::TestFuture<bool> success_future;
   area->Put(key, value, std::nullopt, "source", success_future.GetCallback());
   EXPECT_TRUE(success_future.Take());
@@ -429,6 +432,12 @@ TEST_P(LocalStorageImplTest, Basic) {
       WaitForMapEntries(storage_key, /*expected_entries=*/{{key, value}}));
   ASSERT_NO_FATAL_FAILURE(ExpectUsageMetadataCount(1u));
   ASSERT_NO_FATAL_FAILURE(ExpectUsageMetadataExists(storage_key));
+
+  // Verify the UpdateMaps histogram was recorded with success (sample 0 = kOk).
+  histograms.ExpectUniqueSample("Storage.LocalStorage.UpdateMaps.OnDisk", 0, 1);
+  // The Put and WaitForMapEntries each trigger a ReadMapKeyValues.
+  histograms.ExpectUniqueSample("Storage.LocalStorage.ReadMapKeyValues.OnDisk",
+                                0, 2);
 }
 
 TEST_P(LocalStorageImplTest, StorageKeysAreIndependent) {
@@ -612,6 +621,7 @@ TEST_P(LocalStorageImplTest, GetStorageUsage_Data) {
 
   base::Time after_write = base::Time::Now();
 
+  base::HistogramTester histograms;
   std::vector<mojom::StorageUsageInfoPtr> info = GetStorageUsageSync();
   ASSERT_EQ(2u, info.size());
   if (info[0]->storage_key == storage_key2) {
@@ -624,6 +634,10 @@ TEST_P(LocalStorageImplTest, GetStorageUsage_Data) {
   EXPECT_GE(after_write, info[0]->last_modified);
   EXPECT_GE(after_write, info[1]->last_modified);
   EXPECT_GT(info[0]->total_size_bytes, info[1]->total_size_bytes);
+
+  // GetStorageUsageSync() results in a ReadAllMetadata call.
+  histograms.ExpectUniqueSample("Storage.LocalStorage.ReadAllMetadata.OnDisk",
+                                0, 1);
 }
 
 TEST_P(LocalStorageImplTest, CheckAccessMetaData) {
@@ -659,7 +673,13 @@ TEST_P(LocalStorageImplTest, CheckAccessMetaData) {
   context()->ApplyPolicyUpdates(std::move(updates));
 
   // After shutdown, we should just see data for storage_key2.
-  ResetStorage(storage_path());
+  {
+    base::HistogramTester purge_histograms;
+    ResetStorage(storage_path());
+    // Verify PurgeOrigins histogram is recorded during shutdown.
+    purge_histograms.ExpectUniqueSample(
+        "Storage.LocalStorage.PurgeOrigins.OnDisk", /*sample=*/0, 1);
+  }
   base::Time after_metadata = base::Time::Now();
 
   WaitForDatabaseOpen();
@@ -683,6 +703,8 @@ TEST_P(LocalStorageImplTest, CheckAccessMetaData) {
   area->GetAll(std::move(unused_observer), future.GetCallback());
   EXPECT_TRUE(future.Wait());
 
+  // Capture the PutMetadata histogram fired during ResetStorage() shutdown.
+  base::HistogramTester histograms;
   ResetStorage(storage_path());
   after_metadata = base::Time::Now();
 
@@ -694,6 +716,10 @@ TEST_P(LocalStorageImplTest, CheckAccessMetaData) {
 
   EXPECT_LE(before_metadata, usage_metadata->last_accessed.value());
   EXPECT_GE(after_metadata, usage_metadata->last_accessed.value());
+
+  // ResetStorage results in a PutMetadata call to update last_accessed.
+  histograms.ExpectUniqueSample("Storage.LocalStorage.PutMetadata.OnDisk",
+                                /*sample=*/0, 1);
 }
 
 TEST_P(LocalStorageImplTest, MetaDataClearedOnDelete) {
@@ -775,6 +801,7 @@ TEST_P(LocalStorageImplTest, DeleteStorage) {
   PutMapKeyValue(storage_key, StdStringToUint8Vector("key"),
                  StdStringToUint8Vector("value"));
 
+  base::HistogramTester histograms;
   ResetStorage(storage_path());
   base::RunLoop run_loop;
   context()->DeleteStorage(storage_key, run_loop.QuitClosure());
@@ -784,6 +811,9 @@ TEST_P(LocalStorageImplTest, DeleteStorage) {
   ASSERT_NO_FATAL_FAILURE(
       ExpectMapEquals(storage_key, /*expected_entries=*/{}));
   ASSERT_NO_FATAL_FAILURE(ExpectUsageMetadataCount(0u));
+
+  histograms.ExpectUniqueSample(
+      "Storage.LocalStorage.DeleteStorageKeysFromSession.OnDisk", 0, 1);
 }
 
 TEST_P(LocalStorageImplTest, DeleteStorageWithoutConnection) {
@@ -1003,7 +1033,12 @@ TEST_P(LocalStorageImplTest, ShutdownClearsData) {
   // Data from storage_key1_third_party should also be erased, since it is
   // a third party storage key, and its top_level_site matches the origin
   // of storage_key1, which is set to purge on shutdown.
+  base::HistogramTester histograms;
   ResetStorage(storage_path());
+  // Verify PurgeOrigins histogram is recorded during shutdown.
+  histograms.ExpectUniqueSample("Storage.LocalStorage.PurgeOrigins.OnDisk",
+                                /*sample=*/0, 1);
+
   WaitForDatabaseOpen();
 
   ASSERT_NO_FATAL_FAILURE(
@@ -1181,6 +1216,8 @@ TEST_P(LocalStorageImplTest, CorruptionOnDisk) {
 }
 
 TEST_P(LocalStorageImplTest, RecreateOnCommitFailure) {
+  base::HistogramTester histograms;
+
   std::optional<base::RunLoop> open_loop;
   std::optional<base::RunLoop> destruction_loop;
   size_t num_database_open_requests = 0;
@@ -1310,6 +1347,11 @@ TEST_P(LocalStorageImplTest, RecreateOnCommitFailure) {
               observer2.observations()[i].type);
     EXPECT_EQ(Uint8VectorToStdString(key), observer2.observations()[i].key);
   }
+
+  // Verify that commit failures were recorded in the histogram.
+  // Sum > 0 means at least one non-zero (failure) sample was recorded.
+  EXPECT_GT(histograms.GetTotalSum("Storage.LocalStorage.UpdateMaps.OnDisk"),
+            0);
 }
 
 TEST_P(LocalStorageImplTest, DontRecreateOnRepeatedCommitFailure) {
