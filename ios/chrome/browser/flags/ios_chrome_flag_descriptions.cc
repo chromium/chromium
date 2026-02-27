@@ -659,6 +659,10 @@ const char kGeminiDynamicSettingsName[] = "Gemini Dynamic Settings";
 const char kGeminiDynamicSettingsDescription[] =
     "Enables loading Gemini settings dynamically using the Gemini SDK.";
 
+const char kGeminiFloatyAllPagesName[] = "Gemini Floaty All Pages";
+const char kGeminiFloatyAllPagesDescription[] =
+    "Enables the Gemini floaty on all pages.";
+
 const char kGeminiFullChatHistoryName[] = "GeminiFullChatHistory";
 const char kGeminiFullChatHistoryDescription[] =
     "Enables the full chat history being shown in the floaty.";

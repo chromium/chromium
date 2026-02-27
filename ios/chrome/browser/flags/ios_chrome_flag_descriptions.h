@@ -402,6 +402,9 @@ extern const char kGeminiCopresenceDescription[];
 extern const char kGeminiDynamicSettingsName[];
 extern const char kGeminiDynamicSettingsDescription[];
 
+extern const char kGeminiFloatyAllPagesName[];
+extern const char kGeminiFloatyAllPagesDescription[];
+
 extern const char kGeminiFullChatHistoryName[];
 extern const char kGeminiFullChatHistoryDescription[];
 

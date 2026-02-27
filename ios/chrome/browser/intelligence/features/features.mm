@@ -587,3 +587,9 @@ bool IsGeminiRichAPCExtractionEnabled() {
 
   return base::FeatureList::IsEnabled(kGeminiRichAPCExtraction);
 }
+
+BASE_FEATURE(kGeminiFloatyAllPages, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsGeminiFloatyAllPagesEnabled() {
+  return base::FeatureList::IsEnabled(kGeminiFloatyAllPages);
+}

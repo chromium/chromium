@@ -5072,8 +5072,19 @@
     "expiry_milestone": 160
   },
   {
+    "name": "gemini-floaty-all-pages",
+    "owners": [
+      "tarekmakkouk@google.com",
+      "bling-alchemy-eng@google.com"
+    ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "gemini-full-chat-history",
-    "owners": [ "adamta@google.com", "bling-alchemy-eng@google.com" ],
+    "owners": [
+      "adamta@google.com",
+      "bling-alchemy-eng@google.com"
+    ],
     "expiry_milestone": 148
   },
   {

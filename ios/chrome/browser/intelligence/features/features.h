@@ -347,4 +347,8 @@ bool IsGeminiActorEnabled();
 BASE_DECLARE_FEATURE(kGeminiRichAPCExtraction);
 bool IsGeminiRichAPCExtractionEnabled();
 
+// Feature flag to enable Gemini Floaty on all pages.
+BASE_DECLARE_FEATURE(kGeminiFloatyAllPages);
+bool IsGeminiFloatyAllPagesEnabled();
+
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_FEATURES_FEATURES_H_
