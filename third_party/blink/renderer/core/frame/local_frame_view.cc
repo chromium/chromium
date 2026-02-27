@@ -151,6 +151,7 @@
 #include "third_party/blink/renderer/core/page/validation_message_client.h"
 #include "third_party/blink/renderer/core/paint/cull_rect_updater.h"
 #include "third_party/blink/renderer/core/paint/frame_painter.h"
+#include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
@@ -4154,10 +4155,11 @@ bool LocalFrameView::CapturePaintPreview(
   return true;
 }
 
-void LocalFrameView::Paint(GraphicsContext& context,
-                           PaintFlags paint_flags,
+void LocalFrameView::Paint(const PaintInfo& paint_info,
                            const CullRect& cull_rect,
                            const gfx::Vector2d& paint_offset) const {
+  GraphicsContext& context = paint_info.context;
+  PaintFlags paint_flags = paint_info.GetPaintFlags();
   const auto* owner_layout_object = GetFrame().OwnerLayoutObject();
   std::optional<Document::PaintPreviewScope> paint_preview;
   if (owner_layout_object &&

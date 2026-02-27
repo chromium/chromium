@@ -16,7 +16,7 @@ namespace blink {
 class CullRect;
 class LayoutEmbeddedContent;
 class LocalFrameView;
-class GraphicsContext;
+struct PaintInfo;
 
 // EmbeddedContentView is a pure virtual class which is implemented by
 // LocalFrameView, RemoteFrameView, and WebPluginContainerImpl.
@@ -36,8 +36,7 @@ class CORE_EXPORT EmbeddedContentView : public GarbageCollectedMixin {
   // |cull_rect| is in the same coordinate space as Location() and FrameRect().
   // |paint_offset| is Location() mapped into the current coordinates space of
   // the current paint context.
-  virtual void Paint(GraphicsContext&,
-                     PaintFlags,
+  virtual void Paint(const PaintInfo&,
                      const CullRect& cull_rect,
                      const gfx::Vector2d& paint_offset) const = 0;
   // Called when the size of the view changes.  Implementations of

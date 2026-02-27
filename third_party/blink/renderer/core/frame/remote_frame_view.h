@@ -29,7 +29,6 @@ class Vector2d;
 
 namespace blink {
 class CullRect;
-class GraphicsContext;
 class LocalFrameView;
 class RemoteFrame;
 
@@ -54,8 +53,7 @@ class CORE_EXPORT RemoteFrameView final
   void SetFrameRect(const gfx::Rect&) override;
   void PropagateFrameRects() override;
   void ZoomFactorChanged(float zoom_factor) override;
-  void Paint(GraphicsContext&,
-             PaintFlags,
+  void Paint(const PaintInfo&,
              const CullRect&,
              const gfx::Vector2d& paint_offset) const override;
   void UpdateGeometry() override;

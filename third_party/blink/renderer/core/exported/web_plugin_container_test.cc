@@ -57,6 +57,7 @@
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/testing/fake_web_plugin.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/core/testing/scoped_fake_plugin_registry.h"
@@ -1582,8 +1583,11 @@ TEST_F(WebPluginContainerTest, CompositedPlugin) {
   PaintController paint_controller;
   paint_controller.UpdateCurrentPaintChunkProperties(PropertyTreeState::Root());
   GraphicsContext graphics_context(paint_controller);
-  container->Paint(graphics_context, PaintFlag::kNoFlag,
-                   CullRect(gfx::Rect(10, 10, 400, 300)), gfx::Vector2d());
+  PaintInfo paint_info(graphics_context, CullRect::Infinite(),
+                       PaintPhase::kForeground,
+                       /*descendant_painting_blocked=*/false);
+  container->Paint(paint_info, CullRect(gfx::Rect(10, 10, 400, 300)),
+                   gfx::Vector2d());
   auto& paint_artifact = paint_controller.CommitNewDisplayItems();
 
   const auto& display_items = paint_artifact.GetDisplayItemList();

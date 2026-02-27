@@ -97,6 +97,7 @@ class Element;
 class FragmentAnchor;
 class Frame;
 class FrameViewAutoSizeInfo;
+class GraphicsContext;
 class HTMLCanvasElement;
 class HTMLVideoElement;
 class HitTestLocation;
@@ -986,8 +987,7 @@ class CORE_EXPORT LocalFrameView final
                            const gfx::Vector2d& paint_offset) const;
 
   // EmbeddedContentView implementation
-  void Paint(GraphicsContext&,
-             PaintFlags,
+  void Paint(const PaintInfo&,
              const CullRect&,
              const gfx::Vector2d&) const final;
 

@@ -68,8 +68,8 @@ void EmbeddedContentPainter::PaintReplaced(const PaintInfo& paint_info,
       paint_location - embedded_content_view->FrameRect().origin();
   CullRect adjusted_cull_rect = paint_info.GetCullRect();
   adjusted_cull_rect.Move(-view_paint_offset);
-  embedded_content_view->Paint(paint_info.context, paint_info.GetPaintFlags(),
-                               adjusted_cull_rect, view_paint_offset);
+  embedded_content_view->Paint(paint_info, adjusted_cull_rect,
+                               view_paint_offset);
 
   // During a ViewTransition in a LocalFrame sub-frame, we need to keep painting
   // the old Document's last frame until the new Document is ready to start
