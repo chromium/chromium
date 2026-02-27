@@ -33,7 +33,7 @@ public class ChromeSwitchPreference extends SwitchPreferenceCompat implements Co
     private @Nullable View mView;
 
     /** The color for tinting of the view's background. */
-    @ColorInt @Nullable private Integer mBackgroundColorInt;
+    private @ColorInt @Nullable Integer mBackgroundColorInt;
 
     /** Indicates if the preference uses a custom layout. */
     private final boolean mHasCustomLayout;

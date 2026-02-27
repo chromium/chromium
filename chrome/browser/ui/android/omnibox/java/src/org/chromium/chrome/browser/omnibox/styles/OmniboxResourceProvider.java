@@ -632,8 +632,7 @@ public class OmniboxResourceProvider {
      * @param context The context to retrieve the resources from.
      * @return the color for the additional text.
      */
-    @ColorInt
-    public static int getAdditionalTextColor(Context context) {
+    public static @ColorInt int getAdditionalTextColor(Context context) {
         return SemanticColorUtils.getDefaultTextColorSecondary(context);
     }
 

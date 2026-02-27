@@ -119,7 +119,7 @@ public class StripLayoutGroupTitle extends StripLayoutView {
     private SharedImageTilesConfig.@Nullable Builder mSharedImageTilesConfigBuilder;
     private @Nullable ViewResourceAdapter mAvatarResource;
     private float mAvatarWidthWithPadding;
-    @ColorInt private final int mBubbleTint;
+    private final @ColorInt int mBubbleTint;
     private @Nullable TabBubbler mTabBubbler;
 
     /**

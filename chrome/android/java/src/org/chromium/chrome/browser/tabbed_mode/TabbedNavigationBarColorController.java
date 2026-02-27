@@ -450,8 +450,7 @@ class TabbedNavigationBarColorController
         updateNavigationBarColor();
     }
 
-    @ColorInt
-    private int getNavigationBarColor(boolean forceDarkNavigationBar) {
+    private @ColorInt int getNavigationBarColor(boolean forceDarkNavigationBar) {
         if (mOverviewMode && mOverviewColorSupplier.get() != null) {
             return mOverviewColorSupplier.get();
         } else if (useBottomAttachedUiColor()) {

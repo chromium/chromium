@@ -356,7 +356,7 @@ public class RippleBackgroundHelper {
      * Adjusts the opacity of the ripple color since {@link RippleDrawable} uses about 50% opacity
      * of color for ripple effect.
      */
-    private @ColorInt static int doubleAlpha(@ColorInt int color) {
+    private static @ColorInt int doubleAlpha(@ColorInt int color) {
         int alpha = Math.min(Color.alpha(color) * 2, 255);
         return ColorUtils.setAlphaComponent(color, alpha);
     }

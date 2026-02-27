@@ -27,7 +27,7 @@ import java.util.function.Supplier;
 @NullMarked
 public class MessageBannerProperties {
     /** A Color value indicating that the "natural" colors from the image should be used. */
-    @ColorInt public static final int TINT_NONE = Color.TRANSPARENT;
+    public static final @ColorInt int TINT_NONE = Color.TRANSPARENT;
 
     /**
      * The identifier for the message for recording metrics. It should be one of the values from

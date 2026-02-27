@@ -41,7 +41,7 @@ class TabListEditorToolbar extends SelectableListToolbar<TabListEditorItemSelect
     private ChromeImageButton mMenuButton;
     private TabListEditorActionViewLayout mActionViewLayout;
     private @Nullable View mNextFocusableView;
-    @ColorInt private int mBackgroundColor;
+    private @ColorInt int mBackgroundColor;
     @StringRes private int mBackButtonAccessibilityString;
 
     public TabListEditorToolbar(Context context, AttributeSet attrs) {
