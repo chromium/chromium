@@ -333,8 +333,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragHandlerTest,
 
 // TODO(crbug.com/40249472): Tab DnD tests not working on ChromeOS and Mac, and
 // flakes on Wayland. Fails on Windows.
-#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_LINUX) && \
-    !BUILDFLAG(IS_WIN)
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_LINUX)
 #define MAYBE_DragToDetachThenCancel DragToDetachThenCancel
 #else
 #define MAYBE_DragToDetachThenCancel DISABLED_DragToDetachThenCancel
@@ -385,9 +384,15 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragHandlerTest,
       }));
 }
 
-// TODO(crbug.com/40249472): Disabled because this flakes on all platforms.
+// TODO(crbug.com/40249472): Tab DnD tests not working on ChromeOS and Mac, and
+// flakes on Wayland
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_LINUX)
+#define MAYBE_DragWithinUnpinnedContainer DragWithinUnpinnedContainer
+#else
+#define MAYBE_DragWithinUnpinnedContainer DISABLED_DragWithinUnpinnedContainer
+#endif
 IN_PROC_BROWSER_TEST_F(VerticalTabDragHandlerTest,
-                       DISABLED_DragWithinUnpinnedContainer) {
+                       MAYBE_DragWithinUnpinnedContainer) {
   TabStripModel* tab_strip_model = browser()->GetTabStripModel();
   ASSERT_NE(nullptr, tab_strip_model);
   RunTestSequence(
@@ -421,9 +426,17 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragHandlerTest,
       }));
 }
 
-// TODO(crbug.com/40249472): Disabled because this flakes on all platforms.
+// TODO(crbug.com/40249472): Tab DnD tests not working on ChromeOS and Mac, and
+// flakes on Wayland
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_LINUX)
+#define MAYBE_CancelDragWithinUnpinnedContainer \
+  CancelDragWithinUnpinnedContainer
+#else
+#define MAYBE_CancelDragWithinUnpinnedContainer \
+  DISABLED_CancelDragWithinUnpinnedContainer
+#endif
 IN_PROC_BROWSER_TEST_F(VerticalTabDragHandlerTest,
-                       DISABLED_CancelDragWithinUnpinnedContainer) {
+                       MAYBE_CancelDragWithinUnpinnedContainer) {
   TabStripModel* tab_strip_model = browser()->GetTabStripModel();
   ASSERT_NE(nullptr, tab_strip_model);
   RunTestSequence(
@@ -732,8 +745,14 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragHandlerTest,
       ReleaseMouseAsync());
 }
 
-// TODO(crbug.com/40249472): Disabled because this flakes on all platforms.
-IN_PROC_BROWSER_TEST_F(VerticalTabDragHandlerTest, DISABLED_DragInGroup) {
+// TODO(crbug.com/40249472): Tab DnD tests not working on ChromeOS and Mac, and
+// flakes on Wayland
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_LINUX)
+#define MAYBE_DragInGroup DragInGroup
+#else
+#define MAYBE_DragInGroup DISABLED_DragInGroup
+#endif
+IN_PROC_BROWSER_TEST_F(VerticalTabDragHandlerTest, MAYBE_DragInGroup) {
   TabStripModel* tab_strip_model = browser()->GetTabStripModel();
   ASSERT_NE(nullptr, tab_strip_model);
   RunTestSequence(
