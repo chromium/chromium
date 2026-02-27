@@ -17,7 +17,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.BaseFlagTestRule;
 
-/** Unit Tests for {@link MutableIntegerParamWithSafeDefault}. */
+/** Unit Tests for {@link MutableIntParamWithSafeDefault}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class MutableIntParamWithSafeDefaultUnitTest {
     private static final String PARAM_A = "a";
