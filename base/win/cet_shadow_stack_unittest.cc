@@ -22,7 +22,7 @@ bool IsHardwareEnforcedShadowStacksEnabled() {
   }
 
   PROCESS_MITIGATION_USER_SHADOW_STACK_POLICY uss_policy;
-  if (!::GetProcessMitigationPolicy(GetCurrentProcess(),
+  if (!::GetProcessMitigationPolicy(::GetCurrentProcess(),
                                     ProcessUserShadowStackPolicy, &uss_policy,
                                     sizeof(uss_policy))) {
     return false;

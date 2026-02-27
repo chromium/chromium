@@ -24,12 +24,12 @@ __declspec(dllexport) void ExportFunc2() {
   // Call into shell32.dll.
   PWSTR path = nullptr;
   if (SUCCEEDED(SHGetKnownFolderPath(FOLDERID_Public, 0, nullptr, &path))) {
-    CoTaskMemFree(path);
+    ::CoTaskMemFree(path);
   }
 
   // Call into kernel32.dll.
-  HANDLE h = CreateEvent(nullptr, FALSE, FALSE, nullptr);
-  CloseHandle(h);
+  HANDLE h = ::CreateEvent(nullptr, FALSE, FALSE, nullptr);
+  ::CloseHandle(h);
 }
 
 }  // extern "C"

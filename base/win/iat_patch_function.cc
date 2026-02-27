@@ -180,7 +180,7 @@ DWORD IATPatchFunction::Patch(const wchar_t* module,
                               const char* imported_from_module,
                               const char* function_name,
                               void* new_function) {
-  HMODULE module_handle = LoadLibraryW(module);
+  HMODULE module_handle = ::LoadLibraryW(module);
   if (!module_handle) {
     NOTREACHED();
   }

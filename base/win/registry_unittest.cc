@@ -541,10 +541,11 @@ TEST_P(DeleteKeyRegistryTest, DoesNotFollowLinks) {
   std::wstring source_path = root_key() + L"\\LinkSource";
   {
     HKEY link_handle = {};
-    ASSERT_EQ(RegCreateKeyEx(HKEY_CURRENT_USER, source_path.c_str(), 0, nullptr,
-                             REG_OPTION_CREATE_LINK | REG_OPTION_NON_VOLATILE,
-                             KEY_WRITE, nullptr, &link_handle, nullptr),
-              ERROR_SUCCESS);
+    ASSERT_EQ(
+        ::RegCreateKeyEx(HKEY_CURRENT_USER, source_path.c_str(), 0, nullptr,
+                         REG_OPTION_CREATE_LINK | REG_OPTION_NON_VOLATILE,
+                         KEY_WRITE, nullptr, &link_handle, nullptr),
+        ERROR_SUCCESS);
     RegKey link(std::exchange(link_handle, HKEY{}));
     ASSERT_TRUE(link.Valid());
 

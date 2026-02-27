@@ -228,7 +228,7 @@ NOINLINE void ScopedHandleVerifier::StartTrackingImpl(HANDLE handle,
                                                       const void* pc1,
                                                       const void* pc2) {
   // Grab the thread id before the lock.
-  DWORD thread_id = GetCurrentThreadId();
+  DWORD thread_id = ::GetCurrentThreadId();
 
   // Grab the thread stacktrace before the lock.
   auto stacktrace = std::make_unique<debug::StackTrace>();

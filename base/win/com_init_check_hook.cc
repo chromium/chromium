@@ -172,7 +172,7 @@ class HookManager {
     // See banner comment above why this subtracts 5 bytes.
     co_create_instance_padded_address_ =
         reinterpret_cast<uint32_t>(
-            GetProcAddress(ole32_library_, "CoCreateInstance")) -
+            ::GetProcAddress(ole32_library_, "CoCreateInstance")) -
         5;
 
     // See banner comment above why this adds 7 bytes.

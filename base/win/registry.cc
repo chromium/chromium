@@ -81,7 +81,7 @@ bool RegKey::Watcher::StartWatching(HKEY key, ChangeCallback callback) {
   DCHECK(callback_.is_null());
 
   if (!watch_event_.is_valid()) {
-    watch_event_.Set(CreateEvent(nullptr, TRUE, FALSE, nullptr));
+    watch_event_.Set(::CreateEvent(nullptr, TRUE, FALSE, nullptr));
   }
 
   if (!watch_event_.is_valid()) {
@@ -155,8 +155,8 @@ LONG RegKey::CreateWithDisposition(HKEY rootkey,
   DCHECK(rootkey && subkey && access && disposition);
   HKEY subhkey = nullptr;
   LONG result =
-      RegCreateKeyEx(rootkey, subkey, 0, nullptr, REG_OPTION_NON_VOLATILE,
-                     access, nullptr, &subhkey, disposition);
+      ::RegCreateKeyEx(rootkey, subkey, 0, nullptr, REG_OPTION_NON_VOLATILE,
+                       access, nullptr, &subhkey, disposition);
   if (result == ERROR_SUCCESS) {
     Close();
     key_ = subhkey;
@@ -184,8 +184,9 @@ LONG RegKey::CreateKey(const wchar_t* name, REGSAM access) {
     NOTREACHED();
   }
   HKEY subkey = nullptr;
-  LONG result = RegCreateKeyEx(key_, name, 0, nullptr, REG_OPTION_NON_VOLATILE,
-                               access, nullptr, &subkey, nullptr);
+  LONG result =
+      ::RegCreateKeyEx(key_, name, 0, nullptr, REG_OPTION_NON_VOLATILE, access,
+                       nullptr, &subkey, nullptr);
   if (result == ERROR_SUCCESS) {
     Close();
     key_ = subkey;
@@ -217,7 +218,7 @@ LONG RegKey::OpenKey(const wchar_t* relative_key_name, REGSAM access) {
     NOTREACHED();
   }
   HKEY subkey = nullptr;
-  LONG result = RegOpenKeyEx(key_, relative_key_name, 0, access, &subkey);
+  LONG result = ::RegOpenKeyEx(key_, relative_key_name, 0, access, &subkey);
 
   // We have to close the current opened key before replacing it with the new
   // one.
@@ -253,7 +254,7 @@ HKEY RegKey::Take() {
 }
 
 bool RegKey::HasValue(const wchar_t* name) const {
-  return RegQueryValueEx(key_, name, nullptr, nullptr, nullptr, nullptr) ==
+  return ::RegQueryValueEx(key_, name, nullptr, nullptr, nullptr, nullptr) ==
          ERROR_SUCCESS;
 }
 
@@ -385,8 +386,8 @@ LONG RegKey::ReadValue(const wchar_t* name,
                        void* data,
                        DWORD* dsize,
                        DWORD* dtype) const {
-  LONG result = RegQueryValueEx(key_, name, nullptr, dtype,
-                                reinterpret_cast<LPBYTE>(data), dsize);
+  LONG result = ::RegQueryValueEx(key_, name, nullptr, dtype,
+                                  reinterpret_cast<LPBYTE>(data), dsize);
   return result;
 }
 
@@ -469,7 +470,7 @@ LONG RegKey::Open(HKEY rootkey,
   DCHECK(rootkey && subkey && access);
   HKEY subhkey = nullptr;
 
-  LONG result = RegOpenKeyEx(rootkey, subkey, options, access, &subhkey);
+  LONG result = ::RegOpenKeyEx(rootkey, subkey, options, access, &subhkey);
   if (result == ERROR_SUCCESS) {
     Close();
     key_ = subhkey;
@@ -581,7 +582,7 @@ void RegistryValueIterator::Initialize(HKEY root_key,
                                        REGSAM wow64access) {
   DCHECK_EQ(wow64access & ~kWow64AccessMask, static_cast<REGSAM>(0));
   LONG result =
-      RegOpenKeyEx(root_key, folder_key, 0, KEY_READ | wow64access, &key_);
+      ::RegOpenKeyEx(root_key, folder_key, 0, KEY_READ | wow64access, &key_);
   if (result != ERROR_SUCCESS) {
     key_ = nullptr;
   } else {
@@ -733,7 +734,7 @@ void RegistryKeyIterator::Initialize(HKEY root_key,
                                      REGSAM wow64access) {
   DCHECK_EQ(wow64access & ~kWow64AccessMask, static_cast<REGSAM>(0));
   LONG result =
-      RegOpenKeyEx(root_key, folder_key, 0, KEY_READ | wow64access, &key_);
+      ::RegOpenKeyEx(root_key, folder_key, 0, KEY_READ | wow64access, &key_);
   if (result != ERROR_SUCCESS) {
     key_ = nullptr;
   } else {

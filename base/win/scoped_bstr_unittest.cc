@@ -44,7 +44,7 @@ TEST(ScopedBstrTest, Basic) {
 namespace {
 
 void CreateTestString1(BSTR* ret) {
-  *ret = SysAllocString(kTestString1);
+  *ret = ::SysAllocString(kTestString1);
 }
 
 }  // namespace
@@ -61,7 +61,7 @@ TEST(ScopedBstrTest, Swap) {
   EXPECT_NE(nullptr, tmp);
   EXPECT_STREQ(kTestString1, tmp);
   EXPECT_EQ(nullptr, b2.Get());
-  SysFreeString(tmp);
+  ::SysFreeString(tmp);
 }
 
 TEST(ScopedBstrTest, OutParam) {

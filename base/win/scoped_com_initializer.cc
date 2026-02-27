@@ -30,7 +30,7 @@ ScopedCOMInitializer::~ScopedCOMInitializer() {
       com_balancer_->Disable();
       com_balancer_.Reset();
     }
-    CoUninitialize();
+    ::CoUninitialize();
   }
 }
 

@@ -445,7 +445,7 @@ bool& IsDeviceFormConvertible() {
     using lpfnRtlGetDeviceFamilyInfo =
         VOID(WINAPI*)(ULONGLONG*, DWORD*, DWORD*);
     static const lpfnRtlGetDeviceFamilyInfo get_device_family_info_fn =
-        reinterpret_cast<lpfnRtlGetDeviceFamilyInfo>(GetProcAddress(
+        reinterpret_cast<lpfnRtlGetDeviceFamilyInfo>(::GetProcAddress(
             ::GetModuleHandle(L"ntdll.dll"), "RtlGetDeviceFamilyInfoEnum"));
     PCHECK(get_device_family_info_fn);
     get_device_family_info_fn(/*pullUAPInfo=*/nullptr,
@@ -940,7 +940,7 @@ bool IsUser32AndGdi32Available() {
   static const bool is_user32_and_gdi32_available = [] {
     // If win32k syscalls aren't disabled, then user32 and gdi32 are available.
     PROCESS_MITIGATION_SYSTEM_CALL_DISABLE_POLICY policy = {};
-    if (::GetProcessMitigationPolicy(GetCurrentProcess(),
+    if (::GetProcessMitigationPolicy(::GetCurrentProcess(),
                                      ProcessSystemCallDisablePolicy, &policy,
                                      sizeof(policy))) {
       return policy.DisallowWin32kSystemCalls == 0;

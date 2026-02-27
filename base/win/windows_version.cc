@@ -169,7 +169,7 @@ OSInfo::OSInfo(const _OSVERSIONINFOEXW& version_info,
   std::tie(version_number_.patch, release_id_) = GetVersionData();
   version_ = MajorMinorBuildToVersion(
       version_number_.major, version_number_.minor, version_number_.build);
-  InitializeWowStatusValuesForProcess(GetCurrentProcess());
+  InitializeWowStatusValuesForProcess(::GetCurrentProcess());
 
   processors_ = static_cast<int>(system_info.dwNumberOfProcessors);
   allocation_granularity_ = system_info.dwAllocationGranularity;

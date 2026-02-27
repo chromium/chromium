@@ -56,7 +56,7 @@ TestWrappedExceptionFiter* TestWrappedExceptionFiter::s_filter_ = nullptr;
 }  // namespace.
 
 TEST(WrappedWindowProc, CatchesExceptions) {
-  HINSTANCE hinst = GetModuleHandle(nullptr);
+  HINSTANCE hinst = ::GetModuleHandle(nullptr);
   std::wstring class_name(L"TestClass");
 
   WNDCLASS wc = {0};

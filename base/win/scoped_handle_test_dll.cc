@@ -49,7 +49,7 @@ bool InternalRunThreadTest() {
     return false;
   }
 
-  HANDLE ready_event = CreateEvent(nullptr, false, false, nullptr);
+  HANDLE ready_event = ::CreateEvent(nullptr, false, false, nullptr);
   if (!ready_event) {
     return false;
   }

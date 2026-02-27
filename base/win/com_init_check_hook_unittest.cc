@@ -73,7 +73,7 @@ TEST(ComInitCheckHook, UnexpectedHook) {
 
   uint32_t co_create_instance_padded_address =
       reinterpret_cast<uint32_t>(
-          GetProcAddress(ole32_library, "CoCreateInstance")) -
+          ::GetProcAddress(ole32_library, "CoCreateInstance")) -
       5;
   const unsigned char* co_create_instance_bytes =
       reinterpret_cast<const unsigned char*>(co_create_instance_padded_address);
@@ -106,7 +106,7 @@ TEST(ComInitCheckHook, ExternallyHooked) {
   ASSERT_TRUE(ole32_library);
 
   uint32_t co_create_instance_address = reinterpret_cast<uint32_t>(
-      GetProcAddress(ole32_library, "CoCreateInstance"));
+      ::GetProcAddress(ole32_library, "CoCreateInstance"));
   const unsigned char* co_create_instance_bytes =
       reinterpret_cast<const unsigned char*>(co_create_instance_address);
   const unsigned char original_byte = co_create_instance_bytes[0];
@@ -139,7 +139,7 @@ TEST(ComInitCheckHook, UnexpectedChangeDuringHook) {
 
   uint32_t co_create_instance_padded_address =
       reinterpret_cast<uint32_t>(
-          GetProcAddress(ole32_library, "CoCreateInstance")) -
+          ::GetProcAddress(ole32_library, "CoCreateInstance")) -
       5;
   const unsigned char* co_create_instance_bytes =
       reinterpret_cast<const unsigned char*>(co_create_instance_padded_address);

@@ -75,7 +75,7 @@ typedef decltype(::DeriveCapabilitySidsFromName)*
 DeriveCapabilitySidsFromNameFunc GetDeriveCapabilitySidsFromName() {
   static const DeriveCapabilitySidsFromNameFunc derive_capability_sids =
       []() -> DeriveCapabilitySidsFromNameFunc {
-    HMODULE module = GetModuleHandle(L"api-ms-win-security-base-l1-2-2.dll");
+    HMODULE module = ::GetModuleHandle(L"api-ms-win-security-base-l1-2-2.dll");
     if (!module) {
       return nullptr;
     }
