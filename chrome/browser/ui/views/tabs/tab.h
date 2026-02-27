@@ -50,11 +50,9 @@ namespace tabs {
 enum class TabAlert;
 }
 
-#if BUILDFLAG(ENABLE_GLIC)
 namespace glic {
 class TabUnderlineView;
 }  // namespace glic
-#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -209,11 +207,9 @@ class Tab : public gfx::AnimationDelegate,
 
   void UpdateInsets();
 
-#if BUILDFLAG(ENABLE_GLIC)
   glic::TabUnderlineView* glic_underline() const {
     return glic_tab_underline_view_;
   }
-#endif
 
  private:
   class TabCloseButtonObserver;
@@ -277,9 +273,7 @@ class Tab : public gfx::AnimationDelegate,
   // True if the tab is being animated closed.
   bool closing_ = false;
 
-#if BUILDFLAG(ENABLE_GLIC)
   raw_ptr<glic::TabUnderlineView> glic_tab_underline_view_ = nullptr;
-#endif
 
   raw_ptr<TabIcon> icon_ = nullptr;
   raw_ptr<AlertIndicatorButton> alert_indicator_button_ = nullptr;

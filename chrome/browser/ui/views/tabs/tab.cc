@@ -25,6 +25,8 @@
 #include "cc/paint/paint_flags.h"
 #include "cc/paint/paint_recorder.h"
 #include "cc/paint/paint_shader.h"
+#include "chrome/browser/glic/browser_ui/tab_underline_view.h"
+#include "chrome/browser/glic/browser_ui/tab_underline_view_controller_impl.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/browser.h"
@@ -109,11 +111,6 @@
 
 #if defined(USE_AURA)
 #include "ui/aura/env.h"
-#endif
-
-#if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/glic/browser_ui/tab_underline_view.h"
-#include "chrome/browser/glic/browser_ui/tab_underline_view_controller_impl.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -271,7 +268,6 @@ Tab::Tab(tabs::TabHandle handle, TabSlotController* controller)
   alert_indicator_button_ =
       AddChildView(std::make_unique<AlertIndicatorButton>(this));
 
-#if BUILDFLAG(ENABLE_GLIC)
   BrowserWindowInterface* const browser_window_interface =
       controller_->GetBrowserWindowInterface();
   if (browser_window_interface &&
@@ -286,7 +282,6 @@ Tab::Tab(tabs::TabHandle handle, TabSlotController* controller)
                 browser_window_interface, tab_handle_))
             .Build());
   }
-#endif
 
   // Unretained is safe here because this class outlives its close button, and
   // the controller outlives this Tab.
@@ -373,7 +368,6 @@ void Tab::Layout(PassKey) {
 
   const int start = contents_rect.x();
 
-#if BUILDFLAG(ENABLE_GLIC)
   // Position the underline under the tab contents.
   constexpr int kGlicUnderlineYOffset = 8;
   if (glic_tab_underline_view_) {
@@ -385,7 +379,6 @@ void Tab::Layout(PassKey) {
     glic_bounds.set_width(size().width());
     glic_tab_underline_view_->SetBoundsRect(glic_bounds);
   }
-#endif
 
   // The bounds for the favicon will include extra width for the attention
   // indicator, but visually it will be smaller at kFaviconSize wide.
@@ -1126,7 +1119,6 @@ void Tab::UpdateIconVisibility() {
            ? alert_indicator_button_->showing_alert_state()
            : tabs::TabAlertController::GetAlertStateToShow(data().alert_state))
           .has_value();
-#if BUILDFLAG(ENABLE_GLIC)
   std::optional<tabs::TabAlert> current_alert_state =
       alert_indicator_button_->showing_alert_state();
   if (glic_tab_underline_view_ &&
@@ -1137,7 +1129,6 @@ void Tab::UpdateIconVisibility() {
     // hidden.
     has_alert_icon = false;
   }
-#endif
 
   is_animating_from_pinned_ &= animating();
 

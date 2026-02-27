@@ -4,8 +4,6 @@
 
 import("//chrome/common/features.gni")
 
-assert(enable_glic)
-
 source_set("glic") {
   sources = [ "glic_actor_constants.h" ]
 

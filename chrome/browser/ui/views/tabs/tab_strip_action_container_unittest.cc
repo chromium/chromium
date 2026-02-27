@@ -46,8 +46,6 @@
 #include "chrome/browser/ash/test/glic_user_session_test_helper.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-static_assert(BUILDFLAG(ENABLE_GLIC));
-
 // TODO(crbug.com/461140208): Re-enable failing tests on ChromeOS.
 #if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE(test_name) DISABLED_##test_name

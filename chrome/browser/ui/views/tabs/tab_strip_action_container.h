@@ -124,11 +124,9 @@ class TabStripActionContainer : public views::View,
   void ShowGlicActorTaskIcon();
   void HideGlicActorTaskIcon();
   bool GetIsShowingGlicActorTaskIconNudge();
-#if BUILDFLAG(ENABLE_GLIC)
   views::FlexLayoutView* glic_actor_button_container();
   void TriggerGlicActorNudge(const std::u16string nudge_text);
   void ShowGlicActorNudge(const std::u16string nudge_text);
-#endif
 
   void UpdateButtonBorders(gfx::Insets button_insets);
 
@@ -146,7 +144,6 @@ class TabStripActionContainer : public views::View,
   void SetLockedExpansionMode(LockedExpansionMode mode,
                               TabStripNudgeButton* button);
 
-#if BUILDFLAG(ENABLE_GLIC)
   std::unique_ptr<glic::TabStripGlicButton> CreateGlicButton();
   void OnGlicButtonClicked();
   void OnGlicButtonDismissed();
@@ -167,7 +164,6 @@ class TabStripActionContainer : public views::View,
   // Update the Glic and GlicActor button borders when showing or hiding the
   // task icon container.
   void UpdateGlicActorButtonContainerBorders();
-#endif
 
   void OnTabStripNudgeButtonTimeout(TabStripNudgeButton* button);
 

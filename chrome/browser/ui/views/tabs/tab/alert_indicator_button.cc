@@ -13,6 +13,7 @@
 #include "cc/paint/skottie_wrapper.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/actor/resources/grit/actor_browser_resources.h"
+#include "chrome/browser/glic/browser_ui/glic_vector_icon_manager.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert.h"
@@ -40,10 +41,6 @@
 #include "ui/views/controls/animated_image_view.h"
 #include "ui/views/metrics.h"
 #include "ui/views/view_class_properties.h"
-
-#if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/glic/browser_ui/glic_vector_icon_manager.h"
-#endif
 
 namespace {
 
