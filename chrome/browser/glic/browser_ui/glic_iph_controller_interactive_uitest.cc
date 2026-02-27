@@ -138,8 +138,10 @@ class GlicIphControllerTestClassic : public GlicIphControllerTestBase {
       : GlicIphControllerTestBase({feature_engagement::kIPHGlicPromoFeature}) {
     // enables FRE warming to test that successful IPH will warm the FRE.
     scoped_feature_list_.InitWithFeatures(
-        {features::kGlicFreWarming}, {feature_engagement::kIPHGlicTryItFeature,
-                                      features::kGlicTrustFirstOnboarding});
+        {features::kGlicFreWarming},
+        /*disabled_features=*/{feature_engagement::kIPHGlicTryItFeature,
+                               features::kGlicTrustFirstOnboarding,
+                               features::kGlicMultiInstance});
   }
   ~GlicIphControllerTestClassic() override = default;
 };
@@ -180,7 +182,8 @@ class GlicIphControllerTestTryIt : public GlicIphControllerTestBase {
       : GlicIphControllerTestBase({feature_engagement::kIPHGlicTryItFeature}) {
     // enables FRE warming to test that successful IPH will warm the FRE.
     scoped_feature_list_.InitWithFeatures(
-        {}, {features::kGlicTrustFirstOnboarding});
+        {},
+        {features::kGlicTrustFirstOnboarding, features::kGlicMultiInstance});
   }
 
   ~GlicIphControllerTestTryIt() override = default;

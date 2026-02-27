@@ -36,7 +36,8 @@ class GlicNetLogBrowserTest : public InProcessBrowserTest {
  public:
   GlicNetLogBrowserTest() {
     feature_list_.InitWithFeatures(
-        {}, {features::kGlicTrustFirstOnboarding, features::kGlicWarming});
+        {}, {features::kGlicTrustFirstOnboarding, features::kGlicWarming,
+             features::kGlicMultiInstance, features::kGlicUnifiedFreScreen});
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {

@@ -44,7 +44,11 @@ class GlicFreControllerBrowserTest : public NonInteractiveGlicTest {
       : NonInteractiveGlicTest(
             {},
             GlicTestEnvironmentConfig{.fre_status =
-                                          prefs::FreStatus::kNotStarted}) {}
+                                          prefs::FreStatus::kNotStarted}) {
+    scoped_feature_list_.InitWithFeatures(
+        {}, /*disabled_features=*/{features::kGlicMultiInstance,
+                                   features::kGlicUnifiedFreScreen});
+  }
   ~GlicFreControllerBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -96,6 +100,7 @@ class GlicFreControllerBrowserTest : public NonInteractiveGlicTest {
  protected:
   base::UserActionTester user_action_tester_;
   base::HistogramTester histogram_tester_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(GlicFreControllerBrowserTest,

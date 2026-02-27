@@ -16,6 +16,7 @@
 #include "chrome/browser/predictors/loading_predictor.h"
 #include "chrome/browser/predictors/loading_predictor_config.h"
 #include "chrome/common/buildflags.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/browser/web_contents.h"
@@ -50,6 +51,7 @@ class ContextualCueingServiceTest : public testing::Test {
                                          /*tracker=*/nullptr) {}
   virtual void InitializeFeatureList() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
         {{contextual_cueing::kContextualCueing,
           {{"BackoffTime", "24h"},
            {"BackoffMultiplierBase", "2.0"},
@@ -57,7 +59,9 @@ class ContextualCueingServiceTest : public testing::Test {
            {"NudgeCapCount", "3"},
            {"MinPageCountBetweenNudges", "0"},
            {"MinTimeBetweenNudges", "30s"}}}},
-        {contextual_cueing::kGlicZeroStateSuggestions});
+        /*disabled_features=*/
+        {contextual_cueing::kGlicZeroStateSuggestions,
+         features::kGlicDefaultTabContextSetting});
   }
 
   void SetUp() override {
@@ -85,7 +89,6 @@ class ContextualCueingServiceTest : public testing::Test {
     task_environment_.FastForwardBy(time_delta);
   }
 
- protected:
   base::test::ScopedFeatureList scoped_feature_list_;
 
  private:
@@ -371,7 +374,8 @@ class MockLoadingPredictor : public predictors::LoadingPredictor {
 class ContextualCueingServiceTestZeroStateSuggestions : public testing::Test {
  public:
   ContextualCueingServiceTestZeroStateSuggestions() {
-    scoped_feature_list_.InitAndEnableFeature(kGlicZeroStateSuggestions);
+    scoped_feature_list_.InitWithFeatures(
+        {kGlicZeroStateSuggestions}, {features::kGlicDefaultTabContextSetting});
   }
 
   void SetUp() override {

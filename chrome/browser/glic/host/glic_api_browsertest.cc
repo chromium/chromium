@@ -267,6 +267,8 @@ class GlicApiTest : public NonInteractiveGlicApiTest, public WithTestParams {
         /*disabled_features=*/
         {
             features::kGlicWarming,
+            contextual_cueing::kGlicZeroStateSuggestions,
+            features::kGlicDaisyChainNewTabs,
         });
     SetUseElementIdentifiers(false);
   }

@@ -74,6 +74,7 @@ class GlicSidePanelCoordinatorTest : public InProcessBrowserTest {
         {
             features::kGlicLocaleFiltering,
             features::kGlicCountryFiltering,
+            features::kGlicDaisyChainNewTabs,
         });
   }
 

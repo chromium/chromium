@@ -313,6 +313,13 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest, PreloadFreOnNudge) {
   if (base::FeatureList::IsEnabled(features::kGlicTrustFirstOnboarding)) {
     GTEST_SKIP() << "Skipping for kGlicTrustFirstOnboarding";
   }
+  if (base::FeatureList::IsEnabled(features::kGlicUnifiedFreScreen)) {
+    // This test does not work for Unified FRE. Looking at the FRE warming code,
+    // it appears that it wasn't written to work for Unified FRE.
+    // FRE prewarming should be removed anyway, so there's no reason to fix
+    // this; see b/426679298.
+    GTEST_SKIP() << "Skipping for kGlicUnifiedFreScreen";
+  }
   auto* nudge_controller =
       browser()->browser_window_features()->glic_nudge_controller();
   nudge_controller->SetNudgeActivityCallbackForTesting();

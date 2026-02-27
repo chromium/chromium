@@ -165,9 +165,12 @@ class GlicFreControllerUiTest : public GlicFreControllerUiTestBase {
     // completion. Disable that feature until that can be sorted out.
     features_.InitWithFeatures(
         /*enabled_features=*/{},
-        /*disabled_features=*/{features::kGlicWarming,
-                               features::kGlicFreWarming,
-                               features::kGlicTrustFirstOnboarding});
+        /*disabled_features=*/{
+            features::kGlicWarming,
+            features::kGlicFreWarming,
+            features::kGlicTrustFirstOnboarding,
+            features::kGlicUnifiedFreScreen,
+        });
   }
 
   auto ForceInvalidateAccount() {
@@ -451,7 +454,8 @@ class GlicFreControllerUiHttpErrorTest : public GlicFreControllerUiTestBase {
         /*enabled_features=*/{},
         /*disabled_features=*/{features::kGlicWarming,
                                features::kGlicFreWarming,
-                               features::kGlicTrustFirstOnboarding});
+                               features::kGlicTrustFirstOnboarding,
+                               features::kGlicUnifiedFreScreen});
 
     fre_server_.AddDefaultHandlers();
     // Register a handler that will return a 502 error.
@@ -517,7 +521,8 @@ class GlicFreControllerUiTimeoutTest : public GlicFreControllerUiTestBase {
         enabled_features,
         /*disabled_features=*/{features::kGlicWarming,
                                features::kGlicFreWarming,
-                               features::kGlicTrustFirstOnboarding});
+                               features::kGlicTrustFirstOnboarding,
+                               features::kGlicUnifiedFreScreen});
 
     fre_server_.AddDefaultHandlers();
     fre_server_.ServeFilesFromDirectory(
@@ -565,7 +570,9 @@ class GlicFreControllerRedirectTest : public GlicFreControllerUiTestBase,
 
     features_.InitWithFeaturesAndParameters(
         enabled_features,
-        /*disabled_features=*/{features::kGlicTrustFirstOnboarding});
+        /*disabled_features=*/{
+            features::kGlicTrustFirstOnboarding, features::kGlicWarming,
+            features::kGlicFreWarming, features::kGlicUnifiedFreScreen});
     GlicFreControllerUiTestBase::SetUp();
   }
 

@@ -501,13 +501,7 @@ BASE_FEATURE(kGlicLocaleFiltering, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls whether the Glic FRE dialog is displayed in the same window as the
 // main app.
-BASE_FEATURE(kGlicUnifiedFreScreen,
-#if !BUILDFLAG(IS_ANDROID)
-             base::FEATURE_DISABLED_BY_DEFAULT
-#else  // Android only supports the unified FRE.
-             base::FEATURE_ENABLED_BY_DEFAULT
-#endif
-);
+BASE_FEATURE(kGlicUnifiedFreScreen, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls the bugfix where the unified FRE synchronizes cookies to the wrong
 // storage partition.
@@ -530,13 +524,7 @@ BASE_FEATURE(kGlic, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kGlicDetached, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether the Glic feature uses multiple instances or not.
-BASE_FEATURE(kGlicMultiInstance,
-#if !BUILDFLAG(IS_ANDROID)
-             base::FEATURE_DISABLED_BY_DEFAULT
-#else  // Android only supports multi instance.
-             base::FEATURE_ENABLED_BY_DEFAULT
-#endif
-);
+BASE_FEATURE(kGlicMultiInstance, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether Glic warms up WebContents instead of a full instance.
 BASE_FEATURE(kGlicWebContentsWarming,
@@ -852,7 +840,7 @@ BASE_FEATURE(kGlicIntro, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicLearnMore, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kGlicUserStatusCheck, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kGlicUserStatusCheck, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, if GlicUserStatusFetcher receives an error when checking for
 // managed status, and the refresh token is missing, it will retry. This fixes
@@ -860,7 +848,7 @@ BASE_FEATURE(kGlicUserStatusCheck, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kGlicUserStatusHandlesRefreshTokenLoss,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kGlicDefaultTabContextSetting, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kGlicDefaultTabContextSetting, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicDefaultContextPinOnBind, base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -979,9 +967,9 @@ BASE_FEATURE(kGlicButtonAltLabel, base::FEATURE_ENABLED_BY_DEFAULT);
 const base::FeatureParam<int> kGlicButtonAltLabelVariant{
     &kGlicButtonAltLabel, "glic-button-alt-label-variant", 0};
 
-BASE_FEATURE(kGlicDaisyChainNewTabs, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kGlicDaisyChainNewTabs, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kGlicLiveModeOnlyGlow, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kGlicLiveModeOnlyGlow, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicMITabContextMenu, base::FEATURE_ENABLED_BY_DEFAULT);
 

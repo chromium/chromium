@@ -82,6 +82,14 @@ class GlicStatusIconTest : public testing::Test {
 
     glic_status_icon_ =
         GlicStatusIcon::Create(&glic_controller_, &status_tray_);
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {
+#if BUILDFLAG(IS_CHROMEOS)
+            features::kGlicShowStatusTrayIcon
+#endif
+        },
+        /*disabled_features=*/{features::kGlicMultiInstance});
     glic_status_icon_->Init();
   }
 
@@ -107,10 +115,7 @@ class GlicStatusIconTest : public testing::Test {
   MockStatusTray status_tray_;
   MockGlicController glic_controller_;
   base::HistogramTester histogram_;
-#if BUILDFLAG(IS_CHROMEOS)
-  base::test::ScopedFeatureList feature_list_{
-      features::kGlicShowStatusTrayIcon};
-#endif
+  base::test::ScopedFeatureList feature_list_;
 };
 
 #if !BUILDFLAG(IS_LINUX)

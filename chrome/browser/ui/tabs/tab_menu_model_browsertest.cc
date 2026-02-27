@@ -49,6 +49,7 @@
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
+#include "chrome/common/chrome_features.h"
 #endif
 
 class TabMenuModelBrowserTest : public MenuModelTest,
@@ -443,8 +444,9 @@ IN_PROC_BROWSER_TEST_F(TabMenuModelBrowserTest, SwapWithInactiveTab) {
 class TabMenuModelGlicMultiTabTest : public TabMenuModelBrowserTest {
  public:
   TabMenuModelGlicMultiTabTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        glic::mojom::features::kGlicMultiTab);
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{glic::mojom::features::kGlicMultiTab},
+        /*disabled_features=*/{features::kGlicMultiInstance});
   }
 
  protected:
