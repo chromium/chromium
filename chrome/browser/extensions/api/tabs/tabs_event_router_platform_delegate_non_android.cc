@@ -55,7 +55,6 @@ constexpr char kGroupIdKey[] = "groupId";
 constexpr char kSplitIdKey[] = "splitViewId";
 constexpr char kFrozenKey[] = "frozen";
 constexpr char kDiscardedKey[] = "discarded";
-constexpr char kTabIdsKey[] = "tabIds";
 
 }  // namespace
 
@@ -132,10 +131,6 @@ void TabsEventRouterPlatformDelegate::OnTabStripModelChanged(
 
   if (tab_strip_model->empty()) {
     return;
-  }
-
-  if (selection.selection_changed()) {
-    DispatchTabSelectionChanged(tab_strip_model, selection.old_model);
   }
 }
 
@@ -235,50 +230,6 @@ void TabsEventRouterPlatformDelegate::OnLifecycleUnitStateChanged(
         lifecycle_unit->AsTabLifecycleUnitExternal()->GetWebContents(),
         std::move(changed_property_names));
   }
-}
-
-void TabsEventRouterPlatformDelegate::DispatchTabSelectionChanged(
-    TabStripModel* tab_strip_model,
-    const ui::ListSelectionModel& old_model) {
-  base::ListValue all_tabs;
-
-  for (tabs::TabInterface* tab :
-       tab_strip_model->selection_model().selected_tabs()) {
-    WebContents* contents = tab->GetContents();
-    if (!contents) {
-      break;
-    }
-    int tab_id = ExtensionTabUtil::GetTabId(contents);
-    all_tabs.Append(tab_id);
-  }
-
-  base::ListValue args;
-  base::DictValue select_info;
-
-  int window_id = -1;
-  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
-      [tab_strip_model,
-       &window_id](BrowserWindowInterface* browser_window_interface) {
-        if (browser_window_interface->GetTabStripModel() == tab_strip_model) {
-          window_id = ExtensionTabUtil::GetWindowId(browser_window_interface);
-          return false;
-        }
-        return true;
-      });
-
-  select_info.Set(tabs_constants::kWindowIdKey, window_id);
-
-  select_info.Set(kTabIdsKey, std::move(all_tabs));
-  args.Append(std::move(select_info));
-
-  // The onHighlighted event replaced onHighlightChanged.
-  Profile* profile = tab_strip_model->profile();
-  router_->DispatchEvent(profile, events::TABS_ON_HIGHLIGHT_CHANGED,
-                         api::tabs::OnHighlightChanged::kEventName,
-                         args.Clone(), EventRouter::UserGestureState::kUnknown);
-  router_->DispatchEvent(profile, events::TABS_ON_HIGHLIGHTED,
-                         api::tabs::OnHighlighted::kEventName, std::move(args),
-                         EventRouter::UserGestureState::kUnknown);
 }
 
 void TabsEventRouterPlatformDelegate::DispatchTabReplacedAt(

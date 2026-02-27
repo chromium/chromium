@@ -535,6 +535,47 @@ void TabsEventRouter::OnTabMoved(TabListInterface& tab_list,
                 std::move(args), EventRouter::UserGestureState::kUnknown);
 }
 
+void TabsEventRouter::OnHighlightedTabsChanged(
+    TabListInterface& tab_list,
+    const std::set<tabs::TabInterface*>& highlighted_tabs) {
+  api::tabs::OnHighlighted::HighlightInfo highlight_info;
+  highlight_info.tab_ids.reserve(highlighted_tabs.size());
+  highlight_info.window_id = -1;
+  Profile* profile = nullptr;
+
+  if (highlighted_tabs.empty()) {
+    // The highlighted tabs could be empty, such as during window shutdown when
+    // the whole tab list is empty. Bail in this case.
+    return;
+  }
+
+  for (tabs::TabInterface* tab : highlighted_tabs) {
+    content::WebContents* web_contents = tab->GetContents();
+    CHECK(web_contents);
+
+    // All the tabs should be in the same window, so just grab the window ID and
+    // browser context from the first.
+    if (highlight_info.window_id == -1) {
+      profile = Profile::FromBrowserContext(web_contents->GetBrowserContext());
+      highlight_info.window_id =
+          ExtensionTabUtil::GetWindowIdOfTab(web_contents);
+    }
+
+    int tab_id = ExtensionTabUtil::GetTabId(web_contents);
+    highlight_info.tab_ids.push_back(tab_id);
+  }
+  CHECK(profile);
+
+  base::ListValue args = api::tabs::OnHighlighted::Create(highlight_info);
+  // The onHighlighted event replaced onHighlightChanged.
+  DispatchEvent(profile, events::TABS_ON_HIGHLIGHT_CHANGED,
+                api::tabs::OnHighlightChanged::kEventName, args.Clone(),
+                EventRouter::UserGestureState::kUnknown);
+  DispatchEvent(profile, events::TABS_ON_HIGHLIGHTED,
+                api::tabs::OnHighlighted::kEventName, std::move(args),
+                EventRouter::UserGestureState::kUnknown);
+}
+
 void TabsEventRouter::OnTabListDestroyed(TabListInterface& tab_list) {
   tab_list_observations_.RemoveObservation(&tab_list);
 }
