@@ -4972,7 +4972,7 @@ enum WebFeature {
   kMulticastControllerJoinGroupFunction = 5656,
   kMulticastControllerLeaveGroupFunction = 5657,
   kMulticastControllerJoinedGroupsAttribute = 5658,
-  kContainerNameQueryFailedTreeScope = 5659,
+  kOBSOLETE_ContainerNameQueryFailedTreeScope = 5659,
   kLocalNetworkAccessWebSocketResourceNotKnownPrivate = 5660,
   kCSSPseudoElementUsesImplicitAnchor = 5661,
   kLineClampByLinesOverflows = 5662,

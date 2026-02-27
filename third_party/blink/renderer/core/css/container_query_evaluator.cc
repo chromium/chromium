@@ -54,29 +54,7 @@ bool NameMatches(const ComputedStyle& style,
         container_name->GetNames();
     for (const auto& scoped_name : names) {
       if (scoped_name->GetName() == name) {
-        const TreeScope* name_tree_scope = scoped_name->GetTreeScope();
-        if (!name_tree_scope || !selector_tree_scope) {
-          // Either the container-name or @container have a UA or User origin.
-          // In that case always match the name regardless of the other one's
-          // origin.
-          return true;
-        }
-        // Match a tree-scoped container name if the container-name
-        // declaration's tree scope is an inclusive ancestor of the @container
-        // rule's tree scope.
-        for (const TreeScope* match_scope = selector_tree_scope; match_scope;
-             match_scope = match_scope->ParentTreeScope()) {
-          if (match_scope == name_tree_scope) {
-            return true;
-          }
-        }
-        // Keeping the TreeScope matching above to be able to count when this
-        // is a behavioral change.
-        selector_tree_scope->GetDocument().CountUse(
-            WebFeature::kContainerNameQueryFailedTreeScope);
-        if (RuntimeEnabledFeatures::CSSContainerNameNotTreeScopedEnabled()) {
-          return true;
-        }
+        return true;
       }
     }
   }

@@ -6282,7 +6282,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5656" label="MulticastControllerJoinGroupFunction"/>
   <int value="5657" label="MulticastControllerLeaveGroupFunction"/>
   <int value="5658" label="MulticastControllerJoinedGroupsAttribute"/>
-  <int value="5659" label="ContainerNameQueryFailedTreeScope"/>
+  <int value="5659" label="OBSOLETE_ContainerNameQueryFailedTreeScope"/>
   <int value="5660" label="LocalNetworkAccessWebSocketResourceNotKnownPrivate"/>
   <int value="5661" label="CSSPseudoElementUsesImplicitAnchor"/>
   <int value="5662" label="LineClampByLinesOverflows"/>
