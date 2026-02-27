@@ -628,6 +628,7 @@ error-page {
   background-size: auto 700%;
   position: relative;
   animation: textShimmerAnimation 1s cubic-bezier(0.3, 0, 1, 1) both;
+  padding-inline-end: 2px;
 }
 
 .name-shimmer-dark {
