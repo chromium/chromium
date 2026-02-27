@@ -2763,6 +2763,24 @@
       <message name="IDS_IOS_ENTERPRISE_ACCOUNT_MANAGED" desc="Text displayed to inform the user that the account is managed by Enterprise policies (without link). [iOS only]">
         This account is managed
       </message>
+      <message name="IDS_IOS_ENTERPRISE_FILE_DOWNLOAD_WARN_CONTINUE_BUTTON" desc="Continue dialog button label for warning before saving or sharing the file. [iOS only]">
+        Share
+      </message>
+      <message name="IDS_IOS_ENTERPRISE_FILE_DOWNLOAD_WARN_LABEL" desc="Text displayed at the top of a dialog telling the user that saving or sharing the file is not recommended. [iOS only]">
+        Based on your organization's policies, this file may contain sensitive information
+      </message>
+      <message name="IDS_IOS_ENTERPRISE_FILE_SAVE_BLOCKED_SNACKBAR_TEXT" desc="The text of the snackbar message to inform users that saving files is blocked. [iOS only]">
+        File couldn't save due to your organization's policies
+      </message>
+      <message name="IDS_IOS_ENTERPRISE_FILE_SAVE_WARN_TITLE" desc="Text displayed at the top of a dialog telling the user that saving the file is not recommended. [iOS only]">
+        Saving not recommended
+      </message>
+      <message name="IDS_IOS_ENTERPRISE_FILE_SHARE_BLOCKED_SNACKBAR_TEXT" desc="The text of the snackbar message to inform users that sharing files is blocked. [iOS only]">
+        File can't be shared due to your organization's policies
+      </message>
+      <message name="IDS_IOS_ENTERPRISE_FILE_SHARE_WARN_TITLE" desc="Text displayed at the top of a dialog telling the user that sharing the file is not recommended. [iOS only]">
+        Sharing not recommended
+      </message>
       <message name="IDS_IOS_ENTERPRISE_MANAGED_BY_YOUR_ORGANIZATION" desc="Text displayed to inform the user that the browser is managed by Enterprise policies (without link). [iOS only]">
         Managed by your organization
       </message>

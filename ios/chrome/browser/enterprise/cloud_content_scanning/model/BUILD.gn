@@ -8,27 +8,53 @@ source_set("model") {
     "ios_analysis_request_handler.mm",
     "ios_content_analysis_request.h",
     "ios_content_analysis_request.mm",
+    "scan_decision_helper.h",
+    "scan_decision_helper.mm",
   ]
   deps = [
     "//components/enterprise/connectors/core",
     "//components/enterprise/connectors/core:cloud_content_scanning",
+    "//components/prefs",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/enterprise/common",
     "//ios/chrome/browser/enterprise/connectors/analysis",
+    "//ios/chrome/browser/enterprise/enterprise_dialog/model",
     "//ios/chrome/browser/policy/model",
     "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/web_state_list:utils",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/snackbar",
     "//ios/components/enterprise/analysis:features",
+    "//ios/web/public",
+    "//ui/base",
   ]
+  frameworks = [ "Foundation.framework" ]
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "ios_content_analysis_request_unittest.mm" ]
+  sources = [
+    "ios_content_analysis_request_unittest.mm",
+    "scan_decision_helper_unittest.mm",
+  ]
   deps = [
     ":model",
     "//base",
     "//base/test:test_support",
     "//components/enterprise/connectors/core:cloud_content_scanning",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/test:test_support",
+    "//ios/chrome/test/fakes",
+    "//ios/web/public/test",
+    "//ios/web/public/test/fakes",
     "//testing/gtest",
+    "//third_party/ocmock",
   ]
 }

@@ -7,7 +7,9 @@
 #import "base/notimplemented.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 namespace enterprise {
 
@@ -58,8 +60,25 @@ WarningDialog GetWarningDialog(DialogType type,
       dialog.cancel_button_id = l10n_util::GetNSString(IDS_CANCEL);
       break;
 
-    case DialogType::kDownloadWarn:
-      NOTIMPLEMENTED();
+    case DialogType::kDownloadSaveWarn:
+      dialog.title =
+          l10n_util::GetNSString(IDS_IOS_ENTERPRISE_FILE_SAVE_WARN_TITLE);
+      dialog.label =
+          l10n_util::GetNSString(IDS_IOS_ENTERPRISE_FILE_DOWNLOAD_WARN_LABEL);
+      dialog.ok_button_id = l10n_util::GetNSString(
+          IDS_IOS_ENTERPRISE_FILE_DOWNLOAD_WARN_CONTINUE_BUTTON);
+      dialog.cancel_button_id = l10n_util::GetNSString(IDS_CANCEL);
+      break;
+
+    case DialogType::kDownloadShareWarn:
+      dialog.title =
+          l10n_util::GetNSString(IDS_IOS_ENTERPRISE_FILE_SHARE_WARN_TITLE);
+      dialog.label =
+          l10n_util::GetNSString(IDS_IOS_ENTERPRISE_FILE_DOWNLOAD_WARN_LABEL);
+      dialog.ok_button_id = l10n_util::GetNSString(
+          IDS_IOS_ENTERPRISE_FILE_DOWNLOAD_WARN_CONTINUE_BUTTON);
+      dialog.cancel_button_id = l10n_util::GetNSString(IDS_CANCEL);
+      break;
   }
 
   return dialog;

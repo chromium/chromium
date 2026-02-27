@@ -5,9 +5,11 @@
 #import "ios/chrome/browser/enterprise/enterprise_dialog/model/warning_dialog.h"
 
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 #import "ui/base/l10n/l10n_util.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 namespace enterprise {
 
@@ -137,6 +139,38 @@ TEST_F(WarningDialogTest, GetWarningDialog_Action_WithDomain) {
                           u"google.com")]);
   EXPECT_TRUE([dialog.ok_button_id
       isEqualToString:l10n_util::GetNSString(IDS_CONTINUE)]);
+  EXPECT_TRUE([dialog.cancel_button_id
+      isEqualToString:l10n_util::GetNSString(IDS_CANCEL)]);
+}
+
+TEST_F(WarningDialogTest, GetWarningDialog_Download_Save) {
+  WarningDialog dialog = GetWarningDialog(DialogType::kDownloadSaveWarn, "");
+  EXPECT_TRUE([dialog.title
+      isEqualToString:l10n_util::GetNSString(
+                          IDS_IOS_ENTERPRISE_FILE_SAVE_WARN_TITLE)]);
+  EXPECT_TRUE([dialog.label
+      isEqualToString:l10n_util::GetNSString(
+                          IDS_IOS_ENTERPRISE_FILE_DOWNLOAD_WARN_LABEL)]);
+  EXPECT_TRUE([dialog.ok_button_id
+      isEqualToString:
+          l10n_util::GetNSString(
+              IDS_IOS_ENTERPRISE_FILE_DOWNLOAD_WARN_CONTINUE_BUTTON)]);
+  EXPECT_TRUE([dialog.cancel_button_id
+      isEqualToString:l10n_util::GetNSString(IDS_CANCEL)]);
+}
+
+TEST_F(WarningDialogTest, GetWarningDialog_Download_Share) {
+  WarningDialog dialog = GetWarningDialog(DialogType::kDownloadShareWarn, "");
+  EXPECT_TRUE([dialog.title
+      isEqualToString:l10n_util::GetNSString(
+                          IDS_IOS_ENTERPRISE_FILE_SHARE_WARN_TITLE)]);
+  EXPECT_TRUE([dialog.label
+      isEqualToString:l10n_util::GetNSString(
+                          IDS_IOS_ENTERPRISE_FILE_DOWNLOAD_WARN_LABEL)]);
+  EXPECT_TRUE([dialog.ok_button_id
+      isEqualToString:
+          l10n_util::GetNSString(
+              IDS_IOS_ENTERPRISE_FILE_DOWNLOAD_WARN_CONTINUE_BUTTON)]);
   EXPECT_TRUE([dialog.cancel_button_id
       isEqualToString:l10n_util::GetNSString(IDS_CANCEL)]);
 }

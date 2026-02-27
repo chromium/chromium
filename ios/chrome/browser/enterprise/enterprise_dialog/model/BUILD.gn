@@ -9,6 +9,7 @@ source_set("model") {
   ]
   deps = [
     "//components/strings",
+    "//ios/chrome/app/strings",
     "//ui/base",
   ]
 
@@ -21,6 +22,7 @@ source_set("unit_tests") {
   deps = [
     ":model",
     "//components/strings",
+    "//ios/chrome/app/strings",
     "//ios/chrome/test:test_support",
     "//testing/gtest",
     "//ui/base",

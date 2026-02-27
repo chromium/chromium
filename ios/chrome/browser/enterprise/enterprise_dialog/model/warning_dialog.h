@@ -21,7 +21,12 @@ enum DialogType {
   kClipboardCopyWarn,
   kClipboardShareWarn,
   kClipboardActionWarn,
-  kDownloadWarn
+
+  // Triggered by downloading from Save prompt.
+  kDownloadSaveWarn,
+
+  // Triggered by downloading from Share sheet.
+  kDownloadShareWarn
 };
 
 // The warning dialog shown to the user when an Enterprise Policy is triggered.
