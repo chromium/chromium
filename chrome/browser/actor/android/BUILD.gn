@@ -9,6 +9,7 @@ android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/actor/ActorKeyedService.java",
     "java/src/org/chromium/chrome/browser/actor/ActorKeyedServiceFactory.java",
+    "java/src/org/chromium/chrome/browser/actor/ActorPictureInPictureController.java",
     "java/src/org/chromium/chrome/browser/actor/ActorServiceTabUtils.java",
     "java/src/org/chromium/chrome/browser/actor/ActorTask.java",
     "java/src/org/chromium/chrome/browser/actor/ActorTaskId.java",
@@ -36,7 +37,10 @@ android_library("java") {
     "//chrome/browser/tabmodel:java",
     "//chrome/browser/ui/messages/android:java",
     "//components/browser_ui/styles/android:java_resources",
+    "//third_party/androidx:androidx_activity_activity_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_core_core_java",
+    "//third_party/androidx:androidx_core_core_pip_java",
     "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_java",
   ]
@@ -97,6 +101,7 @@ android_resources("java_resources") {
 
 robolectric_library("junit") {
   sources = [
+    "java/src/org/chromium/chrome/browser/actor/ActorPictureInPictureControllerTest.java",
     "java/src/org/chromium/chrome/browser/actor/ui/ActorControlCoordinatorTest.java",
     "java/src/org/chromium/chrome/browser/actor/ui/ActorOverlayCoordinatorTest.java",
   ]
@@ -114,6 +119,8 @@ robolectric_library("junit") {
     "//components/browser_ui/styles/android:java",
     "//components/browser_ui/styles/android:java_resources",
     "//components/browser_ui/theme/android:java_resources",
+    "//third_party/androidx:androidx_activity_activity_java",
+    "//third_party/androidx:androidx_core_core_pip_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
