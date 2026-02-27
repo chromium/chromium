@@ -892,40 +892,6 @@ std::unique_ptr<HistogramBase> LinearHistogram::PersistentCreate(
                                         logged_counts, meta, logged_meta));
 }
 
-HistogramBase* LinearHistogram::FactoryGetWithRangeDescription(
-    std::string_view name,
-    Sample32 minimum,
-    Sample32 maximum,
-    size_t bucket_count,
-    int32_t flags) {
-  // Originally, histograms were required to have at least one sample value
-  // plus underflow and overflow buckets. For single-entry enumerations,
-  // that one value is usually zero (which IS the underflow bucket)
-  // resulting in a |maximum| value of 1 (the exclusive upper-bound) and only
-  // the two outlier buckets. Handle this by making max==2 and buckets==3.
-  // This usually won't have any cost since the single-value-optimization
-  // will be used until the count exceeds 16 bits.
-  if (maximum == 1 && bucket_count == 2) {
-    maximum = 2;
-    bucket_count = 3;
-  }
-
-  const auto validity = Histogram::InspectConstructionArguments(
-      name, &minimum, &maximum, &bucket_count);
-  if (validity != Histogram::kOK) {
-    // Produce a crash dump with the histogram name, so that we can detect cases
-    // where there is a coding error and a histogram is logged with bad params.
-    SCOPED_CRASH_KEY_STRING256("BadHistogramArgs", "name", std::string(name));
-    SCOPED_CRASH_KEY_STRING256("BadHistogramArgs", "validity",
-                               HistogramValidityToString(validity));
-    base::debug::DumpWithoutCrashing();
-    DLOG(ERROR) << "Histogram " << name << " dropped for invalid parameters.";
-    return DummyHistogram::GetInstance();
-  }
-
-  return Factory(name, minimum, maximum, bucket_count, flags).Build();
-}
-
 HistogramType LinearHistogram::GetHistogramType() const {
   return LINEAR_HISTOGRAM;
 }
@@ -972,8 +938,32 @@ HistogramBase* LinearHistogram::FactoryGetInternal(std::string_view name,
                                                    Sample32 maximum,
                                                    size_t bucket_count,
                                                    int32_t flags) {
-  return FactoryGetWithRangeDescription(name, minimum, maximum, bucket_count,
-                                        flags);
+  // Originally, histograms were required to have at least one sample value
+  // plus underflow and overflow buckets. For single-entry enumerations,
+  // that one value is usually zero (which IS the underflow bucket)
+  // resulting in a |maximum| value of 1 (the exclusive upper-bound) and only
+  // the two outlier buckets. Handle this by making max==2 and buckets==3.
+  // This usually won't have any cost since the single-value-optimization
+  // will be used until the count exceeds 16 bits.
+  if (maximum == 1 && bucket_count == 2) {
+    maximum = 2;
+    bucket_count = 3;
+  }
+
+  const auto validity = Histogram::InspectConstructionArguments(
+      name, &minimum, &maximum, &bucket_count);
+  if (validity != Histogram::kOK) {
+    // Produce a crash dump with the histogram name, so that we can detect cases
+    // where there is a coding error and a histogram is logged with bad params.
+    SCOPED_CRASH_KEY_STRING256("BadHistogramArgs", "name", std::string(name));
+    SCOPED_CRASH_KEY_STRING256("BadHistogramArgs", "validity",
+                               HistogramValidityToString(validity));
+    base::debug::DumpWithoutCrashing();
+    DLOG(ERROR) << "Histogram " << name << " dropped for invalid parameters.";
+    return DummyHistogram::GetInstance();
+  }
+
+  return Factory(name, minimum, maximum, bucket_count, flags).Build();
 }
 
 // static

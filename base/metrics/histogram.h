@@ -398,17 +398,6 @@ class BASE_EXPORT LinearHistogram : public Histogram {
     const char* description;  // Null means end of a list of pairs.
   };
 
-  // Create a LinearHistogram and store a list of number/text values for use in
-  // writing the histogram graph.
-  // |descriptions| can be NULL, which means no special descriptions to set. If
-  // it's not NULL, the last element in the array must has a NULL in its
-  // "description" field.
-  static HistogramBase* FactoryGetWithRangeDescription(std::string_view name,
-                                                       Sample32 minimum,
-                                                       Sample32 maximum,
-                                                       size_t bucket_count,
-                                                       int32_t flags);
-
   static void InitializeBucketRanges(Sample32 minimum,
                                      Sample32 maximum,
                                      BucketRanges* ranges);
