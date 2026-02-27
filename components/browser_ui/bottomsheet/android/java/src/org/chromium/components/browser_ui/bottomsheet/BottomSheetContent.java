@@ -261,6 +261,16 @@ public interface BottomSheetContent {
     }
 
     /**
+     * Whether the bottom sheet should act as a bottom browser control in the PEEK state,
+     * pushing web content up rather than overlaying it.
+     *
+     * @return True if the bottom sheet should act as a browser control.
+     */
+    default boolean actsAsBrowserControls() {
+        return false;
+    }
+
+    /**
      * Whether long press gestures should move the bottom sheet.
      *
      * <p>Should NOT be overridden to return `true` if the bottom sheet contains any UI that

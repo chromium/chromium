@@ -49,6 +49,7 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
         LayerType.READ_ALOUD_PLAYER,
         LayerType.BOTTOM_TOOLBAR,
         LayerType.BOTTOM_CHIN,
+        LayerType.BOTTOM_SHEET,
         LayerType.TEST_BOTTOM_LAYER
     })
     public @interface LayerType {
@@ -62,6 +63,10 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
         int TABSTRIP_TOOLBAR_BELOW_READALOUD = 3;
         int BOTTOM_TOOLBAR = 4;
         int BOTTOM_CHIN = 5;
+        // Bottom sheet as a browser control layer. This is used to position bottom sheet in
+        // respect to other bottom controls, and/or specialized bottom sheets that can push web
+        // content up in PEEK state.
+        int BOTTOM_SHEET = 6;
 
         // Layer that's used for testing.
         int TEST_BOTTOM_LAYER = 100;
@@ -118,6 +123,7 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
     // The pre-defined stack order for different bottom controls.
     private static final @LayerType int[] STACK_ORDER =
             new int[] {
+                LayerType.BOTTOM_SHEET,
                 LayerType.PROGRESS_BAR,
                 LayerType.TABSTRIP_TOOLBAR,
                 LayerType.READ_ALOUD_PLAYER,
@@ -489,7 +495,6 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
                     minHeightBottomOffset = Math.min(minHeightBottomOffset, mTotalHeight);
                 }
 
-
                 logIfHeightMismatch(
                         "Heights before #repositionLayers",
                         mTotalHeight,
@@ -501,7 +506,6 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
 
             yOffsetOfLayers.put(type, layerYOffset);
         }
-
 
         // 2. If animated, compare and fix the yOffset with the previous mLayerOffsets if reposition
         // is caused by an animated browser controls height adjustment. This needs to run in a
