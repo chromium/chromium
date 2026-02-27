@@ -106,7 +106,7 @@ public final class AutofillSaveIbanBottomSheetMediatorTest {
                         SaveIbanPromptResult.ACCEPTED);
         HistogramWatcher nicknameHistogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
-                        AutofillSaveIbanBottomSheetMediator.SAVE_IBAN_PROMPT_RESULT_HISTOGRAM
+                        AutofillSaveIbanBottomSheetMediator.SAVE_IBAN_PROMPT_RESULT_FOR_SAVE_WITH_NICKNAME_HISTOGRAM
                                 + ".Upload.SavedWithNickname",
                         false);
 
@@ -125,7 +125,7 @@ public final class AutofillSaveIbanBottomSheetMediatorTest {
                         SaveIbanPromptResult.ACCEPTED);
         HistogramWatcher nicknameHistogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
-                        AutofillSaveIbanBottomSheetMediator.SAVE_IBAN_PROMPT_RESULT_HISTOGRAM
+                        AutofillSaveIbanBottomSheetMediator.SAVE_IBAN_PROMPT_RESULT_FOR_SAVE_WITH_NICKNAME_HISTOGRAM
                                 + ".Upload.SavedWithNickname",
                         true);
 

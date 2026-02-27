@@ -39,7 +39,9 @@ import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
     static final String SAVE_IBAN_PROMPT_OFFER_HISTOGRAM = "Autofill.SaveIbanPromptOffer";
 
     @VisibleForTesting
-    static final String SAVE_IBAN_PROMPT_RESULT_HISTOGRAM = "Autofill.SaveIbanPromptResult";
+    static final String SAVE_IBAN_PROMPT_RESULT_FOR_SAVE_WITH_NICKNAME_HISTOGRAM = "Autofill.SaveIbanPromptResult";
+
+    static final String SAVE_IBAN_PROMPT_RESULT_HISTOGRAM = "Autofill.SaveIbanPromptResult2";
 
     private final AutofillSaveIbanBottomSheetCoordinator.NativeDelegate mDelegate;
     private final AutofillSaveIbanBottomSheetContent mBottomSheetContent;
@@ -96,7 +98,7 @@ import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
         mDelegate.onUiAccepted(userProvidedNickname);
 
         RecordHistogram.recordBooleanHistogram(
-                SAVE_IBAN_PROMPT_RESULT_HISTOGRAM
+                SAVE_IBAN_PROMPT_RESULT_FOR_SAVE_WITH_NICKNAME_HISTOGRAM
                         + (mIsServerSave ? ".Upload" : ".Local")
                         + ".SavedWithNickname",
                 !userProvidedNickname.isEmpty());
