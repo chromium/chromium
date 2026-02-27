@@ -146,6 +146,9 @@ MockAudioRenderer::~MockAudioRenderer() = default;
 
 MockRenderer::MockRenderer() = default;
 
+MockRenderer::MockRenderer(RendererType renderer_type)
+    : renderer_type_(renderer_type) {}
+
 MockRenderer::~MockRenderer() = default;
 
 MockRendererFactory::MockRendererFactory() = default;

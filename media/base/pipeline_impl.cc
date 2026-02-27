@@ -732,9 +732,11 @@ void PipelineImpl::RendererWrapper::CreateRendererInternal(
   }
 #endif  // BUILDFLAG(IS_WIN)
 
-  // TODO(xhwang): During Resume(), the |default_renderer_| might already match
-  // the |renderer_type|, in which case we shouldn't need to create a new one.
-  if (!default_renderer_ || renderer_type) {
+  // During Resume(), the |default_renderer_| might already match the
+  // |renderer_type|, in which case we shouldn't need to create a new one.
+  if (!default_renderer_ ||
+      (renderer_type &&
+       default_renderer_->GetRendererType() != renderer_type.value())) {
     // Create the Renderer asynchronously on the main task runner. Use
     // base::BindPostTaskToCurrentDefault to call OnRendererCreated() on the
     // media task runner.
