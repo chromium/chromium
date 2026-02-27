@@ -6,9 +6,11 @@ include_rules = [
   "+components/page_content_annotations/content",
   "+components/page_content_annotations/core",
   "+components/translate/core",
+  "+components/ukm",
   "+components/url_matcher",
   "+components/variations",
   "+content/public/browser",
   "+content/public/test",
+  "+services/metrics/public/cpp",
   "+third_party/re2",
 ]

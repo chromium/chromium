@@ -6,6 +6,7 @@
 
 #include <string_view>
 
+#include "base/containers/map_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_split.h"
 #include "base/timer/elapsed_timer.h"
@@ -15,6 +16,8 @@
 #include "components/accessibility_annotator/content/content_annotator/content_classifier_types.h"
 #include "components/accessibility_annotator/core/accessibility_annotator_features.h"
 #include "components/variations/hashing.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
 
 namespace accessibility_annotator {
 
@@ -104,6 +107,19 @@ std::string_view ContentClassifier::ClassifierResultStatusToString(
   }
 }
 
+int64_t ContentClassifier::GetRelevanceAsInt(
+    std::optional<std::string_view> category) const {
+  ContentClassifierRelevance relevance =
+      ContentClassifierRelevance::kLowContentRelevance;
+  if (category) {
+    if (auto* found_relevance =
+            base::FindOrNull(classifier_relevance_values_, *category)) {
+      relevance = *found_relevance;
+    }
+  }
+  return static_cast<int64_t>(relevance);
+}
+
 ContentClassificationResult ContentClassifier::Classify(
     const ContentClassificationInput& input) const {
   CHECK(input.adopted_language.has_value());
@@ -111,12 +127,15 @@ ContentClassificationResult ContentClassifier::Classify(
   CHECK(input.page_title.has_value());
 
   ContentClassificationResult result;
+  ukm::builders::AccessibilityAnnotator_ContentAnnotator_ClassifierResults
+      ukm_builder(input.ukm_source_id);
 
   // 1. Check whether the page is in one of the target language(s).
   result.is_in_target_language =
       supported_languages_.contains(*input.adopted_language);
   base::UmaHistogramBoolean("AccessibilityAnnotator.LanguageCheck",
                             result.is_in_target_language.value());
+  ukm_builder.SetIsTargetLanguage(result.is_in_target_language.value());
 
   // 2. Check whether the page is within the sensitivity threshold.
   result.is_sensitive =
@@ -135,10 +154,11 @@ ContentClassificationResult ContentClassifier::Classify(
     base::UmaHistogramTimes(
         "AccessibilityAnnotator.TitleKeywordClassifierDuration",
         timer.Elapsed());
+
     if (category) {
       title_result.category = std::string(*category);
-      // TODO(crbug.com/478246547): Log the value to UKM.
     }
+    ukm_builder.SetTitleKeywordResult(GetRelevanceAsInt(title_result.category));
     result.title_keyword_result = title_result;
     title_classifier_result =
         result.title_keyword_result->category
@@ -167,10 +187,11 @@ ContentClassificationResult ContentClassifier::Classify(
         url_match_classifier_->Classify(input.url);
     base::UmaHistogramTimes("AccessibilityAnnotator.UrlClassifierDuration",
                             timer.Elapsed());
+
     if (category) {
       url_result.category = std::string(*category);
-      // TODO(crbug.com/478246547): Log the value to UKM.
     }
+    ukm_builder.SetUrlMatchResult(GetRelevanceAsInt(url_result.category));
     result.url_match_result = url_result;
     url_classifier_result =
         result.url_match_result->category
@@ -189,6 +210,7 @@ ContentClassificationResult ContentClassifier::Classify(
   base::UmaHistogramSparse("AccessibilityAnnotator.UrlClassifierResult",
                            variations::HashName(url_classifier_result));
 
+  ukm_builder.Record(ukm::UkmRecorder::Get());
   return result;
 }
 

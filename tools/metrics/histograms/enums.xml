@@ -2329,6 +2329,19 @@ Called by update_net_error_codes.py.-->
   <int value="4" label="The network is validated"/>
 </enum>
 
+<!-- LINT.IfChange(ContentClassifierRelevanceValue) -->
+
+<enum name="ContentClassifierRelevanceValue">
+  <summary>
+    Possible outcomes for the level of interest in the web page.
+  </summary>
+  <int value="1" label="LowContentRelevance"/>
+  <int value="2" label="MediumContentRelevance"/>
+  <int value="3" label="HighContentRelevance"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/accessibility_annotator/content/content_annotator/content_annotator_classifier_rules_parser.h:ContentClassifierRelevance) -->
+
 <enum name="ContentIndexCategory">
   <summary>
     The type of a Content Index entry. Corresponds to

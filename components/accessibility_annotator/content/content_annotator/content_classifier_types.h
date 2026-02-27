@@ -12,6 +12,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "url/gurl.h"
 
 namespace accessibility_annotator {
@@ -40,6 +41,7 @@ struct ContentClassificationInput {
   ~ContentClassificationInput();
 
   GURL url;
+  ukm::SourceId ukm_source_id = ukm::kInvalidSourceId;
   // LINT.IfChange
   std::optional<float> sensitivity_score;
   std::optional<base::Time> navigation_timestamp;

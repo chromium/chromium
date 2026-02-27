@@ -571,6 +571,35 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="AccessibilityAnnotator.ContentAnnotator.ClassifierResults"
+    singular="True">
+  <owner>qiaoli@google.com</owner>
+  <owner>akvuong@google.com</owner>
+  <owner>igoralsky@google.com</owner>
+  <summary>
+    Recorded when a page load is evaluated for annotation, which happens when a
+    page is loaded and sufficient data (content, language, sensitivity score)
+    has been gathered.
+  </summary>
+  <metric name="IsTargetLanguage" enum="Boolean">
+    <summary>
+      Records whether the page is in one of the target language(s).
+    </summary>
+  </metric>
+  <metric name="TitleKeywordResult" enum="ContentClassifierRelevanceValue">
+    <summary>
+      Records the level of interest in the web page content based on the results
+      of the title keyword value classifier.
+    </summary>
+  </metric>
+  <metric name="UrlMatchResult" enum="ContentClassifierRelevanceValue">
+    <summary>
+      Indicates the level of interest in the web page content based on the
+      results of the URL match classifier.
+    </summary>
+  </metric>
+</event>
+
 <event name="AdFrameLoad">
   <owner>johnidel@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>

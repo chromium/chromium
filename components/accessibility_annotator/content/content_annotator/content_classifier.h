@@ -72,6 +72,9 @@ class ContentClassifier {
   ContentClassifier();
 
  private:
+  // Resolves the relevance classifier value for UKM logging.
+  int64_t GetRelevanceAsInt(std::optional<std::string_view> category) const;
+
   // The classifier for matching keywords in the page title.
   std::unique_ptr<ContentAnnotatorRuleBasedClassifier>
       title_keyword_classifier_;

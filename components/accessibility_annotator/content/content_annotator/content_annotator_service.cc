@@ -120,6 +120,7 @@ void ContentAnnotatorService::OnPageContentExtracted(
   }
 
   it->second.annotated_page_content = std::move(page_content);
+  it->second.ukm_source_id = page.GetMainDocument().GetPageUkmSourceId();
   MaybeAnnotate(it);
 }
 

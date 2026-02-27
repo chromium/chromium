@@ -7,9 +7,13 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/accessibility_annotator/core/accessibility_annotator_features.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "components/variations/hashing.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -69,6 +73,7 @@ class ContentClassifierTest : public testing::Test {
   struct ClassifierTestOptions {
     std::string title_keyword_rules;
     std::string url_match_rules;
+    std::string relevance_values;
     std::optional<double> sensitivity_threshold;
   };
 
@@ -82,6 +87,10 @@ class ContentClassifierTest : public testing::Test {
     if (!options.url_match_rules.empty()) {
       params[kContentAnnotatorClassifierUrlMatchRules.name] =
           options.url_match_rules;
+    }
+    if (!options.relevance_values.empty()) {
+      params[kContentAnnotatorClassifierRelevanceValues.name] =
+          options.relevance_values;
     }
 
     if (options.sensitivity_threshold.has_value()) {
@@ -136,6 +145,7 @@ class ContentClassifierTest : public testing::Test {
   }
 
   base::test::ScopedFeatureList feature_list_;
+  base::test::TaskEnvironment task_environment_;
 };
 
 TEST_F(ContentClassifierTest, Classify_AllClassifiersMatch) {
@@ -391,6 +401,58 @@ TEST_F(ContentClassifierTest, Classify_SensitivityCheck) {
         "AccessibilityAnnotator.UrlClassifierResult",
         variations::HashName("category_1"), 2);
   }
+}
+
+TEST_F(ContentClassifierTest, Classify_LogsUkm) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  std::unique_ptr<ContentClassifier> classifier = CreateClassifier(
+      {.title_keyword_rules = R"JSON({"category_1":["rule1"]})JSON",
+       .url_match_rules = R"JSON({"category_2":["/rule1"]})JSON",
+       .relevance_values = R"JSON({"category_1":3,"category_2":2})JSON"});
+  ASSERT_TRUE(classifier);
+
+  ContentClassificationInput input(GURL("https://example.com/rule1"));
+  input.ukm_source_id = ukm::AssignNewSourceId();
+  input.page_title = "rule1";
+  input.adopted_language = "en";
+  input.sensitivity_score = 0.1f;
+
+  classifier->Classify(input);
+
+  using UkmEntry =
+      ukm::builders::AccessibilityAnnotator_ContentAnnotator_ClassifierResults;
+  auto entries = ukm_recorder.GetEntriesByName(UkmEntry::kEntryName);
+  ASSERT_EQ(1u, entries.size());
+  auto entry = entries[0];
+  ukm_recorder.ExpectEntryMetric(entry, UkmEntry::kIsTargetLanguageName, true);
+  ukm_recorder.ExpectEntryMetric(entry, UkmEntry::kTitleKeywordResultName, 3);
+  ukm_recorder.ExpectEntryMetric(entry, UkmEntry::kUrlMatchResultName, 2);
+}
+
+TEST_F(ContentClassifierTest, Classify_LogsUkm_NoMatch) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  std::unique_ptr<ContentClassifier> classifier =
+      CreateClassifier({.title_keyword_rules = R"JSON({"cat1":["rule1"]})JSON",
+                        .relevance_values = R"JSON({"cat1":3})JSON"});
+  ASSERT_TRUE(classifier);
+
+  ContentClassificationInput input(GURL("https://example.com/other"));
+  input.ukm_source_id = ukm::AssignNewSourceId();
+  input.page_title = "other";
+  input.adopted_language = "fr";
+  input.sensitivity_score = 0.1f;
+
+  classifier->Classify(input);
+
+  using UkmEntry =
+      ukm::builders::AccessibilityAnnotator_ContentAnnotator_ClassifierResults;
+  auto entries = ukm_recorder.GetEntriesByName(UkmEntry::kEntryName);
+  ASSERT_EQ(1u, entries.size());
+  auto entry = entries[0];
+  ukm_recorder.ExpectEntryMetric(entry, UkmEntry::kIsTargetLanguageName, false);
+  ukm_recorder.ExpectEntryMetric(entry, UkmEntry::kTitleKeywordResultName, 1);
+  EXPECT_FALSE(
+      ukm_recorder.GetEntryMetric(entry, UkmEntry::kUrlMatchResultName));
 }
 
 }  // namespace

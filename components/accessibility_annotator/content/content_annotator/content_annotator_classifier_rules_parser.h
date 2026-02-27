@@ -16,6 +16,7 @@ namespace accessibility_annotator {
 inline constexpr size_t kMaxRuleCategories = 100;
 inline constexpr size_t kMaxRulesPerCategory = 200;
 
+// LINT.IfChange(ContentClassifierRelevance)
 enum class ContentClassifierRelevance {
   kUnknown = 0,
   kLowContentRelevance = 1,
@@ -23,6 +24,7 @@ enum class ContentClassifierRelevance {
   kHighContentRelevance = 3,
   kMaxValue = kHighContentRelevance,
 };
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:ContentClassifierRelevanceValue)
 
 // Parses a JSON string of rules into a map of categories to rules.
 // The string should be in the format:
