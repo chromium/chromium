@@ -1336,8 +1336,7 @@ CanvasRenderingContext2D::CreateCanvasResourceProvider() {
     // could be mapped onto the CPU for software raster writes and then read by
     // the display compositor.
     bool native_mappable_si_supported =
-        SharedGpuContext::MaySupportImageChromium() &&
-        RuntimeEnabledFeatures::Canvas2dImageChromiumEnabled();
+        SharedGpuContext::NativeMappableSharedImagesSupportedForCanvas2D();
     if (use_gpu_raster || native_mappable_si_supported) {
       gpu::SharedImageUsageSet shared_image_usage_flags =
           gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;

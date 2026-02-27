@@ -274,6 +274,11 @@ bool SharedGpuContext::MaySupportImageChromium() {
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
+bool SharedGpuContext::NativeMappableSharedImagesSupportedForCanvas2D() {
+  return MaySupportImageChromium() &&
+         RuntimeEnabledFeatures::Canvas2dImageChromiumEnabled();
+}
+
 bool SharedGpuContext::OverlaysSupportedForCanvas2D() {
   return MaySupportImageChromium() &&
          RuntimeEnabledFeatures::Canvas2dImageChromiumEnabled();

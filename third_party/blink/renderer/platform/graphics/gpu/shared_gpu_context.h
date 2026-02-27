@@ -63,6 +63,9 @@ class PLATFORM_EXPORT SharedGpuContext {
   static bool MaySupportImageChromium() { return true; }
 #endif
 
+  // Whether native mappable SharedImages are supported for Canvas2D.
+  static bool NativeMappableSharedImagesSupportedForCanvas2D();
+
   // Whether SharedImages used for canvas2D content may be placed into overlays.
   static bool OverlaysSupportedForCanvas2D();
 
