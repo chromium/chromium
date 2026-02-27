@@ -68,8 +68,6 @@ void OmniboxController::SetView(OmniboxView* view) {
   }
 }
 
-constexpr bool is_ios = !!BUILDFLAG(IS_IOS);
-
 OmniboxController::~OmniboxController() = default;
 
 void OmniboxController::StartAutocomplete(
@@ -102,7 +100,7 @@ void OmniboxController::StartZeroSuggestPrefetch() {
   GURL current_url = client_->GetURL();
   std::u16string text = base::UTF8ToUTF16(current_url.spec());
 
-  if (omnibox::IsNTPPage(page_classification) || !is_ios) {
+  if (omnibox::IsNTPPage(page_classification)) {
     text.clear();
   }
 
