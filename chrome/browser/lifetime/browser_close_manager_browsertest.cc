@@ -1332,7 +1332,6 @@ IN_PROC_BROWSER_TEST_F(
 
 #endif  // BUILDFLAG(ENABLE_BACKGROUND_MODE)
 
-#if BUILDFLAG(ENABLE_GLIC)
 
 class BrowserCloseManagerWithGlicBrowserTest
     : public BrowserCloseManagerBrowserTest {
@@ -1369,5 +1368,3 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerWithGlicBrowserTest,
   EXPECT_TRUE(browser_shutdown::IsTryingToQuit());
   EXPECT_TRUE(GlobalBrowserCollection::GetInstance()->IsEmpty());
 }
-
-#endif  // BUILDFLAG(ENABLE_GLIC)
