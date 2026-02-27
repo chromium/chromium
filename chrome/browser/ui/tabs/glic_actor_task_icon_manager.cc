@@ -19,11 +19,6 @@ using actor::ActorTask;
 using TaskState = actor::ActorTask::State;
 using Text = ActorTaskNudgeState::Text;
 
-bool RequiresTaskProcessing(TaskState state) {
-    return GlicActorTaskIconManager::RequiresAttention(state) ||
-           state == TaskState::kFinished || state == TaskState::kFailed;
-}
-
 }  // namespace
 
 GlicActorTaskIconManager::GlicActorTaskIconManager(
@@ -188,6 +183,12 @@ size_t GlicActorTaskIconManager::GetNumActorTasksNeedProcessing() const {
 bool GlicActorTaskIconManager::RequiresAttention(TaskState state) {
   return state == TaskState::kPausedByActor ||
          state == TaskState::kWaitingOnUser;
+}
+
+// static
+bool GlicActorTaskIconManager::RequiresTaskProcessing(TaskState state) {
+  return GlicActorTaskIconManager::RequiresAttention(state) ||
+         state == TaskState::kFinished || state == TaskState::kFailed;
 }
 
 }  // namespace tabs

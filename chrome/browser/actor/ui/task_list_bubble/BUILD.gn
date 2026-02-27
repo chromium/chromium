@@ -86,6 +86,7 @@ source_set("unit_tests") {
     "//base",
     "//chrome/browser/actor",
     "//chrome/browser/actor:test_support",
+    "//chrome/browser/actor/resources:grit_grit",
     "//chrome/test:test_support",
     "//testing/gtest",
   ]

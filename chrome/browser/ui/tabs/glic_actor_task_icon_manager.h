@@ -38,6 +38,10 @@ class GlicActorTaskIconManager : public KeyedService {
   // waiting for user action.
   static bool RequiresAttention(actor::ActorTask::State state);
 
+  // Returns true if the task requires attention, was recently completed, or
+  // failed.
+  static bool RequiresTaskProcessing(actor::ActorTask::State state);
+
   // Register for this callback to get task nudge state change notifications.
   using TaskNudgeChangeCallback = base::RepeatingCallback<void(
       actor::ui::ActorTaskNudgeState actor_task_nudge_state)>;
