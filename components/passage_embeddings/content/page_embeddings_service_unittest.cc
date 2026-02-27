@@ -947,4 +947,74 @@ TEST_F(PageEmbeddingsServiceTest,
   page_embeddings_service().RemoveObserver(&observer);
 }
 
+// Validates that adding a lower priority observer doesn't downgrade the usage
+// mode.
+TEST_F(PageEmbeddingsServiceTest, UsageModeDoesNotDowngrade) {
+  std::unique_ptr<content::WebContents> web_contents =
+      CreateTestWebContentsWithVisibility(content::Visibility::VISIBLE);
+
+  ObserverMock continuous_observer;
+  EXPECT_CALL(continuous_observer, GetDefaultPriority)
+      .WillRepeatedly(Return(PageEmbeddingsService::kDefault));
+  EXPECT_CALL(continuous_observer, GetUsageMode)
+      .WillRepeatedly(Return(PageEmbeddingsService::kContinuous));
+  page_embeddings_service().AddObserver(&continuous_observer);
+
+  ObserverMock on_demand_observer;
+  EXPECT_CALL(on_demand_observer, GetDefaultPriority)
+      .WillRepeatedly(Return(PageEmbeddingsService::kDefault));
+  EXPECT_CALL(on_demand_observer, GetUsageMode)
+      .WillRepeatedly(Return(PageEmbeddingsService::kOnDemand));
+  page_embeddings_service().AddObserver(&on_demand_observer);
+
+  // Since we are in continuous mode, embeddings should be computed immediately
+  // for visible tabs.
+  EXPECT_CALL(embedder_mock(), ComputePassagesEmbeddings).Times(1);
+
+  page_embeddings_service().OnPageContentExtracted(
+      web_contents->GetPrimaryPage(),
+      base::MakeRefCounted<
+          page_content_annotations::RefCountedAnnotatedPageContent>());
+
+  page_embeddings_service().RemoveObserver(&continuous_observer);
+  page_embeddings_service().RemoveObserver(&on_demand_observer);
+}
+
+// Validates that transitioning to continuous mode only triggers eager
+// computation once.
+TEST_F(PageEmbeddingsServiceTest, ContinuousModeEagerComputationOnlyRunsOnce) {
+  std::unique_ptr<content::WebContents> web_contents =
+      CreateTestWebContentsWithVisibility(content::Visibility::VISIBLE);
+
+  // Extract content so there are pending passages.
+  page_embeddings_service().OnPageContentExtracted(
+      web_contents->GetPrimaryPage(),
+      base::MakeRefCounted<
+          page_content_annotations::RefCountedAnnotatedPageContent>());
+
+  // Adding the first continuous observer should trigger eager computation.
+  EXPECT_CALL(embedder_mock(), ComputePassagesEmbeddings).Times(1);
+
+  ObserverMock continuous_observer1;
+  EXPECT_CALL(continuous_observer1, GetDefaultPriority)
+      .WillRepeatedly(Return(PageEmbeddingsService::kDefault));
+  EXPECT_CALL(continuous_observer1, GetUsageMode)
+      .WillRepeatedly(Return(PageEmbeddingsService::kContinuous));
+  page_embeddings_service().AddObserver(&continuous_observer1);
+
+  // Adding a second continuous observer should NOT trigger eager computation
+  // again.
+  EXPECT_CALL(embedder_mock(), ComputePassagesEmbeddings).Times(0);
+
+  ObserverMock continuous_observer2;
+  EXPECT_CALL(continuous_observer2, GetDefaultPriority)
+      .WillRepeatedly(Return(PageEmbeddingsService::kDefault));
+  EXPECT_CALL(continuous_observer2, GetUsageMode)
+      .WillRepeatedly(Return(PageEmbeddingsService::kContinuous));
+  page_embeddings_service().AddObserver(&continuous_observer2);
+
+  page_embeddings_service().RemoveObserver(&continuous_observer1);
+  page_embeddings_service().RemoveObserver(&continuous_observer2);
+}
+
 }  // namespace passage_embeddings

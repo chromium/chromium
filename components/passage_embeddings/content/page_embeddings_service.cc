@@ -176,7 +176,7 @@ void PageEmbeddingsService::AddObserver(Observer* observer) {
   UpdateTaskPriorities(GetActivePriority(observers_, temporary_priority_));
 
   if (const UsageMode next_usage_mode = observer->GetUsageMode();
-      next_usage_mode != current_usage_mode_) {
+      next_usage_mode > current_usage_mode_) {
     if (next_usage_mode == kContinuous) {
       // Compute embeddings eagerly for all foreground tabs, to ensure that they
       // are available.
