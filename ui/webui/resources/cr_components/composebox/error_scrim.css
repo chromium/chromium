@@ -22,6 +22,7 @@
   position: absolute;
   width: 100%;
   z-index: 101;
+  pointer-events: auto;
 }
 
 :host([compact-mode]) #errorScrim {
