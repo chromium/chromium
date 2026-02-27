@@ -192,15 +192,18 @@ public class FuseboxMetrics {
     private static boolean isAttachmentButtonShown(
             PropertyModel model, @FuseboxAttachmentButtonType int attachmentType) {
         return switch (attachmentType) {
-            case FuseboxAttachmentButtonType.CAMERA, FuseboxAttachmentButtonType.GALLERY -> true;
-            case FuseboxAttachmentButtonType.TAB_PICKER ->
-                    model.get(FuseboxProperties.POPUP_ATTACH_TAB_PICKER_VISIBLE);
             case FuseboxAttachmentButtonType.CURRENT_TAB ->
                     model.get(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_VISIBLE);
-            case FuseboxAttachmentButtonType.CLIPBOARD ->
-                    model.get(FuseboxProperties.POPUP_ATTACH_CLIPBOARD_VISIBLE);
+            case FuseboxAttachmentButtonType.TAB_PICKER ->
+                    model.get(FuseboxProperties.POPUP_ATTACH_TAB_PICKER_VISIBLE);
+            case FuseboxAttachmentButtonType.CAMERA ->
+                    model.get(FuseboxProperties.POPUP_ATTACH_CAMERA_VISIBLE);
+            case FuseboxAttachmentButtonType.GALLERY ->
+                    model.get(FuseboxProperties.POPUP_ATTACH_GALLERY_VISIBLE);
             case FuseboxAttachmentButtonType.FILES ->
                     model.get(FuseboxProperties.POPUP_ATTACH_FILE_VISIBLE);
+            case FuseboxAttachmentButtonType.CLIPBOARD ->
+                    model.get(FuseboxProperties.POPUP_ATTACH_CLIPBOARD_VISIBLE);
             default -> false;
         };
     }
