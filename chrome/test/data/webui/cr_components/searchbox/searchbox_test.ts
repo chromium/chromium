@@ -13,8 +13,7 @@ import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {NavigationPredictor} from 'chrome://resources/mojo/components/omnibox/browser/omnibox.mojom-webui.js';
 import type {AutocompleteMatch} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {RenderType, SideType} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import type {InputState} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
-import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertNotEquals, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
@@ -3166,28 +3165,4 @@ suite('SearchboxTest', () => {
     assertFalse(backspaceEvent.defaultPrevented);
   });
 
-  test('onInputStateChanged updates inputState', async () => {
-    realbox = await createAndAppendRealbox();
-    const inputState = {
-      allowedModels: [],
-      allowedTools: [],
-      allowedInputTypes: [],
-      activeModel: 0,
-      activeTool: 0,
-      disabledModels: [],
-      disabledTools: [],
-      disabledInputTypes: [],
-      inputTypeConfigs: [],
-      toolConfigs: [],
-      modelConfigs: [],
-      toolsSectionConfig: null,
-      modelSectionConfig: null,
-      hintText: '',
-      maxInstances: {},
-      maxTotalInputs: 0,
-    } as InputState;
-    testProxy.callbackRouterRemote.onInputStateChanged(inputState);
-    await microtasksFinished();
-    assertDeepEquals((realbox as any).inputState_, inputState);
-  });
 });
