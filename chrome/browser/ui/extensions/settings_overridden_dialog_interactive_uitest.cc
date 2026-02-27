@@ -4,6 +4,7 @@
 
 #include <algorithm>
 
+#include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/test/scoped_feature_list.h"
@@ -87,6 +88,13 @@ class MockImageFetcherService : public image_fetcher::ImageFetcherService {
 class SettingsOverriddenExplicitChoiceDialogInteractiveUiTest
     : public InteractiveBrowserTest {
  protected:
+  const ui::ElementIdentifier kPreviousSettingButtonId =
+      kSettingsOverriddenDialogPreviousSettingButtonId;
+  const ui::ElementIdentifier kNewSettingButtonId =
+      kSettingsOverriddenDialogNewSettingButtonId;
+  const ui::ElementIdentifier kSaveButtonId =
+      kSettingsOverriddenDialogSaveButtonId;
+
   SettingsOverriddenExplicitChoiceDialogInteractiveUiTest() {
     feature_list_.InitAndEnableFeature(
         extensions_features::kSearchEngineExplicitChoiceDialog);
@@ -180,11 +188,10 @@ class SettingsOverriddenExplicitChoiceDialogInteractiveUiTest
 
   // Waits for the dialog to show, and verifies it's explicit-choice type.
   auto WaitForDialogToShow() {
-    auto steps =
-        Steps(WaitForShow(kSettingsOverriddenDialogId),
-              EnsurePresent(kSettingsOverriddenDialogSaveButtonId),
-              EnsurePresent(kSettingsOverriddenDialogPreviousSettingButtonId),
-              EnsurePresent(kSettingsOverriddenDialogNewSettingButtonId));
+    auto steps = Steps(WaitForShow(kSettingsOverriddenDialogId),
+                       EnsurePresent(kSaveButtonId),
+                       EnsurePresent(kPreviousSettingButtonId),
+                       EnsurePresent(kNewSettingButtonId));
     AddDescriptionPrefix(steps, __func__);
     return steps;
   }
@@ -226,6 +233,27 @@ class SettingsOverriddenExplicitChoiceDialogInteractiveUiTest
               .host();
         },
         "www.google.com", "Wait for navigation to Google");
+  }
+
+  auto CheckFocused(ui::ElementIdentifier id, bool is_focused) {
+    return CheckView(id, [is_focused](views::View* view) {
+      const views::View* focused_view =
+          view->GetFocusManager()->GetFocusedView();
+      bool contains_focus = focused_view && (view == focused_view ||
+                                             view->Contains(focused_view));
+      return contains_focus == is_focused;
+    });
+  }
+
+  auto CheckSelected(ui::ElementIdentifier id, bool is_selected) {
+    return CheckViewProperty(
+        id, &extensions::RichRadioButton::GetCheckedForTesting, is_selected);
+  }
+
+  auto CheckSelectedAndFocused(ui::ElementIdentifier id,
+                               bool is_selected_and_focused) {
+    return Steps(CheckSelected(id, is_selected_and_focused),
+                 CheckFocused(id, is_selected_and_focused));
   }
 
  private:
@@ -271,10 +299,9 @@ IN_PROC_BROWSER_TEST_F(SettingsOverriddenExplicitChoiceDialogInteractiveUiTest,
                   SetNewSearchProvider(DefaultSearch::kUseDefault),
                   LoadExtensionOverridingSearch(), PerformSearchFromOmnibox(),
                   WaitForDialogToShow(), CheckActiveUrl(GURL("about:blank")),
-                  ScreenshotDialog(),
-                  PressButton(kSettingsOverriddenDialogPreviousSettingButtonId),
+                  ScreenshotDialog(), PressButton(kPreviousSettingButtonId),
                   // Click Save.
-                  PressButton(kSettingsOverriddenDialogSaveButtonId),
+                  PressButton(kSaveButtonId),
                   WaitForHide(kSettingsOverriddenDialogId),
                   // Verify navigation proceeds to the default search URL
                   // (Google) instead of the extension URL.
@@ -292,8 +319,7 @@ IN_PROC_BROWSER_TEST_F(
       WaitForDialogToShow(), CheckActiveUrl(GURL("about:blank")),
       ScreenshotDialog(),
       // Select previous search setting.
-      PressButton(kSettingsOverriddenDialogNewSettingButtonId),
-      PressButton(kSettingsOverriddenDialogSaveButtonId),
+      PressButton(kNewSettingButtonId), PressButton(kSaveButtonId),
       WaitForHide(kSettingsOverriddenDialogId),
       // Verify navigation proceeds to the extension's search URL.
       WaitForWebContentsNavigation(kWebContentsId, GURL(kExtensionSearchUrl)));
@@ -317,34 +343,20 @@ IN_PROC_BROWSER_TEST_F(SettingsOverriddenExplicitChoiceDialogInteractiveUiTest,
       LoadExtensionOverridingSearch(), PerformSearchFromOmnibox(),
       WaitForDialogToShow(), CheckActiveUrl(GURL("about:blank")),
       // Assert that neither radio button is initially selected or focused.
-      CheckViewProperty(kSettingsOverriddenDialogPreviousSettingButtonId,
-                        &views::View::HasFocus, false),
-      CheckViewProperty(kSettingsOverriddenDialogPreviousSettingButtonId,
-                        &extensions::RichRadioButton::GetCheckedForTesting,
-                        false),
-      CheckViewProperty(kSettingsOverriddenDialogNewSettingButtonId,
-                        &views::View::HasFocus, false),
-      CheckViewProperty(kSettingsOverriddenDialogNewSettingButtonId,
-                        &extensions::RichRadioButton::GetCheckedForTesting,
-                        false),
+      CheckSelectedAndFocused(kPreviousSettingButtonId, false),
+      CheckSelectedAndFocused(kNewSettingButtonId, false),
       // Assert that the Save button is disabled initially. Choosing an
       // option enables it.
-      CheckViewProperty(kSettingsOverriddenDialogSaveButtonId,
-                        &views::View::GetEnabled, false),
+      CheckViewProperty(kSaveButtonId, &views::View::GetEnabled, false),
       // Select an option.
-      PressButton(kSettingsOverriddenDialogNewSettingButtonId),
+      PressButton(kNewSettingButtonId),
       // Ensure the selected option is checked (but not focused).
-      CheckViewProperty(kSettingsOverriddenDialogNewSettingButtonId,
-                        &views::View::HasFocus, false),
-      CheckViewProperty(kSettingsOverriddenDialogNewSettingButtonId,
-                        &extensions::RichRadioButton::GetCheckedForTesting,
-                        true),
+      CheckSelected(kNewSettingButtonId, true),
+      CheckFocused(kNewSettingButtonId, false),
       // Assert that the save button is now enabled.
-      CheckViewProperty(kSettingsOverriddenDialogSaveButtonId,
-                        &views::View::GetEnabled, true),
+      CheckViewProperty(kSaveButtonId, &views::View::GetEnabled, true),
       // Click the save button.
-      PressButton(kSettingsOverriddenDialogSaveButtonId),
-      WaitForHide(kSettingsOverriddenDialogId),
+      PressButton(kSaveButtonId), WaitForHide(kSettingsOverriddenDialogId),
       WaitForWebContentsNavigation(kWebContentsId, GURL(kExtensionSearchUrl)));
 }
 
@@ -357,14 +369,12 @@ IN_PROC_BROWSER_TEST_F(SettingsOverriddenExplicitChoiceDialogInteractiveUiTest,
       LoadExtensionOverridingSearch(), PerformSearchFromOmnibox(),
       WaitForDialogToShow(),
       // Send Escape.
-      SendAccelerator(kSettingsOverriddenDialogId,
-                      ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE)),
+      SendKeyPress(kSettingsOverriddenDialogId, ui::VKEY_ESCAPE),
       // Verify dialog is still present (Wait a bit or just ensure present).
       EnsurePresent(kSettingsOverriddenDialogId),
       // Clean up by choosing an option so the dialog closes and the navigation
       // finishes.
-      PressButton(kSettingsOverriddenDialogNewSettingButtonId),
-      PressButton(kSettingsOverriddenDialogSaveButtonId),
+      PressButton(kNewSettingButtonId), PressButton(kSaveButtonId),
       WaitForHide(kSettingsOverriddenDialogId),
       WaitForWebContentsNavigation(kWebContentsId, GURL(kExtensionSearchUrl)));
 }
@@ -386,8 +396,7 @@ IN_PROC_BROWSER_TEST_F(SettingsOverriddenExplicitChoiceDialogInteractiveUiTest,
       // search.
       CheckActiveUrl(kInitialUrl),
       // Select previous search setting.
-      PressButton(kSettingsOverriddenDialogNewSettingButtonId),
-      PressButton(kSettingsOverriddenDialogSaveButtonId),
+      PressButton(kNewSettingButtonId), PressButton(kSaveButtonId),
       WaitForHide(kSettingsOverriddenDialogId),
       // Only now should the navigation complete.
       WaitForWebContentsNavigation(kWebContentsId, GURL(kExtensionSearchUrl)));
@@ -435,9 +444,63 @@ IN_PROC_BROWSER_TEST_F(
             LaunchDelayedSurvey(kHatsSurveyTriggerSEHijacking, 5000, _, _))
             .WillOnce(testing::Return(true));
       }),
-      PressButton(kSettingsOverriddenDialogNewSettingButtonId),
-      PressButton(kSettingsOverriddenDialogSaveButtonId),
-      WaitForHide(kSettingsOverriddenDialogSaveButtonId));
+      PressButton(kNewSettingButtonId), PressButton(kSaveButtonId),
+      WaitForHide(kSaveButtonId));
+}
+
+// Ensures that the dialog operates correctly under keyboard input.
+IN_PROC_BROWSER_TEST_F(SettingsOverriddenExplicitChoiceDialogInteractiveUiTest,
+                       VerifyKeyboardInteraction) {
+  auto kFirstOption = kPreviousSettingButtonId;
+  auto kSecondOption = kNewSettingButtonId;
+
+  RunTestSequence(
+      InstrumentTab(kWebContentsId),
+      SetNewSearchProvider(DefaultSearch::kUseDefault),
+      LoadExtensionOverridingSearch(), PerformSearchFromOmnibox(),
+      WaitForDialogToShow(), CheckActiveUrl(GURL("about:blank")),
+
+      // Initially, nothing is focused or selected.
+      CheckSelectedAndFocused(kFirstOption, false),
+      CheckSelectedAndFocused(kSecondOption, false),
+
+      // Press Tab. First radio button should focus (and become selected).
+      SendKeyPress(kSettingsOverriddenDialogId, ui::VKEY_TAB),
+      CheckSelectedAndFocused(kFirstOption, true),
+      CheckSelectedAndFocused(kSecondOption, false),
+
+      // Press Tab. Save button should be focused.
+      SendKeyPress(kSettingsOverriddenDialogId, ui::VKEY_TAB),
+      CheckSelected(kFirstOption, true), CheckFocused(kFirstOption, false),
+      CheckSelectedAndFocused(kSecondOption, false),
+
+      // Press Tab. First radio button should focus.
+      SendKeyPress(kSettingsOverriddenDialogId, ui::VKEY_TAB),
+      CheckSelectedAndFocused(kFirstOption, true),
+      CheckSelectedAndFocused(kSecondOption, false),
+
+      // Press Down Arrow key. Second radio button should now be focused and
+      // selected.
+      SendKeyPress(kSettingsOverriddenDialogId, ui::VKEY_DOWN),
+      CheckSelectedAndFocused(kFirstOption, false),
+      CheckSelectedAndFocused(kSecondOption, true),
+      // Press Right Arrow key. First radio button should now be focused and
+      // selected, as focus cycles back to the first element.
+      SendKeyPress(kSettingsOverriddenDialogId, ui::VKEY_RIGHT),
+      CheckSelectedAndFocused(kFirstOption, true),
+      CheckSelectedAndFocused(kSecondOption, false),
+
+      // Finish the dialog to clean up.
+      PressButton(kSaveButtonId), WaitForHide(kSettingsOverriddenDialogId));
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsOverriddenExplicitChoiceDialogInteractiveUiTest,
+                       RtlLayout) {
+  base::i18n::SetRTLForTesting(true);
+  RunTestSequence(InstrumentTab(kWebContentsId),
+                  SetNewSearchProvider(DefaultSearch::kUseDefault),
+                  LoadExtensionOverridingSearch(), PerformSearchFromOmnibox(),
+                  WaitForDialogToShow(), ScreenshotDialog());
 }
 
 }  // namespace
