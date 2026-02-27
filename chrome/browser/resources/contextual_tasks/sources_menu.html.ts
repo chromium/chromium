@@ -36,8 +36,8 @@ export function getHtml(this: SourcesMenuElement) {
             <cr-url-list-item class="dropdown-item" data-index="${index}"
               @click="${this.onImageClick_}"
               .title="${item.image.title}">
-              <img slot="customIcon" src="${this.getImageSrc_(item.image.url)}"
-                  .alt="${item.image.title}">
+              <cr-icon slot="customIcon" icon="contextual_tasks:img_icon">
+              </cr-icon>
             </cr-url-list-item>
           `;
         } else {

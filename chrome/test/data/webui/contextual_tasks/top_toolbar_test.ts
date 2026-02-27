@@ -451,8 +451,8 @@ suite('TopToolbarTest', () => {
     const item3 = items[2];
     assertHTMLElement(item3);  // Assert first
     assertTrue(item3.classList.contains('favicon-item'));
-    assertFalse(item3.classList.contains('file-icon'));
-    assertTrue(item3.tagName !== 'CR-ICON');
+    assertEquals(item3.tagName, 'CR-ICON');
+    assertEquals((item3 as CrIconElement).icon, 'contextual_tasks:img_icon');
 
     const moreItems =
         sourcesButton.shadowRoot.querySelector<HTMLElement>('#more-items');
