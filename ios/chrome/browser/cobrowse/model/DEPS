@@ -1,0 +1,6 @@
+include_rules = [
+  # keep-sorted start
+  "+ios/chrome/browser/shared/model/browser",
+  "+ios/chrome/browser/tabs/model",
+  # keep-sorted end
+]

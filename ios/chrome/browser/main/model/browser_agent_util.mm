@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/autocomplete/model/autocomplete_browser_agent.h"
 #import "ios/chrome/browser/browser_view/model/browser_view_visibility_notifier_browser_agent.h"
 #import "ios/chrome/browser/bubble/model/tab_based_iph_browser_agent.h"
+#import "ios/chrome/browser/cobrowse/model/cobrowse_browser_agent.h"
 #import "ios/chrome/browser/collaboration/model/collaboration_service_factory.h"
 #import "ios/chrome/browser/collaboration/model/data_sharing_browser_agent.h"
 #import "ios/chrome/browser/crash_report/model/breadcrumbs/breadcrumb_manager_browser_agent.h"
@@ -122,6 +123,9 @@ void AttachBrowserAgentsForActiveBrowser(Browser* browser) {
   OmniboxPositionBrowserAgent::CreateForBrowser(browser);
   AutocompleteBrowserAgent::CreateForBrowser(browser);
   ToolbarsSizeBrowserAgent::CreateForBrowser(browser);
+  if (IsAimCobrowseEnabled()) {
+    CobrowseBrowserAgent::CreateForBrowser(browser);
+  }
 
   // Only create the FullscreenBrowserAgent and ReaderModeBrowserAgent for
   // regular and incognito Browser (since the other Browser do not present the

@@ -17,6 +17,7 @@ specific_include_rules = {
     "+ios/chrome/browser/autocomplete/model/autocomplete_browser_agent.h",
     "+ios/chrome/browser/browser_view/model/browser_view_visibility_notifier_browser_agent.h",
     "+ios/chrome/browser/bubble/model",
+    "+ios/chrome/browser/cobrowse/model",
     "+ios/chrome/browser/collaboration/model/collaboration_service_factory.h",
     "+ios/chrome/browser/collaboration/model/data_sharing_browser_agent.h",
     "+ios/chrome/browser/crash_report/model/breadcrumbs/breadcrumb_manager_browser_agent.h",

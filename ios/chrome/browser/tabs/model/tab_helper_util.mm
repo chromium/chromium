@@ -27,6 +27,7 @@
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/autofill/model/form_suggestion_tab_helper.h"
 #import "ios/chrome/browser/browser_content/model/edit_menu_tab_helper.h"
+#import "ios/chrome/browser/cobrowse/model/cobrowse_tab_helper.h"
 #import "ios/chrome/browser/collaboration/model/data_sharing_tab_helper.h"
 #import "ios/chrome/browser/commerce/model/price_alert_util.h"
 #import "ios/chrome/browser/commerce/model/price_notifications/price_notifications_tab_helper.h"
@@ -468,6 +469,9 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
 
   attacher.Create<EditMenuTabHelper>();
 
+  if (IsAimCobrowseEnabled()) {
+    attacher.Create<CobrowseTabHelper>();
+  }
 
   attacher.CreateWhen<BwgTabHelper>(!attacher.IsOffTheRecord() &&
                                     !attacher.IsForPrerender() &&
