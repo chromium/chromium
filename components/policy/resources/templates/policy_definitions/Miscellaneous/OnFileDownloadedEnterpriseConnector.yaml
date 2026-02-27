@@ -67,8 +67,6 @@ features:
   cloud_only: true
   dynamic_refresh: true
   per_profile: true
-future_on:
-- fuchsia
 owners:
 - cbe-cep-eng@google.com
 - domfc@chromium.org
@@ -155,6 +153,7 @@ schema:
     type: object
   type: array
 future_on:
+- fuchsia
 - android
 supported_on:
 - chrome.*:84-
