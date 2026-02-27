@@ -467,6 +467,10 @@ TEST_F(CWVAutofillControllerTest, SubmitCallback) {
   [[delegate expect] autofillController:autofill_controller_
                   didSubmitFormWithName:kTestFormName
                                 frameID:frame_id_
+                         perfectFilling:YES];
+  [[delegate expect] autofillController:autofill_controller_
+                  didSubmitFormWithName:kTestFormName
+                                frameID:frame_id_
                           userInitiated:YES
                          perfectFilling:YES];
   auto frame = web::FakeWebFrame::CreateMainWebFrame(GURL());
@@ -478,6 +482,10 @@ TEST_F(CWVAutofillControllerTest, SubmitCallback) {
       /*user_initiated=*/true,
       /*perfect_filling=*/true);
 
+  [[delegate expect] autofillController:autofill_controller_
+                  didSubmitFormWithName:kTestFormName
+                                frameID:frame_id_
+                         perfectFilling:NO];
   [[delegate expect] autofillController:autofill_controller_
                   didSubmitFormWithName:kTestFormName
                                 frameID:frame_id_
@@ -498,6 +506,11 @@ TEST_F(CWVAutofillControllerTest, SubmitCallbackAcrossIframes) {
   id delegate = OCMProtocolMock(@protocol(CWVAutofillControllerDelegate));
   autofill_controller_.delegate = delegate;
 
+  OCMExpect([delegate
+         autofillController:autofill_controller_
+      didSubmitFormWithName:kTestFormName
+                    frameID:base::SysUTF8ToNSString(web::kMainFakeFrameId)
+             perfectFilling:YES]);
   OCMExpect([delegate
          autofillController:autofill_controller_
       didSubmitFormWithName:kTestFormName

@@ -142,6 +142,13 @@ typedef struct {
 }
 
 - (void)autofillController:(CWVAutofillController*)autofillController
+     didSubmitFormWithName:(NSString*)formName
+                   frameID:(NSString*)frameID
+            perfectFilling:(BOOL)perfectFilling {
+  // Not implemented.
+}
+
+- (void)autofillController:(CWVAutofillController*)autofillController
               didFindForms:(NSArray<CWVAutofillForm*>*)forms
                    frameID:(NSString*)frameID {
   if (forms.count == 0) {
