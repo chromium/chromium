@@ -20,6 +20,7 @@ build_webui_tests("build") {
   ]
 
   ts_tsconfig_base = "tsconfig_base.json"
+  ts_composite = true
 
   ts_deps = [
     "//chrome/browser/resources/new_tab_page:build_ts",

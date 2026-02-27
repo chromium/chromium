@@ -93,25 +93,13 @@ IN_PROC_BROWSER_TEST_F(CrComponentsSearchboxTest, RealboxMatchTest) {
 IN_PROC_BROWSER_TEST_F(CrComponentsSearchboxTest, RealboxTest) {
   set_test_loader_host(chrome::kChromeUINewTabPageHost);
   RunTest("cr_components/searchbox/searchbox_test.js",
-          "runMochaSuite('NewTabPageRealboxTest');");
-}
-
-IN_PROC_BROWSER_TEST_F(CrComponentsSearchboxTest, RealboxNextTest) {
-  set_test_loader_host(chrome::kChromeUINewTabPageHost);
-  RunTest("cr_components/searchbox/searchbox_test.js",
-          "runMochaSuite('NewTabPageRealboxNextTest');");
+          "runMochaSuite('SearchboxTest');");
 }
 
 IN_PROC_BROWSER_TEST_F(CrComponentsSearchboxTest, RealboxPlaceholderTest) {
   set_test_loader_host(chrome::kChromeUINewTabPageHost);
   RunTest("cr_components/searchbox/placeholder_text_cycler_test.js",
           "runMochaSuite('PlaceholderTextCyclerTest');");
-}
-
-IN_PROC_BROWSER_TEST_F(CrComponentsSearchboxTest, RealboxTabsTest) {
-  set_test_loader_host(chrome::kChromeUINewTabPageHost);
-  RunTest("cr_components/searchbox/searchbox_test.js",
-          "runMochaSuite('NewTabPageRealboxTabsTest');");
 }
 
 IN_PROC_BROWSER_TEST_F(CrComponentsSearchboxTest, RealboxLensTest) {
