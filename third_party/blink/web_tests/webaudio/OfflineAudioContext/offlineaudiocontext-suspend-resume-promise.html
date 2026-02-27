@@ -25,42 +25,43 @@
       const suspendInterval = 0.25;
 
       function onSuspended() {
-        if (context.state === 'suspended' &&
-            context.currentTime === scheduledSuspendTime) {
-          assert_true(
-              context.state === 'suspended' &&
-                  context.currentTime === scheduledSuspendTime,
-              `Context suspended at ${scheduledSuspendTime} second(s)`);
+        assert_equals(
+            context.state, 'suspended',
+            'Context should be in suspended state');
+        assert_equals(
+            context.currentTime, scheduledSuspendTime,
+            `Context should suspend at exactly ${scheduledSuspendTime} ` +
+                `second(s). Actual time: ${context.currentTime}, ` +
+                `delta: ${context.currentTime - scheduledSuspendTime}`);
 
-          scheduledSuspendTime = context.currentTime + suspendInterval;
+        scheduledSuspendTime = context.currentTime + suspendInterval;
 
-          // Scheduling a suspend before the render duration should pass.
-          if (scheduledSuspendTime < renderDuration) {
-            context.suspend(scheduledSuspendTime)
-                .then(() => onSuspended())
-                .catch(e => assert_unreached(
-                    `Scheduling a new suspend threw ${e}`));
-          }
-
-          // Scheduling a suspend exactly at the render duration should be
-          // rejected.
-          if (scheduledSuspendTime === renderDuration) {
-            context.suspend(scheduledSuspendTime)
-                .then(() => {
-                  assert_unreached(
-                      `Scheduling at ${renderDuration} ` +
-                          `seconds should be rejected`);
-                })
-                .catch(() => {
-                  // expected rejection, nothing to do
-                });
-          }
-
-          context.resume();
+        // Scheduling a suspend before the render duration should pass.
+        if (scheduledSuspendTime < renderDuration) {
+          context.suspend(scheduledSuspendTime)
+              .then(() => onSuspended())
+              .catch((e) => assert_unreached(
+                  `Scheduling a new suspend threw ${e}`));
         }
+
+        // Scheduling a suspend exactly at the render duration should be
+        // rejected.
+        if (scheduledSuspendTime === renderDuration) {
+          context.suspend(scheduledSuspendTime)
+              .then(() => {
+                assert_unreached(
+                    `Scheduling at ${renderDuration} ` +
+                        `seconds should be rejected`);
+              })
+              .catch(() => {
+                // expected rejection, nothing to do
+              });
+        }
+
+        context.resume();
       }
 
-      promise_test(t => {
+      promise_test((t) => {
         context = new OfflineAudioContext(
             1, sampleRate * renderDuration, sampleRate);
 
