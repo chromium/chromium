@@ -100,6 +100,11 @@ class CrosDisplayConfigTest : public AshTestBase {
     cros_display_config_ = Shell::Get()->cros_display_config();
   }
 
+  void TearDown() override {
+    cros_display_config_ = nullptr;
+    AshTestBase::TearDown();
+  }
+
   crosapi::mojom::DisplayLayoutInfoPtr GetDisplayLayoutInfo() {
     crosapi::mojom::DisplayLayoutInfoPtr display_layout_info;
     base::RunLoop run_loop;
@@ -231,7 +236,7 @@ class CrosDisplayConfigTest : public AshTestBase {
   CrosDisplayConfig* cros_display_config() { return cros_display_config_; }
 
  private:
-  raw_ptr<CrosDisplayConfig, DanglingUntriaged> cros_display_config_ = nullptr;
+  raw_ptr<CrosDisplayConfig> cros_display_config_ = nullptr;
 
   base::test::ScopedFeatureList scoped_feature_list_;
 };
