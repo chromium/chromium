@@ -127,6 +127,7 @@ class NetworkDetailedNetworkViewTest : public AshTestBase {
   }
 
   void TearDown() override {
+    network_detailed_network_view_ = nullptr;
     widget_.reset();
 
     AshTestBase::TearDown();
@@ -200,8 +201,7 @@ class NetworkDetailedNetworkViewTest : public AshTestBase {
   CrosNetworkConfigTestHelper network_config_helper_;
   FakeNetworkDetailedNetworkViewDelegate fake_network_detailed_network_delagte_;
   std::unique_ptr<DetailedViewDelegate> detailed_view_delegate_;
-  raw_ptr<NetworkDetailedNetworkViewImpl, DanglingUntriaged>
-      network_detailed_network_view_;
+  raw_ptr<NetworkDetailedNetworkViewImpl> network_detailed_network_view_;
   base::HistogramTester histogram_tester_;
 };
 
