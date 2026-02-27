@@ -234,9 +234,15 @@ IN_PROC_BROWSER_TEST_P(ChromeURLDataManagerWebUITrustedTypesTest,
   WaitBeforeNavigation();
 }
 
+// TODO(crbug.com/488078915): Re-enable this test on MacOS.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_TrustedTypesEnabled DISABLED_TrustedTypesEnabled
+#else
+#define MAYBE_TrustedTypesEnabled TrustedTypesEnabled
+#endif
 // Verify that Trusted Types checks are actually enabled for all `kChromeUrls`.
 IN_PROC_BROWSER_TEST_P(ChromeURLDataManagerWebUITrustedTypesTest,
-                       TrustedTypesEnabled) {
+                       MAYBE_TrustedTypesEnabled) {
   CheckTrustedTypesEnabled(GetParam());
   WaitBeforeNavigation();
 }
