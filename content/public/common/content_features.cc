@@ -480,6 +480,11 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    "duplicate_nav_threshold",
                    base::Milliseconds(2000));
 BASE_FEATURE_PARAM(bool,
+                   kSkipIgnoreBrowserInitiatedNavs,
+                   &kIgnoreDuplicateNavs,
+                   "skip_ignore_browser_initiated_navs",
+                   false);
+BASE_FEATURE_PARAM(bool,
                    kSkipIgnoreRendererInitiatedNavs,
                    &kIgnoreDuplicateNavs,
                    "skip_ignore_renderer_initiated_navs",

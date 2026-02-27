@@ -230,13 +230,14 @@ class CONTENT_EXPORT ContentClient {
   // Returns whether duplicate navigations should be ignored.
   //
   // Currently, returns true (ignore) if:
-  // 1. It is a browser-initiated navigation (always ignored when the feature
-  // `kIgnoreDuplicateNavs` is enabled).
-  // 2. It is a renderer-initiated navigation, the skip flag is disabled, and:
+  // 1. The feature `kIgnoreDuplicateNavs` is enabled.
+  // 2. The specific initiator's skip param (browser or renderer) is disabled.
+  // 3. AND one of the following origin criteria is met:
+  //    - It is a browser-initiated navigation.
   //    - The origin list `kIgnoreDuplicateNavsOrigins` is empty (applies to all
-  //    origins).
-  //    - OR the navigation's origin matches one in the list.
-  // Returns false (do not ignore) otherwise.
+  //      origins).
+  //    - The navigation's origin matches one in the origin list.
+  // Returns false otherwise.
   virtual bool ShouldIgnoreDuplicateNavs(const GURL& url,
                                          bool is_renderer_initiated) const;
 

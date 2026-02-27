@@ -153,6 +153,8 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE_PARAM(std::string,
 CONTENT_EXPORT BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
                                           kDuplicateNavThreshold);
 CONTENT_EXPORT BASE_DECLARE_FEATURE_PARAM(bool,
+                                          kSkipIgnoreBrowserInitiatedNavs);
+CONTENT_EXPORT BASE_DECLARE_FEATURE_PARAM(bool,
                                           kSkipIgnoreRendererInitiatedNavs);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kInstalledApp);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kInstalledAppProvider);
