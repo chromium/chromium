@@ -1195,6 +1195,10 @@ void BrowserViewTabbedLayoutImpl::ConfigureTopContainerBackground(
 
 void BrowserViewTabbedLayoutImpl::DoPostLayoutVisualAdjustments(
     const BrowserLayoutParams& params) {
+  if (base::FeatureList::IsEnabled(features::kGlassToolbar)) {
+    return;
+  }
+
   const auto tab_strip_type = GetTabStripType();
   const auto window_state = delegate().GetBrowserWindowState();
 

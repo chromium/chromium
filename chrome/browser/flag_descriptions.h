@@ -1354,6 +1354,11 @@ inline constexpr char kContextMenuEmptySpaceDescription[] =
 inline constexpr char kContextualCueingName[] = "Contextual cueing";
 inline constexpr char kContextualCueingDescription[] =
     "Enables the contextual cueing system to support showing actions.";
+
+inline constexpr char kGlassToolbarName[] = "Glass Toolbar";
+inline constexpr char kGlassToolbarDescription[] =
+    "Enables a glass effect on the toolbar.";
+
 inline constexpr char kGlicActorName[] = "Glic actor";
 inline constexpr char kGlicActorDescription[] = "Enables the Glic actor.";
 inline constexpr char kGlicActorAutofillName[] = "Glic actor autofill";

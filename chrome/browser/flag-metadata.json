@@ -5168,6 +5168,11 @@
     "expiry_milestone": 135
   },
   {
+    "name": "glass-toolbar",
+    "owners": [ "emshack@chromium.org", "top-chrome-desktop-ui@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "glic",
     "owners": [
       "birnie@google.com",

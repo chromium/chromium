@@ -9756,6 +9756,10 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop, FEATURE_VALUE_TYPE(media::kGetDisplayMediaConfersActivation)},
 #endif
 
+    {"glass-toolbar", flag_descriptions::kGlassToolbarName,
+     flag_descriptions::kGlassToolbarDescription, kOsAll,
+     FEATURE_VALUE_TYPE(features::kGlassToolbar)},
+
     {"render-document", flag_descriptions::kRenderDocumentName,
      flag_descriptions::kRenderDocumentDescription, kOsAll,
      FEATURE_WITH_PARAMS_VALUE_TYPE(features::kRenderDocument,

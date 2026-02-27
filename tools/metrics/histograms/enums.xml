@@ -14007,6 +14007,7 @@ from previous Chrome versions.
       label="EnableServiceWorkersForChromeUntrusted:disabled"/>
   <int value="-140665765" label="MultiCaptureReworkedUsageIndicators:enabled"/>
   <int value="-138983372" label="DesktopPWAWindowing:disabled"/>
+  <int value="-138951938" label="GlassToolbar:disabled"/>
   <int value="-138820512" label="DesktopPWAsTabStrip:enabled"/>
   <int value="-138773929" label="PassiveDocumentEventListeners:enabled"/>
   <int value="-138760381" label="AutofillManualFallbackAndroid:enabled"/>
@@ -16679,6 +16680,7 @@ from previous Chrome versions.
   <int value="763629028" label="AutofillSkipAndroidBottomSheetForIban:enabled"/>
   <int value="763667542"
       label="AutofillFillCreditCardAsPerFormatString:enabled"/>
+  <int value="763904037" label="GlassToolbar:enabled"/>
   <int value="763947368" label="HomepageLocationPolicy:disabled"/>
   <int value="764508124" label="NavigationNetworkResponseQueue:disabled"/>
   <int value="764797356" label="SmartCard:enabled"/>
