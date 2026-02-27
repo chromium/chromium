@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.ui.side_panel_container;
 
+import android.app.Activity;
+
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -15,11 +17,12 @@ public final class SidePanelContainerCoordinatorFactory {
     private SidePanelContainerCoordinatorFactory() {}
 
     @Nullable
-    public static SidePanelContainerCoordinator create(SideUiCoordinator sideUiCoordinator) {
+    public static SidePanelContainerCoordinator create(
+            Activity parentActivity, SideUiCoordinator sideUiCoordinator) {
         if (!ChromeFeatureList.sEnableAndroidSidePanel.isEnabled()) {
             return null;
         }
 
-        return new SidePanelContainerCoordinatorImpl(sideUiCoordinator);
+        return new SidePanelContainerCoordinatorImpl(parentActivity, sideUiCoordinator);
     }
 }

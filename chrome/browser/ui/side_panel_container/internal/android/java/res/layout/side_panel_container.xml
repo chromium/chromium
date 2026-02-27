@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Copyright 2026 The Chromium Authors
+  Use of this source code is governed by a BSD-style license that can be
+  found in the LICENSE file.
+-->
+
+<!--
+  Layout for the side panel container.
+
+  This layout should be feature-agnostic, i.e., besides the View
+  provided by a side panel feature, this layout should only contain
+  common Views that can be shared among features.
+
+  The "layout_width" should be set programmatically, so it's 0dp here.
+-->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/side_panel_container"
+    android:layout_width="0dp"
+    android:layout_height="match_parent" />

@@ -1858,7 +1858,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         }
 
         mSidePanelContainerCoordinator =
-                SidePanelContainerCoordinatorFactory.create(mSideUiCoordinator);
+                SidePanelContainerCoordinatorFactory.create(mActivity, mSideUiCoordinator);
         if (mSidePanelContainerCoordinator != null) {
             mSidePanelContainerCoordinator.init();
         }
@@ -1879,6 +1879,10 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             mSideUiCoordinator.destroy();
             mSideUiCoordinator = null;
         }
+    }
+
+    public @Nullable SidePanelContainerCoordinator getSidePanelContainerCoordinatorForTesting() {
+        return mSidePanelContainerCoordinator;
     }
 
     /** Returns the {@link TabGroupSyncControllerImpl} if it has been created yet. */

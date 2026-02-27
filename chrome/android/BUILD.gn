@@ -2361,6 +2361,7 @@ if (_is_default_toolchain) {
       "//chrome/browser/ui/android/digital_credentials:javatests",
       "//chrome/browser/ui/android/webid/internal:javatests",
       "//chrome/browser/ui/plus_addresses/android:javatests",
+      "//chrome/browser/ui/side_panel_container/internal:javatests",
       "//components/embedder_support/android:virtual_structure_javatests",
     ]
 

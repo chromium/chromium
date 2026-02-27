@@ -6,12 +6,16 @@ package org.chromium.chrome.browser.ui.side_panel_container;
 
 import static org.mockito.Mockito.verify;
 
+import android.app.Activity;
+
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator;
@@ -23,10 +27,16 @@ public class SidePanelContainerCoordinatorImplUnitTest {
 
     @Mock private SideUiCoordinator mMockSideUiCoordinator;
 
+    private Activity mTestActivity;
+
+    @Before
+    public void setUp() {
+        mTestActivity = Robolectric.buildActivity(Activity.class).setup().get();
+    }
+
     @Test
     public void init_registerSelfAsSideUiContainer() {
-        var sidePanelContainerCoordinator =
-                new SidePanelContainerCoordinatorImpl(mMockSideUiCoordinator);
+        var sidePanelContainerCoordinator = createSidePanelContainerCoordinator();
 
         sidePanelContainerCoordinator.init();
 
@@ -35,11 +45,14 @@ public class SidePanelContainerCoordinatorImplUnitTest {
 
     @Test
     public void destroy_unregisterSelfAsSideUiContainer() {
-        var sidePanelContainerCoordinator =
-                new SidePanelContainerCoordinatorImpl(mMockSideUiCoordinator);
+        var sidePanelContainerCoordinator = createSidePanelContainerCoordinator();
 
         sidePanelContainerCoordinator.destroy();
 
         verify(mMockSideUiCoordinator).unregisterSideUiContainer(sidePanelContainerCoordinator);
+    }
+
+    private SidePanelContainerCoordinatorImpl createSidePanelContainerCoordinator() {
+        return new SidePanelContainerCoordinatorImpl(mTestActivity, mMockSideUiCoordinator);
     }
 }
