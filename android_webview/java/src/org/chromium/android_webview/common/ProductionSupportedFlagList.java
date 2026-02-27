@@ -1311,6 +1311,9 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 BlinkFeatures.RUSTY_BMP_FEATURE,
                 "When enabled, uses Rust `image` crate to decode BMP images."),
+        Flag.baseFeature(
+                "NoSequenceForLevelDBCleanupTasks",
+                "When enabled, LevelDB cleanup tasks are run concurrently instead of in sequence."),
 
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
