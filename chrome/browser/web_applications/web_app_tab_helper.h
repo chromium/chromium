@@ -167,6 +167,9 @@ class WebAppTabHelper : public content::WebContentsUserData<WebAppTabHelper>,
   void SetState(std::optional<webapps::AppId> app_id,
                 std::optional<webapps::AppId> window_app_id);
 
+  void MaybeShowBlockedMigrationInfoBar(
+      const std::optional<webapps::AppId>& app_id);
+
   // Runs any logic when the associated app is added, changed or removed.
   void OnAssociatedAppChanged(
       const std::optional<webapps::AppId>& previous_app_id,

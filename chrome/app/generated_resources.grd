@@ -6912,6 +6912,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_WEB_APP_MENU_BUTTON_UPDATE" desc="Short label next to three-dot menu in a web app window when an update for the web app is available">
         App update available
       </message>
+      <message name="IDS_WEB_APP_BLOCKED_MIGRATION_MESSAGE" desc="Message shown in an info bar when a web app update is blocked by enterprise policy.">
+        An update for this app has been blocked by your admin and the app may not work correctly
+      </message>
       <message name="IDS_WEB_APP_ENABLE_WINDOW_CONTROLS_OVERLAY_TOOLTIP" formatter_data="android_java">
         Hide title bar
       </message>

@@ -193,6 +193,9 @@ class WebAppUiManagerImpl : public BrowserCollectionObserver,
       content::WebContents* web_contents,
       const std::string& launch_name) override;
 
+  void MaybeCreateWebAppBlockedMigrationInfoBar(
+      content::WebContents* web_contents) override;
+
   void MaybeShowIPHPromoForAppsLaunchedViaLinkCapturing(
       Browser* browser,
       Profile* profile,

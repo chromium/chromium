@@ -38,6 +38,8 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/site_instance.h"
+#include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/common/features.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
@@ -161,6 +163,7 @@ void WebAppTabHelper::SetState(std::optional<webapps::AppId> app_id,
              *app_id, WebAppFilter::IsAppSurfaceableToUser()) ||
          provider_->registrar_unsafe().IsUninstalling(*app_id));
 
+
   if (app_id_ == app_id && window_app_id_ == window_app_id) {
     // This can be triggered for navigations that are happening in the same app
     // window, like if a navigation is captured in an open window causing a page
@@ -172,7 +175,15 @@ void WebAppTabHelper::SetState(std::optional<webapps::AppId> app_id,
 
   std::optional<webapps::AppId> previous_app_id = std::move(app_id_);
   app_id_ = std::move(app_id);
+
+  std::optional<webapps::AppId> previous_window_app_id =
+      std::move(window_app_id_);
   window_app_id_ = std::move(window_app_id);
+
+  if (base::FeatureList::IsEnabled(blink::features::kWebAppMigrationApi) &&
+      (previous_window_app_id != window_app_id_)) {
+    MaybeShowBlockedMigrationInfoBar(window_app_id_);
+  }
 
   if (previous_app_id != app_id_) {
     OnAssociatedAppChanged(previous_app_id, app_id_);
@@ -471,5 +482,21 @@ void WebAppTabHelper::OnManifestSpecifiedOnPrimaryPage(
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(WebAppTabHelper);
+
+// TODO(crbug.com/442651045) Append removed logic for this info bar.
+void WebAppTabHelper::MaybeShowBlockedMigrationInfoBar(
+    const std::optional<webapps::AppId>& window_app_id) {
+  if (!window_app_id.has_value()) {
+    return;
+  }
+  const WebApp* app =
+      provider_->registrar_unsafe().GetAppById(window_app_id.value());
+  if (app && app->pending_migration_info().has_value() &&
+      provider_->registrar_unsafe().IsInstalledByPolicy(
+          window_app_id.value())) {
+    provider_->ui_manager().MaybeCreateWebAppBlockedMigrationInfoBar(
+        web_contents());
+  }
+}
 
 }  // namespace web_app

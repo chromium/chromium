@@ -41,6 +41,7 @@
 #include "chrome/browser/ui/intent_picker_tab_helper.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chrome/browser/ui/views/web_apps/web_app_blocked_migration_infobar_delegate.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
@@ -607,6 +608,11 @@ void WebAppUiManagerImpl::MaybeCreateEnableSupportedLinksInfobar(
         ->AddInfoBar(CreateConfirmInfoBar(std::move(delegate)));
   }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
+}
+
+void WebAppUiManagerImpl::MaybeCreateWebAppBlockedMigrationInfoBar(
+    content::WebContents* web_contents) {
+  WebAppBlockedMigrationInfoBarDelegate::Create(web_contents);
 }
 
 void WebAppUiManagerImpl::MaybeShowIPHPromoForAppsLaunchedViaLinkCapturing(

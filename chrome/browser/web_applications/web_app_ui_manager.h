@@ -340,6 +340,10 @@ class WebAppUiManager {
       content::WebContents* web_contents,
       const std::string& launch_name) = 0;
 
+  // Creates the WebAppBlockedUpdateInfoBar in a Web App window.
+  virtual void MaybeCreateWebAppBlockedMigrationInfoBar(
+      content::WebContents* web_contents) = 0;
+
   // Creates the IPH bubble for apps that are launched via link capturing being
   // enabled.
   virtual void MaybeShowIPHPromoForAppsLaunchedViaLinkCapturing(
