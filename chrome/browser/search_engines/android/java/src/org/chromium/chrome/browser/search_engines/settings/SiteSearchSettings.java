@@ -77,6 +77,9 @@ public class SiteSearchSettings extends ChromeBaseSettingsFragment {
 
         // Inactive Shortcuts
         SettingsUtils.addPreferencesFromResource(this, R.xml.inactive_shortcut_preferences);
+
+        // Extensions
+        SettingsUtils.addPreferencesFromResource(this, R.xml.extensions_preferences);
     }
 
     @Override

@@ -527,6 +527,12 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
       <message name="IDS_SITE_SEARCH_INACTIVE_SHORTCUTS_HEADER" desc="Header for 'Inactive Shortcuts' section">
         Inactive shortcuts
       </message>
+      <message name="IDS_SITE_SEARCH_EXTENSIONS_HEADER" desc="Header for 'Extensions' section">
+        Extensions
+      </message>
+      <message name="IDS_SITE_SEARCH_EXTENSIONS_DESCRIPTION" desc="Explanation for 'Extensions' section">
+        Some extensions can add search engines to Chrome
+      </message>
       <message name="IDS_SITE_SEARCH_DIALOG_TITLE_ADD" desc="Title for the Add Site Search dialog.">
         Add site search
       </message>
