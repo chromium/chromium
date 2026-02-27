@@ -2233,10 +2233,7 @@ TEST_F(PaymentsSuggestionGeneratorBnplTest,
   ASSERT_NE(bnpl_it, suggestions.end())
       << "Expected a BNPL suggestion to be generated.";
 
-  EXPECT_EQ(bnpl_it->main_text.value,
-            l10n_util::GetStringFUTF16(
-                IDS_AUTOFILL_BNPL_UNLINKED_ISSUER_SUGGESTION_MAIN_TEXT,
-                unlinked_issuer.GetDisplayName()));
+  EXPECT_EQ(bnpl_it->main_text.value, unlinked_issuer.GetDisplayName());
   EXPECT_EQ(bnpl_it->icon, Suggestion::Icon::kBnplZipUnlinked);
   EXPECT_THAT(bnpl_it->labels,
               ElementsAre(std::vector<Suggestion::Text>{

@@ -44,12 +44,9 @@ Suggestion CreateBnplSuggestion(
   const bool is_linked = issuer_context.issuer.payment_instrument().has_value();
 
   Suggestion bnpl_suggestion(SuggestionType::kBnplEntry);
-  bnpl_suggestion.main_text = Suggestion::Text(
-      is_linked ? issuer_context.issuer.GetDisplayName()
-                : l10n_util::GetStringFUTF16(
-                      IDS_AUTOFILL_BNPL_UNLINKED_ISSUER_SUGGESTION_MAIN_TEXT,
-                      issuer_context.issuer.GetDisplayName()),
-      Suggestion::Text::IsPrimary(true));
+  bnpl_suggestion.main_text =
+      Suggestion::Text(issuer_context.issuer.GetDisplayName(),
+                       Suggestion::Text::IsPrimary(true));
   if (is_card_number_field_empty) {
     bnpl_suggestion.labels = {
         {Suggestion::Text(payments::GetBnplIssuerSelectionOptionText(
