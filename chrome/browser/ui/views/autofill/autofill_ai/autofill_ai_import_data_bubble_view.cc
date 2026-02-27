@@ -157,12 +157,26 @@ AutofillAiImportDataBubbleView::BuildEntityAttributeRow(
 
   std::optional<std::u16string> accessibility_value;
   if (existing_entity_added_or_updated_attribute) {
-    accessibility_value = l10n_util::GetStringFUTF16(
-        detail.update_type() ==
-                EntityAttributeUpdateType::kNewEntityAttributeAdded
-            ? IDS_AUTOFILL_AI_UPDATE_ENTITY_DIALOG_NEW_ATTRIBUTE_ACCESSIBLE_NAME
-            : IDS_AUTOFILL_AI_UPDATE_ENTITY_DIALOG_UPDATED_ATTRIBUTE_ACCESSIBLE_NAME,
-        detail.attribute_value());
+    if (base::FeatureList::IsEnabled(features::kAutofillAiNewUpdatePrompt)) {
+      if (detail.update_type() ==
+          EntityAttributeUpdateType::kNewEntityAttributeAdded) {
+        accessibility_value = l10n_util::GetStringFUTF16(
+            IDS_AUTOFILL_AI_UPDATE_ENTITY_DIALOG_NEW_ATTRIBUTE_ACCESSIBLE_NAME_V2,
+            detail.attribute_value());
+      } else {
+        accessibility_value = l10n_util::GetStringFUTF16(
+            IDS_AUTOFILL_AI_UPDATE_ENTITY_DIALOG_UPDATED_ATTRIBUTE_ACCESSIBLE_NAME_V2,
+            detail.attribute_value(),
+            detail.old_attribute_value().value_or(u""));
+      }
+    } else {
+      accessibility_value = l10n_util::GetStringFUTF16(
+          detail.update_type() ==
+                  EntityAttributeUpdateType::kNewEntityAttributeAdded
+              ? IDS_AUTOFILL_AI_UPDATE_ENTITY_DIALOG_NEW_ATTRIBUTE_ACCESSIBLE_NAME
+              : IDS_AUTOFILL_AI_UPDATE_ENTITY_DIALOG_UPDATED_ATTRIBUTE_ACCESSIBLE_NAME,
+          detail.attribute_value());
+    }
   }
 
   const int new_value_font_style = [&]() {
