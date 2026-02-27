@@ -21,11 +21,13 @@ import androidx.test.filters.MediumTest;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
@@ -42,6 +44,7 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class PwaRestoreBottomSheetCoordinatorTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     Activity mActivity;
 
     private final String[] mDefaultAppIds = new String[] {"appId1", "appId2", "appId3"};
@@ -58,7 +61,6 @@ public class PwaRestoreBottomSheetCoordinatorTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mActivity = Robolectric.buildActivity(Activity.class).create().get();
         PwaRestoreBottomSheetMediatorJni.setInstanceForTesting(mNativeMediatorMock);
         when(mNativeMediatorMock.initialize(Mockito.any())).thenReturn(0L);

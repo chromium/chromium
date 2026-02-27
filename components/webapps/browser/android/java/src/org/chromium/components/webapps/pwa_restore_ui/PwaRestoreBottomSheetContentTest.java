@@ -9,11 +9,12 @@ import android.app.Activity;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
-import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -23,12 +24,8 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 /** Unit tests for {@link PwaRestoreBottomSheetContent}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public final class PwaRestoreBottomSheetContentTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     private Activity mActivity;
-
-    @Before
-    public void setUp() {
-        MockitoAnnotations.initMocks(this);
-    }
 
     @Test
     @MediumTest
