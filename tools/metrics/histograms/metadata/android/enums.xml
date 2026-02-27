@@ -899,13 +899,6 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Retain"/>
 </enum>
 
-<enum name="BottomControlsStatus">
-  <int value="0" label="HEIGHT_ZERO"/>
-  <int value="1" label="HIDDEN"/>
-  <int value="2" label="VISIBLE_FULL_HEIGHT"/>
-  <int value="3" label="VISIBLE_PARTIAL_HEIGHT"/>
-</enum>
-
 <enum name="BrowserControlsLockReason">
   <summary>The reason why browser controls were locked.</summary>
   <int value="0" label="CHROME_URL"/>
