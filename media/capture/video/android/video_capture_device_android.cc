@@ -442,9 +442,11 @@ void VideoCaptureDeviceAndroid::OnHardwareBufferAvailableOnMainThread(
   gmb_handle.type = gfx::ANDROID_HARDWARE_BUFFER;
   gmb_handle.android_hardware_buffer = ahb_handle.Clone();
 
-  constexpr auto kSharedImageUsage = gpu::SHARED_IMAGE_USAGE_GLES2_READ |
-                                     gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
-                                     gpu::SHARED_IMAGE_USAGE_RASTER_READ;
+  constexpr auto kSharedImageUsage =
+      gpu::SHARED_IMAGE_USAGE_GLES2_READ |
+      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
+      gpu::SHARED_IMAGE_USAGE_RASTER_READ |
+      gpu::SHARED_IMAGE_USAGE_VIDEO_ENCODE_ACCELERATOR;
   auto shared_image = sii->CreateSharedImage(
       {shared_image_format, gfx::Size(desc.width, desc.height), color_space,
        kSharedImageUsage, "AndroidCaptureDevice"},
