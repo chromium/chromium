@@ -14,8 +14,6 @@ static_library("video_conference") {
     "video_conference_ash_feature_client.h",
     "video_conference_client_base.cc",
     "video_conference_client_base.h",
-    "video_conference_client_wrapper.cc",
-    "video_conference_client_wrapper.h",
     "video_conference_manager_ash.cc",
     "video_conference_manager_ash.h",
   ]
