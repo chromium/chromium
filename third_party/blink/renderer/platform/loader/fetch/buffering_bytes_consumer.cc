@@ -229,7 +229,7 @@ void BufferingBytesConsumer::BufferData() {
       return;
     if (result == Result::kOk) {
       auto* chunk = MakeGarbageCollected<GCedHeapVector<char>>();
-      chunk->AppendSpan(p);
+      chunk->append_range(p);
       buffer_.push_back(chunk);
       total_buffer_size_ += chunk->size();
       result = bytes_consumer_->EndRead(p.size());

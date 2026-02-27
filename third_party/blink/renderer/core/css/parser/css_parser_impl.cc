@@ -218,7 +218,7 @@ unsigned CSSParserImpl::ParseValue(HeapVector<CSSPropertyValue, 8>& result,
   parser.ConsumeDeclarationValue(stream, unresolved_property,
                                  /*is_in_declaration_list=*/false,
                                  StyleRule::kStyle);
-  result.AppendVector(parser.parsed_properties_);
+  result.append_range(parser.parsed_properties_);
   return parser.parsed_properties_.size();
 }
 

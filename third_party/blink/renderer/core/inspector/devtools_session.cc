@@ -111,7 +111,7 @@ class DevToolsSession::IOSession : public mojom::blink::DevToolsSession {
     // Post a task to the worker or main renderer thread that will interrupt V8
     // and be run immediately. Only methods that do not run JS code are safe.
     Vector<uint8_t> message_copy;
-    message_copy.AppendSpan(message);
+    message_copy.append_range(message);
     if (ShouldInterruptForMethod(method)) {
       inspector_task_runner_->AppendTask(CrossThreadBindOnce(
           &::blink::DevToolsSession::DispatchProtocolCommandImpl,

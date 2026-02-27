@@ -65,8 +65,8 @@ Vector<String> CollectAcceptTypes(const HTMLInputElement& input) {
 
   Vector<String> accept_types;
   accept_types.reserve(mime_types.size() + extensions.size());
-  accept_types.AppendVector(mime_types);
-  accept_types.AppendVector(extensions);
+  accept_types.append_range(mime_types);
+  accept_types.append_range(extensions);
   return accept_types;
 }
 

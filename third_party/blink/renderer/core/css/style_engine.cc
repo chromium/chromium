@@ -834,12 +834,12 @@ const ActiveStyleSheetVector StyleEngine::ActiveStyleSheetsForInspector() {
 
   ActiveStyleSheetVector active_style_sheets;
 
-  active_style_sheets.AppendVector(
+  active_style_sheets.append_range(
       GetDocumentStyleSheetCollection().ActiveStyleSheets());
   for (TreeScope* tree_scope : active_tree_scopes_) {
     if (StyleSheetCollection* collection =
             style_sheet_collection_map_.at(tree_scope)) {
-      active_style_sheets.AppendVector(collection->ActiveStyleSheets());
+      active_style_sheets.append_range(collection->ActiveStyleSheets());
     }
   }
 

@@ -90,12 +90,12 @@ void TextResourceDecoder::AddToBuffer(base::span<const char> data) {
   // Explicitly reserve capacity in the Vector to avoid triggering the growth
   // heuristic (== no excess capacity).
   buffer_.reserve(base::checked_cast<wtf_size_t>(buffer_.size() + data.size()));
-  buffer_.AppendSpan(data);
+  buffer_.append_range(data);
 }
 
 void TextResourceDecoder::AddToBufferIfEmpty(base::span<const char> data) {
   if (buffer_.empty())
-    buffer_.AppendSpan(data);
+    buffer_.append_range(data);
 }
 
 void TextResourceDecoder::SetEncoding(const TextEncoding& encoding,

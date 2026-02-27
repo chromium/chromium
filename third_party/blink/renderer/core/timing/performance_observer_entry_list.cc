@@ -19,7 +19,7 @@ PerformanceObserverEntryList::~PerformanceObserverEntryList() = default;
 PerformanceEntryVector PerformanceObserverEntryList::getEntries() const {
   PerformanceEntryVector entries;
 
-  entries.AppendVector(performance_entries_);
+  entries.append_range(performance_entries_);
 
   std::sort(entries.begin(), entries.end(),
             PerformanceEntry::StartTimeCompareLessThan);

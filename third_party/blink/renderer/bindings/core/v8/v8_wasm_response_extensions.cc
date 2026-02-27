@@ -127,10 +127,10 @@ class WasmCodeCachingCallback {
     Vector<uint8_t> serialized_data = CachedMetadata::GetSerializedDataHeader(
         kWasmModuleTag, kWireBytesDigestSize + base::checked_cast<wtf_size_t>(
                                                    serialized_module.size));
-    serialized_data.AppendSpan(base::span(wire_bytes_digest));
+    serialized_data.append_range(wire_bytes_digest);
     // SAFETY: v8::CompiledWasmModule::Serialize ensures the
     // serialized_module.buffer size is equal to serialized_module.size.
-    serialized_data.AppendSpan(UNSAFE_BUFFERS(base::span(
+    serialized_data.append_range(UNSAFE_BUFFERS(base::span(
         reinterpret_cast<const uint8_t*>(serialized_module.buffer.get()),
         serialized_module.size)));
 

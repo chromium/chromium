@@ -237,7 +237,7 @@ Vector<String> SavedFormState::GetReferencedFilePaths() const {
     }
     const Deque<FormControlState>& queue = form_control.value;
     for (const FormControlState& form_control_state : queue) {
-      to_return.AppendVector(
+      to_return.append_range(
           HTMLInputElement::FilesFromFileInputFormControlState(
               form_control_state));
     }
@@ -566,7 +566,7 @@ Vector<String> FormController::GetReferencedFilePaths(
   SavedFormStateMap map;
   ControlStatesFromStateVector(state_vector, map);
   for (const auto& saved_form_state : map)
-    to_return.AppendVector(saved_form_state.value->GetReferencedFilePaths());
+    to_return.append_range(saved_form_state.value->GetReferencedFilePaths());
   return to_return;
 }
 

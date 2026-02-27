@@ -1270,7 +1270,7 @@ void XMLDocumentParser::Characters(base::span<const xmlChar> chars) {
   }
 
   CreateLeafTextNodeIfNeeded();
-  buffered_text_.AppendSpan(chars);
+  buffered_text_.append_range(chars);
 }
 
 void XMLDocumentParser::GetError(XMLErrors::ErrorType type,

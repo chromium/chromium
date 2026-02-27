@@ -34,7 +34,7 @@ class MockMultipartParserClient final
     parts_.push_back(header_fields);
   }
   void PartDataInMultipartReceived(base::span<const char> bytes) override {
-    parts_.back().data.AppendSpan(bytes);
+    parts_.back().data.append_range(bytes);
   }
   void PartDataInMultipartFullyReceived() override {
     parts_.back().data_fully_received = true;
@@ -65,7 +65,7 @@ TEST(MultipartParserTest, AppendDataInChunks) {
   const size_t sizes[] = {1u, 2u, strlen(kBytes)};
 
   Vector<char> boundary;
-  boundary.AppendSpan(base::span_from_cstring("boundary"));
+  boundary.append_range(base::span_from_cstring("boundary"));
   for (const size_t size : sizes) {
     MockMultipartParserClient* client =
         MakeGarbageCollected<MockMultipartParserClient>();
@@ -115,7 +115,7 @@ TEST(MultipartParserTest, Epilogue) {
   };
 
   Vector<char> boundary;
-  boundary.AppendSpan(base::span_from_cstring("boundary"));
+  boundary.append_range(base::span_from_cstring("boundary"));
   for (size_t end : ends) {
     MockMultipartParserClient* client =
         MakeGarbageCollected<MockMultipartParserClient>();
@@ -162,7 +162,7 @@ TEST(MultipartParserTest, NoEndBoundary) {
       "--boundary\r\ncontent-type: application/xhtml+xml\r\n\r\n1";
 
   Vector<char> boundary;
-  boundary.AppendSpan(base::span_from_cstring("boundary"));
+  boundary.append_range(base::span_from_cstring("boundary"));
   MockMultipartParserClient* client =
       MakeGarbageCollected<MockMultipartParserClient>();
   MultipartParser* parser =
@@ -184,7 +184,7 @@ TEST(MultipartParserTest, NoStartBoundary) {
       "content-type: application/xhtml+xml\r\n\r\n1\r\n--boundary--\r\n";
 
   Vector<char> boundary;
-  boundary.AppendSpan(base::span_from_cstring("boundary"));
+  boundary.append_range(base::span_from_cstring("boundary"));
   MockMultipartParserClient* client =
       MakeGarbageCollected<MockMultipartParserClient>();
   MultipartParser* parser =
@@ -200,7 +200,7 @@ TEST(MultipartParserTest, NoStartNorEndBoundary) {
   constexpr char bytes[] = "content-type: application/xhtml+xml\r\n\r\n1";
 
   Vector<char> boundary;
-  boundary.AppendSpan(base::span_from_cstring("boundary"));
+  boundary.append_range(base::span_from_cstring("boundary"));
   MockMultipartParserClient* client =
       MakeGarbageCollected<MockMultipartParserClient>();
   MultipartParser* parser =
@@ -223,7 +223,7 @@ constexpr size_t kStarts[] = {
 TEST(MultipartParserTest, Preamble) {
   test::TaskEnvironment task_environment;
   Vector<char> boundary;
-  boundary.AppendSpan(base::span_from_cstring("boundary"));
+  boundary.append_range(base::span_from_cstring("boundary"));
   for (const size_t start : kStarts) {
     MockMultipartParserClient* client =
         MakeGarbageCollected<MockMultipartParserClient>();
@@ -285,7 +285,7 @@ TEST(MultipartParserTest, Preamble) {
 TEST(MultipartParserTest, PreambleWithMalformedBoundary) {
   test::TaskEnvironment task_environment;
   Vector<char> boundary;
-  boundary.AppendSpan(base::span_from_cstring("--boundary"));
+  boundary.append_range(base::span_from_cstring("--boundary"));
   for (const size_t start : kStarts) {
     MockMultipartParserClient* client =
         MakeGarbageCollected<MockMultipartParserClient>();

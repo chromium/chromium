@@ -7221,7 +7221,7 @@ AXObject::AXObjectVector AXObject::TableRowChildren() const {
     if (child->IsTableRowLikeRole())
       result.push_back(child);
     else if (child->RoleValue() == ax::mojom::blink::Role::kRowGroup)
-      result.AppendVector(child->TableRowChildren());
+      result.append_range(child->TableRowChildren());
   }
   return result;
 }
@@ -7232,7 +7232,7 @@ AXObject::AXObjectVector AXObject::TableCellChildren() const {
     if (child->IsTableCellLikeRole())
       result.push_back(child);
     else if (child->RoleValue() == ax::mojom::blink::Role::kGenericContainer)
-      result.AppendVector(child->TableCellChildren());
+      result.append_range(child->TableCellChildren());
   }
   return result;
 }

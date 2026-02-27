@@ -663,7 +663,7 @@ void LayoutText::AbsoluteQuadsForRange(Vector<gfx::QuadF>& quads,
       }
     }
     if (!found_non_collapsed_quad)
-      quads.AppendVector(collapsed_quads_candidates);
+      quads.append_range(collapsed_quads_candidates);
     return;
   }
 }

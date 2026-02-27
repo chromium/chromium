@@ -2134,7 +2134,7 @@ void InspectorNetworkAgent::DidReceiveWebSocketMessage(
   Vector<uint8_t> flatten;
   flatten.reserve(base::checked_cast<wtf_size_t>(size));
   for (const auto& span : data) {
-    flatten.AppendSpan(span);
+    flatten.append_range(span);
   }
   GetFrontend()->webSocketFrameReceived(
       IdentifiersFactory::SubresourceRequestId(identifier),

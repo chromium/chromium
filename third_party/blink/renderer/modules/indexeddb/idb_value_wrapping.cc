@@ -417,7 +417,7 @@ bool IDBValueUnwrapper::ReadBytes(Vector<uint8_t>& value) {
   }
   Vector<uint8_t> result;
   result.ReserveInitialCapacity(length);
-  result.AppendSpan(parse_span_.first(length));
+  result.append_range(parse_span_.first(length));
   value = std::move(result);
   parse_span_ = parse_span_.subspan(length);
   return true;

@@ -59,7 +59,7 @@ void MIDIDispatcher::SendMIDIData(uint32_t port,
 
   unacknowledged_bytes_sent_ += data.size();
   Vector<uint8_t> v;
-  v.AppendSpan(data);
+  v.append_range(data);
   midi_session_->SendData(port, std::move(v), timestamp);
 }
 

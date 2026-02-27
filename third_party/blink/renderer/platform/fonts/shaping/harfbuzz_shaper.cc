@@ -321,7 +321,7 @@ inline bool ShapeRange(hb_buffer_t* buffer,
     for (const FontFeatureValue& feature : resolved_features) {
       variant_features->push_back(FontFeatureRange{feature});
     }
-    variant_features->AppendVector(font_features);
+    variant_features->append_range(font_features);
   }
   const FontFeatureRanges& argument_features =
       variant_features ? *variant_features : font_features;

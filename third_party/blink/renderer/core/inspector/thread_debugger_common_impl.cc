@@ -828,40 +828,50 @@ static Vector<String> NormalizeEventTypes(
           ToCoreString(isolate, v8::Local<v8::String>::Cast(type_value)));
     }
   }
-  if (info.Length() == 1)
-    types.AppendVector(
-        Vector<String>({"mouse",   "key",          "touch",
-                        "pointer", "control",      "load",
-                        "unload",  "abort",        "error",
-                        "select",  "input",        "change",
-                        "submit",  "reset",        "focus",
-                        "blur",    "resize",       "scroll",
-                        "search",  "devicemotion", "deviceorientation"}));
+  if (info.Length() == 1) {
+    static constexpr std::string_view kAllEvents[] = {
+        "mouse",   "key",          "touch",
+        "pointer", "control",      "load",
+        "unload",  "abort",        "error",
+        "select",  "input",        "change",
+        "submit",  "reset",        "focus",
+        "blur",    "resize",       "scroll",
+        "search",  "devicemotion", "deviceorientation",
+    };
+    types.append_range(kAllEvents);
+  }
 
   Vector<String> output_types;
   for (wtf_size_t i = 0; i < types.size(); ++i) {
-    if (types[i] == "mouse")
-      output_types.AppendVector(
-          Vector<String>({"auxclick", "click", "dblclick", "mousedown",
-                          "mouseeenter", "mouseleave", "mousemove", "mouseout",
-                          "mouseover", "mouseup", "mouseleave", "mousewheel"}));
-    else if (types[i] == "key")
-      output_types.AppendVector(
-          Vector<String>({"keydown", "keyup", "keypress", "textInput"}));
-    else if (types[i] == "touch")
-      output_types.AppendVector(Vector<String>(
-          {"touchstart", "touchmove", "touchend", "touchcancel"}));
-    else if (types[i] == "pointer")
-      output_types.AppendVector(Vector<String>(
-          {"pointerover", "pointerout", "pointerenter", "pointerleave",
-           "pointerdown", "pointerup", "pointermove", "pointercancel",
-           "gotpointercapture", "lostpointercapture"}));
-    else if (types[i] == "control")
-      output_types.AppendVector(
-          Vector<String>({"resize", "scroll", "zoom", "focus", "blur", "select",
-                          "input", "change", "submit", "reset"}));
-    else
+    if (types[i] == "mouse") {
+      static constexpr std::string_view kMouseEvents[] = {
+          "auxclick",    "click",      "dblclick",   "mousedown",
+          "mouseeenter", "mouseleave", "mousemove",  "mouseout",
+          "mouseover",   "mouseup",    "mouseleave", "mousewheel"};
+      output_types.append_range(kMouseEvents);
+    } else if (types[i] == "key") {
+      static constexpr std::string_view kKeyEvents[] = {
+          "keydown", "keyup", "keypress", "textInput"};
+      output_types.append_range(kKeyEvents);
+    } else if (types[i] == "touch") {
+      static constexpr std::string_view kTouchEvents[] = {
+          "touchstart", "touchmove", "touchend", "touchcancel"};
+      output_types.append_range(kTouchEvents);
+    } else if (types[i] == "pointer") {
+      static constexpr std::string_view kPointerEvents[] = {
+          "pointerover",       "pointerout",    "pointerenter",
+          "pointerleave",      "pointerdown",   "pointerup",
+          "pointermove",       "pointercancel", "gotpointercapture",
+          "lostpointercapture"};
+      output_types.append_range(kPointerEvents);
+    } else if (types[i] == "control") {
+      static constexpr std::string_view kControlEvents[] = {
+          "resize", "scroll", "zoom",   "focus",  "blur",
+          "select", "input",  "change", "submit", "reset"};
+      output_types.append_range(kControlEvents);
+    } else {
       output_types.push_back(types[i]);
+    }
   }
   return output_types;
 }

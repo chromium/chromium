@@ -299,7 +299,7 @@ TEST_F(FormDataBytesConsumerTest, TwoPhaseReadFromArrayBuffer) {
                      MakeGarbageCollected<FormDataBytesConsumer>(buffer)))
                     ->Run();
   Vector<char> expected;
-  expected.AppendSpan(base::span(kData));
+  expected.append_range(kData);
 
   EXPECT_EQ(Result::kDone, result.first);
   EXPECT_EQ(expected, result.second);
@@ -315,7 +315,7 @@ TEST_F(FormDataBytesConsumerTest, TwoPhaseReadFromArrayBufferView) {
                          DOMUint8Array::Create(buffer, kOffset, kSize))))
                     ->Run();
   Vector<char> expected;
-  expected.AppendSpan(base::span(kData).subspan(kOffset, kSize));
+  expected.append_range(base::span(kData).subspan(kOffset, kSize));
 
   EXPECT_EQ(Result::kDone, result.first);
   EXPECT_EQ(expected, result.second);
@@ -659,7 +659,7 @@ scoped_refptr<EncodedFormData> CreateDataWithBoundary() {
 
 void AppendData(scoped_refptr<EncodedFormData> data, const String& content) {
   FormDataElement element;
-  element.data_.AppendSpan(content.RawByteSpan());
+  element.data_.append_range(content.RawByteSpan());
   data->MutableElements().push_back(element);
 }
 

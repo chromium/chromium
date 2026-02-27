@@ -186,7 +186,7 @@ Vector<char> ParseMultipartBoundary(const AtomicString& content_type_header) {
                                   &had_charset, &boundary);
   base::TrimString(boundary, " \"", &boundary);
   Vector<char> result;
-  result.AppendSpan(base::span(boundary));
+  result.append_range(boundary);
   return result;
 }
 

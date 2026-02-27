@@ -566,9 +566,9 @@ void HTMLCollection::NamedItems(const AtomicString& name,
 
   const NamedItemCache& cache = GetNamedItemCache();
   if (const auto* id_results = cache.GetElementsById(name))
-    result.AppendVector(*id_results);
+    result.append_range(*id_results);
   if (const auto* name_results = cache.GetElementsByName(name))
-    result.AppendVector(*name_results);
+    result.append_range(*name_results);
 }
 
 bool HTMLCollection::HasNamedItems(const AtomicString& name) const {

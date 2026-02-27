@@ -98,7 +98,7 @@ class Receiver {
     }
 
     if (!buffer.empty()) {
-      data_.AppendSpan(base::as_chars(buffer));
+      data_.append_range(buffer);
     }
 
     rv = handle_->EndReadData(buffer.size());

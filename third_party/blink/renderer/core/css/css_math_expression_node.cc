@@ -1021,14 +1021,14 @@ UnitsVector CollectSumOrProductInOrder(const CSSMathExpressionOperation* root) {
   // to ret.
   if (auto it = numeric_children.find(CSSPrimitiveValue::UnitType::kNumber);
       it != numeric_children.end()) {
-    ret.AppendVector(*it->value);
+    ret.append_range(*it->value);
     numeric_children.erase(it);
   }
   // From spec: If nodes contains a percentage, remove it from nodes and append
   // it to ret.
   if (auto it = numeric_children.find(CSSPrimitiveValue::UnitType::kPercentage);
       it != numeric_children.end()) {
-    ret.AppendVector(*it->value);
+    ret.append_range(*it->value);
     numeric_children.erase(it);
   }
   // Now, sort the rest numeric values alphabatically.
@@ -1049,10 +1049,10 @@ UnitsVector CollectSumOrProductInOrder(const CSSMathExpressionOperation* root) {
   std::sort(keys.begin(), keys.end(), comp);
   // Now, add those numeric nodes in the sorted order.
   for (const auto& unit_type : keys) {
-    ret.AppendVector(*numeric_children.at(unit_type));
+    ret.append_range(*numeric_children.at(unit_type));
   }
   // Now, add all the complex (non-numerics with double value) values.
-  ret.AppendVector(complex_children);
+  ret.append_range(complex_children);
   return ret;
 }
 

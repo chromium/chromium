@@ -32,7 +32,7 @@ void EventSourceParser::AddBytes(base::span<const char> bytes) {
     // break separately.
     if (is_recognizing_bom_ && line_.size() + (i - start) == std::size(kBOM)) {
       Vector<char> line = line_;
-      line.AppendSpan(bytes.subspan(start, i - start));
+      line.append_range(bytes.subspan(start, i - start));
       DCHECK_EQ(line.size(), std::size(kBOM));
       is_recognizing_bom_ = false;
       if (base::as_byte_span(line) == base::span(kBOM)) {
@@ -49,7 +49,7 @@ void EventSourceParser::AddBytes(base::span<const char> bytes) {
     }
     is_recognizing_crlf_ = false;
     if (bytes[i] == '\r' || bytes[i] == '\n') {
-      line_.AppendSpan(bytes.subspan(start, i - start));
+      line_.append_range(bytes.subspan(start, i - start));
       ParseLine();
       line_.clear();
       start = i + 1;
@@ -59,7 +59,7 @@ void EventSourceParser::AddBytes(base::span<const char> bytes) {
   }
   if (is_stopped_)
     return;
-  line_.AppendSpan(bytes.subspan(start));
+  line_.append_range(bytes.subspan(start));
 }
 
 void EventSourceParser::ParseLine() {
@@ -95,7 +95,7 @@ void EventSourceParser::ParseLine() {
     return;
   }
   if (field_name == "data") {
-    data_.AppendSpan(field_value);
+    data_.append_range(field_value);
     data_.push_back('\n');
     return;
   }

@@ -1198,7 +1198,7 @@ String WebSocketChannelImpl::GetTextMessage(
   if (chunks.size() > 1) {
     flatten.reserve(size);
     for (const auto& chunk : chunks) {
-      flatten.AppendSpan(chunk);
+      flatten.append_range(chunk);
     }
     span = base::span(flatten);
   } else if (chunks.size() == 1) {

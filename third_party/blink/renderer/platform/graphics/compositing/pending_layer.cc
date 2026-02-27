@@ -377,7 +377,7 @@ bool PendingLayer::Merge(const PendingLayer& guest,
   change_of_decomposited_transforms_ = std::max(
       ChangeOfDecompositedTransforms(), guest.ChangeOfDecompositedTransforms());
   hit_test_opaqueness_ = merged_hit_test_opaqueness;
-  non_composited_scroll_translations_.AppendVector(
+  non_composited_scroll_translations_.append_range(
       guest.non_composited_scroll_translations_);
   return true;
 }

@@ -49,7 +49,7 @@ void SequenceTest::setElementSequenceOfSequences(
     const HeapVector<HeapVector<Member<Element>>>& arg) {
   HeapVector<Member<Element>> flattened_arg;
   for (const auto& vec : arg) {
-    flattened_arg.AppendVector(vec);
+    flattened_arg.append_range(vec);
   }
   element_sequence_ = flattened_arg;
 }

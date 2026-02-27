@@ -870,7 +870,7 @@ void PhysicalBoxFragment::MutableForCloning::ReplaceChildren(
   DCHECK(!fragment_.HasItems());
 
   fragment_.children_.clear();
-  fragment_.children_.AppendVector(new_fragment.children_);
+  fragment_.children_.append_range(new_fragment.children_);
 
   // Replace propagated data.
   fragment_.propagated_data_ = new_fragment.propagated_data_;

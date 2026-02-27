@@ -23,7 +23,7 @@ void BytesConsumerTestReader::OnStateChange() {
     if (result == BytesConsumer::Result::kOk) {
       wtf_size_t read =
           static_cast<wtf_size_t>(std::min(max_chunk_size_, buffer.size()));
-      data_.AppendSpan(buffer.first(read));
+      data_.append_range(buffer.first(read));
       result = consumer_->EndRead(read);
     }
     DCHECK_NE(result, BytesConsumer::Result::kShouldWait);

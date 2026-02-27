@@ -1719,7 +1719,7 @@ void Range::GetBorderAndTextQuads(Vector<gfx::QuadF>& quads) const {
       owner_document_->AdjustQuadsForScrollAndAbsoluteZoom(element_quads,
                                                            *layout_object);
 
-      quads.AppendVector(element_quads);
+      quads.append_range(element_quads);
       continue;
     }
 
@@ -1739,7 +1739,7 @@ void Range::GetBorderAndTextQuads(Vector<gfx::QuadF>& quads) const {
                                     ? end_.Offset()
                                     : std::numeric_limits<unsigned>::max();
     if (!layout_text->IsTextFragment()) {
-      quads.AppendVector(ComputeTextQuads(*owner_document_, *layout_text,
+      quads.append_range(ComputeTextQuads(*owner_document_, *layout_text,
                                           start_offset, end_offset));
       continue;
     }
@@ -1755,7 +1755,7 @@ void Range::GetBorderAndTextQuads(Vector<gfx::QuadF>& quads) const {
       const unsigned start_in_first_letter = start_offset;
       const unsigned end_in_first_letter =
           std::min(end_offset, first_letter_part.FragmentLength());
-      quads.AppendVector(ComputeTextQuads(*owner_document_, first_letter_part,
+      quads.append_range(ComputeTextQuads(*owner_document_, first_letter_part,
                                           start_in_first_letter,
                                           end_in_first_letter));
     }
@@ -1769,7 +1769,7 @@ void Range::GetBorderAndTextQuads(Vector<gfx::QuadF>& quads) const {
       const unsigned end_in_remaining_part =
           end_offset == UINT_MAX ? end_offset
                                  : end_offset - remaining_part.Start();
-      quads.AppendVector(ComputeTextQuads(*owner_document_, remaining_part,
+      quads.append_range(ComputeTextQuads(*owner_document_, remaining_part,
                                           start_in_remaining_part,
                                           end_in_remaining_part));
     }

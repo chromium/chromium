@@ -125,7 +125,7 @@ class TeeHelper final : public GarbageCollected<TeeHelper>,
     explicit Chunk(base::span<const char> data) {
       buffer_.ReserveInitialCapacity(
           base::checked_cast<wtf_size_t>(data.size()));
-      buffer_.AppendSpan(data);
+      buffer_.append_range(data);
       // Report buffer size to V8 so GC can be triggered appropriately.
       external_memory_accounter_.Increase(v8::Isolate::GetCurrent(),
                                           buffer_.size());

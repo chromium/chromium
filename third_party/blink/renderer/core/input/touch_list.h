@@ -42,7 +42,7 @@ class CORE_EXPORT TouchList final : public ScriptWrappable {
 
   static TouchList* Create(const HeapVector<Member<Touch>>& touches) {
     TouchList* list = MakeGarbageCollected<TouchList>();
-    list->values_.AppendVector(touches);
+    list->values_.append_range(touches);
     return list;
   }
 

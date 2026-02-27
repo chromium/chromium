@@ -51,7 +51,7 @@ class FakeRestrictedUDPSocket
   }
 
   void Send(base::span<const uint8_t> data, SendCallback callback) override {
-    data_.AppendSpan(data);
+    data_.append_range(data);
     std::move(callback).Run(net::Error::OK);
   }
 

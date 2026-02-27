@@ -188,7 +188,7 @@ void SerializeV8Value(v8::Local<v8::Value> value,
                                        non_throwable_exception_state);
 
   DCHECK(wire_bytes->empty());
-  wire_bytes->AppendSpan(serialized_value->GetWireData());
+  wire_bytes->append_range(serialized_value->GetWireData());
 
   // Sanity check that the serialization header has not changed, as the tests
   // that use this method rely on the header format.

@@ -218,7 +218,7 @@ void DocumentChunker::PassageList::AddPassageForNode(
 }
 
 void DocumentChunker::PassageList::Extend(const PassageList& passage_list) {
-  passages.AppendVector(passage_list.passages);
+  passages.append_range(passage_list.passages);
 }
 
 bool DocumentChunker::AggregateNode::Fits(const AggregateNode& node,
@@ -228,7 +228,7 @@ bool DocumentChunker::AggregateNode::Fits(const AggregateNode& node,
 
 void DocumentChunker::AggregateNode::AddNode(const AggregateNode& node) {
   num_words += node.num_words;
-  segments.AppendVector(node.segments);
+  segments.append_range(node.segments);
 }
 
 String DocumentChunker::AggregateNode::CreatePassage() const {

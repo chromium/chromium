@@ -85,7 +85,7 @@ class MyersDiffer {
     Vector<Point> points;
 
     void Add(const Point& p) { points.push_back(p); }
-    void Add(const Path& p) { points.AppendVector(p.points); }
+    void Add(const Path& p) { points.append_range(p.points); }
   };
 
   // A snake is a path between two points that is either:

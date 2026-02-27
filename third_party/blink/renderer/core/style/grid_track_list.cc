@@ -161,7 +161,7 @@ bool GridTrackList::AddRepeater(
   repeaters_.emplace_back(repeater_track_sizes_.size(), repeat_size,
                           repeat_count, repeat_type);
   if (!IsSubgriddedAxis()) {
-    repeater_track_sizes_.AppendVector(repeater_track_sizes);
+    repeater_track_sizes_.append_range(repeater_track_sizes);
   }
   return true;
 }

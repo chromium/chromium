@@ -93,7 +93,7 @@ void QuotedPrintableEncode(base::span<const char> input,
   out.clear();
   out.reserve(base::checked_cast<wtf_size_t>(input.size()));
   if (is_header)
-    out.AppendSpan(base::span_from_cstring(kRFC2047EncodingPrefix));
+    out.append_range(base::span_from_cstring(kRFC2047EncodingPrefix));
   size_t current_line_length = 0;
   for (size_t i = 0; i < input.size(); ++i) {
     bool is_last_character = (i == input.size() - 1);
@@ -123,7 +123,7 @@ void QuotedPrintableEncode(base::span<const char> input,
     if (!is_last_character) {
       size_t length_of_line_ending = LengthOfLineEndingAtIndex(input, i);
       if (length_of_line_ending) {
-        out.AppendSpan(base::span_from_cstring("\r\n"));
+        out.append_range(base::span_from_cstring("\r\n"));
         current_line_length = 0;
         i += (length_of_line_ending -
               1);  // -1 because we'll ++ in the for() above.
@@ -147,16 +147,16 @@ void QuotedPrintableEncode(base::span<const char> input,
     if (current_line_length + length_of_encoded_character >
         max_line_length_for_encoded_content) {
       if (is_header) {
-        out.AppendSpan(base::span_from_cstring(kRFC2047EncodingSuffix));
-        out.AppendSpan(base::span_from_cstring("\r\n"));
+        out.append_range(base::span_from_cstring(kRFC2047EncodingSuffix));
+        out.append_range(base::span_from_cstring("\r\n"));
         out.push_back(' ');
       } else {
         out.push_back('=');
-        out.AppendSpan(base::span_from_cstring("\r\n"));
+        out.append_range(base::span_from_cstring("\r\n"));
       }
       current_line_length = 0;
       if (is_header)
-        out.AppendSpan(base::span_from_cstring(kRFC2047EncodingPrefix));
+        out.append_range(base::span_from_cstring(kRFC2047EncodingPrefix));
     }
 
     // Finally, insert the actual character(s).
@@ -171,7 +171,7 @@ void QuotedPrintableEncode(base::span<const char> input,
     }
   }
   if (is_header)
-    out.AppendSpan(base::span_from_cstring(kRFC2047EncodingSuffix));
+    out.append_range(base::span_from_cstring(kRFC2047EncodingSuffix));
 }
 
 String ConvertToPrintableCharacters(const String& text) {
@@ -319,7 +319,7 @@ void MHTMLArchive::GenerateMHTMLHeader(const String& boundary,
   DCHECK(string_builder.ToString().ContainsOnlyASCIIOrEmpty());
   std::string utf8_string = string_builder.ToString().Utf8();
 
-  output_buffer.AppendSpan(base::span(utf8_string));
+  output_buffer.append_range(utf8_string);
 }
 
 void MHTMLArchive::GenerateMHTMLPart(const String& boundary,
@@ -369,11 +369,11 @@ void MHTMLArchive::GenerateMHTMLPart(const String& boundary,
   string_builder.Append("\r\n");
 
   std::string utf8_string = string_builder.ToString().Utf8();
-  output_buffer.AppendSpan(base::span(utf8_string));
+  output_buffer.append_range(utf8_string);
 
   if (content_encoding == kBinary) {
     for (const auto& span : *resource.data) {
-      output_buffer.AppendSpan(span);
+      output_buffer.append_range(span);
     }
   } else {
     // FIXME: ideally we would encode the content as a stream without having to
@@ -384,7 +384,7 @@ void MHTMLArchive::GenerateMHTMLPart(const String& boundary,
     Vector<char> encoded_data;
     if (content_encoding == kQuotedPrintable) {
       QuotedPrintableEncode(data, false /* is_header */, encoded_data);
-      output_buffer.AppendVector(encoded_data);
+      output_buffer.append_range(encoded_data);
     } else {
       DCHECK_EQ(content_encoding, kBase64);
       // We are not specifying insertLFs = true below as it would cut the lines
@@ -395,8 +395,8 @@ void MHTMLArchive::GenerateMHTMLPart(const String& boundary,
       do {
         auto encoded_data_line = encoded_data_span.take_first(
             std::min(encoded_data_span.size(), kMaximumLineLength));
-        output_buffer.AppendSpan(encoded_data_line);
-        output_buffer.AppendSpan(base::span_from_cstring("\r\n"));
+        output_buffer.append_range(encoded_data_line);
+        output_buffer.append_range(base::span_from_cstring("\r\n"));
       } while (!encoded_data_span.empty());
     }
   }
@@ -406,7 +406,7 @@ void MHTMLArchive::GenerateMHTMLFooterForTesting(const String& boundary,
                                                  Vector<char>& output_buffer) {
   DCHECK(!boundary.empty());
   std::string utf8_string = StrCat({"\r\n--", boundary, "--\r\n"}).Utf8();
-  output_buffer.AppendSpan(base::span(utf8_string));
+  output_buffer.append_range(utf8_string);
 }
 
 void MHTMLArchive::SetMainResource(ArchiveResource* main_resource) {

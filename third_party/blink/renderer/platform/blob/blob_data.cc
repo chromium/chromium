@@ -206,7 +206,7 @@ void BlobData::AppendDataInternal(base::span<const char> data,
     const auto& bytes_element = elements_.back()->get_bytes();
     bytes_element->length += data.size();
     if (should_embed_bytes && bytes_element->embedded_data) {
-      bytes_element->embedded_data->AppendSpan(data);
+      bytes_element->embedded_data->append_range(data);
       current_memory_population_ += data.size();
     } else if (bytes_element->embedded_data) {
       current_memory_population_ -= bytes_element->embedded_data->size();
@@ -230,7 +230,7 @@ void BlobData::AppendDataInternal(base::span<const char> data,
         data.size(), std::nullopt, std::move(bytes_provider_remote));
     if (should_embed_bytes) {
       bytes_element->embedded_data = Vector<uint8_t>();
-      bytes_element->embedded_data->AppendSpan(data);
+      bytes_element->embedded_data->append_range(data);
       current_memory_population_ += data.size();
     }
     elements_.push_back(DataElement::NewBytes(std::move(bytes_element)));

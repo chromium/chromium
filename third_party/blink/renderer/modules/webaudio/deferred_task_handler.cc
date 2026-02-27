@@ -406,7 +406,7 @@ void DeferredTaskHandler::RequestToDeleteHandlersOnMainThread() {
     return;
   }
 
-  deletable_orphan_handlers_.AppendVector(rendering_orphan_handlers_);
+  deletable_orphan_handlers_.append_range(rendering_orphan_handlers_);
   rendering_orphan_handlers_.clear();
   PostCrossThreadTask(
       *task_runner_, FROM_HERE,

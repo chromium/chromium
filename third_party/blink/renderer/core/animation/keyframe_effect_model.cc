@@ -182,7 +182,7 @@ template <class K>
 void KeyframeEffectModelBase::SetFrames(HeapVector<K>& keyframes) {
   // TODO(samli): Should also notify/invalidate the animation
   keyframes_.clear();
-  keyframes_.AppendVector(keyframes);
+  keyframes_.append_range(keyframes);
   IndexKeyframesAndResolveComputedOffsets();
   ClearCachedData();
 }

@@ -1566,7 +1566,7 @@ static HeapVector<CSSSelector> FlattenSelector(const CSSSelector* selector) {
     if (const CSSSelectorList* list = selector->SelectorList()) {
       for (const CSSSelector* s = list->First(); s;
            s = CSSSelectorList::Next(*s)) {
-        result.AppendVector(FlattenSelector(s));
+        result.append_range(FlattenSelector(s));
       }
     }
     selector = selector->NextSimpleSelector();

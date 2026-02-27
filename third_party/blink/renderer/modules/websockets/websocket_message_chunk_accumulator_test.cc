@@ -21,7 +21,7 @@ class WebSocketMessageChunkAccumulatorTest : public testing::Test {
       const Vector<base::span<const uint8_t>>& chunks) {
     Vector<uint8_t> v;
     for (const auto& chunk : chunks) {
-      v.AppendSpan(chunk);
+      v.append_range(chunk);
     }
     return v;
   }
@@ -113,7 +113,7 @@ TEST_F(WebSocketMessageChunkAccumulatorTest, AppendRepeatedly) {
   Vector<uint8_t> expected;
 
   chunks->Append(base::span(chunk1));
-  expected.AppendVector(chunk1);
+  expected.append_range(chunk1);
 
   EXPECT_EQ(chunks->GetSize(), expected.size());
   ASSERT_EQ(chunks->GetView().size(), 1u);
@@ -121,7 +121,7 @@ TEST_F(WebSocketMessageChunkAccumulatorTest, AppendRepeatedly) {
   ASSERT_EQ(Flatten(chunks->GetView()), expected);
 
   chunks->Append(base::span(chunk2));
-  expected.AppendVector(chunk2);
+  expected.append_range(chunk2);
 
   EXPECT_EQ(chunks->GetSize(), expected.size());
   ASSERT_EQ(chunks->GetView().size(), 1u);
@@ -129,7 +129,7 @@ TEST_F(WebSocketMessageChunkAccumulatorTest, AppendRepeatedly) {
   ASSERT_EQ(Flatten(chunks->GetView()), expected);
 
   chunks->Append(base::span(chunk3));
-  expected.AppendVector(chunk3);
+  expected.append_range(chunk3);
 
   EXPECT_EQ(chunks->GetSize(), expected.size());
   ASSERT_EQ(chunks->GetView().size(), 1u);
@@ -137,7 +137,7 @@ TEST_F(WebSocketMessageChunkAccumulatorTest, AppendRepeatedly) {
   ASSERT_EQ(Flatten(chunks->GetView()), expected);
 
   chunks->Append(base::span(chunk4));
-  expected.AppendVector(chunk4);
+  expected.append_range(chunk4);
 
   EXPECT_EQ(chunks->GetSize(), expected.size());
   ASSERT_EQ(chunks->GetView().size(), 3u);
@@ -147,7 +147,7 @@ TEST_F(WebSocketMessageChunkAccumulatorTest, AppendRepeatedly) {
   ASSERT_EQ(Flatten(chunks->GetView()), expected);
 
   chunks->Append(base::span(chunk5));
-  expected.AppendVector(chunk5);
+  expected.append_range(chunk5);
 
   EXPECT_EQ(chunks->GetSize(), expected.size());
   ASSERT_EQ(chunks->GetView().size(), 4u);
@@ -158,7 +158,7 @@ TEST_F(WebSocketMessageChunkAccumulatorTest, AppendRepeatedly) {
   ASSERT_EQ(Flatten(chunks->GetView()), expected);
 
   chunks->Append(base::span(chunk6));
-  expected.AppendVector(chunk6);
+  expected.append_range(chunk6);
 
   EXPECT_EQ(chunks->GetSize(), expected.size());
   ASSERT_EQ(chunks->GetView().size(), 5u);

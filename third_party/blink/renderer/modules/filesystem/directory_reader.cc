@@ -110,7 +110,7 @@ void DirectoryReader::readEntries(V8EntriesCallback* entries_callback,
 }
 
 void DirectoryReader::AddEntries(const EntryHeapVector& entries_to_add) {
-  entries_.AppendVector(entries_to_add);
+  entries_.append_range(entries_to_add);
   error_callback_ = nullptr;
   if (auto* entries_callback = entries_callback_.Release()) {
     EntryHeapVector entries;

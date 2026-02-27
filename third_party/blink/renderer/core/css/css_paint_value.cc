@@ -223,7 +223,7 @@ bool CSSPaintValue::ParseInputArguments(const Document& document) {
       parsed_input_arguments_ = nullptr;
       return false;
     }
-    parsed_input_arguments_->AppendVector(
+    parsed_input_arguments_->append_range(
         StyleValueFactory::CssValueToStyleValueVector(*parsed_value));
   }
   return true;

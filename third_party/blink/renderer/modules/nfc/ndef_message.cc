@@ -74,7 +74,7 @@ NDEFMessage* NDEFMessage::Create(const ScriptState* script_state,
         return nullptr;
       }
       Vector<uint8_t> payload_data;
-      payload_data.AppendSpan(buffer->ByteSpan());
+      payload_data.append_range(buffer->ByteSpan());
       NDEFMessage* message = MakeGarbageCollected<NDEFMessage>();
       message->records_.push_back(MakeGarbageCollected<NDEFRecord>(
           String() /* id */, "application/octet-stream",
@@ -90,7 +90,7 @@ NDEFMessage* NDEFMessage::Create(const ScriptState* script_state,
         return nullptr;
       }
       Vector<uint8_t> payload_data;
-      payload_data.AppendSpan(buffer_view->ByteSpan());
+      payload_data.append_range(buffer_view->ByteSpan());
       NDEFMessage* message = MakeGarbageCollected<NDEFMessage>();
       message->records_.push_back(MakeGarbageCollected<NDEFRecord>(
           String() /* id */, "application/octet-stream",

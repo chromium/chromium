@@ -275,10 +275,10 @@ RuleInvalidationDataVisitor<VisitorType>::RuleInvalidationDataVisitor(
 template <RuleInvalidationDataVisitorType VisitorType>
 void RuleInvalidationDataVisitor<VisitorType>::InvalidationSetFeatures::Merge(
     const InvalidationSetFeatures& other) {
-  classes.AppendVector(other.classes);
-  attributes.AppendVector(other.attributes);
-  custom_pseudo_names.AppendVector(other.custom_pseudo_names);
-  ids.AppendVector(other.ids);
+  classes.append_range(other.classes);
+  attributes.append_range(other.attributes);
+  custom_pseudo_names.append_range(other.custom_pseudo_names);
+  ids.append_range(other.ids);
   // Tag names that have been added to an invalidation set for an ID, a class,
   // or an attribute are called "emitted" tag names. Emitted tag names need to
   // go in a separate vector in order to correctly track which tag names to
@@ -291,11 +291,11 @@ void RuleInvalidationDataVisitor<VisitorType>::InvalidationSetFeatures::Merge(
   // Hence, when processing the rightmost :is(), we end up with li in the
   // emitted_tag_names vector, and span and ol in the regular tag_names vector.
   if (other.has_features_for_rule_set_invalidation) {
-    emitted_tag_names.AppendVector(other.tag_names);
+    emitted_tag_names.append_range(other.tag_names);
   } else {
-    tag_names.AppendVector(other.tag_names);
+    tag_names.append_range(other.tag_names);
   }
-  emitted_tag_names.AppendVector(other.emitted_tag_names);
+  emitted_tag_names.append_range(other.emitted_tag_names);
   max_direct_adjacent_selectors = std::max(max_direct_adjacent_selectors,
                                            other.max_direct_adjacent_selectors);
   invalidation_flags.Merge(other.invalidation_flags);

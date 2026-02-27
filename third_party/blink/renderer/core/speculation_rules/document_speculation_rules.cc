@@ -917,7 +917,7 @@ void DocumentSpeculationRules::AddLinkBasedSpeculationCandidates(
   }
 
   for (auto& it : matched_links_) {
-    candidates.AppendVector(*(it.value));
+    candidates.append_range(*(it.value));
   }
 }
 
@@ -1021,7 +1021,7 @@ void DocumentSpeculationRules::InvalidateAllLinks() {
 void DocumentSpeculationRules::UpdateSelectors() {
   HeapVector<Member<StyleRule>> selectors;
   for (SpeculationRuleSet* rule_set : rule_sets_) {
-    selectors.AppendVector(rule_set->selectors());
+    selectors.append_range(rule_set->selectors());
   }
 
   selectors_ = std::move(selectors);

@@ -114,7 +114,7 @@ void WatchTimeComponent<T>::Finalize(
 
   // Complete the finalize and indicate which keys need to be finalized.
   end_timestamp_ = media::kNoTimestamp;
-  keys_to_finalize->AppendVector(keys_to_finalize_);
+  keys_to_finalize->append_range(keys_to_finalize_);
   DCHECK(!NeedsFinalize());
 }
 

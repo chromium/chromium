@@ -2456,7 +2456,7 @@ void PaintLayer::UpdateCompositorFilterOperationsForBackdropFilter(
   // To get around that, we add the "regular" filters to the backdrop filters to
   // approximate.
   FilterOperations filter_operations = style.BackdropFilter();
-  filter_operations.Operations().AppendVector(style.Filter().Operations());
+  filter_operations.Operations().append_range(style.Filter().Operations());
   // NOTE: Backdrop filters will have their input cropped to the their layer
   // bounds with a mirror edge mode, but this is the responsibility of the
   // compositor to apply, regardless of the actual filter operations added here.

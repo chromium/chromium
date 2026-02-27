@@ -140,7 +140,7 @@ bool PendingAnimations::Update(
   // thread.
   if (started_synchronized_on_compositor) {
     FlushWaitingNonCompositedAnimations();
-    waiting_for_compositor_animation_start_.AppendVector(
+    waiting_for_compositor_animation_start_.append_range(
         waiting_for_start_time);
   } else {
     // Main-threaded animations previously held up for sync with the compositor

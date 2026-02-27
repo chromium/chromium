@@ -275,7 +275,7 @@ void PerformanceObserver::observe(ScriptState* script_state,
     if (observer_init->buffered()) {
       // Append all entries of this type to the current performance_entries_
       // to be returned on the next callback.
-      performance_entries_.AppendVector(performance_->getBufferedEntriesByType(
+      performance_entries_.append_range(performance_->getBufferedEntriesByType(
           AtomicString(observer_init->type())));
       std::sort(performance_entries_.begin(), performance_entries_.end(),
                 PerformanceEntry::StartTimeCompareLessThan);

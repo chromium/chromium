@@ -298,7 +298,7 @@ class FetchDataLoaderAsFormData final : public FetchDataLoader,
 
     StringUtf8Adaptor multipart_boundary_utf8(multipart_boundary_);
     Vector<char> multipart_boundary_vector;
-    multipart_boundary_vector.AppendSpan(base::span(multipart_boundary_utf8));
+    multipart_boundary_vector.append_range(multipart_boundary_utf8);
 
     client_ = client;
     form_data_ = MakeGarbageCollected<FormData>();

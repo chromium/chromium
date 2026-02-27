@@ -1294,7 +1294,7 @@ Vector<String> GetAuthoredGridTrackSizes(const CSSValue* value,
       // There could be only one auto repeat value in a |value_list|, therefore,
       // resetting auto_repeat_count to zero after inserting repeated values.
       for (; auto_repeat_count; --auto_repeat_count)
-        result.AppendVector(repeated_track_sizes);
+        result.append_range(repeated_track_sizes);
       continue;
     }
 

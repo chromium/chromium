@@ -302,7 +302,7 @@ bool WEBPImageDecoder::UpdateDemuxer() {
   } else {
     buffer_.reserve(base::checked_cast<wtf_size_t>(data_->size()));
     while (buffer_.size() < data_->size()) {
-      buffer_.AppendSpan(data_->GetSomeData(buffer_.size()));
+      buffer_.append_range(data_->GetSomeData(buffer_.size()));
     }
     DCHECK_EQ(buffer_.size(), data_->size());
     consolidated_data_ =

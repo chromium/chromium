@@ -81,7 +81,7 @@ class IncomingStreamTest : public ::testing::Test {
       ADD_FAILURE() << "chunk is not an Uint8Array";
       return ret;
     }
-    ret.AppendSpan(value->ByteSpan());
+    ret.append_range(value->ByteSpan());
     return ret;
   }
 

@@ -316,7 +316,7 @@ void ParkableImageImpl::WriteToDiskInBackground(
       base::checked_cast<wtf_size_t>(parkable_image->size()));
 
   do {
-    vector.AppendSpan(*it);
+    vector.append_range(*it);
   } while (it.Next());
 
   auto reserved_chunk = std::move(parkable_image->reserved_chunk_);

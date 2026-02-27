@@ -4732,7 +4732,7 @@ void HTMLMediaElement::ScheduleResolvePlayPromises() {
   if (play_promise_resolvers_.empty())
     return;
 
-  play_promise_resolve_list_.AppendVector(play_promise_resolvers_);
+  play_promise_resolve_list_.append_range(play_promise_resolvers_);
   play_promise_resolvers_.clear();
 
   if (play_promise_resolve_task_handle_.IsActive())
@@ -4756,7 +4756,7 @@ void HTMLMediaElement::ScheduleRejectPlayPromises(PlayPromiseError code) {
   if (play_promise_resolvers_.empty())
     return;
 
-  play_promise_reject_list_.AppendVector(play_promise_resolvers_);
+  play_promise_reject_list_.append_range(play_promise_resolvers_);
   play_promise_resolvers_.clear();
 
   if (play_promise_reject_task_handle_.IsActive())
@@ -4843,7 +4843,7 @@ void HTMLMediaElement::RejectScheduledPlayPromises() {
 
 void HTMLMediaElement::RejectPlayPromises(DOMExceptionCode code,
                                           const String& message) {
-  play_promise_reject_list_.AppendVector(play_promise_resolvers_);
+  play_promise_reject_list_.append_range(play_promise_resolvers_);
   play_promise_resolvers_.clear();
   RejectPlayPromisesInternal(code, message);
 }

@@ -106,7 +106,7 @@ void FixScriptsByEastAsianWidth(UChar32 ch,
       NOTREACHED();
     }
     set->Shrink(0);
-    set->AppendVector(han_scripts);
+    set->append_range(han_scripts);
   }
 }
 

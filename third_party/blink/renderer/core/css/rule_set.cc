@@ -1277,7 +1277,7 @@ void RuleSet::ApplyMixin(StyleRule* parent_rule,
     // re-evaluate this RuleSet.
     features_.MutableMediaQueryResultFlags().Add(
         mixins.media_query_result_flags);
-    media_query_set_results_.AppendVector(mixins.media_query_set_results);
+    media_query_set_results_.append_range(mixins.media_query_set_results);
 
     // Mark that we are using some mixin, and which generation of mixin map
     // it came from, so that we can invalidate if anything should change.

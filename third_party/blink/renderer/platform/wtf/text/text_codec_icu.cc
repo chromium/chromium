@@ -733,7 +733,7 @@ std::string TextCodecIcu::EncodeInternal(base::span<const UChar> input,
     ucnv_fromUnicode(converter_icu_, &target, target_limit, &source, end,
                      nullptr, true, &err);
     wtf_size_t count = static_cast<wtf_size_t>(target - buffer.data());
-    result.AppendSpan(base::span(buffer).first(count));
+    result.append_range(base::span(buffer).first(count));
   } while (err == U_BUFFER_OVERFLOW_ERROR);
 
   return std::string(result.data(), result.size());
@@ -765,7 +765,7 @@ std::string TextCodecIcu::Encode(base::span<const LChar> characters,
   Vector<UChar> buffer;
   buffer.ReserveInitialCapacity(
       base::checked_cast<wtf_size_t>(characters.size()));
-  buffer.AppendSpan(characters);
+  buffer.append_range(characters);
   base::span<const UChar> span(buffer);
   return EncodeCommon(span, handling);
 }

@@ -1734,7 +1734,7 @@ void OutOfFlowLayoutPart::LayoutFragmentainerDescendants(
         // (because of nested OOFs), so that we keep on generating fragments for
         // the repeated fixed-positioned elements in the new fragmentainers as
         // well.
-        repeated_fixedpos_descendants.AppendVector(fragmented_descendants);
+        repeated_fixedpos_descendants.append_range(fragmented_descendants);
       }
       descendants_to_layout.Shrink(0);
 

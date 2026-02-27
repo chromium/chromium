@@ -134,7 +134,7 @@ bool LengthListPropertyFunctions::GetLengthList(const CSSProperty& property,
   switch (property.PropertyID()) {
     case CSSPropertyID::kStrokeDasharray: {
       if (const SVGDashArray* array = style.StrokeDashArray()) {
-        result.AppendVector(*array);
+        result.append_range(*array);
       }
       return true;
     }

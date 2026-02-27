@@ -138,7 +138,7 @@ void InternalNormalizeLineEndingsToCRLF(const std::string& from,
     return;
 
   if (new_len == from.length()) {
-    buffer.AppendSpan(base::span(from));
+    buffer.append_range(from);
     return;
   }
 
@@ -158,7 +158,7 @@ void NormalizeLineEndingsToLF(const std::string& from, Vector<char>& result) {
 
   // If no need to fix the string, just copy the string over.
   if (!new_len) {
-    result.AppendSpan(base::span(from));
+    result.append_range(from);
     return;
   }
 

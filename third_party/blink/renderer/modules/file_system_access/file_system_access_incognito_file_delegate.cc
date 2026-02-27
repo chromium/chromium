@@ -142,7 +142,7 @@ base::FileErrorOr<int> FileSystemAccessIncognitoFileDelegate::Write(
 
   auto ref_counted_data =
       base::MakeRefCounted<base::RefCountedData<Vector<uint8_t>>>();
-  ref_counted_data->data.AppendSpan(data);
+  ref_counted_data->data.append_range(data);
 
   // Write the data to the data pipe on another thread. This is safe to run in
   // parallel to the `Write()` call, since the browser can read from the pipe as

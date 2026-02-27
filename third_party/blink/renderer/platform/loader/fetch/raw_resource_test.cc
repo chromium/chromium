@@ -89,7 +89,7 @@ class DummyClient final : public GarbageCollected<DummyClient>,
   String DebugName() const override { return "DummyClient"; }
 
   void DataReceived(Resource*, base::span<const char> data) override {
-    data_.AppendSpan(data);
+    data_.append_range(data);
   }
 
   bool RedirectReceived(Resource*,

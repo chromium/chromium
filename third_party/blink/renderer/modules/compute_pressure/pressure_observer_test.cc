@@ -92,7 +92,7 @@ class PressureRecordAccumulator final : public ScriptFunction {
           NativeValueTraits<IDLSequence<PressureRecord>>::NativeValue(
               script_value.GetIsolate(), script_value.V8Value(),
               exception_state);
-      pressure_records_.AppendVector(updates);
+      pressure_records_.append_range(updates);
     }
     return ScriptValue();
   }

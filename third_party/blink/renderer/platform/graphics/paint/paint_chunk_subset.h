@@ -126,7 +126,7 @@ class PaintChunkSubset {
 
   void Merge(const PaintChunkSubset& other) {
     DCHECK_EQ(paint_artifact_, other.paint_artifact_);
-    subset_indices_.AppendVector(other.subset_indices_);
+    subset_indices_.append_range(other.subset_indices_);
   }
 
   size_t ApproximateUnsharedMemoryUsage() const {

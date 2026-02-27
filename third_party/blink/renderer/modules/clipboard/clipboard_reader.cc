@@ -100,7 +100,7 @@ class ClipboardTextReader final : public ClipboardReader {
     StringUtf8Adaptor utf8_text(plain_text);
     Vector<uint8_t> utf8_bytes;
     utf8_bytes.ReserveInitialCapacity(utf8_text.size());
-    utf8_bytes.AppendSpan(base::span(utf8_text));
+    utf8_bytes.append_range(utf8_text);
 
     PostCrossThreadTask(
         *clipboard_task_runner, FROM_HERE,
@@ -186,7 +186,7 @@ class ClipboardHtmlReader final : public ClipboardReader {
     StringUtf8Adaptor utf8_text(plain_text);
     Vector<uint8_t> utf8_bytes;
     utf8_bytes.ReserveInitialCapacity(utf8_text.size());
-    utf8_bytes.AppendSpan(base::span(utf8_text));
+    utf8_bytes.append_range(utf8_text);
 
     PostCrossThreadTask(
         *clipboard_task_runner, FROM_HERE,
@@ -264,7 +264,7 @@ class ClipboardSvgReader final : public ClipboardReader {
     StringUtf8Adaptor utf8_text(plain_text);
     Vector<uint8_t> utf8_bytes;
     utf8_bytes.ReserveInitialCapacity(utf8_text.size());
-    utf8_bytes.AppendSpan(base::span(utf8_text));
+    utf8_bytes.append_range(utf8_text);
 
     PostCrossThreadTask(
         *clipboard_task_runner, FROM_HERE,

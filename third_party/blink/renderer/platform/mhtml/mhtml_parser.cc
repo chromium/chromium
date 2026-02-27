@@ -418,12 +418,12 @@ ArchiveResource* MHTMLParser::ParseNextPart(
       }
       // Note that we use line.utf8() and not line.ascii() as ascii turns
       // special characters (such as tab, line-feed...) into '?'.
-      content.AppendSpan(base::span<const char>(line.Utf8()));
+      content.append_range(line.Utf8());
       if (content_transfer_encoding == MIMEHeader::Encoding::kQuotedPrintable) {
         // The line reader removes the \r\n, but we need them for the content in
         // this case as the QuotedPrintable decoder expects CR-LF terminated
         // lines.
-        content.AppendSpan(base::span_from_cstring("\r\n"));
+        content.append_range(base::span_from_cstring("\r\n"));
       }
     }
   }
@@ -446,7 +446,7 @@ ArchiveResource* MHTMLParser::ParseNextPart(
     case MIMEHeader::Encoding::kEightBit:
     case MIMEHeader::Encoding::kSevenBit:
     case MIMEHeader::Encoding::kBinary:
-      data.AppendVector(content);
+      data.append_range(content);
       break;
     default:
       DVLOG(1) << "Invalid encoding for MHTML part.";

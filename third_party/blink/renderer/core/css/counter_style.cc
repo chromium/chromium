@@ -211,7 +211,7 @@ Vector<wtf_size_t> AdditiveAlgorithm(unsigned value,
       if (result.size() + repetitions > kCounterLengthLimit) {
         return Vector<wtf_size_t>();
       }
-      result.AppendVector(Vector<wtf_size_t>(repetitions, index));
+      result.append_range(Vector<wtf_size_t>(repetitions, index));
     }
     value %= weights[index];
   }

@@ -427,7 +427,7 @@ void ImageDecoderExternal::OnStateChange() {
     if (result == BytesConsumer::Result::kOk) {
       if (!buffer.empty()) {
         data.ReserveInitialCapacity(static_cast<wtf_size_t>(buffer.size()));
-        data.AppendSpan(buffer);
+        data.append_range(buffer);
         bytes_read_ += buffer.size();
       }
       result = consumer_->EndRead(buffer.size());

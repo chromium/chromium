@@ -418,7 +418,7 @@ class KeyframeEffectModel : public KeyframeEffectModelBase {
       scoped_refptr<TimingFunction> default_keyframe_easing = nullptr,
       bool has_named_range_keyframes = false)
       : KeyframeEffectModelBase(composite, std::move(default_keyframe_easing)) {
-    keyframes_.AppendVector(keyframes);
+    keyframes_.append_range(keyframes);
     IndexKeyframesAndResolveComputedOffsets();
     has_named_range_keyframes_ = has_named_range_keyframes;
   }

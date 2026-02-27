@@ -167,11 +167,11 @@ void SecurityContextInit::ApplyPermissionsPolicy(
                       WebFeature::kFeaturePolicyReportOnlyHeader);
   }
 
-  auto messages = Vector<PolicyParserMessageBuffer::Message>();
-  messages.AppendVector(feature_policy_logger.GetMessages());
-  messages.AppendVector(report_only_feature_policy_logger.GetMessages());
-  messages.AppendVector(permissions_policy_logger.GetMessages());
-  messages.AppendVector(report_only_permissions_policy_logger.GetMessages());
+  Vector<PolicyParserMessageBuffer::Message> messages;
+  messages.append_range(feature_policy_logger.GetMessages());
+  messages.append_range(report_only_feature_policy_logger.GetMessages());
+  messages.append_range(permissions_policy_logger.GetMessages());
+  messages.append_range(report_only_permissions_policy_logger.GetMessages());
 
   for (const auto& message : messages) {
     execution_context_->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(

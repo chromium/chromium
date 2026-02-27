@@ -349,7 +349,7 @@ ScriptPromise<IDLUndefined> HIDDevice::sendReport(
   }
 
   Vector<uint8_t> vector;
-  vector.AppendSpan(data);
+  vector.append_range(data);
 
   device_requests_.insert(resolver);
   connection_->Write(report_id, vector,
@@ -383,7 +383,7 @@ ScriptPromise<IDLUndefined> HIDDevice::sendFeatureReport(
   }
 
   Vector<uint8_t> vector;
-  vector.AppendSpan(data);
+  vector.append_range(data);
 
   device_requests_.insert(resolver);
   connection_->SendFeatureReport(

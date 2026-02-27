@@ -30,7 +30,7 @@ class MockClient final : public GarbageCollected<MockClient>,
     data_.push_back(Vector<char>());
   }
   void MultipartDataReceived(base::span<const uint8_t> bytes) override {
-    data_.back().AppendSpan(bytes);
+    data_.back().append_range(bytes);
   }
 
   Vector<ResourceResponse> responses_;
@@ -59,7 +59,7 @@ TEST(MultipartResponseTest, SkippableLength) {
   });
   for (const auto& test : line_tests) {
     Vector<char> input;
-    input.AppendSpan(base::span(test.input));
+    input.append_range(test.input);
     EXPECT_EQ(test.expected,
               MultipartImageResourceParser::SkippableLengthForTest(
                   input, test.position));
@@ -83,8 +83,8 @@ TEST(MultipartResponseTest, FindBoundary) {
 
   for (const auto& test : boundary_tests) {
     Vector<char> boundary, data;
-    boundary.AppendSpan(base::span(test.boundary));
-    data.AppendSpan(base::span(test.data));
+    boundary.append_range(test.boundary);
+    data.append_range(test.data);
     EXPECT_EQ(test.position, MultipartImageResourceParser::FindBoundaryForTest(
                                  data, &boundary));
   }
@@ -98,7 +98,7 @@ TEST(MultipartResponseTest, NoStartBoundary) {
                               AtomicString("text/plain"));
   MockClient* client = MakeGarbageCollected<MockClient>();
   Vector<char> boundary;
-  boundary.AppendSpan(base::span_from_cstring("bound"));
+  boundary.append_range(base::span_from_cstring("bound"));
 
   MultipartImageResourceParser* parser =
       MakeGarbageCollected<MultipartImageResourceParser>(response, boundary,
@@ -127,7 +127,7 @@ TEST(MultipartResponseTest, NoEndBoundary) {
                               AtomicString("text/plain"));
   MockClient* client = MakeGarbageCollected<MockClient>();
   Vector<char> boundary;
-  boundary.AppendSpan(base::span_from_cstring("bound"));
+  boundary.append_range(base::span_from_cstring("bound"));
 
   MultipartImageResourceParser* parser =
       MakeGarbageCollected<MultipartImageResourceParser>(response, boundary,
@@ -154,7 +154,7 @@ TEST(MultipartResponseTest, NoStartAndEndBoundary) {
                               AtomicString("text/plain"));
   MockClient* client = MakeGarbageCollected<MockClient>();
   Vector<char> boundary;
-  boundary.AppendSpan(base::span_from_cstring("bound"));
+  boundary.append_range(base::span_from_cstring("bound"));
 
   MultipartImageResourceParser* parser =
       MakeGarbageCollected<MultipartImageResourceParser>(response, boundary,
@@ -182,7 +182,7 @@ TEST(MultipartResponseTest, MalformedBoundary) {
                               AtomicString("text/plain"));
   MockClient* client = MakeGarbageCollected<MockClient>();
   Vector<char> boundary;
-  boundary.AppendSpan(base::span_from_cstring("--bound"));
+  boundary.append_range(base::span_from_cstring("--bound"));
 
   MultipartImageResourceParser* parser =
       MakeGarbageCollected<MultipartImageResourceParser>(response, boundary,
@@ -230,7 +230,7 @@ void VariousChunkSizesTest(base::span<const TestChunk> chunks,
   response.SetMimeType(AtomicString("multipart/x-mixed-replace"));
   MockClient* client = MakeGarbageCollected<MockClient>();
   Vector<char> boundary;
-  boundary.AppendSpan(base::span_from_cstring("bound"));
+  boundary.append_range(base::span_from_cstring("bound"));
 
   auto* parser = MakeGarbageCollected<MultipartImageResourceParser>(
       response, boundary, client);
@@ -327,7 +327,7 @@ TEST(MultipartResponseTest, SmallChunk) {
                               AtomicString("text/plain"));
   MockClient* client = MakeGarbageCollected<MockClient>();
   Vector<char> boundary;
-  boundary.AppendSpan(base::span_from_cstring("bound"));
+  boundary.append_range(base::span_from_cstring("bound"));
 
   MultipartImageResourceParser* parser =
       MakeGarbageCollected<MultipartImageResourceParser>(response, boundary,
@@ -363,7 +363,7 @@ TEST(MultipartResponseTest, MultipleBoundaries) {
   response.SetMimeType(AtomicString("multipart/x-mixed-replace"));
   MockClient* client = MakeGarbageCollected<MockClient>();
   Vector<char> boundary;
-  boundary.AppendSpan(base::span_from_cstring("bound"));
+  boundary.append_range(base::span_from_cstring("bound"));
 
   MultipartImageResourceParser* parser =
       MakeGarbageCollected<MultipartImageResourceParser>(response, boundary,
@@ -382,7 +382,7 @@ TEST(MultipartResponseTest, EatLeadingLF) {
   response.SetMimeType(AtomicString("multipart/x-mixed-replace"));
   MockClient* client = MakeGarbageCollected<MockClient>();
   Vector<char> boundary;
-  boundary.AppendSpan(base::span_from_cstring("bound"));
+  boundary.append_range(base::span_from_cstring("bound"));
 
   MultipartImageResourceParser* parser =
       MakeGarbageCollected<MultipartImageResourceParser>(response, boundary,
@@ -418,7 +418,7 @@ TEST(MultipartResponseTest, EatLeadingCRLF) {
   response.SetMimeType(AtomicString("multipart/x-mixed-replace"));
   MockClient* client = MakeGarbageCollected<MockClient>();
   Vector<char> boundary;
-  boundary.AppendSpan(base::span_from_cstring("bound"));
+  boundary.append_range(base::span_from_cstring("bound"));
 
   MultipartImageResourceParser* parser =
       MakeGarbageCollected<MultipartImageResourceParser>(response, boundary,

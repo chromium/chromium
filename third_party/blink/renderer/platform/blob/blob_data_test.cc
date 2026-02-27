@@ -311,7 +311,7 @@ TEST_F(BlobDataHandleTest, CreateFromMergedBytes) {
   EXPECT_EQ(1u, data->ElementsForTesting().size());
 
   Vector<uint8_t> expected_data = medium_test_data_;
-  expected_data.AppendVector(small_test_data_);
+  expected_data.append_range(small_test_data_);
 
   Vector<ExpectedElement> expected_elements;
   expected_elements.push_back(
@@ -327,7 +327,7 @@ TEST_F(BlobDataHandleTest, CreateFromMergedLargeAndSmallBytes) {
   EXPECT_EQ(1u, data->ElementsForTesting().size());
 
   Vector<uint8_t> expected_data = large_test_data_;
-  expected_data.AppendVector(small_test_data_);
+  expected_data.append_range(small_test_data_);
 
   Vector<ExpectedElement> expected_elements;
   expected_elements.push_back(
@@ -343,7 +343,7 @@ TEST_F(BlobDataHandleTest, CreateFromMergedSmallAndLargeBytes) {
   EXPECT_EQ(1u, data->ElementsForTesting().size());
 
   Vector<uint8_t> expected_data = small_test_data_;
-  expected_data.AppendVector(large_test_data_);
+  expected_data.append_range(large_test_data_);
 
   Vector<ExpectedElement> expected_elements;
   expected_elements.push_back(
@@ -372,7 +372,7 @@ TEST_F(BlobDataHandleTest, CreateFromBlobsAndBytes) {
   data->AppendBytes(large_test_data_);
 
   Vector<uint8_t> expected_data = medium_test_data_;
-  expected_data.AppendVector(small_test_data_);
+  expected_data.append_range(small_test_data_);
 
   Vector<ExpectedElement> expected_elements;
   expected_elements.push_back(ExpectedElement::Blob(test_blob_uuid_, 10, 10));
@@ -403,7 +403,7 @@ TEST_F(BlobDataHandleTest, CreateFromManyMergedBytes) {
   Vector<uint8_t> merged_data;
   while (merged_data.size() <= DataElementBytes::kMaximumEmbeddedDataSize) {
     data->AppendBytes(medium_test_data_);
-    merged_data.AppendVector(medium_test_data_);
+    merged_data.append_range(medium_test_data_);
   }
   data->AppendBlob(test_blob_, 0, 10);
   data->AppendBytes(medium_test_data_);

@@ -481,7 +481,7 @@ void AnchorElementMetricsSender::DidFinishLifecycleUpdate(
   // into the DOM later or if they enter the viewport.
   anchor_elements_to_report_.clear();
 
-  metrics_removed_anchors_.AppendVector(removed_anchors_to_report_);
+  metrics_removed_anchors_.append_range(removed_anchors_to_report_);
   removed_anchors_to_report_.clear();
 
   if (!metrics_.empty() || !metrics_removed_anchors_.empty()) {

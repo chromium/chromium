@@ -588,7 +588,7 @@ FontHeight RubyBlockPositionCalculator::HandleRubyLine(
         AnnotationDepth depth = current_depth;
         RubyLevel new_level;
         new_level.reserve(current.size() + 1);
-        new_level.AppendVector(current);
+        new_level.append_range(current);
         if (depth.column->ruby_position == RubyPosition::kUnder) {
           new_level.push_back(--depth.under_depth);
         } else {

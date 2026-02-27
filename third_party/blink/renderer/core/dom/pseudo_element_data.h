@@ -368,7 +368,7 @@ PseudoElementData::GetPseudoElements() const {
     result.push_back(generated_scroll_button_block_end_);
   }
   if (column_pseudo_elements_) {
-    result.AppendVector(*column_pseudo_elements_);
+    result.append_range(*column_pseudo_elements_);
   }
   return result;
 }

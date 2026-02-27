@@ -135,7 +135,7 @@ void UndoStep::Append(SimpleEditCommand* command) {
 }
 
 void UndoStep::Append(UndoStep* undo_step) {
-  commands_.AppendVector(undo_step->commands_);
+  commands_.append_range(undo_step->commands_);
 }
 
 void UndoStep::SetStartingSelection(const SelectionForUndoStep& selection) {

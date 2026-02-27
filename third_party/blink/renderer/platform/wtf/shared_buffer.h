@@ -199,7 +199,7 @@ inline Vector<char> SegmentedBuffer::CopyAs() const {
   Vector<char> buffer;
   buffer.ReserveInitialCapacity(base::checked_cast<wtf_size_t>(size_));
   for (const auto& span : *this) {
-    buffer.AppendSpan(span);
+    buffer.append_range(span);
   }
   DCHECK_EQ(buffer.size(), size_);
   return buffer;
@@ -210,7 +210,7 @@ inline Vector<uint8_t> SegmentedBuffer::CopyAs() const {
   Vector<uint8_t> buffer;
   buffer.ReserveInitialCapacity(base::checked_cast<wtf_size_t>(size_));
   for (const auto& span : *this) {
-    buffer.AppendSpan(span);
+    buffer.append_range(span);
   }
   DCHECK_EQ(buffer.size(), size_);
   return buffer;

@@ -397,7 +397,7 @@ CSSStyleValueVector StyleValueFactory::CoerceStyleValuesOrStrings(
         }
 
         DCHECK(!subvalues.Contains(nullptr));
-        style_values.AppendVector(subvalues);
+        style_values.append_range(subvalues);
         break;
       }
     }

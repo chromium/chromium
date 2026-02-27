@@ -24,8 +24,8 @@ void InterpolableTransformList::PreConcat(
     const InterpolableTransformList& underlying) {
   HeapVector<Member<TransformOperation>> result;
   result.reserve(underlying.operations_.size() + operations_.size());
-  result.AppendVector(underlying.operations_.Operations());
-  result.AppendVector(operations_.Operations());
+  result.append_range(underlying.operations_.Operations());
+  result.append_range(operations_.Operations());
   operations_.Operations() = result;
 }
 

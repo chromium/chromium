@@ -569,7 +569,7 @@ std::vector<WebString> WebURLResponse::CorsExposedHeaderNames() const {
 void WebURLResponse::SetCorsExposedHeaderNames(
     const std::vector<WebString>& header_names) {
   Vector<String> exposed_header_names;
-  exposed_header_names.AppendSpan(base::span(header_names));
+  exposed_header_names.append_range(header_names);
   resource_response_->SetCorsExposedHeaderNames(exposed_header_names);
 }
 

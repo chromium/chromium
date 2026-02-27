@@ -1555,8 +1555,8 @@ DocumentPolicy::ParsedDocumentPolicy DocumentLoader::CreateDocumentPolicy() {
         header_required_policy, frame_policy_.required_document_policy));
   }
 
-  document_policy_parsing_messages_.AppendVector(header_logger.GetMessages());
-  document_policy_parsing_messages_.AppendVector(
+  document_policy_parsing_messages_.append_range(header_logger.GetMessages());
+  document_policy_parsing_messages_.append_range(
       require_header_logger.GetMessages());
 
   return parsed_policy;

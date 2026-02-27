@@ -119,7 +119,7 @@ gfx::Vector2dF IntersectionObservation::MinScrollDeltaToUpdate() const {
 
 void IntersectionObservation::TakeRecords(
     HeapVector<Member<IntersectionObserverEntry>>& entries) {
-  entries.AppendVector(entries_);
+  entries.append_range(entries_);
   entries_.clear();
 }
 

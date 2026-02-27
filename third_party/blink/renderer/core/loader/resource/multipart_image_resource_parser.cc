@@ -32,7 +32,7 @@ void MultipartImageResourceParser::AppendData(base::span<const char> bytes) {
   // does, we just throw it away.
   if (saw_last_boundary_)
     return;
-  data_.AppendSpan(bytes);
+  data_.append_range(bytes);
 
   if (is_parsing_top_) {
     // Eat leading \r\n
@@ -183,7 +183,7 @@ wtf_size_t MultipartImageResourceParser::FindBoundary(const Vector<char>& data,
         data[boundary_position - 2] == '-') {
       boundary_position -= 2;
       Vector<char> v(2, '-');
-      v.AppendVector(*boundary);
+      v.append_range(*boundary);
       *boundary = v;
     }
   }

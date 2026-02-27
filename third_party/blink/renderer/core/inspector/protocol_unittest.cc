@@ -16,7 +16,7 @@ TEST(ProtocolBinaryTest, base64EmptyArgs) {
   Binary decoded = Binary::fromBase64("", &success);
   EXPECT_TRUE(success);
   Vector<uint8_t> decoded_bytes;
-  decoded_bytes.AppendSpan(decoded.Span());
+  decoded_bytes.append_range(decoded.Span());
   EXPECT_EQ(Vector<uint8_t>(), decoded_bytes);
 }
 
@@ -29,14 +29,14 @@ TEST(ProtocolStringTest, AllBytesBase64Roundtrip) {
   Binary decoded = Binary::fromBase64(binary.toBase64(), &success);
   EXPECT_TRUE(success);
   Vector<uint8_t> decoded_bytes;
-  decoded_bytes.AppendSpan(decoded.Span());
+  decoded_bytes.append_range(decoded.Span());
   EXPECT_EQ(all_bytes, decoded_bytes);
 }
 
 TEST(ProtocolStringTest, HelloWorldBase64Roundtrip) {
   const char kMsg[] = "Hello, world.";
   Vector<uint8_t> msg;
-  msg.AppendSpan(base::span_from_cstring(kMsg));
+  msg.append_range(base::span_from_cstring(kMsg));
   EXPECT_EQ(strlen(kMsg), msg.size());
 
   protocol::String encoded = Binary::fromVector(msg).toBase64();
@@ -45,7 +45,7 @@ TEST(ProtocolStringTest, HelloWorldBase64Roundtrip) {
   Binary decoded_binary = Binary::fromBase64(encoded, &success);
   EXPECT_TRUE(success);
   Vector<uint8_t> decoded;
-  decoded.AppendSpan(decoded_binary.Span());
+  decoded.append_range(decoded_binary.Span());
   EXPECT_EQ(msg, decoded);
 }
 

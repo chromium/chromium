@@ -668,7 +668,7 @@ void FindBuffer::AddTextToBuffer(const Text& text_node,
         mapped_text.Substring(unit.TextContentStart(),
                               unit.TextContentEnd() - unit.TextContentStart());
     text_for_unit.Ensure16Bit();
-    buffer.AppendSpan(text_for_unit.Span16());
+    buffer.append_range(text_for_unit.Span16());
     last_unit_end = unit.TextContentEnd();
   }
 }

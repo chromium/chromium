@@ -118,7 +118,7 @@ Binary Binary::fromVector(Vector<uint8_t> in) {
 // static
 Binary Binary::fromSpan(base::span<const uint8_t> data) {
   Vector<uint8_t> in;
-  in.AppendSpan(data);
+  in.append_range(data);
   return Binary::fromVector(std::move(in));
 }
 

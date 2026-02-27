@@ -498,7 +498,7 @@ HeapVector<Member<RtcReceivedPacket>> RtcTransport::getReceivedPackets() {
 void RtcTransport::sendPackets(
     HeapVector<Member<RtcSendPacketParameters>> packets) {
   if (!initialized_) {
-    pending_send_packets_calls_.AppendVector(packets);
+    pending_send_packets_calls_.append_range(packets);
     return;
   }
   auto packet_payloads = std::make_unique<Vector<Vector<uint8_t>>>();

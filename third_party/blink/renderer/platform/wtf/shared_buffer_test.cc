@@ -160,7 +160,7 @@ TEST(SharedBufferTest, copy) {
   ASSERT_EQ(contiguous.size(), shared_buffer->size());
   ASSERT_EQ(clone, contiguous);
 
-  clone.AppendVector(test_data);
+  clone.append_range(test_data);
   ASSERT_EQ(test_data.size() * 5, clone.size());
 }
 
@@ -168,13 +168,13 @@ TEST(SharedBufferTest, constructorWithFlatData) {
   Vector<char> data;
 
   while (data.size() < 10000ul) {
-    data.AppendSpan(base::span_from_cstring("FooBarBaz"));
+    data.append_range(base::span_from_cstring("FooBarBaz"));
     auto shared_buffer = SharedBuffer::Create(base::span(data));
 
     Vector<Vector<char>> segments;
     for (const auto& span : *shared_buffer) {
       segments.emplace_back();
-      segments.back().AppendSpan(span);
+      segments.back().append_range(span);
     }
 
     // Shared buffers constructed from flat data should stay flat.

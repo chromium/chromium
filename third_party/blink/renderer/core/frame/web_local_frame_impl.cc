@@ -1434,7 +1434,7 @@ void WebLocalFrameImpl::RemoveSpellingMarkers() {
 void WebLocalFrameImpl::RemoveSpellingMarkersUnderWords(
     const std::vector<WebString>& words) {
   Vector<String> converted_words;
-  converted_words.AppendSpan(base::span(words));
+  converted_words.append_range(words);
   GetFrame()->RemoveSpellingMarkersUnderWords(converted_words);
 }
 

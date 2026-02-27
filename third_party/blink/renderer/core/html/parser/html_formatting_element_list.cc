@@ -150,7 +150,7 @@ void HTMLFormattingElementList::TryToEnsureNoahsArkConditionQuickly(
   if (candidates.size() < kNoahsArkCapacity)
     return;
 
-  remaining_candidates.AppendVector(candidates);
+  remaining_candidates.append_range(candidates);
 }
 
 void HTMLFormattingElementList::EnsureNoahsArkCondition(

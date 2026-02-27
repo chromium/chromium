@@ -284,7 +284,7 @@ void CanvasRenderingContext2DState::SetLineDash(const Vector<double>& dash) {
   // Spec requires the concatenation of two copies the dash list when the
   // number of elements is odd
   if (dash.size() % 2)
-    line_dash_.AppendVector(dash);
+    line_dash_.append_range(dash);
   // clamp the double values to float
   std::ranges::transform(line_dash_, line_dash_.begin(),
                          [](double d) { return ClampTo<float>(d); });

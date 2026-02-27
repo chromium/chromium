@@ -1092,7 +1092,7 @@ VectorOf<Node> Node::ConvertNodeUnionsIntoNodes(
         NodeVector fragment_nodes;
         GetChildNodes(*fragment, fragment_nodes);
         fragment->RemoveChildren();
-        nodes.AppendVector(fragment_nodes);
+        nodes.append_range(fragment_nodes);
       } else {
         nodes.push_back(node);
       }

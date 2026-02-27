@@ -304,7 +304,7 @@ bool MultipartParser::ParseHeaderFields(base::span<const char>& bytes,
 
   auto header_bytes = bytes;
   if (!buffered_header_bytes_.empty()) {
-    buffered_header_bytes_.AppendSpan(header_bytes);
+    buffered_header_bytes_.append_range(header_bytes);
     header_bytes = buffered_header_bytes_;
   }
 
@@ -314,7 +314,7 @@ bool MultipartParser::ParseHeaderFields(base::span<const char>& bytes,
     // Store the current header bytes for the next call unless that has
     // already been done.
     if (buffered_header_bytes_.empty()) {
-      buffered_header_bytes_.AppendSpan(header_bytes);
+      buffered_header_bytes_.append_range(header_bytes);
     }
     bytes = {};
     return false;

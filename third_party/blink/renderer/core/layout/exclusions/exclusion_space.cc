@@ -243,7 +243,7 @@ void ExclusionSpaceInternal::Add(const ExclusionArea* exclusion) {
       // Perform a copy-on-write if the number of exclusions has gone out of
       // sync.
       auto* exclusions = MakeGarbageCollected<GCedExclusionAreaPtrArray>();
-      exclusions->AppendSpan(base::span(*exclusions_).first(num_exclusions_));
+      exclusions->append_range(base::span(*exclusions_).first(num_exclusions_));
       exclusions_ = exclusions;
     }
   }

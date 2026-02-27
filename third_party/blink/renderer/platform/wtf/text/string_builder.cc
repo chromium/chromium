@@ -258,7 +258,7 @@ void StringBuilder::Append(base::span<const UChar> chars) {
 
   unsigned length = base::checked_cast<unsigned>(chars.size());
   EnsureBuffer16(length);
-  buffer16_.AppendSpan(chars);
+  buffer16_.append_range(chars);
   length_ += length;
 }
 
@@ -271,13 +271,13 @@ void StringBuilder::Append(base::span<const LChar> chars) {
   unsigned length = base::checked_cast<unsigned>(chars.size());
   if (is_8bit_) {
     EnsureBuffer8(length);
-    buffer8_.AppendSpan(chars);
+    buffer8_.append_range(chars);
     length_ += length;
     return;
   }
 
   EnsureBuffer16(length);
-  buffer16_.AppendSpan(chars);
+  buffer16_.append_range(chars);
   length_ += length;
 }
 

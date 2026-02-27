@@ -853,7 +853,7 @@ DocumentMarkerVector DocumentMarkerController::MarkersFor(
       continue;
     }
 
-    result.AppendVector(list->GetMarkers());
+    result.append_range(list->GetMarkers());
   }
 
   std::sort(result.begin(), result.end(),
@@ -883,7 +883,7 @@ DocumentMarkerVector DocumentMarkerController::Markers() const {
     }
     for (const auto& node_markers : *marker_map) {
       DocumentMarkerList* list = node_markers.value;
-      result.AppendVector(list->GetMarkers());
+      result.append_range(list->GetMarkers());
     }
   }
   std::sort(result.begin(), result.end(),
@@ -938,7 +938,7 @@ DocumentMarkerVector DocumentMarkerController::ComputeMarkersToPaint(
   if (suggestion_markers.empty()) {
     // If there are no suggestion markers, we can return early as a minor
     // performance optimization.
-    markers_to_paint.AppendVector(MarkersFor(
+    markers_to_paint.append_range(MarkersFor(
         text, DocumentMarker::MarkerTypes::AllBut(
                   DocumentMarker::MarkerTypes(DocumentMarker::kSuggestion |
                                               DocumentMarker::kCustomHighlight))
@@ -997,9 +997,9 @@ DocumentMarkerVector DocumentMarkerController::ComputeMarkersToPaint(
     markers_to_paint.push_back(marker);
   }
 
-  markers_to_paint.AppendVector(suggestion_markers);
+  markers_to_paint.append_range(suggestion_markers);
 
-  markers_to_paint.AppendVector(MarkersFor(
+  markers_to_paint.append_range(MarkersFor(
       text,
       DocumentMarker::MarkerTypes::AllBut(
           DocumentMarker::MarkerTypes(
@@ -1039,7 +1039,7 @@ Vector<gfx::Rect> DocumentMarkerController::LayoutRectsForTextMatchMarkers() {
     if (!list) {
       continue;
     }
-    result.AppendVector(To<TextMatchMarkerListImpl>(list)->LayoutRects(node));
+    result.append_range(To<TextMatchMarkerListImpl>(list)->LayoutRects(node));
   }
 
   return result;

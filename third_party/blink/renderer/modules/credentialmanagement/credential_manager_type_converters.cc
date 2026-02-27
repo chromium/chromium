@@ -331,11 +331,11 @@ TypeConverter<blink::Vector<uint8_t>,
   blink::Vector<uint8_t> vector;
   switch (buffer->GetContentType()) {
     case blink::V8UnionArrayBufferOrArrayBufferView::ContentType::kArrayBuffer:
-      vector.AppendSpan(buffer->GetAsArrayBuffer()->ByteSpan());
+      vector.append_range(buffer->GetAsArrayBuffer()->ByteSpan());
       break;
     case blink::V8UnionArrayBufferOrArrayBufferView::ContentType::
         kArrayBufferView:
-      vector.AppendSpan(buffer->GetAsArrayBufferView()->ByteSpan());
+      vector.append_range(buffer->GetAsArrayBufferView()->ByteSpan());
       break;
   }
   return vector;

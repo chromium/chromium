@@ -1090,9 +1090,9 @@ inline void StringImpl::AppendTo(BufferType& result,
   if (!number_of_characters_to_copy)
     return;
   if (Is8Bit())
-    result.AppendSpan(Span8().subspan(start, number_of_characters_to_copy));
+    result.append_range(Span8().subspan(start, number_of_characters_to_copy));
   else
-    result.AppendSpan(Span16().subspan(start, number_of_characters_to_copy));
+    result.append_range(Span16().subspan(start, number_of_characters_to_copy));
 }
 
 template <typename T>

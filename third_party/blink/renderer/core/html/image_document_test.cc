@@ -67,7 +67,7 @@ Vector<unsigned char> JpegImage() {
       0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
       0x00, 0x00, 0x00, 0x00, 0x03, 0xff, 0xd9};
 
-  jpeg.AppendSpan(base::span(kData));
+  jpeg.append_range(kData);
   return jpeg;
 }
 
@@ -90,7 +90,7 @@ Vector<unsigned char> AnimatedWebpImage() {
       0x40, 0x0c, 0x00, 0x07, 0xd0, 0xbf, 0x88, 0xfe, 0x07, 0x80, 0x84, 0xf0,
       0x7f, 0xbd, 0x18, 0xd1, 0xff, 0x94, 0x0b, 0x00};
 
-  animated_webp.AppendSpan(base::span(kData));
+  animated_webp.append_range(kData);
   return animated_webp;
 }
 
@@ -178,8 +178,7 @@ void ImageDocumentTest::CreateDocumentWithoutLoadingImage(int view_width,
   params->url = is_animated ? KURL("http://www.example.com/image.webp")
                             : KURL("http://www.example.com/image.jpg");
 
-  const Vector<unsigned char>& data =
-      is_animated ? AnimatedWebpImage() : JpegImage();
+  Vector<unsigned char> data = is_animated ? AnimatedWebpImage() : JpegImage();
   WebNavigationParams::FillStaticResponse(
       params.get(), is_animated ? "image/webp" : "image/jpeg", "UTF-8",
       base::as_chars(base::span(data)));
@@ -387,7 +386,7 @@ TEST_F(ImageDocumentViewportTest, HidingURLBarDoesntChangeImageLocation) {
   LoadURL("https://example.com/test.jpg");
 
   Vector<char> data;
-  data.AppendVector(JpegImage());
+  data.append_range(JpegImage());
   request.Complete(data);
 
   Compositor().BeginFrame();
@@ -424,7 +423,7 @@ TEST_F(ImageDocumentViewportTest, ScaleImage) {
   LoadURL("https://example.com/test.jpg");
 
   Vector<char> data;
-  data.AppendVector(JpegImage());
+  data.append_range(JpegImage());
   request.Complete(data);
 
   HTMLImageElement* img = GetDocument().ImageElement();
@@ -464,7 +463,7 @@ TEST_F(ImageDocumentViewportTest, DivWidth) {
   LoadURL("https://example.com/test.jpg");
 
   Vector<char> data;
-  data.AppendVector(JpegImage());
+  data.append_range(JpegImage());
   request.Complete(data);
 
   HTMLImageElement* img = GetDocument().ImageElement();
@@ -522,7 +521,7 @@ TEST_F(ImageDocumentViewportTest, DivWidthOnMobileWithDisabledViewportMeta) {
   SimRequest request("https://example.com/test.jpg", "image/jpeg");
   LoadURL("https://example.com/test.jpg");
   Vector<char> data;
-  data.AppendVector(JpegImage());
+  data.append_range(JpegImage());
   request.Complete(data);
   HTMLImageElement* img = GetDocument().ImageElement();
   WebView().SetZoomFactorForDeviceScaleFactor(1.f);

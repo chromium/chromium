@@ -295,7 +295,7 @@ bool SubresourceIntegrity::CheckHashesImpl(
 
     // And finally decode the metadata's digest for comparison.
     DigestValue expected_value;
-    expected_value.AppendSpan(base::as_byte_span(metadata.value));
+    expected_value.append_range(metadata.value);
 
     // 5.4. If actualValue is a case-sensitive match for expectedValue, return
     // true set hash-match to true and break.

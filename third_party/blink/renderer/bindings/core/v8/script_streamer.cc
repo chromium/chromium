@@ -160,7 +160,7 @@ class SourceStream : public v8::ScriptCompiler::ExternalSourceStream {
           // either share ownership of the chunks, or only give chunks back to
           // the client once the streaming completes.
           Vector<char> copy_for_decoder;
-          copy_for_decoder.AppendSpan(base::as_chars(buffer));
+          copy_for_decoder.append_range(buffer);
           if (std::holds_alternative<ScriptDecoder*>(script_decoder_)) {
             std::get<ScriptDecoder*>(script_decoder_)
                 ->DidReceiveData(std::move(copy_for_decoder));
@@ -1752,7 +1752,7 @@ BackgroundResourceScriptStreamer::BackgroundProcessor::
     }
     sha256_digest_from_code_cache_ =
         std::make_unique<ParkableStringImpl::SecureDigest>();
-    sha256_digest_from_code_cache_->AppendSpan(base::span(header->hash));
+    sha256_digest_from_code_cache_->append_range(header->hash);
   }
   std::unique_ptr<v8::ScriptCompiler::ConsumeCodeCacheTask> task;
   if (V8CodeCache::HasCodeCache(*metadata, encoding_.GetName())) {

@@ -577,7 +577,7 @@ TransformOperations TransformOperations::Add(
     const TransformOperations& addend) const {
   TransformOperations result;
   result.operations_ = Operations();
-  result.operations_.AppendVector(addend.Operations());
+  result.operations_.append_range(addend.Operations());
   return result;
 }
 

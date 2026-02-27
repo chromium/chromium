@@ -39,7 +39,7 @@ constexpr char kPngImageDataUrl[] =
 
 Vector<uint8_t> CreateVector(base::span<const uint8_t> buffer) {
   Vector<uint8_t> vector;
-  vector.AppendSpan(buffer);
+  vector.append_range(buffer);
   return vector;
 }
 

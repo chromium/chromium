@@ -101,7 +101,7 @@ HeapVector<Member<Node>> CollectFlattenedAssignedNodes(
       if (!child.IsSlotable())
         continue;
       if (auto* child_slot = ToHTMLSlotElementIfSupportsAssignmentOrNull(child))
-        nodes.AppendVector(CollectFlattenedAssignedNodes(*child_slot));
+        nodes.append_range(CollectFlattenedAssignedNodes(*child_slot));
       else
         nodes.push_back(child);
     }
@@ -110,7 +110,7 @@ HeapVector<Member<Node>> CollectFlattenedAssignedNodes(
       DCHECK(node->IsSlotable());
       if (auto* assigned_node_slot =
               ToHTMLSlotElementIfSupportsAssignmentOrNull(*node))
-        nodes.AppendVector(CollectFlattenedAssignedNodes(*assigned_node_slot));
+        nodes.append_range(CollectFlattenedAssignedNodes(*assigned_node_slot));
       else
         nodes.push_back(node);
     }

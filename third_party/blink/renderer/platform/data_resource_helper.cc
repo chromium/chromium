@@ -24,7 +24,7 @@ String UncompressResourceAsASCIIString(int resource_id) {
 Vector<char> UncompressResourceAsBinary(int resource_id) {
   std::string data = Platform::Current()->GetDataResourceString(resource_id);
   Vector<char> result;
-  result.AppendSpan(base::span(data));
+  result.append_range(data);
   return result;
 }
 

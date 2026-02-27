@@ -71,7 +71,7 @@ class MockWebSocketChannelClient
       const Vector<base::span<const uint8_t>>& data) override {
     Vector<uint8_t> flatten;
     for (const auto& span : data) {
-      flatten.AppendSpan(span);
+      flatten.append_range(span);
     }
     DidReceiveBinaryMessageMock(flatten);
   }
@@ -316,7 +316,7 @@ class WebSocketChannelImplTest : public WebSocketChannelImplTestBase {
   template <size_t N>
   static Vector<uint8_t> AsVector(const char (&literal)[N]) {
     Vector<uint8_t> v;
-    v.AppendSpan(base::span(literal).template first<N - 1>());
+    v.append_range(base::span(literal).template first<N - 1>());
     return v;
   }
 

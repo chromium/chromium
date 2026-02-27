@@ -610,7 +610,7 @@ void SpeculationRuleSet::SetTag(String tag) {
 
 void SpeculationRuleSet::AddWarnings(
     base::span<const String> warning_messages) {
-  warning_messages_.AppendSpan(warning_messages);
+  warning_messages_.append_range(warning_messages);
 }
 
 // static
@@ -769,7 +769,7 @@ SpeculationRuleSet* SpeculationRuleSet::Parse(Source* source,
 
           if (rule->predicate()) {
             result->has_document_rule_ = true;
-            result->selectors_.AppendVector(rule->predicate()->GetStyleRules());
+            result->selectors_.append_range(rule->predicate()->GetStyleRules());
           }
 
           if (rule->eagerness() !=

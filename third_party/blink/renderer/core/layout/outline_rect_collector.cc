@@ -71,7 +71,7 @@ void VectorOutlineRectCollector::Combine(
       rects_.push_back(rect);
     }
   } else {
-    rects_.AppendVector(
+    rects_.append_range(
         static_cast<VectorOutlineRectCollector*>(collector)->TakeRects());
   }
 }

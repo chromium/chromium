@@ -13,7 +13,7 @@ void MixinMap::Merge(const MixinMap& other) {
     mixins.Set(key, value);
   }
   media_query_result_flags.Add(other.media_query_result_flags);
-  media_query_set_results.AppendVector(other.media_query_set_results);
+  media_query_set_results.append_range(other.media_query_set_results);
 }
 
 }  // namespace blink

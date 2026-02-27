@@ -35,7 +35,7 @@ class ReplayingBytesConsumer final : public BytesConsumer {
     explicit Command(Name name) : name_(name) {}
     Command(Name name, const Vector<char>& body) : name_(name), body_(body) {}
     Command(Name name, base::span<const char> body) : name_(name) {
-      body_.AppendSpan(body);
+      body_.append_range(body);
     }
     template <size_t N>
     Command(Name name, const char (&body)[N])

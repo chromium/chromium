@@ -39,7 +39,7 @@ class DataElementReader {
     switch (element->which()) {
       case mojob::DataElement::Tag::kBytes: {
         const mojob::DataElementBytesPtr& bytes = element->get_bytes();
-        blob_body_bytes_.AppendVector(*bytes->embedded_data);
+        blob_body_bytes_.append_range(*bytes->embedded_data);
         return CreateFakeBlob();
       }
       case mojob::DataElement::Tag::kFile: {
@@ -80,7 +80,7 @@ class DataElementReader {
           done_callback_(std::move(done_callback)) {}
 
     void OnDataAvailable(base::span<const uint8_t> data) override {
-      blob_body_bytes_->AppendSpan(data);
+      blob_body_bytes_->append_range(data);
     }
 
     void OnDataComplete() override { std::move(done_callback_).Run(); }

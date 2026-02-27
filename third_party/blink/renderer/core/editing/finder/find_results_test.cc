@@ -15,7 +15,7 @@ class FindResultsTest : public EditingTestBase {
   static Vector<UChar> MakeBuffer(const UChar (&literal)[N]) {
     Vector<UChar> buffer;
     buffer.reserve(N);
-    buffer.AppendSpan(base::span(literal));
+    buffer.append_range(literal);
     for (auto& ch : buffer) {
       if (ch == '_') {
         ch = 0;

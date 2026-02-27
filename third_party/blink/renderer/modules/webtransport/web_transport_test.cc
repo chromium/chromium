@@ -957,7 +957,7 @@ Vector<uint8_t> GetValueAsVector(ScriptState* script_state,
   }
 
   Vector<uint8_t> result;
-  result.AppendSpan(array->ByteSpan());
+  result.append_range(array->ByteSpan());
   return result;
 }
 

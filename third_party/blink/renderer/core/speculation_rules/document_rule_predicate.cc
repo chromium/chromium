@@ -46,7 +46,7 @@ class Conjunction : public DocumentRulePredicate {
   HeapVector<Member<StyleRule>> GetStyleRules() const override {
     HeapVector<Member<StyleRule>> rules;
     for (DocumentRulePredicate* clause : clauses_) {
-      rules.AppendVector(clause->GetStyleRules());
+      rules.append_range(clause->GetStyleRules());
     }
     return rules;
   }
@@ -96,7 +96,7 @@ class Disjunction : public DocumentRulePredicate {
   HeapVector<Member<StyleRule>> GetStyleRules() const override {
     HeapVector<Member<StyleRule>> rules;
     for (DocumentRulePredicate* clause : clauses_) {
-      rules.AppendVector(clause->GetStyleRules());
+      rules.append_range(clause->GetStyleRules());
     }
     return rules;
   }

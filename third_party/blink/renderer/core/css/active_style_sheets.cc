@@ -115,8 +115,8 @@ ActiveSheetsChange CompareActiveStyleSheets(
   ActiveStyleSheetVector merged_sorted;
   merged_sorted.reserve(old_style_sheet_count + new_style_sheet_count -
                         2 * index);
-  merged_sorted.AppendSpan(base::span(old_style_sheets).subspan(index));
-  merged_sorted.AppendSpan(base::span(new_style_sheets).subspan(index));
+  merged_sorted.append_range(base::span(old_style_sheets).subspan(index));
+  merged_sorted.append_range(base::span(new_style_sheets).subspan(index));
 
   std::sort(merged_sorted.begin(), merged_sorted.end());
 

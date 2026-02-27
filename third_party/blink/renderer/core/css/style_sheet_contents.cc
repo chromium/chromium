@@ -858,8 +858,8 @@ static bool ExtractMixinsFromRules(
         found |= match;
         if (mixins) {
           mixins->media_query_result_flags.Add(flags_if_found);
-          mixins->media_query_set_results.AppendVector(
-              std::move(media_query_set_results_if_found));
+          mixins->media_query_set_results.append_range(
+              media_query_set_results_if_found);
         }
       }
     } else if (auto* supports_rule = DynamicTo<StyleRuleSupports>(rule)) {

@@ -60,7 +60,7 @@ PushMessageData* PushMessageData::Create(
 }
 
 PushMessageData::PushMessageData(base::span<const uint8_t> data) {
-  data_.AppendSpan(data);
+  data_.append_range(data);
 }
 
 PushMessageData::~PushMessageData() = default;

@@ -49,7 +49,7 @@ SharedBufferChunkReader::SharedBufferChunkReader(
 
 void SharedBufferChunkReader::SetSeparator(std::string_view separator) {
   separator_.clear();
-  separator_.AppendSpan(base::span(separator));
+  separator_.append_range(separator);
 }
 
 bool SharedBufferChunkReader::NextChunk(Vector<char>& chunk,
@@ -63,7 +63,7 @@ bool SharedBufferChunkReader::NextChunk(Vector<char>& chunk,
       char current_character = segment_[segment_index_++];
       if (current_character != separator_[separator_index_]) {
         if (separator_index_ > 0) {
-          chunk.AppendSpan(base::span(separator_).first(separator_index_));
+          chunk.append_range(base::span(separator_).first(separator_index_));
           separator_index_ = 0;
         }
         chunk.push_back(current_character);
@@ -72,7 +72,7 @@ bool SharedBufferChunkReader::NextChunk(Vector<char>& chunk,
       separator_index_++;
       if (separator_index_ == separator_.size()) {
         if (include_separator)
-          chunk.AppendVector(separator_);
+          chunk.append_range(separator_);
         separator_index_ = 0;
         return true;
       }
@@ -86,7 +86,7 @@ bool SharedBufferChunkReader::NextChunk(Vector<char>& chunk,
       segment_ = {};
       reached_end_of_file_ = true;
       if (separator_index_ > 0)
-        chunk.AppendSpan(base::span(separator_).first(separator_index_));
+        chunk.append_range(base::span(separator_).first(separator_index_));
       return !chunk.empty();
     }
     segment_ = *it;
@@ -110,19 +110,19 @@ size_t SharedBufferChunkReader::Peek(Vector<char>& data,
   data.clear();
   auto data_fragment = segment_.subspan(segment_index_);
   if (requested_size <= data_fragment.size()) {
-    data.AppendSpan(data_fragment.first(requested_size));
+    data.append_range(data_fragment.first(requested_size));
     return requested_size;
   }
 
-  data.AppendSpan(data_fragment);
+  data.append_range(data_fragment);
 
   for (auto it = buffer_->GetIteratorAt(buffer_position_ + segment_.size());
        it != buffer_->cend(); ++it) {
     if (requested_size <= data.size() + it->size()) {
-      data.AppendSpan((*it).first(requested_size - data.size()));
+      data.append_range((*it).first(requested_size - data.size()));
       break;
     }
-    data.AppendSpan(*it);
+    data.append_range(*it);
   }
   return data.size();
 }

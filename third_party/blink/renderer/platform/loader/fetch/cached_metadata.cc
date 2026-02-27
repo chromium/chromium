@@ -38,7 +38,7 @@ Vector<uint8_t> GetSerializedData(uint32_t data_type_id,
 
   Vector<uint8_t> vector =
       CachedMetadata::GetSerializedDataHeader(data_type_id, data.size(), tag);
-  vector.AppendSpan(data);
+  vector.append_range(data);
   return vector;
 }
 

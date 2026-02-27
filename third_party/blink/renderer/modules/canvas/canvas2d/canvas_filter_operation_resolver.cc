@@ -112,7 +112,7 @@ std::optional<KernelMatrix> GetKernelMatrix(const Dictionary& dict,
       return std::nullopt;
     }
 
-    result.values.AppendVector(row);
+    result.values.append_range(row);
   }
 
   return result;
@@ -190,7 +190,7 @@ ComponentTransferFunction GetComponentTransferFunction(
   std::optional<Vector<float>> table_values =
       transfer_dict.Get<IDLSequence<IDLFloat>>("tableValues", exception_state);
   if (table_values.has_value()) {
-    result.table_values.AppendVector(*table_values);
+    result.table_values.append_range(*table_values);
   }
 
   return result;

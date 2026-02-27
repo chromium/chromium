@@ -82,7 +82,7 @@ class PLATFORM_EXPORT FontFeatureRangesSaver {
   explicit FontFeatureRangesSaver(FontFeatureRanges* features)
       : features_(features), num_features_before_(features->size()) {
 #if EXPENSIVE_DCHECKS_ARE_ON()
-    saved_features_.AppendVector(*features);
+    saved_features_.append_range(*features);
 #endif  // EXPENSIVE_DCHECKS_ARE_ON()
   }
 

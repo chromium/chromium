@@ -44,7 +44,7 @@ NodeSet* NodeSet::Create(const NodeSet& other) {
   NodeSet* node_set = NodeSet::Create();
   node_set->is_sorted_ = other.is_sorted_;
   node_set->subtrees_are_disjoint_ = other.subtrees_are_disjoint_;
-  node_set->nodes_.AppendVector(other.nodes_);
+  node_set->nodes_.append_range(other.nodes_);
   return node_set;
 }
 
