@@ -18,7 +18,6 @@ void WebContentsFactoryDataDeleter::WebContentsDestroyed() {
       ->GetBrowserContext()
       ->GetStoragePartition(storage_partition_config_, false)
       ->ClearData(content::StoragePartition::REMOVE_DATA_MASK_ALL,
-                  content::StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL,
                   blink::StorageKey(), base::Time(), base::Time::Max(),
                   base::DoNothing());
 

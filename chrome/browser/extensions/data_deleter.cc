@@ -64,8 +64,7 @@ void DeleteOrigin(Profile* profile,
     // simpler than special casing.  This code should go away once we merge
     // the various URLRequestContexts (http://crbug.com/40293166).
     partition->ClearDataForOrigin(
-        ~StoragePartition::REMOVE_DATA_MASK_SHADER_CACHE,
-        StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL, origin,
+        ~StoragePartition::REMOVE_DATA_MASK_SHADER_CACHE, origin,
         subtask_done_callback);
 
     // Delete cookies separately from other data so that the request context
@@ -76,8 +75,7 @@ void DeleteOrigin(Profile* profile,
     // We don't need to worry about the media request context because that
     // shares the same cookie store as the main request context.
     partition->ClearDataForOrigin(
-        ~StoragePartition::REMOVE_DATA_MASK_SHADER_CACHE,
-        StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL, origin,
+        ~StoragePartition::REMOVE_DATA_MASK_SHADER_CACHE, origin,
         std::move(done_callback));
   }
 }

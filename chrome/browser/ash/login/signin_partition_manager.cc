@@ -34,10 +34,8 @@ std::string GeneratePartitionName() {
 void ClearStoragePartition(content::StoragePartition* storage_partition,
                            base::OnceClosure partition_data_cleared) {
   storage_partition->ClearData(
-      content::StoragePartition::REMOVE_DATA_MASK_ALL,
-      content::StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL,
-      blink::StorageKey(), base::Time(), base::Time::Max(),
-      std::move(partition_data_cleared));
+      content::StoragePartition::REMOVE_DATA_MASK_ALL, blink::StorageKey(),
+      base::Time(), base::Time::Max(), std::move(partition_data_cleared));
 }
 
 network::mojom::NetworkContext* GetSystemNetworkContext() {

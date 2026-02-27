@@ -215,7 +215,6 @@ class PaymentAppBrowserTest : public ContentBrowserTest {
                                            ->GetBrowserContext()
                                            ->GetDefaultStoragePartition())
         ->ClearData(StoragePartition::REMOVE_DATA_MASK_SERVICE_WORKERS,
-                    StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL,
                     blink::StorageKey(), base::Time(), base::Time::Max(),
                     run_loop.QuitClosure());
 

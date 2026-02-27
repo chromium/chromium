@@ -1408,7 +1408,6 @@ IN_PROC_BROWSER_TEST_P(KeepAliveFetchRetryBrowserTest,
   static_cast<StoragePartitionImpl*>(
       web_contents()->GetBrowserContext()->GetDefaultStoragePartition())
       ->ClearData(StoragePartition::REMOVE_KEEPALIVE_LOADS_ATTEMPTING_RETRY,
-                  StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL,
                   blink::StorageKey(), base::Time(), base::Time::Max(),
                   run_loop.QuitClosure());
   run_loop.Run();

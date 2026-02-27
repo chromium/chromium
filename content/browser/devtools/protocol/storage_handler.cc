@@ -676,7 +676,7 @@ void StorageHandler::ClearDataForOrigin(
   }
 
   storage_partition_->ClearData(
-      remove_mask, StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL,
+      remove_mask,
       blink::StorageKey::CreateFirstParty(url::Origin::Create(GURL(origin))),
       base::Time(), base::Time::Max(),
       base::BindOnce(&ClearDataForOriginCallback::sendSuccess,
@@ -705,8 +705,7 @@ void StorageHandler::ClearDataForStorageKey(
         Response::InvalidParams("Unable to deserialize storage key"));
   }
   storage_partition_->ClearData(
-      remove_mask, StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL, *key,
-      base::Time(), base::Time::Max(),
+      remove_mask, *key, base::Time(), base::Time::Max(),
       base::BindOnce(&ClearDataForStorageKeyCallback::sendSuccess,
                      std::move(callback)));
 }

@@ -96,9 +96,8 @@ void InlineLoginHandler::HandleInitializeMessage(const base::ListValue& args) {
             current_url, signin::kSignInPromoQueryKeyForceKeepData, &value) ||
         value == "0") {
       partition->ClearData(
-          content::StoragePartition::REMOVE_DATA_MASK_ALL,
-          content::StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL,
-          blink::StorageKey(), base::Time(), base::Time::Max(),
+          content::StoragePartition::REMOVE_DATA_MASK_ALL, blink::StorageKey(),
+          base::Time(), base::Time::Max(),
           base::BindOnce(&InlineLoginHandler::ContinueHandleInitializeMessage,
                          weak_ptr_factory_.GetWeakPtr()));
     } else {

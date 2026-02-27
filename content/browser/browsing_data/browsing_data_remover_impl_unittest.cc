@@ -98,13 +98,11 @@ namespace {
 struct StoragePartitionRemovalData {
   StoragePartitionRemovalData()
       : remove_mask(0),
-        quota_storage_remove_mask(0),
         cookie_deletion_filter(network::mojom::CookieDeletionFilter::New()),
         remove_code_cache(false) {}
 
   StoragePartitionRemovalData(const StoragePartitionRemovalData& other)
       : remove_mask(other.remove_mask),
-        quota_storage_remove_mask(other.quota_storage_remove_mask),
         remove_begin(other.remove_begin),
         remove_end(other.remove_end),
         filter_builder(other.filter_builder ? other.filter_builder->Copy()
@@ -117,7 +115,6 @@ struct StoragePartitionRemovalData {
   StoragePartitionRemovalData& operator=(
       const StoragePartitionRemovalData& rhs) {
     remove_mask = rhs.remove_mask;
-    quota_storage_remove_mask = rhs.quota_storage_remove_mask;
     remove_begin = rhs.remove_begin;
     remove_end = rhs.remove_end;
     filter_builder = rhs.filter_builder ? rhs.filter_builder->Copy() : nullptr;
@@ -129,7 +126,6 @@ struct StoragePartitionRemovalData {
   }
 
   uint32_t remove_mask;
-  uint32_t quota_storage_remove_mask;
   base::Time remove_begin;
   base::Time remove_end;
   std::unique_ptr<BrowsingDataFilterBuilder> filter_builder;
@@ -164,12 +160,10 @@ class StoragePartitionRemovalTestStoragePartition
   ~StoragePartitionRemovalTestStoragePartition() override = default;
 
   void ClearDataForOrigin(uint32_t remove_mask,
-                          uint32_t quota_storage_remove_mask,
                           const GURL& storage_origin,
                           base::OnceClosure callback) override {}
 
   void ClearData(uint32_t remove_mask,
-                 uint32_t quota_storage_remove_mask,
                  const blink::StorageKey& storage_key,
                  const base::Time begin,
                  const base::Time end,
@@ -177,7 +171,6 @@ class StoragePartitionRemovalTestStoragePartition
     // Store stuff to verify parameters' correctness later.
     StoragePartitionRemovalData data;
     data.remove_mask = remove_mask;
-    data.quota_storage_remove_mask = quota_storage_remove_mask;
     data.remove_begin = begin;
     data.remove_end = end;
     storage_partition_removal_data_.push_back(std::move(data));
@@ -186,7 +179,6 @@ class StoragePartitionRemovalTestStoragePartition
   }
 
   void ClearData(uint32_t remove_mask,
-                 uint32_t quota_storage_remove_mask,
                  BrowsingDataFilterBuilder* filter_builder,
                  StorageKeyPolicyMatcherFunction storage_key_policy_matcher,
                  CookieDeletionFilterPtr cookie_deletion_filter,
@@ -197,7 +189,6 @@ class StoragePartitionRemovalTestStoragePartition
     // Store stuff to verify parameters' correctness later.
     StoragePartitionRemovalData data;
     data.remove_mask = remove_mask;
-    data.quota_storage_remove_mask = quota_storage_remove_mask;
     data.remove_begin = begin;
     data.remove_end = end;
     data.filter_builder = filter_builder ? filter_builder->Copy() : nullptr;
@@ -532,8 +523,6 @@ TEST_F(BrowsingDataRemoverImplTest, RemoveCookieForever) {
             StoragePartition::REMOVE_DATA_MASK_COOKIES |
                 StoragePartition::REMOVE_DATA_MASK_INTEREST_GROUPS |
                 StoragePartition::REMOVE_KEEPALIVE_LOADS_ATTEMPTING_RETRY);
-  EXPECT_EQ(removal_data.quota_storage_remove_mask,
-            StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL);
   EXPECT_EQ(removal_data.remove_begin, GetBeginTime());
 }
 
@@ -551,8 +540,6 @@ TEST_F(BrowsingDataRemoverImplTest, RemoveCookieLastHour) {
             StoragePartition::REMOVE_DATA_MASK_COOKIES |
                 StoragePartition::REMOVE_DATA_MASK_INTEREST_GROUPS |
                 StoragePartition::REMOVE_KEEPALIVE_LOADS_ATTEMPTING_RETRY);
-  EXPECT_EQ(removal_data.quota_storage_remove_mask,
-            StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL);
   EXPECT_EQ(removal_data.remove_begin, GetBeginTime());
 }
 
@@ -578,8 +565,6 @@ TEST_F(BrowsingDataRemoverImplTest, RemoveCookiesDomainPreserveList) {
             StoragePartition::REMOVE_DATA_MASK_COOKIES |
                 StoragePartition::REMOVE_DATA_MASK_INTEREST_GROUPS |
                 StoragePartition::REMOVE_KEEPALIVE_LOADS_ATTEMPTING_RETRY);
-  EXPECT_EQ(removal_data.quota_storage_remove_mask,
-            StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL);
   EXPECT_EQ(removal_data.remove_begin, GetBeginTime());
   const url::Origin kTestOrigin1 = url::Origin::Create(kTestUrl1);
   const url::Origin kTestOrigin2 =
@@ -630,8 +615,6 @@ TEST_F(BrowsingDataRemoverImplTest, RemoveUnprotectedLocalStorageForever) {
   StoragePartitionRemovalData removal_data = GetStoragePartitionRemovalData();
   EXPECT_EQ(removal_data.remove_mask,
             StoragePartition::REMOVE_DATA_MASK_LOCAL_STORAGE);
-  EXPECT_EQ(removal_data.quota_storage_remove_mask,
-            StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL);
   EXPECT_EQ(removal_data.remove_begin, GetBeginTime());
 
   ASSERT_TRUE(removal_data.filter_builder);
@@ -671,8 +654,6 @@ TEST_F(BrowsingDataRemoverImplTest, RemoveProtectedLocalStorageForever) {
   StoragePartitionRemovalData removal_data = GetStoragePartitionRemovalData();
   EXPECT_EQ(removal_data.remove_mask,
             StoragePartition::REMOVE_DATA_MASK_LOCAL_STORAGE);
-  EXPECT_EQ(removal_data.quota_storage_remove_mask,
-            StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL);
   EXPECT_EQ(removal_data.remove_begin, GetBeginTime());
 
   ASSERT_TRUE(removal_data.filter_builder);
@@ -709,8 +690,6 @@ TEST_F(BrowsingDataRemoverImplTest, RemoveLocalStorageForLastWeek) {
   StoragePartitionRemovalData removal_data = GetStoragePartitionRemovalData();
   EXPECT_EQ(removal_data.remove_mask,
             StoragePartition::REMOVE_DATA_MASK_LOCAL_STORAGE);
-  EXPECT_EQ(removal_data.quota_storage_remove_mask,
-            StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL);
   EXPECT_EQ(removal_data.remove_begin, GetBeginTime());
 
   ASSERT_TRUE(removal_data.filter_builder);
@@ -756,8 +735,6 @@ TEST_F(BrowsingDataRemoverImplTest, RemoveMultipleTypes) {
             StoragePartition::REMOVE_DATA_MASK_COOKIES |
                 StoragePartition::REMOVE_DATA_MASK_INTEREST_GROUPS |
                 StoragePartition::REMOVE_KEEPALIVE_LOADS_ATTEMPTING_RETRY);
-  EXPECT_EQ(removal_data.quota_storage_remove_mask,
-            StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL);
 }
 
 TEST_F(BrowsingDataRemoverImplTest, RemoveQuotaManagedDataForeverBoth) {
@@ -784,8 +761,6 @@ TEST_F(BrowsingDataRemoverImplTest, RemoveQuotaManagedDataForeverBoth) {
                 StoragePartition::REMOVE_DATA_MASK_SERVICE_WORKERS |
                 StoragePartition::REMOVE_DATA_MASK_CACHE_STORAGE |
                 StoragePartition::REMOVE_DATA_MASK_INDEXEDDB);
-  EXPECT_EQ(removal_data.quota_storage_remove_mask,
-            StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL);
 }
 
 TEST_F(BrowsingDataRemoverImplTest,
@@ -816,8 +791,6 @@ TEST_F(BrowsingDataRemoverImplTest,
                 StoragePartition::REMOVE_DATA_MASK_SERVICE_WORKERS |
                 StoragePartition::REMOVE_DATA_MASK_CACHE_STORAGE |
                 StoragePartition::REMOVE_DATA_MASK_INDEXEDDB);
-  EXPECT_EQ(removal_data.quota_storage_remove_mask,
-            StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL);
 
   ASSERT_TRUE(removal_data.filter_builder);
   EXPECT_TRUE(removal_data.filter_builder->MatchesAllOriginsAndDomains());
@@ -863,8 +836,6 @@ TEST_F(BrowsingDataRemoverImplTest,
                 StoragePartition::REMOVE_DATA_MASK_SERVICE_WORKERS |
                 StoragePartition::REMOVE_DATA_MASK_CACHE_STORAGE |
                 StoragePartition::REMOVE_DATA_MASK_INDEXEDDB);
-  EXPECT_EQ(removal_data.quota_storage_remove_mask,
-            StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL);
 
   ASSERT_TRUE(removal_data.filter_builder);
   EXPECT_TRUE(removal_data.filter_builder->MatchesAllOriginsAndDomains());
@@ -909,8 +880,6 @@ TEST_F(BrowsingDataRemoverImplTest, RemoveQuotaManagedDataForeverNeither) {
                 StoragePartition::REMOVE_DATA_MASK_SERVICE_WORKERS |
                 StoragePartition::REMOVE_DATA_MASK_CACHE_STORAGE |
                 StoragePartition::REMOVE_DATA_MASK_INDEXEDDB);
-  EXPECT_EQ(removal_data.quota_storage_remove_mask,
-            StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL);
 
   ASSERT_TRUE(removal_data.filter_builder);
   EXPECT_TRUE(removal_data.filter_builder->MatchesAllOriginsAndDomains());
@@ -959,8 +928,6 @@ TEST_F(BrowsingDataRemoverImplTest,
                 StoragePartition::REMOVE_DATA_MASK_SERVICE_WORKERS |
                 StoragePartition::REMOVE_DATA_MASK_CACHE_STORAGE |
                 StoragePartition::REMOVE_DATA_MASK_INDEXEDDB);
-  EXPECT_EQ(removal_data.quota_storage_remove_mask,
-            StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL);
   ASSERT_TRUE(removal_data.filter_builder);
   StoragePartition::StorageKeyMatcherFunction storage_key_matcher =
       removal_data.filter_builder->BuildStorageKeyFilter();
@@ -1000,8 +967,6 @@ TEST_F(BrowsingDataRemoverImplTest, RemoveQuotaManagedDataForLastHour) {
                 StoragePartition::REMOVE_DATA_MASK_CACHE_STORAGE |
                 StoragePartition::REMOVE_DATA_MASK_INDEXEDDB);
 
-  EXPECT_EQ(removal_data.quota_storage_remove_mask,
-            StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL);
   // Check removal begin time.
   EXPECT_EQ(removal_data.remove_begin, GetBeginTime());
 }
@@ -1032,8 +997,6 @@ TEST_F(BrowsingDataRemoverImplTest, RemoveQuotaManagedDataForLastWeek) {
                 StoragePartition::REMOVE_DATA_MASK_CACHE_STORAGE |
                 StoragePartition::REMOVE_DATA_MASK_INDEXEDDB);
 
-  EXPECT_EQ(removal_data.quota_storage_remove_mask,
-            StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL);
   // Check removal begin time.
   EXPECT_EQ(removal_data.remove_begin, GetBeginTime());
 }
@@ -1068,8 +1031,6 @@ TEST_F(BrowsingDataRemoverImplTest, RemoveQuotaManagedUnprotectedOrigins) {
                 StoragePartition::REMOVE_DATA_MASK_SERVICE_WORKERS |
                 StoragePartition::REMOVE_DATA_MASK_CACHE_STORAGE |
                 StoragePartition::REMOVE_DATA_MASK_INDEXEDDB);
-  EXPECT_EQ(removal_data.quota_storage_remove_mask,
-            StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL);
 
   ASSERT_TRUE(removal_data.filter_builder);
   EXPECT_TRUE(removal_data.filter_builder->MatchesAllOriginsAndDomains());
@@ -1120,8 +1081,6 @@ TEST_F(BrowsingDataRemoverImplTest, RemoveQuotaManagedProtectedSpecificOrigin) {
                 StoragePartition::REMOVE_DATA_MASK_SERVICE_WORKERS |
                 StoragePartition::REMOVE_DATA_MASK_CACHE_STORAGE |
                 StoragePartition::REMOVE_DATA_MASK_INDEXEDDB);
-  EXPECT_EQ(removal_data.quota_storage_remove_mask,
-            StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL);
 
   ASSERT_TRUE(removal_data.filter_builder);
   StoragePartition::StorageKeyMatcherFunction storage_key_matcher =
@@ -1173,8 +1132,6 @@ TEST_F(BrowsingDataRemoverImplTest, RemoveQuotaManagedProtectedOrigins) {
                 StoragePartition::REMOVE_DATA_MASK_SERVICE_WORKERS |
                 StoragePartition::REMOVE_DATA_MASK_CACHE_STORAGE |
                 StoragePartition::REMOVE_DATA_MASK_INDEXEDDB);
-  EXPECT_EQ(removal_data.quota_storage_remove_mask,
-            StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL);
 
   ASSERT_TRUE(removal_data.filter_builder);
   EXPECT_TRUE(removal_data.filter_builder->MatchesAllOriginsAndDomains());
@@ -1219,8 +1176,6 @@ TEST_F(BrowsingDataRemoverImplTest,
                 StoragePartition::REMOVE_DATA_MASK_SERVICE_WORKERS |
                 StoragePartition::REMOVE_DATA_MASK_CACHE_STORAGE |
                 StoragePartition::REMOVE_DATA_MASK_INDEXEDDB);
-  EXPECT_EQ(removal_data.quota_storage_remove_mask,
-            StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL);
 
   ASSERT_TRUE(removal_data.filter_builder);
   EXPECT_TRUE(removal_data.filter_builder->MatchesAllOriginsAndDomains());
@@ -1853,8 +1808,6 @@ TEST_F(BrowsingDataRemoverImplTest, NonDefaultStoragePartitionInFilter) {
                 StoragePartition::REMOVE_DATA_MASK_SERVICE_WORKERS |
                 StoragePartition::REMOVE_DATA_MASK_CACHE_STORAGE |
                 StoragePartition::REMOVE_DATA_MASK_INDEXEDDB);
-  EXPECT_EQ(removal_data.quota_storage_remove_mask,
-            StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL);
   ASSERT_TRUE(removal_data.filter_builder);
   EXPECT_EQ(non_default_storage_partition_config,
             removal_data.filter_builder->GetStoragePartitionConfig());
@@ -1926,8 +1879,6 @@ TEST_F(BrowsingDataRemoverImplSharedStorageTest,
   StoragePartitionRemovalData removal_data = GetStoragePartitionRemovalData();
   EXPECT_EQ(removal_data.remove_mask,
             StoragePartition::REMOVE_DATA_MASK_SHARED_STORAGE);
-  EXPECT_EQ(removal_data.quota_storage_remove_mask,
-            StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL);
   EXPECT_EQ(removal_data.remove_begin, GetBeginTime());
 
   ASSERT_TRUE(removal_data.filter_builder);
@@ -1968,8 +1919,6 @@ TEST_F(BrowsingDataRemoverImplSharedStorageTest,
   StoragePartitionRemovalData removal_data = GetStoragePartitionRemovalData();
   EXPECT_EQ(removal_data.remove_mask,
             StoragePartition::REMOVE_DATA_MASK_SHARED_STORAGE);
-  EXPECT_EQ(removal_data.quota_storage_remove_mask,
-            StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL);
   EXPECT_EQ(removal_data.remove_begin, GetBeginTime());
 
   ASSERT_TRUE(removal_data.filter_builder);
@@ -2007,8 +1956,6 @@ TEST_F(BrowsingDataRemoverImplSharedStorageTest,
   StoragePartitionRemovalData removal_data = GetStoragePartitionRemovalData();
   EXPECT_EQ(removal_data.remove_mask,
             StoragePartition::REMOVE_DATA_MASK_SHARED_STORAGE);
-  EXPECT_EQ(removal_data.quota_storage_remove_mask,
-            StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL);
   EXPECT_EQ(removal_data.remove_begin, GetBeginTime());
 
   ASSERT_TRUE(removal_data.filter_builder);

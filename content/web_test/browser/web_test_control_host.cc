@@ -1355,7 +1355,7 @@ void WebTestControlHost::OnTestFinished() {
       content::StoragePartition::REMOVE_DATA_MASK_ALL & ~exclusion_mask;
 
   storage_partition->ClearData(
-      removal_mask, content::StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL,
+      removal_mask,
       /*filter_builder=*/nullptr,
       content::StoragePartition::StorageKeyPolicyMatcherFunction(),
       /*cookie_deletion_filter=*/nullptr,

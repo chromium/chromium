@@ -512,7 +512,6 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
     if (lens::features::IsLensOverlayTranslateLanguagesFetchEnabled()) {
       profile_->GetDefaultStoragePartition()->ClearDataForOrigin(
           content::StoragePartition::REMOVE_DATA_MASK_LOCAL_STORAGE,
-          /*quota_storage_remove_mask=*/0,
           GURL(chrome::kChromeUILensOverlayUntrustedURL), base::DoNothing());
     }
 #endif
@@ -698,8 +697,7 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
 
       profile_->GetDefaultStoragePartition()->ClearDataForOrigin(
           content::StoragePartition::REMOVE_DATA_MASK_LOCAL_STORAGE,
-          /*quota_storage_remove_mask=*/0, GURL(chrome::kChromeUINewTabPageURL),
-          base::DoNothing());
+          GURL(chrome::kChromeUINewTabPageURL), base::DoNothing());
     }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

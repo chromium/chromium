@@ -109,7 +109,6 @@ void CastWebService::ClearLocalStorage(ClearLocalStorageCallback callback) {
             network::mojom::CookieDeletionSessionControl::IGNORE_CONTROL;
         partition->ClearData(
             remove_data_mask,
-            content::StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL,
             /*filter_builder=*/nullptr,
             content::StoragePartition::StorageKeyPolicyMatcherFunction(),
             std::move(cookie_delete_filter), /*perform_cleanup=*/true,

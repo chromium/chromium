@@ -285,9 +285,9 @@ void AwQuotaManagerBridge::DeleteAllDataFramework(JNIEnv* env) {
   uint32_t remove_mask = StoragePartition::REMOVE_DATA_MASK_FILE_SYSTEMS |
                          StoragePartition::REMOVE_DATA_MASK_INDEXEDDB |
                          StoragePartition::REMOVE_DATA_MASK_LOCAL_STORAGE;
-  GetStoragePartition()->ClearData(
-      remove_mask, StoragePartition::QUOTA_MANAGED_STORAGE_MASK_TEMPORARY,
-      blink::StorageKey(), base::Time(), base::Time::Max(), base::DoNothing());
+  GetStoragePartition()->ClearData(remove_mask, blink::StorageKey(),
+                                   base::Time(), base::Time::Max(),
+                                   base::DoNothing());
 }
 
 void AwQuotaManagerBridge::DeleteOriginFramework(
@@ -300,9 +300,8 @@ void AwQuotaManagerBridge::DeleteOriginFramework(
   // All (temporary) QuotaClient types.
   uint32_t remove_mask = StoragePartition::REMOVE_DATA_MASK_FILE_SYSTEMS |
                          StoragePartition::REMOVE_DATA_MASK_INDEXEDDB;
-  storage_partition->ClearDataForOrigin(
-      remove_mask, StoragePartition::QUOTA_MANAGED_STORAGE_MASK_TEMPORARY,
-      GURL(origin_string), base::DoNothing());
+  storage_partition->ClearDataForOrigin(remove_mask, GURL(origin_string),
+                                        base::DoNothing());
 }
 
 void AwQuotaManagerBridge::GetOrigins(JNIEnv* env,
