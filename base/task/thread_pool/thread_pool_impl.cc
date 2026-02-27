@@ -46,12 +46,24 @@ constexpr EnvironmentParams kForegroundPoolEnvironmentParams{
 constexpr EnvironmentParams kUtilityPoolEnvironmentParams{
     "Utility", base::ThreadType::kUtility};
 
+constexpr EnvironmentParams kPresentationPoolEnvironmentParams{
+    "Presentation", base::ThreadType::kPresentation};
+
+constexpr EnvironmentParams kAudioPoolEnvironmentParams{
+    "Audio", base::ThreadType::kAudioProcessing};
+
 constexpr EnvironmentParams kBackgroundPoolEnvironmentParams{
     "Background", base::ThreadType::kBackground};
 
 // Used for ThreadGroupProfiler to tag profiles collected for different thread
 // groups.
-enum ThreadGroupType { FOREGROUND = 0, UTILITY, BACKGROUND };
+enum ThreadGroupType {
+  FOREGROUND = 0,
+  UTILITY,
+  BACKGROUND,
+  PRESENTATION,
+  AUDIO
+};
 
 constexpr size_t kMaxBestEffortTasks = 2;
 
@@ -121,6 +133,8 @@ ThreadPoolImpl::~ThreadPoolImpl() {
   foreground_thread_group_.reset();
   utility_thread_group_.reset();
   background_thread_group_.reset();
+  presentation_thread_group_.reset();
+  audio_thread_group_.reset();
 }
 
 void ThreadPoolImpl::Start(const ThreadPoolInstance::InitParams& init_params,
@@ -160,8 +174,37 @@ void ThreadPoolImpl::Start(const ThreadPoolInstance::InitParams& init_params,
         kUtilityPoolEnvironmentParams.thread_type_hint,
         ThreadGroupType::UTILITY, task_tracker_->GetTrackedRef(),
         tracked_ref_factory_.GetTrackedRef());
-    foreground_thread_group_->HandoffNonDefaultTaskSourcesToOtherThreadGroup(
-        utility_thread_group_.get());
+    foreground_thread_group_
+        ->HandoffTaskSourcesToOtherThreadGroupAtMostThreadType(
+            ThreadType::kUtility, utility_thread_group_.get());
+  }
+  if (FeatureList::IsEnabled(kUseHighPriorityThreadGroup)) {
+    audio_thread_group_ = std::make_unique<ThreadGroupImpl>(
+        histogram_label_.empty()
+            ? std::string()
+            : JoinString(
+                  {histogram_label_, kAudioPoolEnvironmentParams.name_suffix},
+                  "."),
+        kAudioPoolEnvironmentParams.name_suffix,
+        kAudioPoolEnvironmentParams.thread_type_hint, ThreadGroupType::AUDIO,
+        task_tracker_->GetTrackedRef(), tracked_ref_factory_.GetTrackedRef());
+    presentation_thread_group_ = std::make_unique<ThreadGroupImpl>(
+        histogram_label_.empty()
+            ? std::string()
+            : JoinString({histogram_label_,
+                          kPresentationPoolEnvironmentParams.name_suffix},
+                         "."),
+        kPresentationPoolEnvironmentParams.name_suffix,
+        kPresentationPoolEnvironmentParams.thread_type_hint,
+        ThreadGroupType::PRESENTATION, task_tracker_->GetTrackedRef(),
+        tracked_ref_factory_.GetTrackedRef());
+
+    foreground_thread_group_
+        ->HandoffTaskSourcesToOtherThreadGroupAtLeastThreadType(
+            ThreadType::kAudioProcessing, audio_thread_group_.get());
+    foreground_thread_group_
+        ->HandoffTaskSourcesToOtherThreadGroupAtLeastThreadType(
+            ThreadType::kPresentation, presentation_thread_group_.get());
   }
 
   // Update the CanRunPolicy based on |has_disable_best_effort_switch_|.
@@ -188,6 +231,7 @@ void ThreadPoolImpl::Start(const ThreadPoolInstance::InitParams& init_params,
 
   size_t foreground_threads = init_params.max_num_foreground_threads;
   size_t utility_threads = init_params.max_num_utility_threads;
+  size_t audio_threads = init_params.max_num_audio_threads;
 
   // On platforms that can't use the background thread priority, best-effort
   // tasks run in foreground pools. A cap is set on the number of best-effort
@@ -206,6 +250,22 @@ void ThreadPoolImpl::Start(const ThreadPoolInstance::InitParams& init_params,
         utility_threads, max_best_effort_tasks,
         init_params.suggested_reclaim_time, service_thread_task_runner,
         worker_thread_observer, worker_environment,
+        g_synchronous_thread_start_for_testing,
+        /*may_block_threshold_for_testing=*/{});
+  }
+
+  if (presentation_thread_group_) {
+    presentation_thread_group_.get()->Start(
+        foreground_threads, 0, init_params.suggested_reclaim_time,
+        service_thread_task_runner, worker_thread_observer, worker_environment,
+        g_synchronous_thread_start_for_testing,
+        /*may_block_threshold_for_testing=*/{});
+  }
+
+  if (audio_thread_group_) {
+    audio_thread_group_.get()->Start(
+        audio_threads, 0, init_params.suggested_reclaim_time,
+        service_thread_task_runner, worker_thread_observer, worker_environment,
         g_synchronous_thread_start_for_testing,
         /*may_block_threshold_for_testing=*/{});
   }
@@ -239,6 +299,12 @@ void ThreadPoolImpl::BeginRestrictedTasks() {
   if (background_thread_group_) {
     background_thread_group_->SetMaxTasks(1);
   }
+  if (presentation_thread_group_) {
+    presentation_thread_group_->SetMaxTasks(1);
+  }
+  if (audio_thread_group_) {
+    audio_thread_group_->SetMaxTasks(1);
+  }
 }
 
 void ThreadPoolImpl::EndRestrictedTasks() {
@@ -248,6 +314,12 @@ void ThreadPoolImpl::EndRestrictedTasks() {
   }
   if (background_thread_group_) {
     background_thread_group_->ResetMaxTasks();
+  }
+  if (presentation_thread_group_) {
+    presentation_thread_group_->ResetMaxTasks();
+  }
+  if (audio_thread_group_) {
+    audio_thread_group_->ResetMaxTasks();
   }
 }
 
@@ -369,6 +441,12 @@ void ThreadPoolImpl::Shutdown() {
   if (background_thread_group_) {
     background_thread_group_->OnShutdownStarted();
   }
+  if (presentation_thread_group_) {
+    presentation_thread_group_->OnShutdownStarted();
+  }
+  if (audio_thread_group_) {
+    audio_thread_group_->OnShutdownStarted();
+  }
 
   task_tracker_->CompleteShutdown();
 }
@@ -424,6 +502,12 @@ void ThreadPoolImpl::JoinForTesting() {
   }
   if (background_thread_group_) {
     background_thread_group_->JoinForTesting();
+  }
+  if (presentation_thread_group_) {
+    presentation_thread_group_->JoinForTesting();
+  }
+  if (audio_thread_group_) {
+    audio_thread_group_->JoinForTesting();
   }
 #if DCHECK_IS_ON()
   join_for_testing_returned_.Set();
@@ -629,6 +713,14 @@ ThreadGroup* ThreadPoolImpl::GetThreadGroup(ThreadType thread_type,
     return utility_thread_group_.get();
   }
 
+  if (thread_type >= ThreadType::kAudioProcessing && audio_thread_group_) {
+    return audio_thread_group_.get();
+  }
+
+  if (thread_type >= ThreadType::kPresentation && presentation_thread_group_) {
+    return presentation_thread_group_.get();
+  }
+
   return foreground_thread_group_.get();
 }
 
@@ -656,6 +748,12 @@ void ThreadPoolImpl::UpdateCanRunPolicy(CanRunPolicy can_run_policy) {
   }
   if (background_thread_group_) {
     background_thread_group_->DidUpdateCanRunPolicy();
+  }
+  if (presentation_thread_group_) {
+    presentation_thread_group_->DidUpdateCanRunPolicy();
+  }
+  if (audio_thread_group_) {
+    audio_thread_group_->DidUpdateCanRunPolicy();
   }
   single_thread_task_runner_manager_.DidUpdateCanRunPolicy();
 }

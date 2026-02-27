@@ -340,27 +340,40 @@ void ThreadGroup::EnqueueAllTaskSources(PriorityQueue* new_priority_queue) {
   }
 }
 
-void ThreadGroup::HandoffAllTaskSourcesToOtherThreadGroup(
+void ThreadGroup::HandoffTaskSourcesToOtherThreadGroupAtLeastThreadType(
+    ThreadType min_thread_type,
     ThreadGroup* destination_thread_group) {
   PriorityQueue new_priority_queue;
   TaskSourceSortKey top_sort_key;
   {
+    // Since tasks are ordered by decreasing priority, this is implemented by
+    // moving all tasks with priority higher or equal to `min_thread_type` to a
+    // `new_priority_queue`.
     CheckedAutoLock current_thread_group_lock(lock_);
-    new_priority_queue.swap(priority_queue_);
+    while (!priority_queue_.IsEmpty() &&
+           (top_sort_key = priority_queue_.PeekSortKey()).thread_type() >=
+               min_thread_type) {
+      new_priority_queue.Push(priority_queue_.PopTaskSource(), top_sort_key);
+    }
   }
   destination_thread_group->EnqueueAllTaskSources(&new_priority_queue);
 }
 
-void ThreadGroup::HandoffNonDefaultTaskSourcesToOtherThreadGroup(
+void ThreadGroup::HandoffTaskSourcesToOtherThreadGroupAtMostThreadType(
+    ThreadType max_thread_type,
     ThreadGroup* destination_thread_group) {
   PriorityQueue new_priority_queue;
   TaskSourceSortKey top_sort_key;
   {
-    // This works because all kDefault tasks are at the front of the queue.
+    // Since tasks are ordered by decreasing priority, this is implemented by
+    // moving all tasks with priority higher than `max_thread_type` to a new
+    // queue, and then swapping it with `priority_queue_`. Thus all tasks with
+    // priority lower or equal to `max_thread_type` will end up in
+    // `new_priority_queue`.
     CheckedAutoLock current_thread_group_lock(lock_);
     while (!priority_queue_.IsEmpty() &&
-           (top_sort_key = priority_queue_.PeekSortKey()).thread_type() ==
-               ThreadType::kDefault) {
+           (top_sort_key = priority_queue_.PeekSortKey()).thread_type() >
+               max_thread_type) {
       new_priority_queue.Push(priority_queue_.PopTaskSource(), top_sort_key);
     }
     new_priority_queue.swap(priority_queue_);

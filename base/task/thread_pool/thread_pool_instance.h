@@ -54,7 +54,8 @@ class BASE_EXPORT ThreadPoolInstance {
 
     InitParams(size_t max_num_foreground_threads_in);
     InitParams(size_t max_num_foreground_threads_in,
-               size_t max_num_utility_threads_in);
+               size_t max_num_utility_threads_in,
+               size_t max_num_audio_threads_in);
     ~InitParams();
 
     // Maximum number of unblocked tasks that can run concurrently in the
@@ -66,6 +67,10 @@ class BASE_EXPORT ThreadPoolInstance {
     // Maximum number of unblocked tasks that can run concurrently in the
     // utility thread group.
     size_t max_num_utility_threads;
+
+    // Maximum number of unblocked tasks that can run concurrently in the
+    // audio thread group.
+    size_t max_num_audio_threads;
 
     // Whether COM is initialized when running sequenced and parallel tasks.
     CommonThreadPoolEnvironment common_thread_pool_environment =

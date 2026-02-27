@@ -200,6 +200,8 @@ class BASE_EXPORT ThreadPoolImpl : public ThreadPoolInstance,
   std::unique_ptr<ThreadGroup> foreground_thread_group_;
   std::unique_ptr<ThreadGroup> utility_thread_group_;
   std::unique_ptr<ThreadGroup> background_thread_group_;
+  std::unique_ptr<ThreadGroup> presentation_thread_group_;
+  std::unique_ptr<ThreadGroup> audio_thread_group_;
 
   // Whether this TaskScheduler was started.
   bool started_ GUARDED_BY_CONTEXT(sequence_checker_) = false;

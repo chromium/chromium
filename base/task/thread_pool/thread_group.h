@@ -136,13 +136,16 @@ class BASE_EXPORT ThreadGroup {
   virtual void PushTaskSourceAndWakeUpWorkers(
       RegisteredTaskSourceAndTransaction transaction_with_task_source) = 0;
 
-  // Move all task sources from this ThreadGroup's PriorityQueue to the
-  // |destination_thread_group|'s.
-  void HandoffAllTaskSourcesToOtherThreadGroup(
+  // Move all task sources at least `min_thread_type`, from this
+  // ThreadGroup's PriorityQueue to the |destination_thread_group|'s.
+  void HandoffTaskSourcesToOtherThreadGroupAtLeastThreadType(
+      ThreadType min_thread_type,
       ThreadGroup* destination_thread_group);
-  // Move all task sources except the ones with TaskPriority::USER_BLOCKING,
-  // from this ThreadGroup's PriorityQueue to the |destination_thread_group|'s.
-  void HandoffNonDefaultTaskSourcesToOtherThreadGroup(
+
+  // Move all task sources at most `max_thread_type`, from this
+  // ThreadGroup's PriorityQueue to the |destination_thread_group|'s.
+  void HandoffTaskSourcesToOtherThreadGroupAtMostThreadType(
+      ThreadType max_thread_type,
       ThreadGroup* destination_thread_group);
 
   // Returns true if a task with |sort_key| running in this thread group should

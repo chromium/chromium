@@ -58,7 +58,7 @@ namespace internal {
 // this task executes on. This is used to influence the priority of other tasks
 // posted from the current task, but not to influence OS-thread Priority of the
 // current task.
-ThreadType GetCurrentTaskImportance();
+BASE_EXPORT ThreadType GetCurrentTaskImportance();
 
 // Overrides the ThreadType returned by GetCurrentTaskImportance(). ThreadType
 // can only be lowered; a higher ThreadType will be ignored.
