@@ -355,9 +355,6 @@ class CONTENT_EXPORT PrefetchContainer {
   void UpdateResourceRequest(const net::RedirectInfo& redirect_info,
                              PrefetchUpdateHeadersParams params);
 
-  // The length of the redirect chain for this prefetch.
-  size_t GetRedirectChainSize() const { return redirect_chain_.size(); }
-
   // Whether this prefetch is a decoy. Decoy prefetches will not store the
   // response, and not serve any prefetched resources.
   void SetIsDecoy(bool is_decoy) { is_decoy_ = is_decoy; }
