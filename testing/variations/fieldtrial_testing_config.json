@@ -26662,9 +26662,10 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "EnabledWithExplicitSigninForExtensionsAndBookmarks",
                     "params": {
-                        "ExplicitSigninForExtensions": "false"
+                        "ExplicitSigninForBookmarks": "true",
+                        "ExplicitSigninForExtensions": "true"
                     },
                     "enable_features": [
                         "ForcedDiceMigration",
@@ -26674,9 +26675,10 @@
                     ]
                 },
                 {
-                    "name": "EnabledWithExplicitSigninForExtensions",
+                    "name": "Enabled",
                     "params": {
-                        "ExplicitSigninForExtensions": "true"
+                        "ExplicitSigninForBookmarks": "false",
+                        "ExplicitSigninForExtensions": "false"
                     },
                     "enable_features": [
                         "ForcedDiceMigration",

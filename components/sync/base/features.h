@@ -89,10 +89,16 @@ BASE_DECLARE_FEATURE(kSeparateLocalAndAccountSearchEngines);
 
 // Feature flag to replace all sync-related UI with sign-in ones.
 BASE_DECLARE_FEATURE(kReplaceSyncPromosWithSignInPromos);
+
 // Enables syncing extensions only if the user newly signs in to Chrome, not if
 // they were already signed in by the time `kReplaceSyncPromosWithSignInPromos`
 // was enabled.
 BASE_DECLARE_FEATURE_PARAM(bool, kExplicitSigninForExtensions);
+
+// Enables syncing bookmarks and reading list only if the user newly signs in to
+// Chrome, not if they were already signed in by the time
+// `kReplaceSyncPromosWithSignInPromos` was enabled.
+BASE_DECLARE_FEATURE_PARAM(bool, kExplicitSigninForBookmarks);
 
 // If enabled, allowlisted priority preferences will be synced even if the
 // preferences user toggle is off. Note that this flag is only meaningful if
