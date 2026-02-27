@@ -3409,6 +3409,17 @@ Keep consistent with active providers. Doesn't need to include every provider in
   </summary>
 </histogram>
 
+<histogram name="Omnibox.SearchPrefetch.KeepAliveRequestFinalStage"
+    enum="FetchKeepAliveRequestStage" expires_after="2026-06-22">
+  <owner>lingqi@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <summary>
+    Records the final stage of a keep-alive request for search prefetch
+    activated pages. Recorded when the SearchPrefetchKeepAliveRequestTracker is
+    destroyed.
+  </summary>
+</histogram>
+
 <histogram
     name="Omnibox.SearchPrefetch.SearchWhatYouTypedWasAlsoSuggested.{HistoryOrSuggest}"
     enum="Boolean" expires_after="2023-05-02">
