@@ -18,16 +18,12 @@ import stat
 import sys
 import tempfile
 
-# Keys that should not be copied from mobileprovision
-BANNED_KEYS = [
-    "com.apple.developer.cs.allow-jit",
-    "com.apple.developer.memory.transfer-send",
-    "com.apple.developer.web-browser",
-    "com.apple.developer.web-browser-engine.host",
-    "com.apple.developer.web-browser-engine.networking",
-    "com.apple.developer.web-browser-engine.rendering",
-    "com.apple.developer.web-browser-engine.webcontent",
-    "com.apple.security.hardened-process",
+# Keys that should be copied from mobileprovision
+ALLOWED_KEYS = [
+    "aps-environment",
+    "com.apple.developer.team-identifier",
+    "get-task-allow",
+    "keychain-access-groups",
 ]
 
 # Patterns for bundle extension per bundle type.
@@ -326,7 +322,7 @@ class Entitlements(object):
 
   def LoadDefaults(self, defaults):
     for key, value in defaults.items():
-      if key not in self._data and key not in BANNED_KEYS:
+      if key not in self._data and key in ALLOWED_KEYS:
         self._data[key] = value
 
   def WriteTo(self, target_path):
