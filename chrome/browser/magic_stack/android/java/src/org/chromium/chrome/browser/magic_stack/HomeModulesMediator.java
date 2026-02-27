@@ -169,7 +169,7 @@ public class HomeModulesMediator {
 
     /** Re-evaluates eligibility and re-renders the magic stack. */
     void refreshModules() {
-        if (mOnHomeModulesChangedCallback == null || mModuleDelegate == null) {
+        if (!mIsShown || mOnHomeModulesChangedCallback == null || mModuleDelegate == null) {
             return;
         }
         showModules(

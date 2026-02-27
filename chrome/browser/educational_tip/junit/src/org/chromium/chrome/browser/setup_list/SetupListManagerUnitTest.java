@@ -9,6 +9,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -622,5 +624,28 @@ public class SetupListManagerUnitTest {
         // 3. Assert: Sign-In should be completed and awaiting animation.
         assertTrue(manager.isModuleCompleted(ModuleType.SIGN_IN_PROMO));
         assertTrue(manager.isModuleAwaitingCompletionAnimation(ModuleType.SIGN_IN_PROMO));
+    }
+
+    @Test
+    @SmallTest
+    public void testObserver_NotifiedOnPrimaryAccountChanged() {
+        SetupListManager.setInstanceForTesting(new SetupListManager());
+        SetupListManager manager = SetupListManager.getInstance();
+        SetupListManager.Observer observer = mock(SetupListManager.Observer.class);
+        manager.addObserver(observer);
+
+        // Sign-in event
+        PrimaryAccountChangeEvent signInEvent =
+                new PrimaryAccountChangeEvent(
+                        PrimaryAccountChangeEvent.Type.SET, ConsentLevel.SIGNIN);
+        manager.onPrimaryAccountChanged(signInEvent);
+        verify(observer).onSetupListStateChanged();
+
+        // Sign-out event
+        PrimaryAccountChangeEvent signOutEvent =
+                new PrimaryAccountChangeEvent(
+                        PrimaryAccountChangeEvent.Type.CLEARED, ConsentLevel.SIGNIN);
+        manager.onPrimaryAccountChanged(signOutEvent);
+        verify(observer, times(2)).onSetupListStateChanged();
     }
 }

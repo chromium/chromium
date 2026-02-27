@@ -13,6 +13,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
@@ -51,6 +52,12 @@ import java.util.concurrent.TimeUnit;
 @NullMarked
 public class SetupListManager
         implements SharedPreferences.OnSharedPreferenceChangeListener, IdentityManager.Observer {
+    /** Interface for observing changes to the Setup List state. */
+    public interface Observer {
+        /** Called when the Setup List's state (eligibility, ranking, or layout) has changed. */
+        void onSetupListStateChanged();
+    }
+
     // TODO(crbug.com/469425754): Re-arrange the class in a more meaningful manner.
     /** Defines the mutually exclusive UI layouts for the Setup List. */
     @IntDef({
@@ -112,6 +119,7 @@ public class SetupListManager
     private @Nullable Profile mProfile;
     private final Set<Integer> mModulesAwaitingCompletionAnimation = new HashSet<>();
     private boolean mHasRegisteredIdentityObserver;
+    private final ObserverList<Observer> mObservers = new ObserverList<>();
 
     /** The current UI layout phase of the Setup List. */
     private @SetupListActiveLayout int mActiveLayout = SetupListActiveLayout.SINGLE_CELL;
@@ -421,12 +429,31 @@ public class SetupListManager
         }
     }
 
+    /** Adds an observer to be notified of Setup List state changes. */
+    public void addObserver(Observer observer) {
+        mObservers.addObserver(observer);
+    }
+
+    /** Removes a previously added observer. */
+    public void removeObserver(Observer observer) {
+        mObservers.removeObserver(observer);
+    }
+
     @Override
     public void onPrimaryAccountChanged(PrimaryAccountChangeEvent eventDetails) {
         @PrimaryAccountChangeEvent.Type
         int eventType = eventDetails.getEventTypeFor(ConsentLevel.SIGNIN);
         if (eventType == PrimaryAccountChangeEvent.Type.SET) {
             setModuleCompleted(ModuleType.SIGN_IN_PROMO, /* silent= */ false);
+        } else {
+            reconcileState();
+        }
+        notifyStateChanged();
+    }
+
+    private void notifyStateChanged() {
+        for (Observer observer : mObservers) {
+            observer.onSetupListStateChanged();
         }
     }
 

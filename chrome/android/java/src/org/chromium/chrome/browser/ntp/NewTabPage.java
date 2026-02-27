@@ -212,6 +212,7 @@ public class NewTabPage
     private @Nullable SingleTabSwitcherCoordinator mSingleTabSwitcherCoordinator;
     private @Nullable ViewGroup mSingleTabCardContainer;
     private @Nullable HomeModulesCoordinator mHomeModulesCoordinator;
+    private SetupListManager.@Nullable Observer mSetupListObserver;
     private @Nullable ViewGroup mHomeModulesContainer;
     private final SettableNullableObservableSupplier<Tab> mMostRecentTabSupplier =
             ObservableSuppliers.createNullable();
@@ -1249,6 +1250,11 @@ public class NewTabPage
             mHomeModulesCoordinator.destroy();
         }
 
+        if (mSetupListObserver != null) {
+            SetupListManager.getInstance().removeObserver(mSetupListObserver);
+            mSetupListObserver = null;
+        }
+
         if (mTopInsetChangeObserver != null) {
             mTopInsetProvider.removeObserver(mTopInsetChangeObserver);
             mTopInsetChangeObserver = null;
@@ -1521,6 +1527,16 @@ public class NewTabPage
                         HomeModulesConfigManager.getInstance(),
                         profileSupplier,
                         assertNonNull(assumeNonNull(mModuleRegistrySupplier).get()));
+
+        if (SetupListManager.getInstance().isSetupListActive()) {
+            mSetupListObserver =
+                    () -> {
+                        if (mHomeModulesCoordinator != null) {
+                            mHomeModulesCoordinator.refreshModules();
+                        }
+                    };
+            SetupListManager.getInstance().addObserver(mSetupListObserver);
+        }
     }
 
     private void onMagicStackShown(boolean isVisible) {
