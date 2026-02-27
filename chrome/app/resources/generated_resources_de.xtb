@@ -3411,7 +3411,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
         <ph name="BREAK" />
         <ph name="BREAK" />
         Über das Kartenmenü kannst du die Einstellungen verwalten und unter „Chrome anpassen“ kannst du weitere Optionen aufrufen.</translation>
-<translation id="3308134619352333507">Schaltfläche ausblenden</translation>
+<translation id="3308134619352333507">Button ausblenden</translation>
 <translation id="3308604065765626613">{GROUP_COUNT,plural, =1{Die Tabs bleiben auf diesem Gerät geöffnet, aber die Gruppe wird endgültig gelöscht.}other{Die Tabs bleiben auf diesem Gerät geöffnet, aber die Gruppen werden endgültig gelöscht.}}</translation>
 <translation id="3308852433423051161">Google Assistant wird geladen...</translation>
 <translation id="3309124184713871355">Bauwerke</translation>
@@ -8006,7 +8006,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6470120577693311302">Aufleuchten bei Benachrichtigungen</translation>
 <translation id="6470499912143282503">Wenn du Tabs teilen und mit anderen zusammenarbeiten möchtest, melde dich in Chrome an und synchronisiere deinen Verlauf und deine Tabs. Du kannst dann auch auf allen deinen Geräten auf deine Passwörter und weitere Daten zugreifen.</translation>
 <translation id="6470823736074966819">Benachrichtigungen stummschalten</translation>
-<translation id="6472893788822429178">Schaltfläche „Startseite“ anzeigen</translation>
+<translation id="6472893788822429178">Button „Startseite“ anzeigen</translation>
 <translation id="6473315466413288899">Option auswählen</translation>
 <translation id="6474498546677193336">Die Aufhebung der Freigabe ist nicht möglich, weil eine Anwendung diesen Ordner verwendet. Die Freigabe des Ordners wird aufgehoben, wenn Linux das nächste Mal heruntergefahren wird.</translation>
 <translation id="6474884162850599008">Verbindung zu Google Drive-Konto aufheben</translation>
