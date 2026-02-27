@@ -45,6 +45,7 @@
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/search.h"
+#include "chrome/browser/ui/waap/waap_utils.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_contents.h"
 #include "components/page_load_metrics/browser/features.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
@@ -173,6 +174,14 @@ void PageLoadMetricsEmbedder::RegisterObservers(
     tracker->AddObserver(std::make_unique<NonTabPageLoadMetricsObserver>(
         std::string(GetNonTabWebUIName(web_contents()->GetBrowserContext(),
                                        navigation_handle->GetURL()))));
+    if (waap::IsForInitialWebUI(navigation_handle->GetURL())) {
+      // For initial WebUIs, record PageLoad UKMs.
+      std::unique_ptr<page_load_metrics::PageLoadMetricsObserver> ukm_observer =
+          UkmPageLoadMetricsObserver::CreateIfNeeded();
+      if (ukm_observer) {
+        tracker->AddObserver(std::move(ukm_observer));
+      }
+    }
     return;
   }
 #endif
