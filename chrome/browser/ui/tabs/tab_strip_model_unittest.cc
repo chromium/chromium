@@ -7012,7 +7012,6 @@ TEST_F(TabStripModelCallbackTest, MoveTabToGroupThenDeleteGroup) {
   tabstrip()->CloseAllTabs();
 }
 
-#if BUILDFLAG(ENABLE_GLIC)
 TEST_P(TabStripModelTest, CommandGlicUnshare) {
   tabstrip()->AppendWebContents(CreateWebContentsWithID(1), true);
   EXPECT_TRUE(tabstrip()->IsContextMenuCommandEnabled(
@@ -7021,7 +7020,6 @@ TEST_P(TabStripModelTest, CommandGlicUnshare) {
   // This should not crash (it CHECKs the delegate returns true).
   tabstrip()->ExecuteContextMenuCommand(0, TabStripModel::CommandGlicUnshare);
 }
-#endif
 
 TEST_P(TabStripModelTest, TabStripUIWasSetResetOnObserverRemoval) {
   MockTabStripModelObserver observer;

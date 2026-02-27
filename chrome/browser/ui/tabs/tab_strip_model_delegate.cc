@@ -11,7 +11,5 @@ TabStripModelDelegate::NewStripContents::~NewStripContents() = default;
 TabStripModelDelegate::NewStripContents::NewStripContents(NewStripContents&&) =
     default;
 
-#if BUILDFLAG(ENABLE_GLIC)
 void TabStripModelDelegate::GlicUnpinTabsFromAllConversations(
     base::span<const tabs::TabHandle> tab_handles) {}
-#endif

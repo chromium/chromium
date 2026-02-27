@@ -17,6 +17,9 @@
 #include "base/metrics/user_metrics_action.h"
 #include "base/notreached.h"
 #include "chrome/browser/actor/ui/actor_ui_tab_controller.h"
+#include "chrome/browser/glic/browser_ui/glic_tab_indicator_helper.h"
+#include "chrome/browser/glic/public/context/glic_sharing_manager.h"
+#include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 #include "chrome/browser/ui/recently_audible_helper.h"
@@ -27,12 +30,6 @@
 #include "content/public/browser/web_contents_capability_type.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
-
-#if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/glic/browser_ui/glic_tab_indicator_helper.h"
-#include "chrome/browser/glic/public/context/glic_sharing_manager.h"
-#include "chrome/browser/glic/public/glic_keyed_service.h"
-#endif  // BUILDFLAG(ENABLE_GLIC)
 
 namespace tabs {
 
@@ -54,10 +51,8 @@ bool CompareAlerts::operator()(TabAlert first, TabAlert second) const {
            {TabAlert::kSerialConnected, 8},
            {TabAlert::kActorWaitingOnUser, 7},
            {TabAlert::kActorAccessing, 6},
-#if BUILDFLAG(ENABLE_GLIC)
            {TabAlert::kGlicAccessing, 5},
            {TabAlert::kGlicSharing, 4},
-#endif  // BUILDFLAG(ENABLE_GLIC)
         // NOTE: VR must take priority over the audio alert ones
         // because most VR content has audio and its usage is implied by the
         // VR icon.
@@ -93,7 +88,6 @@ TabAlertController::TabAlertController(TabInterface& tab)
                 base::Unretained(this)));
   }
 
-#if BUILDFLAG(ENABLE_GLIC)
   glic::GlicTabIndicatorHelper* const glic_tab_indicator_helper =
       glic::GlicTabIndicatorHelper::From(&tab);
   if (glic_tab_indicator_helper) {
@@ -106,7 +100,6 @@ TabAlertController::TabAlertController(TabInterface& tab)
             base::BindRepeating(&TabAlertController::OnGlicAccessingStateChange,
                                 base::Unretained(this))));
   }
-#endif  // BUILDFLAG(ENABLE_GLIC)
 }
 
 TabAlertController::~TabAlertController() = default;
@@ -181,13 +174,11 @@ std::u16string TabAlertController::GetTabAlertStateText(
       return l10n_util::GetStringUTF16(
           IDS_TOOLTIP_TAB_ALERT_STATE_ACTOR_ACCESSING);
     case TabAlert::kGlicAccessing:
-#if BUILDFLAG(ENABLE_GLIC)
       return l10n_util::GetStringUTF16(
           IDS_TOOLTIP_TAB_ALERT_STATE_GLIC_ACCESSING);
     case TabAlert::kGlicSharing:
       return l10n_util::GetStringUTF16(
           IDS_TOOLTIP_TAB_ALERT_STATE_GLIC_SHARING);
-#endif
   }
   NOTREACHED();
 }
@@ -226,12 +217,10 @@ int TabAlertController::GetAccessibleAlertStringId(const TabAlert alert_state) {
     case TabAlert::kActorAccessing:
     case TabAlert::kActorWaitingOnUser:
       return IDS_TAB_AX_LABEL_ACTOR_ACCESSING;
-#if BUILDFLAG(ENABLE_GLIC)
     case TabAlert::kGlicAccessing:
       return IDS_TAB_AX_LABEL_GLIC_ACCESSING;
     case TabAlert::kGlicSharing:
       return IDS_TAB_AX_LABEL_GLIC_SHARING;
-#endif
   }
 }
 
@@ -259,10 +248,8 @@ void TabAlertController::RecordCloseTabMetrics(const TabAlert alert_state) {
     case TabAlert::kVrPresentingInHeadset:
     case TabAlert::kActorWaitingOnUser:
     case TabAlert::kActorAccessing:
-#if BUILDFLAG(ENABLE_GLIC)
     case TabAlert::kGlicAccessing:
     case TabAlert::kGlicSharing:
-#endif
       break;
   }
 }
@@ -398,7 +385,6 @@ void TabAlertController::OnIsContentDisplayedInHeadsetChanged(bool state) {
   UpdateAlertState(TabAlert::kVrPresentingInHeadset, state);
 }
 
-#if BUILDFLAG(ENABLE_GLIC)
 void TabAlertController::OnGlicSharingStateChange(bool is_sharing) {
   UpdateAlertState(TabAlert::kGlicSharing, is_sharing);
 }
@@ -406,7 +392,6 @@ void TabAlertController::OnGlicSharingStateChange(bool is_sharing) {
 void TabAlertController::OnGlicAccessingStateChange(bool is_accessing) {
   UpdateAlertState(TabAlert::kGlicAccessing, is_accessing);
 }
-#endif  // BUILDFLAG(ENABLE_GLIC)
 
 void TabAlertController::OnActorTabIndicatorStateChanged(
     actor::ui::TabIndicatorStatus tab_indicator_status) {

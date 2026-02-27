@@ -63,12 +63,10 @@ mojom::AlertState ToMojo(tabs::TabAlert state) {
       return mojom::AlertState::kAudioRecording;
     case tabs::TabAlert::kVideoRecording:
       return mojom::AlertState::kVideoRecording;
-#if BUILDFLAG(ENABLE_GLIC)
     case tabs::TabAlert::kGlicAccessing:
       return mojom::AlertState::kGlicAccessing;
     case tabs::TabAlert::kGlicSharing:
       return mojom::AlertState::kGlicSharing;
-#endif  // BUILDFLAG(ENABLE_GLIC)
     case tabs::TabAlert::kActorAccessing:
       return mojom::AlertState::kActorAccessing;
     case tabs::TabAlert::kActorWaitingOnUser:

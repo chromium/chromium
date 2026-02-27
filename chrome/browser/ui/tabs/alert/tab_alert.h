@@ -25,10 +25,8 @@ enum class TabAlert {
   kVrPresentingInHeadset,  // VR content is being presented in a headset.
   kAudioRecording,         // Audio [only] being recorded, consumed by tab.
   kVideoRecording,         // Video [only] being recorded, consumed by tab.
-#if BUILDFLAG(ENABLE_GLIC)
   kGlicAccessing,       // Glic is accessing the tab's contents.
   kGlicSharing,         // The tab's contents are shared with glic.
-#endif                  // BUILDFLAG(ENABLE_GLIC)
   kActorAccessing,      // Actor is accessing the tab's contents.
   kActorWaitingOnUser,  // Actor is waiting on user to respond.
 };

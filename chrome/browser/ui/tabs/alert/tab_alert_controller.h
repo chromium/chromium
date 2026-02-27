@@ -106,10 +106,8 @@ class TabAlertController : public tabs::ContentsObservingTabFeature,
   void OnIsContentDisplayedInHeadsetChanged(bool state) override;
 
  private:
-#if BUILDFLAG(ENABLE_GLIC)
   void OnGlicSharingStateChange(bool is_sharing);
   void OnGlicAccessingStateChange(bool is_accessing);
-#endif  // BUILDFLAG(ENABLE_GLIC)
 
   void OnActorTabIndicatorStateChanged(
       actor::ui::TabIndicatorStatus tab_indicator_state);

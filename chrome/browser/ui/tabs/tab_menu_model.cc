@@ -13,6 +13,12 @@
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/glic/browser_ui/glic_vector_icon_manager.h"
+#include "chrome/browser/glic/host/glic_features.mojom.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_util.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -21,6 +27,7 @@
 #include "chrome/browser/ui/tabs/existing_tab_group_sub_menu_model.h"
 #include "chrome/browser/ui/tabs/existing_window_sub_menu_model.h"
 #include "chrome/browser/ui/tabs/features.h"
+#include "chrome/browser/ui/tabs/glic_tab_sub_menu_model.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service_factory.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_utils.h"
 #include "chrome/browser/ui/tabs/split_tab_menu_model.h"
@@ -42,16 +49,6 @@
 #include "components/feed/feed_feature_list.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
-
-#if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/glic/browser_ui/glic_vector_icon_manager.h"
-#include "chrome/browser/glic/host/glic_features.mojom.h"
-#include "chrome/browser/glic/public/glic_enabling.h"
-#include "chrome/browser/glic/public/glic_keyed_service.h"
-#include "chrome/browser/glic/public/glic_keyed_service_factory.h"
-#include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
-#include "chrome/browser/ui/tabs/glic_tab_sub_menu_model.h"
-#endif
 
 using base::UserMetricsAction;
 
@@ -253,14 +250,10 @@ void TabMenuModel::Build(TabStripModel* tab_strip, int index) {
   const bool display_read_later = tab_strip->delegate()->SupportsReadLater();
   const bool display_send_to_self = send_tab_to_self::ShouldDisplayEntryPoint(
       tab_strip->GetWebContentsAt(index));
-#if BUILDFLAG(ENABLE_GLIC)
   const bool display_share_with_glic =
       base::FeatureList::IsEnabled(glic::mojom::features::kGlicMultiTab) &&
       glic::GlicEnabling::IsReadyForProfile(tab_strip->profile()) &&
       !glic::GlicEnabling::IsMultiInstanceEnabled();
-#else
-  const bool display_share_with_glic = false;
-#endif
   if (display_read_later || display_send_to_self || display_share_with_glic) {
     AddSeparator(ui::NORMAL_SEPARATOR);
   }
@@ -275,7 +268,6 @@ void TabMenuModel::Build(TabStripModel* tab_strip, int index) {
                  tab_strip->IsReadLaterSupportedForAny(indices));
   }
 
-#if BUILDFLAG(ENABLE_GLIC)
   if (glic::GlicEnabling::IsReadyForProfile(tab_strip->profile()) &&
       glic::GlicEnabling::IsMultiInstanceEnabled() &&
       base::FeatureList::IsEnabled(features::kGlicMITabContextMenu)) {
@@ -330,7 +322,6 @@ void TabMenuModel::Build(TabStripModel* tab_strip, int index) {
                                                num_tabs));
     }
   }
-#endif
 
   if (display_send_to_self) {
 #if BUILDFLAG(IS_MAC)

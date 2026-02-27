@@ -5,6 +5,8 @@
 #include "chrome/browser/ui/tabs/glic_nudge_controller.h"
 
 #include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/call_to_action/call_to_action_lock.h"
@@ -12,10 +14,6 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
 
-#if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/glic/public/glic_keyed_service.h"
-#include "chrome/browser/glic/public/glic_keyed_service_factory.h"
-#endif
 
 namespace tabs {
 
@@ -95,17 +93,10 @@ void GlicNudgeController::OnNudgeActivity(GlicNudgeActivity activity) {
   }
   switch (activity) {
     case GlicNudgeActivity::kNudgeShown: {
-      // We should only have a GlicNudgeController if the ENABLE_GLIC buildflag
-      // is set. However, since we don't prevent it by having #if's across the
-      // various places the class is referenced (which would be noisy), it's
-      // possible to have this class built even when that buildflag isn't set,
-      // so we'll conditionally compile this next section.
-#if BUILDFLAG(ENABLE_GLIC)
       auto* profile = browser_window_interface_->GetProfile();
       auto* glic_service =
           glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile);
       glic_service->TryPreloadFre(glic::GlicPrewarmingFreSource::kNudge);
-#endif
       nudge_activity_callback_.Run(GlicNudgeActivity::kNudgeShown);
       scoped_call_to_action_lock_ =
           CallToActionLock::From(browser_window_interface_)->AcquireLock();

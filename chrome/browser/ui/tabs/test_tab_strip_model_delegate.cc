@@ -146,7 +146,6 @@ void TestTabStripModelDelegate::OnRemovingAllTabsFromGroups(
   std::move(callback).Run();
 }
 
-#if BUILDFLAG(ENABLE_GLIC)
 bool TestTabStripModelDelegate::IsTabGlicPinned(tabs::TabHandle tab_handle) {
   return true;
 }
@@ -165,4 +164,3 @@ void TestTabStripModelDelegate::OpenGlicWindowFromSharedTab() {}
 
 void TestTabStripModelDelegate::GlicUnpinTabsFromAllConversations(
     base::span<const tabs::TabHandle> tab_handles) {}
-#endif

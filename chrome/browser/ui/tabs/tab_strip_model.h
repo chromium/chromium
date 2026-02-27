@@ -771,7 +771,6 @@ class TabStripModel {
     CommandGoBack,
     CommandCloseAllTabs,
     CommandToggleVertical,
-#if BUILDFLAG(ENABLE_GLIC)
     CommandGlicShareLimit,
     CommandGlicStartShare,
     CommandGlicStopShare,
@@ -779,7 +778,6 @@ class TabStripModel {
     CommandGlicCreateNewChat,
     CommandGlicSwitchToRecentConversation,
     CommandGlicUnshare,
-#endif
     CommandLast
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/tab/histograms.xml:TabContextMenuCommand)
