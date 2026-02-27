@@ -8,7 +8,7 @@ import type {SigninEmailConfirmationAppElement} from './signin_email_confirmatio
 export function getHtml(this: SigninEmailConfirmationAppElement) {
   return html`<!--_html_template_start_-->
 <div class="container">
-  <div class="top-title-bar" id='dialogTitle'>
+  <div class="top-title-bar" id="dialogTitle">
   </div>
   <div class="details">
     <cr-radio-group selected="createNewUser">

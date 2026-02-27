@@ -9,7 +9,7 @@ import type {PasscodeInputElement} from './passcode_input.js';
 export function getHtml(this: PasscodeInputElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
-<div id='container'>
+<div id="container">
   <input id="inputElement" aria-label="${this.ariaLabel}" autocomplete="off"
       class="hidden-input" .maxLength="${this.length}"
       ?disabled="${this.disabled}" spellcheck="false"
