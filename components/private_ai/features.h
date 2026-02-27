@@ -15,7 +15,7 @@ namespace private_ai {
 BASE_DECLARE_FEATURE(kPrivateAi);
 
 // Feature flag to enable server attestation.
-BASE_DECLARE_FEATURE(kPrivateAiSeverAttestation);
+BASE_DECLARE_FEATURE(kPrivateAiServerAttestation);
 
 // Feature flag to enable token attestation.
 BASE_DECLARE_FEATURE(kPrivateAiUseTokenAttestation);

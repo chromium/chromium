@@ -8,7 +8,7 @@ namespace private_ai {
 
 BASE_FEATURE(kPrivateAi, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kPrivateAiSeverAttestation, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kPrivateAiServerAttestation, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPrivateAiUseTokenAttestation, base::FEATURE_DISABLED_BY_DEFAULT);
 

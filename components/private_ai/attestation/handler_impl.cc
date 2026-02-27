@@ -39,7 +39,7 @@ AttestationHandlerImpl::GetAttestationRequest() {
 
 bool AttestationHandlerImpl::VerifyAttestationResponse(
     const AttestationEvidence& evidence) {
-  if (!base::FeatureList::IsEnabled(kPrivateAiSeverAttestation)) {
+  if (!base::FeatureList::IsEnabled(kPrivateAiServerAttestation)) {
     return true;
   }
 

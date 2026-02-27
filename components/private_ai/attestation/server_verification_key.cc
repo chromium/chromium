@@ -31,13 +31,16 @@ bool ProcessedKey::operator==(const ProcessedKey& other) const {
 
 base::span<const ProcessedKey> GetServerVerificationKey() {
   const std::string url = kPrivateAiUrl.Get();
+  if (base::StartsWith(url, "autopush")) {
+    return kAutopushServerVerificationKeys;
+  }
   if (base::StartsWith(url, "dev")) {
     return kDevServerVerificationKeys;
   }
   if (base::StartsWith(url, "staging")) {
     return kStagingServerVerificationKeys;
   }
-  return kAutopushServerVerificationKeys;
+  return kProdServerVerificationKeys;
 }
 
 base::span<const ProcessedKey> GetAutopushKeysForTesting() {
@@ -46,6 +49,10 @@ base::span<const ProcessedKey> GetAutopushKeysForTesting() {
 
 base::span<const ProcessedKey> GetDevKeysForTesting() {
   return kDevServerVerificationKeys;
+}
+
+base::span<const ProcessedKey> GetProdKeysForTesting() {
+  return kProdServerVerificationKeys;
 }
 
 base::span<const ProcessedKey> GetStagingKeysForTesting() {

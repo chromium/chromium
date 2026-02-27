@@ -41,6 +41,19 @@ TEST_F(ServerVerificationKeyTest, GetDevKeys) {
   EXPECT_NE(keys, GetStagingKeysForTesting());
 }
 
+TEST_F(ServerVerificationKeyTest, GetProdKeys) {
+  base::FieldTrialParams params;
+  params["url"] = "legion.corp.google.com";
+  feature_list_.InitAndEnableFeatureWithParameters(kPrivateAi, params);
+
+  auto keys = GetServerVerificationKey();
+  EXPECT_FALSE(keys.empty());
+  EXPECT_EQ(keys, GetProdKeysForTesting());
+  EXPECT_NE(keys, GetAutopushKeysForTesting());
+  EXPECT_NE(keys, GetDevKeysForTesting());
+  EXPECT_NE(keys, GetStagingKeysForTesting());
+}
+
 TEST_F(ServerVerificationKeyTest, GetStagingKeys) {
   base::FieldTrialParams params;
   params["url"] = "staging-legion.corp.google.com";
