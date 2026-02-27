@@ -192,7 +192,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularConnectionHandler
   void EnableProfile();
   void OnEnableCarrierProfileResult(HermesResponseStatus status);
 
-  void UninhibitScans(const std::optional<std::string>& error_before_uninhibit);
   void OnUninhibitScanResult(
       const std::optional<std::string>& error_before_uninhibit,
       bool success);

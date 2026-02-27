@@ -148,7 +148,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimUninstallHandler
   void TransitionToUninstallState(UninstallState next_state);
   void CompleteCurrentRequest(UninstallESimResult result);
 
-  std::string GetIdForCurrentRequest() const;
   const NetworkState* GetNetworkStateForCurrentRequest() const;
 
   void CheckActiveNetworkState();

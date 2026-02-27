@@ -86,7 +86,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkSmsHandler
   friend class TextMessageProviderTest;
 
   class NetworkSmsDeviceHandler;
-  class ModemManagerNetworkSmsDeviceHandler;
   class ModemManager1NetworkSmsDeviceHandler;
 
   // Timeout for waiting to fetch SMS details.

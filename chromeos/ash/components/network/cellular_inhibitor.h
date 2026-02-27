@@ -168,8 +168,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularInhibitor
   void OnScanningChangeTimeout();
 
   void CheckInhibitPropertyIfNeeded();
-  void CheckForInhibit();
-  void CheckForUninhibit();
   void OnInhibitPropertyChangeTimeout();
 
   void PopRequestAndProcessNext();

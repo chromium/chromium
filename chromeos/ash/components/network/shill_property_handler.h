@@ -253,8 +253,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ShillPropertyHandler final
                            const std::string& ip_config_path,
                            std::optional<base::DictValue> properties);
 
-  void SetProhibitedTechnologiesEnforced(bool enforced);
-
   // Pointer to containing class (owns this)
   raw_ptr<Listener> listener_;
 
