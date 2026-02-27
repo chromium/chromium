@@ -731,13 +731,13 @@ TEST_F(ElementTest, ParseFocusgroupAttrDefaultValuesWhenEmptyValue) {
       fg_empty->GetFocusgroupData(),
       FocusgroupData(FocusgroupBehavior::kNoBehavior, FocusgroupFlags::kNone));
 
-  // Toolbar behavior with default axes
+  // Toolbar behavior with default inline axis.
   auto* fg_toolbar = document.getElementById(AtomicString("fg_toolbar"));
   ASSERT_TRUE(fg_toolbar);
 
-  EXPECT_EQ(fg_toolbar->GetFocusgroupData(),
-            FocusgroupData(FocusgroupBehavior::kToolbar,
-                           FocusgroupFlags::kInline | FocusgroupFlags::kBlock));
+  EXPECT_EQ(
+      fg_toolbar->GetFocusgroupData(),
+      FocusgroupData(FocusgroupBehavior::kToolbar, FocusgroupFlags::kInline));
 }
 
 TEST_F(ElementTest, ParseFocusgroupAttrSupportedAxesAreValid) {
@@ -761,13 +761,14 @@ TEST_F(ElementTest, ParseFocusgroupAttrSupportedAxesAreValid) {
       fg1->GetFocusgroupData(),
       FocusgroupData(FocusgroupBehavior::kToolbar, FocusgroupFlags::kInline));
 
-  // 2. Only block should be supported.
+  // 2. Only block should be supported; tablist default wrap applies in block.
   auto* fg2 = document.getElementById(AtomicString("fg2"));
   EXPECT_TRUE(fg2);
 
   EXPECT_EQ(
       fg2->GetFocusgroupData(),
-      FocusgroupData(FocusgroupBehavior::kTablist, FocusgroupFlags::kBlock));
+      FocusgroupData(FocusgroupBehavior::kTablist,
+                     FocusgroupFlags::kBlock | FocusgroupFlags::kWrapBlock));
 
   // 3. No axis specified so both should be supported
   auto* fg3 = document.getElementById(AtomicString("fg3"));
@@ -777,21 +778,24 @@ TEST_F(ElementTest, ParseFocusgroupAttrSupportedAxesAreValid) {
             FocusgroupData(FocusgroupBehavior::kListbox,
                            FocusgroupFlags::kInline | FocusgroupFlags::kBlock));
 
-  // 4. Only support inline because it's specified.
+  // 4. Only support inline because it's specified; menu default wrap in inline.
   auto* fg3_a = document.getElementById(AtomicString("fg3_a"));
   ASSERT_TRUE(fg3_a);
 
   EXPECT_EQ(
       fg3_a->GetFocusgroupData(),
-      FocusgroupData(FocusgroupBehavior::kMenu, FocusgroupFlags::kInline));
+      FocusgroupData(FocusgroupBehavior::kMenu,
+                     FocusgroupFlags::kInline | FocusgroupFlags::kWrapInline));
 
-  // 5. Only support block because it's specified.
+  // 5. Only support block because it's specified; menubar default wrap in
+  // block.
   auto* fg3_b = document.getElementById(AtomicString("fg3_b"));
   ASSERT_TRUE(fg3_b);
 
   EXPECT_EQ(
       fg3_b->GetFocusgroupData(),
-      FocusgroupData(FocusgroupBehavior::kMenubar, FocusgroupFlags::kBlock));
+      FocusgroupData(FocusgroupBehavior::kMenubar,
+                     FocusgroupFlags::kBlock | FocusgroupFlags::kWrapBlock));
 
   // 6. Child specifying only behavior should still support both axes.
   auto* fg3_b_1 = document.getElementById(AtomicString("fg3_b_1"));
@@ -847,10 +851,10 @@ TEST_F(ElementTest, ParseFocusgroupAttrWrapIgnoredInDescendantsWithoutOwnWrap) {
   ASSERT_TRUE(fg11);
   ASSERT_TRUE(fg12);
 
-  // Parent supports both axes but no wrap - children should not inherit wrap
-  EXPECT_EQ(fg1->GetFocusgroupData(),
-            FocusgroupData(FocusgroupBehavior::kToolbar,
-                           FocusgroupFlags::kInline | FocusgroupFlags::kBlock));
+  // Parent supports inline (toolbar default) with no wrap.
+  EXPECT_EQ(
+      fg1->GetFocusgroupData(),
+      FocusgroupData(FocusgroupBehavior::kToolbar, FocusgroupFlags::kInline));
 
   EXPECT_EQ(
       fg2->GetFocusgroupData(),
@@ -862,11 +866,11 @@ TEST_F(ElementTest, ParseFocusgroupAttrWrapIgnoredInDescendantsWithoutOwnWrap) {
       FocusgroupData(FocusgroupBehavior::kToolbar,
                      FocusgroupFlags::kBlock | FocusgroupFlags::kWrapBlock));
 
-  EXPECT_EQ(fg4->GetFocusgroupData(),
-            FocusgroupData(FocusgroupBehavior::kToolbar,
-                           FocusgroupFlags::kInline | FocusgroupFlags::kBlock |
-                               FocusgroupFlags::kWrapInline |
-                               FocusgroupFlags::kWrapBlock));
+  // Toolbar wrap with no explicit axis: toolbar default inline + wrap-inline.
+  EXPECT_EQ(
+      fg4->GetFocusgroupData(),
+      FocusgroupData(FocusgroupBehavior::kToolbar,
+                     FocusgroupFlags::kInline | FocusgroupFlags::kWrapInline));
 
   // Parent supports only inline axis - children inherit this restriction
   EXPECT_EQ(
@@ -883,11 +887,11 @@ TEST_F(ElementTest, ParseFocusgroupAttrWrapIgnoredInDescendantsWithoutOwnWrap) {
       FocusgroupData(FocusgroupBehavior::kToolbar,
                      FocusgroupFlags::kBlock | FocusgroupFlags::kWrapBlock));
 
-  EXPECT_EQ(fg8->GetFocusgroupData(),
-            FocusgroupData(FocusgroupBehavior::kToolbar,
-                           FocusgroupFlags::kInline | FocusgroupFlags::kBlock |
-                               FocusgroupFlags::kWrapInline |
-                               FocusgroupFlags::kWrapBlock));
+  // Toolbar wrap with no explicit axis: toolbar default inline + wrap-inline.
+  EXPECT_EQ(
+      fg8->GetFocusgroupData(),
+      FocusgroupData(FocusgroupBehavior::kToolbar,
+                     FocusgroupFlags::kInline | FocusgroupFlags::kWrapInline));
 
   // Parent supports only block axis - children inherit this restriction
   EXPECT_EQ(
@@ -904,11 +908,11 @@ TEST_F(ElementTest, ParseFocusgroupAttrWrapIgnoredInDescendantsWithoutOwnWrap) {
       FocusgroupData(FocusgroupBehavior::kToolbar,
                      FocusgroupFlags::kBlock | FocusgroupFlags::kWrapBlock));
 
-  EXPECT_EQ(fg12->GetFocusgroupData(),
-            FocusgroupData(FocusgroupBehavior::kToolbar,
-                           FocusgroupFlags::kInline | FocusgroupFlags::kBlock |
-                               FocusgroupFlags::kWrapInline |
-                               FocusgroupFlags::kWrapBlock));
+  // Toolbar wrap with no explicit axis: toolbar default inline + wrap-inline.
+  EXPECT_EQ(
+      fg12->GetFocusgroupData(),
+      FocusgroupData(FocusgroupBehavior::kToolbar,
+                     FocusgroupFlags::kInline | FocusgroupFlags::kWrapInline));
 }
 
 TEST_F(ElementTest, ParseFocusgroupAttrGrid) {
@@ -1061,11 +1065,11 @@ TEST_F(ElementTest, ParseFocusgroupAttrNoMemoryToken) {
   ASSERT_TRUE(a);
   ASSERT_TRUE(b);
 
-  // Default axes (inline+block) plus no-memory.
-  EXPECT_EQ(a->GetFocusgroupData(),
-            FocusgroupData(FocusgroupBehavior::kToolbar,
-                           FocusgroupFlags::kInline | FocusgroupFlags::kBlock |
-                               FocusgroupFlags::kNoMemory));
+  // Toolbar default axis (inline) plus no-memory.
+  EXPECT_EQ(
+      a->GetFocusgroupData(),
+      FocusgroupData(FocusgroupBehavior::kToolbar,
+                     FocusgroupFlags::kInline | FocusgroupFlags::kNoMemory));
   EXPECT_TRUE(focusgroup::IsActualFocusgroup(a->GetFocusgroupData()));
 
   // Explicit inline axis only + no-memory.
@@ -1587,15 +1591,18 @@ TEST_F(ElementTest, ParseFocusgroupAttrBehaviorFirstRequirement) {
   // Valid behavior tokens should work
   auto* valid_toolbar = document.getElementById(AtomicString("valid_toolbar"));
   ASSERT_TRUE(valid_toolbar);
-  EXPECT_EQ(valid_toolbar->GetFocusgroupData(),
-            FocusgroupData(FocusgroupBehavior::kToolbar,
-                           FocusgroupFlags::kInline | FocusgroupFlags::kBlock));
+  // Toolbar defaults to inline-only axis.
+  EXPECT_EQ(
+      valid_toolbar->GetFocusgroupData(),
+      FocusgroupData(FocusgroupBehavior::kToolbar, FocusgroupFlags::kInline));
 
   auto* valid_tablist = document.getElementById(AtomicString("valid_tablist"));
   ASSERT_TRUE(valid_tablist);
+  // Tablist explicit inline + default wrap applies in inline axis.
   EXPECT_EQ(
       valid_tablist->GetFocusgroupData(),
-      FocusgroupData(FocusgroupBehavior::kTablist, FocusgroupFlags::kInline));
+      FocusgroupData(FocusgroupBehavior::kTablist,
+                     FocusgroupFlags::kInline | FocusgroupFlags::kWrapInline));
 
   auto* valid_radiogroup =
       document.getElementById(AtomicString("valid_radiogroup"));
@@ -1614,15 +1621,19 @@ TEST_F(ElementTest, ParseFocusgroupAttrBehaviorFirstRequirement) {
 
   auto* valid_menu = document.getElementById(AtomicString("valid_menu"));
   ASSERT_TRUE(valid_menu);
-  EXPECT_EQ(valid_menu->GetFocusgroupData(),
-            FocusgroupData(FocusgroupBehavior::kMenu,
-                           FocusgroupFlags::kInline | FocusgroupFlags::kBlock));
+  // Menu defaults to block axis + wrap-block.
+  EXPECT_EQ(
+      valid_menu->GetFocusgroupData(),
+      FocusgroupData(FocusgroupBehavior::kMenu,
+                     FocusgroupFlags::kBlock | FocusgroupFlags::kWrapBlock));
 
   auto* valid_menubar = document.getElementById(AtomicString("valid_menubar"));
   ASSERT_TRUE(valid_menubar);
-  EXPECT_EQ(valid_menubar->GetFocusgroupData(),
-            FocusgroupData(FocusgroupBehavior::kMenubar,
-                           FocusgroupFlags::kInline | FocusgroupFlags::kBlock));
+  // Menubar defaults to inline axis + wrap-inline.
+  EXPECT_EQ(
+      valid_menubar->GetFocusgroupData(),
+      FocusgroupData(FocusgroupBehavior::kMenubar,
+                     FocusgroupFlags::kInline | FocusgroupFlags::kWrapInline));
 
   auto* valid_none = document.getElementById(AtomicString("valid_none"));
   ASSERT_TRUE(valid_none);

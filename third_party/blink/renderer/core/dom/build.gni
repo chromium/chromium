@@ -319,6 +319,7 @@ blink_core_tests_dom = [
   "events/listener_leak_test.cc",
   "first_letter_pseudo_element_test.cc",
   "flat_tree_traversal_test.cc",
+  "focusgroup_flags_test.cc",
   "layout_tree_builder_traversal_test.cc",
   "live_node_list_registry_test.cc",
   "mutation_observer_test.cc",
