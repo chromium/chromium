@@ -74,6 +74,7 @@ class ConnectionProxy : public Connection {
     OnRequestCallback callback;
   };
 
+  void FetchToken();
   void OnProxyToken(std::optional<phosphor::BlindSignedAuthToken> auth_token);
   void CallOnDisconnect(ErrorCode error_code);
 
