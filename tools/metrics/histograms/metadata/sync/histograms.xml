@@ -2482,7 +2482,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Sync.SyncToSigninMigrationOutcome.ExtensionDeduplicatedCount"
+<histogram name="Sync.SyncToSigninMigrationOutcome.ExtensionsDeduplicatedCount"
     units="extensions" expires_after="2027-01-28">
   <owner>ankushkush@google.com</owner>
   <owner>src/components/sync/OWNERS</owner>
@@ -2509,7 +2509,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.SyncToSigninMigrationOutcome.ThemeDeduplication"
-    enum="Boolean" expires_after="2027-01-28">
+    enum="SyncToSigninMigrationThemeOutcome" expires_after="2027-01-28">
   <owner>ankushkush@google.com</owner>
   <owner>src/components/sync/OWNERS</owner>
   <summary>
