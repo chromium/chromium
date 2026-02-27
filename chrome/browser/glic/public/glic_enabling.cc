@@ -511,8 +511,7 @@ bool GlicEnabling::IsTrustFirstOnboardingEnabledForProfile(Profile* profile) {
 bool GlicEnabling::ShouldBypassFreUi(
     Profile* profile,
     mojom::InvocationSource invocation_source) {
-  return invocation_source ==
-             mojom::InvocationSource::kAutoOpenedByContextualCue &&
+  return invocation_source == mojom::InvocationSource::kAutoOpenedForPdf &&
          base::FeatureList::IsEnabled(features::kAutoOpenGlicForPdf) &&
          !HasConsentedForProfile(profile);
 }
