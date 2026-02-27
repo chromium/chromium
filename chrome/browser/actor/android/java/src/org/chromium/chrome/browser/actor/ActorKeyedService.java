@@ -55,6 +55,12 @@ public class ActorKeyedService {
         return taskList;
     }
 
+    /** Returns the number of active tasks. */
+    public int getActiveTasksCount() {
+        if (mNativePtr == 0) return 0;
+        return ActorKeyedServiceJni.get().getActiveTasksCount(mNativePtr);
+    }
+
     /** Gets a specific task by its ID. */
     @Nullable
     public ActorTask getTask(@ActorTaskId int taskId) {
@@ -108,6 +114,8 @@ public class ActorKeyedService {
     @NativeMethods
     interface Natives {
         ActorTask[] getActiveTasks(long nativeActorKeyedServiceAndroid);
+
+        int getActiveTasksCount(long nativeActorKeyedServiceAndroid);
 
         ActorTask getTask(long nativeActorKeyedServiceAndroid, int taskId);
 

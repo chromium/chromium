@@ -83,6 +83,10 @@ ActorKeyedServiceAndroid::GetActiveTasks(JNIEnv* env) {
   return base::android::ToJavaArrayOfObjects(env, j_tasks);
 }
 
+int32_t ActorKeyedServiceAndroid::GetActiveTasksCount(JNIEnv* env) {
+  return static_cast<int32_t>(service_->GetActiveTasksCount());
+}
+
 base::android::ScopedJavaLocalRef<jobject> ActorKeyedServiceAndroid::GetTask(
     JNIEnv* env,
     int32_t task_id) {

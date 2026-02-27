@@ -69,6 +69,8 @@ class ActorKeyedService : public KeyedService,
 
   const std::map<TaskId, const ActorTask*> GetActiveTasks() const;
 
+  size_t GetActiveTasksCount() const;
+
   std::vector<TaskId> FindTaskIdsInActive(
       base::FunctionRef<bool(const ActorTask&)> predicate) const;
 

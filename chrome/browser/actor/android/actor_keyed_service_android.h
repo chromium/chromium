@@ -27,6 +27,7 @@ class ActorKeyedServiceAndroid : public base::SupportsUserData::Data {
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 
   base::android::ScopedJavaLocalRef<jobjectArray> GetActiveTasks(JNIEnv* env);
+  int32_t GetActiveTasksCount(JNIEnv* env);
   base::android::ScopedJavaLocalRef<jobject> GetTask(JNIEnv* env,
                                                      int32_t task_id);
   void StopTask(JNIEnv* env, int32_t task_id, int32_t stop_reason);
