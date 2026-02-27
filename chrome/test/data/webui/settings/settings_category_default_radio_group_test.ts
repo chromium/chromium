@@ -5,7 +5,7 @@
 // clang-format off
 import type {SettingsCategoryDefaultRadioGroupElement} from 'chrome://settings/lazy_load.js';
 import {ContentSetting, DefaultSettingSource, ContentSettingsTypes, SiteSettingsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
-import {assertEquals, assertNotEquals, assertTrue, assertFalse} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertTrue, assertFalse} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestSiteSettingsBrowserProxy} from './test_site_settings_browser_proxy.js';
@@ -59,103 +59,84 @@ suite('SettingsCategoryDefaultRadioGroup', function() {
   }
 
   /**
-   * Verifies that the widget works as expected for a given |category|,
+   * Verifies that the widget works as expected for a given |expectedCategory|,
    * initial |prefs|, and given expectations.
    * @param element The settings-category-default-radio-group element to test.
    * @param proxy The mock proxy object.
    * @param prefs The preference object.
-   * @param expectedCategory The category of the |element|.
-   * @param expectedEnabled If the category is enabled by default.
-   * @param expectedEnabledContentSetting The enabled content setting value of
-   *     the |expectedCategory|.
+   * @param expectedCategory The category to exercise the |element| with.
+   * @param expectedSupportedSettings The category default settings that should
+   *     be exercised on the |element|.
+   * @param expectedInitialSetting The expected initial setting.
    */
   async function testCategoryEnabled(
       element: SettingsCategoryDefaultRadioGroupElement,
       proxy: TestSiteSettingsBrowserProxy, prefs: SiteSettingsPref,
-      expectedCategory: ContentSettingsTypes, expectedEnabled: boolean,
-      expectedEnabledContentSetting: ContentSetting) {
+      expectedCategory: ContentSettingsTypes,
+      expectedSupportedSettings: ContentSetting[],
+      expectedInitialSetting: ContentSetting) {
     proxy.reset();
     proxy.setPrefs(prefs);
     element.set('category', expectedCategory);
 
     // Set labels for the options that should be supported and thus displayed.
-    if (expectedEnabledContentSetting === ContentSetting.ASK) {
-      element.askOptionLabel = 'Ask';
-    } else {
+    if (expectedSupportedSettings.includes(ContentSetting.ALLOW)) {
       element.allowOptionLabel = 'Allow';
     }
-    element.blockOptionLabel = 'Block';
-
-    let category = await proxy.whenCalled('getDefaultValueForContentType');
-    await microtasksFinished();
-
-    let enabledRadioButton;
-    let thirdRadioButton;
-    if (expectedEnabledContentSetting === ContentSetting.ASK) {
-      enabledRadioButton = element.$.askRadioOption;
-      thirdRadioButton = element.$.allowRadioOption;
-    } else {
-      enabledRadioButton = element.$.allowRadioOption;
-      thirdRadioButton = element.$.askRadioOption;
+    if (expectedSupportedSettings.includes(ContentSetting.ASK)) {
+      element.askOptionLabel = 'Ask';
+    }
+    if (expectedSupportedSettings.includes(ContentSetting.BLOCK)) {
+      element.blockOptionLabel = 'Block';
     }
 
-    const disabledRadioButton = element.$.blockRadioOption;
+    const initialCategory =
+        await proxy.whenCalled('getDefaultValueForContentType');
+    await microtasksFinished();
 
-    // An allow/block setting should have "allow", "block", but no "ask" radios,
-    // whereas an ask/block setting should have "ask" and "block", but no
-    // "allow" radios.
-    assertTrue(isVisible(enabledRadioButton));
-    assertTrue(isVisible(disabledRadioButton));
-    assertFalse(isVisible(thirdRadioButton));
+    const radios: Partial<Record<ContentSetting, any>> = {
+      [ContentSetting.ALLOW]: element.$.allowRadioOption,
+      [ContentSetting.ASK]: element.$.askRadioOption,
+      [ContentSetting.BLOCK]: element.$.blockRadioOption,
+    };
 
-    assertEquals(expectedCategory, category);
-    assertEquals(expectedEnabled, enabledRadioButton.checked);
-    assertNotEquals(expectedEnabled, disabledRadioButton.checked);
+    assertEquals(expectedCategory, initialCategory);
 
-    // Click the button specifying the alternative option
-    // and verify that the preference value is updated correctly.
-    proxy.resetResolver('setDefaultValueForContentType');
-    const oppositeRadioButton =
-        expectedEnabled ? disabledRadioButton : enabledRadioButton;
-    oppositeRadioButton.click();
+    for (const [setting, radio] of Object.entries(radios)) {
+      assertEquals(
+          expectedSupportedSettings.includes(setting as ContentSetting),
+          isVisible(radio), `Initial visibility for ${setting}`);
+      assertEquals(
+          expectedInitialSetting === setting as ContentSetting, radio.checked,
+          `Initial checked state for ${setting}`);
+    }
 
-    let whenChanged =
-        eventToPromise('change', element.$.settingsCategoryDefaultRadioGroup);
-    let selectedChangedEventPromise =
-        eventToPromise('selected-value-changed', element);
-    let setting;
-    [category, setting] =
-        await proxy.whenCalled('setDefaultValueForContentType');
-    await whenChanged;
-    await selectedChangedEventPromise;
-    assertEquals(expectedCategory, category);
-    const oppositeSetting =
-        expectedEnabled ? ContentSetting.BLOCK : expectedEnabledContentSetting;
+    for (const expectedSetting of expectedSupportedSettings) {
+      if (expectedSetting === expectedInitialSetting) {
+        continue;
+      }
 
-    assertEquals(oppositeSetting, setting);
-    assertNotEquals(expectedEnabled, enabledRadioButton.checked);
+      // Click the button specifying the alternative option
+      // and verify that the preference value is updated correctly.
+      proxy.resetResolver('setDefaultValueForContentType');
+      const radioButton = radios[expectedSetting];
+      radioButton.click();
 
-    // Click the initially selected option and verify that the
-    // preference value is set back to the initial state.
-    proxy.resetResolver('setDefaultValueForContentType');
-    const initialRadioButton =
-        expectedEnabled ? enabledRadioButton : disabledRadioButton;
-    initialRadioButton.click();
-    whenChanged =
-        eventToPromise('change', element.$.settingsCategoryDefaultRadioGroup);
-    selectedChangedEventPromise =
-        eventToPromise('selected-value-changed', element);
-
-    [category, setting] =
-        await proxy.whenCalled('setDefaultValueForContentType');
-    await whenChanged;
-    await selectedChangedEventPromise;
-    assertEquals(expectedCategory, category);
-    const initialSetting =
-        expectedEnabled ? expectedEnabledContentSetting : ContentSetting.BLOCK;
-
-    assertEquals(initialSetting, setting);
-    assertEquals(expectedEnabled, enabledRadioButton.checked);
+      const whenChanged =
+          eventToPromise('change', element.$.settingsCategoryDefaultRadioGroup);
+      const selectedChangedEventPromise =
+          eventToPromise('selected-value-changed', element);
+      const [category, setting] =
+          await proxy.whenCalled('setDefaultValueForContentType');
+      await whenChanged;
+      await selectedChangedEventPromise;
+      assertEquals(
+          expectedCategory, category,
+          `Propagated category for ${expectedSetting}`);
+      assertEquals(
+          expectedSetting, setting, `Propagated value for ${expectedSetting}`);
+      assertTrue(radioButton.checked, `Radio selected for ${expectedSetting}`);
+    }
   }
 
   test('ask location disable click triggers update', async function() {
@@ -164,7 +145,8 @@ suite('SettingsCategoryDefaultRadioGroup', function() {
 
     await testCategoryEnabled(
         testElement, browserProxy, enabledPref,
-        ContentSettingsTypes.GEOLOCATION, true, ContentSetting.ASK);
+        ContentSettingsTypes.GEOLOCATION,
+        [ContentSetting.ASK, ContentSetting.BLOCK], ContentSetting.ASK);
   });
 
   test('block location enable click triggers update', async function() {
@@ -173,7 +155,8 @@ suite('SettingsCategoryDefaultRadioGroup', function() {
 
     await testCategoryEnabled(
         testElement, browserProxy, disabledPref,
-        ContentSettingsTypes.GEOLOCATION, false, ContentSetting.ASK);
+        ContentSettingsTypes.GEOLOCATION,
+        [ContentSetting.ASK, ContentSetting.BLOCK], ContentSetting.BLOCK);
   });
 
   test('allow ads disable click triggers update', async function() {
@@ -181,8 +164,8 @@ suite('SettingsCategoryDefaultRadioGroup', function() {
         createPref(ContentSettingsTypes.ADS, ContentSetting.ALLOW);
 
     await testCategoryEnabled(
-        testElement, browserProxy, enabledPref, ContentSettingsTypes.ADS, true,
-        ContentSetting.ALLOW);
+        testElement, browserProxy, enabledPref, ContentSettingsTypes.ADS,
+        [ContentSetting.ALLOW, ContentSetting.BLOCK], ContentSetting.ALLOW);
   });
 
   test('block ads enable click triggers update', async function() {
@@ -191,9 +174,31 @@ suite('SettingsCategoryDefaultRadioGroup', function() {
 
     await testCategoryEnabled(
         testElement, browserProxy, disabledPref, ContentSettingsTypes.ADS,
-        false, ContentSetting.ALLOW);
+        [ContentSetting.ALLOW, ContentSetting.BLOCK], ContentSetting.BLOCK);
   });
 
+  test('allow ask binary click triggers update', async function() {
+    // Note that NOTIFICATIONS do not actually use an allow/ask toggle, but that
+    // is not relevant for this test.
+    const pref =
+        createPref(ContentSettingsTypes.NOTIFICATIONS, ContentSetting.ALLOW);
+
+    await testCategoryEnabled(
+        testElement, browserProxy, pref, ContentSettingsTypes.NOTIFICATIONS,
+        [ContentSetting.ALLOW, ContentSetting.ASK], ContentSetting.ALLOW);
+  });
+
+  test('allow ask block three-state click triggers update', async function() {
+    // Note that NOTIFICATIONS do not actually use an allow/ask/block toggle,
+    // but that is not relevant for this test.
+    const pref =
+        createPref(ContentSettingsTypes.NOTIFICATIONS, ContentSetting.ASK);
+
+    await testCategoryEnabled(
+        testElement, browserProxy, pref, ContentSettingsTypes.NOTIFICATIONS,
+        [ContentSetting.ALLOW, ContentSetting.ASK, ContentSetting.BLOCK],
+        ContentSetting.ASK);
+  });
 
   test('radio group is disabled when pref is enforced', async function() {
     const enforcedPrefs = createSiteSettingsPrefs(
