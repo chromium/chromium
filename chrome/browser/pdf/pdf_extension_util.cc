@@ -16,7 +16,9 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/pdf/pdf_viewer_stream_manager.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/api/pdf_viewer_private.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/browser_resources.h"
@@ -41,11 +43,6 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
-
-#if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/glic/public/glic_enabling.h"
-#include "chrome/common/chrome_features.h"
-#endif  // BUILDFLAG(ENABLE_GLIC)
 
 #if BUILDFLAG(ENABLE_PDF_INK2)
 #include "chrome/common/pref_names.h"
@@ -96,6 +93,8 @@ base::DictValue GetPdfViewerStrings() {
       {"bookmarks", IDS_PDF_BOOKMARKS},
       {"downloadEdited", IDS_PDF_DOWNLOAD_EDITED},
       {"downloadOriginal", IDS_PDF_DOWNLOAD_ORIGINAL},
+      {"glicSummarize", IDS_PDF_GLIC_SUMMARIZE},
+      {"glicSummarizeTooltip", IDS_PDF_GLIC_SUMMARIZE_TOOLTIP},
       {"labelPageNumber", IDS_PDF_LABEL_PAGE_NUMBER},
       {"moreActions", IDS_DOWNLOAD_MORE_ACTIONS},
       {"oversizeAttachmentWarning", IDS_PDF_OVERSIZE_ATTACHMENT_WARNING},
@@ -137,11 +136,6 @@ base::DictValue GetPdfViewerStrings() {
       {"tooltipRotateCCW", IDS_PDF_TOOLTIP_ROTATE_CCW},
       {"tooltipThumbnails", IDS_PDF_TOOLTIP_THUMBNAILS},
       {"zoomTextInputAriaLabel", IDS_PDF_ZOOM_TEXT_INPUT_ARIA_LABEL},
-
-#if BUILDFLAG(ENABLE_GLIC)
-      {"glicSummarize", IDS_PDF_GLIC_SUMMARIZE},
-      {"glicSummarizeTooltip", IDS_PDF_GLIC_SUMMARIZE_TOOLTIP},
-#endif  // BUILDFLAG(ENABLE_GLIC)
 
 #if BUILDFLAG(ENABLE_PDF_INK2)
       {"annotationColorBlack", IDS_PDF_ANNOTATION_COLOR_BLACK},
@@ -312,6 +306,7 @@ base::DictValue GetAdditionalData(content::BrowserContext* context) {
   dict.Set("pdfGetSaveDataInBlocks",
            base::FeatureList::IsEnabled(
                chrome_pdf::features::kPdfGetSaveDataInBlocks));
+  dict.Set("pdfGlicSummarizeEnabled", ShouldShowGlicSummarizeButton(context));
   dict.Set(
       "pdfSearchifySaveEnabled",
       base::FeatureList::IsEnabled(chrome_pdf::features::kPdfSearchifySave));
@@ -326,10 +321,6 @@ base::DictValue GetAdditionalData(content::BrowserContext* context) {
   dict.Set("pdfTextAnnotationsEnabled",
            use_ink2 && chrome_pdf::features::kPdfInk2TextAnnotations.Get());
 #endif  // BUILDFLAG(ENABLE_PDF_INK2)
-
-#if BUILDFLAG(ENABLE_GLIC)
-  dict.Set("pdfGlicSummarizeEnabled", ShouldShowGlicSummarizeButton(context));
-#endif  // BUILDFLAG(ENABLE_GLIC)
 
 #if BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
   const bool save_to_drive_enabled =
@@ -427,7 +418,6 @@ void DispatchShouldUpdateViewportEvent(content::RenderFrameHost* embedder_host,
 }
 
 bool ShouldShowGlicSummarizeButton(content::BrowserContext* context) {
-#if BUILDFLAG(ENABLE_GLIC)
   Profile* profile = Profile::FromBrowserContext(context);
   if (!glic::GlicEnabling::IsEnabledForProfile(profile)) {
     return false;
@@ -441,9 +431,6 @@ bool ShouldShowGlicSummarizeButton(content::BrowserContext* context) {
   }
 
   return base::FeatureList::IsEnabled(features::kPdfGlicSummarize);
-#else
-  return false;
-#endif  // BUILDFLAG(ENABLE_GLIC)
 }
 
 }  // namespace pdf_extension_util
