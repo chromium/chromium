@@ -11,6 +11,7 @@
 #include "chrome/browser/contextual_cueing/contextual_cueing_features.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"
 #include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/test_support/interactive_glic_test.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
@@ -743,6 +744,81 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
   histogram_tester.ExpectUniqueSample(
       "ContextualCueing.NudgeDecision.GlicContextualCueing",
       contextual_cueing::NudgeDecision::kSuccess, 1);
+}
+
+// Test fixture to verify that auto-open for PDF bypasses nudge caps.
+class ContextualCueingBypassNudgeCapsTest
+    : public glic::test::InteractiveGlicTest {
+ public:
+  ContextualCueingBypassNudgeCapsTest() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{contextual_cueing::kContextualCueing,
+          {{"BackoffTime", "0h"},
+           {"BackoffMultiplierBase", "0.0"},
+           {"NudgeCapTime", "0h"},
+           {"NudgeCapCount", "10"},
+           {"MinPageCountBetweenNudges", "0"},
+           {"UseDynamicCues", "true"}}},
+         {contextual_cueing::kEnableAutoOpenGlicSidePanel, {}},
+         {features::kAutoOpenGlicForPdf, {}},
+         {page_content_annotations::features::kAnnotatedPageContentExtraction,
+          {}},
+         {contextual_tasks::kContextualTasks, {}}},
+        /*disabled_features=*/{});
+  }
+
+  void SetUp() override {
+    https_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+    https_server_.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
+    ASSERT_TRUE(https_server_.Start());
+
+    glic::test::InteractiveGlicTest::SetUp();
+  }
+
+  void SetUpOnMainThread() override {
+    glic::test::InteractiveGlicTest::SetUpOnMainThread();
+    host_resolver()->AddRule("*", "127.0.0.1");
+  }
+
+  void SetUpBypassHints() {
+    optimization_guide::proto::GlicContextualCueingMetadata cueing_metadata;
+    auto* cueing_config = cueing_metadata.add_cueing_configurations();
+    cueing_config->set_cue_label("auto open label");
+    cueing_config->set_dynamic_cue_label("auto open dynamic label");
+    cueing_config->set_default_text("Summarize this page");
+    cueing_config->set_auto_open_eligible(true);
+
+    optimization_guide::OptimizationMetadata metadata;
+    metadata.set_any_metadata(
+        optimization_guide::AnyWrapProto(cueing_metadata));
+    OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
+        ->AddHintForTesting(
+            https_server_.GetURL("autoopen.com",
+                                 "/optimization_guide/hello.html"),
+            optimization_guide::proto::GLIC_CONTEXTUAL_CUEING, metadata);
+  }
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
+};
+
+// Verify that kAutoOpenGlicForPdf + auto_open_eligible=true correctly
+// opens the panel via the auto-open path, bypassing nudge caps.
+IN_PROC_BROWSER_TEST_F(ContextualCueingBypassNudgeCapsTest,
+                       TestAutoOpenBypassesNudgeCaps) {
+  SetUpBypassHints();
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(),
+      https_server_.GetURL("autoopen.com", "/optimization_guide/hello.html"),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+
+  // kAutoOpenGlicForPdf + auto_open_eligible should open the panel.
+  auto* glic_service = glic::GlicKeyedService::Get(browser()->profile());
+  ASSERT_TRUE(glic_service);
+  EXPECT_TRUE(glic_service->IsWindowShowing());
 }
 
 #endif  // BUILDFLAG(ENABLE_GLIC)
