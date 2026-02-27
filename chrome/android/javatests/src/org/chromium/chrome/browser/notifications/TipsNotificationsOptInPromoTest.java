@@ -59,6 +59,7 @@ import java.io.IOException;
 @EnableFeatures({ChromeFeatureList.ANDROID_TIPS_NOTIFICATIONS + ":always_show_opt_in_promo/true"})
 @Batch(Batch.PER_CLASS)
 @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
+@DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/488115473
 public class TipsNotificationsOptInPromoTest {
     @Rule
     public FreshCtaTransitTestRule mCtaTestRule =
@@ -81,7 +82,6 @@ public class TipsNotificationsOptInPromoTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/487549444
     public void testOptInBottomSheetDismiss() throws IOException {
         var tripResult = showOptInBottomSheet();
         TipsOptInBottomSheetFacility bottomSheet = tripResult.first;
@@ -97,7 +97,6 @@ public class TipsNotificationsOptInPromoTest {
 
     @Test
     @MediumTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/486122313
     public void testOptInBottomSheetClose() {
         var tripResult = showOptInBottomSheet();
         TipsOptInBottomSheetFacility bottomSheet = tripResult.first;
@@ -110,7 +109,6 @@ public class TipsNotificationsOptInPromoTest {
 
     @Test
     @MediumTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/486122313
     public void testOptInBottomSheetAccept() {
         var tripResult = showOptInBottomSheet();
         TipsOptInBottomSheetFacility bottomSheet = tripResult.first;

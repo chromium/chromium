@@ -31,7 +31,6 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.DisableIf;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
@@ -69,6 +68,7 @@ import java.util.List;
 })
 @Batch(Batch.PER_CLASS)
 @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
+@DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/488115473
 public class TipsNotificationsFeaturePromoTest {
     @Rule
     public FreshCtaTransitTestRule mCtaTestRule =
@@ -95,7 +95,6 @@ public class TipsNotificationsFeaturePromoTest {
 
     @Test
     @MediumTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/485627769
     public void testBottomSheetBackButtonAndDismiss() {
         @TipsNotificationsFeatureType
         int featureType = TipsNotificationsFeatureType.ENHANCED_SAFE_BROWSING;
@@ -152,7 +151,6 @@ public class TipsNotificationsFeaturePromoTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @DisabledTest(message = "https://crbug.com/485627769")
     public void testESBBottomSheetDetailPageAccept() throws IOException {
         @TipsNotificationsFeatureType
         int featureType = TipsNotificationsFeatureType.ENHANCED_SAFE_BROWSING;
@@ -269,7 +267,6 @@ public class TipsNotificationsFeaturePromoTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/488056270")
     public void testGoogleLensBottomSheetMainPageAccept() {
         @TipsNotificationsFeatureType int featureType = TipsNotificationsFeatureType.GOOGLE_LENS;
 
@@ -298,7 +295,6 @@ public class TipsNotificationsFeaturePromoTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/485627769
     public void testGoogleLensBottomSheetDetailPageAccept() throws IOException {
         @TipsNotificationsFeatureType int featureType = TipsNotificationsFeatureType.GOOGLE_LENS;
         List<Integer> detailPageStepsRes =
@@ -338,7 +334,6 @@ public class TipsNotificationsFeaturePromoTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/488056270")
     public void testBottomOmniboxBottomSheetMainPageAccept() {
         @TipsNotificationsFeatureType int featureType = TipsNotificationsFeatureType.BOTTOM_OMNIBOX;
 
