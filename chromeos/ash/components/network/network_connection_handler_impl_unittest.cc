@@ -98,7 +98,6 @@ class TestNetworkConnectionObserver : public NetworkConnectionObserver {
 
   void DisconnectRequested(const std::string& service_path) override {
     requests_.insert(service_path);
-    disconnect_requests_.insert(service_path);
   }
 
   bool GetRequested(const std::string& service_path) {
@@ -112,16 +111,11 @@ class TestNetworkConnectionObserver : public NetworkConnectionObserver {
     return iter->second;
   }
 
-  const std::set<std::string>& disconnect_requests() {
-    return disconnect_requests_;
-  }
-
   void SetConnectToNetworkVerdict(ConnectToNetworkRequestVerdict verdict) {
     connect_to_network_verdict_ = verdict;
   }
 
  private:
-  std::set<std::string> disconnect_requests_;
   std::set<std::string> requests_;
   std::map<std::string, std::string> results_;
 

@@ -88,8 +88,6 @@ class TrafficCountersHandlerTest : public ::testing::Test {
     LoginState::Shutdown();
   }
 
-  base::Time GetTime() { return task_environment_.GetMockClock()->Now(); }
-
  protected:
   base::Time SetLastResetTimeAndRun(const std::string& time_str) {
     base::Time reset_time = GetTimeFromString(time_str);

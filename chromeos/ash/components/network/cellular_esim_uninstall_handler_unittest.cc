@@ -221,11 +221,6 @@ class CellularESimUninstallHandlerTest : public testing::Test {
     network_state_handler_->SyncStubCellularNetworks();
   }
 
-  void SetHasRefreshedProfiles(bool has_refreshed) {
-    cellular_esim_profile_handler_->SetHasRefreshedProfilesForEuicc(
-        kDefaultEid, dbus::ObjectPath(kDefaultEuiccPath), has_refreshed);
-  }
-
   void ExpectResult(CellularESimUninstallHandler::UninstallESimResult result,
                     int expected_count = 1) {
     histogram_tester_.ExpectBucketCount(

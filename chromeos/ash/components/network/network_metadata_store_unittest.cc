@@ -221,7 +221,6 @@ class NetworkMetadataStoreNoLoginTest : public ::testing::Test {
   sync_preferences::TestingPrefServiceSyncable* user_prefs() {
     return user_prefs_.get();
   }
-  TestingPrefServiceSimple* device_prefs() { return device_prefs_.get(); }
 
   NetworkMetadataStore* metadata_store() { return metadata_store_.get(); }
   TestNetworkMetadataObserver* metadata_observer() {

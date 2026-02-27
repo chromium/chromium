@@ -117,11 +117,6 @@ class NetworkDeviceHandlerTest : public testing::Test {
     properties_ = std::move(properties.value());
   }
 
-  void StringSuccessCallback(const std::string& result) {
-    VLOG(1) << "StringSuccessCallback: " << result;
-    result_ = result;
-  }
-
   void GetDeviceProperties(const std::string& device_path,
                            const std::string& expected_result) {
     network_device_handler_->GetDeviceProperties(

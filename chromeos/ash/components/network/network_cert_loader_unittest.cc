@@ -92,7 +92,6 @@ class FakePolicyCertificateProvider : public PolicyCertificateProvider {
   base::ObserverList<PolicyCertificateProvider::Observer,
                      true /* check_empty */>::Unchecked observer_list_;
   net::CertificateList authority_certificates_;
-  const std::set<std::string> kNoExtensions = {};
 };
 
 bool IsCertInCertificateList(

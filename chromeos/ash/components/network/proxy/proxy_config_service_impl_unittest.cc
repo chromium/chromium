@@ -146,10 +146,6 @@ class ProxyConfigServiceImplTest : public testing::Test {
     return net::ProxyConfig::CreateAutoDetect();
   }
 
-  NetworkHandlerTestHelper* network_handler_test_helper() {
-    return network_handler_test_helper_.get();
-  }
-
  protected:
   base::test::TaskEnvironment environment_;
   std::unique_ptr<NetworkHandlerTestHelper> network_handler_test_helper_;

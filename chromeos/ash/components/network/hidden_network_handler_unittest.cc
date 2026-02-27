@@ -59,7 +59,6 @@ class FakeNetworkConfigurationObserver : public NetworkConfigurationObserver {
 
   size_t total_removed_count() const { return total_removed_count_; }
   const std::string& service_path() { return service_path_; }
-  const std::string& guid() { return guid_; }
 
  private:
   size_t total_removed_count_ = 0;
@@ -176,10 +175,6 @@ class HiddenNetworkHandlerTest : public ::testing::Test {
                                        success_count);
     histogram_tester.ExpectBucketCount(kRemovalAttemptResultHistogram, false,
                                        failure_count);
-  }
-
-  void ErrorCallback(const std::string& error_name) {
-    ADD_FAILURE() << "Unexpected error: " << error_name;
   }
 
   base::test::TaskEnvironment* task_environment() { return &task_environment_; }
