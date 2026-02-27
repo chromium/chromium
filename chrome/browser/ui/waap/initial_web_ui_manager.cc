@@ -22,13 +22,16 @@ InitialWebUIManager* InitialWebUIManager::From(
   return Get(browser_window_interface->GetUnownedUserDataHost());
 }
 
-bool InitialWebUIManager::RequestDeferShow(base::OnceClosure callback) {
-  if (!features::kWebUIReloadButtonDeferBrowserViewShow.Get()) {
+bool InitialWebUIManager::RequestDeferShow(base::OnceClosure unsafe_callback) {
+  if (!base::FeatureList::IsEnabled(features::kWebUIReloadButton) &&
+      !features::kWebUIReloadButtonDeferBrowserViewShow.Get()) {
     return false;
   }
   if (is_initial_web_ui_pending_) {
     is_show_pending_ = true;
-    web_ui_ready_callback_ = std::move(callback);
+    if (unsafe_callback) {
+      web_ui_ready_callbacks_.AddUnsafe(std::move(unsafe_callback));
+    }
     return true;
   }
   return false;
@@ -41,7 +44,5 @@ bool InitialWebUIManager::IsShowPending() const {
 void InitialWebUIManager::OnWebUIToolbarLoaded() {
   is_initial_web_ui_pending_ = false;
   is_show_pending_ = false;
-  if (web_ui_ready_callback_) {
-    std::move(web_ui_ready_callback_).Run();
-  }
+  web_ui_ready_callbacks_.Notify();
 }

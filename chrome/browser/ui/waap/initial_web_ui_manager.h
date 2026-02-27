@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WAAP_INITIAL_WEB_UI_MANAGER_H_
 #define CHROME_BROWSER_UI_WAAP_INITIAL_WEB_UI_MANAGER_H_
 
-#include "base/functional/callback.h"
+#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
@@ -29,7 +29,10 @@ class InitialWebUIManager {
   // finishes loading. Returns true if the deferral was successful and the state
   // was updated. In this case, `callback` will be invoked when the WebUI is
   // ready. Returns false if deferral is not applicable or not needed.
-  bool RequestDeferShow(base::OnceClosure callback);
+  // Note: the callback is unsafe since it will be added to the list and maybe
+  // invoked after the caller is already destructed. The caller should ensure
+  // the safety (e.g. by binding it to a weak pointer).
+  bool RequestDeferShow(base::OnceClosure unsafe_callback);
 
   bool IsShowPending() const;
 
@@ -38,8 +41,8 @@ class InitialWebUIManager {
   void OnWebUIToolbarLoaded();
 
  private:
-  // This callback is triggered when the initial WebUI is ready.
-  base::OnceClosure web_ui_ready_callback_;
+  // These callbacks are triggered when the initial WebUI is ready.
+  base::OnceClosureList web_ui_ready_callbacks_;
 
   // Tracks the physical loading state of the Initial WebUI.
   // True when the browser launches and the WebUI begins loading in the
