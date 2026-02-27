@@ -9,7 +9,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "components/lens/lens_entrypoints.h"
-#include "net/base/url_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -24,25 +23,6 @@ TEST(LensUrlUtilsTest, GetRegionSearchParameterTest) {
   std::string query_param =
       lens::GetQueryParametersForLensRequest(lens_region_search_ep);
   EXPECT_THAT(query_param, MatchesRegex("ep=crs&re=df&s=4&st=\\d+"));
-}
-
-TEST(LensUrlUtilsTest, AppendCommonSearchParametersToURL) {
-  GURL url("http://example.com");
-  url = lens::AppendCommonSearchParametersToURL(url, "us", false);
-
-  std::string language_value;
-  EXPECT_TRUE(net::GetValueForKeyInQuery(url, lens::kLanguageCodeParameterKey,
-                                         &language_value));
-  EXPECT_EQ("us", language_value);
-}
-
-TEST(LensUrlUtilsTest, AppendCommonSearchParametersToURL_ExcludeLanguage) {
-  GURL url("http://example.com");
-  url = lens::AppendCommonSearchParametersToURL(url, std::nullopt, false);
-
-  std::string language_value;
-  EXPECT_FALSE(net::GetValueForKeyInQuery(url, lens::kLanguageCodeParameterKey,
-                                          &language_value));
 }
 
 TEST(LensUrlUtilsTest, GetImageSearcParameterTest) {
