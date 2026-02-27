@@ -41,7 +41,9 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
+#include "components/user_manager/user.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_PDF_INK2)
@@ -266,6 +268,40 @@ bool IsPdfInk2AnnotationsEnabled(content::BrowserContext* context) {
 }
 #endif  // BUILDFLAG(ENABLE_PDF_INK2)
 
+#if BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
+bool IsPdfSaveToDriveEnabled(content::BrowserContext* context) {
+#if BUILDFLAG(IS_CHROMEOS)
+  // TODO(crbug.com/488428177): Write unit test for this logic.
+  // On ChromeOS, only regular user session has accounts associated with the
+  // browser.
+
+  // Only allow regular user session profiles.
+  auto* user =
+      ash::BrowserContextHelper::Get()->GetUserByBrowserContext(context);
+  if (!user) {
+    return false;
+  }
+  switch (user->GetType()) {
+    case user_manager::UserType::kRegular:
+    case user_manager::UserType::kChild:
+      // These are regular user sessions.
+      break;
+    case user_manager::UserType::kGuest:
+    case user_manager::UserType::kPublicAccount:
+    case user_manager::UserType::kKioskChromeApp:
+    case user_manager::UserType::kKioskWebApp:
+    case user_manager::UserType::kKioskIWA:
+    case user_manager::UserType::kKioskArcvmApp:
+      // Disallows guest, managed guest and kiosk app sessions.
+      return false;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+  return base::FeatureList::IsEnabled(chrome_pdf::features::kPdfSaveToDrive) &&
+         !Profile::FromBrowserContext(context)->IsOffTheRecord();
+}
+#endif  // BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
+
 }  // namespace
 
 std::string GetManifest() {
@@ -323,9 +359,7 @@ base::DictValue GetAdditionalData(content::BrowserContext* context) {
 #endif  // BUILDFLAG(ENABLE_PDF_INK2)
 
 #if BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
-  const bool save_to_drive_enabled =
-      base::FeatureList::IsEnabled(chrome_pdf::features::kPdfSaveToDrive) &&
-      !Profile::FromBrowserContext(context)->IsOffTheRecord();
+  const bool save_to_drive_enabled = IsPdfSaveToDriveEnabled(context);
   dict.Set("pdfSaveToDrive", save_to_drive_enabled);
   dict.Set("pdfSaveToDriveHelpCenterURL",
            chrome::kPdfViewerSaveToDriveHelpCenterURL);
