@@ -44,9 +44,9 @@ public class InMemoryDownloadFile {
 
     @RequiresApi(Build.VERSION_CODES.R)
     private InMemoryDownloadFile(String filename) throws Exception {
-        FileDescriptor mFd = Os.memfd_create(filename, 0);
-        mPfd = ParcelFileDescriptor.dup(mFd);
-        mFos = new FileOutputStream(mFd);
+        FileDescriptor fd = Os.memfd_create(filename, 0);
+        mPfd = ParcelFileDescriptor.dup(fd);
+        mFos = new FileOutputStream(fd);
     }
 
     @CalledByNative
