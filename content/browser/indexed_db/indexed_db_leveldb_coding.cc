@@ -1480,10 +1480,10 @@ int Compare(std::string_view a,
             bool only_compare_index_keys) {
   bool ok;
   int result = Compare(a, b, only_compare_index_keys, &ok);
-  // TODO(dmurph): Report this somehow. https://crbug.com/913121
-  CHECK(ok, base::NotFatalUntil::M146);
-  if (!ok)
+  if (!ok) {
+    // TODO(dmurph): Report this somehow. https://crbug.com/913121
     return 0;
+  }
   return result;
 }
 
