@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
@@ -18,6 +19,7 @@
 
 class AccountId;
 class PrefRegistrySimple;
+class PrefService;
 class ProfileDownloader;
 
 namespace base {
@@ -56,7 +58,9 @@ class UserImageManagerImpl : public ProfileDownloaderDelegate {
   // Registers user image manager preferences.
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
-  UserImageManagerImpl(const AccountId& account_id,
+  // `local_state` must be non-null and must outlive `this`.
+  UserImageManagerImpl(PrefService* local_state,
+                       const AccountId& account_id,
                        user_manager::UserManager* user_manager,
                        UserImageLoaderDelegate* user_image_loader_delegate);
 
@@ -152,10 +156,6 @@ class UserImageManagerImpl : public ProfileDownloaderDelegate {
   friend class UserImageManagerTestBase;
   friend class UserImageManagerImplTest;
 
-  // ID of user which images are managed by current instance of
-  // UserImageManager.
-  const AccountId account_id_;
-
   // Every image load or update is encapsulated by a Job. Whenever an image load
   // or update is requested for a user, the Job currently running for that user
   // (if any) is canceled. This ensures that at most one Job is running per user
@@ -233,6 +233,12 @@ class UserImageManagerImpl : public ProfileDownloaderDelegate {
   // Returns true if user avatar customization selectors are enabled. Profile
   // image download will only occur if this returns true
   bool IsCustomizationSelectorsPrefEnabled() const;
+
+  const raw_ref<PrefService> local_state_;
+
+  // ID of user which images are managed by current instance of
+  // UserImageManager.
+  const AccountId account_id_;
 
   // The user manager.
   raw_ptr<user_manager::UserManager> user_manager_;

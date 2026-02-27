@@ -202,7 +202,9 @@ class UserManagerTest : public testing::Test {
             user_manager_.get(), ash::CrosSettings::Get(),
             DeviceSettingsService::Get(), nullptr);
     user_image_manager_registry_ =
-        std::make_unique<ash::UserImageManagerRegistry>(user_manager_.get());
+        std::make_unique<ash::UserImageManagerRegistry>(
+            TestingBrowserProcess::GetGlobal()->local_state(),
+            user_manager_.get());
     // Initialize `UserManager` after `UserImageManagerRegistry` creation to
     // follow initialization order in
     // `BrowserProcessPlatformPart::InitializeUserManager()`

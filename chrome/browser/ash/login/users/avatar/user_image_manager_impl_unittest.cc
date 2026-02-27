@@ -52,6 +52,7 @@ class UserImageManagerImplTest : public testing::Test {
     mock_user_image_loader_delegate_ = mock_user_image_loader_delegate.get();
 
     user_image_manager_registry_ = std::make_unique<UserImageManagerRegistry>(
+        TestingBrowserProcess::GetGlobal()->local_state(),
         fake_chrome_user_manager(), std::move(mock_user_image_loader_delegate));
   }
 

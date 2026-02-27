@@ -13,6 +13,7 @@
 
 #include "ash/public/cpp/image_downloader.h"
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -32,7 +33,6 @@
 #include "chrome/browser/ash/login/users/avatar/user_image_sync_observer.h"
 #include "chrome/browser/ash/login/users/default_user_image/default_user_images.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_downloader.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -156,7 +156,8 @@ void UserImageManagerImpl::RegisterPrefs(PrefRegistrySimple* registry) {
 class UserImageManagerImpl::Job {
  public:
   // The `Job` will update the user object corresponding to `parent`.
-  explicit Job(UserImageManagerImpl* parent);
+  // `local_state` must be non-null and must outlive `this`.
+  Job(PrefService* local_state, UserImageManagerImpl* parent);
 
   Job(const Job&) = delete;
   Job& operator=(const Job&) = delete;
@@ -238,6 +239,8 @@ class UserImageManagerImpl::Job {
     return parent_->user_image_loader_delegate_;
   }
 
+  const raw_ref<PrefService> local_state_;
+
   raw_ptr<UserImageManagerImpl, DanglingUntriaged> parent_;
 
   // Whether one of the Load*() or Set*() methods has been run already.
@@ -251,8 +254,9 @@ class UserImageManagerImpl::Job {
   base::WeakPtrFactory<Job> weak_factory_{this};
 };
 
-UserImageManagerImpl::Job::Job(UserImageManagerImpl* parent)
-    : parent_(parent), run_(false) {}
+UserImageManagerImpl::Job::Job(PrefService* local_state,
+                               UserImageManagerImpl* parent)
+    : local_state_(CHECK_DEREF(local_state)), parent_(parent), run_(false) {}
 
 UserImageManagerImpl::Job::~Job() = default;
 
@@ -513,8 +517,6 @@ void UserImageManagerImpl::Job::UpdateLocalState() {
     return;
   }
 
-  PrefService* local_state = g_browser_process->local_state();
-
   base::DictValue entry;
   entry.Set(kImagePathNodeName, image_path_.value());
   entry.Set(kImageIndexNodeName, image_index_);
@@ -524,14 +526,14 @@ void UserImageManagerImpl::Job::UpdateLocalState() {
   }
 
   const base::DictValue* existing_value =
-      local_state->GetDict(kUserImageProperties)
+      local_state_->GetDict(kUserImageProperties)
           .FindDict(account_id().GetUserEmail());
 
   if (existing_value && *existing_value == entry) {
     return;
   }
 
-  ScopedDictPrefUpdate update(local_state, kUserImageProperties);
+  ScopedDictPrefUpdate update(&local_state_.get(), kUserImageProperties);
 
   update->Set(account_id().GetUserEmail(), std::move(entry));
 
@@ -543,10 +545,12 @@ void UserImageManagerImpl::Job::NotifyJobDone() {
 }
 
 UserImageManagerImpl::UserImageManagerImpl(
+    PrefService* local_state,
     const AccountId& account_id,
     user_manager::UserManager* user_manager,
     UserImageLoaderDelegate* user_image_loader_delegate)
-    : account_id_(account_id),
+    : local_state_(CHECK_DEREF(local_state)),
+      account_id_(account_id),
       user_manager_(user_manager),
       user_image_loader_delegate_(user_image_loader_delegate),
       downloading_profile_image_(false),
@@ -602,7 +606,7 @@ void UserImageManagerImpl::LoadUserImage() {
     return;
   }
 
-  job_ = std::make_unique<Job>(this);
+  job_ = std::make_unique<Job>(&local_state_.get(), this);
   job_->LoadImage(base::FilePath(*image_path), image_index, image_url);
 }
 
@@ -667,7 +671,7 @@ void UserImageManagerImpl::SaveUserDefaultImageIndex(int default_image_index) {
   if (IsUserImageManaged()) {
     return;
   }
-  job_ = std::make_unique<Job>(this);
+  job_ = std::make_unique<Job>(&local_state_.get(), this);
   job_->SetToDefaultImage(default_image_index);
 }
 
@@ -676,7 +680,7 @@ void UserImageManagerImpl::SaveUserImage(
   if (IsUserImageManaged() || !IsCustomizationSelectorsPrefEnabled()) {
     return;
   }
-  job_ = std::make_unique<Job>(this);
+  job_ = std::make_unique<Job>(&local_state_.get(), this);
   job_->SetToImage(user_manager::UserImage::Type::kExternal,
                    std::move(user_image));
 }
@@ -685,7 +689,7 @@ void UserImageManagerImpl::SaveUserImageFromFile(const base::FilePath& path) {
   if (IsUserImageManaged() || !IsCustomizationSelectorsPrefEnabled()) {
     return;
   }
-  job_ = std::make_unique<Job>(this);
+  job_ = std::make_unique<Job>(&local_state_.get(), this);
   job_->SetToPath(path, user_manager::UserImage::Type::kExternal, GURL(), true);
 }
 
@@ -703,7 +707,7 @@ void UserImageManagerImpl::SaveUserImageFromProfileImage() {
         downloaded_profile_image_, user_manager::UserImage::ChooseImageFormat(
                                        *downloaded_profile_image_.bitmap()));
   }
-  job_ = std::make_unique<Job>(this);
+  job_ = std::make_unique<Job>(&local_state_.get(), this);
   job_->SetToImage(user_manager::UserImage::Type::kProfile,
                    std::move(user_image));
   // If no profile image has been downloaded yet, ensure that a download is
@@ -789,7 +793,7 @@ void UserImageManagerImpl::OnExternalDataFetched(
   DCHECK_EQ(policy::key::kUserAvatarImage, policy);
   DCHECK(IsUserImageManaged());
   if (data) {
-    job_ = std::make_unique<Job>(this);
+    job_ = std::make_unique<Job>(&local_state_.get(), this);
     job_->SetToImageData(std::move(data));
   }
 }
@@ -959,8 +963,7 @@ void UserImageManagerImpl::DownloadProfileData() {
 
 void UserImageManagerImpl::DeleteUserImageAndLocalStateEntry(
     const char* prefs_dict_root) {
-  ScopedDictPrefUpdate update(g_browser_process->local_state(),
-                              prefs_dict_root);
+  ScopedDictPrefUpdate update(&local_state_.get(), prefs_dict_root);
   const base::DictValue* image_properties =
       update->FindDict(account_id_.GetUserEmail());
   if (!image_properties) {
@@ -1005,9 +1008,8 @@ void UserImageManagerImpl::TryToCreateImageSyncObserver() {
 }
 
 const base::DictValue* UserImageManagerImpl::GetImageProperties() {
-  PrefService* local_state = g_browser_process->local_state();
   const base::DictValue& prefs_images =
-      local_state->GetDict(kUserImageProperties);
+      local_state_->GetDict(kUserImageProperties);
 
   const base::DictValue* image_properties =
       prefs_images.FindDict(account_id_.GetUserEmail());
