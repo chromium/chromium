@@ -93,6 +93,7 @@ CGFloat HorizontalMargin() {
 
   BOOL _undoActive;
   BOOL _selectTabsActionEnabled;
+  BOOL _closeAllActionEnabled;
   BOOL _closeOtherTabsEnabled;
 
   BOOL _scrolledToEdge;
@@ -175,6 +176,11 @@ CGFloat HorizontalMargin() {
 
 - (void)setSelectTabsActionEnabled:(BOOL)enabled {
   _selectTabsActionEnabled = enabled;
+  _overflowMenuButton.menu = [self createOverflowMenu];
+}
+
+- (void)setCloseAllActionEnabled:(BOOL)enabled {
+  _closeAllActionEnabled = enabled;
   _overflowMenuButton.menu = [self createOverflowMenu];
 }
 
@@ -619,15 +625,18 @@ CGFloat HorizontalMargin() {
                     }]];
     }
 
-    UIButton* currentOverflowMenuButton = _overflowMenuButton;
-    [menuElements addObject:[actionFactory actionToCloseAllTabsWithBlock:^{
-                    TabGridTopToolbar* strongSelf = weakSelf;
-                    if (!strongSelf) {
-                      return;
-                    }
-                    [strongSelf.buttonsDelegate
-                        closeAllButtonTapped:currentOverflowMenuButton];
-                  }]];
+    // Only display the Close All Tabs button if there are open tabs or groups.
+    if (_closeAllActionEnabled) {
+      UIButton* currentOverflowMenuButton = _overflowMenuButton;
+      [menuElements addObject:[actionFactory actionToCloseAllTabsWithBlock:^{
+                      TabGridTopToolbar* strongSelf = weakSelf;
+                      if (!strongSelf) {
+                        return;
+                      }
+                      [strongSelf.buttonsDelegate
+                          closeAllButtonTapped:currentOverflowMenuButton];
+                    }]];
+    }
 
     if (_closeOtherTabsEnabled) {
       UIAction* closeOtherTabsAction =

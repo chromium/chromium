@@ -50,6 +50,8 @@
 - (void)setSearchButtonEnabled:(BOOL)enabled;
 // Sets `enabled` on the select tabs action.
 - (void)setSelectTabsActionEnabled:(BOOL)enabled;
+// Sets `enabled` on the close all tabs and groups action.
+- (void)setCloseAllActionEnabled:(BOOL)enabled;
 // Sets `enabled` on the select all button.
 - (void)setSelectAllButtonEnabled:(BOOL)enabled;
 // Sets `enabled` on the close other tabs action.

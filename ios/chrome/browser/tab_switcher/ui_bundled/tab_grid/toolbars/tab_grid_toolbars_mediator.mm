@@ -113,6 +113,9 @@
       setSelectTabsActionEnabled:_configuration.selectTabsButton];
 
   [self.topToolbarConsumer
+      setCloseAllActionEnabled:_configuration.closeAllButton];
+
+  [self.topToolbarConsumer
       setCloseOtherTabsEnabled:_configuration.closeOtherTabsButton];
 }
 
