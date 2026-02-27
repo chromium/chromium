@@ -737,6 +737,36 @@ TEST_P(RemoteTest, Fusion) {
   EXPECT_TRUE(called);
 }
 
+TEST_P(RemoteTest, MessageFilter) {
+  PendingRemote<sample::PingTest> pending_remote;
+  PingTestImpl impl(pending_remote.InitWithNewPipeAndPassReceiver());
+  Remote<sample::PingTest> remote(std::move(pending_remote));
+
+  class Filter : public MessageFilter {
+   public:
+    bool WillDispatch(Message* message) override {
+      ++num_calls;
+      return true;
+    }
+
+    void DidDispatchOrReject(Message* message, bool accepted) override {}
+
+    int num_calls = 0;
+  };
+
+  auto filter = std::make_unique<Filter>();
+  Filter* filter_handle = filter.get();
+  remote.SetFilter(std::move(filter));
+
+  for (int i = 0; i < 10; ++i) {
+    base::RunLoop loop;
+    remote->Ping(loop.QuitClosure());
+    loop.Run();
+  }
+
+  EXPECT_EQ(10, filter_handle->num_calls);
+}
+
 void Fail() {
   FAIL() << "Unexpected connection error";
 }

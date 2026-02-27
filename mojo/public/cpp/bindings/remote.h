@@ -23,6 +23,8 @@
 
 namespace mojo {
 
+class MessageFilter;
+
 // A Remote is used to issue Interface method calls to a single connected
 // Receiver or PendingReceiver. The Remote must be bound in order to issue those
 // method calls, and it becomes bound by consuming a PendingRemote either at
@@ -223,6 +225,15 @@ class Remote {
       internal_state_.CloseWithReason(custom_reason, description);
     }
     reset();
+  }
+
+  // Sets the message filter to be notified of each outgoing message before
+  // dispatch. If a filter returns |false| from WillDispatch(), the message is
+  // not dispatched and the pip is closed. Filters cannot be removed once
+  // added and only one can be set.
+  void SetFilter(std::unique_ptr<MessageFilter> filter) {
+    CHECK(is_bound()) << "Remote must be bound before setting the filter";
+    internal_state_.SetFilter(std::move(filter));
   }
 
   // Returns the version of Interface used by this Remote. Defaults to 0 but can

@@ -196,6 +196,11 @@ class InterfacePtrState : public InterfacePtrStateBase {
     InterfacePtrStateBase::Swap(other);
   }
 
+  void SetFilter(std::unique_ptr<MessageFilter> filter) {
+    ConfigureProxyIfNecessary();
+    endpoint_client()->SetFilter(std::move(filter));
+  }
+
   void Bind(PendingRemoteState* remote_state,
             scoped_refptr<base::SequencedTaskRunner> runner) {
     DCHECK(!proxy_);
