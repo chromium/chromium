@@ -9,8 +9,8 @@ import 'chrome://resources/cr_elements/icons.html.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {BrowserServiceImpl} from './browser_service.js';
-import {getCss} from './filter_chips.css.js';
-import {getHtml} from './filter_chips.html.js';
+import {getCss} from './history_filter_chips.css.js';
+import {getHtml} from './history_filter_chips.html.js';
 
 export class HistoryFilterChipsElement extends CrLitElement {
   static get is() {

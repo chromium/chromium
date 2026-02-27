@@ -4,7 +4,7 @@
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
-import type {HistoryFilterChipsElement} from './filter_chips.js';
+import type {HistoryFilterChipsElement} from './history_filter_chips.js';
 
 export function getHtml(this: HistoryFilterChipsElement) {
   // clang-format off

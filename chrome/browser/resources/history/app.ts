@@ -15,7 +15,7 @@ import './history_sync_promo.js';
 // </if>
 import './history_list.js';
 import './history_toolbar.js';
-import './filter_chips.js';
+import './history_filter_chips.js';
 import './query_manager.js';
 import './router.js';
 import './side_bar.js';
