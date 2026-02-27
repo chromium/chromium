@@ -14,6 +14,9 @@
 // Sets whether the tab grid is visible or not.
 - (void)setTabGridVisible:(BOOL)tabGridVisible;
 
+// Sets whether the tab groups page in the tab grid is visible.
+- (void)setTabGroupsPageVisible:(BOOL)tabGroupsPageVisible;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_APP_BAR_UI_APP_BAR_CONSUMER_H_

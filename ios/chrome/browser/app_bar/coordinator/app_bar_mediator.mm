@@ -205,18 +205,14 @@
   if (_tabGridState.tabGridVisible) {
     switch (_tabGridState.currentPage) {
       case TabGridPageRegularTabs:
+      case TabGridPageTabGroups:
+        // This is an intentional fallthrough. Tabs created while on the tab
+        // group page of the tab grid should be non-incognito.
         [self openNewTabInTabGridInIncognito:NO];
-        break;
-
+        return;
       case TabGridPageIncognitoTabs:
         [self openNewTabInTabGridInIncognito:YES];
-        break;
-      case TabGridPageTabGroups: {
-        [self.regularTabGroupsCommands showTabGroupCreationWithoutTabs];
-        base::RecordAction(
-            base::UserMetricsAction("MobileTabGridCreateTabGroup"));
-        break;
-      }
+        return;
     }
   } else {
     CGPoint center = [sender.superview convertPoint:sender.center toView:nil];
@@ -227,6 +223,13 @@
 
     [IntentDonationHelper donateIntent:IntentType::kOpenNewTab];
   }
+}
+
+- (void)createNewTabGroupFromView:(UIView*)sender {
+  if (!_tabGridState.tabGridVisible) {
+    return;
+  }
+  [self.regularTabGroupsCommands showTabGroupCreationWithoutTabs];
 }
 
 #pragma mark - Properties
@@ -271,14 +274,18 @@
 - (void)updateForTabGridPage:(TabGridPage)page {
   switch (page) {
     case TabGridPageIncognitoTabs:
+      [self.consumer setTabGroupsPageVisible:NO];
       self.currentWebStateList = _incognitoWebStateList;
       break;
     case TabGridPageRegularTabs:
+      [self.consumer setTabGroupsPageVisible:NO];
       self.currentWebStateList = _regularWebStateList;
       break;
     case TabGridPageTabGroups:
       CHECK_NE(TabGridPageTabGroups, _tabGridState.originPage);
+      CHECK_EQ(TabGridPageTabGroups, _currentPage);
       [self updateForTabGridPage:_tabGridState.originPage];
+      [self.consumer setTabGroupsPageVisible:YES];
       break;
   }
 }

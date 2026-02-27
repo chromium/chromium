@@ -73,6 +73,8 @@ UIImage* CustomAppBarSymbol(NSString* symbol_name) {
   NSUInteger _tabCount;
   // Whether the tab grid is currently visible.
   BOOL _isTabGridVisible;
+  // Whether the tab groups page in the tab grid is currently visible.
+  BOOL _isTabGroupsPageVisible;
 }
 
 - (void)updateForAngle:(CGFloat)angle {
@@ -117,6 +119,14 @@ UIImage* CustomAppBarSymbol(NSString* symbol_name) {
 - (void)setTabGridVisible:(BOOL)tabGridVisible {
   _isTabGridVisible = tabGridVisible;
   [self updateTabGridButtonForTabGridShowing:tabGridVisible];
+}
+
+- (void)setTabGroupsPageVisible:(BOOL)tabGroupsPageVisible {
+  if (tabGroupsPageVisible == _isTabGroupsPageVisible) {
+    return;
+  }
+  _isTabGroupsPageVisible = tabGroupsPageVisible;
+  [self updateNewTabButtonForTabGroupsPageVisibility];
 }
 
 #pragma mark - Private
@@ -214,6 +224,44 @@ UIImage* CustomAppBarSymbol(NSString* symbol_name) {
   return button;
 }
 
+// Updates the new tab button for whether the tab groups page in the tab grid is
+// showing.
+- (void)updateNewTabButtonForTabGroupsPageVisibility {
+  if (_isTabGroupsPageVisible) {
+    __weak __typeof(self) weakSelf = self;
+    UIButton* openNewTabButton = _openNewTabButton;
+
+    UIAction* newTabGroupAction = [UIAction
+        actionWithTitle:l10n_util::GetNSString(
+                            IDS_IOS_APP_BAR_CONTEXT_MENU_NEW_TAB_GROUP)
+                  image:DefaultSymbolWithConfiguration(kNewTabGroupActionSymbol,
+                                                       nil)
+             identifier:nil
+                handler:^(UIAction*) {
+                  [weakSelf
+                      didTapContextMenuButtonNewTabGroup:openNewTabButton];
+                }];
+
+    UIAction* newTabAction = [UIAction
+        actionWithTitle:l10n_util::GetNSString(
+                            IDS_IOS_DIAMOND_PROTOTYPE_NEW_TAB)
+                  image:DefaultSymbolWithConfiguration(kPlusSymbol, nil)
+             identifier:nil
+                handler:^(UIAction*) {
+                  [weakSelf didTapContextMenuButtonNewTab:openNewTabButton];
+                }];
+
+    UIMenu* contextMenu =
+        [UIMenu menuWithChildren:@[ newTabGroupAction, newTabAction ]];
+    _openNewTabButton.menu = contextMenu;
+    _openNewTabButton.showsMenuAsPrimaryAction = YES;
+    return;
+  }
+
+  _openNewTabButton.menu = nil;
+  _openNewTabButton.showsMenuAsPrimaryAction = NO;
+}
+
 // Updates the tab grid button for the given tab grid showing state.
 - (void)updateTabGridButtonForTabGridShowing:(BOOL)showing {
   NSString* symbolName = showing ? kAppFillSymbol : kAppSymbol;
@@ -241,6 +289,20 @@ UIImage* CustomAppBarSymbol(NSString* symbol_name) {
 - (void)didTapOpenNewTabButton:(UIView*)sender {
   base::RecordAction(base::UserMetricsAction("MobileToolbarNewTabShortcut"));
   [self.mutator createNewTabFromView:sender];
+}
+
+// Called when the New Tab button is selected from the context menu of the
+// `_openNewTabButton` on the tab groups page of the tab grid.
+- (void)didTapContextMenuButtonNewTab:(UIView*)sender {
+  base::RecordAction(base::UserMetricsAction("MobileTabGridCreateRegularTab"));
+  [self.mutator createNewTabFromView:sender];
+}
+
+// Called when the New Tab Group button is selected from the context menu of the
+// `_openNewTabButton` on the tab groups page of the tab grid.
+- (void)didTapContextMenuButtonNewTabGroup:(UIView*)sender {
+  base::RecordAction(base::UserMetricsAction("MobileTabGridCreateTabGroup"));
+  [self.mutator createNewTabGroupFromView:sender];
 }
 
 // Called when the Tab Grid button has a touch down.

@@ -13,6 +13,9 @@
 // Creates a new tab for the current mode.
 - (void)createNewTabFromView:(UIView*)sender;
 
+// Creates a new tab group for the current mode.
+- (void)createNewTabGroupFromView:(UIView*)sender;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_APP_BAR_UI_APP_BAR_MUTATOR_H_
