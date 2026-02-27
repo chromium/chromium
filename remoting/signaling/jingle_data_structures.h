@@ -46,8 +46,8 @@ struct JabberId {
   std::string resource_part;
 };
 
-// WebRTC session description (SDP).
-// https://www.w3.org/TR/webrtc/#rtcsessiondescription-class
+// Represents a WebRTC session description (SDP).
+// See https://www.w3.org/TR/webrtc/#rtcsessiondescription-class
 struct SessionDescription {
   SessionDescription();
   SessionDescription(const SessionDescription&);
@@ -71,10 +71,8 @@ struct SessionDescription {
   std::vector<uint8_t> signature;
 };
 
-// The authentication payload used in session-initiate, session-accept, and
-// session-info messages.
-// TODO: joedow - Consider using sub-messages to limit the fields for each
-// authenticator type.
+// Represents the authentication payload used in session-initiate,
+// session-accept, and session-info messages.
 struct JingleAuthentication {
   JingleAuthentication();
   JingleAuthentication(const JingleAuthentication&);
@@ -123,9 +121,12 @@ struct JingleAuthentication {
   bool is_empty() const;
 };
 
+// Represents the ICE transport information including candidates and credentials
 struct IceTransportInfo {
   IceTransportInfo();
   ~IceTransportInfo();
+
+  // Represents an ICE candidate with an optional name and SDP m-line index.
   // TODO: joedow - Replace this with webrtc::IceCandidate post-chromotocol.
   struct NamedCandidate {
     NamedCandidate();
@@ -143,6 +144,7 @@ struct IceTransportInfo {
     std::optional<int> sdp_m_line_index;
   };
 
+  // Represents ICE credentials for a specific channel.
   struct IceCredentials {
     IceCredentials();
     IceCredentials(std::string channel,
@@ -159,6 +161,7 @@ struct IceTransportInfo {
   std::list<NamedCandidate> candidates;
 };
 
+// Represents transport information for a Jingle session.
 struct JingleTransportInfo {
   JingleTransportInfo();
   JingleTransportInfo(const JingleTransportInfo&);
@@ -167,6 +170,8 @@ struct JingleTransportInfo {
   JingleTransportInfo& operator=(JingleTransportInfo&&);
   ~JingleTransportInfo();
 
+  // The XML namespace for this transport (e.g., google:remoting:ice or
+  // google:remoting:webrtc).
   // TODO: joedow - Remove this field when we no longer support chromotocol.
   std::string xml_namespace;
 
@@ -176,6 +181,7 @@ struct JingleTransportInfo {
   std::optional<SessionDescription> session_description;
 };
 
+// Represents host attributes sent as an attachment.
 struct HostAttributesAttachment {
   HostAttributesAttachment();
   HostAttributesAttachment(const HostAttributesAttachment&);
@@ -187,6 +193,7 @@ struct HostAttributesAttachment {
   std::vector<std::string> attribute;
 };
 
+// Represents host configuration settings sent as an attachment.
 struct HostConfigAttachment {
   HostConfigAttachment();
   HostConfigAttachment(const HostConfigAttachment&);
@@ -198,6 +205,8 @@ struct HostConfigAttachment {
   std::map<std::string, std::string> settings;
 };
 
+// Represents a generic attachment that can contain host attributes or
+// configuration.
 struct Attachment {
   Attachment();
   Attachment(const Attachment&);
@@ -210,6 +219,7 @@ struct Attachment {
   std::optional<HostConfigAttachment> host_config;
 };
 
+// Represents the payload for a "session-initiate" Jingle action.
 struct SessionInitiate {
   SessionInitiate();
   SessionInitiate(const SessionInitiate&);
@@ -222,6 +232,7 @@ struct SessionInitiate {
   std::optional<JingleTransportInfo> transport_info;
 };
 
+// Represents the payload for a "session-accept" Jingle action.
 struct SessionAccept {
   SessionAccept();
   SessionAccept(const SessionAccept&);
@@ -234,6 +245,7 @@ struct SessionAccept {
   std::optional<JingleTransportInfo> transport_info;
 };
 
+// Represents the payload for a "session-info" Jingle action.
 struct SessionInfo {
   SessionInfo();
   SessionInfo(const SessionInfo&);
@@ -260,6 +272,7 @@ struct SessionInfo {
   std::optional<GenericInfo> generic_info;
 };
 
+// Represents the payload for a "session-terminate" Jingle action.
 struct SessionTerminate {
   SessionTerminate();
   SessionTerminate(const SessionTerminate&);
@@ -268,6 +281,7 @@ struct SessionTerminate {
   SessionTerminate& operator=(SessionTerminate&&);
   ~SessionTerminate();
 
+  // The reason for termination. See XEP-0166, section 7.2.
   enum class Reason {
     kUnspecified,
     kSuccess,
@@ -286,8 +300,10 @@ struct SessionTerminate {
   std::string error_location;
 };
 
+// Represents a Jingle message payload for session negotiation.
 class JingleMessage {
  public:
+  // The specific Jingle action this message represents.
   enum class ActionType {
     kUnknownAction,
     kSessionInitiate,
@@ -324,35 +340,32 @@ class JingleMessage {
 
   void SetPayload(Payload payload);
 
+  // Unique identifier for the message.
   std::string message_id;
 
   SignalingAddress from;
   SignalingAddress to;
+
+  // The unique identifier for this Jingle session.
   std::string sid;
 
+  // JID of the session initiator.
   std::string initiator;
 
   std::unique_ptr<ContentDescription> description;
   std::vector<Attachment> attachments;
 
-  // Value from the <reason> tag if it is present in the
-  // message. Useful mainly for session-terminate messages, but Jingle
-  // spec allows it in any message.
+  // Value from the <reason> tag if it is present in the message. Useful mainly
+  // for session-terminate messages, but Jingle spec allows it in any message.
   SessionTerminate::Reason reason = SessionTerminate::Reason::kUnspecified;
 
-  // Value from the <google:remoting:error-code> tag if it is present in the
-  // message. Useful mainly for session-terminate messages. If it's UNKNOWN,
-  // or reason is UNKNOWN_REASON, this field will be ignored in the xml output.
+  // CRD-specific error code, provides more detail than `reason`.
   ErrorCode error_code = ErrorCode::UNKNOWN_ERROR;
 
-  // Value from the <google:remoting:error-details> tag if it is present in the
-  // message. Useful mainly for session-terminate messages. If it's empty, or
-  // reason is UNKNOWN_REASON, this field will be ignored in the xml output.
+  // Optional human-readable details about the error.
   std::string error_details;
 
-  // Value from the <google:remoting:error-location> tag if it is present in the
-  // message. Useful mainly for session-terminate messages. If it's empty, or
-  // reason is UNKNOWN_REASON, this field will be ignored in the xml output.
+  // Optional string indicating the code location where the error occurred.
   std::string error_location;
 
  private:
@@ -364,11 +377,15 @@ class JingleMessage {
   Payload payload_;
 };
 
+// Represents a response to a Jingle message, which can be either a success
+// (RESULT) or an error (ERROR).
 struct JingleMessageReply {
   enum ReplyType {
     REPLY_RESULT,
     REPLY_ERROR,
   };
+
+  // Condition for an IQ-level error, distinct from a session-terminate error.
   enum ErrorType {
     UNSPECIFIED,
     BAD_REQUEST,
@@ -387,11 +404,18 @@ struct JingleMessageReply {
   JingleMessageReply& operator=(JingleMessageReply&&);
   ~JingleMessageReply();
 
+  // Defines the role of this reply in the IQ request/response pattern.
   ReplyType reply_type = REPLY_RESULT;
+
+  // Error details, present if reply_type = REPLY_ERROR.
   std::optional<ErrorType> error_type;
+
+  // Optional descriptive text for the error.
   std::string text;
 
+  // Unique identifier for the message, used for pairing with the request.
   std::string message_id;
+
   SignalingAddress from;
   SignalingAddress to;
 };
