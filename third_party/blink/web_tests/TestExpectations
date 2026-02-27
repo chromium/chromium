@@ -9688,9 +9688,6 @@ crbug.com/475047610 [ Debug Linux ] external/wpt/webdriver/tests/bidi/input/perf
 crbug.com/475126745 [ Debug Linux ] external/wpt/mathml/presentation-markup/scripts/underover-stretchy-003.html [ Failure ]
 crbug.com/465849685 [ Debug Linux ] media/media-playback-while-not-visible-permission-policy-cant-play-if-hidden.html [ Failure Pass ]
 
-# Gardener 2026-01-13
-crbug.com/475366073 [ Win11-arm64 ] virtual/xslt-enabled/http/tests/xsl/xslt/xslt-transform-with-javascript-disabled-quirk.html [ Failure ]
-
 # linux-blink-leak-rel failure
 crbug.com/476257809 [ Linux ] external/wpt/fedcm/fedcm-storage-access-api-autogrant.tentative.https.sub.html [ Failure Pass Skip ]
 
