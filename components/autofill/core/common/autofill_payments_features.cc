@@ -246,7 +246,13 @@ BASE_FEATURE(kAutofillEnableTouchToFillReshowForBnpl,
 // retrieval if a challenge is required, 3DS authentication is available for
 // the card, and FIDO is not.
 BASE_FEATURE(kAutofillEnableVcn3dsAuthentication,
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#else
              base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
 
 // When enabled, the Virtual Card enrollment bottom sheet uses the Java
 // payments data manager and associated image fetcher to retrieve the cached

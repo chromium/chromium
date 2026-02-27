@@ -2620,24 +2620,6 @@
             ]
         }
     ],
-    "AutofillEnableVcn3dsAuthentication": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillEnableVcn3dsAuthentication"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillEnableWalletBranding": [
         {
             "platforms": [
