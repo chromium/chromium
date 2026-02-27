@@ -19,6 +19,8 @@
 #include "third_party/blink/public/common/frame/frame_ad_evidence.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom-shared.h"
+#include "third_party/blink/public/web/web_script_source.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/core/accessibility/ax_context.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
@@ -6659,6 +6661,533 @@ TEST_F(AIPageContentAgentTest, MultipleInteractionDisabledReasons) {
                   InteractionDisabledReason::kDisabled,
                   InteractionDisabledReason::kAriaDisabled,
                   InteractionDisabledReason::kCursorNotAllowed));
+}
+
+TEST_F(AIPageContentAgentTest, ZeroSizeActionableElement) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <div id='zero' style='width: 0; height: 0;' onclick='void(0)'></div>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  GetAIPageContentWithActionableElements();
+
+  const auto* zero_node = FindNodeBySelector("#zero");
+  // An actionable element with 0 size should still be included in the APC tree
+  // if it is visible, e.g. it doesn't have visibility: hidden.
+  ASSERT_TRUE(zero_node);
+  ASSERT_TRUE(zero_node->content_attributes->geometry);
+  EXPECT_TRUE(
+      zero_node->content_attributes->geometry->outer_bounding_box.IsEmpty());
+  EXPECT_TRUE(
+      zero_node->content_attributes->geometry->visible_bounding_box.IsEmpty());
+}
+
+TEST_F(AIPageContentAgentTest, ZeroSizeNonActionableElement) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <div id='zero' style='width: 0; height: 0;'></div>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  GetAIPageContentWithActionableElements();
+
+  const auto* zero_node = FindNodeBySelector("#zero");
+  // A non-actionable element with 0 size should be excluded from the APC tree.
+  EXPECT_FALSE(zero_node);
+}
+
+TEST_F(AIPageContentAgentTest, ZeroSizeContainerWithVisibleChild) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <div id='zero' style='width: 0; height: 0; position: fixed;'>"
+      "    <div id='visible' style='width: 10px; height: 10px;'>text</div>"
+      "  </div>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  GetAIPageContentWithActionableElements();
+
+  const auto* zero_node = FindNodeBySelector("#zero");
+  // A container with 0 size but visible children should be included.
+  ASSERT_TRUE(zero_node);
+  const auto* visible_node = FindNodeBySelector("#visible");
+  ASSERT_TRUE(visible_node);
+
+  // Verify that 'visible' is a child of 'zero' in the APC tree.
+  bool found = false;
+  for (const auto& child : zero_node->children_nodes) {
+    if (child->content_attributes->dom_node_id ==
+        visible_node->content_attributes->dom_node_id) {
+      found = true;
+      break;
+    }
+  }
+  EXPECT_TRUE(found);
+}
+
+class AIPageContentAgentTestTextEncoding : public AIPageContentAgentTest {
+ private:
+  // All of these tests assume the UTF-8 conversion feature is enabled.
+  ScopedAIPageContentConvertNodeTextToUtf8ForTest enable_utf8_conversion_{true};
+};
+
+TEST_F(AIPageContentAgentTestTextEncoding, TextContentCorrected) {
+  // Start with a basic valid UTF-16 string.
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <p id='wrong'>Hello</p>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  auto& document = *helper_.LocalMainFrame()->GetFrame()->GetDocument();
+  auto* p = document.getElementById(AtomicString("wrong"));
+  // Confirm that on the Blink side, we have a valid UTF-16 string.
+  EXPECT_EQ(p->innerText(), String(u"Hello"));
+
+  // The only way to get an invalid UTF-16 string into the element is via
+  // Javascript, which isn't required to match surrogates. In this case, the
+  // unmatched surrogate is \uD83D. We also need to use a raw string so that the
+  // unicode character is interpreted by Javascript, not CPP.
+  helper_.LocalMainFrame()->ExecuteScript(WebScriptSource(
+      R"(document.getElementById('wrong').innerText = 'Hello\uD83D')"));
+
+  GetAIPageContentWithActionableElements();
+
+  auto* p_node = FindNodeBySelector("#wrong");
+  CheckTextNode(*p_node->children_nodes[0], String(u"Hello\uFFFD"));
+}
+
+TEST_F(AIPageContentAgentTestTextEncoding, ImageCaptionCorrected) {
+  // Start with a basic valid UTF-16 string.
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <img id='wrong' alt='Hello'>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  auto& document = *helper_.LocalMainFrame()->GetFrame()->GetDocument();
+  auto* img = document.getElementById(AtomicString("wrong"));
+  // Put an actual image in the node.
+  img->setAttribute(html_names::kSrcAttr, AtomicString(kSmallImage));
+
+  // Confirm that on the Blink side, we have a valid UTF-16 string.
+  EXPECT_EQ(DynamicTo<HTMLImageElement>(img)->AltText(), String(u"Hello"));
+
+  // The only way to get an invalid UTF-16 string into the element is via
+  // Javascript, which isn't required to match surrogates. In this case, the
+  // unmatched surrogate is \uD83D. We also need to use a raw string so that the
+  // unicode character is interpreted by Javascript, not CPP.
+  helper_.LocalMainFrame()->ExecuteScript(WebScriptSource(
+      R"(document.getElementById('wrong').alt = 'Hello\uD83D')"));
+
+  GetAIPageContentWithActionableElements();
+
+  auto* image_node = FindNodeBySelector("#wrong");
+  CheckImageNode(*image_node, String(u"Hello\uFFFD"));
+}
+
+TEST_F(AIPageContentAgentTestTextEncoding, SVGRootCorrected) {
+  ScopedAIPageContentIncludeSVGSubtreeForTest scoped_feature(
+      /*enabled=*/true);
+
+  // Start with a basic valid UTF-16 string.
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <svg id='wrongsvg' width='400' height='200'>"
+      "    <text id='wrongtext' x='50%' y='50%' font-size='24'>"
+      "      Hello SVG Text!"
+      "    </text>"
+      "  </svg>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  // The only way to get an invalid UTF-16 string into the element is via
+  // Javascript, which isn't required to match surrogates. In this case, the
+  // unmatched surrogate is \uD83D. We also need to use a raw string so that the
+  // unicode character is interpreted by Javascript, not CPP.
+  helper_.LocalMainFrame()->ExecuteScript(WebScriptSource(
+      R"(
+        document
+          .getElementById('wrongsvg')
+          .getElementById('wrongtext')
+          .textContent = '      Hello\uD83D    '
+      )"));
+
+  GetAIPageContentWithActionableElements();
+
+  const auto& svg = *ContentRootNode().children_nodes[0];
+  EXPECT_EQ(svg.content_attributes->attribute_type,
+            mojom::blink::AIPageContentAttributeType::kSvgRoot);
+  ASSERT_TRUE(svg.content_attributes->svg_root_data);
+  EXPECT_EQ(svg.content_attributes->svg_root_data->inner_text, u"Hello\uFFFD");
+
+  const auto& text_child = *svg.children_nodes[0];
+  EXPECT_EQ(text_child.content_attributes->attribute_type,
+            mojom::blink::AIPageContentAttributeType::kText);
+  // Note that whitespace is kept.
+  CheckTextNode(text_child, u"      Hello\uFFFD    ");
+}
+
+TEST_F(AIPageContentAgentTestTextEncoding, TableNameCorrected) {
+  // Start with a basic valid UTF-16 string.
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <table>"
+      "     <caption id='wrong'>Hello</caption>"
+      "  </table>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  // The only way to get an invalid UTF-16 string into the element is via
+  // Javascript, which isn't required to match surrogates. In this case, the
+  // unmatched surrogate is \uD83D. We also need to use a raw string so that the
+  // unicode character is interpreted by Javascript, not CPP.
+  helper_.LocalMainFrame()->ExecuteScript(WebScriptSource(
+      R"(document.getElementById('wrong').innerText = 'Hello\uD83D')"));
+
+  GetAIPageContentWithActionableElements();
+
+  const auto& table = *ContentRootNode().children_nodes[0];
+  CheckTableNode(table, u"Hello\uFFFD");
+}
+
+TEST_F(AIPageContentAgentTestTextEncoding, FormNameCorrected) {
+  // Start with a basic valid UTF-16 string.
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <form id='wrong' name='Hello'>"
+      "    <p>Greetings</p>"
+      "  </form>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  // The only way to get an invalid UTF-16 string into the element is via
+  // Javascript, which isn't required to match surrogates. In this case, the
+  // unmatched surrogate is \uD83D. We also need to use a raw string so that the
+  // unicode character is interpreted by Javascript, not CPP.
+  helper_.LocalMainFrame()->ExecuteScript(WebScriptSource(
+      R"(document.getElementById('wrong').name = 'Hello\uD83D')"));
+
+  GetAIPageContentWithActionableElements();
+
+  const auto& form = *ContentRootNode().children_nodes[0];
+  EXPECT_EQ(form.content_attributes->attribute_type,
+            mojom::blink::AIPageContentAttributeType::kForm);
+  EXPECT_EQ(form.content_attributes->form_data->form_name, u"Hello\uFFFD");
+}
+
+TEST_F(AIPageContentAgentTestTextEncoding,
+       AriaFormControlPlaceholderCorrected) {
+  // Start with a basic valid UTF-16 string.
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <form>"
+      "    <input id='wrong' type='text' aria-required='true' "
+      "aria-placeholder='Hello'>"
+      "  </form>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  // The only way to get an invalid UTF-16 string into the element is via
+  // Javascript, which isn't required to match surrogates. In this case, the
+  // unmatched surrogate is \uD83D. We also need to use a raw string so that the
+  // unicode character is interpreted by Javascript, not CPP.
+  helper_.LocalMainFrame()->ExecuteScript(WebScriptSource(
+      R"(document.getElementById('wrong').ariaPlaceholder = 'Hello\uD83D')"));
+
+  GetAIPageContentWithActionableElements();
+
+  const auto* input = FindNodeBySelector("#wrong");
+  CheckFormControlNode(*input, mojom::blink::FormControlType::kInputText);
+  EXPECT_EQ(input->content_attributes->form_control_data->placeholder,
+            u"Hello\uFFFD");
+}
+
+TEST_F(AIPageContentAgentTestTextEncoding, TextFormControlValueCorrected) {
+  // Start with a basic valid UTF-16 string.
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <form>"
+      "    <input id='wrong' type='text' name='Username' value='Hello'>"
+      "  </form>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  // The only way to get an invalid UTF-16 string into the element is via
+  // Javascript, which isn't required to match surrogates. In this case, the
+  // unmatched surrogate is \uD83D. We also need to use a raw string so that the
+  // unicode character is interpreted by Javascript, not CPP.
+  helper_.LocalMainFrame()->ExecuteScript(WebScriptSource(
+      R"(
+          let input = document.getElementById('wrong');
+          input.name = 'Username\uD83D';
+          input.value = 'Hello\uD83D';
+      )"));
+
+  GetAIPageContentWithActionableElements();
+
+  const auto* input = FindNodeBySelector("#wrong");
+  CheckFormControlNode(*input, mojom::blink::FormControlType::kInputText);
+  const mojom::blink::AIPageContentFormControlDataPtr& form_control_data =
+      input->content_attributes->form_control_data;
+  EXPECT_EQ(form_control_data->field_name, u"Username\uFFFD");
+  EXPECT_EQ(form_control_data->field_value, u"Hello\uFFFD");
+}
+
+TEST_F(AIPageContentAgentTestTextEncoding,
+       TextFormControlPlaceholderCorrected) {
+  // Start with a basic valid UTF-16 string.
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <form>"
+      "    <input id='wrong' type='text' name='Username' placeholder='Hello'>"
+      "  </form>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  // The only way to get an invalid UTF-16 string into the element is via
+  // Javascript, which isn't required to match surrogates. In this case, the
+  // unmatched surrogate is \uD83D. We also need to use a raw string so that the
+  // unicode character is interpreted by Javascript, not CPP.
+  helper_.LocalMainFrame()->ExecuteScript(WebScriptSource(
+      R"(
+          let input = document.getElementById('wrong');
+          input.name = 'Username\uD83D';
+          input.placeholder = 'Hello\uD83D';
+      )"));
+
+  GetAIPageContentWithActionableElements();
+
+  const auto* input = FindNodeBySelector("#wrong");
+  CheckFormControlNode(*input, mojom::blink::FormControlType::kInputText);
+  const mojom::blink::AIPageContentFormControlDataPtr& form_control_data =
+      input->content_attributes->form_control_data;
+  EXPECT_EQ(form_control_data->field_name, u"Username\uFFFD");
+  EXPECT_EQ(form_control_data->placeholder, u"Hello\uFFFD");
+}
+
+TEST_F(AIPageContentAgentTestTextEncoding, SelectFormControlOptionsCorrected) {
+  // Start with a basic valid UTF-16 string.
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <select id='container'>"
+      "    <option id='wrong' value='First'>Hello</option>"
+      "  </select>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  // The only way to get an invalid UTF-16 string into the element is via
+  // Javascript, which isn't required to match surrogates. In this case, the
+  // unmatched surrogate is \uD83D. We also need to use a raw string so that the
+  // unicode character is interpreted by Javascript, not CPP.
+  helper_.LocalMainFrame()->ExecuteScript(WebScriptSource(
+      R"(
+          let option = document.getElementById('wrong');
+          option.value = 'First\uD83D';
+          option.text = 'Hello\uD83D';
+      )"));
+
+  GetAIPageContentWithActionableElements();
+
+  const auto* select = FindNodeBySelector("#container");
+  CheckFormControlNode(*select, mojom::blink::FormControlType::kSelectOne);
+  const mojom::blink::AIPageContentFormControlDataPtr& form_control_data =
+      select->content_attributes->form_control_data;
+  EXPECT_EQ(form_control_data->select_options[0]->value, u"First\uFFFD");
+  EXPECT_EQ(form_control_data->select_options[0]->text, u"Hello\uFFFD");
+}
+
+TEST_F(AIPageContentAgentTestTextEncoding, MetadataCorrected) {
+  // Start with a basic valid UTF-16 string.
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<head>"
+      "  <meta id='wrong' name='Hello' content='World'>"
+      "</head>"
+      "<body>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  // The only way to get an invalid UTF-16 string into the element is via
+  // Javascript, which isn't required to match surrogates. In this case, the
+  // unmatched surrogate is \uD83D. We also need to use a raw string so that the
+  // unicode character is interpreted by Javascript, not CPP.
+  helper_.LocalMainFrame()->ExecuteScript(WebScriptSource(
+      R"(
+          let meta = document.getElementById('wrong');
+          meta.name = 'Hello\uD83D';
+          meta.content = 'World\uD83D';
+      )"));
+
+  auto options = GetAIPageContentOptionsForTest();
+  options.mode = mojom::blink::AIPageContentMode::kActionableElements;
+  options.max_meta_elements = 1;
+  GetAIPageContent(options);
+
+  const mojom::blink::AIPageContentMetaPtr& meta =
+      Content()->frame_data->meta_data[0];
+  EXPECT_EQ(meta->name, u"Hello\uFFFD");
+  EXPECT_EQ(meta->content, u"World\uFFFD");
+}
+
+TEST_F(AIPageContentAgentTestTextEncoding, AriaLabelCorrected) {
+  // Start with a basic valid UTF-16 string.
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <button id='wrong' aria-label='Hello'></button>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  // The only way to get an invalid UTF-16 string into the element is via
+  // Javascript, which isn't required to match surrogates. In this case, the
+  // unmatched surrogate is \uD83D. We also need to use a raw string so that the
+  // unicode character is interpreted by Javascript, not CPP.
+  helper_.LocalMainFrame()->ExecuteScript(WebScriptSource(
+      R"(
+          let button = document.getElementById('wrong');
+          button.ariaLabel = 'Hello\uD83D';
+      )"));
+
+  GetAIPageContentWithActionableElements();
+
+  auto* button = FindNodeBySelector("#wrong");
+  EXPECT_EQ(button->content_attributes->label, u"Hello\uFFFD");
+}
+
+TEST_F(AIPageContentAgentTestTextEncoding, AriaLabeledByCorrected) {
+  // Start with a basic valid UTF-16 string.
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <div id='wrong' style='display: none;'>Hello</div>"
+      "  <input id='on' type='text' aria-labelledby='wrong'>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  // The only way to get an invalid UTF-16 string into the element is via
+  // Javascript, which isn't required to match surrogates. In this case, the
+  // unmatched surrogate is \uD83D. We also need to use a raw string so that the
+  // unicode character is interpreted by Javascript, not CPP.
+  helper_.LocalMainFrame()->ExecuteScript(WebScriptSource(
+      R"(
+          let div = document.getElementById('wrong');
+          div.textContent = 'Hello\uD83D';
+      )"));
+
+  GetAIPageContentWithActionableElements();
+
+  auto* input = FindNodeBySelector("#on");
+  EXPECT_EQ(input->content_attributes->label, u"Hello\uFFFD");
+}
+
+TEST_F(AIPageContentAgentTestTextEncoding, FrameTitleCorrected) {
+  // Start with a basic valid UTF-16 string.
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<head>"
+      "  <title id='wrong'>Hello</title>"
+      "</head>"
+      "<body>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  // The only way to get an invalid UTF-16 string into the element is via
+  // Javascript, which isn't required to match surrogates. In this case, the
+  // unmatched surrogate is \uD83D. We also need to use a raw string so that the
+  // unicode character is interpreted by Javascript, not CPP.
+  helper_.LocalMainFrame()->ExecuteScript(WebScriptSource(
+      R"(
+          let title = document.getElementById('wrong');
+          title.textContent = 'Hello\uD83D';
+      )"));
+
+  GetAIPageContentWithActionableElements();
+
+  EXPECT_EQ(Content()->frame_data->title, u"Hello\uFFFD");
+}
+
+TEST_F(AIPageContentAgentTestTextEncoding,
+       FrameInteractionInfoSelectedTextCorrected) {
+  // Start with a basic valid UTF-16 string.
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <p id='p1'>Paragraph 1</p>"
+      "  <p id='p2'>Paragraph 2</p>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  // The only way to get an invalid UTF-16 string into the element is via
+  // Javascript, which isn't required to match surrogates. In this case, the
+  // unmatched surrogate is \uD83D. We also need to use a raw string so that the
+  // unicode character is interpreted by Javascript, not CPP.
+  helper_.LocalMainFrame()->ExecuteScript(WebScriptSource(
+      R"(
+        const p1 = document.getElementById('p1');
+        p1.innerText = 'Hello\uD83D'
+        const p2 = document.getElementById('p2');
+
+        const range = new Range();
+        range.setStart(p1.childNodes[0], 0);
+        range.setEnd(p2.childNodes[0], 4);
+        const selection = window.getSelection();
+        selection.removeAllRanges();
+        selection.addRange(range);
+      )"));
+
+  GetAIPageContentWithActionableElements();
+
+  EXPECT_EQ(
+      Content()->frame_data->frame_interaction_info->selection->selected_text,
+      u"Hello\uFFFD\n\nPara");
+}
+
+TEST_F(AIPageContentAgentTestTextEncoding, FlagDisabled) {
+  ScopedAIPageContentConvertNodeTextToUtf8ForTest enable_utf8_conversion{false};
+  // Start with a basic valid UTF-16 string.
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <p id='wrong'>Hello</p>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  auto& document = *helper_.LocalMainFrame()->GetFrame()->GetDocument();
+  auto* p = document.getElementById(AtomicString("wrong"));
+  // Confirm that on the Blink side, we have a valid UTF-16 string.
+  EXPECT_EQ(p->innerText(), String(u"Hello"));
+
+  // The only way to get an invalid UTF-16 string into the element is via
+  // Javascript, which isn't required to match surrogates. In this case, the
+  // unmatched surrogate is \uD83D. We also need to use a raw string so that the
+  // unicode character is interpreted by Javascript, not CPP.
+  helper_.LocalMainFrame()->ExecuteScript(WebScriptSource(
+      R"(document.getElementById('wrong').innerText = 'Hello\uD83D')"));
+
+  GetAIPageContentWithActionableElements();
+
+  auto* p_node = FindNodeBySelector("#wrong");
+  const auto& text_attributes = *p_node->children_nodes[0]->content_attributes;
+  EXPECT_EQ(text_attributes.attribute_type,
+            mojom::blink::AIPageContentAttributeType::kText);
+  ASSERT_TRUE(text_attributes.text_info);
+
+  // The last character should be 0xD83D.
+  EXPECT_EQ(text_attributes.text_info->text_content.Span16().back(), 0xD83D);
 }
 
 }  // namespace

@@ -330,6 +330,12 @@
       name: "AIPageContentCheckGeometry",
       status: "test"
     },
+    // Ensures that text content extracted from DOM nodes are valid UTF-8 Before
+    // providing them to consumers of AIPageContent.
+    {
+      name: "AIPageContentConvertNodeTextToUtf8",
+      status: "stable"
+    },
     {
       name: "AIPageContentIncludeSVGSubtree",
       status: "stable"

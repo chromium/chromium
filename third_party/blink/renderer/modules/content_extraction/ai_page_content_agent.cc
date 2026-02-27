@@ -147,6 +147,41 @@ class AutoBuildHelper final : public NativeEventListener {
 
 namespace {
 
+String ReplaceUnpairedSurrogates(const String& node_text) {
+  if (!RuntimeEnabledFeatures::AIPageContentConvertNodeTextToUtf8Enabled()) {
+    return node_text;
+  }
+
+  if (node_text.IsNull() || node_text.empty()) {
+    return node_text;
+  }
+
+  // These strings need to be converted between formats (mojom, protobuf, etc)
+  // that might have varying tolerances for encoding jank, so we should
+  // sanitize them as much as possible. DOM strings may contain unpaired
+  // surrogates, which are a UTF-16 construct and not technically valid
+  // Unicode. Calling Utf8() here with kStrictReplacingErrors will replace
+  // unpaired surrogates with the default Unicode replacement character, which
+  // means that downstream consumers can correctly move between encodings
+  // (UTF-8, etc).
+  //
+  // But Utf8() conversion returns a std::string, so we need to convert back
+  // to a WTF::String for Blink usage.
+  //
+  // Strings that are already in 8 bit representation (like Latin1 encoding)
+  // can't contain unpaired surrogates, so we can return those transparently.
+  if (node_text.Is8Bit()) {
+    return node_text;
+  }
+
+  return String::FromUTF8(
+      node_text.Utf8(Utf8ConversionMode::kStrictReplacingErrors));
+}
+
+String ConvertNodeTextToUtf8(const AtomicString& node_text) {
+  return ReplaceUnpairedSurrogates(node_text.GetString());
+}
+
 // Coordinate mapping flags
 // - Viewport mapping: positions relative to the window/viewport origin.
 constexpr MapCoordinatesFlags kMapToViewportFlags =
@@ -703,7 +738,8 @@ void ProcessTextNode(const LayoutText& layout_text,
   text_style->color = GetColor(*layout_text.Style());
 
   auto text_info = mojom::blink::AIPageContentTextInfo::New();
-  text_info->text_content = layout_text.TransformedText();
+  text_info->text_content =
+      ReplaceUnpairedSurrogates(layout_text.TransformedText());
   text_info->text_style = std::move(text_style);
   attributes.text_info = std::move(text_info);
 }
@@ -726,7 +762,8 @@ void ProcessImageNode(const LayoutObject& layout_image,
           DynamicTo<HTMLImageElement>(layout_image.GetNode())) {
     // TODO(crbug.com/383127202): A11y stack generates alt text using image
     // data which could be reused for this.
-    image_info->image_caption = image_element->AltText();
+    image_info->image_caption =
+        ReplaceUnpairedSurrogates(image_element->AltText());
   }
 
   // TODO(crbug.com/382558422): Include image source origin.
@@ -747,7 +784,8 @@ void ProcessSVGRoot(const LayoutSVGRoot& layout_svg,
   auto svg_root_data = mojom::blink::AIPageContentSvgRootData::New();
   // TODO(b/452908424): Consider removing this given that the inner text is
   // available in the text nodes.
-  svg_root_data->inner_text = element->GetInnerTextWithoutUpdate();
+  svg_root_data->inner_text =
+      ReplaceUnpairedSurrogates(element->GetInnerTextWithoutUpdate());
   attributes.svg_root_data = std::move(svg_root_data);
 }
 
@@ -808,7 +846,7 @@ void ProcessTableNode(const LayoutTable& layout_table,
           table_name.Append(layout_text->TransformedText());
         }
       }
-      table_data->table_name = table_name.ToString();
+      table_data->table_name = ReplaceUnpairedSurrogates(table_name.ToString());
     }
   }
   attributes.table_data = std::move(table_data);
@@ -822,7 +860,7 @@ void ProcessFormNode(const HTMLFormElement& form_element,
   }
   auto form_data = mojom::blink::AIPageContentFormData::New();
   if (const auto& name = form_element.GetName()) {
-    form_data->form_name = name;
+    form_data->form_name = ReplaceUnpairedSurrogates(name);
   }
   form_data->action_url = KURL(form_element.action());
 
@@ -942,7 +980,7 @@ bool ProcessAriaFormControlNode(
       mojom::blink::AIPageContentRedactionDecision::kNoRedactionNecessary;
 
   if (!aria_placeholder.empty()) {
-    form_control_data.placeholder = aria_placeholder;
+    form_control_data.placeholder = ReplaceUnpairedSurrogates(aria_placeholder);
   }
 
   if (has_aria_checked) {
@@ -962,7 +1000,8 @@ void ProcessFormControlNode(const HTMLFormControlElement& form_control_element,
       mojom::blink::AIPageContentFormControlData::New();
   auto* form_control_data = attributes.form_control_data.get();
   form_control_data->form_control_type = form_control_element.FormControlType();
-  form_control_data->field_name = form_control_element.GetName();
+  form_control_data->field_name =
+      ConvertNodeTextToUtf8(form_control_element.GetName());
   form_control_data->is_required = form_control_element.IsRequired();
   form_control_data->is_readonly = form_control_element.IsReadOnly();
 
@@ -997,7 +1036,8 @@ void ProcessFormControlNode(const HTMLFormControlElement& form_control_element,
     if (form_control_data->redaction_decision !=
         mojom::blink::AIPageContentRedactionDecision::
             kRedacted_HasBeenPassword) {
-      form_control_data->field_value = text_control_element->Value();
+      form_control_data->field_value =
+          ReplaceUnpairedSurrogates(text_control_element->Value());
     }
     String placeholder_value = text_control_element->GetPlaceholderValue();
     if (placeholder_value.empty()) {
@@ -1007,7 +1047,8 @@ void ProcessFormControlNode(const HTMLFormControlElement& form_control_element,
         placeholder_value = aria_placeholder;
       }
     }
-    form_control_data->placeholder = placeholder_value;
+    form_control_data->placeholder =
+        ReplaceUnpairedSurrogates(placeholder_value);
 
     if (!form_control_data->is_readonly &&
         AXObject::IsAriaAttributeTrue(form_control_element,
@@ -1023,10 +1064,11 @@ void ProcessFormControlNode(const HTMLFormControlElement& form_control_element,
           DynamicTo<HTMLSelectElement>(form_control_element)) {
     for (auto& option_element : select_element->GetOptionList()) {
       auto select_option = mojom::blink::AIPageContentSelectOption::New();
-      select_option->value = option_element.value();
-      select_option->text = option_element.text();
+      select_option->value = ReplaceUnpairedSurrogates(option_element.value());
+      select_option->text = ReplaceUnpairedSurrogates(option_element.text());
       if (select_option->text.empty()) {
-        select_option->text = option_element.DisplayLabel();
+        select_option->text =
+            ReplaceUnpairedSurrogates(option_element.DisplayLabel());
       }
       select_option->is_selected = option_element.Selected();
       select_option->disabled = option_element.IsDisabledFormControl();
@@ -1645,12 +1687,12 @@ void AIPageContentAgent::ContentBuilder::AddMetaData(
       continue;
     }
     auto meta = mojom::blink::AIPageContentMeta::New();
-    meta->name = name;
+    meta->name = ConvertNodeTextToUtf8(name);
     auto content = meta_element.Content();
     if (content.empty()) {
       meta->content = "";
     } else {
-      meta->content = content;
+      meta->content = ConvertNodeTextToUtf8(content);
     }
     meta_data.push_back(std::move(meta));
     count++;
@@ -2054,7 +2096,8 @@ void AIPageContentAgent::ContentBuilder::
   if (value.empty()) {
     attributes.form_control_data->redaction_decision = mojom::blink::
         AIPageContentRedactionDecision::kUnredacted_EmptyCustomPassword;
-    attributes.form_control_data->field_value = value;
+    attributes.form_control_data->field_value =
+        ReplaceUnpairedSurrogates(value);
     return;
   }
 
@@ -2098,7 +2141,7 @@ void AIPageContentAgent::ContentBuilder::AddLabel(
       element->ElementsFromAttributeOrInternals(
           html_names::kAriaLabelledbyAttr);
   if (!aria_labelledby_elements) {
-    attributes.label = accumulated_text.ToString();
+    attributes.label = ReplaceUnpairedSurrogates(accumulated_text.ToString());
     return;
   }
 
@@ -2117,7 +2160,7 @@ void AIPageContentAgent::ContentBuilder::AddLabel(
     accumulated_text.Append(text_content);
   }
 
-  attributes.label = accumulated_text.ToString();
+  attributes.label = ReplaceUnpairedSurrogates(accumulated_text.ToString());
 }
 
 void AIPageContentAgent::ContentBuilder::AddForDomNodeId(
@@ -2426,7 +2469,7 @@ void AIPageContentAgent::ContentBuilder::AddFrameData(
     mojom::blink::AIPageContentFrameData& frame_data) {
   frame_data.frame_interaction_info =
       mojom::blink::AIPageContentFrameInteractionInfo::New();
-  frame_data.title = frame.GetDocument()->title();
+  frame_data.title = ReplaceUnpairedSurrogates(frame.GetDocument()->title());
   AddFrameInteractionInfo(frame, *frame_data.frame_interaction_info);
   AddMetaData(frame, frame_data.meta_data);
 
@@ -2457,7 +2500,7 @@ void AIPageContentAgent::ContentBuilder::AddFrameInteractionInfo(
         mojom::blink::AIPageContentSelection::New();
     mojom::blink::AIPageContentSelection& selection =
         *frame_interaction_info.selection;
-    selection.selected_text = frame.SelectedText();
+    selection.selected_text = ReplaceUnpairedSurrogates(frame.SelectedText());
 
     const SelectionInDOMTree& frame_selection =
         frame.Selection().GetSelectionInDOMTree();
