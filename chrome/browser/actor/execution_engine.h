@@ -235,7 +235,12 @@ class ExecutionEngine : public ToolDelegate {
     tool_invoke_complete_callback_for_testing_ = std::move(callback);
   }
 
-  State state() { return state_; }
+  State state() const { return state_; }
+
+  // Currently, navigations are generally forced to happen in the same tab (see
+  // https://crbug.com/420669167 ). In some cases we need to drop this
+  // restriction for certain tools to function.
+  bool TabsCanOpenNewWebContents() const;
 
  protected:
   // Allow derived classes to use the natural constructors.

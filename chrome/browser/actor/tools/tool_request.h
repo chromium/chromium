@@ -91,6 +91,14 @@ class ToolRequest {
   // Gets configuration for general page stability on observation.
   virtual ObservationDelayController::PageStabilityConfig
   GetObservationPageStabilityConfig() const;
+
+  // While acting, navigations are generally forced to happen in the same tab,
+  // as we do not currently support multiple tabs (see
+  // https://crbug.com/420669167 ). Individual tools that cannot function with
+  // this restriction may override this to allow popups. It is up to the tool to
+  // special case its handling of the popup until general support for multi-tab
+  // is implemented.
+  virtual bool RequiresOpeningWebContents() const;
 };
 
 // Tool requests targeting a specific, existing tab should inherit from this

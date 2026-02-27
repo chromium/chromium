@@ -61,6 +61,10 @@ ToolRequest::GetObservationPageStabilityConfig() const {
   return ObservationDelayController::PageStabilityConfig();
 }
 
+bool ToolRequest::RequiresOpeningWebContents() const {
+  return false;
+}
+
 TabToolRequest::TabToolRequest(const tabs::TabHandle tab_handle)
     : tab_handle_(tab_handle) {
   // The given handle need not be valid - the handle is validated at time of

@@ -623,6 +623,11 @@ void ExecutionEngine::DidUninterruptTask() {
   }
 }
 
+bool ExecutionEngine::TabsCanOpenNewWebContents() const {
+  return state() == State::kToolInvoke &&
+         GetInProgressAction().RequiresOpeningWebContents();
+}
+
 void ExecutionEngine::CancelOngoingActions(mojom::ActionResultCode reason) {
   TRACE_EVENT0("actor", "ExecutionEngine::CancelOngoingActions");
   deferred_finish_tool_invoke_.Reset();
