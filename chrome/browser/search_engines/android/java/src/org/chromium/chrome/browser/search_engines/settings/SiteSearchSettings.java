@@ -15,6 +15,7 @@ import org.chromium.chrome.browser.search_engines.R;
 import org.chromium.chrome.browser.search_engines.settings.common.SearchEngineListPreference;
 import org.chromium.chrome.browser.search_engines.settings.custom_search_engine.CustomSearchEngineListCoordinator;
 import org.chromium.chrome.browser.search_engines.settings.custom_site_search.CustomSiteSearchCoordinator;
+import org.chromium.chrome.browser.search_engines.settings.extensions.ExtensionSearchEngineCoordinator;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.components.browser_ui.settings.SettingsFragment;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
@@ -31,11 +32,13 @@ public class SiteSearchSettings extends ChromeBaseSettingsFragment {
             "keyboard_shortcut_radio_group";
     private static final String CUSTOM_SEARCH_ENGINE_LIST_PREF = "custom_search_engine_item_list";
     private static final String CUSTOM_SITE_SEARCH_LIST_PREF = "custom_site_search_item_list";
+    private static final String EXTENSIONS_PREF_KEY = "extension_item_list";
     private final SettableMonotonicObservableSupplier<String> mPageTitle =
             ObservableSuppliers.createMonotonic();
 
     private @Nullable CustomSearchEngineListCoordinator mSearchEngineCoordinator;
     private @Nullable CustomSiteSearchCoordinator mSiteSearchCoordinator;
+    private @Nullable ExtensionSearchEngineCoordinator mExtensionSearchEngineCoordinator;
 
     @Override
     public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey) {
@@ -80,6 +83,11 @@ public class SiteSearchSettings extends ChromeBaseSettingsFragment {
 
         // Extensions
         SettingsUtils.addPreferencesFromResource(this, R.xml.extensions_preferences);
+        SearchEngineListPreference extensionsPref = findPreference(EXTENSIONS_PREF_KEY);
+        if (mExtensionSearchEngineCoordinator == null) {
+            mExtensionSearchEngineCoordinator =
+                    new ExtensionSearchEngineCoordinator(getContext(), extensionsPref);
+        }
     }
 
     @Override
