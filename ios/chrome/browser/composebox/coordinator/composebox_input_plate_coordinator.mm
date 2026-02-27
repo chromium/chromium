@@ -348,7 +348,7 @@ const CGFloat kSnackbarBottomMargin = 10;
     (ComposeboxInputPlateViewController*)composeboxViewController {
   PHPickerConfiguration* config = [[PHPickerConfiguration alloc]
       initWithPhotoLibrary:PHPhotoLibrary.sharedPhotoLibrary];
-  config.selectionLimit = [_mediator maxNumberOfAttachmentsAllowed];
+  config.selectionLimit = [_mediator remainingNumberOfImagesAllowed];
   config.filter = [PHPickerFilter imagesFilter];
   _picker = [[PHPickerViewController alloc] initWithConfiguration:config];
   _picker.delegate = self;
@@ -660,7 +660,9 @@ const CGFloat kSnackbarBottomMargin = 10;
   if (!_theme.isTopInputPlate) {
     offset += _viewController.inputHeight + kSnackbarBottomMargin;
   }
-  [_snackbarPresenter showAttachmentLimitSnackbarWithBottomOffset:offset];
+  [_snackbarPresenter
+      showSnackbarForAttachmentLimit:[_mediator remainingAttachmentCapacity]
+                        bottomOffset:offset];
 }
 
 /// Displays a snackbar error indicating that attachment failed to be added.

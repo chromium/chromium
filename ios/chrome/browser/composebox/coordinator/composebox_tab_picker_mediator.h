@@ -21,6 +21,9 @@
 // Returns the number of non-tab attachments.
 - (NSUInteger)nonTabAttachmentCount;
 
+// Returns the max number of tab attachments.
+- (NSUInteger)maxTabAttachmentCount;
+
 /// Sends the selected tabs identifiers to the tabs attachment delegate.
 /// `cachedWebStateIDs` contains the IDs of the tabs that have their content
 /// cached.

@@ -23,13 +23,25 @@
   return self;
 }
 
-- (void)showAttachmentLimitSnackbar {
-  [self showAttachmentLimitSnackbarWithBottomOffset:0];
+- (void)showSnackbarForTabAttachmentLimit:(NSUInteger)attachmentLimit {
+  NSString* title = l10n_util::GetPluralNSStringF(
+      IDS_IOS_COMPOSEBOX_MAXIMUM_TABS_REACHED, attachmentLimit);
+  SnackbarMessage* message = [[SnackbarMessage alloc] initWithTitle:title];
+
+  CommandDispatcher* dispatcher = _browser->GetCommandDispatcher();
+  id<SnackbarCommands> snackbarHandler =
+      HandlerForProtocol(dispatcher, SnackbarCommands);
+  [snackbarHandler showSnackbarMessage:message bottomOffset:0];
 }
 
-- (void)showAttachmentLimitSnackbarWithBottomOffset:(CGFloat)bottomOffset {
+- (void)showSnackbarForAttachmentLimit:(NSUInteger)attachmentLimit {
+  [self showSnackbarForAttachmentLimit:attachmentLimit bottomOffset:0];
+}
+
+- (void)showSnackbarForAttachmentLimit:(NSUInteger)attachmentLimit
+                          bottomOffset:(CGFloat)bottomOffset {
   NSString* title = l10n_util::GetPluralNSStringF(
-      IDS_IOS_COMPOSEBOX_MAXIMUM_ATTACHMENTS_REACHED, kAttachmentLimit);
+      IDS_IOS_COMPOSEBOX_MAXIMUM_ATTACHMENTS_REACHED, attachmentLimit);
   SnackbarMessage* message = [[SnackbarMessage alloc] initWithTitle:title];
 
   CommandDispatcher* dispatcher = _browser->GetCommandDispatcher();

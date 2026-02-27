@@ -1492,6 +1492,11 @@
         =1 {Add up to 1 file, tab, or image}
         other {Add up to {COUNT} files, tabs, or images}}
       </message>
+      <message name="IDS_IOS_COMPOSEBOX_MAXIMUM_TABS_REACHED" desc="Message displayed in a snackbar when the user tries to attach more than the maximum allowed number of tabs. [iOS only].">
+        {COUNT, plural,
+        =1 {Add up to 1 tab}
+        other {Add up to {COUNT} tabs}}
+      </message>
       <message name="IDS_IOS_COMPOSEBOX_MENU_TITLE" desc="Title for the contextual menu, the menu allows the user to attach images, tabs, files to their query. [iOS only].">
         Ask Google about tabs and more
       </message>

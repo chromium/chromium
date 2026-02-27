@@ -85,7 +85,11 @@ class ContextualSearchSessionHandle;
 
 // Returns the maximum number of attachments allowed based on the current
 // composebox mode and current number of attachments.
-- (NSUInteger)maxNumberOfAttachmentsAllowed;
+- (NSUInteger)remainingAttachmentCapacity;
+
+// Returns the maximum number of images allowed based on the current
+// composebox mode and current number of attachments.
+- (NSUInteger)remainingNumberOfImagesAllowed;
 
 @end
 

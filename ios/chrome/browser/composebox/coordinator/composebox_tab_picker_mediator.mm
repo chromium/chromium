@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/composebox/coordinator/composebox_constants.h"
 #import "ios/chrome/browser/composebox/coordinator/web_state_deferred_executor.h"
 #import "ios/chrome/browser/composebox/debugger/composebox_debugger_logger.h"
+#import "ios/chrome/browser/composebox/public/features.h"
 #import "ios/chrome/browser/composebox/ui/composebox_snackbar_presenter.h"
 #import "ios/chrome/browser/composebox/ui/composebox_tab_picker_consumer.h"
 #import "ios/chrome/browser/intelligence/persist_tab_context/model/persist_tab_context_browser_agent.h"
@@ -117,7 +118,14 @@
   if ([self attachmentLimitReached:itemID]) {
     ComposeboxSnackbarPresenter* snackbar =
         [[ComposeboxSnackbarPresenter alloc] initWithBrowser:self.browser];
-    [snackbar showAttachmentLimitSnackbar];
+
+    if (EnableComposeboxServerSideState()) {
+      [snackbar showSnackbarForTabAttachmentLimit:[_tabsAttachmentDelegate
+                                                      maxTabAttachmentCount]];
+    } else {
+      [snackbar showSnackbarForAttachmentLimit:kAttachmentLimit];
+    }
+
     return;
   }
 
@@ -342,9 +350,8 @@
 /// an existing item implies removal).
 - (BOOL)attachmentLimitReached:(GridItemIdentifier*)itemID {
   return ![self.selectedEditingItems containItem:itemID] &&
-         (self.selectedEditingItems.tabsCount +
-              [_tabsAttachmentDelegate nonTabAttachmentCount] >=
-          kAttachmentLimit);
+         (self.selectedEditingItems.tabsCount >=
+          [_tabsAttachmentDelegate maxTabAttachmentCount]);
 }
 
 /// Handles the scenario where a tab fails to load.

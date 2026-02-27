@@ -42,26 +42,11 @@
 }
 
 - (BOOL)hasImage {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  for (ComposeboxInputItem* item in _containedItems) {
-    if (item.type == ComposeboxInputItemType::kComposeboxInputItemTypeImage) {
-      return YES;
-    }
-  }
-
-  return NO;
+  return self.imagesCount > 0;
 }
 
 - (BOOL)hasTabOrFile {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  for (ComposeboxInputItem* item in _containedItems) {
-    if (item.type == ComposeboxInputItemType::kComposeboxInputItemTypeTab ||
-        item.type == ComposeboxInputItemType::kComposeboxInputItemTypeFile) {
-      return YES;
-    }
-  }
-
-  return NO;
+  return self.tabsCount > 0 || self.filesCount > 0;
 }
 
 - (BOOL)canAddMoreAttachments {
@@ -75,10 +60,36 @@
 }
 
 - (size_t)nonTabAttachmentCount {
+  return self.imagesCount + self.filesCount;
+}
+
+- (size_t)imagesCount {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   NSUInteger result = 0;
   for (ComposeboxInputItem* item in _containedItems) {
-    if (item.type != ComposeboxInputItemType::kComposeboxInputItemTypeTab) {
+    if (item.type == ComposeboxInputItemType::kComposeboxInputItemTypeImage) {
+      result++;
+    }
+  }
+  return result;
+}
+
+- (size_t)tabsCount {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  NSUInteger result = 0;
+  for (ComposeboxInputItem* item in _containedItems) {
+    if (item.type == ComposeboxInputItemType::kComposeboxInputItemTypeFile) {
+      result++;
+    }
+  }
+  return result;
+}
+
+- (size_t)filesCount {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  NSUInteger result = 0;
+  for (ComposeboxInputItem* item in _containedItems) {
+    if (item.type == ComposeboxInputItemType::kComposeboxInputItemTypeTab) {
       result++;
     }
   }

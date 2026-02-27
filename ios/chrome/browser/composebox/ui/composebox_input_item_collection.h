@@ -58,6 +58,15 @@ class UnguessableToken;
 // The number of non tab attachments.
 @property(nonatomic, readonly) size_t nonTabAttachmentCount;
 
+// Number of images added.
+@property(nonatomic, readonly) size_t imagesCount;
+
+// Number of tabs added.
+@property(nonatomic, readonly) size_t tabsCount;
+
+// Number of files added.
+@property(nonatomic, readonly) size_t filesCount;
+
 // The first item in this collection, or `nil` if not present.
 @property(nonatomic, readonly) ComposeboxInputItem* firstItem;
 

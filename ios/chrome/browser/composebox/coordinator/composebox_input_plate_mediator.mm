@@ -243,9 +243,6 @@ CreateInputDataFromAnnotatedPageContent(
                         prefService:(PrefService*)prefService {
   self = [super init];
   if (self) {
-    _items = [[ComposeboxInputItemCollection alloc]
-        initWithAttachmentLimit:kAttachmentLimit];
-    _items.delegate = self;
     _prefService = prefService;
     _contextualSearchSession = std::move(contextualSearchSession);
     _contextualSearchSession->NotifySessionStarted();
@@ -276,6 +273,10 @@ CreateInputDataFromAnnotatedPageContent(
       [self createInputStateModel];
       [self startInputStateObservation];
     }
+
+    _items = [[ComposeboxInputItemCollection alloc]
+        initWithAttachmentLimit:[self totalAttachmentLimit]];
+    _items.delegate = self;
   }
   return self;
 }
@@ -332,10 +333,20 @@ CreateInputDataFromAnnotatedPageContent(
 }
 
 - (BOOL)canAddMoreAttachments {
-  return [self maxNumberOfAttachmentsAllowed] > 0;
+  return [self remainingAttachmentCapacity] > 0;
 }
 
-- (NSUInteger)maxNumberOfAttachmentsAllowed {
+// The absolute value for the maximum number of attachments available,
+// regardless the type.
+- (NSUInteger)totalAttachmentLimit {
+  if (EnableComposeboxServerSideState()) {
+    return _inputState.max_total_inputs;
+  }
+
+  return kAttachmentLimit;
+}
+
+- (NSUInteger)remainingAttachmentCapacity {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
 
   NSUInteger availableSlots = _items.availableSlots;
@@ -356,6 +367,24 @@ CreateInputDataFromAnnotatedPageContent(
                  : MIN(availableSlots, kAttachmentLimitForImageGeneration);
     }
   }
+}
+
+- (NSUInteger)remainingNumberOfImagesAllowed {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+
+  int remainingAttachmentCapacity = [self remainingAttachmentCapacity];
+  if (EnableComposeboxServerSideState()) {
+    CHECK(_inputStateModel);
+    auto limits = _inputState.max_instances;
+    auto type = omnibox::InputType::INPUT_TYPE_LENS_IMAGE;
+    if (limits.count(type)) {
+      int serverLimit = limits[type];
+      int remainingSlots = serverLimit - _items.imagesCount;
+      return MIN(remainingSlots, remainingAttachmentCapacity);
+    }
+  }
+
+  return remainingAttachmentCapacity;
 }
 
 #pragma mark - ComposeboxInputPlateMutator
@@ -382,6 +411,8 @@ CreateInputDataFromAnnotatedPageContent(
   if (base::FeatureList::IsEnabled(kComposeboxAutoattachTab) && _items.empty) {
     _modeHolder.mode = ComposeboxMode::kRegularSearch;
   }
+
+  [self notifyContextChanged];
 }
 
 - (void)sendText:(NSString*)text {
@@ -689,6 +720,26 @@ CreateInputDataFromAnnotatedPageContent(
   return _items.nonTabAttachmentCount;
 }
 
+- (NSUInteger)maxTabAttachmentCount {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+
+  int remainingAttachmentCapacity = [self remainingAttachmentCapacity];
+  int tabsCount = _items.tabsCount;
+  int capacityForTabs = remainingAttachmentCapacity + tabsCount;
+
+  if (EnableComposeboxServerSideState()) {
+    CHECK(_inputStateModel);
+    auto limits = _inputState.max_instances;
+    auto type = omnibox::InputType::INPUT_TYPE_BROWSER_TAB;
+    if (limits.count(type)) {
+      int serverLimit = limits[type];
+      return MIN(serverLimit, capacityForTabs);
+    }
+  }
+
+  return capacityForTabs;
+}
+
 - (void)attachSelectedTabsWithWebStateIDs:
             (std::set<web::WebStateID>)selectedWebStateIDs
                         cachedWebStateIDs:
@@ -848,6 +899,8 @@ CreateInputDataFromAnnotatedPageContent(
     _contextualSearchSession->StartTabContextUploadFlow(
         serverToken, std::move(inputData), image_options);
   }
+
+  [self notifyContextChanged];
 }
 
 // Invoked when a file context has been successfully uploaded to the server
@@ -961,6 +1014,13 @@ CreateInputDataFromAnnotatedPageContent(
                          : omnibox::ToolMode::TOOL_MODE_IMAGE_GEN;
   if (_inputState.active_tool != toolMode) {
     _inputStateModel->setActiveTool(toolMode);
+  }
+}
+
+// Informs the model of a context change (e.g.; attachment added or deleted).
+- (void)notifyContextChanged {
+  if (_inputStateModel) {
+    _inputStateModel->OnContextChanged();
   }
 }
 
@@ -1226,6 +1286,8 @@ CreateInputDataFromAnnotatedPageContent(
   }
 
   [_items replaceWithItems:itemsToKeep];
+
+  [self notifyContextChanged];
 }
 
 // Handles the loaded preview `image` for the item with the given `identifier`.
@@ -1355,6 +1417,7 @@ CreateInputDataFromAnnotatedPageContent(
   _contextualSearchSession->StartFileContextUploadFlow(
       serverToken, fileName, kPortableNetworkGraphicMimeType, std::move(buffer),
       options);
+  [self notifyContextChanged];
 }
 
 // Uploads the `image` for the item with the given `identifier`.
@@ -1436,6 +1499,7 @@ CreateInputDataFromAnnotatedPageContent(
         serverToken, fileName, kAdobePortableDocumentFormatMimeType,
         std::move(buffer),
         /*image_options=*/std::nullopt);
+    [self notifyContextChanged];
   }
 
   // Concurrently, generate a preview for the UI.
@@ -1660,6 +1724,123 @@ CreateInputDataFromAnnotatedPageContent(
   return disabled;
 }
 
+#pragma mark - Attachments availability checks
+
+// Whether the current input state disables the given input type.
+- (BOOL)inputStateDisablesType:(omnibox::InputType)inputType {
+  return std::find(_inputState.disabled_input_types.begin(),
+                   _inputState.disabled_input_types.end(),
+                   inputType) != _inputState.disabled_input_types.end();
+}
+
+// Whether the current input state allows the given input type.
+- (BOOL)inputStateAllowsType:(omnibox::InputType)inputType {
+  return std::find(_inputState.allowed_input_types.begin(),
+                   _inputState.allowed_input_types.end(),
+                   inputType) != _inputState.allowed_input_types.end();
+}
+
+// Whether the current state allows tab attachments.
+- (BOOL)tabAttachmentAllowed {
+  if (![self attachmentsAvailable]) {
+    return NO;
+  }
+  if (EnableComposeboxServerSideState()) {
+    return [self inputStateAllowsType:omnibox::INPUT_TYPE_BROWSER_TAB];
+  }
+
+  return YES;
+}
+
+// Whether the current state allows tab attachments.
+- (BOOL)fileAttachmentAllowed {
+  BOOL canUploadFiles = [self isEligibleToUploadPdf];
+  if (![self attachmentsAvailable] || !canUploadFiles) {
+    return NO;
+  }
+
+  if (EnableComposeboxServerSideState()) {
+    return [self inputStateAllowsType:omnibox::INPUT_TYPE_LENS_FILE];
+  }
+
+  return YES;
+}
+
+// Whether the current state allows image attachments.
+- (BOOL)imageAttachmentAllowed {
+  if (![self attachmentsAvailable]) {
+    return NO;
+  }
+
+  if (EnableComposeboxServerSideState() &&
+      ![self inputStateAllowsType:omnibox::INPUT_TYPE_LENS_IMAGE]) {
+    return NO;
+  }
+
+  BOOL isImageCreationMode =
+      _modeHolder.mode == ComposeboxMode::kImageGeneration;
+  if (isImageCreationMode) {
+    return [self uploadAllowedInImageGeneration];
+  }
+
+  return YES;
+}
+
+// Disables tab attachment.
+- (BOOL)tabAttachmentDisabled {
+  if (![self canAddMoreAttachments]) {
+    return YES;
+  }
+
+  if (EnableComposeboxServerSideState()) {
+    return [self inputStateDisablesType:omnibox::INPUT_TYPE_BROWSER_TAB];
+  }
+
+  BOOL isImageCreationMode =
+      _modeHolder.mode == ComposeboxMode::kImageGeneration;
+  return isImageCreationMode;
+}
+
+// Whether the current state allows tab attachments.
+- (BOOL)fileAttachmentDisabled {
+  if (![self canAddMoreAttachments]) {
+    return YES;
+  }
+
+  if (EnableComposeboxServerSideState()) {
+    return [self inputStateDisablesType:omnibox::INPUT_TYPE_LENS_FILE];
+  }
+
+  BOOL isImageCreationMode =
+      _modeHolder.mode == ComposeboxMode::kImageGeneration;
+  return isImageCreationMode;
+}
+
+// Whether the current state allows image attachments.
+- (BOOL)imageAttachmentDisabled {
+  if (![self canAddMoreAttachments]) {
+    return YES;
+  }
+
+  if (EnableComposeboxServerSideState()) {
+    return [self inputStateDisablesType:omnibox::INPUT_TYPE_LENS_IMAGE];
+  }
+
+  return NO;
+}
+
+- (BOOL)attachmentsAvailable {
+  if (![self isContentSharingEnabled]) {
+    return NO;
+  }
+
+  BOOL canSearchWithAI = [self isEligibleToAIM];
+  BOOL canCreateImage = [self imageToolAllowed];
+  BOOL canUseCanvas = [self canvasToolAllowed];
+  BOOL canUseDeepSearch = [self deepSearchToolAllowed];
+  return canUseCanvas || canCreateImage || canUseDeepSearch || canSearchWithAI;
+}
+
 - (BOOL)isDSEGoogle {
   if (!_templateURLService) {
     return NO;
@@ -1869,30 +2050,17 @@ CreateInputDataFromAnnotatedPageContent(
 
 /// Updates the consumer actions enabled/disable state.
 - (void)updateConsumerActionsState {
-  BOOL canUploadFiles = [self isEligibleToUploadPdf];
-  BOOL canCreateImage = [self imageToolAllowed];
-  BOOL canSearchWithAI = [self isEligibleToAIM];
-  BOOL canUseCanvas = [self canvasToolAllowed];
-  BOOL canUseDeepSearch = [self deepSearchToolAllowed];
-
-  BOOL isImageCreationMode =
-      _modeHolder.mode == ComposeboxMode::kImageGeneration;
-  BOOL attachmentsAvailable =
-      (canUseCanvas || canCreateImage || canSearchWithAI) &&
-      [self isContentSharingEnabled];
-  BOOL canAddMoreAttachments = [self canAddMoreAttachments];
-
   // Image generation action.
   [self.consumer disableCreateImageActions:[self imageToolDisabled]];
-  [self.consumer hideCreateImageActions:!canCreateImage];
+  [self.consumer hideCreateImageActions:![self imageToolAllowed]];
 
   // Canvas action.
   [self.consumer disableCanvasActions:[self canvasToolDisabled]];
-  [self.consumer hideCanvasActions:!canUseCanvas];
+  [self.consumer hideCanvasActions:![self canvasToolAllowed]];
 
   // Deep search action.
   [self.consumer disableDeepSearchActions:[self deepSearchToolDisabled]];
-  [self.consumer hideDeepSearchActions:!canUseDeepSearch];
+  [self.consumer hideDeepSearchActions:![self deepSearchToolAllowed]];
 
   // Model picker.
   // TODO(crbug.com/477888273): Handle attachment incompatibility based on
@@ -1902,32 +2070,24 @@ CreateInputDataFromAnnotatedPageContent(
   [self.consumer setDisabledModels:[self disabledModels]];
 
   // Add tabs action.
-  [self.consumer
-      disableAttachTabActions:isImageCreationMode || !canAddMoreAttachments];
-  [self.consumer hideAttachTabActions:!attachmentsAvailable];
+  [self.consumer disableAttachTabActions:[self tabAttachmentDisabled]];
+  [self.consumer hideAttachTabActions:![self tabAttachmentAllowed]];
 
   // Add files action.
-  [self.consumer
-      disableAttachFileActions:isImageCreationMode || !canAddMoreAttachments];
-  [self.consumer
-      hideAttachFileActions:!canUploadFiles || !attachmentsAvailable];
+  [self.consumer disableAttachFileActions:[self fileAttachmentDisabled]];
+  [self.consumer hideAttachFileActions:![self fileAttachmentAllowed]];
 
   // Add pictures from user gallery action.
-  BOOL canAddImage =
-      isImageCreationMode
-          ? (attachmentsAvailable && [self uploadAllowedInImageGeneration])
-          : attachmentsAvailable;
-
-  [self.consumer disableGalleryActions:!canAddMoreAttachments];
-  [self.consumer hideGalleryActions:!canAddImage];
+  [self.consumer disableGalleryActions:[self imageAttachmentDisabled]];
+  [self.consumer hideGalleryActions:![self imageAttachmentAllowed]];
 
   // Add picture from camera action.
-  [self.consumer disableCameraActions:!canAddMoreAttachments];
-  [self.consumer hideCameraActions:!canAddImage];
+  [self.consumer disableCameraActions:[self imageAttachmentDisabled]];
+  [self.consumer hideCameraActions:![self imageAttachmentAllowed]];
 
   // Set the number of attachments that can still be added.
   [self.consumer
-      setRemainingAttachmentCapacity:[self maxNumberOfAttachmentsAllowed]];
+      setRemainingAttachmentCapacity:[self remainingAttachmentCapacity]];
 }
 
 /// Updates the consumer items and maybe trigger AIM.
