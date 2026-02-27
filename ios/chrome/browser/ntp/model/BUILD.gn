@@ -47,11 +47,8 @@ source_set("util") {
     "//components/regional_capabilities",
     "//components/search",
     "//components/search_engines",
-    "//ios/chrome/browser/shared/model/browser",
-    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/url",
     "//ios/chrome/browser/shared/model/url:constants",
-    "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/web/public",
   ]
 }
