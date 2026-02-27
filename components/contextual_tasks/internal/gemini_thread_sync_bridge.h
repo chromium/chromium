@@ -10,6 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "components/contextual_tasks/public/contextual_task.h"
 #include "components/sync/model/data_batch.h"
 #include "components/sync/model/data_type_local_change_processor.h"
 #include "components/sync/model/data_type_store.h"
@@ -65,6 +66,9 @@ class GeminiThreadSyncBridge : public syncer::DataTypeSyncBridge {
   bool IsEntityDataValid(const syncer::EntityData& entity_data) const override;
   sync_pb::EntitySpecifics TrimAllSupportedFieldsFromRemoteSpecifics(
       const sync_pb::EntitySpecifics& entity_specifics) const override;
+
+  // Returns all threads.
+  virtual std::vector<Thread> GetThreads() const;
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);

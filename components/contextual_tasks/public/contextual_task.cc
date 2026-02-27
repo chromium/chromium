@@ -15,11 +15,13 @@ namespace contextual_tasks {
 Thread::Thread(ThreadType type,
                const std::string& server_id,
                const std::string& title,
-               const std::string& conversation_turn_id)
+               std::optional<std::string> conversation_turn_id)
     : type(type),
       server_id(server_id),
       title(title),
-      conversation_turn_id(conversation_turn_id) {}
+      conversation_turn_id(conversation_turn_id) {
+  DCHECK(type != ThreadType::kAiMode || conversation_turn_id);
+}
 Thread::Thread(const Thread& other) = default;
 Thread::~Thread() = default;
 

@@ -215,6 +215,15 @@ void GeminiThreadSyncBridge::OnDataTypeStoreCommit(
   }
 }
 
+std::vector<Thread> GeminiThreadSyncBridge::GetThreads() const {
+  std::vector<Thread> threads;
+  for (const auto& [conversation_id, specifics] : gemini_thread_specifics_) {
+    threads.emplace_back(ThreadType::kGemini, conversation_id,
+                         specifics.title());
+  }
+  return threads;
+}
+
 void GeminiThreadSyncBridge::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
 }

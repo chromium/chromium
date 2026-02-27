@@ -126,6 +126,8 @@ class ContextualTasksServiceImpl : public ContextualTasksService,
 
   void SetAiThreadSyncBridgeForTesting(
       std::unique_ptr<AiThreadSyncBridge> bridge);
+  void SetGeminiThreadSyncBridgeForTesting(
+      std::unique_ptr<GeminiThreadSyncBridge> bridge);
 
   // AiThreadSyncBridge::Observer implementation.
   void OnThreadDataStoreLoaded() override;

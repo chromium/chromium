@@ -17,6 +17,7 @@ namespace contextual_tasks {
 enum class ThreadType {
   kUnknown,
   kAiMode,
+  kGemini,
 };
 
 // Represents the type of a resource attached to a task's context.
@@ -39,7 +40,7 @@ struct Thread {
   Thread(ThreadType type,
          const std::string& server_id,
          const std::string& title,
-         const std::string& conversation_turn_id);
+         std::optional<std::string> conversation_turn_id = std::nullopt);
   Thread(const Thread& other);
   ~Thread();
 
@@ -53,7 +54,7 @@ struct Thread {
   // The unique server-side identifier for this specific conversation.
   // Since conversations can fork into a tree-like structure, this ID
   // represents a single path or branch within that tree.
-  std::string conversation_turn_id;
+  std::optional<std::string> conversation_turn_id;
 };
 
 struct UrlResource {

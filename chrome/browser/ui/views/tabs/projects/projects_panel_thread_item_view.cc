@@ -51,9 +51,21 @@ ProjectsPanelThreadItemView::ProjectsPanelThreadItemView(
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
       ui::kColorIcon, projects_panel::kListItemIconSize);
 
+  auto gemini_icon = ui::ImageModel::FromVectorIcon(
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      vector_icons::kGoogleAgentspaceMonochromeLogo25Icon,
+#else
+      vector_icons::kChatSparkIcon,
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      ui::kColorIcon, projects_panel::kListItemIconSize);
+
   switch (thread.type) {
     case contextual_tasks::ThreadType::kAiMode: {
       AddChildView(std::make_unique<views::ImageView>(aim_icon));
+      break;
+    }
+    case contextual_tasks::ThreadType::kGemini: {
+      AddChildView(std::make_unique<views::ImageView>(gemini_icon));
       break;
     }
     case contextual_tasks::ThreadType::kUnknown:

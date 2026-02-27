@@ -979,7 +979,8 @@ void ContextualTasksUiService::GetThreadUrlFromTaskId(
             }
 
             std::optional<Thread> thread = task->GetThread();
-            if (!thread) {
+            // Gemini Thread URL generation is not supported yet.
+            if (!thread || thread->type == ThreadType::kGemini) {
               std::move(callback).Run(url);
               return;
             }
@@ -988,8 +989,9 @@ void ContextualTasksUiService::GetThreadUrlFromTaskId(
             // URL. A query parameter needs to be present, but its
             // value is not used for continued threads.
             url = net::AppendQueryParameter(url, "q", thread->title);
-            url = net::AppendQueryParameter(url, "mstk",
-                                            thread->conversation_turn_id);
+            DCHECK(thread->conversation_turn_id.has_value());
+            url = net::AppendQueryParameter(
+                url, "mstk", thread->conversation_turn_id.value());
             url = net::AppendQueryParameter(url, "mtid", thread->server_id);
 
             std::move(callback).Run(url);

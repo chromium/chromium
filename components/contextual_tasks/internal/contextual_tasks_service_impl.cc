@@ -197,7 +197,7 @@ ContextualTasksServiceImpl::ContextualTasksServiceImpl(
       std::move(gemini_thread_processor), data_type_store_factory);
   gemini_thread_observation_.Observe(gemini_thread_sync_bridge_.get());
 
-  // Wait for both AiThreadSyncBridge and ContextualTaskSyncBridge to finish
+  // Wait for both AiThreadSyncBridge and GeminiThreadSyncBridge to finish
   // loading their data store.
   on_data_loaded_barrier_ = base::BarrierClosure(
       2, base::BindOnce(&ContextualTasksServiceImpl::OnDataStoresLoaded,
@@ -297,8 +297,12 @@ void ContextualTasksServiceImpl::UpdateThreadForTask(
   // otherwise, retain the existing values if a thread already exists.
   const std::string& new_title =
       title.value_or(thread.has_value() ? thread->title : "");
-  const std::string& new_conversation_turn_id = conversation_turn_id.value_or(
-      thread.has_value() ? thread->conversation_turn_id : "");
+  std::optional<std::string> new_conversation_turn_id = std::nullopt;
+  if (conversation_turn_id.has_value()) {
+    new_conversation_turn_id = conversation_turn_id;
+  } else if (thread.has_value()) {
+    new_conversation_turn_id = thread->conversation_turn_id;
+  }
 
   // Add or update the thread information within the task.
   it->second.AddThread(
@@ -526,6 +530,12 @@ void ContextualTasksServiceImpl::SetAiThreadSyncBridgeForTesting(
   ai_thread_sync_bridge_ = std::move(bridge);
 }
 
+void ContextualTasksServiceImpl::SetGeminiThreadSyncBridgeForTesting(
+    std::unique_ptr<GeminiThreadSyncBridge> bridge) {
+  gemini_thread_observation_.Reset();
+  gemini_thread_sync_bridge_ = std::move(bridge);
+}
+
 void ContextualTasksServiceImpl::OnThreadDataStoreLoaded() {
   on_data_loaded_barrier_.Run();
 }
@@ -733,6 +743,12 @@ std::vector<ContextualTask> ContextualTasksServiceImpl::BuildTasks() const {
     // ephemeral since they are built using a user's threads.
     // TODO(485520978): Use a UUIDv5 based on the thread ID here so the UUID
     //                  is deterministic between restarts.
+    tasks.push_back(CreateTaskForThread(thread, supports_ephemeral_only_));
+  }
+  for (const auto& thread : gemini_thread_sync_bridge_->GetThreads()) {
+    if (used_thread_ids.contains(thread.server_id)) {
+      continue;
+    }
     tasks.push_back(CreateTaskForThread(thread, supports_ephemeral_only_));
   }
 
