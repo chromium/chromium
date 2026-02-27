@@ -12546,15 +12546,6 @@
             ],
             "experiments": [
                 {
-                    "name": "Experiment_NewBehaviorCountAllScrolls",
-                    "params": {
-                        "histogram_emission_policy": "emit_for_all_scrolls"
-                    },
-                    "enable_features": [
-                        "HandleNonDamagingInputsInScrollJankV4Metric"
-                    ]
-                },
-                {
                     "name": "Experiment_NewBehaviorCountDamagingScrolls",
                     "params": {
                         "histogram_emission_policy": "emit_for_damaging_scrolls"
