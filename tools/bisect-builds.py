@@ -2,7 +2,6 @@
 # Copyright 2012 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-
 """Snapshot Build Bisect Tool
 
 This script bisects a snapshot archive using binary search. It starts at
@@ -37,7 +36,6 @@ import urllib.parse
 import urllib.request
 from xml.etree import ElementTree
 import zipfile
-
 
 # These constants are used for android bisect which depends on
 # Catapult repo.
@@ -99,7 +97,6 @@ DEPS_FILE_NEW = ('https://chromium.googlesource.com/chromium/src/+/%s/DEPS')
 # Source Tag
 SOURCE_TAG_URL = ('https://chromium.googlesource.com/chromium/src/'
                   '+/refs/tags/%s?format=JSON')
-
 
 DONE_MESSAGE_GOOD_MIN = (
     'You are probably looking for a change made after %s%s ('
@@ -367,7 +364,12 @@ PATH_CONTEXT = {
         },
     },
     'asan': {
-        'linux': {},
+        'linux': {
+            'binary_name': 'chrome',
+        },
+        'linux64': {
+            'binary_name': 'chrome',
+        },
         'mac': {},
         'win': {},
     },
@@ -879,14 +881,15 @@ class ChromiumVersion:
 
   This class is used to compare the version numbers.
   """
+
   def __init__(self, vstring: str):
     self.vstring = vstring
     self.version = tuple(int(x) for x in vstring.split('.'))
 
-  def __str__ (self):
+  def __str__(self):
     return self.vstring
 
-  def __repr__ (self):
+  def __repr__(self):
     return "ChromiumVersion ('%s')" % str(self)
 
   def __lt__(self, other):
@@ -1209,6 +1212,8 @@ class ASANBuild(SnapshotBuild):
     except in the case of Windows where they use "win32" instead of "win"."""
     if self.platform == 'win':
       return 'win32'
+    elif self.platform == 'linux64':
+      return 'linux'
     else:
       return self.platform
 
@@ -1216,7 +1221,7 @@ class ASANBuild(SnapshotBuild):
     """Returns the base name of the ASAN zip file."""
     # TODO: These files were not update since 2016 for linux, 2021 for win.
     # Need to confirm if it's moved.
-    if 'linux' in self.platform:
+    if self.platform == 'linux':
       return 'asan-symbolized-%s-%s' % (self.GetASANPlatformDir(),
                                         self.asan_build_type)
     else:
@@ -1244,6 +1249,12 @@ class ASANBuild(SnapshotBuild):
 
   def get_download_url(self, revision):
     return '%s/%s' % (self.base_url, self._get_marker_for_revision(revision))
+
+  def _get_extract_binary_glob(self, tempdir):
+    if self.platform == "linux64":
+      return f'{tempdir}/{self.binary_name}'
+    else:
+      return super()._get_extract_binary_glob(tempdir)
 
 
 class AndroidBuildMixin:
@@ -1397,7 +1408,6 @@ class AndroidBuildMixin:
     if binary_name is None:
       binary_name = self.binary_name
     return '%s/*/apks/%s' % (tempdir, binary_name)
-
 
 
 class AndroidReleaseBuild(AndroidBuildMixin, ReleaseBuild):
@@ -1692,7 +1702,9 @@ def UnzipFilenameToDir(filename, directory):
   # unsuitable for Mac builds. so use ditto instead.
   if IsMac():
     unzip_cmd = ['ditto', '-x', '-k', filename, '.']
-    proc = subprocess.Popen(unzip_cmd, bufsize=0, stdout=subprocess.PIPE,
+    proc = subprocess.Popen(unzip_cmd,
+                            bufsize=0,
+                            stdout=subprocess.PIPE,
                             stderr=subprocess.PIPE)
     proc.communicate()
     os.chdir(cwd)
@@ -1780,8 +1792,8 @@ def IsGoodASANBuild(rev, exit_status, stdout, stderr):
   if stderr:
     bad_count = 0
     for line in stderr.splitlines():
-      print(line)
-      if line.find('ERROR: AddressSanitizer:') != -1:
+      print(line.decode('utf-8'))
+      if line.find(b'ERROR: AddressSanitizer:') != -1:
         bad_count += 1
     if bad_count > 0:
       print('Revision %d determined to be bad.' % rev)
@@ -1965,7 +1977,7 @@ def Bisect(archive_build,
     bad_rev_fetch = None
     try:
       bad_rev_fetch = archive_build.get_download_job(rev_list[-1],
-                                                    'bad_rev_fetch').start()
+                                                     'bad_rev_fetch').start()
       bad_download = bad_rev_fetch.wait_for()
       # Start fetching the good revision in parallel with the bad evaluation.
       good_rev_fetch = archive_build.get_download_job(rev_list[0],
@@ -2003,8 +2015,8 @@ def Bisect(archive_build,
       change_log_url = ""
       if (len(rev_list) - 2).bit_length() <= STEPS_TO_SHOW_CHANGELOG_URL:
         change_log_url = f"({change_log_url_fn(rev_list[-1], rev_list[0])})"
-      print('Bisecting range [%s (bad), %s (good)]%s.' % (
-          rev_list[-1], rev_list[0], change_log_url))
+      print('Bisecting range [%s (bad), %s (good)]%s.' %
+            (rev_list[-1], rev_list[0], change_log_url))
       # clean prefetch to keep only the valid fetches
       for key in list(prefetch.keys()):
         if key not in rev_list:
@@ -2064,6 +2076,7 @@ def Bisect(archive_build,
     prefetch.clear()
   return sorted((rev_list[0], rev_list[-1]))
 
+
 def GetChromiumRevision(url, default=999999999):
   """Returns the chromium revision read from given URL."""
   if not url:
@@ -2094,6 +2107,7 @@ def FetchJsonFromURL(url):
       print(f'urlopen {url} JSON decode error: {e}')
   return None
 
+
 def GetGitHashFromSVNRevision(svn_revision):
   """Returns GitHash from SVN Revision"""
   crrev_url = CRREV_URL + str(svn_revision)
@@ -2102,9 +2116,11 @@ def GetGitHashFromSVNRevision(svn_revision):
     return data['git_sha']
   return None
 
+
 def GetShortChangeLogURL(rev1, rev2):
   min_rev, max_rev = sorted([rev1, rev2])
   return SHORT_CHANGELOG_URL % (min_rev, max_rev)
+
 
 def GetChangeLogURL(rev1, rev2):
   """Prints the changelog URL."""
@@ -2112,9 +2128,10 @@ def GetChangeLogURL(rev1, rev2):
   return CHANGELOG_URL % (GetGitHashFromSVNRevision(min_rev),
                           GetGitHashFromSVNRevision(max_rev))
 
+
 def GetReleaseChangeLogURL(version1, version2):
   """Prints the changelog URL."""
-  min_ver, max_ver= sorted([version1, version2])
+  min_ver, max_ver = sorted([version1, version2])
   return RELEASE_CHANGELOG_URL % (min_ver, max_ver)
 
 
@@ -2330,6 +2347,7 @@ def _IsWebViewProvider(apk_helper_instance):
     print(f'Failed to get APK metadata: {e}')
     return False
 
+
 def InstallOnAndroid(device, apk_path):
   """Installs the Chromium build on a given device."""
   print('Installing %s on Android device...' % apk_path)
@@ -2348,6 +2366,7 @@ def InstallOnAndroid(device, apk_path):
   else:
     print('Warn: this is an app bundle. Unable to change WebView provider '
           'setting.')
+
 
 def LaunchOnAndroid(device, apk):
   """Launches the chromium build on a given device."""
@@ -2527,11 +2546,10 @@ Tip: add "-- --no-first-run" to bypass the first run prompts.
       help='Test the first and last revisions in the range before proceeding '
       'with the bisect.',
   )
-  apk_choices = sorted(
-      set().union(CHROME_APK_FILENAMES, CHROME_MODERN_APK_FILENAMES,
-                  MONOCHROME_APK_FILENAMES, WEBVIEW_APK_FILENAMES,
-                  TRICHROME_APK_FILENAMES, TRICHROME64_32_APK_FILENAMES,
-                  TRICHROME64_APK_FILENAMES))
+  apk_choices = sorted(set().union(
+      CHROME_APK_FILENAMES, CHROME_MODERN_APK_FILENAMES,
+      MONOCHROME_APK_FILENAMES, WEBVIEW_APK_FILENAMES, TRICHROME_APK_FILENAMES,
+      TRICHROME64_32_APK_FILENAMES, TRICHROME64_APK_FILENAMES))
   parser.add_argument(
       '--apk',
       choices=apk_choices,
@@ -2713,6 +2731,8 @@ def BuildTypeToCommandLineArgument(build_type, omit_default=True):
       return ''
   elif build_type == 'asan':
     return '--asan'
+  elif build_type == 'cft':
+    return '--cft'
   else:
     raise ValueError(f'Unknown build type: {build_type}')
 
@@ -2794,6 +2814,7 @@ def MaybeSwitchBuildType(opts, good, bad):
 
 
 class UpdateScriptAction(argparse.Action):
+
   def __call__(self, parser, namespace, values, option_string=None):
     script_path = sys.argv[0]
     script_content = str(
@@ -2866,6 +2887,7 @@ def main():
     if opts.build_type == 'official':
       print('The script might not always return single CL as suspect '
             'as some perf builds might get missing due to failure.')
+
 
 if __name__ == '__main__':
   sys.exit(main())
