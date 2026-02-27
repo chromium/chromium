@@ -35,6 +35,7 @@
 #include "chrome/browser/ui/webui/cr_components/searchbox/contextual_searchbox_handler.h"
 #include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
+#include "components/contextual_search/contextual_search_service.h"
 #include "components/contextual_tasks/public/context_decoration_params.h"
 #include "components/contextual_tasks/public/contextual_task_context.h"
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
@@ -900,6 +901,12 @@ void ContextualTasksComposeboxHandler::AddFileContext(
     searchbox::mojom::SelectedFileInfoPtr file_info,
     mojo_base::BigBuffer file_bytes,
     AddFileContextCallback callback) {
+  if (!contextual_search::ContextualSearchService::IsContextSharingEnabled(
+          profile_->GetPrefs())) {
+    std::move(callback).Run(base::unexpected(
+        contextual_search::FileUploadErrorType::kBrowserProcessingError));
+    return;
+  }
   auto* session_handle = GetContextualSessionHandle();
   if (!session_handle) {
     std::move(callback).Run(base::unexpected(
@@ -926,6 +933,13 @@ void ContextualTasksComposeboxHandler::AddTabContext(
     int32_t tab_id,
     bool delay_upload,
     AddTabContextCallback callback) {
+  if (!contextual_search::ContextualSearchService::IsContextSharingEnabled(
+          profile_->GetPrefs())) {
+    std::move(callback).Run(base::unexpected(
+        contextual_search::FileUploadErrorType::kBrowserProcessingError));
+    return;
+  }
+
   const tabs::TabHandle handle = tabs::TabHandle(tab_id);
   tabs::TabInterface* const tab = handle.Get();
 
