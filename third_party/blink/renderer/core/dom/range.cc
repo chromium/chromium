@@ -613,6 +613,10 @@ DocumentFragment* Range::ProcessContents(ActionType action,
   Node* process_end = ChildOfCommonRootBeforeOffset(
       &original_end.Container(), original_end.Offset(), common_root);
 
+  if (!process_end && !common_root->contains(&original_end.Container())) {
+    process_start = nullptr;
+  }
+
   // Collapse the range, making sure that the result is not within a node that
   // was partially selected.
   if (action == kExtractContents || action == kDeleteContents) {
