@@ -93,6 +93,18 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
 
   void Trace(Visitor* visitor) const {}
 
+  bool operator==(const GapGeometry& other) const {
+    return inline_gap_size_ == other.inline_gap_size_ &&
+           block_gap_size_ == other.block_gap_size_ &&
+           container_type_ == other.container_type_ &&
+           main_gaps_ == other.main_gaps_ && cross_gaps_ == other.cross_gaps_ &&
+           content_inline_start_ == other.content_inline_start_ &&
+           content_inline_end_ == other.content_inline_end_ &&
+           content_block_start_ == other.content_block_start_ &&
+           content_block_end_ == other.content_block_end_ &&
+           main_direction_ == other.main_direction_;
+  }
+
   // Computes the physical bounding rect for gap decorations ink overflow.
   PhysicalRect ComputeInkOverflowForGaps(WritingDirectionMode writing_direction,
                                          const PhysicalSize& container_size,

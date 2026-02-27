@@ -96,6 +96,14 @@ class CORE_EXPORT MainGap {
   void AddGapSegmentStateRange(
       const GapSegmentStateRange& gap_segment_state_range);
 
+  bool operator==(const MainGap& other) const {
+    return gap_offset_ == other.gap_offset_ &&
+           range_of_cross_gaps_before_ == other.range_of_cross_gaps_before_ &&
+           range_of_cross_gaps_after_ == other.range_of_cross_gaps_after_ &&
+           gap_segment_state_ranges_ == other.gap_segment_state_ranges_ &&
+           spanner_main_gap_type_ == other.spanner_main_gap_type_;
+  }
+
  private:
   // This represents the midpoint offset (block or inline) of the gap. If the main
   // direction is row it'll be the block offset otherwise it'll be the inline.

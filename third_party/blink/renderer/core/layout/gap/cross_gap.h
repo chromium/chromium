@@ -111,6 +111,12 @@ class CORE_EXPORT CrossGap {
   void AddGapSegmentStateRange(
       const GapSegmentStateRange& gap_segment_state_range);
 
+  bool operator==(const CrossGap& other) const {
+    return gap_logical_offset_ == other.gap_logical_offset_ &&
+           edge_state_ == other.edge_state_ &&
+           gap_segment_state_ranges_ == other.gap_segment_state_ranges_;
+  }
+
   static void UpdateCrossGapRangeEdgeState(
       Vector<CrossGap>& cross_gaps,
       wtf_size_t start_index,

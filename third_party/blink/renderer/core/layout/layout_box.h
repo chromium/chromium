@@ -51,6 +51,7 @@ class ConstraintSpace;
 class CustomLayoutChild;
 class EarlyBreak;
 class Element;
+class GapGeometry;
 class LayoutResult;
 class MeasureCache;
 class PhysicalBoxFragment;
@@ -96,6 +97,11 @@ struct LayoutBoxRareData final : public GarbageCollected<LayoutBoxRareData> {
   // object for this box that web developers can query style, and perform
   // layout upon. Only created if IsCustomItem() is true.
   Member<CustomLayoutChild> layout_child_;
+
+  // Used by BoxPaintInvalidator. Stores one entry for each fragment, holding
+  // the previous gap geometry for that fragment, or nullptr for fragments
+  // that had no gap geometry.
+  Member<GCedHeapVector<Member<const GapGeometry>>> previous_gap_geometries_;
 };
 
 // LayoutBox implements the full CSS box model.
@@ -1053,6 +1059,9 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
         rare_data->has_previous_content_box_rect_ = false;
     }
 
+    void SavePreviousGapGeometries();
+    void ClearPreviousGapGeometries();
+
     // Called from LayoutShiftTracker when we attach this LayoutBox to a node
     // for which we saved these values when the node was detached from its
     // original LayoutBox.
@@ -1107,6 +1116,12 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
                ? overflow_->previous_overflow_data
                      ->previous_self_visual_overflow_rect
                : PhysicalRect(PhysicalOffset(), PreviousSize());
+  }
+
+  const GCedHeapVector<Member<const GapGeometry>>* PreviousGapGeometries()
+      const {
+    NOT_DESTROYED();
+    return rare_data_ ? rare_data_->previous_gap_geometries_.Get() : nullptr;
   }
 
   // Returns the cached intrinsic logical widths when no children depend on the

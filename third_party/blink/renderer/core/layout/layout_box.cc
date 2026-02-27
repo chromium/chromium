@@ -78,6 +78,7 @@
 #include "third_party/blink/renderer/core/layout/forms/layout_fieldset.h"
 #include "third_party/blink/renderer/core/layout/forms/layout_text_control.h"
 #include "third_party/blink/renderer/core/layout/fragmentation_utils.h"
+#include "third_party/blink/renderer/core/layout/gap/gap_geometry.h"
 #include "third_party/blink/renderer/core/layout/geometry/box_strut.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
@@ -479,6 +480,7 @@ LayoutBoxRareData::LayoutBoxRareData()
 
 void LayoutBoxRareData::Trace(Visitor* visitor) const {
   visitor->Trace(layout_child_);
+  visitor->Trace(previous_gap_geometries_);
 }
 
 LayoutBox::LayoutBox(ContainerNode* node) : LayoutBoxModelObject(node) {
@@ -1248,8 +1250,11 @@ void LayoutBox::UpdateAfterLayout() {
   if (IsPositioned())
     GetFrame()->GetInputMethodController().DidLayoutSubtree(*this);
 
-  if (StyleRef().HasColumnRule() && IsFragmentationContextRoot()) {
+  if (StyleRef().HasColumnRule() && IsFragmentationContextRoot() &&
+      !RuntimeEnabledFeatures::CSSGapDecorationEnabled()) {
     // Issue full invalidation, in case the number of column rules have changed.
+    // When CSSGapDecoration is enabled, gap decoration invalidation is handled
+    // by BoxPaintInvalidator.
     ClearNeedsLayoutWithFullPaintInvalidation();
   } else {
     ClearNeedsLayout();
@@ -4033,6 +4038,23 @@ void LayoutBox::MutableForPainting::SavePreviousOverflowData() {
       GetLayoutBox().VisualOverflowRect();
   previous_overflow->previous_self_visual_overflow_rect =
       GetLayoutBox().SelfVisualOverflowRect();
+}
+
+void LayoutBox::MutableForPainting::SavePreviousGapGeometries() {
+  auto* previous_gap_geometries =
+      MakeGarbageCollected<GCedHeapVector<Member<const GapGeometry>>>();
+  for (const PhysicalBoxFragment& fragment :
+       GetLayoutBox().PhysicalFragments()) {
+    previous_gap_geometries->push_back(fragment.GetGapGeometry());
+  }
+  GetLayoutBox().EnsureRareData().previous_gap_geometries_ =
+      previous_gap_geometries;
+}
+
+void LayoutBox::MutableForPainting::ClearPreviousGapGeometries() {
+  if (auto* rare_data = GetLayoutBox().rare_data_.Get()) {
+    rare_data->previous_gap_geometries_ = nullptr;
+  }
 }
 
 void LayoutBox::MutableForPainting::SetPreviousGeometryForLayoutShiftTracking(

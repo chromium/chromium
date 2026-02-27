@@ -112,6 +112,10 @@ struct GapSegmentStateRange {
   wtf_size_t start;
   wtf_size_t end;
   GapSegmentState state;
+
+  bool operator==(const GapSegmentStateRange& other) const {
+    return start == other.start && end == other.end && state == other.state;
+  }
 };
 
 using GapSegmentStateRanges = Vector<GapSegmentStateRange>;

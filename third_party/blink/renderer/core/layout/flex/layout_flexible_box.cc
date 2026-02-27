@@ -99,19 +99,4 @@ const DevtoolsFlexInfo* LayoutFlexibleBox::FlexLayoutData() const {
   return GetLayoutResult(0)->FlexLayoutData();
 }
 
-void LayoutFlexibleBox::UpdateAfterLayout() {
-  NOT_DESTROYED();
-
-  // Gap decorations depend on the position of flex items, which may change
-  // when a child's size changes (e.g., during animation). Trigger a full
-  // paint invalidation to ensure the gap decorations repaint correctly.
-  // TODO(crbug.com/357648037): See if the conditions for this can be scoped
-  // more narrowly.
-  if (RuntimeEnabledFeatures::CSSGapDecorationEnabled() &&
-      StyleRef().HasGapRule()) {
-    SetShouldDoFullPaintInvalidation();
-  }
-  LayoutBlock::UpdateAfterLayout();
-}
-
 }  // namespace blink

@@ -280,4 +280,164 @@ TEST_P(BoxPaintInvalidatorTest, InvalidateHitTestOnCompositingStyleChange) {
   // This test passes if no under-invalidation occurs.
 }
 
+TEST_P(BoxPaintInvalidatorTest, GapDecorationGridChildSizeChange) {
+  ScopedCSSGapDecorationForTest scoped_gap_decoration(true);
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #grid {
+        display: grid;
+        grid-template-columns: 50px 50px;
+        gap: 10px;
+        column-rule: 2px solid black;
+      }
+      .item { height: 50px; }
+    </style>
+    <div id="grid">
+      <div class="item" id="item1"></div>
+      <div class="item"></div>
+      <div class="item"></div>
+      <div class="item"></div>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* grid = GetDocument().getElementById(AtomicString("grid"));
+  ASSERT_TRUE(grid);
+  auto* grid_object = grid->GetLayoutObject();
+  EXPECT_FALSE(grid_object->ShouldDoFullPaintInvalidation());
+
+  GetDocument().View()->SetTracksRasterInvalidations(true);
+  auto* item1 = GetDocument().getElementById(AtomicString("item1"));
+  item1->setAttribute(html_names::kStyleAttr, AtomicString("height: 100px"));
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_THAT(GetRasterInvalidationTracking()->Invalidations(),
+              testing::Contains(testing::Field(
+                  &RasterInvalidationInfo::client_id, grid_object->Id())));
+  GetDocument().View()->SetTracksRasterInvalidations(false);
+}
+
+TEST_P(BoxPaintInvalidatorTest, GapDecorationFlexChildRemoval) {
+  ScopedCSSGapDecorationForTest scoped_gap_decoration(true);
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #flex {
+        display: flex;
+        gap: 10px;
+        column-rule: 2px solid green;
+      }
+      .item { width: 50px; height: 50px; }
+    </style>
+    <div id="flex">
+      <div class="item"></div>
+      <div class="item" id="removable"></div>
+      <div class="item"></div>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* flex = GetDocument().getElementById(AtomicString("flex"));
+  ASSERT_TRUE(flex);
+  auto* flex_object = flex->GetLayoutObject();
+  EXPECT_FALSE(flex_object->ShouldDoFullPaintInvalidation());
+
+  GetDocument().View()->SetTracksRasterInvalidations(true);
+  auto* removable = GetDocument().getElementById(AtomicString("removable"));
+  removable->remove();
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_THAT(GetRasterInvalidationTracking()->Invalidations(),
+              testing::Contains(testing::Field(
+                  &RasterInvalidationInfo::client_id, flex_object->Id())));
+  GetDocument().View()->SetTracksRasterInvalidations(false);
+}
+
+TEST_P(BoxPaintInvalidatorTest, GapDecorationNoChangeNoInvalidation) {
+  ScopedCSSGapDecorationForTest scoped_gap_decoration(true);
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #grid {
+        display: grid;
+        grid-template-columns: 50px 50px;
+        gap: 10px;
+        column-rule: 2px solid black;
+      }
+      .item { height: 50px; }
+    </style>
+    <div id="grid">
+      <div class="item" id="item1"></div>
+      <div class="item"></div>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* grid = GetDocument().getElementById(AtomicString("grid"));
+  ASSERT_TRUE(grid);
+  auto* grid_object = grid->GetLayoutObject();
+
+  // Add a small enough amount of text to trigger layout within the child
+  // without affecting gap geometry.
+  GetDocument().View()->SetTracksRasterInvalidations(true);
+  auto* item1 = GetDocument().getElementById(AtomicString("item1"));
+  item1->setTextContent(AtomicString("hello"));
+  UpdateAllLifecyclePhasesForTest();
+  for (const auto& inv : GetRasterInvalidationTracking()->Invalidations()) {
+    EXPECT_NE(inv.client_id, grid_object->Id());
+  }
+  GetDocument().View()->SetTracksRasterInvalidations(false);
+}
+
+TEST_P(BoxPaintInvalidatorTest, GapDecorationAddedToExistingGrid) {
+  ScopedPaintUnderInvalidationCheckingForTest under_invalidation_checking(true);
+  ScopedCSSGapDecorationForTest scoped_gap_decoration(true);
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #grid {
+        display: grid;
+        grid-template-columns: 50px 50px;
+        gap: 10px;
+      }
+      .item { height: 50px; }
+    </style>
+    <div id="grid">
+      <div class="item"></div>
+      <div class="item"></div>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  // Adding a column-rule to a grid that previously had no gap decorations
+  // should not cause under-invalidation.
+  auto* grid = GetDocument().getElementById(AtomicString("grid"));
+  ASSERT_TRUE(grid);
+  grid->setAttribute(html_names::kStyleAttr,
+                     AtomicString("column-rule: 2px solid red"));
+  UpdateAllLifecyclePhasesForTest();
+}
+
+TEST_P(BoxPaintInvalidatorTest, GapDecorationRemovedFromGrid) {
+  ScopedPaintUnderInvalidationCheckingForTest under_invalidation_checking(true);
+  ScopedCSSGapDecorationForTest scoped_gap_decoration(true);
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #grid {
+        display: grid;
+        grid-template-columns: 50px 50px;
+        gap: 10px;
+        column-rule: 2px solid black;
+      }
+      .item { height: 50px; }
+    </style>
+    <div id="grid">
+      <div class="item"></div>
+      <div class="item"></div>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  // Removing the column-rule should not cause under-invalidation.
+  auto* grid = GetDocument().getElementById(AtomicString("grid"));
+  ASSERT_TRUE(grid);
+  grid->setAttribute(html_names::kStyleAttr, AtomicString("column-rule: none"));
+  UpdateAllLifecyclePhasesForTest();
+}
+
 }  // namespace blink
