@@ -132,23 +132,6 @@ using affiliations::SQLTableBuilder;
 // Common prefix for all histograms.
 constexpr char kPasswordManager[] = "PasswordManager";
 
-// A simple class for scoping a login database transaction. This does not
-// support rollback since the login database doesn't either.
-class ScopedTransaction {
- public:
-  explicit ScopedTransaction(LoginDatabase* db) : db_(db) {
-    db_->BeginTransaction();
-  }
-
-  ScopedTransaction(const ScopedTransaction&) = delete;
-  ScopedTransaction& operator=(const ScopedTransaction&) = delete;
-
-  ~ScopedTransaction() { db_->CommitTransaction(); }
-
- private:
-  raw_ptr<LoginDatabase> db_;
-};
-
 // Convenience enum for interacting with SQL queries that use all the columns.
 enum LoginDatabaseTableColumns {
   COLUMN_ORIGIN_URL = 0,
@@ -1673,7 +1656,6 @@ bool LoginDatabase::RemoveLoginsCreatedBetween(
     changes->clear();
   }
   std::vector<PasswordForm> forms;
-  ScopedTransaction transaction(this);
   if (!GetLoginsCreatedBetween(delete_begin, delete_end, &forms)) {
     return false;
   }
