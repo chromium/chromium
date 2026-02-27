@@ -221,9 +221,9 @@ TEST_F(SkillsServiceImplTest, LoadInitialSkills) {
   ASSERT_THAT(
       service().GetSkills(),
       ElementsAre(
+          Pointee(HasSkill("name2", "icon2", "prompt2", /*description=*/"")),
           Pointee(HasSkillWithSource("source_skill_id", "name1", "icon1",
-                                     "prompt1", /*description=*/"")),
-          Pointee(HasSkill("name2", "icon2", "prompt2", /*description=*/""))));
+                                     "prompt1", /*description=*/""))));
 
   // Simulate browser restart, it calls LoadInitialSkills() to load skills from
   // the disk implicitly.
@@ -233,8 +233,8 @@ TEST_F(SkillsServiceImplTest, LoadInitialSkills) {
   EXPECT_THAT(
       service().GetSkills(),
       ElementsAre(
-          Pointee(HasSkill("name1", "icon1", "prompt1", /*description=*/"")),
-          Pointee(HasSkill("name2", "icon2", "prompt2", /*description=*/""))));
+          Pointee(HasSkill("name2", "icon2", "prompt2", /*description=*/"")),
+          Pointee(HasSkill("name1", "icon1", "prompt1", /*description=*/""))));
 }
 
 TEST_F(SkillsServiceImplTest, NotifyOnServiceStatusChange) {
@@ -486,35 +486,35 @@ TEST_F(SkillsServiceImplTest, FetchDiscoverySkills_Failure) {
   run_loop.Run();
 }
 
-TEST_F(SkillsServiceImplTest, AddSkillSortsByName) {
+TEST_F(SkillsServiceImplTest, AddSkillSortsByLastUpdateTime) {
   InitService();
   service().AddSkill("source_id", "Name B", "icon", "prompt");
   service().AddSkill("source_id", "Name A", "icon", "prompt");
   service().AddSkill("source_id", "Name C", "icon", "prompt");
 
   EXPECT_THAT(service().GetSkills(),
-              ElementsAre(Pointee(HasSkill("Name A", "icon", "prompt", "")),
-                          Pointee(HasSkill("Name B", "icon", "prompt", "")),
-                          Pointee(HasSkill("Name C", "icon", "prompt", ""))));
+              ElementsAre(Pointee(HasSkill("Name C", "icon", "prompt", "")),
+                          Pointee(HasSkill("Name A", "icon", "prompt", "")),
+                          Pointee(HasSkill("Name B", "icon", "prompt", ""))));
 }
 
-TEST_F(SkillsServiceImplTest, UpdateSkillSortsByName) {
+TEST_F(SkillsServiceImplTest, UpdateSkillSortsByLastUpdateTime) {
   InitService();
   const Skill* skill1 =
       service().AddSkill("source_id", "Name A", "icon", "prompt");
   service().AddSkill("source_id", "Name B", "icon", "prompt");
   service().AddSkill("source_id", "Name C", "icon", "prompt");
 
-  // Update "A" to "D". New order should be B, C, D.
+  // Update "A" to "D". New order should be D, C, B.
   service().UpdateSkill(skill1->id, "Name D", "icon", "prompt");
 
   EXPECT_THAT(service().GetSkills(),
-              ElementsAre(Pointee(HasSkill("Name B", "icon", "prompt", "")),
+              ElementsAre(Pointee(HasSkill("Name D", "icon", "prompt", "")),
                           Pointee(HasSkill("Name C", "icon", "prompt", "")),
-                          Pointee(HasSkill("Name D", "icon", "prompt", ""))));
+                          Pointee(HasSkill("Name B", "icon", "prompt", ""))));
 }
 
-TEST_F(SkillsServiceImplTest, AddSkillFromSyncSortsByName) {
+TEST_F(SkillsServiceImplTest, AddSkillFromSyncSortsByLastUpdateTime) {
   InitService();
   service().AddSkill("source_id", "Name B", "icon", "prompt");
 
@@ -527,22 +527,21 @@ TEST_F(SkillsServiceImplTest, AddSkillFromSyncSortsByName) {
                           Pointee(HasSkill("Name B", "icon", "prompt", ""))));
 }
 
-TEST_F(SkillsServiceImplTest, UpdateSkillFromSyncSortsByName) {
+TEST_F(SkillsServiceImplTest, UpdateSkillFromSyncSortsByLastUpdateTime) {
   InitService();
   const Skill* skill1 =
       service().AddSkill("source_id", "Name A", "icon", "prompt");
   service().AddSkill("source_id", "Name B", "icon", "prompt");
 
-  // Update "A" to "C" via Sync. Order should become B, C.
+  // Update "A" to "C" via Sync. Order should become C, B.
   service().AddOrUpdateSkillFromSync(skill1->id, "source_id", "Name C", "icon",
                                      "prompt", "desc", base::Time::Now(),
                                      base::Time::Now() + base::Seconds(1),
                                      sync_pb::SKILL_SOURCE_USER_CREATED);
 
-  EXPECT_THAT(
-      service().GetSkills(),
-      ElementsAre(Pointee(HasSkill("Name B", "icon", "prompt", "")),
-                  Pointee(HasSkill("Name C", "icon", "prompt", "desc"))));
+  EXPECT_THAT(service().GetSkills(),
+              ElementsAre(Pointee(HasSkill("Name C", "icon", "prompt", "desc")),
+                          Pointee(HasSkill("Name B", "icon", "prompt", ""))));
 }
 
 }  // namespace

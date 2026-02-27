@@ -190,9 +190,11 @@ SkillsService::ServiceStatus SkillsServiceImpl::GetServiceStatus() const {
 }
 
 void SkillsServiceImpl::SortSkills() {
-  std::sort(skills_.begin(), skills_.end(),
-            [](const std::unique_ptr<Skill>& a,
-               const std::unique_ptr<Skill>& b) { return a->name < b->name; });
+  std::sort(
+      skills_.begin(), skills_.end(),
+      [](const std::unique_ptr<Skill>& a, const std::unique_ptr<Skill>& b) {
+        return a->last_update_time > b->last_update_time;
+      });
 }
 
 void SkillsServiceImpl::AddObserver(Observer* observer) {
