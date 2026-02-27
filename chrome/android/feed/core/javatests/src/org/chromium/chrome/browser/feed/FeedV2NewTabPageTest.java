@@ -73,6 +73,7 @@ import org.chromium.chrome.browser.firstrun.FirstRunUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.gesturenav.GestureNavigationUtils;
 import org.chromium.chrome.browser.ntp.NewTabPage;
+import org.chromium.chrome.browser.ntp.NtpSmoothTransitionDelegate;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
@@ -294,7 +295,7 @@ public class FeedV2NewTabPageTest {
         CriteriaHelper.pollInstrumentationThread(
                 () -> ntp.getSmoothTransitionDelegateForTesting() != null);
         CallbackHelper callbackHelper = new CallbackHelper();
-        ((NewTabPage.NtpSmoothTransitionDelegate) ntp.getSmoothTransitionDelegateForTesting())
+        ((NtpSmoothTransitionDelegate) ntp.getSmoothTransitionDelegateForTesting())
                 .getAnimatorForTesting()
                 .addListener(
                         new AnimatorListenerAdapter() {
