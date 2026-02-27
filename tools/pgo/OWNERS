@@ -1,2 +1,7 @@
 thakis@chromium.org
 wnwen@chromium.org
+
+per-file generate_profile_webview.py*=zbikowski@google.com
+per-file generate_profile_webview.py*=ziadyoussef@chromium.org
+per-file BUILD.gn=zbikowski@google.com
+per-file BUILD.gn=ziadyoussef@chromium.org
