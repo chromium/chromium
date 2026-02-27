@@ -128,5 +128,12 @@ bool CheckboxInputType::ShouldAppearIndeterminate() const {
   return GetElement().indeterminate();
 }
 
+bool CheckboxInputType::SupportsBaseAppearance(
+    Element::BaseAppearanceValue value) const {
+  if (!RuntimeEnabledFeatures::AppearanceBaseEnabled()) {
+    return false;
+  }
+  return value == Element::BaseAppearanceValue::kBase;
+}
 
 }  // namespace blink

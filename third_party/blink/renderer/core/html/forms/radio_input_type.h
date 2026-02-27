@@ -47,6 +47,8 @@ class RadioInputType final : public BaseCheckableInputType {
       : BaseCheckableInputType(Type::kRadio, element) {}
   bool ValueMissing(const String&) const;
 
+  bool SupportsBaseAppearance(Element::BaseAppearanceValue) const override;
+
  private:
   void CountUsage() override;
   AppearanceValue AutoAppearance() const override;

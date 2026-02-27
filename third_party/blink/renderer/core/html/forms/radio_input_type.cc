@@ -369,4 +369,12 @@ void RadioInputType::WillUpdateCheckedness(bool new_checked) {
     input->SetChecked(false);
 }
 
+bool RadioInputType::SupportsBaseAppearance(
+    Element::BaseAppearanceValue value) const {
+  if (!RuntimeEnabledFeatures::AppearanceBaseEnabled()) {
+    return false;
+  }
+  return value == Element::BaseAppearanceValue::kBase;
+}
+
 }  // namespace blink

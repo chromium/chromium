@@ -701,15 +701,72 @@ input[type="image" i] {
 
 input[type="radio" i],
 input[type="checkbox" i] {
-    margin:3px 3px 3px 4px;
-    padding: initial;
-    background-color: initial;
-    border: initial;
-    cursor: default;
+    @supports not blink-feature(AppearanceBase) {
+        padding: initial;
+        background-color: initial;
+        border: initial;
+        cursor: default;
+    }
+    @supports blink-feature(AppearanceBase) {
+        padding: -internal-auto-base(initial, unset);
+        background-color: -internal-auto-base(initial, transparent);
+        border: -internal-auto-base(initial, 1px solid currentColor);
+        cursor: -internal-auto-base(default, unset);
+
+        block-size: -internal-auto-base(unset, 1em);
+        inline-size: -internal-auto-base(unset, 1em);
+        font-size: -internal-auto-base(unset, max(1em, 24px));
+        display: -internal-auto-base(inline-block, inline-flex);
+        align-items: -internal-auto-base(unset, center);
+        justify-content: -internal-auto-base(unset, center);
+    }
+}
+
+input[type="checkbox" i] {
+    @supports not blink-feature(AppearanceBase) {
+        margin: 3px 3px 3px 4px;
+    }
+    @supports blink-feature(AppearanceBase) {
+        margin: -internal-auto-base(3px 3px 3px 4px, unset);
+    }
 }
 
 input[type="radio" i] {
-  margin:3px 3px 0 5px;
+    @supports not blink-feature(AppearanceBase) {
+        margin:3px 3px 0 5px;
+    }
+    @supports blink-feature(AppearanceBase) {
+        margin: -internal-auto-base(3px 3px 0 5px, unset);
+        border-radius: -internal-auto-base(unset, 50%);
+        padding: -internal-auto-base(initial, 0.15em);
+    }
+}
+
+@supports blink-feature(AppearanceBase) {
+    input[type="checkbox" i]::checkmark {
+        content: -internal-auto-base(unset, '\2713' / '');
+    }
+
+    input[type="radio" i]::checkmark  {
+        content: -internal-auto-base(unset, '');
+    }
+
+    input[type="checkbox" i]:not(:checked, :indeterminate)::checkmark,
+    input[type="radio" i]:not(:checked)::checkmark {
+        visibility: hidden;
+    }
+
+    input[type="checkbox" i]:indeterminate::checkmark {
+        content: -internal-auto-base(unset, '\2500' / '');
+    }
+
+    input[type="radio" i]:checked::checkmark {
+        background-color: currentColor;
+        display: inline-block;
+        border-radius: inherit;
+        height: 100%;
+        width: 100%;
+    }
 }
 
 input[type="button" i], input[type="submit" i], input[type="reset" i] {

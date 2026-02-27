@@ -5181,6 +5181,12 @@ void Element::RecalcStyle(const StyleRecalcChange change,
                           child_recalc_context);
     }
 
+    if (DynamicTo<HTMLInputElement>(this) &&
+        RuntimeEnabledFeatures::AppearanceBaseEnabled()) {
+      UpdatePseudoElement(kPseudoIdCheckMark, child_change,
+                          child_recalc_context);
+    }
+
     UpdatePseudoElement(kPseudoIdBefore, child_change, child_recalc_context);
   }
 
@@ -10822,7 +10828,12 @@ bool Element::CanGeneratePseudoElement(PseudoId pseudo_id) const {
     };
     const HTMLMenuItemElement* menu_item = DynamicTo<HTMLMenuItemElement>(this);
     const bool checkable_menu_item = menu_item && menu_item->IsCheckable();
-    if (!is_option_in_appearance_base_select(this) && !checkable_menu_item) {
+    const HTMLInputElement* input = DynamicTo<HTMLInputElement>(this);
+    const bool base_checkable_input =
+        RuntimeEnabledFeatures::AppearanceBaseEnabled() && input &&
+        input->IsAppearanceBase() && input->IsCheckable();
+    if (!is_option_in_appearance_base_select(this) && !checkable_menu_item &&
+        !base_checkable_input) {
       return false;
     }
   }

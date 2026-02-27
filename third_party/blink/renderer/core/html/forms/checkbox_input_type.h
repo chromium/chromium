@@ -41,6 +41,8 @@ class CheckboxInputType final : public BaseCheckableInputType {
       : BaseCheckableInputType(Type::kCheckbox, element) {}
   bool ValueMissing(const String&) const;
 
+  bool SupportsBaseAppearance(Element::BaseAppearanceValue) const override;
+
  private:
   void CountUsage() override;
   AppearanceValue AutoAppearance() const override;
