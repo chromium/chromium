@@ -283,7 +283,7 @@ void HTMLGeolocationElement::ClearWatch() {
 void HTMLGeolocationElement::MaybeTriggerAutolocate(ForceAutolocate force) {
   CHECK(FastHasAttribute(html_names::kAutolocateAttr));
   if (force == ForceAutolocate::kYes ||
-      (!did_autolocate_trigger_request && IsRenderered() &&
+      (!did_autolocate_trigger_request && IsRendered() &&
        PermissionsGranted())) {
     did_autolocate_trigger_request = true;
     RequestGeolocation();

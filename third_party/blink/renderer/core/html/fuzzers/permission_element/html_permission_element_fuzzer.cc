@@ -86,7 +86,7 @@ class HTMLPermissionElementFuzzer
 
     // If the element doesn't exist (e.g. if style caused it to not render or be
     // removed?), return.
-    if (!permission_element || !permission_element->IsRenderered()) {
+    if (!permission_element || !permission_element->IsRendered()) {
       return;
     }
 

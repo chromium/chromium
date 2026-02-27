@@ -82,7 +82,7 @@ class CORE_EXPORT HTMLCapabilityElementBase
   CascadeFilter GetCascadeFilter() const override;
   bool CanGeneratePseudoElement(PseudoId) const override;
 
-  bool IsRenderered() const;
+  bool IsRendered() const;
   bool granted() const { return PermissionsGranted(); }
 
   const Member<HTMLSpanElement>& permission_text_span_for_testing() const {

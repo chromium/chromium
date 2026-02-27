@@ -456,7 +456,7 @@ bool HTMLCapabilityElementBase::CanGeneratePseudoElement(PseudoId id) const {
   }
 }
 
-bool HTMLCapabilityElementBase::IsRenderered() const {
+bool HTMLCapabilityElementBase::IsRendered() const {
   if (GetComputedStyle() &&
       GetComputedStyle()->Visibility() == EVisibility::kVisible) {
     return true;
@@ -592,12 +592,11 @@ void HTMLCapabilityElementBase::UpdatePermissionStatus() {
 }
 
 void HTMLCapabilityElementBase::HandleInstallDataError() {
-  DisableClickingIndefinitely(DisableReason::kInstallDataError);
   // TODO(crbug.com/481519343): ValidationChange is not what we normally expect
   // after an interaction error. Revisit how to best surface this for <install>
   // as a long-term solution (a separate error attribute linked to the install
   // result, etc.).
-  MaybeDispatchValidationChangeEvent();
+  DisableClickingIndefinitely(DisableReason::kInstallDataError);
   return;
 }
 
@@ -735,7 +734,7 @@ bool HTMLCapabilityElementBase::MaybeRegisterPageEmbeddedPermissionControl() {
     }
   }
 
-  if (!IsRenderered()) {
+  if (!IsRendered()) {
     return false;
   }
 
@@ -1249,6 +1248,7 @@ void HTMLCapabilityElementBase::DisableClickingIndefinitely(
     DisableReason reason) {
   clicking_disabled_reasons_.Set(reason, base::TimeTicks::Max());
   StopTimerDueToIndefiniteReason(reason);
+  MaybeDispatchValidationChangeEvent();
 }
 
 void HTMLCapabilityElementBase::DisableClickingTemporarily(
@@ -1604,7 +1604,7 @@ void HTMLCapabilityElementBase::DidFinishLifecycleUpdate(
   }
   intersection_rect_ = intersection_rect;
 
-  if (IsRenderered()) {
+  if (IsRendered()) {
     MaybeRegisterPageEmbeddedPermissionControl();
   } else {
     EnsureUnregisterPageEmbeddedPermissionControl();
