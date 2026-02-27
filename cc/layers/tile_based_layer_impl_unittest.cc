@@ -79,12 +79,15 @@ class TestTileBasedLayerImpl : public TileBasedLayerImpl<FakeTiling> {
 
  private:
   // TileBasedLayerImpl:
+  gfx::Rect RecordedBounds() const override { return gfx::Rect(bounds()); }
+
   bool AppendQuadForTile(TilingSetCoverageIterator<FakeTiling> iter,
                          const AppendQuadsContext& context,
                          viz::CompositorRenderPass* render_pass,
                          AppendQuadsData* append_quads_data,
                          viz::SharedQuadState* shared_quad_state,
                          const Occlusion& scaled_occlusion,
+                         const gfx::Rect& visible_geometry_rect,
                          const gfx::Vector2d& quad_offset,
                          const std::optional<gfx::Rect>& scaled_cull_rect,
                          float max_contents_scale,
@@ -419,6 +422,7 @@ class OcclusionTestTileBasedLayerImpl : public TestTileBasedLayerImpl {
                          AppendQuadsData* append_quads_data,
                          viz::SharedQuadState* shared_quad_state,
                          const Occlusion& scaled_occlusion,
+                         const gfx::Rect& visible_geometry_rect,
                          const gfx::Vector2d& quad_offset,
                          const std::optional<gfx::Rect>& scaled_cull_rect,
                          float max_contents_scale,
@@ -576,6 +580,7 @@ class QuadOffsetTestTileBasedLayerImpl : public TestTileBasedLayerImpl {
                          AppendQuadsData* append_quads_data,
                          viz::SharedQuadState* shared_quad_state,
                          const Occlusion& scaled_occlusion,
+                         const gfx::Rect& visible_geometry_rect,
                          const gfx::Vector2d& quad_offset,
                          const std::optional<gfx::Rect>& scaled_cull_rect,
                          float max_contents_scale,
@@ -657,6 +662,7 @@ class QuadOffsetOrderTestTileBasedLayerImpl : public TestTileBasedLayerImpl {
                          AppendQuadsData* append_quads_data,
                          viz::SharedQuadState* shared_quad_state,
                          const Occlusion& scaled_occlusion,
+                         const gfx::Rect& visible_geometry_rect,
                          const gfx::Vector2d& quad_offset,
                          const std::optional<gfx::Rect>& scaled_cull_rect,
                          float max_contents_scale,

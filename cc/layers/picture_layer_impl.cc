@@ -316,8 +316,6 @@ std::unique_ptr<AppendQuadsCustomSharedData> PictureLayerImpl::WillAppendQuads(
   auto custom_data = std::make_unique<AppendQuadsCustomSharedDataImpl>();
   custom_data->scaled_viewport_for_tile_priority_ = gfx::ScaleToEnclosingRect(
       viewport_rect_for_tile_priority_in_content_space_, max_contents_scale);
-  custom_data->scaled_recorded_bounds_ = gfx::ScaleToEnclosingRect(
-      raster_source_->recorded_bounds(), max_contents_scale);
 
   return std::move(custom_data);
 }
@@ -329,6 +327,7 @@ bool PictureLayerImpl::AppendQuadForTile(
     AppendQuadsData* append_quads_data,
     viz::SharedQuadState* shared_quad_state,
     const Occlusion& scaled_occlusion,
+    const gfx::Rect& visible_geometry_rect,
     const gfx::Vector2d& quad_offset,
     const std::optional<gfx::Rect>& scaled_cull_rect,
     float max_contents_scale,
@@ -340,11 +339,6 @@ bool PictureLayerImpl::AppendQuadForTile(
       static_cast<AppendQuadsCustomSharedDataImpl*>(custom_data);
 
   gfx::Rect geometry_rect = iter.geometry_rect();
-  gfx::Rect visible_geometry_rect;
-  if (ShouldSkipTile(geometry_rect, shared_data->scaled_recorded_bounds_,
-                     scaled_occlusion, visible_geometry_rect)) {
-    return /*tile_produced=*/true;
-  }
 
   gfx::Rect offset_geometry_rect = geometry_rect;
   offset_geometry_rect.Offset(quad_offset);
@@ -951,6 +945,10 @@ const PaintWorkletRecordMap& PictureLayerImpl::GetPaintWorkletRecords() const {
 
 bool PictureLayerImpl::IsDirectlyCompositedImage() const {
   return directly_composited_image_default_raster_scale_ > 0.f;
+}
+
+gfx::Rect PictureLayerImpl::RecordedBounds() const {
+  return raster_source_ ? raster_source_->recorded_bounds() : gfx::Rect();
 }
 
 std::vector<const DrawImage*> PictureLayerImpl::GetDiscardableImagesInRect(

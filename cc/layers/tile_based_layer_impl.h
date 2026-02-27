@@ -80,14 +80,6 @@ class CC_EXPORT TileBasedLayerImpl : public LayerImpl {
   std::optional<gfx::Rect> CalculateScaledCullRect(
       float max_contents_scale) const;
 
-  // A helper for AppendQuadsSpecialization() that returns true if the current
-  // tile should be skipped. `visible_geometry_rect` is an out-param that will
-  // be populated when the tile should not be skipped.
-  bool ShouldSkipTile(const gfx::Rect& geometry_rect,
-                      const gfx::Rect& scaled_recorded_bounds,
-                      const Occlusion& scaled_occlusion,
-                      gfx::Rect& visible_geometry_rect) const;
-
   void ClearLastAppendQuadsScales() { last_append_quads_scales_.clear(); }
 
   void AddScaleToLastAppendQuadsScales(float scale) {
@@ -102,6 +94,14 @@ class CC_EXPORT TileBasedLayerImpl : public LayerImpl {
   }
 
  private:
+  // A helper for AppendQuads() that returns true if the current
+  // tile should be skipped. `visible_geometry_rect` is an out-param that will
+  // be populated when the tile should not be skipped.
+  bool ShouldSkipTile(const gfx::Rect& geometry_rect,
+                      const gfx::Rect& scaled_recorded_bounds,
+                      const Occlusion& scaled_occlusion,
+                      gfx::Rect& visible_geometry_rect) const;
+
   // Invoked when the draw mode is DRAW_MODE_RESOURCELESS_SOFTWARE.
   virtual void AppendQuadsForResourcelessSoftwareDraw(
       const AppendQuadsContext& context,
@@ -121,6 +121,8 @@ class CC_EXPORT TileBasedLayerImpl : public LayerImpl {
   virtual std::unique_ptr<AppendQuadsCustomSharedData> WillAppendQuads(
       float max_contents_scale);
 
+  virtual gfx::Rect RecordedBounds() const = 0;
+
   // Called for each tile covered by the layer. `quad_offset` is the offset by
   // which appended quads should be adjusted. The return value is false if the
   // tile was determined to be missing.
@@ -135,6 +137,7 @@ class CC_EXPORT TileBasedLayerImpl : public LayerImpl {
       AppendQuadsData* append_quads_data,
       viz::SharedQuadState* shared_quad_state,
       const Occlusion& scaled_occlusion,
+      const gfx::Rect& visible_geometry_rect,
       const gfx::Vector2d& quad_offset,
       const std::optional<gfx::Rect>& scaled_cull_rect,
       float max_contents_scale,
@@ -318,14 +321,23 @@ void TileBasedLayerImpl<Tiling>::AppendQuads(
   std::optional<gfx::Rect> scaled_cull_rect =
       CalculateScaledCullRect(max_contents_scale);
 
+  const gfx::Rect scaled_recorded_bounds =
+      gfx::ScaleToEnclosingRect(RecordedBounds(), max_contents_scale);
+
   int missing_tile_count = 0;
   for (auto iter = Cover(shared_quad_state->visible_quad_layer_rect,
                          max_contents_scale, ideal_scale_key);
        iter; ++iter) {
+    gfx::Rect visible_geometry_rect;
+    if (ShouldSkipTile(iter.geometry_rect(), scaled_recorded_bounds,
+                       scaled_occlusion, visible_geometry_rect)) {
+      continue;
+    }
+
     if (!AppendQuadForTile(iter, context, render_pass, append_quads_data,
-                           shared_quad_state, scaled_occlusion, quad_offset,
-                           scaled_cull_rect, max_contents_scale,
-                           custom_data.get())) {
+                           shared_quad_state, scaled_occlusion,
+                           visible_geometry_rect, quad_offset, scaled_cull_rect,
+                           max_contents_scale, custom_data.get())) {
       missing_tile_count++;
     }
   }

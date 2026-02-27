@@ -195,18 +195,12 @@ bool TileDisplayLayerImpl::AppendQuadForTile(
     AppendQuadsData* append_quads_data,
     viz::SharedQuadState* shared_quad_state,
     const Occlusion& scaled_occlusion,
+    const gfx::Rect& visible_geometry_rect,
     const gfx::Vector2d& quad_offset,
     const std::optional<gfx::Rect>& scaled_cull_rect,
     float max_contents_scale,
     AppendQuadsCustomSharedData* custom_data) {
-  const gfx::Rect scaled_recorded_bounds =
-      gfx::ScaleToEnclosingRect(recorded_bounds_, max_contents_scale);
   const gfx::Rect geometry_rect = iter.geometry_rect();
-  gfx::Rect visible_geometry_rect;
-  if (ShouldSkipTile(geometry_rect, scaled_recorded_bounds, scaled_occlusion,
-                     visible_geometry_rect)) {
-    return true;
-  }
 
   gfx::Rect offset_geometry_rect = geometry_rect;
   offset_geometry_rect.Offset(quad_offset);
@@ -267,6 +261,10 @@ float TileDisplayLayerImpl::GetMaximumContentsScaleForUseInAppendQuads() const {
 
 bool TileDisplayLayerImpl::IsDirectlyCompositedImage() const {
   return is_directly_composited_image_;
+}
+
+gfx::Rect TileDisplayLayerImpl::RecordedBounds() const {
+  return recorded_bounds_;
 }
 
 void TileDisplayLayerImpl::GetContentsResourceId(

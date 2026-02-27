@@ -198,6 +198,7 @@ class CC_EXPORT PictureLayerImpl
   TileUpdateSet TakeAllTiles();
 
   bool IsDirectlyCompositedImage() const override;
+  gfx::Rect RecordedBounds() const override;
   bool nearest_neighbor() const { return nearest_neighbor_; }
 
   void set_should_batch_updated_tiles() { should_batch_updated_tiles_ = true; }
@@ -404,7 +405,6 @@ class CC_EXPORT PictureLayerImpl
     // by embedders like Android WebView with
     // SetExternalTilePriorityConstraints.
     gfx::Rect scaled_viewport_for_tile_priority_;
-    gfx::Rect scaled_recorded_bounds_;
   };
 
   // TileBasedLayerImpl:
@@ -430,6 +430,7 @@ class CC_EXPORT PictureLayerImpl
                          AppendQuadsData* append_quads_data,
                          viz::SharedQuadState* shared_quad_state,
                          const Occlusion& scaled_occlusion,
+                         const gfx::Rect& visible_geometry_rect,
                          const gfx::Vector2d& quad_offset,
                          const std::optional<gfx::Rect>& scaled_cull_rect,
                          float max_contents_scale,
