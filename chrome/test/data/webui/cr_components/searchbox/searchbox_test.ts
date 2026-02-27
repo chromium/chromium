@@ -1522,7 +1522,7 @@ suite('SearchboxTest', () => {
       shiftKey: true,
     });
     realbox.$.input.dispatchEvent(shiftEnter);
-    assertFalse(shiftEnter.defaultPrevented);
+    assertTrue(shiftEnter.defaultPrevented);
 
     // Did not navigate to the first match since it's not selected.
     assertEquals(0, testProxy.handler.getCallCount('openAutocompleteMatch'));
@@ -3165,4 +3165,59 @@ suite('SearchboxTest', () => {
     assertFalse(backspaceEvent.defaultPrevented);
   });
 
+  test('pressing Enter in empty input prevents new line', async () => {
+    // Ensure the input is empty.
+    realbox.$.input.value = '';
+    realbox.$.input.dispatchEvent(new MouseEvent('mousedown', {button: 0}));
+    await testProxy.handler.whenCalled('queryAutocomplete');
+    testProxy.callbackRouterRemote.autocompleteResultChanged(
+        createAutocompleteResultForTesting({
+          input: '',
+          matches: [createSearchMatchForTesting()],
+        }));
+    await microtasksFinished();
+    const enterEvent = new KeyboardEvent('keydown', {
+      bubbles: true,
+      cancelable: true,
+      composed: true,  // So it propagates across shadow DOM boundary.
+      key: 'Enter',
+    });
+
+    // Dispatch the Enter key event.
+    realbox.$.input.dispatchEvent(enterEvent);
+    await microtasksFinished();
+
+    // Assert that the default action (inserting a new line) is prevented.
+    assertTrue(enterEvent.defaultPrevented);
+
+    // Assert that no navigation was triggered since the input is empty.
+    assertEquals(0, testProxy.handler.getCallCount('openAutocompleteMatch'));
+  });
+
+  test('pressing Shift+Enter in multi-line input allows new line', async () => {
+    // Enable multi-line mode.
+    realbox.multiLineEnabled = true;
+    await microtasksFinished();
+
+    realbox.$.input.value = '';
+
+    const shiftEnterEvent = new KeyboardEvent('keydown', {
+      bubbles: true,
+      cancelable: true,
+      composed: true,
+      key: 'Enter',
+      shiftKey: true,  // Simulate holding the Shift key.
+    });
+
+    // Dispatch the Shift + Enter key event.
+    realbox.$.input.dispatchEvent(shiftEnterEvent);
+    await microtasksFinished();
+
+    // Assert that the default action is NOT prevented (browser will insert new
+    // line).
+    assertFalse(shiftEnterEvent.defaultPrevented);
+
+    // Assert that no navigation was triggered.
+    assertEquals(0, testProxy.handler.getCallCount('openAutocompleteMatch'));
+  });
 });
