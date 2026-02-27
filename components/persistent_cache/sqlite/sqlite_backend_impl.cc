@@ -283,14 +283,11 @@ base::expected<void, int> SqliteBackendImpl::InsertImpl(
     base::span<const uint8_t> key,
     base::span<const uint8_t> content,
     EntryMetadata metadata) {
-  // Use a transaction for insertions if the database may have multiple
-  // connections so that the creation of the row and the writing of the data are
-  // a single atomic operation. A transaction is not necessary if the database
-  // is opened for a single connection, as it is not possible for another
-  // connection to access or modify the database between the statements below.
-  std::optional<sql::Transaction> transaction;
-  if (!vfs_file_set_.is_single_connection() &&
-      !transaction.emplace(&*db_).Begin()) {
+  // Performance tests show that unconditional use of a transaction is faster
+  // even for single connections where contention with another reader/writer
+  // isn't a concern.
+  sql::Transaction transaction(&*db_);
+  if (!transaction.Begin()) {
     return base::unexpected(db_->GetErrorCode());
   }
 
@@ -317,7 +314,7 @@ base::expected<void, int> SqliteBackendImpl::InsertImpl(
     return base::unexpected(db_->GetErrorCode());
   }
 
-  if (transaction && !transaction->Commit()) {
+  if (!transaction.Commit()) {
     return base::unexpected(db_->GetErrorCode());
   }
 
