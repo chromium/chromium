@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/read_anything/read_anything_immersive_overlay_view.h"
+#include "chrome/browser/ui/sad_tab_helper.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/contents_container_view.h"
@@ -246,6 +247,12 @@ void MultiContentsView::SetWebContentsAtIndex(
     resize_area_->SetVisible(true);
     UpdateContentsBorderAndOverlay();
   }
+
+  if (web_contents) {
+    if (auto* sad_tab_helper = SadTabHelper::FromWebContents(web_contents)) {
+      sad_tab_helper->ReinstallInWebView();
+    }
+  }
 }
 
 void MultiContentsView::ShowSplitView(double ratio) {
@@ -292,6 +299,12 @@ void MultiContentsView::CloseSplitView() {
   contents_container_views_[1]->SetVisible(false);
   resize_area_->SetVisible(false);
   UpdateContentsBorderAndOverlay();
+
+  if (auto* active_contents = GetActiveContentsView()->web_contents()) {
+    if (auto* sad_tab_helper = SadTabHelper::FromWebContents(active_contents)) {
+      sad_tab_helper->ReinstallInWebView();
+    }
+  }
 }
 
 void MultiContentsView::SetActiveIndex(int index) {
