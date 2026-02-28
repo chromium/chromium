@@ -14,9 +14,9 @@
 void AnnounceInActiveBrowser(const std::u16string& message) {
   BrowserWindowInterface* const browser =
       GetLastActiveBrowserWindowInterfaceWithAnyProfile();
-  const bool is_type_normal =
-      browser->GetType() == BrowserWindowInterface::Type::TYPE_NORMAL;
-  if (!browser || !is_type_normal || !browser->IsActive()) {
+  if (!browser ||
+      browser->GetType() != BrowserWindowInterface::Type::TYPE_NORMAL ||
+      !browser->IsActive()) {
     return;
   }
 
