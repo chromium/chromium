@@ -136,7 +136,7 @@ export function getHtml(this: UserEducationInternalsElement) {
       </div>
       <div id="whatsNew">
         <h2>What's New</h2>
-        <if expr="is_chromeos == False">
+        <if expr="not is_chromeos">
           <div class="whats-new-section">
             <h3>Version Override</h3>
             <p>

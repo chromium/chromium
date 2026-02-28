@@ -13,12 +13,6 @@ import {getCss} from './slim_web_view.css.js';
 import {getHtml} from './slim_web_view.html.js';
 import {BrowserProxyImpl, PermissionResponseAction} from './slim_web_view_browser_proxy.js';
 
-export interface SlimWebViewElement {
-  $: {
-    input: HTMLElement,
-  };
-}
-
 const GUEST_INSTANCE_ID_PENDING: number = 0;
 
 export class ExitEvent extends Event {

@@ -17,7 +17,7 @@ import {getHtml} from './app.html.js';
 
 export interface OnDeviceInternalsAppElement {
   $: {
-    'tabs': CrTabsElement,
+    tabs: CrTabsElement,
   };
 }
 

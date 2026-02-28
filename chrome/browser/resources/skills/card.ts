@@ -29,7 +29,6 @@ export enum CardType {
 
 export interface SkillCardElement {
   $: {
-    cardBody: HTMLElement,
     name: HTMLElement,
     icon: HTMLElement,
     menu: CrActionMenuElement,

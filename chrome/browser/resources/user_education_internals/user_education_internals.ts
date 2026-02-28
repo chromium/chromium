@@ -16,7 +16,10 @@ import '//resources/cr_elements/icons.html.js';
 import './user_education_internals_card.js';
 import './user_education_whats_new_internals_card.js';
 
+// <if expr="not is_chromeos">
 import type {CrInputElement} from '//resources/cr_elements/cr_input/cr_input.js';
+// </if>
+
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {HelpBubbleMixinLit} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin_lit.js';
 import type {CrMenuSelectorElement} from 'chrome://resources/cr_elements/cr_menu_selector/cr_menu_selector.js';
@@ -35,7 +38,9 @@ export interface UserEducationInternalsElement {
     content: HTMLElement,
     errorMessageToast: CrToastElement,
     menu: CrMenuSelectorElement,
+    // <if expr="not is_chromeos">
     whatsNewVersionOverride: CrInputElement,
+    // </if>
   };
 }
 
@@ -385,6 +390,7 @@ export class UserEducationInternalsElement extends
     this.ntpPromoPreferencesExpanded_ = e.detail.value;
   }
 
+  // <if expr="not is_chromeos">
   protected onLaunchWhatsNewStagingClick_() {
     this.handler_.launchWhatsNewStaging();
   }
@@ -401,6 +407,7 @@ export class UserEducationInternalsElement extends
     this.handler_.updateWhatsNewVersionOverride(versionOverride);
     this.whatsNewVersionToRequest_ = versionOverride;
   }
+  // </if>
 }
 
 declare global {

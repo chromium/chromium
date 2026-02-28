@@ -67,9 +67,6 @@ export interface ContextualTasksAppElement {
     // <if expr="not is_android">
     composebox: ContextualTasksComposeboxElement,
     // </if>
-    // <if expr="is_android">
-    composebox: HTMLElement,
-    // </if>
     composeboxHeaderWrapper: HTMLElement,
     composeboxHeader: HTMLElement,
     flexCenterContainer: HTMLElement,
@@ -563,7 +560,9 @@ export class ContextualTasksAppElement extends CrLitElement {
       });
     };
 
+    // <if expr="not is_android">
     restartAnimations(this.$.composebox);
+    // </if>
     restartAnimations(this.$.composeboxHeaderWrapper);
 
     if (this.$.nameShimmer) {
