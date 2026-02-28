@@ -499,15 +499,6 @@ public class OmniboxMetrics {
                 break;
 
             default:
-                // May trigger if nev PageClassifications were added to
-                // third_party/metrics_proto/omnibox_event.proto file,
-                // but have not been reflected here. If that's the case, file a bug for the
-                // author of the new PageClassification.
-                // Last supported value: OTHER_ON_CCT.
-                assert false
-                        : "b/40221519: Invalid page classification: "
-                                + pageClass
-                                + ". Please re-open bug, and attach captured stack trace.";
                 break;
         }
 
