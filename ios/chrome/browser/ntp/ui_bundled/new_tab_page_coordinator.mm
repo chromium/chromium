@@ -81,6 +81,7 @@
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_component_factory_protocol.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_content_delegate.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_url_loader_delegate.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_controller_delegate.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_coordinator+Testing.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_delegate.h"
@@ -138,6 +139,7 @@
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/public/fakebox_focuser.h"
 #import "ios/chrome/browser/toolbar/tab_group/coordinator/tab_group_indicator_coordinator.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/chrome/browser/web/model/web_navigation_util.h"
 #import "ios/chrome/common/NSString+Chromium.h"
 #import "ios/chrome/common/material_timing.h"
@@ -167,6 +169,7 @@
                                      NewTabPageDelegate,
                                      NewTabPageHeaderCommands,
                                      NewTabPageActionsDelegate,
+                                     NewTabPageURLLoaderDelegate,
                                      OverscrollActionsControllerDelegate,
                                      ProfileStateObserver,
                                      SceneStateObserver,
@@ -342,10 +345,8 @@
   // Configures incognito NTP if user is in incognito mode.
   if (self.isOffTheRecord) {
     DCHECK(!self.incognitoViewController);
-    UrlLoadingBrowserAgent* URLLoader =
-        UrlLoadingBrowserAgent::FromBrowser(self.browser);
-    self.incognitoViewController =
-        [[IncognitoViewController alloc] initWithUrlLoader:URLLoader];
+    self.incognitoViewController = [[IncognitoViewController alloc] init];
+    self.incognitoViewController.URLLoaderDelegate = self;
     self.started = YES;
     return;
   }
@@ -1277,6 +1278,13 @@
 
 - (BOOL)isSignInAllowed {
   return self.authService->SigninEnabled();
+}
+
+#pragma mark - NewTabPageURLLoaderDelegate
+
+- (void)loadURLInTab:(const GURL&)URL {
+  UrlLoadingBrowserAgent::FromBrowser(self.browser)
+      ->Load(UrlLoadParams::InCurrentTab(URL));
 }
 
 #pragma mark - NewTabPageActionsDelegate

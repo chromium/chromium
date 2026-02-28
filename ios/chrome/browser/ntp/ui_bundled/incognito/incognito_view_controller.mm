@@ -4,42 +4,25 @@
 
 #import "ios/chrome/browser/ntp/ui_bundled/incognito/incognito_view_controller.h"
 
-#import "base/memory/raw_ptr.h"
 #import "ios/chrome/browser/ntp/ui_bundled/incognito/incognito_view.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_url_loader_delegate.h"
-#import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
-#import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
-@interface IncognitoViewController () <NewTabPageURLLoaderDelegate>
+@interface IncognitoViewController ()
 
 // The scrollview containing the actual views.
 @property(nonatomic, strong) UIScrollView* incognitoView;
 
 @end
 
-@implementation IncognitoViewController {
-  // The UrlLoadingService associated with this view.
-  // TODO(crbug.com/40228520): View controllers should not have access to
-  // model-layer objects. Create a mediator to connect model-layer class
-  // `UrlLoadingBrowserAgent` to the view controller.
-  raw_ptr<UrlLoadingBrowserAgent, DanglingUntriaged> _URLLoader;  // weak
-}
-
-- (instancetype)initWithUrlLoader:(UrlLoadingBrowserAgent*)URLLoader {
-  self = [super init];
-  if (self) {
-    _URLLoader = URLLoader;
-  }
-  return self;
-}
+@implementation IncognitoViewController
 
 - (void)viewDidLoad {
   self.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
 
   IncognitoView* view = [[IncognitoView alloc] initWithFrame:self.view.bounds];
-  view.URLLoaderDelegate = self;
+  view.URLLoaderDelegate = self.URLLoaderDelegate;
   self.incognitoView = view;
   self.incognitoView.accessibilityIdentifier = kNTPIncognitoViewIdentifier;
   [self.incognitoView setAutoresizingMask:UIViewAutoresizingFlexibleHeight |
@@ -50,12 +33,6 @@
 
 - (void)dealloc {
   [_incognitoView setDelegate:nil];
-}
-
-#pragma mark - NewTabPageURLLoaderDelegate
-
-- (void)loadURLInTab:(const GURL&)URL {
-  _URLLoader->Load(UrlLoadParams::InCurrentTab(URL));
 }
 
 @end
