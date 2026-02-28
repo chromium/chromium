@@ -7,6 +7,28 @@ found in the LICENSE file.
 
 <org.chromium.chrome.browser.history.HistoryItemView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@drawable/list_item_rounded_background_selector"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content" />
+    android:layout_height="wrap_content">
+
+    <FrameLayout
+        android:id="@+id/spark_container"
+        android:layout_width="@dimen/history_item_spark_size"
+        android:layout_height="@dimen/history_item_spark_size"
+        android:layout_gravity="start|top"
+        android:layout_marginStart="@dimen/history_item_spark_margin_start"
+        android:layout_marginTop="@dimen/history_item_spark_margin_top"
+        android:visibility="gone">
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/oval_surface_0" />
+        <org.chromium.ui.widget.ChromeImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="@dimen/history_item_spark_padding"
+            android:src="@drawable/ic_spark_24dp"
+            app:tint="@macro/default_icon_color_accent1" />
+    </FrameLayout>
+</org.chromium.chrome.browser.history.HistoryItemView>

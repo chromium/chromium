@@ -52,6 +52,7 @@ public class HistoryItemView extends SelectableItemView<HistoryItem> {
     private boolean mIsItemRemoved;
     private BooleanSupplier mShowSourceApp;
     private ChipView mChipView;
+    private View mSparkContainer;
 
     public HistoryItemView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -88,6 +89,12 @@ public class HistoryItemView extends SelectableItemView<HistoryItem> {
 
         mChipView = findViewById(R.id.chip);
         mChipView.getPrimaryTextView().setEllipsize(TextUtils.TruncateAt.END);
+
+        mSparkContainer = findViewById(R.id.spark_container);
+        // Ensure the spark is drawn on top of the favicon and its background. This is needed
+        // because the content of xml is added first, then the content from code is added next (on
+        // top of the xml children).
+        mSparkContainer.bringToFront();
     }
 
     @Override
@@ -127,6 +134,22 @@ public class HistoryItemView extends SelectableItemView<HistoryItem> {
                     AppCompatResources.getColorStateList(
                             getContext(), R.color.default_text_color_list));
         }
+        updateSparkVisibility();
+    }
+
+    @Override
+    protected void updateView(boolean animate) {
+        super.updateView(animate);
+        updateSparkVisibility();
+    }
+
+    private void updateSparkVisibility() {
+        HistoryItem item = getItem();
+        // The spark should be shown only if the item is not selected (checked), blocked, and is an
+        // actor visit.
+        boolean showSpark =
+                item != null && item.isActorVisit() && !item.wasBlockedVisit() && !isChecked();
+        mSparkContainer.setVisibility(showSpark ? View.VISIBLE : View.GONE);
     }
 
     @Initializer
@@ -218,7 +241,13 @@ public class HistoryItemView extends SelectableItemView<HistoryItem> {
                 });
     }
 
+    @VisibleForTesting
     View getRemoveButtonForTests() {
         return mRemoveButton;
+    }
+
+    @VisibleForTesting
+    View getSparkContainerForTests() {
+        return mSparkContainer;
     }
 }

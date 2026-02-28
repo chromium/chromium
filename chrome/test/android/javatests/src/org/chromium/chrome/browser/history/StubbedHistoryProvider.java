@@ -170,6 +170,18 @@ public class StubbedHistoryProvider implements HistoryProvider {
     }
 
     public static HistoryItem createHistoryItem(int which, long timestamp) {
+        return createHistoryItem(which, timestamp, which == 5, false);
+    }
+
+    /**
+     * @param which Which history item to create.
+     * @param timestamp The timestamp for the item.
+     * @param blockedVisit Whether the visit was blocked.
+     * @param isActorVisit Whether the visit was actor initiated.
+     * @return A new HistoryItem.
+     */
+    public static HistoryItem createHistoryItem(
+            int which, long timestamp, boolean blockedVisit, boolean isActorVisit) {
         long[] nativeTimestamps = {timestamp * 1000};
         String appId = null;
         if (which == 0) {
@@ -180,8 +192,8 @@ public class StubbedHistoryProvider implements HistoryProvider {
                     appId,
                     timestamp,
                     nativeTimestamps,
-                    false,
-                    false);
+                    blockedVisit,
+                    isActorVisit);
         } else if (which == 1) {
             return new HistoryItem(
                     JUnitTestGURLs.EXAMPLE_URL,
@@ -190,8 +202,8 @@ public class StubbedHistoryProvider implements HistoryProvider {
                     appId,
                     timestamp,
                     nativeTimestamps,
-                    false,
-                    false);
+                    blockedVisit,
+                    isActorVisit);
         } else if (which == 2) {
             return new HistoryItem(
                     JUnitTestGURLs.URL_1,
@@ -200,8 +212,8 @@ public class StubbedHistoryProvider implements HistoryProvider {
                     appId,
                     timestamp,
                     nativeTimestamps,
-                    false,
-                    false);
+                    blockedVisit,
+                    isActorVisit);
         } else if (which == 3) {
             return new HistoryItem(
                     JUnitTestGURLs.URL_2,
@@ -210,8 +222,8 @@ public class StubbedHistoryProvider implements HistoryProvider {
                     appId,
                     timestamp,
                     nativeTimestamps,
-                    false,
-                    false);
+                    blockedVisit,
+                    isActorVisit);
         } else if (which == 4) {
             return new HistoryItem(
                     JUnitTestGURLs.URL_3,
@@ -220,8 +232,8 @@ public class StubbedHistoryProvider implements HistoryProvider {
                     appId,
                     timestamp,
                     nativeTimestamps,
-                    false,
-                    false);
+                    blockedVisit,
+                    isActorVisit);
         } else if (which == 5) {
             return new HistoryItem(
                     JUnitTestGURLs.INITIAL_URL,
@@ -230,8 +242,8 @@ public class StubbedHistoryProvider implements HistoryProvider {
                     appId,
                     timestamp,
                     nativeTimestamps,
-                    true,
-                    false);
+                    blockedVisit,
+                    isActorVisit);
         } else {
             return null;
         }

@@ -261,6 +261,66 @@ public class HistoryUiTest {
 
     @Test
     @SmallTest
+    public void testSparkVisibility() {
+        // Use a timestamp older than the ones in setUp() to ensure they appear after Item 1 and 2.
+        long timestamp = mItem2.getTimestamp() - 1000;
+
+        // Item with spark (actor visit, not blocked)
+        HistoryItem actorItem =
+                StubbedHistoryProvider.createHistoryItem(
+                        0, timestamp, /* blockedVisit= */ false, /* isActorVisit= */ true);
+
+        // Item without spark (not actor visit)
+        HistoryItem nonActorItem =
+                StubbedHistoryProvider.createHistoryItem(
+                        1, timestamp - 1, /* blockedVisit= */ false, /* isActorVisit= */ false);
+
+        // Item without spark (actor visit, but blocked)
+        HistoryItem blockedActorItem =
+                StubbedHistoryProvider.createHistoryItem(
+                        2, timestamp - 2, /* blockedVisit= */ true, /* isActorVisit= */ true);
+
+        mHistoryProvider.addItem(actorItem);
+        mHistoryProvider.addItem(nonActorItem);
+        mHistoryProvider.addItem(blockedActorItem);
+
+        mAdapter.startLoadingItems();
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        // Recalculate height and layout to ensure all items are visible.
+        mRecyclerView.measure(0, 0);
+        mHeight = mRecyclerView.getMeasuredHeight();
+        layoutRecyclerView();
+
+        // The items are added after the initial ones in setUp().
+        // setUp() adds 2 items. They are at position 2 and 3.
+        // New items are at 4, 5, 6 because they have older timestamps.
+        Assert.assertEquals(7, mAdapter.getItemCount());
+
+        HistoryItemView actorView = (HistoryItemView) getItemView(4);
+        Assert.assertEquals(actorItem, actorView.getItem());
+        Assert.assertEquals(View.VISIBLE, actorView.getSparkContainerForTests().getVisibility());
+
+        // Select the actor visit item and check that the spark is hidden.
+        toggleItemSelection(4);
+        Assert.assertEquals(View.GONE, actorView.getSparkContainerForTests().getVisibility());
+
+        // Unselect the actor visit item and check that the spark is shown again.
+        toggleItemSelection(4);
+        Assert.assertEquals(View.VISIBLE, actorView.getSparkContainerForTests().getVisibility());
+
+        HistoryItemView nonActorView = (HistoryItemView) getItemView(5);
+        Assert.assertEquals(nonActorItem, nonActorView.getItem());
+        Assert.assertEquals(View.GONE, nonActorView.getSparkContainerForTests().getVisibility());
+
+        HistoryItemView blockedActorView = (HistoryItemView) getItemView(6);
+        Assert.assertEquals(blockedActorItem, blockedActorView.getItem());
+        Assert.assertEquals(
+                View.GONE, blockedActorView.getSparkContainerForTests().getVisibility());
+    }
+
+    @Test
+    @SmallTest
     public void testRemove_AllItems() throws Exception {
         toggleItemSelection(2);
         toggleItemSelection(3);
