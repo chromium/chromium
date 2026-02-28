@@ -6269,5 +6269,20 @@
       "--enable-features=WebAudioConfigurableRenderQuantum"
     ],
     "expires": "never"
+  },
+  {
+    "prefix": "single-axis-scroll-containers",
+    "platforms": ["Linux", "Mac", "Win", "Android"],
+    "bases": [
+      "external/wpt/css/css-position/sticky/position-sticky-single-axis-basic.html",
+      "external/wpt/css/css-position/sticky/position-sticky-single-axis-dynamic.html",
+      "external/wpt/css/css-position/sticky/position-sticky-single-axis-nested.html"
+    ],
+    "exclusive_tests": "ALL",
+    "args": ["--enable-blink-features=SingleAxisScrollContainers"],
+    "owners": [
+      "freedebreuil@google.com"
+    ],
+    "expires": "Jan 1, 2027"
   }
 ]

@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/core/layout/block_node.h"
 #include "third_party/blink/renderer/core/layout/constraint_space_builder.h"
+#include "third_party/blink/renderer/core/layout/geometry/axis.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/layout_result.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_info.h"
@@ -152,7 +153,7 @@ SVGLayoutResult LayoutSVGForeignObject::UpdateSVGLayout(
   for (const auto& item :
        content_result->GetPhysicalFragment().StickyDescendants()) {
     if (auto* pending = item.GetIfPending()) {
-      pending->SetStickyConstraints(nullptr);
+      pending->ClearStickyConstraints(kPhysicalAxesBoth);
     }
   }
 

@@ -74,15 +74,10 @@ class PaintLayer;
 // already being shifted by its ancestor. To correctly handle such situations we
 // apply more complicated logic which is explained in the implementation of
 // |ComputeStickyOffset|.
-struct CORE_EXPORT StickyPositionScrollingConstraints final
-    : public GarbageCollected<StickyPositionScrollingConstraints> {
- public:
-  // Computes the sticky offset for a given scroll position of the containing
-  // scroll container. When the scroll position changed in a ScrollableArea,
-  // this method must be called for all affected sticky objects in pre-tree
-  // order.
-  void ComputeStickyOffset(const gfx::PointF& scroll_position);
+struct CORE_EXPORT StickyPositionScrollingConstraints final {
+  STACK_ALLOCATED();
 
+ public:
   // The containing block rect and sticky box rect are the basic components
   // for calculating the sticky offset to apply after a scroll. Consider the
   // following setup:
@@ -198,13 +193,21 @@ struct CORE_EXPORT StickyPositionScrollingConstraints final
     LayoutUnit AncestorContainingBlockOffset() const;
   };
 
-  StickyPositionScrollingConstraints(PerAxisData* x_data, PerAxisData* y_data);
+  StickyPositionScrollingConstraints() = default;
+  StickyPositionScrollingConstraints(PerAxisData* x_data, PerAxisData* y_data)
+      : x_data_(x_data), y_data_(y_data) {}
+
+  explicit operator bool() const { return x_data_ || y_data_; }
+
+  // Computes the sticky offset for a given scroll position of the containing
+  // scroll container. When the scroll position changed in a ScrollableArea,
+  // this method must be called for all affected sticky objects in pre-tree
+  // order.
+  void ComputeStickyOffset(const gfx::PointF& scroll_position,
+                           PhysicalAxes scroll_axes);
 
   const PerAxisData* AxisData(PhysicalAxis axis) const {
-    return (axis == PhysicalAxis::kHorizontal) ? x_data_.Get() : y_data_.Get();
-  }
-  PerAxisData* AxisData(PhysicalAxis axis) {
-    return (axis == PhysicalAxis::kHorizontal) ? x_data_.Get() : y_data_.Get();
+    return (axis == PhysicalAxis::kHorizontal) ? x_data_ : y_data_;
   }
 
   bool HasScrollDependentOffset() const;
@@ -269,23 +272,28 @@ struct CORE_EXPORT StickyPositionScrollingConstraints final
     return nullptr;
   }
 
-  void Trace(Visitor* visitor) const;
-
  private:
   const PerAxisData* PreferredAxisData() const;
 
   // Safely builds a 2D rect from 1D ranges, falling back to 0 if an axis is
   // missing.
   PhysicalRect BuildRect(const BoxEdge* x, const BoxEdge* y) const {
-    DCHECK(x && y)
-        << "2D geometric reconstruction requires both axes to be populated.";
     return PhysicalRect(x ? x->offset : LayoutUnit(),
                         y ? y->offset : LayoutUnit(),
                         x ? x->size : LayoutUnit(), y ? y->size : LayoutUnit());
   }
 
-  Member<PerAxisData> x_data_;
-  Member<PerAxisData> y_data_;
+  PerAxisData* x_data_ = nullptr;
+  PerAxisData* y_data_ = nullptr;
+};
+
+// Per-axis sticky constraints update payload.
+struct CORE_EXPORT StickyConstraintsData {
+  STACK_ALLOCATED();
+
+ public:
+  StickyPositionScrollingConstraints::PerAxisData* x_data = nullptr;
+  StickyPositionScrollingConstraints::PerAxisData* y_data = nullptr;
 };
 
 }  // namespace blink

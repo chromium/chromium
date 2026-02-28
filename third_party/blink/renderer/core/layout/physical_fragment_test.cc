@@ -111,11 +111,11 @@ TEST_F(StickyFragmentPropagationTest, StickyAxisDisabled) {
 
   ExpectStickyDescendant(
       "inner", "sticky-y",
-      {.consumed = kPhysicalAxesVertical, .pending = kPhysicalAxesNone});
+      {.consumed = kPhysicalAxesBoth, .pending = kPhysicalAxesNone});
 
   ExpectStickyDescendant(
       "inner", "sticky-x",
-      {.consumed = kPhysicalAxesHorizontal, .pending = kPhysicalAxesNone});
+      {.consumed = kPhysicalAxesBoth, .pending = kPhysicalAxesNone});
 
   ExpectStickyDescendant(
       "inner", "sticky-both",

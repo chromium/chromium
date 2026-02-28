@@ -25,14 +25,16 @@ void FragmentData::RareData::EnsureId() {
 void FragmentData::RareData::SetLayer(PaintLayer* new_layer) {
   if (layer && layer != new_layer) {
     layer->Destroy();
-    sticky_constraints = nullptr;
+    x_sticky_constraints = nullptr;
+    y_sticky_constraints = nullptr;
   }
   layer = new_layer;
 }
 
 void FragmentData::RareData::Trace(Visitor* visitor) const {
   visitor->Trace(layer);
-  visitor->Trace(sticky_constraints);
+  visitor->Trace(x_sticky_constraints);
+  visitor->Trace(y_sticky_constraints);
   visitor->Trace(additional_fragments);
   visitor->Trace(paint_properties);
   visitor->Trace(local_border_box_properties);

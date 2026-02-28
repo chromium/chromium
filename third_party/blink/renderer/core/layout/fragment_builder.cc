@@ -31,16 +31,6 @@ bool IsInlineContainerForNode(const BlockNode& node,
              node.Style().GetPosition());
 }
 
-PhysicalAxes StickyConstrainedAxes(const ComputedStyle& style) {
-  PhysicalAxes axes = kPhysicalAxesNone;
-  if (!style.Top().IsAuto() || !style.Bottom().IsAuto()) {
-    axes |= kPhysicalAxesVertical;
-  }
-  if (!style.Left().IsAuto() || !style.Right().IsAuto()) {
-    axes |= kPhysicalAxesHorizontal;
-  }
-  return axes;
-}
 }  // namespace
 
 AnchorMap::SetOptions FragmentBuilder::AnchorOptionsForChild(
@@ -143,7 +133,8 @@ void FragmentBuilder::PropagateStickyDescendants(
   const PhysicalAxes scrollable_axes = GetOverflowScrollAxes();
 
   if (child.HasStickyConstrainedPosition()) {
-    const PhysicalAxes axes = StickyConstrainedAxes(child.Style());
+    const PhysicalAxes axes =
+        LayoutBoxModelObject::StickyConstrainedAxes(child.Style());
     const PhysicalAxes consumed = scrollable_axes & axes;
     const PhysicalAxes pending = axes ^ consumed;
 

@@ -17,8 +17,14 @@ namespace blink {
 enum class LogicalAxis : uint8_t { kInline = 0b01, kBlock = 0b10 };
 enum class PhysicalAxis : uint8_t { kHorizontal = 0b01, kVertical = 0b10 };
 
-using PhysicalAxes = base::StrongAlias<class PhysicalAxesTag, uint8_t>;
-using LogicalAxes = base::StrongAlias<class LogicalAxesTag, uint8_t>;
+struct PhysicalAxes : public base::StrongAlias<class PhysicalAxesTag, uint8_t> {
+  using StrongAlias::StrongAlias;
+  explicit constexpr operator bool() const { return value() != 0; }
+};
+struct LogicalAxes : public base::StrongAlias<class LogicalAxesTag, uint8_t> {
+  using StrongAlias::StrongAlias;
+  explicit constexpr operator bool() const { return value() != 0; }
+};
 
 inline constexpr LogicalAxes operator|(LogicalAxes a, LogicalAxes b) {
   return LogicalAxes(a.value() | b.value());

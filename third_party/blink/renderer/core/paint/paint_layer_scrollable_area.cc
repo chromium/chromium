@@ -2413,10 +2413,12 @@ void PaintLayerScrollableArea::UpdateAllStickyConstraints() {
   for (const auto& fragment : GetLayoutBox()->PhysicalFragments()) {
     for (const auto& item : fragment.StickyDescendants()) {
       if (auto* sticky_descendant = item.GetIfConsumed()) {
-        auto* constraints =
-            sticky_descendant->ComputeStickyPositionConstraints();
-        constraints->ComputeStickyOffset(ScrollPosition());
-        sticky_descendant->SetStickyConstraints(constraints);
+        StickyConstraintsData data =
+            sticky_descendant->ComputeStickyPositionConstraints(
+                *Layer(), item.ConsumedAxes());
+        sticky_descendant->SetStickyConstraints(data);
+        sticky_descendant->StickyConstraints().ComputeStickyOffset(
+            ScrollPosition(), item.ConsumedAxes());
       }
     }
   }
@@ -2451,8 +2453,8 @@ void PaintLayerScrollableArea::InvalidatePaintForStickyDescendants() {
       if (auto* sticky_descendant = item.GetIfConsumed()) {
         sticky_descendant->SetNeedsPaintPropertyUpdate();
         DCHECK(sticky_descendant->StickyConstraints());
-        sticky_descendant->StickyConstraints()->ComputeStickyOffset(
-            ScrollPosition());
+        sticky_descendant->StickyConstraints().ComputeStickyOffset(
+            ScrollPosition(), item.ConsumedAxes());
       }
     }
   }

@@ -13,16 +13,11 @@
 namespace blink {
 
 namespace {
-BoxEdge RectToLayoutUnitSegment(PhysicalAxis axis, const PhysicalRect& rect) {
+BoxEdge RectToBoxEdge(PhysicalAxis axis, const PhysicalRect& rect) {
   return axis == PhysicalAxis::kHorizontal ? BoxEdge(rect.X(), rect.Width())
                                            : BoxEdge(rect.Y(), rect.Height());
 }
 }  // namespace
-
-StickyPositionScrollingConstraints::StickyPositionScrollingConstraints(
-    PerAxisData* x_data,
-    PerAxisData* y_data)
-    : x_data_(x_data), y_data_(y_data) {}
 
 StickyPositionScrollingConstraints::PerAxisData::PerAxisData(
     PhysicalAxis axis,
@@ -39,10 +34,10 @@ StickyPositionScrollingConstraints::PerAxisData::PerAxisData(
       min_inset(min_inset),
       max_inset(max_inset),
       scroll_container_relative_containing_block_range(
-          RectToLayoutUnitSegment(axis, containing_block)),
+          RectToBoxEdge(axis, containing_block)),
       scroll_container_relative_sticky_box_range(
-          RectToLayoutUnitSegment(axis, sticky_box)),
-      constraining_range(RectToLayoutUnitSegment(axis, constraining)),
+          RectToBoxEdge(axis, sticky_box)),
+      constraining_range(RectToBoxEdge(axis, constraining)),
       nearest_sticky_layer_shifting_sticky_box(
           nearest_sticky_layer_shifting_sticky_box),
       nearest_sticky_layer_shifting_containing_block(
@@ -131,12 +126,13 @@ void StickyPositionScrollingConstraints::PerAxisData::ComputeOffset(
 }
 
 void StickyPositionScrollingConstraints::ComputeStickyOffset(
-    const gfx::PointF& scroll_position) {
-  if (x_data_) {
+    const gfx::PointF& scroll_position,
+    PhysicalAxes scroll_axes) {
+  if (x_data_ && (scroll_axes & kPhysicalAxesHorizontal)) {
     x_data_->ComputeOffset(scroll_position.x());
   }
 
-  if (y_data_) {
+  if (y_data_ && (scroll_axes & kPhysicalAxesVertical)) {
     y_data_->ComputeOffset(scroll_position.y());
   }
 }
@@ -176,11 +172,11 @@ StickyPositionScrollingConstraints::PerAxisData::AncestorStickyBoxOffset()
   if (!nearest_sticky_layer_shifting_sticky_box) {
     return LayoutUnit();
   }
-  const auto* constraints =
+  const auto constraints =
       nearest_sticky_layer_shifting_sticky_box->StickyConstraints();
   DCHECK(constraints);
 
-  if (const auto* ancestor_data = constraints->AxisData(axis)) {
+  if (const auto* ancestor_data = constraints.AxisData(axis)) {
     return ancestor_data->total_sticky_box_sticky_offset;
   }
   return LayoutUnit();
@@ -192,40 +188,18 @@ StickyPositionScrollingConstraints::PerAxisData::AncestorContainingBlockOffset()
   if (!nearest_sticky_layer_shifting_containing_block) {
     return LayoutUnit();
   }
-  const auto* constraints =
+  const auto constraints =
       nearest_sticky_layer_shifting_containing_block->StickyConstraints();
   DCHECK(constraints);
 
-  if (const auto* ancestor_data = constraints->AxisData(axis)) {
+  if (const auto* ancestor_data = constraints.AxisData(axis)) {
     return ancestor_data->total_containing_block_sticky_offset;
   }
   return LayoutUnit();
 }
 
-void StickyPositionScrollingConstraints::Trace(Visitor* visitor) const {
-  visitor->Trace(x_data_);
-  visitor->Trace(y_data_);
-}
-
 const StickyPositionScrollingConstraints::PerAxisData*
 StickyPositionScrollingConstraints::PreferredAxisData() const {
-  // Prefer the axis that has a valid scroll container layer.
-  bool x_valid = x_data_ && x_data_->containing_scroll_container_layer;
-  bool y_valid = y_data_ && y_data_->containing_scroll_container_layer;
-  if (x_valid != y_valid) {
-    return x_valid ? x_data_ : y_data_;
-  }
-
-  // If exactly one axis is actually constrained, prefer it.
-  const bool x_has_insets =
-      x_data_ && (x_data_->min_inset || x_data_->max_inset);
-  const bool y_has_insets =
-      y_data_ && (y_data_->min_inset || y_data_->max_inset);
-  if (x_has_insets != y_has_insets) {
-    return x_has_insets ? x_data_ : y_data_;
-  }
-
-  // Otherwise default to horizontal-first determinism.
   return x_data_ ? x_data_ : y_data_;
 }
 

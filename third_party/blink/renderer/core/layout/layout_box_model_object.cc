@@ -180,10 +180,18 @@ void LayoutBoxModelObject::StyleDidChange(
     Parent()->SetNeedsLayout(layout_invalidation_reason::kChildChanged,
                              kMarkContainerChain);
 
-  // Clear our sticky constraints if we are no longer sticky.
-  if (Layer() && old_style->HasStickyConstrainedPosition() &&
-      !StyleRef().HasStickyConstrainedPosition()) {
-    SetStickyConstraints(nullptr);
+  if (Layer() && old_style->HasStickyConstrainedPosition()) {
+    // Clear our sticky constraints if we are no longer sticky.
+    if (!StyleRef().HasStickyConstrainedPosition()) {
+      ClearStickyConstraints(kPhysicalAxesBoth);
+    } else {
+      // When still sticky, clear out axes that no longer exist.
+      const PhysicalAxes old_axes = StickyConstrainedAxes(*old_style);
+      const PhysicalAxes new_axes = StickyConstrainedAxes(StyleRef());
+      if (const PhysicalAxes remove_axes = old_axes ^ (old_axes & new_axes)) {
+        ClearStickyConstraints(remove_axes);
+      }
+    }
   }
 
   PaintLayerType type = LayerTypeRequired();
@@ -519,14 +527,24 @@ LayoutBlock* LayoutBoxModelObject::StickyContainer() const {
   return ContainingBlock();
 }
 
-StickyPositionScrollingConstraints*
-LayoutBoxModelObject::ComputeStickyPositionConstraints() const {
+StickyConstraintsData LayoutBoxModelObject::ComputeStickyPositionConstraints(
+    const PaintLayer& scroll_container_layer,
+    PhysicalAxes scroll_axes) const {
   NOT_DESTROYED();
   DCHECK(StyleRef().HasStickyConstrainedPosition());
 
   bool is_fixed_to_view = false;
-  const auto* scroll_container_layer =
-      Layer()->ContainingScrollContainerLayer(&is_fixed_to_view);
+  {
+    // Walk up layout / paint layer tree to find if a fixed to view element
+    // exists between this element and `scroll_container_layer`.
+    const PaintLayer* walk = Layer();
+    while (walk && walk != &scroll_container_layer && !is_fixed_to_view) {
+      walk = walk->ContainingScrollContainerLayer(&is_fixed_to_view);
+    }
+    // We should reach `scroll_container_layer` unless we hit a fixed to view
+    // ancestor (in which case we stop early).
+    CHECK(walk == &scroll_container_layer || is_fixed_to_view);
+  }
 
   // Skip anonymous containing blocks except for anonymous fieldset content box.
   LayoutBlock* sticky_container = StickyContainer();
@@ -538,7 +556,7 @@ LayoutBoxModelObject::ComputeStickyPositionConstraints() const {
     sticky_container = sticky_container->ContainingBlock();
   }
 
-  const auto* scroll_container = scroll_container_layer->GetLayoutBox();
+  const auto* scroll_container = scroll_container_layer.GetLayoutBox();
   DCHECK(scroll_container);
   const PhysicalOffset scroll_container_border_offset(
       scroll_container->BorderLeft(), scroll_container->BorderTop());
@@ -626,10 +644,16 @@ LayoutBoxModelObject::ComputeStickyPositionConstraints() const {
   const PhysicalRect constraining_rect =
       scroll_container->ComputeStickyConstrainingRect();
 
-  auto compute_axis_data = [&](PhysicalAxis axis, const Length& min_length,
-                               const Length& max_length,
-                               LayoutUnit available_size,
-                               LayoutUnit sticky_box_size, bool is_flipped) {
+  auto compute_axis_data =
+      [&](PhysicalAxis axis, const Length& min_length, const Length& max_length,
+          LayoutUnit available_size, LayoutUnit sticky_box_size,
+          bool is_flipped) -> StickyPositionScrollingConstraints::PerAxisData* {
+    const PhysicalAxes axes = axis == PhysicalAxis::kHorizontal
+                                  ? kPhysicalAxesHorizontal
+                                  : kPhysicalAxesVertical;
+    if (!(axes & scroll_axes)) {
+      return nullptr;
+    }
     std::optional<LayoutUnit> min_inset;
     std::optional<LayoutUnit> max_inset;
 
@@ -658,7 +682,7 @@ LayoutBoxModelObject::ComputeStickyPositionConstraints() const {
         axis, scroll_container_relative_containing_block_rect,
         scroll_container_relative_sticky_box_rect, constraining_rect,
         nearest_sticky_layer_shifting_sticky_box,
-        nearest_sticky_layer_shifting_containing_block, scroll_container_layer,
+        nearest_sticky_layer_shifting_containing_block, &scroll_container_layer,
         is_fixed_to_view, min_inset, max_inset);
   };
 
@@ -666,21 +690,60 @@ LayoutBoxModelObject::ComputeStickyPositionConstraints() const {
   const WritingDirectionMode sticky_container_writing_direction =
       sticky_container->StyleRef().GetWritingDirection();
 
-  return MakeGarbageCollected<StickyPositionScrollingConstraints>(
+  return StickyConstraintsData{
       compute_axis_data(PhysicalAxis::kHorizontal, style.Left(), style.Right(),
                         constraining_rect.size.width, sticky_box_rect.Width(),
                         sticky_container_writing_direction.IsFlippedX()),
       compute_axis_data(PhysicalAxis::kVertical, style.Top(), style.Bottom(),
                         constraining_rect.size.height, sticky_box_rect.Height(),
-                        sticky_container_writing_direction.IsFlippedY()));
+                        sticky_container_writing_direction.IsFlippedY())};
+}
+
+void LayoutBoxModelObject::SetStickyConstraints(
+    StickyConstraintsData constraints) {
+  NOT_DESTROYED();
+
+  if (GetMutableForPainting().FirstFragment().SetStickyConstraints(
+          constraints)) {
+    SetNeedsPaintPropertyUpdate();
+  }
+}
+
+void LayoutBoxModelObject::ClearStickyConstraints(PhysicalAxes axes_to_clear) {
+  NOT_DESTROYED();
+  if (GetMutableForPainting().FirstFragment().ClearStickyConstraints(
+          axes_to_clear)) {
+    SetNeedsPaintPropertyUpdate();
+  }
+}
+
+PhysicalAxes LayoutBoxModelObject::StickyConstrainedAxes(
+    const ComputedStyle& style) {
+  if (style.GetPosition() != EPosition::kSticky) {
+    return kPhysicalAxesNone;
+  }
+  PhysicalAxes axes = kPhysicalAxesNone;
+  if (!style.Top().IsAuto() || !style.Bottom().IsAuto()) {
+    axes |= kPhysicalAxesVertical;
+  }
+  if (!style.Left().IsAuto() || !style.Right().IsAuto()) {
+    axes |= kPhysicalAxesHorizontal;
+  }
+  // TODO(crbug.com/481019005): When disabled, this forces both sticky axes to
+  // propagate upwards if either axis is active. This preserves existing
+  // compositor behavior and can be removed once the compositor supports
+  // multiple scroll container parents.
+  if (!RuntimeEnabledFeatures::SingleAxisScrollContainersEnabled() && axes) {
+    axes = kPhysicalAxesBoth;
+  }
+  return axes;
 }
 
 PhysicalOffset LayoutBoxModelObject::StickyPositionOffset() const {
   NOT_DESTROYED();
   // TODO(chrishtr): StickyPositionOffset depends data updated after layout at
   // present, but there are callsites within Layout for it.
-  auto* constraints = StickyConstraints();
-  return constraints ? constraints->StickyOffset() : PhysicalOffset();
+  return StickyConstraints().StickyOffset();
 }
 
 PhysicalOffset LayoutBoxModelObject::OffsetFromContainerInternal(

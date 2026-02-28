@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/layout/background_bleed_avoidance.h"
 #include "third_party/blink/renderer/core/layout/content_change_type.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
+#include "third_party/blink/renderer/core/page/scrolling/sticky_position_scrolling_constraints.h"
 #include "third_party/blink/renderer/platform/text/writing_mode_utils.h"
 
 namespace blink {
@@ -120,20 +121,27 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
   void DestroyLayer();
 
   // Computes the sticky constraints for this object.
-  StickyPositionScrollingConstraints* ComputeStickyPositionConstraints() const;
+  StickyConstraintsData ComputeStickyPositionConstraints(
+      const PaintLayer& scroll_container_layer,
+      PhysicalAxes scroll_axes) const;
 
   PhysicalOffset StickyPositionOffset() const;
   virtual LayoutBlock* StickyContainer() const;
 
-  StickyPositionScrollingConstraints* StickyConstraints() const {
+  StickyPositionScrollingConstraints StickyConstraints() const {
     NOT_DESTROYED();
     return FirstFragment().StickyConstraints();
   }
-  void SetStickyConstraints(StickyPositionScrollingConstraints* constraints) {
+  bool HasStickyConstraints() const {
     NOT_DESTROYED();
-    GetMutableForPainting().FirstFragment().SetStickyConstraints(constraints);
-    SetNeedsPaintPropertyUpdate();
+    return FirstFragment().HasStickyConstraints();
   }
+  void SetStickyConstraints(StickyConstraintsData constraints);
+  void ClearStickyConstraints(PhysicalAxes axes_to_clear);
+
+  // Determines which physical axes are actively constrained by sticky
+  // positioning.
+  static PhysicalAxes StickyConstrainedAxes(const ComputedStyle& style);
 
   // IE extensions. Used to calculate offsetWidth/Height.
   virtual LayoutUnit OffsetLeft(const Element*) const = 0;
