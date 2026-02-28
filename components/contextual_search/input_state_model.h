@@ -94,7 +94,7 @@ class InputStateModel {
 
   InputState state_;
   omnibox::RuleSet rule_set_;
-  base::raw_ref<contextual_search::ContextualSearchSessionHandle>
+  base::WeakPtr<contextual_search::ContextualSearchSessionHandle>
       session_handle_;
   base::RepeatingCallbackList<void(const InputState&)> subscribers_;
 

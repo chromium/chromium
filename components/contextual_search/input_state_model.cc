@@ -99,7 +99,8 @@ InputStateModel::InputStateModel(
     contextual_search::ContextualSearchSessionHandle& session_handle,
     const SearchboxConfig& config,
     bool is_off_the_record)
-    : session_handle_(session_handle), is_off_the_record_(is_off_the_record) {
+    : session_handle_(session_handle.AsWeakPtr()),
+      is_off_the_record_(is_off_the_record) {
   SearchboxConfig mutable_config = config;
   MaybePopulateBrowserTabInputTypeRule(&mutable_config);
 
@@ -185,7 +186,7 @@ InputStateModel::InputStateModel(
 InputStateModel::InputStateModel(
     const InputStateModel& new_input_state_model,
     contextual_search::ContextualSearchSessionHandle& new_session_handle)
-    : session_handle_(new_session_handle),
+    : session_handle_(new_session_handle.AsWeakPtr()),
       is_off_the_record_(new_input_state_model.is_off_the_record_) {
   state_ = new_input_state_model.state_;
   rule_set_ = new_input_state_model.rule_set_;
@@ -252,9 +253,12 @@ const omnibox::ToolRule* GetToolRule(const omnibox::RuleSet& rule_set,
 
 // Gets the current input types from the session handle.
 std::vector<omnibox::InputType> GetCurrentInputTypes(
-    const contextual_search::ContextualSearchSessionHandle& session_handle) {
+    const contextual_search::ContextualSearchSessionHandle* session_handle) {
   std::vector<omnibox::InputType> input_types;
-  const auto& uploaded_files = session_handle.GetUploadedContextFileInfos();
+  if (!session_handle) {
+    return input_types;
+  }
+  const auto& uploaded_files = session_handle->GetUploadedContextFileInfos();
   input_types.reserve(uploaded_files.size());
   for (const auto& file_info : uploaded_files) {
     if (file_info.tab_url) {
