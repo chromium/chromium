@@ -261,6 +261,7 @@ export class ComposeboxElement extends I18nMixinLit
         reflect: true,
       },
       isFollowupQuery: {type: Boolean},
+      shouldShowGhostFiles: {type: Boolean},
     };
   }
 
@@ -285,6 +286,12 @@ export class ComposeboxElement extends I18nMixinLit
   accessor disableVoiceSearchAnimation: boolean = false;
   protected accessor tabSuggestions_: TabInfo[] = [];
   accessor lensButtonDisabled: boolean = false;
+  // Set this to true in parent component if it is desired
+  // to show files that are not in the file map when
+  // file status is updated from backend. Ghost files will be
+  // shown as image chip with spinner in file carousel.
+  accessor shouldShowGhostFiles: boolean = false;
+
   protected composeboxNoFlickerSuggestionsFix_: boolean =
       loadTimeData.getBoolean('composeboxNoFlickerSuggestionsFix');
   // If isCollapsible is set to true, the composebox will be a pill shape until
@@ -737,6 +744,11 @@ export class ComposeboxElement extends I18nMixinLit
     this.updateInputPlaceholder_();
   }
 
+  protected addToPendingUploads_(token: UnguessableToken) {
+    this.pendingUploads_.add(token);
+    this.fileUploadsComplete = false;
+  }
+
   protected computeCancelButtonTitle_() {
     return this.input_.trim().length > 0 || this.files_.size > 0 ?
         this.i18n('composeboxCancelButtonTitleInput') :
@@ -909,6 +921,9 @@ export class ComposeboxElement extends I18nMixinLit
         ComposeboxContextAddedMethod.CONTEXT_MENU, this.composeboxSource_);
   }
 
+  // Start file upload flow from frontend. This contrasts with
+  // `onFileContextAdded_`, which is for the file upload flow that is started
+  // from the backend.
   private async addFileContext_(files: File[]) {
     const composeboxFiles: Map<UnguessableToken, ComposeboxFile> = new Map();
     for (const file of files) {
@@ -1753,8 +1768,7 @@ export class ComposeboxElement extends I18nMixinLit
         // `NotUploaded`, `UploadStarted` come before and after `kProcessing`
         //  respectively, so we only need to add to `pendingUploads_` when in a
         //  type of processing state.
-        this.pendingUploads_.add(file.uuid);
-        this.fileUploadsComplete = this.pendingUploads_.size === 0;
+        this.addToPendingUploads_(file.uuid);
       }
 
       // Fetch contextual suggestions for processingSuggestSignalsReady
@@ -1866,6 +1880,10 @@ export class ComposeboxElement extends I18nMixinLit
     return this.input_;
   }
 
+  getNumOfFilesForTesting(): number {
+    return this.files_.size;
+  }
+
   private selectFirstMatch() {
     if (this.result_?.matches.length) {
       this.$.matches.selectFirst();
@@ -1908,10 +1926,15 @@ export class ComposeboxElement extends I18nMixinLit
     }
   }
 
+  // This function is called when backend starts a file upload flow, whether
+  // through `addFileFromAttachment_`, `addFileContextFromBrowser`, etc. This
+  // contrasts with the workflows where the frontend starts a file upload flow
+  // (`addFileContext_`).
   private onFileContextAdded_(file: ComposeboxFile) {
     const newFiles = new Map(this.files_);
     newFiles.set(file.uuid, file);
     this.files_ = newFiles;
+    this.addToPendingUploads_(file.uuid);
   }
 
   private handleProcessFilesError_(error: ProcessFilesError) {
@@ -2008,20 +2031,25 @@ export class ComposeboxElement extends I18nMixinLit
       }
       this.files_ = new Map([...this.files_]);
     } else {
-      // File is unknown but its status is known. Add it to file carousel
-      // while we wait for its file details to be known.
-      if (this.entrypointName === 'Omnibox') {
+      // File is unknown but its status is known. Show this if
+      // ghost/unknown files in frontend are allowed to be in
+      // carousel.
+      if (this.shouldShowGhostFiles) {
         file = {
           uuid: token,
           name: '',
           objectUrl: null,
           dataUrl: null,
           type: '',
-          status: status,
+          // Override this since first upload status is this or processing.
+          // Need this or processing in order to show tab spinner.
+          status: FileUploadStatus.kUploadStarted,
           url: null,
           tabId: null,
           isDeletable: true,
         };
+        // Update pending uploads in 'composebox.ts' to disable
+        // submit button.
         this.onFileContextAdded_(file);
       }
     }

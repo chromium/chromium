@@ -19,6 +19,7 @@ export function getHtml(this: OmniboxAimAppElement) {
       @close-composebox="${this.onCloseComposebox_}"
       @composebox-submit="${this.onComposeboxSubmit_}"
       .showMenuOnClick="${false}"
+      .shouldShowGhostFiles="${true}"
       entrypoint-name="Omnibox">
   </cr-composebox>
 </div>
