@@ -437,18 +437,22 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
       }
       this.files_ = new Map([...this.files_]);
     } else {
-      file = {
-        uuid: token,
-        name: '',
-        objectUrl: null,
-        dataUrl: null,
-        type: '',
-        status: status,
-        url: null,
-        tabId: null,
-        isDeletable: true,
-      };
-      this.onFileContextAdded(file);
+      // File is unknown but its status is known. Add it to file carousel
+      // while we wait for its file details to be known.
+      if (this.entrypointName === 'Omnibox') {
+        file = {
+          uuid: token,
+          name: '',
+          objectUrl: null,
+          dataUrl: null,
+          type: '',
+          status: status,
+          url: null,
+          tabId: null,
+          isDeletable: true,
+        };
+        this.onFileContextAdded(file);
+      }
     }
     return {file, errorMessage};
   }
