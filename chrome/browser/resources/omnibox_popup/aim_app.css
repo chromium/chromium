@@ -99,12 +99,9 @@ cr-composebox::part(voice-icon) {
   --cr-icon-button-fill-color: var(--cr-composebox-voice-icon-fill-color);
 }
 
-cr-composebox[searchbox-layout-mode='TallBottomContext']::part(voice-icon) {
+cr-composebox[searchbox-layout-mode='TallBottomContext']::part(voice-icon),
+cr-composebox[submit-enabled_][searchbox-layout-mode='TallBottomContext']:not([show-dropdown_])::part(submit) {
   bottom: 6px;
-}
-
-cr-composebox[show-submit_][submit-enabled_][searchbox-layout-mode='TallBottomContext']:not([show-dropdown_])::part(submit) {
-    bottom: 6px;
 }
 
 cr-composebox[searchbox-layout-mode='TallTopContext'] {
