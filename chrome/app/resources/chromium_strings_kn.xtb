@@ -27,6 +27,7 @@
 <translation id="126567311906253476"><ph name="USER_EMAIL" /> ಬಳಸಿಕೊಂಡು Gmail ಅಥವಾ YouTube ನಂತಹ Google ಸೇವೆಗಳಿಗೆ ನೀವು ಸೈನ್ ಇನ್ ಮಾಡಿದರೆ, ನೀವು ಅದೇ ಖಾತೆಯೊಂದಿಗೆ Chromium ಗೆ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಸೈನ್ ಇನ್ ಮಾಡಬಹುದು</translation>
 <translation id="1290883685122687410">ಸೆಟಪ್ ದೋಷ: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1315551408014407711">ನಿಮ್ಮ ಹೊಸ Chromium ಪ್ರೊಫೈಲ್ ಅನ್ನು ಸೆಟಪ್ ಮಾಡಿ</translation>
+<translation id="132092532143527429">Chromium ನಲ್ಲಿ Gemini ಜೊತೆಗೆ ಬಳಸಿ ನೋಡಿ</translation>
 <translation id="1324107359134968521">ಬ್ಲೂಟೂತ್ ಸಾಧನಗಳನ್ನು
 ಎಕ್ಸ್‌ಪ್ಲೋರ್ ಮಾಡಲು Chromium ಗೆ ಬ್ಲೂಟೂತ್ ಆ್ಯಕ್ಸೆಸ್‌ನ ಅಗತ್ಯವಿದೆ. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">ಭಾಷೆಯನ್ನು ಪತ್ತೆ ಮಾಡಿ</translation>
@@ -237,6 +238,7 @@
 <translation id="3509308970982693815">ದಯವಿಟ್ಟು ಎಲ್ಲಾ Chromium ವಿಂಡೋಗಳನ್ನು ಮುಚ್ಚಿರಿ ಹಾಗೂ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="3522404737534491619">ನಿಮ್ಮ ವಿಂಡೋ ಅನ್ನು ಹಂಚಿಕೊಳ್ಳಲು, ಸಿಸ್ಟಂ ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ Chromium ಗೆ ಸ್ಕ್ರೀನ್ ರೆಕಾರ್ಡಿಂಗ್ ಮಾಡಲು ಅನುಮತಿಸಿ</translation>
 <translation id="3530103706039034513"><ph name="EXISTING_USER" /> ಅನ್ನು ಈಗಾಗಲೇ ಸೈನ್ ಇನ್ ಮಾಡಲಾಗಿದೆ.  ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್ ಅನ್ನು ಪ್ರತ್ಯೇಕವಾಗಿರಿಸಲು, ನಿಮ್ಮ ಸ್ವಂತ ಪ್ರೊಫೈಲ್‌ನಲ್ಲಿ <ph name="USER_EMAIL_ADDRESS" /> ನಂತೆ Chromium ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ.</translation>
+<translation id="3531741627422851418">ಮೊಬೈಲ್ ಸಾಧನಗಳಲ್ಲಿ Chromium ಬ್ರೌಸರ್ ಅನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಲು QR ಕೋಡ್</translation>
 <translation id="3561853857681580870">ನಿಮ್ಮ ಸ್ಕ್ರೀನ್‌ ಅನ್ನು ಹಂಚಿಕೊಳ್ಳಲು, ಸಿಸ್ಟಂ ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ Chromium ಗೆ ಸ್ಕ್ರೀನ್ ರೆಕಾರ್ಡಿಂಗ್ ಮಾಡಲು ಅನುಮತಿಸಿ.</translation>
 <translation id="3588112919289558122">Chromium ಗುರುತಿಸದ ಸೈಟ್‌ಗಳಿಗೆ ವರ್ಧಿತ ಸುರಕ್ಷತೆಯು JavaScript ಆಪ್ಟಿಮೈಸೇಷನ್ ಅನ್ನು ಆಫ್ ಮಾಡುತ್ತದೆ</translation>
 <translation id="3597003331831379823">ಎಲಿವೇಟೆಡ್ ಪ್ರಿವಿಲೇಜಸ್ ಮೂಲಕ ಸೆಟಪ್ ಅನ್ನು ರನ್ ಮಾಡಲು ವಿಫಲವಾಗಿದೆ. <ph name="METAINSTALLER_ERROR" /></translation>
@@ -602,6 +604,7 @@
 <translation id="7622753900276619808">ಈಗ ನೀವು Chromium ನಲ್ಲಿ ಇನ್ನಷ್ಟು ಫೀಚರ್‌ಗಳನ್ನು ಹೊಂದಿದ್ದೀರಿ</translation>
 <translation id="7624307931717240213">ಈ ಸೇವೆಯನ್ನು ಸುಧಾರಿಸಲು ನಾವು ಮಾಹಿತಿಯನ್ನು ಬಳಸುತ್ತೇವೆ. ಗೌಪ್ಯತೆ ನೀತಿ ಮತ್ತು ಸೇವಾ ನಿಯಮಗಳನ್ನು ನೋಡಿ.</translation>
 <translation id="7649070708921625228">ಸಹಾಯ</translation>
+<translation id="7650134251917003571">Chromium ಆ್ಯಪ್ ಅನ್ನು ಪಡೆಯಿರಿ</translation>
 <translation id="7656340475565475526">ನಿಮ್ಮ ಪರವಾಗಿ ಬ್ರೌಸ್ ಮಾಡಲು Chromium ಗೆ ಅವಕಾಶ ನೀಡಿ</translation>
 <translation id="7658239707568436148">ರದ್ದುಮಾಡಿ</translation>
 <translation id="7686590090926151193">Chromium ನಿಮ್ಮ ಡೀಫಾಲ್ಟ್ ಬ್ರೌಸರ್ ಅಲ್ಲ</translation>

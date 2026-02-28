@@ -1310,6 +1310,8 @@
 <translation id="3102312643185441063">बचत</translation>
 <translation id="3103188521861412364">स्टॉक आणि बाँड</translation>
 <translation id="3105172416063519923">मालमत्ता आयडी:</translation>
+<translation id="3105223248029915046">पेमेंट प्लॅन हे पात्रतेच्या अधीन आहेत.
+नंतर पेमेंट करण्याचे पर्याय लपवण्यासाठी, <ph name="BEGIN_LINK" />पेमेंट सेटिंग्ज<ph name="END_LINK" /> वर जा</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />सुरक्षित DNS कॉन्फिगरेशन तपासत आहे<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">मधला ट्रे</translation>
 <translation id="3109061346635850169">चेहरा आणि शरीराची निगा</translation>
@@ -2865,7 +2867,6 @@
 <translation id="5543564889050342791">प्राणिसंग्रहालये, मत्स्यालये आणि अभयारण्ये</translation>
 <translation id="5543722831081909240">१८० अंश</translation>
 <translation id="5544836308113951378">क्रूझ आणि चार्टर</translation>
-<translation id="5545314360139398232">कालांतराने पैसे देण्यासाठी <ph name="ISSUER_NAME" /> लिंक करा</translation>
 <translation id="5547939254150808298">मुद्रण आणि प्रकाशन</translation>
 <translation id="554815783948612276">फोरम आणि चॅट पुरवठादार</translation>
 <translation id="5548606607480005320">सुरक्षा तपासणी</translation>
@@ -4361,6 +4362,7 @@
 <translation id="7908648876066812348">व्हर्च्युअल कार्ड सुरू करत आहे</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, सेटिंग्जमध्ये Chrome सुरक्षितता तपासणी पेजवर जाण्यासाठी टॅब आणि त्यानंतर एंटर प्रेस करा</translation>
 <translation id="791107458486222637">परिणाम पुन्हा जनरेट करत आहे</translation>
+<translation id="7911651285409665023">बंद करा आणि "<ph name="TAB_TITLE" />" वर परत जा</translation>
 <translation id="7912924955815015552">Safari मधून इंपोर्ट केलेले</translation>
 <translation id="791551905239004656">चित्रकला आणि रंग भरणे</translation>
 <translation id="7916162853251942238">फ्लेक्सो बेस</translation>

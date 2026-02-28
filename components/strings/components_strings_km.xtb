@@ -1313,6 +1313,8 @@
 <translation id="3102312643185441063">គណនី​សន្សំ</translation>
 <translation id="3103188521861412364">ភាគហ៊ុន និង​សញ្ញាបណ្ណ</translation>
 <translation id="3105172416063519923">ID ទ្រព្យសកម្ម៖</translation>
+<translation id="3105223248029915046">គម្រោង​បង់ប្រាក់​អាស្រ័យលើ​សិទ្ធិទទួលបាន។
+ដើម្បីលាក់​ជម្រើស​ទូទាត់​ពេលក្រោយ សូម​ចូលទៅកាន់<ph name="BEGIN_LINK" />ការកំណត់​ការបង់ប្រាក់<ph name="END_LINK" /></translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />ពិនិត្យ​ការកំណត់រចនាសម្ព័ន្ធ DNS សុវត្ថិភាព<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">ទម្រកណ្ដាល</translation>
 <translation id="3109061346635850169">ការថែទាំ​ផ្ទៃមុខ និងដងខ្លួន</translation>
@@ -2870,7 +2872,6 @@
 <translation id="5543564889050342791">សួនសត្វ ជលវប្បដ្ឋាន និង​តំបន់​អភិរក្ស</translation>
 <translation id="5543722831081909240">180 ដឺក្រេ</translation>
 <translation id="5544836308113951378">នាវាកម្សាន្ត និង​ការជួល​យានជំនិះ</translation>
-<translation id="5545314360139398232">ភ្ជាប់ <ph name="ISSUER_NAME" /> ដើម្បីបង់ប្រាក់ជាបណ្ដើរៗទៅតាមពេលវេលា</translation>
 <translation id="5547939254150808298">ការបោះពុម្ព និងការបោះផ្សាយ</translation>
 <translation id="554815783948612276">ក្រុមហ៊ុនផ្ដល់​សេវាវេទិកា និងជជែក</translation>
 <translation id="5548606607480005320">ការពិនិត្យ​សុវត្ថិភាព</translation>
@@ -4365,6 +4366,7 @@
 <translation id="7908648876066812348">កំពុងបើក​កាត​និម្មិត</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" /> ចុច Tab រួចចុច Enter ដើម្បីចូលទៅកាន់ទំព័រនៃការពិនិត្យសុវត្ថិភាព Chrome នៅក្នុងការកំណត់</translation>
 <translation id="791107458486222637">កំពុងធ្វើ​វិញ</translation>
+<translation id="7911651285409665023">បិទ ហើយត្រឡប់ទៅ "<ph name="TAB_TITLE" />"</translation>
 <translation id="7912924955815015552">បាន​នាំចូលពី Safari</translation>
 <translation id="791551905239004656">គំនូរ និងការផាត់ពណ៌</translation>
 <translation id="7916162853251942238">បាត Flexo</translation>

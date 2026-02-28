@@ -287,6 +287,7 @@
 <translation id="2230777942707397948">रिकामी विंडो</translation>
 <translation id="223356358902285214">वेब आणि अ‍ॅप अ‍ॅक्टिव्हिटी</translation>
 <translation id="2233735624724508540">कालावधी निवडा आणि त्यानंतर डेटा हटवा यावर टॅप करा</translation>
+<translation id="2234031676056123135">तुमचे शॉर्टकट कस्टमाइझ करा</translation>
 <translation id="2234827758954819389">गोपनीयता मार्गदर्शक</translation>
 <translation id="2238038374973843156">गट दुसऱ्या विंडोवर हलवा</translation>
 <translation id="2239812875700136898">Discover साठी पर्याय बटणावरून तुमच्या स्टोरी नियंत्रित करा</translation>
@@ -465,6 +466,7 @@
 <translation id="2951071800649516099">नंतर वाचण्यासाठी तुमच्या वाचन सूचीमध्ये पेज जोडा</translation>
 <translation id="2954586176076923855">अ‍ॅड्रेस बार सर्वात वरती हलवा</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> न वाचलेले पेज}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> न वाचलेली पेज}}</translation>
+<translation id="2965758440484146185">हा शॉर्टकट पिन करा वर टॅप करा</translation>
 <translation id="2972109037780336501">परवानग्या आपोआप काढून टाका</translation>
 <translation id="2976550651269220761">तुमचा काही Chrome डेटा अद्याप तुमच्या Google खात्यामध्ये सेव्ह केला गेलेला नाही.\nसाइन आउट करण्यापूर्वी काही मिनिटे प्रतीक्षा करून पहा. तुम्ही आता साइन आउट केल्यास, हा डेटा हटवला जाईल.</translation>
 <translation id="2977350910003566746">शेवटचा उघडलेला यानुसार क्रमाने लावत आहे</translation>
@@ -492,6 +494,7 @@
 <translation id="3037177537145227281">किमतीचा माग ठेवत आहे</translation>
 <translation id="3037517125981011456">Chrome मध्ये साइन इन करण्यासाठी सूचना दाखवते</translation>
 <translation id="3038272154009688107">सर्व साइट पहा</translation>
+<translation id="3057938290530993634">पुढील वेळी सहज अ‍ॅक्सेससाठी तुमच्या सर्वाधिक भेट दिलेल्या वेबसाइट पिन करण्याकरिता टॅप करून धरून ठेवा</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> बुकमार्क}other{<ph name="BOOKMARKS_COUNT_MANY" /> बुकमार्क}}</translation>
 <translation id="3062802207422175757">Chrome वरील तुमच्या स्वारस्यांविषयी लेख</translation>
 <translation id="3066573403916685335">खाली हलवा</translation>
@@ -551,6 +554,7 @@
 <translation id="333863344734218290">तुम्हाला असुरक्षित सार्वजनिक आणि खाजगी साइटसाठी चेतावणी देते</translation>
 <translation id="3340978935015468852">सेटिंग्ज</translation>
 <translation id="3341262203274374114">अनफॉलो करू शकत नाही. काहीतरी चूक झाली.</translation>
+<translation id="3351959803838327376">वेबसाइटवर प्रेस करून ठेवा आणि मेनू उघडा</translation>
 <translation id="3359667936385849800">तुमचा सध्याचा सेवा पुरवठादार वापरा</translation>
 <translation id="3373701465337594448">सुरू असताना, तुम्ही भेट देता त्या तुमच्या स्वारस्यांचा अंदाज लावणाऱ्या साइटची सूची येथे दिसते</translation>
 <translation id="3384347053049321195">इमेज शेअर करा</translation>
@@ -593,6 +597,7 @@
 <translation id="3549537543136628349">प्रीलोड केलेली पेज एन्क्रिप्ट केलेली असल्यामुळे आणि पेजशी लिंक करणारी साइट किंवा अ‍ॅप Google साइट अथवा अ‍ॅप असल्यामुळे, ही पेज खाजगीरीत्या प्रीलोड करताना Google सर्व्हरना नवीन माहिती मिळत नाही.</translation>
 <translation id="3549657413697417275">तुमचा इतिहास शोधा</translation>
 <translation id="3557336313807607643">संपर्कांमध्ये जोडा</translation>
+<translation id="3560831525486613327">नवीन टॅब पेज उघडा</translation>
 <translation id="3563767357928833671">क्लिपबोर्डचा आशय दाखवला</translation>
 <translation id="3566639033325271639">सेटिंग्ज अपडेट करा</translation>
 <translation id="3568945271227339929">एकही पासवर्ड धोक्यात नाही</translation>
@@ -1364,6 +1369,7 @@
 <translation id="6661521899577697780">Chrome Finds ची निवड अर्ध्या उंचीवर उघडली आहे</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" /> मध्ये उघडा</translation>
 <translation id="6669390930482049506">मला सूचित करा</translation>
+<translation id="6670767097276846646">काही एक्स्टेंशन ही Chrome मध्ये शोध इंजीन जोडू शकतात</translation>
 <translation id="6671495933530132209">इमेज कॉपी करा</translation>
 <translation id="6672697278890207089">तुमचा सांकेतिक वाक्यांश एंटर करा</translation>
 <translation id="6672917148207387131"><ph name="DOMAIN" /> जोडा</translation>
@@ -1961,6 +1967,7 @@
 <translation id="8969796057708736017">फाइल तुमच्या संस्थेच्या धोरणांची पूर्तता करत असल्यास, तुमचे डाउनलोड पूर्ण होईल</translation>
 <translation id="8970887620466824814">काहीतरी चूक झाली.</translation>
 <translation id="8972098258593396643">डीफॉल्ट फोल्डरमध्ये डाउनलोड करायचे?</translation>
+<translation id="8987736167266086032">तुम्ही सोडले होते तिथून पुढे सुरू करा</translation>
 <translation id="8992769679401294069">तुमचा डेटा हा तुमच्या पासफ्रेझसह एन्क्रिप्ट केला गेला आहे. तुमच्या Google खाते मधील Chrome डेटा वापरण्यासाठी आणि सेव्ह करण्यासाठी तो एंटर करा.</translation>
 <translation id="8993760627012879038">गुप्त मोडमध्ये एक नवीन टॅब उघडा</translation>
 <translation id="8995521496079646922">तुम्ही निवडलेली ॲप्स बाय डीफॉल्ट वापरली जातील. ॲप या डिव्हाइसवर आधीपासून नसल्यास, ते थोड्या वेळात डाउनलोड केले जाईल.</translation>

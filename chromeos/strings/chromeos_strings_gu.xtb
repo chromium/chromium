@@ -167,6 +167,7 @@
 <translation id="1621067168122174824">ચાર્જિંગનું પરીક્ષણ ચાલુ કરો</translation>
 <translation id="1622402072367425417">ચમકતા બબલ</translation>
 <translation id="1626590945318984973">શૉર્ટકટ ઉપલબ્ધ નથી. ફંક્શન અને <ph name="META_KEY" /> કીનો ઉપયોગ કર્યા વગર નવી શૉર્ટકટ કી દબાવો.</translation>
+<translation id="163774412591892664">તમારા ઍડમિનિસ્ટ્રેટરે તમારું ડિવાઇસ બંધ કર્યું છે અને તેઓ તેનું લોકેશન ઍક્સેસ કરી શકે છે.</translation>
 <translation id="1639239467298939599">લોડ થઇ રહી છે</translation>
 <translation id="1641857168437328880">દસ્તાવેજનું ફીડર (એક બાજુથી)</translation>
 <translation id="1642396894598555413">સાઇકલ</translation>
@@ -1723,6 +1724,7 @@
 <translation id="8584654835905316966"><ph name="DEVICE_NAME" /> માટે ફર્મવેયરનું ઇન્સ્ટૉલેશન વર્ઝન <ph name="VERSION" /> પર પૂર્ણ કરવા ફરી શરૂ કરવાની જરૂર છે. તમારું કમ્પ્યૂટર ઘણી વખત રીબૂટ કર્યું હોય એવું લાગે છે. આ વર્તન અપેક્ષિત છે.</translation>
 <translation id="8593058461203131755">મીડિયા થોભાવો</translation>
 <translation id="8620617069779373398">રોમિંગ સ્થિતિ</translation>
+<translation id="8624524972189162859">તમારા <ph name="DOMAIN_NAME" /> ઍડમિનિસ્ટ્રેટરે તમારું ડિવાઇસ બંધ કર્યું છે અને તેઓ તેનું લોકેશન ઍક્સેસ કરી શકે છે.</translation>
 <translation id="8626489604350149811"><ph name="APN_NAME" /> માટે વધુ ક્રિયાઓ</translation>
 <translation id="86356131183441916">આછો જાંબલી</translation>
 <translation id="8647595191512746911">ઑડિયો ટ્રાન્સક્રિપ્શન</translation>

@@ -167,6 +167,7 @@
 <translation id="1621067168122174824">Patakbuhin ang pagsusuri sa Pag-charge</translation>
 <translation id="1622402072367425417">mga nagliliwanag na bubble</translation>
 <translation id="1626590945318984973">Hindi available ang shortcut. Pumindot ng bagong shortcut nang hindi ginagamit ang function key at <ph name="META_KEY" /> key.</translation>
+<translation id="163774412591892664">Na-disable ng iyong administrator ang device mo at maa-access niya ang lokasyon nito.</translation>
 <translation id="1639239467298939599">Naglo-load</translation>
 <translation id="1641857168437328880">Document Feeder (Isang bahagi)</translation>
 <translation id="1642396894598555413">mga bisikleta</translation>
@@ -1723,6 +1724,7 @@ I-download ang modelo ng transcription (hanggang 100MB) para makuha ang mga tran
 <translation id="8584654835905316966">Nire-require na mag-restart para makumpleto ang pag-install ng firmware para sa <ph name="DEVICE_NAME" /> sa bersyon <ph name="VERSION" />. Posibleng magmukhang nagre-reboot nang ilang beses ang iyong computer. Inaasahan ang gawing ito.</translation>
 <translation id="8593058461203131755">mag-pause ng media</translation>
 <translation id="8620617069779373398">Status ng roaming</translation>
+<translation id="8624524972189162859">Na-disable ng iyong administrator ng <ph name="DOMAIN_NAME" /> ang device mo at maa-access niya ang lokasyon nito.</translation>
 <translation id="8626489604350149811">Higit pang pagkilos para sa <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Light purple</translation>
 <translation id="8647595191512746911">Audio transcription</translation>

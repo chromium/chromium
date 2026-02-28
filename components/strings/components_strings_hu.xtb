@@ -230,6 +230,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="1358187717814494928">Táblázat létrehozása</translation>
 <translation id="1358223345833465883">Az Ön keresőmotorja a Chromiumban</translation>
 <translation id="1359836962251219822">Konyha és ebédlő</translation>
+<translation id="136059610328993645">Adatait a(z) <ph name="ACCOUNT" /> fiókhoz tartozó Google Walletbe menti a rendszer. A Google-szolgáltatásokban használhatja őket az űrlapok gyorsabb kitöltéséhez.</translation>
 <translation id="1360955481084547712">Privát böngészéshez nyisson új inkognitó ablakot</translation>
 <translation id="1361528602584216624">Pix-korlát <ph name="TRANSACTION_LIMIT" /> BRL</translation>
 <translation id="1363015776076529485">A fizetés folytatásához kiválasztható fizetési módok teljes magasságban megnyitva</translation>
@@ -252,6 +253,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="1392813880755413602">OpenDocument-prezentáció</translation>
 <translation id="139305205187523129">A(z) <ph name="HOST_NAME" /> nem küldött adatokat.</translation>
 <translation id="1393071644879491291">Előfordulhat, hogy az Ön által felkeresni próbált webhelyen a támadók ráveszik Önt valamilyen szoftver telepítésére, illetve olyan adatok megadására, mint a jelszavai, a telefonszámai vagy a bankkártyaszámai. A Chrome kifejezetten javasolja, hogy térjen vissza biztonságos webhelyre. <ph name="BEGIN_LEARN_MORE_LINK" />További információ erről a figyelmeztetésről<ph name="END_LEARN_MORE_LINK" />.</translation>
+<translation id="1402151528875251561">Előzmények megjelenítése az oldalsó panelen</translation>
 <translation id="1405567553485452995">Világoszöld</translation>
 <translation id="1406370515365284486">A fizetési módjai továbbra is mentve lesznek</translation>
 <translation id="1406500794671479665">Ellenőrzés...</translation>
@@ -1448,6 +1450,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="33073482541490531">Kiderült, hogy a most használt jelszava adatvédelmi incidensben volt érintett. A Jelszókezelő a jelszó haladéktalan módosítását javasolja.</translation>
 <translation id="3307649904964670439">A Chrome személyre szabása gomb. A gombot megnyomva személyre szabhatja a böngésző megjelenését.</translation>
 <translation id="3308006649705061278">Szervezeti egység (OU)</translation>
+<translation id="3310946375819654151">A Chrome megpróbálja kitölteni az Ön bizalmas információit a(z) <ph name="APP_NAME" /> alkalmazásban.</translation>
 <translation id="3312952471765023168">Sikeres feltöltés</translation>
 <translation id="3318016344440038475">Televíziós vígjátékok</translation>
 <translation id="3324687287337751929">4 × 6 hüvelyk</translation>
@@ -1738,6 +1741,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3752181611900535304">Menti a címet a fiókba?</translation>
 <translation id="3752543821772132562">Figyelmen kívül hagyva, mert a következő házirend nincs beállítva: <ph name="POLICY_NAME" />.</translation>
 <translation id="3754210790023674521">Kilépés a kép a képben módból</translation>
+<translation id="3754664361823138853">Előzmények oldal &amp;megnyitása</translation>
 <translation id="3759461132968374835">Nincs a közelmúltban bejelentett rendszerösszeomlás. A kikapcsolt jelentésküldés során történt összeomlások nem jelennek meg itt.</translation>
 <translation id="3760561303380396507">A Windows Hello szolgáltatást szeretné használni a CVC helyett?</translation>
 <translation id="3761171036307311438">A kártyán feltüntetett név:</translation>
@@ -2748,6 +2752,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5385966243497224160">Nem lehet megjeleníteni a nem HTTPS URL-ek előnézetét</translation>
 <translation id="5386426401304769735">A webhely tanúsítványlánca SHA-1 titkosítással aláírt tanúsítványt tartalmaz.</translation>
 <translation id="5391010642126249196">Ekkor járt itt:</translation>
+<translation id="5391306025131596142">Előzmények oldal &amp;megnyitása</translation>
 <translation id="539203134595252721">Asztalitenisz</translation>
 <translation id="5392506727170022660">Fém (félig fényes)</translation>
 <translation id="5394069166371280357">Családi tévéműsorok</translation>
@@ -2858,7 +2863,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5543564889050342791">Állatkertek, akváriumok és rezervátumok</translation>
 <translation id="5543722831081909240">180 fok</translation>
 <translation id="5544836308113951378">Hajóutak és hajóbérlés</translation>
-<translation id="5545314360139398232">A(z) <ph name="ISSUER_NAME" /> összekapcsolása későbbi fizetéshez</translation>
 <translation id="5547939254150808298">Nyomda és kiadás</translation>
 <translation id="554815783948612276">Fórum- és chatszolgáltatók</translation>
 <translation id="5548606607480005320">Biztonsági ellenőrzés</translation>
@@ -3543,6 +3547,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6655085656059574817">Összekapcsolt fiók esetén gyorsabban fizethet a(z) <ph name="BNPL_ISSUER_NAME" /> segítségével, de le is választhatja a fiókját a <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /> webhelyen.</translation>
 <translation id="6656935431494847393">Olyan információkat tartalmaz, mint a repülőjegy-foglalások és a járműadatok</translation>
 <translation id="6657585470893396449">Jelszó</translation>
+<translation id="6659156657345021268">Adatait csak az eszközre menti a rendszer. A következő alkalommal, amikor egy releváns űrlapot tölt ki, lehetősége lesz a Walletbe elmenteni.</translation>
 <translation id="6659246032834639189">Ez az ár alacsony</translation>
 <translation id="6660413144148052430">helyadatok</translation>
 <translation id="6662457027866368246">1. tekercs</translation>
@@ -4950,6 +4955,7 @@ További részletek:
 <translation id="8894794286471754040">Hosszú él először</translation>
 <translation id="8897221284075091877">Ha szeretnéd megkérni, hogy láthasd ezt a tartalmat, jelentkezz be a Google-fiókodba</translation>
 <translation id="8897428486789851669">Úszás</translation>
+<translation id="8898854704577986668">Előzmények megjelenítése az oldalsó panelen</translation>
 <translation id="8899807382908246773">Tolakodó hirdetések</translation>
 <translation id="8903921497873541725">Nagyítás</translation>
 <translation id="8903998444169664879">A fizetési beállítások módosításához igazolja személyazonosságát</translation>

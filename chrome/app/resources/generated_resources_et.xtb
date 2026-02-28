@@ -369,7 +369,7 @@ Paroole saate alati kontrollida menüüs <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1232569758102978740">Pealkirjata</translation>
 <translation id="1233497634904001272">Taotluse lõpule viimiseks puudutage uuesti turvavõtit.</translation>
 <translation id="1233721473400465416">Lokaat</translation>
-<translation id="1233835246554936745">{0,plural, =1{Salvesta üks kontol olev üksus}other{Salvesta # kontol olevat üksust}}</translation>
+<translation id="1233835246554936745">{0,plural, =1{Salvesta üks üksus kontole}other{Salvesta # üksust kontole}}</translation>
 <translation id="1234736487471201993">Loo selle pildi jaoks QR-kood</translation>
 <translation id="1234808891666923653">Service Workers</translation>
 <translation id="1235458158152011030">Teadaolevad võrgud</translation>
@@ -11791,6 +11791,7 @@ See võib hõlmata teavet installitud tarkvara, failide, teie brauseri, seadme o
 <translation id="8986494364107987395">Saada kasutusstatistika ja krahhiaruanded automaatselt Google'ile</translation>
 <translation id="8987305927843254629">Iga inimene saab oma kasutuskogemuse isikupärastada ja andmed privaatsena hoida.</translation>
 <translation id="8987321822984361516">Brauserit haldab organisatsioon, profiili haldab <ph name="PROFILE_DOMAIN" /></translation>
+<translation id="8987736167266086032">Jätkake poolelijäänud kohast</translation>
 <translation id="8987927404178983737">kuu</translation>
 <translation id="8988539543012086784">See leht on salvestatud kausta <ph name="BOOKMARK_FOLDER" /></translation>
 <translation id="8989359959810288806">Värskenda jagamise olekut</translation>

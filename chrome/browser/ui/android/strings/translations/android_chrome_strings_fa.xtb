@@ -924,6 +924,7 @@
 <translation id="4885273946141277891">‏این تعداد از نسخه‌های Chrome پشتیبانی نمی‌شود.</translation>
 <translation id="4890973535105146893">‏گذرواژه ذخیره‌شده‌ای در «حساب Google» شما نیست</translation>
 <translation id="4905823827770127520">افزودن پیوند صفحه</translation>
+<translation id="4908601375231458049">گروه زبانه‌ها را سفارشی‌سازی کنید و روی «انجام شد» بزنید</translation>
 <translation id="4908869848243824489">‏«یافته‌ها» از Google</translation>
 <translation id="4910889077668685004">برنامه‌های پرداخت</translation>
 <translation id="4911042367886397055">بازگشتتان را خوشامد می‌گوییم <ph name="USER_NAME" />!</translation>
@@ -1187,6 +1188,7 @@
 <translation id="6040143037577758943">بستن</translation>
 <translation id="604124094241169006">خودکار</translation>
 <translation id="6042308850641462728">بیشتر</translation>
+<translation id="6047066316630165190">تعویض‌کننده زبانه جدولی را باز کنید</translation>
 <translation id="604996488070107836">به‌دلیل خطایی ناشناس، بارگیری <ph name="FILE_NAME" /> انجام نشد.</translation>
 <translation id="605721222689873409">سال</translation>
 <translation id="6059830886158432458">داستان‌ها و فعالیت خود را اینجا کنترل کنید</translation>
@@ -1260,6 +1262,7 @@
 <translation id="6301526076346731664">باز کردن ابزارهای توسعه‌دهندگان</translation>
 <translation id="630308129961693966">انتخاب کردن جای نوار نشانی</translation>
 <translation id="6303969859164067831">خروج از سیستم و خاموش کردن همگام‌سازی</translation>
+<translation id="6305257382500066042">اکنون امتحان کنید</translation>
 <translation id="6307241780749477694">هویت خود را درستی‌سنجی کنید تا به همه گذرواژه‌هایتان در این دستگاه دسترسی داشته باشید</translation>
 <translation id="6309082029962045994">‫<ph name="TAB_TITLE" />، زبانه شنیداری سنجاق‌شده چندانتخابی</translation>
 <translation id="6312687380483398334">برنامه‌های وب (بی‌صدا)</translation>
@@ -1361,6 +1364,7 @@
 <translation id="6661521899577697780">‏موافقت کردن با «یافته‌های Chrome» به‌صورت نیمه باز شده است</translation>
 <translation id="666731172850799929">باز کردن در <ph name="APP_NAME" /></translation>
 <translation id="6669390930482049506">مطلع شوم</translation>
+<translation id="6670767097276846646">‏بعضی‌از افزونه‌ها می‌توانند موتور جستجو به Chrome اضافه کنند</translation>
 <translation id="6671495933530132209">کپی تصویر</translation>
 <translation id="6672697278890207089">گذرعبارت را وارد کنید</translation>
 <translation id="6672917148207387131">افزودن <ph name="DOMAIN" /></translation>
@@ -1847,6 +1851,7 @@
 <translation id="8458341576712814616">میان‌بر</translation>
 <translation id="8458413889418591446">برای برگشتن سریع به سایت‌هایی که بازدید کرده‌اید، سابقه و زبانه‌ها را همگام‌سازی کنید</translation>
 <translation id="84594714173170813">‏همچنان از داده‌های Chrome ذخیره‌شده در «حساب Google» خود استفاده کنید</translation>
+<translation id="8460008946585880786">یک زبانه را روی زبانه دیگر بکشید و رها کنید</translation>
 <translation id="8460448946170646641">مرور کنترل‌های اصلی امنیت و حریم خصوصی</translation>
 <translation id="8460932807646981183">مدیریت موتورهای جستجو و جستجوی سایت</translation>
 <translation id="8473863474539038330">نشانی‌ها و موارد دیگر</translation>
@@ -1957,6 +1962,7 @@
 <translation id="8969796057708736017">اگر فایل با خط‌مشی‌های سازمانتان مطابقت داشته باشد، بارگیری تکمیل خواهد شد</translation>
 <translation id="8970887620466824814">مشکلی پیش آمد.</translation>
 <translation id="8972098258593396643">در پوشه پیش‌فرض بارگیری شود؟</translation>
+<translation id="8987736167266086032">ادامه دادن از جایی که ترک کرده‌اید</translation>
 <translation id="8992769679401294069">‏داده‌هایتان بااستفاده از گذرعبارت شما رمزگذاری شده است. برای ذخیره کردن داده‌های Chrome در «حساب Google» خود و استفاده از آن‌ها، این گذرعبارت را وارد کنید.</translation>
 <translation id="8993760627012879038">باز کردن برگه جدیدی در حالت ناشناس</translation>
 <translation id="8995521496079646922">به‌طور پیش‌فرض از برنامه‌هایی که انتخاب کردید استفاده خواهد شد. اگر برنامه‌ای ازقبل در این دستگاه نباشد، به‌زودی بارگیری خواهد شد.</translation>

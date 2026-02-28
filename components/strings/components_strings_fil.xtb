@@ -1310,6 +1310,8 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3102312643185441063">Savings</translation>
 <translation id="3103188521861412364">Mga Stock at Bond</translation>
 <translation id="3105172416063519923">Asset ID:</translation>
+<translation id="3105223248029915046">Napapailalim sa pagiging kwalipikado ang mga plan sa pagbabayad.
+Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga setting ng pagbabayad<ph name="END_LINK" /></translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />Suriin ang configuration ng secure na DNS<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Gitnang Tray</translation>
 <translation id="3109061346635850169">Pangangalaga ng Mukha at Katawan</translation>
@@ -2866,7 +2868,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="5543564889050342791">Mga Zoo, Aquarium, at Preserve</translation>
 <translation id="5543722831081909240">180 degrees</translation>
 <translation id="5544836308113951378">Mga Cruise at Charter</translation>
-<translation id="5545314360139398232">I-link ang <ph name="ISSUER_NAME" /> para magbayad sa paglipas ng panahon</translation>
 <translation id="5547939254150808298">Pag-print at Pag-publish</translation>
 <translation id="554815783948612276">Mga Provider ng Forum at Chat</translation>
 <translation id="5548606607480005320">Pag-check sa kaligtasan</translation>
@@ -4361,6 +4362,7 @@ Mga karagdagang detalye:
 <translation id="7908648876066812348">Ino-on ang virtual card</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, pindutin ang Tab at pagkatapos ay ang Enter para pumunta sa page ng pag-check sa kaligtasan ng Chrome sa mga setting</translation>
 <translation id="791107458486222637">Nire-redo ang resulta</translation>
+<translation id="7911651285409665023">Isara at bumalik sa "<ph name="TAB_TITLE" />"</translation>
 <translation id="7912924955815015552">Na-import mula sa Safari</translation>
 <translation id="791551905239004656">Pagguhit at Pagkukulay</translation>
 <translation id="7916162853251942238">Flexo Base</translation>

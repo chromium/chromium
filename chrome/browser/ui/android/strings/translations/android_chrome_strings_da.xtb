@@ -924,6 +924,7 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="4885273946141277891">Der er flere forekomster af Chrome, end der understøttes.</translation>
 <translation id="4890973535105146893">Ingen gemte adgangskoder på din Google-konto</translation>
 <translation id="4905823827770127520">Medtag et link til siden</translation>
+<translation id="4908601375231458049">Tilpas fanegruppen, og tryk på Udfør</translation>
 <translation id="4908869848243824489">Discover fra Google</translation>
 <translation id="4910889077668685004">Betalingsapps</translation>
 <translation id="4911042367886397055">Velkommen tilbage, <ph name="USER_NAME" />.</translation>
@@ -1187,6 +1188,7 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="6040143037577758943">Luk</translation>
 <translation id="604124094241169006">Automatisk</translation>
 <translation id="6042308850641462728">Mere</translation>
+<translation id="6047066316630165190">Åbn Faneskift i gittervisning</translation>
 <translation id="604996488070107836"><ph name="FILE_NAME" /> kunne ikke downloades, da der opstod en ukendt fejl.</translation>
 <translation id="605721222689873409">ÅÅ</translation>
 <translation id="6059830886158432458">Administrer dine historier og din aktivitet her</translation>
@@ -1242,7 +1244,7 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 
 Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, som ikke er baseret på andre websites, du har besøgt. Mange websites vil fortsat indsamle og bruge browserdata til f.eks. at forbedre sikkerheden, til at levere indhold, annoncer og anbefalinger og til at generere rapporteringsstatistik.</translation>
 <translation id="623755660902014047">Læsetilstand</translation>
-<translation id="6247557882553405851">Google Adgangs­kode­admin­istrator</translation>
+<translation id="6247557882553405851">Google Adgangs­ko­de­administrator</translation>
 <translation id="6248988683584659830">Søg i indstillinger</translation>
 <translation id="6250847299079540062"><ph name="TAB_TITLE" />, fastgjort inkognitofane med multivalg</translation>
 <translation id="6251449557817521191">Se din Chrome-historik her</translation>
@@ -1260,6 +1262,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="6301526076346731664">Åbn Udviklerværktøjer</translation>
 <translation id="630308129961693966">Vælg placering for adresselinje</translation>
 <translation id="6303969859164067831">Log ud, og deaktiver synkronisering</translation>
+<translation id="6305257382500066042">Prøv den nu</translation>
 <translation id="6307241780749477694">Verificer din identitet for at få alle dine adgangskoder på denne enhed</translation>
 <translation id="6309082029962045994"><ph name="TAB_TITLE" />, fastgjort fane med multivalg, der afspiller lyd</translation>
 <translation id="6312687380483398334">Webapps (lydløs)</translation>
@@ -1361,6 +1364,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="6661521899577697780">Tilvalg af Chrome Finds er åbnet i halv højde</translation>
 <translation id="666731172850799929">Åbn i <ph name="APP_NAME" /></translation>
 <translation id="6669390930482049506">Send mig notifikationer</translation>
+<translation id="6670767097276846646">Nogle udvidelser kan føje søgemaskiner til Chrome</translation>
 <translation id="6671495933530132209">Kopiér billede</translation>
 <translation id="6672697278890207089">Angiv din adgangssætning</translation>
 <translation id="6672917148207387131">Tilføj <ph name="DOMAIN" /></translation>
@@ -1847,6 +1851,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="8458341576712814616">Genvej</translation>
 <translation id="8458413889418591446">Synkroniser din historik og dine faner for hurtigt at vende tilbage til de websites, du har besøgt</translation>
 <translation id="84594714173170813">Fortsæt med at bruge Chrome-dataene på din Google-konto</translation>
+<translation id="8460008946585880786">Træk og slip en fane oven på en anden</translation>
 <translation id="8460448946170646641">Gennemgå vigtige privatlivs- og sikkerhedsindstillinger</translation>
 <translation id="8460932807646981183">Administrer søgemaskiner og websitesøgning</translation>
 <translation id="8473863474539038330">Adresser m.m.</translation>
@@ -1957,6 +1962,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="8969796057708736017">Din download gennemføres, hvis filen overholder din organisations politikker</translation>
 <translation id="8970887620466824814">Noget gik galt.</translation>
 <translation id="8972098258593396643">Vil du downloade til standardmappen?</translation>
+<translation id="8987736167266086032">Fortsæt, hvor du slap</translation>
 <translation id="8992769679401294069">Dine data krypteres med din adgangssætning. Angiv adgangssætningen for at bruge og gemme Chrome-data på din Google-konto.</translation>
 <translation id="8993760627012879038">Åbn en ny fane i inkognitotilstand</translation>
 <translation id="8995521496079646922">De apps, du har valgt, bruges som standard. Hvis en app ikke allerede er på denne enhed, downloades den snart.</translation>

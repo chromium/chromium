@@ -679,6 +679,7 @@
     डीबग लॉग<ph name="END_LINK" /> पाठवा (शिफारस केलेले)</translation>
 <translation id="1454223536435069390">स्क्रीनशॉट घ्या</translation>
 <translation id="145432137617179457">स्पेल चेकच्या भाषा</translation>
+<translation id="1455009947184333152">हटवलेले कौशल्य</translation>
 <translation id="1455119378540982311">विंडोचा आकार प्रीसेट करा</translation>
 <translation id="1456849775870359518">तुमचे टॅब पुन्हा उघडतील</translation>
 <translation id="146000042969587795">ही फ्रेम ब्लॉक केली होती कारण यात काही असुरक्षित आशय आहे.</translation>
@@ -1342,6 +1343,7 @@
 <translation id="1886996562706621347">प्रोटोकॉलकरिता डीफॉल्ट हँडलर होण्यासाठी साइटना विचारण्याची अनुमती द्या</translation>
 <translation id="1887210448491286312"><ph name="DEVICE_NAME" /> वर टॅब कास्‍ट करणे थांबवा</translation>
 <translation id="1887442540531652736">साइन इन एरर</translation>
+<translation id="1888692623866312036">सेव्ह केलेले कौशल्य</translation>
 <translation id="1890026367080681123">एंबेड केलेल्या आशयाच्या सेटिंग्जवर जा</translation>
 <translation id="189035593835762169">अटी आणि नियम</translation>
 <translation id="1891362123137972260">डिस्कवरील जागा अतिशय कमी आहे. कृपया डिस्कवरील जागा मोकळी करा.</translation>
@@ -1849,6 +1851,7 @@
 <translation id="2232751457155581899">साइट तुमच्या कॅमेर्‍याचे स्थान ट्रॅक करण्यासाठी विचारू शकतात</translation>
 <translation id="2233502537820838181">&amp;अधिक माहिती</translation>
 <translation id="223356358902285214">वेब आणि अ‍ॅप अ‍ॅक्टिव्हिटी</translation>
+<translation id="2234031676056123135">तुमचे शॉर्टकट कस्टमाइझ करा</translation>
 <translation id="2234065144797002621">खाडी</translation>
 <translation id="2234208862050358325">कर्सर हलवण्यासाठी 1, 2, 3, q, e, a, s, d या की वापरा</translation>
 <translation id="2234827758954819389">गोपनीयता मार्गदर्शक</translation>
@@ -3110,10 +3113,12 @@
 <translation id="3048589239114571785">प्ले करा (k)</translation>
 <translation id="3048742847101793553">स्कॅन पूर्ण न झाल्याने तुमच्या संस्थेने ही फाइल ब्लॉक केली आहे.</translation>
 <translation id="3048917188684939573">Cast आणि डिव्हाइसचे लॉग</translation>
+<translation id="3049356453907822148">नवीन कौशल्य जोडा</translation>
 <translation id="3051250416341590778">डिस्प्ले आकार</translation>
 <translation id="3053013834507634016">सर्टिफिकेट की वापर</translation>
 <translation id="3053273573829329829">वापरकर्ता पिन सुरू करा</translation>
 <translation id="3053274730492362225">ब्लिंक करू नका</translation>
+<translation id="3057938290530993634">पुढील वेळी सहज अ‍ॅक्सेससाठी तुमच्या सर्वाधिक भेट दिलेल्या वेबसाइट पिन करण्याकरिता टॅप करून धरून ठेवा</translation>
 <translation id="3058498974290601450">तुम्ही सेटिंग्जमध्ये कधीही सिंक सुरू करू शकता</translation>
 <translation id="3060952009917586498">डिव्हाइसची भाषा बदला. सध्याची भाषा <ph name="LANGUAGE" /> आहे.</translation>
 <translation id="3060987956645097882">आम्हाला तुमच्या फोनसह कनेक्शन साधता आले नाही. तुमचा फोन जवळपास असल्याची, अनलॉक केलेला असल्याची आणि त्याचे ब्लूटूथ व वाय-फाय सुरू असल्याची खात्री करा.</translation>
@@ -3270,6 +3275,7 @@
 <translation id="3182749001423093222">स्पेल चेक</translation>
 <translation id="3183139917765991655">प्रोफाईल आयातकर्ता</translation>
 <translation id="3183143381919926261">मोबाइल डेटा नेटवर्क</translation>
+<translation id="3183428991752322898">कीबोर्ड शॉर्टकट साफ करा</translation>
 <translation id="3183700187146209259">स्कॅनर सॉफ्टवेअर इंस्टॉल करू शकत नाही</translation>
 <translation id="3183750649832309748">तुमची संस्था, <ph name="ACCOUNT_MANAGER" />, यासह काही माहिती पाहू शकते</translation>
 <translation id="3183944777708523606">मॉनिटर व्यवस्था</translation>
@@ -3361,6 +3367,7 @@
 <translation id="3247649647204519958">येथून, तुम्ही ज्या साइटवर आहात तिच्या एक्स्टेंशनशी संबंधित परवानग्या पाहू आणि व्यवस्थापित करू शकता</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - नेटवर्क एरर</translation>
 <translation id="3248902735035392926">सुरक्षा महत्त्वाची आहे. थोडा वेळ काढा आणि <ph name="BEGIN_LINK" />आता तुमची एक्स्टेंशन तपासा<ph name="END_LINK" /></translation>
+<translation id="3250374026663843838">तुमचे कौशल्य व्यवस्थापित करा</translation>
 <translation id="3251119461199395237">फाइल सिंक करणे</translation>
 <translation id="3251759466064201842">&lt;प्रमाणपत्राचा भाग नाही&gt;</translation>
 <translation id="3252169590975855820">तुम्ही Google Password Manager मध्ये ते अ‍ॅक्सेस करू शकता.</translation>
@@ -5192,6 +5199,7 @@
 <translation id="4469324811108161144"><ph name="CHARACTER_LIMIT" /> वर्णांपर्यंतच्या टिपा सेव्ह केल्या जाऊ शकतात.</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> <ph name="FOLDERNAME" /> मधील फाइल संपादित करू शकते</translation>
 <translation id="4470957202018033307">बाह्य स्टोरेज प्राधान्ये</translation>
+<translation id="4471250205822310967">Gemini निवड ओव्हरले</translation>
 <translation id="4471354919263203780">स्पीच रेकग्निशन फाइल डाउनलोड करत आहे... <ph name="PERCENT" />%</translation>
 <translation id="4472194221638903160">AI वापरून टॅब गटबद्ध करा</translation>
 <translation id="4472298120638043495">तुम्ही तुमची प्राधान्य असलेली Google खाते भाषा वापरू शकता (<ph name="NEW_LOCALE_FROM_GAIA" />)</translation>
@@ -11811,6 +11819,7 @@ I feel - विटांची इमारत</translation>
 <translation id="8986494364107987395">Google ला वापरविषयक आकडेवारी आणि क्रॅश अहवाल आपोआप पाठवा</translation>
 <translation id="8987305927843254629">प्रत्येक व्यक्ती स्वतःचा अनुभव पर्सनलाइझ करू शकते आणि डेटा खाजगी ठेवू शकते.</translation>
 <translation id="8987321822984361516">संस्थेद्वारे व्यवस्थापित केलेले ब्राउझर, <ph name="PROFILE_DOMAIN" /> द्वारे व्यवस्थापित केलेली प्रोफाइल</translation>
+<translation id="8987736167266086032">तुम्ही सोडले होते तिथून पुढे सुरू करा</translation>
 <translation id="8987927404178983737">महिना</translation>
 <translation id="8988539543012086784">हे पेज <ph name="BOOKMARK_FOLDER" /> वर सेव्ह केले आहे</translation>
 <translation id="8989359959810288806">टेदरिंग स्टेटस रिफ्रेश करा</translation>
@@ -11935,6 +11944,7 @@ I feel - विटांची इमारत</translation>
 <translation id="9061521313218438086">Chrome ला सार्वजनिक डेटा भंगामध्ये तुमचा एखादा पासवर्ड आढळला, तर तुम्ही साइन इन केले असल्यास Google Password Manager हे तुम्हाला तुमचा पासवर्ड बदलण्याची ऑफर देऊ शकते.</translation>
 <translation id="9061694916020926968">Chromebook (बीटा) साठी Steam वापरण्यासाठी तुम्हाला Google खाते मध्ये साइन इन करणे आवश्यक आहे. साइन इन करून पुन्हा प्रयत्न करा.</translation>
 <translation id="9062468308252555888">१४x</translation>
+<translation id="9062873887761404531">नेव्हिगेशन शॉर्टकट साफ करा</translation>
 <translation id="9063208415146866933">ओळ <ph name="ERROR_LINE_START" /> ते <ph name="ERROR_LINE_END" /> पर्यंत एरर</translation>
 <translation id="9064275926664971810">एका क्लिकमध्ये वेब फॉर्म भरण्यासाठी ऑटोफिल सक्षम करा</translation>
 <translation id="9065203028668620118">संपादन</translation>

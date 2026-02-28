@@ -669,6 +669,7 @@
 <translation id="3476450923187944815">Opnaðu aðgangsorðin þín í öðrum forritum.</translation>
 <translation id="3485558910355485767">Nýr huliðsgluggi</translation>
 <translation id="3488501490964659223">Flipum var lokað og vefskoðunargögnum eytt. Þú skráðist út</translation>
+<translation id="3490396108106323715">Deila núverandi flipa</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Frekari upplýsingar<ph name="END_LINK" /> um uppástungur að efni</translation>
 <translation id="349446645805573740">Veldu hvar á að vista „<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />“</translation>
 <translation id="3504377992102007712">Stillingar</translation>
@@ -695,6 +696,7 @@
 <translation id="3565012355885596568">Ekki tókst að hlaða myndum</translation>
 <translation id="3565930036634619844">Flipi. <ph name="TAB_INDEX" /> af <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3567168891086460374">Vista á annan hátt</translation>
+<translation id="3572503683475187385">Núverandi flipa er deilt með Gemini þegar þú byrjar nýtt spjall. Þegar þú deilir flipa með Gemini er efni hans og vefslóð send til Google. <ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">Á Google-reikningnum þínum</translation>
 <translation id="3575234738189584619">Leita með Linsu</translation>
 <translation id="3575426792457739946">Listinn sýnir alla prófíla sem var hlaðið.</translation>
@@ -738,6 +740,7 @@
 <translation id="3751873026576444885">Hætta að leita á skjánum með Google-linsu</translation>
 <translation id="3753408171347588045">Vaktar verð</translation>
 <translation id="3753618528540214374">Viridian-þema</translation>
+<translation id="3759491607478608474">Deildu efni núverandi flipa með Gemini til að fá meira viðeigandi svör</translation>
 <translation id="3762232513783804601">Sérhannað fyrir iPad</translation>
 <translation id="3768725474733206671">Opna aftur flipann sem síðast var lokað</translation>
 <translation id="3779810277399252432">Engin internettenging.</translation>
@@ -985,6 +988,7 @@
 <translation id="4650125387981512669">Halda áfram sem <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4651927776207937667">{count,plural, =1{Fela eftir eina mínútu}one{Fela eftir {count} mínútu}other{Fela eftir {count} mínútur}}</translation>
 <translation id="4652817563047461855">Vertu viss um að aðgangsorðin þín séu örugg, fáðu tilkynningar ef þau eru í hættu og ráðleggingar um hvernig þú getur varið þig á netinu. <ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" /></translation>
+<translation id="4653053602672040238">Kveikja á deilingu flipa</translation>
 <translation id="4658335131052370646">Vista</translation>
 <translation id="466307903888586355">Fyrirtækið þitt leyfir ekki vistun skráa</translation>
 <translation id="4668929960204016307">,</translation>
@@ -1298,6 +1302,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="5718049162805123412">Þú ættir að breyta þeim strax</translation>
 <translation id="5721040778297053709">Settu kreditkortið innan þessa ramma</translation>
 <translation id="572328651809341494">Nýlegir flipar</translation>
+<translation id="5724590854763964497">Núverandi flipa er sjálfkrafa deilt þegar þú hefur nýtt spjall. Þegar flipum er deilt er efni þeirra og vefslóðir sent til Google en verður ekki notað til að bæta skapandi gervigreindarlíkön. Þú getur breytt þessari stillingu hvenær sem er.</translation>
 <translation id="5724941645893276623">Opnaðu nýjan flipa til að vafra leynilega</translation>
 <translation id="5728072125198221967">Tengdar Google-þjónustur</translation>
 <translation id="5728700505257787410">Því miður kom upp vandamál við að skrá þig inn á reikninginn.</translation>
@@ -1965,6 +1970,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="8059533439631660104">Minnkar hlutann.</translation>
 <translation id="8061584726507121204">Ferill</translation>
 <translation id="8064946459644399612">Kjörstillingar fyrir síðu nýrra flipa voru notaðar</translation>
+<translation id="8065556469005366939">Fáðu viðeigandi svör með því að deila flipunum þínum</translation>
 <translation id="8069394452933076548">Veldu hvenær flytja á flipa sem hafa ekki verið notaðir nýlegar yfir í hluta óvirkra flipa.</translation>
 <translation id="8073670137947914548">Niðurhali lokið</translation>
 <translation id="8076492880354921740">Flipar</translation>
@@ -2133,6 +2139,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="8660600697590740984">Linsumynd sem þú afritaðir</translation>
 <translation id="866266761389616183">Ansans!</translation>
 <translation id="8663764600409216912">Þú ert að nota aðgangsorð sem líta út fyrir að erfitt sé að giska á</translation>
+<translation id="8664992138761940052">Núverandi flipa er sjálfkrafa deilt þegar þú hefur nýtt spjall. Þegar flipum er deilt er efni þeirra og vefslóðir sent til Google Þú getur breytt þessari stillingu hvenær sem er.</translation>
 <translation id="8668210798914567634">Síðan var vistuð á leslistann þinn.</translation>
 <translation id="8672642291731179042">Þýða síður</translation>
 <translation id="8672733398999596205">Virkja allt</translation>

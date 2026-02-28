@@ -1310,6 +1310,8 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3102312643185441063">Simpanan</translation>
 <translation id="3103188521861412364">Saham &amp; Bon</translation>
 <translation id="3105172416063519923">ID Aset:</translation>
+<translation id="3105223248029915046">Pelan pembayaran tertakluk pada kelayakan.
+Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetapan pembayaran<ph name="END_LINK" /></translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />Menyemak konfigurasi DNS selamat<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Dulang Tengah</translation>
 <translation id="3109061346635850169">Penjagaan Wajah &amp; Tubuh</translation>
@@ -2867,7 +2869,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="5543564889050342791">Zoo, Akuarium &amp; Rizab</translation>
 <translation id="5543722831081909240">180 darjah</translation>
 <translation id="5544836308113951378">Pelayaran &amp; Carter</translation>
-<translation id="5545314360139398232">Pautkan <ph name="ISSUER_NAME" /> untuk membayar dari semasa ke semasa</translation>
 <translation id="5547939254150808298">Percetakan &amp; Penerbitan</translation>
 <translation id="554815783948612276">Penyedia Forum &amp; Sembang</translation>
 <translation id="5548606607480005320">Semakan keselamatan</translation>
@@ -4362,6 +4363,7 @@ Butiran tambahan:
 <translation id="7908648876066812348">Menghidupkan kad maya</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan kekunci Tab kemudian Enter untuk mengakses halaman semakan keselamatan Chrome dalam tetapan</translation>
 <translation id="791107458486222637">Membuat semula hasil</translation>
+<translation id="7911651285409665023">Tutup dan kembali kepada "<ph name="TAB_TITLE" />"</translation>
 <translation id="7912924955815015552">Diimport daripada Safari</translation>
 <translation id="791551905239004656">Melukis &amp; Mewarna</translation>
 <translation id="7916162853251942238">Asas Flexo</translation>

@@ -1361,6 +1361,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6661521899577697780">Activation de Chrome Finds ouverte à mi-hauteur</translation>
 <translation id="666731172850799929">Ouvrir dans <ph name="APP_NAME" /></translation>
 <translation id="6669390930482049506">M'avertir</translation>
+<translation id="6670767097276846646">Certaines extensions peuvent ajouter des moteurs de recherche dans Chrome</translation>
 <translation id="6671495933530132209">Copier l'image</translation>
 <translation id="6672697278890207089">Saisir votre phrase secrète</translation>
 <translation id="6672917148207387131">Ajouter <ph name="DOMAIN" /></translation>
@@ -1957,6 +1958,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="8969796057708736017">Le téléchargement aura lieu si le fichier respecte les règles de votre organisation</translation>
 <translation id="8970887620466824814">Un problème est survenu</translation>
 <translation id="8972098258593396643">Télécharger dans le dossier par défaut ?</translation>
+<translation id="8987736167266086032">Reprenez là où vous vous étiez arrêté</translation>
 <translation id="8992769679401294069">Vos données sont chiffrées avec votre phrase secrète. Saisissez-la pour utiliser et enregistrer les données Chrome dans votre compte Google.</translation>
 <translation id="8993760627012879038">Ouvrir un nouvel onglet en mode navigation privée</translation>
 <translation id="8995521496079646922">Les applis choisies seront utilisées par défaut. Si une appli n'est pas déjà sur cet appareil, elle sera bientôt téléchargée.</translation>

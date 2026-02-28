@@ -1310,6 +1310,8 @@
 <translation id="3102312643185441063">ਬਚਤਾਂ</translation>
 <translation id="3103188521861412364">ਸਟਾਕ ਅਤੇ ਬਾਂਡ</translation>
 <translation id="3105172416063519923">ਸੰਪਤੀ ਆਈ.ਡੀ.:</translation>
+<translation id="3105223248029915046">ਭੁਗਤਾਨ ਪਲਾਨ ਯੋਗਤਾ ਦੇ ਅਧੀਨ ਹੁੰਦੇ ਹਨ।
+ਬਾਅਦ ਵਿੱਚ ਭੁਗਤਾਨ ਕਰਨ ਸੰਬੰਧੀ ਵਿਕਲਪ ਲੁਕਾਉਣ ਲਈ, <ph name="BEGIN_LINK" />ਭੁਗਤਾਨ ਸੈਟਿੰਗਾਂ<ph name="END_LINK" /> 'ਤੇ ਜਾਓ</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />ਸੁਰੱਖਿਅਤ DNS ਦੇ ਸੰਰੂਪਣ ਦੀ ਜਾਂਚ ਕਰਨਾ<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">ਵਿਚਕਾਰਲੀ ਟ੍ਰੇਅ</translation>
 <translation id="3109061346635850169">ਚਿਹਰੇ ਅਤੇ ਸਰੀਰ ਦੀ ਦੇਖਭਾਲ</translation>
@@ -2863,7 +2865,6 @@
 <translation id="5543564889050342791">ਚਿੜੀਆਘਰ, ਜਲ ਜੀਵਸ਼ਾਲਾਵਾਂ ਅਤੇ ਰੱਖ</translation>
 <translation id="5543722831081909240">180 ਡਿਗਰੀ</translation>
 <translation id="5544836308113951378">ਕਰੂਜ਼ ਅਤੇ ਚਾਰਟਰ</translation>
-<translation id="5545314360139398232">ਸਮੇਂ 'ਤੇ ਭੁਗਤਾਨ ਕਰਨ ਲਈ, <ph name="ISSUER_NAME" /> ਨੂੰ ਲਿੰਕ ਕਰੋ</translation>
 <translation id="5547939254150808298">ਪ੍ਰਿੰਟਿੰਗ ਅਤੇ ਪ੍ਰਕਾਸ਼ਨ</translation>
 <translation id="554815783948612276">ਫ਼ੋਰਮ ਅਤੇ ਚੈਟ ਪ੍ਰਦਾਨਕ</translation>
 <translation id="5548606607480005320">ਸੁਰੱਖਿਆ ਜਾਂਚ</translation>
@@ -4356,6 +4357,7 @@
 <translation id="7908648876066812348">ਆਭਾਸੀ ਕਾਰਡ ਚਾਲੂ ਕੀਤੇ ਜਾ ਰਹੇ ਹਨ</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, ਸੈਟਿੰਗਾਂ ਵਿੱਚ Chrome ਸੁਰੱਖਿਆ ਜਾਂਚ ਪੰਨੇ 'ਤੇ ਜਾਣ ਲਈ Tab ਦਬਾ ਕੇ ਫਿਰ Enter ਦਬਾਓ</translation>
 <translation id="791107458486222637">ਨਤੀਜੇ ਨੂੰ ਮੁੜ-ਓਹੀ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
+<translation id="7911651285409665023">ਬੰਦ ਕਰੋ ਅਤੇ "<ph name="TAB_TITLE" />" 'ਤੇ ਵਾਪਸ ਜਾਓ</translation>
 <translation id="7912924955815015552">Safari ਤੋਂ ਆਯਾਤ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="791551905239004656">ਚਿੱਤਰਕਾਰੀ ਅਤੇ ਰੰਗ ਕਰਨ ਸੰਬੰਧੀ ਗੇਮਾਂ</translation>
 <translation id="7916162853251942238">ਫਲੈਕਸੋ ਬੇਸ</translation>

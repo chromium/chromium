@@ -1018,6 +1018,7 @@
 <translation id="1671525612731130246">Drive ଆକାଉଣ୍ଟ ବାଛନ୍ତୁ</translation>
 <translation id="1671749176392751693">ସୁରକ୍ଷିତ ବିଷୟବସ୍ତୁ ଚିହ୍ନଟକାରୀଗୁଡ଼ିକୁ ଅନୁମତି ଦିଆଯାଇଛି</translation>
 <translation id="1673137583248014546"><ph name="URL" /> ଆପଣଙ୍କର ସୁରକ୍ଷା କୀ'ର ନିର୍ମାତା ଏବଂ ମଡେଲ୍ ଦେଖିବାକୁ ଚାହୁଁଛନ୍ତି</translation>
+<translation id="1673855466663721679">ସାଇଡ ପେନେଲରେ ବୁକମାର୍କଗୁଡ଼ିକ ଦେଖାନ୍ତୁ</translation>
 <translation id="1674073353928166410">ସମସ୍ତ (<ph name="URL_COUNT" />)ଟି URL ଇନକଗ୍ନିଟୋ ୱିଣ୍ଡୋରେ ଖୋଲନ୍ତୁ</translation>
 <translation id="1674142805528405174">Google Password Manager ଆପଣଙ୍କ ଆକାଉଣ୍ଟ <ph name="EMAIL" />ରେ ଆପଣଙ୍କ ପାଇଁ ସେଭ ଥିବା ଏକ କଠିନ ପାସୱାର୍ଡ ସହିତ ଆପଣଙ୍କର ଆକାଉଣ୍ଟକୁ ଅପଡେଟ କରିପାରିବ।</translation>
 <translation id="1674945585974615438">ଅପରିଚିତ ସାଇଟଗୁଡ଼ିକରେ JavaScript ଅପ୍ଟିମାଇଜରଗୁଡ଼ିକୁ ସ୍ୱତଃ ଅକ୍ଷମ କରନ୍ତୁ</translation>
@@ -3441,6 +3442,7 @@
 <translation id="3312883087018430408">ଏକ ନିର୍ଦ୍ଦିଷ୍ଟ ସାଇଟ କିମ୍ବା Chromeର କିଛି ଅଂଶ ସନ୍ଧାନ କରିବାକୁ, ଠିକଣା ବାରରେ ଏହାର ସର୍ଟକଟ ଟାଇପ କରିବା ପରେ ଆପଣଙ୍କ ପସନ୍ଦର କୀବୋର୍ଡ ସର୍ଟକଟ ଟାଇପ କରନ୍ତୁ। ଉଦାହରଣ ସ୍ୱରୂପ, କେବଳ ବୁକମାର୍କ ସନ୍ଧାନ କରିବାକୁ, "@bookmarks" ଟାଇପ କରନ୍ତୁ, ତା'ପରେ Tab କିମ୍ବା Spaceକୁ ଦବାନ୍ତୁ।</translation>
 <translation id="3313622045786997898">ସାର୍ଟିଫିକେଟ୍ ଦସ୍ତଖତ ମୂଲ୍ୟ</translation>
 <translation id="3313950410573257029">ସଂଯୋଗ ଯାଞ୍ଚ କରନ୍ତୁ</translation>
+<translation id="3314239811356311272">&amp;ବୁକମାର୍କ ମେନେଜର ଖୋଲନ୍ତୁ</translation>
 <translation id="3315158641124845231"><ph name="PRODUCT_NAME" /> ଲୁଚାନ୍ତୁ</translation>
 <translation id="3317459757438853210">ଦୁଇ-ତରଫା</translation>
 <translation id="3317521105713541270">ଗୋଷ୍ଠୀଗୁଡ଼ିକୁ ତିଆରି କରନ୍ତୁ</translation>
@@ -3647,6 +3649,7 @@
 <translation id="3453597230179205517">ଲୋକେସନ ଆକ୍ସେସକୁ ବ୍ଲକ କରାଯାଇଛି</translation>
 <translation id="3453612417627951340">ପ୍ରାଧିକରଣ ଆବଶ୍ୟକ ଅଟେ</translation>
 <translation id="3454213325559396544">ଏହି <ph name="DEVICE_TYPE" /> ପାଇଁ ଏହା ଶେଷ ସ୍ୱଚାଳିତ ସଫ୍ଟୱେୟାର୍ ଏବଂ ସୁରକ୍ଷା ଅପ୍‌ଡେଟ୍ ଅଟେ ଭବିଷ୍ୟତର ଅପ୍‌ଡେଟ୍‍ଗୁଡ଼ିକ ପାଇବା ପାଇଁ, ଗୋଟିଏ ନୂଆ ମଡେଲ୍‍କୁ ଅପ୍‌ଗ୍ରେଡ୍ କରନ୍ତୁ।</translation>
+<translation id="3454276058453724464">{FILE_LIMIT,plural, =1{ଆପଣଙ୍କ ପ୍ରଶ୍ନ ସହ ବ୍ୟବହାର କରିବାକୁ 1 .pdf ଫାଇଲ ଅପଲୋଡ କରନ୍ତୁ}other{ଆପଣଙ୍କ ପ୍ରଶ୍ନ ସହ ବ୍ୟବହାର କରିବାକୁ # .pdf ଫାଇଲ ପର୍ଯ୍ୟନ୍ତ ଅପଲୋଡ କରନ୍ତୁ}}</translation>
 <translation id="3454818737556063691">1ଟି ଫାଇଲ ଖୋଲିବା ପାଇଁ ଏହାକୁ <ph name="CLOUD_PROVIDER" />କୁ ମୁଭ କରିବେ?</translation>
 <translation id="3455436146814891176">ଏନକ୍ରିପସନ୍ ପାସୱାର୍ଡ ସିଙ୍କ୍ କରନ୍ତୁ</translation>
 <translation id="345693547134384690">ନୂତନ ଟ୍ୟାବରେ &amp;ପ୍ରତିଛବି ଖୋଲନ୍ତୁ</translation>
@@ -5019,6 +5022,7 @@
 <translation id="4364567974334641491"><ph name="APP_NAME" /> ଏକ ୱିଣ୍ଡୋ ସେୟାର୍ କରୁଛି।</translation>
 <translation id="4364830672918311045">ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକ ପ୍ରଦର୍ଶନ କରନ୍ତୁ</translation>
 <translation id="4367971618859387374">ଡିସପ୍ଲେ ନାମ</translation>
+<translation id="4368888793624522796">ଟାବ ଗ୍ରୁପଗୁଡ଼ିକ ମୁଭ ହୋଇଛି</translation>
 <translation id="4368960422722232719">ଟାବ ହୋଭର ପ୍ରିଭ୍ୟୁ କାର୍ଡରେ ମେମୋରୀ ବ୍ୟବହାର ଦେଖାନ୍ତୁ</translation>
 <translation id="4369151461324628035">ଆପଣଙ୍କ ସ୍ଥାନୀୟ ନେଟୱାର୍କରେ ଯେ କୌଣସି ଡିଭାଇସ ସହ କନେକ୍ଟ କରିବାକୁ ସାଇଟଗୁଡ଼ିକୁ ଅନୁମତି ଦିଅନ୍ତୁ ନାହିଁ</translation>
 <translation id="4369215744064167350">ୱେବସାଇଟ ଅନୁରୋଧକୁ ଅନୁମୋଦନ ଦିଆଯାଇଛି</translation>
@@ -5407,6 +5411,7 @@
 <translation id="4634575639321169635">କାର୍ଯ୍ୟସ୍ଥଳୀ କିମ୍ବା ବ୍ୟକ୍ତିଗତ ବ୍ୟବହାର ପାଇଁ ଏହି ଡିଭାଇସକୁ ସେଟ୍ ଅପ୍ କରନ୍ତୁ</translation>
 <translation id="4635072447747973225">Crostini ଅନଇନଷ୍ଟଲ୍ କରନ୍ତୁ</translation>
 <translation id="4635398712689569051">ଅତିଥି ଉପଯୋଗକର୍ତ୍ତାଙ୍କ ପାଇଁ <ph name="PAGE_NAME" />ଉପଲବ୍ଧ ନାହିଁ।</translation>
+<translation id="4635975718422788482">{FILE_LIMIT,plural, =1{ଆପଣଙ୍କ ପ୍ରଶ୍ନ ସହ ବ୍ୟବହାର କରିବାକୁ 1 ଇମେଜ ଅପଲୋଡ କରନ୍ତୁ}other{ଆପଣଙ୍କ ପ୍ରଶ୍ନ ସହ ବ୍ୟବହାର କରିବାକୁ # ଇମେଜ ପର୍ଯ୍ୟନ୍ତ ଅପଲୋଡ କରନ୍ତୁ}}</translation>
 <translation id="4636187126182557415">ସିଷ୍ଟମ ପସନ୍ଦଗୁଡ଼ିକ</translation>
 <translation id="4636930964841734540">ସୂଚନା</translation>
 <translation id="4637083375689622795">ଅଧିକ ପଦକ୍ଷେପ, <ph name="EMAIL" /></translation>
@@ -6249,6 +6254,7 @@
 <translation id="5215502535566372932">ଦେଶ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="5216674789212441076">ଏହା ସ୍ୱତଃ ଲାଇଭ କେପ୍ସନକୁ ଅନୁବାଦ କରେ। ଅନୁବାଦ ପାଇଁ Googleକୁ କେପ୍ସନ ପଠାଯାଏ।</translation>
 <translation id="5216951551945455224">{NUM_TABS,plural, =1{Gemini ସହ ଟାବ ସେୟାର କରିବା ବନ୍ଦ କରନ୍ତୁ}other{Gemini ସହ # ଟାବ ସେୟାର କରିବା ବନ୍ଦ କରନ୍ତୁ}}</translation>
+<translation id="5217883660859035687">ଆପଣଙ୍କ ବୁକମାର୍କଗୁଡ଼ିକୁ ଅଧିକ ସ୍ଥାନ ଦେବା ପାଇଁ ଆମେ ଟାବ ଗ୍ରୁପଗୁଡ଼ିକୁ ମୁଭ କରୁଛୁ।</translation>
 <translation id="5220011581825921581">ସର୍ଚ୍ଚ + ଅପ ତୀର</translation>
 <translation id="5221516927483787768"><ph name="HOST_NAME" />କୁ କାଷ୍ଟ କରିବାରେ ଅସମର୍ଥ</translation>
 <translation id="5221834113325601057">ତାଲିକାରୁ ଟାବକୁ ବାଦ ଦିଆଯାଇଛି</translation>
@@ -6930,6 +6936,7 @@
 <translation id="5697832193891326782">ଇମୋଜି ପିକର୍</translation>
 <translation id="5698136107297470317">ଆପଣଙ୍କ <ph name="BRAND" /> ଡାଟାକୁ ଆପଣ ଡିଲିଟ କରିବାକୁ ଯାଉଛନ୍ତି</translation>
 <translation id="5698878456427040674">ଚୟନିତ ଆକାଉଣ୍ଟ ସମର୍ଥିତ ଅଟେ ନା ନାହିଁ ତାହା ଯାଞ୍ଚ କରନ୍ତୁ।</translation>
+<translation id="5698900765010620315">କମ କଣ୍ଟ୍ରାଷ୍ଟ ଡାର୍କ</translation>
 <translation id="5699227710146832453">ଆପଣଙ୍କର</translation>
 <translation id="570043786759263127">Google Play ଆପ୍ସ ଏବଂ ସେବା</translation>
 <translation id="5700761515355162635">ତୃତୀୟ-ପକ୍ଷ କୁକୀଗୁଡ଼ିକୁ ଅନୁମତି ଦିଆଯାଇଛି</translation>
@@ -8313,6 +8320,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="6663190258859265334">ଆପଣଙ୍କର <ph name="DEVICE_TYPE" />କୁ ପାୱାରୱାସ୍ କରନ୍ତୁ ଏବଂ ପୂର୍ବବର୍ତ୍ତୀ ସଂସ୍କରଣକୁ ଫେରି ଯାଆନ୍ତୁ।</translation>
 <translation id="6664774537677393800">ଆପଣଙ୍କର ପ୍ରୋଫାଇଲ୍‌ ଖୋଲିବା ସମୟରେ କିଛି ତ୍ରୁଟି ହୋ‍ଇଛି। ଦୟାକରି ସାଇନ୍ ଆଉଟ୍ କରିବା ପରେ ପୁଣିଥରେ ସାଇନ୍ ଇନ୍ କରନ୍ତୁ।</translation>
 <translation id="6665874326033183068">ୱାଇଲ୍ଡ</translation>
+<translation id="6666560794795912543">ସାଇଡ ପେନେଲରେ ବୁକମାର୍କଗୁଡ଼ିକ ଦେଖାନ୍ତୁ</translation>
 <translation id="6667086124612170548">ଏହି ଡିଭାଇସ ପାଇଁ ଫାଇଲଟି ବହୁତ ବଡ଼ ଅଟେ</translation>
 <translation id="6667092961374478614"><ph name="FEATURE_NAME" /> ଡିସ୍କଭରେବିଲିଟି</translation>
 <translation id="6667187897999649121">ବର୍ତ୍ତମାନ ପାଇଁ, ଆପଣ କେବଳ ପରିବାର ସଦସ୍ୟଙ୍କ ସହିତ ପାସୱାର୍ଡ ସେୟାର କରିପାରିବେ। 6 ଜଣ ପର୍ଯ୍ୟନ୍ତ ସଦସ୍ୟଙ୍କ ସହିତ <ph name="BEGIN_LINK" />ଏକ ପରିବାର ଗୋଷ୍ଠୀ ତିଆରି କରନ୍ତୁ<ph name="END_LINK" /> ଏବଂ Googleରେ ଆପଣଙ୍କ ପ୍ରଡକ୍ଟ ଏବଂ ସଦସ୍ୟତାରୁ ଅଧିକ ପାଆନ୍ତୁ।</translation>
@@ -9773,6 +9781,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="7660146600670077843">ଏକ ଟାବରେ ଡାହାଣ-କ୍ଲିକ କରି "ଟାବକୁ ନୂଆ ଗୋଷ୍ଠୀରେ ଯୋଗ କରନ୍ତୁ"କୁ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="7661451191293163002">ଏକ ପଞ୍ଜିକରଣ ସାର୍ଟିଫିକେଟ୍‌ ପ୍ରାପ୍ତ କରିହେଲା ନାହିଁ।</translation>
 <translation id="7662283695561029522">କନ୍‌ଫିଗର୍‌ କରିବାକୁ ଟାପ୍‍ କରନ୍ତୁ</translation>
+<translation id="7662535435481776002">କମ କଣ୍ଟ୍ରାଷ୍ଟ ଲାଇଟ</translation>
 <translation id="7663719505383602579">ଗ୍ରହୀତା: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7663774460282684730">କୀବୋର୍ଡ ସର୍ଟକଟ୍ ଉପଲବ୍ଧ ଅଛି</translation>
 <translation id="7663859337051362114">eSIM ପ୍ରୋଫାଇଲ୍ ଯୋଗ କରନ୍ତୁ</translation>
@@ -11779,6 +11788,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="8986494364107987395">ସ୍ୱଚାଳିତରୂପେ Googleକୁ ବ୍ୟବହାରର ପରିସଂଖ୍ୟାନ ଏବଂ କ୍ରାସ୍ ରିପୋର୍ଟ ପଠାନ୍ତୁ</translation>
 <translation id="8987305927843254629">ପ୍ରତ୍ୟେକ ବ୍ୟକ୍ତି ତାଙ୍କ ଅନୁଭୂତିକୁ ପର୍ସନାଲାଇଜ କରିପାରିବେ ଏବଂ ଡାଟାକୁ ପ୍ରାଇଭେଟ ରଖିପାରିବେ।</translation>
 <translation id="8987321822984361516">ବ୍ରାଉଜର ଏକ ସଂସ୍ଥା ଦ୍ୱାରା ପରିଚାଳିତ ହେଉଛି, ପ୍ରୋଫାଇଲ <ph name="PROFILE_DOMAIN" /> ଦ୍ୱାରା ପରିଚାଳିତ ହେଉଛି</translation>
+<translation id="8987736167266086032">ଆପଣ ଯେଉଁଠି ଛାଡ଼ିଥିଲେ ସେଠାରୁ ଆରମ୍ଭ କର</translation>
 <translation id="8987927404178983737">ମାସ</translation>
 <translation id="8988539543012086784">ଏହି ପୃଷ୍ଠାକୁ <ph name="BOOKMARK_FOLDER" />ରେ ସେଭ କରାଯାଇଛି</translation>
 <translation id="8989359959810288806">ଟିଥରିଂ ସ୍ଥିତିକୁ ରିଫ୍ରେସ କରନ୍ତୁ</translation>

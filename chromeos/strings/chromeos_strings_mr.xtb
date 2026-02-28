@@ -167,6 +167,7 @@
 <translation id="1621067168122174824">चार्ज चाचणी रन करा</translation>
 <translation id="1622402072367425417">चमकणारे बुडबुडे</translation>
 <translation id="1626590945318984973">शॉर्टकट उपलब्ध नाही. फंक्शन आणि <ph name="META_KEY" /> की न वापरता नवीन शॉर्टकट प्रेस करा.</translation>
+<translation id="163774412591892664">तुमच्या अ‍ॅडमिनिस्ट्रेटरने तुमचे डिव्हाइस बंद केले आहे आणि ते त्याचे स्थान अ‍ॅक्सेस करू शकतात.</translation>
 <translation id="1639239467298939599">लोड करत आहे</translation>
 <translation id="1641857168437328880">दस्तऐवज फीडर (एक बाजू असलेले)</translation>
 <translation id="1642396894598555413">सायकल</translation>
@@ -1723,6 +1724,7 @@
 <translation id="8584654835905316966"><ph name="DEVICE_NAME" /> साठी <ph name="VERSION" /> आवृत्तीवर फर्मवेअरचे इंस्टॉलेशन पूर्ण करण्यासाठी रीस्‍टार्टची आवश्‍यकता आहे. तुमचा काँप्युटर अनेक वेळा रीबूट होताना दिसेल. हे वर्तन अपेक्षित आहे.</translation>
 <translation id="8593058461203131755">मीडिया थांबवा</translation>
 <translation id="8620617069779373398">रोमिंग स्थिती</translation>
+<translation id="8624524972189162859">तुमच्या <ph name="DOMAIN_NAME" /> ॲडमिनिस्ट्रेटरने तुमचे डिव्हाइस बंद केले आहे आणि ते त्याचे स्थान ॲक्सेस करू शकतात.</translation>
 <translation id="8626489604350149811"><ph name="APN_NAME" /> साठी आणखी कृती</translation>
 <translation id="86356131183441916">फिकट जांभळा</translation>
 <translation id="8647595191512746911">ऑडिओ ट्रान्स्क्रिप्शन</translation>

@@ -230,6 +230,7 @@
 <translation id="1358187717814494928">ایجاد کاربرگ</translation>
 <translation id="1358223345833465883">‏موتور جستجوی شما در Chromium</translation>
 <translation id="1359836962251219822">آشپزخانه و ناهارخوری</translation>
+<translation id="136059610328993645">‏اطلاعاتتان در «کیف پول Google» مربوط به <ph name="ACCOUNT" /> ذخیره می‌شود. می‌توانید از آن در سرویس‌های Google برای تکمیل سریع‌تر فرم‌ها استفاده کنید.</translation>
 <translation id="1360955481084547712">پنجره ناشناس جدیدی را برای مرور خصوصی باز کنید</translation>
 <translation id="1361528602584216624">‏محدودیت برای هر Pix:‏ R$‏ <ph name="TRANSACTION_LIMIT" /></translation>
 <translation id="1363015776076529485">فهرست روش‌های پرداخت دردسترس که می‌توانند برای ادامه پرداخت انتخاب شوند به‌صورت کامل باز شده است.</translation>
@@ -252,6 +253,7 @@
 <translation id="1392813880755413602">‏ارائه OpenDocument</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> داده‌ای ارسال نکرد.</translation>
 <translation id="1393071644879491291">‏مهاجمان ممکن است در سایتی که می‌خواستید بازدید کنید شما را فریب دهند تا نرم‌افزاری نصب کنید یا مواردی مثل گذرواژه، شماره تلفن، یا شماره کارت اعتباری‌تان را افشا کنید. ‫Chrome اکیداً توصیه می‌کند به ایمنی بازگردید. <ph name="BEGIN_LEARN_MORE_LINK" />درباره این هشدار بیشتر بدانید<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="1402151528875251561">نمایش سابقه در پانل کناری</translation>
 <translation id="1405567553485452995">سبز روشن</translation>
 <translation id="1406370515365284486">روش‌های پرداختتان همچنان ذخیره خواهند ماند</translation>
 <translation id="1406500794671479665">در حال تأیید...</translation>
@@ -1451,6 +1453,7 @@
 <translation id="33073482541490531">گذرواژه‌ای که اکنون استفاده کردید در سرقت اطلاعات شبکه پیدا شده است. «مدیر گذرواژه» توصیه می‌کند این گذرواژه را همین‌حالا تغییر دهید.</translation>
 <translation id="3307649904964670439">‏دکمه «سفارشی‌سازی Chrome»؛ برای سفارشی‌سازی ظاهر مرورگر، آن را فعال کنید</translation>
 <translation id="3308006649705061278">‏واحد سازمانی (OU)</translation>
+<translation id="3310946375819654151">‏Chrome تلاش دارد اطلاعات حساس شما را در <ph name="APP_NAME" /> پر کند.</translation>
 <translation id="3312952471765023168">بارگذاری انجام شد</translation>
 <translation id="3318016344440038475">کمدی تلویزیونی</translation>
 <translation id="3324687287337751929">۶ × ۴ اینچ</translation>
@@ -1741,6 +1744,7 @@
 <translation id="3752181611900535304">نشانی در حساب ذخیره شود؟</translation>
 <translation id="3752543821772132562">نادیده گرفته می‌شود زیرا <ph name="POLICY_NAME" /> تنظیم نشده است.</translation>
 <translation id="3754210790023674521">خروج از تصویردرتصویر</translation>
+<translation id="3754664361823138853">&amp;باز کردن صفحه سابقه</translation>
 <translation id="3759461132968374835">شما اخیراً گزارش خرابی ارسال نکرده‌اید. مشکلاتی که در هنگام غیرفعال بودن ویژگی ارائه گزارش خرابی ایجاد شده است، در اینجا نمایش داده نمی‌شود.</translation>
 <translation id="3760561303380396507">‏به‌جای CVC از Windows Hello استفاده شود؟</translation>
 <translation id="3761171036307311438">نام روی کارت:</translation>
@@ -2752,6 +2756,7 @@
 <translation id="5385966243497224160">‏نمی‌توان نشانی وب غیرHTTPS را پیش‌دید کرد</translation>
 <translation id="5386426401304769735">‏زنجیره گواهی این سایت حاوی یک گواهی با امضای SHA-1 است.</translation>
 <translation id="5391010642126249196">آخرین بازدید:</translation>
+<translation id="5391306025131596142">&amp;باز کردن صفحه سابقه</translation>
 <translation id="539203134595252721">تنیس روی میز</translation>
 <translation id="5392506727170022660">فلز (نیمه‌براق)</translation>
 <translation id="5394069166371280357">نمایش تلویزیونی خانوادگی</translation>
@@ -2862,7 +2867,6 @@
 <translation id="5543564889050342791">باغ وحش، آکواریوم، منطقه حفاظت‌شده</translation>
 <translation id="5543722831081909240">۱۸۰ درجه</translation>
 <translation id="5544836308113951378">سفر دریایی و دربستی</translation>
-<translation id="5545314360139398232">به <ph name="ISSUER_NAME" /> پیوند دهید تا بتوانید قسطی پرداخت کنید</translation>
 <translation id="5547939254150808298">چاپ و نشر</translation>
 <translation id="554815783948612276">ارائه‌دهند گپ و تالار گفتمان</translation>
 <translation id="5548606607480005320">بررسی ایمنی</translation>
@@ -3547,6 +3551,7 @@
 <translation id="6655085656059574817">حفظ پیوند حسابتان به پرداخت سریع‌تر با <ph name="BNPL_ISSUER_NAME" /> کمک می‌کند، اما می‌توانید با رفتن به <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" />، پیوند آن را لغو کنید.</translation>
 <translation id="6656935431494847393">شامل اطلاعاتی مثل رزرو پرواز و اطلاعات خودرو می‌شود</translation>
 <translation id="6657585470893396449">گذرواژه</translation>
+<translation id="6659156657345021268">اطلاعات شما فقط در دستگاهتان ذخیره می‌شود. دفعه بعدی که فرم مربوطی را تکمیل کنید، فرصت خواهید داشت که آن را در «کیف پول» ذخیره کنید.</translation>
 <translation id="6659246032834639189">این قیمت پایین است</translation>
 <translation id="6660413144148052430">مکان</translation>
 <translation id="6662457027866368246">رول اول</translation>
@@ -4952,6 +4957,7 @@
 <translation id="8894794286471754040">ابتدا لبه بلند</translation>
 <translation id="8897221284075091877">‏برای درخواست کردن دسترسی به این محتوا، با «حساب Google» خود ادامه دهید</translation>
 <translation id="8897428486789851669">شنا</translation>
+<translation id="8898854704577986668">نمایش سابقه در پانل کناری</translation>
 <translation id="8899807382908246773">آگهی‌های مزاحم</translation>
 <translation id="8903921497873541725">بزرگ‌نمایی</translation>
 <translation id="8903998444169664879">برای تغییر تنظیمات پرداخت، هویتتان را درستی‌سنجی کنید</translation>

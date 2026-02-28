@@ -924,6 +924,7 @@ Váš účet Google môže mať na adrese <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="4885273946141277891">Nepodporovaný počet inštancií prehliadača Chrome.</translation>
 <translation id="4890973535105146893">Vo svojom účte Google nemáte uložené žiadne heslá</translation>
 <translation id="4905823827770127520">Zahrnúť odkaz na stránku</translation>
+<translation id="4908601375231458049">Prispôsobte si skupinu kariet a vyberte Hotovo.</translation>
 <translation id="4908869848243824489">Kanál Objaviť od Googlu</translation>
 <translation id="4910889077668685004">Platobné aplikácie</translation>
 <translation id="4911042367886397055">Vitajte späť, <ph name="USER_NAME" />!</translation>
@@ -1187,6 +1188,7 @@ Váš účet Google môže mať na adrese <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="6040143037577758943">Zavrieť</translation>
 <translation id="604124094241169006">Automatické</translation>
 <translation id="6042308850641462728">Viac</translation>
+<translation id="6047066316630165190">Otvorte mriežkový prepínač kariet.</translation>
 <translation id="604996488070107836">Súbor <ph name="FILE_NAME" /> sa nepodarilo stiahnuť z dôvodu neznámej chyby.</translation>
 <translation id="605721222689873409">RR</translation>
 <translation id="6059830886158432458">Tu ovládajte svoje príbehy aj aktivitu</translation>
@@ -1260,6 +1262,7 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="6301526076346731664">Otvorenie nástrojov pre vývojárov</translation>
 <translation id="630308129961693966">Vyberte umiestnenie panela s adresou</translation>
 <translation id="6303969859164067831">Odhlásiť sa a vypnúť synchronizáciu</translation>
+<translation id="6305257382500066042">Vyskúšať</translation>
 <translation id="6307241780749477694">Overte svoju totožnosť a budete mať v tomto zariadení k dispozícii všetky svoje heslá</translation>
 <translation id="6309082029962045994"><ph name="TAB_TITLE" />, viackrát vybraná pripnutá karta so zvukom</translation>
 <translation id="6312687380483398334">Webové aplikácie (ticho)</translation>
@@ -1361,6 +1364,7 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="6661521899577697780">Prihlásenie na používanie funkcie Chrome Finds je otvorené na polovičnú výšku</translation>
 <translation id="666731172850799929">Otvoriť v aplikácii <ph name="APP_NAME" /></translation>
 <translation id="6669390930482049506">Upozorňovať</translation>
+<translation id="6670767097276846646">Niektoré rozšírenia môžu pridávať vyhľadávače do Chromu</translation>
 <translation id="6671495933530132209">Kopírovať obrázok</translation>
 <translation id="6672697278890207089">Zadajte svoju prístupovú frázu</translation>
 <translation id="6672917148207387131">Pridať <ph name="DOMAIN" /></translation>
@@ -1847,6 +1851,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Ch
 <translation id="8458341576712814616">Skratka</translation>
 <translation id="8458413889418591446">Ak sa chcete rýchlo vrátiť na weby, ktoré ste navštívili, synchronizujte si históriu a karty</translation>
 <translation id="84594714173170813">Naďalej používajte údaje Chromu vo svojom účte Google</translation>
+<translation id="8460008946585880786">Presuňte jednu kartu na druhú.</translation>
 <translation id="8460448946170646641">Skontrolujte hlavné ovládacie prvky ochrany súkromia a zabezpečenia</translation>
 <translation id="8460932807646981183">Spravovať vyhľadávače a vyhľadávanie na webe</translation>
 <translation id="8473863474539038330">Adresy a ďalšie údaje</translation>
@@ -1957,6 +1962,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Ch
 <translation id="8969796057708736017">Ak súbor spĺňa pravidlá vašej organizácie, sťahovanie sa dokončí</translation>
 <translation id="8970887620466824814">Niečo sa pokazilo.</translation>
 <translation id="8972098258593396643">Stiahnuť do predvoleného priečinka?</translation>
+<translation id="8987736167266086032">Pokračujte tam, kde ste skončili</translation>
 <translation id="8992769679401294069">Údaje sú šifrované pomocou vašej prístupovej frázy. Zadajte ju, ak chcete používať a ukladať údaje Chromu do svojho účtu Google.</translation>
 <translation id="8993760627012879038">Otvorenie novej karty v režime inkognito</translation>
 <translation id="8995521496079646922">Aplikácie, ktoré vyberiete, sa budú používať predvolene. Ak určitú aplikáciu ešte v tomto zariadení nemáte, čoskoro sa stiahne.</translation>

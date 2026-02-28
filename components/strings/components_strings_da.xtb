@@ -230,6 +230,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1358187717814494928">Opret regneark</translation>
 <translation id="1358223345833465883">Din søgemaskine i Chromium</translation>
 <translation id="1359836962251219822">Køkkener og køkkenudstyr</translation>
+<translation id="136059610328993645">Dine oplysninger gemmes i Google Wallet for <ph name="ACCOUNT" />. Du kan bruge oplysningerne i Googles tjenester til hurtigere at udfylde formularer.</translation>
 <translation id="1360955481084547712">Åbn et nyt inkognitovindue for at browse privat</translation>
 <translation id="1361528602584216624">Grænse pr. Pix <ph name="TRANSACTION_LIMIT" /> BRL</translation>
 <translation id="1363015776076529485">Betalingsmetoder, der kan vælges for at fortsætte med betalingen, er åbnet i fuld højde.</translation>
@@ -252,6 +253,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1392813880755413602">OpenDocument-præsentation</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> har ikke sendt nogen data.</translation>
 <translation id="1393071644879491291">Hackere på det website, du har forsøgt at besøge, kan narre dig til at installere software eller afsløre data som f.eks. dine adgangskoder, dit telefonnummer eller dine kreditkortnumre. Chrome anbefaler på det kraftigste, at du går tilbage til Sikkerhed. <ph name="BEGIN_LEARN_MORE_LINK" />Få flere oplysninger om denne advarsel<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="1402151528875251561">Vis historik i sidepanelet</translation>
 <translation id="1405567553485452995">Lysegrøn</translation>
 <translation id="1406370515365284486">Dine betalingsmetoder gemmes stadig</translation>
 <translation id="1406500794671479665">Verificerer...</translation>
@@ -1450,6 +1452,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="33073482541490531">Den adgangskode, du lige har brugt, er blevet lækket i forbindelse med et brud på datasikkerheden. Adgangs­kode­admin­istrator anbefaler, at du ændrer denne adgangskode nu.</translation>
 <translation id="3307649904964670439">Knappen Tilpas Chrome, aktivér for at tilpasse din browsers udseende</translation>
 <translation id="3308006649705061278">Organisationsenhed (OU)</translation>
+<translation id="3310946375819654151">Chrome forsøger at udfylde dine følsomme oplysninger i <ph name="APP_NAME" />.</translation>
 <translation id="3312952471765023168">Upload lykkedes</translation>
 <translation id="3318016344440038475">Tv-komedier</translation>
 <translation id="3324687287337751929">4 x 6 tommer</translation>
@@ -1740,6 +1743,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3752181611900535304">Vil du gemme adressen på kontoen?</translation>
 <translation id="3752543821772132562">Ignoreret, fordi <ph name="POLICY_NAME" /> ikke er angivet.</translation>
 <translation id="3754210790023674521">Afslut integreret billede</translation>
+<translation id="3754664361823138853">Åbn siden Historik</translation>
 <translation id="3759461132968374835">Du har ingen nyligt rapporterede nedbrud. Nedbrud, der opstod, mens rapportering om nedbrud var deaktiveret, vises ikke her.</translation>
 <translation id="3760561303380396507">Vil du bruge Windows Hello i stedet for CVC?</translation>
 <translation id="3761171036307311438">Navn på kort:</translation>
@@ -2751,6 +2755,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5385966243497224160">Du kan ikke se en forhåndsvisning af en webadresse, der ikke er HTTPS</translation>
 <translation id="5386426401304769735">Certifikatkæden for dette website indeholder et certifikat, der er signeret med SHA-1.</translation>
 <translation id="5391010642126249196">Du besøgte indholdet</translation>
+<translation id="5391306025131596142">Åbn siden Historik</translation>
 <translation id="539203134595252721">Bordtennis</translation>
 <translation id="5392506727170022660">Metal (halvblankt)</translation>
 <translation id="5394069166371280357">Familieorienterede tv-programmer</translation>
@@ -2861,7 +2866,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5543564889050342791">Zoologiske haver, akvarier og reservater</translation>
 <translation id="5543722831081909240">180 grader</translation>
 <translation id="5544836308113951378">Krydstogter og charterrejser</translation>
-<translation id="5545314360139398232">Tilknyt <ph name="ISSUER_NAME" /> for at betale over tid</translation>
 <translation id="5547939254150808298">Trykkeri og udgivelse</translation>
 <translation id="554815783948612276">Udbydere af fora og chatprogrammer</translation>
 <translation id="5548606607480005320">Sikkerhedstjek</translation>
@@ -3546,6 +3550,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6655085656059574817">Hvis du bevarer tilknytningen af din konto, kan du betale hurtigere med <ph name="BNPL_ISSUER_NAME" />. Hvis du vil fjerne tilknytningen, skal du gå til <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /></translation>
 <translation id="6656935431494847393">Omfatter oplysninger som f.eks. flybookinger og køretøjsoplysninger</translation>
 <translation id="6657585470893396449">Adgangskode</translation>
+<translation id="6659156657345021268">Dine oplysninger gemmes kun på din enhed. Du får mulighed for at gemme oplysningerne i Wallet, næste gang du udfylder en relevant formular.</translation>
 <translation id="6659246032834639189">Denne pris er lav</translation>
 <translation id="6660413144148052430">lokation</translation>
 <translation id="6662457027866368246">Første papirrulle</translation>
@@ -4952,6 +4957,7 @@ Yderligere oplysninger:
 <translation id="8894794286471754040">Lang kant først</translation>
 <translation id="8897221284075091877">Fortsæt med din Google-konto for at bede om at se dette indhold</translation>
 <translation id="8897428486789851669">Svømning</translation>
+<translation id="8898854704577986668">Vis historik i sidepanelet</translation>
 <translation id="8899807382908246773">Påtrængende annoncer</translation>
 <translation id="8903921497873541725">Zoom ind</translation>
 <translation id="8903998444169664879">Verificer din identitet for at ændre dine betalingsindstillinger</translation>

@@ -1361,6 +1361,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="6661521899577697780">Chrome Finds 선택이 절반 높이로 열림</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" />에서 열기</translation>
 <translation id="6669390930482049506">알림 받기</translation>
+<translation id="6670767097276846646">일부 확장 프로그램은 Chrome에 검색엔진을 추가할 수 있습니다.</translation>
 <translation id="6671495933530132209">이미지 복사</translation>
 <translation id="6672697278890207089">암호 입력</translation>
 <translation id="6672917148207387131"><ph name="DOMAIN" /> 추가</translation>
@@ -1957,6 +1958,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="8969796057708736017">파일이 조직의 정책을 준수하는 경우 다운로드가 완료됩니다.</translation>
 <translation id="8970887620466824814">문제 발생</translation>
 <translation id="8972098258593396643">기본 폴더에 다운로드하시겠습니까?</translation>
+<translation id="8987736167266086032">멈춘 부분에서 계속</translation>
 <translation id="8992769679401294069">데이터가 암호로 암호화되어 있습니다. Google 계정에서 Chrome 데이터를 사용하고 저장하려면 암호를 입력하세요.</translation>
 <translation id="8993760627012879038">시크릿 모드로 새 탭 열기</translation>
 <translation id="8995521496079646922">선택한 앱이 기본적으로 사용됩니다. 이 기기에 앱이 아직 설치되어 있지 않은 경우 곧 다운로드됩니다.</translation>

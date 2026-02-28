@@ -1020,6 +1020,7 @@
 <translation id="1671525612731130246">‏انتخاب کردن حساب Drive</translation>
 <translation id="1671749176392751693">شناسه‌های محتوای محافظت‌شده مجاز هستند</translation>
 <translation id="1673137583248014546"><ph name="URL" /> می‌خواهد به ساخت و مدل «کلید امنیتی» شما دسترسی پیدا کند</translation>
+<translation id="1673855466663721679">نمایش نشانک‌ها در پانل کناری</translation>
 <translation id="1674073353928166410">باز کردن همه (<ph name="URL_COUNT" /> مورد) در «پنجره ناشناس»</translation>
 <translation id="1674142805528405174">‏«مدیر گذرواژه Google» می‌تواند حسابتان را با گذرواژه‌ای قوی که در حساب <ph name="EMAIL" /> شما ذخیره می‌شود به‌روز کند.</translation>
 <translation id="1674945585974615438">بهینه‌سازهای جاوا اسکریپت در سایت‌های ناآشنا به‌طور خودکار غیرفعال شود</translation>
@@ -3453,6 +3454,7 @@
 <translation id="3312883087018430408">‏برای جستجوی بخش یا سایتی خاص در Chrome، میان‌بر آن را در نوار نشانی تایپ کنید و به‌دنبال آن میان‌بر ترجیحی صفحه‌کلید را فشار دهید. برای مثال، برای اینکه فقط Bookmarks (نشانک‌ها) را جستجو کنید، «‎@bookmarks» را تایپ کنید و سپس کلید «جهش» یا «فاصله» را فشار دهید.</translation>
 <translation id="3313622045786997898">ارزش امضای گواهی</translation>
 <translation id="3313950410573257029">بررسی اتصال</translation>
+<translation id="3314239811356311272">&amp;باز کردن «مدیر نشانک‌ها»</translation>
 <translation id="3315158641124845231">عدم نمایش <ph name="PRODUCT_NAME" /></translation>
 <translation id="3317459757438853210">دو طرفه</translation>
 <translation id="3317521105713541270">ایجاد گروه‌ها</translation>
@@ -3659,6 +3661,7 @@
 <translation id="3453597230179205517">دسترسی مکان مسدود است</translation>
 <translation id="3453612417627951340">به مجوز نیاز دارد</translation>
 <translation id="3454213325559396544">این آخرین به‌روزرسانی خودکار نرم‌افزار و امنیتی برای این <ph name="DEVICE_TYPE" /> است. برای دریافت به‌روزرسانی‌های بعدی، به مدل جدیدتری ارتقا دهید.</translation>
+<translation id="3454276058453724464">{FILE_LIMIT,plural, =1{۱ فایل پی‌دی‌اف برای استفاده همراه با سؤالتان بارگذاری کنید}one{حداکثر # فایل پی‌دی‌اف برای استفاده همراه با سؤالتان بارگذاری کنید}other{حداکثر # فایل پی‌دی‌اف برای استفاده همراه با سؤالتان بارگذاری کنید}}</translation>
 <translation id="3454818737556063691">یک فایل برای باز شدن به <ph name="CLOUD_PROVIDER" /> منتقل شود؟</translation>
 <translation id="3455436146814891176">گذرواژه رمزگذاری همگام‌سازی</translation>
 <translation id="345693547134384690">باز کردن &amp;تصویر در برگهٔ جدید</translation>
@@ -5032,6 +5035,7 @@
 <translation id="4364567974334641491"><ph name="APP_NAME" /> در حال اشتراک‌گذاری یک پنجره است.</translation>
 <translation id="4364830672918311045">نمایش اعلان‌ها</translation>
 <translation id="4367971618859387374">نام نمایشی</translation>
+<translation id="4368888793624522796">گروه زبانه‌ها منتقل شده است</translation>
 <translation id="4368960422722232719">نمایش میزان استفاده از حافظه در کارت پیش‌نمایش نگه داشتن روی زبانه</translation>
 <translation id="4369151461324628035">به سایت‌ها اجازه داده نشود به دستگاه‌های موجود در شبکه محلی شما وصل شوند</translation>
 <translation id="4369215744064167350">درخواست وب‌سایت تأیید شد</translation>
@@ -5420,6 +5424,7 @@
 <translation id="4634575639321169635">راه‌اندازی این دستگاه برای استفاده کاری یا شخصی</translation>
 <translation id="4635072447747973225">‏حذف نصب Crostini</translation>
 <translation id="4635398712689569051"><ph name="PAGE_NAME" /> برای کاربران مهمان دردسترس نیست.</translation>
+<translation id="4635975718422788482">{FILE_LIMIT,plural, =1{۱ تصویر برای استفاده همراه با سؤالتان بارگذاری کنید}one{حداکثر # تصویر برای استفاده همراه با سؤالتان بارگذاری کنید}other{حداکثر # تصویر برای استفاده همراه با سؤالتان بارگذاری کنید}}</translation>
 <translation id="4636187126182557415">اولویت‌های سیستم</translation>
 <translation id="4636930964841734540">اطلاعات</translation>
 <translation id="4637083375689622795">کنش‌های دیگر، <ph name="EMAIL" /></translation>
@@ -6263,6 +6268,7 @@
 <translation id="5215502535566372932">کشور را انتخاب کنید</translation>
 <translation id="5216674789212441076">‏زیرنویس زنده ناشنوایان را به‌طور خودکار ترجمه می‌کند. زیرنویس ناشنوایان برای ترجمه به Google ارسال می‌شود.</translation>
 <translation id="5216951551945455224">{NUM_TABS,plural, =1{‏توقف هم‌رسانی زبانه با Gemini}one{‏توقف هم‌رسانی # زبانه با Gemini}other{‏توقف هم‌رسانی # زبانه با Gemini}}</translation>
+<translation id="5217883660859035687">گروه زبانه‌ها را حرکت می‌دهیم تا فضای بیشتری برای نشانک‌هایتان ایجاد کنیم.</translation>
 <translation id="5220011581825921581">جستجو + کلید بالابر</translation>
 <translation id="5221516927483787768">پخش کردن محتوای <ph name="HOST_NAME" /> امکان‌پذیر نیست</translation>
 <translation id="5221834113325601057">زبانه از فهرست کنار گذاشته شد</translation>
@@ -6946,6 +6952,7 @@
 <translation id="5697832193891326782">انتخاب‌گر اموجی</translation>
 <translation id="5698136107297470317">قصد دارید داده‌هایتان در <ph name="BRAND" /> را حذف کنید</translation>
 <translation id="5698878456427040674">بررسی کنید از حساب انتخاب‌شده پشتیبانی می‌شود.</translation>
+<translation id="5698900765010620315">تیره با کنتراست پایین</translation>
 <translation id="5699227710146832453">از شما</translation>
 <translation id="570043786759263127">‏خدمات و برنامه‌های Google Play</translation>
 <translation id="5700761515355162635">کوکی‌های طرف سوم مجاز هستند</translation>
@@ -8330,6 +8337,7 @@
 <translation id="6663190258859265334">‏<ph name="DEVICE_TYPE" /> شما Powerwash می‌شود و به نسخه قبلی برمی‌گردد.</translation>
 <translation id="6664774537677393800">هنگام باز کردن نمایه‌تان مشکلی پیش آمد. لطفاً از سیستم خارج شوید و دوباره به آن وارد شوید.</translation>
 <translation id="6665874326033183068">حیات‌وحش</translation>
+<translation id="6666560794795912543">نمایش نشانک‌ها در پانل کناری</translation>
 <translation id="6667086124612170548">فایل برای این دستگاه بسیار بزرگ است</translation>
 <translation id="6667092961374478614">قابلیت شناسایی <ph name="FEATURE_NAME" /></translation>
 <translation id="6667187897999649121">‏درحال‌حاضر، می‌توانید گذرواژه‌ها را فقط با اعضای خانواده هم‌رسانی کنید. <ph name="BEGIN_LINK" />گروه خانواده‌ای با حداکثر ۶ عضو ایجاد کنید<ph name="END_LINK" /> و بهره بیشتری از محصولات و اشتراک‌ها در Google ببرید.</translation>
@@ -9791,6 +9799,7 @@
 <translation id="7660146600670077843">روی یکی از زبانه‌ها کلیک راست کنید و «افزودن زبانه به گروه جدید» را انتخاب کنید</translation>
 <translation id="7661451191293163002">گواهینامه ثبت بدست نیامد.</translation>
 <translation id="7662283695561029522">برای پیکربندی تک‌ضرب بزنید</translation>
+<translation id="7662535435481776002">روشن با کنتراست پایین</translation>
 <translation id="7663719505383602579">گیرنده: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7663774460282684730">میان‌بر صفحه‌کلید دردسترس است</translation>
 <translation id="7663859337051362114">افزودن نمایه سیم‌کارت داخلی</translation>
@@ -11800,6 +11809,7 @@
 <translation id="8986494364107987395">‏ارسال خودکار آمار کاربرد و گزارش‌های خرابی به Google</translation>
 <translation id="8987305927843254629">هر فرد می‌تواند تجربه‌اش را شخصی‌سازی کند و داده‌ها را خصوصی نگه دارد.</translation>
 <translation id="8987321822984361516">مرورگر تحت‌مدیریت سازمان و نمایه تحت‌مدیریت <ph name="PROFILE_DOMAIN" /> قرار دارد</translation>
+<translation id="8987736167266086032">ادامه دادن از جایی که ترک کرده‌اید</translation>
 <translation id="8987927404178983737">ماه</translation>
 <translation id="8988539543012086784">این صفحه در <ph name="BOOKMARK_FOLDER" /> ذخیره شد</translation>
 <translation id="8989359959810288806">بازآوری وضعیت اشتراک‌گذاری اینترنت</translation>

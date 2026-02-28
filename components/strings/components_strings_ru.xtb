@@ -1310,6 +1310,8 @@
 <translation id="3102312643185441063">Сберегательный счет</translation>
 <translation id="3103188521861412364">Акции и облигации</translation>
 <translation id="3105172416063519923">Идентификатор объекта:</translation>
+<translation id="3105223248029915046">Платежи в рассрочку доступны при соответствии требованиям.
+Чтобы скрыть варианты оплаты в рассрочку, перейдите в <ph name="BEGIN_LINK" />платежные настройки<ph name="END_LINK" />.</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />Проверить настройки безопасного DNS-сервера<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Средний лоток</translation>
 <translation id="3109061346635850169">Уход за лицом и телом</translation>
@@ -2865,7 +2867,6 @@
 <translation id="5543564889050342791">Зоопарки, аквариумы и заповедники</translation>
 <translation id="5543722831081909240">180 градусов</translation>
 <translation id="5544836308113951378">Круизы и чартерные рейсы</translation>
-<translation id="5545314360139398232">Использовать рассрочку, связав аккаунт с сервисом "<ph name="ISSUER_NAME" />"</translation>
 <translation id="5547939254150808298">Печать и издательское дело</translation>
 <translation id="554815783948612276">Поставщики форумов и чатов</translation>
 <translation id="5548606607480005320">Проверка безопасности</translation>
@@ -4360,6 +4361,7 @@
 <translation id="7908648876066812348">Подключается виртуальная карта</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />. Нажмите Tab, а затем Ввод, чтобы перейти на страницу проверки безопасности Chrome в настройках.</translation>
 <translation id="791107458486222637">Повтор действия</translation>
+<translation id="7911651285409665023">Закрыть и вернуться на вкладку "<ph name="TAB_TITLE" />"</translation>
 <translation id="7912924955815015552">Импортировано из Safari</translation>
 <translation id="791551905239004656">Рисование и раскраски</translation>
 <translation id="7916162853251942238">Основа для флексопечати</translation>

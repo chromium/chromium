@@ -1310,6 +1310,8 @@
 <translation id="3102312643185441063">ಉಳಿತಾಯ</translation>
 <translation id="3103188521861412364">ಸ್ಟಾಕ್‌ಗಳು ಮತ್ತು ಬಾಂಡ್‌ಗಳು</translation>
 <translation id="3105172416063519923">ಅಸೆಟ್ ID:</translation>
+<translation id="3105223248029915046">ಪಾವತಿ ಪ್ಲಾನ್‌ಗಳು ಅರ್ಹತೆಗೆ ಒಳಪಟ್ಟಿರುತ್ತವೆ.
+ನಂತರ ಪಾವತಿಸುವ ಆಯ್ಕೆಗಳನ್ನು ಮರೆಮಾಡಲು, <ph name="BEGIN_LINK" />ಪಾವತಿ ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ<ph name="END_LINK" /> ಹೋಗಿ</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />ಸುರಕ್ಷಿತ DNS ಕಾನ್ಫಿಗರೇಶನ್‌ ಅನ್ನು ಪರಿಶೀಲಿಸಿ<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">ಮಧ್ಯಭಾಗದ ಟ್ರೇ</translation>
 <translation id="3109061346635850169">ಫೇಸ್ ಮತ್ತು ಬಾಡಿ ಕೇರ್</translation>
@@ -1393,6 +1395,7 @@
 <translation id="3218388919950135939">ಒಳಗೊಂಡಿರುವ ಅಪಾಯಗಳ ಕುರಿತು ನಿಮಗೆ ಸಂಪೂರ್ಣ ಅರಿವಿದ್ದರೆ ಮಾತ್ರ <ph name="BEGIN_LINK" />ಈ ಅಸುರಕ್ಷಿತ ಸೈಟ್‌ಗೆ<ph name="END_LINK" /> ಭೇಟಿ ನೀಡಿ.</translation>
 <translation id="3219056262712778751">ಅಜ್ಞಾತ ದೋಷದಿಂದಾಗಿ ವೀಡಿಯೊ ಕಳೆದುಹೋಗಿದೆ</translation>
 <translation id="3220264767789936523">ಸಾಂಪ್ರದಾಯಿಕ ಉಡುಗೆ</translation>
+<translation id="3222634016790917333">ನಿಮ್ಮ ಮಾಹಿತಿಯನ್ನು ಸೇವ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="3223287115535306850">ಆ್ಯಪ್ ಬಿಡುಗಡೆ ಥ್ರೋಬರ್</translation>
 <translation id="3223425961342298674">ಸ್ಥಳವನ್ನು ಅನುಮತಿಸಲಾಗಿಲ್ಲ</translation>
 <translation id="3225919329040284222">ಆಂತರಿಕ ಮಾನದಂಡಗಳಿಗೆ ಹೊಂದಿಕೆಯಾಗದ ಪ್ರಮಾಣಪತ್ರವನ್ನು ಸರ್ವರ್ ಹಾಜರಿಪಡಿಸಿದೆ. ನಿಮ್ಮ ಸುರಕ್ಷತೆಯ ಸಲುವಾಗಿ ಕೆಲವು ಹೆಚ್ಚು ಸುರಕ್ಷಿತ ವೆಬ್ ಸೈಟ್‌ಗಳಲ್ಲಿ ಈ ಮಾನದಂಡಗಳನ್ನು ಸೇರ್ಪಡೆಗೊಳಿಸಲಾಗಿದೆ.</translation>
@@ -1610,6 +1613,7 @@
 <translation id="3575121482199441727">ಈ ಸೈಟ್‌ಗಾಗಿ ಅನುಮತಿಸಿ</translation>
 <translation id="3575168918110434329">A4x7</translation>
 <translation id="3575589330755445706">ಬೀದಿ ಹೆಸರು ಆಯ್ಕೆಯನ್ನು ಆರಿಸಲಾಗಿದೆ</translation>
+<translation id="3576315803647905285">ಶಿಷ್ಟ ಭಾಷೆಯನ್ನು ಬಳಸಿ</translation>
 <translation id="3576616784287504635"><ph name="SITE" /> ನಲ್ಲಿ ಎಂಬೆಡ್ ಮಾಡಲಾದ ಪುಟವು ಹೀಗೆ ಹೇಳುತ್ತದೆ</translation>
 <translation id="3577473026931028326">ಏನೋ ತಪ್ಪಾಗಿದೆ. ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="3577902790357386792">ಜಿಮ್ನಾಸ್ಟಿಕ್ಸ್</translation>
@@ -2680,6 +2684,7 @@
 <translation id="5266128565379329178">ಮೇಲ್ಭಾಗದಲ್ಲಿ ಬೈಂಡ್ ಮಾಡಿ</translation>
 <translation id="5269225904387178860">ಕೆಳಭಾಗದಲ್ಲಿ ನಾಲ್ಕು ತೂತುಗಳನ್ನು ಮಾಡಿ</translation>
 <translation id="5271381225185906340">"<ph name="DATA_CONTROLS_RESTRICTION" />" ಗೆ "<ph name="DATA_CONTROLS_ATTRIBUTE" />" ಬೆಂಬಲಿತ ಸ್ಥಿತಿಯಲ್ಲ</translation>
+<translation id="527191520368130807">ಇಂಪ್ರೂವ್ ಮಾಡಿ</translation>
 <translation id="5273658854610202413">ಎಚ್ಚರಿಕೆ: ಈ ಕಾರ್ಯನೀತಿಯನ್ನು PolicyDictionaryMultipleSourceMergeList ಕಾರ್ಯನೀತಿಯಲ್ಲಿ ನಿರ್ದಿಷ್ಟಪಡಿಸಿರುವಂತೆ ವಿಲೀನಗೊಳಿಸಲಾಗಿಲ್ಲ ಏಕೆಂದರೆ ಅದು ವಿಲೀನಗೊಳಿಸಬಹುದಾದ ನಿಘಂಟಿನ ಕಾರ್ಯನೀತಿಗಳ ಭಾಗವಾಗಿಲ್ಲ.</translation>
 <translation id="5278778426231952189">ಇದೀಗ ಅಪ್‌ಲೋಡ್ ಮಾಡಿ</translation>
 <translation id="5279286380302340275">ಡೌನ್‌ಲೋಡ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
@@ -2863,7 +2868,6 @@
 <translation id="5543564889050342791">ಮೃಗಾಲಯಗಳು, ಅಕ್ವೇರಿಯಮ್‌ಗಳು ಮತ್ತು ಅಭಯಾರಣ್ಯಗಳು</translation>
 <translation id="5543722831081909240">180 ಡಿಗ್ರಿಗಳು</translation>
 <translation id="5544836308113951378">ಕ್ರೂಸಸ್‌ ಮತ್ತು ಚಾರ್ಟರ್‌ಗಳು</translation>
-<translation id="5545314360139398232">ಕಾಲಾನಂತರದಲ್ಲಿ ಪಾವತಿಸುವ ಲಿಂಕ್ <ph name="ISSUER_NAME" /></translation>
 <translation id="5547939254150808298">ಮುದ್ರಣ ಮತ್ತು ಪ್ರಕಾಶನ</translation>
 <translation id="554815783948612276">ಫೋರಂ ಮತ್ತು Chat ಒದಗಿಸುವವರು</translation>
 <translation id="5548606607480005320">ಸುರಕ್ಷತೆಯ ಪರಿಶೀಲನೆ</translation>
@@ -3581,6 +3585,7 @@
 <translation id="6698097747703777657">ನಿಮ್ಮ ಕೋಡ್ ಅನ್ನು ಸ್ವೀಕರಿಸಿಲ್ಲವೇ? <ph name="BEGIN_LINK" />ಹೊಸ ಕೋಡ್ ಅನ್ನು ಪಡೆದುಕೊಳ್ಳಿ<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">ರಚಿಸಲಾಗಿದೆ:</translation>
 <translation id="6698769547327354196">Chrome ನಲ್ಲಿ Pix ಅನ್ನು ಆಫ್‌ ಮಾಡಲು, ನಿಮ್ಮ <ph name="BEGIN_LINK1" />ಪಾವತಿ ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ<ph name="END_LINK1" /> ಹೋಗಿ</translation>
+<translation id="669903922988126943">ನಿಮ್ಮ ಮಾಹಿತಿಯನ್ನು ಸೇವ್ ಮಾಡಿ ಮತ್ತು Google ಉತ್ಪನ್ನಗಳಾದ್ಯಂತ ಫಾರ್ಮ್‌ಗಳನ್ನು ಭರ್ತಿ ಮಾಡುವಂತಹ ಕೆಲಸಗಳನ್ನು ವೇಗವಾಗಿ ಮಾಡಿ. ನೀವು <ph name="ACCOUNT" /> ಗಾಗಿ <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> ನಲ್ಲಿ <ph name="MANAGE_INFO_LINK" /> ಮಾಡಬಹುದು.</translation>
 <translation id="67007264085648978">ಸಮಯದ ಸ್ಕ್ರಬ್ಬರ್</translation>
 <translation id="6702851555558236418">ಆಡಿಯೋ ಮತ್ತು ಸಂಗೀತದ ಸಾಫ್ಟ್‌ವೇರ್</translation>
 <translation id="6702919718839027939">ಪ್ರೆಸೆಂಟೇಷನ್ ಮೋಡ್</translation>
@@ -4092,6 +4097,7 @@
 <translation id="7499188644237027195">ನೀವು Chrome ನಲ್ಲಿ ಖರೀದಿಗಳನ್ನು ಮಾಡಿದಾಗ, eWallet ಮತ್ತು Pix ಅನ್ನು ಆಯ್ಕೆಗಳಾಗಿ ನೋಡಿ</translation>
 <translation id="7500917112031739411">ಗುಂಪಿನ ಪ್ರಕಾರ ತೋರಿಸಿ</translation>
 <translation id="7501663406926337752">ಮುಂದಿನ ಸೈಟ್ ಅನ್ನು ನಿಮ್ಮ ಸಂಸ್ಥೆಯು ಫ್ಲ್ಯಾಗ್ ಮಾಡಿದೆ</translation>
+<translation id="7502044688973049724">ನಿಮ್ಮ ಮಾಹಿತಿಯನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="7507075214339298899">ಎನ್ವಲಪ್ #9</translation>
 <translation id="7508255263130623398">ಹಿಂತಿರುಗಿಸಲಾದ ನೀತಿಯ ಸಾಧನ ಐಡಿ ಖಾಲಿ ಇದೆ ಅಥವಾ ಪ್ರಸ್ತುತ ಸಾಧನ ಐಡಿಗೆ ಹೊಂದಾಣಿಕೆಯಾಗುವುದಿಲ್ಲ</translation>
 <translation id="7508577201115425418">ಡಾಕ್ಯುಮೆಂಟ್ ಮತ್ತು ಮುದ್ರಣ ಸೇವೆಗಳು</translation>
@@ -4357,6 +4363,7 @@
 <translation id="7908648876066812348">ವರ್ಚುವಲ್ ಕಾರ್ಡ್ ಅನ್ನು ಆನ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ Chrome ಸುರಕ್ಷತೆ ಪರಿಶೀಲನೆ ಪುಟಕ್ಕೆ ಹೋಗಲು Tab ಒತ್ತಿರಿ ನಂತರ Enter ಬಟನ್ ಒತ್ತಿರಿ</translation>
 <translation id="791107458486222637">ಪುನಃ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
+<translation id="7911651285409665023">ಮುಚ್ಚಿರಿ ಮತ್ತು "<ph name="TAB_TITLE" />" ಗೆ ಹಿಂತಿರುಗಿ</translation>
 <translation id="7912924955815015552">Safari ಇಂದ ಇಂಪೋರ್ಟ್ ಮಾಡಿಕೊಳ್ಳಲಾಗಿದೆ</translation>
 <translation id="791551905239004656">ಚಿತ್ರಬಿಡಿಸುವಿಕೆ ಮತ್ತು ಬಣ್ಣಹಚ್ಚುವಿಕೆ</translation>
 <translation id="7916162853251942238">ಫ್ಲೆಕ್ಸೊ ಬೇಸ್</translation>
@@ -5143,6 +5150,7 @@
 <translation id="9191834167571392248">ಕೆಳಗಿನ ಎಡಭಾಗದಲ್ಲಿ ತೂತುಗಳನ್ನು ಮಾಡಿ</translation>
 <translation id="9192361865877479444">ಲೋಹ (ಮ್ಯಾಟ್)</translation>
 <translation id="9192947025498305328">ಕ್ಲೀನ್ ಬ್ಯೂಟಿ</translation>
+<translation id="9193018794001479794">ವಿವರವಾಗಿ ಹೇಳಿ</translation>
 <translation id="9195969368671142407">ನಿಮ್ಮ ಸಂಸ್ಥೆಯು ನಿಮ್ಮ Google ಖಾತೆಗೆ ಉಳಿತಾಯವನ್ನು ಮಿತಿಗೊಳಿಸಿದಾಗ, ನೀವು ಟ್ಯಾಬ್ ಗುಂಪುಗಳನ್ನು ಹಂಚಿಕೊಳ್ಳಲು ಅಥವಾ ಸೇರಿಕೊಳ್ಳಲು ಸಾಧ್ಯವಾಗುವುದಿಲ್ಲ</translation>
 <translation id="9198613052465150219">ನಿಮ್ಮ Google ಖಾತೆಯು <ph name="BEGIN_LINK_GMA" />history.google.com<ph name="END_LINK_GMA" /> ನಲ್ಲಿ ಇತರ ವಿಧಗಳ ಬ್ರೌಸಿಂಗ್ ಇತಿಹಾಸವನ್ನು ಹೊಂದಿರಬಹುದು</translation>
 <translation id="9199905725844810519">ಪ್ರಿಂಟಿಂಗ್ ಅನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>

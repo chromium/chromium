@@ -680,6 +680,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
     mga log ng debug<ph name="END_LINK" /> (inirerekomenda)</translation>
 <translation id="1454223536435069390">Kumuha ng screenshot</translation>
 <translation id="145432137617179457">Mga wika sa pang-check ng pagbabaybay</translation>
+<translation id="1455009947184333152">Na-delete ang kasanayan</translation>
 <translation id="1455119378540982311">Mga preset na laki ng window</translation>
 <translation id="1456849775870359518">Bubuksan ulit ang iyong mga tab</translation>
 <translation id="146000042969587795">Ang frame na ito ay naharang dahil naglalaman ito ng ilang nilalaman na insecure.</translation>
@@ -1343,6 +1344,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="1886996562706621347">Payagan ang mga site na hilinging maging default na mga handler para sa mga protocol (inirerekomenda)</translation>
 <translation id="1887210448491286312">Itigil ang pag-cast ng tab sa <ph name="DEVICE_NAME" /></translation>
 <translation id="1887442540531652736">Error sa pag-sign in</translation>
+<translation id="1888692623866312036">Na-save na kasanayan</translation>
 <translation id="1890026367080681123">Pumunta sa mga setting ng naka-embed na content</translation>
 <translation id="189035593835762169">Mga tuntunin at kundisyon</translation>
 <translation id="1891362123137972260">Kaunting-kaunti na lang ang espasyo sa disk. Magbakante ng espasyo sa disk.</translation>
@@ -1850,6 +1852,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2232751457155581899">Puwede ring hilingin ng mga site na i-track ang posisyon ng iyong camera</translation>
 <translation id="2233502537820838181">&amp;Higit pang impormasyon</translation>
 <translation id="223356358902285214">Aktibidad sa Web at App</translation>
+<translation id="2234031676056123135">I-customize ang mga shortcut mo</translation>
 <translation id="2234065144797002621">Sapa</translation>
 <translation id="2234208862050358325">Gamitin ang mga key na 1, 2, 3, q, e, a, s, d para igalaw ang cursor</translation>
 <translation id="2234827758954819389">Gabay sa Privacy</translation>
@@ -3111,10 +3114,12 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3048589239114571785">I-play (k)</translation>
 <translation id="3048742847101793553">Na-block ng iyong organisasyon ang file na ito dahil hindi ito na-scan.</translation>
 <translation id="3048917188684939573">Mga Log ng Cast at Device</translation>
+<translation id="3049356453907822148">Magdagdag ng bagong kasanayan</translation>
 <translation id="3051250416341590778">Laki ng display</translation>
 <translation id="3053013834507634016">Paggamit ng Certificate Key </translation>
 <translation id="3053273573829329829">I-enable ang pin ng user</translation>
 <translation id="3053274730492362225">Huwag kukurap</translation>
+<translation id="3057938290530993634">I-tap at i-hold para i-pin ang mga website na pinakamadalas mong bisitahin para sa madaling pag-access sa susunod</translation>
 <translation id="3058498974290601450">Maaari mong i-on ang pag-sync anumang oras sa mga setting.</translation>
 <translation id="3060952009917586498">Palitan ang wika ng device. Ang kasalukuyang wika ay <ph name="LANGUAGE" />.</translation>
 <translation id="3060987956645097882">Hindi kami makakonekta sa iyong telepono. Tiyaking nasa malapit at naka-unlock ang iyong telepono at naka-on ang Bluetooth at Wi-Fi nito.</translation>
@@ -3271,6 +3276,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3182749001423093222">Pang-check ng pagbabaybay</translation>
 <translation id="3183139917765991655">Pang-import ng Profile</translation>
 <translation id="3183143381919926261">Mga mobile data network</translation>
+<translation id="3183428991752322898">I-clear ang keyboard shortcut</translation>
 <translation id="3183700187146209259">Hindi ma-install ang software ng scanner</translation>
 <translation id="3183750649832309748">Makikita ng iyong organisasyong <ph name="ACCOUNT_MANAGER" /> ang ilang impormasyon, kasama ang</translation>
 <translation id="3183944777708523606">Arrangement ng monitor</translation>
@@ -3362,6 +3368,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3247649647204519958">Mula rito, makikita at mapapamahalaan mo ang mga pahintulot sa extension para sa site kung nasaan ka</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - Error sa network</translation>
 <translation id="3248902735035392926">Mahalaga ang kaligtasan. Maglaan ng ilang sandali at <ph name="BEGIN_LINK" />tingnan ang iyong mga extension ngayon<ph name="END_LINK" /></translation>
+<translation id="3250374026663843838">Pamahalaan ang iyong kasanayan</translation>
 <translation id="3251119461199395237">Pag-sync ng file</translation>
 <translation id="3251759466064201842">&lt;Hindi Bahagi Ng Certificate&gt;</translation>
 <translation id="3252169590975855820">Maa-access mo ito sa Google Password Manager</translation>
@@ -5195,6 +5202,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="4469324811108161144">Puwedeng mag-save ng hanggang <ph name="CHARACTER_LIMIT" /> character ang mga tala.</translation>
 <translation id="4469762931504673593">Puwedeng i-edit ng <ph name="ORIGIN" /> ang mga file sa <ph name="FOLDERNAME" /></translation>
 <translation id="4470957202018033307">Mga kagustuhan sa external na storage</translation>
+<translation id="4471250205822310967">Overlay ng Pagpipilian ng Gemini</translation>
 <translation id="4471354919263203780">Dina-download ang mga file ng pagkilala sa speech... <ph name="PERCENT" />%</translation>
 <translation id="4472194221638903160">Igrupo ang mga tab gamit ang AI</translation>
 <translation id="4472298120638043495">Puwede mong gamitin ang iyong gustong wika ng Google Account (<ph name="NEW_LOCALE_FROM_GAIA" />)</translation>
@@ -11815,6 +11823,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="8986494364107987395">Awtomatikong ipadala ang mga istatistika ng paggamit at mga ulat ng pag-crash sa Google</translation>
 <translation id="8987305927843254629">Magagawa ng bawat taong i-personalize ang kanyang experience at panatilihing pribado ang data.</translation>
 <translation id="8987321822984361516">Pinapamahalaan ang browser ng isang organisasyon, pinapamahalaan ang profile ng <ph name="PROFILE_DOMAIN" /></translation>
+<translation id="8987736167266086032">Bumalik kung saan ka tumigil</translation>
 <translation id="8987927404178983737">Buwan</translation>
 <translation id="8988539543012086784">Naka-save ang page na ito sa <ph name="BOOKMARK_FOLDER" /></translation>
 <translation id="8989359959810288806">I-refresh ang Status ng Pag-tether</translation>
@@ -11939,6 +11948,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="9061521313218438086">Kung makikita ng Chrome ang isa sa iyong mga password sa isang pampublikong breach sa data, puwedeng mag-alok ang Google Password Manager na palitan ang password mo para sa iyo kung naka-sign in ka.</translation>
 <translation id="9061694916020926968">Kailangang naka-sign in ka sa isang Google Account para magamit ang Steam para sa Chromebook (Beta). Mag-sign in at subukan ulit.</translation>
 <translation id="9062468308252555888">14x</translation>
+<translation id="9062873887761404531">I-clear ang shortcut sa pag-navigate</translation>
 <translation id="9063208415146866933">Error mula sa linya <ph name="ERROR_LINE_START" /> hanggang <ph name="ERROR_LINE_END" /></translation>
 <translation id="9064275926664971810">I-enable ang Autofill upang punan ang mga form sa isahang pag-click</translation>
 <translation id="9065203028668620118">I-edit</translation>

@@ -30,6 +30,7 @@
 <translation id="1011431628606634753">Mude o PIN de recuperação do Gerenciador de senhas do Google</translation>
 <translation id="1012794136286421601">Seus arquivos do Google Docs, Planilhas, Apresentações e Desenhos estão sendo sincronizados. Abra o aplicativo Google Drive para acessá-los on-line ou off-line.</translation>
 <translation id="1012876632442809908">Dispositivo USB-C (porta frontal)</translation>
+<translation id="10146536653536065">Instalar "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="1015041505466489552">TrackPoint</translation>
 <translation id="1015318665228971643">Editar nome da pasta</translation>
 <translation id="1015578595646638936">{NUM_DAYS,plural, =1{Último dia para atualizar o <ph name="DEVICE_TYPE" />}one{Atualize o <ph name="DEVICE_TYPE" /> em até {NUM_DAYS} dia}other{Atualize o <ph name="DEVICE_TYPE" /> em até {NUM_DAYS} dias}}</translation>
@@ -2846,6 +2847,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2881076733170862447">Quando você clicar na extensão</translation>
 <translation id="2882301808122022326">Resposta do Omaha</translation>
 <translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" /> será reiniciado e redefinido temporariamente</translation>
+<translation id="2883143988769190738">A extensão está solicitando estas permissões:</translation>
 <translation id="2884070497102362193">Testar bateria, CPU, memória, conectividade e muito mais</translation>
 <translation id="2885129935310217435">Há um botão com o mesmo nome. Escolha outro.</translation>
 <translation id="2885378588091291677">Gerenciador de tarefas</translation>
@@ -6941,6 +6943,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5677928146339483299">Bloqueado</translation>
 <translation id="5678550637669481956">Foi concedido acesso de leitura e gravação a <ph name="VOLUME_NAME" />.</translation>
 <translation id="5678821117681811450">Enviando para <ph name="WEB_DRIVE" /></translation>
+<translation id="5678888125599911373">Você pode reabrir as guias que fechou recentemente em qualquer lugar em que usa o Chrome</translation>
 <translation id="5678955352098267522">Leia seus dados em <ph name="WEBSITE_1" /></translation>
 <translation id="5679785611070310751">Você não receberá mais atualizações de segurança para este Chromebook em <ph name="MONTH_AND_YEAR" />. Faça upgrade para ter a segurança e o software mais recentes. Oferta sujeita aos termos.</translation>
 <translation id="5680050361008726776">Remover "<ph name="ESIM_PROFILE_NAME" />"?</translation>
@@ -10392,6 +10395,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8038111231936746805">(padrão)</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{Copiando 1 arquivo para o <ph name="CLOUD_PROVIDER" />}one{Copiando {NUM_OF_FILES} arquivo para o <ph name="CLOUD_PROVIDER" />}other{Copiando {NUM_OF_FILES} arquivos para o <ph name="CLOUD_PROVIDER" />}}</translation>
 <translation id="8039525676147630657">Este app do Chrome vai deixar de funcionar depois que a versão do ChromeOS for atualizada. Salve os dados que você quer manter do app. Para saber mais sobre as opções disponíveis, entre em contato com o desenvolvedor do app ou sua equipe de suporte de TI.</translation>
+<translation id="804060420274176929">Lembrar no iOS</translation>
 <translation id="8041089156583427627">Enviar feedback</translation>
 <translation id="8041093619605951337">Alegre</translation>
 <translation id="8041267120753677077">Fazer transmissão dos apps no seu smartphone</translation>
@@ -11822,6 +11826,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="8986494364107987395">Envia estatísticas de uso e relatórios de erros ao Google automaticamente</translation>
 <translation id="8987305927843254629">Cada pessoa pode personalizar a própria experiência e manter os dados privados.</translation>
 <translation id="8987321822984361516">Navegador gerenciado por uma organização, perfil gerenciado por <ph name="PROFILE_DOMAIN" /></translation>
+<translation id="8987736167266086032">Recomece de onde você parou</translation>
 <translation id="8987927404178983737">Mês</translation>
 <translation id="8988539543012086784">Esta página foi salva em <ph name="BOOKMARK_FOLDER" /></translation>
 <translation id="8989359959810288806">Atualizar status do tethering</translation>
@@ -11927,6 +11932,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="9043264199499366189">Inscreva-se em eventos do sistema ChromeOS Flex</translation>
 <translation id="9043767139743235992">Entre em contato com o Suporte à Acessibilidade do Google</translation>
 <translation id="9044646465488564462">Falha na conexão à rede: <ph name="DETAILS" /></translation>
+<translation id="9044838301401489071">Não é possível interagir com a guia até que a tarefa seja pausada ou concluída</translation>
 <translation id="9045160989383249058">A Lista de leitura foi movida para o novo painel lateral. Faça um teste.</translation>
 <translation id="9048745018038487540">Selecionar todas as fontes</translation>
 <translation id="9050666287014529139">Senha</translation>

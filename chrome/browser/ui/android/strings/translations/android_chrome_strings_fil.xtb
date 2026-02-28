@@ -287,6 +287,7 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="2230777942707397948">Walang lamang window</translation>
 <translation id="223356358902285214">Aktibidad sa Web at App</translation>
 <translation id="2233735624724508540">Pumili ng timeframe at pagkatapos ay i-tap ang I-delete ang data</translation>
+<translation id="2234031676056123135">I-customize ang mga shortcut mo</translation>
 <translation id="2234827758954819389">Gabay sa Privacy</translation>
 <translation id="2238038374973843156">Ilipat ang grupo sa ibang window</translation>
 <translation id="2239812875700136898">Kontrolin ang iyong mga kuwento mula sa Mga Opsyon para sa button na I-discover</translation>
@@ -465,6 +466,7 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="2951071800649516099">Magdagdag ng mga pahina sa iyong listahan ng babasahin para sa ibang pagkakataon</translation>
 <translation id="2954586176076923855">Ilipat ang address bar sa itaas</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> page ang hindi pa nababasa}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> page ang hindi pa nababasa}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> na page ang hindi pa nababasa}}</translation>
+<translation id="2965758440484146185">I-tap ang I-pin ang shortcut na ito</translation>
 <translation id="2972109037780336501">Awtomatikong alisin ang mga pahintulot</translation>
 <translation id="2976550651269220761">Hindi pa nase-save sa Google Account mo ang ilan sa iyong data sa Chrome.\nSubukang maghintay nang ilang minuto bago mag-sign out. Kung magsa-sign out ka ngayon, made-delete ang data na ito.</translation>
 <translation id="2977350910003566746">Ibinubukod-bukod ayon sa huling binuksan</translation>
@@ -492,6 +494,7 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="3037177537145227281">Sinusubaybayan ang presyo</translation>
 <translation id="3037517125981011456">Nagpapakita ng mga prompt na mag-sign in sa Chrome</translation>
 <translation id="3038272154009688107">Tingnan ang lahat ng site</translation>
+<translation id="3057938290530993634">I-tap at i-hold para i-pin ang mga website na pinakamadalas mong bisitahin para sa madaling pag-access sa susunod</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> bookmark}one{<ph name="BOOKMARKS_COUNT_MANY" /> bookmark}other{<ph name="BOOKMARKS_COUNT_MANY" /> na bookmark}}</translation>
 <translation id="3062802207422175757">Mga artikulo tungkol sa iyong mga interes sa Chrome</translation>
 <translation id="3066573403916685335">Lumipat Pababa</translation>
@@ -551,6 +554,7 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="333863344734218290">Binabalaan ka para sa mga hindi secure na pampubliko at pribadong site</translation>
 <translation id="3340978935015468852">mga setting</translation>
 <translation id="3341262203274374114">Hindi ma-unfollow. Nagkaproblema.</translation>
+<translation id="3351959803838327376">Pindutin nang matagal ang website at buksan ang menu</translation>
 <translation id="3359667936385849800">Gamitin ang iyong kasalukuyang service provider</translation>
 <translation id="3373701465337594448">Kapag naka-on, lalabas dito ang listahan ng mga binibisita mong site na humuhula ng iyong mga interes</translation>
 <translation id="3384347053049321195">Magbahagi ng larawan</translation>
@@ -593,6 +597,7 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="3549537543136628349">Dahil naka-encrypt ang mga na-preload na page, at ang site o app na nagli-link sa mga page ay site o app ng Google, hindi nakakatanggap ng bagong impormasyon ang mga server ng Google kapag pribadong pini-preload ang mga page na ito.</translation>
 <translation id="3549657413697417275">Hanapin sa iyong history</translation>
 <translation id="3557336313807607643">Idagdag sa mga contact</translation>
+<translation id="3560831525486613327">Magbukas ng page na bagong tab</translation>
 <translation id="3563767357928833671">Ipinapakita ang mga content ng clipboard</translation>
 <translation id="3566639033325271639">I-update ang mga setting</translation>
 <translation id="3568945271227339929">Walang nakompromisong password</translation>
@@ -1364,6 +1369,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="6661521899577697780">Binuksan nang kalahati ang pag-opt in sa Chrome Finds</translation>
 <translation id="666731172850799929">Buksan sa <ph name="APP_NAME" /></translation>
 <translation id="6669390930482049506">Abisuhan ako</translation>
+<translation id="6670767097276846646">Puwedeng magdagdag ang ilang extension ng mga search engine sa Chrome</translation>
 <translation id="6671495933530132209">Kopyahin ang larawan</translation>
 <translation id="6672697278890207089">Ipasok ang iyong passphrase</translation>
 <translation id="6672917148207387131">Idagdag ang <ph name="DOMAIN" /></translation>
@@ -1961,6 +1967,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="8969796057708736017">Matatapos ang iyong pag-download kung natutugunan ng file ang mga patakaran ng organisasyon mo</translation>
 <translation id="8970887620466824814">Nagkaproblema.</translation>
 <translation id="8972098258593396643">I-download sa default na folder?</translation>
+<translation id="8987736167266086032">Bumalik kung saan ka tumigil</translation>
 <translation id="8992769679401294069">Naka-encrypt ang iyong data gamit ang passphrase mo. Ilagay ito para magamit at ma-save ang data sa Chrome sa iyong Google Account.</translation>
 <translation id="8993760627012879038">Magbukas ng bagong tab sa Incognito mode</translation>
 <translation id="8995521496079646922">Gagamitin ang mga app na pinili mo bilang default. Kung may app na wala pa sa device, ida-download ito sa ilang sandali.</translation>

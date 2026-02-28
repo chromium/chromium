@@ -29,6 +29,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="126567311906253476">Þegar þú skráir þig inn í Google-þjónustu á borð við Gmail eða YouTube með <ph name="USER_EMAIL" /> geturðu skráð þig sjálfkrafa inn í Chromium með sama reikningi</translation>
 <translation id="1290883685122687410">Villa við uppsetningu: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1315551408014407711">Settu upp nýja Chromium prófílinn þinn</translation>
+<translation id="132092532143527429">Prófaðu með Gemini í Chromium</translation>
 <translation id="1324107359134968521">Chromium þarf aðgang að Bluetooth til að kanna 
  Bluetooth-tæki. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">Greina tungumál</translation>
@@ -241,6 +242,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="3509308970982693815">Lokaðu öllum gluggum Chromium og reyndu aftur.</translation>
 <translation id="3522404737534491619">Leyfðu skjáupptöku í Chromium í kerfisstillingunum til að deila glugganum þínum.</translation>
 <translation id="3530103706039034513"><ph name="EXISTING_USER" /> er þegar innskráð(ur).  Til að halda vefskoðun aðskilinni skaltu skrá þig inn á Chromium með þínum eigin prófíl sem <ph name="USER_EMAIL_ADDRESS" />.</translation>
+<translation id="3531741627422851418">QR-kóði til að sækja Chromium-vafra í snjalltæki</translation>
 <translation id="3561853857681580870">Leyfðu skjáupptöku í Chromium í kerfisstillingunum til að deila skjánum þínum.</translation>
 <translation id="3588112919289558122">Aukin vörn slekkur á fínstillingu JavaScript fyrir vefsvæði sem Chromium þekkir ekki</translation>
 <translation id="3597003331831379823">Ekki tókst að hefja uppsetningu með auknum heimildum. <ph name="METAINSTALLER_ERROR" /></translation>
@@ -609,6 +611,7 @@ Chromium getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="7622753900276619808">Nú standa fleiri eiginleikar þér til boða í Chromium</translation>
 <translation id="7624307931717240213">Við notum upplýsingar til að bæta þessa þjónustu. Sjá persónuverndarstefnu og þjónustuskilmála.</translation>
 <translation id="7649070708921625228">Hjálp</translation>
+<translation id="7650134251917003571">Sækja Chromium-forritið</translation>
 <translation id="7656340475565475526">Láttu Chromium skoða fyrir þig</translation>
 <translation id="7658239707568436148">Hætta við</translation>
 <translation id="7686590090926151193">Chromium er ekki sjálfgefinn vafri</translation>

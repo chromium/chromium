@@ -1310,6 +1310,8 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="3102312643185441063">Konto oszczędnościowe</translation>
 <translation id="3103188521861412364">Akcje i obligacje</translation>
 <translation id="3105172416063519923">Identyfikator zasobu:</translation>
+<translation id="3105223248029915046">Subskrypcje podlegają kryteriom kwalifikacji.
+Aby ukryć opcje płatności odroczonej, otwórz <ph name="BEGIN_LINK" />ustawienia płatności<ph name="END_LINK" /></translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />sprawdzić konfigurację bezpiecznego DNS<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Taca środkowa</translation>
 <translation id="3109061346635850169">Pielęgnacja twarzy i ciała</translation>
@@ -2866,7 +2868,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5543564889050342791">Ogrody zoologiczne, oceanaria i rezerwaty</translation>
 <translation id="5543722831081909240">180 stopni</translation>
 <translation id="5544836308113951378">Rejsy i czartery</translation>
-<translation id="5545314360139398232">Połącz aplikację <ph name="ISSUER_NAME" />, aby płacić w ratach</translation>
 <translation id="5547939254150808298">Druk i poligrafia</translation>
 <translation id="554815783948612276">Operatorzy forum i czatów</translation>
 <translation id="5548606607480005320">Kontrola zabezpieczeń</translation>
@@ -4361,6 +4362,7 @@ Dodatkowe informacje:
 <translation id="7908648876066812348">Włączam kartę wirtualną</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />; aby otworzyć w ustawieniach stronę kontroli zabezpieczeń w Chrome, naciśnij Tab, a potem Enter</translation>
 <translation id="791107458486222637">Wynik ponownego wykonania</translation>
+<translation id="7911651285409665023">Zamknij i wróć na kartę „<ph name="TAB_TITLE" />”</translation>
 <translation id="7912924955815015552">Zaimportowane z Safari</translation>
 <translation id="791551905239004656">Rysowanie i kolorowanie</translation>
 <translation id="7916162853251942238">Podstawa fleksograficzna</translation>

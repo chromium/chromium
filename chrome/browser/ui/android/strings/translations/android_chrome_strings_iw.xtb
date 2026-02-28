@@ -924,6 +924,7 @@
 <translation id="4885273946141277891">‏מספר בלתי נתמך של מופעי Chrome.</translation>
 <translation id="4890973535105146893">‏אין סיסמאות שמורות בחשבון שלך ב-Google</translation>
 <translation id="4905823827770127520">הוספת קישור לדף</translation>
+<translation id="4908601375231458049">מתאימים אישית את קבוצת הכרטיסיות ולוחצים על "סיום"</translation>
 <translation id="4908869848243824489">Discover by Google</translation>
 <translation id="4910889077668685004">אפליקציות תשלום</translation>
 <translation id="4911042367886397055">שמחים שחזרת, <ph name="USER_NAME" />!</translation>
@@ -1187,6 +1188,7 @@
 <translation id="6040143037577758943">סגירה</translation>
 <translation id="604124094241169006">אוטומטי</translation>
 <translation id="6042308850641462728">עוד</translation>
+<translation id="6047066316630165190">פותחים את הכלי למעבר בין כרטיסיות בתצוגת רשת</translation>
 <translation id="604996488070107836">הורדת <ph name="FILE_NAME" /> נכשלה עקב שגיאה לא ידועה.</translation>
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">כאן אפשר לנהל את הסטוריז והפעילות שלך</translation>
@@ -1260,6 +1262,7 @@
 <translation id="6301526076346731664">פתיחת "כלים למפתחים"</translation>
 <translation id="630308129961693966">בחירת המיקום של סרגל הכתובות</translation>
 <translation id="6303969859164067831">יציאה וכיבוי הסנכרון</translation>
+<translation id="6305257382500066042">אני רוצה לנסות</translation>
 <translation id="6307241780749477694">כדי לקבל את כל הסיסמאות במכשיר הזה, צריך לאמת את הזהות שלך</translation>
 <translation id="6309082029962045994">‫<ph name="TAB_TITLE" />, כרטיסייה מוצמדת מתוך סדרת כרטיסיות שנבחרו ומכילה תוכן שאפשר לשמוע</translation>
 <translation id="6312687380483398334">אפליקציות אינטרנט (שקט)</translation>
@@ -1361,6 +1364,7 @@
 <translation id="6661521899577697780">‏ההצעה להצטרף ל-Chrome Finds נפתחה בחצי גובה</translation>
 <translation id="666731172850799929">פתיחה ב-<ph name="APP_NAME" /></translation>
 <translation id="6669390930482049506">אני רוצה לקבל התראות</translation>
+<translation id="6670767097276846646">‏חלק מהתוספים יכולים להוסיף מנועי חיפוש ל-Chrome</translation>
 <translation id="6671495933530132209">העתקת התמונה</translation>
 <translation id="6672697278890207089">הזן את משפט הסיסמה</translation>
 <translation id="6672917148207387131">הוספה של <ph name="DOMAIN" /></translation>
@@ -1847,6 +1851,7 @@
 <translation id="8458341576712814616">קיצור דרך</translation>
 <translation id="8458413889418591446">אחרי סנכרון ההיסטוריה והכרטיסיות אפשר יהיה לחזור במהירות לאתרים שביקרת בהם</translation>
 <translation id="84594714173170813">‏המשך השימוש בנתוני Chrome בחשבון Google שלך</translation>
+<translation id="8460008946585880786">גוררים כרטיסייה אחת מעל כרטיסייה אחרת ומשחררים אותה</translation>
 <translation id="8460448946170646641">בדיקה של אמצעי הבקרה החשובים ביותר על פרטיות ואבטחה</translation>
 <translation id="8460932807646981183">ניהול של מנועי החיפוש ושל החיפוש באתרים ספציפיים</translation>
 <translation id="8473863474539038330">כתובות ועוד</translation>
@@ -1957,6 +1962,7 @@
 <translation id="8969796057708736017">המערכת תוריד את הקובץ אם הוא עומד בדרישות המדיניות של הארגון</translation>
 <translation id="8970887620466824814">משהו השתבש.</translation>
 <translation id="8972098258593396643">האם להוריד לתיקיית ברירת המחדל?</translation>
+<translation id="8987736167266086032">המשך מהנקודה שבה הפסקת</translation>
 <translation id="8992769679401294069">‏הנתונים שלך מוצפנים באמצעות ביטוי הסיסמה. כדי להשתמש בנתוני Chrome ולשמור אותם בחשבון Google, עליך להזין את ביטוי הסיסמה.</translation>
 <translation id="8993760627012879038">פתיחת חלון חדש במצב אנונימי</translation>
 <translation id="8995521496079646922">האפליקציות שבחרת ישמשו כברירת מחדל. אם האפליקציה לא מותקנת במכשיר הזה, המערכת תוריד אותה בקרוב.</translation>

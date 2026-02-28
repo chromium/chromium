@@ -1020,6 +1020,7 @@
 <translation id="1671525612731130246">ເລືອກບັນຊີ Drive</translation>
 <translation id="1671749176392751693">ອະນຸຍາດໃຫ້ໃຊ້ຕົວລະບຸເນື້ອຫາທີ່ມີການປົກປ້ອງ</translation>
 <translation id="1673137583248014546"><ph name="URL" /> ຕ້ອງການເບິ່ງຍີ່ຫໍ້ ແລະ ລຸ້ນຂອງກະແຈຄວາມປອດໄພຂອງທ່ານ</translation>
+<translation id="1673855466663721679">ສະແດງບຸກມາກໃນແຜງຄວບຄຸມດ້ານຂ້າງ</translation>
 <translation id="1674073353928166410">ເປີດທັງໝົດ (<ph name="URL_COUNT" />) ໃນໜ້າ​ຈໍ​ທີ່ບໍ່ເປີດເຜີຍຕົວຕົນ</translation>
 <translation id="1674142805528405174">ຕົວຈັດການລະຫັດຜ່ານ Google ສາມາດອັບເດດບັນຊີຂອງທ່ານດ້ວຍລະຫັດຜ່ານຍາກທີ່ບັນທຶກໄວ້ໃຫ້ທ່ານໃນບັນຊີ <ph name="EMAIL" /> ຂອງທ່ານ.</translation>
 <translation id="1674945585974615438">ປິດການນຳໃຊ້ຕົວເພີ່ມປະສິດທິພາບ JavaScript ໂດຍອັດຕະໂນມັດຢູ່ເວັບໄຊທີ່ບໍ່ຄຸ້ນເຄີຍ</translation>
@@ -3455,6 +3456,7 @@
 <translation id="3312883087018430408">ເພື່ອຊອກຫາເວັບໄຊສະເພາະໃດໜຶ່ງ ຫຼື ບາງສ່ວນຂອງ Chrome, ໃຫ້ພິມທາງລັດຂອງມັນໃສ່ໃນແຖບທີ່ຢູ່, ຕາມດ້ວຍຄີລັດທີ່ທ່ານຕ້ອງການ. ຕົວຢ່າງ: ເພື່ອຊອກຫາ Bookmarks ຢ່າງດຽວ, ໃຫ້ພິມ "@bookmarks", ຈາກນັ້ນກົດແຖບ ຫຼື ຍະຫວ່າງ.</translation>
 <translation id="3313622045786997898">ຄ່າລາຍເຊັນໃບຢັ້ງຢືນ</translation>
 <translation id="3313950410573257029">ກະລຸນາກວດສອບການເຊື່ອມຕໍ່</translation>
+<translation id="3314239811356311272">&amp;ເປີດຕົວຈັດການບຸກມາກ</translation>
 <translation id="3315158641124845231">ເຊື່ອງ <ph name="PRODUCT_NAME" /></translation>
 <translation id="3317459757438853210">ສອງໜ້າ</translation>
 <translation id="3317521105713541270">ສ້າງກຸ່ມ</translation>
@@ -3661,6 +3663,7 @@
 <translation id="3453597230179205517">ສິດເຂົ້າເຖິງສະຖານທີ່ຖືກບລັອກໄວ້</translation>
 <translation id="3453612417627951340">ຕ້ອງມີການໃຫ້ສິດ</translation>
 <translation id="3454213325559396544">ນີ້ແມ່ນການອັບເດດຊອບແວ ແລະ ຄວາມປອດໄພອັດຕະໂນມັດສຸດທ້າຍສຳລັບ <ph name="DEVICE_TYPE" /> ນີ້. ເພື່ອຮັບການອັບເດດໃນອະນາຄົດ, ກະລຸນາອັບເກຣດເປັນຮຸ່ນໃໝ່ກວ່າ.</translation>
+<translation id="3454276058453724464">{FILE_LIMIT,plural, =1{ອັບໂຫຼດໄຟລ໌ .pdf 1 ໄຟລ໌ເພື່ອໃຊ້ກັບຄຳຖາມຂອງທ່ານ}other{ອັບໂຫຼດໄຟລ໌ .pdf ສູງສຸດ # ໄຟລ໌ເພື່ອໃຊ້ກັບຄຳຖາມຂອງທ່ານ}}</translation>
 <translation id="3454818737556063691">ຍ້າຍ 1 ໄຟລ໌ໄປໃສ່ <ph name="CLOUD_PROVIDER" /> ເພື່ອເປີດບໍ?</translation>
 <translation id="3455436146814891176">ຊິ້ງຂໍ້ມູນລະຫັດຜ່ານສຳລັບການເຂົ້າລະຫັດລັບ</translation>
 <translation id="345693547134384690">ເປີດຮູບຢູ່ໃນແຖບໃໝ່</translation>
@@ -5034,6 +5037,7 @@
 <translation id="4364567974334641491"><ph name="APP_NAME" /> ກຳລັງແບ່ງປັນໜ້າຈໍ.</translation>
 <translation id="4364830672918311045">ສະແດງການແຈ້ງເຕືອນ</translation>
 <translation id="4367971618859387374">ຊື່ສະແດງ</translation>
+<translation id="4368888793624522796">ກຸ່ມແຖບໄດ້ຍ້າຍໄປແລ້ວ</translation>
 <translation id="4368960422722232719">ສະແດງການໃຊ້ໜ່ວຍຄວາມຈຳໃນບັດຕົວຢ່າງເມື່ອວາງເມົ້າເທິງແຖບ</translation>
 <translation id="4369151461324628035">ບໍ່ອະນຸຍາດໃຫ້ເວັບໄຊເຊື່ອມຕໍ່ກັບອຸປະກອນໃດກໍຕາມໃນເຄືອຂ່າຍທ້ອງຖິ່ນຂອງທ່ານ</translation>
 <translation id="4369215744064167350">ອະນຸມັດຄຳຮ້ອງຂໍເວັບໄຊແລ້ວ</translation>
@@ -5422,6 +5426,7 @@
 <translation id="4634575639321169635">ຕັ້ງຄ່າອຸປະກອນນີ້ສຳລັບວຽກ ຫຼື ການໃຊ້ສ່ວນຕົວ</translation>
 <translation id="4635072447747973225">ຖອນການຕິດຕັ້ງ Crostini</translation>
 <translation id="4635398712689569051"><ph name="PAGE_NAME" /> ບໍ່ສາມາດໃຊ້ໄດ້ຕໍ່ກັບຜູ້ໃຊ້ທີ່ເປັນແຂກ.</translation>
+<translation id="4635975718422788482">{FILE_LIMIT,plural, =1{ອັບໂຫຼດຮູບພາບ 1 ຮູບເພື່ອໃຊ້ກັບຄຳຖາມຂອງທ່ານ}other{ອັບໂຫຼດຮູບພາບສູງສຸດ # ຮູບເພື່ອໃຊ້ກັບຄຳຖາມຂອງທ່ານ}}</translation>
 <translation id="4636187126182557415">ການຕັ້ງຄ່າລະບົບ</translation>
 <translation id="4636930964841734540">ຂໍ້​ມູນ</translation>
 <translation id="4637083375689622795">ການດຳເນີນການເພີ່ມເຕີມ, <ph name="EMAIL" /></translation>
@@ -6265,6 +6270,7 @@
 <translation id="5215502535566372932">ເລືອກປະເທດ</translation>
 <translation id="5216674789212441076">ແປຄຳບັນຍາຍສົດໂດຍອັດຕະໂນມັດ. ລະບົບຈະສົ່ງຄຳບັນຍາຍໄປຫາ Google ເພື່ອແປພາສາ.</translation>
 <translation id="5216951551945455224">{NUM_TABS,plural, =1{ຢຸດແບ່ງປັນແຖບກັບ Gemini}other{ຢຸດແບ່ງປັນ # ແຖບກັບ Gemini}}</translation>
+<translation id="5217883660859035687">ພວກເຮົາກຳລັງຍ້າຍກຸ່ມແຖບເພື່ອໃຫ້ບຸກມາກຂອງທ່ານມີພື້ນທີ່ຫຼາຍຂຶ້ນ.</translation>
 <translation id="5220011581825921581">ຊອກຫາ + ລູກສອນຂຶ້ນ</translation>
 <translation id="5221516927483787768">ບໍ່ສາມາດສົ່ງສັນຍານ <ph name="HOST_NAME" /> ໄດ້</translation>
 <translation id="5221834113325601057">ແຖບທີ່ຖືກຍົກເວັ້ນຈາກລາຍຊື່</translation>
@@ -6947,6 +6953,7 @@
 <translation id="5697832193891326782">ຕົວເລືອກອີໂມຈິ</translation>
 <translation id="5698136107297470317">ທ່ານກຳລັງຈະລຶບຂໍ້ມູນ <ph name="BRAND" /> ຂອງທ່ານ</translation>
 <translation id="5698878456427040674">ກວດສອບວ່າລະບົບຮອງຮັບບັນຊີທີ່ເລືອກຫຼືບໍ່.</translation>
+<translation id="5698900765010620315">ຮູບແບບສີສັນມືດຄອນທຣາສຕ່ຳ</translation>
 <translation id="5699227710146832453">ຈາກຂອງທ່ານ</translation>
 <translation id="570043786759263127">ແອັບ ແລະ ການບໍລິການຂອງ Google Play</translation>
 <translation id="5700761515355162635">ອະນຸຍາດຄຸກກີ້ພາກສ່ວນທີສາມແລ້ວ</translation>
@@ -8329,6 +8336,7 @@
 <translation id="6663190258859265334">Powerwash <ph name="DEVICE_TYPE" /> ຂອງທ່ານ ແລະ ກັບຄືນຫາເວີຊັນກ່ອນໜ້າ.</translation>
 <translation id="6664774537677393800">ມີບາງຢ່າງຜິດພາດໃນເວລາເປີດໂປຣໄຟລ໌ຂອງທ່ານ. ກະລຸນາອອກຈາກລະບົບ ແລ້ວເຂົ້າສູ່ລະບົບຄືນໃໝ່.</translation>
 <translation id="6665874326033183068">ປ່າ</translation>
+<translation id="6666560794795912543">ສະແດງບຸກມາກໃນແຜງຄວບຄຸມດ້ານຂ້າງ</translation>
 <translation id="6667086124612170548">ໄຟລ໌ໃຫຍ່ເກີນໄປສຳລັບອຸປະກອນນີ້</translation>
 <translation id="6667092961374478614">ຄວາມສາມາດໃນການຄົ້ນພົບ <ph name="FEATURE_NAME" /></translation>
 <translation id="6667187897999649121">ສຳລັບຕອນນີ້, ທ່ານສາມາດແບ່ງປັນລະຫັດຜ່ານກັບສະມາຊິກຄອບຄົວໄດ້ເທົ່ານັ້ນ. <ph name="BEGIN_LINK" />ສ້າງກຸ່ມຄອບຄົວ<ph name="END_LINK" /> ທີ່ມີສະມາຊິກໄດ້ສູງສຸດ 6 ຄົນ ແລະ ໃຊ້ປະໂຫຍດຈາກຜະລິດຕະພັນ ແລະ ການສະໝັກໃຊ້ຂອງທ່ານໃນທົ່ວ Google ໄດ້ຫຼາຍຂຶ້ນ.</translation>
@@ -9788,6 +9796,7 @@
 <translation id="7660146600670077843">ຄລິກຂວາໃສ່ແຖບໃດໜຶ່ງແລ້ວເລືອກ "ເພີ່ມແຖບໃສ່ກຸ່ມໃໝ່"</translation>
 <translation id="7661451191293163002">ບໍ່ສາມາດໄດ້ຮັບໃບຢັ້ງຢືນການລົງທະບຽນ.</translation>
 <translation id="7662283695561029522">ແຕະເພື່ອກຳນົດຄ່າ</translation>
+<translation id="7662535435481776002">ຮູບແບບສີສັນແຈ້ງຄອນທຣາສຕ່ຳ</translation>
 <translation id="7663719505383602579">ຕົວຮັບ: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7663774460282684730">ມີຄີລັດທີ່ສາມາດໃຊ້ໄດ້</translation>
 <translation id="7663859337051362114">ເພີ່ມໂປຣໄຟລ໌ eSIM</translation>
@@ -11795,6 +11804,7 @@
 <translation id="8986494364107987395">ສົ່ງສະຖິຕິການໃຊ້ ແລະລາຍງານກາ​ນຂັດຂ້ອງໄປຫາ Google ໂດຍອັດຕະໂນມັດ</translation>
 <translation id="8987305927843254629">ແຕ່ລະຄົນສາມາດປັບແຕ່ງປະສົບການຂອງເຂົາເຈົ້າ ແລະ ຮັກສາຂໍ້ມູນໄວ້ເປັນສ່ວນຕົວໄດ້.</translation>
 <translation id="8987321822984361516">ໂປຣແກຣມທ່ອງເວັບທີ່ຈັດການໂດຍອົງກອນ, ໂປຣໄຟລ໌ທີ່ຈັດການໂດຍ <ph name="PROFILE_DOMAIN" /></translation>
+<translation id="8987736167266086032">ເລືອກຈາກ​ບ່ອນ​ທີ່​ທ່ານ​ອອກ​ໄປ</translation>
 <translation id="8987927404178983737">ເດືອນ</translation>
 <translation id="8988539543012086784">ໜ້ານີ້ຖືກບັນທຶກໄວ້ໃນ <ph name="BOOKMARK_FOLDER" /> ແລ້ວ</translation>
 <translation id="8989359959810288806">ໂຫຼດສະຖານະການປ່ອຍສັນຍານຄືນໃໝ່</translation>

@@ -924,6 +924,7 @@
 <translation id="4885273946141277891">Chrome ଇନ୍‌ଷ୍ଟାନ୍‌ସଗୁଡ଼ିକର ଅସମର୍ଥିତ ସଂଖ୍ୟା।</translation>
 <translation id="4890973535105146893">ଆପଣଙ୍କର Google ଆକାଉଣ୍ଟରେ କୌଣସି ସେଭ ହୋଇଥିବା ପାସୱାର୍ଡ ନାହିଁ</translation>
 <translation id="4905823827770127520">ପୃଷ୍ଠାର ଏକ ଲିଙ୍କ୍ ଅନ୍ତର୍ଭୁକ୍ତ କରନ୍ତୁ</translation>
+<translation id="4908601375231458049">ଟାବ ଗ୍ରୁପକୁ କଷ୍ଟମାଇଜ କରି ହୋଇଗଲାକୁ ହିଟ କରନ୍ତୁ</translation>
 <translation id="4908869848243824489">Googleର Discover</translation>
 <translation id="4910889077668685004">ପେମେଣ୍ଟ ଆପ୍ସ</translation>
 <translation id="4911042367886397055">ଆପଣଙ୍କୁ ପୁଣି ସ୍ୱାଗତ, <ph name="USER_NAME" />!</translation>
@@ -1187,6 +1188,7 @@
 <translation id="6040143037577758943">ବନ୍ଦ</translation>
 <translation id="604124094241169006">ସ୍ୱଚାଳିତ</translation>
 <translation id="6042308850641462728">ଅଧିକ</translation>
+<translation id="6047066316630165190">ଗ୍ରିଡ ଟାବ ସ୍ୱିଚର ଖୋଲନ୍ତୁ</translation>
 <translation id="604996488070107836">ଏକ ଅଜଣା ତ୍ରୁଟି ଯୋଗୁଁ <ph name="FILE_NAME" /> ଡାଉନ୍‌ଲୋଡ୍ ହୋଇପାରିଲା ନାହିଁ।</translation>
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">ଏଠାରେ ଆପଣଙ୍କ ଷ୍ଟୋରୀ ଏବଂ କାର୍ଯ୍ୟକଳାପ ନିୟନ୍ତ୍ରଣ କରନ୍ତୁ</translation>
@@ -1260,6 +1262,7 @@
 <translation id="6301526076346731664">ଡେଭେଲପର ଟୁଲ ଖୋଲନ୍ତୁ</translation>
 <translation id="630308129961693966">ଆପଣଙ୍କ ଠିକଣା ବାରର ପୋଜିସନ ବାଛନ୍ତୁ</translation>
 <translation id="6303969859164067831">ସାଇନ୍ ଆଉଟ୍ କରନ୍ତୁ ଏବଂ ସିଙ୍କ୍ ବନ୍ଦ କରନ୍ତୁ</translation>
+<translation id="6305257382500066042">ବର୍ତ୍ତମାନ ଏହାକୁ ବ୍ୟବହାର କରି ଦେଖନ୍ତୁ</translation>
 <translation id="6307241780749477694">ଏହି ଡିଭାଇସରେ ଆପଣଙ୍କର ସମସ୍ତ ପାସୱାର୍ଡ ପାଇବା ପାଇଁ ଏହା ଆପଣ ବୋଲି ଯାଞ୍ଚ କରନ୍ତୁ</translation>
 <translation id="6309082029962045994"><ph name="TAB_TITLE" />, ମଲ୍ଟିସିଲେକ୍ଟେଡ ପିନ ହୋଇଥିବା ଶୁଣିହେଉଥିବା ଟାବ</translation>
 <translation id="6312687380483398334">ୱେବ୍ ଆପଗୁଡ଼ିକ (ନୀରବ)</translation>
@@ -1361,6 +1364,7 @@
 <translation id="6661521899577697780">Chrome Finds ଅପ୍ଟ-ଇନକୁ ଅଧା ଖୋଲାଯାଇଛି</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" />ରେ ଖୋଲନ୍ତୁ</translation>
 <translation id="6669390930482049506">ମୋତେ ସୂଚିତ କରନ୍ତୁ</translation>
+<translation id="6670767097276846646">କିଛି ଏକ୍ସଟେନସନ Chromeରେ ସର୍ଚ୍ଚ ଇଞ୍ଜିନଗୁଡ଼ିକ ଯୋଗ କରିପାରେ</translation>
 <translation id="6671495933530132209">ଛବି କପି କରନ୍ତୁ</translation>
 <translation id="6672697278890207089">ଆପଣଙ୍କ ପାସଫ୍ରେଜ ଲେଖନ୍ତୁ</translation>
 <translation id="6672917148207387131"><ph name="DOMAIN" /> ଯୋଗ କରନ୍ତୁ</translation>
@@ -1847,6 +1851,7 @@
 <translation id="8458341576712814616">ସର୍ଟକଟ୍</translation>
 <translation id="8458413889418591446">ଆପଣ ଭିଜିଟ କରିଥିବା ସାଇଟଗୁଡ଼ିକୁ ଶୀଘ୍ର ଫେରିବା ପାଇଁ ଆପଣଙ୍କ ଇତିହାସ ଏବଂ ଟାବଗୁଡ଼ିକୁ ସିଙ୍କ କରନ୍ତୁ</translation>
 <translation id="84594714173170813">ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ Chrome ଡାଟାକୁ ବ୍ୟବହାର କରିବା ଜାରି ରଖନ୍ତୁ</translation>
+<translation id="8460008946585880786">ଗୋଟିଏ ଟାବକୁ ଅନ୍ୟ ଏକ ଟାବ ଉପରେ ଡ୍ରାଗ ଏବଂ ଡ୍ରପ କରନ୍ତୁ</translation>
 <translation id="8460448946170646641">ମୁଖ୍ୟ ଗୋପନୀୟତା ଏବଂ ସୁରକ୍ଷା ନିୟନ୍ତ୍ରଣଗୁଡ଼ିକର ସମୀକ୍ଷା କରନ୍ତୁ</translation>
 <translation id="8460932807646981183">ସର୍ଚ୍ଚ ଇଞ୍ଜିନ ଏବଂ ସାଇଟ ସର୍ଚ୍ଚକୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="8473863474539038330">ଠିକଣାଗୁଡ଼ିକ ଏବଂ ଅଧିକ</translation>
@@ -1957,6 +1962,7 @@
 <translation id="8969796057708736017">ଯଦି ଫାଇଲ ଆପଣଙ୍କ ସଂସ୍ଥାର ନୀତିଗୁଡ଼ିକୁ ପୂରଣ କରେ, ତେବେ ଆପଣଙ୍କ ଡାଉନଲୋଡ ସମ୍ପୂର୍ଣ୍ଣ ହେବ</translation>
 <translation id="8970887620466824814">କିଛି ଭୁଲ ହୋଇଗଲା।</translation>
 <translation id="8972098258593396643">ଡିଫଲ୍ଟ ଫୋଲ୍ଡର୍‍କୁ ଡାଉନ୍‍‍ଲୋଡ୍ କରିବେ କି?</translation>
+<translation id="8987736167266086032">ଆପଣ ଯେଉଁଠି ଛାଡ଼ିଥିଲେ ସେଠାରୁ ଆରମ୍ଭ କର</translation>
 <translation id="8992769679401294069">ଆପଣଙ୍କ ପାସଫ୍ରେଜ ମାଧ୍ୟମରେ ଆପଣଙ୍କ ଡାଟାକୁ ଏନକ୍ରିପ୍ଟ କରାଯାଇଛି। ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ Chrome ଡାଟା ବ୍ୟବହାର ଏବଂ ସେଭ କରିବା ପାଇଁ ଏହାକୁ ଲେଖନ୍ତୁ।</translation>
 <translation id="8993760627012879038">ଇନ୍‌କଗ୍‌ନିଟୋ ମୋଡ୍‍‍ରେ ଏକ ନୂଆ ଟାବ୍ ଖୋଲନ୍ତୁ</translation>
 <translation id="8995521496079646922">ଆପଣ ବାଛୁଥିବା ଆପ୍ସକୁ ଡିଫଲ୍ଟ ଭାବେ ବ୍ୟବହାର କରାଯିବ। ଯଦି କୌଣସି ଆପ ପୂର୍ବରୁ ଏହି ଡିଭାଇସରେ ନାହିଁ, ତେବେ ଏହାକୁ ଶୀଘ୍ର ଡାଉନଲୋଡ କରାଯିବ।</translation>

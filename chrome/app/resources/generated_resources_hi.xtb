@@ -1023,6 +1023,7 @@
 <translation id="1671525612731130246">Drive खाता चुनें</translation>
 <translation id="1671749176392751693">सुरक्षित कॉन्टेंट दिखाने के लिए आइडेंटिफ़ायर इस्तेमाल करने की अनुमति दी गई</translation>
 <translation id="1673137583248014546"><ph name="URL" /> आपकी सुरक्षा कुंजी के निर्माता और मॉडल को देखना चाहता है</translation>
+<translation id="1673855466663721679">साइड पैनल में बुकमार्क दिखाएं</translation>
 <translation id="1674073353928166410">सभी (<ph name="URL_COUNT" />) यूआरएल गुप्त विंडो में खोलें</translation>
 <translation id="1674142805528405174">Google Password Manager, एक मज़बूत पासवर्ड जनरेट करके आपके मौजूदा पासवर्ड को अपडेट कर सकता है. नया पासवर्ड आपके खाते <ph name="EMAIL" /> में सेव हो जाएगा.</translation>
 <translation id="1674945585974615438">अनजान साइटों पर JavaScript ऑप्टिमाइज़र अपने-आप बंद हो जाते हैं</translation>
@@ -3457,6 +3458,7 @@
 <translation id="3312883087018430408">किसी साइट या Chrome में उपलब्ध किसी विकल्प को खोजने के लिए, पता बार में उसका शॉर्टकट लिखें. इसके बाद, अपने हिसाब से कीबोर्ड शॉर्टकट दबाएं. उदाहरण के लिए, सिर्फ़ बुकमार्क खोजने के लिए "@bookmarks" लिखें. इसके बाद, Tab या Space दबाएं.</translation>
 <translation id="3313622045786997898">प्रमाणपत्र हस्ताक्षर मान</translation>
 <translation id="3313950410573257029">कनेक्शन की जांच करें</translation>
+<translation id="3314239811356311272">और बुकमार्क मैनेजर खोलें</translation>
 <translation id="3315158641124845231">छुपाएं<ph name="PRODUCT_NAME" /></translation>
 <translation id="3317459757438853210">दोतरफा</translation>
 <translation id="3317521105713541270">ग्रुप बनाएं</translation>
@@ -3663,6 +3665,7 @@
 <translation id="3453597230179205517">जगह की जानकारी का ऐक्सेस ब्लॉक किया गया है</translation>
 <translation id="3453612417627951340">अनुमति की ज़रुरत है</translation>
 <translation id="3454213325559396544">यह इस <ph name="DEVICE_TYPE" /> के लिए अपने आप होने वाला आखिरी साॅफ़्टवेयर और सुरक्षा अपडेट था. आने वाले समय में और अपडेट पाने के लिए, नए माॅडल पर अपग्रेड करें.</translation>
+<translation id="3454276058453724464">{FILE_LIMIT,plural, =1{अपने सवाल के साथ इस्तेमाल करने के लिए, 1 .pdf फ़ाइल अपलोड करें}one{अपने सवाल के साथ इस्तेमाल करने के लिए, ज़्यादा से ज़्यादा # .pdf फ़ाइल अपलोड करें}other{अपने सवाल के साथ इस्तेमाल करने के लिए, ज़्यादा से ज़्यादा # .pdf फ़ाइलें अपलोड करें}}</translation>
 <translation id="3454818737556063691">क्या आपको एक फ़ाइल को खोलने के लिए, उसे <ph name="CLOUD_PROVIDER" /> में ट्रांसफ़र करना है?</translation>
 <translation id="3455436146814891176">सिंक किए गए डेटा को एन्क्रिप्ट (सुरक्षित) करने का पासवर्ड</translation>
 <translation id="345693547134384690">नए टैब में &amp;छवि खोलें</translation>
@@ -5035,6 +5038,7 @@
 <translation id="4364567974334641491"><ph name="APP_NAME" /> किसी विंडो को शेयर कर रहा है.</translation>
 <translation id="4364830672918311045">डिसप्ले नोटिफ़िकेशन</translation>
 <translation id="4367971618859387374">डिसप्ले नेम</translation>
+<translation id="4368888793624522796">टैब ग्रुप की जगह बदल गई है</translation>
 <translation id="4368960422722232719">टैब पर कर्सर घुमाकर झलक दिखाने वाले कार्ड पर, मेमोरी के इस्तेमाल की जानकारी दिखाएं</translation>
 <translation id="4369151461324628035">साइटों को, अपने लोकल नेटवर्क पर मौजूद किसी भी डिवाइस से कनेक्ट करने की अनुमति न दें</translation>
 <translation id="4369215744064167350">वेबसाइट ऐक्सेस करने के लिए किए गए अनुरोध को मंज़ूरी मिल गई है</translation>
@@ -5423,6 +5427,7 @@
 <translation id="4634575639321169635">काम या निजी इस्तेमाल के लिए इस डिवाइस को सेट अप करें</translation>
 <translation id="4635072447747973225">Crostini अनइंस्टॉल करें</translation>
 <translation id="4635398712689569051"><ph name="PAGE_NAME" /> मेहमान उपयोगकर्ताओं के लिए उपलब्ध नहीं है.</translation>
+<translation id="4635975718422788482">{FILE_LIMIT,plural, =1{अपने सवाल के साथ इस्तेमाल करने के लिए, 1 इमेज अपलोड करें}one{अपने सवाल के साथ इस्तेमाल करने के लिए, ज़्यादा से ज़्यादा # इमेज अपलोड करें}other{अपने सवाल के साथ इस्तेमाल करने के लिए, ज़्यादा से ज़्यादा # इमेज अपलोड करें}}</translation>
 <translation id="4636187126182557415">सिस्टम की सेटिंग</translation>
 <translation id="4636930964841734540">जानकारी</translation>
 <translation id="4637083375689622795">ज़्यादा कार्रवाइयां, <ph name="EMAIL" /></translation>
@@ -6265,6 +6270,7 @@
 <translation id="5215502535566372932">देश चुनें</translation>
 <translation id="5216674789212441076">लाइव कैप्शन का अनुवाद अपने-आप होता है. कैप्शन को अनुवाद के लिए Google को भेजा जाता है.</translation>
 <translation id="5216951551945455224">{NUM_TABS,plural, =1{Gemini के साथ टैब शेयर करना बंद करें}one{Gemini के साथ # टैब शेयर करना बंद करें}other{Gemini के साथ # टैब शेयर करना बंद करें}}</translation>
+<translation id="5217883660859035687">हम टैब ग्रुप की जगह बदल रहे हैं, ताकि आपके बुकमार्क को ज़्यादा जगह मिल सके.</translation>
 <translation id="5220011581825921581">खोज बटन + अप ऐरो</translation>
 <translation id="5221516927483787768"><ph name="HOST_NAME" /> पर कास्ट नहीं हो पाया</translation>
 <translation id="5221834113325601057">सूची से टैब को हटाया गया</translation>
@@ -6947,6 +6953,7 @@
 <translation id="5697832193891326782">इमोजी पिकर</translation>
 <translation id="5698136107297470317"><ph name="BRAND" /> का डेटा मिटाया जा रहा है</translation>
 <translation id="5698878456427040674">देखें कि चुना गया खाता काम करता है या नहीं.</translation>
+<translation id="5698900765010620315">कम कंट्रास्ट और गहरे रंग वाली थीम</translation>
 <translation id="5699227710146832453">आपके इस डिवाइस से</translation>
 <translation id="570043786759263127">Google Play ऐप्लिकेशन और सेवाएं</translation>
 <translation id="5700761515355162635">तीसरे पक्ष की कुकी को अनुमति है</translation>
@@ -8331,6 +8338,7 @@
 <translation id="6663190258859265334">पावरवॉश की मदद से <ph name="DEVICE_TYPE" /> को पिछले वर्शन पर रीसेट करें.</translation>
 <translation id="6664774537677393800">आपकी प्रोफ़ाइल खोलते समय कुछ गलत हुआ है. कृपया साइन आउट करके फिर से साइन इन करें.</translation>
 <translation id="6665874326033183068">वाइल्ड</translation>
+<translation id="6666560794795912543">साइड पैनल में बुकमार्क दिखाएं</translation>
 <translation id="6667086124612170548">यह फ़ाइल इस डिवाइस के लिए बहुत बड़ी है</translation>
 <translation id="6667092961374478614"><ph name="FEATURE_NAME" /> की 'खोजने लायक बनाना' सेटिंग</translation>
 <translation id="6667187897999649121">फ़िलहाल, सिर्फ़ फ़ैमिली ग्रुप के सदस्यों के साथ पासवर्ड शेयर किए जा सकते हैं. Google पर अपने प्रॉडक्ट और ली गई सदस्यताओं का ज़्यादा फ़ायदा पाने के लिए, छह सदस्यों तक का <ph name="BEGIN_LINK" />फ़ैमिली ग्रुप बनाएं<ph name="END_LINK" />.</translation>
@@ -9791,6 +9799,7 @@
 <translation id="7660146600670077843">टैब पर दायां क्लिक करें और "टैब को नए ग्रुप में जोड़ें" चुनें</translation>
 <translation id="7661451191293163002">पंजीकरण प्रमाणपत्र नहीं लिया जा सका.</translation>
 <translation id="7662283695561029522">कॉन्फ़िगर करने के लिए टैप करें</translation>
+<translation id="7662535435481776002">कम कंट्रास्ट और हल्के रंग वाली थीम</translation>
 <translation id="7663719505383602579">प्राप्तकर्ता: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7663774460282684730">कीबोर्ड शॉर्टकट उपलब्ध है</translation>
 <translation id="7663859337051362114">ई-सिम प्रोफ़ाइल जोड़ें</translation>
@@ -11800,6 +11809,7 @@
 <translation id="8986494364107987395">इस्तेमाल के आंकड़े और खराबी रिपोर्ट अपने आप Google को भेजें</translation>
 <translation id="8987305927843254629">हर व्यक्ति अपने अनुभव को पसंद के हिसाब से बना सकता है और डेटा को निजी रख सकता है.</translation>
 <translation id="8987321822984361516">ब्राउज़र को कोई संगठन मैनेज करता है और प्रोफ़ाइल को <ph name="PROFILE_DOMAIN" /> मैनेज करता है</translation>
+<translation id="8987736167266086032">वहीं से प्रारंभ करें जहां आपने छोड़ा था</translation>
 <translation id="8987927404178983737">माह</translation>
 <translation id="8988539543012086784">यह पेज <ph name="BOOKMARK_FOLDER" /> में सेव किया गया है</translation>
 <translation id="8989359959810288806">टेदरिंग का स्टेटस रीफ़्रेश करें</translation>

@@ -166,6 +166,7 @@
 <translation id="1621067168122174824">Przeprowadź test ładowania</translation>
 <translation id="1622402072367425417">świecące bąbelki</translation>
 <translation id="1626590945318984973">Brak dostępnego skrótu. Naciśnij nowy skrót bez klawiszy funkcyjnych i klawisza <ph name="META_KEY" />.</translation>
+<translation id="163774412591892664">Administrator wyłączył Twoje urządzenie i ma dostęp do jego lokalizacji.</translation>
 <translation id="1639239467298939599">Wczytuję</translation>
 <translation id="1641857168437328880">Podajnik dokumentów (jednostronny)</translation>
 <translation id="1642396894598555413">rowery</translation>
@@ -1719,6 +1720,7 @@ Aby korzystać z tej funkcji, pobierz model transkrypcji (do 100 MB).</transla
 <translation id="8584654835905316966">Aby dokończyć instalację aktualizacji oprogramowania układowego <ph name="DEVICE_NAME" /> do wersji <ph name="VERSION" />, musisz ponownie uruchomić urządzenie. Komputer może kilka razy uruchomić się ponownie. Jest to działanie prawidłowe.</translation>
 <translation id="8593058461203131755">wstrzymaj multimedia</translation>
 <translation id="8620617069779373398">Stan roamingu</translation>
+<translation id="8624524972189162859">Administrator strony <ph name="DOMAIN_NAME" /> wyłączył Twoje urządzenie i ma dostęp do jego lokalizacji.</translation>
 <translation id="8626489604350149811">Więcej działań dotyczących: <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Jasnofioletowy</translation>
 <translation id="8647595191512746911">Transkrypcja</translation>

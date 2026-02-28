@@ -230,6 +230,7 @@
 <translation id="1358187717814494928">ສ້າງຊີດ</translation>
 <translation id="1358223345833465883">ໂປຣແກຣມຊອກຫາຂອງທ່ານໃນ Chromium</translation>
 <translation id="1359836962251219822">ເຮືອນຄົວ ແລະ ຫ້ອງອາຫານ</translation>
+<translation id="136059610328993645">ລະບົບຈະບັນທຶກຂໍ້ມູນຂອງທ່ານໃສ່ໃນ Google Wallet ສຳລັບ <ph name="ACCOUNT" />. ທ່ານສາມາດໃຊ້ຂໍ້ມູນນີ້ໃນທົ່ວບໍລິການ Google ເພື່ອຕື່ມຂໍ້ມູນໃສ່ແບບຟອມໄດ້ໄວຂຶ້ນ.</translation>
 <translation id="1360955481084547712">ເປີດໜ້າຈໍທີ່ບໍ່ເປີດເຜີຍຕົວຕົນໃໝ່ເພື່ອທ່ອງເວັບແບບເປັນສ່ວນຕົວ</translation>
 <translation id="1361528602584216624">ວົງເງິນຂອງ Pix R$ <ph name="TRANSACTION_LIMIT" /></translation>
 <translation id="1363015776076529485">ວິທີການຈ່າຍເງິນທີ່ພ້ອມໃຫ້ເລືອກເພື່ອດຳເນີນການຈ່າຍເງິນເປີດຢູ່ລະດັບຄວາມສູງເຕັມຈໍ.</translation>
@@ -252,6 +253,7 @@
 <translation id="1392813880755413602">ພຣີເຊັນເທເຊິນ OpenDocument</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> ບໍ່ໄດ້ສົ່ງຂໍ້ມູນໃດໆ.</translation>
 <translation id="1393071644879491291">ຜູ້ໂຈມຕີຢູ່ເວັບໄຊທີ່ທ່ານພະຍາຍາມເຂົ້າເບິ່ງອາດຈະຫຼອກລວງໃຫ້ທ່ານຕິດຕັ້ງຊອບແວ ຫຼື ເປີດເຜີຍຂໍ້ມູນຕ່າງໆ ເຊັ່ນ: ລະຫັດຜ່ານ, ເບີໂທລະສັບ ຫຼື ໝາຍເລກບັດເຄຣດິດຂອງທ່ານ. Chrome ຂໍແນະນຳຢ່າງຍິ່ງໃຫ້ກັບໄປຫາຄວາມປອດໄພ. <ph name="BEGIN_LEARN_MORE_LINK" />ສຶກສາເພີ່ມເຕີມກ່ຽວກັບຄຳເຕືອນນີ້<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="1402151528875251561">ສະແດງປະຫວັດໃນແຜງຄວບຄຸມດ້ານຂ້າງ</translation>
 <translation id="1405567553485452995">ສີຂຽວຈາງ</translation>
 <translation id="1406370515365284486">ລະບົບຈະຍັງຄົງບັນທຶກວິທີການຈ່າຍເງິນຂອງທ່ານໄວ້</translation>
 <translation id="1406500794671479665">ກໍາລັງກວດສອບ ...</translation>
@@ -1450,6 +1452,7 @@
 <translation id="33073482541490531">ພົບລະຫັດຜ່ານທີ່ທ່ານຫາກໍໃຊ້ນັ້ນໃນການຮົ່ວໄຫຼຂໍ້ມູນ. ຕົວຈັດການລະຫັດຜ່ານແນະນຳໃຫ້ປ່ຽນລະຫັດຜ່ານນີ້ດຽວນີ້.</translation>
 <translation id="3307649904964670439">ປຸ່ມປັບແຕ່ງ Chrome, ເປີດນຳໃຊ້ເພື່ອປັບແຕ່ງຮູບລັກຂອງໂປຣແກຣມທ່ອງເວັບຂອງທ່ານ</translation>
 <translation id="3308006649705061278">ໜ່ວຍງານການຈັດຕັ້ງ (OU)</translation>
+<translation id="3310946375819654151">Chrome ກຳລັງພະຍາຍາມຕື່ມຂໍ້ມູນລະອຽດອ່ອນຂອງທ່ານໃສ່ <ph name="APP_NAME" />.</translation>
 <translation id="3312952471765023168">ອັບໂຫຼດສໍາເລັດແລ້ວ</translation>
 <translation id="3318016344440038475">ລາຍການຕະຫຼົກທາງໂທລະທັດ</translation>
 <translation id="3324687287337751929">4 x 6 ນິ້ວ</translation>
@@ -1740,6 +1743,7 @@
 <translation id="3752181611900535304">ບັນທຶກທີ່ຢູ່ໃນບັນຊີບໍ?</translation>
 <translation id="3752543821772132562">ຖືກປະຕິເສດຍ້ອນວ່າບໍ່ໄດ້ຕັ້ງ <ph name="POLICY_NAME" />.</translation>
 <translation id="3754210790023674521">ອອກຈາກໂໝດສະແດງຜົນຊ້ອນກັນ</translation>
+<translation id="3754664361823138853">&amp;ເປີດໜ້າປະຫວັດ</translation>
 <translation id="3759461132968374835">ທ່ານບໍ່ໄດ້ລາຍງານກາ​ນຂັດຂ້ອງເມື່ອບໍ່ດົນມານີ້. ການ​ຂັດຂ້ອງທີ່ເກີດຂຶ້ນເມື່ອການລາຍງານກາ​ນຂັດຂ້ອງຖືກປິດໃຊ້ງານ ຈະບໍ່ປະກົດຂຶ້ນທີ່ນີ້.</translation>
 <translation id="3760561303380396507">ໃຊ້ Windows Hello ແທນ CVC ບໍ?</translation>
 <translation id="3761171036307311438">ຊື່​ຢູ່ບັດ​:</translation>
@@ -2751,6 +2755,7 @@
 <translation id="5385966243497224160">ບໍ່ສາມາດສະແດງຕົວຢ່າງ URL ທີ່ບໍ່ແມ່ນ HTTPS ໄດ້</translation>
 <translation id="5386426401304769735">ຕ່ອງໂສ້ໃບຮັບຮອງສຳລັບເວັບໄຊນີ້ປະກອບມີໃບຮັບຮອງທີ່ເຊັນຊື່ໂດຍໃຊ້ SHA-1.</translation>
 <translation id="5391010642126249196">ທ່ານເຂົ້າເບິ່ງ</translation>
+<translation id="5391306025131596142">&amp;ເປີດໜ້າປະຫວັດ</translation>
 <translation id="539203134595252721">ປິ່ງປ່ອງ</translation>
 <translation id="5392506727170022660">ໂລຫະ (ເຄິ່ງມັນວາວ)</translation>
 <translation id="5394069166371280357">ລາຍການໂທລະທັດສຳລັບຄອບຄົວ</translation>
@@ -2861,7 +2866,6 @@
 <translation id="5543564889050342791">ສວນສັດ, ພິພິທະພັນສັດນ້ຳ ແລະ ເຂດອະນຸຮັກ</translation>
 <translation id="5543722831081909240">180 ອົງສາ</translation>
 <translation id="5544836308113951378">ເຮືອສຳລານ ແລະ ເຮືອເຊົ່າ</translation>
-<translation id="5545314360139398232">ລິ້ງ <ph name="ISSUER_NAME" /> ເພື່ອແບ່ງຈ່າຍ</translation>
 <translation id="5547939254150808298">ການພິມ ແລະ ການຕີພິມ</translation>
 <translation id="554815783948612276">ຜູ້ໃຫ້ບໍລິການກະດານສົນທະນາ ແລະ ການສົນທະນາ</translation>
 <translation id="5548606607480005320">ການກວດສອບຄວາມປອດໄພ</translation>
@@ -3546,6 +3550,7 @@
 <translation id="6655085656059574817">ການລິ້ງບັນຊີຂອງທ່ານໄວ້ຈະຊ່ວຍໃຫ້ທ່ານຈ່າຍເງິນດ້ວຍ <ph name="BNPL_ISSUER_NAME" />, ໄດ້ໄວຂຶ້ນ, ແຕ່ທ່ານກໍສາມາດຍົກເລີກການລິ້ງໄດ້ໂດຍເຂົ້າໄປ <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /></translation>
 <translation id="6656935431494847393">ຮວມທັງຂໍ້ມູນຕ່າງໆ ເຊັ່ນ: ການຈອງຖ້ຽວບິນ ແລະ ຂໍ້ມູນພາຫະນະ</translation>
 <translation id="6657585470893396449">ລະຫັດຜ່ານ</translation>
+<translation id="6659156657345021268">ລະບົບຈະບັນທຶກຂໍ້ມູນຂອງທ່ານໃສ່ໃນອຸປະກອນຂອງທ່ານເທົ່ານັ້ນ. ທ່ານຈະມີໂອກາດບັນທຶກຂໍ້ມູນນີ້ໃສ່ໃນ Wallet ເມື່ອທ່ານຕື່ມຂໍ້ມູນໃສ່ແບບຟອມທີ່ກ່ຽວຂ້ອງໃນເທື່ອຕໍ່ໄປ.</translation>
 <translation id="6659246032834639189">ລາຄານີ້ແມ່ນຕ່ຳ</translation>
 <translation id="6660413144148052430">ສະຖານທີ່</translation>
 <translation id="6662457027866368246">ມ້ວນທຳອິດ</translation>
@@ -4950,6 +4955,7 @@
 <translation id="8894794286471754040">ດ້ານຂອບຍາວກ່ອນ</translation>
 <translation id="8897221284075091877">ເພື່ອຂໍເບິ່ງເນື້ອຫານີ້, ໃຫ້ດຳເນີນການຕໍ່ດ້ວຍບັນຊີ Google ຂອງທ່ານ</translation>
 <translation id="8897428486789851669">ລອຍນໍ້າ</translation>
+<translation id="8898854704577986668">ສະແດງປະຫວັດໃນແຜງຄວບຄຸມດ້ານຂ້າງ</translation>
 <translation id="8899807382908246773">ໂຄສະນາແບບບຸກລຸກ</translation>
 <translation id="8903921497873541725">ຊຸມເຂົ້າ</translation>
 <translation id="8903998444169664879">ຢັ້ງຢືນວ່າແມ່ນທ່ານເພື່ອປ່ຽນການຕັ້ງຄ່າການຈ່າຍເງິນຂອງທ່ານ</translation>

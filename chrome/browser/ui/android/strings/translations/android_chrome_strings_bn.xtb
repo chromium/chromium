@@ -924,6 +924,7 @@
 <translation id="4885273946141277891">অসমর্থিত সংখ্যার Chrome দৃষ্টান্তগুলি</translation>
 <translation id="4890973535105146893">আপনার Google অ্যাকাউন্ট কোনও সেভ করা পাসওয়ার্ড নেই</translation>
 <translation id="4905823827770127520">পৃষ্ঠাতে লিঙ্ক যোগ করুন</translation>
+<translation id="4908601375231458049">ট্যাব গ্রুপ কাস্টমাইজ করে 'হয়ে গেছে' বিকল্পে ক্লিক করুন</translation>
 <translation id="4908869848243824489">Google-এর ডিসকভার</translation>
 <translation id="4910889077668685004">পেমেন্ট অ্যাপ্লিকেশান</translation>
 <translation id="4911042367886397055"><ph name="USER_NAME" />, আপনাকে আবার স্বাগত জানাই!</translation>
@@ -1187,6 +1188,7 @@
 <translation id="6040143037577758943">বন্ধ</translation>
 <translation id="604124094241169006">স্বয়ংক্রিয়</translation>
 <translation id="6042308850641462728">আরও</translation>
+<translation id="6047066316630165190">গ্রিড ট্যাব পাল্টানোর ফিচার খুলুন</translation>
 <translation id="604996488070107836">একটি অজানা ত্রুটির কারনে <ph name="FILE_NAME" /> ডাউনলোড করা যায়নি।</translation>
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">আপনার খবর ও গতিবিধি এখানে নিয়ন্ত্রণ করুন</translation>
@@ -1260,6 +1262,7 @@
 <translation id="6301526076346731664">ডেভেলপার টুল খোলে</translation>
 <translation id="630308129961693966">আপনার অ্যাড্রেস বারের পজিশন বাছুন</translation>
 <translation id="6303969859164067831">সাইন-আউট করুন এবং সিঙ্ক করা বন্ধ করুন</translation>
+<translation id="6305257382500066042">এখনই ব্যবহার করে দেখুন</translation>
 <translation id="6307241780749477694">এই ডিভাইসে যাতে আপনার সব পাসওয়ার্ড পেতে পারেন সেই জন্য নিজের পরিচয় যাচাই করুন</translation>
 <translation id="6309082029962045994"><ph name="TAB_TITLE" />, একাধিক বেছে নেওয়া পিন করা অডিবল ট্যাব</translation>
 <translation id="6312687380483398334">ওয়েব অ্যাপ (কোনও রকম আওয়াজ ছাড়া)</translation>
@@ -1361,6 +1364,7 @@
 <translation id="6661521899577697780">Chrome Finds অপ্ট-ইন অর্ধেক স্ক্রিন জুড়ে খোলা হয়েছে</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" /> এ খুলুন</translation>
 <translation id="6669390930482049506">আমাকে জানান</translation>
+<translation id="6670767097276846646">কিছু এক্সটেনশন Chrome-এ সার্চ ইঞ্জিন যোগ করতে পারে</translation>
 <translation id="6671495933530132209">ছবি কপি করুন</translation>
 <translation id="6672697278890207089">আপনার পাসফ্রেজটি প্রবেশ করান</translation>
 <translation id="6672917148207387131"><ph name="DOMAIN" /> যোগ করুন</translation>
@@ -1847,6 +1851,7 @@
 <translation id="8458341576712814616">শর্টকাট</translation>
 <translation id="8458413889418591446">আপনার দেখা সাইটে দ্রুত ফিরে যেতে, ইতিহাস ও ট্যাব সিঙ্ক করুন</translation>
 <translation id="84594714173170813">আপনার Google অ্যাকাউন্টে Chrome ডেটা ব্যবহার করা চালিয়ে যান</translation>
+<translation id="8460008946585880786">একটি ট্যাব টেনে এনে অন্যটির উপরে রাখুন</translation>
 <translation id="8460448946170646641">মূল গোপনীয়তা এবং নিরাপত্তা নিয়ন্ত্রণ পর্যালোচনা করুন</translation>
 <translation id="8460932807646981183">সার্চ ইঞ্জিন এবং সাইট সার্চ করা ম্যানেজ করুন</translation>
 <translation id="8473863474539038330">ঠিকানা ও আরও অনেককিছু</translation>
@@ -1957,6 +1962,7 @@
 <translation id="8969796057708736017">ফাইলটি আপনার সংস্থার নীতি মেনে চললে ডাউনলোড সম্পূর্ণ হবে</translation>
 <translation id="8970887620466824814">কিছু সমস্যা হয়েছে।</translation>
 <translation id="8972098258593396643">ডিফল্ট ফোল্ডারে ডাউনলোড করবেন?</translation>
+<translation id="8987736167266086032">আপনি যেখানে ছেড়ে গিয়েছিলেন সেখান থেকে শুরু করুন</translation>
 <translation id="8992769679401294069">পাসফ্রেজ ব্যবহার করে আপনার ডেটা এনক্রিপ্ট করা হয়েছে। আপনার Google অ্যাকাউন্টে Chrome সম্পর্কিত ডেটা ব্যবহার ও সেভ করতে এটি লিখুন।</translation>
 <translation id="8993760627012879038">ছদ্মবেশী মোডে একটি নতুন ট্যাব খুলুন</translation>
 <translation id="8995521496079646922">আপনার বেছে নেওয়া অ্যাপ ডিফল্ট হিসেবে ব্যবহার করা হবে। আপনার বেছে নেওয়া কোনও অ্যাপ আগে থেকে ডিভাইসে না থাকলে, একটু পরেই তা ডাউনলোড করা হবে।</translation>

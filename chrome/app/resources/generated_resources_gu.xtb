@@ -679,6 +679,7 @@
 <translation id="1453561711872398978"><ph name="BEGIN_LINK" />ડીબગ લૉગ<ph name="END_LINK" /> મોકલો (ભલામણ કરવામાં આવે છે)</translation>
 <translation id="1454223536435069390">સ્ક્રીનશોટ &amp;લો</translation>
 <translation id="145432137617179457">જોડણીની તપાસ ધરાવતી ભાષાઓ</translation>
+<translation id="1455009947184333152">ડિલીટ કરેલું કૌશલ્ય</translation>
 <translation id="1455119378540982311">વિન્ડોના પ્રીસેટ કરેલા કદ</translation>
 <translation id="1456849775870359518">તમારા ટૅબ ફરી ખૂલશે</translation>
 <translation id="146000042969587795">આ ફ્રેમ બ્લૉક કરવામાં આવી હતી કારણ કે તેમાં અમુક અસુરક્ષિત કન્ટેન્ટ છે.</translation>
@@ -1330,6 +1331,7 @@
 <translation id="1886996562706621347">પ્રોટોકૉલ માટે ડિફૉલ્ટ હૅન્ડલર બનવા માટે સાઇટને પૂછવાની મંજૂરી આપો (સુઝાવ આપીએ છીએ)</translation>
 <translation id="1887210448491286312"><ph name="DEVICE_NAME" /> પર ટૅબ કાસ્ટ કરવાનું રોકો</translation>
 <translation id="1887442540531652736">સાઇન-ઇનમાં ભૂલ</translation>
+<translation id="1888692623866312036">સાચવેલું કૌશલ્ય</translation>
 <translation id="1890026367080681123">શામેલ કરેલા કન્ટેન્ટના સેટિંગ પર જાઓ</translation>
 <translation id="189035593835762169">નિયમો અને શરતો</translation>
 <translation id="1891362123137972260">ડિસ્કમાં સ્પેસ અત્યંત ઓછી છે. કૃપા કરીને ડિસ્કમાં સ્પેસ ખાલી કરો.</translation>
@@ -1837,6 +1839,7 @@
 <translation id="2232751457155581899">સાઇટ તમારા કૅમેરાનું સ્ટેટસ ટ્રૅક કરવાનું પૂછી શકે છે</translation>
 <translation id="2233502537820838181">&amp;વધુ માહિતી</translation>
 <translation id="223356358902285214">વેબ અને ઍપ પ્રવૃત્તિ</translation>
+<translation id="2234031676056123135">તમારા શૉર્ટકટ કસ્ટમાઇઝ કરો</translation>
 <translation id="2234065144797002621">ક્રિક</translation>
 <translation id="2234208862050358325">કર્સરને ખસેડવા માટે 1, 2, 3, q, e, a, s, d કીનો ઉપયોગ કરો</translation>
 <translation id="2234827758954819389">પ્રાઇવસી સંબંધિત માર્ગદર્શિકા</translation>
@@ -3096,10 +3099,12 @@
 <translation id="3048589239114571785">વગાડો (k)</translation>
 <translation id="3048742847101793553">સ્કૅન કરવાનું નિષ્ફળ થયું હોવાથી તમારી સંસ્થા દ્વારા આ ફાઇલને બ્લૉક કરવામાં આવી છે.</translation>
 <translation id="3048917188684939573">કાસ્ટ અને ડિવાઇસ લૉગ</translation>
+<translation id="3049356453907822148">નવું કૌશલ્ય ઉમેરો</translation>
 <translation id="3051250416341590778">ડિસ્પ્લેનું કદ</translation>
 <translation id="3053013834507634016">પ્રમાણપત્ર કી ઉપયોગ</translation>
 <translation id="3053273573829329829">વપરાશકર્તા પિન ચાલુ કરો</translation>
 <translation id="3053274730492362225">બ્લિંક ન કરો</translation>
+<translation id="3057938290530993634">આગલી વખતે સરળ ઍક્સેસ માટે, તમારી સૌથી વધુ મુલાકાત લેવાયેલી વેબસાઇટને પિન કરવા ટૅપ કરીને દબાવી રાખો</translation>
 <translation id="3058498974290601450">તમે કોઈ પણ સમયે સેટિંગમાં 'સિંક કરો' ચાલુ કરી શકો છો</translation>
 <translation id="3060952009917586498">ડિવાઇસની ભાષા બદલો. હાલની ભાષા <ph name="LANGUAGE" /> છે.</translation>
 <translation id="3060987956645097882">તમારા ફોન સાથે અમે કોઈ સંપર્ક સ્થાપિત કરી શક્યા નથી. ખાતરી કરો કે તમારો ફોન નજીકમાં હોય, અનલૉક કરેલો હોય અને તેમાં બ્લૂટૂથ અને વાઇ-ફાઇની સુવિધા ચાલુ હોય.</translation>
@@ -3256,6 +3261,7 @@
 <translation id="3182749001423093222">જોડણીની તપાસ</translation>
 <translation id="3183139917765991655">પ્રોફાઇલ આયાતકાર</translation>
 <translation id="3183143381919926261">મોબાઇલ ડેટા નેટવર્ક</translation>
+<translation id="3183428991752322898">કીબોર્ડ શૉર્ટકટ સાફ કરો</translation>
 <translation id="3183700187146209259">સ્કૅનર સૉફ્ટવેર ઇન્સ્ટૉલ કરી શકતા નથી</translation>
 <translation id="3183750649832309748">તમારી સંસ્થા, <ph name="ACCOUNT_MANAGER" />, અમુક માહિતી જોઈ શકશે, જેમાં આ શામેલ હશે</translation>
 <translation id="3183944777708523606">મૉનિટરની ગોઠવણી</translation>
@@ -3347,6 +3353,7 @@
 <translation id="3247649647204519958">અહીંથી, તમે જે સાઇટ પર છો તે માટેની એક્સ્ટેન્શન પરવાનગીઓને જોઈ અને મેનેજ કરી શકો છો</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - નેટવર્ક ભૂલ</translation>
 <translation id="3248902735035392926">સલામતી મહત્ત્વપૂર્ણ છે. થોડી ક્ષણ ફાળવીને <ph name="BEGIN_LINK" />હમણાં જ તમારા એક્સ્ટેંશન ચેક કરો<ph name="END_LINK" /></translation>
+<translation id="3250374026663843838">તમારું કૌશલ્ય મેનેજ કરો</translation>
 <translation id="3251119461199395237">ફાઇલ સિંક</translation>
 <translation id="3251759466064201842">&lt;પ્રમાણપત્રનો ભાગ નથી&gt;</translation>
 <translation id="3252169590975855820">તમે Google Password Manager પર તેને ઍક્સેસ કરી શકો છો</translation>
@@ -5180,6 +5187,7 @@
 <translation id="4469324811108161144">પાસવર્ડની નોંધમાં <ph name="CHARACTER_LIMIT" /> જેટલા અક્ષર સાચવી શકાય છે.</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> <ph name="FOLDERNAME" />માં ફાઇલોમાં ફેરફાર કરી શકતા નથી</translation>
 <translation id="4470957202018033307">બાહ્ય સ્ટોરેજ માટેની પસંદગીઓ</translation>
+<translation id="4471250205822310967">Gemini પસંદગી ઓવરલે</translation>
 <translation id="4471354919263203780">વાણી ઓળખની ફાઇલો ડાઉનલોડ કરી રહ્યાં છીએ… <ph name="PERCENT" />%</translation>
 <translation id="4472194221638903160">AI વડે ટૅબનું ગ્રૂપ બનાવો</translation>
 <translation id="4472298120638043495">તમે તમારી પસંદગીની Google એકાઉન્ટની ભાષા (<ph name="NEW_LOCALE_FROM_GAIA" />)નો ઉપયોગ કરી શકો છો</translation>
@@ -11795,6 +11803,7 @@ USB ડિવાઇસ</translation>
 <translation id="8986494364107987395">ઉપયોગિતા આંકડાઓ અને ક્રૅશ રિપોર્ટ Googleને ઑટોમૅટિક રીતે મોકલો</translation>
 <translation id="8987305927843254629">દરેક વ્યક્તિ તેમનો અનુભવ મનગમતો બનાવી શકે છે અને ડેટા ખાનગી રાખી શકે છે.</translation>
 <translation id="8987321822984361516">બ્રાઉઝર કોઈ સંસ્થા દ્વારા મેનેજ કરવામાં આવે છે, પ્રોફાઇલ <ph name="PROFILE_DOMAIN" /> દ્વારા મેનેજ કરવામાં આવે છે</translation>
+<translation id="8987736167266086032">તમે જ્યાંથી છોડેલું ત્યાંથી ચૂંટો</translation>
 <translation id="8987927404178983737">મહિનો</translation>
 <translation id="8988539543012086784">આ પેજને <ph name="BOOKMARK_FOLDER" />માં સાચવવામાં આવે છે</translation>
 <translation id="8989359959810288806">ઇન્ટરનેટ શેર કરવાની સુવિધાનું સ્ટેટસ રિફ્રેશ કરો</translation>
@@ -11919,6 +11928,7 @@ USB ડિવાઇસ</translation>
 <translation id="9061521313218438086">જો Chromeને તમારો કોઈ પાસવર્ડ સાર્વજનિક ડેટા ઉલ્લંઘનમાં જોવા મળે, તો જો તમે સાઇન ઇન કર્યું હોય, તો Google Password Manager તમારા માટે તમારો પાસવર્ડ બદલવાની ઑફર કરી શકે છે.</translation>
 <translation id="9061694916020926968">Chromebook માટે Steam (બીટા)નો ઉપયોગ કરવા માટે, તમારે Google એકાઉન્ટમાં સાઇન ઇન થવું જરૂરી રહેશે. સાઇન ઇન કરો અને ફરીથી પ્રયાસ કરો.</translation>
 <translation id="9062468308252555888">14x</translation>
+<translation id="9062873887761404531">નૅવિગેશન શૉર્ટકટ સાફ કરો</translation>
 <translation id="9063208415146866933">લાઇન <ph name="ERROR_LINE_START" /> થી <ph name="ERROR_LINE_END" />માં ભૂલ આવી છે</translation>
 <translation id="9064275926664971810">એક જ ક્લિકમાં ફોર્મ ભરવા માટે ઑટોમૅટિક રીતે ભરાવાનું ચાલુ કરો</translation>
 <translation id="9065203028668620118">ફેરફાર કરો</translation>

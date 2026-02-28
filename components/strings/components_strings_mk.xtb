@@ -230,6 +230,7 @@
 <translation id="1358187717814494928">Создај табела</translation>
 <translation id="1358223345833465883">Вашиот пребарувач во Chromium</translation>
 <translation id="1359836962251219822">Кујна и трпезарија</translation>
+<translation id="136059610328993645">Вашите податоци се зачувуваат во Google Wallet за <ph name="ACCOUNT" />. Може да ги користите на услугите на Google за да ги пополнувате формуларите побрзо.</translation>
 <translation id="1360955481084547712">Отворете нов прозорец во режим „Инкогнито“ за приватно прелистување</translation>
 <translation id="1361528602584216624">Ограничување по Pix: <ph name="TRANSACTION_LIMIT" /> R$</translation>
 <translation id="1363015776076529485">Начините на плаќање достапни за избирање за да се продолжи со плаќањето се отворени на цел екран.</translation>
@@ -252,6 +253,7 @@
 <translation id="1392813880755413602">OpenDocument Presentation</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> не испрати податоци.</translation>
 <translation id="1393071644879491291">Напаѓачите на сајтот што се обидовте да го отворите може да ве измамат да инсталирате софтвер или да откриете работи како вашите лозинки, телефонски броеви или броеви на кредитни картички. Chrome силно препорачува да се вратите на безбедно. <ph name="BEGIN_LEARN_MORE_LINK" />Дознајте повеќе за предупредувањево<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="1402151528875251561">Прикажи ја историјата во страничната табла</translation>
 <translation id="1405567553485452995">Светлозелена</translation>
 <translation id="1406370515365284486">Вашите начини на плаќање и понатаму ќе се зачувуваат</translation>
 <translation id="1406500794671479665">Се проверува…</translation>
@@ -1450,6 +1452,7 @@
 <translation id="33073482541490531">Откриено е дека лозинката која штотуку ја употребивте е меѓу лозинките откриени при упад во податоците. Password Manager препорачува веднаш да ја промените лозинкава.</translation>
 <translation id="3307649904964670439">Копче за приспособување на Chrome, активирајте го за да го приспособите изгледот на вашиот прелистувач</translation>
 <translation id="3308006649705061278">Организациска единица (ОУ)</translation>
+<translation id="3310946375819654151">Chrome се обидува да пополни ваши чувствителни податоци во апликацијата <ph name="APP_NAME" />.</translation>
 <translation id="3312952471765023168">Прикачувањето е успешно</translation>
 <translation id="3318016344440038475">ТВ-комедии</translation>
 <translation id="3324687287337751929">4 x 6 инчи</translation>
@@ -1740,6 +1743,7 @@
 <translation id="3752181611900535304">Дали да се зачува адресата во сметката?</translation>
 <translation id="3752543821772132562">Се игнорира бидејќи не е поставено <ph name="POLICY_NAME" />.</translation>
 <translation id="3754210790023674521">Излези од „Слика во слика“</translation>
+<translation id="3754664361823138853">&amp;Отвори ја страницата со историја</translation>
 <translation id="3759461132968374835">Немате неодамна пријавени падови. Падовите што настанале кога било исклучено пријавувањето падови нема да се појават тука.</translation>
 <translation id="3760561303380396507">Да се користи Windows Hello наместо CVC?</translation>
 <translation id="3761171036307311438">Име на картичка:</translation>
@@ -2751,6 +2755,7 @@
 <translation id="5385966243497224160">Не може да се прегледа URL-адреса што не е HTTPS</translation>
 <translation id="5386426401304769735">Синџирот со сертификати за сајтов содржи сертификат потпишан со SHA-1.</translation>
 <translation id="5391010642126249196">Го отворивте ова</translation>
+<translation id="5391306025131596142">&amp;Отвори ја страницата со историја</translation>
 <translation id="539203134595252721">Пинг-понг</translation>
 <translation id="5392506727170022660">Метал (полусјајен)</translation>
 <translation id="5394069166371280357">ТВ-серии за семејства</translation>
@@ -2861,7 +2866,6 @@
 <translation id="5543564889050342791">Зоолошки, аквариуми и резервати</translation>
 <translation id="5543722831081909240">180 степени</translation>
 <translation id="5544836308113951378">Крстарења и чартери</translation>
-<translation id="5545314360139398232">Поврзете ја сметката со <ph name="ISSUER_NAME" /> за да плаќате одложено</translation>
 <translation id="5547939254150808298">Печатарство и издаваштво</translation>
 <translation id="554815783948612276">Даватели на услуги за форум и разговори</translation>
 <translation id="5548606607480005320">Безбедносна проверка</translation>
@@ -3546,6 +3550,7 @@
 <translation id="6655085656059574817">Ако ви е поврзана сметката, може да плаќате побрзо со <ph name="BNPL_ISSUER_NAME" />, но може да ја прекинете врската преку <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /></translation>
 <translation id="6656935431494847393">Опфаќа податоци како резервации на летови и податоци за возила</translation>
 <translation id="6657585470893396449">Лозинка</translation>
+<translation id="6659156657345021268">Вашите податоци ќе се зачуваат само на вашиот уред. Ќе имате можност да ги зачувате во Wallet следниот пат кога ќе пополнувате соодветен формулар.</translation>
 <translation id="6659246032834639189">Оваа цена е ниска</translation>
 <translation id="6660413144148052430">локација</translation>
 <translation id="6662457027866368246">Прва ролна</translation>
@@ -4950,6 +4955,7 @@
 <translation id="8894794286471754040">Прво долгиот раб</translation>
 <translation id="8897221284075091877">За да побарате да ги видите содржиниве, продолжете со вашата сметка на Google</translation>
 <translation id="8897428486789851669">Пливање</translation>
+<translation id="8898854704577986668">Прикажи ја историјата во страничната табла</translation>
 <translation id="8899807382908246773">Нападни реклами</translation>
 <translation id="8903921497873541725">Зумирај</translation>
 <translation id="8903998444169664879">Потврдете го вашиот идентитет за да ги промените поставките за плаќање</translation>

@@ -924,6 +924,7 @@
 <translation id="4885273946141277891">‏Chrome وقوعات کی غیر تعاون یافتہ تعداد۔</translation>
 <translation id="4890973535105146893">‏آپ کے Google اکاؤنٹ میں کوئی محفوظ کردہ پاس ورڈ نہیں ہے</translation>
 <translation id="4905823827770127520">صفحے پر کوئی لنک شامل کریں</translation>
+<translation id="4908601375231458049">ٹیب گروپ کو حسب ضرورت بنائیں اور ہو گیا پر کلک کریں</translation>
 <translation id="4908869848243824489">‏Discover منجانب Google</translation>
 <translation id="4910889077668685004">ادائیگی ایپس</translation>
 <translation id="4911042367886397055">پھر سے خوش آمدید، <ph name="USER_NAME" />!</translation>
@@ -1187,6 +1188,7 @@
 <translation id="6040143037577758943">بند کریں</translation>
 <translation id="604124094241169006">خود کار</translation>
 <translation id="6042308850641462728">مزید</translation>
+<translation id="6047066316630165190">گرڈ ٹیب سوئچر کھولیں</translation>
 <translation id="604996488070107836">ایک نامعلوم خرابی کی وجہ سے <ph name="FILE_NAME" /> کو ڈاؤن لوڈ کرنا ناکام ہوگیا۔</translation>
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">اپنی کہانیوں اور سرگرمی کو یہاں کنٹرول کریں</translation>
@@ -1260,6 +1262,7 @@
 <translation id="6301526076346731664">ڈویلپر ٹولز کھولیں</translation>
 <translation id="630308129961693966">اپنے ایڈریس بار کی پوزیشن کا انتخاب کریں</translation>
 <translation id="6303969859164067831">سائن آؤٹ کریں اور مطابقت پذیری آف کریں</translation>
+<translation id="6305257382500066042">اسے ابھی آزمائیں</translation>
 <translation id="6307241780749477694">اس آلہ پر اپنے تمام پاس ورڈز حاصل کرنے کے لیے توثیق کریں کہ یہ آپ ہی ہیں</translation>
 <translation id="6309082029962045994">‫<ph name="TAB_TITLE" />، متعدد منتخب پن کردہ قابل سماعت ٹیب</translation>
 <translation id="6312687380483398334">ویب ایپس (خاموش)</translation>
@@ -1361,6 +1364,7 @@
 <translation id="6661521899577697780">‏‫Chrome Finds آپٹ ان آدھی اونچائی پر کھلا ہے</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" /> میں کھولیں</translation>
 <translation id="6669390930482049506">مجھے مطلع کریں</translation>
+<translation id="6670767097276846646">‏کچھ ایکسٹینشنز سرچ انجنز کو Chrome میں شامل کر سکتی ہیں</translation>
 <translation id="6671495933530132209">تصویر کاپی کریں</translation>
 <translation id="6672697278890207089">اپنا پاس فریز درج کریں</translation>
 <translation id="6672917148207387131"><ph name="DOMAIN" /> شامل کریں</translation>
@@ -1847,6 +1851,7 @@
 <translation id="8458341576712814616">شارٹ کٹ</translation>
 <translation id="8458413889418591446">تیزی سے اپنی ملاحظہ کردہ سائٹس پر واپس جانے کے لیے، اپنی سرگزشت اور ٹیبز کو مطابقت پذیر بنائیں</translation>
 <translation id="84594714173170813">‏اپنے Google اکاؤنٹ میں Chrome ڈیٹا استعمال کرتے رہیں</translation>
+<translation id="8460008946585880786">ایک ٹیب کو دوسرے ٹیب پر گھسیٹ کر ڈالیں</translation>
 <translation id="8460448946170646641">کلیدی رازداری اور سیکیورٹی کنٹرولز کا جائزہ لیں</translation>
 <translation id="8460932807646981183">سرچ انجنز اور سائٹ کی تلاش کا نظم کریں</translation>
 <translation id="8473863474539038330">پتے وغیرہ</translation>
@@ -1957,6 +1962,7 @@
 <translation id="8969796057708736017">اگر فائل آپ کی تنظیم کی پالیسیوں پر پورا اترتی ہے تو آپ کا ڈاؤن لوڈ مکمل ہو جائے گا</translation>
 <translation id="8970887620466824814">کچھ غلط ہو گیا۔</translation>
 <translation id="8972098258593396643">ڈیفالٹ فولڈر میں ڈاؤن لوڈ کریں؟</translation>
+<translation id="8987736167266086032">جہاں آپ نے چھوڑا وہیں سے شروع کریں</translation>
 <translation id="8992769679401294069">‏آپ کا ڈیٹا آپ کی پاس فریز کے ساتھ مرموز کردہ ہے۔ اپنے Google اکاؤنٹ میں Chrome ڈیٹا استعمال کرنے اور اسے محفوظ کرنے کے لیے اسے درج کریں۔</translation>
 <translation id="8993760627012879038">پوشیدگی وضع میں ایک نیا ٹیب کھولیں</translation>
 <translation id="8995521496079646922">آپ کی منتخب کردہ ایپس بطور ڈیفالٹ استعمال ہوں گی۔ اگر کوئی ایپ پہلے سے اس آلے پر نہیں ہے تو اسے جلد ہی ڈاؤن لوڈ کر دیا جائے گا۔</translation>

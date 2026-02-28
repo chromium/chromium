@@ -1020,6 +1020,7 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1671525612731130246">Seleccionar a conta de Drive</translation>
 <translation id="1671749176392751693">Identificadores de contido protexido permitidos</translation>
 <translation id="1673137583248014546"><ph name="URL" /> quere ver a marca e o modelo da chave de seguranza</translation>
+<translation id="1673855466663721679">Mostrar marcadores no panel lateral</translation>
 <translation id="1674073353928166410">Abrir todos (<ph name="URL_COUNT" />) nunha ventá do modo de incógnito</translation>
 <translation id="1674142805528405174">O xestor de contrasinais de Google pode actualizar a túa conta cun contrasinal seguro e gardalo na túa conta (<ph name="EMAIL" />).</translation>
 <translation id="1674945585974615438">Desactivar automaticamente os optimizadores de JavaScript en sitios descoñecidos</translation>
@@ -3442,6 +3443,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3312883087018430408">Para realizar buscas nunha parte ou sitio específico de Chrome, escribe o seu atallo na barra de enderezos, seguido do atallo de teclado que prefiras. Por exemplo, para facer buscas só en Marcadores, escribe "@marcadores" e despois preme Tabulador ou Espazo.</translation>
 <translation id="3313622045786997898">Valor da sinatura do certificado</translation>
 <translation id="3313950410573257029">Comprobar conexión</translation>
+<translation id="3314239811356311272">&amp;Abrir xestor de marcadores</translation>
 <translation id="3315158641124845231">Ocultar <ph name="PRODUCT_NAME" /></translation>
 <translation id="3317459757438853210">Dobre cara</translation>
 <translation id="3317521105713541270">Crear grupos</translation>
@@ -3648,6 +3650,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3453597230179205517">O acceso á localización está bloqueado</translation>
 <translation id="3453612417627951340">Precisa autorización</translation>
 <translation id="3454213325559396544">Esta é a última actualización automática de software e seguranza para este <ph name="DEVICE_TYPE" />. Para obter futuras actualizacións, cambia a un modelo máis novo.</translation>
+<translation id="3454276058453724464">{FILE_LIMIT,plural, =1{Carga 1 ficheiro .pdf para usalo coa túa pregunta}other{Carga ata # ficheiros .pdf para usalos coa túa pregunta}}</translation>
 <translation id="3454818737556063691">Queres mover 1 ficheiros a <ph name="CLOUD_PROVIDER" /> para abrilo?</translation>
 <translation id="3455436146814891176">Contrasinal de encriptación da sincronización</translation>
 <translation id="345693547134384690">Abrir &amp;imaxe na pestana nova</translation>
@@ -5024,6 +5027,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4364567974334641491"><ph name="APP_NAME" /> está compartindo unha ventá.</translation>
 <translation id="4364830672918311045">Mostrar notificacións</translation>
 <translation id="4367971618859387374">Nome visible</translation>
+<translation id="4368888793624522796">Trasladáronse os grupos de pestanas</translation>
 <translation id="4368960422722232719">Mostrar uso da memoria na tarxeta de vista previa que aparece ao pasar por enriba das pestanas</translation>
 <translation id="4369151461324628035">Non permitir que os sitios se conecten a calquera dispositivo da túa rede local</translation>
 <translation id="4369215744064167350">Aprobouse a solicitude de sitios web</translation>
@@ -5412,6 +5416,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4634575639321169635">Configura este dispositivo para uso laboral ou persoal</translation>
 <translation id="4635072447747973225">Desinstalar Crostini</translation>
 <translation id="4635398712689569051"><ph name="PAGE_NAME" /> non está dispoñible para usuarios invitados.</translation>
+<translation id="4635975718422788482">{FILE_LIMIT,plural, =1{Carga 1 imaxe para usala coa túa pregunta}other{Carga ata # imaxes para usalas coa túa pregunta}}</translation>
 <translation id="4636187126182557415">Preferencias do sistema</translation>
 <translation id="4636930964841734540">Información</translation>
 <translation id="4637083375689622795">Máis accións, <ph name="EMAIL" /></translation>
@@ -6255,6 +6260,7 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="5215502535566372932">Seleccionar país</translation>
 <translation id="5216674789212441076">Traduciranse automaticamente os subtítulos instantáneos. Os subtítulos envíanse a Google para que se traduzan.</translation>
 <translation id="5216951551945455224">{NUM_TABS,plural, =1{Deixar de compartir a pestana con Gemini}other{Deixar de compartir # pestanas con Gemini}}</translation>
+<translation id="5217883660859035687">Imos trasladar os grupos de pestanas para que os marcadores teñan máis espazo.</translation>
 <translation id="5220011581825921581">busca + frecha arriba</translation>
 <translation id="5221516927483787768">Non se puido emitir <ph name="HOST_NAME" /></translation>
 <translation id="5221834113325601057">Pestana excluída da lista</translation>
@@ -6936,6 +6942,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="5697832193891326782">Selector de emojis</translation>
 <translation id="5698136107297470317">Vas eliminar os teus datos de <ph name="BRAND" /></translation>
 <translation id="5698878456427040674">Comproba se se admite a conta seleccionada.</translation>
+<translation id="5698900765010620315">Escuro con baixo contraste</translation>
 <translation id="5699227710146832453">Do teu dispositivo</translation>
 <translation id="570043786759263127">Aplicacións e servizos de Google Play</translation>
 <translation id="5700761515355162635">Cookies de terceiros permitidas</translation>
@@ -8317,6 +8324,7 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
 <translation id="6663190258859265334">Utiliza a función Powerwash no teu dispositivo (<ph name="DEVICE_TYPE" />) e volve á versión anterior.</translation>
 <translation id="6664774537677393800">Produciuse un erro ao abrir o perfil. Pecha sesión e despois iníciaa de novo.</translation>
 <translation id="6665874326033183068">Salvaxe</translation>
+<translation id="6666560794795912543">Mostrar marcadores no panel lateral</translation>
 <translation id="6667086124612170548">O ficheiro é demasiado grande para este dispositivo</translation>
 <translation id="6667092961374478614">Detectabilidade de <ph name="FEATURE_NAME" /></translation>
 <translation id="6667187897999649121">Polo de agora, só podes compartir contrasinais cos membros da familia. <ph name="BEGIN_LINK" />Crea un grupo familiar<ph name="END_LINK" /> cun máximo de seis membros para tirardes proveito dos teus produtos e subscricións de Google.</translation>
@@ -9777,6 +9785,7 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
 <translation id="7660146600670077843">Fai clic co botón dereito nunha pestana e selecciona Engadir pestana ao grupo novo</translation>
 <translation id="7661451191293163002">Non se puido obter un certificado de rexistro.</translation>
 <translation id="7662283695561029522">Toca para configurar a conexión compartida</translation>
+<translation id="7662535435481776002">Claro con baixo contraste</translation>
 <translation id="7663719505383602579">Receptor: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7663774460282684730">Hai atallos de teclado dispoñibles</translation>
 <translation id="7663859337051362114">Engadir perfil de eSIM</translation>
@@ -11784,6 +11793,7 @@ Pode tratarse de información sobre o software instalado, os ficheiros, o navega
 <translation id="8986494364107987395">Enviar estatísticas de uso e informes de erros a Google automaticamente</translation>
 <translation id="8987305927843254629">Cada persoa pode personalizar a súa experiencia e protexer a privacidade dos seus datos.</translation>
 <translation id="8987321822984361516">Navegador xestionado por unha organización, perfil xestionado por <ph name="PROFILE_DOMAIN" /></translation>
+<translation id="8987736167266086032">Continúa onde o deixaches</translation>
 <translation id="8987927404178983737">Mes</translation>
 <translation id="8988539543012086784">Gardouse esta páxina en <ph name="BOOKMARK_FOLDER" /></translation>
 <translation id="8989359959810288806">Actualizar estado da conexión compartida</translation>

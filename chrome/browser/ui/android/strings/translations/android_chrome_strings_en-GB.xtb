@@ -1361,6 +1361,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6661521899577697780">Chrome Finds opt-in opened at half height</translation>
 <translation id="666731172850799929">Open in <ph name="APP_NAME" /></translation>
 <translation id="6669390930482049506">Notify me</translation>
+<translation id="6670767097276846646">Some extensions can add search engines to Chrome</translation>
 <translation id="6671495933530132209">Copy image</translation>
 <translation id="6672697278890207089">Enter your passphrase</translation>
 <translation id="6672917148207387131">Add <ph name="DOMAIN" /></translation>
@@ -1957,6 +1958,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="8969796057708736017">Your download will complete if the file meets your organisation's policies</translation>
 <translation id="8970887620466824814">Something went wrong.</translation>
 <translation id="8972098258593396643">Download to default folder?</translation>
+<translation id="8987736167266086032">Pick up from where you left off</translation>
 <translation id="8992769679401294069">Your data is encrypted with your passphrase. Enter it to use and save Chrome data in your Google Account.</translation>
 <translation id="8993760627012879038">Open a new tab in Incognito mode</translation>
 <translation id="8995521496079646922">The apps that you chose will be used by default. If an app isn't already on this device, it'll be downloaded shortly.</translation>

@@ -230,6 +230,7 @@
 <translation id="1358187717814494928">شیٹ تخلیق کریں</translation>
 <translation id="1358223345833465883">‏Chromium میں آپ کا سرچ انجن</translation>
 <translation id="1359836962251219822">باورچی خانہ اور ڈائننگ</translation>
+<translation id="136059610328993645">‏آپ کی معلومات <ph name="ACCOUNT" /> کے لیے Google والٹ میں محفوظ ہو جاتی ہے۔ آپ فارمز کو تیزی سے پُر کرنے کے لیے اسے Google سروسز پر استعمال کر سکتے ہیں۔</translation>
 <translation id="1360955481084547712">نجی طور پر براؤز کرنے کے لیے ایک نئی پوشیدگی ونڈو کھولیں</translation>
 <translation id="1361528602584216624">‏فی <ph name="TRANSACTION_LIMIT" /> ‏Pix R$‎ کی حد</translation>
 <translation id="1363015776076529485">ادائیگی کے ساتھ آگے بڑھنے کی خاطر منتخب کیے جانے کے لیے دستیاب ادائیگی کے طریقے پوری اسکرین پر کھلے ہوئے ہیں۔</translation>
@@ -252,6 +253,7 @@
 <translation id="1392813880755413602">‏‫OpenDocument پیشکش</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> نے کوئی ڈیٹا نہیں بھیجا۔</translation>
 <translation id="1393071644879491291">‏آپ نے جو سائٹ ملاحظہ کرنے کی کوشش کی ہے، اس پر حملہ آور دھوکے سے آپ سے سافٹ ویئر انسٹال کروا سکتے ہیں یا آپ کے پاس ورڈز، فون یا کریڈٹ کارڈ نمبرز جیسی چیزیں افشاء کروا سکتے ہیں۔ ‫Chrome تحفظ پر واپس جانے کا پُرزور مشورہ دیتا ہے۔ <ph name="BEGIN_LEARN_MORE_LINK" />اس وارننگ کے بارے میں مزید جانیں<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="1402151528875251561">سائیڈ پینل میں سرگزشت دکھائیں</translation>
 <translation id="1405567553485452995">ہلکا سبز</translation>
 <translation id="1406370515365284486">آپ کے ادائیگی کے طریقے اب بھی محفوظ کیے جائیں گے</translation>
 <translation id="1406500794671479665">توثیق ہو رہی ہے…</translation>
@@ -1451,6 +1453,7 @@
 <translation id="33073482541490531">آپ نے ابھی جو پاس ورڈ استعمال کیا وہ ڈیٹا کی خلاف ورزی میں پایا گیا۔ پاس ورڈ مینیجر اس پاس ورڈ کو ابھی تبدیل کرنے کی تجویز کرتا ہے۔</translation>
 <translation id="3307649904964670439">‏Chrome کو حسب ضرورت بنائیں بٹن، اپنے براؤزر کی شکل کو حسب ضرورت بنانے کے لیے فعال کریں</translation>
 <translation id="3308006649705061278">‏تنظیمی اکائی (OU)</translation>
+<translation id="3310946375819654151">‏‫Google Chrome <ph name="APP_NAME" /> پر آپ کی حساس معلومات پُر کرنے کی کوشش کر رہا ہے۔</translation>
 <translation id="3312952471765023168">اپ لوڈ کامیاب</translation>
 <translation id="3318016344440038475">‏TV کامیڈیز</translation>
 <translation id="3324687287337751929">‏‎4 x 6 انچ</translation>
@@ -1741,6 +1744,7 @@
 <translation id="3752181611900535304">اکاؤنٹ میں پتہ محفوظ کریں؟</translation>
 <translation id="3752543821772132562">پالیسی کو نظر انداز کیا گیا کیونکہ <ph name="POLICY_NAME" /> سیٹ نہیں ہے۔</translation>
 <translation id="3754210790023674521">تصویر میں تصویر سے باہر نکلیں</translation>
+<translation id="3754664361823138853">سرگزشت کا صفحہ &amp;کھولیں</translation>
 <translation id="3759461132968374835">آپ کے پاس فی الحال کوئی اطلاع کردہ کریشز نہیں ہیں۔  کریش رپورٹنگ غیر فعال ہونے پر پیش آنے والے کریشز یہاں ظاہر نہیں ہوں گے۔</translation>
 <translation id="3760561303380396507">‏CVC کے بجائے Windows Hello کا استعمال کریں؟</translation>
 <translation id="3761171036307311438">کارڈ پر نام:</translation>
@@ -2752,6 +2756,7 @@
 <translation id="5385966243497224160">‏غیر HTTPS URL کا پیش منظر نہیں دیکھ سکتے</translation>
 <translation id="5386426401304769735">‏اس سائٹ کیلئے سرٹیفکیٹ چین میں SHA-1 کا استعمال کر کے دستخط کردہ سرٹیفکیٹ شامل ہے۔</translation>
 <translation id="5391010642126249196">آپ کے ملاحظہ کردہ ٹیبز</translation>
+<translation id="5391306025131596142">سرگزشت کا صفحہ &amp;کھولیں</translation>
 <translation id="539203134595252721">ٹیبل ٹینس</translation>
 <translation id="5392506727170022660">میٹل (سیمی گلوس)</translation>
 <translation id="5394069166371280357">‏خاندان پر مرتکز TV شوز</translation>
@@ -2862,7 +2867,6 @@
 <translation id="5543564889050342791">چڑیا گھر، ماہی خانے اور ذخائر</translation>
 <translation id="5543722831081909240">180 ڈگریز</translation>
 <translation id="5544836308113951378">کروزز اور چارٹرز</translation>
-<translation id="5545314360139398232">گزرتے وقت کے ساتھ ادائیگی کرنے کیلئے، <ph name="ISSUER_NAME" /> کو لنک کریں</translation>
 <translation id="5547939254150808298">پرنٹنگ اور اشاعت</translation>
 <translation id="554815783948612276">فورم اور چیٹ فراہم کنندگان</translation>
 <translation id="5548606607480005320">سیفٹی چیک</translation>
@@ -3548,6 +3552,7 @@
 <translation id="6655085656059574817">اپنے اکاؤنٹ کو لنک کیے رکھنے سے آپ کو <ph name="BNPL_ISSUER_NAME" /> کے ساتھ فوری ادائیگی کرنے میں مدد ملتی ہے، لیکن آپ <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /> پر جا کر لنک ختم کر سکتے ہیں</translation>
 <translation id="6656935431494847393">اس میں فلائیٹ کی بُکنگز اور گاڑی کی معلومات جیسی معلومات شامل ہے</translation>
 <translation id="6657585470893396449">پاس ورڈ</translation>
+<translation id="6659156657345021268">آپ کی معلومات آپ کے آلے میں محفوظ ہے اگلی بار جب آپ کوئی متعلقہ فارم پُر کریں گے تو آپ کو اسے والٹ میں محفوظ کرنے کا موقع ملے گا۔</translation>
 <translation id="6659246032834639189">یہ قیمت کم ہے</translation>
 <translation id="6660413144148052430">مقام</translation>
 <translation id="6662457027866368246">پہلا رول</translation>
@@ -4952,6 +4957,7 @@
 <translation id="8894794286471754040">طویل کنارہ پہلے</translation>
 <translation id="8897221284075091877">‏اس مواد کو دیکھنے کی درخواست کرنے کے لیے، اپنے Google اکاؤنٹ کے ساتھ جاری رکھیں</translation>
 <translation id="8897428486789851669">تیراکی</translation>
+<translation id="8898854704577986668">سائیڈ پینل میں سرگزشت دکھائیں</translation>
 <translation id="8899807382908246773">دخل انداز اشتہارات</translation>
 <translation id="8903921497873541725">زوم ان کریں</translation>
 <translation id="8903998444169664879">اپنی ادائیگیوں کی ترتیبات کو تبدیل کرنے کے لیے توثیق کریں کہ یہ آپ ہی ہیں</translation>

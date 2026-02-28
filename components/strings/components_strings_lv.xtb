@@ -230,6 +230,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1358187717814494928">Izveidot izklājlapu</translation>
 <translation id="1358223345833465883">Jūsu meklētājprogramma pārlūkā Chromium</translation>
 <translation id="1359836962251219822">Virtuves un ēdamistabas preces</translation>
+<translation id="136059610328993645">Jūsu informācija tiek saglabāta lietotnē Google maks kontam <ph name="ACCOUNT" />. Varat to izmantot Google pakalpojumos, lai ātrāk aizpildītu veidlapas.</translation>
 <translation id="1360955481084547712">Atveriet jaunu inkognito režīma logu privātai pārlūkošanai.</translation>
 <translation id="1361528602584216624"><ph name="TRANSACTION_LIMIT" /> R$ ierobežojums katram Pix maksājumam</translation>
 <translation id="1363015776076529485">Maksājumu veidi, kurus var atlasīt maksājuma turpināšanai, ir atvērti pilnā augstumā.</translation>
@@ -252,6 +253,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1392813880755413602">OpenDocument prezentācija</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> nenosūtīja nekādus datus.</translation>
 <translation id="1393071644879491291">Vietnē, kuru mēģinājāt apmeklēt, uzbrucēji var jūs maldināt, lai pamudinātu instalēt programmatūru vai atklāt kādu informāciju, piemēram, jūsu paroles, tālruņa numuru vai kredītkaršu numurus. Chrome stingri iesaka doties atpakaļ. <ph name="BEGIN_LEARN_MORE_LINK" />Uzziniet vairāk par šo brīdinājumu.<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="1402151528875251561">Rādīt vēsturi sānu panelī</translation>
 <translation id="1405567553485452995">Gaiši zaļa</translation>
 <translation id="1406370515365284486">Jūsu maksājuma veidi joprojām tiks saglabāti</translation>
 <translation id="1406500794671479665">Notiek verificēšana...</translation>
@@ -1450,6 +1452,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="33073482541490531">Nupat izmantotā parole ir atklāta datu aizsardzības pārkāpuma dēļ. Paroļu pārvaldnieks iesaka nekavējoties nomainīt šo paroli.</translation>
 <translation id="3307649904964670439">Poga “Pielāgot pārlūkprogrammu Chrome”. Aktivizējiet, lai pielāgotu pārlūkprogrammas izskatu.</translation>
 <translation id="3308006649705061278">Organizacionālā vienība (OU)</translation>
+<translation id="3310946375819654151">Pārlūkā Chrome tiek mēģināts ievadīt jūsu sensitīvo informāciju lietotnē <ph name="APP_NAME" />.</translation>
 <translation id="3312952471765023168">Augšupielāde sekmīga</translation>
 <translation id="3318016344440038475">TV komēdijas</translation>
 <translation id="3324687287337751929">4 x 6 collas</translation>
@@ -1739,6 +1742,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3752181611900535304">Vai saglabāt adresi kontā?</translation>
 <translation id="3752543821772132562">Ignorēta, jo nav iestatīta politika <ph name="POLICY_NAME" />.</translation>
 <translation id="3754210790023674521">Iziet no režīma “Attēls attēlā”</translation>
+<translation id="3754664361823138853">&amp;Atvērt lapu Vēsture</translation>
 <translation id="3759461132968374835">Pēdējā laikā neesat ziņojis par avārijām. Šeit nebūs redzamas avārijas, kas radās laikā, kad avāriju pārskatu izveide bija atspējota.</translation>
 <translation id="3760561303380396507">Vai vēlaties izmantot Windows Hello, nevis CVC?</translation>
 <translation id="3761171036307311438">Vārds uz kartes:</translation>
@@ -2749,6 +2753,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="5385966243497224160">Nevar priekšskatīt URL, kam netiek izmantots protokols HTTPS</translation>
 <translation id="5386426401304769735">Šīs vietnes sertifikātu ķēdē ir iekļauts sertifikāts, kas ir parakstīts, izmantojot SHA-1.</translation>
 <translation id="5391010642126249196">Jūs apmeklējāt</translation>
+<translation id="5391306025131596142">&amp;Atvērt lapu Vēsture</translation>
 <translation id="539203134595252721">Galda teniss</translation>
 <translation id="5392506727170022660">Metāls (pusglancēts)</translation>
 <translation id="5394069166371280357">Televīzijas pārraides visai ģimenei</translation>
@@ -2859,7 +2864,6 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="5543564889050342791">Zooloģiskie dārzi, akvāriji un rezervāti</translation>
 <translation id="5543722831081909240">Par 180 grādiem</translation>
 <translation id="5544836308113951378">Kruīzi un čarterreisi</translation>
-<translation id="5545314360139398232">Saistiet “<ph name="ISSUER_NAME" />”, lai maksātu pa daļām</translation>
 <translation id="5547939254150808298">Drukāšana un izdevējdarbība</translation>
 <translation id="554815783948612276">Forumu un tērzētavu nodrošinātāji</translation>
 <translation id="5548606607480005320">Drošības pārbaude</translation>
@@ -3544,6 +3548,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="6655085656059574817">Saglabājot konta saistījumu, varēsiet norēķināties ātrāk, izmantojot <ph name="BNPL_ISSUER_NAME" />, taču varat arī atsaistīt kontu vietnē <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" />.</translation>
 <translation id="6656935431494847393">Ietver informāciju, piemēram, par lidojumu rezervācijām un transportlīdzekļiem.</translation>
 <translation id="6657585470893396449">Parole</translation>
+<translation id="6659156657345021268">Jūsu informācija tiek saglabāta tikai jūsu ierīcē. Nākamreiz, kad aizpildīsiet atbilstošu veidlapu, jums būs iespēja saglabāt šo informāciju lietotnē Maks.</translation>
 <translation id="6659246032834639189">Šī cena ir zema</translation>
 <translation id="6660413144148052430">atrašanās vieta</translation>
 <translation id="6662457027866368246">Pirmais rullis</translation>
@@ -4950,6 +4955,7 @@ Papildu informācija:
 <translation id="8894794286471754040">Vispirms garākā mala</translation>
 <translation id="8897221284075091877">Lai lūgtu atļauju skatīt šo saturu, turpiniet darbu ar savu Google kontu.</translation>
 <translation id="8897428486789851669">Peldēšana</translation>
+<translation id="8898854704577986668">Rādīt vēsturi sānu panelī</translation>
 <translation id="8899807382908246773">Traucējošas reklāmas</translation>
 <translation id="8903921497873541725">Tuvināt</translation>
 <translation id="8903998444169664879">Verificējiet savu identitāti, lai varētu mainīt maksājumu iestatījumus.</translation>

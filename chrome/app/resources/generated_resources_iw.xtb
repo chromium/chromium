@@ -1021,6 +1021,7 @@
 <translation id="1671525612731130246">‏בחירת חשבון Drive</translation>
 <translation id="1671749176392751693">יש הרשאה להשתמש במזהים של תוכן מוגן</translation>
 <translation id="1673137583248014546">האתר <ph name="URL" /> מבקש לראות את היצרן והדגם של מפתח האבטחה שלך</translation>
+<translation id="1673855466663721679">הצגת הסימניות בחלונית צדדית</translation>
 <translation id="1674073353928166410">פתיחת כל החלונות (<ph name="URL_COUNT" />) במצב חלון אנונימי</translation>
 <translation id="1674142805528405174">‏מנהל הסיסמאות של Google יכול להגדיר לך סיסמה חזקה חדשה ולשמור אותה בחשבון <ph name="EMAIL" />.</translation>
 <translation id="1674945585974615438">‏השבתה אוטומטית של כלי האופטימיזציה של JavaScript באתרים לא מוכרים</translation>
@@ -3454,6 +3455,7 @@
 <translation id="3312883087018430408">‏כדי לחפש באתר ספציפי או בחלק כלשהו של Chrome, מקלידים את קיצור הדרך שלהם בסרגל הכתובות ולאחר מכן מקישים על מקש הקיצור המועדף. לדוגמה: כדי לחפש רק ב-Bookmarks, מקלידים "‎@bookmarks" ומקישים על מקש ה-Tab או על מקש הרווח.</translation>
 <translation id="3313622045786997898">ערך חתימת אישור </translation>
 <translation id="3313950410573257029">בדיקת החיבור</translation>
+<translation id="3314239811356311272">&amp;פתיחת ניהול הסימניות</translation>
 <translation id="3315158641124845231">הסתרת <ph name="PRODUCT_NAME" /></translation>
 <translation id="3317459757438853210">דו-צדדי</translation>
 <translation id="3317521105713541270">יצירת קבוצות</translation>
@@ -3660,6 +3662,7 @@
 <translation id="3453597230179205517">הגישה למיקום חסומה</translation>
 <translation id="3453612417627951340">יש צורך באישור</translation>
 <translation id="3454213325559396544">זהו העדכון האוטומטי האחרון של התוכנה והאבטחה עבור מכשיר ה-<ph name="DEVICE_TYPE" /> הזה. כדי לקבל עדכונים עתידיים, יש לשדרג לדגם חדש יותר.</translation>
+<translation id="3454276058453724464">{FILE_LIMIT,plural, =1{‏אפשר לצרף לשאלה קובץ pdf‎. אחד}one{‏אפשר לצרף לשאלה עד # קובצי pdf‎.}two{‏אפשר לצרף לשאלה עד # קובצי pdf‎.}other{‏אפשר לצרף לשאלה עד # קובצי pdf‎.}}</translation>
 <translation id="3454818737556063691">להעביר קובץ אחד אל <ph name="CLOUD_PROVIDER" /> כדי לפתוח אותו?</translation>
 <translation id="3455436146814891176">סנכרון סיסמת הצפנה</translation>
 <translation id="345693547134384690">פתיחת &amp;תמונה בכרטיסייה חדשה</translation>
@@ -5033,6 +5036,7 @@
 <translation id="4364567974334641491"><ph name="APP_NAME" /> משתף חלון.</translation>
 <translation id="4364830672918311045">הצגת הודעות</translation>
 <translation id="4367971618859387374">השם המוצג</translation>
+<translation id="4368888793624522796">קבוצות הכרטיסיות עברו למקום אחר</translation>
 <translation id="4368960422722232719">הצגת השימוש בזיכרון בכרטיס התצוגה המקדימה שמופיע כשמעבירים את העכבר מעל לכרטיסייה</translation>
 <translation id="4369151461324628035">אין הרשאה לאתרים להתחבר למכשירים ברשת המקומית</translation>
 <translation id="4369215744064167350">הבקשה לגבי האתר אושרה</translation>
@@ -5422,6 +5426,7 @@
 <translation id="4634575639321169635">אפשר להגדיר את המכשיר לעבודה או לשימוש אישי</translation>
 <translation id="4635072447747973225">‏הסרה של Crostini</translation>
 <translation id="4635398712689569051"><ph name="PAGE_NAME" /> לא זמין למשתמשים במצב אורח.</translation>
+<translation id="4635975718422788482">{FILE_LIMIT,plural, =1{אפשר לצרף לשאלה תמונה אחת}one{אפשר לצרף לשאלה עד # תמונות}two{אפשר לצרף לשאלה עד # תמונות}other{אפשר לצרף לשאלה עד # תמונות}}</translation>
 <translation id="4636187126182557415">העדפות המערכת</translation>
 <translation id="4636930964841734540">מידע</translation>
 <translation id="4637083375689622795">פעולות נוספות, <ph name="EMAIL" /></translation>
@@ -6265,6 +6270,7 @@
 <translation id="5215502535566372932">יש לבחור מדינה</translation>
 <translation id="5216674789212441076">‏התכונה מתרגמת באופן אוטומטי כתוביות מיידיות. הכתוביות נשלחות אל Google לתרגום.</translation>
 <translation id="5216951551945455224">{NUM_TABS,plural, =1{‏הפסקת שיתוף הכרטיסייה עם Gemini}one{‏הפסקת השיתוף של # כרטיסיות עם Gemini}two{‏הפסקת השיתוף של # כרטיסיות עם Gemini}other{‏הפסקת השיתוף של # כרטיסיות עם Gemini}}</translation>
+<translation id="5217883660859035687">אנחנו מעבירים את קבוצות הכרטיסיות כדי לתת לסימניות שלך יותר מקום.</translation>
 <translation id="5220011581825921581">חיפוש + חץ למעלה</translation>
 <translation id="5221516927483787768">‏אי אפשר להפעיל Cast של <ph name="HOST_NAME" /></translation>
 <translation id="5221834113325601057">הכרטיסייה הוחרגה מהרשימה</translation>
@@ -6948,6 +6954,7 @@
 <translation id="5697832193891326782">בוחר אמוג'י</translation>
 <translation id="5698136107297470317">בחרת למחוק את הנתונים שלך מ<ph name="BRAND" /></translation>
 <translation id="5698878456427040674">עליך לבדוק אם יש תמיכה בחשבון שנבחר.</translation>
+<translation id="5698900765010620315">ניגודיות נמוכה בעיצוב כהה</translation>
 <translation id="5699227710146832453">מתוך</translation>
 <translation id="570043786759263127">‏אפליקציות ושירותים של Google Play</translation>
 <translation id="5700761515355162635">‏יש אישור לקובצי cookie של צד שלישי</translation>
@@ -8334,6 +8341,7 @@
 <translation id="6663190258859265334">‏יש לבצע Powerwash למכשיר ה-<ph name="DEVICE_TYPE" /> שלך ולחזור לגרסה הקודמת.</translation>
 <translation id="6664774537677393800">משהו השתבש בפתיחת הפרופיל שלך. יש לצאת ולאחר מכן להיכנס מחדש.</translation>
 <translation id="6665874326033183068">פרוע</translation>
+<translation id="6666560794795912543">הצגת הסימניות בחלונית צדדית</translation>
 <translation id="6667086124612170548">הקובץ הזה גדול מדי למכשיר</translation>
 <translation id="6667092961374478614">יכולת הגילוי ב<ph name="FEATURE_NAME" /></translation>
 <translation id="6667187897999649121">‏בשלב הזה אפשר לשתף סיסמאות רק עם חברים בקבוצה המשפחתית. ניתן <ph name="BEGIN_LINK" />ליצור קבוצה משפחתית<ph name="END_LINK" /> של עד 6 אנשים ולהפיק יותר ממוצרי Google ומהמינויים לשירותי Google.</translation>
@@ -9795,6 +9803,7 @@
 <translation id="7660146600670077843">לוחצים לחיצה ימנית על הכרטיסייה ובוחרים באפשרות 'הוספת כרטיסייה לקבוצה חדשה'</translation>
 <translation id="7661451191293163002">לא ניתן להשיג אישור הרשמה.</translation>
 <translation id="7662283695561029522">יש ללחוץ כדי להגדיר</translation>
+<translation id="7662535435481776002">ניגודיות נמוכה בעיצוב בהיר</translation>
 <translation id="7663719505383602579">מקבל: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7663774460282684730">יש מקשי קיצור</translation>
 <translation id="7663859337051362114">‏הוספת פרופיל eSim</translation>
@@ -11807,6 +11816,7 @@
 <translation id="8986494364107987395">‏שליחה אוטומטית של דוחות קריסה וסטטיסטיקות שימוש ל-Google</translation>
 <translation id="8987305927843254629">כל משתמש יכול להתאים אישית את חוויית המשתמש שלו ולהגן על פרטיות הנתונים.</translation>
 <translation id="8987321822984361516">הדפדפן מנוהל על ידי ארגון, הפרופיל מנוהל על ידי <ph name="PROFILE_DOMAIN" /></translation>
+<translation id="8987736167266086032">המשך מהנקודה שבה הפסקת</translation>
 <translation id="8987927404178983737">חודש</translation>
 <translation id="8988539543012086784">הדף הזה נשמר בתיקייה <ph name="BOOKMARK_FOLDER" /></translation>
 <translation id="8989359959810288806">‏רענון הסטטוס של שיתוף אינטרנט בין מכשירים (tethering)</translation>

@@ -509,6 +509,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="3122883569442693641">Mais detalhes</translation>
 <translation id="3123734510202723619">Anúncios</translation>
 <translation id="3134385238404760368">Nenhuma guia recente</translation>
+<translation id="3135655388926735587">Toque em Guias recentes</translation>
 <translation id="314939179385989105">Página inicial do Chrome</translation>
 <translation id="3158667104057012316">Ordenar manualmente</translation>
 <translation id="3159335509547415276">Saiba mais sobre contas bloqueadas.</translation>
@@ -855,6 +856,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 senha comprometida}one{# senha comprometida}other{# senhas comprometidas}}</translation>
 <translation id="4641919525231168205">Ir para a próxima página</translation>
 <translation id="4642472735733036929">Monitoramento de preço interrompido</translation>
+<translation id="4649493483932335039">Veja as guias recentes</translation>
 <translation id="465657074423018424">O recurso Navegação segura protege você de sites enganosos. Se desativá-lo, tenha cuidado redobrado ao navegar pela Internet, principalmente quando for digitar senhas.</translation>
 <translation id="4662373422909645029">O apelido não pode ter números</translation>
 <translation id="4663756553811254707"><ph name="NUMBER_OF_BOOKMARKS" /> favoritos excluídos</translation>
@@ -1370,6 +1372,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="6661521899577697780">A opção de ativar o Chrome Finds foi aberta na metade do tamanho</translation>
 <translation id="666731172850799929">Abrir no <ph name="APP_NAME" /></translation>
 <translation id="6669390930482049506">Receber notificações</translation>
+<translation id="6670767097276846646">Algumas extensões podem adicionar mecanismos de pesquisa ao Chrome</translation>
 <translation id="6671495933530132209">Copiar imagem</translation>
 <translation id="6672697278890207089">Digite sua senha</translation>
 <translation id="6672917148207387131">Adicionar <ph name="DOMAIN" /></translation>
@@ -1571,6 +1574,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="7363349185727752629">Um guia das suas escolhas de privacidade</translation>
 <translation id="7364103838544876661">Mais opções para excluir dados de navegação</translation>
 <translation id="7365073365123878797">Para salvar e usar senhas com o Gerenciador de senhas do Google, atualize o Google Play Services</translation>
+<translation id="7368009310682364976">Veja guias abertas recentemente</translation>
 <translation id="7368927539449986686">Editar a Pesquisa no site</translation>
 <translation id="7375125077091615385">Tipo:</translation>
 <translation id="7376560087009844242">Ao incluir mais texto de uma página, você poderá ver resultados melhores ao usar a Pesquisa por toque. Você pode mudar essa opção nas <ph name="BEGIN_LINK" />configurações<ph name="END_LINK" /> quando quiser.</translation>
@@ -1689,6 +1693,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="7824665136384946951">Sua organização desativou a Navegação Segura</translation>
 <translation id="7826342993930002256">Seu Google Chrome, em qualquer lugar</translation>
 <translation id="7844171778363018843">Nenhum dado selecionado para sincronização</translation>
+<translation id="784453721355882533">Teste o Gemini no Chrome para receber respostas, ideias principais e muito mais.</translation>
 <translation id="7846161022626028328">Ocorreu um erro. Tente de novo.</translation>
 <translation id="7846296061357476882">Serviços do Google</translation>
 <translation id="784652447248278262">Janela atual</translation>
@@ -1698,6 +1703,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="7853202427316060426">Atividade</translation>
 <translation id="7859988229622350291">Nunca traduzir</translation>
 <translation id="7866213166286285359">Traduzir páginas aqui</translation>
+<translation id="7873610418439765081">Teste o Gemini no Chrome para receber respostas, ideias principais e muito mais no botão "Mais opções".</translation>
 <translation id="7875915731392087153">Criar e-mail</translation>
 <translation id="7876243839304621966">Remover tudo</translation>
 <translation id="7886917304091689118">Executando no Chrome</translation>
@@ -1748,6 +1754,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="8062594758852531064">Pré-carregamento estendido:</translation>
 <translation id="8063895661287329888">Falha ao adicionar favorito.</translation>
 <translation id="8066816452984416180">Adicione esta página aos favoritos rapidamente. Para editar este atalho, toque e pressione.</translation>
+<translation id="8072436850275034464">Reabra guias fechadas recentemente em qualquer lugar onde usa o Chrome</translation>
 <translation id="8073388330009372546">Abrir imagem em nova guia</translation>
 <translation id="8076492880354921740">Guias</translation>
 <translation id="8078096376109663956">Compartilhar somente o texto</translation>
@@ -1967,6 +1974,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="8969796057708736017">O download será concluído se o arquivo atender às políticas da sua organização</translation>
 <translation id="8970887620466824814">Algo deu errado.</translation>
 <translation id="8972098258593396643">Fazer o download para a pasta padrão?</translation>
+<translation id="8987736167266086032">Recomece de onde você parou</translation>
 <translation id="8992769679401294069">Seus dados são criptografados com a senha longa. Digite-a para usar e salvar os dados do Chrome na sua Conta do Google.</translation>
 <translation id="8993760627012879038">Abrir uma nova guia no modo de navegação anônima</translation>
 <translation id="8995521496079646922">Os apps escolhidos serão usados por padrão. Os que não estiverem no dispositivo serão baixados em breve.</translation>

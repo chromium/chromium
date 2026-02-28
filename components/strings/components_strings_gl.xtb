@@ -230,6 +230,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1358187717814494928">Crear folla</translation>
 <translation id="1358223345833465883">O teu buscador en Chromium</translation>
 <translation id="1359836962251219822">Utensilios de cociña</translation>
+<translation id="136059610328993645">A túa información gárdase en Google Wallet para <ph name="ACCOUNT" />. Podes usala nos servizos de Google para completar formularios máis rápido.</translation>
 <translation id="1360955481084547712">Abrir unha nova ventá do modo de incógnito para navegar de forma privada</translation>
 <translation id="1361528602584216624">Límite de <ph name="TRANSACTION_LIMIT" /> R$ para Pix</translation>
 <translation id="1363015776076529485">Lista aberta a altura completa cos métodos de pago que se poden seleccionar para proceder ao pagamento.</translation>
@@ -252,6 +253,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1392813880755413602">Presentación de OpenDocument</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> non enviou datos.</translation>
 <translation id="1393071644879491291">Os atacantes do sitio que tentaches visitar poderían enganarte para que instales software ou reveles información como os teus contrasinais, números de teléfono ou tarxetas de crédito. Chrome recoméndache encarecidamente volver a un sitio seguro. <ph name="BEGIN_LEARN_MORE_LINK" />Máis información sobre esta advertencia<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="1402151528875251561">Mostrar historial no panel lateral</translation>
 <translation id="1405567553485452995">Verde claro</translation>
 <translation id="1406370515365284486">Os teus métodos de pago seguirán gardados</translation>
 <translation id="1406500794671479665">Verificando...</translation>
@@ -1450,6 +1452,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="33073482541490531">O contrasinal que acabas de utilizar viuse implicado nunha violación da seguranza dos datos. O xestor de contrasinais recomenda que o cambies de inmediato.</translation>
 <translation id="3307649904964670439">Botón para personalizar Chrome. Actívao para personalizar o aspecto do navegador</translation>
 <translation id="3308006649705061278">Unidade organizativa (UO)</translation>
+<translation id="3310946375819654151">Google Chrome está tentando completar a túa información confidencial en <ph name="APP_NAME" />.</translation>
 <translation id="3312952471765023168">Completouse a carga</translation>
 <translation id="3318016344440038475">Comedias de televisión</translation>
 <translation id="3324687287337751929">4 x 6 polgadas</translation>
@@ -1740,6 +1743,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3752181611900535304">Queres gardar o enderezo na conta?</translation>
 <translation id="3752543821772132562">Ignórase porque non se configurou <ph name="POLICY_NAME" />.</translation>
 <translation id="3754210790023674521">Saír do modo de pantalla superposta</translation>
+<translation id="3754664361823138853">&amp;Abrir páxina do historial</translation>
 <translation id="3759461132968374835">Non informaches de ningún erro recentemente. Os erros producidos mentres estaban desactivados os informes de erros non aparecerán aquí.</translation>
 <translation id="3760561303380396507">Queres usar Windows Hello en lugar do CVC?</translation>
 <translation id="3761171036307311438">Nome na tarxeta:</translation>
@@ -2751,6 +2755,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5385966243497224160">Os URL que non sexan HTTPS non se poden previsualizar</translation>
 <translation id="5386426401304769735">A cadea de certificados deste sitio contén un certificado que se asinou con SHA-1.</translation>
 <translation id="5391010642126249196">Acceso</translation>
+<translation id="5391306025131596142">&amp;Abrir páxina do historial</translation>
 <translation id="539203134595252721">Tenis de mesa</translation>
 <translation id="5392506727170022660">Metal (semibrillo)</translation>
 <translation id="5394069166371280357">Series para a familia</translation>
@@ -2861,7 +2866,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5543564889050342791">Zoos, acuarios e reservas naturais</translation>
 <translation id="5543722831081909240">180 graos</translation>
 <translation id="5544836308113951378">Cruceiros e voos chárter</translation>
-<translation id="5545314360139398232">Vincula <ph name="ISSUER_NAME" /> para pagar máis tarde</translation>
 <translation id="5547939254150808298">Impresión e publicación</translation>
 <translation id="554815783948612276">Provedores de foros e chats</translation>
 <translation id="5548606607480005320">Revisión de seguranza</translation>
@@ -3546,6 +3550,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6655085656059574817">Se mantés a túa conta vinculada, poderás pagar máis rápido con <ph name="BNPL_ISSUER_NAME" />. Podes desvinculala en <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /></translation>
 <translation id="6656935431494847393">Inclúe información como reservas de voos e datos de vehículos</translation>
 <translation id="6657585470893396449">Contrasinal</translation>
+<translation id="6659156657345021268">A túa información gárdase no teu dispositivo. Terás a oportunidade de gardala en Wallet a próxima vez que completes un formulario relevante.</translation>
 <translation id="6659246032834639189">Este prezo é baixo</translation>
 <translation id="6660413144148052430">localización</translation>
 <translation id="6662457027866368246">Primeiro rolo</translation>
@@ -4950,6 +4955,7 @@ Detalles adicionais:
 <translation id="8894794286471754040">Co bordo longo primeiro</translation>
 <translation id="8897221284075091877">Para pedir acceso a este contido, continúa coa túa Conta de Google</translation>
 <translation id="8897428486789851669">Natación</translation>
+<translation id="8898854704577986668">Mostrar historial no panel lateral</translation>
 <translation id="8899807382908246773">Anuncios intrusivos</translation>
 <translation id="8903921497873541725">Achegar</translation>
 <translation id="8903998444169664879">Verifica a túa identidade para cambiar a configuración de pago</translation>

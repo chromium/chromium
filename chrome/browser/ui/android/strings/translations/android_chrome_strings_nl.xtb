@@ -924,6 +924,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="4885273946141277891">Niet-ondersteund aantal Chrome-instanties.</translation>
 <translation id="4890973535105146893">Geen opgeslagen wachtwoorden in je Google-account</translation>
 <translation id="4905823827770127520">Link naar de pagina opnemen</translation>
+<translation id="4908601375231458049">Pas de tabbladgroep aan en klik op Klaar</translation>
 <translation id="4908869848243824489">Discover van Google</translation>
 <translation id="4910889077668685004">Betaal-apps</translation>
 <translation id="4911042367886397055">Welkom terug <ph name="USER_NAME" />.</translation>
@@ -1187,6 +1188,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="6040143037577758943">Sluiten</translation>
 <translation id="604124094241169006">Automatisch</translation>
 <translation id="6042308850641462728">Meer</translation>
+<translation id="6047066316630165190">Open de rastertabbladschakelaar</translation>
 <translation id="604996488070107836">Download van <ph name="FILE_NAME" /> mislukt vanwege een onbekende fout.</translation>
 <translation id="605721222689873409">JJ</translation>
 <translation id="6059830886158432458">Beheer hier je artikelen en activiteiten</translation>
@@ -1260,6 +1262,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="6301526076346731664">Ontwikkelaarstools openen</translation>
 <translation id="630308129961693966">Positie van de adresbalk kiezen</translation>
 <translation id="6303969859164067831">Uitloggen en synchronisatie uitzetten</translation>
+<translation id="6305257382500066042">Nu proberen</translation>
 <translation id="6307241780749477694">Laat verifiëren dat jij het bent om al je wachtwoorden op dit apparaat te krijgen</translation>
 <translation id="6309082029962045994"><ph name="TAB_TITLE" />, meervoudig geselecteerd vastgezet tabblad met audio</translation>
 <translation id="6312687380483398334">Web-apps (stil)</translation>
@@ -1361,6 +1364,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="6661521899577697780">Aanmelding voor Chrome Finds is op halve hoogte geopend</translation>
 <translation id="666731172850799929">Openen in <ph name="APP_NAME" /></translation>
 <translation id="6669390930482049506">Melding sturen</translation>
+<translation id="6670767097276846646">Met sommige extensies kun je zoekmachines aan Chrome toevoegen</translation>
 <translation id="6671495933530132209">Afbeelding kopiëren</translation>
 <translation id="6672697278890207089">Je wachtwoordzin invoeren</translation>
 <translation id="6672917148207387131"><ph name="DOMAIN" /> toevoegen</translation>
@@ -1847,6 +1851,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="8458341576712814616">Snelkoppeling</translation>
 <translation id="8458413889418591446">Synchroniseer je geschiedenis en tabbladen om snel terug te gaan naar sites die je hebt bezocht</translation>
 <translation id="84594714173170813">Blijf de Chrome-gegevens in je Google-account gebruiken</translation>
+<translation id="8460008946585880786">Sleep een tabblad over een ander tabblad</translation>
 <translation id="8460448946170646641">Neem belangrijke privacy- en beveiligingsopties door</translation>
 <translation id="8460932807646981183">Zoekmachines en Site Search beheren</translation>
 <translation id="8473863474539038330">Adressen en meer</translation>
@@ -1957,6 +1962,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="8969796057708736017">Je download wordt afgerond als het bestand voldoet aan het beleid van je organisatie</translation>
 <translation id="8970887620466824814">Er is iets misgegaan.</translation>
 <translation id="8972098258593396643">Downloaden naar standaardmap?</translation>
+<translation id="8987736167266086032">Ga verder waar je gebleven was</translation>
 <translation id="8992769679401294069">Je gegevens zijn versleuteld met je wachtwoordzin. Voer deze in om Chrome-gegevens te gebruiken en op te slaan in je Google-account.</translation>
 <translation id="8993760627012879038">Een nieuw venster openen in de incognitomodus</translation>
 <translation id="8995521496079646922">De door jou gekozen apps worden standaard gebruikt. Als een app nog niet op dit apparaat staat, wordt deze binnenkort gedownload.</translation>

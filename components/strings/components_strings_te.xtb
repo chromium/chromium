@@ -1305,6 +1305,8 @@
 <translation id="3102312643185441063">సేవింగ్స్</translation>
 <translation id="3103188521861412364">స్టాక్‌లు &amp; బాండ్‌లు</translation>
 <translation id="3105172416063519923">అసెట్ ID:</translation>
+<translation id="3105223248029915046">పేమెంట్ ప్లాన్‌లు అర్హతకు లోబడి ఉంటాయి.
+'తర్వాత పే చేయండి' ఆప్షన్‌లను దాచడానికి, <ph name="BEGIN_LINK" />పేమెంట్ సెట్టింగ్‌ల<ph name="END_LINK" />కు వెళ్లండి</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />సెక్యూర్ DNS కాన్ఫిగరేషన్‌ని చెక్ చేస్తోంది<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">మిడిల్ ట్రే</translation>
 <translation id="3109061346635850169">ముఖం &amp; శరీర సంరక్షణ</translation>
@@ -2861,7 +2863,6 @@
 <translation id="5543564889050342791">జూలు, అక్వేరియమ్‌లు &amp; సంరక్షణ కేంద్రాలు</translation>
 <translation id="5543722831081909240">180 డిగ్రీలు</translation>
 <translation id="5544836308113951378">క్రూజ్‌లు &amp; చార్టర్‌లు</translation>
-<translation id="5545314360139398232">తర్వాత పే చేయడానికి <ph name="ISSUER_NAME" />‌ను లింక్ చేయండి</translation>
 <translation id="5547939254150808298">ప్రింటింగ్ &amp; పబ్లిషింగ్</translation>
 <translation id="554815783948612276">ఫోరమ్ &amp; చాట్ ప్రొవైడర్‌లు</translation>
 <translation id="5548606607480005320">భద్రతా చెక్-అప్</translation>
@@ -4356,6 +4357,7 @@
 <translation id="7908648876066812348">వర్చువల్ కార్డ్ ఆన్ అవుతోంది</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tabను నొక్కి, తర్వాత Enterను నొక్కి సెట్టింగ్‌లలో Chrome సేఫ్టీ చెక్ పేజీకి వెళ్లండి</translation>
 <translation id="791107458486222637">ఫలితాన్ని మళ్లీ జెనరేట్ చేస్తోంది</translation>
+<translation id="7911651285409665023">మూసివేసి, "<ph name="TAB_TITLE" />"కు తిరిగి వెళ్లండి</translation>
 <translation id="7912924955815015552">Safari నుండి దిగుమతి చేయబడింది</translation>
 <translation id="791551905239004656">డ్రాయింగ్ &amp; కలరింగ్</translation>
 <translation id="7916162853251942238">ఫ్లెక్సో బేస్</translation>

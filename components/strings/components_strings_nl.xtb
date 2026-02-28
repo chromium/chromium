@@ -230,6 +230,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1358187717814494928">Spreadsheet maken</translation>
 <translation id="1358223345833465883">Je zoekmachine in Chromium</translation>
 <translation id="1359836962251219822">Keuken en eetkamer</translation>
+<translation id="136059610328993645">Je informatie wordt opgeslagen in Google Wallet voor <ph name="ACCOUNT" />. Je kunt deze gebruiken in Google-services om formulieren sneller in te vullen.</translation>
 <translation id="1360955481084547712">Een nieuw incognitovenster openen om privé te browsen</translation>
 <translation id="1361528602584216624">Limiet per Pix R$ <ph name="TRANSACTION_LIMIT" /></translation>
 <translation id="1363015776076529485">Lijst met betaalmethoden die kunnen worden geselecteerd om door te gaan met de betaling, geopend op volledige hoogte.</translation>
@@ -252,6 +253,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1392813880755413602">OpenDocument-presentatie</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> heeft geen gegevens verzonden.</translation>
 <translation id="1393071644879491291">Aanvallers op de site die je probeerde te bezoeken, kunnen je misleiden zodat je software installeert of gegevens zoals je wachtwoorden, telefoonnummers of creditcardnummers openbaar maakt. Chrome raadt je sterk aan terug te gaan naar een beveiligde website. <ph name="BEGIN_LEARN_MORE_LINK" />Meer informatie over deze waarschuwing<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="1402151528875251561">Geschiedenis tonen in zijvenster</translation>
 <translation id="1405567553485452995">Lichtgroen</translation>
 <translation id="1406370515365284486">Je betaalmethoden blijven opgeslagen</translation>
 <translation id="1406500794671479665">Verifiëren...</translation>
@@ -1447,6 +1449,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="33073482541490531">Het wachtwoord dat je net hebt gebruikt, is gevonden bij een gegevenslek. Wachtwoordmanager raadt je aan dit wachtwoord nu te wijzigen.</translation>
 <translation id="3307649904964670439">Knop Chrome aanpassen. Activeer deze om het uiterlijk van je browser aan te passen.</translation>
 <translation id="3308006649705061278">Organisatie-eenheid (OU)</translation>
+<translation id="3310946375819654151">Chrome probeert je gevoelige informatie in te vullen in <ph name="APP_NAME" />.</translation>
 <translation id="3312952471765023168">Uploaden voltooid</translation>
 <translation id="3318016344440038475">Tv-comedy's</translation>
 <translation id="3324687287337751929">4 x 6 inch</translation>
@@ -1735,6 +1738,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3752181611900535304">Adres opslaan in account?</translation>
 <translation id="3752543821772132562">Genegeerd omdat <ph name="POLICY_NAME" /> niet is ingesteld.</translation>
 <translation id="3754210790023674521">Scherm-in-scherm afsluiten</translation>
+<translation id="3754664361823138853">Geschiedenispagina &amp;openen</translation>
 <translation id="3759461132968374835">Je hebt geen onlangs gemelde crashes. Crashes die zich voordeden toen de crashrapportage was uitgezet, worden hier niet weergegeven.</translation>
 <translation id="3760561303380396507">Windows Hello gebruiken in plaats van CVC?</translation>
 <translation id="3761171036307311438">Naam op pas:</translation>
@@ -2745,6 +2749,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5385966243497224160">Kan geen voorbeeld van een niet-HTTPS-URL weergeven</translation>
 <translation id="5386426401304769735">De certificaatketen voor deze site bevat een certificaat dat is ondertekend met SHA-1.</translation>
 <translation id="5391010642126249196">Je bezocht deze website</translation>
+<translation id="5391306025131596142">Geschiedenispagina &amp;openen</translation>
 <translation id="539203134595252721">Tafeltennis</translation>
 <translation id="5392506727170022660">Metaal (zijdeglans)</translation>
 <translation id="5394069166371280357">Tv-programma's voor het hele gezin</translation>
@@ -2855,7 +2860,6 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5543564889050342791">Dierentuinen, aquaria en natuurreservaten</translation>
 <translation id="5543722831081909240">180 graden</translation>
 <translation id="5544836308113951378">Cruises en charters</translation>
-<translation id="5545314360139398232">Koppel met <ph name="ISSUER_NAME" /> om in termijnen te betalen</translation>
 <translation id="5547939254150808298">Afdrukken en publiceren</translation>
 <translation id="554815783948612276">Forum- en chatproviders</translation>
 <translation id="5548606607480005320">Veiligheidscheck</translation>
@@ -3539,6 +3543,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="6655085656059574817">Als je je account gekoppeld houdt, kun je sneller betalen met <ph name="BNPL_ISSUER_NAME" />. Je kunt je account ontkoppelen door naar <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /> te gaan.</translation>
 <translation id="6656935431494847393">Bevat informatie zoals vluchtboekingen en voertuiggegevens</translation>
 <translation id="6657585470893396449">Wachtwoord</translation>
+<translation id="6659156657345021268">Je informatie wordt alleen opgeslagen op je apparaat. Je krijgt de volgende keer dat je een relevant formulier invult de kans om deze informatie op te slaan in Wallet.</translation>
 <translation id="6659246032834639189">Deze prijs is laag</translation>
 <translation id="6660413144148052430">locatie</translation>
 <translation id="6662457027866368246">1e rol</translation>
@@ -4944,6 +4949,7 @@ Aanvullende informatie:
 <translation id="8894794286471754040">Lange zijde eerst</translation>
 <translation id="8897221284075091877">Ga verder met je Google-account om te vragen of je deze content kunt bekijken</translation>
 <translation id="8897428486789851669">Zwemmen</translation>
+<translation id="8898854704577986668">Geschiedenis tonen in zijvenster</translation>
 <translation id="8899807382908246773">Opdringerige advertenties</translation>
 <translation id="8903921497873541725">Inzoomen</translation>
 <translation id="8903998444169664879">Laat verifiëren dat jij het bent om je betaalinstellingen te wijzigen</translation>

@@ -230,6 +230,7 @@
 <translation id="1358187717814494928">יצירת גיליון</translation>
 <translation id="1358223345833465883">‏מנוע החיפוש שלך ב-Chromium</translation>
 <translation id="1359836962251219822">מטבחים ופינות אוכל</translation>
+<translation id="136059610328993645">‏הפרטים נשמרים ב-Google Wallet בחשבון <ph name="ACCOUNT" />. כדי למלא טפסים מהר יותר, אפשר להשתמש בפרטים האלה בכל שירותי Google.</translation>
 <translation id="1360955481084547712">כדי לגלוש באופן פרטי, יש לפתוח חלון אנונימי חדש</translation>
 <translation id="1361528602584216624">‏המגבלה לכל Pix R$‎: ‏<ph name="TRANSACTION_LIMIT" /></translation>
 <translation id="1363015776076529485">רשימת אמצעי התשלום הזמינים לבחירה כדי להמשיך בתהליך התשלום נפתחה בגובה המלא של המסך.</translation>
@@ -252,6 +253,7 @@
 <translation id="1392813880755413602">OpenDocument Presentation</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> לא שלח נתונים.</translation>
 <translation id="1393071644879491291">‏תוקפים באתר שבו ניסית לבקר עשויים לגרום לך בדרכי מרמה להתקין תוכנות או לחשוף פרטים כמו הסיסמאות, מספרי הטלפון או מספרי כרטיסי האשראי שלך. אזהרה מ-Chrome: ממש לא מומלץ להמשיך. עדיף לעשות אחורה פנה. <ph name="BEGIN_LEARN_MORE_LINK" />מידע נוסף על האזהרה הזו<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="1402151528875251561">הצגת ההיסטוריה בחלונית צדדית</translation>
 <translation id="1405567553485452995">ירוק בהיר</translation>
 <translation id="1406370515365284486">אמצעי התשלום שלך עדיין יישמרו</translation>
 <translation id="1406500794671479665">מאמת...</translation>
@@ -1450,6 +1452,7 @@
 <translation id="33073482541490531">הסיסמה שבה השתמשת עכשיו אותרה בפרצה באבטחת מידע. לפי מנהל הסיסמאות, מומלץ לשנות את הסיסמה הזו עכשיו.</translation>
 <translation id="3307649904964670439">‏הכפתור להתאמה אישית של Chrome, מפעילים אותו כדי להתאים אישית את מראה הדפדפן</translation>
 <translation id="3308006649705061278">‏יחידה ארגונית (OU)</translation>
+<translation id="3310946375819654151">‏‫Chrome מנסה למלא מידע רגיש באפליקציה <ph name="APP_NAME" />.</translation>
 <translation id="3312952471765023168">ההעלאה הושלמה</translation>
 <translation id="3318016344440038475">תוכניות קומיות בטלוויזיה</translation>
 <translation id="3324687287337751929">‏4x6 אינץ'</translation>
@@ -1740,6 +1743,7 @@
 <translation id="3752181611900535304">לשמור את הכתובת בחשבון?</translation>
 <translation id="3752543821772132562">המערכת התעלמה מהמדיניות הזו כי המדיניות <ph name="POLICY_NAME" /> לא מוגדרת.</translation>
 <translation id="3754210790023674521">יציאה ממצב תמונה בתוך תמונה</translation>
+<translation id="3754664361823138853">&amp;פתיחת דף ההיסטוריה</translation>
 <translation id="3759461132968374835">לא התקבלו דיווחים על קריסות לאחרונה. קריסות שהתרחשו בזמן שאפשרות הדיווח על קריסות הייתה מושבתת לא יופיעו כאן.</translation>
 <translation id="3760561303380396507">‏האם להשתמש ב-Windows Hello במקום ב-CVC?</translation>
 <translation id="3761171036307311438">שם על הכרטיס:</translation>
@@ -2755,6 +2759,7 @@ Del</translation>
 <translation id="5385966243497224160">‏לא ניתן להציג כתובת URL שאינה מסוג HTTPS בתצוגה מקדימה</translation>
 <translation id="5386426401304769735">‏שרשרת האישורים של האתר הזה כוללת אישור שנחתם באמצעות SHA-1.</translation>
 <translation id="5391010642126249196">ביקרת כאן</translation>
+<translation id="5391306025131596142">&amp;פתיחת דף ההיסטוריה</translation>
 <translation id="539203134595252721">טניס שולחן</translation>
 <translation id="5392506727170022660">Metal (Semi-Gloss)</translation>
 <translation id="5394069166371280357">תוכניות טלוויזיה לכל המשפחה</translation>
@@ -2866,7 +2871,6 @@ Del</translation>
 <translation id="5543564889050342791">גני חיות, אקווריומים ושמורות טבע</translation>
 <translation id="5543722831081909240">180 מעלות</translation>
 <translation id="5544836308113951378">הפלגות ושיט תענוגות</translation>
-<translation id="5545314360139398232">כדי לשלם בתשלומים, צריך ליצור קישור אל <ph name="ISSUER_NAME" /></translation>
 <translation id="5547939254150808298">דפוס והוצאה לאור</translation>
 <translation id="554815783948612276">ספקי פורומים וצ'אטים</translation>
 <translation id="5548606607480005320">בדיקת אבטחה</translation>
@@ -3551,6 +3555,7 @@ Del</translation>
 <translation id="6655085656059574817">התשלום עם <ph name="BNPL_ISSUER_NAME" /> מהיר יותר כשהחשבון מקושר. אם רוצים, אפשר לבטל את הקישור בכתובת <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /></translation>
 <translation id="6656935431494847393">כולל מידע כמו הזמנת טיסות ופרטי רכב</translation>
 <translation id="6657585470893396449">סיסמה</translation>
+<translation id="6659156657345021268">‏הפרטים שלך נשמרו במכשיר. תהיה לך אפשרות לשמור אותו ב-Wallet בזמן מילוי הטופס הרלוונטי הבא.</translation>
 <translation id="6659246032834639189">המחיר הזה נמוך</translation>
 <translation id="6660413144148052430">מיקום</translation>
 <translation id="6662457027866368246">גליל ראשון</translation>
@@ -4956,6 +4961,7 @@ Del</translation>
 <translation id="8894794286471754040">הקצה הארוך ראשון</translation>
 <translation id="8897221284075091877">‏כדי לבקש אישור לראות את התוכן הזה, צריך להמשיך עם חשבון Google</translation>
 <translation id="8897428486789851669">שחייה</translation>
+<translation id="8898854704577986668">הצגת ההיסטוריה בחלונית צדדית</translation>
 <translation id="8899807382908246773">מודעות שמפריעות</translation>
 <translation id="8903921497873541725">התקרבות לתצוגה</translation>
 <translation id="8903998444169664879">כדי לשנות את הגדרות התשלומים, צריך לאמת את הזהות</translation>

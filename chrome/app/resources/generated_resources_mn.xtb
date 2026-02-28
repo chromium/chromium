@@ -1019,6 +1019,7 @@
 <translation id="1671525612731130246">Драйвын бүртгэл сонгох</translation>
 <translation id="1671749176392751693">Хамгаалагдсан контент танигчийг зөвшөөрсөн</translation>
 <translation id="1673137583248014546"><ph name="URL" /> таны Аюулгүй байдлын түлхүүрийн бүтэц болон загварыг харах хүсэлтэй байна</translation>
+<translation id="1673855466663721679">Хажуугийн самбарт хавчуурга харуулах</translation>
 <translation id="1674073353928166410">Бүгдийг (<ph name="URL_COUNT" />) Нууцлалтай цонхонд нээх</translation>
 <translation id="1674142805528405174">Google Нууц үгний менежер танд зориулж таны <ph name="EMAIL" /> бүртгэлд хадгалдаг сайн нууц үгээр бүртгэлийг тань шинэчлэх боломжтой.</translation>
 <translation id="1674945585974615438">Танихгүй сайт дээр JavaScript оновчтой болгогчийг автоматаар идэвхгүй болгох</translation>
@@ -3452,6 +3453,7 @@
 <translation id="3312883087018430408">Тодорхой сайт эсвэл Chrome-н хэсгийг хайхын тулд хаяг оруулах хэсэгт түүний товчлолын араас сонгосон товчлуурын шууд холбоосоо бичнэ үү. Жишээлбэл, зөвхөн Хавчуургыг хайхын тулд "@хавчуурга" гэж бичээд, дараа нь Tab эсвэл Space дээр дарна уу.</translation>
 <translation id="3313622045786997898">Certificate Signature Value</translation>
 <translation id="3313950410573257029">Холболт шалгах</translation>
+<translation id="3314239811356311272">&amp;Хавчуургын менежерийг нээх</translation>
 <translation id="3315158641124845231"><ph name="PRODUCT_NAME" />-ийг нуух</translation>
 <translation id="3317459757438853210">Хоёр талт</translation>
 <translation id="3317521105713541270">Бүлгүүд үүсгэх</translation>
@@ -3658,6 +3660,7 @@
 <translation id="3453597230179205517">Байршлын хандалтыг блоклосон</translation>
 <translation id="3453612417627951340">Зөвшөөрөл хэрэгтэй</translation>
 <translation id="3454213325559396544">Энэ бол энэ <ph name="DEVICE_TYPE" />-н программ хангамж болон аюулгүй байдлын сүүлийн автомат шинэчлэлт. Ирээдүйд шинэчлэлт хийхийн тулд, шинэ загварт дэвшүүлнэ үү.</translation>
+<translation id="3454276058453724464">{FILE_LIMIT,plural, =1{Асуулттайгаа хамт ашиглах 1 .pdf файл байршуулна уу}other{Асуулттайгаа хамт ашиглах # хүртэл .pdf файл байршуулна уу}}</translation>
 <translation id="3454818737556063691">Нээхийн тулд 1 файлыг <ph name="CLOUD_PROVIDER" /> руу зөөх үү?</translation>
 <translation id="3455436146814891176">Шифрлэлтийн нууц үгийг синк хийх</translation>
 <translation id="345693547134384690">Зургийг шинэ цонхонд нээ</translation>
@@ -5030,6 +5033,7 @@
 <translation id="4364567974334641491"><ph name="APP_NAME" /> цонх хуваалцаж байна.</translation>
 <translation id="4364830672918311045">Дэлгэцийн мэдэгдэл</translation>
 <translation id="4367971618859387374">Дэлгэцийн нэр</translation>
+<translation id="4368888793624522796">Табын бүлгүүдийг зөөсөн</translation>
 <translation id="4368960422722232719">Таб дээр курсорыг зөөхөд урьдчилан үзүүлэх картад санах ойн ашиглалтыг харуулах</translation>
 <translation id="4369151461324628035">Сайтад таны дотоод сүлжээн дээрх ямар нэг төхөөрөмжид холбогдохыг бүү зөвшөөр</translation>
 <translation id="4369215744064167350">Вебсайтын хүсэлтийг зөвшөөрсөн</translation>
@@ -5418,6 +5422,7 @@
 <translation id="4634575639321169635">Энэ төхөөрөмжийг ажлын эсвэл хувийн хэрэгцээндээ зориулж тохируулах</translation>
 <translation id="4635072447747973225">Crostini-г устгах</translation>
 <translation id="4635398712689569051"><ph name="PAGE_NAME" /> Зочин хэрэглэгч ашиглах боломжгүй байна.</translation>
+<translation id="4635975718422788482">{FILE_LIMIT,plural, =1{Асуулттайгаа хамт ашиглах 1 зураг байршуулна уу}other{Асуулттайгаа хамт ашиглах # хүртэлх зураг байршуулна уу}}</translation>
 <translation id="4636187126182557415">Системийн сонголт</translation>
 <translation id="4636930964841734540">Мэдээлэл</translation>
 <translation id="4637083375689622795">Нэмэлт үйлдлүүд, <ph name="EMAIL" /></translation>
@@ -6261,6 +6266,7 @@
 <translation id="5215502535566372932">Улсаа сонгох</translation>
 <translation id="5216674789212441076">Шууд тайлбарыг автоматаар орчуулна. Тайлбарыг Google рүү орчуулахаар илгээдэг.</translation>
 <translation id="5216951551945455224">{NUM_TABS,plural, =1{Gemini-тай таб хуваалцахыг зогсоох}other{Gemini-тай # таб хуваалцахыг зогсоох}}</translation>
+<translation id="5217883660859035687">Бид таны хавчуургад илүү зай гаргаж өгөхийн тулд табын бүлгүүдийг зөөж байна.</translation>
 <translation id="5220011581825921581">хайлт + дээш сум</translation>
 <translation id="5221516927483787768"><ph name="HOST_NAME" />-г дамжуулах боломжгүй</translation>
 <translation id="5221834113325601057">Табыг жагсаалтаас хассан</translation>
@@ -6945,6 +6951,7 @@
 <translation id="5697832193891326782">Эможи сонгогч</translation>
 <translation id="5698136107297470317">Та <ph name="BRAND" />-н өгөгдлөө устгах гэж байна</translation>
 <translation id="5698878456427040674">Сонгосон бүртгэлийг дэмждэг эсэхийг шалгана уу.</translation>
+<translation id="5698900765010620315">Бага ялгаралтай бараан</translation>
 <translation id="5699227710146832453">Таны дараахаас</translation>
 <translation id="570043786759263127">Google Play-н аппууд болон үйлчилгээнүүд</translation>
 <translation id="5700761515355162635">Гуравдагч талын күүкинүүдийг зөвшөөрсөн</translation>
@@ -8326,6 +8333,7 @@
 <translation id="6663190258859265334"><ph name="DEVICE_TYPE" />-г powerwash хийж, өмнөх хувилбар луу буцна уу.</translation>
 <translation id="6664774537677393800">Таны профайлыг нээхэд асуудал гарлаа. Бүртгэлээсээ гараад, дахин нэвтэрнэ үү.</translation>
 <translation id="6665874326033183068">Зэрлэг</translation>
+<translation id="6666560794795912543">Хажуугийн самбарт хавчуурга харуулах</translation>
 <translation id="6667086124612170548">Файл нь энэ төхөөрөмжид хэт том байна</translation>
 <translation id="6667092961374478614"><ph name="FEATURE_NAME" />-н илрэх байдал</translation>
 <translation id="6667187897999649121">Одоогоор та нууц үгнүүдийг зөвхөн гэр бүлийн гишүүдтэй хуваалцах боломжтой. 6 хүртэлх гишүүнтэй <ph name="BEGIN_LINK" />гэр бүлийн бүлэг үүсгэж<ph name="END_LINK" />, Google дээрх бүтээгдэхүүн, захиалгуудаасаа илүү ихийг аваарай.</translation>
@@ -9786,6 +9794,7 @@
 <translation id="7660146600670077843">Таб дээр баруун талыг товшоод, "Табыг шинэ бүлэгт нэмэх"-ийг сонгоно уу</translation>
 <translation id="7661451191293163002">Бүртгэлийн гэрчилгээг авах боломжгүй байна.</translation>
 <translation id="7662283695561029522">Тохируулахын тулд товших</translation>
+<translation id="7662535435481776002">Бага ялгаралтай цайвар</translation>
 <translation id="7663719505383602579">Хүлээн авагч: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7663774460282684730">Товчлуурны шууд холбоос боломжтой</translation>
 <translation id="7663859337051362114">eSIM профайл нэмэх</translation>
@@ -11790,6 +11799,7 @@
 <translation id="8986494364107987395">Google рүү хэрэглээний статистик мэдээ болон алдаа ослын тайланг автоматаар илгээ</translation>
 <translation id="8987305927843254629">Хүн бүр хэрэглээгээ хувийн болгох ба өгөгдлийг хувийн байлгах боломжтой.</translation>
 <translation id="8987321822984361516">Хөтчийг байгууллагаас удирддаг, профайлыг <ph name="PROFILE_DOMAIN" />-с удирддаг</translation>
+<translation id="8987736167266086032">Үйлдлээ зогсоосон газраасаа үргэлжлүүлнэ үү</translation>
 <translation id="8987927404178983737">Сар</translation>
 <translation id="8988539543012086784">Энэ хуудсыг <ph name="BOOKMARK_FOLDER" />-д хадгалсан</translation>
 <translation id="8989359959810288806">Модем болгох төлөвийг сэргээх</translation>

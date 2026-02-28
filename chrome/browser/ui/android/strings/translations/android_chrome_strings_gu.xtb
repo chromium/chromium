@@ -287,6 +287,7 @@
 <translation id="2230777942707397948">ખાલી વિન્ડો</translation>
 <translation id="223356358902285214">વેબ અને ઍપ પ્રવૃત્તિ</translation>
 <translation id="2233735624724508540">સમયમર્યાદા પસંદ કરો અને પછી 'ડેટા ડિલીટ કરો' પર ટૅપ કરો</translation>
+<translation id="2234031676056123135">તમારા શૉર્ટકટ કસ્ટમાઇઝ કરો</translation>
 <translation id="2234827758954819389">પ્રાઇવસી સંબંધિત માર્ગદર્શિકા</translation>
 <translation id="2238038374973843156">ગ્રૂપને અન્ય વિન્ડોમાં ખસેડો</translation>
 <translation id="2239812875700136898">Discover બટન માટે વિકલ્પોમાંથી તમારી સ્ટોરીનું નિયંત્રણ કરો</translation>
@@ -465,6 +466,7 @@
 <translation id="2951071800649516099">પછીથી વાંચવા માટે, તમારી વાંચન સૂચિમાં પેજ ઉમેરો</translation>
 <translation id="2954586176076923855">ઍડ્રેસ બારને સૌથી ઉપર ખસેડો</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{વાંચ્યા વગરનું <ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> પેજ}one{વાંચ્યા વગરનું <ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> પેજ}other{વાંચ્યા વગરના <ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> પેજ}}</translation>
+<translation id="2965758440484146185">આ શૉર્ટકટને પિન કરો પર ટૅપ કરો</translation>
 <translation id="2972109037780336501">પરવાનગીઓ ઑટોમૅટિક રીતે કાઢી નાખો</translation>
 <translation id="2976550651269220761">Chromeનો તમારો અમુક ડેટા હજી સુધી તમારા Google એકાઉન્ટમાં સાચવવામાં આવ્યો નથી.\nસાઇન આઉટ કરતા પહેલાં થોડી મિનિટ રાહ જોવાનો પ્રયાસ કરી જુઓ. જો તમે હમણાં જ સાઇન આઉટ કરશો, તો આ ડેટા ડિલીટ કરવામાં આવશે.</translation>
 <translation id="2977350910003566746">'છેલ્લે ખોલાયા' અનુસાર સૉર્ટ કરી રહ્યાં છીએ</translation>
@@ -492,6 +494,7 @@
 <translation id="3037177537145227281">કિંમત ટ્રૅક કરી રહ્યાં છીએ</translation>
 <translation id="3037517125981011456">Chromeમાં સાઇન ઇન કરવા માટે સંકેતો બતાવે છે</translation>
 <translation id="3038272154009688107">બધી સાઇટ જુઓ</translation>
+<translation id="3057938290530993634">આગલી વખતે સરળ ઍક્સેસ માટે, તમારી સૌથી વધુ મુલાકાત લેવાયેલી વેબસાઇટને પિન કરવા ટૅપ કરીને દબાવી રાખો</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> બુકમાર્ક}one{<ph name="BOOKMARKS_COUNT_MANY" /> બુકમાર્ક}other{<ph name="BOOKMARKS_COUNT_MANY" /> બુકમાર્ક}}</translation>
 <translation id="3062802207422175757">Chrome પર તમારી રુચિ વિશેના લેખ</translation>
 <translation id="3066573403916685335">નીચે ખસેડો</translation>
@@ -551,6 +554,7 @@
 <translation id="333863344734218290">અસુરક્ષિત સાર્વજનિક અને ખાનગી સાઇટ વિશે તમને ચેતવણી આપે છે</translation>
 <translation id="3340978935015468852">સેટિંગ</translation>
 <translation id="3341262203274374114">અનફૉલો કરી શકતા નથી. કંઈક ખોટું થયું.</translation>
+<translation id="3351959803838327376">વેબસાઇટ પર થોડીવાર દબાવી રાખો અને મેનૂ ખોલો</translation>
 <translation id="3359667936385849800">તમારા વર્તમાન સેવા પ્રદાતાનો ઉપયોગ કરો</translation>
 <translation id="3373701465337594448">જ્યારે ચાલુ હોય, ત્યારે તમારી રુચિઓનું અનુમાન લગાવતી હોય તેવી તમે મુલાકાત લો છો તે સાઇટની સૂચિ અહીં દેખાય છે</translation>
 <translation id="3384347053049321195">છબી શેર કરો</translation>
@@ -593,6 +597,7 @@
 <translation id="3549537543136628349">પહેલેથી લોડ કરેલા પેજ એન્ક્રિપ્ટેડ હોવાથી અને પેજને લિંક કરતી સાઇટ કે ઍપ, Googleની સાઇટ કે ઍપ હોવાથી, આ પેજને ખાનગી રીતે પહેલેથી લોડ કરતી વખતે Googleના સર્વરને નવી માહિતી મળતી નથી.</translation>
 <translation id="3549657413697417275">તમારો ઇતિહાસ શોધો</translation>
 <translation id="3557336313807607643">સંપર્કોમાં ઉમેરો</translation>
+<translation id="3560831525486613327">'નવું ટૅબ' પેજ ખોલો</translation>
 <translation id="3563767357928833671">ક્લિપબોર્ડનું કન્ટેન્ટ બતાવેલું છે</translation>
 <translation id="3566639033325271639">સેટિંગ અપડેટ કરો</translation>
 <translation id="3568945271227339929">કોઈ પાસવર્ડ સાથે ચેડાં થયાં નથી</translation>
@@ -1364,6 +1369,7 @@
 <translation id="6661521899577697780">Chrome Finds સુવિધા પસંદ કરવાનો વિકલ્પ અડધી ઊંચાઈએ ખોલ્યો</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" /> માં ખોલો</translation>
 <translation id="6669390930482049506">મને સૂચિત કરો</translation>
+<translation id="6670767097276846646">કેટલાક એક્સ્ટેન્શન Chromeમાં શોધ એન્જિન ઉમેરી શકે છે</translation>
 <translation id="6671495933530132209">છબી કૉપિ કરો</translation>
 <translation id="6672697278890207089">તમારો પાસફ્રેઝ દાખલ કરો</translation>
 <translation id="6672917148207387131"><ph name="DOMAIN" /> ઉમેરો</translation>
@@ -1961,6 +1967,7 @@
 <translation id="8969796057708736017">જો ફાઇલ તમારી સંસ્થાની પૉલિસીઓનું પાલન કરતી હશે, તો તમારું ડાઉનલોડ પૂર્ણ થશે</translation>
 <translation id="8970887620466824814">કંઈક ખોટું થયું.</translation>
 <translation id="8972098258593396643">ડિફૉલ્ટ ફોલ્ડરમાં ડાઉનલોડ કરીએ?</translation>
+<translation id="8987736167266086032">તમે જ્યાંથી છોડેલું ત્યાંથી ચૂંટો</translation>
 <translation id="8992769679401294069">તમારો ડેટા તમારા પાસફ્રેઝ વડે એન્ક્રિપ્ટ કરવામાં આવ્યો છે. તમારા Google એકાઉન્ટમાં Chrome ડેટાનો ઉપયોગ કરવા અને તેને સાચવવા માટે, તમારો પાસફ્રેઝ દાખલ કરો.</translation>
 <translation id="8993760627012879038">છુપા મોડમાં એક નવું ટૅબ ખોલો</translation>
 <translation id="8995521496079646922">તમે પસંદ કરેલી ઍપ ડિફૉલ્ટ તરીકે ઉપયોગમાં લેવાશે. જો ઍપ પહેલેથી આ ડિવાઇસ પર ન હોય, તો તે ટૂંક સમયમાં ડાઉનલોડ કરવામાં આવશે.</translation>

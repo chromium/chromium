@@ -230,6 +230,7 @@
 <translation id="1358187717814494928">Направите табелу</translation>
 <translation id="1358223345833465883">Ваш претраживач у Chromium-у</translation>
 <translation id="1359836962251219822">Кухиње и трпезарије</translation>
+<translation id="136059610328993645">Информације се чувају у Google новчанику за налог <ph name="ACCOUNT" />. Можете да их користите у свим Google услугама да бисте брже попуњавали обрасце.</translation>
 <translation id="1360955481084547712">Отворите нови прозор без архивирања да бисте прегледали приватно</translation>
 <translation id="1361528602584216624">Ограничење за Pix у износу од <ph name="TRANSACTION_LIMIT" /> R$</translation>
 <translation id="1363015776076529485">Начини плаћања доступни за избор за наставак плаћања отворени су у пуној висини.</translation>
@@ -252,6 +253,7 @@
 <translation id="1392813880755413602">OpenDocument презентација</translation>
 <translation id="139305205187523129">Хост <ph name="HOST_NAME" /> није послао никакве податке.</translation>
 <translation id="1393071644879491291">Нападачи на сајту који сте пробали да посетите могу да вас преваре да инсталирате софтвер или откријете ствари попут лозинки, телефона или бројева кредитних картица. Chrome топло препоручује да се вратите на безбедно место. <ph name="BEGIN_LEARN_MORE_LINK" />Сазнајте више о овом упозорењу<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="1402151528875251561">Прикажи историју на бочној табли</translation>
 <translation id="1405567553485452995">Светлозелена</translation>
 <translation id="1406370515365284486">Начини плаћања ће и даље бити сачувани</translation>
 <translation id="1406500794671479665">Верификовање...</translation>
@@ -364,7 +366,7 @@
 <translation id="1569694109004336106">Google Chrome покушава да укључи Windows Hello за попуњавање лозинки.</translation>
 <translation id="1572765991610098222"><ph name="WIDTH" />x<ph name="HEIGHT" /> in</translation>
 <translation id="1574714699824202614">Верификује се начин плаћања</translation>
-<translation id="1576277203042721907">Увид у куповину</translation>
+<translation id="1576277203042721907">Увид за куповину</translation>
 <translation id="1579189948231786790">Ваша организација је блокирала овај сајт</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1583429793053364125">Дошло је до грешке при приказивању ове веб-странице.</translation>
@@ -1450,6 +1452,7 @@
 <translation id="33073482541490531">Лозинка коју сте управо користили је пронађена при повреди података. Менаџер лозинки препоручује да одмах промените ову лозинку.</translation>
 <translation id="3307649904964670439">Дугме Прилагоди Chrome, активирајте га да бисте прилагодили изглед прегледача</translation>
 <translation id="3308006649705061278">Организациона јединица (OU)</translation>
+<translation id="3310946375819654151">Chrome покушава да унесе осетљиве информације у апликацији <ph name="APP_NAME" />.</translation>
 <translation id="3312952471765023168">Отпремање је успело</translation>
 <translation id="3318016344440038475">ТВ комедије</translation>
 <translation id="3324687287337751929">4×6 in</translation>
@@ -1740,6 +1743,7 @@
 <translation id="3752181611900535304">Желите да сачувате адресу на налогу?</translation>
 <translation id="3752543821772132562">Занемарује се јер смернице <ph name="POLICY_NAME" /> нису подешене.</translation>
 <translation id="3754210790023674521">Изађи из режима слике у слици</translation>
+<translation id="3754664361823138853">&amp;Отвори страницу историје</translation>
 <translation id="3759461132968374835">Немате ниједно недавно пријављено отказивање. Отказивања која су се десила док је пријављивање отказивања било онемогућено неће се овде приказати.</translation>
 <translation id="3760561303380396507">Желите ли да користите Windows Hello уместо CVC-а?</translation>
 <translation id="3761171036307311438">Име и презиме на картици:</translation>
@@ -2751,6 +2755,7 @@
 <translation id="5385966243497224160">Не можете да прегледате URL који није HTTPS</translation>
 <translation id="5386426401304769735">Ланац сертификата за овај сајт садржи сертификат потписан помоћу алгоритма SHA-1.</translation>
 <translation id="5391010642126249196">Посетили сте</translation>
+<translation id="5391306025131596142">&amp;Отвори страницу историје</translation>
 <translation id="539203134595252721">Стони тенис</translation>
 <translation id="5392506727170022660">Метал (полусјајни)</translation>
 <translation id="5394069166371280357">Породичне ТВ емисије</translation>
@@ -2861,7 +2866,6 @@
 <translation id="5543564889050342791">Зоолошки вртови, акваријуми и резервати</translation>
 <translation id="5543722831081909240">180 степени</translation>
 <translation id="5544836308113951378">Крстарења и нелинијска пловидба</translation>
-<translation id="5545314360139398232">Повежите издавача <ph name="ISSUER_NAME" /> да бисте плаћали током времена</translation>
 <translation id="5547939254150808298">Штампарство и издаваштво</translation>
 <translation id="554815783948612276">Добављачи за форуме и чет услуге</translation>
 <translation id="5548606607480005320">Безбедносна провера</translation>
@@ -3545,6 +3549,7 @@
 <translation id="6655085656059574817">Ако налог остане повезан, брже ћете плаћати користећи <ph name="BNPL_ISSUER_NAME" />, али можете да опозовете везу ако одете на <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /></translation>
 <translation id="6656935431494847393">Обухвата информације као што су резервације летова и информације о возилу</translation>
 <translation id="6657585470893396449">Лозинка</translation>
+<translation id="6659156657345021268">Информације се чувају само на уређају. Моћи ћете да их сачувате у Новчанику следећи пут када попуните одговарајући образац.</translation>
 <translation id="6659246032834639189">Ова цена је ниска</translation>
 <translation id="6660413144148052430">локација</translation>
 <translation id="6662457027866368246">Први котур</translation>
@@ -4315,7 +4320,7 @@
 <translation id="782886543891417279">WiFi мрежа коју користите (<ph name="WIFI_NAME" />) ће можда захтевати да посетите страницу за пријављивање.</translation>
 <translation id="7831993212387676366">Шта је то листа за куповину?</translation>
 <translation id="7840103971441592723">Снимање екрана је почело</translation>
-<translation id="784137052867620416">Увид у куповину</translation>
+<translation id="784137052867620416">Увид за куповину</translation>
 <translation id="7841633276323004751">Начини плаћања доступни за избор да би се наставило са плаћањем. Тастатура је сакривена.</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Ниједна}=1{1 апликација (<ph name="EXAMPLE_APP_1" />)}=2{2 апликације (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# апликација (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}few{# апликације (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}other{# апликација (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Дошло је до грешке. Пробајте поново.</translation>
@@ -4951,6 +4956,7 @@
 <translation id="8894794286471754040">Прво дугачка ивица</translation>
 <translation id="8897221284075091877">Да бисте затражили да видите овај садржај, наставите са Google налогом</translation>
 <translation id="8897428486789851669">Пливање</translation>
+<translation id="8898854704577986668">Прикажи историју на бочној табли</translation>
 <translation id="8899807382908246773">Огласи који ометају</translation>
 <translation id="8903921497873541725">Увећавање</translation>
 <translation id="8903998444169664879">Потврдите идентитет да бисте променили подешавања плаћања</translation>

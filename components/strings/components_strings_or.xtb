@@ -230,6 +230,7 @@
 <translation id="1358187717814494928">ସିଟ୍ ତିଆରି କରନ୍ତୁ</translation>
 <translation id="1358223345833465883">Chromiumରେ ଆପଣଙ୍କ ସର୍ଚ୍ଚ ଇଞ୍ଜିନ</translation>
 <translation id="1359836962251219822">ରୋଷେଇଘର ଓ ଡାଇନିଂ</translation>
+<translation id="136059610328993645">ଆପଣଙ୍କ ସୂଚନା <ph name="ACCOUNT" /> ପାଇଁ Google Walletରେ ସେଭ ହୋଇଯାଏ। ଫର୍ମଗୁଡ଼ିକୁ ଶୀଘ୍ର ପୂରଣ କରିବା ପାଇଁ ଆପଣ ଏହାକୁ ସମଗ୍ର Google ସେବାରେ ବ୍ୟବହାର କରିପାରିବେ।</translation>
 <translation id="1360955481084547712">ବ୍ୟକ୍ତିଗତ ଭାବେ ବ୍ରାଉଜ୍ କରିବାକୁ ଏକ ନୂଆ ଇନକଗ୍ନିଟୋ ୱିଣ୍ଡୋ ଖୋଲନ୍ତୁ</translation>
 <translation id="1361528602584216624">Pix ପ୍ରତି ସୀମା R$ <ph name="TRANSACTION_LIMIT" /></translation>
 <translation id="1363015776076529485">ସମ୍ପୂର୍ଣ୍ଣ ୱିଣ୍ଡୋରେ ଖୋଲାଯାଇଥିବା ପେମେଣ୍ଟ ସହିତ ଆଗକୁ ବଢ଼ିବା ପାଇଁ ଚୟନ କରିବାକୁ ଉପଲବ୍ଧ ପେମେଣ୍ଟ ପଦ୍ଧତିଗୁଡ଼ିକ।</translation>
@@ -252,6 +253,7 @@
 <translation id="1392813880755413602">OpenDocument Presentation</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> କୌଣସି ଡାଟା ପଠାଇନାହିଁ।</translation>
 <translation id="1393071644879491291">ଆପଣ ଭିଜିଟ କରିବାକୁ ଚେଷ୍ଟା କରିଥିବା ସାଇଟରେ ଆକ୍ରମଣକାରୀମାନେ ଆପଣଙ୍କୁ ସଫ୍ଟୱେର ଇନଷ୍ଟଲ କରିବାକୁ କିମ୍ବା ଆପଣଙ୍କ ପାସୱାର୍ଡ, ଫୋନ ବା କ୍ରେଡିଟ କାର୍ଡ ନମ୍ବରଗୁଡ଼ିକ ପରି ଜିନିଷଗୁଡ଼ିକୁ ପ୍ରକାଶ କରିବାକୁ ପ୍ରତାରଣା କରିପାରନ୍ତି। ସୁରକ୍ଷାକୁ ଫେରିବା ପାଇଁ Chrome ଦୃଢ଼ ଭାବେ ସୁପାରିଶ କରେ। <ph name="BEGIN_LEARN_MORE_LINK" />ଏହି ଚେତାବନୀ ବିଷୟରେ ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="1402151528875251561">ସାଇଡ ପେନେଲରେ ଇତିହାସ ଦେଖାନ୍ତୁ</translation>
 <translation id="1405567553485452995">ହାଲୁକା ସବୁଜ</translation>
 <translation id="1406370515365284486">ଆପଣଙ୍କ ପେମେଣ୍ଟ ପଦ୍ଧତିକୁ ଏବେ ବି ସେଭ କରାଯିବ</translation>
 <translation id="1406500794671479665">ଯାଞ୍ଚ ହେଉଛି...</translation>
@@ -1448,6 +1450,7 @@
 <translation id="33073482541490531">ଆପଣ ଏବେ ବ୍ୟବହାର କରିଥିବା ପାସୱାର୍ଡ ଏକ ଡାଟା ଉଲ୍ଲଙ୍ଘନରେ ମିଳିଛି। Password Manager ବର୍ତ୍ତମାନ ଏହି ପାସୱାର୍ଡକୁ ପରିବର୍ତ୍ତନ କରିବା ପାଇଁ ସୁପାରିଶ କରେ।</translation>
 <translation id="3307649904964670439">'Chromeକୁ କଷ୍ଟମାଇଜ କରନ୍ତୁ' ବଟନ, ଆପଣଙ୍କ ବ୍ରାଉଜରର ଲୁକ କଷ୍ଟମାଇଜ କରିବା ପାଇଁ ଏହାକୁ ସକ୍ରିୟ କରନ୍ତୁ</translation>
 <translation id="3308006649705061278">ସାଙ୍ଗଠନିକ‍ ୟୁନିଟ୍‌ (OU)</translation>
+<translation id="3310946375819654151">Chrome ଆପଣଙ୍କ ସମ୍ବେଦନଶୀଳ ସୂଚନାକୁ <ph name="APP_NAME" />ରେ ପୂରଣ କରିବାକୁ ଚେଷ୍ଟା କରୁଛି।</translation>
 <translation id="3312952471765023168">ଅପଲୋଡ ସଫଳ ହୋଇଛି</translation>
 <translation id="3318016344440038475">ଟିଭି କମେଡିଗୁଡ଼ିକ</translation>
 <translation id="3324687287337751929">4 x 6 ଇଞ୍ଚ</translation>
@@ -1737,6 +1740,7 @@
 <translation id="3752181611900535304">ଆକାଉଣ୍ଟରେ ଠିକଣା ସେଭ କରିବେ?</translation>
 <translation id="3752543821772132562"><ph name="POLICY_NAME" /> ସେଟ ଅପ କରାଯାଇନଥିବା ଯୋଗୁଁ ଅଣଦେଖା କରାଯାଇଛି।</translation>
 <translation id="3754210790023674521">ପିକଚର୍-ଇନ୍-ପିକଚର୍‌ରୁ ବାହାରି ଯାଆନ୍ତୁ</translation>
+<translation id="3754664361823138853">&amp;ଇତିହାସ ପୃଷ୍ଠା ଖୋଲନ୍ତୁ</translation>
 <translation id="3759461132968374835">ଆପଣଙ୍କ ପାଖରେ ନିକଟରେ ରିପୋର୍ଟ କରାଯାଇଥିବା କ୍ରାସ୍‌ ନାହିଁ।  କ୍ରାସ୍‍ ରିପୋର୍ଟ ଅକ୍ଷମ ହେଉଥିବା ସମୟରେ ହୋ‍ଇଥିବା କ୍ରାସ୍‌ ଏଠାରେ ଦେଖାଯିବ ନାହିଁ।</translation>
 <translation id="3760561303380396507">CVC ପରିବର୍ତ୍ତେ Windows Hello ବ୍ୟବହାର କରିବେ?</translation>
 <translation id="3761171036307311438">କାର୍ଡରେ ଥିବା ନାମ:</translation>
@@ -2748,6 +2752,7 @@
 <translation id="5385966243497224160">ଅଣ-HTTPS URLର ପ୍ରିଭ୍ୟୁ କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="5386426401304769735">ଏହି ସାଇଟ୍‌ ପାଇଁ ଥିବା ସାର୍ଟିଫିକେଟ୍‌ ଶୃଙ୍ଖଳାରେ SHA-1ର ବ୍ୟବହାର କରି ଦସ୍ତଖତ କରାଯାଇଥିବା ସାର୍ଟିଫିକେଟ୍‌ ଅଛି।</translation>
 <translation id="5391010642126249196">ଆପଣ ଭିଜିଟ କରିଛନ୍ତି</translation>
+<translation id="5391306025131596142">&amp;ଇତିହାସ ପୃଷ୍ଠା ଖୋଲନ୍ତୁ</translation>
 <translation id="539203134595252721">ଟେବୁଲ ଟେନିସ</translation>
 <translation id="5392506727170022660">ମେଟାଲ (ସେମି-ଗ୍ଲସ)</translation>
 <translation id="5394069166371280357">ଟିଭି ପରିବାର-ଅନୁକୂଳ ଶୋ'ଗୁଡ଼ିକ</translation>
@@ -2858,7 +2863,6 @@
 <translation id="5543564889050342791">ଚିିଡ଼ିଆଖାନା, ଆକ୍ୱାରିଅମ ଏବଂ ସଂରକ୍ଷିତ ଅଞ୍ଚଳଗୁଡ଼ିକ</translation>
 <translation id="5543722831081909240">180 ଡିଗ୍ରୀ</translation>
 <translation id="5544836308113951378">କ୍ରୁଜ ଏବଂ ଚାର୍ଟରଗୁଡ଼ିକ</translation>
-<translation id="5545314360139398232">ପରେ ପେମେଣ୍ଟ କରିବା ପାଇଁ <ph name="ISSUER_NAME" />କୁ ଲିଙ୍କ କରନ୍ତୁ</translation>
 <translation id="5547939254150808298">ପ୍ରିଣ୍ଟିଂ ଏବଂ ପବ୍ଲିସିଂ</translation>
 <translation id="554815783948612276">ଫୋରମ ଏବଂ ଚାଟ ସେବା ପ୍ରଦାନକାରୀଗୁଡ଼ିକ</translation>
 <translation id="5548606607480005320">ସୁରକ୍ଷା ଯାଞ୍ଚ</translation>
@@ -3542,6 +3546,7 @@
 <translation id="6655085656059574817">ଆପଣଙ୍କ ଆକାଉଣ୍ଟକୁ ଲିଙ୍କଯୁକ୍ତ ରଖିବା ଫଳରେ ଏହା ଆପଣଙ୍କୁ <ph name="BNPL_ISSUER_NAME" /> ମାଧ୍ୟମରେ ଶୀଘ୍ର ପେମେଣ୍ଟ କରିବାରେ ସାହାଯ୍ୟ କରେ, କିନ୍ତୁ ଆପଣ <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" />କୁ ଯାଇ ଏହାକୁ ଅନଲିଙ୍କ କରିପାରିବେ</translation>
 <translation id="6656935431494847393">ଫ୍ଲାଇଟ ବୁକିଂ ଏବଂ ଗାଡ଼ି ସୂଚନା ପରି ସୂଚନା ଅନ୍ତର୍ଭୁକ୍ତ କରେ</translation>
 <translation id="6657585470893396449">ପାସ୍‌ୱର୍ଡ</translation>
+<translation id="6659156657345021268">ଆପଣଙ୍କ ସୂଚନା କେବଳ ଆପଣଙ୍କ ଡିଭାଇସରେ ସେଭ ହୋଇଛି। ପରବର୍ତ୍ତୀ ଥର ଏକ ପ୍ରାସଙ୍ଗିକ ଫର୍ମକୁ ଆପଣ ପୂରଣ କରିବା ସମୟରେ ଏହାକୁ Walletରେ ସେଭ କରିବାର ଏକ ସୁଯୋଗ ପାଇବେ।</translation>
 <translation id="6659246032834639189">ଏହି ମୂଲ୍ୟ କମ ଅଟେ</translation>
 <translation id="6660413144148052430">ଲୋକେସନ୍</translation>
 <translation id="6662457027866368246">ପ୍ରଥମ ରୋଲ୍</translation>
@@ -4946,6 +4951,7 @@
 <translation id="8894794286471754040">ପ୍ରଥମେ ଲମ୍ବା ଏଡଜ୍</translation>
 <translation id="8897221284075091877">ଏହି ବିଷୟବସ୍ତୁ ଦେଖିବା ପାଇଁ ପଚାରିବାକୁ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟ ସହ ଜାରି ରଖନ୍ତୁ</translation>
 <translation id="8897428486789851669">ସନ୍ତରଣ</translation>
+<translation id="8898854704577986668">ସାଇଡ ପେନେଲରେ ଇତିହାସ ଦେଖାନ୍ତୁ</translation>
 <translation id="8899807382908246773">ଇଣ୍ଟ୍ରୁସିଭ ବିଜ୍ଞାପନଗୁଡ଼ିକ</translation>
 <translation id="8903921497873541725">ଜୁମ୍ ବଢ଼ାନ୍ତୁ</translation>
 <translation id="8903998444169664879">ଆପଣଙ୍କ ପେମେଣ୍ଟ ସେଟିଂସ ପରିବର୍ତ୍ତନ କରିବାକୁ ଏହା ଆପଣ ବୋଲି ଯାଞ୍ଚ କରନ୍ତୁ</translation>

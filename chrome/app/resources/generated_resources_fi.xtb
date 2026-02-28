@@ -1022,6 +1022,7 @@ Sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä. Voit päättä
 <translation id="1671525612731130246">Valitse Drive-tili</translation>
 <translation id="1671749176392751693">Suojatun sisällön tunnisteet sallittu</translation>
 <translation id="1673137583248014546"><ph name="URL" /> haluaa nähdä suojausavaimesi merkin ja mallin.</translation>
+<translation id="1673855466663721679">Näytä kirjanmerkit sivupaneelissa</translation>
 <translation id="1674073353928166410">Avaa kaikki (<ph name="URL_COUNT" />) incognito-ikkunassa</translation>
 <translation id="1674142805528405174">Google Salasanat voi päivittää tilillesi vahvan salasanan, joka tallennetaan tilille (<ph name="EMAIL" />).</translation>
 <translation id="1674945585974615438">Poista JavaScript-optimoijat automaattisesti käytöstä tuntemattomilla sivustoilla</translation>
@@ -3455,6 +3456,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3312883087018430408">Etsi tiettyä sivustoa tai Chromen osaa kirjoittamalla sen pikakomento osoitepalkkiin ja painamalla valitsemaasi pikanäppäintä. Hae esimerkiksi kirjanmerkeistä kirjoittamalla "@bookmarks" ja painamalla sarkainta tai välilyöntiä.</translation>
 <translation id="3313622045786997898">Varmenteen allekirjoituksen arvo</translation>
 <translation id="3313950410573257029">Tarkista yhteys</translation>
+<translation id="3314239811356311272">Avaa kirjanmerkkien hallinta</translation>
 <translation id="3315158641124845231">Piilota <ph name="PRODUCT_NAME" /></translation>
 <translation id="3317459757438853210">Kaksipuolinen</translation>
 <translation id="3317521105713541270">Luo ryhmiä</translation>
@@ -3661,6 +3663,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3453597230179205517">Pääsy sijaintiin on estetty</translation>
 <translation id="3453612417627951340">Tarvitsee luvan</translation>
 <translation id="3454213325559396544">Tämä on viimeinen automaattinen ohjelmisto- ja tietoturvapäivitys, jonka <ph name="DEVICE_TYPE" /> saa. Vaihda uudempaan malliin, jos haluat jatkossa päivityksiä.</translation>
+<translation id="3454276058453724464">{FILE_LIMIT,plural, =1{Lataa 1 PDF-tiedosto, jota haluat käyttää kysymyksessä}other{Lataa enintään # PDF-tiedostoa, joita haluat käyttää kysymyksessä}}</translation>
 <translation id="3454818737556063691">Siirretäänkö 1 tiedosto avattavaksi tänne: <ph name="CLOUD_PROVIDER" />?</translation>
 <translation id="3455436146814891176">Synkronoi salauksen salasana</translation>
 <translation id="345693547134384690">Avaa &amp;kuva uudessa välilehdessä</translation>
@@ -5031,6 +5034,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="4364567974334641491"><ph name="APP_NAME" /> jakaa ikkunan.</translation>
 <translation id="4364830672918311045">Näytä ilmoitukset</translation>
 <translation id="4367971618859387374">Julkisesti näkyvä nimi</translation>
+<translation id="4368888793624522796">Välilehtiryhmät on siirretty</translation>
 <translation id="4368960422722232719">Näytä muistin käyttö välilehden kohdistuksen esikatselukortissa</translation>
 <translation id="4369151461324628035">Älä salli sivustojen yhdistää mihinkään paikallisessa verkossa olevaan laitteeseen</translation>
 <translation id="4369215744064167350">Sivustopyyntö hyväksytty</translation>
@@ -5419,6 +5423,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="4634575639321169635">Määritä tämä laite töitä varten tai henkilökohtaiseen käyttöön</translation>
 <translation id="4635072447747973225">Poista Crostini</translation>
 <translation id="4635398712689569051"><ph name="PAGE_NAME" /> ei ole vieraskäyttäjien saatavilla.</translation>
+<translation id="4635975718422788482">{FILE_LIMIT,plural, =1{Lataa 1 kuva, jota haluat käyttää kysymyksessä}other{Lataa enintään # kuvaa, joita haluat käyttää kysymyksessä}}</translation>
 <translation id="4636187126182557415">Järjestelmäasetukset</translation>
 <translation id="4636930964841734540">Tietoja</translation>
 <translation id="4637083375689622795">Lisää toimintoja, <ph name="EMAIL" /></translation>
@@ -6262,6 +6267,7 @@ Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="5215502535566372932">Valitse maa</translation>
 <translation id="5216674789212441076">Kääntää livetekstitykset automaattisesti. Tekstitykset lähetetään Googlelle käännettäväksi.</translation>
 <translation id="5216951551945455224">{NUM_TABS,plural, =1{Lopeta välilehden jakaminen Geminille}other{Lopeta # välilehden jakaminen Geminille}}</translation>
+<translation id="5217883660859035687">Siirrämme välilehtiryhmiä, jotta kirjanmerkeille jää enemmän tilaa.</translation>
 <translation id="5220011581825921581">haku + ylänuoli</translation>
 <translation id="5221516927483787768">Osoitteen <ph name="HOST_NAME" /> striimaus ei onnistu</translation>
 <translation id="5221834113325601057">Välilehti suljettu pois listalta</translation>
@@ -6945,6 +6951,7 @@ Voit määrittää samalle toiminnolle useita kytkimiä.</translation>
 <translation id="5697832193891326782">Emojivalitsin</translation>
 <translation id="5698136107297470317">Olet poistamassa datan täältä: <ph name="BRAND" /></translation>
 <translation id="5698878456427040674">Tarkista, tuetaanko valittua tiliä.</translation>
+<translation id="5698900765010620315">Pienen kontrastin tumma</translation>
 <translation id="5699227710146832453">Lähde:</translation>
 <translation id="570043786759263127">Google Playn sovellukset ja palvelut</translation>
 <translation id="5700761515355162635">Kolmannen osapuolen evästeet sallittu</translation>
@@ -8327,6 +8334,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="6663190258859265334">Tee Powerwash laitteellesi (<ph name="DEVICE_TYPE" />) ja palaa edelliseen versioon.</translation>
 <translation id="6664774537677393800">Jotain meni pieleen. profiilisi avaamisessa. Kirjaudu ensin ulos ja sitten uudelleen sisään.</translation>
 <translation id="6665874326033183068">Villi</translation>
+<translation id="6666560794795912543">Näytä kirjanmerkit sivupaneelissa</translation>
 <translation id="6667086124612170548">Tiedosto on liian iso tälle laitteelle</translation>
 <translation id="6667092961374478614"><ph name="FEATURE_NAME" /> / löydettävyys</translation>
 <translation id="6667187897999649121">Tällä hetkellä voit jakaa salasanoja vain perheenjäsenillesi. <ph name="BEGIN_LINK" />Luo perheryhmä<ph name="END_LINK" />, jossa on enintään kuusi jäsentä, niin voitte hyödyntää Googlen tuotteita ja tilauksia paremmin.</translation>
@@ -9788,6 +9796,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="7660146600670077843">Klikkaa välilehteä kakkospainikkeella ja valitse Lisää välilehti uuteen ryhmään</translation>
 <translation id="7661451191293163002">Rekisteröintivarmenteen noutaminen epäonnistui.</translation>
 <translation id="7662283695561029522">Määritä napauttamalla.</translation>
+<translation id="7662535435481776002">Pienen kontrastin vaalea</translation>
 <translation id="7663719505383602579">Vastaanottaja: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7663774460282684730">Pikanäppäin käytettävissä</translation>
 <translation id="7663859337051362114">Lisää eSIM-profiili</translation>
@@ -11796,6 +11805,7 @@ Tällaisia tietoja voivat olla esimerkiksi asennetut ohjelmistot, tiedostot, sel
 <translation id="8986494364107987395">Lähetä Googlelle käyttötilastoja ja virheraportteja automaattisesti</translation>
 <translation id="8987305927843254629">Jokainen henkilö voi personoida kokemuksensa ja pitää datan yksityisenä.</translation>
 <translation id="8987321822984361516">Organisaation hallinnoima selain, profiilia hallinnoi <ph name="PROFILE_DOMAIN" /></translation>
+<translation id="8987736167266086032">Jatka siitä, mihin jäit</translation>
 <translation id="8987927404178983737">Kuukausi</translation>
 <translation id="8988539543012086784">Sivu on tallennettu tänne: <ph name="BOOKMARK_FOLDER" /></translation>
 <translation id="8989359959810288806">Päivitä yhteyden jakamisen tila</translation>

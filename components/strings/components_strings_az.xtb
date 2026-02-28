@@ -230,6 +230,7 @@
 <translation id="1358187717814494928">Cədvəl yaradın</translation>
 <translation id="1358223345833465883">Chromium-da axtarış mexanizminiz</translation>
 <translation id="1359836962251219822">Mətbəx və yemək otağı</translation>
+<translation id="136059610328993645">Məlumatınız <ph name="ACCOUNT" /> üçün Google Pulqabıda yadda saxlanılır. Formaları daha sürətli doldurmaq üçün onu Google xidmətlərində istifadə edə bilərsiniz.</translation>
 <translation id="1360955481084547712">Gizli baxış üçün yeni Anonim pəncərə açın</translation>
 <translation id="1361528602584216624"><ph name="TRANSACTION_LIMIT" /> R$ Pix limiti</translation>
 <translation id="1363015776076529485">Tam hündürlükdə açılan ödənişi davam etdirmək üçün seçilə bilən ödəniş metodları.</translation>
@@ -252,6 +253,7 @@
 <translation id="1392813880755413602">OpenDocument təqdimatı</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> hər hansı data göndərməyib.</translation>
 <translation id="1393071644879491291">Daxil olmağa cəhd etdiyiniz saytda hücumçular sizi proqram təminatı quraşdırmağa, yaxud parollar, telefon və ya kredit kartı nömrələri kimi məlumatları açıqlamağa təşviq edə bilər. Chrome geri qayıtmağınızı təkidlə tövsiyə edir. <ph name="BEGIN_LEARN_MORE_LINK" />Bu xəbərdarlıq haqqında ətraflı məlumat əldə edin<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="1402151528875251561">Tarixçəni Yan paneldə göstərin</translation>
 <translation id="1405567553485452995">Açıq-yaşıl</translation>
 <translation id="1406370515365284486">Ödəniş metodlarınız yenə də yadda saxlanılacaq</translation>
 <translation id="1406500794671479665">Təsdiqlənir...</translation>
@@ -1448,6 +1450,7 @@
 <translation id="33073482541490531">İndicə istifadə etdiyiniz parol bir data pozuntusunda tapılıb. Parol Meneceri bu parolu indi dəyişdirmənizi tövsiyə edir.</translation>
 <translation id="3307649904964670439">"Chrome-u fərdiləşdirin" düyməsi, aktivləşdirərək brauzer görünüşünü fərdiləşdirin</translation>
 <translation id="3308006649705061278">Təşkilati Birlik (OU)</translation>
+<translation id="3310946375819654151">Chrome <ph name="APP_NAME" /> tətbiqində həssas məlumatlarınızı doldurmağa çalışır.</translation>
 <translation id="3312952471765023168">Yükləndi</translation>
 <translation id="3318016344440038475">TV Komediyaları</translation>
 <translation id="3324687287337751929">4 x 6 düym</translation>
@@ -1736,6 +1739,7 @@
 <translation id="3752181611900535304">Ünvan hesabda yadda saxlanılsın?</translation>
 <translation id="3752543821772132562"><ph name="POLICY_NAME" /> ayarlanmadığına görə nəzərə alınmayıb.</translation>
 <translation id="3754210790023674521">Şəkildə şəkil rejimindən çıxın</translation>
+<translation id="3754664361823138853">&amp;Tarixçə səhifəsini açın</translation>
 <translation id="3759461132968374835">Xəbər verdiyiniz qəza yoxdur. Qəza haqqında hesabat deaktiv edildikdə baş verən qəzalar burada görünmür.</translation>
 <translation id="3760561303380396507">CVC əvəzinə Windows Hello istifadə edilsin?</translation>
 <translation id="3761171036307311438">Kartdakı ad:</translation>
@@ -2747,6 +2751,7 @@
 <translation id="5385966243497224160">Qeyri-HTTPS URL-ni önizləmək olmur</translation>
 <translation id="5386426401304769735">Bu saytın sertifikat zənciri SHA-1 istifadə edərək imzalanmış sertifikatdan ibarətdir.</translation>
 <translation id="5391010642126249196">Daxil olmusunuz</translation>
+<translation id="5391306025131596142">&amp;Tarixçə səhifəsini açın</translation>
 <translation id="539203134595252721">Stolüstü Tennis</translation>
 <translation id="5392506727170022660">Metal (yarıparlaq)</translation>
 <translation id="5394069166371280357">Ailəvi TV şouları</translation>
@@ -2857,7 +2862,6 @@
 <translation id="5543564889050342791">Zooparklar, akvariumlar və qoruqlar</translation>
 <translation id="5543722831081909240">180 dərəcə</translation>
 <translation id="5544836308113951378">Kruiz və Çarter Reysləri</translation>
-<translation id="5545314360139398232">Hissə-hissə ödəmək üçün <ph name="ISSUER_NAME" /> ilə əlaqələndirin</translation>
 <translation id="5547939254150808298">Çap və Nəşriyyat</translation>
 <translation id="554815783948612276">Forum və Söhbət Provayderləri</translation>
 <translation id="5548606607480005320">Təhlükəsizlik yoxlanışı</translation>
@@ -3542,6 +3546,7 @@
 <translation id="6655085656059574817">Hesabınızı əlaqələndirilmiş formada saxlamaq <ph name="BNPL_ISSUER_NAME" /> ilə daha sürətli ödəniş etməyinizə kömək edir, lakin <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /> bölməsinə keçərək əlaqəni sonlandıra bilərsiniz</translation>
 <translation id="6656935431494847393">Uçuş rezervasiyaları və nəqliyyat vasitəsi məlumatları kimi məlumatlar daxildir</translation>
 <translation id="6657585470893396449">Parol</translation>
+<translation id="6659156657345021268">Məlumatınız yalnız cihazda yadda saxlanılır. Növbəti dəfə müvafiq formanı doldurduğunuz zaman onu Pulqabıda yadda saxlamaq fürsətiniz olacaq.</translation>
 <translation id="6659246032834639189">Bu qiymət aşağıdır</translation>
 <translation id="6660413144148052430">məkan</translation>
 <translation id="6662457027866368246">Birinci Rulon</translation>
@@ -4946,6 +4951,7 @@
 <translation id="8894794286471754040">Əvvəlcə uzun kənar</translation>
 <translation id="8897221284075091877">Bu kontenti istəmək üçün Google Hesabınız ilə davam edin</translation>
 <translation id="8897428486789851669">Üzgüçülük</translation>
+<translation id="8898854704577986668">Tarixçəni yan paneldə göstərin</translation>
 <translation id="8899807382908246773">İntruziv reklamlar</translation>
 <translation id="8903921497873541725">Zoom</translation>
 <translation id="8903998444169664879">Ödəniş ayarlarını dəyişmək üçün kimliyinizi doğrulayın</translation>

@@ -924,6 +924,7 @@
 <translation id="4885273946141277891">Неподдржан број примероци на Chrome.</translation>
 <translation id="4890973535105146893">Нема зачувани лозинки во вашата сметка на Google</translation>
 <translation id="4905823827770127520">Додајте линк на страницата</translation>
+<translation id="4908601375231458049">Приспособете ја групата картички и кликнете „Готово“</translation>
 <translation id="4908869848243824489">Discover од Google</translation>
 <translation id="4910889077668685004">Апликации за плаќање</translation>
 <translation id="4911042367886397055">Добре дојдовте пак, <ph name="USER_NAME" />!</translation>
@@ -1187,6 +1188,7 @@
 <translation id="6040143037577758943">Затвори</translation>
 <translation id="604124094241169006">Автоматски</translation>
 <translation id="6042308850641462728">Повеќе</translation>
+<translation id="6047066316630165190">Отворете го менувачот на картички во мрежа</translation>
 <translation id="604996488070107836">Преземањето на <ph name="FILE_NAME" /> не успеа поради непозната грешка.</translation>
 <translation id="605721222689873409">ГГ</translation>
 <translation id="6059830886158432458">Контролирајте ги сториите и активноста тука</translation>
@@ -1260,6 +1262,7 @@
 <translation id="6301526076346731664">Отвори „Алатки за програмери“</translation>
 <translation id="630308129961693966">Изберете ја положбата на лентата за адреса</translation>
 <translation id="6303969859164067831">Одјавете се и исклучете ја синхронизацијата</translation>
+<translation id="6305257382500066042">Испробајте</translation>
 <translation id="6307241780749477694">Потврдете дека сте вие за да ги добиете сите ваши лозинки на уредов</translation>
 <translation id="6309082029962045994"><ph name="TAB_TITLE" />, повеќекратно избрана прикачена картичка со пуштен звук</translation>
 <translation id="6312687380483398334">Веб-апликации (тивки)</translation>
@@ -1361,6 +1364,7 @@
 <translation id="6661521899577697780">Листот за прифаќање на „Наоди на Chrome“ е отворен на половина екран</translation>
 <translation id="666731172850799929">Отвори во <ph name="APP_NAME" /></translation>
 <translation id="6669390930482049506">Известувај ме</translation>
+<translation id="6670767097276846646">Некои екстензии може да додаваат пребарувачи на Chrome</translation>
 <translation id="6671495933530132209">Копирај слика</translation>
 <translation id="6672697278890207089">Внесете ја вашата лозинка</translation>
 <translation id="6672917148207387131">Додај <ph name="DOMAIN" /></translation>
@@ -1847,6 +1851,7 @@
 <translation id="8458341576712814616">Кратенка</translation>
 <translation id="8458413889418591446">За да се вратите брзо на сајтовите што сте ги посетиле, синхронизирајте ги вашите картички и историја</translation>
 <translation id="84594714173170813">Продолжете да ги користите податоците на Chrome во вашата сметка на Google</translation>
+<translation id="8460008946585880786">Повлечете и спуштете една картичка врз друга</translation>
 <translation id="8460448946170646641">Прегледајте ги клучните контроли за приватноста и безбедноста</translation>
 <translation id="8460932807646981183">Управувајте со пребарувачи и пребарување сајтови</translation>
 <translation id="8473863474539038330">Адреси и друго</translation>
@@ -1957,6 +1962,7 @@
 <translation id="8969796057708736017">Преземањето ќе заврши ако датотеката е сообразна со правилата на вашата организација</translation>
 <translation id="8970887620466824814">Нешто тргна наопаку.</translation>
 <translation id="8972098258593396643">Дали да се преземе во стандардната папка?</translation>
+<translation id="8987736167266086032">Продолжете каде што сте застанале</translation>
 <translation id="8992769679401294069">Вашите податоци се шифрирани со вашата лозинка. Внесете ја за да користите и зачувувате податоци од Chrome во вашата сметка на Google.</translation>
 <translation id="8993760627012879038">Отворете нова картичка во режим инкогнито</translation>
 <translation id="8995521496079646922">Апликациите што ги избравте ќе се користат стандардно. Ако некоја апликација не е веќе на уредов, ќе се преземе наскоро.</translation>

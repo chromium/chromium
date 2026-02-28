@@ -2,7 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="de">
 <translation id="1018939186200882850">Menüpunkt</translation>
-<translation id="10623998915015855">Ein-/Aus-Schaltfläche</translation>
+<translation id="10623998915015855">Ein-/Aus-Button</translation>
 <translation id="1088086359088493902">Sekunden</translation>
 <translation id="1142001580032786438">Wochenauswahl anzeigen</translation>
 <translation id="1188858454923323853">ergänzend</translation>
@@ -175,7 +175,7 @@
 <translation id="7034405885550056553">Vorschlag</translation>
 <translation id="7102274145889307184">aktueller Standort</translation>
 <translation id="7139483182332611405">Vorbemerkung</translation>
-<translation id="7198226213493847604">Pop-up-Schaltfläche für das Menü</translation>
+<translation id="7198226213493847604">Pop-up-Button für das Menü</translation>
 <translation id="7214187073215825913">Informationen zum Inhalt</translation>
 <translation id="7238347055216017155">Betonung</translation>
 <translation id="7244618938296408319">Überschrift des Abschnitts</translation>
@@ -224,7 +224,7 @@
 <translation id="8808573423886751634">Kapitel</translation>
 <translation id="8826423933757944500">Unterschrift</translation>
 <translation id="8851136666856101339">main</translation>
-<translation id="8861621546968757188">Pop-up-Schaltfläche für das Dialogfeld</translation>
+<translation id="8861621546968757188">Pop-up-Button für das Dialogfeld</translation>
 <translation id="8889402386540077796">Farbton</translation>
 <translation id="894736920926684893">Formatregler</translation>
 <translation id="8987927404178983737">Monat</translation>

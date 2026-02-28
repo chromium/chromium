@@ -3964,6 +3964,23 @@ Gegevensoverdracht met Takeout moet ook aanstaan voor een goede werking van de a
 <translation id="3712861436661566358">Profielscheiding afdwingen</translation>
 <translation id="3719826155360621982">Homepage</translation>
 <translation id="3724039569609354541">Standaardgedrag gebruiken om te bepalen of websites verzoeken naar netwerkeindpunten kunnen sturen</translation>
+<translation id="3726715125055227414">Met dit beleid stel je <ph name="PRODUCT_OS_NAME" /> in om de voorkeursalgoritmen voor sleutelovereenkomst (ondersteunde groepen) in TLS 1.3 te ordenen op basis van een voorkeur voor algoritmen die zijn goedgekeurd door een specifiek nalevingsregime, als je netwerkverzoeken doet vanaf het inlogscherm.
+
+Als je dit beleid instelt, garandeert dit niet dat er specifieke algoritmen worden onderhandeld.
+
+Dit beleid is bedoeld om serverbeheerders die clients met en zonder nalevingsvereisten willen ondersteunen, onderscheid te laten maken tussen deze clients en alleen bepaalde niet-standaard algoritmen met verhoogde cryptografische sterkte te laten gebruiken voor clients die expliciet zijn ingesteld om deze te gebruiken.
+
+Als je het beleid instelt op <ph name="CNSA2_NAME" />, wordt <ph name="PRODUCT_OS_NAME" /> zo ingesteld dat het de voorkeur geeft aan sleuteluitwisselingsmethoden die nodig zijn voor naleving van de Commercial National Security Algorithm Suite 2.0 (CNSA 2.0).
+
+Als je het beleid niet instelt of instelt op <ph name="DEFAULT_NAME" />, wordt <ph name="PRODUCT_OS_NAME" /> ingesteld om de standaardmethoden voor sleuteluitwisseling te gebruiken.
+
+Het is niet nodig om dit beleid in te stellen voor de beveiliging. De standaardversleuteling die <ph name="PRODUCT_OS_NAME" /> gebruikt, is sterk genoeg om een brute-force-aanval te weerstaan met de hele kracht van de zon.
+
+Als je dit beleid instelt, wordt <ph name="PRODUCT_OS_NAME" /> trager als je netwerkverzoeken doet vanaf het inlogscherm.
+
+Dit beleid heeft alleen invloed op TLS 1.3 en QUIC. Het heeft geen invloed op eerdere versies van TLS.
+
+Dit apparaatbeleid is vergelijkbaar met het gebruikersbeleid <ph name="PREFER_SLOW_KEX_ALGORITHMS_POLICY_NAME" />, maar wordt in plaats daarvan toegepast op het inlogprofiel op het inlogscherm.</translation>
 <translation id="3727476641336727380">Als je <ph name="ALLOW_SCREEN_WAKE_LOCKS_POLICY_NAME" /> aanzet of niet instelt, zijn wake locks voor het scherm toegestaan voor stroombeheer, tenzij <ph name="ALLOW_WAKE_LOCKS_POLICY_NAME" /> is uitgezet. Extensies kunnen wake locks voor het scherm aanvragen via de API voor de stroombeheerextensie en via ARC-apps.
 
       Als je het beleid niet toepast, worden wake lock-verzoeken voor het scherm verlaagd naar wake lock-verzoeken voor het systeem.</translation>
@@ -4475,6 +4492,17 @@ Ga naar https://chromeenterprise.google/policies/url-patterns/ voor gedetailleer
 <translation id="4090088362777472639">De SHA-256-hash van het Ansible-playbook.</translation>
 <translation id="4091040199847925434">Rapportage van systeeminformatie en paginacontent uitzetten die wordt gebruikt om Safe Browsing te verbeteren</translation>
 <translation id="4093058072421210667">Inline afbeelding niet toestaan.</translation>
+<translation id="4096503137212127216">Je kunt dit beleid gebruiken om <ph name="CHROME_DEVTOOLS_NAME" /> te blokkeren voor specifieke URL's. Ga naar https://support.google.com/chrome/a?p=url_blocklist_filter_format voor informatie over de URL-indeling.
+
+URL-patronen worden vergeleken met de URL van elk frame op de pagina die wordt geïnspecteerd. Het resulterende gedrag hangt ervan af of het beleid <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> ook is ingesteld.
+
+Als je dit beleid instelt en <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> niet, wordt <ph name="CHROME_DEVTOOLS_NAME" /> voor de hele pagina geblokkeerd als de URL van een frame overeenkomt met een patroon op deze blokkeerlijst. Als de URL van een frame niet overeenkomt met een patroon, wordt de beschikbaarheid bepaald door het beleid <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />.
+
+Als je dit beleid en het beleid <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> beide instelt, heeft de toelatingslijst voorrang. Als de URL van een frame overeenkomt met een patroon op de toelatingslijst, wordt deze toegestaan, zelfs als deze ook overeenkomt met een patroon op deze blokkeerlijst. Als een URL overeenkomt met een patroon op deze blokkeerlijst (maar niet op de toelatingslijst), wordt deze geblokkeerd. Als een URL met geen van beide overeenkomt, wordt het beleid <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> gebruikt als reserve.
+
+Als je dit beleid niet instelt, wordt de beschikbaarheid van <ph name="CHROME_DEVTOOLS_NAME" /> bepaald door het beleid <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> en <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />.
+
+Dit beleid is beperkt tot 1000 items.</translation>
 <translation id="4098920079809952737">Afdrukken zowel met als zonder achtergrondbeelden toestaan</translation>
 <translation id="410061592404122032">Altijd toestemming vragen als een site het recht voor vensterbeheer wil hebben</translation>
 <translation id="410068710490553233">Inloggen op aanvullende Google-accounts toestaan</translation>
@@ -5727,6 +5755,19 @@ Als je dit beleid instelt op <ph name="ALLOW_PASSTHROUGH_OF_SEARCH_BASED_SHORTCU
       Als het beleid niet is ingesteld in versies tot en met M76, kan <ph name="PRODUCT_NAME" /> deze logboeken standaard niet verzamelen en uploaden. Vanaf M77 kan <ph name="PRODUCT_NAME" /> deze logboeken standaard verzamelen en uploaden vanuit de meeste profielen waarop cloudgebaseerde bedrijfsbeleidsregels op gebruikersniveau van toepassing zijn. Vanaf M77 tot en met M80 kan <ph name="PRODUCT_NAME" /> deze logboeken ook standaard verzamelen en uploaden vanuit profielen waarop <ph name="PRODUCT_NAME" />-beheer op locatie van toepassing is.</translation>
 <translation id="4911334289324462969">poort 989 (blokkering kan worden opgeheven tot 01-02-2022)</translation>
 <translation id="4917385247580444890">Sterk</translation>
+<translation id="4917925819533520480">Je kunt dit beleid gebruiken om <ph name="CHROME_DEVTOOLS_NAME" /> toe te staan voor specifieke URL's.
+
+URL-patronen worden vergeleken met de URL van elk frame op de pagina die wordt geïnspecteerd. Het resulterende gedrag hangt ervan af of het beleid <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> ook is ingesteld.
+
+Als je dit beleid instelt en <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> niet, moet de URL van elk frame overeenkomen met een patroon op deze toelatingslijst om <ph name="CHROME_DEVTOOLS_NAME" /> toe te staan. Als de URL van een frame niet overeenkomt, wordt DevTools geblokkeerd voor de hele pagina. Ga naar https://support.google.com/chrome/a?p=url_blocklist_filter_format voor informatie over de URL-indeling.
+
+Als je dit beleid en het beleid <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> beide instelt, heeft deze toelatingslijst voorrang. Als de URL van een frame overeenkomt met een patroon op deze toelatingslijst, wordt deze toegestaan, zelfs als deze ook overeenkomt met een patroon op de blokkeerlijst. Als een URL overeenkomt met een patroon op de blokkeerlijst (maar niet op de toelatingslijst), wordt deze geblokkeerd. Als een URL met geen van beide overeenkomt, wordt het beleid <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> gebruikt als reserve.
+
+Als je dit beleid niet instelt, wordt de beschikbaarheid van <ph name="CHROME_DEVTOOLS_NAME" /> bepaald door het beleid <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> en <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />.
+
+Dit beleid is ook van toepassing op <ph name="CHROME_DEVTOOLS_NAME" /> die worden geopend voor extensies en web-apps.
+
+Dit beleid is beperkt tot 1000 items.</translation>
 <translation id="4918150584200819898">Automatisch starten van online opnieuw verifiëren aanzetten.</translation>
 <translation id="4918261735182294270">Gebruikers toestaan om te kiezen of <ph name="CHROME_SYNC_NAME" /> moet worden aangezet</translation>
 <translation id="4918485681633125382">Ondersteuning voor XFA-formulieren in pdf-documenten aanzetten</translation>
@@ -10651,6 +10692,21 @@ Er zijn meerdere beleidsregels met oorsprongen die van invloed zijn op verzoeken
 <translation id="8059352177830050556">Rapportage van achtergrondverlichtingsinformatie van apparaat aanzetten</translation>
 <translation id="8062485064082966327">Een anonieme Google-service gebruiken voor automatische beschrijvingen van niet-gelabelde afbeeldingen</translation>
 <translation id="8066428282805800713">Extra hardwaregegevens sturen op ChromeOS Flex</translation>
+<translation id="8069233292746468045">Met dit beleid stel je <ph name="PRODUCT_NAME" /> in om de voorkeursalgoritmen voor sleutelovereenkomst (ondersteunde groepen) in TLS 1.3 te ordenen op basis van een voorkeur voor algoritmen die zijn goedgekeurd door een specifiek nalevingsregime.
+
+Als je dit beleid instelt, garandeert dit niet dat er specifieke algoritmen worden onderhandeld.
+
+Dit beleid is bedoeld om serverbeheerders die clients met en zonder nalevingsvereisten willen ondersteunen, onderscheid te laten maken tussen deze clients en alleen bepaalde niet-standaard algoritmen met verhoogde cryptografische sterkte te laten gebruiken voor clients die expliciet zijn ingesteld om deze te gebruiken.
+
+Als je het beleid instelt op <ph name="CNSA2_NAME" />, wordt <ph name="PRODUCT_NAME" /> zo ingesteld dat het de voorkeur geeft aan sleuteluitwisselingsmethoden die nodig zijn voor naleving van de Commercial National Security Algorithm Suite 2.0 (CNSA 2.0).
+
+Als je het beleid niet instelt of instelt op <ph name="DEFAULT_NAME" />, wordt <ph name="PRODUCT_NAME" /> ingesteld om de standaardmethoden voor sleuteluitwisseling te gebruiken.
+
+Het is niet nodig om dit beleid in te stellen voor de beveiliging. De standaardversleuteling die <ph name="PRODUCT_NAME" /> gebruikt, is sterk genoeg om een brute-force-aanval te weerstaan met de hele kracht van de zon.
+
+Als je dit beleid instelt, wordt <ph name="PRODUCT_NAME" /> trager als je websites opent.
+
+Dit beleid heeft alleen invloed op TLS 1.3 en QUIC. Het heeft geen invloed op eerdere versies van TLS.</translation>
 <translation id="8071371098891664137">Als <ph name="PRINTERS_BLOCKLIST" /> wordt gekozen voor <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" />, kun je door <ph name="PRINTERS_BULK_BLOCKLIST_POLICY_NAME" /> in te stellen aangeven welke printers gebruikers niet kunnen gebruiken. Alle printers zijn beschikbaar voor de gebruiker, behalve de ID's in dit beleid. De ID's moeten overeenkomen met het veld <ph name="ID_FIELD" /> of <ph name="GUID_FIELD" /> in het bestand dat is opgegeven in <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" />.</translation>
 <translation id="8076539570602616846">Beperk in aanmerking komende Google-accounts voor het opslaan van pdf-bestanden in Google Drive vanuit <ph name="PRODUCT_NAME" /> PDF Viewer</translation>
 <translation id="8078297389450285582">Als je dit beleid toepast of niet instelt, wordt het slimme dimmodel gebruikt en kan het langer duren voordat het scherm wordt gedimd. Als dit het geval is, blijven de perioden tot het scherm uitgaat, het scherm wordt vergrendeld en inactiviteit wordt geactiveerd, gelijk aan de periode voor het dimmen van het scherm die je oorspronkelijk had ingesteld.

@@ -1310,6 +1310,8 @@
 <translation id="3102312643185441063">সঞ্চয়</translation>
 <translation id="3103188521861412364">ষ্টক আৰু বণ্ড</translation>
 <translation id="3105172416063519923">সম্পদৰ আইডি:</translation>
+<translation id="3105223248029915046">পৰিশোধৰ আঁচনিসমূহ যোগ্যতাৰ অধীন।
+পাছত পৰিশোধ কৰাৰ বিকল্পসমূহ লুকুৱাবলৈ, <ph name="BEGIN_LINK" />পৰিশোধৰ ছেটিঙ<ph name="END_LINK" />লৈ যাওক</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />সুৰক্ষিত DNS কনফিগাৰেশ্বন পৰীক্ষা কৰি থকা হৈছে<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">মাজৰ ট্ৰে’</translation>
 <translation id="3109061346635850169">মুখাৱয়ব আৰু শৰীৰৰ যত্ন</translation>
@@ -2862,7 +2864,6 @@
 <translation id="5543564889050342791">চিৰিয়াখানা, একুৰিয়াম আৰু বন্য জীৱ-জন্তু চাব পৰা অন্য ঠাই</translation>
 <translation id="5543722831081909240">১৮০ ডিগ্ৰী</translation>
 <translation id="5544836308113951378">ক্ৰুজ আৰু চাৰ্টাৰ</translation>
-<translation id="5545314360139398232">সময়ৰ লগে লগে পৰিশোধ কৰিবলৈ <ph name="ISSUER_NAME" /> লিংক কৰক</translation>
 <translation id="5547939254150808298">মুদ্ৰণ আৰু প্ৰকাশ</translation>
 <translation id="554815783948612276">ফ’ৰাম আৰু চাট প্ৰদানকাৰী</translation>
 <translation id="5548606607480005320">সুৰক্ষা পৰীক্ষা</translation>
@@ -4355,6 +4356,7 @@
 <translation id="7908648876066812348">ভাৰ্ছুৱেল কাৰ্ড অন কৰা হৈছে</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, ছেটিঙত Chromeৰ সুৰক্ষা পৰীক্ষা পৃষ্ঠালৈ যাবলৈ প্ৰথমে টেব তাৰ পাছত এণ্টাৰ টিপক</translation>
 <translation id="791107458486222637">ফলাফল পুনৰ নিৰ্ধাৰণ কৰি থকা হৈছে</translation>
+<translation id="7911651285409665023">বন্ধ কৰক আৰু "<ph name="TAB_TITLE" />"লৈ উভতি যাওক</translation>
 <translation id="7912924955815015552">Safariৰ পৰা আমদানি কৰা হৈছে</translation>
 <translation id="791551905239004656">অংকন আৰু ৰং কৰা</translation>
 <translation id="7916162853251942238">ফ্লেক্স’ বে’ছ</translation>

@@ -76,6 +76,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="1698376642261615901">Google Chrome er vafri sem keyrir vefsíður og forrit með ótrúlegum hraða. Hann er hraðvirkur, stöðugur og einfaldur í notkun. Notaðu vefinn á öruggari hátt með innbyggðri vernd Google Chrome gegn spilliforritum og vefveiðum.</translation>
 <translation id="1713301662689114961">{0,plural, =1{Chrome verður endurræst eftir klukkustund}one{Chrome verður endurræst eftir # klukkustund}other{Chrome verður endurræst eftir # klukkustundir}}</translation>
 <translation id="1722488837206509557">Þetta gerir þér kleift að velja á milli tiltækra tækja og efnis á skjá þeirra.</translation>
+<translation id="177180974022074201">Prófaðu með Gemini í Chrome</translation>
 <translation id="1786003790898721085">Vertu viss um að þú sért skráð(ur) inn á Chrome í <ph name="TARGET_DEVICE_NAME" /> og reyndu svo að senda aftur.</translation>
 <translation id="1786044937610313874">Flýtilyklar opnir í Chrome</translation>
 <translation id="178701303897325119">Þessi viðbót er ekki lengur studd. Chrome mælir með að þú fjarlægir hana þess í stað.</translation>
@@ -225,6 +226,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="3226612997184048185">Ef þú vistar bókamerkin þín einnig á Google-reikningnum þínum geturðu vaktað verð á vörum í Chrome og fengið tilkynningar þegar verð lækka</translation>
 <translation id="3242123554343253302">Bæta við Chrome-prófíl</translation>
 <translation id="3245429137663807393">Ef þú deilir einnig Chrome notkunarskýrslum innihalda þær skýrslur vefslóðirnar sem þú opnar</translation>
+<translation id="3259748324892322072">Sækja Chrome-forritið</translation>
 <translation id="3286538390144397061">Endurræsa núna</translation>
 <translation id="3292333338048274092">Þú þarft að endurræsa Chrome í kjölfarið.</translation>
 <translation id="3324218984287646518">Spyrja Google-linsu um þetta vídeó</translation>
@@ -534,6 +536,7 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="6481963882741794338">Tengdu Chrome við aðrar Google-þjónustur til að sérsníða upplifun þína og fleira</translation>
 <translation id="648319183876919572">Enn öruggari vefskoðun gerir viðbótarráðstafanir til að vernda þig gegn skaðlegum vefsvæðum og niðurhali</translation>
 <translation id="6489302989675808168">Kveikt • Chrome getur ekki staðfest hvaðan þessi viðbót kemur</translation>
+<translation id="6491330562720922580">QR-kóði til að sækja Chrome-vafra í snjalltæki</translation>
 <translation id="6493527311031785448">Google Chrome er að reyna að <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="6497147134301593682">Chrome var lokað sjálfkrafa</translation>
 <translation id="6506909944137591434">Chrome verður að fá leyfi fyrir myndavél til að búa til þrívíddarkort af umhverfi þínu</translation>

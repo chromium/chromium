@@ -681,6 +681,7 @@
 <translation id="1453561711872398978">Отправить <ph name="BEGIN_LINK" />журналы отладки<ph name="END_LINK" /> (рекомендуется)</translation>
 <translation id="1454223536435069390">С&amp;делать снимок экрана</translation>
 <translation id="145432137617179457">Языки с поддержкой проверки правописания</translation>
+<translation id="1455009947184333152">Навык удален.</translation>
 <translation id="1455119378540982311">Стандартные размеры окон</translation>
 <translation id="1456849775870359518">Ваши вкладки откроются снова</translation>
 <translation id="146000042969587795">Этот фрейм заблокирован, поскольку он содержит небезопасные элементы.</translation>
@@ -1334,6 +1335,7 @@
 <translation id="1886996562706621347">Разрешить запросы на установку обработчиков протоколов (рекомендуется)</translation>
 <translation id="1887210448491286312">Остановить трансляцию вкладки на устройство "<ph name="DEVICE_NAME" />"</translation>
 <translation id="1887442540531652736">Ошибка входа</translation>
+<translation id="1888692623866312036">Навык сохранен.</translation>
 <translation id="1890026367080681123">Открыть настройки встроенного контента</translation>
 <translation id="189035593835762169">Условия использования</translation>
 <translation id="1891362123137972260">На диске почти нет места. Удалите лишние файлы.</translation>
@@ -1841,6 +1843,7 @@
 <translation id="2232751457155581899">Разрешить сайтам отправлять запрос на отслеживание положения камеры</translation>
 <translation id="2233502537820838181">&amp;Дополнительная информация</translation>
 <translation id="223356358902285214">История приложений и веб-поиска</translation>
+<translation id="2234031676056123135">Настройте ярлыки</translation>
 <translation id="2234065144797002621">Ручей</translation>
 <translation id="2234208862050358325">Чтобы перемещать указатель, используйте клавиши 1, 2, 3, Q, E, A, S, D.</translation>
 <translation id="2234827758954819389">Руководство по конфиденциальности</translation>
@@ -3099,10 +3102,12 @@
 <translation id="3048589239114571785">Воспроизвести (K)</translation>
 <translation id="3048742847101793553">Ваша организация заблокировала этот файл, поскольку его не удалось проверить.</translation>
 <translation id="3048917188684939573">Журналы трансляций и устройств</translation>
+<translation id="3049356453907822148">Добавить навык</translation>
 <translation id="3051250416341590778">Масштаб изображения на дисплее</translation>
 <translation id="3053013834507634016">Использование ключа сертификата</translation>
 <translation id="3053273573829329829">Включить PIN-код пользователя</translation>
 <translation id="3053274730492362225">Не мигать</translation>
+<translation id="3057938290530993634">Нажмите и удерживайте, чтобы закрепить часто посещаемые сайты для быстрого доступа.</translation>
 <translation id="3058498974290601450">Ее можно включить в настройках в любой момент.</translation>
 <translation id="3060952009917586498">Изменить язык устройства. Сейчас используется <ph name="LANGUAGE" />.</translation>
 <translation id="3060987956645097882">Не удалось подключиться к телефону. Убедитесь, что телефон находится рядом, он разблокирован и на нем включены Bluetooth и Wi-Fi.</translation>
@@ -3259,6 +3264,7 @@
 <translation id="3182749001423093222">Проверка правописания</translation>
 <translation id="3183139917765991655">Импорт профилей</translation>
 <translation id="3183143381919926261">Мобильные сети</translation>
+<translation id="3183428991752322898">Удалить сочетание клавиш</translation>
 <translation id="3183700187146209259">Не удалось установить ПО для сканера</translation>
 <translation id="3183750649832309748">Вашей организации (<ph name="ACCOUNT_MANAGER" />) будет видна некоторая информация, в том числе:</translation>
 <translation id="3183944777708523606">Расположение мониторов</translation>
@@ -3350,6 +3356,7 @@
 <translation id="3247649647204519958">Здесь вы можете узнавать, у каких расширений есть доступ к сайту, и управлять их разрешениями.</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" />: ошибка сети</translation>
 <translation id="3248902735035392926">Безопасность – это важно. <ph name="BEGIN_LINK" />Проверьте расширения<ph name="END_LINK" />, которые у вас установлены.</translation>
+<translation id="3250374026663843838">Управление навыком</translation>
 <translation id="3251119461199395237">Синхронизация файлов</translation>
 <translation id="3251759466064201842">&lt;Не является частью сертификата&gt;</translation>
 <translation id="3252169590975855820">Он доступен в Google Менеджере паролей.</translation>
@@ -5183,6 +5190,7 @@
 <translation id="4469324811108161144">Максимальное количество символов в примечании: <ph name="CHARACTER_LIMIT" />.</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> может изменять файлы в папке "<ph name="FOLDERNAME" />".</translation>
 <translation id="4470957202018033307">Настройки внешних накопителей</translation>
+<translation id="4471250205822310967">Оверлей выбора Gemini</translation>
 <translation id="4471354919263203780">Скачивание файлов распознавания речи: <ph name="PERCENT" /> %…</translation>
 <translation id="4472194221638903160">Группировать вкладки с помощью ИИ</translation>
 <translation id="4472298120638043495">Можно использовать предпочитаемый язык, установленный в вашем аккаунте Google (<ph name="NEW_LOCALE_FROM_GAIA" />).</translation>
@@ -11805,6 +11813,7 @@
 <translation id="8986494364107987395">Автоматически отправлять в Google статистику использования и отчеты о сбоях</translation>
 <translation id="8987305927843254629">У каждого пользователя будет возможность персонализировать устройство и обеспечить конфиденциальность своих данных.</translation>
 <translation id="8987321822984361516">Браузером управляет организация, а профилем – <ph name="PROFILE_DOMAIN" /></translation>
+<translation id="8987736167266086032">Продолжайте работу с того места, где остановились</translation>
 <translation id="8987927404178983737">Месяц</translation>
 <translation id="8988539543012086784">Страница сохранена в папку "<ph name="BOOKMARK_FOLDER" />".</translation>
 <translation id="8989359959810288806">Обновить статус режима модема</translation>
@@ -11929,6 +11938,7 @@
 <translation id="9061521313218438086">Если Chrome обнаружит, что один из ваших паролей оказался в общем доступе из-за утечки данных, Google Менеджер паролей может предложить изменить его. Для этого нужно войти в аккаунт.</translation>
 <translation id="9061694916020926968">Чтобы использовать Steam для Chromebook (бета), нужно войти в аккаунт Google. Сделайте это и повторите попытку.</translation>
 <translation id="9062468308252555888">14x</translation>
+<translation id="9062873887761404531">Удалить быстрые клавиши для перехода</translation>
 <translation id="9063208415146866933">Ошибка в строках <ph name="ERROR_LINE_START" />–<ph name="ERROR_LINE_END" /></translation>
 <translation id="9064275926664971810">Включить автозаполнение для быстрого добавления данных в веб-формы</translation>
 <translation id="9065203028668620118">Изменить</translation>

@@ -690,7 +690,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="397650873162244514"><ph name="TAB_TITLE" />, festet fane</translation>
 <translation id="3985022125189960801">Legg til et nettsted igjen hvis du vil ha det i gruppen med nettsteder som kan gjette hva du liker</translation>
 <translation id="3985215325736559418">Vil du laste ned <ph name="FILE_NAME" /> igjen?</translation>
-<translation id="3987993985790029246">Kopiér link</translation>
+<translation id="3987993985790029246">Kopier link</translation>
 <translation id="3994236846568425219">Slå på mørkt tema når mørkt tema er påslått på enheten</translation>
 <translation id="4000212216660919741">Hjem uten nett</translation>
 <translation id="4000670338830950598">Tilpass og kontroller Google Chrome med et element som er uthevet</translation>
@@ -1364,6 +1364,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="6661521899577697780">Samtykket for Chrome Finds er åpnet i halv høyde</translation>
 <translation id="666731172850799929">Åpne i <ph name="APP_NAME" /></translation>
 <translation id="6669390930482049506">Varsle meg</translation>
+<translation id="6670767097276846646">Noen utvidelser kan legge til søkemotorer i Chrome</translation>
 <translation id="6671495933530132209">Kopiér bildet</translation>
 <translation id="6672697278890207089">Angi passordfrasen din</translation>
 <translation id="6672917148207387131">Legg til <ph name="DOMAIN" /></translation>
@@ -1961,6 +1962,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="8969796057708736017">Nedlastingen fullføres hvis filen overholder retningslinjene til organisasjonen din</translation>
 <translation id="8970887620466824814">Noe gikk galt.</translation>
 <translation id="8972098258593396643">Vil du laste ned til standardmappen?</translation>
+<translation id="8987736167266086032">Fortsett der du slapp</translation>
 <translation id="8992769679401294069">Dataene dine er kryptert med passordfrasen din. Skriv den inn for å bruke og lagre Chrome-data i Google-kontoen din.</translation>
 <translation id="8993760627012879038">Åpne en ny fane i inkognitomodus</translation>
 <translation id="8995521496079646922">Appene du har valgt, brukes som standard. Hvis noen av appene ikke allerede finnes på enheten, blir de lastet ned om kort tid.</translation>

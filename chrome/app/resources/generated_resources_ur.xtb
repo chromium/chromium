@@ -1021,6 +1021,7 @@
 <translation id="1671525612731130246">‏‫Drive اکاؤنٹ منتخب کریں</translation>
 <translation id="1671749176392751693">تحفط یافتہ مواد کے شناخت کنندگان کی اجازت ہے</translation>
 <translation id="1673137583248014546"><ph name="URL" /> آپ کی سیکیورٹی کلید کا برانڈ اور ماڈل دیکھنا چاہتا ہے</translation>
+<translation id="1673855466663721679">سائیڈ پینل میں بُک مارکس دکھائیں</translation>
 <translation id="1674073353928166410">سبھی (<ph name="URL_COUNT" />) کو پوشیدگی ونڈو میں کھولیں</translation>
 <translation id="1674142805528405174">‏‫Google پاس ورڈ مینیجر آپ کے اکاؤنٹ کو ایک مضبوط پاس ورڈ کے ساتھ اپ ڈیٹ کر سکتا ہے جو آپ کے اکاؤنٹ <ph name="EMAIL" /> میں آپ کے لیے محفوظ ہے۔</translation>
 <translation id="1674945585974615438">‏غیر مانوس سائٹس پر JavaScript آپٹیمائزرز کو خودکار طور پر غیر فعال کریں</translation>
@@ -3443,6 +3444,7 @@
 <translation id="3312883087018430408">‏کسی مخصوص سائٹ یا Chrome کا حصہ تلاش کرنے کے لیے، ایڈریس بار میں اس کا شارٹ کٹ ٹائپ کریں، اس کے بعد اپنا پسندیدہ کی بورڈ شارٹ کٹ درج کریں۔ مثال کے طور پر، صرف Bookmarks تلاش کرنے کے لیے، "bookmarks@" ٹائپ کریں پھر 'ٹیب' یا 'اسپیس' دبائیں۔</translation>
 <translation id="3313622045786997898">سرٹیفکیٹ دستخط قدر</translation>
 <translation id="3313950410573257029">کنکشن چیک کریں</translation>
+<translation id="3314239811356311272">&amp;بُک مارکس مینیجر کھولیں</translation>
 <translation id="3315158641124845231"><ph name="PRODUCT_NAME" /> چھپائیں</translation>
 <translation id="3317459757438853210">دو طرفہ</translation>
 <translation id="3317521105713541270">گروپس بنائیں</translation>
@@ -3649,6 +3651,7 @@
 <translation id="3453597230179205517">مقام تک رسائی مسدود ہے</translation>
 <translation id="3453612417627951340">اجازت نامہ درکار ہے</translation>
 <translation id="3454213325559396544">یہ اس <ph name="DEVICE_TYPE" /> کے لیے آخری خودکار سافٹ ویئر اور سیکیورٹی اپ ڈیٹ ہے۔ آئندہ کے اپ ڈیٹس حاصل کرنے کے لیے، نئے ماڈل پر اپ گریڈ کریں۔</translation>
+<translation id="3454276058453724464">{FILE_LIMIT,plural, =1{‏اپنے سوال کے ساتھ استعمال کرنے کے لیے 1 ‎.pdf فائل اپ لوڈ کریں}other{‏اپنے سوال کے ساتھ استعمال کرنے کے لیے # ‎.pdf فائلز تک اپ لوڈ کریں}}</translation>
 <translation id="3454818737556063691">کھولنے کے لیے 1 فائل کو <ph name="CLOUD_PROVIDER" /> میں منتقل کریں؟</translation>
 <translation id="3455436146814891176">مرموز کاری پاس ورڈ کو مطابقت پذیر بنائیں</translation>
 <translation id="345693547134384690">&amp;تصویر کو نئے ٹیب میں کھولیں</translation>
@@ -5022,6 +5025,7 @@
 <translation id="4364567974334641491"><ph name="APP_NAME" /> ایک ونڈو کا اشتراک کر رہی ہے۔</translation>
 <translation id="4364830672918311045">اطلاعات ڈسپلے کریں</translation>
 <translation id="4367971618859387374">ڈسپلے نام</translation>
+<translation id="4368888793624522796">ٹیب گروپس منتقل ہو گئے ہیں</translation>
 <translation id="4368960422722232719">ٹیب ہوور پیش منظر کارڈ پر میموری کا استعمال دکھائیں</translation>
 <translation id="4369151461324628035">سائٹس کو اپنے مقامی نیٹ ورک پر کسی آلے سے منسلک ہونے کی اجازت نہ دیں</translation>
 <translation id="4369215744064167350">ویب سائٹ کی درخواست منظور ہو گئی</translation>
@@ -5410,6 +5414,7 @@
 <translation id="4634575639321169635">دفتر یا ذاتی استعمال کے لیے اس آلہ کو سیٹ اپ کریں</translation>
 <translation id="4635072447747973225">‏Crostini اَن انسٹال کریں</translation>
 <translation id="4635398712689569051"><ph name="PAGE_NAME" /> مہمان صارفین کے لئے دستیاب نہیں ہے۔</translation>
+<translation id="4635975718422788482">{FILE_LIMIT,plural, =1{اپنے سوال کے ساتھ استعمال کرنے کے لیے 1 تصویر اپ لوڈ کریں}other{اپنے سوال کے ساتھ استعمال کرنے کے لیے # تصاویر تک اپ لوڈ کریں}}</translation>
 <translation id="4636187126182557415">سسٹم کی ترجیحات</translation>
 <translation id="4636930964841734540">معلومات</translation>
 <translation id="4637083375689622795">مزید کارروائیاں، <ph name="EMAIL" /></translation>
@@ -6252,6 +6257,7 @@
 <translation id="5215502535566372932">ملک منتخب کریں</translation>
 <translation id="5216674789212441076">‏لائیو کیپشنز کا خودکار طور پر ترجمہ کرتی ہے۔ ترجمے کیلئے کیپشنز کو Google کو بھیجا جاتا ہے۔</translation>
 <translation id="5216951551945455224">{NUM_TABS,plural, =1{‏‫Gemini کے ساتھ ٹیب کا اشتراک کرنا بند کریں}other{‏‫Gemini کے ساتھ # ٹیبز کا اشتراک بند کریں}}</translation>
+<translation id="5217883660859035687">ہم آپ کے بُک مارکس کو مزید جگہ دینے کے لیے ٹیب گروپس کو منتقل کر رہے ہیں۔</translation>
 <translation id="5220011581825921581">‏search + اوپر تیر کا نشان</translation>
 <translation id="5221516927483787768"><ph name="HOST_NAME" /> کاسٹ کرنے سے قاصر</translation>
 <translation id="5221834113325601057">ٹیب کو فہرست سے خارج کر دیا گیا</translation>
@@ -6933,6 +6939,7 @@
 <translation id="5697832193891326782">ایموجی منتخب کنندہ</translation>
 <translation id="5698136107297470317">آپ اپنا <ph name="BRAND" /> ڈیٹا حذف کرنے والے ہیں</translation>
 <translation id="5698878456427040674">چیک کریں کہ آیا منتخب کردہ اکاؤنٹ تعاون یافتہ ہے۔</translation>
+<translation id="5698900765010620315">ادنی تناسب امتزاج والی گہری تھیم</translation>
 <translation id="5699227710146832453">آپ کی طرف سے</translation>
 <translation id="570043786759263127">‏Google Play ایپس اور سروسز</translation>
 <translation id="5700761515355162635">فریق ثالث کوکیز کی اجازت ہے</translation>
@@ -8315,6 +8322,7 @@
 <translation id="6663190258859265334">‏اپنا <ph name="DEVICE_TYPE" /> Powerwash کریں اور پچھلے ورژن پر واپس جائیں۔</translation>
 <translation id="6664774537677393800">آپ کے پروفائل کو کھولتے وقت کچھ غلط ہوگیا۔ براہ کرم سائن آؤٹ کر کے دوبارہ سائن ان کریں۔</translation>
 <translation id="6665874326033183068">وائلڈ</translation>
+<translation id="6666560794795912543">سائیڈ پینل میں بُک مارکس دکھائیں</translation>
 <translation id="6667086124612170548">فائل اس آلہ کے لیے بہت بڑی ہے</translation>
 <translation id="6667092961374478614"><ph name="FEATURE_NAME" /> کی قابل دریافتگی</translation>
 <translation id="6667187897999649121">‏ابھی کے لیے، آپ صرف فیملی ممبرز کے ساتھ پاس ورڈز کا اشتراک کر سکتے ہیں۔ 6 اراکین تک کا <ph name="BEGIN_LINK" />ایک فیملی گروپ بنائیں<ph name="END_LINK" /> اور Google پر اپنے پروڈکٹس اور سبسکرپشنز سے مزید حاصل کریں۔</translation>
@@ -9775,6 +9783,7 @@
 <translation id="7660146600670077843">ٹیب پر دایاں کلک کریں اور "نئے گروپ میں ٹیب شامل کریں" کو منتخب کریں</translation>
 <translation id="7661451191293163002">رجسٹریشن سرٹیفکیٹ حاصل نہیں کیا جا سکا۔</translation>
 <translation id="7662283695561029522">کنفیگر کرنے کیلئے تھپتھپائیں</translation>
+<translation id="7662535435481776002">ادنی تناسب امتزاج والی ہلکی تھیم</translation>
 <translation id="7663719505383602579">وصول کنندہ: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7663774460282684730">کی بورڈ شارٹ کٹ دستیاب ہے</translation>
 <translation id="7663859337051362114">‏eSIM پروفائل شامل کریں</translation>
@@ -11782,6 +11791,7 @@
 <translation id="8986494364107987395">‏خود کار طریقے سے Google کو استعمال کے اعداد و شمار اور کریش کی رپورٹیں بھیجیں</translation>
 <translation id="8987305927843254629">ہر فرد اپنے تجربہ کو ذاتی نوعیت کا بنا سکتا ہے اور ڈیٹا کو نجی رکھ سکتا ہے۔</translation>
 <translation id="8987321822984361516">کسی تنظیم کے زیر انتظام براؤزر، <ph name="PROFILE_DOMAIN" /> کے زیر انتظام پروفائل</translation>
+<translation id="8987736167266086032">جہاں آپ نے چھوڑا وہیں سے شروع کریں</translation>
 <translation id="8987927404178983737">ماہ</translation>
 <translation id="8988539543012086784">یہ صفحہ <ph name="BOOKMARK_FOLDER" /> میں محفوظ ہے</translation>
 <translation id="8989359959810288806">ٹیدرنگ کی صورتحال کو ریفریش کریں</translation>
