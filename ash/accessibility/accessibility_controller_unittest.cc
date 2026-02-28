@@ -12,6 +12,7 @@
 #include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/accessibility/a11y_feature_type.h"
 #include "ash/accessibility/accessibility_observer.h"
+#include "ash/accessibility/accessibility_prefs_custom_associator.h"
 #include "ash/accessibility/disable_touchpad_event_rewriter.h"
 #include "ash/accessibility/filter_keys_event_rewriter.h"
 #include "ash/accessibility/flash_screen_controller.h"
@@ -27,6 +28,7 @@
 #include "ash/display/window_tree_host_manager.h"
 #include "ash/keyboard/ui/keyboard_util.h"
 #include "ash/public/cpp/event_rewriter_controller.h"
+#include "ash/public/cpp/session/session_observer.h"
 #include "ash/public/cpp/test/test_system_tray_client.h"
 #include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
@@ -2716,5 +2718,227 @@ TEST_P(AccessibilityControllerRegisterProfilePrefsTest,
 INSTANTIATE_TEST_SUITE_P(All,
                          AccessibilityControllerRegisterProfilePrefsTest,
                          ::testing::Values(true, false));
+
+class AccessibilityControllerSyncablePrefsOnSigninTest
+    : public NoSessionAshTestBase,
+      public SessionObserver,
+      public testing::WithParamInterface<TestUserLoginType> {
+ public:
+  AccessibilityControllerSyncablePrefsOnSigninTest() = default;
+
+  AccessibilityControllerSyncablePrefsOnSigninTest(
+      const AccessibilityControllerSyncablePrefsOnSigninTest&) = delete;
+  AccessibilityControllerSyncablePrefsOnSigninTest& operator=(
+      const AccessibilityControllerSyncablePrefsOnSigninTest&) = delete;
+
+  ~AccessibilityControllerSyncablePrefsOnSigninTest() = default;
+
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeatures(
+        {features::kOsSyncAccessibilitySettingsBatch1,
+         features::kOsSyncAccessibilitySettingsBatch2,
+         features::kOsSyncAccessibilitySettingsBatch3},
+        {});
+    NoSessionAshTestBase::SetUp();
+    Shell::Get()->session_controller()->AddObserver(this);
+  }
+
+  void TearDown() override {
+    Shell::Get()->session_controller()->RemoveObserver(this);
+    NoSessionAshTestBase::TearDown();
+  }
+
+  // SessionObserver:
+  //
+  // We override this hook because at this point signin is performed, prefs are
+  // copied and the associator is active.
+  void OnFirstSessionStarted() override {
+    // Verify that prefs values are copied if they should.
+    SessionControllerImpl* session = Shell::Get()->session_controller();
+    AccessibilityController* accessibility =
+        Shell::Get()->accessibility_controller();
+    DockedMagnifierController* docked_magnifier =
+        Shell::Get()->docked_magnifier_controller();
+
+    PrefService* user_prefs = session->GetLastActiveUserPrefService();
+    PrefService* signin_prefs = session->GetSigninScreenPrefService();
+    EXPECT_NE(signin_prefs, user_prefs);
+
+    using prefs::kAccessibilityAutoclickEnabled;
+    using prefs::kAccessibilityCaretHighlightEnabled;
+    using prefs::kAccessibilityHighContrastEnabled;
+    using prefs::kAccessibilityLargeCursorEnabled;
+    using prefs::kAccessibilityMonoAudioEnabled;
+    using prefs::kAccessibilitySpokenFeedbackEnabled;
+    using prefs::kDockedMagnifierEnabled;
+
+    const bool should_signin_prefs_be_copied =
+        GetParam() == TestUserLoginType::kNewUser;
+    if (should_signin_prefs_be_copied) {
+      EXPECT_TRUE(accessibility->large_cursor().enabled());
+      EXPECT_TRUE(accessibility->spoken_feedback().enabled());
+      EXPECT_TRUE(accessibility->high_contrast().enabled());
+      EXPECT_TRUE(accessibility->autoclick().enabled());
+      EXPECT_TRUE(accessibility->mono_audio().enabled());
+      EXPECT_TRUE(accessibility->caret_highlight().enabled());
+      EXPECT_TRUE(docked_magnifier->GetEnabled());
+      EXPECT_FLOAT_EQ(kMagnifierScale, docked_magnifier->GetScale());
+      EXPECT_TRUE(user_prefs->GetBoolean(kAccessibilityLargeCursorEnabled));
+      EXPECT_TRUE(user_prefs->GetBoolean(kAccessibilityHighContrastEnabled));
+      EXPECT_TRUE(user_prefs->GetBoolean(kAccessibilityCaretHighlightEnabled));
+      EXPECT_TRUE(user_prefs->GetBoolean(kDockedMagnifierEnabled));
+      EXPECT_TRUE(user_prefs->GetBoolean(kAccessibilitySpokenFeedbackEnabled));
+      EXPECT_TRUE(user_prefs->GetBoolean(kAccessibilityAutoclickEnabled));
+      EXPECT_TRUE(user_prefs->GetBoolean(kAccessibilityMonoAudioEnabled));
+
+      // Check locking of enabled syncable preferences.
+      EXPECT_NE(nullptr, accessibility->prefs_custom_associator());
+      EXPECT_TRUE(IsPrefLockedForTesting(kAccessibilityLargeCursorEnabled));
+      EXPECT_TRUE(IsPrefLockedForTesting(kAccessibilityHighContrastEnabled));
+      EXPECT_TRUE(IsPrefLockedForTesting(kAccessibilityCaretHighlightEnabled));
+      EXPECT_TRUE(IsPrefLockedForTesting(kDockedMagnifierEnabled));
+      EXPECT_FALSE(IsPrefLockedForTesting(kAccessibilitySpokenFeedbackEnabled));
+      EXPECT_FALSE(IsPrefLockedForTesting(kAccessibilityAutoclickEnabled));
+      EXPECT_FALSE(IsPrefLockedForTesting(kAccessibilityMonoAudioEnabled));
+    } else {
+      EXPECT_FALSE(accessibility->large_cursor().enabled());
+      EXPECT_FALSE(accessibility->spoken_feedback().enabled());
+      EXPECT_FALSE(accessibility->high_contrast().enabled());
+      EXPECT_FALSE(accessibility->autoclick().enabled());
+      EXPECT_FALSE(accessibility->mono_audio().enabled());
+      EXPECT_FALSE(accessibility->caret_highlight().enabled());
+      EXPECT_FALSE(docked_magnifier->GetEnabled());
+      EXPECT_NE(kMagnifierScale, docked_magnifier->GetScale());
+      EXPECT_FALSE(user_prefs->GetBoolean(kAccessibilityLargeCursorEnabled));
+      EXPECT_FALSE(user_prefs->GetBoolean(kAccessibilitySpokenFeedbackEnabled));
+      EXPECT_FALSE(user_prefs->GetBoolean(kAccessibilityHighContrastEnabled));
+      EXPECT_FALSE(user_prefs->GetBoolean(kAccessibilityAutoclickEnabled));
+      EXPECT_FALSE(user_prefs->GetBoolean(kAccessibilityMonoAudioEnabled));
+      EXPECT_FALSE(user_prefs->GetBoolean(kAccessibilityCaretHighlightEnabled));
+      EXPECT_FALSE(user_prefs->GetBoolean(kDockedMagnifierEnabled));
+
+      // No associator should have been created.
+      EXPECT_EQ(nullptr, accessibility->prefs_custom_associator());
+    }
+  }
+
+  void SimulateLogin() {
+    constexpr char kUserEmail[] = "user1@test.com";
+    switch (GetParam()) {
+      case TestUserLoginType::kNewUser:
+        SimulateNewUserFirstLogin(kUserEmail);
+        break;
+
+      case TestUserLoginType::kGuest:
+        NOTREACHED();
+
+      case TestUserLoginType::kExistingUser:
+        SimulateUserLogin({kUserEmail});
+        break;
+    }
+  }
+
+ protected:
+  bool IsPrefLockedForTesting(std::string_view pref_name) {
+    auto* associator =
+        Shell::Get()->accessibility_controller()->prefs_custom_associator();
+    std::optional<base::Value> merge_value =
+        associator->GetPreferredPrefMergeValue(pref_name, base::Value(false));
+    return merge_value.has_value() && merge_value->is_bool()
+               ? merge_value->GetBool()
+               : false;
+  }
+
+  static constexpr float kMagnifierScale = 4.3f;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         AccessibilityControllerSyncablePrefsOnSigninTest,
+                         ::testing::Values(TestUserLoginType::kNewUser,
+                                           TestUserLoginType::kExistingUser));
+
+TEST_P(AccessibilityControllerSyncablePrefsOnSigninTest,
+       Signin_PrefCopyAndLock) {
+  AccessibilityController* accessibility =
+      Shell::Get()->accessibility_controller();
+  DockedMagnifierController* docked_magnifier =
+      Shell::Get()->docked_magnifier_controller();
+  SessionControllerImpl* session = Shell::Get()->session_controller();
+  PrefService* signin_prefs = session->GetSigninScreenPrefService();
+
+  using prefs::kAccessibilityAutoclickEnabled;
+  using prefs::kAccessibilityCaretHighlightEnabled;
+  using prefs::kAccessibilityHighContrastEnabled;
+  using prefs::kAccessibilityLargeCursorEnabled;
+  using prefs::kAccessibilityMonoAudioEnabled;
+  using prefs::kAccessibilitySpokenFeedbackEnabled;
+  using prefs::kDockedMagnifierEnabled;
+
+  // Ensures accessibility prefs are disabled at the beginning of the signin
+  // process.
+  {
+    EXPECT_EQ(session_manager::SessionState::LOGIN_PRIMARY,
+              session->GetSessionState());
+    EXPECT_FALSE(accessibility->large_cursor().enabled());
+    EXPECT_FALSE(accessibility->live_caption().enabled());
+    EXPECT_FALSE(accessibility->spoken_feedback().enabled());
+    EXPECT_FALSE(accessibility->high_contrast().enabled());
+    EXPECT_FALSE(accessibility->autoclick().enabled());
+    EXPECT_FALSE(accessibility->mono_audio().enabled());
+    EXPECT_FALSE(accessibility->caret_highlight().enabled());
+    EXPECT_FALSE(docked_magnifier->GetEnabled());
+
+    EXPECT_FALSE(signin_prefs->GetBoolean(kAccessibilityLargeCursorEnabled));
+    EXPECT_FALSE(signin_prefs->GetBoolean(kAccessibilitySpokenFeedbackEnabled));
+    EXPECT_FALSE(signin_prefs->GetBoolean(kAccessibilityHighContrastEnabled));
+    EXPECT_FALSE(signin_prefs->GetBoolean(kAccessibilityAutoclickEnabled));
+    EXPECT_FALSE(signin_prefs->GetBoolean(kAccessibilityMonoAudioEnabled));
+    EXPECT_FALSE(signin_prefs->GetBoolean(kAccessibilityCaretHighlightEnabled));
+    EXPECT_FALSE(signin_prefs->GetBoolean(kDockedMagnifierEnabled));
+    EXPECT_NE(kMagnifierScale, docked_magnifier->GetScale());
+  }
+
+  // Toggle accessibility prefs prior to the signin process.
+  {
+    accessibility->large_cursor().SetEnabled(true);
+    accessibility->SetSpokenFeedbackEnabled(true, A11Y_NOTIFICATION_NONE);
+    accessibility->high_contrast().SetEnabled(true);
+    accessibility->autoclick().SetEnabled(true);
+    accessibility->mono_audio().SetEnabled(true);
+    accessibility->caret_highlight().SetEnabled(true);
+    docked_magnifier->SetEnabled(true);
+    docked_magnifier->SetScale(kMagnifierScale);
+  }
+
+  // Verify that toggling prefs at the signin screen changes the signin setting.
+  {
+    EXPECT_TRUE(accessibility->large_cursor().enabled());
+    EXPECT_TRUE(accessibility->spoken_feedback().enabled());
+    EXPECT_TRUE(accessibility->high_contrast().enabled());
+    EXPECT_TRUE(accessibility->autoclick().enabled());
+    EXPECT_TRUE(accessibility->mono_audio().enabled());
+    EXPECT_TRUE(accessibility->caret_highlight().enabled());
+    EXPECT_TRUE(docked_magnifier->GetEnabled());
+    EXPECT_FLOAT_EQ(kMagnifierScale, docked_magnifier->GetScale());
+    EXPECT_TRUE(signin_prefs->GetBoolean(kAccessibilityLargeCursorEnabled));
+    EXPECT_TRUE(signin_prefs->GetBoolean(kAccessibilitySpokenFeedbackEnabled));
+    EXPECT_TRUE(signin_prefs->GetBoolean(kAccessibilityHighContrastEnabled));
+    EXPECT_TRUE(signin_prefs->GetBoolean(kAccessibilityAutoclickEnabled));
+    EXPECT_TRUE(signin_prefs->GetBoolean(kAccessibilityMonoAudioEnabled));
+    EXPECT_TRUE(signin_prefs->GetBoolean(kAccessibilityCaretHighlightEnabled));
+    EXPECT_TRUE(signin_prefs->GetBoolean(kDockedMagnifierEnabled));
+  }
+
+  // The type of user (new or existing) will trigger the copying of
+  // accessibility prefs from the signin screen to the new user profile.
+  //
+  // In case of new users, prefs are copied, the associator is created and prefs
+  // are "locked". OTOH, for existing users, no copying takes place (as well as
+  // no associator is created, and no "locking") - see OnFirstSessionStarted().
+  SimulateLogin();
+}
 
 }  // namespace ash

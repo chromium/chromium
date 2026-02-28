@@ -58,6 +58,7 @@ class AccessibilityControllerClient;
 class AccessibilityEventRewriter;
 class AccessibilityFeatureDisableDialog;
 class AccessibilityHighlightController;
+class AccessibilityPrefsCustomAssociator;
 class AccessibilityObserver;
 enum class AccessibilityPanelState;
 enum class DictationToggleSource;
@@ -664,6 +665,7 @@ class ASH_EXPORT AccessibilityController
   void OnSigninScreenPrefServiceInitialized(PrefService* prefs) override;
   void OnActiveUserPrefServiceChanged(PrefService* prefs) override;
   void OnSessionStateChanged(session_manager::SessionState state) override;
+  void OnFirstSessionReady() override;
 
   // InputDeviceSettingsController::Observer:
   void OnMouseConnected(const mojom::Mouse& mouse) override;
@@ -770,6 +772,10 @@ class ASH_EXPORT AccessibilityController
 
   PrefService* GetActiveUserPrefs() { return active_user_prefs_; }
 
+  AccessibilityPrefsCustomAssociator* prefs_custom_associator() const {
+    return prefs_custom_associator_.get();
+  }
+
  private:
   // Populate |features_| with the feature of the correct type.
   void CreateAccessibilityFeatures();
@@ -786,6 +792,9 @@ class ASH_EXPORT AccessibilityController
 
   // Updates the actual feature status based on the prefs value.
   void UpdateFeatureFromPref(A11yFeatureType feature);
+
+  // Copy the signin preferences to the newly created user profile if needed.
+  void CopySigninPrefsIfNeeded(PrefService* current_pref_service);
 
   void UpdateAutoclickDelayFromPref();
   void UpdateAutoclickEventTypeFromPref();
@@ -937,6 +946,9 @@ class ASH_EXPORT AccessibilityController
   // The pref service of the currently active user or the signin profile before
   // user logs in. Can be null in ash_unittests.
   raw_ptr<PrefService> active_user_prefs_ = nullptr;
+
+  // Associator class to handle preference conflicts at first user signin.
+  std::unique_ptr<AccessibilityPrefsCustomAssociator> prefs_custom_associator_;
 
   // This has to be the first one to be destroyed so we don't get updates about
   // any prefs during destruction.

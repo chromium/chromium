@@ -14,6 +14,7 @@
 #include "ash/accessibility/a11y_feature_type.h"
 #include "ash/accessibility/accessibility_notification_controller.h"
 #include "ash/accessibility/accessibility_observer.h"
+#include "ash/accessibility/accessibility_prefs_custom_associator.h"
 #include "ash/accessibility/accessibility_sync_prefs_utils.h"
 #include "ash/accessibility/autoclick/autoclick_controller.h"
 #include "ash/accessibility/disable_touchpad_event_rewriter.h"
@@ -370,34 +371,8 @@ bool ShouldCopySigninPrefs(PrefService* previous_pref_service,
   return false;
 }
 
-// On a user's first login into a device, any a11y features enabled/disabled
-// by the user on the login screen are enabled/disabled in the user's profile.
-// This function copies settings from the signin prefs into the user's prefs
-// when it detects a login with a newly created profile.
-void CopySigninPrefsIfNeeded(PrefService* previous_pref_service,
-                             PrefService* current_pref_service) {
-  DCHECK(current_pref_service);
-  if (!ShouldCopySigninPrefs(previous_pref_service, current_pref_service)) {
-    return;
-  }
-
-  PrefService* signin_prefs =
-      Shell::Get()->session_controller()->GetSigninScreenPrefService();
-  DCHECK(signin_prefs);
-  for (const auto* pref_path : kCopiedOnSigninAccessibilityPrefs) {
-    const PrefService::Preference* pref =
-        signin_prefs->FindPreference(pref_path);
-
-    // Ignore if the pref has not been set by the user.
-    if (!pref || !pref->IsUserControlled()) {
-      continue;
-    }
-
-    // Copy the pref value from the signin profile.
-    const base::Value* value_on_login = pref->GetValue();
-    current_pref_service->Set(pref_path, *value_on_login);
-  }
-}
+using EnsurePrefsCustomAssociatorCallback =
+    base::OnceCallback<AccessibilityPrefsCustomAssociator*()>;
 
 // Returns notification icon based on the A11yNotificationType.
 const gfx::VectorIcon& GetNotificationIcon(A11yNotificationType type) {
@@ -2483,7 +2458,7 @@ void AccessibilityController::OnActiveUserPrefServiceChanged(
   // This is guaranteed to be received after
   // OnSigninScreenPrefServiceInitialized() so only copy the signin prefs if
   // needed here.
-  CopySigninPrefsIfNeeded(active_user_prefs_, prefs);
+  CopySigninPrefsIfNeeded(prefs);
   ObservePrefs(prefs);
 }
 
@@ -2507,6 +2482,16 @@ void AccessibilityController::OnSessionStateChanged(
   container->SetProperty(
       ui::kAXConsiderInvisibleAndIgnoreChildren,
       Shell::Get()->session_controller()->IsUserSessionBlocked());
+}
+
+void AccessibilityController::OnFirstSessionReady() {
+  // By the time the user desktop fully loads, any eventual syncable/conflicting
+  // preferences are set in the associator already.
+  //
+  // TODO(crbug.com/479890756): Launch the conflict resolution feature.
+
+  // Reset the associator since it is not needed anymore.
+  prefs_custom_associator_.reset();
 }
 
 AccessibilityEventRewriter*
@@ -2547,6 +2532,45 @@ void AccessibilityController::OnDisplayTabletStateChanged(
           A11yNotificationType::kSpokenFeedbackEnabled, kNotificationId,
           std::vector<std::u16string>()));
     }
+  }
+}
+
+// On a user's first login into a device, any a11y features enabled/disabled
+// by the user on the login screen are enabled/disabled in the user's profile.
+// This function copies settings from the signin prefs into the user's prefs
+// when it detects a login with a newly created profile.
+void AccessibilityController::CopySigninPrefsIfNeeded(
+    PrefService* current_pref_service) {
+  DCHECK(current_pref_service);
+  if (!ShouldCopySigninPrefs(/*previous_pref_service=*/active_user_prefs_,
+                             current_pref_service)) {
+    return;
+  }
+
+  // Ensure a fresh state on the associator.
+  CHECK(!prefs_custom_associator_);
+  prefs_custom_associator_ =
+      std::make_unique<AccessibilityPrefsCustomAssociator>();
+
+  PrefService* signin_prefs =
+      Shell::Get()->session_controller()->GetSigninScreenPrefService();
+  DCHECK(signin_prefs);
+  for (const auto* pref_path : kCopiedOnSigninAccessibilityPrefs) {
+    const PrefService::Preference* pref =
+        signin_prefs->FindPreference(pref_path);
+
+    // Ignore if the pref has not been set by the user.
+    if (!pref || !pref->IsUserControlled()) {
+      continue;
+    }
+
+    // Copy the pref value from the signin profile.
+    const base::Value* value_on_login = pref->GetValue();
+    current_pref_service->Set(pref_path, *value_on_login);
+
+    // Try to "lock" this preference in case it is syncable and we must wait to
+    // sync until after showing the resolution dialog.
+    prefs_custom_associator_->TryLockPref(pref_path, *value_on_login);
   }
 }
 
