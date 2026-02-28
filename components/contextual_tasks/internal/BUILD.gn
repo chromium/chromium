@@ -13,8 +13,6 @@ source_set("internal") {
     "ai_thread_sync_bridge.h",
     "composite_context_decorator.cc",
     "composite_context_decorator.h",
-    "contextual_task_sync_bridge.cc",
-    "contextual_task_sync_bridge.h",
     "contextual_tasks_service_impl.cc",
     "contextual_tasks_service_impl.h",
     "conversions.cc",
@@ -56,7 +54,6 @@ source_set("unit_tests") {
   sources = [
     "ai_thread_sync_bridge_unittest.cc",
     "composite_context_decorator_unittest.cc",
-    "contextual_task_sync_bridge_unittest.cc",
     "contextual_tasks_service_impl_unittest.cc",
     "conversions_unittest.cc",
     "fallback_title_context_decorator_unittest.cc",
