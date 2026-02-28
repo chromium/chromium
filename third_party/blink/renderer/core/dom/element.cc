@@ -12420,23 +12420,20 @@ HeapLinkedHashSet<Member<Element>> AllSourceInterestInvokers(Element& target) {
 //    losing focus (not any ancestors), and then SetFocused(true) is called on
 //    the element gaining focus. Because the ancestor chain is not automatically
 //    notified, this function must walk the ancestors manually.
-void Element::HandleInterestForHoverOrFocus(InterestSource source,
-                                            bool recursive_call) {
+void Element::HandleInterestForHoverOrFocus(InterestSource source) {
   DCHECK(RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled());
   if (!IsInTreeScope() || !GetDocument().IsActive()) {
     return;
   }
-  // We manually "bubble" all calls to this function to all ancestors.
-  if (!recursive_call) {
-    for (auto& node : FlatTreeTraversal::InclusiveAncestorsOf(*this)) {
-      if (Element* element = DynamicTo<Element>(node)) {
-        element->HandleInterestForHoverOrFocus(source,
-                                               /*recursive_call*/ true);
-      }
+  for (Node& node : FlatTreeTraversal::InclusiveAncestorsOf(*this)) {
+    if (Element* element = DynamicTo<Element>(node)) {
+      element->ScheduleInterestChangesIfNeeded(source);
     }
-    return;
   }
+}
 
+void Element::ScheduleInterestChangesIfNeeded(InterestSource source) {
+  DCHECK(RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled());
   InvokerData* invoker_data = GetInvokerData();
   Element* upstream_invoker = SourceInterestInvoker();
   InvokerData* upstream_data =

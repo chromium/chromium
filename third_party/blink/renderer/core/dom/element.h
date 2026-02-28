@@ -2571,8 +2571,8 @@ class CORE_EXPORT Element : public ContainerNode {
     kFocus,
     kBlur,
   };
-  void HandleInterestForHoverOrFocus(InterestSource source,
-                                     bool recursive_call = false);
+  void HandleInterestForHoverOrFocus(InterestSource source);
+  void ScheduleInterestChangesIfNeeded(InterestSource source);
 
   // Highlight pseudos inherit all properties from the corresponding highlight
   // in the parent, but virtually all existing content uses universal rules
