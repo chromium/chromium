@@ -1285,31 +1285,47 @@ void OmniboxEditModel::OnPaste() {
 }
 
 void OmniboxEditModel::OnUpOrDownPressed(bool down, bool page) {
+  const auto direction = down ? OmniboxPopupSelection::Direction::kForward
+                              : OmniboxPopupSelection::Direction::kBackward;
+  const auto step = page ? OmniboxPopupSelection::Step::kAllLines
+                         : OmniboxPopupSelection::Step::kWholeLine;
+
   if (popup_view_ && popup_view_->IsSelectionPopupControlled()) {
-    popup_view_->StepSelection(
-        down ? OmniboxPopupSelection::Direction::kForward
-             : OmniboxPopupSelection::Direction::kBackward,
-        page ? OmniboxPopupSelection::Step::kAllLines
-             : OmniboxPopupSelection::Step::kWholeLine);
-    return;
+    const OmniboxPopupSelection old_selection = GetPopupSelection();
+    OmniboxPopupSelection new_selection = old_selection.GetNextSelection(
+        autocomplete_controller()->input(), autocomplete_controller()->result(),
+        controller_->client()->GetTemplateURLService(),
+        view_->AimButtonVisible(), direction, step);
+    // Pass through to native step if this is a keyword mode transition because
+    // the popup does not yet support keyword mode.
+    if (new_selection.state != OmniboxPopupSelection::LineState::KEYWORD_MODE) {
+      popup_view_->StepSelection(direction, step);
+      return;
+    }
   }
 
-  const auto direction =
-      down ? OmniboxPopupSelection::kForward : OmniboxPopupSelection::kBackward;
-  const auto step = page ? OmniboxPopupSelection::kAllLines
-                         : OmniboxPopupSelection::kWholeLine;
   StepPopupSelection(direction, step);
 }
 
 void OmniboxEditModel::OnTabPressed(bool shift) {
-  OmniboxPopupSelection::Direction direction =
+  const OmniboxPopupSelection::Direction direction =
       shift ? OmniboxPopupSelection::Direction::kBackward
             : OmniboxPopupSelection::Direction::kForward;
-  OmniboxPopupSelection::Step step = OmniboxPopupSelection::Step::kStateOrLine;
+  const OmniboxPopupSelection::Step step =
+      OmniboxPopupSelection::Step::kStateOrLine;
 
   if (popup_view_ && popup_view_->IsSelectionPopupControlled()) {
-    popup_view_->StepSelection(direction, step);
-    return;
+    const OmniboxPopupSelection old_selection = GetPopupSelection();
+    OmniboxPopupSelection new_selection = old_selection.GetNextSelection(
+        autocomplete_controller()->input(), autocomplete_controller()->result(),
+        controller_->client()->GetTemplateURLService(),
+        view_->AimButtonVisible(), direction, step);
+    // Pass through to native step if this is a keyword mode transition because
+    // the popup does not yet support keyword mode.
+    if (new_selection.state != OmniboxPopupSelection::LineState::KEYWORD_MODE) {
+      popup_view_->StepSelection(direction, step);
+      return;
+    }
   }
 
   StepPopupSelection(direction, step);
@@ -1912,7 +1928,7 @@ OmniboxPopupSelection OmniboxEditModel::GetPopupSelection() const {
 void OmniboxEditModel::SetPopupSelection(OmniboxPopupSelection new_selection,
                                          bool reset_to_default,
                                          bool force_update_ui,
-                                         bool cancel_autocomplete) {
+                                         bool native_update) {
   DCHECK(popup_view_);
 
   // Special case for updating the focus ring around the AIM button.
@@ -1923,7 +1939,7 @@ void OmniboxEditModel::SetPopupSelection(OmniboxPopupSelection new_selection,
     return;
   }
 
-  if (cancel_autocomplete) {
+  if (native_update) {
     // Cancel the query so the matches don't change on the user.
     controller_->StopAutocomplete(/*clear_result=*/false);
   }
@@ -1938,8 +1954,10 @@ void OmniboxEditModel::SetPopupSelection(OmniboxPopupSelection new_selection,
   // `popup_selection_` to update themselves.
   const OmniboxPopupSelection old_selection = popup_selection_;
   popup_selection_ = new_selection;
-  observers_.Notify(&Observer::OnSelectionChanged, old_selection,
-                    popup_selection_);
+  if (native_update) {
+    observers_.Notify(&Observer::OnSelectionChanged, old_selection,
+                      popup_selection_);
+  }
 
   const AutocompleteMatch& match =
       popup_selection_.line == OmniboxPopupSelection::kNoMatch ||
