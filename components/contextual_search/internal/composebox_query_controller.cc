@@ -512,8 +512,8 @@ void ComposeboxQueryController::CreateSearchUrl(
 
       // Add the "cvst" lns mode param to the url.
       if (is_aim_search) {
-        search_url_request_info->additional_params.insert(
-            {kLnsModeQueryParameterKey, kLnsModeQueryParameterValue});
+        search_url_request_info->additional_params[kLnsModeQueryParameterKey] =
+            kLnsModeQueryParameterValue;
       }
 
       // Get the encoded visual search interaction log data.

@@ -4570,6 +4570,46 @@ TEST_F(ComposeboxQueryControllerTest,
 }
 
 TEST_F(ComposeboxQueryControllerTest,
+       CreateSearchUrl_AimSearch_OverwritesLnsModeIfPresent) {
+  // Act: Start the session.
+  controller().InitializeIfNeeded();
+
+  // Assert: Validate cluster info request and state changes.
+  WaitForClusterInfo();
+
+  // Act: Start the file upload flow.
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  StartPdfFileUploadFlow(file_token,
+                         /*file_data=*/std::vector<uint8_t>());
+
+  // Assert: Validate file upload request and status changes.
+  WaitForFileUpload(file_token, lens::MimeType::kPdf);
+
+  // Act: Create the destination URL for the query.
+  std::unique_ptr<CreateSearchUrlRequestInfo> search_url_request_info =
+      std::make_unique<CreateSearchUrlRequestInfo>();
+  search_url_request_info->query_text = "hello";
+  search_url_request_info->search_url_type =
+      ComposeboxQueryController::SearchUrlType::kAim;
+  search_url_request_info->query_start_time = kTestQueryStartTime;
+  search_url_request_info->file_tokens.push_back(file_token);
+  // Add an existing lns_mode param with a different value.
+  search_url_request_info->additional_params[kLnsModeQueryParameterKey] =
+      "old_value";
+
+  base::test::TestFuture<GURL> url_future;
+  controller().CreateSearchUrl(std::move(search_url_request_info),
+                               url_future.GetCallback());
+  GURL aim_url = url_future.Take();
+
+  // Assert: lns_mode param is present and updated.
+  std::string lns_mode_value;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(aim_url, kLnsModeQueryParameterKey,
+                                         &lns_mode_value));
+  EXPECT_EQ(lns_mode_value, "cvst");
+}
+
+TEST_F(ComposeboxQueryControllerTest,
        CreateAddedInputs_IncludesFilesWithoutLensUsageIntent) {
   // Act: Start the session.
   controller().InitializeIfNeeded();
