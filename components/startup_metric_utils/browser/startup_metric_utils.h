@@ -200,6 +200,8 @@ class COMPONENT_EXPORT(STARTUP_METRIC_UTILS)
       base::TimeTicks begin_ticks,
       base::TimeTicks end_ticks);
 
+  void EmitBrowserWindowDisplayHistogram();
+
   // Mark as volatile to defensively make sure usage is thread-safe.
   // Note that at the time of this writing, access is only on the UI thread.
   volatile bool main_window_startup_interrupted_ = false;
@@ -219,6 +221,8 @@ class COMPONENT_EXPORT(STARTUP_METRIC_UTILS)
   bool is_privacy_sandbox_attestations_first_check_recorded_ = false;
 
   bool is_first_run_ = false;
+
+  bool is_browser_window_display_metric_emitted_ = false;
 };
 
 COMPONENT_EXPORT(STARTUP_METRIC_UTILS)
