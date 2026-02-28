@@ -199,54 +199,6 @@ CanvasRenderingContext::GetChildPaintRecord(Element* element) {
   return Host()->GetCanvasChildPaintRecord(element->GetDomNodeId());
 }
 
-std::optional<cc::PaintRecord> CanvasRenderingContext::GetElementPaintRecord(
-    Element* element,
-    std::optional<CullRect> cull_rect,
-    const String& func_name,
-    ExceptionState& exception_state) {
-  if (!IsDrawElementImageEligible(element, func_name, exception_state)) {
-    return std::nullopt;
-  }
-
-  PaintRecordBuilder builder;
-  LayoutBox* layout_box = element->GetLayoutBox();
-  // All drawn elements should have their own stacking contexts.
-  CHECK(layout_box->HasLayer());
-  CHECK(layout_box->IsStacked());
-  PaintLayer* layer = layout_box->EnclosingLayer();
-
-  if (!cull_rect) {
-    auto box_rect =
-        gfx::Rect(ToCeiledSize(layer->GetLayoutBox()->StitchedSize()));
-    cull_rect.emplace(box_rect);
-  }
-
-  OverriddenCullRectScope cull_rect_scope(*layer, *cull_rect,
-                                          /*disable_expansion*/ true);
-
-  PaintLayerPainter paint_layer_painter = PaintLayerPainter(*layer);
-  paint_layer_painter.Paint(
-      builder.Context(),
-      PaintFlag::kPrivacyPreserving | PaintFlag::kOmitCompositingInfo);
-
-  // Use the drawn element's local property tree state to start drawing, but
-  // then modify this to include effects and clips between the drawn element
-  // and the canvas element. This will exclude transforms above the local
-  // border box state (e.g., css transform is ignored), but will include effects
-  // (e.g., css filter is not ignored).
-  PropertyTreeState property_tree_state = layer->GetLayoutBox()
-                                              ->FirstFragment()
-                                              .LocalBorderBoxProperties()
-                                              .Unalias();
-  HTMLCanvasElement* canvas_element = static_cast<HTMLCanvasElement*>(Host());
-  const auto& canvas_fragment = canvas_element->GetLayoutBox()->FirstFragment();
-  property_tree_state.SetEffect(canvas_fragment.ContentsEffect().Unalias());
-  property_tree_state.SetClip(canvas_fragment.ContentsClip().Unalias());
-
-  cc::PaintRecord paint_record = builder.EndRecording(property_tree_state);
-  return paint_record;
-}
-
 scoped_refptr<StaticBitmapImage> CanvasRenderingContext::GetElementImage(
     Element* element,
     std::optional<float> sx,
@@ -260,23 +212,23 @@ scoped_refptr<StaticBitmapImage> CanvasRenderingContext::GetElementImage(
   element->GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint(
       DocumentUpdateReason::kCanvasDrawElementImage);
 
-  // Element size in physical coordinates.
-  gfx::SizeF box_size;
-  if (element->GetLayoutBox()) {
-    box_size = gfx::SizeF(element->GetLayoutBox()->StitchedSize());
-  }
-  gfx::RectF src_rect(box_size);
-  std::optional<CullRect> cull_rect;
-  if (sx && sy && swidth && sheight) {
-    float dpr = element->ComputedStyleRef().EffectiveZoom();
-    src_rect = gfx::RectF(*sx * dpr, *sy * dpr, *swidth * dpr, *sheight * dpr);
-    cull_rect.emplace(gfx::ToEnclosingRect(src_rect));
+  if (!IsDrawElementImageEligible(element, func_name, exception_state)) {
+    return nullptr;
   }
 
-  std::optional<cc::PaintRecord> paint_record =
-      GetElementPaintRecord(element, cull_rect, func_name, exception_state);
-  if (!paint_record) {
+  std::optional<CanvasChildPaintRecord> child_paint_record =
+      GetChildPaintRecord(element);
+  if (!child_paint_record) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "No cached paint record for element.");
     return nullptr;
+  }
+
+  // Element size in physical coordinates.
+  gfx::RectF src_rect(child_paint_record->box_size);
+  if (sx && sy && swidth && sheight) {
+    float dpr = child_paint_record->scale;
+    src_rect = gfx::RectF(*sx * dpr, *sy * dpr, *swidth * dpr, *sheight * dpr);
   }
 
   HTMLCanvasElement* canvas_element = static_cast<HTMLCanvasElement*>(Host());
@@ -308,7 +260,7 @@ scoped_refptr<StaticBitmapImage> CanvasRenderingContext::GetElementImage(
   SkiaPaintCanvas skia_paint_canvas(surface->getCanvas());
   skia_paint_canvas.scale(canvas_scale.x(), canvas_scale.y());
   skia_paint_canvas.translate(-src_rect.x(), -src_rect.y());
-  skia_paint_canvas.drawPicture(*paint_record);
+  skia_paint_canvas.drawPicture(child_paint_record->record);
   return UnacceleratedStaticBitmapImage::Create(surface->makeImageSnapshot());
 }
 

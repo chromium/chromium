@@ -70,7 +70,6 @@ class VideoFrame;
 namespace blink {
 
 class ComputedStyle;
-class CullRect;
 class Document;
 class Element;
 class ExceptionState;
@@ -345,12 +344,6 @@ class CORE_EXPORT CanvasRenderingContext
                                   ExceptionState& exception_state);
 
   std::optional<CanvasChildPaintRecord> GetChildPaintRecord(Element* element);
-
-  std::optional<cc::PaintRecord> GetElementPaintRecord(
-      Element*,
-      std::optional<CullRect> cull_rect,
-      const String& func_name,
-      ExceptionState&);
 
   std::optional<cc::PaintRecord> empty_recording_;
 
