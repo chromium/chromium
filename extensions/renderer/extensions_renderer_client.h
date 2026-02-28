@@ -67,6 +67,9 @@ class ExtensionsRendererClient {
   // (third_party/WebKit/public/web/WebFrame.h) for additional context.
   virtual int GetLowestIsolatedWorldId() const = 0;
 
+  // Returns true if activity logging is currently enabled.
+  virtual bool IsActivityLoggingEnabled() const;
+
   // Returns true if policy-driven activity logging is currently enabled.
   // This state is used to gate the attachment of DOMActivityLoggers to
   // extension V8 contexts.

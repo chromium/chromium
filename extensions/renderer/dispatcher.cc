@@ -989,10 +989,8 @@ void Dispatcher::ActivateExtension(const ExtensionId& extension_id) {
 
   active_extension_ids_.insert(extension_id);
 
-  if (activity_logging_enabled_) {
-    DOMActivityLogger::AttachToWorld(DOMActivityLogger::kMainWorldId,
-                                     extension_id);
-  }
+  DOMActivityLogger::AttachToWorldIfEnabled(DOMActivityLogger::kMainWorldId,
+                                            extension_id);
 
   InitOriginPermissions(extension);
 
@@ -1363,7 +1361,8 @@ void Dispatcher::SetActivityLoggingEnabled(bool enabled) {
   activity_logging_enabled_ = enabled;
   if (enabled) {
     for (const ExtensionId& id : active_extension_ids_) {
-      DOMActivityLogger::AttachToWorld(DOMActivityLogger::kMainWorldId, id);
+      DOMActivityLogger::AttachToWorldIfEnabled(DOMActivityLogger::kMainWorldId,
+                                                id);
     }
   }
   script_injection_manager_->set_activity_logging_enabled(enabled);

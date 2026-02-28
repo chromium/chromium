@@ -303,9 +303,9 @@ void ScriptInjection::InjectJs(std::set<std::string>* executing_scripts,
       blink_world_id =
           IsolatedWorldManager::GetInstance().GetOrCreateIsolatedWorldForHost(
               *injection_host_, execution_world, world_id);
-      if (injection_host_->id().type == mojom::HostID::HostType::kExtensions &&
-          log_activity_) {
-        DOMActivityLogger::AttachToWorld(blink_world_id, host_string_id);
+      if (injection_host_->id().type == mojom::HostID::HostType::kExtensions) {
+        DOMActivityLogger::AttachToWorldIfEnabled(blink_world_id,
+                                                  host_string_id);
       }
 
       break;

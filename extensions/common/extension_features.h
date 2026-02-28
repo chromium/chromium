@@ -248,6 +248,10 @@ BASE_DECLARE_FEATURE(kDisableDisableExtensionsExceptCommandLineSwitch);
 // flag `--extensions-on-extension-urls` flag.
 BASE_DECLARE_FEATURE(kDisableExtensionsOnChromeUrlsSwitch);
 
+// If enabled, high-risk extension DOM activity is collected and reported
+// for enterprise auditing.
+BASE_DECLARE_FEATURE(kEnterpriseExtensionDOMActivityTelemetry);
+
 // Changes the chrome.userScript API to be enabled by a per-extension toggle
 // rather than the developer mode toggle on chrome://extensions.
 BASE_DECLARE_FEATURE(kUserScriptUserExtensionToggle);

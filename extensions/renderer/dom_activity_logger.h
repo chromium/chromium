@@ -21,7 +21,7 @@ namespace extensions {
 
 // Used to log DOM API calls from within WebKit. The events are sent via IPC to
 // extensions::ActivityLog for recording and display.
-class DOMActivityLogger: public blink::WebDOMActivityLogger {
+class DOMActivityLogger : public blink::WebDOMActivityLogger {
  public:
   static const int kMainWorldId = 0;
   explicit DOMActivityLogger(const ExtensionId& extension_id);
@@ -31,12 +31,15 @@ class DOMActivityLogger: public blink::WebDOMActivityLogger {
 
   ~DOMActivityLogger() override;
 
-  // Check (using the WebKit API) if there is no logger attached to the world
-  // corresponding to world_id, and if so, construct a new logger and attach it.
+  // If activity logging is enabled, constructs a new logger (if
+  // required) and attaches it to the world specified by world_id.
   // world_id = 0 indicates the main world.
-  static void AttachToWorld(int32_t world_id, const ExtensionId& extension_id);
+  static void AttachToWorldIfEnabled(int32_t world_id,
+                                     const ExtensionId& extension_id);
 
- private:
+ protected:
+  virtual mojom::RendererHost* GetRendererHost(v8::Local<v8::Context> context);
+
   // blink::WebDOMActivityLogger implementation.
   // Marshals the arguments into an ExtensionHostMsg_DOMAction_Params and sends
   // it over to the browser (via IPC) for appending it to the extension activity
@@ -66,7 +69,15 @@ class DOMActivityLogger: public blink::WebDOMActivityLogger {
                 const blink::WebURL& url,
                 const blink::WebString& title) override;
 
-  mojom::RendererHost* GetRendererHost(v8::Local<v8::Context> context);
+ private:
+  static void AttachToWorld(int32_t world_id, const ExtensionId& extension_id);
+
+  void LogInternal(mojom::RendererHost* renderer_host,
+                   DomActionType::Type type,
+                   const std::string& api_name,
+                   base::ListValue args,
+                   const GURL& url,
+                   const std::u16string& title);
 
   // The id of the extension with which this logger is associated.
   ExtensionId extension_id_;

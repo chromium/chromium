@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "chrome/common/chrome_isolated_world_ids.h"
@@ -18,6 +19,7 @@
 #include "content/public/renderer/render_thread.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/renderer/dispatcher.h"
 #include "extensions/renderer/renderer_extension_registry.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
@@ -77,8 +79,12 @@ bool ChromeExtensionsRendererClient::IsPolicyActivityLoggingEnabled() const {
 
 void ChromeExtensionsRendererClient::SetPolicyActivityLoggingEnabled(
     bool enabled) {
-  policy_activity_logging_enabled_ = enabled;
-  if (enabled) {
+  policy_activity_logging_enabled_ =
+      enabled &&
+      base::FeatureList::IsEnabled(
+          extensions_features::kEnterpriseExtensionDOMActivityTelemetry);
+
+  if (policy_activity_logging_enabled_) {
     if (!policy_activity_log_filter_) {
       policy_activity_log_filter_ =
           std::make_unique<extensions::ChromePolicyActivityLogFilterDelegate>();
@@ -90,7 +96,7 @@ void ChromeExtensionsRendererClient::SetPolicyActivityLoggingEnabled(
 
 extensions::PolicyActivityLogFilter*
 ChromeExtensionsRendererClient::GetPolicyActivityLogFilter() {
-  if (!policy_activity_logging_enabled_) {
+  if (!IsPolicyActivityLoggingEnabled()) {
     return nullptr;
   }
   CHECK(policy_activity_log_filter_);

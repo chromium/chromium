@@ -399,6 +399,7 @@ source_set("unit_tests") {
     "bindings/listener_tracker_unittest.cc",
     "bindings/returns_async_builder.cc",
     "bindings/returns_async_builder.h",
+    "dom_activity_logger_unittest.cc",
     "extension_localization_throttle_unittest.cc",
     "extension_throttle_simulation_unittest.cc",
     "extension_throttle_test_support.cc",
