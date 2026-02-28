@@ -47,9 +47,9 @@ declare global {
 
 export interface HistorySyncedDeviceManagerElement {
   $: {
-    'menu': CrLazyRenderLitElement<CrActionMenuElement>,
-    'no-synced-tabs': HTMLElement,
-    'sign-in-guide': HTMLElement,
+    menu: CrLazyRenderLitElement<CrActionMenuElement>,
+    noSyncedTabs: HTMLElement,
+    signInGuide: HTMLElement,
   };
 }
 

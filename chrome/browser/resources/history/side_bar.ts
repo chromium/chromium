@@ -29,9 +29,9 @@ export interface FooterInfo {
 
 export interface HistorySideBarElement {
   $: {
-    'history': HTMLAnchorElement,
-    'menu': CrMenuSelectorElement,
-    'syncedTabs': HTMLElement,
+    history: HTMLAnchorElement,
+    menu: CrMenuSelectorElement,
+    syncedTabs: HTMLElement,
   };
 }
 

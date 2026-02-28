@@ -47,11 +47,11 @@
   }
 }
 
-#no-synced-tabs {
+#noSyncedTabs {
   height: 100%;
 }
 
-#sign-in-guide {
+#signInGuide {
   align-items: center;
   display: flex;
   flex-direction: column;

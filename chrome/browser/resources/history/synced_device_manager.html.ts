@@ -28,12 +28,12 @@ export function getHtml(this: HistorySyncedDeviceManagerElement) {
     </history-synced-device-card>
   `)}
 </div>
-<div id="no-synced-tabs" class="centered-message"
+<div id="noSyncedTabs" class="centered-message"
     ?hidden="${!this.showNoSyncedMessage_()}">
   ${this.noSyncedTabsMessage_()}
 </div>
 
-<div id="sign-in-guide"
+<div id="signInGuide"
     ?hidden="${!this.showSignInGuide_()
       || this.replaceSyncPromosWithSignInPromos_}">
   <div id="sync-promo-illustration"></div>
