@@ -51,6 +51,7 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/validation_message_client.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/bidi_paragraph.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/line_ending.h"
@@ -370,7 +371,11 @@ bool ListedElement::RecalcWillValidate() const {
   }
   return data_list_ancestor_state_ ==
              DataListAncestorState::kNotInsideDataList &&
-         !element.IsDisabledFormControl() && !is_readonly_;
+         !element.IsDisabledFormControl() &&
+         (!is_readonly_ ||
+          (RuntimeEnabledFeatures::
+               ElementSpecificReadOnlyConstraintValidationEnabled() &&
+           !ReadOnlyPreventsConstraintValidation()));
 }
 
 bool ListedElement::WillValidate() const {

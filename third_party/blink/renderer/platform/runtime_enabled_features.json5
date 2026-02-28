@@ -2308,6 +2308,14 @@
       status: "experimental",
     },
     {
+      // When enabled, the readonly attribute will prevent constraint validation
+      // only in some cases, depending on the element.
+      // This was added in M147 and can be removed after M149.
+      // https://issues.chromium.org/issues/486228104
+      name: "ElementSpecificReadOnlyConstraintValidation",
+      status: "stable",
+    },
+    {
       name: "EmailVerificationProtocol",
       public: true,
       status: "test",

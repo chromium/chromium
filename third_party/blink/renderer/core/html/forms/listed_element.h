@@ -210,6 +210,8 @@ class CORE_EXPORT ListedElement : public GarbageCollectedMixin {
   void UpdateWillValidateCache(
       WillValidateReason = WillValidateReason::kDefault);
   virtual bool RecalcWillValidate() const;
+  // https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#barred-from-constraint-validation
+  virtual bool ReadOnlyPreventsConstraintValidation() const { return false; }
 
   String CustomValidationMessage() const;
   // This is just a setter. This doesn't set |customError| flag.

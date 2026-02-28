@@ -270,6 +270,9 @@ class CORE_EXPORT TextControlElement : public HTMLFormControlElementWithState {
     return inner_editor_.Get();
   }
 
+  // https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#barred-from-constraint-validation
+  bool ReadOnlyPreventsConstraintValidation() const final { return true; }
+
  private:
   // Used by ComputeSelection() to specify which values are needed.
   enum ComputeSelectionFlags {

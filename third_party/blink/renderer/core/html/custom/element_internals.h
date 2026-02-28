@@ -135,6 +135,8 @@ class CORE_EXPORT ElementInternals : public ScriptWrappable,
   bool ShouldSaveAndRestoreFormControlState() const override;
   FormControlState SaveFormControlState() const override;
   void RestoreFormControlState(const FormControlState& state) override;
+  // https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#barred-from-constraint-validation
+  bool ReadOnlyPreventsConstraintValidation() const final { return true; }
 
   Member<HTMLElement> target_;
 
