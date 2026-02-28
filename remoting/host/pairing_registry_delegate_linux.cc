@@ -20,7 +20,7 @@
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
-#include "remoting/host/branding.h"
+#include "remoting/base/branding.h"
 
 namespace {
 

@@ -26,6 +26,7 @@
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "remoting/base/branding.h"
 #include "remoting/base/file_path_util_linux.h"
 #include "remoting/host/host_config.h"
 #include "remoting/host/usage_stats_consent.h"
@@ -53,7 +54,7 @@ base::FilePath GetConfigPath() {
     return current_process->GetSwitchValuePath(kHostConfigSwitchName);
   }
   std::string filename = GetHostHash() + ".json";
-  return GetConfigDirectoryPath().Append(filename);
+  return GetConfigDir().Append(filename);
 }
 
 bool GetScriptPath(base::FilePath* result) {

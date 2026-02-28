@@ -154,6 +154,7 @@ source_set("ipc_constants") {
     "//base",
     "//components/named_mojo_ipc_server",
     "//mojo/public/cpp/platform",
+    "//remoting/base",
     "//remoting/host/base",
   ]
 }
@@ -342,8 +343,6 @@ static_library("common") {
     "backoff_timer.cc",
     "backoff_timer.h",
     "basic_desktop_environment.cc",
-    "branding.cc",
-    "branding.h",
     "chromoting_host.cc",
     "chromoting_host.h",
     "chromoting_host_context.cc",

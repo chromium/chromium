@@ -34,12 +34,13 @@
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "remoting/base/auto_thread.h"
 #include "remoting/base/auto_thread_task_runner.h"
+#include "remoting/base/branding.h"
 #include "remoting/base/crash/crash_reporting_breakpad.h"
 #include "remoting/base/logging.h"
+#include "remoting/base/username.h"
 #include "remoting/host/base/host_exit_codes.h"
 #include "remoting/host/base/screen_resolution.h"
 #include "remoting/host/base/switches.h"
-#include "remoting/host/branding.h"
 #include "remoting/host/chromoting_host_services_server.h"
 #include "remoting/host/host_config.h"
 #include "remoting/host/host_main.h"
@@ -281,6 +282,9 @@ std::unique_ptr<DaemonProcess> DaemonProcess::Create(
     base::OnceClosure stopped_callback) {
   auto daemon_process = std::make_unique<DaemonProcessLinux>(
       caller_task_runner, io_task_runner, std::move(stopped_callback));
+
+  // TODO: crbug.com/475611769 - set ACL on the pairing registry directory for
+  // the network user.
 
   daemon_process->StartDesktopSessionFactory();
 

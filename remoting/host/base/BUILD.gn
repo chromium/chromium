@@ -20,7 +20,6 @@ source_set("base") {
     "screen_controls.h",
     "screen_resolution.h",
     "switches.h",
-    "username.h",
   ]
 
   sources = [
@@ -30,7 +29,6 @@ source_set("base") {
     "process_util.cc",
     "screen_resolution.cc",
     "switches.cc",
-    "username.cc",
   ]
 
   public_deps = [ "//remoting/base:logging" ]

@@ -1,13 +1,14 @@
-// Copyright 2013 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "remoting/host/base/username.h"
+#include "remoting/base/username.h"
 
 #include <vector>
 
 #include "base/logging.h"
 #include "base/notimplemented.h"
+#include "base/strings/cstring_view.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_POSIX)
@@ -84,5 +85,15 @@ std::string GetUsername() {
   return std::string();
 #endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)
 }
+
+#if BUILDFLAG(IS_LINUX)
+
+base::cstring_view GetNetworkProcessUsername() {
+  // Should be in sync with CRD_NETWORK_USER in
+  // //remoting/host/installer/linux/debian/postinst
+  return "_crd_network";
+}
+
+#endif  // BUILDFLAG(IS_LINUX)
 
 }  // namespace remoting

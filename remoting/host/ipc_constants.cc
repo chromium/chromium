@@ -11,7 +11,7 @@
 #include "build/build_config.h"
 #include "components/named_mojo_ipc_server/named_mojo_ipc_util.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
-#include "remoting/host/base/username.h"
+#include "remoting/base/username.h"
 
 namespace remoting {
 
@@ -137,12 +137,6 @@ GetLoginSessionReporterServerName() {
           named_mojo_ipc_server::WorkingDirectoryIndependentServerNameFromUTF8(
               kLoginSessionReporterIpcName));
   return *server_name;
-}
-
-base::cstring_view GetNetworkProcessUsername() {
-  // Should be in sync with CRD_NETWORK_USER in
-  // //remoting/host/installer/linux/debian/postinst
-  return "_crd_network";
 }
 
 #endif  // BUILDFLAG(IS_LINUX)

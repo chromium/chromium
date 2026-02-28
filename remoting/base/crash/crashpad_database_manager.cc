@@ -13,6 +13,7 @@
 #include "base/i18n/time_formatting.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
+#include "remoting/base/branding.h"
 #include "remoting/base/file_path_util_linux.h"
 #include "third_party/crashpad/crashpad/client/crash_report_database.h"
 #include "third_party/crashpad/crashpad/client/settings.h"
@@ -48,7 +49,9 @@ base::FilePath GetCrashpadDatabasePath() {
 #if BUILDFLAG(IS_WIN)
   base::PathService::Get(base::BasePathKey::DIR_ASSETS, &database_path);
 #else
-  database_path = GetConfigDirectoryPath();
+  // TODO: crbug.com/475611769 - fix multi-process Linux host. The current
+  // implementation will create one crash database per Linux user.
+  database_path = GetConfigDir();
 #endif
   return database_path.Append(kChromotingCrashpadDatabasePath);
 }

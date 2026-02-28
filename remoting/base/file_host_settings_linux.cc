@@ -4,13 +4,14 @@
 
 #include "remoting/base/file_host_settings.h"
 
+#include "remoting/base/branding.h"
 #include "remoting/base/file_path_util_linux.h"
 
 namespace remoting {
 
 base::FilePath FileHostSettings::GetSettingsFilePath() {
-  return (base::FilePath(
-      GetConfigDirectoryPath().Append(GetHostHash() + ".settings.json")));
+  return (
+      base::FilePath(GetConfigDir().Append(GetHostHash() + ".settings.json")));
 }
 
 }  // namespace remoting

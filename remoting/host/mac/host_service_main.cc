@@ -26,9 +26,9 @@
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "remoting/base/logging.h"
+#include "remoting/base/username.h"
 #include "remoting/host/base/host_exit_codes.h"
 #include "remoting/host/base/switches.h"
-#include "remoting/host/base/username.h"
 #include "remoting/host/mac/constants_mac.h"
 #include "remoting/host/version.h"
 

@@ -1,9 +1,9 @@
-// Copyright 2012 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef REMOTING_HOST_BRANDING_H_
-#define REMOTING_HOST_BRANDING_H_
+#ifndef REMOTING_BASE_BRANDING_H_
+#define REMOTING_BASE_BRANDING_H_
 
 #include "base/files/file_path.h"
 #include "build/build_config.h"
@@ -15,9 +15,10 @@ namespace remoting {
 extern const wchar_t kWindowsServiceName[];
 #endif
 
-// Returns the location of the host configuration directory.
+// Returns the a directory for storing chromoting config files. Depending on the
+// platform, different users may get different config directories.
 base::FilePath GetConfigDir();
 
 }  // namespace remoting
 
-#endif  // REMOTING_HOST_BRANDING_H_
+#endif  // REMOTING_BASE_BRANDING_H_

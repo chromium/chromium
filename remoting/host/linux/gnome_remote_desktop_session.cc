@@ -19,6 +19,7 @@
 #include "base/strings/string_split.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/expected.h"
+#include "remoting/base/branding.h"
 #include "remoting/base/file_path_util_linux.h"
 #include "remoting/base/logging.h"
 #include "remoting/host/base/switches.h"
@@ -44,7 +45,7 @@ constexpr ObjectPathCStr kScreenCastObjectPath = "/org/gnome/Mutter/ScreenCast";
 
 base::FilePath GetDisplayLayoutFilePath() {
   return (base::FilePath(
-      GetConfigDirectoryPath().Append(GetHostHash() + ".display_layout.pb")));
+      GetConfigDir().Append(GetHostHash() + ".display_layout.pb")));
 }
 
 std::unique_ptr<protocol::VideoLayout> CreateDefaultLayout() {
