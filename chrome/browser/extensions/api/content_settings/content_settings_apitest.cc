@@ -23,15 +23,12 @@
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/content_settings/core/browser/content_settings_uma_util.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
-#include "components/keep_alive_registry/keep_alive_types.h"
-#include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/permissions/permission_manager.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/common/content_switches.h"
@@ -47,6 +44,11 @@
 #include "extensions/test/test_extension_dir.h"
 #include "net/base/schemeful_site.h"
 #include "net/dns/mock_host_resolver.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "components/keep_alive_registry/keep_alive_types.h"
+#include "components/keep_alive_registry/scoped_keep_alive.h"
+#endif
 
 #if BUILDFLAG(ENABLE_PLUGINS)
 #include "content/public/browser/plugin_service.h"
@@ -73,24 +75,28 @@ class ExtensionContentSettingsApiTest : public ExtensionApiTest {
     // The browser might get closed later (and therefore be destroyed), so we
     // save the profile.
     profile_ = profile();
-
+#if !BUILDFLAG(IS_ANDROID)
     // Closing the last browser window also releases a KeepAlive. Make
     // sure it's not the last one, so the message loop doesn't quit
     // unexpectedly.
     keep_alive_ = std::make_unique<ScopedKeepAlive>(
         KeepAliveOrigin::BROWSER, KeepAliveRestartOption::DISABLED);
+#endif
+
     profile_keep_alive_ = std::make_unique<ScopedProfileKeepAlive>(
         profile_, ProfileKeepAliveOrigin::kBrowserWindow);
   }
 
   void TearDownOnMainThread() override {
     profile_keep_alive_.reset();
+#if !BUILDFLAG(IS_ANDROID)
     // BrowserProcess::Shutdown() needs to be called in a message loop, so we
     // post a task to release the keep alive, then run the message loop.
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&std::unique_ptr<ScopedKeepAlive>::reset,
                                   base::Unretained(&keep_alive_), nullptr));
     content::RunAllPendingInMessageLoop();
+#endif
 
     ExtensionApiTest::TearDownOnMainThread();
   }
@@ -273,7 +279,11 @@ class ExtensionContentSettingsApiTest : public ExtensionApiTest {
 
  private:
   raw_ptr<Profile, AcrossTasksDanglingUntriaged> profile_ = nullptr;
+
+#if !BUILDFLAG(IS_ANDROID)
+  // KeepAlive is not supported nor required on Android.
   std::unique_ptr<ScopedKeepAlive> keep_alive_;
+#endif
   std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive_;
 };
 
@@ -313,9 +323,14 @@ class ExtensionContentSettingsApiTestWithContextType
       const ExtensionContentSettingsApiTestWithContextType&) = delete;
 };
 
+// Android only supports MV3 and later, therefore don't need to test for
+// persistent background context.
+#if !BUILDFLAG(IS_ANDROID)
 INSTANTIATE_TEST_SUITE_P(PersistentBackground,
                          ExtensionContentSettingsApiTestWithContextType,
                          ::testing::Values(ContextType::kPersistentBackground));
+#endif
+
 INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          ExtensionContentSettingsApiTestWithContextType,
                          ::testing::Values(ContextType::kServiceWorker));

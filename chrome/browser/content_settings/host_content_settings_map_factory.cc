@@ -26,11 +26,11 @@
 #include "extensions/buildflags/buildflags.h"
 #include "ui/webui/webui_allowlist_provider.h"
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "base/trace_event/trace_event.h"
 #include "extensions/browser/api/content_settings/content_settings_custom_extension_provider.h"  // nogncheck
 #include "extensions/browser/api/content_settings/content_settings_service.h"  // nogncheck
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/content_settings/javascript_optimizer_provider_android.h"
@@ -70,7 +70,7 @@ HostContentSettingsMapFactory::HostContentSettingsMapFactory()
   DependsOn(TemplateURLServiceFactory::GetInstance());
 #endif
   DependsOn(OneTimePermissionsTrackerFactory::GetInstance());
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   DependsOn(extensions::ContentSettingsService::GetFactoryInstance());
 #endif
 #if BUILDFLAG(IS_CHROMEOS)
@@ -137,7 +137,7 @@ scoped_refptr<RefcountedKeyedService>
                                  std::move(component_extension_provider));
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   // These must be registered before before the HostSettings are passed over to
   // the IOThread.  Simplest to do this on construction.
   settings_map->RegisterProvider(
@@ -150,7 +150,7 @@ scoped_refptr<RefcountedKeyedService>
           // the case where profile->IsOffTheRecord() is true? And what is the
           // interaction with profile->IsGuestSession()?
           false));
-#endif // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
   supervised_user::FamilyLinkSettingsService* family_link_settings_service =
       supervised_user::FamilyLinkSettingsServiceFactory::GetForKey(

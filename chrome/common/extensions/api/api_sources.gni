@@ -14,6 +14,7 @@ assert(enable_extensions_core)
 schema_sources_ = [
   "activity_log_private.json",
   "bookmarks.json",
+  "content_settings.json",
   "context_menus.json",
   "cookies.json",
   "debugger.json",
@@ -81,7 +82,6 @@ if (enable_extensions) {
     "bookmark_manager_private.json",
     "braille_display_private.idl",
     "command_line_private.json",
-    "content_settings.json",
     "crash_report_private.idl",
     "enterprise_reporting_private.idl",
     "proxy_override_rules_private.json",
