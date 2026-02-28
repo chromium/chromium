@@ -86,7 +86,8 @@ TEST_F(ParallelLaunchTest, SingleLaunch) {
   static_cast<BrokerServicesBase*>(broker)->SetBrokerServicesDelegateForTesting(
       std::unique_ptr<BrokerServicesDelegate>(delegate));
 
-  base::CommandLine cmd_line = sandbox::CreateCommandLineForTesting("wait");
+  base::CommandLine cmd_line =
+      WaitCommandTestRunner::CreateCommandLineForTesting();
 
   auto policy = broker->CreatePolicy();
   EXPECT_EQ(SBOX_ALL_OK, policy->GetConfig()->SetTokenLevel(USER_INTERACTIVE,
@@ -159,7 +160,8 @@ TEST_F(ParallelLaunchTest, ParallelLaunch) {
   static_cast<BrokerServicesBase*>(broker)->SetBrokerServicesDelegateForTesting(
       std::unique_ptr<BrokerServicesDelegate>(delegate));
 
-  base::CommandLine cmd_line = sandbox::CreateCommandLineForTesting("wait");
+  base::CommandLine cmd_line =
+      WaitCommandTestRunner::CreateCommandLineForTesting();
 
   base::RunLoop run_loop;
   int launches_remaining_count = 2;

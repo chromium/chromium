@@ -178,6 +178,12 @@ class TestRunnerBase {
   bool WaitForAllTargets();
 
  protected:
+  static base::CommandLine CreateCommandLine(std::string_view command,
+                                             base::span<const std::string> args,
+                                             SboxTestsState state,
+                                             bool no_sandbox,
+                                             bool legacy_command);
+
   TestRunnerBase(JobLevel job_level,
                  TokenLevel startup_token,
                  TokenLevel main_token);
@@ -279,6 +285,10 @@ class TestRunner final : public TestRunnerBase {
   base::Process target_process_;
 };
 
+// Declare built-in test commands.
+SBOX_TEST_DECLARE_COMMAND(WaitCommand);
+SBOX_TEST_DECLARE_COMMAND(PingCommand);
+
 // Returns the broker services.
 BrokerServices* GetBroker();
 
@@ -291,9 +301,6 @@ bool IsChildProcessForTesting();
 
 // Runs the given test on the target process.
 int DispatchCall();
-
-// Create a command line object for directly calling `SpawnTargetAsync`.
-base::CommandLine CreateCommandLineForTesting(std::string_view command);
 
 }  // namespace sandbox
 

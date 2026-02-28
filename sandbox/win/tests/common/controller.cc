@@ -14,8 +14,6 @@
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/memory/platform_shared_memory_region.h"
-#include "base/memory/read_only_shared_memory_region.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
@@ -31,8 +29,6 @@
 #include "base/test/test_future.h"
 #include "base/test/test_timeouts.h"
 #include "base/time/time.h"
-#include "base/unguessable_token.h"
-#include "base/win/scoped_handle.h"
 #include "base/win/windows_version.h"
 #include "sandbox/win/src/app_container.h"
 #include "sandbox/win/src/sandbox_factory.h"
@@ -87,78 +83,11 @@ class TargetTracker : public sandbox::BrokerServicesTargetTracker {
   }
 };
 
-int SharedMemoryCommand(base::span<const std::wstring> args) {
-  if (args.empty()) {
-    return SBOX_TEST_INVALID_PARAMETER;
-  }
-  size_t raw_handle;
-  if (!base::StringToSizeT(args[0], &raw_handle)) {
-    return SBOX_TEST_INVALID_PARAMETER;
-  }
-  // First extract the handle to the platform-native ScopedHandle.
-  base::win::ScopedHandle scoped_handle(reinterpret_cast<HANDLE>(raw_handle));
-  if (!scoped_handle.is_valid()) {
-    return SBOX_TEST_INVALID_PARAMETER;
-  }
-
-  std::string_view test_contents = "Hello World";
-  // Then convert to the low-level chromium region.
-  base::subtle::PlatformSharedMemoryRegion platform_region =
-      base::subtle::PlatformSharedMemoryRegion::Take(
-          std::move(scoped_handle),
-          base::subtle::PlatformSharedMemoryRegion::Mode::kReadOnly,
-          test_contents.size(), base::UnguessableToken::Create());
-  // Finally wrap the low-level region in the shared memory API.
-  base::ReadOnlySharedMemoryRegion region =
-      base::ReadOnlySharedMemoryRegion::Deserialize(std::move(platform_region));
-  if (!region.IsValid()) {
-    return SBOX_TEST_INVALID_PARAMETER;
-  }
-  base::ReadOnlySharedMemoryMapping view = region.Map();
-  if (!view.IsValid()) {
-    return SBOX_TEST_INVALID_PARAMETER;
-  }
-  const std::string contents(view.GetMemoryAsSpan<char>().data());
-  if (contents != test_contents) {
-    return SBOX_TEST_INVALID_PARAMETER;
-  }
-  Sleep(INFINITE);
-  return SBOX_TEST_TIMED_OUT;
-}
-
 constexpr char kChildSwitch[] = "child";
 constexpr char kNoSandboxSwitch[] = "no-sandbox";
 constexpr char kStateSwitch[] = "state";
 constexpr char kCommandSwitch[] = "cmd";
 constexpr char kLegacySwitch[] = "legacy";
-
-base::CommandLine CreateCommandLine(std::string_view command,
-                                    base::span<const std::string> args,
-                                    SboxTestsState state,
-                                    bool no_sandbox,
-                                    bool legacy_command) {
-  // Get the path to the sandboxed process.
-  base::FilePath prog_name;
-  CHECK(base::PathService::Get(base::FILE_EXE, &prog_name));
-  base::CommandLine cmd_line(prog_name);
-  cmd_line.AppendSwitch(kChildSwitch);
-  if (no_sandbox) {
-    cmd_line.AppendSwitch(kNoSandboxSwitch);
-  }
-  if (legacy_command) {
-    cmd_line.AppendSwitch(kLegacySwitch);
-  }
-  DCHECK_LE(MAX_STATE, 10);
-  cmd_line.AppendSwitchASCII(kStateSwitch,
-                             base::NumberToString(static_cast<int>(state)));
-  cmd_line.AppendSwitchUTF8(kCommandSwitch, command);
-  cmd_line.AppendArg("--");
-  for (const auto& arg : args) {
-    cmd_line.AppendArg(arg);
-  }
-
-  return cmd_line;
-}
 
 std::wstring MakePathToSysBase(std::wstring_view name,
                                std::wstring_view sysname,
@@ -268,6 +197,36 @@ BrokerServices* GetBroker() {
                : nullptr;
   }();
   return instance;
+}
+
+// static
+base::CommandLine TestRunnerBase::CreateCommandLine(
+    std::string_view command,
+    base::span<const std::string> args,
+    SboxTestsState state,
+    bool no_sandbox,
+    bool legacy_command) {
+  // Get the path to the sandboxed process.
+  base::FilePath prog_name;
+  CHECK(base::PathService::Get(base::FILE_EXE, &prog_name));
+  base::CommandLine cmd_line(prog_name);
+  cmd_line.AppendSwitch(kChildSwitch);
+  if (no_sandbox) {
+    cmd_line.AppendSwitch(kNoSandboxSwitch);
+  }
+  if (legacy_command) {
+    cmd_line.AppendSwitch(kLegacySwitch);
+  }
+  DCHECK_LE(MAX_STATE, 10);
+  cmd_line.AppendSwitchASCII(kStateSwitch,
+                             base::NumberToString(static_cast<int>(state)));
+  cmd_line.AppendSwitchUTF8(kCommandSwitch, command);
+  cmd_line.AppendArg("--");
+  for (const auto& arg : args) {
+    cmd_line.AppendArg(arg);
+  }
+
+  return cmd_line;
 }
 
 TestRunnerBase::TestRunnerBase(JobLevel job_level,
@@ -469,19 +428,13 @@ int DispatchCall() {
   }
   auto args = cmd_line->GetArgs();
   // We hard code two tests to avoid dispatch failures.
-  if (command_name == "wait") {
+  if (command_name == sandbox::WaitCommandTestRunner::type::kTestName) {
     Sleep(INFINITE);
     return SBOX_TEST_TIMED_OUT;
   }
 
-  if (command_name == "ping") {
+  if (command_name == PingCommandTestRunner::type::kTestName) {
     return SBOX_TEST_PING_OK;
-  }
-
-  // If the caller shared a shared memory handle with us attempt to open it
-  // in read only mode and sleep infinitely if we succeed.
-  if (command_name == "shared_memory_handle") {
-    return SharedMemoryCommand(args);
   }
 
   int state_value;
@@ -536,11 +489,6 @@ int DispatchCall() {
   }
 
   return command.Run(args);
-}
-
-base::CommandLine CreateCommandLineForTesting(std::string_view command) {
-  return CreateCommandLine(command, {}, MIN_STATE, /*no_sandbox=*/false,
-                           /*legacy=*/true);
 }
 
 }  // namespace sandbox

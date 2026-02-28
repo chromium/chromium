@@ -88,8 +88,8 @@ bool VolumeSupportsACLs(const wchar_t* any_path) {
 
 // Tests if the suite is working properly.
 TEST(ValidationSuite, TestSuite) {
-  TestRunner runner;
-  ASSERT_EQ(SBOX_TEST_PING_OK, runner.RunTest(L"ping"));
+  PingCommandTestRunner runner;
+  ASSERT_EQ(SBOX_TEST_PING_OK, runner.RunTest());
 }
 
 // Tests if the file system is correctly protected by the sandbox.
