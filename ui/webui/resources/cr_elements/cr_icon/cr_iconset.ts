@@ -123,6 +123,10 @@ export class CrIconsetElement extends CrLitElement {
     if (contentViewBox) {
       svgClone.setAttribute('viewBox', contentViewBox);
     }
+    svgClone.style.display = 'block';
+    svgClone.style.height = '100%';
+    svgClone.style.width = '100%';
+    svgClone.style.pointerEvents = 'none';
     svgClone.appendChild(content);
     return svgClone;
   }

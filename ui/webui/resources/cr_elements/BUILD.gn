@@ -88,8 +88,7 @@ build_webui("build") {
   }
 
   if ((!is_android && !is_ios) || is_desktop_android) {
-    web_component_files += [ "cr_a11y_announcer/cr_a11y_announcer.ts" ]
-
+    static_files = [ "cr_a11y_announcer/cr_a11y_announcer.css" ]
     ts_files += [
       "cr_radio_button/cr_radio_button_mixin_lit.ts",
       "cr_search_field/cr_search_field_mixin_lit.ts",
@@ -99,6 +98,8 @@ build_webui("build") {
       # Web components files that either
       #  - don't have a corresponding .html file or
       #  - have a checked-in *.html.ts wrapper file instead of auto-generated
+      "cr_a11y_announcer/cr_a11y_announcer.html.ts",
+      "cr_a11y_announcer/cr_a11y_announcer.ts",
       "cr_collapse/cr_collapse.html.ts",
       "cr_collapse/cr_collapse.ts",
       "cr_drawer/cr_drawer.html.ts",

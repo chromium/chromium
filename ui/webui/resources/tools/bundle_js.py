@@ -174,6 +174,8 @@ def _bundle(out_folder, in_path, manifest_out_path, js_module_in_files,
       '[name].rollup.js',
       '--sourcemap',
       '--sourcemapExcludeSources',
+      '--importAttributesKey',
+      'with',
       '--config',
       rollup_config_file,
   ])

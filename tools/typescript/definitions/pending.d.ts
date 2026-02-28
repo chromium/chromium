@@ -155,3 +155,9 @@ declare namespace Intl {
         locales: string|string[], options?: DurationFormatOptions): string[],
   };
 }
+
+// See https://github.com/microsoft/TypeScript/issues/46135.
+declare module '*.css' {
+  const _default: CSSStyleSheet;
+  export default _default;
+}

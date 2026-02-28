@@ -40,12 +40,13 @@ function combinePaths(origin, source) {
  * @param {string} urlSrcPath The path that corresponds to the URL prefix.
  * @param {!Array<string>} excludes List of paths that should be excluded from
  *     bundling.
+ * @param {boolean} isCss Whether the file is a CSS file.
  * @return {string} The path to |source|. If |source| does not map to
  *     |urlSrcPath|, returns an empty string. If |source| maps to a location
  *     in |urlSrcPath| but is listed in |excludes|, returns the URL
  *     corresponding to |source|. Otherwise, returns the full path for |source|.
  */
-function getPathForUrl(source, origin, urlPrefix, urlSrcPath, excludes) {
+function getPathForUrl(source, origin, urlPrefix, urlSrcPath, excludes, isCss) {
   if (source === urlPrefix) {
     // Handle case where 'urlPrefix` matches the entire `source` URL and
     // therefore is not just a prefix, but a complete URL.
@@ -74,7 +75,8 @@ function getPathForUrl(source, origin, urlPrefix, urlSrcPath, excludes) {
     return '';
   }
 
-  if (excludes.includes(urlPrefix + pathFromUrl) ||
+  if (isCss ||
+      excludes.includes(urlPrefix + pathFromUrl) ||
       excludes.includes(schemeRelativeUrl + pathFromUrl)) {
     return urlPrefix + pathFromUrl;
   }
@@ -116,13 +118,16 @@ export default function plugin(
             `Invalid path (missing file extension) was found: ${source}`);
       }
 
+      const isCss = path.extname(source) === '.css';
+
       // Normalize origin paths to use forward slashes.
       if (origin) {
         origin = normalizeSlashes(origin);
       }
 
       for (const [url, path] of urlsToPaths) {
-        const resultPath = getPathForUrl(source, origin, url, path, excludes);
+        const resultPath =
+            getPathForUrl(source, origin, url, path, excludes, isCss);
         if (resultPath.includes('://') || resultPath.startsWith('//')) {
           return {id: resultPath, external: 'absolute'};
         } else if (resultPath) {
@@ -132,7 +137,7 @@ export default function plugin(
 
       // Check if the URL is an external path that isn't mapped.
       if (source.includes('://') || source.startsWith('//')) {
-        if (excludes.includes(source)) {
+        if (isCss || excludes.includes(source)) {
           return {id: source, external: 'absolute'};
         } else {
           this.error(`Invalid absolute path: ${source} is not in |excludes| ` +
@@ -149,7 +154,7 @@ export default function plugin(
           combinePaths(origin, source);
       if (fullSourcePath.startsWith(rootPath)) {
         const pathFromRoot = relativePath(rootPath, fullSourcePath);
-        if (excludes.includes(pathFromRoot)) {
+        if (isCss || excludes.includes(pathFromRoot)) {
           const url = new URL(pathFromRoot, hostUrl);
           return source.startsWith('/') ?
               {id: url.href, external: 'absolute'} :

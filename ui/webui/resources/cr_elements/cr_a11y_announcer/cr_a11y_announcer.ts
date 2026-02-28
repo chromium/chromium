@@ -5,6 +5,7 @@
 import {assert} from '//resources/js/assert.js';
 import {CustomElement} from '//resources/js/custom_element.js';
 
+import sheet from './cr_a11y_announcer.css' with {type : 'css'};
 import {getTemplate} from './cr_a11y_announcer.html.js';
 
 /**
@@ -61,6 +62,11 @@ export class CrA11yAnnouncerElement extends CustomElement {
 
   private currentTimeout_: number|null = null;
   private messages_: string[] = [];
+
+  constructor() {
+    super();
+    this.shadowRoot!.adoptedStyleSheets = [sheet];
+  }
 
   disconnectedCallback() {
     if (this.currentTimeout_ !== null) {

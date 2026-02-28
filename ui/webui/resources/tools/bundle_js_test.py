@@ -241,6 +241,20 @@ class BundleJsTest(unittest.TestCase):
     depfile_d = self._read_out_file('depfile.d')
     self._check_dep_file(['src/bar.js'], depfile_d)
 
+  def testSimpleBundleExcludesCss(self):
+    args = [
+        '--host',
+        'fake-host',
+        '--js_module_in_files',
+        'foo_with_css.js',
+    ]
+    self._run_bundle(args)
+
+    self._check_bundle_output('foo_with_css_excludes_css.rollup.js',
+                              'foo_with_css.rollup.js')
+    depfile_d = self._read_out_file('depfile.d')
+    self._check_dep_file(['src/foo.js'], depfile_d)
+    self.assertNotIn('src/foo.css', depfile_d)
 
 if __name__ == '__main__':
   unittest.main()

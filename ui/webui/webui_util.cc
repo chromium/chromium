@@ -65,8 +65,10 @@ void SetJSModuleDefaults(content::WebUIDataSource* source) {
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::FontSrc,
       base::StringPrintf("font-src %s://resources 'self';", scheme.c_str()));
-  // unsafe-inline is required for Polymer. Allow styles to be imported from
-  // //resources and //theme.
+  // unsafe-inline is required for Polymer and for CSS shims, which
+  // require <style> tags directly in the main .html file. Also
+  // required by some Lit elements that set style= in HTML.
+  // Allow styles to be imported from  //resources and //theme.
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::StyleSrc,
       base::StringPrintf(
