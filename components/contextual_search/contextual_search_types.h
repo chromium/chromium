@@ -89,7 +89,7 @@ struct FileInfo {
   base::Time selection_time;
 
   // The mime type of the file.
-  lens::MimeType mime_type;
+  lens::MimeType mime_type = lens::MimeType::kUnknown;
 
   // The upload status of the file.
   // Do not modify this field directly.
