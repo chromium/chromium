@@ -112,7 +112,8 @@ class ComposeboxQueryController
 
   // Creates the AddedInputs proto for the given file tokens.
   lens::AddedInputs CreateAddedInputs(
-      const std::vector<base::UnguessableToken>& file_tokens);
+      const std::vector<base::UnguessableToken>& file_tokens,
+      bool include_files_without_lens_usage_intent);
 
   // Returns the string representation of the mime type, for use in calculating
   // the AddedInputs proto.
