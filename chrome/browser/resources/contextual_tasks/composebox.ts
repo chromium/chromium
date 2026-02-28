@@ -283,6 +283,10 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
     }
   }
 
+  protected get showSuggestions_() {
+    return this.isZeroState;
+  }
+
   get showLensButton_() {
     //Lens should be hidden in the side panel if deep search is enabled.
     return this.isSidePanel && this.activeToolMode_ !== ToolMode.kDeepSearch;
