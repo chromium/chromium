@@ -23,7 +23,6 @@ export function getHtml(this: ContextualTasksAppElement) {
   `}
   <webview id="threadFrame" allowtransparency="on"
       partition="persist:contextual-tasks"
-      aria-hidden="${this.isZeroState_ && !this.isShownInTab_}"
       style="${this.getThreadFrameStyles()}">
   </webview>
   <ghost-loader id="ghostLoader"></ghost-loader>
