@@ -803,7 +803,7 @@ crbug.com/477575513 wpt_internal/html/canvas/drawElementImage/css-backdrop-filte
 crbug.com/477575513 wpt_internal/html/canvas/drawElementImage/nested-webgl-canvas.html [ Skip Timeout ]
 crbug.com/435609887 wpt_internal/html/canvas/drawElementImage/nested-canvas.html [ Skip Timeout ]
 crbug.com/435609887 wpt_internal/html/canvas/drawElementImage/nested-div-canvas.html [ Skip Timeout ]
-crbug.com/480074850 virtual/canvas-draw-element-in-subtree/draw-element-grandchild.html [ Skip Failure ]
+crbug.com/480074850 virtual/canvas-draw-element-in-subtree/draw-element-grandchild.html [ Failure Skip ]
 
 # WPT speculative-parsing tests failing
 crbug.com/1144176 external/wpt/html/syntax/speculative-parsing/generated/document-write/link-rel-alternate-stylesheet.tentative.sub.html [ Crash Failure ]
@@ -2873,7 +2873,7 @@ crbug.com/488071544 external/wpt/webrtc/RTCPeerConnection-getStats.https.html?re
 crbug.com/476344902 virtual/webui-browser/external/wpt/html/browsers/windows/nested-browsing-contexts/window-top.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
-external/wpt/webdriver/tests/bidi/emulation/set_network_conditions/user_contexts.py [ Failure ]
+crbug.com/488362582 external/wpt/webdriver/tests/bidi/emulation/set_network_conditions/user_contexts.py [ Failure ]
 crbug.com/488130147 [ Win ] external/wpt/WebCryptoAPI/encrypt_decrypt/aes_cbc.https.any.html [ Pass Timeout ]
 crbug.com/488130147 [ Win ] external/wpt/WebCryptoAPI/sign_verify/ecdsa.https.any.html [ Pass Timeout ]
 crbug.com/488171521 external/wpt/navigation-api/navigate-event/navigate-history-traversal-during-onnavigate-should-reject.html [ Timeout ]
