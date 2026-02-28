@@ -110,6 +110,7 @@ class ReadAnythingUntrustedPageHandler::DistillerDelegate
 
   void StartDistillation(dom_distiller::DomDistillerService* service,
                          content::WebContents* contents) {
+    start_time_ = base::TimeTicks::Now();
     // If existing distillation request, cancel it. This removes delegate as
     // observer of previous request and allow it to observe new request.
     viewer_handle_.reset();
@@ -125,6 +126,10 @@ class ReadAnythingUntrustedPageHandler::DistillerDelegate
   // dom_distiller::ViewRequestDelegate:
   void OnArticleReady(
       const dom_distiller::DistilledArticleProto* article_proto) override {
+    CHECK(!start_time_.is_null());
+    base::UmaHistogramMediumTimes(
+        "Accessibility.ReadAnything.TimeFromStartDistillationToOnArticleReady",
+        base::TimeTicks::Now() - start_time_);
     handler_->ProcessDistilledArticle(article_proto);
     viewer_handle_.reset();
   }
@@ -137,6 +142,7 @@ class ReadAnythingUntrustedPageHandler::DistillerDelegate
  private:
   raw_ptr<ReadAnythingUntrustedPageHandler> handler_;
   std::unique_ptr<dom_distiller::ViewerHandle> viewer_handle_;
+  base::TimeTicks start_time_;
 };
 
 namespace {

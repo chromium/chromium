@@ -3402,6 +3402,18 @@ even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
+<histogram
+    name="Accessibility.ReadAnything.TimeFromStartDistillationToOnArticleReady"
+    units="ms" expires_after="2027-03-01">
+  <owner>martinglopez@google.com</owner>
+  <owner>chrome-irm-devs@google.com</owner>
+  <summary>
+    Records the time it takes for the Readability distiller to complete a
+    distillation process. This starts when StartDistillation is called and ends
+    when OnArticleReady is called.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.ReadAnything.TimeFrom{Flow}StartedTo{Method}"
     units="ms" expires_after="2026-08-02">
   <owner>lwinston@google.com</owner>
