@@ -52,6 +52,11 @@ bool IsStateless() {
          base::FeatureList::IsEnabled(kAutofillPaymentsSheetStateless);
 }
 
+// Returns true if the payments bottom sheet is stateless.
+bool IsV3() {
+  return base::FeatureList::IsEnabled(kAutofillPaymentsSheetV3Ios);
+}
+
 }  // namespace
 
 @interface PaymentsSuggestionBottomSheetMediator () <
@@ -272,7 +277,7 @@ bool IsStateless() {
       [self logExitReason:kBadProvider];
       return;
     }
-  } else if (crossProvider.type != SuggestionProviderTypeAutofill) {
+  } else if (!IsV3() && crossProvider.type != SuggestionProviderTypeAutofill) {
     [self disableBottomSheetAndRefocus:YES];
     [self logExitReason:kBadProvider];
     return;
@@ -313,7 +318,7 @@ bool IsStateless() {
 
   // Attach the extra contextual information to the suggestion when using the
   // Stateless sheet.
-  if (IsStateless()) {
+  if (IsStateless() || IsV3()) {
     AutofillTabHelper* autofillTabHelper = [self autofillTabHelper];
     // At this point we know that there is a valid active webstate so there must
     // be an autofill tab helper. Also, the bottom sheet can only be triggered
