@@ -583,7 +583,8 @@ public class TopToolbarOverlayMediator {
 
     private void applyContentOffsetToModel(float contentOffset) {
         if (BrowserControlsUtils.isTopControlsRefactorOffsetEnabled()
-                && getControlsPosition() == ControlsPosition.TOP) {
+                && getControlsPosition() == ControlsPosition.TOP
+                && !mIsVisibilityManuallyControlled) {
             contentOffset = INVALID_CONTENT_OFFSET;
         }
         mModel.set(TopToolbarOverlayProperties.LEGACY_CONTENT_OFFSET, contentOffset);
