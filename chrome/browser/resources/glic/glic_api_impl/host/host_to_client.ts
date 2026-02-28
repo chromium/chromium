@@ -199,8 +199,12 @@ export class WebClientImpl implements WebClientInterface {
   notifySkillPreviewsChanged(skillPreviews: SkillPreviewMojo[]): void {
     this.sender.sendLatestWhenActive(
         'glicWebClientNotifySkillPreviewsChanged', {
-          skillPreviews: skillPreviews.map(
-              s => ({...s, source: s.source as number as SkillSource})),
+          skillPreviews:
+              skillPreviews.map(s => ({
+                                  ...s,
+                                  source: s.source as number as SkillSource,
+                                  isContextual: false,
+                                })),
         });
   }
 
@@ -208,8 +212,12 @@ export class WebClientImpl implements WebClientInterface {
       void {
     this.sender.sendLatestWhenActive(
         'glicWebClientNotifyContextualSkillPreviewsChanged', {
-          contextualSkillPreviews: skillPreviews.map(
-              s => ({...s, source: s.source as number as SkillSource})),
+          contextualSkillPreviews:
+              skillPreviews.map(s => ({
+                                  ...s,
+                                  source: s.source as number as SkillSource,
+                                  isContextual: true,
+                                })),
         });
   }
 

@@ -2901,9 +2901,9 @@ class ApiTestWithoutOpen extends ApiTestFixtureBase {
     assertDefined(this.host.getSkillPreviews);
     const skillPreviewsSequence = observeSequence(this.host.getSkillPreviews());
     let skills = await skillPreviewsSequence.waitFor(s => s.length === 2);
-    const user_skill_1 = skills.find(s => s.name === 'user_skill_1');
+    let user_skill_1 = skills.find(s => s.name === 'user_skill_1');
     assertDefined(user_skill_1);
-    const user_skill_2 = skills.find(s => s.name === 'user_skill_2');
+    let user_skill_2 = skills.find(s => s.name === 'user_skill_2');
     assertDefined(user_skill_2);
     await this.advanceToNextStep();
 
@@ -2922,8 +2922,15 @@ class ApiTestWithoutOpen extends ApiTestFixtureBase {
     assertEquals('contextual_skill_2', contextual_skill_2.name);
     assertEquals(
         'contextual_skill_description_2', contextual_skill_2.description);
-    assertDefined(skills.find(s => s.name === 'user_skill_1'));
-    assertDefined(skills.find(s => s.name === 'user_skill_2'));
+    user_skill_1 = skills.find(s => s.name === 'user_skill_1');
+    assertDefined(user_skill_1);
+    user_skill_2 = skills.find(s => s.name === 'user_skill_2');
+    assertDefined(user_skill_2);
+    // Verify that only the contextual skills are marked as contextual.
+    assertEquals(true, contextual_skill_1.isContextual);
+    assertEquals(true, contextual_skill_2.isContextual);
+    assertEquals(false, user_skill_1.isContextual);
+    assertEquals(false, user_skill_2.isContextual);
     await this.advanceToNextStep();
 
     // Verify that after a contextual skills update, the skills cache is updated
@@ -2936,8 +2943,14 @@ class ApiTestWithoutOpen extends ApiTestFixtureBase {
     assertEquals('contextual_skill_3', contextual_skill_3.name);
     assertEquals(
         'contextual_skill_description_3', contextual_skill_3.description);
-    assertDefined(skills.find(s => s.name === 'user_skill_1'));
-    assertDefined(skills.find(s => s.name === 'user_skill_2'));
+    user_skill_1 = skills.find(s => s.name === 'user_skill_1');
+    assertDefined(user_skill_1);
+    user_skill_2 = skills.find(s => s.name === 'user_skill_2');
+    assertDefined(user_skill_2);
+    // Verify that only the contextual skills are marked as contextual.
+    assertEquals(true, contextual_skill_3.isContextual);
+    assertEquals(false, user_skill_1.isContextual);
+    assertEquals(false, user_skill_2.isContextual);
   }
 }
 

@@ -2092,6 +2092,8 @@ export declare interface SkillPreview {
   source: SkillSource;
   /** The description of the skill. */
   description?: string;
+  /** Whether the skill is contextually relevant to the current tab. */
+  isContextual?: boolean;
 }
 
 /** Represents a single skill. */
