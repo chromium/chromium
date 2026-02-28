@@ -946,33 +946,8 @@ void ClientSideDetectionHost::PrimaryPageChanged(content::Page& page) {
   // ping back but only cancel the showing of the interstitial.
   weak_factory_.InvalidateWeakPtrs();
 
-  if (base::FeatureList::IsEnabled(kClientSideDetectionNewObservers)) {
-    did_first_visually_non_empty_paint_ = false;
-    on_first_contentful_paint_ = false;
-    trigger_model_request_sent_as_force_request_ = false;
-    return;
-  }
-
   trigger_model_request_sent_as_force_request_ = false;
   MaybeStartPreClassification(ClientSideDetectionType::TRIGGER_MODELS);
-}
-
-void ClientSideDetectionHost::DidFirstVisuallyNonEmptyPaint() {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionNewObservers)) {
-    did_first_visually_non_empty_paint_ = true;
-    if (on_first_contentful_paint_) {
-      MaybeStartPreClassification(ClientSideDetectionType::TRIGGER_MODELS);
-    }
-  }
-}
-
-void ClientSideDetectionHost::OnFirstContentfulPaintInPrimaryMainFrame() {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionNewObservers)) {
-    on_first_contentful_paint_ = true;
-    if (did_first_visually_non_empty_paint_) {
-      MaybeStartPreClassification(ClientSideDetectionType::TRIGGER_MODELS);
-    }
-  }
 }
 
 void ClientSideDetectionHost::OnPromptAdded() {
@@ -2226,11 +2201,6 @@ void ClientSideDetectionHost::AddMiscellaneousMetadataToClientPhishingRequest(
       base::FeatureList::IsEnabled(kConditionalImageResize)
           ? "ConditionalImageResize.Enabled"
           : "ConditionalImageResize.Control");
-
-  verdict->mutable_population()->add_finch_active_groups(
-      base::FeatureList::IsEnabled(kClientSideDetectionNewObservers)
-          ? "ClientSideDetectionNewObservers.Enabled"
-          : "ClientSideDetectionNewObservers.Control");
 
   raw_ptr<VerdictCacheManager> cache_manager = delegate_->GetCacheManager();
   if (cache_manager) {

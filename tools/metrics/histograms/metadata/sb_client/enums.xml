@@ -457,10 +457,6 @@ chromium-metrics-reviews@google.com.
       label="Phishing classifier callback is empty on classification
              completion"/>
   <int value="9" label="Phishing classification request is responded"/>
-  <int value="10" label="Renderer page layout has finished loading"/>
-  <int value="11"
-      label="Renderer page layout has finished loading again in middle of
-             classification"/>
 </enum>
 
 <enum name="TailoredWarningType">

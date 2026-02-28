@@ -153,8 +153,6 @@ class ClientSideDetectionHost
   void VibrationRequested() override;
   void OnTextCopiedToClipboard(content::RenderFrameHost* render_frame_host,
                                const std::u16string& copied_text) override;
-  void DidFirstVisuallyNonEmptyPaint() override;
-  void OnFirstContentfulPaintInPrimaryMainFrame() override;
 
   // permissions::PermissionRequestManager::Observer methods:
   void OnPromptAdded() override;
@@ -548,18 +546,6 @@ class ClientSideDetectionHost
   // DidToggleFullscreenModeForTab can be called for both entering and exiting
   // fullscreen.
   GURL last_fullscreen_url_;
-
-  // `did_first_visually_non_empty_paint_` becomes true after the first paint
-  // that is not the background color. `on_first_contentful_paint_` becomes
-  // true after the browser renders the first content from the DOM (e.g.,
-  // text or an image).
-  //
-  // Client-side detection for TRIGGER_MODELS will only start after both events
-  // have occurred. This ensures that classification doesn't begin before the
-  // page has meaningfully rendered. These flags are reset on each new main
-  // frame navigation.
-  bool did_first_visually_non_empty_paint_ = false;
-  bool on_first_contentful_paint_ = false;
 
   // Records the start time of when image embedding started.
   base::TimeTicks image_embedding_start_time_;

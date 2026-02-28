@@ -6172,28 +6172,6 @@
             ]
         }
     ],
-    "ClientSideDetectionNewObservers": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "ClassificationDelay": "0.0"
-                    },
-                    "enable_features": [
-                        "ClientSideDetectionNewObservers"
-                    ]
-                }
-            ]
-        }
-    ],
     "ClientSideDetectionOnDeviceModelLazyDownloadAndroid": [
         {
             "platforms": [
