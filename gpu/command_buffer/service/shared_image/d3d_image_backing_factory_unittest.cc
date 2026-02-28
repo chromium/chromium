@@ -1970,6 +1970,128 @@ TEST_P(D3DImageBackingFactoryTest,
   RunMultiplanarUploadAndReadback(/*use_update_subresource=*/true);
 }
 
+// Verifies that UploadFromMemory flushes pending Graphite commands. Draws blue
+// via Skia, then uploads red pixels. The final result should be red.
+TEST_P(D3DImageBackingFactoryTest, UploadAfterSkiaWrite) {
+  const auto format = viz::SinglePlaneFormat::kRGBA_8888;
+  const gfx::Size size(4, 4);
+  const auto color_space = gfx::ColorSpace::CreateSRGB();
+  const gpu::SharedImageUsageSet usage =
+      SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_DISPLAY_WRITE |
+      SHARED_IMAGE_USAGE_CPU_UPLOAD;
+  const auto mailbox = Mailbox::Generate();
+
+  auto owned_backing = shared_image_factory_->CreateSharedImage(
+      mailbox, format, kNullSurfaceHandle, size, color_space,
+      kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage, "TestLabel",
+      /*is_thread_safe=*/false);
+  ASSERT_TRUE(owned_backing);
+  SharedImageBacking* backing = owned_backing.get();
+
+  auto factory_ref = shared_image_manager_.Register(std::move(owned_backing),
+                                                    memory_type_tracker_.get());
+  ASSERT_TRUE(factory_ref);
+
+  // Write blue via Skia.
+  {
+    auto skia_representation =
+        shared_image_representation_factory_->ProduceSkia(mailbox,
+                                                          context_state_);
+    ASSERT_TRUE(skia_representation);
+
+    auto scoped_write_access = skia_representation->BeginScopedWriteAccess(
+        /*begin_semaphores=*/nullptr, /*end_semaphores=*/nullptr,
+        SharedImageRepresentation::AllowUnclearedAccess::kYes);
+    ASSERT_TRUE(scoped_write_access);
+
+    SkCanvas* canvas = scoped_write_access->surface()->getCanvas();
+    canvas->clear(SkColors::kBlue);
+    context_state_->FlushWriteAccess(scoped_write_access.get());
+    skia_representation->SetCleared();
+  }
+
+  // Upload red pixels. This should flush any pending Graphite commands first,
+  // then overwrite the texture with red.
+  const size_t num_pixels = size.width() * size.height();
+  std::vector<uint8_t> red_pixels(num_pixels * 4);
+  for (size_t i = 0; i < num_pixels; i++) {
+    red_pixels[i * 4 + 0] = 255;
+    red_pixels[i * 4 + 1] = 0;
+    red_pixels[i * 4 + 2] = 0;
+    red_pixels[i * 4 + 3] = 255;
+  }
+  auto info = SkImageInfo::Make(size.width(), size.height(),
+                                kRGBA_8888_SkColorType, kPremul_SkAlphaType,
+                                color_space.ToSkColorSpace());
+  std::vector<SkPixmap> pixmaps = {
+      SkPixmap(info, red_pixels.data(), info.minRowBytes())};
+  ASSERT_TRUE(backing->UploadFromMemory(pixmaps));
+
+  // Verify the final color is red.
+  CheckSkiaPixels(mailbox, size, {255, 0, 0, 255});
+}
+
+// Verifies that ReadbackToMemory flushes pending Graphite commands. Draws blue
+// via Skia, then reads back. The result should be blue.
+TEST_P(D3DImageBackingFactoryTest, ReadbackAfterSkiaWrite) {
+  const auto format = viz::SinglePlaneFormat::kRGBA_8888;
+  const gfx::Size size(4, 4);
+  const auto color_space = gfx::ColorSpace::CreateSRGB();
+  const gpu::SharedImageUsageSet usage =
+      SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_DISPLAY_WRITE |
+      SHARED_IMAGE_USAGE_CPU_READ;
+  const auto mailbox = Mailbox::Generate();
+
+  auto owned_backing = shared_image_factory_->CreateSharedImage(
+      mailbox, format, kNullSurfaceHandle, size, color_space,
+      kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage, "TestLabel",
+      /*is_thread_safe=*/false);
+  ASSERT_TRUE(owned_backing);
+  SharedImageBacking* backing = owned_backing.get();
+
+  auto factory_ref = shared_image_manager_.Register(std::move(owned_backing),
+                                                    memory_type_tracker_.get());
+  ASSERT_TRUE(factory_ref);
+
+  // Write blue via Skia.
+  {
+    auto skia_representation =
+        shared_image_representation_factory_->ProduceSkia(mailbox,
+                                                          context_state_);
+    ASSERT_TRUE(skia_representation);
+
+    auto scoped_write_access = skia_representation->BeginScopedWriteAccess(
+        /*begin_semaphores=*/nullptr, /*end_semaphores=*/nullptr,
+        SharedImageRepresentation::AllowUnclearedAccess::kYes);
+    ASSERT_TRUE(scoped_write_access);
+
+    SkCanvas* canvas = scoped_write_access->surface()->getCanvas();
+    canvas->clear(SkColors::kBlue);
+    context_state_->FlushWriteAccess(scoped_write_access.get());
+    skia_representation->SetCleared();
+  }
+
+  // Read back pixels. This should flush any pending Graphite commands first,
+  // then read the correct blue data from the texture.
+  const size_t num_pixels = size.width() * size.height();
+  std::vector<uint8_t> readback_pixels(num_pixels * 4, 0);
+  auto info = SkImageInfo::Make(size.width(), size.height(),
+                                kRGBA_8888_SkColorType, kPremul_SkAlphaType,
+                                color_space.ToSkColorSpace());
+  std::vector<SkPixmap> pixmaps = {
+      SkPixmap(info, readback_pixels.data(), info.minRowBytes())};
+  ASSERT_TRUE(backing->ReadbackToMemory(pixmaps));
+
+  // Verify every pixel is blue (RGBA: 0, 0, 255, 255).
+  const uint8_t kExpectedColor[] = {0, 0, 255, 255};  // Blue
+  for (size_t i = 0; i < num_pixels; ++i) {
+    for (size_t j = 0; j < 4; ++j) {
+      ASSERT_EQ(readback_pixels[i * 4 + j], kExpectedColor[j])
+          << "Mismatch at pixel " << i << " component " << j;
+    }
+  }
+}
+
 TEST_P(D3DImageBackingFactoryTest, CanCreateScanoutBacking) {
   const gfx::Size arbitrary_size = gfx::Size(4, 4);
 

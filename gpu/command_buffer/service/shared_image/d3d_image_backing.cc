@@ -627,6 +627,10 @@ bool D3DImageBacking::UploadFromMemory(const std::vector<SkPixmap>& pixmaps) {
   AutoLock auto_lock(this);
   DCHECK_EQ(pixmaps.size(), static_cast<size_t>(format().NumberOfPlanes()));
 
+  // Flush any previously deferred Graphite commands before uploading to the
+  // D3D11 texture to ensure correct ordering.
+  FlushGraphiteCommandsIfNeeded();
+
   if (use_update_subresource1_ && CanUseUpdateSubresource(pixmaps)) {
     CHECK(texture_d3d11_device_);
     Microsoft::WRL::ComPtr<ID3D11DeviceContext> device_context;
@@ -687,6 +691,9 @@ bool D3DImageBacking::UploadFromMemory(const std::vector<SkPixmap>& pixmaps) {
 
 bool D3DImageBacking::CopyToStagingTexture() {
   TRACE_EVENT0("gpu", "D3DImageBacking::CopyToStagingTexture");
+  // Flush any previously deferred Graphite commands to ensure the readback
+  // doesn't contain stale data.
+  FlushGraphiteCommandsIfNeeded();
   ID3D11Texture2D* staging_texture = GetOrCreateStagingTexture();
   if (!staging_texture) {
     return false;
