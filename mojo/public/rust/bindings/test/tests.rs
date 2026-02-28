@@ -390,7 +390,7 @@ fn test_disconnect_handlers() {
     let _receiver = pending_receiver.bind_with_options(
         SaturatingMathService {},
         None,
-        Some(Box::new(move || (quit_loop)())),
+        Some(Box::new(quit_loop)),
     );
     drop(pending_remote);
 
@@ -402,7 +402,7 @@ fn test_disconnect_handlers() {
 
     // Test Receiver disconnect handler
     let (pending_remote, pending_receiver) = PendingRemote::<dyn MathService>::new_pipe().unwrap();
-    let _remote = pending_remote.bind_with_options(None, Some(Box::new(move || (quit_loop)())));
+    let _remote = pending_remote.bind_with_options(None, Some(Box::new(quit_loop)));
     drop(pending_receiver);
 
     run_loop.run();

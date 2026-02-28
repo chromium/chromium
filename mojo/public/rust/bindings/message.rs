@@ -40,7 +40,7 @@ impl MojomMessage {
     pub fn from_raw(msg: &RawMojoMessage) -> ParsingResult<Self> {
         // FOR_RELEASE: Make sure any MojoErrors are handled gracefully.
         let (raw_bytes, handles) = msg.read_data().unwrap();
-        let (remaining_bytes, header) = MessageHeader::deserialize(&raw_bytes)?;
+        let (remaining_bytes, header) = MessageHeader::deserialize(raw_bytes)?;
         // FOR_RELEASE: Hopefully once we make our MojomMessage type better we
         // can avoid calling to_vec here.
         let payload = remaining_bytes.to_vec();
