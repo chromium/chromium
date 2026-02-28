@@ -77821,6 +77821,19 @@
         {}
        ]
       ],
+      "align-out-of-flow-only-content.html": [
+       "cd7750b8cdd29b341f5bf3663a512305fd6e0763",
+       [
+        null,
+        [
+         [
+          "/css/css-align/abspos/align-out-of-flow-only-content-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "align-self-static-position-001.html": [
        "1ff73ef116d9d59786bf91c73c546a3f0f7e89df",
        [
@@ -161652,6 +161665,19 @@
         [
          [
           "/css/css-highlight-api/painting/custom-highlight-painting-invalidation-007-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "custom-highlight-painting-line-wrap-001.html": [
+       "8a9bbeb1c1ef87e5289f741f69bcdf7d94f5a7f3",
+       [
+        null,
+        [
+         [
+          "/css/css-highlight-api/painting/custom-highlight-painting-line-wrap-001-ref.html",
           "=="
          ]
         ],
@@ -270732,6 +270758,45 @@
        {}
       ]
      ],
+     "attr-namespace-non-existing.html": [
+      "c1abc431e655ed37566264e42b66f20632ee2bb2",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "attr-namespace-valid.xhtml": [
+      "f5fdc184942b20cf98c2d92c08459944ba2f086a",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "attr-namespace-wildcard.html": [
+      "f9be5a7d8f46b6fdadac10751423f5b7d95cb733",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "attr-notype-fallback.html": [
       "b88f3de4b571136c53c74486e6b63682bbd3291c",
       [
@@ -281877,6 +281942,19 @@
         [
          [
           "/css/css-viewport/zoom/svg-path-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "svg-stroke-width.html": [
+       "ffc70ccad80f9497309ee0cabd445356bde95967",
+       [
+        null,
+        [
+         [
+          "/css/css-viewport/zoom/svg-stroke-width-ref.html",
           "=="
          ]
         ],
@@ -325919,7 +325997,7 @@
          ]
         ],
         "select-explicit-size.html": [
-         "71c77d266d94feb2fd80837e3aa47bdfe2348cd9",
+         "970c1ebbc8561daad21c88c72d94f431e2b204bb",
          [
           null,
           [
@@ -325928,7 +326006,23 @@
             "=="
            ]
           ],
-          {}
+          {
+           "fuzzy": [
+            [
+             null,
+             [
+              [
+               0,
+               2
+              ],
+              [
+               0,
+               1
+              ]
+             ]
+            ]
+           ]
+          }
          ]
         ],
         "select-font-size.html": [
@@ -360520,6 +360614,10 @@
        "fd7093f98748709d0f6d03c9dc9993a7a1447446",
        []
       ],
+      "align-out-of-flow-only-content-ref.html": [
+       "7c69ac3bca6ef7190b7d2fb5c1ab0416bbf4ffa4",
+       []
+      ],
       "align-self-static-position-001-ref.html": [
        "94d0b43b2127080e961be8a7277865e2b6013d88",
        []
@@ -382844,6 +382942,10 @@
       ],
       "custom-highlight-painting-invalidation-007-ref.html": [
        "88f3d0f3d65cf46cc56fae34166d6c38db170eb2",
+       []
+      ],
+      "custom-highlight-painting-line-wrap-001-ref.html": [
+       "f60a246c908470e1585050ac57eafd3187a3d733",
        []
       ],
       "custom-highlight-painting-overlapping-highlights-001-ref.html": [
@@ -406686,6 +406788,10 @@
       ],
       "svg-ref.html": [
        "f5f349517c114b76e6a59b8eca4b5041a4e00e4f",
+       []
+      ],
+      "svg-stroke-width-ref.html": [
+       "14980cb77c5a2b324a1ba888fe72b04f0a7a3c0e",
        []
       ],
       "svg-transform-ref.html": [
@@ -544824,6 +544930,20 @@
        {}
       ]
      ],
+     "select-as-flex-item-child-with-overflow.html": [
+      "394eb00e954141bcfe357772ae9ad278b9886144",
+      [
+       null,
+       {}
+      ]
+     ],
+     "select-as-flex-item-with-overflow.html": [
+      "d53c5309ef384d7e31d4c9cb044835238b332fff",
+      [
+       null,
+       {}
+      ]
+     ],
      "shrinking-column-flexbox.html": [
       "680dc7eb7f36e508437fab444660d58d03f00bfe",
       [
@@ -574684,7 +574804,7 @@
        ]
       ],
       "svg-computed-style.html": [
-       "fe7b69ac1544f4c3836133c915b5e8a747d5daf2",
+       "03df4792fb299ce3623a01820e44d16bb5209af8",
        [
         null,
         {}
@@ -588066,6 +588186,13 @@
        {
         "timeout": "long"
        }
+      ]
+     ],
+     "Range-extractContents-dynamic-end.html": [
+      "71fcc9d7a4072dda74efa29f131600fad4e74622",
+      [
+       null,
+       {}
       ]
      ],
      "Range-extractContents.html": [
@@ -685356,7 +685483,7 @@
       "focusgroup": {
        "tentative": {
         "ax-role-inference-children.html": [
-         "04e3a7d819a21473c2d90c91cd5d251ad93095ed",
+         "a26b108d1b2dd380b3f7afa24b759206e0d4c95a",
          [
           null,
           {
@@ -685401,7 +685528,7 @@
         ],
         "backward-navigation": {
          "does-not-move-when-on-focusgroup-root.html": [
-          "97de0f7245df17bb3dbecbfadf826ccc9e25442a",
+          "00c7d5ca4a53caf88c82d172c8803725d8fbd797",
           [
            null,
            {
@@ -685410,7 +685537,7 @@
           ]
          ],
          "does-not-move-when-on-non-focusgroup-item.html": [
-          "bce137775608e3dd46ade6357ca3c80acb002303",
+          "c1f6dcb48b7aab579bbac29651412b2471946b3f",
           [
            null,
            {
@@ -685419,7 +685546,7 @@
           ]
          ],
          "does-not-move-when-only-one-item-and-wraps.html": [
-          "b31da027c9c19387a5c97f3f1733c87a27db2dee",
+          "d43146266b19f77a8182971b2600a3f1a6913d68",
           [
            null,
            {
@@ -685428,7 +685555,7 @@
           ]
          ],
          "does-not-move-when-only-one-item.html": [
-          "4bf74c3d452e8979fe90dd33f881711ffb716f99",
+          "1a54a0a0b68b72661951a5623245676dc324fc6f",
           [
            null,
            {
@@ -685437,7 +685564,7 @@
           ]
          ],
          "does-not-move-when-outside-focusgroup.html": [
-          "8bbe959f90fd5206cf158095a45889278761169c",
+          "3818bebfff0a55d5d9de4e053dada8a9351cd15d",
           [
            null,
            {
@@ -685446,7 +685573,7 @@
           ]
          ],
          "does-not-wrap-when-not-supported.html": [
-          "ea243d55da7eb231c82532ce2851387cddbd9b73",
+          "27c5bd3eff97d436cc8082e8e54a82aa1bcb38b7",
           [
            null,
            {
@@ -685502,7 +685629,7 @@
           ]
          },
          "moves-to-previous-item-and-skips-focusable-item.html": [
-          "979ec15ae5cde4d624129b42f00f1d89cd850bde",
+          "cf52044e23cefef35d11894b79ede46bdf04739d",
           [
            null,
            {
@@ -685511,7 +685638,7 @@
           ]
          ],
          "moves-to-previous-item.html": [
-          "bb9def8eefa771c13187f970b900e5476b46b438",
+          "fcc10ff46ebd2ceb4aac83475664302e871a33e3",
           [
            null,
            {
@@ -685520,7 +685647,7 @@
           ]
          ],
          "skips-non-focusgroup-subtree.html": [
-          "316fb9fb83b264b0523c41887c0a1f68b895cecb",
+          "06f2dea058a0ea8413156b38ee71756a72908a72",
           [
            null,
            {
@@ -685529,7 +685656,7 @@
           ]
          ],
          "skips-root-focusgroup-complex-case.html": [
-          "cf628ce988447882797576a0dc0bbc57a90458d5",
+          "1c800423a9cb440a2cb02c6b1a32a22fc399e626",
           [
            null,
            {
@@ -685538,7 +685665,7 @@
           ]
          ],
          "skips-root-focusgroup.html": [
-          "c3f27db4b01bc70a50e5a92bad6ff8341144d1a7",
+          "d87cc55af63a5fb0e784258719d490ebb193278a",
           [
            null,
            {
@@ -685594,7 +685721,7 @@
           ]
          },
          "wraps-successfully-complex-case.html": [
-          "6129ac6625b4230b99d973116368418fc5475ceb",
+          "d6454b059a1d4d6de3a442b10c7257a66db7539b",
           [
            null,
            {
@@ -685603,7 +685730,7 @@
           ]
          ],
          "wraps-successfully.html": [
-          "600daad1bf93f3317b8633aac4b2ce5e695d40dd",
+          "97d765a8e73c754dfc0893b00c508568056ba368",
           [
            null,
            {
@@ -685622,7 +685749,7 @@
          ]
         ],
         "behavior-tokens-comprehensive.html": [
-         "b2a6841333a93427c0768bacba9d35a7d8c35d14",
+         "0af5c4882f1485f0228a5eabe170d713bf42bbf6",
          [
           null,
           {
@@ -685632,7 +685759,7 @@
         ],
         "descendant-navigation": {
          "deeply-nested-items.html": [
-          "d66a9632d861ce30676179c899eedad0d45cebc0",
+          "0bb26224812d8ca407f41ace654e1e2d6b6613f1",
           [
            null,
            {
@@ -685641,7 +685768,7 @@
           ]
          ],
          "mixed-content-navigation.html": [
-          "a64820c8e229459e3a909dc9f170866c2794bfc0",
+          "dfce06e08a5069f34fe9814dfb916048a02a7d63",
           [
            null,
            {
@@ -685659,7 +685786,7 @@
           ]
          ],
          "various-element-types.html": [
-          "c1a7301a788b7c46dd79990946b36d38369a4030",
+          "0255cb31c62a5137f134ca7597a9f98b7fae18d7",
           [
            null,
            {
@@ -685668,7 +685795,7 @@
           ]
          ],
          "wrapping-with-descendants.html": [
-          "a1f1422c5461a087147db142efb3a32e7ca4b4eb",
+          "7e02373616f90749cd49881048922f1b72eecba5",
           [
            null,
            {
@@ -685679,7 +685806,7 @@
         },
         "forward-navigation": {
          "does-not-move-when-on-focusgroup-root.html": [
-          "a02151294768fad460d5240ee7c29227a4638e5b",
+          "f2ebe21afacd5c321ed1bb5517b83356e8b11ec1",
           [
            null,
            {
@@ -685688,7 +685815,7 @@
           ]
          ],
          "does-not-move-when-on-non-item.html": [
-          "f6d8ac2aa5343e56e7d8a07b312bf1e32dab043b",
+          "0c58bff90f705f198a73ed895a40ecc24ce12d02",
           [
            null,
            {
@@ -685697,7 +685824,7 @@
           ]
          ],
          "does-not-move-when-only-one-item-and-wraps.html": [
-          "34cd12360def9ba795cfe8bd98a516c838e9b0ca",
+          "290412894357da33a6f4d4648b12824e32f85f56",
           [
            null,
            {
@@ -685706,7 +685833,7 @@
           ]
          ],
          "does-not-move-when-only-one-item.html": [
-          "4e3dbf0b0a61e0b17edb8b05d50e061279935f0a",
+          "9373b00cd0d8b1488d4210f9d2ca56216b386b04",
           [
            null,
            {
@@ -685715,7 +685842,7 @@
           ]
          ],
          "does-not-move-when-outside-focusgroup.html": [
-          "446a170db144fc1abf4f33eba3c10bdc2475f9f4",
+          "59f06ec18db72705513e6870a55e9efc827e5714",
           [
            null,
            {
@@ -685724,7 +685851,7 @@
           ]
          ],
          "does-not-wrap-when-not-supported.html": [
-          "e2a79ebd33700a6cb296b1580770531dbe74175f",
+          "e453d095428b4625ffef71a8a8bb516537d14d16",
           [
            null,
            {
@@ -685771,7 +685898,7 @@
           ]
          ],
          "moves-to-next-item-and-skips-non-focusable.html": [
-          "221d1c36ed097898cdfe65cc6f99a087e07993be",
+          "8417daece39e7cd82dcee7fb86c9456b7ff4b883",
           [
            null,
            {
@@ -685780,7 +685907,7 @@
           ]
          ],
          "moves-to-next-item.html": [
-          "0072d8eb5f454ca7bd1ac6a1231d410f7f7db184",
+          "c43cbce2c11c3899a545dac8c87e12e6ece67d92",
           [
            null,
            {
@@ -685789,7 +685916,7 @@
           ]
          ],
          "nested-focusgroup-is-item-of-parent.html": [
-          "25912f34d410624496e17e256e4c2193576b0185",
+          "b1269b6b696d8896d438d1c508c592939fcf3cfc",
           [
            null,
            {
@@ -685798,7 +685925,7 @@
           ]
          ],
          "rtl-direction-reverses-inline.html": [
-          "8d093342343963e3d704e015ad3d477d61596c6b",
+          "5fb8ab16c832d5e360e6d55799f418965c501244",
           [
            null,
            {
@@ -685836,7 +685963,7 @@
           ]
          },
          "vertical-writing-mode.html": [
-          "0b25ea98c79097f2854ffae7fe98bb417b5b9caf",
+          "b376f12be446fd635ba49c737bbc85e75cc8e5f1",
           [
            null,
            {
@@ -685845,7 +685972,7 @@
           ]
          ],
          "wraps-successfully.html": [
-          "5e558a6851a982e2f5f01b454d5ade16fbd0991e",
+          "0d6cf9ba8881c61aec4883e9be52891ab4abb9e5",
           [
            null,
            {
@@ -686030,7 +686157,7 @@
         },
         "opt-out-barriers": {
          "complex-nested-opt-out.html": [
-          "413f8662e4e4870a7546e71aa465d76af6071974",
+          "bd3b3c1bd42ffa62833ae2a071adeed63fcd0f16",
           [
            null,
            {
@@ -686039,7 +686166,7 @@
           ]
          ],
          "none-creates-barriers.html": [
-          "b169ac6977e5aff3d3dbe02aa4f55e7c4bac2002",
+          "26cbfda22044323e84e45f6a4d566116880258be",
           [
            null,
            {
@@ -686133,7 +686260,7 @@
           ]
          ],
          "arrow-key-handler-nested-focusgroup.html": [
-          "74e28106b45d07dc2282ca2b920f3afc9a450d3f",
+          "15c8dc822d03df659b5a6aaeabcf514c1bc67f25",
           [
            null,
            {
@@ -686151,7 +686278,7 @@
           ]
          ],
          "arrow-key-handler-scrollable-container.html": [
-          "6b69441b481293f2a3af1ec9ad4725deddcd30dd",
+          "6e61344a70491ce553af92726c8c2100fada4107",
           [
            null,
            {
@@ -686160,7 +686287,7 @@
           ]
          ],
          "arrow-key-handler-tab-escape.html": [
-          "fbe52722328e5387bb1957a30a345bffb61d7891",
+          "1e4beb3fe923baa60605b8c9a23f7cf96fe14dff",
           [
            null,
            {
@@ -686187,7 +686314,7 @@
           ]
          ],
          "basic-tab-behavior.html": [
-          "e090232618781ccdc0ef0a90df180f8a1ae924fe",
+          "f53054652b279b1833164757bdb28d608582b4ac",
           [
            null,
            {
@@ -686196,7 +686323,7 @@
           ]
          ],
          "dynamic-changes.html": [
-          "77b92f5002589094b60dea686fe56f979721c4a3",
+          "c5b17847d778b2d8f91b268c1ce29bb0dbd861ce",
           [
            null,
            {
@@ -686214,7 +686341,7 @@
           ]
          ],
          "focusgroup-segments.html": [
-          "53f47d248dffcd89353149637194e6be806bbdf6",
+          "b72196cafd3a0d20a9a5c97b33af0dd08bf7e23a",
           [
            null,
            {
@@ -686223,7 +686350,7 @@
           ]
          ],
          "guaranteed-tab-stop-priority.html": [
-          "2bbf50ee0ba19a2ee39c648c9e557f238d79e699",
+          "5bc85e639174230ecaf820a7bba365305b311825",
           [
            null,
            {
@@ -686232,7 +686359,7 @@
           ]
          ],
          "memory-behavior.html": [
-          "d04706e94b45b93adc34627280211225105fa10c",
+          "269afcef98cd4152980ded369a52b876ef38ef89",
           [
            null,
            {
@@ -686241,7 +686368,7 @@
           ]
          ],
          "nested-focusgroups.html": [
-          "15ea05eda65803a02d11c3ed6250543c731ae079",
+          "6ca62a35e57747ed9d19eb2999e7e124f1dad00c",
           [
            null,
            {
@@ -686261,7 +686388,7 @@
           ]
          ],
          "shadow-nested-scope.html": [
-          "35b4b68d04c29eb08caabf673b09a11c01507cff",
+          "cf4c0771b255790ea4ff909a7da9a59f332fd6ce",
           [
            null,
            {
@@ -696516,7 +696643,7 @@
          ]
         ],
         "switch-picker-appearance.html": [
-         "272ebae2186cc67487a428f230181dffbe4fb549",
+         "9abb8d6132fb3fb0a271c99d12e75ffedd10fbe3",
          [
           null,
           {
