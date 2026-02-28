@@ -174,8 +174,6 @@ void SessionStorageImpl::BindStorageArea(
 }
 
 void SessionStorageImpl::CreateNamespace(const std::string& namespace_id) {
-  CHECK_NE(connection_state_, CONNECTION_IN_PROGRESS,
-           base::NotFatalUntil::M146);
   if (namespaces_.find(namespace_id) != namespaces_.end())
     return;
 
@@ -187,8 +185,6 @@ void SessionStorageImpl::CloneNamespace(
     const std::string& clone_from_namespace_id,
     const std::string& clone_to_namespace_id,
     mojom::SessionStorageCloneType clone_type) {
-  CHECK_NE(connection_state_, CONNECTION_IN_PROGRESS,
-           base::NotFatalUntil::M146);
   if (namespaces_.find(clone_to_namespace_id) != namespaces_.end()) {
     // Non-immediate clones expect to be paired with a |Clone| from the mojo
     // namespace object. If that clone has already happened, then we don't need
@@ -224,8 +220,8 @@ void SessionStorageImpl::CloneNamespace(
             clone_to_namespace_id);
       } else if (metadata_.namespace_storage_key_map().contains(
                      clone_from_namespace_id)) {
-        CHECK_EQ(connection_state_, CONNECTION_FINISHED,
-                 base::NotFatalUntil::M146);
+        CHECK_EQ(connection_state_, CONNECTION_FINISHED);
+
         // The namespace exists on disk but is not in-use, so do the appropriate
         // metadata operations to clone the namespace and set up the new object.
         auto source_namespace_entry =
@@ -254,8 +250,6 @@ void SessionStorageImpl::CloneNamespace(
 
 void SessionStorageImpl::DeleteNamespace(const std::string& namespace_id,
                                          bool should_persist) {
-  CHECK_NE(connection_state_, CONNECTION_IN_PROGRESS,
-           base::NotFatalUntil::M146);
   auto namespace_it = namespaces_.find(namespace_id);
   // If the namespace has pending clones, do the clone now before destroying it.
   if (namespace_it != namespaces_.end()) {
@@ -556,6 +550,8 @@ base::FilePath SessionStorageImpl::GetDatabasePath() const {
 scoped_refptr<DomStorageDatabase::SharedMapLocator>
 SessionStorageImpl::RegisterNewAreaMap(const std::string& namespace_id,
                                        const blink::StorageKey& storage_key) {
+  CHECK_EQ(connection_state_, CONNECTION_FINISHED);
+
   scoped_refptr<DomStorageDatabase::SharedMapLocator> map_entry =
       metadata_.RegisterNewMap(namespace_id, storage_key);
   if (database_) {
@@ -595,6 +591,14 @@ void SessionStorageImpl::OnCommitResult(DbStatus status) {
     commit_error_count_ = 0;
     return;
   }
+
+  if (connection_state_ != CONNECTION_FINISHED) {
+    // Previous commit errors deleted and recreated the database below.  Ignore
+    // additional errors from the old database while waiting for the new
+    // database to open.
+    return;
+  }
+
   commit_error_count_++;
   if (commit_error_count_ > kSessionStorageCommitErrorThreshold) {
     if (tried_to_recover_from_commit_errors_) {
@@ -635,8 +639,8 @@ void SessionStorageImpl::RegisterShallowClonedNamespace(
     }
   }
 
-  CHECK_EQ(connection_state_, CONNECTION_FINISHED, base::NotFatalUntil::M146);
-  DCHECK_EQ(connection_state_, CONNECTION_FINISHED);
+  CHECK_EQ(connection_state_, CONNECTION_FINISHED);
+
   auto source_namespace_entry =
       metadata_.GetOrCreateNamespaceEntry(source_namespace_id);
   auto namespace_entry = metadata_.GetOrCreateNamespaceEntry(new_namespace_id);
@@ -677,7 +681,7 @@ SessionStorageImpl::CreateSessionStorageNamespaceImpl(
 
 void SessionStorageImpl::DeleteNamespacesFromMetadataAndDatabase(
     std::vector<std::string> namespace_ids) {
-  CHECK_EQ(connection_state_, CONNECTION_FINISHED, base::NotFatalUntil::M146);
+  CHECK_EQ(connection_state_, CONNECTION_FINISHED);
 
   // Remove each namespace from `metadata_`.
   std::vector<DomStorageDatabase::MapLocator> maps_to_delete;
@@ -724,8 +728,7 @@ void SessionStorageImpl::RunWhenConnected(base::OnceClosure callback) {
 }
 
 void SessionStorageImpl::InitiateConnection(bool in_memory_only) {
-  CHECK_EQ(connection_state_, CONNECTION_IN_PROGRESS,
-           base::NotFatalUntil::M146);
+  CHECK_EQ(connection_state_, CONNECTION_IN_PROGRESS);
 
   if (backing_mode_ != BackingMode::kNoDisk && !in_memory_only &&
       !storage_partition_directory_.empty()) {
@@ -784,8 +787,7 @@ void SessionStorageImpl::OnGotDatabaseMetadata(
 }
 
 void SessionStorageImpl::OnConnectionFinished() {
-  CHECK(!database_ || connection_state_ == CONNECTION_IN_PROGRESS,
-        base::NotFatalUntil::M146);
+  CHECK_EQ(connection_state_, CONNECTION_IN_PROGRESS);
 
   // If connection was opened successfully, reset tried_to_recreate_during_open_
   // to enable recreating the database on future errors.

@@ -165,7 +165,9 @@ class SessionStorageImpl : public base::trace_event::MemoryDumpProvider,
   // Initiates connecting to the database if no connection is in progress yet.
   void RunWhenConnected(base::OnceClosure callback);
 
-  // Part of our asynchronous directory opening called from RunWhenConnected().
+  // Part of asynchronous database opening called from `RunWhenConnected()`. If
+  // opening the database on disk fails twice, falls back to in memory. If
+  // opening the database in memory fails, runs without a database.
   void InitiateConnection(bool in_memory_only = false);
   void OnDatabaseOpened(DbStatus status);
   void OnGotDatabaseMetadata(
@@ -207,6 +209,7 @@ class SessionStorageImpl : public base::trace_event::MemoryDumpProvider,
 
   mojo::Receiver<mojom::SessionStorageControl> receiver_;
 
+  // `database_` is null after failing to open repeatedly.
   std::unique_ptr<AsyncDomStorageDatabase> database_;
   // This can be true even if the profile is not in-memory, since we attempt
   // to create an in-memory DB if on-disk fails. This variable has no meaning
