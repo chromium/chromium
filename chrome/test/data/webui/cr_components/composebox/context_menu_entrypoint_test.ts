@@ -563,8 +563,8 @@ suite('ContextMenuEntrypoint', () => {
             entrypoint.shadowRoot.querySelectorAll<HTMLElement>(
                 '.multi-tab-icon');
         assertEquals(2, tabSelectors.length);
-        assertEquals('cr:add', tabSelectors[0]!.getAttribute('icon'));
-        assertEquals('cr:add', tabSelectors[1]!.getAttribute('icon'));
+        assertEquals('composebox:addCircle', tabSelectors[0]!.getAttribute('icon'));
+        assertEquals('composebox:addCircle', tabSelectors[1]!.getAttribute('icon'));
 
         // Act by adding tab 1 as context.
         entrypoint.disabledTabIds = new Map([[1, '1']]);
@@ -575,8 +575,8 @@ suite('ContextMenuEntrypoint', () => {
             entrypoint.shadowRoot.querySelectorAll<HTMLElement>(
                 '.multi-tab-icon');
         assertEquals(2, tabSelectors.length);
-        assertEquals('cr:check', tabSelectors[0]!.getAttribute('icon'));
-        assertEquals('cr:add', tabSelectors[1]!.getAttribute('icon'));
+        assertEquals('composebox:checkCircle', tabSelectors[0]!.getAttribute('icon'));
+        assertEquals('composebox:addCircle', tabSelectors[1]!.getAttribute('icon'));
       });
 
   test('multi-tab enabled does not close context menu', async () => {

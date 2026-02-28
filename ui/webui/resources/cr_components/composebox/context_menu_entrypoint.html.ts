@@ -60,10 +60,10 @@ export function getHtml(this: ContextMenuEntrypointElement) {
           ${this.enableMultiTabSelection_ ? html`
             ${this.disabledTabIds.has(tab.tabId) ? html`
               <cr-icon class="multi-tab-icon"
-                  icon="cr:check" id="multi-tab-check"></cr-icon>
+                  icon="composebox:checkCircle" id="multi-tab-check"></cr-icon>
             ` : html`
               <cr-icon class="multi-tab-icon"
-                  icon="cr:add" id="multi-tab-add"></cr-icon>
+                  icon="composebox:addCircle" id="multi-tab-add"></cr-icon>
             `}
           ` : ''}
         </button>
