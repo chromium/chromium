@@ -1876,6 +1876,13 @@ class LocationBarMediator
                 TextView tv = (TextView) view;
                 return tv.getSelectionStart() == tv.getSelectionEnd()
                         && tv.getSelectionEnd() == tv.getText().length();
+            } else if (keyCode == KeyEvent.KEYCODE_DEL) {
+                if (mCurrentInput != null
+                        && !TextUtils.isEmpty(mCurrentInput.getKeyword())
+                        && TextUtils.isEmpty(mUrlCoordinator.getTextWithoutAutocomplete())) {
+                    mCurrentInput.setKeyword(null);
+                    return true;
+                }
             }
             return false;
         }

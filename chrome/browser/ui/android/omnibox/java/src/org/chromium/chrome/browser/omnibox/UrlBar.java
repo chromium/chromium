@@ -290,7 +290,8 @@ public class UrlBar extends AutocompleteEditText {
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         return ((KeyNavigationUtil.isEnter(event)
                                 || KeyNavigationUtil.isGoAnyDirection(event)
-                                || KeyNavigationUtil.isTabNavigation(event))
+                                || KeyNavigationUtil.isTabNavigation(event)
+                                || event.getKeyCode() == KeyEvent.KEYCODE_DEL)
                         && (mKeyDownListener != null
                                 && mKeyDownListener.onKey(this, keyCode, event)))
                 || super_onKeyDown(keyCode, event);

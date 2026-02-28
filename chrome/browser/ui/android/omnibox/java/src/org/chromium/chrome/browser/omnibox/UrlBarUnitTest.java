@@ -751,7 +751,8 @@ public class UrlBarUnitTest {
                         KeyEvent.KEYCODE_DPAD_UP,
                         KeyEvent.KEYCODE_DPAD_DOWN,
                         KeyEvent.KEYCODE_DPAD_LEFT,
-                        KeyEvent.KEYCODE_DPAD_RIGHT);
+                        KeyEvent.KEYCODE_DPAD_RIGHT,
+                        KeyEvent.KEYCODE_DEL);
 
         var listener = mock(View.OnKeyListener.class);
         mUrlBar.setKeyDownListener(listener);
@@ -788,7 +789,8 @@ public class UrlBarUnitTest {
                         KeyEvent.KEYCODE_ENTER,
                         KeyEvent.KEYCODE_NUMPAD_ENTER,
                         KeyEvent.KEYCODE_DPAD_UP,
-                        KeyEvent.KEYCODE_DPAD_DOWN);
+                        KeyEvent.KEYCODE_DPAD_DOWN,
+                        KeyEvent.KEYCODE_DEL);
 
         var listener = mock(View.OnKeyListener.class);
         mUrlBar.setKeyDownListener(listener);
