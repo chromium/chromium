@@ -53,19 +53,23 @@ class ToolbarDependencyProvider : public WebUIToolbarUI::DependencyProvider {
 
   // This might blow up in the future. We are implicitly assuming that the
   // delegate isn't going to be used in this test.
-  browser_controls_api::BrowserControlsService::Delegate* GetDelegate()
-      override {
+  browser_controls_api::BrowserControlsService::BrowserControlsServiceDelegate*
+  GetBrowserControlsDelegate() override {
     return nullptr;
   }
 
-  std::unique_ptr<browser_controls_api::NavigationControlsStateFetcher>
+  toolbar_ui_api::ToolbarUIService::ToolbarUIServiceDelegate*
+  GetToolbarUIServiceDelegate() override {
+    return nullptr;
+  }
+
+  std::unique_ptr<toolbar_ui_api::NavigationControlsStateFetcher>
   GetNavigationControlsStateFetcher() override {
-    return std::make_unique<
-        browser_controls_api::NavigationControlsStateFetcherImpl>(
+    return std::make_unique<toolbar_ui_api::NavigationControlsStateFetcherImpl>(
         base::BindLambdaForTesting([]() {
-          return browser_controls_api::mojom::NavigationControlsState::New(
-              browser_controls_api::mojom::ReloadControlState::New(),
-              browser_controls_api::mojom::SplitTabsControlState::New(),
+          return toolbar_ui_api::mojom::NavigationControlsState::New(
+              toolbar_ui_api::mojom::ReloadControlState::New(),
+              toolbar_ui_api::mojom::SplitTabsControlState::New(),
               /*layout_constants_version=*/0);
         }));
   }

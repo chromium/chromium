@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
 #include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_ui.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom.h"
 #include "ui/base/window_open_disposition_utils.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/widget/widget.h"
@@ -95,7 +96,7 @@ void WebUIReloadControl::ExecuteCommand(int command_id, int event_flags) {
 }
 
 void WebUIReloadControl::UpdateState() {
-  auto state = browser_controls_api::mojom::ReloadControlState::New();
+  auto state = toolbar_ui_api::mojom::ReloadControlState::New();
   state->is_devtools_connected = is_dev_tools_connected_;
   state->is_navigation_loading = (mode_ == ReloadControl::Mode::kStop);
   state->is_context_menu_visible = menu_runner_->IsRunning();

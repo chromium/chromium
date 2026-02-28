@@ -10,12 +10,13 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {ContextMenuType, SplitTabActiveLocation} from './browser_controls_api_data_model.mojom-webui.js';
-import type {SplitTabsControlState} from './browser_controls_api_data_model.mojom-webui.js';
+import {SplitTabActiveLocation} from './toolbar_ui_api_data_model.mojom-webui.js';
+import {ContextMenuType} from './toolbar_ui_api_data_model.mojom-webui.js';
 import {type BrowserProxy, BrowserProxyImpl} from './browser_proxy.js';
 import {getCss} from './split_tabs_button.css.js';
 import {getHtml} from './split_tabs_button.html.js';
 import {getClickSourceType, getContextMenuPosition, getContextMenuSourceType} from './toolbar_button.js';
+import type {SplitTabsControlState} from './toolbar_ui_api_data_model.mojom-webui.js';
 
 export class SplitTabsButtonElement extends CrLitElement {
   static get is() {
@@ -88,18 +89,18 @@ export class SplitTabsButtonElement extends CrLitElement {
   protected onClick(e: Event) {
     if (this.state.isCurrentTabSplit) {
       // If already split, show the action menu.
-      this.browserProxy_.handler.showContextMenu(
+      this.browserProxy_.toolbarUIHandler.showContextMenu(
           ContextMenuType.kSplitTabsAction, this.menuPosition(),
           getClickSourceType(e));
     } else {
       // If not split, enters split view.
-      this.browserProxy_.handler.splitActiveTab();
+      this.browserProxy_.browserControlsHandler.splitActiveTab();
     }
   }
 
   protected onContextmenu(e: MouseEvent) {
     e.preventDefault();
-    this.browserProxy_.handler.showContextMenu(
+    this.browserProxy_.toolbarUIHandler.showContextMenu(
         ContextMenuType.kSplitTabsContext, this.menuPosition(),
         getContextMenuSourceType(e));
   }

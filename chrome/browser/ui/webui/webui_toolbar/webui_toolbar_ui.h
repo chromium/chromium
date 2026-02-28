@@ -6,13 +6,18 @@
 #define CHROME_BROWSER_UI_WEBUI_WEBUI_TOOLBAR_WEBUI_TOOLBAR_UI_H_
 
 #include <memory>
+#include <string_view>
+#include <vector>
 
+#include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_config.h"
-#include "chrome/browser/ui/webui/webui_toolbar/adapters/navigation_controls_state_fetcher.h"
 #include "chrome/browser/ui/webui/webui_toolbar/browser_controls_service.h"
+#include "chrome/browser/ui/webui/webui_toolbar/toolbar_ui_service.h"
 #include "components/browser_apis/browser_controls/browser_controls_api.mojom-forward.h"
 #include "components/browser_apis/browser_controls/browser_controls_api_data_model.mojom.h"
+#include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api.mojom.h"
 #include "content/public/browser/webui_config.h"
 #include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -28,7 +33,7 @@ class WebUIDataSource;
 namespace gfx {
 class FontList;
 }  // namespace gfx
-   //
+
 class CommandUpdater;
 
 // The webui controller for the webui toolbar. This class has a two part
@@ -39,10 +44,12 @@ class WebUIToolbarUI : public TopChromeWebUIController {
   // Provides dependencies to this controller during init.
   class DependencyProvider {
    public:
-    virtual browser_controls_api::BrowserControlsService::Delegate*
-    GetDelegate() = 0;
-    virtual std::unique_ptr<
-        browser_controls_api::NavigationControlsStateFetcher>
+    virtual browser_controls_api::BrowserControlsService::
+        BrowserControlsServiceDelegate*
+        GetBrowserControlsDelegate() = 0;
+    virtual toolbar_ui_api::ToolbarUIService::ToolbarUIServiceDelegate*
+    GetToolbarUIServiceDelegate() = 0;
+    virtual std::unique_ptr<toolbar_ui_api::NavigationControlsStateFetcher>
     GetNavigationControlsStateFetcher() = 0;
   };
 
@@ -58,17 +65,18 @@ class WebUIToolbarUI : public TopChromeWebUIController {
           receiver);
 
   void BindInterface(
+      mojo::PendingReceiver<toolbar_ui_api::mojom::ToolbarUIService> receiver);
+
+  void BindInterface(
       mojo::PendingReceiver<tracked_element::mojom::TrackedElementHandler>
           receiver);
 
   void OnNavigationControlsStateChanged(
-      browser_controls_api::mojom::NavigationControlsStatePtr state);
+      toolbar_ui_api::mojom::NavigationControlsStatePtr state);
 
   // The |depdency_provider| is expected to outlive this class.
   void Init(DependencyProvider* dependency_provider);
 
-  browser_controls_api::BrowserControlsService*
-  browser_controls_service_for_testing();
 
   // TopChromeWebUIController:
   // The controller uses `requesting_origin` to:
@@ -96,6 +104,15 @@ class WebUIToolbarUI : public TopChromeWebUIController {
                                content::WebUIDataSource* source);
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(WebUIToolbarUITest,
+                           BindInterfaceBrowserControlsService);
+  FRIEND_TEST_ALL_PREFIXES(WebUIToolbarUITest, BindInterfaceToolbarUIService);
+  FRIEND_TEST_ALL_PREFIXES(WebUIToolbarUITest, CreateBrowserControlsService);
+  FRIEND_TEST_ALL_PREFIXES(WebUIToolbarUITest, CreateToolbarUIService);
+  FRIEND_TEST_ALL_PREFIXES(WebUIToolbarUITest,
+                           CreateBrowserControlsService_NullCommandUpdater);
+  FRIEND_TEST_ALL_PREFIXES(WebUIToolbarUITest,
+                           CreateToolbarUIService_NullCommandUpdater);
   CommandUpdater* GetCommandUpdater() const;
 
   // Returns the list of known element identifiers. These elements are HTML
@@ -105,6 +122,7 @@ class WebUIToolbarUI : public TopChromeWebUIController {
 
   std::unique_ptr<browser_controls_api::BrowserControlsService>
       browser_controls_service_;
+  std::unique_ptr<toolbar_ui_api::ToolbarUIService> toolbar_ui_service_;
   std::unique_ptr<ui::TrackedElementHandler> tracked_element_handler_;
 
   raw_ptr<DependencyProvider> dependency_provider_;

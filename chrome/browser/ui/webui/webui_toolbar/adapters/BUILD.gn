@@ -11,6 +11,7 @@ source_set("adapters") {
     "//chrome/browser/ui/webui/webui_toolbar/utils",
     "//components/browser_apis/browser_controls:mojom",
     "//components/browser_apis/browser_controls:mojom_data_model",
+    "//components/browser_apis/ui_controllers/toolbar:mojom_data_model",
     "//ui/base:types",
   ]
 }
@@ -30,5 +31,6 @@ source_set("impl") {
     "//chrome/browser/ui/tabs",
     "//chrome/browser/ui/webui/webui_toolbar/utils",
     "//components/browser_apis/browser_controls:mojom_data_model",
+    "//components/browser_apis/ui_controllers/toolbar:mojom_data_model",
   ]
 }

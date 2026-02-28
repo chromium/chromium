@@ -4,10 +4,21 @@
 
 import '//resources/js/cr.js';
 
-import {BrowserControlsObserverCallbackRouter, BrowserControlsService} from './browser_controls_api.mojom-webui.js';
+import {BrowserControlsService} from './browser_controls_api.mojom-webui.js';
 import type {BrowserControlsServiceInterface} from './browser_controls_api.mojom-webui.js';
-import {ClickDispositionFlag, ContextMenuType} from './browser_controls_api_data_model.mojom-webui.js';
-import type {NavigationControlsState, ReloadControlState} from './browser_controls_api_data_model.mojom-webui.js';
+import {ClickDispositionFlag} from './browser_controls_api_data_model.mojom-webui.js';
+import {
+  ToolbarUIObserverCallbackRouter,
+  ToolbarUIService,
+} from './toolbar_ui_api.mojom-webui.js';
+import type {ToolbarUIServiceInterface} from './toolbar_ui_api.mojom-webui.js';
+import {
+  ContextMenuType,
+} from './toolbar_ui_api_data_model.mojom-webui.js';
+import type {
+  NavigationControlsState,
+  ReloadControlState,
+} from './toolbar_ui_api_data_model.mojom-webui.js';
 
 export {
   ClickDispositionFlag,
@@ -26,7 +37,8 @@ export const INVALID_NAVIGATION_CONTROLS_STATE_LISTENER_HANDLE:
     NavigationControlsStateListenerHandle = -1;
 
 export interface BrowserProxy {
-  handler: BrowserControlsServiceInterface;
+  browserControlsHandler: BrowserControlsServiceInterface;
+  toolbarUIHandler: ToolbarUIServiceInterface;
 
   /**
    * Records a value in a histogram.
@@ -45,12 +57,14 @@ export interface BrowserProxy {
 }
 
 export class BrowserProxyImpl implements BrowserProxy {
-  private callbackRouter: BrowserControlsObserverCallbackRouter;
-  handler: BrowserControlsServiceInterface;
+  private callbackRouter: ToolbarUIObserverCallbackRouter;
+  browserControlsHandler: BrowserControlsServiceInterface;
+  toolbarUIHandler: ToolbarUIServiceInterface;
 
   private constructor() {
-    this.callbackRouter = new BrowserControlsObserverCallbackRouter();
-    this.handler = BrowserControlsService.getRemote();
+    this.callbackRouter = new ToolbarUIObserverCallbackRouter();
+    this.browserControlsHandler = BrowserControlsService.getRemote();
+    this.toolbarUIHandler = ToolbarUIService.getRemote();
   }
 
   /**
@@ -68,7 +82,7 @@ export class BrowserProxyImpl implements BrowserProxy {
     const handle =
         this.callbackRouter.onNavigationControlsStateChanged.addListener(
             listener);
-    this.handler.bind().then(fence => {
+    this.toolbarUIHandler.bind().then(fence => {
       listener(fence.state);
       this.callbackRouter.$.bindHandle(fence.updateStream.handle);
     });

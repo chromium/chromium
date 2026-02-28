@@ -9,22 +9,15 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
-#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter.h"
-#include "chrome/browser/ui/webui/webui_toolbar/adapters/browser_controls_adapter.h"
-#include "chrome/browser/ui/webui/webui_toolbar/utils/split_tabs_utils.h"
 #include "components/browser_apis/browser_controls/browser_controls_api.mojom.h"
-#include "content/public/browser/context_menu_params.h"
 #include "ui/base/window_open_disposition_utils.h"
+#include "ui/events/event_constants.h"
 
 namespace {
 // Measurement marks.
-constexpr char kChangeVisibleModeToLoadingStartMark[] =
-    "BrowserControls.ChangeVisibleModeToLoading.Start";
-constexpr char kChangeVisibleModeToNotLoadingStartMark[] =
-    "BrowserControls.ChangeVisibleModeToNotLoading.Start";
 constexpr char kInputMouseReleaseStartMark[] =
     "ReloadButton.Input.MouseRelease.Start";
 
@@ -67,31 +60,16 @@ namespace browser_controls_api {
 BrowserControlsService::BrowserControlsService(
     mojo::PendingReceiver<mojom::BrowserControlsService> service,
     std::unique_ptr<BrowserControlsAdapter> browser_adapter,
-    std::unique_ptr<NavigationControlsStateFetcher> state_fetcher,
     MetricsReporter* metrics_reporter,
-    BrowserControlsService::Delegate* delegate)
+    BrowserControlsServiceDelegate* delegate)
     : service_(this, std::move(service)),
       browser_adapter_(std::move(browser_adapter)),
-      state_fetcher_(std::move(state_fetcher)),
       metrics_reporter_(metrics_reporter),
       delegate_(delegate) {
   CHECK(browser_adapter_);
-  CHECK(metrics_reporter);
 }
 
 BrowserControlsService::~BrowserControlsService() = default;
-
-void BrowserControlsService::Bind(BindCallback callback) {
-  auto result = browser_controls_api::mojom::InitialState::New();
-  result->state = state_fetcher_->GetNavigationControlsState();
-
-  mojo::Remote<browser_controls_api::mojom::BrowserControlsObserver> observer;
-  result->update_stream = observer.BindNewPipeAndPassReceiver();
-
-  observers_.Add(std::move(observer));
-
-  std::move(callback).Run(std::move(result));
-}
 
 void BrowserControlsService::ReloadFromClick(
     bool bypass_cache,
@@ -138,41 +116,14 @@ void BrowserControlsService::StopLoad() {
   // TODO(crbug.com/448794588): Handle KeyPress events.
 }
 
-void BrowserControlsService::ShowContextMenu(
-    browser_controls_api::mojom::ContextMenuType menu_type,
-    const gfx::Point& viewport_coordinate_css_pixels,
-    ui::mojom::MenuSourceType source) {
-  if (delegate_) {
-    delegate_->HandleContextMenu(menu_type, viewport_coordinate_css_pixels,
-                                 source);
-  }
-}
-
-void BrowserControlsService::OnPageInitialized() {
-  if (delegate_) {
-    delegate_->OnPageInitialized();
-  }
-}
-
-void BrowserControlsService::OnNavigationControlsStateChanged(
-    const browser_controls_api::mojom::NavigationControlsStatePtr& state) {
-  auto* mark = state->reload_control_state->is_navigation_loading
-                   ? kChangeVisibleModeToLoadingStartMark
-                   : kChangeVisibleModeToNotLoadingStartMark;
-  metrics_reporter_->Mark(mark);
-
-  for (auto& observer : observers_) {
-    observer->OnNavigationControlsStateChanged(state.Clone());
-  }
-}
-
 void BrowserControlsService::SplitActiveTab() {
   // We only reach here if the frontend decided we need to CREATE a split.
   // We don't need to check IsActiveTabInSplit() or handle the menu here.
   browser_adapter_->CreateNewSplitTab();
 }
 
-void BrowserControlsService::SetDelegate(Delegate* delegate) {
+void BrowserControlsService::SetDelegate(
+    BrowserControlsServiceDelegate* delegate) {
   delegate_ = delegate;
 }
 

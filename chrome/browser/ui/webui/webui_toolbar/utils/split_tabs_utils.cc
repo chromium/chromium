@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -38,20 +39,17 @@ TabSplitStatus ComputeTabSplitStatus(
 
     switch (location) {
       case split_tabs::SplitTabActiveLocation::kStart:
-        status.location =
-            browser_controls_api::mojom::SplitTabActiveLocation::kStart;
+        status.location = toolbar_ui_api::mojom::SplitTabActiveLocation::kStart;
         break;
       case split_tabs::SplitTabActiveLocation::kEnd:
-        status.location =
-            browser_controls_api::mojom::SplitTabActiveLocation::kEnd;
+        status.location = toolbar_ui_api::mojom::SplitTabActiveLocation::kEnd;
         break;
       case split_tabs::SplitTabActiveLocation::kTop:
-        status.location =
-            browser_controls_api::mojom::SplitTabActiveLocation::kTop;
+        status.location = toolbar_ui_api::mojom::SplitTabActiveLocation::kTop;
         break;
       case split_tabs::SplitTabActiveLocation::kBottom:
         status.location =
-            browser_controls_api::mojom::SplitTabActiveLocation::kBottom;
+            toolbar_ui_api::mojom::SplitTabActiveLocation::kBottom;
         break;
     }
   }
@@ -60,9 +58,9 @@ TabSplitStatus ComputeTabSplitStatus(
 }
 
 bool IsButtonPinned(BrowserWindowInterface* browser_interface,
-                    browser_controls_api::mojom::ToolbarButtonType type) {
+                    toolbar_ui_api::mojom::ToolbarButtonType type) {
   switch (type) {
-    case browser_controls_api::mojom::ToolbarButtonType::kSplitTabs:
+    case toolbar_ui_api::mojom::ToolbarButtonType::kSplitTabs:
       return browser_interface->GetProfile()->GetPrefs()->GetBoolean(
           prefs::kPinSplitTabButton);
     default:

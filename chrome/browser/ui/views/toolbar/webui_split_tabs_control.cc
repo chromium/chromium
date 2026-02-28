@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_ui.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -57,13 +58,12 @@ bool WebUISplitTabsControl::IsVisible() const {
 }
 
 void WebUISplitTabsControl::HandleContextMenu(
-    browser_controls_api::mojom::ContextMenuType menu_type,
+    toolbar_ui_api::mojom::ContextMenuType menu_type,
     const gfx::Point& screen_location,
     ui::mojom::MenuSourceType source_type) {
   BrowserWindowInterface* browser = toolbar_view_->browser_;
   current_menu_type_ = menu_type;
-  if (menu_type ==
-      browser_controls_api::mojom::ContextMenuType::kSplitTabsAction) {
+  if (menu_type == toolbar_ui_api::mojom::ContextMenuType::kSplitTabsAction) {
     // Only show "Separate Views" menu if actually in split.
     auto* tab_strip_model = browser->GetTabStripModel();
     if (!tab_strip_model || !tab_strip_model->GetActiveTab() ||
@@ -77,7 +77,7 @@ void WebUISplitTabsControl::HandleContextMenu(
         tab_strip_model, SplitTabMenuModel::MenuSource::kToolbarButton);
     RunMenuAt(screen_location.x(), screen_location.y(), source_type);
   } else if (menu_type ==
-             browser_controls_api::mojom::ContextMenuType::kSplitTabsContext) {
+             toolbar_ui_api::mojom::ContextMenuType::kSplitTabsContext) {
     Browser* actual_browser =
         chrome::FindBrowserWithWindow(browser->GetWindow()->GetNativeWindow());
     if (actual_browser) {
@@ -124,7 +124,7 @@ void WebUISplitTabsControl::OnSplitTabChanged(const SplitTabChange& change) {
 }
 
 void WebUISplitTabsControl::UpdateVisibility(
-    const browser_controls_api::mojom::SplitTabsControlState* state) {
+    const toolbar_ui_api::mojom::SplitTabsControlState* state) {
   bool should_be_visible = state->is_pinned || state->is_current_tab_split;
 
   if (should_be_visible != is_visible_) {
@@ -134,13 +134,13 @@ void WebUISplitTabsControl::UpdateVisibility(
 }
 
 void WebUISplitTabsControl::UpdateState() {
-  auto state = browser_controls_api::mojom::SplitTabsControlState::New();
+  auto state = toolbar_ui_api::mojom::SplitTabsControlState::New();
   auto s = webui_toolbar::ComputeTabSplitStatus(toolbar_view_->browser_);
   state->is_current_tab_split = s.is_split;
   state->location = s.location;
   state->is_pinned = webui_toolbar::IsButtonPinned(
       toolbar_view_->browser_,
-      browser_controls_api::mojom::ToolbarButtonType::kSplitTabs);
+      toolbar_ui_api::mojom::ToolbarButtonType::kSplitTabs);
   state->is_context_menu_visible = menu_runner_ && menu_runner_->IsRunning();
   UpdateVisibility(state.get());
   toolbar_view_->OnSplitTabsControlStateChanged(std::move(state));

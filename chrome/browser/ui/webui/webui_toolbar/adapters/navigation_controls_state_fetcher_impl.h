@@ -5,9 +5,10 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_WEBUI_TOOLBAR_ADAPTERS_NAVIGATION_CONTROLS_STATE_FETCHER_IMPL_H_
 #define CHROME_BROWSER_UI_WEBUI_WEBUI_TOOLBAR_ADAPTERS_NAVIGATION_CONTROLS_STATE_FETCHER_IMPL_H_
 
+#include "base/functional/callback.h"
 #include "chrome/browser/ui/webui/webui_toolbar/adapters/navigation_controls_state_fetcher.h"
 
-namespace browser_controls_api {
+namespace toolbar_ui_api {
 
 // State fetcher using a simple repeating callback.
 class NavigationControlsStateFetcherImpl
@@ -25,6 +26,6 @@ class NavigationControlsStateFetcherImpl
   CallbackType state_fetcher_;
 };
 
-}  // namespace browser_controls_api
+}  // namespace toolbar_ui_api
 
 #endif  // CHROME_BROWSER_UI_WEBUI_WEBUI_TOOLBAR_ADAPTERS_NAVIGATION_CONTROLS_STATE_FETCHER_IMPL_H_

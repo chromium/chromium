@@ -6,7 +6,9 @@
 
 #include <memory>
 #include <utility>
+#include <vector>
 
+#include "base/check.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_command_controller.h"
@@ -26,6 +28,7 @@
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/browser/ui/webui/webui_toolbar/adapters/browser_controls_adapter_impl.h"
 #include "chrome/browser/ui/webui/webui_toolbar/browser_controls_service.h"
+#include "chrome/browser/ui/webui/webui_toolbar/toolbar_ui_service.h"
 #include "chrome/browser/ui/webui/webui_toolbar/utils/split_tabs_utils.h"
 #include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_layout_css_helper.h"
 #include "chrome/common/chrome_features.h"
@@ -34,6 +37,7 @@
 #include "chrome/grit/webui_toolbar_resources.h"
 #include "chrome/grit/webui_toolbar_resources_map.h"
 #include "components/browser_apis/browser_controls/browser_controls_api.mojom.h"
+#include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api.mojom.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -125,9 +129,28 @@ void WebUIToolbarUI::BindInterface(
           std::move(receiver),
           std::make_unique<browser_controls_api::BrowserControlsAdapterImpl>(
               webui::GetBrowserWindowInterface(web_contents), command_updater),
-          dependency_provider_->GetNavigationControlsStateFetcher(),
           metrics_service->metrics_reporter(),
-          dependency_provider_->GetDelegate());
+          dependency_provider_->GetBrowserControlsDelegate());
+}
+
+void WebUIToolbarUI::BindInterface(
+    mojo::PendingReceiver<toolbar_ui_api::mojom::ToolbarUIService> receiver) {
+  CHECK(dependency_provider_)
+      << "Dependency provider is not set, make sure to call Init() first";
+
+  auto* web_contents = web_ui()->GetWebContents();
+  MetricsReporterService* metrics_service =
+      MetricsReporterService::GetFromWebContents(web_contents);
+
+  // If this CHECK() starts hitting, it could be due to races with browser
+  // shutdown, similar to issues seen in the past (e.g., b/478033216#comment4).
+  CHECK(metrics_service) << "Metrics service missing from web contents";
+
+  toolbar_ui_service_ = std::make_unique<toolbar_ui_api::ToolbarUIService>(
+      std::move(receiver),
+      dependency_provider_->GetNavigationControlsStateFetcher(),
+      metrics_service->metrics_reporter(),
+      dependency_provider_->GetToolbarUIServiceDelegate());
 }
 
 void WebUIToolbarUI::BindInterface(
@@ -146,10 +169,9 @@ void WebUIToolbarUI::BindInterface(
 }
 
 void WebUIToolbarUI::OnNavigationControlsStateChanged(
-    browser_controls_api::mojom::NavigationControlsStatePtr state) {
-  if (browser_controls_service_) {
-    browser_controls_service_->OnNavigationControlsStateChanged(
-        std::move(state));
+    toolbar_ui_api::mojom::NavigationControlsStatePtr state) {
+  if (toolbar_ui_service_) {
+    toolbar_ui_service_->OnNavigationControlsStateChanged(std::move(state));
   }
 }
 
@@ -158,12 +180,11 @@ void WebUIToolbarUI::Init(DependencyProvider* dependency_provider) {
       << "Out of order initialization, the browser control service has already "
          "been instantiated.";
 
-  dependency_provider_ = dependency_provider;
-}
+  CHECK(!toolbar_ui_service_)
+      << "Out of order initialization, the toolbar UI service has already "
+         "been instantiated.";
 
-browser_controls_api::BrowserControlsService*
-WebUIToolbarUI::browser_controls_service_for_testing() {
-  return browser_controls_service_.get();
+  dependency_provider_ = dependency_provider;
 }
 
 CommandUpdater* WebUIToolbarUI::GetCommandUpdater() const {

@@ -5,9 +5,9 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_WEBUI_TOOLBAR_ADAPTERS_NAVIGATION_CONTROLS_STATE_FETCHER_H_
 #define CHROME_BROWSER_UI_WEBUI_WEBUI_TOOLBAR_ADAPTERS_NAVIGATION_CONTROLS_STATE_FETCHER_H_
 
-#include "components/browser_apis/browser_controls/browser_controls_api.mojom.h"
+#include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom.h"
 
-namespace browser_controls_api {
+namespace toolbar_ui_api {
 
 // An adapter which fetches and combines the current toolbar control states.
 class NavigationControlsStateFetcher {
@@ -17,6 +17,6 @@ class NavigationControlsStateFetcher {
   virtual mojom::NavigationControlsStatePtr GetNavigationControlsState() = 0;
 };
 
-}  // namespace browser_controls_api
+}  // namespace toolbar_ui_api
 
 #endif  // CHROME_BROWSER_UI_WEBUI_WEBUI_TOOLBAR_ADAPTERS_NAVIGATION_CONTROLS_STATE_FETCHER_H_

@@ -43,7 +43,8 @@ BrowserControlsAdapterImpl::ComputeSplitTabStatus() {
   return webui_toolbar::ComputeTabSplitStatus(&browser_.get());
 }
 
-bool BrowserControlsAdapterImpl::IsButtonPinned(mojom::ToolbarButtonType type) {
+bool BrowserControlsAdapterImpl::IsButtonPinned(
+    toolbar_ui_api::mojom::ToolbarButtonType type) {
   return webui_toolbar::IsButtonPinned(&browser_.get(), type);
 }
 

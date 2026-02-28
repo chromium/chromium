@@ -70,6 +70,7 @@ include_rules = [
   "+components/breadcrumbs/core",
   "+components/browser_apis/browser_controls",
   "+components/browser_apis/tab_strip",
+  "+components/browser_apis/ui_controllers",
   "+components/browser_sync",
   "+components/browser_ui/accessibility",
   "+components/browser_ui/desktop_windowing/android",

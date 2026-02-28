@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/run_loop.h"
 #include "chrome/browser/ui/webui/theme_colors_source_manager.h"
 #include "chrome/browser/ui/webui/theme_colors_source_manager_factory.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
@@ -31,22 +32,22 @@
 namespace {
 
 // Helper class to manage mojo remote to the WebUIToolbarUI.
-class MockBrowserControlsServiceConnection {
+class ToolbarUIServiceConnectionManager {
  public:
-  explicit MockBrowserControlsServiceConnection(WebUIToolbarUI* ui) {
+  explicit ToolbarUIServiceConnectionManager(WebUIToolbarUI* ui) {
     ui->BindInterface(service_remote_.BindNewPipeAndPassReceiver());
   }
 
   // Not movable or copyable.
-  MockBrowserControlsServiceConnection(
-      const MockBrowserControlsServiceConnection&) = delete;
-  MockBrowserControlsServiceConnection& operator=(
-      const MockBrowserControlsServiceConnection&) = delete;
+  ToolbarUIServiceConnectionManager(const ToolbarUIServiceConnectionManager&) =
+      delete;
+  ToolbarUIServiceConnectionManager& operator=(
+      const ToolbarUIServiceConnectionManager&) = delete;
 
   void RegisterObserver() {
     service_remote_->Bind(base::BindOnce(
-        [](MockBrowserControlsServiceConnection* self,
-           base::expected<browser_controls_api::mojom::InitialStatePtr,
+        [](ToolbarUIServiceConnectionManager* self,
+           base::expected<toolbar_ui_api::mojom::InitialStatePtr,
                           mojo_base::mojom::ErrorPtr> result) {
           ASSERT_TRUE(result.has_value());
           self->mock_observer_.Bind(std::move(result.value()->update_stream));
@@ -64,21 +65,52 @@ class MockBrowserControlsServiceConnection {
 
  private:
   testing::StrictMock<MockReloadButtonPage> mock_observer_;
+  mojo::Remote<toolbar_ui_api::mojom::ToolbarUIService> service_remote_;
+};
+
+// Helper class to manage mojo remote to the WebUIToolbarUI.
+class BrowserControlsServiceConnectionManager {
+ public:
+  explicit BrowserControlsServiceConnectionManager(WebUIToolbarUI* ui) {
+    ui->BindInterface(service_remote_.BindNewPipeAndPassReceiver());
+  }
+
+  // Not movable or copyable.
+  BrowserControlsServiceConnectionManager(
+      const BrowserControlsServiceConnectionManager&) = delete;
+  BrowserControlsServiceConnectionManager& operator=(
+      const BrowserControlsServiceConnectionManager&) = delete;
+
+  void FlushForTesting() { service_remote_.FlushForTesting(); }
+
+  bool is_bound() { return service_remote_.is_bound(); }
+  bool is_connected() { return service_remote_.is_connected(); }
+
+ private:
   mojo::Remote<browser_controls_api::mojom::BrowserControlsService>
       service_remote_;
 };
 
 class BrowserControlsDelegate
-    : public browser_controls_api::BrowserControlsService::Delegate {
+    : public browser_controls_api::BrowserControlsService::
+          BrowserControlsServiceDelegate {
  public:
   BrowserControlsDelegate() = default;
   ~BrowserControlsDelegate() override = default;
 
-  void HandleContextMenu(browser_controls_api::mojom::ContextMenuType menu_type,
+  void PermitLaunchUrl() override {}
+};
+
+class ToolbarUIDelegate
+    : public toolbar_ui_api::ToolbarUIService::ToolbarUIServiceDelegate {
+ public:
+  ToolbarUIDelegate() = default;
+  ~ToolbarUIDelegate() override = default;
+
+  void HandleContextMenu(toolbar_ui_api::mojom::ContextMenuType menu_type,
                          gfx::Point viewport_coordinate_css_pixels,
                          ui::mojom::MenuSourceType source) override {}
   void OnPageInitialized() override {}
-  void PermitLaunchUrl() override {}
 };
 
 // Test fixture for WebUIToolbarUI. These tests test the connectivity between
@@ -119,14 +151,17 @@ class WebUIToolbarUIBrowserTest : public InProcessBrowserTest,
   }
 
   // WebUIToolbarUI::DependencyProvider:
-  browser_controls_api::BrowserControlsService::Delegate* GetDelegate()
-      override {
-    return &delegate_;
+  browser_controls_api::BrowserControlsService::BrowserControlsServiceDelegate*
+  GetBrowserControlsDelegate() override {
+    return &browser_controls_delegate_;
   }
-  std::unique_ptr<browser_controls_api::NavigationControlsStateFetcher>
+  toolbar_ui_api::ToolbarUIService::ToolbarUIServiceDelegate*
+  GetToolbarUIServiceDelegate() override {
+    return &toolbar_ui_delegate_;
+  }
+  std::unique_ptr<toolbar_ui_api::NavigationControlsStateFetcher>
   GetNavigationControlsStateFetcher() override {
-    return std::make_unique<
-        browser_controls_api::NavigationControlsStateFetcherImpl>(
+    return std::make_unique<toolbar_ui_api::NavigationControlsStateFetcherImpl>(
         base::BindRepeating(
             [&] { return CreateValidNavigationControlsState(); }));
   }
@@ -136,7 +171,8 @@ class WebUIToolbarUIBrowserTest : public InProcessBrowserTest,
 
  private:
   base::test::ScopedFeatureList feature_list_;
-  BrowserControlsDelegate delegate_;
+  BrowserControlsDelegate browser_controls_delegate_;
+  ToolbarUIDelegate toolbar_ui_delegate_;
   std::unique_ptr<content::TestWebUI> web_ui_;
   std::unique_ptr<WebUIToolbarUI> ui_;
 };
@@ -144,20 +180,19 @@ class WebUIToolbarUIBrowserTest : public InProcessBrowserTest,
 // Tests that OnNavigationControlsStateChanged calls the browser controls
 // observer with the correct parameters.
 IN_PROC_BROWSER_TEST_F(WebUIToolbarUIBrowserTest, SetReloadButtonState) {
-  MockBrowserControlsServiceConnection connection(ui());
+  ToolbarUIServiceConnectionManager connection(ui());
 
   auto state = CreateValidNavigationControlsState();
   state->reload_control_state->is_navigation_loading = true;
   connection.RegisterObserver();
 
-  EXPECT_CALL(connection.mock_observer(),
-              OnNavigationControlsStateChanged(testing::Pointee(testing::Field(
-                  &browser_controls_api::mojom::NavigationControlsState::
-                      reload_control_state,
-                  testing::Pointee(testing::Field(
-                      &browser_controls_api::mojom::ReloadControlState::
-                          is_navigation_loading,
-                      true))))))
+  EXPECT_CALL(
+      connection.mock_observer(),
+      OnNavigationControlsStateChanged(testing::Pointee(testing::Field(
+          &toolbar_ui_api::mojom::NavigationControlsState::reload_control_state,
+          testing::Pointee(testing::Field(
+              &toolbar_ui_api::mojom::ReloadControlState::is_navigation_loading,
+              true))))))
       .Times(1);
   ui()->OnNavigationControlsStateChanged(std::move(state));
   connection.mock_observer().FlushForTesting();
@@ -165,18 +200,35 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarUIBrowserTest, SetReloadButtonState) {
 
 // Tests that the BindInterface method for BrowserControlsService works
 // correctly.
-IN_PROC_BROWSER_TEST_F(WebUIToolbarUIBrowserTest, BindService) {
-  MockBrowserControlsServiceConnection connection(ui());
+IN_PROC_BROWSER_TEST_F(WebUIToolbarUIBrowserTest, BindBrowserControlsService) {
+  BrowserControlsServiceConnectionManager connection(ui());
+
+  EXPECT_TRUE(connection.is_bound());
+  EXPECT_TRUE(connection.is_connected());
+}
+
+// Tests that the BindInterface method for ToolbarUIService works
+// correctly.
+IN_PROC_BROWSER_TEST_F(WebUIToolbarUIBrowserTest, BindToolbarUIService) {
+  ToolbarUIServiceConnectionManager connection(ui());
 
   EXPECT_TRUE(connection.is_bound());
   EXPECT_TRUE(connection.is_connected());
 }
 
 // Tests that connecting to the service instantiates the BrowserControlsService.
-IN_PROC_BROWSER_TEST_F(WebUIToolbarUIBrowserTest, CreateService) {
-  MockBrowserControlsServiceConnection connection(ui());
+IN_PROC_BROWSER_TEST_F(WebUIToolbarUIBrowserTest,
+                       CreateBrowserControlsService) {
+  BrowserControlsServiceConnectionManager connection(ui());
 
-  EXPECT_THAT(ui()->browser_controls_service_for_testing(), testing::NotNull());
+  EXPECT_TRUE(connection.is_connected());
+}
+
+// Tests that connecting to the service instantiates the ToolbarUIService.
+IN_PROC_BROWSER_TEST_F(WebUIToolbarUIBrowserTest, CreateToolbarUIService) {
+  ToolbarUIServiceConnectionManager connection(ui());
+
+  EXPECT_TRUE(connection.is_connected());
 }
 
 // Tests that Service creation handles a null CommandUpdater gracefully.
@@ -192,7 +244,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarUIBrowserTest,
 
   web_ui()->set_web_contents(dummy_content.get());
 
-  MockBrowserControlsServiceConnection connection(ui());
+  BrowserControlsServiceConnectionManager connection(ui());
   // This line is necessary, because there is a defect in mojo's is_connected()
   // which erroneously return true without this, even if the remote is not
   // actually connected.

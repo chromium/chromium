@@ -1,0 +1,46 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module toolbar_ui_api.mojom;
+
+// The context menu types that can be opened with ToolbarUIService's
+// ShowContextMenu.
+enum ContextMenuType {
+  kUnspecified = 0,
+  kReload = 1,
+  kSplitTabsAction = 2,
+  kSplitTabsContext = 3,
+};
+
+enum SplitTabActiveLocation {
+  kStart,
+  kEnd,
+  kTop,
+  kBottom,
+};
+
+enum ToolbarButtonType {
+  kSplitTabs,
+};
+
+struct ReloadControlState {
+  bool is_devtools_connected;
+  bool is_navigation_loading;
+  bool is_context_menu_visible;
+};
+
+struct SplitTabsControlState {
+  bool is_current_tab_split;
+  SplitTabActiveLocation location;
+  bool is_pinned;
+  bool is_context_menu_visible;
+};
+
+struct NavigationControlsState {
+  ReloadControlState reload_control_state;
+  SplitTabsControlState split_tabs_control_state;
+  // This is incremented every time a settings change may change the layout
+  // constants.
+  int32 layout_constants_version = 0;
+};

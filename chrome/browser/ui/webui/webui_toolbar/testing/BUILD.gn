@@ -14,6 +14,7 @@ source_set("testing") {
     "//chrome/browser/ui/webui/webui_toolbar/adapters",
     "//chrome/browser/ui/webui/webui_toolbar/utils",
     "//components/browser_apis/browser_controls:mojom_data_model",
+    "//components/browser_apis/ui_controllers/toolbar:mojom_data_model",
     "//ui/base:types",
   ]
 }

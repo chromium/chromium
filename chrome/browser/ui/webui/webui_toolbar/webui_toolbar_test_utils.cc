@@ -7,14 +7,13 @@
 MockReloadButtonPage::MockReloadButtonPage() = default;
 MockReloadButtonPage::~MockReloadButtonPage() = default;
 
-mojo::PendingRemote<browser_controls_api::mojom::BrowserControlsObserver>
+mojo::PendingRemote<toolbar_ui_api::mojom::ToolbarUIObserver>
 MockReloadButtonPage::BindAndGetRemote() {
   return receiver_.BindNewPipeAndPassRemote();
 }
 
 void MockReloadButtonPage::Bind(
-    mojo::PendingReceiver<browser_controls_api::mojom::BrowserControlsObserver>
-        receiver) {
+    mojo::PendingReceiver<toolbar_ui_api::mojom::ToolbarUIObserver> receiver) {
   receiver_.Bind(std::move(receiver));
 }
 
@@ -22,14 +21,19 @@ void MockReloadButtonPage::FlushForTesting() {
   receiver_.FlushForTesting();
 }
 
-MockWebWebUIToolbarDelegate::MockWebWebUIToolbarDelegate() = default;
-MockWebWebUIToolbarDelegate::~MockWebWebUIToolbarDelegate() = default;
+MockToolbarUIServiceDelegate::MockToolbarUIServiceDelegate() = default;
+MockToolbarUIServiceDelegate::~MockToolbarUIServiceDelegate() = default;
 
-browser_controls_api::mojom::NavigationControlsStatePtr
+MockBrowserControlsServiceDelegate::MockBrowserControlsServiceDelegate() =
+    default;
+MockBrowserControlsServiceDelegate::~MockBrowserControlsServiceDelegate() =
+    default;
+
+toolbar_ui_api::mojom::NavigationControlsStatePtr
 CreateValidNavigationControlsState() {
-  return browser_controls_api::mojom::NavigationControlsState::New(
-      browser_controls_api::mojom::ReloadControlState::New(),
-      browser_controls_api::mojom::SplitTabsControlState::New(),
+  return toolbar_ui_api::mojom::NavigationControlsState::New(
+      toolbar_ui_api::mojom::ReloadControlState::New(),
+      toolbar_ui_api::mojom::SplitTabsControlState::New(),
       /*layout_constants_version=*/0);
 }
 

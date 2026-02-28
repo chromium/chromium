@@ -1933,6 +1933,7 @@ static_library("browser") {
     "//components/activity_reporter",
     "//components/activity_reporter:buildflags",
     "//components/browser_apis/tab_strip:mojom",
+    "//components/browser_apis/ui_controllers/toolbar:mojom",
     "//components/content_settings/browser/ui",
     "//components/enterprise/connectors/core",
     "//components/enterprise/connectors/core:cloud_content_scanning",

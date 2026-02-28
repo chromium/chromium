@@ -136,9 +136,9 @@ WebUIToolbarWebView::WebUIToolbarWebView(
                               base::Unretained(this)))) {
   base::trace_event::EmitNamedTrigger("webui-toolbar-constructor");
   last_queued_state_.split_tabs_control_state =
-      browser_controls_api::mojom::SplitTabsControlState::New();
+      toolbar_ui_api::mojom::SplitTabsControlState::New();
   last_queued_state_.reload_control_state =
-      browser_controls_api::mojom::ReloadControlState::New();
+      toolbar_ui_api::mojom::ReloadControlState::New();
   last_queued_state_.layout_constants_version = 0;
   if (auto* manager = InitialWebUIWindowMetricsManager::From(browser_)) {
     manager->OnReloadButtonCreated();
@@ -218,7 +218,7 @@ gfx::Size WebUIToolbarWebView::CalculatePreferredSize(
 }
 
 void WebUIToolbarWebView::HandleContextMenu(
-    browser_controls_api::mojom::ContextMenuType menu_type,
+    toolbar_ui_api::mojom::ContextMenuType menu_type,
     gfx::Point viewport_coordinate_css_pixels,
     ui::mojom::MenuSourceType source) {
   CHECK(web_view_);
@@ -234,14 +234,14 @@ void WebUIToolbarWebView::HandleContextMenu(
           .OffsetFromOrigin();
 
   switch (menu_type) {
-    case browser_controls_api::mojom::ContextMenuType::kReload:
+    case toolbar_ui_api::mojom::ContextMenuType::kReload:
       reload_control_.HandleContextMenu(GetWidget(), screen_location, source);
       break;
-    case browser_controls_api::mojom::ContextMenuType::kSplitTabsAction:
-    case browser_controls_api::mojom::ContextMenuType::kSplitTabsContext:
+    case toolbar_ui_api::mojom::ContextMenuType::kSplitTabsAction:
+    case toolbar_ui_api::mojom::ContextMenuType::kSplitTabsContext:
       split_tabs_control_.HandleContextMenu(menu_type, screen_location, source);
       break;
-    case browser_controls_api::mojom::ContextMenuType::kUnspecified:
+    case toolbar_ui_api::mojom::ContextMenuType::kUnspecified:
       NOTREACHED() << "Unexpected ClickDispositionFlag::kUnspecified.";
   }
 }
@@ -261,24 +261,27 @@ ReloadControl* WebUIToolbarWebView::GetReloadControl() {
   return &reload_control_;
 }
 
-browser_controls_api::BrowserControlsService::Delegate*
-WebUIToolbarWebView::GetDelegate() {
+browser_controls_api::BrowserControlsService::BrowserControlsServiceDelegate*
+WebUIToolbarWebView::GetBrowserControlsDelegate() {
   return this;
 }
 
-std::unique_ptr<browser_controls_api::NavigationControlsStateFetcher>
+toolbar_ui_api::ToolbarUIService::ToolbarUIServiceDelegate*
+WebUIToolbarWebView::GetToolbarUIServiceDelegate() {
+  return this;
+}
+
+std::unique_ptr<toolbar_ui_api::NavigationControlsStateFetcher>
 WebUIToolbarWebView::GetNavigationControlsStateFetcher() {
-  return std::make_unique<
-      browser_controls_api::NavigationControlsStateFetcherImpl>(
+  return std::make_unique<toolbar_ui_api::NavigationControlsStateFetcherImpl>(
       base::BindRepeating(&WebUIToolbarWebView::GetNavigationControlsState,
                           base::Unretained(this)));
 }
 
-browser_controls_api::mojom::NavigationControlsStatePtr
+toolbar_ui_api::mojom::NavigationControlsStatePtr
 WebUIToolbarWebView::GetNavigationControlsState() {
   return last_queued_state_.Clone();
 }
-
 
 void WebUIToolbarWebView::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
@@ -419,7 +422,7 @@ void WebUIToolbarWebView::PermitLaunchUrl() {
 }
 
 void WebUIToolbarWebView::OnReloadControlStateChanged(
-    browser_controls_api::mojom::ReloadControlStatePtr state) {
+    toolbar_ui_api::mojom::ReloadControlStatePtr state) {
   if (*state != *last_queued_state_.reload_control_state) {
     last_queued_state_.reload_control_state = std::move(state);
     PostPushNavigationState();
@@ -427,7 +430,7 @@ void WebUIToolbarWebView::OnReloadControlStateChanged(
 }
 
 void WebUIToolbarWebView::OnSplitTabsControlStateChanged(
-    browser_controls_api::mojom::SplitTabsControlStatePtr state) {
+    toolbar_ui_api::mojom::SplitTabsControlStatePtr state) {
   if (*state != *last_queued_state_.split_tabs_control_state) {
     last_queued_state_.split_tabs_control_state = std::move(state);
     PostPushNavigationState();

@@ -1,0 +1,43 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module toolbar_ui_api.mojom;
+
+import "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom";
+import "ui/base/mojom/menu_source_type.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+import "mojo/public/mojom/base/error.mojom";
+
+// Used by Toolbar UI to observe navigation controls state changes.
+interface ToolbarUIObserver {
+  // Observes events for navigation controls (e.g. back, forward, reload
+  // buttons). |state| contains the state for all navigation controls
+  // so that they can update together to avoid visual flicker.
+  OnNavigationControlsStateChanged(NavigationControlsState state);
+};
+
+struct InitialState {
+    NavigationControlsState state;
+    pending_receiver<ToolbarUIObserver> update_stream;
+};
+
+// ToolbarUIService defines methods to be called from the WebUI to the
+// browser-side to drive UI logic.
+interface ToolbarUIService {
+  // Binds an observer to the service. This is a synchronization point between
+  // the client and the browser. All subsequent updates after the initial
+  // data will be associated receiver.
+  Bind() => result<InitialState, mojo_base.mojom.Error>;
+
+  // Displays the context menu with the provided menu type at the provided
+  // offset in CSS pixels relative to the WebUIToolbarWebView's viewport origin.
+  // The source indicates what triggered showing this menu (mouse, keyboard,
+  // etc).
+  ShowContextMenu(ContextMenuType menu_type,
+                  gfx.mojom.Point viewport_coordinate_css_pixels,
+                  ui.mojom.MenuSourceType source);
+
+  // Called when the page finishes initialization.
+  OnPageInitialized();
+};

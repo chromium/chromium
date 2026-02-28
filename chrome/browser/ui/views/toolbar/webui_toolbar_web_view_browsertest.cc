@@ -38,6 +38,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom.h"
 #include "components/prefs/pref_service.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "content/public/browser/javascript_dialog_manager.h"
@@ -338,7 +339,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
   // Show reload button context menu.
   webui_toolbar_view->GetReloadControl()->SetDevToolsStatus(true);
   webui_toolbar_view->HandleContextMenu(
-      browser_controls_api::mojom::ContextMenuType::kReload,
+      toolbar_ui_api::mojom::ContextMenuType::kReload,
       element->GetScreenBounds().bottom_right(),
       ui::mojom::MenuSourceType::kMouse);
 
@@ -391,7 +392,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
 
   // Show context menu.
   split_tabs_control->HandleContextMenu(
-      browser_controls_api::mojom::ContextMenuType::kSplitTabsContext,
+      toolbar_ui_api::mojom::ContextMenuType::kSplitTabsContext,
       element->GetScreenBounds().bottom_right(),
       ui::mojom::MenuSourceType::kMouse);
 

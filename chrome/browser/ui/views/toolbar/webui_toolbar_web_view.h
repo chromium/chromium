@@ -13,8 +13,11 @@
 #include "chrome/browser/ui/views/toolbar/webui_split_tabs_control.h"
 #include "chrome/browser/ui/webui/webui_toolbar/adapters/navigation_controls_state_fetcher.h"
 #include "chrome/browser/ui/webui/webui_toolbar/browser_controls_service.h"
+#include "chrome/browser/ui/webui/webui_toolbar/toolbar_ui_service.h"
 #include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_ui.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api.mojom.h"
+#include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -33,7 +36,9 @@ class WebView;
 class WebUIToolbarWebView
     : public views::View,
       public content::WebContentsObserver,
-      public browser_controls_api::BrowserControlsService::Delegate,
+      public toolbar_ui_api::ToolbarUIService::ToolbarUIServiceDelegate,
+      public browser_controls_api::BrowserControlsService::
+          BrowserControlsServiceDelegate,
       public WebUIToolbarUI::DependencyProvider {
   METADATA_HEADER(WebUIToolbarWebView, views::View)
 
@@ -52,16 +57,20 @@ class WebUIToolbarWebView
   WebUILocationBar* GetLocationBar() { return location_bar_.get(); }
 
   // WebUIToolbarUI::DependencyProvider:
-  browser_controls_api::BrowserControlsService::Delegate* GetDelegate()
-      override;
-  std::unique_ptr<browser_controls_api::NavigationControlsStateFetcher>
+  browser_controls_api::BrowserControlsService::BrowserControlsServiceDelegate*
+  GetBrowserControlsDelegate() override;
+  toolbar_ui_api::ToolbarUIService::ToolbarUIServiceDelegate*
+  GetToolbarUIServiceDelegate() override;
+  std::unique_ptr<toolbar_ui_api::NavigationControlsStateFetcher>
   GetNavigationControlsStateFetcher() override;
 
-  // BrowserControlsService::BrowserControlsServiceDelegate:
-  void HandleContextMenu(browser_controls_api::mojom::ContextMenuType menu_type,
+  // ToolbarUIService::ToolbarUIServiceDelegate:
+  void HandleContextMenu(toolbar_ui_api::mojom::ContextMenuType menu_type,
                          gfx::Point viewport_coordinate_css_pixels,
                          ui::mojom::MenuSourceType source) override;
   void OnPageInitialized() override;
+
+  // BrowserControlsService::BrowserControlsServiceDelegate:
   void PermitLaunchUrl() override;
 
   // views::View:
@@ -93,7 +102,7 @@ class WebUIToolbarWebView
   friend WebUIReloadControl;
   friend WebUISplitTabsControl;
 
-  browser_controls_api::mojom::NavigationControlsStatePtr
+  toolbar_ui_api::mojom::NavigationControlsStatePtr
   GetNavigationControlsState();
 
   // Reloads the WebUI toolbar to recover from crashes or unresponsiveness.
@@ -118,14 +127,14 @@ class WebUIToolbarWebView
 
   // Called by friended controls to push state.
   void OnReloadControlStateChanged(
-      browser_controls_api::mojom::ReloadControlStatePtr state);
+      toolbar_ui_api::mojom::ReloadControlStatePtr state);
   void OnSplitTabsControlStateChanged(
-      browser_controls_api::mojom::SplitTabsControlStatePtr state);
+      toolbar_ui_api::mojom::SplitTabsControlStatePtr state);
 
   void OnTouchUiChanged();
   void PostPushNavigationState();
   void PushNavigationState(uint64_t state_generation);
-  browser_controls_api::mojom::NavigationControlsState last_queued_state_;
+  toolbar_ui_api::mojom::NavigationControlsState last_queued_state_;
   uint64_t current_state_generation_ = 0;
 
   InitializationState initialization_state_ =

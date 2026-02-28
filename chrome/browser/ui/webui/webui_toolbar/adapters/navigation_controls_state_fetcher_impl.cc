@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/webui/webui_toolbar/adapters/navigation_controls_state_fetcher_impl.h"
 
-namespace browser_controls_api {
+namespace toolbar_ui_api {
 
 NavigationControlsStateFetcherImpl::NavigationControlsStateFetcherImpl(
     CallbackType state_fetcher)
@@ -18,4 +18,4 @@ NavigationControlsStateFetcherImpl::GetNavigationControlsState() {
   return state_fetcher_.Run();
 }
 
-}  // namespace browser_controls_api
+}  // namespace toolbar_ui_api

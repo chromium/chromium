@@ -143,7 +143,7 @@ export class ReloadButtonAppElement extends CrLitElement {
       // as true, so that it won't be treated as a normal click.
       this.isLongPressed_ = true;
       if (this.state.isDevtoolsConnected) {
-        BrowserProxyImpl.getInstance().handler.showContextMenu(
+        BrowserProxyImpl.getInstance().toolbarUIHandler.showContextMenu(
             ContextMenuType.kReload, this.contextMenuPosition(),
             MenuSourceType.kLongPress);
       }
@@ -207,11 +207,11 @@ export class ReloadButtonAppElement extends CrLitElement {
     clearTimeout(this.longPressTimer_);
 
     if (this.state.isNavigationLoading) {
-      BrowserProxyImpl.getInstance().handler.stopLoad();
+      BrowserProxyImpl.getInstance().browserControlsHandler.stopLoad();
     } else {
       // If the shift or ctrl key is pressed, we should reload with cache
       // bypassed.
-      BrowserProxyImpl.getInstance().handler.reloadFromClick(
+      BrowserProxyImpl.getInstance().browserControlsHandler.reloadFromClick(
           /*bypass_cache=*/ e.shiftKey || e.ctrlKey, this.generateFlags(e));
     }
 
@@ -223,7 +223,7 @@ export class ReloadButtonAppElement extends CrLitElement {
 
   protected onContextmenu_(e: PointerEvent) {
     if (this.state.isDevtoolsConnected) {
-      BrowserProxyImpl.getInstance().handler.showContextMenu(
+      BrowserProxyImpl.getInstance().toolbarUIHandler.showContextMenu(
           ContextMenuType.kReload, this.contextMenuPosition(),
           MenuSourceType.kMouse);
     }

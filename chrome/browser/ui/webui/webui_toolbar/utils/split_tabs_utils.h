@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_WEBUI_TOOLBAR_UTILS_SPLIT_TABS_UTILS_H_
 
 #include "components/browser_apis/browser_controls/browser_controls_api_data_model.mojom.h"
+#include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom.h"
 
 class BrowserWindowInterface;
 
@@ -18,8 +19,8 @@ namespace webui_toolbar {
 // Represents the split state of the active tab.
 struct TabSplitStatus {
   bool is_split = false;
-  browser_controls_api::mojom::SplitTabActiveLocation location =
-      browser_controls_api::mojom::SplitTabActiveLocation::kStart;
+  toolbar_ui_api::mojom::SplitTabActiveLocation location =
+      toolbar_ui_api::mojom::SplitTabActiveLocation::kStart;
 
   bool operator==(const TabSplitStatus& other) const = default;
 };
@@ -29,7 +30,7 @@ TabSplitStatus ComputeTabSplitStatus(BrowserWindowInterface* browser_interface);
 
 // Gets the pin state from user prefs.
 bool IsButtonPinned(BrowserWindowInterface* browser_interface,
-                    browser_controls_api::mojom::ToolbarButtonType type);
+                    toolbar_ui_api::mojom::ToolbarButtonType type);
 
 // Populates the WebUI data source with split tabs specific strings and initial
 // state.

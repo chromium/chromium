@@ -93,6 +93,7 @@
 #include "chrome/common/chrome_features.h"
 #include "components/autofill/core/browser/ml_model/logging/autofill_ml_internals.mojom.h"
 #include "components/browser_apis/browser_controls/browser_controls_api.mojom.h"
+#include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api.mojom.h"
 #include "components/commerce/core/mojom/shopping_service.mojom.h"  // nogncheck crbug.com/1125897
 #include "components/contextual_tasks/public/features.h"
 #include "components/data_sharing/public/features.h"
@@ -681,6 +682,7 @@ void PopulateChromeWebUIFrameInterfaceBrokersTrustedPartsDesktop(
   if (features::IsWebUIToolbarEnabled()) {
     registry.ForWebUI<WebUIToolbarUI>()
         .Add<browser_controls_api::mojom::BrowserControlsService>()
+        .Add<toolbar_ui_api::mojom::ToolbarUIService>()
         .Add<tracked_element::mojom::TrackedElementHandler>();
   }
 

@@ -7,17 +7,18 @@
 
 #include "chrome/browser/command_updater.h"
 #include "chrome/browser/ui/webui/webui_toolbar/browser_controls_service.h"
+#include "chrome/browser/ui/webui/webui_toolbar/toolbar_ui_service.h"
 #include "components/browser_apis/browser_controls/browser_controls_api.mojom.h"
-#include "components/browser_apis/browser_controls/browser_controls_api_data_model.mojom.h"
+#include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api.mojom.h"
+#include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/window_open_disposition.h"
 
 // Mock implementation of the
-// browser_controls_api::mojom::BrowserControlsObserver interface.
-class MockReloadButtonPage
-    : public browser_controls_api::mojom::BrowserControlsObserver {
+// toolbar_ui_api::mojom::ToolbarUIObserver interface.
+class MockReloadButtonPage : public toolbar_ui_api::mojom::ToolbarUIObserver {
  public:
   MockReloadButtonPage();
   ~MockReloadButtonPage() override;
@@ -26,43 +27,53 @@ class MockReloadButtonPage
   MockReloadButtonPage& operator=(const MockReloadButtonPage&) = delete;
 
   // Returns a PendingRemote to this mock implementation.
-  mojo::PendingRemote<browser_controls_api::mojom::BrowserControlsObserver>
+  mojo::PendingRemote<toolbar_ui_api::mojom::ToolbarUIObserver>
   BindAndGetRemote();
 
-  void Bind(mojo::PendingReceiver<
-            browser_controls_api::mojom::BrowserControlsObserver> receiver);
+  void Bind(
+      mojo::PendingReceiver<toolbar_ui_api::mojom::ToolbarUIObserver> receiver);
 
   void FlushForTesting();
 
-  // browser_controls_api::mojom::BrowserControlsObserver:
+  // toolbar_ui_api::mojom::ToolbarUIObserver:
   MOCK_METHOD(void,
               OnNavigationControlsStateChanged,
-              (browser_controls_api::mojom::NavigationControlsStatePtr state),
+              (toolbar_ui_api::mojom::NavigationControlsStatePtr state),
               (override));
 
  private:
-  mojo::Receiver<browser_controls_api::mojom::BrowserControlsObserver>
-      receiver_{this};
+  mojo::Receiver<toolbar_ui_api::mojom::ToolbarUIObserver> receiver_{this};
 };
 
-class MockWebWebUIToolbarDelegate
-    : public browser_controls_api::BrowserControlsService::Delegate {
+class MockToolbarUIServiceDelegate
+    : public toolbar_ui_api::ToolbarUIService::ToolbarUIServiceDelegate {
  public:
-  MockWebWebUIToolbarDelegate();
-  ~MockWebWebUIToolbarDelegate() override;
+  MockToolbarUIServiceDelegate();
+  ~MockToolbarUIServiceDelegate() override;
 
+  // ToolbarUIService::ToolbarUIServiceDelegate:
   MOCK_METHOD(void,
               HandleContextMenu,
-              (browser_controls_api::mojom::ContextMenuType,
+              (toolbar_ui_api::mojom::ContextMenuType,
                gfx::Point,
                ui::mojom::MenuSourceType),
               (override));
   MOCK_METHOD(void, OnPageInitialized, (), (override));
+};
+
+class MockBrowserControlsServiceDelegate
+    : public browser_controls_api::BrowserControlsService::
+          BrowserControlsServiceDelegate {
+ public:
+  MockBrowserControlsServiceDelegate();
+  ~MockBrowserControlsServiceDelegate() override;
+
+  // BrowserControlsService::BrowserControlsServiceDelegate:
   MOCK_METHOD(void, PermitLaunchUrl, (), (override));
 };
 
 // Helper to create a valid NavigationControlsState with initialized fields.
-browser_controls_api::mojom::NavigationControlsStatePtr
+toolbar_ui_api::mojom::NavigationControlsStatePtr
 CreateValidNavigationControlsState();
 
 // Mock implementation of CommandUpdater for testing.
