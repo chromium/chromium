@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <meta name=fuzzy content="maxDifference=0-3; totalPixels=0-100">
+<script src="../../../resources/run-after-layout-and-paint.js"></script>
 <style>
 div {
   display: inline-block;
@@ -45,6 +46,9 @@ sideways-lr
 
 <script>
 if (window.internals) {
+  internals.setIsCursorVisible(document, true);
+  internals.settings.setPrimaryHoverType('hover');
+  internals.settings.setAvailableHoverTypes('hover');
   for (let input of document.querySelectorAll('input')) {
     internals.setPseudoClassState(input, ':hover', true);
   }
@@ -52,6 +56,14 @@ if (window.internals) {
   var input = document.getElementById('i7');
   // A spinbutton should be showing on the top (left)
   input.focus();
+}
+if (window.testRunner) {
+  testRunner.waitUntilDone();
+  runAfterLayoutAndPaint(function() {
+    runAfterLayoutAndPaint(function() {
+      testRunner.notifyDone();
+    });
+  });
 }
 </script>
 </body>
