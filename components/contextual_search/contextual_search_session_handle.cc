@@ -4,6 +4,7 @@
 
 #include "components/contextual_search/contextual_search_session_handle.h"
 
+#include <algorithm>
 #include <vector>
 
 #include "base/containers/flat_set.h"
@@ -308,14 +309,18 @@ void ContextualSearchSessionHandle::CreateSearchUrl(
       contextual_search::SessionState::kNavigationOccurred);
   metrics_recorder->RecordQueryMetrics(query_text.size(),
                                        uploaded_context_tokens_.size());
-  // Move the uploaded tokens to the request's file_tokens. Make sure to dedupe
-  // the tokens with those already in the SearchUrlRequestInfo.
-  base::flat_set<base::UnguessableToken> file_tokens_set(
-      std::move(search_url_request_info->file_tokens));
-  file_tokens_set.insert(uploaded_context_tokens_.begin(),
-                         uploaded_context_tokens_.end());
-  search_url_request_info->file_tokens = std::move(file_tokens_set).extract();
-  uploaded_context_tokens_.clear();
+
+  // If the request info has no file tokens, move the uploaded tokens to the
+  // request. Otherwise, keep the file tokens as is and remove them from the
+  // uploaded context tokens manually.
+  if (search_url_request_info->file_tokens.empty()) {
+    search_url_request_info->file_tokens =
+        std::exchange(uploaded_context_tokens_, {});
+  } else {
+    for (const auto& token : search_url_request_info->file_tokens) {
+      std::erase(uploaded_context_tokens_, token);
+    }
+  }
 
   // Copy the tokens from this request to the list of all submitted tokens.
   submitted_context_tokens_.insert(submitted_context_tokens_.end(),
