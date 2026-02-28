@@ -12,10 +12,13 @@
 #include <stddef.h>
 
 #include <array>
+#include <cstdint>
 #include <limits>
 #include <optional>
 #include <ostream>
+#include <string>
 #include <type_traits>
+#include <vector>
 
 #include "base/base_export.h"
 #include "base/memory/raw_ptr.h"
