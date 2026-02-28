@@ -51,8 +51,8 @@ public interface ManagedBottomSheetController
      */
     void setBrowserControlsHiddenRatio(float ratio);
 
-    /** Set the current height of the bottom controls. */
-    void setBottomControlsHeight(int bottomControlsHeight);
+    /** Set the current offset of the bottom controls. */
+    void setBottomControlsOffset(int bottomControlsOffset);
 
     /** Clean up any state maintained by the controller. */
     void destroy();

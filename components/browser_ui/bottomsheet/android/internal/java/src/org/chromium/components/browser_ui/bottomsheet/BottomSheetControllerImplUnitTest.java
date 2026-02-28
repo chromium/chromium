@@ -148,10 +148,10 @@ public class BottomSheetControllerImplUnitTest {
     }
 
     @Test
-    public void testBottomControlsHeight() {
+    public void testBottomControlsOffset() {
         mController.runSheetInitializerForTesting();
         doReturn(true).when(mBottomSheet).isSheetOpen();
-        mController.setBottomControlsHeight(100);
+        mController.setBottomControlsOffset(100);
 
         verify(mBottomSheet).setBottomMargin(100);
 
