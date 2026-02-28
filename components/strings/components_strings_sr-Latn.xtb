@@ -360,7 +360,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="1569694109004336106">Google Chrome pokušava da uključi Windows Hello za popunjavanje lozinki.</translation>
 <translation id="1572765991610098222"><ph name="WIDTH" />x<ph name="HEIGHT" /> in</translation>
 <translation id="1574714699824202614">Verifikuje se način plaćanja</translation>
-<translation id="1576277203042721907">Uvid u kupovinu</translation>
+<translation id="1576277203042721907">Uvid za kupovinu</translation>
 <translation id="1579189948231786790">Vaša organizacija je blokirala ovaj sajt</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1581172376168798878">Ne ističe</translation>
@@ -4250,7 +4250,7 @@ Dodatni detalji:
 <translation id="782886543891417279">WiFi mreža koju koristite (<ph name="WIFI_NAME" />) će možda zahtevati da posetite stranicu za prijavljivanje.</translation>
 <translation id="7831993212387676366">Šta je to lista za kupovinu?</translation>
 <translation id="7840103971441592723">Snimanje ekrana je počelo</translation>
-<translation id="784137052867620416">Uvid u kupovinu</translation>
+<translation id="784137052867620416">Uvid za kupovinu</translation>
 <translation id="7841633276323004751">Načini plaćanja dostupni za izbor da bi se nastavilo sa plaćanjem. Tastatura je sakrivena.</translation>
 <translation id="7842611866969435396">Idemo</translation>
 <translation id="784404208867107517">Grupisana istorija</translation>

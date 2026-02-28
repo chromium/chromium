@@ -360,7 +360,7 @@
 <translation id="1569694109004336106">Google Chrome покушава да укључи Windows Hello за попуњавање лозинки.</translation>
 <translation id="1572765991610098222"><ph name="WIDTH" />x<ph name="HEIGHT" /> in</translation>
 <translation id="1574714699824202614">Верификује се начин плаћања</translation>
-<translation id="1576277203042721907">Увид у куповину</translation>
+<translation id="1576277203042721907">Увид за куповину</translation>
 <translation id="1579189948231786790">Ваша организација је блокирала овај сајт</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1581172376168798878">Не истиче</translation>
@@ -4250,7 +4250,7 @@
 <translation id="782886543891417279">WiFi мрежа коју користите (<ph name="WIFI_NAME" />) ће можда захтевати да посетите страницу за пријављивање.</translation>
 <translation id="7831993212387676366">Шта је то листа за куповину?</translation>
 <translation id="7840103971441592723">Снимање екрана је почело</translation>
-<translation id="784137052867620416">Увид у куповину</translation>
+<translation id="784137052867620416">Увид за куповину</translation>
 <translation id="7841633276323004751">Начини плаћања доступни за избор да би се наставило са плаћањем. Тастатура је сакривена.</translation>
 <translation id="7842611866969435396">Идемо</translation>
 <translation id="784404208867107517">Груписана историја</translation>

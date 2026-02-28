@@ -663,7 +663,7 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <translation id="144518587530125858">Impossible de charger "<ph name="IMAGE_PATH" />" pour le thème.</translation>
 <translation id="1445330076053050041">Sélectionnez une action pour la touche <ph name="KEY_NAME" /></translation>
 <translation id="1447531650545977377">Activer la &amp;synchronisation…</translation>
-<translation id="1447895950459090752">Fiche d'aperçu du survol de l'onglet</translation>
+<translation id="1447895950459090752">Aperçu au survol de l'onglet</translation>
 <translation id="1448264954024227422">Vous pouvez utiliser ce compte avec les applis Android. Pour ajouter le compte d'une autre personne, <ph name="LINK_BEGIN" />ajoutez plutôt un nouvel utilisateur<ph name="LINK_END" /> à votre <ph name="DEVICE_TYPE" />.
 
 Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer à ce compte. Vous pouvez contrôler les autorisations pour les applis Android dans <ph name="APPS_LINK_BEGIN" />Paramètres des applications<ph name="APPS_LINK_END" />.</translation>
@@ -2662,7 +2662,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2782104745158847185">Erreur pendant l'installation de l'application Linux</translation>
 <translation id="2783952358106015700">Utilisez votre clé de sécurité avec <ph name="APP_NAME" /></translation>
 <translation id="2785267875302712148">Check-up Mots de passe</translation>
-<translation id="2785279781154577715">Apparence de la fiche d'aperçu du survol de l'onglet</translation>
+<translation id="2785279781154577715">Apparence de l'aperçu au survol de l'onglet</translation>
 <translation id="2785873697295365461">Descripteurs de fichiers</translation>
 <translation id="2785975315093449168">GTK</translation>
 <translation id="2787354132612937472">–</translation>
@@ -4270,7 +4270,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3875815154304214043"><ph name="APP_NAME" /> est configuré pour s'ouvrir dans un nouvel onglet de navigateur. Les liens compatibles s'ouvriront aussi dans le navigateur. <ph name="BEGIN_LINK_LEARN_MORE" />En savoir plus<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3876219572815410515">Fenêtres redimensionnées en haut</translation>
 <translation id="3877075909000773256">Paramètres du Partage à proximité pour l'appareil de <ph name="USER_NAME" /> dans le compte <ph name="USER_EMAIL" />.</translation>
-<translation id="3877209288227498506">Choisissez d'afficher l'utilisation de la mémoire et les images dans la fiche d'aperçu du survol de l'onglet</translation>
+<translation id="3877209288227498506">Choisissez d'afficher l'utilisation de la mémoire et les images dans l'aperçu au survol de l'onglet</translation>
 <translation id="3879748587602334249">Gestionnaire de téléchargement</translation>
 <translation id="3880513902716032002">Certaines pages que vous consultez sont préchargées</translation>
 <translation id="3884152383786131369">Le contenu Web disponible dans plusieurs langues vous sera proposé dans la première langue disponible de cette liste. Ces préférences sont synchronisées avec les paramètres de votre navigateur. <ph name="BEGIN_LINK_LEARN_MORE" />En savoir plus<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -4963,7 +4963,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> partage une fenêtre.</translation>
 <translation id="4364830672918311045">Afficher les notifications</translation>
 <translation id="4367971618859387374">Nom à afficher</translation>
-<translation id="4368960422722232719">Afficher l'utilisation de la mémoire sur la fiche d'aperçu du survol de l'onglet</translation>
+<translation id="4368960422722232719">Afficher l'utilisation de la mémoire dans l'aperçu au survol de l'onglet</translation>
 <translation id="4369151461324628035">Ne pas autoriser les sites à se connecter aux appareils sur votre réseau local</translation>
 <translation id="4369215744064167350">Demande de site Web approuvée</translation>
 <translation id="4369233657762989723">Activer/Désactiver la dictée</translation>

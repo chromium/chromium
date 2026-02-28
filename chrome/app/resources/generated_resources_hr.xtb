@@ -671,7 +671,7 @@ Dopuštenja koja ste već dali aplikacijama mogu se primijeniti na ovaj račun. 
 <translation id="1448779317883494811">Alat za kistove</translation>
 <translation id="1448963928642384376">Žarišne točke vašeg uređaja</translation>
 <translation id="1449191289887455076">Ponovno pritisnite tipku <ph name="CURRENTKEY" /> da biste potvrdili dodjelu i <ph name="RESPONSE" /></translation>
-<translation id="1450484535522155181">Otvori profil gosta</translation>
+<translation id="1450484535522155181">Otvorite profil gosta</translation>
 <translation id="1451375123200651445">Web-stranica, jedna datoteka</translation>
 <translation id="1453561711872398978">Pošalji <ph name="BEGIN_LINK" />zapisnike o otklanjanju pogrešaka<ph name="END_LINK" /> (preporučeno)</translation>
 <translation id="1454223536435069390">I&amp;zradi snimku zaslona</translation>
@@ -2554,7 +2554,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2721695630904737430">Nadzirane korisnike onemogućio je administrator.</translation>
 <translation id="2722540561488096675">Vaš će se uređaj isključiti za <ph name="TIME_LEFT" />. Uklonite USB i ponovo uključite uređaj. Nakon toga možete upotrebljavati <ph name="DEVICE_OS" />.</translation>
 <translation id="2722547199758472013">ID: <ph name="EXTENSION_ID" /></translation>
-<translation id="2722817840640790566">Otvori profil gosta</translation>
+<translation id="2722817840640790566">Otvorite profil gosta</translation>
 <translation id="2723819893410108315">Boja limuna</translation>
 <translation id="2724822892847436256">Ograničenja</translation>
 <translation id="2724841811573117416">WebRTC zapisnici</translation>
@@ -7679,7 +7679,7 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="6265159465845424232">Pitaj prije kopiranja ili premještanja Microsoftovih datoteka na Microsoft OneDrive</translation>
 <translation id="6265687851677020761">Ukloni priključak</translation>
 <translation id="6266532094411434237">Povezivanje s uređajem <ph name="DEVICE" /></translation>
-<translation id="6266984048393265562">Prilagodba profila</translation>
+<translation id="6266984048393265562">Prilagodite profil</translation>
 <translation id="6267166720438879315">Odaberite certifikat za svoju autentikaciju na <ph name="HOST_NAME" /></translation>
 <translation id="6268252012308737255">Otvori aplikacijom <ph name="APP" /></translation>
 <translation id="6269050081341530851">Kada zatvorite duplikate zadržava se najstarija kopija</translation>

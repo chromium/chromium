@@ -366,7 +366,7 @@ Paroole saate alati kontrollida menüüs <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1232569758102978740">Pealkirjata</translation>
 <translation id="1233497634904001272">Taotluse lõpule viimiseks puudutage uuesti turvavõtit.</translation>
 <translation id="1233721473400465416">Lokaat</translation>
-<translation id="1233835246554936745">{0,plural, =1{Salvesta üks kontol olev üksus}other{Salvesta # kontol olevat üksust}}</translation>
+<translation id="1233835246554936745">{0,plural, =1{Salvesta üks üksus kontole}other{Salvesta # üksust kontole}}</translation>
 <translation id="1234736487471201993">Loo selle pildi jaoks QR-kood</translation>
 <translation id="1234808891666923653">Service Workers</translation>
 <translation id="1235458158152011030">Teadaolevad võrgud</translation>

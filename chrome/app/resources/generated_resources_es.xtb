@@ -4870,7 +4870,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4295072614469448764">La aplicación está disponible en tu terminal. Es posible que también haya un icono en el menú de aplicaciones.</translation>
 <translation id="4295979599050707005">Vuelve a iniciar sesión para confirmar que tu cuenta <ph name="USER_EMAIL" /> se puede usar con sitios web, aplicaciones y extensiones tanto en Chrome como en Google Play. También puedes quitar esta cuenta. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="4296424230850377304">Aplicaciones instaladas y emitidas desde <ph name="APP_NAME" /></translation>
-<translation id="4296632172536745000">Tu contraseña original de este sitio se ha encontrado en una brecha de seguridad de datos públicos. El <ph name="DATE" /> pediste a <ph name="BRAND" /> que cambiara automáticamente tu contraseña.</translation>
+<translation id="4296632172536745000">Tu contraseña original de este sitio se ha encontrado en una brecha pública de seguridad de datos. El <ph name="DATE" /> pediste a <ph name="BRAND" /> que cambiara automáticamente tu contraseña.</translation>
 <translation id="4297219207642690536">Reiniciar y restablecer</translation>
 <translation id="4297813521149011456">Rotación de pantalla</translation>
 <translation id="4298660926525614540">Nombres de almacenamiento extraíble</translation>
@@ -5504,7 +5504,7 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="4744268813103118742">Ir al sitio</translation>
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Activar sonido del sitio}other{Activar sonido de los sitios}}</translation>
-<translation id="4745096442457817087">Tu contraseña se ha encontrado en una brecha de seguridad de datos públicos</translation>
+<translation id="4745096442457817087">Tu contraseña se ha encontrado en una brecha pública de seguridad de datos</translation>
 <translation id="4745500401920035244">El administrador ha hecho un cambio que afecta a todo el sistema e inhabilita algunos perfiles antiguos. Ya no puedes acceder a este perfil, pero puedes quitarlo.</translation>
 <translation id="4746757725581505837">Estás a punto de eliminar tus datos de <ph name="BRAND" /> guardados en este dispositivo</translation>
 <translation id="4748783296226936791">Los sitios se suelen conectar a dispositivos HID para usarlos en funciones que utilizan teclados poco habituales, mandos de juegos y otros dispositivos</translation>

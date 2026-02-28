@@ -810,7 +810,7 @@
 <translation id="4148023517926189160">Dette website vil gerne downloade en fil og føje den til din kalender.</translation>
 <translation id="4152011295694446843">Her finder du dine bogmærker</translation>
 <translation id="4154753961803534698">Søg med kameraet</translation>
-<translation id="4158491215857439601">Adgangskodeadministrator</translation>
+<translation id="4158491215857439601">Adgangskode­administrator</translation>
 <translation id="4159430626587776301">Se anmeldelser af produkter, du har kigget på for nylig</translation>
 <translation id="4161488339191275792">Opret fanegrupper for at organisere dine åbne faner</translation>
 <translation id="4163699139741158298">{count,plural, =1{Bogmærket er gemt i "{title}". Det gemmes kun på denne enhed.}one{{count} bogmærke er gemt i "{title}". Det gemmes kun på denne enhed.}other{{count} bogmærker er gemt i "{title}". De gemmes kun på denne enhed.}}</translation>
@@ -854,7 +854,7 @@
 <translation id="428768789042547925">Nyheder</translation>
 <translation id="429074084062258019">{count,plural, =1{Føj fane til gruppe}one{Føj fane til gruppe}other{Føj faner til gruppe}}</translation>
 <translation id="4302061870579014542">Vælg placering</translation>
-<translation id="4304713468139749426">Adgangs­kode­admin­istrator</translation>
+<translation id="4304713468139749426">Adgangskode­administrator</translation>
 <translation id="4309403553630140242">Tryk to gange for at få flere oplysninger</translation>
 <translation id="4320848494125124980">Seneste</translation>
 <translation id="4322394346347055525">Luk alle andre faner</translation>
@@ -1393,7 +1393,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="6234310016144827337">Tjek din forbindelse, og prøv igen</translation>
 <translation id="6236952928980352967">Gendan advarsel</translation>
 <translation id="6241132809279377987">Få adgang til flere iPhone-funktioner med Google-apps</translation>
-<translation id="6247557882553405851">Google Adgangs­kode­admin­istrator</translation>
+<translation id="6247557882553405851">Google Adgangs­ko­de­administrator</translation>
 <translation id="6251835855431997163">Autofyld <ph name="VALUE" /></translation>
 <translation id="6254066287920239840">Åbn links i appen i stedet for i browseren.</translation>
 <translation id="6259928806013786178">Læsetilstand mislykkedes</translation>
