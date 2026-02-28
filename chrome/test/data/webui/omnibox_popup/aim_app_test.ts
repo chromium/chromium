@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ComposeboxContextAddedMethod} from '//resources/cr_components/search/constants.js';
 import {BrowserProxy, PageCallbackRouter, PageHandlerRemote} from 'chrome://omnibox-popup.top-chrome/omnibox_popup.js';
 import type {PageRemote} from 'chrome://omnibox-popup.top-chrome/omnibox_popup.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -22,8 +21,6 @@ class TestAimBrowserProxy {
     this.page = this.callbackRouter.$.bindNewPipeAndPassRemote();
   }
 }
-
-const FAKE_TOKEN_STRING = '00000000000000001234567890ABCDEF';
 
 suite('AimAppTest', function() {
   let testProxy: TestAimBrowserProxy;
@@ -160,39 +157,5 @@ suite('AimAppTest', function() {
     });
     await microtasksFinished();
     assertTrue(glowAnimationPlayed);
-  });
-
-  test('LogsMetricOnAddSearchContextWithAttachments', function() {
-    const app = document.createElement('omnibox-aim-app');
-    document.body.appendChild(app);
-
-    assertEquals(
-        0,
-        metrics.count(
-            'ContextualSearch.ContextAdded.ContextAddedMethod.Omnibox'));
-
-    // Set context with attachments.
-    app.$.composebox.addSearchContext({
-      input: 'test input',
-      attachments: [{
-        fileAttachment: {
-          uuid: FAKE_TOKEN_STRING,
-          name: 'test.pdf',
-          mimeType: 'application/pdf',
-          imageDataUrl: null,
-        },
-      }],
-      toolMode: 0,
-    });
-
-    assertEquals(
-        1,
-        metrics.count(
-            'ContextualSearch.ContextAdded.ContextAddedMethod.Omnibox'));
-    assertEquals(
-        1,
-        metrics.count(
-            'ContextualSearch.ContextAdded.ContextAddedMethod.Omnibox',
-            ComposeboxContextAddedMethod.CONTEXT_MENU));
   });
 });

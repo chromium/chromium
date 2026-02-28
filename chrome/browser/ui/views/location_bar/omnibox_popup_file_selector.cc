@@ -105,6 +105,10 @@ void OmniboxPopupFileSelector::FileSelectionCanceled() {
 
 void OmniboxPopupFileSelector::OnFileDataReady(
     std::unique_ptr<FileData> file_data) {
+  base::UmaHistogramExactLinear(
+      "ContextualSearch.ContextAdded.ContextAddedMethod.Omnibox",
+      /*ContextMenu*/ 0, 4);
+
   lens::MimeType mime_type;
   if (file_data->mime_type.find("pdf") != std::string::npos) {
     mime_type = lens::MimeType::kPdf;

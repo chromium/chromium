@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/omnibox/omnibox_context_menu_controller.h"
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -34,6 +35,8 @@
 #include "ui/menus/simple_menu_model.h"
 
 namespace {
+
+constexpr int kMinOmniboxContextMenuRecentTabsCommandId = 33000;
 
 size_t GetVisibleItemCount(const ui::SimpleMenuModel* menu_model) {
   size_t visible_count = 0;
@@ -179,6 +182,34 @@ IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerBrowserTest,
   context = searchbox_context_data->TakePendingContext();
   ASSERT_TRUE(context);
   EXPECT_EQ(context->mode, searchbox::mojom::ToolMode::kCreateImage);
+}
+
+IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerBrowserTest,
+                       RecordHistogramOnTabSelected) {
+  base::HistogramTester histogram_tester;
+
+  // Navigate the initial tab to the popup URL.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(chrome::kChromeUIOmniboxPopupURL)));
+  auto* popup_web_contents = GetWebContents();
+
+  // Add a recent tab.
+  GURL url(embedded_test_server()->GetURL("/title1.html"));
+  ASSERT_TRUE(AddTabAtIndex(1, url, ui::PAGE_TRANSITION_TYPED));
+
+  // The controller should be associated with the popup web contents.
+  auto owning_window = browser()->window()->GetNativeWindow();
+  auto omnibox_popup_file_selector =
+      std::make_unique<OmniboxPopupFileSelector>(owning_window);
+  OmniboxContextMenuController controller(omnibox_popup_file_selector.get(),
+                                          popup_web_contents);
+
+  // The first recent tab item should be at
+  // kMinOmniboxContextMenuRecentTabsCommandId.
+  controller.ExecuteCommand(kMinOmniboxContextMenuRecentTabsCommandId, 0);
+
+  histogram_tester.ExpectUniqueSample(
+      "ContextualSearch.ContextAdded.ContextAddedMethod.Omnibox", 0, 1);
 }
 
 class OmniboxContextMenuControllerBrowserTestWithCommand

@@ -608,11 +608,6 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
       }
     }
 
-    if (context.attachments.length > 0) {
-      recordContextAdditionMethod(
-          ComposeboxContextAddedMethod.CONTEXT_MENU, this.composeboxSource_);
-    }
-
     switch (context.toolMode) {
       case ToolMode.kDeepSearch:
         this.setInitialMode(ComposeboxToolMode.kDeepSearch);
