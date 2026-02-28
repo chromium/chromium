@@ -54,14 +54,31 @@ from pylib import constants
                help=__doc__,
                context_settings=dict(ignore_unknown_options=True,
                                      allow_interspersed_args=True,
+                                     allow_extra_args=True,
                                      help_option_names=['-h', '--help']))
 @autotest_options
-@click.argument('files', nargs=-1)
 @click.pass_context
 @telemetry.tracer.start_as_current_span('chromium.tools.autotest.main')
 def main(ctx, **kwargs) -> int:
-  # Capture "extras" (arguments click didn't recognize)
-  kwargs['extras'] = ctx.args
+
+  files_to_test = []
+  extras = []
+
+  parsing_files = True
+  for arg in ctx.args:
+    if len(files_to_test) == 0:
+      parsing_files = True
+
+    if arg.startswith('-'):
+      parsing_files = False
+
+    if parsing_files:
+      files_to_test.append(arg)
+    else:
+      extras.append(arg)
+
+  kwargs['files'] = tuple(files_to_test)
+  kwargs['extras'] = extras
 
   config: AutotestConfig = AutotestConfig(**kwargs)
 
