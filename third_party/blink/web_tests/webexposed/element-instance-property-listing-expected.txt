@@ -213,6 +213,7 @@ namespace http://www.w3.org/1999/xhtml
     property onclick
     property onclose
     property oncommand
+    property oncomplete
     property oncontentvisibilityautostatechange
     property oncontextlost
     property oncontextmenu
@@ -589,6 +590,13 @@ html element colgroup
     property vAlign
     property width
 html element credential
+    property clientId
+    property configURL
+    property domainHint
+    property fields
+    property loginHint
+    property params
+    property type
 html element data
     property value
 html element datalist
@@ -912,6 +920,7 @@ html element link
 html element listing
     property width
 html element login
+    property credential
 html element main
 html element map
     property areas
@@ -1543,6 +1552,7 @@ namespace http://www.w3.org/2000/svg
     property onclick
     property onclose
     property oncommand
+    property oncomplete
     property oncontentvisibilityautostatechange
     property oncontextlost
     property oncontextmenu

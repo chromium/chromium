@@ -41,6 +41,7 @@ interface mixin GlobalEventHandlers {
   attribute EventHandler onclick;
   attribute EventHandler onclose;
   attribute EventHandler oncommand;
+  [RuntimeEnabled=LoginElement] attribute EventHandler oncomplete;
   attribute EventHandler oncontentvisibilityautostatechange;
   attribute EventHandler oncontextlost;
   attribute EventHandler oncontextmenu;

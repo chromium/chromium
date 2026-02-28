@@ -2043,6 +2043,7 @@ interface Document : Node
     getter onclick
     getter onclose
     getter oncommand
+    getter oncomplete
     getter oncontentvisibilityautostatechange
     getter oncontextlost
     getter oncontextmenu
@@ -2269,6 +2270,7 @@ interface Document : Node
     setter onclick
     setter onclose
     setter oncommand
+    setter oncomplete
     setter oncontentvisibilityautostatechange
     setter oncontextlost
     setter oncontextmenu
@@ -3853,7 +3855,21 @@ interface HTMLCollection
     method namedItem
 interface HTMLCredentialElement : HTMLElement
     attribute @@toStringTag
+    getter clientId
+    getter configURL
+    getter domainHint
+    getter fields
+    getter loginHint
+    getter params
+    getter type
     method constructor
+    setter clientId
+    setter configURL
+    setter domainHint
+    setter fields
+    setter loginHint
+    setter params
+    setter type
 interface HTMLDListElement : HTMLElement
     attribute @@toStringTag
     getter compact
@@ -3945,6 +3961,7 @@ interface HTMLElement : Element
     getter onclick
     getter onclose
     getter oncommand
+    getter oncomplete
     getter oncontentvisibilityautostatechange
     getter oncontextlost
     getter oncontextmenu
@@ -4084,6 +4101,7 @@ interface HTMLElement : Element
     setter onclick
     setter onclose
     setter oncommand
+    setter oncomplete
     setter oncontentvisibilityautostatechange
     setter oncontextlost
     setter oncontextmenu
@@ -4703,6 +4721,7 @@ interface HTMLLinkElement : HTMLElement
     setter type
 interface HTMLLoginElement : HTMLElement
     attribute @@toStringTag
+    getter credential
     method constructor
 interface HTMLMapElement : HTMLElement
     attribute @@toStringTag
@@ -6086,6 +6105,7 @@ interface MathMLElement : Element
     getter onclick
     getter onclose
     getter oncommand
+    getter oncomplete
     getter oncontentvisibilityautostatechange
     getter oncontextlost
     getter oncontextmenu
@@ -6200,6 +6220,7 @@ interface MathMLElement : Element
     setter onclick
     setter onclose
     setter oncommand
+    setter oncomplete
     setter oncontentvisibilityautostatechange
     setter oncontextlost
     setter oncontextmenu
@@ -8655,6 +8676,7 @@ interface SVGElement : Element
     getter onclick
     getter onclose
     getter oncommand
+    getter oncomplete
     getter oncontentvisibilityautostatechange
     getter oncontextlost
     getter oncontextmenu
@@ -8771,6 +8793,7 @@ interface SVGElement : Element
     setter onclick
     setter onclose
     setter oncommand
+    setter oncomplete
     setter oncontentvisibilityautostatechange
     setter oncontextlost
     setter oncontextmenu
@@ -13517,6 +13540,7 @@ namespace console
     getter onclick
     getter onclose
     getter oncommand
+    getter oncomplete
     getter oncontentvisibilityautostatechange
     getter oncontextlost
     getter oncontextmenu
@@ -13751,6 +13775,7 @@ namespace console
     setter onclick
     setter onclose
     setter oncommand
+    setter oncomplete
     setter oncontentvisibilityautostatechange
     setter oncontextlost
     setter oncontextmenu

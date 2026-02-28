@@ -246,6 +246,7 @@ class CORE_EXPORT EventTarget : public ScriptWrappable {
   DEFINE_ATTRIBUTE_EVENT_LISTENER(click, kClick)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(close, kClose)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(command, kCommand)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(complete, kComplete)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(contentvisibilityautostatechange,
                                   kContentvisibilityautostatechange)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(contextmenu, kContextmenu)

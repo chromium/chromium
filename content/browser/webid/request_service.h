@@ -682,7 +682,7 @@ class CONTENT_EXPORT RequestService
   // Can be set to true in tests.
   bool force_allow_redirect_to_for_testing_{false};
 
-  mojo::Receiver<blink::mojom::FederatedAuthRequest> receiver_{this};
+  mojo::ReceiverSet<blink::mojom::FederatedAuthRequest> receivers_;
 
   base::WeakPtrFactory<RequestService> weak_ptr_factory_{this};
 };

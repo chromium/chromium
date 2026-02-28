@@ -1598,6 +1598,17 @@ _CONFIG = [
     },
     {
         'paths': [
+            'third_party/blink/renderer/core/html/html_credential_element.cc',
+            'third_party/blink/renderer/core/html/html_credential_element.h',
+            'third_party/blink/renderer/core/html/html_login_element.cc',
+            'third_party/blink/renderer/core/html/html_login_element.h',
+        ],
+        'allowed': [
+            'base::Value',
+        ],
+    },
+    {
+        'paths': [
             'third_party/blink/renderer/core/css/style_color.cc',
             'third_party/blink/renderer/core/html/html_capability_element_base.cc',
             'third_party/blink/renderer/core/paint/box_border_painter.cc',

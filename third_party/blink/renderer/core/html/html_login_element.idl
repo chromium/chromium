@@ -6,4 +6,5 @@
     Exposed=Window,
     RuntimeEnabled=LoginElement
 ] interface HTMLLoginElement : HTMLElement {
+    [CallWith=ScriptState] readonly attribute any credential;
 };

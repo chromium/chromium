@@ -225,23 +225,18 @@ RequestService& RequestService::CreateForTesting(
 void RequestService::BindReceiver(
     mojo::PendingReceiver<blink::mojom::FederatedAuthRequest>
         pending_receiver) {
-  if (receiver_.is_bound()) {
-    // This should only happen with a compromised renderer.
-    // TODO(crbug.com/40810039): Call ReportBadMessage.
-    return;
-  }
-  receiver_.Bind(std::move(pending_receiver));
+  receivers_.Add(this, std::move(pending_receiver));
 }
 
 void RequestService::ReportBadMessage(const char* message) {
-  receiver_.ReportBadMessage(message);
+  receivers_.ReportBadMessage(message);
 }
 
 void RequestService::ResetAndDeleteThisForTesting() {
-  // Resetting the receiver_ before we destruct the objects means that
+  // Resetting the receivers_ before we destruct the objects means that
   // callbacks won't be called. This matches DocumentService::ResetAndDeleteThis
   // and is what our tests expect.
-  receiver_.reset();
+  receivers_.Clear();
   DeleteForCurrentDocument(&render_frame_host());
 }
 
