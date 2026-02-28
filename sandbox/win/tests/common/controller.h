@@ -5,20 +5,44 @@
 #ifndef SANDBOX_WIN_TESTS_COMMON_CONTROLLER_H_
 #define SANDBOX_WIN_TESTS_COMMON_CONTROLLER_H_
 
+#include <concepts>
 #include <string>
 #include <string_view>
+#include <utility>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/dcheck_is_on.h"
 #include "base/memory/raw_ptr.h"
 #include "base/process/process.h"
+#include "base/strings/to_string.h"
 #include "base/time/time.h"
+#include "base/win/scoped_process_information.h"
 #include "base/win/windows_types.h"
 #include "sandbox/win/src/sandbox_policy.h"
 #include "sandbox/win/src/win_utils.h"
 
 namespace sandbox {
+
+namespace internal {
+
+// base::ToString can't handle passing std::wstring so implement our own wrapper
+// to handle this special case.
+template <typename T>
+std::string ToString(const T& value) {
+  return base::ToString(value);
+}
+
+template <>
+std::string ToString(const std::wstring& value);
+
+template <typename T>
+concept TestNameDefinition = requires {
+  { T::kTestName } -> std::convertible_to<std::string_view>;
+};
+
+}  // namespace internal
 
 // See winerror.h for details.
 #define SEVERITY_INFO_FLAGS   0x40000000
@@ -90,19 +114,32 @@ enum SboxTestsState {
 #define SBOX_TESTS_API __declspec(dllexport)
 #define SBOX_TESTS_COMMAND extern "C" SBOX_TESTS_API
 
+#define SBOX_TEST_DECLARE_COMMAND(name)                         \
+  struct name##Def {                                            \
+    static constexpr std::string_view kTestName = #name "Impl"; \
+  };                                                            \
+  using name##TestRunner = GenericTestRunner<name##Def>
+
+#define SBOX_TEST_DEFINE_COMMAND(name) \
+  SBOX_TESTS_COMMAND int name##Impl(base::span<const std::wstring> args)
+
+// Declare a command runner type and its implementation.
+#define SBOX_TEST_COMMAND(name)    \
+  SBOX_TEST_DECLARE_COMMAND(name); \
+  SBOX_TEST_DEFINE_COMMAND(name)
+
 extern "C" {
-typedef int (*CommandFunction)(int argc, wchar_t **argv);
+typedef int (*CommandFunction)(int argc, const wchar_t** argv);
 }
 
+typedef int (*CommandFunctionArgs)(base::span<const std::wstring>);
+
 // Class to facilitate the launch of a test inside the sandbox.
-class TestRunner {
+class TestRunnerBase {
  public:
-  TestRunner(JobLevel job_level, TokenLevel startup_token,
-             TokenLevel main_token);
-
-  TestRunner();
-
-  ~TestRunner();
+  TestRunnerBase(const TestRunnerBase&) = delete;
+  TestRunnerBase& operator=(const TestRunnerBase&) = delete;
+  virtual ~TestRunnerBase();
 
   // Adds a filesystem rules with the path of a file in system32. The function
   // appends "pattern" to "system32" and then call AddRule. Return true if the
@@ -113,16 +150,9 @@ class TestRunner {
   // succeeds.
   bool AllowFileAccess(FileSemantics semantics, std::wstring_view pattern);
 
-  // Starts a child process in the sandbox and ask it to run `command`.
-  // Return a SboxTestResult.
-  int RunTest(std::wstring_view command);
-
   // Sets the timeout value for the child to run the command and return.
   void SetTimeout(DWORD timeout_ms);
   void SetTimeout(base::TimeDelta timeout);
-
-  // Sets TestRunner to return without waiting for the process to exit.
-  void SetAsynchronous(bool is_async) { is_async_ = is_async; }
 
   // Sets whether TestRunner sandboxes the child process. ("--no-sandbox")
   void SetUnsandboxed(bool is_no_sandbox) { no_sandbox_ = is_no_sandbox; }
@@ -134,15 +164,104 @@ class TestRunner {
   // Sets the desired state for the test to run.
   void SetTestState(SboxTestsState desired_state) { state_ = desired_state; }
 
-  // Sets a flag whether the process should be killed when the TestRunner is
-  // destroyed.
-  void SetKillOnDestruction(bool value) { kill_on_destruction_ = value; }
-
-  // Returns the pointers to the policy object. It can be used to modify
+  // Returns the pointer to the policy object. It can be used to modify
   // the policy manually.
   TargetPolicy* GetPolicy();
 
+  // Returns the pointer to the config object. It can be used to modify
+  // the config manually.
+  TargetConfig* GetConfig();
+
   BrokerServices* broker() { return broker_; }
+
+  // Blocks until the number of tracked processes returns to zero.
+  bool WaitForAllTargets();
+
+ protected:
+  TestRunnerBase(JobLevel job_level,
+                 TokenLevel startup_token,
+                 TokenLevel main_token);
+
+  base::Process CreateTestProcess(std::string_view command,
+                                  base::span<const std::string> args,
+                                  bool legacy_command = false);
+
+  int WaitForResult(const base::Process& process) const;
+
+ private:
+  base::Process LaunchSandboxProcess(const base::CommandLine& cmd_line);
+
+  raw_ptr<BrokerServices> broker_;
+  std::unique_ptr<TargetPolicy> policy_;
+  base::TimeDelta timeout_;
+  SboxTestsState state_ = AFTER_REVERT;
+  bool no_sandbox_ = false;
+  bool disable_csrss_ = true;
+};
+
+template <internal::TestNameDefinition Test>
+class GenericTestRunner final : public TestRunnerBase {
+ public:
+  using type = Test;
+
+  GenericTestRunner()
+      : TestRunnerBase(JobLevel::kLockdown,
+                       USER_RESTRICTED_SAME_ACCESS,
+                       USER_LOCKDOWN) {}
+
+  GenericTestRunner(JobLevel job_level,
+                    TokenLevel startup_token,
+                    TokenLevel main_token)
+      : TestRunnerBase(job_level, startup_token, main_token) {}
+
+  static base::CommandLine CreateCommandLineForTesting() {
+    return CreateCommandLine(Test::kTestName, {}, BEFORE_INIT,
+                             /*no_sandbox=*/false,
+                             /*legacy_command=*/false);
+  }
+
+  // Starts a child process in the sandbox and ask it to run the callback
+  // command with optional arguments asynchronously. Return a running process
+  // object.
+  template <typename... Args>
+  base::Process RunTestAsync(Args&&... args) {
+    std::vector<std::string> args_vector = {internal::ToString(args)...};
+    return CreateTestProcess(Test::kTestName, args_vector);
+  }
+
+  // Starts a child process in the sandbox and ask it to run the callback
+  // command with optional arguments. Return a SboxTestResult.
+  template <typename... Args>
+  int RunTest(Args&&... args) {
+    base::Process process = RunTestAsync(std::forward<Args>(args)...);
+    if (!process.IsValid()) {
+      return SBOX_TEST_FAILED_TO_RUN_TEST;
+    }
+    return WaitForResult(process);
+  }
+};
+
+// TODO(forshaw): This is to support old code which passes and entire command
+// line. Remove once the new API is implemented and all the old tests have been
+// updated.
+class TestRunner final : public TestRunnerBase {
+ public:
+  TestRunner()
+      : TestRunnerBase(JobLevel::kLockdown,
+                       USER_RESTRICTED_SAME_ACCESS,
+                       USER_LOCKDOWN) {}
+  TestRunner(JobLevel job_level,
+             TokenLevel startup_token,
+             TokenLevel main_token)
+      : TestRunnerBase(job_level, startup_token, main_token) {}
+  ~TestRunner() override;
+
+  // Sets TestRunner to return without waiting for the process to exit.
+  void SetAsynchronous(bool is_async) { is_async_ = is_async; }
+
+  // Sets a flag whether the process should be killed when the TestRunner is
+  // destroyed.
+  void SetKillOnDestruction(bool value) { kill_on_destruction_ = value; }
 
   // Returns the process handle for an asynchronous test.
   base::ProcessHandle process() { return target_process_.Handle(); }
@@ -150,23 +269,12 @@ class TestRunner {
   // Returns the process ID for an asynchronous test.
   base::ProcessId process_id() { return target_process_.Pid(); }
 
-  // Blocks until the number of tracked processes returns to zero.
-  bool WaitForAllTargets();
+  // Starts a child process in the sandbox and ask it to run `command`.
+  // Return a SboxTestResult.
+  int RunTest(std::wstring_view command);
 
  private:
-  DWORD timeout_ms();
-  int RunTestInternal(std::string_view command,
-                      base::span<const std::string> args);
-  base::Process LaunchSandboxProcess(const base::CommandLine& cmd_line);
-
-  raw_ptr<BrokerServices> broker_;
-  std::unique_ptr<TargetPolicy> policy_;
-  base::TimeDelta timeout_;
-  SboxTestsState state_ = AFTER_REVERT;
-  bool is_init_ = false;
   bool is_async_ = false;
-  bool no_sandbox_ = false;
-  bool disable_csrss_ = true;
   bool kill_on_destruction_ = true;
   base::Process target_process_;
 };
