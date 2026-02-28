@@ -61,6 +61,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.omnibox.FuseboxSessionState;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentRecyclerViewAdapter.FuseboxAttachmentType;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxState;
@@ -186,12 +187,14 @@ public class FuseboxMediatorUnitTest {
                         mWindowAndroid,
                         mModel,
                         mViewHolder,
-                        mAttachments,
                         mTabModelSelectorSupplier,
-                        mComposeboxQueryControllerBridge,
                         mFuseboxStateSupplier,
                         mSnackbarManager);
-        mMediator.beginInput(mInput);
+        mMediator.beginInput(createSession());
+    }
+
+    private FuseboxSessionState createSession() {
+        return new FuseboxSessionState(mInput, mComposeboxQueryControllerBridge, mAttachments);
     }
 
     private void addTabAttachment(Tab tab) {

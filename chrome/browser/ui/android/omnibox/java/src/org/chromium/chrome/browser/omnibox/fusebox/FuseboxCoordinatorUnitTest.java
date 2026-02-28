@@ -10,7 +10,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.lenient;
@@ -83,7 +82,7 @@ public class FuseboxCoordinatorUnitTest {
 
     @Mock private AutocompleteController mAutocompleteController;
     @Mock private AutocompleteController.Natives mControllerJniMock;
-    @Mock private ComposeboxQueryControllerBridge.Natives mComposeboxController;
+    @Mock private ComposeboxQueryControllerBridge mComposebox;
     @Mock private FuseboxMediator mMediator;
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private TabModel mTabModel;
@@ -110,8 +109,6 @@ public class FuseboxCoordinatorUnitTest {
 
     @Before
     public void setUp() {
-        ComposeboxQueryControllerBridgeJni.setInstanceForTesting(mComposeboxController);
-
         AutocompleteControllerJni.setInstanceForTesting(mControllerJniMock);
         lenient().doReturn(mAutocompleteController).when(mControllerJniMock).getForProfile(any());
 
@@ -151,7 +148,7 @@ public class FuseboxCoordinatorUnitTest {
     }
 
     private FuseboxSessionState createSession() {
-        return new FuseboxSessionState(mAutocompleteInput);
+        return new FuseboxSessionState(mAutocompleteInput, mComposebox, null);
     }
 
     @After
@@ -166,9 +163,6 @@ public class FuseboxCoordinatorUnitTest {
         // Start with a default state.
         mCoordinator.setMediatorForTesting(null);
 
-        doReturn(/* nativeInstance= */ 1L)
-                .when(mComposeboxController)
-                .init(any(Profile.class), any(ComposeboxQueryControllerBridge.class));
         mProfileSupplier.set(mProfile);
         assertNotNull(mCoordinator.getMediatorForTesting());
         assertNotEquals(mMediator, mCoordinator.getMediatorForTesting());
@@ -178,13 +172,12 @@ public class FuseboxCoordinatorUnitTest {
     @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
     public void testOnProfileAvailable_featureEnabled_noBridge() {
         // Start with a default state.
-        mCoordinator.setMediatorForTesting(null);
-
-        doReturn(/* nativeInstance= */ 0L)
-                .when(mComposeboxController)
-                .init(any(Profile.class), any(ComposeboxQueryControllerBridge.class));
+        mCoordinator.endInput();
+        mComposebox = null;
+        clearInvocations(mMediator);
         mProfileSupplier.set(mProfile);
-        assertNull(mCoordinator.getMediatorForTesting());
+        mCoordinator.beginInput(createSession());
+        verify(mMediator, never()).beginInput(any());
     }
 
     @Test
@@ -194,8 +187,6 @@ public class FuseboxCoordinatorUnitTest {
         mCoordinator.setMediatorForTesting(null);
 
         mProfileSupplier.set(mProfile);
-        verify(mComposeboxController, never())
-                .init(any(Profile.class), any(ComposeboxQueryControllerBridge.class));
         assertNull(mCoordinator.getMediatorForTesting());
     }
 
@@ -205,9 +196,6 @@ public class FuseboxCoordinatorUnitTest {
         // Start with a default state.
         mCoordinator.setMediatorForTesting(null);
 
-        doReturn(/* nativeInstance= */ 1L)
-                .when(mComposeboxController)
-                .init(any(Profile.class), any(ComposeboxQueryControllerBridge.class));
         mProfileSupplier.set(mProfile);
         assertNotNull(mCoordinator.getMediatorForTesting());
         assertNotEquals(mMediator, mCoordinator.getMediatorForTesting());
@@ -243,7 +231,7 @@ public class FuseboxCoordinatorUnitTest {
 
         // Mediator set by setUp().
         mCoordinator.beginInput(createSession());
-        verify(mMediator).beginInput(mAutocompleteInput);
+        verify(mMediator).beginInput(any());
 
         mCoordinator.endInput();
         verify(mMediator).endInput();
@@ -279,7 +267,7 @@ public class FuseboxCoordinatorUnitTest {
             mCoordinator.beginInput(createSession());
 
             boolean shouldBeVisible = supportedPageClassifications.contains(pageClass);
-            verify(mMediator, times(shouldBeVisible ? 1 : 0)).beginInput(mAutocompleteInput);
+            verify(mMediator, times(shouldBeVisible ? 1 : 0)).beginInput(any());
 
             mCoordinator.endInput();
         }
@@ -299,27 +287,24 @@ public class FuseboxCoordinatorUnitTest {
     @Test
     @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
     public void testNtpAiModeButtonPress() {
-        doReturn(/* nativeInstance= */ 1L)
-                .when(mComposeboxController)
-                .init(any(Profile.class), any(ComposeboxQueryControllerBridge.class));
         mProfileSupplier.set(mProfile);
         RobolectricUtil.runAllBackgroundAndUi();
         mAutocompleteInput.setRequestType(AutocompleteRequestType.AI_MODE);
 
         mCoordinator.beginInput(createSession());
-        verify(mMediator).beginInput(mAutocompleteInput);
+        verify(mMediator).beginInput(any());
     }
 
     @Test
     @EnableFeatures({OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT})
     public void createImageButtonVisibility_regularProfile() {
-        doReturn(/* nativeInstance= */ 1L)
-                .when(mComposeboxController)
-                .init(any(Profile.class), any(ComposeboxQueryControllerBridge.class));
-        doReturn(true).when(mComposeboxController).isCreateImagesEligible(anyLong());
-
+        // Restart session with different eligibility.
+        mCoordinator.endInput();
+        doReturn(true).when(mComposebox).isCreateImagesEligible();
         OmniboxFeatures.sShowImageGenerationButtonInIncognito.setForTesting(false);
         mProfileSupplier.set(mProfile);
+        mCoordinator.beginInput(createSession());
+
         assertTrue(
                 mCoordinator
                         .getModelForTesting()

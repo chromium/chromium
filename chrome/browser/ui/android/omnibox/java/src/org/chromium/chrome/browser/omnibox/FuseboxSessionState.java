@@ -10,6 +10,8 @@ import org.chromium.base.UserData;
 import org.chromium.base.UserDataHost;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.omnibox.fusebox.ComposeboxQueryControllerBridge;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentModelList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.omnibox.AutocompleteInput;
@@ -31,6 +33,8 @@ public class FuseboxSessionState implements UserData {
     private AutocompleteInput mAutocompleteInput = new AutocompleteInput();
 
     private @Nullable Profile mProfile;
+    private @Nullable ComposeboxQueryControllerBridge mComposeBoxQueryControllerBridge;
+    private @Nullable FuseboxAttachmentModelList mFuseboxAttachmentModelList;
     private boolean mIsActive;
 
     /**
@@ -77,8 +81,13 @@ public class FuseboxSessionState implements UserData {
      * @param input The initial AutocompleteInput for this session.
      */
     @VisibleForTesting
-    public FuseboxSessionState(AutocompleteInput input) {
+    public FuseboxSessionState(
+            AutocompleteInput input,
+            @Nullable ComposeboxQueryControllerBridge composeboxQueryControllerBridge,
+            @Nullable FuseboxAttachmentModelList fuseboxAttachmentModelList) {
         mAutocompleteInput = input;
+        mComposeBoxQueryControllerBridge = composeboxQueryControllerBridge;
+        mFuseboxAttachmentModelList = fuseboxAttachmentModelList;
     }
 
     /**
@@ -120,7 +129,37 @@ public class FuseboxSessionState implements UserData {
      *     session.
      */
     public void setProfile(@Nullable Profile profile) {
+        if (mProfile == profile) return;
+
+        // Profile has changed. This typically means either
+        // - profile was applied and we want to construct session objects, or
+        // - profile was removed and we want to destroy them.
+        // Technically this also supports profile swap, but that scenario shouldn't ever happen.
         mProfile = profile;
+
+        if (mFuseboxAttachmentModelList != null) {
+            mFuseboxAttachmentModelList.destroy();
+            mFuseboxAttachmentModelList = null;
+        }
+
+        if (mComposeBoxQueryControllerBridge != null) {
+            mComposeBoxQueryControllerBridge.destroy();
+            mComposeBoxQueryControllerBridge = null;
+        }
+
+        // Abort now if we're not creating session controllers.
+        if (mProfile == null || !mIsActive) return;
+
+        mComposeBoxQueryControllerBridge =
+                ComposeboxQueryControllerBridge.createForProfile(mProfile);
+
+        if (mComposeBoxQueryControllerBridge != null) {
+            // Composebox Controller may not be instantiated if locale or policies prohibit AIM.
+            // Create attachments list only if allowed.
+            mFuseboxAttachmentModelList = new FuseboxAttachmentModelList();
+            mFuseboxAttachmentModelList.setComposeboxQueryControllerBridge(
+                    mComposeBoxQueryControllerBridge);
+        }
     }
 
     /**
@@ -140,5 +179,19 @@ public class FuseboxSessionState implements UserData {
      */
     public AutocompleteInput getAutocompleteInput() {
         return mAutocompleteInput;
+    }
+
+    /**
+     * @return The current {@link ComposeboxQueryControllerBridge} for this session.
+     */
+    public @Nullable ComposeboxQueryControllerBridge getComposeboxQueryControllerBridge() {
+        return mComposeBoxQueryControllerBridge;
+    }
+
+    /**
+     * @return The current {@link FuseboxAttachmentModelList} for this session.
+     */
+    public @Nullable FuseboxAttachmentModelList getFuseboxAttachmentModelList() {
+        return mFuseboxAttachmentModelList;
     }
 }

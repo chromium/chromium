@@ -74,6 +74,7 @@ import org.chromium.chrome.browser.layouts.toolbar.ToolbarWidthConsumer;
 import org.chromium.chrome.browser.lens.LensController;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
+import org.chromium.chrome.browser.omnibox.fusebox.ComposeboxQueryControllerBridge;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxState;
 import org.chromium.chrome.browser.omnibox.geo.GeolocationHeader;
@@ -203,6 +204,7 @@ public class LocationBarMediatorTest {
     @Mock private AppBannerManager.Natives mAppBannerManagerJni;
     @Mock private NewTabPageDelegate mNewTabPageDelegate;
     @Mock private FuseboxCoordinator mFuseboxCoordinator;
+    @Mock private ComposeboxQueryControllerBridge mComposeboxBridge;
 
     @Captor private ArgumentCaptor<Runnable> mRunnableCaptor;
     @Captor private ArgumentCaptor<LoadUrlParams> mLoadUrlParamsCaptor;
@@ -272,6 +274,8 @@ public class LocationBarMediatorTest {
 
         doReturn(mFuseboxStateSupplier).when(mFuseboxCoordinator).getFuseboxStateSupplier();
         doReturn("").when(mUrlCoordinator).getTextWithAutocomplete();
+
+        ComposeboxQueryControllerBridge.setInstanceForTesting(mComposeboxBridge);
 
         AppBannerManagerJni.setInstanceForTesting(mAppBannerManagerJni);
         doReturn(mAppBannerManager)

@@ -65,6 +65,7 @@ import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
 import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
+import org.chromium.chrome.browser.omnibox.fusebox.ComposeboxQueryControllerBridge;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxState;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
@@ -139,6 +140,7 @@ public class AutocompleteMediatorUnitTest {
     private @Mock DeferredIMEWindowInsetApplicationCallback mDeferredImeCallback;
     private @Mock FuseboxCoordinator mFuseboxCoordinator;
     private @Mock PreloadingFeatureMap mPreloadingFeatureMap;
+    private @Mock ComposeboxQueryControllerBridge mComposeboxQueryControllerBridge;
     private @Captor ArgumentCaptor<OmniboxLoadUrlParams> mOmniboxLoadUrlParamsCaptor;
     private @Mock CachedZeroSuggestionsManager.OverridesForTesting
             mMockCachedZeroSuggestionsManager;
@@ -279,7 +281,7 @@ public class AutocompleteMediatorUnitTest {
         autocompleteInput.setPageUrl(url);
         autocompleteInput.setPageTitle(title);
         autocompleteInput.setPageClassification(pageClassification);
-        return new FuseboxSessionState(autocompleteInput);
+        return new FuseboxSessionState(autocompleteInput, mComposeboxQueryControllerBridge, null);
     }
 
     private FuseboxSessionState createEmptySession() {
@@ -1685,7 +1687,7 @@ public class AutocompleteMediatorUnitTest {
                             ((Callback<GURL>) invocation.getArgument(1)).onResult(url);
                             return null;
                         })
-                .when(mFuseboxCoordinator)
+                .when(mComposeboxQueryControllerBridge)
                 .getAimUrl(any(), any());
 
         AutocompleteMatch defaultMatch =
@@ -1730,7 +1732,7 @@ public class AutocompleteMediatorUnitTest {
                             ((Callback<GURL>) invocation.getArgument(1)).onResult(url2);
                             return null;
                         })
-                .when(mFuseboxCoordinator)
+                .when(mComposeboxQueryControllerBridge)
                 .getImageGenerationUrl(any(), any());
 
         AutocompleteMatch defaultMatch =

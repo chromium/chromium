@@ -118,6 +118,7 @@ class AutocompleteMediator
             mDeferredIMEWindowInsetApplicationCallback;
     private final OmniboxSuggestionsDropdownEmbedder mEmbedder;
     private @Nullable AutocompleteInput mAutocompleteInput;
+    private @Nullable FuseboxSessionState mSessionState;
     private final boolean mForcePhoneStyleOmnibox;
     private final Callback<@ControlsPosition Integer> mToolbarPositionChangedCallback =
             this::onToolbarPositionChanged;
@@ -439,9 +440,10 @@ class AutocompleteMediator
      *     through the endInput() (valid -> valid). This is the case for tab switching.
      */
     void beginInput(FuseboxSessionState session) {
-        boolean alreadyInInput = mAutocompleteInput != null;
+        boolean alreadyInInput = mSessionState != null;
         cancelAutocompleteRequests();
         setAutocompleteInput(session.getAutocompleteInput());
+        mSessionState = session;
 
         if (!alreadyInInput) {
             // Propagate the information about omnibox session state change to all the processors
@@ -495,7 +497,7 @@ class AutocompleteMediator
      */
     void endInput() {
         // Session already inactive - stop.
-        if (mAutocompleteInput == null) return;
+        if (!isInInputSession()) return;
 
         // Propagate the information about omnibox session state change to all the processors first.
         // Processors need this for accounting purposes.
@@ -536,6 +538,7 @@ class AutocompleteMediator
         // a consequence the omnibox is unfocused).
         clearSuggestions();
         setAutocompleteInput(null);
+        mSessionState = null;
     }
 
     private void setAutocompleteInput(@Nullable AutocompleteInput input) {
@@ -1172,6 +1175,8 @@ class AutocompleteMediator
             long inputStart,
             boolean openInNewTab,
             boolean openInNewWindow) {
+        if (!isInInputSession()) return;
+
         try (TraceEvent e = TraceEvent.scoped("AutocompleteMediator.loadUrlFromOmniboxMatch")) {
             OmniboxMetrics.recordFocusToOpenTime(
                     System.currentTimeMillis()
@@ -1217,11 +1222,13 @@ class AutocompleteMediator
                                 finalTransition);
                     };
 
-            switch (assumeNonNull(mAutocompleteInput).getRequestType()) {
+            switch (mAutocompleteInput.getRequestType()) {
                 case AutocompleteRequestType.AI_MODE ->
-                        mFuseboxCoordinator.getAimUrl(url, onUrlReady);
+                        assumeNonNull(mSessionState.getComposeboxQueryControllerBridge())
+                                .getAimUrl(url, onUrlReady);
                 case AutocompleteRequestType.IMAGE_GENERATION ->
-                        mFuseboxCoordinator.getImageGenerationUrl(url, onUrlReady);
+                        assumeNonNull(mSessionState.getComposeboxQueryControllerBridge())
+                                .getImageGenerationUrl(url, onUrlReady);
                 default -> onUrlReady.onResult(url);
             }
         }
@@ -1694,9 +1701,11 @@ class AutocompleteMediator
      * @return Whether there is currently an active omnibox session. An active session is defined by
      *     the presence of an {@link AutocompleteInput} and the activity window having focus.
      */
-    @EnsuresNonNullIf("mAutocompleteInput")
+    @EnsuresNonNullIf(
+            value = {"mAutocompleteInput", "mSessionState"},
+            result = true)
     private boolean isInInputSession() {
-        return mAutocompleteInput != null && mActivityWindowFocused;
+        return mSessionState != null && mAutocompleteInput != null && mActivityWindowFocused;
     }
 
     @Override

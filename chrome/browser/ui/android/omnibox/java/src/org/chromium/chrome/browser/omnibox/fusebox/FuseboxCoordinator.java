@@ -48,7 +48,6 @@ import org.chromium.ui.widget.AnchoredPopupWindow;
 import org.chromium.ui.widget.AnchoredPopupWindow.HorizontalOrientation;
 import org.chromium.ui.widget.RectProvider;
 import org.chromium.ui.widget.ViewRectProvider;
-import org.chromium.url.GURL;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -75,7 +74,6 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
     private final FuseboxAttachmentModelList mModelList;
     private final MonotonicObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
     private @Nullable FuseboxMediator mMediator;
-    private @Nullable ComposeboxQueryControllerBridge mComposeboxQueryControllerBridge;
     private @Nullable AutocompleteInput mInput;
     private boolean mDefaultSearchEngineIsGoogle = true;
     private TemplateUrlService mTemplateUrlService;
@@ -177,17 +175,6 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
             mMediator = null;
         }
 
-        if (mComposeboxQueryControllerBridge != null) {
-            mComposeboxQueryControllerBridge.destroy();
-        }
-        mComposeboxQueryControllerBridge =
-                ComposeboxQueryControllerBridge.createForProfile(profile);
-        AutocompleteController.getForProfile(profile)
-                .setComposeboxQueryControllerBridge(mComposeboxQueryControllerBridge);
-        if (mComposeboxQueryControllerBridge == null) return;
-
-        // Set the bridge for the model list to enable tight coupling.
-        mModelList.setComposeboxQueryControllerBridge(mComposeboxQueryControllerBridge);
         mMediator =
                 new FuseboxMediator(
                         mContext,
@@ -195,15 +182,12 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
                         mWindowAndroid,
                         mModel,
                         assumeNonNull(mViewHolder),
-                        mModelList,
                         mTabModelSelectorSupplier,
-                        mComposeboxQueryControllerBridge,
                         mFuseboxStateSupplier,
                         mSnackbarManager);
         if (mLastBrandedColorScheme != null) {
             mMediator.updateVisualsForState(mLastBrandedColorScheme);
         }
-        mModelList.setAttachmentUploadFailedListener(mMediator::onAttachmentUploadFailed);
     }
 
     public void destroy() {
@@ -217,10 +201,6 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
             mTemplateUrlService.removeObserver(this);
         }
         mModelList.destroy();
-        if (mComposeboxQueryControllerBridge != null) {
-            mComposeboxQueryControllerBridge.destroy();
-            mComposeboxQueryControllerBridge = null;
-        }
         if (mViewportRectProvider != null) {
             mViewportRectProvider.destroy();
         }
@@ -244,6 +224,9 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
      *     through the endInput() (valid -> valid). This is the case for tab switching.
      */
     public void beginInput(FuseboxSessionState session) {
+        // Abort early if there is no composebox.
+        if (session.getComposeboxQueryControllerBridge() == null) return;
+
         // We can't do inclusive check due to missing `isPhone()` case in `DeviceInfo`.
         // Additionally these values may change at runtime, e.g. if the user starts Chrome on phone
         // and moves to Android Auto.
@@ -271,12 +254,12 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
             return;
         }
 
-        // Erase all attachments to avoid leaking them to other sessions when user switches tabs.
-        // TODO(crbug.com/474616308): remove when proper session persistence is available.
-        mModelList.clear();
+        // TODO(crbug.com/474616308): move to FuseboxSessionState.
+        AutocompleteController.getForProfile(assumeNonNull(session.getProfile()))
+                .setComposeboxQueryControllerBridge(session.getComposeboxQueryControllerBridge());
 
         mInput = session.getAutocompleteInput();
-        mMediator.beginInput(mInput);
+        mMediator.beginInput(session);
         FuseboxMetrics.notifyOmniboxSessionStarted();
     }
 
@@ -299,24 +282,6 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
             mInput.setRequestType(AutocompleteRequestType.SEARCH);
             assumeNonNull(mMediator).setToolbarVisible(false);
         }
-    }
-
-    /** Returns the URL associated with the current AIM session. */
-    public void getAimUrl(GURL url, Callback<GURL> callback) {
-        if (mMediator == null) {
-            callback.onResult(GURL.emptyGURL());
-            return;
-        }
-        mMediator.getAimUrl(url, callback);
-    }
-
-    /** Returns the URL associated with the current image generation session. */
-    public void getImageGenerationUrl(GURL url, Callback<GURL> callback) {
-        if (mMediator == null) {
-            callback.onResult(GURL.emptyGURL());
-            return;
-        }
-        mMediator.getImageGenerationUrl(url, callback);
     }
 
     public PropertyModel getModelForTesting() {

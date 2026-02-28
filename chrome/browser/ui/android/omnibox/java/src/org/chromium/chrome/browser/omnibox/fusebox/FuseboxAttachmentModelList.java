@@ -196,7 +196,7 @@ public class FuseboxAttachmentModelList implements FileUploadObserver, Iterable<
     }
 
     /** Release all resources and mark this instance ready for recycling. */
-    void destroy() {
+    public void destroy() {
         setComposeboxQueryControllerBridge(null);
         mAttachmentUploadFailedListener = null;
     }
