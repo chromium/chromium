@@ -27,10 +27,11 @@ function getInternalMap(): Map<string, string> {
 }
 
 /**
- * Returns a copy of the current crash keys.
+ * Returns the internal map of crash keys as an object so it can be passed
+ * across the JS->native bridge.
  */
-export function getCrashKeys(): Map<string, string> {
-  return new Map(getInternalMap());
+export function getCrashKeys(): Object {
+  return Object.fromEntries(getInternalMap());
 }
 
 /**

@@ -13,8 +13,7 @@ const crash_keys_tests = new CrWebApi('crash_keys_tests');
 
 gCrWeb.registerApi(crash_keys_tests);
 
-crash_keys_tests.addFunction(
-    'getCrashKeys', () => Object.fromEntries(getCrashKeys()));
+crash_keys_tests.addFunction('getCrashKeys', getCrashKeys);
 crash_keys_tests.addFunction('setCrashKey', setCrashKey);
 crash_keys_tests.addFunction('clearCrashKey', clearCrashKey);
 crash_keys_tests.addFunction('clearAllCrashKeys', clearAllCrashKeys);

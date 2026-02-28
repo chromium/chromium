@@ -5,6 +5,7 @@
 #ifndef IOS_WEB_JS_FEATURES_WINDOW_ERROR_SCRIPT_ERROR_DETAILS_H_
 #define IOS_WEB_JS_FEATURES_WINDOW_ERROR_SCRIPT_ERROR_DETAILS_H_
 
+#import <map>
 #import <string>
 
 #import "url/gurl.h"
@@ -35,6 +36,9 @@ struct ScriptErrorDetails {
 
   // Whether or not this error occurred in the main frame.
   bool is_main_frame;
+
+  // The crash keys set in the JavaScript code before this error occurred.
+  std::map<std::string, std::string> crash_keys;
 };
 
 #endif  // IOS_WEB_JS_FEATURES_WINDOW_ERROR_SCRIPT_ERROR_DETAILS_H_

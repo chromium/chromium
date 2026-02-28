@@ -196,6 +196,7 @@ void WebJsErrorReportProcessor::ReportJavaScriptError(
   report.api = details.api;
   report.error_message = details.message;
   report.stack_trace = RedactStack(details.stack);
+  report.crash_keys = details.crash_keys;
   report.page_url = details.url.GetWithEmptyPath().spec();
 
   std::string filename = details.url.ExtractFileName();
@@ -293,6 +294,13 @@ void WebJsErrorReportProcessor::SendErrorReport(
   if (error_report.error_code) {
     params["error_code"] =
         base::NumberToString(error_report.error_code.value());
+  }
+
+  if (error_report.crash_keys) {
+    for (auto ck = error_report.crash_keys->begin();
+         ck != error_report.crash_keys->end(); ++ck) {
+      params[base::StrCat({"JS_", ck->first})] = ck->second;
+    }
   }
 
   AddExperimentIds(params);

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {clearAllCrashKeys, getCrashKeys} from '//ios/web/js_features/crash_keys/resources/crash_keys.js';
 import {sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.js';
 
 /**
@@ -24,9 +25,14 @@ export function catchAndReportErrors(
       }
     }
     if (errorMessage && errorStack) {
-      sendWebKitMessage(
-          'WindowErrorResultHandler',
-          {'message': errorMessage, 'stack': errorStack, 'api': apiName});
+      const crashKeys = getCrashKeys();
+      clearAllCrashKeys();
+      sendWebKitMessage('WindowErrorResultHandler', {
+        'message': errorMessage,
+        'stack': errorStack,
+        'api': apiName,
+        'crashKeys': crashKeys,
+      });
     }
   }
   return undefined;

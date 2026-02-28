@@ -5,6 +5,7 @@
 #ifndef IOS_WEB_JS_FEATURES_WINDOW_ERROR_IOS_JAVASCRIPT_ERROR_REPORT_H_
 #define IOS_WEB_JS_FEATURES_WINDOW_ERROR_IOS_JAVASCRIPT_ERROR_REPORT_H_
 
+#include <map>
 #include <optional>
 #include <string>
 
@@ -62,6 +63,9 @@ struct IOSJavaScriptErrorReport {
   // This can be important information for debugging since the full URL is not
   // available in `page_url`
   std::optional<std::string> page_url_file_extension;
+
+  // The crash keys set in the JavaScript code before this error occurred.
+  std::optional<std::map<std::string, std::string>> crash_keys;
 };
 
 #endif  // IOS_WEB_JS_FEATURES_WINDOW_ERROR_IOS_JAVASCRIPT_ERROR_REPORT_H_

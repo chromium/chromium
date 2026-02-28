@@ -55,7 +55,10 @@ compile_ts("util_scripts") {
 compile_ts("error_reporting") {
   sources = [ "resources/error_reporting.ts" ]
 
-  deps = [ ":util_scripts" ]
+  deps = [
+    ":util_scripts",
+    "//ios/web/js_features/crash_keys:crash_keys_js",
+  ]
 }
 
 # `compile_ts` and `optimize_js` targets are defined separately here instead of

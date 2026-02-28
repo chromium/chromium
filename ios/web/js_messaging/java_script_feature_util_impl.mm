@@ -55,8 +55,13 @@ GetScriptErrorMessageHandlerJavaScriptFeature() {
         //     {error_message}
         //     {api}:{line_number}
         //     {stack}
+        //     {crash_keys}
         //     {url}
         //     {kMainFrameDescription|kIframeDescription}
+        std::string crash_keys_str;
+        for (const auto [key, value] : error_details.crash_keys) {
+          crash_keys_str += "\n " + key + ": " + value;
+        }
         const char* frame_description = error_details.is_main_frame
                                             ? kMainFrameDescription
                                             : kIframeDescription;
@@ -64,7 +69,10 @@ GetScriptErrorMessageHandlerJavaScriptFeature() {
                     << error_details.message << "\n"
                     << error_details.api << ":" << error_details.line_number
                     << "\n  " << error_details.stack << "\n  "
-                    << error_details.url.spec() << "\n  " << frame_description;
+                    << "Crash Keys:"
+                    << (crash_keys_str.empty() ? "None" : crash_keys_str)
+                    << "\n  " << error_details.url.spec() << "\n  "
+                    << frame_description;
         if (base::FeatureList::IsEnabled(features::kAssertOnJavaScriptErrors)) {
           CHECK(false) << "JavaScript error occurred with "
                           "kAssertOnJavaScriptErrors enabled.";
