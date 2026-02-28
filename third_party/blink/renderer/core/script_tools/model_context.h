@@ -9,6 +9,7 @@
 
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
+#include "base/types/pass_key.h"
 #include "third_party/blink/public/mojom/content_extraction/script_tools.mojom-blink.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_model_context.h"
@@ -93,7 +94,25 @@ class CORE_EXPORT ModelContext : public ScriptWrappable {
 
   class CORE_EXPORT ToolData : public GarbageCollected<ToolData> {
    public:
+    // Creates a JS-backed tool.
+    ToolData(base::PassKey<ModelContext>,
+             mojo::StructPtr<mojom::blink::ScriptTool> script_tool,
+             V8ToolFunction* v8_tool_function,
+             SourceLocation* source_location)
+        : script_tool_(std::move(script_tool)),
+          v8_tool_function_(v8_tool_function),
+          source_location_(source_location) {}
+
+    // Creates a declarative (<form>-backed) tool.
+    ToolData(base::PassKey<ModelContext>,
+             mojo::StructPtr<mojom::blink::ScriptTool> script_tool,
+             DeclarativeWebMCPTool* declarative_tool)
+        : script_tool_(std::move(script_tool)),
+          declarative_tool_(declarative_tool) {}
+
     const String& Name() const;
+
+    const mojom::blink::ScriptTool& ScriptTool() const { return *script_tool_; }
 
     // If this is a JS-provided tool, returns the source location
     // of the call to registerTool(). Otherwise, returns nullptr.
@@ -103,6 +122,11 @@ class CORE_EXPORT ModelContext : public ScriptWrappable {
 
    private:
     friend class ModelContext;
+
+    V8ToolFunction* GetV8ToolFunction() const { return v8_tool_function_; }
+    DeclarativeWebMCPTool* DeclarativeTool() const { return declarative_tool_; }
+
+    void RefreshDeclarativeInputSchema();
 
     mojo::StructPtr<mojom::blink::ScriptTool> script_tool_;
     // A JS-provided MCP tool:
