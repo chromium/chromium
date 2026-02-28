@@ -1056,8 +1056,8 @@ TEST_F(ElementTest, ParseFocusgroupAttrOptOutNone) {
 TEST_F(ElementTest, ParseFocusgroupAttrNoMemoryToken) {
   Document& document = GetDocument();
   SetBodyContent(R"HTML(
-    <div id=a focusgroup="toolbar nomemory"></div>
-    <div id=b focusgroup="listbox inline nomemory"></div>
+    <div id=a focusgroup="toolbar no-memory"></div>
+    <div id=b focusgroup="listbox inline no-memory"></div>
   )HTML");
 
   auto* a = document.getElementById(AtomicString("a"));
@@ -1225,7 +1225,7 @@ TEST_F(ElementTest, FocusgroupFlagsToString) {
       static_cast<FocusgroupFlags>(FocusgroupFlags::kBlock |
                                    FocusgroupFlags::kNoMemory)};
   EXPECT_EQ(
-      "toolbar:(block|nomemory)",
+      "toolbar:(block|no-memory)",
       focusgroup::FocusgroupDataToStringForTesting(toolbar_no_memory_data));
 }
 

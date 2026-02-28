@@ -436,24 +436,4 @@ TEST_F(FocusgroupFlagsTest, ValidTokenListStringIncludesGridTokens) {
   EXPECT_TRUE(messages[0].contains("nowrap"));
 }
 
-TEST_F(FocusgroupFlagsTest, NomemoryModifierSetsFlag) {
-  ScopedFocusgroupForTest focusgroup_scope(true);
-
-  auto* element = MakeGarbageCollected<HTMLDivElement>(GetDocument());
-  GetDocument().body()->appendChild(element);
-
-  ClearConsoleMessages();
-  FocusgroupData result =
-      ParseFocusgroup(element, AtomicString("toolbar nomemory"));
-
-  EXPECT_EQ(result.behavior, FocusgroupBehavior::kToolbar);
-  EXPECT_TRUE(result.flags & FocusgroupFlags::kNoMemory);
-  // Should also have default axes.
-  EXPECT_TRUE(result.flags & FocusgroupFlags::kInline);
-  EXPECT_TRUE(result.flags & FocusgroupFlags::kBlock);
-
-  auto messages = CopyConsoleMessages();
-  EXPECT_EQ(messages.size(), 0u);
-}
-
 }  // namespace blink::focusgroup
