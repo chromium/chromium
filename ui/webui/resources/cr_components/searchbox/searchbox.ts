@@ -1117,8 +1117,8 @@ export class SearchboxElement extends SearchboxElementBase implements
       }
       const metricName =
           `ContextualSearch.UserAction.SubmitQuery.WithoutContext.${source}`;
-      chrome.metricsPrivate.recordUserAction(metricName);
-      chrome.metricsPrivate.recordBoolean(metricName, true);
+      chrome.histograms.recordUserAction(metricName);
+      chrome.histograms.recordBoolean(metricName, true);
 
       // Construct navigation url.
       const searchParams = new URLSearchParams();
@@ -1148,7 +1148,7 @@ export class SearchboxElement extends SearchboxElementBase implements
       this.openComposebox_();
     }
 
-    chrome.metricsPrivate.recordBoolean(
+    chrome.histograms.recordBoolean(
         'NewTabPage.ComposeEntrypoint.Click.UserTextPresent',
         !this.isInputEmpty());
   }

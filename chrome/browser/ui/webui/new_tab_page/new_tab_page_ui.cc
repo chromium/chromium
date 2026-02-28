@@ -802,7 +802,9 @@ constexpr std::string_view kDisabledBrowserPromo = "disabled";
 int NewTabPageUI::instance_count_ = 0;
 
 NewTabPageUI::NewTabPageUI(content::WebUI* web_ui)
-    : ui::MojoWebUIController(web_ui, /*enable_chrome_send=*/true),
+    : ui::MojoWebUIController(web_ui,
+                              /*enable_chrome_send=*/true,
+                              /*enable_chrome_histograms=*/true),
       content::WebContentsObserver(web_ui->GetWebContents()),
       page_factory_receiver_(this),
       customize_buttons_factory_receiver_(this),

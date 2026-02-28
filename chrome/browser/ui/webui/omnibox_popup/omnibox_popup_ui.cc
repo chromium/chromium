@@ -66,7 +66,8 @@ bool OmniboxPopupUIConfig::IsWebUIEnabled(
 
 OmniboxPopupUI::OmniboxPopupUI(content::WebUI* web_ui)
     : TopChromeWebUIController(web_ui,
-                               true /* Needed for webui browser tests */),
+                               /*enable_chrome_send=*/true,
+                               /*enable_chrome_histograms=*/true),
       profile_(Profile::FromWebUI(web_ui)) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       Profile::FromWebUI(web_ui), chrome::kChromeUIOmniboxPopupHost);

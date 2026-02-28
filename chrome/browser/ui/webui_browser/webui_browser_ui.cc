@@ -90,7 +90,9 @@ bool WebUIBrowserUIConfig::IsWebUIEnabled(
 // enable_chrome_send to MojoWebUIController constructor, since they're
 // a package deal via BindingsPolicyValue::kWebUi.
 WebUIBrowserUI::WebUIBrowserUI(content::WebUI* web_ui)
-    : ui::MojoWebUIController(web_ui, /*enable_chrome_send=*/true) {
+    : ui::MojoWebUIController(web_ui,
+                              /*enable_chrome_send=*/true,
+                              /*enable_chrome_histograms=*/true) {
   WebUIBrowserWindow* webui_browser_window =
       WebUIBrowserWindow::FromWebShellWebContents(web_ui->GetWebContents());
   browser_ = webui_browser_window->browser();

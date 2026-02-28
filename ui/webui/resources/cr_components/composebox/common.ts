@@ -71,30 +71,15 @@ export enum GlifAnimationState {
 
 export function recordEnumerationValue(
     metricName: string, value: number, enumSize: number) {
-  // In rare cases chrome.metricsPrivate is not available.
-  // TODO(crbug.com/40162029): Remove this check once the bug is fixed.
-  if (!chrome.metricsPrivate) {
-    return;
-  }
-  chrome.metricsPrivate.recordEnumerationValue(metricName, value, enumSize);
+  chrome.histograms.recordEnumerationValue(metricName, value, enumSize);
 }
 
 export function recordUserAction(metricName: string) {
-  // In rare cases chrome.metricsPrivate is not available.
-  // TODO(crbug.com/40162029): Remove this check once the bug is fixed.
-  if (!chrome.metricsPrivate) {
-    return;
-  }
-  chrome.metricsPrivate.recordUserAction(metricName);
+  chrome.histograms.recordUserAction(metricName);
 }
 
 export function recordBoolean(metricName: string, value: boolean) {
-  // In rare cases chrome.metricsPrivate is not available.
-  // TODO(crbug.com/40162029): Remove this check once the bug is fixed.
-  if (!chrome.metricsPrivate) {
-    return;
-  }
-  chrome.metricsPrivate.recordBoolean(metricName, value);
+  chrome.histograms.recordBoolean(metricName, value);
 }
 
 // TODO(crbug.com/468329884): Consider making this a new contextual entry

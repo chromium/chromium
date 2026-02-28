@@ -42,5 +42,23 @@ export function fakeMetricsPrivate(): MetricsTracker {
   chrome.metricsPrivate.recordSmallCount = (m, v) => metrics.record(m, v);
   chrome.metricsPrivate.recordMediumCount = (m, v) => metrics.record(m, v);
   chrome.metricsPrivate.recordTime = (m, v) => metrics.record(m, v);
+
+  // Mirror for chrome.histograms callers.
+  const histograms =
+      (chrome as any).histograms || ((chrome as any).histograms = {});
+  histograms.recordUserAction = (m: string) => metrics.record(m, 0);
+  histograms.recordBoolean = (m: string, v: boolean) => metrics.record(m, v);
+  histograms.recordPercentage = (m: string, v: number) => metrics.record(m, v);
+  histograms.recordSmallCount = (m: string, v: number) => metrics.record(m, v);
+  histograms.recordMediumCount = (m: string, v: number) => metrics.record(m, v);
+  histograms.recordCount = (m: string, v: number) => metrics.record(m, v);
+  histograms.recordTime = (m: string, v: number) => metrics.record(m, v);
+  histograms.recordMediumTime = (m: string, v: number) => metrics.record(m, v);
+  histograms.recordLongTime = (m: string, v: number) => metrics.record(m, v);
+  histograms.recordValue = (metric: {metricName: string}, v: number) =>
+      metrics.record(metric.metricName, v);
+  histograms.recordEnumerationValue = (m: string, v: number) =>
+      metrics.record(m, v);
+  histograms.recordSparseValue = (m: string, v: number) => metrics.record(m, v);
   return metrics;
 }
