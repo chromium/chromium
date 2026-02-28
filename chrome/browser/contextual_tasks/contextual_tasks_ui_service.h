@@ -153,12 +153,12 @@ class ContextualTasksUiService : public KeyedService {
   virtual bool IsAiUrl(const GURL& url);
 
   // Returns whether the provided URL is to a contextual tasks WebUI page.
-  bool IsContextualTasksUrl(const GURL& url);
+  static bool IsContextualTasksUrl(const GURL& url);
 
   // Returns whether the provided URL is a Google search results page. This
   // method does not check for the validity of any parameters that
   // differentiate different modes or queries.
-  bool IsSearchResultsUrl(const GURL& url);
+  static bool IsSearchResultsUrl(const GURL& url);
 
   // Returns whether the provided URL is a share URL.
   bool IsShareUrl(const GURL& url);
@@ -167,6 +167,10 @@ class ContextualTasksUiService : public KeyedService {
   // the embedded page in the WebUI) search results page that contains the
   // correct params and isn't a shopping query.
   bool IsValidSearchResultsPage(const GURL& url);
+
+  // Returns AIM URL found in the search param of the contextual tasks URL.
+  // Returns empty URL if not found or not from AIM.
+  static GURL GetAimUrlFromContextualTasksUrl(const GURL& url);
 
   // Called when the Lens overlay is shown/hidden. No-op if the active UI is not
   // in the side panel since the Lens button is always hidden in a tab.
@@ -270,7 +274,7 @@ class ContextualTasksUiService : public KeyedService {
   virtual void OnShareUrlNavigation(const GURL& url);
 
   // Checks if the provided URL matches any of the allowed hosts.
-  bool IsAllowedHost(const GURL& url);
+  static bool IsAllowedHost(const GURL& url);
 
   const raw_ptr<Profile> profile_;
 
@@ -294,9 +298,6 @@ class ContextualTasksUiService : public KeyedService {
 
   // A timer used to refresh the OAuth token before it expires.
   base::OneShotTimer token_refresh_timer_;
-
-  // The hosts of the AI page that is loaded into the WebUI.
-  std::vector<GURL> ai_page_hosts_;
 
   // Map a task's ID to the URL that was used to create it, if it exists. This
   // is primarily used in init flows where the contextual tasks UI is

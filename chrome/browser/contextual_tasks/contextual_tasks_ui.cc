@@ -472,14 +472,9 @@ void ContextualTasksUI::OnTaskUpdated(
 }
 
 GURL ContextualTasksUI::GetAimUrl() {
-  std::string aim_url_str;
-  if (net::GetValueForKeyInQuery(
-          web_ui()->GetWebContents()->GetLastCommittedURL(), "aim_url",
-          &aim_url_str)) {
-    return GURL(aim_url_str);
-  } else {
-    return GURL();
-  }
+  return contextual_tasks::ContextualTasksUiService::
+      GetAimUrlFromContextualTasksUrl(
+          web_ui()->GetWebContents()->GetLastCommittedURL());
 }
 
 const std::optional<base::Uuid>& ContextualTasksUI::GetTaskId() {

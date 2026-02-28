@@ -55,6 +55,10 @@ BASE_DECLARE_FEATURE(kContextualTasksExpandButton);
 // requests initiated from within an embedded Co-Browse <webview>.
 BASE_DECLARE_FEATURE(kContextualTasksSendFullVersionListEnabled);
 
+// When contextual tasks is disabled and this flag is enabled, intecept the
+// contextual tasks URL and redirect to aim URL.
+BASE_DECLARE_FEATURE(kContextualTasksUrlRedirectToAimUrl);
+
 // Enum denoting which entry point can show when enabled.
 enum class EntryPointOption {
   kNoEntryPoint,

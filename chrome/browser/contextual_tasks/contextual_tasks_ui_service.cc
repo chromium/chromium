@@ -96,6 +96,7 @@ constexpr net::BackoffEntry::Policy
 
 constexpr char kAiPageHost[] = "https://google.com";
 constexpr char kTaskQueryParam[] = "task";
+constexpr char kAimUrlQueryParam[] = "aim_url";
 
 // Parameters that the search results page must contain at least one of to be
 // considered a valid search results page.
@@ -196,13 +197,7 @@ ContextualTasksUiService::ContextualTasksUiService(
       identity_manager_(identity_manager),
       aim_eligibility_service_(aim_eligibility_service),
       request_access_token_backoff_(
-          &kIgnoreFirstErrorRequestAccessTokenBackoffPolicy) {
-  ai_page_hosts_.emplace_back(kAiPageHost);
-  std::string forced_host = contextual_tasks::GetForcedEmbeddedPageHost();
-  if (!forced_host.empty()) {
-    ai_page_hosts_.emplace_back(base::StrCat({"https://", forced_host}));
-  }
-}
+          &kIgnoreFirstErrorRequestAccessTokenBackoffPolicy) {}
 
 ContextualTasksUiService::~ContextualTasksUiService() = default;
 
@@ -1137,6 +1132,18 @@ bool ContextualTasksUiService::IsValidSearchResultsPage(const GURL& url) {
           !value.empty());
 }
 
+GURL ContextualTasksUiService::GetAimUrlFromContextualTasksUrl(
+    const GURL& url) {
+  std::string aim_url_str;
+  if (net::GetValueForKeyInQuery(url, kAimUrlQueryParam, &aim_url_str)) {
+    GURL aim_url = GURL(aim_url_str);
+    if (IsSearchResultsUrl(aim_url)) {
+      return aim_url;
+    }
+  }
+  return GURL();
+}
+
 void ContextualTasksUiService::OnLensOverlayStateChanged(
     BrowserWindowInterface* browser_window_interface,
     bool is_showing) {
@@ -1244,10 +1251,16 @@ void ContextualTasksUiService::OnImageClickedFromSourcesMenu(
 }
 
 bool ContextualTasksUiService::IsAllowedHost(const GURL& url) {
-  for (const auto& host : ai_page_hosts_) {
-    if (net::SchemefulSite::IsSameSite(url, host)) {
-      return true;
-    }
+  if (net::SchemefulSite::IsSameSite(url, GURL(kAiPageHost))) {
+    return true;
+  }
+  std::string forced_host = contextual_tasks::GetForcedEmbeddedPageHost();
+  if (!forced_host.empty() &&
+      net::SchemefulSite::IsSameSite(
+          url,
+          GURL(base::StrCat({url::kHttpsScheme, url::kStandardSchemeSeparator,
+                             forced_host})))) {
+    return true;
   }
   return false;
 }
