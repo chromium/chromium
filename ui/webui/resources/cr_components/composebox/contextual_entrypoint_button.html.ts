@@ -16,7 +16,8 @@ ${this.hasAllowedInputs_() ? html`
       <cr-button id="entrypoint" class="ai-mode-button" part="entrypoint-button"
           @click="${this.onEntrypointClick_}"
           title="${this.i18n('addContextTitle')}"
-          ?disabled="${this.uploadButtonDisabled}" noink>
+          ?disabled="${this.uploadButtonDisabled}" noink
+          aria-label="${this.i18n('addContextTitle')}">
         <cr-icon id="entrypointIcon" icon="cr:add" slot="prefix-icon"></cr-icon>
         <span id="description"
             @animationend="${this.onDescriptionAnimationEnd_}">
@@ -29,7 +30,8 @@ ${this.hasAllowedInputs_() ? html`
           iron-icon="cr:add"
           @click="${this.onEntrypointClick_}"
           title="${this.i18n('addContextTitle')}"
-          ?disabled="${this.uploadButtonDisabled}" noink>
+          ?disabled="${this.uploadButtonDisabled}" noink
+          aria-label="${this.i18n('addContextTitle')}">
       </cr-icon-button>
     `}
     ${this.glifAnimationState !== GlifAnimationState.INELIGIBLE ? html`
