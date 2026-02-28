@@ -4954,7 +4954,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4301697210743228350">{COUNT,plural, =1{# kontakt er ikke tilgængelig. Hvis du vil bruge <ph name="FEATURE_NAME" /> med denne kontakt, skal du føje den mailadresse, der er tilknyttet vedkommendes Google-konto, til dine kontakter.}one{# kontakt er ikke tilgængelig. Hvis du vil bruge <ph name="FEATURE_NAME" /> med denne kontakt, skal du føje den mailadresse, der er tilknyttet vedkommendes Google-konto, til dine kontakter.}other{# kontakter er ikke tilgængelige. Hvis du vil bruge <ph name="FEATURE_NAME" /> med disse kontakter, skal du føje de mailadresser, der er tilknyttet deres Google-konti, til dine kontakter.}}</translation>
 <translation id="4303079906735388947">Opret en ny pinkode til din sikkerhedsnøgle</translation>
 <translation id="430351398235329166">Flyt din adresselinje for at få en tilpasset browseroplevelse</translation>
-<translation id="4304713468139749426">Adgangs­kode­admin­istrator</translation>
+<translation id="4304713468139749426">Adgangskode­administrator</translation>
 <translation id="4305402730127028764">Kopiér til <ph name="DEVICE_NAME" /></translation>
 <translation id="4305817255990598646">Skift</translation>
 <translation id="4306119971288449206">Apps skal downloades med indholdstypen "<ph name="CONTENT_TYPE" />"</translation>
@@ -5213,7 +5213,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4479877282574735775">Konfigurerer den virtuelle maskine. Dette kan tage et par minutter.</translation>
 <translation id="4481467543947557978">scripttjeneste</translation>
 <translation id="4482990632723642375">Fane, der blev lukket for nylig</translation>
-<translation id="4486333480498805415">Lokationsnøjagtighed</translation>
+<translation id="4486333480498805415">Lokations­nøjagtighed</translation>
 <translation id="4487489714832036847">Chromebooks bruger apps i stedet for traditionel software. Få apps til produktivitet, underholdning og meget mere.</translation>
 <translation id="4488257340342212116">Har tilladelse til at bruge dit kamera</translation>
 <translation id="4490798467014431984">Udvidelser er ikke tilladt på dette website</translation>
@@ -7745,7 +7745,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6243774244933267674">Serveren er utilgængelig</translation>
 <translation id="6244245036423700521">Importér ONC-fil</translation>
 <translation id="6245523954602476652">Du kan få adgang til den i Google Adgangs­kode­admin­istrator.</translation>
-<translation id="6247557882553405851">Google Adgangs­kode­admin­istrator</translation>
+<translation id="6247557882553405851">Google Adgangs­ko­de­administrator</translation>
 <translation id="6247620186971210352">Der blev ikke fundet nogen apps</translation>
 <translation id="6247708409970142803"><ph name="PERCENTAGE" /> %</translation>
 <translation id="6247802389331535091">System: <ph name="ARC_PROCESS_NAME" /></translation>

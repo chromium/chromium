@@ -629,7 +629,7 @@
 <translation id="4964701498510730546">Textfeld ist leer</translation>
 <translation id="4973717656530883744">Mind. <ph name="X" /></translation>
 <translation id="4974612477719259470">Keine vorherige Schaltfläche</translation>
-<translation id="4979404613699303341">Vorherige Schaltfläche</translation>
+<translation id="4979404613699303341">Vorheriger Button</translation>
 <translation id="4981239367072766915">nicht erkannte Eingabe</translation>
 <translation id="4982917827052020884">Fangen wir mit ein paar Tasten an, die du regelmäßig verwenden wirst. Mit der Steuerung-Taste kannst du die Sprachausgabe anhalten. Du findest die Steuerung-Taste unten links auf deiner Tastatur. Drücke zum Fortfahren die Steuerung-Taste.</translation>
 <translation id="4983588134362688868">Zum Seitenanfang</translation>
@@ -661,7 +661,7 @@
 <translation id="5142101052131610456">Alle Lektionen</translation>
 <translation id="514387318601895731">Nach unten blicken</translation>
 <translation id="5158275234811857234">Titelseite</translation>
-<translation id="516076699907426116">Nutze „Bei Berühren vorlesen“, um die Schaltfläche „Nächste Lektion“ zu finden. Anschließend kannst du durch Doppeltippen fortfahren.</translation>
+<translation id="516076699907426116">Nutze „Bei Berühren vorlesen“, um den Button „Nächste Lektion“ zu finden. Anschließend kannst du durch Doppeltippen fortfahren.</translation>
 <translation id="5170206230005240598">Braille-Untertitel aktiviert</translation>
 <translation id="5183440668879371625">Braille – vorherige Zeile</translation>
 <translation id="5189244881767082992">Zeile</translation>
@@ -713,7 +713,7 @@
 <translation id="5539820223028224601">Gainsboro</translation>
 <translation id="554893713779400387">Diktierfunktion ein-/ausschalten</translation>
 <translation id="5549179427201066174">Akustisches Feedback (Earcons) aktivieren oder deaktivieren</translation>
-<translation id="556042886152191864">Schaltfläche</translation>
+<translation id="556042886152191864">Button</translation>
 <translation id="5561345396546889625">Nächste Liste</translation>
 <translation id="5562645715554321347">hdnggrp</translation>
 <translation id="5574412348552378458">ChromeVox-Lernmodus</translation>
@@ -751,7 +751,7 @@
 <translation id="5732189279857692565">Hierbei handelt es sich um die zweite Überschrift. Zum Springen drückst du entweder auf „Suche + H“ oder auf „Suche + Umschalttaste + H“.</translation>
 <translation id="5748623122140342504">Vorherige Überschrift der Ebene 5</translation>
 <translation id="5760594853119905566">Anhang</translation>
-<translation id="5761219715606611783">Perfekt! Du kennst jetzt die Grundlagen von ChromeVox. Du kannst diese Anleitung noch einmal starten oder sie beenden, indem du unten auf die entsprechende Schaltfläche tippst.</translation>
+<translation id="5761219715606611783">Perfekt! Du kennst jetzt die Grundlagen von ChromeVox. Du kannst diese Anleitung noch einmal starten oder sie beenden, indem du unten auf den entsprechenden Button tippst.</translation>
 <translation id="5776001898637896684">Erweiterung für die Sprachausgabe bei Google Enhanced Network</translation>
 <translation id="5783252477644995371">Mit der Gesichtssteuerung kannst du den Cursor mithilfe von Gesichtsbewegungen steuern und Aktionen ausführen, z. B. die linke Maustaste mit einem Lächeln betätigen</translation>
 <translation id="5805940204952508776">Mit zwei Fingern tippen</translation>
@@ -848,7 +848,7 @@
 <translation id="6417265370957905582">Google Assistant</translation>
 <translation id="6444046323172968959">Benachrichtigungsdialogfeld</translation>
 <translation id="6452403590345320472">Inhaltsverzeichnis</translation>
-<translation id="6468049171101508116">Nächste Schaltfläche</translation>
+<translation id="6468049171101508116">Nächster Button</translation>
 <translation id="646954774886932461">Index</translation>
 <translation id="6493991254603208962">Helligkeit verringern</translation>
 <translation id="6501595918865591267">Türkis</translation>
@@ -883,7 +883,7 @@
 <translation id="6759710362319508545">Ressourcen</translation>
 <translation id="67862343314499040">Violett</translation>
 <translation id="6786800275320335305">Article-Element</translation>
-<translation id="6790781785997195160">Sobald du ein wenig Übung hast, suche die Schaltfläche „Nächste Lektion“ und wähle sie aus. Anschließend kannst du durch Doppeltippen fortfahren.</translation>
+<translation id="6790781785997195160">Sobald du ein wenig Übung hast, suche den Button „Nächste Lektion“ und wähle ihn aus. Anschließend kannst du durch Doppeltippen fortfahren.</translation>
 <translation id="6793101435925451627">lstbx</translation>
 <translation id="6815255864998354418">Chiffongelb</translation>
 <translation id="6816066673340002913">Blasse Goldrutenfarbe</translation>
@@ -943,7 +943,7 @@
 <translation id="7143207342074048698">Verbinden...</translation>
 <translation id="7153618581592392745">Lavendel</translation>
 <translation id="7157306005867877619">Zusammenfassung</translation>
-<translation id="7161771961008409533">Pop-up-Schaltfläche</translation>
+<translation id="7161771961008409533">Pop-up-Button</translation>
 <translation id="7167657087543110">Zeichenecho</translation>
 <translation id="7173102181852295013">Mitternachtsblau</translation>
 <translation id="7194194198490288773"><ph name="ACTION" /> (<ph name="GESTURE" />)</translation>
@@ -1013,7 +1013,7 @@
 <translation id="762020119231868829">Pausiert alle momentan aktiven Medien-Widgets</translation>
 <translation id="7625690649919402823">Nächste Tabelle</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), Grad <ph name="GRADE" /></translation>
-<translation id="7637342083105831460">Drücke „Suchtaste plus Rechtspfeil“, um den Übungsbereich oder die Schaltfläche „Nächste Lektion“ zu markieren. Drücke dann „Suchtaste plus Leertaste“, um die Schaltfläche auszuwählen.</translation>
+<translation id="7637342083105831460">Drücke „Suchtaste plus Rechtspfeil“, um den Übungsbereich oder den Button „Nächste Lektion“ zu markieren. Drücke dann „Suchtaste plus Leertaste“, um den Button auszuwählen.</translation>
 <translation id="7639968568612851608">Dunkelgrau</translation>
 <translation id="7663318257180412551">Überschrift 2</translation>
 <translation id="7673144236430784711">.input {$$COUNT :number} .match $$COUNT 1{{Dollarzeichen}} *{{{$$COUNT} Dollarzeichen}}</translation>
@@ -1150,7 +1150,7 @@
 <translation id="8603071050456974042">ChromeVox-Steuerfeld</translation>
 <translation id="8606621670302093223">Steuerung für Datum</translation>
 <translation id="8613709718990529335">Tomatencreme</translation>
-<translation id="8614129468475308349">Perfekt! Jetzt kennst du die Grundlagen von ChromeVox. Du kannst diese Anleitung noch einmal starten oder sie beenden, indem du auf die entsprechende Schaltfläche unten klickst.</translation>
+<translation id="8614129468475308349">Perfekt! Jetzt kennst du die Grundlagen von ChromeVox. Du kannst diese Anleitung noch einmal starten oder sie beenden, indem du auf den entsprechenden Button unten klickst.</translation>
 <translation id="8625173877182443267">Keine nächste Überschrift der Ebene 6</translation>
 <translation id="8628186274519446680">Tomatenrot</translation>
 <translation id="8638532244051952400">Koordinaten der aktuellen Zelle ansagen</translation>

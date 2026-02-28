@@ -8575,7 +8575,7 @@
 <translation id="6841186874966388268">エラー</translation>
 <translation id="6842135459748401207"><ph name="USER_EMAIL" /> にログインしているデバイスのみ</translation>
 <translation id="6842136130964845393">保存したパスワードに常にアクセスできるようにするには、本人確認を行ってください</translation>
-<translation id="6842670680297285750">現在のタブで新しい分割表示</translation>
+<translation id="6842670680297285750">現在のタブで新しい分割ビュー</translation>
 <translation id="6842749380892715807">XML サイトリストの前回のダウンロードは <ph name="LAST_DATE_DOWNLOAD" /> に行われました。</translation>
 <translation id="6842868554183332230">チャットアプリのステータスを設定するため、サイトでデバイスのアクティブ状態を検出する場合があります。</translation>
 <translation id="6843264316370513305">ネットワークのデバッグ</translation>
@@ -9648,7 +9648,7 @@
 <translation id="7586498138629385861">Chrome アプリが開いている間 Chrome は実行され続けます。</translation>
 <translation id="7587297195142686341">Gemini によるログイン</translation>
 <translation id="7587806318633605613">候補の履歴</translation>
-<translation id="7589448773774086276">現在のタブで新しい分割表示</translation>
+<translation id="7589448773774086276">現在のタブで新しい分割ビュー</translation>
 <translation id="7589461650300748890">データが失われる危険があります。</translation>
 <translation id="7590883480672980941">入力設定</translation>
 <translation id="7592060599656252486">一部</translation>
