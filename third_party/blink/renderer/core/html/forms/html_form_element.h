@@ -260,6 +260,7 @@ class CORE_EXPORT HTMLFormElement final : public HTMLElement {
       CHECK(!tool_name.IsNull() && !tool_description.IsNull());
     }
     String ComputeInputSchema() override;
+    Element* FormElement() const override { return form_; }
     void ExecuteTool(
         String input_arguments,
         base::OnceCallback<void(McpToolCallbackResult)> done_callback) override;

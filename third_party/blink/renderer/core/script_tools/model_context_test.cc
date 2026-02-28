@@ -1053,6 +1053,7 @@ class MockDeclarativeTool : public GarbageCollected<MockDeclarativeTool>,
                        done_callback) override {}
 
   String ComputeInputSchema() override { return "{}"; }
+  Element* FormElement() const override { return nullptr; }
   void Trace(Visitor* visitor) const override {}
 };
 
@@ -1169,6 +1170,40 @@ TEST_F(ModelContextTest, SourceLocation) {
   EXPECT_EQ("delete", tools[1]->Name());
   ASSERT_TRUE(tools[1]->GetSourceLocation());
   EXPECT_EQ(8u, tools[1]->GetSourceLocation()->LineNumber());
+}
+
+TEST_F(ModelContextTest, BackingFormElement) {
+  SimRequest main_resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+
+  main_resource.Complete(R"(<!DOCTYPE html>
+    <form
+      id=book-table
+      toolname=book-table
+      tooldescription="Book a table">
+    </form>
+    <form
+      id=leave-feedback
+      toolname=leave-feedback
+      tooldescription="leave-feedback">
+    </form>
+  )");
+
+  auto* model_context =
+      ModelContextSupplement::modelContext(*Window().navigator());
+  ASSERT_TRUE(model_context);
+
+  HeapVector<Member<const ModelContext::ToolData>> tools =
+      model_context->ListTools();
+  ASSERT_EQ(2u, tools.size());
+
+  EXPECT_EQ("book-table", tools[0]->Name());
+  ASSERT_TRUE(tools[0]->BackingFormElement());
+  EXPECT_EQ("book-table", tools[0]->BackingFormElement()->GetIdAttribute());
+
+  EXPECT_EQ("leave-feedback", tools[1]->Name());
+  ASSERT_TRUE(tools[1]->BackingFormElement());
+  EXPECT_EQ("leave-feedback", tools[1]->BackingFormElement()->GetIdAttribute());
 }
 
 }  // namespace blink

@@ -559,6 +559,10 @@ SourceLocation* ModelContext::ToolData::GetSourceLocation() const {
   return source_location_;
 }
 
+Element* ModelContext::ToolData::BackingFormElement() const {
+  return declarative_tool_ ? declarative_tool_->FormElement() : nullptr;
+}
+
 void ModelContext::ToolData::Trace(Visitor* visitor) const {
   visitor->Trace(v8_tool_function_);
   visitor->Trace(declarative_tool_);

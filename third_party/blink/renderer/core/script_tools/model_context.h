@@ -25,6 +25,7 @@
 namespace blink {
 
 class AbortSignal;
+class Element;
 class SourceLocation;
 
 class DeclarativeWebMCPTool : public GarbageCollectedMixin {
@@ -41,6 +42,9 @@ class DeclarativeWebMCPTool : public GarbageCollectedMixin {
 
   // Returns the input json-schema associated with the tool.
   virtual String ComputeInputSchema() = 0;
+
+  // The <form> backing this declarative tool.
+  virtual Element* FormElement() const = 0;
 };
 
 class CORE_EXPORT ModelContext : public ScriptWrappable {
@@ -117,6 +121,10 @@ class CORE_EXPORT ModelContext : public ScriptWrappable {
     // If this is a JS-provided tool, returns the source location
     // of the call to registerTool(). Otherwise, returns nullptr.
     SourceLocation* GetSourceLocation() const;
+
+    // If this is a declarative tool, returns the <form> element
+    // that provided this tool. Otherwise, returns nullptr.
+    Element* BackingFormElement() const;
 
     void Trace(Visitor* visitor) const;
 
