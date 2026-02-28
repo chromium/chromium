@@ -52,7 +52,8 @@ class PLATFORM_EXPORT ScrollPredictor {
       mojom::blink::GestureDevice gesture_device,
       int modifiers);
 
-  bool HasPrediction(base::TimeTicks frame_time) const;
+  bool HasPrediction(base::TimeTicks frame_time,
+                     base::TimeDelta frame_interval) const;
 
   void UpdatePredictionForEventAfterSampleTime(const WebInputEvent& event);
 

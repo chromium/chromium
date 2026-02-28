@@ -684,7 +684,7 @@ bool InputHandlerProxy::GenerateAndDispatchSyntheticScrollPrediction(
   // so far apart that we cannot reliably create predictions. When that occurs
   // we do not create any synthetic events.
   if (!currently_active_gesture_device_.has_value() || !scroll_predictor_ ||
-      !scroll_predictor_->HasPrediction(args.frame_time) ||
+      !scroll_predictor_->HasPrediction(args.frame_time, args.interval) ||
       scroll_begin_main_thread_hit_test_reasons_) {
     return false;
   }

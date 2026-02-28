@@ -631,5 +631,60 @@ TEST_F(ScrollPredictorTest, ResampleLatencyFixedMs) {
   EXPECT_NEAR(resampled_event->data.scroll_update.delta_y, 8, kEpsilon);
 }
 
+TEST_F(ScrollPredictorTest, RefinedHasPredictionTimeout) {
+  InitLinearResamplingTest();
+  SendGestureScrollBegin();
+
+  const base::TimeTicks start_time =
+      WebInputEvent::GetStaticTimeStampForTests();
+  const base::TimeDelta interval = base::Milliseconds(16);
+
+  // Send two events to establish prediction. Last one at t=10ms.
+  std::unique_ptr<WebInputEvent> update1 =
+      CreateGestureScrollUpdate(0, 10, 0 /* ms */);
+  HandleResampleScrollEvents(update1, 0 /* ms */, 62.5 /* Hz */);
+  std::unique_ptr<WebInputEvent> update2 =
+      CreateGestureScrollUpdate(0, 10, 10 /* ms */);
+  HandleResampleScrollEvents(update2, 10 /* ms */, 62.5 /* Hz */);
+
+  // With InitLinearResamplingTest, we are in 'frames' mode with 0.5 frame
+  // latency.
+  // ResampleLatency = 0.5 * 16ms + (-5ms constant) = 8ms - 5ms = 3ms.
+  base::TimeDelta resample_latency =
+      scroll_predictor_->ResampleLatency(interval);
+  EXPECT_EQ(resample_latency, base::Milliseconds(3));
+
+  // MaxResampleTime = 20ms.
+  // last_event_time = 10ms.
+
+  // Test Case 1: t=26ms.
+  // Old: 26 - 10 = 16 <= 20 (TRUE).
+  // New: 26 + 3 - 10 = 19 <= 20 (TRUE).
+  base::TimeTicks time_a = start_time + base::Milliseconds(26);
+
+  // Test Case 2: t=29ms.
+  // Old: 29 - 10 = 19 <= 20 (TRUE).
+  // New: 29 + 3 - 10 = 22 > 20 (FALSE).
+  base::TimeTicks time_b = start_time + base::Milliseconds(29);
+
+  {
+    // Feature DISABLED: Uses Old Logic (frame_time - last_event).
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndDisableFeature(
+        blink::features::kScrollPredictorRefinedHasPrediction);
+    EXPECT_TRUE(scroll_predictor_->HasPrediction(time_a, interval));
+    EXPECT_TRUE(scroll_predictor_->HasPrediction(time_b, interval));
+  }
+
+  {
+    // Feature ENABLED: Uses New Logic (frame_time + latency - last_event).
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeature(
+        blink::features::kScrollPredictorRefinedHasPrediction);
+    EXPECT_TRUE(scroll_predictor_->HasPrediction(time_a, interval));
+    EXPECT_FALSE(scroll_predictor_->HasPrediction(time_b, interval));
+  }
+}
+
 }  // namespace test
 }  // namespace blink
