@@ -631,7 +631,13 @@ const AnchorPositionScrollData* TransformTree::GetAnchorPositionScrollData(
 gfx::Vector2dF TransformTree::AnchorPositionOffset(
     TransformNode* node,
     int max_updated_node_id,
-    UpdateTransformsData* update_data) {
+    UpdateTransformsData* update_data,
+    base::flat_set<int>& visited) {
+  if (visited.contains(node->id)) {
+    return gfx::Vector2dF();
+  }
+  visited.insert(node->id);
+
   const AnchorPositionScrollData* data = GetAnchorPositionScrollData(node->id);
   if (!data)
     return gfx::Vector2dF();
@@ -665,7 +671,7 @@ gfx::Vector2dF TransformTree::AnchorPositionOffset(
       // because AnchorPositionOffset() is the opposite of
       // blink::AnchorPositionScrollData::AccmulatedOffset().
       accumulated_offset -= AnchorPositionOffset(
-          container_transform, max_updated_node_id, update_data);
+          container_transform, max_updated_node_id, update_data, visited);
     }
     if (container_transform_id > max_updated_node_id) {
       // The adjustment depends on a later transform node that may contain
@@ -834,7 +840,9 @@ void TransformTree::UpdateLocalTransform(
 
   transform.Translate(StickyPositionOffset(node));
   if (node->anchor_position_scroll_data_id >= 0) {
-    transform.Translate(AnchorPositionOffset(node, node->id - 1, update_data));
+    base::flat_set<int> visited;
+    transform.Translate(
+        AnchorPositionOffset(node, node->id - 1, update_data, visited));
     // Make sure the damage rect is tracked.
     node->SetTransformChanged(DamageReason::kUntracked);
   }

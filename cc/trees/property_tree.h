@@ -104,23 +104,23 @@ class CC_EXPORT PropertyTree {
   }
   T* FindNodeFromElementId(ElementId id) {
     auto iterator = element_id_to_node_index_.find(id);
-    if (iterator == element_id_to_node_index_.end())
+    if (iterator == element_id_to_node_index_.end()) {
       return nullptr;
+    }
     return Node(iterator->second);
   }
   const T* FindNodeFromElementId(ElementId id) const {
     auto iterator = element_id_to_node_index_.find(id);
-    if (iterator == element_id_to_node_index_.end())
+    if (iterator == element_id_to_node_index_.end()) {
       return nullptr;
+    }
     return Node(iterator->second);
   }
 
   void clear();
   size_t size() const { return nodes_.size(); }
 
-  void set_needs_update(bool needs_update) {
-    needs_update_ = needs_update;
-  }
+  void set_needs_update(bool needs_update) { needs_update_ = needs_update; }
   bool needs_update() const { return needs_update_; }
 
   std::vector<T>& nodes() { return nodes_; }
@@ -358,7 +358,8 @@ class CC_EXPORT TransformTree final : public PropertyTree<TransformNode> {
   gfx::Vector2dF StickyPositionOffset(TransformNode* node);
   gfx::Vector2dF AnchorPositionOffset(TransformNode* node,
                                       int max_updated_node_id,
-                                      UpdateTransformsData* update_data);
+                                      UpdateTransformsData* update_data,
+                                      base::flat_set<int>& visited);
   void UpdateLocalTransform(TransformNode* node,
                             const ViewportPropertyIds* viewport_property_ids,
                             UpdateTransformsData* update_data);
@@ -649,8 +650,9 @@ class CC_EXPORT ScrollTree final : public PropertyTree<ScrollNode> {
   // Returns true if the scroll offset is changed.
   bool SetScrollOffset(ElementId id, const gfx::PointF& scroll_offset);
   void SetScrollOffsetClobberActiveValue(ElementId id) {
-    if (auto* synced_offset = GetSyncedScrollOffset(id))
+    if (auto* synced_offset = GetSyncedScrollOffset(id)) {
       synced_offset->set_clobber_active_value();
+    }
   }
 
   bool SetElasticOverscroll(const ScrollNode& scroll_node,

@@ -65,9 +65,10 @@ class DrawPropertiesTestBase : public LayerTreeImplTestBase {
     if (layer_impl->layer_tree_impl()
             ->property_trees()
             ->scroll_tree_mutable()
-            .SetScrollOffsetDeltaForTesting(layer_impl->element_id(), delta))
+            .SetScrollOffsetDeltaForTesting(layer_impl->element_id(), delta)) {
       layer_impl->layer_tree_impl()->DidUpdateScrollOffset(
           layer_impl->element_id(), /*pushed_from_main_or_pending_tree=*/false);
+    }
   }
 
   static float MaximumAnimationToScreenScale(LayerImpl* layer_impl) {
@@ -101,8 +102,9 @@ class DrawPropertiesTestBase : public LayerTreeImplTestBase {
   // impl-side pending tree, and updates pending tree draw properties.
   void Commit(float device_scale_factor = 1.0f) {
     UpdateMainDrawProperties(device_scale_factor);
-    if (!host_impl()->pending_tree())
+    if (!host_impl()->pending_tree()) {
       host_impl()->CreatePendingTree();
+    }
     host()->CommitToPendingTree();
     // TODO(crbug.com/40617417) This call should be handled by
     // FakeLayerTreeHost instead of manually pushing the properties from the
@@ -125,8 +127,9 @@ class DrawPropertiesTestBase : public LayerTreeImplTestBase {
 
   bool UpdateLayerListContains(int id) const {
     for (const auto& layer : update_layer_list_) {
-      if (layer->id() == id)
+      if (layer->id() == id) {
         return true;
+      }
     }
     return false;
   }
@@ -2035,14 +2038,18 @@ static bool ProjectionClips(const gfx::Transform& map_transform,
                             const gfx::RectF& mapped_rect) {
   gfx::Transform inverse = map_transform.GetCheckedInverse();
   bool clipped = false;
-  if (!clipped)
+  if (!clipped) {
     MathUtil::ProjectPoint(inverse, mapped_rect.top_right(), &clipped);
-  if (!clipped)
+  }
+  if (!clipped) {
     MathUtil::ProjectPoint(inverse, mapped_rect.origin(), &clipped);
-  if (!clipped)
+  }
+  if (!clipped) {
     MathUtil::ProjectPoint(inverse, mapped_rect.bottom_right(), &clipped);
-  if (!clipped)
+  }
+  if (!clipped) {
     MathUtil::ProjectPoint(inverse, mapped_rect.bottom_left(), &clipped);
+  }
   return clipped;
 }
 
@@ -5771,6 +5778,24 @@ TEST_F(DrawPropertiesAnchorPositionScrollTest, NestedScrollers) {
       gfx::Vector2dF(-20, -20),
       GetImpl(anchored.get())->ScreenSpaceTransform().To2dTranslation());
 }
+
+TEST_F(DrawPropertiesAnchorPositionScrollTest, Cycle) {
+  CreateRoot();
+  scoped_refptr<Layer> anchored1 = CreateAnchored(root_.get(), {});
+  scoped_refptr<Layer> anchored2 =
+      CreateAnchored(root_.get(), {anchored1->element_id()});
+
+  // Create a cycle: anchored1 -> anchored2 -> anchored1
+  auto& data1 =
+      GetPropertyTrees(anchored1.get())
+          ->transform_tree_mutable()
+          .EnsureAnchorPositionScrollData(anchored1->transform_tree_index());
+  data1.adjustment_container_ids = {anchored2->element_id()};
+
+  // This should not crash (stack overflow).
+  UpdateMainDrawProperties();
+}
+
 class AnimationScaleFactorTrackingLayerImpl : public LayerImpl {
  public:
   static std::unique_ptr<AnimationScaleFactorTrackingLayerImpl> Create(
@@ -8615,10 +8640,9 @@ struct MaskFilterTestCase {
   gfx::LinearGradient gradient_mask;
 };
 
-class DrawPropertiesWithLayerTreeTest :
-    public DrawPropertiesTestWithLayerTree,
-    public testing::WithParamInterface<MaskFilterTestCase> {
-};
+class DrawPropertiesWithLayerTreeTest
+    : public DrawPropertiesTestWithLayerTree,
+      public testing::WithParamInterface<MaskFilterTestCase> {};
 
 // In layer tree mode, not using impl-side PropertyTreeBuilder.
 TEST_P(DrawPropertiesWithLayerTreeTest, MaskFilterOnRenderSurface) {
@@ -8632,8 +8656,9 @@ TEST_P(DrawPropertiesWithLayerTreeTest, MaskFilterOnRenderSurface) {
 
   const MaskFilterTestCase test_case = GetParam();
   gfx::LinearGradient gradient_mask = test_case.gradient_mask;
-  if (!gradient_mask.IsEmpty())
+  if (!gradient_mask.IsEmpty()) {
     gradient_mask.AddStep(50, 0x50);
+  }
 
   scoped_refptr<Layer> root = Layer::Create();
   host()->SetRootLayer(root);
@@ -8689,21 +8714,26 @@ TEST_P(DrawPropertiesWithLayerTreeTest, MaskFilterOnRenderSurface) {
   UpdateMainDrawProperties();
   CommitAndActivate();
 
-  EXPECT_NE(test_case.rounded_corners.IsEmpty(),
+  EXPECT_NE(
+      test_case.rounded_corners.IsEmpty(),
       GetRenderSurfaceImpl(child_1)->mask_filter_info().HasRoundedCorners());
-  EXPECT_NE(test_case.rounded_corners.IsEmpty(),
+  EXPECT_NE(
+      test_case.rounded_corners.IsEmpty(),
       GetRenderSurfaceImpl(child_2)->mask_filter_info().HasRoundedCorners());
-  EXPECT_NE(test_case.rounded_corners.IsEmpty(),
+  EXPECT_NE(
+      test_case.rounded_corners.IsEmpty(),
       GetRenderSurfaceImpl(child_3)->mask_filter_info().HasRoundedCorners());
 
-  EXPECT_NE(test_case.gradient_mask.IsEmpty(),
+  EXPECT_NE(
+      test_case.gradient_mask.IsEmpty(),
       GetRenderSurfaceImpl(child_1)->mask_filter_info().HasGradientMask());
-  EXPECT_NE(test_case.gradient_mask.IsEmpty(),
+  EXPECT_NE(
+      test_case.gradient_mask.IsEmpty(),
       GetRenderSurfaceImpl(child_2)->mask_filter_info().HasGradientMask());
-  EXPECT_NE(test_case.gradient_mask.IsEmpty(),
+  EXPECT_NE(
+      test_case.gradient_mask.IsEmpty(),
       GetRenderSurfaceImpl(child_3)->mask_filter_info().HasGradientMask());
-  }
-
+}
 
 INSTANTIATE_TEST_SUITE_P(
     DrawPropertiesWithLayerTreeTests,
@@ -8711,7 +8741,8 @@ INSTANTIATE_TEST_SUITE_P(
     testing::ValuesIn<MaskFilterTestCase>({
         {"WithRoundedCorners", gfx::RoundedCornersF(10.f),
          gfx::LinearGradient::GetEmpty()},
-        {"WithGradientMask", gfx::RoundedCornersF(0.f), gfx::LinearGradient(45)},
+        {"WithGradientMask", gfx::RoundedCornersF(0.f),
+         gfx::LinearGradient(45)},
         {"WithRoundedCornersAndGradientMask", gfx::RoundedCornersF(10.f),
          gfx::LinearGradient(45)},
     }),
