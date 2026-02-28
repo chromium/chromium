@@ -25,8 +25,9 @@ void BuildPackedH265ProfileTierLevel(
     builder.AppendBits(1,
                        profile_tier_level.general_frame_only_constraint_flag);
     CHECK_LT(profile_tier_level.general_profile_idc, 4);
-    // Check general_profile_compatibility_flag[ 2 ] == 0
-    CHECK(!(profile_tier_level.general_profile_compatibility_flags & 1 << 29));
+    // We are not using the encoder for still image encoding, so the
+    // general_one_picture_only_constraint_flag should always be set to 0. In
+    // that case simply appending 43 zero bits is fine.
     builder.AppendBits(43, 0);  // general_reserved_zero_43bits
     builder.AppendBits(1, 0);   // general_inbld_flag
   }

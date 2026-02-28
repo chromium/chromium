@@ -558,6 +558,10 @@ EncoderStatus::Or<size_t> D3D12VideoEncodeDelegate::ReadbackBitstream(
     return std::move(size_or_error).error();
   }
   size_t size = std::move(size_or_error).value();
+  if (size > bitstream_buffer.size()) {
+    return {EncoderStatus::Codes::kEncoderHardwareDriverError,
+            "Encoded bitstream exceeds output buffer size"};
+  }
   D3D12_RANGE written_range{};
   metadata.Commit(&written_range);
   EncoderStatus status =
@@ -583,8 +587,11 @@ bool D3D12VideoEncodeDecodedPictureBuffers<
                                             DXGI_FORMAT format,
                                             size_t max_num_ref_frames,
                                             bool use_texture_array) {
-  CHECK_GT(max_num_ref_frames, 0u);
-  CHECK_LE(max_num_ref_frames, kMaxDpbSize);
+  if (max_num_ref_frames == 0 || max_num_ref_frames > kMaxDpbSize) {
+    LOG(ERROR) << "Invalid max reference frames number: " << max_num_ref_frames
+               << " (should be between 1 and " << kMaxDpbSize << ")";
+    return false;
+  }
   size_ = max_num_ref_frames;
 
   // We reserve one space in extra for the current frame.

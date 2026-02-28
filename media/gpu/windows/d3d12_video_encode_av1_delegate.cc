@@ -110,7 +110,7 @@ AV1BitstreamBuilder::SequenceHeader FillAV1BuilderSequenceHeader(
   return sequence_header;
 }
 
-AV1BitstreamBuilder::FrameHeader FillAV1BuilderFrameHeader(
+std::optional<AV1BitstreamBuilder::FrameHeader> FillAV1BuilderFrameHeader(
     const D3D12VideoEncodeAV1Delegate::PictureControlFlags& picture_ctrl,
     const D3D12_VIDEO_ENCODER_AV1_PICTURE_CONTROL_CODEC_DATA& pic_params,
     const AV1BitstreamBuilder::SequenceHeader& sequence_header) {
@@ -209,7 +209,7 @@ AV1BitstreamBuilder::FrameHeader FillAV1BuilderFrameHeader(
         lr_unit_shift = 0;
         break;
       default:
-        NOTREACHED();
+        return std::nullopt;
     }
     // Check if either restoration_u_tile_size or resotration_v_tile_size is
     // equal to resotration_y_tile_size, if so, lr_uv_shift is 0; otherwise,
@@ -1211,8 +1211,14 @@ EncoderStatus::Or<size_t> D3D12VideoEncodeAV1Delegate::ReadbackBitstream(
 
   DVLOG(4) << PrintPostEncodeValues(post_encode_values);
 
-  auto frame_header = FillAV1BuilderFrameHeader(picture_ctrl_, picture_params_,
-                                                sequence_header_);
+  auto frame_header_or_error = FillAV1BuilderFrameHeader(
+      picture_ctrl_, picture_params_, sequence_header_);
+  if (!frame_header_or_error.has_value()) {
+    return {EncoderStatus::Codes::kEncoderHardwareDriverError,
+            "D3D12VideoEncodeAV1Delegate: invalid restoration tile size."};
+  }
+  AV1BitstreamBuilder::FrameHeader frame_header =
+      std::move(frame_header_or_error).value();
   if (!UpdateFrameHeaderPostEncode(enc_caps_.post_value_flags,
                                    post_encode_values, frame_header)) {
     return {EncoderStatus::Codes::kEncoderHardwareDriverError,

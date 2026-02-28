@@ -772,6 +772,20 @@ if (use_av1_hw_decoder) {
   }
 }
 
+if (is_win) {
+  fuzzer_test("media_d3d12_video_encode_delegate_fuzzer") {
+    sources = [ "windows/d3d12_video_encode_delegate_fuzzer.cc" ]
+    deps = [
+      ":gpu",
+      "//base",
+      "//media:test_support",
+      "//media/base/win:test_support",
+      "//testing/gmock",
+      "//testing/gtest",
+    ]
+  }
+}
+
 fuzzer_test("media_vp9_decoder_fuzzer") {
   sources = [ "vp9_decoder_fuzzer.cc" ]
   deps = [

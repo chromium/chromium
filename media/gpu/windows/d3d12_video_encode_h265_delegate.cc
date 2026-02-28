@@ -402,18 +402,18 @@ EncoderStatus D3D12VideoEncodeH265Delegate::EncodeImpl(
   // Rate control.
   int qp = -1;
   if (software_rate_controller_) {
-    software_rate_controller_
-        ->temporal_layers(metadata_.svc_generic->temporal_idx)
+    size_t temporal_idx =
+        metadata_.svc_generic ? metadata_.svc_generic->temporal_idx : 0;
+    software_rate_controller_->temporal_layers(temporal_idx)
         .ShrinkHRDBuffer(rate_controller_timestamp_);
     if (is_keyframe) {
       software_rate_controller_->EstimateIntraFrameQP(
           rate_controller_timestamp_);
     } else {
       software_rate_controller_->EstimateInterFrameQP(
-          metadata_.svc_generic->temporal_idx, rate_controller_timestamp_);
+          temporal_idx, rate_controller_timestamp_);
     }
-    qp = software_rate_controller_
-             ->temporal_layers(metadata_.svc_generic->temporal_idx)
+    qp = software_rate_controller_->temporal_layers(temporal_idx)
              .curr_frame_qp();
   } else if (options.quantizer.has_value()) {
     qp = options.quantizer.value();
@@ -644,6 +644,14 @@ EncoderStatus D3D12VideoEncodeH265Delegate::InitializeVideoEncoder(
   status = CheckD3D12VideoEncoderSupport(video_device_.Get(), &support);
   if (!status.is_ok()) {
     return status;
+  }
+  if (!std::has_single_bit(
+          resolution_support_limits_.SubregionBlockPixelsSize)) {
+    return {
+        EncoderStatus::Codes::kEncoderUnsupportedConfig,
+        base::StringPrintf(
+            "D3D12VideoEncoder reported invalid SubregionBlockPixelsSize %u",
+            resolution_support_limits_.SubregionBlockPixelsSize)};
   }
   encoder_support_flags_ = support.SupportFlags;
 
