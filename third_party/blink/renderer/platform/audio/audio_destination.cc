@@ -68,7 +68,7 @@ namespace {
 // to play audio via Web Audio API.
 constexpr uint32_t kFIFOSize = 128 * 128;
 
-const char* DeviceStateToString(AudioDestination::DeviceState state) {
+const String DeviceStateToString(AudioDestination::DeviceState state) {
   switch (state) {
     case AudioDestination::kRunning:
       return "running";
@@ -443,9 +443,11 @@ AudioDestination::AudioDestination(
                                 callback_buffer_size_));
   SendLogMessage(__func__, String::Format("=> (device sample rate=%.0f Hz)",
                                           web_audio_device_->SampleRate()));
-  SendLogMessage(__func__, UNSAFE_TODO(String::Format(
-                               "Output buffer bypass: %s",
-                               is_output_buffer_bypassed_ ? "yes" : "no")));
+  if (is_output_buffer_bypassed_) {
+    SendLogMessage(__func__, "Output buffer bypass: yes");
+  } else {
+    SendLogMessage(__func__, "Output buffer bypass: no");
+  }
 
   TRACE_EVENT1("webaudio", "AudioDestination::AudioDestination",
                "sink information",
@@ -681,12 +683,13 @@ void AudioDestination::TransferElapsedFramesFrom(
   frames_elapsed_ += previous_platform_destination->FramesElapsed();
 }
 
-void AudioDestination::SendLogMessage(const char* const function_name,
+void AudioDestination::SendLogMessage(const String& function_name,
                                       const String& message) const {
-  WebRtcLogMessage(UNSAFE_TODO(
-      String::Format("[WA]AD::%s %s [state=%s]", function_name,
-                     message.Utf8().c_str(), DeviceStateToString(device_state_))
-          .Utf8()));
+  WebRtcLogMessage(
+      String::Format("[WA]AD::%s %s [state=%s]", function_name.Utf8().c_str(),
+                     message.Utf8().c_str(),
+                     DeviceStateToString(device_state_).Utf8().c_str())
+          .Utf8());
 }
 
 }  // namespace blink

@@ -140,7 +140,7 @@ class MODULES_EXPORT AudioNode : public EventTarget,
   virtual void ConnectToDestinationReady() {}
 
   // https://chromium.googlesource.com/chromium/src/+/refs/heads/main/docs/media/capture/README.md#logs
-  void SendLogMessage(const char* const function_name, const String& message);
+  void SendLogMessage(const String& function_name, const String& message);
 
   Member<BaseAudioContext> context_;
   scoped_refptr<DeferredTaskHandler> deferred_task_handler_;

@@ -541,14 +541,13 @@ bool RealtimeAudioDestinationHandler::
 }
 
 void RealtimeAudioDestinationHandler::SendLogMessage(
-    const char* const function_name,
+    const String& function_name,
     const String& message) const {
-  WebRtcLogMessage(
-      UNSAFE_TODO(String::Format("[WA]RADH::%s %s (sink_descriptor_=%s)",
-                                 function_name, message.Utf8().c_str(),
-                                 sink_descriptor_.SinkId().Utf8().c_str()))
-          .Utf8()
-          .c_str());
+  WebRtcLogMessage(String::Format("[WA]RADH::%s %s (sink_descriptor_=%s)",
+                                  function_name.Utf8().c_str(),
+                                  message.Utf8().c_str(),
+                                  sink_descriptor_.SinkId().Utf8().c_str())
+                       .Utf8());
 }
 
 }  // namespace blink

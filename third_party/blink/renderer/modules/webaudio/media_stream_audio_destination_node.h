@@ -73,7 +73,7 @@ class MODULES_EXPORT MediaStreamAudioDestinationNode final
   MediaStreamAudioDestinationHandler& GetOwnHandler() const;
 
   // https://chromium.googlesource.com/chromium/src/+/refs/heads/main/docs/media/capture/README.md#logs
-  void SendLogMessage(const char* const function_name, const String& message);
+  void SendLogMessage(const String& function_name, const String& message);
 
   Member<MediaStreamSource> source_;
   Member<MediaStream> stream_;

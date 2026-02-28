@@ -621,10 +621,10 @@ void AudioNode::DidAddOutput(unsigned number_of_outputs) {
   DCHECK_EQ(number_of_outputs, connected_params_.size());
 }
 
-void AudioNode::SendLogMessage(const char* const function_name,
+void AudioNode::SendLogMessage(const String& function_name,
                                const String& message) {
-  WebRtcLogMessage(UNSAFE_TODO(String::Format("[WA]AN::%s %s", function_name,
-                                              message.Utf8().c_str()))
+  WebRtcLogMessage(String::Format("[WA]AN::%s %s", function_name.Utf8().c_str(),
+                                  message.Utf8().c_str())
                        .Utf8());
 }
 

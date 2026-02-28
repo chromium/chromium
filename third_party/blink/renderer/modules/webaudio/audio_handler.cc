@@ -564,13 +564,13 @@ void AudioHandler::UpdateChannelInterpretation() {
   channel_interpretation_ = new_channel_interpretation_;
 }
 
-void AudioHandler::SendLogMessage(const char* const function_name,
+void AudioHandler::SendLogMessage(const String& function_name,
                                   const String& message) {
   WebRtcLogMessage(
-      UNSAFE_TODO(String::Format("[WA]AH::%s %s [type=%s, this=0x%" PRIXPTR "]",
-                                 function_name, message.Utf8().c_str(),
-                                 NodeTypeName().Utf8().c_str(),
-                                 reinterpret_cast<uintptr_t>(this)))
+      String::Format("[WA]AH::%s %s [type=%s, this=0x%" PRIXPTR "]",
+                     function_name.Utf8().c_str(), message.Utf8().c_str(),
+                     NodeTypeName().Utf8().c_str(),
+                     reinterpret_cast<uintptr_t>(this))
           .Utf8());
 }
 

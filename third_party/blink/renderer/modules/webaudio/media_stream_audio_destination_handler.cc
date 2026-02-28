@@ -180,13 +180,13 @@ void MediaStreamAudioDestinationHandler::UpdatePullStatusIfNeeded() {
 }
 
 void MediaStreamAudioDestinationHandler::SendLogMessage(
-    const char* const function_name,
+    const String& function_name,
     const String& message) {
-  WebRtcLogMessage(
-      UNSAFE_TODO(String::Format("[WA]MSADH::%s %s [this=0x%" PRIXPTR "]",
-                                 function_name, message.Utf8().c_str(),
-                                 reinterpret_cast<uintptr_t>(this)))
-          .Utf8());
+  WebRtcLogMessage(String::Format("[WA]MSADH::%s %s [this=0x%" PRIXPTR "]",
+                                  function_name.Utf8().c_str(),
+                                  message.Utf8().c_str(),
+                                  reinterpret_cast<uintptr_t>(this))
+                       .Utf8());
 }
 
 void MediaStreamAudioDestinationHandler::SetConsumer(
