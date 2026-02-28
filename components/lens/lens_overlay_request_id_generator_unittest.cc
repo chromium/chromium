@@ -342,4 +342,15 @@ TEST_F(LensOverlayRequestIdGeneratorTest, GetNextRequestId_SetsContextId) {
   ASSERT_EQ(first_id->context_id(), second_id->context_id());
 }
 
+TEST_F(LensOverlayRequestIdGeneratorTest,
+       SetContextId_SetsContextIdOnNextRequest) {
+  lens::LensOverlayRequestIdGenerator request_id_generator;
+  request_id_generator.SetContextId(12345);
+  std::unique_ptr<lens::LensOverlayRequestId> request_id =
+      request_id_generator.GetNextRequestId(
+          RequestIdUpdateMode::kInitialRequest,
+          lens::LensOverlayRequestId::MEDIA_TYPE_DEFAULT_IMAGE);
+  ASSERT_EQ(request_id->context_id(), 12345);
+}
+
 }  // namespace lens

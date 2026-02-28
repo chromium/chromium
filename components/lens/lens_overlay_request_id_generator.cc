@@ -47,8 +47,7 @@ void LensOverlayRequestIdGenerator::ResetRequestId() {
 std::unique_ptr<lens::LensOverlayRequestId>
 LensOverlayRequestIdGenerator::GetNextRequestId(
     RequestIdUpdateMode update_mode,
-    lens::LensOverlayRequestId::MediaType media_type,
-    std::optional<int64_t> context_id) {
+    lens::LensOverlayRequestId::MediaType media_type) {
   // Verify that the initial request id is only generated once.
   CHECK(update_mode != RequestIdUpdateMode::kInitialRequest ||
         sequence_id_ == 0);
@@ -68,10 +67,6 @@ LensOverlayRequestIdGenerator::GetNextRequestId(
   long_context_id_ = next_request_id->long_context_id();
   if (store_analytics_id) {
     analytics_id_ = next_request_id->analytics_id();
-  }
-
-  if (context_id.has_value()) {
-    next_request_id->set_context_id(context_id.value());
   }
   return next_request_id;
 }
