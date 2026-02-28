@@ -245,7 +245,7 @@ IN_PROC_BROWSER_TEST_P(NtpRealboxUiTest, DISABLED_Screenshots) {
   const DeepQuery kSearchboxContainer = {"ntp-app", "#content"};
   const DeepQuery kRealbox = {"ntp-app", "cr-searchbox", "#inputWrapper"};
   const DeepQuery kContextMenuEntrypoint = {
-      "ntp-app", "cr-searchbox", "contextual-entrypoint-and-carousel"};
+      "ntp-app", "cr-searchbox", "#context"};
 
   RunTestSequence(
       // 1. Open 1P new tab page.

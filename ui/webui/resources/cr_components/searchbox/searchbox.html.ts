@@ -7,6 +7,7 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {SearchboxElement} from './searchbox.js';
 import {getHtml as getContextualEntrypointHtml} from './searchbox_contextual_entrypoint.html.js';
 import {getHtml as getDropdownHtml} from './searchbox_searchbox_dropdown.html.js';
+import {getHtml as getRecentTabChipHtml} from './searchbox_recent_tab_chip.html.js';
 
 export function getHtml(this: SearchboxElement) {
   // clang-format off
@@ -98,19 +99,15 @@ export function getHtml(this: SearchboxElement) {
     ${this.useCompactLayout_() ? html`
       <div class="dropdownContainer">
         ${getDropdownHtml.bind(this)()}
-        ${this.computeShowRecentTabChip_() ? html`
-          <div id="recentTabChipContainer">
-            <composebox-recent-tab-chip
-                .recentTab="${this.recentTabForChip_}"
-                @add-tab-context="${this.addTabContext_}">
-            </composebox-recent-tab-chip>
-          </div>
-        ` : ''}
+        ${getRecentTabChipHtml.bind(this)()}
       </div>
     ` : html`
       <div id="inputInnerBottomContainer">
         <div class="contextualEntrypointContainer">
           ${getContextualEntrypointHtml.bind(this)()}
+          ${this.dropdownIsVisible ?
+              html`<div class="carousel-divider"></div>` : ''}
+          ${getDropdownHtml.bind(this)()}
         </div>
         ${this.searchboxVoiceSearchEnabled_ ? html`
           <div class="searchbox-icon-button-container voice">

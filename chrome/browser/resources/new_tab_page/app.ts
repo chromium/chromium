@@ -662,7 +662,7 @@ export class AppElement extends AppElementBase {
     if (this.ntpRealboxNextEnabled_ && this.realboxLayoutMode_ !== '') {
       this.registerHelpBubble(
           CONTEXTUAL_ENTRYPOINT_ELEMENT_ID,
-          ['#searchbox', '#context', '#contextEntrypoint'], {fixed: true});
+          ['#searchbox', '#context'], {fixed: true});
     }
   }
 

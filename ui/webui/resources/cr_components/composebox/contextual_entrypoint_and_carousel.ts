@@ -341,19 +341,6 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
         ComposeboxContextAddedMethod.COPY_PASTE, this.composeboxSource_);
   }
 
-  closeMenu() {
-    if (!this.showMenuOnClick) {
-      return;
-    }
-
-    const entrypointAndMenu =
-        this.shadowRoot.querySelector<ContextualEntrypointAndMenuElement>(
-            '#contextEntrypoint');
-    if (entrypointAndMenu) {
-      entrypointAndMenu.closeMenu();
-    }
-  }
-
   setContextFiles(files: ContextualUpload[]) {
     const dataTransfer = new DataTransfer();
     for (const file of files) {
@@ -430,7 +417,7 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
           default:
             break;
         }
-        this.closeMenu();
+        this.closeMenu_();
       } else {
         file = {...file, status: status};
         this.files_.set(token, file);
@@ -725,7 +712,7 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
     }
 
     this.recordFileValidationMetric_(metric);
-    this.closeMenu();
+    this.closeMenu_();
     this.fire('on-file-validation-error', {
       errorMessage: this.i18n(errorMessage),
     });
@@ -767,11 +754,6 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
 
     if (this.activeTool_ === ComposeboxToolMode.kDeepSearch) {
       this.handleProcessFilesError_(ProcessFilesError.FILE_UPLOAD_NOT_ALLOWED);
-      return;
-    }
-
-    if (this.entrypointName === 'Realbox') {
-      this.addFileContext_(Array.from(files));
       return;
     }
 
@@ -936,21 +918,19 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
   }
 
   protected handleToolClick_(tool: ComposeboxToolMode) {
-    if (this.entrypointName !== 'Realbox') {
-      if (this.contextMenuDescriptionEnabled_) {
-        if (this.activeTool_ === tool) {
-          this.showContextMenuDescription_ = true;
-        } else {
-          this.showContextMenuDescription_ =
-              tool === ComposeboxToolMode.kUnspecified;
-        }
-      }
-
+    if (this.contextMenuDescriptionEnabled_) {
       if (this.activeTool_ === tool) {
-        this.activeTool_ = ComposeboxToolMode.kUnspecified;
+        this.showContextMenuDescription_ = true;
       } else {
-        this.activeTool_ = tool;
+        this.showContextMenuDescription_ =
+            tool === ComposeboxToolMode.kUnspecified;
       }
+    }
+
+    if (this.activeTool_ === tool) {
+      this.activeTool_ = ComposeboxToolMode.kUnspecified;
+    } else {
+      this.activeTool_ = tool;
     }
 
     const isActive = this.activeTool_ === tool;
@@ -968,6 +948,19 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
 
   protected onVoiceSearchClick_() {
     this.fire('open-voice-search');
+  }
+
+  private closeMenu_() {
+    if (!this.showMenuOnClick) {
+      return;
+    }
+
+    const entrypointAndMenu =
+        this.shadowRoot.querySelector<ContextualEntrypointAndMenuElement>(
+            '#contextEntrypoint');
+    if (entrypointAndMenu) {
+      entrypointAndMenu.closeMenu();
+    }
   }
 
   private recordFileValidationMetric_(
