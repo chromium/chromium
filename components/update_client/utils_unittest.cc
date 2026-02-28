@@ -24,7 +24,11 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_WIN)
+#include <windows.h>
+
 #include <shlobj.h>
+
+#include "base/win/windows_types.h"
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
@@ -32,6 +36,16 @@
 #endif
 
 namespace update_client {
+
+namespace {
+constexpr base::FilePath::CharType kTestDirPrefix[] =
+    FILE_PATH_LITERAL("_utils_unittest_");
+constexpr base::FilePath::CharType kTestDirMatcher[] =
+    FILE_PATH_LITERAL("_utils_unittest_*");
+constexpr base::FilePath::CharType kTestDownloadFilename[] =
+    FILE_PATH_LITERAL("test_file.txt");
+constexpr char kTestDownloadContent[] = "Hello, World!";
+}  // namespace
 
 TEST(UpdateClientUtils, VerifyFileHash256) {
   EXPECT_TRUE(VerifyFileHash256(
@@ -227,6 +241,52 @@ TEST(UpdateClientUtils, RetryFileOperation) {
 
   // Deleting with retries works.
   ASSERT_TRUE(RetryFileOperation(&base::DeletePathRecursively, tempdir));
+}
+
+#if BUILDFLAG(IS_WIN)
+TEST(UpdateClientUtils, CleanupDirectoriesOlderThan) {
+  base::FilePath download_dir_path;
+  ASSERT_TRUE(base::CreateNewTempDirectory(kTestDirPrefix, &download_dir_path));
+  ASSERT_TRUE(base::WriteFile(download_dir_path.Append(kTestDownloadFilename),
+                              kTestDownloadContent));
+
+  // Manipulate the creation time of the directory to be older than 3 days.
+  FILETIME creation_filetime =
+      (base::Time::NowFromSystemTime() - base::Days(5)).ToFileTime();
+  base::File download_dir(download_dir_path,
+                          base::File::FLAG_OPEN |
+                              base::File::FLAG_WIN_BACKUP_SEMANTICS |
+                              base::File::FLAG_WRITE_ATTRIBUTES);
+  ASSERT_TRUE(download_dir.IsValid());
+  ASSERT_TRUE(::SetFileTime(download_dir.GetPlatformFile(), &creation_filetime,
+                            NULL, NULL));
+  download_dir.Close();
+
+  CleanupDirectoriesOlderThan(download_dir_path.DirName(), kTestDirMatcher,
+                              base::Days(3));
+
+  EXPECT_FALSE(base::DirectoryExists(download_dir_path))
+      << "download_dir_path: " << download_dir_path;
+}
+#endif  // BUILDFLAG(IS_WIN)
+
+TEST(UpdateClientUtils, RetainsRecentDownloads) {
+  base::FilePath download_dir_path;
+  ASSERT_TRUE(base::CreateNewTempDirectory(kTestDirPrefix, &download_dir_path));
+  ASSERT_TRUE(base::WriteFile(download_dir_path.Append(kTestDownloadFilename),
+                              kTestDownloadContent));
+
+  base::FilePath temp_dir;
+#if BUILDFLAG(IS_WIN)
+  ASSERT_TRUE(base::GetSecureTempDirectory(&temp_dir));
+#else   // BUILDFLAG(IS_WIN)
+  ASSERT_TRUE(base::GetTempDir(&temp_dir));
+#endif  // BUILDFLAG(IS_WIN)
+  CleanupDirectoriesOlderThan(temp_dir, kTestDirMatcher, base::Days(3));
+
+  EXPECT_TRUE(base::DirectoryExists(download_dir_path));
+  ASSERT_TRUE(
+      RetryFileOperation(&base::DeletePathRecursively, download_dir_path));
 }
 
 struct UpdateClientUtilsUTF8StringTypeTestCase {

@@ -909,29 +909,14 @@ void BackgroundDownloader::CleanupStaleJobs() {
 
 void BackgroundDownloader::CleanupStaleDownloads() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(com_sequence_checker_);
-  EnumerateDownloadDirs(
-      base::StrCat({prod_id_, kDownloadDirectoryPrefixMatcher}),
-      [](const base::FilePath& dir) {
-        const base::Time now = base::Time::Now();
-        base::File::Info info;
-        if (base::GetFileInfo(dir, &info) &&
-            info.creation_time + base::Days(kPurgeStaleJobsAfterDays) < now) {
-          RetryFileOperation(&base::DeletePathRecursively, dir);
-        }
-      });
-}
 
-void BackgroundDownloader::EnumerateDownloadDirs(
-    const base::FilePath::StringType& matcher,
-    base::FunctionRef<void(const base::FilePath& dir)> callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(com_sequence_checker_);
   base::FilePath dir;
-  if (base::GetSecureTempDirectory(&dir)) {
-    base::FileEnumerator(dir,
-                         /*recursive=*/false, base::FileEnumerator::DIRECTORIES,
-                         matcher)
-        .ForEach(callback);
+  if (!base::GetSecureTempDirectory(&dir)) {
+    return;
   }
+  CleanupDirectoriesOlderThan(
+      dir, base::StrCat({prod_id_, kDownloadDirectoryPrefixMatcher}),
+      base::Days(kPurgeStaleJobsAfterDays));
 }
 
 }  // namespace update_client

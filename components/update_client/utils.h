@@ -126,6 +126,12 @@ constexpr std::string StringTypeToUTF8(
 }
 #endif  // BUILDFLAG(IS_WIN)
 
+// Perform a best-effort cleanup up of directories under `dir` that match
+// `matcher` and are `older_than`.
+void CleanupDirectoriesOlderThan(const base::FilePath& dir,
+                                 const base::FilePath::StringType& matcher,
+                                 base::TimeDelta older_than);
+
 }  // namespace update_client
 
 #endif  // COMPONENTS_UPDATE_CLIENT_UTILS_H_

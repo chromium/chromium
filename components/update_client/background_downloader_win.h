@@ -118,11 +118,6 @@ class BackgroundDownloader : public CrxDownloader {
   // Perform a best-effort cleanup up downloads that are too old.
   void CleanupStaleDownloads();
 
-  // Enumerate the writable temporary directories matching |matcher|.
-  void EnumerateDownloadDirs(
-      const base::FilePath::StringType& matcher,
-      base::FunctionRef<void(const base::FilePath& dir)> callback);
-
   // This sequence checker is bound to the main sequence.
   SEQUENCE_CHECKER(sequence_checker_);
   SEQUENCE_CHECKER(com_sequence_checker_);

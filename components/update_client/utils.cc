@@ -19,6 +19,7 @@
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "base/files/file.h"
+#include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/memory_mapped_file.h"
@@ -236,5 +237,23 @@ std::string StringTypeToUTF8(const base::FilePath::StringType& stringtype) {
   return base::WideToUTF8(stringtype);
 }
 #endif  // BUILDFLAG(IS_WIN)
+
+void CleanupDirectoriesOlderThan(const base::FilePath& dir,
+                                 const base::FilePath::StringType& matcher,
+                                 base::TimeDelta older_than) {
+  // Enumerate the directories matching `matcher`.
+  base::FileEnumerator(dir,
+                       /*recursive=*/false, base::FileEnumerator::DIRECTORIES,
+                       matcher)
+      .ForEach([&](const base::FilePath& dir) {
+        base::File::Info info;
+
+        // Delete the directories older than `older_than`.
+        if (base::GetFileInfo(dir, &info) &&
+            ((info.creation_time + older_than) < base::Time::Now())) {
+          RetryFileOperation(&base::DeletePathRecursively, dir);
+        }
+      });
+}
 
 }  // namespace update_client

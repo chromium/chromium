@@ -11,6 +11,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/test/task_environment.h"
 #include "base/win/windows_types.h"
+#include "components/update_client/utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace update_client {
@@ -35,9 +36,9 @@ class BackgroundDownloaderWinTest : public testing::Test {
 };
 
 void BackgroundDownloaderWinTest::TearDown() {
-  downloader_->EnumerateDownloadDirs(
-      kTestDirMatcher,
-      [](const base::FilePath& dir) { base::DeletePathRecursively(dir); });
+  base::FilePath dir;
+  ASSERT_TRUE(base::GetSecureTempDirectory(&dir));
+  CleanupDirectoriesOlderThan(dir, kTestDirMatcher, base::Seconds(0));
 }
 
 TEST_F(BackgroundDownloaderWinTest, CleansStaleDownloads) {
