@@ -91,6 +91,10 @@ cr-composebox[searchbox-layout-mode='Compact']::part(context-menu-entrypoint-ico
   top: 14px;
 }
 
+cr-composebox::part(text-container) {
+  height: 44px;
+}
+
 cr-composebox::part(voice-icon) {
   --cr-icon-button-fill-color: var(--cr-composebox-voice-icon-fill-color);
 }
