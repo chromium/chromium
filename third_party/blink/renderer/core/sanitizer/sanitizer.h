@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SANITIZER_SANITIZER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SANITIZER_SANITIZER_H_
 
+#include "base/gtest_prod_util.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_sanitizer_presets.h"
 #include "third_party/blink/renderer/core/dom/qualified_name.h"
 #include "third_party/blink/renderer/core/sanitizer/sanitizer_names.h"
@@ -127,6 +128,8 @@ class CORE_EXPORT Sanitizer final : public ScriptWrappable {
   bool setFrom(const SanitizerConfig*, bool allowCommentsAndDataAttributes);
   // Helper for constructors: Copy from other Sanitizer.
   void setFrom(const Sanitizer&);
+
+  FRIEND_TEST_ALL_PREFIXES(SanitizerTest, SvgSetWithMultipleColons);
 
  private:
   enum class SanitizerBoolWithAbsence { kAbsent, kTrue, kFalse };

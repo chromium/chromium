@@ -771,7 +771,15 @@ void RemoveAttributeIfProtocolIsJavaScript(Element* element,
 void RemoveAttributeIfValueIsHref(Element* element,
                                   const QualifiedName& attribute) {
   const AtomicString& value = element->getAttribute(attribute);
-  if (value == "href" or value == "xlink:href") {
+
+  // The spec asks to compare against "href" and "xlink:href". Instead, we'll
+  // run the same parsing as SVGAnimateElement and check on the result.
+  AtomicString prefix;
+  AtomicString local_name;
+  if (Document::ParseQualifiedName(
+          value, prefix, local_name, IGNORE_EXCEPTION,
+          Document::QualifiedNameParsingMode::kParsingAttribute) &&
+      local_name == html_names::kHrefAttr.LocalName()) {
     element->removeAttribute(attribute);
   }
 }
