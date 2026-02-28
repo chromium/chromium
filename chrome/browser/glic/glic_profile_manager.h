@@ -110,6 +110,8 @@ class GlicProfileManager : public ProfileManagerObserver,
  private:
   FRIEND_TEST_ALL_PREFIXES(GlicProfileManagerDidSelectProfileTest,
                            DidSelectProfile_NoConsent);
+  FRIEND_TEST_ALL_PREFIXES(GlicProfileManagerDidSelectProfileTest,
+                           DidSelectProfile_Consented);
 
   // Callback from ProfilePicker::Show().
   void DidSelectProfile(Profile* profile);
