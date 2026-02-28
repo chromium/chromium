@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/bind.h"
 #include "chrome/browser/data_sharing/data_sharing_service_factory.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -29,6 +30,7 @@
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/image/image_unittest_util.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/interaction/polling_view_observer.h"
 
 class TabGroupHeaderInteractiveUiTest
@@ -122,4 +124,29 @@ IN_PROC_BROWSER_TEST_F(TabGroupHeaderInteractiveUiTest, AttentionIndicator) {
                         ->group_header(group_id)
                         ->ShouldShowAttentionIndicator());
       }));
+}
+
+IN_PROC_BROWSER_TEST_F(TabGroupHeaderInteractiveUiTest, DragCollapsedGroup) {
+  CreateTabGroup({CreateTab()});
+
+  RunTestSequence(
+      WaitForShow(kTabGroupHeaderElementId), FinishTabstripAnimations(),
+      PollViewProperty(kTabGroupCollapsedState, kTabGroupHeaderElementId,
+                       &TabGroupHeader::is_collapsed_for_testing),
+      // Collapse the group
+      MoveMouseTo(kTabGroupHeaderElementId), ClickMouse(ui_controls::LEFT),
+      WaitForState(kTabGroupCollapsedState, true), FinishTabstripAnimations(),
+      // Drag the group header. We drag it a bit to the right.
+      MoveMouseTo(kTabGroupHeaderElementId),
+      DragMouseTo(kTabGroupHeaderElementId,
+                  base::BindLambdaForTesting([](ui::TrackedElement* el) {
+                    return el->AsA<views::TrackedElementViews>()
+                               ->view()
+                               ->GetBoundsInScreen()
+                               .CenterPoint() +
+                           gfx::Vector2d(50, 0);
+                  })),
+      // Verify it is still collapsed
+      CheckViewProperty(kTabGroupHeaderElementId,
+                        &TabGroupHeader::is_collapsed_for_testing, true));
 }
