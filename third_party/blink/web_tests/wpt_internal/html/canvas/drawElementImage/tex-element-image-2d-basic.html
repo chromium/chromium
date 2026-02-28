@@ -188,7 +188,7 @@
         }, "verify the texElementImage2D works as expected");
       }
 
-      onload = () => runTest();
+      onload = () => requestAnimationFrame(() => setTimeout(runTest));
     </script>
   </body>
 </html>

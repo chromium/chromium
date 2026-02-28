@@ -189,6 +189,9 @@ class CORE_EXPORT HTMLCanvasElement final
 
   void DiscardResources() override;
 
+  std::optional<CanvasChildPaintRecord> GetCanvasChildPaintRecord(
+      DOMNodeId child_id) const override;
+
   TextDirection GetTextDirection(const ComputedStyle*) override;
   const LayoutLocale* GetLocale() const override;
 

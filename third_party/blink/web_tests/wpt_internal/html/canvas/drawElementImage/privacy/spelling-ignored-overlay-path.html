@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<html class="reftest-wait">
 <meta charset="UTF-8">
 <title>drawElementImage does not draw spelling with custom highlights</title>
 <link rel="help" href="https://github.com/WICG/html-in-canvas">
@@ -6,6 +7,7 @@
 <link rel="match" href="spelling-ignored-overlay-path-ref.html">
 <meta name="assert" value="When preserving privacy for readback, do not draw spelling markers when using the highlight overlay painting path (triggered by the custom highlight).">
 <script src="/wpt_internal/css/support/markers.js"></script>
+<script src="/common/reftest-wait.js"></script>
 <style>
   #child {
     width: 100px;
@@ -30,7 +32,7 @@
   </div>
 </canvas>
 <script>
-  function runTest() {
+  async function runTest() {
     addSpellingMarker(editable, 5, 10)
 
     let r = new Range();
@@ -38,8 +40,12 @@
     r.setEnd(document.body, 1);
     CSS.highlights.set("example-highlight", new Highlight(r));
 
+    await new Promise(requestAnimationFrame);
+    await new Promise(setTimeout);
     canvas.getContext("2d").drawElementImage(child, 0, 0);
+    takeScreenshot();
   }
 
   onload = () => runTest();
 </script>
+</html>

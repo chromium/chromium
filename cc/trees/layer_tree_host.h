@@ -1142,7 +1142,6 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   // Layer id to Layer map.
   std::unordered_map<int, raw_ptr<Layer, CtnExperimental>> layer_id_map_;
 
-  // This is for layer tree mode only.
   std::unordered_map<ElementId, raw_ptr<Layer, CtnExperimental>, ElementIdHash>
       element_layers_map_;
 

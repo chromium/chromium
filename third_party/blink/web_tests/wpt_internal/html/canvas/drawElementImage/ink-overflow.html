@@ -68,6 +68,7 @@ import { computeScaledDestinationSize,
 
 Promise.all(Array.from(document.querySelectorAll("canvas")).map(async cvs => {
   await resizeToPixelGrid(cvs);
+  await new Promise(setTimeout);
 
   const target = cvs.firstElementChild;
   const targetStyle = getComputedStyle(target);

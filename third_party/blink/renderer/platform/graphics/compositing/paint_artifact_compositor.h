@@ -217,6 +217,9 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
 
   void SetTracksRasterInvalidations(bool);
 
+  std::optional<CanvasChildPaintRecord> GetCanvasChildPaintRecord(
+      DOMNodeId child_id) const;
+
   // Called when the local frame view that owns this compositor is
   // going to be removed from its frame.
   void WillBeRemovedFromFrame();
@@ -335,6 +338,7 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
 
   class OldPendingLayerMatcher;
   PendingLayers pending_layers_;
+  HashMap<DOMNodeId, wtf_size_t> canvas_child_layer_map_;
 
   class Layerizer;
 

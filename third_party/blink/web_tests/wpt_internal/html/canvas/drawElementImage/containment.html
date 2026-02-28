@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<html class=reftest-wait>
 <title>Canvas.drawElementImage: styles for children of canvas</title>
 <link rel="help" href="https://github.com/WICG/html-in-canvas">
 <link rel="author" href="mailto:chrishtr@chromium.org">
@@ -36,5 +35,5 @@ promise_test(async () => {
     assert_equals(getComputedStyle(grandchild1)[a], grandchild_asserts[a]);
     assert_equals(getComputedStyle(grandchild2)[a], grandchild_asserts[a]);
   }
- }, 'canvas child containment');
+}, 'canvas child containment');
 </script>

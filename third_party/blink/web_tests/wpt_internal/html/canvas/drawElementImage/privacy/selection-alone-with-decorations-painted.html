@@ -1,10 +1,12 @@
 <!DOCTYPE html>
+<html class="reftest-wait">
 <meta charset="UTF-8">
 <title>drawElementImage draws selection</title>
 <link rel="help" href="https://drafts.csswg.org/css-highlight-api-1/">
 <link rel="match" href="selection-alone-with-decorations-painted-ref.html">
 <meta name="assert" value="When preserving privacy for readback, draw selection when it has decorations and shadows.">
 <script src="/wpt_internal/css/support/markers.js"></script>
+<script src="/common/reftest-wait.js"></script>
 <style>
   :focus {
     outline: none;
@@ -30,11 +32,16 @@
   </div>
 </canvas>
 <script>
-  function runTest() {
+  async function runTest() {
     setSelection(editable, 5, 11)
 
+    await new Promise(requestAnimationFrame);
+    await new Promise(setTimeout);
+
     canvas.getContext("2d").drawElementImage(child, 0, 0);
+    takeScreenshot();
   }
 
-  onload = () => runTest();
+  onload = runTest;
 </script>
+</html>

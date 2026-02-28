@@ -1,9 +1,11 @@
 <!DOCTYPE html>
+<html class="reftest-wait">
 <head>
   <title>drawElementImage paints CSS blur filters</title>
   <link rel="help" href="https://github.com/WICG/html-in-canvas">
   <link rel="match" href="css-blur-filter-on-div-ref.html">
   <meta name="assert" value="A div with a CSS blur filter paints with the filter.">
+  <script src="/common/reftest-wait.js"></script>
   <style>
     div {
       width: 100px;
@@ -19,9 +21,12 @@
   </canvas>
 
   <script>
-    window.onload = () => {
+    function runTest() {
       var context = canvas.getContext("2d");
       context.drawElementImage(child, 0, 0);
+      takeScreenshot();
     }
-  </script>
+    onload = () => requestAnimationFrame(() => setTimeout(runTest));
+ </script>
 </body>
+</html>

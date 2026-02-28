@@ -1,9 +1,11 @@
 <!DOCTYPE html>
+<html class="reftest-wait">
 <head>
   <title>texElementImage2D ignores CSS transforms</title>
   <link rel="help" href="https://github.com/WICG/html-in-canvas">
   <link rel="match" href="css-transform-on-div-ref.html">
   <meta name="assert" value="A div with a CSS transform paints without the transform.">
+  <script src="/common/reftest-wait.js"></script>
   <style>
     canvas {
       background: black;
@@ -29,9 +31,11 @@ import { resizeToPixelGrid, SimpleGLProgram } from "/wpt_internal/resources/canv
 
 const canvas = document.querySelector("canvas");
 await resizeToPixelGrid(canvas);
+await new Promise(setTimeout);
 const prog = new SimpleGLProgram(canvas.getContext("webgl2"));
 const target = canvas.firstElementChild;
 prog.render(target);
 takeScreenshot();
   </script>
 </body>
+</html>

@@ -23,7 +23,9 @@
 
   <script>
     window.onload = () => {
-      test(function(t) {
+      promise_test(async function(t) {
+        await new Promise(requestAnimationFrame);
+        await new Promise(setTimeout);
         var context = canvas.getContext("2d", { willReadFrequently: true });
         context.drawElementImage(document.getElementById("child"), 0, 0);
 
@@ -37,7 +39,7 @@
         assert_equals(pixel[1], 128, "Cross origin should not draw, green channel");
         assert_equals(pixel[2], 0, "Cross origin should not draw, blue channel");
 
-        t.done();
+
       });
     }
   </script>

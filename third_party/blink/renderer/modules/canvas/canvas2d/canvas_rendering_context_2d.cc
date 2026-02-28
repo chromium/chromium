@@ -86,6 +86,7 @@
 #include "third_party/blink/renderer/core/layout/layout_replaced.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
 #include "third_party/blink/renderer/core/layout/map_coordinates_flags.h"
+#include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/scroll/scroll_alignment.h"
 #include "third_party/blink/renderer/core/scroll/scroll_into_view_util.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
@@ -887,28 +888,27 @@ DOMMatrix* CanvasRenderingContext2D::DrawElementInternal(
     return nullptr;
   }
 
+  if (!IsDrawElementImageEligible(element, "DrawElementImage",
+                                  exception_state)) {
+    return nullptr;
+  }
+
   TRACE_EVENT0("blink", "DrawElementImage");
 
-  element->GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint(
-      DocumentUpdateReason::kCanvasDrawElementImage);
-
-  // Element size in physical coordinates.
-  gfx::SizeF box_size;
-  if (element->GetLayoutBox()) {
-    box_size = gfx::SizeF(element->GetLayoutBox()->StitchedSize());
-  }
-  gfx::RectF src_rect(box_size);
-  std::optional<CullRect> cull_rect;
-  if (sx && sy && swidth && sheight) {
-    float dpr = element->ComputedStyleRef().EffectiveZoom();
-    src_rect = gfx::RectF(*sx * dpr, *sy * dpr, *swidth * dpr, *sheight * dpr);
-    cull_rect.emplace(gfx::ToEnclosingRect(src_rect));
-  }
-
-  std::optional<cc::PaintRecord> paint_record = GetElementPaintRecord(
-      element, cull_rect, "drawElementImage()", exception_state);
-  if (!paint_record) {
+  std::optional<CanvasChildPaintRecord> child_paint_record =
+      GetChildPaintRecord(element);
+  if (!child_paint_record) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "No cached paint record for element.");
     return nullptr;
+  }
+  float dpr = child_paint_record->scale;
+  gfx::SizeF box_size = child_paint_record->box_size;
+  cc::PaintRecord paint_record = std::move(child_paint_record->record);
+
+  gfx::RectF src_rect(box_size);
+  if (sx && sy && swidth && sheight) {
+    src_rect = gfx::RectF(*sx * dpr, *sy * dpr, *swidth * dpr, *sheight * dpr);
   }
 
   // The filter needs to be resolved before calling Draw, because it
@@ -989,7 +989,7 @@ DOMMatrix* CanvasRenderingContext2D::DrawElementInternal(
         c->clipRect(SkRect::MakeXYWH(src_rect.x(), src_rect.y(),
                                      src_rect.width(), src_rect.height()));
 
-        c->drawPicture(paint_record.value(),
+        c->drawPicture(std::move(paint_record),
                        // use a save at the beginning of the record to keep
                        // transforms local:
                        true);
