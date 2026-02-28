@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './composebox_file_inputs.js';
 import './composebox_tool_chip.js';
 import './contextual_entrypoint_and_menu.js';
 import './contextual_entrypoint_button.js';
@@ -15,7 +16,6 @@ import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {ComposeboxContextAddedMethod} from '//resources/cr_components/search/constants.js';
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
-import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
@@ -33,14 +33,14 @@ import {getCss} from './contextual_entrypoint_and_carousel.css.js';
 import {getHtml} from './contextual_entrypoint_and_carousel.html.js';
 import type {ContextualEntrypointAndMenuElement} from './contextual_entrypoint_and_menu.js';
 import type {ComposeboxFileCarouselElement} from './file_carousel.js';
+import type {ComposeboxFileInputsElement} from './composebox_file_inputs.js';
 import type {RecentTabChipElement} from './recent_tab_chip.js';
 
 export interface ContextualEntrypointAndCarouselElement {
   $: {
-    fileInput: HTMLInputElement,
     contextEntrypoint: ContextualEntrypointAndMenuElement,
     carousel: ComposeboxFileCarouselElement,
-    imageInput: HTMLInputElement,
+    fileInputs: ComposeboxFileInputsElement,
     recentTabChip: RecentTabChipElement,
     voiceSearchButton: CrIconButtonElement,
   };
@@ -122,11 +122,9 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
       // =========================================================================
       // Protected properties
       // =========================================================================
-      attachmentFileTypes_: {type: Array},
       contextMenuEnabled_: {type: Boolean},
       files_: {type: Object},
       addedTabsIds_: {type: Object},
-      imageFileTypes_: {type: Array},
       showContextMenuDescription_: {type: Boolean},
       showFileCarousel_: {
         reflect: true,
@@ -165,14 +163,10 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
   accessor isOmniboxInCompactMode_: boolean = false;
   accessor recentTabForChip: TabInfo|null = null;
 
-  protected accessor attachmentFileTypes_: string[] =
-      loadTimeData.getString('composeboxAttachmentFileTypes').split(',');
   protected accessor contextMenuEnabled_: boolean =
       loadTimeData.getBoolean('composeboxShowContextMenu');
   protected accessor files_: Map<UnguessableToken, ComposeboxFile> = new Map();
   protected accessor addedTabsIds_: Map<number, UnguessableToken> = new Map();
-  protected accessor imageFileTypes_: string[] =
-      loadTimeData.getString('composeboxImageFileTypes').split(',');
   protected accessor uploadButtonDisabled_: boolean = false;
   protected contextMenuDescriptionEnabled_: boolean =
       loadTimeData.getBoolean('composeboxShowContextMenuDescription');
@@ -183,6 +177,10 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
       ComposeboxToolMode.kUnspecified;
   protected accessor submitButtonShown: boolean = false;
   private automaticActiveTab_: ComposeboxFile|null = null;
+  private attachmentFileTypes_: string[] =
+      loadTimeData.getString('composeboxAttachmentFileTypes').split(',');
+  private imageFileTypes_: string[] =
+      loadTimeData.getString('composeboxImageFileTypes').split(',');
 
   getActiveToolMode() {
     return this.activeTool_;
@@ -859,11 +857,8 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
     this.handleProcessFilesError_(errorToDisplay);
   }
 
-  protected onFileChange_(e: Event) {
-    const input = e.target as HTMLInputElement;
-    const files = input.files;
-    this.processFiles_(files);
-    input.value = '';
+  protected onFileChange_(e: CustomEvent<{files: FileList}>) {
+    this.processFiles_(e.detail.files);
     recordContextAdditionMethod(
         ComposeboxContextAddedMethod.CONTEXT_MENU, this.composeboxSource_);
   }
@@ -915,22 +910,9 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
     } as TabUpload);
   }
 
-  protected openImageUpload_() {
-    if (this.entrypointName !== 'ContextualTasks') {
-      // Open file dialog using top level primary window
-      // in contextual tasks composebox.
-      assert(this.$.imageInput);
-      this.$.imageInput.click();
-    }
-  }
-
-  protected openFileUpload_() {
-    if (this.entrypointName !== 'ContextualTasks') {
-      // Open file dialog using top level primary window
-      // in contextual tasks composebox.
-      assert(this.$.fileInput);
-      this.$.fileInput.click();
-    }
+  protected shouldDisableFileInputs_() {
+    return !this.contextMenuEnabled_ || !this.showMenuOnClick ||
+        this.entrypointName === 'ContextualTasks';
   }
 
   protected onToolClick_(e: CustomEvent<{toolMode: ComposeboxToolMode}>) {

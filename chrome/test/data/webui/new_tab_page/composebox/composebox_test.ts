@@ -162,8 +162,8 @@ suite('NewTabPageComposeboxTest', () => {
 
   function getInputForFileType(fileType: string): HTMLInputElement {
     return fileType === 'application/pdf' ?
-        composeboxElement.$.context.$.fileInput :
-        composeboxElement.$.context.$.imageInput;
+        composeboxElement.$.context.$.fileInputs.$.fileInput :
+        composeboxElement.$.context.$.fileInputs.$.imageInput;
   }
 
   function getMockFileChangeEventForType(fileType: string): Event {
@@ -174,7 +174,7 @@ suite('NewTabPageComposeboxTest', () => {
     const mockFileChange = new Event('change', {bubbles: true});
     Object.defineProperty(mockFileChange, 'target', {
       writable: false,
-      value: composeboxElement.$.context.$.imageInput,
+      value: composeboxElement.$.context.$.fileInputs.$.imageInput,
     });
     return mockFileChange;
   }
@@ -268,8 +268,10 @@ suite('NewTabPageComposeboxTest', () => {
     const dataTransfer = new DataTransfer();
     dataTransfer.items.add(
         new File(['foo1'], 'foo1.pdf', {type: 'application/pdf'}));
-    composeboxElement.$.context.$.fileInput.files = dataTransfer.files;
-    composeboxElement.$.context.$.fileInput.dispatchEvent(new Event('change'));
+    composeboxElement.$.context.$.fileInputs.$.fileInput.files =
+        dataTransfer.files;
+    composeboxElement.$.context.$.fileInputs.$.fileInput.dispatchEvent(
+        new Event('change'));
 
     await searchboxHandler.whenCalled(ADD_FILE_CONTEXT_FN);
     await microtasksFinished();
@@ -555,8 +557,9 @@ suite('NewTabPageComposeboxTest', () => {
     const dataTransfer = new DataTransfer();
     const file = new File(['foo'], 'foo.pdf', {type: 'application/pdf'});
     dataTransfer.items.add(file);
-    composeboxElement.$.context.$.fileInput.files = dataTransfer.files;
-    composeboxElement.$.context.$.fileInput.dispatchEvent(
+    composeboxElement.$.context.$.fileInputs.$.fileInput.files =
+        dataTransfer.files;
+    composeboxElement.$.context.$.fileInputs.$.fileInput.dispatchEvent(
         new Event('change'));
 
     await searchboxHandler.whenCalled(ADD_FILE_CONTEXT_FN);
@@ -610,11 +613,13 @@ suite('NewTabPageComposeboxTest', () => {
     const mockFileChange = new Event('change', {bubbles: true});
     Object.defineProperty(mockFileChange, 'target', {
       writable: false,
-      value: composeboxElement.$.context.$.fileInput,
+      value: composeboxElement.$.context.$.fileInputs.$.fileInput,
     });
 
-    composeboxElement.$.context.$.fileInput.files = dataTransfer.files;
-    composeboxElement.$.context.$.fileInput.dispatchEvent(mockFileChange);
+    composeboxElement.$.context.$.fileInputs.$.fileInput.files =
+        dataTransfer.files;
+    composeboxElement.$.context.$.fileInputs.$.fileInput.dispatchEvent(
+        mockFileChange);
 
     await waitForAddFileCallCount(2);
     await composeboxElement.updateComplete;
@@ -771,11 +776,11 @@ suite('NewTabPageComposeboxTest', () => {
     });
     createComposeboxElement();
     let clickCalled = false;
-    composeboxElement.$.context.$.imageInput.click = () => {
+    composeboxElement.$.context.$.fileInputs.$.imageInput.click = () => {
       clickCalled = true;
     };
     composeboxElement.$.context.$.contextEntrypoint.dispatchEvent(
-        new CustomEvent('open-image-upload'));
+        new CustomEvent('open-image-upload', {bubbles: true, composed: true}));
 
     // Assert.
     assertTrue(clickCalled);
@@ -787,11 +792,11 @@ suite('NewTabPageComposeboxTest', () => {
     });
     createComposeboxElement();
     let clickCalled = false;
-    composeboxElement.$.context.$.fileInput.click = () => {
+    composeboxElement.$.context.$.fileInputs.$.fileInput.click = () => {
       clickCalled = true;
     };
     composeboxElement.$.context.$.contextEntrypoint.dispatchEvent(
-        new CustomEvent('open-file-upload'));
+        new CustomEvent('open-file-upload', {bubbles: true, composed: true}));
 
     // Assert.
     assertTrue(clickCalled);
@@ -835,8 +840,9 @@ suite('NewTabPageComposeboxTest', () => {
         const pdfFile = new File(['foo'], 'foo.pdf', {type: 'application/pdf'});
         const dataTransfer = new DataTransfer();
         dataTransfer.items.add(pdfFile);
-        composeboxElement.$.context.$.fileInput.files = dataTransfer.files;
-        composeboxElement.$.context.$.fileInput.dispatchEvent(
+        composeboxElement.$.context.$.fileInputs.$.fileInput.files =
+            dataTransfer.files;
+        composeboxElement.$.context.$.fileInputs.$.fileInput.dispatchEvent(
             new Event('change'));
 
         await searchboxHandler.whenCalled(ADD_FILE_CONTEXT_FN);
@@ -860,7 +866,8 @@ suite('NewTabPageComposeboxTest', () => {
         const dataTransfer2 = new DataTransfer();
         dataTransfer2.items.add(imageFile);
 
-        const imageInput = composeboxElement.$.context.$.imageInput;
+        const imageInput =
+            composeboxElement.$.context.$.fileInputs.$.imageInput;
         imageInput.files = dataTransfer2.files;
         imageInput.dispatchEvent(new Event('change'));
 
@@ -2852,8 +2859,9 @@ suite('NewTabPageComposeboxTest', () => {
       const dataTransfer = new DataTransfer();
       const file = new File(['foo'], 'foo.pdf', {type: 'application/pdf'});
       dataTransfer.items.add(file);
-      composeboxElement.$.context.$.fileInput.files = dataTransfer.files;
-      composeboxElement.$.context.$.fileInput.dispatchEvent(
+      composeboxElement.$.context.$.fileInputs.$.fileInput.files =
+          dataTransfer.files;
+      composeboxElement.$.context.$.fileInputs.$.fileInput.dispatchEvent(
           new Event('change'));
 
       await searchboxHandler.whenCalled(ADD_FILE_CONTEXT_FN);

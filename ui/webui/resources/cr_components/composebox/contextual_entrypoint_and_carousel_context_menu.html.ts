@@ -21,8 +21,6 @@ export function getHtml(this: ContextualEntrypointAndCarouselElement) {
         part="composebox-entrypoint"
         exportparts="context-menu-entrypoint-icon"
         class="upload-button no-overlap"
-        @open-image-upload="${this.openImageUpload_}"
-        @open-file-upload="${this.openFileUpload_}"
         @add-tab-context="${this.addTabContext_}"
         @delete-tab-context="${this.onDeleteFile_}"
         @tool-click="${this.onToolClick_}"
