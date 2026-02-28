@@ -283,6 +283,68 @@ IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType, Reload) {
   ASSERT_TRUE(RunExtensionTest("tabs/reload")) << message_;
 }
 
+// Tests various behaviors of highlighting tabs using chrome.tabs.update(),
+// including that highlighting is additive, tabs can be unhighlighted, and
+// that extensions cannot unhighlight all tabs in a window.
+IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, UpdateHighlighted) {
+  constexpr char kManifest[] = R"({
+    "name": "Update Highlighted",
+    "version": "1.0",
+    "manifest_version": 3,
+    "background": {"service_worker": "background.js"}
+  })";
+
+  constexpr char kBackgroundJs[] = R"(
+    chrome.test.runTests([
+      async function highlightingTabs() {
+        // Open multiple tabs.
+        const win = await chrome.windows.create(
+                        {url: ['about:blank', 'about:blank', 'about:blank']});
+        const tabs = await chrome.tabs.query({windowId: win.id});
+        chrome.test.assertEq(3, tabs.length);
+        // Set the initial state. Only highlight the first tab.
+        // This is necessary because on desktop android, multiple tabs are
+        // highlighted in the newly-created window.
+        await chrome.tabs.update(tabs[0].id, {highlighted: true});
+        await chrome.tabs.update(tabs[1].id, {highlighted: false});
+        await chrome.tabs.update(tabs[2].id, {highlighted: false});
+
+        let highlightedTabs =
+            await chrome.tabs.query({windowId: win.id, highlighted: true});
+        chrome.test.assertEq(1, highlightedTabs.length);
+
+        chrome.test.assertEq(tabs[0].id, highlightedTabs[0].id);
+
+        // Highlight a different tab. Both tabs should be highlighted.
+        await chrome.tabs.update(tabs[2].id, {highlighted: true});
+        highlightedTabs =
+            await chrome.tabs.query({windowId: win.id, highlighted: true});
+        chrome.test.assertEq(2, highlightedTabs.length);
+        let highlightedIds = highlightedTabs.map(t => t.id);
+        chrome.test.assertEq(highlightedIds.sort(),
+                             [tabs[0].id, tabs[2].id].sort());
+
+        // Unhighlight the first tab. Only tabs[2] should be highlighted now.
+        await chrome.tabs.update(tabs[0].id, {highlighted: false});
+        highlightedTabs =
+            await chrome.tabs.query({windowId: win.id, highlighted: true});
+        chrome.test.assertEq(1, highlightedTabs.length);
+        chrome.test.assertEq(tabs[2].id, highlightedTabs[0].id);
+
+        chrome.test.succeed();
+      }
+    ]);
+  )";
+
+  extensions::TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackgroundJs);
+
+  extensions::ResultCatcher catcher;
+  ASSERT_TRUE(LoadExtension(test_dir.UnpackedPath()));
+  EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
+}
+
 class ExtensionApiCaptureTest : public ExtensionApiTabTest {
  public:
   ExtensionApiCaptureTest() = default;
