@@ -374,11 +374,13 @@ void ImageResourceContent::NotifyObservers(
 }
 
 scoped_refptr<Image> ImageResourceContent::CreateImage(bool is_multipart) {
-  String content_dpr_value =
-      info_->GetResponse().HttpHeaderField(http_names::kContentDPR);
+  const ResourceResponse& response = info_->GetResponse();
+  const AtomicString& content_dpr_header_value =
+      response.HttpHeaderField(http_names::kContentDPR);
+  StringView content_dpr_value = content_dpr_header_value;
   wtf_size_t comma = content_dpr_value.rfind(',');
   if (comma != kNotFound && comma < content_dpr_value.length() - 1) {
-    content_dpr_value = content_dpr_value.Substring(comma + 1);
+    content_dpr_value = content_dpr_value.substr(comma + 1);
   }
   auto optional_header_value = StringToFloat(content_dpr_value);
   has_device_pixel_ratio_header_value_ = optional_header_value.has_value();
@@ -388,8 +390,9 @@ scoped_refptr<Image> ImageResourceContent::CreateImage(bool is_multipart) {
     device_pixel_ratio_header_value_ = 1.0;
     has_device_pixel_ratio_header_value_ = false;
   }
-  if (info_->GetResponse().MimeType() == "image/svg+xml")
+  if (response.MimeType() == "image/svg+xml") {
     return SVGImage::Create(this, is_multipart);
+  }
   return BitmapImage::Create(this, is_multipart);
 }
 
