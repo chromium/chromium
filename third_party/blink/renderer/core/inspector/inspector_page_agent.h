@@ -323,9 +323,6 @@ class CORE_EXPORT InspectorPageAgent final
 
   HeapHashMap<WeakMember<LocalFrame>, Vector<IsolatedWorldRequest>>
       pending_isolated_worlds_;
-  using FrameIsolatedWorlds = GCedHeapHashMap<String, Member<DOMWrapperWorld>>;
-  HeapHashMap<WeakMember<LocalFrame>, Member<FrameIsolatedWorlds>>
-      isolated_worlds_;
   HashMap<String, AdTracker::AdScriptAncestry> frame_ad_script_ancestry_;
   v8_inspector::V8InspectorSession* v8_session_;
   Client* client_;

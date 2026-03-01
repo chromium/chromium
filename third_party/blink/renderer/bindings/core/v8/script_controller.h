@@ -89,10 +89,6 @@ class CORE_EXPORT ScriptController final
                             network::mojom::CSPDisposition,
                             const DOMWrapperWorld* world_for_csp);
 
-  // Creates a new isolated world for DevTools with the given human readable
-  // |world_name| and returns it id or nullptr on failure.
-  DOMWrapperWorld* CreateNewInspectorIsolatedWorld(const String& world_name);
-
   // Disables eval for the main world.
   void DisableEval(const String& error_message);
 

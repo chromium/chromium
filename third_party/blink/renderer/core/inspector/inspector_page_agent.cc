@@ -1042,22 +1042,13 @@ DOMWrapperWorld* InspectorPageAgent::EnsureDOMWrapperWorld(
     LocalFrame* frame,
     const String& world_name,
     bool grant_universal_access) {
-  if (!isolated_worlds_.Contains(frame)) {
-    isolated_worlds_.Set(frame, MakeGarbageCollected<FrameIsolatedWorlds>());
-  }
-  FrameIsolatedWorlds& frame_worlds = *isolated_worlds_.find(frame)->value;
-
-  auto world_it = frame_worlds.find(world_name);
-  if (world_it != frame_worlds.end()) {
-    return world_it->value;
-  }
   LocalDOMWindow* window = frame->DomWindow();
   DOMWrapperWorld* world =
-      window->GetScriptController().CreateNewInspectorIsolatedWorld(world_name);
+      DOMWrapperWorld::EnsureInspectorIsolatedWorldWithName(
+          frame->DomWindow()->GetIsolate(), world_name);
   if (!world) {
     return nullptr;
   }
-  frame_worlds.Set(world_name, world);
   scoped_refptr<SecurityOrigin> security_origin =
       window->GetSecurityOrigin()->IsolatedCopy();
   if (grant_universal_access) {
@@ -2069,7 +2060,6 @@ void InspectorPageAgent::Trace(Visitor* visitor) const {
   visitor->Trace(inspected_frames_);
   visitor->Trace(pending_isolated_worlds_);
   visitor->Trace(inspector_resource_content_loader_);
-  visitor->Trace(isolated_worlds_);
   InspectorBaseAgent::Trace(visitor);
 }
 

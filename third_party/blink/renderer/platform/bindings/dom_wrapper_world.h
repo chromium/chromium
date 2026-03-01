@@ -126,6 +126,11 @@ class PLATFORM_EXPORT DOMWrapperWorld final
   // Ensures an IsolatedWorld for |worldId|.
   static DOMWrapperWorld* EnsureIsolatedWorld(v8::Isolate*, int32_t world_id);
 
+  // Ensures a kInspectorIsolated world for |name|.
+  static DOMWrapperWorld* EnsureInspectorIsolatedWorldWithName(
+      v8::Isolate*,
+      const String& name);
+
   DOMWrapperWorld(PassKey,
                   v8::Isolate*,
                   WorldType,

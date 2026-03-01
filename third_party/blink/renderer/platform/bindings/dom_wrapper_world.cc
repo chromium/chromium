@@ -108,6 +108,24 @@ DOMWrapperWorld* DOMWrapperWorld::EnsureIsolatedWorld(v8::Isolate* isolate,
       /*is_default_world_of_isolate=*/false);
 }
 
+DOMWrapperWorld* DOMWrapperWorld::EnsureInspectorIsolatedWorldWithName(
+    v8::Isolate* isolate,
+    const String& name) {
+  for (DOMWrapperWorld* world : GetWorldMap().Values()) {
+    if (world->GetWorldType() == WorldType::kInspectorIsolated &&
+        world->NonMainWorldHumanReadableName() == name) {
+      return world;
+    }
+  }
+  DOMWrapperWorld* world = DOMWrapperWorld::Create(
+      isolate, DOMWrapperWorld::WorldType::kInspectorIsolated);
+  if (world && !name.empty()) {
+    DOMWrapperWorld::SetNonMainWorldHumanReadableName(world->GetWorldId(),
+                                                      name);
+  }
+  return world;
+}
+
 DOMWrapperWorld::DOMWrapperWorld(PassKey,
                                  v8::Isolate* isolate,
                                  WorldType world_type,

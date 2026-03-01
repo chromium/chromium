@@ -1,0 +1,4 @@
+Tests that Page.addScriptToEvaluateOnNewDocument does not create extra contexts
+Navigating
+contexts: 2
+
