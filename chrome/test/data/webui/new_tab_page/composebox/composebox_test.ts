@@ -2853,7 +2853,6 @@ suite('NewTabPageComposeboxTest', () => {
 
     // Autocomplete queried once on load.
     assertEquals(searchboxHandler.getCallCount('queryAutocomplete'), 1);
-    searchboxHandler.reset();
     searchboxHandler.setPromiseResolveFor(
         ADD_TAB_CONTEXT_FN, {low: BigInt(1), high: BigInt(2)});
 
@@ -2871,17 +2870,94 @@ suite('NewTabPageComposeboxTest', () => {
     await microtasksFinished();
 
     // Should have cleared matches.
-    assertEquals(searchboxHandler.getCallCount('stopAutocomplete'), 1);
-    searchboxHandler.reset();
+    assertEquals(1, searchboxHandler.getCallCount('stopAutocomplete'));
 
     // Remove autochip.
     searchboxCallbackRouterRemote.updateAutoSuggestedTabContext(null);
     await microtasksFinished();
 
     // Autocomplete should be queried again when an auto chip is removed.
-    assertEquals(searchboxHandler.getCallCount('stopAutocomplete'), 2);
-    assertEquals(searchboxHandler.getCallCount('queryAutocomplete'), 2);
+    assertEquals(3, searchboxHandler.getCallCount('stopAutocomplete'));
+    assertEquals(2, searchboxHandler.getCallCount('queryAutocomplete'));
   });
+
+  test(
+      'autocomplete not requeried if file removed and autochip remains',
+      async () => {
+        const testInputState = {
+          ...mockInputState,
+          maxInstances: {
+            [InputType.kBrowserTab]: 1,
+            [InputType.kLensImage]: 3,
+            [InputType.kLensFile]: 1,
+          },
+          maxTotalInputs: 3,
+        };
+        loadTimeData.overrideValues({composeboxShowZps: true});
+        createComposeboxElement();
+        searchboxCallbackRouterRemote.onInputStateChanged(testInputState);
+        await microtasksFinished();
+
+        // Autocomplete queried once on load.
+        assertEquals(1, searchboxHandler.getCallCount('queryAutocomplete'));
+
+        const tab = {
+          tabId: 1,
+          title: 'Tab 1',
+          url: 'https://example.com/1',
+          showInCurrentTabChip: true,
+          showInPreviousTabChip: false,
+          lastActive: {internalValue: BigInt(1)},
+        } as any as TabInfo;
+
+        // Add autochip.
+        const autochipToken = generateZeroId();
+        searchboxHandler.setPromiseResolveFor(
+            ADD_TAB_CONTEXT_FN, {token: autochipToken});
+        searchboxCallbackRouterRemote.updateAutoSuggestedTabContext(tab);
+        await searchboxCallbackRouterRemote.$.flushForTesting();
+        await searchboxHandler.whenCalled(ADD_TAB_CONTEXT_FN);
+        await microtasksFinished();
+
+        // Autocomplete should NOT have been queried again when the chip was
+        // added.
+        assertEquals(1, searchboxHandler.getCallCount('queryAutocomplete'));
+
+        // Add a file.
+        const fileId = generateZeroId();
+        searchboxHandler.setPromiseResolveFor(
+            ADD_FILE_CONTEXT_FN, {token: fileId});
+
+        composeboxElement.addFileContextForTesting({
+          uuid: FAKE_TOKEN_STRING,
+          name: 'foo.jpg',
+          status: 0,
+          type: 'image/jpeg',
+          isDeletable: true,
+          objectUrl: null,
+          dataUrl: null,
+          url: null,
+          tabId: null,
+        });
+        await microtasksFinished();
+
+        // Delete the uploaded file.
+        const deletedId = composeboxElement.$.carousel.files[1]!.uuid;
+        composeboxElement.$.carousel.dispatchEvent(
+            new CustomEvent('delete-file', {
+              detail: {
+                uuid: deletedId,
+              },
+              bubbles: true,
+              composed: true,
+            }));
+
+        await microtasksFinished();
+
+        // Autocomplete should NOT be queried again when there is an autochip
+        // remaining.
+        assertEquals(1, searchboxHandler.getCallCount('queryAutocomplete'));
+      });
 
   test('matches cleared when new autochip added', async () => {
     createComposeboxElement();

@@ -912,7 +912,18 @@ export class ComposeboxElement extends I18nMixinLit
     this.fileUploadsComplete = this.pendingUploads_.size === 0;
     this.searchboxHandler_.deleteContext(uuidToDelete, fromAutoSuggestedChip);
     this.focusInput();
-    this.queryAutocomplete_(/* clearMatches= */ true);
+    // We should not be querying autocomplete in the presence of a tab
+    // with delayed upload until URL suggestions are implemented.
+    // `deleteContext_` gets called before the active tab chip token is cleared,
+    // therefore, check if we're removing this chip to see if the delayed tab
+    // is getting removed.
+    if (fromAutoSuggestedChip || !this.getHasAutomaticActiveTabChipToken()) {
+      this.queryAutocomplete_(/* clearMatches= */ true);
+    } else {
+      // TODO(crbug.com/482150500): Have URL-suggestions for tabs with delayed
+      // uploads.
+      this.clearAutocompleteMatches();
+    }
   }
 
   protected onFileChange_(e: CustomEvent<{files: FileList}>) {
@@ -1006,6 +1017,8 @@ export class ComposeboxElement extends I18nMixinLit
   }
 
   private updateAutoSuggestedTabContext_(tab: TabInfo|null) {
+    // TODO(crbug.com/488088325): Fix deletion logic so autoActiveTab is
+    // correctly deleted on tab switch. Cannot rely on tabId here.
     const shouldDeleteAutomaticActiveTab = this.automaticActiveTab_ &&
         (!tab || this.automaticActiveTab_.tabId !== tab.tabId);
     if (shouldDeleteAutomaticActiveTab) {
@@ -1039,7 +1052,7 @@ export class ComposeboxElement extends I18nMixinLit
 
       // Only query autocomplete if we're replacing the current chip or if we're
       // adding a new chip.
-      this.queryAutocomplete_(/* clearMatches= */ true);
+      this.clearAutocompleteMatches();
     }
   }
 

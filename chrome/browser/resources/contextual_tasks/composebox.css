@@ -579,6 +579,11 @@
   position: relative;
 }
 
-#composeboxContainer:not(:has(#composebox[show-dropdown_])) ~ #contextualTasksSuggestionsContainer {
+:host:has(#composebox:not([show-dropdown_])) #contextualTasksSuggestionsContainer {
   display: none;
+}
+
+/* Needed for space between header and composebox. */
+:host:has(#composebox:not([show-dropdown_])) #composebox {
+  margin-top: 24px;
 }
