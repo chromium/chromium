@@ -2873,9 +2873,9 @@ crbug.com/488071544 external/wpt/webrtc/RTCPeerConnection-getStats.https.html?re
 crbug.com/476344902 virtual/webui-browser/external/wpt/html/browsers/windows/nested-browsing-contexts/window-top.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
-external/wpt/css/css-viewport/zoom/border-radius.html [ Failure ]
-external/wpt/css/css-viewport/zoom/scroll-margin.html [ Failure ]
-[ Win ] external/wpt/css/css-viewport/zoom/svg-computed-style.html [ Pass Timeout ]
+crbug.com/488651384 external/wpt/css/css-viewport/zoom/border-radius.html [ Failure ]
+crbug.com/488651384 external/wpt/css/css-viewport/zoom/scroll-margin.html [ Failure ]
+crbug.com/488651384 [ Win ] external/wpt/css/css-viewport/zoom/svg-computed-style.html [ Pass Timeout ]
 crbug.com/488373052 external/wpt/css/css-values/attr-namespace-non-existing.html [ Failure ]
 crbug.com/488373052 external/wpt/css/css-values/attr-namespace-valid.xhtml [ Failure ]
 crbug.com/488362582 external/wpt/webdriver/tests/bidi/emulation/set_network_conditions/user_contexts.py [ Failure ]
