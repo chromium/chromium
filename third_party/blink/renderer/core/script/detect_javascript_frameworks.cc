@@ -307,28 +307,26 @@ void DetectFrameworkVersions(Document& document,
         result.detected_versions[JavaScriptFramework::kJoomla] =
             kNoFrameworkVersionDetected;
       } else {
-        constexpr char wordpress_prefix[] = "WordPress ";
-        constexpr size_t wordpress_prefix_length =
-            std::char_traits<char>::length(wordpress_prefix);
+        constexpr char kWordpressPrefix[] = "WordPress ";
+        constexpr size_t kWordpressPrefixLength =
+            std::char_traits<char>::length(kWordpressPrefix);
 
-        if (content.starts_with(wordpress_prefix)) {
-          String version_string =
-              String(content).Substring(wordpress_prefix_length);
+        if (content.starts_with(kWordpressPrefix)) {
+          StringView version_string = content;
+          version_string.remove_prefix(kWordpressPrefixLength);
           result.detected_versions[JavaScriptFramework::kWordPress] =
               ExtractVersion(version_regexp, context,
                              V8String(isolate, version_string));
         }
 
-        constexpr char drupal_prefix[] = "Drupal ";
-        constexpr size_t drupal_prefix_length =
-            std::char_traits<char>::length(drupal_prefix);
+        constexpr char kDrupalPrefix[] = "Drupal ";
+        constexpr size_t kDrupalPrefixLength =
+            std::char_traits<char>::length(kDrupalPrefix);
 
-        if (content.starts_with(drupal_prefix)) {
-          String version_string =
-              String(content).Substring(drupal_prefix_length);
-          String trimmed =
-              version_string.Substring(0, version_string.find(" "));
-          std::optional<int> version = StringToIntLoose(trimmed);
+        if (content.starts_with(kDrupalPrefix)) {
+          StringView version_string(content, kDrupalPrefixLength);
+          version_string = version_string.substr(0, version_string.find(' '));
+          std::optional<int> version = StringToIntLoose(version_string);
           result.detected_versions[JavaScriptFramework::kDrupal] =
               version.has_value() ? ((*version & 0xff) << 8)
                                   : kNoFrameworkVersionDetected;
