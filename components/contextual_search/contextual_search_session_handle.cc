@@ -157,6 +157,11 @@ void ContextualSearchSessionHandle::StartFileContextUploadFlow(
   input_data->primary_content_type = mime_type;
   input_data->file_name = file_name;
 
+  if (mime_type == lens::MimeType::kPdf){
+    // For PDF file uploads, the file name is set in the page_title field.
+    input_data->page_title = file_name;
+  }
+
   base::span<const uint8_t> file_data_span = base::span(file_bytes);
   std::vector<uint8_t> file_data_vector(file_data_span.begin(),
                                         file_data_span.end());
