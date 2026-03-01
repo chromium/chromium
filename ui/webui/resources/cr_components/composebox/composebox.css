@@ -739,15 +739,9 @@ contextual-entrypoint-and-carousel[is-omnibox-in-compact-mode_]::part(cr-compose
 }
 
 cr-composebox-voice-search {
-  opacity: 1;
-  @starting-style {
-    opacity: 0;  /* Since hidden elements have no previous state. */
-  }
-  transition: opacity 90ms ease-in-out, display 100ms allow-discrete;
   z-index: 2;
 }
 
 :host(:not([in-voice-search-mode_])) cr-composebox-voice-search {
   display: none;
-  opacity: 0;
 }

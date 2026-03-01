@@ -1556,6 +1556,9 @@ export class ComposeboxElement extends I18nMixinLit
       this.searchboxHandler_.clearFiles(shouldBlockAutoSuggestedTabs);
     }
     this.fileUploadsComplete = this.pendingUploads_.size === 0;
+    if (this.inVoiceSearchMode_) {
+      this.voiceSearchEndCleanup_();
+    }
   }
 
   clearInput() {
