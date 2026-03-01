@@ -169,9 +169,8 @@ void TestingPrefStore::SetInitializationCompleted() {
 }
 
 void TestingPrefStore::NotifyPrefValueChanged(std::string_view key) {
-  // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
-  observers_.NotifyAllowReentrancyUntriaged(
-      &PrefStore::Observer::OnPrefValueChanged, key);
+  observers_.NotifyAllowReentrancy(&PrefStore::Observer::OnPrefValueChanged,
+                                   key);
 }
 
 void TestingPrefStore::NotifyInitializationCompleted() {
@@ -191,9 +190,8 @@ void TestingPrefStore::ReportValueChanged(std::string_view key,
   if (prefs_.GetValue(key, &value))
     CheckPrefIsSerializable(key, *value);
 
-  // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
-  observers_.NotifyAllowReentrancyUntriaged(
-      &PrefStore::Observer::OnPrefValueChanged, key);
+  observers_.NotifyAllowReentrancy(&PrefStore::Observer::OnPrefValueChanged,
+                                   key);
 }
 
 void TestingPrefStore::SetString(const std::string& key,
