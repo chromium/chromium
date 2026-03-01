@@ -65,6 +65,7 @@ source_set("lens") {
     "//chrome/browser/lens/core/mojom:mojo_bindings",
     "//chrome/browser/search_engines",
     "//chrome/browser/themes",
+    "//chrome/browser/ui/contextual_search",
     "//chrome/browser/ui/exclusive_access",
     "//chrome/browser/ui/omnibox",
     "//chrome/browser/ui/promos:service",

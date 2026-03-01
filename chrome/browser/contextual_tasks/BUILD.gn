@@ -42,6 +42,7 @@ source_set("contextual_tasks") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/tab_list",
     "//chrome/browser/ui/browser_window",
+    "//components/contextual_search:public",
     "//components/contextual_tasks/public",
     "//components/keyed_service/core",
     "//components/lens:lens_url_utils",

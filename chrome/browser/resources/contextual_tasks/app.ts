@@ -357,6 +357,7 @@ export class ContextualTasksAppElement extends CrLitElement {
       }),
       callbackRouter.hideErrorPage.addListener(() => {
         this.isErrorPageVisible_ = false;
+        this.maybeLoadPendingUrl_();
       }),
       callbackRouter.showOauthErrorDialog.addListener(() => {
         this.isErrorDialogVisible_ = true;
@@ -446,6 +447,13 @@ export class ContextualTasksAppElement extends CrLitElement {
       const url = new URL(window.location.href);
       url.searchParams.delete('open_history');
       window.history.replaceState({}, '', url.href);
+    }
+
+    if (taskUuid) {
+      const {isPendingErrorPage} =
+          await this.browserProxy_.handler.isPendingErrorPage(
+              {value: taskUuid});
+      this.isErrorPageVisible_ = isPendingErrorPage;
     }
 
     // Check if the initial render should be zero state.
@@ -715,7 +723,8 @@ export class ContextualTasksAppElement extends CrLitElement {
   private maybeLoadPendingUrl_() {
     // If all the data needed to make the initial request is available, load
     // the pending URL.
-    if (this.pendingUrl_ && this.commonSearchParams_) {
+    if (this.pendingUrl_ && this.commonSearchParams_ &&
+        !this.isErrorPageVisible_) {
       this.$.threadFrame.src = this.pendingUrl_;
       this.pendingUrl_ = '';
     }

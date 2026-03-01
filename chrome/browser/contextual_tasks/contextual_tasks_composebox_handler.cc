@@ -470,6 +470,7 @@ void ContextualTasksComposeboxHandler::InitializeInputStateModel() {
     }
   }
 
+  ResetInputStateModel();
   ContextualSearchboxHandler::InitializeInputStateModel();
 }
 

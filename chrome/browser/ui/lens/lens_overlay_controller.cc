@@ -1053,13 +1053,10 @@ void LensOverlayController::IssueLensRequest(
     initialization_data_->selected_region_bitmap_.reset();
   }
 
-  if (GetContextualizationController()->GetCurrentPageContextEligibility()) {
-    GetLensQueryFlowRouter()->SendRegionSearch(
-        query_start_time, region.Clone(), selection_type,
-        initialization_data_->additional_search_query_params_, region_bytes,
-        invocation_source_);
-  }
-
+  GetLensQueryFlowRouter()->SendRegionSearch(
+      query_start_time, region.Clone(), selection_type,
+      initialization_data_->additional_search_query_params_, region_bytes,
+      invocation_source_);
   MaybeOpenSidePanel();
   GetLensSessionMetricsLogger()->RecordTimeToFirstInteraction(
       lens::LensOverlayFirstInteractionType::kRegionSelect);
@@ -1082,12 +1079,10 @@ void LensOverlayController::IssueMultimodalRequest(
     const std::string& text_query,
     lens::LensOverlaySelectionType selection_type,
     std::optional<SkBitmap> region_bitmap) {
-  if (GetContextualizationController()->GetCurrentPageContextEligibility()) {
-    GetLensQueryFlowRouter()->SendMultimodalRequest(
-        query_start_time, std::move(region), text_query, selection_type,
-        initialization_data_->additional_search_query_params_, region_bitmap,
-        invocation_source_);
-  }
+  GetLensQueryFlowRouter()->SendMultimodalRequest(
+      query_start_time, std::move(region), text_query, selection_type,
+      initialization_data_->additional_search_query_params_, region_bitmap,
+      invocation_source_);
 }
 
 void LensOverlayController::IssueSearchBoxRequest(
@@ -1131,13 +1126,11 @@ void LensOverlayController::IssueContextualTextRequest(
     base::Time query_start_time,
     const std::string& text_query,
     lens::LensOverlaySelectionType selection_type) {
-  if (GetContextualizationController()->GetCurrentPageContextEligibility()) {
-    lens_selection_type_ = selection_type;
-    GetLensQueryFlowRouter()->SendContextualTextQuery(
-        query_start_time, text_query, selection_type,
-        initialization_data_->additional_search_query_params_,
-        invocation_source_);
-  }
+  lens_selection_type_ = selection_type;
+  GetLensQueryFlowRouter()->SendContextualTextQuery(
+      query_start_time, text_query, selection_type,
+      initialization_data_->additional_search_query_params_,
+      invocation_source_);
 }
 
 void LensOverlayController::AddOverlayStateToSearchQuery(
@@ -1787,10 +1780,8 @@ void LensOverlayController::IssueSearchBoxRequestPart2(
   lens::LensOverlayInvocationSource final_source =
       invocation_source.value_or(invocation_source_);
 
-  if (!GetContextualizationController()->GetCurrentPageContextEligibility()) {
-    // Do not send any requests if the page is not context eligible.
-  } else if (initialization_data_->selected_region_.is_null() &&
-             IsContextualSearchbox()) {
+  if (initialization_data_->selected_region_.is_null() &&
+      IsContextualSearchbox()) {
     GetLensQueryFlowRouter()->SendContextualTextQuery(
         query_start_time, search_box_text, lens_selection_type_,
         initialization_data_->additional_search_query_params_, final_source);

@@ -229,6 +229,34 @@ suite('ContextualTasksAppTest', function() {
     await microtasksFinished();
   });
 
+  test('error page shown if pending error page is true for task', async () => {
+    const taskId = '123';
+    window.history.replaceState({}, '', `?task=${taskId}`);
+
+    const proxy = new TestContextualTasksBrowserProxy('http://example.com');
+    proxy.handler.setIsPendingErrorPage({value: taskId}, true);
+    BrowserProxyImpl.setInstance(proxy);
+
+    const appElement = document.createElement('contextual-tasks-app');
+    document.body.appendChild(appElement);
+    await microtasksFinished();
+
+    assertTrue(appElement.hasAttribute('is-error-page-visible_'));
+  });
+
+  test(
+      'error page not shown if pending error page is not true for task',
+      async () => {
+        const proxy = new TestContextualTasksBrowserProxy('http://example.com');
+        BrowserProxyImpl.setInstance(proxy);
+
+        const appElement = document.createElement('contextual-tasks-app');
+        document.body.appendChild(appElement);
+        await microtasksFinished();
+
+        assertFalse(appElement.hasAttribute('is-error-page-visible_'));
+      });
+
   test('toolbar visibility changes for tab and side panel', async () => {
     const proxy = new TestContextualTasksBrowserProxy(fixtureUrl);
     BrowserProxyImpl.setInstance(proxy);

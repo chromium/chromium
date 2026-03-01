@@ -73,6 +73,10 @@ interface PageHandler {
   // Returns if the given URL is an AI page.
   IsAiPage(url.mojom.Url url) => (bool is_ai_page);
 
+  // Checks if the given task corresponds to an error page. If so, triggers the
+  // error page to be shown. This is only called when the WebUI is first opened.
+  IsPendingErrorPage(mojo_base.mojom.Uuid task_id) => (bool is_pending_error_page);
+
   // Set the title of the active thread.
   SetThreadTitle(string title);
 

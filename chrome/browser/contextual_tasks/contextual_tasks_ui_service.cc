@@ -37,6 +37,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/contextual_search/contextual_search_metrics_recorder.h"
 #include "components/contextual_search/contextual_search_service.h"
 #include "components/contextual_tasks/public/account_utils.h"
 #include "components/contextual_tasks/public/contextual_task.h"
@@ -579,6 +580,19 @@ void ContextualTasksUiService::OnTextFinderLookupComplete(
       text_directives);
 }
 
+void ContextualTasksUiService::InitializeTaskInSidePanel(
+    content::WebContents* web_contents,
+    const base::Uuid& task_id,
+    std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
+        session_handle) {
+  AssociateWebContentsToTask(web_contents, task_id);
+  if (session_handle) {
+    ContextualSearchWebContentsHelper::GetOrCreateForWebContents(web_contents)
+        ->SetTaskSession(task_id, std::move(session_handle),
+                         /*input_state_model=*/nullptr);
+  }
+}
+
 void ContextualTasksUiService::OnNonThreadNavigationInTab(
     const GURL& url,
     base::WeakPtr<tabs::TabInterface> tab) {
@@ -1059,15 +1073,8 @@ void ContextualTasksUiService::StartTaskUiInSidePanel(
     AssociateWebContentsToTask(tab_interface->GetContents(), task.GetTaskId());
     controller->Show();
 
-    // Associate the web contents with the task and set the session handle if
-    // provided.
-    content::WebContents* web_contents = controller->GetActiveWebContents();
-    AssociateWebContentsToTask(web_contents, task.GetTaskId());
-    if (session_handle) {
-      ContextualSearchWebContentsHelper::GetOrCreateForWebContents(web_contents)
-          ->SetTaskSession(task.GetTaskId(), std::move(session_handle),
-                           /*input_state_model=*/nullptr);
-    }
+    InitializeTaskInSidePanel(controller->GetActiveWebContents(),
+                              task.GetTaskId(), std::move(session_handle));
     return;
   }
 
@@ -1082,12 +1089,57 @@ void ContextualTasksUiService::StartTaskUiInSidePanel(
   }
 }
 
+void ContextualTasksUiService::StartTaskUiInSidePanelWithErrorPage(
+    BrowserWindowInterface* browser_window_interface,
+    tabs::TabInterface* tab_interface,
+    std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
+        session_handle) {
+  // Create a new task.
+  ContextualTask task = contextual_tasks_service_->CreateTask();
+  auto* controller =
+      ContextualTasksPanelController::From(browser_window_interface);
+  auto* panel_contents = controller->GetActiveWebContents();
+  auto source = session_handle && session_handle->GetMetricsRecorder()
+                    ? session_handle->GetMetricsRecorder()->source()
+                    : contextual_search::ContextualSearchSource::kUnknown;
+
+  if (tab_interface) {
+    AssociateWebContentsToTask(tab_interface->GetContents(), task.GetTaskId());
+  }
+
+  bool panel_was_closed =
+      !panel_contents || !controller->IsPanelOpenForContextualTask();
+  if (panel_was_closed) {
+    pending_error_page_tasks_.emplace(task.GetTaskId(), source);
+    controller->Show();
+  }
+
+  content::WebContents* web_contents = controller->GetActiveWebContents();
+  InitializeTaskInSidePanel(web_contents, task.GetTaskId(),
+                            std::move(session_handle));
+
+  if (!panel_was_closed) {
+    if (auto* web_ui_interface = GetWebUiInterface(web_contents)) {
+      contextual_tasks::ShowAndRecordErrorPage(
+          web_ui_interface->GetPageRemote(), source);
+    }
+  }
+}
+
 bool ContextualTasksUiService::IsAiUrl(const GURL& url) {
   if (!IsSearchResultsUrl(url)) {
     return false;
   }
 
   return aim_eligibility_service_->HasAimUrlParams(url);
+}
+
+bool ContextualTasksUiService::IsPendingErrorPage(const base::Uuid& task_id) {
+  if (!pending_error_page_tasks_.contains(task_id)) {
+    return false;
+  }
+  contextual_tasks::RecordErrorPageShown(pending_error_page_tasks_[task_id]);
+  return true;
 }
 
 bool ContextualTasksUiService::IsContextualTasksUrl(const GURL& url) {

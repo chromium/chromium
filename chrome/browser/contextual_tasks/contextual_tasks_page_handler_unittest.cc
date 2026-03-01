@@ -141,6 +141,7 @@ class MockUiService : public ContextualTasksUiService {
               (const GURL&, BrowserWindowInterface*),
               (override));
   MOCK_METHOD(bool, IsAiUrl, (const GURL&), (override));
+  MOCK_METHOD(bool, IsPendingErrorPage, (const base::Uuid&), (override));
 };
 
 class TestContextualTasksUI : public ContextualTasksUI {
@@ -217,6 +218,33 @@ class ContextualTasksPageHandlerTest : public BrowserWithTestWindowTest {
   NiceMock<MockPage> page_;
   base::test::ScopedFeatureList feature_list_;
 };
+
+TEST_F(ContextualTasksPageHandlerTest, IsPendingErrorPage) {
+  base::Uuid task_id = base::Uuid::GenerateRandomV4();
+
+  EXPECT_CALL(*mock_contextual_tasks_ui_service_, IsPendingErrorPage(task_id))
+      .WillOnce(Return(true));
+
+  base::RunLoop run_loop;
+  page_handler_->IsPendingErrorPage(
+      task_id, base::BindLambdaForTesting([&](bool is_pending_error_page) {
+        EXPECT_TRUE(is_pending_error_page);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+TEST_F(ContextualTasksPageHandlerTest, IsPendingErrorPage_TaskNotPending) {
+  base::Uuid task_id = base::Uuid::GenerateRandomV4();
+
+  base::RunLoop run_loop;
+  page_handler_->IsPendingErrorPage(
+      task_id, base::BindLambdaForTesting([&](bool is_pending_error_page) {
+        EXPECT_FALSE(is_pending_error_page);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
 
 TEST_F(ContextualTasksPageHandlerTest, GetThreadUrl) {
   GURL expected_url(kAiPageUrl);

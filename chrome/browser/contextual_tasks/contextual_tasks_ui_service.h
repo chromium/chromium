@@ -149,8 +149,20 @@ class ContextualTasksUiService : public KeyedService {
       std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
           session_handle);
 
+  // Opens the contextual tasks side panel with the protected error page showing
+  // by default.
+  virtual void StartTaskUiInSidePanelWithErrorPage(
+      BrowserWindowInterface* browser_window_interface,
+      tabs::TabInterface* tab_interface,
+      std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
+          session_handle);
+
   // Returns whether the provided URL is to an AI page.
   virtual bool IsAiUrl(const GURL& url);
+
+  // Returns whether the provided task ID is for a task that should show the
+  // error page on load.
+  virtual bool IsPendingErrorPage(const base::Uuid& task_id);
 
   // Returns whether the provided URL is to a contextual tasks WebUI page.
   static bool IsContextualTasksUrl(const GURL& url);
@@ -271,6 +283,14 @@ class ContextualTasksUiService : public KeyedService {
       base::WeakPtr<BrowserWindowInterface> browser,
       const std::vector<std::pair<std::string, bool>>& lookup_results);
 
+  // Helper method to associate the WebContents with the task and set the
+  // session handle.
+  void InitializeTaskInSidePanel(
+      content::WebContents* web_contents,
+      const base::Uuid& task_id,
+      std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
+          session_handle);
+
   // Navigates to a share URL.
   virtual void OnShareUrlNavigation(const GURL& url);
 
@@ -312,6 +332,10 @@ class ContextualTasksUiService : public KeyedService {
   // are cleaned up.
   std::map<base::Uuid, omnibox::ChromeAimEntryPoint>
       task_id_to_entry_point_override_;
+
+  // Map of tasks that should show the error page on load to the source trigger.
+  std::map<base::Uuid, contextual_search::ContextualSearchSource>
+      pending_error_page_tasks_;
 
   base::WeakPtrFactory<ContextualTasksUiService> weak_ptr_factory_{this};
 };
