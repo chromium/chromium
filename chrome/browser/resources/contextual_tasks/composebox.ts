@@ -85,6 +85,10 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
         type: Boolean,
         reflect: true,
       },
+      maybeShowOverlayHintText: {
+        type: Boolean,
+        reflect: true,
+      },
       composeboxHeight_: {type: Number},
       composeboxDropdownHeight_: {type: Number},
       isComposeboxFocused_: {
@@ -122,6 +126,7 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
   accessor isZeroState: boolean = false;
   accessor isSidePanel: boolean = false;
   accessor isLensOverlayShowing: boolean = false;
+  accessor maybeShowOverlayHintText: boolean = false;
   accessor inputEnabled: boolean = true;
 
   protected accessor zeroStateSuggestions_: AutocompleteResult = {
@@ -293,7 +298,7 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
   }
 
   protected getInputPlaceholder_() {
-    return this.isLensOverlayShowing ?
+    return this.maybeShowOverlayHintText ?
         loadTimeData.getString('composeboxHintTextLensOverlay') :
         '';
   }

@@ -65,7 +65,7 @@ void LensResultsPanelRouter::OnOverlayShown() {
       service->OnLensOverlayStateChanged(
           lens_search_controller_->GetTabInterface()
               ->GetBrowserWindowInterface(),
-          /*is_showing=*/true);
+          /*is_showing=*/true, lens_search_controller_->invocation_source());
     }
     return;
   }
@@ -78,7 +78,7 @@ void LensResultsPanelRouter::OnOverlayHidden() {
       service->OnLensOverlayStateChanged(
           lens_search_controller_->GetTabInterface()
               ->GetBrowserWindowInterface(),
-          /*is_showing=*/false);
+          /*is_showing=*/false, lens_search_controller_->invocation_source());
     }
     return;
   }

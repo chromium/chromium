@@ -1146,7 +1146,8 @@ GURL ContextualTasksUiService::GetAimUrlFromContextualTasksUrl(
 
 void ContextualTasksUiService::OnLensOverlayStateChanged(
     BrowserWindowInterface* browser_window_interface,
-    bool is_showing) {
+    bool is_showing,
+    std::optional<lens::LensOverlayInvocationSource> invocation_source) {
   auto* controller =
       ContextualTasksPanelController::From(browser_window_interface);
   if (!controller || !controller->IsPanelOpenForContextualTask()) {
@@ -1160,7 +1161,7 @@ void ContextualTasksUiService::OnLensOverlayStateChanged(
 
   auto* web_ui_interface = GetWebUiInterface(panel_contents);
   if (web_ui_interface) {
-    web_ui_interface->OnLensOverlayStateChanged(is_showing);
+    web_ui_interface->OnLensOverlayStateChanged(is_showing, invocation_source);
   }
 }
 

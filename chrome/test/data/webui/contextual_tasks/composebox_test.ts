@@ -2076,7 +2076,7 @@ suite('ContextualTasksComposeboxTest', () => {
     const inputElement = innerComposebox.$.input;
 
     // Initially false, placeholder override should be empty.
-    assertFalse(contextualComposebox.isLensOverlayShowing);
+    assertFalse(contextualComposebox.maybeShowOverlayHintText);
     await contextualComposebox.updateComplete;
     await innerComposebox.updateComplete;
     assertEquals('', innerComposebox.inputPlaceholderOverride);
@@ -2084,20 +2084,20 @@ suite('ContextualTasksComposeboxTest', () => {
     const initialPlaceholder = inputElement.placeholder;
 
     // Set to true.
-    contextualComposebox.isLensOverlayShowing = true;
+    contextualComposebox.maybeShowOverlayHintText = true;
     await contextualComposebox.updateComplete;
     await innerComposebox.updateComplete;
 
-    assertTrue(contextualComposebox.isLensOverlayShowing);
+    assertTrue(contextualComposebox.maybeShowOverlayHintText);
     assertEquals('Test Lens Hint', innerComposebox.inputPlaceholderOverride);
     assertEquals('Test Lens Hint', inputElement.placeholder);
 
     // Set back to false.
-    contextualComposebox.isLensOverlayShowing = false;
+    contextualComposebox.maybeShowOverlayHintText = false;
     await contextualComposebox.updateComplete;
     await innerComposebox.updateComplete;
 
-    assertFalse(contextualComposebox.isLensOverlayShowing);
+    assertFalse(contextualComposebox.maybeShowOverlayHintText);
     assertEquals('', innerComposebox.inputPlaceholderOverride);
     assertEquals(initialPlaceholder, inputElement.placeholder);
   });

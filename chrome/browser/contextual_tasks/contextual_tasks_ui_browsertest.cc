@@ -27,6 +27,7 @@
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/contextual_tasks/public/mock_contextual_tasks_service.h"
+#include "components/lens/lens_overlay_invocation_source.h"
 #include "components/omnibox/browser/searchbox.mojom.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -74,7 +75,10 @@ class MockContextualTasksPage : public contextual_tasks::mojom::Page {
   MOCK_METHOD(void, RestoreInput, (), (override));
   MOCK_METHOD(void, OnZeroStateChange, (bool is_zero_state), (override));
   MOCK_METHOD(void, OnAiPageStatusChanged, (bool), (override));
-  MOCK_METHOD(void, OnLensOverlayStateChanged, (bool), (override));
+  MOCK_METHOD(void,
+              OnLensOverlayStateChanged,
+              (bool is_showing, bool maybe_show_overlay_hint_text),
+              (override));
   MOCK_METHOD(void,
               SetTaskDetails,
               (const base::Uuid&, const std::string&, const std::string&),
@@ -353,23 +357,31 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUIBrowserTest,
   mojo::PendingReceiver<contextual_tasks::mojom::PageHandler> handler_receiver;
   // The initial call to CreatePageHandler should call
   // OnLensOverlayStateChanged.
-  EXPECT_CALL(mock_page, OnLensOverlayStateChanged(false));
+  EXPECT_CALL(mock_page, OnLensOverlayStateChanged(
+                             /*is_showing=*/false,
+                             /*maybe_show_overlay_hint_text=*/false));
   controller_->CreatePageHandler(mock_page.BindAndGetRemote(),
                                  std::move(handler_receiver));
 
   {
     base::RunLoop run_loop;
-    EXPECT_CALL(mock_page, OnLensOverlayStateChanged(true))
+    EXPECT_CALL(mock_page,
+                OnLensOverlayStateChanged(
+                    /*is_showing=*/true, /*maybe_show_overlay_hint_text=*/true))
         .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
-    controller_->OnLensOverlayStateChanged(true);
+    controller_->OnLensOverlayStateChanged(
+        true, lens::LensOverlayInvocationSource::kContextualTasksComposebox);
     run_loop.Run();
   }
 
   {
     base::RunLoop run_loop;
-    EXPECT_CALL(mock_page, OnLensOverlayStateChanged(false))
+    EXPECT_CALL(mock_page, OnLensOverlayStateChanged(
+                               /*is_showing=*/false,
+                               /*maybe_show_overlay_hint_text=*/false))
         .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
-    controller_->OnLensOverlayStateChanged(false);
+    controller_->OnLensOverlayStateChanged(
+        false, lens::LensOverlayInvocationSource::kAppMenu);
     run_loop.Run();
   }
 }
