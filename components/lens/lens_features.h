@@ -191,6 +191,12 @@ BASE_DECLARE_FEATURE(kLensUseSeparateRequestIdForViewportImages);
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kLensSendVitForSingleContextNextQueries);
 
+// Enables restricting annotated page content to same site frames for contextual
+// next queries.
+COMPONENT_EXPORT(LENS_FEATURES)
+BASE_DECLARE_FEATURE(
+    kLensRestrictAnnotatedPageContentToSameSiteFramesForNextQueries);
+
 // The base URL for Lens.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern const base::FeatureParam<std::string> kHomepageURLForLens;

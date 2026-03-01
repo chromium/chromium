@@ -103,7 +103,10 @@ void TabContextualizationController::GetAnnotatedPageContent(
       optimization_guide::DefaultAIPageContentOptions(
           /*on_critical_path=*/true);
   ai_page_content_options->max_meta_elements = 20;
-  ai_page_content_options->include_same_site_only = true;
+  ai_page_content_options->include_same_site_only =
+      base::FeatureList::IsEnabled(
+          lens::features::
+              kLensRestrictAnnotatedPageContentToSameSiteFramesForNextQueries);
   optimization_guide::GetAIPageContent(tab_->GetContents(),
                                        std::move(ai_page_content_options),
                                        std::move(callback));
