@@ -1174,6 +1174,80 @@ suite('SearchboxTest', () => {
     assertEquals('voiceSearchButton', getDeepActiveElement()!.id);
   });
 
+  test('dropdown suppressed in multi-line mode', async () => {
+    realbox = await createAndAppendRealbox({multiLineEnabled: true});
+
+    // The initial scroll height of the input.
+    (realbox as any).initialInputScrollHeight_ = 20;
+
+    // The text currently fits on one line (no wrapping).
+    Object.defineProperty(realbox.$.input, 'scrollHeight', {
+      value: 20,
+      configurable: true,
+    });
+
+    realbox.$.input.value = 'hello';
+    realbox.$.input.dispatchEvent(new InputEvent('input'));
+
+    const matches = [createSearchMatchForTesting(), createUrlMatch()];
+    testProxy.callbackRouterRemote.autocompleteResultChanged(
+        createAutocompleteResultForTesting({
+          input: realbox.$.input.value.trimStart(),
+          matches: matches,
+        }));
+
+    // Dropdown should be visible (not wrapping and matchNums > 1).
+    assertTrue(await areMatchesShowing());
+
+    // Simulate text wrapping.
+    // Change 'scrollHeight' to 40, which is > initialInputScrollHeight_ (20).
+    Object.defineProperty(realbox.$.input, 'scrollHeight', {
+      value: 40,
+      configurable: true,
+    });
+
+    realbox.$.input.value = 'hello world';
+    realbox.$.input.dispatchEvent(new InputEvent('input'));
+
+    testProxy.callbackRouterRemote.autocompleteResultChanged(
+        createAutocompleteResultForTesting({
+          input: realbox.$.input.value.trimStart(),
+          matches: matches,
+        }));
+
+    // Dropdown should be hidden.
+    assertFalse(await areMatchesShowing());
+
+    // Reset wrapping (simulate text deleted or unwrapped).
+    Object.defineProperty(realbox.$.input, 'scrollHeight', {
+      value: 20,
+      configurable: true,
+    });
+
+    realbox.$.input.value = 'hello';
+    realbox.$.input.dispatchEvent(new InputEvent('input'));
+
+    testProxy.callbackRouterRemote.autocompleteResultChanged(
+        createAutocompleteResultForTesting({
+          input: realbox.$.input.value.trimStart(),
+          matches: matches,
+        }));
+
+    // Dropdown should be visible again.
+    assertTrue(await areMatchesShowing());
+
+    // Browser returns only 1 match.
+    const singleMatch = [createSearchMatchForTesting()];
+    testProxy.callbackRouterRemote.autocompleteResultChanged(
+        createAutocompleteResultForTesting({
+          input: realbox.$.input.value.trimStart(),
+          matches: singleMatch,
+        }));
+
+    // Dropdown should be hidden (only mirror query match in multi-line mode).
+    assertFalse(await areMatchesShowing());
+  });
+
   //============================================================================
   // Test Cut/Copy
   //============================================================================

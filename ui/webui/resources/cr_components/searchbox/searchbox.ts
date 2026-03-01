@@ -48,7 +48,6 @@ const LENS_GHOST_LOADER_TAG_NAME = 'cr-searchbox-ghost-loader';
 // the source value with the "crn" component.
 const DESKTOP_CHROME_NTP_REALBOX_ENTRY_SOURCE_VALUE = 'chrome.crn.rb';
 const DESKTOP_CHROME_NTP_REALBOX_ENTRY_POINT_VALUE = '42';
-const MULTILINE_INPUT_HEIGHT_THRESHOLD = 50;
 
 // Register --placeholder-opacity as type <number> so that we can animate it.
 CSS.registerProperty({
@@ -379,6 +378,7 @@ export class SearchboxElement extends SearchboxElementBase implements
   private onTabStripChangedListenerId_: number|null = null;
   private placeholderCycler_: PlaceholderTextCycler|null = null;
   private contextMenuOpened_: boolean = false;
+  private initialInputScrollHeight_: number = 0;
 
   constructor() {
     performance.mark('realbox-creation-start');
@@ -479,6 +479,9 @@ export class SearchboxElement extends SearchboxElementBase implements
 
   override firstUpdated() {
     performance.measure('realbox-creation', 'realbox-creation-start');
+    if (this.multiLineEnabled) {
+      this.initialInputScrollHeight_ = this.$.input.scrollHeight;
+    }
   }
 
   private computeInputAriaLive_(): string {
@@ -541,11 +544,13 @@ export class SearchboxElement extends SearchboxElementBase implements
     });
 
     this.dropdownIsVisible = hasPrimaryMatches;
-    if (this.multiLineEnabled) {
-      const isUserTyping = result.input.trim().length > 0;
-      const matchNum = result.matches?.length || 0;
 
-      if (isUserTyping && (matchNum <= 1)) {
+    // In multi-line mode, suppress the dropdown when text wraps
+    // or when the only match is the mirror query.
+    if (this.multiLineEnabled && this.dropdownIsVisible) {
+      const isUserTyping = result.input.trim().length > 0;
+      if (isUserTyping &&
+          this.shouldSuppressDropdownForMultiline_(result.matches?.length || 0)) {
         this.dropdownIsVisible = false;
       }
     }
@@ -604,7 +609,8 @@ export class SearchboxElement extends SearchboxElementBase implements
     // Only handle cut/copy when input has content and it's all selected.
     if (!this.$.input.value || this.$.input.selectionStart !== 0 ||
         this.$.input.selectionEnd !== this.$.input.value.length ||
-        !this.result_ || this.result_.matches.length === 0) {
+        !this.result_ || !this.result_.matches ||
+        this.result_.matches.length === 0) {
       return;
     }
 
@@ -882,14 +888,12 @@ export class SearchboxElement extends SearchboxElementBase implements
       return;
     }
 
-    const matchNum = this.result_?.matches.length || 0;
-    const isMultiline =
-        this.$.input.scrollHeight > MULTILINE_INPUT_HEIGHT_THRESHOLD;
 
     // ArrowUp/ArrowDown query autocomplete when matches are not visible.
     if (!this.dropdownIsVisible) {
       if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
-        if (isMultiline || matchNum <= 1) {
+        if (this.multiLineEnabled &&
+            this.shouldSuppressDropdownForMultiline_(this.result_?.matches?.length || 0)) {
           return;
         }
         const inputValue = this.$.input.value;
@@ -1231,6 +1235,12 @@ export class SearchboxElement extends SearchboxElementBase implements
       return null;
     }
     return this.result_.matches[this.selectedMatchIndex_] || null;
+  }
+
+  private shouldSuppressDropdownForMultiline_(numMatches: number): boolean {
+    const inputHasWrapped = this.initialInputScrollHeight_ > 0 &&
+        this.$.input.scrollHeight > this.initialInputScrollHeight_;
+    return inputHasWrapped || numMatches === 1;
   }
 
   protected computeShowRecentTabChip_(): boolean {
