@@ -10,7 +10,6 @@ import './composebox_lens_search.js';
 import './file_carousel.js';
 import './file_thumbnail.js';
 import './icons.html.js';
-import './recent_tab_chip.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 
 import {ComposeboxContextAddedMethod} from '//resources/cr_components/search/constants.js';
@@ -34,14 +33,12 @@ import {getHtml} from './contextual_entrypoint_and_carousel.html.js';
 import type {ContextualEntrypointAndMenuElement} from './contextual_entrypoint_and_menu.js';
 import type {ComposeboxFileCarouselElement} from './file_carousel.js';
 import type {ComposeboxFileInputsElement} from './composebox_file_inputs.js';
-import type {RecentTabChipElement} from './recent_tab_chip.js';
 
 export interface ContextualEntrypointAndCarouselElement {
   $: {
     contextEntrypoint: ContextualEntrypointAndMenuElement,
     carousel: ComposeboxFileCarouselElement,
     fileInputs: ComposeboxFileInputsElement,
-    recentTabChip: RecentTabChipElement,
     voiceSearchButton: CrIconButtonElement,
   };
 }
@@ -95,7 +92,6 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
       // Public properties
       // =========================================================================
       showDropdown: {type: Boolean},
-      showLensSearchChip: {reflect: true, type: Boolean},
       searchboxLayoutMode: {type: String},
       tabSuggestions: {type: Array},
       showMenuOnClick: {type: Boolean},
@@ -106,18 +102,12 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
       },
       inputState: {type: Object},
       contextMenuGlifAnimationState: {type: String, reflect: true},
-      // Determines if the entrypoint button should be hidden. This applies
-      // specifically to Omnibox Searchbox in compact mode, as opposed to the
-      // AIM composebox where the entrypoint is always visible.
-      inComposebox: {type: Boolean},
       showModelPicker: {type: Boolean},
       fileUploadsComplete: {
         type: Boolean,
         reflect: true,
       },
       enableCarouselScrolling: {type: Boolean},
-      showRecentTabChip: {type: Boolean},
-      recentTabForChip: {type: Object},
 
       // =========================================================================
       // Protected properties
@@ -146,22 +136,18 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
 
   accessor fileUploadsComplete: boolean = true;
   accessor showDropdown: boolean = false;
-  accessor showLensSearchChip: boolean = false;
   accessor searchboxLayoutMode: string = '';
   accessor showMenuOnClick: boolean = true;
   accessor entrypointName: string = '';
   accessor tabSuggestions: TabInfo[] = [];
   accessor carouselOnTop_: boolean = false;
   accessor showVoiceSearch: boolean = false;
-  accessor showRecentTabChip: boolean = false;
   accessor inputState: InputState|null = null;
   accessor contextMenuGlifAnimationState: GlifAnimationState =
       GlifAnimationState.INELIGIBLE;
-  accessor inComposebox: boolean = false;
   accessor showModelPicker: boolean = false;
   accessor enableCarouselScrolling: boolean = false;
   accessor isOmniboxInCompactMode_: boolean = false;
-  accessor recentTabForChip: TabInfo|null = null;
 
   protected accessor contextMenuEnabled_: boolean =
       loadTimeData.getBoolean('composeboxShowContextMenu');
@@ -208,42 +194,6 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
     return this.activeTool_ !== ComposeboxToolMode.kUnspecified;
   }
 
-  private shouldShowContextualSearchChips_(): boolean {
-    return this.files_.size === 0 && !this.inToolMode_;
-  }
-
-  protected get shouldShowLensSearchChip_(): boolean {
-    return this.shouldShowContextualSearchChips_() && this.showLensSearchChip;
-  }
-
-  protected get shouldShowContextualChipsForCompactMode_(): boolean {
-    return this.searchboxLayoutMode === 'Compact' &&
-        (this.showRecentTabChip || this.shouldShowLensSearchChip_);
-  }
-
-  protected get shouldShowToolChipsForTallMode_(): boolean {
-    // TODO(b/476405347): Consolidate logic here and remove the Omnibox specific
-    // code.
-    if (this.entrypointName === 'Omnibox') {
-      return !this.shouldShowToolChipsForCompactMode_;
-    }
-    return this.searchboxLayoutMode !== 'Compact' ||
-        this.shouldShowContextualChipsForCompactMode_;
-  }
-
-  protected get toolChipsVisible_(): boolean {
-    return this.showRecentTabChip || this.shouldShowLensSearchChip_ ||
-        this.inToolMode_;
-  }
-
-  protected get shouldShowToolChipsForCompactMode_(): boolean {
-    if (this.searchboxLayoutMode !== 'Compact' || !this.toolChipsVisible_) {
-      return false;
-    }
-
-    return this.entrypointName !== 'Omnibox' || this.inComposebox;
-  }
-
   protected get shouldShowDivider_(): boolean {
     // TODO(b/476175193): Remove `entrypointName` condition.
     if (this.entrypointName === 'Omnibox' &&
@@ -252,24 +202,10 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
       return false;
     }
 
-    // TODO(b/476405347): Remove `entrypointName` condition.
-    // `this.shouldShowContextualChipsForCompactMode_` can possibly be removed
-    // without consequence.
     return this.showDropdown &&
-        ((this.entrypointName !== 'Omnibox' &&
-          this.shouldShowContextualChipsForCompactMode_) ||
-         this.showFileCarousel_ ||
+        (this.showFileCarousel_ ||
          this.searchboxLayoutMode === 'TallTopContext' ||
          this.submitButtonShown);
-  }
-
-  protected get shouldHideEntrypointButton_(): boolean {
-    return this.shouldShowContextualChipsForCompactMode_;
-  }
-
-  protected shouldShowDescription_(): boolean {
-    return this.showContextMenuDescription_ && !this.showRecentTabChip &&
-        !this.shouldShowLensSearchChip_;
   }
 
   protected getToolChipLabel_(tool: ComposeboxToolMode): string {

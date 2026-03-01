@@ -36,24 +36,20 @@ export function getHtml(this: ContextualEntrypointAndCarouselElement) {
         .disabledTabIds="${this.addedTabsIds_}"
         .fileNum="${this.files_.size}"
         ?upload-button-disabled="${this.uploadButtonDisabled_}"
-        ?show-context-menu-description="${
-            this.shouldShowDescription_()}"
+        ?show-context-menu-description="${this.showContextMenuDescription_}"
         glif-animation-state="${this.contextMenuGlifAnimationState}">
     </cr-composebox-contextual-entrypoint-and-menu>
   ` : html`
-    ${this.shouldHideEntrypointButton_ ? '' : html`
-      <cr-composebox-contextual-entrypoint-button
-          id="contextEntrypoint"
-          part="composebox-entrypoint"
-          exportparts="context-menu-entrypoint-icon"
-          class="upload-button no-overlap"
-          .inputState="${this.inputState}"
-          ?upload-button-disabled="${this.uploadButtonDisabled_}"
-          ?show-context-menu-description="${
-                this.shouldShowDescription_()}"
-          glif-animation-state="${this.contextMenuGlifAnimationState}">
-      </cr-composebox-contextual-entrypoint-button>
-    `}
+    <cr-composebox-contextual-entrypoint-button
+        id="contextEntrypoint"
+        part="composebox-entrypoint"
+        exportparts="context-menu-entrypoint-icon"
+        class="upload-button no-overlap"
+        .inputState="${this.inputState}"
+        ?upload-button-disabled="${this.uploadButtonDisabled_}"
+        ?show-context-menu-description="${this.showContextMenuDescription_}"
+        glif-animation-state="${this.contextMenuGlifAnimationState}">
+    </cr-composebox-contextual-entrypoint-button>
   `}
   ${this.searchboxLayoutMode === 'Compact' && this.showVoiceSearch ? html`
     <cr-icon-button id="voiceSearchButton" class="voice-icon"
@@ -62,7 +58,7 @@ export function getHtml(this: ContextualEntrypointAndCarouselElement) {
         title="${this.i18n('voiceSearchButtonLabel')}">
     </cr-icon-button>
   ` : ''}
-  ${this.shouldShowToolChipsForTallMode_ ? getToolChipsHtml.bind(this)() : ''}
+  ${this.searchboxLayoutMode !== 'Compact' ? getToolChipsHtml.bind(this)() : ''}
   ${this.searchboxLayoutMode === 'TallTopContext' ? html`
     ${this.showVoiceSearch ? html`
       <cr-icon-button id="voiceSearchButton" class="voice-icon"

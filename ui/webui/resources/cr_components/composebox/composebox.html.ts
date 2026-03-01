@@ -82,7 +82,6 @@ export function getHtml(this: ComposeboxElement) {
               cr-composebox-file-carousel, upload-container, voice-icon,
               carousel-divider, carousel-container, thumbnail,
               thumbnail-title, tool-chip-label"
-          in-composebox
           .tabSuggestions="${this.tabSuggestions_}"
           .showMenuOnClick="${this.showMenuOnClick}"
           .entrypointName="${this.entrypointName ? this.entrypointName : 'Composebox'}"

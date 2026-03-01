@@ -42,7 +42,7 @@ export function getHtml(this: ContextualEntrypointAndCarouselElement) {
   ` : ''}
   <!-- Suggestions are slotted in from the parent component. -->
   <slot id="dropdownMatches"></slot>
-  ${this.shouldShowToolChipsForCompactMode_ ? html`
+  ${this.searchboxLayoutMode === 'Compact' && this.inToolMode_ ? html`
     <div class="context-menu-container" id="toolChipsContainer"
         part="tool-chips-container">
       ${getToolChipsHtml.bind(this)()}
