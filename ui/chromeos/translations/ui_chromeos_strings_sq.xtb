@@ -100,6 +100,7 @@
 <translation id="1761091787730831947">Ndaj me <ph name="VM_NAME" /></translation>
 <translation id="1773212559869067373">Certifikata e vërtetimit u refuzua nga afër</translation>
 <translation id="1775381402323441512">Informacionet e videos</translation>
+<translation id="1787208118234640571">Belge</translation>
 <translation id="180035236176489073">Duhet të jesh online për t'u qasur te këta skedarë.</translation>
 <translation id="1807938677607439181">Të gjithë skedarët</translation>
 <translation id="1810764548349082891">Nuk ka asnjë pamje paraprake</translation>
@@ -113,9 +114,11 @@
 <translation id="1853795129690976061">Kjo dosje është ndarë me Linux</translation>
 <translation id="1864756863218646478">Ky skedar nuk mund të gjendej.</translation>
 <translation id="1877377730633446520">Kjo do të përdorë rreth <ph name="REQUIRED_SPACE" />. Aktualisht ke <ph name="FREE_SPACE" /> në dispozicion.</translation>
+<translation id="18790189037341066">Norvegjeze</translation>
 <translation id="1884013283844450420">Rrjeti <ph name="NETWORK_INDEX" /> nga <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, lidhu</translation>
 <translation id="1920670151694390848">Malajalamisht me transliterim</translation>
 <translation id="1920798810075583923">Shalqi</translation>
+<translation id="1922341967219151064">Ukrainase</translation>
 <translation id="1924372192547904021"><ph name="DRIVE_NAME" /> u formatua</translation>
 <translation id="1942765061641586207">Rezolucioni i imazhit</translation>
 <translation id="1972984168337863910">Zgjero panelet e komenteve të skedarëve</translation>
@@ -124,15 +127,19 @@
 <translation id="2004942826429452291">Skedarët do të ruhen në renë kompjuterike dhe në këtë Chromebook.</translation>
 <translation id="2009067268969781306">Formatimi i një disku do të fshijë të gjitha të dhënat e ruajtura në të. Ky veprim nuk mund të zhbëhet.</translation>
 <translation id="2025955442973426285">Tigrinja</translation>
+<translation id="2029385776150020336">Amerikane e zgjeruar</translation>
 <translation id="2037845485764049925">Rusisht</translation>
 <translation id="2044023416777079300">Modemi nuk është regjistruar</translation>
 <translation id="2046702855113914483">Ramen</translation>
+<translation id="2070397826966158357">Estoneze</translation>
 <translation id="2070909990982335904">Emrat që fillojnë me pikë janë të rezervuar për sistemin. Zgjidh një tjetër emër.</translation>
 <translation id="2079545284768500474">Zhbëj</translation>
 <translation id="2084108471225856927">Cilësimet e pajisjes</translation>
 <translation id="2084809735218147718">Duke nënshkruar me faleminderit</translation>
 <translation id="2088690981887365033">Rrjeti VPN</translation>
+<translation id="2096167581623663959">Holandeze</translation>
 <translation id="209653272837065803">Nuk ka hapësirë ruajtëse të mjaftueshme për të vazhduar me sinkronizimin e skedarëve</translation>
+<translation id="2101288073618388449">Mongole</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> artikuj do të fshihen dhe nuk do të mund t'i restaurosh.</translation>
 <translation id="2122305276694332719">Lidhja automatike me një rrjet të fshehtë u lejon të tjerëve të të shohin pajisjen dhe disa prej cilësimeve të rrjetit, dhe nuk rekomandohet.</translation>
 <translation id="2125607626296734455">Kmerisht</translation>
@@ -200,6 +207,7 @@
 <translation id="2587195714949534472">Po përgatitet për të sinkronizuar <ph name="FILE_NAME" />...</translation>
 <translation id="2602810353103180630">Rrjeti <ph name="NETWORK_INDEX" /> nga <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, fuqia e sinjalit <ph name="SIGNAL_STRENGTH" />%, bllokuar nga administratori yt, detajet</translation>
 <translation id="2614589611416690597">Video <ph name="VIDEO_TYPE" /></translation>
+<translation id="2619043364735935227">Britanike Dvorak</translation>
 <translation id="2620090360073999360">"Disku i Google" nuk mund të arrihet në këtë moment.</translation>
 <translation id="2621713457727696555">I siguruar</translation>
 <translation id="2638942478653899953">"Disku i Google" është i paarritshëm. <ph name="BEGIN_LINK" />Dil<ph name="END_LINK" /> dhe identifikohu përsëri.</translation>
@@ -207,8 +215,12 @@
 <translation id="2653059201992392941">Ke <ph name="RETRIES" /> përpjekje të mbetura.</translation>
 <translation id="2663066752008346276">Birmanisht/Mianmar me tastierë Myansan</translation>
 <translation id="2664412712123763093">Vendndodhja e skedarit</translation>
+<translation id="2672394942808662069">Shumëgjuhëshe kanadeze</translation>
+<translation id="2707357721402813583">Irlandeze</translation>
+<translation id="2708477391501452176">Franceze BÉPO</translation>
 <translation id="2719020180254996569">Rrjeti <ph name="NETWORK_INDEX" /> nga <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, detaje</translation>
 <translation id="2724954091494693138">Turqisht me tastierën F</translation>
+<translation id="2728450421877450246">Frënge</translation>
 <translation id="2732288874651063549">Menaxho ndarjen me <ph name="VM_NAME" /></translation>
 <translation id="2732839045120506979">Vietnamisht VNI</translation>
 <translation id="2735623501230989521">Jepi leje Parallels Desktop që të qaset në skedarët në dosjen <ph name="FOLDER_NAME" /></translation>
@@ -216,16 +228,19 @@
 <translation id="2771816809568414714">Djathë</translation>
 <translation id="2802583107108007218">Mëso më shumë rreth këtyre kufizimeve</translation>
 <translation id="2803375539583399270">Fut kodin PIN</translation>
+<translation id="2817444452774702982">Gjeorgjiane</translation>
 <translation id="2819519502129272135">Sinkronizimi i skedarëve është çaktivizuar</translation>
 <translation id="2820957248982571256">Po skanon...</translation>
 <translation id="2830077785865012357">Kinezisht Zhuyin</translation>
 <translation id="2843806747483486897">Ndrysho parazgjedhjen...</translation>
 <translation id="2873951654529031587">Koshi</translation>
+<translation id="2887314858867008269">Amerikane Colemak</translation>
 <translation id="2887525882758501333">Dokument PDF</translation>
 <translation id="2888807692577297075">Asnjë artikull nuk përputhet me &lt;b&gt;"<ph name="SEARCH_STRING" />"&lt;/b&gt;</translation>
 <translation id="2894654529758326923">Informacion</translation>
 <translation id="2904378509913846215">Një dosje me emrin "<ph name="FILENAME" />" ekziston tashmë. Dëshiron ta zëvendësosh me atë që po zhvendos?</translation>
 <translation id="290843123675549676">Maratisht</translation>
+<translation id="2939595088421183401">Sllovene</translation>
 <translation id="2943503720238418293">Përdor një emër më të shkurtër</translation>
 <translation id="2949781154072577687"><ph name="DRIVE_NAME" /> po formatohet...</translation>
 <translation id="2951236788251446349">Kandili i detit</translation>
@@ -243,6 +258,7 @@
 <translation id="3067790092342515856">Skedarët e Windows</translation>
 <translation id="3083975830683400843">Pajisjet Chromebit</translation>
 <translation id="3085752524577180175">Strehuesi i protokollit SOCKS</translation>
+<translation id="3091469289665833668">Rumune</translation>
 <translation id="3104793765551262433">Rrjeti <ph name="NETWORK_INDEX" /> nga <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, fuqia e sinjalit <ph name="SIGNAL_STRENGTH" />%, bllokuar nga administratori yt, detajet</translation>
 <translation id="3113592018909187986">Ke 1 përpjekje të mbetur. Nuk do të mund ta përdorësh këtë rrjet derisa të konfigurosh një kod të ri PIN.</translation>
 <translation id="3124404833828281817">Person duke ëndërruar me sy hapur</translation>
@@ -261,6 +277,7 @@
 <translation id="3255159654094949700">Arabisht</translation>
 <translation id="326396468955264502"><ph name="NUMBER_OF_FILES" /> skedarë nuk mund të zhvendoseshin sepse janë të enkriptuar.</translation>
 <translation id="3264582393905923483">Konteksti</translation>
+<translation id="3269333278563769269">Portugeze</translation>
 <translation id="3272909651715601089">Nuk mund të hapej "<ph name="PATH" />"</translation>
 <translation id="3280431534455935878">Po përgatitet</translation>
 <translation id="3280719573299097127">Je në një rrjet me matje. Sinkronizimi i skedarëve është vendosur në pauzë.</translation>
@@ -282,6 +299,8 @@
 <translation id="3408072735282270043">Aktivizo <ph name="NETWORK_NAME" /></translation>
 <translation id="3408236822532681288">Gjermanisht (Gjermani) me tastierë Neo 2</translation>
 <translation id="3414856743105198592">Formatimi i medias së çmontueshme do të spastrojë të gjitha të dhënat. Dëshiron të vazhdosh?</translation>
+<translation id="3430687179542180192">Kanadeze e frëngjishtes</translation>
+<translation id="3436358745602312794">Turke F</translation>
 <translation id="3437801641691368414">Ora e krijimit</translation>
 <translation id="343907260260897561">Kamerë e çastit</translation>
 <translation id="3455931012307786678">Estonisht</translation>
@@ -299,9 +318,11 @@
 <translation id="3553048479571901246">Për të hapur skedarët me <ph name="APP_NAME" />, në fillim kopjoji në dosjen e skedarëve të Windows.</translation>
 <translation id="3556731189587832921">Anglisht (SHBA) me tastierën ndërkombëtare për PC</translation>
 <translation id="3557414470514932909"><ph name="FILE_NAME" /> po zhvendoset te koshi</translation>
+<translation id="3560848236447534728">Fonetike armene</translation>
 <translation id="3567221313191587603">Zgjidh një skedar dhe aktivizo <ph name="OFFLINE_CHECKBOX_NAME" /> për qasje offline te skedarët e tu.</translation>
 <translation id="3587482841069643663">Të gjitha</translation>
 <translation id="3592251141500063301"><ph name="FILE_NAME" /> nuk mund të ofrohej offline</translation>
+<translation id="3599083260824681324">Japoneze</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3619115746895587757">Kapuçino</translation>
@@ -329,14 +350,17 @@
 <translation id="3811494700605067549">1 skedar i zgjedhur</translation>
 <translation id="3817579325494460411">Nuk jepet</translation>
 <translation id="3819448694985509187">Kodi PIN është i pasaktë. Ke 1 përpjekje të mbetur.</translation>
+<translation id="3826081788392587762">Faroeze</translation>
 <translation id="3830674330436234648">Luajtja e padisponueshme</translation>
 <translation id="3839045880592694915">Modemi yt nuk lejohet që të lidhet nga operatori celular. Kontakto me operatorin celular për më shumë detaje.</translation>
 <translation id="385051799172605136">Prapa</translation>
 <translation id="3858860766373142691">Emri</translation>
+<translation id="3874963587970919929">Amerikane</translation>
 <translation id="3899991606604168269">Frëngjisht (Kanada) me tastierë shumëgjuhëshe</translation>
 <translation id="3901991538546252627">Po lidhet me <ph name="NAME" /></translation>
 <translation id="3906232975181435906">Po instalon profilin e celularit, rrjeti <ph name="NETWORK_INDEX" /> nga <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="3924145049010392604">Meta</translation>
+<translation id="3934861075411093298">Gjermane Neo 2</translation>
 <translation id="3943857333388298514">Ngjite</translation>
 <translation id="3950820424414687140">Identifikohu</translation>
 <translation id="3952872973865944257">Teluguisht fonetike</translation>
@@ -349,9 +373,11 @@
 <translation id="4002066346123236978">Titulli</translation>
 <translation id="4017788180641807848">Anglisht (SHBA) me tastierën Workman</translation>
 <translation id="4040753847560036377">Kodi PUK i pasaktë</translation>
+<translation id="4043426908238742491">Britanike</translation>
 <translation id="4057991113334098539">Po aktivizohet...</translation>
 <translation id="4092890906744441904">Irlandisht</translation>
 <translation id="4101601646343868113">Identifikohu në rrjetin tënd celular dhe konfirmo që plani i të dhënave celulare është aktiv</translation>
+<translation id="4103534645423593971">Letone</translation>
 <translation id="4124731372776320263">Po sinkronizohet 1 skedar i "Diskut"</translation>
 <translation id="4124935795427217608">Njëbrirësh</translation>
 <translation id="4131235941541910880">Zhvendosi artikujt që nuk të duhen te koshi.</translation>
@@ -445,9 +471,12 @@
 <translation id="4789067489790477934">Jepi leje Parallels Desktop që të qaset në skedarët në "Diskun tënd të Google". Ndryshimet do të sinkronizohen në pajisjet e tua të tjera.</translation>
 <translation id="4790766916287588578">Hindisht me tastierë InScript</translation>
 <translation id="4801956050125744859">Mbaji të dyja</translation>
+<translation id="4802185962157240723">Hungareze</translation>
 <translation id="4804827417948292437">Avokado</translation>
 <translation id="4805966553127040832"><ph name="COUNT" /> artikuj po restaurohen</translation>
+<translation id="4823376603577118337">Braziliane</translation>
 <translation id="4826849268470072925">Tamilisht ITRANS</translation>
+<translation id="4838707632718400841">Daneze</translation>
 <translation id="4843566743023903107">Pajisjet Chromebase</translation>
 <translation id="4850886885716139402">Pamja</translation>
 <translation id="4862885579661885411">Cilësimet e "Sledarëve"</translation>
@@ -477,6 +506,7 @@
 <translation id="5010406651457630570">Kompjuterët</translation>
 <translation id="5011233892417813670">Chromebook</translation>
 <translation id="5024856940085636730">Një operacion po zgjat më shumë nga sa pritej. Dëshiron që ta braktisësh?</translation>
+<translation id="5036141350290856713">Fonetike ruse</translation>
 <translation id="5036159836254554629">Menaxho ndarjen e Parallels Desktop</translation>
 <translation id="5038625366300922036">Shiko më shumë...</translation>
 <translation id="5044852990838351217">Armenisht</translation>
@@ -500,6 +530,7 @@
    Heqja e pajisjes kur është në përdorim mund të shkaktojë humbje të të dhënave. Prit deri sa të përfundojë operacioni dhe më pas nxirre pajisjen duke përdorur aplikacionin "Skedarët".</translation>
 <translation id="5163869187418756376">Ndarja dështoi. Kontrollo lidhjen dhe provo përsëri më vonë.</translation>
 <translation id="5177526793333269655">Pamje miniaturë</translation>
+<translation id="5178355323709925287">Fonetike bullgare</translation>
 <translation id="5181896909298187506">Nuk ka skedarë të fundit</translation>
 <translation id="5194713942430106590">Kliko për të renditur kolonën në rend ngjitës.</translation>
 <translation id="5211614973734216083">Faroisht</translation>
@@ -547,15 +578,18 @@
 <translation id="5534520101572674276">Po llogarit madhësinë</translation>
 <translation id="554153475311314364">Greqisht me transliterim</translation>
 <translation id="5554171655917412781">U zgjodhën <ph name="SELECTED_FOLDERS_COUNT" /> dosje</translation>
+<translation id="5568003358606822240">Çeke QWERTY</translation>
 <translation id="5580591966435005537">pajisja virtuale</translation>
 <translation id="5583640892426849032">Hapësirë prapa</translation>
 <translation id="5583664733673201137">Gjerësia e shenjave të pikësimit është e plotë</translation>
 <translation id="5596627076506792578">Më shumë opsione</translation>
 <translation id="5602622065581044566">Bullgarisht me tastierë fonetike</translation>
+<translation id="5604409170937514933">Suedeze</translation>
 <translation id="560739212255190568">Administratori yt ka caktuar rregullat e anulimit për procy-in përveç zbatimit të proxy-it të mëposhtëm</translation>
 <translation id="5618330573454123917">Ky skedar është i projektuar për kompjuterë që përdorin softuerë të Macintosh. Kjo nuk përputhet me pajisjen tënde e cila punon me ChromeOS. <ph name="BEGIN_LINK_HELP" />Mëso më shumë<ph name="END_LINK_HELP" /> në lidhje me hapjen e skedarëve në ChromeOS.</translation>
 <translation id="5625294776298156701">Tamilisht me tastierë Tamil99</translation>
 <translation id="5633226425545095130">Zhvendosja e këtij artikulli do ta ndajë atë me të gjithë ata që mund ta shikojnë dosjen e ndarë "<ph name="DESTINATION_NAME" />".</translation>
+<translation id="5646106346566990960">Turke</translation>
 <translation id="5649768706273821470">Dëgjo</translation>
 <translation id="5650895901941743674">Kontrollo konfigurimin e APN-së</translation>
 <translation id="5669691691057771421">Fut kodin e ri PIN</translation>
@@ -565,9 +599,11 @@
 <translation id="5691596662111998220">Mos! <ph name="FILE_NAME" /> nuk ekziston më.</translation>
 <translation id="5698411045597658393"><ph name="NETWORK_NAME" />, Shkyç</translation>
 <translation id="5700087501958648444">Informacionet e audios</translation>
+<translation id="5718459114973371204">Maqedonase</translation>
 <translation id="5720028165859493293"><ph name="FILE_NAME" /> u zhvendos te koshi</translation>
 <translation id="5724172041621205163">Tajlandisht me tastierë Pattachote</translation>
 <translation id="57383366388012121">Muajin e fundit</translation>
+<translation id="5744221903031815187">Zvicerane</translation>
 <translation id="575175778971367197">Ky skedar nuk mund të sinkronizohet për momentin</translation>
 <translation id="5760252553414789727">U zgjodhën <ph name="SELECTED_FILES_COUNT" /> artikuj</translation>
 <translation id="5763377084591234761">Gjermanisht (Zvicër)</translation>
@@ -597,8 +633,10 @@
 <translation id="5948255720516436063">Rrjeti <ph name="NETWORK_INDEX" /> nga <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, aktivizoje pas konfigurimit të pajisjes</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> artikuj</translation>
 <translation id="5957366693331451795">Pajisjet Chromebox</translation>
+<translation id="5959163675722155317">Ndërkombëtare amerikane</translation>
 <translation id="5982621672636444458">Opsionet e renditjes</translation>
 <translation id="6011074160056912900">Rrjeti i eternetit</translation>
+<translation id="6023337265947005432">Çeke</translation>
 <translation id="603895874132768835">Nuk do të mund ta përdorësh këtë rrjet derisa të konfigurosh një kod të ri PIN</translation>
 <translation id="6040143037577758943">Mbyll</translation>
 <translation id="6055907707645252013">Rrjeti <ph name="NETWORK_TYPE" />, nuk është lidhur</translation>
@@ -615,6 +653,7 @@
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, nuk ka rrjet</translation>
 <translation id="6146563240635539929">Videot</translation>
 <translation id="6150853954427645995">Për ta ruajtur këtë skedar për përdorim offline, kthehu online, kliko me të djathtën te skedari dhe zgjidh opsionin <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
+<translation id="6162247388574239985">Lituane</translation>
 <translation id="6164412158936057769">Flutura</translation>
 <translation id="6165508094623778733">Mëso më shumë</translation>
 <translation id="6170470584681422115">Sandviç</translation>
@@ -624,6 +663,7 @@
 <translation id="6198252989419008588">Ndrysho kodin PIN</translation>
 <translation id="6199801702437275229">Po pret për informacionin e hapësirës...</translation>
 <translation id="6205710420833115353">Disa operacione po zgjasin më shumë nga sa pritej. Dëshiron që t'i braktisësh?</translation>
+<translation id="6214593504928642973">Serbe</translation>
 <translation id="6220423280121890987">Panxhabi</translation>
 <translation id="6224240818060029162">Danisht</translation>
 <translation id="6224253798271602650">Formato <ph name="DRIVE_NAME" /></translation>
@@ -650,17 +690,22 @@
 <translation id="6394388407447716302">Vetëm për lexim</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> artikuj</translation>
 <translation id="6407769893376380348">Skedari <ph name="FILE_NAME" /> nuk mund të zhvendosej sepse është i enkriptuar.</translation>
+<translation id="6417922483715629770">Gjermane</translation>
+<translation id="6421174876526901486">Hebraike</translation>
 <translation id="642282551015776456">Ky emër nuk mund të përdoret si emër skedari ose dosjeje</translation>
 <translation id="6423031066725912715">Vietnamisht me tastierë TCVN</translation>
 <translation id="6430271654280079150">Ke 1 përpjekje të mbetur.</translation>
 <translation id="643243556292470964">Skedarët e fshirë tani zhvendosen te koshi</translation>
 <translation id="6438480100790416671">Po kontrollon hapësirën ruajtëse…</translation>
 <translation id="6451527188465304418">Skedari po kontrollohet me politikat e sigurisë të organizatës sate...</translation>
+<translation id="6480474281747138552">Amerikane Dvorak për programues</translation>
+<translation id="6483241221370343062">Polake</translation>
 <translation id="6485131920355264772">Dështoi në marrjen e informacionit të hapësirës</translation>
 <translation id="6495925982925244349">Rrjeti <ph name="NETWORK_INDEX" /> nga <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, fuqia e sinjalit <ph name="SIGNAL_STRENGTH" />%, menaxhuar nga administratori yt, detaje</translation>
 <translation id="649877868557234318"><ph name="FILE_NAME" /> po nxirret te "<ph name="FOLDER_NAME" />"</translation>
 <translation id="6499681088828539489">Mos i lejo përfaqësuesit për rrjete të ndara</translation>
 <translation id="6503285896705205014">Kopjimi i <ph name="COUNT" /> skedarëve është bllokuar nga politika e administratorit</translation>
+<translation id="652312300422421604">Ruse</translation>
 <translation id="6528513914570774834">Lejo që përdoruesit e tjerë të kësaj pajisjeje të përdorin këtë rrjet</translation>
 <translation id="6549689063733911810">Të fundit</translation>
 <translation id="6558280019477628686">Ndodhi një gabim. Disa artikuj mund të mos jenë fshirë.</translation>
@@ -675,6 +720,7 @@
 <translation id="6650726141019353908">Flutur rozë</translation>
 <translation id="6657585470893396449">Fjalëkalimi</translation>
 <translation id="6658865850469097484">Skedarët që ndodhen te koshi për më shumë se 30 ditë do të fshihen automatikisht.</translation>
+<translation id="6660283757324568684">Zvicerane e frëngjishtes</translation>
 <translation id="6673674183150363784">Frëngjisht (Francë) me tastierë Bépo</translation>
 <translation id="670380500182402678">Zëvendësoji të gjitha</translation>
 <translation id="6710022688720561421">Robot</translation>
@@ -698,6 +744,7 @@
 <translation id="6861394552169064235">Persisht</translation>
 <translation id="6862635236584086457">Të gjithë skedarët e ruajtur në këtë dosje janë ruajtur online automatikisht</translation>
 <translation id="6864328437977279120">Sanskritisht</translation>
+<translation id="6870343452066868538">Latino-amerikane</translation>
 <translation id="6874758081814639712">Person duke bërë tai-çi</translation>
 <translation id="6876155724392614295">Biçikletë</translation>
 <translation id="6878261347041253038">Tastierë Devanagari (fonetike)</translation>
@@ -709,6 +756,7 @@
 <translation id="6935521024859866267">Përmbys</translation>
 <translation id="6943836128787782965">Marrja e HTTP-së dështoi</translation>
 <translation id="6949408524333579394">Serbisht me transliterim</translation>
+<translation id="6950304227892369683">Bjelloruse</translation>
 <translation id="69548399407432279">Vitin e kaluar</translation>
 <translation id="6960565108681981554">Nuk është aktivizuar. Kontakto me operatorin celular.</translation>
 <translation id="696203921837389374">Aktivizo sinkronizimin nëpërmjet të dhënave celulare</translation>
@@ -717,6 +765,7 @@
 <translation id="6973630695168034713">Dosjet</translation>
 <translation id="6976795442547527108">Luan</translation>
 <translation id="6979158407327259162">Disku i Google</translation>
+<translation id="6987318887406266229">Greke</translation>
 <translation id="6989942356279143254">Suedisht</translation>
 <translation id="6990081529015358884">Nuk ke më hapësirë të lirë</translation>
 <translation id="6993826899923627728">Këta artikuj janë te koshi</translation>
@@ -731,6 +780,7 @@
 <translation id="7048024426273850086">Rrjeti <ph name="NETWORK_INDEX" /> nga <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, fuqia e sinjalit <ph name="SIGNAL_STRENGTH" />%, bateria e telefonit <ph name="BATTERY_STATUS" />%, lidhu</translation>
 <translation id="7070804685954057874">Hyrja e drejtpërdrejtë</translation>
 <translation id="7075931588889865715">Tajlandisht me tastierë TIS 820-2531</translation>
+<translation id="7080126840087683316">Spanjolle</translation>
 <translation id="708278670402572152">Shkëputu për të aktivizuar skanimin</translation>
 <translation id="7086590977277044826">Tamilisht me tastierë InScript</translation>
 <translation id="7088615885725309056">Më të vjetër</translation>
@@ -741,12 +791,15 @@
 <translation id="7135561821015524160">Kanadisht fonetike</translation>
 <translation id="714034171374937760">Baza e Chrome</translation>
 <translation id="7162080671816799010">Mungon "Përputhja e emrit alternativ të subjektit" ose "Përputhja e prapashtesës së domenit" për të verifikuar identitetin e serverit të vërtetimit</translation>
+<translation id="7163653800467169701">Italiane</translation>
 <translation id="7165320105431587207">Konfigurimi i rrjetit dështoi</translation>
 <translation id="7170041865419449892">Jashtë mbulimit</translation>
 <translation id="7179579940054351344">Të gjitha uebsajtet dhe URL-të kanë qasje te skedarët, përveç <ph name="NON_RESTRICTED_DESTINATIONS" /></translation>
 <translation id="7180611975245234373">Rifresko</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">Ruaje faqen si</translation>
+<translation id="7192364647705823015">Kroate</translation>
+<translation id="7224162581405244205">Islandeze</translation>
 <translation id="7229570126336867161">Nevojitet EVDO</translation>
 <translation id="7230898482850090046">Administratori yt të ka kërkuar ta çaktivizosh cilësimin "Kyç kartën SIM"</translation>
 <translation id="7238097264433196391">Emri i diskut</translation>
@@ -773,6 +826,7 @@
 <translation id="7417453074306512035">Tastiera në etiopisht</translation>
 <translation id="7417705661718309329">Hartë e Google</translation>
 <translation id="7419668828140929293">"<ph name="FILENAME" />" po restaurohet</translation>
+<translation id="7435577899926900307">Amerikane Dvorak</translation>
 <translation id="7458955835361612701">Nuk ka imazhe të fundit</translation>
 <translation id="7469894403370665791">Lidhu automatikisht me këtë rrjet</translation>
 <translation id="7486315294984620427">Për t'i lëshuar skedarët në Parallels Desktop, skedari duhet të kopjohet te dosja e skedarëve të Windows.</translation>
@@ -811,8 +865,10 @@
 <translation id="7724603315864178912">Prite</translation>
 <translation id="7732111077498238432">Rrjeti kontrollohet nga një politikë</translation>
 <translation id="7736003208887389532">Të fshihen përgjithmonë këta skedarë?</translation>
+<translation id="7737249716250841853">Hungareze QWERTY</translation>
 <translation id="7740287852186792672">Rezultatet e kërkimit</translation>
 <translation id="7748626145866214022">Më shumë opsione ofrohen në shiritin e veprimeve. Shtyp Alt + A për t'u fokusuar te shiriti e veprimeve.</translation>
+<translation id="7758806833942383902">Katalane</translation>
 <translation id="7760449188139285140">Kinezisht Wubi</translation>
 <translation id="7765158879357617694">Zhvendos</translation>
 <translation id="7774365994322694683">Zog</translation>
@@ -824,6 +880,7 @@
 <translation id="7794058097940213561">Formato pajisjen</translation>
 <translation id="7799329977874311193">Dokument HTML</translation>
 <translation id="7801354353640549019">Pajisjet Chromebook</translation>
+<translation id="7804303447453320114">Kazake</translation>
 <translation id="7805768142964895445">Statusi</translation>
 <translation id="7806708061868529807">Hebraisht</translation>
 <translation id="78104721049218340">Tajlandisht me tastierë Kedmanee</translation>
@@ -833,9 +890,11 @@
 <translation id="7839804798877833423">Marrja e këtyre skedarëve do të përdorë afro <ph name="FILE_SIZE" /> të dhëna celulare.</translation>
 <translation id="7846076177841592234">Anulo zgjedhjen</translation>
 <translation id="7857117644404132472">Shto një përjashtim</translation>
+<translation id="7859924767769322048">Koreane</translation>
 <translation id="7868774406711971383">Polonisht</translation>
 <translation id="7874321682039004450">Filipinisht</translation>
 <translation id="78946041517601018">Disqet e ndara</translation>
+<translation id="7901567919203965902">Ndërkombëtare amerikane Workman</translation>
 <translation id="7903984238293908205">Katakana</translation>
 <translation id="7908793776359722643">Formatimi i një ndarjeje do të spastrojë të gjitha të dhënat e ruajtura në të. Ky veprim nuk mund të zhbëhet.</translation>
 <translation id="7911118814695487383">Linux</translation>
@@ -897,6 +956,7 @@
 <translation id="8336153091935557858">Dje <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">Ekziston tashmë një skedar ose një direktori me të njëjtin emër.</translation>
 <translation id="83651606385705612">Jepi leje <ph name="VM_NAME" /> që të ketë qasje te skedarët në dosjen "<ph name="FOLDER_NAME" />"</translation>
+<translation id="837225070446042993">Amerikane Workman</translation>
 <translation id="8372369524088641025">Çelës WEP i gabuar</translation>
 <translation id="8372852072747894550">Greqisht</translation>
 <translation id="8377269993083688872">Strukturat e email-it</translation>
@@ -925,6 +985,7 @@
 <translation id="8512483403832814140">Në çdo kohë</translation>
 <translation id="853494022971700746">Frëngjisht (Francë)</translation>
 <translation id="8540608333167683902">Rrjeti <ph name="NETWORK_INDEX" /> nga <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, fuqia e sinjalit <ph name="SIGNAL_STRENGTH" />%, detaje</translation>
+<translation id="8543218582821188600">Kanadeze e anglishtes</translation>
 <translation id="8545476925160229291">Anglisht (SHBA)</translation>
 <translation id="854655314928502177">URL-ja me zbulim automatik të përfaqësuesit të uebit:</translation>
 <translation id="8547747809824590510">Administratori yt ka caktuar rregullat e anulimit për proxy-in</translation>
@@ -939,6 +1000,7 @@
 <translation id="8600173386174225982">Lista e skedarëve ka ndryshuar në pamjen e miniaturës.</translation>
 <translation id="8601932370724196034">Skedar imazhi Crostini</translation>
 <translation id="8609695766746872526">Islandisht</translation>
+<translation id="86185366481240448">Sllovake</translation>
 <translation id="8630384863424041081">Fut kodin PIN të kartës SIM ose kodin e parazgjedhur PIN të dhënë nga operatori yt celular. Kontakto me operatorin celular për mbështetje.</translation>
 <translation id="863903787380594467">Kodi PIN është i pasaktë. Të kanë mbetur edhe <ph name="RETRIES" /> përpjekje.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - porta</translation>
@@ -967,6 +1029,7 @@
 <translation id="8873014196523807561">Për t'i restauruar këta artikuj, zvarriti ata te një dosje e re. Dosjet origjinale për disa nga këta artikuj janë fshirë.</translation>
 <translation id="8874184842967597500">Nuk u lidh</translation>
 <translation id="8876368061475701452">Në radhë</translation>
+<translation id="8902208737522818687">Ndërkombëtare amerikane (PC)</translation>
 <translation id="8903931173357132290">I diplomuar</translation>
 <translation id="8912078710089354287">Qen duke tundur bishtin</translation>
 <translation id="8949925099261528566">Lidhur, por pa internet</translation>
@@ -1009,11 +1072,13 @@
 <translation id="931652069802536959">Rrjeti është i bllokuar nga politika</translation>
 <translation id="938470336146445890">Instalo një certifikatë përdoruesi.</translation>
 <translation id="939736085109172342">Dosje e re</translation>
+<translation id="941005944931359847">Bullgare</translation>
 <translation id="943972244133411984">Modifikuar nga</translation>
 <translation id="945522503751344254">Dërgo komente</translation>
 <translation id="947144732524271678">U zgjodh një gamë prej <ph name="ENTRY_COUNT" /> regjistrimesh nga <ph name="FROM_ENTRY_NAME" /> në <ph name="TO_ENTRY_NAME" />.</translation>
 <translation id="954194396377670556">Politika e administratorit parandalon:</translation>
 <translation id="965477715979482472">Anglisht (Afrika e Jugut)</translation>
+<translation id="97351090361893336">Finlandeze</translation>
 <translation id="976666271385981812"><ph name="NUMBER_OF_ITEMS" /> artikuj po zhvendosen te koshi</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="988685240266037636">Skedari me emrin "<ph name="FILE_NAME" />" ekziston. Dëshiron ta zëvendësosh?</translation>

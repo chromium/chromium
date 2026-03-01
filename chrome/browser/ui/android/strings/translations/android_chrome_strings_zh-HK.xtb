@@ -924,6 +924,7 @@
 <translation id="4885273946141277891">Chrome 實例的數量已超出上限。</translation>
 <translation id="4890973535105146893">Google 帳戶中沒有儲存密碼</translation>
 <translation id="4905823827770127520">加入頁面的連結</translation>
+<translation id="4908601375231458049">自訂分頁群組，然後輕觸「完成」</translation>
 <translation id="4908869848243824489">Google 探索</translation>
 <translation id="4910889077668685004">付款應用程式</translation>
 <translation id="4911042367886397055"><ph name="USER_NAME" />，歡迎回來！</translation>
@@ -1187,6 +1188,7 @@
 <translation id="6040143037577758943">關閉</translation>
 <translation id="604124094241169006">自動</translation>
 <translation id="6042308850641462728">更多選項</translation>
+<translation id="6047066316630165190">開啟方格分頁切換工具</translation>
 <translation id="604996488070107836">發生不明錯誤，因此無法下載 <ph name="FILE_NAME" />。</translation>
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">請在這裡控制您的報導和活動</translation>
@@ -1260,6 +1262,7 @@
 <translation id="6301526076346731664">開啟 Developer Tools</translation>
 <translation id="630308129961693966">選擇網址列位置</translation>
 <translation id="6303969859164067831">登出並停用同步功能</translation>
+<translation id="6305257382500066042">立即體驗</translation>
 <translation id="6307241780749477694">你必須驗證身分，才能取得此裝置上的所有密碼</translation>
 <translation id="6309082029962045994"><ph name="TAB_TITLE" />，複選咗播緊音訊嘅固定分頁</translation>
 <translation id="6312687380483398334">網絡應用程式 (安靜模式)</translation>
@@ -1848,6 +1851,7 @@
 <translation id="8458341576712814616">快捷字詞</translation>
 <translation id="8458413889418591446">如要快速重溫你瀏覽過的網站，可同步記錄和分頁</translation>
 <translation id="84594714173170813">繼續使用 Google 帳戶中的 Chrome 資料</translation>
+<translation id="8460008946585880786">將一個分頁拖曳到另一個分頁上</translation>
 <translation id="8460448946170646641">查看重要的私隱和安全控制項</translation>
 <translation id="8460932807646981183">管理搜尋引擎和站內搜尋</translation>
 <translation id="8473863474539038330">地址及其他資料</translation>

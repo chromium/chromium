@@ -1021,6 +1021,7 @@
 <translation id="1671525612731130246">選擇雲端硬碟帳戶</translation>
 <translation id="1671749176392751693">已允許受保護內容的 ID</translation>
 <translation id="1673137583248014546"><ph name="URL" /> 要求查看安全金鑰的製造商和型號</translation>
+<translation id="1673855466663721679">在側邊面板中顯示書籤</translation>
 <translation id="1674073353928166410">在無痕視窗中開啟所有 (<ph name="URL_COUNT" /> 個) 網址</translation>
 <translation id="1674142805528405174">Google 密碼管理工具可以提高帳戶密碼的強度，並儲存到帳戶 <ph name="EMAIL" /> 中。</translation>
 <translation id="1674945585974615438">自動在不熟悉的網站上停用 JavaScript 最佳化工具</translation>
@@ -3440,6 +3441,7 @@
 <translation id="3312883087018430408">如要搜尋特定網站或 Chrome，請在網址列輸入相應的搜尋捷徑，然後按下你慣用的鍵盤快速鍵。舉例來說，如果只要搜尋書籤，請輸入「@bookmarks」，然後按下 Tab 鍵或空白鍵。</translation>
 <translation id="3313622045786997898">憑證簽署值</translation>
 <translation id="3313950410573257029">檢查連線狀態</translation>
+<translation id="3314239811356311272">開啟書籤管理員</translation>
 <translation id="3315158641124845231">隱藏 <ph name="PRODUCT_NAME" /></translation>
 <translation id="3317459757438853210">雙面</translation>
 <translation id="3317521105713541270">建立群組</translation>
@@ -3646,6 +3648,7 @@
 <translation id="3453597230179205517">位置資訊存取權已停用</translation>
 <translation id="3453612417627951340">需要授權</translation>
 <translation id="3454213325559396544">這是這部 <ph name="DEVICE_TYPE" /> 最後一次自動更新軟體和安全性。如要取得後續更新，請升級為較新的型號。</translation>
+<translation id="3454276058453724464">{FILE_LIMIT,plural, =1{提問時上傳 1 個 PDF 檔案}other{提問時最多只能上傳 # 個 PDF 檔案}}</translation>
 <translation id="3454818737556063691">要將 1 個檔案移到「<ph name="CLOUD_PROVIDER" />」再開啟嗎？</translation>
 <translation id="3455436146814891176">同步資料加密的密碼</translation>
 <translation id="345693547134384690">在新分頁中開啟圖片(&amp;I)</translation>
@@ -5018,6 +5021,7 @@
 <translation id="4364567974334641491">「<ph name="APP_NAME" />」正在分享視窗。</translation>
 <translation id="4364830672918311045">顯示通知</translation>
 <translation id="4367971618859387374">顯示名稱</translation>
+<translation id="4368888793624522796">分頁群組已移至新位置</translation>
 <translation id="4368960422722232719">在分頁懸停預覽資訊卡上顯示記憶體用量</translation>
 <translation id="4369151461324628035">不允許網站連線到區域網路上的任何裝置</translation>
 <translation id="4369215744064167350">已核准網站要求</translation>
@@ -5403,6 +5407,7 @@
 <translation id="4634575639321169635">將這部裝置設定為工作用或個人使用</translation>
 <translation id="4635072447747973225">解除安裝 Crostini</translation>
 <translation id="4635398712689569051">訪客使用者無法使用<ph name="PAGE_NAME" />。</translation>
+<translation id="4635975718422788482">{FILE_LIMIT,plural, =1{提問時上傳 1 個圖像}other{提問時最多只能上傳 # 個圖像}}</translation>
 <translation id="4636187126182557415">系統偏好設定</translation>
 <translation id="4636930964841734540">資訊</translation>
 <translation id="4637083375689622795">更多動作 (<ph name="EMAIL" />)</translation>
@@ -6245,6 +6250,7 @@
 <translation id="5215502535566372932">選取國家/地區</translation>
 <translation id="5216674789212441076">自動翻譯即時字幕 (送給 Google 進行翻譯)。</translation>
 <translation id="5216951551945455224">{NUM_TABS,plural, =1{停止與 Gemini 分享 1 個分頁}other{停止與 Gemini 分享 # 個分頁}}</translation>
+<translation id="5217883660859035687">我們正在移動分頁群組，讓書籤有更多空間。</translation>
 <translation id="5220011581825921581">搜尋鍵 + 向上鍵</translation>
 <translation id="5221516927483787768">無法投放 <ph name="HOST_NAME" />。</translation>
 <translation id="5221834113325601057">已從清單中排除分頁</translation>
@@ -6925,6 +6931,7 @@
 <translation id="5697832193891326782">表情符號挑選器</translation>
 <translation id="5698136107297470317">你即將刪除 <ph name="BRAND" />的資料</translation>
 <translation id="5698878456427040674">請確認系統是否支援所選帳戶。</translation>
+<translation id="5698900765010620315">低對比深色</translation>
 <translation id="5699227710146832453">來自：</translation>
 <translation id="570043786759263127">Google Play 應用程式和服務</translation>
 <translation id="5700761515355162635">已允許使用第三方 Cookie</translation>
@@ -8305,6 +8312,7 @@
 <translation id="6663190258859265334">在 <ph name="DEVICE_TYPE" /> 上執行 Powerwash 並返回先前的版本。</translation>
 <translation id="6664774537677393800">開啟你的設定檔時發生錯誤。請先登出，然後再次登入。</translation>
 <translation id="6665874326033183068">狂野</translation>
+<translation id="6666560794795912543">在側邊面板中顯示書籤</translation>
 <translation id="6667086124612170548">檔案過大，無法下載到這部裝置</translation>
 <translation id="6667092961374478614"><ph name="FEATURE_NAME" />可偵測性</translation>
 <translation id="6667187897999649121">目前只能與家庭成員分享密碼。你可以<ph name="BEGIN_LINK" />建立家庭群組<ph name="END_LINK" /> (最多 6 位成員)，讓 Google 的產品和訂閱服務發揮更多價值。</translation>
@@ -9765,6 +9773,7 @@
 <translation id="7660146600670077843">在分頁標籤上按一下滑鼠右鍵，選取「將分頁加入新群組」</translation>
 <translation id="7661451191293163002">無法取得註冊憑證。</translation>
 <translation id="7662283695561029522">輕觸即可進行設定</translation>
+<translation id="7662535435481776002">低對比淺色</translation>
 <translation id="7663719505383602579">接收端：<ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7663774460282684730">可以使用鍵盤快速鍵</translation>
 <translation id="7663859337051362114">新增 eSIM 設定檔</translation>

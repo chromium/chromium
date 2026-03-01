@@ -287,6 +287,7 @@
 <translation id="2230777942707397948">Хоосон цонх</translation>
 <translation id="223356358902285214">Веб, аппын үйл ажиллагаа</translation>
 <translation id="2233735624724508540">Хугацаа сонгоод, Өгөгдөл устгах дээр товшино уу</translation>
+<translation id="2234031676056123135">Товчлолуудаа өөрчлөх</translation>
 <translation id="2234827758954819389">Нууцлалын хөтөч</translation>
 <translation id="2238038374973843156">Бүлгийг өөр цонх руу зөөх</translation>
 <translation id="2239812875700136898">Мэдээ, нийтлэлээ Discover-н сонголтуудын товчлуураас хянана уу</translation>
@@ -465,6 +466,7 @@
 <translation id="2951071800649516099">Хуудаснуудыг дараа уншихаар унших жагсаалтдаа нэмээрэй</translation>
 <translation id="2954586176076923855">Хаяг оруулах хэсгийг дээш зөөх</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{Уншаагүй <ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> хуудас}other{Уншаагүй <ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> хуудас}}</translation>
+<translation id="2965758440484146185">Энэ товчлолыг бэхлэх дээр товшино уу</translation>
 <translation id="2972109037780336501">Зөвшөөрлийг автоматаар хасах</translation>
 <translation id="2976550651269220761">Таны Chrome-н зарим өгөгдлийг одоогоор Google Бүртгэлд тань хадгалаагүй байна.\nГарахаасаа өмнө хэдэн минут хүлээж үзнэ үү. Хэрэв та одоо гарвал энэ өгөгдлийг устгана.</translation>
 <translation id="2977350910003566746">Сүүлд нээснээр нь эрэмбэлж байна</translation>
@@ -492,6 +494,7 @@
 <translation id="3037177537145227281">Үнийг хянаж байна</translation>
 <translation id="3037517125981011456">Chrome-д нэвтрэх сануулгыг харуулна</translation>
 <translation id="3038272154009688107">Бүх сайтыг харах</translation>
+<translation id="3057938290530993634">Дараагийн удаа хялбар хандахын тулд хамгийн их зочилсон вебсайтууд дээр товшоод удаан дарж бэхэлнэ үү</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> хавчуурга}other{<ph name="BOOKMARKS_COUNT_MANY" /> хавчуурга}}</translation>
 <translation id="3062802207422175757">Таны сонирхолтой холбоотой Chrome дээрх нийтлэлүүд</translation>
 <translation id="3066573403916685335">Доош нь болгох</translation>
@@ -551,6 +554,7 @@
 <translation id="333863344734218290">Танд олон нийтийн болон хувийн аюултай сайтуудын талаар сануулна</translation>
 <translation id="3340978935015468852">тохиргоо</translation>
 <translation id="3341262203274374114">Дагахаа болих боломжгүй. Алдаа гарлаа.</translation>
+<translation id="3351959803838327376">Вебсайт дээр удаан дараад, цэсийг нээнэ үү</translation>
 <translation id="3359667936385849800">Одоогийн үйлчилгээ үзүүлэгчээ ашиглах</translation>
 <translation id="3373701465337594448">Асаалттай үед таны зочилсон сонирхлыг тань таамагладаг сайтуудын жагсаалт энд гарч ирнэ</translation>
 <translation id="3384347053049321195">Зураг хуваалцах</translation>
@@ -593,6 +597,7 @@
 <translation id="3549537543136628349">Урьдчилан ачаалсан хуудаснууд нь шифрлэгдсэн ба тухайн хуудаснуудтай холбож буй сайт, апп нь Google-н сайт, апп тул тэдгээр хуудсыг нууцлалтайгаар урьдчилан ачаалахад Google-н сервер шинэ мэдээлэл хүлээн авахгүй.</translation>
 <translation id="3549657413697417275">Түүхээ хайх</translation>
 <translation id="3557336313807607643">Харилцагчид нэмэх</translation>
+<translation id="3560831525486613327">Шинэ таб хуудсыг нээнэ үү</translation>
 <translation id="3563767357928833671">Түр санах ойн контентуудыг харуулсан</translation>
 <translation id="3566639033325271639">Тохиргоог шинэчлэх</translation>
 <translation id="3568945271227339929">Алдагдсан нууц үг алга</translation>

@@ -924,6 +924,7 @@
 <translation id="4885273946141277891">Chrome 实例数量已超出上限。</translation>
 <translation id="4890973535105146893">您的 Google 账号中没有保存任何密码</translation>
 <translation id="4905823827770127520">包含页面链接</translation>
+<translation id="4908601375231458049">自定义标签页分组，然后点击“完成”</translation>
 <translation id="4908869848243824489">Google 探索</translation>
 <translation id="4910889077668685004">付款应用</translation>
 <translation id="4911042367886397055"><ph name="USER_NAME" />，欢迎回来！</translation>
@@ -1187,6 +1188,7 @@
 <translation id="6040143037577758943">关闭</translation>
 <translation id="604124094241169006">自动</translation>
 <translation id="6042308850641462728">更多</translation>
+<translation id="6047066316630165190">打开网格标签页切换器</translation>
 <translation id="604996488070107836">出现未知错误，未能下载 <ph name="FILE_NAME" />。</translation>
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">在此处控制您的报道和活动</translation>
@@ -1260,6 +1262,7 @@
 <translation id="6301526076346731664">打开开发者工具</translation>
 <translation id="630308129961693966">选择地址栏的位置</translation>
 <translation id="6303969859164067831">退出账号并关闭同步功能</translation>
+<translation id="6305257382500066042">立即试用</translation>
 <translation id="6307241780749477694">请验证您的身份，以便在此设备上获取您的所有密码</translation>
 <translation id="6309082029962045994"><ph name="TAB_TITLE" />，已选择的多个固定标签页之一，正在播放音频</translation>
 <translation id="6312687380483398334">Web 应用（安静）</translation>
@@ -1846,6 +1849,7 @@
 <translation id="8458341576712814616">快捷字词</translation>
 <translation id="8458413889418591446">如果想快速重新访问浏览过的网站，请同步您的历史记录和标签页</translation>
 <translation id="84594714173170813">请继续使用您的 Google 账号中的 Chrome 数据</translation>
+<translation id="8460008946585880786">将一个标签页拖放到另一个标签页上</translation>
 <translation id="8460448946170646641">检查重要的隐私控制设置和安全控件</translation>
 <translation id="8460932807646981183">管理搜索引擎和网站搜索</translation>
 <translation id="8473863474539038330">地址和其他信息</translation>

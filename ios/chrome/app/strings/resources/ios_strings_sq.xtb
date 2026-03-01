@@ -669,6 +669,7 @@
 <translation id="3476450923187944815">Qasu te fjalëkalimet e tua në aplikacione të tjera.</translation>
 <translation id="3485558910355485767">Dritare e re "e fshehtë"</translation>
 <translation id="3488501490964659223">Skedat janë mbyllur dhe të dhënat e shfletimit janë fshirë. Ke dalë nga llogaria</translation>
+<translation id="3490396108106323715">Ndaj skedën aktuale</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /> mbi përmbajtjen e sugjeruar</translation>
 <translation id="349446645805573740">Zgjidh se ku do ta ruash "<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />"</translation>
 <translation id="3504377992102007712">Cilësimet</translation>
@@ -695,6 +696,7 @@
 <translation id="3565012355885596568">Imazhet nuk mund të ngarkoheshin</translation>
 <translation id="3565930036634619844">Skeda. <ph name="TAB_INDEX" /> nga <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3567168891086460374">Ruaje në një mënyrë tjetër</translation>
+<translation id="3572503683475187385">Skeda aktuale ndahet me Gemini kur ti fillon një bisedë të re. Kur ndan një skedë me Gemini, përmbajtjet dhe URL-ja e saj dërgohen te Google. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">Në "Llogarinë tënde të Google"</translation>
 <translation id="3575234738189584619">Kërko me "Lenten"</translation>
 <translation id="3575426792457739946">Kjo listë përfshin të gjitha profilet e ngarkuara.</translation>
@@ -738,6 +740,7 @@
 <translation id="3751873026576444885">Ndalo kërkimin në ekranin tënd me "Lenten e Google"</translation>
 <translation id="3753408171347588045">Çmimet po monitorohen</translation>
 <translation id="3753618528540214374">Tema e gjelbër në blu</translation>
+<translation id="3759491607478608474">Ndaj përmbajtjen e skedës aktuale me Gemini për të marrë përgjigje më të përshtatshme</translation>
 <translation id="3762232513783804601">Krijuar për iPad tënd</translation>
 <translation id="3768725474733206671">Rihap skedën e fundit të mbyllur</translation>
 <translation id="3779810277399252432">Nuk ka lidhje interneti.</translation>
@@ -985,6 +988,7 @@
 <translation id="4650125387981512669">Vazhdo si <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4651927776207937667">{count,plural, =1{Fshih pas 1 minute}other{Fshih pas {count} minutash}}</translation>
 <translation id="4652817563047461855">Sigurohu që fjalëkalimet e tua të jetë të sigurta, zbulo nëse janë komprometuar dhe merr këshilla për të të ndihmuar për mbrojtjen tënde online. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
+<translation id="4653053602672040238">Aktivizo ndarjen e skedave</translation>
 <translation id="4658335131052370646">Ruaj</translation>
 <translation id="466307903888586355">Ruajtja e skedarëve është bllokuar nga organizata jote</translation>
 <translation id="4668929960204016307">,</translation>
@@ -1298,6 +1302,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="5718049162805123412">Duhet t'i ndryshosh këto tani</translation>
 <translation id="5721040778297053709">Poziciono kartën e kreditit në këtë kuadër</translation>
 <translation id="572328651809341494">Skedat e fundit</translation>
+<translation id="5724590854763964497">Si parazgjedhje, skeda jote aktuale ndahet kur fillon një bisedë të re. Kur ndahen skedat, përmbajtjet dhe URL-të e tyre dërgohen te Google, por nuk do të përdoren për të përmirësuar modelet e IA-së gjeneruese. Mund ta ndryshosh këtë cilësim në çdo kohë.</translation>
 <translation id="5724941645893276623">Për të shfletuar uebin në mënyrë private, shto një skedë të re</translation>
 <translation id="5728072125198221967">Shërbimet e lidhura të Google</translation>
 <translation id="5728700505257787410">Na vjen keq, ka pasur një problem identifikimi në llogarinë tënde.</translation>
@@ -1965,6 +1970,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="8059533439631660104">Mbyll seksionin.</translation>
 <translation id="8061584726507121204">Historiku</translation>
 <translation id="8064946459644399612">U zbatuan preferencat e tua për faqen e "Skedës së re"</translation>
+<translation id="8065556469005366939">Merr përgjigje më të përshtatshme duke ndarë skedat e tua</translation>
 <translation id="8069394452933076548">Zgjidh se kur zhvendosen te seksioni i skedave joaktive skedat që nuk janë përdorur së fundi.</translation>
 <translation id="8073670137947914548">Shkarkimi përfundoi</translation>
 <translation id="8076492880354921740">Skedat</translation>
@@ -2133,6 +2139,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="8660600697590740984">Imazhi i "Lentes" që kopjove</translation>
 <translation id="866266761389616183">Oh, mos!</translation>
 <translation id="8663764600409216912">Po përdor fjalëkalime që duken të vështira për t'u hamendësuar</translation>
+<translation id="8664992138761940052">Si parazgjedhje, skeda jote aktuale ndahet kur fillon një bisedë të re. Kur ndahen skedat, përmbajtjet dhe URL-të e tyre dërgohen te Google. Mund ta ndryshosh këtë cilësim në çdo kohë.</translation>
 <translation id="8668210798914567634">Kjo faqe është ruajtur në "Listën tënde të leximit".</translation>
 <translation id="8672642291731179042">Përkthe faqet</translation>
 <translation id="8672733398999596205">Aktivizo të gjitha</translation>

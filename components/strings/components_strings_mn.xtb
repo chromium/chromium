@@ -1310,6 +1310,8 @@
 <translation id="3102312643185441063">Хадгаламж</translation>
 <translation id="3103188521861412364">Хувьцаа, бондууд</translation>
 <translation id="3105172416063519923">Хөрөнгийн ID:</translation>
+<translation id="3105223248029915046">Төлбөрийн төлөвлөгөө нь зохих эрхтэй эсэхээс хамаарна.
+Дараа төлөх сонголтуудыг нуухын тулд <ph name="BEGIN_LINK" />төлбөрийн тохиргоо<ph name="END_LINK" /> руу очно уу</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />Аюулгүй DNS тохируулгыг шалгах<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Дунд талын тавиур</translation>
 <translation id="3109061346635850169">Нүүр, биеийн арчилгаа</translation>
@@ -2636,6 +2638,7 @@
 <translation id="5190835502935405962">Хайлтын жагсаалтын цонх</translation>
 <translation id="5191315092027169558">Таны профайлыг <ph name="DOMAIN" /> удирддаг</translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> хэд хэдэн файл татах хүсэлтэй байна</translation>
+<translation id="5199121357983849992">Иргэний үнэмлэхийг хадгалах уу?</translation>
 <translation id="5200063972779787617">Бүртгэлд хаяг хадгалах</translation>
 <translation id="5201306358585911203">Энэ хуудсанд оруулсан хуудас хэлэхдээ</translation>
 <translation id="5203716867500274632">Танай администратор дараах зүйлийг таны ChromeOS төхөөрөмжүүд дээрх таны өмнөх болон одоогийн харилцан үйлдлүүдийн хооронд синк хийхийг идэвхжүүлсэн:</translation>
@@ -4073,6 +4076,7 @@
 <translation id="746412105358554870">JavaScript-н оновчлол, аюулгүй байдал</translation>
 <translation id="7465036432780054056"><ph name="EMBEDDED_URL" /> таныг <ph name="TOP_LEVEL_URL" />-д зочилсон болохыг мэднэ</translation>
 <translation id="7465963048299965912">10 x 13 инч</translation>
+<translation id="7467332121947433617">Иргэний үнэмлэхийг шинэчлэх үү?</translation>
 <translation id="7469935732330206581">Маягт аюултай байна.</translation>
 <translation id="7470854469646445678">Хуулж буй шалтгааныг өгнө үү (шаардлагатай)</translation>
 <translation id="7471007961486718967">Шилжүүлж буй шалтгаанаар хангана уу (шаардлагатай)</translation>
@@ -4359,6 +4363,7 @@
 <translation id="7908648876066812348">Виртуал картыг асааж байна</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, тохиргооны Chrome-н аюулгүй байдлын шалгалтын хуудас руу очихын тулд Tab, дараа нь Enter-г дарна уу</translation>
 <translation id="791107458486222637">Үр дүнг дахин гаргаж байна</translation>
+<translation id="7911651285409665023">Хаагаад, "<ph name="TAB_TITLE" />" руу буцах</translation>
 <translation id="7912924955815015552">Safari-с импортолсон</translation>
 <translation id="791551905239004656">Зурах, будах</translation>
 <translation id="7916162853251942238">Флексо суурь</translation>

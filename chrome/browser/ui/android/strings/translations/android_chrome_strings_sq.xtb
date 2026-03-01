@@ -506,6 +506,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="3122883569442693641">Më shumë detaje</translation>
 <translation id="3123734510202723619">Njoftime</translation>
 <translation id="3134385238404760368">Nuk ka skeda të fundit</translation>
+<translation id="3135655388926735587">Trokit te "Skedat e fundit"</translation>
 <translation id="314939179385989105">Faqja kryesore e Chrome</translation>
 <translation id="3158667104057012316">Po renditen sipas renditjes manuale</translation>
 <translation id="3159335509547415276">Mëso rreth llogarive të bllokuara</translation>
@@ -849,6 +850,7 @@ Llogaria jote e Google mund të ketë forma të tjera të historikut të shfleti
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 fjalëkalim i komprometuar}other{# fjalëkalime të komprometuara}}</translation>
 <translation id="4641919525231168205">Shko te faqja tjetër</translation>
 <translation id="4642472735733036929">Monitorimi i çmimeve ndaloi</translation>
+<translation id="4649493483932335039">Shiko skedat e fundit</translation>
 <translation id="465657074423018424">"Shfletimi i sigurt" të mbron kundër sajteve mashtruese. Nëse e çaktivizon, ki shumë kujdes kur shfleton, sidomos përpara se të futësh fjalëkalime.</translation>
 <translation id="4662373422909645029">Pseudonimi nuk mund të përmbajë numra</translation>
 <translation id="4663756553811254707"><ph name="NUMBER_OF_BOOKMARKS" /> faqeshënuesë u fshinë</translation>
@@ -1566,6 +1568,7 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="7363349185727752629">Udhëzues për zgjedhjet e tua të privatësisë</translation>
 <translation id="7364103838544876661">Opsione të tjera për të fshirë të dhënat e shfletimit</translation>
 <translation id="7365073365123878797">Për të filluar të ruash dhe të përdorësh fjalëkalimet me "Menaxherin e fjalëkalimeve të Google", përditëso shërbimet e Google Play</translation>
+<translation id="7368009310682364976">Shiko skedat e hapura së fundi</translation>
 <translation id="7368927539449986686">Modifiko kërkimin në sajt</translation>
 <translation id="7375125077091615385">Shkruaj:</translation>
 <translation id="7376560087009844242">Duke përfshirë më shumë nga teksti i një faqeje, mund të shikosh rezultate më të mira kur përdor "Prek për të kërkuar". Mund të vizitosh gjithmonë <ph name="BEGIN_LINK" />cilësimet<ph name="END_LINK" /> për ta ndryshuar këtë.</translation>
@@ -1684,6 +1687,7 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="7824665136384946951">Organizata jote ka e çaktivizuar "Shfletimin e sigurt"</translation>
 <translation id="7826342993930002256">Chrome për ty, kudo</translation>
 <translation id="7844171778363018843">Nuk janë zgjedhur të dhëna për t'u sinkronizuar</translation>
+<translation id="784453721355882533">Provo Gemini në Chrome për të marrë përgjigje, pikat kryesore etj.</translation>
 <translation id="7846161022626028328">Ndodhi një gabim. Provo përsëri.</translation>
 <translation id="7846296061357476882">Shërbimet e Google</translation>
 <translation id="784652447248278262">Dritarja aktuale</translation>
@@ -1693,6 +1697,7 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="7853202427316060426">Aktiviteti</translation>
 <translation id="7859988229622350291">Mos përkthe asnjëherë</translation>
 <translation id="7866213166286285359">Përkthe faqet këtu</translation>
+<translation id="7873610418439765081">Provo Gemini në Chrome për të marrë përgjigje, pikat kryesore etj. nga butoni "Më shumë opsione".</translation>
 <translation id="7875915731392087153">Krijo mail</translation>
 <translation id="7876243839304621966">Hiqi të gjitha</translation>
 <translation id="7886917304091689118">Po ekzekutohet në Chrome</translation>
@@ -1743,6 +1748,7 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="8062594758852531064">Ngarkimi paraprak i zgjatur:</translation>
 <translation id="8063895661287329888">Shtimi i faqeshënuesit dështoi.</translation>
 <translation id="8066816452984416180">Shtoje këtë faqe me shpejtësi te faqeshënuesit. Për ta modifikuar këtë shkurtore, preke dhe mbaje shtypur.</translation>
+<translation id="8072436850275034464">Mund t'i hapësh përsëri skedat që ke mbyllur së fundi nga çdo vend ku përdor Chrome</translation>
 <translation id="8073388330009372546">Hape imazhin në një skedë të re</translation>
 <translation id="8076492880354921740">Skedat</translation>
 <translation id="8078096376109663956">Ndaj vetëm tekstin</translation>

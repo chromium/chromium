@@ -29,6 +29,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="126567311906253476">Kur identifikohesh me <ph name="USER_EMAIL" /> në shërbimet e Google, si p.sh. Gmail ose YouTube, mund të identifikohesh automatikisht në Chromium me të njëjtën llogari</translation>
 <translation id="1290883685122687410">Gabim në konfigurim: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1315551408014407711">Konfiguro profilin tënd të ri të Chromium</translation>
+<translation id="132092532143527429">Provo me Gemini në Chromium</translation>
 <translation id="1324107359134968521">Chromium ka nevojë për qasje te Bluetooth-i për të eksploruar pajisjet me Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">Zbulo gjuhën</translation>
 <translation id="1330742950061766891">Përdor cilësimet e rekomanduara të shfletuesit Chromium</translation>
@@ -607,6 +608,7 @@ Chromium nuk është në gjendje të rikuperojë cilësimet e tua.</translation>
 <translation id="7622753900276619808">Tani ke më shumë veçori të disponueshme në Chromium</translation>
 <translation id="7624307931717240213">Ne i përdorim informacionet për ta përmirësuar këtë shërbim. Shiko "Politikën e privatësisë" dhe "Kushtet e shërbimit".</translation>
 <translation id="7649070708921625228">Ndihma</translation>
+<translation id="7650134251917003571">Merr aplikacionin e Chromium</translation>
 <translation id="7656340475565475526">Lejo që Chromium të shfletojë për ty</translation>
 <translation id="7658239707568436148">Anulo</translation>
 <translation id="7686590090926151193">Chromium nuk është shfletuesi i parazgjedhur</translation>

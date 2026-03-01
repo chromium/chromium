@@ -230,6 +230,7 @@
 <translation id="1358187717814494928">创建工作表</translation>
 <translation id="1358223345833465883">您在 Chromium 中使用的搜索引擎</translation>
 <translation id="1359836962251219822">厨房与餐厅</translation>
+<translation id="136059610328993645">您的信息会保存到 <ph name="ACCOUNT" /> 的 Google 钱包中。您可以在各项 Google 服务中使用它更快地填写表单。</translation>
 <translation id="1360955481084547712">若要私密地浏览网页，请打开一个新的无痕式窗口</translation>
 <translation id="1361528602584216624">每笔 Pix 交易的限额为 R$ <ph name="TRANSACTION_LIMIT" /></translation>
 <translation id="1363015776076529485">支付方式列表已按最大高度显示，选中一种支付方式即可继续付款。</translation>
@@ -252,6 +253,7 @@
 <translation id="1392813880755413602">OpenDocument 演示文稿</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> 未发送任何数据。</translation>
 <translation id="1393071644879491291">您尝试访问的网站上的攻击者可能会诱使您安装软件或泄露某些信息，例如您的密码、手机号码或信用卡号码。Chrome 强烈建议您返回到安全的浏览环境。<ph name="BEGIN_LEARN_MORE_LINK" />详细了解此警告<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="1402151528875251561">在侧边栏中显示历史记录</translation>
 <translation id="1405567553485452995">浅绿色</translation>
 <translation id="1406370515365284486">系统仍会保存您的支付方式</translation>
 <translation id="1406500794671479665">正在验证...</translation>
@@ -1448,6 +1450,7 @@
 <translation id="33073482541490531">系统检测到，您刚才使用的密码遭遇了数据泄露。密码管理工具建议您立即更改此密码。</translation>
 <translation id="3307649904964670439">“自定义 Chrome”按钮，激活它即可自定义您的浏览器外观</translation>
 <translation id="3308006649705061278">组织单位 (OU)</translation>
+<translation id="3310946375819654151">Chrome 正尝试在“<ph name="APP_NAME" />”上填充您的敏感信息。</translation>
 <translation id="3312952471765023168">上传成功</translation>
 <translation id="3318016344440038475">电视喜剧</translation>
 <translation id="3324687287337751929">4 x 6 英寸</translation>
@@ -1736,6 +1739,7 @@
 <translation id="3752181611900535304">是否将地址保存到账号？</translation>
 <translation id="3752543821772132562">已忽略，因为未设置 <ph name="POLICY_NAME" />。</translation>
 <translation id="3754210790023674521">退出“画中画”模式</translation>
+<translation id="3754664361823138853">并打开历史记录页面</translation>
 <translation id="3759461132968374835">您最近未收到崩溃报告。崩溃报告停用时发生的崩溃不会在此处显示。</translation>
 <translation id="3760561303380396507">要改用 Windows Hello 来取代银行卡验证码 (CVC) 吗？</translation>
 <translation id="3761171036307311438">持卡人姓名：</translation>
@@ -2747,6 +2751,7 @@
 <translation id="5385966243497224160">无法预览非 HTTPS 网址</translation>
 <translation id="5386426401304769735">此网站的证书链包含使用 SHA-1 签署的证书。</translation>
 <translation id="5391010642126249196">上次访问时间：</translation>
+<translation id="5391306025131596142">并打开历史记录页面</translation>
 <translation id="539203134595252721">乒乓球</translation>
 <translation id="5392506727170022660">金属（半光）</translation>
 <translation id="5394069166371280357">面向家庭的电视节目</translation>
@@ -3540,6 +3545,7 @@
 <translation id="6655085656059574817">让账号保持关联状态有助于您更快地通过<ph name="BNPL_ISSUER_NAME" />付款，不过您可以前往 <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /> 解除关联</translation>
 <translation id="6656935431494847393">包括航班预订和车辆信息等</translation>
 <translation id="6657585470893396449">密码</translation>
+<translation id="6659156657345021268">您的信息仅会保存到您的设备上。下次您填写相关表单时，可选择将其保存到 Google 钱包中。</translation>
 <translation id="6659246032834639189">此价格较低</translation>
 <translation id="6660413144148052430">位置权限</translation>
 <translation id="6662457027866368246">第 1 卷</translation>
@@ -4946,6 +4952,7 @@
 <translation id="8894794286471754040">长边先入</translation>
 <translation id="8897221284075091877">如需请求查看此内容，请登录 Google 账号继续操作</translation>
 <translation id="8897428486789851669">游泳</translation>
+<translation id="8898854704577986668">在侧边栏中显示历史记录</translation>
 <translation id="8899807382908246773">侵扰性广告</translation>
 <translation id="8903921497873541725">放大</translation>
 <translation id="8903998444169664879">请验证您的身份，以更改支付设置</translation>
