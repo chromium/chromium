@@ -780,7 +780,7 @@ bool SelectionController::SelectClosestWordFromHitTestResult(
                    .SetEmitsObjectReplacementCharacter(
                        IsEditable(*range.StartPosition().AnchorNode()))
                    .Build());
-    if (word.length() >= 1 && word[0] == '\n') {
+    if (word.starts_with('\n')) {
       // We should not select word from end of line, e.g.
       // "(1)|\n(2)" => "(1)^\n(|2)". See http://crbug.com/974569
       return false;

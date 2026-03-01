@@ -67,7 +67,7 @@ class DOMFilePath {
   }
 
   static bool EndsWithSeparator(const String& path) {
-    return path[path.length() - 1] == DOMFilePath::kSeparator;
+    return path.ends_with(DOMFilePath::kSeparator);
   }
 
   // Evaluates all "../" and "./" segments. Note that "/../" expands to "/", so

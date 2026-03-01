@@ -67,11 +67,9 @@ static const char kBlackColorValue[] = "#000000";
 static const char kFallbackColorValue[] = "#000000";
 
 static bool IsValidColorString(const String& value) {
-  if (value.empty())
+  if (!value.starts_with('#')) {
     return false;
-  if (value[0] != '#')
-    return false;
-
+  }
   // We don't accept #rgb and #aarrggbb formats.
   if (value.length() != 7)
     return false;
