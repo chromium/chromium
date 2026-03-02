@@ -18,7 +18,7 @@
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/credential_provider_promo_commands.h"
-#import "ios/chrome/browser/shared/public/commands/docking_promo_commands.h"
+#import "ios/chrome/browser/shared/public/commands/promos_manager_commands.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/sync_presenter_commands.h"
@@ -118,6 +118,15 @@ TEST_F(TipsNotificationPresenterTest, TestShowSetUpListContinuation) {
   OCMExpect([mock_handler showSetUpListSeeMoreMenuExpanded:YES]);
   TipsNotificationPresenter::Present(
       browser_->AsWeakPtr(), TipsNotificationType::kSetUpListContinuation);
+  EXPECT_OCMOCK_VERIFY(mock_handler);
+}
+
+// Tests that the presenter can show the Docking promo.
+TEST_F(TipsNotificationPresenterTest, TestShowDocking) {
+  id mock_handler = MockHandler(@protocol(PromosManagerCommands));
+  OCMExpect([mock_handler showDockingPromo]);
+  TipsNotificationPresenter::Present(browser_->AsWeakPtr(),
+                                     TipsNotificationType::kDocking);
   EXPECT_OCMOCK_VERIFY(mock_handler);
 }
 
