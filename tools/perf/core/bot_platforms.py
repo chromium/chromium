@@ -774,7 +774,7 @@ def CreateLegacySchedule() -> set[_PerfPlatform]:
               'agsa_probe_config.hjson',
               '--repetitions=50',
               '--cool-down-threshold=moderate',
-              '--http-request-timeout=10s',
+              '--http-request-timeout=2s',
               '--ignore-partial-failures',
               '--embedder-process-name=googleapp',
               '--embedder-setup-command-config=../../clank/android_webview/tools/crossbench_config/'
