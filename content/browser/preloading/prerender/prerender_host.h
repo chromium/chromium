@@ -576,7 +576,13 @@ class CONTENT_EXPORT PrerenderHost {
   // `Report*(base_name, trigger_type(), embedder_suffix())`
   const std::string metric_suffix_;
 
-  base::ObserverList<Observer> observers_;
+  // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
+  base::ObserverList<
+      Observer,
+      /*check_empty=*/false,
+      /*reentrancy=*/
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>
+      observers_;
 
   // Stores the attempt corresponding to this prerender to log various metrics.
   // We use a WeakPtr here to avoid inadvertent UAF. `attempt_` can get deleted
