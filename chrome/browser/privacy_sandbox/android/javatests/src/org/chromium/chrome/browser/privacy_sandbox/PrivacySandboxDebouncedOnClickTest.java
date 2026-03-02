@@ -40,7 +40,6 @@ public final class PrivacySandboxDebouncedOnClickTest {
                     new ParameterSet().value(R.id.settings_button).name("Settings"),
                     new ParameterSet().value(R.id.more_button).name("More"),
                     new ParameterSet().value(R.id.dropdown_element).name("Dropdown"),
-                    new ParameterSet().value(R.id.no_button).name("No"),
                     new ParameterSet()
                             .value(R.id.privacy_policy_back_button)
                             .name("PrivacyPolicyBack"));

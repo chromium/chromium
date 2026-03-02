@@ -36,7 +36,6 @@ import java.util.Locale;
 @NullMarked
 public class PrivacySandboxDialogController {
     private static @Nullable WeakReference<Dialog> sDialog;
-    private static boolean sDisableAnimations;
     private static boolean sDisableEEANoticeForTesting;
     private static boolean sShowMoreButtonForTesting;
     private static @Nullable Runnable sOnDialogDismissedRunnable;
@@ -48,8 +47,7 @@ public class PrivacySandboxDialogController {
         }
         @PromptType
         int promptType = new PrivacySandboxBridge(profile).getRequiredPromptType(surfaceType);
-        if (promptType != PromptType.M1_CONSENT
-                && promptType != PromptType.M1_NOTICE_EEA
+        if (promptType != PromptType.M1_NOTICE_EEA
                 && promptType != PromptType.M1_NOTICE_ROW
                 && promptType != PromptType.M1_NOTICE_RESTRICTED) {
             return false;
@@ -111,18 +109,6 @@ public class PrivacySandboxDialogController {
         switch (promptType) {
             case PromptType.NONE:
                 return false;
-            case PromptType.M1_CONSENT:
-                dialog =
-                        new PrivacySandboxDialogConsentEEA(
-                                activity,
-                                privacySandboxBridge,
-                                sDisableAnimations,
-                                surfaceType,
-                                profile,
-                                activityWindowAndroid);
-                dialog.show();
-                sDialog = new WeakReference<>(dialog);
-                return true;
             case PromptType.M1_NOTICE_EEA:
                 showNoticeEEA(
                         activity,
@@ -206,11 +192,6 @@ public class PrivacySandboxDialogController {
     @VisibleForTesting
     static @Nullable Dialog getDialog() {
         return sDialog != null ? sDialog.get() : null;
-    }
-
-    @VisibleForTesting
-    static void disableAnimations(boolean disable) {
-        sDisableAnimations = disable;
     }
 
     @VisibleForTesting
