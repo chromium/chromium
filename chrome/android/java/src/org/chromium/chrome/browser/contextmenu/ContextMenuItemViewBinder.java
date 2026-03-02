@@ -16,6 +16,7 @@ import static org.chromium.ui.listmenu.ListMenuItemProperties.START_ICON_DRAWABL
 import static org.chromium.ui.listmenu.ListMenuItemProperties.START_ICON_ID;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE;
 
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -78,7 +79,7 @@ class ContextMenuItemViewBinder {
             }
         } else if (propertyKey == ICON_TINT_COLOR_STATE_LIST_ID) {
             @ColorRes int tintColorId = model.get(ICON_TINT_COLOR_STATE_LIST_ID);
-            if (tintColorId != 0) {
+            if (tintColorId != Resources.ID_NULL) {
                 ImageViewCompat.setImageTintList(
                         startIconView,
                         AppCompatResources.getColorStateList(

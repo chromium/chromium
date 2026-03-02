@@ -4,6 +4,7 @@
 
 package org.chromium.ui.listmenu;
 
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -126,17 +127,13 @@ public class ListMenuItemViewBinder {
         } else if (propertyKey == ListMenuItemProperties.ICON_TINT_COLOR_STATE_LIST_ID) {
             @ColorRes
             int tintColorId = model.get(ListMenuItemProperties.ICON_TINT_COLOR_STATE_LIST_ID);
-            if (tintColorId != 0) {
+            if (tintColorId != Resources.ID_NULL) {
                 ImageViewCompat.setImageTintList(
                         startIcon,
-                        AppCompatResources.getColorStateList(
-                                view.getContext(),
-                                model.get(ListMenuItemProperties.ICON_TINT_COLOR_STATE_LIST_ID)));
+                        AppCompatResources.getColorStateList(view.getContext(), tintColorId));
                 ImageViewCompat.setImageTintList(
                         endIcon,
-                        AppCompatResources.getColorStateList(
-                                view.getContext(),
-                                model.get(ListMenuItemProperties.ICON_TINT_COLOR_STATE_LIST_ID)));
+                        AppCompatResources.getColorStateList(view.getContext(), tintColorId));
             } else {
                 // No tint.
                 ImageViewCompat.setImageTintList(startIcon, null);
