@@ -378,8 +378,16 @@ void ApplyPrefChangeToCrossDevice(
   // the corresponding entry in the cross-device dictionary should be cleared to
   // signal that this device no longer has a value set by the user.
   if (tracked_pref->IsDefaultValue()) {
-    ScopedDictPrefUpdate update(profile_pref_service, cross_device_pref_name);
-    update->Remove(cache_guid.value());
+    const base::DictValue& cross_device_dict =
+        profile_pref_service->GetDict(cross_device_pref_name);
+
+    // Only instantiate `ScopedDictPrefUpdate` (which triggers a Sync server
+    // notification) if there is actually an entry to remove.
+    if (cross_device_dict.contains(cache_guid.value())) {
+      ScopedDictPrefUpdate update(profile_pref_service, cross_device_pref_name);
+      update->Remove(cache_guid.value());
+    }
+
     return;
   }
 
