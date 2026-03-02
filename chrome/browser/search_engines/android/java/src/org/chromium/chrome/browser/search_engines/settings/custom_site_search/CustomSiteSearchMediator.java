@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.R;
@@ -48,19 +49,25 @@ public class CustomSiteSearchMediator implements TemplateUrlService.TemplateUrlS
     private final List<ListItem> mHiddenItems = new ArrayList<>();
     private boolean mIsExpanded;
     private final Runnable mOnAddSearchEngine;
+    private final Callback<TemplateUrl> mOnEditSearchEngine;
 
     boolean isExpandedForTesting() {
         return mIsExpanded;
     }
 
     public CustomSiteSearchMediator(
-            Context context, ModelList modelList, Profile profile, Runnable onAddSearchEngine) {
+            Context context,
+            ModelList modelList,
+            Profile profile,
+            Runnable onAddSearchEngine,
+            Callback<TemplateUrl> onEditSearchEngine) {
         mContext = context;
         mModelList = modelList;
         mTemplateUrlService = TemplateUrlServiceFactory.getForProfile(profile);
         mLargeIconBridge = new LargeIconBridge(profile);
         mFaviconSize = context.getResources().getDimensionPixelSize(R.dimen.default_favicon_size);
         mOnAddSearchEngine = onAddSearchEngine;
+        mOnEditSearchEngine = onEditSearchEngine;
 
         mTemplateUrlService.addObserver(this);
         mTemplateUrlService.runWhenLoaded(this::refreshList);
@@ -157,7 +164,7 @@ public class CustomSiteSearchMediator implements TemplateUrlService.TemplateUrlS
     @VisibleForTesting
     void onMenuItemClicked(int textId, TemplateUrl url) {
         if (textId == R.string.site_search_list_menu_edit) {
-            // TODO: Handle edit.
+            mOnEditSearchEngine.onResult(url);
         } else if (textId == R.string.site_search_list_menu_make_default) {
             mTemplateUrlService.setSearchEngine(url.getKeyword());
         } else if (textId == R.string.site_search_list_menu_deactivate) {

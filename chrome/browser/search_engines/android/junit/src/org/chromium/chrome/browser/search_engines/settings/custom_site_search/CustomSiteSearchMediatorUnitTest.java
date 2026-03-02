@@ -25,6 +25,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.R;
@@ -57,6 +58,7 @@ public class CustomSiteSearchMediatorUnitTest {
     @Mock private TemplateUrlService mTemplateUrlService;
     @Mock private LargeIconBridgeJni mLargeIconBridgeJni;
     @Mock private Runnable mOnAddSearchEngine;
+    @Mock private Callback<TemplateUrl> mOnEditSearchEngine;
 
     private Context mContext;
     private CustomSiteSearchMediator mMediator;
@@ -101,7 +103,8 @@ public class CustomSiteSearchMediatorUnitTest {
     public void testSiteSearchList_underMaxRows() {
         setUpTemplateUrlService(/* searchEngineCount= */ 3);
         mMediator =
-                new CustomSiteSearchMediator(mContext, mModelList, mProfile, mOnAddSearchEngine);
+                new CustomSiteSearchMediator(
+                        mContext, mModelList, mProfile, mOnAddSearchEngine, mOnEditSearchEngine);
 
         verifyCollapsedModelListView(/* searchEngineCount= */ 3);
     }
@@ -110,7 +113,8 @@ public class CustomSiteSearchMediatorUnitTest {
     public void testSiteSearchList_exactMaxRows() {
         setUpTemplateUrlService(/* searchEngineCount= */ 5);
         mMediator =
-                new CustomSiteSearchMediator(mContext, mModelList, mProfile, mOnAddSearchEngine);
+                new CustomSiteSearchMediator(
+                        mContext, mModelList, mProfile, mOnAddSearchEngine, mOnEditSearchEngine);
 
         verifyCollapsedModelListView(/* searchEngineCount= */ 5);
     }
@@ -119,7 +123,8 @@ public class CustomSiteSearchMediatorUnitTest {
     public void testSiteSearchList_overMaxRows() {
         setUpTemplateUrlService(/* searchEngineCount= */ 7);
         mMediator =
-                new CustomSiteSearchMediator(mContext, mModelList, mProfile, mOnAddSearchEngine);
+                new CustomSiteSearchMediator(
+                        mContext, mModelList, mProfile, mOnAddSearchEngine, mOnEditSearchEngine);
 
         verifyCollapsedModelListView(/* searchEngineCount= */ 7);
 
@@ -150,7 +155,8 @@ public class CustomSiteSearchMediatorUnitTest {
     public void testSiteSearchList_templateUrlServiceChanged() {
         setUpTemplateUrlService(7);
         mMediator =
-                new CustomSiteSearchMediator(mContext, mModelList, mProfile, mOnAddSearchEngine);
+                new CustomSiteSearchMediator(
+                        mContext, mModelList, mProfile, mOnAddSearchEngine, mOnEditSearchEngine);
 
         verifyCollapsedModelListView(/* searchEngineCount= */ 7);
 
@@ -173,7 +179,8 @@ public class CustomSiteSearchMediatorUnitTest {
         when(templateUrl.getStarterPackId()).thenReturn(StarterPackId.NONE);
 
         mMediator =
-                new CustomSiteSearchMediator(mContext, mModelList, mProfile, mOnAddSearchEngine);
+                new CustomSiteSearchMediator(
+                        mContext, mModelList, mProfile, mOnAddSearchEngine, mOnEditSearchEngine);
 
         PropertyModel model = mModelList.get(0).model;
         ListMenuDelegate delegate = model.get(SiteSearchProperties.MENU_DELEGATE);
@@ -212,7 +219,8 @@ public class CustomSiteSearchMediatorUnitTest {
         when(templateUrl.getStarterPackId()).thenReturn(StarterPackId.GEMINI);
 
         mMediator =
-                new CustomSiteSearchMediator(mContext, mModelList, mProfile, mOnAddSearchEngine);
+                new CustomSiteSearchMediator(
+                        mContext, mModelList, mProfile, mOnAddSearchEngine, mOnEditSearchEngine);
 
         PropertyModel model = mModelList.get(0).model;
         ListMenuDelegate delegate = model.get(SiteSearchProperties.MENU_DELEGATE);
@@ -229,9 +237,22 @@ public class CustomSiteSearchMediatorUnitTest {
     }
 
     @Test
+    public void testEditClicked() {
+        mMediator =
+                new CustomSiteSearchMediator(
+                        mContext, mModelList, mProfile, mOnAddSearchEngine, mOnEditSearchEngine);
+        TemplateUrl templateUrl = createMockTemplateUrl("keyword", "shortName");
+
+        mMediator.onMenuItemClicked(R.string.site_search_list_menu_edit, templateUrl);
+
+        verify(mOnEditSearchEngine).onResult(templateUrl);
+    }
+
+    @Test
     public void testMakeDefaultClicked() {
         mMediator =
-                new CustomSiteSearchMediator(mContext, mModelList, mProfile, mOnAddSearchEngine);
+                new CustomSiteSearchMediator(
+                        mContext, mModelList, mProfile, mOnAddSearchEngine, mOnEditSearchEngine);
         TemplateUrl templateUrl = createMockTemplateUrl("keyword", "shortName");
 
         mMediator.onMenuItemClicked(R.string.site_search_list_menu_make_default, templateUrl);
@@ -242,7 +263,8 @@ public class CustomSiteSearchMediatorUnitTest {
     @Test
     public void testDeactivateClicked() {
         mMediator =
-                new CustomSiteSearchMediator(mContext, mModelList, mProfile, mOnAddSearchEngine);
+                new CustomSiteSearchMediator(
+                        mContext, mModelList, mProfile, mOnAddSearchEngine, mOnEditSearchEngine);
         TemplateUrl templateUrl = createMockTemplateUrl("keyword", "shortName");
 
         mMediator.onMenuItemClicked(R.string.site_search_list_menu_deactivate, templateUrl);
@@ -253,7 +275,8 @@ public class CustomSiteSearchMediatorUnitTest {
     @Test
     public void testDeleteClicked() {
         mMediator =
-                new CustomSiteSearchMediator(mContext, mModelList, mProfile, mOnAddSearchEngine);
+                new CustomSiteSearchMediator(
+                        mContext, mModelList, mProfile, mOnAddSearchEngine, mOnEditSearchEngine);
         TemplateUrl templateUrl = createMockTemplateUrl("keyword", "shortName");
 
         mMediator.onMenuItemClicked(R.string.site_search_list_menu_delete, templateUrl);

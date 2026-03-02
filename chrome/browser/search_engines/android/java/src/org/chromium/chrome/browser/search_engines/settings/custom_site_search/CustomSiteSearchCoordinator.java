@@ -12,6 +12,8 @@ import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.search_engines.settings.common.SearchEngineListPreference;
 import org.chromium.chrome.browser.search_engines.settings.common.SiteSearchProperties;
 import org.chromium.chrome.browser.search_engines.settings.common.SiteSearchViewBinder;
+import org.chromium.chrome.browser.search_engines.settings.custom_search_engine.EditSearchEngineDialogCoordinator;
+import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -26,6 +28,7 @@ public class CustomSiteSearchCoordinator {
     private final PropertyModel mPropertyModel;
     private final PropertyModelChangeProcessor mPropertyModelChangeProcessor;
     private final AddSearchEngineDialogCoordinator mAddSearchEngineDialogCoordinator;
+    private final EditSearchEngineDialogCoordinator mEditSearchEngineDialogCoordinator;
 
     public CustomSiteSearchCoordinator(
             Context context,
@@ -36,9 +39,20 @@ public class CustomSiteSearchCoordinator {
         mAdapter = new CustomSiteSearchAdapter(context, mModelList);
         mMediator =
                 new CustomSiteSearchMediator(
-                        context, mModelList, profile, this::openAddSearchEngineDialog);
+                        context,
+                        mModelList,
+                        profile,
+                        this::openAddSearchEngineDialog,
+                        this::openEditSearchEngineDialog);
+
         mAddSearchEngineDialogCoordinator =
                 new AddSearchEngineDialogCoordinator(
+                        context,
+                        modalDialogManager,
+                        TemplateUrlServiceFactory.getForProfile(profile));
+
+        mEditSearchEngineDialogCoordinator =
+                new EditSearchEngineDialogCoordinator(
                         context,
                         modalDialogManager,
                         TemplateUrlServiceFactory.getForProfile(profile));
@@ -55,6 +69,7 @@ public class CustomSiteSearchCoordinator {
 
     public void destroy() {
         mAddSearchEngineDialogCoordinator.dismiss();
+        mEditSearchEngineDialogCoordinator.dismiss();
         mPropertyModel.set(SiteSearchProperties.ADAPTER, null);
         mPropertyModelChangeProcessor.destroy();
         mAdapter.destroy();
@@ -63,5 +78,9 @@ public class CustomSiteSearchCoordinator {
 
     private void openAddSearchEngineDialog() {
         mAddSearchEngineDialogCoordinator.show();
+    }
+
+    private void openEditSearchEngineDialog(TemplateUrl templateUrl) {
+        mEditSearchEngineDialogCoordinator.show(templateUrl);
     }
 }
