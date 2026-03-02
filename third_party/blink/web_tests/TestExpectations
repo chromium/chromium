@@ -6664,6 +6664,13 @@ crbug.com/357649033 virtual/customizable-select-listbox-disabled/external/wpt/ht
 crbug.com/357649033 virtual/customizable-select-listbox-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select-listbox/customizable-select-listbox-appearance-focused.html [ Failure ]
 crbug.com/357649033 virtual/customizable-select-listbox-disabled/external/wpt/html/semantics/forms/the-select-element/filterable-select/filterable-select-keyboard-behavior.tentative.html [ Failure ]
 
+# These tests are included in the virtual test suite just to make sure that
+# they don't crash when the flag is disabled.
+crbug.com/458113204 external/wpt/html/semantics/forms/the-select-element/customizable-select/selectedcontent-restore.html [ Failure ]
+crbug.com/458113204 external/wpt/html/semantics/forms/the-select-element/customizable-select/selectedcontent-color.html [ Failure ]
+crbug.com/458113204 external/wpt/html/semantics/forms/the-select-element/customizable-select/selectedcontent-nested.html [ Failure ]
+crbug.com/458113204 external/wpt/html/semantics/forms/the-select-element/customizable-select/selectedcontentelement-attr.tentative.html [ Failure ]
+
 # The height of the appearance:auto <select> button on mac is different from the reference.
 crbug.com/440471997 [ Mac ] wpt_internal/html/semantics/forms/the-select-element/select-multiple-popup-auto-appearance.html [ Failure ]
 
