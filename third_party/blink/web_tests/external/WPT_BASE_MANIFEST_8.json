@@ -196264,6 +196264,19 @@
        {}
       ]
      ],
+     "text-overflow-ellipsis-editable-div-with-caret.html": [
+      "ecae2dcca11571cf516ed0e6267ad51b3aaae24c",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/reference/text-overflow-ellipsis-editable-div-with-caret-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "text-overflow-ellipsis-editing-input.html": [
       "b235ca503a80c42d2083ba78195d9b28e1307c22",
       [
@@ -196284,6 +196297,19 @@
        [
         [
          "/css/css-overflow/reference/text-overflow-ellipsis-rtl-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-overflow-ellipsis-textarea-with-caret.html": [
+      "ae0dd0521946bc8414744be419c6a8b5a711342c",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/reference/text-overflow-ellipsis-textarea-with-caret-ref.html",
          "=="
         ]
        ],
@@ -212188,6 +212214,58 @@
      ],
      "abspos-auto-sizing-fit-content-percentage-004.html": [
       "1d05d96f43104dcc6ceacf4f563f07a488bb91c2",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "abspos-auto-sizing-fit-content-percentage-005.html": [
+      "4c82ebe1de7a394a15a4cde750f0b813930fe67b",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "abspos-auto-sizing-fit-content-percentage-006.html": [
+      "ca53769e2b93f2bff57563981277f90221d22a22",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "abspos-auto-sizing-fit-content-percentage-007.html": [
+      "726c304980f256399782d956524bd777107896d4",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "abspos-auto-sizing-fit-content-percentage-008.html": [
+      "2faf802e1a3e17be36bbf508de90cea32368aabd",
       [
        null,
        [
@@ -281916,6 +281994,19 @@
         [
          [
           "/css/css-viewport/zoom/reference/scroll-margin-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "scroll-padding.html": [
+       "90a5fafa65a3c98491509c238d61e6cf5c4d4227",
+       [
+        null,
+        [
+         [
+          "/css/css-viewport/zoom/reference/scroll-padding-ref.html",
           "=="
          ]
         ],
@@ -389114,8 +389205,16 @@
        "cf26b6b8c848521940936165002eb6aab46c068d",
        []
       ],
+      "text-overflow-ellipsis-editable-div-with-caret-ref.html": [
+       "1c728466535765f7ad53e0187a66cb0ff34cf166",
+       []
+      ],
       "text-overflow-ellipsis-rtl-001-ref.html": [
        "5c75e38d8308ac81dcfe5eef7e18fd7ad56d6b3b",
+       []
+      ],
+      "text-overflow-ellipsis-textarea-with-caret-ref.html": [
+       "1cc9c8df6ac94a9318845cb4668f62f900783a58",
        []
       ],
       "text-overflow-ellipsis-vertical-001-ref.html": [
@@ -406749,6 +406848,10 @@
         "d061c49165a111087225825fd8875db22de3990e",
         []
        ],
+       "scroll-padding-ref.html": [
+        "51a0ffb2ed15a82aca6866dbfada078019251a2f",
+        []
+       ],
        "stroke-ref.html": [
         "75742b1dc34e522a202bdedf7e4e66d472edc922",
         []
@@ -406809,7 +406912,7 @@
        ]
       },
       "svg-computed-style-expected.txt": [
-       "884a97ffb45f614224ccf633d6c3c9f299d09032",
+       "80eabe24bee6421b99f6ae0010c5b0029e14f4dc",
        []
       ],
       "svg-font-relative-units-ref.html": [
@@ -415137,150 +415240,6 @@
       "97ecedbacb431d164ff4cfcce018bfac184c0588",
       []
      ],
-     "join-different-white-space-style-paragraphs_method=backspace_left-white-space=normal_right-white-space=nowrap-expected.txt": [
-      "e4381f3e3b134e16f0586cd6ad9e2a49b51d1888",
-      []
-     ],
-     "join-different-white-space-style-paragraphs_method=backspace_left-white-space=normal_right-white-space=pre-line-expected.txt": [
-      "3eea13eed2b4233c33e03147e94a00a00bf4a49a",
-      []
-     ],
-     "join-different-white-space-style-paragraphs_method=backspace_left-white-space=normal_right-white-space=pre-wrap-expected.txt": [
-      "67ba870cfcb51c2a129b3fac3a98fd96b0129cc7",
-      []
-     ],
-     "join-different-white-space-style-paragraphs_method=backspace_left-white-space=nowrap_right-white-space=normal-expected.txt": [
-      "3002d7ff0ee55c738613e012c8e2c2c19545fd78",
-      []
-     ],
-     "join-different-white-space-style-paragraphs_method=backspace_left-white-space=nowrap_right-white-space=pre-expected.txt": [
-      "54f7c088cea61627fe64ad986061f7d49d09b2a9",
-      []
-     ],
-     "join-different-white-space-style-paragraphs_method=backspace_left-white-space=pre-line_right-white-space=normal-expected.txt": [
-      "25eb53402838181cd316ac2387cafbe6fb8c92ae",
-      []
-     ],
-     "join-different-white-space-style-paragraphs_method=backspace_left-white-space=pre-line_right-white-space=pre-wrap-expected.txt": [
-      "4e693534e6045be83e95376ac1723ef5e55c49e1",
-      []
-     ],
-     "join-different-white-space-style-paragraphs_method=backspace_left-white-space=pre-wrap_right-white-space=normal-expected.txt": [
-      "e76c14662b7c70973299a94ea4ebdbd4afb79dce",
-      []
-     ],
-     "join-different-white-space-style-paragraphs_method=backspace_left-white-space=pre-wrap_right-white-space=pre-expected.txt": [
-      "cce03889b375872e116ab1ae8884a1a05ebcb2df",
-      []
-     ],
-     "join-different-white-space-style-paragraphs_method=backspace_left-white-space=pre-wrap_right-white-space=pre-line-expected.txt": [
-      "00bf30f5ce962708b6a714ecd6b13853803cebaf",
-      []
-     ],
-     "join-different-white-space-style-paragraphs_method=backspace_left-white-space=pre_right-white-space=nowrap-expected.txt": [
-      "5510240dd2b0c2011b8e3379d08b07a9d84af9f6",
-      []
-     ],
-     "join-different-white-space-style-paragraphs_method=backspace_left-white-space=pre_right-white-space=pre-wrap-expected.txt": [
-      "66e0eb138e4c7fd1b525010e1d23399969a2d63c",
-      []
-     ],
-     "join-different-white-space-style-paragraphs_method=forwarddelete_left-white-space=normal_right-white-space=nowrap-expected.txt": [
-      "ce8f9ec83c5215336592681b9ddeb5239dbee34b",
-      []
-     ],
-     "join-different-white-space-style-paragraphs_method=forwarddelete_left-white-space=normal_right-white-space=pre-line-expected.txt": [
-      "8aa6623bbc9e37e2cd753c8dfd117b55cf512b3f",
-      []
-     ],
-     "join-different-white-space-style-paragraphs_method=forwarddelete_left-white-space=normal_right-white-space=pre-wrap-expected.txt": [
-      "50b40d585c9239d5fa400d78fcb6372c46e12f50",
-      []
-     ],
-     "join-different-white-space-style-paragraphs_method=forwarddelete_left-white-space=nowrap_right-white-space=normal-expected.txt": [
-      "634a2ba4bdc152acc93e34e172005fc26a36d920",
-      []
-     ],
-     "join-different-white-space-style-paragraphs_method=forwarddelete_left-white-space=nowrap_right-white-space=pre-expected.txt": [
-      "6f15d1d82d9d659f6064c62e097798bd6c61854e",
-      []
-     ],
-     "join-different-white-space-style-paragraphs_method=forwarddelete_left-white-space=pre-line_right-white-space=normal-expected.txt": [
-      "473947d357d232df58b2504d62c67e117000ca7a",
-      []
-     ],
-     "join-different-white-space-style-paragraphs_method=forwarddelete_left-white-space=pre-line_right-white-space=pre-wrap-expected.txt": [
-      "7ce4daca3665ca0430ad7d6e417d3673d41a0dcc",
-      []
-     ],
-     "join-different-white-space-style-paragraphs_method=forwarddelete_left-white-space=pre-wrap_right-white-space=normal-expected.txt": [
-      "9ddfb481f4567fb6e560c9ef0d51aa029950981b",
-      []
-     ],
-     "join-different-white-space-style-paragraphs_method=forwarddelete_left-white-space=pre-wrap_right-white-space=pre-expected.txt": [
-      "8015d83e92dd11e6c1b11e00c2bada638ea6f7b8",
-      []
-     ],
-     "join-different-white-space-style-paragraphs_method=forwarddelete_left-white-space=pre-wrap_right-white-space=pre-line-expected.txt": [
-      "92a05727a7b5052b2d77fb49f67c2bc13f144c38",
-      []
-     ],
-     "join-different-white-space-style-paragraphs_method=forwarddelete_left-white-space=pre_right-white-space=nowrap-expected.txt": [
-      "f3e8d8648b3cd08ffbd401490085b6de395c4f78",
-      []
-     ],
-     "join-different-white-space-style-paragraphs_method=forwarddelete_left-white-space=pre_right-white-space=pre-wrap-expected.txt": [
-      "6f0dc6c68ea9b0071e34d994063ec73c6ca82499",
-      []
-     ],
-     "join-different-white-space-style-paragraphs_method=select-boundary_left-white-space=normal_right-white-space=nowrap-expected.txt": [
-      "fe6e6aefc9955ba82164f7c599fe6a62d3eff4ef",
-      []
-     ],
-     "join-different-white-space-style-paragraphs_method=select-boundary_left-white-space=normal_right-white-space=pre-line-expected.txt": [
-      "34ec1cf911ae4743057d74c0c3d0e8b73e7d18ee",
-      []
-     ],
-     "join-different-white-space-style-paragraphs_method=select-boundary_left-white-space=normal_right-white-space=pre-wrap-expected.txt": [
-      "ecfe001673a27a33b9dac8dbd3871bf27459827d",
-      []
-     ],
-     "join-different-white-space-style-paragraphs_method=select-boundary_left-white-space=nowrap_right-white-space=normal-expected.txt": [
-      "c4e077bac71592fbe6961c09e7aa02b611b077b6",
-      []
-     ],
-     "join-different-white-space-style-paragraphs_method=select-boundary_left-white-space=nowrap_right-white-space=pre-expected.txt": [
-      "3a72941b7a551205be63018eb6ad3b2be62940c7",
-      []
-     ],
-     "join-different-white-space-style-paragraphs_method=select-boundary_left-white-space=pre-line_right-white-space=normal-expected.txt": [
-      "e93598c8a5e76909a493bb6f84acf879a6681f39",
-      []
-     ],
-     "join-different-white-space-style-paragraphs_method=select-boundary_left-white-space=pre-line_right-white-space=pre-wrap-expected.txt": [
-      "1a97fc8584fdc33b6b178b9f69107a5803753dc4",
-      []
-     ],
-     "join-different-white-space-style-paragraphs_method=select-boundary_left-white-space=pre-wrap_right-white-space=normal-expected.txt": [
-      "9e1070447126a6e50b2989751f2ecddf226ff942",
-      []
-     ],
-     "join-different-white-space-style-paragraphs_method=select-boundary_left-white-space=pre-wrap_right-white-space=pre-expected.txt": [
-      "9a5ddd8aad5a7c9e9200ba666ca661db36af0d22",
-      []
-     ],
-     "join-different-white-space-style-paragraphs_method=select-boundary_left-white-space=pre-wrap_right-white-space=pre-line-expected.txt": [
-      "47e697dca05be3d849f7c78cce56ece06579c789",
-      []
-     ],
-     "join-different-white-space-style-paragraphs_method=select-boundary_left-white-space=pre_right-white-space=nowrap-expected.txt": [
-      "131bc3c34a9308d7a066d3f414e0334e1e56f4ba",
-      []
-     ],
-     "join-different-white-space-style-paragraphs_method=select-boundary_left-white-space=pre_right-white-space=pre-wrap-expected.txt": [
-      "b0fc4242f307e0cf84f93b6b9b2f8041b4a5c428",
-      []
-     ],
      "link-boundaries-insertion-expected.txt": [
       "d4eff9d116410742b7a62e406decbc75c8ffe492",
       []
@@ -415396,7 +415355,7 @@
       []
      ],
      "paste-when-nested-with-contenteditable-true.https-expected.txt": [
-      "bc50cb74eb1313fdddfa9e9d94cc31521fbade7e",
+      "28e41bf69a88723b7e9b414f75ac6676669ec7b2",
       []
      ],
      "plaintext-only-in-designMode-expected.txt": [
@@ -463368,6 +463327,10 @@
        "ac5159143dbeaf1eec81d63127b215e6dd092309",
        []
       ],
+      "SVGList-parse-invalid-clears-items-expected.txt": [
+       "ee5224a6044b484a497fb0b430e7a02ffda478ff",
+       []
+      ],
       "SVGMatrix-tentative-expected.txt": [
        "cecf734d7dee6cf55d05cf568aabc022ab6d6c17",
        []
@@ -465310,7 +465273,7 @@
         []
        ],
        "try_table.wast.js": [
-        "e2cdb5c102b36acce7e0669ac91c827b14370201",
+        "08a7015774bcc35c280a75d2646683e6f14c4277",
         []
        ]
       },
@@ -465392,7 +465355,7 @@
         []
        ],
        "array_init_elem.wast.js": [
-        "b39588ed2d4897e1fdd3a6d7c8370d3d1f24fc24",
+        "a2002f39d0160de5ce453ea8d7890221ccf0fdcf",
         []
        ],
        "array_new_data.wast.js": [
@@ -546347,7 +546310,23 @@
        null,
        {}
       ]
-     ]
+     ],
+     "parsing": {
+      "checkmark-pseudo-element.html": [
+       "a89daf4f44d4a55efd912bf5853dbb4468d09b5f",
+       [
+        null,
+        {}
+       ]
+      ],
+      "picker-icon-pseudo-element.html": [
+       "9f95926e3b960d715dc5c0739fc6617015f92270",
+       [
+        null,
+        {}
+       ]
+      ]
+     }
     },
     "css-gaps": {
      "animation": {
@@ -557912,20 +557891,6 @@
       ],
       "marker-supported-properties.html": [
        "cb1d67b62052a8e18eaf7ae1bac41ba915e763b5",
-       [
-        null,
-        {}
-       ]
-      ],
-      "the-checkmark-pseudo-element.tentative.html": [
-       "f50794a5128020361ccc4de5ff15731240e05844",
-       [
-        null,
-        {}
-       ]
-      ],
-      "the-picker-icon-pseudo-element.tentative.html": [
-       "79a5e10e93bc0097c175d4dc3f3f5c573700c2c0",
        [
         null,
         {}
@@ -574869,7 +574834,7 @@
        ]
       ],
       "svg-computed-style.html": [
-       "bc2b2915aaa63d9fe567d7f134f3c781adeae98b",
+       "7410ffa1a4bd4cbe512aae635c06089ba3f1756f",
        [
         null,
         {}
@@ -783353,6 +783318,13 @@
         {}
        ]
       ],
+      "SVGList-parse-invalid-clears-items.html": [
+       "a5b0d8d85070229137258cde55e47407c41cc937",
+       [
+        null,
+        {}
+       ]
+      ],
       "SVGMatrix-tentative.html": [
        "8b3382d6032ffca7a11f87b546465b11c3cb3132",
        [
@@ -783623,6 +783595,15 @@
     ],
     "multi-touch-interfaces.html": [
      "8b5965c2c915bd88ee6811378e6e1e5c7e499fb7",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
+    "multi-touch-touchmove.html": [
+     "0b7a055be9abf260055cc487e3f94bdc8da0c3e5",
      [
       null,
       {

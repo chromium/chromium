@@ -2796,6 +2796,8 @@ crbug.com/488071544 external/wpt/webrtc/RTCPeerConnection-getStats.https.html?re
 crbug.com/476344902 virtual/webui-browser/external/wpt/html/browsers/windows/nested-browsing-contexts/window-top.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+external/wpt/css/css-viewport/zoom/scroll-padding.html [ Failure ]
+[ Linux ] external/wpt/wasm/core/gc/array_init_elem.wast.js.html [ Crash ]
 crbug.com/488651384 external/wpt/css/css-viewport/zoom/border-radius.html [ Failure ]
 crbug.com/488651384 external/wpt/css/css-viewport/zoom/scroll-margin.html [ Failure ]
 crbug.com/488651384 [ Win ] external/wpt/css/css-viewport/zoom/svg-computed-style.html [ Pass Timeout ]
