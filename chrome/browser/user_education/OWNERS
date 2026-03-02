@@ -6,7 +6,7 @@ per-file *.cc=file://components/user_education/OWNERS
 per-file ntp_promo_identifiers.h=file://components/search/OWNERS
 
 # Android User Education
-per-file java=mdjones@chromium.org
-per-file java=dtrainor@chromium.org
-per-file java=twellington@chromium.org
-per-file java=pnoland@chromium.org
+per-file java/...=mdjones@chromium.org
+per-file java/...=dtrainor@chromium.org
+per-file java/...=twellington@chromium.org
+per-file java/...=pnoland@chromium.org
