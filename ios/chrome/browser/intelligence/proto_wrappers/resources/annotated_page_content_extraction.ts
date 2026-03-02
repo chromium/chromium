@@ -394,6 +394,11 @@ function isGenericContainer(
     return true;
   }
 
+  // Elements with annotated roles are considered generic containers.
+  if (getAnnotatedRoleForTag(element.tagName) !== null) {
+    return true;
+  }
+
   // A <figure> element is a semantic container for self-contained content, like
   // images or diagrams, making it a generic container.
   if (element.tagName === TAG_FIGURE) {

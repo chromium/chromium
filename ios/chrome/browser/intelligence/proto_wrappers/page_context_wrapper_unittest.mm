@@ -2506,14 +2506,22 @@ TEST_P(PageContextWrapperTest, PopulatePageContext_RichExtraction_Visibility) {
   EXPECT_EQ(child2.content_attributes().attribute_type(),
             optimization_guide::proto::CONTENT_ATTRIBUTE_IMAGE);
 
-  // Verify Child 3: P
+  // Verify Child 3: Container (section)
   const auto& child3 = root_node.children_nodes(2);
   EXPECT_EQ(child3.content_attributes().attribute_type(),
-            optimization_guide::proto::CONTENT_ATTRIBUTE_PARAGRAPH);
+            optimization_guide::proto::CONTENT_ATTRIBUTE_CONTAINER);
   ASSERT_EQ(child3.children_nodes_size(), 1);
-  EXPECT_EQ(
-      child3.children_nodes(0).content_attributes().text_data().text_content(),
-      "Deep Visible Paragraph");
+
+  // Verify Child 3's child: P
+  const auto& child3_p = child3.children_nodes(0);
+  EXPECT_EQ(child3_p.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_PARAGRAPH);
+  ASSERT_EQ(child3_p.children_nodes_size(), 1);
+  EXPECT_EQ(child3_p.children_nodes(0)
+                .content_attributes()
+                .text_data()
+                .text_content(),
+            "Deep Visible Paragraph");
 
   // Verify Child 4: DIV
   const auto& child4 = root_node.children_nodes(3);
@@ -3322,6 +3330,55 @@ TEST_P(
 
   ASSERT_EQ(target_node->children_nodes_size(), 1);
   const auto& text_node = target_node->children_nodes(0);
+  EXPECT_EQ(text_node.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_TEXT);
+  EXPECT_EQ(text_node.content_attributes().text_data().text_content(),
+            "Target");
+}
+
+// Tests that tags with annotated roles (e.g. <main>, <header>, <article>)
+// are correctly identified as generic containers.
+TEST_P(PageContextWrapperTest,
+       PopulatePageContext_RichExtraction_GenericContainer_AnnotatedRoles) {
+  if (!IsRefactored()) {
+    GTEST_SKIP() << "ApcV2 not supported for the non-refactored APC wrapper";
+  }
+
+  // A generic div is usually flattened. But <main> has an annotated role
+  // (kMain) so it should be preserved as a container.
+  auto page_structure =
+      HtmlPage("Main", RawHtml("<main id='target'>Target</main>"));
+  std::string main_html = page_helper_->Build(page_structure);
+  web::test::LoadHtml(base::SysUTF8ToNSString(main_html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  PageContextWrapperConfig config =
+      PageContextWrapperConfigBuilder().SetUseRichExtraction(true).Build();
+
+  PageContextWrapperCallbackResponse response = RunPageContextWrapperWithConfig(
+      web_state(), config, ^(PageContextWrapper* wrapper) {
+        wrapper.shouldGetAnnotatedPageContent = YES;
+      });
+
+  ASSERT_TRUE(response.has_value());
+  const auto& apc = response.value()->annotated_page_content();
+  const auto& root_node = apc.root_node();
+
+  // Root should contain the <main> node as a container
+  ASSERT_EQ(root_node.children_nodes_size(), 1);
+  const auto& main_node = root_node.children_nodes(0);
+
+  EXPECT_EQ(main_node.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_CONTAINER);
+
+  // Verify the annotated role is attached
+  ASSERT_EQ(main_node.content_attributes().annotated_roles_size(), 1);
+  EXPECT_EQ(main_node.content_attributes().annotated_roles(0),
+            optimization_guide::proto::ANNOTATED_ROLE_MAIN);
+
+  // The container should have the text node as a child
+  ASSERT_EQ(main_node.children_nodes_size(), 1);
+  const auto& text_node = main_node.children_nodes(0);
   EXPECT_EQ(text_node.content_attributes().attribute_type(),
             optimization_guide::proto::CONTENT_ATTRIBUTE_TEXT);
   EXPECT_EQ(text_node.content_attributes().text_data().text_content(),
