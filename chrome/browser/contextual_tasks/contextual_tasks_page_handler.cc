@@ -435,6 +435,16 @@ void ContextualTasksPageHandler::PostMessageToWebview(
   web_ui_controller_->GetPageRemote()->PostMessageToWebview(serialized_message);
 }
 
+void ContextualTasksPageHandler::OnTaskAdded(
+    const contextual_tasks::ContextualTask& task,
+    contextual_tasks::ContextualTasksService::TriggerSource source) {
+  if (!web_ui_controller_->GetPageRemote()) {
+    return;
+  }
+
+  UpdateContextForTask(task.GetTaskId());
+}
+
 void ContextualTasksPageHandler::OnTaskUpdated(
     const contextual_tasks::ContextualTask& task,
     contextual_tasks::ContextualTasksService::TriggerSource source) {
