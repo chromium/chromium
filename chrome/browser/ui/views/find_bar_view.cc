@@ -543,15 +543,12 @@ bool FindBarView::OnBeforeCutOrCopy(views::Textfield* sender,
       find_bar_host_->GetFindBarController()->web_contents(), copy_contents);
 }
 
-bool FindBarView::OnBeforePaste(views::Textfield* sender,
-                                std::u16string* paste_contents) {
-  if (auto replacement = enterprise_data_protection::ReplacePasteToFindBar(
-          find_bar_host_->GetFindBarController()->web_contents())) {
-    *paste_contents = *replacement;
-    return true;
-  }
-
-  return false;
+void FindBarView::OnBeforePaste(
+    views::Textfield* sender,
+    base::OnceCallback<void(std::optional<std::u16string>)> callback) {
+  enterprise_data_protection::ReplacePasteToFindBar(
+      find_bar_host_->GetFindBarController()->web_contents(),
+      std::move(callback));
 }
 
 std::unique_ptr<ui::ScopedClipboardWriter>

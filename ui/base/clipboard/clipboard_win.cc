@@ -891,16 +891,6 @@ void ClipboardWin::ReadBookmark(const DataTransferEndpoint* data_dst,
   *url = base::UTF16ToUTF8(bookmark);
 }
 
-// |data_dst| is not used. It's only passed to be consistent with other
-// platforms.
-void ClipboardWin::ReadData(const ClipboardFormatType& format,
-                            const DataTransferEndpoint* data_dst,
-                            std::string* result) const {
-  CHECK(result);
-  *result = ReadDataInternal(format, base::OptionalFromPtr(data_dst),
-                             GetClipboardWindow());
-}
-
 // static
 // |data_dst| is not used, but is kept as it may be used in the future.
 std::string ClipboardWin::ReadDataInternal(

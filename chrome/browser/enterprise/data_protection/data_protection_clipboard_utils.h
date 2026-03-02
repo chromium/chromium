@@ -106,8 +106,9 @@ bool ReplaceCopyFromFindBar(std::u16string_view selected_text,
 // data, and returns it if so. This is used so `FindBarView` code doesn't always
 // receive blocked pasted data in safe cases like searching a string in the same
 // page it was copied from.
-std::optional<std::u16string> ReplacePasteToFindBar(
-    content::WebContents* web_contents);
+void ReplacePasteToFindBar(
+    content::WebContents* web_contents,
+    base::OnceCallback<void(std::optional<std::u16string>)> callback);
 
 }  // namespace enterprise_data_protection
 

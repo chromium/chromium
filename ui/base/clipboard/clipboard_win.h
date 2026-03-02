@@ -100,9 +100,6 @@ class ClipboardWin : public Clipboard, public ClipboardChangeNotifier {
   void ReadBookmark(const DataTransferEndpoint* data_dst,
                     std::u16string* title,
                     std::string* url) const override;
-  void ReadData(const ClipboardFormatType& format,
-                const DataTransferEndpoint* data_dst,
-                std::string* result) const override;
   void WritePortableAndPlatformRepresentations(
       ClipboardBuffer buffer,
       const ObjectMap& objects,

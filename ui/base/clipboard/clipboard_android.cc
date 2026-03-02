@@ -712,12 +712,13 @@ void ClipboardAndroid::ReadBookmark(const DataTransferEndpoint* data_dst,
 
 // |data_dst| is not used. It's only passed to be consistent with other
 // platforms.
-void ClipboardAndroid::ReadData(const ClipboardFormatType& format,
-                                const DataTransferEndpoint* data_dst,
-                                std::string* result) const {
+void ClipboardAndroid::ReadData(
+    const ClipboardFormatType& format,
+    const std::optional<DataTransferEndpoint>& data_dst,
+    ReadDataCallback callback) const {
   DCHECK(CalledOnValidThread());
   RecordRead(ClipboardFormatMetric::kData);
-  *result = GetClipboardMap().Get(format);
+  std::move(callback).Run(GetClipboardMap().Get(format));
 }
 
 base::Time ClipboardAndroid::GetLastModifiedTime() const {

@@ -88,9 +88,6 @@ class ClipboardOzone : public Clipboard {
   void ReadBookmark(const DataTransferEndpoint* data_dst,
                     std::u16string* title,
                     std::string* url) const override;
-  void ReadData(const ClipboardFormatType& format,
-                const DataTransferEndpoint* data_dst,
-                std::string* result) const override;
   bool IsSelectionBufferAvailable() const override;
   void WritePortableTextRepresentation(ClipboardBuffer buffer,
                                        const ObjectMap& objects);

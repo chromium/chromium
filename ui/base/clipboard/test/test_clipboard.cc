@@ -295,18 +295,22 @@ void TestClipboard::ReadBookmark(const DataTransferEndpoint* data_dst,
     *title = base::UTF8ToUTF16(store.url_title);
 }
 
-void TestClipboard::ReadData(const ClipboardFormatType& format,
-                             const DataTransferEndpoint* data_dst,
-                             std::string* result) const {
+void TestClipboard::ReadData(
+    const ClipboardFormatType& format,
+    const std::optional<DataTransferEndpoint>& data_dst,
+    ReadDataCallback callback) const {
   const DataStore& store = GetDefaultStore();
-  if (!IsReadAllowed(store.data_src, data_dst)) {
+  if (!IsReadAllowed(store.data_src, base::OptionalToPtr(data_dst))) {
+    std::move(callback).Run("");
     return;
   }
 
-  result->clear();
+  std::string result;
   auto it = store.data.find(format);
-  if (it != store.data.end())
-    *result = it->second;
+  if (it != store.data.end()) {
+    result = it->second;
+  }
+  std::move(callback).Run(std::move(result));
 }
 
 base::Time TestClipboard::GetLastModifiedTime() const {

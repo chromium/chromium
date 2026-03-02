@@ -154,10 +154,11 @@ class TextfieldPasteInterceptController
  public:
   using TextfieldClipboardControllerBase::TextfieldClipboardControllerBase;
 
-  bool OnBeforePaste(Textfield* sender, std::u16string* text) override {
+  void OnBeforePaste(Textfield* sender,
+                     base::OnceCallback<void(std::optional<std::u16string>)>
+                         callback) override {
     on_before_called_ = true;
-    *text = text_to_inject_;
-    return true;
+    std::move(callback).Run(text_to_inject_);
   }
 
   void OnAfterPaste() override { on_after_called_ = true; }

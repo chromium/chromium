@@ -446,12 +446,4 @@ void Clipboard::ReadBookmark(
   std::move(callback).Run(std::move(title), GURL(url));
 }
 
-void Clipboard::ReadData(const ClipboardFormatType& format,
-                         const std::optional<DataTransferEndpoint>& data_dst,
-                         ReadDataCallback callback) const {
-  std::string result;
-  ReadData(format, base::OptionalToPtr(data_dst), &result);
-  std::move(callback).Run(std::move(result));
-}
-
 }  // namespace ui

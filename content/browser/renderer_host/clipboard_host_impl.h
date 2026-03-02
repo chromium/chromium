@@ -224,6 +224,14 @@ class CONTENT_EXPORT ClipboardHostImpl
                                     ReadDataTransferCustomDataCallback callback,
                                     std::u16string data);
 
+  void OnGetSourceClipboardEndpoint(const ui::ClipboardFormatType& data_type,
+                                    ClipboardPasteData clipboard_paste_data,
+                                    IsClipboardPasteAllowedCallback callback,
+                                    std::optional<size_t> data_size,
+                                    ui::ClipboardSequenceNumberToken seqno,
+                                    content::ClipboardEndpoint data_dst,
+                                    content::ClipboardEndpoint source);
+
   void OnReadUnsanitizedCustomFormat(
       ReadUnsanitizedCustomFormatCallback callback,
       std::string data);

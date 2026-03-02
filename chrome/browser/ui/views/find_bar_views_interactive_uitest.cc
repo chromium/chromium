@@ -1334,9 +1334,12 @@ IN_PROC_BROWSER_TEST_P(FindBarViewsUiTest, CopyBlockedByPolicy) {
       // Regardless of whether the copied data made it to the clipboard, pasting
       // it back into the FindBar will result in getting the original text back
       // as the current policy doesn't block it.
-      WithView(FindBarView::kTextField, [&](views::Textfield* textfield) {
-        textfield->ExecuteCommand(
-            std::to_underlying(ui::TouchEditable::MenuCommands::kPaste), 0);
-        ASSERT_EQ(textfield->GetText(), u"some text");
-      }));
+      WithView(
+          FindBarView::kTextField,
+          [](views::Textfield* textfield) {
+            textfield->ExecuteCommand(
+                std::to_underlying(ui::TouchEditable::MenuCommands::kPaste), 0);
+          }),
+      WaitForViewProperty(FindBarView::kTextField, views::Textfield, Text,
+                          u"some text"));
 }

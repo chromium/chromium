@@ -17,7 +17,10 @@ void BookmarkNodeData::WriteToClipboard(bool is_off_the_record) {
   NOTREACHED();
 }
 
-bool BookmarkNodeData::ReadFromClipboard(ui::ClipboardBuffer buffer) {
+// static
+void BookmarkNodeData::ReadFromClipboard(
+    ui::ClipboardBuffer buffer,
+    base::OnceCallback<void(std::unique_ptr<BookmarkNodeData>)> callback) {
   NOTREACHED();
 }
 

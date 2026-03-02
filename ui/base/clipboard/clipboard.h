@@ -251,7 +251,7 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
   // as a byte vector.
   virtual void ReadData(const ClipboardFormatType& format,
                         const std::optional<DataTransferEndpoint>& data_dst,
-                        ReadDataCallback callback) const;
+                        ReadDataCallback callback) const = 0;
 
   // Synchronous reads are deprecated (https://crbug.com/443355). Please use the
   // equivalent functions that take callbacks above.
@@ -264,9 +264,6 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
   virtual void ReadBookmark(const DataTransferEndpoint* data_dst,
                             std::u16string* title,
                             std::string* url) const = 0;
-  virtual void ReadData(const ClipboardFormatType& format,
-                        const DataTransferEndpoint* data_dst,
-                        std::string* result) const = 0;
 
   // Returns an estimate of the time the clipboard was last updated.  If the
   // time is unknown, returns Time::Time().

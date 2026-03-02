@@ -145,9 +145,10 @@ const ui::ClipboardFormatType& SourceRFHTokenType();
 // tracks about clipboard data's source, e.g. the WebContents that provided the
 // data. This function allows retrieving both the //ui metadata and the
 // //content metadata in a single call.
-CONTENT_EXPORT ClipboardEndpoint
-GetSourceClipboardEndpoint(const ui::DataTransferEndpoint* data_dst,
-                           ui::ClipboardBuffer clipboard_buffer);
+CONTENT_EXPORT void GetSourceClipboardEndpoint(
+    const ui::DataTransferEndpoint* data_dst,
+    ui::ClipboardBuffer clipboard_buffer,
+    base::OnceCallback<void(ClipboardEndpoint)> callback);
 
 // Adds source-tracking metadata to `clipboard_writer` to mark its data as
 // originating from `rfh`.

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/cocoa/tab_contents/web_drag_bookmark_handler_mac.h"
 
+#include "base/functional/callback_helpers.h"
 #include "chrome/browser/ui/bookmarks/bookmark_tab_helper.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -23,7 +24,17 @@ void WebDragBookmarkHandlerMac::DragInitialize(WebContents* contents) {
     bookmark_tab_helper_ = BookmarkTabHelper::FromWebContents(contents);
   }
 
-  bookmark_drag_data_.ReadFromClipboard(ui::ClipboardBuffer::kDrag);
+  // This operation is synchronous on Mac.
+  bookmarks::BookmarkNodeData::ReadFromClipboard(
+      ui::ClipboardBuffer::kDrag,
+      base::BindOnce(
+          [](bookmarks::BookmarkNodeData* bookmark_drag_data,
+             std::unique_ptr<bookmarks::BookmarkNodeData> data) {
+            if (data) {
+              *bookmark_drag_data = std::move(*data);
+            }
+          },
+          &bookmark_drag_data_));
 }
 
 void WebDragBookmarkHandlerMac::OnDragOver() {

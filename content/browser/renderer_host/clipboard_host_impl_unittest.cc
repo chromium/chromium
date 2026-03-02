@@ -276,8 +276,10 @@ class ClipboardHostImplWriteTest : public RenderViewHostTestHarness {
   RenderFrameHost& rfh() { return *web_contents()->GetPrimaryMainFrame(); }
 
   void ValidateClipboardSource() {
-    ClipboardEndpoint source_endpoint =
-        GetSourceClipboardEndpoint(nullptr, ui::ClipboardBuffer::kCopyPaste);
+    base::test::TestFuture<ClipboardEndpoint> future;
+    GetSourceClipboardEndpoint(nullptr, ui::ClipboardBuffer::kCopyPaste,
+                               future.GetCallback());
+    ClipboardEndpoint source_endpoint = future.Take();
     EXPECT_TRUE(source_endpoint.data_transfer_endpoint());
     EXPECT_TRUE(source_endpoint.data_transfer_endpoint()->IsUrlType());
     EXPECT_EQ(source_endpoint.web_contents(),
@@ -300,8 +302,10 @@ TEST_F(ClipboardHostImplWriteTest, NoSourceWithoutDataWrite) {
                                   future.GetCallback());
   EXPECT_EQ(u"", future.Take());
 
-  ClipboardEndpoint source_endpoint =
-      GetSourceClipboardEndpoint(nullptr, ui::ClipboardBuffer::kCopyPaste);
+  base::test::TestFuture<ClipboardEndpoint> source_future;
+  GetSourceClipboardEndpoint(nullptr, ui::ClipboardBuffer::kCopyPaste,
+                             source_future.GetCallback());
+  ClipboardEndpoint source_endpoint = source_future.Take();
   EXPECT_FALSE(source_endpoint.data_transfer_endpoint());
   EXPECT_FALSE(source_endpoint.web_contents());
   EXPECT_FALSE(source_endpoint.browser_context());

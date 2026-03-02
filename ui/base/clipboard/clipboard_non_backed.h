@@ -120,8 +120,8 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ClipboardNonBacked
                     std::u16string* title,
                     std::string* url) const override;
   void ReadData(const ClipboardFormatType& format,
-                const DataTransferEndpoint* data_dst,
-                std::string* result) const override;
+                const std::optional<DataTransferEndpoint>& data_dst,
+                ReadDataCallback callback) const override;
 #if BUILDFLAG(IS_OZONE)
   bool IsSelectionBufferAvailable() const override;
 #endif  // BUILDFLAG(IS_OZONE)

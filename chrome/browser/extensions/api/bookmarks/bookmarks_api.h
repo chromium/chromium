@@ -141,7 +141,7 @@ class BookmarksGetFunction : public BookmarksFunction {
   ~BookmarksGetFunction() override = default;
 
   // BookmarksFunction:
-  ResponseValue RunOnReady() override;
+  ResponseAction RunOnReady() override;
 };
 
 class BookmarksGetChildrenFunction : public BookmarksFunction {
@@ -152,7 +152,7 @@ class BookmarksGetChildrenFunction : public BookmarksFunction {
   ~BookmarksGetChildrenFunction() override = default;
 
   // BookmarksFunction:
-  ResponseValue RunOnReady() override;
+  ResponseAction RunOnReady() override;
 };
 
 class BookmarksGetRecentFunction : public BookmarksFunction {
@@ -163,7 +163,7 @@ class BookmarksGetRecentFunction : public BookmarksFunction {
   ~BookmarksGetRecentFunction() override = default;
 
   // BookmarksFunction:
-  ResponseValue RunOnReady() override;
+  ResponseAction RunOnReady() override;
 };
 
 class BookmarksGetTreeFunction : public BookmarksFunction {
@@ -174,7 +174,7 @@ class BookmarksGetTreeFunction : public BookmarksFunction {
   ~BookmarksGetTreeFunction() override = default;
 
   // BookmarksFunction:
-  ResponseValue RunOnReady() override;
+  ResponseAction RunOnReady() override;
 };
 
 class BookmarksGetSubTreeFunction : public BookmarksFunction {
@@ -185,7 +185,7 @@ class BookmarksGetSubTreeFunction : public BookmarksFunction {
   ~BookmarksGetSubTreeFunction() override = default;
 
   // BookmarksFunction:
-  ResponseValue RunOnReady() override;
+  ResponseAction RunOnReady() override;
 };
 
 class BookmarksSearchFunction : public BookmarksFunction {
@@ -196,7 +196,7 @@ class BookmarksSearchFunction : public BookmarksFunction {
   ~BookmarksSearchFunction() override = default;
 
   // BookmarksFunction:
-  ResponseValue RunOnReady() override;
+  ResponseAction RunOnReady() override;
 };
 
 class BookmarksRemoveFunctionBase : public BookmarksFunction {
@@ -206,7 +206,7 @@ class BookmarksRemoveFunctionBase : public BookmarksFunction {
   virtual bool is_recursive() const = 0;
 
   // BookmarksFunction:
-  ResponseValue RunOnReady() override;
+  ResponseAction RunOnReady() override;
 };
 
 class BookmarksRemoveFunction : public BookmarksRemoveFunctionBase {
@@ -239,7 +239,7 @@ class BookmarksCreateFunction : public BookmarksFunction {
   ~BookmarksCreateFunction() override = default;
 
   // BookmarksFunction:
-  ResponseValue RunOnReady() override;
+  ResponseAction RunOnReady() override;
 
  private:
   // Helper to create a bookmark node from a CreateDetails object. If a node
@@ -259,7 +259,7 @@ class BookmarksMoveFunction : public BookmarksFunction {
   ~BookmarksMoveFunction() override = default;
 
   // BookmarksFunction:
-  ResponseValue RunOnReady() override;
+  ResponseAction RunOnReady() override;
 };
 
 class BookmarksUpdateFunction : public BookmarksFunction {
@@ -270,7 +270,7 @@ class BookmarksUpdateFunction : public BookmarksFunction {
   ~BookmarksUpdateFunction() override = default;
 
   // BookmarksFunction:
-  ResponseValue RunOnReady() override;
+  ResponseAction RunOnReady() override;
 };
 
 }  // namespace extensions

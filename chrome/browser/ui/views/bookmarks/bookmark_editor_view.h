@@ -105,7 +105,9 @@ class BookmarkEditorView : public BookmarkEditor,
                        const std::u16string& new_contents) override;
   bool HandleKeyEvent(views::Textfield* sender,
                       const ui::KeyEvent& key_event) override;
-  bool OnBeforePaste(views::Textfield* sender, std::u16string* text) override;
+  void OnBeforePaste(views::Textfield* sender,
+                     base::OnceCallback<void(std::optional<std::u16string>)>
+                         callback) override;
 
   // ui::SimpleMenuModel::Delegate:
   bool IsCommandIdChecked(int command_id) const override;
@@ -232,6 +234,10 @@ class BookmarkEditorView : public BookmarkEditor,
   void UpdateExpandedNodes(EditorNode* editor_node,
                            BookmarkExpandedStateTracker::Nodes* expanded_nodes);
 
+  void OnReadTextForBeforePaste(
+      base::OnceCallback<void(std::optional<std::u16string>)> callback,
+      std::u16string text);
+
   enum {
     kContextMenuItemEdit = 1,
     kContextMenuItemDelete,
@@ -284,6 +290,8 @@ class BookmarkEditorView : public BookmarkEditor,
   // Any extra logic that should be run after the save button is clicked,
   // defined by the caller of BookmarkEditor::Show.
   BookmarkEditor::OnSaveCallback on_save_callback_;
+
+  base::WeakPtrFactory<BookmarkEditorView> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_BOOKMARKS_BOOKMARK_EDITOR_VIEW_H_

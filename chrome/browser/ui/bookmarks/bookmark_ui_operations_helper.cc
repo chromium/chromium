@@ -8,6 +8,8 @@
 #include <unordered_set>
 
 #include "base/files/file_path.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/i18n/case_conversion.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
@@ -71,6 +73,8 @@ bool HasAncestorInSelectedNodes(
 }  // namespace
 
 namespace internal {
+
+BookmarkUIOperationsHelper::BookmarkUIOperationsHelper() = default;
 
 BookmarkUIOperationsHelper::TargetParent::~TargetParent() = default;
 
@@ -194,29 +198,50 @@ bool BookmarkUIOperationsHelper::CanPasteFromClipboard() const {
          GetUrlFromClipboard(/*notify_if_restricted=*/false).is_valid();
 }
 
-void BookmarkUIOperationsHelper::PasteFromClipboard(size_t index) {
+void BookmarkUIOperationsHelper::PasteFromClipboard(
+    size_t index,
+    base::OnceClosure callback) {
   if (!target_parent()) {
+    std::move(callback).Run();
     return;
   }
 
-  BookmarkNodeData bookmark_data;
-  if (!bookmark_data.ReadFromClipboard(ui::ClipboardBuffer::kCopyPaste)) {
+  BookmarkNodeData::ReadFromClipboard(
+      ui::ClipboardBuffer::kCopyPaste,
+      base::BindOnce(&BookmarkUIOperationsHelper::OnReadBookmarkData,
+                     weak_ptr_factory_.GetWeakPtr(), index,
+                     std::move(callback)));
+}
+
+void BookmarkUIOperationsHelper::OnReadBookmarkData(
+    size_t index,
+    base::OnceClosure callback,
+    std::unique_ptr<bookmarks::BookmarkNodeData> bookmark_data) {
+  if (!bookmark_data) {
     GURL url = GetUrlFromClipboard(/*notify_if_restricted=*/true);
     if (!url.is_valid()) {
+      std::move(callback).Run();
       return;
     }
     BookmarkNode node(/*id=*/0, base::Uuid::GenerateRandomV4(), url);
     node.SetTitle(base::ASCIIToUTF16(url.spec()));
-    bookmark_data = BookmarkNodeData(&node);
-  }
-  CHECK_LE(index, target_parent()->GetChildrenCount());
-  if (bookmark_data.size() == 1 &&
-      model()->IsBookmarked(bookmark_data.elements[0].url)) {
-    MakeTitleUnique(bookmark_data.elements[0].url,
-                    &bookmark_data.elements[0].title);
+    bookmark_data = std::make_unique<BookmarkNodeData>(&node);
   }
 
-  AddNodesAsCopiesOfNodeData(bookmark_data, index);
+  if (!target_parent()) {
+    std::move(callback).Run();
+    return;
+  }
+
+  CHECK_LE(index, target_parent()->GetChildrenCount());
+  if (bookmark_data->size() == 1 &&
+      model()->IsBookmarked(bookmark_data->elements[0].url)) {
+    MakeTitleUnique(bookmark_data->elements[0].url,
+                    &bookmark_data->elements[0].title);
+  }
+
+  AddNodesAsCopiesOfNodeData(*bookmark_data, index);
+  std::move(callback).Run();
 }
 
 void BookmarkUIOperationsHelper::MakeTitleUnique(const GURL& url,

@@ -146,9 +146,11 @@ struct BookmarkNodeData {
 
   // Reads bookmarks from the specified clipboard. Prefers data written via
   // WriteToClipboard() but will also attempt to read a plain bookmark.
-  // Returns true if the operation succeeds, which also implies that this
-  // contains valid data (is non-empty).
-  bool ReadFromClipboard(ui::ClipboardBuffer buffer);
+  // `callback` will always be called, returning the data on success (is
+  // non-empty), or null on failure.
+  static void ReadFromClipboard(
+      ui::ClipboardBuffer buffer,
+      base::OnceCallback<void(std::unique_ptr<BookmarkNodeData>)> callback);
 
 #if defined(TOOLKIT_VIEWS)
   // Writes elements to data. If there is only one element and it is a URL

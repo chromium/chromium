@@ -104,8 +104,8 @@ class ClipboardAndroid : public Clipboard {
                     std::u16string* title,
                     std::string* url) const override;
   void ReadData(const ClipboardFormatType& format,
-                const DataTransferEndpoint* data_dst,
-                std::string* result) const override;
+                const std::optional<DataTransferEndpoint>& data_dst,
+                ReadDataCallback callback) const override;
   base::Time GetLastModifiedTime() const override;
   void ClearLastModifiedTime() override;
   void WritePortableAndPlatformRepresentations(

@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/js/assert.js';
 import {addWebUiListener, removeWebUiListener} from 'chrome://resources/js/cr.js';
 import type {Action} from 'chrome://resources/js/store.js';
 
@@ -68,7 +67,10 @@ function highlightUpdatedItemsImpl() {
 export function highlightUpdatedItems() {
   // Ensure that the items are highlighted after the current batch update (if
   // there is one) is completed.
-  assert(debouncer);
+  if (!debouncer) {
+    highlightUpdatedItemsImpl();
+    return;
+  }
   debouncer.promise.then(highlightUpdatedItemsImpl);
 }
 

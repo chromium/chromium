@@ -108,8 +108,9 @@ class FindBarView : public views::BoxLayoutView,
   void OnAfterPaste() override;
   bool OnBeforeCutOrCopy(views::Textfield* sender,
                          std::u16string* copy_contents) override;
-  bool OnBeforePaste(views::Textfield* sender,
-                     std::u16string* paste_contents) override;
+  void OnBeforePaste(views::Textfield* sender,
+                     base::OnceCallback<void(std::optional<std::u16string>)>
+                         callback) override;
   std::unique_ptr<ui::ScopedClipboardWriter> CreateClipboardWriter() override;
 
  private:

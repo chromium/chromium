@@ -17,6 +17,7 @@
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service.h"
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
@@ -237,7 +238,11 @@ TYPED_TEST(BookmarkUIOperationsHelperTest, PasteBookmarkFromURL) {
   // Now we should be able to paste from the clipboard.
   EXPECT_TRUE(helper->CanPasteFromClipboard());
 
-  helper->PasteFromClipboard(0);
+  {
+    base::test::TestFuture<void> future;
+    helper->PasteFromClipboard(0, future.GetCallback());
+    EXPECT_TRUE(future.Wait());
+  }
   ASSERT_EQ(1u, new_folder->children().size());
 
   // Url for added node should be same as url_text.
@@ -271,7 +276,11 @@ TYPED_TEST(BookmarkUIOperationsHelperTest, MakeTitleUnique) {
   // Now we should be able to paste from the clipboard.
   EXPECT_TRUE(helper->CanPasteFromClipboard());
 
-  helper->PasteFromClipboard(1);
+  {
+    base::test::TestFuture<void> future;
+    helper->PasteFromClipboard(1, future.GetCallback());
+    EXPECT_TRUE(future.Wait());
+  }
   ASSERT_EQ(2u, bookmark_bar_node->children().size());
 
   // Url for added node should be same as url_text.
@@ -304,7 +313,11 @@ TYPED_TEST(BookmarkUIOperationsHelperTest, CopyPasteMetaInfo) {
   // And make sure we can paste a bookmark from the clipboard.
   EXPECT_TRUE(helper->CanPasteFromClipboard());
 
-  helper->PasteFromClipboard(0);
+  {
+    base::test::TestFuture<void> future;
+    helper->PasteFromClipboard(0, future.GetCallback());
+    EXPECT_TRUE(future.Wait());
+  }
   ASSERT_EQ(1u, folder->children().size());
 
   // Verify that the pasted node contains the same meta info.
@@ -367,7 +380,11 @@ TYPED_TEST(BookmarkUIOperationsHelperTest, CopyPasteMultipleNodes) {
   // And make sure we can paste a bookmark from the clipboard.
   EXPECT_TRUE(helper->CanPasteFromClipboard());
 
-  helper->PasteFromClipboard(1);
+  {
+    base::test::TestFuture<void> future;
+    helper->PasteFromClipboard(1, future.GetCallback());
+    EXPECT_TRUE(future.Wait());
+  }
   EXPECT_EQ(model->bookmark_bar_node()->children().size(),
             bookmark_bar_children + 2u);
   CHECK_EQ(model->bookmark_bar_node()->children()[1]->GetTitle(),
@@ -405,7 +422,11 @@ TYPED_TEST(BookmarkUIOperationsHelperTest, CutToClipboard) {
   // And make sure we can paste from the clipboard.
   EXPECT_TRUE(helper->CanPasteFromClipboard());
 
-  helper->PasteFromClipboard(0);
+  {
+    base::test::TestFuture<void> future;
+    helper->PasteFromClipboard(0, future.GetCallback());
+    EXPECT_TRUE(future.Wait());
+  }
   EXPECT_EQ(model->other_node()->children().size(), 2u);
   CHECK_EQ(model->other_node()->children()[0]->GetTitle(), u"foo bar 1 ");
   CHECK_EQ(model->other_node()->children()[1]->GetTitle(), u"foo bar 2 ");
@@ -463,7 +484,11 @@ TYPED_TEST(BookmarkUIOperationsHelperTest, PasteBookmarkFromEmptyBookmarkNode) {
   // point, fall back to loading from Clipboard::BookmarkData. Otherwise, the
   // empty BookmarkNodeData::Element will trigger a CHECK assertion in
   // PermanentFolderOrderingTracker::AddNodesAsCopiesOfNodeData.
-  helper->PasteFromClipboard(0);
+  {
+    base::test::TestFuture<void> future;
+    helper->PasteFromClipboard(0, future.GetCallback());
+    EXPECT_TRUE(future.Wait());
+  }
   ASSERT_EQ(1u, bar_folder->children().size());
   EXPECT_EQ(url, bar_folder->children()[0]->url().spec());
 }

@@ -7,6 +7,7 @@
 
 #include <cstddef>
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/common/bookmark_metrics.h"
@@ -30,6 +31,7 @@ namespace internal {
 
 class BookmarkUIOperationsHelper {
  public:
+  BookmarkUIOperationsHelper();
   virtual ~BookmarkUIOperationsHelper();
 
   // Drops the bookmark nodes that are in `data` onto `target_parent()` at
@@ -73,7 +75,7 @@ class BookmarkUIOperationsHelper {
 
   // Pastes from the clipboard. The new nodes are added to `target_parent()`.
   // The nodes are inserted at `index`.
-  void PasteFromClipboard(size_t index);
+  void PasteFromClipboard(size_t index, base::OnceClosure callback);
 
  protected:
   // Represents the target parent node for the operation.
@@ -102,6 +104,10 @@ class BookmarkUIOperationsHelper {
   virtual const TargetParent* target_parent() const = 0;
 
  private:
+  void OnReadBookmarkData(size_t index,
+                          base::OnceClosure callback,
+                          std::unique_ptr<bookmarks::BookmarkNodeData> data);
+
   static void CopyOrCutToClipboard(
       bookmarks::BookmarkModel* model,
       const std::vector<
@@ -113,6 +119,8 @@ class BookmarkUIOperationsHelper {
   // Updates `title` such that `url` and `title` pair are unique among the
   // children of `target_parent()`.
   void MakeTitleUnique(const GURL& url, std::u16string* title) const;
+
+  base::WeakPtrFactory<BookmarkUIOperationsHelper> weak_ptr_factory_{this};
 };
 
 }  // namespace internal

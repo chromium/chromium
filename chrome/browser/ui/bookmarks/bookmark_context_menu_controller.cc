@@ -13,6 +13,7 @@
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -521,9 +522,14 @@ void BookmarkContextMenuController::ExecuteCommand(int id, int event_flags) {
       break;
 
     case IDC_PASTE: {
-      BookmarkUIOperationsHelperMergedSurfaces(bookmark_service_,
-                                               new_nodes_parent_.get())
-          .PasteFromClipboard(GetIndexForNewNodes());
+      auto paste_helper =
+          std::make_unique<BookmarkUIOperationsHelperMergedSurfaces>(
+              bookmark_service_, new_nodes_parent_.get());
+      auto* paste_helper_ptr = paste_helper.get();
+      paste_helper_ptr->PasteFromClipboard(
+          GetIndexForNewNodes(),
+          base::BindOnce(&BookmarkContextMenuController::OnPasteFinished,
+                         weak_factory_.GetWeakPtr(), std::move(paste_helper)));
       break;
     }
 
@@ -747,3 +753,6 @@ bool IsSelectionPermanentBookmarkFolder(
   }
   return false;
 }
+
+void BookmarkContextMenuController::OnPasteFinished(
+    std::unique_ptr<BookmarkUIOperationsHelperMergedSurfaces> paste_helper) {}

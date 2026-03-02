@@ -33,9 +33,7 @@ class BookmarksFunction : public ExtensionFunction,
   ~BookmarksFunction() override = default;
 
   // Run semantic equivalent called when the bookmarks are ready.
-  // Overrides can return nullptr to further delay responding (a.k.a.
-  // RespondLater()).
-  virtual ResponseValue RunOnReady() = 0;
+  virtual ResponseAction RunOnReady() = 0;
 
   // Helper to get the BookmarkModel.
   bookmarks::BookmarkModel* GetBookmarkModel();

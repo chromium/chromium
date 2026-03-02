@@ -803,22 +803,6 @@ void ClipboardOzone::ReadBookmark(const DataTransferEndpoint* data_dst,
   NOTIMPLEMENTED();
 }
 
-void ClipboardOzone::ReadData(const ClipboardFormatType& format,
-                              const DataTransferEndpoint* data_dst,
-                              std::string* result) const {
-  DCHECK(CalledOnValidThread());
-
-  auto clipboard_data = async_clipboard_ozone_->ReadClipboardDataAndWait(
-      ClipboardBuffer::kCopyPaste, format.GetName());
-
-  if (!IsReadAllowed(GetSource(ClipboardBuffer::kCopyPaste), data_dst,
-                     clipboard_data))
-    return;
-
-  RecordRead(ClipboardFormatMetric::kData);
-  result->assign(clipboard_data.begin(), clipboard_data.end());
-}
-
 bool ClipboardOzone::IsSelectionBufferAvailable() const {
   return async_clipboard_ozone_->IsSelectionBufferAvailable();
 }

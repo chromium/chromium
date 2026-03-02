@@ -27,8 +27,9 @@ class VIEWS_EXPORT Textarea : public Textfield {
 
  protected:
   // Textfield:
-  Textfield::EditCommandResult DoExecuteTextEditCommand(
-      ui::TextEditCommand command) override;
+  void DoExecuteTextEditCommand(
+      ui::TextEditCommand command,
+      base::OnceCallback<void(Textfield::EditCommandResult)> callback) override;
   bool PreHandleKeyPressed(const ui::KeyEvent& event) override;
   ui::TextEditCommand GetCommandForKeyEvent(const ui::KeyEvent& event) override;
 };

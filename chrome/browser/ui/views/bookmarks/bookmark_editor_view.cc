@@ -230,29 +230,33 @@ bool BookmarkEditorView::IsCommandIdChecked(int command_id) const {
   return false;
 }
 
-bool BookmarkEditorView::OnBeforePaste(views::Textfield* sender,
-                                       std::u16string* paste_contents) {
+void BookmarkEditorView::OnBeforePaste(
+    views::Textfield* sender,
+    base::OnceCallback<void(std::optional<std::u16string>)> callback) {
   // Intercept paste for the URL textfield and provide sanitized clipboard text.
-  // Returning true lets Textfield::Paste() use this content instead of reading
-  // the clipboard directly.
-  if (sender != url_tf_ || !paste_contents) {
-    return false;
+  if (sender != url_tf_) {
+    std::move(callback).Run(std::nullopt);
+    return;
   }
 
   ui::Clipboard::GetForCurrentThread()->ReadText(
-      ui::ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr,
-      paste_contents);
+      ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/std::nullopt,
+      base::BindOnce(&BookmarkEditorView::OnReadTextForBeforePaste,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
 
-  if (paste_contents->length() > kMaxClipboardTextLength) {
+void BookmarkEditorView::OnReadTextForBeforePaste(
+    base::OnceCallback<void(std::optional<std::u16string>)> callback,
+    std::u16string text) {
+  if (text.length() > kMaxClipboardTextLength) {
     // Trim leading and trailing whitespace, validate string length to stay
     // consistent with TextfieldModel::Paste and prevent cases where the first
     // 500 KB of pasted content is all whitespace.
-    base::TrimWhitespace(*paste_contents, base::TRIM_ALL, paste_contents);
+    base::TrimWhitespace(text, base::TRIM_ALL, &text);
 
-    *paste_contents = paste_contents->substr(0, kMaxClipboardTextLength);
+    text = text.substr(0, kMaxClipboardTextLength);
   }
-
-  return true;
+  std::move(callback).Run(std::move(text));
 }
 
 bool BookmarkEditorView::IsCommandIdEnabled(int command_id) const {

@@ -613,7 +613,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void EnableMojoJsBindings(
       content::mojom::ExtraMojoJsFeaturesPtr features) override;
   bool ShouldChangeRenderFrameHostOnSameSiteNavigation() const override;
-  bool IsClipboardOwner(ui::ClipboardSequenceNumberToken seqno) const override;
+  void IsClipboardOwner(ui::ClipboardSequenceNumberToken seqno,
+                        base::OnceCallback<void(bool)> callback) const override;
   bool IsUntrustedNetworkDisabled() const override;
   bool HasPolicyContainerHost() const override;
   const network::CrossOriginEmbedderPolicy& GetCrossOriginEmbedderPolicy()
@@ -4470,6 +4471,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // committed NavigationEntry. Must be called when this frame transitions to
   // kRunningUnloadHandlers or kReadyToBeDeleted, when the frame is detaching.
   void CleanupLastCommittedNavigationEntry();
+
+  void OnReadClipboardData(base::OnceCallback<void(bool)> callback,
+                           std::string result) const;
 
   // The RenderViewHost that this RenderFrameHost is associated with.
   //

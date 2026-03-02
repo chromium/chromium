@@ -1174,11 +1174,12 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener {
   virtual void OnPreloadingHeuristicsModelDone(const GURL& url,
                                                float score) = 0;
 
-  // Checks if `seqno` is known to have originated from this RFH. This will only
-  // return true if `seqno` represents the last clipboard write made by all
-  // RFHs.
-  virtual bool IsClipboardOwner(
-      ui::ClipboardSequenceNumberToken seqno) const = 0;
+  // Checks if `seqno` is known to have originated from this RFH. `callback`
+  // will only be called with true if `seqno` represents the last clipboard
+  // write made by all RFHs.
+  virtual void IsClipboardOwner(
+      ui::ClipboardSequenceNumberToken seqno,
+      base::OnceCallback<void(bool)> callback) const = 0;
 
   // Returns true if RenderFrameHostImpl has non-null PolicyContainerHost.
   // TODO(crbug.com/346386726): Delete this method once we have solidified the

@@ -7,6 +7,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/no_destructor.h"
 #include "base/pickle.h"
+#include "base/types/optional_util.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -116,26 +117,25 @@ const ui::ClipboardFormatType& SourceRFHTokenType() {
   return *type;
 }
 
-ClipboardEndpoint GetSourceClipboardEndpoint(
-    const ui::DataTransferEndpoint* data_dst,
-    ui::ClipboardBuffer clipboard_buffer) {
-  auto* clipboard = ui::Clipboard::GetForCurrentThread();
-  std::string pickled_rfh_token;
-  clipboard->ReadData(SourceRFHTokenType(), data_dst, &pickled_rfh_token);
-
+void OnReadSourceRFHToken(ui::ClipboardBuffer clipboard_buffer,
+                          base::OnceCallback<void(ClipboardEndpoint)> callback,
+                          std::string result) {
   auto rfh_token = GlobalRenderFrameHostToken::FromPickle(
-      base::Pickle::WithData(base::as_byte_span(pickled_rfh_token)));
+      base::Pickle::WithData(base::as_byte_span(result)));
 
   RenderFrameHost* rfh = nullptr;
   if (rfh_token) {
     rfh = RenderFrameHost::FromFrameToken(*rfh_token);
   }
 
+  auto* clipboard = ui::Clipboard::GetForCurrentThread();
   if (!rfh) {
     // Fall back to the clipboard source if there is no `seqno` match or RFH, as
     // `ui::DataTransferEndpoint` can be populated differently based on
     // platform.
-    return ClipboardEndpoint(clipboard->GetSource(clipboard_buffer));
+    std::move(callback).Run(
+        ClipboardEndpoint(clipboard->GetSource(clipboard_buffer)));
+    return;
   }
 
   std::optional<ui::DataTransferEndpoint> source_dte;
@@ -151,7 +151,7 @@ ClipboardEndpoint GetSourceClipboardEndpoint(
     }
   }
 
-  return ClipboardEndpoint(
+  std::move(callback).Run(ClipboardEndpoint(
       std::move(source_dte),
       base::BindRepeating(
           [](GlobalRenderFrameHostToken rfh_token) -> BrowserContext* {
@@ -162,7 +162,17 @@ ClipboardEndpoint GetSourceClipboardEndpoint(
             return rfh->GetBrowserContext();
           },
           rfh->GetGlobalFrameToken()),
-      *rfh);
+      *rfh));
+}
+
+void GetSourceClipboardEndpoint(
+    const ui::DataTransferEndpoint* data_dst,
+    ui::ClipboardBuffer clipboard_buffer,
+    base::OnceCallback<void(ClipboardEndpoint)> callback) {
+  ui::Clipboard::GetForCurrentThread()->ReadData(
+      SourceRFHTokenType(), base::OptionalFromPtr(data_dst),
+      base::BindOnce(&OnReadSourceRFHToken, clipboard_buffer,
+                     std::move(callback)));
 }
 
 void AddSourceDataToClipboardWriter(ui::ScopedClipboardWriter& clipboard_writer,

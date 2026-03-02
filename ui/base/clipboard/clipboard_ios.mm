@@ -254,10 +254,7 @@ void ClipboardIOS::ReadRTF(ClipboardBuffer buffer,
   DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
   RecordRead(ClipboardFormatMetric::kRtf);
 
-  std::string result;
-  ReadData(ClipboardFormatType::RtfType(), base::OptionalToPtr(data_dst),
-           &result);
-  std::move(callback).Run(std::move(result));
+  ReadData(ClipboardFormatType::RtfType(), data_dst, std::move(callback));
 }
 
 // |data_dst| is not used. It's only passed to be consistent with other
@@ -356,16 +353,18 @@ void ClipboardIOS::ReadBookmark(const DataTransferEndpoint* data_dst,
 // |data_dst| is not used. It's only passed to be consistent with other
 // platforms.
 void ClipboardIOS::ReadData(const ClipboardFormatType& format,
-                            const DataTransferEndpoint* data_dst,
-                            std::string* result) const {
+                            const std::optional<DataTransferEndpoint>& data_dst,
+                            ReadDataCallback callback) const {
   DCHECK(CalledOnValidThread());
   RecordRead(ClipboardFormatMetric::kData);
 
+  std::string result;
   NSData* data =
       GetDataWithTypeFromPasteboard(GetPasteboard(), format.ToNSString());
   if (data) {
-    result->assign(base::as_string_view(base::apple::NSDataToSpan(data)));
+    result.assign(base::as_string_view(base::apple::NSDataToSpan(data)));
   }
+  std::move(callback).Run(std::move(result));
 }
 
 // |data_src| is not used. It's only passed to be consistent with other

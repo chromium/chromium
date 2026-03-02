@@ -552,8 +552,9 @@ class VIEWS_EXPORT Textfield : public View,
   // gesture event.
   void RequestFocusForGesture(const ui::GestureEventDetails& details);
 
-  virtual Textfield::EditCommandResult DoExecuteTextEditCommand(
-      ui::TextEditCommand command);
+  virtual void DoExecuteTextEditCommand(
+      ui::TextEditCommand command,
+      base::OnceCallback<void(Textfield::EditCommandResult)> callback);
 
   // Handles key press event ahead of OnKeyPressed(). This is used for Textarea
   // to handle the return key. Use TextfieldController::HandleKeyEvent to
@@ -573,6 +574,12 @@ class VIEWS_EXPORT Textfield : public View,
   bool IsMenuShowing() const;
 
   void AddedToWidget() override;
+
+  // Convenience method to call TextfieldController::OnBeforeUserAction();
+  void OnBeforeUserAction();
+
+  // Convenience method to call TextfieldController::OnAfterUserAction();
+  void OnAfterUserAction();
 
 #if BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
   void UpdateAccessibleTextOffsetsIfNeeded();
@@ -652,12 +659,6 @@ class VIEWS_EXPORT Textfield : public View,
   // Convenience method to notify the InputMethod and TouchSelectionController.
   void OnCaretBoundsChanged();
 
-  // Convenience method to call TextfieldController::OnBeforeUserAction();
-  void OnBeforeUserAction();
-
-  // Convenience method to call TextfieldController::OnAfterUserAction();
-  void OnAfterUserAction();
-
   // Calls |model_->Cut()| and notifies TextfieldController on success.
   bool Cut();
 
@@ -666,7 +667,7 @@ class VIEWS_EXPORT Textfield : public View,
 
   // Calls |model_->Paste()| and calls TextfieldController::ContentsChanged()
   // explicitly if paste succeeded.
-  bool Paste();
+  void Paste(base::OnceCallback<void(bool)> callback);
 
   // Utility function to prepare the context menu.
   void UpdateContextMenu();
@@ -741,6 +742,12 @@ class VIEWS_EXPORT Textfield : public View,
   // accessibility. Currently only on Windows when UIA is enabled.
   void RefreshAccessibleTextOffsets();
 #endif  // BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
+
+  void OnTextCommandExecuted(gfx::SelectionModel selection_model,
+                             Textfield::EditCommandResult result);
+
+  void OnPasted(base::OnceCallback<void(Textfield::EditCommandResult)> callback,
+                bool pasted);
 
   // The text model.
   std::unique_ptr<TextfieldModel> model_;

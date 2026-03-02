@@ -884,9 +884,10 @@ void ClipboardNonBacked::ReadBookmark(const DataTransferEndpoint* data_dst,
 #endif
 }
 
-void ClipboardNonBacked::ReadData(const ClipboardFormatType& format,
-                                  const DataTransferEndpoint* data_dst,
-                                  std::string* result) const {
+void ClipboardNonBacked::ReadData(
+    const ClipboardFormatType& format,
+    const std::optional<DataTransferEndpoint>& data_dst,
+    ReadDataCallback callback) const {
   DCHECK(CalledOnValidThread());
 
   const ClipboardInternal& clipboard_internal =
@@ -895,8 +896,10 @@ void ClipboardNonBacked::ReadData(const ClipboardFormatType& format,
   // Reading an RFH token written in the clipboard is always allowed as it is
   // used internally by the browser to evaluate other policies.
   if (format.GetName() != "chromium/x-internal-source-rfh-token" &&
-      !clipboard_internal.IsReadAllowed(
-          data_dst, ClipboardInternalFormat::kCustom, format)) {
+      !clipboard_internal.IsReadAllowed(base::OptionalToPtr(data_dst),
+                                        ClipboardInternalFormat::kCustom,
+                                        format)) {
+    std::move(callback).Run("");
     return;
   }
 
@@ -905,7 +908,9 @@ void ClipboardNonBacked::ReadData(const ClipboardFormatType& format,
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   RecordRead(ClipboardFormatMetric::kData);
-  clipboard_internal.ReadData(format, result);
+  std::string result;
+  clipboard_internal.ReadData(format, &result);
+  std::move(callback).Run(std::move(result));
 
 #if BUILDFLAG(IS_CHROMEOS)
   ClipboardMonitor::GetInstance()->NotifyClipboardDataRead();
