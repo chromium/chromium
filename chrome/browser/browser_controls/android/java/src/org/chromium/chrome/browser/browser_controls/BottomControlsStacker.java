@@ -45,7 +45,6 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
     @IntDef({
         LayerType.PROGRESS_BAR,
         LayerType.TABSTRIP_TOOLBAR,
-        LayerType.TABSTRIP_TOOLBAR_BELOW_READALOUD,
         LayerType.READ_ALOUD_PLAYER,
         LayerType.BOTTOM_TOOLBAR,
         LayerType.BOTTOM_CHIN,
@@ -56,11 +55,8 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
         // The progress bar during page loading. This layer has a height of 0 and overlaps the next
         // visible layer in the stack.
         int PROGRESS_BAR = 0;
-        int TABSTRIP_TOOLBAR = 1;
         int READ_ALOUD_PLAYER = 2;
-        // Temporary layer that allows us to flag guard the new behavior of stacking the tabstrip
-        // toolbar below, rather than above, the readadloud player.
-        int TABSTRIP_TOOLBAR_BELOW_READALOUD = 3;
+        int TABSTRIP_TOOLBAR = 3;
         int BOTTOM_TOOLBAR = 4;
         int BOTTOM_CHIN = 5;
         // Bottom sheet as a browser control layer. This is used to position bottom sheet in
@@ -125,9 +121,8 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
             new int[] {
                 LayerType.BOTTOM_SHEET,
                 LayerType.PROGRESS_BAR,
-                LayerType.TABSTRIP_TOOLBAR,
                 LayerType.READ_ALOUD_PLAYER,
-                LayerType.TABSTRIP_TOOLBAR_BELOW_READALOUD,
+                LayerType.TABSTRIP_TOOLBAR,
                 LayerType.BOTTOM_TOOLBAR,
                 LayerType.BOTTOM_CHIN,
                 LayerType.TEST_BOTTOM_LAYER

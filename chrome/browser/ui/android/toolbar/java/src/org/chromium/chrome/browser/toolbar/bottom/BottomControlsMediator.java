@@ -296,7 +296,7 @@ class BottomControlsMediator
 
     @Override
     public int getType() {
-        return LayerType.TABSTRIP_TOOLBAR_BELOW_READALOUD;
+        return LayerType.TABSTRIP_TOOLBAR;
     }
 
     @Override
