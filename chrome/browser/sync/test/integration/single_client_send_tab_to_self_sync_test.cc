@@ -22,7 +22,6 @@
 #include "chrome/browser/sync/user_event_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/send_tab_to_self/page_context.h"
@@ -125,13 +124,6 @@ IN_PROC_BROWSER_TEST_P(SingleClientSendTabToSelfSyncTest,
   const GURL kUrl =
       embedded_test_server()->GetURL("/autofill/autofill_test_form.html");
   ASSERT_TRUE(SetupSync());
-
-  // Show the browser window. Otherwise, the rendering pipeline might not
-  // initialize or produce frames (e.g., on Wayland headless bots), which
-  // can cause tests relying on hit test data or visual state to time out.
-  // TODO(crbug.com/485145029): Move this to a common codepath in SyncTest as
-  // other tests may run into similar issues.
-  GetBrowser(0)->window()->Show();
 
   // Open tab and fill form.
   content::WebContents* web_contents =

@@ -226,8 +226,10 @@ bool TwoClientWebAppsIntegrationTestBase::SetupClients() {
     Browser* browser =
         chrome::FindTabbedBrowser(profile, /*match_original_profiles=*/false);
     CHECK(browser);
-    if (!browser->tab_strip_model()->count()) {
-      AddBlankTabAndShow(browser);
+    if (!browser->tab_strip_model()->count() &&
+        !AddTabAtIndexToBrowser(browser, 0, GURL(url::kAboutBlankURL),
+                                ui::PAGE_TRANSITION_AUTO_TOPLEVEL)) {
+      return false;
     }
   }
   return true;
