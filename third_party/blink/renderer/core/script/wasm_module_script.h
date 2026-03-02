@@ -29,6 +29,15 @@ class CORE_EXPORT WasmModuleScript final : public ModuleScript,
       const ScriptFetchOptions&,
       const TextPosition& start_position = TextPosition::MinimumPosition());
 
+  static WasmModuleScript* CreateFromStreamingResult(
+      Modulator* modulator,
+      const ScriptFetchOptions& options,
+      const std::variant<v8::Local<v8::WasmModuleObject>, v8::Local<v8::Value>>&
+          module_or_error,
+      const KURL& source_url,
+      const KURL& base_url,
+      const TextPosition& start_position = TextPosition::MinimumPosition());
+
   const char* GetHumanReadableName() const override {
     return "WasmModuleScript";
   }

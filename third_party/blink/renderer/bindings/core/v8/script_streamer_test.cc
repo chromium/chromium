@@ -42,8 +42,11 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_script_runner.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/loader/modulescript/module_script_creation_params.h"
 #include "third_party/blink/renderer/core/script/classic_script.h"
 #include "third_party/blink/renderer/core/script/mock_script_element_base.h"
+#include "third_party/blink/renderer/core/script/wasm_module_script.h"
+#include "third_party/blink/renderer/core/testing/dummy_modulator.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/platform/exported/wrapped_resource_response.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -781,6 +784,25 @@ const char kScriptWithBOM[] =
     "\xef\xbb\xbf function foo() { var foob\xec\x92\x81r = 13; return "
     "foob\xec\x92\x81r; } foo();";
 
+// WASM module constants. Use string_views instead of char c-style arrays
+// because the Wasm bytes include null characters.
+// A valid Wasm module should start with the magic number and the version.
+constexpr std::string_view kWasmMagicNumber("\x00\x61\x73\x6d", 4);
+constexpr std::string_view kWasmVersion("\x01\x00\x00\x00", 4);
+// This is a larger valid WASM module with an empty function.
+constexpr std::string_view kWasmModuleWithFunction(
+    "\x00\x61\x73\x6d"  // Magic
+    "\x01\x00\x00\x00"  // Version
+    "\x01\x04"          // Type section, length 4
+    "\x01"              // 1 type
+    "\x60\x00\x00"      // Function type: () -> ()
+    "\x03\x02"          // Function section, length 2
+    "\x01\x00"          // 1 function, type 0
+    "\x0a\x04"          // Code section, length 4
+    "\x01\x02"          // 1 function body, length 2
+    "\x00\x0b",         // Empty function body + end
+    24);
+
 class DummyLoaderFactory final : public ResourceFetcher::LoaderFactory {
  public:
   DummyLoaderFactory() = default;
@@ -986,20 +1008,12 @@ network::mojom::URLResponseHeadPtr CreateURLResponseHead(
 
 }  // namespace
 
-class BackgroundResourceScriptStreamerTest : public testing::Test {
+class BackgroundResourceScriptStreamerTestBase : public testing::Test {
  public:
-  explicit BackgroundResourceScriptStreamerTest(
-      bool enable_background_code_cache_decode_start = false)
+  explicit BackgroundResourceScriptStreamerTestBase()
       : url_(String("http://streaming-test.example.com/foo" +
-                    base::NumberToString(url_counter_++))) {
-    feature_list_.InitWithFeaturesAndParameters(
-        {{features::kBackgroundResourceFetch,
-          {{"background-script-response-processor", "true"},
-           {"background-code-cache-decoder-start",
-            base::ToString(enable_background_code_cache_decode_start)}}}},
-        {});
-  }
-  ~BackgroundResourceScriptStreamerTest() override = default;
+                    base::NumberToString(url_counter_++))) {}
+  ~BackgroundResourceScriptStreamerTestBase() override = default;
 
   void TearDown() override {
     RunInBackgroundThread(base::BindLambdaForTesting(
@@ -1060,11 +1074,6 @@ class BackgroundResourceScriptStreamerTest : public testing::Test {
     }));
   }
 
-  ClassicScript* CreateClassicScript() const {
-    return ClassicScript::CreateFromResource(resource_, ScriptFetchOptions());
-  }
-
- protected:
   void AppendData(std::string_view data) {
     AppendDataToDataPipe(data, producer_handle_);
   }
@@ -1105,15 +1114,15 @@ class BackgroundResourceScriptStreamerTest : public testing::Test {
     EXPECT_EQ(nullptr, streamer);
   }
 
-  void CheckScriptStreamer(mojom::blink::ScriptType script_type =
-                               mojom::blink::ScriptType::kClassic) {
+  ScriptStreamer* TakeScriptStreamer(mojom::blink::ScriptType script_type =
+                                         mojom::blink::ScriptType::kClassic) {
     ScriptStreamer* streamer;
     ScriptStreamer::NotStreamingReason not_streamed_reason;
     std::tie(streamer, not_streamed_reason) =
         ScriptStreamer::TakeFrom(resource_, script_type);
     EXPECT_EQ(ScriptStreamer::NotStreamingReason::kInvalid,
               not_streamed_reason);
-    EXPECT_NE(nullptr, streamer);
+    return streamer;
   }
 
   static int url_counter_;
@@ -1133,7 +1142,26 @@ class BackgroundResourceScriptStreamerTest : public testing::Test {
       background_resource_fetch_task_runner_;
   base::test::ScopedFeatureList feature_list_;
 };
-int BackgroundResourceScriptStreamerTest::url_counter_ = 0;
+int BackgroundResourceScriptStreamerTestBase::url_counter_ = 0;
+
+class BackgroundResourceScriptStreamerTest
+    : public BackgroundResourceScriptStreamerTestBase {
+ public:
+  explicit BackgroundResourceScriptStreamerTest(
+      bool enable_background_code_cache_decode_start = false) {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{features::kBackgroundResourceFetch,
+          {{"background-script-response-processor", "true"},
+           {"background-code-cache-decoder-start",
+            base::ToString(enable_background_code_cache_decode_start)}}}},
+        {});
+  }
+
+ protected:
+  ClassicScript* CreateClassicScript() const {
+    return ClassicScript::CreateFromResource(resource_, ScriptFetchOptions());
+  }
+};
 
 TEST_F(BackgroundResourceScriptStreamerTest, UnsupportedModuleMimeType) {
   V8TestingScope scope;
@@ -1342,7 +1370,8 @@ TEST_F(BackgroundResourceScriptStreamerTest, HasTimeStampData) {
   Finish();
   RunUntilResourceLoaded();
   // ScriptStreamer must have been created.
-  CheckScriptStreamer();
+  ScriptStreamer* streamer = TakeScriptStreamer();
+  EXPECT_TRUE(streamer);
 }
 
 TEST_F(BackgroundResourceScriptStreamerTest, InvalidCachedMetadata) {
@@ -1374,7 +1403,8 @@ TEST_F(BackgroundResourceScriptStreamerTest, InvalidCachedMetadata) {
   Finish();
   RunUntilResourceLoaded();
   // ScriptStreamer must have been created.
-  CheckScriptStreamer();
+  ScriptStreamer* streamer = TakeScriptStreamer();
+  EXPECT_TRUE(streamer);
 }
 
 TEST_F(BackgroundResourceScriptStreamerTest, SmallScript) {
@@ -1512,7 +1542,8 @@ TEST_F(BackgroundResourceScriptStreamerTest, EnoughData) {
   Finish();
   RunUntilResourceLoaded();
   // ScriptStreamer must have been created.
-  CheckScriptStreamer();
+  ScriptStreamer* streamer = TakeScriptStreamer();
+  EXPECT_TRUE(streamer);
 }
 
 TEST_F(BackgroundResourceScriptStreamerTest, EnoughDataInFirstChunk) {
@@ -1541,7 +1572,8 @@ TEST_F(BackgroundResourceScriptStreamerTest, EnoughDataInFirstChunk) {
   Finish();
   RunUntilResourceLoaded();
   // ScriptStreamer must have been created.
-  CheckScriptStreamer();
+  ScriptStreamer* streamer = TakeScriptStreamer();
+  EXPECT_TRUE(streamer);
 }
 
 TEST_F(BackgroundResourceScriptStreamerTest, EnoughDataModuleScript) {
@@ -1568,7 +1600,9 @@ TEST_F(BackgroundResourceScriptStreamerTest, EnoughDataModuleScript) {
   Finish();
   RunUntilResourceLoaded();
   // ScriptStreamer must have been created.
-  CheckScriptStreamer(mojom::blink::ScriptType::kModule);
+  ScriptStreamer* streamer =
+      TakeScriptStreamer(mojom::blink::ScriptType::kModule);
+  EXPECT_TRUE(streamer);
 }
 
 TEST_F(BackgroundResourceScriptStreamerTest, EncodingNotSupported) {
@@ -1625,7 +1659,8 @@ TEST_F(BackgroundResourceScriptStreamerTest, EncodingFromBOM) {
   Finish();
   RunUntilResourceLoaded();
   // ScriptStreamer must have been created.
-  CheckScriptStreamer();
+  ScriptStreamer* streamer = TakeScriptStreamer();
+  EXPECT_TRUE(streamer);
 }
 
 TEST_F(BackgroundResourceScriptStreamerTest, ScriptTypeMismatch) {
@@ -1939,6 +1974,286 @@ TEST_F(BackgroundResourceScriptStreamerTest,
   producer_handle_.reset();
 
   task_environment_.RunUntilIdle();
+}
+
+class WasmStreamingDummyModulator : public DummyModulator {
+ public:
+  explicit WasmStreamingDummyModulator(ScriptState* script_state)
+      : script_state_(script_state) {}
+  ~WasmStreamingDummyModulator() override = default;
+
+  ScriptState* GetScriptState() override { return script_state_; }
+
+  void Trace(Visitor* visitor) const override {
+    DummyModulator::Trace(visitor);
+    visitor->Trace(script_state_);
+  }
+
+ private:
+  Member<ScriptState> script_state_;
+};
+
+// Tests for BackgroundWasmStreamManager
+class BackgroundWasmResourceScriptStreamerTest
+    : public BackgroundResourceScriptStreamerTestBase {
+ public:
+  BackgroundWasmResourceScriptStreamerTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{features::kBackgroundResourceFetch,
+          {{"background-script-response-processor", "true"}}},
+         {features::kJavaScriptSourcePhaseImports, {}}},
+        {});
+  }
+
+ protected:
+  void CheckNotStreamingReason(
+      ScriptStreamer::NotStreamingReason expected_not_streamed_reason) {
+    ScriptStreamer* streamer;
+    ScriptStreamer::NotStreamingReason not_streamed_reason;
+    std::tie(streamer, not_streamed_reason) =
+        ScriptStreamer::TakeFrom(resource_, mojom::blink::ScriptType::kModule);
+    EXPECT_EQ(expected_not_streamed_reason, not_streamed_reason);
+    EXPECT_EQ(nullptr, streamer);
+  }
+
+  void CheckStreamedWasm(ScriptState* script_state, bool has_parse_error) {
+    // If a valid Wasm module was streamed successfully, then
+    // `WasmModuleScript::Create` should use the `v8::WasmModuleObject`
+    // from the streamer and ignore the invalid source code that we are
+    // passing here.
+    base::RunLoop run_loop;
+    ScriptStreamer* streamer =
+        TakeScriptStreamer(mojom::blink::ScriptType::kModule);
+    EXPECT_TRUE(streamer);
+    v8::WasmModuleCompilation* wasm_module_compilation =
+        streamer->GetWasmModuleCompilation();
+    EXPECT_TRUE(wasm_module_compilation);
+    wasm_module_compilation->Finish(
+        script_state->GetIsolate(), nullptr,
+        [&](std::variant<v8::Local<v8::WasmModuleObject>, v8::Local<v8::Value>>
+                module_or_error) {
+          WasmModuleScript* module_script =
+              WasmModuleScript::CreateFromStreamingResult(
+                  MakeGarbageCollected<WasmStreamingDummyModulator>(
+                      script_state),
+                  ScriptFetchOptions(), std::move(module_or_error), url_, url_);
+          EXPECT_TRUE(module_script);
+          EXPECT_EQ(has_parse_error, module_script->HasParseError());
+          run_loop.Quit();
+        });
+    run_loop.Run();
+  }
+};
+
+TEST_F(BackgroundWasmResourceScriptStreamerTest, InvalidWasmScriptType) {
+  V8TestingScope scope;
+  Init(scope.GetIsolate(), /*is_module_script=*/false);
+  RunInBackgroundThread(base::BindLambdaForTesting([&]() {
+    network::mojom::URLResponseHeadPtr head =
+        CreateURLResponseHead("application/wasm");
+    std::optional<mojo_base::BigBuffer> cached_metadata;
+    EXPECT_FALSE(background_response_processor_->MaybeStartProcessingResponse(
+        head, consumer_handle_, cached_metadata,
+        background_resource_fetch_task_runner_,
+        &background_response_processor_client_));
+    EXPECT_TRUE(head);
+    EXPECT_TRUE(consumer_handle_);
+    EXPECT_FALSE(cached_metadata);
+  }));
+  Finish();
+  RunUntilResourceLoaded();
+  CheckNotStreamingReason(
+      ScriptStreamer::NotStreamingReason::kNonModuleWithWasmMimeType);
+}
+
+TEST_F(BackgroundWasmResourceScriptStreamerTest, NoData) {
+  V8TestingScope scope;
+  Init(scope.GetIsolate(), /*is_module_script=*/true);
+  RunInBackgroundThread(base::BindLambdaForTesting([&]() {
+    network::mojom::URLResponseHeadPtr head =
+        CreateURLResponseHead("application/wasm");
+    std::optional<mojo_base::BigBuffer> cached_metadata;
+    EXPECT_TRUE(background_response_processor_->MaybeStartProcessingResponse(
+        head, consumer_handle_, cached_metadata,
+        background_resource_fetch_task_runner_,
+        &background_response_processor_client_));
+    EXPECT_FALSE(head);
+    EXPECT_FALSE(consumer_handle_);
+    EXPECT_FALSE(cached_metadata);
+  }));
+  // Close the data pipe without any data.
+  producer_handle_.reset();
+  background_response_processor_client_.WaitUntilFinished();
+  background_response_processor_client_.CheckResultOfFinishCallback(
+      /*expected_body=*/{},
+      /*expected_cached_metadata=*/std::nullopt);
+  Finish();
+  RunUntilResourceLoaded();
+  // When the WASM module is empty, we should not stream it.
+  CheckNotStreamingReason(
+      ScriptStreamer::NotStreamingReason::kScriptTooSmallBackground);
+}
+
+TEST_F(BackgroundWasmResourceScriptStreamerTest, WasmMagicNumberOnly) {
+  V8TestingScope scope;
+  Init(scope.GetIsolate(), /*is_module_script=*/true);
+  RunInBackgroundThread(base::BindLambdaForTesting([&]() {
+    network::mojom::URLResponseHeadPtr head =
+        CreateURLResponseHead("application/wasm");
+    std::optional<mojo_base::BigBuffer> cached_metadata;
+    EXPECT_TRUE(background_response_processor_->MaybeStartProcessingResponse(
+        head, consumer_handle_, cached_metadata,
+        background_resource_fetch_task_runner_,
+        &background_response_processor_client_));
+    EXPECT_FALSE(head);
+    EXPECT_FALSE(consumer_handle_);
+    EXPECT_FALSE(cached_metadata);
+  }));
+  AppendData(kWasmMagicNumber);
+  producer_handle_.reset();
+  background_response_processor_client_.WaitUntilFinished();
+  Finish();
+  RunUntilResourceLoaded();
+  CheckNotStreamingReason(
+      ScriptStreamer::NotStreamingReason::kScriptTooSmallBackground);
+}
+
+TEST_F(BackgroundWasmResourceScriptStreamerTest, EmptyWasmModule) {
+  V8TestingScope scope;
+  Init(scope.GetIsolate(), /*is_module_script=*/true);
+  AppendData(kWasmMagicNumber);
+  RunInBackgroundThread(base::BindLambdaForTesting([&]() {
+    network::mojom::URLResponseHeadPtr head =
+        CreateURLResponseHead("application/wasm");
+    std::optional<mojo_base::BigBuffer> cached_metadata;
+    EXPECT_TRUE(background_response_processor_->MaybeStartProcessingResponse(
+        head, consumer_handle_, cached_metadata,
+        background_resource_fetch_task_runner_,
+        &background_response_processor_client_));
+    EXPECT_FALSE(head);
+    EXPECT_FALSE(consumer_handle_);
+    EXPECT_FALSE(cached_metadata);
+  }));
+  AppendData(kWasmVersion);
+  producer_handle_.reset();
+  background_response_processor_client_.WaitUntilFinished();
+  background_response_processor_client_.CheckResultOfFinishCallback(
+      /*expected_body=*/base::span(
+          base::StrCat({kWasmMagicNumber, kWasmVersion})),
+      /*expected_cached_metadata=*/std::nullopt);
+  Finish();
+  RunUntilResourceLoaded();
+  CheckStreamedWasm(scope.GetScriptState(), /*has_parse_error=*/false);
+}
+
+TEST_F(BackgroundWasmResourceScriptStreamerTest, InvalidWasmModule) {
+  V8TestingScope scope;
+  Init(scope.GetIsolate(), /*is_module_script=*/true);
+  AppendData(kWasmMagicNumber);
+  RunInBackgroundThread(base::BindLambdaForTesting([&]() {
+    network::mojom::URLResponseHeadPtr head =
+        CreateURLResponseHead("application/wasm");
+    std::optional<mojo_base::BigBuffer> cached_metadata;
+    EXPECT_TRUE(background_response_processor_->MaybeStartProcessingResponse(
+        head, consumer_handle_, cached_metadata,
+        background_resource_fetch_task_runner_,
+        &background_response_processor_client_));
+    EXPECT_FALSE(head);
+    EXPECT_FALSE(consumer_handle_);
+    EXPECT_FALSE(cached_metadata);
+  }));
+  AppendData(kWasmVersion);
+  AppendData("f");
+  producer_handle_.reset();
+  background_response_processor_client_.WaitUntilFinished();
+  background_response_processor_client_.CheckResultOfFinishCallback(
+      /*expected_body=*/base::span(
+          base::StrCat({kWasmMagicNumber, kWasmVersion, "f"})),
+      /*expected_cached_metadata=*/std::nullopt);
+  Finish();
+  RunUntilResourceLoaded();
+  CheckStreamedWasm(scope.GetScriptState(), /*has_parse_error=*/true);
+}
+
+TEST_F(BackgroundWasmResourceScriptStreamerTest, LargeEnoughWasmModule) {
+  V8TestingScope scope;
+  Init(scope.GetIsolate(), /*is_module_script=*/true);
+  RunInBackgroundThread(base::BindLambdaForTesting([&]() {
+    network::mojom::URLResponseHeadPtr head =
+        CreateURLResponseHead("application/wasm");
+    std::optional<mojo_base::BigBuffer> cached_metadata;
+    EXPECT_TRUE(background_response_processor_->MaybeStartProcessingResponse(
+        head, consumer_handle_, cached_metadata,
+        background_resource_fetch_task_runner_,
+        &background_response_processor_client_));
+    EXPECT_FALSE(head);
+    EXPECT_FALSE(consumer_handle_);
+    EXPECT_FALSE(cached_metadata);
+  }));
+  // Append enough data to start streaming.
+  AppendData(kWasmModuleWithFunction);
+  producer_handle_.reset();
+  background_response_processor_client_.WaitUntilFinished();
+  background_response_processor_client_.CheckResultOfFinishCallback(
+      /*expected_body=*/base::span(kWasmModuleWithFunction),
+      /*expected_cached_metadata=*/std::nullopt);
+  Finish();
+  RunUntilResourceLoaded();
+  CheckStreamedWasm(scope.GetScriptState(), /*has_parse_error=*/false);
+}
+
+TEST_F(BackgroundWasmResourceScriptStreamerTest,
+       CancelWhileWaitingForDataPipe) {
+  V8TestingScope scope;
+  Init(scope.GetIsolate(), /*is_module_script=*/true);
+  RunInBackgroundThread(base::BindLambdaForTesting([&]() {
+    network::mojom::URLResponseHeadPtr head =
+        CreateURLResponseHead("application/wasm");
+    std::optional<mojo_base::BigBuffer> cached_metadata;
+    EXPECT_TRUE(background_response_processor_->MaybeStartProcessingResponse(
+        head, consumer_handle_, cached_metadata,
+        background_resource_fetch_task_runner_,
+        &background_response_processor_client_));
+    EXPECT_FALSE(head);
+    EXPECT_FALSE(consumer_handle_);
+    EXPECT_FALSE(cached_metadata);
+  }));
+  Cancel();
+  RunInBackgroundThread(base::BindLambdaForTesting(
+      [&]() { background_response_processor_.reset(); }));
+  producer_handle_.reset();
+  // Cancelling the background response processor while waiting for data pipe
+  // should not cause any crash. Run a no-op task on the background thread to
+  // ensure any queued background work has completed.
+  RunInBackgroundThread(base::BindLambdaForTesting([]() {}));
+}
+
+TEST_F(BackgroundWasmResourceScriptStreamerTest,
+       CancelWhileRunningStreamingTask) {
+  V8TestingScope scope;
+  Init(scope.GetIsolate(), /*is_module_script=*/true);
+  RunInBackgroundThread(base::BindLambdaForTesting([&]() {
+    network::mojom::URLResponseHeadPtr head =
+        CreateURLResponseHead("application/wasm");
+    std::optional<mojo_base::BigBuffer> cached_metadata;
+    EXPECT_TRUE(background_response_processor_->MaybeStartProcessingResponse(
+        head, consumer_handle_, cached_metadata,
+        background_resource_fetch_task_runner_,
+        &background_response_processor_client_));
+    EXPECT_FALSE(head);
+    EXPECT_FALSE(consumer_handle_);
+    EXPECT_FALSE(cached_metadata);
+  }));
+  // Append enough data to start streaming.
+  AppendData(kWasmModuleWithFunction);
+  Cancel();
+  RunInBackgroundThread(base::BindLambdaForTesting(
+      [&]() { background_response_processor_.reset(); }));
+  producer_handle_.reset();
+  // Cancelling the background response processor while running streaming task
+  // should not cause any crash. Run a no-op task on the background thread to
+  // ensure any queued background work has completed.
+  RunInBackgroundThread(base::BindLambdaForTesting([]() {}));
 }
 
 }  // namespace blink

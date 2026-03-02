@@ -63,6 +63,11 @@ class CORE_EXPORT ModuleScriptLoader final
   void NotifyFetchFinishedSuccess(const ModuleScriptCreationParams&) override;
   void NotifyFetchFinishedError(
       const HeapVector<Member<ConsoleMessage>>& error_messages) override;
+  void NotifyWasmStreamingFinished(
+      const std::variant<v8::Local<v8::WasmModuleObject>, v8::Local<v8::Value>>&
+          wasm_module_or_error,
+      const KURL& source_url,
+      const KURL& base_url);
 
   bool IsInitialState() const { return state_ == State::kInitial; }
   bool HasFinished() const { return state_ == State::kFinished; }

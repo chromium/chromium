@@ -70,10 +70,12 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding_registry.h"
 #include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
+#include "v8/include/v8-wasm.h"
 
 namespace blink {
 
 class BackgroundJSStreamManager;
+class BackgroundStreamManager;
 
 namespace {
 
@@ -1183,13 +1185,27 @@ class BackgroundResourceScriptStreamer::BackgroundProcessor final
       scoped_refptr<base::SequencedTaskRunner> background_task_runner,
       Client* client) override;
 
-  void PostJSResultToMainThread(
+  // Posts the JS streaming result to the main thread. This moves
+  // `streamer_handle_`, so it is mutually exclusive with
+  // `PostWasmCompilationObjectToMainThread` — only one may be called.
+  void PostResultToMainThread(
       std::unique_ptr<BackgroundResourceScriptStreamer::Result> result,
       BackgroundResourceScriptStreamer::NotStreamingReason reason) {
     client_->PostTaskToMainThread(CrossThreadBindOnce(
         &BackgroundResourceScriptStreamer::OnResult,
         MakeUnwrappingCrossThreadWeakHandle(std::move(streamer_handle_)),
         std::move(result), reason));
+  }
+
+  // Posts the Wasm compilation object to the main thread. This moves
+  // `streamer_handle_`, so it is mutually exclusive with
+  // `PostResultToMainThread` — only one may be called.
+  void PostWasmCompilationObjectToMainThread(
+      std::unique_ptr<v8::WasmModuleCompilation> module_compilation) {
+    client_->PostTaskToMainThread(CrossThreadBindOnce(
+        &BackgroundResourceScriptStreamer::SetWasmModuleCompilation,
+        MakeUnwrappingCrossThreadWeakHandle(std::move(streamer_handle_)),
+        std::move(module_compilation)));
   }
 
   void DidFinishBackgroundTasks(
@@ -1204,7 +1220,7 @@ class BackgroundResourceScriptStreamer::BackgroundProcessor final
   std::unique_ptr<StreamingDetails> details_;
   CrossThreadWeakHandle<BackgroundResourceScriptStreamer> streamer_handle_;
   Client* client_ = nullptr;
-  std::unique_ptr<BackgroundJSStreamManager> stream_manager_;
+  std::unique_ptr<BackgroundStreamManager> stream_manager_;
 
   base::WeakPtrFactory<BackgroundProcessor> weak_factory_{this};
 };
@@ -1245,37 +1261,88 @@ class BackgroundResourceScriptStreamer::BackgroundProcessorFactory final
   CrossThreadWeakHandle<BackgroundResourceScriptStreamer> streamer_handle_;
 };
 
-class BackgroundJSStreamManager {
+class BackgroundStreamManager {
  public:
   using NotStreamingReason =
       BackgroundResourceScriptStreamer::NotStreamingReason;
-  BackgroundJSStreamManager(
+
+  BackgroundStreamManager(
       network::mojom::URLResponseHeadPtr&& head,
       mojo::ScopedDataPipeConsumerHandle&& body,
       std::optional<mojo_base::BigBuffer>&& cached_metadata,
-      scoped_refptr<base::SequencedTaskRunner> background_task_runner,
       std::unique_ptr<StreamingDetails> details,
       base::WeakPtr<BackgroundResourceScriptStreamer::BackgroundProcessor>
           background_processor)
       : head_(std::move(head)),
         body_(std::move(body)),
         cached_metadata_(std::move(cached_metadata)),
-        background_task_runner_(std::move(background_task_runner)),
         details_(std::move(details)),
         background_processor_(std::move(background_processor)) {}
 
-  ~BackgroundJSStreamManager() {
+  virtual ~BackgroundStreamManager() = default;
+
+  virtual bool TryStartStreaming() = 0;
+
+  // Releases ownership of `head_`, `body_`, and `cached_metadata_` back to the
+  // caller. Called when streaming is not taking place and the
+  // BackgroundResponseProcessor should pass the data back to the network stack.
+  auto ReleaseOwnership() {
+    return std::forward_as_tuple(std::move(head_), std::move(body_),
+                                 std::move(cached_metadata_));
+  }
+
+  void SuppressStreaming(NotStreamingReason reason) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    CHECK_EQ(suppressed_reason_, NotStreamingReason::kInvalid);
+    CHECK_NE(reason, NotStreamingReason::kInvalid);
+    suppressed_reason_ = reason;
+
+    background_processor_->PostResultToMainThread(/*result=*/nullptr, reason);
+  }
+
+  bool IsStreamingSuppressed() const {
+    return suppressed_reason_ != NotStreamingReason::kInvalid;
+  }
+
+ protected:
+  network::mojom::URLResponseHeadPtr head_;
+  mojo::ScopedDataPipeConsumerHandle body_;
+  std::optional<mojo_base::BigBuffer> cached_metadata_;
+  std::unique_ptr<StreamingDetails> details_;
+  base::WeakPtr<BackgroundResourceScriptStreamer::BackgroundProcessor>
+      background_processor_;
+
+  std::unique_ptr<mojo::SimpleWatcher> watcher_;
+  NotStreamingReason suppressed_reason_ = NotStreamingReason::kInvalid;
+
+  SEQUENCE_CHECKER(sequence_checker_);
+};
+
+class BackgroundJSStreamManager : public BackgroundStreamManager {
+ public:
+  BackgroundJSStreamManager(
+      network::mojom::URLResponseHeadPtr&& head,
+      mojo::ScopedDataPipeConsumerHandle&& body,
+      std::optional<mojo_base::BigBuffer>&& cached_metadata,
+      std::unique_ptr<StreamingDetails> details,
+      scoped_refptr<base::SequencedTaskRunner> background_task_runner,
+      base::WeakPtr<BackgroundResourceScriptStreamer::BackgroundProcessor>
+          background_processor)
+      : BackgroundStreamManager(std::move(head),
+                                std::move(body),
+                                std::move(cached_metadata),
+                                std::move(details),
+                                std::move(background_processor)),
+        background_task_runner_(std::move(background_task_runner)) {}
+
+  ~BackgroundJSStreamManager() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     watcher_.reset();
     if (source_stream_ptr_) {
       source_stream_ptr_->Cancel();
     }
   }
-  bool TryStartStreaming();
-  auto ReleaseOwnership() {
-    return std::forward_as_tuple(std::move(head_), std::move(body_),
-                                 std::move(cached_metadata_));
-  }
+  bool TryStartStreaming() override;
 
  private:
   static void RunScriptStreamingTask(
@@ -1321,18 +1388,10 @@ class BackgroundJSStreamManager {
 
   void SetState(BackgroundStreamingState state);
 
-  void SuppressStreaming(NotStreamingReason reason);
-  bool IsStreamingSuppressed() const {
-    return suppressed_reason_ != NotStreamingReason::kInvalid;
+  void SuppressStreaming(NotStreamingReason reason) {
+    SetState(BackgroundStreamingState::kStreamingSupressed);
+    BackgroundStreamManager::SuppressStreaming(reason);
   }
-
-  network::mojom::URLResponseHeadPtr head_;
-  mojo::ScopedDataPipeConsumerHandle body_;
-  std::optional<mojo_base::BigBuffer> cached_metadata_;
-  scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
-  std::unique_ptr<StreamingDetails> details_;
-  base::WeakPtr<BackgroundResourceScriptStreamer::BackgroundProcessor>
-      background_processor_;
 
   DataPipeScriptDecoderPtr data_pipe_script_decoder_;
   std::unique_ptr<v8_compile_hints::CompileHintsForStreaming> compile_hints_;
@@ -1346,11 +1405,47 @@ class BackgroundJSStreamManager {
   SourceStream* source_stream_ptr_ = nullptr;
   BackgroundStreamingState state_ = BackgroundStreamingState::kResponseReceived;
   std::optional<ScriptDecoder::Result> decoder_result_;
-  NotStreamingReason suppressed_reason_ = NotStreamingReason::kInvalid;
-  std::unique_ptr<mojo::SimpleWatcher> watcher_;
+  scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
 
-  SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<BackgroundJSStreamManager> weak_factory_{this};
+};
+
+class BackgroundWasmStreamManager : public BackgroundStreamManager {
+ public:
+  BackgroundWasmStreamManager(
+      network::mojom::URLResponseHeadPtr&& head,
+      mojo::ScopedDataPipeConsumerHandle&& body,
+      std::unique_ptr<StreamingDetails> details,
+      base::WeakPtr<BackgroundResourceScriptStreamer::BackgroundProcessor>
+          background_processor)
+      : BackgroundStreamManager(std::move(head),
+                                std::move(body),
+                                std::nullopt,
+                                std::move(details),
+                                std::move(background_processor)),
+        wasm_module_compilation_(
+            std::make_unique<v8::WasmModuleCompilation>()) {}
+
+  ~BackgroundWasmStreamManager() override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    if (watcher_) {
+      watcher_.reset();
+      // `WasmModuleCompilation::Abort()` cannot be called after
+      // `WasmModuleCompilation::Finish()`, the watcher is destroyed before
+      // posting the Finish task to the main thread, so if the watcher is still
+      // here, the compilation must not have finished yet.
+      wasm_module_compilation_->Abort();
+    }
+  }
+
+  bool TryStartStreaming() override;
+
+ private:
+  void OnDataReadable(MojoResult result, const mojo::HandleSignalsState& state);
+  static constexpr size_t kMinBytesForValidWasm = 8;
+
+  SegmentedBuffer raw_bytes_;
+  std::unique_ptr<v8::WasmModuleCompilation> wasm_module_compilation_;
 };
 
 BackgroundResourceScriptStreamer::BackgroundProcessor::BackgroundProcessor(
@@ -1389,27 +1484,43 @@ bool BackgroundResourceScriptStreamer::BackgroundProcessor::
 
   std::string mime_type;
   const bool has_mime_type = head->headers->GetMimeType(&mime_type);
+  String mime_type_string = String(mime_type);
+  const bool is_valid_wasm_mime_type =
+      has_mime_type &&
+      base::FeatureList::IsEnabled(
+          blink::features::kJavaScriptSourcePhaseImports) &&
+      MIMETypeRegistry::IsWasmMIMEType(mime_type_string);
   if (details_->script_type == v8::ScriptType::kModule) {
     if (!has_mime_type ||
-        !MIMETypeRegistry::IsSupportedJavaScriptMIMEType(String(mime_type))) {
-      PostJSResultToMainThread(
-          nullptr, NotStreamingReason::kNonJavascriptModuleBackground);
+        !(MIMETypeRegistry::IsSupportedJavaScriptMIMEType(mime_type_string) ||
+          is_valid_wasm_mime_type)) {
+      PostResultToMainThread(
+          /*result=*/nullptr,
+          NotStreamingReason::kNonJavascriptModuleBackground);
       return false;
     }
   }
-  if (base::FeatureList::IsEnabled(
-          blink::features::kJavaScriptSourcePhaseImports) &&
-      has_mime_type && MIMETypeRegistry::IsWasmMIMEType(String(mime_type))) {
+  if (is_valid_wasm_mime_type &&
+      details_->script_type != v8::ScriptType::kModule) {
     // Suppress streaming if the Wasm source was requested as a classic script.
-    PostJSResultToMainThread(nullptr,
-                             NotStreamingReason::kNonModuleWithWasmMimeType);
+    PostResultToMainThread(/*result=*/nullptr,
+                           NotStreamingReason::kNonModuleWithWasmMimeType);
     return false;
   }
 
-  stream_manager_ = std::make_unique<BackgroundJSStreamManager>(
-      std::move(head), std::move(body), std::move(cached_metadata),
-      std::move(background_task_runner), std::move(details_),
-      weak_factory_.GetWeakPtr());
+  if (is_valid_wasm_mime_type) {
+    // TODO(https://crbug.com/42204365): Add support for code caching.
+    // For now, we clear cached_metadata to avoid unintended side-effects.
+    cached_metadata.reset();
+    stream_manager_ = std::make_unique<BackgroundWasmStreamManager>(
+        std::move(head), std::move(body), std::move(details_),
+        weak_factory_.GetWeakPtr());
+  } else {
+    stream_manager_ = std::make_unique<BackgroundJSStreamManager>(
+        std::move(head), std::move(body), std::move(cached_metadata),
+        std::move(details_), std::move(background_task_runner),
+        weak_factory_.GetWeakPtr());
+  }
 
   if (!stream_manager_->TryStartStreaming()) {
     std::tie(head, body, cached_metadata) = stream_manager_->ReleaseOwnership();
@@ -1758,7 +1869,7 @@ void BackgroundJSStreamManager::OnFinishStreaming(
   source_stream_ptr_ = nullptr;
   CHECK_EQ(state_, BackgroundStreamingState::kWaitingForParseResult);
   SetState(BackgroundStreamingState::kFinished);
-  background_processor_->PostJSResultToMainThread(
+  background_processor_->PostResultToMainThread(
       std::make_unique<BackgroundResourceScriptStreamer::Result>(
           std::move(result.decoded_data), std::move(result.digest),
           std::move(streamed_source)),
@@ -1893,7 +2004,7 @@ void BackgroundJSStreamManager::OnFinishCodeCacheConsumerScriptDecode() {
     }
     sha256_digest_from_code_cache_ = nullptr;
   }
-  background_processor_->PostJSResultToMainThread(
+  background_processor_->PostResultToMainThread(
       std::make_unique<BackgroundResourceScriptStreamer::Result>(
           std::move(decoder_result_->decoded_data),
           std::move(decoder_result_->digest),
@@ -1904,14 +2015,67 @@ void BackgroundJSStreamManager::OnFinishCodeCacheConsumerScriptDecode() {
       std::move(cached_metadata_));
 }
 
-void BackgroundJSStreamManager::SuppressStreaming(NotStreamingReason reason) {
+bool BackgroundWasmStreamManager::TryStartStreaming() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK_EQ(suppressed_reason_, NotStreamingReason::kInvalid);
-  CHECK_NE(reason, NotStreamingReason::kInvalid);
-  SetState(BackgroundStreamingState::kStreamingSupressed);
-  suppressed_reason_ = reason;
+  watcher_ = std::make_unique<mojo::SimpleWatcher>(
+      FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::MANUAL);
+  // Safe to use Unretained: |watcher_| is owned by |this| and destroyed in
+  // the destructor before |this| is invalidated.
+  watcher_->Watch(body_.get(), MOJO_HANDLE_SIGNAL_NEW_DATA_READABLE,
+                  MOJO_TRIGGER_CONDITION_SIGNALS_SATISFIED,
+                  BindRepeating(&BackgroundWasmStreamManager::OnDataReadable,
+                                Unretained(this)));
+  watcher_->ArmOrNotify();
+  return true;
+}
 
-  background_processor_->PostJSResultToMainThread(nullptr, reason);
+void BackgroundWasmStreamManager::OnDataReadable(
+    MojoResult result,
+    const mojo::HandleSignalsState& state) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  switch (result) {
+    case MOJO_RESULT_SHOULD_WAIT:
+      NOTREACHED();
+    case MOJO_RESULT_OK:
+      break;
+    case MOJO_RESULT_FAILED_PRECONDITION:
+      // The data pipe was closed.
+      watcher_.reset();
+      if (raw_bytes_.size() < kMinBytesForValidWasm) {
+        // The data pipe was closed without sending enough data.
+        wasm_module_compilation_->Abort();
+        SuppressStreaming(NotStreamingReason::kScriptTooSmallBackground);
+        background_processor_->DidFinishBackgroundTasks(
+            std::move(head_), std::move(body_), std::nullopt);
+        return;
+      }
+      background_processor_->PostWasmCompilationObjectToMainThread(
+          std::move(wasm_module_compilation_));
+      // `DidFinishBackgroundTasks` also posts to the main thread. Since both
+      // tasks are posted from the same sequence, `SetWasmModuleCompilation`
+      // is guaranteed to execute before the resource load completion.
+      background_processor_->DidFinishBackgroundTasks(
+          std::move(head_), std::move(raw_bytes_), std::nullopt);
+      return;
+    default:
+      // Some error occurred.
+      watcher_.reset();
+      wasm_module_compilation_->Abort();
+      SuppressStreaming(NotStreamingReason::kErrorOccurredBackground);
+      background_processor_->DidFinishBackgroundTasks(
+          std::move(head_), std::move(body_), std::nullopt);
+      return;
+  }
+  base::span<const uint8_t> buffer;
+  MojoResult read_result =
+      body_->BeginReadData(MOJO_READ_DATA_FLAG_NONE, buffer);
+  CHECK_EQ(read_result, MOJO_RESULT_OK);
+  CHECK(!buffer.empty());
+  raw_bytes_.Append(buffer);
+  wasm_module_compilation_->OnBytesReceived(buffer.data(), buffer.size());
+  read_result = body_->EndReadData(buffer.size());
+  CHECK_EQ(read_result, MOJO_RESULT_OK);
+  watcher_->ArmOrNotify();
 }
 
 BackgroundResourceScriptStreamer::BackgroundResourceScriptStreamer(
@@ -1962,12 +2126,12 @@ v8::ScriptType BackgroundResourceScriptStreamer::GetScriptType() const {
 void BackgroundResourceScriptStreamer::OnResult(
     std::unique_ptr<Result> result,
     NotStreamingReason suppressed_reason) {
+  CHECK_EQ(!!result, suppressed_reason == NotStreamingReason::kInvalid ||
+                         (features::kBackgroundCodeCacheDecoderStart.Get() &&
+                          suppressed_reason ==
+                              NotStreamingReason::kHasCodeCacheBackground));
   result_ = std::move(result);
   suppressed_reason_ = suppressed_reason;
-  CHECK_EQ(!!result_, suppressed_reason_ == NotStreamingReason::kInvalid ||
-                          (features::kBackgroundCodeCacheDecoderStart.Get() &&
-                           suppressed_reason_ ==
-                               NotStreamingReason::kHasCodeCacheBackground));
 }
 
 }  // namespace blink

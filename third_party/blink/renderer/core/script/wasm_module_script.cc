@@ -17,6 +17,30 @@
 
 namespace blink {
 
+namespace {
+WasmModuleScript* CreateScriptWithModuleOrError(
+    Modulator* modulator,
+    const ScriptFetchOptions& options,
+    const KURL& source_url,
+    const KURL& base_url,
+    const TextPosition& start_position,
+    v8::Isolate* isolate,
+    const v8::Local<v8::WasmModuleObject>& wasm_module_object,
+    const v8::Local<v8::Value>& error) {
+  CHECK(modulator);
+  WasmModuleScript* script = MakeGarbageCollected<WasmModuleScript>(
+      modulator, wasm_module_object, source_url, base_url, options,
+      start_position);
+  if (!error.IsEmpty()) {
+    script->SetParseErrorAndClearRecord(ScriptValue(isolate, error));
+  } else {
+    CHECK(!wasm_module_object.IsEmpty());
+    modulator->GetModuleRecordResolver()->RegisterModuleScript(script);
+  }
+  return script;
+}
+}  // namespace
+
 // <specdef
 // href="https://html.spec.whatwg.org/C/#creating-a-webassembly-module-script">
 WasmModuleScript* WasmModuleScript::Create(
@@ -24,6 +48,7 @@ WasmModuleScript* WasmModuleScript::Create(
     Modulator* modulator,
     const ScriptFetchOptions& options,
     const TextPosition& start_position) {
+  CHECK(!params.GetScriptStreamer());
   ScriptState* script_state = modulator->GetScriptState();
   ScriptState::Scope scope(script_state);
 
@@ -51,26 +76,50 @@ WasmModuleScript* WasmModuleScript::Create(
   v8::TryCatch try_catch(isolate);
 
   v8::Local<v8::WasmModuleObject> result;
+  v8::Local<v8::Value> error;
   bool success =
       v8::WasmModuleObject::Compile(
           isolate, v8::MemorySpan<const uint8_t>(source.data(), source.size()))
           .ToLocal(&result);
   // <spec step="8">If the previous step threw an error, then:</spec>
-  WasmModuleScript* script = MakeGarbageCollected<WasmModuleScript>(
-      modulator, result, params.SourceURL(), params.BaseURL(), options,
-      start_position);
   if (try_catch.HasCaught()) {
     DCHECK(!success);
     // <spec step="8.1">Set script's parse error to error.</spec>
-    v8::Local<v8::Value> error = try_catch.Exception();
-    script->SetParseErrorAndClearRecord(ScriptValue(isolate, error));
-    // <spec step="8.2">Return script.</spec>
-    return script;
+    error = try_catch.Exception();
   }
+  // <spec step="8.2">Return script.</spec>
+  return CreateScriptWithModuleOrError(modulator, options, params.SourceURL(),
+                                       params.BaseURL(), start_position,
+                                       isolate, result, error);
+}
 
-  modulator->GetModuleRecordResolver()->RegisterModuleScript(script);
+WasmModuleScript* WasmModuleScript::CreateFromStreamingResult(
+    Modulator* modulator,
+    const ScriptFetchOptions& options,
+    const std::variant<v8::Local<v8::WasmModuleObject>, v8::Local<v8::Value>>&
+        module_or_error,
+    const KURL& source_url,
+    const KURL& base_url,
+    const TextPosition& start_position) {
+  CHECK(modulator);
+  ScriptState* script_state = modulator->GetScriptState();
+  ScriptState::Scope scope(script_state);
+  v8::Isolate* isolate = script_state->GetIsolate();
 
-  return script;
+  const bool result_is_error =
+      std::holds_alternative<v8::Local<v8::Value>>(module_or_error);
+
+  v8::Local<v8::WasmModuleObject> wasm_module_object;
+  v8::Local<v8::Value> error;
+  if (result_is_error) {
+    error = std::get<v8::Local<v8::Value>>(module_or_error);
+  } else {
+    wasm_module_object =
+        std::get<v8::Local<v8::WasmModuleObject>>(module_or_error);
+  }
+  return CreateScriptWithModuleOrError(modulator, options, source_url, base_url,
+                                       start_position, isolate,
+                                       wasm_module_object, error);
 }
 
 WasmModuleScript::WasmModuleScript(Modulator* settings_object,

@@ -352,16 +352,55 @@ void ModuleScriptLoader::NotifyFetchFinishedSuccess(
       //
       module_script_ = JSModuleScript::Create(params, modulator_, options_);
       break;
-    case ResolvedModuleType::kWasm:
+    case ResolvedModuleType::kWasm: {
       // <spec step="13.6">If mimeType's essence is "application/wasm" and
       // moduleType is "javascript-or-wasm", then set moduleScript to the result
       // of creating a WebAssembly module script given bodyBytes,
       // settingsObject, response's URL, and options/</spec>
+      ScriptStreamer* streamer = params.GetScriptStreamer();
+      if (streamer) {
+        // The wasm streaming compilation is not finished yet. Call
+        // `WasmModuleCompilation::Finish()` which will finish the compilation
+        // asynchronously and call `result_callback` when finished.
+        v8::WasmModuleCompilation* wasm_module_compilation =
+            streamer->GetWasmModuleCompilation();
+        CHECK(wasm_module_compilation);
+        ScriptState* script_state = modulator_->GetScriptState();
+        ScriptState::Scope scope(script_state);
+        auto result_callback =
+            [script_loader = WrapPersistent(this),
+             source_url = params.SourceURL(), base_url = params.BaseURL()](
+                std::variant<v8::Local<v8::WasmModuleObject>,
+                             v8::Local<v8::Value>> module_or_error) {
+              script_loader->NotifyWasmStreamingFinished(module_or_error,
+                                                         source_url, base_url);
+            };
+        // TODO(https://crbug.com/42204365): Implement code caching support.
+        wasm_module_compilation->Finish(
+            modulator_->GetScriptState()->GetIsolate(), nullptr,
+            std::move(result_callback));
+        return;
+      }
       module_script_ = WasmModuleScript::Create(params, modulator_, options_);
       break;
+    }
   }
-
   AdvanceState(State::kFinished, params.GetModuleImportPhase());
+}
+
+void ModuleScriptLoader::NotifyWasmStreamingFinished(
+    const std::variant<v8::Local<v8::WasmModuleObject>, v8::Local<v8::Value>>&
+        wasm_module_or_error,
+    const KURL& source_url,
+    const KURL& base_url) {
+  // [nospec] Abort the steps if the browsing context is discarded.
+  if (!modulator_->HasValidContext()) {
+    AdvanceState(State::kFinished);
+    return;
+  }
+  module_script_ = WasmModuleScript::CreateFromStreamingResult(
+      modulator_, options_, wasm_module_or_error, source_url, base_url);
+  AdvanceState(State::kFinished, ModuleImportPhase::kSource);
 }
 
 void ModuleScriptLoader::Trace(Visitor* visitor) const {
