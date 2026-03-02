@@ -29,7 +29,7 @@ class TabGroupViewsTest : public ChromeViewsTestBase {
     ChromeViewsTestBase::SetUp();
 
     widget_ =
-        CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
+        CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
     tab_container_ = widget_->SetContentsView(std::make_unique<views::View>());
     tab_container_->SetBounds(0, 0, 1000, 100);
     drag_context_ =

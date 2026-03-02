@@ -45,7 +45,7 @@ class ColorPickerViewTest : public ChromeViewsTestBase {
     ChromeViewsTestBase::SetUp();
 
     widget_ =
-        CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
+        CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
     bubble_view_ = std::make_unique<views::BubbleDialogDelegateView>(
         views::BubbleDialogDelegateView::CreatePassKey());
 
@@ -99,7 +99,7 @@ class ColorPickerViewTest : public ChromeViewsTestBase {
 
 TEST_F(ColorPickerViewTest, ColorSelectedByDefaultIfMatching) {
   std::unique_ptr<views::Widget> widget =
-      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
 
   ColorPickerView* color_picker =
       widget->SetContentsView(std::make_unique<ColorPickerView>(

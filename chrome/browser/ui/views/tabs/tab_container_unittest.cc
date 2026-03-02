@@ -194,7 +194,7 @@ class TabContainerTest : public ChromeViewsTestBase {
     tab_slot_controller_->set_tab_container(tab_container.get());
 
     widget_ =
-        CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
+        CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
     tab_container_ =
         widget_->GetRootView()->AddChildView(std::move(tab_container));
     drag_context_ =
