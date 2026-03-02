@@ -521,7 +521,7 @@ class CodeCacheWithPersistentCacheHost : public CodeCacheHostImpl {
         url, MojoCacheTypeToCodeCacheType(cache_type));
 
     generated_code_cache_context()->InsertIntoPersistentCacheCollection(
-        cache_id, resource_key, std::move(data),
+        cache_id, base::as_byte_span(resource_key), std::move(data),
         persistent_cache::EntryMetadata{
             .input_signature = expected_response_time.ToDeltaSinceWindowsEpoch()
                                    .InMicroseconds()});
@@ -550,7 +550,7 @@ class CodeCacheWithPersistentCacheHost : public CodeCacheHostImpl {
 
     if (auto metadata_and_content =
             generated_code_cache_context()->FindInPersistentCacheCollection(
-                cache_id, resource_key);
+                cache_id, base::as_byte_span(resource_key));
         metadata_and_content.has_value() &&
         metadata_and_content->content.size() > 0) {
       // Cache hit with content.

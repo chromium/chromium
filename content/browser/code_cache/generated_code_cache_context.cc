@@ -8,7 +8,6 @@
 #include <memory>
 #include <optional>
 #include <string>
-#include <string_view>
 
 #include "base/containers/span.h"
 #include "base/feature_list.h"
@@ -237,7 +236,7 @@ GeneratedCodeCacheContext::ShareReadOnlyConnection(
 
 void GeneratedCodeCacheContext::InsertIntoPersistentCacheCollection(
     const std::string& context_key,
-    std::string_view url,
+    base::span<const uint8_t> resource_key,
     base::span<const uint8_t> content,
     persistent_cache::EntryMetadata metadata) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -246,15 +245,8 @@ void GeneratedCodeCacheContext::InsertIntoPersistentCacheCollection(
     return;
   }
 
-  // Since `content` is coming in through mojo it's important to make sure that
-  // it's copied so it cannot be modified racily. This happens implicitly
-  // because of the way the SQLite backend (the only backend available
-  // currently) of PersistentCache stores data through the BLOB type.
-  //
-  // TODO(crbug.com/377475540): Make an explicit copy here once PersistentCache
-  // handles taking ownership of the memory passed in.
   RETURN_IF_ERROR(persistent_cache_collection_->Insert(
-                      context_key, base::as_byte_span(url), content, metadata),
+                      context_key, resource_key, content, metadata),
                   [](persistent_cache::TransactionError error) {
                     // TODO(crbug.com/374930286): Handle or at least address
                     // permanent errors.
@@ -265,7 +257,7 @@ void GeneratedCodeCacheContext::InsertIntoPersistentCacheCollection(
 std::optional<GeneratedCodeCacheContext::MetadataAndContent>
 GeneratedCodeCacheContext::FindInPersistentCacheCollection(
     const std::string& context_key,
-    std::string_view url) {
+    base::span<const uint8_t> resource_key) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!persistent_cache_collection_) {
@@ -281,18 +273,17 @@ GeneratedCodeCacheContext::FindInPersistentCacheCollection(
     return base::span(content_buffer);
   };
 
-  ASSIGN_OR_RETURN(
-      std::optional<persistent_cache::EntryMetadata> metadata,
-      persistent_cache_collection_->Find(context_key, base::as_byte_span(url),
-                                         std::move(buffer_provider)),
-      // An adapter that is invoked on error. Its return value
-      // percolates up out of this function.
-      [](persistent_cache::TransactionError error)
-          -> std::optional<MetadataAndContent> {
-        // TODO(crbug.com/374930286): Handle or at least address
-        // permanent errors.
-        return std::nullopt;
-      });
+  ASSIGN_OR_RETURN(std::optional<persistent_cache::EntryMetadata> metadata,
+                   persistent_cache_collection_->Find(
+                       context_key, resource_key, std::move(buffer_provider)),
+                   // An adapter that is invoked on error. Its return value
+                   // percolates up out of this function.
+                   [](persistent_cache::TransactionError error)
+                       -> std::optional<MetadataAndContent> {
+                     // TODO(crbug.com/374930286): Handle or at least address
+                     // permanent errors.
+                     return std::nullopt;
+                   });
 
   if (!metadata.has_value()) {
     return std::nullopt;  // Cache miss.

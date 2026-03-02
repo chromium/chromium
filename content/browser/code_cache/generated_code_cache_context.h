@@ -10,7 +10,6 @@
 #include <memory>
 #include <optional>
 #include <string>
-#include <string_view>
 
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
@@ -87,12 +86,11 @@ class CONTENT_EXPORT GeneratedCodeCacheContext
   std::optional<persistent_cache::PendingBackend> ShareReadOnlyConnection(
       const std::string& context_key);
 
-  // Using a persistent cache collection with `context_key` as the cache_id
-  // makes sure that there are seperate files for separate process locks. This
-  // will eventually allow the sharing of the files with the renderers.
+  // Inserts `content` and `metadata` for `resource_key` in the cache identified
+  // by `context_key`.
   void InsertIntoPersistentCacheCollection(
       const std::string& context_key,
-      std::string_view url,
+      base::span<const uint8_t> resource_key,
       base::span<const uint8_t> content,
       persistent_cache::EntryMetadata metadata);
 
@@ -105,11 +103,11 @@ class CONTENT_EXPORT GeneratedCodeCacheContext
     mojo_base::BigBuffer content;
   };
 
-  // TODO(crbug.com/377475540): Use types that are not interchangeable for
-  // `context_key` and `url` so that they cannot be mixed up by mistake.
+  // Returns the entry for `resource_key` in the cache identified by
+  // `context_key`, or no value in case of a cache miss or retrieval error.
   std::optional<MetadataAndContent> FindInPersistentCacheCollection(
       const std::string& context_key,
-      std::string_view url);
+      base::span<const uint8_t> resource_key);
 #endif  // !BUILDFLAG(IS_FUCHSIA)
 
  private:
