@@ -464,10 +464,8 @@ void VerticalTabGroupView::HideHoverCard() const {
     return;
   }
 
-  TabHoverCardController* hover_card_controller =
-      collection_node_->GetController()->GetHoverCardController();
-
-  if (hover_card_controller && hover_card_controller->IsHoverCardVisible()) {
+  if (TabHoverCardController* hover_card_controller =
+          collection_node_->GetController()->GetHoverCardController()) {
     hover_card_controller->UpdateHoverCard(
         nullptr, TabSlotController::HoverCardUpdateType::kEvent);
   }
