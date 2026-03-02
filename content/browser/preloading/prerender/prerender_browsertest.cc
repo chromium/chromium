@@ -1103,7 +1103,8 @@ INSTANTIATE_TEST_SUITE_P(
     PrerenderBrowserTestFallbackEnabledDisabled,
     ::testing::Bool());
 
-class NoVarySearchPrerenderBrowserTest : public PrerenderBrowserTest {
+class NoVarySearchPrerenderBrowserTest
+    : public PrerenderBrowserTestFallbackEnabledDisabled {
  public:
   using StartedReason = PrerenderHost::WaitingForHeadersStartedReason;
   using FinishedReason = PrerenderHost::WaitingForHeadersFinishedReason;
@@ -1123,6 +1124,11 @@ class NoVarySearchPrerenderBrowserTest : public PrerenderBrowserTest {
  private:
   base::test::ScopedFeatureList feature_list_;
 };
+
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    NoVarySearchPrerenderBrowserTest,
+    ::testing::Bool());
 
 class NoVarySearchHintPrerenderHostObserver : public PrerenderHost::Observer {
  public:
@@ -1176,7 +1182,7 @@ class NoVarySearchHintPrerenderHostObserver : public PrerenderHost::Observer {
 
 // Test that the timer is enabled and cleared appropriately when navigating to
 // a No-Vary-Search hint matched prerender successfully.
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     NoVarySearchPrerenderBrowserTest,
     EagerTimerWorksCorrectlyForHeadersThatArriveBeforeTimeout) {
   const std::string kTestingRelativeUrl =
@@ -1282,8 +1288,13 @@ IN_PROC_BROWSER_TEST_F(
 // Tests the case where prerendering navigation fails while a potential
 // activation navigation is waiting for the No-Vary-Search header.
 // This is a regression test for crbug.com/420906968.
-IN_PROC_BROWSER_TEST_F(NoVarySearchPrerenderBrowserTest,
+IN_PROC_BROWSER_TEST_P(NoVarySearchPrerenderBrowserTest,
                        FailureOnPrerenderNavigation) {
+  if (IsPrerender2FallbackPrefetchSpecRulesEnabled()) {
+    // TODO(crbug.com/375330756): Test enabled case.
+    GTEST_SKIP();
+  }
+
   const std::string kTestingRelativeUrl =
       "/delayed_with_no_vary_search?prerender";
   const std::string kPrerenderingRelativeUrl = kTestingRelativeUrl + "&a=5";
@@ -1371,9 +1382,14 @@ IN_PROC_BROWSER_TEST_F(NoVarySearchPrerenderBrowserTest,
 #define MAYBE_EagerTimerWorksCorrectlyForHeadersThatArriveAfterTimeout \
   EagerTimerWorksCorrectlyForHeadersThatArriveAfterTimeout
 #endif
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     NoVarySearchPrerenderBrowserTest,
     MAYBE_EagerTimerWorksCorrectlyForHeadersThatArriveAfterTimeout) {
+  if (IsPrerender2FallbackPrefetchSpecRulesEnabled()) {
+    // TODO(crbug.com/375330756): Test enabled case.
+    GTEST_SKIP();
+  }
+
   const std::string kTestingRelativeUrl =
       "/delayed_with_no_vary_search?prerender";
   const std::string kPrerenderingRelativeUrl = kTestingRelativeUrl + "&a=5";
@@ -1577,14 +1593,14 @@ void NoVarySearchPrerenderBrowserTest::TestNoVarySearchHeaderFailure(
 }
 
 // Test that a No-Vary-Search header is malformed.
-IN_PROC_BROWSER_TEST_F(NoVarySearchPrerenderBrowserTest,
+IN_PROC_BROWSER_TEST_P(NoVarySearchPrerenderBrowserTest,
                        MalformedNoVarySearchHeader) {
   TestNoVarySearchHeaderFailure("No-Vary-Search: malformed(\"a\")",
                                 FinishedReason::kNoVarySearchHeaderParseFailed);
 }
 
 // Test that a No-Vary-Search header is default value.
-IN_PROC_BROWSER_TEST_F(NoVarySearchPrerenderBrowserTest,
+IN_PROC_BROWSER_TEST_P(NoVarySearchPrerenderBrowserTest,
                        NoVarySearchHeaderWithDefaultValue) {
   TestNoVarySearchHeaderFailure(
       "No-Vary-Search: params=()",
@@ -1592,13 +1608,13 @@ IN_PROC_BROWSER_TEST_F(NoVarySearchPrerenderBrowserTest,
 }
 
 // Test that a No-Vary-Search header is not served.
-IN_PROC_BROWSER_TEST_F(NoVarySearchPrerenderBrowserTest, NoNoVarySearchHeader) {
+IN_PROC_BROWSER_TEST_P(NoVarySearchPrerenderBrowserTest, NoNoVarySearchHeader) {
   TestNoVarySearchHeaderFailure("",
                                 FinishedReason::kNoVarySearchHeaderNotReceived);
 }
 
 // Test that a No-Vary-Search header is received but does not match.
-IN_PROC_BROWSER_TEST_F(NoVarySearchPrerenderBrowserTest,
+IN_PROC_BROWSER_TEST_P(NoVarySearchPrerenderBrowserTest,
                        UnmatchedNoVarySearchHeader) {
   TestNoVarySearchHeaderFailure(
       "No-Vary-Search: params=(\"different\")",
@@ -1608,8 +1624,13 @@ IN_PROC_BROWSER_TEST_F(NoVarySearchPrerenderBrowserTest,
 // Test that activation is successful when navigating to an inexact URL
 // before No-Vary-Search header is back from the server, if the No-Vary-Search
 // header is matching when it is received.
-IN_PROC_BROWSER_TEST_F(NoVarySearchPrerenderBrowserTest,
+IN_PROC_BROWSER_TEST_P(NoVarySearchPrerenderBrowserTest,
                        HintActivationSuccessful) {
+  if (IsPrerender2FallbackPrefetchSpecRulesEnabled()) {
+    // TODO(crbug.com/375330756): Test enabled case.
+    GTEST_SKIP();
+  }
+
   const std::string kTestingRelativeUrl =
       "/delayed_with_no_vary_search?prerender";
   const std::string kPrerenderingRelativeUrl = kTestingRelativeUrl + "&a=5";
@@ -1725,7 +1746,7 @@ IN_PROC_BROWSER_TEST_F(NoVarySearchPrerenderBrowserTest,
 // Test that activation is not successful when navigating to an inexact URL
 // before No-Vary-Search header is back from the server if the No-Vary-Search
 // header is not matching when it is received.
-IN_PROC_BROWSER_TEST_F(NoVarySearchPrerenderBrowserTest,
+IN_PROC_BROWSER_TEST_P(NoVarySearchPrerenderBrowserTest,
                        HintActivationUnsuccessful) {
   const std::string kTestingRelativeUrl =
       "/delayed_without_no_vary_search?prerender";
@@ -1823,7 +1844,7 @@ IN_PROC_BROWSER_TEST_F(NoVarySearchPrerenderBrowserTest,
 
 // Test that activation is successful when navigating to an exact URL before
 // No-Vary-Search header is back from the server.
-IN_PROC_BROWSER_TEST_F(NoVarySearchPrerenderBrowserTest,
+IN_PROC_BROWSER_TEST_P(NoVarySearchPrerenderBrowserTest,
                        HintActivationSuccessful_ExactUrl) {
   const std::string testing_relative_url =
       "/delayed_with_no_vary_search?prerender";
@@ -1922,7 +1943,7 @@ IN_PROC_BROWSER_TEST_F(NoVarySearchPrerenderBrowserTest,
 }
 
 // Test that activation is successful when 2 matchable PrerenderHosts exist.
-IN_PROC_BROWSER_TEST_F(NoVarySearchPrerenderBrowserTest,
+IN_PROC_BROWSER_TEST_P(NoVarySearchPrerenderBrowserTest,
                        MultipleMatchableHosts) {
   const std::string testing_relative_url =
       "/delayed_with_no_vary_search?prerender";
@@ -2033,7 +2054,7 @@ IN_PROC_BROWSER_TEST_F(NoVarySearchPrerenderBrowserTest,
 
 // Tests that the speculationrules No-Vary-Search hint is populated for the
 // PrerenderHost.
-IN_PROC_BROWSER_TEST_F(NoVarySearchPrerenderBrowserTest, HintIsPopulated) {
+IN_PROC_BROWSER_TEST_P(NoVarySearchPrerenderBrowserTest, HintIsPopulated) {
   const GURL kInitialUrl = GetUrl("/empty.html");
   const GURL kPrerenderingUrl = GetUrl("/no_vary_search_a.html?prerender");
 
@@ -2054,7 +2075,12 @@ IN_PROC_BROWSER_TEST_F(NoVarySearchPrerenderBrowserTest, HintIsPopulated) {
 
 // Tests that the speculationrules trigger works in the presence of
 // No-Vary-Search for same URL.
-IN_PROC_BROWSER_TEST_F(NoVarySearchPrerenderBrowserTest, ExactUrlMatch) {
+IN_PROC_BROWSER_TEST_P(NoVarySearchPrerenderBrowserTest, ExactUrlMatch) {
+  if (IsPrerender2FallbackPrefetchSpecRulesEnabled()) {
+    // TODO(crbug.com/375330756): Test enabled case.
+    GTEST_SKIP();
+  }
+
   const GURL kInitialUrl = GetUrl("/empty.html");
   const GURL kPrerenderingUrl = GetUrl("/no_vary_search_a.html?prerender");
   const GURL kNavigationUrl = kPrerenderingUrl;
@@ -2097,7 +2123,12 @@ IN_PROC_BROWSER_TEST_F(NoVarySearchPrerenderBrowserTest, ExactUrlMatch) {
 
 // Tests that the speculationrules trigger works in the presence of
 // No-Vary-Search.
-IN_PROC_BROWSER_TEST_F(NoVarySearchPrerenderBrowserTest, InexactUrlMatch) {
+IN_PROC_BROWSER_TEST_P(NoVarySearchPrerenderBrowserTest, InexactUrlMatch) {
+  if (IsPrerender2FallbackPrefetchSpecRulesEnabled()) {
+    // TODO(crbug.com/375330756): Test enabled case.
+    GTEST_SKIP();
+  }
+
   const GURL kInitialUrl = GetUrl("/empty.html");
   const GURL kPrerenderingUrl = GetUrl("/no_vary_search_a.html?prerender");
   const GURL kNavigationUrl = GetUrl("/no_vary_search_a.html?prerender&a=3");
@@ -2144,8 +2175,13 @@ IN_PROC_BROWSER_TEST_F(NoVarySearchPrerenderBrowserTest, InexactUrlMatch) {
 
 // Tests that the speculationrules trigger works in the presence of
 // No-Vary-Search for same URL in the presence of redirection.
-IN_PROC_BROWSER_TEST_F(NoVarySearchPrerenderBrowserTest,
+IN_PROC_BROWSER_TEST_P(NoVarySearchPrerenderBrowserTest,
                        ExactMatchWithUrlRedirection) {
+  if (IsPrerender2FallbackPrefetchSpecRulesEnabled()) {
+    // TODO(crbug.com/375330756): Test enabled case.
+    GTEST_SKIP();
+  }
+
   // Navigate to an initial page.
   const GURL kInitialUrl = GetUrl("/empty.html");
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
@@ -2195,8 +2231,13 @@ IN_PROC_BROWSER_TEST_F(NoVarySearchPrerenderBrowserTest,
 
 // Tests that the speculationrules trigger works in the presence of
 // No-Vary-Search for inexact URL in the presence of redirection.
-IN_PROC_BROWSER_TEST_F(NoVarySearchPrerenderBrowserTest,
+IN_PROC_BROWSER_TEST_P(NoVarySearchPrerenderBrowserTest,
                        InexactMatchWithUrlRedirection) {
+  if (IsPrerender2FallbackPrefetchSpecRulesEnabled()) {
+    // TODO(crbug.com/375330756): Test enabled case.
+    GTEST_SKIP();
+  }
+
   // Navigate to an initial page.
   const GURL kInitialUrl = GetUrl("/empty.html");
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
@@ -2256,8 +2297,13 @@ IN_PROC_BROWSER_TEST_F(NoVarySearchPrerenderBrowserTest,
 
 // Tests that the speculationrules trigger works in the presence of
 // No-Vary-Search for inexact URL in the presence of main frame navigation.
-IN_PROC_BROWSER_TEST_F(NoVarySearchPrerenderBrowserTest,
+IN_PROC_BROWSER_TEST_P(NoVarySearchPrerenderBrowserTest,
                        InexactUrlMatchWithMainFrameNavigation) {
+  if (IsPrerender2FallbackPrefetchSpecRulesEnabled()) {
+    // TODO(crbug.com/375330756): Test enabled case.
+    GTEST_SKIP();
+  }
+
   const GURL kInitialUrl = GetUrl("/empty.html");
   const GURL kPrerenderingUrl = GetUrl("/no_vary_search_a.html?prerender");
   const GURL kPrerenderingNextUrl = GetUrl("/empty.html?next");
@@ -2416,7 +2462,8 @@ INSTANTIATE_TEST_SUITE_P(All,
                            return info.param;
                          });
 
-class AutoSpeculationRulesPrerenderBrowserTest : public PrerenderBrowserTest {
+class AutoSpeculationRulesPrerenderBrowserTest
+    : public PrerenderBrowserTestFallbackEnabledDisabled {
  public:
   AutoSpeculationRulesPrerenderBrowserTest() {
     sub_feature_list_.InitAndEnableFeatureWithParameters(
@@ -2475,6 +2522,10 @@ class AutoSpeculationRulesPrerenderBrowserTest : public PrerenderBrowserTest {
   static constexpr char kPrerenderedUrlPath[] = "/empty.html?prerender";
 };
 
+INSTANTIATE_TEST_SUITE_P(/* no prefix */,
+                         AutoSpeculationRulesPrerenderBrowserTest,
+                         testing::Bool());
+
 class AutoSpeculationRulesPrerenderBrowserTestWithHoldback
     : public AutoSpeculationRulesPrerenderBrowserTest {
  public:
@@ -2488,7 +2539,16 @@ class AutoSpeculationRulesPrerenderBrowserTestWithHoldback
   base::test::ScopedFeatureList sub_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(AutoSpeculationRulesPrerenderBrowserTest, Metrics) {
+INSTANTIATE_TEST_SUITE_P(/* no prefix */,
+                         AutoSpeculationRulesPrerenderBrowserTestWithHoldback,
+                         testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(AutoSpeculationRulesPrerenderBrowserTest, Metrics) {
+  if (IsPrerender2FallbackPrefetchSpecRulesEnabled()) {
+    // TODO(crbug.com/375330756): Test enabled case.
+    GTEST_SKIP();
+  }
+
   const GURL kInitialUrl = GetInitialUrl();
   const GURL kPrerenderingUrl = GetPrerenderedUrl();
 
@@ -2554,8 +2614,13 @@ IN_PROC_BROWSER_TEST_F(AutoSpeculationRulesPrerenderBrowserTest, Metrics) {
   }
 }
 
-IN_PROC_BROWSER_TEST_F(AutoSpeculationRulesPrerenderBrowserTestWithHoldback,
+IN_PROC_BROWSER_TEST_P(AutoSpeculationRulesPrerenderBrowserTestWithHoldback,
                        Metrics) {
+  if (IsPrerender2FallbackPrefetchSpecRulesEnabled()) {
+    // TODO(crbug.com/375330756): Test enabled case.
+    GTEST_SKIP();
+  }
+
   const GURL kInitialUrl = GetInitialUrl();
   const GURL kPrerenderingUrl = GetPrerenderedUrl();
 
@@ -7247,22 +7312,60 @@ IN_PROC_BROWSER_TEST_F(PrerenderTargetHintBrowserTest,
 enum class SSLPrerenderTestErrorBlockType { kClientCertRequested, kCertError };
 
 std::string SSLPrerenderTestErrorBlockTypeToString(
-    const testing::TestParamInfo<SSLPrerenderTestErrorBlockType>& info) {
-  switch (info.param) {
-    case SSLPrerenderTestErrorBlockType::kClientCertRequested:
-      return "ClientCertRequested";
-    case SSLPrerenderTestErrorBlockType::kCertError:
-      return "CertError";
-  }
+    const testing::TestParamInfo<
+        std::tuple<SSLPrerenderTestErrorBlockType, bool>>& info) {
+  return base::StringPrintf(
+      "%s_%s",
+      std::get<0>(info.param) ==
+              SSLPrerenderTestErrorBlockType::kClientCertRequested
+          ? "ClientCertRequested"
+          : "CertError",
+      std::get<1>(info.param) ? "FallbackEnabled" : "FallbackDisabled");
 }
 
 class SSLPrerenderBrowserTest
-    : public testing::WithParamInterface<SSLPrerenderTestErrorBlockType>,
-      public PrerenderBrowserTest {
+    : public PrerenderBrowserTest,
+      public testing::WithParamInterface<
+          std::tuple<SSLPrerenderTestErrorBlockType, bool>> {
+ public:
+  SSLPrerenderBrowserTest() {
+    if (IsPrerender2FallbackPrefetchSpecRulesEnabled()) {
+      scoped_feature_list_prerender2_fallback_.InitWithFeaturesAndParameters(
+          {
+              {
+                  features::kPrerender2FallbackPrefetchSpecRules,
+                  {
+                      {
+                          features::
+                              kPrerender2FallbackPrefetchUseBlockUntilHeadTimetout
+                                  .name,
+                          "false",
+                      },
+                      {
+                          features::kPrerender2FallbackPrefetchSchedulerPolicy
+                              .name,
+                          "NotUse",
+                      },
+                  },
+              },
+          },
+          {});
+    } else {
+      scoped_feature_list_prerender2_fallback_.InitWithFeaturesAndParameters(
+          {}, {
+                  features::kPrerender2FallbackPrefetchSpecRules,
+              });
+    }
+  }
+
+  bool IsPrerender2FallbackPrefetchSpecRulesEnabled() const {
+    return std::get<1>(GetParam());
+  }
+
  protected:
   void RequireClientCertsOrSendExpiredCerts() {
     net::SSLServerConfig ssl_config;
-    switch (GetParam()) {
+    switch (std::get<0>(GetParam())) {
       case SSLPrerenderTestErrorBlockType::kClientCertRequested:
         ssl_config.client_cert_type =
             net::SSLServerConfig::ClientCertType::REQUIRE_CLIENT_CERT;
@@ -7276,7 +7379,7 @@ class SSLPrerenderBrowserTest
     }
   }
   PrerenderFinalStatus GetExpectedFinalStatus() {
-    switch (GetParam()) {
+    switch (std::get<0>(GetParam())) {
       case SSLPrerenderTestErrorBlockType::kClientCertRequested:
         return PrerenderFinalStatus::kClientCertRequested;
       case SSLPrerenderTestErrorBlockType::kCertError:
@@ -7284,20 +7387,25 @@ class SSLPrerenderBrowserTest
     }
   }
   int GetExpectedNetError() {
-    switch (GetParam()) {
+    switch (std::get<0>(GetParam())) {
       case SSLPrerenderTestErrorBlockType::kClientCertRequested:
         return net::ERR_SSL_CLIENT_AUTH_CERT_NEEDED;
       case SSLPrerenderTestErrorBlockType::kCertError:
         return net::ERR_CERT_COMMON_NAME_INVALID;
     }
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_prerender2_fallback_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
-    All,
+    /* no prefix */,
     SSLPrerenderBrowserTest,
-    testing::Values(SSLPrerenderTestErrorBlockType::kClientCertRequested,
-                    SSLPrerenderTestErrorBlockType::kCertError),
+    testing::Combine(
+        testing::Values(SSLPrerenderTestErrorBlockType::kClientCertRequested,
+                        SSLPrerenderTestErrorBlockType::kCertError),
+        testing::Bool()),
     SSLPrerenderTestErrorBlockTypeToString);
 
 // For a prerendering navigation request, if the server requires a client
@@ -7305,6 +7413,11 @@ INSTANTIATE_TEST_SUITE_P(
 // prernedering should be canceled.
 IN_PROC_BROWSER_TEST_P(SSLPrerenderBrowserTest,
                        CertificateValidation_Navigation) {
+  if (IsPrerender2FallbackPrefetchSpecRulesEnabled()) {
+    // TODO(crbug.com/375330756): Test enabled case.
+    GTEST_SKIP();
+  }
+
   // Navigate to an initial page.
   const GURL kInitialUrl = GetUrl("/empty.html");
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
@@ -7363,6 +7476,11 @@ IN_PROC_BROWSER_TEST_P(SSLPrerenderBrowserTest,
 // resource request is intercepted and sent by a service worker.
 IN_PROC_BROWSER_TEST_P(SSLPrerenderBrowserTest,
                        CertificateValidation_SWMainResource) {
+  if (IsPrerender2FallbackPrefetchSpecRulesEnabled()) {
+    // TODO(crbug.com/375330756): Test enabled case.
+    GTEST_SKIP();
+  }
+
   // Register a service worker that intercepts resource requests.
   const GURL kInitialUrl = GetUrl("/workers/service_worker_setup.html");
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
@@ -7384,7 +7502,8 @@ IN_PROC_BROWSER_TEST_P(SSLPrerenderBrowserTest,
   // just cancels the url request, and leads to the cancellation of
   // prerendering with kNavigationRequestNetworkError.
   ExpectFinalStatusForSpeculationRule(
-      GetParam() == SSLPrerenderTestErrorBlockType::kClientCertRequested
+      std::get<0>(GetParam()) ==
+              SSLPrerenderTestErrorBlockType::kClientCertRequested
           ? PrerenderFinalStatus::kClientCertRequested
           : PrerenderFinalStatus::kNavigationRequestNetworkError);
 }
@@ -7397,7 +7516,7 @@ IN_PROC_BROWSER_TEST_P(SSLPrerenderBrowserTest,
   // Skip the test when the block type is kCertError. With the type, this test
   // times out due to https://crbug.com/1311887.
   // TODO(crbug.com/40220378): Enable the test with kCertError.
-  if (GetParam() == SSLPrerenderTestErrorBlockType::kCertError) {
+  if (std::get<0>(GetParam()) == SSLPrerenderTestErrorBlockType::kCertError) {
     return;
   }
 
