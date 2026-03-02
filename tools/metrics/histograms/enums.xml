@@ -7778,262 +7778,262 @@ shown properly on the user-facing crash UI.
     base::HashMetricName(locale_string_id) to base::HistogramBase::Sample. JS
     users should use metricsPrivate.recordSparseValueWithHashMetricName().
   </summary>
-  <int value="-2132740958" label="gl"/>
-  <int value="-2112894028" label="haw"/>
-  <int value="-2092490813" label="fa"/>
-  <int value="-2084324285" label="iw"/>
-  <int value="-2070680532" label="hi"/>
-  <int value="-2070250592" label="zu"/>
-  <int value="-2061822420" label="gv"/>
-  <int value="-2042178987" label="si"/>
-  <int value="-2041104386" label="mi"/>
-  <int value="-2014954614" label="so"/>
-  <int value="-2007848210" label="ay"/>
-  <int value="-2005166181" label="ja-Latn"/>
-  <int value="-2001789870" label="sg"/>
-  <int value="-1999171202" label="lv"/>
-  <int value="-1998337622" label="es-CL"/>
-  <int value="-1994870905" label="lt"/>
-  <int value="-1993564971" label="tzm"/>
-  <int value="-1986814580" label="om"/>
-  <int value="-1920649864" label="an"/>
-  <int value="-1898669966" label="zh-CN"/>
+  <int value="-2132740958" label="gl">Galician</int>
+  <int value="-2112894028" label="haw">Hawaiian</int>
+  <int value="-2092490813" label="fa">Persian</int>
+  <int value="-2084324285" label="iw">Hebrew (deprecated)</int>
+  <int value="-2070680532" label="hi">Hindi</int>
+  <int value="-2070250592" label="zu">Zulu</int>
+  <int value="-2061822420" label="gv">Manx</int>
+  <int value="-2042178987" label="si">Sinhala</int>
+  <int value="-2041104386" label="mi">Maori</int>
+  <int value="-2014954614" label="so">Somali</int>
+  <int value="-2007848210" label="ay">Aymara</int>
+  <int value="-2005166181" label="ja-Latn">Japanese (Latn)</int>
+  <int value="-2001789870" label="sg">Sango</int>
+  <int value="-1999171202" label="lv">Latvian</int>
+  <int value="-1998337622" label="es-CL">Spanish (Chile)</int>
+  <int value="-1994870905" label="lt">Lithuanian</int>
+  <int value="-1993564971" label="tzm">Central Atlas Tamazight</int>
+  <int value="-1986814580" label="om">Oromo</int>
+  <int value="-1920649864" label="an">Aragonese</int>
+  <int value="-1898669966" label="zh-CN">Simplified Chinese (China)</int>
   <int value="-1895779836" label="empty string">
     Reported as page source language when language detection code was not run
     (i.e. page closed or navigated away before running).
   </int>
-  <int value="-1872667487" label="rm"/>
-  <int value="-1855113037" label="vi"/>
-  <int value="-1835493637" label="ce"/>
-  <int value="-1828586117" label="de"/>
-  <int value="-1823968882" label="zh"/>
-  <int value="-1797669833" label="it-IT"/>
-  <int value="-1791051166" label="ha"/>
-  <int value="-1787999070" label="wa"/>
-  <int value="-1776903256" label="es-ES"/>
-  <int value="-1767491741" label="es-HN"/>
-  <int value="-1760672594" label="mr"/>
-  <int value="-1741747229" label="es-419"/>
-  <int value="-1735828230" label="zh-TW"/>
-  <int value="-1734070684" label="en-NZ"/>
-  <int value="-1731398502" label="wo"/>
-  <int value="-1696927720" label="la"/>
-  <int value="-1690250140" label="ja"/>
-  <int value="-1683177340" label="qu"/>
-  <int value="-1679839472" label="bem"/>
-  <int value="-1662603770" label="es-VE"/>
-  <int value="-1655091207" label="ee"/>
-  <int value="-1639240777" label="hi-IN"/>
-  <int value="-1625830957" label="ln"/>
-  <int value="-1621588434" label="bho"/>
-  <int value="-1612285087" label="en-ZA"/>
-  <int value="-1609141189" label="ja-JP"/>
-  <int value="-1589643944" label="sa"/>
-  <int value="-1578396049" label="ki"/>
-  <int value="-1566592213" label="hi-Latn"/>
-  <int value="-1558307126" label="es-CO"/>
-  <int value="-1553574832" label="saq"/>
-  <int value="-1532548885" label="pa"/>
-  <int value="-1515310228" label="ps"/>
-  <int value="-1481549061" label="dv"/>
-  <int value="-1453785110" label="rw"/>
-  <int value="-1452189651" label="es-CR"/>
-  <int value="-1403061996" label="mgo"/>
-  <int value="-1346992143" label="nn"/>
-  <int value="-1344048927" label="naq"/>
-  <int value="-1301970539" label="dsb"/>
-  <int value="-1284862637" label="ru"/>
-  <int value="-1283061184" label="bo"/>
-  <int value="-1273588087" label="kn"/>
-  <int value="-1242903543" label="es-UY"/>
-  <int value="-1230368678" label="kok"/>
-  <int value="-1211529228" label="gd"/>
-  <int value="-1159958698" label="tl"/>
-  <int value="-1136256351" label="zh-HK"/>
-  <int value="-1117024738" label="zh-Latn"/>
-  <int value="-1100371650" label="sn"/>
-  <int value="-1086322569" label="es-AR"/>
-  <int value="-1069161714" label="yue"/>
-  <int value="-1052948093" label="jw"/>
-  <int value="-1051941586" label="ff"/>
-  <int value="-1048980531" label="ur"/>
-  <int value="-1042449480" label="cy"/>
-  <int value="-1033645590" label="fil"/>
-  <int value="-1025520269" label="az"/>
-  <int value="-1022428397" label="kln"/>
-  <int value="-1010619188" label="ru-Latn"/>
-  <int value="-1007452579" label="mni"/>
-  <int value="-1000295094" label="no"/>
-  <int value="-950444864" label="tk"/>
-  <int value="-926982267" label="de-AT"/>
-  <int value="-912744476" label="lus"/>
-  <int value="-901764938" label="doi"/>
-  <int value="-887258309" label="hu"/>
-  <int value="-873154203" label="en-CA"/>
-  <int value="-862298602" label="st"/>
-  <int value="-851607677" label="sm"/>
-  <int value="-846401046" label="chr"/>
-  <int value="-838275151" label="xh"/>
-  <int value="-812926878" label="ug"/>
-  <int value="-796128841" label="agq"/>
-  <int value="-780984386" label="fr-CA"/>
-  <int value="-764225367" label="kri"/>
-  <int value="-750267977" label="bg"/>
-  <int value="-742603342" label="ca"/>
-  <int value="-740941224" label="ku"/>
-  <int value="-739605699" label="de-LI"/>
-  <int value="-736352432" label="guz"/>
-  <int value="-735144849" label="bas"/>
-  <int value="-734032818" label="km"/>
-  <int value="-717751759" label="lb"/>
-  <int value="-678521183" label="teo"/>
-  <int value="-659007214" label="el"/>
-  <int value="-647197922" label="ceb"/>
-  <int value="-645438410" label="my"/>
-  <int value="-645318977" label="smn"/>
-  <int value="-644560085" label="su"/>
-  <int value="-598481752" label="et"/>
-  <int value="-548175087" label="tt"/>
-  <int value="-545951624" label="ar-Latn"/>
-  <int value="-450972170" label="oc"/>
-  <int value="-442590807" label="sd"/>
-  <int value="-441493751" label="el-Latn"/>
-  <int value="-439564761" label="he"/>
-  <int value="-433923634" label="en-US"/>
-  <int value="-429718906" label="sh"/>
-  <int value="-426630965" label="ga"/>
-  <int value="-415677801" label="it"/>
-  <int value="-403118581" label="sw"/>
-  <int value="-371077109" label="fr-FR"/>
-  <int value="-349113427" label="am"/>
-  <int value="-342591258" label="sq"/>
-  <int value="-302282167" label="ti"/>
-  <int value="-288195501" label="ts"/>
-  <int value="-259045309" label="lu"/>
-  <int value="-226066958" label="bg-Latn"/>
-  <int value="-219674420" label="ta"/>
-  <int value="-183664425" label="pt-PT"/>
-  <int value="-181870943" label="bn"/>
-  <int value="-119774173" label="dav"/>
-  <int value="-110306666" label="sr"/>
-  <int value="-96372035" label="bn-BD"/>
-  <int value="-91748674" label="tn"/>
-  <int value="-91654905" label="luo"/>
-  <int value="-78164291" label="kk"/>
-  <int value="-74147910" label="en"/>
-  <int value="-35182995" label="fi"/>
-  <int value="-27733173" label="mfe"/>
-  <int value="-5034744" label="ny"/>
-  <int value="42532257" label="id"/>
-  <int value="64053359" label="eu"/>
-  <int value="114573335" label="es"/>
-  <int value="121688617" label="eo"/>
-  <int value="124739394" label="lo"/>
-  <int value="132594104" label="be"/>
-  <int value="134866094" label="ka"/>
-  <int value="142304335" label="gn"/>
-  <int value="142313505" label="ro"/>
-  <int value="145030010" label="gu"/>
-  <int value="158276939" label="gsw"/>
-  <int value="162326141" label="sl"/>
-  <int value="183952636" label="mg"/>
-  <int value="191168946" label="mk"/>
-  <int value="264824286" label="ksh"/>
-  <int value="350748440" label="und"/>
-  <int value="357286655" label="af"/>
-  <int value="389407533" label="zh-Hant"/>
-  <int value="443574411" label="dz"/>
-  <int value="461111861" label="mt"/>
-  <int value="462869158" label="hy"/>
-  <int value="469297921" label="khq"/>
-  <int value="470982931" label="sv"/>
-  <int value="522435458" label="hr"/>
-  <int value="526531379" label="ml"/>
-  <int value="538270200" label="uk"/>
-  <int value="549800655" label="de-CH"/>
-  <int value="563029930" label="pcm"/>
-  <int value="584710092" label="nb"/>
-  <int value="596295208" label="bs"/>
-  <int value="622642106" label="ilo"/>
-  <int value="632444664" label="yue-HK"/>
-  <int value="652001481" label="fur"/>
-  <int value="673577439" label="cs"/>
-  <int value="720107264" label="es-PE"/>
-  <int value="729519028" label="or"/>
-  <int value="729888861" label="hsb"/>
-  <int value="769713961" label="he-IL"/>
-  <int value="796588925" label="yo"/>
-  <int value="804120371" label="jv"/>
-  <int value="806431033" label="mgh"/>
-  <int value="842939712" label="se"/>
-  <int value="844238123" label="kl"/>
-  <int value="861252498" label="seh"/>
-  <int value="873647701" label="th"/>
-  <int value="910795716" label="ne"/>
-  <int value="911100675" label="de-DE"/>
-  <int value="911759580" label="kab"/>
-  <int value="919128771" label="dua"/>
-  <int value="925733725" label="ms"/>
-  <int value="1062172280" label="en-IN"/>
-  <int value="1084091282" label="sah"/>
-  <int value="1092864716" label="ht"/>
-  <int value="1110169461" label="hmn"/>
-  <int value="1117613525" label="ewo"/>
-  <int value="1119752109" label="te"/>
-  <int value="1129132659" label="kea"/>
-  <int value="1140816756" label="ar"/>
-  <int value="1152813109" label="to"/>
-  <int value="1166708194" label="is"/>
-  <int value="1196096274" label="es-US"/>
-  <int value="1199169847" label="en-AU"/>
-  <int value="1214473765" label="unknown"/>
-  <int value="1222328168" label="rn"/>
-  <int value="1225967405" label="lg"/>
-  <int value="1227107723" label="nyn"/>
-  <int value="1228519432" label="fo"/>
-  <int value="1282439493" label="es-MX"/>
-  <int value="1308353869" label="sv-SE"/>
-  <int value="1311313702" label="pt"/>
-  <int value="1312638242" label="pl"/>
-  <int value="1327296767" label="gom"/>
-  <int value="1437205305" label="uz"/>
-  <int value="1478556106" label="bm"/>
-  <int value="1482920614" label="yi"/>
-  <int value="1483760478" label="tg"/>
-  <int value="1552733612" label="da"/>
-  <int value="1587354509" label="mzn"/>
-  <int value="1628170778" label="pt-BR"/>
-  <int value="1632012012" label="zgh"/>
-  <int value="1638257274" label="sk"/>
-  <int value="1650591828" label="kw"/>
-  <int value="1670494558" label="ko"/>
-  <int value="1704087523" label="ky"/>
-  <int value="1704315002" label="fr"/>
-  <int value="1708437566" label="it-CH"/>
-  <int value="1717583602" label="co"/>
-  <int value="1724977738" label="ia"/>
-  <int value="1747828010" label="os"/>
-  <int value="1754979806" label="fy"/>
-  <int value="1837633193" label="mai"/>
-  <int value="1853848431" label="tr"/>
-  <int value="1865219403" label="nd"/>
-  <int value="1866346468" label="in"/>
-  <int value="1883413742" label="kam"/>
-  <int value="1884922344" label="ckb"/>
-  <int value="1921155040" label="br"/>
-  <int value="1958157353" label="nso"/>
-  <int value="1988450082" label="tw"/>
-  <int value="1995581006" label="kde"/>
-  <int value="2039992295" label="ig"/>
-  <int value="2072277196" label="ak"/>
-  <int value="2077417554" label="fr-CH"/>
-  <int value="2078974161" label="ast"/>
-  <int value="2081074480" label="ii"/>
-  <int value="2087142539" label="mn"/>
-  <int value="2094171128" label="mo"/>
-  <int value="2098003573" label="as"/>
-  <int value="2119087611" label="nl"/>
-  <int value="2147270293" label="en-GB"/>
+  <int value="-1872667487" label="rm">Romansh</int>
+  <int value="-1855113037" label="vi">Vietnamese</int>
+  <int value="-1835493637" label="ce">Chechen</int>
+  <int value="-1828586117" label="de">German</int>
+  <int value="-1823968882" label="zh">Chinese</int>
+  <int value="-1797669833" label="it-IT">Italian (Italy)</int>
+  <int value="-1791051166" label="ha">Hausa</int>
+  <int value="-1787999070" label="wa">Walloon</int>
+  <int value="-1776903256" label="es-ES">European Spanish</int>
+  <int value="-1767491741" label="es-HN">Spanish (Honduras)</int>
+  <int value="-1760672594" label="mr">Marathi</int>
+  <int value="-1741747229" label="es-419">Latin American Spanish</int>
+  <int value="-1735828230" label="zh-TW">Traditional Chinese (Taiwan)</int>
+  <int value="-1734070684" label="en-NZ">English (New Zeland)</int>
+  <int value="-1731398502" label="wo">Wolof</int>
+  <int value="-1696927720" label="la">Latin</int>
+  <int value="-1690250140" label="ja">Japanese</int>
+  <int value="-1683177340" label="qu">Quechua</int>
+  <int value="-1679839472" label="bem">Bemba</int>
+  <int value="-1662603770" label="es-VE">Spanish (Venezuela)</int>
+  <int value="-1655091207" label="ee">Ewe</int>
+  <int value="-1639240777" label="hi-IN">Hindi (India)</int>
+  <int value="-1625830957" label="ln">Lingala</int>
+  <int value="-1621588434" label="bho">Bhojpuri</int>
+  <int value="-1612285087" label="en-ZA">English (South Africa)</int>
+  <int value="-1609141189" label="ja-JP">Japanese (Japan)</int>
+  <int value="-1589643944" label="sa">Sanskrit</int>
+  <int value="-1578396049" label="ki">Kikuyu</int>
+  <int value="-1566592213" label="hi-Latn">Hindi (Latin)</int>
+  <int value="-1558307126" label="es-CO">Spanish (Colombia)</int>
+  <int value="-1553574832" label="saq">Samburu</int>
+  <int value="-1532548885" label="pa">Punjabi</int>
+  <int value="-1515310228" label="ps">Pashto</int>
+  <int value="-1481549061" label="dv">Divehi</int>
+  <int value="-1453785110" label="rw">Kinyarwanda</int>
+  <int value="-1452189651" label="es-CR">Spanish (Costa Rica)</int>
+  <int value="-1403061996" label="mgo">Meta</int>
+  <int value="-1346992143" label="nn">Norwegian Nynorsk</int>
+  <int value="-1344048927" label="naq">Nama</int>
+  <int value="-1301970539" label="dsb">Lower Sorbian</int>
+  <int value="-1284862637" label="ru">Russian</int>
+  <int value="-1283061184" label="bo">Tibetan</int>
+  <int value="-1273588087" label="kn">Kannada</int>
+  <int value="-1242903543" label="es-UY">Spanish (Uruguay)</int>
+  <int value="-1230368678" label="kok">Konkani</int>
+  <int value="-1211529228" label="gd">Gaelic</int>
+  <int value="-1159958698" label="tl">Tagalog</int>
+  <int value="-1136256351" label="zh-HK">Traditional Chinese (Hong Kong)</int>
+  <int value="-1117024738" label="zh-Latn">Chinese Latin (Pinyin)</int>
+  <int value="-1100371650" label="sn">Shona</int>
+  <int value="-1086322569" label="es-AR">Spanish (Argentina)</int>
+  <int value="-1069161714" label="yue">Cantonese</int>
+  <int value="-1052948093" label="jw">Javanese</int>
+  <int value="-1051941586" label="ff">Fulah</int>
+  <int value="-1048980531" label="ur">Urdu</int>
+  <int value="-1042449480" label="cy">Welsh</int>
+  <int value="-1033645590" label="fil">Filipino</int>
+  <int value="-1025520269" label="az">Azerbaijani</int>
+  <int value="-1022428397" label="kln">Kalenjin</int>
+  <int value="-1010619188" label="ru-Latn">Russian (Latin)</int>
+  <int value="-1007452579" label="mni">Manipuri</int>
+  <int value="-1000295094" label="no">Norwegian</int>
+  <int value="-950444864" label="tk">Turkmen</int>
+  <int value="-926982267" label="de-AT">German (Austria)</int>
+  <int value="-912744476" label="lus">Mizo</int>
+  <int value="-901764938" label="doi">Dogri</int>
+  <int value="-887258309" label="hu">Hungarian</int>
+  <int value="-873154203" label="en-CA">English (Canada)</int>
+  <int value="-862298602" label="st">Southern Sotho</int>
+  <int value="-851607677" label="sm">Samoan</int>
+  <int value="-846401046" label="chr">Cherokee</int>
+  <int value="-838275151" label="xh">Xhosa</int>
+  <int value="-812926878" label="ug">Uyghur</int>
+  <int value="-796128841" label="agq">Aghem</int>
+  <int value="-780984386" label="fr-CA">French (Canada)</int>
+  <int value="-764225367" label="kri">Krio</int>
+  <int value="-750267977" label="bg">Bulgarian</int>
+  <int value="-742603342" label="ca">Catalan</int>
+  <int value="-740941224" label="ku">Kurdish</int>
+  <int value="-739605699" label="de-LI">German (Liechtenstein)</int>
+  <int value="-736352432" label="guz">Gusii</int>
+  <int value="-735144849" label="bas">Basaa</int>
+  <int value="-734032818" label="km">Khmer</int>
+  <int value="-717751759" label="lb">Luxembourgish</int>
+  <int value="-678521183" label="teo">Teso</int>
+  <int value="-659007214" label="el">Greek</int>
+  <int value="-647197922" label="ceb">Cebuano</int>
+  <int value="-645438410" label="my">Burmese</int>
+  <int value="-645318977" label="smn">Inari Sami</int>
+  <int value="-644560085" label="su">Sundanese</int>
+  <int value="-598481752" label="et">Estonian</int>
+  <int value="-548175087" label="tt">Tatar</int>
+  <int value="-545951624" label="ar-Latn">Arabic (Latin)</int>
+  <int value="-450972170" label="oc">Occitan</int>
+  <int value="-442590807" label="sd">Sindhi</int>
+  <int value="-441493751" label="el-Latn">Greek (Latin)</int>
+  <int value="-439564761" label="he">Hebrew</int>
+  <int value="-433923634" label="en-US">English (United States)</int>
+  <int value="-429718906" label="sh">Serbo-Croatian</int>
+  <int value="-426630965" label="ga">Irish</int>
+  <int value="-415677801" label="it">Italian</int>
+  <int value="-403118581" label="sw">Swahili</int>
+  <int value="-371077109" label="fr-FR">French (France)</int>
+  <int value="-349113427" label="am">Amharic</int>
+  <int value="-342591258" label="sq">Albanian</int>
+  <int value="-302282167" label="ti">Tigrinya</int>
+  <int value="-288195501" label="ts">Tsonga</int>
+  <int value="-259045309" label="lu">Luba-Katanga</int>
+  <int value="-226066958" label="bg-Latn">Bulgarian (Latin)</int>
+  <int value="-219674420" label="ta">Tamil</int>
+  <int value="-183664425" label="pt-PT">European Portuguese</int>
+  <int value="-181870943" label="bn">Bengali</int>
+  <int value="-119774173" label="dav">Taita</int>
+  <int value="-110306666" label="sr">Serbian</int>
+  <int value="-96372035" label="bn-BD">Bengali (Bangladesh)</int>
+  <int value="-91748674" label="tn">Tswana</int>
+  <int value="-91654905" label="luo">Luo</int>
+  <int value="-78164291" label="kk">Kazakh</int>
+  <int value="-74147910" label="en">English</int>
+  <int value="-35182995" label="fi">Finnish</int>
+  <int value="-27733173" label="mfe">Morisyen</int>
+  <int value="-5034744" label="ny">Nyanja</int>
+  <int value="42532257" label="id">Indonesian</int>
+  <int value="64053359" label="eu">Basque</int>
+  <int value="114573335" label="es">Spanish</int>
+  <int value="121688617" label="eo">Esperanto</int>
+  <int value="124739394" label="lo">Lao</int>
+  <int value="132594104" label="be">Belarusian</int>
+  <int value="134866094" label="ka">Georgian</int>
+  <int value="142304335" label="gn">Guarani</int>
+  <int value="142313505" label="ro">Romanian</int>
+  <int value="145030010" label="gu">Gujarati</int>
+  <int value="158276939" label="gsw">Swiss German</int>
+  <int value="162326141" label="sl">Slovenian</int>
+  <int value="183952636" label="mg">Malagasy</int>
+  <int value="191168946" label="mk">Macedonian</int>
+  <int value="264824286" label="ksh">Colognian</int>
+  <int value="350748440" label="und">Undetermined</int>
+  <int value="357286655" label="af">Afrikaans</int>
+  <int value="389407533" label="zh-Hant">Traditional Chinese</int>
+  <int value="443574411" label="dz">Dzongkha</int>
+  <int value="461111861" label="mt">Maltese</int>
+  <int value="462869158" label="hy">Armenian</int>
+  <int value="469297921" label="khq">Koyra Chiini</int>
+  <int value="470982931" label="sv">Swedish</int>
+  <int value="522435458" label="hr">Croatian</int>
+  <int value="526531379" label="ml">Malayalam</int>
+  <int value="538270200" label="uk">Ukrainian</int>
+  <int value="549800655" label="de-CH">Swiss High German</int>
+  <int value="563029930" label="pcm">Nigerian Pidgin</int>
+  <int value="584710092" label="nb">Norwegian Bokmål</int>
+  <int value="596295208" label="bs">Bosnian</int>
+  <int value="622642106" label="ilo">Iloko</int>
+  <int value="632444664" label="yue-HK">Cantonese (Hong Kong)</int>
+  <int value="652001481" label="fur">Friulian</int>
+  <int value="673577439" label="cs">Czech</int>
+  <int value="720107264" label="es-PE">Spanish (Peru)</int>
+  <int value="729519028" label="or">Odia</int>
+  <int value="729888861" label="hsb">Upper Sorbian</int>
+  <int value="769713961" label="he-IL">Hebrew (Israel)</int>
+  <int value="796588925" label="yo">Yoruba</int>
+  <int value="804120371" label="jv">Javanese</int>
+  <int value="806431033" label="mgh">Makhuwa-Meetto</int>
+  <int value="842939712" label="se">Northern Sami</int>
+  <int value="844238123" label="kl">Kalaallisut</int>
+  <int value="861252498" label="seh">Sena</int>
+  <int value="873647701" label="th">Thai</int>
+  <int value="910795716" label="ne">Nepali</int>
+  <int value="911100675" label="de-DE">German (Germany)</int>
+  <int value="911759580" label="kab">Kabyle</int>
+  <int value="919128771" label="dua">Duala</int>
+  <int value="925733725" label="ms">Malay</int>
+  <int value="1062172280" label="en-IN">English (India)</int>
+  <int value="1084091282" label="sah">Sakha</int>
+  <int value="1092864716" label="ht">Haitian</int>
+  <int value="1110169461" label="hmn">Hmong</int>
+  <int value="1117613525" label="ewo">Ewondo</int>
+  <int value="1119752109" label="te">Telugu</int>
+  <int value="1129132659" label="kea">Kabuverdianu</int>
+  <int value="1140816756" label="ar">Arabic</int>
+  <int value="1152813109" label="to">Tongan</int>
+  <int value="1166708194" label="is">Icelandic</int>
+  <int value="1196096274" label="es-US">Spanish (United States)</int>
+  <int value="1199169847" label="en-AU">English (Australia)</int>
+  <int value="1214473765" label="unknown">Unknown</int>
+  <int value="1222328168" label="rn">Rundi</int>
+  <int value="1225967405" label="lg">Ganda</int>
+  <int value="1227107723" label="nyn">Nyankole</int>
+  <int value="1228519432" label="fo">Faroese</int>
+  <int value="1282439493" label="es-MX">Spanish (Mexico)</int>
+  <int value="1308353869" label="sv-SE">Swedish (Sweden)</int>
+  <int value="1311313702" label="pt">Portuguese</int>
+  <int value="1312638242" label="pl">Polish</int>
+  <int value="1327296767" label="gom">Goan Konkani</int>
+  <int value="1437205305" label="uz">Uzbek</int>
+  <int value="1478556106" label="bm">Bambara</int>
+  <int value="1482920614" label="yi">Yiddish</int>
+  <int value="1483760478" label="tg">Tajik</int>
+  <int value="1552733612" label="da">Danish</int>
+  <int value="1587354509" label="mzn">Mazanderani</int>
+  <int value="1628170778" label="pt-BR">Portuguese (Brazil)</int>
+  <int value="1632012012" label="zgh">Standard Moroccan Tamazight</int>
+  <int value="1638257274" label="sk">Slovak</int>
+  <int value="1650591828" label="kw">Cornish</int>
+  <int value="1670494558" label="ko">Korean</int>
+  <int value="1704087523" label="ky">Kyrgyz</int>
+  <int value="1704315002" label="fr">French</int>
+  <int value="1708437566" label="it-CH">Italian (Switzerland)</int>
+  <int value="1717583602" label="co">Corsican</int>
+  <int value="1724977738" label="ia">Interlingua</int>
+  <int value="1747828010" label="os">Ossetic</int>
+  <int value="1754979806" label="fy">Western Frisian</int>
+  <int value="1837633193" label="mai">Maithili</int>
+  <int value="1853848431" label="tr">Turkish</int>
+  <int value="1865219403" label="nd">North Ndebele</int>
+  <int value="1866346468" label="in">Indonesian</int>
+  <int value="1883413742" label="kam">Kamba</int>
+  <int value="1884922344" label="ckb">Central Kurdish</int>
+  <int value="1921155040" label="br">Breton</int>
+  <int value="1958157353" label="nso">Northern Sotho</int>
+  <int value="1988450082" label="tw">Twi</int>
+  <int value="1995581006" label="kde">Makonde</int>
+  <int value="2039992295" label="ig">Igbo</int>
+  <int value="2072277196" label="ak">Akan</int>
+  <int value="2077417554" label="fr-CH">French (Switzerland)</int>
+  <int value="2078974161" label="ast">Asturian</int>
+  <int value="2081074480" label="ii">Sichuan Yi</int>
+  <int value="2087142539" label="mn">Mongolian</int>
+  <int value="2094171128" label="mo">Moldavian</int>
+  <int value="2098003573" label="as">Assamese</int>
+  <int value="2119087611" label="nl">Dutch</int>
+  <int value="2147270293" label="en-GB">English (United Kingdom)</int>
 </enum>
 
 <enum name="LocalSearchServiceBackend">
