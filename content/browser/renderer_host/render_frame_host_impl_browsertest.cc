@@ -9470,13 +9470,35 @@ class RenderFrameHostImplConnectionAllowlistBrowserTest
         network::features::kConnectionAllowlists);
   }
 
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    RenderFrameHostImplBrowserTest::SetUpCommandLine(command_line);
+    mock_cert_verifier_.SetUpCommandLine(command_line);
+  }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    RenderFrameHostImplBrowserTest::SetUpInProcessBrowserTestFixture();
+    mock_cert_verifier_.SetUpInProcessBrowserTestFixture();
+  }
+
+  void TearDownInProcessBrowserTestFixture() override {
+    RenderFrameHostImplBrowserTest::TearDownInProcessBrowserTestFixture();
+    mock_cert_verifier_.TearDownInProcessBrowserTestFixture();
+  }
+
  protected:
   void SetUpOnMainThread() override {
     url_loader_interceptor_ = std::make_unique<
         URLLoaderInterceptor>(base::BindRepeating(
         &RenderFrameHostImplConnectionAllowlistBrowserTest::InterceptURLRequest,
         base::Unretained(this)));
-    RenderFrameHostImplBrowserTest::SetUpOnMainThread();
+
+    host_resolver()->AddRule("*", "127.0.0.1");
+    https_server()->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+    https_server()->ServeFilesFromSourceDirectory(GetTestDataFilePath());
+    mock_cert_verifier_.mock_cert_verifier()->set_default_result(net::OK);
+    net::test_server::RegisterDefaultHandlers(https_server());
+    SetupCrossSiteRedirector(https_server());
+    ASSERT_TRUE(https_server()->Start());
   }
 
   void TearDownOnMainThread() override {
@@ -9515,40 +9537,40 @@ class RenderFrameHostImplConnectionAllowlistBrowserTest
 
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<URLLoaderInterceptor> url_loader_interceptor_;
+  ContentMockCertVerifier mock_cert_verifier_;
 };
 
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplConnectionAllowlistBrowserTest,
                        ConnectionAllowlist) {
-  GURL url(embedded_test_server()->GetURL(
-      "/connection_allowlist_response_origin.html"));
+  GURL url(
+      https_server()->GetURL("/connection_allowlist_response_origin.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
   std::optional<base::UnguessableToken> first_network_restrictions_id =
       web_contents()->GetPrimaryMainFrame()->GetNetworkRestrictionsID();
   EXPECT_TRUE(first_network_restrictions_id.has_value());
 
-  GURL fetch_url(embedded_test_server()->GetURL("/cors-ok.txt"));
+  GURL fetch_url(https_server()->GetURL("/cors-ok.txt"));
   std::string fetch_resource = JsReplace(
       "(async () => {"
-      "  let resp = (await fetch($1, { mode: 'cors', credential: 'omit'}));"
+      "  let resp = (await fetch($1, { mode: 'cors', credentials: 'omit'}));"
       "  return resp.status; })();",
       fetch_url);
 
   EXPECT_EQ(200, EvalJs(web_contents()->GetPrimaryMainFrame(), fetch_resource));
 
   // now fetch a cross-origin resource. It should be disallowed.
-  GURL d_url = embedded_test_server()->GetURL("d.com", "/cors-ok.txt");
+  GURL d_url = https_server()->GetURL("d.com", "/cors-ok.txt");
   std::string cross_origin_fetch_resource = JsReplace(
       "(async () => {"
-      "  let resp = (await fetch($1, { mode: 'cors', credential: 'omit'}));"
+      "  let resp = (await fetch($1, { mode: 'cors', credentials: 'omit'}));"
       "  return resp.status; })();",
       d_url);
   ASSERT_FALSE(ExecJs(web_contents()->GetPrimaryMainFrame(),
                       cross_origin_fetch_resource));
 
   // Perform a same-origin cross-document navigation.
-  GURL same_origin_cross_document_url =
-      embedded_test_server()->GetURL("/title2.html");
+  GURL same_origin_cross_document_url = https_server()->GetURL("/title2.html");
   EXPECT_TRUE(NavigateToURL(shell(), same_origin_cross_document_url));
 
   // In the new document, attempt a cross-origin fetch. This should pass as it
@@ -9564,18 +9586,18 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplConnectionAllowlistBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplConnectionAllowlistBrowserTest,
                        ConnectionAllowlistNavigation) {
-  GURL url(
-      embedded_test_server()->GetURL("a.com", "/connection_allowlist.html"));
+  GURL url(https_server()->GetURL("a.com", "/connection_allowlist.html"));
+
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
   // Browser-initiated Navigations to both same-origin and cross-origin
   // urls should succeed.
   // Navigate to a same-origin URL. This should be allowed.
   // New document title1 also has the same connection allowlist policy.
-  GURL same_origin_url(embedded_test_server()->GetURL(
+  GURL same_origin_url(https_server()->GetURL(
       "a.com", "/connection_allowlist_response_origin.html"));
   EXPECT_TRUE(NavigateToURL(shell(), same_origin_url));
-  GURL cross_origin_url(embedded_test_server()->GetURL(
+  GURL cross_origin_url(https_server()->GetURL(
       "b.com", "/connection_allowlist_response_origin.html"));
   EXPECT_TRUE(NavigateToURL(shell(), cross_origin_url));
 
@@ -9595,8 +9617,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplConnectionAllowlistBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplConnectionAllowlistBrowserTest,
                        ConnectionAllowlistNavigationInIframe) {
-  GURL url(
-      embedded_test_server()->GetURL("a.com", "/connection_allowlist.html"));
+  GURL url(https_server()->GetURL("a.com", "/connection_allowlist.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
   // Create an iframe.
@@ -9612,14 +9633,13 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplConnectionAllowlistBrowserTest,
   EXPECT_TRUE(iframe->IsRenderFrameLive());
 
   // Renderer-initiated navigation in iframe to same-origin should succeed.
-  GURL same_origin_url(embedded_test_server()->GetURL(
+  GURL same_origin_url(https_server()->GetURL(
       "a.com", "/connection_allowlist_response_origin.html"));
   EXPECT_TRUE(
       NavigateToURLFromRenderer(iframe->frame_tree_node(), same_origin_url));
 
   // Renderer-initiated navigation in iframe to cross-origin should fail.
-  GURL cross_origin_url(
-      embedded_test_server()->GetURL("b.com", "/title2.html"));
+  GURL cross_origin_url(https_server()->GetURL("b.com", "/title2.html"));
   EXPECT_FALSE(
       NavigateToURLFromRenderer(iframe->frame_tree_node(), cross_origin_url));
 
@@ -9636,8 +9656,8 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplConnectionAllowlistBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplConnectionAllowlistBrowserTest,
                        EmptyIframeInjectedScriptFetch) {
-  GURL main_url = embedded_test_server()->GetURL(
-      "/connection_allowlist_response_origin.html");
+  GURL main_url =
+      https_server()->GetURL("/connection_allowlist_response_origin.html");
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
   RenderFrameHostImpl* main_rfh = web_contents()->GetPrimaryMainFrame();
@@ -9662,11 +9682,11 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplConnectionAllowlistBrowserTest,
   EXPECT_FALSE(iframe_network_restrictions_id.has_value());
 
   // Inject JavaScript into the iframe to fetch a cross-origin resource.
-  GURL d_url = embedded_test_server()->GetURL("d.com", "/cors-ok.txt");
+  GURL d_url = https_server()->GetURL("d.com", "/cors-ok.txt");
   std::string fetch_resource_in_iframe = JsReplace(
       "(async () => {"
       "  try {"
-      "    let resp = await fetch($1, { mode: 'cors', credential: 'omit'});"
+      "    let resp = await fetch($1, { mode: 'cors', credentials: 'omit'});"
       "    domAutomationController.send(String(resp.status));"
       "  } catch (e) {"
       "    domAutomationController.send('Error: ' + e.message);"
@@ -9685,11 +9705,11 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplConnectionAllowlistBrowserTest,
   EXPECT_THAT(message, testing::HasSubstr("\"Error:"));
 
   // Inject JavaScript into the iframe to fetch a same-origin resource.
-  GURL same_origin_url = embedded_test_server()->GetURL("/cors-ok.txt");
+  GURL same_origin_url = https_server()->GetURL("/cors-ok.txt");
   std::string fetch_same_origin_resource_in_iframe = JsReplace(
       "(async () => {"
       "  try {"
-      "    let resp = await fetch($1, { mode: 'cors', credential: 'omit'});"
+      "    let resp = await fetch($1, { mode: 'cors', credentials: 'omit'});"
       "    domAutomationController.send(String(resp.status));"
       "  } catch (e) {"
       "    domAutomationController.send('Error: ' + e.message);"
@@ -9709,8 +9729,8 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplConnectionAllowlistBrowserTest,
   // 1. Navigate top-level frame to a page with connection allowlists.
   // connection_allowlist_response_origin.html has Connection-Allowlist:
   // (response-origin)
-  GURL main_url = embedded_test_server()->GetURL(
-      "/connection_allowlist_response_origin.html");
+  GURL main_url =
+      https_server()->GetURL("/connection_allowlist_response_origin.html");
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
   RenderFrameHostImpl* main_rfh = web_contents()->GetPrimaryMainFrame();
@@ -9718,8 +9738,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplConnectionAllowlistBrowserTest,
   // 2. Create an iframe and point its src to a page with a different value of
   // connection allowlist.
   // connection_allowlist_empty.html has Connection-Allowlist: ()
-  GURL iframe_url =
-      embedded_test_server()->GetURL("/connection_allowlist_empty.html");
+  GURL iframe_url = https_server()->GetURL("/connection_allowlist_empty.html");
   EXPECT_TRUE(
       ExecJs(main_rfh, JsReplace("let child = document.createElement('iframe');"
                                  "child.id = 'test_iframe';"
@@ -9734,10 +9753,10 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplConnectionAllowlistBrowserTest,
 
   // In connection_allowlist_empty.html, same-origin fetch should fail because
   // the allowlist is empty.
-  GURL fetch_url(embedded_test_server()->GetURL("/cors-ok.txt"));
+  GURL fetch_url(https_server()->GetURL("/cors-ok.txt"));
   std::string fetch_resource = JsReplace(
       "(async () => {"
-      "  let resp = (await fetch($1, { mode: 'cors', credential: 'omit'}));"
+      "  let resp = (await fetch($1, { mode: 'cors', credentials: 'omit'}));"
       "  return resp.status; })();",
       fetch_url);
   ASSERT_FALSE(ExecJs(iframe, fetch_resource));
@@ -9756,10 +9775,10 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplConnectionAllowlistBrowserTest,
   EXPECT_EQ(200, EvalJs(iframe, fetch_resource));
 
   // Cross-origin fetch should still fail.
-  GURL d_url = embedded_test_server()->GetURL("d.com", "/cors-ok.txt");
+  GURL d_url = https_server()->GetURL("d.com", "/cors-ok.txt");
   std::string cross_origin_fetch_resource = JsReplace(
       "(async () => {"
-      "  let resp = (await fetch($1, { mode: 'cors', credential: 'omit'}));"
+      "  let resp = (await fetch($1, { mode: 'cors', credentials: 'omit'}));"
       "  return resp.status; })();",
       d_url);
   ASSERT_FALSE(ExecJs(iframe, cross_origin_fetch_resource));
@@ -9767,7 +9786,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplConnectionAllowlistBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplConnectionAllowlistBrowserTest,
                        ConnectionAllowlistEmpty) {
-  GURL url(embedded_test_server()->GetURL("/connection_allowlist_empty.html"));
+  GURL url(https_server()->GetURL("/connection_allowlist_empty.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
   std::optional<base::UnguessableToken> main_network_restrictions_id =
@@ -9776,19 +9795,19 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplConnectionAllowlistBrowserTest,
 
   // now fetch same-origin and cross-origin resources, both should be
   // disallowed.
-  GURL fetch_url(embedded_test_server()->GetURL("/cors-ok.txt"));
+  GURL fetch_url(https_server()->GetURL("/cors-ok.txt"));
   std::string fetch_resource = JsReplace(
       "(async () => {"
-      "  let resp = (await fetch($1, { mode: 'cors', credential: 'omit'}));"
+      "  let resp = (await fetch($1, { mode: 'cors', credentials: 'omit'}));"
       "  return resp.status; })();",
       fetch_url);
 
   ASSERT_FALSE(ExecJs(web_contents()->GetPrimaryMainFrame(), fetch_resource));
 
-  GURL d_url = embedded_test_server()->GetURL("d.com", "/cors-ok.txt");
+  GURL d_url = https_server()->GetURL("d.com", "/cors-ok.txt");
   std::string cross_origin_fetch_resource = JsReplace(
       "(async () => {"
-      "  let resp = (await fetch($1, { mode: 'cors', credential: 'omit'}));"
+      "  let resp = (await fetch($1, { mode: 'cors', credentials: 'omit'}));"
       "  return resp.status; })();",
       d_url);
   ASSERT_FALSE(ExecJs(web_contents()->GetPrimaryMainFrame(),
@@ -9798,7 +9817,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplConnectionAllowlistBrowserTest,
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplConnectionAllowlistBrowserTest,
                        ConnectionAllowlistInPagehideNavigationStateKeepAlive) {
   // 1. Set up the opener window.
-  GURL opener_url(embedded_test_server()->GetURL("a.com", "/title2.html"));
+  GURL opener_url(https_server()->GetURL("a.com", "/title2.html"));
   EXPECT_TRUE(NavigateToURL(shell(), opener_url));
 
   // 2. Set up the openee window.
@@ -9809,12 +9828,11 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplConnectionAllowlistBrowserTest,
 
   // 3. Navigate openee to a page with a connection allowlist.
   GURL allowlist_url(
-      embedded_test_server()->GetURL("b.com", "/connection_allowlist.html"));
+      https_server()->GetURL("b.com", "/connection_allowlist.html"));
   EXPECT_TRUE(NavigateToURL(openee_shell, allowlist_url));
 
   // 4. The openee will navigate the opener to a cross-origin URL in pagehide.
-  GURL cross_origin_url(
-      embedded_test_server()->GetURL("c.com", "/title2.html"));
+  GURL cross_origin_url(https_server()->GetURL("c.com", "/title2.html"));
   EXPECT_TRUE(ExecJs(openee_shell, JsReplace(R"(
     window.addEventListener("pagehide", () => {
       opener.location.href = $1;
@@ -9851,7 +9869,7 @@ IN_PROC_BROWSER_TEST_F(
     RenderFrameHostImplConnectionAllowlistBrowserTest,
     ConnectionAllowlistInPagehideNavigationStateKeepAliveAboutBlank) {
   // 1. Set up the opener window.
-  GURL opener_url(embedded_test_server()->GetURL("a.com", "/title2.html"));
+  GURL opener_url(https_server()->GetURL("a.com", "/title2.html"));
   EXPECT_TRUE(NavigateToURL(shell(), opener_url));
 
   // 2. Set up the openee window.
@@ -9862,14 +9880,14 @@ IN_PROC_BROWSER_TEST_F(
 
   // 3. Navigate openee to a page with a connection allowlist.
   GURL allowlist_url(
-      embedded_test_server()->GetURL("b.com", "/connection_allowlist.html"));
+      https_server()->GetURL("b.com", "/connection_allowlist.html"));
   EXPECT_TRUE(NavigateToURL(openee_shell, allowlist_url));
 
   // Fetch a cross-origin resource from the opener. It should be allowed.
-  GURL d_url = embedded_test_server()->GetURL("d.com", "/cors-ok.txt");
+  GURL d_url = https_server()->GetURL("d.com", "/cors-ok.txt");
   std::string cross_origin_fetch_resource = JsReplace(
       "(async () => {"
-      "  let resp = (await fetch($1, { mode: 'cors', credential: 'omit'}));"
+      "  let resp = (await fetch($1, { mode: 'cors', credentials: 'omit'}));"
       "  return resp.status; })();",
       d_url);
   ASSERT_TRUE(ExecJs(web_contents(), cross_origin_fetch_resource));
@@ -9913,8 +9931,7 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplConnectionAllowlistBrowserTest,
                        ConnectionAllowlistSrcdoc) {
-  GURL url(
-      embedded_test_server()->GetURL("a.com", "/connection_allowlist.html"));
+  GURL url(https_server()->GetURL("a.com", "/connection_allowlist.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
   WebContents* web_contents = shell()->web_contents();
   RenderFrameHostImpl* main_rfh =
@@ -9939,10 +9956,10 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplConnectionAllowlistBrowserTest,
   // now fetch a cross-origin resource. It should be disallowed both in the
   // main frame and the iframe.
   RenderFrameHostImpl* iframe = main_rfh->child_at(0)->current_frame_host();
-  GURL d_url = embedded_test_server()->GetURL("d.com", "/cors-ok.txt");
+  GURL d_url = https_server()->GetURL("d.com", "/cors-ok.txt");
   std::string cross_origin_fetch_resource = JsReplace(
       "(async () => {"
-      "  let resp = (await fetch($1, { mode: 'cors', credential: 'omit'}));"
+      "  let resp = (await fetch($1, { mode: 'cors', credentials: 'omit'}));"
       "  return resp.status; })();",
       d_url);
   ASSERT_FALSE(ExecJs(iframe, cross_origin_fetch_resource));
@@ -9953,8 +9970,8 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplConnectionAllowlistBrowserTest,
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplConnectionAllowlistBrowserTest,
                        ConnectionAllowlistBrowserBackAllowed) {
   GURL allowlist_url(
-      embedded_test_server()->GetURL("a.com", "/connection_allowlist.html"));
-  GURL cross_origin_url(embedded_test_server()->GetURL(
+      https_server()->GetURL("a.com", "/connection_allowlist.html"));
+  GURL cross_origin_url(https_server()->GetURL(
       "b.com", "/connection_allowlist_response_origin.html"));
 
   // 1. Navigate to a.com with Connection-Allowlist.
@@ -9978,8 +9995,8 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplConnectionAllowlistBrowserTest,
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplConnectionAllowlistBrowserTest,
                        ConnectionAllowlistHistoryBackAllowedBFCache) {
   GURL allowlist_url(
-      embedded_test_server()->GetURL("a.com", "/connection_allowlist.html"));
-  GURL cross_origin_url(embedded_test_server()->GetURL(
+      https_server()->GetURL("a.com", "/connection_allowlist.html"));
+  GURL cross_origin_url(https_server()->GetURL(
       "b.com", "/connection_allowlist_response_origin.html"));
 
   // 1. Navigate to a.com with Connection-Allowlist.
@@ -10010,10 +10027,10 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplConnectionAllowlistBrowserTest,
 
   // 4. The document loaded from BFCache should restore its own connection
   // allowlist. Fetch a cross-origin resource. It should be disallowed.
-  GURL d_url = embedded_test_server()->GetURL("d.com", "/cors-ok.txt");
+  GURL d_url = https_server()->GetURL("d.com", "/cors-ok.txt");
   std::string cross_origin_fetch_resource = JsReplace(
       "(async () => {"
-      "  let resp = (await fetch($1, { mode: 'cors', credential: 'omit'}));"
+      "  let resp = (await fetch($1, { mode: 'cors', credentials: 'omit'}));"
       "  return resp.status; })();",
       d_url);
   ASSERT_FALSE(ExecJs(web_contents()->GetPrimaryMainFrame(),
@@ -10023,8 +10040,8 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplConnectionAllowlistBrowserTest,
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplConnectionAllowlistBrowserTest,
                        ConnectionAllowlistHistoryBackDisallowedNoBFCache) {
   GURL allowlist_url(
-      embedded_test_server()->GetURL("a.com", "/connection_allowlist.html"));
-  GURL cross_origin_url(embedded_test_server()->GetURL(
+      https_server()->GetURL("a.com", "/connection_allowlist.html"));
+  GURL cross_origin_url(https_server()->GetURL(
       "b.com", "/connection_allowlist_response_origin.html"));
 
   // 1. Navigate to a.com with Connection-Allowlist.
