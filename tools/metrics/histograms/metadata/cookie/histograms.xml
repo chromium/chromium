@@ -660,16 +660,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Cookie.NumKeys" units="keys" expires_after="2026-04-13">
-  <owner>cfredric@chromium.org</owner>
-  <owner>kaustubhag@chromium.org</owner>
-  <summary>
-    Records the number of distinct keys (eTLD+1's) that have any stored cookies
-    (which may or may not be expired). Recorded every 10 minutes of active
-    browsing time.
-  </summary>
-</histogram>
-
 <histogram name="Cookie.OnCookiesAccessed.BatchSize" units="accesses"
     expires_after="2026-05-03">
   <owner>olivierli@chromium.org</owner>

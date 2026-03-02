@@ -2839,9 +2839,6 @@ bool CookieMonster::DoRecordPeriodicStats() {
       RecordPeriodicFirstPartySetsStats(maybe_sets.value());
   }
 
-  // Can be up to kMaxCookies.
-  UMA_HISTOGRAM_COUNTS_10000("Cookie.NumKeys", num_keys_);
-
   std::map<std::string, size_t> n_same_site_none_cookies;
   size_t n_bytes = 0;
   std::map<std::string, size_t> n_bytes_per_key;
