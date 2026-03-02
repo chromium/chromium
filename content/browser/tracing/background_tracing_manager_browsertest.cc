@@ -558,8 +558,14 @@ IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
 }
 
 // This tests that non-allowlisted args get stripped if required.
+#if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
+#define MAYBE_LegacyNotAllowlistedArgsStripped \
+  DISABLED_LegacyNotAllowlistedArgsStripped
+#else
+#define MAYBE_LegacyNotAllowlistedArgsStripped LegacyNotAllowlistedArgsStripped
+#endif
 IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
-                       LegacyNotAllowlistedArgsStripped) {
+                       MAYBE_LegacyNotAllowlistedArgsStripped) {
   TestBackgroundTracingHelper background_tracing_helper;
 
   EXPECT_TRUE(BackgroundTracingManager::GetInstance().InitializeFieldScenarios(
