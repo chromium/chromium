@@ -7,6 +7,7 @@
 #import "ios/chrome/browser/app_bar/coordinator/app_bar_mediator.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_container_view_controller.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_view_controller.h"
+#import "ios/chrome/browser/menu/ui_bundled/browser_action_factory.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/tab_grid_state.h"
@@ -51,9 +52,6 @@
   _viewController.tabGridHandler = tabGridHandler;
   _viewController.layoutGuideCenter = LayoutGuideCenterForBrowser(nil);
 
-  _containerViewController = [[AppBarContainerViewController alloc] init];
-  [_containerViewController setAppBar:_viewController];
-
   SceneState* sceneState = _regularBrowser->GetSceneState();
 
   _mediator = [[AppBarMediator alloc]
@@ -64,13 +62,22 @@
                                       _regularBrowser)
                      tabGridState:sceneState.tabGridState
                    incognitoState:sceneState.incognitoState];
-  _mediator.consumer = _viewController;
+  _mediator.regularActionFactory = [[BrowserActionFactory alloc]
+      initWithBrowser:_regularBrowser.get()
+             scenario:kMenuScenarioHistogramToolbarMenu];
+  _mediator.incognitoActionFactory = [[BrowserActionFactory alloc]
+      initWithBrowser:_incognitoBrowser.get()
+             scenario:kMenuScenarioHistogramToolbarMenu];
   _mediator.sceneHandler = sceneHandler;
   _mediator.tabGridHandler = tabGridHandler;
   _mediator.regularTabGroupsCommands =
       HandlerForProtocol(regularDispatcher, TabGroupsCommands);
 
+  _mediator.consumer = _viewController;
   _viewController.mutator = _mediator;
+
+  _containerViewController = [[AppBarContainerViewController alloc] init];
+  [_containerViewController setAppBar:_viewController];
 }
 
 - (void)stop {

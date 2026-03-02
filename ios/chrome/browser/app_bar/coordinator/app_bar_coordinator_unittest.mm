@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_grid_commands.h"
@@ -26,21 +27,37 @@ class AppBarCoordinatorTest : public PlatformTest {
     regular_browser_ = std::make_unique<TestBrowser>(regular_profile_.get());
     incognito_browser_ =
         std::make_unique<TestBrowser>(incognito_profile_.get());
+
     coordinator_ = [[AppBarCoordinator alloc]
         initWithRegularBrowser:regular_browser_.get()
               incognitoBrowser:incognito_browser_.get()];
+
     scene_handler_ = OCMProtocolMock(@protocol(SceneCommands));
     [regular_browser_->GetCommandDispatcher()
         startDispatchingToTarget:scene_handler_
                      forProtocol:@protocol(SceneCommands)];
+    [incognito_browser_->GetCommandDispatcher()
+        startDispatchingToTarget:scene_handler_
+                     forProtocol:@protocol(SceneCommands)];
+
     tab_grid_handler_ = OCMProtocolMock(@protocol(TabGridCommands));
     [regular_browser_->GetCommandDispatcher()
         startDispatchingToTarget:tab_grid_handler_
                      forProtocol:@protocol(TabGridCommands)];
+
     tab_group_handler_ = OCMProtocolMock(@protocol(TabGroupsCommands));
     [regular_browser_->GetCommandDispatcher()
         startDispatchingToTarget:tab_group_handler_
                      forProtocol:@protocol(TabGroupsCommands)];
+
+    browser_coordinator_handler_ =
+        OCMProtocolMock(@protocol(BrowserCoordinatorCommands));
+    [regular_browser_->GetCommandDispatcher()
+        startDispatchingToTarget:browser_coordinator_handler_
+                     forProtocol:@protocol(BrowserCoordinatorCommands)];
+    [incognito_browser_->GetCommandDispatcher()
+        startDispatchingToTarget:browser_coordinator_handler_
+                     forProtocol:@protocol(BrowserCoordinatorCommands)];
   }
 
   ~AppBarCoordinatorTest() override { [coordinator_ stop]; }
@@ -54,6 +71,7 @@ class AppBarCoordinatorTest : public PlatformTest {
   id scene_handler_;
   id tab_grid_handler_;
   id tab_group_handler_;
+  id browser_coordinator_handler_;
 };
 
 // Tests that the coordinator creates a view controller when started.

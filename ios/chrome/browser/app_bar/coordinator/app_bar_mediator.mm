@@ -10,6 +10,7 @@
 #import "base/metrics/user_metrics_action.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_consumer.h"
 #import "ios/chrome/browser/intents/model/intents_donation_helper.h"
+#import "ios/chrome/browser/menu/ui_bundled/browser_action_factory.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/incognito_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/tab_grid_state.h"
@@ -21,9 +22,12 @@
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_grid_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_groups_commands.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/web_state.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 #import "url/gurl.h"
 
 @interface AppBarMediator () <IncognitoStateObserver,
@@ -80,6 +84,9 @@
 }
 
 - (void)setConsumer:(id<AppBarConsumer>)consumer {
+  if (consumer == _consumer) {
+    return;
+  }
   _consumer = consumer;
   [self updateConsumer];
 }
@@ -89,7 +96,6 @@
   if (_tabGridState.tabGridVisible &&
       _currentPage == TabGridPageIncognitoTabs) {
     self.currentWebStateList = _incognitoWebStateList;
-    [self updateConsumer];
   } else if (_incognitoState.incognitoContentVisible) {
     self.currentWebStateList = _incognitoWebStateList;
   }
@@ -97,6 +103,7 @@
 
 - (void)disconnect {
   self.consumer = nil;
+  self.currentTabGroup = nullptr;
   if (self.currentWebStateList) {
     self.currentWebStateList->RemoveObserver(_observerBridge.get());
     self.currentWebStateList = nullptr;
@@ -106,6 +113,8 @@
   _incognitoWebStateList = nullptr;
   _prefService = nullptr;
   _URLLoader = nullptr;
+  _incognitoState = nil;
+  _tabGridState = nil;
 }
 
 #pragma mark - WebStateListObserving
@@ -168,11 +177,10 @@
 - (void)willEnterTabGrid {
   _currentPage = _tabGridState.currentPage;
   self.currentTabGroup = _tabGridState.visibleTabGroup;
-  [self.consumer setTabGridVisible:YES];
+  [self updateConsumer];
 }
 
 - (void)willExitTabGrid {
-  [self.consumer setTabGridVisible:NO];
   [self updateForIncognitoVisible:_incognitoState.incognitoContentVisible];
 }
 
@@ -229,6 +237,7 @@
   if (!_tabGridState.tabGridVisible) {
     return;
   }
+  base::RecordAction(base::UserMetricsAction("MobileTabGridCreateTabGroup"));
   [self.regularTabGroupsCommands showTabGroupCreationWithoutTabs];
 }
 
@@ -268,24 +277,28 @@
   }
   [self.consumer updateTabCount:tabCount];
   [self.consumer setTabGridVisible:_tabGridState.tabGridVisible];
+  [self.consumer setTabGroupsPageVisible:_currentPage == TabGridPageTabGroups];
+
+  [self.consumer setMenu:[self createContextMenuForAssistantButton]
+           forButtonType:AppBarButtonTypeAssistant];
+  [self.consumer setMenu:[self createContextMenuForNewTabButton]
+           forButtonType:AppBarButtonTypeNewTab];
+  [self.consumer setMenu:[self createContextMenuForTabGridButton]
+           forButtonType:AppBarButtonTypeTabGrid];
 }
 
 // Updates for entering tab grid `page`.
 - (void)updateForTabGridPage:(TabGridPage)page {
   switch (page) {
     case TabGridPageIncognitoTabs:
-      [self.consumer setTabGroupsPageVisible:NO];
       self.currentWebStateList = _incognitoWebStateList;
       break;
     case TabGridPageRegularTabs:
-      [self.consumer setTabGroupsPageVisible:NO];
       self.currentWebStateList = _regularWebStateList;
       break;
     case TabGridPageTabGroups:
       CHECK_NE(TabGridPageTabGroups, _tabGridState.originPage);
-      CHECK_EQ(TabGridPageTabGroups, _currentPage);
       [self updateForTabGridPage:_tabGridState.originPage];
-      [self.consumer setTabGroupsPageVisible:YES];
       break;
   }
 }
@@ -360,6 +373,69 @@
   _URLLoader->Load(params);
 
   return webStateListCount != webStateList->count();
+}
+
+// Returns the context menu for the Assistant button.
+// TODO(crbug.com/484000556) Implement this menu.
+- (UIMenu*)createContextMenuForAssistantButton {
+  return nil;
+}
+
+// Returns the context menu for the New Tab button.
+- (UIMenu*)createContextMenuForNewTabButton {
+  UIMenu* menu;
+  BOOL isTabGroupsPageVisible = _currentPage == TabGridPageTabGroups;
+
+  if (isTabGroupsPageVisible) {
+    __weak __typeof(self) weakSelf = self;
+
+    UIAction* newTabGroupAction = [UIAction
+        actionWithTitle:l10n_util::GetNSString(
+                            IDS_IOS_APP_BAR_CONTEXT_MENU_NEW_TAB_GROUP)
+                  image:DefaultSymbolWithConfiguration(kNewTabGroupActionSymbol,
+                                                       nil)
+             identifier:nil
+                handler:^(UIAction*) {
+                  [weakSelf createNewTabGroupFromView:nil];
+                }];
+    UIAction* newTabAction = [UIAction
+        actionWithTitle:l10n_util::GetNSString(
+                            IDS_IOS_DIAMOND_PROTOTYPE_NEW_TAB)
+                  image:DefaultSymbolWithConfiguration(kPlusSymbol, nil)
+             identifier:nil
+                handler:^(UIAction*) {
+                  [weakSelf createNewTabFromView:nil];
+                }];
+
+    menu = [UIMenu menuWithChildren:@[ newTabGroupAction, newTabAction ]];
+  } else {
+    // TODO(crbug.com/484000878): Add unique context menus for within tab groups
+    // and outside of the tab grid.
+    menu = nil;
+  }
+
+  return menu;
+}
+
+// Returns the context menu for the Tab Grid button.
+- (UIMenu*)createContextMenuForTabGridButton {
+  // If the tab grid is showing, the context menu should be disabled.
+  if (_tabGridState.tabGridVisible) {
+    return nil;
+  }
+
+  // From an incognito tab, the `openNewTabAction` should open a non-incognito
+  // tab. From a non-incognito tab, it should open an incognito tab.
+  UIAction* openNewTabAction =
+      _incognitoState.incognitoContentVisible
+          ? [self.regularActionFactory actionToOpenNewTab]
+          : [self.incognitoActionFactory actionToOpenNewIncognitoTab];
+  UIAction* closeCurrentTabAction =
+      _incognitoState.incognitoContentVisible
+          ? [self.incognitoActionFactory actionToCloseCurrentTab]
+          : [self.regularActionFactory actionToCloseCurrentTab];
+
+  return [UIMenu menuWithChildren:@[ closeCurrentTabAction, openNewTabAction ]];
 }
 
 @end

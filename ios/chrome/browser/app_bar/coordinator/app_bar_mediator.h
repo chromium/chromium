@@ -10,16 +10,17 @@
 #import "ios/chrome/browser/app_bar/ui/app_bar_mutator.h"
 
 @protocol AppBarConsumer;
+@class BrowserActionFactory;
 @class IncognitoState;
 class PrefService;
 @protocol SceneCommands;
 @protocol TabGridCommands;
-@protocol TabGroupsCommands;
 @class TabGridState;
+@protocol TabGroupsCommands;
 class UrlLoadingBrowserAgent;
 class WebStateList;
 
-// Mediator for the app bar coordinator.
+// Mediator for the App Bar coordinator.
 @interface AppBarMediator : NSObject <AppBarMutator>
 
 // Handler for the scene commands.
@@ -33,6 +34,12 @@ class WebStateList;
 
 // The consumer of this mediator.
 @property(nonatomic, weak) id<AppBarConsumer> consumer;
+
+// The regular actions factory.
+@property(nonatomic, strong) BrowserActionFactory* regularActionFactory;
+
+// The incognito actions factory.
+@property(nonatomic, strong) BrowserActionFactory* incognitoActionFactory;
 
 // Initializes the mediator with the two web state lists.
 - (instancetype)initWithRegularWebStateList:(WebStateList*)regularWebStateList
