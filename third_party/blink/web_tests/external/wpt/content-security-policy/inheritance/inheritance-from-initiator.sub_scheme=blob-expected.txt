@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] blob: Changing contentWindow.location inherits from who changed it (apart from javascript:, which keeps target policies, and blob:, which always inherits from creator).
+  assert_equals: expected "p" but got "a"
+[FAIL] blob: window.open() inherits from caller (apart from javascript:, which keeps target policies, and blob:, which always inherits from creator).
+  assert_equals: expected "p" but got "a"
+[FAIL] blob: Click on anchor inherits from owner of the anchor (apart from javascript:, which keeps target policies, and blob:, which always inherits from creator).
+  assert_equals: expected "p" but got "b"
+Harness: the test ran to completion.
+
