@@ -29,6 +29,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
+#include "ui/views/widget/widget.h"
 
 namespace tab_groups {
 

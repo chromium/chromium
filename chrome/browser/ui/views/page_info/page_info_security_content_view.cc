@@ -22,6 +22,7 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/widget/widget.h"
 
 PageInfoSecurityContentView::PageInfoSecurityContentView(
     PageInfo* presenter,

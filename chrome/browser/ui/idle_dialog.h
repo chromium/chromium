@@ -8,9 +8,12 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "ui/views/widget/widget.h"
 
 class BrowserWindowInterface;
+
+namespace views {
+class Widget;
+}  // namespace views
 
 // Idle timeout dialog. This is shown to users to inform them that Chrome will
 // be closed by the IdleService, as dictated by the IdleProfileCloseTimeout

@@ -41,6 +41,7 @@
 #include "ui/views/controls/animated_image_view.h"
 #include "ui/views/metrics.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/widget/widget.h"
 
 namespace {
 

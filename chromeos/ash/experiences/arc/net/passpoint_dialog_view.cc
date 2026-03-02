@@ -32,6 +32,7 @@
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/style/typography_provider.h"
+#include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
 namespace {

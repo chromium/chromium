@@ -14,6 +14,7 @@
 #include "ui/accessibility/platform/browser_accessibility_manager.h"
 #include "ui/views/accessibility/tree/widget_view_ax_cache.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/widget/widget.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <oleacc.h>

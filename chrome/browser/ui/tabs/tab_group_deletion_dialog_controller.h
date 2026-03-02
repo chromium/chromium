@@ -12,11 +12,14 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
-#include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
 namespace ui {
 class DialogModel;
+}
+
+namespace views {
+class Widget;
 }
 
 class BrowserWindowInterface;

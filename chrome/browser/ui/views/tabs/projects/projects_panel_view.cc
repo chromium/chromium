@@ -47,6 +47,7 @@
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_shadow.h"
+#include "ui/views/widget/widget.h"
 
 namespace {
 constexpr int kClipRectRightMarginForShadow = 32;

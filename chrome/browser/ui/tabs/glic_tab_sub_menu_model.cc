@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/tabs/glic_tab_sub_menu_model.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"

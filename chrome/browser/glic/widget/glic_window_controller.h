@@ -26,7 +26,6 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/gfx/native_ui_types.h"
-#include "ui/views/widget/widget.h"
 
 class Browser;
 
@@ -40,6 +39,10 @@ class Point;
 namespace tabs {
 class TabInterface;
 }
+
+namespace views {
+class View;
+}  // namespace views
 
 namespace glic {
 DECLARE_CUSTOM_ELEMENT_EVENT_TYPE(kGlicWidgetAttached);
