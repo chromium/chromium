@@ -244,6 +244,7 @@ public class SettingsSearchCoordinator
         }
         bg.setTint(tint);
         searchBox.setBackground(bg);
+        query.setBackground(bg);
         if (mMultiColumnSettings != null) {
             mHandler.post(this::initializeMultiColumnSearchUi);
         } else {
