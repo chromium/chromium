@@ -503,7 +503,8 @@ void WaitForFakeJoinFlowView() {
 
 // Checks opening the Share flow from the Tab Grid and actually sharing. Then
 // deleting the shared group as owner.
-- (void)testShareGroupAndDeleteUsingContextMenus {
+// TODO(crbug.com/489048084): Test is flaky.
+- (void)FLAKY_testShareGroupAndDeleteUsingContextMenus {
   AddSharedGroup(/*owner=*/YES, self.testServer);
 
   // Long press the group.
@@ -526,7 +527,8 @@ void WaitForFakeJoinFlowView() {
 }
 
 // Checks joining a group. Then leaving the shared group as member.
-- (void)testJoinGroupAndLeaveUsingContextMenus {
+// TODO(crbug.com/489048084): Test is flaky.
+- (void)FLAKY_testJoinGroupAndLeaveUsingContextMenus {
   AddSharedGroup(/*owner=*/NO, self.testServer);
 
   // Long press the group.
@@ -1002,7 +1004,8 @@ void WaitForFakeJoinFlowView() {
 }
 
 // Ensures new tab is added when moving the last tab of a shared group.
-- (void)testLastTabCloseWithClearBrowsingData {
+// TODO(crbug.com/489048084): Test is flaky.
+- (void)FLAKY_testLastTabCloseWithClearBrowsingData {
   AddSharedGroup(/*owner=*/NO, self.testServer);
   [ChromeEarlGrey waitForMainTabCount:1];
 
