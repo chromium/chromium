@@ -23,9 +23,20 @@ constexpr char kZeroMemoryListHistogramName[] =
     "Memory.SystemMemoryLists.ExhaustedIntervalsPerThirtySeconds.ZeroList";
 constexpr char kFreeMemoryListHistogramName[] =
     "Memory.SystemMemoryLists.ExhaustedIntervalsPerThirtySeconds.FreeList";
-constexpr char kZeroAndFreeMemoryListHistogramName[] =
+constexpr char kStandbyMemoryListHistogramName[] =
+    "Memory.SystemMemoryLists.ExhaustedIntervalsPerThirtySeconds.StandbyList";
+constexpr char kAllMemoryListHistogramName[] =
     "Memory.SystemMemoryLists.ExhaustedIntervalsPerThirtySeconds."
-    "ZeroAndFreeList";
+    "AllLists";
+constexpr char kLowZeroMemoryListHistogramName[] =
+    "Memory.SystemMemoryLists.LowIntervalsPerThirtySeconds.ZeroList";
+constexpr char kLowFreeMemoryListHistogramName[] =
+    "Memory.SystemMemoryLists.LowIntervalsPerThirtySeconds.FreeList";
+constexpr char kLowStandbyMemoryListHistogramName[] =
+    "Memory.SystemMemoryLists.LowIntervalsPerThirtySeconds.StandbyList";
+constexpr char kLowAllMemoryListHistogramName[] =
+    "Memory.SystemMemoryLists.LowIntervalsPerThirtySeconds."
+    "AllLists";
 constexpr char kTotalIntervalsRecordedHistogramName[] =
     "Memory.SystemMemoryLists.TotalIntervalsRecorded";
 constexpr char kFreeListCountHistogramName[] =
@@ -112,9 +123,23 @@ TEST_F(WinSystemMemoryListMetricsProviderTest, SystemListEmpty) {
   histogram_tester_.ExpectTotalCount(kFreeMemoryListHistogramName, 2);
   histogram_tester_.ExpectBucketCount(kFreeMemoryListHistogramName, 1, 1);
 
-  histogram_tester_.ExpectTotalCount(kZeroAndFreeMemoryListHistogramName, 2);
-  histogram_tester_.ExpectBucketCount(kZeroAndFreeMemoryListHistogramName, 1,
-                                      1);
+  histogram_tester_.ExpectTotalCount(kStandbyMemoryListHistogramName, 2);
+  histogram_tester_.ExpectBucketCount(kStandbyMemoryListHistogramName, 1, 1);
+
+  histogram_tester_.ExpectTotalCount(kAllMemoryListHistogramName, 2);
+  histogram_tester_.ExpectBucketCount(kAllMemoryListHistogramName, 1, 1);
+
+  histogram_tester_.ExpectTotalCount(kLowZeroMemoryListHistogramName, 2);
+  histogram_tester_.ExpectBucketCount(kLowZeroMemoryListHistogramName, 1, 1);
+
+  histogram_tester_.ExpectTotalCount(kLowFreeMemoryListHistogramName, 2);
+  histogram_tester_.ExpectBucketCount(kLowFreeMemoryListHistogramName, 1, 1);
+
+  histogram_tester_.ExpectTotalCount(kLowStandbyMemoryListHistogramName, 2);
+  histogram_tester_.ExpectBucketCount(kLowStandbyMemoryListHistogramName, 1, 1);
+
+  histogram_tester_.ExpectTotalCount(kLowAllMemoryListHistogramName, 2);
+  histogram_tester_.ExpectBucketCount(kLowAllMemoryListHistogramName, 1, 1);
 
   histogram_tester_.ExpectTotalCount(kTotalIntervalsRecordedHistogramName, 2);
   histogram_tester_.ExpectBucketCount(kTotalIntervalsRecordedHistogramName, 1,
@@ -163,9 +188,23 @@ TEST_F(WinSystemMemoryListMetricsProviderTest, SystemListFull) {
   histogram_tester_.ExpectTotalCount(kFreeMemoryListHistogramName, 1);
   histogram_tester_.ExpectBucketCount(kFreeMemoryListHistogramName, 0, 1);
 
-  histogram_tester_.ExpectTotalCount(kZeroAndFreeMemoryListHistogramName, 1);
-  histogram_tester_.ExpectBucketCount(kZeroAndFreeMemoryListHistogramName, 0,
-                                      1);
+  histogram_tester_.ExpectTotalCount(kStandbyMemoryListHistogramName, 1);
+  histogram_tester_.ExpectBucketCount(kStandbyMemoryListHistogramName, 0, 1);
+
+  histogram_tester_.ExpectTotalCount(kAllMemoryListHistogramName, 1);
+  histogram_tester_.ExpectBucketCount(kAllMemoryListHistogramName, 0, 1);
+
+  histogram_tester_.ExpectTotalCount(kLowZeroMemoryListHistogramName, 1);
+  histogram_tester_.ExpectBucketCount(kLowZeroMemoryListHistogramName, 0, 1);
+
+  histogram_tester_.ExpectTotalCount(kLowFreeMemoryListHistogramName, 1);
+  histogram_tester_.ExpectBucketCount(kLowFreeMemoryListHistogramName, 0, 1);
+
+  histogram_tester_.ExpectTotalCount(kLowStandbyMemoryListHistogramName, 1);
+  histogram_tester_.ExpectBucketCount(kLowStandbyMemoryListHistogramName, 0, 1);
+
+  histogram_tester_.ExpectTotalCount(kLowAllMemoryListHistogramName, 1);
+  histogram_tester_.ExpectBucketCount(kLowAllMemoryListHistogramName, 0, 1);
 
   histogram_tester_.ExpectTotalCount(kTotalIntervalsRecordedHistogramName, 1);
   histogram_tester_.ExpectBucketCount(kTotalIntervalsRecordedHistogramName, 1,
@@ -211,8 +250,12 @@ TEST_F(WinSystemMemoryListMetricsProviderTest, SystemListCounterReset) {
 
   histogram_tester_.ExpectBucketCount(kZeroMemoryListHistogramName, 1, 1);
   histogram_tester_.ExpectBucketCount(kFreeMemoryListHistogramName, 1, 1);
-  histogram_tester_.ExpectBucketCount(kZeroAndFreeMemoryListHistogramName, 1,
-                                      1);
+  histogram_tester_.ExpectBucketCount(kStandbyMemoryListHistogramName, 1, 1);
+  histogram_tester_.ExpectBucketCount(kAllMemoryListHistogramName, 1, 1);
+  histogram_tester_.ExpectBucketCount(kLowZeroMemoryListHistogramName, 1, 1);
+  histogram_tester_.ExpectBucketCount(kLowFreeMemoryListHistogramName, 1, 1);
+  histogram_tester_.ExpectBucketCount(kLowStandbyMemoryListHistogramName, 1, 1);
+  histogram_tester_.ExpectBucketCount(kLowAllMemoryListHistogramName, 1, 1);
   histogram_tester_.ExpectUniqueSample(kTotalIntervalsRecordedHistogramName, 1,
                                        2);
   histogram_tester_.ExpectUniqueSample(kFreeListCountHistogramName, 0, 2);
@@ -244,7 +287,7 @@ TEST_F(WinSystemMemoryListMetricsProviderTest, SampleMetadataSetDuringRuns) {
       .WillOnce(success_closure)
       .WillOnce(
           [&](SYSTEM_MEMORY_LIST_INFORMATION& memory_list_info) -> NTSTATUS {
-            EXPECT_EQ(initial_item_count + 1,
+            EXPECT_EQ(initial_item_count + 2,
                       base::MetadataRecorder::MetadataProvider(
                           base::GetSampleMetadataRecorder(),
                           base::PlatformThread::CurrentId())
