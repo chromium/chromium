@@ -424,7 +424,7 @@ std::unique_ptr<MediaCodecBridge> MediaCodecBridgeImpl::CreateAudioDecoder(
       Java_MediaCodecBridgeBuilder_createAudioDecoder(
           env, j_mime, media_crypto, config.samples_per_second(), channel_count,
           j_csd0, j_csd1, j_csd2, output_frame_has_adts_header,
-          !!on_buffers_available_cb));
+          !on_buffers_available_cb.is_null()));
 
   if (j_bridge.is_null()) {
     return nullptr;
@@ -462,7 +462,7 @@ std::unique_ptr<MediaCodecBridge> MediaCodecBridgeImpl::CreateVideoDecoder(
           config.initial_expected_coded_size.width(),
           config.initial_expected_coded_size.height(), config.surface, j_csd0,
           j_csd1, j_hdr_metadata, /*allowAdaptivePlayback=*/true,
-          /*useAsyncApi=*/!!config.on_buffers_available_cb,
+          /*useAsyncApi=*/!config.on_buffers_available_cb.is_null(),
           /*useBlockModel=*/config.use_block_model,
           /*useLowLatencyMode=*/config.use_low_latency_mode, j_decoder_name,
           config.profile));
