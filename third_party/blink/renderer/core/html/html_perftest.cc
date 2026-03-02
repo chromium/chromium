@@ -11,6 +11,7 @@
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/json/json_reader.h"
+#include "base/strings/safe_sprintf.h"
 #include "base/strings/string_view_util.h"
 #include "testing/perf/perf_result_reporter.h"
 #include "testing/perf/perf_test.h"
@@ -45,9 +46,8 @@ TEST(HTMLParsePerfTest, Speedometer) {
       base::as_string_view(*serialized), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!json.has_value()) {
     char msg[256];
-    UNSAFE_TODO(snprintf(msg, sizeof(msg),
-                         "Skipping %s test because %s could not be read", label,
-                         filename));
+    base::strings::SafeSPrintf(
+        msg, "Skipping %s test because %s could not be read", label, filename);
     GTEST_SKIP_(msg);
   }
 

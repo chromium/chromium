@@ -33,4 +33,7 @@ specific_include_rules = {
     "trust_token_attribute_parsing_test.cc": [
         "+services/network/test",
     ],
+    "html_perftest.cc": [
+        "+base/strings/safe_sprintf.h",
+    ],
 }
