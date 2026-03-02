@@ -31,7 +31,7 @@ ScriptTimingInfo::ScriptTimingInfo(ExecutionContext* context,
 
 void ScriptTimingInfo::SetSourceLocation(const ScriptSourceLocation& location) {
   source_location_ = location;
-  if (KURL(location.url).ProtocolIsData()) {
+  if (ProtocolIs(location.url, "data")) {
     source_location_.url = "data:";
   }
 }

@@ -763,7 +763,7 @@ void Sanitizer::SanitizeElement(Element* element, Mode safe) const {
 void RemoveAttributeIfProtocolIsJavaScript(Element* element,
                                            const QualifiedName& attribute) {
   const AtomicString& value = element->getAttribute(attribute);
-  if (value && KURL(value.GetString()).ProtocolIsJavaScript()) {
+  if (value && ProtocolIsJavaScript(value)) {
     element->removeAttribute(attribute);
   }
 }

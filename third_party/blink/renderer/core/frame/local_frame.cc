@@ -3673,7 +3673,7 @@ void LocalFrame::SaveImageAt(const gfx::Point& window_point) {
     return;
 
   String url = To<Element>(*node).ImageSourceURL();
-  if (!KURL(NullUrl(), url).ProtocolIsData()) {
+  if (!ProtocolIs(url, "data")) {
     return;
   }
 
