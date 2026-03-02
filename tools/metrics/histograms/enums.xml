@@ -17113,6 +17113,7 @@ from previous Chrome versions.
   <int value="910725730" label="WebRtcHWVP9Encoding:disabled"/>
   <int value="910964036" label="ChangeUnfocusedPriority:disabled"/>
   <int value="911256399" label="GlobalMediaControlsModernUI:enabled"/>
+  <int value="911991932" label="OnDeviceModelLitertLmBackend:enabled"/>
   <int value="912119426" label="InfiniteSessionRestore:disabled"/>
   <int value="913138924" label="RecurrentInterstitialFeature:disabled"/>
   <int value="913855453" label="VirtualKeyboardFloatingResizable:disabled"/>
@@ -18954,6 +18955,7 @@ from previous Chrome versions.
   <int value="1530177325" label="LanguagesPreference:disabled"/>
   <int value="1530182188" label="PdfHonorJsContentSettings:enabled"/>
   <int value="1531164533" label="SyncPseudoUSSFavicons:disabled"/>
+  <int value="1531608861" label="OnDeviceModelLitertLmBackend:disabled"/>
   <int value="1531741496" label="DragFromShelfToHomeOrOverview:disabled"/>
   <int value="1532006216" label="CommerceHintAndroid:disabled"/>
   <int value="1532505461" label="HelpAppLauncherSearch:disabled"/>

@@ -236,6 +236,7 @@
 #include "services/media_session/public/cpp/features.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/network_switches.h"
+#include "services/on_device_model/public/cpp/features.h"
 #include "services/tracing/public/cpp/tracing_features.h"
 #include "services/webnn/public/mojom/features.mojom-features.h"
 #include "storage/browser/blob/features.h"
@@ -10378,6 +10379,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kProofreaderAPIForGeminiNanoDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(blink::features::kAIProofreadingAPI),
      flag_descriptions::kAIAPIsForGeminiNanoLinks},
+
+    {"on-device-model-litert-lm-backend",
+     flag_descriptions::kOnDeviceModelLitertLmBackendName,
+     flag_descriptions::kOnDeviceModelLitertLmBackendDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(
+         on_device_model::features::kOnDeviceModelLitertLmBackend)},
 
     {"css-grid-lanes-layout", flag_descriptions::kCSSGridLanesLayoutName,
      flag_descriptions::kCSSGridLanesLayoutDescription, kOsAll,
