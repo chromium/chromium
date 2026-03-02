@@ -9,6 +9,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.os.Build;
 import android.os.IBinder;
 import android.view.accessibility.AccessibilityEvent;
 
@@ -24,6 +25,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.ui.accessibility.testservice.IAccessibilityTestHelperService;
 
@@ -169,5 +171,35 @@ public class WebContentsAccessibilityE2ETest {
                                 "",
                                 EVENT_TIMEOUT_MS);
         Assert.assertTrue("Service did not receive WINDOW_STATE_CHANGED", wscReceived);
+    }
+
+    @Test
+    @SmallTest
+    @MinAndroidSdkLevel(Build.VERSION_CODES.BAKLAVA)
+    public void testAccessibilityServiceReceivesInitialEvent_SdkBalklavaAndAbove()
+            throws Throwable {
+        // Load a page.
+        String url = UrlUtils.encodeHtmlDataUri("<p>hello</p>");
+        mActivityTestRule.launchContentShellWithUrl(url);
+
+        // Wait for the window to appear.
+        boolean wscReceived =
+                getAccessibilityHelperService()
+                        .waitForEvent(
+                                AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED,
+                                "",
+                                "",
+                                EVENT_TIMEOUT_MS);
+        Assert.assertTrue("Service did not receive WINDOW_STATE_CHANGED", wscReceived);
+
+        // Ask the service to wait for a text selection changed on the omnibox.
+        boolean tscReceived =
+                getAccessibilityHelperService()
+                        .waitForEvent(
+                                AccessibilityEvent.TYPE_VIEW_TEXT_SELECTION_CHANGED,
+                                "android.widget.EditText",
+                                url,
+                                EVENT_TIMEOUT_MS);
+        Assert.assertTrue("Service did not receive TEXT_SELECTION_CHANGED", tscReceived);
     }
 }
