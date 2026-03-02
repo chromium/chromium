@@ -9,6 +9,7 @@
 
 #include "base/values.h"
 #include "chrome/browser/banners/app_banner_manager_desktop.h"
+#include "content/public/browser/web_contents_observer.h"
 
 namespace content {
 class WebContents;
@@ -19,7 +20,8 @@ namespace webapps {
 // Provides the ability to await the results of the installability check that
 // happens for every page load.
 class TestAppBannerManagerDesktop : public AppBannerManagerDesktop,
-                                    private AppBannerManager::Observer {
+                                    private AppBannerManager::Observer,
+                                    private content::WebContentsObserver {
  public:
   explicit TestAppBannerManagerDesktop(content::WebContents* web_contents);
 
@@ -62,12 +64,18 @@ class TestAppBannerManagerDesktop : public AppBannerManagerDesktop,
   TestAppBannerManagerDesktop* AsTestAppBannerManagerDesktopForTesting()
       override;
 
+  bool IsPromptAvailableForTesting() const {
+    return app_banner_manager()->IsPromptAvailableForTesting();
+  }
+
+  InstallableWebAppCheckResult GetInstallableWebAppCheckResult() const {
+    return app_banner_manager()->GetInstallableWebAppCheckResult();
+  }
+
   const base::ListValue& debug_log() const { return debug_log_; }
 
  protected:
-  // AppBannerManager:
-  // TODO(http://crbug.com/322342499): When AppBannerManager is devirtualized,
-  // listen to WebContentsObserver::DidFinishLoad directly instead.
+  // WebContentsObserver:
   void DidFinishLoad(content::RenderFrameHost* render_frame_host,
                      const GURL& validated_url) override;
 

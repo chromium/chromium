@@ -61,8 +61,8 @@ static bool JNI_PwaBottomSheetController_RequestOrExpandBottomSheetInstaller(
     int install_trigger) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(jweb_contents);
-  auto* app_banner_manager = static_cast<AppBannerManagerAndroid*>(
-      WebappsClient::Get()->GetAppBannerManager(web_contents));
+  auto* app_banner_manager =
+      AppBannerManagerAndroid::FromWebContents(web_contents);
 
   std::optional<InstallBannerConfig> install_config =
       app_banner_manager->GetCurrentBannerConfig();

@@ -28,8 +28,7 @@ class TestAppBannerManagerDesktop;
 
 // Manages web app banners for desktop platforms.
 class AppBannerManagerDesktop
-    : public AppBannerManager,
-      public AppBannerManager::Delegate,
+    : public AppBannerManager::Delegate,
       public content::WebContentsUserData<AppBannerManagerDesktop>,
       public web_app::WebAppInstallManagerObserver {
  public:
@@ -43,6 +42,10 @@ class AppBannerManagerDesktop
 
   virtual TestAppBannerManagerDesktop*
   AsTestAppBannerManagerDesktopForTesting();
+
+  AppBannerManager* app_banner_manager() const {
+    return app_banner_manager_.get();
+  }
 
  protected:
   explicit AppBannerManagerDesktop(content::WebContents* web_contents);
@@ -104,6 +107,8 @@ class AppBannerManagerDesktop
   // the dialog is triggered by ML.
   void DidCreateWebAppFromMLDialog(const webapps::AppId& app_id,
                                    webapps::InstallResultCode code);
+
+  std::unique_ptr<AppBannerManager> app_banner_manager_;
 
   raw_ptr<extensions::ExtensionRegistry> extension_registry_;
   webapps::AppId uninstalling_app_id_;

@@ -61,8 +61,7 @@ struct InstallBannerConfig;
 // TODO(crbug.com/40730613): remove remaining Chrome-specific functionality and
 // move to //components/webapps.
 class AppBannerManagerAndroid
-    : public AppBannerManager,
-      public AppBannerManager::Delegate,
+    : public AppBannerManager::Delegate,
       public content::WebContentsUserData<AppBannerManagerAndroid> {
  public:
   class ChromeDelegate {
@@ -137,8 +136,16 @@ class AppBannerManagerAndroid
                                          WebappInstallSource install_source,
                                          const InstallBannerConfig& data);
 
+  std::optional<InstallBannerConfig> GetCurrentBannerConfig() const {
+    return app_banner_manager_->GetCurrentBannerConfig();
+  }
+
   // AppBannerManager::Delegate override:
   void OnMlInstallPrediction(std::string result_label) override;
+
+  AppBannerManager* app_banner_manager() const {
+    return app_banner_manager_.get();
+  }
 
  protected:
   friend class content::WebContentsUserData<AppBannerManagerAndroid>;
@@ -231,6 +238,9 @@ class AppBannerManagerAndroid
 
   base::android::ScopedJavaLocalRef<jobject> GetJavaBannerManager(
       JNIEnv* env) const;
+
+  std::unique_ptr<AppBannerManager> app_banner_manager_;
+
   const std::unique_ptr<ChromeDelegate> delegate_;
 
   // A weak reference to the Java object. The Java object will be kept alive by

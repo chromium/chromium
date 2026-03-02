@@ -27,15 +27,16 @@ namespace webapps {
 
 TestAppBannerManagerDesktop::TestAppBannerManagerDesktop(
     content::WebContents* web_contents)
-    : AppBannerManagerDesktop(web_contents) {
+    : AppBannerManagerDesktop(web_contents),
+      content::WebContentsObserver(web_contents) {
   // Ensure no real instance exists. This must be the only instance to avoid
   // observers of AppBannerManager left observing the wrong one.
   DCHECK_EQ(AppBannerManagerDesktop::FromWebContents(web_contents), nullptr);
-  AddObserver(this);
+  app_banner_manager()->AddObserver(this);
 }
 
 TestAppBannerManagerDesktop::~TestAppBannerManagerDesktop() {
-  RemoveObserver(this);
+  app_banner_manager()->RemoveObserver(this);
 }
 
 static std::unique_ptr<AppBannerManagerDesktop> CreateTestAppBannerManager(
@@ -75,7 +76,7 @@ bool TestAppBannerManagerDesktop::WaitForInstallableCheck() {
     run_loop.Run();
   }
   CHECK(!installable_check_in_progress_);
-  return IsPromotableWebApp();
+  return app_banner_manager()->IsPromotableWebApp();
 }
 
 void TestAppBannerManagerDesktop::SetBannerPromptReplyCallback(
@@ -89,7 +90,7 @@ void TestAppBannerManagerDesktop::SetCompleteCallback(
 }
 
 AppBannerManager::State TestAppBannerManagerDesktop::state() {
-  return AppBannerManager::state();
+  return app_banner_manager()->state();
 }
 
 void TestAppBannerManagerDesktop::AwaitAppInstall() {
@@ -128,8 +129,6 @@ void TestAppBannerManagerDesktop::DidFinishLoad(
     RunInstallableQuitClosureIfNeeded();
     return;
   }
-
-  AppBannerManagerDesktop::DidFinishLoad(render_frame_host, validated_url);
 }
 
 void TestAppBannerManagerDesktop::RunInstallableQuitClosureIfNeeded() {

@@ -73,7 +73,8 @@ WebappInstallSource WebappsClientAndroid::GetInstallSource(
 
 AppBannerManager* WebappsClientAndroid::GetAppBannerManager(
     content::WebContents* web_contents) {
-  return AppBannerManagerAndroid::FromWebContents(web_contents);
+  return AppBannerManagerAndroid::FromWebContents(web_contents)
+      ->app_banner_manager();
 }
 
 void WebappsClientAndroid::DoesNewWebAppConflictWithExistingInstallation(

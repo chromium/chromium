@@ -59,10 +59,9 @@ extern bool g_disable_banner_triggering_for_testing;
 // native app banner if requested). The second call completes the checking for a
 // web app banner (checking manifest validity, service worker, and icon).
 //
-// TODO(crbug.com/41440485): Refactor this into several simpler classes,
-// and remove all inheritance.
-class AppBannerManager : public content::WebContentsObserver,
-                         public blink::mojom::AppBannerService {
+// TODO(crbug.com/41440485): Refactor this into several simpler classes.
+class AppBannerManager final : public content::WebContentsObserver,
+                               public blink::mojom::AppBannerService {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -209,6 +208,10 @@ class AppBannerManager : public content::WebContentsObserver,
   // |web_contents|.
   static AppBannerManager* FromWebContents(content::WebContents* web_contents);
 
+  static std::unique_ptr<AppBannerManager> Create(
+      AppBannerManager::Delegate* delegate,
+      content::WebContents* web_contents);
+  ~AppBannerManager() override;
   AppBannerManager(const AppBannerManager&) = delete;
   AppBannerManager& operator=(const AppBannerManager&) = delete;
 
@@ -304,14 +307,25 @@ class AppBannerManager : public content::WebContentsObserver,
 
   void RecheckInstallabilityForLoadedPage();
 
- protected:
-  AppBannerManager(AppBannerManager::Delegate* delegate,
-                   content::WebContents* web_contents);
-  ~AppBannerManager() override;
-
-  void PostInstallableWebAppCheckValidation(const bool does_conflict);
+  bool IsRunningForTesting() const;
 
   // TODO(http://crbug.com/322342499): Make this private.
+  State state() const { return state_; }
+
+  // Voids all outstanding service pointers.
+  // TODO(http://crbug.com/322342499): Make this private.
+  void ResetBindings();
+
+  // Reports |code| via a UMA histogram or logs it to the console.
+  // TODO(http://crbug.com/322342499): Figure out if this should be private,
+  // currently AppBannerManagerAndroid use it.
+  void ReportStatus(InstallableStatusCode code);
+
+ private:
+  AppBannerManager(AppBannerManager::Delegate* delegate,
+                   content::WebContents* web_contents);
+  void PostInstallableWebAppCheckValidation(const bool does_conflict);
+
   enum class UrlType {
     // This url & page should be considered for installability & promotability.
     kValidForBanner,
@@ -322,29 +336,6 @@ class AppBannerManager : public content::WebContentsObserver,
     kInvalidPrimaryFrameUrl,
   };
 
-  // content::WebContentsObserver override:
-  // TODO(http://crbug.com/322342499): Make this private with the rest of the
-  // web contents observer overrides.
-  void DidFinishLoad(content::RenderFrameHost* render_frame_host,
-                     const GURL& validated_url) override;
-  void DidFailLoad(content::RenderFrameHost* render_frame_host,
-                   const GURL& validated_url,
-                   int error_code) override;
-
-  // TODO(http://crbug.com/322342499): Make this private.
-  State state() const { return state_; }
-
-  // Voids all outstanding service pointers.
-  // TODO(http://crbug.com/322342499): Make this private.
-  void ResetBindings();
-
-  // TODO(http://crbug.com/322342499): Make this private.
-  bool IsRunning() const;
-
-  // Reports |code| via a UMA histogram or logs it to the console.
-  void ReportStatus(InstallableStatusCode code);
-
- private:
   void RequestAppBanner();
 
   void UpdateState(State state);
@@ -416,6 +407,11 @@ class AppBannerManager : public content::WebContentsObserver,
       const content::MediaPlayerId& id,
       WebContentsObserver::MediaStoppedReason reason) override;
   void WebContentsDestroyed() override;
+  void DidFinishLoad(content::RenderFrameHost* render_frame_host,
+                     const GURL& validated_url) override;
+  void DidFailLoad(content::RenderFrameHost* render_frame_host,
+                   const GURL& validated_url,
+                   int error_code) override;
 
   // Subclass accessors for private fields which should not be changed outside
   // this class.

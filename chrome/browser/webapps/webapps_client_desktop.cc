@@ -139,7 +139,10 @@ WebappInstallSource WebappsClientDesktop::GetInstallSource(
 AppBannerManager* WebappsClientDesktop::GetAppBannerManager(
     content::WebContents* web_contents) {
   CHECK(web_contents);
-  return AppBannerManagerDesktop::FromWebContents(web_contents);
+  if (auto* manager = AppBannerManagerDesktop::FromWebContents(web_contents)) {
+    return manager->app_banner_manager();
+  }
+  return nullptr;
 }
 
 void WebappsClientDesktop::DoesNewWebAppConflictWithExistingInstallation(

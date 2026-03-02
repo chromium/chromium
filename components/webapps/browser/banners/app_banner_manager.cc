@@ -284,6 +284,13 @@ bool AppBannerManager::IsPromptAvailableForTesting() const {
   return receiver_.is_bound();
 }
 
+// static
+std::unique_ptr<AppBannerManager> AppBannerManager::Create(
+    Delegate* delegate,
+    content::WebContents* web_contents) {
+  return base::WrapUnique(new AppBannerManager(delegate, web_contents));
+}
+
 AppBannerManager::AppBannerManager(Delegate* delegate,
                                    content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
@@ -798,8 +805,7 @@ void AppBannerManager::WebContentsDestroyed() {
   manager_ = nullptr;
 }
 
-
-bool AppBannerManager::IsRunning() const {
+bool AppBannerManager::IsRunningForTesting() const {
   switch (state_) {
     case State::INACTIVE:
     case State::PENDING_PROMPT_CANCELED:
