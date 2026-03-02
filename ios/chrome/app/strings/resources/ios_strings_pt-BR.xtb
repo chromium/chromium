@@ -1787,6 +1787,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Para bloquear suas guias anônimas, configure o Touch ID, o Face ID ou uma senha.</translation>
 <translation id="750886945254958667">Mantenha este grupo para adicionar guias mais tarde ou saia dele se não quiser mais ter acesso</translation>
+<translation id="7511727374778217603">{COUNT,plural, =1{Adicione até 1 guia}one{Adicione até {COUNT} guia}other{Adicione até {COUNT} guias}}</translation>
 <translation id="7512909159512473473">Digite a senha longa…</translation>
 <translation id="7514365320538308">Baixar</translation>
 <translation id="7514530647142300459">Continue usando as senhas na sua Conta do Google <ph name="EMAIL" /></translation>

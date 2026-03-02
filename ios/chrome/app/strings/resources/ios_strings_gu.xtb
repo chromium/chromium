@@ -1787,6 +1787,7 @@
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">તમારી છુપી ટૅબને લૉક કરવા માટે, ટચ ID, ચહેરાના ID કે પાસકોડનું સેટઅપ કરો.</translation>
 <translation id="750886945254958667">પછીથી ટૅબ ઉમેરવા માટે આ ગ્રૂપ રાખો અથવા જો તમને હવે તેનો ઍક્સેસ ન જોઈતો હોય તો તેને છોડી દો</translation>
+<translation id="7511727374778217603">{COUNT,plural, =1{વધુમાં વધુ 1 ટૅબ ઉમેરો}one{વધુમાં વધુ {COUNT} ટૅબ ઉમેરો}other{વધુમાં વધુ {COUNT} ટૅબ ઉમેરો}}</translation>
 <translation id="7512909159512473473">પાસફ્રેઝ દાખલ કરો…</translation>
 <translation id="7514365320538308">ડાઉનલોડ કરો</translation>
 <translation id="7514530647142300459">તમારા Google એકાઉન્ટ <ph name="EMAIL" />માં પાસવર્ડનો ઉપયોગ કરવાનું ચાલુ રાખો</translation>

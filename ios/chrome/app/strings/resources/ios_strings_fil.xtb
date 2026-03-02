@@ -1787,6 +1787,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Para ma-lock ang iyong mga tab na Incognito, ma-set up ang Touch ID, Face ID, o Passcode.</translation>
 <translation id="750886945254958667">Panatilihin ang grupong ito para magdagdag ng mga tab dito sa ibang pagkakataon, o umalis sa grupo kung ayaw mo na itong ma-access</translation>
+<translation id="7511727374778217603">{COUNT,plural, =1{Magdagdag ng hanggang 1 tab}one{Magdagdag ng hanggang {COUNT} tab}other{Magdagdag ng hanggang {COUNT} na tab}}</translation>
 <translation id="7512909159512473473">Ilagay ang passphrase…</translation>
 <translation id="7514365320538308">I-download</translation>
 <translation id="7514530647142300459">Patuloy na gamitin ang mga password sa iyong Google Account na <ph name="EMAIL" /></translation>

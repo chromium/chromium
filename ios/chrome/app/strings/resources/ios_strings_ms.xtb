@@ -1787,6 +1787,7 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Untuk mengunci tab Inkognito anda, sediakan Touch ID, Face ID atau Kod Laluan.</translation>
 <translation id="750886945254958667">Simpan kumpulan ini untuk menambahkan tab kemudian atau keluar daripada kumpulan ini jika anda tidak mahu akses kepada kumpulan ini lagi</translation>
+<translation id="7511727374778217603">{COUNT,plural, =1{Tambahkan hingga 1 tab}other{Tambahkan hingga {COUNT} tab}}</translation>
 <translation id="7512909159512473473">Masukkan ungkapan laluan…</translation>
 <translation id="7514365320538308">Muat Turun</translation>
 <translation id="7514530647142300459">Kekal menggunakan kata laluan dalam Google Account anda <ph name="EMAIL" /></translation>

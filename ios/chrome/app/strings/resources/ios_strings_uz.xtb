@@ -1787,6 +1787,7 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">inkognito varaqlarni qulflash uchun Touch ID, Face ID yoki kirish kodini sozlang.</translation>
 <translation id="750886945254958667">Undan foydalanish va unga varaqlar kiritish mumkin. Guruh kerak boʻlmasa, uni tark eting.</translation>
+<translation id="7511727374778217603">{COUNT,plural, =1{1 tagacha varaq qoʻshing}other{{COUNT} tagacha varaq qoʻshing}}</translation>
 <translation id="7512909159512473473">Kodli iborani kiriting…</translation>
 <translation id="7514365320538308">Yuklab olish</translation>
 <translation id="7514530647142300459">Parollarni Google hisobingizda (<ph name="EMAIL" />) saqlashda davom eting</translation>

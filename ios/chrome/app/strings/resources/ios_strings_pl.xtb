@@ -1787,6 +1787,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Aby zablokować karty incognito, skonfiguruj Touch ID, Face ID lub hasło.</translation>
 <translation id="750886945254958667">Zachowaj tę grupę, aby później dodać karty, lub opuść ją, jeśli nie chcesz już mieć do niej dostępu</translation>
+<translation id="7511727374778217603">{COUNT,plural, =1{Dodaj maksymalnie 1 kartę}few{Dodaj maksymalnie {COUNT} karty}many{Dodaj maksymalnie {COUNT} kart}other{Dodaj maksymalnie {COUNT} karty}}</translation>
 <translation id="7512909159512473473">Wpisz hasło wielowyrazowe…</translation>
 <translation id="7514365320538308">Pobierz</translation>
 <translation id="7514530647142300459">Nadal używaj haseł na swoim koncie Google <ph name="EMAIL" /></translation>

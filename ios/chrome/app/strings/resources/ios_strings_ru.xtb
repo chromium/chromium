@@ -1787,6 +1787,7 @@
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Чтобы закреплять вкладки инкогнито, настройте Touch ID, Face ID или код доступа.</translation>
 <translation id="750886945254958667">Вы сможете пользоваться ей в дальнейшем и добавлять вкладки. Если группа больше не нужна, выйдите из нее.</translation>
+<translation id="7511727374778217603">{COUNT,plural, =1{Добавить можно не более 1 вкладки.}one{Добавить можно не более {COUNT} вкладки.}few{Добавить можно не более {COUNT} вкладок.}many{Добавить можно не более {COUNT} вкладок.}other{Добавить можно не более {COUNT} вкладки.}}</translation>
 <translation id="7512909159512473473">Ввести кодовую фразу</translation>
 <translation id="7514365320538308">Скачать</translation>
 <translation id="7514530647142300459">Продолжайте использовать пароли в аккаунте <ph name="EMAIL" />.</translation>

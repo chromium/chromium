@@ -1787,6 +1787,7 @@
 <translation id="7506817096924591340"><ph name="FILENAME" /> ‏(<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">‏כדי לנעול את כרטיסיות המצב האנונימי, יש להגדיר Touch ID,‏ Face ID או קוד גישה.</translation>
 <translation id="750886945254958667">אפשר לשמור את הקבוצה הזו כדי להוסיף כרטיסיות מאוחר יותר, או לעזוב אותה אם אין לך יותר צורך בה</translation>
+<translation id="7511727374778217603">{COUNT,plural, =1{אפשר להוסיף רק כרטיסייה אחת}one{אפשר להוסיף עד {COUNT} כרטיסיות}two{אפשר להוסיף עד {COUNT} כרטיסיות}other{אפשר להוסיף עד {COUNT} כרטיסיות}}</translation>
 <translation id="7512909159512473473">הזנת ביטוי סיסמה…</translation>
 <translation id="7514365320538308">הורדה</translation>
 <translation id="7514530647142300459">‏המשך השימוש בסיסמאות בחשבון שלך ב-Google <ph name="EMAIL" /></translation>
