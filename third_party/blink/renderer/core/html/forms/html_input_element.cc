@@ -1928,6 +1928,14 @@ HTMLInputElement::FilteredDataListOptions() const {
   if (!data_list)
     return filtered;
 
+  if (IsBaseAppearanceCombobox()) {
+    // This method is only used for the "native" autofill popup, which we don't
+    // want to render at all when we are also rendering the same datalist
+    // options in the base appearance datalist. Returning zero options here will
+    // prevent the autofill popup from rendering.
+    return filtered;
+  }
+
   // Ensure the editor has been created as InnerEditorValue() returns an empty
   // string if the editor wasn't created.
   EnsureInnerEditorElement();
