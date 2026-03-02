@@ -205,4 +205,27 @@ TEST_F(SearchIntegrityTest, Histograms_LoggedCorrectly) {
       "Search.Integrity.IsDefaultCustomWithMatchingPolicyEngine", true, 1);
 }
 
+TEST_F(SearchIntegrityTest, CheckDefaultSearchEngine_DefaultIsStarterPack) {
+  TemplateURL* turl = AddSearchEngine(u"Starter Pack", "http://starter.com",
+                                      /*created_by_policy=*/false,
+                                      /*prepopulate_id=*/0,
+                                      /*starter_pack_id=*/1);
+  SetDefaultSearchProvider(turl);
+
+  SearchIntegrityReport report = CheckSearchEnginesReport();
+
+  EXPECT_FALSE(report.is_default_custom);
+}
+
+TEST_F(SearchIntegrityTest, CheckDefaultSearchEngine_DefaultIsPrepopulated) {
+  TemplateURL* turl =
+      AddSearchEngine(u"Prepopulated", "http://prepopulated.com",
+                      /*created_by_policy=*/false, /*prepopulate_id=*/1);
+  SetDefaultSearchProvider(turl);
+
+  SearchIntegrityReport report = CheckSearchEnginesReport();
+
+  EXPECT_FALSE(report.is_default_custom);
+}
+
 }  // namespace search_integrity
