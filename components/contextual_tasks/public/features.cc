@@ -38,10 +38,6 @@ BASE_FEATURE(kContextualTasksContextMenu, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kContextualTasksSuggestionsEnabled,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables tab auto-chip for contextual tasks.
-BASE_FEATURE(kContextualTasksTabAutoSuggestionChipEnabled,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kContextualTasksShowOnboardingTooltip,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -103,6 +99,10 @@ const base::FeatureParam<double> kContentVisibilityThreshold{
 const base::FeatureParam<double> kContextualTasksContextLoggingSampleRate{
     &kContextualTasksContextLogging, "ContextualTasksContextLoggingSampleRate",
     1.0};
+
+// Enables tab auto-chip for contextual tasks.
+const base::FeatureParam<bool> kContextualTasksTabAutoSuggestionChipEnabled(
+    &kContextualTasks, "ContextualTasksTabAutoSuggestionChipEnabled", true);
 
 // The base URL for the AI page.
 const base::FeatureParam<std::string> kContextualTasksAiPageUrl{
@@ -343,6 +343,10 @@ const base::FeatureParam<int> kContextualTasksNextboxMaxFileCount{
 
 bool GetIsContextualTasksSuggestionsEnabled() {
   return base::FeatureList::IsEnabled(kContextualTasksSuggestionsEnabled);
+}
+
+bool GetIsTabAutoSuggestionChipEnabled() {
+  return kContextualTasksTabAutoSuggestionChipEnabled.Get();
 }
 
 bool GetEnableLensInContextualTasks() {

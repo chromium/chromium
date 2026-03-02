@@ -31,10 +31,6 @@ BASE_DECLARE_FEATURE(kContextualTasksContextMenu);
 // Enables context menu settings for contextual tasks.
 BASE_DECLARE_FEATURE(kContextualTasksSuggestionsEnabled);
 
-// Enables tab auto-chip for contextual tasks. When disabled, no suggested
-// chips will be shown in the composebox automatically.
-BASE_DECLARE_FEATURE(kContextualTasksTabAutoSuggestionChipEnabled);
-
 // Force the application locale to US and the gl query parameter to us.
 BASE_DECLARE_FEATURE(kContextualTasksForceCountryCodeUS);
 
@@ -179,6 +175,10 @@ extern std::vector<std::string> GetContextualTasksSignInDomains();
 
 // Whether the suggestions are enabled for Nextbox.
 extern bool GetIsContextualTasksSuggestionsEnabled();
+
+// Enables tab auto-chip for contextual tasks. When disabled, no suggested
+// chips will be shown in the composebox automatically.
+extern bool GetIsTabAutoSuggestionChipEnabled();
 
 // Returns whether Lens is enabled in contextual tasks. When this is enabled,
 // Lens entry points will open results in the contextual tasks panels.

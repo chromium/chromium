@@ -4528,28 +4528,48 @@ const FeatureEntry::FeatureVariation kAndroidDesktopZoomScalingVariations[] = {
      nullptr}};
 #endif  // BUILDFLAG(IS_ANDROID)
 
-const FeatureEntry::FeatureParam kContextualTaskPermanentButton[] = {
-    {"ContextualTasksEntryPoint", "toolbar-permanent"}};
-const FeatureEntry::FeatureParam kContextualTaskEphemeralButton[] = {
-    {"ContextualTasksEntryPoint", "toolbar-revisit"}};
-const FeatureEntry::FeatureParam kContextualTaskPageAction[] = {
-    {"ContextualTasksEntryPoint", "page-action-revisit"}};
-const FeatureEntry::FeatureParam kContextualTaskDisableSidePanel[] = {
-    {"ContextualTasksEntryPoint", "toolbar-revisit"},
-    {"ContextualTasksOpenSidePanelOnLinkClicked", "false"}};
-const FeatureEntry::FeatureParam kContextualTaskDisableLens[] = {
-    {"ContextualTasksEntryPoint", "toolbar-revisit"},
-    {"ContextualTasksEnableLensInContextualTasks", "false"}};
+const FeatureEntry::FeatureParam kArm1FullBundleWithExpandoButton[] = {
+    {"ContextualTasksExpandButtonOptions", "side-panel-expand-button"}};
+const FeatureEntry::FeatureParam
+    kArm2FullBundleNoAutoSidePanelOpenWithExpandoButton[] = {
+        {"ContextualTasksExpandButtonOptions", "side-panel-expand-button"},
+        {"ContextualTasksOpenSidePanelOnLinkClicked", "false"}};
+const FeatureEntry::FeatureParam
+    kArm3FullBundleWithoutLensMigrationWithExpandoButton[] = {
+        {"ContextualTasksExpandButtonOptions", "side-panel-expand-button"},
+        {"ContextualTasksEnableLensInContextualTasks", "false"}};
+const FeatureEntry::FeatureParam
+    kArm4FullBundleNoAutoAddedContextInSidePanelWithExpandoButton[] = {
+        {"ContextualTasksExpandButtonOptions", "side-panel-expand-button"},
+        {"ContextualTasksTabAutoSuggestionChipEnabled", "false"}};
+const FeatureEntry::FeatureParam kArm5FullBundleWithCloseToExpandButton[] = {
+    {"ContextualTasksExpandButtonOptions", "toolbar-close-button"}};
+const FeatureEntry::FeatureParam
+    kArm6FullBundleWithoutLensMigrationWithCloseToExpandButton[] = {
+        {"ContextualTasksExpandButtonOptions", "toolbar-close-button"},
+        {"ContextualTasksEnableLensInContextualTasks", "false"}};
+const FeatureEntry::FeatureParam
+    kArm7FullBundleNoAutoAddedContextInSidePanelWithCloseToExpandButton[] = {
+        {"ContextualTasksExpandButtonOptions", "toolbar-close-button"},
+        {"ContextualTasksTabAutoSuggestionChipEnabled", "false"}};
 
-const FeatureEntry::FeatureVariation kContextualTaskEntryPointVariations[] = {
-    {"Arm 1: Full bundle with ephemeral toolbar button",
-     kContextualTaskEphemeralButton, nullptr},
-    {"Arm 2: Full bundle, without AIM link clicks opening side panel",
-     kContextualTaskDisableSidePanel, nullptr},
-    {"Arm 3: Full bundle, without Lens migration", kContextualTaskDisableLens,
+const FeatureEntry::FeatureVariation kContextualTasksVariations[] = {
+    {"Arm 1: Full bundle with expando button", kArm1FullBundleWithExpandoButton,
      nullptr},
-    {"permanent toolbar button", kContextualTaskPermanentButton, nullptr},
-    {"page action chip", kContextualTaskPageAction, nullptr}};
+    {"Arm 2: Full bundle, no auto side panel open, expando button",
+     kArm2FullBundleNoAutoSidePanelOpenWithExpandoButton, nullptr},
+    {"Arm 3: Full bundle, without Lens migration, expando button",
+     kArm3FullBundleWithoutLensMigrationWithExpandoButton, nullptr},
+    {"Arm 4: Full bundle, No auto added context in side panel, expando button",
+     kArm4FullBundleNoAutoAddedContextInSidePanelWithExpandoButton, nullptr},
+    {"Arm 5: Full bundle with close to expand button",
+     kArm5FullBundleWithCloseToExpandButton, nullptr},
+    {"Arm 6: Full bundle, without Lens migration, close to expand button",
+     kArm6FullBundleWithoutLensMigrationWithCloseToExpandButton, nullptr},
+    {"Arm 7: Full bundle, No auto added context in side panel, close to expand "
+     "button",
+     kArm7FullBundleNoAutoAddedContextInSidePanelWithCloseToExpandButton,
+     nullptr}};
 
 const FeatureEntry::FeatureParam kTaskScopedSidePanel[] = {
     {"ContextualTasksTaskScopedSidePanel", "true"}};
@@ -12211,7 +12231,7 @@ const FeatureEntry kFeatureEntries[] = {
      contextual_tasks::flag_descriptions::kContextualTasksDescription,
      kOsDesktop,
      FEATURE_WITH_PARAMS_VALUE_TYPE(contextual_tasks::kContextualTasks,
-                                    kContextualTaskEntryPointVariations,
+                                    kContextualTasksVariations,
                                     "ContextualTasks")},
 
     {"omnibox-debug-logs", omnibox::flag_descriptions::kOmniboxDebugLogsName,
