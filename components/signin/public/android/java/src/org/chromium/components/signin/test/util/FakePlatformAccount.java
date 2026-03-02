@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 package org.chromium.components.signin.test.util;
 
-import org.chromium.build.annotations.Nullable;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.signin.AccessTokenData;
 import org.chromium.components.signin.AccountManagerDelegate;
 import org.chromium.components.signin.PlatformAccount;
@@ -19,6 +19,7 @@ import java.util.UUID;
  * A test implementation of {@link PlatformAccount} for testing components that depend on {@link
  * AccountManagerDelegate}.
  */
+@NullMarked
 public class FakePlatformAccount implements PlatformAccount {
     private final AccountInfo mAccount;
     private final Map<String, AccessTokenData> mAccessTokens =
@@ -60,7 +61,6 @@ public class FakePlatformAccount implements PlatformAccount {
      * Gets the access token for the given scope. If a token has not been previously generated for
      * this scope, a new one will be created.
      */
-    @Nullable
     public AccessTokenData getAccessTokenOrGenerateNew(String scope) {
         return mAccessTokens.computeIfAbsent(
                 scope, (ignored) -> new AccessTokenData(UUID.randomUUID().toString()));

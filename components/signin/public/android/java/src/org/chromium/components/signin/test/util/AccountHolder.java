@@ -7,10 +7,10 @@ package org.chromium.components.signin.test.util;
 import android.accounts.Account;
 
 import androidx.annotation.AnyThread;
-import androidx.annotation.Nullable;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.signin.AccessTokenData;
 import org.chromium.components.signin.base.AccountCapabilities;
 import org.chromium.components.signin.base.AccountInfo;
@@ -44,7 +44,6 @@ public class AccountHolder {
         return mAccountInfo;
     }
 
-    @Nullable
     @AnyThread
     AccessTokenData getAccessTokenOrGenerateNew(String scope) {
         return mAccessTokens.computeIfAbsent(
