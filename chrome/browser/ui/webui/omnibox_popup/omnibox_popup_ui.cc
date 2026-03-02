@@ -225,7 +225,6 @@ void OmniboxPopupUI::BindInterface(
       web_ui(),
       base::BindRepeating(&OmniboxPopupUI::GetOrCreateContextualSessionHandle,
                           base::Unretained(this)));
-  omnibox_handler_->SetEmbedder(embedder());
 }
 
 void OmniboxPopupUI::BindInterface(
@@ -239,6 +238,7 @@ void OmniboxPopupUI::CreatePageHandler(
     mojo::PendingReceiver<omnibox_popup::mojom::PageHandler> receiver) {
   popup_handler_ = std::make_unique<OmniboxPopupHandler>(std::move(receiver),
                                                          std::move(page));
+  popup_handler_->set_embedder(embedder());
 }
 
 void OmniboxPopupUI::BindInterface(
@@ -292,12 +292,12 @@ void OmniboxPopupUI::CreatePageHandler(
 
   // TODO(crbug.com/435288212): Move searchbox mojom to use factory pattern.
   composebox_handler_->SetPage(std::move(pending_searchbox_page));
-  composebox_handler_->SetEmbedder(embedder());
 }
 
 void OmniboxPopupUI::CreatePageHandler(
     mojo::PendingRemote<omnibox_popup_aim::mojom::Page> page,
     mojo::PendingReceiver<omnibox_popup_aim::mojom::PageHandler> receiver) {
   popup_aim_handler_ = std::make_unique<OmniboxPopupAimHandler>(
-      std::move(receiver), std::move(page), this);
+      std::move(receiver), std::move(page), web_ui()->GetWebContents());
+  popup_aim_handler_->set_embedder(embedder());
 }

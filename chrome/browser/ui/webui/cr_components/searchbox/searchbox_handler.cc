@@ -1082,12 +1082,8 @@ void SearchboxHandler::ActivateKeyword(
     const GURL& url,
     base::TimeTicks match_selection_timestamp,
     bool is_mouse_event) {
-  // Generic searchbox should not show keywords.
-  NOTREACHED();
-}
-
-void SearchboxHandler::ShowContextMenu(const gfx::Point& point) {
-  // Generic searchbox should not have a context menu.
+  // TODO(b/449785444): Allow embedders other than the Omnibox to activate
+  // keyword mode.
   NOTREACHED();
 }
 

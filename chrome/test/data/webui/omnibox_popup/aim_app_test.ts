@@ -158,4 +158,21 @@ suite('AimAppTest', function() {
     await microtasksFinished();
     assertTrue(glowAnimationPlayed);
   });
+
+  test('ShowsContextMenuOnContextualEntryPointClick', async function() {
+    const app = document.createElement('omnibox-aim-app');
+    document.body.appendChild(app);
+
+    const point = {x: 10, y: 20};
+    app.$.composebox.dispatchEvent(
+        new CustomEvent('context-menu-entrypoint-click', {
+          detail: point,
+          bubbles: true,
+          composed: true,
+        }));
+
+    const result = await testProxy.handler.whenCalled('showContextMenu');
+    assertEquals(point.x, result.x);
+    assertEquals(point.y, result.y);
+  });
 });

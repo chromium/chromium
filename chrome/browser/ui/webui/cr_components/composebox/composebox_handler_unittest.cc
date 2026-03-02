@@ -56,32 +56,6 @@ class MockPage : public composebox::mojom::Page {
   mojo::Receiver<composebox::mojom::Page> receiver_{this};
 };
 
-class TestEmbedder final : public TopChromeWebUIController::Embedder {
- public:
-  TestEmbedder() = default;
-  ~TestEmbedder() = default;
-
-  void ShowUI() override {}
-  void CloseUI() override {}
-  void HideContextMenu() override {}
-
-  void ShowContextMenu(gfx::Point point,
-                       std::unique_ptr<ui::MenuModel> menu_model) override {
-    context_menu_shown_ = true;
-  }
-
-  bool context_menu_shown() const { return context_menu_shown_; }
-
-  base::WeakPtr<TestEmbedder> GetWeakPtr() {
-    return weak_factory_.GetWeakPtr();
-  }
-
- private:
-  bool context_menu_shown_;
-
-  base::WeakPtrFactory<TestEmbedder> weak_factory_{this};
-};
-
 }  // namespace
 
 class ComposeboxHandlerTest : public ContextualSearchboxHandlerTestHarness {
@@ -127,8 +101,6 @@ class ComposeboxHandlerTest : public ContextualSearchboxHandlerTestHarness {
         }));
 
     handler_->SetPage(mock_searchbox_page_.BindAndGetRemote());
-    embedder_ = std::make_unique<TestEmbedder>();
-    handler_->SetEmbedder(embedder_->GetWeakPtr());
   }
 
   ComposeboxHandler& handler() { return *handler_; }
@@ -136,7 +108,6 @@ class ComposeboxHandlerTest : public ContextualSearchboxHandlerTestHarness {
   MockContextualSearchMetricsRecorder& metrics_recorder() {
     return *metrics_recorder_;
   }
-  TestEmbedder& embedder() { return *embedder_; }
 
   void SubmitQueryAndWaitForNavigation() {
     content::TestNavigationObserver navigation_observer(web_contents());
@@ -187,7 +158,6 @@ class ComposeboxHandlerTest : public ContextualSearchboxHandlerTestHarness {
   raw_ptr<MockContextualSearchMetricsRecorder> metrics_recorder_;
   std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
       contextual_session_handle_;
-  std::unique_ptr<TestEmbedder> embedder_;
   std::unique_ptr<ComposeboxHandler> handler_;
 };
 
@@ -256,9 +226,4 @@ TEST_F(ComposeboxHandlerTest, SubmitQueryWithToolMetric) {
       "ContextualSearch.Tools.ModeOnSubmission.NewTabPage", 3);
   histogram_tester().ExpectTotalCount(
       "ContextualSearch.Models.ModeOnSubmission.NewTabPage", 3);
-}
-
-TEST_F(ComposeboxHandlerTest, ContextMenu_Shows) {
-  handler().ShowContextMenu(gfx::Point());
-  EXPECT_TRUE(embedder().context_menu_shown());
 }

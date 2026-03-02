@@ -31,7 +31,7 @@ import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
-import type {PageCallbackRouter as OmniboxPopupPageCallbackRouter} from './omnibox_popup.mojom-webui.js';
+import type {PageCallbackRouter as OmniboxPopupPageCallbackRouter, PageHandlerInterface as OmniboxPopupPageHandlerInterface} from './omnibox_popup.mojom-webui.js';
 import {OmniboxPopupBrowserProxy} from './omnibox_popup_browser_proxy.js';
 
 // 675px ~= 449px (--cr-realbox-primary-side-min-width) * 1.5 + some margin.
@@ -171,6 +171,7 @@ export class OmniboxPopupAppElement extends I18nMixinLit
   private pageHandler_: SearchboxPageHandlerInterface;
   private popupCallbackRouter_: OmniboxPopupPageCallbackRouter;
   private popupListenerIds_: number[] = [];
+  private popupPageHandler_: OmniboxPopupPageHandlerInterface;
   private selection_: OmniboxPopupSelection = kDefaultSelection;
 
   constructor() {
@@ -180,6 +181,7 @@ export class OmniboxPopupAppElement extends I18nMixinLit
         OmniboxPopupBrowserProxy.getInstance().callbackRouter;
     this.isDebug = new URLSearchParams(window.location.search).has('debug');
     this.pageHandler_ = SearchboxBrowserProxy.getInstance().handler;
+    this.popupPageHandler_ = OmniboxPopupBrowserProxy.getInstance().handler;
     ColorChangeUpdater.forDocument().start();
   }
 
@@ -535,7 +537,7 @@ export class OmniboxPopupAppElement extends I18nMixinLit
   private openCurrentSelection_(disposition: WindowOpenDisposition) {
     if (this.selection_.state ===
         SelectionLineState.kFocusedButtonContextEntrypoint) {
-      this.pageHandler_.showContextMenu({x: 0, y: 0});
+      this.popupPageHandler_.showContextMenu({x: 0, y: 0});
     } else if (selectionIsNativelySupported(this.selection_)) {
       this.pageHandler_.openPopupSelection(this.selection_, disposition);
     } else {
@@ -556,7 +558,7 @@ export class OmniboxPopupAppElement extends I18nMixinLit
       x: e.detail.x,
       y: e.detail.y,
     };
-    this.pageHandler_.showContextMenu(point);
+    this.popupPageHandler_.showContextMenu(point);
   }
 
   protected async refreshRecentTabForChip_() {

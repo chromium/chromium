@@ -36,7 +36,7 @@ class OmniboxPopupComposeboxClient : public ContextualOmniboxClient {
     // The OmniboxPopupWebContentsHelper should already be instantiated by this
     // point.
     auto* main_omnibox_controller =
-        OmniboxPopupWebContentsHelper::FromWebContents(web_contents_)
+        OmniboxPopupWebContentsHelper::GetOrCreateForWebContents(web_contents_)
             ->get_omnibox_controller();
 
     if (!main_omnibox_controller) {

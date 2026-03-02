@@ -281,12 +281,6 @@ void WebuiOmniboxHandler::ActivateKeyword(
   }
 }
 
-void WebuiOmniboxHandler::ShowContextMenu(const gfx::Point& point) {
-  if (embedder_) {
-    embedder_->ShowContextMenu(point, nullptr);
-  }
-}
-
 void WebuiOmniboxHandler::OpenLensSearch() {
   edit_model()->OpenLensSearch();
 }

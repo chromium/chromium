@@ -5,7 +5,7 @@
 module omnibox_popup_aim.mojom;
 
 import "components/omnibox/browser/searchbox.mojom";
-import "mojo/public/mojom/base/work_in_progress.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
 
 // The browser-side handler for the Omnibox AIM Popup.
@@ -23,6 +23,9 @@ interface PageHandler {
 
   // Called to open URLs in AIM such as the suggestion activity link.
   NavigateCurrentTab(url.mojom.Url url);
+
+  // Opens context menu.
+  ShowContextMenu(gfx.mojom.Point point);
 };
 
 // The WebUI page for the Omnibox AIM Popup.

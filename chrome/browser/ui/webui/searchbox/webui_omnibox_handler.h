@@ -45,17 +45,12 @@ class WebuiOmniboxHandler : public ContextualSearchboxHandler,
 
   ~WebuiOmniboxHandler() override;
 
-  void SetEmbedder(base::WeakPtr<TopChromeWebUIController::Embedder> embedder) {
-    embedder_ = embedder;
-  }
-
   // searchbox::mojom::PageHandler:
   void ActivateKeyword(uint8_t line,
                        const GURL& url,
                        base::TimeTicks match_selection_timestamp,
                        bool is_mouse_event) override;
   void OnThumbnailRemoved() override {}
-  void ShowContextMenu(const gfx::Point& point) override;
   void OpenLensSearch() override;
   void AddTabContext(int32_t tab_id,
                      bool delay_upload,
@@ -137,8 +132,6 @@ class WebuiOmniboxHandler : public ContextualSearchboxHandler,
 
   raw_ptr<MetricsReporter> metrics_reporter_;
   PrefChangeRegistrar pref_change_registrar_;
-
-  base::WeakPtr<TopChromeWebUIController::Embedder> embedder_;
 
   base::CallbackListSubscription aim_eligibility_subscription_;
 

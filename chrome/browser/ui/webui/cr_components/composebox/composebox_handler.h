@@ -24,8 +24,6 @@
 class Profile;
 class OmniboxController;
 
-class TopChromeWebUIController;
-
 class ComposeboxHandler : public composebox::mojom::PageHandler,
                           public ContextualSearchboxHandler {
  public:
@@ -38,10 +36,6 @@ class ComposeboxHandler : public composebox::mojom::PageHandler,
       content::WebContents* web_contents,
       GetSessionHandleCallback get_session_callback);
   ~ComposeboxHandler() override;
-
-  void SetEmbedder(base::WeakPtr<TopChromeWebUIController::Embedder> embedder) {
-    embedder_ = embedder;
-  }
 
   // composebox::mojom::PageHandler:
   void FocusChanged(bool focused) override;
@@ -68,7 +62,6 @@ class ComposeboxHandler : public composebox::mojom::PageHandler,
                    bool meta_key,
                    bool shift_key) override;
   void ClearFiles(bool should_block_auto_suggested_tabs) override;
-  void ShowContextMenu(const gfx::Point& point) override;
 
   // This is called from either the ComposeboxOmniboxClient when a match is
   // present in navigation or for the PageHandler's `SubmitQuery()` when there
@@ -98,7 +91,6 @@ class ComposeboxHandler : public composebox::mojom::PageHandler,
 
  private:
   raw_ptr<content::WebContents> web_contents_;
-  base::WeakPtr<TopChromeWebUIController::Embedder> embedder_;
 
   // These are located at the end of the list of member variables to ensure the
   // WebUI page is disconnected before other members are destroyed.

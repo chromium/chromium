@@ -6,7 +6,9 @@
 #define CHROME_BROWSER_UI_WEBUI_OMNIBOX_POPUP_OMNIBOX_POPUP_HANDLER_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webui/omnibox_popup/mojom/omnibox_popup.mojom.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -23,12 +25,21 @@ class OmniboxPopupHandler : public omnibox_popup::mojom::PageHandler {
 
   ~OmniboxPopupHandler() override;
 
+  void set_embedder(
+      base::WeakPtr<TopChromeWebUIController::Embedder> embedder) {
+    embedder_ = embedder;
+  }
+
+  // omnibox_popup::mojom::PageHandler:
+  void ShowContextMenu(const gfx::Point& point) override;
+
   // Forwards an `OnShow()` call to the page.
   void OnShow();
 
  private:
   mojo::Receiver<omnibox_popup::mojom::PageHandler> receiver_;
   mojo::Remote<omnibox_popup::mojom::Page> page_;
+  base::WeakPtr<TopChromeWebUIController::Embedder> embedder_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_OMNIBOX_POPUP_OMNIBOX_POPUP_HANDLER_H_
