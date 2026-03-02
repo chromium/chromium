@@ -19,7 +19,7 @@ FakeDeviceInfoTracker::FakeDeviceInfoTracker() = default;
 FakeDeviceInfoTracker::~FakeDeviceInfoTracker() = default;
 
 bool FakeDeviceInfoTracker::IsSyncing() const {
-  return !devices_.empty();
+  return is_syncing_override_.value_or(!devices_.empty());
 }
 
 const DeviceInfo* FakeDeviceInfoTracker::GetDeviceInfo(
@@ -115,6 +115,14 @@ void FakeDeviceInfoTracker::Replace(const DeviceInfo* old_device,
 void FakeDeviceInfoTracker::OverrideActiveDeviceCount(
     const absl::flat_hash_map<DeviceInfo::FormFactor, int>& counts) {
   device_count_per_type_override_ = counts;
+  for (auto& observer : observers_) {
+    observer.OnDeviceInfoChange();
+  }
+}
+
+void FakeDeviceInfoTracker::SetIsSyncingOverride(
+    std::optional<bool> override_value) {
+  is_syncing_override_ = override_value;
   for (auto& observer : observers_) {
     observer.OnDeviceInfoChange();
   }

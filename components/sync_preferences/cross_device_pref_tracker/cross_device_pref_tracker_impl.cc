@@ -560,7 +560,13 @@ CrossDevicePrefTrackerImpl::CrossDevicePrefTrackerImpl(
 
   // Clean up any expired device entries from the cross-device storage.
   // This relies on `active_device_guids_`.
-  GarbageCollectStaleCacheGuids();
+  if (syncer::DeviceInfoTracker* tracker =
+          device_info_sync_service_->GetDeviceInfoTracker()) {
+    // Only garbage collect when the tracker is fully loaded.
+    if (tracker->IsSyncing()) {
+      GarbageCollectStaleCacheGuids();
+    }
+  }
 }
 
 CrossDevicePrefTrackerImpl::~CrossDevicePrefTrackerImpl() {
@@ -677,9 +683,23 @@ void CrossDevicePrefTrackerImpl::Shutdown() {
 // 3. Signal for garbage collection of stale Cache GUIDs (removed or expired).
 void CrossDevicePrefTrackerImpl::OnDeviceInfoChange() {
   HandleLocalDeviceInfoIfAvailable();
+  UpdateServiceStatus();
+
+  syncer::DeviceInfoTracker* tracker =
+      device_info_sync_service_->GetDeviceInfoTracker();
+
+  if (!tracker) {
+    return;
+  }
+
+  // Nothing to do if Sync is disabled and there's no device data
+  // available to handle.
+  if (!tracker->IsSyncing() && active_device_guids_.empty()) {
+    return;
+  }
+
   HandleRemoteDeviceInfoChanges();
   GarbageCollectStaleCacheGuids();
-  UpdateServiceStatus();
 }
 
 void CrossDevicePrefTrackerImpl::OnStateChanged(syncer::SyncService* sync) {

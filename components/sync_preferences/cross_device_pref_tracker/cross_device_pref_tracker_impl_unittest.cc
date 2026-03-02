@@ -2061,5 +2061,36 @@ TEST_F(CrossDevicePrefTrackerTest, DoesNotWriteToDictionaryForDefaultValues) {
   CreateTracker();
 }
 
+// Verifies that cached cross-device prefs are not prematurely garbage
+// collected during startup before the `DeviceInfoTracker` has finished
+// its initial sync.
+TEST_F(CrossDevicePrefTrackerTest, DoesNotPrematurelyGarbageCollectAtStartup) {
+  const std::string kRemoteGuid = "remote_guid";
+  const base::Time kNow = base::Time::Now();
+
+  // Inject a valid pref entry to simulate data loaded from disk at startup.
+  InjectCrossDevicePrefEntry(kCrossDeviceProfilePref, kRemoteGuid,
+                             base::Value(100), kNow, std::nullopt);
+
+  // Simulate the tracker not being ready yet (initial sync incomplete).
+  GetTracker()->SetIsSyncingOverride(false);
+
+  // Initialize the tracker. It should skip garbage collection because
+  // `IsSyncing()` is false.
+  CreateTracker();
+
+  // Verify the cached entry was NOT prematurely wiped.
+  EXPECT_NE(GetCrossDevicePrefEntry(kCrossDeviceProfilePref, kRemoteGuid),
+            nullptr);
+
+  // Simulate initial sync completing.
+  GetTracker()->SetIsSyncingOverride(true);
+
+  // Now the stale entry should be garbage collected because the remote device
+  // isn't actively in the tracker.
+  EXPECT_EQ(GetCrossDevicePrefEntry(kCrossDeviceProfilePref, kRemoteGuid),
+            nullptr);
+}
+
 }  // namespace
 }  // namespace sync_preferences
