@@ -661,8 +661,9 @@ void ChromeWebClient::RunOpenPanel(
     API_AVAILABLE(ios(18.4)) {
   CHECK(base::FeatureList::IsEnabled(kIOSCustomFileUploadMenu));
   ChooseFileTabHelper* tab_helper = ChooseFileTabHelper::FromWebState(source);
-  CHECK(tab_helper);
-  tab_helper->RunOpenPanel(parameters, frame, std::move(completion));
+  if (tab_helper) {
+    tab_helper->RunOpenPanel(parameters, frame, std::move(completion));
+  }
 }
 
 web::JSErrorReportLoggingLevel ChromeWebClient::GetJSErrorReportLoggingLevel(
