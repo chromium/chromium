@@ -43,7 +43,7 @@ public class ActorOverlayPTTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(ChromeFeatureList.GLIC_ACTOR_UI)
+    @EnableFeatures(ChromeFeatureList.GLIC)
     public void testActorOverlayIsInflated() {
         mActivityTestRule.startOnBlankPage();
         onView(withId(R.id.actor_overlay)).check(matches(not(isDisplayed())));
@@ -51,7 +51,7 @@ public class ActorOverlayPTTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(ChromeFeatureList.GLIC_ACTOR_UI)
+    @EnableFeatures(ChromeFeatureList.GLIC)
     public void testOverlayVisibility() {
         mActivityTestRule.startOnBlankPage();
         showOverlay(true);
@@ -63,7 +63,7 @@ public class ActorOverlayPTTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(ChromeFeatureList.GLIC_ACTOR_UI)
+    @EnableFeatures(ChromeFeatureList.GLIC)
     public void testOverlayClickShowsSnackbar() {
         WebPageStation page = mActivityTestRule.startOnBlankPage();
         showOverlay(true);

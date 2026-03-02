@@ -968,8 +968,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                             mTabModelSelectorSupplier);
         }
 
-        if (ChromeFeatureList.sGlicActorUi.isEnabled()
-                && ChromeFeatureList.sGlicActorUiOverlay.getValue()) {
+        if (ChromeFeatureList.sGlic.isEnabled()) {
             ViewStub stub = mActivity.findViewById(R.id.actor_overlay_stub);
             mActorOverlayCoordinator =
                     new ActorOverlayCoordinator(
