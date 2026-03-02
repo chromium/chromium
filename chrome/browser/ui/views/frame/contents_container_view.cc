@@ -10,6 +10,9 @@
 #include "chrome/browser/actor/ui/actor_overlay_web_view.h"
 #include "chrome/browser/devtools/devtools_contents_resizing_strategy.h"
 #include "chrome/browser/enterprise/watermark/watermark_view.h"
+#include "chrome/browser/glic/browser_ui/context_sharing_border_view.h"
+#include "chrome/browser/glic/browser_ui/context_sharing_border_view_controller_impl.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
@@ -43,12 +46,6 @@
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
-
-#if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/glic/browser_ui/context_sharing_border_view.h"
-#include "chrome/browser/glic/browser_ui/context_sharing_border_view_controller_impl.h"
-#include "chrome/browser/glic/public/glic_enabling.h"
-#endif
 
 #if BUILDFLAG(IS_WIN)
 #include "ui/views/widget/native_widget_aura.h"
@@ -121,7 +118,6 @@ ContentsContainerView::ContentsContainerView(BrowserView* browser_view)
     actor_overlay_web_view_ = AddChildView(std::move(actor_overlay_web_view));
   }
 
-#if BUILDFLAG(ENABLE_GLIC)
   if (base::FeatureList::IsEnabled(features::kGlicRegionSelectionNew)) {
     auto glic_selection_overlay_view = std::make_unique<views::WebView>();
     glic_selection_overlay_view->SetProperty(
@@ -144,7 +140,6 @@ ContentsContainerView::ContentsContainerView(BrowserView* browser_view)
             .SetCanProcessEventsWithinSubtree(false)
             .Build());
   }
-#endif
 
   mini_toolbar_ = AddChildView(std::make_unique<MultiContentsViewMiniToolbar>(
       browser_view, contents_view_));
@@ -279,7 +274,6 @@ void ContentsContainerView::UpdateBorderRoundedCorners() {
     actor_overlay_web_view_->holder()->SetCornerRadii(radii);
   }
 
-#if BUILDFLAG(ENABLE_GLIC)
   if (glic_selection_overlay_view_) {
     glic_selection_overlay_view_->holder()->SetCornerRadii(radii);
   }
@@ -287,7 +281,6 @@ void ContentsContainerView::UpdateBorderRoundedCorners() {
   if (glic_border_) {
     glic_border_->SetRoundedCorners(content_rounded_corners);
   }
-#endif
 }
 
 void ContentsContainerView::ClearBorderRoundedCorners() {
@@ -309,7 +302,6 @@ void ContentsContainerView::ClearBorderRoundedCorners() {
     actor_overlay_web_view_->holder()->SetCornerRadii(kNoRoundedCorners);
   }
 
-#if BUILDFLAG(ENABLE_GLIC)
   if (glic_selection_overlay_view_) {
     glic_selection_overlay_view_->holder()->SetCornerRadii(kNoRoundedCorners);
   }
@@ -317,7 +309,6 @@ void ContentsContainerView::ClearBorderRoundedCorners() {
   if (glic_border_) {
     glic_border_->SetRoundedCorners(kNoRoundedCorners);
   }
-#endif
 }
 
 void ContentsContainerView::ChildVisibilityChanged(View* child) {
@@ -602,14 +593,12 @@ views::ProposedLayout ContentsContainerView::CalculateProposedLayout(
   layouts.child_layouts.emplace_back(
       contents_view_.get(), contents_view_->GetVisible(), contents_rect);
 
-#if BUILDFLAG(ENABLE_GLIC)
   if (glic_border_) {
     // |glic_border_| should not be seen over devtools.
     layouts.child_layouts.emplace_back(glic_border_.get(),
                                        glic_border_->GetVisible(),
                                        non_devtools_contents_bounds);
   }
-#endif
 
   // The content scrim view should cover the entire contents bounds.
   CHECK(contents_scrim_view_);
@@ -629,14 +618,12 @@ views::ProposedLayout ContentsContainerView::CalculateProposedLayout(
         non_devtools_contents_bounds, size_bounds);
   }
 
-#if BUILDFLAG(ENABLE_GLIC)
   if (glic_selection_overlay_view_) {
     layouts.child_layouts.emplace_back(
         glic_selection_overlay_view_.get(),
         glic_selection_overlay_view_->GetVisible(),
         non_devtools_contents_bounds, size_bounds);
   }
-#endif
 
   // Reading Mode overlay view bounds are the same as the contents view.
   if (features::IsImmersiveReadAnythingEnabled() &&

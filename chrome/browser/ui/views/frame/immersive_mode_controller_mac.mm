@@ -13,6 +13,7 @@
 #include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/feature_list.h"
+#include "chrome/browser/glic/widget/glic_widget.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/find_bar/find_bar.h"
@@ -33,10 +34,6 @@
 #include "ui/views/cocoa/native_widget_mac_ns_window_host.h"
 #include "ui/views/focus/focus_search.h"
 #include "ui/views/widget/native_widget.h"
-
-#if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/glic/widget/glic_widget.h"
-#endif
 
 namespace {
 
@@ -439,9 +436,7 @@ bool ImmersiveModeControllerMac::ShouldMoveChild(views::Widget* child) {
       child->GetNativeWindowProperty(views::kWidgetIdentifierKey);
   if (widget_identifier ==
           constrained_window::kConstrainedWindowWidgetIdentifier
-#if BUILDFLAG(ENABLE_GLIC)
       || widget_identifier == glic::kGlicWidgetIdentifier
-#endif
   ) {
     return true;
   }

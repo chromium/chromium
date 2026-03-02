@@ -330,9 +330,7 @@ class BrowserView : public BrowserWindow,
     return weak_ptr_factory_.GetWeakPtr();
   }
 
-#if BUILDFLAG(ENABLE_GLIC)
   views::LabelButton* GetGlicButton();
-#endif  // BUILDFLAG(ENABLE_GLIC)
 
   // Accessor for the BrowserView's TabSearchBubbleHost instance.
   TabSearchBubbleHost* GetTabSearchBubbleHost();

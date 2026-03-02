@@ -124,13 +124,11 @@ bool LensOverlayHomeworkPageActionController::ShouldShow() {
     return false;
   }
 
-#if BUILDFLAG(ENABLE_GLIC)
   if (lens::features::IsLensOverlayEduActionChipDisabledByGlic() &&
       glic::GlicEnabling::IsEligibleForGlicTieredRollout(
           base::to_address(profile_))) {
     return false;
   }
-#endif  // BUILDFLAG(ENABLE_GLIC)
 
   // Hide the homework chip if the broader lens feature is disabled.
   const auto* lens_overlay_entry_point_controller =

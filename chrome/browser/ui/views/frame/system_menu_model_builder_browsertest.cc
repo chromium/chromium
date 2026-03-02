@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
+#include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -16,12 +18,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/menu_model.h"
 
-#if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/glic/glic_pref_names.h"
-#include "chrome/browser/glic/test_support/glic_test_util.h"
-#endif
-
-#if BUILDFLAG(ENABLE_GLIC)
 namespace {
 // Returns true if there exists a visible command with specified id and
 // (optionally) label in the given menu. False otherwise.
@@ -71,4 +67,3 @@ IN_PROC_BROWSER_TEST_F(SystemMenuModelBuilderGlicTest, TogglePinning) {
   profile_prefs->SetBoolean(glic::prefs::kGlicPinnedToTabstrip, true);
   EXPECT_TRUE(ContainsCommand(menu, IDC_GLIC_TOGGLE_PIN, IDS_GLIC_UNPIN));
 }
-#endif

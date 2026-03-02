@@ -22,6 +22,10 @@ source_set("side_panel") {
     "extensions/extension_side_panel_manager.cc",
     "extensions/extension_side_panel_manager.h",
     "extensions/extension_side_panel_utils.cc",
+    "glic/glic_legacy_side_panel_coordinator.cc",
+    "glic/glic_legacy_side_panel_coordinator.h",
+    "glic/glic_side_panel_coordinator_impl.cc",
+    "glic/glic_side_panel_coordinator_impl.h",
     "history/history_side_panel_coordinator.cc",
     "history/history_side_panel_coordinator.h",
     "history_clusters/history_clusters_side_panel_controller.cc",
@@ -63,14 +67,6 @@ source_set("side_panel") {
     "side_panel_web_ui_view.cc",
     "side_panel_web_ui_view.h",
   ]
-  if (enable_glic) {
-    sources += [
-      "glic/glic_legacy_side_panel_coordinator.cc",
-      "glic/glic_legacy_side_panel_coordinator.h",
-      "glic/glic_side_panel_coordinator_impl.cc",
-      "glic/glic_side_panel_coordinator_impl.h",
-    ]
-  }
   public_deps = [
     "//base",
     "//chrome/browser:browser_public_dependencies",
@@ -115,6 +111,7 @@ source_set("side_panel") {
     "//chrome/app:generated_resources_grit",
     "//chrome/app/vector_icons",
     "//chrome/browser/favicon",
+    "//chrome/browser/glic",
     "//chrome/browser/media/webrtc",
     "//chrome/browser/profiles",
     "//chrome/browser/resources:component_extension_resources",
@@ -186,10 +183,6 @@ source_set("side_panel") {
       "//extensions/common",
     ]
     deps += [ "//chrome/common/extensions/api" ]
-  }
-
-  if (enable_glic) {
-    deps += [ "//chrome/browser/glic" ]
   }
 
   allow_circular_includes_from = [

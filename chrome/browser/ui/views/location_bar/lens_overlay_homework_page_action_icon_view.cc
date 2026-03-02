@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/location_bar/lens_overlay_homework_page_action_icon_view.h"
 
 #include "build/branding_buildflags.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/lens/region_search/lens_region_search_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/search.h"
@@ -30,10 +31,6 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/view_class_properties.h"
-
-#if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/glic/public/glic_enabling.h"
-#endif  // BUILDFLAG(ENABLE_GLIC)
 
 LensOverlayHomeworkPageActionIconView::LensOverlayHomeworkPageActionIconView(
     IconLabelBubbleView::Delegate* parent_delegate,
@@ -90,13 +87,11 @@ bool LensOverlayHomeworkPageActionIconView::ShouldShow() {
     return false;
   }
 
-#if BUILDFLAG(ENABLE_GLIC)
   if (lens::features::IsLensOverlayEduActionChipDisabledByGlic() &&
       glic::GlicEnabling::IsEligibleForGlicTieredRollout(
           browser_->GetProfile())) {
     return false;
   }
-#endif  // BUILDFLAG(ENABLE_GLIC)
 
   // Hide the homework chip if the broader lens feature is disabled.
   const auto* controller =

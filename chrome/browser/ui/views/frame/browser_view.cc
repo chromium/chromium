@@ -167,6 +167,7 @@
 #include "chrome/browser/ui/views/frame/vertical_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/frame/web_contents_close_handler.h"
 #include "chrome/browser/ui/views/fullscreen_control/fullscreen_control_host.h"
+#include "chrome/browser/ui/views/glic/glic_button_interface.h"
 #include "chrome/browser/ui/views/global_media_controls/media_toolbar_button_view.h"
 #include "chrome/browser/ui/views/hats/hats_next_web_dialog.h"
 #include "chrome/browser/ui/views/incognito_clear_browsing_data_dialog_coordinator.h"
@@ -391,9 +392,6 @@
 #undef LoadAccelerators
 #endif
 
-#if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/ui/views/glic/glic_button_interface.h"
-#endif  // BUILDFLAG(ENABLE_GLIC)
 
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
 #include "chrome/browser/ui/views/frame/webui_tab_strip_container_view.h"
@@ -1291,7 +1289,6 @@ TabStripRegionView* BrowserView::tab_strip_view() const {
   return horizontal_tab_strip_region_view_.get();
 }
 
-#if BUILDFLAG(ENABLE_GLIC)
 views::LabelButton* BrowserView::GetGlicButton() {
   auto* controller = tabs::VerticalTabStripStateController::From(browser_);
   if (vertical_tab_strip_region_view_ && controller &&
@@ -1303,7 +1300,6 @@ views::LabelButton* BrowserView::GetGlicButton() {
 
   return horizontal_tab_strip_region_view_->GetGlicButton();
 }
-#endif  // BUILDFLAG(ENABLE_GLIC)
 
 TabSearchBubbleHost* BrowserView::GetTabSearchBubbleHost() {
   return tab_search_bubble_host_.get();

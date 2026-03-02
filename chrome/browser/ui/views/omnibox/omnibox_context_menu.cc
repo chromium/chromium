@@ -9,24 +9,21 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/omnibox/omnibox_context_menu_controller.h"
+#include "chrome/browser/ui/tabs/glic_nudge_controller.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
+#include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/buildflags.h"
 #include "components/favicon_base/favicon_types.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/menus/simple_menu_model.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/menu_model_adapter.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/menu/submenu_view.h"
-
-#if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
-#include "chrome/browser/ui/tabs/glic_nudge_controller.h"
-#include "chrome/browser/ui/webui/webui_embedding_context.h"
-#include "components/tabs/public/tab_interface.h"
-#endif
 
 OmniboxContextMenu::OmniboxContextMenu(views::Widget* parent_widget,
                                        OmniboxPopupFileSelector* file_selector,
@@ -71,7 +68,6 @@ void OmniboxContextMenu::RunMenuAt(const gfx::Point& point,
                           gfx::Rect(point, gfx::Size()),
                           views::MenuAnchorPosition::kTopLeft, source_type);
 
-#if BUILDFLAG(ENABLE_GLIC)
   if (!web_contents_) {
     return;
   }
@@ -97,7 +93,6 @@ void OmniboxContextMenu::RunMenuAt(const gfx::Point& point,
       std::nullopt,
       tabs::GlicNudgeActivity::kNudgeIgnoredOmniboxContextMenuInteraction,
       base::DoNothing());
-#endif
 }
 
 void OmniboxContextMenu::ExecuteCommand(int command_id, int event_flags) {

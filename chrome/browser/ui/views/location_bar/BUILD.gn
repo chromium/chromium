@@ -107,6 +107,7 @@ source_set("impl") {
       "//chrome/browser/contextual_search",
       "//chrome/browser/extensions",
       "//chrome/browser/extensions/api/omnibox",
+      "//chrome/browser/glic",
       "//chrome/browser/page_info",
       "//chrome/browser/search_engines",
       "//chrome/browser/sharing_hub",
@@ -171,10 +172,6 @@ source_set("impl") {
       "//ui/native_theme",
       "//ui/strings:ui_strings_grit",
     ]
-
-    if (enable_glic) {
-      deps += [ "//chrome/browser/glic" ]
-    }
   }
 }
 

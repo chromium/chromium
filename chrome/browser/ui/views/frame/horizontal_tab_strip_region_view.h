@@ -101,9 +101,7 @@ class HorizontalTabStripRegionView final : public TabStripRegionView {
   TabStripFlatEdgeButton* GetTabSearchButton();
   TabStripComboButton* GetComboButton() { return combo_button_; }
 
-#if BUILDFLAG(ENABLE_GLIC)
   views::LabelButton* GetGlicButton();
-#endif  // BUILDFLAG(ENABLE_GLIC)
 
   // TabStripRegionView:
   void InitializeTabStrip() override;

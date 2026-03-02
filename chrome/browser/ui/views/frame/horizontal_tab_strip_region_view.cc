@@ -583,11 +583,9 @@ TabStripFlatEdgeButton* HorizontalTabStripRegionView::GetTabSearchButton() {
   return nullptr;
 }
 
-#if BUILDFLAG(ENABLE_GLIC)
 views::LabelButton* HorizontalTabStripRegionView::GetGlicButton() {
   return tab_strip_action_container_->GetGlicButton();
 }
-#endif  // BUILDFLAG(ENABLE_GLIC)
 
 void HorizontalTabStripRegionView::InitializeTabStrip() {
   if (tab_strip_set_) {

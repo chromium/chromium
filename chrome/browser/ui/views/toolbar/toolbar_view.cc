@@ -536,7 +536,6 @@ void ToolbarView::Init() {
     media_button_ = AddChildView(std::move(media_button));
   }
 
-#if BUILDFLAG(ENABLE_GLIC)
   if (glic::GlicEnabling::IsProfileEligible(browser_view_->GetProfile())) {
     auto* vertical_tab_strip_state_controller =
         tabs::VerticalTabStripStateController::From(browser_view_->browser());
@@ -551,7 +550,6 @@ void ToolbarView::Init() {
     }
     UpdateGlicButtonVisibility();
   }
-#endif  // BUILDFLAG(ENABLE_GLIC)
 
   avatar_ = AddChildView(std::make_unique<AvatarToolbarButton>(browser_view_));
   bool show_avatar_toolbar_button = true;
@@ -643,7 +641,6 @@ void ToolbarView::OnVerticalTabStripModeChanged(
   UpdateGlicButtonVisibility();
 }
 
-#if BUILDFLAG(ENABLE_GLIC)
 std::unique_ptr<glic::ToolbarGlicButton> ToolbarView::CreateGlicButton() {
   glic::GlicKeyedService* service =
       glic::GlicKeyedService::Get(browser_view_->GetProfile());
@@ -786,7 +783,6 @@ void ToolbarView::SetGlicPanelIsOpen(bool open) {
 
   glic_button_->SetGlicPanelIsOpen(open);
 }
-#endif  // ENABLE_GLIC
 
 void ToolbarView::AnimationEnded(const gfx::Animation* animation) {
   if (animation->GetCurrentValue() == 0) {

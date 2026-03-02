@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/check.h"
+#include "chrome/browser/glic/browser_ui/context_sharing_border_view.h"
 #include "chrome/browser/ui/sad_tab_controller.h"
 #include "chrome/browser/ui/sad_tab_helper.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -20,10 +21,6 @@
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/controls/webview/webview.h"
-
-#if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/glic/browser_ui/context_sharing_border_view.h"
-#endif  // BUILDFLAG(ENABLE_GLIC)
 
 namespace {
 
@@ -199,12 +196,10 @@ void BrowserViewAsh::UpdateWindowRoundedCorners(
     contents_webview->SetBackgroundRadii(contents_webview_radii);
   }
 
-#if BUILDFLAG(ENABLE_GLIC)
   if (auto* glic_border = GetActiveContentsContainerView()->glic_border_view();
       glic_border) {
     glic_border->SetRoundedCorners(contents_webview_radii);
   }
-#endif  // BUILDFLAG(ENABLE_GLIC)
 
   const gfx::RoundedCornersF contents_scrim_radii(
       round_content_webview_top_corner ? window_radii.upper_left() : 0,
