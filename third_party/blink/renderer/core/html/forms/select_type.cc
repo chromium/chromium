@@ -535,6 +535,12 @@ bool MenuListSelectType::ShouldOpenPopupForKeyDownEvent(
   if (IsSpatialNavigationEnabled(select_->GetDocument().GetFrame()))
     return false;
 
+  if (PopupIsVisible()) {
+    // We shouldn't try to open the popup again if the popup is already open.
+    // This can cause focus issues: https://crbug.com/487577797
+    return false;
+  }
+
   // TODO(crbug.com/1511354): Reconsider making appearance:base-select affect
   // keyboard behavior after a resolution here:
   // https://github.com/openui/open-ui/issues/1087
