@@ -54,7 +54,6 @@
 #include "chrome/browser/ash/profiles/signin_profile_handler.h"
 #include "chrome/browser/ash/system/device_disabling_manager.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/chrome_device_id_helper.h"
@@ -230,9 +229,11 @@ CreateSecondDeviceAuthBroker() {
 LoginDisplayHostCommon::LoginDisplayHostCommon(
     PrefService* local_state,
     ApplicationLocaleStorage* application_locale_storage,
+    policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
     bool update_geolocation_usage_allowed)
     : local_state_(CHECK_DEREF(local_state)),
       application_locale_storage_(CHECK_DEREF(application_locale_storage)),
+      browser_policy_connector_ash_(CHECK_DEREF(browser_policy_connector_ash)),
       keep_alive_(KeepAliveOrigin::LOGIN_DISPLAY_HOST_WEBUI,
                   KeepAliveRestartOption::DISABLED),
       login_ui_pref_controller_(std::make_unique<LoginUIPrefController>(
@@ -316,9 +317,7 @@ void LoginDisplayHostCommon::StartSignInScreen() {
   }
 
   // Initiate device policy fetching.
-  policy::BrowserPolicyConnectorAsh* connector =
-      g_browser_process->platform_part()->browser_policy_connector_ash();
-  connector->ScheduleServiceInitialization(
+  browser_policy_connector_ash_->ScheduleServiceInitialization(
       kPolicyServiceInitializationDelayMilliseconds);
 
   // Run UI-specific logic.

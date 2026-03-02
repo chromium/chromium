@@ -28,6 +28,10 @@ class AccountId;
 class ApplicationLocaleStorage;
 class PrefService;
 
+namespace policy {
+class BrowserPolicyConnectorAsh;
+}  // namespace policy
+
 namespace ash {
 
 class LoginFeedback;
@@ -42,11 +46,13 @@ class LoginDisplayHostCommon : public LoginDisplayHost,
                                public SigninUI,
                                public ash::SessionTerminationManager::Observer {
  public:
-  // `local_state` and `application_locale_storage` must be non-null and must
-  // outlive `this`.
-  LoginDisplayHostCommon(PrefService* local_state,
-                         ApplicationLocaleStorage* application_locale_storage,
-                         bool update_geolocation_usage_allowed);
+  // `local_state`, `application_locale_storage` and
+  // `browser_policy_connector_ash` must be non-null and must outlive `this`.
+  LoginDisplayHostCommon(
+      PrefService* local_state,
+      ApplicationLocaleStorage* application_locale_storage,
+      policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
+      bool update_geolocation_usage_allowed);
 
   LoginDisplayHostCommon(const LoginDisplayHostCommon&) = delete;
   LoginDisplayHostCommon& operator=(const LoginDisplayHostCommon&) = delete;
@@ -136,6 +142,8 @@ class LoginDisplayHostCommon : public LoginDisplayHost,
 
   const raw_ref<PrefService> local_state_;
   const raw_ref<ApplicationLocaleStorage> application_locale_storage_;
+  const raw_ref<policy::BrowserPolicyConnectorAsh>
+      browser_policy_connector_ash_;
 
  private:
   void Cleanup();

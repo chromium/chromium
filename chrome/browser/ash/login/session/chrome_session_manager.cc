@@ -79,12 +79,15 @@ void RemoveObsoleteKioskCryptohomes() {
 }
 
 // Starts kiosk app launch and shows the splash screen.
-// `local_state` and `application_locale_storage` must be non-null and must
-// outlive LoginDisplayHostWebUI.
-void StartKioskSession(PrefService* local_state,
-                       ApplicationLocaleStorage* application_locale_storage,
-                       KioskAppId app,
-                       bool is_auto_launch = false) {
+// `local_state`, `application_locale_storage`, and
+// `browser_policy_connector_ash` must be non-null and must outlive
+// LoginDisplayHostWebUI.
+void StartKioskSession(
+    PrefService* local_state,
+    ApplicationLocaleStorage* application_locale_storage,
+    policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
+    KioskAppId app,
+    bool is_auto_launch = false) {
   // Kiosk app launcher starts with login state.
   CHECK_DEREF(session_manager::SessionManager::Get())
       .SetSessionState(session_manager::SessionState::LOGIN_PRIMARY);
@@ -94,8 +97,8 @@ void StartKioskSession(PrefService* local_state,
       ->SetInputMethodLoginDefault(/*is_in_oobe_context=*/false);
 
   // Manages its own lifetime. See ShutdownDisplayHost().
-  auto* display_host =
-      new LoginDisplayHostWebUI(local_state, application_locale_storage);
+  auto* display_host = new LoginDisplayHostWebUI(
+      local_state, application_locale_storage, browser_policy_connector_ash);
   display_host->StartKiosk(app, is_auto_launch);
 
   // Login screen is skipped but 'login-prompt-visible' signal is still needed.
@@ -103,15 +106,18 @@ void StartKioskSession(PrefService* local_state,
   SessionManagerClient::Get()->EmitLoginPromptVisible();
 }
 
-// `local_state` and `application_locale_storage` must be non-null and must
-// outlive LoginDisplayHostWebUI.
+// `local_state`, `application_locale_storage`, and
+// `browser_policy_connector_ash` must be non-null and must outlive
+// LoginDisplayHostWebUI.
 void StartAutoLaunchKioskSession(
     PrefService* local_state,
-    ApplicationLocaleStorage* application_locale_storage) {
+    ApplicationLocaleStorage* application_locale_storage,
+    policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash) {
   auto app = KioskController::Get().GetAutoLaunchApp();
   CHECK(app.has_value());
 
-  StartKioskSession(local_state, application_locale_storage, app.value().id(),
+  StartKioskSession(local_state, application_locale_storage,
+                    browser_policy_connector_ash, app.value().id(),
                     /*is_auto_launch=*/true);
 }
 
@@ -382,8 +388,10 @@ void InitFeaturesSessionType(const user_manager::User* user) {
 
 ChromeSessionManager::ChromeSessionManager(
     PrefService* local_state,
+    policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
     session_manager::SessionManager* session_manager)
     : local_state_(CHECK_DEREF(local_state)),
+      browser_policy_connector_ash_(CHECK_DEREF(browser_policy_connector_ash)),
       session_manager_(CHECK_DEREF(session_manager)),
       oobe_configuration_(std::make_unique<OobeConfiguration>()),
       user_session_initializer_(
@@ -467,8 +475,8 @@ void ChromeSessionManager::Initialize(
 
   if (ShouldAutoLaunchKioskApp(parsed_command_line, local_state_.get())) {
     VLOG(1) << "Starting Chrome with kiosk auto launch.";
-    StartAutoLaunchKioskSession(&local_state_.get(),
-                                application_locale_storage);
+    StartAutoLaunchKioskSession(&local_state_.get(), application_locale_storage,
+                                &browser_policy_connector_ash_.get());
   } else if (parsed_command_line.HasSwitch(switches::kLoginManager)) {
     oobe_configuration_->CheckConfiguration();
     if (is_running_test && !force_login_screen_in_test) {

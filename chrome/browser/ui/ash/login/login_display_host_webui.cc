@@ -268,6 +268,8 @@ void ShowLoginWizardFinish(
   PrefService* local_state = g_browser_process->local_state();
   ApplicationLocaleStorage* application_locale_storage =
       g_browser_process->GetFeatures()->application_locale_storage();
+  policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
 
   // `ShowLoginWizardFinish` can be called as a result of
   // `OnLanguageSwitchedCallback` and it can happen that the browser started to
@@ -300,20 +302,20 @@ void ShowLoginWizardFinish(
     // Tests may have already allocated an instance for us to use.
     display_host = LoginDisplayHost::default_host();
   } else if (ShouldShowSigninScreen(first_screen)) {
-    display_host =
-        new LoginDisplayHostMojo(local_state, application_locale_storage,
-                                 DisplayedScreen::SIGN_IN_SCREEN,
-                                 /*update_geolocation_usage_allowed=*/true);
+    display_host = new LoginDisplayHostMojo(
+        local_state, application_locale_storage, browser_policy_connector_ash,
+        DisplayedScreen::SIGN_IN_SCREEN,
+        /*update_geolocation_usage_allowed=*/true);
   } else if (first_screen == ArcVmDataMigrationScreenView::kScreenId) {
-    display_host =
-        new LoginDisplayHostMojo(local_state, application_locale_storage,
-                                 DisplayedScreen::SIGN_IN_SCREEN,
-                                 /*update_geolocation_usage_allowed=*/true);
+    display_host = new LoginDisplayHostMojo(
+        local_state, application_locale_storage, browser_policy_connector_ash,
+        DisplayedScreen::SIGN_IN_SCREEN,
+        /*update_geolocation_usage_allowed=*/true);
     DCHECK(session_manager::SessionManager::Get());
     session_manager::SessionManager::Get()->NotifyLoginOrLockScreenVisible();
   } else {
-    display_host =
-        new LoginDisplayHostWebUI(local_state, application_locale_storage);
+    display_host = new LoginDisplayHostWebUI(
+        local_state, application_locale_storage, browser_policy_connector_ash);
   }
 
   if (features::IsOobeAddUserDuringEnrollmentEnabled() && user_context) {
@@ -511,9 +513,11 @@ class LoginDisplayHostWebUI::KeyboardDrivenOobeKeyHandler
 
 LoginDisplayHostWebUI::LoginDisplayHostWebUI(
     PrefService* local_state,
-    ApplicationLocaleStorage* application_locale_storage)
+    ApplicationLocaleStorage* application_locale_storage,
+    policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash)
     : LoginDisplayHostCommon(local_state,
                              application_locale_storage,
+                             browser_policy_connector_ash,
                              /*update_geolocation_usage_allowed=*/true),
       oobe_startup_sound_played_(StartupUtils::IsOobeCompleted()) {
   session_manager_client_observation_.Observe(SessionManagerClient::Get());
@@ -1225,6 +1229,8 @@ void ShowLoginWizard(OobeScreenId first_screen) {
   PrefService& local_state = CHECK_DEREF(g_browser_process->local_state());
   ApplicationLocaleStorage* application_locale_storage =
       g_browser_process->GetFeatures()->application_locale_storage();
+  policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
 
   if (ash::BrowserController::GetInstance()->IsTryingToQuit()) {
     return;
@@ -1259,8 +1265,8 @@ void ShowLoginWizard(OobeScreenId first_screen) {
   if (enrollment_config.should_enroll() &&
       first_screen == ash::OOBE_SCREEN_UNKNOWN) {
     // Manages its own lifetime. See ShutdownDisplayHost().
-    auto* display_host =
-        new LoginDisplayHostWebUI(&local_state, application_locale_storage);
+    auto* display_host = new LoginDisplayHostWebUI(
+        &local_state, application_locale_storage, browser_policy_connector_ash);
     // Shows networks screen instead of enrollment screen to resume the
     // interrupted auto start enrollment flow because enrollment screen does
     // not handle flaky network. See http://crbug.com/332572

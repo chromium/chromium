@@ -10,6 +10,7 @@
 #include "base/observer_list.h"
 #include "chrome/browser/ash/login/screens/user_selection_screen.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/ash/login/login_display_host_mojo.h"
@@ -53,12 +54,14 @@ void UserAddingScreenImpl::Start() {
   PrefService* local_state = g_browser_process->local_state();
   ApplicationLocaleStorage* application_locale_storage =
       g_browser_process->GetFeatures()->application_locale_storage();
+  policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
 
   CHECK(!IsRunning());
-  display_host_ =
-      new LoginDisplayHostMojo(local_state, application_locale_storage,
-                               DisplayedScreen::USER_ADDING_SCREEN,
-                               /*update_geolocation_usage_allowed=*/false);
+  display_host_ = new LoginDisplayHostMojo(
+      local_state, application_locale_storage, browser_policy_connector_ash,
+      DisplayedScreen::USER_ADDING_SCREEN,
+      /*update_geolocation_usage_allowed=*/false);
 
   // This triggers input method manager to filter login screen methods. This
   // should happen before setting user input method, which happens when focusing

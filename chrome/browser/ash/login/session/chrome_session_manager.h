@@ -26,6 +26,10 @@ namespace network {
 class SharedURLLoaderFactory;
 }  // namespace network
 
+namespace policy {
+class BrowserPolicyConnectorAsh;
+}  // namespace policy
+
 class ApplicationLocaleStorage;
 class PrefService;
 class Profile;
@@ -36,10 +40,12 @@ class SessionLengthLimiter;
 
 class ChromeSessionManager : public session_manager::SessionManagerObserver {
  public:
-  // `local_state` and `session_manager` must not be nullptr, and must outlive
-  // this instance.
-  ChromeSessionManager(PrefService* local_state,
-                       session_manager::SessionManager* session_manager);
+  // `local_state`, `browser_policy_connector_ash`, and `session_manager` must
+  // not be nullptr, and must outlive this instance.
+  ChromeSessionManager(
+      PrefService* local_state,
+      policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
+      session_manager::SessionManager* session_manager);
 
   ChromeSessionManager(const ChromeSessionManager&) = delete;
   ChromeSessionManager& operator=(const ChromeSessionManager&) = delete;
@@ -79,6 +85,8 @@ class ChromeSessionManager : public session_manager::SessionManagerObserver {
 
  private:
   const raw_ref<PrefService> local_state_;
+  const raw_ref<policy::BrowserPolicyConnectorAsh>
+      browser_policy_connector_ash_;
   const raw_ref<session_manager::SessionManager> session_manager_;
   std::unique_ptr<OobeConfiguration> oobe_configuration_;
   std::unique_ptr<UserSessionInitializer> user_session_initializer_;

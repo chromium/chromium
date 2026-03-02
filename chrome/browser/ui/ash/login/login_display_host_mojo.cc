@@ -54,7 +54,6 @@
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/ash/login/login_display_host_common.h"
@@ -188,16 +187,17 @@ LoginDisplayHostMojo::AuthState::~AuthState() = default;
 LoginDisplayHostMojo::LoginDisplayHostMojo(
     PrefService* local_state,
     ApplicationLocaleStorage* application_locale_storage,
+    policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
     DisplayedScreen displayed_screen,
     bool update_geolocation_usage_allowed)
     : LoginDisplayHostCommon(local_state,
                              application_locale_storage,
+                             browser_policy_connector_ash,
                              update_geolocation_usage_allowed),
       user_selection_screen_(std::make_unique<ChromeUserSelectionScreen>(
           local_state,
           application_locale_storage,
-          // TODO(crbug.com/404133029): Avoid using g_browser_process.
-          g_browser_process->platform_part()->browser_policy_connector_ash(),
+          browser_policy_connector_ash,
           displayed_screen)),
       auth_performer_(UserDataAuthClient::Get()),
       system_info_updater_(std::make_unique<MojoSystemInfoDispatcher>()) {
