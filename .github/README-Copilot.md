@@ -9,6 +9,11 @@ common prompts and instructions into a central directory with stubs for bespoke
 IDE/agent integration. Please check with your organization before using GitHub
 Copilot.
 
+Note: This README file is intentionally NOT named /.github/README.md to avoid
+replacing the root level [README.md](../README.md) on
+https://github.com/chromium/chromium. See
+[github readme documentation](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-readmes)
+
 ## Where is copilot-instructions.md?
 [`copilot-instructions.md`](../copilot-instructions.md) is typically a single
 instruction file that contains default instructions for a workspace. These
