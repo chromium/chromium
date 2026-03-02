@@ -2519,33 +2519,151 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplWithLegacyBeforeUnloadBrowserTest,
       "Navigation.StartAdjustment.LegacyPostTask.Percentage", 0);
 }
 
+struct AvoidUnnecessaryBeforeUnloadCheckSyncBrowserTestParam {
+  std::string test_name;
+  std::vector<base::test::FeatureRefAndParams> enabled_features;
+  std::vector<base::test::FeatureRef> disabled_features;
+  bool force_post_task_content_browser_client = false;
+  std::vector<std::string> expected_events;
+};
+
+const AvoidUnnecessaryBeforeUnloadCheckSyncBrowserTestParam
+    kAvoidUnnecessaryBeforeUnloadCheckSyncBrowserTestParams[]{
+        {.test_name = "Disabled",
+         .enabled_features = {},
+         .disabled_features =
+             {features::kAvoidUnnecessaryBeforeUnloadCheckSync},
+         .expected_events = {"load_url_begin", "load_url_end", "beforeunload",
+                             "start_navigation", "load_stop"}},
+        {.test_name = "Enabled_WithSendBeforeUnload",
+         .enabled_features =
+             {{features::kAvoidUnnecessaryBeforeUnloadCheckSync,
+               {{features::kAvoidUnnecessaryBeforeUnloadCheckSyncMode.name,
+                 "WithSendBeforeUnload"}}}},
+         .disabled_features = {},
+         .expected_events = {"load_url_begin", "beforeunload",
+                             "start_navigation", "load_url_end", "load_stop"}},
+        {.test_name = "Enabled_WithSendBeforeUnload_ButBrowserClientProhibits",
+         .enabled_features =
+             {{features::kAvoidUnnecessaryBeforeUnloadCheckSync,
+               {{features::kAvoidUnnecessaryBeforeUnloadCheckSyncMode.name,
+                 "WithSendBeforeUnload"}}}},
+         .disabled_features = {},
+         .force_post_task_content_browser_client = true,
+         .expected_events = {"load_url_begin", "load_url_end", "beforeunload",
+                             "start_navigation", "load_stop"}},
+        {.test_name = "Enabled_WithoutSendBeforeUnload",
+         .enabled_features =
+             {{features::kAvoidUnnecessaryBeforeUnloadCheckSync,
+               {{features::kAvoidUnnecessaryBeforeUnloadCheckSyncMode.name,
+                 "WithoutSendBeforeUnload"}}}},
+         .disabled_features = {},
+         .expected_events = {"load_url_begin", "start_navigation",
+                             "load_url_end", "load_stop"}},
+        {.test_name =
+             "Enabled_WithoutSendBeforeUnload_ButBrowserClientProhibits",
+         .enabled_features =
+             {{features::kAvoidUnnecessaryBeforeUnloadCheckSync,
+               {{features::kAvoidUnnecessaryBeforeUnloadCheckSyncMode.name,
+                 "WithoutSendBeforeUnload"}}}},
+         .disabled_features = {},
+         .force_post_task_content_browser_client = true,
+         .expected_events = {"load_url_begin", "load_url_end", "beforeunload",
+                             "start_navigation", "load_stop"}},
+    };
+
 class AvoidUnnecessaryBeforeUnloadCheckSyncBrowserTest
     : public RenderFrameHostImplBrowserTest,
-      public testing::WithParamInterface<std::string> {
+      public testing::WithParamInterface<
+          AvoidUnnecessaryBeforeUnloadCheckSyncBrowserTestParam> {
  public:
+  class ForcePostTaskContentBrowserClient
+      : public ContentBrowserTestContentBrowserClient {
+    bool SupportsAvoidUnnecessaryBeforeUnloadCheckSync() override {
+      return false;
+    }
+  };
+
+  class StartNavigationObserver : public WebContentsObserver {
+   public:
+    StartNavigationObserver(WebContents* contents,
+                            const GURL& target_url,
+                            base::OnceClosure on_did_start_navigation)
+        : WebContentsObserver(contents),
+          target_url_(target_url),
+          on_did_start_navigation_(std::move(on_did_start_navigation)) {}
+
+    void DidStartNavigation(NavigationHandle* handle) override {
+      if (handle->GetURL() == target_url_) {
+        std::move(on_did_start_navigation_).Run();
+      }
+    }
+
+   private:
+    const GURL target_url_;
+    base::OnceClosure on_did_start_navigation_;
+  };
+
   AvoidUnnecessaryBeforeUnloadCheckSyncBrowserTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/
-        {{features::kAvoidUnnecessaryBeforeUnloadCheckSync,
-          {{features::kAvoidUnnecessaryBeforeUnloadCheckSyncMode.name,
-            GetMode()}}}},
-        /*disabled_features=*/{});
+        GetParam().enabled_features, GetParam().disabled_features);
   }
 
-  const std::string& GetMode() { return GetParam(); }
+  void SetUpOnMainThread() override {
+    RenderFrameHostImplBrowserTest::SetUpOnMainThread();
+    if (GetParam().force_post_task_content_browser_client) {
+      content_browser_client_override_ =
+          std::make_unique<ForcePostTaskContentBrowserClient>();
+    }
+  }
 
  private:
+  std::unique_ptr<ContentBrowserTestContentBrowserClient>
+      content_browser_client_override_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
     All,
     AvoidUnnecessaryBeforeUnloadCheckSyncBrowserTest,
-    ::testing::Values("WithSendBeforeUnload", "WithoutSendBeforeUnload"),
-    [](const testing::TestParamInfo<
-        AvoidUnnecessaryBeforeUnloadCheckSyncBrowserTest::ParamType>& info) {
-      return info.param;
+    testing::ValuesIn(kAvoidUnnecessaryBeforeUnloadCheckSyncBrowserTestParams),
+    [](const ::testing::TestParamInfo<
+        AvoidUnnecessaryBeforeUnloadCheckSyncBrowserTestParam>& info) {
+      return info.param.test_name;
     });
+
+IN_PROC_BROWSER_TEST_P(AvoidUnnecessaryBeforeUnloadCheckSyncBrowserTest,
+                       BeforeUnloadBehaviorOnNavigation) {
+  // Initial navigation to ensure `run_beforeunload_for_legacy` will be true
+  // in the next navigation.
+  EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
+
+  std::vector<std::string> events;
+
+  const GURL target_url =
+      embedded_test_server()->GetURL("a.test", "/title1.html");
+  web_contents()
+      ->GetPrimaryMainFrame()
+      ->set_on_process_before_unload_completed_for_testing(
+          base::BindLambdaForTesting([&]() {
+            // This callback can be triggered even if the current document
+            // doesn't have a beforeunload handler for legacy reason (when
+            // run_beforeunload_for_legacy is true).
+            events.push_back("beforeunload");
+          }));
+  StartNavigationObserver start_navigation_observer(
+      web_contents(), target_url, base::BindLambdaForTesting([&]() {
+        events.push_back("start_navigation");
+      }));
+
+  events.push_back("load_url_begin");
+  shell()->LoadURL(target_url);
+  events.push_back("load_url_end");
+  EXPECT_TRUE(WaitForLoadStop(web_contents()));
+  events.push_back("load_stop");
+
+  EXPECT_EQ(events, GetParam().expected_events);
+}
 
 // Regression test for https://crbug.com/411855273.
 // Confirms that the back navigation in the following scenario must not crash
