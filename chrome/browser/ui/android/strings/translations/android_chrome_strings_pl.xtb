@@ -91,7 +91,6 @@
 <translation id="1342886103232377846">Aby sprawdzić, czy jakieś hasła nie zostały przejęte, otwórz Menedżera haseł Google</translation>
 <translation id="1343830902827845050">Zaloguj się w Chrome</translation>
 <translation id="1344653310988386453">Dołącz link do podświetlenia</translation>
-<translation id="1347468774581902829">Zarządzaj aktywnością</translation>
 <translation id="1355088659320425659">Historia i karty</translation>
 <translation id="1360432990279830238">Wylogować i wyłączyć synchronizację?</translation>
 <translation id="1363028406613469049">Utwór</translation>
@@ -1623,7 +1622,6 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="7554643625247105821">Nie można sprawdzić wersji Chrome</translation>
 <translation id="7557508262441527045">Wylogowano</translation>
 <translation id="7573665567024262965">Wybierz swoje aplikacje domyślne</translation>
-<translation id="7577900504646297215">Zarządzaj zainteresowaniami</translation>
 <translation id="757855969265046257">{FILES,plural, =1{Pobrano <ph name="FILES_DOWNLOADED_ONE" /> plik}few{Pobrano <ph name="FILES_DOWNLOADED_MANY" /> pliki}many{Pobrano <ph name="FILES_DOWNLOADED_MANY" /> plików}other{Pobrano <ph name="FILES_DOWNLOADED_MANY" /> pliku}}</translation>
 <translation id="7579341427377004341"><ph name="TAB_TITLE" />, jedna z kilku wybranych kart incognito z dźwiękiem</translation>
 <translation id="7581273696622423628">Wypełnij ankietę</translation>

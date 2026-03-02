@@ -91,7 +91,6 @@
 <translation id="1342886103232377846">Gå til Google Adgangs­kode­admin­istrator for at tjekke, om der er kompromitterede adgangskoder</translation>
 <translation id="1343830902827845050">Log ind i Chrome</translation>
 <translation id="1344653310988386453">Medtag link til fremhævning</translation>
-<translation id="1347468774581902829">Administrer aktivitet</translation>
 <translation id="1355088659320425659">Historik og faner</translation>
 <translation id="1360432990279830238">Log ud, og deaktiver synkronisering?</translation>
 <translation id="1363028406613469049">Spor</translation>
@@ -1618,7 +1617,6 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="7554643625247105821">Chrome-versionen kan ikke tjekkes</translation>
 <translation id="7557508262441527045">Logget ud</translation>
 <translation id="7573665567024262965">Vælg dine standardapps</translation>
-<translation id="7577900504646297215">Administrer interesser</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> fil blev downloadet}one{<ph name="FILES_DOWNLOADED_MANY" /> fil blev downloadet}other{<ph name="FILES_DOWNLOADED_MANY" /> filer blev downloadet}}</translation>
 <translation id="7579341427377004341"><ph name="TAB_TITLE" />, inkognitofane med multivalg, der afspiller lyd</translation>
 <translation id="7581273696622423628">Deltag i undersøgelsen</translation>

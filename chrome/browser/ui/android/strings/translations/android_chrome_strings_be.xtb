@@ -91,7 +91,6 @@
 <translation id="1342886103232377846">Каб праверыць наяўнасць раскрытых пароляў, перайдзіце ў Менеджар пароляў Google</translation>
 <translation id="1343830902827845050">Увайдзіце ў Chrome</translation>
 <translation id="1344653310988386453">Далучыць спасылку на вылучаны тэкст</translation>
-<translation id="1347468774581902829">Кіраваць дзеяннямі</translation>
 <translation id="1355088659320425659">Гісторыя і ўкладкі</translation>
 <translation id="1360432990279830238">Выйсці і выключыць сінхранізацыю?</translation>
 <translation id="1363028406613469049">Трэк</translation>
@@ -1618,7 +1617,6 @@
 <translation id="7554643625247105821">Не ўдалося праверыць версію Chrome</translation>
 <translation id="7557508262441527045">Выкананы выхад</translation>
 <translation id="7573665567024262965">Выберыце стандартныя праграмы</translation>
-<translation id="7577900504646297215">Кіраваць інтарэсамі</translation>
 <translation id="757855969265046257">{FILES,plural, =1{Спампаваны <ph name="FILES_DOWNLOADED_ONE" /> файл}one{Спампаваны <ph name="FILES_DOWNLOADED_MANY" /> файл}few{Спампавана <ph name="FILES_DOWNLOADED_MANY" /> файлы}many{Спампавана <ph name="FILES_DOWNLOADED_MANY" /> файлаў}other{Спампавана <ph name="FILES_DOWNLOADED_MANY" /> файла}}</translation>
 <translation id="7579341427377004341"><ph name="TAB_TITLE" />, укладка ў рэжыме інкогніта з уключаным гукам, змесціва якой абагульваецца</translation>
 <translation id="7581273696622423628">Прыняць удзел у апытанні</translation>

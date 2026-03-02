@@ -167,6 +167,7 @@
 <translation id="1621067168122174824">Quvvatlanishini tekshirish</translation>
 <translation id="1622402072367425417">yorqin pufaklar</translation>
 <translation id="1626590945318984973">Tezkor tugma ishlamayapti. Funksiya va <ph name="META_KEY" /> tugmachalarini bosmasdan qayta urinib koʻring.</translation>
+<translation id="163774412591892664">Administrator qurilmangizni faolsizlantirdi va uning joylashuviga kira oladi.</translation>
 <translation id="1639239467298939599">Yuklanmoqda</translation>
 <translation id="1641857168437328880">Hujjat tasmasi (bir tomonlama)</translation>
 <translation id="1642396894598555413">velosipedlar</translation>
@@ -1723,6 +1724,7 @@ Mazkur transkripsiyalar uchun transkripsiya modelini (&lt;100MB) yuklab oling.</
 <translation id="8584654835905316966"><ph name="VERSION" /> versiyali <ph name="DEVICE_NAME" /> tizim dasturini oʻrnatish uchun qurilmani oʻchirib yoqish zarur. Kompyuter bir necha marta qayta ishga tushirilishi mumkin. Bu odatiy holat.</translation>
 <translation id="8593058461203131755">ijroni toʻxtatish</translation>
 <translation id="8620617069779373398">Rouming holati</translation>
+<translation id="8624524972189162859"><ph name="DOMAIN_NAME" /> administratori qurilmangizni faolsizlantirdi va uning joylashuviga kira oladi.</translation>
 <translation id="8626489604350149811"><ph name="APN_NAME" /> uchun boshqa amallar</translation>
 <translation id="86356131183441916">Och siyohrang</translation>
 <translation id="8647595191512746911">Audio transkripsiya</translation>

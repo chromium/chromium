@@ -355,6 +355,7 @@
 <translation id="1221825588892235038">सिर्फ़ चुनें</translation>
 <translation id="1222835797152767346">साइन इन करने की प्रोसेस आसान बनाने के लिए, एक पिन सेट करें</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" /> को लाइसेंस की ज़रूरत है</translation>
+<translation id="1223498995510244364">खास जानकारी दें</translation>
 <translation id="1223853788495130632">आपका व्‍यवस्‍थापक इस सेटिंग के लिए किसी विशिष्ट मान की अनुशंसा करता है.</translation>
 <translation id="1225177025209879837">अनुरोध पूरा करने की प्रक्रिया जारी है...</translation>
 <translation id="1227107020813934021">दस्तावेज़ स्कैन करने वाले ऐप्लिकेशन ढूंढें</translation>
@@ -4347,7 +4348,6 @@
 <translation id="3880513902716032002">आपके विज़िट किए गए पेजों में से, कुछ पेज पहले से ही लोड होते हैं</translation>
 <translation id="3884152383786131369">कई भाषाओं में उपलब्ध वेब कॉन्टेंट, इस सूची में दी गई पहली भाषा में दिखाया जाएगा. इन प्राथमिकताओं को आपके ब्राउज़र की सेटिंग के साथ सिंक किया जाता है. <ph name="BEGIN_LINK_LEARN_MORE" />ज़्यादा जानें<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">अपडेट को आपका एडमिन मैनेज करता है</translation>
-<translation id="3887022758415973389">डिवाइसों की सूची दिखाएं</translation>
 <translation id="3887764720741098847">सेव की गई जानकारी</translation>
 <translation id="3888501106166145415">जुड़े हुए वाई-फ़ाई नेटवर्क</translation>
 <translation id="3890064827463908288">'वाई-फ़ाई सिंक' इस्तेमाल करने के लिए 'Chrome सिंक' चालू करें</translation>
@@ -11685,7 +11685,6 @@
 <translation id="8909298138148012791"><ph name="APP_NAME" /> अनइंस्टॉल हो गया</translation>
 <translation id="8909833622202089127">साइट आपकी जगह को ट्रैक कर रही है</translation>
 <translation id="8910222113987937043">आपके बुकमार्क, इतिहास, पासवर्ड और अन्य सेटिंग में किए गए बदलाव अब आपके Google खाते से सिंक नहीं किए जाएंगे. हालांकि, आपका मौजूदा डेटा आपके Google खाते में संग्रहित रहेगा और <ph name="BEGIN_LINK" />Google डैशबोर्ड<ph name="END_LINK" /> पर प्रबंधित किया जा सकेगा.</translation>
-<translation id="8910987510378294980">डिवाइसों की सूची छिपाएं</translation>
 <translation id="8911914282056933784">प्रोजेक्ट छिपाएं</translation>
 <translation id="8912362522468806198">Google खाता</translation>
 <translation id="8912810933860534797">अपने आप स्कैन करने की सुविधा चालू करें</translation>

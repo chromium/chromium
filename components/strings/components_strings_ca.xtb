@@ -1308,6 +1308,8 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3102312643185441063">Estalvis</translation>
 <translation id="3103188521861412364">Accions i bons</translation>
 <translation id="3105172416063519923">Identificador de l'element:</translation>
+<translation id="3105223248029915046">Els plans de pagament estan subjectes a la idoneïtat.
+Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />configuració de pagament<ph name="END_LINK" /></translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />Comprova la configuració de DNS segur<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Safata central</translation>
 <translation id="3109061346635850169">Tractaments facials i corporals</translation>
@@ -4354,6 +4356,7 @@ Detalls addicionals:
 <translation id="7908648876066812348">S'està activant la targeta virtual</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />. Prem Tab i després Retorn per anar a la pàgina de comprovació de seguretat de Chrome a la configuració.</translation>
 <translation id="791107458486222637">S'està refent el resultat</translation>
+<translation id="7911651285409665023">Tanca i torna a <ph name="TAB_TITLE" /></translation>
 <translation id="7912924955815015552">Importat de Safari</translation>
 <translation id="791551905239004656">Dibuix i pintura</translation>
 <translation id="7916162853251942238">Base flexogràfica</translation>

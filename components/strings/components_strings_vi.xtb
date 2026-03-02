@@ -230,6 +230,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="1358187717814494928">Tạo trang tính</translation>
 <translation id="1358223345833465883">Công cụ tìm kiếm của bạn trong Chromium</translation>
 <translation id="1359836962251219822">Nhà bếp và phòng ăn</translation>
+<translation id="136059610328993645">Thông tin của bạn sẽ được lưu vào Google Wallet cho <ph name="ACCOUNT" />. Bạn có thể dùng thẻ này trên các dịch vụ của Google để điền thông tin vào biểu mẫu nhanh hơn.</translation>
 <translation id="1360955481084547712">Mở một cửa sổ Ẩn danh mới để duyệt web ở chế độ riêng tư</translation>
 <translation id="1361528602584216624">Giới hạn cho mỗi giao dịch với Pix là <ph name="TRANSACTION_LIMIT" /> R$</translation>
 <translation id="1363015776076529485">Các phương thức thanh toán mà bạn có thể chọn để tiến hành thanh toán đã mở toàn bộ.</translation>
@@ -252,6 +253,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="1392813880755413602">Bản trình bày OpenDocument</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> không gửi bất kỳ dữ liệu nào.</translation>
 <translation id="1393071644879491291">Những kẻ tấn công trên trang web bạn đã cố truy cập có thể lừa bạn cài đặt phần mềm hoặc tiết lộ các thông tin như mật khẩu, số điện thoại hoặc số thẻ tín dụng. Bạn nên quay lại trang an toàn. <ph name="BEGIN_LEARN_MORE_LINK" />Tìm hiểu thêm về cảnh báo này<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="1402151528875251561">Hiện nhật ký trong bảng điều khiển bên</translation>
 <translation id="1405567553485452995">Xanh lục nhạt</translation>
 <translation id="1406370515365284486">Các phương thức thanh toán của bạn vẫn sẽ được lưu</translation>
 <translation id="1406500794671479665">Đang xác minh...</translation>
@@ -1308,6 +1310,8 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3102312643185441063">Tài khoản tiết kiệm</translation>
 <translation id="3103188521861412364">Cổ phiếu và trái phiếu</translation>
 <translation id="3105172416063519923">ID phần tử:</translation>
+<translation id="3105223248029915046">Gói thanh toán sẽ tuỳ theo điều kiện áp dụng.
+Để ẩn các lựa chọn trả sau, hãy chuyển đến phần <ph name="BEGIN_LINK" />cài đặt thông tin thanh toán<ph name="END_LINK" /></translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />Kiểm tra cấu hình DNS bảo mật<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Khay giữa</translation>
 <translation id="3109061346635850169">Chăm sóc mặt và cơ thể</translation>
@@ -1450,6 +1454,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="33073482541490531">Mật khẩu bạn vừa sử dụng đã bị lộ trong một sự cố rò rỉ dữ liệu. Trình quản lý mật khẩu khuyên bạn nên đổi mật khẩu này ngay.</translation>
 <translation id="3307649904964670439">Nút Tuỳ chỉnh Chrome, hãy nhấn nút này để tuỳ chỉnh giao diện trình duyệt của bạn</translation>
 <translation id="3308006649705061278">Đơn vị Tổ chức (OU)</translation>
+<translation id="3310946375819654151">Chrome đang cố gắng điền thông tin nhạy cảm của bạn vào <ph name="APP_NAME" />.</translation>
 <translation id="3312952471765023168">Tải lên thành công</translation>
 <translation id="3318016344440038475">Hài kịch truyền hình</translation>
 <translation id="3324687287337751929">4 x 6 inch</translation>
@@ -1740,6 +1745,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3752181611900535304">Lưu địa chỉ trong tài khoản?</translation>
 <translation id="3752543821772132562">Bỏ qua vì bạn chưa đặt <ph name="POLICY_NAME" />.</translation>
 <translation id="3754210790023674521">Thoát chế độ hình trong hình</translation>
+<translation id="3754664361823138853">&amp;Mở trang Nhật ký</translation>
 <translation id="3759461132968374835">Bạn không nhận được báo cáo sự cố nào gần đây. Sự cố xảy ra khi báo cáo sự cố đã bị tắt sẽ không xuất hiện ở đây.</translation>
 <translation id="3760561303380396507">Sử dụng Windows Hello thay cho CVC?</translation>
 <translation id="3761171036307311438">Tên trên thẻ:</translation>
@@ -2751,6 +2757,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5385966243497224160">Không thể xem trước URL không thuộc loại HTTPS</translation>
 <translation id="5386426401304769735">Chuỗi chứng chỉ cho trang web này có chứa một chứng chỉ đã ký bằng SHA-1.</translation>
 <translation id="5391010642126249196">Bạn đã truy cập</translation>
+<translation id="5391306025131596142">&amp;Mở trang nhật ký</translation>
 <translation id="539203134595252721">Bóng bàn</translation>
 <translation id="5392506727170022660">Kim loại (Bán bóng)</translation>
 <translation id="5394069166371280357">Chương trình truyền hình dành cho gia đình</translation>
@@ -3545,6 +3552,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6655085656059574817">Nếu tiếp tục liên kết tài khoản, bạn sẽ thanh toán nhanh hơn bằng <ph name="BNPL_ISSUER_NAME" />, tuy nhiên, bạn có thể huỷ liên kết bằng cách truy cập vào <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /></translation>
 <translation id="6656935431494847393">Bao gồm thông tin như việc đặt vé máy bay và thông tin về xe</translation>
 <translation id="6657585470893396449">Mật khẩu</translation>
+<translation id="6659156657345021268">Thông tin sẽ chỉ được lưu vào thiết bị của bạn Lần tới khi điền vào biểu mẫu liên quan, bạn sẽ có thể lưu thông tin này vào Wallet.</translation>
 <translation id="6659246032834639189">Đây là mức giá thấp</translation>
 <translation id="6660413144148052430">vị trí</translation>
 <translation id="6662457027866368246">Cuộn đầu tiên</translation>
@@ -4354,6 +4362,7 @@ Thông tin chi tiết bổ sung:
 <translation id="7908648876066812348">Đang bật thẻ ảo</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, nhấn phím Tab rồi nhấn phím Enter để chuyển đến trang kiểm tra an toàn trên Chrome trong phần cài đặt</translation>
 <translation id="791107458486222637">Đang khôi phục kết quả</translation>
+<translation id="7911651285409665023">Đóng và quay lại "<ph name="TAB_TITLE" />"</translation>
 <translation id="7912924955815015552">Được nhập từ Safari</translation>
 <translation id="791551905239004656">Vẽ và tô màu</translation>
 <translation id="7916162853251942238">Gốc Flexo</translation>
@@ -4951,6 +4960,7 @@ Thông tin chi tiết bổ sung:
 <translation id="8894794286471754040">Cạnh dài trước</translation>
 <translation id="8897221284075091877">Để yêu cầu xem nội dung này, hãy tiếp tục bằng Tài khoản Google của bạn</translation>
 <translation id="8897428486789851669">Bơi</translation>
+<translation id="8898854704577986668">Hiện nhật ký trong bảng điều khiển bên</translation>
 <translation id="8899807382908246773">Quảng cáo xâm nhập</translation>
 <translation id="8903921497873541725">Phóng to</translation>
 <translation id="8903998444169664879">Xác minh danh tính của bạn để thay đổi chế độ cài đặt thông tin thanh toán</translation>

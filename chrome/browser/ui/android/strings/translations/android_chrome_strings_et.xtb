@@ -91,7 +91,6 @@
 <translation id="1342886103232377846">Ohustatud paroolide kontrollimiseks avage Google'i paroolihaldur</translation>
 <translation id="1343830902827845050">Chrome'i sisselogimine</translation>
 <translation id="1344653310988386453">Lisage esiletõstmiseks link</translation>
-<translation id="1347468774581902829">Tegevuste haldamine</translation>
 <translation id="1355088659320425659">Ajalugu ja vahelehed</translation>
 <translation id="1360432990279830238">Login välja ja keelan sünkroonimise?</translation>
 <translation id="1363028406613469049">Jälgi</translation>
@@ -1615,7 +1614,6 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="7554643625247105821">Chrome'i versiooni ei saa kontrollida</translation>
 <translation id="7557508262441527045">Välja logitud</translation>
 <translation id="7573665567024262965">Vaikerakenduste valimine</translation>
-<translation id="7577900504646297215">Huvide haldamine</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> fail laaditi alla}other{<ph name="FILES_DOWNLOADED_MANY" /> faili laaditi alla}}</translation>
 <translation id="7579341427377004341"><ph name="TAB_TITLE" />, mitmikvalikuga kuuldav inkognito vaheleht</translation>
 <translation id="7581273696622423628">Osalege küsitluses</translation>

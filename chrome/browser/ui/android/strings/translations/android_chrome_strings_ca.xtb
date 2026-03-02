@@ -91,7 +91,6 @@
 <translation id="1342886103232377846">Per comprovar si hi ha contrasenyes en perill, ves al gestor de contrasenyes de Google</translation>
 <translation id="1343830902827845050">Inicia la sessió a Chrome</translation>
 <translation id="1344653310988386453">Inclou un enllaç al text marcat</translation>
-<translation id="1347468774581902829">Gestiona l'activitat</translation>
 <translation id="1355088659320425659">Historial i pestanyes</translation>
 <translation id="1360432990279830238">Vols tancar la sessió i desactivar la sincronització?</translation>
 <translation id="1363028406613469049">Fes un seguiment</translation>
@@ -287,6 +286,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="2230777942707397948">Finestra buida</translation>
 <translation id="223356358902285214">Activitat al web i en aplicacions</translation>
 <translation id="2233735624724508540">Tria un període de temps i, a continuació, toca Suprimeix les dades</translation>
+<translation id="2234031676056123135">Personalitza les dreceres</translation>
 <translation id="2234827758954819389">Guia de privadesa</translation>
 <translation id="2238038374973843156">Mou a una altra finestra</translation>
 <translation id="2239812875700136898">Controla les teves històries amb el botó Opcions per a Discover</translation>
@@ -465,6 +465,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="2951071800649516099">Afegeix pàgines a la llista de lectura per a més tard</translation>
 <translation id="2954586176076923855">Mou la barra d'adreces a la part superior</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> pàgina no llegida}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> pàgines no llegides}}</translation>
+<translation id="2965758440484146185">Toca Fixa aquesta drecera</translation>
 <translation id="2972109037780336501">Suprimeix els permisos automàticament</translation>
 <translation id="2976550651269220761">Algunes dades de Chrome encara no s\u2019han desat al teu Compte de Google.\nProva d\u2019esperar uns quants minuts abans de tancar la sessió. Si tanques la sessió ara, aquestes dades se suprimiran.</translation>
 <translation id="2977350910003566746">S'ordena per última obertura</translation>
@@ -492,6 +493,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="3037177537145227281">Estàs fent un seguiment del preu</translation>
 <translation id="3037517125981011456">Mostra sol·licituds per iniciar la sessió a Chrome</translation>
 <translation id="3038272154009688107">Mostra tots els llocs web</translation>
+<translation id="3057938290530993634">Mantén premuts els llocs web que més visites per fixar-los i accedir-hi fàcilment la propera vegada</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> adreça d'interès}other{<ph name="BOOKMARKS_COUNT_MANY" /> adreces d'interès}}</translation>
 <translation id="3062802207422175757">Articles relacionats amb els teus interessos a Chrome</translation>
 <translation id="3066573403916685335">Mou cap avall</translation>
@@ -551,6 +553,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="333863344734218290">T'avisa de llocs web públics i privats no segurs</translation>
 <translation id="3340978935015468852">configuració</translation>
 <translation id="3341262203274374114">No es pot deixar de seguir. S'ha produït un error.</translation>
+<translation id="3351959803838327376">Mantén premut el lloc web i obre el menú</translation>
 <translation id="3359667936385849800">Utilitza el teu proveïdor de serveis actual</translation>
 <translation id="3373701465337594448">Quan aquesta opció està activada, aquí es mostra una llista dels llocs web que visites i que determinen els teus interessos</translation>
 <translation id="3384347053049321195">Comparteix la imatge</translation>
@@ -593,6 +596,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="3549537543136628349">Com que les pàgines precarregades estan encriptades, i l'aplicació o el lloc web que hi enllaça és una aplicació o un lloc de Google, els servidors de Google no reben informació nova quan aquestes pàgines es precarreguen de manera privada.</translation>
 <translation id="3549657413697417275">Cerca a l'historial</translation>
 <translation id="3557336313807607643">Afegeix als contactes</translation>
+<translation id="3560831525486613327">Obre una pàgina Pestanya nova.</translation>
 <translation id="3563767357928833671">Es mostren els continguts del porta-retalls</translation>
 <translation id="3566639033325271639">Actualitza la configuració</translation>
 <translation id="3568945271227339929">No hi ha cap contrasenya en perill</translation>
@@ -1615,7 +1619,6 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="7554643625247105821">No es pot comprovar la versió de Chrome</translation>
 <translation id="7557508262441527045">S'ha tancat la sessió</translation>
 <translation id="7573665567024262965">Tria les aplicacions predeterminades</translation>
-<translation id="7577900504646297215">Gestiona els interessos</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> fitxer baixat}other{<ph name="FILES_DOWNLOADED_MANY" /> fitxers baixats}}</translation>
 <translation id="7579341427377004341"><ph name="TAB_TITLE" />, pestanya d'incògnit audible multiseleccionada</translation>
 <translation id="7581273696622423628">Ves a l'enquesta</translation>

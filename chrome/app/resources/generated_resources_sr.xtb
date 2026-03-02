@@ -356,6 +356,7 @@
 <translation id="1221825588892235038">Само изабрани садржај</translation>
 <translation id="1222835797152767346">Подесите PIN да бисте олакшали пријављивање</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" /> захтева лиценцу</translation>
+<translation id="1223498995510244364">Резимирај</translation>
 <translation id="1223853788495130632">Администратор препоручује одређену вредност за ово подешавање.</translation>
 <translation id="1225177025209879837">Обрада захтева...</translation>
 <translation id="1227107020813934021">Пронађите скенере докумената</translation>
@@ -4331,7 +4332,6 @@
 <translation id="3880513902716032002">Неке од страница које посећујете су предучитане</translation>
 <translation id="3884152383786131369">Веб-садржај који је доступан на више језика користи први подржани језик са ове листе. Ова подешавања се синхронизују са подешавањима прегледача. <ph name="BEGIN_LINK_LEARN_MORE" />Сазнајте више<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">Администратор управља ажурирањима</translation>
-<translation id="3887022758415973389">Прегледајте листу уређаја</translation>
 <translation id="3887764720741098847">Сачуване информације</translation>
 <translation id="3888501106166145415">Повезане WiFi мреже</translation>
 <translation id="3890064827463908288">Укључите Chrome синхронизацију да бисте користили WiFi синхронизацију</translation>
@@ -11675,7 +11675,6 @@
 <translation id="8909298138148012791">Апликација <ph name="APP_NAME" /> је деинсталирана</translation>
 <translation id="8909833622202089127">Сајт прати локацију</translation>
 <translation id="8910222113987937043">Промене обележивача, историје, лозинки и других подешавања се више неће синхронизовати са Google налогом. Међутим, постојећи подаци ће се и даље чувати на Google налогу и можете да управљате њима на <ph name="BEGIN_LINK" />Google контролној табли<ph name="END_LINK" />.</translation>
-<translation id="8910987510378294980">Сакријте листу уређаја</translation>
 <translation id="8911914282056933784">Сакриј пројекте</translation>
 <translation id="8912362522468806198">Google налога</translation>
 <translation id="8912810933860534797">Омогући аутоматско скенирање</translation>

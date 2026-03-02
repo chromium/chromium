@@ -355,6 +355,7 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1221825588892235038">Vetëm zgjedhja</translation>
 <translation id="1222835797152767346">Cakto një kod PIN për ta bërë më të lehtë të identifikohesh</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" /> kërkon një licencë</translation>
+<translation id="1223498995510244364">Përmblidh</translation>
 <translation id="1223853788495130632">Administratori yt rekomandon një vlerë specifike për këtë cilësim.</translation>
 <translation id="1225177025209879837">Po përpunon kërkesën...</translation>
 <translation id="1227107020813934021">Gjej skanerë të dokumenteve</translation>
@@ -4332,7 +4333,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3880513902716032002">Disa nga faqet që ti viziton janë të ngarkuara paraprakisht</translation>
 <translation id="3884152383786131369">Përmbajtja e uebit që ofrohet në shumë gjuhë do të përdorë gjuhën e parë të mbështetur nga kjo listë. Këto preferenca sinkronizohen me cilësimet e shfletuesit tënd. <ph name="BEGIN_LINK_LEARN_MORE" />Mëso më shumë<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">Përditësimet menaxhohen nga administratori yt</translation>
-<translation id="3887022758415973389">Shfaq listën e pajisjeve</translation>
 <translation id="3887764720741098847">Informacionet e ruajtura</translation>
 <translation id="3888501106166145415">Rrjetet e lidhura Wi-Fi</translation>
 <translation id="3890064827463908288">Aktivizo "Sinkronizimin e Chrome" për të përdorur "Sinkronizimin e Wi-Fi"</translation>
@@ -10729,7 +10729,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8280267190418431666">Uebsajtet në gjuhët e tua</translation>
 <translation id="8280848878018088610">Dallgë që përplasen në det, me një qytet dhe kështjellë imagjinare në sfond, me atmosferë të errët.</translation>
 <translation id="828180235270931531">Printerë të tjerë të disponueshëm</translation>
-<translation id="8281886186245836920">Kapërce</translation>
+<translation id="8281886186245836920">Anashkalo</translation>
 <translation id="8284279544186306258">të gjitha faqet <ph name="WEBSITE_1" /></translation>
 <translation id="8284326494547611709">Titrat</translation>
 <translation id="8285625579699113397">Llogaria jote</translation>
@@ -11670,7 +11670,6 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="8909298138148012791"><ph name="APP_NAME" /> është çinstaluar</translation>
 <translation id="8909833622202089127">Sajti po gjurmon vendndodhjen tënde</translation>
 <translation id="8910222113987937043">Ndryshimet te faqeshënuesit, historiku, fjalëkalimet dhe cilësimet e tjera nuk do të sinkronizohen më te llogaria jote e Google. Sidoqoftë, të dhënat e tua ekzistuese do të qëndrojnë të ruajtura te llogaria jote e Google dhe mund të menaxhohen në <ph name="BEGIN_LINK" />Panelin analitik të Google.<ph name="END_LINK" /></translation>
-<translation id="8910987510378294980">Fshih listën e pajisjeve</translation>
 <translation id="8911914282056933784">Fshih projektet</translation>
 <translation id="8912362522468806198">Llogaria e Google</translation>
 <translation id="8912810933860534797">Aktivizo skanimin automatik</translation>

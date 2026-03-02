@@ -355,6 +355,7 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1221825588892235038">Kun det markerede</translation>
 <translation id="1222835797152767346">Angiv en pinkode for at gøre det nemmere at logge ind</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" /> kræver licens</translation>
+<translation id="1223498995510244364">Opsummer</translation>
 <translation id="1223853788495130632">Din administrator anbefaler en bestemt værdi for denne indstilling.</translation>
 <translation id="1225177025209879837">Behandler anmodning...</translation>
 <translation id="1227107020813934021">Find dokumentscannere</translation>
@@ -4348,7 +4349,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3880513902716032002">Nogle af de sider, du besøger, er forudindlæst</translation>
 <translation id="3884152383786131369">Webindhold, som er tilgængeligt på flere sprog, vises på det første understøttede sprog på denne liste. Disse præferencer synkroniseres med dine browserindstillinger. <ph name="BEGIN_LINK_LEARN_MORE" />Få flere oplysninger<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">Opdateringer administreres af din administrator.</translation>
-<translation id="3887022758415973389">Vis liste over enheder</translation>
 <translation id="3887764720741098847">Gemte oplysninger</translation>
 <translation id="3888501106166145415">Tilknyttede Wi-Fi-netværk</translation>
 <translation id="3890064827463908288">Aktivér Chrome-synkronisering for at bruge Wi-Fi-synkronisering</translation>
@@ -11691,7 +11691,6 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser, enhed
 <translation id="8909298138148012791"><ph name="APP_NAME" /> er afinstalleret</translation>
 <translation id="8909833622202089127">Websitet sporer din lokation</translation>
 <translation id="8910222113987937043">Ændringer af bogmærker, historik, adgangskoder og andre indstillinger synkroniseres ikke længere med din Google-konto. Dine eksisterende data er dog stadig gemt på din Google-konto og kan administreres i <ph name="BEGIN_LINK" />Google Kontrolpanel<ph name="END_LINK" />.</translation>
-<translation id="8910987510378294980">Skjul liste over enheder</translation>
 <translation id="8911914282056933784">Skjul projekter</translation>
 <translation id="8912362522468806198">Google-konto</translation>
 <translation id="8912810933860534797">Aktivér automatisk scanning</translation>

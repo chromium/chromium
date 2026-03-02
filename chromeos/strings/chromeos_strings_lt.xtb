@@ -167,6 +167,7 @@
 <translation id="1621067168122174824">Vykdyti įkrovimo bandymą</translation>
 <translation id="1622402072367425417">šviečiantys burbulai</translation>
 <translation id="1626590945318984973">Spartusis klavišas nepasiekiamas. Paspauskite naują spartųjį klavišą nenaudodami funkcijų klavišų ir klavišo „<ph name="META_KEY" />“.</translation>
+<translation id="163774412591892664">Administratorius išjungė jūsų įrenginį ir gali pasiekti jo vietovę.</translation>
 <translation id="1639239467298939599">Įkeliama</translation>
 <translation id="1641857168437328880">Dokumentų tiektuvas (vienpusis)</translation>
 <translation id="1642396894598555413">dviračiai</translation>
@@ -1723,6 +1724,7 @@ Atsisiųskite transkribavimo modelį (iki 100 MB), kad gautumėte transkribuotus
 <translation id="8584654835905316966">Norint užbaigti „<ph name="DEVICE_NAME" />“ programinės aparatinės įrangos diegimą į <ph name="VERSION" /> versiją, reikia iš naujo paleisti. Gali atrodyti, kad kompiuteris kelis kartus paleistas iš naujo. Toks elgesys yra numatomas.</translation>
 <translation id="8593058461203131755">pristabdyti mediją</translation>
 <translation id="8620617069779373398">Tarptinklinio ryšio būsena</translation>
+<translation id="8624524972189162859"><ph name="DOMAIN_NAME" /> administratorius išjungė jūsų įrenginį ir gali pasiekti jo vietovę.</translation>
 <translation id="8626489604350149811">Daugiau veiksmų („<ph name="APN_NAME" />“)</translation>
 <translation id="86356131183441916">Šviesiai violetinė</translation>
 <translation id="8647595191512746911">Garso įrašo transkribavimas</translation>

@@ -356,6 +356,7 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1221825588892235038">Apenas seleção</translation>
 <translation id="1222835797152767346">Defina um PIN para facilitar o login</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" /> requer uma licença</translation>
+<translation id="1223498995510244364">Resumir</translation>
 <translation id="1223853788495130632">Seu administrador recomenda um valor específico para esta configuração.</translation>
 <translation id="1225177025209879837">Processando solicitação...</translation>
 <translation id="1227107020813934021">Encontrar scanners</translation>
@@ -4356,7 +4357,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3880513902716032002">Algumas das páginas que você visita são pré-carregadas.</translation>
 <translation id="3884152383786131369">Conteúdos da Web disponíveis em vários idiomas usarão o primeiro idioma compatível desta lista. Estas preferências são sincronizadas com as configurações do navegador. <ph name="BEGIN_LINK_LEARN_MORE" />Saiba mais<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">As atualizações são gerenciadas pelo administrador</translation>
-<translation id="3887022758415973389">Mostrar a lista de dispositivos</translation>
 <translation id="3887764720741098847">Informações salvas</translation>
 <translation id="3888501106166145415">Redes Wi-Fi associadas</translation>
 <translation id="3890064827463908288">Ativar a Sincronização do Chrome para usar o recurso Sincronizar Wi-Fi</translation>
@@ -11702,7 +11702,6 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="8909298138148012791">O app <ph name="APP_NAME" /> foi desinstalado</translation>
 <translation id="8909833622202089127">O site está rastreando seu local</translation>
 <translation id="8910222113987937043">As alterações feitas nos seus favoritos, histórico, senhas e outras configurações não serão mais sincronizadas com sua Conta do Google. No entanto, os dados já existentes permanecerão armazenados na sua conta e será possível gerenciá-los no <ph name="BEGIN_LINK" />Painel do Google<ph name="END_LINK" />.</translation>
-<translation id="8910987510378294980">Ocultar lista de dispositivos</translation>
 <translation id="8911914282056933784">Ocultar projetos</translation>
 <translation id="8912362522468806198">Conta do Google</translation>
 <translation id="8912810933860534797">Ativar leitura automática</translation>

@@ -354,6 +354,7 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1221825588892235038">Alleen selectie</translation>
 <translation id="1222835797152767346">Stel een pincode in om makkelijker in te loggen</translation>
 <translation id="1223484782328004593">Je hebt een licentie nodig voor <ph name="APP_NAME" /></translation>
+<translation id="1223498995510244364">Samenvatten</translation>
 <translation id="1223853788495130632">Je beheerder raadt een specifieke waarde aan voor deze instelling.</translation>
 <translation id="1225177025209879837">Je verzoek wordt verwerkt...</translation>
 <translation id="1227107020813934021">Documentscanners zoeken</translation>
@@ -4331,7 +4332,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3880513902716032002">Sommige pagina's die je bezoekt, worden vooraf geladen</translation>
 <translation id="3884152383786131369">Voor webcontent die in meerdere talen beschikbaar is, wordt de eerste ondersteunde taal in deze lijst gebruikt. Deze voorkeuren worden gesynchroniseerd met je browserinstellingen. <ph name="BEGIN_LINK_LEARN_MORE" />Meer informatie<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">Updates worden beheerd door je beheerder</translation>
-<translation id="3887022758415973389">Apparaatlijst bekijken</translation>
 <translation id="3887764720741098847">Opgeslagen informatie</translation>
 <translation id="3888501106166145415">Gekoppelde wifi-netwerken</translation>
 <translation id="3890064827463908288">Chrome-synchronisatie aanzetten om wifi-synchronisatie te gebruiken</translation>
@@ -11664,7 +11664,6 @@ Dit kan informatie zijn over de geïnstalleerde software, bestanden, je browser,
 <translation id="8909298138148012791"><ph name="APP_NAME" /> is verwijderd</translation>
 <translation id="8909833622202089127">Site houdt je locatie bij</translation>
 <translation id="8910222113987937043">Wijzigingen in je bookmarks, geschiedenis, wachtwoorden en andere instellingen worden niet meer gesynchroniseerd met je Google-account. Je bestaande gegevens blijven echter opgeslagen in je Google-account en kunnen worden beheerd via <ph name="BEGIN_LINK" />Google Dashboard<ph name="END_LINK" />.</translation>
-<translation id="8910987510378294980">Apparaatlijst verbergen</translation>
 <translation id="8911914282056933784">Projecten verbergen</translation>
 <translation id="8912362522468806198">Google-account</translation>
 <translation id="8912810933860534797">Automatisch scannen aanzetten</translation>

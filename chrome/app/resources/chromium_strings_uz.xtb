@@ -27,6 +27,7 @@
 <translation id="126567311906253476">Gmail yoki YouTube kabi Google xizmatlariga <ph name="USER_EMAIL" /> hisobidan avtomatik kirganda Chromeʼga ham shu hisobdan kirishingiz mumkin</translation>
 <translation id="1290883685122687410">Sozlash xatosi: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1315551408014407711">Yangi Chromium profilini sozlang</translation>
+<translation id="132092532143527429">Chromium ichida Gemini bilan sinang</translation>
 <translation id="1324107359134968521">Qurilmalarni topish uchun Chromium Bluetooth aloqadan foydalanishiga ruxsat bering. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">Tilni aniqlash</translation>
 <translation id="1330742950061766891">Chromium tavsiya etgan brauzer sozlamalaridan foydalanish</translation>
@@ -236,6 +237,7 @@
 <translation id="3509308970982693815">Barcha Chromium oynalarini yoping va qaytadan urinib ko‘ring.</translation>
 <translation id="3522404737534491619">Oynani ulashish uchun tizim sozlamalarida Chromium brauzeriga ekranni yozib olish uchun ruxsat bering.</translation>
 <translation id="3530103706039034513"><ph name="EXISTING_USER" /> hisobiga allaqachon kirilgan.  Internetni alohida kezish uchun Chromiumga shaxsiy profilingiz (<ph name="USER_EMAIL_ADDRESS" />) orqali kiring.</translation>
+<translation id="3531741627422851418">Mobil qurilmalarda Chromium brauzerini yuklab olish uchun QR kod</translation>
 <translation id="3561853857681580870">Ekranni ulashish uchun tizim sozlamalarida Chromium uchun ekranni yozib olishga ruxsat bering.</translation>
 <translation id="3588112919289558122">Kuchaytirilgan himoya Chromium uchun notanish saytlar boʻyicha JavaScript optimizatsiyasini faolsizlantiradi</translation>
 <translation id="3597003331831379823">Kengaytirilgan ruxsatlar bilan sozlash ishga tushmadi. <ph name="METAINSTALLER_ERROR" /></translation>
@@ -605,6 +607,7 @@ Chromium sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="7622753900276619808">Endi koʻproq Chromium funksiyalaridan foydalanishingiz mumkin</translation>
 <translation id="7624307931717240213">Bu xizmatni yaxshilash uchun axborotdan foydalanamiz. Maxfiylik siyosati va Xizmat shartlari bilan tanishing.</translation>
 <translation id="7649070708921625228">Yordam</translation>
+<translation id="7650134251917003571">Chromium ilovasini yuklab olish</translation>
 <translation id="7656340475565475526">Chromium siz uchun sahifalarni kezishi mumkin</translation>
 <translation id="7658239707568436148">Bekor qilish</translation>
 <translation id="7686590090926151193">Chromium standart brauzer sifatida tayinlanmagan</translation>

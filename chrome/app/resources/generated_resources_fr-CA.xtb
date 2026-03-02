@@ -355,6 +355,7 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="1221825588892235038">Imprimer seulement la sélection</translation>
 <translation id="1222835797152767346">Définir un NIP pour faciliter la connexion à cet appareil</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" /> nécessite une licence</translation>
+<translation id="1223498995510244364">Résumer</translation>
 <translation id="1223853788495130632">Votre administrateur recommande une valeur particulière pour ce paramètre.</translation>
 <translation id="1225177025209879837">Traitement de la demande en cours…</translation>
 <translation id="1227107020813934021">Trouver des numériseurs de documents</translation>
@@ -4333,7 +4334,6 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou voir plus d'
 <translation id="3880513902716032002">Certaines des pages que vous visitez sont préchargées</translation>
 <translation id="3884152383786131369">Le contenu Web offert en plusieurs langues utilisera la première langue prise en charge de cette liste. Ces préférences sont synchronisées avec les paramètres de votre navigateur. <ph name="BEGIN_LINK_LEARN_MORE" />En savoir plus<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">C'est votre administrateur qui gère les mises à jour</translation>
-<translation id="3887022758415973389">Afficher la liste des appareils</translation>
 <translation id="3887764720741098847">Informations enregistrées</translation>
 <translation id="3888501106166145415">Réseaux Wi-Fi associés</translation>
 <translation id="3890064827463908288">Activez la synchronisation Chrome pour utiliser la synchronisation Wi-Fi</translation>
@@ -11664,7 +11664,6 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="8909298138148012791"><ph name="APP_NAME" /> a été désinstallée</translation>
 <translation id="8909833622202089127">Le site effectue le suivi de votre position</translation>
 <translation id="8910222113987937043">Les modifications apportées à vos favoris, à votre historique, à vos mots de passe et autres paramètres ne seront plus synchronisés avec votre compte Google. Cependant, vos données existantes resteront stockées dans votre compte Google et peuvent être gérées sur <ph name="BEGIN_LINK" />Google Dashboard<ph name="END_LINK" />.</translation>
-<translation id="8910987510378294980">Masquer la liste des appareils</translation>
 <translation id="8911914282056933784">Masquer les projets</translation>
 <translation id="8912362522468806198">Compte Google</translation>
 <translation id="8912810933860534797">Activer l'analyse automatique</translation>

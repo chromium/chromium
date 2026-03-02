@@ -91,7 +91,6 @@
 <translation id="1342886103232377846">धोक्यात असलेले पासवर्ड तपासण्यासाठी, Google Password Manager वर जा</translation>
 <translation id="1343830902827845050">Chrome मध्ये साइन इन करा</translation>
 <translation id="1344653310988386453">हायलाइट करण्यासाठी लिंकचा समावेश करा</translation>
-<translation id="1347468774581902829">अ‍ॅक्टिव्हिटी व्यवस्थापित करा</translation>
 <translation id="1355088659320425659">इतिहास आणि टॅब</translation>
 <translation id="1360432990279830238">साइन आउट करून सिंक बंद करायचे आहे का?</translation>
 <translation id="1363028406613469049">ट्रॅक</translation>
@@ -1623,7 +1622,6 @@
 <translation id="7554643625247105821">Chrome ची आवृत्ती तपासू शकत नाही</translation>
 <translation id="7557508262441527045">साइन आउट केले आहे</translation>
 <translation id="7573665567024262965">तुमची डीफॉल्ट ॲप्स निवडा</translation>
-<translation id="7577900504646297215">स्वारस्ये व्यवस्थापित करा</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> फाइल डाउनलोड केली}other{<ph name="FILES_DOWNLOADED_MANY" /> फाइल डाउनलोड केल्या}}</translation>
 <translation id="7579341427377004341"><ph name="TAB_TITLE" />, मल्टीसिलेक्ट केलेला ऐकू येणारा गुप्त टॅब</translation>
 <translation id="7581273696622423628">सर्वेक्षण घ्या</translation>

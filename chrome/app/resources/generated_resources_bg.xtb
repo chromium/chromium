@@ -354,6 +354,7 @@
 <translation id="1221825588892235038">Само избраното</translation>
 <translation id="1222835797152767346">Задайте ПИН код, за да улесните влизането в профила си</translation>
 <translation id="1223484782328004593">Изисква се лиценз за <ph name="APP_NAME" /></translation>
+<translation id="1223498995510244364">Обобщаване</translation>
 <translation id="1223853788495130632">Администраторът ви препоръчва конкретна стойност за тази настройка.</translation>
 <translation id="1225177025209879837">Заявката се обработва...</translation>
 <translation id="1227107020813934021">Намиране на скенери за документи</translation>
@@ -4340,7 +4341,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3880513902716032002">Някои от страниците, които посещавате, са заредени предварително</translation>
 <translation id="3884152383786131369">За показване на уеб съдържанието, което се предлага на няколко езика, ще се използва първият поддържан от този списък. Тези предпочитания се синхронизират с настройките на браузъра. <ph name="BEGIN_LINK_LEARN_MORE" />Научете повече<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">Актуализациите се управляват от администратора ви</translation>
-<translation id="3887022758415973389">Показване на списъка с устройства</translation>
 <translation id="3887764720741098847">Запазена информация</translation>
 <translation id="3888501106166145415">Свързани Wi-Fi мрежи</translation>
 <translation id="3890064827463908288">Включете синхронизирането в Chrome, за да използвате синхронизирането на Wi-Fi</translation>
@@ -11674,7 +11674,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="8909298138148012791">Деинсталирането на <ph name="APP_NAME" /> бе успешно</translation>
 <translation id="8909833622202089127">Сайтът следи местоположението ви</translation>
 <translation id="8910222113987937043">Промените във вашите отметки, история, пароли и други настройки повече няма да се синхронизират с профила ви в Google. Съществуващите ви данни обаче ще продължат да се съхраняват в него. Можете да ги управлявате от <ph name="BEGIN_LINK" />Google Табло за управление<ph name="END_LINK" />.</translation>
-<translation id="8910987510378294980">Скриване на списъка с устройства</translation>
 <translation id="8911914282056933784">Скриване на проектите</translation>
 <translation id="8912362522468806198">Профил в Google</translation>
 <translation id="8912810933860534797">Активиране на автоматичното сканиране</translation>

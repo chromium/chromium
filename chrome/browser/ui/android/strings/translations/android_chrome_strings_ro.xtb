@@ -91,7 +91,6 @@
 <translation id="1342886103232377846">Pentru a verifica dacă există parole compromise, accesează Managerul de parole Google</translation>
 <translation id="1343830902827845050">Conectează-te la Chrome</translation>
 <translation id="1344653310988386453">Include linkul spre evidențiere</translation>
-<translation id="1347468774581902829">Gestionează activitatea</translation>
 <translation id="1355088659320425659">Istoric și file</translation>
 <translation id="1360432990279830238">Te deconectezi și dezactivezi sincronizarea?</translation>
 <translation id="1363028406613469049">Melodia</translation>
@@ -1618,7 +1617,6 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chrome
 <translation id="7554643625247105821">Nu se poate verifica versiunea Chrome</translation>
 <translation id="7557508262441527045">Te-ai deconectat</translation>
 <translation id="7573665567024262965">Alege aplicațiile prestabilite</translation>
-<translation id="7577900504646297215">Gestionează interesele</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> fișier descărcat}few{<ph name="FILES_DOWNLOADED_MANY" /> fișiere descărcate}other{<ph name="FILES_DOWNLOADED_MANY" /> de fișiere descărcate}}</translation>
 <translation id="7579341427377004341"><ph name="TAB_TITLE" />, filă incognito cu sunet cu selectare multiplă</translation>
 <translation id="7581273696622423628">Participă la sondaj</translation>

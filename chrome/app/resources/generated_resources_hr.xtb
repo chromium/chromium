@@ -356,6 +356,7 @@ Zaporke uvijek možete provjeriti u odjeljku <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1221825588892235038">Samo odabir</translation>
 <translation id="1222835797152767346">Postavite PIN da biste se lakše prijavili</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" /> zahtijeva licencu</translation>
+<translation id="1223498995510244364">Izrada sažetka</translation>
 <translation id="1223853788495130632">Administrator preporučuje određenu vrijednost za tu postavku.</translation>
 <translation id="1225177025209879837">Obrada zahtjeva...</translation>
 <translation id="1227107020813934021">Pronalaženje skenera dokumenata</translation>
@@ -4332,7 +4333,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3880513902716032002">Neke od stranica koje posjećujete predučitavaju se</translation>
 <translation id="3884152383786131369">Web-sadržaj dostupan na više jezika koristit će prvi podržani jezik s ovog popisa. Te se postavke sinkroniziraju s postavkama vašeg preglednika. <ph name="BEGIN_LINK_LEARN_MORE" />Saznajte više<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">Ažuriranjima upravlja vaš administrator</translation>
-<translation id="3887022758415973389">Prikaz popisa uređaja</translation>
 <translation id="3887764720741098847">Spremljeni podaci</translation>
 <translation id="3888501106166145415">Povezane Wi-Fi mreže</translation>
 <translation id="3890064827463908288">Uključite Chrome sinkronizaciju kako biste upotrebljavali Wi-Fi sinkronizaciju</translation>
@@ -11666,7 +11666,6 @@ To može uključivati informacije o instaliranom softveru, datotekama, vašem pr
 <translation id="8909298138148012791">Deinstalirana je aplikacija <ph name="APP_NAME" /></translation>
 <translation id="8909833622202089127">Web-lokacija prati vašu lokaciju</translation>
 <translation id="8910222113987937043">Promjene vaših oznaka, povijesti, zaporki i drugih postavki više se neće sinkronizirati s vašim Google računom. No vaši podaci ostat će pohranjeni na vašem Google računu i možete upravljati njima na <ph name="BEGIN_LINK" />Google nadzornoj ploči<ph name="END_LINK" />.</translation>
-<translation id="8910987510378294980">Sakrij popis uređaja</translation>
 <translation id="8911914282056933784">Sakrij projekte</translation>
 <translation id="8912362522468806198">Google Račun</translation>
 <translation id="8912810933860534797">Omogući automatsko traženje</translation>

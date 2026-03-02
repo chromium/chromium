@@ -354,6 +354,7 @@
 <translation id="1221825588892235038">仅限选定内容</translation>
 <translation id="1222835797152767346">设置 PIN 码即可轻松登录</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" /> 必须获得许可</translation>
+<translation id="1223498995510244364">总结</translation>
 <translation id="1223853788495130632">您的管理员建议将此设置设为某个特定值。</translation>
 <translation id="1225177025209879837">正在处理请求…</translation>
 <translation id="1227107020813934021">查找文件扫描器</translation>
@@ -676,6 +677,7 @@
 <translation id="1453561711872398978">发送<ph name="BEGIN_LINK" />调试日志<ph name="END_LINK" />（推荐）</translation>
 <translation id="1454223536435069390">屏幕截图(&amp;A)</translation>
 <translation id="145432137617179457">支持“拼写检查”功能的语言</translation>
+<translation id="1455009947184333152">已删除技能</translation>
 <translation id="1455119378540982311">预设窗口大小</translation>
 <translation id="1456849775870359518">您的标签页将会重新打开</translation>
 <translation id="146000042969587795">此框架因含某些不安全内容而被拦截。</translation>
@@ -1325,6 +1327,7 @@
 <translation id="1886996562706621347">允许网站要求成为协议的默认处理程序（推荐）</translation>
 <translation id="1887210448491286312">停止将标签页投放到“<ph name="DEVICE_NAME" />”</translation>
 <translation id="1887442540531652736">登录错误</translation>
+<translation id="1888692623866312036">已保存技能</translation>
 <translation id="1890026367080681123">前往“嵌入式内容”设置</translation>
 <translation id="189035593835762169">条款及条件</translation>
 <translation id="1891362123137972260">磁盘空间严重不足。请释放磁盘空间。</translation>
@@ -1832,6 +1835,7 @@
 <translation id="2232751457155581899">网站可以请求跟踪您的摄像头位置</translation>
 <translation id="2233502537820838181">详细信息(&amp;M)</translation>
 <translation id="223356358902285214">网络与应用活动记录</translation>
+<translation id="2234031676056123135">自定义快捷方式</translation>
 <translation id="2234065144797002621">小溪</translation>
 <translation id="2234208862050358325">使用 1、2、3、q、e、a、s、d 键可移动光标</translation>
 <translation id="2234827758954819389">隐私保护指南</translation>
@@ -2502,7 +2506,7 @@
 <translation id="2670168377011445813">如果 Chrome 发现您的密码在公开数据泄露事件中外泄，Google 密码管理工具可能会在您登录时建议更改密码。<ph name="BEGIN_LINK" />详细了解自动更改密码<ph name="END_LINK" /></translation>
 <translation id="2670350619068134931">经过简化的动画</translation>
 <translation id="2670403088701171361">不允许网站查看您剪贴板中的文字或图片</translation>
-<translation id="2671423594960767771">分享组</translation>
+<translation id="2671423594960767771">共享分组</translation>
 <translation id="2671451824761031126">您的书签和设置已就绪</translation>
 <translation id="2672142220933875349">crx 文件已损坏，未能成功解压。</translation>
 <translation id="2672200806060988299">您的标签页标题和网址会发送给 Google，并且可能由人工审核员查看，以改进此功能。</translation>
@@ -3089,10 +3093,12 @@
 <translation id="3048589239114571785">播放 (K)</translation>
 <translation id="3048742847101793553">由于扫描失败，您的组织已屏蔽此文件。</translation>
 <translation id="3048917188684939573">投放和设备日志</translation>
+<translation id="3049356453907822148">添加新技能</translation>
 <translation id="3051250416341590778">显示屏上的内容大小</translation>
 <translation id="3053013834507634016">证书密钥用法</translation>
 <translation id="3053273573829329829">启用用户 PIN 码</translation>
 <translation id="3053274730492362225">不闪烁</translation>
+<translation id="3057938290530993634">按住即可固定最常用的网站，方便以后访问</translation>
 <translation id="3058498974290601450">您随时可在“设置”中开启同步功能</translation>
 <translation id="3060952009917586498">更改设备语言。当前语言为<ph name="LANGUAGE" />。</translation>
 <translation id="3060987956645097882">我们无法与您的手机建立连接。请确保您的手机就在附近、处于解锁状态，且已开启蓝牙和 Wi-Fi。</translation>
@@ -3249,6 +3255,7 @@
 <translation id="3182749001423093222">拼写检查</translation>
 <translation id="3183139917765991655">个人资料导入应用</translation>
 <translation id="3183143381919926261">移动数据网络</translation>
+<translation id="3183428991752322898">清除键盘快捷键</translation>
 <translation id="3183700187146209259">无法安装扫描仪软件</translation>
 <translation id="3183750649832309748">您的组织 (<ph name="ACCOUNT_MANAGER" />) 将能够查看某些信息，包括：</translation>
 <translation id="3183944777708523606">显示器排列方式</translation>
@@ -3338,6 +3345,7 @@
 <translation id="3247649647204519958">在此处，您可以查看和管理针对您所在网站的扩展程序权限</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - 网络错误</translation>
 <translation id="3248902735035392926">安全至上。请花点时间<ph name="BEGIN_LINK" />立即检查一下您的扩展程序<ph name="END_LINK" />吧</translation>
+<translation id="3250374026663843838">管理技能</translation>
 <translation id="3251119461199395237">文件同步</translation>
 <translation id="3251759466064201842">&lt;未包含在证书中&gt;</translation>
 <translation id="3252169590975855820">您可以通过 Google 密码管理工具访问该密码。</translation>
@@ -4323,7 +4331,6 @@
 <translation id="3880513902716032002">预加载您访问的部分网页</translation>
 <translation id="3884152383786131369">能以多种语言显示的网页内容将会使用此列表中第一项受支持的语言。这些偏好设置会与您的浏览器设置同步。<ph name="BEGIN_LINK_LEARN_MORE" />了解详情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">更新是由您的管理员管理</translation>
-<translation id="3887022758415973389">显示设备列表</translation>
 <translation id="3887764720741098847">已保存的信息</translation>
 <translation id="3888501106166145415">关联的 Wi-Fi 网络</translation>
 <translation id="3890064827463908288">您需要开启 Chrome 同步才能使用 Wi-Fi 同步功能</translation>
@@ -5170,6 +5177,7 @@
 <translation id="4469324811108161144">备注最多可以包含 <ph name="CHARACTER_LIMIT" /> 个字符。</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> 可修改“<ph name="FOLDERNAME" />”内的文件</translation>
 <translation id="4470957202018033307">外部存储偏好设置</translation>
+<translation id="4471250205822310967">Gemini 选择叠加层</translation>
 <translation id="4471354919263203780">正在下载语音识别文件... <ph name="PERCENT" />%</translation>
 <translation id="4472194221638903160">利用 AI 将标签页分组</translation>
 <translation id="4472298120638043495">您可以使用您的首选 Google 账号语言（<ph name="NEW_LOCALE_FROM_GAIA" />）</translation>
@@ -9130,7 +9138,7 @@
 <translation id="7225082563376899794">填充密码时使用 Windows Hello</translation>
 <translation id="7225179976675429563">缺少网络类型</translation>
 <translation id="7226163413959353072">这款 AI 助理可为您提供要点总结、阐明概念、查找答案等</translation>
-<translation id="7227235818314667565">管理分享设置</translation>
+<translation id="7227235818314667565">管理共享设置</translation>
 <translation id="7227458944009118910">下列应用也能处理协议链接。其他应用会请求授权。</translation>
 <translation id="7228056665272655255">若要设置指纹，请让您的孩子轻触键盘右上角的指纹传感器。您孩子的指纹数据会安全地存储在此 <ph name="DEVICE_TYPE" /> 上，绝不会外泄。</translation>
 <translation id="7228523857728654909">屏幕锁定和登录</translation>
@@ -9181,7 +9189,7 @@
 <translation id="7260186537988033909">自助服务终端和数字标牌设备注册已完成</translation>
 <translation id="7260206782629605806">如果您降低阈值，就可以做出轻微的动作。如果您提高阈值，可能需要做出更夸张的动作。</translation>
 <translation id="7260802376010589729">按下“c”键表示松开鼠标按键</translation>
-<translation id="7261217796641151584">分享分组</translation>
+<translation id="7261217796641151584">共享分组</translation>
 <translation id="7261612856573623172">系统默认文字转语音声音</translation>
 <translation id="7262004276116528033">此登录服务由 <ph name="SAML_DOMAIN" /> 托管</translation>
 <translation id="7262564444061174264">详细了解导航快捷键</translation>
@@ -11656,7 +11664,6 @@
 <translation id="8909298138148012791">已卸载 <ph name="APP_NAME" /></translation>
 <translation id="8909833622202089127">该网站正在跟踪您的位置</translation>
 <translation id="8910222113987937043">对您的书签、历史记录、密码及其他设置所做的更改将不再同步到您的 Google 账号。但是，您的现有数据依然会存储在您的 Google 账号中，而且您可以通过 <ph name="BEGIN_LINK" />Google 信息中心<ph name="END_LINK" />管理这些数据。</translation>
-<translation id="8910987510378294980">隐藏设备列表</translation>
 <translation id="8911914282056933784">隐藏项目</translation>
 <translation id="8912362522468806198">Google 账号</translation>
 <translation id="8912810933860534797">启用自动扫描</translation>
@@ -11905,6 +11912,7 @@
 <translation id="9061521313218438086">如果 Chrome 发现您的密码在公开数据泄露事件中外泄，Google 密码管理工具可能会在您登录时建议更改密码。</translation>
 <translation id="9061694916020926968">您需要登录 Google 账号，才能使用 Steam for Chromebook（Beta 版）。请登录，然后重试。</translation>
 <translation id="9062468308252555888">14 倍</translation>
+<translation id="9062873887761404531">清除导航快捷键</translation>
 <translation id="9063208415146866933">第 <ph name="ERROR_LINE_START" /> 行到第 <ph name="ERROR_LINE_END" /> 行存在错误</translation>
 <translation id="9064275926664971810">启用自动填充功能后，只需点击一次即可填写多个表单</translation>
 <translation id="9065203028668620118">修改</translation>

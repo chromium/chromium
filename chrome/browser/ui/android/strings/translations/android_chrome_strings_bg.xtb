@@ -91,7 +91,6 @@
 <translation id="1342886103232377846">За да проверите за компрометирани пароли, отворете Google Мениджър на пароли</translation>
 <translation id="1343830902827845050">Вход в Chrome</translation>
 <translation id="1344653310988386453">Включване на връзка към откроения текст</translation>
-<translation id="1347468774581902829">Управление на активността</translation>
 <translation id="1355088659320425659">История и раздели</translation>
 <translation id="1360432990279830238">Изход и изключване на синхронизирането?</translation>
 <translation id="1363028406613469049">Запис</translation>
@@ -1615,7 +1614,6 @@
 <translation id="7554643625247105821">Версията на Chrome не бе проверена</translation>
 <translation id="7557508262441527045">Излязохте от профила си</translation>
 <translation id="7573665567024262965">Избиране на приложенията по подразбиране</translation>
-<translation id="7577900504646297215">Управление на интересите</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> файл бе изтеглен}other{<ph name="FILES_DOWNLOADED_MANY" /> файла бяха изтеглени}}</translation>
 <translation id="7579341427377004341"><ph name="TAB_TITLE" /> – раздел в режим „инкогнито“, който възпроизвежда звук и е избран заедно с други</translation>
 <translation id="7581273696622423628">Участие в анкетата</translation>

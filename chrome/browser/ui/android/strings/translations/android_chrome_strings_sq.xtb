@@ -91,7 +91,6 @@
 <translation id="1342886103232377846">Për të kontrolluar për fjalëkalimet e komprometuara, shko te "Menaxheri i fjalëkalimeve i Google"</translation>
 <translation id="1343830902827845050">Identifikohu në Chrome</translation>
 <translation id="1344653310988386453">Përfshi lidhjen për te teksti i theksuar</translation>
-<translation id="1347468774581902829">Menaxho aktivitetin</translation>
 <translation id="1355088659320425659">Historiku dhe skedat</translation>
 <translation id="1360432990279830238">Do të dalësh dhe çaktivizosh sinkronizimin?</translation>
 <translation id="1363028406613469049">Pjesa muzikore</translation>
@@ -1621,7 +1620,6 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="7554643625247105821">Versioni i Chrome nuk mund të kontrollohet</translation>
 <translation id="7557508262441527045">Ke dalë</translation>
 <translation id="7573665567024262965">Zgjidh aplikacionet e parazgjedhura</translation>
-<translation id="7577900504646297215">Menaxho interesat</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> skedar i shkarkuar}other{<ph name="FILES_DOWNLOADED_MANY" /> skedarë të shkarkuar}}</translation>
 <translation id="7579341427377004341"><ph name="TAB_TITLE" />, skeda "e fshehtë" duke luajtur audion dhe e zgjedhur me shumë të tjera</translation>
 <translation id="7581273696622423628">Merr pjesë në anketë</translation>
@@ -1812,7 +1810,7 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="8271267069224406035">Raporto si përmbajtje të bezdisshme</translation>
 <translation id="8277710303010772444">Fillo kërkimin</translation>
 <translation id="8279945625179116733">Siguruar nga <ph name="APP_NAME" /></translation>
-<translation id="8281886186245836920">Kapërce</translation>
+<translation id="8281886186245836920">Anashkalo</translation>
 <translation id="8282297628636750033">Zbato temën e errët për sajtet</translation>
 <translation id="8282950411412455249">Shko te cilësimet e sigurisë</translation>
 <translation id="8288688997999490824">{NUM_WINDOWS,plural, =1{Mbyll 1 dritare të fshehtë}other{Mbyll # dritare të fshehta}}</translation>

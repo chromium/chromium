@@ -241,6 +241,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="3509308970982693815">Zaprite vsa okna Chromiuma in poskusite znova.</translation>
 <translation id="3522404737534491619">Če želite deliti okno, v sistemskih nastavitvah omogočite snemanje zaslona za Chromium.</translation>
 <translation id="3530103706039034513">Uporabnik <ph name="EXISTING_USER" /> je že prijavljen.  Če želite ločiti brskanje, se v Chromiumu prijavite v svoj profil kot <ph name="USER_EMAIL_ADDRESS" />.</translation>
+<translation id="3531741627422851418">Koda QR za prenos brskalnika Chromium v mobilnih napravah</translation>
 <translation id="3561853857681580870">Če želite deliti zaslon, v sistemskih nastavitvah omogočite snemanje zaslona za Chromium.</translation>
 <translation id="3588112919289558122">Izboljšana zaščita izklopi optimizacijo JavaScripta za spletna mesta, ki jih Chromium ne prepozna</translation>
 <translation id="3597003331831379823">Nastavitve s povečanimi pravicami ni bilo mogoče izvesti. <ph name="METAINSTALLER_ERROR" /></translation>

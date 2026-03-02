@@ -91,7 +91,6 @@
 <translation id="1342886103232377846">‏כדי לבדוק אם יש סיסמאות שנחשפו, צריך לעבור למנהל הסיסמאות של Google</translation>
 <translation id="1343830902827845050">‏כניסה ל-Chrome</translation>
 <translation id="1344653310988386453">עליך לכלול קישור לטקסט המודגש</translation>
-<translation id="1347468774581902829">ניהול פעילות</translation>
 <translation id="1355088659320425659">היסטוריה וכרטיסיות</translation>
 <translation id="1360432990279830238">לצאת ולהשבית את הסנכרון?</translation>
 <translation id="1363028406613469049">רצועה</translation>
@@ -1618,7 +1617,6 @@
 <translation id="7554643625247105821">‏לא ניתן לבדוק את הגרסה של Chrome</translation>
 <translation id="7557508262441527045">החשבון לא מחובר</translation>
 <translation id="7573665567024262965">בחירת האפליקציות שיוגדרו כברירות המחדל</translation>
-<translation id="7577900504646297215">ניהול תחומי עניין</translation>
 <translation id="757855969265046257">{FILES,plural, =1{הורדת קובץ אחד (<ph name="FILES_DOWNLOADED_ONE" />)}one{הורדת <ph name="FILES_DOWNLOADED_MANY" /> קבצים}two{הורדת <ph name="FILES_DOWNLOADED_MANY" /> קבצים}other{הורדת <ph name="FILES_DOWNLOADED_MANY" /> קבצים}}</translation>
 <translation id="7579341427377004341">‫<ph name="TAB_TITLE" />, כרטיסייה פרטית מתוך סדרת כרטיסיות פרטית שנבחרו ומכילה תוכן שאפשר לשמוע</translation>
 <translation id="7581273696622423628">השתתף בסקר</translation>

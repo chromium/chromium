@@ -91,7 +91,6 @@
 <translation id="1342886103232377846">Siirry Google Salasanoihin ja tarkista vaarantuneet salasanat</translation>
 <translation id="1343830902827845050">Chromeen kirjautuminen</translation>
 <translation id="1344653310988386453">Lisää linkki korostukseen</translation>
-<translation id="1347468774581902829">Toimintavalinnat</translation>
 <translation id="1355088659320425659">Historia ja välilehdet</translation>
 <translation id="1360432990279830238">Kirjaudu ulos ja lopeta synkronointi?</translation>
 <translation id="1363028406613469049">Raita</translation>
@@ -1618,7 +1617,6 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />poista tilin Chrome-
 <translation id="7554643625247105821">Chrome-version tarkistaminen ei onnistu</translation>
 <translation id="7557508262441527045">Kirjautunut ulos</translation>
 <translation id="7573665567024262965">Valitse oletussovellukset</translation>
-<translation id="7577900504646297215">Ylläpidä kiinnostuksen kohteita</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> tiedosto ladattu}other{<ph name="FILES_DOWNLOADED_MANY" /> tiedostoa ladattu}}</translation>
 <translation id="7579341427377004341"><ph name="TAB_TITLE" />, monivalittu incognito-välilehti, jolla toistetaan audiota</translation>
 <translation id="7581273696622423628">Vastaa kyselyyn</translation>

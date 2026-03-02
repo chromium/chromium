@@ -354,6 +354,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1221825588892235038">Solo selezione</translation>
 <translation id="1222835797152767346">Imposta un PIN per facilitare l'accesso</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" /> richiede una licenza</translation>
+<translation id="1223498995510244364">Riassumi</translation>
 <translation id="1223853788495130632">L'amministratore consiglia un valore specifico per questa impostazione.</translation>
 <translation id="1225177025209879837">Elaborazione della richiesta in corso...</translation>
 <translation id="1227107020813934021">Trova scanner di documenti</translation>
@@ -4329,7 +4330,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3880513902716032002">Alcune delle pagine che visiti sono precaricate</translation>
 <translation id="3884152383786131369">I contenuti web che sono disponibili in più lingue utilizzeranno la prima lingua supportata nell'elenco. Queste preferenze sono sincronizzate con le impostazioni del browser. <ph name="BEGIN_LINK_LEARN_MORE" />Ulteriori informazioni<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">Gli aggiornamenti sono gestiti dall'amministratore</translation>
-<translation id="3887022758415973389">Mostra elenco dispositivi</translation>
 <translation id="3887764720741098847">Informazioni salvate</translation>
 <translation id="3888501106166145415">Reti Wi-Fi associate</translation>
 <translation id="3890064827463908288">Per utilizzare Sync Wi-Fi, attiva Sincronizzazione Chrome</translation>
@@ -11658,7 +11658,6 @@ Potrebbero essere incluse informazioni su software installati, file, browser, si
 <translation id="8909298138148012791">L'app <ph name="APP_NAME" /> è stata disinstallata</translation>
 <translation id="8909833622202089127">Il sito sta monitorando la tua posizione</translation>
 <translation id="8910222113987937043">Le modifiche ai preferiti, alla cronologia, alle password e ad altre impostazioni non verranno più sincronizzate con il tuo Account Google. I dati esistenti rimarranno invece memorizzati nel tuo Account Google e potranno essere gestiti su <ph name="BEGIN_LINK" />Google Dashboard<ph name="END_LINK" />.</translation>
-<translation id="8910987510378294980">Nascondi elenco dispositivi</translation>
 <translation id="8911914282056933784">Nascondi progetti</translation>
 <translation id="8912362522468806198">Google Account</translation>
 <translation id="8912810933860534797">Attiva scansione automatica</translation>

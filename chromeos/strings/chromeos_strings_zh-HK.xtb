@@ -167,6 +167,7 @@
 <translation id="1621067168122174824">執行充電測試</translation>
 <translation id="1622402072367425417">發光氣泡</translation>
 <translation id="1626590945318984973">無法使用快速鍵。請使用其他快速鍵，且當中不得有功能鍵和<ph name="META_KEY" />鍵。</translation>
+<translation id="163774412591892664">管理員已停用你的裝置，並可存取其位置。</translation>
 <translation id="1639239467298939599">載入中</translation>
 <translation id="1641857168437328880">文件送紙器 (單面)</translation>
 <translation id="1642396894598555413">單車</translation>
@@ -1723,6 +1724,7 @@
 <translation id="8584654835905316966"><ph name="DEVICE_NAME" />必須重新啟動，才能完成安裝韌體版本 <ph name="VERSION" />。電腦可能會多次重新啟動，這是正常現象。</translation>
 <translation id="8593058461203131755">暫停媒體</translation>
 <translation id="8620617069779373398">漫遊狀態</translation>
+<translation id="8624524972189162859"><ph name="DOMAIN_NAME" /> 管理員已停用你的裝置，並可存取其位置。</translation>
 <translation id="8626489604350149811">可對 <ph name="APN_NAME" /> 執行的其他操作</translation>
 <translation id="86356131183441916">淺紫色</translation>
 <translation id="8647595191512746911">音訊轉錄</translation>

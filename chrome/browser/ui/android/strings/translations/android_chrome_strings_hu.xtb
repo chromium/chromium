@@ -91,7 +91,6 @@
 <translation id="1342886103232377846">Az illetéktelen kézbe került jelszavak előfordulásának ellenőrzéséhez nyissa meg a Google Jelszókezelőt</translation>
 <translation id="1343830902827845050">Bejelentkezés a Chrome-ba</translation>
 <translation id="1344653310988386453">A kiemelt szöveghez vezető linkkel együtt</translation>
-<translation id="1347468774581902829">Tevékenységek kezelése</translation>
 <translation id="1355088659320425659">Előzmények és lapok</translation>
 <translation id="1360432990279830238">Kijelentkezik, és kikapcsolja a szinkronizálást?</translation>
 <translation id="1363028406613469049">Szám</translation>
@@ -1618,7 +1617,6 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="7554643625247105821">Nem sikerült ellenőrizni a Chrome-verziót</translation>
 <translation id="7557508262441527045">Kijelentkezve</translation>
 <translation id="7573665567024262965">Alapértelmezett alkalmazások kiválasztása</translation>
-<translation id="7577900504646297215">Érdeklődési körök kezelése</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> fájl letöltve}other{<ph name="FILES_DOWNLOADED_MANY" /> fájl letöltve}}</translation>
 <translation id="7579341427377004341"><ph name="TAB_TITLE" />, több kiválasztott, hangot lejátszó inkognitó lap</translation>
 <translation id="7581273696622423628">Kérdőív kitöltése</translation>

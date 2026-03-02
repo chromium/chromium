@@ -219,7 +219,6 @@
 <translation id="1767766085187034454">Google Tarjimon</translation>
 <translation id="1771016937398045251">Asboblar menyusi</translation>
 <translation id="1772468122139624049">Varaqlar qayta yuklanmadi</translation>
-<translation id="1776240104318790173">Yaxshilangan avtomatik kiritishni yoqish/oʻchirish</translation>
 <translation id="1779354709911146450">Autentifikatsiya xatosi yuz berdi</translation>
 <translation id="1780152987505130652">Guruhni yopish</translation>
 <translation id="178400879184240105">Parollaringiz takrorlanmagan</translation>
@@ -669,6 +668,7 @@
 <translation id="3476450923187944815">Parollarni boshqa ilovalarda ishlatish.</translation>
 <translation id="3485558910355485767">Yangi inkognito oyna</translation>
 <translation id="3488501490964659223">Varaqlar yopiladi va brauzer tarixi tozalanadi. Hisobingizdan chiqasiz</translation>
+<translation id="3490396108106323715">Joriy varaqni ulashish</translation>
 <translation id="3493531032208478708">Bildirgi takliflar haqida <ph name="BEGIN_LINK" />batafsil ma’lumot<ph name="END_LINK" /></translation>
 <translation id="349446645805573740">“<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />” faylini qayerga saqlashni tanlang</translation>
 <translation id="3504377992102007712">Sozlamalar</translation>
@@ -695,6 +695,7 @@
 <translation id="3565012355885596568">Rasmlar yuklanmadi</translation>
 <translation id="3565930036634619844">Varaq. <ph name="TAB_INDEX" /> / <ph name="NUMBER_OF_TABS" /></translation>
 <translation id="3567168891086460374">Boshqa usulda saqlang</translation>
+<translation id="3572503683475187385">Yangi chat boshlaganingizda joriy varaq Gemini bilan ulashiladi. Varaq Gemini bilan ulashilganda uning kontenti va URL manzili Googlega yuboriladi. <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">Google hisobingizda</translation>
 <translation id="3575234738189584619">Lens orqali qidirish</translation>
 <translation id="3575426792457739946">Bu roʻyxatda barcha profillar yuklangan.</translation>
@@ -738,6 +739,7 @@
 <translation id="3751873026576444885">Google Lens bilan ekrandan qidiruvni toʻxtatish</translation>
 <translation id="3753408171347588045">Narxlarni kuzatish</translation>
 <translation id="3753618528540214374">Koʻk-yashil mavzu</translation>
+<translation id="3759491607478608474">Yanada mos javoblarni olish uchun joriy varaq kontentini Gemini bilan ulashish</translation>
 <translation id="3762232513783804601">iPad uchun ishlab chiqilgan</translation>
 <translation id="3768725474733206671">Oxirgi yopilgan varaqni ochish</translation>
 <translation id="3779810277399252432">Internetga ulanmagansiz</translation>
@@ -985,6 +987,7 @@
 <translation id="4650125387981512669"><ph name="FIRST_RUN_ACCOUNT_NAME" /> nomidan kirish</translation>
 <translation id="4651927776207937667">{count,plural, =1{1 daqiqadan keyin berkitish}other{{count} daqiqadan keyin berkitish}}</translation>
 <translation id="4652817563047461855">Parollaringiz xavfsiz ekaniga ishonch hosil qiling. Ular oʻgʻirlagan yoki yoʻqligi haqida maʼlumot oling va oʻzingizni onlayn himoya qilish boʻyicha maslahat oling. <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
+<translation id="4653053602672040238">Varaq ulashuvini yoqish</translation>
 <translation id="4658335131052370646">Saqlash</translation>
 <translation id="466307903888586355">Tashkilotingiz fayllar saqlashni bloklagan</translation>
 <translation id="4668929960204016307">,</translation>
@@ -1298,6 +1301,7 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="5718049162805123412">Bularni hoziroq oʻzgartiring</translation>
 <translation id="5721040778297053709">Bu kadrga kredit kartani joylang</translation>
 <translation id="572328651809341494">Oxirgi varaqlar</translation>
+<translation id="5724590854763964497">Birlamchi holatda yangi chat boshlanganda joriy varaq ulashiladi. Varaqlar ulashilganda ularning kontenti va URL manzillari Googlega yuboriladi, ammo generativ AI modellarini yaxshilashda ishlatilmaydi. Bu sozlamani istalgan vaqt oʻzgartirish mumkin.</translation>
 <translation id="5724941645893276623">Internetni pinhona kezish uchun yangi varaq oching</translation>
 <translation id="5728072125198221967">Ulangan Google xizmatlari</translation>
 <translation id="5728700505257787410">Hisobga kirib bo‘lmadi.</translation>
@@ -1965,6 +1969,7 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="8059533439631660104">Bo‘limni yig‘adi.</translation>
 <translation id="8061584726507121204">Tarix</translation>
 <translation id="8064946459644399612">Yangi varaq sahifasi sozlamalari tatbiq qilindi</translation>
+<translation id="8065556469005366939">Varaqlarni ulashish yanada mos javoblarni olish imkonini beradi</translation>
 <translation id="8069394452933076548">Yaqinda foydalanilmagan varaqlarni qachon nofaol varaqlar boʻlimiga koʻchirishni tanlang.</translation>
 <translation id="8073670137947914548">Yuklab olindi</translation>
 <translation id="8076492880354921740">Varaqlar</translation>
@@ -2133,6 +2138,7 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="8660600697590740984">Lens rasmdan nusxa oldi</translation>
 <translation id="866266761389616183">Ana xolos!</translation>
 <translation id="8663764600409216912">Parollaringiz ishonchli darajada</translation>
+<translation id="8664992138761940052">Birlamchi holatda yangi chat boshlanganda joriy varaq ulashiladi. Varaqlar ulashilganda ularning kontenti va URL manzillari Googlega yuboriladi. Bu sozlamani istalgan vaqt oʻzgartirish mumkin.</translation>
 <translation id="8668210798914567634">Bu sahifa mutolaa ro‘yxatingizga saqlandi.</translation>
 <translation id="8672642291731179042">Sahifalarni tarjima qilish</translation>
 <translation id="8672733398999596205">Hammasini yoqish</translation>

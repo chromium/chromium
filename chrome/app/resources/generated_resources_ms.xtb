@@ -354,6 +354,7 @@ Semak kata laluan anda pada bila-bila masa dalam <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1221825588892235038">Pemilihan sahaja</translation>
 <translation id="1222835797152767346">Tetapkan PIN untuk memudahkan log masuk</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" /> memerlukan lesen</translation>
+<translation id="1223498995510244364">Ringkaskan</translation>
 <translation id="1223853788495130632">Pentadbir anda mencadangkan nilai khusus untuk tetapan ini.</translation>
 <translation id="1225177025209879837">Memproses permintaan...</translation>
 <translation id="1227107020813934021">Cari pengimbas dokumen</translation>
@@ -4353,7 +4354,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3880513902716032002">Beberapa halaman yang anda lawati dipramuat</translation>
 <translation id="3884152383786131369">Kandungan web yang tersedia dalam berbilang bahasa akan menggunakan bahasa pertama yang disokong daripada senarai ini. Pilihan ini disegerakkan dengan tetapan penyemak imbas anda. <ph name="BEGIN_LINK_LEARN_MORE" />Ketahui lebih lanjut<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">Kemaskinian diurus oleh pentadbir anda</translation>
-<translation id="3887022758415973389">Paparkan senarai peranti</translation>
 <translation id="3887764720741098847">Maklumat yang disimpan</translation>
 <translation id="3888501106166145415">Rangkaian Wi-Fi berkaitan</translation>
 <translation id="3890064827463908288">Hidupkan Penyegerakan Chrome untuk menggunakan Penyegerakan Wi-Fi</translation>
@@ -7984,6 +7984,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="6410257289063177456">Fail Imej</translation>
 <translation id="6410328738210026208">Tukar saluran dan Powerwash</translation>
 <translation id="6410390304316730527">Penyemakan Imbas Selamat melindungi anda daripada penyerang yang mungkin memperdaya anda agar melakukan sesuatu yang berbahaya seperti memasang perisian hasad atau mendedahkan maklumat peribadi, seperti kata laluan, nombor telefon atau kad kredit. Jika anda mematikan ciri ini, sila berhati-hati semasa menyemak imbas laman web yang tidak biasa dilawati atau tidak bereputasi baik.</translation>
+<translation id="6410390446958964276">Ketika anda dilog masuk, anda boleh menggunakan tema, tetapan dan pelbagai lagi yang disimpan dalam Google Account anda pada semua peranti anda</translation>
 <translation id="6411135999030237579">Tekan dan tahan untuk mengulangi kekunci secara automatik</translation>
 <translation id="6414618057231176439">Pilih versi <ph name="VM_NAME" /> untuk dipasang.</translation>
 <translation id="641469293210305670">Pasang Kemas Kini dan Apl</translation>
@@ -11694,7 +11695,6 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="8909298138148012791"><ph name="APP_NAME" /> telah dinyahpasang</translation>
 <translation id="8909833622202089127">Tapak sedang menjejak lokasi anda</translation>
 <translation id="8910222113987937043">Perubahan kepada penanda halaman, sejarah, kata laluan dan tetapan anda yang lain tidak akan disegerakkan ke Google Account anda lagi. Namun begitu, data anda yang sedia ada akan terus disimpan dalam Google Account anda dan boleh diurus di <ph name="BEGIN_LINK" />Papan Pemuka Google<ph name="END_LINK" />.</translation>
-<translation id="8910987510378294980">Sembunyikan senarai peranti</translation>
 <translation id="8911914282056933784">Sembunyikan projek</translation>
 <translation id="8912362522468806198">Google Account</translation>
 <translation id="8912810933860534797">Dayakan autoimbas</translation>

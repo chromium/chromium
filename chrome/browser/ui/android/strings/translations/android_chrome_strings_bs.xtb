@@ -91,7 +91,6 @@
 <translation id="1342886103232377846">Da provjerite ugrožene lozinke, idite na Google upravitelj lozinki</translation>
 <translation id="1343830902827845050">Prijavite se u Chrome</translation>
 <translation id="1344653310988386453">Uključite link za istaknuti tekst</translation>
-<translation id="1347468774581902829">Upravljajte aktivnostima</translation>
 <translation id="1355088659320425659">Historija i kartice</translation>
 <translation id="1360432990279830238">Odjaviti se i isključiti sinhronizaciju?</translation>
 <translation id="1363028406613469049">Numera</translation>
@@ -1618,7 +1617,6 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chromea 
 <translation id="7554643625247105821">Nije moguće provjeriti verziju Chromea</translation>
 <translation id="7557508262441527045">Odjavljeni ste</translation>
 <translation id="7573665567024262965">Odaberite zadane aplikacije</translation>
-<translation id="7577900504646297215">Upravljajte interesovanjima</translation>
 <translation id="757855969265046257">{FILES,plural, =1{Preuzet je <ph name="FILES_DOWNLOADED_ONE" /> fajl}one{Preuzet je <ph name="FILES_DOWNLOADED_MANY" /> fajl}few{Preuzeta su <ph name="FILES_DOWNLOADED_MANY" /> fajla}other{Preuzeto je <ph name="FILES_DOWNLOADED_MANY" /> fajlova}}</translation>
 <translation id="7579341427377004341"><ph name="TAB_TITLE" />, višestruko odabrana anonimna kartica sa zvukom</translation>
 <translation id="7581273696622423628">Popunite anketu</translation>

@@ -355,6 +355,7 @@
 <translation id="1221825588892235038">শুধুমাত্র নির্বাচন</translation>
 <translation id="1222835797152767346">সাইন-ইন করা আরও সহজ করতে পিন সেট করুন</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" /> লঞ্চ করতে লাইসেন্স প্রয়োজন</translation>
+<translation id="1223498995510244364">সংক্ষিপ্ত করুন</translation>
 <translation id="1223853788495130632">আপনার প্রশাসক এই সেটিং এর জন্য কোনো সুনির্দিষ্ট মানের প্রস্তাব দেয়৷</translation>
 <translation id="1225177025209879837">অনুরোধ প্রক্রিয়াকরণ হচ্ছে...</translation>
 <translation id="1227107020813934021">ডকুমেন্ট স্ক্যানার খুঁজুন</translation>
@@ -4347,7 +4348,6 @@
 <translation id="3880513902716032002">আপনি যেসব পৃষ্ঠা দেখেন তার মধ্যে কিছু প্রিলোড করা আছে</translation>
 <translation id="3884152383786131369">যেসকল ওয়েব কন্টেন্ট একাধিক ভাষায় উপলভ্য সেগুলি এই তালিকা থেকে উপযুক্ত প্রথম ভাষাটি ব্যবহার করবে। আপনার ব্রাউজার সেটিংসের সাথে এই পছন্দ সিঙ্ক করা আছে। <ph name="BEGIN_LINK_LEARN_MORE" />আরও জানুন<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">আপনার অ্যাডমিনিস্ট্রেটর আপডেটগুলি ম্যানেজ করে।</translation>
-<translation id="3887022758415973389">ডিভাইসের তালিকা দেখুন</translation>
 <translation id="3887764720741098847">সেভ করা তথ্য</translation>
 <translation id="3888501106166145415">সংশ্লিষ্ট ওয়াই-ফাই নেটওয়ার্ক</translation>
 <translation id="3890064827463908288">ওয়াই-ফাই সিঙ্ক ব্যবহার করতে Chrome সিঙ্ক চালু করুন</translation>
@@ -11690,7 +11690,6 @@
 <translation id="8909298138148012791"><ph name="APP_NAME" /> আনইনস্টল করা হয়েছে</translation>
 <translation id="8909833622202089127">সাইটটি আপনার লোকেশন ট্র্যাক করছে</translation>
 <translation id="8910222113987937043">আপনার বুকমার্ক, ইতিহাস, পাসওয়ার্ড এবং অন্যান্য সেটিংসের পরিবর্তনগুলি এখন আর আপনার Google অ্যাকাউন্টের সাথে সিঙ্ক করা হবে না। তবে, আপনার বর্তমান ডেটা আপনার Google অ্যাকাউন্টে সঞ্চিত থাকবে এবং <ph name="BEGIN_LINK" />Google ড্যাশবোর্ড<ph name="END_LINK" /> থেকে ম্যানেজ করা যাবে।</translation>
-<translation id="8910987510378294980">ডিভাইসের তালিকা লুকান</translation>
 <translation id="8911914282056933784">প্রোজেক্ট লুকান</translation>
 <translation id="8912362522468806198">Google অ্যাকাউন্ট</translation>
 <translation id="8912810933860534797">অটো-স্ক্যান চালু করুন</translation>

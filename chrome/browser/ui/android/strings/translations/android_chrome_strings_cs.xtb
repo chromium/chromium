@@ -91,7 +91,6 @@
 <translation id="1342886103232377846">Pokud chcete zkontrolovat, zda nedošlo k prolomení hesel, přejděte do Správce hesel Google</translation>
 <translation id="1343830902827845050">Přihlášení do Chromu</translation>
 <translation id="1344653310988386453">Zahrnout odkaz na zvýraznění</translation>
-<translation id="1347468774581902829">Spravovat aktivitu</translation>
 <translation id="1355088659320425659">Historie a karty</translation>
 <translation id="1360432990279830238">Odhlásit a vypnout synchronizaci?</translation>
 <translation id="1363028406613469049">Stopa</translation>
@@ -1618,7 +1617,6 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="7554643625247105821">Verzi Chromu nelze zkontrolovat</translation>
 <translation id="7557508262441527045">Odhlášeno</translation>
 <translation id="7573665567024262965">Vyberte výchozí aplikace</translation>
-<translation id="7577900504646297215">Spravovat zájmy</translation>
 <translation id="757855969265046257">{FILES,plural, =1{Byl stažen <ph name="FILES_DOWNLOADED_ONE" /> soubor}few{Byly staženy <ph name="FILES_DOWNLOADED_MANY" /> soubory}many{Bylo staženo <ph name="FILES_DOWNLOADED_MANY" /> souboru}other{Bylo staženo <ph name="FILES_DOWNLOADED_MANY" /> souborů}}</translation>
 <translation id="7579341427377004341"><ph name="TAB_TITLE" />, jedna z několika vybraných slyšitelných anonymních karet</translation>
 <translation id="7581273696622423628">Zúčastnit se průzkumu</translation>

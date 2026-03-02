@@ -355,6 +355,7 @@
 <translation id="1221825588892235038">තෝරාගැනීම් පමණි</translation>
 <translation id="1222835797152767346">පුරනය වීම පහසු කිරීම සඳහා PIN එකක් සකසන්න</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" /> බලපත්‍රයක් අවශ්‍ය කරයි</translation>
+<translation id="1223498995510244364">සාරාංශ කරන්න</translation>
 <translation id="1223853788495130632">ඔබේ පරිපාලක මෙම සැකසුම සඳහා නිශ්චිත අගයක් නිර්දේශ කරයි.</translation>
 <translation id="1225177025209879837">සැකසුම් ඉල්ලීම...</translation>
 <translation id="1227107020813934021">ලේඛන ස්කෑනර් සොයා ගන්න</translation>
@@ -4333,7 +4334,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="3880513902716032002">ඔබ පිවිසෙන සමහර පිටු පූර්ව පූරණය කර ඇත</translation>
 <translation id="3884152383786131369">භාෂා කිහිපයකින් ලබා ගත හැකි වෙබ් අන්තර්ගතය මෙම ලැයිස්තුවෙන් පළමු සහාය දක්වන භාෂාව භාවිත කරයි. මෙම මනාප ඔබගේ බ්‍රව්සර සැකසීම් සමඟ සමමුහුර්ත කර ඇත. <ph name="BEGIN_LINK_LEARN_MORE" />තව දැන ගන්න<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">යාවත්කාලීන කිරීම් කළමනාකරණය කරනු ලබන්නේ ඔබගේ පරිපාලක විසිනි</translation>
-<translation id="3887022758415973389">උපාංග ලැයිස්තුව පෙන්වන්න</translation>
 <translation id="3887764720741098847">සුරැකි තොරතුරු</translation>
 <translation id="3888501106166145415">ආශ්‍රිත Wi-Fi ජාල</translation>
 <translation id="3890064827463908288">Wi-Fi සමමුහුර්තකරණය භාවිත කිරීමට Chrome සමමුහුර්තකරණය ක්‍රියාත්මක කරන්න</translation>
@@ -11671,7 +11671,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8909298138148012791"><ph name="APP_NAME" /> අස්ථාපන කර ඇත</translation>
 <translation id="8909833622202089127">අඩවිය ඔබේ ස්ථානය සොයමින්</translation>
 <translation id="8910222113987937043">ඔබගේ පිටුසන්, ඉතිහාසය, මුරපද, සහ අනෙකුත් සැකසීම්වලට සිදු කරන වෙනස් කිරීම් ඔබගේ Google ගිණුම වෙත තව දුරටත් සමමුහුර්ත වන්නේ නැත. කෙසේ වෙතත්, ඔබගේ පවතින දත්ත ඔබගේ Google ගිණුමේ ගබඩා කර තිබෙනු ඇති අතර <ph name="BEGIN_LINK" />Google උපකරණ පුවරුව<ph name="END_LINK" /> තුළ කළමනාකරණය කළ හැකිය.</translation>
-<translation id="8910987510378294980">උපාංග ලැයිස්තුව සඟවන්න</translation>
 <translation id="8911914282056933784">ව්‍යාපෘති සඟවන්න</translation>
 <translation id="8912362522468806198">Google ගිණුම</translation>
 <translation id="8912810933860534797">ස්වයංක්‍රීය ස්කෑන් සබල කරන්න</translation>

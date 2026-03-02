@@ -1310,6 +1310,8 @@
 <translation id="3102312643185441063">बचत</translation>
 <translation id="3103188521861412364">सेयर तथा बचतपत्र</translation>
 <translation id="3105172416063519923">सम्पत्ति ID:</translation>
+<translation id="3105223248029915046">तपाईंको योग्यताका आधारमा भुक्तानी योजनाहरू उपलब्ध हुने छन्।
+पछि भुक्तानी गर्ने विकल्पहरू लुकाउन <ph name="BEGIN_LINK" />भुक्तानीसम्बन्धी सेटिङ<ph name="END_LINK" />मा जानुहोस्</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />सुरक्षित DNS कन्फिगुरेसनको जाँच गर्दै<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">बिचको ट्रे</translation>
 <translation id="3109061346635850169">अनुहार तथा शरीरको हेरचाह</translation>
@@ -4357,6 +4359,7 @@
 <translation id="7908648876066812348">भर्चुअल कार्ड अन गरिँदै छ</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, सेटिङमा रहेको Chrome को सुरक्षा जाँच पेजमा जान ट्याब थिच्नुहोस् अनि इन्टर थिच्नुहोस्</translation>
 <translation id="791107458486222637">परिणाम रिडू गरिँदै छ</translation>
+<translation id="7911651285409665023">बन्द गर्नुहोस् र "<ph name="TAB_TITLE" />" मा फर्कनुहोस्</translation>
 <translation id="7912924955815015552">Safari बाट इम्पोर्ट गरिएको</translation>
 <translation id="791551905239004656">चित्र कोर्ने तथा रङ भर्ने काम</translation>
 <translation id="7916162853251942238">फ्लेक्सो बेस</translation>

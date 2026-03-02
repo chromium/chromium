@@ -354,6 +354,7 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1221825588892235038">Só selección</translation>
 <translation id="1222835797152767346">Define un PIN para que sexa máis fácil iniciar sesión</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" /> require unha licenza</translation>
+<translation id="1223498995510244364">Resumir</translation>
 <translation id="1223853788495130632">O administrador recomenda un valor específico para esta configuración.</translation>
 <translation id="1225177025209879837">Procesando solicitude...</translation>
 <translation id="1227107020813934021">Busca escáneres de documentos</translation>
@@ -4335,7 +4336,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3880513902716032002">Precargaranse algunhas das páxinas que visites</translation>
 <translation id="3884152383786131369">No contido web que estean dispoñibles varios idiomas usarase o primeiro admitido da lista. Estas preferencias sincronízanse coa configuración do teu navegador. <ph name="BEGIN_LINK_LEARN_MORE" />Máis información<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">O teu administrador xestiona as actualizacións</translation>
-<translation id="3887022758415973389">Mostrar lista de dispositivos</translation>
 <translation id="3887764720741098847">Información gardada</translation>
 <translation id="3888501106166145415">Redes wifi asociadas</translation>
 <translation id="3890064827463908288">Activar Sincronización de Chrome para usar a función Sincronización wifi</translation>
@@ -11669,7 +11669,6 @@ Pode tratarse de información sobre o software instalado, os ficheiros, o navega
 <translation id="8909298138148012791">Desinstalouse <ph name="APP_NAME" /></translation>
 <translation id="8909833622202089127">O sitio está facendo un seguimento da túa localización</translation>
 <translation id="8910222113987937043">Os cambios nos marcadores, no historial, nos contrasinais e noutras opcións de configuración deixarán de sincronizarse coa túa conta de Google. Non obstante, os teus datos actuais permanecerán almacenados na túa conta de Google e poden xestionarse a través do <ph name="BEGIN_LINK" />Panel de control de Google<ph name="END_LINK" />.</translation>
-<translation id="8910987510378294980">Ocultar lista de dispositivos</translation>
 <translation id="8911914282056933784">Ocultar os proxectos</translation>
 <translation id="8912362522468806198">Conta de Google</translation>
 <translation id="8912810933860534797">Activar a exploración automática</translation>

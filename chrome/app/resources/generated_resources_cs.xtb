@@ -356,6 +356,7 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1221825588892235038">Pouze výběr</translation>
 <translation id="1222835797152767346">Nastavte si PIN, abyste si usnadnili přihlašování</translation>
 <translation id="1223484782328004593">Aplikace <ph name="APP_NAME" /> vyžaduje licenci</translation>
+<translation id="1223498995510244364">Shrnout</translation>
 <translation id="1223853788495130632">Váš administrátor doporučuje pro toto nastavení konkrétní hodnotu.</translation>
 <translation id="1225177025209879837">Probíhá zpracování požadavku...</translation>
 <translation id="1227107020813934021">Najděte skenery dokumentů</translation>
@@ -4333,7 +4334,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3880513902716032002">Některé stránky, které navštěvujete, se načítají předběžně</translation>
 <translation id="3884152383786131369">U webového obsahu, který je k dispozici v několika jazycích, se použije první jazyk v seznamu. Tyto předvolby jsou synchronizovány s nastavením prohlížeče. <ph name="BEGIN_LINK_LEARN_MORE" />Další informace<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">Aktualizace spravuje administrátor</translation>
-<translation id="3887022758415973389">Zobrazit seznam zařízení</translation>
 <translation id="3887764720741098847">Uložené informace</translation>
 <translation id="3888501106166145415">Přidružené sítě Wi-Fi</translation>
 <translation id="3890064827463908288">Chcete-li použít Synchronizaci Wi-Fi, zapněte Synchronizaci Chromu</translation>
@@ -11670,7 +11670,6 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="8909298138148012791">Aplikace <ph name="APP_NAME" /> byla odinstalována.</translation>
 <translation id="8909833622202089127">Web sleduje vaši polohu</translation>
 <translation id="8910222113987937043">Změny záložek, historie, hesel a dalších nastavení se již nebudou synchronizovat do účtu Google. Vaše existující data v účtu Google uložena zůstanou a lze je spravovat na <ph name="BEGIN_LINK" />Hlavním panelu Google<ph name="END_LINK" />.</translation>
-<translation id="8910987510378294980">Skrýt seznam zařízení</translation>
 <translation id="8911914282056933784">Skrýt projekty</translation>
 <translation id="8912362522468806198">Účet Google</translation>
 <translation id="8912810933860534797">Zapnout automatické prohledávání</translation>
@@ -11837,7 +11836,7 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="9011262023858991985">Odesílání této karty</translation>
 <translation id="9011393886518328654">Poznámky k vydání</translation>
 <translation id="9012013036616593083">Gemini momentálně není k dispozici. Zkuste to později.</translation>
-<translation id="9012122671773859802">Při pohybu myši posouvat obrazovku souvisle</translation>
+<translation id="9012122671773859802">Při pohybu myši se obrazovku souvisle posouvá</translation>
 <translation id="9012585441087414258">Chrání před weby, soubory ke stažení a rozšířeními, o kterých je známo, že jsou nebezpečné. Pokud stránka provede něco podezřelého, odešlou se adresy URL a části obsahu stránky do Bezpečného prohlížení Google.</translation>
 <translation id="9013037634206938463">K instalaci Linuxu je potřeba <ph name="INSTALL_SIZE" /> volného místa. Místo uvolníte smazáním souborů ze zařízení.</translation>
 <translation id="9014206344398081366">Výukový program čtečky ChromeVox</translation>

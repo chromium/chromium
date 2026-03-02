@@ -91,7 +91,6 @@
 <translation id="1342886103232377846">Če želite preveriti, ali so gesla ogrožena, odprite Googlovega upravitelja gesel</translation>
 <translation id="1343830902827845050">Prijava v Chrome</translation>
 <translation id="1344653310988386453">Vključite povezavo do označitve</translation>
-<translation id="1347468774581902829">Upravljanje dejavnosti</translation>
 <translation id="1355088659320425659">Zgodovina in zavihki</translation>
 <translation id="1360432990279830238">Odjava in izklop sinhronizacije?</translation>
 <translation id="1363028406613469049">Posnetek</translation>
@@ -287,6 +286,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="2230777942707397948">Prazno okno</translation>
 <translation id="223356358902285214">Dejavnost v spletu in aplikacijah</translation>
 <translation id="2233735624724508540">Izberite časovno obdobje in se dotaknite »Izbriši podatke«</translation>
+<translation id="2234031676056123135">Prilagajanje bližnjic</translation>
 <translation id="2234827758954819389">Vodnik po zasebnosti</translation>
 <translation id="2238038374973843156">Premik skupine v drugo okno</translation>
 <translation id="2239812875700136898">Nadzirajte članke v možnostih za gumb Odkrivanja</translation>
@@ -465,6 +465,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="2951071800649516099">Dodajte strani na bralni seznam za pozneje.</translation>
 <translation id="2954586176076923855">Premakni naslovno vrstico na vrh</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> neprebrana stran}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> neprebrana stran}two{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> neprebrani strani}few{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> neprebrane strani}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> neprebranih strani}}</translation>
+<translation id="2965758440484146185">Dotaknite se »Pripni to bližnjico«</translation>
 <translation id="2972109037780336501">Samodejno odstrani dovoljenja</translation>
 <translation id="2976550651269220761">Nekateri podatki v Chromu še niso shranjeni v računu Google.\nPoskusite počakati nekaj minut, preden se odjavite. Če se odjavite zdaj, bodo ti podatki izbrisani.</translation>
 <translation id="2977350910003566746">Razvrščanje po nazadnje odprtih</translation>
@@ -492,6 +493,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="3037177537145227281">Spremljanje cene</translation>
 <translation id="3037517125981011456">Pokaže pozive za prijavo v Chrome.</translation>
 <translation id="3038272154009688107">Ogled vseh spletnih mest</translation>
+<translation id="3057938290530993634">Pridržite, če želite pripeti najbolj obiskana spletna mesta za preprost dostop</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> zaznamek}one{<ph name="BOOKMARKS_COUNT_MANY" /> zaznamek}two{<ph name="BOOKMARKS_COUNT_MANY" /> zaznamka}few{<ph name="BOOKMARKS_COUNT_MANY" /> zaznamki}other{<ph name="BOOKMARKS_COUNT_MANY" /> zaznamkov}}</translation>
 <translation id="3062802207422175757">Članki na temo vaših zanimanj v Chromu</translation>
 <translation id="3066573403916685335">Premik dol</translation>
@@ -551,6 +553,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="333863344734218290">Prikaz opozorila za javna in zasebna spletna mesta, ki niso varna</translation>
 <translation id="3340978935015468852">nastavitve</translation>
 <translation id="3341262203274374114">Spremljanja ni mogoče preklicati. Prišlo je do napake.</translation>
+<translation id="3351959803838327376">Pridržite spletno mesto in odprite meni</translation>
 <translation id="3359667936385849800">Uporaba trenutnega ponudnika storitev</translation>
 <translation id="3373701465337594448">Ko je ta možnost vklopljena, se tukaj prikaže seznam spletnih mest, ki ugotovijo, kaj vas zanima.</translation>
 <translation id="3384347053049321195">Skupna raba slike</translation>
@@ -593,6 +596,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="3549537543136628349">Ker so vnaprej naložene strani šifrirane, spletno mesto ali aplikacija s povezavo do teh strani pa je Googlovo spletno mesto ali aplikacija, Googlovi strežniki ne prejmejo nobenega novega podatka ob zasebnem vnaprejšnjem nalaganju teh strani.</translation>
 <translation id="3549657413697417275">Iščite v svoji zgodovini</translation>
 <translation id="3557336313807607643">Dodaj med stike</translation>
+<translation id="3560831525486613327">Odprite stran »Nov zavihek«</translation>
 <translation id="3563767357928833671">Vsebina odložišča je prikazana</translation>
 <translation id="3566639033325271639">Posodobi nastavitve</translation>
 <translation id="3568945271227339929">Ni ogroženih gesel</translation>
@@ -1618,7 +1622,6 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="7554643625247105821">Ni mogoče preveriti različice Chroma</translation>
 <translation id="7557508262441527045">Odjavljen</translation>
 <translation id="7573665567024262965">Izbira privzetih aplikacij</translation>
-<translation id="7577900504646297215">Upravljanje zanimanj</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> prenesena datoteka}one{<ph name="FILES_DOWNLOADED_MANY" /> prenesena datoteka}two{<ph name="FILES_DOWNLOADED_MANY" /> preneseni datoteki}few{<ph name="FILES_DOWNLOADED_MANY" /> prenesene datoteke}other{<ph name="FILES_DOWNLOADED_MANY" /> prenesenih datotek}}</translation>
 <translation id="7579341427377004341"><ph name="TAB_TITLE" />, večkrat izbrani anonimni zavihek z zvokom</translation>
 <translation id="7581273696622423628">Izpolnjevanje ankete</translation>

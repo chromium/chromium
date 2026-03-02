@@ -91,7 +91,6 @@
 <translation id="1342886103232377846">Pour vérifier les mots de passe compromis, accédez au gestionnaire de mots de passe Google</translation>
 <translation id="1343830902827845050">Connectez-vous à Chrome</translation>
 <translation id="1344653310988386453">Inclure le lien vers l'élément en surbrillance</translation>
-<translation id="1347468774581902829">Gérer l'activité</translation>
 <translation id="1355088659320425659">Historique et onglets</translation>
 <translation id="1360432990279830238">Se déconnecter et désactiver la synchro?</translation>
 <translation id="1363028406613469049">Numéro de suivi</translation>
@@ -1615,7 +1614,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="7554643625247105821">Impossible de vérifier la version de Chrome</translation>
 <translation id="7557508262441527045">Déconnecté</translation>
 <translation id="7573665567024262965">Choisir vos applis par défaut</translation>
-<translation id="7577900504646297215">Gérer les centres d'intérêt</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> fichier téléchargé}one{<ph name="FILES_DOWNLOADED_MANY" /> fichier téléchargé}other{<ph name="FILES_DOWNLOADED_MANY" /> fichiers téléchargés}}</translation>
 <translation id="7579341427377004341"><ph name="TAB_TITLE" />, onglet de navigation privée multiséléctionné avec son</translation>
 <translation id="7581273696622423628">Répondre au sondage</translation>

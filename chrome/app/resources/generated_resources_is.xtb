@@ -356,6 +356,7 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1221825588892235038">Eingöngu val</translation>
 <translation id="1222835797152767346">Stilltu PIN-númer til að auðvelda þér innskráningu</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" /> krefst leyfis</translation>
+<translation id="1223498995510244364">Samantekt</translation>
 <translation id="1223853788495130632">Kerfisstjórinn þinn ráðleggur tiltekið gildi fyrir þessa stillingu.</translation>
 <translation id="1225177025209879837">Vinnur úr beiðni...</translation>
 <translation id="1227107020813934021">Finna skjalaskanna</translation>
@@ -4356,7 +4357,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3880513902716032002">Sumar síður sem þú opnar eru forhlaðnar</translation>
 <translation id="3884152383786131369">Vefefni sem er í boði á mörgum tungumálum mun nota fyrsta studda tungumálið á listanum. Þessar kjörstillingar eru samstilltar vafrastillingunum. <ph name="BEGIN_LINK_LEARN_MORE" />Frekari upplýsingar<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">Kerfisstjórinn þinn stjórnar uppfærslum</translation>
-<translation id="3887022758415973389">Sýna tækjalista</translation>
 <translation id="3887764720741098847">Vistaðar upplýsingar</translation>
 <translation id="3888501106166145415">Tengd WiFi-net</translation>
 <translation id="3890064827463908288">Kveiktu á Chrome samstillingu til að nota Wi-Fi-samstillingu</translation>
@@ -11700,7 +11700,6 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8909298138148012791"><ph name="APP_NAME" /> var fjarlægt</translation>
 <translation id="8909833622202089127">Vefsvæði er að rekja staðsetningu þína</translation>
 <translation id="8910222113987937043">Breytingar á bókamerkjum, ferlum, aðgangsorðum og öðrum stillingum verða ekki lengur samstilltar við Google reikninginn þinn. Gögnin þín verða þó áfram vistuð á Google reikningnum þínum og hægt er að hafa umsjón með þeim á <ph name="BEGIN_LINK" />stjórnborði Google<ph name="END_LINK" />.</translation>
-<translation id="8910987510378294980">Fela tækjalista</translation>
 <translation id="8911914282056933784">Fela verkefni</translation>
 <translation id="8912362522468806198">Google-reikningur</translation>
 <translation id="8912810933860534797">Kveikja á sjálfvirkri skönnun</translation>

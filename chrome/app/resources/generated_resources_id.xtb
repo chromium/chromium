@@ -354,6 +354,7 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="1221825588892235038">Khusus yang terpilih</translation>
 <translation id="1222835797152767346">Setel PIN untuk memudahkan proses login</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" /> memerlukan lisensi</translation>
+<translation id="1223498995510244364">Ringkasan</translation>
 <translation id="1223853788495130632">Administrator Anda menyarankan nilai tertentu untuk setelan ini.</translation>
 <translation id="1225177025209879837">Memproses permintaan...</translation>
 <translation id="1227107020813934021">Temukan pemindai dokumen</translation>
@@ -4342,7 +4343,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3880513902716032002">Beberapa halaman yang Anda buka akan dipramuat</translation>
 <translation id="3884152383786131369">Konten web yang tersedia dalam beberapa bahasa akan menggunakan bahasa pertama yang didukung dari daftar ini. Preferensi ini akan disinkronkan dengan setelan browser Anda. <ph name="BEGIN_LINK_LEARN_MORE" />Pelajari lebih lanjut<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">Update dikelola oleh administrator Anda</translation>
-<translation id="3887022758415973389">Tampilkan daftar perangkat</translation>
 <translation id="3887764720741098847">Informasi tersimpan</translation>
 <translation id="3888501106166145415">Jaringan Wi-Fi terkait</translation>
 <translation id="3890064827463908288">Aktifkan Sinkronisasi Chrome untuk menggunakan Wi-Fi Sync</translation>
@@ -11674,7 +11674,6 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="8909298138148012791"><ph name="APP_NAME" /> telah di-uninstal.</translation>
 <translation id="8909833622202089127">Situs sedang melacak lokasi Anda</translation>
 <translation id="8910222113987937043">Perubahan terhadap bookmark, histori, sandi, dan setelan lain sudah tidak disinkronkan ke Akun Google Anda. Namun, data yang sudah ada akan tetap disimpan di Akun Google dan dapat dikelola di <ph name="BEGIN_LINK" />Google Dasbor<ph name="END_LINK" />.</translation>
-<translation id="8910987510378294980">Sembunyikan daftar perangkat</translation>
 <translation id="8911914282056933784">Sembunyikan project</translation>
 <translation id="8912362522468806198">Akun Google</translation>
 <translation id="8912810933860534797">Aktifkan pindai otomatis</translation>

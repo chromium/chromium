@@ -91,7 +91,6 @@
 <translation id="1342886103232377846">若要检查是否存在已泄露的密码，请前往 Google 密码管理工具</translation>
 <translation id="1343830902827845050">登录 Chrome</translation>
 <translation id="1344653310988386453">包含指向突出显示的内容的链接</translation>
-<translation id="1347468774581902829">管理我的活动记录</translation>
 <translation id="1355088659320425659">历史记录和标签页</translation>
 <translation id="1360432990279830238">退出账号并关闭同步功能？</translation>
 <translation id="1363028406613469049">跟踪</translation>
@@ -287,6 +286,7 @@
 <translation id="2230777942707397948">空白窗口</translation>
 <translation id="223356358902285214">网络与应用活动记录</translation>
 <translation id="2233735624724508540">选择时间范围，然后点按“删除数据”</translation>
+<translation id="2234031676056123135">自定义快捷方式</translation>
 <translation id="2234827758954819389">隐私保护指南</translation>
 <translation id="2238038374973843156">将分组移至另一个窗口</translation>
 <translation id="2239812875700136898">通过“‘探索’功能的选项”按钮控制您的报道</translation>
@@ -465,6 +465,7 @@
 <translation id="2951071800649516099">将网页添加到阅读清单以供日后阅读</translation>
 <translation id="2954586176076923855">将地址栏移到顶部</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> 个未读页面}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> 个未读页面}}</translation>
+<translation id="2965758440484146185">点按“固定此快捷方式”</translation>
 <translation id="2972109037780336501">自动撤消权限</translation>
 <translation id="2976550651269220761">部分 Chrome 数据尚未保存到您的 Google 账号。\n请尝试等待几分钟再退出账号。如果现在就退出账号，这些数据将被删除。</translation>
 <translation id="2977350910003566746">按上次打开时间排序</translation>
@@ -492,6 +493,7 @@
 <translation id="3037177537145227281">正在跟踪价格</translation>
 <translation id="3037517125981011456">显示 Chrome 登录提示</translation>
 <translation id="3038272154009688107">查看所有网站</translation>
+<translation id="3057938290530993634">按住即可固定最常用的网站，方便以后访问</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> 个书签}other{<ph name="BOOKMARKS_COUNT_MANY" /> 个书签}}</translation>
 <translation id="3062802207422175757">Chrome 可提供您感兴趣的报道</translation>
 <translation id="3066573403916685335">下移</translation>
@@ -551,6 +553,7 @@
 <translation id="333863344734218290">在您访问不安全的公共网站和私有网站时发出警告</translation>
 <translation id="3340978935015468852">设置</translation>
 <translation id="3341262203274374114">无法取消关注。出了点问题。</translation>
+<translation id="3351959803838327376">长按网站打开菜单</translation>
 <translation id="3359667936385849800">使用您当前的服务提供商</translation>
 <translation id="3373701465337594448">开启此设置后，这里会列出您访问过的哪些网站会推测您的兴趣</translation>
 <translation id="3384347053049321195">分享图片</translation>
@@ -593,6 +596,7 @@
 <translation id="3549537543136628349">由于预加载的网页均已加密，并且链接到这些网页的网站或应用是一个 Google 网站或应用，因此当以私密方式预加载这些网页时，Google 服务器不会收到新信息。</translation>
 <translation id="3549657413697417275">搜索您的历史记录</translation>
 <translation id="3557336313807607643">添加到通讯录</translation>
+<translation id="3560831525486613327">打开一个新标签页</translation>
 <translation id="3563767357928833671">已显示剪贴板内容</translation>
 <translation id="3566639033325271639">更新设置</translation>
 <translation id="3568945271227339929">没有任何密码遭泄露</translation>
@@ -1616,7 +1620,6 @@
 <translation id="7554643625247105821">无法检查 Chrome 版本</translation>
 <translation id="7557508262441527045">已退出账号</translation>
 <translation id="7573665567024262965">选择默认应用</translation>
-<translation id="7577900504646297215">管理我的兴趣</translation>
 <translation id="757855969265046257">{FILES,plural, =1{已下载 <ph name="FILES_DOWNLOADED_ONE" /> 个文件}other{已下载 <ph name="FILES_DOWNLOADED_MANY" /> 个文件}}</translation>
 <translation id="7579341427377004341"><ph name="TAB_TITLE" />，已选择的多个无痕式标签页之一，正在播放音频</translation>
 <translation id="7581273696622423628">参与调查</translation>

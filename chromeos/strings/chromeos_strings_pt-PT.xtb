@@ -167,6 +167,7 @@
 <translation id="1621067168122174824">Executar teste de carregamento</translation>
 <translation id="1622402072367425417">balões brilhantes</translation>
 <translation id="1626590945318984973">Atalho não disponível. Prima um novo atalho sem usar as teclas de função e <ph name="META_KEY" />.</translation>
+<translation id="163774412591892664">O seu administrador desativou o seu dispositivo e pode aceder à respetiva localização.</translation>
 <translation id="1639239467298939599">A carregar…</translation>
 <translation id="1641857168437328880">Alimentador de documentos (um lado)</translation>
 <translation id="1642396894598555413">bicicletas</translation>
@@ -1723,6 +1724,7 @@ Transfira o modelo de transcrição (até 100 MB) para ver estas transcrições.
 <translation id="8584654835905316966">É necessário reiniciar para concluir a instalação do firmware do <ph name="DEVICE_NAME" /> para a versão <ph name="VERSION" />. O computador pode reiniciar várias vezes. Este comportamento é o esperado.</translation>
 <translation id="8593058461203131755">pausar o conteúdo multimédia</translation>
 <translation id="8620617069779373398">Estado do roaming</translation>
+<translation id="8624524972189162859">O seu administrador de <ph name="DOMAIN_NAME" /> desativou o seu dispositivo e pode aceder à respetiva localização.</translation>
 <translation id="8626489604350149811">Mais ações para <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Roxo-claro</translation>
 <translation id="8647595191512746911">Transcrição de áudio</translation>

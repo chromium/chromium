@@ -91,7 +91,6 @@
 <translation id="1342886103232377846">გატეხილი პაროლების შესამოწმებლად გადადით Google პაროლების მმართველზე</translation>
 <translation id="1343830902827845050">Chrome-ში შესვლა</translation>
 <translation id="1344653310988386453">გამოყოფილთან ბმულის დართვა</translation>
-<translation id="1347468774581902829">აქტივობის მართვა</translation>
 <translation id="1355088659320425659">ისტორია და ჩანართები</translation>
 <translation id="1360432990279830238">გსურთ გამოსვლა და სინქრონიზაციის გამორთვა?</translation>
 <translation id="1363028406613469049">ჩანაწერი</translation>
@@ -1618,7 +1617,6 @@
 <translation id="7554643625247105821">Chrome-ის ვერსიის შემოწმება შეუძლებელია</translation>
 <translation id="7557508262441527045">გამოსული</translation>
 <translation id="7573665567024262965">აირჩიეთ ნაგულისხმევი აპები</translation>
-<translation id="7577900504646297215">ინტერესების მართვა</translation>
 <translation id="757855969265046257">{FILES,plural, =1{ჩამოიტვირთა <ph name="FILES_DOWNLOADED_ONE" /> ფაილი}other{ჩამოიტვირთა <ph name="FILES_DOWNLOADED_MANY" /> ფაილი}}</translation>
 <translation id="7579341427377004341"><ph name="TAB_TITLE" />, არჩეულია რამდენიმე ინკოგნიტო ჩანართი კონტენტის მოსასმენად</translation>
 <translation id="7581273696622423628">გამოკითხვაში მონაწილეობის მიღება</translation>

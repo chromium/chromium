@@ -1310,6 +1310,8 @@
 <translation id="3102312643185441063">儲蓄戶口</translation>
 <translation id="3103188521861412364">股票和債券</translation>
 <translation id="3105172416063519923">資產識別碼：</translation>
+<translation id="3105223248029915046">付款計劃須符合資格條件。
+如要隱藏「稍後付款」選項，請前往<ph name="BEGIN_LINK" />付款設定<ph name="END_LINK" /></translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />檢查安全 DNS 設定<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">中匣</translation>
 <translation id="3109061346635850169">臉部和身體護理</translation>
@@ -4359,6 +4361,7 @@
 <translation id="7908648876066812348">打開緊虛擬卡</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以去設定入面嘅 Chrome 安全檢查頁面</translation>
 <translation id="791107458486222637">正在取消復原結果</translation>
+<translation id="7911651285409665023">關閉並返回「<ph name="TAB_TITLE" />」</translation>
 <translation id="7912924955815015552">由 Safari 匯入</translation>
 <translation id="791551905239004656">繪畫和填色</translation>
 <translation id="7916162853251942238">彈性凸版基底</translation>

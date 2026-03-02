@@ -91,7 +91,6 @@
 <translation id="1342886103232377846">Sızdırılmış şifre olup olmadığını kontrol etmek için Google Şifre Yöneticisi'ne gidin</translation>
 <translation id="1343830902827845050">Chrome'da oturum açın</translation>
 <translation id="1344653310988386453">Seçili metin bağlantısını ekle</translation>
-<translation id="1347468774581902829">Etkinliği yönet</translation>
 <translation id="1355088659320425659">Geçmiş ve sekmeler</translation>
 <translation id="1360432990279830238">Oturum ve senkronizasyon kapatılsın mı?</translation>
 <translation id="1363028406613469049">Takip Et</translation>
@@ -1615,7 +1614,6 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chrome ver
 <translation id="7554643625247105821">Chrome sürümü kontrol edilemiyor</translation>
 <translation id="7557508262441527045">Oturum kapatıldı</translation>
 <translation id="7573665567024262965">Varsayılan uygulamalarınızı seçin</translation>
-<translation id="7577900504646297215">İlgi alanlarını yönet</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> dosya indirildi}other{<ph name="FILES_DOWNLOADED_MANY" /> dosya indirildi}}</translation>
 <translation id="7579341427377004341"><ph name="TAB_TITLE" />, Ses Çalan Birden Çok Seçili Gizli Sekme</translation>
 <translation id="7581273696622423628">Ankete katıl</translation>

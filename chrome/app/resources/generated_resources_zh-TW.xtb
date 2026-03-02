@@ -354,6 +354,7 @@
 <translation id="1221825588892235038">僅限選取的內容</translation>
 <translation id="1222835797152767346">設定 PIN 碼可簡化登入程序</translation>
 <translation id="1223484782328004593">「<ph name="APP_NAME" />」必須取得授權</translation>
+<translation id="1223498995510244364">摘要</translation>
 <translation id="1223853788495130632">管理員為這項設定推薦特定的值。</translation>
 <translation id="1225177025209879837">正在處理要求...</translation>
 <translation id="1227107020813934021">尋找文件掃描器</translation>
@@ -4330,7 +4331,6 @@
 <translation id="3880513902716032002">系統會預先載入你要造訪的某些網頁</translation>
 <translation id="3884152383786131369">支援多種語言的網站內容會使用這個清單上第一個支援的語言。這些偏好設定會與你的瀏覽器設定同步。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">更新作業由管理員負責管理。</translation>
-<translation id="3887022758415973389">顯示裝置清單</translation>
 <translation id="3887764720741098847">儲存的資訊</translation>
 <translation id="3888501106166145415">關聯的 Wi-Fi 網路</translation>
 <translation id="3890064827463908288">開啟 Chrome 同步功能以使用 Wi-Fi 同步功能</translation>
@@ -11658,7 +11658,6 @@
 <translation id="8909298138148012791">已解除安裝「<ph name="APP_NAME" />」</translation>
 <translation id="8909833622202089127">網站正在追蹤你的位置</translation>
 <translation id="8910222113987937043">你的書籤、歷史記錄、密碼和其他設定的變更將不會再同步到你的 Google 帳戶。不過，你的現有資料仍會儲存在你的 Google 帳戶中，並可透過 <ph name="BEGIN_LINK" />Google 資訊主頁<ph name="END_LINK" />管理。</translation>
-<translation id="8910987510378294980">隱藏裝置清單</translation>
 <translation id="8911914282056933784">隱藏專案</translation>
 <translation id="8912362522468806198">Google 帳戶</translation>
 <translation id="8912810933860534797">啟用自動掃描</translation>

@@ -354,6 +354,7 @@
 <translation id="1221825588892235038">선택 영역만</translation>
 <translation id="1222835797152767346">더 쉽게 로그인할 수 있도록 PIN 설정하기</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" /> 라이선스 필요</translation>
+<translation id="1223498995510244364">요약해 보세요</translation>
 <translation id="1223853788495130632">관리자가 이 설정에 대해 특정 값을 추천합니다.</translation>
 <translation id="1225177025209879837">요청을 처리하는 중...</translation>
 <translation id="1227107020813934021">문서 스캐너 찾기</translation>
@@ -4345,7 +4346,6 @@
 <translation id="3880513902716032002">방문한 페이지 중 일부가 미리 로드되었습니다.</translation>
 <translation id="3884152383786131369">여러 언어를 지원하는 웹 콘텐츠는 목록의 첫 번째 지원 언어를 사용합니다. 이러한 환경설정은 브라우저 설정과 동기화됩니다. <ph name="BEGIN_LINK_LEARN_MORE" />자세히 알아보기<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">업데이트는 관리자가 관리합니다</translation>
-<translation id="3887022758415973389">기기 목록 표시</translation>
 <translation id="3887764720741098847">저장된 정보</translation>
 <translation id="3888501106166145415">연결된 Wi-Fi 네트워크</translation>
 <translation id="3890064827463908288">Wi-Fi 동기화를 사용하려면 Chrome 동기화 사용 설정</translation>
@@ -11677,7 +11677,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8909298138148012791"><ph name="APP_NAME" /> 앱이 제거됨</translation>
 <translation id="8909833622202089127">사이트에서 내 위치를 추적하고 있습니다.</translation>
 <translation id="8910222113987937043">북마크, 방문 기록, 비밀번호 및 기타 설정을 변경하면 더 이상 Google 계정에 동기화되지 않습니다. 하지만 기존 데이터는 Google 계정에 계속 저장되며 <ph name="BEGIN_LINK" />Google 대시보드<ph name="END_LINK" />에서 관리할 수 있습니다.</translation>
-<translation id="8910987510378294980">기기 목록 숨기기</translation>
 <translation id="8911914282056933784">프로젝트 숨기기</translation>
 <translation id="8912362522468806198">Google 계정</translation>
 <translation id="8912810933860534797">자동 스캔 사용</translation>

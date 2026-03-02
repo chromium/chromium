@@ -91,7 +91,6 @@
 <translation id="1342886103232377846">‏للتحقّق من كلمات المرور المحتمَل تعرّضها للاختراق، يُرجى الانتقال إلى "مدير كلمات المرور في Google".</translation>
 <translation id="1343830902827845050">‏سجِّل الدخول إلى Chrome</translation>
 <translation id="1344653310988386453">تضمين رابط يؤدي إلى النصوص التي تم تمييزها</translation>
-<translation id="1347468774581902829">إدارة النشاط</translation>
 <translation id="1355088659320425659">السجلّ وعلامات التبويب</translation>
 <translation id="1360432990279830238">هل تريد تسجيل الخروج وإيقاف المزامنة؟</translation>
 <translation id="1363028406613469049">تتبّع</translation>
@@ -1618,7 +1617,6 @@
 <translation id="7554643625247105821">‏يتعذّر التحقّق من إصدار Chrome</translation>
 <translation id="7557508262441527045">تمّ تسجيل الخروج</translation>
 <translation id="7573665567024262965">اختَر تطبيقاتك التلقائية</translation>
-<translation id="7577900504646297215">إدارة الاهتمامات</translation>
 <translation id="757855969265046257">{FILES,plural, =1{تم تنزيل ملف <ph name="FILES_DOWNLOADED_ONE" />}zero{تم تنزيل <ph name="FILES_DOWNLOADED_MANY" /> ملفات}two{تم تنزيل ملفين (<ph name="FILES_DOWNLOADED_MANY" />)}few{تم تنزيل <ph name="FILES_DOWNLOADED_MANY" /> ملفات}many{تم تنزيل <ph name="FILES_DOWNLOADED_MANY" /> ملفًا}other{تم تنزيل <ph name="FILES_DOWNLOADED_MANY" /> ملف}}</translation>
 <translation id="7579341427377004341">‫"<ph name="TAB_TITLE" />"، علامة تبويب تشغِّل صوتًا وتم اختيارها مع علامات تبويب أخرى في "وضع التصفّح المتخفي"</translation>
 <translation id="7581273696622423628">المشاركة في استطلاع الرأي</translation>

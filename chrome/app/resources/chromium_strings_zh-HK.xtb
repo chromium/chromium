@@ -240,6 +240,7 @@
 <translation id="3509308970982693815">請關閉所有 Chromium 視窗，然後再試一次。</translation>
 <translation id="3522404737534491619">如要分享視窗，請前往「系統設定」允許 Chromium 螢幕錄影</translation>
 <translation id="3530103706039034513"><ph name="EXISTING_USER" />已登入。如要分開保存你的瀏覽資料，請在 Chromium 中登入你的個人檔案 (<ph name="USER_EMAIL_ADDRESS" />)。</translation>
+<translation id="3531741627422851418">此二維碼用於在流動裝置下載 Chromium 瀏覽器</translation>
 <translation id="3561853857681580870">如要分享螢幕內容，請前往「系統設定」允許 Chromium 螢幕錄影。</translation>
 <translation id="3588112919289558122">「強化保護」會為 Chromium 無法識別的網站關閉 JavaScript 優化功能</translation>
 <translation id="3597003331831379823">無法按更高權限執行設定。<ph name="METAINSTALLER_ERROR" /></translation>

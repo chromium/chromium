@@ -91,7 +91,6 @@
 <translation id="1342886103232377846">유출된 비밀번호가 있는지 확인하려면 Google 비밀번호 관리자로 이동하세요</translation>
 <translation id="1343830902827845050">Chrome에 로그인하세요</translation>
 <translation id="1344653310988386453">하이라이트 링크 포함</translation>
-<translation id="1347468774581902829">활동 관리</translation>
 <translation id="1355088659320425659">방문 기록 및 탭</translation>
 <translation id="1360432990279830238">로그아웃하고 동기화를 사용 중지하시겠습니까?</translation>
 <translation id="1363028406613469049">추적</translation>
@@ -1615,7 +1614,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="7554643625247105821">Chrome 버전을 확인할 수 없음</translation>
 <translation id="7557508262441527045">로그아웃됨</translation>
 <translation id="7573665567024262965">기본 앱 선택</translation>
-<translation id="7577900504646297215">관심분야 관리</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" />개 파일 다운로드됨}other{<ph name="FILES_DOWNLOADED_MANY" />개 파일 다운로드됨}}</translation>
 <translation id="7579341427377004341"><ph name="TAB_TITLE" />, 여러 개 선택되고 청취 가능한 시크릿 탭</translation>
 <translation id="7581273696622423628">설문조사 참여</translation>

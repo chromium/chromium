@@ -354,6 +354,7 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="1221825588892235038">Solo contenido seleccionado</translation>
 <translation id="1222835797152767346">Configura un PIN para que sea más fácil iniciar sesión</translation>
 <translation id="1223484782328004593">Para usar <ph name="APP_NAME" />, se necesita una licencia</translation>
+<translation id="1223498995510244364">Resumir</translation>
 <translation id="1223853788495130632">El administrador recomienda un valor específico para esta opción.</translation>
 <translation id="1225177025209879837">Procesando solicitud...</translation>
 <translation id="1227107020813934021">Buscar escáneres de documentos</translation>
@@ -4331,7 +4332,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3880513902716032002">Algunas de las páginas que visitas están precargadas</translation>
 <translation id="3884152383786131369">El contenido web que esté disponible en varios idiomas usará el primer idioma admitido de esta lista. Estas preferencias se sincronizan con la configuración de tu navegador. <ph name="BEGIN_LINK_LEARN_MORE" />Más información<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">Las actualizaciones las gestiona tu administrador</translation>
-<translation id="3887022758415973389">Mostrar lista de dispositivos</translation>
 <translation id="3887764720741098847">Información guardada</translation>
 <translation id="3888501106166145415">Redes Wi-Fi asociadas</translation>
 <translation id="3890064827463908288">Activa la Sincronización de Chrome para usar la Sincronización Wi‑Fi</translation>
@@ -11661,7 +11661,6 @@ Puede tratarse de información sobre el software instalado, los archivos, el nav
 <translation id="8909298138148012791">Se ha desinstalado <ph name="APP_NAME" />.</translation>
 <translation id="8909833622202089127">El sitio web está registrando tu ubicación</translation>
 <translation id="8910222113987937043">Los cambios que realices en tus marcadores, tu historial, tus contraseñas y otros ajustes no se sincronizarán con tu cuenta de Google. Sin embargo, tus datos actuales permanecerán almacenados en esa cuenta y se podrán gestionar en el <ph name="BEGIN_LINK" />Panel de Control de Google<ph name="END_LINK" />.</translation>
-<translation id="8910987510378294980">Ocultar lista de dispositivos</translation>
 <translation id="8911914282056933784">Ocultar proyectos</translation>
 <translation id="8912362522468806198">cuenta de Google</translation>
 <translation id="8912810933860534797">Habilitar búsqueda automática</translation>

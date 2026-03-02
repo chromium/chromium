@@ -91,7 +91,6 @@
 <translation id="1342886103232377846">如要檢查密碼是否被盜用，請前往「Google 密碼管理工具」</translation>
 <translation id="1343830902827845050">登入 Chrome</translation>
 <translation id="1344653310988386453">包含突顯文字的連結</translation>
-<translation id="1347468774581902829">管理活動</translation>
 <translation id="1355088659320425659">記錄和分頁</translation>
 <translation id="1360432990279830238">要登出並停用同步功能嗎？</translation>
 <translation id="1363028406613469049">曲目</translation>
@@ -287,6 +286,7 @@
 <translation id="2230777942707397948">空白視窗</translation>
 <translation id="223356358902285214">網絡和應用程式活動記錄</translation>
 <translation id="2233735624724508540">選擇時間範圍，然後輕按 [刪除資料]</translation>
+<translation id="2234031676056123135">自訂捷徑</translation>
 <translation id="2234827758954819389">私隱權指南</translation>
 <translation id="2238038374973843156">將群組移至另一個視窗</translation>
 <translation id="2239812875700136898">按一下 [探索的選項] 按鈕來控制您的報導</translation>
@@ -465,6 +465,7 @@
 <translation id="2951071800649516099">將網頁新增至閱讀清單，以便稍後瀏覽</translation>
 <translation id="2954586176076923855">將網址列移至頂部</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> 個未讀網頁}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> 個未讀網頁}}</translation>
+<translation id="2965758440484146185">輕按 [固定此捷徑]</translation>
 <translation id="2972109037780336501">自動移除權限</translation>
 <translation id="2976550651269220761">部分 Chrome 資料尚未儲存至 Google 帳戶。\n請稍候幾分鐘後再登出。如果你現在登出，系統將刪除此資料。</translation>
 <translation id="2977350910003566746">根據上次打開嘅日期排序</translation>
@@ -492,6 +493,7 @@
 <translation id="3037177537145227281">正在追蹤價格</translation>
 <translation id="3037517125981011456">顯示登入 Chrome 的指示</translation>
 <translation id="3038272154009688107">查看所有網站</translation>
+<translation id="3057938290530993634">按住即可固定最常瀏覽的網站，方便下次存取</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> 個書籤}other{<ph name="BOOKMARKS_COUNT_MANY" /> 個書籤}}</translation>
 <translation id="3062802207422175757">您感興趣的文章和內容，一切盡在 Chrome</translation>
 <translation id="3066573403916685335">向下移動</translation>
@@ -551,6 +553,7 @@
 <translation id="333863344734218290">在你瀏覽不安全的公開和私人網站時發出警告</translation>
 <translation id="3340978935015468852">設定</translation>
 <translation id="3341262203274374114">無法取消追蹤，發生錯誤。</translation>
+<translation id="3351959803838327376">長按網站並開啟選單</translation>
 <translation id="3359667936385849800">使用目前的服務供應商</translation>
 <translation id="3373701465337594448">開啟設定後，系統會在此顯示您曾瀏覽的網站清單來推斷您的興趣。</translation>
 <translation id="3384347053049321195">分享圖片</translation>
@@ -593,6 +596,7 @@
 <translation id="3549537543136628349">由於預先載入的頁面經過加密，且連至這些頁面的網站或應用程式為 Google 網站或應用程式，因此以私密方式預先載入這些頁面時，Google 伺服器不會接收新資料。</translation>
 <translation id="3549657413697417275">搜尋您的記錄</translation>
 <translation id="3557336313807607643">新增至通訊錄</translation>
+<translation id="3560831525486613327">開啟新分頁</translation>
 <translation id="3563767357928833671">顯示咗剪貼簿嘅內容</translation>
 <translation id="3566639033325271639">更新設定</translation>
 <translation id="3568945271227339929">沒有密碼被盜用</translation>
@@ -1618,7 +1622,6 @@
 <translation id="7554643625247105821">無法檢查 Chrome 版本</translation>
 <translation id="7557508262441527045">已登出</translation>
 <translation id="7573665567024262965">選擇預設應用程式</translation>
-<translation id="7577900504646297215">管理興趣</translation>
 <translation id="757855969265046257">{FILES,plural, =1{已下載 <ph name="FILES_DOWNLOADED_ONE" /> 個檔案}other{已下載 <ph name="FILES_DOWNLOADED_MANY" /> 個檔案}}</translation>
 <translation id="7579341427377004341"><ph name="TAB_TITLE" />，複選咗播緊音訊嘅無痕式分頁</translation>
 <translation id="7581273696622423628">填寫問卷調查</translation>

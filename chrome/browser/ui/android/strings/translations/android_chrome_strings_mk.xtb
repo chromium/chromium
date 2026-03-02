@@ -91,7 +91,6 @@
 <translation id="1342886103232377846">За проверка за компромитирани лозинки, одете во Google Password Manager</translation>
 <translation id="1343830902827845050">Најавете се на Chrome</translation>
 <translation id="1344653310988386453">Вклучи линк до нагласената ставка</translation>
-<translation id="1347468774581902829">Управувајте со активноста</translation>
 <translation id="1355088659320425659">Картички и историја</translation>
 <translation id="1360432990279830238">Одјавете се и исклучете синхронизација?</translation>
 <translation id="1363028406613469049">Песна</translation>
@@ -1618,7 +1617,6 @@
 <translation id="7554643625247105821">Не може да се провери верзијата на Chrome</translation>
 <translation id="7557508262441527045">Одјавени сте</translation>
 <translation id="7573665567024262965">Изберете ги вашите стандардни апликации</translation>
-<translation id="7577900504646297215">Управувајте со она што ве интересира</translation>
 <translation id="757855969265046257">{FILES,plural, =1{Преземена е <ph name="FILES_DOWNLOADED_ONE" /> датотека}one{Преземена е <ph name="FILES_DOWNLOADED_MANY" /> датотека}other{Преземени се <ph name="FILES_DOWNLOADED_MANY" /> датотеки}}</translation>
 <translation id="7579341427377004341"><ph name="TAB_TITLE" />, повеќекратно избрана картичка „Инкогнито“ со пуштен звук</translation>
 <translation id="7581273696622423628">Пополнете ја анкетата</translation>

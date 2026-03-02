@@ -356,6 +356,7 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
 <translation id="1221825588892235038">Len výber</translation>
 <translation id="1222835797152767346">Nastavte si kód PIN, aby ste sa mohli ľahšie prihlasovať</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" /> vyžaduje licenciu</translation>
+<translation id="1223498995510244364">Zhrnúť</translation>
 <translation id="1223853788495130632">Váš správca odporúča pre toto nastavenie konkrétnu hodnotu.</translation>
 <translation id="1225177025209879837">Prebieha spracovanie žiadosti...</translation>
 <translation id="1227107020813934021">Vyhľadávanie skenerov dokumentov</translation>
@@ -4335,7 +4336,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3880513902716032002">Niektoré stránky, ktoré navštevujete, sú prednačítané</translation>
 <translation id="3884152383786131369">Internetový obsah dostupný vo viacerých jazykoch použije prvý podporovaný jazyk z tohto zoznamu. Tieto predvoľby sú synchronizované s nastaveniami vášho prehliadača. <ph name="BEGIN_LINK_LEARN_MORE" />Ďalšie informácie<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">Aktualizácie riadi váš správca</translation>
-<translation id="3887022758415973389">Zobraziť zoznam zariadení</translation>
 <translation id="3887764720741098847">Uložené informácie</translation>
 <translation id="3888501106166145415">Spojené siete Wi‐Fi</translation>
 <translation id="3890064827463908288">Zapnite synchronizáciu Chromu, aby ste mohli používať Synchronizáciu Wi-Fi</translation>
@@ -11677,7 +11677,6 @@ Môže to zahŕňať informácie o nainštalovanom softvéri, súboroch, prehli
 <translation id="8909298138148012791">Aplikácia <ph name="APP_NAME" /> bola odinštalovaná</translation>
 <translation id="8909833622202089127">Web sleduje vašu polohu</translation>
 <translation id="8910222113987937043">Záložky, história, heslá a ďalšie nastavenia sa už nebudú ďalej synchronizovať do vášho účtu Google. Vaše existujúce údaje však zostanú uložené v účte Google a môžete ich spravovať pomocou panela <ph name="BEGIN_LINK" />Google Dashboard<ph name="END_LINK" />.</translation>
-<translation id="8910987510378294980">Skryť zoznam zariadení</translation>
 <translation id="8911914282056933784">Skryť projekty</translation>
 <translation id="8912362522468806198">účtu Google</translation>
 <translation id="8912810933860534797">Aktivovať automatické prehľadávanie</translation>

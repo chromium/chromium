@@ -91,7 +91,6 @@
 <translation id="1342886103232377846">Para verificar se há senhas comprometidas, acesse o Gerenciador de senhas do Google</translation>
 <translation id="1343830902827845050">Faça login no Chrome</translation>
 <translation id="1344653310988386453">Incluir link para o conteúdo destacado</translation>
-<translation id="1347468774581902829">Gerenciar atividade</translation>
 <translation id="1355088659320425659">Histórico e guias</translation>
 <translation id="1360432990279830238">Sair e desativar a sincronização?</translation>
 <translation id="1363028406613469049">Rastrear</translation>
@@ -1627,7 +1626,6 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="7554643625247105821">Não é possível verificar a versão do Chrome</translation>
 <translation id="7557508262441527045">Saiu</translation>
 <translation id="7573665567024262965">Escolha seus apps padrão</translation>
-<translation id="7577900504646297215">Gerenciar interesses</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> arquivo baixado}one{<ph name="FILES_DOWNLOADED_MANY" /> arquivo baixado}other{<ph name="FILES_DOWNLOADED_MANY" /> arquivos baixados}}</translation>
 <translation id="7579341427377004341"><ph name="TAB_TITLE" />, guia anônima de seleção múltipla com áudio</translation>
 <translation id="7581273696622423628">Responder à pesquisa</translation>

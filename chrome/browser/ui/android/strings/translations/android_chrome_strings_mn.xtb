@@ -91,7 +91,6 @@
 <translation id="1342886103232377846">Алдагдсан нууц үгнүүд байгаа эсэхийг шалгахын тулд Google Password Manager лүү очно уу</translation>
 <translation id="1343830902827845050">Chrome-д нэвтрэх</translation>
 <translation id="1344653310988386453">Тодруулсан текстийн холбоосыг багтаах</translation>
-<translation id="1347468774581902829">Үйл ажиллагааг удирдах</translation>
 <translation id="1355088659320425659">Түүх, табууд</translation>
 <translation id="1360432990279830238">Гараад синк хийхийг унтраах уу?</translation>
 <translation id="1363028406613469049">Бичлэг</translation>
@@ -1623,7 +1622,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="7554643625247105821">Chrome-н хувилбарыг шалгаж чадахгүй байна</translation>
 <translation id="7557508262441527045">Гарсан</translation>
 <translation id="7573665567024262965">Өгөгдмөл апуудаа сонгоно уу</translation>
-<translation id="7577900504646297215">Сонирхлыг удирдах</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> файл татсан}other{<ph name="FILES_DOWNLOADED_MANY" /> файл татсан}}</translation>
 <translation id="7579341427377004341"><ph name="TAB_TITLE" />, Олноороо сонгогдож, аудио тоглуулж буй нууцлалтай таб</translation>
 <translation id="7581273696622423628">Судалгаа бөглөх</translation>

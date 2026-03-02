@@ -91,7 +91,6 @@
 <translation id="1342886103232377846">Para tingnan kung may mga nakompromisong password, pumunta sa Google Password Manager</translation>
 <translation id="1343830902827845050">Mag-sign in sa Chrome</translation>
 <translation id="1344653310988386453">Isama ang link sa highlight</translation>
-<translation id="1347468774581902829">Pamahalaan ang aktibidad</translation>
 <translation id="1355088659320425659">History at mga tab</translation>
 <translation id="1360432990279830238">Mag-sign out at i-off ang pag-sync?</translation>
 <translation id="1363028406613469049">Track</translation>
@@ -1623,7 +1622,6 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="7554643625247105821">Hindi masuri ang bersyon ng Chrome</translation>
 <translation id="7557508262441527045">Nag-sign out</translation>
 <translation id="7573665567024262965">Piliin ang iyong mga default na app</translation>
-<translation id="7577900504646297215">Pamahalaan ang mga interes</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> file ang na-download}one{<ph name="FILES_DOWNLOADED_MANY" /> file ang na-download}other{<ph name="FILES_DOWNLOADED_MANY" /> na file ang na-download}}</translation>
 <translation id="7579341427377004341"><ph name="TAB_TITLE" />, Naka-multiselect na Tab na Incognito na May Naririnig na Audio</translation>
 <translation id="7581273696622423628">Sagutan ang survey</translation>

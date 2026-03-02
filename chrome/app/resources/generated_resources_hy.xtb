@@ -355,6 +355,7 @@
 <translation id="1221825588892235038">Միայն ընտրվածը</translation>
 <translation id="1222835797152767346">Ստեղծեք PIN կոդ, որպեսզի ավելի հեշտ մուտք գործեք</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" /> հավելվածին հավաստագիր է անհրաժեշտ</translation>
+<translation id="1223498995510244364">Ամփոփել</translation>
 <translation id="1223853788495130632">Ադմինիստրատորը խորհուրդ է տալիս այս կարգավորման համար որոշակի արժեք ընտրել:</translation>
 <translation id="1225177025209879837">Հարցումը մշակվում է…</translation>
 <translation id="1227107020813934021">Գտեք փաստաթղթերի սկաներներ</translation>
@@ -4331,7 +4332,6 @@
 <translation id="3880513902716032002">Ձեր կողմից այցելվող որոշ էջեր նախապես են բեռնվում</translation>
 <translation id="3884152383786131369">Տարբեր լեզուներով հասանելի վեբ բովանդակությունը կօգտագործի ցանկում նշված աջակցվող առաջին լեզուն։ Այս պարամետրերը համաժամացվում են ձեր դիտարկիչի կարգավորումների հետ։ <ph name="BEGIN_LINK_LEARN_MORE" />Իմանալ ավելին<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">Թարմացումները կառավարվում են ադմինիստրատորի կողմից</translation>
-<translation id="3887022758415973389">Ցուցադրել սարքերի ցանկը</translation>
 <translation id="3887764720741098847">Պահված տեղեկություններ</translation>
 <translation id="3888501106166145415">Կապված Wi-Fi ցանցեր</translation>
 <translation id="3890064827463908288">Միացրեք Chrome Sync-ը՝ Wi-Fi համաժամացումն օգտագործելու համար։</translation>
@@ -11667,7 +11667,6 @@
 <translation id="8909298138148012791"><ph name="APP_NAME" /> հավելվածը հեռացվեց</translation>
 <translation id="8909833622202089127">Կայքին հայտնի է ձեր գտնվելու վայրը</translation>
 <translation id="8910222113987937043">Ձեր էջանիշների, այցելությունների պատմության, գաղտնաբառերի և այլ կարգավորումների փոփոխությունները չեն համաժամացվի ձեր Google հաշվի հետ: Այդուհանդերձ, ձեր առկա տվյալները կպահվեն Google հաշվում, և դրանք կարող եք կառավարել <ph name="BEGIN_LINK" />Google Dashboard-ում<ph name="END_LINK" />:</translation>
-<translation id="8910987510378294980">Թաքցնել սարքերի ցանկը</translation>
 <translation id="8911914282056933784">Թաքցնել նախագծերը</translation>
 <translation id="8912362522468806198">Google հաշիվ</translation>
 <translation id="8912810933860534797">Միացնել ավտոմատ որոնումը</translation>

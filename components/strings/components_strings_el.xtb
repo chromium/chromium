@@ -1310,6 +1310,8 @@
 <translation id="3102312643185441063">Ταμιευτηρίου</translation>
 <translation id="3103188521861412364">Μετοχές και ομόλογα</translation>
 <translation id="3105172416063519923">Αναγνωριστικό στοιχείο:</translation>
+<translation id="3105223248029915046">Τα προγράμματα πληρωμών εξαρτώνται από την καταλληλότητα.
+Για να αποκρύψετε τις επιλογές πληρωμής αργότερα, μεταβείτε στις <ph name="BEGIN_LINK" />ρυθμίσεις πληρωμής<ph name="END_LINK" /></translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />Έλεγχος διαμόρφωσης ασφαλούς DNS<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Μεσαίος τροφοδότης χαρτιού</translation>
 <translation id="3109061346635850169">Περιποίηση προσώπου και σώματος</translation>
@@ -4362,6 +4364,7 @@
 <translation id="7908648876066812348">Ενεργοποίηση εικονικής κάρτας</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε το πλήκτρο Tab και μετά το Enter για να μεταβείτε στη σελίδα του ελέγχου ασφαλείας του Chrome στις ρυθμίσεις</translation>
 <translation id="791107458486222637">Επανάληψη αποτελέσματος</translation>
+<translation id="7911651285409665023">Κλείσιμο και επιστροφή στην καρτέλα "<ph name="TAB_TITLE" />"</translation>
 <translation id="7912924955815015552">Εισήχθησαν από το Safari</translation>
 <translation id="791551905239004656">Ζωγραφική και χρωματισμός</translation>
 <translation id="7916162853251942238">Βάση Flexo</translation>

@@ -1310,6 +1310,8 @@
 <translation id="3102312643185441063">储蓄</translation>
 <translation id="3103188521861412364">股票与债券</translation>
 <translation id="3105172416063519923">资产 ID：</translation>
+<translation id="3105223248029915046">付款方案需满足资格要求。
+如要隐藏先买后付选项，请前往<ph name="BEGIN_LINK" />支付设置<ph name="END_LINK" /></translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />检查安全 DNS 配置<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">中间纸匣</translation>
 <translation id="3109061346635850169">面部与身体护理</translation>
@@ -4355,6 +4357,7 @@
 <translation id="7908648876066812348">正在开启虚拟卡</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可前往“设置”中的 Chrome 安全检查页面</translation>
 <translation id="791107458486222637">正在重新生成结果</translation>
+<translation id="7911651285409665023">关闭并返回“<ph name="TAB_TITLE" />”</translation>
 <translation id="7912924955815015552">由 Safari 导入</translation>
 <translation id="791551905239004656">绘画与着色</translation>
 <translation id="7916162853251942238">柔印底基</translation>

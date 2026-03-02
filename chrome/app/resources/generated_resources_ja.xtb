@@ -354,6 +354,7 @@
 <translation id="1221825588892235038">選択したコンテンツのみ</translation>
 <translation id="1222835797152767346">PIN を設定して簡単にログイン</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" /> を使用するにはライセンスが必要です</translation>
+<translation id="1223498995510244364">要約</translation>
 <translation id="1223853788495130632">この設定には管理者が特定の値を推奨しています。</translation>
 <translation id="1225177025209879837">リクエストを処理しています...</translation>
 <translation id="1227107020813934021">ドキュメント スキャナを検出</translation>
@@ -1020,6 +1021,7 @@
 <translation id="1671525612731130246">ドライブ アカウントを選択</translation>
 <translation id="1671749176392751693">保護されたコンテンツの識別子が許可されました</translation>
 <translation id="1673137583248014546"><ph name="URL" /> よりセキュリティ キーのメーカーとモデルの読み取り許可を求められています</translation>
+<translation id="1673855466663721679">サイドパネルにブックマークを表示</translation>
 <translation id="1674073353928166410">シークレット ウィンドウですべて開く（<ph name="URL_COUNT" /> 件の URL）</translation>
 <translation id="1674142805528405174">Google パスワード マネージャーで、Google アカウント「<ph name="EMAIL" />」に保存されているこのアカウントのパスワードを安全なものに変更できます。</translation>
 <translation id="1674945585974615438">未知のサイトで JavaScript オプティマイザーを自動的に無効にする</translation>
@@ -3435,6 +3437,7 @@
 <translation id="3312883087018430408">特定のサイトや Chrome のセクションを検索するには、アドレスバーにそれらのショートカットを入力して、設定したキーボード ショートカットを押します。たとえばブックマークのみを検索する場合は、「@bookmarks」と入力して Tab または Space キーを押します。</translation>
 <translation id="3313622045786997898">証明書の署名値</translation>
 <translation id="3313950410573257029">接続を確認</translation>
+<translation id="3314239811356311272">ブックマーク マネージャーを開く(&amp;O)</translation>
 <translation id="3315158641124845231"><ph name="PRODUCT_NAME" /> を隠す</translation>
 <translation id="3317459757438853210">両面印刷</translation>
 <translation id="3317521105713541270">グループを作成</translation>
@@ -3641,6 +3644,7 @@
 <translation id="3453597230179205517">位置情報へのアクセスはブロックされています</translation>
 <translation id="3453612417627951340">認証が必要です</translation>
 <translation id="3454213325559396544">この <ph name="DEVICE_TYPE" /> でソフトウェアとセキュリティの自動アップデートが行われるのは今回が最後です。今後もアップデートを取得するには、新しいモデルにアップグレードしてください。</translation>
+<translation id="3454276058453724464">{FILE_LIMIT,plural, =1{質問で使用する PDF ファイルを 1 個アップロードできます}other{質問で使用する PDF ファイルを # 個までアップロードできます}}</translation>
 <translation id="3454818737556063691">1 個のファイルを <ph name="CLOUD_PROVIDER" /> に移動して開きますか？</translation>
 <translation id="3455436146814891176">同期データの暗号化パスワード</translation>
 <translation id="345693547134384690">新しいタブで画像を開く(&amp;I)</translation>
@@ -4321,7 +4325,6 @@
 <translation id="3880513902716032002">アクセスするページの一部はプリロードされます</translation>
 <translation id="3884152383786131369">複数の言語に対応しているウェブ コンテンツでは、次のリストの最初にある対応言語が使用されます。これらの設定はブラウザの設定と同期されています。<ph name="BEGIN_LINK_LEARN_MORE" />詳細<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">更新は管理者によって管理されています</translation>
-<translation id="3887022758415973389">デバイスリストを表示する</translation>
 <translation id="3887764720741098847">保存した情報</translation>
 <translation id="3888501106166145415">関連付けられている Wi-Fi ネットワーク</translation>
 <translation id="3890064827463908288">Wi-Fi 同期を使用するには Chrome 同期をオンにしてください</translation>
@@ -5012,6 +5015,7 @@
 <translation id="4364567974334641491"><ph name="APP_NAME" /> がウィンドウを共有しています。</translation>
 <translation id="4364830672918311045">通知を表示</translation>
 <translation id="4367971618859387374">表示名</translation>
+<translation id="4368888793624522796">タブグループを移動しました</translation>
 <translation id="4368960422722232719">タブ マウスオーバーのプレビュー カードにメモリ使用量を表示する</translation>
 <translation id="4369151461324628035">サイトにローカル ネットワーク上のデバイスへの接続を許可しない</translation>
 <translation id="4369215744064167350">ウェブサイトへのアクセスが承認されました</translation>
@@ -5399,6 +5403,7 @@
 <translation id="4634575639321169635">このデバイスを仕事または個人で使用する</translation>
 <translation id="4635072447747973225">Crostini のアンインストール</translation>
 <translation id="4635398712689569051">ゲストユーザーは <ph name="PAGE_NAME" /> を利用できません。</translation>
+<translation id="4635975718422788482">{FILE_LIMIT,plural, =1{質問で使用する画像を 1 個アップロードできます}other{質問で使用する画像を # 個までアップロードできます}}</translation>
 <translation id="4636187126182557415">システム環境設定</translation>
 <translation id="4636930964841734540">情報</translation>
 <translation id="4637083375689622795">その他の操作（<ph name="EMAIL" />）</translation>
@@ -6239,6 +6244,7 @@
 <translation id="5215502535566372932">国を選択</translation>
 <translation id="5216674789212441076">自動字幕起こしを自動的に翻訳します。字幕は翻訳のために Google に送信されます。</translation>
 <translation id="5216951551945455224">{NUM_TABS,plural, =1{Gemini とのタブの共有を停止}other{Gemini との # 個のタブの共有を停止}}</translation>
+<translation id="5217883660859035687">ブックマークのスペースを増やすため、タブグループを移動します。</translation>
 <translation id="5220011581825921581">検索+上矢印</translation>
 <translation id="5221516927483787768"><ph name="HOST_NAME" /> をキャストできません</translation>
 <translation id="5221834113325601057">リストからタブを除外しました</translation>
@@ -6920,6 +6926,7 @@
 <translation id="5697832193891326782">絵文字選択ツール</translation>
 <translation id="5698136107297470317"><ph name="BRAND" /> のデータを削除しようとしています</translation>
 <translation id="5698878456427040674">選択したアカウントがサポートされているかどうかを確認してください。</translation>
+<translation id="5698900765010620315">低コントラスト ダーク</translation>
 <translation id="5699227710146832453">取得元:</translation>
 <translation id="570043786759263127">Google Play のアプリとサービス</translation>
 <translation id="5700761515355162635">サードパーティ Cookie が許可されています</translation>
@@ -8301,6 +8308,7 @@
 <translation id="6663190258859265334"><ph name="DEVICE_TYPE" /> で Powerwash を実行し、以前のバージョンに戻します。</translation>
 <translation id="6664774537677393800">プロフィールを開こうとして問題が発生しました。ログアウトしてから再度ログインしてください。</translation>
 <translation id="6665874326033183068">荒涼</translation>
+<translation id="6666560794795912543">サイドパネルにブックマークを表示</translation>
 <translation id="6667086124612170548">ファイルがこのデバイスには大きすぎます</translation>
 <translation id="6667092961374478614"><ph name="FEATURE_NAME" /> の検出の許可</translation>
 <translation id="6667187897999649121">現在のところ、パスワードはファミリー メンバーとのみ共有できます。最大 6 人のメンバーを招待して<ph name="BEGIN_LINK" />ファミリー グループを作成<ph name="END_LINK" />すると、Google のさまざまなサービスやサブスクリプションをさらに活用できます。</translation>
@@ -9761,6 +9769,7 @@
 <translation id="7660146600670077843">タブを右クリックして、[タブを新しいグループに追加] を選択します</translation>
 <translation id="7661451191293163002">登録証明書を取得できませんでした。</translation>
 <translation id="7662283695561029522">設定するにはタップします</translation>
+<translation id="7662535435481776002">低コントラスト ライト</translation>
 <translation id="7663719505383602579">レシーバー: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7663774460282684730">利用可能なキーボード ショートカット</translation>
 <translation id="7663859337051362114">eSIM プロファイルの追加</translation>
@@ -11644,7 +11653,6 @@
 <translation id="8909298138148012791"><ph name="APP_NAME" /> のアンインストールが完了しました</translation>
 <translation id="8909833622202089127">サイトで現在地が追跡されています</translation>
 <translation id="8910222113987937043">ブックマーク、履歴、パスワードなどの設定に行った変更は Google アカウントと同期されなくなります。ただし、既存のデータは Google アカウントに保存され、<ph name="BEGIN_LINK" />Google ダッシュボード<ph name="END_LINK" />で管理できます。</translation>
-<translation id="8910987510378294980">デバイスリストを非表示にする</translation>
 <translation id="8911914282056933784">プロジェクトを非表示</translation>
 <translation id="8912362522468806198">Google アカウントを使用</translation>
 <translation id="8912810933860534797">自動スキャンを有効にする</translation>

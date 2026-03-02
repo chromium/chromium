@@ -354,6 +354,7 @@
 <translation id="1221825588892235038">Тек таңдау</translation>
 <translation id="1222835797152767346">Аккаунтқа кіру оңай болуы үшін, PIN кодын орнатыңыз</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" /> үшін лицензия қажет</translation>
+<translation id="1223498995510244364">Қорытындылау</translation>
 <translation id="1223853788495130632">Әкімшіңіз бұл параметр үшін арнайы мәнді ұсынады.</translation>
 <translation id="1225177025209879837">Сұрау өңделуде…</translation>
 <translation id="1227107020813934021">Құжат сканерлерін табу</translation>
@@ -4325,7 +4326,6 @@
 <translation id="3880513902716032002">Сіз кіретін беттердің кейбірі алдын ала жүктеледі.</translation>
 <translation id="3884152383786131369">Бірнеше тілдегі веб-контент осы тізімдегі бірінші тілді пайдаланады. Бұл параметрлер браузер параметрлерімен синхрондалады. <ph name="BEGIN_LINK_LEARN_MORE" />Толығырақ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">Жаңартуларды әкімшіңіз басқарады.</translation>
-<translation id="3887022758415973389">Құрылғылар тізімін көрсету</translation>
 <translation id="3887764720741098847">Сақталған ақпарат</translation>
 <translation id="3888501106166145415">Байланыстырылған Wi-Fi желілері</translation>
 <translation id="3890064827463908288">Wi-Fi деректерін синхрондау үшін Chrome Sync функциясын қосыңыз.</translation>
@@ -11650,7 +11650,6 @@
 <translation id="8909298138148012791"><ph name="APP_NAME" /> жойылды.</translation>
 <translation id="8909833622202089127">Сайт орналасқан жеріңізді бақылауда</translation>
 <translation id="8910222113987937043">Бетбелгілерге, тарихқа, құпия сөздерге және басқа параметрлерге енгізілген өзгертулер бұдан әрі Google аккаунтымен синхрондалмайды. Алайда бұрыннан бар деректер Google аккаунтында сақталады және <ph name="BEGIN_LINK" />Google бақылау тақтасында<ph name="END_LINK" /> басқарылады.</translation>
-<translation id="8910987510378294980">Құрылғылар тізімін жасыру</translation>
 <translation id="8911914282056933784">Жобаларды жасыру</translation>
 <translation id="8912362522468806198">Google аккаунты</translation>
 <translation id="8912810933860534797">Автоматты түрде іздеу функциясын қосу</translation>

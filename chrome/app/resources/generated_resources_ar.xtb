@@ -358,6 +358,7 @@
 <translation id="1221825588892235038">التحديد فقط</translation>
 <translation id="1222835797152767346">اضبط رقم تعريف شخصي لتسهيل تسجيل الدخول</translation>
 <translation id="1223484782328004593">يتطلّب <ph name="APP_NAME" /> ترخيصًا</translation>
+<translation id="1223498995510244364">تلخيص</translation>
 <translation id="1223853788495130632">يوصي المشرف بقيمة محددة لهذا الإعداد.</translation>
 <translation id="1225177025209879837">جارٍ معالجة الطلب...</translation>
 <translation id="1227107020813934021">العثور على الماسحات الضوئية للمستندات</translation>
@@ -4336,7 +4337,6 @@
 <translation id="3880513902716032002">يتم بشكل مسبق تحميل بعض الصفحات التي تنتقل إليها.</translation>
 <translation id="3884152383786131369">سيستخدم محتوى الويب المتوفّر بلغات متعدّدة أول لغة معتمَدة من القائمة. وستتم مزامنة هذه الإعدادات المفضّلة مع إعدادات المتصفّح. <ph name="BEGIN_LINK_LEARN_MORE" />مزيد من المعلومات<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">يتولّى مشرفك إدارة التحديثات.</translation>
-<translation id="3887022758415973389">عرض قائمة الأجهزة</translation>
 <translation id="3887764720741098847">المعلومات المحفوظة</translation>
 <translation id="3888501106166145415">‏شبكات Wi-Fi المرتبطة</translation>
 <translation id="3890064827463908288">‏تفعيل ميزة "مزامنة Chrome" لاستخدام "مزامنة الواي فاي"</translation>
@@ -11679,7 +11679,6 @@
 <translation id="8909298138148012791">تم إلغاء تثبيت <ph name="APP_NAME" />.</translation>
 <translation id="8909833622202089127">تتبّع الموقع الإلكتروني موقعك الجغرافي.</translation>
 <translation id="8910222113987937043">‏لن تتم بعد الآن مزامنة التغييرات التي تطرأ على الإشارات المرجعية والسجلّ وكلمات المرور والإعدادات الأخرى مع حسابك على Google، ولكن ستظل بياناتك الحالية مخزّنة في حسابك على Google ويمكن إدارتها في <ph name="BEGIN_LINK" />لوحة تحكّم Google<ph name="END_LINK" />.</translation>
-<translation id="8910987510378294980">إخفاء قائمة الأجهزة</translation>
 <translation id="8911914282056933784">إخفاء المشاريع</translation>
 <translation id="8912362522468806198">‏حساب Google‏</translation>
 <translation id="8912810933860534797">تفعيل المسح التلقائي</translation>

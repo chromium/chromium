@@ -354,6 +354,7 @@
 <translation id="1221825588892235038">只限選取的內容</translation>
 <translation id="1222835797152767346">設定 PIN 可簡化登入程序</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" /> 需要取得授權</translation>
+<translation id="1223498995510244364">總結</translation>
 <translation id="1223853788495130632">管理員為這項設定推薦特定的值。</translation>
 <translation id="1225177025209879837">正在處理要求…</translation>
 <translation id="1227107020813934021">尋找文件掃瞄器</translation>
@@ -679,6 +680,7 @@
     偵錯記錄<ph name="END_LINK" /> (建議)</translation>
 <translation id="1454223536435069390">擷取螢幕擷圖</translation>
 <translation id="145432137617179457">拼字檢查支援以下語言</translation>
+<translation id="1455009947184333152">已刪除技能</translation>
 <translation id="1455119378540982311">預設視窗大小</translation>
 <translation id="1456849775870359518">你的分頁將重新開啟</translation>
 <translation id="146000042969587795">此頁框由於包含不安全的內容，已被封鎖。</translation>
@@ -1342,6 +1344,7 @@
 <translation id="1886996562706621347">允許網站要求成為通訊協定的預設處理常式 (建議)</translation>
 <translation id="1887210448491286312">停止將分頁投放去 <ph name="DEVICE_NAME" /></translation>
 <translation id="1887442540531652736">登入錯誤</translation>
+<translation id="1888692623866312036">已儲存技能</translation>
 <translation id="1890026367080681123">前往已嵌入的內容設定</translation>
 <translation id="189035593835762169">條款及細則</translation>
 <translation id="1891362123137972260">磁碟空間嚴重不足。請騰出磁碟空間。</translation>
@@ -1849,6 +1852,7 @@
 <translation id="2232751457155581899">網站可要求追蹤攝錄機的位置</translation>
 <translation id="2233502537820838181">更多資料(&amp;M)</translation>
 <translation id="223356358902285214">網絡和應用程式活動記錄</translation>
+<translation id="2234031676056123135">自訂捷徑</translation>
 <translation id="2234065144797002621">溪流</translation>
 <translation id="2234208862050358325">按下 1、2、3、q、e、a、s、d 鍵可移動游標</translation>
 <translation id="2234827758954819389">私隱權指南</translation>
@@ -3109,10 +3113,12 @@
 <translation id="3048589239114571785">播放 (K 鍵)</translation>
 <translation id="3048742847101793553">由於掃瞄失敗，因此檔案已被機構封鎖。</translation>
 <translation id="3048917188684939573">投放和裝置記錄</translation>
+<translation id="3049356453907822148">新增技能</translation>
 <translation id="3051250416341590778">顯示大小</translation>
 <translation id="3053013834507634016">憑證金鑰用途</translation>
 <translation id="3053273573829329829">啟用使用者 PIN</translation>
 <translation id="3053274730492362225">不要閃動</translation>
+<translation id="3057938290530993634">按住即可固定最常瀏覽的網站，方便下次存取</translation>
 <translation id="3058498974290601450">您可隨時在設定中開啟同步功能</translation>
 <translation id="3060952009917586498">改裝置語言。目前嘅語言係<ph name="LANGUAGE" />。</translation>
 <translation id="3060987956645097882">我們無法與您的手機建立連線。請確認您的手機在附近並已解鎖，且已開啟藍牙和 Wi-Fi。</translation>
@@ -3269,6 +3275,7 @@
 <translation id="3182749001423093222">拼字檢查</translation>
 <translation id="3183139917765991655">個人檔案匯入工具</translation>
 <translation id="3183143381919926261">流動數據網絡</translation>
+<translation id="3183428991752322898">清除鍵盤快速鍵</translation>
 <translation id="3183700187146209259">無法安裝掃瞄器軟件</translation>
 <translation id="3183750649832309748">你的機構 <ph name="ACCOUNT_MANAGER" /> 將可以查看某些資料，包括</translation>
 <translation id="3183944777708523606">顯示器排列</translation>
@@ -3358,6 +3365,7 @@
 <translation id="3247649647204519958">您可在此處查看及管理擴充程式在目前網站上的權限</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - 網絡錯誤</translation>
 <translation id="3248902735035392926">安全至上。請花一點時間<ph name="BEGIN_LINK" />立即檢查您的擴充功能<ph name="END_LINK" /></translation>
+<translation id="3250374026663843838">管理技能</translation>
 <translation id="3251119461199395237">檔案同步</translation>
 <translation id="3251759466064201842">&lt;不是憑證的一部分&gt;</translation>
 <translation id="3252169590975855820">你可在「Google 密碼管理工具」中存取密碼</translation>
@@ -4343,7 +4351,6 @@
 <translation id="3880513902716032002">系統會預先載入你瀏覽的部分網頁</translation>
 <translation id="3884152383786131369">支援多種語言的網站內容會使用此清單上的第一個支援語言。這些偏好設定會與您的瀏覽器設定同步。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">更新由您的管理員管理</translation>
-<translation id="3887022758415973389">顯示裝置清單</translation>
 <translation id="3887764720741098847">已儲存的資料</translation>
 <translation id="3888501106166145415">關聯的 Wi-Fi 網絡</translation>
 <translation id="3890064827463908288">開啟 Chrome 同步功能以使用 Wi-Fi Sync</translation>
@@ -5188,6 +5195,7 @@
 <translation id="4469324811108161144">筆記可以儲存最多 <ph name="CHARACTER_LIMIT" /> 個字元。</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> 可編輯「<ph name="FOLDERNAME" />」中的檔案</translation>
 <translation id="4470957202018033307">外部儲存空間偏好設定</translation>
+<translation id="4471250205822310967">Gemini 選擇功能重疊畫面</translation>
 <translation id="4471354919263203780">正在下載語音識別檔案… <ph name="PERCENT" />%</translation>
 <translation id="4472194221638903160">運用 AI 建立分頁群組</translation>
 <translation id="4472298120638043495">您可使用偏好的 Google 帳戶語言 (<ph name="NEW_LOCALE_FROM_GAIA" />)</translation>
@@ -11667,7 +11675,6 @@
 <translation id="8909298138148012791">已解除安裝 <ph name="APP_NAME" /></translation>
 <translation id="8909833622202089127">網站正在追蹤您的位置</translation>
 <translation id="8910222113987937043">您的書籤、記錄、密碼和其他設定的變更將不會繼續同步至您的 Google 帳戶。不過，Google 帳戶內仍會儲存您現有的資料，而您亦可透過「<ph name="BEGIN_LINK" />Google 資訊主頁<ph name="END_LINK" />」管理這些資料。</translation>
-<translation id="8910987510378294980">隱藏裝置清單</translation>
 <translation id="8911914282056933784">隱藏項目</translation>
 <translation id="8912362522468806198">Google 帳戶</translation>
 <translation id="8912810933860534797">啟用自動掃瞄</translation>
@@ -11916,6 +11923,7 @@
 <translation id="9061521313218438086">如果 Chrome 發現你的密碼在公開資料外洩事件中外洩，「Google 密碼管理工具」可能會在你登入時提議為你更改密碼。</translation>
 <translation id="9061694916020926968">您需要登入 Google 帳戶，才能使用 Chromebook 版 Steam (Beta 版本)。請登入帳戶，然後再試一次。</translation>
 <translation id="9062468308252555888">14 倍</translation>
+<translation id="9062873887761404531">清除導覽快速鍵</translation>
 <translation id="9063208415146866933">第<ph name="ERROR_LINE_START" />至第<ph name="ERROR_LINE_END" />行有錯</translation>
 <translation id="9064275926664971810">啟用「自動填入」功能，輕鬆一按即可填妥表格</translation>
 <translation id="9065203028668620118">編輯</translation>

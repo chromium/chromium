@@ -91,7 +91,6 @@
 <translation id="1342886103232377846">For å sjekke om du har passord som er utsatt for sikkerhetsbrudd, gå til Google Passordlagring</translation>
 <translation id="1343830902827845050">Logg på Chrome</translation>
 <translation id="1344653310988386453">Inkluder link til markert tekst</translation>
-<translation id="1347468774581902829">Administrer aktivitet</translation>
 <translation id="1355088659320425659">Logg og faner</translation>
 <translation id="1360432990279830238">Vil du logge av og slå av synkronisering?</translation>
 <translation id="1363028406613469049">Spor</translation>
@@ -1618,7 +1617,6 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="7554643625247105821">Kan ikke sjekke Chrome-versjonen</translation>
 <translation id="7557508262441527045">Logget av</translation>
 <translation id="7573665567024262965">Velg standardapper</translation>
-<translation id="7577900504646297215">Administrer interesser</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> fil er lastet ned}other{<ph name="FILES_DOWNLOADED_MANY" /> filer er lastet ned}}</translation>
 <translation id="7579341427377004341"><ph name="TAB_TITLE" />, flere valgte inkognitofaner med lyd</translation>
 <translation id="7581273696622423628">Besvar undersøkelsen</translation>

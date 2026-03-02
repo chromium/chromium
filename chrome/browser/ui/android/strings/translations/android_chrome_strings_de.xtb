@@ -91,7 +91,6 @@
 <translation id="1342886103232377846">Rufe den Google Passwortmanager auf, um nach kompromittierten Passwörtern zu suchen</translation>
 <translation id="1343830902827845050">In Chrome anmelden</translation>
 <translation id="1344653310988386453">Link zum markierten Text hinzufügen</translation>
-<translation id="1347468774581902829">Aktivitäten verwalten</translation>
 <translation id="1355088659320425659">Verlauf und Tabs</translation>
 <translation id="1360432990279830238">Abmelden &amp; Synchronisierung deaktivieren?</translation>
 <translation id="1363028406613469049">Verfolgen</translation>
@@ -1615,7 +1614,6 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="7554643625247105821">Chrome-Version kann nicht geprüft werden</translation>
 <translation id="7557508262441527045">Abgemeldet</translation>
 <translation id="7573665567024262965">Standard-Apps auswählen</translation>
-<translation id="7577900504646297215">Interessen verwalten</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> Datei heruntergeladen}other{<ph name="FILES_DOWNLOADED_MANY" /> Dateien heruntergeladen}}</translation>
 <translation id="7579341427377004341"><ph name="TAB_TITLE" />, mehrfach ausgewählter Inkognitotab mit Audio</translation>
 <translation id="7581273696622423628">An Umfrage teilnehmen</translation>

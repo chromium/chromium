@@ -91,7 +91,6 @@
 <translation id="1342886103232377846">Чтобы проверить наличие раскрытых паролей, воспользуйтесь Google Менеджером паролей</translation>
 <translation id="1343830902827845050">Войдите в Chrome</translation>
 <translation id="1344653310988386453">Добавьте ссылку на выделенный текст.</translation>
-<translation id="1347468774581902829">Управление историей</translation>
 <translation id="1355088659320425659">История и вкладки</translation>
 <translation id="1360432990279830238">Выйти и отключить синхронизацию?</translation>
 <translation id="1363028406613469049">Отслеживать</translation>
@@ -1623,7 +1622,6 @@
 <translation id="7554643625247105821">Не удалось проверить версию Chrome</translation>
 <translation id="7557508262441527045">Выполнен выход</translation>
 <translation id="7573665567024262965">Выберите приложения по умолчанию</translation>
-<translation id="7577900504646297215">Управление интересами</translation>
 <translation id="757855969265046257">{FILES,plural, =1{Скачан <ph name="FILES_DOWNLOADED_ONE" /> файл}one{Скачан <ph name="FILES_DOWNLOADED_MANY" /> файл}few{Скачано <ph name="FILES_DOWNLOADED_MANY" /> файла}many{Скачано <ph name="FILES_DOWNLOADED_MANY" /> файлов}other{Скачано <ph name="FILES_DOWNLOADED_MANY" /> файла}}</translation>
 <translation id="7579341427377004341">Выбранная вместе с несколькими другими вкладка инкогнито "<ph name="TAB_TITLE" />" с включенным звуком</translation>
 <translation id="7581273696622423628">Пройти опрос</translation>

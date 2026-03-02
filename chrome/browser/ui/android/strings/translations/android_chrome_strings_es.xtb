@@ -91,7 +91,6 @@
 <translation id="1342886103232377846">Para comprobar si hay contraseñas vulneradas, ve al Gestor de contraseñas de Google</translation>
 <translation id="1343830902827845050">Iniciar sesión en Chrome</translation>
 <translation id="1344653310988386453">Incluir enlace al texto destacado</translation>
-<translation id="1347468774581902829">Gestionar actividad</translation>
 <translation id="1355088659320425659">Historial y pestañas</translation>
 <translation id="1360432990279830238">¿Cerrar sesión y detener sincronización?</translation>
 <translation id="1363028406613469049">Seguir</translation>
@@ -1615,7 +1614,6 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chrome de
 <translation id="7554643625247105821">No se puede comprobar la versión de Chrome</translation>
 <translation id="7557508262441527045">Se ha cerrado la sesión</translation>
 <translation id="7573665567024262965">Elige tus aplicaciones predeterminadas</translation>
-<translation id="7577900504646297215">Gestionar intereses</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> archivo descargado}other{<ph name="FILES_DOWNLOADED_MANY" /> archivos descargados}}</translation>
 <translation id="7579341427377004341"><ph name="TAB_TITLE" />, pestaña de Incógnito audible en selección múltiple</translation>
 <translation id="7581273696622423628">Responder encuesta</translation>

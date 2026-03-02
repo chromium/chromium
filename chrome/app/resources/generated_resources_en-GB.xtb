@@ -354,6 +354,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1221825588892235038">Selection only</translation>
 <translation id="1222835797152767346">Set a PIN to make it easier to sign in</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" /> requires a licence</translation>
+<translation id="1223498995510244364">Summarise</translation>
 <translation id="1223853788495130632">Your administrator recommends a specific value for this setting.</translation>
 <translation id="1225177025209879837">Processing request...</translation>
 <translation id="1227107020813934021">Find document scanners</translation>
@@ -4343,7 +4344,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3880513902716032002">Some of the pages you visit are preloaded</translation>
 <translation id="3884152383786131369">Web content available in multiple languages will use the first supported language from this list. These preferences are synced with your browser settings. <ph name="BEGIN_LINK_LEARN_MORE" />Learn more<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">Updates are managed by your administrator</translation>
-<translation id="3887022758415973389">Show device list</translation>
 <translation id="3887764720741098847">Saved information</translation>
 <translation id="3888501106166145415">Associated Wi-Fi networks</translation>
 <translation id="3890064827463908288">Turn on Chrome Sync to use Wi-Fi Sync</translation>
@@ -11676,7 +11676,6 @@ This can include information about installed software, files, your browser, the 
 <translation id="8909298138148012791"><ph name="APP_NAME" /> has been uninstalled</translation>
 <translation id="8909833622202089127">Site is tracking your location</translation>
 <translation id="8910222113987937043">Changes to your bookmarks, history, passwords and other settings will no longer be synced to your Google Account. However, your existing data will remain stored in your Google Account and can be managed on <ph name="BEGIN_LINK" />Google Dashboard<ph name="END_LINK" />.</translation>
-<translation id="8910987510378294980">Hide device list</translation>
 <translation id="8911914282056933784">Hide projects</translation>
 <translation id="8912362522468806198">Google Account</translation>
 <translation id="8912810933860534797">Enable auto-scan</translation>
