@@ -159,9 +159,14 @@ void BuildExplicitChoiceDialog(
       .SetDialogDestroyingCallback(
           base::BindOnce(&SettingsOverriddenDialogDelegate::OnDialogDestroyed,
                          base::Unretained(dialog_delegate)))
-      .SetInitiallyFocusedField(kSettingsOverriddenDialogSaveButtonId)
-      .OverrideShowCloseButton(false)
-      .DisableCloseOnEscape(SettingsOverriddenDialogDelegate::GetPassKey());
+      .SetInitiallyFocusedField(kSettingsOverriddenDialogSaveButtonId);
+
+  const bool is_escapable =
+      extensions_features::kSearchEngineExplicitChoiceDialogEscapable.Get();
+  if (!is_escapable) {
+    dialog_builder.OverrideShowCloseButton(false).DisableCloseOnEscape(
+        SettingsOverriddenDialogDelegate::GetPassKey());
+  }
 
   // Helper to bind the selection callback to a specific result.
   auto create_selection_callback = [&](DialogResult result) {

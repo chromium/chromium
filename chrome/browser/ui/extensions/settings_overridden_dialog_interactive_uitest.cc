@@ -363,19 +363,48 @@ IN_PROC_BROWSER_TEST_F(SettingsOverriddenExplicitChoiceDialogInteractiveUiTest,
 IN_PROC_BROWSER_TEST_F(SettingsOverriddenExplicitChoiceDialogInteractiveUiTest,
                        EscapeDoesNotCloseDialog) {
   // This test verifies that pressing Escape does not close the dialog.
+  RunTestSequence(InstrumentTab(kWebContentsId),
+                  SetNewSearchProvider(DefaultSearch::kUseDefault),
+                  LoadExtensionOverridingSearch(), PerformSearchFromOmnibox(),
+                  WaitForDialogToShow(),
+                  // Send Escape.
+                  SendKeyPress(kSettingsOverriddenDialogId, ui::VKEY_ESCAPE),
+                  // Verify dialog is still present.
+                  EnsurePresent(kSettingsOverriddenDialogId),
+                  // Ensure we can still close it via interaction.
+                  PressButton(kNewSettingButtonId), PressButton(kSaveButtonId),
+                  WaitForHide(kSettingsOverriddenDialogId));
+}
+
+class SettingsOverriddenExplicitChoiceDialogEscapableInteractiveUiTest
+    : public SettingsOverriddenExplicitChoiceDialogInteractiveUiTest {
+ public:
+  SettingsOverriddenExplicitChoiceDialogEscapableInteractiveUiTest() {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        extensions_features::kSearchEngineExplicitChoiceDialog,
+        {{"escapable", "true"}});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    SettingsOverriddenExplicitChoiceDialogEscapableInteractiveUiTest,
+    EscapeClosesDialog) {
+  // This test verifies that pressing Escape closes the dialog when the
+  // "escapable" feature parameter is set.
   RunTestSequence(
       InstrumentTab(kWebContentsId),
       SetNewSearchProvider(DefaultSearch::kUseDefault),
       LoadExtensionOverridingSearch(), PerformSearchFromOmnibox(),
       WaitForDialogToShow(),
-      // Send Escape.
       SendKeyPress(kSettingsOverriddenDialogId, ui::VKEY_ESCAPE),
-      // Verify dialog is still present (Wait a bit or just ensure present).
-      EnsurePresent(kSettingsOverriddenDialogId),
-      // Clean up by choosing an option so the dialog closes and the navigation
-      // finishes.
-      PressButton(kNewSettingButtonId), PressButton(kSaveButtonId),
+      // Verify dialog is dismissed.
       WaitForHide(kSettingsOverriddenDialogId),
+      // Verify navigation proceeds to the extension's search URL since the
+      // dialog was dismissed without saving changes (default behavior is to
+      // keep new settings).
       WaitForWebContentsNavigation(kWebContentsId, GURL(kExtensionSearchUrl)));
 }
 

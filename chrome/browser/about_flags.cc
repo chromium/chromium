@@ -4719,6 +4719,16 @@ const FeatureEntry::FeatureVariation
         {"Mute Both", kPermissionsGestureGatedPromptsMuteBoth, nullptr},
 };
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+const FeatureEntry::FeatureParam kSearchEngineExplicitChoiceDialogEscapable[] =
+    {{"escapable", "true"}};
+
+const FeatureEntry::FeatureVariation
+    kSearchEngineExplicitChoiceDialogVariations[] = {
+        {"Escapable", kSearchEngineExplicitChoiceDialogEscapable, nullptr},
+};
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+
 // RECORDING USER METRICS FOR FLAGS:
 // -----------------------------------------------------------------------------
 // The first line of the entry is the internal name.
@@ -12941,8 +12951,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSearchEngineExplicitChoiceDialogName,
      flag_descriptions::kSearchEngineExplicitChoiceDialogDescription,
      kOsWin | kOsMac,
-     FEATURE_VALUE_TYPE(
-         extensions_features::kSearchEngineExplicitChoiceDialog)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         extensions_features::kSearchEngineExplicitChoiceDialog,
+         kSearchEngineExplicitChoiceDialogVariations,
+         "SearchEngineExplicitChoiceDialogVariations")},
 
     {"search-engine-unconditional-dialog",
      flag_descriptions::kSearchEngineUnconditionalDialogName,

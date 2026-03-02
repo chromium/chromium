@@ -311,6 +311,7 @@ BASE_DECLARE_FEATURE(kEnableShouldShowPromotion);
 // must be used to confirm the choice of using the new search engine, or
 // returning to the previous provider.
 BASE_DECLARE_FEATURE(kSearchEngineExplicitChoiceDialog);
+BASE_DECLARE_FEATURE_PARAM(bool, kSearchEngineExplicitChoiceDialogEscapable);
 
 // When enabled, all search extensions will unconditionally get the search
 // engine override dialog.
