@@ -46,11 +46,11 @@ const int kMinFFTPow2Size = 2;
 FFTFrame::FFTSetupDatum::FFTSetupDatum(unsigned log2fft_size) {
   // We only need power-of-two sized FFTS, so FFT_RADIX2.
   setup_ = vDSP_create_fftsetup(log2fft_size, FFT_RADIX2);
-  DCHECK(setup_);
+  CHECK(setup_);
 }
 
 FFTFrame::FFTSetupDatum::~FFTSetupDatum() {
-  DCHECK(setup_);
+  CHECK(setup_);
 
   vDSP_destroy_fftsetup(setup_);
 }
@@ -63,7 +63,7 @@ Vector<std::unique_ptr<FFTFrame::FFTSetupDatum>>& FFTFrame::FFTSetups() {
   if (first_call) {
     // Make sure we construct the fft_setups vector below on the main thread.
     // Once constructed, we can access it from any thread.
-    DCHECK(IsMainThread());
+    CHECK(IsMainThread());
     first_call = false;
   }
 
@@ -82,7 +82,7 @@ void FFTFrame::InitializeFFTSetupForSize(wtf_size_t log2fft_size) {
     // Make sure allocation of a new setup only occurs on the main thread so we
     // don't have a race condition with multiple threads trying to write to the
     // same element of the vector.
-    DCHECK(IsMainThread());
+    CHECK(IsMainThread());
 
     setup[log2fft_size] = std::make_unique<FFTSetupDatum>(log2fft_size);
   }
@@ -94,8 +94,10 @@ FFTFrame::FFTFrame(unsigned fft_size)
       log2fft_size_(static_cast<unsigned>(log2(fft_size))),
       real_data_(fft_size),
       imag_data_(fft_size) {
+  CHECK_GE(fft_size, MinFFTSize());
+  CHECK_LE(fft_size, MaxFFTSize());
   // We only allow power of two
-  DCHECK_EQ(1UL << log2fft_size_, fft_size_);
+  CHECK_EQ(1UL << log2fft_size_, fft_size_);
 
   // Initialize the PFFFT_Setup object here so that it will be ready when we
   // compute FFTs.
