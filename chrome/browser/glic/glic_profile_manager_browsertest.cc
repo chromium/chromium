@@ -604,7 +604,7 @@ IN_PROC_BROWSER_TEST_P(GlicProfileManagerDidSelectProfileTest,
   auto* service = GetMockGlicKeyedService(profile);
 
   if (IsTrustFREOnboardingEnabled()) {
-    EXPECT_CALL(*service, ToggleUI(testing::IsNull(), true,
+    EXPECT_CALL(*service, ToggleUI(testing::NotNull(), true,
                                    mojom::InvocationSource::kProfilePicker,
                                    testing::Eq(std::nullopt), testing::_));
   } else {
@@ -612,6 +612,29 @@ IN_PROC_BROWSER_TEST_P(GlicProfileManagerDidSelectProfileTest,
                 OpenFreDialogInNewTab(testing::NotNull(),
                                       mojom::InvocationSource::kProfilePicker));
   }
+
+  GlicProfileManager::GetInstance()->DidSelectProfile(profile);
+}
+
+IN_PROC_BROWSER_TEST_P(GlicProfileManagerDidSelectProfileTest,
+                       DidSelectProfile_Consented) {
+  // Create a profile that is eligible and has consented.
+  Profile* profile =
+#if BUILDFLAG(IS_CHROMEOS)
+      CreateNewUserSessionAndProfile(kAccountId1, /*allow_glic=*/true);
+#else
+      CreateNewProfile(/*signin_and_allow_glic=*/true);
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  profile->GetPrefs()->SetInteger(
+      glic::prefs::kGlicCompletedFre,
+      static_cast<int>(glic::prefs::FreStatus::kCompleted));
+  ASSERT_TRUE(GlicEnabling::IsEnabledAndConsentForProfile(profile));
+
+  auto* service = GetMockGlicKeyedService(profile);
+
+  EXPECT_CALL(*service, ToggleUI(testing::IsNull(), true,
+                                 mojom::InvocationSource::kProfilePicker,
+                                 testing::Eq(std::nullopt), testing::_));
 
   GlicProfileManager::GetInstance()->DidSelectProfile(profile);
 }
