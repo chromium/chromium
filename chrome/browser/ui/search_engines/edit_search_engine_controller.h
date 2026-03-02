@@ -72,10 +72,6 @@ class EditSearchEngineController {
   Profile* profile() const { return profile_; }
 
  private:
-  // Fixes up and returns the URL the user has input. The returned URL is
-  // suitable for use by TemplateURL.
-  std::string GetFixedUpURL(const std::string& url_input) const;
-
   // The TemplateURL we're displaying information for. It may be nullptr. If we
   // have a keyword_editor_view, we assume that this TemplateURL is already in
   // the TemplateURLService; if not, we assume it isn't.

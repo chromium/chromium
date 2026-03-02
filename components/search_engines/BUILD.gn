@@ -225,6 +225,7 @@ source_set("unit_tests") {
     "template_url_service_unittest.cc",
     "template_url_service_util_unittest.cc",
     "template_url_unittest.cc",
+    "util_unittest.cc",
   ]
 
   deps = [

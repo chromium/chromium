@@ -230,6 +230,35 @@ TemplateURLService::OwnedTemplateURLVector::iterator FindTemplateURL(
 // Returns whether the provided `url` leads to the AIM web page.
 bool IsAimURL(const GURL& url);
 
+// TODO(crbug.com/488962351): Consider moving validation logic to
+// template_url.cc or template_url_service.cc.
+// Returns true if |name_input| is a valid search engine name to use.
+bool IsSearchEngineNameValidToUse(const std::u16string& name_input);
+
+// Returns true if |keyword_input| is a valid search engine keyword to use. The
+// keyword is valid if it is non-empty and does not conflict with an existing
+// entry. NOTE: this is just the keyword, not the title and url.
+// |existing_url| is the TemplateURL currently being edited, or null if adding a
+// new one.
+bool IsSearchEngineKeywordValidToUse(const std::u16string& keyword_input,
+                                     const TemplateURLService* service,
+                                     const TemplateURL* existing_url);
+
+// Returns true if |url_input| is a valid search engine URL to use.The URL is
+// valid if it contains no search terms and is a valid url, or if it contains a
+// search term and replacing that search term with a character results in a
+// valid url.
+// |existing_url| is the TemplateURL currently being edited, or null if adding a
+// new one.
+bool IsSearchEngineURLValidToUse(const std::string& url_input,
+                                 const TemplateURLService* service,
+                                 const TemplateURL* existing_url);
+
+// Fixes up and returns the URL. The returned URL is suitable for use by
+// TemplateURL.
+std::string GetFixedUpSearchEngineUrl(const std::string& url_input,
+                                      const SearchTermsData& search_terms_data);
+
 // Retrieves the URL for the AIM web page.
 // `aim_entrypoint` (aep) is required as it identifies the source of the
 // request. `query_start_time` is the time that the user clicked the submit

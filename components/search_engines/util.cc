@@ -19,6 +19,7 @@
 #include "base/check_is_test.h"
 #include "base/check_op.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "components/country_codes/country_codes.h"
 #include "components/google/core/common/google_util.h"
@@ -38,6 +39,7 @@
 #include "components/search_engines/template_url_prepopulate_data_resolver.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_starter_pack_data.h"
+#include "components/url_formatter/url_fixer.h"
 #include "net/base/url_util.h"
 #include "third_party/lens_server_proto/lens_overlay_contextual_inputs.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_request_id.pb.h"
@@ -143,6 +145,94 @@ GURL GetBaseSearchUrl(TemplateURLService* turl_service,
 }
 
 }  // namespace
+
+bool IsSearchEngineNameValidToUse(const std::u16string& name_input) {
+  return !base::CollapseWhitespace(name_input, true).empty();
+}
+
+bool IsSearchEngineKeywordValidToUse(const std::u16string& keyword_input,
+                                     const TemplateURLService* service,
+                                     const TemplateURL* existing_url) {
+  std::u16string keyword_input_trimmed(
+      base::CollapseWhitespace(keyword_input, true));
+  if (keyword_input_trimmed.empty()) {
+    return false;  // Do not allow empty keyword.
+  }
+
+  // The omnibox doesn't properly handle search keywords with whitespace,
+  // so do not allow such keywords.
+  if (keyword_input_trimmed.find_first_of(base::kWhitespaceUTF16) !=
+      std::u16string::npos) {
+    return false;
+  }
+
+  const TemplateURL* turl_with_keyword =
+      service->GetTemplateURLForKeyword(keyword_input_trimmed);
+  return (!turl_with_keyword || turl_with_keyword == existing_url);
+}
+
+std::string GetFixedUpSearchEngineUrl(
+    const std::string& url_input,
+    const SearchTermsData& search_terms_data) {
+  std::u16string url16;
+  base::TrimWhitespace(base::UTF8ToUTF16(url_input), base::TRIM_ALL, &url16);
+  if (url16.empty()) {
+    return std::string();
+  }
+  std::string url = TemplateURLRef::DisplayURLToURLRef(url16);
+
+  // Parse the string as a URL to determine the scheme. If we need to, add the
+  // scheme. As the scheme may be expanded (as happens with {google:baseURL})
+  // we need to replace the search terms before testing for the scheme.
+  TemplateURLData data;
+  data.SetURL(url);
+  TemplateURL t_url(data);
+  std::string expanded_url(t_url.url_ref().ReplaceSearchTerms(
+      TemplateURLRef::SearchTermsArgs(u"x"), search_terms_data));
+  url::Parsed parts;
+  std::string scheme(url_formatter::SegmentURL(expanded_url, &parts));
+  if (!parts.scheme.is_valid()) {
+    url.insert(0, scheme + "://");
+  }
+
+  return url;
+}
+
+bool IsSearchEngineURLValidToUse(const std::string& url_input,
+                                 const TemplateURLService* service,
+                                 const TemplateURL* existing_url) {
+  std::string url =
+      GetFixedUpSearchEngineUrl(url_input, service->search_terms_data());
+  if (url.empty()) {
+    return false;
+  }
+
+  // Convert |url| to a TemplateURLRef so we can check its validity even if it
+  // contains replacement strings.  We do this by constructing a dummy
+  // TemplateURL owner because |existing_url| might be nullptr and we can't
+  // call TemplateURLRef::IsValid() when its owner is nullptr.
+  TemplateURLData data;
+  data.SetURL(url);
+  TemplateURL t_url(data);
+  const TemplateURLRef& template_ref = t_url.url_ref();
+  if (!template_ref.IsValid(service->search_terms_data())) {
+    return false;
+  }
+
+  // If this is going to be the default search engine, it must support
+  // replacement.
+  if (!template_ref.SupportsReplacement(service->search_terms_data()) &&
+      existing_url && existing_url == service->GetDefaultSearchProvider()) {
+    return false;
+  }
+
+  // Replace any search term with a placeholder string and make sure the
+  // resulting URL is valid.
+  return GURL(template_ref.ReplaceSearchTerms(
+                  TemplateURLRef::SearchTermsArgs(u"x"),
+                  service->search_terms_data()))
+      .is_valid();
+}
 
 std::u16string GetDefaultSearchEngineName(TemplateURLService* service) {
   DCHECK(service);
