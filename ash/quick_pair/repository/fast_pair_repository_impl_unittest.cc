@@ -192,6 +192,16 @@ class FastPairRepositoryImplTest : public AshTestBase {
   }
 
   void TearDown() override {
+    saved_device_registry_ = nullptr;
+    pending_write_store_ = nullptr;
+    device_image_store_ = nullptr;
+    device_address_map_ = nullptr;
+    image_decoder_ = nullptr;
+    footprints_fetcher_ = nullptr;
+    device_metadata_fetcher_ = nullptr;
+    metadata_http_fetcher_ = nullptr;
+    device_.reset();
+    // reset last due to dependency to above
     fast_pair_repository_.reset();
     NetworkHandler::Shutdown();
     AshTestBase::TearDown();
@@ -247,15 +257,14 @@ class FastPairRepositoryImplTest : public AshTestBase {
   scoped_refptr<Device> device_;
   gfx::Image test_image_;
 
-  raw_ptr<DeviceMetadataFetcher, DanglingUntriaged> device_metadata_fetcher_;
-  raw_ptr<FakeDeviceMetadataHttpFetcher, DanglingUntriaged>
-      metadata_http_fetcher_;
-  raw_ptr<FakeFootprintsFetcher, DanglingUntriaged> footprints_fetcher_;
-  raw_ptr<MockFastPairImageDecoder, DanglingUntriaged> image_decoder_;
-  raw_ptr<DeviceAddressMap, DanglingUntriaged> device_address_map_;
-  raw_ptr<DeviceImageStore, DanglingUntriaged> device_image_store_;
-  raw_ptr<PendingWriteStore, DanglingUntriaged> pending_write_store_;
-  raw_ptr<SavedDeviceRegistry, DanglingUntriaged> saved_device_registry_;
+  raw_ptr<DeviceMetadataFetcher> device_metadata_fetcher_;
+  raw_ptr<FakeDeviceMetadataHttpFetcher> metadata_http_fetcher_;
+  raw_ptr<FakeFootprintsFetcher> footprints_fetcher_;
+  raw_ptr<MockFastPairImageDecoder> image_decoder_;
+  raw_ptr<DeviceAddressMap> device_address_map_;
+  raw_ptr<DeviceImageStore> device_image_store_;
+  raw_ptr<PendingWriteStore> pending_write_store_;
+  raw_ptr<SavedDeviceRegistry> saved_device_registry_;
 
   base::WeakPtrFactory<FastPairRepositoryImplTest> weak_ptr_factory_{this};
 };
