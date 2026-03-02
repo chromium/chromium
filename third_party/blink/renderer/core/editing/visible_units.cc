@@ -1492,6 +1492,10 @@ gfx::RectF ComputeTextRectF(const EphemeralRange& range) {
   return ComputeTextRectTemplate(range);
 }
 
+gfx::RectF ComputeTextRectF(const EphemeralRangeInFlatTree& range) {
+  return ComputeTextRectTemplate(range);
+}
+
 gfx::Rect FirstRectForRange(const EphemeralRange& range) {
   DCHECK(!range.GetDocument().NeedsLayoutTreeUpdate());
   DocumentLifecycle::DisallowTransitionScope disallow_transition(

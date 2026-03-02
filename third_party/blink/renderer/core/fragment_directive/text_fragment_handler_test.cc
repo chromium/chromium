@@ -425,16 +425,15 @@ TEST_F(TextFragmentHandlerTest, ExtractFirstTextFragmentRectScroll) {
   const auto& start = Position(first_paragraph, 10);
   const auto& end = Position(first_paragraph, 19);
   ASSERT_EQ("test page", PlainText(EphemeralRange(start, end)));
-  gfx::Rect rect(ComputeTextRect(EphemeralRange(start, end)));
-  gfx::Rect expected_rect =
-      GetDocument().GetFrame()->View()->FrameToViewport(rect);
   // ExtractFirstTextFragmentsRect should return the first matched scaled
-  // viewport relative location since the page is loaded zoomed in 4X
-  ASSERT_EQ(gfx::Rect(432, 296, 360, 40), expected_rect);
-
+  // viewport relative location since the page is loaded zoomed in 4X.
   gfx::Rect text_fragment_rect = ExtractFirstTextFragmentsRect();
 
-  EXPECT_EQ(expected_rect, text_fragment_rect);
+  if (RuntimeEnabledFeatures::FractionalScrollOffsetsEnabled()) {
+    EXPECT_EQ(gfx::Rect(432, 298, 360, 40), text_fragment_rect);
+  } else {
+    EXPECT_EQ(gfx::Rect(432, 296, 360, 40), text_fragment_rect);
+  }
 }
 
 TEST_F(TextFragmentHandlerTest, ExtractFirstTextFragmentRectMultipleHighlight) {

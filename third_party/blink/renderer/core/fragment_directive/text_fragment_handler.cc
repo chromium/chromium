@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_conversions.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 
 namespace blink {
 
@@ -186,10 +187,15 @@ void TextFragmentHandler::ExtractFirstFragmentRect(
       continue;
     }
 
-    PhysicalRect bounding_box(
-        ComputeTextRect(annotation->GetAttachedRange().ToEphemeralRange()));
-    rect_in_viewport =
-        GetFrame()->View()->FrameToViewport(ToEnclosingRect(bounding_box));
+    const gfx::RectF bounding_box =
+        ComputeTextRectF(annotation->GetAttachedRange().ToEphemeralRange());
+    const gfx::PointF top_left =
+        GetFrame()->View()->FrameToViewport(bounding_box.origin());
+    const gfx::PointF bottom_right =
+        GetFrame()->View()->FrameToViewport(bounding_box.bottom_right());
+    rect_in_viewport = gfx::ToEnclosingRect(
+        gfx::RectF(top_left.x(), top_left.y(), bottom_right.x() - top_left.x(),
+                   bottom_right.y() - top_left.y()));
     break;
   }
 
