@@ -342,7 +342,10 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
 
         if (OpenInAppUtils.isOpenInAppAvailable()) {
             mOpenInAppEntryPoint =
-                    new CustomTabOpenInAppEntryPoint(mActivityTabProvider.asObservable(), activity);
+                    new CustomTabOpenInAppEntryPoint(
+                            mActivityTabProvider.asObservable(),
+                            activity,
+                            tabModelSelectorSupplier);
         }
     }
 

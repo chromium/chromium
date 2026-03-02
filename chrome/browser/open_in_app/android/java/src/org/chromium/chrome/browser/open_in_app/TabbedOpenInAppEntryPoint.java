@@ -9,11 +9,13 @@ import static org.chromium.build.NullUtil.assertNonNull;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.OmniboxChipManager;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 
 /** Entry point for Open in App in tabbed activity. */
 @NullMarked
@@ -27,12 +29,15 @@ public class TabbedOpenInAppEntryPoint extends OpenInAppEntryPoint {
      * @param tabSupplier Supplier of the current tab.
      * @param omniboxChipManager The {@link OmniboxChipManager} to manage the open in app chip.
      * @param context The {@link Context} to get resources from.
+     * @param tabModelSelectorSupplier The {@link TabModelSelector} supplier to access the tab
+     *     model.
      */
     public TabbedOpenInAppEntryPoint(
             NullableObservableSupplier<Tab> tabSupplier,
             OmniboxChipManager omniboxChipManager,
-            Context context) {
-        super(tabSupplier, context);
+            Context context,
+            MonotonicObservableSupplier<TabModelSelector> tabModelSelectorSupplier) {
+        super(tabSupplier, context, tabModelSelectorSupplier);
 
         mOmniboxChipManager = omniboxChipManager;
     }

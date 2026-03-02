@@ -16,6 +16,7 @@ import android.net.Uri;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.PackageManagerUtils;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.TaskTraits;
@@ -23,6 +24,8 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSupplierObserver;
+import org.chromium.chrome.browser.tabmodel.TabClosureParams;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.external_intents.ExternalNavigationHandler;
 import org.chromium.content_public.browser.NavigationHandle;
@@ -36,6 +39,7 @@ import java.util.List;
 @NullMarked
 public abstract class OpenInAppEntryPoint implements OpenInAppMenuItemProvider {
     private final TabSupplierObserver mTabSupplierObserver;
+    private final MonotonicObservableSupplier<TabModelSelector> mTabModelSelector;
     private @Nullable Tab mCurrentTab;
     private @Nullable OpenInAppDelegate mOpenInAppDelegate;
     private @Nullable GURL mLastNavigatedUrl;
@@ -132,8 +136,13 @@ public abstract class OpenInAppEntryPoint implements OpenInAppMenuItemProvider {
      *
      * @param tabSupplier A supplier that notifies of tab changes.
      * @param context The {@link Context} to get resources from.
+     * @param tabModelSelectorSupplier The {@link TabModelSelector} supplier to access the tab
+     *     model.
      */
-    public OpenInAppEntryPoint(NullableObservableSupplier<Tab> tabSupplier, Context context) {
+    public OpenInAppEntryPoint(
+            NullableObservableSupplier<Tab> tabSupplier,
+            Context context,
+            MonotonicObservableSupplier<TabModelSelector> tabModelSelectorSupplier) {
         mTabSupplierObserver =
                 new TabSupplierObserver(tabSupplier, /* shouldTrigger= */ false) {
                     @Override
@@ -154,6 +163,7 @@ public abstract class OpenInAppEntryPoint implements OpenInAppMenuItemProvider {
                     }
                 };
         mContext = context;
+        mTabModelSelector = tabModelSelectorSupplier;
     }
 
     public void destroy() {
@@ -207,6 +217,13 @@ public abstract class OpenInAppEntryPoint implements OpenInAppMenuItemProvider {
                         var openInAppInfo = mOpenInAppDelegate.getCurrentOpenInAppInfo();
                         if (openInAppInfo != null) {
                             helper.launchExternalApp(targetIntent, mContext);
+
+                            if (mCurrentTab == null) return;
+                            var tabModelSelector = mTabModelSelector.get();
+                            if (tabModelSelector == null) return;
+                            tabModelSelector.tryCloseTab(
+                                    TabClosureParams.closeTab(mCurrentTab).allowUndo(false).build(),
+                                    /* allowDialog= */ false);
                         }
                     }
                 };

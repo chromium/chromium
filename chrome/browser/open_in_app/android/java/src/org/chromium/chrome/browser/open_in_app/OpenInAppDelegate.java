@@ -52,8 +52,8 @@ public class OpenInAppDelegate implements UserData {
         return mCurrentOpenInAppInfo;
     }
 
-    public void setExternalNavigationHelper(ExternalNavigationHelper delegate) {
-        mExternalNavigationHelper = delegate;
+    public void setExternalNavigationHelper(ExternalNavigationHelper helper) {
+        mExternalNavigationHelper = helper;
     }
 
     public @Nullable ExternalNavigationHelper getExternalNavigationHelper() {
