@@ -15,17 +15,18 @@
 
 namespace {
 
-int GetDropArrowImageResourceId(bool is_down) {
-  return is_down ? IDR_TAB_DROP_DOWN : IDR_TAB_DROP_UP;
+int GetDropArrowImageResourceId(DropArrow::Direction direction) {
+  return direction == DropArrow::Direction::kUp ? IDR_TAB_DROP_UP
+                                                : IDR_TAB_DROP_DOWN;
 }
 
 }  // namespace
 
 DropArrow::DropArrow(const BrowserRootView::DropIndex& index,
-                     bool point_down,
-                     views::Widget* context)
-    : index_(index), point_down_(point_down) {
-  arrow_window_ = new views::Widget;
+                     gfx::NativeWindow context,
+                     BoundsCallback bounds_callback)
+    : index_(index), bounds_callback_(std::move(bounds_callback)) {
+  arrow_widget_ = new views::Widget;
   views::Widget::InitParams params(
       views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
       views::Widget::InitParams::TYPE_POPUP);
@@ -33,21 +34,21 @@ DropArrow::DropArrow(const BrowserRootView::DropIndex& index,
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.accept_events = false;
   params.bounds = gfx::Rect(GetSize());
-  params.context = context->GetNativeWindow();
-  arrow_window_->Init(std::move(params));
+  params.context = context;
+  arrow_widget_->Init(std::move(params));
   arrow_view_ =
-      arrow_window_->SetContentsView(std::make_unique<views::ImageView>());
-  arrow_view_->SetImage(
-      ui::ImageModel::FromResourceId(GetDropArrowImageResourceId(point_down_)));
-  scoped_observation_.Observe(arrow_window_.get());
+      arrow_widget_->SetContentsView(std::make_unique<views::ImageView>());
+  scoped_observation_.Observe(arrow_widget_.get());
 
-  arrow_window_->Show();
+  UpdateBounds();
+
+  arrow_widget_->Show();
 }
 
 DropArrow::~DropArrow() {
   // Close eventually deletes the window, which deletes arrow_view too.
-  if (arrow_window_) {
-    arrow_window_->Close();
+  if (arrow_widget_) {
+    arrow_widget_->Close();
   }
 }
 
@@ -57,29 +58,33 @@ gfx::Size DropArrow::GetSize() {
     // Direction doesn't matter, both images are the same size.
     const gfx::ImageSkia* drop_image =
         ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-            GetDropArrowImageResourceId(true));
+            GetDropArrowImageResourceId(Direction::kDown));
     return gfx::Size(drop_image->width(), drop_image->height());
   }();
   return size;
 }
 
-void DropArrow::SetPointDown(bool down) {
-  if (point_down_ == down) {
-    return;
-  }
-
-  point_down_ = down;
-  arrow_view_->SetImage(
-      ui::ImageModel::FromResourceId(GetDropArrowImageResourceId(point_down_)));
+void DropArrow::SetIndex(const BrowserRootView::DropIndex& index) {
+  index_ = index;
+  UpdateBounds();
 }
 
-void DropArrow::SetWindowBounds(const gfx::Rect& bounds) {
-  arrow_window_->SetBounds(bounds);
+void DropArrow::UpdateBounds() {
+  Direction direction;
+  gfx::Rect drop_bounds = bounds_callback_.Run(index_, &direction);
+
+  if (!direction_.has_value() || direction_ != direction) {
+    direction_ = direction;
+    arrow_view_->SetImage(ui::ImageModel::FromResourceId(
+        GetDropArrowImageResourceId(*direction_)));
+  }
+
+  arrow_widget_->SetBounds(drop_bounds);
 }
 
 void DropArrow::OnWidgetDestroying(views::Widget* widget) {
-  DCHECK(scoped_observation_.IsObservingSource(arrow_window_.get()));
+  DCHECK(scoped_observation_.IsObservingSource(arrow_widget_.get()));
   scoped_observation_.Reset();
-  arrow_window_ = nullptr;
   arrow_view_ = nullptr;
+  arrow_widget_ = nullptr;
 }

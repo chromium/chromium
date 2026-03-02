@@ -11,6 +11,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/views/frame/browser_root_view.h"
+#include "chrome/browser/ui/views/tabs/shared/drop_arrow.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_container.h"
 #include "chrome/browser/ui/views/tabs/tab_group_underline.h"
@@ -33,7 +34,6 @@
 class TabStrip;
 class TabHoverCardController;
 class TabDragPositioningDelegateBase;
-class DropArrow;
 
 // A View that contains a sequence of Tabs for the TabStrip.
 class TabContainerImpl : public TabContainer,
@@ -274,12 +274,9 @@ class TabContainerImpl : public TabContainer,
   // -- Link Drag & Drop ------------------------------------------------------
 
   // Returns the bounds to render the drop at, in screen coordinates. Sets
-  // `is_beneath` to indicate whether the arrow is beneath the tab, or above
-  // it.
-  gfx::Rect GetDropBounds(int drop_index,
-                          bool drop_before,
-                          bool drop_in_group,
-                          bool* is_beneath);
+  // `direction` to indicate which way the arrow should point.
+  gfx::Rect GetDropBounds(const BrowserRootView::DropIndex& drop_index,
+                          DropArrow::Direction* direction);
 
   // Show drop arrow with passed `tab_data_index` and `drop_before`.
   // If `tab_data_index` is negative, the arrow will disappear.
