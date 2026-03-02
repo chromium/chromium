@@ -344,12 +344,21 @@ bool SharedGpuContext::LowLatencyUsageSupportedForCanvas2D() {
                                .SharedImageInterface()
                                ->GetCapabilities()
                                .shared_image_swap_chain;
+  if (can_use_swapchain) {
+    return true;
+  }
 
-  return can_use_swapchain ||
-         (MaySupportImageChromium() &&
-          (Canvas2dImageChromiumEnabled() ||
-           base::FeatureList::IsEnabled(
-               features::kLowLatencyCanvas2dImageChromium)));
+  if (MaySupportImageChromium() && Canvas2dImageChromiumEnabled()) {
+    return true;
+  }
+
+  if (MaySupportImageChromium() &&
+      base::FeatureList::IsEnabled(
+          features::kLowLatencyCanvas2dImageChromium)) {
+    return true;
+  }
+
+  return false;
 }
 
 }  // namespace blink
