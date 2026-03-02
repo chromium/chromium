@@ -1072,9 +1072,14 @@ chromium-metrics-reviews@google.com.
   <token key="NotificationTipsFeatureType">
     <variant name=""/>
     <variant name=".BottomOmnibox"/>
+    <variant name=".CreateTabGroups"/>
+    <variant name=".CustomizeMVT"/>
     <variant name=".EnhancedSafeBrowsing"/>
     <variant name=".GoogleLens"/>
+    <variant name=".PasswordAutofill"/>
     <variant name=".QuickDelete"/>
+    <variant name=".RecentTabs"/>
+    <variant name=".Signin"/>
   </token>
 </histogram>
 
@@ -1103,9 +1108,14 @@ chromium-metrics-reviews@google.com.
   <token key="NotificationTipsFeatureType">
     <variant name=""/>
     <variant name=".BottomOmnibox"/>
+    <variant name=".CreateTabGroups"/>
+    <variant name=".CustomizeMVT"/>
     <variant name=".EnhancedSafeBrowsing"/>
     <variant name=".GoogleLens"/>
+    <variant name=".PasswordAutofill"/>
     <variant name=".QuickDelete"/>
+    <variant name=".RecentTabs"/>
+    <variant name=".Signin"/>
   </token>
 </histogram>
 
