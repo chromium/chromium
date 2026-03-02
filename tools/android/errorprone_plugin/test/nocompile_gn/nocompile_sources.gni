@@ -7,3 +7,5 @@ no_redundant_field_init_check_int_test_nocompile_sources = [ "../src/org/chromiu
 test_class_name_check_test_nocompile_sources = [
   "../src/org/chromium/tools/errorprone/plugin/TestClassNameCheckTesting.java",
 ]
+
+no_android_log_test_nocompile_sources = [ "../src/org/chromium/tools/errorprone/plugin/NoAndroidLogNoCompileSources.java" ]

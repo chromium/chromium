@@ -31,3 +31,12 @@ android_library("test_class_name_check_test_java") {
     "//third_party/junit",
   ]
 }
+
+android_library("no_android_log_test_java") {
+  testonly = true
+  enable_errorprone = true
+  sources = [ empty_java ]
+  if (enable_android_nocompile_tests) {
+    sources += no_android_log_test_nocompile_sources
+  }
+}
