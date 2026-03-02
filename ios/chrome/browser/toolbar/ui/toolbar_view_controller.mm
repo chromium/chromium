@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/toolbar/ui/toolbar_constants.h"
 #import "ios/chrome/browser/toolbar/ui/toolbar_height_delegate.h"
 #import "ios/chrome/browser/toolbar/ui/toolbar_mutator.h"
+#import "ios/chrome/browser/toolbar/ui/toolbar_utils.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 namespace {
@@ -60,6 +61,9 @@ constexpr CGFloat kButtonMinScale = 0.2;
 
   // Whether this toolbar is in incognito mode.
   BOOL _incognito;
+
+  // Used to record the latest fullscreen progress.
+  CGFloat _fullscreenProgress;
 }
 
 - (instancetype)initInIncognito:(BOOL)incognito {
@@ -81,6 +85,11 @@ constexpr CGFloat kButtonMinScale = 0.2;
   [self setUpHierarchy];
 
   [self updateToolbarVisibility];
+
+  [self
+      registerForTraitChanges:
+          @[ UITraitVerticalSizeClass.class, UITraitHorizontalSizeClass.class ]
+                   withAction:@selector(sizeClassDidChange)];
 }
 
 - (void)setLocationBarViewController:
@@ -189,15 +198,25 @@ constexpr CGFloat kButtonMinScale = 0.2;
 #pragma mark - FullscreenUIElement
 
 - (void)updateForFullscreenProgress:(CGFloat)progress {
-  CGFloat locationBarHeight = progress * kLocationBarHeight +
+  _fullscreenProgress = progress;
+  CGFloat locationBarExpandedHeight;
+  CGFloat locationBarBottomPadding;
+  if (ShouldHaveCompactLocationBar(self.traitCollection)) {
+    locationBarExpandedHeight = kLocationBarHeight;
+    locationBarBottomPadding = kToolbarPadding;
+  } else {
+    locationBarExpandedHeight = kTopLocationBarIPhonePortraitHeight;
+    locationBarBottomPadding = kTopToolbarIPhonePortraitPadding;
+  }
+  CGFloat locationBarHeight = progress * locationBarExpandedHeight +
                               (1 - progress) * kLocationBarHeightFullscreen;
   _locationBarHeightConstraint.constant = locationBarHeight;
   _locationBarBackground.layer.cornerRadius = locationBarHeight / 2.0;
 
   _locationBarBackground.alpha = progress;
 
-  CGFloat toolbarPadding =
-      progress * kToolbarPadding + (1 - progress) * kToolbarPaddingFullscreen;
+  CGFloat toolbarPadding = progress * locationBarBottomPadding +
+                           (1 - progress) * kToolbarPaddingFullscreen;
   _locationBarBottomPaddingConstraint.constant = -toolbarPadding;
 
   [self updateButtons:_leadingStackView.arrangedSubviews
@@ -447,6 +466,11 @@ constexpr CGFloat kButtonMinScale = 0.2;
   _leadingStackView.hidden = !_visible;
   _locationBarContainer.hidden = !_visible;
   _trailingStackView.hidden = !_visible;
+}
+
+// Called when the size class is updated.
+- (void)sizeClassDidChange {
+  [self updateForFullscreenProgress:_fullscreenProgress];
 }
 
 @end

@@ -55,6 +55,7 @@
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/toolbar_coordinatee.h"
 #import "ios/chrome/browser/toolbar/ui/buttons/toolbar_button_factory.h"
 #import "ios/chrome/browser/toolbar/ui/toolbar_constants.h"
+#import "ios/chrome/browser/toolbar/ui/toolbar_utils.h"
 #import "ios/chrome/browser/toolbar/ui/toolbar_view_controller.h"
 #import "ios/chrome/browser/web/model/web_navigation_browser_agent.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -470,7 +471,10 @@
       // zero. This is a temporary fix for the pdf bug.
       return 1;
     }
-    return kToolbarHeightFullscreen;
+    if (ShouldHaveFullHeightTopToolbar(self.traitEnvironment)) {
+      return kToolbarHeightFullscreen;
+    }
+    return kTopToolbarIPhonePortraitHeightFullscreen;
   }
   if (_omniboxPosition == ToolbarType::kSecondary) {
     // TODO(crbug.com/40279063): Find out why primary toolbar height cannot be
@@ -489,7 +493,10 @@
       // zero. This is a temporary fix for the pdf bug.
       return 1;
     }
-    return kToolbarHeight;
+    if (ShouldHaveFullHeightTopToolbar(self.traitEnvironment)) {
+      return kToolbarHeight;
+    }
+    return kTopToolbarIPhonePortraitHeight;
   }
   CGFloat height =
       self.primaryToolbarViewController.view.intrinsicContentSize.height;

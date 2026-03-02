@@ -23,13 +23,22 @@ extern NSString* const kToolbarAssistantButtonIdentifier;
 
 // The height of the toolbar.
 extern const CGFloat kToolbarHeight;
+// The height of the toolbar when at the top on iPhone portrait.
+extern const CGFloat kTopToolbarIPhonePortraitHeight;
 // The height of the location bar in the toolbar.
 extern const CGFloat kLocationBarHeight;
+// The height of the location bar in the toolbar when at the top on iPhone
+// portrait.
+extern const CGFloat kTopLocationBarIPhonePortraitHeight;
 // The padding in the toolbar.
 extern const CGFloat kToolbarPadding;
+// The padding in the toolbar when at the top on iPhone portrait..
+extern const CGFloat kTopToolbarIPhonePortraitPadding;
 
 // The height of the toolbar when in fullscreen.
 extern const CGFloat kToolbarHeightFullscreen;
+// The height of the toolbar when at the top in fullscreen on iPhone portrait.
+extern const CGFloat kTopToolbarIPhonePortraitHeightFullscreen;
 // The height of the location bar when in fullscreen.
 extern const CGFloat kLocationBarHeightFullscreen;
 // The padding in the toolbar when in fullscreen.

@@ -5,9 +5,13 @@
 #import "ios/chrome/browser/shared/ui/util/dynamic_type_util.h"
 
 #import "base/metrics/histogram_macros.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/common/ui/util/dynamic_type_util.h"
 
 UIContentSizeCategory LocationBarSteadyViewMaxSizeCategory() {
+  if (IsChromeNextIaEnabled()) {
+    return UIContentSizeCategoryAccessibilityExtraExtraLarge;
+  }
   return UIContentSizeCategoryAccessibilityExtraLarge;
 }
 

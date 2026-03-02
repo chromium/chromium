@@ -23,9 +23,13 @@ NSString* const kToolbarAssistantButtonIdentifier =
     @"kToolbarAssistantButtonIdentifier";
 
 constexpr CGFloat kToolbarHeight = 62;
-constexpr CGFloat kLocationBarHeight = 46;
-constexpr CGFloat kToolbarPadding = 8;
+constexpr CGFloat kTopToolbarIPhonePortraitHeight = 54;
+constexpr CGFloat kLocationBarHeight = 42;
+constexpr CGFloat kTopLocationBarIPhonePortraitHeight = 46;
+constexpr CGFloat kToolbarPadding = 10;
+constexpr CGFloat kTopToolbarIPhonePortraitPadding = 8;
 
 constexpr CGFloat kToolbarHeightFullscreen = 40;
+constexpr CGFloat kTopToolbarIPhonePortraitHeightFullscreen = 32;
 constexpr CGFloat kLocationBarHeightFullscreen = 32;
 constexpr CGFloat kToolbarPaddingFullscreen = 4;

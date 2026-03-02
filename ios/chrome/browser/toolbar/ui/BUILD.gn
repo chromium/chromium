@@ -12,6 +12,7 @@ source_set("ui") {
   deps = [
     ":constants",
     ":height_delegate",
+    ":utils",
     "//base",
     "//ios/chrome/browser/composebox/coordinator",
     "//ios/chrome/browser/fullscreen/ui_bundled:ui",
@@ -37,5 +38,14 @@ source_set("constants") {
     "toolbar_constants.h",
     "toolbar_constants.mm",
   ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("utils") {
+  sources = [
+    "toolbar_utils.h",
+    "toolbar_utils.mm",
+  ]
+  deps = [ "//ios/chrome/browser/shared/ui/util" ]
   frameworks = [ "UIKit.framework" ]
 }
