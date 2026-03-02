@@ -42,9 +42,6 @@ specific_include_rules = {
     "+content/public/browser",
     "+content/shell",
   ],
-  "renderer_main\.cc": [
-   "+chromeos/ash/components/memory/userspace_swap",
-  ],
   "render_thread_impl_browsertest\.cc": [
     "+content/app/mojo/mojo_init.h",
   ],

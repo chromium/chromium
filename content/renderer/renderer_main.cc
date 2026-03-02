@@ -78,10 +78,6 @@
 #include "third_party/blink/public/web/web_view.h"
 #endif  // BUILDFLAG(IS_MAC)
 
-#if BUILDFLAG(IS_CHROMEOS) && defined(ARCH_CPU_X86_64)
-#include "chromeos/ash/components/memory/userspace_swap/userspace_swap_renderer_initialization_impl.h"
-#endif  // BUILDFLAG(IS_CHROMEOS) && defined(ARCH_CPU_X86_64)
-
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/system/core_scheduling.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -180,18 +176,6 @@ int RendererMain(MainFunctionParams parameters) {
   // When we start the renderer on ChromeOS if the system has core scheduling
   // available we want to turn it on.
   chromeos::system::EnableCoreSchedulingIfAvailable();
-
-#if defined(ARCH_CPU_X86_64)
-  using UserspaceSwapInit =
-      ash::memory::userspace_swap::UserspaceSwapRendererInitializationImpl;
-  std::optional<UserspaceSwapInit> swap_init;
-  if (UserspaceSwapInit::UserspaceSwapSupportedAndEnabled()) {
-    swap_init.emplace();
-
-    PLOG_IF(ERROR, !swap_init->PreSandboxSetup())
-        << "Unable to complete presandbox userspace swap initialization";
-  }
-#endif  // defined(ARCH_CPU_X86_64)
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   InitializeSkia();
@@ -288,22 +272,6 @@ int RendererMain(MainFunctionParams parameters) {
     base::RunLoop run_loop;
     new RenderThreadImpl(run_loop.QuitClosure(),
                          std::move(main_thread_scheduler));
-
-#if BUILDFLAG(IS_CHROMEOS) && defined(ARCH_CPU_X86_64)
-    // Once the sandbox has been entered and initialization of render threads
-    // complete we will transfer FDs to the browser, or close them on failure.
-    // This should always be called because it will also transfer the errno that
-    // prevented the creation of the userfaultfd if applicable.
-    if (swap_init) {
-      swap_init->TransferFDsOrCleanup(base::BindOnce(
-          &RenderThread::BindHostReceiver,
-          // Unretained is safe because TransferFDsOrCleanup is synchronous.
-          base::Unretained(RenderThread::Get())));
-
-      // No need to leave this around any further.
-      swap_init.reset();
-    }
-#endif
 
 #if BUILDFLAG(IS_WIN)
     // Now that Mojo is initialized, but before the sandbox is enabled, set up

@@ -93,7 +93,6 @@ include_rules = [
   "+components/web_cache/renderer",
   "+content/public/child",
   "+content/public/renderer",
-  "+chromeos/ash/components/memory/userspace_swap",
   "+device/fido/features.h",
   "+extensions/common",
   "+extensions/buildflags",

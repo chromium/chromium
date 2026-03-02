@@ -60,9 +60,6 @@
 #include "chromeos/ash/components/mojo_service_manager/utility_process_bridge.h"
 #include "chromeos/components/cdm_factory_daemon/cdm_factory_daemon_proxy_ash.h"
 #include "components/performance_manager/public/performance_manager.h"
-#if defined(ARCH_CPU_X86_64)
-#include "chrome/browser/performance_manager/mechanisms/userspace_swap_chromeos.h"
-#endif  // defined(ARCH_CPU_X86_64)
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -273,19 +270,6 @@ void ChromeContentBrowserClient::ExposeInterfacesToRenderer(
           base::BindRepeating(&ModuleDatabase::HandleModuleLoadEvent)),
       ui_task_runner);
 #endif
-
-#if BUILDFLAG(IS_CHROMEOS) && defined(ARCH_CPU_X86_64)
-  if (performance_manager::mechanism::userspace_swap::
-          UserspaceSwapInitializationImpl::UserspaceSwapSupportedAndEnabled()) {
-    registry
-        ->AddInterface<::userspace_swap::mojom::UserspaceSwapInitialization>(
-            base::BindRepeating(
-                &performance_manager::mechanism::userspace_swap::
-                    UserspaceSwapInitializationImpl::Create,
-                render_process_host->GetDeprecatedID()),
-            ui_task_runner);
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS) && defined(ARCH_CPU_X86_64)
 
   for (auto& ep : extra_parts_) {
     ep->ExposeInterfacesToRenderer(registry, associated_registry,

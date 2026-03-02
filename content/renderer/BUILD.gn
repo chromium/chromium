@@ -414,9 +414,6 @@ target(link_target_type, "renderer") {
       "//chromeos:chromeos_export",
       "//chromeos/system",
     ]
-    if (target_cpu == "x64") {
-      deps += [ "//chromeos/ash/components/memory/userspace_swap" ]
-    }
   }
 
   if (use_ozone) {

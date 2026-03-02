@@ -6039,20 +6039,6 @@ static_library("browser") {
       deps += [ "//chrome/browser/nearby_sharing/internal/icons:vector_icons" ]
     }
 
-    if (target_cpu == "x64") {
-      sources += [
-        "performance_manager/mechanisms/userspace_swap_chromeos.cc",
-        "performance_manager/mechanisms/userspace_swap_chromeos.h",
-        "performance_manager/policies/userspace_swap_policy_chromeos.cc",
-        "performance_manager/policies/userspace_swap_policy_chromeos.h",
-      ]
-
-      deps += [
-        "//chromeos/ash/components/memory/userspace_swap",
-        "//chromeos/ash/components/memory/userspace_swap:mojom",
-      ]
-    }
-
     if (!is_official_build) {
       deps += [
         "//ash/webui/sample_system_web_app_ui",

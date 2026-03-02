@@ -23,9 +23,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "base/allocator/buildflags.h"
-#if defined(ARCH_CPU_X86_64)
-#include "chrome/renderer/performance_manager/mechanisms/userspace_swap_impl_chromeos.h"
-#endif  // defined(ARCH_CPU_X86_64)
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN)
@@ -66,19 +63,6 @@ void ExposeChromeRendererInterfacesToBrowser(
   binders->Add<chrome::mojom::WebRtcLoggingAgent>(
       base::BindRepeating(&BindWebRTCLoggingAgent, client),
       base::SequencedTaskRunner::GetCurrentDefault());
-
-#if BUILDFLAG(IS_CHROMEOS)
-#if defined(ARCH_CPU_X86_64)
-  if (performance_manager::mechanism::UserspaceSwapImpl::
-          PlatformSupportsUserspaceSwap()) {
-    binders->Add<userspace_swap::mojom::UserspaceSwap>(
-        base::BindRepeating(
-            &performance_manager::mechanism::UserspaceSwapImpl::Create),
-        base::SequencedTaskRunner::GetCurrentDefault());
-  }
-#endif  // defined(ARCH_CPU_X86_64)
-
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_SPELLCHECK)
   binders->Add<spellcheck::mojom::SpellChecker>(

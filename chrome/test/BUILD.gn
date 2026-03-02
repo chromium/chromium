@@ -9504,14 +9504,6 @@ test("unit_tests") {
     ]
 
     data_deps += [ "//testing/buildbot/filters:chromeos_filters" ]
-
-    if (target_cpu == "x64") {
-      sources += [ "../browser/performance_manager/policies/userspace_swap_policy_chromeos_unittest.cc" ]
-      deps += [
-        "//chromeos/ash/components/memory/userspace_swap",
-        "//chromeos/ash/components/memory/userspace_swap:mojom",
-      ]
-    }
   }
 
   if (use_ozone) {

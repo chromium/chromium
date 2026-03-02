@@ -592,9 +592,6 @@ specific_include_rules = {
     "+services/network/network_context.h",
     "+services/network/network_service.h",
   ],
-  r"chrome_content_browser_client_receiver_bindings\.cc" : [
-    "+chrome/browser/performance_manager/mechanisms/userspace_swap_chromeos.h",
-  ],
   r"chrome_content_browser_client\.cc" : [
     "+ash/shell.h",
     "+ash/multi_capture/multi_capture_service.h",

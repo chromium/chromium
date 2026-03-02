@@ -67,10 +67,6 @@
 #include "components/performance_manager/power/battery_level_provider_chromeos.h"
 #include "components/performance_manager/power/dbus_power_manager_sampling_event_source.h"
 
-#if defined(ARCH_CPU_X86_64)
-#include "chrome/browser/performance_manager/policies/userspace_swap_policy_chromeos.h"
-#endif  // defined(ARCH_CPU_X86_64)
-
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -176,13 +172,6 @@ void ChromeBrowserMainExtraPartsPerformanceManager::CreatePoliciesAndDecorators(
   }
 
 #if BUILDFLAG(IS_CHROMEOS)
-#if defined(ARCH_CPU_X86_64)
-  if (performance_manager::policies::UserspaceSwapPolicy::
-          UserspaceSwapSupportedAndEnabled()) {
-    graph->PassToGraph(
-        std::make_unique<performance_manager::policies::UserspaceSwapPolicy>());
-  }
-#endif  // defined(ARCH_CPU_X86_64)
 
   graph->PassToGraph(std::make_unique<
                      performance_manager::policies::OomScorePolicyChromeOS>());

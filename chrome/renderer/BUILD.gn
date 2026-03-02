@@ -432,17 +432,5 @@ static_library("renderer") {
       "//ash/constants",
       "//ash/webui/file_manager:constants",
     ]
-
-    if (target_cpu == "x64") {
-      sources += [
-        "performance_manager/mechanisms/userspace_swap_impl_chromeos.cc",
-        "performance_manager/mechanisms/userspace_swap_impl_chromeos.h",
-      ]
-
-      deps += [
-        "//chromeos/ash/components/memory/userspace_swap",
-        "//chromeos/ash/components/memory/userspace_swap:mojom",
-      ]
-    }
   }
 }
