@@ -1413,17 +1413,6 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameTexturesToGLTexture(
     return true;
   }
 
-  // It is not possible to support one-copy upload of pure software
-  // VideoFrames via MultiplanarSharedImage: these VideoFrames have format
-  // I420, and it is not possible across all platforms to upload the
-  // VideoFrame's data via raster to a MultiplanarSI with format I420 that is
-  // accessible by WebGL. Such an SI must be backed by a native buffer to be
-  // accessible to WebGL, and native buffer-backed I420 SharedImages are in
-  // general not supported (and *cannot* be supported on Windows). NOTE:
-  // Whether 1 GPU-GPU copy or 2 GPU-GPU copies are performed for pure video
-  // software upload should not be a significant factor in performance, as the
-  // dominant factor in terms of performance will be the fact that the
-  // VideoFrame's data needs to be uploaded from the CPU to the GPU.
   if (SupportsOneCopyUploadToGLTexture(
           video_frame->format(), shared_image->GetTextureTarget(), target,
           internal_format, type, level, dst_alpha_type)) {
