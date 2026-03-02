@@ -21,6 +21,7 @@ import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.components.browser_ui.widget.ListItemBuilder;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.search_engines.TemplateUrl;
+import org.chromium.components.search_engines.TemplateUrlCategory;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.ui.listmenu.ListMenu;
 import org.chromium.ui.listmenu.ListMenuDelegate;
@@ -76,9 +77,8 @@ public class CustomSearchEngineListMediator
         // the list. But it would be great to check if there's any better way to handle this.
         mModelList.clear();
 
-        // TODO: Get only default search engines in template url services after the API is
-        // available.
-        List<TemplateUrl> urls = mTemplateUrlService.getTemplateUrls();
+        List<TemplateUrl> urls =
+                mTemplateUrlService.getTemplateUrlsByCategory(TemplateUrlCategory.DEFAULT);
         TemplateUrl defaultSearchEngine = mTemplateUrlService.getDefaultSearchEngineTemplateUrl();
         for (TemplateUrl url : urls) {
             PropertyModel model =
