@@ -48,7 +48,12 @@ class TraversalIteratorBase {
 
  public:
   using NodeType = typename Traversal::TraversalNodeType;
-  NodeType& operator*() { return *current_; }
+  using value_type = NodeType;
+  using difference_type = std::ptrdiff_t;
+  NodeType& operator*() const { return *current_; }
+  bool operator==(const TraversalIteratorBase& rval) const {
+    return current_ == rval.current_;
+  }
   bool operator!=(const TraversalIteratorBase& rval) const {
     return current_ != rval.current_;
   }
@@ -59,6 +64,7 @@ class TraversalIteratorBase {
   NodeType* current_;
 };
 
+// Satisfies std::forward_iterator.
 template <class Traversal>
 class TraversalIterator : public TraversalIteratorBase<Traversal> {
   STACK_ALLOCATED();
@@ -67,17 +73,24 @@ class TraversalIterator : public TraversalIteratorBase<Traversal> {
   using StartNodeType = typename Traversal::TraversalNodeType;
   using TraversalIteratorBase<Traversal>::current_;
 
+  TraversalIterator() : TraversalIteratorBase<Traversal>(nullptr) {}
   explicit TraversalIterator(const StartNodeType* start)
       : TraversalIteratorBase<Traversal>(const_cast<StartNodeType*>(start)) {}
 
-  void operator++() { current_ = Traversal::Next(*current_); }
+  TraversalIterator& operator++() {
+    current_ = Traversal::Next(*current_);
+    return *this;
+  }
+  TraversalIterator operator++(int) {
+    TraversalIterator copy(*this);
+    current_ = Traversal::Next(*current_);
+    return copy;
+  }
 
   static TraversalIterator End() { return TraversalIterator(); }
-
- private:
-  TraversalIterator() : TraversalIteratorBase<Traversal>(nullptr) {}
 };
 
+// Satisfies std::forward_iterator.
 template <class Traversal>
 class TraversalDescendantIterator : public TraversalIteratorBase<Traversal> {
   STACK_ALLOCATED();
@@ -86,21 +99,30 @@ class TraversalDescendantIterator : public TraversalIteratorBase<Traversal> {
   using StartNodeType = Node;
   using TraversalIteratorBase<Traversal>::current_;
 
+  TraversalDescendantIterator() : TraversalIteratorBase<Traversal>(nullptr) {}
   explicit TraversalDescendantIterator(const StartNodeType* start)
       : TraversalIteratorBase<Traversal>(start ? Traversal::FirstWithin(*start)
                                                : nullptr),
         root_(start) {}
 
-  void operator++() { current_ = Traversal::Next(*current_, root_); }
+  TraversalDescendantIterator& operator++() {
+    current_ = Traversal::Next(*current_, root_);
+    return *this;
+  }
+  TraversalDescendantIterator operator++(int) {
+    TraversalDescendantIterator copy(*this);
+    current_ = Traversal::Next(*current_, root_);
+    return copy;
+  }
   static TraversalDescendantIterator End() {
     return TraversalDescendantIterator();
   }
 
  private:
-  TraversalDescendantIterator() : TraversalIteratorBase<Traversal>(nullptr) {}
   const StartNodeType* root_ = nullptr;
 };
 
+// Satisfies std::forward_iterator.
 template <class Traversal, class TinyBloomFilter>
 class TraversalDescendantWithFilterIterator
     : public TraversalIteratorBase<Traversal> {
@@ -110,6 +132,8 @@ class TraversalDescendantWithFilterIterator
   using StartNodeType = Node;
   using TraversalIteratorBase<Traversal>::current_;
 
+  TraversalDescendantWithFilterIterator()
+      : TraversalIteratorBase<Traversal>(nullptr) {}
   explicit TraversalDescendantWithFilterIterator(const StartNodeType* start,
                                                  TinyBloomFilter filter)
       : TraversalIteratorBase<Traversal>(
@@ -117,18 +141,25 @@ class TraversalDescendantWithFilterIterator
         root_(start),
         filter_(filter) {}
 
-  void operator++() { current_ = Traversal::Next(*current_, root_, filter_); }
+  TraversalDescendantWithFilterIterator& operator++() {
+    current_ = Traversal::Next(*current_, root_, filter_);
+    return *this;
+  }
+  TraversalDescendantWithFilterIterator operator++(int) {
+    TraversalDescendantWithFilterIterator copy(*this);
+    current_ = Traversal::Next(*current_, root_, filter_);
+    return copy;
+  }
   static TraversalDescendantWithFilterIterator End() {
     return TraversalDescendantWithFilterIterator();
   }
 
  private:
-  TraversalDescendantWithFilterIterator()
-      : TraversalIteratorBase<Traversal>(nullptr) {}
   const StartNodeType* root_ = nullptr;
-  const TinyBloomFilter filter_ = 0;
+  TinyBloomFilter filter_ = 0;
 };
 
+// Satisfies std::forward_iterator.
 template <class Traversal>
 class TraversalInclusiveDescendantIterator
     : public TraversalIteratorBase<Traversal> {
@@ -138,12 +169,21 @@ class TraversalInclusiveDescendantIterator
   using StartNodeType = typename Traversal::TraversalNodeType;
   using TraversalIteratorBase<Traversal>::current_;
 
-  explicit TraversalInclusiveDescendantIterator(const StartNodeType* start)
+  explicit TraversalInclusiveDescendantIterator(
+      const StartNodeType* start = nullptr)
       : TraversalIteratorBase<Traversal>(const_cast<StartNodeType*>(start)),
         root_(start) {}
-  void operator++() { current_ = Traversal::Next(*current_, root_); }
+  TraversalInclusiveDescendantIterator& operator++() {
+    current_ = Traversal::Next(*current_, root_);
+    return *this;
+  }
+  TraversalInclusiveDescendantIterator operator++(int) {
+    TraversalInclusiveDescendantIterator copy(*this);
+    current_ = Traversal::Next(*current_, root_);
+    return copy;
+  }
   static TraversalInclusiveDescendantIterator End() {
-    return TraversalInclusiveDescendantIterator(nullptr);
+    return TraversalInclusiveDescendantIterator();
   }
 
  private:

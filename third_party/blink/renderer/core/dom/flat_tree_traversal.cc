@@ -33,6 +33,16 @@
 
 namespace blink {
 
+static_assert(std::forward_iterator<
+              TraversalIterator<TraversalParent<FlatTreeTraversal>>>);
+static_assert(std::forward_iterator<
+              TraversalDescendantIterator<TraversalParent<FlatTreeTraversal>>>);
+static_assert(std::forward_iterator<TraversalDescendantWithFilterIterator<
+                  TraversalParent<FlatTreeTraversal>,
+                  Element::TinyBloomFilter>>);
+static_assert(std::forward_iterator<TraversalInclusiveDescendantIterator<
+                  TraversalParent<FlatTreeTraversal>>>);
+
 #if DCHECK_IS_ON()
 void FlatTreeTraversal::AssertFlatTreeNodeDataUpdated(
     const Node& root,
