@@ -333,6 +333,11 @@ class TabStatsTracker::TabWatcher final : public TabModelListObserver,
   }
 
   void OnTabModelRemoved(TabModel* tab_model) final {
+    for (int i = 0; i < tab_model->GetTabCount(); ++i) {
+      if (TabAndroid* tab = tab_model->GetTabAt(i)) {
+        TabRemoved(tab);
+      }
+    }
     tab_model_observations_.RemoveObservation(tab_model);
     tracker_->OnTabStripRemoved();
   }
@@ -346,6 +351,14 @@ class TabStatsTracker::TabWatcher final : public TabModelListObserver,
   }
 
   void TabRemoved(TabAndroid* tab) final {
+    // The tab was removed from the model, either because it closed or moved to
+    // a different model. Either way stop watching for the WebContents.
+    if (tab_android_observations_.IsObservingSource(tab)) {
+      tab_android_observations_.RemoveObservation(tab);
+    }
+  }
+
+  void DidRemoveTabForClosure(TabAndroid* tab) final {
     // The tab was removed from the model, either because it closed or moved to
     // a different model. Either way stop watching for the WebContents.
     if (tab_android_observations_.IsObservingSource(tab)) {

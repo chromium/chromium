@@ -44,6 +44,7 @@ class GlicTabObserverAndroid : public GlicTabObserver,
   void DidAddTab(TabAndroid* tab, TabModel::TabLaunchType type) override;
   void DidSelectTab(TabAndroid* tab, TabModel::TabSelectionType type) override;
   void TabClosureCommitted(TabAndroid* tab) override;
+  void DidRemoveTabForClosure(TabAndroid* tab) override;
   void TabRemoved(TabAndroid* tab) override;
   void DidMoveTab(TabAndroid* tab, int new_index, int old_index) override;
   void OnTabClosePending(const std::vector<TabAndroid*>& tabs,

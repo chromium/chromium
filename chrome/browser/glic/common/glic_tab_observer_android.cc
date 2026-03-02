@@ -131,6 +131,11 @@ void GlicTabObserverAndroid::OnTabModelAdded(TabModel* model) {
 
 void GlicTabObserverAndroid::OnTabModelRemoved(TabModel* model) {
   if (observed_tab_models_.IsObservingSource(model)) {
+    for (int i = 0; i < model->GetTabCount(); ++i) {
+      if (TabAndroid* tab = model->GetTabAt(i)) {
+        StopObservingTab(tab);
+      }
+    }
     observed_tab_models_.RemoveObservation(model);
     last_active_tab_map_.erase(model);
   }
@@ -167,6 +172,10 @@ void GlicTabObserverAndroid::DidSelectTab(TabAndroid* tab,
 void GlicTabObserverAndroid::TabClosureCommitted(TabAndroid* tab) {
   ResetLastActiveTab(TabModelList::GetTabModelForTabAndroid(tab));
   callback_.Run(TabMutationEvent{});
+}
+
+void GlicTabObserverAndroid::DidRemoveTabForClosure(TabAndroid* tab) {
+  TabRemoved(tab);
 }
 
 void GlicTabObserverAndroid::TabRemoved(TabAndroid* tab) {
