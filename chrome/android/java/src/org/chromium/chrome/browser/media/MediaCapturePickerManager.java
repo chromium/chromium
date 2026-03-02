@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.media;
 
 import android.content.Context;
 
+import org.chromium.base.Log;
 import org.chromium.blink.mojom.PreferredDisplaySurface;
 import org.chromium.blink.mojom.WindowAudioPreference;
 import org.chromium.build.annotations.NullMarked;
@@ -20,6 +21,8 @@ import org.chromium.ui.base.WindowAndroid;
  */
 @NullMarked
 public class MediaCapturePickerManager {
+    private static final String TAG = "MediaCapture";
+
     /** A delegate for handling returning the picker result. */
     public interface Delegate extends MediaCapturePickerTabObserver.FilterDelegate {
         /**
@@ -134,13 +137,19 @@ public class MediaCapturePickerManager {
     public static void showDialog(Params params, Delegate delegate) {
         final Context context = maybeGetContext(params.webContents);
         if (context == null) {
+            Log.e(
+                    TAG,
+                    "Cannot get Context from params web contents to show picker dialog, cancel "
+                            + "media capture request");
             delegate.onCancel();
             return;
         }
 
         if (ChromeFeatureList.sAndroidNewMediaPicker.isEnabled()) {
+            Log.d(TAG, "New media picker is enabled, showing MediaCapturePickerInvoker");
             MediaCapturePickerInvoker.show(context, params, delegate);
         } else {
+            Log.d(TAG, "New media picker is disabled, showing MediaCapturePickerDialog");
             new MediaCapturePickerDialog(context, params, delegate).show();
         }
     }

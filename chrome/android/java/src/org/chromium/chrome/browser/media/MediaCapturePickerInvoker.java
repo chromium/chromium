@@ -13,6 +13,7 @@ import androidx.activity.result.ActivityResult;
 import androidx.fragment.app.FragmentActivity;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.Log;
 import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.media.MediaCapturePickerHeadlessFragment.CaptureAction;
@@ -24,6 +25,8 @@ import org.chromium.content_public.browser.media.capture.ScreenCapture;
 /** Stub for the new media capture picker UI. */
 @NullMarked
 public class MediaCapturePickerInvoker {
+    private static final String TAG = "MediaCapture";
+
     /**
      * Shows the new media capture picker UI.
      *
@@ -47,6 +50,10 @@ public class MediaCapturePickerInvoker {
                 MediaCapturePickerHeadlessFragment fragment =
                         MediaCapturePickerHeadlessFragment.getInstance(
                                 assumeNonNull((FragmentActivity) activity));
+                Log.d(
+                        TAG,
+                        "PickerInvoker: Starting AndroidCapturePrompt for tab/ window/ screen"
+                                + " sharing");
                 fragment.startAndroidCapturePrompt(
                         (action, result) ->
                                 onPickAndroidCapturePrompt(
@@ -54,7 +61,9 @@ public class MediaCapturePickerInvoker {
                         intent);
                 return;
             }
+            Log.e(TAG, "PickerInvoker: Failed to create ScreenCapture Intent, cancel request");
         }
+        Log.e(TAG, "PickerInvoker: No PickerDelegate, cancel request");
         delegate.onCancel();
     }
 
@@ -64,18 +73,25 @@ public class MediaCapturePickerInvoker {
             WebContents webContents,
             MediaCapturePickerManager.Delegate delegate,
             MediaCapturePickerDelegate impl) {
+        Log.d(TAG, "PickerInvoker: AndroidCapturePrompt received user action %d", action);
         if (action == CaptureAction.CAPTURE_CANCELLED) {
             delegate.onCancel();
         } else if (action == CaptureAction.CAPTURE_WINDOW) {
             Tab tab = impl.getPickedTab();
             if (tab != null) {
                 // User selected from app provided contents, i.e. a tab.
+                Log.d(
+                        TAG,
+                        "PickerInvoker: Tab %d with title '%s' was picked",
+                        tab.getId(),
+                        tab.getTitle());
                 tab.loadIfNeeded(TabLoadIfNeededCaller.MEDIA_CAPTURE_PICKER);
                 WebContents pickedTabwebContents = tab.getWebContents();
                 assert pickedTabwebContents != null;
                 delegate.onPickTab(pickedTabwebContents, impl.shouldShareAudio());
             } else {
                 // User selected a window or screen.
+                Log.d(TAG, "PickerInvoker: A window or screen was picked");
                 ScreenCapture.onPick(webContents, result);
                 delegate.onPickWindow();
             }

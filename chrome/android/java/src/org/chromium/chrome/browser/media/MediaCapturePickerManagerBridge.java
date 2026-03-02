@@ -8,6 +8,7 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.Log;
 import org.chromium.blink.mojom.PreferredDisplaySurface;
 import org.chromium.blink.mojom.WindowAudioPreference;
 import org.chromium.build.annotations.NullMarked;
@@ -16,6 +17,8 @@ import org.chromium.content_public.browser.WebContents;
 /** Glue for the media capture picker dialog UI code and communication with the native backend. */
 @NullMarked
 public class MediaCapturePickerManagerBridge implements MediaCapturePickerManager.Delegate {
+    private static final String TAG = "MediaCapture";
+
     private long mNativeMediaCapturePickerManagerBridge;
 
     /**
@@ -58,6 +61,7 @@ public class MediaCapturePickerManagerBridge implements MediaCapturePickerManage
             boolean excludeSelfBrowserSurface,
             boolean excludeMonitorTypeSurfaces,
             @AllowedScreenCaptureLevel int allowedCaptureLevel) {
+        Log.d(TAG, "PickerManagerBridge show dialog");
         MediaCapturePickerManager.Params params =
                 new MediaCapturePickerManager.Params(
                         webContents,
@@ -81,6 +85,7 @@ public class MediaCapturePickerManagerBridge implements MediaCapturePickerManage
 
     @Override
     public void onPickTab(WebContents webContents, boolean audioShare) {
+        Log.d(TAG, "PickerManagerBridge on pick tab");
         // We know `mNativeMediaCapturePickerManagerBridge` is non-zero because
         // `destroy` will only be called after the dialog is dismissed.
         assert mNativeMediaCapturePickerManagerBridge != 0;
@@ -90,6 +95,7 @@ public class MediaCapturePickerManagerBridge implements MediaCapturePickerManage
 
     @Override
     public void onPickWindow() {
+        Log.d(TAG, "PickerManagerBridge on pick window");
         // We know `mNativeMediaCapturePickerManagerBridge` is non-zero because
         // `destroy` will only be called after the dialog is dismissed.
         assert mNativeMediaCapturePickerManagerBridge != 0;
@@ -99,6 +105,7 @@ public class MediaCapturePickerManagerBridge implements MediaCapturePickerManage
 
     @Override
     public void onPickScreen() {
+        Log.d(TAG, "PickerManagerBridge on pick screen");
         // We know `mNativeMediaCapturePickerManagerBridge` is non-zero because
         // `destroy` will only be called after the dialog is dismissed.
         assert mNativeMediaCapturePickerManagerBridge != 0;
@@ -108,6 +115,7 @@ public class MediaCapturePickerManagerBridge implements MediaCapturePickerManage
 
     @Override
     public void onCancel() {
+        Log.d(TAG, "PickerManagerBridge on cancel");
         // We know `mNativeMediaCapturePickerManagerBridge` is non-zero because
         // `destroy` will only be called after the dialog is dismissed.
         assert mNativeMediaCapturePickerManagerBridge != 0;
