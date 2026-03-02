@@ -836,4 +836,17 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
   EXPECT_EQ(error_future.Get(), GlicInvokeError::kInvalidTab);
 }
 
+IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
+                       InvokeWithEmptyConversationId) {
+  base::test::TestFuture<GlicInvokeError> error_future;
+  GlicInvokeOptions options(mojom::InvocationSource::kOsButton);
+  options.on_error = error_future.GetCallback();
+  options.conversation = ConversationId("");
+
+  coordinator().Invoke(GetTabListInterface()->GetActiveTab(),
+                       std::move(options));
+
+  EXPECT_EQ(error_future.Get(), GlicInvokeError::kInvalidConversationId);
+}
+
 }  // namespace glic
