@@ -18,6 +18,7 @@ source_set("coordinator") {
     "//ios/chrome/app:task_names",
     "//ios/chrome/app/application_delegate:app_state",
     "//ios/chrome/app/profile",
+    "//ios/chrome/app/profile:first_run_profile_agent",
     "//ios/chrome/browser/ai_prototyping/coordinator",
     "//ios/chrome/browser/app_bar/coordinator",
     "//ios/chrome/browser/assistant/coordinator",

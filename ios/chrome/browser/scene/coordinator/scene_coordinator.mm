@@ -24,6 +24,7 @@
 #import "ios/chrome/app/application_delegate/tab_opening.h"
 #import "ios/chrome/app/deferred_initialization_runner.h"
 #import "ios/chrome/app/deferred_initialization_task_names.h"
+#import "ios/chrome/app/profile/first_run_profile_agent.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/browser/ai_prototyping/coordinator/ai_prototyping_coordinator.h"
 #import "ios/chrome/browser/app_bar/coordinator/app_bar_coordinator.h"
@@ -1916,6 +1917,13 @@ void OnListFamilyMembersResponse(
 
   // If the Safari data import workflow is active, stop it.
   [self stopSafariDataImportCoordinator];
+
+  // If the guided tour is active, stop it.
+  FirstRunProfileAgent* firstRunAgent =
+      [FirstRunProfileAgent agentFromProfile:self.sceneState.profileState];
+  if (firstRunAgent) {
+    [firstRunAgent stopGuidedTour];
+  }
 
   __weak __typeof(self) weakSelf = self;
   ProceduralBlock resetAndDismiss = ^{

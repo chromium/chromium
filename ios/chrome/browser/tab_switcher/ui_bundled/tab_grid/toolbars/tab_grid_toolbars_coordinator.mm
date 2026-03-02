@@ -138,6 +138,13 @@
   _guidedTourCompletionBlock = completion;
 }
 
+- (void)hideTabGridToolbarGuidedTour {
+  [self.topToolbar resetLastPageControlHighlight];
+  _guidedTourCompletionBlock = nil;
+  [_guidedTourCoordinator stop];
+  _guidedTourCoordinator = nil;
+}
+
 #pragma mark - GuidedTourCoordinatorDelegate
 
 - (void)nextTappedForStep:(GuidedTourStep)step {

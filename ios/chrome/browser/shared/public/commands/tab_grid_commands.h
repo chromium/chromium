@@ -40,6 +40,9 @@ class TabGroup;
 - (void)showGuidedTourLongPressStepWithDismissalCompletion:
     (ProceduralBlock)completion;
 
+// Hides the Guided Tour on the tab grid.
+- (void)hideTabGridGuidedTour;
+
 // Presents the page action menu from the tab grid, registering the source.
 - (void)showPageActionMenuFromTabGrid;
 

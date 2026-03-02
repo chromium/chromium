@@ -370,14 +370,15 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   [self.topToolbar.pageControl setSelectedPage:self.currentPage animated:NO];
   [self configureViewControllerForCurrentSizeClassesAndPage];
 
-  // The toolbars should be hidden (alpha 0.0) before the tab appears, so that
-  // they can be animated in. They can't be set to 0.0 here, because if
-  // `animated` is YES, this method is being called inside the animation block.
-  if (animated && self.transitionCoordinator) {
-    [self animateToolbarsForAppearance];
-  } else {
-    // The new tab grid transitions don't hide the toolbars, so no need to show.
-    if (!IsNewTabGridTransitionsEnabled()) {
+  // The new tab grid transitions don't hide the toolbars, so no need to show.
+  if (!IsNewTabGridTransitionsEnabled()) {
+    // The toolbars should be hidden (alpha 0.0) before the tab appears, so that
+    // they can be animated in. They can't be set to 0.0 here, because if
+    // `animated` is YES, this method is being called inside the animation
+    // block.
+    if (animated && self.transitionCoordinator) {
+      [self animateToolbarsForAppearance];
+    } else {
       [self showToolbars];
     }
   }
@@ -403,13 +404,13 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   [self.swipeToIncognitoIPH
       dismissWithReason:IPHDismissalReasonType::kTappedOutsideIPHAndAnchorView];
 
-  // When the view disappears, the toolbar alpha should be set to 0; either as
-  // part of the animation, or directly with -hideToolbars.
-  if (animated && self.transitionCoordinator) {
-    [self animateToolbarsForDisappearance];
-  } else {
-    // The new tab grid transitions don't hide the toolbars.
-    if (!IsNewTabGridTransitionsEnabled()) {
+  // The new tab grid transitions don't hide the toolbars.
+  if (!IsNewTabGridTransitionsEnabled()) {
+    // When the view disappears, the toolbar alpha should be set to 0; either as
+    // part of the animation, or directly with -hideToolbars.
+    if (animated && self.transitionCoordinator) {
+      [self animateToolbarsForDisappearance];
+    } else {
       [self hideToolbars];
     }
   }

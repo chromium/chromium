@@ -104,8 +104,9 @@ const char kGuidedTourStepDidFinishHistogram[] = "IOS.GuidedTour.DidFinishStep";
   // Coordinator for the first step of the guided tour.
   GuidedTourCoordinator* _guidedTourCoordinator;
 
-  // The current step in the guided tour.
-  GuidedTourStep _currentGuidedTourStep;
+  // The current step in the guided tour. nullopt if the tour is not in
+  // progress.
+  std::optional<GuidedTourStep> _currentGuidedTourStep;
 
   // Used to force the device orientation in portrait mode on iPhone.
   std::unique_ptr<ScopedForcePortraitOrientation> _scopedForceOrientation;
@@ -135,6 +136,41 @@ const char kGuidedTourStepDidFinishHistogram[] = "IOS.GuidedTour.DidFinishStep";
     };
     [handler showGuidedTourIncognitoStepWithDismissalCompletion:completion];
   }
+}
+
+- (void)stopGuidedTour {
+  // If guided tour promo is showing, count this as a dismissal.
+  if (_guidedTourPromoCoordinator) {
+    [self dismissGuidedTourPromo];
+    return;
+  }
+  if (!_currentGuidedTourStep) {
+    return;
+  }
+
+  switch (_currentGuidedTourStep.value()) {
+    case GuidedTourStep::kNTP: {
+      [_guidedTourCoordinator stop];
+      _guidedTourCoordinator = nil;
+      break;
+    }
+    // Both tab grid steps are exited in the same way.
+    case GuidedTourStep::kTabGridIncognito:
+    case GuidedTourStep::kTabGridTabGroup: {
+      id<TabGridToolbarCommands> tabGridToolbarHandler =
+          HandlerForProtocol([self commandDispatcher], TabGridToolbarCommands);
+      [tabGridToolbarHandler hideTabGridToolbarGuidedTour];
+      break;
+    }
+    case GuidedTourStep::kTabGridLongPress: {
+      id<TabGridCommands> tabGridHandler =
+          HandlerForProtocol([self commandDispatcher], TabGridCommands);
+      [tabGridHandler hideTabGridGuidedTour];
+      break;
+    }
+  }
+
+  _currentGuidedTourStep = std::nullopt;
 }
 
 #pragma mark - SceneStateObserver
@@ -214,7 +250,8 @@ const char kGuidedTourStepDidFinishHistogram[] = "IOS.GuidedTour.DidFinishStep";
 #pragma mark - GuidedTourCoordinatorDelegate
 
 - (void)stepCompleted:(GuidedTourStep)step {
-  CHECK_EQ(step, _currentGuidedTourStep);
+  CHECK(_currentGuidedTourStep);
+  CHECK_EQ(step, _currentGuidedTourStep.value());
   if (step == GuidedTourStep::kNTP) {
     [_guidedTourCoordinator stop];
     _guidedTourCoordinator = nil;
@@ -252,6 +289,7 @@ const char kGuidedTourStepDidFinishHistogram[] = "IOS.GuidedTour.DidFinishStep";
 }
 
 - (void)startGuidedTour {
+  _currentGuidedTourStep = GuidedTourStep::kNTP;
   [_postActionsProvider setGuidedTourStarted:YES];
   __weak FirstRunProfileAgent* weakSelf = self;
   ProceduralBlock completion = ^{
@@ -451,6 +489,7 @@ const char kGuidedTourStepDidFinishHistogram[] = "IOS.GuidedTour.DidFinishStep";
 
 // Called when the Guided Tour flow is completed.
 - (void)guidedTourCompleted {
+  _currentGuidedTourStep = std::nullopt;
   [self releaseUILocks];
   [self performNextPostFirstRunAction];
 }

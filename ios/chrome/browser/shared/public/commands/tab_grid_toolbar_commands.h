@@ -17,8 +17,14 @@
 // will be executed after the step dismisses.
 - (void)showGuidedTourIncognitoStepWithDismissalCompletion:
     (ProceduralBlock)completion;
+
+// Displays the Guided Tour step that highlights the Tab Group tab. `completion`
+// will be executed after the step dismisses.
 - (void)showGuidedTourTabGroupStepWithDismissalCompletion:
     (ProceduralBlock)completion;
+
+// Hides the Guided Tour on the tab grid toolbar (either step).
+- (void)hideTabGridToolbarGuidedTour;
 
 @end
 

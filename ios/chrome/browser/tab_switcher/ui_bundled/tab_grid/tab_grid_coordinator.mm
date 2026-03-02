@@ -1786,6 +1786,12 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   _guidedTourCompletionBlock = completion;
 }
 
+- (void)hideTabGridGuidedTour {
+  _guidedTourCompletionBlock = nil;
+  [_guidedTourCoordinator stop];
+  _guidedTourCoordinator = nil;
+}
+
 - (void)showPageActionMenuFromTabGrid {
   // TODO(crbug.com/465505528) Propagate page action menu entry point source to
   // page action menu coordinator.
