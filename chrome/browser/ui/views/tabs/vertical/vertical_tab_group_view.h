@@ -84,6 +84,10 @@ class VerticalTabGroupView
   void HandleTabDragInContainer(const gfx::Rect& dragged_tab_bounds) override;
   void OnTabDragExited(const gfx::Point& point_in_screen) override;
 
+  void AttachChildView(std::unique_ptr<views::View> child_view,
+                       const gfx::Rect& previous_bounds_in_screen);
+  std::unique_ptr<views::View> DetachChildView(views::View* child_view);
+
   void ResetCollectionNode();
   void OnDataChanged();
   void UpdateChildVisibilityForCollapseState(bool collapsed);

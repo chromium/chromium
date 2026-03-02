@@ -42,7 +42,7 @@ class VerticalTabGroupViewTest
     return region_view->root_node_for_testing();
   }
 
-  void CreateActiveTabGroup() {
+  tab_groups::TabGroupId CreateActiveTabGroup() {
     AppendTab();
     AppendTab();
 
@@ -50,8 +50,10 @@ class VerticalTabGroupViewTest
         1, TabStripUserGestureDetails(
                TabStripUserGestureDetails::GestureType::kOther));
 
-    browser()->tab_strip_model()->AddToNewGroup({1});
+    tab_groups::TabGroupId group_id =
+        browser()->tab_strip_model()->AddToNewGroup({1});
     RunScheduledLayouts();
+    return group_id;
   }
 
   tab_groups::TabGroupId CreateInactiveTabGroup() {
@@ -66,6 +68,23 @@ class VerticalTabGroupViewTest
                TabStripUserGestureDetails::GestureType::kOther));
     RunScheduledLayouts();
     return group_id;
+  }
+
+  void UngroupTabGroup(tab_groups::TabGroupId group_id) {
+    const gfx::Range tab_range = browser()
+                                     ->tab_strip_model()
+                                     ->group_model()
+                                     ->GetTabGroup(group_id)
+                                     ->ListTabs();
+
+    std::vector<int> tab_indices;
+    tab_indices.reserve(tab_range.length());
+    for (auto i = tab_range.start(); i < tab_range.end(); ++i) {
+      tab_indices.push_back(i);
+    }
+
+    browser()->tab_strip_model()->RemoveFromGroup(tab_indices);
+    RunScheduledLayouts();
   }
 
   void ClickTabGroupHeaderToToggleCollapse() {
@@ -193,6 +212,26 @@ IN_PROC_BROWSER_TEST_F(VerticalTabGroupViewTest,
   TabCollectionNode* next_tab_node =
       unpinned_collection_node()->children()[1].get();
   EXPECT_TRUE(GetTabInterfaceForNode(next_tab_node)->IsActivated());
+}
+
+IN_PROC_BROWSER_TEST_F(VerticalTabGroupViewTest,
+                       UngroupingTabsFromCollapsedGroup) {
+  tab_groups::TabGroupId group_id = CreateActiveTabGroup();
+
+  TabCollectionNode* tab_node =
+      unpinned_collection_node()
+          ->GetChildNodeOfType(TabCollectionNode::Type::GROUP)
+          ->children()[0]
+          .get();
+  VerticalTabView* tab = static_cast<VerticalTabView*>(tab_node->view());
+
+  // Collapse the tab group and verify the tab is not visible.
+  ClickTabGroupHeaderToToggleCollapse();
+  EXPECT_TRUE(base::test::RunUntil([&]() { return !tab->GetVisible(); }));
+
+  // Ungroup the tab group and verify that the tab is now visible.
+  UngroupTabGroup(group_id);
+  EXPECT_TRUE(base::test::RunUntil([&]() { return tab->GetVisible(); }));
 }
 
 IN_PROC_BROWSER_TEST_F(VerticalTabGroupViewTest, OpenEditorBubble) {

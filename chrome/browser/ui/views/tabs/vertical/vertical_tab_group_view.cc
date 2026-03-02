@@ -88,8 +88,9 @@ VerticalTabGroupView::VerticalTabGroupView(TabCollectionNode* collection_node)
       &TabCollectionAnimatingLayoutManager::AnimateAndDestroyChildView,
       base::Unretained(&layout_manager_.get())));
   collection_node->set_attach_child_to_node(base::BindRepeating(
-      &TabCollectionAnimatingLayoutManager::AnimateAndReparentView,
-      base::Unretained(&layout_manager_.get())));
+      &VerticalTabGroupView::AttachChildView, base::Unretained(this)));
+  collection_node->set_detach_child_from_node(base::BindRepeating(
+      &VerticalTabGroupView::DetachChildView, base::Unretained(this)));
 
   node_destroyed_subscription_ =
       collection_node_->RegisterWillDestroyCallback(base::BindOnce(
@@ -261,6 +262,28 @@ std::u16string VerticalTabGroupView::GetGroupContentString() const {
   }
 
   return tab_groups::GetGroupContentString(group);
+}
+
+void VerticalTabGroupView::AttachChildView(
+    std::unique_ptr<views::View> child_view,
+    const gfx::Rect& previous_bounds_in_screen) {
+  if (IsCollapsed()) {
+    // When child views are added to a group when in collapsed state,
+    // expand it to reveal the newly added views.
+    ToggleCollapsedState(ToggleTabGroupCollapsedStateOrigin::kMenuAction);
+  }
+  layout_manager_->AnimateAndReparentView(std::move(child_view),
+                                          previous_bounds_in_screen);
+}
+
+std::unique_ptr<views::View> VerticalTabGroupView::DetachChildView(
+    views::View* child_view) {
+  if (IsCollapsed()) {
+    // The child views are invisible in collapsed state. When child views
+    // are detached from the group while collapsed, reset its visibility.
+    child_view->SetVisible(true);
+  }
+  return RemoveChildViewT(child_view);
 }
 
 void VerticalTabGroupView::ResetCollectionNode() {
