@@ -14,17 +14,17 @@ export function getHtml(this: SitePermissionsEditUrlDialogElement) {
   <div slot="body">
     <cr-input id="input" label="$i18n{sitePermissionsDialogInputLabel}"
         placeholder="https://example.com" .value="${this.site_}"
-        @value-changed="${this.onSiteChanged_}" @input="${this.validate_}"
+        @value-changed="${this.onSiteValueChanged_}" @input="${this.onInput_}"
         ?invalid="${!this.inputValid_}"
         error-message="$i18n{sitePermissionsDialogInputError}"
         spellcheck="false" autofocus>
     </cr-input>
   </div>
   <div slot="button-container">
-    <cr-button class="cancel-button" @click="${this.onCancel_}">
+    <cr-button class="cancel-button" @click="${this.onCancelClick_}">
       $i18n{cancel}
     </cr-button>
-    <cr-button class="action-button" id="submit" @click="${this.onSubmit_}"
+    <cr-button class="action-button" id="submit" @click="${this.onSubmitClick_}"
         ?disabled="${this.computeSubmitButtonDisabled_()}">
       ${this.computeSubmitButtonLabel_()}
     </cr-button>

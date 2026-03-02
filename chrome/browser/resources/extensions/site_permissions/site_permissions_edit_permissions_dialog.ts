@@ -156,7 +156,7 @@ export class SitePermissionsEditPermissionsDialogElement extends
     this.updateExtensionSiteAccessData_(this.siteSet_);
   }
 
-  protected onSiteSetChanged_(
+  protected onSiteSetSelectedChanged_(
       e: CustomEvent<{value: chrome.developerPrivate.SiteSet}>) {
     this.siteSet_ = e.detail.value;
     this.updateExtensionSiteAccessData_(this.siteSet_);

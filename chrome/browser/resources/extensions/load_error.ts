@@ -106,6 +106,10 @@ export class LoadErrorElement extends CrLitElement {
     this.$.dialog.showModal();
   }
 
+  protected onCloseClick_() {
+    this.close();
+  }
+
   close() {
     this.$.dialog.close();
   }

@@ -369,14 +369,14 @@ export class ExtensionsManagerElement extends ExtensionsManagerElementBase {
     }
   }
 
-  protected onFilterChanged_(event: CustomEvent<string>) {
+  protected onSearchChanged_(event: CustomEvent<string>) {
     if (this.currentPage_!.page !== Page.LIST) {
       navigation.navigateTo({page: Page.LIST});
     }
     this.filter = event.detail;
   }
 
-  protected onMenuButtonClick_() {
+  protected onCrToolbarMenuClick_() {
     this.showDrawer_ = true;
     setTimeout(() => {
       this.shadowRoot.querySelector('cr-drawer')!.openDrawer();

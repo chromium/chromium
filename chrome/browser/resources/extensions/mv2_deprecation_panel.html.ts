@@ -71,7 +71,7 @@ export function getHtml(this: ExtensionsMv2DeprecationPanelElement) {
         $i18n{mv2DeprecationPanelKeepForNowButton}
       </button>
       <button class="dropdown-item" id="removeAction"
-          @click="${this.onRemoveExtensionActionClicked_}"
+          @click="${this.onRemoveExtensionActionClick_}"
           ?hidden="${!this.showExtensionRemoveAction_()}">
         $i18n{mv2DeprecationPanelRemoveExtensionButton}
       </button>

@@ -20,7 +20,8 @@ export function getHtml(this: ActivityLogStreamElement) {
           html`$i18n{stopActivityStream}` : html`$i18n{startActivityStream}`}
     </span>
   </cr-button>
-  <cr-button class="clear-activities-button" @click="${this.clearStream}">
+  <cr-button class="clear-activities-button"
+      @click="${this.onClearStreamClick_}">
     $i18n{clearActivities}
   </cr-button>
 </div>

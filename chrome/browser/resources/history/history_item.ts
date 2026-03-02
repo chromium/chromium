@@ -174,7 +174,11 @@ export class HistoryItemElement extends HistoryItemElementBase {
    * has to fire before onCheckboxChange_. If we bind it to click/press,
    * it might trigger out of desired order.
    */
-  protected onCheckboxClick_(e: MouseEvent) {
+  protected onCheckboxMousedown_(e: MouseEvent) {
+    this.isShiftKeyDown_ = e.shiftKey;
+  }
+
+  protected onCheckboxSelectKeydown_(e: KeyboardEvent) {
     this.isShiftKeyDown_ = e.shiftKey;
   }
 
@@ -295,7 +299,11 @@ export class HistoryItemElement extends HistoryItemElementBase {
     });
   }
 
-  protected onLinkRightClick_() {
+  protected onLinkAuxclick_() {
+    this.onLinkClick_();
+  }
+
+  protected onLinkContextmenu_() {
     BrowserServiceImpl.getInstance().recordAction('EntryLinkRightClick');
   }
 

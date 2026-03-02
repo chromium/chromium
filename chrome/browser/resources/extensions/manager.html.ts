@@ -16,8 +16,8 @@ export function getHtml(this: ExtensionsManagerElement) {
     ?is-child-account="${this.isChildAccount_}"
     ?dev-mode-controlled-by-policy="${this.devModeControlledByPolicy}"
     .delegate="${this.delegate}"
-    @cr-toolbar-menu-click="${this.onMenuButtonClick_}"
-    @search-changed="${this.onFilterChanged_}"
+    @cr-toolbar-menu-click="${this.onCrToolbarMenuClick_}"
+    @search-changed="${this.onSearchChanged_}"
     .extensions="${this.extensions_}"
     ?narrow="${this.narrow_}"
     @narrow-changed="${this.onNarrowChanged_}">

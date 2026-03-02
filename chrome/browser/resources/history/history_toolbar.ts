@@ -112,12 +112,24 @@ export class HistoryToolbarElement extends CrLitElement {
     return this.$.mainToolbar.getSearchField();
   }
 
+  protected onDeleteSelectedItemsClick_() {
+    this.deleteSelectedItems();
+  }
+
   deleteSelectedItems() {
     this.fire('delete-selected');
   }
 
+  protected onOpenSelectedItemsClick_() {
+    this.openSelectedItems();
+  }
+
   openSelectedItems() {
     this.fire('open-selected');
+  }
+
+  protected onClearSelectedItems_() {
+    this.clearSelectedItems();
   }
 
   clearSelectedItems() {

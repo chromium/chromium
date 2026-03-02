@@ -321,12 +321,16 @@ export class ExtensionsRuntimeHostPermissionsElement extends CrLitElement {
     return getFaviconUrl(url);
   }
 
-  protected onRemoveSitesWarningConfirm_() {
+  protected onRemoveSitesWarningConfirmClick_() {
     this.delegate.setItemHostAccess(
         this.itemId,
         this.getSelectMenu().value as chrome.developerPrivate.HostAccess);
     this.getRemoveSiteDialog().close();
     this.showRemoveSiteDialog_ = false;
+  }
+
+  protected onRemoveSitesWarningCancelClick_() {
+    this.onRemoveSitesWarningCancel_();
   }
 
   protected onRemoveSitesWarningCancel_() {

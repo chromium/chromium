@@ -107,7 +107,7 @@ export class ExtensionsHostPermissionsToggleListElement extends
     });
   }
 
-  protected onAllHostsToggleChanged_(e: CustomEvent<boolean>) {
+  protected onAllHostsToggleChange_(e: CustomEvent<boolean>) {
     // TODO(devlin): In the case of going from all sites to specific sites,
     // we'll withhold all sites (i.e., all specific site toggles will move to
     // unchecked, and the user can check them individually). This is slightly
@@ -128,7 +128,7 @@ export class ExtensionsHostPermissionsToggleListElement extends
     }
   }
 
-  protected onHostAccessChanged_(e: CustomEvent<boolean>) {
+  protected onHostAccessChange_(e: CustomEvent<boolean>) {
     const host = (e.target as HTMLElement).dataset['host'] || '';
     const checked = (e.target as ExtensionsToggleRowElement).checked;
 

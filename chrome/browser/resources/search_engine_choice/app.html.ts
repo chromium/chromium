@@ -15,14 +15,14 @@ export function getHtml(this: AppElement) {
   <h1 class="title">$i18n{title}</h1>
   <p class="subtitle">
     $i18n{subtitle}
-    <a id="infoLink" href="" @click="${this.onLinkClicked_}"
+    <a id="infoLink" href="" @click="${this.onInfoLinkClick_}"
         aria-label="$i18n{subtitleInfoLinkA11yLabel}">
       $i18n{subtitleInfoLink}
     </a>
   </p>
   <cr-radio-group id="choiceList"
       selected="${this.selectedChoice_}"
-      @selected-changed="${this.onSelectedChoiceChangedByUser_}"
+      @selected-changed="${this.onChoiceListSelectedChanged_}"
       aria-label="$i18n{choiceListA11yLabel}" role="list">
     ${this.choiceList_.map(item => html`
       <cr-radio-button aria-label="${item.name}" role="listitem"
@@ -46,11 +46,11 @@ export function getHtml(this: AppElement) {
 <div id="buttonContainer">
   <cr-checkbox ?hidden="${!this.showGuestCheckbox_}"
       ?checked="${this.saveGuestModeSearchEngineChoice_}"
-      @checked-changed="${this.onCheckboxStateChange_}">
+      @checked-changed="${this.onGuestCheckboxCheckedChanged_}">
     $i18n{guestCheckboxText}
   </cr-checkbox>
   <cr-button class="action-button" id="actionButton"
-      @click="${this.onActionButtonClicked_}"
+      @click="${this.onActionButtonClick_}"
       ?disabled="${this.isActionButtonDisabled_}">
     <div class="cr-icon" slot="prefix-icon" title=""
         ?hidden="${this.hasUserScrolledToTheBottom_}">
@@ -73,7 +73,7 @@ ${
     </div>
     <div slot="button-container">
       <cr-button class="action-button" id="infoDialogButton"
-          @click="${this.onInfoDialogButtonClicked_}">
+          @click="${this.onInfoDialogButtonClick_}">
         $i18n{infoDialogButtonText}
       </cr-button>
     </div>

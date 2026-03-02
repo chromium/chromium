@@ -181,7 +181,7 @@ export class CastFeedbackUiElement extends CrLitElement {
     return this.feedbackType_ === FeedbackType.DISCOVERY;
   }
 
-  protected onSubmit_() {
+  protected onSubmitClick_() {
     const parts = [`Type: ${this.feedbackType_}`, ''];
 
     function append(label: string, value: string) {
@@ -263,7 +263,7 @@ export class CastFeedbackUiElement extends CrLitElement {
     this.sendDialogIsInteractive_ = isInteractive;
   }
 
-  protected onSendDialogOk_() {
+  protected onSendDialogOkClick_() {
     if (this.feedbackSent) {
       chrome.send('close');
     } else {
@@ -271,14 +271,14 @@ export class CastFeedbackUiElement extends CrLitElement {
     }
   }
 
-  protected onCancel_() {
+  protected onCancelClick_() {
     if (!this.comments_ ||
         confirm(loadTimeData.getString('discardConfirmation'))) {
       chrome.send('close');
     }
   }
 
-  protected onLogsDialogOk_() {
+  protected onLogsDialogOkClick_() {
     this.$.logsDialog.close();
   }
 
@@ -292,39 +292,43 @@ export class CastFeedbackUiElement extends CrLitElement {
     return data;
   }
 
-  protected onFeedbackTypeChanged_(e: CustomEvent<{value: FeedbackType}>) {
+  protected onFeedbackTypeSelectedChanged_(
+      e: CustomEvent<{value: FeedbackType}>) {
     this.feedbackType_ = e.detail.value;
   }
 
-  protected onVideoSmoothnessChanged_(e: CustomEvent<{value: string}>) {
+  protected onVideoSmoothnessSelectedChanged_(e: CustomEvent<{value: string}>) {
     this.videoSmoothness_ = e.detail.value;
   }
 
-  protected onVideoQualityChanged_(e: CustomEvent<{value: string}>) {
+  protected onVideoQualitySelectedChanged_(e: CustomEvent<{value: string}>) {
     this.videoQuality_ = e.detail.value;
   }
 
-  protected onAudioQualityChanged_(e: CustomEvent<{value: string}>) {
+  protected onAudioQualitySelectedChanged_(e: CustomEvent<{value: string}>) {
     this.audioQuality_ = e.detail.value;
   }
 
-  protected onProjectedContentUrlChanged_(e: CustomEvent<{value: string}>) {
+  protected onProjectedContentUrlValueChanged_(
+      e: CustomEvent<{value: string}>) {
     this.projectedContentUrl_ = e.detail.value;
   }
 
-  protected onVisibleInSetupChanged_(e: CustomEvent<{value: string}>) {
+  protected onVisibleInSetupSelectedChanged_(e: CustomEvent<{value: string}>) {
     this.visibleInSetup_ = e.detail.value;
   }
 
-  protected onHasNetworkSoftwareChanged_(e: CustomEvent<{value: string}>) {
+  protected onHasNetworkSoftwareSelectedChanged_(
+      e: CustomEvent<{value: string}>) {
     this.hasNetworkSoftware_ = e.detail.value;
   }
 
-  protected onAllowContactByEmailChanged_(e: CustomEvent<{value: boolean}>) {
+  protected onAllowContactByEmailCheckedChanged_(
+      e: CustomEvent<{value: boolean}>) {
     this.allowContactByEmail_ = e.detail.value;
   }
 
-  protected onAttachLogsChanged_(e: CustomEvent<{value: boolean}>) {
+  protected onAttachLogsCheckedChanged_(e: CustomEvent<{value: boolean}>) {
     this.attachLogs_ = e.detail.value;
   }
 

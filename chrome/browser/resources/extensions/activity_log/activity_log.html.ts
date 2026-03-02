@@ -22,7 +22,7 @@ export function getHtml(this: ExtensionsActivityLogElement) {
       </div>
     </div>
     <cr-tabs id="tabs" selected="${this.selectedSubpage_}"
-        @selected-changed="${this.onTabsChangedSelectedSubpage_}"
+        @selected-changed="${this.onTabsSelectedChanged_}"
         .tabNames="${this.tabNames_}">
     </cr-tabs>
     <cr-page-selector selected="${this.selectedSubpage_}">

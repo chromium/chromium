@@ -27,15 +27,15 @@ export function getHtml(this: HistoryToolbarElement) {
 <cr-toolbar-selection-overlay ?show="${this.itemsSelected_}"
     cancel-label="$i18n{cancel}"
     selection-label="${this.numberOfItemsSelected_(this.count)}"
-    @clear-selected-items="${this.clearSelectedItems}">
+    @clear-selected-items="${this.onClearSelectedItems_}">
 
-  <cr-button
-      @click="${this.openSelectedItems}" ?disabled="${this.pendingDelete}">
+  <cr-button @click="${this.onOpenSelectedItemsClick_}"
+      ?disabled="${this.pendingDelete}">
     $i18n{openSelected}
   </cr-button>
 
-  <cr-button
-      @click="${this.deleteSelectedItems}" ?disabled="${this.pendingDelete}">
+  <cr-button @click="${this.onDeleteSelectedItemsClick_}"
+      ?disabled="${this.pendingDelete}">
     $i18n{delete}
   </cr-button>
 

@@ -11,7 +11,7 @@ export function getHtml(this: HistorySyncedDeviceCardElement) {
   return html`<!--_html_template_start_-->
 <div id="history-item-container">
   <div class="card-title" id="cardHeading" aria-expanded="${this.opened}"
-      aria-controls="collapse" @click="${this.toggleTabCard}">
+      aria-controls="collapse" @click="${this.onCardHeadingClick_}">
     <div id="title-left-content">
       <div id="device-name">${this.device}</div>
       <span id="last-update-time">${this.lastUpdateTime}</span>
@@ -35,8 +35,8 @@ export function getHtml(this: HistorySyncedDeviceCardElement) {
         <div class="item-container">
           <a href="${tab.url}" class="website-link" title="${tab.title}"
               data-session-id="${tab.sessionId}"
-              @click="${this.openTab_}"
-              @contextmenu="${this.onLinkRightClick_}">
+              @click="${this.onLinkClick_}"
+              @contextmenu="${this.onLinkContextmenu_}">
             <div class="website-icon"></div>
             <history-searched-label class="website-title"
                 title="${tab.title}"

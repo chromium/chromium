@@ -29,7 +29,7 @@ export function getHtml(this: LoadErrorElement) {
   </div>
   <div slot="button-container">
     <div class="spinner" ?hidden="${!this.retrying_}"></div>
-    <cr-button class="cancel-button" @click="${this.close}">
+    <cr-button class="cancel-button" @click="${this.onCloseClick_}">
       $i18n{cancel}
     </cr-button>
     <cr-button class="action-button" ?disabled="${this.retrying_}"

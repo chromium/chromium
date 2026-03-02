@@ -12,7 +12,7 @@ export function getHtml(this: HistorySideBarElement) {
 <cr-menu-selector id="menu" selected="${this.selectedPage}"
     @selected-changed="${this.onSelectorSelectedChanged_}"
     selectable=".page-item" attr-for-selected="path"
-    @iron-activate="${this.onSelectorActivate_}"
+    @iron-activate="${this.onMenuIronActivate_}"
     selected-attribute="selected">
   <a id="history" role="menuitem" class="page-item cr-nav-menu-item"
       href="${this.getHistoryItemHref_()}"

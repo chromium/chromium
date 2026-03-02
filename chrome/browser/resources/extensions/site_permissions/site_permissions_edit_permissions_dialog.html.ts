@@ -25,7 +25,7 @@ export function getHtml(this: SitePermissionsEditPermissionsDialogElement) {
      if the dialog's contents exceed the max height. -->
     ${!this.matchesSubdomains_() ? html`
       <cr-radio-group .selected="${this.siteSet_}"
-          @selected-changed="${this.onSiteSetChanged_}">
+          @selected-changed="${this.onSiteSetSelectedChanged_}">
         <cr-radio-button ?hidden="${!this.showPermittedOption_}"
             name="${chrome.developerPrivate.SiteSet.USER_PERMITTED}"
             label="${this.getPermittedSiteLabel_()}">

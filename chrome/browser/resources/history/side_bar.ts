@@ -194,7 +194,7 @@ export class HistorySideBarElement extends CrLitElement {
     }
   }
 
-  protected onSelectorActivate_() {
+  protected onMenuIronActivate_() {
     this.fire('history-close-drawer');
   }
 

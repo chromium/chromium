@@ -389,7 +389,7 @@ export class ExtensionsMv2DeprecationPanelElement extends
    * Triggers an extension removal when the remove button in the action menu
    * is clicked for an extension.
    */
-  protected onRemoveExtensionActionClicked_(): void {
+  protected onRemoveExtensionActionClick_(): void {
     assert(this.mv2ExperimentStage === Mv2ExperimentStage.WARNING);
     chrome.metricsPrivate.recordUserAction(
         'Extensions.Mv2Deprecation.Warning.RemoveExtension');

@@ -125,6 +125,10 @@ export class ActivityLogStreamElement extends CrLitElement {
     }
   }
 
+  protected onClearStreamClick_() {
+    this.clearStream();
+  }
+
   clearStream() {
     this.activityStream_ = [];
   }

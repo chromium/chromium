@@ -31,8 +31,8 @@ export function getHtml(this: ExtensionsErrorPageElement) {
         ${this.entries_.map((entry, index) => html`
           <div class="item-container">
             <div class="cr-row error-item ${this.computeErrorClass_(index)}">
-              <div actionable class="start" @click="${this.onErrorItemAction_}"
-                  @keydown="${this.onErrorItemAction_}" tabindex="0"
+              <div actionable class="start" @click="${this.onErrorItemClick_}"
+                  @keydown="${this.onErrorItemKeydown_}" tabindex="0"
                   data-error-index="${index}" role="button"
                   aria-expanded="${this.isAriaExpanded_(index)}">
                 <cr-icon .icon="${this.computeErrorIcon_(entry)}"
@@ -47,7 +47,7 @@ export function getHtml(this: ExtensionsErrorPageElement) {
               <div class="separator"></div>
               <cr-icon-button class="icon-delete-gray"
                   data-error-id="${entry.id}"
-                  @click="${this.onDeleteErrorAction_}"
+                  @click="${this.onDeleteErrorClick_}"
                   aria-describedby="${entry.id}" aria-label="$i18n{clearEntry}">
               </cr-icon-button>
             </div>

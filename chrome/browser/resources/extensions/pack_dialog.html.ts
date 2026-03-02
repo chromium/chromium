@@ -15,15 +15,17 @@ export function getHtml(this: ExtensionsPackDialogElement) {
     <div>$i18n{packDialogContent}</div>
     <cr-input id="rootDir" label="$i18n{packDialogExtensionRoot}"
         .value="${this.packDirectory_}"
-        @value-changed="${this.onPackDirectoryChanged_}" autofocus>
-      <cr-button id="rootDirBrowse" @click="${this.onRootBrowse_}"
+        @value-changed="${this.onPackDirectoryValueChanged_}" autofocus>
+      <cr-button id="rootDirBrowse" @click="${this.onRootBrowseClick_}"
           slot="suffix">
         $i18n{packDialogBrowse}
       </cr-button>
     </cr-input>
     <cr-input id="keyFile" label="$i18n{packDialogKeyFile}"
-        .value="${this.keyFile_}" @value-changed="${this.onKeyFileChanged_}">
-      <cr-button id="keyFileBrowse" @click="${this.onKeyBrowse_}" slot="suffix">
+        .value="${this.keyFile_}"
+        @value-changed="${this.onKeyFileValueChanged_}">
+      <cr-button id="keyFileBrowse" @click="${this.onKeyBrowseClick_}"
+          slot="suffix">
         $i18n{packDialogBrowse}
       </cr-button>
     </cr-input>

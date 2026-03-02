@@ -26,7 +26,7 @@ export function getHtml(this: CastFeedbackUiElement) {
     <div id="feedback-type-toggle">
       <div class="h2">$i18n{typeQuestion}</div>
       <cr-radio-group .selected="${this.feedbackType_}"
-          @selected-changed="${this.onFeedbackTypeChanged_}">
+          @selected-changed="${this.onFeedbackTypeSelectedChanged_}">
         <cr-radio-button name="${FeedbackType.BUG}">
           $i18n{typeBugOrError}
         </cr-radio-button>
@@ -64,7 +64,7 @@ export function getHtml(this: CastFeedbackUiElement) {
         <div class="question-part">
           <div class="h3">$i18n{videoSmoothness}</div>
           <cr-radio-group .selected="${this.videoSmoothness_}"
-              @selected-changed="${this.onVideoSmoothnessChanged_}">
+              @selected-changed="${this.onVideoSmoothnessSelectedChanged_}">
             <cr-radio-button name="1">
               1 ($i18n{videoFreezes})
             </cr-radio-button>
@@ -88,7 +88,7 @@ export function getHtml(this: CastFeedbackUiElement) {
         <div class="question-part">
           <div class="h3">$i18n{videoQuality}</div>
           <cr-radio-group .selected="${this.videoQuality_}"
-              @selected-changed="${this.onVideoQualityChanged_}">
+              @selected-changed="${this.onVideoQualitySelectedChanged_}">
             <cr-radio-button name="1">
               1 ($i18n{videoUnwatchable})
             </cr-radio-button>
@@ -112,7 +112,7 @@ export function getHtml(this: CastFeedbackUiElement) {
         <div class="question-part">
           <div class="h3">$i18n{audioQuality}</div>
           <cr-radio-group .selected="${this.audioQuality_}"
-              @selected-changed="${this.onAudioQualityChanged_}">
+              @selected-changed="${this.onAudioQualitySelectedChanged_}">
             <cr-radio-button name="1">
               1 ($i18n{audioUnintelligible})
             </cr-radio-button>
@@ -138,7 +138,7 @@ export function getHtml(this: CastFeedbackUiElement) {
         <div class="h2">$i18n{contentQuestion}</div>
         <cr-input placeholder="$i18n{yourAnswer}"
             .value="${this.projectedContentUrl_}"
-            @value-changed="${this.onProjectedContentUrlChanged_}">
+            @value-changed="${this.onProjectedContentUrlValueChanged_}">
         </cr-input>
       </div>
       <div class="question">
@@ -160,7 +160,7 @@ export function getHtml(this: CastFeedbackUiElement) {
               ?hidden="${this.sufficientFeedback_}">*</span>
         </div>
         <cr-radio-group .selected="${this.visibleInSetup_}"
-            @selected-changed="${this.onVisibleInSetupChanged_}">
+            @selected-changed="${this.onVisibleInSetupSelectedChanged_}">
           <cr-radio-button name="Yes">
             $i18n{yes}
           </cr-radio-button>
@@ -175,7 +175,7 @@ export function getHtml(this: CastFeedbackUiElement) {
       <div class="question">
         <div class="h2">$i18n{softwareQuestion}</div>
         <cr-radio-group .selected="${this.hasNetworkSoftware_}"
-            @selected-changed="${this.onHasNetworkSoftwareChanged_}">
+            @selected-changed="${this.onHasNetworkSoftwareSelectedChanged_}">
           <cr-radio-button name="Yes">
             $i18n{yes}
           </cr-radio-button>
@@ -216,7 +216,7 @@ export function getHtml(this: CastFeedbackUiElement) {
       <!-- Show the email field only if the user is logged into Chrome
            (i.e. |userEmail_| is set). -->
       <cr-checkbox ?checked="${this.allowContactByEmail_}"
-           @checked-changed="${this.onAllowContactByEmailChanged_}"
+           @checked-changed="${this.onAllowContactByEmailCheckedChanged_}"
            aria-description="$i18n{allowContactByEmail}"
            id="allow-contact-by-email"
            ?hidden="${!this.userEmail_}">
@@ -233,7 +233,7 @@ export function getHtml(this: CastFeedbackUiElement) {
           disabled>
       </cr-input>
       <cr-checkbox ?checked="${this.attachLogs_}"
-          @checked-changed="${this.onAttachLogsChanged_}"
+          @checked-changed="${this.onAttachLogsCheckedChanged_}"
           aria-description="$i18n{sendLogs}">
         <span class="checkbox-label" id="send-logs">
           $i18nRaw{sendLogsHtml}
@@ -242,10 +242,10 @@ export function getHtml(this: CastFeedbackUiElement) {
       <p class="informative">$i18n{privacyDataUsage}</p>
     </div>
     <div id="form-buttons">
-      <cr-button class="cancel-button" @click="${this.onCancel_}">
+      <cr-button class="cancel-button" @click="${this.onCancelClick_}">
         $i18n{cancel}
       </cr-button>
-      <cr-button class="action-button" @click="${this.onSubmit_}"
+      <cr-button class="action-button" @click="${this.onSubmitClick_}"
           ?disabled="${!this.sufficientFeedback_}">
         $i18n{sendButton}
       </cr-button>
@@ -255,7 +255,7 @@ export function getHtml(this: CastFeedbackUiElement) {
   <cr-dialog id="sendDialog">
     <div slot="body">${this.sendDialogText_}</div>
     <div slot="button-container">
-      <cr-button @click="${this.onSendDialogOk_}"
+      <cr-button @click="${this.onSendDialogOkClick_}"
           ?hidden="${!this.sendDialogIsInteractive_}">
         $i18n{ok}
       </cr-button>
@@ -271,14 +271,14 @@ export function getHtml(this: CastFeedbackUiElement) {
       <pre>${this.logData_}</pre>
       <div class="send-logs">
         <cr-checkbox ?checked="${this.attachLogs_}"
-            @checked-changed="${this.onAttachLogsChanged_}"
+            @checked-changed="${this.onAttachLogsCheckedChanged_}"
             aria-description="$i18n{sendLogs}">
           <span class="send-logs">$i18n{sendLogs}</span>
         </cr-checkbox>
       </div>
     </div>
     <div slot="button-container">
-      <cr-button @click="${this.onLogsDialogOk_}">$i18n{ok}</cr-button>
+      <cr-button @click="${this.onLogsDialogOkClick_}">$i18n{ok}</cr-button>
     </div>
   </cr-dialog>
 </div><!--_html_template_end_-->`;

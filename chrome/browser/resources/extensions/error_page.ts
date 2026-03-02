@@ -192,7 +192,7 @@ export class ExtensionsErrorPageElement extends ExtensionsErrorPageElementBase {
         loadTimeData.getString('errorLevel'));
   }
 
-  protected onDeleteErrorAction_(e: Event) {
+  protected onDeleteErrorClick_(e: Event) {
     const id = Number((e.currentTarget as HTMLElement).dataset['errorId']);
     assert(this.data);
     assert(this.delegate);
@@ -377,8 +377,18 @@ export class ExtensionsErrorPageElement extends ExtensionsErrorPageElementBase {
     return this.isOpened_(index).toString();
   }
 
-  protected onErrorItemAction_(e: KeyboardEvent) {
-    if (e.type === 'keydown' && !((e.code === 'Space' || e.code === 'Enter'))) {
+  protected onErrorItemClick_(e: MouseEvent) {
+    this.onErrorItemAction_(e);
+  }
+
+  protected onErrorItemKeydown_(e: KeyboardEvent) {
+    this.onErrorItemAction_(e);
+  }
+
+  protected onErrorItemAction_(e: Event) {
+    if (e.type === 'keydown' &&
+        !((e as KeyboardEvent).code === 'Space' ||
+          (e as KeyboardEvent).code === 'Enter')) {
       return;
     }
 

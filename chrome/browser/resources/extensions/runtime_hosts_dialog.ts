@@ -184,10 +184,14 @@ export class ExtensionsRuntimeHostsDialogElement extends
     return this.$.dialog.open;
   }
 
+  protected onInput_() {
+    this.validate_();
+  }
+
   /**
    * Validates that the pattern entered is valid.
    */
-  protected validate_() {
+  private validate_() {
     // If input is empty, disable the action button, but don't show the red
     // invalid message.
     if (this.site_.trim().length === 0) {
@@ -198,7 +202,7 @@ export class ExtensionsRuntimeHostsDialogElement extends
     this.inputInvalid_ = !runtimeHostsPatternRegExp.test(this.site_);
   }
 
-  protected onSiteChanged_(e: CustomEvent<{value: string}>) {
+  protected onSiteValueChanged_(e: CustomEvent<{value: string}>) {
     this.site_ = e.detail.value;
   }
 

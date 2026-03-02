@@ -19,7 +19,7 @@ export function getHtml(this: ExtensionsHostPermissionsToggleListElement) {
 </div>
 <div class="toggle-section">
   <extensions-toggle-row ?checked="${this.allowedOnAllHosts_()}"
-      id="allHostsToggle" @change="${this.onAllHostsToggleChanged_}">
+      id="allHostsToggle" @change="${this.onAllHostsToggleChange_}">
     <span class="${this.getAllHostsToggleLabelClass_()}">
       $i18n{itemAllowOnFollowingSites}
     </span>
@@ -37,7 +37,7 @@ ${this.getSortedHosts_().map(item => html`
     <extensions-toggle-row ?checked="${this.isItemChecked_(item)}"
         class="host-toggle no-end-padding"
         ?disabled="${this.allowedOnAllHosts_()}"
-        data-host="${item.host}" @change="${this.onHostAccessChanged_}">
+        data-host="${item.host}" @change="${this.onHostAccessChange_}">
       <div class="site-row">
         <div class="site-favicon"
             .style="background-image:${this.getFaviconUrl_(item.host)}"

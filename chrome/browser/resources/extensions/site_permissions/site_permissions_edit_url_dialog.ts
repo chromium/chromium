@@ -104,7 +104,7 @@ export class SitePermissionsEditUrlDialogElement extends CrLitElement {
    * not be shown, but the input cannot be submitted as the action button will
    * be disabled.
    */
-  protected validate_() {
+  private validate_() {
     this.inputValid_ = this.site_.trim().length === 0 ||
         sitePermissionsPatternRegExp.test(this.site_);
   }
@@ -124,11 +124,11 @@ export class SitePermissionsEditUrlDialogElement extends CrLitElement {
     return loadTimeData.getString(this.siteToEdit === null ? 'add' : 'save');
   }
 
-  protected onCancel_() {
+  protected onCancelClick_() {
     this.$.dialog.cancel();
   }
 
-  protected onSubmit_() {
+  protected onSubmitClick_() {
     const pattern = getSitePermissionsPatternFromSite(this.site_);
     if (this.siteToEdit !== null) {
       this.handleEdit_(pattern);
@@ -137,8 +137,12 @@ export class SitePermissionsEditUrlDialogElement extends CrLitElement {
     }
   }
 
-  protected onSiteChanged_(e: CustomEvent<{value: string}>) {
+  protected onSiteValueChanged_(e: CustomEvent<{value: string}>) {
     this.site_ = e.detail.value;
+  }
+
+  protected onInput_() {
+    this.validate_();
   }
 
   private handleEdit_(pattern: string) {

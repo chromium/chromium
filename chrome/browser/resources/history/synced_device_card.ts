@@ -113,7 +113,7 @@ export class HistorySyncedDeviceCardElement extends CrLitElement {
   }
 
   /** Open a single synced tab. */
-  protected openTab_(e: MouseEvent) {
+  protected onLinkClick_(e: MouseEvent) {
     const browserService = BrowserServiceImpl.getInstance();
     browserService.recordHistogram(
         SYNCED_TABS_HISTOGRAM_NAME, SyncedTabsHistogram.LINK_CLICKED,
@@ -122,6 +122,10 @@ export class HistorySyncedDeviceCardElement extends CrLitElement {
         this.sessionTag,
         Number((e.currentTarget as HTMLElement).dataset['sessionId']), e);
     e.preventDefault();
+  }
+
+  protected onCardHeadingClick_() {
+    this.toggleTabCard();
   }
 
   /**
@@ -184,7 +188,7 @@ export class HistorySyncedDeviceCardElement extends CrLitElement {
     e.stopPropagation();  // Prevent cr-collapse.
   }
 
-  protected onLinkRightClick_() {
+  protected onLinkContextmenu_() {
     BrowserServiceImpl.getInstance().recordHistogram(
         SYNCED_TABS_HISTOGRAM_NAME, SyncedTabsHistogram.LINK_RIGHT_CLICKED,
         SyncedTabsHistogram.LIMIT);

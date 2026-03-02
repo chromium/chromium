@@ -146,11 +146,11 @@ ${this.showRemoveSiteDialog_ ? html`
     <div slot="title">$i18n{removeSitesDialogTitle}</div>
     <div slot="button-container">
       <cr-button class="cancel-button"
-          @click="${this.onRemoveSitesWarningCancel_}">
+          @click="${this.onRemoveSitesWarningCancelClick_}">
         $i18n{cancel}
       </cr-button>
       <cr-button class="action-button"
-          @click="${this.onRemoveSitesWarningConfirm_}">
+          @click="${this.onRemoveSitesWarningConfirmClick_}">
         $i18n{remove}
       </cr-button>
     </div>

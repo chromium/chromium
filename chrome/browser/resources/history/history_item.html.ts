@@ -20,12 +20,14 @@ export function getHtml(this: HistoryItemElement) {
           </div>
         </div>
       </div>
-      <div role="row" @mousedown="${this.onRowMousedown_}" @click="${this.onRowClick_}">
+      <div role="row" @mousedown="${this.onRowMousedown_}"
+          @click="${this.onRowClick_}">
         <div id="item-container" focus-row-container>
           <div role="gridcell">
             <cr-checkbox id="checkbox" .checked="${this.selected}"
                 focus-row-control focus-type="cr-checkbox"
-                @mousedown="${this.onCheckboxClick_}" @keydown="${this.onCheckboxClick_}"
+                @mousedown="${this.onCheckboxMousedown_}"
+                @keydown="${this.onCheckboxSelectKeydown_}"
                 @change="${this.onCheckboxChange_}" class="no-label"
                 ?hidden="${this.selectionNotAllowed_}"
                 .disabled="${this.selectionNotAllowed_}">
@@ -42,7 +44,7 @@ export function getHtml(this: HistoryItemElement) {
               <a href="${this.item?.url}" id="link" class="website-link"
                   focus-row-control focus-type="link"
                   title="${this.item?.title}" @click="${this.onLinkClick_}"
-                  @auxclick="${this.onLinkClick_}" @contextmenu="${this.onLinkRightClick_}"
+                  @auxclick="${this.onLinkAuxclick_}" @contextmenu="${this.onLinkContextmenu_}"
                   aria-describedby="${this.getAriaDescribedByForHeading_()}">
                 <div class="website-icon" id="icon"></div>
                 <history-searched-label class="website-title"

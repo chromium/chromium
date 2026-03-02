@@ -192,17 +192,17 @@ export class AppElement extends AppElementBase {
     this.resizeObserver_.observe(document.body);
   }
 
-  protected onLinkClicked_(e: Event) {
+  protected onInfoLinkClick_(e: Event) {
     e.preventDefault();
     this.showInfoDialog_ = true;
     this.pageHandler_.handleLearnMoreLinkClicked();
   }
 
-  protected onCheckboxStateChange_(e: CustomEvent<{value: boolean}>) {
+  protected onGuestCheckboxCheckedChanged_(e: CustomEvent<{value: boolean}>) {
     this.saveGuestModeSearchEngineChoice_ = e.detail.value;
   }
 
-  protected onActionButtonClicked_() {
+  protected onActionButtonClick_() {
     if (this.hasUserScrolledToTheBottom_) {
       this.pageHandler_.handleSearchEngineChoiceSelected(
           this.selectedChoice_,
@@ -233,7 +233,7 @@ export class AppElement extends AppElementBase {
     return item.showMarketingSnippet ? '' : 'truncate-text';
   }
 
-  protected onInfoDialogButtonClicked_() {
+  protected onInfoDialogButtonClick_() {
     this.showInfoDialog_ = false;
   }
 
@@ -262,7 +262,7 @@ export class AppElement extends AppElementBase {
     this.requestUpdate();
   }
 
-  protected onSelectedChoiceChangedByUser_(e: CustomEvent<{value: string}>) {
+  protected onChoiceListSelectedChanged_(e: CustomEvent<{value: string}>) {
     this.selectedChoice_ = Number.parseInt(e.detail.value);
   }
 
