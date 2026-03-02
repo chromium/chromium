@@ -1533,10 +1533,6 @@ BASE_FEATURE(kOrcaResizingSupport, base::FEATURE_DISABLED_BY_DEFAULT);
 // Enables or disables Orca on Demo mode.
 BASE_FEATURE(kOrcaSupportDemoMode, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// If enabled, OsSyncConsent Revamp will be shown.
-// enabling this without enabling Lacros flag will have no effect
-BASE_FEATURE(kOsSyncConsentRevamp, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables Jelly colors and components to appear in the Parent Access Widget
 // if jelly-colors is also enabled.
 BASE_FEATURE(kParentAccessJelly, base::FEATURE_DISABLED_BY_DEFAULT);
@@ -2942,10 +2938,6 @@ bool IsOobeAutoEnrollmentCheckForcedEnabled() {
 
 bool IsOobeSplitModifierKeyboardInfoEnabled() {
   return base::FeatureList::IsEnabled(kOobeSplitModifierKeyboardInfo);
-}
-
-bool IsOsSyncConsentRevampEnabled() {
-  return base::FeatureList::IsEnabled(kOsSyncConsentRevamp);
 }
 
 bool IsParentAccessJellyEnabled() {
