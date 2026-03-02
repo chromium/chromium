@@ -34,6 +34,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_task_environment.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -252,18 +253,13 @@ class DiceSignedInProfileCreatorTest
       return;
     }
 
-    // I don't know why this test looks like this, but I am only removing
-    // !BUILDFLAG(IS_FUCHSIA).
-    return;
-
     EXPECT_EQ(3u, cookies_source_profile.size());
     EXPECT_EQ(3u, cookies_new_profile.size());
 
     for (const auto& cookie : cookies_new_profile) {
       EXPECT_TRUE(cookie.IsDomainMatch(url.GetHost()));
-      EXPECT_TRUE(cookie.Name() == "oldgoogle0" ||
-                  cookie.Name() == "validgoogle1" ||
-                  cookie.Name() == "newgoogle1");
+      EXPECT_THAT(cookie.Name(),
+                  testing::AnyOf("oldgoogle0", "validgoogle1", "newgoogle2"));
     }
   }
 
