@@ -564,7 +564,7 @@ public class PopupCreatorUnitTest {
         final PictureInPictureWindowOptions windowOptions = new PictureInPictureWindowOptions();
 
         PopupCreator.moveWebContentsToNewDocumentPictureInPictureWindow(
-                mWebContents, windowOptions);
+                null, mWebContents, windowOptions);
 
         verify(mFlaggedApiDelegate).setMovableTaskRequired(any());
         verify(mContext).startActivity(any(), any());
@@ -580,7 +580,7 @@ public class PopupCreatorUnitTest {
         Assert.assertFalse(
                 "moveWebContentsToNewDocumentPictureInPictureWindow should have returned false",
                 PopupCreator.moveWebContentsToNewDocumentPictureInPictureWindow(
-                        mWebContents, windowOptions));
+                        null, mWebContents, windowOptions));
         verify(mFlaggedApiDelegate).setMovableTaskRequired(any());
         verify(mContext, never()).startActivity(any(), any());
     }

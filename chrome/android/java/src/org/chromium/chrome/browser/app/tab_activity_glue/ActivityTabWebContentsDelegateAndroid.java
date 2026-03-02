@@ -261,7 +261,7 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
             }
 
             return PopupCreator.moveWebContentsToNewDocumentPictureInPictureWindow(
-                    webContents, pictureInPictureWindowOptions);
+                    mActivity, webContents, pictureInPictureWindowOptions);
         }
 
         final CompletableFuture<Boolean> addTabToModel = new CompletableFuture<Boolean>();
