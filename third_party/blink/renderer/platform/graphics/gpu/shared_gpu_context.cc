@@ -331,6 +331,7 @@ bool SharedGpuContext::LowLatencyUsageSupportedForCanvas2D() {
     return g_low_latency_usage_supported_for_canvas_2d_for_testing.value();
   }
 
+  // Swapchain-backed SharedImages always support low-latency usages.
   bool can_use_swapchain = ContextProviderWrapper()
                                ->ContextProvider()
                                .SharedImageInterface()
@@ -341,18 +342,21 @@ bool SharedGpuContext::LowLatencyUsageSupportedForCanvas2D() {
   }
 
 #if BUILDFLAG(IS_APPLE)
+  // IOSurface-backed SharedImages always support low-latency usages.
   if (Canvas2DSharedImagesBackedByIOSurface()) {
     return true;
   }
 #endif
 
-  if (MaySupportImageChromium() &&
-      base::FeatureList::IsEnabled(
-          features::kLowLatencyCanvas2dImageChromium)) {
-    return true;
+#if BUILDFLAG(IS_ANDROID)
+  // Low-latency usage on Android is possible only with SurfaceControl.
+  if (!::features::IsAndroidSurfaceControlEnabled()) {
+    return false;
   }
+#endif
 
-  return false;
+  return base::FeatureList::IsEnabled(
+      features::kLowLatencyCanvas2dImageChromium);
 }
 
 }  // namespace blink
