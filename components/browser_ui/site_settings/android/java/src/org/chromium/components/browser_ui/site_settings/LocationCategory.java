@@ -10,8 +10,8 @@ import android.content.res.Resources;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.location.LocationUtils;
+import org.chromium.components.permissions.PermissionUtil;
 import org.chromium.components.permissions.PermissionsAndroidFeatureList;
 import org.chromium.components.permissions.PermissionsAndroidFeatureMap;
 import org.chromium.content_public.browser.BrowserContextHandle;
@@ -82,9 +82,9 @@ public class LocationCategory extends SiteSettingsCategory {
         // blocks Location by policy (because then turning it on in the system isn't going to
         // turn on location in Chrome).
         return WebsitePreferenceBridge.isContentSettingEnabled(
-                        getBrowserContextHandle(), ContentSettingsType.GEOLOCATION)
+                        getBrowserContextHandle(), PermissionUtil.getGeolocationType())
                 || WebsitePreferenceBridge.isContentSettingUserModifiable(
-                        getBrowserContextHandle(), ContentSettingsType.GEOLOCATION);
+                        getBrowserContextHandle(), PermissionUtil.getGeolocationType());
     }
 
     @Override
