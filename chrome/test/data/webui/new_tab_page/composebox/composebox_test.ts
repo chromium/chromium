@@ -27,6 +27,8 @@ enum Attributes {
 const ADD_FILE_CONTEXT_FN = 'addFileContext';
 const ADD_TAB_CONTEXT_FN = 'addTabContext';
 const FAKE_TOKEN_STRING = '00000000000000001234567890ABCDEF';
+const FAKE_TOKEN_STRING_2 = '00000000000000001234567890ABCDEE';
+
 const CONTEXT_ADDED_NTP =
     'ContextualSearch.ContextAdded.ContextAddedMethod.NewTabPage';
 
@@ -158,6 +160,31 @@ suite('NewTabPageComposeboxTest', () => {
       };
       checkCount();
     });
+  }
+
+  async function addTab() {
+    searchboxHandler.setPromiseResolveFor(
+        ADD_TAB_CONTEXT_FN, FAKE_TOKEN_STRING);
+
+    // Assert no files.
+    assertFalse(!!$$<HTMLElement>(composeboxElement, '#carousel'));
+
+    const contextMenuButton = $$(composeboxElement, '#contextEntrypoint');
+    assertTrue(!!contextMenuButton);
+    const sampleTabTitle = 'Sample Tab';
+    contextMenuButton.dispatchEvent(new CustomEvent('add-tab-context', {
+      detail: {id: 1, title: sampleTabTitle},
+      bubbles: true,
+      composed: true,
+    }));
+
+    await searchboxHandler.whenCalled(ADD_TAB_CONTEXT_FN);
+    await microtasksFinished();
+    const files = composeboxElement.$.carousel.files;
+    assertEquals(files.length, 1);
+    assertEquals(files[0]!.type, 'tab');
+    assertEquals(files[0]!.name, sampleTabTitle);
+    return FAKE_TOKEN_STRING;
   }
 
   function getInputForFileType(fileType: string): HTMLInputElement {
@@ -2091,7 +2118,7 @@ suite('NewTabPageComposeboxTest', () => {
     // Check that only one files were added.
     assertEquals(1, searchboxHandler.getCallCount(ADD_FILE_CONTEXT_FN));
 
-    // Check that the "too many files" metric was recorded (Enum value 1).
+    // Check that the 'too many files' metric was recorded (Enum value 1).
     assertEquals(
         1,
         metrics.count(
@@ -2674,27 +2701,7 @@ suite('NewTabPageComposeboxTest', () => {
 
     test('add tab context', async () => {
       createComposeboxElement();
-      searchboxHandler.setPromiseResolveFor(
-          ADD_TAB_CONTEXT_FN, {low: BigInt(1), high: BigInt(2)});
-
-      // Assert no files.
-      assertFalse(!!$$<HTMLElement>(composeboxElement, '#carousel'));
-
-      const contextMenuButton = $$(composeboxElement, '#contextEntrypoint');
-      assertTrue(!!contextMenuButton);
-      const sampleTabTitle = 'Sample Tab';
-      contextMenuButton.dispatchEvent(new CustomEvent('add-tab-context', {
-        detail: {id: 1, title: sampleTabTitle},
-        bubbles: true,
-        composed: true,
-      }));
-
-      await searchboxHandler.whenCalled(ADD_TAB_CONTEXT_FN);
-      await microtasksFinished();
-      const files = composeboxElement.$.carousel.files;
-      assertEquals(files.length, 1);
-      assertEquals(files[0]!.type, 'tab');
-      assertEquals(files[0]!.name, sampleTabTitle);
+      await addTab();
     });
 
     test('add tab context fails', async () => {
@@ -2919,4 +2926,57 @@ suite('NewTabPageComposeboxTest', () => {
         assertEquals(searchboxHandler.getCallCount('queryAutocomplete'), 1);
         assertEquals(searchboxHandler.getCallCount('stopAutocomplete'), 0);
       });
+
+  test('when flag enabled, adds tab context of ghost file', async () => {
+    createComposeboxElement();
+    document.body.appendChild(composeboxElement);
+    composeboxElement.shouldShowGhostFiles = true;
+
+    await addTab();
+
+    await composeboxElement.updateComplete;
+    await microtasksFinished();
+
+    assertTrue(
+        composeboxElement.getNumOfFilesForTesting() === 1,
+        'Tab should be added');
+
+    const bad_token = FAKE_TOKEN_STRING_2;
+    searchboxCallbackRouterRemote.onContextualInputStatusChanged(
+        bad_token,
+        FileUploadStatus.kUploadSuccessful,
+        null,
+    );
+    await composeboxElement.updateComplete;
+    await microtasksFinished();
+    assertTrue(
+        composeboxElement.getNumOfFilesForTesting() === 2,
+        'Ghost file should be added');
+  });
+
+  test('does not add tab context of ghost file', async () => {
+    createComposeboxElement();
+    document.body.appendChild(composeboxElement);
+    composeboxElement.shouldShowGhostFiles = false;
+
+    await addTab();
+    await composeboxElement.updateComplete;
+    await microtasksFinished();
+
+
+    assertTrue(
+        composeboxElement.getNumOfFilesForTesting() === 1,
+        'Tab should be added');
+    const bad_token = FAKE_TOKEN_STRING_2;
+    searchboxCallbackRouterRemote.onContextualInputStatusChanged(
+        bad_token,
+        FileUploadStatus.kUploadSuccessful,
+        null,
+    );
+    await composeboxElement.updateComplete;
+    await microtasksFinished();
+    assertTrue(
+        composeboxElement.getNumOfFilesForTesting() === 1,
+        'Ghost file should not be added');
+  });
 });
