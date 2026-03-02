@@ -19,12 +19,10 @@ namespace gfx {
 
 class Size;
 
-// Interface for encoding and decoding PNG data. This is a wrapper around
-// libpng, which has an inconvenient interface for callers. This is currently
-// designed for use in tests only (where we control the files), so the handling
-// isn't as robust as would be required for a browser (see Decode() for more).
-// WebKit has its own more complicated PNG decoder which handles, among other
-// things, partially downloaded data.
+// Interface for encoding and decoding PNG data. This is a wrapper
+// around `SkPngRustCodec`. Note that `SkPngRustCodec` is not yet
+// rule-of-2 compliant because some parsing is still done in C/C++
+// (see https://crbug.com/463653726 for more details).
 class CODEC_EXPORT PNGCodec {
  public:
   enum ColorFormat {
