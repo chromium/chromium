@@ -64,7 +64,6 @@ public class TrustedWebActivityPermissionsTest {
 
     private static final String TEST_PAGE = "/chrome/test/data/android/google.html";
     private static final int NOTIFICATIONS = ContentSettingsType.NOTIFICATIONS;
-    private static final int GEOLOCATION = ContentSettingsType.GEOLOCATION;
 
     private EmbeddedTestServer mTestServer;
     private String mTestPage;
