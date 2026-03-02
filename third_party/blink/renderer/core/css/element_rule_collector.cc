@@ -1388,7 +1388,9 @@ void ElementRuleCollector::DidMatchRule(
     }
 
     result_.SetHasPseudoElementStyle(dynamic_pseudo);
-    CountPseudoElementUsage(context_.GetElement(), dynamic_pseudo);
+    if (!matching_ua_rules_) {
+      CountPseudoElementUsage(context_.GetElement(), dynamic_pseudo);
+    }
 
     if (IsHighlightPseudoElement(dynamic_pseudo)) {
       // Determine whether the selector definitely matches the highlight pseudo
