@@ -10,6 +10,7 @@
 
 #include "base/containers/fixed_flat_map.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
@@ -1045,6 +1046,108 @@ TEST_F(ContextHostResolverTest, NetworkBoundResolverCacheInvalidation) {
   GTEST_SKIP()
       << "Network-bound HostResolverManagers are supported only on Android";
 #endif  // BUILDFLAG(IS_ANDROID)
+}
+
+TEST_F(ContextHostResolverTest, OnShutdown_ReentrantRequest) {
+  // Set up delayed result for "example.com".
+  MockDnsClientRuleList rules;
+  rules.emplace_back("example.com", dns_protocol::kTypeA, /*secure=*/false,
+                     MockDnsClientRule::Result(BuildTestDnsAddressResponse(
+                         "example.com", IPAddress(2, 3, 4, 5))),
+                     /*delay=*/true);
+  rules.emplace_back(
+      "example.com", dns_protocol::kTypeAAAA, /*secure=*/false,
+      MockDnsClientRule::Result(MockDnsClientRule::ResultType::kEmpty),
+      /*delay=*/false);
+  SetMockDnsRules(std::move(rules));
+
+  auto context = CreateTestURLRequestContextBuilder()->Build();
+  auto resolve_context =
+      std::make_unique<ResolveContext>(context.get(), /*enable_caching=*/false);
+  auto resolver = std::make_unique<ContextHostResolver>(
+      manager_.get(), std::move(resolve_context));
+
+  std::unique_ptr<HostResolver::ResolveHostRequest> request =
+      resolver->CreateRequest(HostPortPair("example.com", 100),
+                              NetworkAnonymizationKey(), NetLogWithSource(),
+                              /*optional_parameters=*/std::nullopt);
+
+  // We bind a base::ScopedClosureRunner to the request's callback so that when
+  // the callback is destroyed during OnShutdown() (which happens when
+  // HostResolverManager::Job is destroyed), it initiates a new request.
+  // This simulates a reentrant CreateRequest() call during shutdown.
+  base::ScopedClosureRunner run_on_destruction(base::BindOnce(
+      [](ContextHostResolver* resolver) {
+        std::unique_ptr<HostResolver::ResolveHostRequest> new_request =
+            resolver->CreateRequest(
+                HostPortPair("example.com", 100), NetworkAnonymizationKey(),
+                NetLogWithSource(), /*optional_parameters=*/std::nullopt);
+      },
+      resolver.get()));
+  int rv = request->Start(base::BindOnce(
+      [](base::ScopedClosureRunner run_on_destruction, int rv) {},
+      std::move(run_on_destruction)));
+  EXPECT_THAT(rv, test::IsError(ERR_IO_PENDING));
+
+  // Trigger shutdown. This should not hit DCHECK.
+  resolver->OnShutdown();
+}
+
+TEST_F(ContextHostResolverServiceEndpointTest, OnShutdown_ReentrantRequest) {
+  std::unique_ptr<ContextHostResolver> resolver = CreateResolver();
+
+  std::unique_ptr<HostResolver::ServiceEndpointRequest> request =
+      resolver->CreateServiceEndpointRequest(
+          HostResolver::Host(
+              url::SchemeHostPort(url::kHttpsScheme, "example.com", 100)),
+          NetworkAnonymizationKey(), NetLogWithSource(),
+          HostResolver::ResolveHostParameters());
+
+  // A helper class that initiates a new request when it is called back. Similar
+  // to the base::ScopedClosureRunner usage in OnShutdown_ReentrantRequest
+  // above.
+  class ReentrantDelegate
+      : public HostResolver::ServiceEndpointRequest::Delegate {
+   public:
+    explicit ReentrantDelegate(ContextHostResolver* resolver)
+        : resolver_(resolver) {}
+    void OnServiceEndpointsUpdated() override {}
+    void OnServiceEndpointRequestFinished(int rv) override {
+      finished_called_ = true;
+      // This is expected to be called during OnShutdown().
+
+      std::unique_ptr<HostResolver::ResolveHostRequest> new_host_request =
+          resolver_->CreateRequest(HostPortPair("example.com", 100),
+                                   NetworkAnonymizationKey(),
+                                   NetLogWithSource(), std::nullopt);
+      std::unique_ptr<HostResolver::ServiceEndpointRequest>
+          new_service_request = resolver_->CreateServiceEndpointRequest(
+              HostResolver::Host(
+                  url::SchemeHostPort(url::kHttpsScheme, "example.com", 100)),
+              NetworkAnonymizationKey(), NetLogWithSource(),
+              HostResolver::ResolveHostParameters());
+
+      int new_rv = new_host_request->Start(base::DoNothing());
+      EXPECT_THAT(new_rv, test::IsError(ERR_CONTEXT_SHUT_DOWN));
+      FakeServiceEndpontRequestDelegate delegate;
+      new_rv = new_service_request->Start(&delegate);
+      EXPECT_THAT(new_rv, test::IsError(ERR_CONTEXT_SHUT_DOWN));
+    }
+
+    bool finished_called() const { return finished_called_; }
+
+   private:
+    raw_ptr<ContextHostResolver> resolver_;
+    bool finished_called_ = false;
+  };
+
+  ReentrantDelegate delegate(resolver.get());
+  int rv = request->Start(&delegate);
+  EXPECT_THAT(rv, test::IsError(ERR_IO_PENDING));
+
+  // Trigger shutdown. This should not hit DCHECK.
+  resolver->OnShutdown();
+  EXPECT_TRUE(delegate.finished_called());
 }
 
 TEST_F(ContextHostResolverTest, InvalidationInProgress) {
