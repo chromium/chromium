@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<title>WaveShaper: Configurable Render Quantum Size Support</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script>
+test(() => {
+  const powerOfTwoHint = 4096;
+  const context = new AudioContext({
+    renderSizeHint: powerOfTwoHint,
+    latencyHint: 'playback',
+  });
+  assert_true(
+      context instanceof AudioContext,
+      'AudioContext with power-of-two renderSizeHint should be created.',
+  );
+
+  const shaper = context.createWaveShaper();
+  shaper.connect(context.destination);
+  shaper.oversample = '4x';
+},
+'Constructing AudioContext with a power-of-two renderSizeHint (4096) ' +
+'and using WaveShaper oversampling.');
+
+test(() => {
+  const nonPowerOfTwoHint = 57456;
+  const context = new AudioContext({
+    renderSizeHint: nonPowerOfTwoHint,
+    latencyHint: 'playback',
+  });
+  assert_true(
+      context instanceof AudioContext,
+      'AudioContext with non-power-of-two renderSizeHint should be created.',
+  );
+
+  const shaper = context.createWaveShaper();
+  shaper.connect(context.destination);
+  shaper.oversample = '4x';
+},
+'Constructing AudioContext with a non-power-of-two renderSizeHint (57456) ' +
+'and using WaveShaper oversampling.');
+
+test(() => {
+  const minSampleRate = 3000;
+  const minRenderSizeHint = 1;
+  const context = new AudioContext({
+    sampleRate: minSampleRate,
+    renderSizeHint: minRenderSizeHint,
+    latencyHint: 'playback',
+  });
+  assert_true(
+      context instanceof AudioContext,
+      'AudioContext with minimum sampleRate and ' +
+      'renderSizeHint should be created.',
+  );
+
+  const shaper = context.createWaveShaper();
+  shaper.connect(context.destination);
+  shaper.oversample = '4x';
+},
+'Constructing AudioContext with minimum sampleRate ' +
+'renderSizeHint (1) and using WaveShaper oversampling.');
+
+test(() => {
+  const maxSampleRate = 768000;
+  const maxRenderSizeHint = 768000 * 6;
+  const context = new AudioContext({
+    sampleRate: maxSampleRate,
+    renderSizeHint: maxRenderSizeHint,
+    latencyHint: 'playback',
+  });
+  assert_true(
+      context instanceof AudioContext,
+      'AudioContext with maximum sampleRate and ' +
+      'renderSizeHint should be created.',
+  );
+
+  const shaper = context.createWaveShaper();
+  shaper.connect(context.destination);
+  shaper.oversample = '4x';
+},
+'Constructing AudioContext with maximum sampleRate and ' +
+'renderSizeHint and using WaveShaper oversampling.');
+</script>
