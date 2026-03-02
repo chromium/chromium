@@ -34,8 +34,14 @@ class ProjectorSessionImplTest : public AshTestBase {
     session_ = static_cast<ProjectorSessionImpl*>(ProjectorSession::Get());
   }
 
+  // AshTestBase:
+  void TearDown() override {
+    session_ = nullptr;
+    AshTestBase::TearDown();
+  }
+
  protected:
-  raw_ptr<ProjectorSessionImpl, DanglingUntriaged> session_;
+  raw_ptr<ProjectorSessionImpl> session_;
 };
 
 TEST_F(ProjectorSessionImplTest, Start) {
