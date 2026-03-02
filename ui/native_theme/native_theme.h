@@ -592,7 +592,12 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeTheme {
 
   base::CallbackListSubscription os_settings_changed_subscription_;
   base::CallbackListSubscription update_delay_subscription_;
-  base::ObserverList<NativeThemeObserver> native_theme_observers_;
+  // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
+  base::ObserverList<
+      NativeThemeObserver,
+      /*check_empty=*/false,
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>
+      native_theme_observers_;
   SystemTheme system_theme_;
   bool use_overlay_scrollbar_ = false;
   ColorProviderKey::ForcedColors forced_colors_ =

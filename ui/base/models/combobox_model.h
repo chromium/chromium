@@ -87,12 +87,21 @@ class COMPONENT_EXPORT(UI_BASE) ComboboxModel {
       size_t index) const;
 
  protected:
-  base::ObserverList<ui::ComboboxModelObserver>& observers() {
+  base::ObserverList<
+      ui::ComboboxModelObserver,
+      /*check_empty=*/false,
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>&
+  observers() {
     return observers_;
   }
 
  private:
-  base::ObserverList<ui::ComboboxModelObserver> observers_;
+  // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
+  base::ObserverList<
+      ui::ComboboxModelObserver,
+      /*check_empty=*/false,
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>
+      observers_;
 };
 
 }  // namespace ui

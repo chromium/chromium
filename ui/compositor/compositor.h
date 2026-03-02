@@ -635,7 +635,12 @@ class COMPOSITOR_EXPORT Compositor : public base::PowerSuspendObserver,
   // The root of the Layer tree drawn by this compositor.
   raw_ptr<Layer> root_layer_ = nullptr;
 
-  base::ObserverList<CompositorObserver, true>::Unchecked observer_list_;
+  // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
+  base::ObserverList<
+      CompositorObserver,
+      /*check_empty=*/true,
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>::Unchecked
+      observer_list_;
 
   base::ObserverList<CompositorAnimationObserver>::Unchecked
       animation_observer_list_;

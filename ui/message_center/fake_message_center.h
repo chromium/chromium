@@ -101,12 +101,23 @@ class FakeMessageCenter : public MessageCenter {
 
  protected:
   void DisableTimersForTest() override;
-  const base::ObserverList<MessageCenterObserver>& observer_list() const {
+  const base::ObserverList<
+      MessageCenterObserver,
+      /*check_empty=*/false,
+      /*reentrancy=*/
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>&
+  observer_list() const {
     return observers_;
   }
 
  private:
-  base::ObserverList<MessageCenterObserver> observers_;
+  // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
+  base::ObserverList<
+      MessageCenterObserver,
+      /*check_empty=*/false,
+      /*reentrancy=*/
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>
+      observers_;
   NotificationList notifications_;
   NotificationList::Notifications visible_notifications_;
   std::vector<raw_ptr<NotificationBlocker, VectorExperimental>> blockers_;

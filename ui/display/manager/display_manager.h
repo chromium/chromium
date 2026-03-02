@@ -766,7 +766,12 @@ class DISPLAY_MANAGER_EXPORT DisplayManager
 
   base::ObserverList<DisplayObserver> display_observers_;
 
-  base::ObserverList<DisplayManagerObserver> manager_observers_;
+  // TODO(crbug.com/484371187): Investigate if this can be non reentrant.
+  base::ObserverList<
+      DisplayManagerObserver,
+      /*check_empty=*/false,
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>
+      manager_observers_;
 
   // Not empty if mixed mirror mode should be turned on (the specified source
   // display is mirrored to the specified destination displays). Empty if mixed
