@@ -40,6 +40,7 @@ import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkRow.Location;
 import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkRowProperties.ImageVisibility;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.partnerbookmarks.PartnerBookmarksReader;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -80,6 +81,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Deque;
 import java.util.HashSet;
 import java.util.List;
@@ -1548,6 +1550,16 @@ class BookmarkManagerMediator
                                     : R.string.enable_price_tracking_menu_item));
         }
 
+        if (!bookmarkItem.isFolder()) {
+            listItems.add(buildSimpleMenuItem(R.string.contextmenu_open_in_new_tab));
+            if (!mProfile.isOffTheRecord() && IncognitoUtils.isIncognitoModeEnabled(mProfile)) {
+                listItems.add(buildSimpleMenuItem(R.string.contextmenu_open_in_incognito_tab));
+            }
+            if (mBookmarkOpener.isOpenInNewWindowSupported()) {
+                listItems.add(buildSimpleMenuItem(R.string.contextmenu_open_in_new_window));
+            }
+        }
+
         return listItems;
     }
 
@@ -1560,7 +1572,16 @@ class BookmarkManagerMediator
         ListMenu.Delegate delegate =
                 (item, view) -> {
                     int textId = item.get(ListMenuItemProperties.TITLE_ID);
-                    if (textId == R.string.bookmark_item_select) {
+                    if (textId == R.string.contextmenu_open_in_new_tab) {
+                        mBookmarkOpener.openBookmarksInNewTabs(
+                                Collections.singletonList(bookmarkId), mProfile.isOffTheRecord());
+                    } else if (textId == R.string.contextmenu_open_in_incognito_tab) {
+                        mBookmarkOpener.openBookmarksInNewTabs(
+                                Collections.singletonList(bookmarkId), /* incognito= */ true);
+                    } else if (textId == R.string.contextmenu_open_in_new_window) {
+                        mBookmarkOpener.openBookmarksInNewWindow(
+                                Collections.singletonList(bookmarkId), mProfile.isOffTheRecord());
+                    } else if (textId == R.string.bookmark_item_select) {
                         mSelectionDelegate.toggleSelectionForItem(bookmarkId);
                         RecordUserAction.record("Android.BookmarkPage.SelectFromMenu");
                         if (bookmarkId.getType() == BookmarkType.READING_LIST) {

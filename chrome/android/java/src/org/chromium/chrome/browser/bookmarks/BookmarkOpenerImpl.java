@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.bookmarks;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
+import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -13,6 +14,7 @@ import android.net.Uri;
 import android.provider.Browser;
 import android.text.format.DateUtils;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
@@ -21,6 +23,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ActivityUtils;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
+import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
@@ -106,6 +109,62 @@ public class BookmarkOpenerImpl implements BookmarkOpener {
         IntentHandler.startActivityForTrustedIntent(intent);
 
         return true;
+    }
+
+    @Override
+    public boolean openBookmarksInNewWindow(List<BookmarkId> bookmarkIds, boolean incognito) {
+        if (bookmarkIds.isEmpty()) return false;
+
+        BookmarkModel bookmarkModel = assumeNonNull(mBookmarkModelSupplier.get());
+        BookmarkItem firstItem = null;
+        ArrayList<String> additionalUrls = new ArrayList<>();
+        List<BookmarkItem> items = new ArrayList<>();
+        for (BookmarkId id : bookmarkIds) {
+            BookmarkItem item = bookmarkModel.getBookmarkById(id);
+            if (item == null) continue;
+            maybeMarkReadingListItemAsRead(item);
+
+            if (firstItem == null) {
+                firstItem = item;
+            } else {
+                additionalUrls.add(item.getUrl().getSpec());
+            }
+
+            items.add(item);
+        }
+        if (firstItem == null) return false;
+        recordMetricsForOpenBookmarksInNewTabs(items);
+
+        Intent intent = createBasicOpenIntent(firstItem, incognito);
+        intent.putExtra(Browser.EXTRA_CREATE_NEW_TAB, true);
+        intent.putExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_WINDOW, incognito);
+        intent.putExtra(IntentHandler.EXTRA_ADDITIONAL_URLS, additionalUrls);
+
+        Activity activity = ContextUtils.activityFromContext(mContext);
+        if (activity != null) {
+            Class<? extends Activity> targetActivity =
+                    MultiWindowUtils.getInstance().getOpenInOtherWindowActivity(activity);
+            if (targetActivity != null) {
+                MultiWindowUtils.setOpenInOtherWindowIntentExtras(intent, activity, targetActivity);
+            }
+
+            if (MultiWindowUtils.isMultiInstanceApi31Enabled()) {
+                intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+                intent.putExtra(IntentHandler.EXTRA_PREFER_NEW, true);
+            }
+        }
+
+        IntentHandler.startActivityForTrustedIntent(intent);
+
+        return true;
+    }
+
+    @Override
+    public boolean isOpenInNewWindowSupported() {
+        Activity activity = ContextUtils.activityFromContext(mContext);
+        return activity != null
+                && (MultiWindowUtils.getInstance().isOpenInOtherWindowSupported(activity)
+                        || MultiWindowUtils.isMultiInstanceApi31Enabled());
     }
 
     private Intent createBasicOpenIntent(BookmarkItem item, boolean incognito) {

@@ -4,9 +4,8 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.components.bookmarks.BookmarkId;
 
@@ -46,4 +45,18 @@ public interface BookmarkOpener {
             List<BookmarkId> bookmarkIds,
             boolean incognito,
             @Nullable @TabLaunchType Integer tabLaunchType);
+
+    /**
+     * Open the given bookmarkIds in a new window.
+     *
+     * @param bookmarkIds The bookmark ids to open.
+     * @param incognito Whether the bookmarks should be opened in incognito mode.
+     * @return Whether the bookmark ids were successfully opened.
+     */
+    boolean openBookmarksInNewWindow(List<BookmarkId> bookmarkIds, boolean incognito);
+
+    /**
+     * @return Whether opening bookmarks in a new window is supported.
+     */
+    boolean isOpenInNewWindowSupported();
 }
