@@ -15,7 +15,6 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "content/public/browser/web_contents.h"
 #include "content/public/common/result_codes.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -75,7 +74,6 @@ std::unique_ptr<views::Label> CreateErrorCodeLabel(int format_string,
 }  // namespace
 
 SadTabView::SadTabView(SadTabController* controller,
-                       content::WebContents* web_contents,
                        SadTabKind kind,
                        int title_id,
                        int message_id,
@@ -84,12 +82,7 @@ SadTabView::SadTabView(SadTabController* controller,
                        int error_code,
                        int button_title_id,
                        int help_link_title_id)
-    : controller_(controller), web_contents_(web_contents), kind_(kind) {
-  // This view gets inserted as a child of a WebView, but we don't want the
-  // WebView to delete us if the WebView gets deleted before the SadTabHelper
-  // does.
-  set_owned_by_client(OwnedByClientPassKey());
-
+    : controller_(controller), kind_(kind) {
   SetBackground(views::CreateSolidBackground(ui::kColorDialogBackground));
   ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -193,36 +186,19 @@ SadTabView::SadTabView(SadTabController* controller,
   // Needed to ensure this View is drawn even if a sibling (such as dev tools)
   // has a z-order.
   SetPaintToLayer();
-  AttachToWebView();
-
-  if (owner_) {
-    // If the `owner_` ContentsWebView has a rounded background, the sad tab
-    // should also have matching rounded corners as well.
-    SetBackgroundRadii(
-        static_cast<ContentsWebView*>(owner_)->GetBackgroundRadii());
-  }
 
   // Make the accessibility role of this view an alert dialog, and
   // put focus on the action button. This causes screen readers to
   // immediately announce the text of this view.
   GetViewAccessibility().SetRole(ax::mojom::Role::kDialog);
+}
+
+SadTabView::~SadTabView() = default;
+
+void SadTabView::AddedToWidget() {
   if (action_button_->GetWidget() && action_button_->GetWidget()->IsActive()) {
     action_button_->RequestFocus();
   }
-}
-
-SadTabView::~SadTabView() {
-  if (owner_) {
-    owner_->SetCrashedOverlayView(nullptr);
-  }
-}
-
-void SadTabView::ReinstallInWebView() {
-  if (owner_) {
-    owner_->SetCrashedOverlayView(nullptr);
-    owner_ = nullptr;
-  }
-  AttachToWebView();
 }
 
 gfx::RoundedCornersF SadTabView::GetBackgroundRadii() const {
@@ -245,36 +221,6 @@ void SadTabView::OnPaint(gfx::Canvas* canvas) {
     painted_ = true;
   }
   View::OnPaint(canvas);
-}
-
-void SadTabView::RemovedFromWidget() {
-  owner_ = nullptr;
-}
-
-void SadTabView::AttachToWebView() {
-  Browser* browser = chrome::FindBrowserWithTab(web_contents_);
-  // This can be null during prefetch.
-  if (!browser) {
-    return;
-  }
-
-  // In unit tests, browser->window() might not be a real BrowserView.
-  if (!browser->window()->GetNativeWindow()) {
-    return;
-  }
-
-  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
-  DCHECK(browser_view);
-
-  std::vector<ContentsWebView*> visible_contents_views =
-      browser_view->GetAllVisibleContentsWebViews();
-  for (ContentsWebView* contents_view : visible_contents_views) {
-    if (contents_view->web_contents() == web_contents_) {
-      owner_ = contents_view;
-      owner_->SetCrashedOverlayView(this);
-      break;
-    }
-  }
 }
 
 void SadTabView::EnableHelpLink(views::FlexLayoutView* actions_container,

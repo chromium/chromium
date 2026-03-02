@@ -6,10 +6,11 @@
 #define CHROME_BROWSER_UI_SAD_TAB_CONTROLLER_H_
 
 #include <memory>
-#include <vector>
 
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/sad_tab.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/views/view_tracker.h"
 
 namespace content {
 class WebContents;
@@ -19,8 +20,7 @@ class SadTabView;
 
 class SadTabController : public SadTab {
  public:
-  SadTabController(content::WebContents* sad_tab_web_contents,
-                   SadTabKind sad_tab_kind);
+  SadTabController(content::WebContents* web_contents, SadTabKind kind);
   SadTabController(const SadTabController&) = delete;
   SadTabController& operator=(const SadTabController&) = delete;
   ~SadTabController() override;
@@ -33,7 +33,10 @@ class SadTabController : public SadTab {
   void RequestFocus();
 
  private:
-  std::unique_ptr<SadTabView> view_;
+  views::ViewTracker view_tracker_;
+  views::ViewTracker contents_view_tracker_;
+  std::unique_ptr<SadTabView> owned_sad_tab_view_;
+  base::WeakPtrFactory<SadTabController> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_SAD_TAB_CONTROLLER_H_
