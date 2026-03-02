@@ -691,8 +691,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
                          animationEnabled:(BOOL)animationEnabled
                               isIncognito:(BOOL)isIncognito
                                completion:(ProceduralBlock)completionHandler {
-  TabGridTransitionType transitionType = [self determineTabGridTransitionType];
-
   Browser* browser = isIncognito ? self.incognitoBrowser : self.regularBrowser;
   if (!browser) {
     // The browser can be nil here, for example when switching account. Do not
@@ -709,22 +707,24 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
     animationEnabled = NO;
   }
 
-  if (animationEnabled) {
-    self.transitionHandler = [[TabGridTransitionHandler alloc]
-                 initWithTransitionType:transitionType
-                              direction:direction
-        tabGridTransitionLayoutProvider:self
-                  tabGridViewController:_viewController
-            browserLayoutViewController:self.browserLayoutViewController
-                      layoutGuideCenter:LayoutGuideCenterForBrowser(browser)
-                    isRegularBrowserNTP:isRegularBrowserNTP
-                              incognito:isIncognito];
+  auto params = std::make_unique<TabGridTransitionHandlerInitParams>(
+      direction, self.browserLayoutViewController, _viewController);
 
+  if (animationEnabled) {
+    if (UIAccessibilityIsReduceMotionEnabled()) {
+      self.transitionHandler = [[TabGridTransitionHandler alloc]
+          initWithReducedMotionCommonParams:std::move(params)];
+    } else {
+      self.transitionHandler = [[TabGridTransitionHandler alloc]
+                     initWithCommonParams:std::move(params)
+          tabGridTransitionLayoutProvider:self
+                        layoutGuideCenter:LayoutGuideCenterForBrowser(browser)
+                      isRegularBrowserNTP:isRegularBrowserNTP
+                                incognito:isIncognito];
+    }
   } else {
     self.transitionHandler = [[TabGridTransitionHandler alloc]
-        initWithDisabledAnimationWithDirection:direction
-                   browserLayoutViewController:self.browserLayoutViewController
-                         tabGridViewController:_viewController];
+        initWithNoAnimationCommonParams:std::move(params)];
   }
   [self.transitionHandler performTransitionWithCompletion:completionHandler];
 }
@@ -890,15 +890,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   transitionHandler.animationDisabled = !animationEnabled;
 
   return transitionHandler;
-}
-
-// Determines the transion type to be used in the transition.
-- (TabGridTransitionType)determineTabGridTransitionType {
-  if (UIAccessibilityIsReduceMotionEnabled()) {
-    return TabGridTransitionType::kReducedMotion;
-  }
-
-  return TabGridTransitionType::kNormal;
 }
 
 // YES if there are tabs present on `page`. Should be called for regular or
