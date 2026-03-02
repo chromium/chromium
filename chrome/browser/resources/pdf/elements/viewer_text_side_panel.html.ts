@@ -15,7 +15,7 @@ export function getHtml(this: ViewerTextSidePanelElement) {
   return html`<!--_html_template_start_-->
     <div class="side-panel-content">
       <h2>$i18n{ink2TextFont}</h2>
-      <select class="md-select" @change="${this.onTypefaceSelected}"
+      <select class="md-select" @change="${this.onTypefaceChange_}"
           aria-label="$i18n{ink2TextFont}">
         ${this.fontNames.map(typeface => html`
           <option value="${typeface}"
@@ -23,7 +23,7 @@ export function getHtml(this: ViewerTextSidePanelElement) {
             ${this.i18n(this.getLabelForTypeface(typeface))}
           </option>`)}
       </select>
-      <select class="md-select" @change="${this.onSizeSelected}"
+      <select class="md-select" @change="${this.onSizeChange_}"
           aria-label="$i18n{ink2TextFontSize}">
         ${this.sizes.map(size => html`
           <option value="${size}" ?selected="${this.isSelectedSize(size)}">

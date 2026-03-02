@@ -7,6 +7,7 @@ import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {ViewerBookmarkElement} from './viewer_bookmark.js';
 
 export function getHtml(this: ViewerBookmarkElement) {
+  // clang-format off
   return html`<!--_html_template_start_-->
 <div id="item" @click="${this.onClick_}"
     .style="${this.getItemStartPaddingStyle_()}">
@@ -15,7 +16,7 @@ export function getHtml(this: ViewerBookmarkElement) {
         ?hidden="${this.getExpandHidden_()}"
         aria-label="$i18n{bookmarkExpandIconAriaLabel}"
         aria-expanded="${this.childrenShown_}"
-        @click="${this.toggleChildren_}"></cr-icon-button>
+        @click="${this.onExpandClick_}"></cr-icon-button>
   </div>
   <span id="title" tabindex="0">${this.bookmark.title}</span>
 </div>
@@ -24,4 +25,5 @@ ${this.childrenShown_ ? html`
     <viewer-bookmark .bookmark="${item}" .depth="${this.getChildDepth_()}">
     </viewer-bookmark>`)}` : ''}
 <!--_html_template_end_-->`;
+  // clang-format on
 }

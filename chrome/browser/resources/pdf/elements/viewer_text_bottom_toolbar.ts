@@ -63,6 +63,14 @@ export class ViewerTextBottomToolbarElement extends
     }
   }
 
+  protected onTypefaceChange_(e: Event) {
+    this.onTypefaceSelected(e);
+  }
+
+  protected onSizeChange_(e: CustomEvent<{value: number}>) {
+    this.onSizeSelected(e);
+  }
+
   protected getAlignmentIcon_(): string {
     switch (this.currentAlignment_) {
       case TextAlignment.LEFT:

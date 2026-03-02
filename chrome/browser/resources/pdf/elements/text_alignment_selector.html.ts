@@ -18,7 +18,7 @@ export function getHtml(this: TextAlignmentSelectorElement) {
     <cr-radio-group aria-label="$i18n{ink2TextAlignment}"
         selectable-elements="selectable-icon-button"
         .selected="${this.currentAlignment_}"
-        @selected-changed="${this.onSelectedAlignmentChanged_}">
+        @selected-changed="${this.onAlignmentSelectedChanged_}">
       <selectable-icon-button icon="pdf-ink:text-align-left"
           name="${TextAlignment.LEFT}" label="$i18n{ink2TextAlignLeft}">
       </selectable-icon-button>

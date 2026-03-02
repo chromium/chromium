@@ -29,6 +29,14 @@ export class ViewerTextSidePanelElement extends ViewerTextSidePanelElementBase {
   override render() {
     return getHtml.bind(this)();
   }
+
+  protected onTypefaceChange_(e: Event) {
+    this.onTypefaceSelected(e);
+  }
+
+  protected onSizeChange_(e: CustomEvent<{value: number}>) {
+    this.onSizeSelected(e);
+  }
 }
 
 declare global {

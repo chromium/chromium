@@ -149,7 +149,7 @@ export class ViewerBookmarkElement extends CrLitElement {
     e.preventDefault();
   }
 
-  protected toggleChildren_(e: Event) {
+  protected onExpandClick_(e: Event) {
     this.childrenShown_ = !this.childrenShown_;
     e.stopPropagation();  // Prevent the above onClick_ handler from firing.
   }

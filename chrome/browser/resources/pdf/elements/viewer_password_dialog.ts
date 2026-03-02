@@ -57,7 +57,7 @@ export class ViewerPasswordDialogElement extends CrLitElement {
     this.dispatchEvent(new CustomEvent('password-denied-for-testing'));
   }
 
-  submit() {
+  protected onSubmitClick_() {
     const password = this.$.password;
     if (password.value.length === 0) {
       return;

@@ -47,7 +47,7 @@ export class TextAlignmentSelectorElement extends
     selectedButton.focus();
   }
 
-  protected onSelectedAlignmentChanged_(e: CustomEvent<{value: string}>) {
+  protected onAlignmentSelectedChanged_(e: CustomEvent<{value: string}>) {
     const newAlignment = e.detail.value as TextAlignment;
     Ink2Manager.getInstance().setTextAlignment(newAlignment);
   }

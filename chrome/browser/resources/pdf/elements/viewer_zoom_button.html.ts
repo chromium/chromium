@@ -9,7 +9,7 @@ import type {ViewerZoomButtonElement} from './viewer_zoom_button.js';
 export function getHtml(this: ViewerZoomButtonElement) {
   return html`
 <cr-icon-button .ironIcon="${this.computeVisibleIcon_()}"
-    @click="${this.fireClick_}"
+    @click="${this.onClick_}"
     aria-label="${this.computeVisibleTooltip_()}"
     title="${this.computeVisibleTooltip_()}"
     ?disabled="${this.disabled}">

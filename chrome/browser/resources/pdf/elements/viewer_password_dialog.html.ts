@@ -7,6 +7,7 @@ import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {ViewerPasswordDialogElement} from './viewer_password_dialog.js';
 
 export function getHtml(this: ViewerPasswordDialogElement) {
+  // clang-format off
   return html`<!--_html_template_start_-->
 <cr-dialog id="dialog" no-cancel show-on-attach>
   <div slot="title">$i18n{passwordDialogTitle}</div>
@@ -18,10 +19,12 @@ export function getHtml(this: ViewerPasswordDialogElement) {
     </cr-input>
   </div>
   <div slot="button-container">
-    <cr-button id="submit" class="action-button" @click="${this.submit}">
+    <cr-button id="submit" class="action-button"
+        @click="${this.onSubmitClick_}">
       $i18n{passwordSubmit}
     </cr-button>
   </div>
 </cr-dialog>
 <!--_html_template_end_-->`;
+  // clang-format on
 }

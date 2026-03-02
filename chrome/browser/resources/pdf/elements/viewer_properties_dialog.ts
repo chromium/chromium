@@ -75,7 +75,7 @@ export class ViewerPropertiesDialogElement extends CrLitElement {
     return value || '-';
   }
 
-  protected onClickClose_() {
+  protected onCloseClick_() {
     this.$.dialog.close();
   }
 }

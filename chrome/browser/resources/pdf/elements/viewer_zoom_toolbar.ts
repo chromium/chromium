@@ -82,6 +82,10 @@ export class ViewerZoomToolbarElement extends CrLitElement {
     this.keyboardNavigationActive_ = false;
   }
 
+  protected onFitButtonFabclick_() {
+    this.fitToggle();
+  }
+
   /** Handle clicks of the fit-button. */
   fitToggle() {
     this.fireFitToChangedEvent_(
@@ -123,12 +127,12 @@ export class ViewerZoomToolbarElement extends CrLitElement {
   }
 
   /** Handle clicks of the zoom-in-button. */
-  zoomIn() {
+  protected onZoomInFabclick_() {
     this.fire('zoom-in');
   }
 
   /** Handle clicks of the zoom-out-button. */
-  zoomOut() {
+  protected onZoomOutFabclick_() {
     this.fire('zoom-out');
   }
 

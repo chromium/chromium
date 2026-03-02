@@ -12,7 +12,7 @@ export function getHtml(this: ViewerErrorDialogElement) {
   <div slot="title">$i18n{errorDialogTitle}</div>
   <div slot="body">$i18n{pageLoadFailed}</div>
   <div slot="button-container" ?hidden="${!this.reloadFn}">
-    <cr-button class="action-button" @click="${this.onReload_}">
+    <cr-button class="action-button" @click="${this.onReloadClick_}">
       $i18n{pageReload}
     </cr-button>
   </div>

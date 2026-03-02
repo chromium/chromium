@@ -59,7 +59,11 @@ export class ViewerBottomToolbarDropdownElement extends CrLitElement {
     }
   }
 
-  protected toggleDropdown_(): void {
+  protected onDropdownClick_() {
+    this.toggleDropdown_();
+  }
+
+  private toggleDropdown_(): void {
     this.showDropdown_ = !this.showDropdown_;
 
     if (this.showDropdown_) {

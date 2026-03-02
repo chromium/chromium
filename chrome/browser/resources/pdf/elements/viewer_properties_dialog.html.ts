@@ -93,7 +93,7 @@ export function getHtml(this: ViewerPropertiesDialogElement) {
     </table>
   </div>
   <div slot="button-container">
-    <cr-button id="close" class="action-button" @click="${this.onClickClose_}">
+    <cr-button id="close" class="action-button" @click="${this.onCloseClick_}">
       $i18n{propertiesDialogClose}
     </cr-button>
   </div>

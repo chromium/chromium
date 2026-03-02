@@ -274,7 +274,7 @@ export class ViewerToolbarElement extends CrLitElement {
     this.dispatchEvent(new CustomEvent('rotate-left'));
   }
 
-  protected toggleDisplayAnnotations_() {
+  protected onDisplayAnnotationsClick_() {
     record(UserAction.TOGGLE_DISPLAY_ANNOTATIONS);
     this.displayAnnotations_ = !this.displayAnnotations_;
     this.dispatchEvent(new CustomEvent(
@@ -302,7 +302,7 @@ export class ViewerToolbarElement extends CrLitElement {
     return this.sidenavCollapsed ? 'false' : 'true';
   }
 
-  protected toggleTwoPageViewClick_() {
+  protected onTwoPageViewClick_() {
     const newTwoUpViewEnabled = !this.twoUpViewEnabled;
     this.dispatchEvent(
         new CustomEvent('two-up-view-changed', {detail: newTwoUpViewEnabled}));
@@ -340,6 +340,10 @@ export class ViewerToolbarElement extends CrLitElement {
 
   private getZoomInput_(): HTMLInputElement {
     return this.shadowRoot.querySelector('#zoom-controls input')!;
+  }
+
+  protected onZoomBlur_() {
+    this.onZoomChange_();
   }
 
   protected onZoomChange_() {
@@ -473,6 +477,10 @@ export class ViewerToolbarElement extends CrLitElement {
         this.enableUndoRedo;
   }
 
+  protected onUndoClick_() {
+    this.undo();
+  }
+
   /**
    * Undo an annotation stroke, if possible.
    */
@@ -490,6 +498,10 @@ export class ViewerToolbarElement extends CrLitElement {
     this.updateCanUndoRedo_();
     this.fire('strokes-updated', this.currentStroke);
     record(UserAction.UNDO_INK2);
+  }
+
+  protected onRedoClick_() {
+    this.redo();
   }
 
   /**

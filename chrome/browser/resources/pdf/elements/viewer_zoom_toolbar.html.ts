@@ -9,7 +9,7 @@ import type {ViewerZoomToolbarElement} from './viewer_zoom_toolbar.js';
 export function getHtml(this: ViewerZoomToolbarElement) {
   return html`<!--_html_template_start_-->
 <div id="zoom-buttons">
-  <viewer-zoom-button id="fitButton" @fabclick="${this.fitToggle}"
+  <viewer-zoom-button id="fitButton" @fabclick="${this.onFitButtonFabclick_}"
       tooltips="$i18n{tooltipFitToPage},$i18n{tooltipFitToWidth}"
       .keyboardNavigationActive="${this.keyboardNavigationActive_}"
       icons="pdf:fullscreen-exit cr:fullscreen">
@@ -18,12 +18,12 @@ export function getHtml(this: ViewerZoomToolbarElement) {
       icons="pdf:add"
       tooltips="$i18n{tooltipZoomIn}"
       .keyboardNavigationActive="${this.keyboardNavigationActive_}"
-      @fabclick="${this.zoomIn}"></viewer-zoom-button>
+      @fabclick="${this.onZoomInFabclick_}"></viewer-zoom-button>
   <viewer-zoom-button id="zoom-out-button"
       icons="pdf:remove"
       tooltips="$i18n{tooltipZoomOut}"
       .keyboardNavigationActive="${this.keyboardNavigationActive_}"
-      @fabclick="${this.zoomOut}"></viewer-zoom-button>
+      @fabclick="${this.onZoomOutFabclick_}"></viewer-zoom-button>
 </div>
 <!--_html_template_end_-->`;
 }
