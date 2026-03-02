@@ -76,7 +76,9 @@ export function getHtml(this: AppElement) {
       Load More
     </cr-button>
   </div>
-  <div id="empty-state-container" ?hidden="${this.computeHasContent()}">
+  <div id="empty-state-container"
+      class="sp-scroller"
+      ?hidden="${this.computeHasContent()}">
     <sp-empty-state image-path="${this.contentState_.imagePath}"
         dark-image-path="${this.contentState_.darkImagePath}"
         heading="${this.contentState_.heading}"

@@ -114,18 +114,21 @@
   padding-right: calc(var(--sp-card-block-padding) * 2);
 }
 
-.sp-scroller::-webkit-scrollbar-track {
+.sp-scroller::-webkit-scrollbar-track,
+#empty-state-container::-webkit-scrollbar-track {
   margin-bottom: 6px;
   margin-top: 6px;
 }
 
 /* Hide the scrollbar corner */
-#containerScroller::-webkit-scrollbar-corner {
+#containerScroller::-webkit-scrollbar-corner,
+#empty-state-container::-webkit-scrollbar-corner {
   background-color: transparent;
 }
 
 /* Set the horizontal scrollbar height to match the gutter space */
-#containerScroller::-webkit-scrollbar:horizontal {
+#containerScroller::-webkit-scrollbar:horizontal,
+#empty-state-container::-webkit-scrollbar:horizontal {
   height: var(--sp-card-block-padding);
 }
 
