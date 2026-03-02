@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/chrome_webui_url_constants.h"
 #include "ash/constants/web_app_id_constants.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/test/test_new_window_delegate.h"
@@ -17,7 +18,6 @@
 #include "chrome/browser/apps/app_service/app_service_test.h"
 #include "chrome/browser/ash/eche_app/app_id.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/privacy/mojom/app_permission_handler.mojom.h"
-#include "chrome/common/url_constants.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
@@ -311,26 +311,29 @@ TEST_F(AppPermissionHandlerTest, GetSystemAppsThatUseMicrophone) {
 }
 
 TEST_F(AppPermissionHandlerTest, OpenCameraBrowserPermissionSettings) {
-  EXPECT_CALL(new_window_delegate(),
-              OpenUrl(GURL(chrome::kBrowserCameraPermissionsSettingsURL),
-                      ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
-                      ash::NewWindowDelegate::Disposition::kSwitchToTab));
+  EXPECT_CALL(
+      new_window_delegate(),
+      OpenUrl(GURL(ash::chrome_urls::kChromeUICameraPermissionsSettingsURL),
+              ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+              ash::NewWindowDelegate::Disposition::kSwitchToTab));
   OpenBrowserPermissionSettings(apps::PermissionType::kCamera);
 }
 
 TEST_F(AppPermissionHandlerTest, OpenLocationBrowserPermissionSettings) {
-  EXPECT_CALL(new_window_delegate(),
-              OpenUrl(GURL(chrome::kBrowserLocationPermissionsSettingsURL),
-                      ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
-                      ash::NewWindowDelegate::Disposition::kSwitchToTab));
+  EXPECT_CALL(
+      new_window_delegate(),
+      OpenUrl(GURL(ash::chrome_urls::kChromeUILocationPermissionsSettingsURL),
+              ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+              ash::NewWindowDelegate::Disposition::kSwitchToTab));
   OpenBrowserPermissionSettings(apps::PermissionType::kLocation);
 }
 
 TEST_F(AppPermissionHandlerTest, OpenMicrophoneBrowserPermissionSettings) {
-  EXPECT_CALL(new_window_delegate(),
-              OpenUrl(GURL(chrome::kBrowserMicrophonePermissionsSettingsURL),
-                      ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
-                      ash::NewWindowDelegate::Disposition::kSwitchToTab));
+  EXPECT_CALL(
+      new_window_delegate(),
+      OpenUrl(GURL(ash::chrome_urls::kChromeUIMicrophonePermissionsSettingsURL),
+              ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+              ash::NewWindowDelegate::Disposition::kSwitchToTab));
   OpenBrowserPermissionSettings(apps::PermissionType::kMicrophone);
 }
 

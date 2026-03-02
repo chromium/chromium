@@ -109,6 +109,10 @@ inline constexpr char kFaceGazeLearnMoreURL[] =
 inline constexpr char kFingerprintLearnMoreURL[] =
     "https://support.google.com/chromebook?p=chromebook_fingerprint";
 
+// URL of the Google account language selection page.
+inline constexpr char kGoogleAccountLanguagesURL[] =
+    "https://myaccount.google.com/language";
+
 // The URL for the "Learn more" page when the user tries to clean up their
 // Google Drive offline storage in the OS settings page.
 inline constexpr char kGoogleDriveCleanUpStorageLearnMoreURL[] =

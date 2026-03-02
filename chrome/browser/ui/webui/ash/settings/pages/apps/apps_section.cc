@@ -7,6 +7,7 @@
 #include <array>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/chrome_webui_url_constants.h"
 #include "ash/constants/url_constants.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
@@ -25,7 +26,6 @@
 #include "chrome/browser/ui/webui/ash/settings/pages/system_preferences/startup_section.h"
 #include "chrome/browser/ui/webui/ash/settings/search/search_tag_registry.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_features.h"
-#include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/os_settings_resources.h"
 #include "chromeos/ash/experiences/arc/app/arc_app_constants.h"
@@ -617,8 +617,9 @@ void AppsSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddString("appManagementDeviceName",
                          ui::GetChromeOSDeviceName());
 
-  html_source->AddString("appNotificationsBrowserSettingsURL",
-                         chrome::kAppNotificationsBrowserSettingsURL);
+  html_source->AddString(
+      "appNotificationsBrowserSettingsURL",
+      ash::chrome_urls::kChromeUIAppNotificationsBrowserSettingsURL);
 
   // We have 2 variants of Android apps settings. Default case, when the Play
   // Store app exists we show expandable section that allows as to

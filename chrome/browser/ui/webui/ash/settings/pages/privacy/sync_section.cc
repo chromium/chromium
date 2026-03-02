@@ -6,6 +6,7 @@
 
 #include <array>
 
+#include "ash/constants/chrome_url_constants.h"
 #include "base/check_deref.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
@@ -16,7 +17,6 @@
 #include "chrome/browser/ui/webui/ash/settings/pages/people/os_sync_handler.h"
 #include "chrome/browser/ui/webui/ash/settings/search/search_tag_registry.h"
 #include "chrome/browser/ui/webui/settings/shared_settings_localized_strings_provider.h"
-#include "chrome/common/url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
@@ -118,8 +118,8 @@ void SyncSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       google_util::AppendGoogleLocaleParam(
           GURL(base::FeatureList::IsEnabled(
                    syncer::kSyncEnableNewSyncDashboardUrl)
-                   ? chrome::kNewSyncGoogleDashboardURL
-                   : chrome::kLegacySyncGoogleDashboardURL),
+                   ? ash::chrome_external_urls::kNewSyncGoogleDashboardURL
+                   : ash::chrome_external_urls::kLegacySyncGoogleDashboardURL),
           g_browser_process->GetApplicationLocale())
           .spec();
 

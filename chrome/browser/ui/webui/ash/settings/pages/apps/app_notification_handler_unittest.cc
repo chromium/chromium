@@ -9,6 +9,7 @@
 #include <variant>
 #include <vector>
 
+#include "ash/constants/chrome_webui_url_constants.h"
 #include "ash/public/cpp/message_center_ash.h"
 #include "ash/public/cpp/test/test_new_window_delegate.h"
 #include "base/logging.h"
@@ -17,7 +18,6 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/app_service_test.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/apps/mojom/app_notification_handler.mojom.h"
-#include "chrome/common/url_constants.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/permission.h"
@@ -276,10 +276,12 @@ TEST_F(AppNotificationHandlerTest, TestAppListUpdated) {
 }
 
 TEST_F(AppNotificationHandlerTest, TestOpenBrowserNotificationSettings) {
-  EXPECT_CALL(new_window_delegate(),
-              OpenUrl(GURL(chrome::kAppNotificationsBrowserSettingsURL),
-                      ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
-                      ash::NewWindowDelegate::Disposition::kSwitchToTab));
+  EXPECT_CALL(
+      new_window_delegate(),
+      OpenUrl(
+          GURL(ash::chrome_urls::kChromeUIAppNotificationsBrowserSettingsURL),
+          ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+          ash::NewWindowDelegate::Disposition::kSwitchToTab));
   base::ListValue empty_args;
   OpenBrowserNotificationSettings();
 }

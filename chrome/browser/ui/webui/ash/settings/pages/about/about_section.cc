@@ -6,6 +6,7 @@
 
 #include <array>
 
+#include "ash/constants/chrome_url_constants.h"
 #include "ash/constants/chrome_webui_url_constants.h"
 #include "ash/constants/url_constants.h"
 #include "ash/constants/webui_url_constants.h"
@@ -30,7 +31,6 @@
 #include "chrome/browser/ui/webui/settings/about_handler.h"
 #include "chrome/browser/ui/webui/version/version_ui.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/common/url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/dbus/constants/dbus_switches.h"
@@ -397,10 +397,10 @@ void AboutSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
           l10n_util::GetStringUTF16(IDS_ABOUT_VERSION_COPYRIGHT),
           base::Time::Now()));
 
-  html_source->AddString(
-      "aboutProductLicenseChromium",
-      l10n_util::GetStringFUTF16(IDS_VERSION_UI_LICENSE_CHROMIUM,
-                                 chrome::kChromiumProjectURL));
+  html_source->AddString("aboutProductLicenseChromium",
+                         l10n_util::GetStringFUTF16(
+                             IDS_VERSION_UI_LICENSE_CHROMIUM,
+                             ash::chrome_external_urls::kChromiumProjectURL));
   html_source->AddString(
       "aboutProductLicenseOther",
       l10n_util::GetStringUTF16(IDS_VERSION_UI_LICENSE_OTHER));

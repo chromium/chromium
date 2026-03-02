@@ -6,13 +6,13 @@
 
 #include <algorithm>
 
+#include "ash/constants/chrome_webui_url_constants.h"
 #include "ash/constants/web_app_id_constants.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/eche_app/app_id.h"
-#include "chrome/common/url_constants.h"
 #include "components/services/app_service/public/cpp/permission.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "url/gurl.h"
@@ -111,13 +111,13 @@ void AppPermissionHandler::OpenBrowserPermissionSettings(
 
   switch (permission_type) {
     case apps::PermissionType::kCamera:
-      url = GURL(chrome::kBrowserCameraPermissionsSettingsURL);
+      url = GURL(ash::chrome_urls::kChromeUICameraPermissionsSettingsURL);
       break;
     case apps::PermissionType::kLocation:
-      url = GURL(chrome::kBrowserLocationPermissionsSettingsURL);
+      url = GURL(ash::chrome_urls::kChromeUILocationPermissionsSettingsURL);
       break;
     case apps::PermissionType::kMicrophone:
-      url = GURL(chrome::kBrowserMicrophonePermissionsSettingsURL);
+      url = GURL(ash::chrome_urls::kChromeUIMicrophonePermissionsSettingsURL);
       break;
     case apps::PermissionType::kUnknown:
     case apps::PermissionType::kNotifications:

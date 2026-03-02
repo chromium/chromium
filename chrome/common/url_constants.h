@@ -25,6 +25,10 @@
 #include "content/public/common/url_constants.h"
 #include "net/net_buildflags.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ash/constants/chrome_url_constants.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 namespace chrome {
 
 // "Learn more" URL linked in the dialog to cast using a code.
@@ -48,10 +52,6 @@ inline constexpr char kAutomaticSettingsResetLearnMoreURL[] =
 inline constexpr char kAdvancedProtectionDownloadLearnMoreURL[] =
     "https://support.google.com/accounts/accounts?p=safe-browsing";
 
-// "Chrome Settings" URL for website notifications linked out from OSSettings.
-inline constexpr char kAppNotificationsBrowserSettingsURL[] =
-    "chrome://settings/content/notifications";
-
 // "Chrome Settings" URL for the appearance page.
 inline constexpr char kBrowserSettingsSearchEngineURL[] =
     "chrome://settings/search";
@@ -63,18 +63,6 @@ inline constexpr const char16_t kBatterySaverModeLearnMoreUrl[] =
 // The URL for providing help when the Bluetooth adapter is off.
 inline constexpr char kBluetoothAdapterOffHelpURL[] =
     "https://support.google.com/chrome?p=bluetooth";
-
-// "Chrome Settings" URL for website camera access permissions.
-inline constexpr char kBrowserCameraPermissionsSettingsURL[] =
-    "chrome://settings/content/camera";
-
-// "Chrome Settings" URL for website location access permissions.
-inline constexpr char kBrowserLocationPermissionsSettingsURL[] =
-    "chrome://settings/content/location";
-
-// "Chrome Settings" URL for website microphone access permissions.
-inline constexpr char kBrowserMicrophonePermissionsSettingsURL[] =
-    "chrome://settings/content/microphone";
 
 // "Learn more" URL shown in the dialog to enable cloud services for Cast.
 inline constexpr char kCastCloudServicesHelpURL[] =
@@ -188,6 +176,10 @@ inline constexpr char kChromeUIUntrustedNewTabPageUrl[] =
 
 // The URL for the Chromium project used in the About dialog.
 inline constexpr char16_t kChromiumProjectURL[] = u"https://www.chromium.org/";
+#if BUILDFLAG(IS_CHROMEOS)
+static_assert(std::u16string_view(kChromiumProjectURL) ==
+              ash::chrome_external_urls::kChromiumProjectURL);
+#endif
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 // The URL for the "Clear browsing data in Chrome" help center article.
@@ -267,10 +259,6 @@ inline constexpr char kRelatedWebsiteSetsLearnMoreURL[] =
 // Url to a blogpost about Flash deprecation.
 inline constexpr char kFlashDeprecationLearnMoreURL[] =
     "https://blog.chromium.org/2017/07/so-long-and-thanks-for-all-flash.html";
-
-// URL of the Google account language selection page.
-inline constexpr char kGoogleAccountLanguagesURL[] =
-    "https://myaccount.google.com/language";
 
 // URL of the 'Activity controls' section of the privacy settings page.
 inline constexpr char kGoogleAccountActivityControlsURL[] =
@@ -539,6 +527,10 @@ inline constexpr char16_t kSettingsSearchHelpURL[] =
 // The URL for the Learn More page about Sync and Google services.
 inline constexpr char kSyncAndGoogleServicesLearnMoreURL[] =
     "https://support.google.com/chrome?p=syncgoogleservices";
+#if BUILDFLAG(IS_CHROMEOS)
+static_assert(std::string_view(kSyncAndGoogleServicesLearnMoreURL) ==
+              ash::chrome_external_urls::kSyncAndGoogleServicesLearnMoreURL);
+#endif
 
 // The URL for the "Learn more" page on sync encryption.
 inline constexpr char16_t kSyncEncryptionHelpURL[] =
@@ -555,10 +547,18 @@ inline constexpr char kSyncErrorsHelpURL[] =
 // Legacy URL to the sync google dashboard.
 inline constexpr char kLegacySyncGoogleDashboardURL[] =
     "https://www.google.com/settings/chrome/sync";
+#if BUILDFLAG(IS_CHROMEOS)
+static_assert(std::string_view(kLegacySyncGoogleDashboardURL) ==
+              ash::chrome_external_urls::kLegacySyncGoogleDashboardURL);
+#endif
 
 // New URL to the sync google dashboard.
 inline constexpr char kNewSyncGoogleDashboardURL[] =
     "https://chrome.google.com/data";
+#if BUILDFLAG(IS_CHROMEOS)
+static_assert(std::string_view(kNewSyncGoogleDashboardURL) ==
+              ash::chrome_external_urls::kNewSyncGoogleDashboardURL);
+#endif
 
 // The URL for the "Learn more" page for sync setup on the personal stuff page.
 inline constexpr char16_t kSyncLearnMoreURL[] =

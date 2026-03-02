@@ -17,7 +17,6 @@
 #include "chrome/browser/ui/webui/ash/settings/os_settings_features_util.h"
 #include "chrome/browser/ui/webui/ash/settings/search/search_tag_registry.h"
 #include "chrome/browser/ui/webui/settings/languages_handler.h"
-#include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_state.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -158,8 +157,9 @@ void AddLanguagesPageStringsV2(content::WebUIDataSource* html_source) {
 
   html_source->AddString(
       "googleAccountLanguagesURL",
-      net::AppendQueryParameter(GURL(chrome::kGoogleAccountLanguagesURL),
-                                "utm_source", "chrome-settings")
+      net::AppendQueryParameter(
+          GURL(ash::external_urls::kGoogleAccountLanguagesURL), "utm_source",
+          "chrome-settings")
           .spec());
 }
 

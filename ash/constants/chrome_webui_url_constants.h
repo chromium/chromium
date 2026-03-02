@@ -12,12 +12,31 @@ namespace ash::chrome_urls {
 // in the lexicographical order.
 // These need to be consistent with ones that Chrome provides.
 // See //chrome/common/webui_url_constants.cc for the check.
+
+// "Chrome Settings" URL for website notifications linked out from OSSettings.
+inline constexpr char kChromeUIAppNotificationsBrowserSettingsURL[] =
+    "chrome://settings/content/notifications";
+
+// "Chrome Settings" URL for website camera access permissions.
+inline constexpr char kChromeUICameraPermissionsSettingsURL[] =
+    "chrome://settings/content/camera";
+
 inline constexpr char kChromeUICertificateManagerDialogURL[] =
     "chrome://certificate-manager";
 inline constexpr char kChromeUIFlagsURL[] = "chrome://flags/";
 inline constexpr char kChromeUIFeedbackURL[] = "chrome://feedback/";
 inline constexpr char kChromeUIHistogramsURL[] = "chrome://histograms";
+
+// "Chrome Settings" URL for website location access permissions.
+inline constexpr char kChromeUILocationPermissionsSettingsURL[] =
+    "chrome://settings/content/location";
+
 inline constexpr char16_t kChromeUIManagementURL16[] = u"chrome://management";
+
+// "Chrome Settings" URL for website microphone access permissions.
+inline constexpr char kChromeUIMicrophonePermissionsSettingsURL[] =
+    "chrome://settings/content/microphone";
+
 inline constexpr char kChromeUINewTabURL[] = "chrome://newtab/";
 inline constexpr char kChromeUISettingsHost[] = "settings";
 inline constexpr char kChromeUISettingsURL[] = "chrome://settings/";
