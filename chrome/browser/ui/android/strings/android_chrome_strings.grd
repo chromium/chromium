@@ -515,6 +515,9 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
       <message name="IDS_SITE_SEARCH_LIST_MENU_MAKE_DEFAULT" desc="Option in site search list menu. User can click the 'Make default' option to make the selected option the default search engine.">
         Make default
       </message>
+      <message name="IDS_SITE_SEARCH_LIST_MENU_ACTIVATE" desc="Option in site search list menu. User can click the 'Activate' option to activate the selected option.">
+        Activate
+      </message>
       <message name="IDS_SITE_SEARCH_LIST_MENU_DELETE" desc="Option in site search list menu. User can click the 'Delete' option to remove the search engine.">
         Delete
       </message>
