@@ -17,6 +17,12 @@ python_library("generate_profile_py") {
   data = [ "//.vpython3" ]
 }
 
+python_library("generate_profile_webview_py") {
+  testonly = true
+  pydeps_file = "//tools/pgo/generate_profile_webview.pydeps"
+  data = [ "//.vpython3" ]
+}
+
 template("generate_profile_test") {
   script_test(target_name) {
     script = "//tools/pgo/generate_profile.py"
@@ -59,5 +65,33 @@ if (defined(android_app_secondary_abi)) {
       "generate_profile_android_trichrome_chrome_64_32_bundle") {
     browser_name = "android-trichrome-chrome-64-32-bundle"
     suffix = "_android_trichrome_chrome_64_32_bundle"
+  }
+
+  script_test("generate_profile_android_webview_64") {
+    script = "//tools/pgo/generate_profile_webview.py"
+
+    # Stream logcat from device (doesn't seem to fully work yet).
+    enable_android_wrapper = true
+
+    args = [
+      # Assume that we are running this script from the output directory.
+      "--builddir",
+      ".",
+    ]
+
+    deps = [ ":generate_profile_webview_py" ]
+
+    data_deps = []
+    if (enable_chrome_android_internal) {
+      data_deps += [
+        "//chrome/test:telemetry_perf_tests_android_clank_webview_64_32_bundle",
+      ]
+    } else {
+      data_deps +=
+          [ "//chrome/test:telemetry_perf_tests_android_webview_bundle" ]
+    }
+
+    # This avoids generate_profile_webview.py attempting to download it on demand.
+    data = [ "${clang_base_path}/bin/llvm-profdata" ]
   }
 }

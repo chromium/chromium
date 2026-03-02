@@ -2581,6 +2581,7 @@ _GENERIC_PYDEPS_FILES = [
     "tools/metrics/histograms/generate_allowlist_from_histograms_file.pydeps",
     'tools/perf/process_perf_results.pydeps',
     'tools/pgo/generate_profile.pydeps',
+    'tools/pgo/generate_profile_webview.pydeps',
 ]
 
 _ALL_PYDEPS_FILES = _ANDROID_SPECIFIC_PYDEPS_FILES + _GENERIC_PYDEPS_FILES

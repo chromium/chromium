@@ -130,6 +130,16 @@ if (is_android) {
     ]
   }
 
+  group("telemetry_chrome_test_android_webview_bundle") {
+    testonly = true
+    data_deps = [
+      ":telemetry_chrome_test",
+      "//android_webview:system_webview${_webview_bitness_if_needed}_bundle",
+      "//android_webview/test:webview_instrumentation_apk",
+      "//android_webview/tools/system_webview_shell:system_webview_shell_apk",
+    ]
+  }
+
   group("telemetry_chrome_test_android_trichrome_chrome_bundle") {
     testonly = true
 
