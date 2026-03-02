@@ -18,10 +18,9 @@ enum PolicyValueType {
 };
 
 // This union includes all the types that can be used to specify a policy's
-// parameter.
+// parameter, except for `kNull`, which is mapped to a null value for the union object.
 // TODO(crbug.com/1119481): Add the following types: inc/dec int, inc double, set.
 union PolicyValue {
-  bool null_value;
   bool bool_value;
   double dec_double_value;
   int32 enum_value;

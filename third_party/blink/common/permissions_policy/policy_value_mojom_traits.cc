@@ -22,10 +22,18 @@ bool UnionTraits<blink::mojom::PolicyValueDataView, blink::PolicyValue>::Read(
       out->SetType(blink::mojom::PolicyValueType::kEnum);
       out->SetIntValue(in.enum_value());
       return true;
-    case blink::mojom::PolicyValueDataView::Tag::kNullValue:
-      break;
   }
-  NOTREACHED();
+  return false;
+}
+
+bool UnionTraits<blink::mojom::PolicyValueDataView, blink::PolicyValue>::IsNull(
+    const blink::PolicyValue& in) {
+  return in.Type() == blink::mojom::PolicyValueType::kNull;
+}
+
+void UnionTraits<blink::mojom::PolicyValueDataView,
+                 blink::PolicyValue>::SetToNull(blink::PolicyValue* out) {
+  out->SetType(blink::mojom::PolicyValueType::kNull);
 }
 
 }  // namespace mojo

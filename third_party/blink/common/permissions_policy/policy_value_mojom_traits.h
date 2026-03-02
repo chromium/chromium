@@ -20,7 +20,7 @@ struct BLINK_COMMON_EXPORT
       const blink::PolicyValue& value) {
     switch (value.Type()) {
       case blink::mojom::PolicyValueType::kNull:
-        return blink::mojom::PolicyValueDataView::Tag::kNullValue;
+        break;
       case blink::mojom::PolicyValueType::kBool:
         return blink::mojom::PolicyValueDataView::Tag::kBoolValue;
       case blink::mojom::PolicyValueType::kDecDouble:
@@ -31,7 +31,6 @@ struct BLINK_COMMON_EXPORT
 
     NOTREACHED();
   }
-  static bool null_value(const blink::PolicyValue& value) { return false; }
   static bool bool_value(const blink::PolicyValue& value) {
     return value.BoolValue();
   }
@@ -43,6 +42,8 @@ struct BLINK_COMMON_EXPORT
   }
   static bool Read(blink::mojom::PolicyValueDataView in,
                    blink::PolicyValue* out);
+  static bool IsNull(const blink::PolicyValue& in);
+  static void SetToNull(blink::PolicyValue* out);
 };
 
 }  // namespace mojo
