@@ -107,15 +107,6 @@ CreateSnapshotProviderInfoForVideoFrame(
     std::optional<gfx::Size> scaled_size = std::nullopt,
     bool reinterpret_video_as_srgb = false);
 
-// Creates a CanvasSnapshotProvider which is appropriate for drawing VideoFrame
-// objects into. Some callers to CreateImageFromVideoFrame() may choose to cache
-// their snapshot providers. If `raster_context_provider` is null a software
-// snapshot provider will be returned.
-PLATFORM_EXPORT std::unique_ptr<CanvasSnapshotProvider>
-CreateSnapshotProviderForVideo(
-    const CanvasSnapshotProvider::Info& info,
-    viz::RasterContextProvider* raster_context_provider = nullptr);
-
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_VIDEO_FRAME_IMAGE_UTIL_H_

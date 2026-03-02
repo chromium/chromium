@@ -29,9 +29,6 @@ namespace blink {
 namespace {
 
 constexpr auto kTestSize = gfx::Size(64, 64);
-constexpr auto kTestFormat = viz::SinglePlaneFormat::kRGBA_8888;
-constexpr auto kTestAlphaType = kPremul_SkAlphaType;
-constexpr auto kTestColorSpace = gfx::ColorSpace::CreateSRGB();
 
 class AcceleratedCompositingTestPlatform
     : public blink::TestingPlatformSupport {
@@ -258,14 +255,6 @@ TEST_P(VideoFrameImageUtilTest, AcceleratedImageIsCreated) {
 
   auto image = DoCreateImageFromVideoFrame(texture_frame);
   EXPECT_TRUE(image->IsTextureBacked());
-}
-
-TEST_P(VideoFrameImageUtilTest, CreateSnapshotProviderForVideoFrame) {
-  auto provider = CreateSnapshotProviderForVideo(
-      {kTestAlphaType, kTestColorSpace, kTestFormat, kTestSize},
-      raster_context_provider());
-  ASSERT_TRUE(provider);
-  EXPECT_EQ(provider->IsAccelerated(), expect_accelerated_images());
 }
 
 }  // namespace blink
