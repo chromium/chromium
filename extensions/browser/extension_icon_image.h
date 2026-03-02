@@ -126,7 +126,12 @@ class IconImage : public ExtensionRegistryObserver {
   // asynchronous from creation).
   bool did_complete_initial_load_;
 
-  base::ObserverList<Observer>::Unchecked observers_;
+  // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
+  base::ObserverList<
+      Observer,
+      /*check_empty=*/false,
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>::Unchecked
+      observers_;
 
   raw_ptr<Source, DanglingUntriaged> source_;  // Owned by ImageSkia storage.
   gfx::ImageSkia image_skia_;

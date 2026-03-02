@@ -211,8 +211,12 @@ class ExtensionRegistry : public KeyedService {
   // subset of `enabled_extensions_`.
   ExtensionSet ready_extensions_;
 
-  base::ObserverList<ExtensionRegistryObserver>::UncheckedAndDanglingUntriaged
-      observers_;
+  // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
+  base::ObserverList<
+      ExtensionRegistryObserver,
+      /*check_empty=*/false,
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>::
+      UncheckedAndDanglingUntriaged observers_;
 
   const raw_ptr<content::BrowserContext> browser_context_;
 };

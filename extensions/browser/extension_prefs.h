@@ -951,7 +951,12 @@ class ExtensionPrefs : public KeyedService {
 
   bool extensions_disabled_;
 
-  base::ObserverList<ExtensionPrefsObserver>::Unchecked observer_list_;
+  // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
+  base::ObserverList<
+      ExtensionPrefsObserver,
+      /*check_empty=*/false,
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>::Unchecked
+      observer_list_;
 };
 
 }  // namespace extensions
