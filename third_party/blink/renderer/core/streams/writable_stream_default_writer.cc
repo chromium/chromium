@@ -486,6 +486,8 @@ std::optional<double> WritableStreamDefaultWriter::GetDesiredSizeInternal()
 void WritableStreamDefaultWriter::ResetReadyPromise(ScriptState* script_state) {
   ready_resolver_ =
       MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
+  // There is no guarantee that a ready promise will ever be resolved.
+  ready_resolver_->SuppressDetachCheck();
 }
 
 void WritableStreamDefaultWriter::Trace(Visitor* visitor) const {
