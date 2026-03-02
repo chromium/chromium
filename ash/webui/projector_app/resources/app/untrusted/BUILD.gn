@@ -15,6 +15,8 @@ mojo_files = [
   "ash/webui/projector_app/public/mojom/projector_types.mojom-webui.ts",
 ]
 
+ts_files = [ "untrusted_projector_browser_proxy.ts" ]
+
 preprocess_if_expr("copy_mojo_ts") {
   visibility = [ ":build_ts" ]
   in_folder = root_gen_dir
@@ -26,15 +28,25 @@ preprocess_if_expr("copy_mojo_ts") {
   out_folder = "$target_gen_dir/preprocessed"
 }
 
+preprocess_if_expr("copy_ts") {
+  visibility = [ ":build_ts" ]
+  in_folder = "."
+  in_files = ts_files
+  out_folder = "$target_gen_dir/preprocessed"
+}
+
 webui_ts_library("build_ts") {
   root_dir = "$target_gen_dir/preprocessed"
   out_dir = "$target_gen_dir/tsc"
 
-  in_files = mojo_files
+  in_files = mojo_files + ts_files
   composite = true
 
   deps = [ "//ui/webui/resources/mojo:build_ts" ]
-  extra_deps = [ ":copy_mojo_ts" ]
+  extra_deps = [
+    ":copy_mojo_ts",
+    ":copy_ts",
+  ]
 }
 
 generate_grd("mojom_grdp") {
@@ -48,13 +60,20 @@ generate_grd("mojom_grdp") {
   input_files_base_dir = rebase_path("$target_gen_dir/tsc", root_build_dir)
 }
 
+generate_grd("ts_grdp") {
+  grd_prefix = "ash_projector_app_untrusted"
+  out_grd = "$target_gen_dir/ts_resources.grdp"
+  deps = [ ":build_ts" ]
+  input_files = [ "untrusted_projector_browser_proxy.js" ]
+  input_files_base_dir = rebase_path("$target_gen_dir/tsc", root_build_dir)
+}
+
 generate_grd("build_untrusted_grd") {
   input_files = [
     "index.html",
     "launch.js",
     "sandboxed_load_time_data.js",
     "untrusted_app_comm_factory.js",
-    "untrusted_projector_browser_proxy.js",
     "assets/icon_16.png",
     "assets/icon_32.png",
     "assets/icon_48.png",
@@ -69,7 +88,13 @@ generate_grd("build_untrusted_grd") {
   grd_prefix = "ash_projector_app_untrusted"
   out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
 
-  deps = [ ":mojom_grdp" ]
-  grdp_files =
-      [ "$target_gen_dir/projector_mojo_bindings_webui_resources.grdp" ]
+  deps = [
+    ":mojom_grdp",
+    ":ts_grdp",
+  ]
+
+  grdp_files = [
+    "$target_gen_dir/projector_mojo_bindings_webui_resources.grdp",
+    "$target_gen_dir/ts_resources.grdp",
+  ]
 }

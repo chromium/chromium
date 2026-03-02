@@ -12,9 +12,6 @@ build_webui_tests("build") {
   is_chrome_untrusted = true
 
   ts_path_mappings = [
-    "chrome-untrusted://projector/untrusted_projector_browser_proxy.js|" + rebase_path(
-            "//ash/webui/projector_app/resources/app/untrusted/untrusted_projector_browser_proxy.js",
-            target_gen_dir),
     "chrome-untrusted://projector/*|" + rebase_path(
             "$root_gen_dir/ash/webui/projector_app/resources/app/untrusted/tsc/*",
             target_gen_dir),
