@@ -161,8 +161,11 @@ const base::FeatureParam<bool> kForceGscInTabMode(
     false);
 
 // The user agent suffix to use for requests from the contextual tasks UI.
+// Version 1.0: Initial version/implementation.
+// Version 1.1: Client is capable of native suggestions.
+// Version 1.2: Client is capable of composebox camouflage.
 const base::FeatureParam<std::string> kContextualTasksUserAgentSuffix{
-    &kContextualTasks, "contextual-tasks-user-agent-suffix", "Cobrowsing/1.1"};
+    &kContextualTasks, "contextual-tasks-user-agent-suffix", "Cobrowsing/1.2"};
 
 const base::FeatureParam<bool> kEnableSteadyComposeboxVoiceSearch(
     &kContextualTasks,
