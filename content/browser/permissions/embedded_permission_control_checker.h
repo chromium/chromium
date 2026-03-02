@@ -32,8 +32,8 @@ class CONTENT_EXPORT EmbeddedPermissionControlChecker
  public:
   // Represents the source of embedded permission control.
   enum class Source {
-    // The request is from a <permission> element.
-    kPermissionElement,
+    // The request is from a <usermedia> element.
+    kUserMediaElement,
     // The request is from a <geolocation> element.
     kGeolocationElement,
     // The request is from an <install> element.

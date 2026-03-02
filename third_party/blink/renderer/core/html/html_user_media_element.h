@@ -27,6 +27,10 @@ class CORE_EXPORT HTMLUserMediaElement : public HTMLCapabilityElementBase {
 
   Vector<mojom::blink::PermissionDescriptorPtr> ParseType(
       const AtomicString& type);
+
+  // HTMLCapabilityElementBase:
+  mojom::blink::EmbeddedPermissionRequestDescriptorPtr
+  CreateEmbeddedPermissionRequestDescriptor() override;
 };
 
 // The custom type casting is required for the UserMediaElement OT because the

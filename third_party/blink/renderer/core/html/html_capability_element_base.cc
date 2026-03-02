@@ -565,13 +565,6 @@ void HTMLCapabilityElementBase::SetPreciseLocation(bool is_precise_location) {
   UpdateAppearance();
 }
 
-mojom::blink::EmbeddedPermissionRequestDescriptorPtr
-HTMLCapabilityElementBase::CreateEmbeddedPermissionRequestDescriptor() {
-  auto descriptor = EmbeddedPermissionRequestDescriptor::New();
-  descriptor->element_position = BoundsInWidget();
-  return descriptor;
-}
-
 void HTMLCapabilityElementBase::UpdatePermissionStatus() {
   if (std::ranges::any_of(permission_status_map_, [](const auto& status) {
         return status.value == MojoPermissionStatus::DENIED;

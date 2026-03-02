@@ -158,38 +158,34 @@ void PermissionServiceImpl::RegisterPageEmbeddedPermissionControl(
     std::vector<PermissionDescriptorPtr> permissions,
     blink::mojom::EmbeddedPermissionRequestDescriptorPtr descriptor,
     mojo::PendingRemote<EmbeddedPermissionControlClient> observer) {
-  // If the control has a detail, ensure the corresponding feature is enabled.
-  if (descriptor->detail) {
-    switch (descriptor->detail->which()) {
-      case blink::mojom::EmbeddedPermissionControlDescriptorExtension::Tag::
-          kGeolocation:
-        if (!base::FeatureList::IsEnabled(
-                blink::features::kGeolocationElement)) {
-          bad_message::ReceivedBadMessage(
-              context_->render_frame_host()->GetProcess(),
-              bad_message::PSI_REGISTER_PERMISSION_ELEMENT_WITHOUT_FEATURE);
-          return;
-        }
-        break;
-      case blink::mojom::EmbeddedPermissionControlDescriptorExtension::Tag::
-          kInstall:
-        if (!base::FeatureList::IsEnabled(blink::features::kInstallElement)) {
-          bad_message::ReceivedBadMessage(
-              context_->render_frame_host()->GetProcess(),
-              bad_message::PSI_REGISTER_PERMISSION_ELEMENT_WITHOUT_FEATURE);
-          return;
-        }
-        break;
-    }
-  }
-
-  if (!descriptor->detail &&
-      !base::FeatureList::IsEnabled(blink::features::kUserMediaElement) &&
-      !base::FeatureList::IsEnabled(blink::features::kWebAppInstallation)) {
-    bad_message::ReceivedBadMessage(
-        context_->render_frame_host()->GetProcess(),
-        bad_message::PSI_REGISTER_PERMISSION_ELEMENT_WITHOUT_FEATURE);
-    return;
+  switch (descriptor->detail->which()) {
+    case blink::mojom::EmbeddedPermissionControlDescriptorExtension::Tag::
+        kGeolocation:
+      if (!base::FeatureList::IsEnabled(blink::features::kGeolocationElement)) {
+        bad_message::ReceivedBadMessage(
+            context_->render_frame_host()->GetProcess(),
+            bad_message::PSI_REGISTER_PERMISSION_ELEMENT_WITHOUT_FEATURE);
+        return;
+      }
+      break;
+    case blink::mojom::EmbeddedPermissionControlDescriptorExtension::Tag::
+        kInstall:
+      if (!base::FeatureList::IsEnabled(blink::features::kInstallElement)) {
+        bad_message::ReceivedBadMessage(
+            context_->render_frame_host()->GetProcess(),
+            bad_message::PSI_REGISTER_PERMISSION_ELEMENT_WITHOUT_FEATURE);
+        return;
+      }
+      break;
+    case blink::mojom::EmbeddedPermissionControlDescriptorExtension::Tag::
+        kUserMedia:
+      if (!base::FeatureList::IsEnabled(blink::features::kUserMediaElement)) {
+        bad_message::ReceivedBadMessage(
+            context_->render_frame_host()->GetProcess(),
+            bad_message::PSI_REGISTER_PERMISSION_ELEMENT_WITHOUT_FEATURE);
+        return;
+      }
+      break;
   }
 
   WebContents* web_contents =
@@ -209,18 +205,20 @@ void PermissionServiceImpl::RegisterPageEmbeddedPermissionControl(
   }
 
   EmbeddedPermissionControlChecker::Source source =
-      EmbeddedPermissionControlChecker::Source::kPermissionElement;
-  if (descriptor->detail) {
-    switch (descriptor->detail->which()) {
-      case blink::mojom::EmbeddedPermissionControlDescriptorExtension::Tag::
-          kGeolocation:
-        source = EmbeddedPermissionControlChecker::Source::kGeolocationElement;
-        break;
-      case blink::mojom::EmbeddedPermissionControlDescriptorExtension::Tag::
-          kInstall:
-        source = EmbeddedPermissionControlChecker::Source::kInstallElement;
-        break;
-    }
+      EmbeddedPermissionControlChecker::Source::kUserMediaElement;
+  switch (descriptor->detail->which()) {
+    case blink::mojom::EmbeddedPermissionControlDescriptorExtension::Tag::
+        kGeolocation:
+      source = EmbeddedPermissionControlChecker::Source::kGeolocationElement;
+      break;
+    case blink::mojom::EmbeddedPermissionControlDescriptorExtension::Tag::
+        kInstall:
+      source = EmbeddedPermissionControlChecker::Source::kInstallElement;
+      break;
+    case blink::mojom::EmbeddedPermissionControlDescriptorExtension::Tag::
+        kUserMedia:
+      source = EmbeddedPermissionControlChecker::Source::kUserMediaElement;
+      break;
   }
   checker->CheckPageEmbeddedPermission(
       source, std::move(permission_names), std::move(observer),
@@ -262,13 +260,20 @@ void PermissionServiceImpl::RequestPageEmbeddedPermission(
     return;
   }
 
-  const base::Feature* required_feature = &blink::features::kUserMediaElement;
-  if (descriptor->detail) {
-    if (descriptor->detail->is_geolocation()) {
+  const base::Feature* required_feature = nullptr;
+  switch (descriptor->detail->which()) {
+    case blink::mojom::EmbeddedPermissionControlDescriptorExtension::Tag::
+        kGeolocation:
       required_feature = &blink::features::kGeolocationElement;
-    } else if (descriptor->detail->is_install()) {
+      break;
+    case blink::mojom::EmbeddedPermissionControlDescriptorExtension::Tag::
+        kInstall:
       required_feature = &blink::features::kInstallElement;
-    }
+      break;
+    case blink::mojom::EmbeddedPermissionControlDescriptorExtension::Tag::
+        kUserMedia:
+      required_feature = &blink::features::kUserMediaElement;
+      break;
   }
 
   if (!base::FeatureList::IsEnabled(*required_feature)) {

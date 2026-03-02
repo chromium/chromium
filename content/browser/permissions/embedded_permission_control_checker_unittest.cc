@@ -34,8 +34,8 @@ namespace content {
 
 namespace {
 
-enum class PermissionElementSource {
-  kPermission,
+enum class CapabilityElementSource {
+  kUserMedia,
   kGeolocation,
   kInstall,
 };
@@ -105,7 +105,7 @@ class EmbeddedPermissionControlCheckerTest
   std::unique_ptr<MockEmbeddedPermissionControlClient>
   CreateEmbeddedPermissionControlClient(
       std::vector<PermissionName> permissions,
-      PermissionElementSource source = PermissionElementSource::kPermission) {
+      CapabilityElementSource source = CapabilityElementSource::kUserMedia) {
     mojo::PendingRemote<EmbeddedPermissionControlClient> mojo_client;
     auto client = std::make_unique<MockEmbeddedPermissionControlClient>(
         mojo_client.InitWithNewPipeAndPassReceiver());
@@ -123,16 +123,19 @@ class EmbeddedPermissionControlCheckerTest
     auto request_descriptor =
         blink::mojom::EmbeddedPermissionRequestDescriptor::New();
     switch (source) {
-      case PermissionElementSource::kPermission:
-        // Do not set `detail` for generic sources.
+      case CapabilityElementSource::kUserMedia:
+        request_descriptor->detail = blink::mojom::
+            EmbeddedPermissionControlDescriptorExtension::NewUserMedia(
+                blink::mojom::UserMediaEmbeddedPermissionRequestDescriptor::
+                    New());
         break;
-      case PermissionElementSource::kGeolocation:
+      case CapabilityElementSource::kGeolocation:
         request_descriptor->detail = blink::mojom::
             EmbeddedPermissionControlDescriptorExtension::NewGeolocation(
                 blink::mojom::GeolocationEmbeddedPermissionRequestDescriptor::
                     New());
         break;
-      case PermissionElementSource::kInstall:
+      case CapabilityElementSource::kInstall:
         request_descriptor->detail = blink::mojom::
             EmbeddedPermissionControlDescriptorExtension::NewInstall(
                 blink::mojom::InstallEmbeddedPermissionRequestDescriptor::
@@ -247,7 +250,7 @@ TEST_F(GeolocationEmbeddedPermissionControlCheckerTest,
       permission_clients(kMaxPEPCPerPage);
   for (size_t i = 0; i < kMaxPEPCPerPage; ++i) {
     permission_clients[i] = CreateEmbeddedPermissionControlClient(
-        {PermissionName::GEOLOCATION}, PermissionElementSource::kPermission);
+        {PermissionName::GEOLOCATION}, CapabilityElementSource::kUserMedia);
     permission_clients[i]->ExpectEmbeddedPermissionControlRegistered();
   }
 
@@ -257,17 +260,17 @@ TEST_F(GeolocationEmbeddedPermissionControlCheckerTest,
       geolocation_clients(kMaxPEPCPerPage);
   for (size_t i = 0; i < kMaxPEPCPerPage; ++i) {
     geolocation_clients[i] = CreateEmbeddedPermissionControlClient(
-        {PermissionName::GEOLOCATION}, PermissionElementSource::kGeolocation);
+        {PermissionName::GEOLOCATION}, CapabilityElementSource::kGeolocation);
     geolocation_clients[i]->ExpectEmbeddedPermissionControlRegistered();
   }
 
   // Create one more client for each source, which should not be registered yet.
   auto pending_permission_client = CreateEmbeddedPermissionControlClient(
-      {PermissionName::GEOLOCATION}, PermissionElementSource::kPermission);
+      {PermissionName::GEOLOCATION}, CapabilityElementSource::kUserMedia);
   pending_permission_client->ExpectEmbeddedPermissionControlNotRegistered();
 
   auto pending_geolocation_client = CreateEmbeddedPermissionControlClient(
-      {PermissionName::GEOLOCATION}, PermissionElementSource::kGeolocation);
+      {PermissionName::GEOLOCATION}, CapabilityElementSource::kGeolocation);
   pending_geolocation_client->ExpectEmbeddedPermissionControlNotRegistered();
 
   // Disconnect one client from the permission element source.
@@ -302,14 +305,14 @@ TEST_F(InstallEmbeddedPermissionControlCheckerTest, InstallElementHigherLimit) {
   for (size_t i = 0; i < kMaxInstallElementsPerPage; ++i) {
     install_clients[i] = CreateEmbeddedPermissionControlClient(
         {PermissionName::WEB_APP_INSTALLATION},
-        PermissionElementSource::kInstall);
+        CapabilityElementSource::kInstall);
     install_clients[i]->ExpectEmbeddedPermissionControlRegistered();
   }
 
   // The 25th install element should not be registered yet.
   auto pending_install_client = CreateEmbeddedPermissionControlClient(
       {PermissionName::WEB_APP_INSTALLATION},
-      PermissionElementSource::kInstall);
+      CapabilityElementSource::kInstall);
   pending_install_client->ExpectEmbeddedPermissionControlNotRegistered();
 
   // Disconnect one install element.
@@ -326,7 +329,7 @@ TEST_F(InstallEmbeddedPermissionControlCheckerTest,
   for (size_t i = 0; i < kMaxPEPCPerPage; ++i) {
     permission_clients[i] = CreateEmbeddedPermissionControlClient(
         {PermissionName::WEB_APP_INSTALLATION},
-        PermissionElementSource::kPermission);
+        CapabilityElementSource::kUserMedia);
     permission_clients[i]->ExpectEmbeddedPermissionControlRegistered();
   }
 
@@ -337,19 +340,19 @@ TEST_F(InstallEmbeddedPermissionControlCheckerTest,
   for (size_t i = 0; i < kMaxInstallElementsPerPage; ++i) {
     install_clients[i] = CreateEmbeddedPermissionControlClient(
         {PermissionName::WEB_APP_INSTALLATION},
-        PermissionElementSource::kInstall);
+        CapabilityElementSource::kInstall);
     install_clients[i]->ExpectEmbeddedPermissionControlRegistered();
   }
 
   // Create one more client for each source, which should not be registered yet.
   auto pending_permission_client = CreateEmbeddedPermissionControlClient(
       {PermissionName::WEB_APP_INSTALLATION},
-      PermissionElementSource::kPermission);
+      CapabilityElementSource::kUserMedia);
   pending_permission_client->ExpectEmbeddedPermissionControlNotRegistered();
 
   auto pending_install_client = CreateEmbeddedPermissionControlClient(
       {PermissionName::WEB_APP_INSTALLATION},
-      PermissionElementSource::kInstall);
+      CapabilityElementSource::kInstall);
   pending_install_client->ExpectEmbeddedPermissionControlNotRegistered();
 
   // Disconnect one client from the permission element source.

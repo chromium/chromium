@@ -107,6 +107,15 @@ void HTMLUserMediaElement::AttributeChanged(
   HTMLCapabilityElementBase::AttributeChanged(params);
 }
 
+mojom::blink::EmbeddedPermissionRequestDescriptorPtr
+HTMLUserMediaElement::CreateEmbeddedPermissionRequestDescriptor() {
+  auto descriptor = mojom::blink::EmbeddedPermissionRequestDescriptor::New(
+      BoundsInWidget(),
+      mojom::blink::EmbeddedPermissionControlDescriptorExtension::NewUserMedia(
+          mojom::blink::UserMediaEmbeddedPermissionRequestDescriptor::New()));
+  return descriptor;
+}
+
 Vector<PermissionDescriptorPtr> HTMLUserMediaElement::ParseType(
     const AtomicString& type) {
   return ParsePermissionDescriptorsFromString(type);

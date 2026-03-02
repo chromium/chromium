@@ -98,14 +98,15 @@ interface PermissionObserver {
   OnPermissionStatusChange(PermissionStatus status);
 };
 
-// Interface that receives change events related to PEPC from the browser
-// process.
+// Interface that is implemented in the renderer and receives change events
+// related to capability element from the browser process.
 interface EmbeddedPermissionControlClient {
-  // Callback triggered when <permission> element is registered from browser
-  // process, to indicate if PEPC is allowed to be created or not. If PEPC is
-  // allowed to be created, the callback will be invoked with the status of the
-  // respective permissions. If PEPC is NOT allowed (i.e. in fenced frames) the
-  // PEPC object will clean up itself.
+  // Callback triggered when HTMLCapabilityElementBase is registered from
+  // the browser process, to indicate if the capability element is allowed to
+  // be created or not. If the capability element is allowed to be created, the
+  // callback will be invoked with the status of the respective permissions.
+  // If the capability element is NOT allowed (i.e. in fenced frames) the
+  // capability element object will clean up itself.
   OnEmbeddedPermissionControlRegistered(bool allow,
                                         array<PermissionStatus>? statuses);
 };
@@ -138,13 +139,23 @@ struct GeolocationEmbeddedPermissionRequestDescriptor {
 struct InstallEmbeddedPermissionRequestDescriptor {
 };
 
+// Hold extra data of request originated from dedicated user media element
+struct UserMediaEmbeddedPermissionRequestDescriptor {
+};
+
 // Union of element-specific details for embedded permission requests.
 union EmbeddedPermissionControlDescriptorExtension {
-  // Hold extra information, if the request comes from a dedicated <geolocation> element.
+  // Hold extra information, if the request comes from a dedicated
+  // <geolocation> element.
   GeolocationEmbeddedPermissionRequestDescriptor geolocation;
 
-  // Hold extra information, if the request comes from a dedicated <install> element.
+  // Hold extra information, if the request comes from a dedicated <install>
+  // element.
   InstallEmbeddedPermissionRequestDescriptor install;
+
+  // Hold extra information, if the request comes from a dedicated user media
+  // element.
+  UserMediaEmbeddedPermissionRequestDescriptor user_media;
 };
 
 // Holds information about the embedded permission request
@@ -154,8 +165,8 @@ struct EmbeddedPermissionRequestDescriptor {
   gfx.mojom.Rect element_position;
 
   // Element-specific details, if the request comes from a dedicated element
-  // like <geolocation>, or <install>. Null for generic <permission> element.
-  EmbeddedPermissionControlDescriptorExtension? detail;
+  // like <geolocation>, or <install>.
+  EmbeddedPermissionControlDescriptorExtension detail;
 };
 
 // The Permission service provides permission handling capabilities by exposing
@@ -163,19 +174,20 @@ struct EmbeddedPermissionRequestDescriptor {
 // start listening to permission changes.
 interface PermissionService {
   HasPermission(PermissionDescriptor permission) => (PermissionStatus status);
-  // Calling this method is only possible when the type attribute of
-  // <permission> element is set. Provide a pending remote
-  // `EmbeddedPermissionControlClient` so that it can receive notifications
-  // registered later by the browser process. The browser process should be able
-  // to observe the lifetime of the mojo pipe and be aware when a PEPC remote
-  // object has been destroyed.
+
+  // Calling this method to register a capability element. Provide a pending
+  // remote `EmbeddedPermissionControlClient` so that it can receive
+  // notifications registered later by the browser process. The browser process
+  // will then be able to observe the lifetime of the mojo pipe and be aware
+  // when a capability element remote object has been destroyed.
   RegisterPageEmbeddedPermissionControl(
     array<PermissionDescriptor> permissions,
     EmbeddedPermissionRequestDescriptor descriptor,
     pending_remote<EmbeddedPermissionControlClient> client);
   // Calling this method indicates the user has explicitly requested the
-  // permission by clicking on the `HTMLPermissionElement`. Asks for a list of
-  // permissions and returns `EmbeddedPermissionControlResult` defined above
+  // permission by clicking on the `HTMLCapabilityElementBase`. Asks for a list
+  // of permissions and returns `EmbeddedPermissionControlResult` defined
+  // above
   RequestPageEmbeddedPermission(array<PermissionDescriptor> permissions,
                                 EmbeddedPermissionRequestDescriptor descriptor)
       => (EmbeddedPermissionControlResult status);
@@ -192,7 +204,7 @@ interface PermissionService {
   AddPermissionObserver(PermissionDescriptor permission,
                         PermissionStatus last_known_status,
                         pending_remote<PermissionObserver> observer);
-  // Calling this method indicates that a `HTMLPermissionElement` subscribes
+  // Calling this method indicates that a `HTMLCapabilityElementBase` subscribes
   // |observer| to updates about changes to the current origin's access to
   // |permission|. This method is similar to `AddPermissionObserver` except it
   // also takes into account the device's permission statuses.
