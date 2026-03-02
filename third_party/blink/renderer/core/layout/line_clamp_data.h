@@ -134,14 +134,19 @@ class CORE_EXPORT LineClampAncestorChain final
     : public GarbageCollected<LineClampAncestorChain> {
  public:
   explicit LineClampAncestorChain(LayoutUnit end_border_padding)
-      : bfc_offset_(LayoutUnit()), end_border_padding_(end_border_padding) {}
+      : bfc_offset_(LayoutUnit()),
+        end_border_padding_(end_border_padding),
+        block_min_max_sizes_(
+            {.min_size = LayoutUnit(), .max_size = LayoutUnit::Max()}) {}
   LineClampAncestorChain(std::optional<LayoutUnit> bfc_offset,
                          LayoutUnit end_border_padding,
                          LayoutUnit end_margin,
+                         MinMaxSizes block_size_constraints,
                          const LineClampAncestorChain* parent)
       : bfc_offset_(bfc_offset),
         end_border_padding_(end_border_padding),
         end_margin_(end_margin),
+        block_min_max_sizes_(block_size_constraints),
         parent_(parent) {
     DCHECK(parent);
   }
@@ -155,7 +160,8 @@ class CORE_EXPORT LineClampAncestorChain final
       return this;
     } else {
       return MakeGarbageCollected<LineClampAncestorChain>(
-          new_bfc_offset, end_border_padding_, end_margin_, parent_);
+          new_bfc_offset, end_border_padding_, end_margin_,
+          block_min_max_sizes_, parent_);
     }
   }
 
@@ -185,6 +191,7 @@ class CORE_EXPORT LineClampAncestorChain final
   const std::optional<LayoutUnit> bfc_offset_;
   const LayoutUnit end_border_padding_;
   const LayoutUnit end_margin_;
+  const MinMaxSizes block_min_max_sizes_;
   const Member<const LineClampAncestorChain> parent_;
 };
 

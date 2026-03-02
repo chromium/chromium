@@ -836,14 +836,24 @@ inline const LayoutResult* BlockLayoutAlgorithm::Layout(
     // chain so we can properly compute the line-clamp container block size if
     // we clamp inside it.
     if (line_clamp_data_.data.IsMeasureUntilBfcOffset()) {
+      MinMaxSizes block_min_max_sizes;
+      if (ChildAvailableSize().block_size != kIndefiniteSize) {
+        block_min_max_sizes.min_size = block_min_max_sizes.max_size =
+            ChildAvailableSize().block_size + BorderPadding().BlockSum();
+      } else {
+        block_min_max_sizes = ComputeInitialMinMaxBlockSizes(
+            constraint_space, Node(), BorderPadding());
+      }
+
       DCHECK(constraint_space.GetLineClampAncestorChain());
       LayoutUnit end_margin =
           ComputeMarginsForSelf(constraint_space, Style()).block_end;
       line_clamp_data_.ancestor_chain =
           MakeGarbageCollected<LineClampAncestorChain>(
               container_builder_.BfcBlockOffset(), BorderPadding().block_end,
-              end_margin, constraint_space.GetLineClampAncestorChain());
-      }
+              end_margin, block_min_max_sizes,
+              constraint_space.GetLineClampAncestorChain());
+    }
   }
 
   LayoutUnit content_edge = BorderScrollbarPadding().block_start;

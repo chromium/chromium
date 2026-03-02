@@ -75,13 +75,27 @@ LayoutUnit LineClampAncestorChain::InnerFinalLineClampBlockSize(
   }
 
   if (parent_) {
+    // TODO(abotella@igalia.com): handle fills viewport quirk
+    // TODO(abotella@igalia.com): handle aspect-ratio
+
+    // Handling {min,max}-height
+    LayoutUnit clamped_size =
+        block_min_max_sizes_.ClampSizeToMinAndMax(block_size);
+    if (clamped_size != block_size ||
+        block_min_max_sizes_.max_size == block_size) {
+      margin_strut = MarginStrut();
+    }
+
     margin_strut.Append(end_margin_, /* is_quirky */ false);
 
+    // TODO(abotella@igalia.com): is this enough to correctly resolve the BFC
+    // offset of all ancestors, even when pushed by floats?
     LayoutUnit bfc_offset = bfc_offset_.value_or(bfc_offset_override);
     LayoutUnit parent_bfc_offset =
         parent_->bfc_offset_.value_or(bfc_offset_override);
     return parent_->InnerFinalLineClampBlockSize(
-        bfc_offset, bfc_offset + block_size - parent_bfc_offset, margin_strut);
+        bfc_offset, bfc_offset + clamped_size - parent_bfc_offset,
+        margin_strut);
   } else {
     DCHECK(bfc_offset_.has_value());
     DCHECK_EQ(*bfc_offset_, LayoutUnit());
