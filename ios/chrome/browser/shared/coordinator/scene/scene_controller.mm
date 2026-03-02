@@ -98,7 +98,7 @@
 #import "ios/chrome/browser/main/ui_bundled/ui_blocker_scene_agent.h"
 #import "ios/chrome/browser/main/ui_bundled/wrangled_browser.h"
 #import "ios/chrome/browser/metrics/model/tab_usage_recorder_browser_agent.h"
-#import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
+#import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/policy/model/cloud/user_policy_signin_service_factory.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
@@ -292,6 +292,46 @@ void InjectUnrealizedWebStates(Browser* browser, int count) {
   }
 }
 #endif  // !BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
+// TODO(crbug.com/429353384): Can InjectNTP be factored into another file?
+void InjectNTP(Browser* browser) {
+  // Don't inject an NTP for an empty web state list.
+  if (!browser->GetWebStateList()->count()) {
+    return;
+  }
+
+  // Don't inject an NTP on an NTP.
+  web::WebState* webState = browser->GetWebStateList()->GetActiveWebState();
+  if (IsUrlNtp(webState->GetVisibleURL())) {
+    return;
+  }
+
+  // Queue up start surface with active tab.
+  StartSurfaceRecentTabBrowserAgent* browser_agent =
+      StartSurfaceRecentTabBrowserAgent::FromBrowser(browser);
+  // This may be nil for an incognito browser.
+  if (browser_agent) {
+    browser_agent->SaveMostRecentTab();
+  }
+
+  // Inject a live NTP.
+  web::WebState::CreateParams create_params(browser->GetProfile());
+  std::unique_ptr<web::WebState> web_state =
+      web::WebState::Create(create_params);
+  std::vector<std::unique_ptr<web::NavigationItem>> items;
+  std::unique_ptr<web::NavigationItem> item(web::NavigationItem::Create());
+  item->SetURL(GURL(kChromeUINewTabURL));
+  items.push_back(std::move(item));
+  web_state->GetNavigationManager()->Restore(0, std::move(items));
+  if (!browser->GetProfile()->IsOffTheRecord()) {
+    NewTabPageTabHelper::CreateForWebState(web_state.get());
+    NewTabPageTabHelper::FromWebState(web_state.get())
+        ->SetShowStartSurface(true);
+  }
+  browser->GetWebStateList()->InsertWebState(
+      std::move(web_state),
+      WebStateList::InsertionParams::Automatic().Activate());
+}
 
 // Updates `data` with the Family Link member role associated to the primary
 // signed-in account, no-op if the account is not enrolled in Family Link.
@@ -1190,11 +1230,6 @@ void OnListFamilyMembersResponse(
   // the current webState.
   if (self.sceneState.profileState.appState.postCrashAction ==
       PostCrashAction::kShowNTPWithReturnToTab) {
-    StartSurfaceRecentTabBrowserAgent* browserAgent =
-        StartSurfaceRecentTabBrowserAgent::FromBrowser(browser);
-    if (browserAgent) {
-      browserAgent->SaveMostRecentTab();
-    }
     InjectNTP(browser);
   }
 
