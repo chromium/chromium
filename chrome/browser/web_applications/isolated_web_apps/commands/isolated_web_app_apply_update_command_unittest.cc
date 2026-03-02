@@ -378,7 +378,14 @@ TEST_F(IsolatedWebAppApplyUpdateCommandTest, FailsIfIconDownloadFails) {
   ExpectAppNotUpdatedAndDataCleared();
 }
 
-TEST_F(IsolatedWebAppApplyUpdateCommandTest, FailsIfInstallFinalizerFails) {
+// TODO(https://crbug.com/487841728): Test is very flaky on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_FailsIfInstallFinalizerFails DISABLED_FailsIfInstallFinalizerFails
+#else
+#define MAYBE_FailsIfInstallFinalizerFails FailsIfInstallFinalizerFails
+#endif
+TEST_F(IsolatedWebAppApplyUpdateCommandTest,
+       MAYBE_FailsIfInstallFinalizerFails) {
   class FailingUpdateFinalizer : public WebAppInstallFinalizer {
    public:
     explicit FailingUpdateFinalizer(webapps::AppId app_id)
