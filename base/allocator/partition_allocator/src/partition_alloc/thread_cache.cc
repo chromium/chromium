@@ -413,7 +413,11 @@ void ThreadCache::Init(PartitionRoot* root) {
 }
 
 bool ThreadCache::IsInitialized() {
-  return g_thread_cache_roots->load(std::memory_order_acquire) != nullptr;
+  PartitionRoot* root =
+      PA_UNSAFE_TODO(
+          g_thread_cache_roots[internal::kDefaultRootThreadCacheIndex])
+          .load(std::memory_order_acquire);
+  return root && root->settings_.with_thread_cache;
 }
 
 // static
