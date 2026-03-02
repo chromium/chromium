@@ -5,7 +5,7 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<org.chromium.components.browser_ui.widget.containment.ContainedLinearLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
@@ -33,4 +33,4 @@ found in the LICENSE file.
         android:text="@string/site_search_additional_sites_button_label"
         android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
 
-</org.chromium.components.browser_ui.widget.containment.ContainedLinearLayout>
+</LinearLayout>
