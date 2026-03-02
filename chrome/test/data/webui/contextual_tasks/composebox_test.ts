@@ -1772,6 +1772,89 @@ suite('ContextualTasksComposeboxTest', () => {
     assertEquals(0, composebox.files_.size);
   });
 
+  test('EnterKeyAfterSubmitDoesNotAddNewLine', async () => {
+    mockTimer.install();
+    const TEST_QUERY = 'test query';
+
+    const inputElement = composebox.$.input;
+    assertTrue(
+        isVisible(inputElement), 'Composebox input element should be visible');
+
+    // 1. Setup: Input text.
+    simulateUserInput(inputElement, TEST_QUERY);
+
+    // Advance timer to trigger the debounced autocomplete query.
+    mockTimer.tick(300);
+
+    // Wait for the component to actually request autocomplete
+    // before we mock the response, otherwise the response is ignored.
+    await mockSearchboxPageHandler.whenCalled('queryAutocomplete');
+
+    // 2. Mock Autocomplete Results.
+    await setupAutocompleteResults(searchboxCallbackRouterRemote, TEST_QUERY);
+
+    // Wait for the matches to be populated in the dropdown.
+    while (!composebox.getMatchesElement().result) {
+      mockTimer.tick(10);
+      await Promise.resolve();
+    }
+
+    const submitButton = getSubmitButton();
+    assertTrue(!!submitButton);
+    assertFalse(submitButton.disabled, 'Submit should be enabled');
+
+    // 3. Action: Simulate Enter press to submit
+    mockSearchboxPageHandler.reset();
+    pressEnter(inputElement);
+
+    await mockSearchboxPageHandler.whenCalled('openAutocompleteMatch');
+    assertEquals(
+        1, mockSearchboxPageHandler.getCallCount('openAutocompleteMatch'));
+
+    // Tick timer to allow Lit's update lifecycle to process the submit.
+    mockTimer.tick(0);
+
+    // 4. Wait for the UI to clear the input after submission.
+    await composebox.updateComplete;
+    await contextualTasksApp.updateComplete;
+    assertEquals(
+        '', inputElement.value, 'Input should be cleared after submit');
+
+    // 5. Action: Press Enter again on empty input.
+    mockSearchboxPageHandler.reset();
+    pressEnter(inputElement);
+
+    // Tick timer again for Lit updates.
+    mockTimer.tick(0);
+    await composebox.updateComplete;
+
+    // 6. Assert: No newline added, submit not called again.
+    assertFalse(inputElement.value.includes('\n'));
+    assertEquals(0, mockSearchboxPageHandler.getCallCount('submitQuery'));
+    assertEquals(
+        0, mockSearchboxPageHandler.getCallCount('openAutocompleteMatch'));
+  });
+
+
+  test('EnterKeyOnEmptyInputDoesNotAddNewLineOrSubmit', async () => {
+    const innerComposebox = contextualTasksApp.$.composebox.$.composebox;
+    const inputElement = innerComposebox.$.input;
+    const keydownDiv =
+        innerComposebox.shadowRoot.querySelector<HTMLElement>('#composebox');
+    assertTrue(!!keydownDiv);
+
+    assertEquals('', inputElement.value);
+    mockSearchboxPageHandler.reset();
+
+    // Action: Press Enter on empty input.
+    pressEnter(keydownDiv);
+    await microtasksFinished();
+
+    // Assert: No newline and no submission.
+    assertFalse(inputElement.value.includes('\n'));
+    assertEquals(0, mockSearchboxPageHandler.getCallCount('submitQuery'));
+  });
+
   test('Composebox upload disabled when uploading files', async () => {
     composebox.searchboxLayoutMode = '';
     composebox.contextMenuEnabled_ = true;
