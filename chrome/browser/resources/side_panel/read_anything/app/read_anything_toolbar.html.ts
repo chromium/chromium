@@ -65,20 +65,16 @@ export function getHtml(this: ReadAnythingToolbarElement) {
         </cr-button>
       ` : ''}
     </span>
-    ${!this.isImmersiveEnabled_ ? html`
-      <cr-button class="toolbar-button" id="rate"
+  ${!this.isImmersiveEnabled_ ? html`
+    <cr-button class="toolbar-button" id="rate"
           tabindex="${this.getRateTabIndex_()}"
           aria-label="${this.getVoiceSpeedLabel_()}"
           title="${this.i18n('voiceSpeedLabel')}"
           aria-haspopup="menu"
           @click="${this.onShowRateMenuClick_}">
           ${this.getFormattedSpeechRate_()}
-      </cr-button>
-    ` : ''}
-    <rate-menu id="rateMenu" .settingsPrefs="${this.settingsPrefs}"
-        @rate-change="${this.onRateChange_}">
-    </rate-menu>
-  ${!this.isImmersiveEnabled_ ? html`
+    </cr-button>
+
     <cr-icon-button class="toolbar-button" id="voice-selection" tabindex="-1"
         aria-label="$i18n{voiceSelectionLabel}"
         title="$i18n{voiceSelectionLabel}"
@@ -206,6 +202,9 @@ export function getHtml(this: ReadAnythingToolbarElement) {
   </cr-action-menu>
   `}'>
   </cr-lazy-render-lit>
+  <rate-menu id="rateMenu" .settingsPrefs="${this.settingsPrefs}"
+    @rate-change="${this.onRateChange_}">
+  </rate-menu>
   <highlight-menu
     id="highlightMenu"
     class="${this.isImmersiveEnabled_ ? 'settings-submenu' : ''}"
