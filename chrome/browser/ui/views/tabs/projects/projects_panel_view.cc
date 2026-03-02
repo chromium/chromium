@@ -54,8 +54,8 @@ constexpr int kClipRectRightMarginForShadow = 32;
 constexpr int kProjectPanelRightCornerRadius = 16;
 constexpr gfx::Insets kRegionInteriorMargins = gfx::Insets::VH(12, 12);
 constexpr int kShadowElevation = 2;
-// The padding around a list header.
-constexpr gfx::Insets kListHeaderPadding = gfx::Insets::VH(10, 20);
+constexpr gfx::Insets kListHeaderMargins = gfx::Insets::VH(10, 20);
+constexpr gfx::Insets kListsSeparatorMargins = gfx::Insets::VH(12, 20);
 
 constexpr base::TimeDelta kPanelShowAnimationDuration = base::Milliseconds(250);
 constexpr base::TimeDelta kPanelHideAnimationDuration = base::Milliseconds(200);
@@ -66,7 +66,7 @@ static bool disable_animations_for_testing_ = false;
 void SetListTitleProperties(views::Label& label) {
   label.SetTextStyle(views::style::TextStyle::STYLE_HEADLINE_5);
   label.SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_TO_HEAD);
-  label.SetProperty(views::kMarginsKey, kListHeaderPadding);
+  label.SetProperty(views::kMarginsKey, kListHeaderMargins);
 }
 
 void SetScrollViewProperties(views::ScrollView& scroll_view) {
@@ -174,6 +174,11 @@ ProjectsPanelView::ProjectsPanelView(BrowserWindowInterface* browser,
   }
 
   if (tab_groups::IsThreadsInProjectsPanelEnabled()) {
+    auto* separator =
+        content_container_->AddChildView(std::make_unique<views::Separator>());
+    separator->SetProperty(views::kMarginsKey, kListsSeparatorMargins);
+    separator->SetColorId(kColorProjectsPanelListsSeparator);
+
     auto* threads_list_title =
         content_container_->AddChildView(std::make_unique<views::Label>());
     threads_list_title->SetText(

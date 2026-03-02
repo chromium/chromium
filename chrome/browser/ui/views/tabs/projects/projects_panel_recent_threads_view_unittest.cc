@@ -41,7 +41,7 @@ const contextual_tasks::Thread& GetThread3() {
 }
 
 MATCHER_P(IsForThread, expected_thread, "") {
-  auto* label = views::AsViewClass<views::Label>(arg->children()[2]);
+  const views::Label* label = arg->title_for_testing();
   return base::UTF8ToUTF16(expected_thread.title) == label->GetText();
 }
 

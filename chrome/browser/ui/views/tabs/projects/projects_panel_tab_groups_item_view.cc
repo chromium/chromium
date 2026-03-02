@@ -37,40 +37,25 @@
 
 namespace {
 
-// Background color of the dragging image for this item.
-constexpr auto kDraggingImageBackgroundColor = ui::kColorSysSurface2;
-
-// Duration of the hover fade in/out animation.
-constexpr auto kHoverFadeAnimationDuration = base::Milliseconds(200);
-
 // The size of the more button.
 constexpr auto kMoreButtonSize = gfx::Size(24, 24);
 
-// The spacing between children in the Tab group item. Since FlexLayout does not
-// provide an easy way to apply this, the spacing is added to the children's
-// margins.
-constexpr int kSpacingBetweenChildren = 10;
-
 // Insets for the more button.
 constexpr gfx::Insets kMoreButtonMargins =
-    gfx::Insets::TLBR(0, kSpacingBetweenChildren, 0, 0);
+    gfx::Insets::TLBR(0, projects_panel::kListItemSpacingBetweenChildren, 0, 0);
 
 // Insets for share Tab icon.
 constexpr gfx::Insets kShareIconMargins =
-    gfx::Insets::TLBR(4, 4 + kSpacingBetweenChildren, 4, 4);
+    gfx::Insets::TLBR(4,
+                      4 + projects_panel::kListItemSpacingBetweenChildren,
+                      4,
+                      4);
 
 // The size of the Tab groups icon.
 constexpr int kTabGroupIconSize = 12;
 
 // The margins for the Tab groups icon.
 constexpr auto kTabGroupsIconMargins = gfx::Insets(6);
-
-// The margins for the Tab groups.
-constexpr auto kTabGroupsItemMargins = gfx::Insets(4);
-
-// Margins for Tab group title.
-constexpr gfx::Insets kTitleMargins =
-    gfx::Insets::TLBR(2, 2 + kSpacingBetweenChildren, 2, 2);
 
 // Height and width of shared Tab group icon and more button icon.
 constexpr int kTrailingIconSize = 16;
@@ -91,24 +76,11 @@ ProjectsPanelTabGroupsItemView::ProjectsPanelTabGroupsItemView(
                                  ? kTabGroupIcon
                                  : kTabGroupClosedIcon) {
   SetLayoutManager(std::make_unique<views::FlexLayout>())
-      ->SetInteriorMargin(kTabGroupsItemMargins)
+      ->SetInteriorMargin(projects_panel::kListItemMargins)
       .SetOrientation(views::LayoutOrientation::kHorizontal)
       .SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
 
-  auto* ink_drop = views::InkDrop::Get(this);
-  ink_drop->SetMode(views::InkDropHost::InkDropMode::ON);
-  ink_drop->SetLayerRegion(views::LayerRegion::kBelow);
-  ink_drop->SetBaseColor(ui::kColorSysStateHoverOnSubtle);
-  ink_drop->SetHighlightOpacity(1.0f);
-  ink_drop->GetInkDrop()->SetHoverHighlightFadeDuration(
-      kHoverFadeAnimationDuration);
-  views::HighlightPathGenerator::Install(
-      this, projects_panel::GetListItemHighlightPathGenerator());
-  views::FocusRing::Install(this);
-  views::FocusRing::Get(this)->SetPathGenerator(
-      projects_panel::GetListItemHighlightPathGenerator());
-  views::FocusRing::Get(this)->SetHaloInset(
-      projects_panel::kListItemFocusRingHaloInset);
+  projects_panel::ConfigureInkDropForButton(this);
 
   tab_group_icon_ = AddChildView(std::make_unique<views::ImageView>());
   tab_group_icon_->SetProperty(views::kMarginsKey, kTabGroupsIconMargins);
@@ -118,7 +90,8 @@ ProjectsPanelTabGroupsItemView::ProjectsPanelTabGroupsItemView(
   title_->SetTextStyle(views::style::STYLE_BODY_3);
   title_->SetHorizontalAlignment(gfx::ALIGN_TO_HEAD);
   title_->SetElideBehavior(gfx::ElideBehavior::FADE_TAIL);
-  title_->SetProperty(views::kMarginsKey, kTitleMargins);
+  title_->SetProperty(views::kMarginsKey,
+                      projects_panel::kListItemTitleMargins);
   title_->SetBackgroundColor(SK_ColorTRANSPARENT);
   title_->SetProperty(
       views::kFlexBehaviorKey,
@@ -130,7 +103,7 @@ ProjectsPanelTabGroupsItemView::ProjectsPanelTabGroupsItemView(
     shared_icon_ = AddChildView(std::make_unique<views::ImageView>());
     shared_icon_->SetProperty(views::kMarginsKey, kShareIconMargins);
     ui::ImageModel shared_group_image_model = ui::ImageModel::FromVectorIcon(
-        kPeopleGroupIcon, ui::kColorSysOnSurfaceSubtle, kTrailingIconSize);
+        kPeopleGroupIcon, kColorProjectsPanelButtonIcon, kTrailingIconSize);
     shared_icon_->SetImage(shared_group_image_model);
     shared_icon_->SetProperty(
         views::kElementIdentifierKey,
@@ -146,7 +119,7 @@ ProjectsPanelTabGroupsItemView::ProjectsPanelTabGroupsItemView(
       base::BindRepeating(&ProjectsPanelTabGroupsItemView::OnMoreButtonPressed,
                           base::Unretained(this))));
   ui::ImageModel menu_icon_image_model = ui::ImageModel::FromVectorIcon(
-      kBrowserToolsChromeRefreshIcon, ui::kColorSysOnSurfaceSubtle,
+      kBrowserToolsChromeRefreshIcon, kColorProjectsPanelButtonIcon,
       kTrailingIconSize);
   more_button_->SetPreferredSize(kMoreButtonSize);
   more_button_->SetImageModel(ButtonState::STATE_NORMAL, menu_icon_image_model);
@@ -172,7 +145,8 @@ ProjectsPanelTabGroupsItemView::ProjectsPanelTabGroupsItemView(
 
   SetNotifyEnterExitOnChild(true);
 
-  button_fade_animation_.SetSlideDuration(kHoverFadeAnimationDuration);
+  button_fade_animation_.SetSlideDuration(
+      projects_panel::kListItemHoverFadeAnimationDuration);
 
   SetCallback(base::BindRepeating(
       [](TabGroupPressedCallback callback, const base::Uuid& group_guid) {
@@ -199,8 +173,8 @@ void ProjectsPanelTabGroupsItemView::SetIsDragging(bool dragging) {
 gfx::ImageSkia ProjectsPanelTabGroupsItemView::GetDragImage() {
   SkBitmap bitmap;
   const float raster_scale = ScaleFactorForDragFromWidget(GetWidget());
-  const SkColor clear_color =
-      GetColorProvider()->GetColor(kDraggingImageBackgroundColor);
+  const SkColor clear_color = GetColorProvider()->GetColor(
+      projects_panel::kProjectsPanelBackgroundColor);
   Paint(views::PaintInfo::CreateRootPaintInfo(
       ui::CanvasPainter(&bitmap, size(), raster_scale, clear_color,
                         /*is_pixel_canvas=*/true)
@@ -217,8 +191,8 @@ void ProjectsPanelTabGroupsItemView::PaintButtonContents(gfx::Canvas* canvas) {
   // When this view is being dragged, we only need to paint a placeholder.
   if (dragging_) {
     cc::PaintFlags flags;
-    flags.setColor(
-        GetColorProvider()->GetColor(ui::kColorSysStateHoverOnSubtle));
+    flags.setColor(GetColorProvider()->GetColor(
+        kColorProjectsPanelTabGroupsDragPlaceholder));
     flags.setStyle(cc::PaintFlags::kFill_Style);
     flags.setAntiAlias(true);
     canvas->DrawRoundRect(gfx::RectF(GetLocalBounds()),

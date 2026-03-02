@@ -5,16 +5,13 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TABS_PROJECTS_PROJECTS_PANEL_UTILS_H_
 #define CHROME_BROWSER_UI_VIEWS_TABS_PROJECTS_PROJECTS_PANEL_UTILS_H_
 
-#include <memory>
-
 namespace views {
-class HighlightPathGenerator;
+class Button;
 }  // namespace views
 
 namespace projects_panel {
 
-std::unique_ptr<views::HighlightPathGenerator>
-GetListItemHighlightPathGenerator();
+void ConfigureInkDropForButton(views::Button* view);
 
 }  // namespace projects_panel
 

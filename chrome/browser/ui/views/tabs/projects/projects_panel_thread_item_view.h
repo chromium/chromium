@@ -12,6 +12,10 @@ namespace contextual_tasks {
 struct Thread;
 }
 
+namespace views {
+class Label;
+}
+
 // Displays a button for a single thread (e.g., a Gemini or AIM thread).
 class ProjectsPanelThreadItemView : public views::Button {
   METADATA_HEADER(ProjectsPanelThreadItemView, views::Button)
@@ -22,6 +26,16 @@ class ProjectsPanelThreadItemView : public views::Button {
   ProjectsPanelThreadItemView& operator=(const ProjectsPanelThreadItemView&) =
       delete;
   ~ProjectsPanelThreadItemView() override;
+
+  const views::Label* title_for_testing() { return title_; }
+
+  const gfx::VectorIcon& chat_type_icon_for_testing() {
+    return *chat_type_icon_;
+  }
+
+ private:
+  raw_ptr<views::Label> title_;
+  raw_ref<const gfx::VectorIcon> chat_type_icon_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_PROJECTS_PROJECTS_PANEL_THREAD_ITEM_VIEW_H_

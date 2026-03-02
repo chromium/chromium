@@ -18,18 +18,24 @@ inline constexpr int kListItemCornerRadius = 8;
 inline constexpr float kListItemFocusRingHaloInset =
     views::FocusRing::kDefaultHaloThickness / 2;
 
-// The size of icons within a list item, in pixels.
-inline constexpr int kListItemIconSize = 16;
+// Duration of the hover fade in/out animation.
+inline constexpr auto kListItemHoverFadeAnimationDuration =
+    base::Milliseconds(200);
 
-// The padding around a list item.
-inline constexpr gfx::Insets kListItemPadding = gfx::Insets::VH(8, 10);
+// The margins around a list item.
+inline constexpr gfx::Insets kListItemMargins = gfx::Insets(4);
 
-// The preferred size of a list item.
-inline constexpr gfx::Size kListItemPreferredSize = gfx::Size(0, 32);
+// The spacing between children within a list item. Since FlexLayout does not
+// provide an easy way to apply this, the spacing is added to the children's
+// margins.
+inline constexpr int kListItemSpacingBetweenChildren = 10;
 
-// The padding around the title within a list item.
-inline constexpr gfx::Insets kListItemTitlePadding =
-    gfx::Insets::TLBR(0, 16, 0, 0);
+// The margins around the title within a list item.
+inline constexpr gfx::Insets kListItemTitleMargins =
+    gfx::Insets::TLBR(2,
+                      2 + projects_panel::kListItemSpacingBetweenChildren,
+                      2,
+                      2);
 
 // The padding around a list.
 inline constexpr gfx::Insets kListPadding = gfx::Insets::VH(0, 4);

@@ -42,8 +42,6 @@
 
 namespace {
 constexpr gfx::Insets kNoTabsInteriorMargins = gfx::Insets::VH(0, 8);
-constexpr int kSpacingBetweenChildren = 2;
-constexpr float kHighlightOpacity = 1.0f;
 
 class ProjectsPanelNewTabGroupButton : public views::LabelButton {
   METADATA_HEADER(ProjectsPanelNewTabGroupButton, views::LabelButton)
@@ -53,23 +51,11 @@ class ProjectsPanelNewTabGroupButton : public views::LabelButton {
       : views::LabelButton(
             std::move(callback),
             l10n_util::GetStringUTF16(IDS_CREATE_NEW_TAB_GROUP)) {
-    SetImageModel(
-        views::Button::STATE_NORMAL,
-        ui::ImageModel::FromVectorIcon(kCreateNewTabGroupIcon, ui::kColorIcon));
+    SetImageModel(views::Button::STATE_NORMAL,
+                  ui::ImageModel::FromVectorIcon(
+                      kCreateNewTabGroupIcon, kColorProjectsPanelButtonIcon));
     SetHorizontalAlignment(gfx::ALIGN_LEFT);
-
-    auto* ink_drop = views::InkDrop::Get(this);
-    ink_drop->SetMode(views::InkDropHost::InkDropMode::ON);
-    ink_drop->SetLayerRegion(views::LayerRegion::kBelow);
-    ink_drop->SetBaseColor(ui::kColorSysStateHoverOnSubtle);
-    ink_drop->SetHighlightOpacity(kHighlightOpacity);
-    views::HighlightPathGenerator::Install(
-        this, projects_panel::GetListItemHighlightPathGenerator());
-
-    views::FocusRing::Get(this)->SetPathGenerator(
-        projects_panel::GetListItemHighlightPathGenerator());
-    views::FocusRing::Get(this)->SetHaloInset(
-        projects_panel::kListItemFocusRingHaloInset);
+    projects_panel::ConfigureInkDropForButton(this);
   }
   ProjectsPanelNewTabGroupButton(const ProjectsPanelNewTabGroupButton&) =
       delete;
@@ -100,7 +86,6 @@ ProjectsPanelTabGroupsView::ProjectsPanelTabGroupsView(
       tab_group_moved_callback_(std::move(tab_group_moved_callback)) {
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>());
   layout->SetOrientation(views::LayoutOrientation::kVertical);
-  layout->set_between_child_spacing(kSpacingBetweenChildren);
 
   create_new_tab_group_button_ =
       AddChildView(std::make_unique<ProjectsPanelNewTabGroupButton>(
@@ -263,8 +248,9 @@ void ProjectsPanelTabGroupsView::PaintChildren(
   auto indicator_bounds = GetDropIndicatorBounds();
   if (indicator_bounds.has_value()) {
     ui::PaintRecorder recorder(paint_info.context(), size());
-    recorder.canvas()->FillRect(
-        *indicator_bounds, GetColorProvider()->GetColor(ui::kColorSysOutline));
+    recorder.canvas()->FillRect(*indicator_bounds,
+                                GetColorProvider()->GetColor(
+                                    kColorProjectsPanelTabGroupsDropIndicator));
   }
 }
 
@@ -359,9 +345,9 @@ std::optional<gfx::Rect> ProjectsPanelTabGroupsView::GetDropIndicatorBounds()
     if (item_views_.empty()) {
       y = 0;
     } else if (index < item_views_.size()) {
-      y = item_views_[index]->y() - kSpacingBetweenChildren / 2;
+      y = item_views_[index]->y();
     } else {
-      y = item_views_.back()->bounds().bottom() + kSpacingBetweenChildren / 2;
+      y = item_views_.back()->bounds().bottom();
     }
 
     constexpr int kDropIndicatorHeight = 2;

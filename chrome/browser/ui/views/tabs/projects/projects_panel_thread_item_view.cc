@@ -21,65 +21,52 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/flex_layout.h"
 
+namespace {
+inline constexpr int kChatTypeIconSize = 16;
+inline constexpr gfx::Insets kChatTypeIconMargins = gfx::Insets(4);
+}  // namespace
+
 ProjectsPanelThreadItemView::ProjectsPanelThreadItemView(
-    const contextual_tasks::Thread& thread) {
+    const contextual_tasks::Thread& thread)
+    : chat_type_icon_(vector_icons::kChatSparkIcon) {
   SetLayoutManager(std::make_unique<views::FlexLayout>())
-      ->SetInteriorMargin(projects_panel::kListItemPadding)
+      ->SetInteriorMargin(projects_panel::kListItemMargins)
       .SetOrientation(views::LayoutOrientation::kHorizontal)
       .SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
 
   GetViewAccessibility().SetName(thread.title);
 
-  auto* ink_drop = views::InkDrop::Get(this);
-  ink_drop->SetMode(views::InkDropHost::InkDropMode::ON);
-  ink_drop->SetLayerRegion(views::LayerRegion::kBelow);
-  ink_drop->SetBaseColor(ui::kColorSysStateHoverOnSubtle);
-  ink_drop->SetHighlightOpacity(1.0f);
-  views::HighlightPathGenerator::Install(
-      this, projects_panel::GetListItemHighlightPathGenerator());
-  views::FocusRing::Install(this);
-  views::FocusRing::Get(this)->SetPathGenerator(
-      projects_panel::GetListItemHighlightPathGenerator());
-  views::FocusRing::Get(this)->SetHaloInset(
-      projects_panel::kListItemFocusRingHaloInset);
+  projects_panel::ConfigureInkDropForButton(this);
 
-  auto aim_icon = ui::ImageModel::FromVectorIcon(
+  chat_type_icon_ = vector_icons::kChatSparkIcon;
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-      vector_icons::kGoogleGLogoMonochromeIcon,
-#else
-      vector_icons::kChatSparkIcon,
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-      ui::kColorIcon, projects_panel::kListItemIconSize);
-
-  auto gemini_icon = ui::ImageModel::FromVectorIcon(
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-      vector_icons::kGoogleAgentspaceMonochromeLogo25Icon,
-#else
-      vector_icons::kChatSparkIcon,
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-      ui::kColorIcon, projects_panel::kListItemIconSize);
-
   switch (thread.type) {
-    case contextual_tasks::ThreadType::kAiMode: {
-      AddChildView(std::make_unique<views::ImageView>(aim_icon));
+    case contextual_tasks::ThreadType::kAiMode:
+      chat_type_icon_ = vector_icons::kGoogleGLogoMonochromeIcon;
       break;
-    }
-    case contextual_tasks::ThreadType::kGemini: {
-      AddChildView(std::make_unique<views::ImageView>(gemini_icon));
+    case contextual_tasks::ThreadType::kGemini:
+      chat_type_icon_ = vector_icons::kGoogleAgentspaceMonochromeLogo25Icon;
       break;
-    }
     case contextual_tasks::ThreadType::kUnknown:
       NOTREACHED();
   }
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
-  auto* title = AddChildView(std::make_unique<views::Label>());
-  title->SetText(base::UTF8ToUTF16(thread.title));
-  title->SetTextStyle(views::style::TextStyle::STYLE_BODY_3);
-  title->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_TO_HEAD);
-  title->SetElideBehavior(gfx::FADE_TAIL);
-  title->SetProperty(views::kMarginsKey, projects_panel::kListItemTitlePadding);
-  title->SetBackgroundColor(SK_ColorTRANSPARENT);
-  title->SetProperty(
+  auto chat_type_image_model_ = ui::ImageModel::FromVectorIcon(
+      *chat_type_icon_, kColorProjectsPanelButtonIcon, kChatTypeIconSize);
+  auto* chat_type_image_ =
+      AddChildView(std::make_unique<views::ImageView>(chat_type_image_model_));
+  chat_type_image_->SetProperty(views::kMarginsKey, kChatTypeIconMargins);
+
+  title_ = AddChildView(std::make_unique<views::Label>());
+  title_->SetText(base::UTF8ToUTF16(thread.title));
+  title_->SetTextStyle(views::style::TextStyle::STYLE_BODY_3);
+  title_->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_TO_HEAD);
+  title_->SetElideBehavior(gfx::FADE_TAIL);
+  title_->SetProperty(views::kMarginsKey,
+                      projects_panel::kListItemTitleMargins);
+  title_->SetBackgroundColor(SK_ColorTRANSPARENT);
+  title_->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
                                views::MaximumFlexSizeRule::kScaleToMaximum));

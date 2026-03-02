@@ -32,31 +32,26 @@ contextual_tasks::Thread CreateGeminiThread() {
 
 class ProjectsPanelThreadItemViewTest : public views::ViewsTestBase {};
 
-TEST_F(ProjectsPanelThreadItemViewTest, DisplaysIconAndTitle) {
-  const auto thread = CreateThread("Thread 1");
-  auto thread_item_view = std::make_unique<ProjectsPanelThreadItemView>(thread);
+TEST_F(ProjectsPanelThreadItemViewTest, DisplaysAimIconAndTitle) {
+  const auto aim_thread = CreateThread("Thread 1");
+  auto thread_item_view =
+      std::make_unique<ProjectsPanelThreadItemView>(aim_thread);
 
-  // Check that the item has an image, label, and ink drop.
+  // Check that the item has an icon, label, and ink drop.
   ASSERT_EQ(3u, thread_item_view->children().size());
 
-  views::ImageView* image_view =
-      views::AsViewClass<views::ImageView>(thread_item_view->children()[1]);
-  EXPECT_TRUE(image_view);
-
-  // Check that the image view has the correct icon.
-  EXPECT_EQ(ui::ImageModel::FromVectorIcon(
+  // Check that correct chat type icon is used.
+  EXPECT_EQ(
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-                vector_icons::kGoogleGLogoMonochromeIcon,
+      &vector_icons::kGoogleGLogoMonochromeIcon,
 #else
-                vector_icons::kChatSparkIcon,
+      &vector_icons::kChatSparkIcon,
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-                ui::kColorIcon, projects_panel::kListItemIconSize),
-            image_view->GetImageModel());
+      &thread_item_view->chat_type_icon_for_testing());
 
-  views::Label* label =
-      views::AsViewClass<views::Label>(thread_item_view->children()[2]);
+  const views::Label* label = thread_item_view->title_for_testing();
   EXPECT_TRUE(label);
-  EXPECT_EQ(base::UTF8ToUTF16(thread.title), label->GetText());
+  EXPECT_EQ(base::UTF8ToUTF16(aim_thread.title), label->GetText());
 }
 
 TEST_F(ProjectsPanelThreadItemViewTest, DisplaysGeminiIconAndTitle) {
@@ -67,22 +62,15 @@ TEST_F(ProjectsPanelThreadItemViewTest, DisplaysGeminiIconAndTitle) {
   // Check that the item has an image, label, and ink drop.
   ASSERT_EQ(3u, thread_item_view->children().size());
 
-  views::ImageView* image_view =
-      static_cast<views::ImageView*>(thread_item_view->children()[1]);
-  EXPECT_TRUE(image_view);
-
-  // Check that the image view has the correct icon.
-  EXPECT_EQ(ui::ImageModel::FromVectorIcon(
+  EXPECT_EQ(
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-                vector_icons::kGoogleAgentspaceMonochromeLogo25Icon,
+      &vector_icons::kGoogleAgentspaceMonochromeLogo25Icon,
 #else
-                vector_icons::kChatSparkIcon,
+      &vector_icons::kChatSparkIcon,
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-                ui::kColorIcon, projects_panel::kListItemIconSize),
-            image_view->GetImageModel());
+      &thread_item_view->chat_type_icon_for_testing());
 
-  views::Label* label =
-      static_cast<views::Label*>(thread_item_view->children()[2]);
+  const views::Label* label = thread_item_view->title_for_testing();
   EXPECT_TRUE(label);
   EXPECT_EQ(base::UTF8ToUTF16(gemini_thread.title), label->GetText());
 }

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/tabs/projects/projects_panel_no_tab_groups_view.h"
 
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -32,7 +33,7 @@ ProjectsPanelNoTabGroupsView::ProjectsPanelNoTabGroupsView() {
 
   auto* no_groups_label = AddChildView(std::make_unique<views::Label>(
       l10n_util::GetStringUTF16(IDS_TAB_GROUPS_NO_TAB_GROUPS)));
-  no_groups_label->SetEnabledColor(ui::kColorSysOnSurfaceSubtle);
+  no_groups_label->SetEnabledColor(kColorProjectsPanelNoTabGroupsText);
   no_groups_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   no_groups_label->SetTextStyle(views::style::STYLE_BODY_4);
   no_groups_label->SetMultiLine(true);
