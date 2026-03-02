@@ -288,8 +288,8 @@ ExperimentalActorPerformActionsFunction::Run() {
         base::BindOnce(
             &ExperimentalActorPerformActionsFunction::OnActionsFinished, this,
             task_id, start_time, skip_async_observation_information,
-            actor::mojom::ActionResultCode::kArgumentsInvalid, requests.error(),
-            std::move(empty_results)));
+            std::nullopt, actor::mojom::ActionResultCode::kArgumentsInvalid,
+            requests.error(), std::move(empty_results)));
     return RespondLater();
   }
 
@@ -297,7 +297,8 @@ ExperimentalActorPerformActionsFunction::Run() {
       task_id, std::move(requests.value()), actor::ActorTaskMetadata(actions),
       base::BindOnce(
           &ExperimentalActorPerformActionsFunction::OnActionsFinished, this,
-          task_id, start_time, skip_async_observation_information));
+          task_id, start_time, skip_async_observation_information,
+          std::nullopt));
 
   return RespondLater();
 }
@@ -306,6 +307,9 @@ void ExperimentalActorPerformActionsFunction::OnActionsFinished(
     actor::TaskId task_id,
     base::TimeTicks start_time,
     bool skip_async_observation_information,
+    std::optional<page_content_annotations::ScreenshotOptions::
+                      ScreenshotCollectionOptions>
+        screenshot_collection_options,
     actor::mojom::ActionResultCode result_code,
     std::optional<size_t> index_of_failed_action,
     std::vector<actor::ActionResultWithLatencyInfo> action_results) {
@@ -321,11 +325,12 @@ void ExperimentalActorPerformActionsFunction::OnActionsFinished(
 
     // Note: the arguments in this function are mostly unused other than the
     // response proto.
-    OnObservationResult(start_time,
-                        actor::mojom::ActionResultCode::kTaskWentAway,
-                        index_of_failed_action, action_results, task_id,
-                        skip_async_observation_information, std::move(response),
-                        /*journal_entry=*/nullptr);
+    OnObservationResult(
+        start_time, actor::mojom::ActionResultCode::kTaskWentAway,
+        index_of_failed_action, action_results, task_id,
+        skip_async_observation_information,
+        std::move(screenshot_collection_options), std::move(response),
+        /*journal_entry=*/nullptr);
     return;
   }
 
@@ -339,17 +344,19 @@ void ExperimentalActorPerformActionsFunction::OnActionsFinished(
 
     // Note: the arguments in this function are mostly unused other than the
     // response proto.
-    OnObservationResult(start_time,
-                        actor::mojom::ActionResultCode::kTaskWentAway,
-                        index_of_failed_action, action_results, task_id,
-                        skip_async_observation_information, std::move(response),
-                        /*journal_entry=*/nullptr);
+    OnObservationResult(
+        start_time, actor::mojom::ActionResultCode::kTaskWentAway,
+        index_of_failed_action, action_results, task_id,
+        skip_async_observation_information,
+        std::move(screenshot_collection_options), std::move(response),
+        /*journal_entry=*/nullptr);
     return;
   }
 
   actor::BuildActionsResultWithObservations(
       *browser_context(), start_time, result_code, index_of_failed_action,
       std::move(action_results), *task, skip_async_observation_information,
+      std::move(screenshot_collection_options),
       base::BindOnce(
           &ExperimentalActorPerformActionsFunction::OnObservationResult, this));
 }
@@ -361,6 +368,9 @@ void ExperimentalActorPerformActionsFunction::OnObservationResult(
     std::vector<actor::ActionResultWithLatencyInfo> action_results,
     actor::TaskId task_id,
     bool skip_async_observation_information,
+    std::optional<page_content_annotations::ScreenshotOptions::
+                      ScreenshotCollectionOptions>
+        screenshot_collection_options,
     std::unique_ptr<optimization_guide::proto::ActionsResult> response,
     std::unique_ptr<actor::AggregatedJournal::PendingAsyncEntry>
         journal_entry) {
@@ -434,7 +444,7 @@ ExperimentalActorRequestTabObservationFunction::Run() {
   // TODO(dtapuska): We may want to add an optional task_id to the API so
   // we can attribute this tab observation to an appropriate task.
   actor_service->RequestTabObservation(
-      *tab, actor::TaskId(),
+      *tab, actor::TaskId(), std::nullopt,
       base::BindOnce(&ExperimentalActorRequestTabObservationFunction::
                          OnObservationFinished,
                      this));

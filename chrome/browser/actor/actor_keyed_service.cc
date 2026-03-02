@@ -400,6 +400,9 @@ void ActorKeyedService::NotifyTaskStateChanged(TaskId task_id,
 void ActorKeyedService::RequestTabObservation(
     tabs::TabInterface& tab,
     TaskId task_id,
+    std::optional<page_content_annotations::ScreenshotOptions::
+                      ScreenshotCollectionOptions>
+        screenshot_collection_options,
     base::OnceCallback<void(TabObservationResult)> callback) {
   TRACE_EVENT0("actor", "ActorKeyedService::RequestTabObservation");
   const GURL& last_committed_url = tab.GetContents()->GetLastCommittedURL();
@@ -414,9 +417,11 @@ void ActorKeyedService::RequestTabObservation(
           // kFullPageScreenshot being true implies
           // kGlicTabScreenshotPaintPreviewBackend is enabled.
           ? page_content_annotations::ScreenshotOptions::FullPage(
-                CreateOptionalPaintPreviewOptions().value())
+                CreateOptionalPaintPreviewOptions().value(),
+                std::move(screenshot_collection_options))
           : page_content_annotations::ScreenshotOptions::ViewportOnly(
-                CreateOptionalPaintPreviewOptions());
+                CreateOptionalPaintPreviewOptions(),
+                std::move(screenshot_collection_options));
 
   options.annotated_page_content_options =
       optimization_guide::ActionableAIPageContentOptions(

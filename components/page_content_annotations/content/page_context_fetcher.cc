@@ -51,16 +51,30 @@ namespace page_content_annotations {
 
 namespace {
 
-gfx::Size GetScreenshotSize(const gfx::Size& original_size) {
+gfx::Size GetScreenshotSize(
+    const gfx::Size& original_size,
+    const std::optional<ScreenshotOptions::ScreenshotCollectionOptions>&
+        screenshot_collection_options) {
+  if (original_size.IsEmpty()) {
+    return gfx::Size();
+  }
+
   // By default, no scaling.
-  if (!base::FeatureList::IsEnabled(kGlicTabScreenshotExperiment)) {
+  if (!base::FeatureList::IsEnabled(kGlicTabScreenshotExperiment) &&
+      !screenshot_collection_options) {
     return gfx::Size();
   }
 
   // If either width or height is 0, or the view is empty, no scaling.
-  int max_width = kMaxScreenshotWidthParam.Get();
-  int max_height = kMaxScreenshotHeightParam.Get();
-  if (max_width == 0 || max_height == 0 || original_size.IsEmpty()) {
+  int max_width = (screenshot_collection_options &&
+                   screenshot_collection_options->max_width)
+                      ? screenshot_collection_options->max_width.value()
+                      : kMaxScreenshotWidthParam.Get();
+  int max_height = (screenshot_collection_options &&
+                    screenshot_collection_options->max_height)
+                       ? screenshot_collection_options->max_height.value()
+                       : kMaxScreenshotHeightParam.Get();
+  if (max_width == 0 || max_height == 0) {
     return gfx::Size();
   }
 
@@ -96,7 +110,23 @@ double GetScreenshotScaleFactor(const gfx::Size& original_size,
   return new_size.width() / original_size.width();
 }
 
-int GetScreenshotJpegQuality() {
+int GetScreenshotJpegQuality(
+    const std::optional<ScreenshotOptions::ScreenshotCollectionOptions>&
+        screenshot_collection_options) {
+  if (screenshot_collection_options &&
+      screenshot_collection_options->screenshot_compression_quality) {
+    switch (
+        screenshot_collection_options->screenshot_compression_quality.value()) {
+      case ScreenshotOptions::ScreenshotCompressionQuality::kLow:
+        return 20;
+      case ScreenshotOptions::ScreenshotCompressionQuality::kMedium:
+        return 40;
+      case ScreenshotOptions::ScreenshotCompressionQuality::kHigh:
+        return 60;
+      case ScreenshotOptions::ScreenshotCompressionQuality::kNone:
+        return 100;
+    }
+  }
   if (!base::FeatureList::IsEnabled(kGlicTabScreenshotExperiment)) {
     return 40;
   }
@@ -104,16 +134,28 @@ int GetScreenshotJpegQuality() {
   return std::max(0, std::min(100, kScreenshotQuality.Get()));
 }
 
-int GetScreenshotWebPQuality() {
-  return GetScreenshotJpegQuality();
+int GetScreenshotWebPQuality(
+    const std::optional<ScreenshotOptions::ScreenshotCollectionOptions>&
+        screenshot_collection_options) {
+  return GetScreenshotJpegQuality(screenshot_collection_options);
 }
 
-// Png only has two modes exposed, so we use the quality to determine if it is
-// low quality or not by checking if it is 50 or lower.
-bool ShouldPngScreenshotBeLowQuality() {
+// Png only has two modes exposed.
+bool ShouldPngScreenshotBeLowQuality(
+    const std::optional<ScreenshotOptions::ScreenshotCollectionOptions>&
+        screenshot_collection_options) {
+  // If low is configured, then we should use low quality for png screenshots.
+  if (screenshot_collection_options &&
+      screenshot_collection_options->screenshot_compression_quality) {
+    return screenshot_collection_options->screenshot_compression_quality
+               .value() ==
+           ScreenshotOptions::ScreenshotCompressionQuality::kLow;
+  }
   if (!base::FeatureList::IsEnabled(kGlicTabScreenshotExperiment)) {
     return false;
   }
+  // We use the quality to determine if it is low quality or not by checking if
+  // it is 50 or lower.
   return kScreenshotQuality.Get() < 50;
 }
 
@@ -131,7 +173,21 @@ enum class ScreenshotImageType {
 constexpr base::TimeDelta kScreenshotTimeoutBrowserAllowance =
     base::Milliseconds(500);
 
-ScreenshotImageType GetScreenshotImageType() {
+ScreenshotImageType GetScreenshotImageType(
+    const std::optional<ScreenshotOptions::ScreenshotCollectionOptions>&
+        screenshot_collection_options) {
+  if (screenshot_collection_options &&
+      screenshot_collection_options->screenshot_image_format) {
+    switch (screenshot_collection_options->screenshot_image_format.value()) {
+      case ScreenshotOptions::ScreenshotImageFormat::kJpeg:
+        return ScreenshotImageType::kJpeg;
+      case ScreenshotOptions::ScreenshotImageFormat::kPng:
+        return ScreenshotImageType::kPng;
+      case ScreenshotOptions::ScreenshotImageFormat::kWebp:
+        return ScreenshotImageType::kWebp;
+    }
+  }
+
   if (!base::FeatureList::IsEnabled(kGlicTabScreenshotExperiment)) {
     return ScreenshotImageType::kJpeg;
   }
@@ -240,14 +296,18 @@ void RecordPdfRequestState(bool is_pdf_document, bool pdf_found) {
 }  // namespace
 
 // static
-std::optional<std::vector<uint8_t>> EncodeScreenshot(const SkBitmap& bitmap) {
+std::optional<std::vector<uint8_t>> EncodeScreenshot(
+    const SkBitmap& bitmap,
+    const std::optional<ScreenshotOptions::ScreenshotCollectionOptions>&
+        screenshot_collection_options) {
   std::optional<std::vector<uint8_t>> encoded;
-  switch (GetScreenshotImageType()) {
+  switch (GetScreenshotImageType(screenshot_collection_options)) {
     case ScreenshotImageType::kJpeg:
-      encoded = gfx::JPEGCodec::Encode(bitmap, GetScreenshotJpegQuality());
+      encoded = gfx::JPEGCodec::Encode(
+          bitmap, GetScreenshotJpegQuality(screenshot_collection_options));
       break;
     case ScreenshotImageType::kPng:
-      if (ShouldPngScreenshotBeLowQuality()) {
+      if (ShouldPngScreenshotBeLowQuality(screenshot_collection_options)) {
         encoded = gfx::PNGCodec::FastEncodeBGRASkBitmap(
             bitmap, /*discard_transparency=*/true);
       } else {
@@ -256,7 +316,8 @@ std::optional<std::vector<uint8_t>> EncodeScreenshot(const SkBitmap& bitmap) {
       }
       break;
     case ScreenshotImageType::kWebp:
-      encoded = gfx::WebpCodec::Encode(bitmap, GetScreenshotWebPQuality());
+      encoded = gfx::WebpCodec::Encode(
+          bitmap, GetScreenshotWebPQuality(screenshot_collection_options));
       break;
     default:
       break;
@@ -396,6 +457,8 @@ void PageContextFetcher::GetTabScreenshot(
   }
 
   screenshot_redaction_color_ = screenshot_options.redaction_color();
+  screenshot_collection_options_ =
+      screenshot_options.screenshot_collection_options();
 
   gfx::Size view_size = view->GetViewBounds().size();
 
@@ -433,8 +496,9 @@ void PageContextFetcher::GetTabScreenshot(
     }
     PageContentScreenshotService::RequestParams request_params = {
         .clip_rect = clip_rect,
-        .scale_factor =
-            GetScreenshotScaleFactor(view_size, GetScreenshotSize(view_size)),
+        .scale_factor = GetScreenshotScaleFactor(
+            view_size,
+            GetScreenshotSize(view_size, screenshot_collection_options_)),
         .clip_x_coord_override = clip_coord_override,
         .clip_y_coord_override = clip_coord_override,
         .redaction_params = std::move(redaction_params),
@@ -451,7 +515,8 @@ void PageContextFetcher::GetTabScreenshot(
 
     view->CopyFromSurface(
         gfx::Rect(),  // Copy entire surface area.
-        GetScreenshotSize(view_size), kScreenshotTimeout.Get(),
+        GetScreenshotSize(view_size, screenshot_collection_options_),
+        kScreenshotTimeout.Get(),
         base::BindOnce(&PageContextFetcher::ReceivedViewportBitmap,
                        GetWeakPtr()));
   }
@@ -518,11 +583,13 @@ void PageContextFetcher::RedactAndEncodeScreenshot(
       base::BindOnce(
           [](const SkBitmap& bitmap,
              std::vector<gfx::Rect> visible_bounding_boxes_for_redaction,
-             SkColor4f redaction_color) {
+             SkColor4f redaction_color,
+             std::optional<ScreenshotOptions::ScreenshotCollectionOptions>
+                 screenshot_collection_options) {
             SkBitmap redacted_bitmap = RedactScreenshotOnWorkerThread(
                 bitmap, visible_bounding_boxes_for_redaction, redaction_color);
             std::optional<std::vector<uint8_t>> encoded =
-                EncodeScreenshot(redacted_bitmap);
+                EncodeScreenshot(redacted_bitmap, screenshot_collection_options);
             base::expected<std::pair<std::vector<uint8_t>, SkBitmap>,
                            std::string>
                 reply;
@@ -535,7 +602,7 @@ void PageContextFetcher::RedactAndEncodeScreenshot(
             return reply;
           },
           *screenshot_bitmap_, std::move(visible_bounding_boxes_for_redaction),
-          screenshot_redaction_color_),
+          screenshot_redaction_color_, screenshot_collection_options_),
       base::BindOnce(&PageContextFetcher::ReceivedEncodedScreenshot,
                      GetWeakPtr()));
   screenshot_bitmap_.reset();
@@ -615,7 +682,7 @@ void PageContextFetcher::ReceivedEncodedScreenshot(
   if (screenshot_data.has_value()) {
     pending_result_->screenshot_result.value().screenshot_data =
         std::move(screenshot_data.value().first);
-    switch (GetScreenshotImageType()) {
+    switch (GetScreenshotImageType(screenshot_collection_options_)) {
       case ScreenshotImageType::kJpeg:
         pending_result_->screenshot_result.value().mime_type = "image/jpeg";
         break;

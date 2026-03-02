@@ -1416,6 +1416,34 @@ export const DEFAULT_PDF_SIZE_LIMIT = 64 * 1024 * 1024;
 /** The default value of TabContextOptions.innerTextBytesLimit. */
 export const DEFAULT_INNER_TEXT_BYTES_LIMIT = 20000;
 
+/** Options for screenshot collection. */
+export declare interface ScreenshotCollectionOptions {
+  /**
+   * Screenshot will be scaled to fit the max width and height while
+   * maintaining the aspect ratio.
+   * If not set or set to 0, the screenshot will be captured without limiting
+   * the width (so long as the height is not limited).
+   */
+  maxWidth?: number;
+  /**
+   * Screenshot will be scaled to fit the max width and height while maintaining
+   * the aspect ratio.
+   * If not set or set to 0, the screenshot will be captured without limiting
+   * the height (so long as the width is not limited).
+   */
+  maxHeight?: number;
+  /**
+   * The format of the screenshot. If not set, the screenshot will be returned
+   * as a jpeg image.
+   */
+  screenshotImageFormat?: ScreenshotImageFormat;
+  /**
+   * The compression quality of the screenshot. If not set, the screenshot will
+   * be returned with medium compression quality.
+   */
+  screenshotCompressionQuality?: ScreenshotCompressionQuality;
+}
+
 /** Options for getting context from a tab. */
 export declare interface TabContextOptions {
   /**
@@ -1432,8 +1460,11 @@ export declare interface TabContextOptions {
    */
   innerTextBytesLimit?: number;
   /**
+   * @deprecated Use `screenshotCollectionOptions` instead.
+   *
    * If true, a screenshot of the user visible viewport will be included in the
-   * response.
+   * response. If `screenshotCollectionOptions` is set, the screenshot will be
+   * captured with the specified options regardless of this field.
    */
   viewportScreenshot?: boolean;
   /** If true, returns the serialized annotatedPageContent proto. */
@@ -1460,6 +1491,13 @@ export declare interface TabContextOptions {
    * maps directly to the AnnotatedPageContentMode enum in the proto.
    */
   annotatedPageContentMode?: number;
+
+  /**
+   * If set, the screenshot collection options will be used to capture the
+   * screenshot. Otherwise, the screenshot will be captured with the default
+   * options.
+   */
+  screenshotCollectionOptions?: ScreenshotCollectionOptions;
 }
 
 /**
@@ -2482,6 +2520,34 @@ export enum FormFactor {
   DESKTOP = 1,
   PHONE = 2,
   TABLET = 3,
+}
+
+///////////////////////////////////////////////
+// WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
+// Enum to specify the image format of the screenshot.
+export enum ScreenshotImageFormat {
+  // JPEG screenshot format. This is the default format.
+  JPEG = 0,
+  // PNG screenshot format.
+  PNG = 1,
+  // WEBP screenshot format.
+  WEBP = 2,
+}
+
+///////////////////////////////////////////////
+// WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
+// Enum to specify the compression quality of the screenshot. Depending on
+// screenshot format, the compression quality may not be respected or may mean
+// something different.
+export enum ScreenshotCompressionQuality {
+  // No compression.
+  NONE = 0,
+  // Low compression quality.
+  LOW = 1,
+  // Medium compression quality.
+  MEDIUM = 2,
+  // High compression quality.
+  HIGH = 3,
 }
 
 ///////////////////////////////////////////////

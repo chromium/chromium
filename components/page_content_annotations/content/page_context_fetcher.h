@@ -63,17 +63,63 @@ struct PaintPreviewOptions {
 
 class ScreenshotOptions {
  public:
+  // The format of the screenshot.
+  // The default value is JPEG.
+  enum class ScreenshotImageFormat {
+    kJpeg,
+    kPng,
+    kWebp,
+  };
+
+  // The compression quality of the screenshot.
+  // Depending on screenshot format, the compression quality may not be
+  // respected or may mean something different.
+  // The default value is MEDIUM.
+  enum class ScreenshotCompressionQuality {
+    kLow,
+    kMedium,
+    kHigh,
+    kNone,
+  };
+
+  struct ScreenshotCollectionOptions {
+   public:
+    // The maximum width of the screenshot. If 0, the screenshot will be
+    // returned at the natural width of the screen. Screenshot will be scaled to
+    // fit the max width and height while maintaining the aspect ratio.
+    std::optional<int32_t> max_width;
+    // The maximum height of the screenshot. If 0, the screenshot will be
+    // returned at the natural height of the screen.
+    // Screenshot will be scaled to fit the max width and height while
+    // maintaining the aspect ratio.
+    std::optional<int32_t> max_height;
+    // The format of the screenshot.
+    // The default value is JPEG.
+    std::optional<ScreenshotImageFormat> screenshot_image_format;
+    // The compression quality of the screenshot.
+    // Depending on screenshot format, the compression quality may not be
+    // respected or may mean something different.
+    // The default value is MEDIUM.
+    std::optional<ScreenshotCompressionQuality> screenshot_compression_quality;
+  };
+
   // Creates options for a full-page screenshot.
   // Full-page screenshots always use the paint preview backend.
-  static ScreenshotOptions FullPage(PaintPreviewOptions paint_preview_options) {
-    return ScreenshotOptions(/*capture_full_page=*/true, paint_preview_options);
+  static ScreenshotOptions FullPage(PaintPreviewOptions paint_preview_options,
+                                    std::optional<ScreenshotCollectionOptions>
+                                        screenshot_collection_options) {
+    return ScreenshotOptions(/*capture_full_page=*/true, paint_preview_options,
+                             std::move(screenshot_collection_options));
   }
 
   // Creates options for a viewport-only screenshot.
   static ScreenshotOptions ViewportOnly(
-      std::optional<PaintPreviewOptions> paint_preview_options) {
+      std::optional<PaintPreviewOptions> paint_preview_options,
+      std::optional<ScreenshotCollectionOptions>
+          screenshot_collection_options) {
     return ScreenshotOptions(/*capture_full_page=*/false,
-                             std::move(paint_preview_options));
+                             std::move(paint_preview_options),
+                             std::move(screenshot_collection_options));
   }
 
   bool capture_full_page() const { return capture_full_page_; }
@@ -86,13 +132,21 @@ class ScreenshotOptions {
   void set_redaction_color_for_testing(SkColor4f redaction_color) {
     redaction_color_ = redaction_color;
   }
+  const std::optional<ScreenshotCollectionOptions>&
+  screenshot_collection_options() const {
+    return screenshot_collection_options_;
+  }
 
  private:
   // Private constructor to force object creation through static methods.
-  ScreenshotOptions(bool capture_full_page,
-                    std::optional<PaintPreviewOptions> paint_preview_options)
+  ScreenshotOptions(
+      bool capture_full_page,
+      std::optional<PaintPreviewOptions> paint_preview_options,
+      std::optional<ScreenshotCollectionOptions> screenshot_collection_options)
       : capture_full_page_(capture_full_page),
-        paint_preview_options_(paint_preview_options) {}
+        paint_preview_options_(paint_preview_options),
+        screenshot_collection_options_(
+            std::move(screenshot_collection_options)) {}
 
   // Whether to capture a full-page screenshot. If false, only the viewport will
   // be captured.
@@ -101,6 +155,9 @@ class ScreenshotOptions {
   std::optional<PaintPreviewOptions> paint_preview_options_ = std::nullopt;
   // The color to paint for redaction.
   SkColor4f redaction_color_ = SkColors::kBlack;
+  // Options for screenshot collection. If not set, the screenshot will be
+  // captured with the default options.
+  std::optional<ScreenshotCollectionOptions> screenshot_collection_options_;
 };
 
 struct FetchPageContextOptions {
@@ -186,6 +243,8 @@ using FetchPageContextResultCallbackArg =
                    FetchPageContextErrorDetails>;
 
 // Controls scaling and quality of tab screenshots.
+// Does not override screenshot_collection_options if they are set, only
+// modifies the default values.
 BASE_DECLARE_FEATURE(kGlicTabScreenshotExperiment);
 
 // Controls whether password fields are redacted from screenshots.
@@ -224,7 +283,9 @@ using GetScreenshotServiceCallback =
         content::BrowserContext*)>;
 
 // Encodes a screenshot according to the enabled feature flags.
-std::optional<std::vector<uint8_t>> EncodeScreenshot(const SkBitmap& bitmap);
+std::optional<std::vector<uint8_t>> EncodeScreenshot(const SkBitmap& bitmap,
+    const std::optional<ScreenshotOptions::ScreenshotCollectionOptions>&
+        screenshot_collection_options);
 
 // Coordinates fetching multiple types of page context.
 class PageContextFetcher : public content::WebContentsObserver {
@@ -303,6 +364,8 @@ class PageContextFetcher : public content::WebContentsObserver {
   bool pdf_done_ = false;
   bool annotated_page_content_done_ = false;
   SkColor4f screenshot_redaction_color_ = SkColors::kBlack;
+  std::optional<ScreenshotOptions::ScreenshotCollectionOptions>
+      screenshot_collection_options_;
   // Whether the primary page has changed since context fetching began.
   bool primary_page_changed_ = false;
   std::unique_ptr<FetchPageContextResult> pending_result_;

@@ -135,7 +135,7 @@ IN_PROC_BROWSER_TEST_F(
   TestFuture<ActorKeyedService::TabObservationResult> future;
   actor_keyed_service->RequestTabObservation(
       *tabs::TabInterface::GetFromContents(web_contents()), actor_task().id(),
-      future.GetCallback());
+      std::nullopt, future.GetCallback());
 
   const ActorKeyedService::TabObservationResult& observation_result =
       future.Get();

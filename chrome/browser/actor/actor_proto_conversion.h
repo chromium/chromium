@@ -16,6 +16,7 @@
 #include "chrome/common/actor.mojom-forward.h"
 #include "chrome/common/actor/action_result.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
+#include "components/page_content_annotations/content/page_context_fetcher.h"
 #include "components/tabs/public/tab_interface.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
@@ -28,10 +29,6 @@ class BrowserContext;
 namespace optimization_guide::proto {
 class Actions;
 }  // namespace optimization_guide::proto
-
-namespace page_content_annotations {
-struct FetchPageContextResult;
-}  // namespace page_content_annotations
 
 namespace actor {
 class ActorTask;
@@ -65,6 +62,9 @@ void BuildActionsResultWithObservations(
     std::vector<actor::ActionResultWithLatencyInfo> action_results,
     const ActorTask& task,
     bool skip_async_observation_information,
+    std::optional<page_content_annotations::ScreenshotOptions::
+                      ScreenshotCollectionOptions>
+        screenshot_collection_options,
     base::OnceCallback<
         void(base::TimeTicks start_time,
              mojom::ActionResultCode result_code,
@@ -72,9 +72,19 @@ void BuildActionsResultWithObservations(
              std::vector<actor::ActionResultWithLatencyInfo> action_results,
              actor::TaskId task_id,
              bool skip_async_observation_information,
+             std::optional<page_content_annotations::ScreenshotOptions::
+                               ScreenshotCollectionOptions>
+                 screenshot_collection_options,
              std::unique_ptr<optimization_guide::proto::ActionsResult>,
              std::unique_ptr<actor::AggregatedJournal::PendingAsyncEntry>)>
         callback);
+
+// Converts the ScreenshotCollectionOptions proto to the
+// FetchPageContextOptions::ScreenshotCollectionOptions struct.
+std::optional<
+    page_content_annotations::ScreenshotOptions::ScreenshotCollectionOptions>
+GetScreenshotCollectionOptions(
+    const optimization_guide::proto::Actions& actions);
 
 // For testing: when set, the callback is used to fill in the TabObservation
 // using the resulting FetchPageContextResult allowing tests to verify error

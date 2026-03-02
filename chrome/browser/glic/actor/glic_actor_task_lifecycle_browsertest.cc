@@ -6,9 +6,27 @@
 #include "content/public/test/browser_test.h"
 
 namespace mojo {
+
+base::Value ConvertToValue(const page_content_annotations::ScreenshotOptions::
+                               ScreenshotCollectionOptions& in) {
+  base::Value raw_out(base::Value::Type::DICT);
+  base::DictValue& out = raw_out.GetDict();
+  out.Set("maxWidth", static_cast<int>(in.max_width.value_or(0)));
+  out.Set("maxHeight", static_cast<int>(in.max_height.value_or(0)));
+  out.Set("screenshotImageFormat",
+          static_cast<int>(in.screenshot_image_format.value_or(
+              page_content_annotations::ScreenshotOptions::
+                  ScreenshotImageFormat::kJpeg)));
+  out.Set("screenshotCompressionQuality",
+          static_cast<int>(in.screenshot_compression_quality.value_or(
+              page_content_annotations::ScreenshotOptions::
+                  ScreenshotCompressionQuality::kMedium)));
+  return raw_out;
+}
+
 template <>
 struct TypeConverter<base::Value, glic::mojom::GetTabContextOptions> {
-  static base::Value Convert(const glic::mojom::GetTabContextOptions in) {
+  static base::Value Convert(const glic::mojom::GetTabContextOptions& in) {
     base::Value raw_out(base::Value::Type::DICT);
     base::DictValue& out = raw_out.GetDict();
     out.Set("includeInnerText", in.include_inner_text);
@@ -20,6 +38,8 @@ struct TypeConverter<base::Value, glic::mojom::GetTabContextOptions> {
     out.Set("pdfSizeLimit", static_cast<int>(in.pdf_size_limit));
     out.Set("annotatedPageContentMode",
             static_cast<int>(in.annotated_page_content_mode));
+    out.Set("screenshotCollectionOptions",
+            ConvertToValue(in.screenshot_collection_options));
     return raw_out;
   }
 };

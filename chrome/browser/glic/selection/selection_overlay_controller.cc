@@ -148,7 +148,8 @@ void SelectionOverlayController::StartScreenshotFlow() {
   page_content_annotations::FetchPageContextOptions options;
   options.screenshot_options =
       page_content_annotations::ScreenshotOptions::ViewportOnly(
-          /*paint_preview_options=*/std::nullopt);
+          /*paint_preview_options=*/std::nullopt,
+          /*screenshot_collection_options=*/std::nullopt);
   options.annotated_page_content_options =
       optimization_guide::DefaultAIPageContentOptions(
           /*on_critical_path=*/true);
@@ -337,9 +338,10 @@ void SelectionOverlayController::RenderRegions() {
               paint.setColor(SK_ColorCYAN);
               canvas.drawRect(region, paint);
             }
-
-            result =
-                page_content_annotations::EncodeScreenshot(deep_copy_bitmap);
+            // TODO(https://b/485548840): Pass in the screenshot collection
+            // options.
+            result = page_content_annotations::EncodeScreenshot(
+                deep_copy_bitmap, std::nullopt);
             return result;
           },
           redacted_screenshot_, std::move(regions)),

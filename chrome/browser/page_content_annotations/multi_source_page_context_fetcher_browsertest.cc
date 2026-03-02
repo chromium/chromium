@@ -171,11 +171,14 @@ IN_PROC_BROWSER_TEST_P(
   if (use_paint_preview_backend()) {
     options.screenshot_options =
         capture_full_page_screenshot()
-            ? ScreenshotOptions::FullPage(PaintPreviewOptions())
-            : ScreenshotOptions::ViewportOnly(PaintPreviewOptions());
+            ? ScreenshotOptions::FullPage(PaintPreviewOptions(), std::nullopt)
+            : ScreenshotOptions::ViewportOnly(
+                  PaintPreviewOptions(),
+                  /*screenshot_collection_options=*/std::nullopt);
   } else {
-    options.screenshot_options =
-        ScreenshotOptions::ViewportOnly(/*paint_preview_options=*/std::nullopt);
+    options.screenshot_options = ScreenshotOptions::ViewportOnly(
+        /*paint_preview_options=*/std::nullopt,
+        /*screenshot_collection_options=*/std::nullopt);
   }
   FetchPageContext(*web_contents(), options, nullptr, future.GetCallback());
 
@@ -241,8 +244,9 @@ IN_PROC_BROWSER_TEST_F(
     base::test::TestFuture<FetchPageContextResultCallbackArg> future;
 
     FetchPageContextOptions options;
-    options.screenshot_options =
-        ScreenshotOptions::ViewportOnly(/*paint_preview_options=*/std::nullopt);
+    options.screenshot_options = ScreenshotOptions::ViewportOnly(
+        /*paint_preview_options=*/std::nullopt,
+        /*screenshot_collection_options=*/std::nullopt);
     FetchPageContext(*web_contents(), options, nullptr, future.GetCallback());
 
     ASSERT_OK_AND_ASSIGN(std::unique_ptr<FetchPageContextResult> result,
@@ -278,8 +282,8 @@ class RedactingMultiSourcePageContextFetcherBrowserTest
     PaintPreviewOptions paint_preview_options;
     paint_preview_options.iframe_redaction_scope =
         page_content_annotations::ScreenshotIframeRedactionScope::kCrossSite;
-    ScreenshotOptions options =
-        ScreenshotOptions::ViewportOnly(paint_preview_options);
+    ScreenshotOptions options = ScreenshotOptions::ViewportOnly(
+        paint_preview_options, /*screenshot_collection_options=*/std::nullopt);
     return options;
   }
 
@@ -440,8 +444,9 @@ IN_PROC_BROWSER_TEST_F(PngMultiSourcePageContextFetcherBrowserTest,
 
   FetchPageContextOptions options;
 
-  options.screenshot_options =
-      ScreenshotOptions::ViewportOnly(/*paint_preview_options=*/std::nullopt);
+  options.screenshot_options = ScreenshotOptions::ViewportOnly(
+      /*paint_preview_options=*/std::nullopt,
+      /*screenshot_collection_options=*/std::nullopt);
   FetchPageContext(*web_contents(), options, nullptr, future.GetCallback());
 
   ASSERT_OK_AND_ASSIGN(std::unique_ptr<FetchPageContextResult> result,
@@ -495,8 +500,9 @@ IN_PROC_BROWSER_TEST_F(WebpMultiSourcePageContextFetcherBrowserTest,
 
   FetchPageContextOptions options;
 
-  options.screenshot_options =
-      ScreenshotOptions::ViewportOnly(/*paint_preview_options=*/std::nullopt);
+  options.screenshot_options = ScreenshotOptions::ViewportOnly(
+      /*paint_preview_options=*/std::nullopt,
+      /*screenshot_collection_options=*/std::nullopt);
   FetchPageContext(*web_contents(), options, nullptr, future.GetCallback());
 
   ASSERT_OK_AND_ASSIGN(std::unique_ptr<FetchPageContextResult> result,
@@ -555,7 +561,8 @@ IN_PROC_BROWSER_TEST_F(
   options.annotated_page_content_options =
       optimization_guide::DefaultAIPageContentOptions(true);
   options.screenshot_options = ScreenshotOptions::ViewportOnly(
-      /*paint_preview_options=*/std::nullopt);
+      /*paint_preview_options=*/std::nullopt,
+      /*screenshot_collection_options=*/std::nullopt);
   options.screenshot_options->set_redaction_color_for_testing(SkColors::kRed);
   FetchPageContext(*web_contents(), options, nullptr, future.GetCallback());
 
@@ -609,7 +616,8 @@ IN_PROC_BROWSER_TEST_F(
   options.annotated_page_content_options =
       optimization_guide::DefaultAIPageContentOptions(true);
   options.screenshot_options = ScreenshotOptions::ViewportOnly(
-      /*paint_preview_options=*/std::nullopt);
+      /*paint_preview_options=*/std::nullopt,
+      /*screenshot_collection_options=*/std::nullopt);
   options.screenshot_options->set_redaction_color_for_testing(SkColors::kRed);
   FetchPageContext(*web_contents(), options, nullptr, future.GetCallback());
 
@@ -648,7 +656,8 @@ IN_PROC_BROWSER_TEST_F(
   options.annotated_page_content_options =
       optimization_guide::DefaultAIPageContentOptions(true);
   options.screenshot_options = ScreenshotOptions::ViewportOnly(
-      /*paint_preview_options=*/std::nullopt);
+      /*paint_preview_options=*/std::nullopt,
+      /*screenshot_collection_options=*/std::nullopt);
   options.screenshot_options->set_redaction_color_for_testing(SkColors::kRed);
   FetchPageContext(*web_contents(), options, nullptr, future.GetCallback());
 
@@ -725,8 +734,9 @@ IN_PROC_BROWSER_TEST_F(
   FetchPageContextOptions options;
   options.annotated_page_content_options =
       optimization_guide::DefaultAIPageContentOptions(true);
-  options.screenshot_options =
-      ScreenshotOptions::ViewportOnly(/*paint_preview_options=*/std::nullopt);
+  options.screenshot_options = ScreenshotOptions::ViewportOnly(
+      /*paint_preview_options=*/std::nullopt,
+      /*screenshot_collection_options=*/std::nullopt);
   options.screenshot_options->set_redaction_color_for_testing(SkColors::kRed);
   FetchPageContext(*web_contents(), options, nullptr, future.GetCallback());
 
@@ -786,7 +796,8 @@ IN_PROC_BROWSER_TEST_F(
   options.annotated_page_content_options =
       optimization_guide::DefaultAIPageContentOptions(true);
   options.screenshot_options = ScreenshotOptions::ViewportOnly(
-      /*paint_preview_options=*/std::nullopt);
+      /*paint_preview_options=*/std::nullopt,
+      /*screenshot_collection_options=*/std::nullopt);
   options.screenshot_options->set_redaction_color_for_testing(SkColors::kRed);
   FetchPageContext(*web_contents(), options, nullptr, future.GetCallback());
 
@@ -828,8 +839,9 @@ IN_PROC_BROWSER_TEST_F(
   FetchPageContextOptions options;
   options.annotated_page_content_options =
       optimization_guide::DefaultAIPageContentOptions(true);
-  options.screenshot_options =
-      ScreenshotOptions::ViewportOnly(/*paint_preview_options=*/std::nullopt);
+  options.screenshot_options = ScreenshotOptions::ViewportOnly(
+      /*paint_preview_options=*/std::nullopt,
+      /*screenshot_collection_options=*/std::nullopt);
   options.screenshot_options->set_redaction_color_for_testing(SkColors::kRed);
   FetchPageContext(*web_contents(), options, nullptr, future.GetCallback());
 
@@ -863,6 +875,45 @@ IN_PROC_BROWSER_TEST_F(
   // cc-exp at (0, 110) size 100x100.
   EXPECT_THAT(bitmap.getColor(10, 120),
               IsColorWithinTolerance(SK_ColorRED, 0x20));
+}
+
+IN_PROC_BROWSER_TEST_F(MultiSourcePageContextFetcherBrowserTest,
+                       TakesScreenshot_PngWithDimensions) {
+  GURL url = embedded_https_test_server().GetURL("/empty.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  SetBackground(web_contents()->GetPrimaryMainFrame(), "red");
+
+  base::test::TestFuture<FetchPageContextResultCallbackArg> future;
+
+  FetchPageContextOptions options;
+  ScreenshotOptions::ScreenshotCollectionOptions collection_options;
+  collection_options.screenshot_image_format =
+      ScreenshotOptions::ScreenshotImageFormat::kPng;
+  collection_options.max_width = 500;
+  collection_options.max_height = 500;
+
+  options.screenshot_options = ScreenshotOptions::ViewportOnly(
+      /*paint_preview_options=*/std::nullopt, collection_options);
+  FetchPageContext(*web_contents(), options, nullptr, future.GetCallback());
+
+  ASSERT_OK_AND_ASSIGN(std::unique_ptr<FetchPageContextResult> result,
+                       future.Take());
+
+  ASSERT_TRUE(result);
+  ASSERT_TRUE(result->screenshot_result.has_value());
+
+  ScreenshotResult& screenshot = result->screenshot_result.value();
+
+  EXPECT_FALSE(screenshot.dimensions.IsZero());
+  EXPECT_LE(screenshot.dimensions.width(), 500);
+  EXPECT_LE(screenshot.dimensions.height(), 500);
+  ASSERT_GT(screenshot.screenshot_data.size(), 0);
+  ASSERT_EQ(screenshot.mime_type, "image/png");
+
+  SkBitmap bitmap = gfx::PNGCodec::Decode(screenshot.screenshot_data);
+  EXPECT_FALSE(bitmap.isNull());
+  EXPECT_FALSE(bitmap.empty());
 }
 
 }  // namespace page_content_annotations

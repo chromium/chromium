@@ -1022,6 +1022,78 @@ void FetchCallback(
 
 }  // namespace
 
+std::optional<
+    page_content_annotations::ScreenshotOptions::ScreenshotCollectionOptions>
+GetScreenshotCollectionOptions(
+    const optimization_guide::proto::Actions& actions) {
+  if (!actions.has_screenshot_options()) {
+    return std::nullopt;
+  }
+  const auto& screenshot_collection_options = actions.screenshot_options();
+  page_content_annotations::ScreenshotOptions::ScreenshotCollectionOptions
+      screenshot_collection_options_value;
+  screenshot_collection_options_value.max_width =
+      screenshot_collection_options.max_width();
+  screenshot_collection_options_value.max_height =
+      screenshot_collection_options.max_height();
+  if (screenshot_collection_options.has_compression_quality()) {
+    switch (screenshot_collection_options.compression_quality()) {
+      case optimization_guide::proto::CompressionQuality::
+          COMPRESSION_QUALITY_LOW:
+        screenshot_collection_options_value.screenshot_compression_quality =
+            page_content_annotations::ScreenshotOptions::
+                ScreenshotCompressionQuality::kLow;
+        break;
+      case optimization_guide::proto::CompressionQuality::
+          COMPRESSION_QUALITY_MEDIUM:
+        screenshot_collection_options_value.screenshot_compression_quality =
+            page_content_annotations::ScreenshotOptions::
+                ScreenshotCompressionQuality::kMedium;
+        break;
+      case optimization_guide::proto::CompressionQuality::
+          COMPRESSION_QUALITY_HIGH:
+        screenshot_collection_options_value.screenshot_compression_quality =
+            page_content_annotations::ScreenshotOptions::
+                ScreenshotCompressionQuality::kHigh;
+        break;
+      case optimization_guide::proto::CompressionQuality::
+          COMPRESSION_QUALITY_NONE:
+        screenshot_collection_options_value.screenshot_compression_quality =
+            page_content_annotations::ScreenshotOptions::
+                ScreenshotCompressionQuality::kNone;
+        break;
+      default:
+        break;
+    }
+  }
+  if (screenshot_collection_options.has_screenshot_format()) {
+    switch (screenshot_collection_options.screenshot_format()) {
+      case optimization_guide::proto::ScreenshotImageFormat::
+          SCREENSHOT_IMAGE_FORMAT_JPEG:
+        screenshot_collection_options_value.screenshot_image_format =
+            page_content_annotations::ScreenshotOptions::ScreenshotImageFormat::
+                kJpeg;
+        break;
+      case optimization_guide::proto::ScreenshotImageFormat::
+          SCREENSHOT_IMAGE_FORMAT_PNG:
+        screenshot_collection_options_value.screenshot_image_format =
+            page_content_annotations::ScreenshotOptions::ScreenshotImageFormat::
+                kPng;
+        break;
+      case optimization_guide::proto::ScreenshotImageFormat::
+          SCREENSHOT_IMAGE_FORMAT_WEBP:
+        screenshot_collection_options_value.screenshot_image_format =
+            page_content_annotations::ScreenshotOptions::ScreenshotImageFormat::
+                kWebp;
+        break;
+      default:
+        break;
+    }
+  }
+
+  return screenshot_collection_options_value;
+}
+
 void BuildActionsResultWithObservations(
     content::BrowserContext& browser_context,
     base::TimeTicks actions_start_time,
@@ -1030,6 +1102,9 @@ void BuildActionsResultWithObservations(
     std::vector<actor::ActionResultWithLatencyInfo> action_results,
     const ActorTask& task,
     bool skip_async_observation_information,
+    std::optional<page_content_annotations::ScreenshotOptions::
+                      ScreenshotCollectionOptions>
+        screenshot_collection_options,
     base::OnceCallback<
         void(base::TimeTicks actions_start_time,
              mojom::ActionResultCode result_code,
@@ -1037,6 +1112,9 @@ void BuildActionsResultWithObservations(
              std::vector<actor::ActionResultWithLatencyInfo> action_results,
              actor::TaskId task_id,
              bool skip_async_observation_information,
+             std::optional<page_content_annotations::ScreenshotOptions::
+                               ScreenshotCollectionOptions>
+                 screenshot_collection_options,
              std::unique_ptr<apc::ActionsResult>,
              std::unique_ptr<actor::AggregatedJournal::PendingAsyncEntry>)>
         callback) {
@@ -1204,20 +1282,22 @@ void BuildActionsResultWithObservations(
     std::move(callback).Run(actions_start_time, result_code,
                             index_of_failed_action, std::move(action_results),
                             task.id(), skip_async_observation_information,
-                            std::move(response), std::move(journal_entry));
+                            screenshot_collection_options, std::move(response),
+                            std::move(journal_entry));
     return;
   }
   base::RepeatingClosure barrier = base::BarrierClosure(
       tabs_to_fetch.size(),
       base::BindOnce(std::move(callback), actions_start_time, result_code,
                      index_of_failed_action, action_results, task.id(),
-                     skip_async_observation_information, std::move(response),
+                     skip_async_observation_information,
+                     screenshot_collection_options, std::move(response),
                      std::move(journal_entry)));
   for (auto& [tab, tab_observation] : tabs_to_fetch) {
     // tab_observation can be Unretained because the underlying APC is owned
     // by the barrier which is ref-counted.
     actor_service->RequestTabObservation(
-        *tab, task.id(),
+        *tab, task.id(), screenshot_collection_options,
         base::BindOnce(FetchCallback, tab->GetHandle(), profile->GetWeakPtr(),
                        task.id(), barrier, base::Unretained(tab_observation),
                        action_results, actions_start_time,

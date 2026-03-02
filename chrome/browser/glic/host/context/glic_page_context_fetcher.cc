@@ -13,11 +13,13 @@
 #include "chrome/browser/actor/aggregated_journal.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
+#include "chrome/browser/glic/host/glic_mojom_traits.h"
 #include "chrome/browser/page_content_annotations/multi_source_page_context_fetcher.h"
 #include "chrome/common/actor/journal_details_builder.h"
 #include "components/content_extraction/content/browser/inner_text.h"
 #include "components/favicon/content/content_favicon_driver.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
+#include "components/page_content_annotations/content/page_context_fetcher.h"
 #include "components/tabs/public/tab_interface.h"
 #include "mojo/public/cpp/base/proto_wrapper.h"
 #include "mojo/public/cpp/base/proto_wrapper_passkeys.h"
@@ -187,7 +189,8 @@ void FetchPageContext(
     // Disable paint preview backend for glic, and capture the viewport only.
     options.screenshot_options =
         page_content_annotations::ScreenshotOptions::ViewportOnly(
-            /*paint_preview_options=*/std::nullopt);
+            /*paint_preview_options=*/std::nullopt,
+            tab_context_options.screenshot_collection_options);
   }
 
   const bool on_critical_path = true;

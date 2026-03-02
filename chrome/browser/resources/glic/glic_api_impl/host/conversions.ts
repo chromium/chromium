@@ -18,9 +18,9 @@ import type {Origin} from '//resources/mojo/url/mojom/origin.mojom-webui.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
 import type {PageMetadata as PageMetadataMojo} from '../../ai_page_content_metadata.mojom-webui.js';
-import type {AdditionalContext as AdditionalContextMojo, AdditionalContextPart as AdditionalContextPartMojo, AnnotatedPageData as AnnotatedPageDataMojo, CaptureRegionResult as CaptureRegionResultMojo, ContextData as ContextDataMojo, ConversationInfo as ConversationInfoMojo, FocusedTabData as FocusedTabDataMojo, FormFactor as FormFactorMojo, GetPinCandidatesOptions as GetPinCandidatesOptionsMojo, GetTabContextOptions as TabContextOptionsMojo, HostCapability as HostCapabilityMojo, InvokeOptions as InvokeOptionsMojo, PanelOpeningData as PanelOpeningDataMojo, PanelState as PanelStateMojo, PdfDocumentData as PdfDocumentDataMojo, PinTabsOptions as PinTabsOptionsMojo, Platform as PlatformMojo, Screenshot as ScreenshotMojo, TabContext as TabContextMojo, TabData as TabDataMojo, UnpinTabsOptions as UnpinTabsOptionsMojo, WebPageData as WebPageDataMojo, ZeroStateSuggestionsV2 as ZeroStateSuggestionsV2Mojo} from '../../glic.mojom-webui.js';
-import {MicrophoneStatus as MicrophoneStatusMojo, PinTrigger as PinTriggerMojo, UnpinTrigger as UnpinTriggerMojo, WebClientMode as WebClientModeMojo} from '../../glic.mojom-webui.js';
-import type {AdditionalContextSource, CaptureRegionResult, ConversationInfo, CredentialType, FeatureMode, FormFactor, GetPinCandidatesOptions, HostCapability, InvocationSource, PageMetadata, PanelOpeningData, PanelState, PinTabsOptions, PinTrigger, Platform, Screenshot, TabContextOptions, TaskOptions, UnpinTabsOptions, UnpinTrigger, WebPageData, ZeroStateSuggestionsV2} from '../../glic_api/glic_api.js';
+import type {AdditionalContext as AdditionalContextMojo, AdditionalContextPart as AdditionalContextPartMojo, AnnotatedPageData as AnnotatedPageDataMojo, CaptureRegionResult as CaptureRegionResultMojo, ContextData as ContextDataMojo, ConversationInfo as ConversationInfoMojo, FocusedTabData as FocusedTabDataMojo, FormFactor as FormFactorMojo, GetPinCandidatesOptions as GetPinCandidatesOptionsMojo, GetTabContextOptions as TabContextOptionsMojo, HostCapability as HostCapabilityMojo, InvokeOptions as InvokeOptionsMojo, PanelOpeningData as PanelOpeningDataMojo, PanelState as PanelStateMojo, PdfDocumentData as PdfDocumentDataMojo, PinTabsOptions as PinTabsOptionsMojo, Platform as PlatformMojo, Screenshot as ScreenshotMojo, ScreenshotCollectionOptions as ScreenshotCollectionOptionsMojo, TabContext as TabContextMojo, TabData as TabDataMojo, UnpinTabsOptions as UnpinTabsOptionsMojo, WebPageData as WebPageDataMojo, ZeroStateSuggestionsV2 as ZeroStateSuggestionsV2Mojo} from '../../glic.mojom-webui.js';
+import {MicrophoneStatus as MicrophoneStatusMojo, PinTrigger as PinTriggerMojo, ScreenshotCompressionQuality as ScreenshotCompressionQualityMojo, ScreenshotImageFormat as ScreenshotImageFormatMojo, UnpinTrigger as UnpinTriggerMojo, WebClientMode as WebClientModeMojo} from '../../glic.mojom-webui.js';
+import type {AdditionalContextSource, CaptureRegionResult, ConversationInfo, CredentialType, FeatureMode, FormFactor, GetPinCandidatesOptions, HostCapability, InvocationSource, PageMetadata, PanelOpeningData, PanelState, PinTabsOptions, PinTrigger, Platform, Screenshot, ScreenshotCollectionOptions, ScreenshotCompressionQuality, ScreenshotImageFormat, TabContextOptions, TaskOptions, UnpinTabsOptions, UnpinTrigger, WebPageData, ZeroStateSuggestionsV2} from '../../glic_api/glic_api.js';
 import {DEFAULT_INNER_TEXT_BYTES_LIMIT, DEFAULT_PDF_SIZE_LIMIT, MicrophoneStatus, WebClientMode} from '../../glic_api/glic_api.js';
 
 import type {ConfirmationRequestErrorReason as ConfirmationRequestErrorReasonMojo, CredentialType as CredentialTypeMojo, NavigationConfirmationRequest as NavigationConfirmationRequestMojo, NavigationConfirmationResponse as NavigationConfirmationResponseMojo, SelectAutofillSuggestionsDialogErrorReason as SelectAutofillSuggestionsDialogErrorReasonMojo, SelectAutofillSuggestionsDialogRequest as SelectAutofillSuggestionsDialogRequestMojo, SelectAutofillSuggestionsDialogResponse as SelectAutofillSuggestionsDialogResponseMojo, SelectCredentialDialogErrorReason as SelectCredentialDialogErrorReasonMojo, SelectCredentialDialogRequest as SelectCredentialDialogRequestMojo, SelectCredentialDialogResponse as SelectCredentialDialogResponseMojo, TaskOptions as TaskOptionsMojo, UserConfirmationDialogRequest as UserConfirmationDialogRequestMojo, UserConfirmationDialogResponse as UserConfirmationDialogResponseMojo, UserGrantedPermissionDuration as UserGrantedPermissionDurationMojo} from './../../actor_webui.mojom-webui.js';
@@ -397,7 +397,8 @@ export function tabContextOptionsFromClient(options: TabContextOptions):
     includeInnerText: options.innerText ?? false,
     innerTextBytesLimit:
         options.innerTextBytesLimit ?? DEFAULT_INNER_TEXT_BYTES_LIMIT,
-    includeViewportScreenshot: options.viewportScreenshot ?? false,
+    includeViewportScreenshot: options.viewportScreenshot === true ||
+        options.screenshotCollectionOptions !== undefined,
     includePdf: options.pdfData ?? false,
     includeAnnotatedPageContent: options.annotatedPageContent ?? false,
     maxMetaTags: options.maxMetaTags ?? 0,
@@ -407,6 +408,8 @@ export function tabContextOptionsFromClient(options: TabContextOptions):
     annotatedPageContentMode: options.annotatedPageContentMode === undefined ?
         0 :
         options.annotatedPageContentMode,
+    screenshotCollectionOptions: screenshotCollectionOptionsFromClient(
+        options.screenshotCollectionOptions),
   };
 }
 
@@ -738,4 +741,30 @@ export function additionalContextPartToClient(
     }
   }
   return result;
+}
+
+export function screenshotCollectionOptionsFromClient(
+    options: ScreenshotCollectionOptions|
+    undefined): ScreenshotCollectionOptionsMojo {
+  return {
+    maxWidth: options?.maxWidth ?? 0,
+    maxHeight: options?.maxHeight ?? 0,
+    screenshotImageFormat: options?.screenshotImageFormat ?
+        screenshotImageFormatFromClient(options.screenshotImageFormat) :
+        ScreenshotImageFormatMojo.kJpeg,
+    screenshotCompressionQuality: options?.screenshotCompressionQuality ?
+        screenshotCompressionQualityFromClient(
+            options.screenshotCompressionQuality) :
+        ScreenshotCompressionQualityMojo.kMedium,
+  };
+}
+
+export function screenshotImageFormatFromClient(format: ScreenshotImageFormat):
+    ScreenshotImageFormatMojo {
+  return format as number as ScreenshotImageFormatMojo;
+}
+
+export function screenshotCompressionQualityFromClient(
+    quality: ScreenshotCompressionQuality): ScreenshotCompressionQualityMojo {
+  return quality as number as ScreenshotCompressionQualityMojo;
 }

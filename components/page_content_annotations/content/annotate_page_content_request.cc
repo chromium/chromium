@@ -233,7 +233,12 @@ void AnnotatedPageContentRequest::RequestAnnotatedPageContentSync() {
   FetchPageContextOptions options;
   options.annotated_page_content_options = request_->Clone();
   if (features::kPageContentCacheEnableScreenshot.Get()) {
-    options.screenshot_options = ScreenshotOptions::ViewportOnly(std::nullopt);
+    ScreenshotOptions::ScreenshotCollectionOptions
+        screenshot_collection_options;
+    screenshot_collection_options.screenshot_image_format =
+        ScreenshotOptions::ScreenshotImageFormat::kPng;
+    options.screenshot_options =
+        ScreenshotOptions::ViewportOnly(std::nullopt, std::nullopt);
   }
   fetch_page_context_callback_.Run(
       *web_contents_, options, /*progress_listener=*/nullptr,

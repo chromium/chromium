@@ -489,6 +489,51 @@ struct WebClientInitialState {
   bool enable_skills;
 };
 
+// @generate glic_api
+// Enum to specify the image format of the screenshot.
+[Stable, Extensible]
+enum ScreenshotImageFormat {
+  // JPEG screenshot format. This is the default format.
+  [Default] kJpeg = 0,
+  // PNG screenshot format.
+  kPng = 1,
+  // WEBP screenshot format.
+  kWebp = 2,
+};
+
+// @generate glic_api
+// Enum to specify the compression quality of the screenshot. Depending on
+// screenshot format, the compression quality may not be respected or may mean
+// something different.
+[Stable, Extensible]
+enum ScreenshotCompressionQuality {
+  // No compression.
+  [Default] kNone = 0,
+  // Low compression quality.
+  kLow = 1,
+  // Medium compression quality.
+  kMedium = 2,
+  // High compression quality.
+  kHigh = 3,
+};
+
+struct ScreenshotCollectionOptions {
+  // Screenshot will be scaled to fit the max width and height while
+  // maintaining the aspect ratio.
+  // If set to 0, the screenshot will be captured without limiting the width
+  // (so long as the height is not limited).
+  uint32 max_width;
+  // Screenshot will be scaled to fit the max width and height while maintaining
+  // the aspect ratio.
+  // If set to 0, the screenshot will be captured without limiting the height
+  // (so long as the width is not limited).
+  uint32 max_height;
+  // The format of the screenshot.
+  ScreenshotImageFormat screenshot_image_format;
+  // The compression quality of the screenshot.
+  ScreenshotCompressionQuality screenshot_compression_quality;
+};
+
 // Options for getting tab context.
 struct GetTabContextOptions {
   // Whether to include inner text in the response.
@@ -511,6 +556,8 @@ struct GetTabContextOptions {
   //
   // If invalid, falls back to using ANNOTATED_PAGE_CONTENT_MODE_DEFAULT.
   uint32 annotated_page_content_mode = 0;
+  // The screenshot collection options to use for the screenshot.
+  ScreenshotCollectionOptions screenshot_collection_options;
 };
 
 // Options for requesting pin candidates.

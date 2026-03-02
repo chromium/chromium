@@ -481,6 +481,30 @@ mojom("mojo_bindings") {
   overridden_deps = [ "//third_party/blink/public/mojom:mojom_platform" ]
 
   component_deps = [ "//content/public/common" ]
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "glic.mojom.ScreenshotCollectionOptions"
+          cpp = "::page_content_annotations::ScreenshotOptions::ScreenshotCollectionOptions"
+        },
+        {
+          mojom = "glic.mojom.ScreenshotImageFormat"
+          cpp = "::page_content_annotations::ScreenshotOptions::ScreenshotImageFormat"
+        },
+        {
+          mojom = "glic.mojom.ScreenshotCompressionQuality"
+          cpp = "::page_content_annotations::ScreenshotOptions::ScreenshotCompressionQuality"
+        },
+      ]
+      traits_headers = [
+        "//components/page_content_annotations/content/page_context_fetcher.h",
+        "host/glic_mojom_traits.h",
+      ]
+      traits_sources = [ "host/glic_mojom_traits.cc" ]
+      traits_public_deps = [ "//components/page_content_annotations/content" ]
+    },
+  ]
 }
 
 source_set("unit_tests") {

@@ -224,7 +224,8 @@ class AttemptFormFillingToolTest : public ActorToolsTest {
         ActorKeyedService::Get(browser()->profile());
     TestFuture<ActorKeyedService::TabObservationResult> tab_observation_future;
     actor_keyed_service->RequestTabObservation(
-        *active_tab(), actor_task().id(), tab_observation_future.GetCallback());
+        *active_tab(), actor_task().id(), std::nullopt,
+        tab_observation_future.GetCallback());
     const ActorKeyedService::TabObservationResult& result =
         tab_observation_future.Get();
     std::optional<std::string> error_message =

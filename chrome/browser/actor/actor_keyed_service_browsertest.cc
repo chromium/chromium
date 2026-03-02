@@ -161,8 +161,8 @@ IN_PROC_BROWSER_TEST_F(ActorKeyedServiceBrowserTest,
       actor_keyed_service()->CreateTask(NoEnterprisePolicyChecker());
 
   TestFuture<ActorKeyedService::TabObservationResult> future;
-  actor_keyed_service()->RequestTabObservation(*active_tab(), task_id,
-                                               future.GetCallback());
+  actor_keyed_service()->RequestTabObservation(
+      *active_tab(), task_id, std::nullopt, future.GetCallback());
 
   const ActorKeyedService::TabObservationResult& result = future.Get();
   ASSERT_TRUE(result.has_value());
@@ -203,8 +203,8 @@ IN_PROC_BROWSER_TEST_F(ActorKeyedServiceBrowserTest,
   }
 
   TestFuture<ActorKeyedService::TabObservationResult> future;
-  actor_keyed_service()->RequestTabObservation(*active_tab(), task_id,
-                                               future.GetCallback());
+  actor_keyed_service()->RequestTabObservation(
+      *active_tab(), task_id, std::nullopt, future.GetCallback());
 
   const ActorKeyedService::TabObservationResult& result = future.Get();
   std::optional<std::string> error_message =
@@ -231,15 +231,17 @@ IN_PROC_BROWSER_TEST_F(ActorKeyedServiceBrowserTest,
              std::optional<size_t> /*index_of_failed_actions*/,
              std::vector<actor::ActionResultWithLatencyInfo>, actor::TaskId,
              bool /*skip_async_observation_information*/,
+             std::optional<page_content_annotations::ScreenshotOptions::
+                               ScreenshotCollectionOptions>,
              std::unique_ptr<optimization_guide::proto::ActionsResult>,
              std::unique_ptr<actor::AggregatedJournal::PendingAsyncEntry>>
       future;
   actor::BuildActionsResultWithObservations(
       *GetProfile(), base::TimeTicks::Now(), mojom::ActionResultCode::kOk,
       std::nullopt, std::vector<actor::ActionResultWithLatencyInfo>(), *task,
-      true, future.GetCallback());
+      true, std::nullopt, future.GetCallback());
   const std::unique_ptr<optimization_guide::proto::ActionsResult>&
-      actions_result = future.Get<6>();
+      actions_result = future.Get<7>();
   ASSERT_TRUE(actions_result);
   EXPECT_EQ(actions_result->action_result(),
             static_cast<int32_t>(mojom::ActionResultCode::kOk));
