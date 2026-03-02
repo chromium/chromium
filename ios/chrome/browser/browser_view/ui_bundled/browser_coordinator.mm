@@ -331,6 +331,7 @@
 #import "ios/chrome/browser/tips_manager/model/tips_manager_ios_factory.h"
 #import "ios/chrome/browser/tips_notifications/coordinator/enhanced_safe_browsing_promo_coordinator.h"
 #import "ios/chrome/browser/tips_notifications/coordinator/lens_promo_coordinator.h"
+#import "ios/chrome/browser/tips_notifications/coordinator/price_tracking_promo_coordinator.h"
 #import "ios/chrome/browser/tips_notifications/coordinator/search_what_you_see_promo_coordinator.h"
 #import "ios/chrome/browser/toolbar/coordinator/toolbar_coordinator.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/accessory/toolbar_accessory_presenter.h"
@@ -751,6 +752,7 @@ const char kChromeAppStoreUrl[] =
   QuickDeleteCoordinator* _quickDeleteCoordinator;
   LensPromoCoordinator* _lensPromoCoordinator;
   EnhancedSafeBrowsingPromoCoordinator* _enhancedSafeBrowsingPromoCoordinator;
+  PriceTrackingPromoCoordinator* _priceTrackingPromoCoordinator;
   AutoDeletionCoordinator* _autoDeletionCoordinator;
   TrustedVaultReauthenticationCoordinator*
       _trustedVaultReauthenticationCoordinator;
@@ -1790,6 +1792,7 @@ const char kChromeAppStoreUrl[] =
   [self dismissEditAddressBottomSheet];
   [self dismissLensPromo];
   [self dismissEnhancedSafeBrowsingPromo];
+  [self dismissPriceTrackingPromo];
   [self dismissAutoDeletionActionSheet];
   [self hideGoogleOne];
   [self stopTrustedVaultReauthentication];
@@ -2689,6 +2692,19 @@ const char kChromeAppStoreUrl[] =
   _searchWhatYouSeePromoCoordinator = nil;
 }
 
+- (void)showPriceTrackingPromo {
+  [_priceTrackingPromoCoordinator stop];
+  _priceTrackingPromoCoordinator = [[PriceTrackingPromoCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser];
+  [_priceTrackingPromoCoordinator start];
+}
+
+- (void)dismissPriceTrackingPromo {
+  [_priceTrackingPromoCoordinator stop];
+  _priceTrackingPromoCoordinator = nil;
+}
+
 - (void)showNotificationsOptInFromAccessPoint:
             (NotificationOptInAccessPoint)accessPoint
                            baseViewController:
@@ -2894,6 +2910,7 @@ const char kChromeAppStoreUrl[] =
   [self dismissEnhancedSafeBrowsingPromo];
   [self dismissAutoDeletionActionSheet];
   [self dismissSearchWhatYouSeePromo];
+  [self dismissPriceTrackingPromo];
   [self dismissNotificationsOptIn];
   [self hideWelcomeBackPromo];
 

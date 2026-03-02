@@ -77,3 +77,18 @@ source_set("search_what_you_see_promo") {
   ]
   frameworks = [ "UIKit.framework" ]
 }
+
+source_set("price_tracking_promo") {
+  sources = [
+    "price_tracking_promo_view_controller.h",
+    "price_tracking_promo_view_controller.mm",
+  ]
+  public_deps = [ ":shared" ]
+  deps = [
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/common/ui/button_stack",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

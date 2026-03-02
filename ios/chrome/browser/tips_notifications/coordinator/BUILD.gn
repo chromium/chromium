@@ -8,6 +8,8 @@ source_set("coordinator") {
     "enhanced_safe_browsing_promo_coordinator.mm",
     "lens_promo_coordinator.h",
     "lens_promo_coordinator.mm",
+    "price_tracking_promo_coordinator.h",
+    "price_tracking_promo_coordinator.mm",
     "search_what_you_see_promo_coordinator.h",
     "search_what_you_see_promo_coordinator.mm",
   ]
@@ -21,6 +23,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/tips_notifications/ui:enhanced_safe_browsing_promo",
     "//ios/chrome/browser/tips_notifications/ui:lens_promo",
+    "//ios/chrome/browser/tips_notifications/ui:price_tracking_promo",
     "//ios/chrome/browser/tips_notifications/ui:search_what_you_see_promo",
     "//ios/chrome/common/ui/button_stack",
     "//ios/chrome/common/ui/confirmation_alert",

@@ -237,8 +237,8 @@ void TipsNotificationPresenter::ShowTabGroupsPromo() {
 }
 
 void TipsNotificationPresenter::ShowPriceTrackingPromo() {
-  // TODO (crbug.com/485573580): Present the Price Tracking promo once it is
-  // created.
+  [HandlerForProtocol(browser_->GetCommandDispatcher(),
+                      BrowserCoordinatorCommands) showPriceTrackingPromo];
 }
 
 bool TipsNotificationPresenter::HasIdentitiesOnDevice() {

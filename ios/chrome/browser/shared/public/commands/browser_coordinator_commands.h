@@ -151,6 +151,10 @@ enum class TrustedVaultUserActionTriggerForUMA;
 - (void)showSearchWhatYouSeePromo;
 - (void)dismissSearchWhatYouSeePromo;
 
+// Shows and dismisses the Price Tracking promo.
+- (void)showPriceTrackingPromo;
+- (void)dismissPriceTrackingPromo;
+
 // Shows the notifications opt-in view from `accessPoint`.
 - (void)showNotificationsOptInFromAccessPoint:
             (NotificationOptInAccessPoint)accessPoint
