@@ -35,8 +35,7 @@ public interface ContainmentItem {
      * Returns the custom background style for the container. By default, the standard background
      * will be used.
      */
-    @BackgroundStyle
-    default int getCustomBackgroundStyle() {
+    default @BackgroundStyle int getCustomBackgroundStyle() {
         return BackgroundStyle.STANDARD;
     }
 
