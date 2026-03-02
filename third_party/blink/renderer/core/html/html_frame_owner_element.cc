@@ -651,7 +651,7 @@ bool HTMLFrameOwnerElement::LazyLoadIfPossible(
     const ResourceRequestHead& request,
     WebFrameLoadType frame_load_type) {
   const auto& loading_attr = FastGetAttribute(html_names::kLoadingAttr);
-  bool loading_lazy_set = EqualIgnoringASCIICase(loading_attr, "lazy");
+  bool loading_lazy_set = EqualIgnoringAsciiCase(loading_attr, "lazy");
 
   if (!IsFrameLazyLoadable(GetExecutionContext(), url, loading_lazy_set,
                            should_lazy_load_children_)) {
@@ -718,7 +718,7 @@ bool HTMLFrameOwnerElement::LoadOrRedirectSubframe(
   // attribute gets parsed in ParseAttribute() before the "loading" attribute
   // does.
   if (should_lazy_load_children_ &&
-      EqualIgnoringASCIICase(FastGetAttribute(html_names::kLoadingAttr),
+      EqualIgnoringAsciiCase(FastGetAttribute(html_names::kLoadingAttr),
                              "eager")) {
     should_lazy_load_children_ = false;
   }

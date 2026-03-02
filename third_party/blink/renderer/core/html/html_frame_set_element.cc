@@ -120,11 +120,11 @@ void HTMLFrameSetElement::ParseAttribute(
     DirtyEdgeInfo();
   } else if (name == html_names::kFrameborderAttr) {
     if (!value.IsNull()) {
-      if (EqualIgnoringASCIICase(value, "no") ||
-          EqualIgnoringASCIICase(value, "0")) {
+      if (EqualIgnoringAsciiCase(value, "no") ||
+          EqualIgnoringAsciiCase(value, "0")) {
         frameborder_ = false;
-      } else if (EqualIgnoringASCIICase(value, "yes") ||
-                 EqualIgnoringASCIICase(value, "1")) {
+      } else if (EqualIgnoringAsciiCase(value, "yes") ||
+                 EqualIgnoringAsciiCase(value, "1")) {
         frameborder_ = true;
       }
     } else {

@@ -36,14 +36,14 @@ void HTMLDivElement::CollectStyleForPresentationAttribute(
     const AtomicString& value,
     HeapVector<CSSPropertyValue, 8>& style) {
   if (name == html_names::kAlignAttr) {
-    if (EqualIgnoringASCIICase(value, "middle") ||
-        EqualIgnoringASCIICase(value, "center")) {
+    if (EqualIgnoringAsciiCase(value, "middle") ||
+        EqualIgnoringAsciiCase(value, "center")) {
       AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kTextAlign,
                                               CSSValueID::kWebkitCenter);
-    } else if (EqualIgnoringASCIICase(value, "left")) {
+    } else if (EqualIgnoringAsciiCase(value, "left")) {
       AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kTextAlign,
                                               CSSValueID::kWebkitLeft);
-    } else if (EqualIgnoringASCIICase(value, "right")) {
+    } else if (EqualIgnoringAsciiCase(value, "right")) {
       AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kTextAlign,
                                               CSSValueID::kWebkitRight);
     } else {

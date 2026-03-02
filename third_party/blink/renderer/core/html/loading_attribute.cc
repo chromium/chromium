@@ -7,10 +7,12 @@
 namespace blink {
 
 LoadingAttributeValue GetLoadingAttributeValue(const String& value) {
-  if (EqualIgnoringASCIICase(value, "lazy"))
+  if (EqualIgnoringAsciiCase(value, "lazy")) {
     return LoadingAttributeValue::kLazy;
-  if (EqualIgnoringASCIICase(value, "eager"))
+  }
+  if (EqualIgnoringAsciiCase(value, "eager")) {
     return LoadingAttributeValue::kEager;
+  }
   return LoadingAttributeValue::kAuto;
 }
 

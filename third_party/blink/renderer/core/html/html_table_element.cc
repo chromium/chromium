@@ -288,23 +288,24 @@ static bool GetBordersFromFrameAttributeValue(const AtomicString& value,
   border_bottom = false;
   border_left = false;
 
-  if (EqualIgnoringASCIICase(value, "above"))
+  if (EqualIgnoringAsciiCase(value, "above")) {
     border_top = true;
-  else if (EqualIgnoringASCIICase(value, "below"))
+  } else if (EqualIgnoringAsciiCase(value, "below")) {
     border_bottom = true;
-  else if (EqualIgnoringASCIICase(value, "hsides"))
+  } else if (EqualIgnoringAsciiCase(value, "hsides")) {
     border_top = border_bottom = true;
-  else if (EqualIgnoringASCIICase(value, "vsides"))
+  } else if (EqualIgnoringAsciiCase(value, "vsides")) {
     border_left = border_right = true;
-  else if (EqualIgnoringASCIICase(value, "lhs"))
+  } else if (EqualIgnoringAsciiCase(value, "lhs")) {
     border_left = true;
-  else if (EqualIgnoringASCIICase(value, "rhs"))
+  } else if (EqualIgnoringAsciiCase(value, "rhs")) {
     border_right = true;
-  else if (EqualIgnoringASCIICase(value, "box") ||
-           EqualIgnoringASCIICase(value, "border"))
+  } else if (EqualIgnoringAsciiCase(value, "box") ||
+             EqualIgnoringAsciiCase(value, "border")) {
     border_top = border_bottom = border_left = border_right = true;
-  else if (!EqualIgnoringASCIICase(value, "void"))
+  } else if (!EqualIgnoringAsciiCase(value, "void")) {
     return false;
+  }
   return true;
 }
 
@@ -358,7 +359,7 @@ void HTMLTableElement::CollectStyleForPresentationAttribute(
     }
   } else if (name == html_names::kAlignAttr) {
     if (!value.empty()) {
-      if (EqualIgnoringASCIICase(value, "center")) {
+      if (EqualIgnoringAsciiCase(value, "center")) {
         AddPropertyToPresentationAttributeStyle(
             style, CSSPropertyID::kMarginInlineStart, CSSValueID::kAuto);
         AddPropertyToPresentationAttributeStyle(
@@ -441,16 +442,17 @@ void HTMLTableElement::ParseAttribute(
         params.new_value, border_top, border_right, border_bottom, border_left);
   } else if (name == html_names::kRulesAttr) {
     rules_attr_ = kUnsetRules;
-    if (EqualIgnoringASCIICase(params.new_value, "none"))
+    if (EqualIgnoringAsciiCase(params.new_value, "none")) {
       rules_attr_ = kNoneRules;
-    else if (EqualIgnoringASCIICase(params.new_value, "groups"))
+    } else if (EqualIgnoringAsciiCase(params.new_value, "groups")) {
       rules_attr_ = kGroupsRules;
-    else if (EqualIgnoringASCIICase(params.new_value, "rows"))
+    } else if (EqualIgnoringAsciiCase(params.new_value, "rows")) {
       rules_attr_ = kRowsRules;
-    else if (EqualIgnoringASCIICase(params.new_value, "cols"))
+    } else if (EqualIgnoringAsciiCase(params.new_value, "cols")) {
       rules_attr_ = kColsRules;
-    else if (EqualIgnoringASCIICase(params.new_value, "all"))
+    } else if (EqualIgnoringAsciiCase(params.new_value, "all")) {
       rules_attr_ = kAllRules;
+    }
   } else if (params.name == html_names::kCellpaddingAttr) {
     if (!params.new_value.empty()) {
       padding_ =

@@ -169,14 +169,14 @@ bool HTMLTemplateElement::BeginPatch(ContainerNode& node) {
     }
 
     const String& current_target = processing_instruction->target();
-    if (EqualIgnoringASCIICase(current_target, "marker")) {
+    if (EqualIgnoringAsciiCase(current_target, "marker")) {
       override_insertion_target_ = marker_host;
       insertion_start_marker_ = processing_instruction;
       insertion_end_marker_ = processing_instruction;
       return true;
     }
 
-    if (EqualIgnoringASCIICase(current_target, "end") &&
+    if (EqualIgnoringAsciiCase(current_target, "end") &&
         insertion_start_marker_) {
       CHECK(override_insertion_target_);
       CHECK(!insertion_end_marker_);
@@ -184,7 +184,7 @@ bool HTMLTemplateElement::BeginPatch(ContainerNode& node) {
       break;
     }
 
-    if (EqualIgnoringASCIICase(current_target, "start") &&
+    if (EqualIgnoringAsciiCase(current_target, "start") &&
         !insertion_start_marker_) {
       CHECK(!override_insertion_target_);
       override_insertion_target_ = marker_host;

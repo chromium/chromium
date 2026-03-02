@@ -113,13 +113,13 @@ void PluginParameters::AppendNameWithValue(const String& name,
 
 void PluginParameters::MapDataParamToSrc() {
   if (std::ranges::any_of(names_, [](auto name) {
-        return EqualIgnoringASCIICase(name, "src");
+        return EqualIgnoringAsciiCase(name, "src");
       })) {
     return;
   }
 
   auto data = std::ranges::find_if(
-      names_, [](auto name) { return EqualIgnoringASCIICase(name, "data"); });
+      names_, [](auto name) { return EqualIgnoringAsciiCase(name, "data"); });
 
   if (data != names_.end()) {
     AppendNameWithValue(

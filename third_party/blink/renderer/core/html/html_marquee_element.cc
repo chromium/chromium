@@ -323,21 +323,26 @@ bool HTMLMarqueeElement::ShouldContinue() {
 
 HTMLMarqueeElement::Behavior HTMLMarqueeElement::GetBehavior() const {
   const AtomicString& behavior = FastGetAttribute(html_names::kBehaviorAttr);
-  if (EqualIgnoringASCIICase(behavior, "alternate"))
+  if (EqualIgnoringAsciiCase(behavior, "alternate")) {
     return kAlternate;
-  if (EqualIgnoringASCIICase(behavior, "slide"))
+  }
+  if (EqualIgnoringAsciiCase(behavior, "slide")) {
     return kSlide;
+  }
   return kScroll;
 }
 
 HTMLMarqueeElement::Direction HTMLMarqueeElement::GetDirection() const {
   const AtomicString& direction = FastGetAttribute(html_names::kDirectionAttr);
-  if (EqualIgnoringASCIICase(direction, "down"))
+  if (EqualIgnoringAsciiCase(direction, "down")) {
     return kDown;
-  if (EqualIgnoringASCIICase(direction, "up"))
+  }
+  if (EqualIgnoringAsciiCase(direction, "up")) {
     return kUp;
-  if (EqualIgnoringASCIICase(direction, "right"))
+  }
+  if (EqualIgnoringAsciiCase(direction, "right")) {
     return kRight;
+  }
   return kLeft;
 }
 

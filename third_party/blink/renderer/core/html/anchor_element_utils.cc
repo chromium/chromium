@@ -143,7 +143,7 @@ void AnchorElementUtils::HandleRelAttribute(FrameLoadRequest& frame_request,
     frame_request.SetNoOpener();
   }
   if (HasRel(link_relations, kRelationNoOpener) ||
-      (EqualIgnoringASCIICase(target, "_blank") &&
+      (EqualIgnoringAsciiCase(target, "_blank") &&
        !HasRel(link_relations, kRelationOpener) &&
        settings->GetTargetBlankImpliesNoOpenerEnabledWillBeRemoved())) {
     frame_request.SetNoOpener();

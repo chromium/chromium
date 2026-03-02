@@ -132,12 +132,13 @@ void HTMLFrameElementBase::ParseAttribute(
     // the user agent is expected to prevent any scrollbars from being shown for
     // the viewport of the Document's browsing context, regardless of the
     // 'overflow' property that applies to that viewport.
-    if (EqualIgnoringASCIICase(value, "off") ||
-        EqualIgnoringASCIICase(value, "noscroll") ||
-        EqualIgnoringASCIICase(value, "no"))
+    if (EqualIgnoringAsciiCase(value, "off") ||
+        EqualIgnoringAsciiCase(value, "noscroll") ||
+        EqualIgnoringAsciiCase(value, "no")) {
       SetScrollbarMode(mojom::blink::ScrollbarMode::kAlwaysOff);
-    else
+    } else {
       SetScrollbarMode(mojom::blink::ScrollbarMode::kAuto);
+    }
   } else if (name == html_names::kOnbeforeunloadAttr) {
     // FIXME: should <frame> elements have beforeunload handlers?
     SetAttributeEventListener(

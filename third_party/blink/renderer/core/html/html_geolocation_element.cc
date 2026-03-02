@@ -110,7 +110,7 @@ void HTMLGeolocationElement::ParseAttribute(
       ClearWatch();
     }
   } else if (params.name == html_names::kAccuracymodeAttr) {
-    SetPreciseLocation(EqualIgnoringASCIICase(
+    SetPreciseLocation(EqualIgnoringAsciiCase(
         params.new_value,
         V8AccuracyMode(V8AccuracyMode::Enum::kPrecise).AsStringView()));
   }

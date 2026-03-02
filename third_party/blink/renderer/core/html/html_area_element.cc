@@ -59,13 +59,13 @@ void HTMLAreaElement::ParseAttribute(
     const AttributeModificationParams& params) {
   const AtomicString& value = params.new_value;
   if (params.name == html_names::kShapeAttr) {
-    if (EqualIgnoringASCIICase(value, "default")) {
+    if (EqualIgnoringAsciiCase(value, "default")) {
       shape_ = kDefault;
-    } else if (EqualIgnoringASCIICase(value, "circle") ||
-               EqualIgnoringASCIICase(value, "circ")) {
+    } else if (EqualIgnoringAsciiCase(value, "circle") ||
+               EqualIgnoringAsciiCase(value, "circ")) {
       shape_ = kCircle;
-    } else if (EqualIgnoringASCIICase(value, "polygon") ||
-               EqualIgnoringASCIICase(value, "poly")) {
+    } else if (EqualIgnoringAsciiCase(value, "polygon") ||
+               EqualIgnoringAsciiCase(value, "poly")) {
       shape_ = kPoly;
     } else {
       // The missing (and implicitly invalid) value default for the

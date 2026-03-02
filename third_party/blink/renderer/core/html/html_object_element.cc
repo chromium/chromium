@@ -394,10 +394,11 @@ bool HTMLObjectElement::ContainsJavaApplet() const {
 
   for (HTMLElement& child : Traversal<HTMLElement>::ChildrenOf(*this)) {
     if (IsA<HTMLParamElement>(child) &&
-        EqualIgnoringASCIICase(child.GetNameAttribute(), "type") &&
+        EqualIgnoringAsciiCase(child.GetNameAttribute(), "type") &&
         MIMETypeRegistry::IsJavaAppletMIMEType(
-            child.FastGetAttribute(html_names::kValueAttr).GetString()))
+            child.FastGetAttribute(html_names::kValueAttr).GetString())) {
       return true;
+    }
 
     auto* html_image_element = DynamicTo<HTMLObjectElement>(child);
     if (html_image_element && html_image_element->ContainsJavaApplet())

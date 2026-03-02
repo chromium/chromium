@@ -60,13 +60,13 @@ AtomicString ListTypeAttributeToStyleName(const AtomicString& value) {
     return keywords::kUpperRoman;
   if (value == "1")
     return keywords::kDecimal;
-  if (EqualIgnoringASCIICase(value, keywords::kDisc)) {
+  if (EqualIgnoringAsciiCase(value, keywords::kDisc)) {
     return keywords::kDisc;
   }
-  if (EqualIgnoringASCIICase(value, keywords::kCircle)) {
+  if (EqualIgnoringAsciiCase(value, keywords::kCircle)) {
     return keywords::kCircle;
   }
-  if (EqualIgnoringASCIICase(value, keywords::kSquare)) {
+  if (EqualIgnoringAsciiCase(value, keywords::kSquare)) {
     return keywords::kSquare;
   }
   return g_null_atom;
@@ -77,7 +77,7 @@ void HTMLLIElement::CollectStyleForPresentationAttribute(
     const AtomicString& value,
     HeapVector<CSSPropertyValue, 8>& style) {
   if (name == html_names::kTypeAttr) {
-    if (EqualIgnoringASCIICase(value, "none")) {
+    if (EqualIgnoringAsciiCase(value, "none")) {
       AddPropertyToPresentationAttributeStyle(
           style, CSSPropertyID::kListStyleType, CSSValueID::kNone);
     } else {

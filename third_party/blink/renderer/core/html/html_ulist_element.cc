@@ -45,19 +45,19 @@ void HTMLUListElement::CollectStyleForPresentationAttribute(
     const AtomicString& value,
     HeapVector<CSSPropertyValue, 8>& style) {
   if (name == html_names::kTypeAttr) {
-    if (EqualIgnoringASCIICase(value, keywords::kDisc)) {
+    if (EqualIgnoringAsciiCase(value, keywords::kDisc)) {
       AddPropertyToPresentationAttributeStyle(
           style, CSSPropertyID::kListStyleType,
           *MakeGarbageCollected<CSSCustomIdentValue>(keywords::kDisc));
-    } else if (EqualIgnoringASCIICase(value, keywords::kCircle)) {
+    } else if (EqualIgnoringAsciiCase(value, keywords::kCircle)) {
       AddPropertyToPresentationAttributeStyle(
           style, CSSPropertyID::kListStyleType,
           *MakeGarbageCollected<CSSCustomIdentValue>(keywords::kCircle));
-    } else if (EqualIgnoringASCIICase(value, keywords::kSquare)) {
+    } else if (EqualIgnoringAsciiCase(value, keywords::kSquare)) {
       AddPropertyToPresentationAttributeStyle(
           style, CSSPropertyID::kListStyleType,
           *MakeGarbageCollected<CSSCustomIdentValue>(keywords::kSquare));
-    } else if (EqualIgnoringASCIICase(value, "none")) {
+    } else if (EqualIgnoringAsciiCase(value, "none")) {
       AddPropertyToPresentationAttributeStyle(
           style, CSSPropertyID::kListStyleType, CSSValueID::kNone);
     }

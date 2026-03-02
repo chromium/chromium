@@ -337,9 +337,9 @@ bool HTMLElement::IsPresentationAttribute(const QualifiedName& name) const {
 }
 
 bool HTMLElement::IsValidDirAttribute(const AtomicString& value) {
-  return EqualIgnoringASCIICase(value, "auto") ||
-         EqualIgnoringASCIICase(value, "ltr") ||
-         EqualIgnoringASCIICase(value, "rtl");
+  return EqualIgnoringAsciiCase(value, "auto") ||
+         EqualIgnoringAsciiCase(value, "ltr") ||
+         EqualIgnoringAsciiCase(value, "rtl");
 }
 
 void HTMLElement::CollectStyleForPresentationAttribute(
@@ -347,7 +347,7 @@ void HTMLElement::CollectStyleForPresentationAttribute(
     const AtomicString& value,
     HeapVector<CSSPropertyValue, 8>& style) {
   if (name == html_names::kAlignAttr) {
-    if (EqualIgnoringASCIICase(value, "middle")) {
+    if (EqualIgnoringAsciiCase(value, "middle")) {
       AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kTextAlign,
                                               CSSValueID::kCenter);
     } else {
@@ -383,7 +383,7 @@ void HTMLElement::CollectStyleForPresentationAttribute(
           style, CSSPropertyID::kWebkitUserModify, CSSValueID::kReadOnly);
     }
   } else if (name == html_names::kHiddenAttr) {
-    if (EqualIgnoringASCIICase(value, keywords::kUntilFound)) {
+    if (EqualIgnoringAsciiCase(value, keywords::kUntilFound)) {
       AddPropertyToPresentationAttributeStyle(
           style, CSSPropertyID::kContentVisibility, CSSValueID::kHidden);
       UseCounter::Count(GetDocument(), WebFeature::kHiddenUntilFoundAttribute);
@@ -394,12 +394,12 @@ void HTMLElement::CollectStyleForPresentationAttribute(
     }
   } else if (name == html_names::kDraggableAttr) {
     UseCounter::Count(GetDocument(), WebFeature::kDraggableAttribute);
-    if (EqualIgnoringASCIICase(value, keywords::kTrue)) {
+    if (EqualIgnoringAsciiCase(value, keywords::kTrue)) {
       AddPropertyToPresentationAttributeStyle(
           style, CSSPropertyID::kWebkitUserDrag, CSSValueID::kElement);
       AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kUserSelect,
                                               CSSValueID::kNone);
-    } else if (EqualIgnoringASCIICase(value, keywords::kFalse)) {
+    } else if (EqualIgnoringAsciiCase(value, keywords::kFalse)) {
       AddPropertyToPresentationAttributeStyle(
           style, CSSPropertyID::kWebkitUserDrag, CSSValueID::kNone);
     }
@@ -407,7 +407,7 @@ void HTMLElement::CollectStyleForPresentationAttribute(
     // This chunk of code interacts with the html.css stylesheet rule labelled
     // with `rendering.html#bidi-rendering`. Make sure any changes here are
     // congruent with changes made there.
-    if (EqualIgnoringASCIICase(value, "auto")) {
+    if (EqualIgnoringAsciiCase(value, "auto")) {
       // These three are handled by the UA stylesheet.
       if (!HasTagName(html_names::kBdoTag) &&
           !HasTagName(html_names::kTextareaTag) &&
@@ -1101,26 +1101,26 @@ void HTMLElement::ApplyAlignmentAttributeToStyle(
   CSSValueID float_value = CSSValueID::kInvalid;
   CSSValueID vertical_align_value = CSSValueID::kInvalid;
 
-  if (EqualIgnoringASCIICase(alignment, "absmiddle") ||
-      EqualIgnoringASCIICase(alignment, "abscenter")) {
+  if (EqualIgnoringAsciiCase(alignment, "absmiddle") ||
+      EqualIgnoringAsciiCase(alignment, "abscenter")) {
     vertical_align_value = CSSValueID::kMiddle;
-  } else if (EqualIgnoringASCIICase(alignment, "absbottom")) {
+  } else if (EqualIgnoringAsciiCase(alignment, "absbottom")) {
     vertical_align_value = CSSValueID::kBottom;
-  } else if (EqualIgnoringASCIICase(alignment, "left")) {
+  } else if (EqualIgnoringAsciiCase(alignment, "left")) {
     float_value = CSSValueID::kLeft;
     vertical_align_value = CSSValueID::kTop;
-  } else if (EqualIgnoringASCIICase(alignment, "right")) {
+  } else if (EqualIgnoringAsciiCase(alignment, "right")) {
     float_value = CSSValueID::kRight;
     vertical_align_value = CSSValueID::kTop;
-  } else if (EqualIgnoringASCIICase(alignment, "top")) {
+  } else if (EqualIgnoringAsciiCase(alignment, "top")) {
     vertical_align_value = CSSValueID::kTop;
-  } else if (EqualIgnoringASCIICase(alignment, "middle")) {
+  } else if (EqualIgnoringAsciiCase(alignment, "middle")) {
     vertical_align_value = CSSValueID::kWebkitBaselineMiddle;
-  } else if (EqualIgnoringASCIICase(alignment, "center")) {
+  } else if (EqualIgnoringAsciiCase(alignment, "center")) {
     vertical_align_value = CSSValueID::kMiddle;
-  } else if (EqualIgnoringASCIICase(alignment, "bottom")) {
+  } else if (EqualIgnoringAsciiCase(alignment, "bottom")) {
     vertical_align_value = CSSValueID::kBaseline;
-  } else if (EqualIgnoringASCIICase(alignment, "texttop")) {
+  } else if (EqualIgnoringAsciiCase(alignment, "texttop")) {
     vertical_align_value = CSSValueID::kTextTop;
   }
 
@@ -1198,7 +1198,7 @@ V8UnionBooleanOrStringOrUnrestrictedDouble* HTMLElement::hidden() const {
     return MakeGarbageCollected<V8UnionBooleanOrStringOrUnrestrictedDouble>(
         false);
   }
-  if (EqualIgnoringASCIICase(attribute, keywords::kUntilFound)) {
+  if (EqualIgnoringAsciiCase(attribute, keywords::kUntilFound)) {
     return MakeGarbageCollected<V8UnionBooleanOrStringOrUnrestrictedDouble>(
         String(keywords::kUntilFound));
   }
@@ -1220,7 +1220,7 @@ void HTMLElement::setHidden(
       }
       break;
     case V8UnionBooleanOrStringOrUnrestrictedDouble::ContentType::kString:
-      if (EqualIgnoringASCIICase(value->GetAsString(), keywords::kUntilFound)) {
+      if (EqualIgnoringAsciiCase(value->GetAsString(), keywords::kUntilFound)) {
         setAttribute(html_names::kHiddenAttr,
                      AtomicString(keywords::kUntilFound));
       } else if (value->GetAsString() == "") {
@@ -1262,7 +1262,7 @@ PopoverValueType GetPopoverTypeFromAttributeValue(const AtomicString& value) {
 void HTMLElement::UpdatePopoverAttribute(const AtomicString& value) {
   PopoverValueType type = GetPopoverTypeFromAttributeValue(value);
   if (type == PopoverValueType::kManual &&
-      !EqualIgnoringASCIICase(value, keywords::kManual)) {
+      !EqualIgnoringAsciiCase(value, keywords::kManual)) {
     AddConsoleMessage(mojom::blink::ConsoleMessageSource::kOther,
                       mojom::blink::ConsoleMessageLevel::kWarning,
                       "Found a 'popover' attribute with an invalid value.");
@@ -2851,43 +2851,43 @@ CommandEventType HTMLElement::GetCommandEventType(
   }
 
   // Popover Cases
-  if (EqualIgnoringASCIICase(action, keywords::kTogglePopover)) {
+  if (EqualIgnoringAsciiCase(action, keywords::kTogglePopover)) {
     return CommandEventType::kTogglePopover;
   }
-  if (EqualIgnoringASCIICase(action, keywords::kShowPopover)) {
+  if (EqualIgnoringAsciiCase(action, keywords::kShowPopover)) {
     return CommandEventType::kShowPopover;
   }
-  if (EqualIgnoringASCIICase(action, keywords::kHidePopover)) {
+  if (EqualIgnoringAsciiCase(action, keywords::kHidePopover)) {
     return CommandEventType::kHidePopover;
   }
 
   // Dialog Cases
-  if (EqualIgnoringASCIICase(action, keywords::kClose)) {
+  if (EqualIgnoringAsciiCase(action, keywords::kClose)) {
     return CommandEventType::kClose;
   }
-  if (EqualIgnoringASCIICase(action, keywords::kShowModal)) {
+  if (EqualIgnoringAsciiCase(action, keywords::kShowModal)) {
     return CommandEventType::kShowModal;
   }
-  if (EqualIgnoringASCIICase(action, keywords::kRequestClose)) {
+  if (EqualIgnoringAsciiCase(action, keywords::kRequestClose)) {
     return CommandEventType::kRequestClose;
   }
 
   // Menu Cases
   if (RuntimeEnabledFeatures::MenuElementsEnabled()) {
-    if (EqualIgnoringASCIICase(action, keywords::kToggleMenu)) {
+    if (EqualIgnoringAsciiCase(action, keywords::kToggleMenu)) {
       return CommandEventType::kToggleMenu;
     }
-    if (EqualIgnoringASCIICase(action, keywords::kShowMenu)) {
+    if (EqualIgnoringAsciiCase(action, keywords::kShowMenu)) {
       return CommandEventType::kShowMenu;
     }
-    if (EqualIgnoringASCIICase(action, keywords::kHideMenu)) {
+    if (EqualIgnoringAsciiCase(action, keywords::kHideMenu)) {
       return CommandEventType::kHideMenu;
     }
   }
 
   // Overscroll gestures.
   if (RuntimeEnabledFeatures::OverscrollGesturesEnabled() &&
-      EqualIgnoringASCIICase(action, keywords::kToggleOverscroll)) {
+      EqualIgnoringAsciiCase(action, keywords::kToggleOverscroll)) {
     return CommandEventType::kToggleOverscroll;
   }
 
@@ -2898,76 +2898,76 @@ CommandEventType HTMLElement::GetCommandEventType(
   }
 
   // Input/Select Cases
-  if (EqualIgnoringASCIICase(action, keywords::kShowPicker)) {
+  if (EqualIgnoringAsciiCase(action, keywords::kShowPicker)) {
     return CommandEventType::kShowPicker;
   }
 
   // Number Input Cases
-  if (EqualIgnoringASCIICase(action, keywords::kStepUp)) {
+  if (EqualIgnoringAsciiCase(action, keywords::kStepUp)) {
     return CommandEventType::kStepUp;
   }
-  if (EqualIgnoringASCIICase(action, keywords::kStepDown)) {
+  if (EqualIgnoringAsciiCase(action, keywords::kStepDown)) {
     return CommandEventType::kStepDown;
   }
 
   // Fullscreen Cases
-  if (EqualIgnoringASCIICase(action, keywords::kToggleFullscreen)) {
+  if (EqualIgnoringAsciiCase(action, keywords::kToggleFullscreen)) {
     return CommandEventType::kToggleFullscreen;
   }
-  if (EqualIgnoringASCIICase(action, keywords::kRequestFullscreen)) {
+  if (EqualIgnoringAsciiCase(action, keywords::kRequestFullscreen)) {
     return CommandEventType::kRequestFullscreen;
   }
-  if (EqualIgnoringASCIICase(action, keywords::kExitFullscreen)) {
+  if (EqualIgnoringAsciiCase(action, keywords::kExitFullscreen)) {
     return CommandEventType::kExitFullscreen;
   }
 
   // Details cases
-  if (EqualIgnoringASCIICase(action, keywords::kToggle)) {
+  if (EqualIgnoringAsciiCase(action, keywords::kToggle)) {
     return CommandEventType::kToggle;
   }
-  if (EqualIgnoringASCIICase(action, keywords::kOpen)) {
+  if (EqualIgnoringAsciiCase(action, keywords::kOpen)) {
     return CommandEventType::kOpen;
   }
   // CommandEventType::kClose handled above in Dialog
 
   // Media cases
-  if (EqualIgnoringASCIICase(action, keywords::kPlayPause)) {
+  if (EqualIgnoringAsciiCase(action, keywords::kPlayPause)) {
     return CommandEventType::kPlayPause;
   }
-  if (EqualIgnoringASCIICase(action, keywords::kPause)) {
+  if (EqualIgnoringAsciiCase(action, keywords::kPause)) {
     return CommandEventType::kPause;
   }
-  if (EqualIgnoringASCIICase(action, keywords::kPlay)) {
+  if (EqualIgnoringAsciiCase(action, keywords::kPlay)) {
     return CommandEventType::kPlay;
   }
-  if (EqualIgnoringASCIICase(action, keywords::kToggleMuted)) {
+  if (EqualIgnoringAsciiCase(action, keywords::kToggleMuted)) {
     return CommandEventType::kToggleMuted;
   }
 
   // Scroll command cases
   if (RuntimeEnabledFeatures::HTMLCommandForScrollCommandsEnabled()) {
-    if (EqualIgnoringASCIICase(action, keywords::kPage_Up)) {
+    if (EqualIgnoringAsciiCase(action, keywords::kPage_Up)) {
       return CommandEventType::kPageUp;
     }
-    if (EqualIgnoringASCIICase(action, keywords::kPage_Down)) {
+    if (EqualIgnoringAsciiCase(action, keywords::kPage_Down)) {
       return CommandEventType::kPageDown;
     }
-    if (EqualIgnoringASCIICase(action, keywords::kPageLeft)) {
+    if (EqualIgnoringAsciiCase(action, keywords::kPageLeft)) {
       return CommandEventType::kPageLeft;
     }
-    if (EqualIgnoringASCIICase(action, keywords::kPageRight)) {
+    if (EqualIgnoringAsciiCase(action, keywords::kPageRight)) {
       return CommandEventType::kPageRight;
     }
-    if (EqualIgnoringASCIICase(action, keywords::kPageBlockStart)) {
+    if (EqualIgnoringAsciiCase(action, keywords::kPageBlockStart)) {
       return CommandEventType::kPageBlockStart;
     }
-    if (EqualIgnoringASCIICase(action, keywords::kPageBlockEnd)) {
+    if (EqualIgnoringAsciiCase(action, keywords::kPageBlockEnd)) {
       return CommandEventType::kPageBlockEnd;
     }
-    if (EqualIgnoringASCIICase(action, keywords::kPageInlineStart)) {
+    if (EqualIgnoringAsciiCase(action, keywords::kPageInlineStart)) {
       return CommandEventType::kPageInlineStart;
     }
-    if (EqualIgnoringASCIICase(action, keywords::kPageInlineEnd)) {
+    if (EqualIgnoringAsciiCase(action, keywords::kPageInlineEnd)) {
       return CommandEventType::kPageInlineEnd;
     }
   }
@@ -2992,14 +2992,16 @@ const AtomicString& HTMLElement::autocapitalize() const {
   if (value.empty())
     return g_empty_atom;
 
-  if (EqualIgnoringASCIICase(value, kNone) ||
-      EqualIgnoringASCIICase(value, keywords::kOff)) {
+  if (EqualIgnoringAsciiCase(value, kNone) ||
+      EqualIgnoringAsciiCase(value, keywords::kOff)) {
     return kNone;
   }
-  if (EqualIgnoringASCIICase(value, kCharacters))
+  if (EqualIgnoringAsciiCase(value, kCharacters)) {
     return kCharacters;
-  if (EqualIgnoringASCIICase(value, kWords))
+  }
+  if (EqualIgnoringAsciiCase(value, kWords)) {
     return kWords;
+  }
   // "sentences", "on", or an invalid value
   return kSentences;
 }
@@ -3013,7 +3015,7 @@ bool HTMLElement::isContentEditableForBinding() const {
 }
 
 bool HTMLElement::draggable() const {
-  return EqualIgnoringASCIICase(FastGetAttribute(html_names::kDraggableAttr),
+  return EqualIgnoringAsciiCase(FastGetAttribute(html_names::kDraggableAttr),
                                 "true");
 }
 
@@ -3092,10 +3094,13 @@ TranslateAttributeMode HTMLElement::GetTranslateAttributeMode() const {
 
   if (value == g_null_atom)
     return kTranslateAttributeInherit;
-  if (EqualIgnoringASCIICase(value, "yes") || EqualIgnoringASCIICase(value, ""))
+  if (EqualIgnoringAsciiCase(value, "yes") ||
+      EqualIgnoringAsciiCase(value, "")) {
     return kTranslateAttributeYes;
-  if (EqualIgnoringASCIICase(value, "no"))
+  }
+  if (EqualIgnoringAsciiCase(value, "no")) {
     return kTranslateAttributeNo;
+  }
 
   return kTranslateAttributeInherit;
 }
@@ -3129,12 +3134,15 @@ static inline const AtomicString& ToValidDirValue(const AtomicString& value) {
   DEFINE_STATIC_LOCAL(const AtomicString, rtl_value, ("rtl"));
   DEFINE_STATIC_LOCAL(const AtomicString, auto_value, ("auto"));
 
-  if (EqualIgnoringASCIICase(value, ltr_value))
+  if (EqualIgnoringAsciiCase(value, ltr_value)) {
     return ltr_value;
-  if (EqualIgnoringASCIICase(value, rtl_value))
+  }
+  if (EqualIgnoringAsciiCase(value, rtl_value)) {
     return rtl_value;
-  if (EqualIgnoringASCIICase(value, auto_value))
+  }
+  if (EqualIgnoringAsciiCase(value, auto_value)) {
     return auto_value;
+  }
   return g_null_atom;
 }
 
@@ -3178,7 +3186,7 @@ bool HTMLElement::HasDirectionAuto() const {
   // https://html.spec.whatwg.org/C/#the-bdi-element
   const AtomicString& direction = FastGetAttribute(html_names::kDirAttr);
   return (IsA<HTMLBDIElement>(*this) && !IsValidDirAttribute(direction)) ||
-         EqualIgnoringASCIICase(direction, "auto");
+         EqualIgnoringAsciiCase(direction, "auto");
 }
 
 const TextControlElement*
@@ -3428,8 +3436,9 @@ bool HTMLElement::ParseColorWithLegacyRules(const String& attribute_value,
   String color_string = attribute_value.StripWhiteSpace();
 
   // "transparent" doesn't apply a color either.
-  if (EqualIgnoringASCIICase(color_string, "transparent"))
+  if (EqualIgnoringAsciiCase(color_string, "transparent")) {
     return false;
+  }
 
   // If the string is a 3/6-digit hex color or a named CSS color, use that.
   // Apply legacy rules otherwise. Note color.setFromString() accepts 4/8-digit
@@ -3723,9 +3732,9 @@ void HTMLElement::OnDirAttrChanged(const AttributeModificationParams& params) {
     CalculateAndAdjustAutoDirectionality();
   } else {
     std::optional<TextDirection> text_direction;
-    if (EqualIgnoringASCIICase(params.new_value, "ltr")) {
+    if (EqualIgnoringAsciiCase(params.new_value, "ltr")) {
       text_direction = TextDirection::kLtr;
-    } else if (EqualIgnoringASCIICase(params.new_value, "rtl")) {
+    } else if (EqualIgnoringAsciiCase(params.new_value, "rtl")) {
       text_direction = TextDirection::kRtl;
     }
 
@@ -3970,7 +3979,7 @@ AtomicString HTMLElement::writingSuggestions() const {
         element->FastGetAttribute(html_names::kWritingsuggestionsAttr);
     if (value == g_null_atom) {
       continue;
-    } else if (EqualIgnoringASCIICase(value, keywords::kFalse)) {
+    } else if (EqualIgnoringAsciiCase(value, keywords::kFalse)) {
       return keywords::kFalse;
     } else {
       // The invalid value default is 'true'.
@@ -3992,108 +4001,109 @@ void HTMLElement::OnRoleAttrChanged(const AttributeModificationParams& params) {
     return;
   }
 
-  if (EqualIgnoringASCIICase(params.new_value, "menu")) {
+  const AtomicString& new_value = params.new_value;
+  if (EqualIgnoringAsciiCase(new_value, "menu")) {
     UseCounter::Count(GetDocument(), WebFeature::kRoleAttributeMenu);
-  } else if (EqualIgnoringASCIICase(params.new_value, "menubar")) {
+  } else if (EqualIgnoringAsciiCase(new_value, "menubar")) {
     UseCounter::Count(GetDocument(), WebFeature::kRoleAttributeMenubar);
-  } else if (EqualIgnoringASCIICase(params.new_value, "menuitem")) {
+  } else if (EqualIgnoringAsciiCase(new_value, "menuitem")) {
     UseCounter::Count(GetDocument(), WebFeature::kRoleAttributeMenuitem);
-  } else if (EqualIgnoringASCIICase(params.new_value, "menuitemcheckbox")) {
+  } else if (EqualIgnoringAsciiCase(new_value, "menuitemcheckbox")) {
     UseCounter::Count(GetDocument(),
                       WebFeature::kRoleAttributeMenuitemcheckbox);
-  } else if (EqualIgnoringASCIICase(params.new_value, "menuitemradio")) {
+  } else if (EqualIgnoringAsciiCase(new_value, "menuitemradio")) {
     UseCounter::Count(GetDocument(), WebFeature::kRoleAttributeMenuitemradio);
-  } else if (EqualIgnoringASCIICase(params.new_value, "button")) {
+  } else if (EqualIgnoringAsciiCase(new_value, "button")) {
     UseCounter::Count(GetDocument(), WebFeature::kRoleAttributeButton);
-  } else if (EqualIgnoringASCIICase(params.new_value, "cell")) {
+  } else if (EqualIgnoringAsciiCase(new_value, "cell")) {
     UseCounter::Count(GetDocument(), WebFeature::kRoleAttributeCell);
-  } else if (EqualIgnoringASCIICase(params.new_value, "checkbox")) {
+  } else if (EqualIgnoringAsciiCase(new_value, "checkbox")) {
     UseCounter::Count(GetDocument(), WebFeature::kRoleAttributeCheckbox);
-  } else if (EqualIgnoringASCIICase(params.new_value, "columnheader")) {
+  } else if (EqualIgnoringAsciiCase(new_value, "columnheader")) {
     UseCounter::Count(GetDocument(), WebFeature::kRoleAttributeColumnheader);
-  } else if (EqualIgnoringASCIICase(params.new_value, "combobox")) {
+  } else if (EqualIgnoringAsciiCase(new_value, "combobox")) {
     UseCounter::Count(GetDocument(), WebFeature::kRoleAttributeCombobox);
-  } else if (EqualIgnoringASCIICase(params.new_value, "dialog")) {
+  } else if (EqualIgnoringAsciiCase(new_value, "dialog")) {
     UseCounter::Count(GetDocument(), WebFeature::kRoleAttributeDialog);
-  } else if (EqualIgnoringASCIICase(params.new_value, "grid")) {
+  } else if (EqualIgnoringAsciiCase(new_value, "grid")) {
     UseCounter::Count(GetDocument(), WebFeature::kRoleAttributeGrid);
-  } else if (EqualIgnoringASCIICase(params.new_value, "gridcell")) {
+  } else if (EqualIgnoringAsciiCase(new_value, "gridcell")) {
     UseCounter::Count(GetDocument(), WebFeature::kRoleAttributeGridcell);
-  } else if (EqualIgnoringASCIICase(params.new_value, "heading")) {
+  } else if (EqualIgnoringAsciiCase(new_value, "heading")) {
     UseCounter::Count(GetDocument(), WebFeature::kRoleAttributeHeading);
-  } else if (EqualIgnoringASCIICase(params.new_value, "img")) {
+  } else if (EqualIgnoringAsciiCase(new_value, "img")) {
     UseCounter::Count(GetDocument(), WebFeature::kRoleAttributeImg);
-  } else if (EqualIgnoringASCIICase(params.new_value, "input")) {
+  } else if (EqualIgnoringAsciiCase(new_value, "input")) {
     UseCounter::Count(GetDocument(), WebFeature::kRoleAttributeInput);
-  } else if (EqualIgnoringASCIICase(params.new_value, "link")) {
+  } else if (EqualIgnoringAsciiCase(new_value, "link")) {
     UseCounter::Count(GetDocument(), WebFeature::kRoleAttributeLink);
-  } else if (EqualIgnoringASCIICase(params.new_value, "list")) {
+  } else if (EqualIgnoringAsciiCase(new_value, "list")) {
     UseCounter::Count(GetDocument(), WebFeature::kRoleAttributeList);
-  } else if (EqualIgnoringASCIICase(params.new_value, "listbox")) {
+  } else if (EqualIgnoringAsciiCase(new_value, "listbox")) {
     UseCounter::Count(GetDocument(), WebFeature::kRoleAttributeListbox);
-  } else if (EqualIgnoringASCIICase(params.new_value, "listitem")) {
+  } else if (EqualIgnoringAsciiCase(new_value, "listitem")) {
     UseCounter::Count(GetDocument(), WebFeature::kRoleAttributeListitem);
-  } else if (EqualIgnoringASCIICase(params.new_value, "main")) {
+  } else if (EqualIgnoringAsciiCase(new_value, "main")) {
     UseCounter::Count(GetDocument(), WebFeature::kRoleAttributeMain);
-  } else if (EqualIgnoringASCIICase(params.new_value, "marquee")) {
+  } else if (EqualIgnoringAsciiCase(new_value, "marquee")) {
     UseCounter::Count(GetDocument(), WebFeature::kRoleAttributeMarquee);
-  } else if (EqualIgnoringASCIICase(params.new_value, "math")) {
+  } else if (EqualIgnoringAsciiCase(new_value, "math")) {
     UseCounter::Count(GetDocument(), WebFeature::kRoleAttributeMath);
-  } else if (EqualIgnoringASCIICase(params.new_value, "meter")) {
+  } else if (EqualIgnoringAsciiCase(new_value, "meter")) {
     UseCounter::Count(GetDocument(), WebFeature::kRoleAttributeMeter);
-  } else if (EqualIgnoringASCIICase(params.new_value, "navigation")) {
+  } else if (EqualIgnoringAsciiCase(new_value, "navigation")) {
     UseCounter::Count(GetDocument(), WebFeature::kRoleAttributeNavigation);
-  } else if (EqualIgnoringASCIICase(params.new_value, "option")) {
+  } else if (EqualIgnoringAsciiCase(new_value, "option")) {
     UseCounter::Count(GetDocument(), WebFeature::kRoleAttributeOption);
-  } else if (EqualIgnoringASCIICase(params.new_value, "progressbar")) {
+  } else if (EqualIgnoringAsciiCase(new_value, "progressbar")) {
     UseCounter::Count(GetDocument(), WebFeature::kRoleAttributeProgressbar);
-  } else if (EqualIgnoringASCIICase(params.new_value, "radio")) {
+  } else if (EqualIgnoringAsciiCase(new_value, "radio")) {
     UseCounter::Count(GetDocument(), WebFeature::kRoleAttributeRadio);
-  } else if (EqualIgnoringASCIICase(params.new_value, "radiogroup")) {
+  } else if (EqualIgnoringAsciiCase(new_value, "radiogroup")) {
     UseCounter::Count(GetDocument(), WebFeature::kRoleAttributeRadiogroup);
-  } else if (EqualIgnoringASCIICase(params.new_value, "range")) {
+  } else if (EqualIgnoringAsciiCase(new_value, "range")) {
     UseCounter::Count(GetDocument(), WebFeature::kRoleAttributeRange);
-  } else if (EqualIgnoringASCIICase(params.new_value, "row")) {
+  } else if (EqualIgnoringAsciiCase(new_value, "row")) {
     UseCounter::Count(GetDocument(), WebFeature::kRoleAttributeRow);
-  } else if (EqualIgnoringASCIICase(params.new_value, "rowgroup")) {
+  } else if (EqualIgnoringAsciiCase(new_value, "rowgroup")) {
     UseCounter::Count(GetDocument(), WebFeature::kRoleAttributeRowgroup);
-  } else if (EqualIgnoringASCIICase(params.new_value, "rowheader")) {
+  } else if (EqualIgnoringAsciiCase(new_value, "rowheader")) {
     UseCounter::Count(GetDocument(), WebFeature::kRoleAttributeRowheader);
-  } else if (EqualIgnoringASCIICase(params.new_value, "scrollbar")) {
+  } else if (EqualIgnoringAsciiCase(new_value, "scrollbar")) {
     UseCounter::Count(GetDocument(), WebFeature::kRoleAttributeScrollbar);
-  } else if (EqualIgnoringASCIICase(params.new_value, "search")) {
+  } else if (EqualIgnoringAsciiCase(new_value, "search")) {
     UseCounter::Count(GetDocument(), WebFeature::kRoleAttributeSearch);
-  } else if (EqualIgnoringASCIICase(params.new_value, "searchbox")) {
+  } else if (EqualIgnoringAsciiCase(new_value, "searchbox")) {
     UseCounter::Count(GetDocument(), WebFeature::kRoleAttributeSearchbox);
-  } else if (EqualIgnoringASCIICase(params.new_value, "select")) {
+  } else if (EqualIgnoringAsciiCase(new_value, "select")) {
     UseCounter::Count(GetDocument(), WebFeature::kRoleAttributeSelect);
-  } else if (EqualIgnoringASCIICase(params.new_value, "separator")) {
+  } else if (EqualIgnoringAsciiCase(new_value, "separator")) {
     UseCounter::Count(GetDocument(), WebFeature::kRoleAttributeSeparator);
-  } else if (EqualIgnoringASCIICase(params.new_value, "slider")) {
+  } else if (EqualIgnoringAsciiCase(new_value, "slider")) {
     UseCounter::Count(GetDocument(), WebFeature::kRoleAttributeSlider);
-  } else if (EqualIgnoringASCIICase(params.new_value, "spinbutton")) {
+  } else if (EqualIgnoringAsciiCase(new_value, "spinbutton")) {
     UseCounter::Count(GetDocument(), WebFeature::kRoleAttributeSpinbutton);
-  } else if (EqualIgnoringASCIICase(params.new_value, "switch")) {
+  } else if (EqualIgnoringAsciiCase(new_value, "switch")) {
     UseCounter::Count(GetDocument(), WebFeature::kRoleAttributeSwitch);
-  } else if (EqualIgnoringASCIICase(params.new_value, "tab")) {
+  } else if (EqualIgnoringAsciiCase(new_value, "tab")) {
     UseCounter::Count(GetDocument(), WebFeature::kRoleAttributeTab);
-  } else if (EqualIgnoringASCIICase(params.new_value, "table")) {
+  } else if (EqualIgnoringAsciiCase(new_value, "table")) {
     UseCounter::Count(GetDocument(), WebFeature::kRoleAttributeTable);
-  } else if (EqualIgnoringASCIICase(params.new_value, "tablist")) {
+  } else if (EqualIgnoringAsciiCase(new_value, "tablist")) {
     UseCounter::Count(GetDocument(), WebFeature::kRoleAttributeTablist);
-  } else if (EqualIgnoringASCIICase(params.new_value, "tabpanel")) {
+  } else if (EqualIgnoringAsciiCase(new_value, "tabpanel")) {
     UseCounter::Count(GetDocument(), WebFeature::kRoleAttributeTabpanel);
-  } else if (EqualIgnoringASCIICase(params.new_value, "textbox")) {
+  } else if (EqualIgnoringAsciiCase(new_value, "textbox")) {
     UseCounter::Count(GetDocument(), WebFeature::kRoleAttributeTextbox);
-  } else if (EqualIgnoringASCIICase(params.new_value, "toolbar")) {
+  } else if (EqualIgnoringAsciiCase(new_value, "toolbar")) {
     UseCounter::Count(GetDocument(), WebFeature::kRoleAttributeToolbar);
-  } else if (EqualIgnoringASCIICase(params.new_value, "tooltip")) {
+  } else if (EqualIgnoringAsciiCase(new_value, "tooltip")) {
     UseCounter::Count(GetDocument(), WebFeature::kRoleAttributeTooltip);
-  } else if (EqualIgnoringASCIICase(params.new_value, "tree")) {
+  } else if (EqualIgnoringAsciiCase(new_value, "tree")) {
     UseCounter::Count(GetDocument(), WebFeature::kRoleAttributeTree);
-  } else if (EqualIgnoringASCIICase(params.new_value, "treegrid")) {
+  } else if (EqualIgnoringAsciiCase(new_value, "treegrid")) {
     UseCounter::Count(GetDocument(), WebFeature::kRoleAttributeTreegrid);
-  } else if (EqualIgnoringASCIICase(params.new_value, "treeitem")) {
+  } else if (EqualIgnoringAsciiCase(new_value, "treeitem")) {
     UseCounter::Count(GetDocument(), WebFeature::kRoleAttributeTreeitem);
   }
 }

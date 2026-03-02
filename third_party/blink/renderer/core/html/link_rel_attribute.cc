@@ -41,50 +41,50 @@ LinkRelAttribute::LinkRelAttribute(const String& rel) : LinkRelAttribute() {
   rel_copy.Replace('\n', ' ');
   Vector<StringView> list = StringView(rel_copy).SplitSkippingEmpty(' ');
   for (const StringView& link_type : list) {
-    if (EqualIgnoringASCIICase(link_type, "stylesheet")) {
+    if (EqualIgnoringAsciiCase(link_type, "stylesheet")) {
       is_style_sheet_ = true;
-    } else if (EqualIgnoringASCIICase(link_type, "alternate")) {
+    } else if (EqualIgnoringAsciiCase(link_type, "alternate")) {
       is_alternate_ = true;
-    } else if (EqualIgnoringASCIICase(link_type, "icon")) {
+    } else if (EqualIgnoringAsciiCase(link_type, "icon")) {
       // This also allows "shortcut icon" since we just ignore the non-standard
       // "shortcut" token (in accordance with the spec).
       icon_type_ = mojom::blink::FaviconIconType::kFavicon;
-    } else if (EqualIgnoringASCIICase(link_type, "prefetch")) {
+    } else if (EqualIgnoringAsciiCase(link_type, "prefetch")) {
       is_link_prefetch_ = true;
-    } else if (EqualIgnoringASCIICase(link_type, "dns-prefetch")) {
+    } else if (EqualIgnoringAsciiCase(link_type, "dns-prefetch")) {
       is_dns_prefetch_ = true;
-    } else if (EqualIgnoringASCIICase(link_type, "preconnect")) {
+    } else if (EqualIgnoringAsciiCase(link_type, "preconnect")) {
       is_preconnect_ = true;
-    } else if (EqualIgnoringASCIICase(link_type, "preload")) {
+    } else if (EqualIgnoringAsciiCase(link_type, "preload")) {
       is_link_preload_ = true;
-    } else if (EqualIgnoringASCIICase(link_type, "prerender")) {
+    } else if (EqualIgnoringAsciiCase(link_type, "prerender")) {
       is_link_prerender_ = true;
-    } else if (EqualIgnoringASCIICase(link_type, "next")) {
+    } else if (EqualIgnoringAsciiCase(link_type, "next")) {
       is_link_next_ = true;
-    } else if (EqualIgnoringASCIICase(link_type, "apple-touch-icon")) {
+    } else if (EqualIgnoringAsciiCase(link_type, "apple-touch-icon")) {
       icon_type_ = mojom::blink::FaviconIconType::kTouchIcon;
-    } else if (EqualIgnoringASCIICase(link_type,
+    } else if (EqualIgnoringAsciiCase(link_type,
                                       "apple-touch-icon-precomposed")) {
       icon_type_ = mojom::blink::FaviconIconType::kTouchPrecomposedIcon;
-    } else if (EqualIgnoringASCIICase(link_type, "manifest")) {
+    } else if (EqualIgnoringAsciiCase(link_type, "manifest")) {
       is_manifest_ = true;
-    } else if (EqualIgnoringASCIICase(link_type, "modulepreload")) {
+    } else if (EqualIgnoringAsciiCase(link_type, "modulepreload")) {
       is_module_preload_ = true;
-    } else if (EqualIgnoringASCIICase(link_type, "serviceworker")) {
+    } else if (EqualIgnoringAsciiCase(link_type, "serviceworker")) {
       is_service_worker_ = true;
-    } else if (EqualIgnoringASCIICase(link_type, "canonical")) {
+    } else if (EqualIgnoringAsciiCase(link_type, "canonical")) {
       is_canonical_ = true;
-    } else if (EqualIgnoringASCIICase(link_type, "monetization")) {
+    } else if (EqualIgnoringAsciiCase(link_type, "monetization")) {
       is_monetization_ = true;
-    } else if (EqualIgnoringASCIICase(link_type, "compression-dictionary")) {
+    } else if (EqualIgnoringAsciiCase(link_type, "compression-dictionary")) {
       is_compression_dictionary_ = true;
-    } else if (EqualIgnoringASCIICase(link_type, "privacy-policy")) {
+    } else if (EqualIgnoringAsciiCase(link_type, "privacy-policy")) {
       is_privacy_policy_ = true;
-    } else if (EqualIgnoringASCIICase(link_type, "terms-of-service")) {
+    } else if (EqualIgnoringAsciiCase(link_type, "terms-of-service")) {
       is_terms_of_service_ = true;
-    } else if (EqualIgnoringASCIICase(link_type, "expect")) {
+    } else if (EqualIgnoringAsciiCase(link_type, "expect")) {
       is_expect_ = true;
-    } else if (EqualIgnoringASCIICase(link_type, "facilitated-payment")) {
+    } else if (EqualIgnoringAsciiCase(link_type, "facilitated-payment")) {
       is_facilitated_payment_ = true;
     }
 

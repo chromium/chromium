@@ -784,7 +784,7 @@ void HTMLImageElement::DidFinishLayout() {
 
 bool HTMLImageElement::draggable() const {
   // Image elements are draggable by default.
-  return !EqualIgnoringASCIICase(FastGetAttribute(html_names::kDraggableAttr),
+  return !EqualIgnoringAsciiCase(FastGetAttribute(html_names::kDraggableAttr),
                                  "false");
 }
 

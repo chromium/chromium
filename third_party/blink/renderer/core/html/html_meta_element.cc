@@ -194,10 +194,12 @@ ViewportLength HTMLMetaElement::ParseViewportValueAsLength(
   // 3) device-width and device-height are used as keywords.
   // 4) Other keywords and unknown values translate to auto.
 
-  if (EqualIgnoringASCIICase(value_string, "device-width"))
+  if (EqualIgnoringAsciiCase(value_string, "device-width")) {
     return ViewportLength::DeviceWidth();
-  if (EqualIgnoringASCIICase(value_string, "device-height"))
+  }
+  if (EqualIgnoringAsciiCase(value_string, "device-height")) {
     return ViewportLength::DeviceHeight();
+  }
 
   bool ok;
 
@@ -232,14 +234,18 @@ float HTMLMetaElement::ParseViewportValueAsZoom(
   // 5) no and unknown values are translated to 0.0
 
   computed_value_matches_parsed_value = false;
-  if (EqualIgnoringASCIICase(value_string, "yes"))
+  if (EqualIgnoringAsciiCase(value_string, "yes")) {
     return 1;
-  if (EqualIgnoringASCIICase(value_string, "no"))
+  }
+  if (EqualIgnoringAsciiCase(value_string, "no")) {
     return 0;
-  if (EqualIgnoringASCIICase(value_string, "device-width"))
+  }
+  if (EqualIgnoringAsciiCase(value_string, "device-width")) {
     return 10;
-  if (EqualIgnoringASCIICase(value_string, "device-height"))
+  }
+  if (EqualIgnoringAsciiCase(value_string, "device-height")) {
     return 10;
+  }
 
   float value =
       ParsePositiveNumber(document, report_warnings, key_string, value_string);
@@ -273,18 +279,20 @@ bool HTMLMetaElement::ParseViewportValueAsUserZoom(
   // Numbers in the range <-1, 1>, and unknown values, are mapped to no.
 
   computed_value_matches_parsed_value = false;
-  if (EqualIgnoringASCIICase(value_string, "yes")) {
+  if (EqualIgnoringAsciiCase(value_string, "yes")) {
     computed_value_matches_parsed_value = true;
     return true;
   }
-  if (EqualIgnoringASCIICase(value_string, "no")) {
+  if (EqualIgnoringAsciiCase(value_string, "no")) {
     computed_value_matches_parsed_value = true;
     return false;
   }
-  if (EqualIgnoringASCIICase(value_string, "device-width"))
+  if (EqualIgnoringAsciiCase(value_string, "device-width")) {
     return true;
-  if (EqualIgnoringASCIICase(value_string, "device-height"))
+  }
+  if (EqualIgnoringAsciiCase(value_string, "device-height")) {
     return true;
+  }
 
   float value =
       ParsePositiveNumber(document, report_warnings, key_string, value_string);
@@ -298,14 +306,18 @@ float HTMLMetaElement::ParseViewportValueAsDPI(Document* document,
                                                bool report_warnings,
                                                const StringView& key_string,
                                                const StringView& value_string) {
-  if (EqualIgnoringASCIICase(value_string, "device-dpi"))
+  if (EqualIgnoringAsciiCase(value_string, "device-dpi")) {
     return ViewportDescription::kValueDeviceDPI;
-  if (EqualIgnoringASCIICase(value_string, "low-dpi"))
+  }
+  if (EqualIgnoringAsciiCase(value_string, "low-dpi")) {
     return ViewportDescription::kValueLowDPI;
-  if (EqualIgnoringASCIICase(value_string, "medium-dpi"))
+  }
+  if (EqualIgnoringAsciiCase(value_string, "medium-dpi")) {
     return ViewportDescription::kValueMediumDPI;
-  if (EqualIgnoringASCIICase(value_string, "high-dpi"))
+  }
+  if (EqualIgnoringAsciiCase(value_string, "high-dpi")) {
     return ViewportDescription::kValueHighDPI;
+  }
 
   bool ok;
   float value = ParsePositiveNumber(document, report_warnings, key_string,
@@ -319,12 +331,15 @@ float HTMLMetaElement::ParseViewportValueAsDPI(Document* document,
 blink::mojom::ViewportFit HTMLMetaElement::ParseViewportFitValueAsEnum(
     bool& unknown_value,
     const StringView& value_string) {
-  if (EqualIgnoringASCIICase(value_string, "auto"))
+  if (EqualIgnoringAsciiCase(value_string, "auto")) {
     return mojom::ViewportFit::kAuto;
-  if (EqualIgnoringASCIICase(value_string, "contain"))
+  }
+  if (EqualIgnoringAsciiCase(value_string, "contain")) {
     return mojom::ViewportFit::kContain;
-  if (EqualIgnoringASCIICase(value_string, "cover"))
+  }
+  if (EqualIgnoringAsciiCase(value_string, "cover")) {
     return mojom::ViewportFit::kCover;
+  }
 
   unknown_value = true;
   return mojom::ViewportFit::kAuto;
@@ -333,12 +348,13 @@ blink::mojom::ViewportFit HTMLMetaElement::ParseViewportFitValueAsEnum(
 // static
 std::optional<ui::mojom::blink::VirtualKeyboardMode>
 HTMLMetaElement::ParseVirtualKeyboardValueAsEnum(const StringView& value) {
-  if (EqualIgnoringASCIICase(value, "resizes-content"))
+  if (EqualIgnoringAsciiCase(value, "resizes-content")) {
     return ui::mojom::blink::VirtualKeyboardMode::kResizesContent;
-  else if (EqualIgnoringASCIICase(value, "resizes-visual"))
+  } else if (EqualIgnoringAsciiCase(value, "resizes-visual")) {
     return ui::mojom::blink::VirtualKeyboardMode::kResizesVisual;
-  else if (EqualIgnoringASCIICase(value, "overlays-content"))
+  } else if (EqualIgnoringAsciiCase(value, "overlays-content")) {
     return ui::mojom::blink::VirtualKeyboardMode::kOverlaysContent;
+  }
 
   return std::nullopt;
 }
@@ -541,22 +557,22 @@ void HTMLMetaElement::NameRemoved(const AtomicString& name_value) {
       FastGetAttribute(html_names::kContentAttr);
   if (content_value.IsNull())
     return;
-  if (EqualIgnoringASCIICase(name_value, "theme-color") &&
+  if (EqualIgnoringAsciiCase(name_value, "theme-color") &&
       GetDocument().GetFrame()) {
     GetDocument().GetFrame()->DidChangeThemeColor(
         /*update_theme_color_cache=*/true);
-  } else if (EqualIgnoringASCIICase(name_value, keywords::kColorScheme)) {
+  } else if (EqualIgnoringAsciiCase(name_value, keywords::kColorScheme)) {
     GetDocument().ColorSchemeMetaChanged();
-  } else if (EqualIgnoringASCIICase(name_value, "supports-reduced-motion")) {
+  } else if (EqualIgnoringAsciiCase(name_value, "supports-reduced-motion")) {
     GetDocument().SupportsReducedMotionMetaChanged();
   } else if (RuntimeEnabledFeatures::AppTitleEnabled(GetExecutionContext()) &&
-             EqualIgnoringASCIICase(name_value, "application-title")) {
+             EqualIgnoringAsciiCase(name_value, "application-title")) {
     GetDocument().UpdateApplicationTitle();
   } else if (RuntimeEnabledFeatures::ResponsiveIframesEnabled() &&
-             EqualIgnoringASCIICase(name_value,
+             EqualIgnoringAsciiCase(name_value,
                                     keywords::kResponsiveEmbeddedSizing)) {
     GetDocument().ResponsiveEmbeddedSizingChanged();
-  } else if (EqualIgnoringASCIICase(name_value, "text-scale")) {
+  } else if (EqualIgnoringAsciiCase(name_value, "text-scale")) {
     GetDocument().TextScaleMetaChanged();
   }
 }
@@ -663,7 +679,7 @@ void HTMLMetaElement::ProcessContent() {
   const AtomicString& content_value =
       FastGetAttribute(html_names::kContentAttr);
 
-  if (EqualIgnoringASCIICase(property_value, "og:type")) {
+  if (EqualIgnoringAsciiCase(property_value, "og:type")) {
     UMA_HISTOGRAM_ENUMERATION("Content.Classification.OpenGraph",
                               GetContentClassification(content_value));
   }
@@ -673,27 +689,27 @@ void HTMLMetaElement::ProcessContent() {
     return;
 
   if (RuntimeEnabledFeatures::ResponsiveIframesEnabled() &&
-      EqualIgnoringASCIICase(name_value, keywords::kResponsiveEmbeddedSizing)) {
+      EqualIgnoringAsciiCase(name_value, keywords::kResponsiveEmbeddedSizing)) {
     GetDocument().SetResponsiveEmbeddedSizing();
   }
 
-  if (EqualIgnoringASCIICase(name_value, "text-scale")) {
+  if (EqualIgnoringAsciiCase(name_value, "text-scale")) {
     GetDocument().TextScaleMetaChanged();
     return;
   }
 
-  if (EqualIgnoringASCIICase(name_value, "theme-color") &&
+  if (EqualIgnoringAsciiCase(name_value, "theme-color") &&
       GetDocument().GetFrame()) {
     GetDocument().GetFrame()->DidChangeThemeColor(
         /*update_theme_color_cache=*/true);
     return;
   }
-  if (EqualIgnoringASCIICase(name_value, keywords::kColorScheme)) {
+  if (EqualIgnoringAsciiCase(name_value, keywords::kColorScheme)) {
     GetDocument().ColorSchemeMetaChanged();
     return;
   }
 
-  if (EqualIgnoringASCIICase(name_value, "supports-reduced-motion")) {
+  if (EqualIgnoringAsciiCase(name_value, "supports-reduced-motion")) {
     GetDocument().SupportsReducedMotionMetaChanged();
     return;
   }
@@ -703,10 +719,10 @@ void HTMLMetaElement::ProcessContent() {
   if (content_value.IsNull())
     return;
 
-  if (EqualIgnoringASCIICase(name_value, "viewport")) {
+  if (EqualIgnoringAsciiCase(name_value, "viewport")) {
     ProcessViewportContentAttribute(content_value,
                                     ViewportDescription::kViewportMeta);
-  } else if (EqualIgnoringASCIICase(name_value, "referrer") &&
+  } else if (EqualIgnoringAsciiCase(name_value, "referrer") &&
              GetExecutionContext()) {
     UseCounter::Count(&GetDocument(),
                       WebFeature::kHTMLMetaElementReferrerPolicy);
@@ -726,14 +742,14 @@ void HTMLMetaElement::ProcessContent() {
         document_rules->DocumentReferrerPolicyChanged();
       }
     }
-  } else if (EqualIgnoringASCIICase(name_value, "handheldfriendly") &&
-             EqualIgnoringASCIICase(content_value, "true")) {
+  } else if (EqualIgnoringAsciiCase(name_value, "handheldfriendly") &&
+             EqualIgnoringAsciiCase(content_value, "true")) {
     ProcessViewportContentAttribute("width=device-width",
                                     ViewportDescription::kHandheldFriendlyMeta);
-  } else if (EqualIgnoringASCIICase(name_value, "mobileoptimized")) {
+  } else if (EqualIgnoringAsciiCase(name_value, "mobileoptimized")) {
     ProcessViewportContentAttribute("width=device-width, initial-scale=1",
                                     ViewportDescription::kMobileOptimizedMeta);
-  } else if (EqualIgnoringASCIICase(name_value, "monetization")) {
+  } else if (EqualIgnoringAsciiCase(name_value, "monetization")) {
     // TODO(1031476): The Web Monetization specification is an unofficial draft,
     // available at https://webmonetization.org/specification.html
     // For now, only use counters are implemented in Blink.
@@ -742,7 +758,7 @@ void HTMLMetaElement::ProcessContent() {
                         WebFeature::kHTMLMetaElementMonetization);
     }
   } else if (RuntimeEnabledFeatures::AppTitleEnabled(GetExecutionContext()) &&
-             EqualIgnoringASCIICase(name_value, "application-title")) {
+             EqualIgnoringAsciiCase(name_value, "application-title")) {
     UseCounter::Count(&GetDocument(), WebFeature::kWebAppTitle);
     GetDocument().UpdateApplicationTitle();
   }

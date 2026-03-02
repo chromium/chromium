@@ -174,7 +174,7 @@ bool HTMLMenuItemElement::setChecked(bool checked) {
   const AtomicString& checkable_keyword =
       nearest_ancestor_field_set_->FastGetAttribute(html_names::kCheckableAttr);
   if (is_checked_ &&
-      EqualIgnoringASCIICase(checkable_keyword, keywords::kSingle)) {
+      EqualIgnoringAsciiCase(checkable_keyword, keywords::kSingle)) {
     nearest_ancestor_field_set_->UpdateMenuItemCheckableExclusivity(this);
     // Exclusive checkbox - close the containing menulist after changing.
     return true;

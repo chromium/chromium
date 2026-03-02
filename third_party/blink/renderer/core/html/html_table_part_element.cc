@@ -57,16 +57,16 @@ void HTMLTablePartElement::CollectStyleForPresentationAttribute(
   } else if (name == html_names::kBackgroundAttr) {
     AddHTMLBackgroundImageToStyle(style, value);
   } else if (name == html_names::kValignAttr) {
-    if (EqualIgnoringASCIICase(value, "top")) {
+    if (EqualIgnoringAsciiCase(value, "top")) {
       AddPropertyToPresentationAttributeStyle(
           style, CSSPropertyID::kVerticalAlign, CSSValueID::kTop);
-    } else if (EqualIgnoringASCIICase(value, "middle")) {
+    } else if (EqualIgnoringAsciiCase(value, "middle")) {
       AddPropertyToPresentationAttributeStyle(
           style, CSSPropertyID::kVerticalAlign, CSSValueID::kMiddle);
-    } else if (EqualIgnoringASCIICase(value, "bottom")) {
+    } else if (EqualIgnoringAsciiCase(value, "bottom")) {
       AddPropertyToPresentationAttributeStyle(
           style, CSSPropertyID::kVerticalAlign, CSSValueID::kBottom);
-    } else if (EqualIgnoringASCIICase(value, "baseline")) {
+    } else if (EqualIgnoringAsciiCase(value, "baseline")) {
       AddPropertyToPresentationAttributeStyle(
           style, CSSPropertyID::kVerticalAlign, CSSValueID::kBaseline);
     } else {
@@ -74,17 +74,17 @@ void HTMLTablePartElement::CollectStyleForPresentationAttribute(
           style, CSSPropertyID::kVerticalAlign, value);
     }
   } else if (name == html_names::kAlignAttr) {
-    if (EqualIgnoringASCIICase(value, "middle") ||
-        EqualIgnoringASCIICase(value, "center")) {
+    if (EqualIgnoringAsciiCase(value, "middle") ||
+        EqualIgnoringAsciiCase(value, "center")) {
       AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kTextAlign,
                                               CSSValueID::kWebkitCenter);
-    } else if (EqualIgnoringASCIICase(value, "absmiddle")) {
+    } else if (EqualIgnoringAsciiCase(value, "absmiddle")) {
       AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kTextAlign,
                                               CSSValueID::kCenter);
-    } else if (EqualIgnoringASCIICase(value, "left")) {
+    } else if (EqualIgnoringAsciiCase(value, "left")) {
       AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kTextAlign,
                                               CSSValueID::kWebkitLeft);
-    } else if (EqualIgnoringASCIICase(value, "right")) {
+    } else if (EqualIgnoringAsciiCase(value, "right")) {
       AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kTextAlign,
                                               CSSValueID::kWebkitRight);
     } else {
