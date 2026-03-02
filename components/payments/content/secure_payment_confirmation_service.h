@@ -32,6 +32,15 @@ namespace payments {
 
 class WebPaymentsWebDataService;
 
+// https://w3c.github.io/secure-payment-confirmation/#enumdef-securepaymentconfirmationavailability
+namespace spc_capabilities {
+
+// This is the set of SPC capabilities (currently only 1) computed by the
+// browser.
+inline constexpr char kBrowserBoundKeyHardware[] = "browserBoundKeyHardware";
+
+}  // namespace spc_capabilities
+
 // Implementation of the mojom::SecurePaymentConfirmationService interface,
 // which provides SPC-related functionality that is not tied to a specific
 // PaymentRequest invocation.
@@ -56,6 +65,10 @@ class SecurePaymentConfirmationService
       SecurePaymentConfirmationAvailabilityCallback callback) override;
 
   // mojom::SecurePaymentConfirmationService:
+  void GetSecurePaymentConfirmationCapabilities(
+      GetSecurePaymentConfirmationCapabilitiesCallback callback) override;
+
+  // mojom::SecurePaymentConfirmationService:
   void StorePaymentCredential(const std::vector<uint8_t>& credential_id,
                               const std::string& rp_id,
                               const std::vector<uint8_t>& user_id,
@@ -68,6 +81,9 @@ class SecurePaymentConfirmationService
 
   void SetPasskeyBrowserBinderForTesting(
       std::unique_ptr<PasskeyBrowserBinder> passkey_browser_binder);
+
+  void SetBrowserBoundKeyStoreForTesting(
+      scoped_refptr<BrowserBoundKeyStore> browser_bound_key_store);
 
  private:
   // States of the enrollment flow, necessary to ensure correctness with
@@ -110,6 +126,14 @@ class SecurePaymentConfirmationService
       blink::mojom::PublicKeyCredentialCreationOptionsPtr options,
       MakePaymentCredentialCallback callback,
       std::optional<PasskeyBrowserBinder::UnboundKey> unbound_key);
+
+  // Checks if hardware backed browser bound keys are supported on this device,
+  // i.e. if it has a hardware security chip that can be used to generate and
+  // store key pairs. If so, runs |callback| with `true`. Otherwise, runs
+  // |callback| with `false`.
+  void IsBrowserBoundKeyHardwareSupported(
+      base::OnceCallback<void(bool)> callback);
+
   bool IsCurrentStateValid() const;
   void RecordFirstSystemPromptResult(
       SecurePaymentConfirmationEnrollSystemPromptResult result);
@@ -124,6 +148,7 @@ class SecurePaymentConfirmationService
       set_browser_bound_key_request_handle_;
   bool is_system_prompt_result_recorded_ = false;
   std::unique_ptr<PasskeyBrowserBinder> passkey_browser_binder_;
+  scoped_refptr<BrowserBoundKeyStore> test_browser_bound_key_store_;
   std::string browser_bound_key_store_keychain_access_group_;
 
   base::WeakPtrFactory<SecurePaymentConfirmationService> weak_ptr_factory_{

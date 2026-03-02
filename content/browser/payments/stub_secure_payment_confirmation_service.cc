@@ -48,6 +48,12 @@ void StubSecurePaymentConfirmationService::
           kUnavailableFeatureNotEnabled);
 }
 
+void StubSecurePaymentConfirmationService::
+    GetSecurePaymentConfirmationCapabilities(
+        GetSecurePaymentConfirmationCapabilitiesCallback callback) {
+  std::move(callback).Run(/*capabilities=*/{});
+}
+
 void StubSecurePaymentConfirmationService::StorePaymentCredential(
     const std::vector<uint8_t>& credential_id,
     const std::string& rp_id,

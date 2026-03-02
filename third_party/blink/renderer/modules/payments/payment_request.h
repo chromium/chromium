@@ -55,6 +55,9 @@ class MODULES_EXPORT PaymentRequest final
   static ScriptPromise<V8SecurePaymentConfirmationAvailability>
   securePaymentConfirmationAvailability(ScriptState* script_state);
 
+  static ScriptPromise<IDLRecord<IDLString, IDLBoolean>>
+  getSecurePaymentConfirmationCapabilities(ScriptState* script_state);
+
   static PaymentRequest* Create(ExecutionContext*,
                                 const HeapVector<Member<PaymentMethodData>>&,
                                 const PaymentDetailsInit*,

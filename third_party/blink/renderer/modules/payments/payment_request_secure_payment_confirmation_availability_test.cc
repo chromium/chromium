@@ -44,6 +44,9 @@ class FakeSecurePaymentConfirmationService
     std::move(callback).Run(spc_availability_);
   }
 
+  void GetSecurePaymentConfirmationCapabilities(
+      GetSecurePaymentConfirmationCapabilitiesCallback callback) override {}
+
   void StorePaymentCredential(
       const Vector<uint8_t>& credential_id,
       const String& rp_id,

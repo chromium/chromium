@@ -6,10 +6,12 @@
 
 #include <optional>
 
+#include "base/barrier_callback.h"
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/task/thread_pool.h"
 #include "components/payments/content/browser_binding/browser_bound_key.h"
 #include "components/payments/content/browser_binding/browser_bound_key_store.h"
 #include "components/payments/content/web_payments_web_data_service.h"
@@ -28,6 +30,7 @@
 namespace payments {
 
 namespace {
+
 void OnIsUserVerifyingPlatformAuthenticatorAvailable(
     SecurePaymentConfirmationService::
         SecurePaymentConfirmationAvailabilityCallback callback,
@@ -38,6 +41,13 @@ void OnIsUserVerifyingPlatformAuthenticatorAvailable(
           : mojom::SecurePaymentConfirmationAvailabilityEnum::
                 kUnavailableNoUserVerifyingPlatformAuthenticator);
 }
+
+mojom::SecurePaymentConfirmationCapabilityPtr MakeCapability(std::string name,
+                                                             bool available) {
+  return mojom::SecurePaymentConfirmationCapability::New(std::move(name),
+                                                         available);
+}
+
 }  // namespace
 
 SecurePaymentConfirmationService::SecurePaymentConfirmationService(
@@ -102,6 +112,22 @@ void SecurePaymentConfirmationService::SecurePaymentConfirmationAvailability(
 
   authenticator_->IsUserVerifyingPlatformAuthenticatorAvailable(base::BindOnce(
       &OnIsUserVerifyingPlatformAuthenticatorAvailable, std::move(callback)));
+}
+
+void SecurePaymentConfirmationService::GetSecurePaymentConfirmationCapabilities(
+    GetSecurePaymentConfirmationCapabilitiesCallback callback) {
+  const size_t kNumberOfCapabilities = 1;
+  // Currently we only support 1 capability, but using a barrier callback
+  // converts the output to a std::vector for us and will allow for easy
+  // expansion in the future.
+  auto barrier_callback =
+      base::BarrierCallback<mojom::SecurePaymentConfirmationCapabilityPtr>(
+          kNumberOfCapabilities, std::move(callback));
+
+  IsBrowserBoundKeyHardwareSupported(
+      base::BindOnce(&MakeCapability,
+                     spc_capabilities::kBrowserBoundKeyHardware)
+          .Then(barrier_callback));
 }
 
 void SecurePaymentConfirmationService::StorePaymentCredential(
@@ -197,6 +223,11 @@ void SecurePaymentConfirmationService::SetPasskeyBrowserBinderForTesting(
   passkey_browser_binder_ = std::move(passkey_browser_binder);
 }
 
+void SecurePaymentConfirmationService::SetBrowserBoundKeyStoreForTesting(
+    scoped_refptr<BrowserBoundKeyStore> browser_bound_key_store) {
+  test_browser_bound_key_store_ = browser_bound_key_store;
+}
+
 void SecurePaymentConfirmationService::OnStorePaymentCredential(
     WebDataServiceBase::Handle h,
     std::unique_ptr<WDTypedResult> result) {
@@ -272,6 +303,25 @@ void SecurePaymentConfirmationService::OnCreateUnboundKey(
           &SecurePaymentConfirmationService::OnAuthenticatorMakeCredential,
           weak_ptr_factory_.GetWeakPtr(), std::move(callback),
           std::move(relying_party_id), std::move(unbound_key)));
+}
+
+void SecurePaymentConfirmationService::IsBrowserBoundKeyHardwareSupported(
+    base::OnceCallback<void(bool)> callback) {
+  scoped_refptr<BrowserBoundKeyStore> bbk_store =
+      test_browser_bound_key_store_
+          ? test_browser_bound_key_store_
+          : GetBrowserBoundKeyStoreInstance(BrowserBoundKeyStore::Config{
+#if BUILDFLAG(IS_MAC)
+                .keychain_access_group =
+                    browser_bound_key_store_keychain_access_group_
+#endif  // BUILDFLAG(IS_MAC)
+            });
+
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
+      base::BindOnce(&BrowserBoundKeyStore::GetDeviceSupportsHardwareKeys,
+                     bbk_store),
+      std::move(callback));
 }
 
 bool SecurePaymentConfirmationService::IsCurrentStateValid() const {

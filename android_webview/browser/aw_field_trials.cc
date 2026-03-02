@@ -140,6 +140,11 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   aw_feature_overrides.DisableFeature(
       blink::features::kSecurePaymentConfirmationAvailabilityAPI);
 
+  // WebView does not support Secure Payment Confirmation, and thus should not
+  // expose the PaymentRequest.securePaymentConfirmationCapabilities API.
+  aw_feature_overrides.DisableFeature(
+      blink::features::kSecurePaymentConfirmationCapabilities);
+
   // WebView does not support handling payment links.
   aw_feature_overrides.DisableFeature(blink::features::kPaymentLinkDetection);
 

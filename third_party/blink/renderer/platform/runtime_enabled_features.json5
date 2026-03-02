@@ -4859,9 +4859,11 @@
     {
       name: "SecurePaymentConfirmationCapabilities",
       status: {
-        "Android": "test",
-        "Mac": "test",
-        "Win": "test",
+        "Android": "experimental",
+        "Mac": "experimental",
+        "Win": "experimental",
+        "iOS": "",
+        "default": "test",
       },
     },
     {

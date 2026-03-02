@@ -861,6 +861,29 @@ void OnSecurePaymentConfirmationAvailabilityResponse(
   resolver->Resolve(V8SecurePaymentConfirmationAvailability(
       ToV8SecurePaymentConfirmationAvailabilityEnum(result)));
 }
+
+void OnGetSecurePaymentConfirmationCapabilitiesComplete(
+    std::unique_ptr<ScopedPromiseResolver> scoped_resolver,
+    const Vector<payments::mojom::blink::SecurePaymentConfirmationCapabilityPtr>
+        capabilities) {
+  auto* resolver = scoped_resolver->Release()
+                       ->DowncastTo<IDLRecord<IDLString, IDLBoolean>>();
+
+  Vector<std::pair<String, bool>> results;
+  for (const auto& capability : capabilities) {
+    results.emplace_back(std::move(capability->name), capability->supported);
+  }
+
+  // Results should be sorted lexicographically based on the keys.
+  std::sort(
+      results.begin(), results.end(),
+      [](const std::pair<String, bool>& a, const std::pair<String, bool>& b) {
+        return CodeUnitCompare(a.first, b.first) < 0;
+      });
+
+  resolver->Resolve(std::move(results));
+}
+
 }  // namespace
 
 // static
@@ -893,6 +916,45 @@ PaymentRequest::securePaymentConfirmationAvailability(
       ->SecurePaymentConfirmationService()
       ->SecurePaymentConfirmationAvailability(
           BindOnce(&OnSecurePaymentConfirmationAvailabilityResponse,
+                   std::make_unique<ScopedPromiseResolver>(resolver)));
+
+  return promise;
+}
+
+// static
+ScriptPromise<IDLRecord<IDLString, IDLBoolean>>
+PaymentRequest::getSecurePaymentConfirmationCapabilities(
+    ScriptState* script_state) {
+  auto* resolver = MakeGarbageCollected<
+      ScriptPromiseResolver<IDLRecord<IDLString, IDLBoolean>>>(script_state);
+  ScriptPromise promise = resolver->Promise();
+
+  if (!RuntimeEnabledFeatures::SecurePaymentConfirmationEnabled(
+          ExecutionContext::From(script_state)) ||
+      !RuntimeEnabledFeatures::SecurePaymentConfirmationCapabilitiesEnabled(
+          ExecutionContext::From(script_state))) {
+    return ScriptPromise<IDLRecord<IDLString, IDLBoolean>>::
+        RejectWithDOMException(script_state,
+                               MakeGarbageCollected<DOMException>(
+                                   DOMExceptionCode::kNotSupportedError,
+                                   "The feature is not enabled."));
+  }
+
+  if (!ExecutionContext::From(script_state)
+           ->IsFeatureEnabled(
+               network::mojom::PermissionsPolicyFeature::kPayment)) {
+    return ScriptPromise<IDLRecord<IDLString, IDLBoolean>>::
+        RejectWithDOMException(
+            script_state,
+            MakeGarbageCollected<DOMException>(
+                DOMExceptionCode::kNotAllowedError,
+                "The \"payment\" permission policy is not enabled."));
+  }
+
+  CredentialManagerProxy::From(script_state)
+      ->SecurePaymentConfirmationService()
+      ->GetSecurePaymentConfirmationCapabilities(
+          BindOnce(&OnGetSecurePaymentConfirmationCapabilitiesComplete,
                    std::make_unique<ScopedPromiseResolver>(resolver)));
 
   return promise;
