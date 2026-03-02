@@ -58,6 +58,13 @@ found in the LICENSE file.
             android:layout_width="52dp"
             style="@style/ToolbarHoverableButton"/>
 
+        <ViewStub
+            android:id="@+id/signin_button_stub"
+            android:layout="@layout/signin_button_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"/>
+
         <org.chromium.chrome.browser.toolbar.top.ToggleTabStackButton
             android:id="@+id/tab_switcher_button"
             style="@style/ToolbarHoverableButton"

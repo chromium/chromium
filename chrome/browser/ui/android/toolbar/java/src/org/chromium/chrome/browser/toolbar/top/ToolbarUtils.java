@@ -39,6 +39,7 @@ public class ToolbarUtils {
                 ToolbarComponentId.BACK,
                 ToolbarComponentId.INCOGNITO_INDICATOR,
                 ToolbarComponentId.ADAPTIVE_BUTTON,
+                ToolbarComponentId.SIGNIN_BUTTON,
                 ToolbarComponentId.RELOAD,
                 ToolbarComponentId.FORWARD,
                 ToolbarComponentId.HOME,
@@ -82,6 +83,7 @@ public class ToolbarUtils {
         ToolbarComponentId.TAB_SWITCHER,
         ToolbarComponentId.MENU,
         ToolbarComponentId.PADDING,
+        ToolbarComponentId.SIGNIN_BUTTON,
         ToolbarComponentId.COUNT
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -105,7 +107,8 @@ public class ToolbarUtils {
         int TAB_SWITCHER = 16;
         int MENU = 17;
         int PADDING = 18;
-        int COUNT = 19;
+        int SIGNIN_BUTTON = 19;
+        int COUNT = 20;
     }
 
     // LINT.ThenChange(//chrome/browser/ui/android/toolbar/java/res/layout/toolbar_tablet.xml:toolbar_tablet_components|//chrome/browser/ui/android/omnibox/java/res/layout/url_action_container.xml:toolbar_tablet_components)

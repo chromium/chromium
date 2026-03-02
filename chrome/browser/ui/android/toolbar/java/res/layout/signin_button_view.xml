@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<org.chromium.chrome.browser.toolbar.signin_button.SigninButtonView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:id="@+id/signin_button">
+
+    <org.chromium.ui.widget.ChromeImageButton
+        android:id="@+id/avatar_button"
+        style="@style/ToolbarHoverableButton"
+        app:tint="@color/default_icon_color_tint_list"
+        android:visibility="gone"/>
+</org.chromium.chrome.browser.toolbar.signin_button.SigninButtonView>
