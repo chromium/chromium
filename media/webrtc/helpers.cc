@@ -13,7 +13,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
-#include "components/optimization_guide/core/tflite_op_resolver.h"
+#include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "media/base/media_switches.h"
 #include "media/webrtc/webrtc_features.h"
 #include "third_party/webrtc/api/audio/audio_processing.h"
@@ -22,6 +22,10 @@
 #include "third_party/webrtc/api/audio/neural_residual_echo_estimator_creator.h"
 #include "third_party/webrtc/modules/audio_processing/aec_dump/aec_dump_factory.h"
 #include "third_party/webrtc_overrides/environment.h"
+
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+#include "components/optimization_guide/core/tflite_op_resolver.h"
+#endif
 
 namespace media {
 namespace {
@@ -150,7 +154,7 @@ CreateWebRtcAudioProcessingModule(
   // Fuchsia does not use the optimization guide.
   // Avoid linking the op resolver to keep Fuchsia binary size down.
   // TODO(crbug.com/450466837): Investigate if this build guard can be avoided.
-#if !BUILDFLAG(IS_FUCHSIA)
+#if !BUILDFLAG(IS_FUCHSIA) && BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   if (residual_echo_estimator_model) {
     optimization_guide::TFLiteOpResolver op_resolver;
     echo_estimator = webrtc::CreateNeuralResidualEchoEstimator(
@@ -163,7 +167,7 @@ CreateWebRtcAudioProcessingModule(
       LOG(ERROR) << "Failed to initialize neural residual echo estimator.";
     }
   }
-#endif  // !BUILDFLAG(IS_FUCHSIA)
+#endif  // !BUILDFLAG(IS_FUCHSIA) && BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 
 #if BUILDFLAG(SYSTEM_LOOPBACK_AS_AEC_REFERENCE)
   if (settings.use_loopback_aec_reference) {

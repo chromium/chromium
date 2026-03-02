@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//components/optimization_guide/features.gni")
 import("//media/media_options.gni")
 import("//third_party/webrtc/webrtc.gni")
 
@@ -26,10 +27,14 @@ component("webrtc") {
   deps = [
     "//base",
     "//build:chromecast_buildflags",
-    "//components/optimization_guide/core/inference:op_resolver",
+    "//components/optimization_guide:machine_learning_tflite_buildflags",
     "//media",
     "//third_party/webrtc_overrides:webrtc_component",
   ]
+
+  if (build_with_tflite_lib) {
+    deps += [ "//components/optimization_guide/core/inference:op_resolver" ]
+  }
 
   public_deps = [ "//third_party/tflite" ]
 }
