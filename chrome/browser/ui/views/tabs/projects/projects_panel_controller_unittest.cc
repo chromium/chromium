@@ -10,6 +10,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
+#include "chrome/browser/contextual_tasks/mock_contextual_tasks_ui_service.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "components/contextual_tasks/public/contextual_task.h"
@@ -106,16 +107,26 @@ MATCHER_P(GroupIs, expected_group, "") {
 
 class ProjectsPanelControllerTest : public testing::Test {
  protected:
+  ProjectsPanelControllerTest() {
+    EXPECT_CALL(mock_browser_window_interface_, GetBrowserForMigrationOnly())
+        .WillRepeatedly(testing::Return(nullptr));
+  }
+
   std::unique_ptr<ProjectsPanelController> GetInitializedController() {
     auto controller = std::make_unique<ProjectsPanelController>(
-        &mock_tab_group_sync_service_, &mock_contextual_tasks_service_);
+        &mock_browser_window_interface_, &mock_tab_group_sync_service_,
+        &mock_contextual_tasks_service_, &mock_contextual_tasks_ui_service_);
     controller->OnInitialized();
     return controller;
   }
+
+  testing::NiceMock<MockBrowserWindowInterface> mock_browser_window_interface_;
   testing::NiceMock<tab_groups::MockTabGroupSyncService>
       mock_tab_group_sync_service_;
   testing::NiceMock<contextual_tasks::MockContextualTasksService>
       mock_contextual_tasks_service_;
+  testing::NiceMock<contextual_tasks::MockContextualTasksUiService>
+      mock_contextual_tasks_ui_service_;
 };
 
 TEST_F(ProjectsPanelControllerTest, PreservesOrderOnConstruction) {
@@ -193,11 +204,7 @@ TEST_F(ProjectsPanelControllerTest, OpenTabGroupCallsService) {
               OpenTabGroup(testing::Eq(uuid), testing::_))
       .Times(1);
 
-  testing::NiceMock<MockBrowserWindowInterface> mock_browser_window_interface;
-  EXPECT_CALL(mock_browser_window_interface, GetBrowserForMigrationOnly())
-      .WillOnce(testing::Return(nullptr));
-
-  controller->OpenTabGroup(uuid, &mock_browser_window_interface);
+  controller->OpenTabGroup(uuid);
 }
 
 TEST_F(ProjectsPanelControllerTest, MoveTabGroupCallsService) {
@@ -227,21 +234,15 @@ TEST_F(ProjectsPanelControllerTest, OpenTabGroupAutofocus) {
               OpenTabGroup(testing::Eq(uuid), testing::_))
       .WillOnce(testing::Return(local_group_id));
 
-  testing::NiceMock<MockBrowserWindowInterface> mock_browser_window_interface;
-
-  // Verify that the browser's TabStripModel is accessed.
-  // The code should check for nullptr, so returning nullptr is fine here.
-  EXPECT_CALL(mock_browser_window_interface, GetTabStripModel())
-      .WillOnce(testing::Return(nullptr));
-
-  controller->OpenTabGroup(uuid, &mock_browser_window_interface);
+  controller->OpenTabGroup(uuid);
 }
 
 class ProjectsPanelControllerObserverTest : public ProjectsPanelControllerTest {
  public:
   void SetUp() override {
     controller_ = std::make_unique<ProjectsPanelController>(
-        &mock_tab_group_sync_service_, &mock_contextual_tasks_service_);
+        &mock_browser_window_interface_, &mock_tab_group_sync_service_,
+        &mock_contextual_tasks_service_, &mock_contextual_tasks_ui_service_);
     controller_->AddObserver(&observer_);
   }
 

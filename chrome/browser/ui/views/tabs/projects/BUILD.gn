@@ -46,6 +46,7 @@ source_set("impl") {
     "//chrome/app:generated_resources",
     "//chrome/app/vector_icons",
     "//chrome/browser/contextual_tasks",
+    "//chrome/browser/contextual_tasks:ui",
     "//chrome/browser/tab_group_sync:factories",
     "//chrome/browser/ui",
     "//chrome/browser/ui:browser_element_identifiers",
@@ -82,6 +83,7 @@ source_set("unit_tests") {
     "//build:branding_buildflags",
     "//chrome/app/vector_icons",
     "//chrome/browser/contextual_tasks",
+    "//chrome/browser/contextual_tasks:test_support",
     "//chrome/browser/tab_group_sync:factories",
     "//chrome/browser/ui:test_support",
     "//chrome/browser/ui:ui_features",
@@ -93,6 +95,22 @@ source_set("unit_tests") {
     "//components/sync/base",
     "//ui/views",
     "//ui/views:test_support",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [ "projects_panel_controller_browsertest.cc" ]
+  deps = [
+    ":projects",
+    "//chrome/browser/contextual_tasks:test_support",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/tabs",
+    "//chrome/test:test_support",
+    "//components/contextual_tasks/public:test_support",
+    "//components/saved_tab_groups/test_support",
+    "//content/test:test_support",
   ]
 }
 

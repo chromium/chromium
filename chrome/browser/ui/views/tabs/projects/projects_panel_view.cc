@@ -10,6 +10,8 @@
 
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser.h"
@@ -132,13 +134,17 @@ ProjectsPanelView::ProjectsPanelView(BrowserWindowInterface* browser,
   // Apply the elevated state by default.
   SetIsElevated(true);
 
+  bool threads_enabled = tab_groups::IsThreadsInProjectsPanelEnabled();
   panel_controller_ = std::make_unique<ProjectsPanelController>(
+      browser_,
       tab_groups::TabGroupSyncServiceFactory::GetForProfile(
           browser->GetProfile()),
-      tab_groups::IsThreadsInProjectsPanelEnabled()
+      threads_enabled
           ? contextual_tasks::ContextualTasksServiceFactory::GetForProfile(
                 browser->GetProfile())
-          : nullptr);
+          : nullptr,
+      contextual_tasks::ContextualTasksUiServiceFactory::
+          GetForBrowserContextIfExists(browser->GetProfile()));
   panel_controller_observer_.Observe(panel_controller_.get());
 
   controls_view_ = content_container_->AddChildView(
@@ -173,7 +179,7 @@ ProjectsPanelView::ProjectsPanelView(BrowserWindowInterface* browser,
     tab_groups_view_->disable_animations_for_testing();  // IN-TEST
   }
 
-  if (tab_groups::IsThreadsInProjectsPanelEnabled()) {
+  if (threads_enabled) {
     auto* separator =
         content_container_->AddChildView(std::make_unique<views::Separator>());
     separator->SetProperty(views::kMarginsKey, kListsSeparatorMargins);
@@ -383,7 +389,7 @@ void ProjectsPanelView::ClosePanel() {
 }
 
 void ProjectsPanelView::OnTabGroupButtonPressed(const base::Uuid& group_guid) {
-  panel_controller_->OpenTabGroup(group_guid, browser_);
+  panel_controller_->OpenTabGroup(group_guid);
   ClosePanel();
 }
 

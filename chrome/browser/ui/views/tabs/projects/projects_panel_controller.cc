@@ -6,15 +6,21 @@
 
 #include <algorithm>
 
+#include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 
 ProjectsPanelController::ProjectsPanelController(
+    BrowserWindowInterface* browser,
     tab_groups::TabGroupSyncService* tab_group_sync_service,
-    contextual_tasks::ContextualTasksService* contextual_tasks_service)
-    : tab_group_sync_service_(tab_group_sync_service),
-      contextual_tasks_service_(contextual_tasks_service) {
+    contextual_tasks::ContextualTasksService* contextual_tasks_service,
+    contextual_tasks::ContextualTasksUiService* contextual_tasks_ui_service)
+    : browser_(browser),
+      tab_group_sync_service_(tab_group_sync_service),
+      contextual_tasks_service_(contextual_tasks_service),
+      contextual_tasks_ui_service_(contextual_tasks_ui_service) {
   tab_group_sync_service_observer_.Observe(tab_group_sync_service);
 
   if (contextual_tasks_service) {
@@ -29,10 +35,9 @@ ProjectsPanelController::GetTabGroups() {
   return tab_groups_;
 }
 
-void ProjectsPanelController::OpenTabGroup(const base::Uuid& group_guid,
-                                           BrowserWindowInterface* browser) {
+void ProjectsPanelController::OpenTabGroup(const base::Uuid& group_guid) {
   tab_groups::SavedTabGroupUtils::OpenSavedTabGroup(
-      browser, group_guid, tab_groups::OpeningSource::kOpenedFromProjectsPanel,
+      browser_, group_guid, tab_groups::OpeningSource::kOpenedFromProjectsPanel,
       tab_group_sync_service_);
 }
 
@@ -42,17 +47,35 @@ void ProjectsPanelController::MoveTabGroup(const base::Uuid& group_guid,
                                                new_index);
 }
 
+const std::vector<contextual_tasks::Thread>&
+ProjectsPanelController::GetThreads() {
+  return threads_;
+}
+
+void ProjectsPanelController::OpenThread(const std::string& thread_server_id) {
+  if (!thread_server_id_to_task_id_.contains(thread_server_id)) {
+    return;
+  }
+
+  const base::Uuid task_id = thread_server_id_to_task_id_[thread_server_id];
+  contextual_tasks_ui_service_->GetThreadUrlFromTaskId(
+      task_id, base::BindOnce(
+                   [](base::WeakPtr<ProjectsPanelController> weak_this,
+                      GURL thread_url) {
+                     if (!weak_this) {
+                       return;
+                     }
+                     weak_this->OnGotThreadUrlForResumption(thread_url);
+                   },
+                   weak_ptr_factory_.GetWeakPtr()));
+}
+
 void ProjectsPanelController::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
 }
 
 void ProjectsPanelController::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
-}
-
-const std::vector<contextual_tasks::Thread>&
-ProjectsPanelController::GetThreads() {
-  return threads_;
 }
 
 void ProjectsPanelController::OnInitialized() {
@@ -142,9 +165,13 @@ void ProjectsPanelController::OnContextualTasksServiceInitialized() {
           return;
         }
         weak_this->threads_ = std::vector<contextual_tasks::Thread>();
+        weak_this->thread_server_id_to_task_id_.clear();
         for (auto& task : tasks) {
           if (task.GetThread().has_value()) {
-            weak_this->threads_.push_back(task.GetThread().value());
+            contextual_tasks::Thread thread = task.GetThread().value();
+            weak_this->threads_.push_back(thread);
+            weak_this->thread_server_id_to_task_id_.emplace(thread.server_id,
+                                                            task.GetTaskId());
           }
         }
 
@@ -153,4 +180,21 @@ void ProjectsPanelController::OnContextualTasksServiceInitialized() {
         }
       },
       weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ProjectsPanelController::OnGotThreadUrlForResumption(GURL thread_url) {
+  auto* tab_strip_model = browser_->GetTabStripModel();
+  CHECK(tab_strip_model);
+
+  // If a tab with the thread URL already exists, activate it.
+  for (int i = 0; i < tab_strip_model->count(); ++i) {
+    auto* web_contents = tab_strip_model->GetWebContentsAt(i);
+    if (web_contents->GetLastCommittedURL().EqualsIgnoringRef(thread_url)) {
+      tab_strip_model->ActivateTabAt(i);
+      return;
+    }
+  }
+
+  // If no tab exists for the thread, create a new one.
+  browser_->OpenGURL(thread_url, WindowOpenDisposition::NEW_FOREGROUND_TAB);
 }

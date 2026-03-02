@@ -17,6 +17,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
+#include "chrome/browser/contextual_tasks/mock_contextual_tasks_ui_service.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "components/application_locale_storage/application_locale_storage.h"
@@ -102,48 +103,6 @@ class MockPage : public mojom::Page {
   mojo::Receiver<mojom::Page> receiver_{this};
 };
 
-class MockUiService : public ContextualTasksUiService {
- public:
-  MockUiService(Profile* profile, ContextualTasksService* service)
-      : ContextualTasksUiService(profile, service, nullptr, nullptr) {}
-
-  MOCK_METHOD(GURL, GetDefaultAiPageUrl, (), (override));
-  MOCK_METHOD(GURL,
-              GetDefaultAiPageUrlForTask,
-              (const base::Uuid& task_id),
-              (override));
-  MOCK_METHOD(void,
-              SetInitialEntryPointForTask,
-              (const base::Uuid&, omnibox::ChromeAimEntryPoint),
-              (override));
-  MOCK_METHOD(std::optional<GURL>,
-              GetInitialUrlForTask,
-              (const base::Uuid&),
-              (override));
-  MOCK_METHOD(void,
-              GetThreadUrlFromTaskId,
-              (const base::Uuid&, base::OnceCallback<void(GURL)>),
-              (override));
-  MOCK_METHOD(void,
-              MoveTaskUiToNewTab,
-              (const base::Uuid&, BrowserWindowInterface*, const GURL&),
-              (override));
-  MOCK_METHOD(void,
-              OnTabClickedFromSourcesMenu,
-              (int32_t, const GURL&, BrowserWindowInterface*),
-              (override));
-  MOCK_METHOD(void,
-              OnFileClickedFromSourcesMenu,
-              (const GURL&, BrowserWindowInterface*),
-              (override));
-  MOCK_METHOD(void,
-              OnImageClickedFromSourcesMenu,
-              (const GURL&, BrowserWindowInterface*),
-              (override));
-  MOCK_METHOD(bool, IsAiUrl, (const GURL&), (override));
-  MOCK_METHOD(bool, IsPendingErrorPage, (const base::Uuid&), (override));
-};
-
 class TestContextualTasksUI : public ContextualTasksUI {
  public:
   explicit TestContextualTasksUI(content::WebUI* web_ui)
@@ -174,7 +133,7 @@ class ContextualTasksPageHandlerTest : public BrowserWithTestWindowTest {
         profile(), base::BindOnce([](content::BrowserContext* context) {
           Profile* profile = Profile::FromBrowserContext(context);
           return std::unique_ptr<KeyedService>(
-              std::make_unique<NiceMock<MockUiService>>(
+              std::make_unique<NiceMock<MockContextualTasksUiService>>(
                   profile,
                   ContextualTasksServiceFactory::GetForProfile(profile)));
         }));
@@ -190,8 +149,9 @@ class ContextualTasksPageHandlerTest : public BrowserWithTestWindowTest {
 
     mock_contextual_tasks_service_ = static_cast<MockContextualTasksService*>(
         ContextualTasksServiceFactory::GetForProfile(profile()));
-    mock_contextual_tasks_ui_service_ = static_cast<MockUiService*>(
-        ContextualTasksUiServiceFactory::GetForBrowserContext(profile()));
+    mock_contextual_tasks_ui_service_ =
+        static_cast<MockContextualTasksUiService*>(
+            ContextualTasksUiServiceFactory::GetForBrowserContext(profile()));
 
     page_handler_ = std::make_unique<ContextualTasksPageHandler>(
         mojo::PendingReceiver<mojom::PageHandler>(), contextual_tasks_ui_.get(),
@@ -214,7 +174,7 @@ class ContextualTasksPageHandlerTest : public BrowserWithTestWindowTest {
   std::unique_ptr<NiceMock<TestContextualTasksUI>> contextual_tasks_ui_;
   std::unique_ptr<ContextualTasksPageHandler> page_handler_;
   raw_ptr<MockContextualTasksService> mock_contextual_tasks_service_;
-  raw_ptr<MockUiService> mock_contextual_tasks_ui_service_;
+  raw_ptr<MockContextualTasksUiService> mock_contextual_tasks_ui_service_;
   NiceMock<MockPage> page_;
   base::test::ScopedFeatureList feature_list_;
 };
