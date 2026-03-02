@@ -1128,8 +1128,8 @@ TEST_F(ContextualTasksUiServiceTest, GetAimUrlFromContextualTasksUrl) {
                 "contextual-tasks?aim_url=https%3A%2F%2Fgoogle.com%2Fsearch")));
 }
 
-TEST_F(ContextualTasksUiServiceTest, HandleNavigation_VirtualUrlRewritten) {
-  GURL virtual_url("chrome://googlesearch/?udm=50&q=test+query");
+TEST_F(ContextualTasksUiServiceTest, HandleNavigation_DisplayUrlRewritten) {
+  GURL display_url("chrome://google.com/search?udm=50&q=test+query");
   auto web_contents = content::WebContentsTester::CreateTestWebContents(
       profile_.get(), content::SiteInstance::Create(profile_.get()));
 
@@ -1144,12 +1144,12 @@ TEST_F(ContextualTasksUiServiceTest, HandleNavigation_VirtualUrlRewritten) {
         EXPECT_EQ(url.path(), "/search");
 
         // Verify that the entire query string is copied verbatim.
-        EXPECT_EQ(url.query(), virtual_url.query());
+        EXPECT_EQ(url.query(), display_url.query());
       });
 
   // Simulate navigation to the virtual URL.
   EXPECT_TRUE(service_for_nav_->HandleNavigation(
-      CreateOpenUrlParams(virtual_url, false), web_contents.get(),
+      CreateOpenUrlParams(display_url, false), web_contents.get(),
       /*is_from_embedded_page=*/false, /*is_to_new_tab=*/false));
 
   base::RunLoop run_loop;
