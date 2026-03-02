@@ -419,7 +419,7 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
     if (yOffsetBeforeRotation < 0) {
       weakSelf.collectionView.contentOffset =
           CGPointMake(0, yOffsetBeforeRotation - heightAboveFeedDifference);
-      [weakSelf updateNTPLayout];
+      [weakSelf updateNTPLayoutForWidth:size.width];
     }
     [weakSelf.view setNeedsLayout];
     [weakSelf.view layoutIfNeeded];
@@ -606,17 +606,7 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
 }
 
 - (void)updateNTPLayout {
-  [self updateFeedInsetsForContentAbove];
-  if (self.feedVisible) {
-    [self updateFeedInsetsForMinimumHeight];
-  }
-
-  // Reload data to ensure the Most Visited tiles and fake omnibox are correctly
-  // positioned, in particular during a rotation while a ViewController is
-  // presented in front of the NTP.
-  [self updateFakeOmniboxOnNewWidth:self.collectionView.bounds.size.width];
-  // Ensure initial fake omnibox layout.
-  [self updateFakeOmniboxForScrollPosition];
+  [self updateNTPLayoutForWidth:self.collectionView.bounds.size.width];
 }
 
 - (void)updateHeightAboveFeed {
@@ -1779,6 +1769,20 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
     }
   }
   return NO;
+}
+
+// Lays out content above feed and adjusts content suggestions for the given
+// `width`.
+- (void)updateNTPLayoutForWidth:(CGFloat)width {
+  [self updateFeedInsetsForContentAbove];
+  if (self.feedVisible) {
+    [self updateFeedInsetsForMinimumHeight];
+  }
+
+  // Reload data to ensure the Most Visited tiles and fake omnibox are correctly
+  // positioned, in particular during a rotation while a ViewController is
+  // presented in front of the NTP.
+  [self updateFakeOmniboxOnNewWidth:width];
 }
 
 #pragma mark - Helpers

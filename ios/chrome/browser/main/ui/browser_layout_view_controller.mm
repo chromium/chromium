@@ -99,13 +99,19 @@
 
   // Add the new active view controller.
   [self addChildViewController:browserViewController];
-  // If the BVC's view has a transform, then its frame isn't accurate.
-  // Instead, remove the transform, set the frame, then reapply the transform.
-  CGAffineTransform oldTransform = browserViewController.view.transform;
-  browserViewController.view.transform = CGAffineTransformIdentity;
-  browserViewController.view.frame = self.view.bounds;
-  browserViewController.view.transform = oldTransform;
-  [self.view insertSubview:browserViewController.view atIndex:0];
+  if (IsChromeNextIaEnabled()) {
+    browserViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.view insertSubview:browserViewController.view atIndex:0];
+    AddSameConstraints(self.view, browserViewController.view);
+  } else {
+    // If the BVC's view has a transform, then its frame isn't accurate.
+    // Instead, remove the transform, set the frame, then reapply the transform.
+    CGAffineTransform oldTransform = browserViewController.view.transform;
+    browserViewController.view.transform = CGAffineTransformIdentity;
+    browserViewController.view.frame = self.view.bounds;
+    browserViewController.view.transform = oldTransform;
+    [self.view insertSubview:browserViewController.view atIndex:0];
+  }
   [browserViewController didMoveToParentViewController:self];
   _browserViewController = browserViewController;
 
