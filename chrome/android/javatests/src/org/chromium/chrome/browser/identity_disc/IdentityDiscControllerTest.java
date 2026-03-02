@@ -110,7 +110,6 @@ import org.chromium.ui.test.util.NightModeTestUtils;
 import org.chromium.ui.test.util.ViewUtils;
 
 import java.io.IOException;
-import java.util.function.Supplier;
 
 /** Instrumentation test for Identity Disc. */
 @DoNotBatch(reason = "This test relies on native initialization")
@@ -152,7 +151,7 @@ public class IdentityDiscControllerTest {
     @Mock private ActivityResultTracker mActivityResultTracker;
     @Mock private DeviceLockActivityLauncher mDeviceLockActivityLauncher;
     @Mock private BottomSheetController mBottomSheetController;
-    @Mock private Supplier<ModalDialogManager> mModalDialogManagerSupplier;
+    @Mock private ModalDialogManager mModalDialogManager;
     @Mock private SnackbarManager mSnackbarManager;
 
     @BeforeClass
@@ -698,7 +697,7 @@ public class IdentityDiscControllerTest {
                 mDeviceLockActivityLauncher,
                 mProfileSupplier,
                 mBottomSheetController,
-                mModalDialogManagerSupplier,
+                mModalDialogManager,
                 mSnackbarManager);
     }
 

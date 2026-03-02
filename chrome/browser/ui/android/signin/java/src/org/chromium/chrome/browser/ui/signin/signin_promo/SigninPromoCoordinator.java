@@ -104,7 +104,7 @@ public class SigninPromoCoordinator
      * @param activityResultTracker Tracker of activity results.
      * @param launcher Launcher of the sign-in flow.
      * @param bottomSheetController Used to interact with the bottom sheet.
-     * @param modalDialogManagerSupplier Supplies the {@link ModalDialogManager}.
+     * @param modalDialogManager The {@link ModalDialogManager}.
      * @param snackbarManager Manages snackbars shown in the app.
      * @param deviceLockActivityLauncher Launcher of the Device Lock Activity.
      * @param delegate A {@link SigninPromoDelegate} to customize the view.
@@ -116,7 +116,7 @@ public class SigninPromoCoordinator
             ActivityResultTracker activityResultTracker,
             SigninAndHistorySyncActivityLauncher launcher,
             Supplier<BottomSheetController> bottomSheetController,
-            Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier,
+            ModalDialogManager modalDialogManager,
             SnackbarManager snackbarManager,
             DeviceLockActivityLauncher deviceLockActivityLauncher,
             SigninPromoDelegate delegate) {
@@ -137,7 +137,7 @@ public class SigninPromoCoordinator
                         deviceLockActivityLauncher,
                         profileSupplier,
                         bottomSheetController,
-                        modalDialogManagerSupplier,
+                        modalDialogManager,
                         snackbarManager,
                         mDelegate.getAccessPoint());
     }

@@ -340,7 +340,7 @@ public class ToolbarManager
     private MenuButtonCoordinator mMenuButtonCoordinator;
     private MenuButtonCoordinator mOverviewModeMenuButtonCoordinator;
     private HomepageManager.@Nullable HomepageStateListener mHomepageStateListener;
-    private final Supplier<@Nullable ModalDialogManager> mModalDialogManagerSupplier;
+    private final NonNullObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
     private final StatusBarColorController mStatusBarColorController;
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private final BottomSheetController mBottomSheetController;
@@ -796,7 +796,7 @@ public class ToolbarManager
             WindowAndroid windowAndroid,
             OneshotSupplier<ChromeAndroidTask> chromeAndroidTaskSupplier,
             Supplier<Boolean> isInOverviewModeSupplier,
-            Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier,
+            NonNullObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
             StatusBarColorController statusBarColorController,
             AppMenuDelegate appMenuDelegate,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,

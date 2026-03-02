@@ -134,7 +134,6 @@ public class SafetyCheckMediatorTest {
     private final boolean mUseGmsApi;
 
     private ModalDialogManager mModalDialogManager;
-
     private final SettableMonotonicObservableSupplier<ModalDialogManager>
             mModalDialogManagerSupplier = ObservableSuppliers.createMonotonic();
 

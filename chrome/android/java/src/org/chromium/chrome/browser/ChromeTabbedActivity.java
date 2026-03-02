@@ -1259,7 +1259,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                 this,
                 getSnackbarManager(),
                 mRootUiCoordinator::getBottomSheetController,
-                getModalDialogManagerSupplier(),
+                getModalDialogManagerSupplier().asNonNull(),
                 getActivityResultTracker(),
                 getCurrentTabModel().getCurrentTabSupplier());
     }
@@ -3064,7 +3064,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                 getLayoutManagerSupplier(),
                 /* menuOrKeyboardActionController= */ this,
                 this::getActivityThemeColor,
-                getModalDialogManagerSupplier(),
+                getModalDialogManagerSupplier().asNonNull(),
                 /* appMenuBlocker= */ this,
                 this::supportsAppMenu,
                 this::supportsFindInPage,
@@ -3479,7 +3479,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                         DeviceLockActivityLauncherImpl.get(),
                         profileSupplier,
                         mRootUiCoordinator::getBottomSheetController,
-                        getModalDialogManagerSupplier(),
+                        getModalDialogManagerSupplier().get(),
                         getSnackbarManager(),
                         accessPoint);
     }
@@ -3667,7 +3667,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                             /* tabCreatorManager= */ this,
                             getTabModelSelectorSupplier(),
                             getCompositorViewHolderSupplier(),
-                            getModalDialogManagerSupplier(),
+                            getModalDialogManagerSupplier().asNonNull(),
                             this::getSnackbarManager,
                             getActivityResultTracker(),
                             getBrowserControlsManager(),

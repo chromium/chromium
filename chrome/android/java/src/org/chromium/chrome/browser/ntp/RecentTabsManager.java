@@ -111,7 +111,7 @@ public class RecentTabsManager
             Profile profile,
             ActivityResultTracker activityResultTracker,
             BottomSheetController bottomSheetController,
-            Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier,
+            Supplier<ModalDialogManager> modalDialogManagerSupplier,
             SnackbarManager snackbarManager,
             Runnable showHistoryManager,
             RecentlyClosedEntriesManager recentlyClosedEntriesManager) {
@@ -135,7 +135,7 @@ public class RecentTabsManager
                         activityResultTracker,
                         SigninAndHistorySyncActivityLauncherImpl.get(),
                         SupplierUtils.of(bottomSheetController),
-                        modalDialogManagerSupplier,
+                        modalDialogManagerSupplier.get(),
                         snackbarManager,
                         DeviceLockActivityLauncherImpl.get(),
                         new RecentTabsSigninPromoDelegate(

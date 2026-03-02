@@ -70,9 +70,11 @@ import org.chromium.base.FeatureOverrides;
 import org.chromium.base.Token;
 import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -221,8 +223,7 @@ public class MultiInstanceManagerApi31UnitTest {
 
     private final SettableMonotonicObservableSupplier<TabModelOrchestrator>
             mTabModelOrchestratorSupplier = ObservableSuppliers.createMonotonic();
-    private final SettableMonotonicObservableSupplier<ModalDialogManager>
-            mModalDialogManagerSupplier = ObservableSuppliers.createMonotonic();
+    private SettableNonNullObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
     private final OneshotSupplierImpl<ProfileProvider> mProfileProviderSupplier =
             new OneshotSupplierImpl<>();
     private UnownedUserDataHost mUnownedUserDataHost;
@@ -263,7 +264,7 @@ public class MultiInstanceManagerApi31UnitTest {
                 MonotonicObservableSupplier<TabModelOrchestrator> tabModelOrchestratorSupplier,
                 MultiWindowModeStateDispatcher multiWindowModeStateDispatcher,
                 ActivityLifecycleDispatcher activityLifecycleDispatcher,
-                MonotonicObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
+                NonNullObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
                 MenuOrKeyboardActionController menuOrKeyboardActionController,
                 Supplier<DesktopWindowStateManager> desktopWindowStateManagerSupplier,
                 TabReparentingDelegate tabReparentingDelegate) {
@@ -345,8 +346,8 @@ public class MultiInstanceManagerApi31UnitTest {
 
     @Before
     public void setUp() {
+        mModalDialogManagerSupplier = ObservableSuppliers.createNonNull(mModalDialogManager);
         mTabModelOrchestratorSupplier.set(mTabModelOrchestrator);
-        mModalDialogManagerSupplier.set(mModalDialogManager);
         mUnownedUserDataHost = new UnownedUserDataHost();
 
         TabGroupSyncFeaturesJni.setInstanceForTesting(mTabGroupSyncFeaturesJniMock);

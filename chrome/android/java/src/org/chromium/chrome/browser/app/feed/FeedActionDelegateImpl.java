@@ -58,7 +58,6 @@ import org.chromium.url.GURL;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Supplier;
 
 /** Implements some actions for the Feed */
 @NullMarked
@@ -87,7 +86,7 @@ public class FeedActionDelegateImpl
             SigninAndHistorySyncActivityLauncher signinLauncher,
             DeviceLockActivityLauncher deviceLockActivityLauncher,
             SnackbarManager snackbarManager,
-            Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier,
+            ModalDialogManager modalDialogManager,
             NativePageNavigationDelegate navigationDelegate,
             BookmarkModel bookmarkModel,
             TabModelSelector tabModelSelector,
@@ -115,7 +114,7 @@ public class FeedActionDelegateImpl
                                 deviceLockActivityLauncher,
                                 profileSupplier,
                                 () -> bottomSheetController,
-                                modalDialogManagerSupplier,
+                                modalDialogManager,
                                 snackbarManager,
                                 accessPoint));
             }

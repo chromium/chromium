@@ -360,7 +360,7 @@ public class RootUiCoordinator
             mTabStripVisibilitySupplier;
     protected final SettableMonotonicObservableSupplier<LayoutManager> mLayoutManagerSupplier =
             ObservableSuppliers.createMonotonic();
-    protected final MonotonicObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
+    protected final NonNullObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
     private final AppMenuBlocker mAppMenuBlocker;
     private final BooleanSupplier mSupportsAppMenuSupplier;
     protected final BooleanSupplier mSupportsFindInPageSupplier;
@@ -488,7 +488,7 @@ public class RootUiCoordinator
             MonotonicObservableSupplier<LayoutManagerImpl> layoutManagerSupplier,
             MenuOrKeyboardActionController menuOrKeyboardActionController,
             Supplier<Integer> activityThemeColorSupplier,
-            MonotonicObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
+            NonNullObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
             AppMenuBlocker appMenuBlocker,
             BooleanSupplier supportsAppMenuSupplier,
             BooleanSupplier supportsFindInPage,
@@ -740,7 +740,8 @@ public class RootUiCoordinator
                         mExclusiveAccessManager);
 
         mExpandedBottomSheetHelper =
-                new ExpandedSheetHelperImpl(mModalDialogManagerSupplier, getTabObscuringHandler());
+                new ExpandedSheetHelperImpl(
+                        mModalDialogManagerSupplier.get(), getTabObscuringHandler());
         mBottomControlsStacker =
                 new BottomControlsStacker(mBrowserControlsManager, mActivity, mWindowAndroid);
         mTopControlsStacker =
@@ -1790,7 +1791,7 @@ public class RootUiCoordinator
                                         mActivity,
                                         mProfileSupplier.get(),
                                         ManagePasswordsReferrer.CHROME_SETTINGS,
-                                        mModalDialogManagerSupplier.asNonNull(),
+                                        mModalDialogManagerSupplier.get(),
                                         /* managePasskeys= */ false);
                             },
                             // Open Quick Delete Dialog callback:

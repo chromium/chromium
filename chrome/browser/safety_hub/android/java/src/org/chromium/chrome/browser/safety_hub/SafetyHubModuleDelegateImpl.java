@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -28,14 +29,12 @@ import org.chromium.components.sync.SyncService;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
-import java.util.function.Supplier;
-
 /** An implementation of {@link SafetyHubModuleDelegate} */
 @NullMarked
 public class SafetyHubModuleDelegateImpl implements SafetyHubModuleDelegate {
     private static final int INVALID_PASSWORD_COUNT = -1;
     private final Profile mProfile;
-    private final Supplier<ModalDialogManager> mModalDialogManagerSupplier;
+    private final MonotonicObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
     private final SigninAndHistorySyncActivityLauncher mSigninLauncher;
     private final SettingsCustomTabLauncher mSettingsCustomTabLauncher;
 
@@ -48,7 +47,7 @@ public class SafetyHubModuleDelegateImpl implements SafetyHubModuleDelegate {
      */
     public SafetyHubModuleDelegateImpl(
             Profile profile,
-            Supplier<ModalDialogManager> modalDialogManagerSupplier,
+            MonotonicObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
             SigninAndHistorySyncActivityLauncher signinLauncher,
             SettingsCustomTabLauncher settingsCustomTabLauncher) {
         mProfile = profile;
@@ -61,13 +60,19 @@ public class SafetyHubModuleDelegateImpl implements SafetyHubModuleDelegate {
     @Override
     public void showPasswordCheckUi(Context context) {
         SafetyHubUtils.showPasswordCheckUi(
-                context, mProfile, mModalDialogManagerSupplier, mSettingsCustomTabLauncher);
+                context,
+                mProfile,
+                mModalDialogManagerSupplier.asNonNull(),
+                mSettingsCustomTabLauncher);
     }
 
     @Override
     public void showLocalPasswordCheckUi(Context context) {
         SafetyHubUtils.showLocalPasswordCheckUi(
-                context, mProfile, mModalDialogManagerSupplier, mSettingsCustomTabLauncher);
+                context,
+                mProfile,
+                mModalDialogManagerSupplier.asNonNull(),
+                mSettingsCustomTabLauncher);
     }
 
     @Override

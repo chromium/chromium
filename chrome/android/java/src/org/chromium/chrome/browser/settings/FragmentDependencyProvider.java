@@ -186,29 +186,26 @@ public class FragmentDependencyProvider extends FragmentManager.FragmentLifecycl
         if (fragment instanceof AutofillOptionsFragment) {
             AutofillOptionsCoordinator.createFor(
                     (AutofillOptionsFragment) fragment,
-                    (Supplier<@Nullable ModalDialogManager>) mModalDialogManagerSupplier,
+                    mModalDialogManagerSupplier,
                     () -> ApplicationLifetime.terminate(true));
         }
         if (fragment instanceof AutofillCreditCardEditor) {
             ((AutofillCreditCardEditor) fragment)
-                    .setModalDialogManagerSupplier(
-                            (Supplier<@Nullable ModalDialogManager>) mModalDialogManagerSupplier);
+                    .setModalDialogManagerSupplier(mModalDialogManagerSupplier);
         }
         if (fragment instanceof TopicsManageFragment) {
             ((TopicsManageFragment) fragment)
-                    .setModalDialogManagerSupplier(
-                            (Supplier<@Nullable ModalDialogManager>) mModalDialogManagerSupplier);
+                    .setModalDialogManagerSupplier(mModalDialogManagerSupplier);
         }
         if (fragment instanceof AutofillLocalIbanEditor) {
             ((AutofillLocalIbanEditor) fragment)
-                    .setModalDialogManagerSupplier(
-                            (Supplier<@Nullable ModalDialogManager>) mModalDialogManagerSupplier);
+                    .setModalDialogManagerSupplier(mModalDialogManagerSupplier);
         }
         if (fragment instanceof SafetyHubFragment safetyHubFragment) {
             safetyHubFragment.setDelegate(
                     new SafetyHubModuleDelegateImpl(
                             mProfile,
-                            mModalDialogManagerSupplier.asNonNull(),
+                            mModalDialogManagerSupplier,
                             SigninAndHistorySyncActivityLauncherImpl.get(),
                             new SettingsCustomTabLauncherImpl()));
         }

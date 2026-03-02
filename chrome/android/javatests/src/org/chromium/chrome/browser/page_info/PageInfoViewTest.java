@@ -58,7 +58,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterProvider;
 import org.chromium.base.test.params.ParameterSet;
@@ -1301,7 +1301,7 @@ public class PageInfoViewTest {
     @MediumTest
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     public void testBottomGravityTablets() {
-        MonotonicObservableSupplier<ModalDialogManager> modalDialogManagerSupplier =
+        NonNullObservableSupplier<ModalDialogManager> modalDialogManagerSupplier =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             ChromeActivity activity = mActivityTestRule.getActivity();
@@ -1316,7 +1316,7 @@ public class PageInfoViewTest {
                                     browserControlsManager.getTopControlsHeight(),
                                     0,
                                     0);
-                            return activity.getModalDialogManagerSupplier();
+                            return activity.getModalDialogManagerSupplier().asNonNull();
                         });
 
         loadUrlAndOpenPageInfo(

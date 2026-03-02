@@ -88,7 +88,7 @@ public class HistoryActivity extends SnackbarActivity {
                         true,
                         getSnackbarManager(),
                         () -> assertNonNull(mBottomSheetController),
-                        getModalDialogManagerSupplier(),
+                        getModalDialogManagerSupplier().asNonNull(),
                         getActivityResultTracker(),
                         /* Supplier<@Nullable Tab>= */ null,
                         new BrowsingHistoryBridge(profile.getOriginalProfile()),

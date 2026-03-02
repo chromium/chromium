@@ -20,13 +20,11 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 
-import java.util.function.Supplier;
-
 /** Contains the logic to set the state of the model and react to events like clicks. */
 @NullMarked
 public class RestoreTabsDialogMediator extends RestoreTabsMediator {
     private Context mContext;
-    private Supplier<ModalDialogManager> mModalDialogManagerSupplier;
+    private ModalDialogManager mModalDialogManager;
     private PropertyModel mHostDialogModel;
     private RestoreTabsBackPressHandler mBackPressHandler;
 
@@ -44,11 +42,11 @@ public class RestoreTabsDialogMediator extends RestoreTabsMediator {
             Profile profile,
             TabCreatorManager tabCreatorManager,
             Context context,
-            Supplier<ModalDialogManager> modalDialogManagerSupplier) {
+            ModalDialogManager modalDialogManager) {
         super.initialize(model, profile, tabCreatorManager, null);
 
         mContext = context;
-        mModalDialogManagerSupplier = modalDialogManagerSupplier;
+        mModalDialogManager = modalDialogManager;
         mBackPressHandler = new RestoreTabsBackPressHandler(model);
 
         ModalDialogProperties.Controller dialogController =
@@ -104,7 +102,7 @@ public class RestoreTabsDialogMediator extends RestoreTabsMediator {
      * @return True if the request was successful, false otherwise.
      */
     public boolean setVisible(boolean isVisible, View content) {
-        ModalDialogManager dialogManager = mModalDialogManagerSupplier.get();
+        ModalDialogManager dialogManager = mModalDialogManager;
         if (dialogManager == null) return false;
 
         if (isVisible) {

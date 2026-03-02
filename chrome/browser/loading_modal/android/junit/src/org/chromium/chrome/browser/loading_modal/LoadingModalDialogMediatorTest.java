@@ -20,8 +20,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.shadows.ShadowLooper;
 
-import org.chromium.base.supplier.ObservableSuppliers;
-import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -38,16 +36,12 @@ public class LoadingModalDialogMediatorTest {
 
     @Mock private ModalDialogManager mModalDialogManager;
     @Mock private LoadingModalDialogCoordinator.Observer mDialogCoordinatorObserver;
-
-    private final SettableMonotonicObservableSupplier<ModalDialogManager>
-            mModalDialogManagerSupplier = ObservableSuppliers.createMonotonic();
     private LoadingModalDialogMediator mMediator;
     private PropertyModel mModel;
 
     @Before
     public void setUp() {
-        mModalDialogManagerSupplier.set(mModalDialogManager);
-        mMediator = new LoadingModalDialogMediator(mModalDialogManagerSupplier, new Handler());
+        mMediator = new LoadingModalDialogMediator(mModalDialogManager, new Handler());
         mModel =
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                         .with(ModalDialogProperties.CONTROLLER, mMediator)

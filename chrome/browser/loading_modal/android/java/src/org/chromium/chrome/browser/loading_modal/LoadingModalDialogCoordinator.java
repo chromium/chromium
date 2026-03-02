@@ -22,7 +22,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.function.Supplier;
 
 /**
  * Coordinator class for displaying the loading modal dialog. It proxies the communication to the
@@ -84,22 +83,19 @@ public class LoadingModalDialogCoordinator {
     /**
      * Creates the {@link LoadingModalDialogCoordinator}.
      *
-     * @param modalDialogManagerSupplier The supplier of the ModalDialogManager which is going to
-     *         display the dialog.
+     * @param modalDialogManager The ModalDialogManager which is going to display the dialog.
      * @param context The context for accessing resources.
      */
     public static LoadingModalDialogCoordinator create(
-            Supplier<ModalDialogManager> modalDialogManagerSupplier, Context context) {
-        return create(modalDialogManagerSupplier, context, new Handler(Looper.getMainLooper()));
+            ModalDialogManager modalDialogManager, Context context) {
+        return create(modalDialogManager, context, new Handler(Looper.getMainLooper()));
     }
 
     @VisibleForTesting
     static LoadingModalDialogCoordinator create(
-            Supplier<ModalDialogManager> modalDialogManagerSupplier,
-            Context context,
-            Handler handler) {
+            ModalDialogManager modalDialogManager, Context context, Handler handler) {
         LoadingModalDialogMediator dialogMediator =
-                new LoadingModalDialogMediator(modalDialogManagerSupplier, handler);
+                new LoadingModalDialogMediator(modalDialogManager, handler);
         RelativeLayout dialogView =
                 (RelativeLayout) LayoutInflater.from(context).inflate(R.layout.loading_modal, null);
         RelativeLayout buttonsView =

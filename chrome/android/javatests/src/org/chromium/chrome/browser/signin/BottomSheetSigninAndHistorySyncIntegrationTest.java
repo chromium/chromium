@@ -1305,7 +1305,7 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
                                             DeviceLockActivityLauncherImpl.get(),
                                             incognitoProfileSupplier,
                                             this::getBottomSheetController,
-                                            baseActivity.getModalDialogManagerSupplier(),
+                                            baseActivity.getModalDialogManagerSupplier().get(),
                                             baseActivity.getSnackbarManager(),
                                             mSigninAccessPoint);
                     Assert.assertThrows(
@@ -1416,7 +1416,7 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
                                             DeviceLockActivityLauncherImpl.get(),
                                             profileSupplier,
                                             this::getBottomSheetController,
-                                            baseActivity.getModalDialogManagerSupplier(),
+                                            baseActivity.getModalDialogManagerSupplier().get(),
                                             baseActivity.getSnackbarManager(),
                                             mSigninAccessPoint);
                 });

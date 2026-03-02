@@ -84,7 +84,7 @@ public final class SigninAndHistorySyncActivityLauncherImpl
                     DeviceLockActivityLauncher deviceLockActivityLauncher,
                     OneshotSupplier<Profile> profileSupplier,
                     Supplier<BottomSheetController> bottomSheetController,
-                    Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier,
+                    ModalDialogManager modalDialogManager,
                     SnackbarManager snackbarManager,
                     @SigninAccessPoint int signinAccessPoint) {
         return BottomSheetSigninAndHistorySyncCoordinator.createAndObserveAddAccountResult(
@@ -95,7 +95,7 @@ public final class SigninAndHistorySyncActivityLauncherImpl
                 deviceLockActivityLauncher,
                 profileSupplier,
                 bottomSheetController,
-                modalDialogManagerSupplier,
+                modalDialogManager,
                 snackbarManager,
                 signinAccessPoint);
     }

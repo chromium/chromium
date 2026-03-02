@@ -38,6 +38,7 @@ import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
@@ -147,6 +148,7 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
     @Mock private EdgeToEdgeManager mEdgeToEdgeManager;
     @Mock private IdentityServicesProvider mIdentityServicesProvider;
     @Mock private DesktopWindowStateManager mDesktopWindowStateManager;
+    @Mock private ModalDialogManager mModalDialogManager;
     @Mock private IdentityManager mIdentityManager;
     @Mock private Supplier<BrowserServicesThemeColorProvider> mBrowserServicesColorProviderSupplier;
 
@@ -162,8 +164,8 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
             ObservableSuppliers.alwaysNull();
     private final MonotonicObservableSupplier<TabModelSelector> mTabModelSelectorSupplier =
             ObservableSuppliers.alwaysNull();
-    private final MonotonicObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier =
-            ObservableSuppliers.alwaysNull();
+    private final NonNullObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier =
+            ObservableSuppliers.createNonNull(mModalDialogManager);
     private final MonotonicObservableSupplier<CompositorViewHolder> mCompositorViewHolderSupplier =
             ObservableSuppliers.alwaysNull();
     private final SettableMonotonicObservableSupplier<EdgeToEdgeController>

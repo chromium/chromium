@@ -97,7 +97,6 @@ import org.chromium.ui.test.util.ViewUtils;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Supplier;
 
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
@@ -166,7 +165,7 @@ public class SigninPromoCoordinatorTest {
     private @Mock SigninAndHistorySyncActivityLauncher mLauncher;
     private @Mock BottomSheetSigninAndHistorySyncCoordinator mCoordinator;
     private @Mock BottomSheetController mBottomSheetController;
-    private @Mock Supplier<ModalDialogManager> mModalDialogManagerSupplier;
+    private @Mock ModalDialogManager mModalDialogManager;
     private @Mock SnackbarManager mSnackbarManager;
     private @Mock DeviceLockActivityLauncher mDeviceLockActivityLauncher;
     private @Mock Runnable mOnPromoStateChange;
@@ -1192,7 +1191,7 @@ public class SigninPromoCoordinatorTest {
                                     mActivityResultTracker,
                                     mLauncher,
                                     SupplierUtils.of(mBottomSheetController),
-                                    mModalDialogManagerSupplier,
+                                    mModalDialogManager,
                                     mSnackbarManager,
                                     mDeviceLockActivityLauncher,
                                     mDelegate);

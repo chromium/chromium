@@ -456,7 +456,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             @NonNull MonotonicObservableSupplier<LayoutManagerImpl> layoutManagerSupplier,
             @NonNull MenuOrKeyboardActionController menuOrKeyboardActionController,
             @NonNull Supplier<Integer> activityThemeColorSupplier,
-            @NonNull MonotonicObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
+            @NonNull NonNullObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
             @NonNull AppMenuBlocker appMenuBlocker,
             @NonNull BooleanSupplier supportsAppMenuSupplier,
             @NonNull BooleanSupplier supportsFindInPage,
@@ -2058,7 +2058,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         return AppLanguagePromoDialog.maybeShowPrompt(
                 mActivity,
                 profile,
-                mModalDialogManagerSupplier.asNonNull().get(),
+                mModalDialogManagerSupplier.get(),
                 () -> ApplicationLifetime.terminate(true));
     }
 

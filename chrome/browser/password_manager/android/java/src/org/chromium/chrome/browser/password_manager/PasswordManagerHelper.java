@@ -108,8 +108,8 @@ public class PasswordManagerHelper {
      *
      * @param context used to show the UI to manage passwords.
      * @param referrer indicates where the request to show the password settings UI comes from.
-     * @param modalDialogManagerSupplier provides a {@link ModalDialogManager}. Used to show error
-     *     modal dialogs or a loading dialog if opening the UI takes too long.
+     * @param modalDialogManager The {@link ModalDialogManager}. Used to show error modal dialogs or
+     *     a loading dialog if opening the UI takes too long.
      * @param managePasskeys indicates whether passkey management is needed, which when true will
      *     attempt to launch the credential manager even without syncing enabled.
      * @param account the account for which to open the UI. An empty or null account signals that
@@ -120,7 +120,7 @@ public class PasswordManagerHelper {
     public void showPasswordSettings(
             Context context,
             @ManagePasswordsReferrer int referrer,
-            Supplier<ModalDialogManager> modalDialogManagerSupplier,
+            ModalDialogManager modalDialogManager,
             boolean managePasskeys,
             @Nullable String account,
             SettingsCustomTabLauncher settingsCustomTabLauncher) {
@@ -131,9 +131,9 @@ public class PasswordManagerHelper {
         SyncService syncService = SyncServiceFactory.getForProfile(mProfile);
 
         if (!showPwmUnavailableOrDownloadCsvDialog(
-                context, modalDialogManagerSupplier.get(), settingsCustomTabLauncher)) {
+                context, modalDialogManager, settingsCustomTabLauncher)) {
             LoadingModalDialogCoordinator loadingDialogCoordinator =
-                    LoadingModalDialogCoordinator.create(modalDialogManagerSupplier, context);
+                    LoadingModalDialogCoordinator.create(modalDialogManager, context);
             launchTheCredentialManager(referrer, syncService, loadingDialogCoordinator, account);
         }
     }
@@ -197,8 +197,7 @@ public class PasswordManagerHelper {
      *
      * @param context used to show the loading dialog.
      * @param referrer the place that requested to show the UI.
-     * @param modalDialogManagerSupplier The supplier of the ModalDialogManager to be used by
-     *     loading dialog.
+     * @param modalDialogManager The {@link ModalDialogManager} to be used by loading dialog.
      * @param accountEmail is the email of the account syncing passwords. If it's empty, the checkup
      *     for local will show. The purpose of this is to enable showing the checkup for local
      *     storage if the password checkup is launched from the leak detection dialog and the leaked
@@ -214,7 +213,7 @@ public class PasswordManagerHelper {
             @Nullable SettingsCustomTabLauncher settingsCustomTabLauncher) {
         assert accountEmail == null || !accountEmail.isEmpty();
         LoadingModalDialogCoordinator loadingDialogCoordinator =
-                LoadingModalDialogCoordinator.create(modalDialogManagerSupplier, context);
+                LoadingModalDialogCoordinator.create(modalDialogManagerSupplier.get(), context);
 
         launchPasswordCheckup(
                 referrer,

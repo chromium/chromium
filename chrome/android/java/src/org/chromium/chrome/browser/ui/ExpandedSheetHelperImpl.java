@@ -12,8 +12,6 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.util.TokenHolder;
 
-import java.util.function.Supplier;
-
 /**
  * Handles interaction with other UI's when a bottom sheet goes in and out of expanded mode:
  *
@@ -37,10 +35,10 @@ public class ExpandedSheetHelperImpl implements ExpandedSheetHelper {
     private TabObscuringHandler.@Nullable Token mTabObscuringToken;
 
     /** A supplier of the activity's dialog manager. */
-    private final Supplier<ModalDialogManager> mDialogManager;
+    private final ModalDialogManager mDialogManager;
 
     public ExpandedSheetHelperImpl(
-            Supplier<ModalDialogManager> dialogManager, TabObscuringHandler tabObscuringHandler) {
+            ModalDialogManager dialogManager, TabObscuringHandler tabObscuringHandler) {
         mDialogManager = dialogManager;
         mTabObscuringHandler = tabObscuringHandler;
     }
@@ -55,10 +53,8 @@ public class ExpandedSheetHelperImpl implements ExpandedSheetHelper {
 
         assert mAppModalToken == TokenHolder.INVALID_TOKEN;
         assert mTabModalToken == TokenHolder.INVALID_TOKEN;
-        if (mDialogManager.get() != null) {
-            mAppModalToken = mDialogManager.get().suspendType(ModalDialogType.APP);
-            mTabModalToken = mDialogManager.get().suspendType(ModalDialogType.TAB);
-        }
+        mAppModalToken = mDialogManager.suspendType(ModalDialogType.APP);
+        mTabModalToken = mDialogManager.suspendType(ModalDialogType.TAB);
     }
 
     /**
@@ -70,14 +66,13 @@ public class ExpandedSheetHelperImpl implements ExpandedSheetHelper {
         setIsObscuringAllTabs(false);
 
         // Tokens can be invalid if the sheet has a custom lifecycle.
-        if (mDialogManager.get() != null
-                && (mAppModalToken != TokenHolder.INVALID_TOKEN
-                        || mTabModalToken != TokenHolder.INVALID_TOKEN)) {
+        if (mAppModalToken != TokenHolder.INVALID_TOKEN
+                || mTabModalToken != TokenHolder.INVALID_TOKEN) {
             // If one modal dialog token is set, the other should be as well.
             assert mAppModalToken != TokenHolder.INVALID_TOKEN
                     && mTabModalToken != TokenHolder.INVALID_TOKEN;
-            mDialogManager.get().resumeType(ModalDialogManager.ModalDialogType.APP, mAppModalToken);
-            mDialogManager.get().resumeType(ModalDialogManager.ModalDialogType.TAB, mTabModalToken);
+            mDialogManager.resumeType(ModalDialogManager.ModalDialogType.APP, mAppModalToken);
+            mDialogManager.resumeType(ModalDialogManager.ModalDialogType.TAB, mTabModalToken);
         }
         mAppModalToken = TokenHolder.INVALID_TOKEN;
         mTabModalToken = TokenHolder.INVALID_TOKEN;

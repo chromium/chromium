@@ -241,7 +241,7 @@ public final class FeedActionDelegateImplTest {
                 mMockSigninAndHistorySyncActivityLauncher,
                 mDeviceLockActivityLauncher,
                 mMockSnackbarManager,
-                () -> mModalDialogManager,
+                mModalDialogManager,
                 mMockNavigationDelegate,
                 mMockBookmarkModel,
                 mTabModelSelector,

@@ -19,8 +19,6 @@ import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modaldialog.ModalDialogProperties.ButtonType;
 import org.chromium.ui.modelutil.PropertyModel;
 
-import java.util.function.Supplier;
-
 /**
  * Mediator class responsible for handling button clicks and controlling the dialog state.
  *
@@ -36,11 +34,10 @@ class LoadingModalDialogMediator
     private static final long LOAD_TIMEOUT_MS = 4500L;
 
     private final Handler mHandler;
-    private final Supplier<ModalDialogManager> mDialogManagerSupplier;
     private final ObserverList<LoadingModalDialogCoordinator.Observer> mObservers =
             new ObserverList<>();
 
-    private @Nullable ModalDialogManager mDialogManager;
+    private final ModalDialogManager mDialogManager;
     private @Nullable PropertyModel mModel;
 
     private long mShownAtMs;
@@ -60,7 +57,6 @@ class LoadingModalDialogMediator
 
     @Override
     public void onDismiss(PropertyModel model, @DialogDismissalCause int dismissalCause) {
-        assumeNonNull(mDialogManager);
         mDialogManager.removeObserver(this);
         mHandler.removeCallbacksAndMessages(null);
         mState = getFinalStateByDismissalCause(dismissalCause);
@@ -91,11 +87,10 @@ class LoadingModalDialogMediator
         if (!mDisableTimeout) postDelayed(this::onTimeoutOccurred, LOAD_TIMEOUT_MS);
     }
 
-    LoadingModalDialogMediator(
-            Supplier<ModalDialogManager> dialogManagerSupplier, Handler handler) {
-        assert dialogManagerSupplier != null;
+    LoadingModalDialogMediator(ModalDialogManager dialogManager, Handler handler) {
+        assert dialogManager != null;
         assert handler != null;
-        mDialogManagerSupplier = dialogManagerSupplier;
+        mDialogManager = dialogManager;
         mState = LoadingModalDialogCoordinator.State.READY;
         mHandler = handler;
     }
@@ -111,16 +106,14 @@ class LoadingModalDialogMediator
     }
 
     /**
-     * Schedules the dialog to be shown after {@link #SHOW_DELAY_TIME_MS} milliseconds.
-     * The dialog will not be shown if {@link #dismiss()} called before it become visible.
+     * Schedules the dialog to be shown after {@link #SHOW_DELAY_TIME_MS} milliseconds. The dialog
+     * will not be shown if {@link #dismiss()} called before it become visible.
      *
      * @param model The {@link PropertyModel} describing the dialog to be shown.
-     *
      */
     void show(PropertyModel model) {
         assert mState == LoadingModalDialogCoordinator.State.READY;
 
-        mDialogManager = mDialogManagerSupplier.get();
         mModel = model;
         mState = LoadingModalDialogCoordinator.State.PENDING;
         postDelayed(mShowingTask, SHOW_DELAY_TIME_MS);
@@ -197,7 +190,6 @@ class LoadingModalDialogMediator
     /** Immediately shows the dialog. */
     private void showDialogImmediately() {
         assert mState == LoadingModalDialogCoordinator.State.PENDING;
-        assumeNonNull(mDialogManager);
         assumeNonNull(mModel);
         mDialogManager.addObserver(this);
         mDialogManager.showDialog(mModel, ModalDialogManager.ModalDialogType.TAB);
@@ -210,7 +202,6 @@ class LoadingModalDialogMediator
      *     dismissed.
      */
     private void dismissDialogWithCause(@DialogDismissalCause int dismissalCause) {
-        assumeNonNull(mDialogManager);
         assumeNonNull(mModel);
         assert isImmediatelyDismissable();
         mDialogManager.dismissDialog(mModel, dismissalCause);

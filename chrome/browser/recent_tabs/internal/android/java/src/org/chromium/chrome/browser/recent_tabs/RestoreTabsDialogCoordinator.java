@@ -19,7 +19,6 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.List;
-import java.util.function.Supplier;
 
 /** Coordinator to manage the Restore Tabs on FRE feature. */
 @NullMarked
@@ -34,13 +33,13 @@ public class RestoreTabsDialogCoordinator {
             Context context,
             Profile profile,
             TabCreatorManager tabCreatorManager,
-            Supplier<ModalDialogManager> modalDialogManagerSupplier) {
+            ModalDialogManager modalDialogManager) {
         this(
                 context,
                 profile,
                 new RestoreTabsDialogMediator(),
                 tabCreatorManager,
-                modalDialogManagerSupplier);
+                modalDialogManager);
     }
 
     protected RestoreTabsDialogCoordinator(
@@ -48,10 +47,9 @@ public class RestoreTabsDialogCoordinator {
             Profile profile,
             RestoreTabsDialogMediator mediator,
             TabCreatorManager tabCreatorManager,
-            Supplier<ModalDialogManager> modalDialogManagerSupplier) {
+            ModalDialogManager modalDialogManager) {
         mMediator = mediator;
-        mMediator.initialize(
-                mModel, profile, tabCreatorManager, context, modalDialogManagerSupplier);
+        mMediator.initialize(mModel, profile, tabCreatorManager, context, modalDialogManager);
 
         View rootView =
                 LayoutInflater.from(context)

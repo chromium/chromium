@@ -13,7 +13,6 @@ import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.List;
-import java.util.function.Supplier;
 
 /** Controller for accessing helper functions for the singleton factory instance. */
 @NullMarked
@@ -24,10 +23,10 @@ public class RestoreTabsDialogControllerImpl implements RestoreTabsController {
             Context context,
             Profile profile,
             TabCreatorManager tabCreatorManager,
-            Supplier<ModalDialogManager> modalDialogManagerSupplier) {
+            ModalDialogManager modalDialogManager) {
         mRestoreTabsDialogCoordinator =
                 new RestoreTabsDialogCoordinator(
-                        context, profile, tabCreatorManager, modalDialogManagerSupplier);
+                        context, profile, tabCreatorManager, modalDialogManager);
     }
 
     @Override

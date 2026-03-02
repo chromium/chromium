@@ -75,7 +75,7 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
     private final TabCreatorManager mTabCreatorManager;
     private final Supplier<TabModelSelector> mTabModelSelectorSupplier;
     private final Supplier<@Nullable CompositorViewHolder> mCompositorViewHolderSupplier;
-    private final Supplier<@Nullable ModalDialogManager> mModalDialogManagerSupplier;
+    private final Supplier<ModalDialogManager> mModalDialogManagerSupplier;
     private final Supplier<SnackbarManager> mSnackbarManagerSupplier;
     private final ActivityResultTracker mActivityResultTracker;
     private final MonotonicObservableSupplier<TabContentManager> mTabContentManagerSupplier;
@@ -109,7 +109,7 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
             TabCreatorManager tabCreatorManager,
             Supplier<TabModelSelector> tabModelSelectorSupplier,
             Supplier<@Nullable CompositorViewHolder> compositorViewHolderSupplier,
-            Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier,
+            Supplier<ModalDialogManager> modalDialogManagerSupplier,
             Supplier<SnackbarManager> snackbarManagerSupplier,
             ActivityResultTracker activityResultTracker,
             BrowserControlsManager browserControlsManager,
@@ -173,7 +173,7 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
                 mTabCreatorManager,
                 mTabModelSelectorSupplier,
                 mCompositorViewHolderSupplier,
-                mModalDialogManagerSupplier,
+                (Supplier<@Nullable ModalDialogManager>) mModalDialogManagerSupplier,
                 mExclusiveAccessManager);
     }
 

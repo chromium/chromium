@@ -399,7 +399,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
                         getLayoutManagerSupplier(),
                         /* menuOrKeyboardActionController= */ this,
                         this::getActivityThemeColor,
-                        getModalDialogManagerSupplier(),
+                        getModalDialogManagerSupplier().asNonNull(),
                         /* appMenuBlocker= */ this,
                         this::supportsAppMenu,
                         this::supportsFindInPage,

@@ -240,7 +240,7 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
      * @param selectionDelegate A class responsible for handling list item selection, null for
      *     unselectable items.
      * @param bottomSheetController Supplier of the {@link BottomSheetController}.
-     * @param modalDialogManagerSupplier Supplies the {@link ModalDialogManager}.
+     * @param modalDialogManagerSupplier Supplier of the {@link ModalDialogManager}.
      * @param snackbarManager The {@link SnackbarManager} used to display snackbars.
      * @param activityResultTracker Tracker of activity results.
      * @param tabSupplier Supplies the current tab, null if the history UI will be shown in a
@@ -267,7 +267,7 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
             boolean shouldShowClearDataIfAvailable,
             SelectionDelegate<HistoryItem> selectionDelegate,
             Supplier<BottomSheetController> bottomSheetController,
-            Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier,
+            Supplier<ModalDialogManager> modalDialogManagerSupplier,
             SnackbarManager snackbarManager,
             ActivityResultTracker activityResultTracker,
             @Nullable Supplier<@Nullable Tab> tabSupplier,
@@ -320,7 +320,7 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
             @Nullable String hostName,
             @Nullable SelectionDelegate<HistoryItem> selectionDelegate,
             @Nullable Supplier<BottomSheetController> bottomSheetControllerSupplier,
-            @Nullable Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier,
+            @Nullable Supplier<ModalDialogManager> modalDialogManagerSupplier,
             @Nullable SnackbarManager snackbarManager,
             @Nullable ActivityResultTracker activityResultTracker,
             @Nullable Supplier<@Nullable Tab> tabSupplier,
@@ -383,7 +383,7 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
                             assumeNonNull(activityResultTracker),
                             SigninAndHistorySyncActivityLauncherImpl.get(),
                             assertNonNull(bottomSheetControllerSupplier),
-                            assumeNonNull(modalDialogManagerSupplier),
+                            assumeNonNull(modalDialogManagerSupplier).get(),
                             assumeNonNull(snackbarManager),
                             DeviceLockActivityLauncherImpl.get(),
                             new HistoryPageSigninPromoDelegate(

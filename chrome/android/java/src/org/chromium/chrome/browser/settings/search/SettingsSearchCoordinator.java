@@ -1185,7 +1185,11 @@ public class SettingsSearchCoordinator
         KeyboardUtils.hideAndroidSoftKeyboard(queryEdit);
         if (preferenceFragment == null) {
             if (MainSettings.openSearchResult(
-                    mActivity, mProfile, key, extras, mModalDialogManagerSupplier.asNonNull())) {
+                    mActivity,
+                    mProfile,
+                    key,
+                    extras,
+                    mModalDialogManagerSupplier.asNonNull().get())) {
                 enterResultState();
             }
             return;

@@ -28,6 +28,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -40,8 +41,6 @@ import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
-import java.util.function.Supplier;
-
 /** Tests {@link SafetyHubModuleDelegate} */
 @RunWith(BaseRobolectricTestRunner.class)
 @Batch(Batch.PER_CLASS)
@@ -49,7 +48,6 @@ public class SafetyHubModuleDelegateTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public SafetyHubTestRule mSafetyHubTestRule = new SafetyHubTestRule();
 
-    @Mock private Supplier<ModalDialogManager> mModalDialogManagerSupplier;
     @Mock private SigninAndHistorySyncActivityLauncher mSigninLauncher;
     @Mock private Intent mSigninIntent;
     @Mock private Context mContext;
@@ -71,12 +69,11 @@ public class SafetyHubModuleDelegateTest {
                 new ModalDialogManager(
                         mock(ModalDialogManager.Presenter.class),
                         ModalDialogManager.ModalDialogType.APP);
-        when(mModalDialogManagerSupplier.get()).thenReturn(modalDialogManager);
 
         mSafetyHubModuleDelegate =
                 new SafetyHubModuleDelegateImpl(
                         mProfile,
-                        mModalDialogManagerSupplier,
+                        ObservableSuppliers.createMonotonic(modalDialogManager),
                         mSigninLauncher,
                         mSettingsCustomTabLauncher);
     }

@@ -22,8 +22,6 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
-import java.util.function.Supplier;
-
 /** Bridge between Java and native PasswordManager code. */
 @NullMarked
 public class PasswordManagerLauncher {
@@ -35,14 +33,14 @@ public class PasswordManagerLauncher {
      * @param context current activity context
      * @param profile the {@link Profile} associated with the passwords.
      * @param referrer specifies on whose behalf the PasswordManager will be opened
-     * @param modalDialogManagerSupplier ModalDialogManager supplier to be used by loading dialog.
+     * @param modalDialogManager The {@link ModalDialogManager} to be used by loading dialog.
      * @param managePasskeys the content to be managed
      */
     public static void showPasswordSettings(
             Context context,
             Profile profile,
             @ManagePasswordsReferrer int referrer,
-            Supplier<ModalDialogManager> modalDialogManagerSupplier,
+            ModalDialogManager modalDialogManager,
             boolean managePasskeys) {
         assert profile != null;
         Profile originalProfile = profile.getOriginalProfile();
@@ -55,7 +53,7 @@ public class PasswordManagerLauncher {
                 .showPasswordSettings(
                         context,
                         referrer,
-                        modalDialogManagerSupplier,
+                        modalDialogManager,
                         managePasskeys,
                         account,
                         new SettingsCustomTabLauncherImpl());
@@ -74,7 +72,7 @@ public class PasswordManagerLauncher {
                 context,
                 Profile.fromWebContents(webContents),
                 referrer,
-                () -> assertNonNull(window.getModalDialogManager()),
+                assertNonNull(window.getModalDialogManager()),
                 managePasskeys);
     }
 }

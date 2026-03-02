@@ -49,7 +49,6 @@ import org.chromium.url.JUnitTestGURLs;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Supplier;
 
 /** Tests for RestoreTabsDialogMediator. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -76,11 +75,9 @@ public class RestoreTabsDialogMediatorUnitTest {
     public void setUp() {
         DeviceInfo.setIsXrForTesting(true);
         TrackerFactory.setTrackerForTests(mTracker);
-        Supplier<ModalDialogManager> modalDialogManagerSupplier = () -> mModalDialogManager;
         when(mContext.getString(R.string.restore_tabs_content_description))
                 .thenReturn(TEST_CONTENT_DESRIPTION);
-        mMediator.initialize(
-                mModel, mProfile, mTabCreatorManager, mContext, modalDialogManagerSupplier);
+        mMediator.initialize(mModel, mProfile, mTabCreatorManager, mContext, mModalDialogManager);
         mDialogModel = mMediator.getHostDialogModelForTesting();
     }
 

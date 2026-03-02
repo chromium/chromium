@@ -54,7 +54,7 @@ public class HistoryPage extends BasicNativePage {
             NativePageHost host,
             SnackbarManager snackbarManager,
             BottomSheetController bottomSheetController,
-            Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier,
+            Supplier<ModalDialogManager> modalDialogManagerSupplier,
             ActivityResultTracker activityResultTracker,
             Supplier<@Nullable Tab> tabSupplier,
             String url,

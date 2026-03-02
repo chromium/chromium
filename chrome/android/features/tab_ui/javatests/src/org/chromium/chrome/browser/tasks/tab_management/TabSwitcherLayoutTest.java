@@ -71,7 +71,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.Token;
-import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -139,7 +139,7 @@ public class TabSwitcherLayoutTest {
     private final List<WeakReference<Bitmap>> mAllBitmaps = new ArrayList<>();
     private final Callback<Bitmap> mBitmapListener =
             (bitmap) -> mAllBitmaps.add(new WeakReference<>(bitmap));
-    private MonotonicObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
+    private NonNullObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
     private RegularNewTabPageStation mNtp;
 
     @Before
@@ -157,7 +157,8 @@ public class TabSwitcherLayoutTest {
 
         CriteriaHelper.pollUiThread(cta.getTabModelSelector()::isTabStateInitialized);
         mModalDialogManagerSupplier =
-                ThreadUtils.runOnUiThreadBlocking(cta::getModalDialogManagerSupplier);
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> cta.getModalDialogManagerSupplier().asNonNull());
     }
 
     @After

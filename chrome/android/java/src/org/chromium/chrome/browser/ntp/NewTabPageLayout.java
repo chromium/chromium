@@ -115,7 +115,7 @@ public class NewTabPageLayout extends LinearLayout
     private Profile mProfile;
     private ActivityResultTracker mActivityResultTracker;
     private BottomSheetController mBottomSheetController;
-    private Supplier<@Nullable ModalDialogManager> mModalDialogManagerSupplier;
+    private ModalDialogManager mModalDialogManager;
     private SnackbarManager mSnackbarManager;
     private UiConfig mUiConfig;
     private @Nullable DisplayStyleObserver mDisplayStyleObserver;
@@ -264,7 +264,7 @@ public class NewTabPageLayout extends LinearLayout
             WindowAndroid windowAndroid,
             ActivityResultTracker activityResultTracker,
             BottomSheetController bottomSheetController,
-            Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier,
+            ModalDialogManager modalDialogManager,
             SnackbarManager snackbarManager,
             boolean isTablet,
             Supplier<Integer> tabStripHeightSupplier,
@@ -278,7 +278,7 @@ public class NewTabPageLayout extends LinearLayout
         mWindowAndroid = windowAndroid;
         mActivityResultTracker = activityResultTracker;
         mBottomSheetController = bottomSheetController;
-        mModalDialogManagerSupplier = modalDialogManagerSupplier;
+        mModalDialogManager = modalDialogManager;
         mSnackbarManager = snackbarManager;
         mIsTablet = isTablet;
         mTabStripHeightSupplier = tabStripHeightSupplier;
@@ -679,7 +679,7 @@ public class NewTabPageLayout extends LinearLayout
                         mActivityResultTracker,
                         SigninAndHistorySyncActivityLauncherImpl.get(),
                         mBottomSheetController,
-                        mModalDialogManagerSupplier,
+                        mModalDialogManager,
                         mSnackbarManager,
                         DeviceLockActivityLauncherImpl.get(),
                         signinPromoViewContainerStub,

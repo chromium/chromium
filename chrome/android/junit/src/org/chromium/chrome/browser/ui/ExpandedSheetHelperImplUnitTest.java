@@ -37,7 +37,7 @@ public class ExpandedSheetHelperImplUnitTest {
     @Before
     public void setUp() {
         mExpandedSheetHelperImpl =
-                new ExpandedSheetHelperImpl(() -> mModalDialogManager, mTabObscuringHandler);
+                new ExpandedSheetHelperImpl(mModalDialogManager, mTabObscuringHandler);
     }
 
     @Test

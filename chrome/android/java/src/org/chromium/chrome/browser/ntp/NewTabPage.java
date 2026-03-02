@@ -406,7 +406,7 @@ public class NewTabPage
      * @param browserControlsStateProvider {@link BrowserControlsStateProvider} to observe for
      *     offset changes.
      * @param activityTabProvider Provides the current active tab.
-     * @param modalDialogManagerSupplier Supplies the {@link ModalDialogManager}.
+     * @param modalDialogManager The {@link ModalDialogManager}.
      * @param snackbarManager {@link SnackbarManager} object.
      * @param lifecycleDispatcher Activity lifecycle dispatcher.
      * @param tabModelSelector {@link TabModelSelector} object.
@@ -434,7 +434,7 @@ public class NewTabPage
             Activity activity,
             BrowserControlsStateProvider browserControlsStateProvider,
             Supplier<@Nullable Tab> activityTabProvider,
-            Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier,
+            ModalDialogManager modalDialogManager,
             SnackbarManager snackbarManager,
             ActivityLifecycleDispatcher lifecycleDispatcher,
             TabModelSelector tabModelSelector,
@@ -552,7 +552,7 @@ public class NewTabPage
                 snackbarManager,
                 isInNightMode,
                 shareDelegateSupplier,
-                modalDialogManagerSupplier,
+                modalDialogManager,
                 url,
                 edgeToEdgeControllerSupplier,
                 startupMetricsTracker);
@@ -616,7 +616,7 @@ public class NewTabPage
                 windowAndroid,
                 activityResultTracker,
                 bottomSheetController,
-                modalDialogManagerSupplier,
+                modalDialogManager,
                 snackbarManager,
                 mIsTablet,
                 mTabStripHeightSupplier,
@@ -651,7 +651,7 @@ public class NewTabPage
             SnackbarManager snackbarManager,
             boolean isInNightMode,
             Supplier<@Nullable ShareDelegate> shareDelegateSupplier,
-            Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier,
+            ModalDialogManager modalDialogManager,
             String url,
             MonotonicObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
             StartupMetricsTracker startupMetricsTracker) {
@@ -671,7 +671,7 @@ public class NewTabPage
                                 SigninAndHistorySyncActivityLauncherImpl.get(),
                                 DeviceLockActivityLauncherImpl.get(),
                                 snackbarManager,
-                                modalDialogManagerSupplier,
+                                modalDialogManager,
                                 mNewTabPageManager.getNavigationDelegate(),
                                 BookmarkModel.getForProfile(profile),
                                 mTabModelSelector,

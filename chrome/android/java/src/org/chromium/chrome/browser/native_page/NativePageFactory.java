@@ -87,7 +87,7 @@ public class NativePageFactory {
     private final BottomSheetController mBottomSheetController;
     private final BrowserControlsManager mBrowserControlsManager;
     private final Supplier<@Nullable Tab> mCurrentTabSupplier;
-    private final Supplier<@Nullable ModalDialogManager> mModalDialogManagerSupplier;
+    private final Supplier<ModalDialogManager> mModalDialogManagerSupplier;
     private final Supplier<SnackbarManager> mSnackbarManagerSupplier;
     private final ActivityLifecycleDispatcher mLifecycleDispatcher;
     private final TabModelSelector mTabModelSelector;
@@ -115,7 +115,7 @@ public class NativePageFactory {
             BottomSheetController sheetController,
             BrowserControlsManager browserControlsManager,
             Supplier<@Nullable Tab> currentTabSupplier,
-            Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier,
+            Supplier<ModalDialogManager> modalDialogManagerSupplier,
             Supplier<SnackbarManager> snackbarManagerSupplier,
             ActivityLifecycleDispatcher lifecycleDispatcher,
             TabModelSelector tabModelSelector,
@@ -203,7 +203,7 @@ public class NativePageFactory {
         private final Supplier<NewTabPageCreationTracker> mNewTabPageCreationTracker;
         private final BrowserControlsManager mBrowserControlsManager;
         private final Supplier<@Nullable Tab> mCurrentTabSupplier;
-        private final Supplier<@Nullable ModalDialogManager> mModalDialogManagerSupplier;
+        private final Supplier<ModalDialogManager> mModalDialogManagerSupplier;
         private final Supplier<SnackbarManager> mSnackbarManagerSupplier;
         private final ActivityLifecycleDispatcher mLifecycleDispatcher;
         private final TabModelSelector mTabModelSelector;
@@ -229,7 +229,7 @@ public class NativePageFactory {
                 BottomSheetController sheetController,
                 BrowserControlsManager browserControlsManager,
                 Supplier<@Nullable Tab> currentTabSupplier,
-                Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier,
+                Supplier<ModalDialogManager> modalDialogManagerSupplier,
                 Supplier<SnackbarManager> snackbarManagerSupplier,
                 ActivityLifecycleDispatcher lifecycleDispatcher,
                 TabModelSelector tabModelSelector,
@@ -292,7 +292,7 @@ public class NativePageFactory {
                     mActivity,
                     mBrowserControlsManager,
                     mCurrentTabSupplier,
-                    mModalDialogManagerSupplier,
+                    mModalDialogManagerSupplier.get(),
                     mSnackbarManagerSupplier.get(),
                     mLifecycleDispatcher,
                     mTabModelSelector,

@@ -479,7 +479,7 @@ class SafetyCheckMediator {
                         mPasswordManagerHelper.showPasswordSettings(
                                 p.getContext(),
                                 ManagePasswordsReferrer.SAFETY_CHECK,
-                                mModalDialogManagerSupplier.asNonNull(),
+                                mModalDialogManagerSupplier.asNonNull().get(),
                                 /* managePasskeys= */ false,
                                 account,
                                 mSettingsCustomTabLauncher);

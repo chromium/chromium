@@ -13,6 +13,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
@@ -77,7 +78,7 @@ public class AdaptiveToolbarUiCoordinator {
     // refactored.
     private final Activity mActivity;
     private final ActivityTabProvider mActivityTabProvider;
-    private final Supplier<ModalDialogManager> mModalDialogManagerSupplier;
+    private final NonNullObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
 
     private List<ButtonDataProvider> mButtonDataProviders;
     private CurrentTabPriceTrackingStateSupplier mCurrentTabPriceTrackingStateSupplier;
@@ -100,7 +101,7 @@ public class AdaptiveToolbarUiCoordinator {
     public AdaptiveToolbarUiCoordinator(
             Activity activity,
             ActivityTabProvider activityTabProvider,
-            Supplier<ModalDialogManager> modalDialogManagerSupplier) {
+            NonNullObservableSupplier<ModalDialogManager> modalDialogManagerSupplier) {
         mContext = activity;
         mActivity = activity;
         mActivityTabProvider = activityTabProvider;
@@ -252,7 +253,7 @@ public class AdaptiveToolbarUiCoordinator {
                             deviceLockActivityLauncher,
                             profileSupplier,
                             bottomSheetController,
-                            (Supplier<@Nullable ModalDialogManager>) mModalDialogManagerSupplier,
+                            mModalDialogManagerSupplier.get(),
                             snackbarManagerSupplier.get());
             mButtonDataProviders = List.of(identityDiscController, adaptiveToolbarButtonController);
         }

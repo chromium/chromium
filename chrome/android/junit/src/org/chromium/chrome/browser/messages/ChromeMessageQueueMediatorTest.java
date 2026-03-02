@@ -30,7 +30,6 @@ import org.chromium.base.CallbackUtils;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
-import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
@@ -91,8 +90,8 @@ public class ChromeMessageQueueMediatorTest {
     private void initMediator() {
         OneshotSupplierImpl<LayoutStateProvider> layoutStateProviderOneShotSupplier =
                 new OneshotSupplierImpl<>();
-        SettableMonotonicObservableSupplier<ModalDialogManager> modalDialogManagerSupplier =
-                ObservableSuppliers.createMonotonic();
+        SettableNonNullObservableSupplier<ModalDialogManager> modalDialogManagerSupplier =
+                ObservableSuppliers.createNonNull(mModalDialogManager);
         mMediator =
                 new ChromeMessageQueueMediator(
                         mBrowserControlsManager,
@@ -154,8 +153,8 @@ public class ChromeMessageQueueMediatorTest {
         when(mBrowserControlsManager.getBrowserControlHiddenRatio()).thenReturn(0.5f);
         OneshotSupplierImpl<LayoutStateProvider> layoutStateProviderOneShotSupplier =
                 new OneshotSupplierImpl<>();
-        SettableMonotonicObservableSupplier<ModalDialogManager> modalDialogManagerSupplier =
-                ObservableSuppliers.createMonotonic();
+        SettableNonNullObservableSupplier<ModalDialogManager> modalDialogManagerSupplier =
+                ObservableSuppliers.createNonNull(mModalDialogManager);
         final ArgumentCaptor<ChromeMessageQueueMediator.BrowserControlsObserver>
                 observerArgumentCaptor =
                         ArgumentCaptor.forClass(
@@ -276,8 +275,8 @@ public class ChromeMessageQueueMediatorTest {
     public void testThrowNothingWhenModalDialogManagerIsNull() {
         OneshotSupplierImpl<LayoutStateProvider> layoutStateProviderOneShotSupplier =
                 new OneshotSupplierImpl<>();
-        SettableMonotonicObservableSupplier<ModalDialogManager> modalDialogManagerSupplier =
-                ObservableSuppliers.createMonotonic();
+        SettableNonNullObservableSupplier<ModalDialogManager> modalDialogManagerSupplier =
+                ObservableSuppliers.createNonNull(mModalDialogManager);
         mMediator =
                 new ChromeMessageQueueMediator(
                         mBrowserControlsManager,
@@ -298,8 +297,8 @@ public class ChromeMessageQueueMediatorTest {
     public void testThrowNothingAfterDestroy() {
         OneshotSupplierImpl<LayoutStateProvider> layoutStateProviderOneShotSupplier =
                 new OneshotSupplierImpl<>();
-        SettableMonotonicObservableSupplier<ModalDialogManager> modalDialogManagerSupplier =
-                ObservableSuppliers.createMonotonic();
+        SettableNonNullObservableSupplier<ModalDialogManager> modalDialogManagerSupplier =
+                ObservableSuppliers.createNonNull(mModalDialogManager);
         mMediator =
                 new ChromeMessageQueueMediator(
                         mBrowserControlsManager,
