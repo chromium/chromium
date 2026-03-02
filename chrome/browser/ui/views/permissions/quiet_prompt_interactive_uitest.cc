@@ -43,7 +43,8 @@
 
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsElementId);
 const char kLocationBarView[] = "LocationBarView";
-const auto QuietChipElementId = PermissionChipView::kElementIdForTesting;
+const auto QuietChipElementId =
+    PermissionChipView::kPermissionRequestChipElementId;
 const auto QuietBubbleAllowElementId =
     views::DialogClientView::kOkButtonElementId;
 const auto QuietBubbleElementId = ContentSettingBubbleContents::kMainElementId;

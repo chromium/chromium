@@ -30,9 +30,12 @@
 #include "ui/views/painter.h"
 #include "ui/views/view_class_properties.h"
 
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PermissionChipView, kElementIdForTesting);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PermissionChipView,
+                                      kIndicatorChipElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PermissionChipView,
+                                      kPermissionRequestChipElementId);
 
-PermissionChipView::PermissionChipView(PressedCallback callback)
+PermissionChipView::PermissionChipView(Role role, PressedCallback callback)
     : MdTextButton(std::move(callback),
                    std::u16string(),
                    views::style::CONTEXT_BUTTON_MD,
@@ -49,7 +52,9 @@ PermissionChipView::PermissionChipView(PressedCallback callback)
   label()->SetTextStyle(views::style::STYLE_BODY_4_EMPHASIS);
   SetCornerRadius(GetCornerRadius());
   animation_ = std::make_unique<gfx::SlideAnimation>(this);
-  SetProperty(views::kElementIdentifierKey, kElementIdForTesting);
+  SetProperty(views::kElementIdentifierKey,
+              role == Role::kIndicatorChip ? kIndicatorChipElementId
+                                           : kPermissionRequestChipElementId);
 
   UpdateIconAndColors();
 }

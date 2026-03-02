@@ -223,27 +223,28 @@ IN_PROC_BROWSER_TEST_P(MerchantTrustChipButtonInteractiveUITest,
   if (!GetParam()) {
     return;
   }
-  RunTestSequence(InstrumentTab(kWebContentsElementId),
-                  NavigateWebContents(kWebContentsElementId, GetURL()),
-                  // The merchant chip is shown.
-                  WaitForShow(kMerchantTrustChipElementId),
-                  // ...and the permission indicator is not.
-                  EnsureNotPresent(PermissionChipView::kElementIdForTesting),
-                  // Request notifications.
-                  ExecuteJs(kWebContentsElementId, "requestNotification"),
-                  // Make sure the request chip is visible.
-                  WaitForShow(PermissionChipView::kElementIdForTesting),
-                  // ...and the merchant chip is not.
-                  WaitForHide(kMerchantTrustChipElementId),
-                  // Make sure the permission popup bubble is visible.
-                  WaitForShow(PermissionPromptBubbleBaseView::kMainViewId),
-                  PressButton(PermissionChipView::kElementIdForTesting),
-                  WaitForHide(PermissionPromptBubbleBaseView::kMainViewId),
-                  // The permission chip is hidden since the permission request
-                  // was dismissed...
-                  WaitForHide(PermissionChipView::kElementIdForTesting),
-                  // ...and the merchant chip is visible again.
-                  WaitForShow(kMerchantTrustChipElementId));
+  RunTestSequence(
+      InstrumentTab(kWebContentsElementId),
+      NavigateWebContents(kWebContentsElementId, GetURL()),
+      // The merchant chip is shown.
+      WaitForShow(kMerchantTrustChipElementId),
+      // ...and the permission indicator is not.
+      EnsureNotPresent(PermissionChipView::kPermissionRequestChipElementId),
+      // Request notifications.
+      ExecuteJs(kWebContentsElementId, "requestNotification"),
+      // Make sure the request chip is visible.
+      WaitForShow(PermissionChipView::kPermissionRequestChipElementId),
+      // ...and the merchant chip is not.
+      WaitForHide(kMerchantTrustChipElementId),
+      // Make sure the permission popup bubble is visible.
+      WaitForShow(PermissionPromptBubbleBaseView::kMainViewId),
+      PressButton(PermissionChipView::kPermissionRequestChipElementId),
+      WaitForHide(PermissionPromptBubbleBaseView::kMainViewId),
+      // The permission chip is hidden since the permission request
+      // was dismissed...
+      WaitForHide(PermissionChipView::kPermissionRequestChipElementId),
+      // ...and the merchant chip is visible again.
+      WaitForShow(kMerchantTrustChipElementId));
 }
 
 IN_PROC_BROWSER_TEST_P(MerchantTrustChipButtonInteractiveUITest,
@@ -258,11 +259,11 @@ IN_PROC_BROWSER_TEST_P(MerchantTrustChipButtonInteractiveUITest,
                   // The merchant chip is shown...
                   WaitForShow(kMerchantTrustChipElementId),
                   // ...and the permission indicator is not.
-                  EnsureNotPresent(PermissionChipView::kElementIdForTesting),
+                  EnsureNotPresent(PermissionChipView::kIndicatorChipElementId),
                   // Requesting to use the camera (camera is in-use now).
                   ExecuteJs(kWebContentsElementId, "requestCamera"),
                   // Make sure the in-use indicator is visible...
-                  WaitForShow(PermissionChipView::kElementIdForTesting),
+                  WaitForShow(PermissionChipView::kIndicatorChipElementId),
                   // ...and the merchant chip is not.
                   WaitForHide(kMerchantTrustChipElementId));
 }

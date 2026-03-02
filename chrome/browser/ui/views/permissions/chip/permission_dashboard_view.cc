@@ -102,6 +102,7 @@ PermissionDashboardView::PermissionDashboardView() {
 
   // Left-Hand Side Activity indicators chip.
   anchored_chip_ = AddChildView(std::make_unique<PermissionChipView>(
+      PermissionChipView::Role::kIndicatorChip,
       PermissionChipView::PressedCallback()));
 
   // An empty view is created to be placed between the LHS activity indicator
@@ -114,6 +115,7 @@ PermissionDashboardView::PermissionDashboardView() {
 
   // Permission request chip.
   secondary_chip_ = AddChildView(std::make_unique<PermissionChipView>(
+      PermissionChipView::Role::kPermissionRequestChip,
       PermissionChipView::PressedCallback()));
 
   // It is unclear which chip will be shown first, hence hide both of them.

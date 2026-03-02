@@ -25,8 +25,11 @@ class PermissionChipView : public views::MdTextButton {
   METADATA_HEADER(PermissionChipView, views::MdTextButton)
 
  public:
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kElementIdForTesting);
-  explicit PermissionChipView(PressedCallback callback);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kIndicatorChipElementId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kPermissionRequestChipElementId);
+  enum class Role { kIndicatorChip, kPermissionRequestChip };
+
+  PermissionChipView(Role role, PressedCallback callback);
   PermissionChipView(const PermissionChipView& button) = delete;
   PermissionChipView& operator=(const PermissionChipView& button) = delete;
   ~PermissionChipView() override;

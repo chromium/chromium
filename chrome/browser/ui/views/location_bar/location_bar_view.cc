@@ -310,6 +310,7 @@ void LocationBarView::Init() {
     chip_controller_ = std::make_unique<ChipController>(
         this, this,
         AddChildViewAt(std::make_unique<PermissionChipView>(
+                           PermissionChipView::Role::kPermissionRequestChip,
                            PermissionChipView::PressedCallback()),
                        0));
   }
