@@ -1061,12 +1061,12 @@ SessionsEventRouter::SessionsEventRouter(Profile* profile)
 #if BUILDFLAG(IS_ANDROID)
   JNIEnv* env = base::android::AttachCurrentThread();
   // Unretained is safe because the callback is cleared during destruction.
-  auto callback = base::BindRepeating(
+  base::RepeatingCallback<void(int64_t)> callback = base::BindRepeating(
       &SessionsEventRouter::OnRecentlyClosedUpdated, base::Unretained(this));
   // Register a callback for updates to Java RecentlyClosedEntriesManager.
   // Limit the updates to the current profile.
   Java_RecentlyClosedEntriesManager_setNativeUpdatedCallback(
-      env, profile_, base::android::ToJniCallback(env, std::move(callback)));
+      env, profile_, std::move(callback));
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
@@ -1078,8 +1078,7 @@ SessionsEventRouter::~SessionsEventRouter() {
 #if BUILDFLAG(IS_ANDROID)
   // Clear the Java callback for this profile.
   JNIEnv* env = base::android::AttachCurrentThread();
-  Java_RecentlyClosedEntriesManager_setNativeUpdatedCallback(env, profile_,
-                                                             nullptr);
+  Java_RecentlyClosedEntriesManager_clearNativeUpdatedCallback(env, profile_);
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 

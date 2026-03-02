@@ -157,7 +157,9 @@ public class RecentlyClosedEntriesManager {
      */
     @CalledByNative
     public static void setNativeUpdatedCallback(
-            @JniType("Profile*") Profile profile, @Nullable JniRepeatingCallback<Long> callback) {
+            @JniType("Profile*") Profile profile,
+            @JniType("base::RepeatingCallback<void(int64_t)>")
+                    JniRepeatingCallback<Long> callback) {
         // All managers are notified about each window update, so just use the first one that
         // matches the browser context.
         Set<RecentlyClosedEntriesManager> managers =
@@ -166,6 +168,19 @@ public class RecentlyClosedEntriesManager {
             if (manager.mProfile == profile) {
                 manager.mNativeUpdatedCallback = callback;
                 return;
+            }
+        }
+    }
+
+    /** Clears the callback to be fired on updates. */
+    @CalledByNative
+    public static void clearNativeUpdatedCallback(@JniType("Profile*") Profile profile) {
+        Set<RecentlyClosedEntriesManager> managers =
+                RecentlyClosedEntriesManagerTrackerImpl.getInstance().getManagers();
+        for (RecentlyClosedEntriesManager manager : managers) {
+            if (manager.mProfile == profile && manager.mNativeUpdatedCallback != null) {
+                manager.mNativeUpdatedCallback.destroy();
+                manager.mNativeUpdatedCallback = null;
             }
         }
     }
