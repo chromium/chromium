@@ -93,7 +93,7 @@ class SharingHubBubbleTest : public ChromeViewsTestBase {
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
     anchor_widget_ =
-        CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
+        CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   }
 
   void TearDown() override {
