@@ -7,6 +7,7 @@ import hashlib
 import os
 import pickle
 from typing import Optional, Any, Dict
+from pathlib import Path
 
 @dataclasses.dataclass(frozen=True)
 class _PresubmitCheckContext:
@@ -14,7 +15,7 @@ class _PresubmitCheckContext:
 
   This is used as a key to cache results of a presubmit check. The histograms
   directory hash is used to lower the probability of changes in one file
-  impacting health status of presubmit checks in the other. This still doesn't
+  impacing health status of presubmit checks in the other. This still doesn't
   eliminate the risk of changes from outside of this directory affecting the
   health status, but given how PRESUBMIT is triggered, this seems to be inline
   with the risk of that happening because of PRESUBMIT not being triggered.
@@ -34,13 +35,12 @@ class _PresubmitCheckContext:
     return f"{self.histograms_directory_hash}:{self.check_id}"
 
 
-_CURRENT_CACHE_FILE_SCHEMA_VERSION = 1
+_CURRENT_CACHE_FILE_SCHEMA_VERSION = "v2"
 
 
 @dataclasses.dataclass(frozen=True)
 class CacheFileSchema:
   """Describes the schema of the cache file."""
-  version: int
   data: Dict[str, Any]
 
 
@@ -59,7 +59,6 @@ def _CalculateCombinedDirectoryHash(directory_path):
           chunk = f.read(4096)
   return hasher.hexdigest()
 
-
 class PresubmitCache:
   """Stores and retrieves results of a presubmit checks for presubmits."""
 
@@ -67,13 +66,14 @@ class PresubmitCache:
   _storage_file_path: str
   _observed_directory: str
 
-  def __init__(self, storage_file_path: str, observed_directory_path: str):
-    self._storage_file_path = storage_file_path
+  def __init__(self, storage_directory_path: str, observed_directory_path: str):
+    base_dir_path = Path(storage_directory_path)
+    versioned_path = base_dir_path.joinpath(_CURRENT_CACHE_FILE_SCHEMA_VERSION)
+    versioned_path.mkdir(parents=True, exist_ok=True)
+
+    self._storage_file_path = str(versioned_path.joinpath("cache.json"))
     self._observed_directory = observed_directory_path
-    self._cache_contents = CacheFileSchema(
-        version=_CURRENT_CACHE_FILE_SCHEMA_VERSION,
-        data={},
-    )
+    self._cache_contents = CacheFileSchema(data={})
 
     if not os.path.exists(self._storage_file_path) or os.path.getsize(
         self._storage_file_path) == 0:
@@ -83,14 +83,25 @@ class PresubmitCache:
     # create a new, empty cache.
     with open(self._storage_file_path, "rb") as f:
       try:
-        loaded_cache = pickle.load(f)
-        if loaded_cache.version == _CURRENT_CACHE_FILE_SCHEMA_VERSION:
-          self._cache_contents = loaded_cache
-      except pickle.PickleError:
-        pass
-      except ModuleNotFoundError:
-        # If changes were made to modules used we should drop the cache as well
-        pass
+        self._cache_contents = pickle.load(f)
+        cache_needs_invalidation = False
+      except Exception as e:
+        # Blank exception - it's better to ignore cache then to break
+        # the presubmit because of cache failure.
+        print(f"Cache is being as it failed to finish reading: {e}")
+        cache_needs_invalidation = True
+
+      if not cache_needs_invalidation:
+        return
+
+    try:
+      os.remove(self._storage_file_path)
+    except Exception as e:
+      # Again using blank exception, just because failing here
+      # causes issues with presubmits.
+      print(f"Failed to delete the cache file ({e}). To invalidate cache,"
+            f" please try to remove {self._storage_file_path} manually.")
+
 
   def _GetForContext(self, context: _PresubmitCheckContext) -> Optional[str]:
     if context.key() not in self._cache_contents.data:

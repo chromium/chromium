@@ -46,8 +46,8 @@ class HistogramsPresubmitCheckType(enum.Enum):
   FORMATTING_VALIDATION = 3
 
 
-_CACHE_FILE_PATH = os.path.join(tempfile.gettempdir(),
-                                'histograms_presubmit_cache.json')
+_CACHE_DIR_PATH = os.path.join(tempfile.gettempdir(),
+                               'histograms_presubmit_cache')
 
 
 def _RunCheckWithCache(check_method: Callable[[Type, Type, Any], List[Any]],
@@ -222,7 +222,7 @@ def ValidateSingleFile(input_api, output_api, file_obj, cwd, results,
 
 def CheckHistogramFormatting(input_api,
                              output_api,
-                             cache_file_path=_CACHE_FILE_PATH,
+                             cache_file_path=_CACHE_DIR_PATH,
                              allow_test_paths=False,
                              xml_paths_override=None):
   """Checks that histograms.xml is pretty-printed and well-formatted.
@@ -274,7 +274,7 @@ def ExecuteCheckHistogramFormatting(input_api, output_api, allow_test_paths,
 
 def CheckWebViewHistogramsAllowlistOnUpload(input_api,
                                             output_api,
-                                            cache_file_path=_CACHE_FILE_PATH,
+                                            cache_file_path=_CACHE_DIR_PATH,
                                             allowlist_path_override=None,
                                             xml_paths_override=None):
   """Checks that HistogramsAllowlist.java contains valid histograms.
@@ -326,7 +326,7 @@ def ExecuteCheckWebViewHistogramsAllowlistOnUpload(input_api, output_api,
 
 def CheckBooleansAreEnums(input_api,
                           output_api,
-                          cache_file_path=_CACHE_FILE_PATH):
+                          cache_file_path=_CACHE_DIR_PATH):
   """Checks that histograms that use Booleans do not use units.
 
   This function is a wrapper around ExecuteCheckBooleansAreEnums that adds
