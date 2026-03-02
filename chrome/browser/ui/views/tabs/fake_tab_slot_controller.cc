@@ -26,6 +26,9 @@ void FakeTabSlotController::ToggleTabGroupCollapsedState(
     ToggleTabGroupCollapsedStateOrigin origin) {}
 
 int FakeTabSlotController::GetTabCount() const {
+  if (tab_count_.has_value()) {
+    return tab_count_.value();
+  }
   return tab_container_ ? tab_container_->GetTabCount() : 0;
 }
 

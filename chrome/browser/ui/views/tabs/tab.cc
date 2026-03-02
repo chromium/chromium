@@ -205,6 +205,9 @@ class Tab::TabCloseButtonObserver : public views::ViewObserver {
   void OnViewFocused(views::View* observed_view) override {
     controller_->UpdateHoverCard(
         tab_, TabSlotController::HoverCardUpdateType::kFocus);
+    if (base::FeatureList::IsEnabled(features::kDesktopGlowUp)) {
+      tab_->InvalidateLayout();
+    }
   }
 
   void OnViewBlurred(views::View* observed_view) override {
@@ -212,6 +215,9 @@ class Tab::TabCloseButtonObserver : public views::ViewObserver {
     if (!controller_->IsFocusInTabs()) {
       controller_->UpdateHoverCard(
           nullptr, TabSlotController::HoverCardUpdateType::kFocus);
+    }
+    if (base::FeatureList::IsEnabled(features::kDesktopGlowUp)) {
+      tab_->InvalidateLayout();
     }
   }
 
@@ -852,6 +858,9 @@ void Tab::OnFocus() {
   controller_->TabKeyboardFocusChangedTo(tab_handle_.Get());
   controller_->UpdateHoverCard(this,
                                TabSlotController::HoverCardUpdateType::kFocus);
+  if (base::FeatureList::IsEnabled(features::kDesktopGlowUp)) {
+    InvalidateLayout();
+  }
 }
 
 void Tab::OnBlur() {
@@ -862,6 +871,9 @@ void Tab::OnBlur() {
   if (!controller_->IsFocusInTabs()) {
     controller_->UpdateHoverCard(
         nullptr, TabSlotController::HoverCardUpdateType::kFocus);
+  }
+  if (base::FeatureList::IsEnabled(features::kDesktopGlowUp)) {
+    InvalidateLayout();
   }
 }
 
@@ -1201,11 +1213,16 @@ void Tab::UpdateIconVisibility() {
       available_width -= favicon_width;
     }
 
+    const bool is_decluttered =
+        base::FeatureList::IsEnabled(features::kDesktopGlowUp) &&
+        controller_->GetTabCount() >= TabStyle::kTabStripDeclutterMinTabs;
     showing_close_button_ =
 #if BUILDFLAG(IS_CHROMEOS)
         should_show_close_button &&
 #endif
-        large_enough_for_close_button;
+        large_enough_for_close_button &&
+        (!is_decluttered || mouse_hovered_ || HasFocus() ||
+         (close_button_ && close_button_->HasFocus()));
     if (showing_close_button_) {
       available_width -= close_button_width;
     }

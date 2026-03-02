@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/tabs/saved_tab_groups/collaboration_messaging_tab_data.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/tabs/tab_types.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/tabs/fake_base_tab_strip_controller.h"
 #include "chrome/browser/ui/views/tabs/fake_tab_slot_controller.h"
 #include "chrome/browser/ui/views/tabs/tab/alert_indicator_button.h"
@@ -668,6 +669,74 @@ TEST_F(TabTest, SmallTabsHideCloseButton) {
   // Shrink the tab. The close button should disappear.
   tab->SetBounds(0, 0, width - 1, 50);
   EXPECT_FALSE(close->GetVisible());
+}
+
+TEST_F(TabTest, CloseButtonVisibilityInDeclutteredState) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kDesktopGlowUp);
+
+  auto controller = std::make_unique<FakeTabSlotController>();
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  Tab* tab = widget->SetContentsView(
+      std::make_unique<Tab>(tabs::TabHandle(1), controller.get()));
+  const int min_width = ui::TouchUiController::Get()->touch_ui()
+                            ? Tab::kTouchMinimumContentsWidthForCloseButtons
+                            : Tab::kMinimumContentsWidthForCloseButtons;
+  const int width =
+      tab->tab_style_views()->GetContentsInsets().width() + min_width;
+  tab->SetBounds(0, 0, width, 50);
+  const views::View* close = GetCloseButton(tab);
+
+  widget->Show();
+  widget->Activate();
+
+  // In non-decluttered state (tab count < min), close button should be visible.
+  controller->set_tab_count(TabStyle::kTabStripDeclutterMinTabs - 1);
+  tab->InvalidateLayout();
+  LayoutTab(tab);
+  EXPECT_TRUE(close->GetVisible());
+
+  // In decluttered state (tab count >= min), close button should be hidden for
+  // an inactive, unhovered tab.
+  controller->set_tab_count(TabStyle::kTabStripDeclutterMinTabs);
+  tab->InvalidateLayout();
+  LayoutTab(tab);
+  EXPECT_FALSE(close->GetVisible());
+
+  // If hovered, it should be visible even in decluttered state.
+  tab->OnMouseEntered(ui::MouseEvent(ui::EventType::kMouseMoved, gfx::Point(),
+                                     gfx::Point(), base::TimeTicks(), 0, 0));
+  tab->InvalidateLayout();
+  LayoutTab(tab);
+  EXPECT_TRUE(close->GetVisible());
+
+  tab->OnMouseExited(ui::MouseEvent(ui::EventType::kMouseMoved, gfx::Point(),
+                                    gfx::Point(), base::TimeTicks(), 0, 0));
+  tab->InvalidateLayout();
+  LayoutTab(tab);
+  EXPECT_FALSE(close->GetVisible());
+
+  // If the tab is focused, the close button becomes visible and can then be
+  // focused.
+  tab->GetFocusManager()->SetFocusedView(tab);
+  LayoutTab(tab);
+  EXPECT_TRUE(close->GetVisible());
+
+  // If focus moves to the close button, it should remain visible.
+  tab->GetFocusManager()->SetFocusedView(const_cast<views::View*>(close));
+  LayoutTab(tab);
+  EXPECT_TRUE(close->GetVisible());
+
+  tab->GetFocusManager()->ClearFocus();
+  LayoutTab(tab);
+  EXPECT_FALSE(close->GetVisible());
+
+  // Active tab should always show close button.
+  controller->set_active_tab(tab);
+  tab->InvalidateLayout();
+  LayoutTab(tab);
+  EXPECT_TRUE(close->GetVisible());
 }
 
 TEST_F(TabTest, ExtraLeftPaddingShownOnSiteWithoutFavicon) {

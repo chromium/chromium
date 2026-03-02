@@ -212,7 +212,7 @@ class TabStyle {
 
   // The minimum number of tabs where the tab strip may render without certain
   // UI elements, such as separators and inactive tab close buttons.
-  static constexpr int kTabStripDeclutterMinTabs = 6;
+  static constexpr int kTabStripDeclutterMinTabs = 9;
 
   static const TabStyle* Get();
 
