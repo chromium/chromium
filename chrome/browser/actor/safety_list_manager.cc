@@ -59,7 +59,7 @@ void SetAll(base::span<const SafetyListEntry> entries,
   }
 }
 
-void MaybeSetHardcodedEntries(
+void MaybeSetHardcodedBlocklistEntries(
     content_settings::HostIndexedContentSettings& indexed_settings) {
   if (IsNavigationGatingEnabled() &&
       kGlicIncludeHardcodedBlockListEntries.Get()) {
@@ -160,7 +160,7 @@ SafetyListManager::Decision SafetyListManager::Find(
 }
 
 SafetyListManager::SafetyListManager() {
-  MaybeSetHardcodedEntries(host_indexed_content_settings_);
+  MaybeSetHardcodedBlocklistEntries(host_indexed_content_settings_);
 }
 SafetyListManager::~SafetyListManager() = default;
 
@@ -201,7 +201,7 @@ SafetyListManager::ParseStatus SafetyListManager::ParseSafetyListsInternal(
     SetAll(SpanOverExpected(blocked_result),
            ContentSetting::CONTENT_SETTING_BLOCK,
            host_indexed_content_settings_);
-    MaybeSetHardcodedEntries(host_indexed_content_settings_);
+    MaybeSetHardcodedBlocklistEntries(host_indexed_content_settings_);
   }
 
   return {allowed_result.error_or(ParseResult::kSuccess),
