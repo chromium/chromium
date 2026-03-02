@@ -1764,6 +1764,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "compositor-view-remeasure-fix",
+    "owners": ["clhager@google.com", "twellington@chromium.org"],
+    "expiry_milestone": 155
+  },
+  {
     "name": "conch",
     "owners": ["hsuanling@google.com", "chromeos-recorder-app@google.com"],
     "expiry_milestone": 150

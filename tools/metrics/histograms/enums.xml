@@ -11325,6 +11325,7 @@ from previous Chrome versions.
       label="PolicyBlocklistThrottleRequiresPoliciesLoaded:disabled"/>
   <int value="-1060541241" label="ForcePreferredIntervalForVideo:enabled"/>
   <int value="-1060395248" label="PasswordSearchMobile:enabled"/>
+  <int value="-1059844654" label="CompositorViewRemeasureFix:enabled"/>
   <int value="-1059478136" label="PreinstalledWebAppDuplicationFixer:enabled"/>
   <int value="-1057056167" label="VirtualKeyboardMultipaste:enabled"/>
   <int value="-1056947847" label="OfflineItemsInNotifications:disabled"/>
@@ -18872,6 +18873,7 @@ from previous Chrome versions.
   <int value="1506384737" label="ArcExtendInputAnrTimeout:disabled"/>
   <int value="1506877591" label="NavBarColorAnimation:disabled"/>
   <int value="1507233295" label="FilesTrash:disabled"/>
+  <int value="1507965665" label="CompositorViewRemeasureFix:disabled"/>
   <int value="1508761653" label="disable-site-isolation-trials"/>
   <int value="1509300278"
       label="UserDisplayModeSyncBrowserMitigation:disabled"/>

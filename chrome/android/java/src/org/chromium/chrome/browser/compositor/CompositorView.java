@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.compositor;
 
+import static androidx.core.view.WindowInsetsCompat.Type.displayCutout;
+import static androidx.core.view.WindowInsetsCompat.Type.systemBars;
+
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
@@ -18,6 +21,8 @@ import android.view.View;
 import android.view.Window;
 import android.widget.FrameLayout;
 import android.window.InputTransferToken;
+
+import androidx.core.graphics.Insets;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
@@ -61,6 +66,7 @@ public class CompositorView extends FrameLayout
                 WindowAndroid.SelectionHandlesObserver {
     // Cache objects that should not be created every frame
     private final Rect mCacheAppRect = new Rect();
+    private @Nullable Insets mCachedWindowInsets;
 
     private CompositorSurfaceManager mCompositorSurfaceManager;
     private boolean mOverlayVideoEnabled;
@@ -187,6 +193,16 @@ public class CompositorView extends FrameLayout
         mRootView = view;
     }
 
+    private @Nullable Insets getLastRawSystemWindowInsets() {
+        if (mWindowAndroid == null) return null;
+        if (mWindowAndroid.getInsetObserver() == null) return null;
+        if (mWindowAndroid.getInsetObserver().getLastRawWindowInsets() == null) return null;
+        return mWindowAndroid
+                .getInsetObserver()
+                .getLastRawWindowInsets()
+                .getInsets(systemBars() + displayCutout());
+    }
+
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         if (mRootView != null) {
@@ -201,6 +217,18 @@ public class CompositorView extends FrameLayout
             int windowTop = mCacheAppRect.top;
             boolean topChanged = windowTop != mPreviousWindowTop;
             mPreviousWindowTop = windowTop;
+
+            // Check whether the system bars or display cutout have changed. This will indicate
+            // certain changes (e.g. leaving fullscreen) that are not caught on certain devices due
+            // to the underlying implementation of View#getWindowVisibleDisplayFrame() on certain
+            // devices / Android versions.
+            @Nullable Insets latestSystemInsets = getLastRawSystemWindowInsets();
+            boolean systemInsetsChanged =
+                    mCachedWindowInsets == null || !mCachedWindowInsets.equals(latestSystemInsets);
+            mCachedWindowInsets = latestSystemInsets;
+            if (ChromeFeatureList.sCompositorViewRemeasureFix.isEnabled()) {
+                topChanged |= systemInsetsChanged;
+            }
 
             Activity activity = mWindowAndroid != null ? mWindowAndroid.getActivity().get() : null;
             boolean isMultiWindow = MultiWindowUtils.getInstance().isInMultiWindowMode(activity);
