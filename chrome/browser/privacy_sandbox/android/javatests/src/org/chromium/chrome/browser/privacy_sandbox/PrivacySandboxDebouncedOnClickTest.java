@@ -38,11 +38,7 @@ public final class PrivacySandboxDebouncedOnClickTest {
             Arrays.asList(
                     new ParameterSet().value(R.id.ack_button).name("Ack"),
                     new ParameterSet().value(R.id.settings_button).name("Settings"),
-                    new ParameterSet().value(R.id.more_button).name("More"),
-                    new ParameterSet().value(R.id.dropdown_element).name("Dropdown"),
-                    new ParameterSet()
-                            .value(R.id.privacy_policy_back_button)
-                            .name("PrivacyPolicyBack"));
+                    new ParameterSet().value(R.id.more_button).name("More"));
 
     private final View mMockView;
     private int mNumClicks;
@@ -54,7 +50,7 @@ public final class PrivacySandboxDebouncedOnClickTest {
         mButtonRid = rid;
         mFakeDialog =
                 new PrivacySandboxDebouncedOnClickImpl(
-                        "ThreeAdsAPIsNoticeModal"
+                        "MeasurementNoticeModal"
                                 + PrivacySandboxDialogUtils.getSurfaceTypeAsString(
                                         SurfaceType.BR_APP));
     }

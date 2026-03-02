@@ -394,22 +394,22 @@
         You can make changes in ad privacy settings
       </message>
       <!--Ad Topics ROW Notice - Ads API UX Enhancements -->
-      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_LEARN_MORE_BULLET_2_V2" desc="This string appears when the user clicks on the “More about ads in Chrome” under the “More useful ads” header. It explains to the user, in second person, how a website they visit may use their activity to recommend ads that are personal to the user. The user is also provided with an example of how a website may do so." formatter_data="android_java">
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_LEARN_MORE_BULLET_2_V2" desc="This string appears when the user clicks on the “More about ads in Chrome” under the “More useful ads” header. It explains to the user, in second person, how a website they visit may use their activity to recommend ads that are personal to the user. The user is also provided with an example of how a website may do so.">
         Sites and their advertising partners can use your activity, such as how you spend your time on sites you visit, to personalize ads on other sites. For example, if you visit a site to find recipes for dinner, the site might decide that you're interested in cooking. Later, another site may show you a related ad for a grocery delivery service suggested by the first site.
       </message>
-      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_LEARN_MORE_DESCRIPTION_2_V2" desc="This string appears when the user clicks on the “More about ads in Chrome” under the “More useful ads” header. It explains that a website can ask Chrome for this information. “Ads suggested by sites” is the same as “site-suggested ads”." formatter_data="android_java">
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_LEARN_MORE_DESCRIPTION_2_V2" desc="This string appears when the user clicks on the “More about ads in Chrome” under the “More useful ads” header. It explains that a website can ask Chrome for this information. “Ads suggested by sites” is the same as “site-suggested ads”.">
         A site you visit can ask for this information — either your ad topics or ads suggested by sites you've visited.
       </message>
-      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_LEARN_MORE_HEADING_3" desc="This string appears when the user clicks on the “More about ads in Chrome” under the “Measuring how well an ad performs” header. " formatter_data="android_java">
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_LEARN_MORE_HEADING_3" desc="This string appears when the user clicks on the “More about ads in Chrome” under the “Measuring how well an ad performs” header. ">
         How sites use your data
       </message>
       <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_LEARN_MORE_DESCRIPTION_5_V2" desc="This string appears when the user expands on the “More about ads in Chrome” label.  “Sites” refers to websites that the user visits. The tone is informative. “Companies” refers to businesses or organizations that these websites belong to. This is intended to explain the possible user risks currently available with our evolving privacy-preserving technologies, in neutral language.">
         Google requires companies to state publicly that they won't use this data to track you across sites. Some sites may use your activity to personalize your experience for more than just ads. They may also combine it with other information they already know about you. Companies are responsible for letting you know how they use your data. <ph name="BEGIN_LINK1">&lt;a href="#" id="$1" aria-description="$2" on-click="$3"&gt;</ph>Learn more in our Privacy Policy<ph name="LINK_END1">&lt;/a&gt;</ph>
       </message>
-      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_LEARN_MORE_DESCRIPTION_5_V2_CLANK" desc="This string appears when the user expands on the “More about ads in Chrome” label.  “Sites” refers to websites that the user visits. The tone is informative. “Companies” refers to businesses or organizations that these websites belong to. This is intended to explain the possible user risks currently available with our evolving privacy-preserving technologies, in neutral language." formatter_data="android_java">
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_LEARN_MORE_DESCRIPTION_5_V2_CLANK" desc="This string appears when the user expands on the “More about ads in Chrome” label.  “Sites” refers to websites that the user visits. The tone is informative. “Companies” refers to businesses or organizations that these websites belong to. This is intended to explain the possible user risks currently available with our evolving privacy-preserving technologies, in neutral language.">
         Google requires companies to state publicly that they won't use this data to track you across sites. Some sites may use your activity to personalize your experience for more than just ads. They may also combine it with other information they already know about you. Companies are responsible for letting you know how they use your data. <ph name="BEGIN_LINK">&lt;link&gt;</ph>Learn more in our Privacy Policy<ph name="END_LINK">&lt;/link&gt;</ph>
       </message>
-      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_LAST_TEXT" desc="This string notifies users that they can make changes to their ad topics in the “ad privacy” section of settings." formatter_data="android_java">
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_LAST_TEXT" desc="This string notifies users that they can make changes to their ad topics in the “ad privacy” section of settings.">
         You can make changes in ad privacy settings
       </message>
 
@@ -573,10 +573,10 @@
         Google requires companies to state publicly that they won't use this data to track you across sites. Some sites may use your activity to personalize your experience for more than just ads. They may also store ad topics for longer than 4 weeks and combine it with other information they already know about you. Companies are responsible for letting you know how they use your data. <ph name="BEGIN_LINK">&lt;link&gt;</ph>Learn more in our Privacy Policy<ph name="END_LINK">&lt;/link&gt;</ph>.
       </message>
       <!--Privacy Sandbox Privacy Policy-->
-      <message name="IDS_PRIVACY_SANDBOX_PRIVACY_POLICY_PAGE_TITLE" desc="Title for Google's Privacy Policy page." formatter_data="android_java">
+      <message name="IDS_PRIVACY_SANDBOX_PRIVACY_POLICY_PAGE_TITLE" desc="Title for Google's Privacy Policy page.">
         Google Privacy Policy
       </message>
-      <message name="IDS_PRIVACY_SANDBOX_PRIVACY_POLICY_BACK_BUTTON" desc="Content description for the Privacy Policy page back button." formatter_data="android_java">
+      <message name="IDS_PRIVACY_SANDBOX_PRIVACY_POLICY_BACK_BUTTON" desc="Content description for the Privacy Policy page back button.">
         Back
       </message>
 

@@ -36,7 +36,6 @@ import java.util.Locale;
 public class PrivacySandboxDialogController {
     private static @Nullable WeakReference<Dialog> sDialog;
     private static boolean sShowMoreButtonForTesting;
-    private static @Nullable Runnable sOnDialogDismissedRunnable;
 
     public static boolean shouldShowPrivacySandboxDialog(Profile profile, int surfaceType) {
         assert profile != null;
@@ -45,8 +44,7 @@ public class PrivacySandboxDialogController {
         }
         @PromptType
         int promptType = new PrivacySandboxBridge(profile).getRequiredPromptType(surfaceType);
-        if (promptType != PromptType.M1_NOTICE_ROW
-                && promptType != PromptType.M1_NOTICE_RESTRICTED) {
+        if (promptType != PromptType.M1_NOTICE_RESTRICTED) {
             return false;
         }
         return true;
@@ -106,23 +104,6 @@ public class PrivacySandboxDialogController {
         switch (promptType) {
             case PromptType.NONE:
                 return false;
-            case PromptType.M1_NOTICE_ROW:
-                dialog =
-                        new PrivacySandboxDialogNoticeROW(
-                                activity,
-                                privacySandboxBridge,
-                                surfaceType,
-                                profile,
-                                activityWindowAndroid);
-                dialog.setOnDismissListener(
-                        d -> {
-                            if (sOnDialogDismissedRunnable != null) {
-                                sOnDialogDismissedRunnable.run();
-                            }
-                        });
-                dialog.show();
-                sDialog = new WeakReference<>(dialog);
-                return true;
             case PromptType.M1_NOTICE_RESTRICTED:
                 dialog =
                         new PrivacySandboxDialogNoticeRestricted(
@@ -138,10 +119,6 @@ public class PrivacySandboxDialogController {
                 // Should not be reached.
                 return false;
         }
-    }
-
-    public static void setOnDialogDismissRunnable(Runnable runnable) {
-        sOnDialogDismissedRunnable = runnable;
     }
 
     @VisibleForTesting
