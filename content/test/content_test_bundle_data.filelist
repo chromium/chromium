@@ -513,6 +513,8 @@ data/accessibility/aria/aria-button-expected-blink.txt
 data/accessibility/aria/aria-button-expected-mac.txt
 data/accessibility/aria/aria-button-expected-uia-win.txt
 data/accessibility/aria/aria-button-expected-win.txt
+data/accessibility/aria/aria-button-labeledby-expected-mac.txt
+data/accessibility/aria/aria-button-labeledby.html
 data/accessibility/aria/aria-button.html
 data/accessibility/aria/aria-caption-expected-android-external.txt
 data/accessibility/aria/aria-caption-expected-android.txt

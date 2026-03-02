@@ -1,0 +1,5 @@
+AXWebArea AXRoleDescription='HTML content'
+++AXGroup AXRoleDescription='group'
+++++AXGroup AXDescription='How are you?' AXRoleDescription='group'
+++++++AXStaticText AXRoleDescription='text' AXValue='How are you?'
+++++AXButton AXRoleDescription='button' AXTitle='How are you?'

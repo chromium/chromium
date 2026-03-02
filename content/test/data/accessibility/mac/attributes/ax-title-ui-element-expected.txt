@@ -1,2 +1,2 @@
-control.accessibilityAttributeNames.has(AXTitleUIElement)='yes'
-control.accessibilityAttributeValue(AXTitleUIElement)=:4
+control.accessibilityAttributeNames.has(AXTitleUIElement)='no'
+control.accessibilityAttributeValue(AXTitleUIElement)=NULL
