@@ -6,8 +6,8 @@
 # with tablet form factor - 10.05", 1600x2560, xhdpi
 
 emulator_package {
-  package_name: "chromium/third_party/android_sdk/public/emulator/linux-amd64"
-  version: "QgDCxG9OzoQx04LpwnENgTz3gby5-Kyx6Rsv5yl91p4C"  # 36.4.9 (Stable)
+  package_name: "chromium/third_party/android_sdk/public/emulator"
+  version: "v8yrLOpMlE0if7NxVuSlX0Etnq0k_FLX_hmYksbVSm0C"  # 36.1.9 (Stable)
 }
 
 system_image_package {
@@ -18,9 +18,9 @@ system_image_name: "system-images;android-35;google_apis;x86_64"
 
 avd_package {
   package_name: "chromium/third_party/android_sdk/public/avds/android-35/google_apis/x86_64"
-  # Created in https://ci.chromium.org/ui/b/8689047532256932641
+  # Created in https://ci.chromium.org/ui/b/8705163385740243089
   # Patched gmscore version 25.07.33 in https://crrev.com/c/6377466
-  version: "6ORqFLr2IwwWA7LKBXKvBnVN9vBzl4pJSIb-TfROsTsC"
+  version: "p0lZavdtJZt3r0ibnAeg05J_llP6S6nt1kyDdGaGwlIC"
 }
 avd_name: "android_35_google_apis_x64"
 
