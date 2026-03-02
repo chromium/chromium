@@ -65,6 +65,12 @@ template("_androidx_prebuilt") {
     } else if (target_name == "androidx_lifecycle_lifecycle_process_java") {
       # Only useful for very old SDKs.
       ignore_proguard_configs = true
+    } else if (target_name == "androidx_graphics_graphics_core_java") {
+      ignore_native_libraries = true
+    } else if (filter_include([ target_name ], [ "androidx_ink_*" ]) != []) {
+      if (invoker.target_type == "android_aar_prebuilt") {
+        ignore_native_libraries = true
+      }
     } else if (target_name == "androidx_graphics_graphics_path_java") {
       ignore_native_libraries = true
     } else if (target_name == "androidx_media_media_java") {
