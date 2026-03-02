@@ -744,7 +744,8 @@ TEST_F(ActorLoginPasswordCredentialsFetcherTest,
   EXPECT_FALSE(credentials[0].immediatelyAvailableToLogin);
 }
 
-TEST_F(ActorLoginPasswordCredentialsFetcherTest, PrefersExactMatch) {
+TEST_F(ActorLoginPasswordCredentialsFetcherTest,
+       ReturnsAllMatchesWithPermission) {
   PasswordForm psl_match =
       CreatePasswordForm("https://sub.foo.com", u"psl_username",
                          u"psl_password", PasswordForm::MatchType::kPSL);
@@ -774,38 +775,7 @@ TEST_F(ActorLoginPasswordCredentialsFetcherTest, PrefersExactMatch) {
   ASSERT_TRUE(future.Wait());
   const auto& [credentials, status] = future.Get();
   EXPECT_FALSE(status->GetGlobalError().has_value());
-  ASSERT_EQ(credentials.size(), 1u);
-  EXPECT_EQ(credentials[0].username, u"exact_username");
-}
-
-TEST_F(ActorLoginPasswordCredentialsFetcherTest, PrefersAffiliatedMatch) {
-  PasswordForm psl_match =
-      CreatePasswordForm("https://sub.foo.com", u"psl_username",
-                         u"psl_password", PasswordForm::MatchType::kPSL);
-  psl_match.actor_login_approved = true;
-  PasswordForm affiliated_match = CreatePasswordForm(
-      "https://m.foo.com", u"affiliated_username", u"affiliated_password",
-      PasswordForm::MatchType::kAffiliated);
-  affiliated_match.actor_login_approved = true;
-  AddFormManager(CreateFormManager());
-  form_fetcher()->SetBestMatches({affiliated_match, psl_match});
-
-  base::test::TestFuture<std::vector<Credential>,
-                         std::unique_ptr<ActorLoginCredentialsFetcher::Status>>
-      future;
-  auto fetcher = std::make_unique<ActorLoginPasswordCredentialsFetcher>(
-      kOrigin, client(), password_manager(), mqls_logger());
-  fetcher->Fetch(future.GetCallback());
-  // The fetcher only attaches itself as a consumer after all the
-  // async checks for signin forms are done.
-  ASSERT_TRUE(RunUntil([&]() { return form_fetcher()->HasConsumers(); }));
-
-  form_fetcher()->NotifyFetchCompleted();
-  ASSERT_TRUE(future.Wait());
-  const auto& [credentials, status] = future.Get();
-  EXPECT_FALSE(status->GetGlobalError().has_value());
-  ASSERT_EQ(credentials.size(), 1u);
-  EXPECT_EQ(credentials[0].username, u"affiliated_username");
+  ASSERT_EQ(credentials.size(), 3u);
 }
 
 TEST_F(ActorLoginPasswordCredentialsFetcherTest, NoApprovedCredentials) {
@@ -896,7 +866,7 @@ TEST_F(ActorLoginPasswordCredentialsFetcherTest, IgnoresGroupedMatches) {
 }
 
 TEST_F(ActorLoginPasswordCredentialsFetcherTest,
-       ReturnsSingleApprovedCredential) {
+       ReturnsCredentialsWithCorrectPermissionStatus) {
   PasswordForm psl_match =
       CreatePasswordForm("https://sub.foo.com", u"psl_username",
                          u"psl_password", PasswordForm::MatchType::kPSL);
@@ -938,9 +908,13 @@ TEST_F(ActorLoginPasswordCredentialsFetcherTest,
   ASSERT_TRUE(future.Wait());
   const auto& [credentials, status] = future.Get();
   EXPECT_FALSE(status->GetGlobalError().has_value());
-  ASSERT_EQ(credentials.size(), 1u);
-  EXPECT_EQ(credentials[0].username, u"affiliated_username");
-  EXPECT_TRUE(credentials[0].has_persistent_permission);
+  ASSERT_EQ(credentials.size(), 3u);
+  EXPECT_EQ(credentials[0].username, u"exact_username");
+  EXPECT_FALSE(credentials[0].has_persistent_permission);
+  EXPECT_EQ(credentials[1].username, u"affiliated_username");
+  EXPECT_TRUE(credentials[1].has_persistent_permission);
+  EXPECT_EQ(credentials[2].username, u"psl_username");
+  EXPECT_FALSE(credentials[2].has_persistent_permission);
 
   // Check the reported logs.
   GetCredentialsDetails expected_details;

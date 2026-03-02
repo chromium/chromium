@@ -4,6 +4,7 @@
 
 #include "components/password_manager/core/browser/actor_login/internal/actor_login_password_credentials_fetcher.h"
 
+#include <algorithm>
 #include <ranges>
 
 #include "base/strings/to_string.h"
@@ -108,7 +109,10 @@ Credential PasswordFormToCredential(
   credential.display_origin = url_formatter::FormatOriginForSecurityDisplay(
       request_origin, url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS);
   credential.immediatelyAvailableToLogin = immediately_available_to_login;
-  credential.has_persistent_permission = form.actor_login_approved;
+  credential.has_persistent_permission =
+      form.actor_login_approved &&
+      // Weak matches do not share the same permission.
+      !password_manager_util::IsCredentialWeakMatch(form);
   return credential;
 }
 
@@ -125,11 +129,6 @@ std::vector<Credential> ConstructCredentialsList(
     if (form.match_type.value() ==
         password_manager::PasswordForm::MatchType::kGrouped) {
       continue;
-    }
-    if (form.actor_login_approved &&
-        !password_manager_util::IsCredentialWeakMatch(form)) {
-      return {PasswordFormToCredential(request_origin,
-                                       immediately_available_to_login, form)};
     }
     result.push_back(PasswordFormToCredential(
         request_origin, immediately_available_to_login, form));
@@ -293,7 +292,9 @@ void ActorLoginPasswordCredentialsFetcher::BuildGetCredentialsOutcome(
 
   // If there is a credential with permission that can be used, it will
   // be the only returned one.
-  if (result[0].has_persistent_permission) {
+  const bool has_permission =
+      std::ranges::any_of(result, &Credential::has_persistent_permission);
+  if (has_permission) {
     get_credentials_logs_.set_permission_details(PermissionEnumToProtoType(
         PermissionDetailsMqls::kHasPermanentPermission));
   } else {
