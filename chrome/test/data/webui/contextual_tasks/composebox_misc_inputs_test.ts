@@ -324,8 +324,9 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
     assertEquals(1, mockSearchboxPageHandler.getCallCount(ADD_FILE_CONTEXT_FN));
   });
 
-  test('ExpandAnimationState', function() {
+  test('ExpandAnimationState', async function() {
     contextualTasksApp.$.composebox.startExpandAnimation();
+    await microtasksFinished();
     assertEquals('expanding', composebox.animationState);
   });
 

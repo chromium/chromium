@@ -758,7 +758,10 @@ TEST_F(ContextualTasksUiTest, Transition_QueryToZeroToQuery) {
   observer->DidFinishNavigation(handle_query2.get());
 }
 
-TEST_F(ContextualTasksUiTest, OnZeroStateChange_FeatureEnabled) {
+
+
+TEST_F(ContextualTasksUiTest,
+       OnZeroStateChange_SameDocument_ZeroStateChanged_FeatureEnabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
       contextual_tasks::kEnableNotifyZeroStateRenderedCapability);
@@ -770,12 +773,23 @@ TEST_F(ContextualTasksUiTest, OnZeroStateChange_FeatureEnabled) {
       contextual_tasks_service_.get(), &delegate);
 
   GURL zero_state_url("https://www.google.com/search?udm=50");
+  GURL query_url("https://www.google.com/search?udm=50&q=test");
 
-  // Case 1: Same document navigation.
-  // Expect OnZeroStateChange to NOT be called.
-  // Expect task creation to happen because IsSameDocument condition in the task creation block allows it.
+  // First navigate to a non-zero state URL to set the baseline state.
   {
-    EXPECT_CALL(delegate, OnZeroStateChange(_)).Times(0);
+    EXPECT_CALL(delegate, OnZeroStateChange(false)).Times(1);
+    auto handle = CreateMockNavigationHandle(query_url);
+    handle->set_has_committed(true);
+    handle->set_is_same_document(false);
+    observer->DidFinishNavigation(handle.get());
+  }
+
+  // Now simulate a same-document navigation to a zero state URL.
+  // Even though it's same-document and the feature is enabled,
+  // OnZeroStateChange should be called because the zero state status has
+  // changed (from false to true).
+  {
+    EXPECT_CALL(delegate, OnZeroStateChange(true)).Times(1);
 
     base::Uuid task_id = base::Uuid::ParseCaseInsensitive(kUuid);
     ContextualTask task(task_id);
@@ -789,21 +803,48 @@ TEST_F(ContextualTasksUiTest, OnZeroStateChange_FeatureEnabled) {
     handle->set_is_same_document(true);
     observer->DidFinishNavigation(handle.get());
   }
+}
 
-  // Case 2: Cross document navigation.
-  // Expect OnZeroStateChange to BE called.
-  // Expect task creation to be SKIPPED because !IsSameDocument is false.
+TEST_F(ContextualTasksUiTest,
+       OnZeroStateChange_SameDocument_ZeroStateChanged_FeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      contextual_tasks::kEnableNotifyZeroStateRenderedCapability);
+
+  testing::NiceMock<MockTaskInfoDelegate> delegate;
+  SetupMockDelegate(&delegate, std::nullopt, std::nullopt, std::nullopt);
+  auto observer = std::make_unique<ContextualTasksUI::FrameNavObserver>(
+      embedded_web_contents_.get(), service_for_nav_.get(),
+      contextual_tasks_service_.get(), &delegate);
+
+  GURL zero_state_url("https://www.google.com/search?udm=50");
+  GURL query_url("https://www.google.com/search?udm=50&q=test");
+
+  // First navigate to a non-zero state URL to set the baseline state.
+  {
+    EXPECT_CALL(delegate, OnZeroStateChange(false)).Times(1);
+    auto handle = CreateMockNavigationHandle(query_url);
+    handle->set_has_committed(true);
+    handle->set_is_same_document(false);
+    observer->DidFinishNavigation(handle.get());
+  }
+
+  // Now simulate a same-document navigation to a zero state URL.
+  // Even though it's same-document, OnZeroStateChange should be called because
+  // the zero state status has changed (from false to true).
   {
     EXPECT_CALL(delegate, OnZeroStateChange(true)).Times(1);
 
-    EXPECT_CALL(*contextual_tasks_service_, CreateTask()).Times(0);
-    EXPECT_CALL(delegate, PrepareForTaskChange()).Times(0);
+    base::Uuid task_id = base::Uuid::ParseCaseInsensitive(kUuid);
+    ContextualTask task(task_id);
+    EXPECT_CALL(*contextual_tasks_service_, CreateTask())
+        .WillOnce(Return(task));
+    EXPECT_CALL(delegate, PrepareForTaskChange()).Times(1);
+    EXPECT_CALL(*service_for_nav_, OnTaskChanged(_, _, task_id, _)).Times(1);
 
-    // Using a different URL to trigger logic (URL change check).
-    GURL zero_state_url_2("https://www.google.com/search?udm=50&other=1");
-    auto handle = CreateMockNavigationHandle(zero_state_url_2);
+    auto handle = CreateMockNavigationHandle(zero_state_url);
     handle->set_has_committed(true);
-    handle->set_is_same_document(false);
+    handle->set_is_same_document(true);
     observer->DidFinishNavigation(handle.get());
   }
 }

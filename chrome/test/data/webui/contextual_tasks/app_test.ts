@@ -1092,4 +1092,78 @@ suite('ContextualTasksAppTest', function() {
         appElement.getIsFrameLoadingForTesting(),
         'isFrameLoading should be false');
   });
+
+  test('zero state animation plays when zero state changes', async () => {
+    loadTimeData.overrideValues({
+      friendlyZeroStateGaiaName: 'Test Name',
+    });
+    const proxy = new TestContextualTasksBrowserProxy(fixtureUrl);
+    BrowserProxyImpl.setInstance(proxy);
+
+    const appElement = document.createElement('contextual-tasks-app');
+    document.body.appendChild(appElement);
+    await microtasksFinished();
+
+    // Set initial state to true so we can transition to false then back to
+    // true.
+    appElement.setIsZeroStateForTesting(true);
+    await microtasksFinished();
+
+    const composebox = appElement.$.composebox;
+    const headerWrapper = appElement.$.composeboxHeaderWrapper;
+    // nameShimmer might not exist if friendlyZeroStateGaiaName_ is not set.
+    const nameShimmer = appElement.$.nameShimmer;
+
+    // Mock animate function.
+    let composeboxAnimateCalled = false;
+    let headerAnimateCalled = false;
+    let nameShimmerAnimateCalled = false;
+
+    // Mock getAnimations to return dummy animations that can be cancelled and
+    // played.
+    const createMockAnimation = (callback: () => void) =>
+        ({
+          cancel: () => {},
+          play: () => {
+            callback();
+            return Promise.resolve();
+          },
+        }) as unknown as Animation;
+
+    composebox.getAnimations = () => [createMockAnimation(() => {
+      composeboxAnimateCalled = true;
+    })];
+
+    headerWrapper.getAnimations = () => [createMockAnimation(() => {
+      headerAnimateCalled = true;
+    })];
+
+    if (nameShimmer) {
+      nameShimmer.getAnimations = () => [createMockAnimation(() => {
+        nameShimmerAnimateCalled = true;
+      })];
+    }
+
+    // Mock startExpandAnimation since it is called to trigger the glow
+    // animation.
+    (composebox as any).startExpandAnimation = () => {};
+
+    // Transition out of zero state first.
+    proxy.callbackRouterRemote.onZeroStateChange(false);
+    await proxy.callbackRouterRemote.$.flushForTesting();
+    await microtasksFinished();
+
+    // Transition back to zero state to trigger animations.
+    proxy.callbackRouterRemote.onZeroStateChange(true);
+    await proxy.callbackRouterRemote.$.flushForTesting();
+    await microtasksFinished();
+
+    // Verify animations were played.
+    assertTrue(composeboxAnimateCalled, 'Composebox animation should play');
+    assertTrue(headerAnimateCalled, 'Header animation should play');
+    if (nameShimmer) {
+      assertTrue(
+          nameShimmerAnimateCalled, 'Name shimmer animation should play');
+    }
+  });
 });
