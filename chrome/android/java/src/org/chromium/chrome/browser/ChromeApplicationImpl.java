@@ -95,6 +95,8 @@ public class ChromeApplicationImpl extends SplitCompatApplication.Impl {
             if (!BuildConfig.IS_CHROME_BRANDED) {
                 HierarchySnapshotter.initialize();
             }
+
+            BrowserExitReasonTracker.onBrowserProcessCreated();
         }
     }
 

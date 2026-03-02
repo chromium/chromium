@@ -45,6 +45,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.AppHooks;
+import org.chromium.chrome.browser.BrowserExitReasonTracker;
 import org.chromium.chrome.browser.ChromeActivitySessionTracker;
 import org.chromium.chrome.browser.ChromeStrictMode;
 import org.chromium.chrome.browser.DefaultBrowserInfo;
@@ -627,6 +628,8 @@ public class ProcessInitializationHandler {
     protected void addPerApplicationStartupDeferredTasks(List<Runnable> tasks, Profile profile) {
         tasks.add(
                 () -> {
+                    BrowserExitReasonTracker.initForegroundBrowserProcess();
+
                     initAsyncDiskTask();
 
                     StorageSystem.recordStorageType();

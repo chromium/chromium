@@ -224,13 +224,9 @@ chromium-metrics-reviews@google.com.
     {AndroidProcessExitReasons}
   </summary>
   <token key="AndroidProcessExitReasons">
-    <variant name=".Browser" summary="Recorded for Browser crashes."/>
-    <variant name=".Browser.Background2"
-        summary="Recorded for background (application is not in running
-                 state) Browser crashes."/>
-    <variant name=".Browser.Foreground2"
-        summary="Recorded for foregound (application is in running state)
-                 Browser crashes."/>
+    <variant name=".Browser2"
+        summary="Recorded for all Browser process exits that launched a
+                 ChromeActivity at some point."/>
     <variant name=".GpuForegroundOom"
         summary="Recorded for foreground GPU process OOM crashes."/>
     <variant name=".UtilityForegroundOom"
