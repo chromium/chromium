@@ -248,17 +248,19 @@ std::vector<ActionChipPtr> CreateDeepDiveChips(
 
 std::vector<omnibox::ToolMode> GetAllowedTools(
     const AimEligibilityService* aim_eligibility_service) {
-  std::vector<omnibox::ToolMode> allowed_tools;
+  std::vector<omnibox::ToolMode> tools;
   if (aim_eligibility_service == nullptr) {
-    return allowed_tools;
+    return tools;
   }
-  if (aim_eligibility_service->IsDeepSearchEligible()) {
-    allowed_tools.push_back(omnibox::TOOL_MODE_DEEP_SEARCH);
+  const omnibox::SearchboxConfig* searchbox_config =
+      aim_eligibility_service->GetSearchboxConfig();
+  if (!searchbox_config->has_rule_set()) {
+    return tools;
   }
-  if (aim_eligibility_service->IsCreateImagesEligible()) {
-    allowed_tools.push_back(omnibox::TOOL_MODE_IMAGE_GEN);
+  for (const int tool : searchbox_config->rule_set().allowed_tools()) {
+    tools.push_back(static_cast<omnibox::ToolMode>(tool));
   }
-  return allowed_tools;
+  return tools;
 }
 
 TabInfoPtr CreateTabInfo(const TabIdGenerator& tab_id_generator,

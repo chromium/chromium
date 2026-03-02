@@ -17,41 +17,9 @@ MockAimEligibilityService::MockAimEligibilityService(
                             url_loader_factory,
                             identity_manager,
                             "en-US",
-                            std::move(configuration)) {}
+                            std::move(configuration)) {
+  ON_CALL(*this, GetSearchboxConfig())
+      .WillByDefault(testing::Return(&mock_config));
+}
 
 MockAimEligibilityService::~MockAimEligibilityService() = default;
-
-const omnibox::SearchboxConfig* MockAimEligibilityService::GetSearchboxConfig()
-    const {
-  mock_config.Clear();
-  omnibox::SearchboxConfig* config = &mock_config;
-
-  auto* rule_set = config->mutable_rule_set();
-  rule_set->add_allowed_tools(omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
-  rule_set->add_allowed_tools(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
-  rule_set->add_allowed_tools(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN_UPLOAD);
-
-  if (IsDeepSearchEligible()) {
-    auto* deep_search_rule = rule_set->add_tool_rules();
-    deep_search_rule->set_tool(omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
-    deep_search_rule->set_allow_all_input_types(true);
-  }
-
-  if (IsCreateImagesEligible()) {
-    auto* image_gen_rule = rule_set->add_tool_rules();
-    image_gen_rule->set_tool(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
-    image_gen_rule->set_allow_all_input_types(true);
-
-    auto* image_gen_upload_rule = rule_set->add_tool_rules();
-    image_gen_upload_rule->set_tool(
-        omnibox::ToolMode::TOOL_MODE_IMAGE_GEN_UPLOAD);
-    image_gen_upload_rule->set_allow_all_input_types(true);
-  }
-
-  auto* model_rule = rule_set->add_model_rules();
-  model_rule->set_model(omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR);
-  model_rule->set_allow_all_tools(true);
-  model_rule->set_allow_all_input_types(true);
-
-  return config;
-}

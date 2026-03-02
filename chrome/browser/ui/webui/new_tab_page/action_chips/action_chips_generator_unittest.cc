@@ -75,6 +75,8 @@ using ::testing::Return;
 using ::testing::TypedEq;
 using ::testing::WithArg;
 
+using enum omnibox::ToolMode;
+
 struct CreateSuggestionOptions {
   std::optional<omnibox::GroupId> group_id;
   int32_t icon_type = omnibox::SuggestTemplateInfo::ICON_TYPE_UNSPECIFIED;
@@ -246,6 +248,8 @@ class GeneratorFixture {
 
     ON_CALL(*fake_client_, IsPersonalizedUrlDataCollectionActive())
         .WillByDefault(Return(true));
+
+    set_searchbox_config({TOOL_MODE_DEEP_SEARCH, TOOL_MODE_IMAGE_GEN});
     ON_CALL(*mock_aim_eligibility_service_, IsDeepSearchEligible)
         .WillByDefault(Return(true));
     ON_CALL(*mock_aim_eligibility_service_, IsCreateImagesEligible)
@@ -281,6 +285,13 @@ class GeneratorFixture {
 
   MockAimEligibilityService& mock_aim_eligibility_service() {
     return *mock_aim_eligibility_service_;
+  }
+
+  void set_searchbox_config(base::span<const omnibox::ToolMode> allowed_tools) {
+    mock_aim_eligibility_service_->config()
+        .mutable_rule_set()
+        ->mutable_allowed_tools()
+        ->Assign(allowed_tools.begin(), allowed_tools.end());
   }
 
   // Makes the optimization guide's mock permissive. i.e., after the call to
@@ -1233,12 +1244,7 @@ TEST(ActionChipGeneratorTest, NewEndpointPartialEligibilityPassesCorrectTools) {
   GeneratorFixture generator_fixture;
 
   // Only Deep Search is eligible.
-  EXPECT_CALL(generator_fixture.mock_aim_eligibility_service(),
-              IsDeepSearchEligible())
-      .WillRepeatedly(Return(true));
-  EXPECT_CALL(generator_fixture.mock_aim_eligibility_service(),
-              IsCreateImagesEligible())
-      .WillRepeatedly(Return(false));
+  generator_fixture.set_searchbox_config({TOOL_MODE_DEEP_SEARCH});
 
   EXPECT_CALL(
       generator_fixture.mock_service(),
