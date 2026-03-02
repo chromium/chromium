@@ -74,6 +74,14 @@ class TcpConnectJob::Connector {
   bool is_waiting_for_endpoint() const {
     return next_state_ == State::kWaitForIPEndPoint;
   }
+
+  // True if the job is waiting on DNS data before it can advance - either
+  // waiting for more IPs, or waiting on crypto ready.
+  bool is_waiting_on_dns() const {
+    return next_state_ == State::kWaitForIPEndPoint ||
+           next_state_ == State::kWaitForCryptoReady;
+  }
+
   bool is_done() const { return next_state_ == State::kDone; }
 
   // Whether `this` is currently connecting to an IPv6 IP, or is connected to

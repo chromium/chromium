@@ -146,6 +146,8 @@ bool TcpConnectJob::has_two_connectors_for_testing() const {
 }
 
 int TcpConnectJob::ConnectInternal() {
+  connect_timing_.domain_lookup_start = base::TimeTicks::Now();
+
   int rv = OK;
   if (!endpoint_override_) {
     HostResolver::ResolveHostParameters parameters;
@@ -191,7 +193,19 @@ int TcpConnectJob::DoServiceEndpointsUpdated(
     did_fail = dns_request_final_result.value() != OK;
   }
 
-  // TODO(https://crbug.com/484073410): Update `connect_timing_` here.
+  // If the request has failed, or all live Connectors are waiting on the DNS
+  // result, update `domain_lookup_end`, so it accurately reflects the time that
+  // the request was blocked on DNS. This can hide fetch time, but for now, do
+  // not return overlapping connect and DNS lookup times. See class not in
+  // header for more details.
+  if (did_fail ||
+      (primary_connector_->is_waiting_on_dns() &&
+       (!ipv4_connector_ || ipv4_connector_->is_waiting_on_dns()))) {
+    connect_timing_.domain_lookup_end = base::TimeTicks::Now();
+    // Even on failure, or when there are no IPs, update `connect_start`. This
+    // matches legacy behavior. Unclear if it matters.
+    connect_timing_.connect_start = connect_timing_.domain_lookup_end;
+  }
 
   // Complete the TcpConnectJob on DNS error.
   if (did_fail) {

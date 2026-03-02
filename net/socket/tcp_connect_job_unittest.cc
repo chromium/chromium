@@ -139,6 +139,7 @@ class TcpConnectJobTest : public TestWithTaskEnvironment {
         initial_priority_, SocketTag(), &common_connect_job_params_,
         SocketParams(), test_delegate_.get(), /*net_log=*/nullptr,
         service_endpoint_override_);
+    start_time_ = base::TimeTicks::Now();
   }
 
   // Combines InitConnectJob() and test_delegate_->StartJobExpectingResult(),
@@ -265,6 +266,18 @@ class TcpConnectJobTest : public TestWithTaskEnvironment {
         &TcpConnectJobTest::OnHostResolution, base::Unretained(this));
   }
 
+  // Checks ConnectTiming. Note that `dns_end` and `connect_start` should always
+  // be the same, so only takes one of them. Also, always uses TimeTicks::Now()
+  // for `connect_end`, since it should always be the time the completion
+  // callback is invoked, which is typically when tests end.
+  void CheckConnectTiming(base::TimeTicks dns_start, base::TimeTicks dns_end) {
+    EXPECT_EQ(connect_job_->connect_timing().domain_lookup_start, dns_start);
+    EXPECT_EQ(connect_job_->connect_timing().domain_lookup_end, dns_end);
+    EXPECT_EQ(connect_job_->connect_timing().connect_start, dns_end);
+    EXPECT_EQ(connect_job_->connect_timing().connect_end,
+              base::TimeTicks::Now());
+  }
+
  protected:
   // Stores the information passed to the OnHostResolutionCallback() for
   // validation.
@@ -354,6 +367,10 @@ class TcpConnectJobTest : public TestWithTaskEnvironment {
   std::unique_ptr<TestConnectJobDelegate> test_delegate_;
   std::unique_ptr<TcpConnectJob> connect_job_;
 
+  // Time `connect_job_` was started. Set by InitConnectJob(), rather than on
+  // start, since there are a lot of different functions to start it.
+  base::TimeTicks start_time_;
+
   // Priority used when making a new ConnectJob.
   RequestPriority initial_priority_ = DEFAULT_PRIORITY;
 
@@ -378,11 +395,11 @@ TEST_F(TcpConnectJobTest, Priority) {
   for (RequestPriority initial_priority : kPriorities) {
     initial_priority_ = initial_priority;
 
+    auto request = host_resolver_.AddFakeRequest();
     MockConnectCompleter connect_completer;
     AddConnect(MockConnect(&connect_completer), kIpV4Endpoint1);
 
     // Start request, make sure initial priority is passed along.
-    auto request = host_resolver_.AddFakeRequest();
     EXPECT_THAT(InitAndStart(), IsError(ERR_IO_PENDING));
     EXPECT_EQ(request->priority(), initial_priority);
 
@@ -437,114 +454,122 @@ TEST_F(TcpConnectJobTest, DnsErrorSync) {
       ERR_FAILED, /*expect_sync_result=*/true,
       /*expected_connection_attempts=*/{{IPEndPoint(), ERR_FAILED}});
   EXPECT_EQ(connect_job_->GetResolveErrorInfo(), kResolveErrorInfo);
+  CheckConnectTiming(/*dns_start=*/start_time_,
+                     /*dns_end=*/start_time_);
 }
 
 TEST_F(TcpConnectJobTest, DnsErrorAsync) {
+  auto request = host_resolver_.AddFakeRequest();
+  EXPECT_THAT(InitAndStart(), IsError(ERR_IO_PENDING));
+
+  // Pass some time, to better check connect timing. Time is short to avoid
+  // creating a second Connector.
+  FastForwardBy(base::Milliseconds(7));
+
   // Use something other than ERR_NAME_NOT_RESOLVED because that's the default
   // error in some cases.
-  host_resolver_.AddFakeRequest()
-      ->set_resolve_error_info(kResolveErrorInfo)
-      .CompleteStartAsynchronously(ERR_FAILED);
-  InitRunAndExpectError(
-      ERR_FAILED, /*expect_sync_result=*/false,
-      /*expected_connection_attempts=*/{{IPEndPoint(), ERR_FAILED}});
+  request->set_resolve_error_info(kResolveErrorInfo)
+      .CallOnServiceEndpointRequestFinished(ERR_FAILED);
+  WaitForError(ERR_FAILED,
+               /*expected_connection_attempts=*/{{IPEndPoint(), ERR_FAILED}});
   EXPECT_FALSE(connect_job_->HasEstablishedConnection());
   EXPECT_EQ(connect_job_->GetResolveErrorInfo(), kResolveErrorInfo);
-}
-
-TEST_F(TcpConnectJobTest, DnsErrorDuringConnect) {
-  for (auto crypto_ready : {false, true}) {
-    SCOPED_TRACE(crypto_ready);
-    MockConnectCompleter connect_completer;
-    AddConnect(MockConnect(&connect_completer), kIpV4Endpoint1);
-    auto request = host_resolver_.AddFakeRequest();
-    request->set_start_callback(base::BindLambdaForTesting([&]() {
-      request->set_crypto_ready(crypto_ready)
-          .add_endpoint(CreateServiceEndpoint({kIpV4Endpoint1}))
-          .CallOnServiceEndpointsUpdated();
-      connect_completer.WaitForConnect();
-      request->set_resolve_error_info(kResolveErrorInfo)
-          .CallOnServiceEndpointRequestFinished(ERR_FAILED);
-    }));
-    InitRunAndExpectError(
-        ERR_FAILED, /*expect_sync_result=*/false,
-        /*expected_connection_attempts=*/{{IPEndPoint(), ERR_FAILED}});
-    EXPECT_FALSE(connect_job_->HasEstablishedConnection());
-    EXPECT_EQ(connect_job_->GetResolveErrorInfo(), kResolveErrorInfo);
-  }
+  CheckConnectTiming(/*dns_start=*/start_time_,
+                     /*dns_end=*/base::TimeTicks::Now());
 }
 
 // Test the case where there's a DNS error after the connection attempt starts.
 TEST_F(TcpConnectJobTest, DnsErrorAfterConnectStart) {
   for (auto crypto_ready : {false, true}) {
     SCOPED_TRACE(crypto_ready);
+
+    auto request = host_resolver_.AddFakeRequest();
     MockConnectCompleter connect_completer;
     AddConnect(MockConnect(&connect_completer), kIpV4Endpoint1);
-    auto request = host_resolver_.AddFakeRequest();
-    request->set_start_callback(base::BindLambdaForTesting([&]() {
-      request->set_crypto_ready(crypto_ready)
-          .add_endpoint(CreateServiceEndpoint({kIpV4Endpoint1}))
-          .CallOnServiceEndpointsUpdated();
+    EXPECT_THAT(InitAndStart(), IsError(ERR_IO_PENDING));
 
-      connect_completer.WaitForConnect();
-      EXPECT_FALSE(connect_job_->HasEstablishedConnection());
+    FastForwardBy(base::Milliseconds(5));
+    request->set_crypto_ready(crypto_ready)
+        .add_endpoint(CreateServiceEndpoint({kIpV4Endpoint1}))
+        .CallOnServiceEndpointsUpdated();
 
-      request->set_resolve_error_info(kResolveErrorInfo)
-          .CallOnServiceEndpointRequestFinished(ERR_FAILED);
-      EXPECT_FALSE(connect_job_->HasEstablishedConnection());
-    }));
-    InitRunAndExpectError(
-        ERR_FAILED, /*expect_sync_result=*/false,
-        /*expected_connection_attempts=*/{{IPEndPoint(), ERR_FAILED}});
+    connect_completer.WaitForConnect();
+    EXPECT_FALSE(connect_job_->HasEstablishedConnection());
+
+    FastForwardBy(base::Milliseconds(6));
+    request->set_resolve_error_info(kResolveErrorInfo)
+        .CallOnServiceEndpointRequestFinished(ERR_FAILED);
+
+    WaitForError(ERR_FAILED,
+                 /*expected_connection_attempts=*/{{IPEndPoint(), ERR_FAILED}});
     EXPECT_FALSE(connect_job_->HasEstablishedConnection());
     EXPECT_EQ(connect_job_->GetResolveErrorInfo(), kResolveErrorInfo);
+    // On DNS error, DNS time covers the entire interval, even if there was a
+    // connection attempt earlier.
+    CheckConnectTiming(/*dns_start=*/start_time_,
+                       /*dns_end=*/base::TimeTicks::Now());
   }
 }
 
 // Test the case where there's a DNS error after a connection is established.
 // This fails the request if crypto ready has not been received yet.
 TEST_F(TcpConnectJobTest, DnsErrorAfterConnectComplete) {
+  auto request = host_resolver_.AddFakeRequest();
   MockConnectCompleter connect_completer;
   AddConnect(MockConnect(&connect_completer), kIpV4Endpoint1);
-  auto request = host_resolver_.AddFakeRequest();
-  request->set_start_callback(base::BindLambdaForTesting([&]() {
-    request->set_crypto_ready(false)
-        .add_endpoint(CreateServiceEndpoint({kIpV4Endpoint1}))
-        .CallOnServiceEndpointsUpdated();
-    EXPECT_FALSE(connect_job_->HasEstablishedConnection());
-    connect_completer.WaitForConnectAndComplete(OK);
-    EXPECT_TRUE(connect_job_->HasEstablishedConnection());
-    request->set_resolve_error_info(kResolveErrorInfo)
-        .CallOnServiceEndpointRequestFinished(ERR_FAILED);
-  }));
-  InitRunAndExpectError(
-      ERR_FAILED, /*expect_sync_result=*/false,
-      /*expected_connection_attempts=*/{{IPEndPoint(), ERR_FAILED}});
+  EXPECT_THAT(InitAndStart(), IsError(ERR_IO_PENDING));
+
+  FastForwardBy(base::Milliseconds(5));
+  request->add_endpoint(CreateServiceEndpoint({kIpV4Endpoint1}))
+      .CallOnServiceEndpointsUpdated();
+
+  EXPECT_FALSE(connect_job_->HasEstablishedConnection());
+  connect_completer.WaitForConnectAndComplete(OK);
+  EXPECT_TRUE(connect_job_->HasEstablishedConnection());
+
+  FastForwardBy(base::Milliseconds(6));
+  request->set_resolve_error_info(kResolveErrorInfo)
+      .CallOnServiceEndpointRequestFinished(ERR_FAILED);
+
+  WaitForError(ERR_FAILED,
+               /*expected_connection_attempts=*/{{IPEndPoint(), ERR_FAILED}});
   EXPECT_TRUE(connect_job_->HasEstablishedConnection());
   EXPECT_EQ(connect_job_->GetResolveErrorInfo(), kResolveErrorInfo);
+  // On DNS error, DNS time covers the entire interval, even if there was a
+  // connection attempt earlier.
+  CheckConnectTiming(/*dns_start=*/start_time_,
+                     /*dns_end=*/base::TimeTicks::Now());
 }
 
 // Test the case where there's a DNS error after a connection error. The DNS
 // error should be the only error in ConnectionAttempts, and should be what the
 // ConnectJob fails with.
 TEST_F(TcpConnectJobTest, DnsErrorAfterConnectError) {
+  auto request = host_resolver_.AddFakeRequest();
   MockConnectCompleter connect_completer;
   AddConnect(MockConnect(&connect_completer), kIpV4Endpoint1);
-  auto request = host_resolver_.AddFakeRequest();
-  request->set_start_callback(base::BindLambdaForTesting([&]() {
-    request->set_crypto_ready(false)
-        .add_endpoint(CreateServiceEndpoint({kIpV4Endpoint1}))
-        .CallOnServiceEndpointsUpdated();
-    connect_completer.WaitForConnectAndComplete(ERR_UNEXPECTED);
-    EXPECT_FALSE(connect_job_->HasEstablishedConnection());
-    request->set_resolve_error_info(kResolveErrorInfo)
-        .CallOnServiceEndpointRequestFinished(ERR_FAILED);
-  }));
-  InitRunAndExpectError(
-      ERR_FAILED, /*expect_sync_result=*/false,
-      /*expected_connection_attempts=*/{{IPEndPoint(), ERR_FAILED}});
+  EXPECT_THAT(InitAndStart(), IsError(ERR_IO_PENDING));
+
+  FastForwardBy(base::Milliseconds(5));
+  request->add_endpoint(CreateServiceEndpoint({kIpV4Endpoint1}))
+      .CallOnServiceEndpointsUpdated();
+
+  EXPECT_FALSE(connect_job_->HasEstablishedConnection());
+  connect_completer.WaitForConnectAndComplete(ERR_UNEXPECTED);
+  EXPECT_FALSE(connect_job_->HasEstablishedConnection());
+
+  FastForwardBy(base::Milliseconds(6));
+  request->set_resolve_error_info(kResolveErrorInfo)
+      .CallOnServiceEndpointRequestFinished(ERR_FAILED);
+
+  WaitForError(ERR_FAILED,
+               /*expected_connection_attempts=*/{{IPEndPoint(), ERR_FAILED}});
   EXPECT_FALSE(connect_job_->HasEstablishedConnection());
   EXPECT_EQ(connect_job_->GetResolveErrorInfo(), kResolveErrorInfo);
+  // On DNS error, DNS time covers the entire interval, even if there was a
+  // connection attempt earlier.
+  CheckConnectTiming(/*dns_start=*/start_time_,
+                     /*dns_end=*/base::TimeTicks::Now());
 }
 
 TEST_F(TcpConnectJobTest, ConnectionSuccessSyncDnsSyncConnect) {
@@ -558,6 +583,8 @@ TEST_F(TcpConnectJobTest, ConnectionSuccessSyncDnsSyncConnect) {
                           /*expect_sync_result=*/true);
   EXPECT_TRUE(connect_job_->HasEstablishedConnection());
   EXPECT_EQ(kDnsAliases, test_delegate_->socket()->GetDnsAliases());
+  CheckConnectTiming(/*dns_start=*/start_time_,
+                     /*dns_end=*/start_time_);
 }
 
 TEST_F(TcpConnectJobTest, ConnectionErrorSyncDnsSyncConnect) {
@@ -569,6 +596,45 @@ TEST_F(TcpConnectJobTest, ConnectionErrorSyncDnsSyncConnect) {
       ERR_FAILED, /*expect_sync_result=*/true,
       /*expected_connection_attempts=*/{{kIpV4Endpoint1, ERR_FAILED}});
   EXPECT_FALSE(connect_job_->HasEstablishedConnection());
+  CheckConnectTiming(/*dns_start=*/start_time_,
+                     /*dns_end=*/start_time_);
+}
+
+TEST_F(TcpConnectJobTest, ConnectionSuccessAsyncDnsSyncConnect) {
+  const auto service_endpoint = CreateServiceEndpoint({kIpV4Endpoint1});
+  auto request = host_resolver_.AddFakeRequest();
+  AddConnect(MockConnect(SYNCHRONOUS, OK), kIpV4Endpoint1);
+  EXPECT_THAT(InitAndStart(), IsError(ERR_IO_PENDING));
+
+  FastForwardBy(base::Milliseconds(5));
+  request->add_endpoint(service_endpoint)
+      .set_aliases(kDnsAliases)
+      .CallOnServiceEndpointRequestFinished(OK);
+  EXPECT_TRUE(connect_job_->HasEstablishedConnection());
+
+  WaitForSuccess(kIpV4Endpoint1, service_endpoint);
+  EXPECT_TRUE(connect_job_->HasEstablishedConnection());
+  EXPECT_EQ(kDnsAliases, test_delegate_->socket()->GetDnsAliases());
+  CheckConnectTiming(/*dns_start=*/start_time_,
+                     /*dns_end=*/base::TimeTicks::Now());
+}
+
+TEST_F(TcpConnectJobTest, ConnectionErrorAsyncDnsSyncConnect) {
+  const auto service_endpoint = CreateServiceEndpoint({kIpV4Endpoint1});
+  auto request = host_resolver_.AddFakeRequest();
+  AddConnect(MockConnect(SYNCHRONOUS, ERR_FAILED), kIpV4Endpoint1);
+  EXPECT_THAT(InitAndStart(), IsError(ERR_IO_PENDING));
+
+  FastForwardBy(base::Milliseconds(5));
+  request->add_endpoint(service_endpoint)
+      .CallOnServiceEndpointRequestFinished(OK);
+  EXPECT_FALSE(connect_job_->HasEstablishedConnection());
+
+  WaitForError(ERR_FAILED,
+               /*expected_connection_attempts=*/{{kIpV4Endpoint1, ERR_FAILED}});
+  EXPECT_FALSE(connect_job_->HasEstablishedConnection());
+  CheckConnectTiming(/*dns_start=*/start_time_,
+                     /*dns_end=*/base::TimeTicks::Now());
 }
 
 TEST_F(TcpConnectJobTest, ConnectionSuccessSyncDnsAsyncConnect) {
@@ -577,92 +643,134 @@ TEST_F(TcpConnectJobTest, ConnectionSuccessSyncDnsAsyncConnect) {
       .add_endpoint(service_endpoint)
       .set_aliases(kDnsAliases)
       .CompleteStartSynchronously(OK);
-  AddConnect(MockConnect(ASYNC, OK), kIpV4Endpoint1);
-  InitRunAndExpectSuccess(kIpV4Endpoint1, service_endpoint,
-                          /*expect_sync_result=*/false);
+  MockConnectCompleter connect_completer;
+  AddConnect(MockConnect(&connect_completer), kIpV4Endpoint1);
+  EXPECT_THAT(InitAndStart(), IsError(ERR_IO_PENDING));
+
+  FastForwardBy(base::Milliseconds(6));
+  connect_completer.WaitForConnectAndComplete(OK);
+
+  WaitForSuccess(kIpV4Endpoint1, service_endpoint);
   EXPECT_TRUE(connect_job_->HasEstablishedConnection());
   EXPECT_EQ(kDnsAliases, test_delegate_->socket()->GetDnsAliases());
+  CheckConnectTiming(/*dns_start=*/start_time_,
+                     /*dns_end=*/start_time_);
 }
 
 TEST_F(TcpConnectJobTest, ConnectionErrorSyncDnsAsyncConnect) {
-  host_resolver_.ConfigureDefaultResolution()
-      .add_endpoint(CreateServiceEndpoint({kIpV4Endpoint1}))
-      .CompleteStartSynchronously(OK);
-  AddConnect(MockConnect(ASYNC, ERR_FAILED), kIpV4Endpoint1);
-  InitRunAndExpectError(
-      ERR_FAILED, /*expect_sync_result=*/false,
-      /*expected_connection_attempts=*/{{kIpV4Endpoint1, ERR_FAILED}});
-  EXPECT_FALSE(connect_job_->HasEstablishedConnection());
-}
-
-TEST_F(TcpConnectJobTest, ConnectionSuccessAsyncDnsSyncConnect) {
   const auto service_endpoint = CreateServiceEndpoint({kIpV4Endpoint1});
-  host_resolver_.AddFakeRequest()
-      ->add_endpoint(service_endpoint)
-      .set_aliases(kDnsAliases)
-      .CompleteStartAsynchronously(OK);
-  AddConnect(MockConnect(SYNCHRONOUS, OK), kIpV4Endpoint1);
-  InitRunAndExpectSuccess(kIpV4Endpoint1, service_endpoint,
-                          /*expect_sync_result=*/false);
-  EXPECT_TRUE(connect_job_->HasEstablishedConnection());
-  EXPECT_EQ(kDnsAliases, test_delegate_->socket()->GetDnsAliases());
-}
+  host_resolver_.ConfigureDefaultResolution()
+      .add_endpoint(service_endpoint)
+      .CompleteStartSynchronously(OK);
+  MockConnectCompleter connect_completer;
+  AddConnect(MockConnect(&connect_completer), kIpV4Endpoint1);
+  EXPECT_THAT(InitAndStart(), IsError(ERR_IO_PENDING));
 
-TEST_F(TcpConnectJobTest, ConnectionErrorAsyncDnsSyncConnect) {
-  host_resolver_.AddFakeRequest()
-      ->add_endpoint(CreateServiceEndpoint({kIpV4Endpoint1}))
-      .CompleteStartAsynchronously(OK);
-  AddConnect(MockConnect(SYNCHRONOUS, ERR_FAILED), kIpV4Endpoint1);
-  InitRunAndExpectError(
-      ERR_FAILED, /*expect_sync_result=*/false,
-      /*expected_connection_attempts=*/{{kIpV4Endpoint1, ERR_FAILED}});
+  FastForwardBy(base::Milliseconds(6));
+  connect_completer.WaitForConnectAndComplete(ERR_FAILED);
+
+  WaitForError(ERR_FAILED,
+               /*expected_connection_attempts=*/{{kIpV4Endpoint1, ERR_FAILED}});
   EXPECT_FALSE(connect_job_->HasEstablishedConnection());
+  CheckConnectTiming(/*dns_start=*/start_time_, /*dns_end=*/start_time_);
 }
 
 TEST_F(TcpConnectJobTest, ConnectionSuccessAsyncDnsAsyncConnect) {
   const auto service_endpoint = CreateServiceEndpoint({kIpV4Endpoint1});
-  host_resolver_.AddFakeRequest()
-      ->add_endpoint(service_endpoint)
+  auto request = host_resolver_.AddFakeRequest();
+  MockConnectCompleter connect_completer;
+  AddConnect(MockConnect(&connect_completer), kIpV4Endpoint1);
+  EXPECT_THAT(InitAndStart(), IsError(ERR_IO_PENDING));
+
+  FastForwardBy(base::Milliseconds(5));
+  request->add_endpoint(service_endpoint)
       .set_aliases(kDnsAliases)
-      .CompleteStartAsynchronously(OK);
-  AddConnect(MockConnect(ASYNC, OK), kIpV4Endpoint1);
-  InitRunAndExpectSuccess(kIpV4Endpoint1, service_endpoint,
-                          /*expect_sync_result=*/false);
+      .CallOnServiceEndpointRequestFinished(OK);
+  base::TimeTicks dns_end = base::TimeTicks::Now();
+
+  FastForwardBy(base::Milliseconds(6));
+  EXPECT_FALSE(connect_job_->HasEstablishedConnection());
+  connect_completer.WaitForConnectAndComplete(OK);
+  EXPECT_TRUE(connect_job_->HasEstablishedConnection());
+
+  WaitForSuccess(kIpV4Endpoint1, service_endpoint);
   EXPECT_TRUE(connect_job_->HasEstablishedConnection());
   EXPECT_EQ(kDnsAliases, test_delegate_->socket()->GetDnsAliases());
+  CheckConnectTiming(/*dns_start=*/start_time_,
+                     /*dns_end=*/dns_end);
 }
 
 TEST_F(TcpConnectJobTest, ConnectionErrorAsyncDnsAsyncConnect) {
-  host_resolver_.AddFakeRequest()
-      ->add_endpoint(CreateServiceEndpoint({kIpV4Endpoint1}))
-      .CompleteStartAsynchronously(OK);
-  AddConnect(MockConnect(ASYNC, ERR_FAILED), kIpV4Endpoint1);
-  InitRunAndExpectError(
-      ERR_FAILED, /*expect_sync_result=*/false,
-      /*expected_connection_attempts=*/{{kIpV4Endpoint1, ERR_FAILED}});
+  const auto service_endpoint = CreateServiceEndpoint({kIpV4Endpoint1});
+  auto request = host_resolver_.AddFakeRequest();
+  MockConnectCompleter connect_completer;
+  AddConnect(MockConnect(&connect_completer), kIpV4Endpoint1);
+  EXPECT_THAT(InitAndStart(), IsError(ERR_IO_PENDING));
+
+  FastForwardBy(base::Milliseconds(5));
+  request->add_endpoint(service_endpoint)
+      .CallOnServiceEndpointRequestFinished(OK);
+  base::TimeTicks dns_end = base::TimeTicks::Now();
+
+  FastForwardBy(base::Milliseconds(6));
   EXPECT_FALSE(connect_job_->HasEstablishedConnection());
+  connect_completer.WaitForConnectAndComplete(ERR_FAILED);
+  EXPECT_FALSE(connect_job_->HasEstablishedConnection());
+
+  WaitForError(ERR_FAILED,
+               /*expected_connection_attempts=*/{{kIpV4Endpoint1, ERR_FAILED}});
+  EXPECT_FALSE(connect_job_->HasEstablishedConnection());
+  CheckConnectTiming(/*dns_start=*/start_time_,
+                     /*dns_end=*/dns_end);
 }
 
 // Test the case where DNS never completes, but is crypto ready and provides an
 // IP address, which should be enough for the job to connect and return a
 // result.
-TEST_F(TcpConnectJobTest, ConnectionSuccessPartialDns) {
+TEST_F(TcpConnectJobTest, ConnectionSuccessAsyncPartialDnsSyncConnect) {
   const auto service_endpoint = CreateServiceEndpoint({kIpV4Endpoint1});
-  for (auto connect : {SYNCHRONOUS, ASYNC}) {
-    SCOPED_TRACE(connect);
-    auto request = host_resolver_.AddFakeRequest();
-    request->set_start_callback(base::BindLambdaForTesting([&]() {
-      request->set_crypto_ready(true)
-          .add_endpoint(service_endpoint)
-          .set_aliases(kDnsAliases)
-          .CallOnServiceEndpointsUpdated();
-    }));
-    AddConnect(MockConnect(connect, OK), kIpV4Endpoint1);
-    InitRunAndExpectSuccess(kIpV4Endpoint1, service_endpoint,
-                            /*expect_sync_result=*/false);
-    EXPECT_TRUE(connect_job_->HasEstablishedConnection());
-    EXPECT_EQ(kDnsAliases, test_delegate_->socket()->GetDnsAliases());
-  }
+  auto request = host_resolver_.AddFakeRequest();
+  AddConnect(MockConnect(SYNCHRONOUS, OK), kIpV4Endpoint1);
+  EXPECT_THAT(InitAndStart(), IsError(ERR_IO_PENDING));
+
+  FastForwardBy(base::Milliseconds(5));
+  request->set_crypto_ready(true)
+      .add_endpoint(service_endpoint)
+      .set_aliases(kDnsAliases)
+      .CallOnServiceEndpointsUpdated();
+  base::TimeTicks partial_dns_time = base::TimeTicks::Now();
+
+  WaitForSuccess(kIpV4Endpoint1, service_endpoint);
+  EXPECT_TRUE(connect_job_->HasEstablishedConnection());
+  EXPECT_EQ(kDnsAliases, test_delegate_->socket()->GetDnsAliases());
+  // Despite DNS not completing, DNS end time is when the endpoint was received,
+  // at which point the ConnectJob was no longer blocked by DNS.
+  CheckConnectTiming(/*dns_start=*/start_time_, /*dns_end=*/partial_dns_time);
+}
+
+TEST_F(TcpConnectJobTest, ConnectionSuccessAsyncPartialDnsAsyncConnect) {
+  const auto service_endpoint = CreateServiceEndpoint({kIpV4Endpoint1});
+  auto request = host_resolver_.AddFakeRequest();
+  MockConnectCompleter connect_completer;
+  AddConnect(MockConnect(&connect_completer), kIpV4Endpoint1);
+  EXPECT_THAT(InitAndStart(), IsError(ERR_IO_PENDING));
+
+  FastForwardBy(base::Milliseconds(5));
+  request->set_crypto_ready(true)
+      .add_endpoint(service_endpoint)
+      .set_aliases(kDnsAliases)
+      .CallOnServiceEndpointsUpdated();
+  base::TimeTicks partial_dns_time = base::TimeTicks::Now();
+
+  FastForwardBy(base::Milliseconds(6));
+  connect_completer.WaitForConnectAndComplete(OK);
+
+  WaitForSuccess(kIpV4Endpoint1, service_endpoint);
+  EXPECT_TRUE(connect_job_->HasEstablishedConnection());
+  EXPECT_EQ(kDnsAliases, test_delegate_->socket()->GetDnsAliases());
+  // Despite DNS not completing, DNS end time is when the endpoint was received,
+  // at which point the ConnectJob was no longer blocked by DNS.
+  CheckConnectTiming(/*dns_start=*/start_time_, /*dns_end=*/partial_dns_time);
 }
 
 // Test the case where DNS provides an IP, and we manage to connect to it,
@@ -676,70 +784,131 @@ TEST_F(TcpConnectJobTest, ConnectionSuccessThenCryptoReady) {
   const auto service_endpoint = CreateServiceEndpoint({kIpV4Endpoint1});
   for (bool dns_completes : {true, false}) {
     SCOPED_TRACE(dns_completes);
-    for (auto connect : {SYNCHRONOUS, ASYNC}) {
-      SCOPED_TRACE(connect);
-      MockConnectCompleter connect_completer;
-      AddConnect(MockConnect(&connect_completer), kIpV4Endpoint1);
-      auto request = host_resolver_.AddFakeRequest();
-      request->set_start_callback(base::BindLambdaForTesting([&]() {
-        request->add_endpoint(service_endpoint).CallOnServiceEndpointsUpdated();
-        EXPECT_FALSE(connect_job_->HasEstablishedConnection());
-        connect_completer.WaitForConnectAndComplete(OK);
-        EXPECT_TRUE(connect_job_->HasEstablishedConnection());
-        if (dns_completes) {
-          request->set_crypto_ready(true)
-              .set_aliases(kDnsAliases)
-              .CallOnServiceEndpointsUpdated();
-        } else {
-          request->set_crypto_ready(true)
-              .set_aliases(kDnsAliases)
-              .CallOnServiceEndpointRequestFinished(OK);
-        }
-      }));
-      InitRunAndExpectSuccess(kIpV4Endpoint1, service_endpoint,
-                              /*expect_sync_result=*/false);
-      EXPECT_EQ(kDnsAliases, test_delegate_->socket()->GetDnsAliases());
-      EXPECT_TRUE(connect_job_->HasEstablishedConnection());
+    MockConnectCompleter connect_completer;
+    AddConnect(MockConnect(&connect_completer), kIpV4Endpoint1);
+    auto request = host_resolver_.AddFakeRequest();
+    EXPECT_THAT(InitAndStart(), IsError(ERR_IO_PENDING));
+
+    FastForwardBy(base::Milliseconds(5));
+    request->add_endpoint(service_endpoint).CallOnServiceEndpointsUpdated();
+    EXPECT_FALSE(connect_job_->HasEstablishedConnection());
+
+    FastForwardBy(base::Milliseconds(6));
+    connect_completer.WaitForConnectAndComplete(OK);
+    EXPECT_TRUE(connect_job_->HasEstablishedConnection());
+    request->set_crypto_ready(true).set_aliases(kDnsAliases);
+    if (dns_completes) {
+      request->CallOnServiceEndpointsUpdated();
+    } else {
+      request->CallOnServiceEndpointRequestFinished(OK);
     }
+
+    WaitForSuccess(kIpV4Endpoint1, service_endpoint);
+    EXPECT_EQ(kDnsAliases, test_delegate_->socket()->GetDnsAliases());
+    EXPECT_TRUE(connect_job_->HasEstablishedConnection());
+
+    // Since the ConnectJob was blocked on crypto ready after establishing a
+    // connection, the request was effectively being blocked on DNS even while
+    // connecting, so DNS time covers the entire duration of the request.
+    CheckConnectTiming(/*dns_start=*/start_time_,
+                       /*dns_end=*/base::TimeTicks::Now());
   }
 }
 
-// Just like the above test, but with an extra ServiceEndpointsUpdated() even
+// Just like the above test, but with an extra ServiceEndpointsUpdated() event
 // before crypto ready is set. The request should not complete until crypto
 // ready is set.
 TEST_F(TcpConnectJobTest, ConnectionSuccessThenCryptoReady2) {
   const auto service_endpoint = CreateServiceEndpoint({kIpV4Endpoint1});
   for (bool dns_completes : {true, false}) {
     SCOPED_TRACE(dns_completes);
-    for (auto connect : {SYNCHRONOUS, ASYNC}) {
-      SCOPED_TRACE(connect);
-      MockConnectCompleter connect_completer;
-      AddConnect(MockConnect(&connect_completer), kIpV4Endpoint1);
-      auto request = host_resolver_.AddFakeRequest();
-      request->set_start_callback(base::BindLambdaForTesting([&]() {
-        request->add_endpoint(service_endpoint).CallOnServiceEndpointsUpdated();
-        EXPECT_FALSE(connect_job_->HasEstablishedConnection());
-        connect_completer.WaitForConnectAndComplete(OK);
-        EXPECT_TRUE(connect_job_->HasEstablishedConnection());
+    MockConnectCompleter connect_completer;
+    AddConnect(MockConnect(&connect_completer), kIpV4Endpoint1);
+    auto request = host_resolver_.AddFakeRequest();
+    EXPECT_THAT(InitAndStart(), IsError(ERR_IO_PENDING));
 
-        // A superfluous OnServiceEndpointsUpdated() event. We could add more
-        // endpoints, but it's not needed for this test. It should not cause the
-        // request to complete. Spin the message loop by advancing time to make
-        // sure there are no pending completion events.
-        request->CallOnServiceEndpointsUpdated();
-        FastForwardBy(base::Milliseconds(1));
-        EXPECT_FALSE(test_delegate_->has_result());
+    FastForwardBy(base::Milliseconds(5));
+    request->add_endpoint(service_endpoint).CallOnServiceEndpointsUpdated();
+    EXPECT_FALSE(connect_job_->HasEstablishedConnection());
 
-        if (dns_completes) {
-          request->set_crypto_ready(true).CallOnServiceEndpointsUpdated();
-        } else {
-          request->set_crypto_ready(true).CallOnServiceEndpointRequestFinished(
-              OK);
-        }
-      }));
-      InitRunAndExpectSuccess(kIpV4Endpoint1, service_endpoint,
-                              /*expect_sync_result=*/false);
+    FastForwardBy(base::Milliseconds(6));
+    connect_completer.WaitForConnectAndComplete(OK);
+    EXPECT_TRUE(connect_job_->HasEstablishedConnection());
+
+    // A superfluous OnServiceEndpointsUpdated() event. We could add more
+    // endpoints, but it's not needed for this test. It should not cause the
+    // request to complete. Spin the message loop by advancing time to make
+    // sure there are no pending completion events.
+    request->CallOnServiceEndpointsUpdated();
+    FastForwardBy(base::Milliseconds(1));
+    EXPECT_FALSE(test_delegate_->has_result());
+
+    request->set_crypto_ready(true).set_aliases(kDnsAliases);
+    if (dns_completes) {
+      request->CallOnServiceEndpointsUpdated();
+    } else {
+      request->CallOnServiceEndpointRequestFinished(OK);
     }
+
+    WaitForSuccess(kIpV4Endpoint1, service_endpoint);
+    EXPECT_EQ(kDnsAliases, test_delegate_->socket()->GetDnsAliases());
+    EXPECT_TRUE(connect_job_->HasEstablishedConnection());
+
+    // Since the ConnectJob was blocked on crypto ready after establishing a
+    // connection, the request was effectively being blocked on DNS even while
+    // connecting, so DNS time covers the entire duration of the request.
+    CheckConnectTiming(/*dns_start=*/start_time_,
+                       /*dns_end=*/base::TimeTicks::Now());
+  }
+}
+
+// Test the case where a connection is established, but it is rejected due to
+// the HTTPS record, but there's a new IP that succeeds. In this case, DNS end
+// should be the time the HTTPS record is received. This test is run both in the
+// case where the DNS request completes, and where it doesn't, which shouldn't
+// affect the results in any way.
+TEST_F(TcpConnectJobTest, HttpsRecordRejectsConnectionSecondConnectionUsage) {
+  const auto service_endpoint1 =
+      CreateServiceEndpoint({kIpV6Endpoint1}, {"h2"}, /*ech=*/true);
+  const auto service_endpoint2 = CreateServiceEndpoint({kIpV4Endpoint1});
+  for (bool dns_completes : {true, false}) {
+    SCOPED_TRACE(dns_completes);
+    std::array<MockConnectCompleter, 2> connect_completers;
+    AddConnect(MockConnect(&connect_completers[0]), kIpV4Endpoint1);
+    AddConnect(MockConnect(&connect_completers[1]), kIpV6Endpoint1);
+    auto request = host_resolver_.AddFakeRequest();
+    EXPECT_THAT(InitAndStart(), IsError(ERR_IO_PENDING));
+
+    FastForwardBy(base::Milliseconds(5));
+    request->add_endpoint(service_endpoint2).CallOnServiceEndpointsUpdated();
+    EXPECT_FALSE(connect_job_->HasEstablishedConnection());
+
+    FastForwardBy(base::Milliseconds(6));
+    connect_completers[0].WaitForConnectAndComplete(OK);
+    EXPECT_TRUE(connect_job_->HasEstablishedConnection());
+
+    FastForwardBy(base::Milliseconds(7));
+    request->set_endpoints({service_endpoint1, service_endpoint2})
+        .set_crypto_ready(true)
+        .set_aliases(kDnsAliases);
+    if (dns_completes) {
+      request->CallOnServiceEndpointsUpdated();
+    } else {
+      request->CallOnServiceEndpointRequestFinished(OK);
+    }
+    base::TimeTicks crypto_ready_time = base::TimeTicks::Now();
+
+    FastForwardBy(base::Milliseconds(8));
+    connect_completers[1].WaitForConnectAndComplete(OK);
+
+    WaitForSuccess(kIpV6Endpoint1, service_endpoint1);
+    EXPECT_EQ(kDnsAliases, test_delegate_->socket()->GetDnsAliases());
+    EXPECT_TRUE(connect_job_->HasEstablishedConnection());
+
+    // The DNS time should include the time up to the crypto ready event, since
+    // the request was blocked on that event.
+    CheckConnectTiming(/*dns_start=*/start_time_,
+                       /*dns_end=*/crypto_ready_time);
   }
 }
 
@@ -787,6 +956,96 @@ TEST_F(TcpConnectJobTest, TwoIpsFirstIpFails) {
       }
     }
   }
+}
+
+// Test the case when initially only one IP is received (and crypto ready),
+// which fails. Then the connection attempt stalls until another IP is provided.
+// The DNS connect end time should include the wait for the second IP.
+TEST_F(TcpConnectJobTest, StalledAfterFirstIpFails) {
+  const auto initial_service_endpoint = CreateServiceEndpoint({kIpV6Endpoint1});
+  const auto final_service_endpoint =
+      CreateServiceEndpoint({kIpV4Endpoint1, kIpV6Endpoint1});
+  auto request = host_resolver_.AddFakeRequest();
+  std::array<MockConnectCompleter, 2> connect_completers;
+  AddConnect(MockConnect(&connect_completers[0]), kIpV6Endpoint1);
+  AddConnect(MockConnect(&connect_completers[1]), kIpV4Endpoint1);
+
+  EXPECT_THAT(InitAndStart(), IsError(ERR_IO_PENDING));
+
+  request->add_endpoint(initial_service_endpoint)
+      .set_crypto_ready(true)
+      .CallOnServiceEndpointsUpdated();
+
+  // First connection attempt fails, leaving no IPs to connect to, but the DNS
+  // request is still going.
+  FastForwardBy(base::Milliseconds(5));
+  connect_completers[0].WaitForConnectAndComplete(ERR_FAILED);
+
+  // The DNS request completes, providing a new IP.
+  FastForwardBy(base::Milliseconds(5));
+  request->set_endpoints({final_service_endpoint})
+      .CallOnServiceEndpointRequestFinished(OK);
+  EXPECT_FALSE(connect_job_->HasEstablishedConnection());
+  base::TimeTicks final_sevice_endpoint_time = base::TimeTicks::Now();
+
+  // Second IP succeeds.
+  FastForwardBy(base::Milliseconds(5));
+  connect_completers[1].WaitForConnectAndComplete(OK);
+  EXPECT_TRUE(connect_job_->HasEstablishedConnection());
+
+  WaitForSuccess(kIpV4Endpoint1,
+                 final_service_endpoint, /*expected_connection_attempts=*/
+                 {{kIpV6Endpoint1, ERR_FAILED}});
+
+  // The DNS time should include the time up to when the second IP was received,
+  // since the request was blocked on it.
+  CheckConnectTiming(/*dns_start=*/start_time_,
+                     /*dns_end=*/final_sevice_endpoint_time);
+}
+
+// Test the case when initially only one IP is received (and crypto ready),
+// while that's connecting, the DNS lookup provide another IP. The first
+// connection attempt fails, but the second succeeds. The DNS connect end time
+// should not include the wait for the second IP, since we were busy connecting
+// at the time.
+TEST_F(TcpConnectJobTest, NotStalledAfterFirstIpFails) {
+  const auto initial_service_endpoint = CreateServiceEndpoint({kIpV6Endpoint1});
+  const auto final_service_endpoint =
+      CreateServiceEndpoint({kIpV4Endpoint1, kIpV6Endpoint1});
+  auto request = host_resolver_.AddFakeRequest();
+  std::array<MockConnectCompleter, 2> connect_completers;
+  AddConnect(MockConnect(&connect_completers[0]), kIpV6Endpoint1);
+  AddConnect(MockConnect(&connect_completers[1]), kIpV4Endpoint1);
+
+  EXPECT_THAT(InitAndStart(), IsError(ERR_IO_PENDING));
+
+  request->add_endpoint(initial_service_endpoint)
+      .set_crypto_ready(true)
+      .CallOnServiceEndpointsUpdated();
+
+  // The DNS request completes, providing a new IP.
+  FastForwardBy(base::Milliseconds(5));
+  request->set_endpoints({final_service_endpoint})
+      .CallOnServiceEndpointRequestFinished(OK);
+  EXPECT_FALSE(connect_job_->HasEstablishedConnection());
+
+  // First connection attempt fails.
+  FastForwardBy(base::Milliseconds(5));
+  connect_completers[0].WaitForConnectAndComplete(ERR_FAILED);
+
+  // Second IP succeeds.
+  FastForwardBy(base::Milliseconds(5));
+  connect_completers[1].WaitForConnectAndComplete(OK);
+  EXPECT_TRUE(connect_job_->HasEstablishedConnection());
+
+  WaitForSuccess(kIpV4Endpoint1,
+                 final_service_endpoint, /*expected_connection_attempts=*/
+                 {{kIpV6Endpoint1, ERR_FAILED}});
+
+  // The DNS time should not include the time up to when the second IP was
+  // received, since the request was never blocked waiting on it.
+  CheckConnectTiming(/*dns_start=*/start_time_,
+                     /*dns_end=*/start_time_);
 }
 
 // Test that ERR_NETWORK_IO_SUSPENDED fails a job instantly, preventing it from
@@ -1884,6 +2143,8 @@ TEST_F(TcpConnectJobTest, OneConnectorSlowDns) {
       kIpV4Endpoint1, service_endpoint,
       /*expected_connection_attempts=*/{{kIpV6Endpoint1, ERR_FAILED}});
   EXPECT_TRUE(connect_job_->HasEstablishedConnection());
+  CheckConnectTiming(/*dns_start=*/start_time_,
+                     /*dns_end=*/base::TimeTicks::Now());
 }
 
 // Test the case where we create two Connectors, but one is never used, since
@@ -1908,6 +2169,7 @@ TEST_F(TcpConnectJobTest, TwoConnectorsOneIpSuccess) {
   connect_completer.Complete(OK);
   WaitForSuccess(kIpV4Endpoint1, service_endpoint);
   EXPECT_TRUE(connect_job_->HasEstablishedConnection());
+  CheckConnectTiming(/*dns_start=*/start_time_, /*dns_end=*/start_time_);
 }
 
 // Test the case where we create two Connectors, but one is never used, since
@@ -1933,6 +2195,7 @@ TEST_F(TcpConnectJobTest, TwoConnectorsOneIpFailure) {
   WaitForError(ERR_FAILED,
                /*expected_connection_attempts=*/{{kIpV4Endpoint1, ERR_FAILED}});
   EXPECT_FALSE(connect_job_->HasEstablishedConnection());
+  CheckConnectTiming(/*dns_start=*/start_time_, /*dns_end=*/start_time_);
 }
 
 // Test the case where we create two Connectors, but one is never used, since
@@ -1964,6 +2227,7 @@ TEST_F(TcpConnectJobTest, TwoConnectorsOneUsedTwoIpsSuccess) {
       kIpV4Endpoint1, service_endpoint,
       /*expected_connection_attempts=*/{{kIpV6Endpoint1, ERR_FAILED}});
   EXPECT_TRUE(connect_job_->HasEstablishedConnection());
+  CheckConnectTiming(/*dns_start=*/start_time_, /*dns_end=*/start_time_);
 }
 
 // Test the case where we make two Connectors with two IPs. Once succeeds, one
@@ -2000,6 +2264,7 @@ TEST_F(TcpConnectJobTest, TwoConnectorsTwoIpsOneNeverCompletes) {
 
     WaitForSuccess(successful_index == 0 ? kIpV6Endpoint1 : kIpV4Endpoint1,
                    service_endpoint);
+    CheckConnectTiming(/*dns_start=*/start_time_, /*dns_end=*/start_time_);
   }
 }
 
@@ -2041,6 +2306,91 @@ TEST_F(TcpConnectJobTest, TwoConnectorsTwoIpsOneFails) {
                    /*expected_connection_attempts=*/
                    {{successful_index == 0 ? kIpV4Endpoint1 : kIpV6Endpoint1,
                      ERR_FAILED}});
+    CheckConnectTiming(/*dns_start=*/start_time_, /*dns_end=*/start_time_);
+  }
+}
+
+// Test the case where two connectors are blocked on crypto ready. In this case,
+// DNS end time includes time up to receiving crypto ready.
+TEST_F(TcpConnectJobTest, TwoConnectorsBlockedOnCryptoReady) {
+  const auto service_endpoint =
+      CreateServiceEndpoint({kIpV4Endpoint1, kIpV6Endpoint1});
+
+  auto request = host_resolver_.AddFakeRequest();
+  std::array<MockConnectCompleter, 2> connect_completers;
+  AddConnect(MockConnect(&connect_completers[0]), kIpV6Endpoint1);
+  AddConnect(MockConnect(&connect_completers[1]), kIpV4Endpoint1);
+
+  EXPECT_THAT(InitAndStart(), IsError(ERR_IO_PENDING));
+
+  // The A and AAAA resolutions complete.
+  FastForwardBy(base::Milliseconds(5));
+  request->add_endpoint(service_endpoint).CallOnServiceEndpointsUpdated();
+
+  FastForwardBy(base::Milliseconds(5));
+  connect_completers[0].WaitForConnect();
+  connect_completers[1].WaitForConnect();
+  EXPECT_TRUE(connect_job_->has_two_connectors_for_testing());
+
+  // Both connections complete, but have to wait for crypto ready.
+  connect_completers[0].Complete(OK);
+  connect_completers[1].Complete(OK);
+
+  // Receive crypto ready a little time later.
+  FastForwardBy(base::Milliseconds(5));
+  request->CallOnServiceEndpointRequestFinished(OK);
+
+  // Request completes. We prefer the primary connector's socket, which is the
+  // IPv6 socket.
+  WaitForSuccess(kIpV6Endpoint1, service_endpoint);
+  // Since both requests were blocked on getting an IP, the DNS end time is when
+  // the crypto ready event was received.
+  CheckConnectTiming(/*dns_start=*/start_time_,
+                     /*dns_end=*/base::TimeTicks::Now());
+}
+
+// Test the case where one connector is blocked on crypto ready, while the other
+// is connecting, when crypto ready occurs. In this case, DNS end time does not
+// include time up to receiving crypto ready, though perhaps it should. The
+// reason for not doing so if because of the case where, e.g., there's one
+// connecting IP and two connectors waiting on a second IP, where we shouldn't
+// update DNS time on crypto ready.
+TEST_F(TcpConnectJobTest, TwoConnectorsOneBlockedOnCryptoReady) {
+  const auto service_endpoint =
+      CreateServiceEndpoint({kIpV4Endpoint1, kIpV6Endpoint1});
+
+  for (int endpoint_to_connect : {0, 1}) {
+    SCOPED_TRACE(endpoint_to_connect);
+    auto request = host_resolver_.AddFakeRequest();
+    std::array<MockConnectCompleter, 2> connect_completers;
+    AddConnect(MockConnect(&connect_completers[0]), kIpV6Endpoint1);
+    AddConnect(MockConnect(&connect_completers[1]), kIpV4Endpoint1);
+
+    EXPECT_THAT(InitAndStart(), IsError(ERR_IO_PENDING));
+
+    // The A and AAAA resolutions complete.
+    request->add_endpoint(service_endpoint).CallOnServiceEndpointsUpdated();
+
+    FastForwardBy(base::Milliseconds(5));
+    connect_completers[0].WaitForConnect();
+    connect_completers[1].WaitForConnect();
+    EXPECT_TRUE(connect_job_->has_two_connectors_for_testing());
+
+    // One connection completes, but has to wait for crypto ready.
+    connect_completers[endpoint_to_connect].Complete(OK);
+
+    // Receive crypto ready a little time later.
+    FastForwardBy(base::Milliseconds(5));
+    request->CallOnServiceEndpointRequestFinished(OK);
+
+    // Request completes. We prefer the primary connector's socket, which is the
+    // IPv6 socket.
+    WaitForSuccess(endpoint_to_connect == 0 ? kIpV6Endpoint1 : kIpV4Endpoint1,
+                   service_endpoint);
+    // Since only one request was blocked on getting an IP, the DNS end time
+    // does not include the wait for crypto ready.
+    CheckConnectTiming(/*dns_start=*/start_time_,
+                       /*dns_end=*/start_time_);
   }
 }
 
@@ -2085,6 +2435,7 @@ TEST_F(TcpConnectJobTest, TwoConnectorsTwoIpsBothFail) {
                  /*expected_connection_attempts=*/{
                      {endpoints[first_failure], errors[first_failure]},
                      {endpoints[second_failure], errors[second_failure]}});
+    CheckConnectTiming(/*dns_start=*/start_time_, /*dns_end=*/start_time_);
   }
 }
 

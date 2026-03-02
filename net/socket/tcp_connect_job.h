@@ -53,6 +53,26 @@ class SocketTag;
 // representing the progress of the TcpConnectJob as a whole, and so can be
 // called either synchronously or asynchronously. If the caller invoking them is
 // async, it's expected to call NotifyDelegateOfCompletion() itself.
+//
+// Connection timing is very ambiguous. As of this writing, the Fetch spec says
+// look up DNS information, and only then establish a connection, and defines
+// the values with that assumption. However, under Happy Eyeballs v2 (and v3),
+// which this class implements, connections may be established when only some
+// portions of the DNS result have completed. We could allow DNS and connection
+// times to overlap, which sites might not expect. Out of caution, and to better
+// match the behavior implied by the spec, though, this class does not do that.
+//
+// Instead, DNS lookup time reflects the time the Job was last blocked waiting
+// on DNS - that is, when the DNS request progresses, and all Connectors are
+// stalled waiting on the result (either due to needing IP addresses, or due to
+// waiting on crypto ready), we update DNS end and connect start to the current
+// time. That does mean if a connection is blocked on crypto ready, and then we
+// use it, we claim there was no connection establishment time, and we were
+// blocked on DNS - which, if someone is interested in why their site is loading
+// slowly, seems the most accurate way to present the information, if we don't
+// allow overlapping time ranges.
+//
+// TODO(crbug.com/488042699): Investigate providing more accurate times.
 class NET_EXPORT_PRIVATE TcpConnectJob
     : public ConnectJob,
       public HostResolver::ServiceEndpointRequest::Delegate {
