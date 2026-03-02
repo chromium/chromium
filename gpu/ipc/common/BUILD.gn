@@ -413,10 +413,6 @@ mojom("interfaces") {
           mojom = "gpu.mojom.VideoEncodeAcceleratorSupportedProfile"
           cpp = "::gpu::VideoEncodeAcceleratorSupportedProfile"
         },
-        {
-          mojom = "gpu.mojom.ImageDecodeAcceleratorSupportedProfile"
-          cpp = "::gpu::ImageDecodeAcceleratorSupportedProfile"
-        },
       ]
       traits_sources = [ "gpu_info_mojom_traits.cc" ]
       traits_headers = [ "gpu_info_mojom_traits.h" ]

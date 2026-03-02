@@ -275,8 +275,8 @@ VaapiImageDecodeStatus VaapiJpegDecoder::AllocateVASurfaceAndSubmitVABuffers(
   return VaapiImageDecodeStatus::kSuccess;
 }
 
-gpu::ImageDecodeAcceleratorType VaapiJpegDecoder::GetType() const {
-  return gpu::ImageDecodeAcceleratorType::kJpeg;
+ImageDecodeAcceleratorType VaapiJpegDecoder::GetType() const {
+  return ImageDecodeAcceleratorType::kJpeg;
 }
 
 SkYUVColorSpace VaapiJpegDecoder::GetYUVColorSpace() const {

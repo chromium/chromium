@@ -35,7 +35,7 @@ class VaapiJpegDecoder : public VaapiImageDecoder {
   ~VaapiJpegDecoder() override;
 
   // VaapiImageDecoder implementation.
-  gpu::ImageDecodeAcceleratorType GetType() const override;
+  ImageDecodeAcceleratorType GetType() const override;
   SkYUVColorSpace GetYUVColorSpace() const override;
 
   // Get the decoded data from the last Decode() call as a ScopedVAImage. The

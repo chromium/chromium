@@ -118,28 +118,6 @@ struct VideoEncodeAcceleratorSupportedProfile {
   uint32 max_framerate_denominator;
 };
 
-// gpu::ImageDecodeAcceleratorType
-enum ImageDecodeAcceleratorType {
-  kJpeg,
-  kWebP,
-  kUnknown,
-};
-
-// gpu::ImageDecodeAcceleratorSubsampling
-enum ImageDecodeAcceleratorSubsampling {
-  k420,
-  k422,
-  k444,
-};
-
-// gpu::ImageDecodeAcceleratorSupportedProfile
-struct ImageDecodeAcceleratorSupportedProfile {
-  ImageDecodeAcceleratorType image_type;
-  gfx.mojom.Size min_encoded_dimensions;
-  gfx.mojom.Size max_encoded_dimensions;
-  array<ImageDecodeAcceleratorSubsampling> subsamplings;
-};
-
 // gpu::OverlaySupport
 [EnableIf=is_win]
 enum OverlaySupport {

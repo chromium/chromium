@@ -114,24 +114,6 @@ VideoDecodeAcceleratorCapabilities::VideoDecodeAcceleratorCapabilities(
 VideoDecodeAcceleratorCapabilities::~VideoDecodeAcceleratorCapabilities() =
     default;
 
-ImageDecodeAcceleratorSupportedProfile::ImageDecodeAcceleratorSupportedProfile()
-    : image_type(ImageDecodeAcceleratorType::kUnknown) {}
-
-ImageDecodeAcceleratorSupportedProfile::ImageDecodeAcceleratorSupportedProfile(
-    const ImageDecodeAcceleratorSupportedProfile& other) = default;
-
-ImageDecodeAcceleratorSupportedProfile::ImageDecodeAcceleratorSupportedProfile(
-    ImageDecodeAcceleratorSupportedProfile&& other) = default;
-
-ImageDecodeAcceleratorSupportedProfile::
-    ~ImageDecodeAcceleratorSupportedProfile() = default;
-
-ImageDecodeAcceleratorSupportedProfile& ImageDecodeAcceleratorSupportedProfile::
-operator=(const ImageDecodeAcceleratorSupportedProfile& other) = default;
-
-ImageDecodeAcceleratorSupportedProfile& ImageDecodeAcceleratorSupportedProfile::
-operator=(ImageDecodeAcceleratorSupportedProfile&& other) = default;
-
 GPUInfo::GPUDevice::GPUDevice() = default;
 
 GPUInfo::GPUDevice::GPUDevice(const GPUInfo::GPUDevice& other) = default;

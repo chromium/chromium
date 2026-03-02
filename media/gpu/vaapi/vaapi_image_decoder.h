@@ -51,6 +51,10 @@ enum class VaapiImageDecodeStatus : uint32_t {
   kInvalidState,
 };
 
+enum class ImageDecodeAcceleratorType {
+  kJpeg,
+};
+
 // This class abstracts the idea of VA-API format-specific decoders. It is the
 // responsibility of each subclass to initialize |vaapi_wrapper_| appropriately
 // for the purpose of performing hardware-accelerated image decodes of a
@@ -83,7 +87,7 @@ class VaapiImageDecoder {
   virtual const ScopedVASurface* GetScopedVASurface() const;
 
   // Returns the type of image supported by this decoder.
-  virtual gpu::ImageDecodeAcceleratorType GetType() const = 0;
+  virtual ImageDecodeAcceleratorType GetType() const = 0;
 
   // Returns the type of mapping needed to convert the NativePixmapDmaBuf
   // returned by ExportAsNativePixmapDmaBuf() from YUV to RGB.
