@@ -334,6 +334,7 @@ build_webui("build") {
     "downloads_page/downloads_browser_proxy.ts",
     "ensure_lazy_loaded.ts",
     "focus_config.ts",
+    "glic_page/glic_browser_proxy.ts",
     "global_scroll_target_mixin.ts",
     "i18n_setup.ts",
     "lazy_load.ts",
@@ -395,10 +396,6 @@ build_webui("build") {
 
   if (is_win || is_mac) {
     ts_files += [ "autofill_page/passkeys_browser_proxy.ts" ]
-  }
-
-  if (enable_glic) {
-    ts_files += [ "glic_page/glic_browser_proxy.ts" ]
   }
 
   # -----------------ts_files end -------------------------------

@@ -3,12 +3,15 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/chrome_browser_interface_binders_webui_parts.h"
+#include "chrome/browser/glic/host/glic_ui.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/common/buildflags.h"
 #include "components/compose/buildflags.h"
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/on_device_translation/buildflags/buildflags.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/signin/public/base/signin_buildflags.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_ui_browser_interface_broker_registry.h"
 #include "content/public/browser/web_ui_controller_interface_binder.h"
 #include "extensions/buildflags/buildflags.h"
@@ -36,17 +39,12 @@
 #include "chrome/browser/ui/webui/extensions_zero_state_promo/zero_state_promo_ui.h"
 #endif
 
-#if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/glic/host/glic_ui.h"
-#include "chrome/browser/glic/public/glic_enabling.h"
-#include "content/public/browser/render_process_host.h"
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/glic/fre/glic_fre_ui.h"
 #endif
 #if !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "components/guest_view/browser/slim_web_view/slim_web_view.mojom.h"  // nogncheck
 #endif
-#endif  // BUILDFLAG(ENABLE_GLIC)
 
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
 #include "chrome/browser/ui/webui/tab_strip/tab_strip.mojom.h"
@@ -98,7 +96,6 @@ void PopulateChromeWebUIFrameBindersPartsFeatures(
       extensions::ZeroStatePromoController>(map);
 #endif
 
-#if BUILDFLAG(ENABLE_GLIC)
   if (glic::GlicEnabling::IsProfileEligible(Profile::FromBrowserContext(
           render_frame_host->GetProcess()->GetBrowserContext()))) {
     // Register binders for all eligible profiles.
@@ -124,7 +121,6 @@ void PopulateChromeWebUIFrameBindersPartsFeatures(
   RegisterWebUIControllerInterfaceBinder<guest_view::mojom::PageHandlerFactory,
                                          glic::GlicUI>(map);
 #endif
-#endif  // BUILDFLAG(ENABLE_GLIC)
 
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
   RegisterWebUIControllerInterfaceBinder<tab_strip::mojom::PageHandlerFactory,

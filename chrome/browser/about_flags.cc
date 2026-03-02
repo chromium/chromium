@@ -39,6 +39,7 @@
 #include "chrome/browser/default_browser/default_browser_features.h"
 #include "chrome/browser/devtools/features.h"
 #include "chrome/browser/flag_descriptions.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/login_detection/login_detection_util.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_constants.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_feature.h"
@@ -386,10 +387,6 @@
 #if BUILDFLAG(ENABLE_VR)
 #include "device/vr/public/cpp/features.h"
 #include "device/vr/public/cpp/switches.h"
-#endif
-
-#if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/glic/public/features.h"
 #endif
 
 #if defined(TOOLKIT_VIEWS)
@@ -3834,7 +3831,6 @@ const FeatureEntry::FeatureVariation
         {"30 days", kAutofillVcnEnrollStrikeExpiryTime_30Days, nullptr}};
 // LINT.ThenChange(//ios/chrome/browser/flags/about_flags.mm:AutofillVcnEnrollStrikeExpiryTime)
 
-#if BUILDFLAG(ENABLE_GLIC)
 // Variations of the glic panel reset for the top Chrome button.
 const FeatureEntry::FeatureParam kGlicPanelResetTopChromeButtonOnOpen_1s[] = {
     {"glic-panel-reset-delay-ms", "1000"}};
@@ -4008,7 +4004,6 @@ const FeatureEntry::FeatureVariation kGlicGuestUrlPresetTypes[] = {
     {"Staging", kGlicGuestUrlPresetTypeStaging, nullptr},
     {"Pre-prod", kGlicGuestUrlPresetTypePreprod, nullptr},
     {"Prod", kGlicGuestUrlPresetTypeProd, nullptr}};
-#endif  // BUILDFLAG(ENABLE_GLIC)
 
 const FeatureEntry::FeatureParam kAutofillShowTypePredictionsAsTitle[] = {
     {"as-title", "true"}};
@@ -10786,7 +10781,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(lens::features::kLensOverlayTranslateLanguages)},
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(ENABLE_GLIC)
     {"glic", flag_descriptions::kGlicName, flag_descriptions::kGlicDescription,
      kOsAll, FEATURE_VALUE_TYPE(features::kGlic)},
     {"glic-z-order-changes", flag_descriptions::kGlicZOrderChangesName,
@@ -10936,7 +10930,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kGlicUseNonClientDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(features::kGlicUseNonClient)},
 #endif  // BUILDFLAG(IS_CHROMEOS)
-#endif  // BUILDFLAG(ENABLE_GLIC)
 
 #if BUILDFLAG(IS_ANDROID)
     {"enable-client-certificate-provisioning-on-android",

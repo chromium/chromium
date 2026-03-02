@@ -29,14 +29,12 @@ class DefaultBrowserManager;
 }  // namespace default_browser
 #endif
 
-#if BUILDFLAG(ENABLE_GLIC)
 namespace glic {
 class GlicBackgroundModeManager;
 class GlicGlobalEnabling;
 class GlicProfileManager;
 class GlicSyntheticTrialManager;
 }  // namespace glic
-#endif
 
 class ApplicationLocaleStorage;
 class AudioProcessMlModelForwarder;
@@ -137,18 +135,15 @@ class GlobalFeatures {
   }
 #endif
 
-#if BUILDFLAG(ENABLE_GLIC)
   glic::GlicProfileManager* glic_profile_manager() {
     return glic_profile_manager_.get();
   }
-#endif
-#if BUILDFLAG(ENABLE_GLIC) && !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   glic::GlicBackgroundModeManager* glic_background_mode_manager() {
     return glic_background_mode_manager_.get();
   }
 #endif
 
-#if BUILDFLAG(ENABLE_GLIC)
   glic::GlicSyntheticTrialManager* glic_synthetic_trial_manager() {
     return synthetic_trial_manager_.get();
   }
@@ -156,7 +151,6 @@ class GlobalFeatures {
   glic::GlicGlobalEnabling& glic_global_enabling() {
     return *glic_global_enabling_.get();
   }
-#endif
 
   ApplicationLocaleStorage* application_locale_storage() {
     return application_locale_storage_.get();
@@ -226,19 +220,13 @@ class GlobalFeatures {
       default_browser_manager_;
 #endif
 
-#if BUILDFLAG(ENABLE_GLIC)
   std::unique_ptr<glic::GlicGlobalEnabling> glic_global_enabling_;
-#endif
-#if BUILDFLAG(ENABLE_GLIC)
   std::unique_ptr<glic::GlicProfileManager> glic_profile_manager_;
-#endif
-#if BUILDFLAG(ENABLE_GLIC) && !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<glic::GlicBackgroundModeManager>
       glic_background_mode_manager_;
 #endif
-#if BUILDFLAG(ENABLE_GLIC)
   std::unique_ptr<glic::GlicSyntheticTrialManager> synthetic_trial_manager_;
-#endif
 
   std::unique_ptr<ApplicationLocaleStorage> application_locale_storage_;
 

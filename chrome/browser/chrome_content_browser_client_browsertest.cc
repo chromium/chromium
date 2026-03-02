@@ -27,6 +27,9 @@
 #include "chrome/browser/enterprise/connectors/analysis/clipboard_request_handler.h"
 #include "chrome/browser/enterprise/connectors/test/fake_clipboard_request_handler.h"
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
+#include "chrome/browser/glic/test_support/glic_test_environment.h"
+#include "chrome/browser/glic/test_support/glic_test_util.h"
+#include "chrome/browser/glic/test_support/non_interactive_glic_test.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/instant_service.h"
 #include "chrome/browser/search/instant_service_factory.h"
@@ -137,12 +140,6 @@
 #endif  // BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
 
 #endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
-
-#if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/glic/test_support/glic_test_environment.h"
-#include "chrome/browser/glic/test_support/glic_test_util.h"
-#include "chrome/browser/glic/test_support/non_interactive_glic_test.h"
-#endif
 
 namespace {
 
@@ -434,11 +431,7 @@ IN_PROC_BROWSER_TEST_F(PageColorsBrowserClientTest,
                    "getPropertyValue('color').toString()"));
 }
 
-#if BUILDFLAG(ENABLE_GLIC)
 using PrefersColorSchemeTestBase = glic::NonInteractiveGlicTest;
-#else
-using PrefersColorSchemeTestBase = InProcessBrowserTest;
-#endif
 
 // Tests for the preferred color scheme for a given WebContents. The first param
 // controls whether the web NativeTheme is light or dark the second controls
@@ -553,7 +546,6 @@ IN_PROC_BROWSER_TEST_P(PrefersColorSchemeTest, FeatureOverridesChromeSchemes) {
                  ExpectedColorScheme())));
 }
 
-#if BUILDFLAG(ENABLE_GLIC)
 IN_PROC_BROWSER_TEST_P(PrefersColorSchemeTest, PrefersColorSchemeGlic) {
   RunTestSequence(OpenGlic(GlicInstrumentMode::kHostAndContents));
   content::RenderFrameHost* webui_frame =
@@ -569,7 +561,6 @@ IN_PROC_BROWSER_TEST_P(PrefersColorSchemeTest, PrefersColorSchemeGlic) {
                  "window.matchMedia('(prefers-color-scheme: %s)').matches",
                  ExpectedColorScheme())));
 }
-#endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 IN_PROC_BROWSER_TEST_P(PrefersColorSchemeTest, FeatureOverridesPdfUI) {

@@ -12,6 +12,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_internals.mojom.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
+#include "chrome/browser/glic/selection/selection_overlay_untrusted_ui.h"
 #include "chrome/browser/history_clusters/history_clusters_service_factory.h"
 #include "chrome/browser/history_embeddings/history_embeddings_utils.h"
 #include "chrome/browser/new_tab_page/modules/file_suggestion/drive_suggestion.mojom.h"
@@ -204,10 +205,6 @@
 #include "components/surface_embed/browser/surface_embed_host.h"
 #include "components/surface_embed/common/features.h"
 #include "components/surface_embed/common/surface_embed.mojom.h"
-#endif
-
-#if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/glic/selection/selection_overlay_untrusted_ui.h"
 #endif
 
 namespace chrome::internal {
@@ -722,12 +719,10 @@ void PopulateChromeWebUIFrameInterfaceBrokersUntrustedPartsDesktop(
       .Add<new_tab_page::mojom::
                MicrosoftAuthUntrustedDocumentInterfacesFactory>();
 
-#if BUILDFLAG(ENABLE_GLIC)
   if (base::FeatureList::IsEnabled(features::kGlicRegionSelectionNew)) {
     registry.ForWebUI<glic::SelectionOverlayUntrustedUI>()
         .Add<glic::selection::SelectionOverlayPageHandlerFactory>();
   }
-#endif
 }
 
 }  // namespace chrome::internal

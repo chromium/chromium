@@ -16,6 +16,7 @@
 #include "chrome/browser/data_sharing/data_sharing_navigation_throttle.h"
 #include "chrome/browser/enterprise/data_protection/view_source_navigation_throttle.h"
 #include "chrome/browser/first_party_sets/first_party_sets_navigation_throttle.h"
+#include "chrome/browser/glic/glic_navigation_throttle.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/interstitials/enterprise_util.h"
 #include "chrome/browser/lookalikes/lookalike_url_navigation_throttle.h"
@@ -177,10 +178,6 @@
 #include "extensions/browser/extension_navigation_throttle.h"
 #include "extensions/browser/extensions_browser_client.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-
-#if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/glic/glic_navigation_throttle.h"
-#endif  // BUILDFLAG(ENABLE_GLIC)
 
 namespace {
 
@@ -614,7 +611,5 @@ void CreateAndAddChromeThrottlesForNavigation(
 
   dom_distiller::DistillerReferrerThrottle::MaybeCreateAndAdd(registry);
 
-#if BUILDFLAG(ENABLE_GLIC)
   glic::GlicNavigationThrottle::MaybeCreateAndAdd(registry);
-#endif  // BUILDFLAG(ENABLE_GLIC)
 }

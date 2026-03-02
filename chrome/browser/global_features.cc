@@ -14,6 +14,9 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/glic/glic_profile_manager.h"               // nogncheck
+#include "chrome/browser/glic/host/glic_synthetic_trial_manager.h"  // nogncheck
+#include "chrome/browser/glic/public/glic_enabling.h"               // nogncheck
 #include "chrome/browser/local_network_access/ip_address_space_overrides_prefs_observer.h"
 #include "chrome/browser/media/audio_process_ml_model_forwarder.h"
 #include "chrome/browser/optimization_guide/model_execution/optimization_guide_global_state.h"
@@ -27,16 +30,10 @@
 #include "media/base/media_switches.h"
 #include "net/net_buildflags.h"
 
-#if BUILDFLAG(ENABLE_GLIC) && !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 // This causes a gn error on Android builds, because gn does not understand
 // buildflags, so we include it only on platforms where it is used.
 #include "chrome/browser/background/glic/glic_background_mode_manager.h"  // nogncheck
-#endif
-
-#if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/glic/glic_profile_manager.h"               // nogncheck
-#include "chrome/browser/glic/host/glic_synthetic_trial_manager.h"  // nogncheck
-#include "chrome/browser/glic/public/glic_enabling.h"               // nogncheck
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
@@ -117,7 +114,6 @@ void GlobalFeatures::PostBrowserProcessInit() {
 
   PostBrowserProcessInitCore();
 
-#if BUILDFLAG(ENABLE_GLIC)
   if (glic::GlicEnabling::IsEnabledByFlags()) {
     glic_profile_manager_ = std::make_unique<glic::GlicProfileManager>();
 #if !BUILDFLAG(IS_ANDROID)
@@ -128,7 +124,6 @@ void GlobalFeatures::PostBrowserProcessInit() {
     synthetic_trial_manager_ =
         std::make_unique<glic::GlicSyntheticTrialManager>();
   }
-#endif
 
 #if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
   if (unexportable_keys::UnexportableKeyServiceImpl::
@@ -176,11 +171,9 @@ void GlobalFeatures::PostBrowserProcessInitCore() {
 
   application_locale_storage_ = std::make_unique<ApplicationLocaleStorage>();
 
-#if BUILDFLAG(ENABLE_GLIC)
   glic::GlicGlobalEnabling::Delegate glic_enabling_delegate;
   glic_global_enabling_ =
       std::make_unique<glic::GlicGlobalEnabling>(glic_enabling_delegate);
-#endif
 
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
   if (base::FeatureList::IsEnabled(
@@ -214,19 +207,17 @@ void GlobalFeatures::PostMainMessageLoopRun() {
   profile_launch_observer_.reset();
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(ENABLE_GLIC) && !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   if (glic_background_mode_manager_) {
     glic_background_mode_manager_->Shutdown();
     glic_background_mode_manager_.reset();
   }
 #endif
-#if BUILDFLAG(ENABLE_GLIC)
   if (glic_profile_manager_) {
     glic_profile_manager_->Shutdown();
     glic_profile_manager_.reset();
   }
   synthetic_trial_manager_.reset();
-#endif
   audio_process_ml_model_forwarder_.reset();
   optimization_guide_global_feature_.reset();
 

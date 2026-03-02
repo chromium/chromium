@@ -1622,6 +1622,11 @@ static_library("browser") {
     # TODO(crbug.com/430804948): Remove this circular dependency when profiles/profile_manager.h
     # gets componentized.
     "//chrome/browser/subscription_eligibility",
+
+    "//chrome/browser/glic:impl",
+    "//chrome/browser/glic/actor",
+    "//chrome/browser/glic/fre",
+    "//chrome/browser/background/glic:impl",
   ]
 
   public_deps = [
@@ -1678,6 +1683,8 @@ static_library("browser") {
     "//chrome/browser/autofill",
     "//chrome/browser/background",
     "//chrome/browser/background:impl",
+    "//chrome/browser/background/glic",
+    "//chrome/browser/background/glic:impl",
     "//chrome/browser/background_fetch",
     "//chrome/browser/background_fetch:impl",
     "//chrome/browser/background_sync",
@@ -1745,6 +1752,10 @@ static_library("browser") {
     "//chrome/browser/file_system_access:impl",
     "//chrome/browser/first_party_sets",
     "//chrome/browser/gcm",
+    "//chrome/browser/glic",
+    "//chrome/browser/glic:impl",
+    "//chrome/browser/glic/actor",
+    "//chrome/browser/glic/fre",
     "//chrome/browser/gpu",
     "//chrome/browser/gpu:impl",
     "//chrome/browser/hang_monitor",
@@ -2510,21 +2521,6 @@ static_library("browser") {
     # componentized.
     "//chrome/browser/ui/webauthn:impl",
   ]
-
-  if (!is_android) {
-    deps += [
-      "//chrome/browser/accessibility_annotator/content_annotator",
-      "//chrome/browser/contextual_tasks:ui_impl",
-      "//chrome/browser/indigo",
-      "//chrome/browser/indigo:impl",
-      "//chrome/browser/private_ai",
-      "//chrome/browser/record_replay",
-      "//chrome/browser/record_replay:impl",
-      "//chrome/browser/ui/browser_window",
-      "//chrome/browser/ui/webui/feedback/report_unsafe_site:mojo_bindings",
-      "//chrome/browser/ui/webui/omnibox_popup/mojom",
-    ]
-  }
 
   # Platforms that have a network diagnostics dialog. All others fall through
   # to the stub which is not implemented.
@@ -4137,6 +4133,7 @@ static_library("browser") {
       "//chrome/app/vector_icons",
       "//chrome/browser/accessibility/tree_fixing:prefs",
       "//chrome/browser/accessibility/tree_fixing:service",
+      "//chrome/browser/accessibility_annotator/content_annotator",
       "//chrome/browser/actor/ui",
       "//chrome/browser/actor/ui:actor_overlay",
       "//chrome/browser/actor/ui:window_controller_impl",
@@ -4149,6 +4146,7 @@ static_library("browser") {
       "//chrome/browser/badging",
       "//chrome/browser/badging:impl",
       "//chrome/browser/contextual_tasks",
+      "//chrome/browser/contextual_tasks:ui_impl",
       "//chrome/browser/device_api",
       "//chrome/browser/device_api:impl",
       "//chrome/browser/device_identity",
@@ -4157,11 +4155,15 @@ static_library("browser") {
       "//chrome/browser/direct_sockets:impl",
       "//chrome/browser/error_reporting",
       "//chrome/browser/feedback:feedback_enum",
+      "//chrome/browser/glic/media",
+      "//chrome/browser/glic/selection",
       "//chrome/browser/hid",
       "//chrome/browser/icon_transcoder",
       "//chrome/browser/image_editor:image_editor_component_util",
       "//chrome/browser/importer",
       "//chrome/browser/importer:impl",
+      "//chrome/browser/indigo",
+      "//chrome/browser/indigo:impl",
       "//chrome/browser/lens/region_search",
       "//chrome/browser/media/router:mojo_impl",
       "//chrome/browser/media/router:providers_wired_display_impl",
@@ -4173,12 +4175,16 @@ static_library("browser") {
       "//chrome/browser/performance_manager/public/user_tuning",
       "//chrome/browser/performance_manager/user_tuning",
       "//chrome/browser/policy:path_parser",
+      "//chrome/browser/private_ai",
+      "//chrome/browser/record_replay",
+      "//chrome/browser/record_replay:impl",
       "//chrome/browser/resource_coordinator",
       "//chrome/browser/screen_ai:prefs",
       "//chrome/browser/screen_ai:screen_ai_install_state",
       "//chrome/browser/screen_ai:screen_ai_service_router_factory",
       "//chrome/browser/screen_ai/public:optical_character_recognizer",
       "//chrome/browser/sharing_hub",
+      "//chrome/browser/skills",
       "//chrome/browser/smart_card",
       "//chrome/browser/themes",
       "//chrome/browser/ui:browser_list",
@@ -4262,12 +4268,14 @@ static_library("browser") {
       "//chrome/browser/ui/webui/cr_components/theme_color_picker",
       "//chrome/browser/ui/webui/customize_buttons",
       "//chrome/browser/ui/webui/customize_buttons:impl",
+      "//chrome/browser/ui/webui/feedback/report_unsafe_site:mojo_bindings",
       "//chrome/browser/ui/webui/infobar_internals",
       "//chrome/browser/ui/webui/infobar_internals:impl",
       "//chrome/browser/ui/webui/metrics_reporter",
       "//chrome/browser/ui/webui/metrics_reporter:impl",
       "//chrome/browser/ui/webui/new_tab_footer",
       "//chrome/browser/ui/webui/new_tab_footer:impl",
+      "//chrome/browser/ui/webui/omnibox_popup/mojom",
       "//chrome/browser/ui/webui/privacy_sandbox:mojo_bindings",
       "//chrome/browser/ui/webui/privacy_sandbox/related_website_sets:mojo_bindings",
       "//chrome/browser/ui/webui/private_ai_internals",
@@ -4531,6 +4539,8 @@ static_library("browser") {
       # - c/b/browser_process_platform_part.h
       # - c/b/net/system_network_context_manager.h
       "//chrome/browser/device_api:impl",
+
+      "//chrome/browser/glic/media",
     ]
 
     if (is_win || is_chromeos) {
@@ -6114,34 +6124,8 @@ static_library("browser") {
     }
   }
 
-  if (enable_glic) {
-    deps += [
-      "//chrome/browser/background/glic",
-      "//chrome/browser/background/glic:impl",
-      "//chrome/browser/glic",
-      "//chrome/browser/glic:impl",
-      "//chrome/browser/glic/actor",
-      "//chrome/browser/glic/fre",
-    ]
-    allow_circular_includes_from += [
-      "//chrome/browser/glic:impl",
-      "//chrome/browser/glic/actor",
-      "//chrome/browser/glic/fre",
-      "//chrome/browser/background/glic:impl",
-    ]
-
-    if (!is_android) {
-      deps += [
-        "//chrome/browser/glic/media",
-        "//chrome/browser/glic/selection",
-        "//chrome/browser/skills",
-      ]
-      allow_circular_includes_from += [ "//chrome/browser/glic/media" ]
-    }
-
-    if (!enable_extensions_core) {
-      deps += [ "//components/guest_view/browser/slim_web_view:mojo_bindings" ]
-    }
+  if (!enable_extensions_core) {
+    deps += [ "//components/guest_view/browser/slim_web_view:mojo_bindings" ]
   }
 
   if (enable_background_mode) {
