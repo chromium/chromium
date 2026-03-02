@@ -11,19 +11,23 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ui/browser_list_observer.h"
+#include "base/scoped_observation.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/tabs/organization/trigger.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 
 class TabStripModel;
 class TabOrganizationTrigger;
+class Browser;
+class BrowserWindowInterface;
 namespace content {
 class BrowserContext;
 }
 
 // Gets inputs for triggering, runs triggering logic when anything changes.
-class TabOrganizationTriggerObserver : public BrowserListObserver,
-                                       TabStripModelObserver {
+class TabOrganizationTriggerObserver : public BrowserCollectionObserver,
+                                       public TabStripModelObserver {
  public:
   explicit TabOrganizationTriggerObserver(
       base::RepeatingCallback<void(const Browser*)> on_trigger,
@@ -31,9 +35,9 @@ class TabOrganizationTriggerObserver : public BrowserListObserver,
       std::unique_ptr<TabOrganizationTrigger> trigger_logic);
   ~TabOrganizationTriggerObserver() override;
 
-  // BrowserListObserver:
-  void OnBrowserAdded(Browser* browser) override;
-  void OnBrowserRemoved(Browser* browser) override;
+  // BrowserCollectionObserver:
+  void OnBrowserCreated(BrowserWindowInterface* browser) override;
+  void OnBrowserClosed(BrowserWindowInterface* browser) override;
 
   // TabStripModelObserver:
   void OnTabStripModelChanged(
@@ -50,6 +54,8 @@ class TabOrganizationTriggerObserver : public BrowserListObserver,
   raw_ptr<content::BrowserContext> browser_context_;
   std::unordered_map<TabStripModel*, raw_ptr<Browser>>
       tab_strip_model_to_browser_map_;
+  base::ScopedObservation<ProfileBrowserCollection, BrowserCollectionObserver>
+      browser_collection_observation_{this};
   // Whether trigger evaluation is scheduled. Used to debounce
   // TabStripModelObserver events.
   bool pending_eval_ = false;

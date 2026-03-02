@@ -22,10 +22,10 @@
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/profiles/profile_colors_util.h"
 #include "chrome/browser/ui/signin/signin_view_controller.h"
@@ -95,12 +95,12 @@ TurnSyncOnHelperDelegateImpl::TurnSyncOnHelperDelegateImpl(
       user_already_signed_in_(user_already_signed_in) {
   DCHECK(browser);
   DCHECK(profile_);
-  BrowserList::AddObserver(this);
+  browser_close_subscription_ = browser_->RegisterBrowserDidClose(
+      base::BindRepeating(&TurnSyncOnHelperDelegateImpl::OnBrowserDidClose,
+                          base::Unretained(this)));
 }
 
-TurnSyncOnHelperDelegateImpl::~TurnSyncOnHelperDelegateImpl() {
-  BrowserList::RemoveObserver(this);
-}
+TurnSyncOnHelperDelegateImpl::~TurnSyncOnHelperDelegateImpl() = default;
 
 bool TurnSyncOnHelperDelegateImpl::IsProfileCreationRequiredByPolicy() const {
   return profile_creation_required_by_policy_;
@@ -207,8 +207,9 @@ void TurnSyncOnHelperDelegateImpl::OnSyncConfirmationUIClosed(
   std::move(sync_confirmation_callback_).Run(result);
 }
 
-void TurnSyncOnHelperDelegateImpl::OnBrowserRemoved(Browser* browser) {
-  if (browser == browser_) {
+void TurnSyncOnHelperDelegateImpl::OnBrowserDidClose(
+    BrowserWindowInterface* browser) {
+  if (browser_ == browser) {
     browser_ = nullptr;
   }
 }
