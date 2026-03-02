@@ -41,6 +41,7 @@
 #include "components/performance_manager/resource_attribution/worker_client_pages.h"
 #include "content/public/common/process_type.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -276,8 +277,8 @@ QueryResultMap CPUMeasurementMonitor::UpdateAndGetCPUMeasurements(
   // contexts that have measurement deltas where as
   // GetLiveOriginInBrowsingInstanceContexts() below iterates over all resource
   // contexts.
-  const std::set<OriginInBrowsingInstanceContext> live_origin_contexts =
-      GetLiveOriginInBrowsingInstanceContexts();
+  const absl::flat_hash_set<OriginInBrowsingInstanceContext>
+      live_origin_contexts = GetLiveOriginInBrowsingInstanceContexts();
 
   // Populate `results` with CPU results for all live
   // `OriginInBrowsingInstanceContext`s, and remove dead ones.
@@ -308,7 +309,8 @@ QueryResultMap CPUMeasurementMonitor::UpdateAndGetCPUMeasurements(
     auto& dead_context_results_kept_alive = it->second.kept_alive;
     dead_context_results_kept_alive.clear();
 
-    std::set<scoped_refptr<ScopedCPUTimeResult>> dead_context_results_to_report;
+    absl::flat_hash_set<scoped_refptr<ScopedCPUTimeResult>>
+        dead_context_results_to_report;
     std::swap(it->second.to_report, dead_context_results_to_report);
 
     for (auto& result : dead_context_results_to_report) {
@@ -507,7 +509,7 @@ void CPUMeasurementMonitor::MonitorCPUUsage(const ProcessNode* process_node) {
   // same ProcessNode (and the same ProcessContext). When that happens
   // OnProcessLifetimeChange will call MonitorCPUUsage again for the same node,
   // creating a new CPUMeasurement that starts measuring the new process from 0.
-  // ApplyMeasurementDeltas will add the new measurements and the old
+  // MeasureAndDistributeCPUUsage will add the new measurements and the old
   // measurements in the same ProcessContext.
   DestroyCPUMeasurementData(process_node);
   CPUMeasurementData::Create(
@@ -522,12 +524,9 @@ void CPUMeasurementMonitor::UpdateAllCPUMeasurements() {
 
   // Update CPU metrics, attributing the cumulative CPU of each process to its
   // frames and workers.
-  absl::flat_hash_map<ResourceContext, CPUTimeResult> measurement_deltas;
   for (const ProcessNode* process_node : graph_->GetAllProcessNodes()) {
-    MeasureAndDistributeCPUUsage(process_node, NoGraphChange(),
-                                 measurement_deltas);
+    MeasureAndDistributeCPUUsage(process_node, NoGraphChange());
   }
-  ApplyMeasurementDeltas(measurement_deltas);
 }
 
 void CPUMeasurementMonitor::UpdateCPUMeasurements(
@@ -547,9 +546,7 @@ void CPUMeasurementMonitor::UpdateCPUMeasurements(
 
   // Update CPU metrics, attributing the cumulative CPU of the process to its
   // frames and workers.
-  absl::flat_hash_map<ResourceContext, CPUTimeResult> measurement_deltas;
-  MeasureAndDistributeCPUUsage(process_node, graph_change, measurement_deltas);
-  ApplyMeasurementDeltas(measurement_deltas, graph_change);
+  MeasureAndDistributeCPUUsage(process_node, graph_change);
 }
 
 scoped_refptr<ScopedCPUTimeResult>& CPUMeasurementMonitor::GetResultPtr(
@@ -585,63 +582,6 @@ scoped_refptr<ScopedCPUTimeResult>& CPUMeasurementMonitor::GetResultPtr(
   }
   // That should cover all context types.
   NOTREACHED();
-}
-
-void CPUMeasurementMonitor::ApplyMeasurementDeltas(
-    const absl::flat_hash_map<ResourceContext, CPUTimeResult>&
-        measurement_deltas,
-    GraphChange graph_change) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  for (const auto& [context, delta] : measurement_deltas) {
-    CHECK(!ContextIs<PageContext>(context));
-    CHECK(!ContextIs<OriginInBrowsingInstanceContext>(context));
-
-    // Add the new process, frame and worker measurements to the existing
-    // measurements, and aggregate new frame and worker measurements to pages.
-    if (ContextIs<ProcessContext>(context)) {
-      ApplySequentialDelta(context, delta);
-    } else if (ContextIs<FrameContext>(context)) {
-      ApplySequentialDelta(context, delta);
-
-      const FrameNode* frame_node =
-          AsContext<FrameContext>(context).GetFrameNode();
-      CHECK(frame_node);
-      ApplyOverlappingDelta(frame_node->GetPageNode()->GetResourceContext(),
-                            delta);
-
-      std::optional<OriginInBrowsingInstanceContext> origin_context =
-          OriginInBrowsingInstanceContextForNode(
-              frame_node, frame_node->GetBrowsingInstanceId(), graph_change);
-      if (origin_context.has_value()) {
-        ApplyOverlappingDelta(origin_context.value(), delta);
-      }
-    } else if (ContextIs<WorkerContext>(context)) {
-      ApplySequentialDelta(context, delta);
-
-      const WorkerNode* worker_node =
-          AsContext<WorkerContext>(context).GetWorkerNode();
-      CHECK(worker_node);
-      auto [client_pages, client_browsing_instances] =
-          GetWorkerClientPagesAndBrowsingInstances(worker_node);
-
-      for (const PageNode* page_node : client_pages) {
-        ApplyOverlappingDelta(page_node->GetResourceContext(), delta);
-      }
-
-      for (content::BrowsingInstanceId browsing_instance :
-           client_browsing_instances) {
-        std::optional<OriginInBrowsingInstanceContext> origin_context =
-            OriginInBrowsingInstanceContextForNode(
-                worker_node, browsing_instance, graph_change);
-        if (origin_context.has_value()) {
-          ApplyOverlappingDelta(origin_context.value(), delta);
-        }
-      }
-    } else {
-      // That should cover all context types.
-      NOTREACHED();
-    }
-  }
 }
 
 void CPUMeasurementMonitor::ApplySequentialDelta(const ResourceContext& context,
@@ -708,11 +648,11 @@ void CPUMeasurementMonitor::SaveFinalMeasurement(
   }
 }
 
-std::set<OriginInBrowsingInstanceContext>
+absl::flat_hash_set<OriginInBrowsingInstanceContext>
 CPUMeasurementMonitor::GetLiveOriginInBrowsingInstanceContexts() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(graph_);
-  std::set<OriginInBrowsingInstanceContext> live_origin_contexts;
+  absl::flat_hash_set<OriginInBrowsingInstanceContext> live_origin_contexts;
   for (const FrameNode* frame_node : graph_->GetAllFrameNodes()) {
     std::optional<OriginInBrowsingInstanceContext> origin_context =
         OriginInBrowsingInstanceContextForNode(
@@ -738,11 +678,10 @@ CPUMeasurementMonitor::GetLiveOriginInBrowsingInstanceContexts() {
   return live_origin_contexts;
 }
 
-// static
 void CPUMeasurementMonitor::MeasureAndDistributeCPUUsage(
     const ProcessNode* process_node,
-    GraphChange graph_change,
-    absl::flat_hash_map<ResourceContext, CPUTimeResult>& measurement_deltas) {
+    GraphChange graph_change) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto* node_impl = ProcessNodeImpl::FromNode(process_node);
   if (!CPUMeasurementData::Exists(node_impl)) {
     // In tests, FrameNodes can be added to mock processes that don't have a PID
@@ -904,44 +843,76 @@ void CPUMeasurementMonitor::MeasureAndDistributeCPUUsage(
     process_priority = process_node->GetPriority();
   }
 
-  auto record_cpu_deltas = [&measurement_deltas, &measurement_interval_start,
-                            &measurement_interval_end,
-                            &process_priority](const ResourceContext& context,
-                                               base::TimeDelta cpu_delta,
-                                               MeasurementAlgorithm algorithm) {
-    // Each ProcessNode should be updated by one call to
-    // MeasureAndDistributeCPUUsage(), and each FrameNode and WorkerNode is in a
-    // single process, so none of these contexts should be in the map yet. Each
-    // FrameNode or WorkerNode's containing process is measured when the node is
-    // added, so `start_time` will be correctly set to the first time the node
-    // is measured.
+  auto create_cpu_result = [&](base::TimeDelta cpu_delta,
+                               MeasurementAlgorithm algorithm) {
     CHECK(!cpu_delta.is_negative());
-    const auto [_, inserted] = measurement_deltas.emplace(
-        context,
-        CPUTimeResult{
-            .metadata = ResultMetadata(measurement_interval_end, algorithm),
-            .start_time = measurement_interval_start,
-            .cumulative_cpu = cpu_delta,
-            // `cumulative_background_cpu` accumulates CPU consumed while the
-            // process' priority is `BEST_EFFORT`.
-            .cumulative_background_cpu =
-                (process_priority == base::Process::Priority::kBestEffort)
-                    ? cpu_delta
-                    : base::TimeDelta()});
-    CHECK(inserted);
+    return CPUTimeResult{
+        .metadata = ResultMetadata(measurement_interval_end, algorithm),
+        .start_time = measurement_interval_start,
+        .cumulative_cpu = cpu_delta,
+        // `cumulative_background_cpu` accumulates CPU consumed while the
+        // process' priority is `BEST_EFFORT`.
+        .cumulative_background_cpu =
+            (process_priority == base::Process::Priority::kBestEffort)
+                ? cpu_delta
+                : base::TimeDelta()};
   };
 
-  record_cpu_deltas(process_node->GetResourceContext(), cumulative_cpu_delta,
-                    MeasurementAlgorithm::kDirectMeasurement);
+  // Add the measured CPU directly to the ProcessContext.
+  ApplySequentialDelta(
+      process_node->GetResourceContext(),
+      create_cpu_result(cumulative_cpu_delta,
+                        MeasurementAlgorithm::kDirectMeasurement));
+
+  // Split the measured CPU among FrameContexts and WorkerContexts, then add the
+  // split measurement to other contexts as needed. Each FrameNode or
+  // WorkerNode's containing process is measured when the node is added, so
+  // `start_time` will be correctly set to the first time the node is measured.
   resource_attribution::SplitResourceAmongFramesAndWorkers(
       cumulative_cpu_delta, process_node,
-      [&record_cpu_deltas](const FrameNode* f, base::TimeDelta cpu_delta) {
-        record_cpu_deltas(f->GetResourceContext(), cpu_delta,
-                          MeasurementAlgorithm::kSplit);
+      [&](const FrameNode* f, base::TimeDelta cpu_delta) {
+        CPUTimeResult cpu_result =
+            create_cpu_result(cpu_delta, MeasurementAlgorithm::kSplit);
+
+        // FrameContext
+        ApplySequentialDelta(f->GetResourceContext(), cpu_result);
+
+        // PageContext
+        ApplyOverlappingDelta(f->GetPageNode()->GetResourceContext(),
+                              cpu_result);
+
+        // OriginInBrowsingInstanceContext
+        std::optional<OriginInBrowsingInstanceContext> origin_context =
+            OriginInBrowsingInstanceContextForNode(
+                f, f->GetBrowsingInstanceId(), graph_change);
+        if (origin_context.has_value()) {
+          ApplyOverlappingDelta(origin_context.value(), cpu_result);
+        }
       },
-      [&record_cpu_deltas](const WorkerNode* w, base::TimeDelta cpu_delta) {
-        record_cpu_deltas(w->GetResourceContext(), cpu_delta,
-                          MeasurementAlgorithm::kSplit);
+      [&](const WorkerNode* w, base::TimeDelta cpu_delta) {
+        CPUTimeResult cpu_result =
+            create_cpu_result(cpu_delta, MeasurementAlgorithm::kSplit);
+
+        // WorkerContext
+        ApplySequentialDelta(w->GetResourceContext(), cpu_result);
+
+        // PageContext
+        auto [client_pages, client_browsing_instances] =
+            GetWorkerClientPagesAndBrowsingInstances(w);
+        for (const PageNode* page_node : client_pages) {
+          ApplyOverlappingDelta(page_node->GetResourceContext(), cpu_result);
+        }
+
+        // OriginInBrowsingInstanceContext
+        for (content::BrowsingInstanceId browsing_instance :
+             client_browsing_instances) {
+          std::optional<OriginInBrowsingInstanceContext> origin_context =
+              OriginInBrowsingInstanceContextForNode(w, browsing_instance,
+                                                     graph_change);
+          if (origin_context.has_value()) {
+            ApplyOverlappingDelta(origin_context.value(), cpu_result);
+          }
+        }
       });
 }
 
