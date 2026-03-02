@@ -50,6 +50,7 @@ public class WebsitePreferenceBridge {
         // of a supervised account or by enterprise policy.
         switch (type) {
             case ContentSettingsType.GEOLOCATION:
+            case ContentSettingsType.GEOLOCATION_WITH_OPTIONS:
             case ContentSettingsType.MEDIASTREAM_CAMERA:
             case ContentSettingsType.MEDIASTREAM_MIC:
                 managedOnly = !isContentSettingUserModifiable(browserContextHandle, type);
