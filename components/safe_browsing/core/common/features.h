@@ -120,6 +120,11 @@ BASE_DECLARE_FEATURE(kClientSideDetectionKillswitch);
 BASE_DECLARE_FEATURE(
     kClientSideDetectionLlamaForcedTriggerInfoForScamDetection);
 
+// The observers that trigger the image classification have been tweaked with a
+// more defined page loading state check.
+BASE_DECLARE_FEATURE(kClientSideDetectionNewObservers);
+extern const base::FeatureParam<double> kCsdClassificationDelay;
+
 #if BUILDFLAG(IS_ANDROID)
 // Instead of starting model download on startup, do it lazily during inference.
 BASE_DECLARE_FEATURE(kClientSideDetectionOnDeviceModelLazyDownloadAndroid);

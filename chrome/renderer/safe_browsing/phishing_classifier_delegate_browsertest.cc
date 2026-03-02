@@ -14,7 +14,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/test/base/chrome_render_view_test.h"
 #include "chrome/test/base/chrome_unit_test_suite.h"
@@ -218,9 +220,11 @@ TEST_F(PhishingClassifierDelegateTest, Navigation) {
   const auto page_text = MakeRefPtrString(u"dummy");
   const auto page_text2 = MakeRefPtrString(u"dummy2");
   {
-    InSequence s;
-    EXPECT_CALL(*classifier_, BeginClassification(_));
+    base::RunLoop run_loop;
+    EXPECT_CALL(*classifier_, BeginClassification(_))
+        .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
     delegate_->PageCaptured(page_text, false);
+    run_loop.Run();
     Mock::VerifyAndClearExpectations(classifier_);
   }
 
@@ -231,20 +235,37 @@ TEST_F(PhishingClassifierDelegateTest, Navigation) {
 
   // Start phishing detection without a fresh page text should still classify,
   // because the top level URL still match.
-  EXPECT_CALL(*classifier_, BeginClassification(_));
-  OnStartPhishingDetection(url);
-  delegate_->PageCaptured(page_text, false);
-  Mock::VerifyAndClearExpectations(classifier_);
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(*classifier_, BeginClassification(_))
+        .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
+    OnStartPhishingDetection(url);
+    delegate_->PageCaptured(page_text, false);
+    run_loop.Run();
+    Mock::VerifyAndClearExpectations(classifier_);
+  }
 
-  EXPECT_CALL(*classifier_, BeginClassification(_));
-  OnStartPhishingDetection(url);
-  delegate_->PageCaptured(page_text, false);
-  Mock::VerifyAndClearExpectations(classifier_);
+  // Even if the page text is captured first, it shouldn't matter since the
+  // browser request will start the classification.
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(*classifier_, BeginClassification(_))
+        .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
+    delegate_->PageCaptured(page_text, false);
+    OnStartPhishingDetection(url);
+    run_loop.Run();
+    Mock::VerifyAndClearExpectations(classifier_);
+  }
 
-  EXPECT_CALL(*classifier_, BeginClassification(_));
-  OnStartPhishingDetection(url);
-  delegate_->PageCaptured(page_text, false);
-  Mock::VerifyAndClearExpectations(classifier_);
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(*classifier_, BeginClassification(_))
+        .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
+    OnStartPhishingDetection(url);
+    delegate_->PageCaptured(page_text, false);
+    run_loop.Run();
+    Mock::VerifyAndClearExpectations(classifier_);
+  }
 
   // Now load a new toplevel page, which should trigger another classification.
   EXPECT_CALL(*classifier_, CancelPendingClassification());
@@ -255,9 +276,11 @@ TEST_F(PhishingClassifierDelegateTest, Navigation) {
   OnStartPhishingDetection(new_url);
 
   {
-    InSequence s;
-    EXPECT_CALL(*classifier_, BeginClassification(_));
+    base::RunLoop run_loop;
+    EXPECT_CALL(*classifier_, BeginClassification(_))
+        .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
     delegate_->PageCaptured(page_text2, false);
+    run_loop.Run();
     Mock::VerifyAndClearExpectations(classifier_);
   }
 
@@ -366,14 +389,20 @@ TEST_F(PhishingClassifierDelegateTest, NoScorerWithRetry) {
 
   // Now set a scorer, which should cause a classifier to be created, and
   // classification will happen again because the scorer is set within timeout.
-  EXPECT_CALL(*classifier_, BeginClassification(_));
+  base::RunLoop run_loop;
+  EXPECT_CALL(*classifier_, BeginClassification(_))
+      .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
   SetScorer(/*model_version=*/1);
+  run_loop.Run();
   Mock::VerifyAndClearExpectations(classifier_);
 
   // Manually start a classification, so that when a new scorer is set, it
   // should cancel.
-  EXPECT_CALL(*classifier_, BeginClassification(_));
+  base::RunLoop run_loop2;
+  EXPECT_CALL(*classifier_, BeginClassification(_))
+      .WillOnce(base::test::RunOnceClosure(run_loop2.QuitClosure()));
   OnStartPhishingDetection(url2);
+  run_loop2.Run();
 
   // If we set a new scorer while a classification is going on the
   // classification should be cancelled.
@@ -403,16 +432,24 @@ TEST_F(PhishingClassifierDelegateTest, NoScorer_Ref_WithRetry) {
   OnStartPhishingDetection(url);
   delegate_->PageCaptured(page_text, false);
 
+  task_environment_.RunUntilIdle();
+
   // Now set a scorer, which should cause a classifier to be created, and
   // classification will happen again because the scorer is set within timeout.
-  EXPECT_CALL(*classifier_, BeginClassification(_));
+  base::RunLoop run_loop;
+  EXPECT_CALL(*classifier_, BeginClassification(_))
+      .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
   SetScorer(/*model_version=*/1);
+  run_loop.Run();
   Mock::VerifyAndClearExpectations(classifier_);
 
   // Manually start a classification, so that when a new scorer is set, it
   // should cancel.
-  EXPECT_CALL(*classifier_, BeginClassification(_));
+  base::RunLoop run_loop2;
+  EXPECT_CALL(*classifier_, BeginClassification(_))
+      .WillOnce(base::test::RunOnceClosure(run_loop2.QuitClosure()));
   OnStartPhishingDetection(url);
+  run_loop2.Run();
 
   // If we set a new scorer while a classification is going on the
   // classification should be cancelled.
@@ -455,8 +492,11 @@ TEST_F(PhishingClassifierDelegateTest, NoScorer) {
 
   // Manually start a classification, so that when a new scorer is set, it
   // should cancel.
-  EXPECT_CALL(*classifier_, BeginClassification(_));
+  base::RunLoop run_loop;
+  EXPECT_CALL(*classifier_, BeginClassification(_))
+      .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
   OnStartPhishingDetection(url2);
+  run_loop.Run();
 
   // If we set a new scorer while a classification is going on the
   // classification should be cancelled.
@@ -497,8 +537,11 @@ TEST_F(PhishingClassifierDelegateTest, NoScorer_Ref) {
   Mock::VerifyAndClearExpectations(classifier_);
 
   // Manually start a classification
-  EXPECT_CALL(*classifier_, BeginClassification(_));
+  base::RunLoop run_loop;
+  EXPECT_CALL(*classifier_, BeginClassification(_))
+      .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
   OnStartPhishingDetection(url);
+  run_loop.Run();
 
   // If we set a new scorer while a classification is going on the
   // classification should be cancelled.
@@ -551,8 +594,11 @@ TEST_F(PhishingClassifierDelegateTest, NoStartPhishingDetection) {
   Mock::VerifyAndClearExpectations(classifier_);
   // Now simulate the StartPhishingDetection IPC.  We expect classification
   // to begin.
-  EXPECT_CALL(*classifier_, BeginClassification(_));
+  base::RunLoop run_loop;
+  EXPECT_CALL(*classifier_, BeginClassification(_))
+      .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
   OnStartPhishingDetection(url);
+  run_loop.Run();
   Mock::VerifyAndClearExpectations(classifier_);
 
   // Now try again, but this time we will navigate the page away before
@@ -586,18 +632,30 @@ TEST_F(PhishingClassifierDelegateTest, NoStartPhishingDetection) {
   Mock::VerifyAndClearExpectations(classifier_);
   EXPECT_CALL(*classifier_, CancelPendingClassification());
 
+  // Now the redirecting URL HTML has been loaded.
   GURL redir_url("http://host4.com/redir");
   LoadHTMLWithUrlOverride("123", redir_url.spec().c_str());
   Mock::VerifyAndClearExpectations(classifier_);
 
-  EXPECT_CALL(*classifier_, BeginClassification(_));
+  // Although the redirecting URL HTML has already loaded, browser requested
+  // from the original URL, but it shouldn't trigger anything, if with new
+  // observers.
+  if (!base::FeatureList::IsEnabled(kClientSideDetectionNewObservers)) {
+    EXPECT_CALL(*classifier_, BeginClassification(_));
+  }
   OnStartPhishingDetection(url4);
   page_text = MakeRefPtrString(u"123");
   {
-    InSequence s;
-    EXPECT_CALL(*classifier_, BeginClassification(_));
+    base::RunLoop run_loop2;
+    EXPECT_CALL(*classifier_, BeginClassification(_))
+        .WillOnce(base::test::RunOnceClosure(run_loop2.QuitClosure()));
+    // The below essentially called OnStartPhishingDetection by replacing the
+    // URL.
     SimulateRedirection(redir_url);
+    // Page has finally captured for the redirecting URL. With the layout
+    // complete, it will start classification on landing page.
     delegate_->PageCaptured(page_text, false);
+    run_loop2.Run();
     Mock::VerifyAndClearExpectations(classifier_);
   }
 
@@ -623,9 +681,11 @@ TEST_F(PhishingClassifierDelegateTest,
 
   // Once the non-preliminary capture happens, classification should begin.
   {
-    InSequence s;
-    EXPECT_CALL(*classifier_, BeginClassification(_));
+    base::RunLoop run_loop;
+    EXPECT_CALL(*classifier_, BeginClassification(_))
+        .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
     delegate_->PageCaptured(page_text, false);
+    run_loop.Run();
     Mock::VerifyAndClearExpectations(classifier_);
   }
 
@@ -649,9 +709,11 @@ TEST_F(PhishingClassifierDelegateTest, DuplicatePageCaptureDoesNotCancel) {
   Mock::VerifyAndClearExpectations(classifier_);
   OnStartPhishingDetection(url);
   {
-    InSequence s;
-    EXPECT_CALL(*classifier_, BeginClassification(_));
+    base::RunLoop run_loop;
+    EXPECT_CALL(*classifier_, BeginClassification(_))
+        .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
     delegate_->PageCaptured(page_text, false);
+    run_loop.Run();
     Mock::VerifyAndClearExpectations(classifier_);
   }
 
@@ -678,9 +740,11 @@ TEST_F(PhishingClassifierDelegateTest, PhishingDetectionDone) {
   Mock::VerifyAndClearExpectations(classifier_);
   OnStartPhishingDetection(url);
   {
-    InSequence s;
-    EXPECT_CALL(*classifier_, BeginClassification(_));
+    base::RunLoop run_loop;
+    EXPECT_CALL(*classifier_, BeginClassification(_))
+        .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
     delegate_->PageCaptured(page_text, false);
+    run_loop.Run();
     Mock::VerifyAndClearExpectations(classifier_);
   }
 

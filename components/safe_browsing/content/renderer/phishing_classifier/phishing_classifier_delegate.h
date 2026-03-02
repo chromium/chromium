@@ -51,7 +51,12 @@ enum class SBPhishingClassifierEvent {
   kPhishingClasifierCallbackEmptyOnCompletion = 8,
   // Phishing classification request responded.
   kPhishingClassifierRequestResponded = 9,
-  kMaxValue = kPhishingClassifierRequestResponded,
+  // Renderer frame layout has finished loading as
+  // WebMeaningfulLayout::kFinishedLoading.
+  kPhishingClassifierPageFinishedLoading = 10,
+  // Renderer frame layout has finished loading during classification.
+  kPhishingClassifierPageFinishedLoadingAgainDuringClassification = 11,
+  kMaxValue = kPhishingClassifierPageFinishedLoadingAgainDuringClassification,
 };
 
 class PhishingClassifierDelegate : public content::RenderFrameObserver,
@@ -173,6 +178,10 @@ class PhishingClassifierDelegate : public content::RenderFrameObserver,
   // Set to true when StartPhishingDetection method is called. It is
   // set to false whenever phishing detection has finished.
   bool is_phishing_detection_running_ = false;
+
+  // Set to true when PageText is captured. Set to false when there is a new
+  // frame loading. This is used as a signal to start the classification.
+  bool renderer_layout_finished_ = false;
 
   // Set to true when we want to classify for the page, but classifier was not
   // ready. It is set to false whenever |is_phishing_detection_running_| is set

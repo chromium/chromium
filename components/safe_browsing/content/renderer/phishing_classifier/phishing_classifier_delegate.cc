@@ -139,9 +139,29 @@ void PhishingClassifierDelegate::StartPhishingDetection(
   classifier_->SetClientSideDetectionType(request_type);
   RecordEvent(SBPhishingClassifierEvent::kPhishingDetectionRequested);
 
-  // Start classifying the current page if all conditions are met.
-  // See MaybeStartClassification() for details.
-  MaybeStartClassification();
+  if (base::FeatureList::IsEnabled(kClientSideDetectionNewObservers)) {
+    // Browser request has come in, but renderer has not fully loaded, so leave
+    // it up for renderer load to start the classification.
+    if (!renderer_layout_finished_) {
+      return;
+    }
+
+    if (request_type_ == mojom::ClientSideDetectionType::kImageEmbeddingMatch ||
+        request_type_ == mojom::ClientSideDetectionType::kTriggerModels) {
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+          FROM_HERE,
+          base::BindOnce(&PhishingClassifierDelegate::MaybeStartClassification,
+                         weak_factory_.GetWeakPtr()),
+          base::Seconds(kCsdClassificationDelay.Get()));
+    } else {
+      MaybeStartClassification();
+    }
+
+  } else {
+    // Start classifying the current page if all conditions are met.
+    // See MaybeStartClassification() for details.
+    MaybeStartClassification();
+  }
 }
 
 void PhishingClassifierDelegate::DidCommitProvisionalLoad(
@@ -149,6 +169,7 @@ void PhishingClassifierDelegate::DidCommitProvisionalLoad(
   blink::WebLocalFrame* frame = render_frame()->GetWebFrame();
   // A new page is starting to load, so cancel classificaiton.
   CancelPendingClassification(CancelClassificationReason::kNavigateAway);
+  renderer_layout_finished_ = false;
   if (!frame->Parent())
     last_main_frame_transition_ = transition;
 }
@@ -160,24 +181,70 @@ bool PhishingClassifierDelegate::is_ready() {
 void PhishingClassifierDelegate::PageCaptured(
     scoped_refptr<const base::RefCountedString16> page_text,
     bool preliminary_capture) {
-  RecordEvent(SBPhishingClassifierEvent::kPageTextCaptured);
+  if (!base::FeatureList::IsEnabled(kClientSideDetectionNewObservers)) {
+    RecordEvent(SBPhishingClassifierEvent::kPageTextCaptured);
 
-  if (preliminary_capture) {
-    return;
+    if (preliminary_capture) {
+      return;
+    }
+
+    // Note: Currently, if the url hasn't changed, we won't restart
+    // classification in this case.  We may want to adjust this.
+
+    last_finished_load_url_ =
+        render_frame()->GetWebFrame()->GetDocument().Url();
+
+    GURL stripped_last_load_url(StripRef(last_finished_load_url_));
+    // Check if toplevel URL has changed.
+    if (stripped_last_load_url == StripRef(last_url_sent_to_classifier_)) {
+      return;
+    }
+
+    MaybeStartClassification();
+  } else {
+    // This is true if layout_type == kWebMeaningfulLayout::kFinishedParsing.
+    // We are looking for kWebMeaningfulLayout::kFinishedLoading only.
+    // PageCaptured is not called for any other cases of kWebMeaningfulLayout.
+    if (preliminary_capture) {
+      return;
+    }
+    renderer_layout_finished_ = true;
+    RecordEvent(
+        SBPhishingClassifierEvent::kPhishingClassifierPageFinishedLoading);
+    // Note: Currently, if the url hasn't changed, we won't restart
+    // classification in this case.  We may want to adjust this.
+    last_finished_load_url_ =
+        render_frame()->GetWebFrame()->GetDocument().Url();
+
+    // Browser side has not made a request yet, so no need to try to start the
+    // classification.
+    if (!is_phishing_detection_running_) {
+      return;
+    }
+
+    GURL stripped_last_load_url(StripRef(last_finished_load_url_));
+    // If we're classifying at the moment and there's a new finished load on the
+    // page, do not attempt to start a new classification.
+    if (is_classifying_ &&
+        stripped_last_load_url == StripRef(last_url_sent_to_classifier_)) {
+      RecordEvent(
+          SBPhishingClassifierEvent::
+              kPhishingClassifierPageFinishedLoadingAgainDuringClassification);
+      return;
+    }
+
+    if (request_type_ == mojom::ClientSideDetectionType::kTriggerModels ||
+        request_type_ == mojom::ClientSideDetectionType::kImageEmbeddingMatch) {
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+          FROM_HERE,
+          base::BindOnce(&PhishingClassifierDelegate::MaybeStartClassification,
+                         weak_factory_.GetWeakPtr()),
+          base::Seconds(kCsdClassificationDelay.Get()));
+
+    } else {
+      MaybeStartClassification();
+    }
   }
-
-  // Note: Currently, if the url hasn't changed, we won't restart
-  // classification in this case.  We may want to adjust this.
-
-  last_finished_load_url_ = render_frame()->GetWebFrame()->GetDocument().Url();
-
-  GURL stripped_last_load_url(StripRef(last_finished_load_url_));
-  // Check if toplevel URL has changed.
-  if (stripped_last_load_url == StripRef(last_url_sent_to_classifier_)) {
-    return;
-  }
-
-  MaybeStartClassification();
 }
 
 void PhishingClassifierDelegate::CancelPendingClassification(
