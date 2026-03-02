@@ -88,14 +88,6 @@ public class PrivacySandboxBridge {
         PrivacySandboxBridgeJni.get().setFledgeJoiningAllowed(mProfile, topFrameEtldPlus1, allowed);
     }
 
-    public @PromptType int getRequiredPromptType(@SurfaceType int surfaceType) {
-        return PrivacySandboxBridgeJni.get().getRequiredPromptType(mProfile, surfaceType);
-    }
-
-    public void promptActionOccurred(@PromptAction int action, @SurfaceType int surfaceType) {
-        PrivacySandboxBridgeJni.get().promptActionOccurred(mProfile, action, surfaceType);
-    }
-
     public boolean isRelatedWebsiteSetsDataAccessEnabled() {
         return PrivacySandboxBridgeJni.get().isRelatedWebsiteSetsDataAccessEnabled(mProfile);
     }
@@ -188,10 +180,6 @@ public class PrivacySandboxBridge {
         List<String> getBlockedFledgeJoiningTopFramesForDisplay(Profile profile);
 
         void setFledgeJoiningAllowed(Profile profile, String topFrameEtldPlus1, boolean allowed);
-
-        int getRequiredPromptType(Profile profile, int surfaceType);
-
-        void promptActionOccurred(Profile profile, int action, int surfaceType);
 
         void topicsToggleChanged(Profile profile, boolean newValue);
 
