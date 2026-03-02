@@ -5,8 +5,10 @@
 #include "chrome/common/importer/firefox_importer_utils.h"
 
 #include "base/base_paths.h"
+#include "base/environment.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/nix/xdg_util.h"
 #include "base/path_service.h"
 
 namespace {
@@ -51,20 +53,44 @@ constexpr const base::FilePath::CharType* const
 constexpr const base::FilePath::CharType* const kFirefoxProfilesIniSubpath =
     FILE_PATH_LITERAL(".mozilla/firefox/profiles.ini");
 
+// Same as `kFirefoxProfilesIniSubpath`, just without the leading dot.
+// Introduced in Firefox 147:
+// https://github.com/mozilla-firefox/firefox/commit/dea79b8a60f1.
+constexpr const base::FilePath::StringViewType kFirefoxProfilesXdgIniSubpath =
+    kFirefoxProfilesIniSubpath + 1;
+
+base::FilePath GetXdgProfilesINI() {
+  auto env = base::Environment::Create();
+  base::FilePath xdg_config_dir = base::nix::GetXDGDirectory(
+      env.get(), base::nix::kXdgConfigHomeEnvVar, base::nix::kDotConfigDir);
+  base::FilePath ini_file =
+      xdg_config_dir.Append(kFirefoxProfilesXdgIniSubpath);
+  if (base::PathExists(ini_file)) {
+    return ini_file;
+  }
+
+  return {};
+}
+
 }  // namespace
 
 base::FilePath GetProfilesINI() {
+  // First, check the XDG-style (~/.config/mozilla/firefox) path.
+  if (auto xdg_ini_file = GetXdgProfilesINI(); !xdg_ini_file.empty()) {
+    return xdg_ini_file;
+  }
+
+  // If that doesn't exist, iterate through possible Firefox profile roots
+  // (locations containing `profiles.ini`), starting with the standard location.
+  // Note: If a user has a stale standard profile (e.g. the application was
+  // uninstalled, but user data was preserved) and an active Snap/Flatpak
+  // installation, we will pick up the stale one.
   base::FilePath home;
   base::PathService::Get(base::DIR_HOME, &home);
   if (home.empty()) {
     return base::FilePath();
   }
 
-  // Iterate through possible Firefox profile roots (locations containing
-  // `profiles.ini`), starting with the standard location.
-  // Note: If a user has a stale standard profile (e.g. the application was
-  // uninstalled, but user data was preserved) and an active Snap/Flatpak
-  // installation, we will pick up the stale one.
   for (const auto* profile_storage_base : kFirefoxProfileStorageBasePaths) {
     base::FilePath ini_file = home;
     ini_file = ini_file.Append(profile_storage_base)
