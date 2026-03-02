@@ -1197,7 +1197,7 @@
     </message>
 
     <message name="IDS_AUTOFILL_AI_WALLET_UPLOAD_THROBBER_ACCESSIBLE_NAME" desc="Announced when the loading throbber during upload to Google Wallet is shown.">
-      Saving your info
+      Saving your info...
     </message>
 
     <message name="IDS_AUTOFILL_AI_LOCAL_SAVE_NOTIFICATION_TITLE" desc="The title of an informational dialog. This dialog appears when a user attempts to save data (like a driver's license) to Google Wallet, but the request fails (e.g., due to server error or connection issues). The title clarifies that the information was not lost, but rather saved locally to the device instead.">
