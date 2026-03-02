@@ -42,7 +42,7 @@
 
 .audio-background-immersive-enabled {
   --audio-controls-background: var(--audio-player-background-color);
-  --audio-controls-right-margin: 6px;
+  --audio-controls-right-margin: 8px;
   --audio-controls-right-padding: 4px;
 }
 
@@ -59,6 +59,7 @@
 
 #audio-controls.audio-background-immersive-enabled {
   border-radius: 100px;
+  padding: 0 6px;
 }
 
 .audio-controls {
@@ -68,6 +69,11 @@
 #audio-controls cr-icon-button {
   --cr-icon-button-fill-color: var(--audio-controls-icon-color-internal);
 }
+
+#audio-controls.audio-background-immersive-enabled cr-icon-button {
+  margin: 4px 2px;
+}
+
 /* Separate CSS classes are needed instead of setting the style directly so
  * that when forced colors are active, the color menu isn't reshown through
  * the code used to manage toolbar overflows. */
@@ -179,6 +185,7 @@
 .immersive-toolbar-container #rate {
   height: 28px;
   width: 28px;
+  margin: 4px 2px;
 }
 
 .separator {
