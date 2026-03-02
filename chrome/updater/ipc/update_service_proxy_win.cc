@@ -34,6 +34,7 @@
 #include "chrome/updater/ipc/update_service_proxy.h"
 #include "chrome/updater/registration_data.h"
 #include "chrome/updater/service_proxy_factory.h"
+#include "chrome/updater/update_service.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util/win_util.h"
 #include "chrome/updater/win/win_constants.h"
@@ -210,13 +211,13 @@ class UpdaterObserver : public DYNAMICIIDSIMPL(IUpdaterObserver) {
 
   static UpdateService::Result QueryResult(ICompleteStatus* complete_status) {
     CHECK(complete_status);
-
     LONG code = 0;
     base::win::ScopedBstr message;
-    CHECK(SUCCEEDED(complete_status->get_statusCode(&code)));
-
-    VLOG(2) << "ICompleteStatus::OnComplete(" << code << ")";
-    return static_cast<UpdateService::Result>(code);
+    HRESULT hr = complete_status->get_statusCode(&code);
+    VLOG(2) << "ICompleteStatus::OnComplete: code=" << code
+            << ", hr=" << std::hex << hr;
+    return SUCCEEDED(hr) ? static_cast<UpdateService::Result>(code)
+                         : UpdateService::Result::kIPCConnectionFailed;
   }
 
   // Called by IUpdaterObserver::OnStateChange when update state changes occur.
