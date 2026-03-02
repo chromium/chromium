@@ -29706,17 +29706,6 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_acc_scaling",
-                    "enable_features": [
-                        "WebrtcAcceleratedScaling"
-                    ],
-                    "disable_features": [
-                        "BreakoutBoxConversionWithoutSinkSignal",
-                        "MediaFoundationD3DVideoProcessing",
-                        "MediaFoundationSharedImageEncode"
-                    ]
-                },
-                {
                     "name": "Enabled_si_encoding",
                     "enable_features": [
                         "MediaFoundationD3DVideoProcessing",
@@ -29725,17 +29714,6 @@
                     "disable_features": [
                         "BreakoutBoxConversionWithoutSinkSignal",
                         "WebrtcAcceleratedScaling"
-                    ]
-                },
-                {
-                    "name": "Enabled_acc_scaling_and_si_encoding",
-                    "enable_features": [
-                        "MediaFoundationD3DVideoProcessing",
-                        "MediaFoundationSharedImageEncode",
-                        "WebrtcAcceleratedScaling"
-                    ],
-                    "disable_features": [
-                        "BreakoutBoxConversionWithoutSinkSignal"
                     ]
                 }
             ]
