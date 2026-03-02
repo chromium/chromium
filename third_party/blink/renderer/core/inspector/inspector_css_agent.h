@@ -128,11 +128,23 @@ class CORE_EXPORT InspectorCSSAgent final
                                   String* computed_font_weight,
                                   float* text_opacity);
 
+  // Collect all StyleRuleFunction rules across the stylesheets of the Document
+  // and build a "reverse" mapping, from StyleRuleFunction to CSSFunctionRule.
+  //
+  // This is needed because we need to find the CSSFunctionRule
+  // (not the StyleRuleFunction) resulting from a function lookup
+  // (StyleEngine::FindFunctionAcrossScopes()).
+  HeapHashMap<Member<StyleRuleFunction>, Member<CSSFunctionRule>>
+  BuildFunctionRuleMap(Document& document);
+  static HeapHashMap<Member<StyleRuleFunction>, Member<CSSFunctionRule>>
+  BuildFunctionRuleMap(
+      const HeapHashSet<Member<CSSStyleSheet>>& document_style_sheets);
+
   // Collects all function references (i.e. <dashed-ident>s) within
   // the rule list, and the CSSFunctionRules that resulted from looking up
   // those function references.
   static void CollectReferencedFunctionRules(
-      const HeapHashSet<Member<CSSStyleSheet>>& document_style_sheets,
+      const HeapHashMap<Member<StyleRuleFunction>, Member<CSSFunctionRule>>&,
       const RuleIndexList&,
       HeapHashMap<Member<const ScopedCSSName>, Member<CSSFunctionRule>>&
           result);

@@ -52,7 +52,8 @@ class InspectorCSSAgentTest : public PageTestBase {
     HeapHashMap<Member<const ScopedCSSName>, Member<CSSFunctionRule>>
         function_rules;
     InspectorCSSAgent::CollectReferencedFunctionRules(
-        sheets, *resolver.MatchedRules(), function_rules);
+        InspectorCSSAgent::BuildFunctionRuleMap(sheets),
+        *resolver.MatchedRules(), function_rules);
     return function_rules;
   }
 

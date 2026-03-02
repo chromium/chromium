@@ -1,0 +1,5 @@
+Load the same stylesheet twice, and observe collected functions
+Calling getMatchedStylesForNode ...
+Call returned.
+Found 1 function rule(s).
+

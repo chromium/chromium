@@ -1481,6 +1481,12 @@ protocol::Response InspectorCSSAgent::getMatchedStylesForNode(
     element->GetDocument().UpdateStyleAndLayoutForNode(
         element, DocumentUpdateReason::kInspector);
   }
+
+  // This must happen outside the InspectorGhostRules scope,
+  // so we can look at the unmodified stylesheets.
+  const HeapHashMap<Member<StyleRuleFunction>, Member<CSSFunctionRule>>
+      function_to_css_rule_map = BuildFunctionRuleMap(document);
+
   InspectorGhostRules ghost_rules;
   HeapVector<Member<CSSStyleSheet>> ghost_sheets;
 
@@ -1632,13 +1638,10 @@ protocol::Response InspectorCSSAgent::getMatchedStylesForNode(
     }
   }
 
-  DocumentStyleSheets::iterator css_style_sheets_for_document_it =
-      document_to_css_style_sheets_.find(&document);
-  if (css_style_sheets_for_document_it != document_to_css_style_sheets_.end() &&
-      resolver.MatchedRules()) {
+  if (resolver.MatchedRules()) {
     HeapHashMap<Member<const ScopedCSSName>, Member<CSSFunctionRule>>
         function_hash_map;
-    CollectReferencedFunctionRules(*css_style_sheets_for_document_it->value,
+    CollectReferencedFunctionRules(function_to_css_rule_map,
                                    *resolver.MatchedRules(), function_hash_map);
     if (!function_hash_map.empty()) {
       *css_function_rules =
@@ -1648,6 +1651,7 @@ protocol::Response InspectorCSSAgent::getMatchedStylesForNode(
       }
     }
   }
+
   return protocol::Response::Success();
 }
 
@@ -4762,9 +4766,35 @@ class TransitiveFunctionCollector {
 
 }  // namespace
 
+HeapHashMap<Member<StyleRuleFunction>, Member<CSSFunctionRule>>
+InspectorCSSAgent::BuildFunctionRuleMap(Document& document) {
+  DocumentStyleSheets::iterator it =
+      document_to_css_style_sheets_.find(&document);
+  if (it == document_to_css_style_sheets_.end()) {
+    return {};
+  }
+  return BuildFunctionRuleMap(*it->value);
+}
+
+// static
+HeapHashMap<Member<StyleRuleFunction>, Member<CSSFunctionRule>>
+InspectorCSSAgent::BuildFunctionRuleMap(
+    const HeapHashSet<Member<CSSStyleSheet>>& document_style_sheets) {
+  HeapHashMap<Member<StyleRuleFunction>, Member<CSSFunctionRule>> to_css_rule;
+  for (CSSStyleSheet* style_sheet : document_style_sheets) {
+    TraverseCSSRules<CSSFunctionRule>(
+        style_sheet, [&to_css_rule](CSSFunctionRule& rule) {
+          to_css_rule.insert(&rule.FunctionRule(), &rule);
+          return true;  // Keep traversing.
+        });
+  }
+  return to_css_rule;
+}
+
 // static
 void InspectorCSSAgent::CollectReferencedFunctionRules(
-    const HeapHashSet<Member<CSSStyleSheet>>& document_style_sheets,
+    const HeapHashMap<Member<StyleRuleFunction>, Member<CSSFunctionRule>>&
+        function_to_css_rule_map,
     const RuleIndexList& rule_list,
     HeapHashMap<Member<const ScopedCSSName>, Member<CSSFunctionRule>>& result) {
   TransitiveFunctionCollector collector;
@@ -4788,16 +4818,6 @@ void InspectorCSSAgent::CollectReferencedFunctionRules(
     return;
   }
 
-  // Build a mapping from StyleRuleFunction to CSSFunctionRule.
-  HeapHashMap<Member<StyleRuleFunction>, Member<CSSFunctionRule>> to_css_rule;
-  for (CSSStyleSheet* style_sheet : document_style_sheets) {
-    TraverseCSSRules<CSSFunctionRule>(
-        style_sheet, [&to_css_rule](CSSFunctionRule& rule) {
-          to_css_rule.insert(&rule.FunctionRule(), &rule);
-          return true;  // Keep traversing.
-        });
-  }
-
   // Emit the final results, which map ScopedCSSNames to CSSFunctionRules.
   for (const auto& [scoped_name, style_rule] : seen_functions) {
     if (!style_rule) {
@@ -4805,7 +4825,7 @@ void InspectorCSSAgent::CollectReferencedFunctionRules(
       // but no corresponding @function rule was found.
       continue;
     }
-    result.insert(scoped_name, to_css_rule.at(style_rule));
+    result.insert(scoped_name, function_to_css_rule_map.at(style_rule));
   }
 }
 

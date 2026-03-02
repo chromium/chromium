@@ -1,0 +1,9 @@
+/* These empty rules are here to give InspectorGhostRules something to do.
+   See also crbug.com/486362484. */
+html {
+  body {}
+}
+
+@function --foo() {
+  result: 100px;
+}
