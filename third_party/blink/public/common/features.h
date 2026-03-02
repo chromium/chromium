@@ -1520,10 +1520,6 @@ BLINK_COMMON_EXPORT extern const char
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kPrerender2EarlyDocumentLifecycleUpdate);
 
-// Firing pagehide events for intended prerender cancellation. See
-// crbug.com/353628449 for more details.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kPageHideEventForPrerender2);
-
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kPrivateAggregationApi);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
     bool,

@@ -1812,22 +1812,20 @@ void PrerenderHostRegistry::ScheduleToDeleteAbandonedHost(
     std::unique_ptr<PrerenderHost> prerender_host,
     const PrerenderCancellationReason& cancellation_reason) {
   prerender_host->RecordFailedFinalStatus(PassKey(), cancellation_reason);
-  if (base::FeatureList::IsEnabled(
-          blink::features::kPageHideEventForPrerender2)) {
-    // TODO(crbug.com/353628449): Support pagehide event dispatch for
-    // PrerenderFinalStatus::kWindowClosed.
-    if (cancellation_reason.final_status() ==
-        PrerenderFinalStatus::kSpeculationRuleRemoved) {
-      // Fire unload related events upon intended prerender cancellation.
-      RenderFrameHostImpl* rfhi = prerender_host->GetPrerenderedMainFrameHost();
-      PrerenderHostId prerender_host_id = prerender_host->prerender_host_id();
-      pending_deletion_hosts_[prerender_host_id] = std::move(prerender_host);
-      rfhi->ClosePage(RenderFrameHostImpl::ClosePageSource::kPrerenderDiscard,
-                      base::BindRepeating(
-                          &PrerenderHostRegistry::DeletePendingDeletionHosts,
-                          weak_factory_.GetWeakPtr(), prerender_host_id));
-      return;
-    }
+
+  // TODO(crbug.com/353628449): Support pagehide event dispatch for
+  // PrerenderFinalStatus::kWindowClosed.
+  if (cancellation_reason.final_status() ==
+      PrerenderFinalStatus::kSpeculationRuleRemoved) {
+    // Fire unload related events upon intended prerender cancellation.
+    RenderFrameHostImpl* rfhi = prerender_host->GetPrerenderedMainFrameHost();
+    PrerenderHostId prerender_host_id = prerender_host->prerender_host_id();
+    pending_deletion_hosts_[prerender_host_id] = std::move(prerender_host);
+    rfhi->ClosePage(
+        RenderFrameHostImpl::ClosePageSource::kPrerenderDiscard,
+        base::BindRepeating(&PrerenderHostRegistry::DeletePendingDeletionHosts,
+                            weak_factory_.GetWeakPtr(), prerender_host_id));
+    return;
   }
 
   // Asynchronously delete the prerender host.

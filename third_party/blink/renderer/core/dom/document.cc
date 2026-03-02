@@ -4577,13 +4577,6 @@ void Document::DispatchUnloadEvents(UnloadEventTimingInfo* unload_timing_info) {
     parser_->StopParsing();
   }
 
-  if (!base::FeatureList::IsEnabled(features::kPageHideEventForPrerender2)) {
-    if (IsPrerendering()) {
-      // We do not dispatch unload event while prerendering.
-      return;
-    }
-  }
-
   if (load_event_progress_ == kLoadEventNotRun ||
       // TODO(dcheng): We should consider if we can make this conditional check
       // stronger with a DCHECK() that this isn't called if the unload event is
