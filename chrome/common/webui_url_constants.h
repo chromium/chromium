@@ -158,9 +158,6 @@ inline constexpr char kChromeUIGlicHost[] = "glic";
 inline constexpr char kChromeUIGlicURL[] = "chrome://glic/";
 inline constexpr char kChromeUIGlicFreHost[] = "glic-fre";
 inline constexpr char kChromeUIGlicFreURL[] = "chrome://glic-fre";
-inline constexpr char kChromeUIContextualTasksVirtualHost[] = "googlesearch";
-inline constexpr char kChromeUIContextualTasksVirtualURL[] =
-    "chrome://googlesearch";
 inline constexpr char kChromeUIHangUIHost[] = "uithreadhang";
 inline constexpr char kChromeUIHelpHost[] = "help";
 inline constexpr char kChromeUIHelpURL[] = "chrome://help/";

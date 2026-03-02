@@ -99,6 +99,7 @@ class TestOmniboxClient final : public testing::NiceMock<OmniboxClient> {
               GetContextualInputData,
               (),
               (const, override));
+  MOCK_METHOD(GURL, GetContextualTasksInnerFrameURL, (), (const, override));
 
   base::WeakPtr<OmniboxClient> AsWeakPtr() override;
 

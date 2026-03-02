@@ -340,6 +340,7 @@ static_library("browser") {
     "//build:branding_buildflags",
     "//components/bookmarks/browser",
     "//components/component_updater",
+    "//components/contextual_tasks/public:feature_list",
     "//components/dom_distiller/core",
     "//components/favicon/core",
     "//components/favicon_base",
@@ -496,6 +497,7 @@ static_library("location_bar") {
   ]
   deps = [
     ":buildflags",
+    "//components/contextual_tasks/public:feature_list",
     "//components/dom_distiller/core",
     "//components/lens/proto/server:proto",
     "//components/safe_browsing/core/common",
@@ -887,6 +889,7 @@ source_set("unit_tests") {
     "//build:blink_buildflags",
     "//components/bookmarks/browser",
     "//components/bookmarks/test",
+    "//components/contextual_tasks/public:feature_list",
     "//components/dom_distiller/core",
     "//components/favicon/core/test:test_support",
     "//components/history/core/test",

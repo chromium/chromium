@@ -7,6 +7,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/contextual_tasks/public/features.h"
 #include "components/dom_distiller/core/url_constants.h"
 #include "components/dom_distiller/core/url_utils.h"
 #include "components/omnibox/browser/autocomplete_classifier.h"
@@ -15,12 +16,6 @@
 #include "content/public/common/url_constants.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
-
-namespace {
-
-constexpr char kChromeUIContextualTasksVirtualHost[] = "googlesearch";
-
-}  // namespace
 
 namespace omnibox {
 
@@ -201,11 +196,15 @@ void AdjustTextForCopy(int sel_min,
     }
   }
 
-  // If `url_from_text` looks like a "contextual tasks" virtual URL, then apply
+  // If `url_from_text` looks like a "contextual tasks" display URL, then apply
   // "origin-swapping" logic to generate a valid shareable URL.
   if (url_from_text->is_valid() &&
-      url_from_text->SchemeIs(content::kChromeUIScheme) &&
-      url_from_text->GetHost() == kChromeUIContextualTasksVirtualHost) {
+      url_from_text->SchemeIs(
+          contextual_tasks::kContextualTasksDisplayUrlScheme.Get()) &&
+      url_from_text->GetHost() ==
+          contextual_tasks::kContextualTasksDisplayUrlHost.Get() &&
+      url_from_text->GetPath() ==
+          contextual_tasks::kContextualTasksDisplayUrlPath.Get()) {
     const GURL inner_frame_url = client->GetContextualTasksInnerFrameURL();
     if (!inner_frame_url.is_valid()) {
       return;

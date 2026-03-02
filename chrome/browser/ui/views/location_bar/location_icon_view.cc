@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/contextual_tasks/public/features.h"
 #include "components/dom_distiller/core/url_constants.h"
 #include "components/omnibox/browser/location_bar_model.h"
 #include "components/security_state/core/security_state.h"
@@ -199,7 +200,9 @@ bool LocationIconView::GetShowText() const {
   if (url.SchemeIs(content::kChromeUIScheme) ||
       url.SchemeIs(extensions::kExtensionScheme) ||
       url.SchemeIs(url::kFileScheme) ||
-      url.SchemeIs(dom_distiller::kDomDistillerScheme)) {
+      url.SchemeIs(dom_distiller::kDomDistillerScheme) ||
+      (location_bar_model->IsContextualTasksPage() &&
+       contextual_tasks::kContextualTasksShowExpandedSecurityChip.Get())) {
     return true;
   }
 
@@ -213,6 +216,11 @@ const views::InkDrop* LocationIconView::get_ink_drop_for_testing() {
 std::u16string LocationIconView::GetText() const {
   if (delegate_->IsEditingOrEmpty()) {
     return std::u16string();
+  }
+
+  if (delegate_->GetLocationBarModel()->IsContextualTasksPage() &&
+      contextual_tasks::kContextualTasksShowExpandedSecurityChip.Get()) {
+    return l10n_util::GetStringUTF16(IDS_SHORT_PRODUCT_NAME);
   }
 
   if (delegate_->GetLocationBarModel()->GetURL().SchemeIs(
