@@ -136,7 +136,7 @@ class PageActionIconViewTest : public ChromeViewsTestBase {
     ChromeViewsTestBase::SetUp();
 
     widget_ =
-        CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
+        CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
     delegate_ = TestPageActionIconDelegate();
     view_ = widget_->SetContentsView(std::make_unique<TestPageActionIconView>(
         /*command_updater=*/nullptr,
