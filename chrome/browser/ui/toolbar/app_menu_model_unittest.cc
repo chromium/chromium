@@ -346,7 +346,6 @@ TEST_F(AppMenuModelTest, DeclutterTabsItem) {
   EXPECT_EQ(1, model.log_metrics_count_);
 }
 
-#if BUILDFLAG(ENABLE_GLIC)
 TEST_F(AppMenuModelTest, GlicItem) {
   feature_list_.Reset();
   feature_list_.InitWithFeatures({features::kGlic, features::kGlicRollout}, {});
@@ -356,7 +355,6 @@ TEST_F(AppMenuModelTest, GlicItem) {
   model.ExecuteCommand(IDC_OPEN_GLIC, 0);
   EXPECT_EQ(1, model.log_metrics_count_);
 }
-#endif
 
 TEST_F(AppMenuModelTest, DoNotShowShareSubMenuItem) {
   PrefService* prefs = browser()->profile()->GetPrefs();
@@ -864,7 +862,6 @@ TEST_F(TestAppMenuModelSafetyHubTest, SafetyHubMenuNotification) {
   EXPECT_FALSE(new_model.GetLabelAt(menu_index).empty());
 }
 
-#if BUILDFLAG(ENABLE_GLIC)
 class TabSearchMenuModelTest : public AppMenuModelTest {
  public:
   TabSearchMenuModelTest() = default;
@@ -907,5 +904,3 @@ TEST_F(TabSearchMenuModelTest, TabSearchItem) {
   EXPECT_TRUE(tab_search_index.has_value());
   EXPECT_TRUE(toolModel.IsEnabledAt(tab_search_index.value()));
 }
-
-#endif

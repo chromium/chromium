@@ -125,6 +125,9 @@ source_set("impl") {
       "//chrome/browser:browser_process",
       "//chrome/browser/favicon",
       "//chrome/browser/feedback:feedback_impl",
+      "//chrome/browser/glic",
+      "//chrome/browser/glic/resources:grit",
+      "//chrome/browser/glic/resources:grit_grit",
       "//chrome/browser/media/router:media_router_feature",
       "//chrome/browser/prefs",
       "//chrome/browser/profiles",
@@ -219,13 +222,6 @@ source_set("impl") {
       deps += [
         "//chrome/browser/ui/webui/signin:signin_ui_error",
         "//chrome/browser/ui/webui/signin:signin_utils",
-      ]
-    }
-    if (enable_glic) {
-      deps += [
-        "//chrome/browser/glic",
-        "//chrome/browser/glic/resources:grit",
-        "//chrome/browser/glic/resources:grit_grit",
       ]
     }
   }

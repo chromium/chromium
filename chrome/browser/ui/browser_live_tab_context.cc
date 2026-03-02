@@ -17,6 +17,7 @@
 #include "base/values.h"
 #include "chrome/browser/apps/app_service/web_contents_app_id_utils.h"
 #include "chrome/browser/browser_features.h"
+#include "chrome/browser/glic/glic_tab_restore_helper.h"
 #include "chrome/browser/performance_manager/public/background_tab_loading_policy.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/session_service_utils.h"
@@ -53,10 +54,6 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/window_open_disposition.h"
-
-#if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/glic/glic_tab_restore_helper.h"
-#endif
 
 using content::NavigationController;
 using content::SessionStorageNamespace;
@@ -158,10 +155,8 @@ std::map<std::string, std::string> BrowserLiveTabContext::GetExtraDataForTab(
     int index) const {
   std::map<std::string, std::string> extra_data;
 
-#if BUILDFLAG(ENABLE_GLIC)
   glic::PopulateGlicExtraData(tab_strip_model_->GetWebContentsAt(index),
                               &extra_data);
-#endif
 
   return extra_data;
 }

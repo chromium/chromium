@@ -72,10 +72,8 @@ class BrowserCommandController : public CommandUpdater,
   void LockedFullscreenStateChanged();
 #endif
   void PrintingStateChanged();
-#if BUILDFLAG(ENABLE_GLIC)
   void GlicWindowActivationChanged(bool active);
   void GlicFreStateChanged(glic::mojom::FreWebUiState new_state);
-#endif
   void LoadingStateChanged(bool is_loading, bool force);
   void FindBarVisibilityChanged();
   void ExtensionStateChanged();
@@ -189,10 +187,8 @@ class BrowserCommandController : public CommandUpdater,
   // Updates the printing command state.
   void UpdatePrintingState();
 
-#if BUILDFLAG(ENABLE_GLIC)
   // Updates the Glic command state.
   void UpdateGlicState();
-#endif
 
   // Updates the SHOW_SYNC_SETUP menu entry.
   void OnSigninAllowedPrefChange();

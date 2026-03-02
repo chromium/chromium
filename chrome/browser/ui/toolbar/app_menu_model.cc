@@ -29,6 +29,9 @@
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/extensions/extension_ui_util.h"
 #include "chrome/browser/feedback/report_unsafe_site_dialog.h"
+#include "chrome/browser/glic/browser_ui/glic_vector_icon_manager.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
@@ -154,12 +157,6 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/text_elider.h"
 #include "ui/menus/simple_menu_model.h"
-
-#if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/glic/browser_ui/glic_vector_icon_manager.h"
-#include "chrome/browser/glic/public/glic_enabling.h"
-#include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
-#endif
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING) || BUILDFLAG(IS_CHROMEOS)
 #include "base/feature_list.h"
@@ -1379,7 +1376,6 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
       }
       LogMenuAction(MENU_ACTION_PRINT);
       break;
-#if BUILDFLAG(ENABLE_GLIC)
     case IDC_OPEN_GLIC:
       if (!uma_action_recorded_) {
         base::UmaHistogramMediumTimes("WrenchMenu.TimeToAction.OpenGlic",
@@ -1387,7 +1383,6 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
       }
       LogMenuAction(MENU_ACTION_OPEN_GLIC);
       break;
-#endif
 
     case IDC_SHOW_TRANSLATE:
       if (!uma_action_recorded_) {
@@ -2109,7 +2104,6 @@ void AppMenuModel::Build() {
 
   AddItemWithStringIdAndVectorIcon(this, IDC_PRINT, IDS_PRINT, kPrintMenuIcon);
 
-#if BUILDFLAG(ENABLE_GLIC)
   if (glic::GlicEnabling::IsEnabledForProfile(browser_->profile())) {
     AddItemWithStringIdAndVectorIcon(this, IDC_OPEN_GLIC,
                                      IDS_GLIC_THREE_DOT_MENU_ITEM,
@@ -2120,7 +2114,6 @@ void AppMenuModel::Build() {
         BrowserUserEducationInterface::From(browser())->MaybeShowNewBadgeFor(
             features::kGlicAppMenuNewBadge));
   }
-#endif
 
   if (browser()
           ->GetFeatures()

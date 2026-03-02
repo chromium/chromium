@@ -288,7 +288,6 @@ class ToolbarView : public views::AccessiblePaneView,
   void OnVerticalTabStripModeChanged(
       tabs::VerticalTabStripStateController* controller);
 
-#if BUILDFLAG(ENABLE_GLIC)
   std::unique_ptr<glic::ToolbarGlicButton> CreateGlicButton();
   void OnGlicButtonClicked();
   void OnGlicButtonDismissed();
@@ -297,7 +296,6 @@ class ToolbarView : public views::AccessiblePaneView,
   void OnGlicButtonAnimationEnded();
   void ExecuteHideToolbarNudge(glic::ToolbarGlicButton* button);
   void UpdateGlicButtonVisibility();
-#endif
 
   gfx::SlideAnimation size_animation_{this};
 

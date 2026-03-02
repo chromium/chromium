@@ -61,6 +61,7 @@ source_set("internal") {
       "//chrome/browser/collaboration",
       "//chrome/browser/contextual_tasks:ui",
       "//chrome/browser/devtools",
+      "//chrome/browser/glic",
       "//chrome/browser/lens/region_search",
       "//chrome/browser/media/router:media_router_feature",
       "//chrome/browser/prefs",
@@ -137,10 +138,6 @@ source_set("internal") {
         "//chrome/browser/ash/boca/on_task",
         "//components/session_manager/core",
       ]
-    }
-
-    if (enable_glic) {
-      deps += [ "//chrome/browser/glic" ]
     }
 
     if (use_aura) {

@@ -280,6 +280,7 @@ static_library("ui") {
     "//chrome/browser:font_pref",
     "//chrome/browser:global_features",
     "//chrome/browser/affiliations",
+    "//chrome/browser/ai",
     "//chrome/browser/autocomplete",
     "//chrome/browser/autocomplete:aim_eligibility_service",
     "//chrome/browser/autofill",
@@ -303,6 +304,10 @@ static_library("ui") {
     "//chrome/browser/feedback:feedback_impl",
     "//chrome/browser/file_system_access",
     "//chrome/browser/gcm",
+    "//chrome/browser/glic",
+    "//chrome/browser/glic/actor",
+    "//chrome/browser/glic/fre",
+    "//chrome/browser/glic/public:features",
     "//chrome/browser/google",
     "//chrome/browser/gpu",
     "//chrome/browser/hang_monitor",
@@ -722,6 +727,7 @@ static_library("ui") {
     "//chrome/browser/devtools",
     "//chrome/browser/favicon",
     "//chrome/browser/feedback",
+    "//chrome/browser/glic/fre",
     "//chrome/browser/safe_browsing",
     "//chrome/browser/profiling_host",
 
@@ -1274,6 +1280,8 @@ static_library("ui") {
       "webui/settings/downloads_handler.h",
       "webui/settings/font_handler.cc",
       "webui/settings/font_handler.h",
+      "webui/settings/glic_handler.cc",
+      "webui/settings/glic_handler.h",
       "webui/settings/hats_handler.cc",
       "webui/settings/hats_handler.h",
       "webui/settings/import_data_handler.cc",
@@ -1439,12 +1447,14 @@ static_library("ui") {
       "//chrome/browser/actor/ui",
       "//chrome/browser/actor/ui:actor_overlay",
       "//chrome/browser/actor/ui:actor_overlay_web_view",
+      "//chrome/browser/actor/ui/task_list_bubble:controller",
       "//chrome/browser/app_mode",
       "//chrome/browser/apps/app_service",
       "//chrome/browser/apps/app_service/app_icon",
       "//chrome/browser/apps/app_service/app_icon:util",
       "//chrome/browser/apps/link_capturing",
       "//chrome/browser/background",
+      "//chrome/browser/background/glic",
       "//chrome/browser/bluetooth",
       "//chrome/browser/browsing_data:constants",
       "//chrome/browser/contextual_cueing",
@@ -1452,6 +1462,12 @@ static_library("ui") {
       "//chrome/browser/custom_handlers",
       "//chrome/browser/device_api",
       "//chrome/browser/first_party_sets",
+      "//chrome/browser/glic/browser_ui",
+      "//chrome/browser/glic/browser_ui:glow",
+      "//chrome/browser/glic/browser_ui:glow_controller",
+      "//chrome/browser/glic/browser_ui:glow_controller_impl",
+      "//chrome/browser/glic/browser_ui:glow_impl",
+      "//chrome/browser/glic/selection",
       "//chrome/browser/indigo",
       "//chrome/browser/lifetime:termination_notification",
       "//chrome/browser/password_manager/factories",
@@ -1489,6 +1505,9 @@ static_library("ui") {
       "//chrome/browser/ui/task_manager",
       "//chrome/browser/ui/thumbnails",
       "//chrome/browser/ui/translate:impl",
+      "//chrome/browser/ui/views/glic",
+      "//chrome/browser/ui/views/tabs/glic",
+      "//chrome/browser/ui/views/tabs/glic:impl",
       "//chrome/browser/ui/waap:window_metrics_manager",
       "//chrome/browser/ui/web_applications",
       "//chrome/browser/ui/web_applications:impl",
@@ -1807,6 +1826,13 @@ static_library("ui") {
       "//chrome/browser/ui/webui/webui_toolbar:impl",
       "//chrome/browser/ui/webui/webui_toolbar/adapters:impl",
       "//chrome/browser/ui/webui/whats_new:impl",
+
+      "//chrome/browser/glic/browser_ui",
+      "//chrome/browser/glic/browser_ui:glow_impl",
+      "//chrome/browser/glic/browser_ui:glow_controller_impl",
+      "//chrome/browser/ui/views/glic",
+      "//chrome/browser/ui/views/tabs/glic",
+      "//chrome/browser/ui/views/tabs/glic:impl",
 
       "//chrome/browser/ui:browser_list_impl",
       "//chrome/browser/ui/media_router:impl",
@@ -5474,44 +5500,6 @@ static_library("ui") {
     ]
   }
 
-  if (enable_glic) {
-    deps += [
-      "//chrome/browser/ai",
-      "//chrome/browser/glic",
-      "//chrome/browser/glic/actor",
-      "//chrome/browser/glic/fre",
-      "//chrome/browser/glic/public:features",
-    ]
-    allow_circular_includes_from += [ "//chrome/browser/glic/fre" ]
-    if (!is_android) {
-      sources += [
-        "webui/settings/glic_handler.cc",
-        "webui/settings/glic_handler.h",
-      ]
-      deps += [
-        "//chrome/browser/actor/ui/task_list_bubble:controller",
-        "//chrome/browser/background/glic",
-        "//chrome/browser/glic/browser_ui",
-        "//chrome/browser/glic/browser_ui:glow",
-        "//chrome/browser/glic/browser_ui:glow_controller",
-        "//chrome/browser/glic/browser_ui:glow_controller_impl",
-        "//chrome/browser/glic/browser_ui:glow_impl",
-        "//chrome/browser/glic/selection",
-        "//chrome/browser/ui/views/glic",
-        "//chrome/browser/ui/views/tabs/glic",
-        "//chrome/browser/ui/views/tabs/glic:impl",
-      ]
-      allow_circular_includes_from += [
-        "//chrome/browser/ui/views/glic",
-        "//chrome/browser/ui/views/tabs/glic",
-        "//chrome/browser/ui/views/tabs/glic:impl",
-        "//chrome/browser/glic/browser_ui",
-        "//chrome/browser/glic/browser_ui:glow_impl",
-        "//chrome/browser/glic/browser_ui:glow_controller_impl",
-      ]
-    }
-  }
-
   if (enable_webui_generate_code_cache) {
     deps += [
       "//chrome/browser/resources:code_cache_resources",
@@ -5667,12 +5655,10 @@ source_set("tab_search_feature") {
   deps = [
     "//base",
     "//chrome/browser:browser_process",
+    "//chrome/browser/glic",
     "//chrome/common:buildflags",
     "//components/variations/service",
   ]
-  if (enable_glic) {
-    deps += [ "//chrome/browser/glic" ]
-  }
 }
 
 source_set("browser_navigator_params_headers") {

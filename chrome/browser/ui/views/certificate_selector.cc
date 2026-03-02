@@ -16,7 +16,15 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/certificate_viewer.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/widget/glic_window_controller.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/grit/generated_resources.h"
@@ -43,18 +51,6 @@
 #include "extensions/browser/extension_registry_factory.h"
 #endif
 
-#if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/glic/public/glic_enabling.h"
-#include "chrome/browser/glic/public/glic_keyed_service.h"
-#include "chrome/browser/glic/public/glic_keyed_service_factory.h"
-#include "chrome/browser/glic/widget/glic_window_controller.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
-#endif
-
-#if BUILDFLAG(ENABLE_GLIC)
 namespace {
 
 // Checks that `contents` is for glic.
@@ -75,7 +71,6 @@ bool UseGlicDevFlow(content::WebContents* contents) {
 }
 
 }  // namespace
-#endif
 
 const int CertificateSelector::kTableViewWidth = 500;
 const int CertificateSelector::kTableViewHeight = 150;
@@ -213,11 +208,9 @@ CertificateSelector::~CertificateSelector() {
 
 // static
 bool CertificateSelector::CanShow(content::WebContents* web_contents) {
-#if BUILDFLAG(ENABLE_GLIC)
   if (UseGlicDevFlow(web_contents)) {
     return true;
   }
-#endif
 
   content::WebContents* top_level_web_contents =
       constrained_window::GetTopLevelWebContents(web_contents);
@@ -226,7 +219,6 @@ bool CertificateSelector::CanShow(content::WebContents* web_contents) {
 }
 
 void CertificateSelector::Show() {
-#if BUILDFLAG(ENABLE_GLIC)
   // In the event that glic is showing and glic-dev is enabled, always show the
   // certificate picker on the glic window. This is not fully correct, but
   // satisfies the main dev use case with minimal overhead.
@@ -245,7 +237,6 @@ void CertificateSelector::Show() {
     }
     return;
   }
-#endif
 
   constrained_window::ShowWebModalDialogViews(this, web_contents_);
 

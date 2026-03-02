@@ -11,6 +11,7 @@
 #include "base/containers/span.h"
 #include "build/build_config.h"
 #include "chrome/browser/apps/app_service/web_contents_app_id_utils.h"
+#include "chrome/browser/glic/glic_tab_restore_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/sessions/session_service_base.h"
@@ -37,10 +38,6 @@
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/range/range.h"
-
-#if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/glic/glic_tab_restore_helper.h"
-#endif
 
 using content::NavigationEntry;
 using content::RestoreType;
@@ -87,9 +84,7 @@ std::unique_ptr<WebContents> CreateRestoredTab(
   apps::SetAppIdForWebContents(browser->profile(), web_contents.get(),
                                extension_app_id);
 
-#if BUILDFLAG(ENABLE_GLIC)
   glic::RestoreGlicStateFromExtraData(web_contents.get(), extra_data);
-#endif
 
   std::vector<std::unique_ptr<NavigationEntry>> entries =
       ContentSerializedNavigationBuilder::ToNavigationEntries(

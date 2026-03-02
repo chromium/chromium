@@ -12,6 +12,9 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
+#include "chrome/browser/glic/host/host.h"
+#include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -54,12 +57,6 @@
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
-#endif
-
-#if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/glic/host/host.h"
-#include "chrome/browser/glic/public/glic_keyed_service.h"
-#include "chrome/browser/glic/widget/glic_window_controller.h"
 #endif
 
 namespace mojom {
@@ -664,7 +661,6 @@ void MediaNotificationService::RemoveDeviceListHost(int host_id) {
 
 bool MediaNotificationService::IsIdBlocked(
     const std::string& request_id) const {
-#if BUILDFLAG(ENABLE_GLIC)
   auto* glic_keyed_service = glic::GlicKeyedService::Get(profile_);
   if (!glic_keyed_service) {
     return false;
@@ -685,7 +681,6 @@ bool MediaNotificationService::IsIdBlocked(
       return true;
     }
   }
-#endif
   return false;
 }
 

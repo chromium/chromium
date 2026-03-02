@@ -74,6 +74,7 @@ source_set("impl") {
     ":global_media_controls",
     "//chrome/browser:browser_process",
     "//chrome/browser/feature_engagement",
+    "//chrome/browser/glic",
     "//chrome/browser/media/router:media_router_feature",
     "//chrome/browser/ui:browser_list",
     "//chrome/browser/ui/browser_window",
@@ -86,9 +87,6 @@ source_set("impl") {
     "//media/remoting:remoting_device_capability",
     "//services/metrics/public/cpp:ukm_builders",
   ]
-  if (enable_glic) {
-    deps += [ "//chrome/browser/glic" ]
-  }
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }
 

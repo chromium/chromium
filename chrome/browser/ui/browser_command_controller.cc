@@ -29,6 +29,13 @@
 #include "chrome/browser/devtools/features.h"
 #include "chrome/browser/feedback/public/feedback_source.h"
 #include "chrome/browser/feedback/show_feedback_page.h"
+#include "chrome/browser/glic/fre/glic_fre_controller.h"
+#include "chrome/browser/glic/glic_enums.h"
+#include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/glic_profile_manager.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
@@ -157,15 +164,6 @@
 #include "chrome/browser/ui/shortcuts/desktop_shortcuts_utils.h"
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 
-#if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/glic/fre/glic_fre_controller.h"
-#include "chrome/browser/glic/glic_enums.h"
-#include "chrome/browser/glic/glic_pref_names.h"
-#include "chrome/browser/glic/glic_profile_manager.h"
-#include "chrome/browser/glic/public/glic_enabling.h"
-#include "chrome/browser/glic/public/glic_keyed_service_factory.h"
-#include "chrome/browser/glic/widget/glic_window_controller.h"
-#endif
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS));
 
@@ -334,7 +332,6 @@ BrowserCommandController::BrowserCommandController(BrowserWindowInterface* bwi)
           base::Unretained(this)));
 #endif  //! BUILDFLAG(IS_MAC)
 
-#if BUILDFLAG(ENABLE_GLIC)
   if (glic::GlicEnabling::IsEnabledByFlags()) {
     auto* glic_service =
         glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile());
@@ -347,9 +344,7 @@ BrowserCommandController::BrowserCommandController(BrowserWindowInterface* bwi)
               base::Unretained(this))));
     }
   }
-#endif  // BUILDFLAG(ENABLE_GLIC)
 
-#if BUILDFLAG(ENABLE_GLIC)
   if (glic::GlicEnabling::IsEnabledByFlags()) {
     auto* service =
         glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile());
@@ -366,7 +361,6 @@ BrowserCommandController::BrowserCommandController(BrowserWindowInterface* bwi)
                   base::Unretained(this)));
     }
   }
-#endif
 
   InitCommandState();
 
@@ -493,7 +487,6 @@ void BrowserCommandController::LoadingStateChanged(bool is_loading,
   UpdateReloadStopState(is_loading, force);
 }
 
-#if BUILDFLAG(ENABLE_GLIC)
 void BrowserCommandController::GlicWindowActivationChanged(bool active) {
   UpdateGlicState();
 }
@@ -502,7 +495,6 @@ void BrowserCommandController::GlicFreStateChanged(
     glic::mojom::FreWebUiState new_state) {
   UpdateGlicState();
 }
-#endif
 
 void BrowserCommandController::FindBarVisibilityChanged() {
   // Block find command updates in locked fullscreen mode unless the instance is
@@ -1394,7 +1386,6 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
           DefaultBrowserPromptManager::CloseReason::kAccept);
       break;
 #endif
-#if BUILDFLAG(ENABLE_GLIC)
     case IDC_GLIC_TOGGLE_PIN: {
       PrefService* profile_prefs = profile()->GetPrefs();
       profile_prefs->SetBoolean(
@@ -1413,7 +1404,6 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
       }
       break;
     }
-#endif
     default:
       LOG(WARNING) << "Received Unimplemented Command: " << id;
       break;
@@ -1796,12 +1786,10 @@ void BrowserCommandController::InitCommandState() {
     command_updater_.UpdateCommandEnabled(IDC_SHOW_CHROME_LABS, true);
   }
 
-#if BUILDFLAG(ENABLE_GLIC)
   // Glic commands.
   command_updater_.UpdateCommandEnabled(
       IDC_GLIC_TOGGLE_PIN, glic::GlicEnabling::IsProfileEligible(profile()));
   UpdateGlicState();
-#endif
 
   // Initialize other commands whose state changes based on various conditions.
   UpdateCommandsForFullscreenMode();
@@ -2264,7 +2252,6 @@ void BrowserCommandController::UpdatePrintingState() {
 #endif
 }
 
-#if BUILDFLAG(ENABLE_GLIC)
 void BrowserCommandController::UpdateGlicState() {
   if (glic::GlicEnabling::IsEnabledByFlags()) {
     auto* service =
@@ -2276,7 +2263,6 @@ void BrowserCommandController::UpdateGlicState() {
     }
   }
 }
-#endif
 
 void BrowserCommandController::UpdateSaveAsState() {
   if (is_locked_fullscreen_) {
@@ -2444,10 +2430,8 @@ void BrowserCommandController::UpdateCommandAndActionEnabled(
 }
 
 void BrowserCommandController::UpdateCommandsForEnableGlicChanged() {
-#if BUILDFLAG(ENABLE_GLIC)
   command_updater_.UpdateCommandEnabled(
       IDC_OPEN_GLIC, glic::GlicEnabling::IsEnabledForProfile(profile()));
-#endif  //  BUILDFLAG(ENABLE_GLIC)
 }
 
 BrowserWindow* BrowserCommandController::window() {

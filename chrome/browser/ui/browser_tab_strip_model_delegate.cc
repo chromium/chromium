@@ -12,6 +12,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "build/build_config.h"
+#include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/reading_list/reading_list_model_factory.h"
@@ -54,10 +55,6 @@
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/gfx/range/range.h"
 
-#if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/glic/public/glic_keyed_service.h"
-#endif  // BUILDFLAG(ENABLE_GLIC)
-
 namespace chrome {
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -68,7 +65,6 @@ BrowserTabStripModelDelegate::BrowserTabStripModelDelegate(Browser* browser)
 
 BrowserTabStripModelDelegate::~BrowserTabStripModelDelegate() = default;
 
-#if BUILDFLAG(ENABLE_GLIC)
 bool BrowserTabStripModelDelegate::IsTabGlicPinned(tabs::TabHandle tab_handle) {
   auto* service =
       glic::GlicKeyedServiceFactory::GetGlicKeyedService(browser_->profile());
@@ -109,7 +105,6 @@ void BrowserTabStripModelDelegate::GlicUnpinTabsFromAllConversations(
   service->UnpinTabsFromAllInstances(tab_handles,
                                      glic::GlicUnpinTrigger::kContextMenu);
 }
-#endif
 
 ////////////////////////////////////////////////////////////////////////////////
 // BrowserTabStripModelDelegate, TabStripModelDelegate implementation:

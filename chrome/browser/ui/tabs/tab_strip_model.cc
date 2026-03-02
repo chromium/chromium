@@ -2928,7 +2928,6 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
       break;
     }
 
-#if BUILDFLAG(ENABLE_GLIC)
     case CommandGlicShareLimit:
       base::UmaHistogramCounts1000(
           "Tab.ContextMenu.GlicShareLimit.SelectedTabsCount",
@@ -2985,7 +2984,6 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
       delegate_->GlicUnpinTabsFromAllConversations(tab_handles);
       break;
     }
-#endif
 
     case CommandCopyURL: {
       base::UmaHistogramCounts1000("Tab.ContextMenu.CopyURL.SelectedTabsCount",

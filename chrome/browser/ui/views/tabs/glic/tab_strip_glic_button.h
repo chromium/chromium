@@ -8,6 +8,7 @@
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/glic/browser_ui/glic_button_controller_delegate.h"
+#include "chrome/browser/glic/fre/glic_fre.mojom.h"
 #include "chrome/browser/ui/views/glic/glic_button_interface.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_nudge_button.h"
 #include "chrome/common/buildflags.h"
@@ -15,9 +16,6 @@
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/controls/menu/menu_model_adapter.h"
 
-#if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/glic/fre/glic_fre.mojom.h"
-#endif  // BUILDFLAG(ENABLE_GLIC)
 
 class BrowserWindowInterface;
 class PrefService;
@@ -170,9 +168,7 @@ class TabStripGlicButton : public TabStripNudgeButton,
   views::View* highlight_view() { return highlight_view_; }
   WidthState width_state() { return width_state_; }
 
-#if BUILDFLAG(ENABLE_GLIC)
   void OnLabelVisibilityChanged();
-#endif  // BUILDFLAG(ENABLE_GLIC)
 
   // The model adapter for the context menu.
   std::unique_ptr<views::MenuModelAdapter> menu_model_adapter_;
