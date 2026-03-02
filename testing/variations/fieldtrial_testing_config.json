@@ -20636,26 +20636,6 @@
             ]
         }
     ],
-    "RemoveGraphicsUKMs": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Disabled",
-                    "disable_features": [
-                        "ReportUkm"
-                    ]
-                }
-            ]
-        }
-    ],
     "RemoveGreySnapshot": [
         {
             "platforms": [
