@@ -11,12 +11,15 @@
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_base.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_observer.h"
 
+class PrefService;
+
 namespace ash {
 
 // Observer class to update the Kiosk app menu when Kiosk app data is changed.
 class KioskAppMenuController : public KioskAppManagerObserver {
  public:
-  KioskAppMenuController();
+  // `local_state` must be non-null and must outlive `this`.
+  explicit KioskAppMenuController(PrefService* local_state);
 
   KioskAppMenuController(const KioskAppMenuController&) = delete;
   KioskAppMenuController& operator=(const KioskAppMenuController&) = delete;
@@ -35,6 +38,8 @@ class KioskAppMenuController : public KioskAppManagerObserver {
  private:
   void LaunchApp(const KioskAppMenuEntry& app);
   void OnMenuWillShow();
+
+  const raw_ref<PrefService> local_state_;
 
   base::ScopedMultiSourceObservation<KioskAppManagerBase,
                                      KioskAppManagerObserver>

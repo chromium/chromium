@@ -236,6 +236,7 @@ LoginDisplayHostCommon::LoginDisplayHostCommon(
       browser_policy_connector_ash_(CHECK_DEREF(browser_policy_connector_ash)),
       keep_alive_(KeepAliveOrigin::LOGIN_DISPLAY_HOST_WEBUI,
                   KeepAliveRestartOption::DISABLED),
+      kiosk_app_menu_controller_(local_state),
       login_ui_pref_controller_(std::make_unique<LoginUIPrefController>(
           update_geolocation_usage_allowed)),
       wizard_context_(std::make_unique<WizardContext>()),

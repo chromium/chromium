@@ -22,7 +22,6 @@
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_controller.h"
 #include "chrome/browser/ash/app_mode/web_app/kiosk_web_app_manager.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/ash/login/login_screen_client_impl.h"
 #include "extensions/grit/extensions_browser_resources.h"
@@ -101,7 +100,8 @@ std::vector<KioskAppMenuEntry> BuildKioskAppMenuEntries() {
 
 }  // namespace
 
-KioskAppMenuController::KioskAppMenuController() {
+KioskAppMenuController::KioskAppMenuController(PrefService* local_state)
+    : local_state_(CHECK_DEREF(local_state)) {
   kiosk_observations_.AddObservation(KioskChromeAppManager::Get());
   kiosk_observations_.AddObservation(KioskWebAppManager::Get());
   kiosk_observations_.AddObservation(KioskIwaManager::Get());
@@ -132,17 +132,14 @@ void KioskAppMenuController::SendKioskApps() {
   }
 
   KioskAppMenu::Get()->SetKioskApps(BuildKioskAppMenuEntries());
-  // TODO(crbug.com/404133029): Remove g_browser_process usage.
   KioskAppLaunchError::Error error =
-      KioskAppLaunchError::Get(CHECK_DEREF(g_browser_process->local_state()));
+      KioskAppLaunchError::Get(local_state_.get());
   if (error == KioskAppLaunchError::Error::kNone) {
     return;
   }
 
   // Clear any old pending Kiosk launch errors
-  // TODO(crbug.com/404133029): Remove g_browser_process usage.
-  KioskAppLaunchError::RecordMetricAndClear(
-      CHECK_DEREF(g_browser_process->local_state()));
+  KioskAppLaunchError::RecordMetricAndClear(local_state_.get());
 
   LoginScreen::Get()->ShowKioskAppError(
       KioskAppLaunchError::GetErrorMessage(error));
