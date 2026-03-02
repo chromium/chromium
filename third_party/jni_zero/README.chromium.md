@@ -121,12 +121,12 @@ void JNI_MyClass_FetchSuccess2(JNIEnv* env, base::OnceCallback<void(const jni_ze
 **Java:**
 ```java
 @CalledByNative
-void onResult(@JniType("base::OnceCallback<void(std::string)>") JniOnceCallback<String> callback) {
+void onResult(@JniType("base::OnceCallback<void(std::string)>&&") JniOnceCallback<String> callback) {
     callback.onResult("success");
 }
 
 @CalledByNative
-void onResult2(@JniType("base::OnceCallback<void(const jni_zero::JavaRef<jobject>&, long)>") JniOnceCallback2<SomeClass, Long> callback) {
+void onResult2(@JniType("base::OnceCallback<void(const jni_zero::JavaRef<jobject>&, long)>&&") JniOnceCallback2<SomeClass, Long> callback) {
     callback.onResult(new SomeClass(), 123L);
 }
 
