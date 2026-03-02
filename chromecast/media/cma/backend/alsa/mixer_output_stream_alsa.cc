@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromecast/media/cma/backend/alsa/mixer_output_stream_alsa.h"
 
 #include <algorithm>
@@ -57,7 +52,8 @@ void ToFixedPoint(const float* input,
                   int frames,
                   typename TargetSampleTypeTraits::ValueType* dest_buffer) {
   for (int f = 0; f < frames; ++f) {
-    dest_buffer[f] = TargetSampleTypeTraits::FromFloat(input[f]);
+    UNSAFE_TODO(dest_buffer[f]) =
+        TargetSampleTypeTraits::FromFloat(UNSAFE_TODO(input[f]));
   }
 }
 
@@ -260,7 +256,8 @@ bool MixerOutputStreamAlsa::Write(const float* data,
     }
     frames_left -= frames_or_error;
     DCHECK_GE(frames_left, 0);
-    output_data += frames_or_error * num_output_channels_ * bytes_per_sample;
+    UNSAFE_TODO(output_data +=
+                frames_or_error * num_output_channels_ * bytes_per_sample);
   }
   first_write_ = false;
   UpdateRenderingDelay();
