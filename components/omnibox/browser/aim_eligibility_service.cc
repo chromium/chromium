@@ -603,11 +603,22 @@ GaiaId AimEligibilityService::GetFirstAccountInCookieJarIfValid() const {
   return GaiaId();
 }
 
-bool AimEligibilityService::AreAccountsInCookieJarFresh() const {
-  if (!identity_manager_) {
+// Drop the request if the accounts in the cookie jar are not fresh and the
+// profile is not OTR. It is expected that `OnAccountsInCookieUpdated()` will
+// be called when the accounts in the cookie jar become fresh which will trigger
+// another request.
+bool AimEligibilityService::ShouldDropRequest() const {
+  if (!omnibox::kAimIdentityDropRequestIfCookiesStale.Get()) {
     return false;
   }
-  return identity_manager_->GetAccountsInCookieJar().AreAccountsFresh();
+
+  if (!identity_manager_) {
+    // If there is no identity manager (OTR profile) do not drop the request
+    // since there will be no cookie events to eventually trigger a request.
+    return false;
+  }
+
+  return !identity_manager_->GetAccountsInCookieJar().AreAccountsFresh();
 }
 
 void AimEligibilityService::ScheduleServerEligibilityRequestIfNeeded(
@@ -978,12 +989,7 @@ void AimEligibilityService::StartServerEligibilityRequest(
     use_oauth = HasValidPrimaryAccount();
     LogEligibilityRequestOAuthFallback(use_oauth, request_source);
 
-    if (!use_oauth && omnibox::kAimIdentityDropRequestIfCookiesStale.Get() &&
-        !AreAccountsInCookieJarFresh()) {
-      // Drop the request if the accounts in the cookie jar are not fresh. It
-      // expected that `OnAccountsInCookieUpdated()` will be called when
-      // the accounts in the cookie jar become fresh which will trigger another
-      // request.
+    if (!use_oauth && ShouldDropRequest()) {
       return;
     }
   }
@@ -1065,8 +1071,7 @@ void AimEligibilityService::OnAccessTokenAvailable(
         net::HttpRequestHeaders::kAuthorization,
         base::StrCat({"Bearer ", access_token_info.token}));
   } else {
-    if (omnibox::kAimIdentityDropRequestIfCookiesStale.Get() &&
-        !AreAccountsInCookieJarFresh()) {
+    if (ShouldDropRequest()) {
       // Drop the request if the accounts in the cookie jar are not fresh. It
       // expected that `OnAccountsInCookieUpdated()` will be called when
       // the accounts in the cookie jar become fresh which will trigger another

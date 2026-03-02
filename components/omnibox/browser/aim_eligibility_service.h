@@ -298,8 +298,8 @@ class AimEligibilityService
   // Returns the first account in the cookie jar if valid and signed in.
   GaiaId GetFirstAccountInCookieJarIfValid() const;
 
-  // Returns true if the accounts in the cookie jar are fresh.
-  bool AreAccountsInCookieJarFresh() const;
+  // Returns true if the request should be dropped.
+  bool ShouldDropRequest() const;
 
   // Queues a request if the last active account changed.
   void ScheduleServerEligibilityRequestIfNeeded(RequestSource source);

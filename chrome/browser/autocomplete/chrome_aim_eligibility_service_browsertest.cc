@@ -1372,6 +1372,36 @@ IN_PROC_BROWSER_TEST_F(ChromeAimEligibilityServiceOAuthBrowserTest,
   EXPECT_TRUE(request_handled_future.Get());
 }
 
+
+IN_PROC_BROWSER_TEST_F(ChromeAimEligibilityServiceOAuthBrowserTest,
+                       OTRRequestIsNotDropped) {
+  // Expectation: The request should include the Authorization header.
+  omnibox::AimEligibilityResponse response;
+  response.set_is_eligible(true);
+  base::test::TestFuture<bool> request_handled_future;
+  auto url_loader_interceptor = std::make_unique<content::URLLoaderInterceptor>(
+      base::BindLambdaForTesting(
+          [&](content::URLLoaderInterceptor::RequestParams* params) {
+            if (params->url_request.url.path() != "/async/folae") {
+              return false;
+            }
+            return OnRequest(params, std::make_optional(response),
+                             request_handled_future.GetRepeatingCallback());
+          }));
+
+  // Trigger the request.
+  // Check off-the-record profile.
+  Profile* otr_profile = browser()->profile()->GetPrimaryOTRProfile(
+      /*create_if_needed=*/true);
+  auto* service = AimEligibilityServiceFactory::GetForProfile(otr_profile);
+  base::test::TestFuture<void> eligibility_changed_future;
+  auto eligibility_subscription = service->RegisterEligibilityChangedCallback(
+      eligibility_changed_future.GetRepeatingCallback());
+
+  EXPECT_TRUE(eligibility_changed_future.Wait());
+  EXPECT_TRUE(request_handled_future.Get());
+}
+
 // This test is not supported on ChromeOS since there isn't a way to clear the
 // primary account. See:
 // https://crsrc.org/c/components/signin/public/identity_manager/identity_test_utils.cc;?q=signin::ClearPrimaryAccount&ss=chromium
