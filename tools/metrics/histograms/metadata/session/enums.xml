@@ -109,6 +109,52 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
+<enum name="SmartRestartability">
+  <int value="0" label="None"/>
+  <int value="1" label="Incognito"/>
+  <int value="2" label="Unsaved form data"/>
+  <int value="3" label="Incognito, Unsaved form data"/>
+  <int value="4" label="Active download"/>
+  <int value="5" label="Incognito, Active download"/>
+  <int value="6" label="Unsaved form data, Active download"/>
+  <int value="7" label="Incognito, Unsaved form data, Active download"/>
+  <int value="8" label="Active media"/>
+  <int value="9" label="Incognito, Active media"/>
+  <int value="10" label="Unsaved form data, Active media"/>
+  <int value="11" label="Incognito, Unsaved form data, Active media"/>
+  <int value="12" label="Active download, Active media"/>
+  <int value="13" label="Incognito, Active download, Active media"/>
+  <int value="14" label="Unsaved form data, Active download, Active media"/>
+  <int value="15"
+      label="Incognito, Unsaved form data, Active download, Active media"/>
+  <int value="16" label="App window"/>
+  <int value="17" label="Incognito, App window"/>
+  <int value="18" label="Unsaved form data, App window"/>
+  <int value="19" label="Incognito, Unsaved form data, App window"/>
+  <int value="20" label="Active download, App window"/>
+  <int value="21" label="Incognito, Active download, App window"/>
+  <int value="22" label="Unsaved form data, Active download, App window"/>
+  <int value="23"
+      label="Incognito, Unsaved form data, Active download, App window"/>
+  <int value="24" label="Active media, App window"/>
+  <int value="25" label="Incognito, Active media, App window"/>
+  <int value="26" label="Unsaved form data, Active media, App window"/>
+  <int value="27"
+      label="Incognito, Unsaved form data, Active media, App window"/>
+  <int value="28" label="Active download, Active media, App window"/>
+  <int value="29" label="Incognito, Active download, Active media, App window"/>
+  <int value="30"
+      label="Unsaved form data, Active download, Active media, App window"/>
+  <int value="31"
+      label="Incognito, Unsaved form data, Active download, Active media, App
+             window"/>
+  <int value="32" label="Total Browser Count Zero"/>
+  <int value="36" label="Active download, Total Browser Count Zero"/>
+  <int value="40" label="Active media, Total Browser Count Zero"/>
+  <int value="44"
+      label="Active download, Active media, Total Browser Count Zero"/>
+</enum>
+
 </enums>
 
 </histogram-configuration>

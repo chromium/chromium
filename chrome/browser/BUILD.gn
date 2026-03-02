@@ -3741,6 +3741,8 @@ static_library("browser") {
       "lifetime/application_lifetime_desktop.h",
       "lifetime/browser_close_manager.cc",
       "lifetime/browser_close_manager.h",
+      "lifetime/restartability_monitor.cc",
+      "lifetime/restartability_monitor.h",
       "lifetime/smart_restart_metrics_observer.cc",
       "lifetime/smart_restart_metrics_observer.h",
       "media/audio_ducker.cc",

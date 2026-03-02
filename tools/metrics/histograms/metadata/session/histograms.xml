@@ -131,6 +131,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Session.LockedDuration.Restartability.{SmartRestartDuration}"
+    enum="SmartRestartability" expires_after="2026-10-01">
+  <owner>victortan@chromium.org</owner>
+  <owner>chrome-analysis-team@google.com</owner>
+  <summary>
+    Records the combination of reasons a potential restart during OS lock screen
+    was blocked, or 'None' if it was viable. Recorded when the zero-window state
+    ends while an update is pending.
+
+    The value is recorded as a bitmask of SmartRestartBlockReason flags. This
+    histogram is sliced by the duration the OS was in the Locked state.
+  </summary>
+  <token key="SmartRestartDuration">
+    <variant name="1To5Min"/>
+    <variant name="5To10Min"/>
+    <variant name="Over10Min"/>
+    <variant name="Under1Min"/>
+  </token>
+</histogram>
+
 <histogram name="Session.LockedDuration.WithUpdate" units="ms"
     expires_after="2026-10-01">
   <owner>victortan@chromium.org</owner>
@@ -1233,6 +1253,28 @@ chromium-metrics-reviews@google.com.
 
     This metric is only recorded on macOS.
   </summary>
+</histogram>
+
+<histogram
+    name="Session.ZeroWindowDuration.Restartability.{SmartRestartDuration}"
+    enum="SmartRestartability" expires_after="2026-10-01">
+  <owner>victortan@chromium.org</owner>
+  <owner>chrome-analysis-team@google.com</owner>
+  <summary>
+    Records the combination of reasons a potential restart with zero windows
+    open on macOS was blocked, or 'None' if it was viable. Recorded when the
+    zero-window state ends while an update is pending.
+
+    The value is recorded as a bitmask of SmartRestartBlockReason flags. This
+    histogram is sliced by the duration the browser was in the Zero Window
+    state.
+  </summary>
+  <token key="SmartRestartDuration">
+    <variant name="1To5Min"/>
+    <variant name="5To10Min"/>
+    <variant name="Over10Min"/>
+    <variant name="Under1Min"/>
+  </token>
 </histogram>
 
 <histogram name="Session.ZeroWindowDuration.WithUpdate" units="ms"

@@ -7,6 +7,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "build/build_config.h"
+#include "chrome/browser/lifetime/restartability_monitor.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
@@ -33,6 +34,34 @@ bool IsZeroTabbedBrowserCount() {
 void RecordDuration(std::string_view histogram_name, base::TimeDelta duration) {
   base::UmaHistogramCustomTimes(histogram_name, duration, base::Seconds(1),
                                 base::Days(1), 50);
+}
+
+const char* GetDurationSuffix(base::TimeDelta duration) {
+  if (duration < base::Minutes(1)) {
+    return ".Under1Min";
+  }
+  if (duration < base::Minutes(5)) {
+    return ".1To5Min";
+  }
+  if (duration < base::Minutes(10)) {
+    return ".5To10Min";
+  }
+  return ".Over10Min";
+}
+
+void RecordRestartabilitySnapshot(
+    std::string_view histogram_name_prefix,
+    base::TimeDelta update_duration,
+    const std::optional<smart_restart::RestartabilityState>& snapshot) {
+  if (!snapshot.has_value()) {
+    return;
+  }
+  std::string histogram_name =
+      base::StrCat({histogram_name_prefix, GetDurationSuffix(update_duration)});
+  base::UmaHistogramExactLinear(
+      histogram_name, snapshot.value().GetRestartabilityStateFactor(),
+      smart_restart::RestartabilityState::SmartRestartStateFactor::kMaxValue +
+          1);
 }
 
 }  // namespace
@@ -72,11 +101,13 @@ SmartRestartMetricsObserver::~SmartRestartMetricsObserver() {
 void SmartRestartMetricsObserver::OnUpgradeRecommended() {
   if (locked_timer_.has_value() && !locked_update_timer_.has_value()) {
     locked_update_timer_.emplace();
+    locked_snapshot_ = RestartabilityMonitor::ComputeCurrentState();
   }
 #if BUILDFLAG(IS_MAC)
   if (zero_window_timer_.has_value() &&
       !zero_window_update_timer_.has_value()) {
     zero_window_update_timer_.emplace();
+    zero_window_snapshot_ = RestartabilityMonitor::ComputeCurrentState();
   }
 #endif
 }
@@ -91,6 +122,7 @@ void SmartRestartMetricsObserver::OnLockStateChanged(bool is_locked) {
     locked_timer_.emplace();
     if (upgrade_detector_->is_upgrade_available()) {
       locked_update_timer_.emplace();
+      locked_snapshot_ = RestartabilityMonitor::ComputeCurrentState();
     }
   } else if (!is_locked && was_locked_) {
     // Transitioned out of LOCKED state. Record duration.
@@ -112,9 +144,14 @@ void SmartRestartMetricsObserver::RecordLockedDurationMetrics() {
   if (locked_update_timer_.has_value()) {
     base::TimeDelta update_duration = locked_update_timer_->Elapsed();
     RecordDuration("Session.LockedDuration.WithUpdate", update_duration);
+
+    // Record the restartability state segmented by duration buckets.
+    RecordRestartabilitySnapshot("Session.LockedDuration.Restartability",
+                                 update_duration, locked_snapshot_);
   }
   locked_timer_.reset();
   locked_update_timer_.reset();
+  locked_snapshot_.reset();
 }
 
 #if BUILDFLAG(IS_MAC)
@@ -131,6 +168,7 @@ void SmartRestartMetricsObserver::OnBrowserRemoved(Browser* browser) {
     zero_window_timer_.emplace();
     if (upgrade_detector_->is_upgrade_available()) {
       zero_window_update_timer_.emplace();
+      zero_window_snapshot_ = RestartabilityMonitor::ComputeCurrentState();
     }
   }
 }
@@ -148,9 +186,14 @@ void SmartRestartMetricsObserver::RecordZeroWindowMetrics() {
   if (zero_window_update_timer_.has_value()) {
     base::TimeDelta update_duration = zero_window_update_timer_->Elapsed();
     RecordDuration("Session.ZeroWindowDuration.WithUpdate", update_duration);
+
+    // Record the restartability state segmented by duration buckets.
+    RecordRestartabilitySnapshot("Session.ZeroWindowDuration.Restartability",
+                                 update_duration, zero_window_snapshot_);
   }
   zero_window_timer_.reset();
   zero_window_update_timer_.reset();
+  zero_window_snapshot_.reset();
 }
 #endif
 

@@ -8,6 +8,7 @@
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
 #include "base/time/default_tick_clock.h"
+#include "chrome/browser/lifetime/restartability_monitor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
@@ -97,6 +98,12 @@ IN_PROC_BROWSER_TEST_P(SmartRestartMetricsObserverBrowserTest,
   histogram_tester.ExpectTotalCount("Session.ZeroWindowDuration", 2);
   histogram_tester.ExpectTotalCount("Session.ZeroWindowDuration.WithUpdate",
                                     TestUpdateAvailable() ? 1 : 0);
+  if (TestUpdateAvailable()) {
+    histogram_tester.ExpectUniqueSample(
+        "Session.ZeroWindowDuration.Restartability.Under1Min",
+        RestartabilityState::SmartRestartStateFactor::kTotalBrowserCountZero,
+        1);
+  }
 }
 #endif
 
@@ -121,6 +128,52 @@ IN_PROC_BROWSER_TEST_P(SmartRestartMetricsObserverBrowserTest,
   histogram_tester.ExpectTotalCount("Session.LockedDuration", 1);
   histogram_tester.ExpectTotalCount("Session.LockedDuration.WithUpdate",
                                     TestUpdateAvailable() ? 1 : 0);
+}
+
+IN_PROC_BROWSER_TEST_F(SmartRestartMetricsObserverBrowserTest,
+                       RecordsLockedDuration_UnloadHandler) {
+  base::HistogramTester histogram_tester;
+
+  // Navigate to a page with a beforeunload handler.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      GURL("data:text/html,<script>window.onbeforeunload=()=>'';</script>")));
+
+  // Simulate an upgrade.
+  fake_upgrade_detector_.SetUpgradeAvailableToRegular();
+
+  // Simulate locking the screen.
+  observer_->SetLockedStateForTesting(true);
+
+  // Simulate unlocking the screen.
+  observer_->SetLockedStateForTesting(false);
+
+  // Verify the Restartability mask recorded the kUnloadHandler bit.
+  histogram_tester.ExpectUniqueSample(
+      "Session.LockedDuration.Restartability.Under1Min",
+      RestartabilityState::SmartRestartStateFactor::kUnloadHandler, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(SmartRestartMetricsObserverBrowserTest,
+                       RecordsLockedDuration_ZeroBrowserCount) {
+  base::HistogramTester histogram_tester;
+
+  // Close the default browser window the test starts with.
+  CloseBrowserSynchronously(browser());
+
+  // Simulate an upgrade.
+  fake_upgrade_detector_.SetUpgradeAvailableToRegular();
+
+  // Simulate locking the screen.
+  observer_->SetLockedStateForTesting(true);
+
+  // Simulate unlocking the screen.
+  observer_->SetLockedStateForTesting(false);
+
+  // Verify the Restartability mask recorded the kTotalBrowserCountZero bit.
+  histogram_tester.ExpectUniqueSample(
+      "Session.LockedDuration.Restartability.Under1Min",
+      RestartabilityState::SmartRestartStateFactor::kTotalBrowserCountZero, 1);
 }
 
 }  // namespace smart_restart

@@ -13,6 +13,8 @@
 #include "base/time/tick_clock.h"
 #include "build/build_config.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
+#include "chrome/test/base/testing_browser_process.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace smart_restart {
@@ -48,9 +50,11 @@ class SmartRestartMetricsObserverTest : public testing::Test {
   SmartRestartMetricsObserverTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
         upgrade_detector_(task_environment_.GetMockClock(),
-                          task_environment_.GetMockTickClock()) {}
+                          task_environment_.GetMockTickClock()),
+        profile_manager_(TestingBrowserProcess::GetGlobal()) {}
 
   void SetUp() override {
+    ASSERT_TRUE(profile_manager_.SetUp());
     observer_ = std::make_unique<SmartRestartMetricsObserver>(
         &upgrade_detector_,
         base::BindRepeating(
@@ -69,6 +73,7 @@ class SmartRestartMetricsObserverTest : public testing::Test {
  protected:
   base::test::TaskEnvironment task_environment_;
   FakeUpgradeDetector upgrade_detector_;
+  TestingProfileManager profile_manager_;
   std::unique_ptr<SmartRestartMetricsObserver> observer_;
   size_t browser_count_ = 1;
 };
@@ -119,6 +124,9 @@ TEST_F(SmartRestartMetricsObserverTest, RecordZeroWindowDurationWithUpdate) {
                                           base::Minutes(5), 1);
   histogram_tester.ExpectUniqueTimeSample(
       "Session.ZeroWindowDuration.WithUpdate", base::Minutes(5), 1);
+  histogram_tester.ExpectUniqueSample(
+      "Session.ZeroWindowDuration.Restartability.5To10Min",
+      32 /* kTotalBrowserCountZero */, 1);
 }
 
 TEST_F(SmartRestartMetricsObserverTest, NoRecordIfNotEmpty) {
@@ -206,6 +214,9 @@ TEST_F(SmartRestartMetricsObserverTest, RecordLockedDurationWithUpdate) {
                                           base::Minutes(30), 1);
   histogram_tester.ExpectUniqueTimeSample("Session.LockedDuration.WithUpdate",
                                           base::Minutes(30), 1);
+  histogram_tester.ExpectUniqueSample(
+      "Session.LockedDuration.Restartability.Over10Min",
+      32 /* kTotalBrowserCountZero */, 1);
 }
 
 TEST_F(SmartRestartMetricsObserverTest, NoRecordIfNeverLocked) {

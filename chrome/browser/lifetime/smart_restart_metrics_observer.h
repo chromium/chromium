@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/timer/elapsed_timer.h"
+#include "chrome/browser/lifetime/restartability_monitor.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/upgrade_detector/upgrade_observer.h"
 
@@ -59,10 +60,12 @@ class SmartRestartMetricsObserver : public BrowserListObserver,
 #if BUILDFLAG(IS_MAC)
   std::optional<base::ElapsedTimer> zero_window_timer_;
   std::optional<base::ElapsedTimer> zero_window_update_timer_;
+  std::optional<RestartabilityState> zero_window_snapshot_;
 #endif
   base::CallbackListSubscription lock_state_subscription_;
   std::optional<base::ElapsedTimer> locked_timer_;
   std::optional<base::ElapsedTimer> locked_update_timer_;
+  std::optional<RestartabilityState> locked_snapshot_;
   bool was_locked_ = false;
 };
 
