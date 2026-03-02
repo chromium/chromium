@@ -2815,18 +2815,19 @@ suite('NewTabPageComposeboxTest', () => {
 
       searchboxHandler.setResultFor(
           'getRecentTabs', Promise.resolve({tabs: sampleTabs}));
-      const entrypointElement =
-          composeboxElement.shadowRoot?.querySelector<HTMLElement>(
-              '#contextEntrypoint');
-      assertTrue(!!entrypointElement);
-      const entrypointMenu =
-          entrypointElement.shadowRoot?.querySelector<HTMLElement>(
-              '#entrypointMenu');
-      assertTrue(!!entrypointMenu);
+
+      const entrypointAndMenu = composeboxElement.shadowRoot.querySelector(
+          'cr-composebox-contextual-entrypoint-and-menu');
+      assertTrue(!!entrypointAndMenu, 'contextual-entrypoint-and-menu');
+      const contextMenuEntrypoint = entrypointAndMenu.shadowRoot.querySelector(
+          'cr-composebox-contextual-entrypoint-button');
+      assertTrue(!!contextMenuEntrypoint, 'contextual entrypoint button');
       const entrypointButton =
-          entrypointMenu.shadowRoot?.querySelector<HTMLElement>('#entrypoint');
-      assertTrue(!!entrypointButton);
+          contextMenuEntrypoint.shadowRoot.querySelector<HTMLElement>(
+              '#entrypoint');
+      assertTrue(!!entrypointButton, 'Entrypoint button');
       entrypointButton.click();
+
       await microtasksFinished();
 
       // There is an initial call to `getRecentTabs` on entrypoint click.

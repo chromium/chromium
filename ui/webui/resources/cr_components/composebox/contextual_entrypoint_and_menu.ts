@@ -4,7 +4,6 @@
 
 import './contextual_action_menu.js';
 import './contextual_entrypoint_button.js';
-import './context_menu_entrypoint.js';
 
 import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {assert} from '//resources/js/assert.js';
@@ -17,7 +16,6 @@ import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/ung
 import {GlifAnimationState} from './common.js';
 import type {ContextualActionMenuElement} from './contextual_action_menu.js';
 import type {ContextualEntrypointButtonElement} from './contextual_entrypoint_button.js';
-import type {ContextMenuEntrypointElement} from './context_menu_entrypoint.js';
 import {getCss} from './contextual_entrypoint_and_menu.css.js';
 import {getHtml} from './contextual_entrypoint_and_menu.html.js';
 
@@ -25,7 +23,6 @@ export interface ContextualEntrypointAndMenuElement {
   $: {
     entrypointButton: ContextualEntrypointButtonElement,
     menu: ContextualActionMenuElement,
-    entrypointMenu: ContextMenuEntrypointElement,
   };
 }
 
@@ -50,7 +47,6 @@ export class ContextualEntrypointAndMenuElement extends
       // =========================================================================
       // Public properties
       // =========================================================================
-      showModelPicker: {type: Boolean},
       fileNum: {type: Number},
       showContextMenuDescription: {type: Boolean},
       hasImageFiles: {
@@ -75,7 +71,6 @@ export class ContextualEntrypointAndMenuElement extends
     };
   }
 
-  accessor showModelPicker: boolean = false;
   accessor fileNum: number = 0;
   accessor showContextMenuDescription: boolean = false;
   accessor disabledTabIds: Map<number, UnguessableToken> = new Map();
@@ -99,20 +94,12 @@ export class ContextualEntrypointAndMenuElement extends
   }
 
   openMenuForMultiSelection() {
-    if (!this.showModelPicker) {
-      this.$.entrypointMenu.openMenuForMultiSelection();
-      return;
-    }
     if (this.enableMultiTabSelection_) {
       this.updateComplete.then(this.showMenuAtEntrypoint_.bind(this));
     }
   }
 
   closeMenu() {
-    if (!this.showModelPicker) {
-      this.$.entrypointMenu.closeMenu();
-      return;
-    }
     const menu =
         this.shadowRoot.querySelector<ContextualActionMenuElement>('#menu');
     if (menu) {
