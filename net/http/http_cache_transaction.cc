@@ -4192,6 +4192,8 @@ bool HttpCache::Transaction::IsUsingURLFromNoVarySearchCache() const {
 
 HttpCache::Transaction::NoVarySearchUseResult
 HttpCache::Transaction::LookupRequestInNoVarySearchCache() {
+  TRACE_EVENT("net",
+              "HttpCache::Transaction::LookupRequestInNoVarySearchCache");
   // In order to conditionally log HttpCache.NoVarySearch.LookupTime.{Hit,Miss},
   // this doesn't use the SCOPED_UMA_HISTOGRAM_TIMER_MICROS macro, but the
   // bucket definitions are identical.

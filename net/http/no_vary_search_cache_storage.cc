@@ -16,6 +16,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/pickle.h"
 #include "base/sequence_checker.h"
@@ -24,6 +25,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "net/base/pickle.h"
 #include "net/base/pickle_base_types.h"
 #include "net/base/pickle_traits.h"
@@ -294,6 +296,9 @@ class NoVarySearchCacheStorage::Loader final {
       base::WeakPtr<NoVarySearchCacheStorage> storage_ptr,
       scoped_refptr<base::SequencedTaskRunner> parent_sequence,
       size_t default_max_size) {
+    TRACE_EVENT("net", "NoVarySearchCacheStorage::Loader::CreateAndLoad");
+    SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
+        "HttpCache.NoVarySearch.CacheStorage.CreateAndLoadTime");
     // As this whole process is synchronous, the Loader object can be allocated
     // on the stack.
     Loader loader(std::move(operations), std::move(storage_ptr),

@@ -1795,6 +1795,7 @@ void HttpCache::OnPendingBackendCreationOpComplete(
 }
 
 void HttpCache::OnBackendCreated(int result, PendingOp* pending_op) {
+  TRACE_EVENT("net", "HttpCache::OnBackendCreated");
   std::unique_ptr<WorkItem> item = std::move(pending_op->writer);
   WorkItemOperation op = item->operation();
   DCHECK_EQ(WI_CREATE_BACKEND, op);

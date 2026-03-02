@@ -842,6 +842,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="HttpCache.NoVarySearch.CacheStorage.CreateAndLoadTime"
+    units="ms" expires_after="2026-06-28">
+  <owner>yoichio@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    The time it takes to instantiate and synchronously execute the Load method
+    of NoVarySearchCacheStorage::Loader on a worker pool thread. This is logged
+    at the time the NVS backend is created.
+  </summary>
+</histogram>
+
 <histogram name="HttpCache.NoVarySearch.DeleteIfExistsError.{Directory}"
     enum="PlatformFileError" expires_after="2026-01-11">
   <owner>ricea@chromium.org</owner>
