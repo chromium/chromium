@@ -86,8 +86,8 @@ ColorProfileReader::DisplayIdToPathMap
 ColorProfileReader::BuildDisplayIdToPathMapOnBackgroundThread() {
   SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY();
   DisplayIdToPathMap display_id_to_path_map;
-  EnumDisplayMonitors(nullptr, nullptr, EnumMonitorForProfilePathCallback,
-                      reinterpret_cast<LPARAM>(&display_id_to_path_map));
+  ::EnumDisplayMonitors(nullptr, nullptr, EnumMonitorForProfilePathCallback,
+                        reinterpret_cast<LPARAM>(&display_id_to_path_map));
   return display_id_to_path_map;
 }
 

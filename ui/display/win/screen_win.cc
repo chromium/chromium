@@ -834,7 +834,7 @@ gfx::Vector2dF ScreenWin::GetPixelsPerInch(const gfx::PointF& point) const {
 int ScreenWin::GetSystemMetricsForMonitor(HMONITOR monitor, int metric) const {
   // Fall back to the primary display's HMONITOR.
   if (!monitor)
-    monitor = MonitorFromWindow(nullptr, MONITOR_DEFAULTTOPRIMARY);
+    monitor = ::MonitorFromWindow(nullptr, MONITOR_DEFAULTTOPRIMARY);
 
   // We don't include fudge factors stemming from accessibility features when
   // dealing with system metrics associated with window elements drawn by the
@@ -868,7 +868,7 @@ int ScreenWin::GetDPIForHWND(HWND hwnd) const {
   if (Display::HasForceDeviceScaleFactor())
     return GetDPIFromScalingFactor(Display::GetForcedDeviceScaleFactor());
 
-  const HMONITOR monitor = MonitorFromWindow(hwnd, MONITOR_DEFAULTTONEAREST);
+  const HMONITOR monitor = ::MonitorFromWindow(hwnd, MONITOR_DEFAULTTONEAREST);
   return GetPerMonitorDPI(monitor).value_or(
       display::win::internal::GetDefaultSystemDPI());
 }
@@ -1030,7 +1030,7 @@ void ScreenWin::UpdateFromDisplayInfos(
   // Retrieve the primary monitor info here, instead of later below. This is a
   // speculative workaround for the issue observed on older version of Windows
   // 10.  See crbug.com/394622418 for more detail.
-  auto primary_monitor = MonitorFromWindow(nullptr, MONITOR_DEFAULTTOPRIMARY);
+  auto primary_monitor = ::MonitorFromWindow(nullptr, MONITOR_DEFAULTTOPRIMARY);
 
   // Get a new list of displays. This will replace `screen_win_displays_` if any
   // displays are found.
@@ -1204,7 +1204,7 @@ void ScreenWin::UpdateAllDisplaysAndNotify() {
 }
 
 void ScreenWin::UpdateAllDisplaysIfPrimaryMonitorChanged() {
-  HMONITOR monitor = MonitorFromWindow(nullptr, MONITOR_DEFAULTTOPRIMARY);
+  HMONITOR monitor = ::MonitorFromWindow(nullptr, MONITOR_DEFAULTTOPRIMARY);
   if (monitor != primary_monitor_) {
     UpdateAllDisplaysAndNotify();
   }

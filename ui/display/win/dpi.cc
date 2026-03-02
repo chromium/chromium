@@ -53,8 +53,8 @@ int GetDefaultSystemDPI() {
     // This value is safe to cache for the life time of the app since the
     // user must logout to change the DPI setting. This value also applies
     // to all screens.
-    dpi_x = GetDeviceCaps(screen_dc, LOGPIXELSX);
-    dpi_y = GetDeviceCaps(screen_dc, LOGPIXELSY);
+    dpi_x = ::GetDeviceCaps(screen_dc, LOGPIXELSX);
+    dpi_y = ::GetDeviceCaps(screen_dc, LOGPIXELSY);
     DCHECK_EQ(dpi_x, dpi_y);
   }
   return dpi_x;
