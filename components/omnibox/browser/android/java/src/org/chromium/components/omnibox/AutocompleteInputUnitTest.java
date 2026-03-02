@@ -25,16 +25,6 @@ import java.util.Set;
 /** Tests for {@link AutocompleteInput}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class AutocompleteInputUnitTest {
-    @Test
-    public void testReset_clearsKeyword() {
-        AutocompleteInput input = new AutocompleteInput();
-        input.setKeyword("history");
-        assertEquals("history", input.getKeyword());
-
-        input.reset();
-        assertEquals(null, input.getKeyword());
-    }
-
     private final AutocompleteInput mInput = new AutocompleteInput();
 
     private void verifyCacheablePageClasses(Set<Integer> allowedPageClasses) {
@@ -51,6 +41,16 @@ public class AutocompleteInputUnitTest {
                     mInput.isInCacheableContext(),
                     allowedPageClasses.contains(pageClass.getNumber()));
         }
+    }
+
+    @Test
+    public void testReset_clearsKeyword() {
+        AutocompleteInput input = new AutocompleteInput();
+        input.setKeyword("history");
+        assertEquals("history", input.getKeyword());
+
+        input.reset();
+        assertEquals(null, input.getKeyword());
     }
 
     @Test
