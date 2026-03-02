@@ -193,7 +193,7 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
   virtual void ReadAvailableTypes(
       ClipboardBuffer buffer,
       const std::optional<DataTransferEndpoint>& data_dst,
-      ReadAvailableTypesCallback callback) const;
+      ReadAvailableTypesCallback callback) const = 0;
 
   // Reads Unicode text from the clipboard, if available.
   virtual void ReadText(ClipboardBuffer buffer,
@@ -253,12 +253,6 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
   virtual void ReadData(const ClipboardFormatType& format,
                         const std::optional<DataTransferEndpoint>& data_dst,
                         ReadDataCallback callback) const = 0;
-
-  // Synchronous reads are deprecated (https://crbug.com/443355). Please use the
-  // equivalent functions that take callbacks above.
-  virtual void ReadAvailableTypes(ClipboardBuffer buffer,
-                                  const DataTransferEndpoint* data_dst,
-                                  std::vector<std::u16string>* types) const = 0;
 
   // Returns an estimate of the time the clipboard was last updated.  If the
   // time is unknown, returns Time::Time().

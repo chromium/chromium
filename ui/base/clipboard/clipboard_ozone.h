@@ -79,9 +79,6 @@ class ClipboardOzone : public Clipboard {
   void ReadData(const ClipboardFormatType& format,
                 const std::optional<DataTransferEndpoint>& data_dst,
                 ReadDataCallback callback) const override;
-  void ReadAvailableTypes(ClipboardBuffer buffer,
-                          const DataTransferEndpoint* data_dst,
-                          std::vector<std::u16string>* types) const override;
 
   bool IsSelectionBufferAvailable() const override;
   void WritePortableTextRepresentation(ClipboardBuffer buffer,

@@ -107,7 +107,9 @@ class PlatformAppContextMenu : public RenderViewContextMenu {
  public:
   PlatformAppContextMenu(content::RenderFrameHost& render_frame_host,
                          const content::ContextMenuParams& params)
-      : RenderViewContextMenu(render_frame_host, params) {}
+      : RenderViewContextMenu(render_frame_host,
+                              params,
+                              /*is_paste_enabled=*/false) {}
 
   bool HasCommandWithId(int command_id) {
     return menu_model_.GetIndexOfCommandId(command_id).has_value();

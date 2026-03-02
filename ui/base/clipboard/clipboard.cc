@@ -420,13 +420,4 @@ bool Clipboard::IsMarkedByOriginatorAsConfidential() const {
   return false;
 }
 
-void Clipboard::ReadAvailableTypes(
-    ClipboardBuffer buffer,
-    const std::optional<DataTransferEndpoint>& data_dst,
-    ReadAvailableTypesCallback callback) const {
-  std::vector<std::u16string> types;
-  ReadAvailableTypes(buffer, base::OptionalToPtr(data_dst), &types);
-  std::move(callback).Run(std::move(types));
-}
-
 }  // namespace ui

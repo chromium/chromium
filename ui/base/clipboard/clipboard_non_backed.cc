@@ -613,27 +613,29 @@ std::vector<std::u16string> ClipboardNonBacked::GetStandardFormats(
 
 void ClipboardNonBacked::ReadAvailableTypes(
     ClipboardBuffer buffer,
-    const DataTransferEndpoint* data_dst,
-    std::vector<std::u16string>* types) const {
+    const std::optional<DataTransferEndpoint>& data_dst,
+    ReadAvailableTypesCallback callback) const {
   DCHECK(CalledOnValidThread());
-  DCHECK(types);
 
   const ClipboardInternal& clipboard_internal = GetInternalClipboard(buffer);
 
-  if (!clipboard_internal.IsReadAllowed(data_dst, std::nullopt)) {
+  if (!clipboard_internal.IsReadAllowed(base::OptionalToPtr(data_dst),
+                                        std::nullopt)) {
+    std::move(callback).Run({});
     return;
   }
 
-  types->clear();
-  *types = GetStandardFormats(buffer, data_dst);
+  std::vector<std::u16string> types =
+      GetStandardFormats(buffer, base::OptionalToPtr(data_dst));
 
   if (clipboard_internal.IsFormatAvailable(ClipboardInternalFormat::kCustom) &&
       clipboard_internal.GetData()) {
     ReadCustomDataTypes(
         base::as_byte_span(
             clipboard_internal.GetData()->GetDataTransferCustomData()),
-        types);
+        &types);
   }
+  std::move(callback).Run(std::move(types));
 }
 
 void ClipboardNonBacked::ReadText(

@@ -52,8 +52,9 @@ class ToolkitDelegateMacCocoa : public RenderViewContextMenu::ToolkitDelegate {
 
 RenderViewContextMenuMac::RenderViewContextMenuMac(
     content::RenderFrameHost& render_frame_host,
-    const content::ContextMenuParams& params)
-    : RenderViewContextMenu(render_frame_host, params),
+    const content::ContextMenuParams& params,
+    bool is_paste_enabled)
+    : RenderViewContextMenu(render_frame_host, params, is_paste_enabled),
       text_services_context_menu_(this) {
   auto delegate = std::make_unique<ToolkitDelegateMacCocoa>(this);
   set_toolkit_delegate(std::move(delegate));

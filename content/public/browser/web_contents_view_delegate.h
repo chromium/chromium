@@ -68,6 +68,9 @@ class CONTENT_EXPORT WebContentsViewDelegate {
   // method).
   virtual void ExecuteCommandForTesting(int command_id, int event_flags);
 
+  // Returns true if a context menu is currently being shown.
+  virtual bool IsContextMenuShowingForTesting();
+
   // Store the current focused view and start tracking it.
   virtual void StoreFocus();
 

@@ -17,7 +17,8 @@ class RenderViewContextMenuMac : public RenderViewContextMenu,
                                  public ui::TextServicesContextMenu::Delegate {
  public:
   RenderViewContextMenuMac(content::RenderFrameHost& render_frame_host,
-                           const content::ContextMenuParams& params);
+                           const content::ContextMenuParams& params,
+                           bool is_paste_enabled);
 
   RenderViewContextMenuMac(const RenderViewContextMenuMac&) = delete;
   RenderViewContextMenuMac& operator=(const RenderViewContextMenuMac&) = delete;

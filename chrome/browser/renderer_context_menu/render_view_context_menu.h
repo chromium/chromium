@@ -116,7 +116,8 @@ class RenderViewContextMenu
                               blink::mojom::PluginActionType)>;
 
   RenderViewContextMenu(content::RenderFrameHost& render_frame_host,
-                        const content::ContextMenuParams& params);
+                        const content::ContextMenuParams& params,
+                        bool is_paste_enabled);
 
   RenderViewContextMenu(const RenderViewContextMenu&) = delete;
   RenderViewContextMenu& operator=(const RenderViewContextMenu&) = delete;
@@ -563,6 +564,9 @@ class RenderViewContextMenu
 
   // Responsible for handling autofill related context menu items.
   autofill::AutofillContextMenuManager autofill_context_menu_manager_;
+
+  // Whether the "Paste" menu item should be enabled.
+  const bool is_paste_enabled_;
 
   // Fenced frame can disable its untrusted network in exchange for access to
   // unpartitioned cross-site data. To prevent cross-site data from leaking out

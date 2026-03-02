@@ -137,15 +137,16 @@ std::vector<std::u16string> TestClipboard::GetStandardFormats(
 
 void TestClipboard::ReadAvailableTypes(
     ClipboardBuffer buffer,
-    const DataTransferEndpoint* data_dst,
-    std::vector<std::u16string>* types) const {
-  DCHECK(types);
-  types->clear();
-  if (!IsReadAllowed(GetStore(buffer).data_src, data_dst)) {
+    const std::optional<DataTransferEndpoint>& data_dst,
+    ReadAvailableTypesCallback callback) const {
+  if (!IsReadAllowed(GetStore(buffer).data_src,
+                     base::OptionalToPtr(data_dst))) {
+    std::move(callback).Run({});
     return;
   }
 
-  *types = GetStandardFormats(buffer, data_dst);
+  std::move(callback).Run(
+      GetStandardFormats(buffer, base::OptionalToPtr(data_dst)));
 }
 
 void TestClipboard::ReadText(

@@ -587,14 +587,12 @@ std::vector<std::u16string> ClipboardAndroid::GetStandardFormats(
 // platforms.
 void ClipboardAndroid::ReadAvailableTypes(
     ClipboardBuffer buffer,
-    const DataTransferEndpoint* data_dst,
-    std::vector<std::u16string>* types) const {
+    const std::optional<DataTransferEndpoint>& data_dst,
+    ReadAvailableTypesCallback callback) const {
   DCHECK(CalledOnValidThread());
   DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
-  DCHECK(types);
-
-  types->clear();
-  *types = GetStandardFormats(buffer, data_dst);
+  std::move(callback).Run(
+      GetStandardFormats(buffer, base::OptionalToPtr(data_dst)));
 }
 
 // |data_dst| is not used. It's only passed to be consistent with other

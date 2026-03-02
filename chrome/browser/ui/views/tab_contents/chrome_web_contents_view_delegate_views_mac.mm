@@ -22,9 +22,13 @@
 #include "chrome/browser/ui/views/tab_contents/chrome_web_contents_view_focus_helper.h"
 #include "components/remote_cocoa/browser/window.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/browser_context.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/drop_data.h"
+#include "ui/base/clipboard/clipboard.h"
+#include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/views/widget/widget.h"
 
 ChromeWebContentsViewDelegateViewsMac::ChromeWebContentsViewDelegateViewsMac(
@@ -72,9 +76,38 @@ void ChromeWebContentsViewDelegateViewsMac::ShowContextMenu(
     web_contents_->Focus();
   }
 
-  ShowMenu(BuildMenu(
-      render_frame_host,
-      AddContextMenuParamsPropertiesFromPreferences(web_contents_, params)));
+  std::optional<ui::DataTransferEndpoint> data_dst;
+  if (params.page_url.is_valid()) {
+    data_dst.emplace(
+        params.page_url,
+        ui::DataTransferEndpointOptions{
+            .notify_if_restricted = false,
+            .off_the_record =
+                web_contents_->GetBrowserContext()->IsOffTheRecord(),
+        });
+  }
+  ui::Clipboard::GetForCurrentThread()->ReadAvailableTypes(
+      ui::ClipboardBuffer::kCopyPaste, std::move(data_dst),
+      base::BindOnce(
+          &ChromeWebContentsViewDelegateViewsMac::OnReadAvailableTypes,
+          weak_ptr_factory_.GetWeakPtr(), render_frame_host.GetGlobalId(),
+          AddContextMenuParamsPropertiesFromPreferences(web_contents_,
+                                                        params)));
+}
+
+void ChromeWebContentsViewDelegateViewsMac::OnReadAvailableTypes(
+    content::GlobalRenderFrameHostId render_frame_host_id,
+    const content::ContextMenuParams& params,
+    std::vector<std::u16string> types) {
+  is_paste_enabled_ = !types.empty();
+
+  content::RenderFrameHost* render_frame_host =
+      content::RenderFrameHost::FromID(render_frame_host_id);
+  if (!render_frame_host) {
+    return;
+  }
+
+  ShowMenu(BuildMenu(*render_frame_host, params));
 }
 
 void ChromeWebContentsViewDelegateViewsMac::StoreFocus() {
@@ -110,12 +143,14 @@ ChromeWebContentsViewDelegateViewsMac::BuildMenu(
   std::unique_ptr<RenderViewContextMenuMac> menu;
   if (remote_cocoa::IsWindowRemote(GetNativeWindow())) {
     menu = std::make_unique<RenderViewContextMenuMacRemoteCocoa>(
-        render_frame_host, params, GetActiveRenderWidgetHostView());
+        render_frame_host, params, is_paste_enabled_,
+        GetActiveRenderWidgetHostView());
   } else {
     gfx::NativeView parent_view =
         GetActiveRenderWidgetHostView()->GetNativeView();
     menu = std::make_unique<RenderViewContextMenuMacCocoa>(
-        render_frame_host, params, parent_view.GetNativeNSView());
+        render_frame_host, params, is_paste_enabled_,
+        parent_view.GetNativeNSView());
   }
 
   menu->Init();

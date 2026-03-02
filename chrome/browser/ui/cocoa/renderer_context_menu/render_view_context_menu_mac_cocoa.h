@@ -19,6 +19,7 @@ class RenderViewContextMenuMacCocoa : public RenderViewContextMenuMac {
  public:
   RenderViewContextMenuMacCocoa(content::RenderFrameHost& render_frame_host,
                                 const content::ContextMenuParams& params,
+                                bool is_paste_enabled,
                                 NSView* parent_view);
 
   RenderViewContextMenuMacCocoa(const RenderViewContextMenuMacCocoa&) = delete;

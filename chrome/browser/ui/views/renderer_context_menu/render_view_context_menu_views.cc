@@ -121,8 +121,9 @@ class RenderViewContextMenuViews::SubmenuViewObserver
 
 RenderViewContextMenuViews::RenderViewContextMenuViews(
     content::RenderFrameHost& render_frame_host,
-    const content::ContextMenuParams& params)
-    : RenderViewContextMenu(render_frame_host, params),
+    const content::ContextMenuParams& params,
+    bool is_paste_enabled)
+    : RenderViewContextMenu(render_frame_host, params, is_paste_enabled),
       bidi_submenu_model_(this) {
   std::unique_ptr<ToolkitDelegate> delegate(new ToolkitDelegateViews);
   set_toolkit_delegate(std::move(delegate));
@@ -133,8 +134,10 @@ RenderViewContextMenuViews::~RenderViewContextMenuViews() = default;
 // static
 RenderViewContextMenuViews* RenderViewContextMenuViews::Create(
     content::RenderFrameHost& render_frame_host,
-    const content::ContextMenuParams& params) {
-  return new RenderViewContextMenuViews(render_frame_host, params);
+    const content::ContextMenuParams& params,
+    bool is_paste_enabled) {
+  return new RenderViewContextMenuViews(render_frame_host, params,
+                                        is_paste_enabled);
 }
 
 void RenderViewContextMenuViews::RunMenuAt(views::Widget* parent,

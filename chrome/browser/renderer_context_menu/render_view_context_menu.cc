@@ -895,7 +895,8 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(RenderViewContextMenu,
 
 RenderViewContextMenu::RenderViewContextMenu(
     content::RenderFrameHost& render_frame_host,
-    const content::ContextMenuParams& params)
+    const content::ContextMenuParams& params,
+    bool is_paste_enabled)
     : RenderViewContextMenuBase(render_frame_host, params),
       extension_items_(
           browser_context_,
@@ -914,7 +915,8 @@ RenderViewContextMenu::RenderViewContextMenu(
       inspect_submenu_model_(this),
       accessibility_labels_submenu_model_(this),
       embedder_web_contents_(GetWebContentsToUse(&render_frame_host)),
-      autofill_context_menu_manager_(this, &menu_model_) {
+      autofill_context_menu_manager_(this, &menu_model_),
+      is_paste_enabled_(is_paste_enabled) {
   if (!g_custom_id_ranges_initialized) {
     g_custom_id_ranges_initialized = true;
     SetContentCustomCommandIdRange(IDC_CONTENT_CONTEXT_CUSTOM_FIRST,
@@ -3939,11 +3941,7 @@ bool RenderViewContextMenu::IsPasteEnabled() const {
     return false;
   }
 
-  std::vector<std::u16string> types;
-  ui::Clipboard::GetForCurrentThread()->ReadAvailableTypes(
-      ui::ClipboardBuffer::kCopyPaste,
-      CreateDataEndpoint(/*notify_if_restricted=*/false).get(), &types);
-  return !types.empty();
+  return is_paste_enabled_;
 }
 
 bool RenderViewContextMenu::IsOpenLinkAllowedByDlp(const GURL& link_url) const {

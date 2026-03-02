@@ -8,7 +8,9 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "components/renderer_context_menu/context_menu_delegate.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/web_contents_view_delegate.h"
 
 class ChromeWebContentsViewFocusHelper;
@@ -57,6 +59,11 @@ class ChromeWebContentsViewDelegateViewsMac
   void ShowMenu(std::unique_ptr<RenderViewContextMenuBase> menu) override;
 
  private:
+  void OnReadAvailableTypes(
+      content::GlobalRenderFrameHostId render_frame_host_id,
+      const content::ContextMenuParams& params,
+      std::vector<std::u16string> types);
+
   content::RenderWidgetHostView* GetActiveRenderWidgetHostView() const;
   ChromeWebContentsViewFocusHelper* GetFocusHelper() const;
 
@@ -68,6 +75,11 @@ class ChromeWebContentsViewDelegateViewsMac
 
   // The chrome specific delegate that receives events from WebDragDestMac.
   std::unique_ptr<WebDragBookmarkHandlerMac> bookmark_handler_;
+
+  bool is_paste_enabled_ = false;
+
+  base::WeakPtrFactory<ChromeWebContentsViewDelegateViewsMac> weak_ptr_factory_{
+      this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TAB_CONTENTS_CHROME_WEB_CONTENTS_VIEW_DELEGATE_VIEWS_MAC_H_

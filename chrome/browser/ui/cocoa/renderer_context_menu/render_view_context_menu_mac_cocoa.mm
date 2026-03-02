@@ -59,8 +59,9 @@ NSMenuItem* GetMenuItemByID(ui::MenuModel* model,
 RenderViewContextMenuMacCocoa::RenderViewContextMenuMacCocoa(
     content::RenderFrameHost& render_frame_host,
     const content::ContextMenuParams& params,
+    bool is_paste_enabled,
     NSView* parent_view)
-    : RenderViewContextMenuMac(render_frame_host, params),
+    : RenderViewContextMenuMac(render_frame_host, params, is_paste_enabled),
       parent_view_(parent_view) {}
 
 RenderViewContextMenuMacCocoa::~RenderViewContextMenuMacCocoa() {

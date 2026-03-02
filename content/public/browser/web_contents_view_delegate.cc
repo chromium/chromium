@@ -37,6 +37,10 @@ void WebContentsViewDelegate::ExecuteCommandForTesting(int command_id,
   NOTREACHED();
 }
 
+bool WebContentsViewDelegate::IsContextMenuShowingForTesting() {
+  return false;
+}
+
 void WebContentsViewDelegate::StoreFocus() {
 }
 

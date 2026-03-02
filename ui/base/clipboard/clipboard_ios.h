@@ -41,8 +41,8 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ClipboardIOS : public Clipboard {
   void Clear(ClipboardBuffer buffer) override;
 
   void ReadAvailableTypes(ClipboardBuffer buffer,
-                          const DataTransferEndpoint* data_dst,
-                          std::vector<std::u16string>* types) const override;
+                          const std::optional<DataTransferEndpoint>& data_dst,
+                          ReadAvailableTypesCallback callback) const override;
   void ReadText(ClipboardBuffer buffer,
                 const std::optional<DataTransferEndpoint>& data_dst,
                 ReadTextCallback callback) const override;

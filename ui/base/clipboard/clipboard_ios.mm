@@ -133,19 +133,18 @@ void ClipboardIOS::Clear(ClipboardBuffer buffer) {
 // platforms.
 void ClipboardIOS::ReadAvailableTypes(
     ClipboardBuffer buffer,
-    const DataTransferEndpoint* data_dst,
-    std::vector<std::u16string>* types) const {
+    const std::optional<DataTransferEndpoint>& data_dst,
+    ReadAvailableTypesCallback callback) const {
   DCHECK(CalledOnValidThread());
-  DCHECK(types);
-
-  types->clear();
-  *types = GetStandardFormats(buffer, data_dst);
+  std::vector<std::u16string> types =
+      GetStandardFormats(buffer, base::OptionalToPtr(data_dst));
 
   NSData* data = GetDataWithTypeFromPasteboard(
       GetPasteboard(), (NSString*)kUTTypeChromiumDataTransferCustomData);
   if (data) {
-    ReadCustomDataTypes(base::apple::NSDataToSpan(data), types);
+    ReadCustomDataTypes(base::apple::NSDataToSpan(data), &types);
   }
+  std::move(callback).Run(std::move(types));
 }
 
 // |data_dst| is not used. It's only passed to be consistent with other
