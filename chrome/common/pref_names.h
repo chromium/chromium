@@ -3458,9 +3458,6 @@ inline constexpr char kShortcutMigrationVersion[] =
 inline constexpr char kRLZBrand[] = "rlz.brand";
 // Whether RLZ pings are disabled.
 inline constexpr char kRLZDisabled[] = "rlz.disabled";
-// Keeps local state of app list while sync service is not available.
-inline constexpr char kAppListLocalState[] = "app_list.local_state";
-inline constexpr char kAppListPreferredOrder[] = "app_list.preferred_order";
 #endif
 
 // An integer that is incremented whenever changes are made to app shortcuts.

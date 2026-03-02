@@ -10,6 +10,7 @@
 
 #include "ash/app_list/model/app_list_item.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/web_app_id_constants.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "base/containers/to_vector.h"
@@ -32,7 +33,6 @@
 #include "chrome/browser/ash/app_list/test/app_list_syncable_service_test_base.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
-#include "chrome/common/pref_names.h"
 #include "components/app_constants/constants.h"
 #include "components/crx_file/id_util.h"
 #include "components/sync/protocol/app_list_specifics.pb.h"
@@ -221,7 +221,7 @@ class AppListSyncableServiceTest : public test::AppListSyncableServiceTestBase {
   // Returns the app list order stored as preference.
   ash::AppListSortOrder GetSortOrderFromPrefs() {
     return static_cast<ash::AppListSortOrder>(
-        profile()->GetPrefs()->GetInteger(prefs::kAppListPreferredOrder));
+        profile()->GetPrefs()->GetInteger(ash::prefs::kAppListPreferredOrder));
   }
 
   ash::AppListItem* FindItemForApp(extensions::Extension* app) {
@@ -1509,7 +1509,7 @@ TEST_F(AppListSyncableServiceTest, EphemeralAppsNotSynced) {
 
   // Ephemeral sync items are not added to the local storage.
   const base::DictValue& local_items =
-      profile()->GetPrefs()->GetDict(prefs::kAppListLocalState);
+      profile()->GetPrefs()->GetDict(ash::prefs::kAppListLocalState);
 
   const base::DictValue* dict_item = local_items.FindDict(ephemeral_app_id);
   EXPECT_FALSE(dict_item);
@@ -1560,7 +1560,7 @@ TEST_F(AppListSyncableServiceTest, EphemeralFoldersNotSynced) {
 
   // Ephemeral sync items are not added to the local storage.
   const base::DictValue& local_items =
-      profile()->GetPrefs()->GetDict(prefs::kAppListLocalState);
+      profile()->GetPrefs()->GetDict(ash::prefs::kAppListLocalState);
   const base::DictValue* dict_item = local_items.FindDict(ephemeral_folder_id);
   EXPECT_FALSE(dict_item);
 

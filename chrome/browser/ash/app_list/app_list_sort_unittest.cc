@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/app_list/model/app_list_model.h"
+#include "ash/constants/ash_pref_names.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/ash/app_list/app_list_model_updater.h"
 #include "chrome/browser/ash/app_list/app_list_test_util.h"
@@ -10,7 +11,6 @@
 #include "chrome/browser/ash/app_list/test/app_list_syncable_service_test_base.h"
 #include "chrome/browser/ash/app_list/test/test_app_list_controller.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/crx_file/id_util.h"
 #include "components/sync/test/fake_sync_change_processor.h"
@@ -43,7 +43,7 @@ class TemporaryAppListSortTest : public test::AppListSyncableServiceTestBase {
   // Returns the app list order stored as preference.
   ash::AppListSortOrder GetSortOrderFromPrefs() {
     return static_cast<ash::AppListSortOrder>(
-        profile()->GetPrefs()->GetInteger(prefs::kAppListPreferredOrder));
+        profile()->GetPrefs()->GetInteger(ash::prefs::kAppListPreferredOrder));
   }
 
   syncer::StringOrdinal GetPositionFromModelUpdater(const std::string& id) {

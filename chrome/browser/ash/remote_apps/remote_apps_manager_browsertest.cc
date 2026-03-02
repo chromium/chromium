@@ -10,6 +10,7 @@
 #include "ash/app_list/quick_app_access_model.h"
 #include "ash/app_list/views/app_list_item_view.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
@@ -48,7 +49,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/common/chrome_paths.h"
-#include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "chromeos/components/remote_apps/mojom/remote_apps.mojom.h"
 #include "components/account_id/account_id.h"
@@ -691,7 +691,7 @@ IN_PROC_BROWSER_TEST_F(RemoteAppsManagerBrowsertest, RemoteAppsNotSynced) {
 
   // Remote app sync item not added to local storage.
   const base::DictValue& local_items =
-      profile_->GetPrefs()->GetDict(prefs::kAppListLocalState);
+      profile_->GetPrefs()->GetDict(ash::prefs::kAppListLocalState);
   const base::DictValue* dict_item = local_items.FindDict(kId1);
   EXPECT_FALSE(dict_item);
 
@@ -730,7 +730,7 @@ IN_PROC_BROWSER_TEST_F(RemoteAppsManagerBrowsertest, RemoteFoldersNotSynced) {
 
   // Remote folder sync item not added to local storage.
   const base::DictValue& local_items =
-      profile_->GetPrefs()->GetDict(prefs::kAppListLocalState);
+      profile_->GetPrefs()->GetDict(ash::prefs::kAppListLocalState);
   const base::DictValue* dict_item = local_items.FindDict(kId1);
   EXPECT_FALSE(dict_item);
 

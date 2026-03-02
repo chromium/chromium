@@ -10,6 +10,7 @@
 #include <variant>
 #include <vector>
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/constants/web_app_id_constants.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
@@ -51,7 +52,6 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/extension_constants.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/file_manager/app_id.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -185,7 +185,7 @@ sync_pb::AppListSpecifics::AppListItemType GetAppListItemType(
 
 void RemoveSyncItemFromLocalStorage(Profile* profile,
                                     const std::string& item_id) {
-  ScopedDictPrefUpdate(profile->GetPrefs(), prefs::kAppListLocalState)
+  ScopedDictPrefUpdate(profile->GetPrefs(), ash::prefs::kAppListLocalState)
       ->Remove(item_id);
 }
 
@@ -197,7 +197,7 @@ void UpdateSyncItemInLocalStorage(
     return;
 
   ScopedDictPrefUpdate pref_update(profile->GetPrefs(),
-                                   prefs::kAppListLocalState);
+                                   ash::prefs::kAppListLocalState);
   base::DictValue* dict_item = pref_update->EnsureDict(sync_item->item_id);
   dict_item->Set(kNameKey, sync_item->item_name);
   dict_item->Set(kPromisePackageIdKey, !sync_item->promise_package_id.empty()
@@ -401,9 +401,9 @@ class AppListSyncableService::ModelUpdaterObserver
 // static
 void AppListSyncableService::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
-  registry->RegisterDictionaryPref(prefs::kAppListLocalState);
+  registry->RegisterDictionaryPref(ash::prefs::kAppListLocalState);
   registry->RegisterIntegerPref(
-      prefs::kAppListPreferredOrder,
+      ash::prefs::kAppListPreferredOrder,
       static_cast<int>(ash::AppListSortOrder::kCustom),
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
 }
@@ -482,7 +482,7 @@ void AppListSyncableService::InitFromLocalStorage() {
 
   // Restore initial state from local storage.
   const base::DictValue& local_items =
-      profile_->GetPrefs()->GetDict(prefs::kAppListLocalState);
+      profile_->GetPrefs()->GetDict(ash::prefs::kAppListLocalState);
   local_state_initially_empty_ = local_items.empty();
 
   for (auto [item_id, item] : local_items) {
@@ -1291,7 +1291,7 @@ AppListSyncableService::MergeDataAndStartSyncing(
 
   // Reset local state and recreate from sync info.
   ScopedDictPrefUpdate pref_update(profile_->GetPrefs(),
-                                   prefs::kAppListLocalState);
+                                   ash::prefs::kAppListLocalState);
   pref_update->clear();
 
   sync_processor_ = std::move(sync_processor);
@@ -1466,7 +1466,7 @@ void AppListSyncableService::Shutdown() {
 void AppListSyncableService::SetAppListPreferredOrder(
     ash::AppListSortOrder order) {
   // Update the preferred order that is shared among syncable devices.
-  profile_->GetPrefs()->SetInteger(prefs::kAppListPreferredOrder,
+  profile_->GetPrefs()->SetInteger(ash::prefs::kAppListPreferredOrder,
                                    static_cast<int>(order));
 
   if (order == ash::AppListSortOrder::kCustom) {
@@ -1519,7 +1519,7 @@ bool AppListSyncableService::CalculateItemPositionInPermanentSortOrder(
 
 ash::AppListSortOrder AppListSyncableService::GetPermanentSortingOrder() const {
   return static_cast<ash::AppListSortOrder>(
-      profile_->GetPrefs()->GetInteger(prefs::kAppListPreferredOrder));
+      profile_->GetPrefs()->GetInteger(ash::prefs::kAppListPreferredOrder));
 }
 
 // AppListSyncableService private

@@ -1222,7 +1222,7 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
      {syncable_prefs_ids::kSyncOsDemographicsPrefName,
       syncer::OS_PRIORITY_PREFERENCES, sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
-    {prefs::kAppListPreferredOrder,
+    {ash::prefs::kAppListPreferredOrder,
      {syncable_prefs_ids::kAppListPreferredOrder, syncer::OS_PREFERENCES,
       sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
