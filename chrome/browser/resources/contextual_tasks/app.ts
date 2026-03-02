@@ -29,6 +29,7 @@ import {getNonOccludedClipPath} from './utils/clip_path.js';
 declare global {
   interface HTMLElementEventMap {
     'loadstart': chrome.webviewTag.LoadStartEvent;
+    'loadcommit': chrome.webviewTag.LoadCommitEvent;
     'newwindow': chrome.webviewTag.NewWindowEvent;
     'permissionrequest': chrome.webviewTag.PermissionRequestEvent;
   }
@@ -413,6 +414,8 @@ export class ContextualTasksAppElement extends CrLitElement {
     this.$.threadFrame.addEventListener(
         'loadstart', this.onThreadFrameLoadStart.bind(this));
     this.$.threadFrame.addEventListener(
+        'loadcommit', this.onThreadFrameLoadCommit.bind(this));
+    this.$.threadFrame.addEventListener(
         'contentload', this.onThreadFrameContentLoad.bind(this));
     this.$.threadFrame.addEventListener(
         'loadabort', this.onThreadFrameLoadAbort.bind(this));
@@ -575,12 +578,29 @@ export class ContextualTasksAppElement extends CrLitElement {
       // Since this is a navigation from one AI page to another,
       // enter basic mode to avoid flickering between navigations.
       this.isNavigatingFromAiPage_ = true;
+      // In the case where this basic mode is currently set to false,
+      // set the pending basic mode to false right away to avoid flickering when
+      // loading the first AIM page (like from a contextual query that directly
+      // opens the side panel). Without this call, the first loaded AIM page
+      // will load with basic mode enabled and will wait for the AIM page to
+      // load and then complete the handshake in order to re-disable basic mode.
+      if (!this.isInBasicMode_) {
+        this.pendingBasicMode_ = false;
+      }
       this.isInBasicMode_ = true;
     }
 
     if (this.onLoadStartFinishedCallbackForTesting_) {
       this.onLoadStartFinishedCallbackForTesting_();
     }
+  }
+
+  private onThreadFrameLoadCommit(ev: chrome.webviewTag.LoadCommitEvent) {
+    // If is from inner iframe and not from main webview URL:
+    if (!ev.isTopLevel) {
+      return;
+    }
+    this.updateBasicModeAfterNavigation();
   }
 
   private onThreadFrameContentLoad() {
