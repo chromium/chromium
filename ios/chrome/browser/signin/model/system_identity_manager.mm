@@ -122,14 +122,6 @@ void SystemIdentityManager::FireIdentityAccessTokenRefreshFailed(
   }
 }
 
-void SystemIdentityManager::BuildExternalPrivacyContext(
-    id<SystemIdentity> identity,
-    UIViewController* view_controller,
-    BuildExternalPrivacyContextCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(crbug.com/481654850): Remove.
-}
-
 bool SystemIdentityManager::IsScopeLimitedError(
     id<RefreshAccessTokenError> error) {
   return false;

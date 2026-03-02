@@ -242,7 +242,7 @@ class SystemIdentityManager {
   virtual void BuildExternalPrivacyContext(
       id<SystemIdentity> identity,
       UIViewController* view_controller,
-      BuildExternalPrivacyContextCallback callback);
+      BuildExternalPrivacyContextCallback callback) = 0;
 
   // Asynchronously handles a potential MDM (Mobile Device Management) event.
   // The callback is invoked on the calling sequence when the operation
