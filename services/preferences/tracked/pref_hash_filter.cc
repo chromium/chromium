@@ -129,6 +129,9 @@ PrefHashFilter::PrefHashFilter(
               base::SequencedTaskRunner::GetCurrentDefault())),
       encrypted_hashing_enabled_(
           base::FeatureList::IsEnabled(tracked::kEncryptedPrefHashing)) {
+  // For base::UmaHistogramExactLinear, number of tracked histograms must 100 or
+  // below.
+  CHECK_LE(reporting_ids_count_, 100u);
   DCHECK(pref_hash_store_);
   DCHECK_GE(reporting_ids_count, tracked_preferences.size());
   // Verify that, if |external_validation_hash_store_pair_| is present, both its

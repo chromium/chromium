@@ -18,6 +18,7 @@ class PrefHashCalculator {
     VALID,
     VALID_ENCRYPTED,
     INVALID_ENCRYPTED,
+    WEAK_HASH_ENCRYPTED,
   };
 
   // Constructs a PrefHashCalculator using |seed_|, |device_id_|.

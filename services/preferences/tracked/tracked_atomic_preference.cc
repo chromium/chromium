@@ -57,13 +57,15 @@ bool TrackedAtomicPreference::EnforceAndReport(
   // rolled out and the hmac based validation is removed.
   // transaction->CheckValue() (from CL1) is dual-hash aware and uses the
   // encryptor with which `transaction` was initialized by PrefHashFilter.
-  ValueState value_state = transaction->CheckValue(pref_path_, value);
+  ValueState value_state =
+      transaction->CheckValue(pref_path_, value, GetReportingId());
   helper_.ReportValidationResult(value_state, transaction->GetStoreUMASuffix());
 
   ValueState external_validation_value_state = ValueState::UNSUPPORTED;
   if (external_validation_transaction) {
     external_validation_value_state =
-        external_validation_transaction->CheckValue(pref_path_, value);
+        external_validation_transaction->CheckValue(pref_path_, value,
+                                                    GetReportingId());
     helper_.ReportValidationResult(
         external_validation_value_state,
         external_validation_transaction->GetStoreUMASuffix());

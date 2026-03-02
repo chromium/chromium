@@ -300,13 +300,15 @@ class MockPrefHashStore : public PrefHashStore {
     // PrefHashStoreTransaction implementation.
     std::string_view GetStoreUMASuffix() const override;
     ValueState CheckValue(const std::string& path,
-                          const base::Value* value) const override;
+                          const base::Value* value,
+                          std::optional<size_t> reporting_id) const override;
     void StoreHash(const std::string& path,
                    const base::Value* new_value) override;
     ValueState CheckSplitValue(
         const std::string& path,
         const base::DictValue* initial_split_value,
-        std::vector<std::string>* invalid_keys) const override;
+        std::vector<std::string>* invalid_keys,
+        std::optional<size_t> reporting_id) const override;
     void StoreSplitHash(const std::string& path,
                         const base::DictValue* split_value) override;
     bool HasHash(const std::string& path) const override;
@@ -504,7 +506,8 @@ MockPrefHashStore::MockPrefHashStoreTransaction ::GetStoreUMASuffix() const {
 
 ValueState MockPrefHashStore::MockPrefHashStoreTransaction::CheckValue(
     const std::string& path,
-    const base::Value* value) const {
+    const base::Value* value,
+    std::optional<size_t> reporting_id) const {
   return outer_->RecordCheckValue(path, value, PrefTrackingStrategy::ATOMIC);
 }
 
@@ -517,7 +520,8 @@ void MockPrefHashStore::MockPrefHashStoreTransaction::StoreHash(
 ValueState MockPrefHashStore::MockPrefHashStoreTransaction::CheckSplitValue(
     const std::string& path,
     const base::DictValue* initial_split_value,
-    std::vector<std::string>* invalid_keys) const {
+    std::vector<std::string>* invalid_keys,
+    std::optional<size_t> reporting_id) const {
   EXPECT_TRUE(invalid_keys && invalid_keys->empty());
 
   std::map<std::string, std::vector<std::string>>::const_iterator

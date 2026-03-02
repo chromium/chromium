@@ -12,6 +12,7 @@
 
 #include "base/base64.h"
 #include "base/enterprise_util.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
 #include "base/notreached.h"
@@ -24,6 +25,7 @@
 #include "crypto/hash.h"
 #include "crypto/hmac.h"
 #include "crypto/secure_util.h"
+#include "services/preferences/tracked/features.h"
 
 namespace {
 
@@ -198,12 +200,26 @@ PrefHashCalculator::ValidationResult PrefHashCalculator::ValidateEncrypted(
     return INVALID_ENCRYPTED;
   }
 
+  os_crypt_async::Encryptor::DecryptFlags flags;
   std::optional<std::string> decrypted_hash =
-      encryptor->DecryptData(*encrypted_hash);
+      encryptor->DecryptData(*encrypted_hash, &flags);
   if (!decrypted_hash) {
     return INVALID_ENCRYPTED;
   }
-
+#if BUILDFLAG(IS_WIN)
+  if (base::FeatureList::IsEnabled(tracked::kRejectWeakCiphertext) &&
+      flags.should_reencrypt) {
+    // This must be true, since if decryption succeeded the data must contain
+    // header + nonce which is at least 15 bytes.
+    CHECK_GE(encrypted_hash->size(), 2u);
+    // Check for v10 encrypted data - if encrypted with v10 but a better cipher
+    // is available, it's considered invalid. This should never happen as v20
+    // has always been available since before this encryption was added.
+    if (encrypted_hash->at(1) == '1') {
+      return WEAK_HASH_ENCRYPTED;
+    }
+  }
+#endif  // BUILDFLAG(IS_WIN)
   std::string expected_hash = Hash(path, ValueAsString(value));
   return crypto::SecureMemEqual(base::as_byte_span(*decrypted_hash),
                                 base::as_byte_span(expected_hash))

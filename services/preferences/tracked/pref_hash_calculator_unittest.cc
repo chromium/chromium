@@ -7,15 +7,22 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/base64.h"
 #include "base/json/json_writer.h"
 #include "base/strings/string_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/os_crypt/async/browser/test_utils.h"
+#include "components/os_crypt/async/common/algorithm.mojom.h"
+#include "components/os_crypt/async/common/encryptor.h"
+#include "crypto/kdf.h"
 #include "crypto/sha2.h"
+#include "services/preferences/tracked/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -35,6 +42,30 @@ class PrefHashCalculatorEncryptedTest : public testing::Test {
   PrefHashCalculator calculator_;
   const os_crypt_async::TestEncryptor test_encryptor_;
 };
+
+// A test key provider that takes a name and produces a deterministic key based
+// on that name.
+class TestKeyProvider : public os_crypt_async::KeyProvider {
+ public:
+  explicit TestKeyProvider(const std::string& name) : name_(name) {}
+
+ private:
+  void GetKey(KeyCallback callback) final {
+    std::move(callback).Run(
+        name_, os_crypt_async::Encryptor::Key(
+                   crypto::kdf::Hkdf<
+                       os_crypt_async::Encryptor::Key::kAES256GCMKeySize>(
+                       crypto::hash::kSha256, base::as_byte_span(name_),
+                       /*salt=*/{}, /*info=*/{}),
+                   os_crypt_async::mojom::Algorithm::kAES256GCM));
+  }
+
+  bool UseForEncryption() final { return true; }
+  bool IsCompatibleWithOsCryptSync() final { return false; }
+
+  const std::string name_;
+};
+
 }  // namespace
 
 TEST(PrefHashCalculatorTest, TestCurrentAlgorithm) {
@@ -344,3 +375,70 @@ TEST_F(PrefHashCalculatorEncryptedTest, EncryptedHashValuesAreStable) {
 
   EXPECT_EQ(base::as_byte_span(*decrypted_hash), kExpectedHash);
 }
+
+#if BUILDFLAG(IS_WIN)
+class PrefHashCalculatorEncryptedWeakHashFeatureTest
+    : public PrefHashCalculatorEncryptedTest,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  PrefHashCalculatorEncryptedWeakHashFeatureTest() {
+    feature_list_.InitWithFeatureState(tracked::kRejectWeakCiphertext,
+                                       GetParam());
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_P(PrefHashCalculatorEncryptedWeakHashFeatureTest, WeakHash) {
+  std::optional<std::string> encrypted_hash;
+  base::Value value_int(555);
+
+  {
+    std::vector<std::pair<size_t, std::unique_ptr<os_crypt_async::KeyProvider>>>
+        providers;
+    providers.emplace_back(/*precedence=*/5u,
+                           std::make_unique<TestKeyProvider>("v10"));
+    os_crypt_async::OSCryptAsync os_crypt(std::move(providers));
+
+    base::test::TestFuture<os_crypt_async::Encryptor> future;
+    os_crypt.GetInstance(future.GetCallback());
+    const auto encryptor = future.Take();
+
+    // This encrypted hash is now encrypted with v10 key.
+    encrypted_hash =
+        calculator_.CalculateEncryptedHash("p.dict", &value_int, &encryptor);
+    const auto validation_result = calculator_.ValidateEncrypted(
+        "p.dict", &value_int, *encrypted_hash, &encryptor);
+    EXPECT_EQ(validation_result, PrefHashCalculator::VALID_ENCRYPTED);
+  }
+
+  EXPECT_TRUE(encrypted_hash.has_value());
+  {
+    std::vector<std::pair<size_t, std::unique_ptr<os_crypt_async::KeyProvider>>>
+        providers;
+    // v10 key is available for decryption.
+    providers.emplace_back(/*precedence=*/5u,
+                           std::make_unique<TestKeyProvider>("v10"));
+    // v20 key is higher precedence, and preferred for encryption.
+    providers.emplace_back(/*precedence=*/10u,
+                           std::make_unique<TestKeyProvider>("v20"));
+    os_crypt_async::OSCryptAsync os_crypt(std::move(providers));
+
+    base::test::TestFuture<os_crypt_async::Encryptor> future;
+    os_crypt.GetInstance(future.GetCallback());
+    const auto encryptor = future.Take();
+
+    const auto validation_result = calculator_.ValidateEncrypted(
+        "p.dict", &value_int, *encrypted_hash, &encryptor);
+    EXPECT_EQ(validation_result, GetParam()
+                                     ? PrefHashCalculator::WEAK_HASH_ENCRYPTED
+                                     : PrefHashCalculator::VALID_ENCRYPTED);
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(,
+                         PrefHashCalculatorEncryptedWeakHashFeatureTest,
+                         testing::Bool());
+
+#endif  // BUILDFLAG(IS_WIN)

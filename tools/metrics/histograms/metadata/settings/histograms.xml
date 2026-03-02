@@ -1580,6 +1580,16 @@ useful for Chirp alerts (go/crca-alerts). -->
   <token key="LoadedType" variants="PrefValueType"/>
 </histogram>
 
+<histogram name="Settings.TrackedPreferences.WeakAlgorithm"
+    enum="TrackedPreference" expires_after="2026-07-05">
+  <owner>wfh@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    The id of a tracked preference which was determined during decryption to be
+    using a weak algorithm, and was thus treated as invalid.
+  </summary>
+</histogram>
+
 <histogram
     name="Settings.TrackedPreferenceTrustedInitialized{TrackedPreferencesExternalValidators}"
     enum="TrackedPreference" expires_after="2026-06-07">

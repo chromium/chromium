@@ -5,6 +5,7 @@
 #ifndef SERVICES_PREFERENCES_TRACKED_PREF_HASH_STORE_TRANSACTION_H_
 #define SERVICES_PREFERENCES_TRACKED_PREF_HASH_STORE_TRANSACTION_H_
 
+#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -25,7 +26,8 @@ class PrefHashStoreTransaction {
   // Checks |initial_value| against the existing stored value hash.
   virtual prefs::mojom::TrackedPreferenceValidationDelegate::ValueState
   CheckValue(const std::string& path,
-             const base::Value* initial_value) const = 0;
+             const base::Value* initial_value,
+             std::optional<size_t> reporting_id = std::nullopt) const = 0;
 
   // Stores a hash of the current |value| of the preference at |path|.
   virtual void StoreHash(const std::string& path, const base::Value* value) = 0;
@@ -39,7 +41,8 @@ class PrefHashStoreTransaction {
   virtual prefs::mojom::TrackedPreferenceValidationDelegate::ValueState
   CheckSplitValue(const std::string& path,
                   const base::DictValue* initial_split_value,
-                  std::vector<std::string>* invalid_keys) const = 0;
+                  std::vector<std::string>* invalid_keys,
+                  std::optional<size_t> reporting_id = std::nullopt) const = 0;
 
   // Stores hashes for the |value| of the split preference at |path|.
   // |split_value| being an empty dictionary or NULL is equivalent.

@@ -6,11 +6,13 @@
 
 #include <stddef.h>
 
+#include <optional>
 #include <string_view>
 #include <utility>
 
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
@@ -55,6 +57,18 @@ std::string GenerateDeviceId() {
   return std::string();
 }
 
+void MaybeReportWeakHash(ValidationResult validation_result,
+                         std::optional<size_t> reporting_id) {
+  if (!reporting_id.has_value()) {
+    return;
+  }
+  if (validation_result != ValidationResult::WEAK_HASH_ENCRYPTED) {
+    return;
+  }
+  base::UmaHistogramExactLinear("Settings.TrackedPreferences.WeakAlgorithm",
+                                reporting_id.value(), /*exclusive_max=*/101);
+}
+
 }  // namespace
 
 class PrefHashStoreImpl::PrefHashStoreTransactionImpl
@@ -75,12 +89,13 @@ class PrefHashStoreImpl::PrefHashStoreTransactionImpl
   // PrefHashStoreTransaction implementation.
   std::string_view GetStoreUMASuffix() const override;
   ValueState CheckValue(const std::string& path,
-                        const base::Value* value) const override;
+                        const base::Value* value,
+                        std::optional<size_t> reporting_id) const override;
   void StoreHash(const std::string& path, const base::Value* value) override;
-  ValueState CheckSplitValue(
-      const std::string& path,
-      const base::DictValue* initial_split_value,
-      std::vector<std::string>* invalid_keys) const override;
+  ValueState CheckSplitValue(const std::string& path,
+                             const base::DictValue* initial_split_value,
+                             std::vector<std::string>* invalid_keys,
+                             std::optional<size_t> reporting_id) const override;
   void StoreSplitHash(const std::string& path,
                       const base::DictValue* split_value) override;
   bool HasHash(const std::string& path) const override;
@@ -115,7 +130,8 @@ class PrefHashStoreImpl::PrefHashStoreTransactionImpl
       const std::string& path,
       const base::Value* value,
       const std::optional<std::string>& stored_encrypted_hash,
-      const std::optional<std::string>& stored_mac) const;
+      const std::optional<std::string>& stored_mac,
+      std::optional<size_t> reporting_id) const;
 
   // Helper for CheckSplitValue to handle validation logic.
   ValueState CheckSplitValueInternal(
@@ -125,7 +141,8 @@ class PrefHashStoreImpl::PrefHashStoreTransactionImpl
       const std::map<std::string, std::string>& split_encrypted_hashes,
       bool has_mac_hashes,
       const std::map<std::string, std::string>& split_macs,
-      std::vector<std::string>* invalid_keys) const;
+      std::vector<std::string>* invalid_keys,
+      std::optional<size_t> reporting_id) const;
 
  private:
   raw_ptr<PrefHashStoreImpl> outer_;
@@ -312,15 +329,18 @@ ValueState PrefHashStoreImpl::PrefHashStoreTransactionImpl::CheckValueInternal(
     const std::string& path,
     const base::Value* value,
     const std::optional<std::string>& stored_encrypted_hash,
-    const std::optional<std::string>& stored_mac) const {
+    const std::optional<std::string>& stored_mac,
+    std::optional<size_t> reporting_id) const {
   if (encryptor_) {
     // Priority 1: Check encrypted hash.
     if (stored_encrypted_hash.has_value()) {
-      ValidationResult result = outer_->pref_hash_calculator_.ValidateEncrypted(
-          path, value, *stored_encrypted_hash, encryptor_);
+      const ValidationResult result =
+          outer_->pref_hash_calculator_.ValidateEncrypted(
+              path, value, *stored_encrypted_hash, encryptor_);
       if (result == ValidationResult::VALID_ENCRYPTED) {
         return ValueState::UNCHANGED_ENCRYPTED;
       }
+      MaybeReportWeakHash(result, reporting_id);
       return value ? ValueState::CHANGED_ENCRYPTED
                    : ValueState::CLEARED_ENCRYPTED;
     }
@@ -376,7 +396,8 @@ ValueState PrefHashStoreImpl::PrefHashStoreTransactionImpl::CheckValueInternal(
 
 ValueState PrefHashStoreImpl::PrefHashStoreTransactionImpl::CheckValue(
     const std::string& path,
-    const base::Value* initial_value) const {
+    const base::Value* initial_value,
+    std::optional<size_t> reporting_id) const {
   // Attempt to retrieve both types of hashes.
   std::optional<std::string> encrypted_hash = GetEncryptedHash(path);
   std::optional<std::string> mac;
@@ -386,7 +407,8 @@ ValueState PrefHashStoreImpl::PrefHashStoreTransactionImpl::CheckValue(
   }
 
   // Delegate to the internal helper.
-  return CheckValueInternal(path, initial_value, encrypted_hash, mac);
+  return CheckValueInternal(path, initial_value, encrypted_hash, mac,
+                            reporting_id);
 }
 
 void PrefHashStoreImpl::PrefHashStoreTransactionImpl::StoreHash(
@@ -430,7 +452,8 @@ PrefHashStoreImpl::PrefHashStoreTransactionImpl::CheckSplitValueInternal(
     const std::map<std::string, std::string>& split_encrypted_hashes,
     bool has_mac_hashes,
     const std::map<std::string, std::string>& split_macs,
-    std::vector<std::string>* invalid_keys) const {
+    std::vector<std::string>* invalid_keys,
+    std::optional<size_t> reporting_id) const {
   DCHECK(invalid_keys && invalid_keys->empty());
 
   const bool is_initial_value_empty =
@@ -445,15 +468,18 @@ PrefHashStoreImpl::PrefHashStoreTransactionImpl::CheckSplitValueInternal(
             split_encrypted_hashes;
         if (initial_split_value) {
           for (const auto item : *initial_split_value) {
-            const std::string keyed_path = path + "." + item.first;
             auto it = current_encrypted.find(item.first);
-            if (it == current_encrypted.end() ||
-                outer_->pref_hash_calculator_.ValidateEncrypted(
-                    keyed_path, &item.second, it->second, encryptor_) !=
-                    ValidationResult::VALID_ENCRYPTED) {
+            if (it == current_encrypted.end()) {
               invalid_keys->push_back(item.first);
-            }
-            if (it != current_encrypted.end()) {
+            } else {
+              const std::string keyed_path = path + "." + item.first;
+              const auto validation_result =
+                  outer_->pref_hash_calculator_.ValidateEncrypted(
+                      keyed_path, &item.second, it->second, encryptor_);
+              if (validation_result != ValidationResult::VALID_ENCRYPTED) {
+                MaybeReportWeakHash(validation_result, reporting_id);
+                invalid_keys->push_back(item.first);
+              }
               current_encrypted.erase(it);
             }
           }
@@ -552,7 +578,8 @@ PrefHashStoreImpl::PrefHashStoreTransactionImpl::CheckSplitValueInternal(
 ValueState PrefHashStoreImpl::PrefHashStoreTransactionImpl::CheckSplitValue(
     const std::string& path,
     const base::DictValue* initial_split_value,
-    std::vector<std::string>* invalid_keys) const {
+    std::vector<std::string>* invalid_keys,
+    std::optional<size_t> reporting_id) const {
   // Attempt to retrieve both types of split hashes.
   std::map<std::string, std::string> split_encrypted_hashes;
   bool has_encrypted = GetSplitEncryptedHashes(path, &split_encrypted_hashes);
@@ -562,7 +589,7 @@ ValueState PrefHashStoreImpl::PrefHashStoreTransactionImpl::CheckSplitValue(
 
   return CheckSplitValueInternal(path, initial_split_value, has_encrypted,
                                  split_encrypted_hashes, has_macs, split_macs,
-                                 invalid_keys);
+                                 invalid_keys, reporting_id);
 }
 
 void PrefHashStoreImpl::PrefHashStoreTransactionImpl::StoreSplitHash(
