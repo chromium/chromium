@@ -5688,17 +5688,13 @@ if (!is_android) {
   source_set("browser_list") {
     sources = [
       "browser_list.h",
-      "browser_list_enumerator.h",
       "browser_list_observer.h",
     ]
     public_deps = [ "//base" ]
   }
 
   source_set("browser_list_impl") {
-    sources = [
-      "browser_list.cc",
-      "browser_list_enumerator.cc",
-    ]
+    sources = [ "browser_list.cc" ]
     public_deps = [ "//chrome/browser:browser_public_dependencies" ]
     deps = [
       "//base",

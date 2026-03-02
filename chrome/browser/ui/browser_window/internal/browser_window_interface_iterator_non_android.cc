@@ -3,78 +3,35 @@
 // found in the LICENSE file.
 
 #include "base/functional/function_ref.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/browser_list_enumerator.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 
 std::vector<BrowserWindowInterface*> GetAllBrowserWindowInterfaces() {
   std::vector<BrowserWindowInterface*> results;
-  for (auto it = BrowserList::GetInstance()->deprecated_begin();
-       it != BrowserList::GetInstance()->deprecated_end(); ++it) {
-    results.push_back(*it);
-  }
+  GlobalBrowserCollection::GetInstance()->ForEach(
+      [&results](BrowserWindowInterface* browser) {
+        results.push_back(browser);
+        return true;
+      });
   return results;
 }
 
-// TODO(crbug.com/431671320): This is implemented in terms of BrowserList to
-// ensure it stays in sync with other BrowserList APIs during migration. It
-// can be implemented directly once clients are migrated off of BrowserList.
 void ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
     base::FunctionRef<bool(BrowserWindowInterface*)> on_browser) {
-  // Make a copy of the BrowserList to simplify the case where we need to
-  // add or remove a Browser during the loop.
-  constexpr bool kEnumerateNewBrowser = false;
-  BrowserListEnumerator browser_list_copy(
-      BrowserList::BrowserVector(
-          BrowserList::GetInstance()
-              ->deprecated_begin_browsers_ordered_by_activation(),
-          BrowserList::GetInstance()
-              ->deprecated_end_browsers_ordered_by_activation()),
-      kEnumerateNewBrowser);
-  while (!browser_list_copy.empty()) {
-    Browser* browser = browser_list_copy.Next();
-
-    // Skip browsers that are already scheduled for deletion to prevent
-    // dangling pointer issues during browser destruction.
-    if (browser->is_delete_scheduled()) {
-      continue;  // Skip this browser and continue with the next one
-    }
-
-    if (!on_browser(browser)) {
-      break;
-    }
-  }
+  GlobalBrowserCollection::GetInstance()->ForEach(
+      [&on_browser](BrowserWindowInterface* browser) {
+        return on_browser(browser);
+      },
+      BrowserCollection::Order::kActivation);
 }
 
-// TODO(crbug.com/431671320): This is implemented in terms of BrowserList to
-// ensure it stays in sync with other BrowserList APIs during migration. It
-// can be implemented directly once clients are migrated off of BrowserList.
 void ForEachCurrentAndNewBrowserWindowInterfaceOrderedByActivation(
     base::FunctionRef<bool(BrowserWindowInterface*)> on_browser) {
-  // Make a copy of the BrowserList to simplify the case where we need to
-  // add or remove a Browser during the loop.
-  constexpr bool kEnumerateNewBrowser = true;
-  BrowserListEnumerator browser_list_copy(
-      BrowserList::BrowserVector(
-          BrowserList::GetInstance()
-              ->deprecated_begin_browsers_ordered_by_activation(),
-          BrowserList::GetInstance()
-              ->deprecated_end_browsers_ordered_by_activation()),
-      kEnumerateNewBrowser);
-  while (!browser_list_copy.empty()) {
-    Browser* browser = browser_list_copy.Next();
-
-    // Skip browsers that are already scheduled for deletion to prevent
-    // dangling pointer issues during browser destruction.
-    if (browser->is_delete_scheduled()) {
-      continue;  // Skip this browser and continue with the next one
-    }
-
-    if (!on_browser(browser)) {
-      break;
-    }
-  }
+  GlobalBrowserCollection::GetInstance()->ForEach(
+      [&on_browser](BrowserWindowInterface* browser) {
+        return on_browser(browser);
+      },
+      BrowserCollection::Order::kActivation, /*enumerate_new_browsers=*/true);
 }
 
 BrowserWindowInterface* GetLastActiveBrowserWindowInterfaceWithAnyProfile() {
