@@ -326,13 +326,13 @@ const std::vector<base::cstring_view> GetRecurrentNetworkActivations(
   for (const auto& activation : activations) {
     switch (activation) {
       case mojom::RecurrentNetworkActivation::kRelu:
-        activation_list.push_back("relu");
+        activation_list.push_back("Relu");
         break;
       case mojom::RecurrentNetworkActivation::kSigmoid:
-        activation_list.push_back("sigmoid");
+        activation_list.push_back("Sigmoid");
         break;
       case mojom::RecurrentNetworkActivation::kTanh:
-        activation_list.push_back("tanh");
+        activation_list.push_back("Tanh");
         break;
       default:
         NOTREACHED() << "Unsupported recurrent network activation function.";
