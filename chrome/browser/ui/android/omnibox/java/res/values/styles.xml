@@ -98,7 +98,7 @@ found in the LICENSE file.
         <item name="containerIconSize">?attr/listItemIconSize</item>
     </style>
 
-    <style name="OmniboxChipThemeOverlay">
+    <style name="OmniboxChipThemeOverlay" parent="ThemeOverlay.Material3Expressive.Button.Tonal">
         <item name="colorContainer">?attr/colorSurface</item>
         <item name="colorOnContainer">?attr/colorOnSurface</item>
     </style>
