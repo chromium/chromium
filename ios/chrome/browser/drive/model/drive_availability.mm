@@ -93,12 +93,14 @@ bool IsChooseFromDriveAvailable(web::WebState* web_state,
     return false;
   }
 
-  // Check user is signed in.
-  if (!identity_manager ||
-      !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
-    base::UmaHistogramEnumeration("IOS.FilePicker.Drive.Displayed",
-                                  FilePickerDriveDisplayed::kNotSignedIn);
-    return false;
+  if (!base::FeatureList::IsEnabled(kIOSChooseFromDriveSignedOut)) {
+    // Check user is signed in.
+    if (!identity_manager ||
+        !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+      base::UmaHistogramEnumeration("IOS.FilePicker.Drive.Displayed",
+                                    FilePickerDriveDisplayed::kNotSignedIn);
+      return false;
+    }
   }
 
   // Check enterprise policy.

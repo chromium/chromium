@@ -141,6 +141,9 @@ std::unique_ptr<net::test_server::HttpResponse> TestPageResponse(
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
   config.features_enabled.push_back(kIOSCustomFileUploadMenu);
   config.features_enabled.push_back(kIOSChooseFromDrive);
+  if ([self isRunningTest:@selector(testDriveInContextMenuWhenSignedOut)]) {
+    config.features_enabled.push_back(kIOSChooseFromDriveSignedOut);
+  }
   return config;
 }
 
@@ -727,6 +730,22 @@ std::unique_ptr<net::test_server::HttpResponse> TestPageResponse(
   [ChromeEarlGrey
       waitForUIElementToAppearWithMatcher:
           grey_accessibilityID(kDriveFilePickerAccessibilityIdentifier)];
+}
+
+// Tests that "Google Drive" is present in the file upload context menu.
+- (void)testDriveInContextMenuWhenSignedOut {
+  // The file upload panel is only available on iOS 18.4+.
+  if (!base::ios::IsRunningOnOrLater(18, 4, 0)) {
+    EARL_GREY_TEST_SKIPPED(@"Test is only available for iOS 18.4+, skipping.");
+  }
+
+  [self loadURLAndTapInputWithPath:"" waitForText:"File input"];
+
+  // Verify "Google Drive" action is present.
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
+                     IDS_IOS_CHOOSE_FROM_DRIVE_ACTION_NAME)]
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 // Tests that tapping the camera action logs the correct metric.
