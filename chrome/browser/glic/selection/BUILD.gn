@@ -5,7 +5,6 @@
 import("//chrome/common/features.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 
-assert(enable_glic)
 assert(!is_android)
 
 source_set("selection") {

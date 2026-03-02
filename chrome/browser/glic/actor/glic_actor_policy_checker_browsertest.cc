@@ -82,9 +82,6 @@ constexpr TestAccount kEnterpriseAccount = {"foo@testenterprise.com",
 class GlicActorPolicyCheckerBrowserTestBase : public NonInteractiveGlicTest {
  public:
   GlicActorPolicyCheckerBrowserTestBase() {
-#if !BUILDFLAG(ENABLE_GLIC)
-    GTEST_SKIP() << "The policy checker is only tested with GLIC enabled.";
-#endif  // BUILDFLAG(ENABLE_GLIC)
     scoped_feature_list_.InitWithFeaturesAndParameters(
         /* enabled_features = */
         {{features::kGlicActor,

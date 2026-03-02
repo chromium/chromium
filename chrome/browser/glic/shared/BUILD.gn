@@ -1,7 +1,5 @@
 import("//chrome/common/features.gni")
 
-assert(enable_glic)
-
 source_set("shared") {
   sources = [
     "webui_shared.cc",
