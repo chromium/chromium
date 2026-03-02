@@ -123,7 +123,7 @@ IN_PROC_BROWSER_TEST_F(BrowserWidgetTest, ChildWidgetsReceiveThemeUpdates) {
   // Create a child popup Widget for the BrowserWidget.
   const auto child_widget = std::make_unique<views::Widget>();
   views::Widget::InitParams params(
-      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+      views::Widget::InitParams::CLIENT_OWNS_WIDGET,
       views::Widget::InitParams::TYPE_POPUP);
   params.shadow_elevation = 1;
   params.shadow_type = views::Widget::InitParams::ShadowType::kDrop;
