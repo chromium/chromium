@@ -29,6 +29,7 @@
 #include "base/lazy_instance.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory_coordinator/utils.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -839,9 +840,8 @@ void WriteRenderFrameImplDeletion(perfetto::EventContext& ctx,
 // Returns the amount of time to keep subframe processes alive in case they can
 // be reused. Returns zero if under memory pressure, as memory should be freed
 // up as soon as possible if it's limited.
-base::TimeDelta GetSubframeProcessShutdownDelay(
-    BrowserContext* browser_context,
-    base::MemoryPressureLevel memory_pressure_level) {
+base::TimeDelta GetSubframeProcessShutdownDelay(BrowserContext* browser_context,
+                                                int memory_limit) {
   static constexpr base::TimeDelta kZeroDelay;
   if (!RenderProcessHostImpl::ShouldDelayProcessShutdown()) {
     return kZeroDelay;
@@ -849,7 +849,7 @@ base::TimeDelta GetSubframeProcessShutdownDelay(
 
   // Don't delay process shutdown under memory pressure. Does not cancel
   // existing shutdown delays for processes already in delayed-shutdown state.
-  if (memory_pressure_level >= base::MEMORY_PRESSURE_LEVEL_MODERATE) {
+  if (memory_limit <= base::kModerateMemoryPressureThreshold) {
     return kZeroDelay;
   }
 
@@ -4649,8 +4649,7 @@ void RenderFrameHostImpl::DeleteRenderFrame(
           frame_tree_->IsBeingDestroyed()
               ? base::TimeDelta()
               : GetSubframeProcessShutdownDelay(
-                    GetSiteInstance()->GetBrowserContext(),
-                    memory_pressure_level());
+                    GetSiteInstance()->GetBrowserContext(), GetMemoryLimit());
       // If this document has unload handlers (and is active), ensure that they
       // have a chance to execute by delaying process cleanup. This will prevent
       // the process from shutting down immediately in the case where this is

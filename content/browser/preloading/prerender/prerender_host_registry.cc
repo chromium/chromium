@@ -11,6 +11,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/memory_pressure_monitor.h"
+#include "base/memory_coordinator/utils.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
@@ -629,14 +630,10 @@ PrerenderHostId PrerenderHostRegistry::CreateAndStartHost(
     }
 
     // Don't prerender under critical memory pressure.
-    switch (GetCurrentMemoryPressureLevel()) {
-      case base::MEMORY_PRESSURE_LEVEL_NONE:
-      case base::MEMORY_PRESSURE_LEVEL_MODERATE:
-        break;
-      case base::MEMORY_PRESSURE_LEVEL_CRITICAL:
-        builder.RejectAsNotEligible(
-            attributes, PrerenderFinalStatus::kMemoryPressureOnTrigger);
-        return PrerenderHostId();
+    if (GetCurrentMemoryLimit() <= base::kCriticalMemoryPressureThreshold) {
+      builder.RejectAsNotEligible(
+          attributes, PrerenderFinalStatus::kMemoryPressureOnTrigger);
+      return PrerenderHostId();
     }
 
     // Disable prerendering on slow network.
@@ -1949,13 +1946,8 @@ void PrerenderHostRegistry::OnMemoryPressure(
     return;
   }
 
-  switch (memory_pressure_level) {
-    case base::MEMORY_PRESSURE_LEVEL_NONE:
-    case base::MEMORY_PRESSURE_LEVEL_MODERATE:
-      break;
-    case base::MEMORY_PRESSURE_LEVEL_CRITICAL:
-      CancelAllHosts(PrerenderFinalStatus::kMemoryPressureAfterTriggered);
-      break;
+  if (GetMemoryLimit() <= base::kCriticalMemoryPressureThreshold) {
+    CancelAllHosts(PrerenderFinalStatus::kMemoryPressureAfterTriggered);
   }
 }
 
@@ -1966,15 +1958,14 @@ PrerenderHostRegistry::GetTimerTaskRunner() {
              : base::SingleThreadTaskRunner::GetCurrentDefault();
 }
 
-base::MemoryPressureLevel
-PrerenderHostRegistry::GetCurrentMemoryPressureLevel() {
+int PrerenderHostRegistry::GetCurrentMemoryLimit() {
   // Ignore the memory pressure event if the memory control is disabled.
   if (!base::FeatureList::IsEnabled(
           blink::features::kPrerender2MemoryControls)) {
-    return base::MEMORY_PRESSURE_LEVEL_NONE;
+    return base::kNoMemoryPressureThreshold;
   }
 
-  return memory_pressure_level();
+  return GetMemoryLimit();
 }
 
 void PrerenderHostRegistry::SetTaskRunnerForTesting(

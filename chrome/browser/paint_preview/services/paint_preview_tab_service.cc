@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/functional/callback.h"
+#include "base/memory_coordinator/utils.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -133,7 +134,7 @@ void PaintPreviewTabService::CaptureTab(int tab_id,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // If the system is under memory pressure don't try to capture.
-  if (memory_pressure_level() >= base::MEMORY_PRESSURE_LEVEL_MODERATE) {
+  if (GetMemoryLimit() <= base::kModerateMemoryPressureThreshold) {
     return;
   }
 

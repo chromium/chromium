@@ -12,6 +12,7 @@
 #include "base/auto_reset.h"
 #include "base/feature_list.h"
 #include "base/memory/weak_ptr.h"
+#include "base/memory_coordinator/utils.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/scoped_observation.h"
@@ -551,7 +552,7 @@ bool WebUIContentsPreloadManager::ShouldPreloadForBrowserContext(
   }
 
   // Don't preload if under heavy memory pressure.
-  if (memory_pressure_level() >= base::MEMORY_PRESSURE_LEVEL_MODERATE) {
+  if (GetMemoryLimit() <= base::kModerateMemoryPressureThreshold) {
     return false;
   }
 

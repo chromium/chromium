@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
+#include "base/memory_coordinator/utils.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -196,7 +197,7 @@ void OnDeviceTailModelService::GetPredictionsForInput(
     ResultCallback result_callback) {
   if (model_task_runner_) {
     // Do not call the model if memory pressure level is too high.
-    if (memory_pressure_level() != base::MEMORY_PRESSURE_LEVEL_CRITICAL) {
+    if (GetMemoryLimit() > base::kCriticalMemoryPressureThreshold) {
       model_task_runner_->PostTaskAndReplyWithResult(
           FROM_HERE,
           base::BindOnce(&RunTailModelExecutor, tail_model_executor_.get(),

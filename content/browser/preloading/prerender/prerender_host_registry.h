@@ -369,7 +369,7 @@ class CONTENT_EXPORT PrerenderHostRegistry
 
   scoped_refptr<base::SingleThreadTaskRunner> GetTimerTaskRunner();
 
-  base::MemoryPressureLevel GetCurrentMemoryPressureLevel();
+  int GetCurrentMemoryLimit();
 
   // Holds the PrerenderHostId of running PrerenderHost. Reset to an invalid
   // value when there's no running PrerenderHost. Tracks only the host id of
