@@ -26,6 +26,7 @@ import android.view.ViewGroup;
 
 import androidx.test.filters.LargeTest;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -56,6 +57,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 
 /** End-to-end test for the extension toolbar on Desktop Android. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -72,6 +75,7 @@ public class ExtensionToolbarTest {
     private EmbeddedTestServer mTestServer;
     private Profile mProfile;
     private WebPageStation mPage;
+    private final List<String> mInstalledTestExtensions = new ArrayList<>();
 
     @Before
     public void setUp() {
@@ -86,6 +90,13 @@ public class ExtensionToolbarTest {
 
         // Wait until the extensions toolbar is loaded.
         ViewUtils.onViewWaiting(withId(R.id.extensions_menu_button)).check(matches(isDisplayed()));
+    }
+
+    @After
+    public void tearDown() {
+        for (String id : new ArrayList<>(mInstalledTestExtensions)) {
+            uninstallTestExtension(id);
+        }
     }
 
     @Test
@@ -256,7 +267,7 @@ public class ExtensionToolbarTest {
                 "Popup did not open");
 
         // Uninstall the extension.
-        ExtensionTestUtils.uninstallExtension(mProfile, id);
+        uninstallTestExtension(id);
 
         // The extension should disappear from the toolbar.
         onView(isRoot())
@@ -285,7 +296,7 @@ public class ExtensionToolbarTest {
                         }
                         """,
                         name, actionTitle));
-        return ExtensionTestUtils.loadUnpackedExtension(mProfile, dir);
+        return installTestExtension(dir);
     }
 
     /** Loads an extension that requests host permissions on a specific site. */
@@ -305,7 +316,7 @@ public class ExtensionToolbarTest {
                         }
                         """,
                         name, host));
-        return ExtensionTestUtils.loadUnpackedExtension(mProfile, dir);
+        return installTestExtension(dir);
     }
 
     private String loadPopupExtension(
@@ -328,7 +339,18 @@ public class ExtensionToolbarTest {
         writeFile(
                 new File(dir, "popup.js"),
                 String.format("chrome.test.sendMessage('%s');", message));
-        return ExtensionTestUtils.loadUnpackedExtension(mProfile, dir);
+        return installTestExtension(dir);
+    }
+
+    private String installTestExtension(File dir) {
+        String id = ExtensionTestUtils.loadUnpackedExtension(mProfile, dir);
+        mInstalledTestExtensions.add(id);
+        return id;
+    }
+
+    private void uninstallTestExtension(String id) {
+        ExtensionTestUtils.uninstallExtension(mProfile, id);
+        mInstalledTestExtensions.remove(id);
     }
 
     private void writeFile(File file, String contents) throws IOException {
