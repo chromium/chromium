@@ -190,12 +190,12 @@ class GLOzoneEGLGbm : public GLOzoneEGL {
   std::unique_ptr<NativePixmapGLBinding> ImportNativePixmap(
       scoped_refptr<gfx::NativePixmap> pixmap,
       viz::SharedImageFormat plane_format,
-      gfx::BufferPlane plane,
+      std::optional<int> plane_index,
       gfx::Size plane_size,
       const gfx::ColorSpace& color_space,
       GLenum target,
       GLuint texture_id) override {
-    return NativePixmapEGLBinding::Create(pixmap, plane_format, plane,
+    return NativePixmapEGLBinding::Create(pixmap, plane_format, plane_index,
                                           plane_size, color_space, target,
                                           texture_id);
   }

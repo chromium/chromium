@@ -123,11 +123,14 @@ bool SurfacelessSkiaGlRenderer::BufferWrapper::Initialize(
                 ->CreateNativePixmap(widget, nullptr, size, format,
                                      gfx::BufferUsage::SCANOUT);
 
+  // The imported pixmap can be externally sampled i.e. does not provide
+  // per-plane textures but provides a unified single texture object.
   pixmap_gl_binding_ =
       OzonePlatform::GetInstance()
           ->GetSurfaceFactoryOzone()
           ->GetCurrentGLOzone()
-          ->ImportNativePixmap(pixmap_, format, gfx::BufferPlane::DEFAULT, size,
+          ->ImportNativePixmap(pixmap_, format,
+                               /*plane_index=*/std::nullopt, size,
                                gfx::ColorSpace(), GL_TEXTURE_2D, gl_tex_);
 
   if (!pixmap_gl_binding_) {

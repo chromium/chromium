@@ -66,7 +66,7 @@ bool GLOzoneEGL::CanImportNativePixmap(viz::SharedImageFormat format) {
 std::unique_ptr<NativePixmapGLBinding> GLOzoneEGL::ImportNativePixmap(
     scoped_refptr<gfx::NativePixmap> pixmap,
     viz::SharedImageFormat plane_format,
-    gfx::BufferPlane plane,
+    std::optional<int> plane_index,
     gfx::Size plane_size,
     const gfx::ColorSpace& color_space,
     GLenum target,

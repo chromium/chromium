@@ -44,8 +44,8 @@ namespace {
 
 NativePixmapEGLBinding::NativePixmapEGLBinding(const gfx::Size& size,
                                                viz::SharedImageFormat format,
-                                               gfx::BufferPlane plane)
-    : size_(size), format_(format), plane_(plane) {}
+                                               std::optional<int> plane_index)
+    : size_(size), format_(format), plane_index_(plane_index) {}
 
 NativePixmapEGLBinding::~NativePixmapEGLBinding() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -60,15 +60,15 @@ bool NativePixmapEGLBinding::IsSharedImageFormatSupported(
 std::unique_ptr<NativePixmapGLBinding> NativePixmapEGLBinding::Create(
     scoped_refptr<gfx::NativePixmap> pixmap,
     viz::SharedImageFormat plane_format,
-    gfx::BufferPlane plane,
+    std::optional<int> plane_index,
     gfx::Size plane_size,
     const gfx::ColorSpace& color_space,
     GLenum target,
     GLuint texture_id) {
   DCHECK_GT(texture_id, 0u);
 
-  auto binding =
-      std::make_unique<NativePixmapEGLBinding>(plane_size, plane_format, plane);
+  auto binding = std::make_unique<NativePixmapEGLBinding>(
+      plane_size, plane_format, plane_index);
 
   if (!binding->InitializeFromNativePixmap(std::move(pixmap), color_space,
                                            target, texture_id)) {
@@ -141,7 +141,7 @@ bool NativePixmapEGLBinding::InitializeFromNativePixmap(
     }
   }
 
-  if (plane_ == gfx::BufferPlane::DEFAULT) {
+  if (!plane_index_.has_value()) {
     constexpr auto kPlaneFDAttrs = std::to_array<EGLint>({
         EGL_DMA_BUF_PLANE0_FD_EXT,
         EGL_DMA_BUF_PLANE1_FD_EXT,
@@ -202,8 +202,15 @@ bool NativePixmapEGLBinding::InitializeFromNativePixmap(
     }
     attrs.push_back(EGL_NONE);
   } else {
-    DCHECK(plane_ == gfx::BufferPlane::Y || plane_ == gfx::BufferPlane::UV);
-    size_t pixmap_plane = plane_ == gfx::BufferPlane::Y ? 0 : 1;
+    size_t pixmap_plane = plane_index_.value();
+    // Gate the pixmap_plane to be either 0 or 1 to preserve historical
+    // behavior which assumed multiplanar format's plane config to be kY_UV
+    // always.
+    // TODO(b/482199461): Verify that flows other than kY_UV can reach here and
+    // eliminate this conditional.
+    if (pixmap_plane > 1) {
+      pixmap_plane = 1;
+    }
 
     attrs.push_back(EGL_DMA_BUF_PLANE0_FD_EXT);
     attrs.push_back(pixmap->GetDmaBufFd(pixmap_plane));

@@ -6,7 +6,6 @@
 #define UI_OZONE_PUBLIC_NATIVE_PIXMAP_GL_BINDING_H_
 
 #include "base/component_export.h"
-#include "ui/gfx/buffer_types.h"
 
 typedef unsigned int GLuint;
 typedef unsigned int GLenum;

@@ -6,6 +6,7 @@
 #define UI_OZONE_COMMON_NATIVE_PIXMAP_EGL_BINDING_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/threading/thread_checker.h"
 #include "components/viz/common/resources/shared_image_format.h"
@@ -21,7 +22,7 @@ class NativePixmapEGLBinding : public NativePixmapGLBinding {
  public:
   NativePixmapEGLBinding(const gfx::Size& size,
                          viz::SharedImageFormat format,
-                         gfx::BufferPlane plane);
+                         std::optional<int> plane_index);
   ~NativePixmapEGLBinding() override;
 
   static bool IsSharedImageFormatSupported(viz::SharedImageFormat format);
@@ -34,7 +35,7 @@ class NativePixmapEGLBinding : public NativePixmapGLBinding {
   static std::unique_ptr<NativePixmapGLBinding> Create(
       scoped_refptr<gfx::NativePixmap> pixmap,
       viz::SharedImageFormat plane_format,
-      gfx::BufferPlane plane,
+      std::optional<int> plane_index,
       gfx::Size plane_size,
       const gfx::ColorSpace& color_space,
       GLenum target,
@@ -54,7 +55,9 @@ class NativePixmapEGLBinding : public NativePixmapGLBinding {
   THREAD_CHECKER(thread_checker_);
   viz::SharedImageFormat format_;
   scoped_refptr<gfx::NativePixmap> pixmap_;
-  gfx::BufferPlane plane_;
+  // Set only for multiplanar formats without external sampler (textures per
+  // plane).
+  std::optional<int> plane_index_;
 };
 
 }  // namespace ui

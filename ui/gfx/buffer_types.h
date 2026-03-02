@@ -39,28 +39,6 @@ enum class BufferUsage {
   LAST = VEA_READ_CAMERA_AND_CPU_READ_WRITE
 };
 
-// Used to identify the plane of a GpuMemoryBuffer to use when creating a
-// SharedImage.
-enum class BufferPlane {
-  // For single-plane GpuMemoryBuffer, this refers to that single plane. For
-  // YUV_420, YUV_420_BIPLANAR, YUVA_420_TRIPLANAR, and P010 GpuMemoryBuffers,
-  // this refers to an RGB representation of the planes (either bound directly
-  // as a texture or created through an extra copy).
-  DEFAULT,
-  // The Y plane for YUV_420, YUV_420_BIPLANAR, YUVA_420_TRIPLANAR, and P010.
-  Y,
-  // The UV plane for YUV_420_BIPLANAR, YUVA_420_TRIPLANAR and P010.
-  UV,
-  // The U plane for YUV_420.
-  U,
-  // The V plane for YUV_420.
-  V,
-  // The A plane for YUVA_420_TRIPLANAR.
-  A,
-
-  LAST = A
-};
-
 }  // namespace gfx
 
 #endif  // UI_GFX_BUFFER_TYPES_H_

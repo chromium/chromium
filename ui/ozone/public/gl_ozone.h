@@ -5,6 +5,7 @@
 #ifndef UI_OZONE_PUBLIC_GL_OZONE_H_
 #define UI_OZONE_PUBLIC_GL_OZONE_H_
 
+#include <optional>
 #include <string>
 
 #include "base/component_export.h"
@@ -78,7 +79,7 @@ class COMPONENT_EXPORT(OZONE_BASE) GLOzone {
   virtual std::unique_ptr<NativePixmapGLBinding> ImportNativePixmap(
       scoped_refptr<gfx::NativePixmap> pixmap,
       viz::SharedImageFormat plane_format,
-      gfx::BufferPlane plane,
+      std::optional<int> plane_index,
       gfx::Size plane_size,
       const gfx::ColorSpace& color_space,
       GLenum target,

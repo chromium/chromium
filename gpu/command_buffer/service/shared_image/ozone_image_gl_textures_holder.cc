@@ -12,7 +12,6 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "gpu/command_buffer/service/texture_manager.h"
-#include "ui/gfx/buffer_types.h"
 #include "ui/gfx/native_pixmap.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/scoped_binders.h"
@@ -44,59 +43,6 @@ viz::SharedImageFormat GetFormatForPlane(viz::SharedImageFormat format,
   NOTREACHED();
 }
 
-gfx::BufferPlane GetBufferPlane(viz::SharedImageFormat format,
-                                int plane_index) {
-  DCHECK(format.IsValidPlaneIndex(plane_index));
-  switch (format.plane_config()) {
-    case viz::SharedImageFormat::PlaneConfig::kY_U_V:
-      switch (plane_index) {
-        case 0:
-          return gfx::BufferPlane::Y;
-        case 1:
-          return gfx::BufferPlane::U;
-        case 2:
-          return gfx::BufferPlane::V;
-      }
-    case viz::SharedImageFormat::PlaneConfig::kY_V_U:
-      switch (plane_index) {
-        case 0:
-          return gfx::BufferPlane::Y;
-        case 1:
-          return gfx::BufferPlane::V;
-        case 2:
-          return gfx::BufferPlane::U;
-      }
-    case viz::SharedImageFormat::PlaneConfig::kY_UV:
-      switch (plane_index) {
-        case 0:
-          return gfx::BufferPlane::Y;
-        case 1:
-          return gfx::BufferPlane::UV;
-      }
-    case viz::SharedImageFormat::PlaneConfig::kY_UV_A:
-      switch (plane_index) {
-        case 0:
-          return gfx::BufferPlane::Y;
-        case 1:
-          return gfx::BufferPlane::UV;
-        case 2:
-          return gfx::BufferPlane::A;
-      }
-    case viz::SharedImageFormat::PlaneConfig::kY_U_V_A:
-      switch (plane_index) {
-        case 0:
-          return gfx::BufferPlane::Y;
-        case 1:
-          return gfx::BufferPlane::U;
-        case 2:
-          return gfx::BufferPlane::V;
-        case 3:
-          return gfx::BufferPlane::A;
-      }
-  }
-  NOTREACHED();
-}
-
 // Create a NativePixmapGLBinding for the given `pixmap`. On failure, returns
 // nullptr.
 std::unique_ptr<ui::NativePixmapGLBinding> GetBinding(
@@ -118,16 +64,17 @@ std::unique_ptr<ui::NativePixmapGLBinding> GetBinding(
   // formats.
   viz::SharedImageFormat plane_format = format;
   gfx::Size plane_size;
-  // The plane is DEFAULT for single planar formats and multi planar with
-  // external sampler.
-  gfx::BufferPlane buffer_plane;
+  // The `buffer_plane_index` is unset for single-planar formats and
+  // multi-planar with external sampler, and only set for per-plane multi-planar
+  // textures.
+  std::optional<int> buffer_plane_index;
   if (format.is_single_plane() || format.PrefersExternalSampler()) {
     plane_size = size;
-    buffer_plane = gfx::BufferPlane::DEFAULT;
+    buffer_plane_index = std::nullopt;
   } else {
     plane_format = GetFormatForPlane(format, plane_index);
     plane_size = format.GetPlaneSize(plane_index, size);
-    buffer_plane = GetBufferPlane(format, plane_index);
+    buffer_plane_index = plane_index;
   }
 
   // The target should be GL_TEXTURE_2D unless external sampling is being
@@ -136,7 +83,6 @@ std::unique_ptr<ui::NativePixmapGLBinding> GetBinding(
   // the buffer format passed in here must be the single-planar format of the
   // plane).
   if (format.PrefersExternalSampler()) {
-    CHECK_EQ(buffer_plane, gfx::BufferPlane::DEFAULT);
     target = GL_TEXTURE_EXTERNAL_OES;
   } else {
     target = GL_TEXTURE_2D;
@@ -153,7 +99,7 @@ std::unique_ptr<ui::NativePixmapGLBinding> GetBinding(
   api->glTexParameteriFn(target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
   std::unique_ptr<ui::NativePixmapGLBinding> np_gl_binding =
-      gl_ozone->ImportNativePixmap(pixmap, plane_format, buffer_plane,
+      gl_ozone->ImportNativePixmap(pixmap, plane_format, buffer_plane_index,
                                    plane_size, color_space, target,
                                    gl_texture_service_id);
   if (!np_gl_binding) {

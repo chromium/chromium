@@ -15,7 +15,6 @@
 #include "media/gpu/chromeos/frame_resource.h"
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
 #include "media/gpu/macros.h"
-#include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/gpu_memory_buffer_handle.h"
 #include "ui/gl/gl_bindings.h"
@@ -107,10 +106,12 @@ std::unique_ptr<ui::NativePixmapGLBinding> CreateAndBindImage(
         std::move(gpu_memory_buffer_handle).native_pixmap_handle());
     DCHECK(native_pixmap->AreDmaBufFdsValid());
 
-    // Import the NativePixmap into GL.
+    // Import the NativePixmap into GL. The imported pixmap can be externally
+    // sampled i.e. does not provide per-plane textures but provides a unified
+    // single texture object.
     return GetCurrentGLOzone().ImportNativePixmap(
         std::move(native_pixmap), viz::MultiPlaneFormat::kNV12,
-        gfx::BufferPlane::DEFAULT, frame->coded_size(), gfx::ColorSpace(),
+        /*plane_index=*/std::nullopt, frame->coded_size(), gfx::ColorSpace(),
         target, texture_id);
   }
 
@@ -141,8 +142,7 @@ std::unique_ptr<ui::NativePixmapGLBinding> CreateAndBindImage(
 
   // Import the NativePixmap into GL.
   return GetCurrentGLOzone().ImportNativePixmap(
-      std::move(native_pixmap), plane_format,
-      plane ? gfx::BufferPlane::UV : gfx::BufferPlane::Y, plane_size,
+      std::move(native_pixmap), plane_format, plane, plane_size,
       gfx::ColorSpace(), target, texture_id);
 }
 
