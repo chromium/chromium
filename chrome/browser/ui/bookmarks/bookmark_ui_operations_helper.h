@@ -9,12 +9,12 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/bookmarks/bookmark_parent_folder.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/common/bookmark_metrics.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
 
 class BookmarkMergedSurfaceService;
-struct BookmarkParentFolder;
 class Profile;
 class Browser;
 
@@ -69,9 +69,9 @@ class BookmarkUIOperationsHelper {
       bookmarks::metrics::BookmarkEditSource source,
       bool is_off_the_record);
 
-  // Returns true if the user can paste from the clipboard a bookmark url/node
-  // into `target_parent()`.
-  bool CanPasteFromClipboard() const;
+  // Runs `callback` with true if the user can paste from the clipboard a
+  // bookmark url/node into `target_parent()`.
+  void CanPasteFromClipboard(base::OnceCallback<void(bool)> callback) const;
 
   // Pastes from the clipboard. The new nodes are added to `target_parent()`.
   // The nodes are inserted at `index`.
@@ -107,6 +107,11 @@ class BookmarkUIOperationsHelper {
   void OnReadBookmarkData(size_t index,
                           base::OnceClosure callback,
                           std::unique_ptr<bookmarks::BookmarkNodeData> data);
+
+  void OnReadTextComplete(std::unique_ptr<bookmarks::BookmarkNodeData> data,
+                          size_t index,
+                          base::OnceClosure callback,
+                          std::u16string text);
 
   static void CopyOrCutToClipboard(
       bookmarks::BookmarkModel* model,
@@ -165,7 +170,9 @@ class BookmarkUIOperationsHelperNonMergedSurfaces
         bookmarks::BookmarkModel* model,
         const bookmarks::BookmarkNode* parent);
 
-    TargetParent(const bookmarks::BookmarkNode* parent, bool is_managed);
+    TargetParent(bookmarks::BookmarkModel* model,
+                 const bookmarks::BookmarkNode* parent,
+                 bool is_managed);
     ~TargetParent() override;
 
     const bookmarks::BookmarkNode* parent_node() const;
@@ -179,7 +186,8 @@ class BookmarkUIOperationsHelperNonMergedSurfaces
     size_t GetChildrenCount() const override;
 
    private:
-    const raw_ptr<const bookmarks::BookmarkNode> parent_;
+    const raw_ptr<bookmarks::BookmarkModel> model_;
+    const int64_t parent_id_;
     const bool is_managed_;
   };
 
@@ -237,10 +245,10 @@ class BookmarkUIOperationsHelperMergedSurfaces
         const BookmarkParentFolder* parent);
 
     TargetParent(BookmarkMergedSurfaceService* merged_surface_service,
-                 const BookmarkParentFolder* parent);
+                 BookmarkParentFolder parent);
     ~TargetParent() override;
 
-    const BookmarkParentFolder* parent_folder() const;
+    const BookmarkParentFolder& parent_folder() const;
 
     // internal::BookmarkUIOperationsHelper::TargetParent
     bool IsManaged() const override;
@@ -252,10 +260,10 @@ class BookmarkUIOperationsHelperMergedSurfaces
 
    private:
     const raw_ptr<BookmarkMergedSurfaceService> merged_surface_service_;
-    const raw_ptr<const BookmarkParentFolder> parent_;
+    const BookmarkParentFolder parent_;
   };
 
-  const BookmarkParentFolder* parent_folder() const;
+  const BookmarkParentFolder& parent_folder() const;
 
   const raw_ptr<BookmarkMergedSurfaceService> merged_surface_service_;
   const std::unique_ptr<TargetParent> target_parent_;

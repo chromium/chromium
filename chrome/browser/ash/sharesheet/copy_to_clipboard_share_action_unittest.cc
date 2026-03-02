@@ -65,10 +65,9 @@ TEST_F(CopyToClipboardShareActionTest, CopyToClipboardText) {
   copy_action->LaunchAction(/*controller=*/nullptr, /*root_view=*/nullptr,
                             ::sharesheet::CreateValidTextIntent());
   // Check text copied correctly.
-  std::u16string clipboard_text;
-  ui::Clipboard::GetForCurrentThread()->ReadText(
-      ui::ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr,
-      &clipboard_text);
+  std::u16string clipboard_text = ui::clipboard_test_util::ReadText(
+      ui::Clipboard::GetForCurrentThread(), ui::ClipboardBuffer::kCopyPaste,
+      /* data_dst = */ nullptr);
   EXPECT_EQ(::sharesheet::kTestText, base::UTF16ToUTF8(clipboard_text));
   histograms.ExpectBucketCount(
       ::sharesheet::kSharesheetCopyToClipboardMimeTypeResultHistogram,
@@ -82,10 +81,9 @@ TEST_F(CopyToClipboardShareActionTest, CopyToClipboardUrl) {
   copy_action->LaunchAction(/*controller=*/nullptr, /*root_view=*/nullptr,
                             ::sharesheet::CreateValidUrlIntent());
   // Check url copied correctly.
-  std::u16string clipboard_url;
-  ui::Clipboard::GetForCurrentThread()->ReadText(
-      ui::ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr,
-      &clipboard_url);
+  std::u16string clipboard_url = ui::clipboard_test_util::ReadText(
+      ui::Clipboard::GetForCurrentThread(), ui::ClipboardBuffer::kCopyPaste,
+      /* data_dst = */ nullptr);
   EXPECT_EQ(::sharesheet::kTestUrl, base::UTF16ToUTF8(clipboard_url));
   histograms.ExpectBucketCount(
       ::sharesheet::kSharesheetCopyToClipboardMimeTypeResultHistogram,

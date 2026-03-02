@@ -36,8 +36,10 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "ui/base/clipboard/clipboard.h"
+#include "ui/base/clipboard/test/clipboard_test_util.h"
 #include "ui/base/interaction/interactive_test.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/styled_label.h"
@@ -90,7 +92,8 @@ class DiscountsInteractiveTest
 
     feature_list_.InitWithFeaturesAndParameters(
         enabled_features,
-        /*disabled_features=*/{commerce::kPriceInsights});
+        /*disabled_features=*/{commerce::kPriceInsights,
+                               features::kNonBlockingOsClipboardReads});
   }
 
   void SetUp() override {
@@ -384,9 +387,9 @@ IN_PROC_BROWSER_TEST_P(DiscountsBubbleDialogInteractiveTest,
       InSameContext(
           PressButton(kDiscountsBubbleCopyButtonElementId), Check([&]() {
             ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
-            std::u16string clipboard_text;
-            clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste,
-                                /* data_dst = */ nullptr, &clipboard_text);
+            std::u16string clipboard_text = ui::clipboard_test_util::ReadText(
+                clipboard, ui::ClipboardBuffer::kCopyPaste,
+                /* data_dst = */ nullptr);
             return clipboard_text == u"WELCOME10";
           })));
 }

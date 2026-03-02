@@ -779,20 +779,7 @@ void ClipboardOzone::ReadAvailableTypes(
   }
 }
 
-void ClipboardOzone::ReadText(ClipboardBuffer buffer,
-                              const DataTransferEndpoint* data_dst,
-                              std::u16string* result) const {
-  DCHECK(CalledOnValidThread());
-  auto clipboard_data = async_clipboard_ozone_->ReadClipboardDataAndWait(
-      buffer, kMimeTypePlainText);
 
-  if (!IsReadAllowed(GetSource(buffer), data_dst, clipboard_data))
-    return;
-
-  RecordRead(ClipboardFormatMetric::kText);
-  *result = base::UTF8ToUTF16(std::string_view(
-      reinterpret_cast<char*>(clipboard_data.data()), clipboard_data.size()));
-}
 
 bool ClipboardOzone::IsSelectionBufferAvailable() const {
   return async_clipboard_ozone_->IsSelectionBufferAvailable();

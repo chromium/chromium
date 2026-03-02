@@ -567,16 +567,6 @@ std::vector<std::u16string> ClipboardWin::ReadAvailableTypesInternal(
   return types;
 }
 
-// |data_dst| is not used. It's only passed to be consistent with other
-// platforms.
-void ClipboardWin::ReadText(ClipboardBuffer buffer,
-                            const DataTransferEndpoint* data_dst,
-                            std::u16string* result) const {
-  CHECK(result);
-  *result = ReadTextInternal(buffer, base::OptionalFromPtr(data_dst),
-                             GetClipboardWindow());
-}
-
 // static
 // |data_dst| is not used, but is kept as it may be used in the future.
 std::u16string ClipboardWin::ReadTextInternal(

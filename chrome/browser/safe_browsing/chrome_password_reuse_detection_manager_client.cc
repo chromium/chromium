@@ -365,7 +365,6 @@ void ChromePasswordReuseDetectionManagerClient::RenderFrameCreated(
 }
 
 void ChromePasswordReuseDetectionManagerClient::OnPaste() {
-  std::u16string text;
   ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
   // Given that this clipboard data read happens in the background and not
   // initiated by a user gesture, then the user shouldn't see a notification
@@ -373,8 +372,14 @@ void ChromePasswordReuseDetectionManagerClient::OnPaste() {
   // policy.
   ui::DataTransferEndpoint data_dst = ui::DataTransferEndpoint(
       ui::EndpointType::kDefault, {.notify_if_restricted = false});
-  clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste, &data_dst, &text);
+  clipboard->ReadText(
+      ui::ClipboardBuffer::kCopyPaste, std::move(data_dst),
+      base::BindOnce(&ChromePasswordReuseDetectionManagerClient::OnTextRead,
+                     weak_factory_.GetWeakPtr()));
+}
 
+void ChromePasswordReuseDetectionManagerClient::OnTextRead(
+    std::u16string text) {
   password_reuse_detection_manager_.OnPaste(std::move(text));
   phishy_interaction_tracker_.HandlePasteEvent();
 }

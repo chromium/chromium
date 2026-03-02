@@ -1254,7 +1254,7 @@ void Label::OnAfterPointerAction(bool text_changed, bool selection_changed) {
   }
 }
 
-bool Label::PasteSelectionClipboard() {
+void Label::PasteSelectionClipboard(base::OnceCallback<void(bool)> callback) {
   NOTREACHED();
 }
 

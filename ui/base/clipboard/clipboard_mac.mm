@@ -304,14 +304,14 @@ void ClipboardMac::ReadAvailableTypes(
 // |data_dst| is not used. It's only passed to be consistent with other
 // platforms.
 void ClipboardMac::ReadText(ClipboardBuffer buffer,
-                            const DataTransferEndpoint* data_dst,
-                            std::u16string* result) const {
+                            const std::optional<DataTransferEndpoint>& data_dst,
+                            ReadTextCallback callback) const {
   DCHECK(CalledOnValidThread());
   DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
   RecordRead(ClipboardFormatMetric::kText);
   NSString* contents = [GetPasteboard() stringForType:NSPasteboardTypeString];
 
-  *result = base::SysNSStringToUTF16(contents);
+  std::move(callback).Run(base::SysNSStringToUTF16(contents));
 }
 
 // |data_dst| is not used. It's only passed to be consistent with other

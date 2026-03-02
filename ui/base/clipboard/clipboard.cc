@@ -429,12 +429,4 @@ void Clipboard::ReadAvailableTypes(
   std::move(callback).Run(std::move(types));
 }
 
-void Clipboard::ReadText(ClipboardBuffer buffer,
-                         const std::optional<DataTransferEndpoint>& data_dst,
-                         ReadTextCallback callback) const {
-  std::u16string result;
-  ReadText(buffer, base::OptionalToPtr(data_dst), &result);
-  std::move(callback).Run(std::move(result));
-}
-
 }  // namespace ui

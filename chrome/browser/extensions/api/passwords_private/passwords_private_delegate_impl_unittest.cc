@@ -90,6 +90,7 @@
 #include "content/public/test/web_contents_tester.h"
 #include "extensions/browser/test_event_router.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/clipboard/test/clipboard_test_util.h"
 #include "ui/base/clipboard/test/test_clipboard.h"
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
@@ -923,8 +924,9 @@ TEST_F(PasswordsPrivateDelegateImplTest, TestCopyPasswordCallbackResult) {
       password_callback.Get(), web_contents.get());
 
   std::u16string result;
-  test_clipboard_->ReadText(ui::ClipboardBuffer::kCopyPaste,
-                            /* data_dst = */ nullptr, &result);
+  result = ui::clipboard_test_util::ReadText(test_clipboard_,
+                                             ui::ClipboardBuffer::kCopyPaste,
+                                             /* data_dst = */ nullptr);
   EXPECT_EQ(form.password_value, result);
 
   histogram_tester().ExpectUniqueSample(
@@ -950,8 +952,9 @@ TEST_F(PasswordsPrivateDelegateImplTest, CopyPlaintextBackupPassword) {
                                         result_callback.Get());
 
   std::u16string result;
-  test_clipboard_->ReadText(ui::ClipboardBuffer::kCopyPaste,
-                            /* data_dst = */ nullptr, &result);
+  result = ui::clipboard_test_util::ReadText(test_clipboard_,
+                                             ui::ClipboardBuffer::kCopyPaste,
+                                             /* data_dst = */ nullptr);
   EXPECT_EQ(result, form.GetPasswordBackup());
 }
 
@@ -1008,8 +1011,9 @@ TEST_F(PasswordsPrivateDelegateImplTest, TestCopyPasswordCallbackResultFail) {
       password_callback.Get(), web_contents.get());
   // Clipboard should not be modified in case Reauth failed
   std::u16string result;
-  test_clipboard_->ReadText(ui::ClipboardBuffer::kCopyPaste,
-                            /* data_dst = */ nullptr, &result);
+  result = ui::clipboard_test_util::ReadText(test_clipboard_,
+                                             ui::ClipboardBuffer::kCopyPaste,
+                                             /* data_dst = */ nullptr);
   EXPECT_EQ(std::u16string(), result);
   EXPECT_EQ(before_call, test_clipboard_->GetLastModifiedTime());
 
@@ -1036,8 +1040,9 @@ TEST_F(PasswordsPrivateDelegateImplTest,
                                         result_callback.Get());
 
   std::u16string result;
-  test_clipboard_->ReadText(ui::ClipboardBuffer::kCopyPaste,
-                            /* data_dst = */ nullptr, &result);
+  result = ui::clipboard_test_util::ReadText(test_clipboard_,
+                                             ui::ClipboardBuffer::kCopyPaste,
+                                             /* data_dst = */ nullptr);
   EXPECT_EQ(result, std::u16string());
 }
 

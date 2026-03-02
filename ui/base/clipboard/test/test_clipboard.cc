@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <cstdio>
 #include <memory>
 #include <optional>
 #include <string_view>
@@ -147,18 +148,22 @@ void TestClipboard::ReadAvailableTypes(
   *types = GetStandardFormats(buffer, data_dst);
 }
 
-void TestClipboard::ReadText(ClipboardBuffer buffer,
-                             const DataTransferEndpoint* data_dst,
-                             std::u16string* result) const {
+void TestClipboard::ReadText(
+    ClipboardBuffer buffer,
+    const std::optional<DataTransferEndpoint>& data_dst,
+    ReadTextCallback callback) const {
   const DataStore& store = GetStore(buffer);
-  if (!IsReadAllowed(store.data_src, data_dst)) {
+  if (!IsReadAllowed(store.data_src, base::OptionalToPtr(data_dst))) {
+    std::move(callback).Run(u"");
     return;
   }
 
+  std::u16string result;
   auto it = store.data.find(ClipboardFormatType::PlainTextType());
   if (it != store.data.end()) {
-    *result = base::UTF8ToUTF16(it->second);
+    result = base::UTF8ToUTF16(it->second);
   }
+  std::move(callback).Run(std::move(result));
 }
 
 void TestClipboard::ReadAsciiText(

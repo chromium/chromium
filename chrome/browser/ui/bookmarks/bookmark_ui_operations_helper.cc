@@ -37,16 +37,20 @@ using ::ui::mojom::DragOperation;
 
 namespace {
 
-// Returns the URL from the clipboard. If there is no URL an empty URL is
-// returned.
-GURL GetUrlFromClipboard(bool notify_if_restricted) {
-  std::u16string url_text;
+// Runs `callback` with the URL from the clipboard. If there is no URL an empty
+// URL is passed to the callback.
+void GetUrlFromClipboard(bool notify_if_restricted,
+                         base::OnceCallback<void(GURL)> callback) {
   ui::DataTransferEndpoint data_dst =
       ui::DataTransferEndpoint(ui::EndpointType::kDefault,
                                {.notify_if_restricted = notify_if_restricted});
   ui::Clipboard::GetForCurrentThread()->ReadText(
-      ui::ClipboardBuffer::kCopyPaste, &data_dst, &url_text);
-  return GURL(url_text);
+      ui::ClipboardBuffer::kCopyPaste, std::move(data_dst),
+      base::BindOnce(
+          [](base::OnceCallback<void(GURL)> callback, std::u16string url_text) {
+            std::move(callback).Run(GURL(url_text));
+          },
+          std::move(callback)));
 }
 
 // This traces node up to root, determines if it is a descendant of one of
@@ -190,12 +194,21 @@ void BookmarkUIOperationsHelper::CopyOrCutToClipboard(
   }
 }
 
-bool BookmarkUIOperationsHelper::CanPasteFromClipboard() const {
+void BookmarkUIOperationsHelper::CanPasteFromClipboard(
+    base::OnceCallback<void(bool)> callback) const {
   if (!target_parent() || target_parent()->IsManaged()) {
-    return false;
+    std::move(callback).Run(false);
+    return;
   }
-  return BookmarkNodeData::ClipboardContainsBookmarks() ||
-         GetUrlFromClipboard(/*notify_if_restricted=*/false).is_valid();
+  if (BookmarkNodeData::ClipboardContainsBookmarks()) {
+    std::move(callback).Run(true);
+    return;
+  }
+  GetUrlFromClipboard(
+      /*notify_if_restricted=*/false,
+      base::BindOnce([](base::OnceCallback<void(bool)> callback,
+                        GURL url) { std::move(callback).Run(url.is_valid()); },
+                     std::move(callback)));
 }
 
 void BookmarkUIOperationsHelper::PasteFromClipboard(
@@ -218,14 +231,15 @@ void BookmarkUIOperationsHelper::OnReadBookmarkData(
     base::OnceClosure callback,
     std::unique_ptr<bookmarks::BookmarkNodeData> bookmark_data) {
   if (!bookmark_data) {
-    GURL url = GetUrlFromClipboard(/*notify_if_restricted=*/true);
-    if (!url.is_valid()) {
-      std::move(callback).Run();
-      return;
-    }
-    BookmarkNode node(/*id=*/0, base::Uuid::GenerateRandomV4(), url);
-    node.SetTitle(base::ASCIIToUTF16(url.spec()));
-    bookmark_data = std::make_unique<BookmarkNodeData>(&node);
+    ui::DataTransferEndpoint data_dst = ui::DataTransferEndpoint(
+        ui::EndpointType::kDefault, {.notify_if_restricted = true});
+    ui::Clipboard::GetForCurrentThread()->ReadText(
+        ui::ClipboardBuffer::kCopyPaste, std::move(data_dst),
+        base::BindOnce(&BookmarkUIOperationsHelper::OnReadTextComplete,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       std::make_unique<BookmarkNodeData>(), index,
+                       std::move(callback)));
+    return;
   }
 
   if (!target_parent()) {
@@ -236,6 +250,35 @@ void BookmarkUIOperationsHelper::OnReadBookmarkData(
   CHECK_LE(index, target_parent()->GetChildrenCount());
   if (bookmark_data->size() == 1 &&
       model()->IsBookmarked(bookmark_data->elements[0].url)) {
+    MakeTitleUnique(bookmark_data->elements[0].url,
+                    &bookmark_data->elements[0].title);
+  }
+
+  AddNodesAsCopiesOfNodeData(*bookmark_data, index);
+  std::move(callback).Run();
+}
+
+void BookmarkUIOperationsHelper::OnReadTextComplete(
+    std::unique_ptr<bookmarks::BookmarkNodeData> bookmark_data,
+    size_t index,
+    base::OnceClosure callback,
+    std::u16string text) {
+  GURL url(text);
+  if (!url.is_valid()) {
+    std::move(callback).Run();
+    return;
+  }
+  BookmarkNode node(/*id=*/0, base::Uuid::GenerateRandomV4(), url);
+  node.SetTitle(base::ASCIIToUTF16(url.spec()));
+  *bookmark_data = BookmarkNodeData(&node);
+
+  if (!target_parent()) {
+    std::move(callback).Run();
+    return;
+  }
+
+  CHECK_LE(index, target_parent()->GetChildrenCount());
+  if (model()->IsBookmarked(bookmark_data->elements[0].url)) {
     MakeTitleUnique(bookmark_data->elements[0].url,
                     &bookmark_data->elements[0].title);
   }
@@ -288,14 +331,15 @@ BookmarkUIOperationsHelperNonMergedSurfaces::TargetParent::CreateTargetParent(
   if (!model || !parent) {
     return nullptr;
   }
-  return std::make_unique<TargetParent>(parent,
+  return std::make_unique<TargetParent>(model, parent,
                                         model->client()->IsNodeManaged(parent));
 }
 
 BookmarkUIOperationsHelperNonMergedSurfaces::TargetParent::TargetParent(
+    bookmarks::BookmarkModel* model,
     const bookmarks::BookmarkNode* parent,
     bool is_managed)
-    : parent_(parent), is_managed_(is_managed) {
+    : model_(model), parent_id_(parent->id()), is_managed_(is_managed) {
   CHECK(parent);
 }
 
@@ -304,7 +348,7 @@ BookmarkUIOperationsHelperNonMergedSurfaces::TargetParent::~TargetParent() =
 
 const bookmarks::BookmarkNode*
 BookmarkUIOperationsHelperNonMergedSurfaces::TargetParent::parent_node() const {
-  return parent_;
+  return bookmarks::GetBookmarkNodeByID(model_, parent_id_);
 }
 
 bool BookmarkUIOperationsHelperNonMergedSurfaces::TargetParent::IsManaged()
@@ -314,30 +358,36 @@ bool BookmarkUIOperationsHelperNonMergedSurfaces::TargetParent::IsManaged()
 
 bool BookmarkUIOperationsHelperNonMergedSurfaces::TargetParent::
     IsPermanentNode() const {
-  return parent_->is_permanent_node();
+  const BookmarkNode* parent = parent_node();
+  return parent && parent->is_permanent_node();
 }
 
 bool BookmarkUIOperationsHelperNonMergedSurfaces::TargetParent::IsDirectChild(
     const bookmarks::BookmarkNode* node) const {
-  return node->parent() == parent_;
+  const BookmarkNode* parent = parent_node();
+  return parent && node->parent() == parent;
 }
 
 bookmarks::BookmarkNode::Type
 BookmarkUIOperationsHelperNonMergedSurfaces::TargetParent::GetType() const {
-  return parent_->type();
+  const BookmarkNode* parent = parent_node();
+  return parent ? parent->type() : bookmarks::BookmarkNode::URL;
 }
 
 const bookmarks::BookmarkNode*
 BookmarkUIOperationsHelperNonMergedSurfaces::TargetParent::GetNodeAtIndex(
     size_t index) const {
+  const BookmarkNode* parent = parent_node();
+  CHECK(parent);
   CHECK_LE(index, GetChildrenCount());
-  return parent_->children()[index].get();
+  return parent->children()[index].get();
 }
 
 size_t
 BookmarkUIOperationsHelperNonMergedSurfaces::TargetParent::GetChildrenCount()
     const {
-  return parent_->children().size();
+  const BookmarkNode* parent = parent_node();
+  return parent ? parent->children().size() : 0;
 }
 
 // BookmarkUIOperationsHelperNonMergedSurfaces:
@@ -361,10 +411,12 @@ bookmarks::BookmarkModel* BookmarkUIOperationsHelperNonMergedSurfaces::model() {
 void BookmarkUIOperationsHelperNonMergedSurfaces::AddNodesAsCopiesOfNodeData(
     const bookmarks::BookmarkNodeData& data,
     size_t index_to_add_at) {
-  CHECK(parent_node());
+  const BookmarkNode* parent = parent_node();
+  if (!parent) {
+    return;
+  }
   bookmarks::ScopedGroupBookmarkActions group_drops(model_);
-  bookmarks::CloneBookmarkNode(model_, data.elements, parent_node(),
-                               index_to_add_at,
+  bookmarks::CloneBookmarkNode(model_, data.elements, parent, index_to_add_at,
                                /*reset_node_times=*/true);
 }
 
@@ -373,14 +425,17 @@ void BookmarkUIOperationsHelperNonMergedSurfaces::MoveBookmarkNodeData(
     const base::FilePath& profile_path,
     size_t index_to_add_at,
     Browser* browser) {
-  CHECK(parent_node());
+  const BookmarkNode* parent = parent_node();
+  if (!parent) {
+    return;
+  }
   const std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>
       moved_nodes = data.GetNodes(model_, profile_path);
   CHECK(!moved_nodes.empty());
   for (const auto& moved_node : moved_nodes) {
     CHECK(!model_->client()->IsNodeManaged(moved_node));
-    model_->Move(moved_node, parent_node(), index_to_add_at);
-    index_to_add_at = parent_node()->GetIndexOf(moved_node).value() + 1;
+    model_->Move(moved_node, parent, index_to_add_at);
+    index_to_add_at = parent->GetIndexOf(moved_node).value() + 1;
   }
 }
 
@@ -410,53 +465,52 @@ BookmarkUIOperationsHelperMergedSurfaces::TargetParent::CreateTargetParent(
   if (!merged_surface_service || !parent) {
     return nullptr;
   }
-  return std::make_unique<TargetParent>(merged_surface_service, parent);
+  return std::make_unique<TargetParent>(merged_surface_service, *parent);
 }
 
 BookmarkUIOperationsHelperMergedSurfaces::TargetParent::TargetParent(
     BookmarkMergedSurfaceService* merged_surface_service,
-    const BookmarkParentFolder* parent)
-    : merged_surface_service_(merged_surface_service), parent_(parent) {
-  CHECK(parent);
-}
+    BookmarkParentFolder parent)
+    : merged_surface_service_(merged_surface_service), parent_(parent) {}
 
 BookmarkUIOperationsHelperMergedSurfaces::TargetParent::~TargetParent() =
     default;
 
-const BookmarkParentFolder*
+const BookmarkParentFolder&
 BookmarkUIOperationsHelperMergedSurfaces::TargetParent::parent_folder() const {
   return parent_;
 }
 
 bool BookmarkUIOperationsHelperMergedSurfaces::TargetParent::IsManaged() const {
-  return merged_surface_service_->IsParentFolderManaged(*parent_);
+  return merged_surface_service_->IsParentFolderManaged(parent_);
 }
 
 bool BookmarkUIOperationsHelperMergedSurfaces::TargetParent::IsPermanentNode()
     const {
-  return !parent_->HoldsNonPermanentFolder();
+  return !parent_.HoldsNonPermanentFolder();
 }
 
 bool BookmarkUIOperationsHelperMergedSurfaces::TargetParent::IsDirectChild(
     const bookmarks::BookmarkNode* node) const {
-  return parent_->HasDirectChildNode(node);
+  return parent_.HasDirectChildNode(node);
 }
 
 bookmarks::BookmarkNode::Type
 BookmarkUIOperationsHelperMergedSurfaces::TargetParent::GetType() const {
-  if (parent_->HoldsNonPermanentFolder()) {
-    return parent_->as_non_permanent_folder()->type();
+  if (parent_.HoldsNonPermanentFolder()) {
+    return parent_.as_non_permanent_folder()->type();
   }
 
-  switch (*parent_->as_permanent_folder()) {
-    case BookmarkParentFolder::PermanentFolderType::kBookmarkBarNode:
+  using PermanentFolderType = BookmarkParentFolder::PermanentFolderType;
+  switch (*parent_.as_permanent_folder()) {
+    case PermanentFolderType::kBookmarkBarNode:
       return bookmarks::BookmarkNode::Type::BOOKMARK_BAR;
-    case BookmarkParentFolder::PermanentFolderType::kOtherNode:
+    case PermanentFolderType::kOtherNode:
       return bookmarks::BookmarkNode::Type::OTHER_NODE;
-    case BookmarkParentFolder::PermanentFolderType::kMobileNode:
+    case PermanentFolderType::kMobileNode:
       return bookmarks::BookmarkNode::Type::MOBILE;
 
-    case BookmarkParentFolder::PermanentFolderType::kManagedNode:
+    case PermanentFolderType::kManagedNode:
       // There is no specific type for managed nodes.
       return bookmarks::BookmarkNode::Type::FOLDER;
   }
@@ -466,16 +520,14 @@ BookmarkUIOperationsHelperMergedSurfaces::TargetParent::GetType() const {
 const bookmarks::BookmarkNode*
 BookmarkUIOperationsHelperMergedSurfaces::TargetParent::GetNodeAtIndex(
     size_t index) const {
-  CHECK(parent_);
   CHECK_LE(index, GetChildrenCount());
-  return merged_surface_service_->GetNodeAtIndex(*parent_, index);
+  return merged_surface_service_->GetNodeAtIndex(parent_, index);
 }
 
 size_t
 BookmarkUIOperationsHelperMergedSurfaces::TargetParent::GetChildrenCount()
     const {
-  CHECK(parent_);
-  return merged_surface_service_->GetChildrenCount(*parent_);
+  return merged_surface_service_->GetChildrenCount(parent_);
 }
 
 // BookmarkUIOperationsHelperMergedSurfaces:
@@ -496,12 +548,14 @@ BookmarkUIOperationsHelperMergedSurfaces::
 const BookmarkNode*
 BookmarkUIOperationsHelperMergedSurfaces::GetDefaultParentForNonMergedSurfaces()
     const {
-  CHECK(parent_folder());
+  if (!target_parent_) {
+    return nullptr;
+  }
   if (target_parent_->IsManaged()) {
-    return merged_surface_service_->GetParentForManagedNode(*parent_folder());
+    return merged_surface_service_->GetParentForManagedNode(parent_folder());
   }
 
-  return merged_surface_service_->GetDefaultParentForNewNodes(*parent_folder());
+  return merged_surface_service_->GetDefaultParentForNewNodes(parent_folder());
 }
 
 bookmarks::BookmarkModel* BookmarkUIOperationsHelperMergedSurfaces::model() {
@@ -511,9 +565,12 @@ bookmarks::BookmarkModel* BookmarkUIOperationsHelperMergedSurfaces::model() {
 void BookmarkUIOperationsHelperMergedSurfaces::AddNodesAsCopiesOfNodeData(
     const bookmarks::BookmarkNodeData& data,
     size_t index_to_add_at) {
+  if (!target_parent_) {
+    return;
+  }
   bookmarks::ScopedGroupBookmarkActions group_drops(model());
   merged_surface_service_->AddNodesAsCopiesOfNodeData(
-      data.elements, *parent_folder(), index_to_add_at);
+      data.elements, parent_folder(), index_to_add_at);
 }
 
 void BookmarkUIOperationsHelperMergedSurfaces::MoveBookmarkNodeData(
@@ -521,6 +578,9 @@ void BookmarkUIOperationsHelperMergedSurfaces::MoveBookmarkNodeData(
     const base::FilePath& profile_path,
     size_t index_to_add_at,
     Browser* browser) {
+  if (!target_parent_) {
+    return;
+  }
   CHECK_GE(data.size(), 1u);
   const std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>
       moved_nodes = data.GetNodes(model(), profile_path);
@@ -528,7 +588,7 @@ void BookmarkUIOperationsHelperMergedSurfaces::MoveBookmarkNodeData(
 
   for (const auto& moved_node : moved_nodes) {
     CHECK(!model()->client()->IsNodeManaged(moved_node));
-    merged_surface_service_->Move(moved_node, *parent_folder(), index_to_add_at,
+    merged_surface_service_->Move(moved_node, parent_folder(), index_to_add_at,
                                   browser);
     index_to_add_at++;
   }
@@ -542,10 +602,8 @@ BookmarkUIOperationsHelperMergedSurfaces::target_parent() const {
   return target_parent_.get();
 }
 
-const BookmarkParentFolder*
+const BookmarkParentFolder&
 BookmarkUIOperationsHelperMergedSurfaces::parent_folder() const {
-  if (!target_parent_) {
-    return nullptr;
-  }
+  CHECK(target_parent_);
   return target_parent_->parent_folder();
 }

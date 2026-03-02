@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
@@ -61,7 +62,10 @@ class TestSelectionControllerDelegate : public SelectionControllerDelegate {
   void OnBeforePointerAction() override {}
   void OnAfterPointerAction(bool text_changed,
                             bool selection_changed) override {}
-  bool PasteSelectionClipboard() override { return false; }
+  void PasteSelectionClipboard(
+      base::OnceCallback<void(bool)> callback) override {
+    std::move(callback).Run(false);
+  }
   void UpdateSelectionClipboard() override {}
 
  private:

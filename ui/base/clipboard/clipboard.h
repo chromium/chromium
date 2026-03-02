@@ -198,7 +198,7 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
   // Reads Unicode text from the clipboard, if available.
   virtual void ReadText(ClipboardBuffer buffer,
                         const std::optional<DataTransferEndpoint>& data_dst,
-                        ReadTextCallback callback) const;
+                        ReadTextCallback callback) const = 0;
 
   // Reads ASCII text from the clipboard, if available.
   virtual void ReadAsciiText(
@@ -259,9 +259,6 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
   virtual void ReadAvailableTypes(ClipboardBuffer buffer,
                                   const DataTransferEndpoint* data_dst,
                                   std::vector<std::u16string>* types) const = 0;
-  virtual void ReadText(ClipboardBuffer buffer,
-                        const DataTransferEndpoint* data_dst,
-                        std::u16string* result) const = 0;
 
   // Returns an estimate of the time the clipboard was last updated.  If the
   // time is unknown, returns Time::Time().

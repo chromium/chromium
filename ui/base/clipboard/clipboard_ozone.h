@@ -82,9 +82,7 @@ class ClipboardOzone : public Clipboard {
   void ReadAvailableTypes(ClipboardBuffer buffer,
                           const DataTransferEndpoint* data_dst,
                           std::vector<std::u16string>* types) const override;
-  void ReadText(ClipboardBuffer buffer,
-                const DataTransferEndpoint* data_dst,
-                std::u16string* result) const override;
+
   bool IsSelectionBufferAvailable() const override;
   void WritePortableTextRepresentation(ClipboardBuffer buffer,
                                        const ObjectMap& objects);

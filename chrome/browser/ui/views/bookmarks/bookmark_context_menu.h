@@ -64,6 +64,8 @@ class BookmarkContextMenu : public BookmarkContextMenuControllerDelegate,
   void RunMenuAt(const gfx::Point& point,
                  ui::mojom::MenuSourceType source_type);
 
+  void UpdateCanPaste(base::OnceClosure callback);
+
   views::MenuItemView* menu() const { return menu_; }
 
   void AddObserver(BookmarkContextMenuObserver* observer);
@@ -101,6 +103,8 @@ class BookmarkContextMenu : public BookmarkContextMenuControllerDelegate,
 
   // Should the menu close when a node is removed.
   bool close_on_remove_;
+
+  base::WeakPtrFactory<BookmarkContextMenu> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_BOOKMARKS_BOOKMARK_CONTEXT_MENU_H_

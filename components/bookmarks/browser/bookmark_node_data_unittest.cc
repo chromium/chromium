@@ -20,6 +20,7 @@
 #include "components/bookmarks/test/test_bookmark_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/clipboard/clipboard.h"
+#include "ui/base/clipboard/test/clipboard_test_util.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/base/dragdrop/os_exchange_data_provider.h"
 #include "url/gurl.h"
@@ -321,10 +322,10 @@ TEST_F(BookmarkNodeDataTest, WriteToClipboardURL) {
   data.WriteToClipboard(/*is_off_the_record=*/false);
 
   // Now read the data back in.
-  std::u16string clipboard_result;
-  clipboard().ReadText(ui::ClipboardBuffer::kCopyPaste,
-                       /* data_dst = */ nullptr, &clipboard_result);
-  EXPECT_EQ(base::UTF8ToUTF16(url.spec()), clipboard_result);
+  std::u16string clipboard_text = ui::clipboard_test_util::ReadText(
+      &clipboard(), ui::ClipboardBuffer::kCopyPaste,
+      /*data_dst=*/nullptr);
+  EXPECT_EQ(base::UTF8ToUTF16(url.spec()), clipboard_text);
 }
 
 #if BUILDFLAG(IS_APPLE)
@@ -357,10 +358,10 @@ TEST_F(BookmarkNodeDataTest, MAYBE_WriteToClipboardMultipleURLs) {
 #endif
   combined_text = base::UTF8ToUTF16(url.spec()) + new_line
     + base::UTF8ToUTF16(url2.spec());
-  std::u16string clipboard_result;
-  clipboard().ReadText(ui::ClipboardBuffer::kCopyPaste,
-                       /* data_dst = */ nullptr, &clipboard_result);
-  EXPECT_EQ(combined_text, clipboard_result);
+  std::u16string clipboard_text = ui::clipboard_test_util::ReadText(
+      &clipboard(), ui::ClipboardBuffer::kCopyPaste,
+      /*data_dst=*/nullptr);
+  EXPECT_EQ(combined_text, clipboard_text);
 }
 
 #if BUILDFLAG(IS_APPLE)
@@ -379,10 +380,10 @@ TEST_F(BookmarkNodeDataTest, MAYBE_WriteToClipboardEmptyFolder) {
   data.WriteToClipboard(/*is_off_the_record=*/false);
 
   // Now read the data back in.
-  std::u16string clipboard_result;
-  clipboard().ReadText(ui::ClipboardBuffer::kCopyPaste,
-                       /* data_dst = */ nullptr, &clipboard_result);
-  EXPECT_EQ(u"g1", clipboard_result);
+  std::u16string clipboard_text = ui::clipboard_test_util::ReadText(
+      &clipboard(), ui::ClipboardBuffer::kCopyPaste,
+      /*data_dst=*/nullptr);
+  EXPECT_EQ(u"g1", clipboard_text);
 }
 
 // Test is flaky on Mac: crbug.com/1236362
@@ -407,10 +408,10 @@ TEST_F(BookmarkNodeDataTest, MAYBE_WriteToClipboardFolderWithChildren) {
   data.WriteToClipboard(/*is_off_the_record=*/false);
 
   // Now read the data back in.
-  std::u16string clipboard_result;
-  clipboard().ReadText(ui::ClipboardBuffer::kCopyPaste,
-                       /* data_dst = */ nullptr, &clipboard_result);
-  EXPECT_EQ(u"g1", clipboard_result);
+  std::u16string clipboard_text = ui::clipboard_test_util::ReadText(
+      &clipboard(), ui::ClipboardBuffer::kCopyPaste,
+      /*data_dst=*/nullptr);
+  EXPECT_EQ(u"g1", clipboard_text);
 }
 
 // TODO(crbug.com/40651106): This test is failing on mac.
@@ -442,10 +443,10 @@ TEST_F(BookmarkNodeDataTest, MAYBE_WriteToClipboardFolderAndURL) {
 #endif
   std::u16string folder_title = u"g1";
   combined_text = base::ASCIIToUTF16(url.spec()) + new_line + folder_title;
-  std::u16string clipboard_result;
-  clipboard().ReadText(ui::ClipboardBuffer::kCopyPaste,
-                       /* data_dst = */ nullptr, &clipboard_result);
-  EXPECT_EQ(combined_text, clipboard_result);
+  std::u16string clipboard_text = ui::clipboard_test_util::ReadText(
+      &clipboard(), ui::ClipboardBuffer::kCopyPaste,
+      /*data_dst=*/nullptr);
+  EXPECT_EQ(combined_text, clipboard_text);
 }
 
 // Tests reading/writing of meta info.

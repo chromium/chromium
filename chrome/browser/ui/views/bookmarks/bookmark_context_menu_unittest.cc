@@ -13,7 +13,9 @@
 
 #include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
+#include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/with_feature_override.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -351,6 +353,10 @@ TEST_P(BookmarkContextMenuTest, CutCopyPasteNodeWithoutAccountNodes) {
                                    BookmarkLaunchLocation::kNone,
                                    selected_nodes, false);
 
+    base::RunLoop run_loop;
+    controller.UpdateCanPaste(run_loop.QuitClosure());
+    run_loop.Run();
+
     ASSERT_TRUE(controller.IsCommandEnabled(IDC_PASTE));
     controller.ExecuteCommand(IDC_PASTE, 0);
 
@@ -415,6 +421,10 @@ TEST_P(BookmarkContextMenuTest, CutCopyPasteNodeWithAccountNodes) {
     BookmarkContextMenu controller(nullptr, nullptr, profile_.get(),
                                    BookmarkLaunchLocation::kNone,
                                    selected_nodes, false);
+
+    base::RunLoop run_loop;
+    controller.UpdateCanPaste(run_loop.QuitClosure());
+    run_loop.Run();
 
     ASSERT_TRUE(controller.IsCommandEnabled(IDC_PASTE));
     controller.ExecuteCommand(IDC_PASTE, 0);

@@ -87,14 +87,27 @@ void BookmarkContextMenu::RunMenuAt(const gfx::Point& point,
     return;
   }
 
-  if (!PreRunCallback().is_null()) {
-    std::move(PreRunCallback()).Run();
-  }
+  UpdateCanPaste(base::BindOnce(
+      [](base::WeakPtr<BookmarkContextMenu> self, const gfx::Point& point,
+         ui::mojom::MenuSourceType source_type) {
+        if (!self) {
+          return;
+        }
+        if (!PreRunCallback().is_null()) {
+          std::move(PreRunCallback()).Run();
+        }
 
-  // width/height don't matter here.
-  menu_runner_->RunMenuAt(parent_widget_, nullptr,
-                          gfx::Rect(point.x(), point.y(), 0, 0),
-                          views::MenuAnchorPosition::kTopLeft, source_type);
+        // width/height don't matter here.
+        self->menu_runner_->RunMenuAt(self->parent_widget_, nullptr,
+                                      gfx::Rect(point.x(), point.y(), 0, 0),
+                                      views::MenuAnchorPosition::kTopLeft,
+                                      source_type);
+      },
+      weak_factory_.GetWeakPtr(), point, source_type));
+}
+
+void BookmarkContextMenu::UpdateCanPaste(base::OnceClosure callback) {
+  controller_->UpdateCanPaste(std::move(callback));
 }
 
 void BookmarkContextMenu::AddObserver(BookmarkContextMenuObserver* observer) {

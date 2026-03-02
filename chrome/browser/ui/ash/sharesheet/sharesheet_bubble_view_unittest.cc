@@ -265,10 +265,9 @@ TEST_F(SharesheetBubbleViewTest, ClickCopyToClipboard) {
       ::sharesheet::SharesheetMetrics::UserAction::kCopyAction, 1);
 
   // Check text copied correctly.
-  std::u16string clipboard_text;
-  ui::Clipboard::GetForCurrentThread()->ReadText(
-      ui::ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr,
-      &clipboard_text);
+  std::u16string clipboard_text = ui::clipboard_test_util::ReadText(
+      ui::Clipboard::GetForCurrentThread(), ui::ClipboardBuffer::kCopyPaste,
+      /* data_dst = */ nullptr);
   EXPECT_EQ(::sharesheet::kTestText, base::UTF16ToUTF8(clipboard_text));
 }
 
@@ -297,10 +296,9 @@ TEST_F(SharesheetBubbleViewTest, KeyPressCopyToClipboard) {
       ::sharesheet::SharesheetMetrics::UserAction::kCopyAction, 1);
 
   // Check text copied correctly.
-  std::u16string clipboard_text;
-  ui::Clipboard::GetForCurrentThread()->ReadText(
-      ui::ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr,
-      &clipboard_text);
+  std::u16string clipboard_text = ui::clipboard_test_util::ReadText(
+      ui::Clipboard::GetForCurrentThread(), ui::ClipboardBuffer::kCopyPaste,
+      /* data_dst = */ nullptr);
   EXPECT_EQ(::sharesheet::kTestText, base::UTF16ToUTF8(clipboard_text));
 }
 
@@ -338,10 +336,9 @@ TEST_F(SharesheetBubbleViewTest, ClickAndKeyPressCopyToClipboardTogether) {
       ::sharesheet::SharesheetMetrics::UserAction::kCopyAction, 1);
 
   // Check text copied correctly.
-  std::u16string clipboard_text;
-  ui::Clipboard::GetForCurrentThread()->ReadText(
-      ui::ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr,
-      &clipboard_text);
+  std::u16string clipboard_text = ui::clipboard_test_util::ReadText(
+      ui::Clipboard::GetForCurrentThread(), ui::ClipboardBuffer::kCopyPaste,
+      /* data_dst = */ nullptr);
   EXPECT_EQ(::sharesheet::kTestText, base::UTF16ToUTF8(clipboard_text));
 }
 

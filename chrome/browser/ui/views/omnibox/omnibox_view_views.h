@@ -228,6 +228,9 @@ class OmniboxViewViews
   void OnOmniboxPaste();
   void OnOmniboxPasteComplete(std::u16string text);
 
+  void HandleCutOrCopyAdjustments(ui::ClipboardBuffer clipboard_buffer,
+                                  std::u16string* text);
+
   // Handle keyword hint tab-to-search and tabbing through dropdown results.
   bool HandleEarlyTabActions(const ui::KeyEvent& event);
 
@@ -282,7 +285,11 @@ class OmniboxViewViews
   bool HandleAccessibleAction(const ui::AXActionData& action_data) override;
   void OnFocus() override;
   void OnBlur() override;
-  std::u16string GetSelectionClipboardText() const override;
+  void PasteSelectionClipboard(
+      base::OnceCallback<void(bool)> callback) override;
+  void OnTextReadForPasteSelectionClipboard(
+      base::OnceCallback<void(bool)> callback,
+      std::u16string text);
   void DoInsertChar(char16_t ch) override;
   bool IsTextEditCommandEnabled(ui::TextEditCommand command) const override;
   void ExecuteTextEditCommand(ui::TextEditCommand command) override;
@@ -305,6 +312,8 @@ class OmniboxViewViews
                       const ui::KeyEvent& key_event) override;
   void OnBeforeUserAction(views::Textfield* sender) override;
   void OnAfterUserAction(views::Textfield* sender) override;
+  bool OnBeforeCutOrCopy(views::Textfield* sender,
+                         std::u16string* copy_contents) override;
   void OnAfterCutOrCopy(ui::ClipboardBuffer clipboard_buffer) override;
   void OnWriteDragData(ui::OSExchangeData* data) override;
   void OnGetDragOperationsForTextfield(int* drag_operations) override;
@@ -315,6 +324,8 @@ class OmniboxViewViews
   views::View::DropCallback CreateDropCallback(
       const ui::DropTargetEvent& event) override;
   void UpdateContextMenu(ui::SimpleMenuModel* menu_contents) override;
+  std::unique_ptr<ui::ScopedClipboardWriter> CreateClipboardWriter() override;
+  void UpdateSelectionClipboard() override;
 
   // ui::SimpleMenuModel::Delegate:
   bool IsCommandIdChecked(int id) const override;

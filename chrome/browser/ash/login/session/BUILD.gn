@@ -193,6 +193,7 @@ source_set("browser_tests") {
     "//rlz/buildflags",
     "//testing/gtest",
     "//ui/base/clipboard",
+    "//ui/base/clipboard:clipboard_test_support",
   ]
 
   if (enable_rlz) {

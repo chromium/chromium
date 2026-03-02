@@ -512,12 +512,12 @@ bool TouchSelectionControllerClientAura::IsCommandIdEnabled(
     case std::to_underlying(ui::TouchEditable::MenuCommands::kCopy):
       return readable && has_selection;
     case std::to_underlying(ui::TouchEditable::MenuCommands::kPaste): {
-      std::u16string result;
       ui::DataTransferEndpoint data_dst = ui::DataTransferEndpoint(
           ui::EndpointType::kDefault, {.notify_if_restricted = false});
-      ui::Clipboard::GetForCurrentThread()->ReadText(
-          ui::ClipboardBuffer::kCopyPaste, &data_dst, &result);
-      return editable && !result.empty();
+      return editable &&
+             ui::Clipboard::GetForCurrentThread()->IsFormatAvailable(
+                 ui::ClipboardFormatType::PlainTextType(),
+                 ui::ClipboardBuffer::kCopyPaste, &data_dst);
     }
     case std::to_underlying(ui::TouchEditable::MenuCommands::kSelectAll): {
       gfx::Range text_range;

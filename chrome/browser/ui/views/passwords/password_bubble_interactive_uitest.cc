@@ -59,6 +59,8 @@
 #include "content/public/test/focus_changed_observer.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/clipboard/clipboard.h"
+#include "ui/base/clipboard/test/clipboard_test_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/views/controls/editable_combobox/editable_combobox.h"
 #include "ui/views/controls/styled_label.h"
@@ -140,7 +142,7 @@ class PasswordBubbleInteractiveUiTest : public ManagePasswordsTest,
                                {{features::kGlicActorPolicyControlExemption
                                      .name,
                                  "true"}}}},
-        /*disabled_features=*/{});
+        /*disabled_features=*/{features::kNonBlockingOsClipboardReads});
   }
 
   PasswordBubbleInteractiveUiTest(const PasswordBubbleInteractiveUiTest&) =
@@ -736,15 +738,15 @@ IN_PROC_BROWSER_TEST_P(PasswordBubbleInteractiveUiTest,
   ClickOnView(PasswordBubbleViewBase::manage_password_bubble()->GetViewByID(
       static_cast<int>(
           password_manager::ManagePasswordsViewIDs::kCopyUsernameButton)));
-  clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr,
-                      &clipboard_text);
+  clipboard_text = ui::clipboard_test_util::ReadText(
+      clipboard, ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr);
   EXPECT_EQ(clipboard_text, u"test_username");
 
   ClickOnView(PasswordBubbleViewBase::manage_password_bubble()->GetViewByID(
       static_cast<int>(
           password_manager::ManagePasswordsViewIDs::kCopyPasswordButton)));
-  clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr,
-                      &clipboard_text);
+  clipboard_text = ui::clipboard_test_util::ReadText(
+      clipboard, ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr);
   EXPECT_EQ(clipboard_text, u"test_password");
 
   EXPECT_THAT(histogram_tester.GetAllSamples(

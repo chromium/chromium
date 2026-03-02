@@ -171,6 +171,7 @@ source_set("unit_tests") {
     "//ui/base",
     "//ui/base:data_exchange",
     "//ui/base/clipboard",
+    "//ui/base/clipboard:clipboard_test_support",
     "//url",
   ]
 

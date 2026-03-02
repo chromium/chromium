@@ -372,6 +372,7 @@ source_set("interactive_ui_tests") {
     "//components/user_education/views",
     "//content/test:test_support",
     "//testing/gtest",
+    "//ui/base/clipboard:clipboard_test_support",
   ]
   if (enable_pdf) {
     deps += [ "//components/pdf/browser" ]

@@ -682,13 +682,6 @@ bool TextfieldModel::Copy(
   return true;
 }
 
-bool TextfieldModel::Paste() {
-  std::u16string text;
-  ui::Clipboard::GetForCurrentThread()->ReadText(
-      ui::ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr, &text);
-  return Paste(std::move(text));
-}
-
 bool TextfieldModel::Paste(std::u16string text) {
   if (text.empty()) {
     return false;

@@ -1869,8 +1869,19 @@ bool OmniboxViewViews::IsCommandIdEnabled(int command_id) const {
           location_bar_view_->command_updater()->IsCommandEnabled(command_id));
 }
 
-std::u16string OmniboxViewViews::GetSelectionClipboardText() const {
-  return omnibox::SanitizeTextForPaste(Textfield::GetSelectionClipboardText());
+void OmniboxViewViews::PasteSelectionClipboard(
+    base::OnceCallback<void(bool)> callback) {
+  ui::Clipboard::GetForCurrentThread()->ReadText(
+      ui::ClipboardBuffer::kSelection, /* data_dst = */ std::nullopt,
+      base::BindOnce(&OmniboxViewViews::OnTextReadForPasteSelectionClipboard,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void OmniboxViewViews::OnTextReadForPasteSelectionClipboard(
+    base::OnceCallback<void(bool)> callback,
+    std::u16string text) {
+  text = omnibox::SanitizeTextForPaste(text);
+  Textfield::OnTextReadForPasteSelectionClipboard(std::move(callback), text);
 }
 
 void OmniboxViewViews::DoInsertChar(char16_t ch) {
@@ -2255,17 +2266,23 @@ void OmniboxViewViews::OnAfterUserAction(views::Textfield* sender) {
   OnAfterPossibleChange(true);
 }
 
-void OmniboxViewViews::OnAfterCutOrCopy(ui::ClipboardBuffer clipboard_buffer) {
+bool OmniboxViewViews::OnBeforeCutOrCopy(views::Textfield* sender,
+                                         std::u16string* copy_contents) {
+  *copy_contents = std::u16string(GetSelectedText());
+  HandleCutOrCopyAdjustments(ui::ClipboardBuffer::kCopyPaste, copy_contents);
+  return true;
+}
+
+void OmniboxViewViews::OnAfterCutOrCopy(ui::ClipboardBuffer clipboard_buffer) {}
+
+void OmniboxViewViews::HandleCutOrCopyAdjustments(
+    ui::ClipboardBuffer clipboard_buffer,
+    std::u16string* text) {
   const base::TimeTicks now(base::TimeTicks::Now());
-  const ui::Clipboard* cb = ui::Clipboard::GetForCurrentThread();
-  std::u16string selected_text;
-  ui::DataTransferEndpoint data_dst = ui::DataTransferEndpoint(
-      ui::EndpointType::kDefault, {.notify_if_restricted = false});
-  cb->ReadText(clipboard_buffer, &data_dst, &selected_text);
   GURL url;
   bool write_url = false;
-  controller()->edit_model()->AdjustTextForCopy(
-      GetSelectedRange().GetMin(), &selected_text, &url, &write_url);
+  controller()->edit_model()->AdjustTextForCopy(GetSelectedRange().GetMin(),
+                                                text, &url, &write_url);
   if (IsSelectAll()) {
     UMA_HISTOGRAM_COUNTS_1M(OmniboxEditModel::kCutOrCopyAllTextHistogram, 1);
 
@@ -2289,16 +2306,6 @@ void OmniboxViewViews::OnAfterCutOrCopy(ui::ClipboardBuffer clipboard_buffer) {
       }
     }
   }
-
-  ui::ScopedClipboardWriter scoped_clipboard_writer(clipboard_buffer);
-  scoped_clipboard_writer.WriteText(selected_text);
-  if (!ShouldDoLearning()) {
-    // Data is copied from an incognito window, so mark it as off the record.
-    scoped_clipboard_writer.MarkAsOffTheRecord();
-  }
-
-  // Regardless of |write_url|, don't write a hyperlink to the clipboard.
-  // Plaintext URLs are simply handled more consistently than hyperlinks.
 }
 
 void OmniboxViewViews::OnWriteDragData(ui::OSExchangeData* data) {
@@ -2398,6 +2405,31 @@ void OmniboxViewViews::UpdateContextMenu(ui::SimpleMenuModel* menu_contents) {
   if (omnibox_feature_configs::Toolbelt::Get().enabled) {
     menu_contents->AddCheckItemWithStringId(IDC_SHOW_SEARCH_TOOLS,
                                             IDS_CONTEXT_MENU_SHOW_SEARCH_TOOLS);
+  }
+}
+
+std::unique_ptr<ui::ScopedClipboardWriter>
+OmniboxViewViews::CreateClipboardWriter() {
+  auto writer = std::make_unique<ui::ScopedClipboardWriter>(
+      ui::ClipboardBuffer::kCopyPaste);
+  if (!ShouldDoLearning()) {
+    writer->MarkAsOffTheRecord();
+  }
+  return writer;
+}
+
+void OmniboxViewViews::UpdateSelectionClipboard() {
+  if (ui::Clipboard::IsSupportedClipboardBuffer(
+          ui::ClipboardBuffer::kSelection)) {
+    if (GetTextInputType() != ui::TEXT_INPUT_TYPE_PASSWORD) {
+      std::u16string text(GetSelectedText());
+      HandleCutOrCopyAdjustments(ui::ClipboardBuffer::kSelection, &text);
+      ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kSelection);
+      writer.WriteText(text);
+      if (!ShouldDoLearning()) {
+        writer.MarkAsOffTheRecord();
+      }
+    }
   }
 }
 

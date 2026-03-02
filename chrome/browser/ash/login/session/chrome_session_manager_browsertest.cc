@@ -33,6 +33,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
+#include "ui/base/clipboard/test/clipboard_test_util.h"
 
 #if BUILDFLAG(ENABLE_RLZ)
 #include "chrome/browser/ash/login/session/user_session_initializer.h"
@@ -240,9 +241,9 @@ IN_PROC_BROWSER_TEST_F(ChromeSessionManagerExistingUsersTest,
   // Check that the text can still be pasted: secondary login screen clipboard
   // should be the same than the active session one since we can return to
   // active session by selecting Cancel.
-  std::u16string clipboard_text;
-  ui::Clipboard::GetForCurrentThread()->ReadText(
-      ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr, &clipboard_text);
+  std::u16string clipboard_text = ui::clipboard_test_util::ReadText(
+      ui::Clipboard::GetForCurrentThread(), ui::ClipboardBuffer::kCopyPaste,
+      /*data_dst=*/nullptr);
   EXPECT_EQ(clipboard_text, session_clipboard_text);
 
   // Go back to active session, with another user.
@@ -254,8 +255,9 @@ IN_PROC_BROWSER_TEST_F(ChromeSessionManagerExistingUsersTest,
             session_controller->GetSessionState());
 
   // Check that the new active session clipboard is empty.
-  ui::Clipboard::GetForCurrentThread()->ReadText(
-      ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr, &clipboard_text);
+  clipboard_text = ui::clipboard_test_util::ReadText(
+      ui::Clipboard::GetForCurrentThread(), ui::ClipboardBuffer::kCopyPaste,
+      /*data_dst=*/nullptr);
   EXPECT_TRUE(clipboard_text.empty());
 
   // Write a text in the new active session clipboard.
@@ -271,8 +273,9 @@ IN_PROC_BROWSER_TEST_F(ChromeSessionManagerExistingUsersTest,
             session_controller->GetSessionState());
 
   // Check that the clipboard is empty, for security reasons.
-  ui::Clipboard::GetForCurrentThread()->ReadText(
-      ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr, &clipboard_text);
+  clipboard_text = ui::clipboard_test_util::ReadText(
+      ui::Clipboard::GetForCurrentThread(), ui::ClipboardBuffer::kCopyPaste,
+      /*data_dst=*/nullptr);
   EXPECT_TRUE(clipboard_text.empty());
 
   // Go back to the active session.
@@ -282,8 +285,9 @@ IN_PROC_BROWSER_TEST_F(ChromeSessionManagerExistingUsersTest,
             session_controller->GetSessionState());
 
   // Check that the clipboard has been restored.
-  ui::Clipboard::GetForCurrentThread()->ReadText(
-      ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr, &clipboard_text);
+  clipboard_text = ui::clipboard_test_util::ReadText(
+      ui::Clipboard::GetForCurrentThread(), ui::ClipboardBuffer::kCopyPaste,
+      /*data_dst=*/nullptr);
   EXPECT_EQ(clipboard_text, other_session_clipboard_text);
 }
 

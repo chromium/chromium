@@ -91,9 +91,7 @@ class ClipboardWin : public Clipboard, public ClipboardChangeNotifier {
   void ReadAvailableTypes(ClipboardBuffer buffer,
                           const DataTransferEndpoint* data_dst,
                           std::vector<std::u16string>* types) const override;
-  void ReadText(ClipboardBuffer buffer,
-                const DataTransferEndpoint* data_dst,
-                std::u16string* result) const override;
+
   void ReadPng(ClipboardBuffer buffer,
                const std::optional<DataTransferEndpoint>& data_dst,
                ReadPngCallback callback) const override;

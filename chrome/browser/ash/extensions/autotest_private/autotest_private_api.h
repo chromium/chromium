@@ -441,6 +441,7 @@ class AutotestPrivateGetClipboardTextDataFunction : public ExtensionFunction {
  private:
   ~AutotestPrivateGetClipboardTextDataFunction() override;
   ResponseAction Run() override;
+  void OnTextRead(std::u16string data);
 };
 
 class AutotestPrivateSetClipboardTextDataFunction

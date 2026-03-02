@@ -117,6 +117,8 @@ class ChromePasswordReuseDetectionManagerClient
       password_manager::PasswordManagerClient* password_manager_client,
       const signin::PrimaryAccountChangeEvent& event_details);
 
+  void OnTextRead(std::u16string text);
+
   safe_browsing::PasswordReuseDetectionManager
       password_reuse_detection_manager_;
   const raw_ptr<Profile> profile_;
@@ -135,6 +137,9 @@ class ChromePasswordReuseDetectionManagerClient
   // reset when ime finish composing text event is triggered.
   std::u16string last_composing_text_;
 #endif  // BUILDFLAG(IS_ANDROID)
+
+  base::WeakPtrFactory<ChromePasswordReuseDetectionManagerClient> weak_factory_{
+      this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

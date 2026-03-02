@@ -196,6 +196,11 @@ class BookmarkManagerPrivatePasteFunction
   ResponseAction RunOnReady() override;
 
  private:
+  void OnCanPasteFinished(
+      std::unique_ptr<::BookmarkUIOperationsHelperNonMergedSurfaces> helper,
+      std::optional<std::vector<std::string>> selected_id_list,
+      const std::string& parent_id,
+      bool can_paste);
   void OnPasteFinished(
       std::unique_ptr<::BookmarkUIOperationsHelperNonMergedSurfaces> helper);
 };
@@ -211,6 +216,9 @@ class BookmarkManagerPrivateCanPasteFunction
 
   // BookmarksFunction:
   ResponseAction RunOnReady() override;
+
+ private:
+  void OnCanPasteFinished(bool can_paste);
 };
 
 class BookmarkManagerPrivateIsActiveTabInSplitFunction

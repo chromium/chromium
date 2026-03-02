@@ -24,6 +24,7 @@ source_set("bookmarks") {
 
   public_deps = [
     "//base",
+    "//chrome/browser/bookmarks",
     "//chrome/browser/ui/tabs:tab_strip_model_observer",
     "//components/bookmarks/browser",
     "//components/page_load_metrics/browser",

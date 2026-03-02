@@ -469,16 +469,37 @@ BookmarkManagerPrivatePasteFunction::RunOnReady() {
   }
   auto helper = std::make_unique<BookmarkUIOperationsHelperNonMergedSurfaces>(
       model, parent_node);
-  bool can_paste = helper->CanPasteFromClipboard();
+  auto* helper_ptr = helper.get();
+  helper_ptr->CanPasteFromClipboard(
+      base::BindOnce(&BookmarkManagerPrivatePasteFunction::OnCanPasteFinished,
+                     base::RetainedRef(this), std::move(helper),
+                     params->selected_id_list, params->parent_id));
+  return RespondLater();
+}
+
+void BookmarkManagerPrivatePasteFunction::OnCanPasteFinished(
+    std::unique_ptr<BookmarkUIOperationsHelperNonMergedSurfaces> helper,
+    std::optional<std::vector<std::string>> selected_id_list,
+    const std::string& parent_id,
+    bool can_paste) {
   if (!can_paste) {
-    return RespondNow(Error("Could not paste from clipboard"));
+    Respond(Error("Could not paste from clipboard"));
+    return;
+  }
+
+  BookmarkModel* model =
+      BookmarkModelFactory::GetForBrowserContext(GetProfile());
+  const BookmarkNode* parent_node = GetNodeFromString(model, parent_id);
+  if (!parent_node) {
+    Respond(Error(bookmarks_errors::kNoParentError));
+    return;
   }
 
   // We want to use the highest index of the selected nodes as a destination.
   std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes;
   // No need to test return value, if we got an empty list, we insert at end.
-  if (params->selected_id_list) {
-    GetNodesFromVector(model, *params->selected_id_list, &nodes);
+  if (selected_id_list) {
+    GetNodesFromVector(model, *selected_id_list, &nodes);
   }
   size_t highest_index = 0;
   for (const BookmarkNode* node : nodes) {
@@ -495,7 +516,6 @@ BookmarkManagerPrivatePasteFunction::RunOnReady() {
       highest_index,
       base::BindOnce(&BookmarkManagerPrivatePasteFunction::OnPasteFinished,
                      base::RetainedRef(this), std::move(helper)));
-  return RespondLater();
 }
 
 void BookmarkManagerPrivatePasteFunction::OnPasteFinished(
@@ -521,10 +541,18 @@ BookmarkManagerPrivateCanPasteFunction::RunOnReady() {
   if (!parent_node) {
     return RespondNow(Error(bookmarks_errors::kNoParentError));
   }
-  bool can_paste =
-      BookmarkUIOperationsHelperNonMergedSurfaces(model, parent_node)
-          .CanPasteFromClipboard();
-  return RespondNow(WithArguments(can_paste));
+
+  auto helper = std::make_unique<BookmarkUIOperationsHelperNonMergedSurfaces>(
+      model, parent_node);
+  helper->CanPasteFromClipboard(base::BindOnce(
+      &BookmarkManagerPrivateCanPasteFunction::OnCanPasteFinished,
+      base::RetainedRef(this)));
+  return RespondLater();
+}
+
+void BookmarkManagerPrivateCanPasteFunction::OnCanPasteFinished(
+    bool can_paste) {
+  Respond(WithArguments(can_paste));
 }
 
 ExtensionFunction::ResponseAction

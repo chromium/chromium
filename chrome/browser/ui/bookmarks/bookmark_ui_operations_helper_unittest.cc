@@ -110,6 +110,12 @@ class BookmarkUIOperationsHelperTest : public testing::Test {
     return helper_.get();
   }
 
+  bool CanPasteFromClipboardSync(internal::BookmarkUIOperationsHelper* helper) {
+    base::test::TestFuture<bool> future;
+    helper->CanPasteFromClipboard(future.GetCallback());
+    return future.Get();
+  }
+
  private:
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
@@ -228,7 +234,7 @@ TYPED_TEST(BookmarkUIOperationsHelperTest, PasteBookmarkFromURL) {
   EXPECT_FALSE(bookmarks::BookmarkNodeData::ClipboardContainsBookmarks());
 
   internal::BookmarkUIOperationsHelper* helper = this->CreateHelper(new_folder);
-  EXPECT_FALSE(helper->CanPasteFromClipboard());
+  EXPECT_FALSE(this->CanPasteFromClipboardSync(helper));
 
   // Write some valid url to the clipboard.
   {
@@ -236,7 +242,7 @@ TYPED_TEST(BookmarkUIOperationsHelperTest, PasteBookmarkFromURL) {
     clipboard_writer.WriteText(url_text);
   }
   // Now we should be able to paste from the clipboard.
-  EXPECT_TRUE(helper->CanPasteFromClipboard());
+  EXPECT_TRUE(this->CanPasteFromClipboardSync(helper));
 
   {
     base::test::TestFuture<void> future;
@@ -274,7 +280,7 @@ TYPED_TEST(BookmarkUIOperationsHelperTest, MakeTitleUnique) {
   internal::BookmarkUIOperationsHelper* helper =
       this->CreateHelper(bookmark_bar_node);
   // Now we should be able to paste from the clipboard.
-  EXPECT_TRUE(helper->CanPasteFromClipboard());
+  EXPECT_TRUE(this->CanPasteFromClipboardSync(helper));
 
   {
     base::test::TestFuture<void> future;
@@ -311,7 +317,7 @@ TYPED_TEST(BookmarkUIOperationsHelperTest, CopyPasteMetaInfo) {
 
   internal::BookmarkUIOperationsHelper* helper = this->CreateHelper(folder);
   // And make sure we can paste a bookmark from the clipboard.
-  EXPECT_TRUE(helper->CanPasteFromClipboard());
+  EXPECT_TRUE(this->CanPasteFromClipboardSync(helper));
 
   {
     base::test::TestFuture<void> future;
@@ -346,7 +352,7 @@ TYPED_TEST(BookmarkUIOperationsHelperTest, CopyPaste) {
       this->CreateHelper(model->bookmark_bar_node());
 
   // And make sure we can paste a bookmark from the clipboard.
-  EXPECT_TRUE(helper->CanPasteFromClipboard());
+  EXPECT_TRUE(this->CanPasteFromClipboardSync(helper));
 
   // Write some text to the clipboard.
   {
@@ -355,7 +361,7 @@ TYPED_TEST(BookmarkUIOperationsHelperTest, CopyPaste) {
   }
 
   // Now we shouldn't be able to paste from the clipboard.
-  EXPECT_FALSE(helper->CanPasteFromClipboard());
+  EXPECT_FALSE(this->CanPasteFromClipboardSync(helper));
 }
 
 TYPED_TEST(BookmarkUIOperationsHelperTest, CopyPasteMultipleNodes) {
@@ -378,7 +384,7 @@ TYPED_TEST(BookmarkUIOperationsHelperTest, CopyPasteMultipleNodes) {
       this->CreateHelper(model->bookmark_bar_node());
 
   // And make sure we can paste a bookmark from the clipboard.
-  EXPECT_TRUE(helper->CanPasteFromClipboard());
+  EXPECT_TRUE(this->CanPasteFromClipboardSync(helper));
 
   {
     base::test::TestFuture<void> future;
@@ -420,7 +426,7 @@ TYPED_TEST(BookmarkUIOperationsHelperTest, CutToClipboard) {
   internal::BookmarkUIOperationsHelper* helper =
       this->CreateHelper(model->other_node());
   // And make sure we can paste from the clipboard.
-  EXPECT_TRUE(helper->CanPasteFromClipboard());
+  EXPECT_TRUE(this->CanPasteFromClipboardSync(helper));
 
   {
     base::test::TestFuture<void> future;
@@ -447,11 +453,11 @@ TYPED_TEST(BookmarkUIOperationsHelperTest, PasteNonEditableNodes) {
   internal::BookmarkUIOperationsHelper* helper =
       this->CreateHelper(model->bookmark_bar_node());
   // And make sure we can paste a bookmark from the clipboard.
-  EXPECT_TRUE(helper->CanPasteFromClipboard());
+  EXPECT_TRUE(this->CanPasteFromClipboardSync(helper));
 
   // But it can't be pasted into a non-editable folder.
   helper = this->CreateHelper(this->managed_bookmark_service()->managed_node());
-  EXPECT_FALSE(helper->CanPasteFromClipboard());
+  EXPECT_FALSE(this->CanPasteFromClipboardSync(helper));
 }
 
 TYPED_TEST(BookmarkUIOperationsHelperTest, PasteBookmarkFromEmptyBookmarkNode) {
@@ -461,7 +467,7 @@ TYPED_TEST(BookmarkUIOperationsHelperTest, PasteBookmarkFromEmptyBookmarkNode) {
   internal::BookmarkUIOperationsHelper* helper = this->CreateHelper(bar_folder);
 
   // Now we shouldn't be able to paste from the clipboard.
-  EXPECT_FALSE(helper->CanPasteFromClipboard());
+  EXPECT_FALSE(this->CanPasteFromClipboardSync(helper));
   EXPECT_FALSE(bookmarks::BookmarkNodeData::ClipboardContainsBookmarks());
 
   // Write empty bookmark node to the clipboard.
@@ -477,7 +483,7 @@ TYPED_TEST(BookmarkUIOperationsHelperTest, PasteBookmarkFromEmptyBookmarkNode) {
   }
 
   // Now we should be able to paste from the clipboard.
-  EXPECT_TRUE(helper->CanPasteFromClipboard());
+  EXPECT_TRUE(this->CanPasteFromClipboardSync(helper));
   EXPECT_TRUE(bookmarks::BookmarkNodeData::ClipboardContainsBookmarks());
 
   // Load from the pickle data first; the bookmark node data is empty at this

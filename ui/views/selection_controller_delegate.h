@@ -5,6 +5,7 @@
 #ifndef UI_VIEWS_SELECTION_CONTROLLER_DELEGATE_H_
 #define UI_VIEWS_SELECTION_CONTROLLER_DELEGATE_H_
 
+#include "base/functional/callback_forward.h"
 #include "ui/views/views_export.h"
 
 namespace views {
@@ -49,8 +50,9 @@ class VIEWS_EXPORT SelectionControllerDelegate {
 
   // Pastes the text from the selection clipboard at the current cursor
   // position. Always called within a pointer action for a non-readonly view.
-  // Returns true if some text was pasted.
-  virtual bool PasteSelectionClipboard() = 0;
+  // Runs `callback` with true if the paste succeeded, false otherwise.
+  virtual void PasteSelectionClipboard(
+      base::OnceCallback<void(bool)> callback) = 0;
   // Updates the selection clipboard with the currently selected text. Should
   // empty the selection clipboard if no text is currently selected.
   // NO-OP if the associated text view is obscured. Since this does not modify

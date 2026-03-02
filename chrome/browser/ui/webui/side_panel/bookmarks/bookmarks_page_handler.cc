@@ -163,6 +163,8 @@ class BookmarkContextMenu : public ui::SimpleMenuModel,
     return controller_->IsCommandIdVisible(command_id);
   }
 
+  BookmarkContextMenuController* controller() { return controller_.get(); }
+
   // BookmarkContextMenuControllerDelegate:
   void CloseMenu() override {
     if (embedder_) {
@@ -630,9 +632,18 @@ void BookmarksPageHandler::ExecuteContextMenuCommand(
       node_ids, bookmarks_ui_->embedder(), source,
       bookmarks_ui_->GetShoppingListContextMenuController(),
       browser_window_interface_);
-  if (context_menu && context_menu->IsCommandIdEnabled(command_id)) {
-    context_menu->ExecuteCommand(command_id, 0);
+  if (!context_menu) {
+    return;
   }
+
+  BookmarkContextMenu* context_menu_ptr = context_menu.get();
+  context_menu_ptr->controller()->UpdateCanPaste(base::BindOnce(
+      [](std::unique_ptr<BookmarkContextMenu> context_menu, int command_id) {
+        if (context_menu->IsCommandIdEnabled(command_id)) {
+          context_menu->ExecuteCommand(command_id, 0);
+        }
+      },
+      std::move(context_menu), command_id));
 }
 
 void BookmarksPageHandler::OpenBookmark(

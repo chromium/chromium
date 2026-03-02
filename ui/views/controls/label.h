@@ -428,7 +428,8 @@ class VIEWS_EXPORT Label : public View,
   int GetDragSelectionDelay() const override;
   void OnBeforePointerAction() override;
   void OnAfterPointerAction(bool text_changed, bool selection_changed) override;
-  bool PasteSelectionClipboard() override;
+  void PasteSelectionClipboard(
+      base::OnceCallback<void(bool)> callback) override;
   void UpdateSelectionClipboard() override;
 
   // ui::SimpleMenuModel::Delegate overrides:

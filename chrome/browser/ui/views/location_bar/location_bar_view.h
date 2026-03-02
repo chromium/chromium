@@ -620,6 +620,8 @@ class LocationBarView
   //  reliable.
   bool in_popup_state_transition_ = false;
 
+  void OnMiddleClickPaste(base::TimeTicks event_timestamp, std::u16string text);
+
   base::WeakPtrFactory<LocationBarView> weak_factory_{this};
 };
 

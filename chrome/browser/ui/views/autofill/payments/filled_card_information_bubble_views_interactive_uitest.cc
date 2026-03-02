@@ -37,6 +37,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/prerender_test_util.h"
 #include "ui/base/clipboard/clipboard.h"
+#include "ui/base/clipboard/test/clipboard_test_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/test/ui_controls.h"
@@ -290,8 +291,8 @@ IN_PROC_BROWSER_TEST_P(FilledCardInformationBubbleViewsInteractiveUiTest,
 
   // Card number (also ensure it doesn't contain spaces):
   ClickOnField(FilledCardInformationBubbleField::kCardNumber);
-  clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr,
-                      &clipboard_text);
+  clipboard_text = ui::clipboard_test_util::ReadText(
+      clipboard, ui::ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr);
   EXPECT_EQ(clipboard_text, u"5454545454545454");
   histogram_tester.ExpectBucketCount(
       "Autofill.FilledCardInformationBubble.FieldClicked",
@@ -300,8 +301,8 @@ IN_PROC_BROWSER_TEST_P(FilledCardInformationBubbleViewsInteractiveUiTest,
 
   // Expiration month:
   ClickOnField(FilledCardInformationBubbleField::kExpirationMonth);
-  clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr,
-                      &clipboard_text);
+  clipboard_text = ui::clipboard_test_util::ReadText(
+      clipboard, ui::ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr);
   EXPECT_EQ(clipboard_text, base::ASCIIToUTF16(test::NextMonth().c_str()));
   histogram_tester.ExpectBucketCount(
       "Autofill.FilledCardInformationBubble.FieldClicked",
@@ -311,8 +312,8 @@ IN_PROC_BROWSER_TEST_P(FilledCardInformationBubbleViewsInteractiveUiTest,
 
   // Expiration year:
   ClickOnField(FilledCardInformationBubbleField::kExpirationYear);
-  clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr,
-                      &clipboard_text);
+  clipboard_text = ui::clipboard_test_util::ReadText(
+      clipboard, ui::ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr);
   EXPECT_EQ(clipboard_text, base::ASCIIToUTF16(test::NextYear().c_str()));
   histogram_tester.ExpectBucketCount(
       "Autofill.FilledCardInformationBubble.FieldClicked",
@@ -322,8 +323,8 @@ IN_PROC_BROWSER_TEST_P(FilledCardInformationBubbleViewsInteractiveUiTest,
 
   // Cardholder name:
   ClickOnField(FilledCardInformationBubbleField::kCardholderName);
-  clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr,
-                      &clipboard_text);
+  clipboard_text = ui::clipboard_test_util::ReadText(
+      clipboard, ui::ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr);
   EXPECT_EQ(clipboard_text, u"John Smith");
   histogram_tester.ExpectBucketCount(
       "Autofill.FilledCardInformationBubble.FieldClicked",
@@ -333,8 +334,8 @@ IN_PROC_BROWSER_TEST_P(FilledCardInformationBubbleViewsInteractiveUiTest,
 
   // CVC:
   ClickOnField(FilledCardInformationBubbleField::kCvc);
-  clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr,
-                      &clipboard_text);
+  clipboard_text = ui::clipboard_test_util::ReadText(
+      clipboard, ui::ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr);
   EXPECT_EQ(clipboard_text, u"345");
   histogram_tester.ExpectBucketCount(
       "Autofill.FilledCardInformationBubble.FieldClicked",
@@ -373,8 +374,8 @@ IN_PROC_BROWSER_TEST_P(FilledCardInformationBubbleViewsInteractiveUiTest,
 
   // Card number (also ensure it doesn't contain spaces):
   ClickOnField(FilledCardInformationBubbleField::kCardNumber);
-  clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr,
-                      &clipboard_text);
+  clipboard_text = ui::clipboard_test_util::ReadText(
+      clipboard, ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr);
   EXPECT_EQ(clipboard_text, u"5454545454545454");
   histogram_tester.ExpectBucketCount(
       "Autofill.FilledCardInformationBubble.FieldClicked",
@@ -383,8 +384,8 @@ IN_PROC_BROWSER_TEST_P(FilledCardInformationBubbleViewsInteractiveUiTest,
 
   // Expiration month:
   ClickOnField(FilledCardInformationBubbleField::kExpirationMonth);
-  clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr,
-                      &clipboard_text);
+  clipboard_text = ui::clipboard_test_util::ReadText(
+      clipboard, ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr);
   EXPECT_EQ(clipboard_text, base::ASCIIToUTF16(test::NextMonth().c_str()));
   histogram_tester.ExpectBucketCount(
       "Autofill.FilledCardInformationBubble.FieldClicked",
@@ -394,8 +395,8 @@ IN_PROC_BROWSER_TEST_P(FilledCardInformationBubbleViewsInteractiveUiTest,
 
   // Expiration year:
   ClickOnField(FilledCardInformationBubbleField::kExpirationYear);
-  clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr,
-                      &clipboard_text);
+  clipboard_text = ui::clipboard_test_util::ReadText(
+      clipboard, ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr);
   EXPECT_EQ(clipboard_text, base::ASCIIToUTF16(test::NextYear().c_str()));
   histogram_tester.ExpectBucketCount(
       "Autofill.FilledCardInformationBubble.FieldClicked",
@@ -405,8 +406,8 @@ IN_PROC_BROWSER_TEST_P(FilledCardInformationBubbleViewsInteractiveUiTest,
 
   // Cardholder name:
   ClickOnField(FilledCardInformationBubbleField::kCardholderName);
-  clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr,
-                      &clipboard_text);
+  clipboard_text = ui::clipboard_test_util::ReadText(
+      clipboard, ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr);
   EXPECT_EQ(clipboard_text, u"John Smith");
   histogram_tester.ExpectBucketCount(
       "Autofill.FilledCardInformationBubble.FieldClicked",
@@ -416,8 +417,8 @@ IN_PROC_BROWSER_TEST_P(FilledCardInformationBubbleViewsInteractiveUiTest,
 
   // CVC:
   ClickOnField(FilledCardInformationBubbleField::kCvc);
-  clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr,
-                      &clipboard_text);
+  clipboard_text = ui::clipboard_test_util::ReadText(
+      clipboard, ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr);
   EXPECT_EQ(clipboard_text, u"345");
   histogram_tester.ExpectBucketCount(
       "Autofill.FilledCardInformationBubble.FieldClicked",

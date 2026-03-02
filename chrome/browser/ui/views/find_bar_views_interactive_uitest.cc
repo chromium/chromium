@@ -47,9 +47,11 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/blink/public/common/switches.h"
 #include "ui/base/clipboard/clipboard.h"
+#include "ui/base/clipboard/test/clipboard_test_util.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ozone_buildflags.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/event_modifiers.h"
@@ -214,7 +216,9 @@ class LegacyFindInPageTest : public InProcessBrowserTest {
 class FindBarViewsUiTest : public InteractiveBrowserTest,
                            public ::testing::WithParamInterface<bool> {
  public:
-  FindBarViewsUiTest() = default;
+  FindBarViewsUiTest() {
+    feature_list_.InitAndDisableFeature(features::kNonBlockingOsClipboardReads);
+  }
 
   void SetUp() override {
     ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
@@ -319,6 +323,7 @@ class FindBarViewsUiTest : public InteractiveBrowserTest,
   bool IsFindBarVisible() { return GetFindBarHost()->IsFindBarVisible(); }
 
  private:
+  base::test::ScopedFeatureList feature_list_;
   base::AutoReset<bool> enable_animation_for_test_ =
       FindBarHost::SetEnableAnimationsForTesting(false);
 };
@@ -797,9 +802,9 @@ IN_PROC_BROWSER_TEST_F(FindBarViewsUiTest, PasteWithoutTextChange) {
           kTextCopiedState,
           [&]() {
             ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
-            std::u16string clipboard_text;
-            clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste,
-                                /* data_dst = */ nullptr, &clipboard_text);
+            std::u16string clipboard_text = ui::clipboard_test_util::ReadText(
+                clipboard, ui::ClipboardBuffer::kCopyPaste,
+                /* data_dst = */ nullptr);
             return base::EqualsASCII(clipboard_text, "a");
           }),
       WaitForState(kTextCopiedState, true),
@@ -1313,9 +1318,9 @@ IN_PROC_BROWSER_TEST_P(FindBarViewsUiTest, CopyBlockedByPolicy) {
           kTextCopiedState,
           [&]() {
             ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
-            std::u16string clipboard_text;
-            clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste,
-                                /* data_dst = */ nullptr, &clipboard_text);
+            std::u16string clipboard_text = ui::clipboard_test_util::ReadText(
+                clipboard, ui::ClipboardBuffer::kCopyPaste,
+                /* data_dst = */ nullptr);
             return base::EqualsASCII(clipboard_text, kExpectedText);
           }),
       WaitForState(kTextCopiedState, true),

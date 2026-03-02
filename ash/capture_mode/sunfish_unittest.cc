@@ -85,6 +85,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/base/clipboard/clipboard.h"
+#include "ui/base/clipboard/test/clipboard_test_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -2365,14 +2366,15 @@ TEST_F(SunfishTest, CopyTextButtonShownForDetectedText) {
           ActionButtonViewID::kCopyTextButton);
   ASSERT_TRUE(copy_text_button);
   // Clipboard should currently be empty.
-  std::u16string clipboard_data;
-  ui::Clipboard::GetForCurrentThread()->ReadText(
-      ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr, &clipboard_data);
+  std::u16string clipboard_data = ui::clipboard_test_util::ReadText(
+      ui::Clipboard::GetForCurrentThread(), ui::ClipboardBuffer::kCopyPaste,
+      /*data_dst=*/nullptr);
   EXPECT_EQ(clipboard_data, u"");
   // Clicking on the button should copy text to clipboard and show a toast.
   LeftClickOn(copy_text_button);
-  ui::Clipboard::GetForCurrentThread()->ReadText(
-      ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr, &clipboard_data);
+  clipboard_data = ui::clipboard_test_util::ReadText(
+      ui::Clipboard::GetForCurrentThread(), ui::ClipboardBuffer::kCopyPaste,
+      /*data_dst=*/nullptr);
   EXPECT_EQ(clipboard_data, u"detected text");
   EXPECT_TRUE(ToastManager::Get()->IsToastShown(kCaptureModeTextCopiedToastId));
 }
@@ -2400,15 +2402,16 @@ TEST_F(SunfishTest, CopyTextButtonShownForLensDetectedText) {
   ASSERT_TRUE(copy_text_button);
 
   // The clipboard should currently be empty.
-  std::u16string clipboard_data;
-  ui::Clipboard::GetForCurrentThread()->ReadText(
-      ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr, &clipboard_data);
+  std::u16string clipboard_data = ui::clipboard_test_util::ReadText(
+      ui::Clipboard::GetForCurrentThread(), ui::ClipboardBuffer::kCopyPaste,
+      /*data_dst=*/nullptr);
   EXPECT_EQ(clipboard_data, u"");
 
   // Clicking on the button should copy text to the clipboard and show a toast.
   LeftClickOn(copy_text_button);
-  ui::Clipboard::GetForCurrentThread()->ReadText(
-      ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr, &clipboard_data);
+  clipboard_data = ui::clipboard_test_util::ReadText(
+      ui::Clipboard::GetForCurrentThread(), ui::ClipboardBuffer::kCopyPaste,
+      /*data_dst=*/nullptr);
   EXPECT_EQ(clipboard_data, u"lens\ndetected text");
   EXPECT_TRUE(ToastManager::Get()->IsToastShown(kCaptureModeTextCopiedToastId));
 
@@ -3530,14 +3533,15 @@ TEST_F(ScannerTest, CopyTextButtonShownForDetectedText) {
           ActionButtonViewID::kCopyTextButton);
   ASSERT_TRUE(copy_text_button);
   // Clipboard should currently be empty.
-  std::u16string clipboard_data;
-  ui::Clipboard::GetForCurrentThread()->ReadText(
-      ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr, &clipboard_data);
+  std::u16string clipboard_data = ui::clipboard_test_util::ReadText(
+      ui::Clipboard::GetForCurrentThread(), ui::ClipboardBuffer::kCopyPaste,
+      /*data_dst=*/nullptr);
   EXPECT_EQ(clipboard_data, u"");
   // Clicking on the button should copy text to clipboard and show a toast.
   LeftClickOn(copy_text_button);
-  ui::Clipboard::GetForCurrentThread()->ReadText(
-      ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr, &clipboard_data);
+  clipboard_data = ui::clipboard_test_util::ReadText(
+      ui::Clipboard::GetForCurrentThread(), ui::ClipboardBuffer::kCopyPaste,
+      /*data_dst=*/nullptr);
   EXPECT_EQ(clipboard_data, u"detected text");
   EXPECT_TRUE(ToastManager::Get()->IsToastShown(kCaptureModeTextCopiedToastId));
 }

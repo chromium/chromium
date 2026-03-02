@@ -593,6 +593,20 @@ bool BookmarkContextMenuController::IsCommandIdChecked(int command_id) const {
   return prefs->GetBoolean(bookmarks::prefs::kShowAppsShortcutInBookmarkBar);
 }
 
+void BookmarkContextMenuController::UpdateCanPaste(base::OnceClosure callback) {
+  BookmarkUIOperationsHelperMergedSurfaces(bookmark_service_,
+                                           new_nodes_parent_.get())
+      .CanPasteFromClipboard(base::BindOnce(
+          [](base::WeakPtr<BookmarkContextMenuController> self,
+             base::OnceClosure callback, bool can_paste) {
+            if (self) {
+              self->can_paste_ = can_paste;
+            }
+            std::move(callback).Run();
+          },
+          weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
 bool BookmarkContextMenuController::IsCommandIdEnabled(int command_id) const {
   PrefService* prefs = profile_->GetPrefs();
 
@@ -682,9 +696,7 @@ bool BookmarkContextMenuController::IsCommandIdEnabled(int command_id) const {
              (command_id == IDC_COPY || can_edit);
 
     case IDC_PASTE:
-      return can_edit && BookmarkUIOperationsHelperMergedSurfaces(
-                             bookmark_service_, new_nodes_parent_.get())
-                             .CanPasteFromClipboard();
+      return can_edit && can_paste_;
   }
   return true;
 }

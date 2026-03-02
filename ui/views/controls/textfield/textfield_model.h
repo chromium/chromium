@@ -216,10 +216,6 @@ class VIEWS_EXPORT TextfieldModel {
   bool Copy(std::u16string text,
             std::unique_ptr<ui::ScopedClipboardWriter> clipboard_writer);
 
-  // Pastes text from the clipboard at current cursor position. Returns true
-  // if any text is pasted.
-  bool Paste();
-
   // Pastes the given text at the current cursor position. Returns true if any
   // text is pasted.
   bool Paste(std::u16string text);

@@ -33,6 +33,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/base/clipboard/clipboard.h"
+#include "ui/base/clipboard/test/clipboard_test_util.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/views/controls/button/image_button.h"
 
@@ -463,9 +464,8 @@ IN_PROC_BROWSER_TEST_F(CustomTabBarViewBrowserTest,
       ->ActivatedAt(0);
 
   ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
-  std::u16string result;
-  clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr,
-                      &result);
+  std::u16string result = ui::clipboard_test_util::ReadText(
+      clipboard, ui::ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr);
   EXPECT_EQ(result, u"http://example.test/");
 }
 #endif  // !BUILDFLAG(IS_MAC)
