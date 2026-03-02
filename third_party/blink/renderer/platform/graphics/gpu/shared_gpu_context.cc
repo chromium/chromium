@@ -45,14 +45,6 @@ bool Canvas2DSharedImagesBackedByIOSurface() {
 }
 #endif
 
-bool Canvas2dImageChromiumEnabled() {
-#if BUILDFLAG(IS_APPLE)
-  return Canvas2DSharedImagesBackedByIOSurface();
-#else
-  return false;
-#endif
-}
-
 }  // namespace
 
 SharedGpuContext* SharedGpuContext::GetInstanceForCurrentThread() {
@@ -348,9 +340,11 @@ bool SharedGpuContext::LowLatencyUsageSupportedForCanvas2D() {
     return true;
   }
 
-  if (MaySupportImageChromium() && Canvas2dImageChromiumEnabled()) {
+#if BUILDFLAG(IS_APPLE)
+  if (Canvas2DSharedImagesBackedByIOSurface()) {
     return true;
   }
+#endif
 
   if (MaySupportImageChromium() &&
       base::FeatureList::IsEnabled(
