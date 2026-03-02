@@ -2,10 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+#include <optional>
+#include <ostream>
+#include <string>
+#include <utility>
+#include <vector>
+
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/run_loop.h"
 #include "base/test/with_feature_override.h"
+#include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -19,6 +27,8 @@
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_starter_pack_data.h"
 #include "content/public/test/browser_test.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
 
 namespace {
@@ -26,14 +36,15 @@ namespace {
 using ::TemplateURLPrepopulateData::bing;
 using ::TemplateURLPrepopulateData::google;
 using ::TemplateURLPrepopulateData::PrepopulatedEngine;
+using ::testing::ElementsAreArray;
 using TemplateURLVector = ::TemplateURL::TemplateURLVector;
 
 // This test suite simulates that Android codesearch is being split from the
 // other codesearch services, to get its own dedicated ID.
 
 const char16_t android_keyword[] = u"cs.android.com";
-const int generic_id = 2424;
-const int new_id = 1313;
+const int generic_id = 924;
+const int new_id = 913;
 
 // Variants of a "codesearch" collection of services
 
@@ -114,16 +125,53 @@ RegionalAndNonRegionalEngines chrome_region_engines = {
 
 RegionalAndNonRegionalEngines chrome_migrated_region_engines = {
     {&google, &bing, &chrome_codesearch},
-    {&android_codesearch, &android_codesearch_migrating,
+    {&chromium_codesearch, &android_codesearch_migrating,
      &android_codesearch_next},
 };
 
-struct SearchProviderExpectation {
+// Describes various forms of search providers (`TemplateURL`,
+// `TemplateURLData`, `PrepopulatedEngine`) for checking expectations.
+struct SearchProviderSummary {
   int id;
   std::u16string keyword;
-  bool is_default;
+
+  // Optional fields are checked for object equality only if both summaries
+  // specify it. So always make sure that the "actual" summary populates this
+  // field.
+  std::optional<bool> is_default;
   std::optional<std::string> search_url;
+
+  bool operator==(const SearchProviderSummary& other) const {
+    if (id != other.id || keyword != other.keyword) {
+      return false;
+    }
+
+    if (is_default.has_value() && other.is_default.has_value() &&
+        is_default != other.is_default) {
+      return false;
+    }
+
+    if (search_url.has_value() && other.search_url.has_value() &&
+        *search_url != *other.search_url) {
+      return false;
+    }
+
+    return true;
+  }
 };
+
+// For GTEST error messages.
+[[maybe_unused]] void PrintTo(const SearchProviderSummary& summary,
+                              std::ostream* os) {
+  *os << "{ id: " << summary.id << ", keyword: " << summary.keyword;
+  if (summary.is_default.has_value()) {
+    *os << ", is_default: " << (summary.is_default ? "true" : "false");
+  };
+  if (summary.search_url.has_value()) {
+    *os << ", search_url: " << *summary.search_url;
+  }
+  *os << " }";
+}
 
 // Tests related to Prepopulated engine migration.
 //
@@ -137,7 +185,7 @@ struct SearchProviderExpectation {
 class PrepopulatedEnginesMigrationBrowserTestBase
     : public InProcessBrowserTest,
       public base::test::WithFeatureOverride {
- public:
+ protected:
   explicit PrepopulatedEnginesMigrationBrowserTestBase(
       std::vector<RegionalAndNonRegionalEngines> engine_set_load_order)
       : base::test::WithFeatureOverride(
@@ -150,7 +198,7 @@ class PrepopulatedEnginesMigrationBrowserTestBase
         engine_set_load_order.size() - 1 - GetTestPreCount();
     CHECK_GE(set_to_load_index, 0);
     CHECK_LT(set_to_load_index, engine_set_load_order.size());
-    auto engines_to_load = engine_set_load_order[set_to_load_index];
+    active_engines_config_ = engine_set_load_order[set_to_load_index];
 
     // Note: Since this gets recorded as a search provider list override,
     // rebuilding the keywords DB is always triggered, without having to change
@@ -158,7 +206,7 @@ class PrepopulatedEnginesMigrationBrowserTestBase
     scoped_engines_override_ = std::make_unique<
         regional_capabilities::ScopedPrepopulatedEnginesOverride>(
         regional_capabilities::SetPrepopulatedEnginesOverrideForTesting(
-            engines_to_load.first, engines_to_load.second));
+            active_engines_config_.first, active_engines_config_.second));
   }
 
   void SetUpOnMainThread() override {
@@ -175,21 +223,6 @@ class PrepopulatedEnginesMigrationBrowserTestBase
     return CHECK_DEREF(browser()->profile()->GetPrefs());
   }
 
-  TemplateURLVector GetTemplateURLsWithoutStarterPack() {
-    auto urls = template_url_service().GetTemplateURLs();
-    urls.erase(
-        std::remove_if(
-            urls.begin(), urls.end(),
-            [](const auto& template_url_unique_ptr) {
-              return template_url_unique_ptr->starter_pack_id() !=
-                     template_url_starter_pack_data::StarterPackId::kNone;
-            }),
-        urls.end());
-    return urls;
-  }
-
-  int CountEngines() { return GetTemplateURLsWithoutStarterPack().size(); }
-
   void WaitForTemplateURLServiceLoad() {
     base::RunLoop run_loop;
     auto subscription =
@@ -200,33 +233,43 @@ class PrepopulatedEnginesMigrationBrowserTestBase
     ASSERT_TRUE(template_url_service().loaded());
   }
 
-  void CheckSearchProviderExpectations(
-      base::span<SearchProviderExpectation> expectations) {
-    TemplateURLVector template_urls = GetTemplateURLsWithoutStarterPack();
-    auto* dse = template_url_service().GetDefaultSearchProvider();
+  std::vector<SearchProviderSummary> GetServiceSearchProviders() {
+    std::vector<SearchProviderSummary> actuals;
+    TemplateURL::TemplateURLVector template_urls =
+        template_url_service().GetTemplateURLs();
+    const TemplateURL* dse = template_url_service().GetDefaultSearchProvider();
 
-    ASSERT_EQ(expectations.size(), template_urls.size());
-    for (int i = 0; i < expectations.size(); ++i) {
-      const SearchProviderExpectation& expectation = expectations[i];
-      const TemplateURL* actual = template_urls[i].get();
-
-      EXPECT_EQ(expectation.id, actual->prepopulate_id());
-      EXPECT_EQ(expectation.keyword, actual->keyword());
-      EXPECT_EQ(expectation.is_default, actual == dse);
-
-      if (expectation.search_url.has_value()) {
-        EXPECT_EQ(*expectation.search_url, actual->url());
+    for (const auto& turl : template_urls) {
+      if (turl->starter_pack_id() !=
+          template_url_starter_pack_data::StarterPackId::kNone) {
+        // Ignore starter pack entries (tabs, bookmarks, etc), they just add
+        // noise and are irrelevant to the current logic.
+        continue;
       }
+
+      actuals.push_back({
+          .id = turl->prepopulate_id(),
+          .keyword = turl->keyword(),
+          .is_default = turl.get() == dse,
+          .search_url = turl->url(),
+      });
     }
+    return actuals;
   }
 
-  void CheckSearchProviderInPrefs(std::string_view pref_name,
-                                  SearchProviderExpectation expectations) {
-    const base::DictValue& url_dict = profile_prefs().GetDict(pref_name);
-    auto turl_data = TemplateURLDataFromDictionary(url_dict);
-    EXPECT_EQ(turl_data->keyword(), expectations.keyword);
-    EXPECT_EQ(turl_data->prepopulate_id, expectations.id);
+  SearchProviderSummary GetSearchProviderFromPrefs(std::string_view pref_name) {
+    std::unique_ptr<TemplateURLData> turl_data =
+        TemplateURLDataFromDictionary(profile_prefs().GetDict(pref_name));
+    CHECK(turl_data);
+    return {
+        .id = turl_data->prepopulate_id,
+        .keyword = turl_data->keyword(),
+        .search_url = turl_data->url(),
+    };
   }
+
+ protected:
+  RegionalAndNonRegionalEngines active_engines_config_;
 
  private:
   std::unique_ptr<regional_capabilities::ScopedPrepopulatedEnginesOverride>
@@ -240,7 +283,7 @@ std::string ParamToTestSuffix(const ::testing::TestParamInfo<bool>& info) {
 
 class PrepopulatedEnginesMigrationBrowserTest
     : public PrepopulatedEnginesMigrationBrowserTestBase {
- public:
+ protected:
   PrepopulatedEnginesMigrationBrowserTest()
       : PrepopulatedEnginesMigrationBrowserTestBase(
             {android_region_engines, android_migrated_region_engines}) {}
@@ -248,65 +291,77 @@ class PrepopulatedEnginesMigrationBrowserTest
 
 INSTANTIATE_TEST_SUITE_P(,
                          PrepopulatedEnginesMigrationBrowserTest,
-                         testing::Bool(),
+                         testing::Bool(),  // Feature states
                          &ParamToTestSuffix);
 
 // -- Non DSE -----------------------------------------------------------------
 
 IN_PROC_BROWSER_TEST_P(PrepopulatedEnginesMigrationBrowserTest, PRE_NonDse) {
-  std::vector<SearchProviderExpectation> expectations = {
+  ASSERT_EQ(active_engines_config_, android_region_engines);
+
+  std::vector<SearchProviderSummary> expectations = {
       {google.id, google.keyword, true},
       {bing.id, bing.keyword, false},
       {generic_id, android_keyword, false}};
-  CheckSearchProviderExpectations(expectations);
+  EXPECT_THAT(GetServiceSearchProviders(), ElementsAreArray(expectations));
 }
 IN_PROC_BROWSER_TEST_P(PrepopulatedEnginesMigrationBrowserTest, NonDse) {
-  std::vector<SearchProviderExpectation> expectations{
+  ASSERT_EQ(active_engines_config_, android_migrated_region_engines);
+
+  std::vector<SearchProviderSummary> expectations{
       {google.id, google.keyword, true},
       {bing.id, bing.keyword, false},
       {IsParamFeatureEnabled() ? new_id : generic_id, android_keyword, false}};
-  CheckSearchProviderExpectations(expectations);
+  EXPECT_THAT(GetServiceSearchProviders(), ElementsAreArray(expectations));
 }
 
 // -- DSE --------------------------------------------------------------------
 
 IN_PROC_BROWSER_TEST_P(PrepopulatedEnginesMigrationBrowserTest, PRE_Dse) {
+  ASSERT_EQ(active_engines_config_, android_region_engines);
+
   template_url_service().SetUserSelectedDefaultSearchProvider(
       template_url_service().GetTemplateURLForKeyword(android_keyword));
 
-  std::vector<SearchProviderExpectation> expectations = {
+  std::vector<SearchProviderSummary> expectations = {
       {google.id, google.keyword, false},
       {bing.id, bing.keyword, false},
       {generic_id, android_keyword, true}};
-  CheckSearchProviderExpectations(expectations);
+  EXPECT_THAT(GetServiceSearchProviders(), ElementsAreArray(expectations));
 
-  CheckSearchProviderInPrefs(
-      DefaultSearchManager::kDefaultSearchProviderDataPrefName,
-      {generic_id, android_codesearch.keyword});
-  CheckSearchProviderInPrefs(
-      DefaultSearchManager::kMirroredDefaultSearchProviderDataPrefName,
-      {generic_id, android_codesearch.keyword});
+  EXPECT_EQ(GetSearchProviderFromPrefs(
+                DefaultSearchManager::kDefaultSearchProviderDataPrefName),
+            (SearchProviderSummary{generic_id, android_codesearch.keyword}));
+  EXPECT_EQ(
+      GetSearchProviderFromPrefs(
+          DefaultSearchManager::kMirroredDefaultSearchProviderDataPrefName),
+      (SearchProviderSummary{generic_id, android_codesearch.keyword}));
 }
 IN_PROC_BROWSER_TEST_P(PrepopulatedEnginesMigrationBrowserTest, Dse) {
-  std::vector<SearchProviderExpectation> expectations{
+  ASSERT_EQ(active_engines_config_, android_migrated_region_engines);
+
+  std::vector<SearchProviderSummary> expectations{
       {google.id, google.keyword, false},
       {bing.id, bing.keyword, false},
       {IsParamFeatureEnabled() ? new_id : generic_id, android_keyword, true}};
-  CheckSearchProviderExpectations(expectations);
+  EXPECT_THAT(GetServiceSearchProviders(), ElementsAreArray(expectations));
 
   // Prefs are not affected by the feature state.
-  CheckSearchProviderInPrefs(
-      DefaultSearchManager::kDefaultSearchProviderDataPrefName,
-      {generic_id, android_codesearch.keyword});
-  CheckSearchProviderInPrefs(
-      DefaultSearchManager::kMirroredDefaultSearchProviderDataPrefName,
-      {generic_id, android_codesearch.keyword});
+  EXPECT_EQ(GetSearchProviderFromPrefs(
+                DefaultSearchManager::kDefaultSearchProviderDataPrefName),
+            (SearchProviderSummary{generic_id, android_codesearch.keyword}));
+  EXPECT_EQ(
+      GetSearchProviderFromPrefs(
+          DefaultSearchManager::kMirroredDefaultSearchProviderDataPrefName),
+      (SearchProviderSummary{generic_id, android_codesearch.keyword}));
 }
 
 // -- UserModified ------------------------------------------------------------
 
 IN_PROC_BROWSER_TEST_P(PrepopulatedEnginesMigrationBrowserTest,
                        PRE_UserModified) {
+  ASSERT_EQ(active_engines_config_, android_region_engines);
+
   auto* migrating_t_url =
       template_url_service().GetTemplateURLForKeyword(android_keyword);
   ASSERT_EQ(generic_id, migrating_t_url->prepopulate_id());
@@ -314,18 +369,20 @@ IN_PROC_BROWSER_TEST_P(PrepopulatedEnginesMigrationBrowserTest,
   template_url_service().ResetTemplateURL(migrating_t_url, u"Searchy Search",
                                           u"cs", android_codesearch.search_url);
 
-  std::vector<SearchProviderExpectation> expectations = {
+  std::vector<SearchProviderSummary> expectations = {
       {google.id, google.keyword, true},
       {bing.id, bing.keyword, false},
       {generic_id, u"cs", false}};
-  CheckSearchProviderExpectations(expectations);
+  EXPECT_THAT(GetServiceSearchProviders(), ElementsAreArray(expectations));
 }
 IN_PROC_BROWSER_TEST_P(PrepopulatedEnginesMigrationBrowserTest, UserModified) {
-  std::vector<SearchProviderExpectation> expectations{
+  ASSERT_EQ(active_engines_config_, android_migrated_region_engines);
+
+  std::vector<SearchProviderSummary> expectations{
       {google.id, google.keyword, true},
       {bing.id, bing.keyword, false},
       {IsParamFeatureEnabled() ? new_id : generic_id, u"cs", false}};
-  CheckSearchProviderExpectations(expectations);
+  EXPECT_THAT(GetServiceSearchProviders(), ElementsAreArray(expectations));
 
   auto* modified_url = template_url_service().GetTemplateURLForKeyword(u"cs");
   EXPECT_FALSE(modified_url->safe_for_autoreplace());
@@ -340,7 +397,7 @@ IN_PROC_BROWSER_TEST_P(PrepopulatedEnginesMigrationBrowserTest, UserModified) {
 // the original region + migration
 class PrepopulatedEnginesXRegionMigrationBrowserTest
     : public PrepopulatedEnginesMigrationBrowserTestBase {
- public:
+ protected:
   PrepopulatedEnginesXRegionMigrationBrowserTest()
       : PrepopulatedEnginesMigrationBrowserTestBase(
             {android_region_engines, chrome_region_engines,
@@ -349,85 +406,100 @@ class PrepopulatedEnginesXRegionMigrationBrowserTest
 
 INSTANTIATE_TEST_SUITE_P(,
                          PrepopulatedEnginesXRegionMigrationBrowserTest,
-                         testing::Bool(),
+                         testing::Bool(),  // Feature states
                          &ParamToTestSuffix);
 
 IN_PROC_BROWSER_TEST_P(PrepopulatedEnginesXRegionMigrationBrowserTest,
                        PRE_PRE_NonDse) {
-  std::vector<SearchProviderExpectation> expectations = {
+  ASSERT_EQ(active_engines_config_, android_region_engines);
+
+  std::vector<SearchProviderSummary> expectations = {
       {google.id, google.keyword, true},
       {bing.id, bing.keyword, false},
       {generic_id, android_codesearch.keyword, false}};
-  CheckSearchProviderExpectations(expectations);
+  EXPECT_THAT(GetServiceSearchProviders(), ElementsAreArray(expectations));
 }
 IN_PROC_BROWSER_TEST_P(PrepopulatedEnginesXRegionMigrationBrowserTest,
                        PRE_NonDse) {
-  std::vector<SearchProviderExpectation> expectations = {
+  ASSERT_EQ(active_engines_config_, chrome_region_engines);
+
+  std::vector<SearchProviderSummary> expectations = {
       {google.id, google.keyword, true},
       {bing.id, bing.keyword, false},
       {generic_id, chrome_codesearch.keyword, false}};
-  CheckSearchProviderExpectations(expectations);
+  EXPECT_THAT(GetServiceSearchProviders(), ElementsAreArray(expectations));
 }
 IN_PROC_BROWSER_TEST_P(PrepopulatedEnginesXRegionMigrationBrowserTest, NonDse) {
-  std::vector<SearchProviderExpectation> expectations{
+  ASSERT_EQ(active_engines_config_, android_migrated_region_engines);
+
+  std::vector<SearchProviderSummary> expectations{
       {google.id, google.keyword, true},
       {bing.id, bing.keyword, false},
       {IsParamFeatureEnabled() ? new_id : generic_id, android_keyword, false}};
-  CheckSearchProviderExpectations(expectations);
+  EXPECT_THAT(GetServiceSearchProviders(), ElementsAreArray(expectations));
 }
 
 // -- CrossRegionDSE ----------------------------------------------------------
 
 IN_PROC_BROWSER_TEST_P(PrepopulatedEnginesXRegionMigrationBrowserTest,
                        PRE_PRE_Dse) {
+  ASSERT_EQ(active_engines_config_, android_region_engines);
+
   template_url_service().SetUserSelectedDefaultSearchProvider(
       template_url_service().GetTemplateURLForKeyword(android_keyword));
 
-  std::vector<SearchProviderExpectation> expectations = {
+  std::vector<SearchProviderSummary> expectations = {
       {google.id, google.keyword, false},
       {bing.id, bing.keyword, false},
       {generic_id, android_codesearch.keyword, true}};
-  CheckSearchProviderExpectations(expectations);
-  CheckSearchProviderInPrefs(
-      DefaultSearchManager::kDefaultSearchProviderDataPrefName,
-      expectations[2]);
-  CheckSearchProviderInPrefs(
-      DefaultSearchManager::kMirroredDefaultSearchProviderDataPrefName,
+  EXPECT_THAT(GetServiceSearchProviders(), ElementsAreArray(expectations));
+  EXPECT_EQ(GetSearchProviderFromPrefs(
+                DefaultSearchManager::kDefaultSearchProviderDataPrefName),
+            expectations[2]);
+  EXPECT_EQ(
+      GetSearchProviderFromPrefs(
+          DefaultSearchManager::kMirroredDefaultSearchProviderDataPrefName),
       expectations[2]);
 }
 IN_PROC_BROWSER_TEST_P(PrepopulatedEnginesXRegionMigrationBrowserTest,
                        PRE_Dse) {
-  std::vector<SearchProviderExpectation> expectations = {
+  ASSERT_EQ(active_engines_config_, chrome_region_engines);
+
+  std::vector<SearchProviderSummary> expectations = {
       {google.id, google.keyword, false},
       {bing.id, bing.keyword, false},
       {generic_id, chrome_codesearch.keyword, true}};
 
-  CheckSearchProviderExpectations(expectations);
+  EXPECT_THAT(GetServiceSearchProviders(), ElementsAreArray(expectations));
 
   // TODO(crbug.com/480071119): Prefs are still the ones associated with
   // `android_codesearch`.
-  CheckSearchProviderInPrefs(
-      DefaultSearchManager::kDefaultSearchProviderDataPrefName,
-      {generic_id, android_codesearch.keyword});
-  CheckSearchProviderInPrefs(
-      DefaultSearchManager::kMirroredDefaultSearchProviderDataPrefName,
-      {generic_id, android_codesearch.keyword});
+  EXPECT_EQ(GetSearchProviderFromPrefs(
+                DefaultSearchManager::kDefaultSearchProviderDataPrefName),
+            (SearchProviderSummary{generic_id, android_codesearch.keyword}));
+  EXPECT_EQ(
+      GetSearchProviderFromPrefs(
+          DefaultSearchManager::kMirroredDefaultSearchProviderDataPrefName),
+      (SearchProviderSummary{generic_id, android_codesearch.keyword}));
 }
 IN_PROC_BROWSER_TEST_P(PrepopulatedEnginesXRegionMigrationBrowserTest, Dse) {
-  std::vector<SearchProviderExpectation> expectations{
+  ASSERT_EQ(active_engines_config_, android_migrated_region_engines);
+
+  std::vector<SearchProviderSummary> expectations{
       {google.id, google.keyword, false},
       {bing.id, bing.keyword, false},
       {IsParamFeatureEnabled() ? new_id : generic_id, android_keyword, true}};
-  CheckSearchProviderExpectations(expectations);
+  EXPECT_THAT(GetServiceSearchProviders(), ElementsAreArray(expectations));
 
   // TODO(crbug.com/480071119): Prefs did not change since the PRE_PRE_
   // run, we migrate from them although the previous state was "non-migrating".
-  CheckSearchProviderInPrefs(
-      DefaultSearchManager::kDefaultSearchProviderDataPrefName,
-      {generic_id, android_codesearch.keyword});
-  CheckSearchProviderInPrefs(
-      DefaultSearchManager::kMirroredDefaultSearchProviderDataPrefName,
-      {generic_id, android_codesearch.keyword});
+  EXPECT_EQ(GetSearchProviderFromPrefs(
+                DefaultSearchManager::kDefaultSearchProviderDataPrefName),
+            (SearchProviderSummary{generic_id, android_codesearch.keyword}));
+  EXPECT_EQ(
+      GetSearchProviderFromPrefs(
+          DefaultSearchManager::kMirroredDefaultSearchProviderDataPrefName),
+      (SearchProviderSummary{generic_id, android_codesearch.keyword}));
 }
 
 // -- CrossRegion No Migration ------------------------------------------------
@@ -439,7 +511,7 @@ IN_PROC_BROWSER_TEST_P(PrepopulatedEnginesXRegionMigrationBrowserTest, Dse) {
 
 class PrepopulatedEnginesXRegionNoMigrationBrowserTest
     : public PrepopulatedEnginesMigrationBrowserTestBase {
- public:
+ protected:
   PrepopulatedEnginesXRegionNoMigrationBrowserTest()
       : PrepopulatedEnginesMigrationBrowserTestBase(
             {chrome_region_engines, android_region_engines,
@@ -448,47 +520,55 @@ class PrepopulatedEnginesXRegionNoMigrationBrowserTest
 
 INSTANTIATE_TEST_SUITE_P(,
                          PrepopulatedEnginesXRegionNoMigrationBrowserTest,
-                         testing::Bool(),
+                         testing::Bool(),  // Feature states
                          &ParamToTestSuffix);
 
 IN_PROC_BROWSER_TEST_P(PrepopulatedEnginesXRegionNoMigrationBrowserTest,
                        PRE_PRE_Dse) {
+  ASSERT_EQ(active_engines_config_, chrome_region_engines);
+
   template_url_service().SetUserSelectedDefaultSearchProvider(
       template_url_service().GetTemplateURLForKeyword(
           chrome_codesearch.keyword));
 
-  std::vector<SearchProviderExpectation> expectations = {
+  std::vector<SearchProviderSummary> expectations = {
       {google.id, google.keyword, false},
       {bing.id, bing.keyword, false},
       {generic_id, chrome_codesearch.keyword, true}};
-  CheckSearchProviderExpectations(expectations);
-  CheckSearchProviderInPrefs(
-      DefaultSearchManager::kDefaultSearchProviderDataPrefName,
-      expectations[2]);
-  CheckSearchProviderInPrefs(
-      DefaultSearchManager::kMirroredDefaultSearchProviderDataPrefName,
+  EXPECT_THAT(GetServiceSearchProviders(), ElementsAreArray(expectations));
+  EXPECT_EQ(GetSearchProviderFromPrefs(
+                DefaultSearchManager::kDefaultSearchProviderDataPrefName),
+            expectations[2]);
+  EXPECT_EQ(
+      GetSearchProviderFromPrefs(
+          DefaultSearchManager::kMirroredDefaultSearchProviderDataPrefName),
       expectations[2]);
 }
 IN_PROC_BROWSER_TEST_P(PrepopulatedEnginesXRegionNoMigrationBrowserTest,
                        PRE_Dse) {
-  std::vector<SearchProviderExpectation> expectations = {
+  ASSERT_EQ(active_engines_config_, android_region_engines);
+
+  std::vector<SearchProviderSummary> expectations = {
       {google.id, google.keyword, false},
       {bing.id, bing.keyword, false},
       {generic_id, android_codesearch.keyword, true}};
 
-  CheckSearchProviderExpectations(expectations);
+  EXPECT_THAT(GetServiceSearchProviders(), ElementsAreArray(expectations));
 
   // TODO(crbug.com/480071119): Prefs are still the ones associated with
   // `chrome_codesearch`.
-  CheckSearchProviderInPrefs(
-      DefaultSearchManager::kDefaultSearchProviderDataPrefName,
-      {generic_id, chrome_codesearch.keyword});
-  CheckSearchProviderInPrefs(
-      DefaultSearchManager::kMirroredDefaultSearchProviderDataPrefName,
-      {generic_id, chrome_codesearch.keyword});
+  EXPECT_EQ(GetSearchProviderFromPrefs(
+                DefaultSearchManager::kDefaultSearchProviderDataPrefName),
+            (SearchProviderSummary{generic_id, chrome_codesearch.keyword}));
+  EXPECT_EQ(
+      GetSearchProviderFromPrefs(
+          DefaultSearchManager::kMirroredDefaultSearchProviderDataPrefName),
+      (SearchProviderSummary{generic_id, chrome_codesearch.keyword}));
 }
 IN_PROC_BROWSER_TEST_P(PrepopulatedEnginesXRegionNoMigrationBrowserTest, Dse) {
-  std::vector<SearchProviderExpectation> expectations;
+  ASSERT_EQ(active_engines_config_, android_migrated_region_engines);
+
+  std::vector<SearchProviderSummary> expectations;
   expectations.push_back({google.id, google.keyword, false});
   expectations.push_back({bing.id, bing.keyword, false});
   if (IsParamFeatureEnabled()) {
@@ -509,18 +589,21 @@ IN_PROC_BROWSER_TEST_P(PrepopulatedEnginesXRegionNoMigrationBrowserTest, Dse) {
         {generic_id, android_keyword, true, android_codesearch.search_url});
   }
 
-  CheckSearchProviderExpectations(expectations);
+  EXPECT_THAT(GetServiceSearchProviders(), ElementsAreArray(expectations));
 
   // TODO(crbug.com/480071119): Prefs did not change since the PRE_PRE_
   // run, we migrate from them although the previous state was "non-migrating".
   // Whether the feature is enabled or not, we're not using the URL selected and
   // present in prefs.
-  CheckSearchProviderInPrefs(
-      DefaultSearchManager::kDefaultSearchProviderDataPrefName,
-      {chrome_codesearch.id, chrome_codesearch.keyword});
-  CheckSearchProviderInPrefs(
-      DefaultSearchManager::kMirroredDefaultSearchProviderDataPrefName,
-      {chrome_codesearch.id, chrome_codesearch.keyword});
+  EXPECT_EQ(
+      GetSearchProviderFromPrefs(
+          DefaultSearchManager::kDefaultSearchProviderDataPrefName),
+      (SearchProviderSummary{chrome_codesearch.id, chrome_codesearch.keyword}));
+
+  EXPECT_EQ(
+      GetSearchProviderFromPrefs(
+          DefaultSearchManager::kMirroredDefaultSearchProviderDataPrefName),
+      (SearchProviderSummary{chrome_codesearch.id, chrome_codesearch.keyword}));
 }
 
 }  // namespace
