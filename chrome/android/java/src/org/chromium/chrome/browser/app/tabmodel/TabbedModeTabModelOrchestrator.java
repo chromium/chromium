@@ -15,7 +15,6 @@ import android.util.Pair;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.EnsuresNonNull;
@@ -32,7 +31,6 @@ import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedIns
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
-import org.chromium.chrome.browser.tab.TabStateStorageFlagHelper;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.AccumulatingTabCreator;
 import org.chromium.chrome.browser.tabmodel.MismatchedIndicesHandler;
@@ -74,8 +72,6 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
     private @MonotonicNonNull ArchivedTabModelOrchestrator mArchivedTabModelOrchestrator;
     private @Nullable Supplier<TabModel> mArchivedHistoricalObserverSupplier;
 
-    // Currently used to perform shadow operations for an alternative storage. Not always enabled.
-    private @Nullable Boolean mTabStateStoreIsAuthoritative;
     private @WindowId int mWindowId;
     private final AccumulatingTabCreator mRegularShadowTabCreator = new AccumulatingTabCreator();
     private final AccumulatingTabCreator mIncognitoShadowTabCreator = new AccumulatingTabCreator();
@@ -253,20 +249,11 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
 
     @Override
     public void onNativeLibraryReady(TabContentManager tabContentManager) {
-        super.onNativeLibraryReady(tabContentManager);
         assertCreated();
+        super.onNativeLibraryReady(tabContentManager);
 
-        TabModelUtils.runOnTabStateInitialized(
-                mTabModelSelector,
-                (selector) -> createArchivedTabModelInDeferredTask(tabContentManager));
-
-        if (TabStateStorageFlagHelper.isTabStorageEnabled()) {
-            mTabStateStoreIsAuthoritative = TabStateStorageFlagHelper.isStorageAuthoritative();
-            // Temporary variable usage to avoid unused variable warning.
-            Log.i(TAG, "mTabStateStoreIsAuthoritative: " + mTabStateStoreIsAuthoritative);
-
+        if (!mTabPersistentStoreDestroyedEarly) {
             String windowTag = Integer.toString(mWindowId);
-
             mShadowTabPersistentStore =
                     buildShadowStore(
                             mMigrationManager,
@@ -278,8 +265,15 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
                             windowTag,
                             mCipherFactory,
                             TABBED_TAG);
-            if (mShadowTabPersistentStore != null) mShadowTabPersistentStore.onNativeLibraryReady();
+            if (mShadowTabPersistentStore != null) {
+                mShadowTabPersistentStore.onNativeLibraryReady();
+            }
+            markStoresInitialized();
         }
+
+        TabModelUtils.runOnTabStateInitialized(
+                mTabModelSelector,
+                (selector) -> createArchivedTabModelInDeferredTask(tabContentManager));
     }
 
     private void createArchivedTabModelInDeferredTask(TabContentManager tabContentManager) {

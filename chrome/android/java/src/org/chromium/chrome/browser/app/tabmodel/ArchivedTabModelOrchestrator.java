@@ -146,7 +146,7 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
     // multiple places simultaneously.
     private final TabCreatorManager mArchivedTabCreatorManager;
     private final AsyncTabParamsManager mAsyncTabParamsManager;
-    private final ObserverList<Observer> mObservers = new ObserverList<>();
+    private final ObserverList<Observer> mArchivedModelObservers = new ObserverList<>();
     private final TabWindowManager mTabWindowManager;
     // The set of {@link TabModelOrchestrators}  which have registered themselves as active for
     // declutter.
@@ -278,12 +278,12 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
 
     /** Adds an observer. */
     public void addObserver(Observer observer) {
-        mObservers.addObserver(observer);
+        mArchivedModelObservers.addObserver(observer);
     }
 
     /** Removes an observer. */
     public void removeObserver(Observer observer) {
-        mObservers.removeObserver(observer);
+        mArchivedModelObservers.removeObserver(observer);
     }
 
     /**
@@ -437,7 +437,7 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
         mInitCalled = true;
 
         TabModel model = mTabModelSelector.getModel(/* incognito= */ false);
-        for (Observer observer : mObservers) {
+        for (Observer observer : mArchivedModelObservers) {
             observer.onTabModelCreated(model);
         }
 
@@ -562,36 +562,38 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
         if (mNativeLibraryReadyCalled) return;
         mNativeLibraryReadyCalled = true;
         super.onNativeLibraryReady(tabContentManager);
-        onNativeLibraryReadyInternal();
-    }
 
-    private void onNativeLibraryReadyInternal() {
         assertCreated();
+        if (!mTabPersistentStoreDestroyedEarly) {
+            mShadowTabPersistentStore =
+                    buildNonOtrShadowStore(
+                            mMigrationManager,
+                            mShadowTabCreator,
+                            mTabModelSelector,
+                            mTabPersistencePolicy,
+                            mTabPersistentStore,
+                            ARCHIVED_WINDOW_TAG,
+                            ARCHIVED_TAG);
+            if (mShadowTabPersistentStore != null) {
+                mShadowTabPersistentStore.onNativeLibraryReady();
+            }
+            markStoresInitialized();
+        }
+
         mTabArchiveSettings = new TabArchiveSettings(ChromeSharedPreferences.getInstance());
         mTabArchiveSettings.addObserver(mTabArchiveSettingsObserver);
         mTabGroupSyncService = assertNonNull(TabGroupSyncServiceFactory.getForProfile(mProfile));
         TabGroupModelFilter regularFilter =
                 mTabModelSelector.getTabGroupModelFilter(/* isIncognito= */ false);
-        assumeNonNull(regularFilter);
+
         mTabArchiver =
                 new TabArchiverImpl(
-                        regularFilter,
+                        assumeNonNull(regularFilter),
                         mArchivedTabCreator,
                         mTabArchiveSettings,
                         System::currentTimeMillis,
                         mTabGroupSyncService);
         mTabArchiver.addObserver(mTabArchiverObserver);
-
-        mShadowTabPersistentStore =
-                buildNonOtrShadowStore(
-                        mMigrationManager,
-                        mShadowTabCreator,
-                        mTabModelSelector,
-                        mTabPersistencePolicy,
-                        mTabPersistentStore,
-                        ARCHIVED_WINDOW_TAG,
-                        ARCHIVED_TAG);
-        if (mShadowTabPersistentStore != null) mShadowTabPersistentStore.onNativeLibraryReady();
     }
 
     @Override

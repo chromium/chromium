@@ -14,6 +14,7 @@ import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
+import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.AsyncTabParamsManager;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
@@ -89,6 +90,12 @@ public class CustomTabsTabModelOrchestrator extends TabModelOrchestrator {
         TabWindowManagerSingleton.getInstance()
                 .unregisterCustomTabsTabModelSelector(mTabModelSelector);
         super.destroy();
+    }
+
+    @Override
+    public void onNativeLibraryReady(TabContentManager tabContentManager) {
+        super.onNativeLibraryReady(tabContentManager);
+        markStoresInitialized();
     }
 
     /**
