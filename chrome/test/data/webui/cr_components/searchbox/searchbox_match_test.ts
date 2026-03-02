@@ -92,7 +92,7 @@ suite('CrComponentsRealboxMatchTest', () => {
 
     // Middle clicks are accepted.
     const middleClickEvent =
-        new MouseEvent('click', {button: 1, cancelable: true});
+        new MouseEvent('auxclick', {button: 1, cancelable: true});
     matchEl.dispatchEvent(middleClickEvent);
     assertTrue(middleClickEvent.defaultPrevented);
     const middleClickArgs =

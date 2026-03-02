@@ -247,6 +247,7 @@ export class SearchboxMatchElement extends CrLitElement {
 
   override firstUpdated() {
     this.addEventListener('click', (event) => this.onMatchClick_(event));
+    this.addEventListener('auxclick', (event) => this.onMatchClick_(event));
     this.addEventListener('focusin', () => this.onMatchFocusin_());
     this.addEventListener('mousedown', () => this.onMatchMouseDown_());
   }
