@@ -4438,7 +4438,10 @@ public class TabCollectionTabModelImplTest {
     public void testIsClosingAllTabsIsFalse() throws Exception {
         Tab tab0 = getTabAt(0);
         Tab tab1 = createTab();
-        assertFalse(mCollectionModel.isClosingAllTabs());
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertFalse(mCollectionModel.isClosingAllTabs());
+                });
 
         CallbackHelper willCloseTabHelper = new CallbackHelper();
         TabModelObserver observer =
