@@ -231,7 +231,7 @@ void ApplyInit(const URLPatternInit* init,
       // relative pathname and just treat the init pathname as an absolute
       // value.
       String base_path = EscapeBaseURLString(base_url.GetPath(), type);
-      auto slash_index = base_path.ReverseFind("/");
+      auto slash_index = base_path.rfind('/');
       if (slash_index != kNotFound) {
         // Extract the baseURL path up to and including the first slash.  Append
         // the relative init pathname to it.

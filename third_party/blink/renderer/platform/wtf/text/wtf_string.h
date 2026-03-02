@@ -270,13 +270,6 @@ class WTF_EXPORT String {
   size_type rfind(UChar c, size_type start = npos) const {
     return impl_ ? impl_->ReverseFind(c, start) : npos;
   }
-  // Find the last instance of a substring.
-  // If `this` string is null, this function returns kNotFound even if
-  // `value` is empty.
-  wtf_size_t ReverseFind(const StringView& value,
-                         unsigned start = UINT_MAX) const {
-    return impl_ ? impl_->ReverseFind(value, start) : kNotFound;
-  }
   // Searches for the last occurrence of a substring within this string.
   //
   // This method performs a backward search starting from the 'start' index.

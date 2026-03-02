@@ -107,7 +107,7 @@ String FindMagicComment(const String& content, const String& name) {
   wtf_size_t equal_sign_pos = 0;
   wtf_size_t closing_comment_pos = 0;
   while (true) {
-    pos = content.ReverseFind(name, pos);
+    pos = content.rfind(name, pos);
     if (pos == kNotFound) {
       return g_empty_string;
     }
