@@ -72,7 +72,6 @@ class ServiceWorkerHandler : public DevToolsDomainHandler,
                        int64_t version_id,
                        const ServiceWorkerContextObserver::ErrorInfo& info);
 
-  void OpenNewDevToolsWindow(int process_id, int devtools_agent_route_id);
   void ClearForceUpdate();
 
   scoped_refptr<ServiceWorkerContextWrapper> context_;
