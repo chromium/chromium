@@ -8,12 +8,12 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "build/build_config.h"
 #include "content/browser/digital_credentials/cross_device_request_dispatcher.h"
 #include "content/public/browser/cross_device_request_info.h"
 #include "content/public/browser/digital_credentials_cross_device.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
-#include "device/bluetooth/test/mock_bluetooth_adapter.h"
-#include "device/fido/cable/fido_cable_discovery.h"
+#include "device/fido/cable/cable_mock_bluetooth_adapter.h"
 #include "device/fido/cable/pairing.h"
 #include "device/fido/cable/v2_authenticator.h"
 #include "device/fido/cable/v2_constants.h"
@@ -29,6 +29,10 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "device/bluetooth/floss/floss_features.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 using base::JSONReader;
 using testing::NiceMock;
 
@@ -40,8 +44,6 @@ class DigitalCredentialsCrossDeviceRequestDispatcherTest
  public:
   void SetUp() override {
     network_context_ = device::cablev2::NewMockTunnelServer(std::nullopt);
-    std::tie(ble_advert_callback_, ble_advert_events_) =
-        device::cablev2::Discovery::AdvertEventStream::New();
 
     bssl::UniquePtr<EC_GROUP> p256(
         EC_GROUP_new_by_curve_name(NID_X9_62_prime256v1));
@@ -53,8 +55,7 @@ class DigitalCredentialsCrossDeviceRequestDispatcherTest
                  POINT_CONVERSION_UNCOMPRESSED, peer_identity_x962_,
                  sizeof(peer_identity_x962_), /*ctx=*/nullptr));
 
-    mock_adapter_ =
-        base::MakeRefCounted<NiceMock<device::MockBluetoothAdapter>>();
+    mock_adapter_ = device::cablev2::CableMockBluetoothAdapter::MakePoweredOn();
     device::BluetoothAdapterFactory::SetAdapterForTesting(mock_adapter_);
   }
 
@@ -69,8 +70,7 @@ class DigitalCredentialsCrossDeviceRequestDispatcherTest
           // This value isn't used since it's a QR-based transaction.
           device::FidoRequestType::kGetAssertion,
           base::BindLambdaForTesting([&]() { return network_context_.get(); }),
-          qr_generator_key_, std::move(ble_advert_events_),
-          std::move(callback_and_event_stream.second),
+          qr_generator_key_, std::move(callback_and_event_stream.second),
           /*extension_contents=*/std::vector<device::CableDiscoveryData>(),
           GetPairingCallback(), GetInvalidatedPairingCallback(),
           GetEventCallback(),
@@ -83,18 +83,22 @@ class DigitalCredentialsCrossDeviceRequestDispatcherTest
                                base::Value(std::move(request_value))};
       base::test::TestFuture<base::expected<Response, RequestDispatcher::Error>>
           callback;
+#if BUILDFLAG(IS_CHROMEOS)
+      if (!floss::features::IsFlossEnabled()) {
+        mock_adapter_->ExpectDiscoveryWithScanCallback();
+      }
+#else
+      mock_adapter_->ExpectDiscoveryWithScanCallback();
+#endif
 
       auto request_handler = std::make_unique<RequestDispatcher>(
-          std::make_unique<device::FidoCableDiscovery>(
-              std::vector<device::CableDiscoveryData>()),
           std::move(discovery), std::move(request_info),
           callback.GetCallback());
       std::unique_ptr<device::cablev2::authenticator::Transaction> transaction =
           device::cablev2::authenticator::
               TransactDigitalIdentityFromQRCodeForTesting(
                   device::cablev2::authenticator::NewMockPlatform(
-                      std::move(ble_advert_callback_),
-                      /*ctap2_device=*/nullptr,
+                      /*ctap2_device=*/nullptr, mock_adapter_,
                       /*observer=*/nullptr),
                   base::BindLambdaForTesting(
                       [&]() { return network_context_.get(); }),
@@ -121,9 +125,6 @@ class DigitalCredentialsCrossDeviceRequestDispatcherTest
   std::unique_ptr<network::mojom::NetworkContext> network_context_;
   const std::array<uint8_t, device::cablev2::kQRKeySize> qr_generator_key_ = {
       0};
-  std::unique_ptr<device::cablev2::Discovery::AdvertEventStream>
-      ble_advert_events_;
-  device::cablev2::Discovery::AdvertEventStream::Callback ble_advert_callback_;
   uint8_t peer_identity_x962_[device::kP256X962Length] = {};
   const std::array<uint8_t, device::cablev2::kQRSecretSize> zero_qr_secret_ = {
       0};
@@ -131,7 +132,7 @@ class DigitalCredentialsCrossDeviceRequestDispatcherTest
       0};
   const std::array<uint8_t, device::cablev2::kQRSeedSize> zero_seed_ = {0};
 
-  scoped_refptr<NiceMock<device::MockBluetoothAdapter>> mock_adapter_;
+  scoped_refptr<device::cablev2::CableMockBluetoothAdapter> mock_adapter_;
 
   base::test::TaskEnvironment task_environment;
 };

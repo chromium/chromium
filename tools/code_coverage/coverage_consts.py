@@ -86,8 +86,6 @@ FUZZERS_WITH_CORPORA = [
     'extension_web_request_form_data_parser_fuzzer',
     'favicon_url_parser_fuzzer',
     'feature_policy_fuzzer',
-    'fido_ble_frames_fuzzer',
-    'fido_cable_handshake_handler_fuzzer',
     'fido_hid_message_fuzzer',
     'field_trial_fuzzer',
     'file_system_manager_mojolpm_fuzzer',

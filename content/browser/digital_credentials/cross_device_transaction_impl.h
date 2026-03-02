@@ -16,7 +16,6 @@
 #include "content/public/browser/cross_device_request_info.h"
 #include "content/public/browser/digital_credentials_cross_device.h"
 #include "device/bluetooth/bluetooth_adapter.h"
-#include "device/fido/cable/fido_cable_discovery.h"
 #include "device/fido/cable/v2_constants.h"
 #include "device/fido/cable/v2_discovery.h"
 #include "device/fido/network_context_factory.h"

@@ -34,8 +34,7 @@ class CONTENT_EXPORT RequestDispatcher
   using CompletionCallback =
       base::OnceCallback<void(base::expected<Response, Error>)>;
 
-  RequestDispatcher(std::unique_ptr<device::FidoDiscoveryBase> v1_discovery,
-                    std::unique_ptr<device::FidoDiscoveryBase> v2_discovery,
+  RequestDispatcher(std::unique_ptr<device::FidoDiscoveryBase> v2_discovery,
                     RequestInfo request_info,
                     CompletionCallback callback);
 
@@ -54,7 +53,6 @@ class CONTENT_EXPORT RequestDispatcher
   void OnAuthenticatorReady(device::FidoAuthenticator* authenticator);
   void OnComplete(std::optional<std::vector<uint8_t>> response);
 
-  const std::unique_ptr<device::FidoDiscoveryBase> v1_discovery_;
   const std::unique_ptr<device::FidoDiscoveryBase> v2_discovery_;
   RequestInfo request_info_;
   CompletionCallback callback_;

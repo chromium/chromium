@@ -3648,6 +3648,7 @@ test("content_unittests") {
       "//device/fido",
       "//device/fido:cablev2_authenticator",
       "//device/fido:cablev2_test_util",
+      "//device/fido:mocks",
       "//media/mojo/mojom:web_speech_recognition",
     ]
 
