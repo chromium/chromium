@@ -7,9 +7,10 @@
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/bindings/core/v8/capture_source_location.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_annotations_dict.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_model_context_options.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_model_context_tool.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_script_runner.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_tool_function.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_tool_annotations.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/dom/scoped_abort_state.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
@@ -168,9 +169,9 @@ void ModelContext::ForEachScriptTool(
 }
 
 void ModelContext::registerTool(ScriptState* script_state,
-                                ToolRegistrationParams* params,
+                                ModelContextTool* tool,
                                 ExceptionState& exception_state) {
-  if (!RegisterTool(script_state, params, exception_state)) {
+  if (!RegisterTool(script_state, tool, exception_state)) {
     return;
   }
 }
@@ -203,11 +204,11 @@ void ModelContext::SetScriptToolDeclaration(
 }
 
 void ModelContext::provideContext(ScriptState* script_state,
-                                  ProvideContextParams* params,
+                                  const ModelContextOptions* options,
                                   ExceptionState& exception_state) {
   auto prev_tool_map = std::move(tool_map_);
 
-  for (auto tool : params->tools()) {
+  for (auto tool : options->tools()) {
     if (!RegisterTool(script_state, tool, exception_state)) {
       tool_map_ = std::move(prev_tool_map);
       return;
@@ -238,7 +239,8 @@ std::optional<uint32_t> ModelContext::ExecuteTool(
   }
 
   std::optional<uint32_t> execution_id;
-  if (V8ToolFunction* v8_tool_function = it->value->GetV8ToolFunction()) {
+  if (V8ToolExecuteCallback* v8_tool_function =
+          it->value->GetV8ToolExecuteCallback()) {
     execution_id = ExecuteV8Tool(v8_tool_function, name, input_arguments,
                                  signal, std::move(tool_executed_cb));
   } else {
@@ -342,7 +344,7 @@ void ModelContext::ExecuteDeclarativeTool(
 // waits for the promise to resolve, JSON-stringifies the result, and passes
 // it to OnToolExecuted().
 std::optional<uint32_t> ModelContext::ExecuteV8Tool(
-    V8ToolFunction* tool_function,
+    V8ToolExecuteCallback* tool_function,
     const String& name,
     const String& input_arguments,
     AbortSignal* signal,
@@ -418,30 +420,30 @@ std::optional<uint32_t> ModelContext::ExecuteV8Tool(
 }
 
 bool ModelContext::RegisterTool(ScriptState* script_state,
-                                ToolRegistrationParams* params,
+                                ModelContextTool* tool,
                                 ExceptionState& exception_state) {
-  if (tool_map_.find(params->name()) != tool_map_.end()) {
+  if (tool_map_.find(tool->name()) != tool_map_.end()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Duplicate tool name");
     return false;
   }
 
-  if (!params->name() || params->name().empty()) {
+  if (!tool->name() || tool->name().empty()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Tool name is required");
     return false;
   }
 
-  if (!params->description() || params->description().empty()) {
+  if (!tool->description() || tool->description().empty()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Description is required");
     return false;
   }
 
   String input_schema;
-  if (params->hasInputSchema()) {
+  if (tool->hasInputSchema()) {
     input_schema =
-        ValidateAndStringifyObject(script_state, params->inputSchema());
+        ValidateAndStringifyObject(script_state, tool->inputSchema());
     if (!input_schema) {
       exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                         "Invalid input schema");
@@ -450,21 +452,21 @@ bool ModelContext::RegisterTool(ScriptState* script_state,
   }
 
   auto script_tool = mojom::blink::ScriptTool::New();
-  script_tool->name = params->name();
-  script_tool->description = params->description();
+  script_tool->name = tool->name();
+  script_tool->description = tool->description();
   script_tool->input_schema = input_schema;
 
-  if (params->hasAnnotations()) {
+  if (tool->hasAnnotations()) {
     script_tool->annotations = mojom::blink::ScriptToolAnnotations::New();
-    script_tool->annotations->read_only = params->annotations()->readOnlyHint();
+    script_tool->annotations->read_only = tool->annotations()->readOnlyHint();
   }
 
   auto* tool_data = MakeGarbageCollected<ToolData>(
       base::PassKey<ModelContext>(), std::move(script_tool),
-      /*v8_tool_function=*/params->execute(),
+      /*v8_tool_function=*/tool->execute(),
       CaptureSourceLocation(ExecutionContext::From(script_state)));
 
-  tool_map_.insert(params->name(), tool_data);
+  tool_map_.insert(tool->name(), tool_data);
   OnToolsChanged();
   UseCounter::Count(document_, WebFeature::kModelContextRegisterTool);
   return true;

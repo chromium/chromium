@@ -2,13 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// https://webmachinelearning.github.io/webmcp/#model-context-container
+
 [
     Exposed=Window,
+    SecureContext,
     RuntimeEnabled=WebMCP
 ] interface ModelContext {
-  [CallWith=ScriptState, RaisesException] undefined registerTool(ToolRegistrationParams params);
-  [RaisesException] undefined unregisterTool(DOMString tool_name);
-
-  [CallWith=ScriptState, RaisesException] undefined provideContext(ProvideContextParams params);
+  [CallWith=ScriptState, RaisesException] undefined provideContext(optional ModelContextOptions options = {});
   undefined clearContext();
+  [CallWith=ScriptState, RaisesException] undefined registerTool(ModelContextTool tool);
+  [RaisesException] undefined unregisterTool(DOMString name);
 };

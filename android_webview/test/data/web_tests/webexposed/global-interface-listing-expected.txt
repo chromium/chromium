@@ -6619,7 +6619,6 @@ interface Navigator
     method share
     method vibrate
     method webkitGetUserMedia
-    setter modelContext
     setter modelContextTesting
 interface NavigatorManagedData : EventTarget
     attribute @@toStringTag

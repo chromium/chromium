@@ -10,19 +10,6 @@
 promise_test(async () => {
   const modelContext = navigator.modelContext;
 
-  // Missing required tools parameter
-  assert_throws_js(
-    TypeError,
-    () => {
-      modelContext.provideContext({});
-    },
-    "provideContext should throw when tools parameter is missing"
-  );
-}, "provideContext throws on missing tools parameter");
-
-promise_test(async () => {
-  const modelContext = navigator.modelContext;
-
   // Invalid tools parameter type
   assert_throws_js(
     TypeError,

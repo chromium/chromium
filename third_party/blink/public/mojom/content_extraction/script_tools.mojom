@@ -4,13 +4,13 @@
 
 module blink.mojom;
 
-// See AnnotationsDict in tool_registration_params.idl for details of this
+// See ToolAnnotations in model_context_tool.idl for details of this
 // data structure.
 struct ScriptToolAnnotations {
   bool read_only;
 };
 
-// See ToolRegistrationParams in tool_registration_params.idl for details of
+// See ModelContextTool in model_context_tool.idl for details of
 // this data structure.
 struct ScriptTool {
   // These directly map to the corresponding fields in the web API.

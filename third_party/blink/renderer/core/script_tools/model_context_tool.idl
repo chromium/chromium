@@ -1,0 +1,19 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://webmachinelearning.github.io/webmcp/#model-context-tool
+
+dictionary ModelContextTool {
+  required DOMString name;
+  required DOMString description;
+  object inputSchema;
+  required ToolExecuteCallback execute;
+  ToolAnnotations annotations;
+};
+
+dictionary ToolAnnotations {
+  boolean readOnlyHint;
+};
+
+callback ToolExecuteCallback = Promise<any>(any... parameters);

@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+'use strict';
+
+test(function() {
+  assert_true(navigator.modelContext instanceof ModelContext);
+}, "navigator.modelContext instanceof ModelContext");
+
+test(function() {
+  assert_equals(navigator.modelContext, navigator.modelContext);
+}, "navigator.modelContext SameObject");
+
+</script>

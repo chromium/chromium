@@ -6977,7 +6977,6 @@ interface Navigator
     method updateAdInterestGroups
     method vibrate
     method webkitGetUserMedia
-    setter modelContext
     setter modelContextTesting
 interface NavigatorLogin
     attribute @@toStringTag
