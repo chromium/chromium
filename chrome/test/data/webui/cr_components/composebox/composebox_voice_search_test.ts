@@ -134,8 +134,7 @@ suite('Composebox voice search', () => {
 
   function getVoiceSearchButton(composeboxElement: ComposeboxElement):
       HTMLElement|null {
-    const contextElement = composeboxElement.$.context;
-    return contextElement.shadowRoot.querySelector<HTMLElement>(
+    return composeboxElement.shadowRoot.querySelector<HTMLElement>(
         '#voiceSearchButton');
   }
 
