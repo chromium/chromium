@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.app.tabmodel;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
+import static org.chromium.chrome.browser.app.tabmodel.PersistentStoreCleaner.cleanWindowForUnavailableStores;
 import static org.chromium.chrome.browser.app.tabmodel.ShadowTabStoreValidator.TABBED_TAG;
 import static org.chromium.chrome.browser.app.tabmodel.TabPersistentStoreFactory.buildAuthoritativeStore;
 import static org.chromium.chrome.browser.app.tabmodel.TabPersistentStoreFactory.buildShadowStore;
@@ -247,6 +248,7 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
         if (mShadowTabPersistentStore != null) {
             mShadowTabPersistentStore.cleanupStateFile(instanceId);
         }
+        cleanWindowForUnavailableStores(instanceId, this);
     }
 
     @Override
