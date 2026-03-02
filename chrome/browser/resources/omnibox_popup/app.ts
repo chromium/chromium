@@ -23,7 +23,7 @@ import {MetricsReporterImpl} from '//resources/js/metrics_reporter/metrics_repor
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {SelectionDirection, SelectionLineState, SelectionStep} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import type {AutocompleteResult, OmniboxPopupSelection, PageCallbackRouter, PageHandlerInterface, TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import type {AutocompleteResult, OmniboxPopupSelection, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerInterface as SearchboxPageHandlerInterface, TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {InputState} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import {InputType} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import type {WindowOpenDisposition} from '//resources/mojo/ui/base/mojom/window_open_disposition.mojom-webui.js';
@@ -31,6 +31,8 @@ import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
+import type {PageCallbackRouter as OmniboxPopupPageCallbackRouter} from './omnibox_popup.mojom-webui.js';
+import {OmniboxPopupBrowserProxy} from './omnibox_popup_browser_proxy.js';
 
 // 675px ~= 449px (--cr-realbox-primary-side-min-width) * 1.5 + some margin.
 const canShowSecondarySideMediaQueryList =
@@ -163,15 +165,19 @@ export class OmniboxPopupAppElement extends I18nMixinLit
   protected accessor usePecApi_: boolean =
       loadTimeData.getBoolean('contextualMenuUsePecApi');
 
-  private callbackRouter_: PageCallbackRouter;
+  private callbackRouter_: SearchboxPageCallbackRouter;
   private eventTracker_ = new EventTracker();
   private listenerIds_: number[] = [];
-  private pageHandler_: PageHandlerInterface;
+  private pageHandler_: SearchboxPageHandlerInterface;
+  private popupCallbackRouter_: OmniboxPopupPageCallbackRouter;
+  private popupListenerIds_: number[] = [];
   private selection_: OmniboxPopupSelection = kDefaultSelection;
 
   constructor() {
     super();
     this.callbackRouter_ = SearchboxBrowserProxy.getInstance().callbackRouter;
+    this.popupCallbackRouter_ =
+        OmniboxPopupBrowserProxy.getInstance().callbackRouter;
     this.isDebug = new URLSearchParams(window.location.search).has('debug');
     this.pageHandler_ = SearchboxBrowserProxy.getInstance().handler;
     ColorChangeUpdater.forDocument().start();
@@ -179,13 +185,15 @@ export class OmniboxPopupAppElement extends I18nMixinLit
 
   override async connectedCallback() {
     super.connectedCallback();
-    // TODO(b:468113419): the handlers and their definitions are not ordered the
-    // same as the
-    //   mojom file.
+    // TODO(b/468113419): The handlers and their definitions are not ordered the
+    // same as the mojom file.
+    this.popupListenerIds_ = [
+      this.popupCallbackRouter_.onShow.addListener(this.onShow_.bind(this)),
+    ];
+
     this.listenerIds_ = [
       this.callbackRouter_.autocompleteResultChanged.addListener(
           this.onAutocompleteResultChanged_.bind(this)),
-      this.callbackRouter_.onShow.addListener(this.onShow_.bind(this)),
       this.callbackRouter_.updateSelection.addListener(
           this.onUpdateSelection_.bind(this)),
       this.callbackRouter_.setKeywordSelected.addListener(
@@ -243,6 +251,12 @@ export class OmniboxPopupAppElement extends I18nMixinLit
       this.callbackRouter_.removeListener(listenerId);
     }
     this.listenerIds_ = [];
+
+    for (const listenerId of this.popupListenerIds_) {
+      this.popupCallbackRouter_.removeListener(listenerId);
+    }
+    this.popupListenerIds_ = [];
+
     canShowSecondarySideMediaQueryList.removeEventListener(
         'change', this.onCanShowSecondarySideChanged_.bind(this));
   }

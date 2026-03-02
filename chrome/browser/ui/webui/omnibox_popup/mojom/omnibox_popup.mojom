@@ -1,0 +1,22 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module omnibox_popup.mojom;
+
+// Browser-side handler for the Omnibox Popup.
+interface PageHandlerFactory {
+  // Creates and binds a new PageHandler to handle calls from the WebUI page.
+  CreatePageHandler(
+      pending_remote<Page> page, pending_receiver<PageHandler> handler);
+};
+
+// Browser-side handler for the Omnibox Popup.
+interface PageHandler {
+};
+
+// The WebUI page for the Omnibox Popup.
+interface Page {
+  // Called when the popup is shown.
+  OnShow();
+};

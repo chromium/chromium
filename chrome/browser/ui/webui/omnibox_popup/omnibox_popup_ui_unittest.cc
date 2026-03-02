@@ -79,4 +79,26 @@ TEST_F(OmniboxPopupUITest, SafeWithNullContextualSearchService) {
   omnibox_popup_ui->CreatePageHandler(
       std::move(pending_page), std::move(pending_page_handler),
       std::move(pending_searchbox_page), std::move(pending_searchbox_handler));
+
+  mojo::PendingRemote<omnibox_popup::mojom::Page> pending_popup_page;
+  mojo::PendingReceiver<omnibox_popup::mojom::PageHandler>
+      pending_popup_handler;
+
+  {
+    auto pipe_popup_page = mojo::MessagePipe();
+    pending_popup_page = mojo::PendingRemote<omnibox_popup::mojom::Page>(
+        std::move(pipe_popup_page.handle0), 0);
+  }
+
+  {
+    auto pipe_popup_handler = mojo::MessagePipe();
+    pending_popup_handler =
+        mojo::PendingReceiver<omnibox_popup::mojom::PageHandler>(
+            std::move(pipe_popup_handler.handle0));
+  }
+
+  omnibox_popup_ui->CreatePageHandler(std::move(pending_popup_page),
+                                      std::move(pending_popup_handler));
+
+  EXPECT_NE(omnibox_popup_ui->popup_handler(), nullptr);
 }

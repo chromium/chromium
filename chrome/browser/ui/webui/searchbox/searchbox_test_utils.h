@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/test_omnibox_edit_model.h"
 #include "chrome/browser/ui/webui/cr_components/searchbox/searchbox_handler.h"
+#include "chrome/browser/ui/webui/omnibox_popup/mojom/omnibox_popup.mojom.h"
 #include "chrome/browser/ui/webui/searchbox/lens_searchbox_client.h"
 #include "components/contextual_search/contextual_search_types.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
@@ -69,7 +70,6 @@ class MockSearchboxPage : public searchbox::mojom::Page {
   MOCK_METHOD(void, OpenCurrentSelection, (WindowOpenDisposition));
   MOCK_METHOD(void, SetAimButtonVisible, (bool visible));
   MOCK_METHOD(void, SetKeywordSelected, (bool is_keyword_selected), (override));
-  MOCK_METHOD(void, OnShow, ());
   MOCK_METHOD(void, SetInputText, (const std::string& input_text));
   MOCK_METHOD(void,
               SetThumbnail,
@@ -95,6 +95,18 @@ class MockSearchboxPage : public searchbox::mojom::Page {
   MOCK_METHOD(void, UpdateAimEligibility, (bool eligible), (override));
   MOCK_METHOD(void, UpdateContentSharingPolicy, (bool enabled), (override));
   MOCK_METHOD(void, OnShowAiModePrefChanged, (bool canShow), (override));
+};
+
+class MockOmniboxPopupPage : public omnibox_popup::mojom::Page {
+ public:
+  MockOmniboxPopupPage();
+  ~MockOmniboxPopupPage() override;
+  mojo::PendingRemote<omnibox_popup::mojom::Page> BindAndGetRemote();
+  mojo::Receiver<omnibox_popup::mojom::Page> receiver_{this};
+
+  void FlushForTesting() { receiver_.FlushForTesting(); }
+
+  MOCK_METHOD(void, OnShow, (), (override));
 };
 
 class MockAutocompleteController : public AutocompleteController {

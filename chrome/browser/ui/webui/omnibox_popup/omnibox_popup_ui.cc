@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter_service.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_aim_handler.h"
+#include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_handler.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_web_contents_helper.h"
 #include "chrome/browser/ui/webui/sanitized_image_source.h"
 #include "chrome/browser/ui/webui/searchbox/omnibox_composebox_handler.h"
@@ -220,6 +221,19 @@ void OmniboxPopupUI::BindInterface(
       base::BindRepeating(&OmniboxPopupUI::GetOrCreateContextualSessionHandle,
                           base::Unretained(this)));
   omnibox_handler_->SetEmbedder(embedder());
+}
+
+void OmniboxPopupUI::BindInterface(
+    mojo::PendingReceiver<omnibox_popup::mojom::PageHandlerFactory> receiver) {
+  popup_page_factory_receiver_.reset();
+  popup_page_factory_receiver_.Bind(std::move(receiver));
+}
+
+void OmniboxPopupUI::CreatePageHandler(
+    mojo::PendingRemote<omnibox_popup::mojom::Page> page,
+    mojo::PendingReceiver<omnibox_popup::mojom::PageHandler> receiver) {
+  popup_handler_ = std::make_unique<OmniboxPopupHandler>(std::move(receiver),
+                                                         std::move(page));
 }
 
 void OmniboxPopupUI::BindInterface(

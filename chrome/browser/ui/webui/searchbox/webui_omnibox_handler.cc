@@ -331,14 +331,6 @@ void WebuiOmniboxHandler::AddTabContext(int32_t tab_id,
   std::move(callback).Run(base::ok(base::UnguessableToken::Create()));
 }
 
-void WebuiOmniboxHandler::OnShow() {
-  // Ignore the call until the page remote is bound and ready to receive calls.
-  if (!IsRemoteBound()) {
-    return;
-  }
-  page_->OnShow();
-}
-
 void WebuiOmniboxHandler::SetPage(
     mojo::PendingRemote<searchbox::mojom::Page> pending_page) {
   ContextualSearchboxHandler::SetPage(std::move(pending_page));

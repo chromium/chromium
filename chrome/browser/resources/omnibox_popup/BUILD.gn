@@ -24,6 +24,7 @@ build_webui("build") {
     "full_app.html.ts",
     "full_app.ts",
     "omnibox_popup.ts",
+    "omnibox_popup_browser_proxy.ts",
   ]
   css_files = [
     "aim_app.css",
@@ -45,7 +46,10 @@ build_webui("build") {
   mojo_files_deps =
       [ "//chrome/browser/ui/webui/omnibox_popup/mojom:mojom_ts__generator" ]
 
-  mojo_files = [ "$root_gen_dir/chrome/browser/ui/webui/omnibox_popup/mojom/omnibox_popup_aim.mojom-webui.ts" ]
+  mojo_files = [
+    "$root_gen_dir/chrome/browser/ui/webui/omnibox_popup/mojom/omnibox_popup.mojom-webui.ts",
+    "$root_gen_dir/chrome/browser/ui/webui/omnibox_popup/mojom/omnibox_popup_aim.mojom-webui.ts",
+  ]
 
   webui_context_type = "trusted"
   optimize = optimize_webui
