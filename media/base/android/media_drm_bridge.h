@@ -14,6 +14,7 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/functional/callback.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner_helpers.h"
@@ -129,10 +130,9 @@ class MEDIA_EXPORT MediaDrmBridge : public ContentDecryptionModule,
 
   // Gets the current version for `key_system`. Returns an error if unable
   // to create a MediaDrm object, signifying that the device does not support
-  // `security_level`. May return an invalid base::Version if the string
-  // returned does not appear to be a version. For key systems other than
-  // Widevine, base::Version() is returned.
-  static GetVersionResult GetVersion(
+  // `security_level`. For key systems other than Widevine, base::Version() is
+  // returned. Note, this may be invalid.
+  static GetVersionResult MaybeGetVersion(
       const std::string& key_system,
       MediaDrmBridge::SecurityLevel security_level);
 
@@ -318,6 +318,7 @@ class MEDIA_EXPORT MediaDrmBridge : public ContentDecryptionModule,
 
  private:
   friend class MediaDrmBridgeFactory;
+  FRIEND_TEST_ALL_PREFIXES(MediaDrmBridgeTest, MaybeParseCdmVersion);
   // For DeleteSoon() in DeleteOnCorrectThread().
   friend class base::DeleteHelper<MediaDrmBridge>;
 
@@ -335,6 +336,11 @@ class MEDIA_EXPORT MediaDrmBridge : public ContentDecryptionModule,
       const SessionExpirationUpdateCB& session_expiration_update_cb);
 
   ~MediaDrmBridge() override;
+
+  // Parses a version string, handling potential non-numeric suffixes.
+  // This returns an invalid version to be handled by the caller if the
+  // version string cannot be parsed.
+  static base::Version MaybeParseCdmVersion(std::string_view version_str);
 
   // Get the security level of the media. Only valid for Widevine.
   SecurityLevel GetSecurityLevel();

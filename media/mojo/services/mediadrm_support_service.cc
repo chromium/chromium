@@ -39,7 +39,7 @@ void MediaDrmSupportService::IsKeySystemSupported(
     security_level = is_secure ? media::MediaDrmBridge::SECURITY_LEVEL_1
                                : media::MediaDrmBridge::SECURITY_LEVEL_3;
   }
-  auto version = MediaDrmBridge::GetVersion(key_system, security_level);
+  auto version = MediaDrmBridge::MaybeGetVersion(key_system, security_level);
   if (!version.has_value() &&
       version.error() ==
           media::CreateCdmStatus::kAndroidFailedL1SecurityLevel) {

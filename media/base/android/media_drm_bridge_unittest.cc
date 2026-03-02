@@ -406,4 +406,31 @@ TEST_F(MediaDrmBridgeTest, GetStatusForPolicyL3_Widevine) {
   EXPECT_EQ(CdmKeyInformation::KeyStatus::OUTPUT_RESTRICTED, key_status);
 }
 
+TEST_F(MediaDrmBridgeTest, MaybeParseCdmVersion) {
+  // Widevine version string returned from MediaDrm pre Android 15.
+  auto old_wv_version_string =
+      MediaDrmBridge::MaybeParseCdmVersion("18.0.0@341113000");
+  EXPECT_TRUE(old_wv_version_string.IsValid());
+  EXPECT_EQ(old_wv_version_string.GetString(), "18.0.0");
+
+  // Version string with build tag that contain alphabets. This is the behavior
+  // from Android 15 onwards for Widevine.
+  base::Version current_wv_version_string =
+      MediaDrmBridge::MaybeParseCdmVersion("19.5.0@BV1A.250226.001");
+  EXPECT_TRUE(current_wv_version_string.IsValid());
+  EXPECT_EQ(current_wv_version_string.GetString(), "19.5.0");
+
+  // Empty string. This is returned by key systems that have not implemented or
+  // set the Version property. This is an invalid version, and is handled by
+  // callers of MediaDrmBridge::GetVersion.
+  base::Version empty_version = MediaDrmBridge::MaybeParseCdmVersion("");
+  EXPECT_FALSE(empty_version.IsValid());
+
+  // Invalid parsed string without an '@'. Verify that the parsing function
+  // does not crash, and it returns an invalid version.
+  base::Version invalid_version =
+      MediaDrmBridge::MaybeParseCdmVersion("invalid_version");
+  EXPECT_FALSE(invalid_version.IsValid());
+}
+
 }  // namespace media
