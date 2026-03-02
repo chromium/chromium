@@ -7,12 +7,21 @@
 
 #include "mojo/public/c/system/types.h"
 #include "mojo/public/rust/bindings/test/cpp/add_seven_service.h"
+#include "mojo/public/rust/system/scoped_handle_interop.h"
 
 namespace bindings_unittests::mojom {
 
 std::unique_ptr<PlusSevenMathService> CreatePlusSevenMathService(
-    MojoHandle handle);
-void TestRemoteFromCpp(MojoHandle handle);
+    std::unique_ptr<mojo::rust::ScopedMessagePipeHandleWrapper> handle);
+void TestRemoteFromCpp(
+    std::unique_ptr<mojo::rust::ScopedMessagePipeHandleWrapper> handle);
+
+// Creates a PlusSevenMathService, binds it to a new pipe, and returns both
+// the service (to keep it alive) and the remote end (wrapped for Rust)
+// via out-parameters.
+void CreatePlusSevenMathServiceAndRemote(
+    std::unique_ptr<PlusSevenMathService>& service_out,
+    std::unique_ptr<mojo::rust::ScopedMessagePipeHandleWrapper>& remote_out);
 
 }  // namespace bindings_unittests::mojom
 

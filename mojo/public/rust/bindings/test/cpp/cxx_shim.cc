@@ -14,18 +14,18 @@
 namespace bindings_unittests::mojom {
 
 std::unique_ptr<PlusSevenMathService> CreatePlusSevenMathService(
-    MojoHandle handle) {
-  mojo::PendingReceiver<MathService> receiver{
-      mojo::ScopedMessagePipeHandle(mojo::MessagePipeHandle(handle))};
+    std::unique_ptr<mojo::rust::ScopedMessagePipeHandleWrapper> wrapper) {
+  mojo::PendingReceiver<MathService> receiver(wrapper->take_handle());
   return std::make_unique<PlusSevenMathService>(std::move(receiver));
 }
 
 // To be called by the Rust testing code. Constructs a math service remote from
 // the given handle, and sends several messages through to ensure basic
 // functionality.
-void TestRemoteFromCpp(MojoHandle handle) {
-  mojo::Remote<MathService> remote(mojo::PendingRemote<MathService>(
-      mojo::ScopedMessagePipeHandle(mojo::MessagePipeHandle(handle)), 0));
+void TestRemoteFromCpp(
+    std::unique_ptr<mojo::rust::ScopedMessagePipeHandleWrapper> wrapper) {
+  mojo::Remote<MathService> remote(
+      mojo::PendingRemote<MathService>(wrapper->take_handle(), 0));
 
   base::RunLoop run_loop;
 
@@ -41,6 +41,16 @@ void TestRemoteFromCpp(MojoHandle handle) {
                          run_loop.QuitClosure()));
 
   run_loop.Run();
+}
+
+void CreatePlusSevenMathServiceAndRemote(
+    std::unique_ptr<PlusSevenMathService>& service_out,
+    std::unique_ptr<mojo::rust::ScopedMessagePipeHandleWrapper>& remote_out) {
+  mojo::PendingRemote<MathService> remote;
+  service_out = std::make_unique<PlusSevenMathService>(
+      remote.InitWithNewPipeAndPassReceiver());
+  remote_out = std::make_unique<mojo::rust::ScopedMessagePipeHandleWrapper>(
+      remote.PassPipe());
 }
 
 }  // namespace bindings_unittests::mojom

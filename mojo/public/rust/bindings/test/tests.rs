@@ -237,8 +237,11 @@ fn test_cpp_receiver() {
     let quit = run_loop.get_quit_closure();
 
     // Pass the receiver handle to C++ and bind it there
-    let receiver_handle = UntypedHandle::from(pending_receiver.into_endpoint()).into_raw_value();
-    let _cpp_receiver = crate::cxx::ffi::CreatePlusSevenMathService(receiver_handle);
+    let receiver_wrapper =
+        system::scoped_handle_interop::ScopedMessagePipeHandleWrapper::from_message_endpoint(
+            pending_receiver.into_endpoint(),
+        );
+    let _cpp_receiver = crate::cxx::ffi::CreatePlusSevenMathService(receiver_wrapper);
 
     let mut remote = pending_remote.bind();
 
@@ -275,8 +278,11 @@ fn test_cpp_remote() {
 
     // Pass the remote handle to C++ and have it send messages.
     // This call blocks until all responses are received.
-    let remote_handle = UntypedHandle::from(pending_remote.into_endpoint()).into_raw_value();
-    crate::cxx::ffi::TestRemoteFromCpp(remote_handle);
+    let remote_wrapper =
+        system::scoped_handle_interop::ScopedMessagePipeHandleWrapper::from_message_endpoint(
+            pending_remote.into_endpoint(),
+        );
+    crate::cxx::ffi::TestRemoteFromCpp(remote_wrapper);
 
     // These message must have come from C++ because `TestFromRemote` i
     // the only testing function that adds things to a total of 22!
@@ -433,4 +439,36 @@ fn test_self_owned_receiver() {
 
     expect_true!(*dropped_clone.lock().unwrap());
     expect_true!(self_owned.upgrade().is_none());
+}
+
+#[gtest(RustBindingsAPI, CppToRustHandoverTest)]
+fn test_cpp_to_rust_handover() {
+    let _task_env = test_cxx::ffi::CreateTaskEnvironment();
+
+    // Create a PlusSevenMathService and bind it, all in C++.
+    let mut _service = cxx::UniquePtr::null();
+    let mut remote_wrapper = cxx::UniquePtr::null();
+    crate::cxx::ffi::CreatePlusSevenMathServiceAndRemote(&mut _service, &mut remote_wrapper);
+
+    // Convert the C++ endpoint to the equivalent Rust version.
+    // Since we use the scoped_handle_interop types, this doesn't require `unsafe`!
+    let remote_endpoint =
+        system::scoped_handle_interop::ScopedMessagePipeHandleWrapper::into_message_endpoint(
+            remote_wrapper,
+        )
+        .unwrap();
+    let pending_remote = PendingRemote::<dyn MathService>::new(remote_endpoint);
+
+    let run_loop = RunLoop::new();
+    let quit = run_loop.get_quit_closure();
+
+    let mut remote = pending_remote.bind();
+
+    // Simple test message
+    remote.Add(5, 10, move |n| {
+        expect_eq!(n, 22); // PlusSevenMathService adds 7 to all its operations.
+        quit();
+    });
+
+    run_loop.run();
 }

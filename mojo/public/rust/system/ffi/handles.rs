@@ -60,6 +60,7 @@ impl UntypedHandle {
     ///
     /// # Safety
     /// The value must represent a live, unonwned handle.
+    /// Passing a value of 0 will panic, but will not cause undefined behavior.
     pub unsafe fn wrap_raw_value(raw_value: raw_ffi::MojoHandle) -> Self {
         // FOR_RELEASE: There are apparently other types of handle ("Pseudohandles")
         // that should not be representable by this type. Look into these and check for

@@ -37,6 +37,7 @@ source_set("math_service_cpp") {
   ]
   deps = [
     ":bindings_unittests_mojom",
+    "../../system",
     "//mojo/public/cpp/bindings",
     "//testing/gtest",
   ]
