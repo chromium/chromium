@@ -72,7 +72,7 @@ export function getHtml(this: SearchboxElement) {
       </input>
     `}
     ${!this.ntpRealboxNextEnabled || this.useCompactLayout_() ? html`
-      ${this.searchboxVoiceSearchEnabled_ ? html`
+      ${this.shouldShowVoiceLens_(this.searchboxVoiceSearchEnabled_) ? html`
         <div class="searchbox-icon-button-container voice">
           <button id="voiceSearchButton" class="searchbox-icon-button"
               @click="${this.onVoiceSearchClick_}"
@@ -80,7 +80,7 @@ export function getHtml(this: SearchboxElement) {
           </button>
         </div>
       ` : ''}
-      ${this.searchboxLensSearchEnabled_ ? html`
+      ${this.shouldShowVoiceLens_(this.searchboxLensSearchEnabled_) ? html`
         <div class="searchbox-icon-button-container lens">
           <button id="lensSearchButton" class="searchbox-icon-button lens"
               @click="${this.onLensSearchClick_}"
@@ -109,7 +109,7 @@ export function getHtml(this: SearchboxElement) {
               html`<div class="carousel-divider"></div>` : ''}
           ${getDropdownHtml.bind(this)()}
         </div>
-        ${this.searchboxVoiceSearchEnabled_ ? html`
+        ${this.shouldShowVoiceLens_(this.searchboxVoiceSearchEnabled_) ? html`
           <div class="searchbox-icon-button-container voice">
             <button id="voiceSearchButton" class="searchbox-icon-button"
                 @click="${this.onVoiceSearchClick_}"
@@ -117,7 +117,7 @@ export function getHtml(this: SearchboxElement) {
             </button>
           </div>
         ` : ''}
-        ${this.searchboxLensSearchEnabled_ ? html`
+        ${this.shouldShowVoiceLens_(this.searchboxLensSearchEnabled_) ? html`
           <div class="searchbox-icon-button-container lens">
             <button id="lensSearchButton" class="searchbox-icon-button lens"
                 @click="${this.onLensSearchClick_}"

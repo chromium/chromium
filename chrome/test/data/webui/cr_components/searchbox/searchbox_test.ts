@@ -1154,10 +1154,9 @@ suite('SearchboxTest', () => {
 
   test('autocomplete result change does not impact focus', async () => {
     realbox = await createAndAppendRealbox();
+    realbox.$.input.dispatchEvent(new MouseEvent('mousedown', {button: 0}));
 
-    realbox.$.input.value = 'he';
-    realbox.$.input.dispatchEvent(new InputEvent('input'));
-
+    // Voice search button is visible when input is empty.
     realbox.shadowRoot.querySelector<HTMLElement>(
                           '#voiceSearchButton')!.focus();
     assertEquals('voiceSearchButton', getDeepActiveElement()!.id);
@@ -1165,7 +1164,7 @@ suite('SearchboxTest', () => {
     const matches = [createSearchMatchForTesting(), createUrlMatch()];
     testProxy.callbackRouterRemote.autocompleteResultChanged(
         createAutocompleteResultForTesting({
-          input: realbox.$.input.value.trimStart(),
+          input: '',
           matches: matches,
         }));
     assertTrue(await areMatchesShowing());
@@ -2707,7 +2706,7 @@ suite('SearchboxTest', () => {
     assertTrue(isVisible(realboxIcon.$.iconImg));
   });
 
-  test('lens searchboxes always use default icons in searchbox', async () => {
+  test('searchboxes always use default icons in searchbox', async () => {
     // Arrange.
     loadTimeData.overrideValues({
       searchboxDefaultIcon: 'hello.svg',
