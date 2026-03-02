@@ -48,6 +48,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.BaseSwitches;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.SysUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -182,6 +183,13 @@ public class ReturnToChromeUtilUnitTest {
         assertTrue(
                 ReturnToChromeUtil.shouldShowNtpAsHomeSurfaceAtStartup(
                         intent, null, /* persistableBundle= */ null, mInactivityTracker));
+
+        // Tests the case when the device is an Android desktop.
+        DeviceInfo.setIsDesktopForTesting(true);
+        assertFalse(
+                ReturnToChromeUtil.shouldShowNtpAsHomeSurfaceAtStartup(
+                        intent, null, /* persistableBundle= */ null, mInactivityTracker));
+        DeviceInfo.setIsDesktopForTesting(false);
     }
 
     @Test

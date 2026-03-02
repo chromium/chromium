@@ -17,6 +17,7 @@ import android.text.format.DateUtils;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
@@ -129,6 +130,11 @@ public final class ReturnToChromeUtil {
             Bundle bundle,
             PersistableBundle persistableBundle,
             ChromeInactivityTracker inactivityTracker) {
+        // If the device is android desktop, don't show a NTP homepage.
+        if (ChromeFeatureList.sNtpSimplification.isEnabled() && DeviceInfo.isDesktop()) {
+            return false;
+        }
+
         // If the current session is due to recreated, don't show a NTP homepage.
         if (isFromRecreate(bundle) || isFromUpdate(persistableBundle)) {
             return false;
