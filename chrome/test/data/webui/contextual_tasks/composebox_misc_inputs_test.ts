@@ -287,6 +287,7 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
       dataUrl: null,
       url: null,
       tabId: null,
+      iconName: null,
     };
     composebox.addFileContextForTesting(mockAddedFile);
     await microtasksFinished();

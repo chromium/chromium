@@ -971,6 +971,7 @@ export class ComposeboxElement extends I18nMixinLit
         url: null,
         tabId: null,
         isDeletable: true,
+        iconName: null,
       };
       composeboxFiles.set(token, attachment);
       const announcer = getAnnouncerInstance();
@@ -995,12 +996,15 @@ export class ComposeboxElement extends I18nMixinLit
       url: null,
       tabId: null,
       isDeletable: fileInfo.isDeletable,
+      iconName: null,
     };
 
     this.onFileContextAdded_(attachment);
   }
 
-  injectInput(title: string, thumbnail: string, fileToken: UnguessableToken) {
+  injectInput(
+      title: string, thumbnail: string, fileToken: UnguessableToken,
+      iconName?: string) {
     const attachment: ComposeboxFile = {
       uuid: fileToken,
       name: title,
@@ -1011,6 +1015,7 @@ export class ComposeboxElement extends I18nMixinLit
       url: null,
       tabId: null,
       isDeletable: true,
+      iconName: iconName ?? null,
     };
 
     this.onFileContextAdded_(attachment);
@@ -1114,6 +1119,7 @@ export class ComposeboxElement extends I18nMixinLit
         url: tabUpload.url,
         tabId: tabUpload.tabId,
         isDeletable: true,
+        iconName: null,
       };
 
       this.files_ = new Map(
@@ -2078,6 +2084,7 @@ export class ComposeboxElement extends I18nMixinLit
           url: null,
           tabId: null,
           isDeletable: true,
+          iconName: null,
         };
         // Update pending uploads in 'composebox.ts' to disable
         // submit button.
@@ -2216,6 +2223,7 @@ export class ComposeboxElement extends I18nMixinLit
       url: null,
       tabId: null,
       isDeletable: true,
+      iconName: null,
     };
     this.onFileContextAdded_(composeboxFile);
   }

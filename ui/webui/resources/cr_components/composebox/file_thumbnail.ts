@@ -57,6 +57,7 @@ export class ComposeboxFileThumbnailElement extends CrLitElement {
     url: null,
     tabId: null,
     isDeletable: true,
+    iconName: null,
   };
 
   protected accessor isUploading_: boolean = false;
