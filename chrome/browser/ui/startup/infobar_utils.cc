@@ -239,7 +239,7 @@ void AddInfoBarsIfNecessary(BrowserWindowInterface* browser,
     if (pin_feature_enabled &&
         base::FeatureList::IsEnabled(features::kSeparateDefaultAndPinPrompt)) {
       const int seed = features::kSeparateDefaultAndPinPromptRandSeed.Get();
-      const int choice = (seed > 0) ? (seed % 2) : base::RandInt(0, 1);
+      const int choice = (seed > 0) ? (seed % 2) : base::RandIntInclusive(0, 1);
 
       base::OnceCallback<void(bool)> pdf_callback = base::DoNothing();
       if (base::FeatureList::IsEnabled(features::kPdfInfoBar)) {
