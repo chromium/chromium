@@ -351,6 +351,7 @@ class ContextualTasksUIConfig
                                     chrome::kChromeUIContextualTasksHost) {}
 
   bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
+  bool ShouldCrashOnJavascriptErrorInDevelopmentBuild() const override;
 
   std::unique_ptr<content::WebUIController> CreateWebUIController(
       content::WebUI* web_ui,

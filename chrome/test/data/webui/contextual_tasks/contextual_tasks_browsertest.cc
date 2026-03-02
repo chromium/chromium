@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/config/coverage/buildflags.h"
 #include "chrome/common/webui_url_constants.h"
@@ -17,6 +18,12 @@ class ContextualTasksBrowserTest : public WebUIMochaBrowserTest {
          contextual_tasks::kContextualTasksForceEntryPointEligibility},
         {});
     set_test_loader_host(chrome::kChromeUIContextualTasksHost);
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    WebUIMochaBrowserTest::SetUpCommandLine(command_line);
+    // TODO(crbug.com/489032845): Re-enable crash-on-JS-error for tests.
+    command_line->AppendSwitch("disable-crash-on-webui-js-error");
   }
 
  private:
