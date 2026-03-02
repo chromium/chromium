@@ -6,24 +6,21 @@
 
 #include <stddef.h>
 #include <stdint.h>
-#include <string.h>
 
 #include <array>
 #include <memory>
 
-#include "base/compiler_specific.h"
 #include "base/memory/memory_pressure_listener_registry.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "base/threading/simple_thread.h"
 #include "base/time/time.h"
-#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace discardable_memory {
 namespace {
 
-const int kInvalidUniqueID = -1;
+constexpr int kInvalidUniqueID = -1;
 
 class TestDiscardableSharedMemory : public base::DiscardableSharedMemory {
  public:
@@ -90,7 +87,7 @@ class DiscardableSharedMemoryManagerTest : public testing::Test {
 };
 
 TEST_F(DiscardableSharedMemoryManagerTest, AllocateForClient) {
-  const int kDataSize = 1024;
+  constexpr int kDataSize = 1024;
   std::array<uint8_t, kDataSize> data;
   data.fill(0x80);
 
@@ -113,7 +110,7 @@ TEST_F(DiscardableSharedMemoryManagerTest, AllocateForClient) {
 }
 
 TEST_F(DiscardableSharedMemoryManagerTest, Purge) {
-  const int kDataSize = 1024;
+  constexpr int kDataSize = 1024;
 
   base::UnsafeSharedMemoryRegion shared_region1;
   manager_->AllocateLockedDiscardableSharedMemoryForClient(
@@ -177,7 +174,7 @@ TEST_F(DiscardableSharedMemoryManagerTest, Purge) {
 }
 
 TEST_F(DiscardableSharedMemoryManagerTest, EnforceMemoryPolicy) {
-  const int kDataSize = 1024;
+  constexpr int kDataSize = 1024;
 
   base::UnsafeSharedMemoryRegion shared_region;
   manager_->AllocateLockedDiscardableSharedMemoryForClient(
@@ -215,7 +212,7 @@ TEST_F(DiscardableSharedMemoryManagerTest, EnforceMemoryPolicy) {
 
 TEST_F(DiscardableSharedMemoryManagerTest,
        ReduceMemoryAfterSegmentHasBeenDeleted) {
-  const int kDataSize = 1024;
+  constexpr int kDataSize = 1024;
 
   base::UnsafeSharedMemoryRegion shared_region1;
   manager_->AllocateLockedDiscardableSharedMemoryForClient(
@@ -252,33 +249,89 @@ TEST_F(DiscardableSharedMemoryManagerTest,
   memory2.Unlock(0, 0);
 }
 
-// Memory pressure listeners are disabled on Windows and Mac, so this test
-// is disabled on those platforms as it relies on receiving notifications.
-//
-// TODO(crbug.com/483018445): Check the kSuppressMemoryMonitor feature flag
-// instead of buildflags once the feature is exposed publicly or moved to base.
-// Currently, it is internal to components/memory_pressure.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-#define MAYBE_OnMemoryPressure DISABLED_OnMemoryPressure
-#else
-#define MAYBE_OnMemoryPressure OnMemoryPressure
-#endif
-TEST_F(DiscardableSharedMemoryManagerTest, MAYBE_OnMemoryPressure) {
-  task_environment_.RunUntilIdle();
+TEST_F(DiscardableSharedMemoryManagerTest, OnModerateMemoryPressure) {
+  constexpr int kDataSize = 1024;
 
-  const base::MemoryPressureLevel pressure_levels[] = {
-      base::MEMORY_PRESSURE_LEVEL_MODERATE,
-      base::MEMORY_PRESSURE_LEVEL_CRITICAL};
+  base::UnsafeSharedMemoryRegion shared_region1;
+  manager_->AllocateLockedDiscardableSharedMemoryForClient(
+      kInvalidUniqueID, kDataSize, 1, &shared_region1);
+  ASSERT_TRUE(shared_region1.IsValid());
+  TestDiscardableSharedMemory memory1(std::move(shared_region1));
+  ASSERT_TRUE(memory1.Map(kDataSize));
 
-  for (auto pressure : pressure_levels) {
-    base::MemoryPressureListener::NotifyMemoryPressure(pressure);
+  base::UnsafeSharedMemoryRegion shared_region2;
+  manager_->AllocateLockedDiscardableSharedMemoryForClient(
+      kInvalidUniqueID, kDataSize, 2, &shared_region2);
+  ASSERT_TRUE(shared_region2.IsValid());
+  TestDiscardableSharedMemory memory2(std::move(shared_region2));
+  ASSERT_TRUE(memory2.Map(kDataSize));
+
+  // Allow two segments to be resident so moderate pressure should trim to one.
+  manager_->SetNow(base::Time::FromSecondsSinceUnixEpoch(1));
+  manager_->SetMemoryLimit(memory1.mapped_size() + memory2.mapped_size());
+  memory1.SetNow(base::Time::FromSecondsSinceUnixEpoch(2));
+  memory1.Unlock(0, 0);
+  memory2.SetNow(base::Time::FromSecondsSinceUnixEpoch(3));
+  memory2.Unlock(0, 0);
+  // Manager time must be after all segment unlock times for eviction to work.
+  manager_->SetNow(base::Time::FromSecondsSinceUnixEpoch(4));
+
+  base::MemoryPressureListenerRegistry::NotifyMemoryPressure(
+      base::MEMORY_PRESSURE_LEVEL_MODERATE);
+  if (manager_->memory_pressure_level() !=
+      base::MEMORY_PRESSURE_LEVEL_MODERATE) {
+    GTEST_SKIP() << "Moderate memory pressure notifications are suppressed for "
+                    "kDiscardableSharedMemoryManager.";
   }
 
-  // Flush to ensure pending memory pressure tasks run.
   task_environment_.RunUntilIdle();
 
-  EXPECT_EQ(std::size(pressure_levels),
-            manager_->on_memory_pressure_call_count());
+  EXPECT_EQ(memory2.mapped_size(), manager_->GetBytesAllocated());
+  EXPECT_FALSE(memory1.IsMemoryResident());
+  EXPECT_TRUE(memory2.IsMemoryResident());
+  EXPECT_EQ(1u, manager_->on_memory_pressure_call_count());
+}
+
+TEST_F(DiscardableSharedMemoryManagerTest, OnCriticalMemoryPressure) {
+  constexpr int kDataSize = 1024;
+
+  base::UnsafeSharedMemoryRegion shared_region1;
+  manager_->AllocateLockedDiscardableSharedMemoryForClient(
+      kInvalidUniqueID, kDataSize, 1, &shared_region1);
+  ASSERT_TRUE(shared_region1.IsValid());
+  TestDiscardableSharedMemory memory1(std::move(shared_region1));
+  ASSERT_TRUE(memory1.Map(kDataSize));
+
+  base::UnsafeSharedMemoryRegion shared_region2;
+  manager_->AllocateLockedDiscardableSharedMemoryForClient(
+      kInvalidUniqueID, kDataSize, 2, &shared_region2);
+  ASSERT_TRUE(shared_region2.IsValid());
+  TestDiscardableSharedMemory memory2(std::move(shared_region2));
+  ASSERT_TRUE(memory2.Map(kDataSize));
+
+  manager_->SetNow(base::Time::FromSecondsSinceUnixEpoch(1));
+  manager_->SetMemoryLimit(memory1.mapped_size() + memory2.mapped_size());
+  memory1.SetNow(base::Time::FromSecondsSinceUnixEpoch(2));
+  memory1.Unlock(0, 0);
+  memory2.SetNow(base::Time::FromSecondsSinceUnixEpoch(3));
+  memory2.Unlock(0, 0);
+  // Manager time must be after all segment unlock times for eviction to work.
+  manager_->SetNow(base::Time::FromSecondsSinceUnixEpoch(4));
+
+  base::MemoryPressureListenerRegistry::NotifyMemoryPressure(
+      base::MEMORY_PRESSURE_LEVEL_CRITICAL);
+  if (manager_->memory_pressure_level() !=
+      base::MEMORY_PRESSURE_LEVEL_CRITICAL) {
+    GTEST_SKIP() << "Critical memory pressure notifications are suppressed for "
+                    "kDiscardableSharedMemoryManager.";
+  }
+
+  task_environment_.RunUntilIdle();
+
+  EXPECT_EQ(0u, manager_->GetBytesAllocated());
+  EXPECT_FALSE(memory1.IsMemoryResident());
+  EXPECT_FALSE(memory2.IsMemoryResident());
+  EXPECT_EQ(1u, manager_->on_memory_pressure_call_count());
 }
 
 class DiscardableSharedMemoryManagerScheduleEnforceMemoryPolicyTest
@@ -309,7 +362,7 @@ class SetMemoryLimitRunner : public base::DelegateSimpleThread::Delegate {
 
 TEST_F(DiscardableSharedMemoryManagerScheduleEnforceMemoryPolicyTest,
        SetMemoryLimitOnSimpleThread) {
-  const int kDataSize = 1024;
+  constexpr int kDataSize = 1024;
 
   base::UnsafeSharedMemoryRegion shared_region;
   manager_->AllocateLockedDiscardableSharedMemoryForClient(
