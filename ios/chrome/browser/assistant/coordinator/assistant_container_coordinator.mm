@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/named_guide.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
@@ -67,8 +68,12 @@
   }
 
   // Resolve layout guide.
-  GuideName* guideName = kAppBarGuide;
-  LayoutGuideCenter* center = LayoutGuideCenterForBrowser(nil);
+  GuideName* guideName = kSecondaryToolbarGuide;
+  LayoutGuideCenter* center = LayoutGuideCenterForBrowser(self.browser);
+  if (IsChromeNextIaEnabled()) {
+    guideName = kAppBarGuide;
+    center = LayoutGuideCenterForBrowser(nil);
+  }
   _containerViewController.anchorView = [center referencedViewUnderName:guideName];
 
   // Add the view controller as a child view controller.
