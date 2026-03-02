@@ -2848,6 +2848,8 @@ export enum HostCapability {
   SHARE_ADDITIONAL_IMAGE_CONTEXT = 6,
   // Enables the PDF Zero State Web UI.
   PDF_ZERO_STATE = 7,
+  // Indicates that the host supports the invoke mechanism.
+  INVOKE = 8,
 }
 
 ///////////////////////////////////////////////

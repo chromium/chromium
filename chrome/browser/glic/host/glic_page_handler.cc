@@ -995,6 +995,10 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
       state->host_capabilities.push_back(mojom::HostCapability::kPdfZeroState);
     }
 
+    if (base::FeatureList::IsEnabled(features::kGlicInvoke)) {
+      state->host_capabilities.push_back(mojom::HostCapability::kInvoke);
+    }
+
     const mojom::InvocationSource invocation_source =
         host().invocation_source().value_or(
             mojom::InvocationSource::kUnsupported);

@@ -2764,6 +2764,8 @@ class ApiTests extends ApiTestFixtureBase {
         return 'SHARE_ADDITIONAL_IMAGE_CONTEXT';
       case HostCapability.PDF_ZERO_STATE:
         return 'PDF_ZERO_STATE';
+      case HostCapability.INVOKE:
+        return 'INVOKE';
       default:
         return 'NEW_ENUM_NOT_IMPLEMENTED';
     }

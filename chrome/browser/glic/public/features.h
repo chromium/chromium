@@ -18,6 +18,8 @@ BASE_DECLARE_FEATURE(kGlicOrphanedReattachment);
 
 BASE_DECLARE_FEATURE(kAutoOpenGlicForPdf);
 
+BASE_DECLARE_FEATURE(kGlicInvoke);
+
 }  // namespace features
 
 #endif  // CHROME_BROWSER_GLIC_PUBLIC_FEATURES_H_
