@@ -44,9 +44,6 @@
   // Whether the active cell if from a pinned tab.
   BOOL _activeCellPinned;
 
-  // The tab grid transition animation to be performed.
-  id<TabGridTransitionAnimation> _animation;
-
   // The layout guide center associated to the current browser.
   LayoutGuideCenter* _layoutGuideCenter;
 
@@ -55,6 +52,10 @@
 
   // Whether the transition is for an incognito tab.
   BOOL _incognito;
+
+  // Whether the animations are disabled. When true, most of the other ivars are
+  // not set.
+  BOOL _disabledAnimations;
 }
 
 #pragma mark - Public
@@ -72,6 +73,7 @@
                              incognito:(BOOL)incognito {
   self = [super init];
   if (self) {
+    _disabledAnimations = NO;
     TabGridTransitionLayout* transitionLayout = [tabGridTransitionLayoutProvider
         transitionLayoutForIsIncognito:incognito];
     _transitionType = transitionType;
@@ -86,6 +88,23 @@
     _layoutGuideCenter = layoutGuideCenter;
     _isRegularBrowserNTP = isRegularBrowserNTP;
     _incognito = incognito;
+  }
+  return self;
+}
+
+- (instancetype)
+    initWithDisabledAnimationWithDirection:(TabGridTransitionDirection)direction
+               browserLayoutViewController:
+                   (UIViewController<TabGridTransitionContextProvider>*)
+                       browserLayoutViewController
+                     tabGridViewController:
+                         (UIViewController*)tabGridViewController {
+  self = [super init];
+  if (self) {
+    _disabledAnimations = YES;
+    _direction = direction;
+    _tabGridViewController = tabGridViewController;
+    _browserLayoutViewController = browserLayoutViewController;
   }
   return self;
 }
@@ -117,7 +136,11 @@
   };
 
   [self prepareBrowserToTabGridTransition];
-  [self performTransitionAnimationWithCompletion:animationCompletion];
+  if (_disabledAnimations) {
+    animationCompletion();
+  } else {
+    [self performTransitionAnimationWithCompletion:animationCompletion];
+  }
 }
 
 // Performs the Tab Grid to Browser transition with a `completion` block.
@@ -133,7 +156,11 @@
   };
 
   [self prepareTabGridToBrowserTransition];
-  [self performTransitionAnimationWithCompletion:animationCompletion];
+  if (_disabledAnimations) {
+    animationCompletion();
+  } else {
+    [self performTransitionAnimationWithCompletion:animationCompletion];
+  }
 }
 
 // Prepares items for the Browser to Tab Grid transition.
@@ -182,6 +209,8 @@
     transitionType = TabGridTransitionType::kReducedMotion;
   }
 
+  // The tab grid transition animation to be performed.
+  id<TabGridTransitionAnimation> animation;
   switch (transitionType) {
     case TabGridTransitionType::kNormal: {
       TabGridAnimationParameters* animationParameters =
@@ -189,13 +218,13 @@
 
       switch (_direction) {
         case TabGridTransitionDirection::kFromTabGridToBrowser: {
-          _animation = [[GridToTabAnimation alloc]
+          animation = [[GridToTabAnimation alloc]
               initWithAnimationParameters:animationParameters];
           break;
         }
 
         case TabGridTransitionDirection::kFromBrowserToTabGrid: {
-          _animation = [[TabToGridAnimation alloc]
+          animation = [[TabToGridAnimation alloc]
               initWithAnimationParameters:animationParameters];
           break;
         }
@@ -205,23 +234,17 @@
     }
 
     case TabGridTransitionType::kReducedMotion: {
-      _animation = [[TabGridReducedAnimation alloc]
+      animation = [[TabGridReducedAnimation alloc]
           initWithAnimatedView:_browserLayoutViewController.view
                 beingPresented:_direction == TabGridTransitionDirection::
                                                  kFromTabGridToBrowser];
       break;
     }
 
-    case TabGridTransitionType::kAnimationDisabled: {
-      break;
-    }
   }
 
-  if (_animation) {
-    [_animation animateWithCompletion:completion];
-  } else if (completion) {
-    completion();
-  }
+  CHECK(animation);
+  [animation animateWithCompletion:completion];
 }
 
 // Creates animation parameters for the transition.

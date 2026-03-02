@@ -21,7 +21,6 @@ enum class TabGridTransitionDirection {
 enum class TabGridTransitionType {
   kNormal,
   kReducedMotion,
-  kAnimationDisabled,
 };
 
 @class LayoutGuideCenter;
@@ -46,6 +45,16 @@ enum class TabGridTransitionType {
                      layoutGuideCenter:(LayoutGuideCenter*)layoutGuideCenter
                    isRegularBrowserNTP:(BOOL)isRegularBrowserNTP
                              incognito:(BOOL)incognito
+    NS_DESIGNATED_INITIALIZER;
+
+// Creates the transition object for a non-animated transition in `direction`.
+- (instancetype)
+    initWithDisabledAnimationWithDirection:(TabGridTransitionDirection)direction
+               browserLayoutViewController:
+                   (UIViewController<TabGridTransitionContextProvider>*)
+                       browserLayoutViewController
+                     tabGridViewController:
+                         (UIViewController*)tabGridViewController
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
