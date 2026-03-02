@@ -56,6 +56,7 @@
 #import "ios/chrome/browser/scene/ui/scene_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_checkup/password_checkup_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_navigation_controller.h"
+#import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/incognito_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -234,6 +235,7 @@ void OnListFamilyMembersResponse(
   [_tabGridCoordinator start];
   if (IsUseSceneViewControllerEnabled()) {
     _viewController = [[SceneViewController alloc] init];
+    _viewController.layoutGuideCenter = LayoutGuideCenterForBrowser(nil);
     UIViewController* tabGridViewController =
         _tabGridCoordinator.viewController;
     [_viewController addChildViewController:tabGridViewController];

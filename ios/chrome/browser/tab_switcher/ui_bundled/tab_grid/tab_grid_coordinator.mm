@@ -707,8 +707,13 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
     animationEnabled = NO;
   }
 
+  UIView* appContentView = IsChromeNextIaEnabled()
+                               ? [LayoutGuideCenterForBrowser(nil)
+                                     referencedViewUnderName:kAppContentGuide]
+                               : nil;
   auto params = std::make_unique<TabGridTransitionHandlerInitParams>(
-      direction, self.browserLayoutViewController, _viewController);
+      direction, self.browserLayoutViewController, _viewController,
+      appContentView);
 
   if (animationEnabled) {
     if (UIAccessibilityIsReduceMotionEnabled()) {
@@ -718,7 +723,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
       self.transitionHandler = [[TabGridTransitionHandler alloc]
                      initWithCommonParams:std::move(params)
           tabGridTransitionLayoutProvider:self
-                        layoutGuideCenter:LayoutGuideCenterForBrowser(browser)
+                 browserLayoutGuideCenter:LayoutGuideCenterForBrowser(browser)
                       isRegularBrowserNTP:isRegularBrowserNTP
                                 incognito:isIncognito];
     }

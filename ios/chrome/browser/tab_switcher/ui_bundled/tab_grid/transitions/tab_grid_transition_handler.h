@@ -29,15 +29,19 @@ struct TabGridTransitionHandlerInitParams {
   UIViewController<TabGridTransitionContextProvider>*
       browser_layout_view_controller;
   UIViewController* tab_grid_view_controller;
+  // The view associated with the AppContent named guide.
+  UIView* app_content_view;
 
   TabGridTransitionHandlerInitParams(
       TabGridTransitionDirection direction,
       UIViewController<TabGridTransitionContextProvider>*
           browser_layout_view_controller,
-      UIViewController* tab_grid_view_controller)
+      UIViewController* tab_grid_view_controller,
+      UIView* app_content_view)
       : direction(direction),
         browser_layout_view_controller(browser_layout_view_controller),
-        tab_grid_view_controller(tab_grid_view_controller) {}
+        tab_grid_view_controller(tab_grid_view_controller),
+        app_content_view(app_content_view) {}
 
   TabGridTransitionHandlerInitParams() = delete;
 };
@@ -50,7 +54,8 @@ struct TabGridTransitionHandlerInitParams {
                     (std::unique_ptr<TabGridTransitionHandlerInitParams>)params
      tabGridTransitionLayoutProvider:
          (id<TabGridTransitionLayoutProviding>)tabGridTransitionLayoutProvider
-                   layoutGuideCenter:(LayoutGuideCenter*)layoutGuideCenter
+            browserLayoutGuideCenter:
+                (LayoutGuideCenter*)browserLayoutGuideCenter
                  isRegularBrowserNTP:(BOOL)isRegularBrowserNTP
                            incognito:(BOOL)incognito NS_DESIGNATED_INITIALIZER;
 

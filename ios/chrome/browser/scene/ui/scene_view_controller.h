@@ -7,12 +7,16 @@
 
 #import <UIKit/UIKit.h>
 
+@class LayoutGuideCenter;
+
 // A view controller that can act as the `rootViewController` for a scene's
 // window.
 @interface SceneViewController : UIViewController
 
 // A view to contain the TabGrid and BVC.
 @property(nonatomic, readonly) UIView* appContainer;
+// This view controller's LayoutGuideCenter.
+@property(nonatomic, strong) LayoutGuideCenter* layoutGuideCenter;
 
 // Sets the app bar.
 - (void)setAppBar:(UIViewController*)appBar;

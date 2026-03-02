@@ -6,6 +6,7 @@
 
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
+#import "ios/chrome/browser/app_bar/ui/app_bar_constants.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_mutator.h"
 #import "ios/chrome/browser/intents/model/intents_donation_helper.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
@@ -51,16 +52,13 @@ UIImage* DefaultAppBarSymbol(NSString* symbol_name) {
                                         AppBarSymbolConfiguration());
 }
 
-// Remove the "unused-function" check as this is only used when some buildflag
-// is enabled.
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wunused-function"
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
 // Returns a custom symbol with the common configuration.
 UIImage* CustomAppBarSymbol(NSString* symbol_name) {
   return CustomSymbolWithConfiguration(symbol_name,
                                        AppBarSymbolConfiguration());
 }
-#pragma clang diagnostic pop
+#endif
 
 }  // namespace
 
@@ -108,11 +106,19 @@ UIImage* CustomAppBarSymbol(NSString* symbol_name) {
   stackView.translatesAutoresizingMaskIntoConstraints = NO;
   stackView.distribution = UIStackViewDistributionFillEqually;
 
-  [self.view addSubview:stackView];
+  UIView* view = self.view;
+  [view addSubview:stackView];
 
-  AddSameConstraints(stackView, self.view);
+  [NSLayoutConstraint activateConstraints:@[
+    [stackView.leadingAnchor constraintEqualToAnchor:view.leadingAnchor],
+    [stackView.topAnchor constraintEqualToAnchor:view.topAnchor],
+    [stackView.trailingAnchor constraintEqualToAnchor:view.trailingAnchor],
+    [stackView.bottomAnchor
+        constraintLessThanOrEqualToAnchor:view.bottomAnchor],
+    [view.heightAnchor constraintEqualToConstant:kAppBarHeight],
+  ]];
 
-  [self.layoutGuideCenter referenceView:self.view underName:kAppBarGuide];
+  [self.layoutGuideCenter referenceView:view underName:kAppBarGuide];
 }
 
 #pragma mark - AppBarConsumer

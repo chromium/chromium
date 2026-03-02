@@ -32,6 +32,7 @@ source_set("transitions") {
     "//ios/chrome/browser/shared/ui/util:util_swift",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid:tab_grid_paging",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/transitions/animations",
+    "//ios/chrome/common/ui/util",
   ]
 }
 

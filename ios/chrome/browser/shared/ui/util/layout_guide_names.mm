@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 
+GuideName* const kAppContentGuide = @"AppContentGuide";
 GuideName* const kContentAreaGuide = @"ContentAreaGuide";
 GuideName* const kPrimaryToolbarGuide = @"kPrimaryToolbarGuide";
 GuideName* const kSecondaryToolbarGuide = @"kSecondaryToolbarGuide";

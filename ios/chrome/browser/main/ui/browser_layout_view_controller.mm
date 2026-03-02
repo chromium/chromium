@@ -48,6 +48,9 @@
 - (void)viewDidLoad {
   [super viewDidLoad];
 
+  if (IsChromeNextIaEnabled()) {
+    self.view.translatesAutoresizingMaskIntoConstraints = NO;
+  }
   // Register for trait changes that affect the tab strip visibility.
   NSArray<UITrait>* traits = TraitCollectionSetForTraits(@[
     UITraitHorizontalSizeClass.class, UITraitVerticalSizeClass.class,

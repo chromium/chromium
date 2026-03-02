@@ -4,6 +4,8 @@
 
 source_set("ui") {
   sources = [
+    "app_bar_constants.h",
+    "app_bar_constants.mm",
     "app_bar_consumer.h",
     "app_bar_container_view.h",
     "app_bar_container_view.mm",

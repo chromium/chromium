@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/transitions/tab_grid_transition_item.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/transitions/tab_grid_transition_layout.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/transitions/tab_grid_transition_layout_providing.h"
+#import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 namespace {
 // Transition types available.
@@ -52,7 +53,7 @@ enum class TabGridTransitionType {
   BOOL _activeCellPinned;
 
   // The layout guide center associated to the current browser.
-  LayoutGuideCenter* _layoutGuideCenter;
+  LayoutGuideCenter* _browserLayoutGuideCenter;
 
   // Whether the transition is for a tab that is a regular (non-icongnito) NTP.
   BOOL _isRegularBrowserNTP;
@@ -67,7 +68,8 @@ enum class TabGridTransitionType {
                     (std::unique_ptr<TabGridTransitionHandlerInitParams>)params
      tabGridTransitionLayoutProvider:
          (id<TabGridTransitionLayoutProviding>)tabGridTransitionLayoutProvider
-                   layoutGuideCenter:(LayoutGuideCenter*)layoutGuideCenter
+            browserLayoutGuideCenter:
+                (LayoutGuideCenter*)browserLayoutGuideCenter
                  isRegularBrowserNTP:(BOOL)isRegularBrowserNTP
                            incognito:(BOOL)incognito {
   self = [super init];
@@ -83,7 +85,7 @@ enum class TabGridTransitionType {
     _activeGrid = transitionLayout.activeGrid;
     _pinnedTabsViewController = transitionLayout.pinnedTabs;
     _activeCellPinned = transitionLayout.isActiveCellPinned;
-    _layoutGuideCenter = layoutGuideCenter;
+    _browserLayoutGuideCenter = browserLayoutGuideCenter;
     _isRegularBrowserNTP = isRegularBrowserNTP;
     _incognito = incognito;
   }
@@ -168,14 +170,18 @@ enum class TabGridTransitionType {
   UIViewController* browserLayout = _params->browser_layout_view_controller;
   [tabGrid addChildViewController:browserLayout];
   if (IsChromeNextIaEnabled()) {
-    CGRect frame = tabGrid.view.bounds;
-    // TODO(crbug.com/483998779): Use autolayout instead of fixed margins.
-    frame.size.height -= 50;
-    browserLayout.view.frame = frame;
+    // Remove from superview to ensure all constraints are gone.
+    [browserLayout.view removeFromSuperview];
+
+    UIView* appContentGuide = _params->app_content_view;
+    browserLayout.view.frame = [tabGrid.view convertRect:appContentGuide.bounds
+                                                fromView:appContentGuide];
+    [tabGrid.view addSubview:browserLayout.view];
+    AddSameConstraints(browserLayout.view, appContentGuide);
   } else {
     browserLayout.view.frame = tabGrid.view.bounds;
+    [tabGrid.view addSubview:browserLayout.view];
   }
-  [tabGrid.view addSubview:browserLayout.view];
 
   browserLayout.view.accessibilityViewIsModal = YES;
 }
@@ -269,8 +275,8 @@ enum class TabGridTransitionType {
                                               : contentAreaFrame.origin.y;
 
   // Get the "bottom toolbar height" (everything below the web content area).
-  UIView* bottomToolbarView =
-      [_layoutGuideCenter referencedViewUnderName:kSecondaryToolbarGuide];
+  UIView* bottomToolbarView = [_browserLayoutGuideCenter
+      referencedViewUnderName:kSecondaryToolbarGuide];
   CGRect bottomToolbarFrameInWindow =
       [bottomToolbarView.superview convertRect:bottomToolbarView.frame
                                         toView:nil];

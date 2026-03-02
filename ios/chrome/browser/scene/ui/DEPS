@@ -1,0 +1,5 @@
+include_rules = [
+  # keep-sorted start
+  "+ios/chrome/browser/app_bar/ui",
+  # keep-sorted end
+]
