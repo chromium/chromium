@@ -203,8 +203,8 @@ void ToolExecutor::ExecuteTool(const actor::TaskId& task_id,
   if (is_split_execution_) {
     tool_->MarkAsRevalidation();
     ValidationResult revalidation = tool_->Validate();
-    base::UmaHistogramEnumeration("Actor.Tools.RevalidationResult",
-                                  revalidation.result->code);
+    base::UmaHistogramSparse("Actor.Tools.RevalidationResult",
+                             std::to_underlying(revalidation.result->code));
     if (!IsOk(*revalidation.result)) {
       ToolFinished(std::move(revalidation.result));
       return;
