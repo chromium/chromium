@@ -43,6 +43,9 @@ AnchorConfiguration GetPermissionPromptBubbleAnchorConfiguration(
 // button.
 AnchorConfiguration GetAppMenuAnchorConfiguration(Browser* browser);
 
+// Returns true if the given anchor can be used as a highlight.
+bool IsHighlightable(views::BubbleAnchor anchor);
+
 }  // namespace bubble_anchor_util
 
 #endif  // CHROME_BROWSER_UI_VIEWS_BUBBLE_ANCHOR_UTIL_VIEWS_H_

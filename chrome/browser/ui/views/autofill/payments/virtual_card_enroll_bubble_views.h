@@ -29,8 +29,8 @@ class VirtualCardEnrollBubbleController;
 // to be enrolled in a virtual card.
 class VirtualCardEnrollBubbleViews : public AutofillLocationBarBubble {
  public:
-  // Bubble will be anchored to |anchor_view|.
-  VirtualCardEnrollBubbleViews(views::View* anchor_view,
+  // Bubble will be anchored to `anchor`.
+  VirtualCardEnrollBubbleViews(views::BubbleAnchor anchor,
                                content::WebContents* web_contents,
                                VirtualCardEnrollBubbleController* controller);
   ~VirtualCardEnrollBubbleViews() override;

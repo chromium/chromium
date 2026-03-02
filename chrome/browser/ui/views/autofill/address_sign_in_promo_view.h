@@ -17,7 +17,7 @@ class AddressSignInPromoView : public AddressBubbleBaseView {
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kBubbleFrameViewId);
 
-  explicit AddressSignInPromoView(views::View* anchor_view,
+  explicit AddressSignInPromoView(views::BubbleAnchor anchor,
                                   content::WebContents* web_contents,
                                   const AutofillProfile& autofill_profile);
 

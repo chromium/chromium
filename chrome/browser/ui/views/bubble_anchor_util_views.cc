@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "components/content_settings/core/common/features.h"
+#include "ui/base/interaction/element_highlighter.h"
 #include "ui/views/bubble/bubble_border.h"
 
 // This file contains the bubble_anchor_util implementation for a Views
@@ -122,6 +123,19 @@ gfx::Rect GetPageInfoAnchorRect(Browser* browser) {
   gfx::Point browser_view_origin = browser_view->GetBoundsInScreen().origin();
   browser_view_origin += gfx::Vector2d(x_within_browser_view, 0);
   return gfx::Rect(browser_view_origin, gfx::Size());
+}
+
+// Returns true if the given anchor can be used as a highlight.
+bool IsHighlightable(views::BubbleAnchor anchor) {
+  if (auto* view_anchor = std::get_if<views::View*>(&anchor)) {
+    return views::Button::AsButton(*view_anchor);
+  } else if (auto* element_anchor = std::get_if<ui::TrackedElement*>(&anchor)) {
+    return ui::ElementHighlighter::GetElementHighlighter()->CanBeHighlighted(
+        *element_anchor);
+  } else {
+    // nullptr isn't highlightable.
+    return false;
+  }
 }
 
 }  // namespace bubble_anchor_util
