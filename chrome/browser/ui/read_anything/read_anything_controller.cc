@@ -285,6 +285,14 @@ void ReadAnythingController::TransferWebUiOwnership(
   CHECK(!web_ui_wrapper_);
   web_ui_wrapper_ = std::move(web_ui_wrapper);
   SetPresentationState(PresentationState::kInactive);
+
+  // If the WebUI was never shown, it likely means it was still loading when
+  // we closed it. If we reuse this wrapper, we might miss the "ShowUI" signal
+  // if it fires while detached. Force recreation to ensure a fresh signal
+  // next time.
+  if (!has_shown_ui_) {
+    RecreateWebUIWrapper();
+  }
 }
 
 void ReadAnythingController::ShowImmersiveUI(ReadAnythingOpenTrigger trigger) {
