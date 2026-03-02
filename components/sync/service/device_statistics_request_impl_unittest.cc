@@ -27,11 +27,6 @@ class DeviceStatisticsRequestImplTest : public testing::Test {
       : shared_url_loader_factory_(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &test_url_loader_factory_)) {
-    // A primary account must exist, even when querying data for a non-primary
-    // account.
-    identity_test_env_.MakePrimaryAccountAvailable(
-        "primary@gmail.com", signin::ConsentLevel::kSignin);
-
     account_info_ = identity_test_env_.MakeAccountAvailable(kTestEmail);
   }
 

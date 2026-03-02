@@ -485,7 +485,12 @@ void FakeServer::InjectEntity(std::unique_ptr<LoopbackServerEntity> entity) {
   const DataType data_type = entity->GetDataType();
 
   OnWillCommit();
-  loopback_server_->SaveEntity(std::move(entity));
+
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    loopback_server_->SaveEntity(std::move(entity));
+    loopback_server_->ScheduleSaveStateToFile();
+  }
 
   // Notify observers so invalidations are mimic-ed.
   OnCommit(/*committed_data_types=*/{data_type});
