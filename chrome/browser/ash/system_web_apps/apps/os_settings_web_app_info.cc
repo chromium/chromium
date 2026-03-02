@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
-#include "ash/constants/chrome_url_constants.h"
+#include "ash/constants/chrome_webui_url_constants.h"
 #include "ash/constants/webui_url_constants.h"
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
 #include "chrome/browser/ash/system_web_apps/apps/system_web_app_install_utils.h"

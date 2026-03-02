@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_CONSTANTS_CHROME_URL_CONSTANTS_H_
-#define ASH_CONSTANTS_CHROME_URL_CONSTANTS_H_
+#ifndef ASH_CONSTANTS_CHROME_WEBUI_URL_CONSTANTS_H_
+#define ASH_CONSTANTS_CHROME_WEBUI_URL_CONSTANTS_H_
 
 // Defines URL/host constants that Chrome as a web browser provides.
 namespace ash::chrome_urls {
@@ -42,4 +42,4 @@ inline constexpr char kSyncSetupSubPage[] = "syncSetup";
 
 }  // namespace ash::chrome_urls
 
-#endif  // ASH_CONSTANTS_CHROME_URL_CONSTANTS_H_
+#endif  // ASH_CONSTANTS_CHROME_WEBUI_URL_CONSTANTS_H_

@@ -8,7 +8,7 @@
 #include <string_view>
 
 #include "ash/constants/ash_pref_names.h"
-#include "ash/constants/chrome_url_constants.h"
+#include "ash/constants/chrome_webui_url_constants.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"

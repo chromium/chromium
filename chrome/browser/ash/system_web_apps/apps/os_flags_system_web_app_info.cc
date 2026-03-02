@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/system_web_apps/apps/os_flags_system_web_app_info.h"
 
-#include "ash/constants/chrome_url_constants.h"
+#include "ash/constants/chrome_webui_url_constants.h"
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
 #include "chrome/browser/ash/system_web_apps/apps/system_web_app_install_utils.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"

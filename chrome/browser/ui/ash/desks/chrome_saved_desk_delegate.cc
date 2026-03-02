@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/ash/desks/chrome_saved_desk_delegate.h"
 
-#include "ash/constants/chrome_url_constants.h"
+#include "ash/constants/chrome_webui_url_constants.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/constants/web_app_id_constants.h"
 #include "ash/public/cpp/desk_template.h"

@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/webui/ash/settings/pages/people/os_sync_handler.h"
 
-#include "ash/constants/chrome_url_constants.h"
+#include "ash/constants/chrome_webui_url_constants.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "base/auto_reset.h"
 #include "base/check_op.h"

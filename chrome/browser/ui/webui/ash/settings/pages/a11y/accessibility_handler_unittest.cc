@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/webui/ash/settings/pages/a11y/accessibility_handler.h"
 
-#include "ash/constants/chrome_url_constants.h"
+#include "ash/constants/chrome_webui_url_constants.h"
 #include "ash/public/cpp/test/test_new_window_delegate.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/test/base/testing_browser_process.h"

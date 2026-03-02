@@ -11,7 +11,7 @@
 #include <string>
 #include <utility>
 
-#include "ash/constants/chrome_url_constants.h"
+#include "ash/constants/chrome_webui_url_constants.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "base/byte_count.h"
 #include "base/check_op.h"

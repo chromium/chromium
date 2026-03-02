@@ -19,7 +19,7 @@
 #include "third_party/blink/public/common/chrome_debug_urls.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "ash/constants/chrome_url_constants.h"
+#include "ash/constants/chrome_webui_url_constants.h"
 #include "ash/constants/webui_url_constants.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

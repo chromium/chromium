@@ -9,7 +9,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
-#include "ash/constants/chrome_url_constants.h"
+#include "ash/constants/chrome_webui_url_constants.h"
 #include "ash/constants/url_constants.h"
 #include "ash/edusumer/graduation_utils.h"
 #include "base/check.h"

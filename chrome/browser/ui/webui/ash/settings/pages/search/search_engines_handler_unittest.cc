@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/webui/settings/search_engines_handler.h"
 
-#include "ash/constants/chrome_url_constants.h"
+#include "ash/constants/chrome_webui_url_constants.h"
 #include "ash/public/cpp/test/test_new_window_delegate.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/common/chrome_constants.h"

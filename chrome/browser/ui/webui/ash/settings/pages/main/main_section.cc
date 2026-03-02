@@ -7,7 +7,7 @@
 #include <string>
 
 #include "ash/constants/ash_features.h"
-#include "ash/constants/chrome_url_constants.h"
+#include "ash/constants/chrome_webui_url_constants.h"
 #include "ash/constants/personalization_entry_point.h"
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
 #include "ash/webui/personalization_app/personalization_app_url_constants.h"

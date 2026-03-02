@@ -6,7 +6,7 @@
 
 #include <array>
 
-#include "ash/constants/chrome_url_constants.h"
+#include "ash/constants/chrome_webui_url_constants.h"
 #include "ash/constants/url_constants.h"
 #include "ash/constants/webui_url_constants.h"
 #include "base/command_line.h"

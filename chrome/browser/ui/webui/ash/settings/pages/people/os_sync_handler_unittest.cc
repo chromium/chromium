@@ -7,7 +7,7 @@
 #include <memory>
 #include <string>
 
-#include "ash/constants/chrome_url_constants.h"
+#include "ash/constants/chrome_webui_url_constants.h"
 #include "ash/public/cpp/test/test_new_window_delegate.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
