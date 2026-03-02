@@ -11755,7 +11755,7 @@
     "GlicEligibilitySeparateAccountCapability": [
         {
             "platforms": [
-                "linux",
+                "chromeos",
                 "mac",
                 "windows"
             ],
