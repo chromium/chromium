@@ -42,7 +42,6 @@ import org.chromium.chrome.browser.omnibox.test.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
@@ -53,13 +52,9 @@ import java.util.function.Supplier;
 public class AutocompleteCoordinatorUnitTest {
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    private Context mContext;
     private AutocompleteCoordinator mAutocompleteCoordinator;
     private final SettableNonNullObservableSupplier<@ControlsPosition Integer>
             mControlsPositionSupplier = ObservableSuppliers.createNonNull(ControlsPosition.TOP);
-    private final SettableNonNullObservableSupplier<@AutocompleteRequestType Integer>
-            mAutocompleteRequestTypeSupplier =
-                    ObservableSuppliers.createNonNull(AutocompleteRequestType.SEARCH);
     private final SettableNonNullObservableSupplier<@FuseboxState Integer> mFuseboxStateSupplier =
             ObservableSuppliers.createNonNull(FuseboxState.DISABLED);
     private final MonotonicObservableSupplier<Profile> mProfileObservableSupplier =
@@ -84,12 +79,12 @@ public class AutocompleteCoordinatorUnitTest {
 
     @Before
     public void setUp() {
-        mContext =
+        Context context =
                 new ContextThemeWrapper(
                         ApplicationProvider.getApplicationContext(),
                         R.style.Theme_BrowserUI_DayNight);
 
-        lenient().when(mParentView.getContext()).thenReturn(mContext);
+        lenient().when(mParentView.getContext()).thenReturn(context);
         lenient()
                 .when(mLocationBarDataProvider.getToolbarPositionSupplier())
                 .thenReturn(mControlsPositionSupplier);
