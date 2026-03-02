@@ -28,6 +28,17 @@ namespace remoting {
 // SharedScreenCastStream runs the pipewire loop, and invokes frame callbacks,
 // on a separate thread. This class is responsible for bouncing them back to
 // the corresponding methods of `parent_` on `callback_sequence`.
+//
+// Lifecycle of the pipewire stream and its virtual monitor:
+//
+// 1. Call the org_gnome_Mutter_ScreenCast_Stream::Start API, which creates the
+//    pipewire stream but doesn't actually create the virtual monitor.
+// 2. Call stream_->StartScreenCastStream(), which creates the virtual monitor.
+// 3. Call stream_->StopScreenCastStream(), which stops the stream but
+//    doesn't destroy the virtual monitor. Video capturing can be resumed by
+//    calling stream_->StartScreenCastStream().
+// 4. Call the org_gnome_Mutter_ScreenCast_Stream::Stop API, which actually
+//    destroys the virtual monitor.
 class PipewireCaptureStream::CallbackProxy
     : public webrtc::DesktopCapturer::Callback,
       public webrtc::SharedScreenCastStream::Observer {
@@ -156,9 +167,22 @@ void PipewireCaptureStream::SetPipeWireStream(
 
 void PipewireCaptureStream::StartVideoCapture() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (video_capture_started_) {
+    return;
+  }
   stream_->StartScreenCastStream(pipewire_node_, pipewire_fd_,
                                  resolution_.width(), resolution_.height(),
                                  false, callback_proxy_.get());
+  video_capture_started_ = true;
+}
+
+void PipewireCaptureStream::StopVideoCapture() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!video_capture_started_) {
+    return;
+  }
+  stream_->StopScreenCastStream();
+  video_capture_started_ = false;
 }
 
 void PipewireCaptureStream::SetCallback(
@@ -166,22 +190,6 @@ void PipewireCaptureStream::SetCallback(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   callback_ = callback;
   if (!callback_) {
-    // The current lifecycle of the pipewire stream and its virtual monitor is:
-    //
-    // 1. Call the org_gnome_Mutter_ScreenCast_Stream::Start API, which creates
-    //    the pipewire stream but doesn't actually create the virtual monitor.
-    // 2. Call stream_->StartScreenCastStream(), which creates the virtual
-    //    monitor.
-    // 3. Call stream_->StopScreenCastStream(), which stops the stream but
-    //    doesn't destroy the virtual monitor.
-    // 4. Call the org_gnome_Mutter_ScreenCast_Stream::Stop API, which destroys
-    //    the virtual monitor.
-    //
-    // Based on this, we could call StopScreenCastStream() here and call
-    // StartScreenCastStream() again when the callback is set to a non-null
-    // value. However, the lifecycle is not documented anywhere, and it's
-    // asymmetrical which doesn't sound right, so we don't do it in case the
-    // behavior gets changed in the future.
     callback_proxy_->Stop();
     is_capturing_frame_ = false;
     return;

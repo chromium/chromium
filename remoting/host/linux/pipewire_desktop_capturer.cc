@@ -27,6 +27,8 @@ PipewireDesktopCapturer::~PipewireDesktopCapturer() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (stream_) {
     stream_->SetCallback(nullptr);
+    stream_->StopVideoCapture();
+    stream_->SetSharedMemoryFactory(nullptr);
   }
 }
 
@@ -35,6 +37,7 @@ void PipewireDesktopCapturer::Start(Callback* callback) {
   callback_ = callback;
   if (stream_) {
     stream_->SetCallback(weak_factory_.GetWeakPtr());
+    stream_->StartVideoCapture();
   }
 }
 

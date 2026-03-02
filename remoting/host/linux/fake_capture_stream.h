@@ -31,6 +31,7 @@ class FakeCaptureStream : public CaptureStream {
                int pipewire_fd),
               (override));
   MOCK_METHOD(void, StartVideoCapture, (), (override));
+  MOCK_METHOD(void, StopVideoCapture, (), (override));
   MOCK_METHOD(void,
               SetCallback,
               (base::WeakPtr<webrtc::DesktopCapturer::Callback> callback),

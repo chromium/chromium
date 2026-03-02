@@ -59,16 +59,25 @@ class CaptureStream {
                       webrtc::kInvalidPipeWireFd);
   }
 
-  // Starts capturing the video stream, which creates the virtual monitor. The
-  // virtual monitor is not created until this method is called. This method can
-  // be called before SetCallback(). See documentation for SetCallback().
+  // Starts capturing the video stream. The virtual monitor is not created until
+  // this method is called. This method can be called before SetCallback(). See
+  // documentation for SetCallback(). This method can be called after
+  // StopVideoCapture() to resume video capturing. No-op if video capturing has
+  // started.
   virtual void StartVideoCapture() = 0;
+
+  // Stops capturing the video stream. This method does not remove the virtual
+  // monitor. Video capturing can be resumed by calling StartVideoCapture().
+  // No-op if video capturing hasn't started.
+  virtual void StopVideoCapture() = 0;
 
   // Sets a callback to be invoked on the current sequence as each new frame is
   // received. If StartVideoCapture() has been called, the callback will be
   // immediately called on the current stack frame with the last available
   // frame.
   // Passing `nullptr` will stop the previously set callback from being called.
+  // Screen capturing will continue but captured frames will captured frames
+  // will be silently dropped, unless StopVideoCapture() is called.
   virtual void SetCallback(
       base::WeakPtr<webrtc::DesktopCapturer::Callback> callback) = 0;
 
