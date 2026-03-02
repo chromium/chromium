@@ -1,9 +1,2 @@
-# The current Follow team is the former Sharing team, so a lot of us have
-# context, especially for desktop:
-file://chrome/browser/follow/OWNERS
-
-# For iOS:
-# kalettuce@chromium.org - pending committership
+ellyjones@chromium.org
 sczs@chromium.org
-
-per-file *.gni=file://components/paint_preview/OWNERS
