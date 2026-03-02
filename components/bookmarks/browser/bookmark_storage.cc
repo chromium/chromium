@@ -39,14 +39,13 @@ constexpr char kBookmarkStorageEncryptedHistogramSuffix[] =
     "BookmarkStorageEncrypted";
 
 void BackupCallback(const base::FilePath& path,
-                    const std::optional<base::FilePath> encrypted_file_path) {
+                    const base::FilePath& encrypted_file_path) {
   base::FilePath backup_path = path.ReplaceExtension(kBackupExtension);
   base::CopyFile(path, backup_path);
   if (ShouldWriteEncryptedBookmarksToDisk()) {
-    CHECK(encrypted_file_path);
     base::FilePath encrypted_backup_path =
-        encrypted_file_path->ReplaceExtension(kBackupExtension);
-    base::CopyFile(encrypted_file_path.value(), encrypted_backup_path);
+        encrypted_file_path.ReplaceExtension(kBackupExtension);
+    base::CopyFile(encrypted_file_path, encrypted_backup_path);
   }
 }
 
@@ -103,7 +102,7 @@ BookmarkStorage::BookmarkStorage(
     const scoped_refptr<base::RefCountedData<const os_crypt_async::Encryptor>>
         encryptor,
     const base::FilePath& file_path,
-    const std::optional<base::FilePath> encrypted_file_path)
+    const base::FilePath& encrypted_file_path)
     : model_(model),
       backend_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
@@ -117,6 +116,7 @@ BookmarkStorage::BookmarkStorage(
               kBookmarkStorageHistogramSuffix),
       last_scheduled_save_(base::TimeTicks::Now()) {
   CHECK(!file_path.empty());
+  CHECK(!encrypted_file_path.empty());
 }
 
 BookmarkStorage::~BookmarkStorage() {

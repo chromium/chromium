@@ -7,8 +7,6 @@
 
 #include <stdint.h>
 
-#include <optional>
-
 #include "base/files/file_path.h"
 #include "base/files/important_file_writer.h"
 #include "base/functional/callback_forward.h"
@@ -66,7 +64,7 @@ class BookmarkStorage
       const scoped_refptr<base::RefCountedData<const os_crypt_async::Encryptor>>
           encryptor,
       const base::FilePath& file_path,
-      const std::optional<base::FilePath> encrypted_file_path);
+      const base::FilePath& encrypted_file_path);
 
   BookmarkStorage(const BookmarkStorage&) = delete;
   BookmarkStorage& operator=(const BookmarkStorage&) = delete;
@@ -116,7 +114,7 @@ class BookmarkStorage
   const scoped_refptr<base::RefCountedData<const os_crypt_async::Encryptor>>
       encryptor_;
 
-  const std::optional<base::FilePath> encrypted_file_path_;
+  const base::FilePath encrypted_file_path_;
 
   // Helper to write bookmark data safely.
   base::ImportantFileWriter writer_;

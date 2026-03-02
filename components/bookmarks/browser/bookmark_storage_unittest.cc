@@ -34,6 +34,11 @@ base::FilePath GetTestBookmarksFileNameInNewTempDir() {
   return temp_dir.Append(FILE_PATH_LITERAL("TestBookmarks"));
 }
 
+base::FilePath GetTestEncryptedBookmarksFileNameInNewTempDir() {
+  const base::FilePath temp_dir = base::CreateUniqueTempDirectoryScopedToTest();
+  return temp_dir.Append(FILE_PATH_LITERAL("TestEncryptedBookmarks"));
+}
+
 std::unique_ptr<BookmarkModel> CreateModelWithOneBookmark() {
   std::unique_ptr<BookmarkModel> model(TestBookmarkClient::CreateModel());
   const BookmarkNode* bookmark_bar = model->bookmark_bar_node();
@@ -79,10 +84,10 @@ TEST(BookmarkStorageTest, ShouldSaveFileToDiskAfterDelay) {
 
   base::test::TaskEnvironment task_environment{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  BookmarkStorage storage(model.get(),
-                          BookmarkStorage::kSelectLocalOrSyncableNodes,
-                          /*encryptor=*/nullptr, bookmarks_file_path,
-                          /*encrypted_file_path=*/std::nullopt);
+  BookmarkStorage storage(
+      model.get(), BookmarkStorage::kSelectLocalOrSyncableNodes,
+      /*encryptor=*/nullptr, bookmarks_file_path,
+      /*encrypted_file_path=*/GetTestEncryptedBookmarksFileNameInNewTempDir());
 
   ASSERT_FALSE(storage.HasScheduledSaveForTesting());
   ASSERT_FALSE(base::PathExists(bookmarks_file_path));
@@ -119,7 +124,8 @@ TEST(BookmarkStorageTest, ShouldSaveFileDespiteShutdownWhileScheduled) {
     BookmarkStorage storage(model.get(),
                             BookmarkStorage::kSelectLocalOrSyncableNodes,
                             /*encryptor=*/nullptr, bookmarks_file_path,
-                            /*encrypted_file_path=*/std::nullopt);
+                            /*encrypted_file_path=*/
+                            GetTestEncryptedBookmarksFileNameInNewTempDir());
 
     storage.ScheduleSave();
     ASSERT_TRUE(storage.HasScheduledSaveForTesting());
@@ -144,10 +150,10 @@ TEST(BookmarkStorageTest, ShouldGenerateBackupFileUponFirstSave) {
 
   base::test::TaskEnvironment task_environment{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  BookmarkStorage storage(model.get(),
-                          BookmarkStorage::kSelectLocalOrSyncableNodes,
-                          /*encryptor=*/nullptr, bookmarks_file_path,
-                          /*encrypted_file_path=*/std::nullopt);
+  BookmarkStorage storage(
+      model.get(), BookmarkStorage::kSelectLocalOrSyncableNodes,
+      /*encryptor=*/nullptr, bookmarks_file_path,
+      /*encrypted_file_path=*/GetTestEncryptedBookmarksFileNameInNewTempDir());
 
   // The backup file should be created upon first save, not earlier.
   task_environment.RunUntilIdle();
@@ -178,10 +184,10 @@ TEST(BookmarkStorageTest, RecordTimeSinceLastScheduledSave) {
 
   base::test::TaskEnvironment task_environment{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  BookmarkStorage storage(model.get(),
-                          BookmarkStorage::kSelectLocalOrSyncableNodes,
-                          /*encryptor=*/nullptr, bookmarks_file_path,
-                          /*encrypted_file_path=*/std::nullopt);
+  BookmarkStorage storage(
+      model.get(), BookmarkStorage::kSelectLocalOrSyncableNodes,
+      /*encryptor=*/nullptr, bookmarks_file_path,
+      /*encrypted_file_path=*/GetTestEncryptedBookmarksFileNameInNewTempDir());
 
   ASSERT_FALSE(storage.HasScheduledSaveForTesting());
   ASSERT_FALSE(base::PathExists(bookmarks_file_path));
@@ -220,9 +226,10 @@ TEST(BookmarkStorageTest, ShouldSaveAccountNodes) {
 
   base::test::TaskEnvironment task_environment{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  BookmarkStorage storage(model.get(), BookmarkStorage::kSelectAccountNodes,
-                          /*encryptor=*/nullptr, bookmarks_file_path,
-                          /*encrypted_file_path=*/std::nullopt);
+  BookmarkStorage storage(
+      model.get(), BookmarkStorage::kSelectAccountNodes,
+      /*encryptor=*/nullptr, bookmarks_file_path,
+      /*encrypted_file_path=*/GetTestEncryptedBookmarksFileNameInNewTempDir());
 
   ASSERT_FALSE(base::PathExists(bookmarks_file_path));
   ASSERT_FALSE(base::PathExists(backup_file_path));
@@ -251,9 +258,10 @@ TEST(BookmarkStorageTest, ShouldSaveDespiteAccountBookmarksEmpty) {
 
   base::test::TaskEnvironment task_environment{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  BookmarkStorage storage(model.get(), BookmarkStorage::kSelectAccountNodes,
-                          /*encryptor=*/nullptr, bookmarks_file_path,
-                          /*encrypted_file_path=*/std::nullopt);
+  BookmarkStorage storage(
+      model.get(), BookmarkStorage::kSelectAccountNodes,
+      /*encryptor=*/nullptr, bookmarks_file_path,
+      /*encrypted_file_path=*/GetTestEncryptedBookmarksFileNameInNewTempDir());
 
   ASSERT_EQ(ReadFileToDict(bookmarks_file_path), std::nullopt);
 
@@ -273,11 +281,10 @@ TEST(BookmarkStorageTest, ShouldSaveUnencryptedAndEncryptedBookmarks) {
   base::HistogramTester histogram_tester;
   std::unique_ptr<BookmarkModel> model = CreateModelWithOneBookmark();
 
-  const base::FilePath temp_dir = base::CreateUniqueTempDirectoryScopedToTest();
   const base::FilePath bookmarks_file_path =
-      temp_dir.Append(FILE_PATH_LITERAL("TestBookmarks"));
+      GetTestBookmarksFileNameInNewTempDir();
   const base::FilePath encrypted_bookmarks_file_path =
-      temp_dir.Append(FILE_PATH_LITERAL("TestEncryptedBookmarks"));
+      GetTestEncryptedBookmarksFileNameInNewTempDir();
 
   scoped_refptr<base::RefCountedData<const os_crypt_async::Encryptor>>
       encryptor = base::MakeRefCounted<
@@ -316,13 +323,12 @@ TEST(BookmarkStorageTest, ShouldGenerateTwoBackupFilesUponFirstSave) {
       features, BookmarkEncryptionStage::kWriteBothReadOnlyClear);
   std::unique_ptr<BookmarkModel> model = CreateModelWithOneBookmark();
 
-  const base::FilePath temp_dir = base::CreateUniqueTempDirectoryScopedToTest();
   const base::FilePath bookmarks_file_path =
-      temp_dir.Append(FILE_PATH_LITERAL("TestBookmarks"));
+      GetTestBookmarksFileNameInNewTempDir();
   const base::FilePath backup_file_path =
       bookmarks_file_path.ReplaceExtension(FILE_PATH_LITERAL("bak"));
   const base::FilePath encrypted_bookmarks_file_path =
-      temp_dir.Append(FILE_PATH_LITERAL("TestEncryptedBookmarks"));
+      GetTestEncryptedBookmarksFileNameInNewTempDir();
   const base::FilePath encrypted_backup_file_path =
       encrypted_bookmarks_file_path.ReplaceExtension(FILE_PATH_LITERAL("bak"));
 
