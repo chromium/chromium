@@ -178,7 +178,7 @@ class TranslateBubbleViewTest : public ChromeViewsTestBase {
 
     // The bubble needs the parent as an anchor.
     anchor_widget_ =
-        CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+        CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET,
                          views::Widget::InitParams::TYPE_WINDOW);
     anchor_widget_->Show();
 

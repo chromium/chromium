@@ -92,7 +92,7 @@ IN_PROC_BROWSER_TEST_F(TranslatePageActionInteractiveUiTest,
   TranslateBubbleController* controller =
       TranslateBubbleController::From(browser());
   auto anchor_widget =
-      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   views::View* anchor_view = anchor_widget->GetContentsView();
   controller->StartPartialTranslate(
       browser()->tab_strip_model()->GetActiveWebContents(), anchor_view,

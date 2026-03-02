@@ -211,7 +211,7 @@ class TranslateBubbleControllerTest : public ChromeViewsTestBase {
 
     // Create an anchor for the bubble.
     anchor_widget_ =
-        CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+        CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET,
                          views::Widget::InitParams::TYPE_WINDOW);
     anchor_widget_->Show();
     web_contents_ =
