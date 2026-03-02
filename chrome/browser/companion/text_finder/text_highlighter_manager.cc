@@ -6,9 +6,6 @@
 
 #include <memory>
 
-#include "base/barrier_callback.h"
-#include "base/functional/bind.h"
-#include "base/unguessable_token.h"
 #include "chrome/browser/companion/text_finder/text_highlighter.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/page_user_data.h"

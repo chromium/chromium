@@ -12,17 +12,21 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/unguessable_token.h"
-#include "chrome/browser/companion/text_finder/text_finder.h"
 #include "content/public/browser/page_user_data.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/annotation/annotation.mojom.h"
 
 namespace companion {
 
+class TextFinder;
+
 class TextFinderManager : public content::PageUserData<TextFinderManager> {
  public:
   using AllDoneCallback = base::OnceCallback<void(
       const std::vector<std::pair<std::string, bool>>&)>;
+  // Same as TextFinder::FinishedCallback.
+  using FinishedCallback =
+      base::OnceCallback<void(std::pair<std::string, bool>)>;
 
   ~TextFinderManager() override;
 
@@ -36,7 +40,7 @@ class TextFinderManager : public content::PageUserData<TextFinderManager> {
   // disconnection. Returns the id associated with the created text finder.
   std::optional<base::UnguessableToken> CreateTextFinder(
       const std::string& text_directive,
-      TextFinder::FinishedCallback callback);
+      FinishedCallback callback);
 
   // Creates multiple text finders for a vector of text directives. Calls
   // `all_done_callback` when all text finders finish searching (via

@@ -7,7 +7,6 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
-#include "base/unguessable_token.h"
 #include "content/public/browser/page_user_data.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/annotation/annotation.mojom.h"

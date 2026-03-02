@@ -4,9 +4,7 @@
 
 assert(is_win || is_mac || is_linux || is_chromeos || is_android)
 
-import("//mojo/public/tools/bindings/mojom.gni")
-
-static_library("text_finder") {
+source_set("text_finder") {
   sources = [
     "text_finder.cc",
     "text_finder.h",
@@ -18,11 +16,14 @@ static_library("text_finder") {
     "text_highlighter_manager.h",
   ]
 
-  deps = [
+  public_deps = [
     "//base",
     "//content/public/browser",
+    "//content/public/common",
     "//ui/gfx/geometry",
   ]
+
+  deps = [ "//services/service_manager/public/cpp" ]
 }
 
 source_set("unit_tests") {
