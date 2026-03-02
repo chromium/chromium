@@ -17,18 +17,18 @@
                 "abridged": false
             },
             "blink_perf.events": {
-                "end": 1,
+                "abridged": false
+            },
+            "blink_perf.image_decoder": {
+                "end": 7,
                 "abridged": false
             }
         }
     },
     "1": {
         "benchmarks": {
-            "blink_perf.events": {
-                "begin": 1,
-                "abridged": false
-            },
             "blink_perf.image_decoder": {
+                "begin": 7,
                 "abridged": false
             },
             "blink_perf.layout": {
@@ -54,6 +54,17 @@
             },
             "blink_perf.webgpu": {
                 "abridged": false
+            },
+            "blink_perf.webgpu_compat": {
+                "abridged": false
+            }
+        },
+        "executables": {
+            "components_perftests": {
+                "arguments": [
+                    "--xvfb"
+                ],
+                "path": "components_perftests"
             }
         }
     },
@@ -75,23 +86,15 @@
                 "abridged": false
             },
             "rendering.mobile": {
-                "end": 70,
+                "end": 72,
                 "abridged": false
-            }
-        },
-        "executables": {
-            "components_perftests": {
-                "arguments": [
-                    "--xvfb"
-                ],
-                "path": "components_perftests"
             }
         }
     },
     "3": {
         "benchmarks": {
             "rendering.mobile": {
-                "begin": 70,
+                "begin": 72,
                 "end": 176,
                 "abridged": false
             }
@@ -101,7 +104,7 @@
         "benchmarks": {
             "rendering.mobile": {
                 "begin": 176,
-                "end": 288,
+                "end": 287,
                 "abridged": false
             }
         }
@@ -109,8 +112,8 @@
     "5": {
         "benchmarks": {
             "rendering.mobile": {
-                "begin": 288,
-                "end": 385,
+                "begin": 287,
+                "end": 382,
                 "abridged": false
             }
         }
@@ -118,7 +121,7 @@
     "6": {
         "benchmarks": {
             "rendering.mobile": {
-                "begin": 385,
+                "begin": 382,
                 "abridged": false
             },
             "rendering.mobile.notracing": {
@@ -134,19 +137,19 @@
                 "abridged": false
             },
             "system_health.common_mobile": {
-                "end": 75,
+                "abridged": false
+            },
+            "system_health.memory_mobile": {
+                "end": 2,
                 "abridged": false
             }
         }
     },
     "7": {
         "benchmarks": {
-            "system_health.common_mobile": {
-                "begin": 75,
-                "abridged": false
-            },
             "system_health.memory_mobile": {
-                "end": 33,
+                "begin": 2,
+                "end": 35,
                 "abridged": false
             }
         }
@@ -154,7 +157,7 @@
     "8": {
         "benchmarks": {
             "system_health.memory_mobile": {
-                "begin": 33,
+                "begin": 35,
                 "end": 71,
                 "abridged": false
             }
@@ -184,20 +187,20 @@
         }
     },
     "extra_infos": {
-        "num_stories": 1126,
-        "predicted_min_shard_time": 2949.0,
-        "predicted_min_shard_index": 5,
-        "predicted_max_shard_time": 2979.0,
-        "predicted_max_shard_index": 8,
-        "shard #0": 2959.0,
-        "shard #1": 2960.0,
-        "shard #2": 2958.0,
-        "shard #3": 2968.0,
-        "shard #4": 2962.0,
-        "shard #5": 2949.0,
-        "shard #6": 2949.0,
-        "shard #7": 2952.0,
-        "shard #8": 2979.0,
+        "num_stories": 1117,
+        "predicted_min_shard_time": 2892.0,
+        "predicted_min_shard_index": 8,
+        "predicted_max_shard_time": 2964.0,
+        "predicted_max_shard_index": 9,
+        "shard #0": 2913.0,
+        "shard #1": 2924.0,
+        "shard #2": 2907.0,
+        "shard #3": 2917.0,
+        "shard #4": 2930.0,
+        "shard #5": 2901.0,
+        "shard #6": 2915.0,
+        "shard #7": 2893.0,
+        "shard #8": 2892.0,
         "shard #9": 2964.0
     }
 }
