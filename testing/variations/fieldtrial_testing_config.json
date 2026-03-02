@@ -14995,21 +14995,6 @@
             ]
         }
     ],
-    "LaunchCauseScreenOffFix": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "LaunchCauseScreenOffFix"
-                    ]
-                }
-            ]
-        }
-    ],
     "LaunchOnStartup": [
         {
             "platforms": [
