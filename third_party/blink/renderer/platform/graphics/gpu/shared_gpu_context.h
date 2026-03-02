@@ -79,6 +79,11 @@ class PLATFORM_EXPORT SharedGpuContext {
   // for low-latency (SCANOUT and CONCURRENT_READ_WRITE).
   static bool LowLatencyUsageSupportedForCanvas2D();
 
+  // Forces LowLatencyUsageSupportedForCanvas2D() to return the
+  // passed-in value. Cleared on the next invocation of Reset() of the global
+  // context.
+  static void SetLowLatencyUsageSupportedForCanvas2DForTesting(bool enable);
+
   using ContextProviderFactory =
       base::RepeatingCallback<std::unique_ptr<WebGraphicsContext3DProvider>()>;
   static void SetContextProviderFactoryForTesting(ContextProviderFactory);

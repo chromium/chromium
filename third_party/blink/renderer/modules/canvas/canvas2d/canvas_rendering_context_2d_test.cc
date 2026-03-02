@@ -3535,6 +3535,8 @@ class CanvasRenderingContext2DTestImageChromium
 INSTANTIATE_PAINT_TEST_SUITE_P(CanvasRenderingContext2DTestImageChromium);
 
 TEST_P(CanvasRenderingContext2DTestImageChromium, LowLatencyIsSingleBuffered) {
+  SharedGpuContext::SetLowLatencyUsageSupportedForCanvas2DForTesting(true);
+
   CreateContext(kNonOpaque, kLowLatency);
   // No need to set-up the layer bridge when testing low latency mode.
   DrawSomething();

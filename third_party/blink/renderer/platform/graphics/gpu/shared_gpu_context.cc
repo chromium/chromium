@@ -33,7 +33,7 @@ namespace {
 
 std::optional<bool>
     g_native_mappable_shared_images_supported_for_canvas_2d_for_testing;
-
+std::optional<bool> g_low_latency_usage_supported_for_canvas_2d_for_testing;
 }
 
 bool Canvas2dImageChromiumEnabled() {
@@ -260,6 +260,7 @@ void SharedGpuContext::Reset() {
   this_ptr->context_provider_wrapper_.reset();
   this_ptr->context_provider_factory_.Reset();
   g_native_mappable_shared_images_supported_for_canvas_2d_for_testing.reset();
+  g_low_latency_usage_supported_for_canvas_2d_for_testing.reset();
 }
 
 bool SharedGpuContext::IsValidWithoutRestoringForTesting() {
@@ -293,11 +294,6 @@ bool SharedGpuContext::AllowSoftwareToAcceleratedCanvasUpgrade() {
 
 #if BUILDFLAG(IS_ANDROID)
 bool SharedGpuContext::MaySupportImageChromium() {
-  SharedGpuContext* this_ptr = GetInstanceForCurrentThread();
-  if (this_ptr->context_provider_factory_) {
-    // In unit tests, enable support.
-    return true;
-  }
   return ::features::IsAndroidSurfaceControlEnabled();
 }
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -320,7 +316,16 @@ bool SharedGpuContext::OverlaysSupportedForCanvas2D() {
   return MaySupportImageChromium() && Canvas2dImageChromiumEnabled();
 }
 
+void SharedGpuContext::SetLowLatencyUsageSupportedForCanvas2DForTesting(
+    bool enable) {
+  g_low_latency_usage_supported_for_canvas_2d_for_testing = enable;
+}
+
 bool SharedGpuContext::LowLatencyUsageSupportedForCanvas2D() {
+  if (g_low_latency_usage_supported_for_canvas_2d_for_testing) {
+    return g_low_latency_usage_supported_for_canvas_2d_for_testing.value();
+  }
+
   bool can_use_swapchain = ContextProviderWrapper()
                                ->ContextProvider()
                                .SharedImageInterface()
