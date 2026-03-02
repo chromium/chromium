@@ -5,7 +5,6 @@
 #include "cc/layers/tile_display_layer_impl.h"
 
 #include <algorithm>
-#include <limits>
 #include <memory>
 #include <utility>
 #include <variant>
@@ -214,14 +213,8 @@ bool TileDisplayLayerImpl::AppendQuadForTile(
       has_draw_quad = true;
     } else if (auto color = iter->solid_color()) {
       has_draw_quad = true;
-      const float alpha = color->fA * shared_quad_state->opacity;
-      if (alpha >= std::numeric_limits<float>::epsilon()) {
-        auto* quad =
-            render_pass->CreateAndAppendDrawQuad<viz::SolidColorDrawQuad>();
-        quad->SetNew(shared_quad_state, offset_geometry_rect,
-                     offset_visible_geometry_rect, *color,
-                     !layer_tree_impl()->settings().enable_edge_anti_aliasing);
-      }
+      AppendSolidColorQuad(render_pass, shared_quad_state, offset_geometry_rect,
+                           offset_visible_geometry_rect, *color);
     } else if (iter->is_oom()) {
       // Keep `has_draw_quad` false to end up checkerboarding below.
     }

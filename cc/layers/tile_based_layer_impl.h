@@ -6,6 +6,7 @@
 #define CC_LAYERS_TILE_BASED_LAYER_IMPL_H_
 
 #include <algorithm>
+#include <limits>
 #include <memory>
 #include <utility>
 #include <vector>
@@ -20,6 +21,7 @@
 #include "cc/tiles/tiling_set_coverage_iterator.h"
 #include "cc/trees/layer_tree_impl.h"
 #include "components/viz/common/quads/debug_border_draw_quad.h"
+#include "components/viz/common/quads/solid_color_draw_quad.h"
 
 namespace cc {
 
@@ -92,6 +94,14 @@ class CC_EXPORT TileBasedLayerImpl : public LayerImpl {
   bool LastAppendQuadsScalesContains(float scale) const {
     return std::ranges::contains(last_append_quads_scales_, scale);
   }
+
+  // Appends a solid-color quad with color `color`. Returns the appended quad.
+  viz::SolidColorDrawQuad* AppendSolidColorQuad(
+      viz::CompositorRenderPass* render_pass,
+      viz::SharedQuadState* shared_quad_state,
+      const gfx::Rect& offset_geometry_rect,
+      const gfx::Rect& offset_visible_geometry_rect,
+      SkColor4f color);
 
  private:
   // Invoked when the draw mode is DRAW_MODE_RESOURCELESS_SOFTWARE.
@@ -411,6 +421,24 @@ void TileBasedLayerImpl<Tiling>::AppendSolidQuad(
       render_pass, occlusion, shared_quad_state, scaled_visible_layer_rect,
       color, !layer_tree_impl()->settings().enable_edge_anti_aliasing,
       effect_node->blend_mode, append_quads_data);
+}
+
+template <typename Tiling>
+viz::SolidColorDrawQuad* TileBasedLayerImpl<Tiling>::AppendSolidColorQuad(
+    viz::CompositorRenderPass* render_pass,
+    viz::SharedQuadState* shared_quad_state,
+    const gfx::Rect& offset_geometry_rect,
+    const gfx::Rect& offset_visible_geometry_rect,
+    SkColor4f color) {
+  float alpha = color.fA * shared_quad_state->opacity;
+  if (alpha < std::numeric_limits<float>::epsilon()) {
+    return nullptr;
+  }
+  auto* quad = render_pass->CreateAndAppendDrawQuad<viz::SolidColorDrawQuad>();
+  quad->SetNew(shared_quad_state, offset_geometry_rect,
+               offset_visible_geometry_rect, color,
+               !layer_tree_impl()->settings().enable_edge_anti_aliasing);
+  return quad;
 }
 
 template <typename Tiling>
