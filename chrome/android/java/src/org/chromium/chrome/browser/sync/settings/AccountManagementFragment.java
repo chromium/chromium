@@ -38,6 +38,7 @@ import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.settings.search.ChromeBaseSearchIndexProvider;
 import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivityLauncherImpl;
+import org.chromium.chrome.browser.signin.services.BadgeConfig;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
@@ -428,10 +429,9 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
                                 if (isChild && context != null) {
                                     mProfileDataCache.setBadge(
                                             assumeNonNull(childAccount).getId(),
-                                            ProfileDataCache
-                                                    .createDefaultSizeChildAccountBadgeConfig(
-                                                            context,
-                                                            R.drawable.ic_account_child_20dp));
+                                            BadgeConfig.create(R.drawable.ic_account_child_20dp)
+                                                    .withDefaultSizeChildAccountConfig()
+                                                    .build(context));
                                 }
                             });
         }

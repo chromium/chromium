@@ -104,9 +104,9 @@ public class ProfileDataCacheUnitTest {
     public void accountInfoIsUpdatedWithOnlyBadgeConfig() {
         mProfileDataCache.setBadge(
                 TestAccounts.TEST_ACCOUNT_NO_NAME.getId(),
-                ProfileDataCache.createDefaultSizeChildAccountBadgeConfig(
-                        RuntimeEnvironment.application.getApplicationContext(),
-                        R.drawable.ic_sync_badge_error_20dp));
+                BadgeConfig.create(R.drawable.ic_sync_badge_error_20dp)
+                        .withDefaultSizeChildAccountConfig()
+                        .build(RuntimeEnvironment.application.getApplicationContext()));
         mProfileDataCache.addObserver(mObserverMock);
         Assert.assertFalse(
                 mProfileDataCache.hasProfileDataForTesting(
@@ -206,9 +206,9 @@ public class ProfileDataCacheUnitTest {
         mAccountManagerTestRule.blockExtendedAccountInfoUpdate();
         mProfileDataCache.setBadge(
                 TestAccounts.TEST_ACCOUNT_NO_NAME.getId(),
-                ProfileDataCache.createDefaultSizeChildAccountBadgeConfig(
-                        RuntimeEnvironment.application.getApplicationContext(),
-                        R.drawable.ic_sync_badge_error_20dp));
+                BadgeConfig.create(R.drawable.ic_sync_badge_error_20dp)
+                        .withDefaultSizeChildAccountConfig()
+                        .build(RuntimeEnvironment.application.getApplicationContext()));
         mProfileDataCache.addObserver(mObserverMock);
         Assert.assertTrue(mProfileDataCache.getAccounts().getResult().isEmpty());
         mAccountManagerTestRule.addAccount(TestAccounts.TEST_ACCOUNT_NO_NAME);
@@ -222,9 +222,9 @@ public class ProfileDataCacheUnitTest {
         mAccountManagerTestRule.blockGetAccountsUpdate();
         mProfileDataCache.setBadge(
                 TestAccounts.TEST_ACCOUNT_NO_NAME.getId(),
-                ProfileDataCache.createDefaultSizeChildAccountBadgeConfig(
-                        RuntimeEnvironment.application.getApplicationContext(),
-                        R.drawable.ic_sync_badge_error_20dp));
+                BadgeConfig.create(R.drawable.ic_sync_badge_error_20dp)
+                        .withDefaultSizeChildAccountConfig()
+                        .build(RuntimeEnvironment.application.getApplicationContext()));
         mProfileDataCache.addObserver(mObserverMock);
         Assert.assertTrue(mProfileDataCache.getAccounts().getResult().isEmpty());
         mAccountManagerTestRule.addAccount(TestAccounts.TEST_ACCOUNT_NO_NAME);

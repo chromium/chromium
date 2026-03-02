@@ -31,6 +31,7 @@ import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivityLauncherImpl;
+import org.chromium.chrome.browser.signin.services.BadgeConfig;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
@@ -368,8 +369,9 @@ public class IdentityDiscController
                     coreAccountInfo.getId(),
                     mIdentityError == UserActionableError.NONE
                             ? null
-                            : ProfileDataCache.createToolbarIdentityDiscBadgeConfig(
-                                    mContext, R.drawable.ic_error_badge_16dp));
+                            : BadgeConfig.create(R.drawable.ic_error_badge_16dp)
+                                    .withToolbarIdentityDiscConfig()
+                                    .build(mContext));
         }
     }
 

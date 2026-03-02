@@ -29,6 +29,7 @@ import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
+import org.chromium.chrome.browser.signin.services.BadgeConfig;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
@@ -742,8 +743,9 @@ public class FullscreenSigninMediator
         // Selected account data will be updated in {@link #onProfileDataUpdated}
         mProfileDataCache.setBadge(
                 isChild
-                        ? ProfileDataCache.createDefaultSizeChildAccountBadgeConfig(
-                                mContext, R.drawable.ic_account_child_20dp)
+                        ? BadgeConfig.create(R.drawable.ic_account_child_20dp)
+                                .withDefaultSizeChildAccountConfig()
+                                .build(mContext)
                         : null);
     }
 

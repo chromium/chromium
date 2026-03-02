@@ -7,13 +7,11 @@ package org.chromium.chrome.browser.signin.services;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Point;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.drawable.BitmapDrawable;
@@ -73,65 +71,6 @@ public class ProfileDataCache implements IdentityManager.Observer, AccountsChang
          * @param profileData The profile data that has been updated.
          */
         void onProfileDataUpdated(DisplayableProfileData profileData);
-    }
-
-    /**
-     * Encapsulates info necessary to overlay a circular badge (e.g., child account icon) on top of
-     * a user avatar.
-     */
-    private static class BadgeConfig {
-        private final int mBadgeResId;
-        private final Drawable mBadge;
-        private final @Px int mBadgeSize;
-        private final @Px int mBorderSize;
-        private final Point mPosition;
-
-        private BadgeConfig(
-                Context context,
-                @DrawableRes int badgeResId,
-                @Px int badgeSize,
-                @Px int borderSize,
-                Point position) {
-            assert badgeResId != 0;
-
-            mBadgeResId = badgeResId;
-            mBadge = AppCompatResources.getDrawable(context, badgeResId);
-            mBadgeSize = badgeSize;
-            mBorderSize = borderSize;
-            mPosition = position;
-        }
-
-        Drawable getBadge() {
-            return mBadge;
-        }
-
-        @Px
-        int getBadgeSize() {
-            return mBadgeSize;
-        }
-
-        @Px
-        int getBorderSize() {
-            return mBorderSize;
-        }
-
-        Point getPosition() {
-            return mPosition;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            return o instanceof BadgeConfig bc
-                    && mBadgeResId == bc.mBadgeResId
-                    && mBadgeSize == bc.mBadgeSize
-                    && mBorderSize == bc.mBorderSize
-                    && mPosition.equals(bc.mPosition);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(mBadgeResId, mBadgeSize, mBorderSize, mPosition);
-        }
     }
 
     private final Context mContext;
@@ -195,7 +134,7 @@ public class ProfileDataCache implements IdentityManager.Observer, AccountsChang
                 AccountManagerFacadeProvider.getInstance(),
                 identityManager,
                 context.getResources().getDimensionPixelSize(R.dimen.user_picture_size),
-                createDefaultSizeChildAccountBadgeConfig(context, badgeResId));
+                BadgeConfig.create(badgeResId).withDefaultSizeChildAccountConfig().build(context));
     }
 
     /**
@@ -211,54 +150,6 @@ public class ProfileDataCache implements IdentityManager.Observer, AccountsChang
                 identityManager,
                 context.getResources().getDimensionPixelSize(imageSizeRedId),
                 /* badgeConfig= */ null);
-    }
-
-    /**
-     * Creates a {@link BadgeConfig} with default badge size.
-     *
-     * @param context Context of the application to extract resources from.
-     * @param badgeResId Resource id of the badge to be attached.
-     * @return A {@link BadgeConfig} with default badge size(R.dimen.badge_size) of given badgeResId
-     *     provided.
-     */
-    public static BadgeConfig createDefaultSizeChildAccountBadgeConfig(
-            Context context, @DrawableRes int badgeResId) {
-        assert badgeResId != 0;
-
-        Resources resources = context.getResources();
-        return new BadgeConfig(
-                context,
-                badgeResId,
-                resources.getDimensionPixelSize(R.dimen.badge_size),
-                resources.getDimensionPixelSize(R.dimen.badge_border_size),
-                new Point(
-                        resources.getDimensionPixelOffset(R.dimen.badge_position_x),
-                        resources.getDimensionPixelOffset(R.dimen.badge_position_y)));
-    }
-
-    /**
-     * Creates a {@link BadgeConfig} with toolbar identity disc badge size.
-     *
-     * @param context Context of the application to extract resources from.
-     * @param badgeResId Resource id of the badge to be attached.
-     * @return A {@link BadgeConfig} with toolbar identity disc badge size badge
-     *     size(R.dimen.toolbar_identity_disc_badge_size) of given badgeResId provided.
-     */
-    public static BadgeConfig createToolbarIdentityDiscBadgeConfig(
-            Context context, @DrawableRes int badgeResId) {
-        assert badgeResId != 0;
-
-        Resources resources = context.getResources();
-        return new BadgeConfig(
-                context,
-                badgeResId,
-                resources.getDimensionPixelSize(R.dimen.toolbar_identity_disc_badge_size),
-                resources.getDimensionPixelSize(R.dimen.toolbar_identity_disc_badge_border_size),
-                new Point(
-                        resources.getDimensionPixelOffset(
-                                R.dimen.toolbar_identity_disc_badge_position_x),
-                        resources.getDimensionPixelOffset(
-                                R.dimen.toolbar_identity_disc_badge_position_y)));
     }
 
     /**

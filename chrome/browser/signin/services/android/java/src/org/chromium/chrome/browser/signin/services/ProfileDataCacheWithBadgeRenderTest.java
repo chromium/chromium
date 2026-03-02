@@ -173,8 +173,9 @@ public class ProfileDataCacheWithBadgeRenderTest {
                             TestAccounts.ACCOUNT1.getId(),
                             badgeResId == 0
                                     ? null
-                                    : ProfileDataCache.createDefaultSizeChildAccountBadgeConfig(
-                                            sActivity, badgeResId));
+                                    : BadgeConfig.create(badgeResId)
+                                            .withDefaultSizeChildAccountConfig()
+                                            .build(sActivity));
                 });
         CriteriaHelper.pollUiThread(
                 () -> {
