@@ -328,6 +328,18 @@ bool WebSocketQuicStreamAdapter::is_initialized() const {
   return true;
 }
 
+uint64_t WebSocketQuicStreamAdapter::stream_bytes_read() const {
+  return websocket_quic_spdy_stream_
+             ? websocket_quic_spdy_stream_->stream_bytes_read()
+             : 0;
+}
+
+uint64_t WebSocketQuicStreamAdapter::stream_bytes_written() const {
+  return websocket_quic_spdy_stream_
+             ? websocket_quic_spdy_stream_->stream_bytes_written()
+             : 0;
+}
+
 // WebSocketQuicSpdyStream::Delegate methods.
 
 void WebSocketQuicStreamAdapter::OnInitialHeadersComplete(

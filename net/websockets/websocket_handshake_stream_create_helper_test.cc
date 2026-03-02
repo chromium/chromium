@@ -570,6 +570,11 @@ class WebSocketHandshakeStreamCreateHelperTest
 
         EXPECT_EQ(200, response.headers->response_code());
 
+        // After the handshake, byte counts should reflect the HEADERS
+        // frames exchanged over the QUIC stream.
+        EXPECT_GT(handshake->GetTotalReceivedBytes(), 0);
+        EXPECT_GT(handshake->GetTotalSentBytes(), 0);
+
         return handshake->Upgrade();
       }
       default:

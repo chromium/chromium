@@ -213,6 +213,10 @@ class NET_EXPORT_PRIVATE WebSocketQuicStreamAdapter
   void Disconnect() override;
   bool is_initialized() const override;
 
+  // Byte count accessors. Return 0 after Disconnect().
+  uint64_t stream_bytes_read() const;
+  uint64_t stream_bytes_written() const;
+
   // WebSocketQuicSpdyStream::Delegate methods.
   void OnInitialHeadersComplete(
       bool fin,

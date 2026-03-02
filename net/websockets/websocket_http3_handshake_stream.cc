@@ -196,14 +196,16 @@ bool WebSocketHttp3HandshakeStream::CanReuseConnection() const {
   return false;
 }
 
-// TODO(momoka): Implement this.
 int64_t WebSocketHttp3HandshakeStream::GetTotalReceivedBytes() const {
-  return 0;
+  return stream_adapter_
+             ? static_cast<int64_t>(stream_adapter_->stream_bytes_read())
+             : 0;
 }
 
-// TODO(momoka): Implement this.
 int64_t WebSocketHttp3HandshakeStream::GetTotalSentBytes() const {
-  return 0;
+  return stream_adapter_
+             ? static_cast<int64_t>(stream_adapter_->stream_bytes_written())
+             : 0;
 }
 
 // TODO(momoka): Implement this.
