@@ -404,7 +404,6 @@ void ContextualSearchboxHandler::AddFileContext(
     searchbox::mojom::SelectedFileInfoPtr file_info_mojom,
     mojo_base::BigBuffer file_bytes,
     AddFileContextCallback callback) {
-  // TODO(crbug.com/483526904): Return synchronous error in the callback.
   if (!contextual_search::ContextualSearchService::IsContextSharingEnabled(
           profile_->GetPrefs())) {
     std::move(callback).Run(base::unexpected(
@@ -413,18 +412,22 @@ void ContextualSearchboxHandler::AddFileContext(
   }
 
   auto* contextual_session_handle = GetContextualSessionHandle();
-  if (contextual_session_handle) {
-    context_input_data_ = std::nullopt;
-    auto context_token = contextual_session_handle->CreateContextToken();
-    // Return the token early, so that listeners can immediately begin
-    // listening for file upload updates.
-    // TODO(crbug.com/477324337): Consider calling this callback elsewhere in
-    // the flow.
-    std::move(callback).Run(base::ok(context_token));
-    contextual_session_handle->StartFileContextUploadFlow(
-        context_token, file_info_mojom->file_name, file_info_mojom->mime_type,
-        std::move(file_bytes), CreateImageEncodingOptions());
+  if (!contextual_session_handle) {
+    std::move(callback).Run(base::unexpected(
+        contextual_search::FileUploadErrorType::kBrowserProcessingError));
+    return;
   }
+
+  context_input_data_ = std::nullopt;
+  auto context_token = contextual_session_handle->CreateContextToken();
+  // Return the token early, so that listeners can immediately begin
+  // listening for file upload updates.
+  // TODO(crbug.com/477324337): Consider calling this callback elsewhere in
+  // the flow.
+  std::move(callback).Run(base::ok(context_token));
+  contextual_session_handle->StartFileContextUploadFlow(
+      context_token, file_info_mojom->file_name, file_info_mojom->mime_type,
+      std::move(file_bytes), CreateImageEncodingOptions());
 }
 
 void ContextualSearchboxHandler::AddFileContextFromBrowser(
@@ -433,7 +436,6 @@ void ContextualSearchboxHandler::AddFileContextFromBrowser(
     mojo_base::BigBuffer file_bytes,
     std::optional<lens::ImageEncodingOptions> image_encoding_options,
     AddFileContextCallback callback) {
-  // TODO(crbug.com/483526904): Return synchronous error in the callback.
   if (!contextual_search::ContextualSearchService::IsContextSharingEnabled(
           profile_->GetPrefs())) {
     std::move(callback).Run(base::unexpected(
@@ -442,17 +444,21 @@ void ContextualSearchboxHandler::AddFileContextFromBrowser(
   }
 
   auto* contextual_session_handle = GetContextualSessionHandle();
-  if (contextual_session_handle) {
-    auto context_token = contextual_session_handle->CreateContextToken();
-    // Return the token early, so that listeners can immediately begin
-    // listening for file upload updates.
-    // TODO(crbug.com/477324337): Consider calling this callback elsewhere in
-    // the flow.
-    std::move(callback).Run(base::ok(context_token));
-    contextual_session_handle->StartFileContextUploadFlow(
-        context_token, file_name, mime_type, std::move(file_bytes),
-        std::move(image_encoding_options));
+  if (!contextual_session_handle) {
+    std::move(callback).Run(base::unexpected(
+        contextual_search::FileUploadErrorType::kBrowserProcessingError));
+    return;
   }
+
+  auto context_token = contextual_session_handle->CreateContextToken();
+  // Return the token early, so that listeners can immediately begin
+  // listening for file upload updates.
+  // TODO(crbug.com/477324337): Consider calling this callback elsewhere in
+  // the flow.
+  std::move(callback).Run(base::ok(context_token));
+  contextual_session_handle->StartFileContextUploadFlow(
+      context_token, file_name, mime_type, std::move(file_bytes),
+      std::move(image_encoding_options));
 }
 
 void ContextualSearchboxHandler::ContinueAddTabContext(
@@ -460,14 +466,6 @@ void ContextualSearchboxHandler::ContinueAddTabContext(
     bool delay_upload,
     base::UnguessableToken context_token,
     AddTabContextCallback callback) {
-  // TODO(crbug.com/483526904): Return synchronous error in the callback.
-  if (!contextual_search::ContextualSearchService::IsContextSharingEnabled(
-          profile_->GetPrefs())) {
-    std::move(callback).Run(base::unexpected(
-        contextual_search::FileUploadErrorType::kBrowserProcessingError));
-    return;
-  }
-
   // TODO(crbug.com/458050417): Move more of the tab context logic to
   // ContextualSessionHandle.
   const tabs::TabHandle handle = tabs::TabHandle(tab_id);
@@ -494,6 +492,12 @@ void ContextualSearchboxHandler::ContinueAddTabContext(
 void ContextualSearchboxHandler::AddTabContext(int32_t tab_id,
                                                bool delay_upload,
                                                AddTabContextCallback callback) {
+  if (!contextual_search::ContextualSearchService::IsContextSharingEnabled(
+          profile_->GetPrefs())) {
+    std::move(callback).Run(base::unexpected(
+        contextual_search::FileUploadErrorType::kBrowserProcessingError));
+    return;
+  }
   auto* contextual_session_handle = GetContextualSessionHandle();
   if (!contextual_session_handle) {
     std::move(callback).Run(base::unexpected(
