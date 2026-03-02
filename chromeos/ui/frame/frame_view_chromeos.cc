@@ -7,20 +7,20 @@
 #include <memory>
 
 #include "chromeos/ui/base/window_properties.h"
-#include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/frame/default_frame_header.h"
 #include "chromeos/ui/frame/frame_utils.h"
 #include "chromeos/ui/frame/header_view.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
-#include "ui/display/screen.h"
 #include "ui/display/tablet_state.h"
+#include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/view.h"
 #include "ui/views/view_targeter.h"
 #include "ui/views/widget/widget.h"
+#include "ui/views/window/frame_view.h"
 
 namespace chromeos {
 
@@ -89,20 +89,10 @@ HeaderView* FrameViewChromeOS::GetHeaderView() {
 }
 
 int FrameViewChromeOS::NonClientTopBorderHeight() const {
-  const aura::Window* frame_window = widget_->GetNativeWindow();
-  const WindowStateType window_state_type =
-      frame_window->GetProperty(kWindowStateTypeKey);
-  const bool is_in_tablet_mode = display::Screen::Get()->InTabletMode();
-  const bool should_have_frame_in_tablet =
-      window_state_type == chromeos::WindowStateType::kFloated ||
-      window_state_type == chromeos::WindowStateType::kNormal;
   // The frame should not occupy the window area when it's in fullscreen,
-  // not visible, disabled, in immersive mode or in tablet mode.
-  // TODO(crbug.com/40879470): Support FrameViewAshImmersiveHelper on
-  // Lacros so that we can remove InTabletMode() && IsMaximized() condition.
+  // not visible or disabled.
   if (widget_->IsFullscreen() || !GetFrameEnabled() ||
-      header_view_->in_immersive_mode() ||
-      (is_in_tablet_mode && !should_have_frame_in_tablet)) {
+      header_view_->in_immersive_mode()) {
     return 0;
   }
   return header_view_->GetPreferredHeight();
