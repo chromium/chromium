@@ -453,7 +453,7 @@
 <translation id="2664621323652615289">停止</translation>
 <translation id="2666092431469916601">顶部</translation>
 <translation id="2669454659051515572">任何使用此设备的用户都能看到已下载的文件</translation>
-<translation id="2671423594960767771">分享组</translation>
+<translation id="2671423594960767771">共享分组</translation>
 <translation id="2673508731173059946">访问复制的链接</translation>
 <translation id="2688535388040882469">横幅</translation>
 <translation id="2690858294534178585">相机正在使用中</translation>
@@ -1660,12 +1660,12 @@
 <translation id="7223102419539744003">关闭这个标签页</translation>
 <translation id="7223134495231529579">存储到“下载”</translation>
 <translation id="722339453342442311">立即检查</translation>
-<translation id="7227235818314667565">管理分享设置</translation>
+<translation id="7227235818314667565">管理共享设置</translation>
 <translation id="7233006041370588369">选择要填充的密码。</translation>
 <translation id="7241135764990439166">无痕模式不可用</translation>
 <translation id="7248046129087111453"><ph name="BEGIN_LINK" />搜索记录<ph name="END_LINK" />和<ph name="BEGIN_LINK" />其他形式的活动记录<ph name="END_LINK" />可能会保存在您的 Google 账号中。</translation>
 <translation id="7253951228444156601">正在检查密码…</translation>
-<translation id="7261217796641151584">分享分组</translation>
+<translation id="7261217796641151584">共享分组</translation>
 <translation id="7266578100016339897">这有助于您保持井井有条。您随时可以在“设置”中更改此设置。</translation>
 <translation id="7272437679830969316">无法验证您的身份。未复制密码。</translation>
 <translation id="728025568708172005">开始导览</translation>

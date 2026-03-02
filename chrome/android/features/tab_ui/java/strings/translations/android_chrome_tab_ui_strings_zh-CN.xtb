@@ -55,7 +55,7 @@
 <translation id="2660792762186871190">{NUMBER_OF_TABS,plural, =1{恢复并打开包含 <ph name="TABS_COUNT_ONE" /> 个标签页的标签页分组，颜色为<ph name="COLOR_NAME" />。}other{恢复并打开包含 <ph name="TABS_COUNT_MANY" /> 个标签页的标签页分组，颜色为<ph name="COLOR_NAME" />。}}</translation>
 <translation id="2662028055331606429">当前评分是 <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">访问网站</translation>
-<translation id="2671423594960767771">分享组</translation>
+<translation id="2671423594960767771">共享分组</translation>
 <translation id="2734252994837336591">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> 周前更新}other{<ph name="NUM_WEEKS_MANY" /> 周前更新}}</translation>
 <translation id="2753877351161418426">{NUM_HOURS,plural, =1{<ph name="NUM_HOURS_ONE" /> 小时前更新}other{<ph name="NUM_HOURS_MANY" /> 小时前更新}}</translation>
 <translation id="2755485474385016903">分组中的所有人都会看到所做的更改</translation>
