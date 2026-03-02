@@ -372,6 +372,7 @@ source_set("blink_headers") {
     "web/web_script_controller.h",
     "web/web_script_execution_callback.h",
     "web/web_script_source.h",
+    "web/web_script_tool_types.h",
     "web/web_searchable_form_data.h",
     "web/web_security_policy.h",
     "web/web_select_element.h",

@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/loader/form_submission.h"
 #include "third_party/blink/renderer/core/script_tools/model_context.h"
+#include "third_party/blink/renderer/core/script_tools/script_tool_types.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
@@ -243,7 +244,7 @@ class CORE_EXPORT HTMLFormElement final : public HTMLElement {
   base::OnceClosure cancel_last_submission_;
 
   using McpToolCallbackResult =
-      base::expected<blink::String, blink::WebDocument::ScriptToolError>;
+      base::expected<blink::String, blink::ScriptToolError>;
   class CORE_EXPORT HTMLFormMcpTool final
       : public GarbageCollected<HTMLFormMcpTool>,
         public DeclarativeWebMCPTool {
@@ -269,7 +270,7 @@ class CORE_EXPORT HTMLFormElement final : public HTMLElement {
     // If no error is returned, then all specified tool parameters (form
     // controls) were filled successfully. Otherwise, the state of all form
     // controls are left unchanged.
-    std::optional<WebDocument::ScriptToolError> FillFormControls(
+    std::optional<ScriptToolError> FillFormControls(
         const String& input_arguments,
         bool require_submit_button,
         HTMLFormControlElement** submit_button);

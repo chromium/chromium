@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/script_tools/model_context_supplement.h"
+#include "third_party/blink/renderer/core/script_tools/script_tool_types.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/platform/bindings/source_location.h"
@@ -117,7 +118,7 @@ TEST_F(ModelContextTest, ExecuteTool) {
   model_context->ExecuteTool(
       "echo", "{\"text\": \"hello\"}", /* signal= */ nullptr,
       base::BindLambdaForTesting(
-          [&](base::expected<WebString, WebDocument::ScriptToolError> res) {
+          [&](base::expected<String, ScriptToolError> res) {
             ASSERT_TRUE(res.has_value());
             result = *res;
             run_loop.Quit();
@@ -169,7 +170,7 @@ TEST_F(ModelContextTest, ExecuteToolReturnsObject) {
   model_context->ExecuteTool(
       "echo", "{\"text\": \"hello\"}", /* signal= */ nullptr,
       base::BindLambdaForTesting(
-          [&](base::expected<WebString, WebDocument::ScriptToolError> res) {
+          [&](base::expected<String, ScriptToolError> res) {
             ASSERT_TRUE(res.has_value());
             result = *res;
             run_loop.Quit();
@@ -199,7 +200,7 @@ TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_Navigation) {
   model_context->ExecuteTool(
       "search_tool", "{\"query\": \"testing\"}", /* signal= */ nullptr,
       base::BindLambdaForTesting(
-          [&](base::expected<WebString, WebDocument::ScriptToolError> res) {
+          [&](base::expected<String, ScriptToolError> res) {
             EXPECT_TRUE(res.has_value());
             EXPECT_TRUE(res->IsNull());
             run_loop.Quit();
@@ -226,10 +227,9 @@ TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_InvalidInput) {
   model_context->ExecuteTool(
       "search_tool", "{\"nonexistent\": \"value\"}", /* signal= */ nullptr,
       base::BindLambdaForTesting(
-          [&](base::expected<WebString, WebDocument::ScriptToolError> res) {
+          [&](base::expected<String, ScriptToolError> res) {
             EXPECT_FALSE(res.has_value());
-            EXPECT_EQ(res.error(),
-                      WebDocument::ScriptToolError::kInvalidInputArguments);
+            EXPECT_EQ(res.error(), ScriptToolErrorCode::kInvalidInputArguments);
             EXPECT_EQ(res.error().message,
                       "Input contains a parameter \"nonexistent\" but there is "
                       "no such parameter for the tool");
@@ -258,10 +258,9 @@ TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_InvalidSelectValue) {
   model_context->ExecuteTool(
       "select_tool", "{\"choice\": \"c\"}", /* signal= */ nullptr,
       base::BindLambdaForTesting(
-          [&](base::expected<WebString, WebDocument::ScriptToolError> res) {
+          [&](base::expected<String, ScriptToolError> res) {
             EXPECT_FALSE(res.has_value());
-            EXPECT_EQ(res.error(),
-                      WebDocument::ScriptToolError::kInvalidInputArguments);
+            EXPECT_EQ(res.error(), ScriptToolErrorCode::kInvalidInputArguments);
             EXPECT_EQ(res.error().message,
                       "Invalid value \"c\" for parameter choice");
             run_loop.Quit();
@@ -299,7 +298,7 @@ TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_SPA) {
   model_context->ExecuteTool(
       "search_tool", "{\"query\": \"testing\"}", /* signal= */ nullptr,
       base::BindLambdaForTesting(
-          [&](base::expected<WebString, WebDocument::ScriptToolError> res) {
+          [&](base::expected<String, ScriptToolError> res) {
             got_result = true;
             ASSERT_TRUE(res.has_value());
             EXPECT_EQ(*res, "result value");
@@ -341,11 +340,10 @@ TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_SPA_Reject) {
   model_context->ExecuteTool(
       "search_tool", "{\"query\": \"testing\"}", /* signal= */ nullptr,
       base::BindLambdaForTesting(
-          [&](base::expected<WebString, WebDocument::ScriptToolError> res) {
+          [&](base::expected<String, ScriptToolError> res) {
             got_result = true;
             ASSERT_FALSE(res.has_value());
-            EXPECT_EQ(res.error(),
-                      WebDocument::ScriptToolError::kToolInvocationFailed);
+            EXPECT_EQ(res.error(), ScriptToolErrorCode::kToolInvocationFailed);
             EXPECT_EQ(res.error().message, "respondWith promise was rejected");
             run_loop.Quit();
           }));
@@ -389,7 +387,7 @@ TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_SPA_NoPreventDefault) {
   model_context->ExecuteTool(
       "search_tool", "{\"query\": \"testing\"}", /* signal= */ nullptr,
       base::BindLambdaForTesting(
-          [&](base::expected<WebString, WebDocument::ScriptToolError> res) {
+          [&](base::expected<String, ScriptToolError> res) {
             got_result = true;
             ASSERT_TRUE(res.has_value());
             EXPECT_TRUE(res->IsNull());
@@ -462,7 +460,7 @@ TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_LateRespondWithThrows) {
   model_context->ExecuteTool(
       "search_tool", "{\"query\": \"testing\"}", /* signal= */ nullptr,
       base::BindLambdaForTesting(
-          [&](base::expected<WebString, WebDocument::ScriptToolError> res) {
+          [&](base::expected<String, ScriptToolError> res) {
             ASSERT_TRUE(res.has_value());
             EXPECT_EQ(*res, "result");
             run_loop.Quit();
@@ -521,7 +519,7 @@ TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_PseudoClasses) {
   model_context->ExecuteTool(
       "search_tool", "{\"query\": \"testing\"}", /* signal= */ nullptr,
       base::BindLambdaForTesting(
-          [&](base::expected<WebString, WebDocument::ScriptToolError> res) {
+          [&](base::expected<String, ScriptToolError> res) {
             run_loop.Quit();
           }));
   run_loop.Run();
@@ -569,7 +567,7 @@ TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_SPA_NoAutoSubmit) {
   model_context->ExecuteTool(
       "search_tool", "{\"query\": \"testing\"}", /* signal= */ nullptr,
       base::BindLambdaForTesting(
-          [&](base::expected<WebString, WebDocument::ScriptToolError> res) {
+          [&](base::expected<String, ScriptToolError> res) {
             got_result = true;
             ASSERT_TRUE(res.has_value());
             EXPECT_EQ(*res, "result value");
@@ -635,7 +633,7 @@ TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_FormPopulatedAtEvent) {
   model_context->ExecuteTool(
       "search_tool", "{\"query\": \"testing\"}", /* signal= */ nullptr,
       base::BindLambdaForTesting(
-          [&](base::expected<WebString, WebDocument::ScriptToolError> res) {
+          [&](base::expected<String, ScriptToolError> res) {
             EXPECT_TRUE(res.has_value());
             run_loop.Quit();
           }));
@@ -674,7 +672,7 @@ TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_PauseExecution) {
   model_context->ExecuteTool(
       "search_tool", "{\"query\": \"testing\"}", /* signal= */ nullptr,
       base::BindLambdaForTesting(
-          [&](base::expected<WebString, WebDocument::ScriptToolError> res) {
+          [&](base::expected<String, ScriptToolError> res) {
             ADD_FAILURE() << "Callback should not be called";
           }));
 
@@ -729,7 +727,7 @@ TEST_F(ModelContextTest, CancelTool) {
   std::optional<uint32_t> execution_id = model_context->ExecuteTool(
       "echo", "{\"text\": \"hello\"}", /* signal= */ nullptr,
       base::BindLambdaForTesting(
-          [&](base::expected<WebString, WebDocument::ScriptToolError> res) {
+          [&](base::expected<String, ScriptToolError> res) {
             ASSERT_FALSE(res.has_value());
             run_loop.Quit();
           }));
@@ -776,7 +774,7 @@ TEST_F(ModelContextTest, ToolEventsDispatched) {
   std::optional<uint32_t> execution_id = model_context->ExecuteTool(
       "slow", "{}", /* signal= */ nullptr,
       base::BindLambdaForTesting(
-          [&](base::expected<WebString, WebDocument::ScriptToolError> res) {
+          [&](base::expected<String, ScriptToolError> res) {
             run_loop.Quit();
           }));
 
@@ -814,11 +812,10 @@ TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_Reset_Cancels) {
   model_context->ExecuteTool(
       "search_tool", "{\"query\": \"testing\"}", /* signal= */ nullptr,
       base::BindLambdaForTesting(
-          [&](base::expected<WebString, WebDocument::ScriptToolError> res) {
+          [&](base::expected<String, ScriptToolError> res) {
             got_error = true;
             ASSERT_FALSE(res.has_value());
-            EXPECT_EQ(res.error(),
-                      WebDocument::ScriptToolError::kToolCancelled);
+            EXPECT_EQ(res.error(), ScriptToolErrorCode::kToolCancelled);
             EXPECT_EQ(res.error().message,
                       "Tool execution cancelled by a form reset");
             run_loop.Quit();
@@ -881,10 +878,9 @@ TEST_F(ModelContextTest, ToolSignalAborted) {
   model_context->ExecuteTool(
       "slow", "{}", controller->signal(),
       base::BindLambdaForTesting(
-          [&](base::expected<WebString, WebDocument::ScriptToolError> res) {
+          [&](base::expected<String, ScriptToolError> res) {
             ASSERT_FALSE(res.has_value());
-            EXPECT_EQ(res.error(),
-                      WebDocument::ScriptToolError::kToolInvocationFailed);
+            EXPECT_EQ(res.error(), ScriptToolErrorCode::kToolInvocationFailed);
             run_loop.Quit();
           }));
   run_loop.Run();
@@ -936,7 +932,7 @@ TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_FlexibleTypes) {
   model_context->ExecuteTool(
       "flexible_tool", json_string, /* signal= */ nullptr,
       base::BindLambdaForTesting(
-          [&](base::expected<WebString, WebDocument::ScriptToolError> res) {
+          [&](base::expected<String, ScriptToolError> res) {
             ASSERT_TRUE(res.has_value());
             run_loop.Quit();
           }));
@@ -959,7 +955,7 @@ TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_FlexibleTypes) {
   model_context->ExecuteTool(
       "flexible_tool", json_string, /* signal= */ nullptr,
       base::BindLambdaForTesting(
-          [&](base::expected<WebString, WebDocument::ScriptToolError> res) {
+          [&](base::expected<String, ScriptToolError> res) {
             ASSERT_TRUE(res.has_value());
             run_loop2.Quit();
           }));
@@ -1028,10 +1024,9 @@ TEST_F(ModelContextTest, CancelToolReentrancy) {
   std::optional<uint32_t> execution_id = model_context->ExecuteTool(
       "hang", "{}", /* signal= */ nullptr,
       base::BindLambdaForTesting(
-          [&](base::expected<WebString, WebDocument::ScriptToolError> res) {
+          [&](base::expected<String, ScriptToolError> res) {
             EXPECT_FALSE(res.has_value());
-            EXPECT_EQ(res.error(),
-                      WebDocument::ScriptToolError::kToolCancelled);
+            EXPECT_EQ(res.error(), ScriptToolErrorCode::kToolCancelled);
             run_loop.Quit();
           }));
 
@@ -1047,10 +1042,10 @@ TEST_F(ModelContextTest, CancelToolReentrancy) {
 class MockDeclarativeTool : public GarbageCollected<MockDeclarativeTool>,
                             public DeclarativeWebMCPTool {
  public:
-  void ExecuteTool(String input_arguments,
-                   base::OnceCallback<void(
-                       base::expected<String, WebDocument::ScriptToolError>)>
-                       done_callback) override {}
+  void ExecuteTool(
+      String input_arguments,
+      base::OnceCallback<void(base::expected<String, ScriptToolError>)>
+          done_callback) override {}
 
   String ComputeInputSchema() override { return "{}"; }
   Element* FormElement() const override { return nullptr; }

@@ -177,7 +177,7 @@ void HTMLFormElement::HTMLFormMcpTool::ExecuteTool(
   }
   HTMLFormControlElement* submit_button = nullptr;
 
-  std::optional<WebDocument::ScriptToolError> error;
+  std::optional<ScriptToolError> error;
   {
     CEReactionsScope reactions(form_->GetDocument().GetAgent().isolate());
     error = FillFormControls(input_arguments, require_submit_button,
@@ -217,7 +217,7 @@ void HTMLFormElement::HTMLFormMcpTool::ExecuteTool(
   }
 }
 
-std::optional<WebDocument::ScriptToolError>
+std::optional<ScriptToolError>
 HTMLFormElement::HTMLFormMcpTool::FillFormControls(
     const String& input_arguments,
     bool require_submit_button,
@@ -225,23 +225,21 @@ HTMLFormElement::HTMLFormMcpTool::FillFormControls(
   *submit_button = nullptr;
   std::unique_ptr<JSONValue> json = ParseJSON(input_arguments);
   if (!json) {
-    return WebDocument::ScriptToolError(
-        WebDocument::ScriptToolError::kInvalidInputArguments,
-        "Failed to parse input string as JSON");
+    return ScriptToolError(ScriptToolErrorCode::kInvalidInputArguments,
+                           "Failed to parse input string as JSON");
   }
 
   std::unique_ptr<JSONObject> json_obj = JSONObject::From(std::move(json));
   if (!json_obj) {
-    return WebDocument::ScriptToolError(
-        WebDocument::ScriptToolError::kInvalidInputArguments,
-        "JSON input arguments must be an object");
+    return ScriptToolError(ScriptToolErrorCode::kInvalidInputArguments,
+                           "JSON input arguments must be an object");
   }
 
   FormMCPSchema mcp_schema(*form_);
   *submit_button = mcp_schema.SubmitButton();
   if (!*submit_button && require_submit_button) {
-    return WebDocument::ScriptToolError(
-        WebDocument::ScriptToolError::kMissingRequiredSubmitButton,
+    return ScriptToolError(
+        ScriptToolErrorCode::kMissingRequiredSubmitButton,
         "No submit button was found, but for a form without `toolautosubmit`, "
         "there must be a submit button");
   }
@@ -303,9 +301,9 @@ void HTMLFormElement::HandleWebMcpToolResponse(HTMLFormMcpTool* tool,
     // Promise rejected - error.
     V8ScriptRunner::ReportException(script_state->GetIsolate(),
                                     value.V8Value());
-    tool->CallDoneCallback(base::unexpected(WebDocument::ScriptToolError(
-        WebDocument::ScriptToolError::kToolInvocationFailed,
-        "respondWith promise was rejected")));
+    tool->CallDoneCallback(base::unexpected(
+        ScriptToolError(ScriptToolErrorCode::kToolInvocationFailed,
+                        "respondWith promise was rejected")));
   }
 }
 
@@ -343,10 +341,9 @@ void HTMLFormElement::UpdateMcpDefinitionsIfNeeded() {
   if (IsValidWebMCPForm()) {
     CHECK(!is_valid_mcp_form || name_or_description_changed);
     // Unregister the tool to ensure any in-flight tool executions are aborted.
-    active_webmcp_tool_->CallDoneCallback(
-        base::unexpected(WebDocument::ScriptToolError(
-            WebDocument::ScriptToolError::kToolCancelled,
-            "Tool execution cancelled, since tool definition was updated")));
+    active_webmcp_tool_->CallDoneCallback(base::unexpected(ScriptToolError(
+        ScriptToolErrorCode::kToolCancelled,
+        "Tool execution cancelled, since tool definition was updated")));
     model_context->unregisterTool(active_webmcp_tool_->ToolName(),
                                   ASSERT_NO_EXCEPTION);
     active_webmcp_tool_ = nullptr;
@@ -902,10 +899,9 @@ void HTMLFormElement::reset() {
   }
 
   if (active_webmcp_tool_) {
-    active_webmcp_tool_->CallDoneCallback(
-        base::unexpected(WebDocument::ScriptToolError(
-            WebDocument::ScriptToolError::kToolCancelled,
-            "Tool execution cancelled by a form reset")));
+    active_webmcp_tool_->CallDoneCallback(base::unexpected(
+        ScriptToolError(ScriptToolErrorCode::kToolCancelled,
+                        "Tool execution cancelled by a form reset")));
   }
 
   is_in_reset_function_ = false;

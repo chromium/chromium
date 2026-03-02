@@ -4,48 +4,48 @@
 
 #include "third_party/blink/renderer/core/script_tools/model_context_testing.h"
 
-#include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/script_tools/model_context.h"
+#include "third_party/blink/renderer/core/script_tools/script_tool_types.h"
 
 namespace blink {
 
 namespace {
 
-String GetToolErrorMessage(WebDocument::ScriptToolError error) {
-  if (!error.message.IsEmpty()) {
+String GetToolErrorMessage(const ScriptToolError& error) {
+  if (!error.message.empty()) {
     return error.message;
   }
   String conversion;
   switch (error.code) {
-    case WebDocument::ScriptToolError::kInvalidToolName:
+    case ScriptToolErrorCode::kInvalidToolName:
       conversion = "Tool was not executed due to invalid name";
       break;
-    case WebDocument::ScriptToolError::kInvalidInputArguments:
+    case ScriptToolErrorCode::kInvalidInputArguments:
       conversion = "Tool was not executed due to invalid input arguments";
       break;
-    case WebDocument::ScriptToolError::kMissingRequiredSubmitButton:
+    case ScriptToolErrorCode::kMissingRequiredSubmitButton:
       conversion =
           "Tool was not executed due to missing required submit button";
       break;
-    case WebDocument::ScriptToolError::kToolInvocationFailed:
+    case ScriptToolErrorCode::kToolInvocationFailed:
       conversion =
           "Tool was executed but the invocation failed. For example, the "
           "script function threw an error";
       break;
-    case WebDocument::ScriptToolError::kToolCancelled:
+    case ScriptToolErrorCode::kToolCancelled:
       conversion = "Tool was cancelled";
       break;
     default:
       NOTREACHED();
   }
-  if (error.message.IsEmpty()) {
+  if (error.message.empty()) {
     return conversion;
   }
-  return conversion + ": " + String(error.message);
+  return conversion + ": " + error.message;
 }
 
 }  // namespace
@@ -82,7 +82,7 @@ ScriptPromise<IDLNullable<IDLString>> ModelContextTesting::executeTool(
 
   auto callback =
       [](ScriptPromiseResolver<IDLNullable<IDLString>>* resolver,
-         base::expected<WebString, WebDocument::ScriptToolError> result) {
+         base::expected<String, ScriptToolError> result) {
         if (!resolver->GetScriptState() ||
             !resolver->GetScriptState()->ContextIsValid()) {
           return;

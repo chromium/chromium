@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/html/html_head_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/script/classic_script.h"
+#include "third_party/blink/renderer/core/script_tools/script_tool_types.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/json/json_parser.h"
 #include "third_party/blink/renderer/platform/json/json_values.h"
@@ -50,7 +51,7 @@ class HTMLFormMcpToolTest : public PageTestBase {
     CHECK(form_element.active_webmcp_tool_);
     bool require_submit_button = false;
     HTMLFormControlElement* submit_button;
-    std::optional<WebDocument::ScriptToolError> error =
+    std::optional<ScriptToolError> error =
         form_element.active_webmcp_tool_->FillFormControls(
             input_arguments, require_submit_button, &submit_button);
     return !error.has_value();

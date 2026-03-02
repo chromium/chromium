@@ -18,6 +18,7 @@
 #include "third_party/blink/public/mojom/content_extraction/script_tools.mojom.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_local_frame.h"
+#include "third_party/blink/public/web/web_script_tool_types.h"
 #include "ui/events/base_event_utils.h"
 
 namespace actor {
@@ -26,25 +27,24 @@ namespace {
 mojom::ActionResultPtr OnToolExecuted(
     const std::string& name,
     const std::string& input_arguments,
-    std::unique_ptr<blink::WebDocument::ScriptToolDeclaration> tool,
-    base::expected<blink::WebString, blink::WebDocument::ScriptToolError>
-        response) {
+    std::unique_ptr<blink::WebScriptToolDeclaration> tool,
+    base::expected<blink::WebString, blink::WebScriptToolError> response) {
   if (!response.has_value()) {
     mojom::ActionResultCode code;
     switch (response.error().code) {
-      case blink::WebDocument::ScriptToolError::kInvalidToolName:
+      case blink::WebScriptToolErrorCode::kInvalidToolName:
         code = mojom::ActionResultCode::kScriptToolInvalidName;
         break;
-      case blink::WebDocument::ScriptToolError::kInvalidInputArguments:
+      case blink::WebScriptToolErrorCode::kInvalidInputArguments:
         code = mojom::ActionResultCode::kScriptToolInvalidInputArguments;
         break;
-      case blink::WebDocument::ScriptToolError::kMissingRequiredSubmitButton:
+      case blink::WebScriptToolErrorCode::kMissingRequiredSubmitButton:
         code = mojom::ActionResultCode::kScriptToolMissingRequiredSubmitButton;
         break;
-      case blink::WebDocument::ScriptToolError::kToolInvocationFailed:
+      case blink::WebScriptToolErrorCode::kToolInvocationFailed:
         code = mojom::ActionResultCode::kScriptToolInvocationFailed;
         break;
-      case blink::WebDocument::ScriptToolError::kToolCancelled:
+      case blink::WebScriptToolErrorCode::kToolCancelled:
         code = mojom::ActionResultCode::kScriptToolCancelled;
         break;
     }

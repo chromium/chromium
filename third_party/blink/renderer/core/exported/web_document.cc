@@ -73,6 +73,7 @@
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/script_tools/model_context_supplement.h"
+#include "third_party/blink/renderer/core/script_tools/script_tool_types.h"
 #include "third_party/blink/renderer/core/speculation_rules/document_speculation_rules.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
@@ -86,6 +87,28 @@ namespace {
 static const blink::WebStyleSheetKey GenerateStyleSheetKey() {
   static unsigned counter = 0;
   return blink::String::Number(++counter);
+}
+
+blink::WebScriptToolErrorCode ToWebScriptToolErrorCode(
+    blink::ScriptToolErrorCode code) {
+  switch (code) {
+    case blink::ScriptToolErrorCode::kInvalidToolName:
+      return blink::WebScriptToolErrorCode::kInvalidToolName;
+    case blink::ScriptToolErrorCode::kInvalidInputArguments:
+      return blink::WebScriptToolErrorCode::kInvalidInputArguments;
+    case blink::ScriptToolErrorCode::kMissingRequiredSubmitButton:
+      return blink::WebScriptToolErrorCode::kMissingRequiredSubmitButton;
+    case blink::ScriptToolErrorCode::kToolInvocationFailed:
+      return blink::WebScriptToolErrorCode::kToolInvocationFailed;
+    case blink::ScriptToolErrorCode::kToolCancelled:
+      return blink::WebScriptToolErrorCode::kToolCancelled;
+  }
+}
+
+blink::WebScriptToolError ToWebScriptToolError(
+    const blink::ScriptToolError& error) {
+  return blink::WebScriptToolError(ToWebScriptToolErrorCode(error.code),
+                                   blink::WebString(error.message));
 }
 
 }  // namespace
@@ -412,18 +435,39 @@ size_t WebDocument::ActiveResourceRequestCount() const {
 std::optional<uint32_t> WebDocument::ExecuteScriptTool(
     const WebString& name,
     const WebString& input_arguments,
-    ScriptToolResultCallback tool_result_cb) {
+    WebScriptToolResultCallback tool_result_cb) {
   if (auto* model_context = ModelContextSupplement::modelContext(
           *Unwrap<Document>()->domWindow()->navigator())) {
-    std::unique_ptr<ScriptToolDeclaration> tool_declaration =
-        std::make_unique<ScriptToolDeclaration>();
-    model_context->SetScriptToolDeclaration(name, tool_declaration.get());
+    auto web_tool_declaration = std::make_unique<WebScriptToolDeclaration>();
+    ScriptToolDeclaration script_tool_declaration;
+    model_context->SetScriptToolDeclaration(name, &script_tool_declaration);
+    web_tool_declaration->description =
+        WebString(script_tool_declaration.description);
+    web_tool_declaration->input_schema =
+        WebString(script_tool_declaration.input_schema);
+    web_tool_declaration->read_only = script_tool_declaration.read_only;
+
     // TODO(481899636): PLUMB SIGNAL TO THE BROWSER SIDE!
     return model_context->ExecuteTool(
         name, input_arguments,
         /* signal= */ nullptr,
-        blink::BindOnce(std::move(tool_result_cb),
-                        std::move(tool_declaration)));
+        blink::BindOnce(
+            [](WebScriptToolResultCallback tool_result_cb,
+               std::unique_ptr<WebScriptToolDeclaration> web_tool_declaration,
+               base::expected<String, ScriptToolError> result) {
+              if (result.has_value()) {
+                std::move(tool_result_cb)
+                    .Run(std::move(web_tool_declaration),
+                         base::expected<WebString, WebScriptToolError>(
+                             WebString(*result)));
+              } else {
+                std::move(tool_result_cb)
+                    .Run(
+                        std::move(web_tool_declaration),
+                        base::unexpected(ToWebScriptToolError(result.error())));
+              }
+            },
+            std::move(tool_result_cb), std::move(web_tool_declaration)));
   }
   return std::nullopt;
 }

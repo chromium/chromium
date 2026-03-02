@@ -115,7 +115,7 @@ std::unique_ptr<JSONObject> FormMCPSchema::ComputeJSON() {
   return out;
 }
 
-std::optional<WebDocument::ScriptToolError> FormMCPSchema::FillData(
+std::optional<ScriptToolError> FormMCPSchema::FillData(
     const JSONObject& json_obj) {
   // If the data isn't valid, form control states remain unchanged.
   for (wtf_size_t i = 0; i < json_obj.size(); ++i) {
@@ -123,21 +123,20 @@ std::optional<WebDocument::ScriptToolError> FormMCPSchema::FillData(
     const String parameter_name = String(entry.first);
     auto it = name_to_controls_.find(parameter_name);
     if (it == name_to_controls_.end()) {
-      return WebDocument::ScriptToolError(
-          WebDocument::ScriptToolError::kInvalidInputArguments,
+      return ScriptToolError(
+          ScriptToolErrorCode::kInvalidInputArguments,
           String("Input contains a parameter \"" + parameter_name +
                  "\" but there is no such parameter for the tool"));
     }
     if (!ValidateParameterData(parameter_name, *entry.second)) {
       String string_value;
       if (ToString(*entry.second, string_value)) {
-        return WebDocument::ScriptToolError(
-            WebDocument::ScriptToolError::kInvalidInputArguments,
-            String("Invalid value \"" + string_value + "\" for parameter " +
-                   parameter_name));
+        return ScriptToolError(ScriptToolErrorCode::kInvalidInputArguments,
+                               String("Invalid value \"" + string_value +
+                                      "\" for parameter " + parameter_name));
       }
-      return WebDocument::ScriptToolError(
-          WebDocument::ScriptToolError::kInvalidInputArguments,
+      return ScriptToolError(
+          ScriptToolErrorCode::kInvalidInputArguments,
           String("Invalid value for parameter " + parameter_name));
     }
   }

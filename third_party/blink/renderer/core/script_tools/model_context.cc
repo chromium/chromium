@@ -6,6 +6,7 @@
 
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
+#include "third_party/blink/public/web/web_script_tool_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/capture_source_location.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_model_context_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_model_context_tool.h"
@@ -26,6 +27,17 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
+
+STATIC_ASSERT_ENUM(ScriptToolErrorCode::kInvalidToolName,
+                   WebScriptToolErrorCode::kInvalidToolName);
+STATIC_ASSERT_ENUM(ScriptToolErrorCode::kInvalidInputArguments,
+                   WebScriptToolErrorCode::kInvalidInputArguments);
+STATIC_ASSERT_ENUM(ScriptToolErrorCode::kMissingRequiredSubmitButton,
+                   WebScriptToolErrorCode::kMissingRequiredSubmitButton);
+STATIC_ASSERT_ENUM(ScriptToolErrorCode::kToolInvocationFailed,
+                   WebScriptToolErrorCode::kToolInvocationFailed);
+STATIC_ASSERT_ENUM(ScriptToolErrorCode::kToolCancelled,
+                   WebScriptToolErrorCode::kToolCancelled);
 
 namespace {
 
@@ -191,7 +203,7 @@ void ModelContext::unregisterTool(const String& tool_name,
 
 void ModelContext::SetScriptToolDeclaration(
     const String& name,
-    WebDocument::ScriptToolDeclaration* tool_declaration) const {
+    ScriptToolDeclaration* tool_declaration) const {
   auto it = tool_map_.find(name);
   if (it != tool_map_.end()) {
     const mojom::blink::ScriptTool& script_tool = it->value->ScriptTool();
@@ -230,11 +242,10 @@ std::optional<uint32_t> ModelContext::ExecuteTool(
 
   if (it == tool_map_.end()) {
     task_runner_->PostTask(
-        FROM_HERE,
-        blink::BindOnce(std::move(tool_executed_cb),
-                        base::unexpected(WebDocument::ScriptToolError(
-                            WebDocument::ScriptToolError::kInvalidToolName,
-                            String("Tool not found: " + name)))));
+        FROM_HERE, blink::BindOnce(std::move(tool_executed_cb),
+                                   base::unexpected(ScriptToolError(
+                                       ScriptToolErrorCode::kInvalidToolName,
+                                       String("Tool not found: " + name)))));
     return std::nullopt;
   }
 
@@ -285,10 +296,9 @@ void ModelContext::CancelTool(uint32_t execution_id) {
     return;
   }
   task_runner_->PostTask(
-      FROM_HERE,
-      blink::BindOnce(std::move(pending_execution->value.callback),
-                      base::unexpected(WebDocument::ScriptToolError(
-                          WebDocument::ScriptToolError::kToolCancelled))));
+      FROM_HERE, blink::BindOnce(std::move(pending_execution->value.callback),
+                                 base::unexpected(ScriptToolError(
+                                     ScriptToolErrorCode::kToolCancelled))));
   pending_executions_.erase(pending_execution);
 }
 
@@ -329,14 +339,13 @@ void ModelContext::ExecuteDeclarativeTool(
     DeclarativeWebMCPTool* tool,
     const String& input_arguments,
     ScriptToolExecutedCallback tool_executed_cb) {
-  tool->ExecuteTool(
-      input_arguments,
-      blink::BindOnce(
-          [](ScriptToolExecutedCallback tool_executed_cb,
-             base::expected<String, WebDocument::ScriptToolError> result) {
-            std::move(tool_executed_cb).Run(result);
-          },
-          std::move(tool_executed_cb)));
+  tool->ExecuteTool(input_arguments,
+                    blink::BindOnce(
+                        [](ScriptToolExecutedCallback tool_executed_cb,
+                           base::expected<String, ScriptToolError> result) {
+                          std::move(tool_executed_cb).Run(result);
+                        },
+                        std::move(tool_executed_cb)));
 }
 
 // This overload is used for JS-provided tool functions. It converts the input
@@ -359,11 +368,11 @@ std::optional<uint32_t> ModelContext::ExecuteV8Tool(
 
   if (try_catch.HasCaught() || script_value.IsEmpty()) {
     task_runner_->PostTask(
-        FROM_HERE, blink::BindOnce(
-                       std::move(tool_executed_cb),
-                       base::unexpected(WebDocument::ScriptToolError(
-                           WebDocument::ScriptToolError::kInvalidInputArguments,
-                           "Failed to parse input arguments"))));
+        FROM_HERE,
+        blink::BindOnce(std::move(tool_executed_cb),
+                        base::unexpected(ScriptToolError(
+                            ScriptToolErrorCode::kInvalidInputArguments,
+                            "Failed to parse input arguments"))));
     return std::nullopt;
   }
 
@@ -402,7 +411,7 @@ std::optional<uint32_t> ModelContext::ExecuteV8Tool(
   auto callback_wrapper = blink::BindOnce(
       [](ScriptToolExecutedCallback inner_cb,
          std::unique_ptr<ScopedAbortState> scoped_abort_state,
-         base::expected<WebString, WebDocument::ScriptToolError> result) {
+         base::expected<String, ScriptToolError> result) {
         // ScopedAbortState is destroyed here, unregistering the algorithm.
         std::move(inner_cb).Run(result);
       },
@@ -500,8 +509,8 @@ void ModelContext::OnToolExecuted(uint32_t execution_id,
     std::move(it->value.callback).Run(*result);
   } else {
     std::move(it->value.callback)
-        .Run(base::unexpected(WebDocument::ScriptToolError(
-            WebDocument::ScriptToolError::kToolInvocationFailed)));
+        .Run(base::unexpected(
+            ScriptToolError(ScriptToolErrorCode::kToolInvocationFailed)));
   }
   pending_executions_.erase(it);
 }

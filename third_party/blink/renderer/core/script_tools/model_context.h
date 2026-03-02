@@ -11,11 +11,11 @@
 #include "base/functional/callback_forward.h"
 #include "base/types/pass_key.h"
 #include "third_party/blink/public/mojom/content_extraction/script_tools.mojom-blink.h"
-#include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_model_context.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_tool_execute_callback.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/script_tools/script_tool_types.h"
 #include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
@@ -36,8 +36,7 @@ class DeclarativeWebMCPTool : public GarbageCollectedMixin {
   // failed.
   virtual void ExecuteTool(
       String input_arguments,
-      base::OnceCallback<
-          void(base::expected<String, WebDocument::ScriptToolError>)>
+      base::OnceCallback<void(base::expected<String, ScriptToolError>)>
           done_callback) = 0;
 
   // Returns the input json-schema associated with the tool.
@@ -61,19 +60,14 @@ class CORE_EXPORT ModelContext : public ScriptWrappable {
                     ExceptionState& exception_state);
   void unregisterTool(const String& name, ExceptionState& exception_state);
 
-  void SetScriptToolDeclaration(
-      const String& name,
-      WebDocument::ScriptToolDeclaration* tool_declaration) const;
+  void SetScriptToolDeclaration(const String& name,
+                                ScriptToolDeclaration* tool_declaration) const;
 
   void provideContext(ScriptState* state,
                       const ModelContextOptions* options,
                       ExceptionState& exception_state);
   void clearContext();
 
-  using ScriptToolExecutedCallback = base::OnceCallback<void(
-      base::expected<WebString, WebDocument::ScriptToolError>)>;
-
-  // TODO: crbug.com/479291237 - remove public/web dependency
   std::optional<uint32_t> ExecuteTool(
       const String& name,
       const String& input_arguments,
