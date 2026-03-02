@@ -68,6 +68,8 @@ class PasswordManagerUIHandler : public password_manager::mojom::PageHandler {
   void SwitchBiometricAuthBeforeFillingState(
       SwitchBiometricAuthBeforeFillingStateCallback callback) override;
 
+  void StartPasswordChange(int credential_id) override;
+
  private:
   password_manager::SavedPasswordsPresenter* GetSavedPasswordsPresenter();
 

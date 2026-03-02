@@ -378,6 +378,14 @@ void TestPasswordsPrivateDelegate::StartPasswordCheck(
   std::move(callback).Run(start_password_check_state_);
 }
 
+void TestPasswordsPrivateDelegate::StartPasswordChange(
+    int credential_id,
+    content::WebContents* web_contents) {
+  // TODO(crbug.com/485620841): Implement this, when the method does something
+  // more than just opening a URL.
+  start_password_change_called_ = true;
+}
+
 api::passwords_private::PasswordCheckStatus
 TestPasswordsPrivateDelegate::GetPasswordCheckStatus() {
   api::passwords_private::PasswordCheckStatus status;

@@ -677,6 +677,10 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
       base::FeatureList::IsEnabled(
           password_manager::features::kEnablePasswordManagerMojoApi));
 
+  source->AddBoolean("enablePasswordCheckup",
+                     base::FeatureList::IsEnabled(
+                         password_manager::features::kPasswordCheckup));
+
   bool passwordUploadUiUpdateEnabled = false;
 #if !BUILDFLAG(IS_CHROMEOS)
   passwordUploadUiUpdateEnabled =

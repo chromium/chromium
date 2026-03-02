@@ -447,6 +447,13 @@ export interface PasswordManagerProxy {
    * Revokes actor login permission for all credentials matching the site.
    */
   revokeActorLoginPermission(site: ActorLoginPermission): void;
+
+
+  /**
+   * Request a password change flow by invoking Glic.
+   * @param id The ID of the credential.
+   */
+  requestChangePassword(credential_id: number): void;
 }
 
 /**
@@ -768,6 +775,10 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
 
   revokeActorLoginPermission(site: ActorLoginPermission) {
     this.handler.revokeActorLoginPermission(site);
+  }
+
+  requestChangePassword(credentialId: number): void {
+    this.handler.startPasswordChange(credentialId);
   }
 
   static getInstance(): PasswordManagerProxy {

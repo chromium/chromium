@@ -251,6 +251,11 @@ class PasswordsPrivateDelegate
   // once a check is running or the request was stopped via StopPasswordCheck().
   virtual void StartPasswordCheck(StartPasswordCheckCallback callback) = 0;
 
+  // Starts the password change from password checkup for the given
+  // `credential_id`
+  virtual void StartPasswordChange(int credential_id,
+                                   content::WebContents* web_contents) = 0;
+
   // Returns the current status of the password check.
   virtual api::passwords_private::PasswordCheckStatus
   GetPasswordCheckStatus() = 0;

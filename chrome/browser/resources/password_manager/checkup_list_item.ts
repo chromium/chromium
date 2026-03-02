@@ -15,6 +15,7 @@ import './shared_style.css.js';
 import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -139,11 +140,20 @@ export class CheckupListItemElement extends CheckupListItemElementBase {
   }
 
   private onChangePasswordClick_() {
-    assert(this.item.changePasswordUrl);
-    OpenWindowProxyImpl.getInstance().openUrl(this.item.changePasswordUrl);
-    this.dispatchEvent(new CustomEvent(
-        'change-password-clicked',
-        {bubbles: true, composed: true, detail: this.item.id}));
+    const passwordCheckupEnabled =
+        loadTimeData.getBoolean('enablePasswordCheckup');
+
+    if (passwordCheckupEnabled) {
+      if (this.item && this.item.id) {
+        PasswordManagerImpl.getInstance().requestChangePassword(this.item.id);
+      }
+    } else {
+      assert(this.item.changePasswordUrl);
+      OpenWindowProxyImpl.getInstance().openUrl(this.item.changePasswordUrl);
+      this.dispatchEvent(new CustomEvent(
+          'change-password-clicked',
+          {bubbles: true, composed: true, detail: this.item.id}));
+    }
   }
 
   private onAlreadyChangedClick_(e: Event) {

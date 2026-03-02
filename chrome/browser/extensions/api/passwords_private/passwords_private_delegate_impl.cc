@@ -887,6 +887,35 @@ void PasswordsPrivateDelegateImpl::StartPasswordCheck(
   sentiment_service->RanPasswordCheck();
 }
 
+void PasswordsPrivateDelegateImpl::StartPasswordChange(
+    int credential_id,
+    content::WebContents* web_contents) {
+  CHECK(web_contents);
+  const CredentialUIEntry* credential =
+      credential_id_generator_.TryGetKey(credential_id);
+  if (!credential) {
+    // TODO(crbug.com/485620841): Show error, instead of returning.
+    // There should always be a credential, unless something went wrong.
+    return;
+  }
+
+  std::optional<GURL> change_password_url = credential->GetChangePasswordURL();
+  if (!change_password_url.has_value() || !change_password_url->is_valid() ||
+      !change_password_url->SchemeIsHTTPOrHTTPS()) {
+    // TODO(crbug.com/485620841): Show error, instead of returning.
+    return;
+  }
+
+  // TODO(crbug.com/485620841): Invoke Gemini in Chrome instead of just opening
+  // the url.
+  web_contents->OpenURL(
+      content::OpenURLParams(*change_password_url, content::Referrer(),
+                             WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                             ui::PAGE_TRANSITION_LINK,
+                             /*is_renderer_initiated=*/false),
+      /*navigation_handle_callback=*/{});
+}
+
 api::passwords_private::PasswordCheckStatus
 PasswordsPrivateDelegateImpl::GetPasswordCheckStatus() {
   return password_check_delegate_.GetPasswordCheckStatus();

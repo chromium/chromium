@@ -95,6 +95,8 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
   bool UnmuteInsecureCredential(
       const api::passwords_private::PasswordUiEntry& credential) override;
   void StartPasswordCheck(StartPasswordCheckCallback callback) override;
+  void StartPasswordChange(int credential_id,
+                           content::WebContents* web_contents) override;
   api::passwords_private::PasswordCheckStatus GetPasswordCheckStatus() override;
   password_manager::InsecureCredentialsManager* GetInsecureCredentialsManager()
       override;
@@ -181,6 +183,10 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
 
   bool remove_backup_password() const { return remove_backup_password_; }
 
+  bool start_password_change_called() const {
+    return start_password_change_called_;
+  }
+
  protected:
   ~TestPasswordsPrivateDelegate() override;
 
@@ -256,6 +262,9 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
 
   // Used to track whether `RemoveBackupPassword` was called.
   bool remove_backup_password_ = false;
+
+  // Used to track whether `StartPasswordChange` was called.
+  bool start_password_change_called_ = false;
 
   std::unique_ptr<password_manager::SavedPasswordsPresenter>
       saved_passwords_presenter_;

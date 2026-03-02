@@ -100,6 +100,7 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
       'requestPlaintextPassword',
       'resetImporter',
       'revokeActorLoginPermission',
+      'requestChangePassword',
       'sharePassword',
       'showAddShortcutDialog',
       'showExportedFileInShell',
@@ -482,5 +483,9 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
         s =>
             !(s.domainInfo.signonRealm === site.domainInfo.signonRealm &&
               s.username === site.username));
+  }
+
+  requestChangePassword(id: number): void {
+    this.methodCalled('requestChangePassword', [id]);
   }
 }

@@ -156,6 +156,8 @@ BASE_FEATURE(kProactivelyDownloadModelForPasswordChange,
 BASE_FEATURE(kReduceRequirementsForPasswordChange,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kPasswordCheckup, base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 BASE_FEATURE(kRestartToGainAccessToKeychain,
 #if BUILDFLAG(IS_MAC)

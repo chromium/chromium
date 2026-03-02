@@ -130,6 +130,8 @@ class PasswordsPrivateDelegateImpl
   bool UnmuteInsecureCredential(
       const api::passwords_private::PasswordUiEntry& credential) override;
   void StartPasswordCheck(StartPasswordCheckCallback callback) override;
+  void StartPasswordChange(int credential_id,
+                           content::WebContents* web_contents) override;
   api::passwords_private::PasswordCheckStatus GetPasswordCheckStatus() override;
   password_manager::InsecureCredentialsManager* GetInsecureCredentialsManager()
       override;
