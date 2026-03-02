@@ -269,7 +269,13 @@ class ContextualTasksComposeboxHandler : public ComposeboxHandler,
   // Includes normal tabs and files still uploading, but not delayed tabs.
   std::set<base::UnguessableToken> pending_context_uploads_;
 
+  // The token associated with the visual selection. This does not actually
+  // correspond to a real file upload, but is used to represent the visual
+  // selection in the UI and in the event that the user submits a query with
+  // the visual selection. The visual selection request flow is handled by
+  // the Lens.
   std::optional<base::UnguessableToken> visual_selection_token_;
+
   // The overlay token associated with the visual selection. This is stored
   // alongside the visual selection token because the overlay controller may be
   // reset or closed, but the visual selection should still be associated with
