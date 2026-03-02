@@ -129,7 +129,9 @@ class MultiDeviceNotificationPresenterTest : public NoSessionAshTestBase {
 
   void TearDown() override {
     notification_presenter_.reset();
+    test_system_tray_client_ = nullptr;
     NoSessionAshTestBase::TearDown();
+    fake_multidevice_setup_.reset();
   }
 
   void InvokePendingMojoCalls() { notification_presenter_->FlushForTesting(); }
@@ -297,7 +299,7 @@ class MultiDeviceNotificationPresenterTest : public NoSessionAshTestBase {
   }
 
   base::HistogramTester histogram_tester_;
-  raw_ptr<TestSystemTrayClient, DanglingUntriaged> test_system_tray_client_;
+  raw_ptr<TestSystemTrayClient> test_system_tray_client_;
   TestMessageCenter test_message_center_;
   std::unique_ptr<multidevice_setup::FakeMultiDeviceSetup>
       fake_multidevice_setup_;
