@@ -396,7 +396,7 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
     }
 
     @Override
-    public void onSpecializedFuseboxModeActivatedC(boolean isSpecializedRequestType) {
+    public void onSpecializedFuseboxModeActivated(boolean isSpecializedRequestType) {
         if (isSpecializedRequestType) {
             mFocusedPopupDrawable.setDrawableByLayerId(R.id.glif_border_layer, mGlifBorderDrawable);
             mGlifBorderDrawable.start();
@@ -528,6 +528,7 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
             layoutParams.bottomMargin = -inset;
             outerRect.setCornerRadius(cornerRadius);
             mFocusedPopupDrawable.setLayerInsetRelative(1, inset, inset, inset, inset);
+            setPadding(getPaddingLeft(), getPaddingTop(), getPaddingRight(), inset);
         } else {
             // Remove the extra padding and un-round the corners of the outer rect since we're now
             // bleeding into the suggestions dropdown.
@@ -537,6 +538,7 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
                         cornerRadius, cornerRadius, cornerRadius, cornerRadius, 0, 0, 0, 0
                     });
             mFocusedPopupDrawable.setLayerInsetRelative(1, inset, inset, inset, 0);
+            setPadding(getPaddingLeft(), getPaddingTop(), getPaddingRight(), 0);
         }
         setLayoutParams(layoutParams);
     }

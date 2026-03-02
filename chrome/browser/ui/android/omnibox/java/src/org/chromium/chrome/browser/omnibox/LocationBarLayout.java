@@ -565,7 +565,7 @@ public class LocationBarLayout extends ConstraintLayout {
      * changes to/from specialized (e.g. aim)/conventional (e.g. plain old search). It is not
      * assumed that this will be called when the session ends.
      */
-    public void onSpecializedFuseboxModeActivatedC(boolean isSpecializedRequestType) {}
+    public void onSpecializedFuseboxModeActivated(boolean isSpecializedRequestType) {}
 
     /**
      * Signal that the list of suggestions shown in the associated omnibox suggestions list has

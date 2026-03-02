@@ -1830,7 +1830,7 @@ class LocationBarMediator
         }
         updateButtonVisibility();
         onSearchBoxHintTextChanged();
-        mLocationBarLayout.onSpecializedFuseboxModeActivatedC(isSpecializedRequestType);
+        mLocationBarLayout.onSpecializedFuseboxModeActivated(isSpecializedRequestType);
     }
 
     private boolean isLensOnOmniboxEnabled() {

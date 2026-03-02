@@ -231,6 +231,7 @@ public class LocationBarTabletUnitTest {
                         .getDimensionPixelSize(R.dimen.location_bar_tablet_fusebox_popup_inset);
         assertEquals(cornerRadius, outerRect.getCornerRadius(), MathUtils.EPSILON);
         assertEquals(inset, background.getLayerInsetBottom(1));
+        assertEquals(inset, mLocationBarTablet.getPaddingBottom());
 
         mLocationBarTablet.onSuggestionsChanged(true);
         assertEquals(0, layoutParams.bottomMargin);
@@ -239,6 +240,7 @@ public class LocationBarTabletUnitTest {
                 outerRect.getCornerRadii(),
                 MathUtils.EPSILON);
         assertEquals(0, background.getLayerInsetBottom(1));
+        assertEquals(0, mLocationBarTablet.getPaddingBottom());
     }
 
     @Test
