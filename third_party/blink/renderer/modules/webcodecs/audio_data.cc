@@ -589,6 +589,8 @@ void AudioData::CopyConvert(base::span<uint8_t> dest,
   const uint32_t frame_count = copy_to_options->hasFrameCount()
                                    ? copy_to_options->frameCount()
                                    : available_frames;
+
+  const uint32_t sample_count = frame_count * numberOfChannels();
   CHECK_LE(frame_count, available_frames);
 
   if (media::IsInterleaved(dest_format)) {
@@ -598,33 +600,28 @@ void AudioData::CopyConvert(base::span<uint8_t> dest,
       case media::kSampleFormatU8: {
         data_as_f32_bus_
             ->ToInterleavedPartial<media::UnsignedInt8SampleTypeTraits>(
-                offset, frame_count, dest.data());
+                offset, dest.first(sample_count));
         return;
       }
 
       case media::kSampleFormatS16: {
-        int16_t* dest_data = reinterpret_cast<int16_t*>(dest.data());
-
         data_as_f32_bus_
-            ->ToInterleavedPartial<media::SignedInt16SampleTypeTraits>(
-                offset, frame_count, dest_data);
+            ->ToInterleavedBytesPartial<media::SignedInt16SampleTypeTraits>(
+                offset, dest.first(sample_count * sizeof(int16_t)));
         return;
       }
 
       case media::kSampleFormatS32: {
-        int32_t* dest_data = reinterpret_cast<int32_t*>(dest.data());
-
         data_as_f32_bus_
-            ->ToInterleavedPartial<media::SignedInt32SampleTypeTraits>(
-                offset, frame_count, dest_data);
+            ->ToInterleavedBytesPartial<media::SignedInt32SampleTypeTraits>(
+                offset, dest.first(sample_count * sizeof(int32_t)));
         return;
       }
 
       case media::kSampleFormatF32: {
-        float* dest_data = reinterpret_cast<float*>(dest.data());
-
-        data_as_f32_bus_->ToInterleavedPartial<media::Float32SampleTypeTraits>(
-            offset, frame_count, dest_data);
+        data_as_f32_bus_
+            ->ToInterleavedBytesPartial<media::Float32SampleTypeTraits>(
+                offset, dest.first(sample_count * sizeof(float)));
         return;
       }
 
