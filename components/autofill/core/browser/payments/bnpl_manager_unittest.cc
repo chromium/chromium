@@ -2902,6 +2902,20 @@ TEST_F(BnplManagerTest, LogAiAmountExtractedInIssuerRange_LogsOnlyOnce) {
           kEntryName);
   ASSERT_EQ(1u, entries.size());
 }
+
+TEST_F(BnplManagerTest,
+       OnAmountExtractionReturnedFromAi_RemoveSelectBnplIssuerOrProgressUi) {
+  bnpl_manager_->OnDidAcceptBnplSuggestion(
+      /*final_checkout_amount=*/std::nullopt,
+      /*on_bnpl_vcn_fetched_callback=*/base::DoNothing());
+
+  EXPECT_CALL(GetBnplUiDelegate(), RemoveSelectBnplIssuerOrProgressUi)
+      .Times(ShouldCloseViewBeforeSwitching() ? 1 : 0);
+
+  bnpl_manager_->OnAmountExtractionReturnedFromAi(
+      base::unexpected(AiAmountExtractionResult::Error::kTimeout));
+}
+
 #endif  // !BUILDFLAG(IS_IOS)
 
 }  // namespace autofill::payments

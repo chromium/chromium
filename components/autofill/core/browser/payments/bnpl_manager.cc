@@ -317,9 +317,21 @@ void BnplManager::OnAmountExtractionReturned(
 void BnplManager::OnAmountExtractionReturnedFromAi(
     const AiAmountExtractionResult::ResultType result) {
   if (!result.has_value()) {
-    payments_autofill_client()
-        .GetBnplUiDelegate()
-        ->RemoveSelectBnplIssuerOrProgressUi();
+    CHECK(payments_autofill_client().GetBnplUiDelegate());
+    CHECK(payments_autofill_client().GetBnplStrategy());
+    using enum BnplStrategy::BeforeSwitchingViewAction;
+    switch (payments_autofill_client()
+                .GetBnplStrategy()
+                ->GetBeforeViewSwitchAction()) {
+      // This case is for platforms (i.e. Android) that will flip to the error
+      // screen within the same view, so no need to remove the current view.
+      case kDoNothing:
+        break;
+      case kCloseCurrentUi:
+        payments_autofill_client()
+            .GetBnplUiDelegate()
+            ->RemoveSelectBnplIssuerOrProgressUi();
+    }
 
     switch (result.error()) {
       case AiAmountExtractionResult::Error::kFailureToGenerateApc:
