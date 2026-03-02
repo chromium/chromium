@@ -2946,12 +2946,18 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     config.availability = Comparator(ANY, 0);
     config.session_rate = Comparator(ANY, 0);
 
-    // This promo blocks the Gemini Image Remix IPH in the same session.
+    // This promo impacts/blocks the Gemini Image Remix IPH in the same session.
     config.session_rate_impact.type = SessionRateImpact::Type::EXPLICIT;
     config.session_rate_impact.affected_features.emplace();
     config.session_rate_impact.affected_features->push_back(
         kIPHiOSGeminiImageRemixFeature.name);
-    config.blocked_by.type = BlockedBy::Type::NONE;
+
+    // This promo is blocked by the Gemini Image Remix IPH being shown at the
+    // same time.
+    config.blocked_by.type = BlockedBy::Type::EXPLICIT;
+    config.blocked_by.affected_features.emplace();
+    config.blocked_by.affected_features->push_back(
+        kIPHiOSGeminiImageRemixFeature.name);
     config.blocking.type = Blocking::Type::NONE;
 
     // Feature should show as long as the AI Hub was never used.
