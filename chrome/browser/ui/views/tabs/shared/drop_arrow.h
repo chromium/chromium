@@ -50,9 +50,9 @@ class DropArrow : public views::WidgetObserver {
   bool point_down_ = false;
 
   // Renders the drop indicator.
-  raw_ptr<views::Widget, DanglingUntriaged> arrow_window_ = nullptr;
+  raw_ptr<views::Widget> arrow_window_ = nullptr;
 
-  raw_ptr<views::ImageView, DanglingUntriaged> arrow_view_ = nullptr;
+  raw_ptr<views::ImageView> arrow_view_ = nullptr;
 
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       scoped_observation_{this};

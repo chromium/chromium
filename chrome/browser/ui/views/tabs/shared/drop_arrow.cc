@@ -81,4 +81,5 @@ void DropArrow::OnWidgetDestroying(views::Widget* widget) {
   DCHECK(scoped_observation_.IsObservingSource(arrow_window_.get()));
   scoped_observation_.Reset();
   arrow_window_ = nullptr;
+  arrow_view_ = nullptr;
 }
