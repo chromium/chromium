@@ -5,7 +5,6 @@
 #ifndef IOS_CHROME_BROWSER_NTP_MODEL_NEW_TAB_PAGE_UTIL_H_
 #define IOS_CHROME_BROWSER_NTP_MODEL_NEW_TAB_PAGE_UTIL_H_
 
-class Browser;
 class GURL;
 
 namespace web {
@@ -21,10 +20,5 @@ bool IsVisibleURLNewTabPage(web::WebState* web_state);
 // Returns whether the `web_state` visible URL is currently a NewTabPage url,
 // and has no navigation history.
 bool IsNTPWithoutHistory(web::WebState* web_state);
-
-// Injects a NTP into the `browser` and activates it.
-// Insertion and activation only occur if there is at least one tab in the
-// WebStateList and the currently active tab is not already an NTP.
-void InjectNTP(Browser* browser);
 
 #endif  // IOS_CHROME_BROWSER_NTP_MODEL_NEW_TAB_PAGE_UTIL_H_
