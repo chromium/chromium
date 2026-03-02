@@ -204,7 +204,12 @@ class ReadingListModelImpl : public ReadingListModel {
 
   ReadingListSyncBridge sync_bridge_;
 
-  base::ObserverList<ReadingListModelObserver>::Unchecked observers_;
+  // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
+  base::ObserverList<
+      ReadingListModelObserver,
+      /*check_empty=*/false,
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>::Unchecked
+      observers_;
 
   bool loaded_ = false;
 
