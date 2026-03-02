@@ -26,6 +26,20 @@ class NewTabPageBrowserTest : public WebUIMochaBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+class NewTabPageNextBrowserTest : public WebUIMochaBrowserTest {
+ protected:
+  NewTabPageNextBrowserTest() {
+    set_test_loader_host(chrome::kChromeUINewTabPageHost);
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{omnibox::kAimServerEligibilityEnabled,
+                              ntp_realbox::kNtpRealboxNext},
+        /*disabled_features=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
 using NewTabPageTest = NewTabPageBrowserTest;
 
 IN_PROC_BROWSER_TEST_F(NewTabPageTest, MetricsUtils) {
@@ -36,7 +50,9 @@ IN_PROC_BROWSER_TEST_F(NewTabPageTest, VoiceSearchOverlay) {
   RunTest("new_tab_page/voice_search_overlay_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(NewTabPageTest, Realbox) {
+using NewTabPageNextTest = NewTabPageNextBrowserTest;
+
+IN_PROC_BROWSER_TEST_F(NewTabPageNextTest, Realbox) {
   RunTest("new_tab_page/realbox_test.js", "mocha.run()");
 }
 
