@@ -16429,6 +16429,21 @@
             ]
         }
     ],
+    "NetworkServiceThreadIncreasedPriority": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "WhileLoading_20260226",
+                    "enable_features": [
+                        "NetworkServiceIncreasedPriorityWhileLoading"
+                    ]
+                }
+            ]
+        }
+    ],
     "NeuralPalmRejectionModelForRedrix": [
         {
             "platforms": [

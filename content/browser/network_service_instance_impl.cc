@@ -180,10 +180,11 @@ void BoostNetworkThreadWhileLoading() {
 
   // Add to the global scope since the goal is to boost the network thread
   // while any page is loading.
-  auto observer_list =
-      performance_scenarios::PerformanceScenarioObserverList::GetForScope(
-          performance_scenarios::ScenarioScope::kGlobal);
-  observer_list->AddMatchingObserver(boost_thread.get());
+  if (auto observer_list =
+          performance_scenarios::PerformanceScenarioObserverList::GetForScope(
+              performance_scenarios::ScenarioScope::kGlobal)) {
+    observer_list->AddMatchingObserver(boost_thread.get());
+  }
 }
 
 std::unique_ptr<network::NetworkService>& GetLocalNetworkService() {
