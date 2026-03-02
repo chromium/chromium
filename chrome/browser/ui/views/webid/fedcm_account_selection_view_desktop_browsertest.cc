@@ -316,7 +316,7 @@ IN_PROC_BROWSER_TEST_F(FedCmAccountSelectionViewBrowserTest,
   views::Widget::InitParams init_params(
       views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW);
-  init_params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  init_params.ownership = views::Widget::InitParams::CLIENT_OWNS_WIDGET;
   init_params.bounds = non_occluding_bounds;
   auto pip_widget = std::make_unique<views::Widget>(std::move(init_params));
   pip_widget->Show();
