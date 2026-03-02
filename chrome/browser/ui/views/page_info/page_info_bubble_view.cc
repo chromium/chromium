@@ -385,7 +385,9 @@ void ShowPageInfoDialogImpl(Browser* browser,
   views::BubbleDialogDelegateView* const bubble =
       PageInfoBubbleView::CreatePageInfoBubble(
           page_info_bubble_builder.Build());
-  bubble->SetHighlightedButton(configuration.highlighted_button);
+  if (configuration.highlighted_element) {
+    bubble->SetHighlightedElement(*configuration.highlighted_element);
+  }
   bubble->SetArrow(configuration.bubble_arrow);
   bubble->GetWidget()->Show();
 }

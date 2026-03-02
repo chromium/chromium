@@ -167,7 +167,9 @@ void FileSystemAccessRestorePermissionBubbleView::UpdateAnchor(
   auto configuration =
       bubble_anchor_util::GetPageInfoAnchorConfiguration(browser);
   SetAnchor(configuration.anchor);
-  SetHighlightedButton(configuration.highlighted_button);
+  if (configuration.highlighted_element) {
+    SetHighlightedElement(*configuration.highlighted_element);
+  }
   if (std::holds_alternative<std::nullptr_t>(configuration.anchor)) {
     SetAnchorRect(bubble_anchor_util::GetPageInfoAnchorRect(browser));
   }

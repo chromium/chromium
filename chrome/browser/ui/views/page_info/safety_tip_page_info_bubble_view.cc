@@ -248,7 +248,9 @@ void ShowSafetyTipDialog(
       configuration.anchor, anchor_rect, parent_view, web_contents,
       safety_tip_status, suggested_url, std::move(close_callback));
 
-  bubble->SetHighlightedButton(configuration.highlighted_button);
+  if (configuration.highlighted_element) {
+    bubble->SetHighlightedElement(*configuration.highlighted_element);
+  }
   bubble->SetArrow(configuration.bubble_arrow);
   bubble->GetWidget()->Show();
 }

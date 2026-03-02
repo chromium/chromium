@@ -169,7 +169,9 @@ void ChooserBubbleUiViewDelegate::OnSelectionChanged() {
 void ChooserBubbleUiViewDelegate::UpdateAnchor(Browser* browser) {
   AnchorConfiguration configuration = GetChooserAnchorConfiguration(browser);
   SetAnchor(configuration.anchor);
-  SetHighlightedButton(configuration.highlighted_button);
+  if (configuration.highlighted_element) {
+    SetHighlightedElement(*configuration.highlighted_element);
+  }
   if (std::holds_alternative<std::nullptr_t>(configuration.anchor)) {
     SetAnchorRect(GetChooserAnchorRect(browser));
   }

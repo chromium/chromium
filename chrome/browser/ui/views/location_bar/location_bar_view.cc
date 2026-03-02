@@ -1242,7 +1242,8 @@ std::optional<bubble_anchor_util::AnchorConfiguration>
 LocationBarView::GetChipAnchor() {
   auto* chip = GetChipController()->chip();
   if (chip->GetVisible()) {
-    return {{chip, chip, views::BubbleBorder::TOP_LEFT}};
+    return {{chip, PermissionChipView::kPermissionRequestChipElementId,
+             views::BubbleBorder::TOP_LEFT}};
   }
   return std::nullopt;
 }

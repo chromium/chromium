@@ -83,7 +83,7 @@ WebUIStubLocationBar::GetChipAnchor() {
       BrowserElements::From(window_->browser())
           ->GetElement(kLocationIconElementId);
   CHECK(location_button) << "Location button not found";
-  return {{location_button, nullptr, views::BubbleBorder::TOP_LEFT}};
+  return {{location_button, std::nullopt, views::BubbleBorder::TOP_LEFT}};
 }
 
 ui::TrackedElement* WebUIStubLocationBar::GetAnchorOrNull() {

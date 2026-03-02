@@ -147,7 +147,9 @@ void PermissionPromptBaseView::AnchorToPageInfoOrChip() {
     set_parent_window(
         platform_util::GetViewForWindow(browser_->window()->GetNativeWindow()));
   }
-  SetHighlightedButton(configuration.highlighted_button);
+  if (configuration.highlighted_element) {
+    SetHighlightedElement(*configuration.highlighted_element);
+  }
   if (std::holds_alternative<std::nullptr_t>(configuration.anchor)) {
     SetAnchorRect(bubble_anchor_util::GetPageInfoAnchorRect(browser_));
   }

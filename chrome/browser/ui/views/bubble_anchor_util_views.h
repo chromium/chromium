@@ -5,14 +5,11 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_BUBBLE_ANCHOR_UTIL_VIEWS_H_
 #define CHROME_BROWSER_UI_VIEWS_BUBBLE_ANCHOR_UTIL_VIEWS_H_
 
-#include "base/memory/raw_ptr.h"
+#include <optional>
+
 #include "chrome/browser/ui/bubble_anchor_util.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
-
-namespace views {
-class Button;
-}  // namespace views
 
 class Browser;
 
@@ -22,8 +19,8 @@ struct AnchorConfiguration {
   // The bubble anchor.
   views::BubbleAnchor anchor = nullptr;
 
-  // The view to be highlighted, or null if it should not be used.
-  raw_ptr<views::Button, DanglingUntriaged> highlighted_button = nullptr;
+  // The element to be highlighted, or nullopt if it should not be used.
+  std::optional<ui::ElementIdentifier> highlighted_element;
 
   // The arrow position for the bubble.
   views::BubbleBorder::Arrow bubble_arrow = views::BubbleBorder::TOP_LEFT;
