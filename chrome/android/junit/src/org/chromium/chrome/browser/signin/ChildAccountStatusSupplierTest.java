@@ -30,7 +30,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
-import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.components.signin.test.util.TestAccounts;
 
 /** Tests for {@link ChildAccountStatusSupplier}. */
@@ -38,11 +37,8 @@ import org.chromium.components.signin.test.util.TestAccounts;
 @Config(manifest = Config.NONE)
 public class ChildAccountStatusSupplierTest {
 
-    FakeAccountManagerFacade mAccountManagerFacade = new FakeAccountManagerFacade();
-
     @Rule
-    public final AccountManagerTestRule mAccountManagerTestRule =
-            new AccountManagerTestRule(mAccountManagerFacade);
+    public final AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -52,10 +48,11 @@ public class ChildAccountStatusSupplierTest {
     @Test
     public void testNoAccounts() {
         ChildAccountStatusSupplier supplier;
-        try (var ignored = mAccountManagerFacade.blockGetAccounts()) {
+        try (var ignored = mAccountManagerTestRule.blockGetAccountsUpdate()) {
             supplier =
                     new ChildAccountStatusSupplier(
-                            mAccountManagerFacade, mAppRestrictionSupplierMock);
+                            mAccountManagerTestRule.getAccountManagerFacade(),
+                            mAppRestrictionSupplierMock);
             shadowOf(Looper.getMainLooper()).idle();
             // Supplier shouldn't be set and should not record any histograms until it can obtain
             // the list of accounts from AccountManagerFacade.
@@ -79,7 +76,9 @@ public class ChildAccountStatusSupplierTest {
         mAccountManagerTestRule.addAccount(TestAccounts.CHILD_ACCOUNT);
 
         ChildAccountStatusSupplier supplier =
-                new ChildAccountStatusSupplier(mAccountManagerFacade, mAppRestrictionSupplierMock);
+                new ChildAccountStatusSupplier(
+                        mAccountManagerTestRule.getAccountManagerFacade(),
+                        mAppRestrictionSupplierMock);
         shadowOf(Looper.getMainLooper()).idle();
 
         assertTrue(supplier.get());
@@ -94,7 +93,9 @@ public class ChildAccountStatusSupplierTest {
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT2);
 
         ChildAccountStatusSupplier supplier =
-                new ChildAccountStatusSupplier(mAccountManagerFacade, mAppRestrictionSupplierMock);
+                new ChildAccountStatusSupplier(
+                        mAccountManagerTestRule.getAccountManagerFacade(),
+                        mAppRestrictionSupplierMock);
         shadowOf(Looper.getMainLooper()).idle();
 
         assertFalse(supplier.get());
@@ -110,7 +111,9 @@ public class ChildAccountStatusSupplierTest {
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT2);
 
         ChildAccountStatusSupplier supplier =
-                new ChildAccountStatusSupplier(mAccountManagerFacade, mAppRestrictionSupplierMock);
+                new ChildAccountStatusSupplier(
+                        mAccountManagerTestRule.getAccountManagerFacade(),
+                        mAppRestrictionSupplierMock);
         shadowOf(Looper.getMainLooper()).idle();
 
         assertTrue(supplier.get());
@@ -124,12 +127,13 @@ public class ChildAccountStatusSupplierTest {
     public void testNonChildWhenNoAppRestrictions() {
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT2);
         // Block getAccounts call to make sure ChildAccountStatusSupplier checks app restrictions.
-        try (var ignored = mAccountManagerFacade.blockGetAccounts()) {
+        try (var ignored = mAccountManagerTestRule.blockGetAccountsUpdate()) {
             when(mAppRestrictionSupplierMock.onAvailable(mCallbackCaptor.capture()))
                     .thenReturn(false);
             ChildAccountStatusSupplier supplier =
                     new ChildAccountStatusSupplier(
-                            mAccountManagerFacade, mAppRestrictionSupplierMock);
+                            mAccountManagerTestRule.getAccountManagerFacade(),
+                            mAppRestrictionSupplierMock);
             shadowOf(Looper.getMainLooper()).idle();
             assertNull(supplier.get());
 
@@ -151,13 +155,14 @@ public class ChildAccountStatusSupplierTest {
 
         ChildAccountStatusSupplier supplier;
         // Block getAccounts call to make sure ChildAccountStatusSupplier checks app restrictions.
-        try (var ignored = mAccountManagerFacade.blockGetAccounts()) {
+        try (var ignored = mAccountManagerTestRule.blockGetAccountsUpdate()) {
             doCallback((Callback<Boolean> callback) -> callback.onResult(true))
                     .when(mAppRestrictionSupplierMock)
                     .onAvailable(any());
             supplier =
                     new ChildAccountStatusSupplier(
-                            mAccountManagerFacade, mAppRestrictionSupplierMock);
+                            mAccountManagerTestRule.getAccountManagerFacade(),
+                            mAppRestrictionSupplierMock);
             shadowOf(Looper.getMainLooper()).idle();
             // Since app restrictions were found - ChildAccountSupplier should wait for status from
             // AccountManagerFacade, so the status shouldn't be available yet.

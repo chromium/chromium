@@ -94,9 +94,7 @@ import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.components.search_engines.TemplateUrl;
-import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.SigninFeatures;
-import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.ui.edge_to_edge.EdgeToEdgeSystemBarColorHelper;
@@ -151,11 +149,6 @@ public class FirstRunIntegrationTest {
                     ChromeTabbedActivity.class,
                     CustomTabActivity.class);
     private final Map<Class, ActivityMonitor> mMonitorMap = new HashMap<>();
-    // The following is only used for tests which call {@code blockOnFlowIsKnown}. Otherwise, the
-    // real implementation
-    // of {@code AccountManagerFacade} is used with a {@code FakeAccountManagerDelegate}.
-    private final FakeAccountManagerFacade mFakeAccountManagerFacade =
-            new FakeAccountManagerFacade();
 
     private Instrumentation mInstrumentation;
     private Context mContext;
@@ -337,11 +330,6 @@ public class FirstRunIntegrationTest {
 
     private ScopedObserverData getObserverData(FirstRunActivity freActivity) {
         return mTestObserver.getScopedObserverData(freActivity);
-    }
-
-    private FakeAccountManagerFacade.UpdateBlocker blockOnFlowIsKnown() {
-        AccountManagerFacadeProvider.setInstanceForTests(mFakeAccountManagerFacade);
-        return mFakeAccountManagerFacade.blockGetAccounts();
     }
 
     @Test
@@ -825,7 +813,7 @@ public class FirstRunIntegrationTest {
         // Inspired by https://crbug.com/1207683 where a notification was dropped because native
         // initialized before the first fragment was attached to the activity.
         FirstRunActivity firstRunActivity;
-        try (var ignored = blockOnFlowIsKnown()) {
+        try (var ignored = mSigninTestRule.blockGetAccountsUpdate()) {
             launchViewIntent(TEST_URL);
             firstRunActivity = waitForFirstRunActivity();
             CriteriaHelper.pollUiThread(
@@ -865,7 +853,7 @@ public class FirstRunIntegrationTest {
     public void testSigninFirstRunPageShownBeforeChildStatusFetch() throws Exception {
         // ChildAccountStatusSupplier uses AppRestrictions to quickly detect non-supervised cases,
         // so pretend there are AppRestrictions set by FamilyLink.
-        try (var ignored = blockOnFlowIsKnown()) {
+        try (var ignored = mSigninTestRule.blockGetAccountsUpdate()) {
             initializePreferences(new FirstRunPagesTestCase());
 
             FirstRunActivity firstRunActivity = launchFirstRunActivity();
@@ -924,7 +912,7 @@ public class FirstRunIntegrationTest {
         skipTosDialogViaPolicy();
 
         FirstRunActivity firstRunActivity;
-        try (var ignored = blockOnFlowIsKnown()) {
+        try (var ignored = mSigninTestRule.blockGetAccountsUpdate()) {
             launchCustomTabs(TEST_URL);
             firstRunActivity = waitForFirstRunActivity();
             CriteriaHelper.pollUiThread(
