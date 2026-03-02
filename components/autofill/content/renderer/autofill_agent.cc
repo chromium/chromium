@@ -86,6 +86,7 @@
 using blink::WebAutofillClient;
 using blink::WebAutofillState;
 using blink::WebDocument;
+using blink::WebDOMEvent;
 using blink::WebElement;
 using blink::WebFormControlElement;
 using blink::WebFormElement;
@@ -97,7 +98,6 @@ using blink::WebLocalFrame;
 using blink::WebNode;
 using blink::WebRange;
 using blink::WebString;
-using blink::WebDOMEvent;
 
 namespace autofill {
 
@@ -345,6 +345,8 @@ bool ShouldTriggerAtMemorySearch(const blink::WebFormControlElement& element) {
   }
   const unsigned int sel_start = element.SelectionStart();
   const unsigned int sel_end = element.SelectionEnd();
+  // Suggestions are only triggered when there is no selection and "@@" is
+  // immediately before the cursor.
   return sel_start == sel_end && sel_start >= 2 &&
          element.EditingValue().Substring(sel_start - 2, 2).Equals("@@");
 }
@@ -901,6 +903,7 @@ void AutofillAgent::ContentEditableDidChange(const WebElement& element) {
   DCHECK(form_util::MaybeWasOwnedByFrame(element, unsafe_render_frame()));
   // TODO(crbug.com/40286232): Add throttling to avoid sending this event for
   // rapid changes.
+
   if (std::optional<FormData> form =
           form_util::FindFormForContentEditable(element)) {
     CHECK_EQ(form->fields().size(), 1u);
@@ -1304,6 +1307,27 @@ void AutofillAgent::ApplyFieldAction(
     switch (action_persistence) {
       case mojom::ActionPersistence::kPreview:
         switch (action_type) {
+          case mojom::FieldActionType::kReplaceAtMemoryTrigger: {
+            const unsigned int sel_start = form_control.SelectionStart();
+            const unsigned int sel_end = form_control.SelectionEnd();
+            std::u16string preview_value = form_control.EditingValue().Utf16();
+            // If there is no selection and the cursor is immediately preceded
+            // by "@@", we replace the trigger. Otherwise (e.g. if the user
+            // has already selected text or triggered via the context menu),
+            // we replace the current selection or insert at the cursor.
+            if (sel_start == sel_end && sel_start >= 2 &&
+                form_control.EditingValue()
+                    .Substring(sel_start - 2, 2)
+                    .Equals("@@")) {
+              preview_value.replace(sel_start - 2, 2, value);
+            } else {
+              preview_value.replace(sel_start, sel_end - sel_start, value);
+            }
+            previewed_elements_.emplace_back(field_id,
+                                             form_control.GetAutofillState());
+            form_control.SetSuggestedValue(WebString::FromUTF16(preview_value));
+            break;
+          }
           case mojom::FieldActionType::kReplaceSelection:
             NOTIMPLEMENTED()
                 << "Previewing replacement of selection is not implemented";
@@ -1320,6 +1344,24 @@ void AutofillAgent::ApplyFieldAction(
         break;
       case mojom::ActionPersistence::kFill:
         switch (action_type) {
+          case mojom::FieldActionType::kReplaceAtMemoryTrigger: {
+            const unsigned int sel_start = form_control.SelectionStart();
+            const unsigned int sel_end = form_control.SelectionEnd();
+            // If there is no selection and the cursor is immediately preceded
+            // by "@@", we select the trigger so it gets replaced by
+            // `PasteText` below. Otherwise (e.g. if the user has already
+            // selected text or triggered via context menu), we just perform
+            // a regular insertion/replacement at the current position.
+            if (sel_start == sel_end && sel_start >= 2 &&
+                form_control.EditingValue()
+                    .Substring(sel_start - 2, 2)
+                    .Equals("@@")) {
+              form_control.SetSelectionRange(sel_start - 2, sel_start);
+            }
+            form_control.PasteText(WebString::FromUTF16(value),
+                                   /*replace_all=*/false);
+            break;
+          }
           case mojom::FieldActionType::kReplaceSelection: {
             form_control.PasteText(WebString::FromUTF16(value),
                                    /*replace_all=*/false);
@@ -1359,6 +1401,7 @@ void AutofillAgent::ApplyFieldAction(
           form_util::GetContentEditableByRendererId(field_id)) {
     switch (action_persistence) {
       case mojom::ActionPersistence::kPreview:
+        // TODO(crbug.com/488311191): Implement for contenteditable.
         NOTIMPLEMENTED()
             << "Previewing replacement of selection is not implemented";
         break;
@@ -1375,6 +1418,11 @@ void AutofillAgent::ApplyFieldAction(
                 WebString::FromUTF16(value),
                 /*replace_all=*/
                 (action_type == mojom::FieldActionType::kReplaceAll));
+            break;
+          case mojom::FieldActionType::kReplaceAtMemoryTrigger:
+            // TODO(crbug.com/488311191): Implement for contenteditable.
+            NOTIMPLEMENTED() << "Previewing is not implemented for "
+                                "contenteditables";
             break;
         }
     }

@@ -157,6 +157,20 @@ bool HasAutofillSugestionsForA11y(SuggestionType item_id) {
   }
 }
 
+void FillOrPreviewAtMemorySearchResult(
+    BrowserAutofillManager& manager,
+    mojom::ActionPersistence action_persistence,
+    const FormData& form,
+    const FormFieldData& field,
+    const Suggestion& suggestion) {
+  const std::u16string& replacement =
+      suggestion.GetPayload<Suggestion::AtMemoryPayload>().value;
+
+  manager.FillOrPreviewField(
+      action_persistence, mojom::FieldActionType::kReplaceAtMemoryTrigger, form,
+      field, replacement, suggestion.type, /*field_type_used=*/std::nullopt);
+}
+
 }  // namespace
 
 int AutofillExternalDelegate::shortcut_test_suggestion_index_ = -1;
@@ -584,7 +598,9 @@ void AutofillExternalDelegate::DidSelectSuggestion(
           suggestion.main_text.value, suggestion.type, LOYALTY_MEMBERSHIP_ID);
       break;
     case SuggestionType::kAtMemorySearchResult:
-      // TODO(crbug.com/481976778): Preview @memory search result
+      FillOrPreviewAtMemorySearchResult(*manager_,
+                                        mojom::ActionPersistence::kPreview,
+                                        query_form_, query_field_, suggestion);
       break;
     case SuggestionType::kWebauthnSignInWithAnotherDevice:
       manager_->DelegateSelectToPasswordManager(suggestion, query_field_);
@@ -824,7 +840,9 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
       break;
     }
     case SuggestionType::kAtMemorySearchResult:
-      // TODO(crbug.com/481976778): Fill @memory search result
+      FillOrPreviewAtMemorySearchResult(*manager_,
+                                        mojom::ActionPersistence::kFill,
+                                        query_form_, query_field_, suggestion);
       break;
     case SuggestionType::kWebauthnSignInWithAnotherDevice:
       manager_->DelegateAcceptToPasswordManager(suggestion, metadata,

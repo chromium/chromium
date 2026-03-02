@@ -2768,6 +2768,32 @@ TEST_F(AutofillExternalDelegateTest, ShouldDiscardOutdatedSuggestions) {
 }
 #endif
 
+// Tests that @memory search results use the kReplaceAtMemoryTrigger action.
+TEST_F(AutofillExternalDelegateTest, AtMemorySearchResult_UsesSpecialAction) {
+  IssueOnQuery(AutofillSuggestionTriggerSource::kAtMemory);
+  Suggestion suggestion(u"some result", SuggestionType::kAtMemorySearchResult);
+  suggestion.payload = Suggestion::AtMemoryPayload{u"pasted text"};
+
+  // 1. Test Preview
+  EXPECT_CALL(
+      autofill_manager(),
+      FillOrPreviewField(mojom::ActionPersistence::kPreview,
+                         mojom::FieldActionType::kReplaceAtMemoryTrigger, _, _,
+                         std::u16string(u"pasted text"),
+                         SuggestionType::kAtMemorySearchResult, _));
+  external_delegate().DidSelectSuggestion(suggestion);
+
+  // 2. Test Fill
+  EXPECT_CALL(
+      autofill_manager(),
+      FillOrPreviewField(mojom::ActionPersistence::kFill,
+                         mojom::FieldActionType::kReplaceAtMemoryTrigger, _, _,
+                         std::u16string(u"pasted text"),
+                         SuggestionType::kAtMemorySearchResult, _));
+  external_delegate().DidAcceptSuggestion(suggestion,
+                                          SuggestionPosition{.row = 0});
+}
+
 }  // namespace
 
 }  // namespace autofill

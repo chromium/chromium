@@ -558,9 +558,10 @@ enum FormActionType {
 
 // The possible actions that Autofill can perform on fields.
 enum FieldActionType {
-  kReplaceAll,        // Replace the field's current value.
-  kReplaceSelection,  // Replace only the currently selected text.
-  kSelectAll,         // Selects all the text within this field.
+  kReplaceAll,              // Replace the field's current value.
+  kReplaceSelection,        // Replace only the currently selected text.
+  kSelectAll,               // Selects all the text within this field.
+  kReplaceAtMemoryTrigger,  // Replaces the "@@" trigger preceding the cursor.
 };
 
 // Describes which action triggered Autofill suggestions. This has implications
