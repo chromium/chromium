@@ -39,7 +39,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.JavaExceptionReporter;
-import org.chromium.base.Log;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.ValueChangedCallback;
@@ -253,8 +252,6 @@ public class ToolbarManager
                 TintObserver,
                 MenuButtonDelegate,
                 TabObscuringHandler.Observer {
-    private static final String TAG = "ToolbarManager";
-
     private final IncognitoStateProvider mIncognitoStateProvider;
     private final TopUiThemeColorProvider mTopUiThemeColorProvider;
     private @Nullable final AdjustedTopUiThemeColorProvider mAdjustedTopUiThemeColorProvider;
@@ -362,7 +359,6 @@ public class ToolbarManager
     private final SettableNonNullObservableSupplier<@ControlsPosition Integer>
             mToolbarPositionSupplier = ObservableSuppliers.createNonNull(ControlsPosition.NONE);
     private final OneshotSupplier<ChromeAndroidTask> mChromeAndroidTaskSupplier;
-    private final boolean mEnableLogs;
 
     private @MonotonicNonNull HomeButtonCoordinator mHomeButtonCoordinator;
     private @MonotonicNonNull ToggleTabStackButtonCoordinator mTabSwitcherButtonCoordinator;
@@ -869,7 +865,6 @@ public class ToolbarManager
         mToolbarLayout = mActivity.findViewById(R.id.toolbar);
         NewTabPageDelegate ntpDelegate = createNewTabPageDelegate();
         mIsCustomTab = mToolbarLayout instanceof CustomTabToolbar;
-        mEnableLogs = ChromeFeatureList.sNewTabPageCustomizationV2EnableLogs.getValue();
 
         mLocationBarModel =
                 new LocationBarModel(
@@ -3200,20 +3195,7 @@ public class ToolbarManager
      * the new page.
      */
     private void checkIfNtpShowingWithNoPendingLoad() {
-        GURL url = mLocationBarModel.getCurrentGurl();
-        boolean isNtpUrl = UrlUtilities.isNtpUrl(url);
-
-        if (mEnableLogs) {
-            Log.i(
-                    TAG,
-                    "Get NewTabPage for the current tab: [null: %b] [isNtpUrl: %b] [isEmpty: %b]"
-                            + " [isValid: %b]",
-                    getNewTabPageForCurrentTab() == null,
-                    isNtpUrl,
-                    url.isEmpty(),
-                    url.isValid());
-        }
-
+        boolean isNtpUrl = UrlUtilities.isNtpUrl(mLocationBarModel.getCurrentGurl());
         if (isNtpUrl && getNewTabPageForCurrentTab() != null) {
             mIsNtpWithFakeboxShowingSupplier.set(NewTabPage.isInSingleUrlBarMode(mIsTablet));
         } else {
@@ -3232,12 +3214,6 @@ public class ToolbarManager
             mLocationBarModel.notifyNtpStartedLoading();
         }
 
-        if (mEnableLogs) {
-            Log.i(
-                    TAG,
-                    "Check if Ntp loaded with current tab %s a NTP.",
-                    ntp != null ? "is" : "isn't");
-        }
         checkIfNtpShowingWithNoPendingLoad();
 
         if (mToolbarPositionController != null) {
@@ -3287,9 +3263,6 @@ public class ToolbarManager
         if (updateUrl) {
             mLocationBarModel.notifyUrlChanged(false);
             updateButtonStatus();
-            if (mEnableLogs) {
-                Log.i(TAG, "Update tab loading state to check if NTP showing.");
-            }
             checkIfNtpShowingWithNoPendingLoad();
         }
     }

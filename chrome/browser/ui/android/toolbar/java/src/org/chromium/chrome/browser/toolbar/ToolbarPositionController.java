@@ -869,27 +869,30 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
             Log.i(TAG, "Current %s showing a NTP", isNtpShowing ? "is" : "isn't");
         }
 
-        boolean isEmptyUrl = false;
-        if (!isNtpShowing) {
-            Tab tab = mActiveTabSupplier.get();
-            if (tab != null) {
-                GURL url = tab.getUrl();
-                isEmptyUrl = url.isEmpty();
-                Log.i(
-                        TAG,
-                        "URL of the current tab: [isEmpty: %b] [isValid: %b]",
-                        isEmptyUrl,
-                        url.isValid());
-            }
-        }
-
-        if (isNtpShowing || isEmptyUrl) {
+        if (isNtpShowing) {
             // On certain devices, the toolbar position could switch from top to bottom, and then
             // back to the top when creating a NTP. Force calling onToEdgeChange() will reset the
             // correct top padding which has been set on the toolbar. Since the toolbar is always
             // shown at the top on NTPs, skips the temporary bottom position on NTPs. See
             // https://crbug.com/485266759.
             return;
+        } else {
+            Tab tab = mActiveTabSupplier.get();
+            if (tab != null) {
+                GURL url = tab.getUrl();
+                boolean isEmptyUrl = url.isEmpty();
+                if (mEnableLogs) {
+                    Log.i(
+                            TAG,
+                            "URL of the current tab: [isEmpty: %b] [isValid: %b]",
+                            isEmptyUrl,
+                            url.isValid());
+                }
+                if (isEmptyUrl) {
+                    // Also skips calling onToEdgeChange() if the URL is empty.
+                    return;
+                }
+            }
         }
 
         // When the toolbar is at bottom, it shouldn't add any top inset. Calling
