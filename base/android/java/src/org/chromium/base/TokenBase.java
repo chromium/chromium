@@ -43,8 +43,8 @@ public abstract class TokenBase {
 
     @Override
     public int hashCode() {
-        int mLowHash = (int) (mLow ^ (mLow >>> 32));
-        int mHighHash = (int) (mHigh ^ (mHigh >>> 32));
-        return 31 * mLowHash + mHighHash;
+        int lowHash = (int) (mLow ^ (mLow >>> 32));
+        int highHash = (int) (mHigh ^ (mHigh >>> 32));
+        return 31 * lowHash + highHash;
     }
 }
