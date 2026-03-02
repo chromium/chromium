@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_EXTENSIONS_EXTENSIONS_MENU_VIEW_MODEL_H_
 #define CHROME_BROWSER_UI_EXTENSIONS_EXTENSIONS_MENU_VIEW_MODEL_H_
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
@@ -98,7 +100,8 @@ class ExtensionsMenuViewModel : public extensions::PermissionsManager::Observer,
 
     // Called when an action icon is updated.
     virtual void OnActionIconUpdated(
-        const ToolbarActionsModel::ActionId& action_id) = 0;
+        const ToolbarActionsModel::ActionId& action_id,
+        int index) = 0;
 
     // Called after all actions are added in the menu model after menu model
     // construction.
@@ -385,6 +388,11 @@ class ExtensionsMenuViewModel : public extensions::PermissionsManager::Observer,
 
   // Returns the extension action view model for the given `extension_id`.
   ExtensionActionViewModel* GetActionViewModel(
+      const extensions::ExtensionId& extension_id) const;
+
+  // Returns the index of the action with `extension_id` in `action_models_`, if
+  // existent.
+  std::optional<int> GetActionIndex(
       const extensions::ExtensionId& extension_id) const;
 
   // Callback for when an icon in `action_models_` updates.

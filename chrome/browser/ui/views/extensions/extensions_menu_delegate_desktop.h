@@ -63,8 +63,8 @@ class ExtensionsMenuDelegateDesktop : public ExtensionsMenuViewModel::Delegate,
   void OnActionRemoved(const ToolbarActionsModel::ActionId& action_id,
                        int index) override;
   void OnActionUpdated(const ToolbarActionsModel::ActionId& action_id) override;
-  void OnActionIconUpdated(
-      const ToolbarActionsModel::ActionId& action_id) override;
+  void OnActionIconUpdated(const ToolbarActionsModel::ActionId& action_id,
+                           int index) override;
   void OnActionsInitialized() override;
   void OnToolbarPinnedActionsChanged() override;
   void OnUserPermissionsSettingsChanged() override;

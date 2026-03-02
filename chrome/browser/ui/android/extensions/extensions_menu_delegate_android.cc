@@ -156,17 +156,10 @@ void ExtensionsMenuDelegateAndroid::OnActionUpdated(
 }
 
 void ExtensionsMenuDelegateAndroid::OnActionIconUpdated(
-    const ToolbarActionsModel::ActionId& action_id) {
+    const ToolbarActionsModel::ActionId& action_id,
+    int index) {
   JNIEnv* env = base::android::AttachCurrentThread();
-
-  const auto& models = menu_model_->action_models();
-  auto it = std::ranges::find_if(
-      models, [&](const auto& model) { return model->GetId() == action_id; });
-  CHECK(it != models.end());
-
-  int menu_entry_index = std::distance(models.begin(), it);
-  Java_ExtensionsMenuBridge_onActionIconUpdated(env, java_object_,
-                                                menu_entry_index);
+  Java_ExtensionsMenuBridge_onActionIconUpdated(env, java_object_, index);
 }
 
 void ExtensionsMenuDelegateAndroid::OnActionsInitialized() {

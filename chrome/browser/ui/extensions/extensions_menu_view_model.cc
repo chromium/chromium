@@ -765,11 +765,8 @@ bool ExtensionsMenuViewModel::CanShowSitePermissionsPage(
 
 ExtensionActionViewModel* ExtensionsMenuViewModel::GetActionViewModel(
     const extensions::ExtensionId& extension_id) const {
-  auto it =
-      std::ranges::find_if(action_models_, [&extension_id](const auto& model) {
-        return model->GetId() == extension_id;
-      });
-  return it != action_models_.end() ? it->get() : nullptr;
+  std::optional<int> index = GetActionIndex(extension_id);
+  return index ? action_models_[*index].get() : nullptr;
 }
 
 ExtensionsMenuViewModel::ControlState
@@ -1186,15 +1183,12 @@ void ExtensionsMenuViewModel::OnToolbarActionAdded(
 void ExtensionsMenuViewModel::OnToolbarActionRemoved(
     const ToolbarActionsModel::ActionId& action_id) {
   // Find the action model and return if it doesn't exist.
-  auto it = std::ranges::find_if(
-      action_models_,
-      [&action_id](const auto& model) { return model->GetId() == action_id; });
-  if (it == action_models_.end()) {
+  std::optional<int> index = GetActionIndex(action_id);
+  if (!index) {
     return;
   }
 
-  // Calculate index for action to be removed.
-  int index = std::distance(action_models_.begin(), it);
+  auto it = action_models_.begin() + *index;
 
   // Move the action model out of the vector but keep it alive locally.
   // This removes it from the list (so repopulation doesn't see it)
@@ -1209,7 +1203,7 @@ void ExtensionsMenuViewModel::OnToolbarActionRemoved(
 
   // Notify observers.
   for (Observer& observer : observers_) {
-    observer.OnActionRemoved(action_id, index);
+    observer.OnActionRemoved(action_id, *index);
   }
 
   // preserved_action_model goes out of scope here and is destroyed safely.
@@ -1296,11 +1290,9 @@ void ExtensionsMenuViewModel::Populate() {
 void ExtensionsMenuViewModel::AddHostAccessRequest(
     const extensions::ExtensionId& extension_id) {
   // Find the "rank" of the new extension in the sorted `action_models_` list.
-  auto action_model_it =
-      std::ranges::find_if(action_models_, [&extension_id](const auto& model) {
-        return model->GetId() == extension_id;
-      });
-  CHECK(action_model_it != action_models_.end());
+  std::optional<int> action_model_index = GetActionIndex(extension_id);
+  CHECK(action_model_index);
+  auto action_model_it = action_models_.begin() + *action_model_index;
 
   // Find the correct insertion spot in `host_access_requests_` to match
   // the order in `action_models_`.
@@ -1359,13 +1351,29 @@ void ExtensionsMenuViewModel::UpdateHostAccessRequests() {
   }
 }
 
+std::optional<int> ExtensionsMenuViewModel::GetActionIndex(
+    const extensions::ExtensionId& extension_id) const {
+  auto it =
+      std::ranges::find_if(action_models_, [&extension_id](const auto& model) {
+        return model->GetId() == extension_id;
+      });
+  if (it == action_models_.end()) {
+    return std::nullopt;
+  }
+  return std::distance(action_models_.begin(), it);
+}
+
 void ExtensionsMenuViewModel::OnActionIconUpdated(
     const extensions::ExtensionId& extension_id) {
+  // Find the index of the action.
+  std::optional<int> index = GetActionIndex(extension_id);
+  CHECK(index);
+
   // Notify observers that the action icon has changed. The platform-specific
   // delegate will then re-fetch the necessary state (e.g. MenuEntryState) and
   // update the corresponding views.
   for (Observer& observer : observers_) {
-    observer.OnActionIconUpdated(extension_id);
+    observer.OnActionIconUpdated(extension_id, *index);
   }
 }
 

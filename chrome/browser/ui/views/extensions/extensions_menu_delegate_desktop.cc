@@ -306,7 +306,8 @@ void ExtensionsMenuDelegateDesktop::OnActionUpdated(
 }
 
 void ExtensionsMenuDelegateDesktop::OnActionIconUpdated(
-    const ToolbarActionsModel::ActionId& action_id) {
+    const ToolbarActionsModel::ActionId& action_id,
+    int index) {
   CHECK(current_page_);
 
   // Update the icon for the extension entry in the main page.

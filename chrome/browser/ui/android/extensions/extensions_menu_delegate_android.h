@@ -46,6 +46,8 @@ class ExtensionsMenuDelegateAndroid : public ExtensionsMenuViewModel::Delegate,
   void OnPageNavigation() override;
   void OnActionAdded(ExtensionActionViewModel* action_model,
                      int index) override;
+  void OnActionIconUpdated(const ToolbarActionsModel::ActionId& action_id,
+                           int index) override;
   void OnActionRemoved(const ToolbarActionsModel::ActionId& action_id,
                        int index) override;
   void OnActionUpdated(const ToolbarActionsModel::ActionId& action_id) override;
@@ -54,8 +56,6 @@ class ExtensionsMenuDelegateAndroid : public ExtensionsMenuViewModel::Delegate,
                                 int index) override;
   void OnHostAccessRequestUpdated(const extensions::ExtensionId& extension_id,
                                   int index) override;
-  void OnActionIconUpdated(
-      const ToolbarActionsModel::ActionId& action_id) override;
   void OnHostAccessRequestsCleared() override;
   void OnHostAccessRequestRemoved(const extensions::ExtensionId& extension_id,
                                   int index) override;
