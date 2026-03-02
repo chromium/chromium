@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/accessibility_annotator/core/accessibility_annotator_data_provider_impl.h"
+#include "components/accessibility_annotator/core/direct_server_entity_provider.h"
 
 #include <utility>
 #include <vector>
@@ -12,21 +12,18 @@
 
 namespace accessibility_annotator {
 
-AccessibilityAnnotatorDataProviderImpl::
-    AccessibilityAnnotatorDataProviderImpl() = default;
-AccessibilityAnnotatorDataProviderImpl::
-    ~AccessibilityAnnotatorDataProviderImpl() = default;
+DirectServerEntityProvider::DirectServerEntityProvider() = default;
+DirectServerEntityProvider::~DirectServerEntityProvider() = default;
 
-void AccessibilityAnnotatorDataProviderImpl::AddObserver(Observer* observer) {
+void DirectServerEntityProvider::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
 }
 
-void AccessibilityAnnotatorDataProviderImpl::RemoveObserver(
-    Observer* observer) {
+void DirectServerEntityProvider::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void AccessibilityAnnotatorDataProviderImpl::GetEntities(
+void DirectServerEntityProvider::GetEntities(
     EntityTypeEnumSet types,
     base::OnceCallback<void(std::vector<Entity>)> callback) {
   // TODO(crbug.com/486769736) - Implement this to read from db.

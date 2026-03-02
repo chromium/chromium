@@ -4,8 +4,8 @@
 
 source_set("accessibility_annotator") {
   sources = [
+    "accessibility_annotation_service_factory.h",
     "accessibility_annotator_backend_factory.h",
-    "accessibility_annotator_data_provider_factory.h",
   ]
 
   deps = [
@@ -20,8 +20,8 @@ source_set("accessibility_annotator") {
 # services - and non-public .h).
 source_set("impl") {
   sources = [
+    "accessibility_annotation_service_factory.cc",
     "accessibility_annotator_backend_factory.cc",
-    "accessibility_annotator_data_provider_factory.cc",
   ]
   deps = [
     ":accessibility_annotator",
@@ -38,8 +38,8 @@ source_set("impl") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "accessibility_annotation_service_factory_unittest.cc",
     "accessibility_annotator_backend_factory_unittest.cc",
-    "accessibility_annotator_data_provider_factory_unittest.cc",
   ]
   deps = [
     ":accessibility_annotator",

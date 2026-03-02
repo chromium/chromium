@@ -4,10 +4,11 @@
 
 source_set("core") {
   sources = [
-    "accessibility_annotator_data_provider.cc",
-    "accessibility_annotator_data_provider.h",
-    "accessibility_annotator_data_provider_impl.cc",
-    "accessibility_annotator_data_provider_impl.h",
+    "accessibility_annotation_service.cc",
+    "accessibility_annotation_service.h",
+    "direct_server_entity_provider.cc",
+    "direct_server_entity_provider.h",
+    "entity_data_provider.h",
   ]
 
   public_deps = [
@@ -30,8 +31,8 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
-    "accessibility_annotator_data_provider_impl_unittest.cc",
     "data_models/entity_unittest.cc",
+    "direct_server_entity_provider_unittest.cc",
     "storage/accessibility_annotation_sync_bridge_unittest.cc",
     "storage/accessibility_annotator_database_unittest.cc",
   ]

@@ -11,6 +11,7 @@
 namespace accessibility_annotator {
 
 BASE_DECLARE_FEATURE(kContentAnnotator);
+BASE_DECLARE_FEATURE(kAccessibilityAnnotator);
 
 extern const base::FeatureParam<int> kContentAnnotatorMaxPendingUrls;
 extern const base::FeatureParam<std::string>
