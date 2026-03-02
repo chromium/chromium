@@ -1530,6 +1530,8 @@ class CORE_EXPORT Document : public ContainerNode,
   const Vector<DraggableRegionValue>& DraggableRegions() const;
   void SetDraggableRegions(const Vector<DraggableRegionValue>&);
 
+  void AddedEventListener(const AtomicString& event_type,
+                          RegisteredEventListener&) final;
   void RemovedEventListener(const AtomicString& event_type,
                             const RegisteredEventListener&) final;
   void RemoveAllEventListeners() final;

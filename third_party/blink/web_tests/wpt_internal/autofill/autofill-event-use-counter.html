@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+  <script type=module>
+    import {WebFeature} from '/gen/third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.m.js';
+
+    test(() => {
+      internals.clearUseCounter(document, WebFeature.kAutofillEvent);
+      document.addEventListener("autofill", () => {});
+      assert_true(internals.isUseCounted(document, WebFeature.kAutofillEvent),
+                  "Use counter should be set after adding event listener");
+    }, "Adding an autofill event listener triggers the AutofillEvent use counter");
+  </script>
+</body>
