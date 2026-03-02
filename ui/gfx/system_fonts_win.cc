@@ -6,11 +6,13 @@
 
 #include <windows.h>
 
-#include "base/compiler_specific.h"
+#include <algorithm>
+
 #include "base/containers/flat_map.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "base/win/scoped_gdi_object.h"
@@ -18,8 +20,7 @@
 #include "base/win/scoped_select_object.h"
 #include "ui/gfx/platform_font.h"
 
-namespace gfx {
-namespace win {
+namespace gfx::win {
 
 namespace {
 
@@ -79,11 +80,10 @@ class SystemFonts {
       new_height = logfont->lfHeight > 0 ? 1 : -1;
     logfont->lfHeight = new_height;
     if (!font_adjustment.font_family_override.empty()) {
-      auto result = UNSAFE_TODO(wcscpy_s(
-          logfont->lfFaceName, font_adjustment.font_family_override.c_str()));
-      DCHECK_EQ(0, result) << "Font name "
-                           << font_adjustment.font_family_override
-                           << " cannot be copied into LOGFONT structure.";
+      size_t copied = base::wcslcpy(logfont->lfFaceName,
+                                    font_adjustment.font_family_override);
+      DCHECK_LT(copied, std::size(logfont->lfFaceName))
+          << "Font family name was truncated.";
     }
   }
 
@@ -287,5 +287,4 @@ void ResetSystemFontsForTesting() {
   SystemFonts::Instance()->ResetForTesting();
 }
 
-}  // namespace win
-}  // namespace gfx
+}  // namespace gfx::win

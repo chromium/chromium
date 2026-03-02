@@ -7,13 +7,12 @@
 #include <windows.h>
 
 #include "base/check_op.h"
-#include "base/compiler_specific.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace gfx {
-namespace win {
+namespace gfx::win {
 
 namespace {
 
@@ -36,11 +35,11 @@ class SystemFontsWinTest : public testing::Test {
   }
 };
 
-LOGFONT CreateLOGFONT(const wchar_t* name, LONG height) {
+LOGFONT CreateLOGFONT(std::wstring_view name, LONG height) {
   LOGFONT logfont = {};
   logfont.lfHeight = height;
-  auto result = UNSAFE_TODO(wcscpy_s(logfont.lfFaceName, name));
-  DCHECK_EQ(0, result);
+
+  base::wcslcpy(logfont.lfFaceName, name);
   return logfont;
 }
 
@@ -170,5 +169,4 @@ TEST_F(SystemFontsWinTest, GetDefaultSystemFont) {
   EXPECT_EQ(base::WideToUTF8(kSegoeUI), system_font.GetFontName());
 }
 
-}  // namespace win
-}  // namespace gfx
+}  // namespace gfx::win
