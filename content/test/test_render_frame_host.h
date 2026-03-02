@@ -248,15 +248,6 @@ class TestRenderFrameHost : public RenderFrameHostImpl,
   // callbacks.
   void SimulateLoadingCompleted(LoadingScenario loading_scenario);
 
-  void set_on_sendbeforeunload_begin(
-      base::OnceClosure on_sendbeforeunload_begin) {
-    on_sendbeforeunload_begin_ = std::move(on_sendbeforeunload_begin);
-  }
-
-  void set_on_sendbeforeunload_end(base::OnceClosure on_sendbeforeunload_end) {
-    on_sendbeforeunload_end_ = std::move(on_sendbeforeunload_end);
-  }
-
   // Expose this for testing.
   using RenderFrameHostImpl::SetPolicyContainerHost;
 
@@ -299,9 +290,6 @@ class TestRenderFrameHost : public RenderFrameHostImpl,
       const blink::DocumentToken& document_token,
       const base::UnguessableToken& devtools_navigation_token,
       blink::mojom::PolicyContainerPtr policy_container) override;
-  void SendBeforeUnload(bool is_reload,
-                        base::WeakPtr<RenderFrameHostImpl> impl,
-                        bool for_legacy) override;
 
  private:
   void SendNavigateWithParameters(int nav_entry_id,
@@ -351,10 +339,6 @@ class TestRenderFrameHost : public RenderFrameHostImpl,
 
   // The last commit was for an error page.
   bool last_commit_was_error_page_;
-
-  // The closure that runs when SendBeforeUnload is called.
-  base::OnceClosure on_sendbeforeunload_begin_;
-  base::OnceClosure on_sendbeforeunload_end_;
 
   std::map<NavigationRequest*,
            mojom::NavigationClient::CommitNavigationCallback>
