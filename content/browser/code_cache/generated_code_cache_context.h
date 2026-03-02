@@ -5,8 +5,19 @@
 #ifndef CONTENT_BROWSER_CODE_CACHE_GENERATED_CODE_CACHE_CONTEXT_H_
 #define CONTENT_BROWSER_CODE_CACHE_GENERATED_CODE_CACHE_CONTEXT_H_
 
+#include <stdint.h>
+
+#include <memory>
+#include <optional>
+#include <string>
+#include <string_view>
+
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
+#include "base/functional/callback_forward.h"
+#include "base/location.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/thread_annotations.h"
@@ -16,6 +27,7 @@
 #include "mojo/public/cpp/base/big_buffer.h"
 
 #if !BUILDFLAG(IS_FUCHSIA)
+#include "components/persistent_cache/entry_metadata.h"
 #include "components/persistent_cache/pending_backend.h"
 #include "components/persistent_cache/persistent_cache_collection.h"
 #endif

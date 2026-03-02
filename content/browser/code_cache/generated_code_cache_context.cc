@@ -3,16 +3,25 @@
 // found in the LICENSE file.
 #include "content/browser/code_cache/generated_code_cache_context.h"
 
+#include <stdint.h>
+
 #include <memory>
 #include <optional>
+#include <string>
+#include <string_view>
 
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
+#include "base/location.h"
+#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/sequence_checker.h"
 #include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner_thread_mode.h"
@@ -24,13 +33,19 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/content_features.h"
+#include "mojo/public/cpp/base/big_buffer.h"
+#include "net/base/cache_type.h"
 #include "net/disk_cache/cache_util.h"
+#include "net/disk_cache/disk_cache.h"
 #include "net/http/http_cache.h"
 #include "third_party/blink/public/common/features.h"
 
 #if !BUILDFLAG(IS_FUCHSIA)
 #include "components/persistent_cache/client.h"
+#include "components/persistent_cache/entry_metadata.h"
+#include "components/persistent_cache/pending_backend.h"
 #include "components/persistent_cache/persistent_cache_collection.h"
+#include "components/persistent_cache/transaction_error.h"
 #endif
 
 namespace content {
