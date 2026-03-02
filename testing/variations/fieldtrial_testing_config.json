@@ -4423,6 +4423,21 @@
             ]
         }
     ],
+    "BusyLoopLessWhenCompositorGesture": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20260302",
+                    "enable_features": [
+                        "BusyLoopLessWhenCompositorGesture"
+                    ]
+                }
+            ]
+        }
+    ],
     "BusyLoopOnMainThread": [
         {
             "platforms": [
