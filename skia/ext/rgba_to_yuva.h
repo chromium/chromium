@@ -31,18 +31,14 @@ SK_API void BlitRGBAToYUVA(SkImage* src_image,
                            bool clear_destination = false,
                            const SkRect& src_region = SkRect::MakeEmpty());
 
-// Apply the following conversion pipeline:
-// - Read the pixel from `src_pm`
-// - Perform YUV to RGB conversion according to `src_yuv_cs`
-// - Apply color space conversion to `dst_pm`'s color space
-// - Perform RGB to YUV conversion according to `dst_yuv_cs`.
-// It is allowed for `src_pm` and `dst_pm` to be the same. This function will
-// CHECK if `src_pm` `dst_pm` differ in size, or if `dst_pm` is opaque but
-// `src_pm` is not.
-SK_API void ConvertRGBAToOrFromYUVA(SkPixmap src_pm,
-                                    SkYUVColorSpace src_yuv_cs,
-                                    SkPixmap dst_pm,
-                                    SkYUVColorSpace dst_yuv_cs);
+// Perform RGB to YUV conversion and color space conversion. The SkColorSpace
+// conversion will be from `src_pm`'s color space to `dst_pixmaps`' color
+// spaces (which are CHECKed to be all the same). The `dst_yuva_info` must
+// be valid. If `dst_yuva_info` is opaque but `src_pm` isn't, then `src_pm`
+// will be blended against black.
+SK_API void ConvertRGBAToYUVA(SkPixmap src_pm,
+                              const SkYUVAInfo& dst_yuva_info,
+                              const std::vector<SkPixmap>& dst_pixmaps);
 
 // Convert the planes in `src_pixmaps` to the RGBA `dst`. If `src_yuva_info`
 // is valid, then YUV to RGB conversion will be performed, and `src_bit_depth`

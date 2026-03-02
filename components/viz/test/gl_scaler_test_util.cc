@@ -189,8 +189,11 @@ SkBitmap GLScalerTestUtil::CreateCyclicalTestImage(
 
 // static
 void GLScalerTestUtil::ConvertRGBABitmapToYUV(SkBitmap* image) {
-  skia::ConvertRGBAToOrFromYUVA(image->pixmap(), kIdentity_SkYUVColorSpace,
-                                image->pixmap(), kRec709_SkYUVColorSpace);
+  skia::ConvertRGBAToYUVA(
+      image->pixmap(),
+      SkYUVAInfo(image->dimensions(), SkYUVAInfo::PlaneConfig::kYUVA,
+                 SkYUVAInfo::Subsampling::k444, kRec709_SkYUVColorSpace),
+      {image->pixmap()});
 }
 
 // static

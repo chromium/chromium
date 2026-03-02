@@ -23,7 +23,7 @@ TEST(RGBAToYUVATest, Convert) {
   };
 
   // Several pairs of test points that will equal each other when called with
-  // ConvertRGBAToOrFromYUVA.
+  // ConvertRGBAToYUVA.
   constexpr size_t kNumTests = 2;
   std::array<std::array<TestPoint, 2>, kNumTests> test_cases;
   test_cases[0] = {
@@ -71,7 +71,7 @@ TEST(RGBAToYUVATest, Convert) {
                             &colors[i], sizeof(SkColor4f));
     }
 
-    for (size_t test_config = 0; test_config < 3; ++test_config) {
+    for (size_t test_config = 0; test_config < 2; ++test_config) {
       size_t src_index = 0;
       size_t dst_index = 0;
       switch (test_config) {
@@ -81,11 +81,6 @@ TEST(RGBAToYUVATest, Convert) {
           dst_index = 1;
           break;
         case 1:
-          // Copy from pixmaps[1] to pixmaps[0].
-          src_index = 1;
-          dst_index = 0;
-          break;
-        case 2:
           // Copy from pixmaps[0] to pixmaps[0] to ensure that copying to
           // oneself works.
           src_index = 0;
@@ -95,9 +90,12 @@ TEST(RGBAToYUVATest, Convert) {
 
       colors[dst_index] = SkColors::kTransparent;
       colors[src_index] = test_points[src_index].color;
-      ConvertRGBAToOrFromYUVA(
-          pixmaps[src_index], test_points[src_index].yuv_color_space,
-          pixmaps[dst_index], test_points[dst_index].yuv_color_space);
+      ConvertRGBAToYUVA(pixmaps[src_index],
+                        SkYUVAInfo(pixmaps[dst_index].dimensions(),
+                                   SkYUVAInfo::PlaneConfig::kYUVA,
+                                   SkYUVAInfo::Subsampling::k444,
+                                   test_points[dst_index].yuv_color_space),
+                        {pixmaps[dst_index]});
       EXPECT_NEAR(colors[dst_index].fR, test_points[dst_index].color.fR,
                   kEpsilon);
       EXPECT_NEAR(colors[dst_index].fG, test_points[dst_index].color.fG,
@@ -106,6 +104,119 @@ TEST(RGBAToYUVATest, Convert) {
                   kEpsilon);
       EXPECT_NEAR(colors[dst_index].fA, test_points[dst_index].color.fA,
                   kEpsilon);
+    }
+  }
+}
+
+TEST(RGBAToYUVA, PlaneConfig) {
+  constexpr float kEpsilon = 0.01;
+  struct TestPoint {
+    SkColor4f color;
+    SkAlphaType alpha_type;
+    sk_sp<SkColorSpace> color_space;
+    SkYUVColorSpace yuv_color_space;
+  };
+
+  constexpr size_t kNumTestPoints = 2;
+  std::array<TestPoint, kNumTestPoints> src_points({
+      {
+          .color = {0.91748756f, 0.20028681f, 0.13856059f, 1.f},
+          .alpha_type = kPremul_SkAlphaType,
+          .color_space = SkColorSpace::MakeRGB(SkNamedTransferFn::kSRGB,
+                                               SkNamedGamut::kDisplayP3),
+          .yuv_color_space = kIdentity_SkYUVColorSpace,
+      },
+      {
+          .color = {0.5f, 0.f, 0.f, 0.5f},
+          .alpha_type = kPremul_SkAlphaType,
+          .color_space = SkColorSpace::MakeSRGB(),
+          .yuv_color_space = kIdentity_SkYUVColorSpace,
+      },
+  });
+  std::array<TestPoint, kNumTestPoints> dst_points({
+      {
+          .color = {0.245331f, 0.401317f, 0.941177f, 1.f},
+          .alpha_type = kPremul_SkAlphaType,
+          .color_space = SkColorSpace::MakeSRGB(),
+          .yuv_color_space = kRec709_SkYUVColorSpace,
+      },
+      {
+          .color = {0.245331f, 0.401317f, 0.941177f, 0.5f},
+          // This is a very important test configuration. The individual planes
+          // are opaque, but this verifies that they are internally changed to
+          // unpremultiplied when blitting.
+          .alpha_type = kOpaque_SkAlphaType,
+          .color_space = SkColorSpace::MakeSRGB(),
+          .yuv_color_space = kRec709_SkYUVColorSpace,
+      },
+  });
+
+  struct Config {
+    SkYUVAInfo::PlaneConfig plane_config;
+    const char* name;
+  };
+  std::array<std::vector<Config>, kNumTestPoints> configs({
+      {
+          {SkYUVAInfo::PlaneConfig::kY_U_V, "Y_U_V"},
+          {SkYUVAInfo::PlaneConfig::kY_UV, "Y_UV"},
+          {SkYUVAInfo::PlaneConfig::kY_U_V_A, "Y_U_V_A"},
+          {SkYUVAInfo::PlaneConfig::kY_UV_A, "Y_UV_A"},
+      },
+      {
+          {SkYUVAInfo::PlaneConfig::kY_U_V_A, "Y_U_V_A"},
+          {SkYUVAInfo::PlaneConfig::kY_UV_A, "Y_UV_A"},
+      },
+  });
+
+  for (size_t t = 0; t < kNumTestPoints; ++t) {
+    const auto& src_point = src_points[t];
+    const auto& dst_point = dst_points[t];
+
+    SkPixmap src_pixmap(
+        SkImageInfo::Make(1, 1, kRGBA_F32_SkColorType, src_point.alpha_type,
+                          src_point.color_space),
+        &src_point.color, sizeof(SkColor4f));
+
+    for (const auto& config : configs[t]) {
+      SkYUVAInfo yuva_info(src_pixmap.dimensions(), config.plane_config,
+                           SkYUVAInfo::Subsampling::k444,
+                           dst_point.yuv_color_space);
+      int num_planes = yuva_info.numPlanes();
+      std::vector<SkColor4f> plane_colors(num_planes, SkColors::kTransparent);
+      std::vector<SkPixmap> plane_pixmaps(num_planes);
+      for (int i = 0; i < num_planes; ++i) {
+        plane_pixmaps[i] = SkPixmap(
+            SkImageInfo::Make(1, 1, kRGBA_F32_SkColorType, dst_point.alpha_type,
+                              dst_point.color_space),
+            &plane_colors[i], sizeof(SkColor4f));
+      }
+
+      ConvertRGBAToYUVA(src_pixmap, yuva_info, plane_pixmaps);
+
+      const auto expected = dst_point.color;
+      EXPECT_NEAR(plane_colors[0].fR, expected.fR, kEpsilon) << config.name;
+      switch (config.plane_config) {
+        case SkYUVAInfo::PlaneConfig::kY_U_V:
+          EXPECT_NEAR(plane_colors[1].fR, expected.fG, kEpsilon) << config.name;
+          EXPECT_NEAR(plane_colors[2].fR, expected.fB, kEpsilon) << config.name;
+          break;
+        case SkYUVAInfo::PlaneConfig::kY_UV:
+          EXPECT_NEAR(plane_colors[1].fR, expected.fG, kEpsilon) << config.name;
+          EXPECT_NEAR(plane_colors[1].fG, expected.fB, kEpsilon) << config.name;
+          break;
+        case SkYUVAInfo::PlaneConfig::kY_U_V_A:
+          EXPECT_NEAR(plane_colors[1].fR, expected.fG, kEpsilon) << config.name;
+          EXPECT_NEAR(plane_colors[2].fR, expected.fB, kEpsilon) << config.name;
+          EXPECT_NEAR(plane_colors[3].fR, expected.fA, kEpsilon) << config.name;
+          break;
+        case SkYUVAInfo::PlaneConfig::kY_UV_A:
+          EXPECT_NEAR(plane_colors[1].fR, expected.fG, kEpsilon) << config.name;
+          EXPECT_NEAR(plane_colors[1].fG, expected.fB, kEpsilon) << config.name;
+          EXPECT_NEAR(plane_colors[2].fR, expected.fA, kEpsilon) << config.name;
+          break;
+        default:
+          FAIL() << "Unsupported plane config";
+      }
     }
   }
 }

@@ -567,9 +567,11 @@ void VideoCaptureOverlay::Sprite::TransformImage() {
     if (color_space_.GetMatrixID() != gfx::ColorSpace::MatrixID::RGB) {
       color_space_.ToSkYUVColorSpace(&colors_yuv_cs);
     }
-    skia::ConvertRGBAToOrFromYUVA(scaled_image.pixmap(),
-                                  kIdentity_SkYUVColorSpace, colors_pm,
-                                  colors_yuv_cs);
+    skia::ConvertRGBAToYUVA(
+        scaled_image.pixmap(),
+        SkYUVAInfo(colors_info.dimensions(), SkYUVAInfo::PlaneConfig::kYUVA,
+                   SkYUVAInfo::Subsampling::k444, colors_yuv_cs),
+        {colors_pm});
   }
 
   switch (format_) {
