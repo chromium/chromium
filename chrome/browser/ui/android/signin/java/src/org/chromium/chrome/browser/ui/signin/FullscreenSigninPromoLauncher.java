@@ -38,7 +38,7 @@ import java.util.concurrent.TimeUnit;
 @NullMarked
 public final class FullscreenSigninPromoLauncher {
     /**
-     * Launches the {@link SigninAndHistoryOptInActivity} if it needs to be displayed.
+     * Launches the {@link SigninAndHistorySyncActivity} if it needs to be displayed.
      *
      * @param context The {@link Context} to launch the {@link SigninAndHistorySyncActivity}.
      * @param profile The active user profile.
@@ -78,7 +78,7 @@ public final class FullscreenSigninPromoLauncher {
     }
 
     /**
-     * Launches the {@link SigninAndHistoryOptInActivity} when forcing the display.
+     * Launches the {@link SigninAndHistorySyncActivity} when forcing the display.
      *
      * @param context The {@link Context} to launch the {@link SigninAndHistorySyncActivity}.
      * @param profile The active user profile.
