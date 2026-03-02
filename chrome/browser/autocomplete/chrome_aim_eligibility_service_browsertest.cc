@@ -1626,8 +1626,14 @@ IN_PROC_BROWSER_TEST_F(ChromeAimEligibilityServiceOAuthBrowserTest,
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(IS_CHROMEOS)
+// TODO(crbug.com/488467253): Fix and re-enable this test for CrOS.
+#define MAYBE_RefreshesOnPersistentError DISABLED_RefreshesOnPersistentError
+#else
+#define MAYBE_RefreshesOnPersistentError RefreshesOnPersistentError
+#endif
 IN_PROC_BROWSER_TEST_F(ChromeAimEligibilityServiceOAuthBrowserTest,
-                       RefreshesOnPersistentError) {
+                       MAYBE_RefreshesOnPersistentError) {
   base::HistogramTester histogram_tester;
 
   omnibox::AimEligibilityResponse response;
