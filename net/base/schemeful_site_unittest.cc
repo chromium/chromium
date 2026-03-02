@@ -10,6 +10,7 @@
 #include "net/base/url_util.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/hash/hash_testing.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 #include "url/url_util.h"
@@ -193,6 +194,10 @@ TEST(SchemefulSiteTest, Operators) {
       EXPECT_FALSE(site1.IsSameSiteWith(kTestOrigins[second]));
     }
   }
+
+  // This doesn't strictly belong in this test but the list of non-equal origins
+  // is exactly what it needs.
+  EXPECT_TRUE(absl::VerifyTypeImplementsAbslHashCorrectly(kTestOrigins));
 }
 
 TEST(SchemefulSiteTest, SchemeUsed) {

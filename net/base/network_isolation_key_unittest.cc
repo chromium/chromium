@@ -14,6 +14,7 @@
 #include "net/base/network_isolation_partition.h"
 #include "net/base/schemeful_site.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/hash/hash_testing.h"
 #include "url/gurl.h"
 #include "url/url_util.h"
 
@@ -360,6 +361,39 @@ TEST(NetworkIsolationKeyTest, CreateTransientForTesting) {
   for (int i = 0; i < 1000; ++i) {
     EXPECT_NE(transient_key, NetworkIsolationKey::CreateTransientForTesting());
   }
+}
+
+TEST(NetworkIsolationKeyTest, SupportsAbslHash) {
+  SchemefulSite site_a = SchemefulSite(GURL("http://a.test/"));
+  SchemefulSite site_b = SchemefulSite(GURL("http://b.test/"));
+  // These are different even though they are constructed from the same URL,
+  // because they are opaque origins.
+  SchemefulSite data_site_1 = SchemefulSite(GURL("data:foo"));
+  SchemefulSite data_site_2 = SchemefulSite(GURL("data:foo"));
+  base::UnguessableToken nonce = base::UnguessableToken::Create();
+  base::UnguessableToken different_nonce = base::UnguessableToken::Create();
+
+  EXPECT_TRUE(absl::VerifyTypeImplementsAbslHashCorrectly({
+      NetworkIsolationKey(),
+      NetworkIsolationKey(site_a, site_a),
+      NetworkIsolationKey(site_a, site_b),
+      NetworkIsolationKey(site_b, site_a),
+      NetworkIsolationKey(site_b, site_b),
+      NetworkIsolationKey(data_site_1, data_site_1),
+      NetworkIsolationKey(data_site_2, data_site_2),
+      NetworkIsolationKey(data_site_1, data_site_2),
+      NetworkIsolationKey(site_a, data_site_1),
+      NetworkIsolationKey(data_site_1, site_a),
+      NetworkIsolationKey(site_a, site_a, nonce),
+      NetworkIsolationKey(site_a, site_b, nonce),
+      NetworkIsolationKey(site_a, site_b, different_nonce),
+      NetworkIsolationKey(
+          site_a, site_a, std::nullopt,
+          NetworkIsolationPartition::kProtectedAudienceSellerWorklet),
+      NetworkIsolationKey(
+          site_a, site_a, std::nullopt,
+          NetworkIsolationPartition::kFedCmUncredentialedRequests),
+  }));
 }
 
 }  // namespace

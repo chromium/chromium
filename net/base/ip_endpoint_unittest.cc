@@ -10,8 +10,8 @@
 #include <string>
 #include <tuple>
 
-#include "base/containers/span.h"
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
@@ -24,6 +24,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
+#include "third_party/abseil-cpp/absl/hash/hash_testing.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <winsock2.h>
@@ -495,6 +496,22 @@ TEST_F(IPEndPointTest, FromMalformedValues) {
   *invalid_address_v4.GetDict().Find("address") =
       base::Value("::ffff:169.254.0.1");
   EXPECT_FALSE(IPEndPoint::FromValue(invalid_scope_id).has_value());
+}
+
+TEST_F(IPEndPointTest, SupportsAbslHash) {
+  constexpr IPAddress kIPv4Address(192, 168, 0, 1);
+  constexpr IPAddress kIPv6Address(0x20, 0x01, 0x0d, 0xb8, 0, 0, 0, 0, 0, 0, 0,
+                                   0, 0, 0, 0, 0x42);
+  constexpr IPAddress kIPv6LinkLocalAddress(0xfe, 0x80, 0, 0, 0, 0, 0, 0, 0, 0,
+                                            0, 0, 0, 0, 0, 1);
+  EXPECT_TRUE(absl::VerifyTypeImplementsAbslHashCorrectly({
+      IPEndPoint(),
+      IPEndPoint(kIPv4Address, 80),
+      IPEndPoint(kIPv4Address, 8080),
+      IPEndPoint(kIPv6Address, 80),
+      IPEndPoint(kIPv6LinkLocalAddress, 80, 1),
+      IPEndPoint(kIPv6LinkLocalAddress, 80, 2),
+  }));
 }
 
 }  // namespace
