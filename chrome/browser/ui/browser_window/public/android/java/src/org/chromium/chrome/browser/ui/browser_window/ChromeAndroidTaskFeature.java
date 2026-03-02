@@ -9,7 +9,11 @@ import android.graphics.Rect;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 
-/** Represents a Chrome feature whose lifecycle should be in sync with {@link ChromeAndroidTask}. */
+/**
+ * Represents a Chrome feature whose lifecycle is bound by a {@link ChromeAndroidTask}.
+ *
+ * @see ChromeAndroidTaskFeatureKey for how the lifecycle of a feature is determined.
+ */
 @NullMarked
 public interface ChromeAndroidTaskFeature {
 
@@ -24,14 +28,17 @@ public interface ChromeAndroidTaskFeature {
     void onAddedToTask();
 
     /**
-     * Called by a {@link ChromeAndroidTask} when the Task is removed or on {@link Profile}
-     * destruction if the feature is associated with a {@link Profile}.
+     * Called by a {@link ChromeAndroidTask} when the feature is being removed.
      *
      * <p>This is the end of the feature's lifecycle. A feature should destroy all objects it owns
      * in this method.
      *
+     * <p>The end of a feature's lifecycle is determined by its {@link ChromeAndroidTaskFeatureKey}
+     * (e.g., on Task destruction, Profile destruction, or Activity destruction).
+     *
      * @see ChromeAndroidTask#destroy()
      * @see ChromeAndroidTaskTracker#remove(int)
+     * @see ChromeAndroidTask#removeAllFeaturesForActivity
      */
     void onFeatureRemoved();
 

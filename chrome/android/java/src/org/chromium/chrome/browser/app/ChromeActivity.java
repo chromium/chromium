@@ -1805,6 +1805,18 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
     @SuppressLint("NewApi")
     @Override
     protected final void onDestroy() {
+        // Destroy all ChromeAndroidTaskFeatures scoped to this ChromeActivity.
+        // For one ChromeAndroidTaskFeature, its native code may hold pointers
+        // to other native objects that are destroyed later in this method,
+        // such as the native TabListInterface, the native BrowserWindowInterface, etc.
+        // Therefore, ChromeAndroidTaskFeatures should be destroyed first to
+        // prevent issues like dereferencing a non-null but invalid pointer.
+        ChromeAndroidTask chromeAndroidTask = mChromeAndroidTaskSupplier.get();
+        if (chromeAndroidTask != null) {
+            var activityWindowAndroid = getWindowAndroid();
+            chromeAndroidTask.removeAllFeaturesForActivity(activityWindowAndroid);
+        }
+
         SnackbarManager snackbarManager = mSnackbarManagerSupplier.get();
         if (snackbarManager != null) {
             SnackbarManagerProvider.detach(snackbarManager);
