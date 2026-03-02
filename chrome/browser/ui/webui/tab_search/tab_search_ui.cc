@@ -9,6 +9,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service_factory.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_utils.h"
@@ -35,10 +36,6 @@
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/webui/webui_util.h"
-
-#if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
-#endif
 
 TabSearchUIConfig::TabSearchUIConfig()
     : DefaultTopChromeWebUIConfig(content::kChromeUIScheme,
@@ -219,10 +216,8 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
   source->AddBoolean("dedupeEnabled", features::IsTabstripDedupeEnabled() &&
                                           !profile->IsIncognitoProfile());
 
-#if BUILDFLAG(ENABLE_GLIC)
   source->AddResourcePath("alert_indicators/tab_media_glic_active.svg",
                           IDR_GLIC_TAB_MEDIA_GLIC_ACTIVE);
-#endif
 
   ui::Accelerator accelerator(ui::VKEY_A,
                               ui::EF_SHIFT_DOWN | ui::EF_PLATFORM_ACCELERATOR);

@@ -124,12 +124,10 @@ class SettingsUI
   // Makes a request to show a HaTS survey.
   void TryShowHatsSurveyWithTimeout();
 
-#if BUILDFLAG(ENABLE_GLIC)
   // Updates, based on account and profile state, the loadTimeData values that
   // control whether the glic settings page should be shown. Returns the enabled
   // value.
   void UpdateShowGlicState();
-#endif
 
 #if !BUILDFLAG(IS_CHROMEOS)
   // theme_color_picker::mojom::ThemeColorPickerHandlerFactory:
@@ -180,9 +178,7 @@ class SettingsUI
                      CustomizeColorSchemeModeHandlerFactory>
       customize_color_scheme_mode_handler_factory_receiver_{this};
 
-#if BUILDFLAG(ENABLE_GLIC)
   base::CallbackListSubscription glic_settings_state_subscription_;
-#endif
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

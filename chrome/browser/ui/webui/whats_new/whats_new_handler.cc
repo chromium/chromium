@@ -12,6 +12,8 @@
 #include "base/metrics/user_metrics_action.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
+#include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -32,11 +34,6 @@
 #include "components/variations/service/variations_service_utils.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
-
-#if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/glic/public/glic_keyed_service.h"
-#include "chrome/browser/glic/public/glic_keyed_service_factory.h"
-#endif
 
 namespace {
 
@@ -122,14 +119,12 @@ void WhatsNewHandler::RecordModuleImpression(
     interaction_data->add_module_shown(module_name, position);
   }
 
-#if BUILDFLAG(ENABLE_GLIC)
   if (module_name == "GlicIntro") {
     if (auto* glic_service =
             glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile_)) {
       glic_service->TryPreloadFre(glic::GlicPrewarmingFreSource::kWhatsNew);
     }
   }
-#endif  // BUILDFLAG(ENABLE_GLIC)
 }
 
 void WhatsNewHandler::RecordExploreMoreToggled(bool expanded) {

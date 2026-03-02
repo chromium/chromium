@@ -7,6 +7,7 @@
 #include "base/command_line.h"
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -32,9 +33,6 @@
 #include "ui/base/ui_base_switches.h"
 #include "ui/native_theme/native_theme.h"
 #include "url/gurl.h"
-#if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/glic/public/glic_enabling.h"
-#endif
 
 namespace {
 // Baseline Gerrit CL number of the most recent CL that modified the UI.
@@ -152,7 +150,6 @@ IN_PROC_BROWSER_TEST_P(SkillsPageInteractiveUITest, ErrorStatePage) {
 }
 
 IN_PROC_BROWSER_TEST_P(SkillsPageInteractiveUITest, ZeroStatePage) {
-#if BUILDFLAG(ENABLE_GLIC)
   std::string screenshot_name =
       IsDarkMode() ? "zero_state_dark" : "zero_state_light";
   SignIn("testskills@gmail.com");
@@ -166,7 +163,6 @@ IN_PROC_BROWSER_TEST_P(SkillsPageInteractiveUITest, ZeroStatePage) {
       Screenshot(kSkillsPageElementId,
                  /*screenshot_name=*/screenshot_name,
                  /*baseline_cl=*/kScreenshotBaselineCL));
-#endif
 }
 
 IN_PROC_BROWSER_TEST_P(SkillsPageInteractiveUITest, NarrowPage) {
@@ -176,7 +172,6 @@ IN_PROC_BROWSER_TEST_P(SkillsPageInteractiveUITest, NarrowPage) {
   const InteractiveBrowserWindowTestApi::DeepQuery kDrawerQuery{
       "skills-app", "cr-drawer#drawer"};
 
-#if BUILDFLAG(ENABLE_GLIC)
   std::string screenshot_name = IsDarkMode() ? "narrow_dark" : "narrow_light";
   SignIn("testskills@gmail.com");
   glic::GlicEnabling::SetBypassEnablementChecksForTesting(true);
@@ -196,7 +191,6 @@ IN_PROC_BROWSER_TEST_P(SkillsPageInteractiveUITest, NarrowPage) {
       Screenshot(kSkillsPageElementId,
                  /*screenshot_name=*/screenshot_name,
                  /*baseline_cl=*/kScreenshotBaselineCL));
-#endif
 }
 
 IN_PROC_BROWSER_TEST_P(SkillsPageInteractiveUITest, YourSkillsPage) {
@@ -211,7 +205,6 @@ IN_PROC_BROWSER_TEST_P(SkillsPageInteractiveUITest, YourSkillsPage) {
   const InteractiveBrowserWindowTestApi::DeepQuery kNewSkillCardQuery{
       "skills-app", "user-skills-page", "skill-card"};
 
-#if BUILDFLAG(ENABLE_GLIC)
   std::string screenshot_name =
       IsDarkMode() ? "your_skills_dark" : "your_skills_light";
   SignIn("testskills@gmail.com");
@@ -247,7 +240,6 @@ IN_PROC_BROWSER_TEST_P(SkillsPageInteractiveUITest, YourSkillsPage) {
       Screenshot(kSkillsPageElementId,
                  /*screenshot_name=*/screenshot_name,
                  /*baseline_cl=*/kScreenshotBaselineCL));
-#endif
 }
 
 IN_PROC_BROWSER_TEST_P(SkillsPageInteractiveUITest, BrowseSkillsPage) {
@@ -278,7 +270,6 @@ IN_PROC_BROWSER_TEST_P(SkillsPageInteractiveUITest, BrowseSkillsPage) {
   const InteractiveBrowserWindowTestApi::DeepQuery kSkillCardQuery{
       "skills-app", "discover-skills-page", "skill-card"};
 
-#if BUILDFLAG(ENABLE_GLIC)
   std::string screenshot_name =
       IsDarkMode() ? "browse_skills_dark" : "browse_skills_light";
   SignIn("testskills@gmail.com");
@@ -293,5 +284,4 @@ IN_PROC_BROWSER_TEST_P(SkillsPageInteractiveUITest, BrowseSkillsPage) {
       Screenshot(kSkillsPageElementId,
                  /*screenshot_name=*/screenshot_name,
                  /*baseline_cl=*/kScreenshotBaselineCL));
-#endif
 }

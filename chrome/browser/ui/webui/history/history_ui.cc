@@ -20,6 +20,8 @@
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
+#include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/history_embeddings/history_embeddings_utils.h"
 #include "chrome/browser/page_image_service/image_service_factory.h"
@@ -68,11 +70,6 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/webui/webui_util.h"
-
-#if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/glic/glic_pref_names.h"
-#include "chrome/browser/glic/public/glic_enabling.h"
-#endif
 
 namespace {
 
@@ -139,17 +136,12 @@ content::WebUIDataSource* CreateAndAddHistoryUIHTMLSource(Profile* profile) {
   source->AddString("sidebarFooterGMALink", chrome::kMyActivityUrlInHistory);
   source->AddString("sidebarFooterGAALink", chrome::kMyActivityGeminiAppsUrl);
 
-#if BUILDFLAG(ENABLE_GLIC)
   const bool is_glic_enabled =
       glic::GlicEnabling::ShouldShowSettingsPage(profile);
   const bool is_glic_web_actuation_available =
       glic::GlicEnabling::IsEnabledAndConsentForProfile(profile) &&
       profile->GetPrefs()->GetBoolean(
           glic::prefs::kGlicUserEnabledActuationOnWeb);
-#else
-  const bool is_glic_enabled = false;
-  const bool is_glic_web_actuation_available = false;
-#endif  // BUILDFLAG(ENABLE_GLIC)
 
   source->AddBoolean("isGlicEnabled", is_glic_enabled);
   source->AddBoolean("isGlicWebActuationAvailable",

@@ -46,6 +46,7 @@ source_set("configs") {
   deps = [
     ":webui",
     "//chrome/browser/actor/ui:actor_overlay",
+    "//chrome/browser/glic",
     "//chrome/browser/optimization_guide",
     "//chrome/browser/ui",
     "//chrome/browser/ui/webui/about",
@@ -69,16 +70,12 @@ source_set("configs") {
     deps += [ "//chrome/browser/ui/webui/signin:inline_login" ]
   }
 
-  if (enable_glic) {
-    if (!is_android) {
-      deps += [ "//chrome/browser/glic/selection" ]
-    }
-  }
   if (!is_android) {
     deps += [
       "//chrome/browser/actor/ui",
       "//chrome/browser/actor/ui:actor_overlay_web_view",
       "//chrome/browser/contextual_tasks:ui",
+      "//chrome/browser/glic/selection",
       "//chrome/browser/ui/webui/access_code_cast",
       "//chrome/browser/ui/webui/app_service_internals",
       "//chrome/browser/ui/webui/autofill_ml_internals",
@@ -139,10 +136,6 @@ source_set("configs") {
 
   if (enable_dice_support) {
     deps += [ "//chrome/browser/ui/webui/signin/signout_confirmation" ]
-  }
-
-  if (enable_glic) {
-    deps += [ "//chrome/browser/glic" ]
   }
 
   if (enable_session_service) {

@@ -22,6 +22,8 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/compose/compose_enabling.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/history_embeddings/history_embeddings_utils.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
@@ -38,6 +40,8 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ssl/https_upgrades_util.h"
+#include "chrome/browser/subscription_eligibility/subscription_eligibility_service.h"
+#include "chrome/browser/subscription_eligibility/subscription_eligibility_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/hats/hats_service.h"
@@ -61,6 +65,7 @@
 #include "chrome/browser/ui/webui/settings/browser_lifetime_handler.h"
 #include "chrome/browser/ui/webui/settings/downloads_handler.h"
 #include "chrome/browser/ui/webui/settings/font_handler.h"
+#include "chrome/browser/ui/webui/settings/glic_handler.h"
 #include "chrome/browser/ui/webui/settings/hats_handler.h"
 #include "chrome/browser/ui/webui/settings/import_data_handler.h"
 #include "chrome/browser/ui/webui/settings/metrics_reporting_handler.h"
@@ -190,14 +195,6 @@
 
 #if BUILDFLAG(ENABLE_VR)
 #include "device/vr/public/cpp/features.h"
-#endif
-
-#if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/glic/public/glic_enabling.h"
-#include "chrome/browser/glic/public/glic_keyed_service.h"
-#include "chrome/browser/subscription_eligibility/subscription_eligibility_service.h"
-#include "chrome/browser/subscription_eligibility/subscription_eligibility_service_factory.h"
-#include "chrome/browser/ui/webui/settings/glic_handler.h"
 #endif
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -380,7 +377,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       compose_enabled && base::FeatureList::IsEnabled(
                              compose::features::kEnableComposeProactiveNudge));
 
-#if BUILDFLAG(ENABLE_GLIC)
   auto* subscription_service = subscription_eligibility::
       SubscriptionEligibilityServiceFactory::GetForProfile(profile);
 
@@ -397,7 +393,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
        !use_paid_tier) ||
           (base::FeatureList::IsEnabled(features::kGlicGeminiInstructions) &&
            !base::FeatureList::IsEnabled(features::kGlicPersonalContext)));
-#endif  //  BUILDFLAG(ENABLE_GLIC)
 
 #if BUILDFLAG(IS_CHROMEOS)
   const bool download_bubble_controlled_by_pref = false;
@@ -578,7 +573,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   bool show_glic_section = false;
   bool glic_disallowed_by_admin = false;
 
-#if BUILDFLAG(ENABLE_GLIC)
   auto glic_enablement = glic::GlicEnabling::EnablementForProfile(profile);
   show_glic_section = glic_enablement.ShouldShowSettingsPage();
   glic_disallowed_by_admin = glic_enablement.DisallowedByAdmin();
@@ -596,7 +590,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
             base::BindRepeating(&SettingsUI::UpdateShowGlicState,
                                 base::Unretained(this)));
   }
-#endif
 
   html_source->AddBoolean("showGlicSettings", show_glic_section);
   html_source->AddBoolean("glicDisallowedByAdmin", glic_disallowed_by_admin);
@@ -844,7 +837,6 @@ void SettingsUI::BindInterface(
       std::move(pending_receiver));
 }
 
-#if BUILDFLAG(ENABLE_GLIC)
 void SettingsUI::UpdateShowGlicState() {
   // The visibility of the Glic page can change based on the user accepting the
   // FRE. Propagate this state to the WebUI value used to display the settings
@@ -864,7 +856,6 @@ void SettingsUI::UpdateShowGlicState() {
       web_ui()->GetWebContents()->GetBrowserContext(),
       chrome::kChromeUISettingsHost, std::move(update));
 }
-#endif
 
 WEB_UI_CONTROLLER_TYPE_IMPL(SettingsUI)
 

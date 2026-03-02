@@ -10,6 +10,8 @@
 #include "build/buildflag.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/browser_management/management_identity.h"
+#include "chrome/browser/glic/resources/glic_resources.h"
+#include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
 #include "chrome/browser/policy/browser_signin_policy_handler.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
@@ -47,11 +49,6 @@
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/webui/webui_util.h"
 #include "url/gurl.h"
-
-#if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/glic/resources/glic_resources.h"
-#include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
-#endif
 
 namespace {
 
@@ -103,21 +100,17 @@ std::string GetManagedDeviceDisclaimer() {
 }
 
 int GetMainViewTitleId(bool is_glic_version) {
-#if BUILDFLAG(ENABLE_GLIC)
   if (is_glic_version) {
     return IDS_PROFILE_PICKER_MAIN_VIEW_TITLE_GLIC;
   }
-#endif
   return ProfilePicker::Shown() ? IDS_PROFILE_PICKER_MAIN_VIEW_TITLE_V2
                                 : IDS_PROFILE_PICKER_MAIN_VIEW_TITLE;
 }
 
 int GetMainViewSingleProfileTitleId(bool is_glic_version) {
-#if BUILDFLAG(ENABLE_GLIC)
   if (is_glic_version) {
     return IDS_PROFILE_PICKER_MAIN_VIEW_TITLE_GLIC;
   }
-#endif
   if (base::FeatureList::IsEnabled(switches::kProfilePickerTextVariations)) {
     switch (switches::kProfilePickerTextVariation.Get()) {
       case switches::ProfilePickerVariation::kKeepWorkAndLifeSeparate:
@@ -137,20 +130,16 @@ int GetMainViewSingleProfileTitleId(bool is_glic_version) {
 }
 
 int GetMainViewSubtitleId(bool is_glic_version) {
-#if BUILDFLAG(ENABLE_GLIC)
   if (is_glic_version) {
     return IDS_PROFILE_PICKER_MAIN_VIEW_SUBTITLE_GLIC;
   }
-#endif
   return IDS_PROFILE_PICKER_MAIN_VIEW_SUBTITLE;
 }
 
 int GetMainViewSingleProfileSubtitleId(bool is_glic_version) {
-#if BUILDFLAG(ENABLE_GLIC)
   if (is_glic_version) {
     return IDS_PROFILE_PICKER_MAIN_VIEW_SUBTITLE_GLIC;
   }
-#endif
   if (base::FeatureList::IsEnabled(switches::kProfilePickerTextVariations)) {
     switch (switches::kProfilePickerTextVariation.Get()) {
       case switches::ProfilePickerVariation::kKeepWorkAndLifeSeparate:
@@ -222,13 +211,11 @@ void AddStrings(content::WebUIDataSource* html_source, bool is_glic_version) {
       {"ok", IDS_OK},
       {"signInButtonLabel",
        IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_SIGNIN_BUTTON_LABEL},
-#if BUILDFLAG(ENABLE_GLIC)
       {"glicAddProfileHelper", IDS_PROFILE_PICKER_ADD_PROFILE_HELPER_GLIC},
       {"glicTitleNoProfile",
        IDS_PROFILE_PICKER_MAIN_VIEW_TITLE_GLIC_NO_PROFILE},
       {"mainViewSubtitleGlicNoProfile",
        IDS_PROFILE_PICKER_MAIN_VIEW_SUBTITLE_GLIC_NO_PROFILE},
-#endif  // BUILDFLAG(ENABLE_GLIC)
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
@@ -341,7 +328,6 @@ void AddResourcePaths(content::WebUIDataSource* html_source,
        IDR_SIGNIN_IMAGES_PROFILE_PICKER_LIGHT_BACKGROUND_SVG},
       {"profile_picker_dark_background.svg",
        IDR_SIGNIN_IMAGES_PROFILE_PICKER_DARK_BACKGROUND_SVG},
-#if BUILDFLAG(ENABLE_GLIC)
       {"glic_banner_top_right.svg",
        glic::GetResourceID(IDR_GLIC_PROFILE_BANNER_TOP_RIGHT)},
       {"glic_banner_bottom_left.svg",
@@ -352,18 +338,12 @@ void AddResourcePaths(content::WebUIDataSource* html_source,
        glic::GetResourceID(IDR_GLIC_PROFILE_BANNER_BOTTOM_LEFT_LIGHT)},
       {"glic_profile_branding.css",
        glic::GetResourceID(IDR_GLIC_PROFILE_BRANDING_CSS)},
-#endif  // BUILDFLAG(ENABLE_GLIC)
   };
   html_source->AddResourcePaths(kResourcePaths);
 
-  int logo_resource_id;
-#if BUILDFLAG(ENABLE_GLIC)
-  logo_resource_id = is_glic_version
-                         ? glic::GetResourceID(IDR_GLIC_PROFILE_LOGO)
-                         : IDR_PRODUCT_LOGO_SVG;
-#else
-  logo_resource_id = IDR_PRODUCT_LOGO_SVG;
-#endif  // BUILDFLAG(ENABLE_GLIC)
+  int logo_resource_id = is_glic_version
+                             ? glic::GetResourceID(IDR_GLIC_PROFILE_LOGO)
+                             : IDR_PRODUCT_LOGO_SVG;
   html_source->AddResourcePath("picker_logo.svg", logo_resource_id);
 }
 

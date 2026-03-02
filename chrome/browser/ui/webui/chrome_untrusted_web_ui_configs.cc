@@ -16,11 +16,9 @@
 #if BUILDFLAG(ENABLE_COMPOSE)
 #include "chrome/browser/ui/webui/compose/compose_untrusted_ui.h"
 #endif  // BUILDFLAG(ENABLE_COMPOSE)
+#include "chrome/browser/glic/selection/selection_overlay_untrusted_ui.h"
 #include "chrome/browser/ui/lens/lens_overlay_untrusted_ui.h"
 #include "chrome/browser/ui/lens/lens_side_panel_untrusted_ui.h"
-#if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/glic/selection/selection_overlay_untrusted_ui.h"
-#endif
 #endif  // defined(TOOLKIT_VIEWS)
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
@@ -59,10 +57,8 @@ void RegisterChromeUntrustedWebUIConfigs() {
   map.AddUntrustedWebUIConfig(std::make_unique<ComposeUIUntrustedConfig>());
 #endif  // BUILDFLAG(ENABLE_COMPOSE)
 
-#if BUILDFLAG(ENABLE_GLIC)
   map.AddUntrustedWebUIConfig(
       std::make_unique<glic::SelectionOverlayUntrustedUIConfig>());
-#endif  // BUILDFLAG(ENABLE_GLIC)
 
 #endif  // defined(TOOLKIT_VIEWS)
 

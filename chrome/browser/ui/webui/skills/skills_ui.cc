@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/skills/skills_ui.h"
 
+#include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -19,10 +20,6 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/webui/webui_util.h"
 
-#if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/glic/public/glic_enabling.h"
-#endif
-
 namespace skills {
 
 SkillsUI::SkillsUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
@@ -31,10 +28,7 @@ SkillsUI::SkillsUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
       profile, chrome::kChromeUISkillsHost);
   webui::SetupWebUIDataSource(source, kSkillsResources, IDR_SKILLS_SKILLS_HTML);
   source->AddResourcePath("dialog", IDR_SKILLS_SKILLS_DIALOG_HTML);
-  bool isGlicEnabled = false;
-#if BUILDFLAG(ENABLE_GLIC)
-  isGlicEnabled = glic::GlicEnabling::IsEnabledForProfile(profile);
-#endif
+  bool isGlicEnabled = glic::GlicEnabling::IsEnabledForProfile(profile);
   source->AddBoolean("isGlicEnabled", isGlicEnabled);
   static constexpr webui::LocalizedString kStrings[] = {
       {"cancel", IDS_CANCEL},

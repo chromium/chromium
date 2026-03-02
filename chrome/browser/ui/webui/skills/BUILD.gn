@@ -40,6 +40,7 @@ source_set("skills") {
     ":mojo_bindings",
     "//base",
     "//chrome/app:generated_resources",
+    "//chrome/browser/glic",
     "//chrome/browser/optimization_guide",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/profiles/keep_alive",
@@ -65,10 +66,6 @@ source_set("skills") {
     "//ui/web_dialogs",
     "//ui/webui",
   ]
-
-  if (enable_glic) {
-    deps += [ "//chrome/browser/glic" ]
-  }
 }
 
 source_set("unit_tests") {

@@ -37,6 +37,7 @@ source_set("whats_new") {
     ]
     public_deps += [
       "//chrome/browser:browser_process",
+      "//chrome/browser/glic",
       "//chrome/browser/ui/webui/whats_new:mojo_bindings",
       "//chrome/common:constants",
       "//components/lens:features",
@@ -48,10 +49,6 @@ source_set("whats_new") {
       "//ui/webui",
       "//ui/webui/resources/js/browser_command:mojo_bindings",
     ]
-
-    if (enable_glic) {
-      public_deps += [ "//chrome/browser/glic" ]
-    }
   }
 }
 source_set("impl") {
