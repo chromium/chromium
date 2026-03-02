@@ -35,10 +35,6 @@ void RegisterWhatsNewModules(whats_new::WhatsNewRegistry* registry) {
       WhatsNewModule("Googlepayreauth", "vinnypersky@google.com",
                      BrowserCommand::kOpenPaymentsSettings));
 
-  // M138
-  registry->RegisterModule(
-      WhatsNewModule("TabGroupsSync", "dpenning@google.com"));
-
   // M142
   registry->RegisterModule(WhatsNewModule(::features::kSideBySide,
                                           "agale@google.com",

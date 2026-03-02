@@ -146,7 +146,8 @@ chromium-metrics-reviews@google.com.
   <variant name="SidePanelPinning" summary="the module for Side Panel Pinning"/>
   <variant name="SyncAccountSettings"
       summary="the module for Wallet integration in Autofill"/>
-  <variant name="TabGroupsSync" summary="the module for Tab Groups that Sync"/>
+  <variant name="TabGroupsSync"
+      summary="the module for Tab Groups that Sync (obsolete)"/>
   <variant name="TabOrganizer" summary="the module for Tab Organizer"/>
   <variant name="TestDefaultModule"
       summary="the default module used for testing only"/>

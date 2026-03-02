@@ -894,7 +894,7 @@ should be able to be added at any place in this file.
   <variant name=".SidePanelPinning" summary="Side Panel Pinning"/>
   <variant name=".SyncAccountSettings"
       summary="Wallet integration in Autofill"/>
-  <variant name=".TabGroupsSync" summary="Tab Groups Sync"/>
+  <variant name=".TabGroupsSync" summary="Tab Groups Sync (obsolete)"/>
   <variant name=".TabOrganizer" summary="Tab Organizer"/>
   <variant name=".TestDefaultModule" summary="Test default module"/>
   <variant name=".TestModule" summary="Test module"/>
