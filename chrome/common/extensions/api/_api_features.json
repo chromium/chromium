@@ -690,7 +690,9 @@
       "7FE4A999359A456C4B0FB7B7AD85CEA29CA50519", // Login screen APIs test extension
       "3F5995FE79A861F019C6F093BEF98D73FA9D3A5F", // Login screen APIs in-session test extension
       // https://crbug.com/433867146
-      "4B7E9789426EBD1BB3F99D72690DAE303FC042DF"  // AuthX Secure for ChromeOS
+      "4B7E9789426EBD1BB3F99D72690DAE303FC042DF", // AuthX Secure for ChromeOS
+      // https://crbug.com/485245112
+      "36F5326E7683E204CE9CE1532093D8BB9CD5D280"  // AuthX in-session extension
     ]
   }],
   "login.exitCurrentSession": [{
@@ -704,6 +706,8 @@
       "3F5995FE79A861F019C6F093BEF98D73FA9D3A5F", // Login screen APIs in-session test extension
       // https://crbug.com/433867146
       "4B7E9789426EBD1BB3F99D72690DAE303FC042DF", // AuthX Secure for ChromeOS
+      // https://crbug.com/485245112
+      "36F5326E7683E204CE9CE1532093D8BB9CD5D280", // AuthX in-session extension
       // Only has access to login.exitCurrentSession
       "8ECFC754A70BE499325FA4BB705E62EFEEC1BC80", // b/314208017
       "ECD28F2B60BDB3B4E566D6C60BD88BE0774044C1",  // b/314208017

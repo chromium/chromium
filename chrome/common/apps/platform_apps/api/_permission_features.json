@@ -50,7 +50,9 @@
       "89B67AA6D43A6D5DDF4718375C325217E38EC60F",  // Final Prod
       "21A31B0290A456FF27425090BDC4E4903234AEB3",  // Final QA
       // https://crbug.com/433867146
-      "4B7E9789426EBD1BB3F99D72690DAE303FC042DF"   // AuthX Secure for ChromeOS
+      "4B7E9789426EBD1BB3F99D72690DAE303FC042DF",  // AuthX Secure for ChromeOS
+      // https://crbug.com/485245112
+      "36F5326E7683E204CE9CE1532093D8BB9CD5D280"   // AuthX in-session extension
     ]
   }],
   "firstRunPrivate": {
