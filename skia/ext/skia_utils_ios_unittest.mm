@@ -2,17 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "skia/ext/skia_utils_ios.h"
 
 #import <ImageIO/ImageIO.h>
 #import <UIKit/UIKit.h>
 
+#include <algorithm>
+
 #include "base/base64.h"
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/ios/ios_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -126,9 +125,16 @@ NSData* StringToNSData(const char* base64encodedData) {
   return [NSData dataWithBytes:output.data() length:output.length()];
 }
 
+// Returns an NSData of the given length filled with -1 (0xFF), which is not a
+// valid image data.
 NSData* InvalidData(NSUInteger length) {
-  NSMutableData* data=[NSMutableData dataWithLength:length];
-  memset([data mutableBytes], 0xFF, length);
+  NSMutableData* data = [NSMutableData dataWithLength:length];
+
+  int8_t* bytes = static_cast<int8_t*>([data mutableBytes]);
+  // SAFETY: data has just been created with this given length.
+  auto span = UNSAFE_BUFFERS(base::span(bytes, length));
+  std::ranges::fill(span, -1);
+
   return data;
 }
 
@@ -782,4 +788,3 @@ TEST_F(SkiaUtilsIosTest, UIColorFromSkColor) {
 }
 
 }  // namespace
-

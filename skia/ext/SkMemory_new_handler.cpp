@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
 
 #include <stddef.h>
 #include <stdlib.h>
@@ -13,6 +9,8 @@
 #include <algorithm>
 #include <tuple>
 
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/debug/alias.h"
 #include "base/process/memory.h"
 #include "build/build_config.h"
@@ -100,10 +98,10 @@ void sk_free(void* p) {
 // They're hard to track down, so in Debug mode we touch all memory right up front.
 //
 // For malloc, fill is an arbitrary byte and ideally not 0.  For calloc, it's got to be 0.
-static void* prevent_overcommit(int fill, size_t size, void* p) {
-    // We probably only need to touch one byte per page, but memset makes things easy.
-    SkDEBUGCODE(memset(p, fill, size));
-    return p;
+static void prevent_overcommit(int fill, size_t size, void* p) {
+  // We probably only need to touch one byte per page, but memset makes things
+  // easy.
+  SkDEBUGCODE(UNSAFE_TODO(memset(p, fill, size)));
 }
 
 static void* malloc_nothrow(size_t size, int debug_sentinel) {
