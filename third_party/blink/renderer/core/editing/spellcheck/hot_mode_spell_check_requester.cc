@@ -4,8 +4,6 @@
 
 #include "third_party/blink/renderer/core/editing/spellcheck/hot_mode_spell_check_requester.h"
 
-#include "base/feature_list.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/editing/commands/composite_edit_command.h"
 #include "third_party/blink/renderer/core/editing/commands/typing_command.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
@@ -15,9 +13,6 @@
 #include "third_party/blink/renderer/core/editing/iterators/backwards_character_iterator.h"
 #include "third_party/blink/renderer/core/editing/iterators/character_iterator.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
-#include "third_party/blink/renderer/core/editing/markers/grammar_marker.h"
-#include "third_party/blink/renderer/core/editing/markers/spelling_marker.h"
-#include "third_party/blink/renderer/core/editing/plain_text_range.h"
 #include "third_party/blink/renderer/core/editing/selection_template.h"
 #include "third_party/blink/renderer/core/editing/spellcheck/spell_check_requester.h"
 #include "third_party/blink/renderer/core/editing/spellcheck/spell_checker.h"
@@ -100,62 +95,6 @@ EphemeralRange CalculateHotModeCheckingRange(const Element& editable,
   return ExpandRangeToSentenceBoundary(EphemeralRange(chunk_start, chunk_end));
 }
 
-bool ShouldSendSpellingMarkersInfo() {
-#if BUILDFLAG(IS_ANDROID)
-  return base::FeatureList::IsEnabled(
-      blink::features::kAndroidSpellcheckFullApiBlink);
-#else
-  return false;
-#endif  // BUILDFLAG(IS_ANDROID)
-}
-
-DocumentMarkerVector GetSpellingMarkers(const Document& document,
-                                        ContainerNode* container,
-                                        const EphemeralRange& range) {
-  if (container == nullptr) {
-    return {};
-  }
-
-  DocumentMarkerVector markers;
-
-  // Compute the start index of the beginning of the range with respect to the
-  // container.
-  size_t range_start_offset = PlainTextRange::Create(*container, range).Start();
-
-  EphemeralRangeInFlatTree range_in_flat_tree =
-      ToEphemeralRangeInFlatTree(range);
-  for (const auto& pair : document.Markers().MarkersIntersectingRange(
-           range_in_flat_tree, DocumentMarker::MarkerTypes(
-                                   DocumentMarker::MarkerType::kSpelling |
-                                   DocumentMarker::MarkerType::kGrammar |
-                                   DocumentMarker::MarkerType::kSuggestion))) {
-    DocumentMarker* marker = pair.second.Get();
-
-    PlainTextRange marker_in_container = PlainTextRange::Create(
-        *container, EphemeralRange(Position(pair.first, marker->StartOffset()),
-                                   Position(pair.first, marker->EndOffset())));
-
-    int start_offset = marker_in_container.Start() - range_start_offset;
-    int end_offset = marker_in_container.End() - range_start_offset;
-
-    if (marker->GetType() == DocumentMarker::MarkerType::kSpelling ||
-        (IsA<SuggestionMarker>(marker) &&
-         To<SuggestionMarker>(marker)->IsMisspelling())) {
-      markers.push_back(
-          MakeGarbageCollected<SpellingMarker>(start_offset, end_offset, ""));
-    }
-
-    if (marker->GetType() == DocumentMarker::MarkerType::kGrammar ||
-        (IsA<SuggestionMarker>(marker) &&
-         To<SuggestionMarker>(marker)->IsGrammarError())) {
-      markers.push_back(
-          MakeGarbageCollected<GrammarMarker>(start_offset, end_offset, ""));
-    }
-  }
-
-  return markers;
-}
-
 }  // namespace
 
 HotModeSpellCheckRequester::HotModeSpellCheckRequester(
@@ -186,15 +125,6 @@ void HotModeSpellCheckRequester::CheckSpellingAt(const Position& position) {
 
   const EphemeralRange& checking_range =
       CalculateHotModeCheckingRange(*root_editable, position);
-
-  if (ShouldSendSpellingMarkersInfo()) {
-    requester_->RequestCheckingFor(
-        checking_range,
-        GetSpellingMarkers(root_editable->GetDocument(),
-                           RootEditableElementOf(position), checking_range),
-        0, false);
-    return;
-  }
   requester_->RequestCheckingFor(checking_range);
 }
 
