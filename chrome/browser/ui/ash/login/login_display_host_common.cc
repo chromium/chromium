@@ -82,6 +82,7 @@
 #include "chromeos/ash/components/language_preferences/language_preferences.h"
 #include "chromeos/ash/components/login/auth/auth_performer.h"
 #include "chromeos/ash/components/osauth/public/auth_session_storage.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/strings/grit/components_strings.h"
 #include "extensions/common/features/feature_session_type.h"
@@ -110,6 +111,7 @@ void PushFrontImIfNotExists(const std::string& input_method_id,
 }
 
 void SetGaiaInputMethods(const PrefService& local_state,
+                         const std::string& application_locale,
                          const AccountId& account_id) {
   input_method::InputMethodManager* imm =
       input_method::InputMethodManager::Get();
@@ -140,8 +142,8 @@ void SetGaiaInputMethods(const PrefService& local_state,
     PushFrontImIfNotExists(owner_input_method_id, &input_method_ids);
     PushFrontImIfNotExists(system_input_method_id, &input_method_ids);
 
-    gaia_ime_state->EnableOobeInputMethods(
-        g_browser_process->GetApplicationLocale(), input_method_ids);
+    gaia_ime_state->EnableOobeInputMethods(application_locale,
+                                           input_method_ids);
 
     if (!system_input_method_id.empty()) {
       gaia_ime_state->ChangeInputMethod(system_input_method_id,
@@ -227,8 +229,10 @@ CreateSecondDeviceAuthBroker() {
 
 LoginDisplayHostCommon::LoginDisplayHostCommon(
     PrefService* local_state,
+    ApplicationLocaleStorage* application_locale_storage,
     bool update_geolocation_usage_allowed)
     : local_state_(CHECK_DEREF(local_state)),
+      application_locale_storage_(CHECK_DEREF(application_locale_storage)),
       keep_alive_(KeepAliveOrigin::LOGIN_DISPLAY_HOST_WEBUI,
                   KeepAliveRestartOption::DISABLED),
       login_ui_pref_controller_(std::make_unique<LoginUIPrefController>(
@@ -746,7 +750,8 @@ void LoginDisplayHostCommon::ShowGaiaDialogCommon(
   if (GetExistingUserController()->IsSigninInProgress()) {
     return;
   }
-  SetGaiaInputMethods(local_state_.get(), prefilled_account);
+  SetGaiaInputMethods(local_state_.get(), application_locale_storage_->Get(),
+                      prefilled_account);
 
   if (!prefilled_account.is_valid()) {
     StartWizard(UserCreationView::kScreenId);

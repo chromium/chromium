@@ -55,7 +55,6 @@
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/ash/login/login_display_host_common.h"
@@ -188,13 +187,16 @@ LoginDisplayHostMojo::AuthState::~AuthState() = default;
 
 LoginDisplayHostMojo::LoginDisplayHostMojo(
     PrefService* local_state,
+    ApplicationLocaleStorage* application_locale_storage,
     DisplayedScreen displayed_screen,
     bool update_geolocation_usage_allowed)
-    : LoginDisplayHostCommon(local_state, update_geolocation_usage_allowed),
+    : LoginDisplayHostCommon(local_state,
+                             application_locale_storage,
+                             update_geolocation_usage_allowed),
       user_selection_screen_(std::make_unique<ChromeUserSelectionScreen>(
           local_state,
+          application_locale_storage,
           // TODO(crbug.com/404133029): Avoid using g_browser_process.
-          g_browser_process->GetFeatures()->application_locale_storage(),
           g_browser_process->platform_part()->browser_policy_connector_ash(),
           displayed_screen)),
       auth_performer_(UserDataAuthClient::Get()),
@@ -908,8 +910,7 @@ void LoginDisplayHostMojo::EnsureOobeDialogLoaded() {
   // Should be created after dialog was created and OobeUI was loaded.
   // TODO(crbug.com/404133029): Avoid using g_browser_process.
   wizard_controller_ = std::make_unique<WizardController>(
-      &local_state_.get(),
-      g_browser_process->GetFeatures()->application_locale_storage(),
+      &local_state_.get(), &application_locale_storage_.get(),
       g_browser_process->shared_url_loader_factory(), GetWizardContext());
 
   GetLoginScreenCertProviderService()->pin_dialog_manager()->AddPinDialogHost(
@@ -1002,12 +1003,8 @@ void LoginDisplayHostMojo::StopObservingOobeUI() {
 }
 
 void LoginDisplayHostMojo::CreateExistingUserController() {
-  // TODO(crbug.com/404133029): Avoid using g_browser_process.
-  const ApplicationLocaleStorage* application_locale_storage =
-      g_browser_process->GetFeatures()->application_locale_storage();
-
   existing_user_controller_ = std::make_unique<ExistingUserController>(
-      &local_state_.get(), application_locale_storage);
+      &local_state_.get(), &application_locale_storage_.get());
 
   // We need auth attempt results to notify views-based login screen.
   existing_user_controller_->AddLoginStatusConsumer(this);

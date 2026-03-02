@@ -31,6 +31,7 @@
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"
 
+class ApplicationLocaleStorage;
 class PrefService;
 
 namespace views {
@@ -52,8 +53,10 @@ class LoginDisplayHostMojo : public LoginDisplayHostCommon,
                              public views::ViewObserver,
                              public ui::UserActivityObserver {
  public:
-  // `local_state` must be non-null and must outlive `this`.
+  // `local_state` and `application_locale_storage` must be non-null and must
+  // outlive `this`.
   LoginDisplayHostMojo(PrefService* local_state,
+                       ApplicationLocaleStorage* application_locale_storage,
                        DisplayedScreen displayed_screen,
                        bool update_geolocation_usage_allowed);
 

@@ -266,6 +266,8 @@ void ShowLoginWizardFinish(
 
   // TODO(crbug.com/403154552): Avoid g_browser_process.
   PrefService* local_state = g_browser_process->local_state();
+  ApplicationLocaleStorage* application_locale_storage =
+      g_browser_process->GetFeatures()->application_locale_storage();
 
   // `ShowLoginWizardFinish` can be called as a result of
   // `OnLanguageSwitchedCallback` and it can happen that the browser started to
@@ -299,16 +301,19 @@ void ShowLoginWizardFinish(
     display_host = LoginDisplayHost::default_host();
   } else if (ShouldShowSigninScreen(first_screen)) {
     display_host =
-        new LoginDisplayHostMojo(local_state, DisplayedScreen::SIGN_IN_SCREEN,
+        new LoginDisplayHostMojo(local_state, application_locale_storage,
+                                 DisplayedScreen::SIGN_IN_SCREEN,
                                  /*update_geolocation_usage_allowed=*/true);
   } else if (first_screen == ArcVmDataMigrationScreenView::kScreenId) {
     display_host =
-        new LoginDisplayHostMojo(local_state, DisplayedScreen::SIGN_IN_SCREEN,
+        new LoginDisplayHostMojo(local_state, application_locale_storage,
+                                 DisplayedScreen::SIGN_IN_SCREEN,
                                  /*update_geolocation_usage_allowed=*/true);
     DCHECK(session_manager::SessionManager::Get());
     session_manager::SessionManager::Get()->NotifyLoginOrLockScreenVisible();
   } else {
-    display_host = new LoginDisplayHostWebUI(local_state);
+    display_host =
+        new LoginDisplayHostWebUI(local_state, application_locale_storage);
   }
 
   if (features::IsOobeAddUserDuringEnrollmentEnabled() && user_context) {
@@ -504,8 +509,11 @@ class LoginDisplayHostWebUI::KeyboardDrivenOobeKeyHandler
 ////////////////////////////////////////////////////////////////////////////////
 // LoginDisplayHostWebUI, public
 
-LoginDisplayHostWebUI::LoginDisplayHostWebUI(PrefService* local_state)
+LoginDisplayHostWebUI::LoginDisplayHostWebUI(
+    PrefService* local_state,
+    ApplicationLocaleStorage* application_locale_storage)
     : LoginDisplayHostCommon(local_state,
+                             application_locale_storage,
                              /*update_geolocation_usage_allowed=*/true),
       oobe_startup_sound_played_(StartupUtils::IsOobeCompleted()) {
   session_manager_client_observation_.Observe(SessionManagerClient::Get());
@@ -639,8 +647,7 @@ void LoginDisplayHostWebUI::StartWizard(OobeScreenId first_screen) {
   } else {
     // TODO(crbug.com/404133029): Avoid using g_browser_process.
     wizard_controller_ = std::make_unique<WizardController>(
-        &local_state_.get(),
-        g_browser_process->GetFeatures()->application_locale_storage(),
+        &local_state_.get(), &application_locale_storage_.get(),
         g_browser_process->shared_url_loader_factory(), GetWizardContext());
     NotifyWizardCreated();
     wizard_controller_->Init(first_screen);
@@ -710,8 +717,7 @@ void LoginDisplayHostWebUI::OnStartAppLaunch() {
   if (!wizard_controller_) {
     // TODO(crbug.com/404133029): Avoid using g_browser_process.
     wizard_controller_ = std::make_unique<WizardController>(
-        &local_state_.get(),
-        g_browser_process->GetFeatures()->application_locale_storage(),
+        &local_state_.get(), &application_locale_storage_.get(),
         g_browser_process->shared_url_loader_factory(), GetWizardContext());
     NotifyWizardCreated();
   }
@@ -1072,12 +1078,8 @@ void LoginDisplayHostWebUI::OnLoginPromptVisible() {
 }
 
 void LoginDisplayHostWebUI::CreateExistingUserController() {
-  // TODO(crbug.com/404133029): Avoid g_browser_process usage.
-  const ApplicationLocaleStorage* application_locale_storage =
-      g_browser_process->GetFeatures()->application_locale_storage();
-
   existing_user_controller_ = std::make_unique<ExistingUserController>(
-      &local_state_.get(), application_locale_storage);
+      &local_state_.get(), &application_locale_storage_.get());
 }
 
 void LoginDisplayHostWebUI::ShowGaiaDialog(const AccountId& prefilled_account) {
@@ -1221,6 +1223,8 @@ void LoginDisplayHostWebUI::PlayStartupSoundIfPossible() {
 void ShowLoginWizard(OobeScreenId first_screen) {
   // TODO(crbug.com/403154552): Avoid using g_browser_process.
   PrefService& local_state = CHECK_DEREF(g_browser_process->local_state());
+  ApplicationLocaleStorage* application_locale_storage =
+      g_browser_process->GetFeatures()->application_locale_storage();
 
   if (ash::BrowserController::GetInstance()->IsTryingToQuit()) {
     return;
@@ -1255,7 +1259,8 @@ void ShowLoginWizard(OobeScreenId first_screen) {
   if (enrollment_config.should_enroll() &&
       first_screen == ash::OOBE_SCREEN_UNKNOWN) {
     // Manages its own lifetime. See ShutdownDisplayHost().
-    auto* display_host = new LoginDisplayHostWebUI(&local_state);
+    auto* display_host =
+        new LoginDisplayHostWebUI(&local_state, application_locale_storage);
     // Shows networks screen instead of enrollment screen to resume the
     // interrupted auto start enrollment flow because enrollment screen does
     // not handle flaky network. See http://crbug.com/332572

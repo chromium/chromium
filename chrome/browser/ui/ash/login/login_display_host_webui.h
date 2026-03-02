@@ -35,6 +35,7 @@
 #include "ui/views/widget/widget_observer.h"
 #include "ui/views/widget/widget_removals_observer.h"
 
+class ApplicationLocaleStorage;
 class PrefService;
 
 namespace ash {
@@ -60,8 +61,10 @@ class LoginDisplayHostWebUI : public LoginDisplayHostCommon,
                               public views::WidgetObserver,
                               public OobeUI::Observer {
  public:
-  // `local_state` must be non-null and must outlive `this`.
-  explicit LoginDisplayHostWebUI(PrefService* local_state);
+  // `local_state` and `application_locale_storage` must be non-null and must
+  // outlive `this`.
+  LoginDisplayHostWebUI(PrefService* local_state,
+                        ApplicationLocaleStorage* application_locale_storage);
 
   LoginDisplayHostWebUI(const LoginDisplayHostWebUI&) = delete;
   LoginDisplayHostWebUI& operator=(const LoginDisplayHostWebUI&) = delete;

@@ -26,6 +26,7 @@ namespace network {
 class SharedURLLoaderFactory;
 }  // namespace network
 
+class ApplicationLocaleStorage;
 class PrefService;
 class Profile;
 
@@ -54,8 +55,10 @@ class ChromeSessionManager : public session_manager::SessionManagerObserver {
   //   - Launches the auto launched kiosk app;
   //   - Resumes user sessions on crash-and-restart;
   //   - Starts a stub login session for dev or test;
-  // `shared_url_loader_factory` must not be nullptr.
+  // `application_locale_storage` must not be nullptr, and must be valid while
+  // main RunLoop is running. `shared_url_loader_factory` must not be nullptr.
   void Initialize(
+      ApplicationLocaleStorage* application_locale_storage,
       scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
       const base::CommandLine& parsed_command_line,
       Profile* profile,

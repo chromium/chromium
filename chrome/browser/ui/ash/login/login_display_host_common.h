@@ -25,6 +25,7 @@
 #include "components/user_manager/user_type.h"
 
 class AccountId;
+class ApplicationLocaleStorage;
 class PrefService;
 
 namespace ash {
@@ -41,8 +42,10 @@ class LoginDisplayHostCommon : public LoginDisplayHost,
                                public SigninUI,
                                public ash::SessionTerminationManager::Observer {
  public:
-  // `local_state` must be non-null and must outlive `this`.
+  // `local_state` and `application_locale_storage` must be non-null and must
+  // outlive `this`.
   LoginDisplayHostCommon(PrefService* local_state,
+                         ApplicationLocaleStorage* application_locale_storage,
                          bool update_geolocation_usage_allowed);
 
   LoginDisplayHostCommon(const LoginDisplayHostCommon&) = delete;
@@ -132,6 +135,7 @@ class LoginDisplayHostCommon : public LoginDisplayHost,
   void NotifyWizardCreated();
 
   const raw_ref<PrefService> local_state_;
+  const raw_ref<ApplicationLocaleStorage> application_locale_storage_;
 
  private:
   void Cleanup();

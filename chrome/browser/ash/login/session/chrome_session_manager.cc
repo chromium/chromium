@@ -79,8 +79,10 @@ void RemoveObsoleteKioskCryptohomes() {
 }
 
 // Starts kiosk app launch and shows the splash screen.
-// `local_state` must be non-null and must outlive LoginDisplayHostWebUI.
+// `local_state` and `application_locale_storage` must be non-null and must
+// outlive LoginDisplayHostWebUI.
 void StartKioskSession(PrefService* local_state,
+                       ApplicationLocaleStorage* application_locale_storage,
                        KioskAppId app,
                        bool is_auto_launch = false) {
   // Kiosk app launcher starts with login state.
@@ -92,7 +94,8 @@ void StartKioskSession(PrefService* local_state,
       ->SetInputMethodLoginDefault(/*is_in_oobe_context=*/false);
 
   // Manages its own lifetime. See ShutdownDisplayHost().
-  auto* display_host = new LoginDisplayHostWebUI(local_state);
+  auto* display_host =
+      new LoginDisplayHostWebUI(local_state, application_locale_storage);
   display_host->StartKiosk(app, is_auto_launch);
 
   // Login screen is skipped but 'login-prompt-visible' signal is still needed.
@@ -100,12 +103,16 @@ void StartKioskSession(PrefService* local_state,
   SessionManagerClient::Get()->EmitLoginPromptVisible();
 }
 
-// `local_state` must be non-null and must outlive LoginDisplayHostWebUI.
-void StartAutoLaunchKioskSession(PrefService* local_state) {
+// `local_state` and `application_locale_storage` must be non-null and must
+// outlive LoginDisplayHostWebUI.
+void StartAutoLaunchKioskSession(
+    PrefService* local_state,
+    ApplicationLocaleStorage* application_locale_storage) {
   auto app = KioskController::Get().GetAutoLaunchApp();
   CHECK(app.has_value());
 
-  StartKioskSession(local_state, app.value().id(), /*is_auto_launch=*/true);
+  StartKioskSession(local_state, application_locale_storage, app.value().id(),
+                    /*is_auto_launch=*/true);
 }
 
 // Starts the login/oobe screen.
@@ -407,10 +414,12 @@ void ChromeSessionManager::OnUserManagerCreated(
 }
 
 void ChromeSessionManager::Initialize(
+    ApplicationLocaleStorage* application_locale_storage,
     scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
     const base::CommandLine& parsed_command_line,
     Profile* profile,
     bool is_running_test) {
+  CHECK(application_locale_storage);
   CHECK(shared_url_loader_factory);
 
   // If a forced powerwash was triggered and no confirmation from the user is
@@ -458,7 +467,8 @@ void ChromeSessionManager::Initialize(
 
   if (ShouldAutoLaunchKioskApp(parsed_command_line, local_state_.get())) {
     VLOG(1) << "Starting Chrome with kiosk auto launch.";
-    StartAutoLaunchKioskSession(&local_state_.get());
+    StartAutoLaunchKioskSession(&local_state_.get(),
+                                application_locale_storage);
   } else if (parsed_command_line.HasSwitch(switches::kLoginManager)) {
     oobe_configuration_->CheckConfiguration();
     if (is_running_test && !force_login_screen_in_test) {
