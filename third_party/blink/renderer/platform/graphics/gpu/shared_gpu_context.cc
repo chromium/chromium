@@ -36,19 +36,21 @@ std::optional<bool>
 std::optional<bool> g_low_latency_usage_supported_for_canvas_2d_for_testing;
 }
 
-bool Canvas2dImageChromiumEnabled() {
 #if BUILDFLAG(IS_APPLE)
-  // NOTE: Canvas2D checks this feature only when GPU compositing is enabled
-  // (since the entire concept of creating accelerated overlays makes sense only
-  // when GPU compositing is enabled), so there is no need to explicitly guard
-  // by switches::kDisableGpu.
-  static const bool enable_canvas_2d_image_chromium =
+bool Canvas2DSharedImagesBackedByIOSurface() {
+  static const bool backed_by_io_surface =
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kEnableGpuMemoryBufferCompositorResources);
-#else
-  constexpr bool enable_canvas_2d_image_chromium = false;
+  return backed_by_io_surface;
+}
 #endif
-  return enable_canvas_2d_image_chromium;
+
+bool Canvas2dImageChromiumEnabled() {
+#if BUILDFLAG(IS_APPLE)
+  return Canvas2DSharedImagesBackedByIOSurface();
+#else
+  return false;
+#endif
 }
 
 }  // namespace
