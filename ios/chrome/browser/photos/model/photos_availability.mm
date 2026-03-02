@@ -38,12 +38,14 @@ bool IsSaveToPhotosAvailable(ProfileIOS* profile) {
     return false;
   }
 
-  // Check user is signed in.
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile);
-  if (!identity_manager ||
-      !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
-    return false;
+  if (!base::FeatureList::IsEnabled(kIOSSaveToPhotosSignedOut)) {
+    // Check user is signed in.
+    signin::IdentityManager* identity_manager =
+        IdentityManagerFactory::GetForProfile(profile);
+    if (!identity_manager ||
+        !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+      return false;
+    }
   }
 
   return true;

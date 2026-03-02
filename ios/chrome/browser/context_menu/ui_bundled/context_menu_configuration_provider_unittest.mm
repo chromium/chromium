@@ -199,11 +199,63 @@ class ContextMenuConfigurationProviderTest : public PlatformTest {
   id mock_gemini_handler;
 };
 
+// TODO(crbug.com/484919846): Remove this test once the "Save to Photos for
+// signed-out users" experiment is fully launched.
 // Test that the "Save Image in Google Photos" action is added to the context
-// menu if enough conditions are met.
-TEST_F(ContextMenuConfigurationProviderTest, HasSaveImageToPhotosMenuElement) {
-  // The action is only available if the user is signed-in.
+// menu if enough conditions are met when signed-in.
+TEST_F(ContextMenuConfigurationProviderTest,
+       HasSaveImageToPhotosMenuElementWhenSignedIn) {
   SignIn();
+
+  // Get menu with params containing image source URL.
+  web::ContextMenuParams paramsWithImage =
+      GetContextMenuParamsWithImageUrl(kImageUrl);
+  UIMenu* menu = GetContextMenuForParams(paramsWithImage);
+
+  // Test that there is a UImenu within the image context menu.
+  NSUInteger indexOfFoundSubMenu =
+      [menu.children indexOfObjectPassingTest:^BOOL(UIMenuElement* menuElement,
+                                                    NSUInteger, BOOL*) {
+        return [menuElement isKindOfClass:[UIMenu class]];
+      }];
+  ASSERT_TRUE(indexOfFoundSubMenu != NSNotFound);
+
+  UIMenu* subMenu = (UIMenu*)menu.children[indexOfFoundSubMenu];
+  BrowserActionFactory* actionFactory = GetBrowserActionFactory();
+  UIMenuElement* expectedMenuElement =
+      [actionFactory actionToSaveToPhotosWithImageURL:GURL(kImageUrl)
+                                             referrer:web::Referrer()
+                                             webState:GetActiveWebState()
+                                                block:nil];
+
+  // Test that there is an element with the expected title in the submenu.
+  NSUInteger indexOfFoundMenuElement =
+      [subMenu.children indexOfObjectPassingTest:^BOOL(
+                            UIMenuElement* menuElement, NSUInteger, BOOL*) {
+        return [menuElement.title isEqualToString:expectedMenuElement.title];
+      }];
+  ASSERT_TRUE(indexOfFoundMenuElement != NSNotFound);
+
+  UIMenuElement* foundMenuElement = subMenu.children[indexOfFoundMenuElement];
+  // Test that the element has the expected subtitle.
+  EXPECT_EQ(foundMenuElement.subtitle, expectedMenuElement.subtitle);
+  // Test that the element has the expected image.
+  EXPECT_TRUE([foundMenuElement.image isEqual:expectedMenuElement.image]);
+  // Test that the element is not disabled.
+  EXPECT_NE(base::apple::ObjCCast<UIAction>(foundMenuElement).attributes,
+            UIMenuElementAttributesDisabled);
+}
+
+// TODO(crbug.com/484919846): Rename test to HasSaveImageToPhotosMenuElement
+// once the "Save to Photos for signed-out users" experiment is fully launched.
+
+// Test that the "Save Image in Google Photos" action is added to the context
+// menu if enough conditions are met when signed-out.
+TEST_F(ContextMenuConfigurationProviderTest,
+       HasSaveImageToPhotosMenuElementWhenSignedOut) {
+  // Enables the flag to show the "Save Image in Photos" action when signed-out.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kIOSSaveToPhotosSignedOut);
 
   // Get menu with params containing image source URL.
   web::ContextMenuParams paramsWithImage =
