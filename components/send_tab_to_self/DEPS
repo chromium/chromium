@@ -5,6 +5,7 @@ include_rules = [
   "+components/infobars",
   "+components/keyed_service/core",
   "+components/prefs",
+  "+components/shared_highlighting/core/common",
   "+components/signin/public/base",
   "+components/signin/public/identity_manager",
   "+components/strings",

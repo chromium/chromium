@@ -21,6 +21,7 @@
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
+#include "components/shared_highlighting/core/common/text_fragment.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -102,16 +103,28 @@ void DesktopNotificationHandler::OnClick(
   if (IsTabReceivedNotification(notification_id)) {
     // Launch a new tab for the notification's |origin|,
     // and close the activated notification.
+    const SendTabToSelfEntry* entry =
+        SendTabToSelfSyncServiceFactory::GetForProfile(profile)
+            ->GetSendTabToSelfModel()
+            ->GetEntryByGUID(notification_id);
+
     NavigateParams params(profile, origin, ui::PAGE_TRANSITION_LINK);
     params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
     params.window_action = NavigateParams::WindowAction::kShowWindow;
+
+    if (base::FeatureList::IsEnabled(kSendTabToSelfPropagateScrollPosition) &&
+        entry && !entry->GetPageContext().scroll_position.IsEmpty()) {
+      shared_highlighting::TextFragment tf =
+          entry->GetPageContext()
+              .scroll_position.text_fragment.ToSharedHighlightingTextFragment();
+      params.scroll_to_text_fragment =
+          tf.ToEscapedString(shared_highlighting::TextFragment::
+                                 EscapedStringFormat::kWithoutTextDirective);
+    }
+
     Navigate(&params);
 
     if (base::FeatureList::IsEnabled(kSendTabToSelfPropagateFormFields)) {
-      const SendTabToSelfEntry* entry =
-          SendTabToSelfSyncServiceFactory::GetForProfile(profile)
-              ->GetSendTabToSelfModel()
-              ->GetEntryByGUID(notification_id);
       if (entry) {
         FillWebContents(params.navigated_or_inserted_contents,
                         url::Origin::Create(entry->GetURL()),

@@ -9,10 +9,18 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/token.h"
 #include "components/send_tab_to_self/entry_point_display_reason.h"
+#include "components/send_tab_to_self/page_context.h"
+#include "components/shared_highlighting/core/common/shared_highlighting_metrics.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/blink/public/mojom/link_to_text/link_to_text.mojom.h"
+#include "url/gurl.h"
 
 class Profile;
 
@@ -95,6 +103,8 @@ class SendTabToSelfBubbleController
   static void RegisterProfilePrefs(
       user_prefs::PrefRegistrySyncable* user_prefs);
 
+  void SetSelectorGenerationTimeoutForTesting(base::TimeDelta timeout);
+
  protected:
   explicit SendTabToSelfBubbleController(content::WebContents* web_contents);
 
@@ -109,6 +119,29 @@ class SendTabToSelfBubbleController
   Profile* GetProfile();
   virtual std::optional<EntryPointDisplayReason> GetEntryPointDisplayReason();
 
+  void SelectorGeneratedForRequest(
+      base::Token request_token,
+      const std::string& selector,
+      shared_highlighting::LinkGenerationError error,
+      shared_highlighting::LinkGenerationReadyStatus ready_status);
+
+  struct PendingRequest {
+    PendingRequest();
+    PendingRequest(PendingRequest&&);
+    PendingRequest& operator=(PendingRequest&&);
+    ~PendingRequest();
+
+    std::string target_device_guid;
+    GURL url;
+    std::string title;
+    PageContext page_context;
+    content::GlobalRenderFrameHostId main_frame_id;
+  };
+
+  void SendFinalizedRequest(PendingRequest request);
+
+  base::TimeDelta GetSelectorGenerationTimeout() const;
+
   // Weak reference. Will be nullptr if no bubble is currently shown.
   raw_ptr<SendTabToSelfBubbleView> send_tab_to_self_bubble_view_ = nullptr;
   // True if the back button is currently shown.
@@ -117,6 +150,21 @@ class SendTabToSelfBubbleController
   bool show_message_ = false;
   // True if the bubble is currently shown.
   bool bubble_shown_ = false;
+
+  mojo::Remote<blink::mojom::TextFragmentReceiver> text_fragment_receiver_;
+
+  // The ID of the main frame that the text_fragment_receiver_ is currently
+  // bound to.
+  content::GlobalRenderFrameHostId last_main_frame_id_;
+
+  // A map of pending requests for text fragment generation. These are stored
+  // to be able to associate the response from the renderer with the correct
+  // device selection.
+  base::flat_map<base::Token, PendingRequest> pending_requests_;
+
+  // Timeout for the renderer to generate a text fragment selector for the
+  // viewport center.
+  base::TimeDelta selector_generation_timeout_for_testing_;
 
   raw_ptr<actions::ActionItem> send_tab_to_self_action_item_ = nullptr;
 

@@ -134,6 +134,16 @@ using flags_ui::FeatureEntry;
 
 namespace {
 
+const FeatureEntry::Choice kSendTabToSelfEnhancedHandoffChoices[] = {
+    {flags_ui::kGenericExperimentChoiceDefault, "", ""},
+    {flags_ui::kGenericExperimentChoiceEnabled, switches::kEnableFeatures,
+     "SendTabToSelfPropagateFormFields,"
+     "SendTabToSelfPropagateScrollPosition"},
+    {flags_ui::kGenericExperimentChoiceDisabled, switches::kDisableFeatures,
+     "SendTabToSelfPropagateFormFields,"
+     "SendTabToSelfPropagateScrollPosition"},
+};
+
 const FeatureEntry::Choice
     kWaitThresholdMillisecondsForCapabilitiesApiChoices[] = {
         {flags_ui::kGenericExperimentChoiceDefault, "", ""},
@@ -1789,8 +1799,7 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
     {"send-tab-to-self-enhanced-handoff",
      flag_descriptions::kSendTabToSelfEnhancedHandoffName,
      flag_descriptions::kSendTabToSelfEnhancedHandoffDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(send_tab_to_self::kSendTabToSelfPropagateFormFields)},
+     flags_ui::kOsIos, MULTI_VALUE_TYPE(kSendTabToSelfEnhancedHandoffChoices)},
     {"send-tab-ios-push-notifications",
      flag_descriptions::kSendTabToSelfIOSPushNotificationsName,
      flag_descriptions::kSendTabToSelfIOSPushNotificationsDescription,

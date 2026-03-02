@@ -28,6 +28,10 @@ BASE_DECLARE_FEATURE(kSendTabToSelfIOSPushNotifications);
 // tab and propagated to the target device.
 BASE_DECLARE_FEATURE(kSendTabToSelfPropagateFormFields);
 
+// If this feature is enabled, the scroll position will be captured and
+// propagated to the target device using a text fragment selector.
+BASE_DECLARE_FEATURE(kSendTabToSelfPropagateScrollPosition);
+
 // Param for whether or not to include the URL image in the push notification
 // for the kSendTabToSelfIOSPushNotifications feature.
 extern const char kSendTabIOSPushNotificationsURLImageParam[];

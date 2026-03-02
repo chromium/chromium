@@ -30,6 +30,9 @@ BASE_FEATURE(kSendTabToSelfIOSPushNotifications,
 BASE_FEATURE(kSendTabToSelfPropagateFormFields,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kSendTabToSelfPropagateScrollPosition,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 const char kSendTabIOSPushNotificationsURLImageParam[] =
     "variant_with_URL_image";
 

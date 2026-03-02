@@ -368,6 +368,14 @@ struct NavigateParams {
   // the behaviors listed in that document.
   bool pwa_navigation_capturing_force_off = false;
 
+  // A text fragment selector (that uses the syntax defined in
+  // https://wicg.github.io/scroll-to-text-fragment/#syntax) to scroll the
+  // matched text into the viewport without applying the standard highlight
+  // styling. This is used for cross-device scroll restoration.
+  // The string should contain only the selector value (the part after
+  // "text=" in a URL directive), not the "text=" prefix itself.
+  std::optional<std::string> scroll_to_text_fragment;
+
  private:
   NavigateParams();
 };

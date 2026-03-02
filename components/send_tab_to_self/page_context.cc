@@ -4,9 +4,19 @@
 
 #include "components/send_tab_to_self/page_context.h"
 
+#include "components/shared_highlighting/core/common/text_fragment.h"
+
 namespace send_tab_to_self {
 
 TextFragmentData::TextFragmentData() = default;
+
+TextFragmentData::TextFragmentData(
+    const shared_highlighting::TextFragment& fragment)
+    : text_start(fragment.text_start()),
+      text_end(fragment.text_end()),
+      prefix(fragment.prefix()),
+      suffix(fragment.suffix()) {}
+
 TextFragmentData::TextFragmentData(std::string text_start,
                                    std::string text_end,
                                    std::string prefix,
@@ -23,8 +33,15 @@ TextFragmentData& TextFragmentData::operator=(TextFragmentData&& other) =
     default;
 TextFragmentData::~TextFragmentData() = default;
 
+shared_highlighting::TextFragment
+TextFragmentData::ToSharedHighlightingTextFragment() const {
+  return shared_highlighting::TextFragment(text_start, text_end, prefix,
+                                           suffix);
+}
+
 bool TextFragmentData::IsEmpty() const {
-  return text_start.empty();
+  return text_start.empty() && text_end.empty() && prefix.empty() &&
+         suffix.empty();
 }
 
 bool TextFragmentData::operator==(const TextFragmentData& other) const =

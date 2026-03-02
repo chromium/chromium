@@ -46,6 +46,7 @@ static_library("send_tab_to_self") {
     "//components/keyed_service/core",
     "//components/prefs",
     "//components/send_tab_to_self/proto:send_tab_to_self_proto",
+    "//components/shared_highlighting/core/common",
     "//components/signin/public/base",
     "//components/signin/public/identity_manager",
     "//components/strings",

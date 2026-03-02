@@ -6,6 +6,8 @@
 #include <vector>
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/send_tab_to_self/desktop_notification_handler.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_util.h"
@@ -19,6 +21,7 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/sharing_hub/sharing_hub_bubble_controller.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_bubble_view.h"
 #include "chrome/common/url_constants.h"
@@ -32,15 +35,29 @@
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #include "components/send_tab_to_self/target_device_info.h"
+#include "components/shared_highlighting/core/common/text_fragment.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "services/service_manager/public/cpp/interface_provider.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/base/window_open_disposition_utils.h"
 #include "ui/events/event.h"
 
 namespace send_tab_to_self {
+
+SendTabToSelfBubbleController::PendingRequest::PendingRequest() = default;
+
+SendTabToSelfBubbleController::PendingRequest::PendingRequest(
+    PendingRequest&&) = default;
+
+SendTabToSelfBubbleController::PendingRequest&
+SendTabToSelfBubbleController::PendingRequest::operator=(PendingRequest&&) =
+    default;
+
+SendTabToSelfBubbleController::PendingRequest::~PendingRequest() = default;
 
 SendTabToSelfBubbleController::~SendTabToSelfBubbleController() {
   if (send_tab_to_self_bubble_view_) {
@@ -133,27 +150,107 @@ SendTabToSelfBubbleController::GetEntryPointDisplayReason() {
 
 void SendTabToSelfBubbleController::OnDeviceSelected(
     const std::string& target_device_guid) {
+  // TODO(crbug.com/40817150): This duplicates the ShouldOfferFeature() check,
+  // instead the 2 codepaths should share code.
+  PendingRequest request;
+  request.target_device_guid = target_device_guid;
+  request.url = GetWebContents().GetLastCommittedURL();
+  request.title = base::UTF16ToUTF8(GetWebContents().GetTitle());
+  if (base::FeatureList::IsEnabled(kSendTabToSelfPropagateFormFields)) {
+    request.page_context = ExtractFormFieldsFromWebContents(&GetWebContents());
+  }
+
+  if (!base::FeatureList::IsEnabled(kSendTabToSelfPropagateScrollPosition)) {
+    SendFinalizedRequest(std::move(request));
+    return;
+  }
+
+  content::RenderFrameHost* main_frame = GetWebContents().GetPrimaryMainFrame();
+  if (!main_frame) {
+    SendFinalizedRequest(std::move(request));
+    return;
+  }
+
+  request.main_frame_id = main_frame->GetGlobalId();
+
+  if (request.main_frame_id != last_main_frame_id_) {
+    text_fragment_receiver_.reset();
+    last_main_frame_id_ = request.main_frame_id;
+  }
+
+  if (!text_fragment_receiver_.is_bound()) {
+    main_frame->GetRemoteInterfaces()->GetInterface(
+        text_fragment_receiver_.BindNewPipeAndPassReceiver());
+  }
+
+  auto request_token = base::Token::CreateRandom();
+  pending_requests_[request_token] = std::move(request);
+
+  text_fragment_receiver_->RequestSelectorForViewportCenter(base::BindOnce(
+      &SendTabToSelfBubbleController::SelectorGeneratedForRequest,
+      weak_ptr_factory_.GetWeakPtr(), request_token));
+
+  // Start a timer to fallback if the renderer is too slow.
+  // TODO(crbug.com/482925620): Add histograms for generation time and
+  // timeouts, and consider making this timeout configurable.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(
+          &SendTabToSelfBubbleController::SelectorGeneratedForRequest,
+          weak_ptr_factory_.GetWeakPtr(), request_token,
+          /*selector=*/std::string(),
+          shared_highlighting::LinkGenerationError::kTimeout,
+          shared_highlighting::LinkGenerationReadyStatus::kRequestedAfterReady),
+      GetSelectorGenerationTimeout());
+}
+
+void SendTabToSelfBubbleController::SelectorGeneratedForRequest(
+    base::Token request_token,
+    const std::string& selector,
+    shared_highlighting::LinkGenerationError /*error*/,
+    shared_highlighting::LinkGenerationReadyStatus /*ready_status*/) {
+  auto it = pending_requests_.find(request_token);
+  if (it == pending_requests_.end()) {
+    // This happens if a request completes after the timeout has already
+    // triggered, or if the timeout task runs after a request has already
+    // completed.
+    return;
+  }
+
+  PendingRequest request = std::move(it->second);
+  pending_requests_.erase(it);
+
+  // Only add the text fragment if the main frame is the same as the one that
+  // was originally requested.
+  content::RenderFrameHost* main_frame = GetWebContents().GetPrimaryMainFrame();
+  if (main_frame && main_frame->GetGlobalId() == request.main_frame_id &&
+      !selector.empty()) {
+    std::optional<shared_highlighting::TextFragment> fragment =
+        shared_highlighting::TextFragment::FromEscapedString(selector);
+    if (fragment) {
+      request.page_context.scroll_position.text_fragment =
+          TextFragmentData(*fragment);
+    }
+  }
+
+  SendFinalizedRequest(std::move(request));
+}
+
+void SendTabToSelfBubbleController::SendFinalizedRequest(
+    PendingRequest request) {
   SendTabToSelfModel* model =
       SendTabToSelfSyncServiceFactory::GetForProfile(GetProfile())
           ->GetSendTabToSelfModel();
-  // TODO(crbug.com/40817150): This duplicates the ShouldOfferFeature() check,
-  // instead the 2 codepaths should share code.
-  const GURL& shared_url = GetWebContents().GetLastCommittedURL();
   if (!model->IsReady()) {
     // TODO(crbug.com/40811626): Is this legit? In STTSv2, there may not
     // *be* a DesktopNotificationHandler for profile, and we're violating the
     // lifetime rules of DesktopNotificationHandler here I think.
-    DesktopNotificationHandler(GetProfile()).DisplayFailureMessage(shared_url);
+    DesktopNotificationHandler(GetProfile()).DisplayFailureMessage(request.url);
     return;
   }
 
-  PageContext page_context;
-  if (base::FeatureList::IsEnabled(kSendTabToSelfPropagateFormFields)) {
-    page_context = ExtractFormFieldsFromWebContents(&GetWebContents());
-  }
-
-  model->AddEntry(shared_url, base::UTF16ToUTF8(GetWebContents().GetTitle()),
-                  target_device_guid, page_context);
+  model->AddEntry(request.url, request.title, request.target_device_guid,
+                  std::move(request.page_context));
 
   // Show confirmation message.
   show_message_ = true;
@@ -197,6 +294,18 @@ bool SendTabToSelfBubbleController::InitialSendAnimationShown() {
 void SendTabToSelfBubbleController::SetInitialSendAnimationShown(bool shown) {
   GetProfile()->GetPrefs()->SetBoolean(prefs::kInitialSendAnimationShown,
                                        shown);
+}
+
+void SendTabToSelfBubbleController::SetSelectorGenerationTimeoutForTesting(
+    base::TimeDelta timeout) {
+  selector_generation_timeout_for_testing_ = timeout;
+}
+
+base::TimeDelta SendTabToSelfBubbleController::GetSelectorGenerationTimeout()
+    const {
+  return selector_generation_timeout_for_testing_.is_zero()
+             ? base::Milliseconds(200)
+             : selector_generation_timeout_for_testing_;
 }
 
 // Static:

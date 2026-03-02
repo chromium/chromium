@@ -8,11 +8,16 @@
 #include <string>
 #include <vector>
 
+namespace shared_highlighting {
+class TextFragment;
+}  // namespace shared_highlighting
+
 namespace send_tab_to_self {
 
 // Text fragment data used for scroll position restoration.
 struct TextFragmentData {
   TextFragmentData();
+  explicit TextFragmentData(const shared_highlighting::TextFragment& fragment);
   TextFragmentData(std::string text_start,
                    std::string text_end,
                    std::string prefix,
@@ -22,6 +27,8 @@ struct TextFragmentData {
   TextFragmentData& operator=(const TextFragmentData& other);
   TextFragmentData& operator=(TextFragmentData&& other);
   ~TextFragmentData();
+
+  shared_highlighting::TextFragment ToSharedHighlightingTextFragment() const;
 
   bool IsEmpty() const;
 

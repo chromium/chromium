@@ -5392,6 +5392,7 @@ if (!is_android) {
         "../browser/ui/views/safe_browsing/tailored_security_desktop_dialog_manager_browsertest.cc",
         "../browser/ui/views/search_engines/dse_reset_dialog_view_browsertest.cc",
         "../browser/ui/views/send_tab_to_self/send_tab_to_self_bubble_browsertest.cc",
+        "../browser/ui/views/send_tab_to_self/send_tab_to_self_bubble_controller_browsertest.cc",
         "../browser/ui/views/side_panel/extensions/extension_side_panel_browsertest.cc",
         "../browser/ui/views/site_data/page_specific_site_data_dialog_browsertest.cc",
         "../browser/ui/views/status_bubble_views_browsertest.cc",
