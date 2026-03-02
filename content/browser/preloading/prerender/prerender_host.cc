@@ -1748,51 +1748,6 @@ void PrerenderHost::OnWaitingForHeadersFinished(
 bool PrerenderHost::ShouldAbortNavigationBecausePrefetchUnavailable() const {
   CHECK(features::UsePrefetchPrerenderIntegration());
 
-  auto is_prefetch_used =
-      [](const std::optional<PrefetchStatus>& prefetch_status) -> bool {
-    if (!prefetch_status.has_value()) {
-      return false;
-    }
-
-    switch (prefetch_status.value()) {
-      case PrefetchStatus::kPrefetchResponseUsed:
-        return true;
-      case PrefetchStatus::kPrefetchNotUsedProbeFailed:
-      case PrefetchStatus::kPrefetchNotStarted:
-      case PrefetchStatus::kPrefetchIneligibleUserHasCookies:
-      case PrefetchStatus::kPrefetchIneligibleUserHasServiceWorker:
-      case PrefetchStatus::
-          kPrefetchIneligibleUserHasServiceWorkerNoFetchHandler:
-      case PrefetchStatus::kPrefetchIneligibleRedirectFromServiceWorker:
-      case PrefetchStatus::kPrefetchIneligibleRedirectToServiceWorker:
-      case PrefetchStatus::kPrefetchIneligibleSchemeIsNotHttps:
-      case PrefetchStatus::kPrefetchIneligibleNonDefaultStoragePartition:
-      case PrefetchStatus::kPrefetchNotFinishedInTime:
-      case PrefetchStatus::kPrefetchFailedNetError:
-      case PrefetchStatus::kPrefetchFailedNon2XX:
-      case PrefetchStatus::kPrefetchFailedMIMENotSupported:
-      case PrefetchStatus::kPrefetchSuccessful:
-      case PrefetchStatus::kPrefetchIneligibleRetryAfter:
-      case PrefetchStatus::kPrefetchIneligiblePrefetchProxyNotAvailable:
-      case PrefetchStatus::kPrefetchIsPrivacyDecoy:
-      case PrefetchStatus::kPrefetchIsStale:
-      case PrefetchStatus::kPrefetchNotUsedCookiesChanged:
-      case PrefetchStatus::kPrefetchIneligibleHostIsNonUnique:
-      case PrefetchStatus::kPrefetchIneligibleDataSaverEnabled:
-      case PrefetchStatus::kPrefetchIneligibleExistingProxy:
-      case PrefetchStatus::kPrefetchHeldback:
-      case PrefetchStatus::kPrefetchFailedInvalidRedirect:
-      case PrefetchStatus::kPrefetchFailedIneligibleRedirect:
-      case PrefetchStatus::
-          kPrefetchIneligibleSameSiteCrossOriginPrefetchRequiredProxy:
-      case PrefetchStatus::kPrefetchIneligibleBatterySaverEnabled:
-      case PrefetchStatus::kPrefetchIneligiblePreloadingDisabled:
-      case PrefetchStatus::kPrefetchEvictedAfterCandidateRemoved:
-      case PrefetchStatus::kPrefetchEvictedForNewerPrefetch:
-      case PrefetchStatus::kPrefetchEvictedAfterBrowsingDataRemoved:
-        return false;
-    }
-  };
   auto is_ineligibility_admissible =
       [](PreloadingEligibility prefetch_eligibility) -> bool {
     switch (prefetch_eligibility) {
@@ -1862,7 +1817,7 @@ bool PrerenderHost::ShouldAbortNavigationBecausePrefetchUnavailable() const {
 
   // Use a prefetch (in many cases, aheaf of prerender) if it is about to be
   // used.
-  if (is_prefetch_used(attributes_.preload_pipeline_info->prefetch_status())) {
+  if (attributes_.preload_pipeline_info->is_prerender_matched_with_prefetch()) {
     return false;
   }
 

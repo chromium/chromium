@@ -445,6 +445,9 @@ class CONTENT_EXPORT PrerenderHost {
   const PreloadPipelineInfo& preload_pipeline_info() const {
     return *attributes_.preload_pipeline_info.get();
   }
+  scoped_refptr<PreloadPipelineInfoImpl> preload_pipeline_info_scoped_refptr() {
+    return attributes_.preload_pipeline_info;
+  }
 
   // Returns whether the initiator page is overriding user agents. The initiator
   // page may be retrieved differently between renderer-initiated and

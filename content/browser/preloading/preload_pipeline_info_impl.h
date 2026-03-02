@@ -9,6 +9,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/unguessable_token.h"
 #include "content/browser/preloading/prefetch/prefetch_status.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/preload_pipeline_info.h"
 #include "content/public/browser/preloading.h"
 #include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
@@ -49,6 +50,11 @@ class CONTENT_EXPORT PreloadPipelineInfoImpl final
   }
   void SetPrefetchStatus(PrefetchStatus prefetch_status);
 
+  bool is_prerender_matched_with_prefetch() const {
+    return is_prerender_matched_with_prefetch_;
+  }
+  void MarkPrerenderMatchedWithPrefetch();
+
  private:
   friend class base::RefCounted<PreloadPipelineInfo>;
 
@@ -63,6 +69,10 @@ class CONTENT_EXPORT PreloadPipelineInfoImpl final
   PreloadingEligibility prefetch_eligibility_ =
       PreloadingEligibility::kUnspecified;
   std::optional<PrefetchStatus> prefetch_status_ = std::nullopt;
+
+  // Set to true when the prerender in this pipeline matches a prefetch.
+  // Note that the prefetch may not be the prefetch in this pipeline.
+  bool is_prerender_matched_with_prefetch_ = false;
 };
 
 }  // namespace content

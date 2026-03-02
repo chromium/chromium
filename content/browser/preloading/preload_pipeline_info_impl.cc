@@ -62,4 +62,9 @@ void PreloadPipelineInfoImpl::SetPrefetchStatus(
   prefetch_status_ = prefetch_status;
 }
 
+void PreloadPipelineInfoImpl::MarkPrerenderMatchedWithPrefetch() {
+  CHECK(!is_prerender_matched_with_prefetch_);
+  is_prerender_matched_with_prefetch_ = true;
+}
+
 }  // namespace content

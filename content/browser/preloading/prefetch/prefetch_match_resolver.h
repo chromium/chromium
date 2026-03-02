@@ -229,6 +229,7 @@ class CONTENT_EXPORT PrefetchMatchResolver final
       PrefetchServiceWorkerState expected_service_worker_state,
       bool is_nav_prerender,
       base::WeakPtr<PrerenderHost> prerender_host,
+      scoped_refptr<PreloadPipelineInfoImpl> preload_pipeline_info,
       base::WeakPtr<PrefetchServingPageMetricsContainer>
           serving_page_metrics_container,
       Callback callback,
@@ -241,6 +242,7 @@ class CONTENT_EXPORT PrefetchMatchResolver final
       PrefetchServiceWorkerState expected_service_worker_state,
       bool is_nav_prerender,
       base::WeakPtr<PrerenderHost> prerender_host,
+      scoped_refptr<PreloadPipelineInfoImpl> preload_pipeline_info,
       Callback callback,
       perfetto::Flow flow);
 
@@ -330,6 +332,12 @@ class CONTENT_EXPORT PrefetchMatchResolver final
   // initial navigation. Otherwise, `nullptr`. Also this is nullptr if
   // `PreloadServingMetricsCapsule::IsFeatureEnabled()` is false.
   base::WeakPtr<PrerenderHost> prerender_host_for_metrics_;
+
+  // `PreloadPipelineInfo` of prerender if the navigation is prerender.
+  //
+  // Non-null iff the navigation is prerender.
+  const scoped_refptr<PreloadPipelineInfoImpl> preload_pipeline_info_;
+
   std::unique_ptr<PrefetchMatchMetrics> prefetch_match_metrics_;
 
   // Potentially matching candidates.
