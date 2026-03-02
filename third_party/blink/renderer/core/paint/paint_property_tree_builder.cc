@@ -2574,9 +2574,12 @@ static bool NeedsOverflowClipForReplacedContents(
   if (replaced.IsSVGRoot())
     return To<LayoutSVGRoot>(replaced).ClipsToContentBox();
 
-  // A replaced element with border-radius always clips the content.
-  if (replaced.StyleRef().HasBorderRadius())
+  // A replaced element with border-radius or border-shape always clips the
+  // content to the inner shape.
+  if (replaced.StyleRef().HasBorderRadius() ||
+      replaced.StyleRef().HasBorderShape()) {
     return true;
+  }
 
   // ImagePainter (but not painters for LayoutMedia whose IsImage is also true)
   // won't paint outside of the content box.
@@ -2858,10 +2861,20 @@ void FragmentPaintPropertyTreeBuilder::UpdateInnerBorderShapeClip() {
       PhysicalRect box_rect(context_.current.paint_offset, box.StitchedSize());
       // Expand the reference rect by overflow-clip-margin if applicable, so
       // that the border-shape clip accounts for the additional visible
-      // overflow area allowed by the margin.
+      // overflow area allowed by the margin. Only expand outward (beyond the
+      // border box); never contract inward, since the inner border-shape clip
+      // must reference the border box, not the padding or content box. For
+      // example, the UA stylesheet sets `overflow-clip-margin: content-box` on
+      // replaced elements like <img>, and applying that contraction here would
+      // incorrectly shrink the inner border-shape clip.
       PhysicalRect expanded_box_rect = box_rect;
       if (box.ShouldApplyOverflowClipMargin()) {
-        expanded_box_rect.Expand(box.BorderOutsetsForClipping());
+        PhysicalBoxStrut outsets = box.BorderOutsetsForClipping();
+        outsets.top = std::max(outsets.top, LayoutUnit());
+        outsets.right = std::max(outsets.right, LayoutUnit());
+        outsets.bottom = std::max(outsets.bottom, LayoutUnit());
+        outsets.left = std::max(outsets.left, LayoutUnit());
+        expanded_box_rect.Expand(outsets);
       }
       std::optional<BorderShapeReferenceRects> border_shape_rects =
           ComputeBorderShapeReferenceRects(expanded_box_rect, box.StyleRef(),
