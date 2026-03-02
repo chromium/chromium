@@ -324,7 +324,12 @@ void CursorManager::UpdateSystemCursorVisibilityForTest(bool visible) {
 
 void CursorManager::CommitSystemCursorVisibility(bool visible) {
   DCHECK(features::ShouldUseCursorEventHook());
-  UpdateSystemCursorVisibility(visible);
+  // Take cursor type kNone as visible. This is to handle the case where
+  // the cursor is reported invisible by Windows after set kNone (e.g. during
+  // fullscreen video playback). In this case, we should not force locking the
+  // cursor. See crbug.com/476097248 for more details.
+  UpdateSystemCursorVisibility(visible || GetCursor().type() ==
+                                              ui::mojom::CursorType::kNone);
 }
 
 void CursorManager::UpdateSystemCursorVisibility(bool visible) {
