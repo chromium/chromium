@@ -5,6 +5,8 @@
 #include <optional>
 #include <string_view>
 
+#include "base/base_paths.h"
+#include "base/path_service.h"
 #include "base/strings/escape.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -15,6 +17,9 @@
 #include "chrome/test/fuzzing/in_process_fuzzer_buildflags.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_test_utils.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/test/embedded_test_server/http_request.h"
+#include "net/test/embedded_test_server/http_response.h"
 
 // This is an example use of the InProcessFuzzer framework.
 // It runs arbitrary JS within the context of an existing
@@ -54,9 +59,23 @@ constexpr RunLoopTimeoutBehavior kJsRunLoopTimeoutBehavior =
     RunLoopTimeoutBehavior::kDeclareInfiniteLoop;
 #endif
 
-constexpr std::string_view kBlankHtmlPage =
-    "<html><head><title>Test page</title></head>"
-    "<body><p>Test text.</p></body></html>";
+constexpr char kMojoFuzzerHtml[] = R"(
+<script src="gen/mojo/public/js/mojo_bindings_lite.js"></script>
+<script
+ src="gen/third_party/blink/public/mojom/locks/lock_manager.mojom-lite.js">
+</script>
+)";
+
+std::unique_ptr<net::test_server::HttpResponse> HandleMojoFuzzerRequest(
+    const net::test_server::HttpRequest& request) {
+  if (request.relative_url != "/mojo_fuzzer.html") {
+    return nullptr;
+  }
+  auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+  response->set_content_type("text/html");
+  response->set_content(kMojoFuzzerHtml);
+  return response;
+}
 
 }  // namespace
 
@@ -68,10 +87,18 @@ JsInProcessFuzzer::JsInProcessFuzzer()
 
 void JsInProcessFuzzer::SetUpOnMainThread() {
   InProcessFuzzer::SetUpOnMainThread();
-  std::string url_string = "data:text/html;charset=utf-8,";
-  const bool kUsePlus = false;
-  url_string.append(base::EscapeQueryParamValue(kBlankHtmlPage, kUsePlus));
-  CHECK(ui_test_utils::NavigateToURL(browser(), GURL(url_string)));
+
+  base::FilePath build_dir;
+  base::PathService::Get(base::DIR_EXE, &build_dir);
+
+  embedded_https_test_server().RegisterRequestHandler(
+      base::BindRepeating(&HandleMojoFuzzerRequest));
+
+  embedded_https_test_server().ServeFilesFromDirectory(build_dir);
+  ASSERT_TRUE(embedded_https_test_server().Start());
+
+  GURL url = embedded_https_test_server().GetURL("/mojo_fuzzer.html");
+  CHECK(ui_test_utils::NavigateToURL(browser(), url));
 #if BUILDFLAG(IS_FUZZILLI)
   // Fuzzilli needs to see this. Unfortunately, we install a signal handler at
   // //content/public/test/browser_test_base.cc that exits when one of those
@@ -91,6 +118,12 @@ JsInProcessFuzzer::GetChromiumCommandLineArguments() {
   return {
       FILE_PATH_LITERAL("--js-flags=--jit-fuzzing --allow-natives-syntax "
                         "--expose-gc --fuzzing --future --harmony"),
+      FILE_PATH_LITERAL("--enable-blink-features=MojoJS,MojoJSTest"),
+      FILE_PATH_LITERAL("--enable-experimental-web-platform-features"),
+      // Disable this to avoid crashing the testing framework when invalid Mojo
+      // messages are received which happens a lot for some interfaces. We're
+      // trading off worse runtime accuracy for better fuzzer performance.
+      FILE_PATH_LITERAL("--disable-kill-after-bad-ipc"),
 #if BUILDFLAG(IS_FUZZILLI)
       // This was caused by some issues with disks filling up fast, because
       // Fuzzilli restarts the binary very frequently.
