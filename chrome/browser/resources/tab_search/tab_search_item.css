@@ -16,6 +16,7 @@
    --audio-icon-color: var(--color-tab-search-media-icon);
    --glic-active-icon-color: var(--color-tab-search-media-glic-active-icon);
    --media-recording-icon-color:  var(--color-tab-search-media-recording-icon);
+   position: relative;
  }
 
 :host([size=large]) {
