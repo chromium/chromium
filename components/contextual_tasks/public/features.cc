@@ -127,7 +127,7 @@ constexpr base::FeatureParam<EntryPointOption>::Option kEntryPointOptions[] = {
 const base::FeatureParam<EntryPointOption> kShowEntryPoint(
     &kContextualTasks,
     "ContextualTasksEntryPoint",
-    EntryPointOption::kToolbarPermanent,
+    EntryPointOption::kToolbarRevisit,
     &kEntryPointOptions);
 
 constexpr base::FeatureParam<ExpandButtonOption>::Option kExpandButtonOption[] =
