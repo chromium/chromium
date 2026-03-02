@@ -34,6 +34,13 @@ namespace {
 
 const char kDesktopNotificationSharedPrefix[] = "shared";
 
+// Returns true if the notification is for a received tab.
+// Received tab notifications use the entry's GUID as their ID.
+// Other notifications (sending confirmations, failures) use the shared prefix.
+bool IsTabReceivedNotification(const std::string& notification_id) {
+  return !notification_id.starts_with(kDesktopNotificationSharedPrefix);
+}
+
 }  // namespace
 
 DesktopNotificationHandler::DesktopNotificationHandler(Profile* profile)
@@ -76,7 +83,7 @@ void DesktopNotificationHandler::OnClose(Profile* profile,
                                          const std::string& notification_id,
                                          bool by_user,
                                          base::OnceClosure completed_closure) {
-  if (notification_id.find(kDesktopNotificationSharedPrefix)) {
+  if (IsTabReceivedNotification(notification_id)) {
     SendTabToSelfSyncServiceFactory::GetForProfile(profile)
         ->GetSendTabToSelfModel()
         ->DismissEntry(notification_id);
@@ -92,7 +99,7 @@ void DesktopNotificationHandler::OnClick(
     const std::optional<int>& action_index,
     const std::optional<std::u16string>& reply,
     base::OnceClosure completed_closure) {
-  if (notification_id.find(kDesktopNotificationSharedPrefix)) {
+  if (IsTabReceivedNotification(notification_id)) {
     // Launch a new tab for the notification's |origin|,
     // and close the activated notification.
     NavigateParams params(profile, origin, ui::PAGE_TRANSITION_LINK);
