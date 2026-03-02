@@ -44,7 +44,7 @@ class MediaDialogViewTest : public ChromeViewsTestBase {
     notification_service_ =
         std::make_unique<MediaNotificationService>(profile(), false);
     anchor_widget_ =
-        CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+        CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET,
                          views::Widget::InitParams::TYPE_WINDOW);
     anchor_widget_->Show();
     soda_installer_impl_ = std::make_unique<speech::SodaInstallerImpl>();
