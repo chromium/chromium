@@ -5530,6 +5530,12 @@ inline constexpr char kNavigationCaptureRefactorAndroidDescription[] =
     "Prevents UI jank when a navigation is 'captured', causing a new "
     "app to be opened.";
 
+inline constexpr char kNewTabPageCustomizationThemeSyncName[] =
+    "New Tab Page Customization Theme Sync";
+inline constexpr char kNewTabPageCustomizationThemeSyncDescription[] =
+    "Allows users to sync their New Tab page customizations settings "
+    "(appearance).";
+
 inline constexpr char kNotificationPermissionRationaleName[] =
     "Notification Permission Rationale UI";
 inline constexpr char kNotificationPermissionRationaleDescription[] =

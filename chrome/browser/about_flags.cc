@@ -13043,6 +13043,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kNtpSimplificationDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kNtpSimplification)},
 #endif
+#if BUILDFLAG(IS_ANDROID)
+    {"new-tab-page-customization-theme-sync",
+     flag_descriptions::kNewTabPageCustomizationThemeSyncName,
+     flag_descriptions::kNewTabPageCustomizationThemeSyncDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kNewTabPageCustomizationThemeSync)},
+#endif
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

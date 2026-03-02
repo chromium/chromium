@@ -505,6 +505,8 @@ public abstract class ChromeFeatureList {
     public static final String MVC_UPDATE_VIEW_WHEN_MODEL_CHANGED = "MvcUpdateViewWhenModelChanged";
     public static final String NAV_BAR_COLOR_ANIMATION = "NavBarColorAnimation";
     public static final String NEW_TAB_PAGE_CUSTOMIZATION_FOR_MVT = "NewTabPageCustomizationForMvt";
+    public static final String NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC =
+            "NewTabPageCustomizationThemeSync";
     public static final String NEW_TAB_PAGE_CUSTOMIZATION_V2 = "NewTabPageCustomizationV2";
     public static final String NOTIFICATION_PERMISSION_VARIANT = "NotificationPermissionVariant";
     public static final String NOTIFICATION_TRAMPOLINE = "NotificationTrampoline";
@@ -989,6 +991,8 @@ public abstract class ChromeFeatureList {
             newCachedFlag(NAV_BAR_COLOR_ANIMATION, /* defaultValue= */ true);
     public static final CachedFlag sNewTabPageCustomizationForMvt =
             newCachedFlag(NEW_TAB_PAGE_CUSTOMIZATION_FOR_MVT, true);
+    public static final CachedFlag sNewTabPageCustomizationThemeSync =
+            newCachedFlag(NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC, /* defaultValue= */ false);
     public static final CachedFlag sNewTabPageCustomizationV2 =
             newCachedFlag(NEW_TAB_PAGE_CUSTOMIZATION_V2, false, true);
     public static final CachedFlag sNotificationTrampoline =
@@ -1230,6 +1234,7 @@ public abstract class ChromeFeatureList {
                     sMvcUpdateViewWhenModelChanged,
                     sNavBarColorAnimation,
                     sNewTabPageCustomizationForMvt,
+                    sNewTabPageCustomizationThemeSync,
                     sNewTabPageCustomizationV2,
                     sNotificationTrampoline,
                     sNotificationTrampolineNoNewTask,

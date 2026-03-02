@@ -9027,6 +9027,7 @@ from previous Chrome versions.
   <int value="-1844445413"
       label="NotificationsIgnoreRequireInteraction:disabled"/>
   <int value="-1843677118" label="TwoPanesStartSurfaceAndroid:disabled"/>
+  <int value="-1843451369" label="NewTabPageCustomizationThemeSync:disabled"/>
   <int value="-1842511843" label="DiceWebSigninInterception:enabled"/>
   <int value="-1842145650" label="WaylandLinuxDrmSyncobj:enabled"/>
   <int value="-1841624903" label="FilesMaterializedViews:disabled"/>
@@ -11994,6 +11995,7 @@ from previous Chrome versions.
   <int value="-832058463" label="LaunchWindowsNativeHostsDirectly:disabled"/>
   <int value="-831855839"
       label="DeprecateOldKeyboardShortcutsAccelerator:enabled"/>
+  <int value="-831789349" label="NewTabPageCustomizationThemeSync:enabled"/>
   <int value="-831303896" label="TabStripGroupIndicatorsAndroid:enabled"/>
   <int value="-831066457" label="IncognitoBrandConsistencyForDesktop:disabled"/>
   <int value="-829665817" label="AltClickAndSixPackCustomization:enabled"/>
