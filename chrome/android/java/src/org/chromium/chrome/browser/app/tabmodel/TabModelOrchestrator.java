@@ -10,9 +10,8 @@ import android.app.Activity;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.metrics.RecordHistogram;
-
 import org.chromium.base.Callback;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.MonotonicNonNull;
@@ -23,6 +22,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.MismatchedIndicesHandler;
 import org.chromium.chrome.browser.tabmodel.PersistentStoreMigrationManager;
+import org.chromium.chrome.browser.tabmodel.PersistentStoreMigrationManager.StoreType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorBase;
@@ -325,6 +325,14 @@ public class TabModelOrchestrator {
 
     public boolean getTabPersistentStoreDestroyedEarlyForTesting() {
         return mTabPersistentStoreDestroyedEarly;
+    }
+
+    public @Nullable @StoreType Integer getAuthoritativeStoreType() {
+        return mTabPersistentStore != null ? mTabPersistentStore.getStoreType() : null;
+    }
+
+    public @Nullable @StoreType Integer getShadowStoreType() {
+        return mShadowTabPersistentStore != null ? mShadowTabPersistentStore.getStoreType() : null;
     }
 
     protected void wireSelectorAndStore() {

@@ -9,11 +9,17 @@ import androidx.annotation.IntDef;
 import org.chromium.base.CallbackUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.tabmodel.PersistentStoreMigrationManager.StoreType;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/** This class handles saving and loading tab state from the persistent storage. */
+/**
+ * This class handles saving and loading tab state from the persistent storage.
+ *
+ * <p>Implementations must also provide the ability to clear their data when an associated {@link
+ * TabPersistentStore} instance is not available.
+ */
 @NullMarked
 public interface TabPersistentStore {
     /** Alerted at various stages of operation. */
@@ -214,4 +220,8 @@ public interface TabPersistentStore {
      * @param observer The {@link TabPersistentStoreObserver} to remove.
      */
     void removeObserver(TabPersistentStoreObserver observer);
+
+    /** Returns the type of store this instance represents. */
+    @StoreType
+    int getStoreType();
 }

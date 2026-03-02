@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.tab.TabStateStorageService;
 import org.chromium.chrome.browser.tab.TabStateStorageServiceFactory;
 import org.chromium.chrome.browser.tab.WebContentsState;
 import org.chromium.chrome.browser.tabmodel.PersistentStoreMigrationManager;
+import org.chromium.chrome.browser.tabmodel.PersistentStoreMigrationManager.StoreType;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -435,14 +436,9 @@ public class TabStateStore implements TabPersistentStore {
 
     @Override
     public void cleanupStateFile(int windowId) {
-        assertInitialized();
-
-        // The archived tab state file does not support this operation.
-        assert windowId != TabWindowManager.INVALID_WINDOW_ID;
-        String windowTag = Integer.toString(windowId);
-
-        mTabStateStorageService.clearWindow(windowTag);
-        TabCountTracker.cleanupWindow(windowTag);
+        Profile profile = mTabModelSelector.getModel(/* incognito= */ false).getProfile();
+        assert profile != null;
+        TabStateStoreCleaner.cleanupStateFile(windowId, profile);
     }
 
     @Override
@@ -461,6 +457,11 @@ public class TabStateStore implements TabPersistentStore {
     @Override
     public void removeObserver(TabPersistentStoreObserver observer) {
         mObservers.removeObserver(observer);
+    }
+
+    @Override
+    public @StoreType int getStoreType() {
+        return StoreType.TAB_STATE_STORE;
     }
 
     private void onTabStateDirtinessChanged(Tab tab, @DirtinessState int dirtiness) {
@@ -640,5 +641,29 @@ public class TabStateStore implements TabPersistentStore {
         if (!mModelTrackingManager.isSynchronizerPresent(incognito)) return;
         int tabCountForModel = mTabModelSelector.getModel(incognito).getCount();
         mTabCountTracker.updateTabCount(incognito, tabCountForModel);
+    }
+
+    /**
+     * Helper class to manage cleaning up the TabStateStore. This is meant to be used to clean up
+     * state when a {@link TabStateStore} instance does not exist for the calling window.
+     */
+    public static class TabStateStoreCleaner {
+        /**
+         * Cleans up the state file for a given window.
+         *
+         * @param windowId The ID of the window to clean up.
+         * @param profile The profile associated with the window.
+         */
+        public static void cleanupStateFile(int windowId, Profile profile) {
+            TabStateStorageService service = TabStateStorageServiceFactory.getForProfile(profile);
+            assert service != null;
+
+            // The archived tab state file does not support this operation.
+            assert windowId != TabWindowManager.INVALID_WINDOW_ID;
+            String windowTag = Integer.toString(windowId);
+
+            service.clearWindow(windowTag);
+            TabCountTracker.cleanupWindow(windowTag);
+        }
     }
 }
