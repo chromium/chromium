@@ -25,12 +25,7 @@ BASE_FEATURE(kComputeRasterTranslateForExternalScale,
 
 // Whether the compositor should attempt to sync with the scroll handlers before
 // submitting a frame.
-BASE_FEATURE(kSynchronizedScrolling,
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#else
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
+BASE_FEATURE(kSynchronizedScrolling, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDeferImplInvalidation, base::FEATURE_ENABLED_BY_DEFAULT);
 
