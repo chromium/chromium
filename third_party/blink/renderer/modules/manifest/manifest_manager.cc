@@ -202,7 +202,7 @@ void ManifestManager::FetchManifest() {
   if (manifest_url.IsEmpty()) {
     ResolveCallbacks(
         Result(mojom::blink::ManifestRequestResult::kNoManifestSpecified,
-               KURL(), DefaultManifest()));
+               NullUrl(), DefaultManifest()));
     return;
   }
 

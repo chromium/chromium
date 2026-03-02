@@ -28,7 +28,7 @@ Agent::Agent(v8::Isolate* isolate,
     : Agent(isolate,
             cluster_id,
             std::move(microtask_queue),
-            AgentClusterKey::CreateSiteKeyed(KURL()),
+            AgentClusterKey::CreateSiteKeyed(NullUrl()),
             agent_type) {}
 
 Agent::Agent(v8::Isolate* isolate,

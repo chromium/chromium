@@ -679,7 +679,7 @@ void Editor::CopyImage(const HitTestResult& result) {
 
 void Editor::CopyImage(const HitTestResult& result,
                        const scoped_refptr<Image>& image) {
-  WriteImageToClipboard(*frame_->GetSystemClipboard(), image, KURL(),
+  WriteImageToClipboard(*frame_->GetSystemClipboard(), image, NullUrl(),
                         result.AltDisplayString());
 }
 

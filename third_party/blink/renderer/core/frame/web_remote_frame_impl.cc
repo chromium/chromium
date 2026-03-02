@@ -251,7 +251,7 @@ WebLocalFrame* WebRemoteFrameImpl::CreateLocalChild(
       FrameInsertType::kInsertInConstructor, name, window_agent_factory, opener,
       document_token, std::move(interface_broker), std::move(policy_container),
       storage_key,
-      /*creator_base_url=*/KURL());
+      /*creator_base_url=*/NullUrl());
   DCHECK(child->GetFrame());
   return child;
 }

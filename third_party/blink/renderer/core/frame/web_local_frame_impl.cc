@@ -2226,7 +2226,7 @@ WebLocalFrameImpl* WebLocalFrameImpl::CreateProvisional(
       previous_web_frame->Opener(), DocumentToken(),
       std::move(interface_broker),
       /*policy_container=*/nullptr, StorageKey(),
-      /*creator_base_url=*/KURL(), sandbox_flags);
+      /*creator_base_url=*/NullUrl(), sandbox_flags);
 
   LocalFrame* new_frame = web_frame->GetFrame();
 

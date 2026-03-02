@@ -194,7 +194,7 @@ String SystemClipboard::ReadHTML(KURL& url,
 void SystemClipboard::ReadHTML(
     mojom::blink::ClipboardHost::ReadHtmlCallback callback) {
   if (!IsValidBufferType(buffer_) || !clipboard_.is_bound()) {
-    std::move(callback).Run(String(), KURL(), 0, 0);
+    std::move(callback).Run(String(), NullUrl(), 0, 0);
     return;
   }
   clipboard_->ReadHtml(buffer_, std::move(callback));
@@ -314,7 +314,7 @@ void SystemClipboard::WriteImageWithTag(Image* image,
     // into rich text editors, such as Gmail, reveals the image. We also don't
     // want to call writeText(), since some applications (WordPad) don't pick
     // the image if there is also a text format on the clipboard.
-    clipboard_->WriteHtml(URLToImageMarkup(url, title), KURL());
+    clipboard_->WriteHtml(URLToImageMarkup(url, title), NullUrl());
   }
 }
 
@@ -383,7 +383,7 @@ void SystemClipboard::WriteDataObject(DataObject* data_object) {
       if (string_item->type == ui::kMimeTypePlainText) {
         clipboard_->WriteText(NonNullString(string_item->data));
       } else if (string_item->type == ui::kMimeTypeHtml) {
-        clipboard_->WriteHtml(NonNullString(string_item->data), KURL());
+        clipboard_->WriteHtml(NonNullString(string_item->data), NullUrl());
       } else if (string_item->type != ui::kMimeTypeDownloadUrl) {
         custom_data.insert(string_item->type, NonNullString(string_item->data));
       }

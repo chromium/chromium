@@ -272,7 +272,7 @@ void ScriptController::ExecuteJavaScriptURL(
   // We pass |SanitizeScriptErrors::kDoNotSanitize| because |muted errors| is
   // false by default.
   ClassicScript* script = ClassicScript::Create(
-      script_source, KURL(), base_url, ScriptFetchOptions(),
+      script_source, NullUrl(), base_url, ScriptFetchOptions(),
       ScriptSourceLocationType::kJavascriptUrl,
       SanitizeScriptErrors::kDoNotSanitize);
 

@@ -52,14 +52,14 @@ ValueWrapperSyntheticModuleScript::CreateCSSWrapperSyntheticModuleScript(
   style_sheet->SetIsForCSSModuleScript();
   if (try_catch.HasCaught()) {
     return ValueWrapperSyntheticModuleScript::CreateWithError(
-        v8::Local<v8::Value>(), settings_object, params.SourceURL(), KURL(),
+        v8::Local<v8::Value>(), settings_object, params.SourceURL(), NullUrl(),
         ScriptFetchOptions(), try_catch.Exception());
   }
   style_sheet->replaceSync(params.GetSourceText().ToString(),
                            PassThroughException(isolate));
   if (try_catch.HasCaught()) {
     return ValueWrapperSyntheticModuleScript::CreateWithError(
-        v8::Local<v8::Value>(), settings_object, params.SourceURL(), KURL(),
+        v8::Local<v8::Value>(), settings_object, params.SourceURL(), NullUrl(),
         ScriptFetchOptions(), try_catch.Exception());
   }
 
@@ -67,7 +67,7 @@ ValueWrapperSyntheticModuleScript::CreateCSSWrapperSyntheticModuleScript(
       ToV8Traits<CSSStyleSheet>::ToV8(script_state, style_sheet);
 
   return ValueWrapperSyntheticModuleScript::CreateWithDefaultExport(
-      v8_value_stylesheet, settings_object, params.SourceURL(), KURL(),
+      v8_value_stylesheet, settings_object, params.SourceURL(), NullUrl(),
       ScriptFetchOptions());
 }
 
@@ -115,11 +115,11 @@ ValueWrapperSyntheticModuleScript::CreateJSONWrapperSyntheticModuleScript(
       FromJSONString(script_state, params.GetSourceText().ToString(), origin);
   if (try_catch.HasCaught()) {
     return ValueWrapperSyntheticModuleScript::CreateWithError(
-        parsed_json, settings_object, params.SourceURL(), KURL(),
+        parsed_json, settings_object, params.SourceURL(), NullUrl(),
         ScriptFetchOptions(), try_catch.Exception());
   } else {
     return ValueWrapperSyntheticModuleScript::CreateWithDefaultExport(
-        parsed_json, settings_object, params.SourceURL(), KURL(),
+        parsed_json, settings_object, params.SourceURL(), NullUrl(),
         ScriptFetchOptions());
   }
 }

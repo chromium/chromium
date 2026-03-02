@@ -2384,7 +2384,7 @@ void ManifestParser::CheckIsolatedAppPermissions(const JSONObject* object) {
 
 std::optional<KURL> ManifestParser::ParseIsolatedAppUpdateManifestUrl(
     const JSONObject* object) {
-  KURL url = ParseURL(object, "update_manifest_url", /*base_url=*/KURL(),
+  KURL url = ParseURL(object, "update_manifest_url", /*base_url=*/NullUrl(),
                       ParseURLRestrictions::kNoRestrictions);
   if (!url.IsValid()) {
     return std::nullopt;
@@ -2761,7 +2761,7 @@ ManifestParser::MaybeCreatePatternInit(const JSONObject* pattern_object) {
   KURL base_url;
 
   if (pattern_object->Get("baseURL")) {
-    base_url = ParseURL(pattern_object, "baseURL", KURL(),
+    base_url = ParseURL(pattern_object, "baseURL", NullUrl(),
                         ParseURLRestrictions::kNoRestrictions);
     if (!base_url.IsValid()) {
       return std::nullopt;

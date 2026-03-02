@@ -18,8 +18,8 @@ namespace blink {
 NullResourceFetcherProperties::NullResourceFetcherProperties()
     : fetch_client_settings_object_(
           *MakeGarbageCollected<FetchClientSettingsObjectSnapshot>(
-              KURL(),
-              KURL(),
+              NullUrl(),
+              NullUrl(),
               nullptr /* security_origin */,
               network::mojom::ReferrerPolicy::kDefault,
               String(),

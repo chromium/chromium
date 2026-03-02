@@ -364,7 +364,7 @@ void WebAssociatedURLLoaderImpl::LoadAsynchronously(
 
   if (!observer_) {
     ReleaseClient()->DidFail(
-        WebURLError(ResourceError::CancelledError(KURL())));
+        WebURLError(ResourceError::CancelledError(NullUrl())));
     return;
   }
 
@@ -496,7 +496,8 @@ void WebAssociatedURLLoaderImpl::ContextDestroyed() {
   if (!client_)
     return;
 
-  ReleaseClient()->DidFail(WebURLError(ResourceError::CancelledError(KURL())));
+  ReleaseClient()->DidFail(
+      WebURLError(ResourceError::CancelledError(NullUrl())));
   // |this| may be dead here.
 }
 

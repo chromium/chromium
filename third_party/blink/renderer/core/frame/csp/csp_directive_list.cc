@@ -429,7 +429,7 @@ bool CheckEvalAndReportViolation(
   ReportEvalViolation(
       csp, policy, raw_directive, CSPDirectiveName::ScriptSrc,
       StrCat({console_message, "\"", raw_directive, "\".", suffix, "\n"}),
-      KURL(), exception_status,
+      NullUrl(), exception_status,
       directive.source_list->report_sample ? content_for_sample
                                            : g_empty_string,
       hash);
@@ -462,7 +462,7 @@ bool CheckWasmEvalAndReportViolation(
       GetRawDirectiveForMessage(csp.raw_directives, directive.type);
   ReportWasmEvalViolation(
       csp, policy, raw_directive, CSPDirectiveName::ScriptSrc,
-      StrCat({console_message, "\"", raw_directive, "\".", suffix}), KURL(),
+      StrCat({console_message, "\"", raw_directive, "\".", suffix}), NullUrl(),
       exception_status,
       directive.source_list->report_sample ? content : g_empty_string);
   if (!CSPDirectiveListIsReportOnly(csp)) {
@@ -551,7 +551,7 @@ bool CheckInlineAndReportViolation(
       StrCat({console_message,
               " violates the following Content Security Policy directive '",
               raw_directive, "'.", suffix}),
-      KURL(), context_url, context_line, element,
+      NullUrl(), context_url, context_line, element,
       directive.source_list->report_sample ? source : g_empty_string);
 
   if (!CSPDirectiveListIsReportOnly(csp)) {
@@ -745,7 +745,7 @@ bool CSPDirectiveListAllowTrustedTypeAssignmentFailure(
       csp, policy,
       ContentSecurityPolicy::GetDirectiveName(
           CSPDirectiveName::RequireTrustedTypesFor),
-      CSPDirectiveName::RequireTrustedTypesFor, message, KURL(),
+      CSPDirectiveName::RequireTrustedTypesFor, message, NullUrl(),
       ContentSecurityPolicyViolationType::kTrustedTypesSinkViolation, sample,
       sample_prefix, issue_id);
   return CSPDirectiveListIsReportOnly(csp);
@@ -1159,7 +1159,8 @@ bool CSPDirectiveListAllowTrustedTypePolicy(
                     raw_directive, "\"."});
   ReportViolation(
       csp, policy, "trusted-types", CSPDirectiveName::TrustedTypes, message,
-      KURL(), ContentSecurityPolicyViolationType::kTrustedTypesPolicyViolation,
+      NullUrl(),
+      ContentSecurityPolicyViolationType::kTrustedTypesPolicyViolation,
       policy_name, String(), issue_id);
 
   return CSPDirectiveListIsReportOnly(csp);

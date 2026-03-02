@@ -466,7 +466,7 @@ void WebPluginContainerImpl::Copy() {
 
   LocalFrame* frame = element_->GetDocument().GetFrame();
   frame->GetSystemClipboard()->WriteHTML(web_plugin_->SelectionAsMarkup(),
-                                         KURL());
+                                         NullUrl());
   String text = web_plugin_->SelectionAsText();
   ReplaceNBSPWithSpace(text);
   frame->GetSystemClipboard()->WritePlainText(text);

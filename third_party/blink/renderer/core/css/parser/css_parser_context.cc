@@ -71,7 +71,7 @@ CSSParserContext::CSSParserContext(const CSSParserContext* other,
 CSSParserContext::CSSParserContext(CSSParserMode mode,
                                    SecureContextMode secure_context_mode,
                                    const Document* use_counter_document)
-    : CSSParserContext(KURL(),
+    : CSSParserContext(NullUrl(),
                        true /* origin_clean */,
                        TextEncoding(),
                        mode,

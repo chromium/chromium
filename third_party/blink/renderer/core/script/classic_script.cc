@@ -131,8 +131,8 @@ ClassicScript* ClassicScript::CreateUnspecifiedScript(
     ScriptSourceLocationType source_location_type,
     SanitizeScriptErrors sanitize_script_errors) {
   return MakeGarbageCollected<ClassicScript>(
-      ParkableString(source_text.Impl()), KURL(), KURL(), ScriptFetchOptions(),
-      source_location_type, sanitize_script_errors);
+      ParkableString(source_text.Impl()), NullUrl(), NullUrl(),
+      ScriptFetchOptions(), source_location_type, sanitize_script_errors);
 }
 
 ClassicScript* ClassicScript::CreateUnspecifiedScript(
@@ -141,7 +141,7 @@ ClassicScript* ClassicScript::CreateUnspecifiedScript(
     ScriptStreamer* streamer) {
   return MakeGarbageCollected<ClassicScript>(
       ParkableString(String(source.code).Impl()),
-      StripFragmentIdentifier(source.url), KURL() /* base_url */,
+      StripFragmentIdentifier(source.url), NullUrl() /* base_url */,
       ScriptFetchOptions(), ScriptSourceLocationType::kUnknown,
       sanitize_script_errors, nullptr, TextPosition::MinimumPosition(),
       streamer, ScriptStreamer::NotStreamingReason::kInlineScript);

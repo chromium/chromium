@@ -3544,7 +3544,7 @@ static const CSSValue& ComputeRegisteredPropertyValue(
   }
 
   if (const auto* uri_value = DynamicTo<cssvalue::CSSURIValue>(value)) {
-    const KURL& base_url = context ? context->BaseURL() : KURL();
+    const KURL& base_url = context ? context->BaseURL() : NullUrl();
     const TextEncoding& charset = context ? context->Charset() : TextEncoding();
     return *uri_value->ComputedCSSValue(base_url, charset);
   }

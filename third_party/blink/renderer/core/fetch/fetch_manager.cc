@@ -1890,7 +1890,7 @@ FetchLaterManager::PrepareNetworkRequest(
 
   FetchManagerResourceRequestContext resource_request_context;
   if (PrepareResourceRequestForCacheAccess(
-          kFetchLaterResourceType, fetch_client_settings_object, KURL(),
+          kFetchLaterResourceType, fetch_client_settings_object, NullUrl(),
           resource_request_context, fetcher->Context(),
           params) != std::nullopt) {
     return nullptr;

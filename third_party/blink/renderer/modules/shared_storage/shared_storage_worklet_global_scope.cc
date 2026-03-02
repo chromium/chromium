@@ -1232,7 +1232,7 @@ void SharedStorageWorkletGlobalScope::OnModuleScriptDownloaded(
   ClassicScript* worker_script = ClassicScript::Create(
       String(*response_body),
       /*source_url=*/script_source_url,
-      /*base_url=*/KURL(), ScriptFetchOptions(),
+      /*base_url=*/NullUrl(), ScriptFetchOptions(),
       ScriptSourceLocationType::kUnknown, SanitizeScriptErrors::kSanitize,
       cached_metadata_handler);
 

@@ -1062,7 +1062,7 @@ Resource* ResourceFetcher::CreateResourceForStaticData(
       // TODO(crbug.com/475522251): update report URL once behavior is defined
       // in spec.
       Context().CheckGuardrailsPolicyForAssetSize(
-          GuardrailPolicyAssetType::kData, data->size(), KURL());
+          GuardrailPolicyAssetType::kData, data->size(), NullUrl());
     }
   } else {
     ArchiveResource* archive_resource =

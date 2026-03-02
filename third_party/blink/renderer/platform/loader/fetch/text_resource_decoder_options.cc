@@ -15,7 +15,7 @@ TextResourceDecoderOptions::TextResourceDecoderOptions(
                                  content_type,
                                  default_encoding,
                                  AtomicString(),
-                                 KURL()) {}
+                                 NullUrl()) {}
 
 TextResourceDecoderOptions TextResourceDecoderOptions::CreateUTF8Decode() {
   return TextResourceDecoderOptions(kAlwaysUseUTF8ForText, kPlainTextContent,

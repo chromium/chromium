@@ -980,7 +980,7 @@ static Document* CreateStagingDocumentForMarkupSanitization(
   // TODO(https://crbug.com/1355751) Initialize `storage_key`.
   frame->Init(/*opener=*/nullptr, DocumentToken(), /*policy_container=*/nullptr,
               StorageKey(), /*document_ukm_source_id=*/ukm::kInvalidSourceId,
-              /*creator_base_url=*/KURL());
+              /*creator_base_url=*/NullUrl());
 
   Document* document = frame->GetDocument();
   DCHECK(document);
@@ -1095,7 +1095,7 @@ String CreateStrictlyProcessedMarkupWithContext(
     last_markup = markup;
 
     DocumentFragment* fragment = CreateFragmentFromMarkupWithContext(
-        *staging_document, last_markup, fragment_start, fragment_end, KURL(),
+        *staging_document, last_markup, fragment_start, fragment_end, NullUrl(),
         kDisallowScriptingAndPluginContent);
     if (!fragment) {
       staging_document->GetPage()->WillBeDestroyed();
@@ -1151,7 +1151,7 @@ DocumentFragment* CreateStrictlyProcessedFragmentFromMarkupWithContext(
     unsigned fragment_end,
     const String& base_url) {
   String sanitized_markup = CreateStrictlyProcessedMarkupWithContext(
-      document, raw_markup, fragment_start, fragment_end, KURL());
+      document, raw_markup, fragment_start, fragment_end, NullUrl());
   if (sanitized_markup.IsNull())
     return nullptr;
   return CreateFragmentFromMarkup(document, sanitized_markup, base_url,

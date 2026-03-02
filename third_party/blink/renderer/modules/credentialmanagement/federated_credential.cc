@@ -61,7 +61,7 @@ FederatedCredential* FederatedCredential::Create(
     const String& name,
     const KURL& icon_url) {
   return MakeGarbageCollected<FederatedCredential>(
-      id, provider, name, icon_url.IsEmpty() ? blink::KURL() : icon_url);
+      id, provider, name, icon_url.IsEmpty() ? NullUrl() : icon_url);
 }
 
 FederatedCredential::FederatedCredential(

@@ -156,7 +156,7 @@ void ScheduledAction::Execute(ExecutionContext* context) {
   // TODO(crbug.com/1133238): Plumb base URL etc. from the initializing script.
   DVLOG(1) << "ScheduledAction::execute " << this << ": executing from source";
   ClassicScript* script =
-      ClassicScript::Create(code_, KURL(), KURL(), ScriptFetchOptions(),
+      ClassicScript::Create(code_, NullUrl(), NullUrl(), ScriptFetchOptions(),
                             ScriptSourceLocationType::kEvalForScheduledAction,
                             SanitizeScriptErrors::kDoNotSanitize);
   script->RunScriptOnScriptState(script_state);

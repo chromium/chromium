@@ -631,7 +631,7 @@ void HTMLIFrameElement::DidChangeAttributes() {
       ParseContentSecurityPolicies(
           required_csp_,
           network::mojom::blink::ContentSecurityPolicyType::kEnforce,
-          network::mojom::blink::ContentSecurityPolicySource::kHTTP, KURL());
+          network::mojom::blink::ContentSecurityPolicySource::kHTTP, NullUrl());
   DCHECK_LE(csp.size(), 1u);
 
   auto attributes = mojom::blink::IframeAttributes::New();
