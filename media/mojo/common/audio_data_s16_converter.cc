@@ -82,14 +82,13 @@ mojom::AudioDataS16Ptr AudioDataS16Converter::ConvertToAudioDataS16(
 
     channel_mixer_->Transform(&audio_bus, monaural_audio_bus_.get());
     monaural_audio_bus_->ToInterleaved<SignedInt16SampleTypeTraits>(
-        monaural_audio_bus_->frames(), &signed_buffer->data[0]);
+        signed_buffer->data);
 
     return signed_buffer;
   }
 
   signed_buffer->data.resize(audio_bus.frames() * audio_bus.channels());
-  audio_bus.ToInterleaved<SignedInt16SampleTypeTraits>(audio_bus.frames(),
-                                                       &signed_buffer->data[0]);
+  audio_bus.ToInterleaved<SignedInt16SampleTypeTraits>(signed_buffer->data);
 
   return signed_buffer;
 }
