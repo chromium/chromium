@@ -395,6 +395,11 @@ static bool ExtractBucketingValues(const CSSSelector* selector,
             values.has_slotted = true;
           }
           break;
+        case CSSSelector::kPseudoPicker:
+          if (selector->Argument() != "select") {
+            break;
+          }
+          [[fallthrough]];
         case CSSSelector::kPseudoPlaceholder:
         case CSSSelector::kPseudoDetailsContent:
         case CSSSelector::kPseudoPermissionIcon:
@@ -419,11 +424,6 @@ static bool ExtractBucketingValues(const CSSSelector* selector,
           break;
         case CSSSelector::kPseudoPart:
           values.part_name = selector->Value();
-          break;
-        case CSSSelector::kPseudoPicker:
-          if (selector->Argument() == "select") {
-            values.ua_shadow_pseudo = shadow_element_names::kPickerSelect;
-          }
           break;
         case CSSSelector::kPseudoIs:
         case CSSSelector::kPseudoWhere:

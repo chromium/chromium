@@ -1287,8 +1287,6 @@ crbug.com/359703395 external/wpt/css/css-shadow/host-has-002.tentative.html [ Fa
 crbug.com/359703395 external/wpt/css/css-shadow/host-has-003.tentative.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-shadow/part/animation-part.html [ Failure ]
 crbug.com/448972968 external/wpt/css/css-shadow/part/exportparts-layered.html [ Failure ]
-crbug.com/381910338 external/wpt/css/css-shadow/slotted-details-content.html [ Failure ]
-crbug.com/381910338 external/wpt/css/css-shadow/slotted-file-selector-button.html [ Failure ]
 crbug.com/393395931 external/wpt/css/css-shadow/slotted-has-001.html [ Failure ]
 crbug.com/393395931 external/wpt/css/css-shadow/slotted-has-002.html [ Failure ]
 crbug.com/393395931 external/wpt/css/css-shadow/slotted-has-003.html [ Failure ]
@@ -2887,12 +2885,10 @@ crbug.com/488080543 external/wpt/css/css-grid/grid-lanes/tentative/track-sizing/
 crbug.com/488080543 external/wpt/css/css-grid/grid-lanes/tentative/track-sizing/auto-repeat/intrinsic-auto-repeat/column-auto-repeat-auto-008.html [ Failure ]
 crbug.com/488080543 external/wpt/css/css-grid/grid-lanes/tentative/track-sizing/auto-repeat/intrinsic-auto-repeat/row-auto-repeat-auto-008.html [ Failure ]
 crbug.com/488080543 external/wpt/css/css-grid/grid-lanes/tentative/track-sizing/auto-repeat/row-auto-repeat-006.html [ Failure ]
-crbug.com/488072422 external/wpt/html/semantics/forms/the-select-element/customizable-select/picker-and-slotted-invalidation.html [ Failure Timeout ]
+crbug.com/488072422 external/wpt/html/semantics/forms/the-select-element/customizable-select/picker-and-slotted-invalidation.html [ Pass Timeout ]
 crbug.com/488072422 external/wpt/html/semantics/forms/the-select-element/customizable-select/select-vertical-writing-mode-navigation.optional.html [ Pass Timeout ]
 crbug.com/488072423 external/wpt/navigation-api/navigate-event/signal-abort-replaceState-crash.html [ Crash ]
 crbug.com/488080569 external/wpt/webdriver/tests/classic/get_element_shadow_root/get.py [ Failure ]
-crbug.com/488072422 virtual/customizable-select-listbox-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/picker-and-slotted-invalidation.html [ Failure ]
-crbug.com/488072422 virtual/option-mutation-observer-improvement-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/picker-and-slotted-invalidation.html [ Failure ]
 crbug.com/488072422 virtual/option-mutation-observer-improvement-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-vertical-writing-mode-navigation.optional.html [ Pass Timeout ]
 crbug.com/485394851 external/wpt/navigation-api/navigate-event/traverseTo-detach.html [ Crash ]
 crbug.com/484675900 [ Android ] external/wpt/webdriver/tests/classic/new_session/unhandled_prompt_behavior.py [ Timeout ]
@@ -6655,8 +6651,6 @@ crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/storage/partitioned-est
 
 # Flaky on headless_shell_wpt_tests
 crbug.com/40146374 external/wpt/html/semantics/forms/the-select-element/customizable-select/select-option-images.html [ Failure Pass ]
-
-crbug.com/366415131 external/wpt/html/semantics/forms/the-select-element/customizable-select/picker-and-slotted.html [ Failure ]
 
 crbug.com/357649033 virtual/customizable-select-listbox-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select-listbox/customizable-select-listbox-appearance.html [ Failure ]
 crbug.com/357649033 virtual/customizable-select-listbox-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select-listbox/customizable-select-listbox-keyboard-behavior.optional.html [ Failure ]

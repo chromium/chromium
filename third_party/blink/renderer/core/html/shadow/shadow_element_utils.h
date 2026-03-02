@@ -21,6 +21,7 @@ bool IsTextControlPlaceholder(const Node* node);
 namespace shadow_element_utils {
 
 const AtomicString& StringForUAShadowPseudoId(PseudoId pseudo_id);
+PseudoId PseudoIdForShadowElementName(const AtomicString& shadow_element_name);
 
 }  // namespace shadow_element_utils
 

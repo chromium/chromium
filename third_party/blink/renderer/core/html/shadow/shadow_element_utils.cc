@@ -66,6 +66,28 @@ const AtomicString& StringForUAShadowPseudoId(PseudoId pseudo_id) {
   }
 }
 
+PseudoId PseudoIdForShadowElementName(const AtomicString& shadow_element_name) {
+  if (shadow_element_name == g_null_atom) {
+    return kPseudoIdNone;
+  }
+  if (shadow_element_name == shadow_element_names::kPseudoInputPlaceholder) {
+    return kPseudoIdPlaceholder;
+  }
+  if (shadow_element_name == shadow_element_names::kPseudoFileUploadButton) {
+    return kPseudoIdFileSelectorButton;
+  }
+  if (shadow_element_name == shadow_element_names::kIdDetailsContent) {
+    return kPseudoIdDetailsContent;
+  }
+  if (shadow_element_name == shadow_element_names::kIdPermissionIcon) {
+    return kPseudoIdPermissionIcon;
+  }
+  if (shadow_element_name == shadow_element_names::kPickerSelect) {
+    return kPseudoIdPickerSelect;
+  }
+  return kPseudoIdNone;
+}
+
 }  // namespace shadow_element_utils
 
 }  // namespace blink

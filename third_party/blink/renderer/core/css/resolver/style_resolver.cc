@@ -108,6 +108,7 @@
 #include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
+#include "third_party/blink/renderer/core/html/shadow/shadow_element_utils.h"
 #include "third_party/blink/renderer/core/html/track/text_track.h"
 #include "third_party/blink/renderer/core/html/track/text_track_cue.h"
 #include "third_party/blink/renderer/core/html/track/vtt/vtt_cue.h"
@@ -740,15 +741,16 @@ void MatchSlottedRules(const Element&,
 void MatchSlottedRulesForUAHost(const Element& element,
                                 ElementRuleCollector& collector,
                                 StyleRuleUsageTracker* tracker) {
-  if (element.ShadowPseudoId() !=
-      shadow_element_names::kPseudoInputPlaceholder) {
+  if (shadow_element_utils::PseudoIdForShadowElementName(
+          element.ShadowPseudoId()) == kPseudoIdNone) {
     return;
   }
 
-  // We allow ::placeholder pseudo-element after ::slotted(). Since we are
-  // matching such pseudo-elements starting from inside the UA shadow DOM of
-  // the element having the placeholder, we need to match ::slotted rules from
-  // the scopes to which the placeholder's host element may be slotted.
+  // We allow UA shadow pseudo-elements such as ::placeholder after ::slotted().
+  // Since we are matching such pseudo-elements starting from inside the UA
+  // shadow DOM of the element having the placeholder, we need to match
+  // ::slotted rules from the scopes to which the placeholder's host element may
+  // be slotted.
   //
   // Example:
   //
