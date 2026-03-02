@@ -14,6 +14,7 @@
 #include "net/base/net_errors.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/base/url_util.h"
+#include "net/dns/canary_domain_service.h"
 #include "net/dns/host_resolver.h"
 #include "net/log/net_log_with_source.h"
 #include "url/gurl.h"
@@ -139,6 +140,11 @@ bool MappedHostResolver::IsHappyEyeballsV3Enabled() const {
 
 HostResolverManager* MappedHostResolver::GetManagerForTesting() {
   return impl_->GetManagerForTesting();
+}
+
+std::unique_ptr<CanaryDomainService>
+MappedHostResolver::CreateCanaryDomainService() {
+  return impl_->CreateCanaryDomainService();
 }
 
 }  // namespace net

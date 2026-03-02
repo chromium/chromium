@@ -886,6 +886,16 @@ bool MockHostResolverBase::IsHappyEyeballsV3Enabled() const {
   return base::FeatureList::IsEnabled(features::kHappyEyeballsV3);
 }
 
+std::unique_ptr<CanaryDomainService>
+MockHostResolverBase::CreateCanaryDomainService() {
+  if (!resolve_context_) {
+    return nullptr;
+  }
+
+  return std::make_unique<CanaryDomainService>(resolve_context_->AsSafeRef(),
+                                               weak_ptr_factory_.GetSafeRef());
+}
+
 int MockHostResolverBase::LoadIntoCache(
     std::variant<url::SchemeHostPort, HostPortPair> endpoint,
     const NetworkAnonymizationKey& network_anonymization_key,

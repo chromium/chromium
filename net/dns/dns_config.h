@@ -110,6 +110,10 @@ struct NET_EXPORT DnsConfig {
   // to DoH they are used in the order defined by
   // `net::ResolveContext::GetDohIterator`.
   std::vector<IPEndPoint> fallback_doh_nameservers;
+
+  // If true, DoH fallback servers are copied into `doh_config` should be used
+  // to send DNS queries over HTTPS.
+  bool should_perform_doh_fallback_upgrade = false;
 };
 
 }  // namespace net

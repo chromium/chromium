@@ -684,6 +684,15 @@ void ResolveContext::EmitDohAutoupgradeSuccessMetrics() {
   }
 }
 
+bool ResolveContext::IsDohFallbackProbeEnabled() const {
+  if (!current_session_) {
+    return false;
+  }
+  return current_session_->config().secure_dns_mode ==
+             SecureDnsMode::kAutomatic &&
+         current_session_->config().should_perform_doh_fallback_upgrade;
+}
+
 // static
 bool ResolveContext::ServerStatsToDohAvailability(
     const ResolveContext::ServerStats& stats) {

@@ -1022,6 +1022,15 @@ void NetworkContext::ActivateDohProbes() {
   doh_probes_request_ =
       url_request_context_->host_resolver()->CreateDohProbeRequest();
   doh_probes_request_->Start();
+
+  if (base::FeatureList::IsEnabled(
+          net::features::kProbeSecureDnsCanaryDomain)) {
+    net::HostResolver* primary_resolver = url_request_context_->host_resolver();
+    canary_domain_service_ = primary_resolver->CreateCanaryDomainService();
+    if (canary_domain_service_) {
+      canary_domain_service_->Start();
+    }
+  }
 }
 
 void NetworkContext::SetClient(

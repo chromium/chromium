@@ -138,6 +138,19 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
+<!-- LINT.IfChange(CanaryDomainResult) -->
+
+<enum name="CanaryDomainResult">
+  <int value="0" label="Unknown result"/>
+  <int value="1" label="Cancelled"/>
+  <int value="2" label="Positive"/>
+  <int value="3" label="Negative: NOERROR without records"/>
+  <int value="4" label="Negative: NXDOMAIN or other error"/>
+  <int value="5" label="Negative: other error"/>
+</enum>
+
+<!-- LINT.ThenChange(/net/dns/canary_domain_service.h:CanaryDomainResult) -->
+
 <enum name="CertificateChangeNotificationType">
   <int value="0" label="Trust"/>
   <int value="1" label="Client Cert"/>
@@ -417,6 +430,19 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(//net/dns/host_cache.h:EraseReason) -->
+
+<!-- LINT.IfChange(FallbackFromSecureTransactionPreferredReason) -->
+
+<enum name="FallbackFromSecureTransactionPreferredReason">
+  <int value="0" label="Fallback not preferred (secure DNS used)"/>
+  <int value="1"
+      label="Fallback preferred: cannot use secure DNS (empty DoH config)"/>
+  <int value="2" label="Fallback preferred: canary domain check pending"/>
+  <int value="3" label="Fallback preferred: canary domain check negative"/>
+  <int value="4" label="Fallback preferred: no available Doh servers"/>
+</enum>
+
+<!-- LINT.ThenChange(//net/dns/dns_client.cc:FallbackFromSecureTransactionPreferredReason) -->
 
 <enum name="HSTSRedirectUpgradeReason">
   <int value="0" label="URL not HTTP"/>

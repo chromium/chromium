@@ -21,6 +21,7 @@
 #include "net/base/host_port_pair.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_anonymization_key.h"
+#include "net/dns/canary_domain_service.h"
 #include "net/dns/context_host_resolver.h"
 #include "net/dns/dns_util.h"
 #include "net/dns/host_resolver.h"
@@ -391,6 +392,11 @@ base::DictValue StaleHostResolver::GetDnsConfigAsValue() const {
 std::unique_ptr<HostResolver::ProbeRequest>
 StaleHostResolver::CreateDohProbeRequest() {
   return inner_resolver_->CreateDohProbeRequest();
+}
+
+std::unique_ptr<CanaryDomainService>
+StaleHostResolver::CreateCanaryDomainService() {
+  return inner_resolver_->CreateCanaryDomainService();
 }
 
 void StaleHostResolver::SetRequestContext(URLRequestContext* request_context) {

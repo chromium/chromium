@@ -27,6 +27,7 @@
 #include "net/base/host_port_pair.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_change_notifier.h"
+#include "net/dns/canary_domain_service.h"
 #include "net/dns/context_host_resolver.h"
 #include "net/dns/dns_client.h"
 #include "net/dns/dns_util.h"
@@ -383,6 +384,12 @@ const URLRequestContext* HostResolver::GetContextForTesting() const {
 
 handles::NetworkHandle HostResolver::GetTargetNetworkForTesting() const {
   return handles::kInvalidNetworkHandle;
+}
+
+std::unique_ptr<CanaryDomainService> HostResolver::CreateCanaryDomainService() {
+  // Should be overridden in any HostResolver implementation where this method
+  // may be called.
+  NOTREACHED();
 }
 
 // static

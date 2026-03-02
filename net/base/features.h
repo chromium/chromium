@@ -775,6 +775,11 @@ NET_EXPORT BASE_DECLARE_FEATURE(kEnableBootstrapIPRandomizationForDoh);
 // lock-free certificate verification mechanism.
 NET_EXPORT BASE_DECLARE_FEATURE(kUseLockFreeX509Verification);
 
+// When enabled, at the same time that DoH probes are started, a canary domain
+// will be probed to check whether Secure DNS is allowed by the network.
+NET_EXPORT BASE_DECLARE_FEATURE(kProbeSecureDnsCanaryDomain);
+NET_EXPORT BASE_DECLARE_FEATURE_PARAM(std::string, kSecureDnsCanaryDomainHost);
+
 #if BUILDFLAG(IS_APPLE)
 // If enabled, the GURL conversion for NSURLs will use the data representation
 // of the URL if it differs from the absolute string.

@@ -19,6 +19,7 @@
 #include "net/dns/dns_test_util.h"
 #include "net/dns/public/dns_over_https_config.h"
 #include "net/dns/public/dns_protocol.h"
+#include "net/dns/public/doh_provider_entry.h"
 #include "net/dns/public/secure_dns_mode.h"
 #include "net/dns/resolve_context.h"
 #include "net/socket/socket_test_util.h"
@@ -265,7 +266,7 @@ TEST_F(DnsClientTest, AllAllowed) {
             ValidConfigWithDoh(false /* doh_only */));
 }
 
-TEST_F(DnsClientTest, FallbackFromInsecureTransactionPreferred_Failures) {
+TEST_F(DnsClientTest, FallbackFromSecureTransactionPreferred_Failures) {
   client_->SetInsecureEnabled(/*enabled=*/true,
                               /*additional_types_enabled=*/true);
   client_->SetSystemConfig(ValidConfigWithDoh(false /* doh_only */));
@@ -296,6 +297,54 @@ TEST_F(DnsClientTest, FallbackFromInsecureTransactionPreferred_Failures) {
   EXPECT_TRUE(client_->CanUseInsecureDnsTransactions());
   EXPECT_TRUE(client_->CanQueryAdditionalTypesViaInsecureDns());
   EXPECT_FALSE(client_->FallbackFromInsecureTransactionPreferred());
+}
+
+TEST_F(DnsClientTest,
+       FallbackFromSecureTransactionPreferred_CanaryDomainCheck) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {net::features::kProbeSecureDnsCanaryDomain,
+       net::features::kAddAutomaticWithDohFallbackMode},
+      {});
+
+  // 1. Set a config that has DoH fallback servers.
+  DnsConfig config = BasicValidConfig();
+  config.secure_dns_mode = SecureDnsMode::kAutomatic;
+  config.allow_dns_over_https_upgrade = true;
+  config.fallback_doh_nameservers = {IPEndPoint(GooglePublicDnsIp(), 53)};
+  client_->SetSystemConfig(config);
+
+  resolve_context_->InvalidateCachesAndPerSessionData(
+      client_->GetCurrentSession(), /*network_change=*/false);
+
+  // Canary domain check status is kNotStarted by default.
+  // Should prefer fallback since it's not kPositive.
+  EXPECT_TRUE(
+      client_->FallbackFromSecureTransactionPreferred(resolve_context_.get()));
+
+  // Now record a positive canary domain check.
+  resolve_context_->set_doh_fallback_canary_domain_check_status(
+      CanaryDomainCheckStatus::kPositive);
+
+  // Still prefers fallback because no DoH servers are available (successful).
+  EXPECT_TRUE(
+      client_->FallbackFromSecureTransactionPreferred(resolve_context_.get()));
+
+  // Record DoH probe success to make it "available".
+  resolve_context_->RecordServerSuccess(/*server_index=*/0u,
+                                        /*is_doh_server=*/true,
+                                        client_->GetCurrentSession());
+
+  // Now that it's positive AND available, it should NOT prefer fallback.
+  EXPECT_FALSE(
+      client_->FallbackFromSecureTransactionPreferred(resolve_context_.get()));
+
+  // If status becomes negative, it should prefer fallback again even if DoH is
+  // available.
+  resolve_context_->set_doh_fallback_canary_domain_check_status(
+      CanaryDomainCheckStatus::kNegative);
+  EXPECT_TRUE(
+      client_->FallbackFromSecureTransactionPreferred(resolve_context_.get()));
 }
 
 TEST_F(DnsClientTest, GetPresetAddrs) {

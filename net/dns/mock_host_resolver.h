@@ -20,6 +20,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/safe_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
@@ -31,6 +32,7 @@
 #include "net/base/host_port_pair.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_anonymization_key.h"
+#include "net/dns/canary_domain_service.h"
 #include "net/dns/host_resolver.h"
 #include "net/dns/host_resolver_proc.h"
 #include "net/dns/public/dns_query_type.h"
@@ -300,6 +302,7 @@ class MockHostResolverBase : public HostResolver {
   HostCache* GetHostCache() override;
   void SetRequestContext(URLRequestContext* request_context) override {}
   bool IsHappyEyeballsV3Enabled() const override;
+  std::unique_ptr<CanaryDomainService> CreateCanaryDomainService() override;
 
   // Preloads the cache with what would currently be the result of a request
   // with the given parameters. Returns the net error of the cached result.
@@ -413,6 +416,14 @@ class MockHostResolverBase : public HostResolver {
     tick_clock_ = tick_clock;
   }
 
+  base::SafeRef<MockHostResolverBase> AsSafeRef() {
+    return weak_ptr_factory_.GetSafeRef();
+  }
+
+  void SetResolveContextForTesting(ResolveContext* resolve_context) {
+    resolve_context_ = resolve_context;
+  }
+
  private:
   friend class MockHostResolver;
   friend class MockCachingHostResolver;
@@ -469,6 +480,8 @@ class MockHostResolverBase : public HostResolver {
   size_t next_request_id_ = 1;
 
   raw_ptr<const base::TickClock> tick_clock_;
+
+  raw_ptr<ResolveContext> resolve_context_;
 
   scoped_refptr<State> state_;
 

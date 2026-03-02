@@ -49,7 +49,9 @@ bool DnsConfig::EqualsIgnoreHosts(const DnsConfig& d) const {
          (doh_config == d.doh_config) &&
          (secure_dns_mode == d.secure_dns_mode) &&
          (allow_dns_over_https_upgrade == d.allow_dns_over_https_upgrade) &&
-         (fallback_doh_nameservers == d.fallback_doh_nameservers);
+         (fallback_doh_nameservers == d.fallback_doh_nameservers) &&
+         (should_perform_doh_fallback_upgrade ==
+          d.should_perform_doh_fallback_upgrade);
 }
 
 void DnsConfig::CopyIgnoreHosts(const DnsConfig& d) {
@@ -69,6 +71,7 @@ void DnsConfig::CopyIgnoreHosts(const DnsConfig& d) {
   secure_dns_mode = d.secure_dns_mode;
   allow_dns_over_https_upgrade = d.allow_dns_over_https_upgrade;
   fallback_doh_nameservers = d.fallback_doh_nameservers;
+  should_perform_doh_fallback_upgrade = d.should_perform_doh_fallback_upgrade;
 }
 
 base::DictValue DnsConfig::ToDict() const {
@@ -104,6 +107,8 @@ base::DictValue DnsConfig::ToDict() const {
     fallback_doh_nameserver_list.Append(nameserver.ToString());
   }
   dict.Set("fallback_doh_nameservers", std::move(fallback_doh_nameserver_list));
+  dict.Set("should_perform_doh_fallback_upgrade",
+           should_perform_doh_fallback_upgrade);
   return dict;
 }
 
