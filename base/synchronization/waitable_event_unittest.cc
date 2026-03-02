@@ -21,8 +21,21 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
+namespace {
+class WaitableEventTest : public testing::Test {
+ public:
+  WaitableEventTest() = default;
 
-TEST(WaitableEventTest, ManualBasics) {
+  WaitableEventTest(const WaitableEventTest&) = delete;
+  WaitableEventTest& operator=(const WaitableEventTest&) = delete;
+
+  ~WaitableEventTest() override {
+    internal::ResetThreadRestrictionsForTesting();
+  }
+};
+}  // anonymous namespace
+
+TEST_F(WaitableEventTest, ManualBasics) {
   WaitableEvent event(WaitableEvent::ResetPolicy::MANUAL,
                       WaitableEvent::InitialState::NOT_SIGNALED);
 
@@ -41,7 +54,7 @@ TEST(WaitableEventTest, ManualBasics) {
   EXPECT_TRUE(event.TimedWait(Milliseconds(10)));
 }
 
-TEST(WaitableEventTest, ManualInitiallySignaled) {
+TEST_F(WaitableEventTest, ManualInitiallySignaled) {
   WaitableEvent event(WaitableEvent::ResetPolicy::MANUAL,
                       WaitableEvent::InitialState::SIGNALED);
 
@@ -60,7 +73,7 @@ TEST(WaitableEventTest, ManualInitiallySignaled) {
   EXPECT_TRUE(event.IsSignaled());
 }
 
-TEST(WaitableEventTest, AutoBasics) {
+TEST_F(WaitableEventTest, AutoBasics) {
   WaitableEvent event(WaitableEvent::ResetPolicy::AUTOMATIC,
                       WaitableEvent::InitialState::NOT_SIGNALED);
 
@@ -82,7 +95,7 @@ TEST(WaitableEventTest, AutoBasics) {
   EXPECT_TRUE(event.TimedWait(Milliseconds(10)));
 }
 
-TEST(WaitableEventTest, AutoInitiallySignaled) {
+TEST_F(WaitableEventTest, AutoInitiallySignaled) {
   WaitableEvent event(WaitableEvent::ResetPolicy::AUTOMATIC,
                       WaitableEvent::InitialState::SIGNALED);
 
@@ -95,7 +108,7 @@ TEST(WaitableEventTest, AutoInitiallySignaled) {
   EXPECT_FALSE(event.IsSignaled());
 }
 
-TEST(WaitableEventTest, WaitManyShortcut) {
+TEST_F(WaitableEventTest, WaitManyShortcut) {
   WaitableEvent* ev[5];
   for (auto*& i : ev) {
     i = new WaitableEvent(WaitableEvent::ResetPolicy::AUTOMATIC,
@@ -119,7 +132,7 @@ TEST(WaitableEventTest, WaitManyShortcut) {
   }
 }
 
-TEST(WaitableEventTest, WaitManyLeftToRight) {
+TEST_F(WaitableEventTest, WaitManyLeftToRight) {
   std::array<WaitableEvent*, 5> ev;
   for (auto*& i : ev) {
     i = new WaitableEvent(WaitableEvent::ResetPolicy::AUTOMATIC,
@@ -173,7 +186,7 @@ class WaitableEventSignaler : public PlatformThread::Delegate {
 
 // Tests that a WaitableEvent can be safely deleted when |Wait| is done without
 // additional synchronization.
-TEST(WaitableEventTest, WaitAndDelete) {
+TEST_F(WaitableEventTest, WaitAndDelete) {
   WaitableEvent* ev =
       new WaitableEvent(WaitableEvent::ResetPolicy::AUTOMATIC,
                         WaitableEvent::InitialState::NOT_SIGNALED);
@@ -192,7 +205,7 @@ TEST(WaitableEventTest, WaitAndDelete) {
 
 // Tests that a WaitableEvent can be safely deleted when |WaitMany| is done
 // without additional synchronization.
-TEST(WaitableEventTest, WaitMany) {
+TEST_F(WaitableEventTest, WaitMany) {
   WaitableEvent* ev[5];
   for (auto*& i : ev) {
     i = new WaitableEvent(WaitableEvent::ResetPolicy::AUTOMATIC,
@@ -216,7 +229,7 @@ TEST(WaitableEventTest, WaitMany) {
 
 // Tests that using TimeDelta::Max() on TimedWait() is not the same as passing
 // a timeout of 0. (crbug.com/465948)
-TEST(WaitableEventTest, TimedWait) {
+TEST_F(WaitableEventTest, TimedWait) {
   WaitableEvent* ev =
       new WaitableEvent(WaitableEvent::ResetPolicy::AUTOMATIC,
                         WaitableEvent::InitialState::NOT_SIGNALED);
@@ -237,7 +250,7 @@ TEST(WaitableEventTest, TimedWait) {
 }
 
 // Tests that a sub-ms TimedWait doesn't time out promptly.
-TEST(WaitableEventTest, SubMsTimedWait) {
+TEST_F(WaitableEventTest, SubMsTimedWait) {
   WaitableEvent ev(WaitableEvent::ResetPolicy::AUTOMATIC,
                    WaitableEvent::InitialState::NOT_SIGNALED);
 
@@ -249,7 +262,7 @@ TEST(WaitableEventTest, SubMsTimedWait) {
 
 // Tests that timeouts of zero return immediately (true if already signaled,
 // false otherwise).
-TEST(WaitableEventTest, ZeroTimeout) {
+TEST_F(WaitableEventTest, ZeroTimeout) {
   WaitableEvent ev;
   TimeTicks start_time = TimeTicks::Now();
   EXPECT_FALSE(ev.TimedWait(TimeDelta()));
@@ -263,7 +276,7 @@ TEST(WaitableEventTest, ZeroTimeout) {
 
 // Tests that TimedWait() doesn't instantiate a ScopedBlockingCall if the
 // WaitableEvent is already signaled.
-TEST(WaitableEventTest, TimedWaitDoesNotBlockIfAlreadySignaled) {
+TEST_F(WaitableEventTest, TimedWaitDoesNotBlockIfAlreadySignaled) {
   WaitableEvent event(WaitableEvent::ResetPolicy::MANUAL,
                       WaitableEvent::InitialState::SIGNALED);
 
@@ -277,7 +290,7 @@ TEST(WaitableEventTest, TimedWaitDoesNotBlockIfAlreadySignaled) {
 
 // Verifies the suggestion that AssertBaseSyncPrimitivesAllowed() is called even
 // if the event is already signaled and the wait skipped.
-TEST(WaitableEventTest, TimedWaitRespectsRestrictionsEvenIfSignaled) {
+TEST_F(WaitableEventTest, TimedWaitRespectsRestrictionsEvenIfSignaled) {
   WaitableEvent event(WaitableEvent::ResetPolicy::MANUAL,
                       WaitableEvent::InitialState::SIGNALED);
   DisallowBaseSyncPrimitives();
@@ -285,7 +298,7 @@ TEST(WaitableEventTest, TimedWaitRespectsRestrictionsEvenIfSignaled) {
 }
 
 // Same as ZeroTimeout for negative timeouts.
-TEST(WaitableEventTest, NegativeTimeout) {
+TEST_F(WaitableEventTest, NegativeTimeout) {
   WaitableEvent ev;
   TimeTicks start_time = TimeTicks::Now();
   EXPECT_FALSE(ev.TimedWait(Milliseconds(-10)));
