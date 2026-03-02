@@ -106,6 +106,14 @@
   [_containerViewController setDetents:detents];
 }
 
+- (void)animateAssistantContainerToDetent:(NSString*)detentIdentifier
+                                 duration:(NSTimeInterval)duration
+                                    curve:(UIViewAnimationCurve)curve {
+  [_containerViewController animateToDetent:detentIdentifier
+                                   duration:duration
+                                      curve:curve];
+}
+
 - (void)dismissAssistantContainerAnimated:(BOOL)animated
                                completion:(ProceduralBlock)completion {
   if (!_containerViewController) {

@@ -29,6 +29,12 @@
 // The delegate for the container events.
 @property(nonatomic, weak) id<AssistantContainerDelegate> delegate;
 
+// Animates the container to a specific detent identified by `detentIdentifier`.
+// If the identifier is not found, acts as a no-op.
+- (void)animateToDetent:(NSString*)detentIdentifier
+               duration:(NSTimeInterval)duration
+                  curve:(UIViewAnimationCurve)curve;
+
 // Default initializer.
 - (instancetype)initWithViewController:(UIViewController*)viewController
     NS_DESIGNATED_INITIALIZER;

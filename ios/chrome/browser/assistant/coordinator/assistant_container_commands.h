@@ -31,6 +31,12 @@
 - (void)setAssistantContainerDetents:
     (NSArray<AssistantContainerDetent*>*)detents;
 
+// Animates the container to a specific detent identified by `detentIdentifier`.
+// If the identifier is not found, acts as a no-op.
+- (void)animateAssistantContainerToDetent:(NSString*)detentIdentifier
+                                 duration:(NSTimeInterval)duration
+                                    curve:(UIViewAnimationCurve)curve;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_ASSISTANT_COORDINATOR_ASSISTANT_CONTAINER_COMMANDS_H_

@@ -165,4 +165,42 @@ TEST_F(AssistantContainerViewControllerTest, DelegateAllowsPanGesture) {
   EXPECT_OCMOCK_VERIFY(delegate_mock);
 }
 
+// Tests that passing an invalid identifier to animateToDetent is safely
+// ignored.
+TEST_F(AssistantContainerViewControllerTest, AnimateToDetentInvalidIdentifier) {
+  [view_controller_ setDetents:@[ minimized_detent_, large_detent_ ]];
+
+  CGFloat initial_height = view_controller_.heightConstraint.constant;
+
+  // Attempt to animate to a non-existent detent.
+  [view_controller_ animateToDetent:@"invalid_detent_id"
+                           duration:0.0
+                              curve:UIViewAnimationCurveEaseInOut];
+
+  // The height should remain unchanged.
+  EXPECT_EQ(initial_height, view_controller_.heightConstraint.constant);
+}
+
+// Tests that passing a valid identifier updates the height constraint.
+TEST_F(AssistantContainerViewControllerTest, AnimateToDetentValid) {
+  [view_controller_ setDetents:@[ minimized_detent_, large_detent_ ]];
+
+  id delegate_mock =
+      OCMStrictProtocolMock(@protocol(AssistantContainerDelegate));
+  view_controller_.delegate = delegate_mock;
+
+  // Expect the delegate to be notified of the detent change.
+  OCMExpect([delegate_mock assistantContainer:view_controller_
+                              didChangeDetent:large_detent_]);
+
+  [view_controller_ animateToDetent:large_detent_.identifier
+                           duration:0.0
+                              curve:UIViewAnimationCurveEaseInOut];
+
+  // Height constraint should now be exactly the large detent value.
+  EXPECT_EQ(300.0, view_controller_.heightConstraint.constant);
+
+  EXPECT_OCMOCK_VERIFY(delegate_mock);
+}
+
 }  // namespace

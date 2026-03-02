@@ -110,6 +110,58 @@ constexpr CGFloat kGestureTopAreaHeight = 44.0;
   _hasAppeared = YES;
 }
 
+#pragma mark - Public
+
+- (void)animateToDetent:(NSString*)detentIdentifier
+               duration:(NSTimeInterval)duration
+                  curve:(UIViewAnimationCurve)curve {
+  AssistantContainerDetent* matchedDetent = nil;
+  for (AssistantContainerDetent* detent in self.detents) {
+    if ([detent.identifier isEqualToString:detentIdentifier]) {
+      matchedDetent = detent;
+      break;
+    }
+  }
+
+  if (!matchedDetent) {
+    return;
+  }
+
+  NSInteger maxHeight = [self effectiveMaxHeight];
+  NSInteger minHeight = [self effectiveMinHeight];
+  NSInteger targetHeight =
+      std::clamp(matchedDetent.value, minHeight, maxHeight);
+
+  _heightConstraint.constant = targetHeight;
+  _hasUserResized = YES;
+
+  // The shift converts an animation curve to animation options.
+  // `UIViewAnimationOptionBeginFromCurrentState` ensures that if an animation
+  // is already running, the new animation smoothly interrupts it from its
+  // current position rather than snapping to the end state.
+  UIViewAnimationOptions options =
+      curve << 16 | UIViewAnimationOptionBeginFromCurrentState;
+
+  if (duration <= 0) {
+    self.isAnimating = YES;
+    [self.view.superview layoutIfNeeded];
+    [self didCompleteDetentAnimationWithDetent:matchedDetent];
+    return;
+  }
+
+  self.isAnimating = YES;
+  __weak __typeof(self) weakSelf = self;
+  [UIView animateWithDuration:duration
+      delay:0
+      options:options
+      animations:^{
+        [weakSelf.view.superview layoutIfNeeded];
+      }
+      completion:^(BOOL finished) {
+        [weakSelf didCompleteDetentAnimationWithDetent:matchedDetent];
+      }];
+}
+
 #pragma mark - Properties
 
 - (void)setIsAnimating:(BOOL)isAnimating {
@@ -160,6 +212,15 @@ constexpr CGFloat kGestureTopAreaHeight = 44.0;
   _headerPanGesture.delegate = self;
   [self.view addGestureRecognizer:_headerPanGesture];
   [self updatePanGestureEnabledState];
+}
+
+// Called when the animation to a detent completes.
+- (void)didCompleteDetentAnimationWithDetent:(AssistantContainerDetent*)detent {
+  self.isAnimating = NO;
+  if ([self.delegate respondsToSelector:@selector(assistantContainer:
+                                                     didChangeDetent:)]) {
+    [self.delegate assistantContainer:self didChangeDetent:detent];
+  }
 }
 
 // Updates the pan gesture enabled state based on animation and detents.
