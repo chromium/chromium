@@ -10,10 +10,13 @@ source_set("storage") {
     "accessibility_annotator_backend.h",
     "accessibility_annotator_database.cc",
     "accessibility_annotator_database.h",
+    "intent_table.cc",
+    "intent_table.h",
   ]
 
   public_deps = [
     "//base",
+    "//components/history/core/browser",
     "//components/keyed_service/core",
     "//components/sync/base",
     "//components/sync/model",

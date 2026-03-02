@@ -35,6 +35,7 @@ source_set("unit_tests") {
     "direct_server_entity_provider_unittest.cc",
     "storage/accessibility_annotation_sync_bridge_unittest.cc",
     "storage/accessibility_annotator_database_unittest.cc",
+    "storage/intent_table_unittest.cc",
   ]
 
   deps = [
