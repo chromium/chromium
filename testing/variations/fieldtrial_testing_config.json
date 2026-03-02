@@ -8552,12 +8552,8 @@
             "experiments": [
                 {
                     "name": "Enabled",
-                    "params": {
-                        "Value": "l2_enabled"
-                    },
                     "enable_features": [
                         "DeviceBoundSessionsForRestrictedSites",
-                        "DeviceBoundSessionsForRestrictedSitesExperimentId",
                         "EnableOAuthMultiloginStandardCookiesBinding",
                         "UseUnexportableKeyServiceInBrowserProcess"
                     ]
