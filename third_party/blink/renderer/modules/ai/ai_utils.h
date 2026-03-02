@@ -7,6 +7,7 @@
 
 #include "base/check_op.h"
 #include "base/types/expected.h"
+#include "base/values.h"
 #include "third_party/blink/public/mojom/ai/ai_common.mojom-blink.h"
 #include "third_party/blink/public/mojom/ai/ai_language_model.mojom-blink.h"
 #include "third_party/blink/public/mojom/ai/ai_proofreader.mojom-blink.h"
@@ -14,6 +15,7 @@
 #include "third_party/blink/public/mojom/ai/ai_summarizer.mojom-blink.h"
 #include "third_party/blink/public/mojom/ai/ai_writer.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_language_model_expected.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_proofreader_create_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rewriter_create_options.h"
@@ -28,9 +30,16 @@
 namespace blink {
 
 class LanguageModelCreateCoreOptions;
+class LanguageModelMessageContent;
 class LocalDOMWindow;
+class ScriptState;
 
 static constexpr uint64_t kNormalizedDownloadProgressMax = 0x10000;
+
+// Checks if a base::Value contains any Type::NONE values.
+// V8ValueConverter returns Type::NONE for circular references and unsupported
+// types embedded within dictionaries/lists.
+MODULES_EXPORT bool ContainsNoneType(const base::Value& value);
 
 // Converts string language codes to AILanguageCode mojo struct.
 Vector<mojom::blink::AILanguageCodePtr> ToMojoLanguageCodes(
@@ -68,6 +77,14 @@ mojom::blink::AIProofreaderCreateOptionsPtr ToMojoProofreaderCreateOptions(
 // Convert language model expected inputs or outputs to the matching mojo type.
 Vector<mojom::blink::AILanguageModelExpectedPtr> ToMojoExpectations(
     const HeapVector<Member<LanguageModelExpected>>& expected);
+
+// Converts a vector of ToolCall mojo structs to a vector of
+// LanguageModelMessageContent with type "tool-call".
+// Exceptions are reported via exception_state if tool call creation fails.
+HeapVector<Member<LanguageModelMessageContent>> ConvertMojoToolCallsToMessages(
+    ScriptState* script_state,
+    const Vector<mojom::blink::ToolCallPtr>& tool_calls,
+    ExceptionState& exception_state);
 
 // Implementation of LookupMatchingLocaleByBestFit
 // (https://tc39.es/ecma402/#sec-lookupmatchinglocalebybestfit) as

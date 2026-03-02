@@ -51,6 +51,11 @@ void AITestUtils::TestStreamingResponder::OnContextOverflow() {
   context_overflow_run_loop_.Quit();
 }
 
+void AITestUtils::TestStreamingResponder::OnToolCalls(
+    std::vector<blink::mojom::ToolCallPtr> tool_calls) {
+  NOTREACHED() << "OnToolCalls not implemented in browser-side test helper yet";
+}
+
 AITestUtils::AITestBase::AITestBase()
     : ChromeRenderViewHostTestHarness(
           base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}

@@ -2251,7 +2251,10 @@ _CONFIG = [
             'third_party/blink/renderer/modules/ai/',
         ],
         'allowed': [
+            'base::DictValue',
+            'base::ListValue',
             'base::MakeFixedFlatSet',
+            'base::Value',
         ],
     },
     {
