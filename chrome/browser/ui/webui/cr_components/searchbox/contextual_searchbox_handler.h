@@ -167,9 +167,6 @@ class ContextualSearchboxHandler
     return context_input_data_;
   }
 
-  // SearchboxHandler:
-  omnibox::InputState GetInputState() const override;
-
   std::vector<base::UnguessableToken> GetUploadedContextTokens();
 
   contextual_search::InputStateModel* input_state_model() {
@@ -188,6 +185,9 @@ class ContextualSearchboxHandler
   }
 
  protected:
+  // SearchboxHandler:
+  omnibox::InputState GetInputState() const override;
+
   void ComputeAndOpenQueryUrl(
       const std::string& query_text,
       WindowOpenDisposition disposition,
@@ -278,9 +278,6 @@ class ContextualSearchboxHandler
       context_controller_;
 
   std::optional<lens::ContextualInputData> context_input_data_;
-
-  std::unique_ptr<contextual_search::InputState> input_state_;
-
 
   // Callback to get the contextual session handle from WebUI controller.
   GetSessionHandleCallback get_session_callback_;
