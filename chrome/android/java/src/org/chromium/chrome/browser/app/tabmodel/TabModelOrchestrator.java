@@ -250,11 +250,13 @@ public class TabModelOrchestrator {
     public void clearState() {
         assertInitialized();
         if (!mTabPersistentStoreDestroyedEarly) {
+            assert mStoresInitialized;
             mTabPersistentStore.clearState();
             if (mShadowTabPersistentStore != null) {
                 mShadowTabPersistentStore.clearState();
             }
             if (mMigrationManager != null) mMigrationManager.onAllStoresRazed();
+            PersistentStoreCleaner.cleanAllWindowsForUnavailableStores(this);
         }
     }
 

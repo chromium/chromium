@@ -5,7 +5,9 @@
 package org.chromium.chrome.browser.app.tabmodel;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -26,6 +28,7 @@ import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager.TabModelStartupInfo;
+import org.chromium.chrome.browser.tab.TabStateStorageServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorBase;
 import org.chromium.chrome.browser.tabmodel.TabPersistencePolicy;
@@ -172,6 +175,12 @@ public class TabModelOrchestratorUnitTest {
     @Test
     @SmallTest
     public void testClearState() {
+        when(mMockTabModel.getProfile()).thenReturn(mock());
+        TabStateStorageServiceFactory.setForTesting(mock());
+
+        mTabModelOrchestrator.markStoresInitialized();
+        assertTrue(mTabModelOrchestrator.areStoresInitialized());
+
         mTabModelOrchestrator.clearState();
         verify(mMockTabPersistentStore).clearState();
         verify(mMockShadowPersistentStore).clearState();

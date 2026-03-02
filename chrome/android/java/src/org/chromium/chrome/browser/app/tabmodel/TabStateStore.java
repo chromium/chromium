@@ -380,8 +380,13 @@ public class TabStateStore implements TabPersistentStore {
         assertInitialized();
 
         // Clearing the state globally is intentional.
-        mTabStateStorageService.clearState();
-        TabCountTracker.clearGlobalState();
+        Profile profile = mTabModelSelector.getModel(/* incognito= */ false).getProfile();
+        assert profile != null;
+        TabStateStoreCleaner.clearState(profile);
+
+        for (TabPersistentStoreObserver observer : mObservers) {
+            observer.onStateLoaded();
+        }
     }
 
     private void cancelLoadingTabs(boolean incognito) {
@@ -648,6 +653,18 @@ public class TabStateStore implements TabPersistentStore {
      * state when a {@link TabStateStore} instance does not exist for the calling window.
      */
     public static class TabStateStoreCleaner {
+        /**
+         * Fully clears the persisted state for all windows.
+         *
+         * @param profile The profile associated with the window.
+         */
+        public static void clearState(Profile profile) {
+            TabStateStorageService service = TabStateStorageServiceFactory.getForProfile(profile);
+            assert service != null;
+            service.clearState();
+            TabCountTracker.clearGlobalState();
+        }
+
         /**
          * Cleans up the state file for a given window.
          *

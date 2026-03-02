@@ -47,6 +47,16 @@ public class PersistentStoreCleaner {
     }
 
     /**
+     * Clears all persisted state for all {@link TabPersistentStore}s.
+     *
+     * @param orchestrator Used to determine the active store types and provide access to the
+     *     profile.
+     */
+    public static void cleanAllWindowsForUnavailableStores(TabModelOrchestrator orchestrator) {
+        new PersistentStoreCleaner(orchestrator).clearState();
+    }
+
+    /**
      * Cleans up a specific window's tab state for {@link TabPersistentStore}s that are not
      * available in the calling window.
      *
@@ -97,5 +107,27 @@ public class PersistentStoreCleaner {
         @StoreType Integer shadowStoreType = mTabModelOrchestrator.getShadowStoreType();
         return !Objects.equals(authoritativeStoreType, type)
                 && !Objects.equals(shadowStoreType, type);
+    }
+
+    private void clearState() {
+        if (storeDoesNotExist(StoreType.LEGACY)) {
+            TabPersistentStoreImplCleaner.clearState(mPersistencePolicy, mSequencedTaskRunner);
+        }
+
+        if (storeDoesNotExist(StoreType.TAB_STATE_STORE)) {
+            maybeClearTabStateStore();
+        }
+    }
+
+    private void maybeClearTabStateStore() {
+        if (!mTabStorageEnabled) return;
+
+        TabModelSelectorBase selector = mTabModelOrchestrator.getTabModelSelector();
+        assert selector != null;
+
+        Profile profile = selector.getModel(/* incognito= */ false).getProfile();
+        assert profile != null;
+
+        TabStateStoreCleaner.clearState(profile);
     }
 }

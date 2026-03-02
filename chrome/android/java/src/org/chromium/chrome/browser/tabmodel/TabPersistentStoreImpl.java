@@ -877,33 +877,7 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
 
     @Override
     public void clearState() {
-        mPersistencePolicy.cancelCleanupInProgress();
-
-        mSequencedTaskRunner.execute(
-                () -> {
-                    File[] baseStateFiles =
-                            TabStateDirectory.getOrCreateBaseStateDirectory().listFiles();
-                    if (baseStateFiles == null) return;
-                    for (File baseStateFile : baseStateFiles) {
-                        // In legacy scenarios (prior to migration, state files could reside in
-                        // the root state directory. So, handle deleting direct child files as
-                        // well as those that reside in sub directories.
-                        if (!baseStateFile.isDirectory()) {
-                            if (!baseStateFile.delete()) {
-                                Log.e(TAG, "Failed to delete file: " + baseStateFile);
-                            }
-                        } else {
-                            File[] files = baseStateFile.listFiles();
-                            if (files == null) continue;
-                            for (File file : files) {
-                                if (!file.delete()) {
-                                    Log.e(TAG, "Failed to delete file: " + file);
-                                }
-                            }
-                        }
-                    }
-                });
-
+        TabPersistentStoreImplCleaner.clearState(mPersistencePolicy, mSequencedTaskRunner);
         onStateLoaded();
     }
 
@@ -2035,6 +2009,42 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
      * up state when a {@link TabPersistentStore} instance does not exist for the calling window.
      */
     public static class TabPersistentStoreImplCleaner {
+        /**
+         * Fully clears the persisted state for all windows.
+         *
+         * @param persistencePolicy The policy used to manage persistence.
+         * @param sequencedTaskRunner The task runner to execute file operations on.
+         */
+        public static void clearState(
+                TabPersistencePolicy persistencePolicy, SequencedTaskRunner sequencedTaskRunner) {
+            persistencePolicy.cancelCleanupInProgress();
+
+            sequencedTaskRunner.execute(
+                    () -> {
+                        File[] baseStateFiles =
+                                TabStateDirectory.getOrCreateBaseStateDirectory().listFiles();
+                        if (baseStateFiles == null) return;
+                        for (File baseStateFile : baseStateFiles) {
+                            // In legacy scenarios (prior to migration, state files could reside in
+                            // the root state directory. So, handle deleting direct child files as
+                            // well as those that reside in sub directories.
+                            if (!baseStateFile.isDirectory()) {
+                                if (!baseStateFile.delete()) {
+                                    Log.e(TAG, "Failed to delete file: " + baseStateFile);
+                                }
+                            } else {
+                                File[] files = baseStateFile.listFiles();
+                                if (files == null) continue;
+                                for (File file : files) {
+                                    if (!file.delete()) {
+                                        Log.e(TAG, "Failed to delete file: " + file);
+                                    }
+                                }
+                            }
+                        }
+                    });
+        }
+
         /**
          * Cleans up the persistent state for a given window. May only be called when a {@link
          * TabPersistentStoreImpl} instance for the calling window does not exist.
