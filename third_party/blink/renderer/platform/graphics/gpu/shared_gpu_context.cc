@@ -320,7 +320,13 @@ void SharedGpuContext::
 }
 
 bool SharedGpuContext::OverlaysSupportedForCanvas2D() {
-  return MaySupportImageChromium() && Canvas2dImageChromiumEnabled();
+#if BUILDFLAG(IS_APPLE)
+  // If canvas2D SIs will be backed by IOSurfaces, we want them to go into
+  // overlays to exploit delegated compositing.
+  return Canvas2DSharedImagesBackedByIOSurface();
+#else
+  return false;
+#endif
 }
 
 void SharedGpuContext::SetLowLatencyUsageSupportedForCanvas2DForTesting(
