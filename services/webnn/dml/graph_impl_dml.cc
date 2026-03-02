@@ -4,11 +4,6 @@
 
 #include "services/webnn/dml/graph_impl_dml.h"
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/349653202): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <winerror.h>
 
 #include <algorithm>
@@ -20,6 +15,7 @@
 
 #include "base/bits.h"
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
@@ -326,9 +322,9 @@ UploadAndCreateConstantBufferBinding(
     // Copy the input data to the upload heap with byte offset
     const auto& d3d12_range =
         aligned_byte_length.key_to_d3d12_range_map.at(operand_id);
-    auto mapped_buffer_span =
+    auto mapped_buffer_span = UNSAFE_TODO(
         base::span(static_cast<uint8_t*>(mapped_buffer) + d3d12_range.Begin,
-                   constant_operand->descriptor().PackedByteLength());
+                   constant_operand->descriptor().PackedByteLength()));
     mapped_buffer_span.copy_from(constant_operand->ByteSpan());
     // Create the buffer binding for each constant/input and push back into the
     // DML_BUFFER_BINDING array.

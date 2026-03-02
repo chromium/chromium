@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "services/proxy_resolver_win/windows_system_proxy_resolver_impl.h"
 
 #include <windows.h>
@@ -18,6 +13,7 @@
 #include <string>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -109,8 +105,8 @@ void CopySettingToIEProxyConfigString(const std::wstring& setting,
   // zero-initializes the memory when using the GPTR flag.
   *ie_proxy_config_string = static_cast<LPWSTR>(
       GlobalAlloc(GPTR, sizeof(wchar_t) * (setting.length() + 1)));
-  memcpy(*ie_proxy_config_string, setting.data(),
-         sizeof(wchar_t) * setting.length());
+  UNSAFE_TODO(memcpy(*ie_proxy_config_string, setting.data(),
+                     sizeof(wchar_t) * setting.length()));
 }
 
 // This class will internally validate behavior that MUST be present in the code
@@ -282,7 +278,7 @@ class MockWinHttpAPIWrapper final : public WinHttpAPIWrapper {
   void AddBypassToProxyResults() {
     ASSERT_LT(proxy_result_.cEntries, kMaxProxyEntryLimit - 1);
     AllocateProxyResultEntriesIfNeeded();
-    proxy_result_.pEntries[proxy_result_.cEntries].fBypass = TRUE;
+    UNSAFE_TODO(proxy_result_.pEntries[proxy_result_.cEntries]).fBypass = TRUE;
     proxy_result_.cEntries++;
   }
   void AddDirectToProxyResults() {
@@ -299,10 +295,13 @@ class MockWinHttpAPIWrapper final : public WinHttpAPIWrapper {
     proxy_list_.push_back(std::move(proxy_host));
     wchar_t* proxy_host_raw = const_cast<wchar_t*>(proxy_list_.back().data());
 
-    proxy_result_.pEntries[proxy_result_.cEntries].fProxy = TRUE;
-    proxy_result_.pEntries[proxy_result_.cEntries].ProxyScheme = scheme;
-    proxy_result_.pEntries[proxy_result_.cEntries].pwszProxy = proxy_host_raw;
-    proxy_result_.pEntries[proxy_result_.cEntries].ProxyPort = port;
+    UNSAFE_TODO(proxy_result_.pEntries[proxy_result_.cEntries]).fProxy = TRUE;
+    UNSAFE_TODO(proxy_result_.pEntries[proxy_result_.cEntries]).ProxyScheme =
+        scheme;
+    UNSAFE_TODO(proxy_result_.pEntries[proxy_result_.cEntries]).pwszProxy =
+        proxy_host_raw;
+    UNSAFE_TODO(proxy_result_.pEntries[proxy_result_.cEntries]).ProxyPort =
+        port;
 
     proxy_result_.cEntries++;
   }
@@ -366,8 +365,9 @@ class MockWinHttpAPIWrapper final : public WinHttpAPIWrapper {
 
     proxy_result_.pEntries =
         new WINHTTP_PROXY_RESULT_ENTRY[kMaxProxyEntryLimit];
-    std::memset(proxy_result_.pEntries, 0,
-                kMaxProxyEntryLimit * sizeof(WINHTTP_PROXY_RESULT_ENTRY));
+    UNSAFE_TODO(
+        std::memset(proxy_result_.pEntries, 0,
+                    kMaxProxyEntryLimit * sizeof(WINHTTP_PROXY_RESULT_ENTRY)));
 
     // The memory of the strings above will be backed by a vector of strings.
     proxy_list_.reserve(kMaxProxyEntryLimit);

@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "services/tracing/public/cpp/perfetto/java_heap_profiler/hprof_parser_android.h"
 
 #include <string_view>
 
 #include "base/android/java_heap_dump_generator.h"
+#include "base/compiler_specific.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
 #include "base/strings/strcat.h"
@@ -92,7 +88,7 @@ TEST(HprofParserTest, ParseClassTag) {
 
   parser.strings_.emplace(
       1, std::make_unique<HprofParser::StringReference>(
-             reinterpret_cast<const char*>(file_data + 16), 4));
+             reinterpret_cast<const char*>(UNSAFE_TODO(file_data + 16)), 4));
 
   parser.ParseClassTag();
   auto it = parser.class_objects_.find(2);
@@ -126,7 +122,7 @@ TEST(HprofParserTest, ParseClassObjectDumpSubtag) {
 
   parser.strings_.emplace(
       1, std::make_unique<HprofParser::StringReference>(
-             reinterpret_cast<const char*>(file_data + 60), 4));
+             reinterpret_cast<const char*>(UNSAFE_TODO(file_data + 60)), 4));
 
   parser.class_objects_.emplace(
       3, std::make_unique<ClassObject>(3, "class_obj_dummy"));
@@ -315,7 +311,7 @@ TEST(HprofParserTest, ResolveSuperClassObjectFields) {
 
   ASSERT_EQ(parser.class_objects().size(), std::size(expected));
   for (unsigned i = 1; i < std::size(expected); ++i) {
-    const auto& expected_class = expected[i - 1];
+    const auto& expected_class = UNSAFE_TODO(expected[i - 1]);
     auto it = parser.class_objects().find(i);
     ASSERT_TRUE(it != parser.class_objects().end())
         << "missing object id " << i;
