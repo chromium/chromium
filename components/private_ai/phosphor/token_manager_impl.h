@@ -37,6 +37,7 @@ class TokenManagerImpl : public TokenManager {
   void PrefetchAuthTokens() override;
   void GetAuthTokenForProxy(GetAuthTokenCallback callback) override;
   void PrefetchAuthTokensForProxy() override;
+  void OnAccountStatusChanged(bool available) override;
 
  private:
   const int batch_size_;

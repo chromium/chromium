@@ -51,4 +51,10 @@ void TokenManagerImpl::PrefetchAuthTokensForProxy() {
   proxy_token_manager_->PrefetchAuthTokens();
 }
 
+void TokenManagerImpl::OnAccountStatusChanged(bool available) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  terminal_token_manager_->OnAccountStatusChanged(available);
+  proxy_token_manager_->OnAccountStatusChanged(available);
+}
+
 }  // namespace private_ai::phosphor

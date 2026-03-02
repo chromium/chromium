@@ -193,7 +193,7 @@ void TokenFetcherImpl::GetAuthnTokensComplete(
   std::move(callback).Run(base::unexpected(try_again_after));
 }
 
-void TokenFetcherImpl::AccountStatusChanged(bool account_available) {
+void TokenFetcherImpl::OnAccountStatusChanged(bool account_available) {
   if (account_available) {
     // End the backoff period if it was caused by account-related issues.
     if (last_get_authn_tokens_backoff_ == base::TimeDelta::Max()) {

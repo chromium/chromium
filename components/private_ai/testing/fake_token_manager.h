@@ -36,6 +36,8 @@ class FakeTokenManager : public phosphor::TokenManager {
   void RespondToGetAuthTokenForProxy(
       std::optional<phosphor::BlindSignedAuthToken> token);
 
+  void OnAccountStatusChanged(bool available) override;
+
   static const char kFakeToken[];
   static const char kFakeProxyToken[];
 

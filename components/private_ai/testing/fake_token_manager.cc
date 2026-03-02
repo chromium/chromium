@@ -62,6 +62,8 @@ void FakeTokenManager::RespondToGetAuthTokenForProxy(
   proxy_callback_future_.Take().Run(std::move(token));
 }
 
+void FakeTokenManager::OnAccountStatusChanged(bool available) {}
+
 std::optional<phosphor::BlindSignedAuthToken> FakeTokenManager::GetToken() {
   if (!return_token_) {
     return std::nullopt;

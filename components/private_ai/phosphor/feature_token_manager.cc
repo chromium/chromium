@@ -46,6 +46,14 @@ void FeatureTokenManager::PrefetchAuthTokens() {
   MaybeRefillCache();
 }
 
+void FeatureTokenManager::OnAccountStatusChanged(bool available) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (available && try_get_auth_tokens_after_.has_value()) {
+    try_get_auth_tokens_after_.reset();
+    ScheduleMaybeRefillCache();
+  }
+}
+
 void FeatureTokenManager::GetAuthToken(
     TokenManager::GetAuthTokenCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -64,6 +72,15 @@ void FeatureTokenManager::GetAuthToken(
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), std::move(result)));
   } else {
+    if (try_get_auth_tokens_after_.has_value() &&
+        base::Time::Now() < *try_get_auth_tokens_after_) {
+      VLOG(2) << "PrivateAI ATC::GetAuthToken failed immediately due to "
+                 "backoff";
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
+      return;
+    }
+
     VLOG(2) << "PrivateAI ATC::GetAuthToken with no tokens available, queuing "
                "request";
     pending_callbacks_.push_back(std::move(callback));

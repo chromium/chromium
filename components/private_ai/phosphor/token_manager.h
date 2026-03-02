@@ -37,6 +37,9 @@ class TokenManager {
   // necessary. This method is intended for pre-fetching and does not return a
   // token.
   virtual void PrefetchAuthTokensForProxy() = 0;
+
+  // Notification that the account status has changed.
+  virtual void OnAccountStatusChanged(bool available) = 0;
 };
 
 }  // namespace private_ai::phosphor

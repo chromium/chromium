@@ -49,7 +49,7 @@ class TokenFetcherImpl : public TokenFetcher {
 
   // The account status has changed, so the delegate's `RequestOAuthToken`
   // behavior may change.
-  void AccountStatusChanged(bool account_available);
+  void OnAccountStatusChanged(bool account_available);
 
  private:
   friend class TokenFetcherImplTest;

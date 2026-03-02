@@ -53,6 +53,9 @@ class FeatureTokenManager {
   // token.
   void PrefetchAuthTokens();
 
+  // Notification that the account status has changed.
+  void OnAccountStatusChanged(bool available);
+
  private:
   // The callback for token fetch completion. On success, this receives a
   // vector of tokens. On failure, it receives the time after which a retry is

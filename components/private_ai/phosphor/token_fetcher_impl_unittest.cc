@@ -464,7 +464,7 @@ TEST_F(TokenFetcherImplTest, CalculateBackoff) {
   // The account-related backoffs should not be changed except by account change
   // events.
   check_fn(kFailedBSA400, base::TimeDelta::Max(), false);
-  fetcher_->AccountStatusChanged(true);
+  fetcher_->OnAccountStatusChanged(true);
   check_fn(kFailedBSA400, default_bug_backoff_, true);
 }
 
@@ -519,7 +519,7 @@ TEST_F(TokenFetcherImplTest, CalculateBackoffNoJitter) {
   // The account-related backoffs should not be changed except by account change
   // events.
   check_fn(kFailedBSA400, base::TimeDelta::Max(), false);
-  fetcher_->AccountStatusChanged(true);
+  fetcher_->OnAccountStatusChanged(true);
   check_fn(kFailedBSA400, default_bug_backoff_, true);
 }
 
