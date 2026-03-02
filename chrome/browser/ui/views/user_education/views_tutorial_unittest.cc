@@ -63,7 +63,7 @@ class ViewsTutorialTest
     widget_ = std::make_unique<views::Widget>();
 
     views::Widget::InitParams params =
-        CreateParams(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+        CreateParams(views::Widget::InitParams::CLIENT_OWNS_WIDGET,
                      views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
     widget_->Init(std::move(params));
     widget_->SetContentsView(
