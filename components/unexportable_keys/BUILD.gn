@@ -39,10 +39,6 @@ component("unexportable_keys") {
     "//crypto",
     "//third_party/abseil-cpp:absl",
   ]
-
-  if (is_mac) {
-    deps = [ "//components/crash/core/common:crash_key" ]
-  }
 }
 
 source_set("test_support") {

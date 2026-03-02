@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <variant>
 
-#include "base/base64.h"
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -23,10 +22,6 @@
 #include "components/unexportable_keys/unexportable_key_id.h"
 #include "components/unexportable_keys/unexportable_key_task_manager.h"
 #include "crypto/unexportable_key.h"
-
-#if BUILDFLAG(IS_MAC)
-#include "components/crash/core/common/crash_key.h"  // nogncheck
-#endif                                               // BUILDFLAG(IS_MAC)
 
 namespace unexportable_keys {
 
@@ -443,18 +438,6 @@ void UnexportableKeyServiceImpl::OnKeyCreatedFromWrappedKeyAndTag(
     WrappedKeyAndTag wrapped_key_and_tag,
     ServiceErrorOr<scoped_refptr<RefCountedUnexportableSigningKey>>
         key_or_error) {
-  auto& [stored_wrapped_key, stored_tag] = wrapped_key_and_tag;
-#if BUILDFLAG(IS_MAC)
-  // TODO(crbug.com/486866772): Remove crash keys once the issue is fixed.
-  static crash_reporter::CrashKeyString<32> stored_wrapped_key_crash_key(
-      "stored_wrapped_key");
-  static crash_reporter::CrashKeyString<128> stored_tag_crash_key("stored_tag");
-  crash_reporter::ScopedCrashKeyString stored_wrapped_key_str(
-      &stored_wrapped_key_crash_key, base::Base64Encode(stored_wrapped_key));
-  crash_reporter::ScopedCrashKeyString stored_tag_str(&stored_tag_crash_key,
-                                                      stored_tag);
-#endif  // BUILDFLAG(IS_MAC)
-
   auto it = key_id_by_wrapped_key_and_tag_.find(wrapped_key_and_tag);
   if (it == key_id_by_wrapped_key_and_tag_.end()) {
     DVLOG(1) << "`wrapped_key` is unknown, did the key get deleted?";
@@ -477,22 +460,7 @@ void UnexportableKeyServiceImpl::OnKeyCreatedFromWrappedKeyAndTag(
                    });
   // `key` must be non-null if `key_or_error` holds a value.
   CHECK(key);
-
-  auto [created_wrapped_key, created_tag] = GetWrappedKeyAndTag(*key);
-#if BUILDFLAG(IS_MAC)
-  // TODO(crbug.com/486866772): Remove crash keys once the issue is fixed.
-  static crash_reporter::CrashKeyString<32> created_wrapped_key_crash_key(
-      "created_wrapped_key");
-  static crash_reporter::CrashKeyString<128> created_tag_crash_key(
-      "created_tag");
-  crash_reporter::ScopedCrashKeyString created_wrapped_key_str(
-      &created_wrapped_key_crash_key, base::Base64Encode(created_wrapped_key));
-  crash_reporter::ScopedCrashKeyString created_tag_str(&created_tag_crash_key,
-                                                       created_tag);
-#endif  // BUILDFLAG(IS_MAC)
-  CHECK_EQ(base::Base64Encode(stored_wrapped_key),
-           base::Base64Encode(created_wrapped_key));
-  CHECK_EQ(stored_tag, created_tag);
+  CHECK(wrapped_key_and_tag == GetWrappedKeyAndTag(*key));
 
   UnexportableKeyId key_id = key->id();
   // A newly created key ID must be unique.
