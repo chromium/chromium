@@ -96,23 +96,23 @@
   </message>
 
   <!-- Privacy Sandbox v4 - Notice Restricted. -->
-  <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_RESTRICTED_TITLE" desc="Title of the restricted notice" formatter_data="android_java">
+  <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_RESTRICTED_TITLE" desc="Title of the restricted notice">
     New ad privacy feature now available
   </message>
   <!-- Note that this string differs slightly on Android, which instead uses `privacy_sandbox_m1_notice_restricted_description_1_android` -->
   <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_RESTRICTED_DESCRIPTION_1" desc="First description in the restricted notice">
     We’re launching a new ad privacy feature called ad measurement. Chrome shares only very limited information between sites, such as when an ad was shown to you, to help sites measure the performance of ads.
   </message>
-  <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_RESTRICTED_DESCRIPTION_2" desc="Second description in the restricted notice"  formatter_data="android_java">
+  <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_RESTRICTED_DESCRIPTION_2" desc="Second description in the restricted notice">
     Learn more about how Google protects your data in our Privacy Policy.
   </message>
-  <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_RESTRICTED_DESCRIPTION_3" desc="Third description in the restricted notice" formatter_data="android_java" >
+  <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_RESTRICTED_DESCRIPTION_3" desc="Third description in the restricted notice">
     You can make changes in Chrome ad privacy settings
   </message>
-  <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_RESTRICTED_ACK_BUTTON" desc="Acknowledge action button" formatter_data="android_java">
+  <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_RESTRICTED_ACK_BUTTON" desc="Acknowledge action button">
     Got it
   </message>
-  <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_RESTRICTED_SETTINGS_BUTTON" desc="Settings action button" formatter_data="android_java">
+  <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_RESTRICTED_SETTINGS_BUTTON" desc="Settings action button">
     Settings
   </message>
 
@@ -171,7 +171,7 @@
   </message>
 
   <!-- Privacy Sandbox v4 - Shared dialog strings. -->
-  <message name="IDS_PRIVACY_SANDBOX_M1_DIALOG_MORE_BUTTON" desc="A button that helps the user scroll. It appears above the text and at the bottom of the screen indicating to the user that there is more text to read. " formatter_data="android_java">
+  <message name="IDS_PRIVACY_SANDBOX_M1_DIALOG_MORE_BUTTON" desc="A button that helps the user scroll. It appears above the text and at the bottom of the screen indicating to the user that there is more text to read. ">
     More
   </message>
 

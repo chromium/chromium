@@ -1006,14 +1006,6 @@ For example, some websites may respond to this request by showing you ads that a
         Remove <ph name="INTEREST">%1$s<ex>Acting and Theater</ex></ph>
       </message>
 
-      <!-- Privacy Sandbox v4 - Consent & Notice Flow -->
-      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_RESTRICTED_DESCRIPTION_1_ANDROID" desc="First description in the restricted notice which applies to Android only">
-        We’re launching a new ad privacy feature called ad measurement. Chrome shares only very limited information among sites and apps, such as when an ad was shown to you, to help measure the performance of ads.
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_RESTRICTED_DESCRIPTION_ANDROID" desc="Special description in the restricted notice which applies to Android only">
-        Your Android device may include a similar setting. If this setting is turned on in Chrome and on your Android device, a company may be able to measure the effectiveness of an ad across websites you visit and apps you use.
-      </message>
-
       <!-- Privacy Sandbox v4 - Ad Privacy Page -->
       <message name="IDS_AD_PRIVACY_PAGE_TITLE" desc="A new page title for a page that includes 3 settings. This same text appears as a label on chrome://settings/privacy between 'Third-party cookies' and 'Security'. This same pair of words is used in the Consent and Notice flow and must be consistently translated in both contexts. We mean privacy associated with ads, and not privacy from ads. **** CONTEXT PRIVACY SANDBOX **** Chrome’s Privacy Sandbox initiative 1) deprecates third-party cookies in Chrome, 2) supports free and open content on the web (by finding better ways to support ads online), 3) while providing stronger privacy protections for users. You can see a high-level description of this public project at www.privacysanbox.com. **** NEW SETTINGS SECTION IN CHROME **** 3 new ad-specific settings appear on an “Ad privacy” page in Chrome settings. For an equivalent structure, see “Security” on chrome://settings/privacy that opens chrome://settings/security. Likewise, “Ad privacy” on chrome://settings/privacy will open chrome://settings/AdPrivacy.">
         Ad privacy
