@@ -41,8 +41,16 @@ chromium-metrics-reviews@google.com.
   <variant name=".NetworkChange"
       summary="Requests triggered by network changes (expected at most once
                after startup)"/>
+  <variant name=".OAuthFallbackCookieChange"
+      summary="Requests triggered by cookie changes during OAuth fallback"/>
   <variant name=".PrimaryAccountChange"
       summary="Requests triggered by primary account changes"/>
+  <variant name=".RefreshTokenError"
+      summary="Requests triggered by refresh token errors"/>
+  <variant name=".RefreshTokenRemoved"
+      summary="Requests triggered by refresh token removals"/>
+  <variant name=".RefreshTokenUpdated"
+      summary="Requests triggered by refresh token updates"/>
   <variant name=".Startup" summary="Requests triggered on browser startup"/>
   <variant name=".User"
       summary="Requests triggered manually from the debug page"/>

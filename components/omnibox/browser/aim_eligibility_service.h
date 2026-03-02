@@ -23,6 +23,7 @@
 #include "components/search_engines/template_url_service_observer.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/base/network_change_notifier.h"
 #include "third_party/omnibox_proto/aim_eligibility_client_request.pb.h"
@@ -202,7 +203,11 @@ class AimEligibilityService
     kNetworkChange = 3,
     kUser = 4,
     kCoBrowseAimUrlDetection = 5,
-    kMaxValue = kCoBrowseAimUrlDetection,
+    kRefreshTokenUpdated = 6,
+    kRefreshTokenRemoved = 7,
+    kRefreshTokenError = 8,
+    kOAuthFallbackCookieChange = 9,
+    kMaxValue = kOAuthFallbackCookieChange,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/omnibox/histograms.xml:AimEligibilityRequestSource)
 
@@ -240,6 +245,15 @@ class AimEligibilityService
   // signin::IdentityManager::Observer:
   void OnPrimaryAccountChanged(
       const signin::PrimaryAccountChangeEvent& event) override;
+  void OnRefreshTokenUpdatedForAccount(
+      const CoreAccountInfo& account_info) override;
+  void OnRefreshTokenRemovedForAccount(
+      const CoreAccountId& account_id) override;
+  void OnErrorStateOfRefreshTokenUpdatedForAccount(
+      const CoreAccountInfo& account_info,
+      const GoogleServiceAuthError& error,
+      signin_metrics::SourceForRefreshTokenOperation token_operation_source)
+      override;
   void OnAccountsInCookieUpdated(
       const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
       const GoogleServiceAuthError& error) override;
@@ -269,14 +283,26 @@ class AimEligibilityService
   // Loads `most_recent_response_` from the prefs, if valid.
   void LoadMostRecentResponse();
 
-  // Returns whether the service should try to use OAuth for the eligibility
-  // request.
-  bool ShouldTryOAuth() const;
+  // Returns whether the primary account is valid and can be used for OAuth.
+  bool HasValidPrimaryAccount() const;
 
   // Configures the `request` credentials and cookies based on `use_oauth` and
-  // the `kAimEligibilityServiceOauth` feature.
+  // the `kAimEligibilityServiceIdentityImprovements` feature.
   void ConfigureRequestCookiesAndCredentials(network::ResourceRequest* request,
                                              bool use_oauth) const;
+
+  // Returns the active account (Primary or Cookie fallback) for eligibility
+  // checks.
+  GaiaId GetActiveAccount() const;
+
+  // Returns the first account in the cookie jar if valid and signed in.
+  GaiaId GetFirstAccountInCookieJarIfValid() const;
+
+  // Returns true if the accounts in the cookie jar are fresh.
+  bool AreAccountsInCookieJarFresh() const;
+
+  // Queues a request if the last active account changed.
+  void ScheduleServerEligibilityRequestIfNeeded(RequestSource source);
 
   // Returns the request URL or an empty GURL if a valid URL cannot be created;
   // e.g., Google is not the default search provider.
@@ -299,6 +325,7 @@ class AimEligibilityService
   // Callback for when an access token is available.
   void OnAccessTokenAvailable(RequestSource request_source,
                               const std::string& locale,
+                              GaiaId pending_request_account,
                               std::unique_ptr<network::ResourceRequest> request,
                               GoogleServiceAuthError error,
                               signin::AccessTokenInfo access_token_info);
@@ -308,13 +335,14 @@ class AimEligibilityService
   void SendServerEligibilityRequest(
       RequestSource request_source,
       const std::string& locale,
+      GaiaId pending_request_account,
       std::unique_ptr<network::ResourceRequest> request);
-  void OnServerEligibilityResponse(
-      std::unique_ptr<network::SimpleURLLoader> loader,
-      RequestSource request_source,
-      std::optional<std::string> response_string);
+  void OnServerEligibilityResponse(RequestSource request_source,
+                                   GaiaId pending_request_account,
+                                   std::optional<std::string> response_string);
   void ProcessServerEligibilityResponse(
       RequestSource request_source,
+      GaiaId pending_request_account,
       int response_code,
       EligibilityRequestStatus request_status,
       int num_retries,
@@ -367,6 +395,12 @@ class AimEligibilityService
   void LogEligibilityRequestDebounced(bool is_debounced,
                                       RequestSource request_source) const;
 
+  // Records histogram for whether the eligibility response account mismatches
+  // the current active account.
+  void LogEligibilityResponseAccountMismatch(
+      bool response_account_mismatch,
+      RequestSource request_source) const;
+
   const raw_ref<PrefService, DanglingUntriaged> pref_service_;
   // Outlives `this` due to BCKSF dependency. Can be nullptr in tests.
   raw_ptr<TemplateURLService> template_url_service_;
@@ -388,8 +422,14 @@ class AimEligibilityService
   EligibilityResponseSource most_recent_response_source_ =
       EligibilityResponseSource::kDefault;
 
+  // The account associated with the most recent response.
+  GaiaId most_recent_response_account_;
+
   std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>
       access_token_fetcher_;
+
+  // The active URL loader for the eligibility request.
+  std::unique_ptr<network::SimpleURLLoader> active_loader_;
 
   // Tracks whether the startup request has been sent.
   bool startup_request_sent_ = false;
