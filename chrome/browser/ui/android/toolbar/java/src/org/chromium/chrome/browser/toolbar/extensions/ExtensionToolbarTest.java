@@ -38,6 +38,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.ImportantFormFactors;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -51,6 +52,7 @@ import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.extensions.common.ExtensionFeatures;
 import org.chromium.net.test.EmbeddedTestServer;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.ViewUtils;
 
 import java.io.File;
@@ -65,6 +67,10 @@ import java.util.List;
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, ChromeSwitches.TEST_TYPE})
 @DisableFeatures(ExtensionFeatures.EXTENSION_DISABLE_UNSUPPORTED_DEVELOPER)
+// @ImportantFormFactors may look redundant, but is actually essential to make this test run on CQ
+// because android-desktop CQ builders run chrome_public_test_apk_desktop that only covers tests
+// specific to desktop.
+@ImportantFormFactors(DeviceFormFactor.DESKTOP)
 public class ExtensionToolbarTest {
     @Rule public TemporaryFolder mTempDir = new TemporaryFolder();
 
