@@ -35,7 +35,6 @@ class MemoryTracker;
 class SharedContextState;
 class SharedImageBackingFactory;
 class SharedImageCopyManager;
-class D3DImageBackingFactory;
 struct GpuFeatureInfo;
 struct GpuPreferences;
 
@@ -96,7 +95,6 @@ class GPU_GLES2_EXPORT SharedImageFactory {
       std::string debug_label,
       gfx::GpuMemoryBufferHandle buffer_handle,
       std::optional<SharedImagePoolId> pool_id = std::nullopt);
-  bool UpdateSharedImage(const Mailbox& mailbox);
   bool UpdateSharedImage(const Mailbox& mailbox,
                          std::unique_ptr<gfx::GpuFence> in_fence);
   bool DestroySharedImage(const Mailbox& mailbox);
@@ -222,11 +220,6 @@ class GPU_GLES2_EXPORT SharedImageFactory {
   // Array of all the backing factories to choose from for creating shared
   // images.
   std::vector<std::unique_ptr<SharedImageBackingFactory>> factories_;
-
-#if BUILDFLAG(IS_WIN)
-  // Used for creating swap chains
-  raw_ptr<D3DImageBackingFactory> d3d_backing_factory_ = nullptr;
-#endif
 
   gfx::GpuExtraInfo gpu_extra_info_;
   gpu::GpuPreferences gpu_preferences_;

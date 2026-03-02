@@ -428,7 +428,7 @@ void SharedImageInterfaceInProcessBase::UpdateSharedImageOnGpuThread(
 
   SharedImageFactory* shared_image_factory = GetSharedImageFactoryOnGpuThread();
   if (!shared_image_factory ||
-      !shared_image_factory->UpdateSharedImage(mailbox)) {
+      !shared_image_factory->UpdateSharedImage(mailbox, /*in_fence=*/nullptr)) {
     MarkContextLostOnGpuThread();
   }
 }

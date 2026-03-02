@@ -236,7 +236,6 @@ SharedImageFactory::SharedImageFactory(
         shared_image_manager_->dxgi_shared_handle_manager(),
         context_state_->GetGLFormatCaps(), workarounds_,
         enable_webnn_only_d3d_factory);
-    d3d_backing_factory_ = d3d_factory.get();
     factories_.push_back(std::move(d3d_factory));
   }
   {
@@ -672,10 +671,6 @@ bool SharedImageFactory::CreateSharedImage(
                          << " gmb_type=" << GmbTypeToString(gmb_type);
 
   return RegisterBacking(std::move(backing), std::move(pool_id));
-}
-
-bool SharedImageFactory::UpdateSharedImage(const Mailbox& mailbox) {
-  return UpdateSharedImage(mailbox, nullptr);
 }
 
 bool SharedImageFactory::UpdateSharedImage(
