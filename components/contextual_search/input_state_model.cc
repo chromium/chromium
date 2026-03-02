@@ -298,6 +298,8 @@ void InputStateModel::OnContextChanged() {
     if (std::find(current_inputs.begin(), current_inputs.end(),
                   omnibox::InputType::INPUT_TYPE_LENS_IMAGE) ==
         current_inputs.end()) {
+      state_.image_gen_upload_active = false;
+    } else {
       state_.image_gen_upload_active = true;
     }
   }
