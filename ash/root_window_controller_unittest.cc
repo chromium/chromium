@@ -78,11 +78,12 @@ class DeleteOnBlurDelegate : public aura::test::TestWindowDelegate,
   void OnWindowFocused(aura::Window* gained_focus,
                        aura::Window* lost_focus) override {
     if (window_ == lost_focus) {
-      delete window_;
+      window_ = nullptr;
+      delete lost_focus;
     }
   }
 
-  raw_ptr<aura::Window, DanglingUntriaged> window_{nullptr};
+  raw_ptr<aura::Window> window_{nullptr};
 };
 
 aura::LayoutManager* GetLayoutManager(RootWindowController* controller,
