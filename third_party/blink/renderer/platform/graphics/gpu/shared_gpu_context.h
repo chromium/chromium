@@ -58,9 +58,9 @@ class PLATFORM_EXPORT SharedGpuContext {
   // This method performs context-specific check that's not available when
   // RuntimeEnabledFeatures is set.
 #if BUILDFLAG(IS_ANDROID)
-  static bool MaySupportImageChromium();
+  static bool MaySupportWebGLImageChromium();
 #else
-  static bool MaySupportImageChromium() { return true; }
+  static bool MaySupportWebGLImageChromium() { return true; }
 #endif
 
   // Whether native mappable SharedImages are supported for Canvas2D.
