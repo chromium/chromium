@@ -52,6 +52,11 @@ class SelectionEditor final : public GarbageCollected<SelectionEditor> {
   bool ComputeAbsoluteBounds(gfx::Rect& anchor, gfx::Rect& focus) const;
   void SetSelectionAndEndTyping(const SelectionInDOMTree&);
 
+  // Sets the ContainsSelectionFocus flag on the style-owning layout object
+  // and triggers layout invalidation if needed for text-overflow.
+  static void SetContainsSelectionFocusFlag(LayoutObject* style_owner,
+                                            bool value);
+
   void DidAttachDocument(Document*);
 
   // There functions are exposed for |FrameSelection|.

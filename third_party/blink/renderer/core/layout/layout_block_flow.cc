@@ -647,6 +647,11 @@ bool LayoutBlockFlow::ShouldTruncateOverflowingText() const {
       object_to_check->StyleRef().TextOverflow().IsClip()) {
     return false;
   }
+  // If selection focus is inside this element, don't truncate (show full text).
+  if (RuntimeEnabledFeatures::TextOverflowClipWithSelectionEnabled() &&
+      object_to_check->ContainsSelectionFocus()) {
+    return false;
+  }
   if (RuntimeEnabledFeatures::DisableEllipsisWhenScrolledEnabled()) {
     if (const auto* box = DynamicTo<LayoutBox>(object_to_check)) {
       if (auto* scrollable_area = box->GetScrollableArea()) {

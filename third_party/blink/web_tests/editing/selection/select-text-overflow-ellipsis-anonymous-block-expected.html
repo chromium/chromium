@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Reference for text-overflow ellipsis with selection in anonymous block-flow</title>
+<style>
+  .ellipsis-container {
+    font: 20px/1;
+    width: 100px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: clip;
+    margin: 10px;
+  }
+</style>
+<div class="ellipsis-container" contenteditable="true">
+    <div>sub-block</div>
+    foo | bar this is a long text that overflows
+</div>
+<script>
+  const container = document.querySelector('.ellipsis-container');
+  const textNode = container.lastChild;
+  const barOffset = textNode.textContent.indexOf('bar');
+  const selection = window.getSelection();
+  selection.removeAllRanges();
+  const range = document.createRange();
+  range.setStart(textNode, barOffset);
+  range.setEnd(textNode, textNode.textContent.length);
+  selection.addRange(range);
+</script>

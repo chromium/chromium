@@ -2235,6 +2235,10 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // See layout_block.h for some extra explanations on containing blocks.
   LayoutBlock* ContainingBlock(AncestorSkipInfo* = nullptr) const;
 
+  // Returns the containing block, resolving anonymous blocks to their
+  // Parent(). This mirrors the lookup in ShouldTruncateOverflowingText().
+  LayoutObject* NonAnonymousContainingBlock() const;
+
   // Returns the nearest ancestor in the layout tree that IsForElement(),
   // or null if there is none.
   LayoutObject* NearestAncestorForElement() const;
@@ -3403,6 +3407,15 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     bitfields_.SetIsMulticolContainer(b);
   }
 
+  bool ContainsSelectionFocus() const {
+    NOT_DESTROYED();
+    return bitfields_.ContainsSelectionFocus();
+  }
+  void SetContainsSelectionFocus(bool b) {
+    NOT_DESTROYED();
+    bitfields_.SetContainsSelectionFocus(b);
+  }
+
   // Returns true if this layout object is created for an element which will be
   // changing behaviour for overflow: visible.
   // See
@@ -3824,7 +3837,8 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
           has_valid_cached_geometry_(false),
           may_be_non_contiguous_ifc_(false),
           has_svg_text_descendants_(false),
-          is_multicol_container_(false) {}
+          is_multicol_container_(false),
+          contains_selection_focus_(false) {}
 
     // Typically indicates that this object has had its style changed, and
     // requires a "full" layout.
@@ -4180,6 +4194,10 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
 
     // True if this is a LayoutBlockFlow that establishes a multicol container.
     ADD_BOOLEAN_BITFIELD(is_multicol_container_, IsMulticolContainer);
+
+    // Whether the selection focus is inside this element.
+    // Used for text-overflow ellipsis.
+    ADD_BOOLEAN_BITFIELD(contains_selection_focus_, ContainsSelectionFocus);
   };
 
 #undef ADD_BOOLEAN_BITFIELD

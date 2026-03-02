@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Test: Error scenarios for text-overflow ellipsis selection</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<style>
+.ellipsis-box {
+  width: 100px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-family: monospace;
+  font-size: 16px;
+}
+</style>
+</head>
+<body>
+
+<div id="container"></div>
+
+<script>
+test(function() {
+  const container = document.getElementById('container');
+  container.innerHTML =
+    '<div id="parent">' +
+    '<div id="removable-box" class="ellipsis-box">' +
+    'Text to be removed</div></div>';
+
+  const parent = document.getElementById('parent');
+  const box = document.getElementById('removable-box');
+  const selection = window.getSelection();
+  selection.removeAllRanges();
+
+  const range = document.createRange();
+  range.setStart(box.firstChild, 0);
+  range.setEnd(box.firstChild, 5);
+  selection.addRange(range);
+
+  box.remove();
+  selection.removeAllRanges();
+
+  container.innerHTML =
+    '<div id="parent2">' +
+    '<div id="box2" class="ellipsis-box">More text here</div></div>';
+  const parent2 = document.getElementById('parent2');
+  const box2 = document.getElementById('box2');
+  selection.collapse(box2.firstChild, 5);
+  parent2.remove();
+
+  selection.removeAllRanges();
+  assert_true(true,
+    "No crash when element or parent is removed during selection");
+}, "Removing element or parent during selection does not crash");
+
+test(function() {
+  const container = document.getElementById('container');
+  container.innerHTML =
+    '<div id="toggle-box" class="ellipsis-box" style="display:none">' +
+    'Toggle visibility text</div>';
+
+  const box = document.getElementById('toggle-box');
+  const selection = window.getSelection();
+
+  selection.collapse(box, 0);
+  box.style.display = 'block';
+  selection.collapse(box.firstChild, 5);
+  box.style.display = 'none';
+
+  box.style.display = 'block';
+  box.style.textOverflow = 'clip';
+  box.style.textOverflow = 'ellipsis';
+  box.style.overflow = 'visible';
+
+  selection.removeAllRanges();
+  assert_true(true,
+    "No crash when visibility or style changes during selection");
+}, "Changing visibility or style during selection does not crash");
+
+test(function() {
+  const container = document.getElementById('container');
+  container.innerHTML = `
+    <div id="ellipsis-span" class="ellipsis-box">
+      Ellipsis text here
+    </div>
+    <div id="normal-span">Normal text here</div>
+  `;
+
+  const ellipsisBox = document.getElementById('ellipsis-span');
+  const normalBox = document.getElementById('normal-span');
+  const selection = window.getSelection();
+  selection.removeAllRanges();
+
+  const range = document.createRange();
+  range.setStart(ellipsisBox.firstChild, 0);
+  range.setEnd(normalBox.firstChild, 10);
+  selection.addRange(range);
+
+  assert_not_equals(
+    selection.anchorNode.parentElement,
+    selection.focusNode.parentElement,
+    "Selection spans different elements"
+  );
+
+  selection.removeAllRanges();
+  assert_true(true, "No crash with cross-element selection");
+}, "Selection spanning ellipsis and non-ellipsis elements");
+
+test(function() {
+  const container = document.getElementById('container');
+  container.innerHTML = `
+    <div id="box1" class="ellipsis-box">
+      First box with long text content here
+    </div>
+    <div id="box2" class="ellipsis-box">
+      Second box with long text content here
+    </div>
+  `;
+
+  const box1 = document.getElementById('box1');
+  const box2 = document.getElementById('box2');
+  const selection = window.getSelection();
+
+  for (let i = 0; i < 20; i++) {
+    selection.removeAllRanges();
+    const box = i % 2 === 0 ? box1 : box2;
+    const start = Math.floor(Math.random() * 10);
+    const end = start + Math.floor(Math.random() * 10);
+
+    const range = document.createRange();
+    range.setStart(box.firstChild, start);
+    const maxEnd = box.firstChild.textContent.length;
+    range.setEnd(box.firstChild, Math.min(end, maxEnd));
+    selection.addRange(range);
+  }
+
+  selection.removeAllRanges();
+  assert_true(true, "No crash with rapid selections");
+}, "Rapid selections across multiple ellipsis elements");
+</script>
+</body>
+</html>

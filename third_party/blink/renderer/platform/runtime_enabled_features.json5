@@ -5559,6 +5559,13 @@
       status: "stable",
     },
     {
+      // When enabled, text-overflow ellipsis is clipped when
+      // selection focus is inside the element, revealing the full text content.
+      // See https://crbug.com/40731275
+      name: "TextOverflowClipWithSelection",
+      status: "test",
+    },
+    {
       // https://crbug.com/41492459
       name: "TextOverflowString",
       status: "test",

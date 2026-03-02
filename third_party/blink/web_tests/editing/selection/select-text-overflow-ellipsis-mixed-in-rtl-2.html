@@ -19,13 +19,15 @@ dd {
   color: black;
 }
 </style>
-<p>crbug.com/642454: Select all text in mixed ltr-rtl in rtl flow. None of the dots in the ellipsis should be selected.</p>
+<p>crbug.com/642454: Selection spanning multiple elements with text-overflow ellipsis in mixed LTR-RTL text.
+The ellipsis dots should not be included in the selection.</p>
 <dl>
     <dd id="selection_with_ellipsis">Lorem ipsum ינטרנט וכו' במקום הטקסט האמיתי הסופיעד שיהיה טקסט אמית</dd>
+    <dd id="selection_with_ellipsis2">Lorem ipsum ינטרנט וכו' במקום הטקסט האמיתי הסופיעד שיהיה טקסט אמית</dd>
 </dl>
 <script src="../../resources/run-after-layout-and-paint.js"></script>
 <script>
 runAfterLayoutAndPaint(function() {
-        getSelection().setBaseAndExtent(selection_with_ellipsis.firstChild, 0, selection_with_ellipsis.firstChild, 66);
+        getSelection().setBaseAndExtent(selection_with_ellipsis.firstChild, 0, selection_with_ellipsis2.firstChild, 66);
         }, true);
 </script>

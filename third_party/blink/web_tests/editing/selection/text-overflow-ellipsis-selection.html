@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Test: Mouse drag selection in text-overflow ellipsis</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<link rel="stylesheet" href="../../resources/ahem.css">
+<style>
+.ellipsis-box {
+  width: 100px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-family: Ahem;
+  font-size: 10px;
+  line-height: 10px;
+}
+</style>
+</head>
+<body>
+
+<div id="ellipsis-container" class="ellipsis-box">ABCDEFGHIJKLMNOPQRSTUVWXYZ</div>
+
+<script>
+const fullText = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+function mouseDragSelect(startX, startY, endX, endY) {
+  if (!window.eventSender) {
+    return null;
+  }
+
+  window.getSelection().removeAllRanges();
+  eventSender.mouseMoveTo(startX, startY);
+  eventSender.mouseDown();
+  eventSender.mouseMoveTo(endX, endY);
+  eventSender.mouseUp();
+
+  return window.getSelection().toString();
+}
+
+function getContainerPosition() {
+  const container = document.getElementById('ellipsis-container');
+  const rect = container.getBoundingClientRect();
+  return {
+    left: rect.left,
+    top: rect.top,
+    right: rect.right,
+    bottom: rect.bottom,
+    centerY: rect.top + rect.height / 2,
+    width: rect.width,
+    height: rect.height
+  };
+}
+
+test(function() {
+  if (!window.eventSender) {
+    return;
+  }
+
+  const pos = getContainerPosition();
+  const selectedText = mouseDragSelect(
+    pos.left + 2, pos.centerY,
+    pos.right + 200, pos.centerY
+  );
+
+  assert_equals(selectedText, fullText,
+    "Dragging mouse far beyond container should select all text including ellipsed portion");
+
+}, "Mouse drag beyond container selects all text including ellipsed portion");
+
+test(function() {
+  if (!window.eventSender) {
+    return;
+  }
+
+  const pos = getContainerPosition();
+  const selectedText = mouseDragSelect(
+    pos.left + 2, pos.centerY,
+    pos.right + 10, pos.centerY
+  );
+
+  assert_greater_than(selectedText.length, 10,
+    "Should select beyond visible 10 characters");
+  assert_less_than(selectedText.length, fullText.length,
+    "Proportional drag should not select all text");
+
+}, "Partial drag beyond container selects hidden ellipsed text");
+</script>
+
+</body>
+</html>

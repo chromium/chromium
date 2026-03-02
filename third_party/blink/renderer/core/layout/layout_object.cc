@@ -1826,6 +1826,15 @@ const LayoutBox* LayoutObject::ContainingScrollContainer(
   return nullptr;
 }
 
+LayoutObject* LayoutObject::NonAnonymousContainingBlock() const {
+  NOT_DESTROYED();
+  LayoutObject* block = ContainingBlock();
+  if (block && block->IsAnonymous()) {
+    block = block->Parent();
+  }
+  return block;
+}
+
 LayoutObject* LayoutObject::NearestAncestorForElement() const {
   NOT_DESTROYED();
   LayoutObject* ancestor = Parent();

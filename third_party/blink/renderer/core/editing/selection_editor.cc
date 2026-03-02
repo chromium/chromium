@@ -37,6 +37,11 @@
 #include "third_party/blink/renderer/core/editing/selection_adjuster.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/forms/text_control_element.h"
+#include "third_party/blink/renderer/core/layout/layout_block.h"
+#include "third_party/blink/renderer/core/layout/layout_invalidation_reason.h"
+#include "third_party/blink/renderer/core/layout/layout_object.h"
+#include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
+#include "third_party/blink/renderer/core/style/computed_style.h"
 
 namespace blink {
 
@@ -133,9 +138,51 @@ void SelectionEditor::SetSelectionAndEndTyping(
     const SelectionInDOMTree& new_selection) {
   new_selection.AssertValidFor(GetDocument());
   DCHECK_NE(selection_, new_selection);
+
+  const SelectionInDOMTree old_selection = selection_;
+
   ClearDocumentCachedRange();
   MarkCacheDirty();
   selection_ = new_selection;
+
+  if (RuntimeEnabledFeatures::TextOverflowClipWithSelectionEnabled()) {
+    Node* old_focus = old_selection.Focus().AnchorNode();
+    Node* new_focus = new_selection.Focus().AnchorNode();
+    LayoutObject* old_style_owner =
+        old_focus && old_focus->GetLayoutObject()
+            ? old_focus->GetLayoutObject()->NonAnonymousContainingBlock()
+            : nullptr;
+    LayoutObject* new_style_owner =
+        new_focus && new_focus->GetLayoutObject()
+            ? new_focus->GetLayoutObject()->NonAnonymousContainingBlock()
+            : nullptr;
+
+    if (old_style_owner != new_style_owner) {
+      SetContainsSelectionFocusFlag(old_style_owner, false);
+      SetContainsSelectionFocusFlag(new_style_owner, true);
+    }
+  }
+}
+
+void SelectionEditor::SetContainsSelectionFocusFlag(LayoutObject* style_owner,
+                                                    bool value) {
+  if (!style_owner || style_owner->StyleRef().TextOverflow().IsClip() ||
+      style_owner->ContainsSelectionFocus() == value) {
+    return;
+  }
+
+  style_owner->SetContainsSelectionFocus(value);
+
+  // ShouldTruncateOverflowingText() is evaluated during each child block's
+  // inline layout. LayoutNG caches child results, so children must be
+  // explicitly marked dirty to re-evaluate truncation.
+  style_owner->SetNeedsLayout(layout_invalidation_reason::kStyleChange);
+  for (LayoutObject* child = style_owner->SlowFirstChild(); child;
+       child = child->NextSibling()) {
+    if (child->IsLayoutBlock()) {
+      child->SetNeedsLayout(layout_invalidation_reason::kStyleChange);
+    }
+  }
 }
 
 void SelectionEditor::DidChangeChildren(
