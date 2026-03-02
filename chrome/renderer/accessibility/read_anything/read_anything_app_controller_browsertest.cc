@@ -5062,3 +5062,39 @@ TEST_F(ReadAnythingAppControllerReadabilityTest,
   histogram_tester.ExpectUniqueSample(
       "Accessibility.ReadAnything.WordsDistilledByReadability", word_count, 1);
 }
+
+TEST_F(ReadAnythingAppControllerReadabilityTest,
+       IsUpdateProcessingPaused_WhenReadabilityIsNext) {
+  // Navigate to a new tree.
+  EXPECT_CALL(page_handler_,
+              OnDistillationStateChanged(
+                  read_anything::mojom::ReadAnythingDistillationState::
+                      kDistillationInProgress))
+      .Times(1);
+  controller().SetDistillationState(
+      read_anything::mojom::ReadAnythingDistillationState::
+          kDistillationInProgress);
+
+  // Distillation should be in progress because Readability is the default.
+  EXPECT_TRUE(controller().IsUpdateProcessingPaused());
+}
+
+TEST_F(ReadAnythingAppControllerReadabilityTest,
+       IsUpdateProcessingPaused_WhenScreen2xIsNext) {
+  // Set distillation state to in progress.
+  EXPECT_CALL(page_handler_,
+              OnDistillationStateChanged(
+                  read_anything::mojom::ReadAnythingDistillationState::
+                      kDistillationInProgress))
+      .Times(1);
+  controller().SetDistillationState(
+      read_anything::mojom::ReadAnythingDistillationState::
+          kDistillationInProgress);
+
+  // Set next distillation method to Screen2x.
+  model().set_next_distillation_method(
+      ReadAnythingAppModel::DistillationMethod::kScreen2x);
+
+  // Distillation state check should be skipped for Screen2x.
+  EXPECT_FALSE(controller().IsUpdateProcessingPaused());
+}

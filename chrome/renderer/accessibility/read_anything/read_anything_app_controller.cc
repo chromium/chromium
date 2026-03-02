@@ -558,6 +558,15 @@ bool ReadAnythingAppController::IsUpdateProcessingPaused() const {
     return true;
   }
 
+  // Update processing should also be considered paused when Readability
+  // is in the process of distilling the page.
+  if (model_.is_readability_next_distillation_method() &&
+      model_.distillation_state() ==
+          read_anything::mojom::ReadAnythingDistillationState::
+              kDistillationInProgress) {
+    return true;
+  }
+
   if (model_.active_presentation_state() ==
       read_anything::mojom::ReadAnythingPresentationState::
           kInImmersiveOverlay) {
@@ -2841,6 +2850,7 @@ void ReadAnythingAppController::UpdateContent(const std::string& title,
   if (!features::IsReadAnythingWithReadabilityEnabled()) {
     return;
   }
+
   dom_distiller_title_ = title;
   dom_distiller_content_html_ = content;
 
