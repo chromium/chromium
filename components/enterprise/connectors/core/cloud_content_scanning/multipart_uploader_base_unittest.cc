@@ -377,6 +377,7 @@ TEST_F(MultipartUploadRequestBaseTest, GeneratesCorrectHeaders_StringRequest) {
       nullptr, GURL(), "metadata", "data", "histogram_suffix",
       TRAFFIC_ANNOTATION_FOR_TESTS, base::DoNothing(),
       base::SingleThreadTaskRunner::GetCurrentDefault());
+  request->set_access_token("test-token");
 
   request->SetRequestHeaders(&resource_request);
   ASSERT_TRUE(resource_request.headers.HasHeader("X-Goog-Upload-Protocol"));
@@ -387,6 +388,9 @@ TEST_F(MultipartUploadRequestBaseTest, GeneratesCorrectHeaders_StringRequest) {
   ASSERT_THAT(
       resource_request.headers.GetHeader("X-Goog-Upload-Header-Content-Length"),
       testing::Optional(std::string("4")));
+  ASSERT_TRUE(resource_request.headers.HasHeader("Authorization"));
+  ASSERT_THAT(resource_request.headers.GetHeader("Authorization"),
+              testing::Optional(std::string("Bearer test-token")));
   EXPECT_EQ(request->GetUploadInfo(), "Multipart - Pending");
 }
 
@@ -397,6 +401,7 @@ TEST_F(MultipartUploadRequestBaseTest, GeneratesCorrectHeaders_FileRequest) {
       nullptr, GURL(), "metadata", CreateFile("my_file_name.foo", "file_data"),
       9, false, "histogram_suffix", TRAFFIC_ANNOTATION_FOR_TESTS,
       base::DoNothing(), base::SingleThreadTaskRunner::GetCurrentDefault());
+  request->set_access_token("test-token");
 
   request->SetRequestHeaders(&resource_request);
   ASSERT_TRUE(resource_request.headers.HasHeader("X-Goog-Upload-Protocol"));
@@ -407,6 +412,9 @@ TEST_F(MultipartUploadRequestBaseTest, GeneratesCorrectHeaders_FileRequest) {
   ASSERT_THAT(
       resource_request.headers.GetHeader("X-Goog-Upload-Header-Content-Length"),
       testing::Optional(std::string("9")));
+  ASSERT_TRUE(resource_request.headers.HasHeader("Authorization"));
+  ASSERT_THAT(resource_request.headers.GetHeader("Authorization"),
+              testing::Optional(std::string("Bearer test-token")));
   EXPECT_EQ(request->GetUploadInfo(), "Multipart - Pending");
 }
 
@@ -417,6 +425,7 @@ TEST_F(MultipartUploadRequestBaseTest, GeneratesCorrectHeaders_PageRequest) {
       nullptr, GURL(), "metadata", CreatePage("print_data"), "histogram_suffix",
       TRAFFIC_ANNOTATION_FOR_TESTS, base::DoNothing(),
       base::SingleThreadTaskRunner::GetCurrentDefault());
+  request->set_access_token("test-token");
 
   request->SetRequestHeaders(&resource_request);
   ASSERT_TRUE(resource_request.headers.HasHeader("X-Goog-Upload-Protocol"));
@@ -427,6 +436,9 @@ TEST_F(MultipartUploadRequestBaseTest, GeneratesCorrectHeaders_PageRequest) {
   ASSERT_THAT(
       resource_request.headers.GetHeader("X-Goog-Upload-Header-Content-Length"),
       testing::Optional(std::string("10")));
+  ASSERT_TRUE(resource_request.headers.HasHeader("Authorization"));
+  ASSERT_THAT(resource_request.headers.GetHeader("Authorization"),
+              testing::Optional(std::string("Bearer test-token")));
   EXPECT_EQ(request->GetUploadInfo(), "Multipart - Pending");
 }
 

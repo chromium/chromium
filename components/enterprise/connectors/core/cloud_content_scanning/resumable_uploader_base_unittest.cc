@@ -181,6 +181,7 @@ class ResumableUploadRequestBaseTest : public testing::Test {
   void VerifyMetadataRequestHeaders(
       const network::ResourceRequest& resource_request,
       std::string expected_size,
+      const std::string& expected_access_token,
       const std::string& expected_content_type = "application/octet-stream") {
     ASSERT_TRUE(resource_request.headers.HasHeader("X-Goog-Upload-Protocol"));
     ASSERT_THAT(resource_request.headers.GetHeader("X-Goog-Upload-Protocol"),
@@ -201,6 +202,11 @@ class ResumableUploadRequestBaseTest : public testing::Test {
     ASSERT_THAT(resource_request.headers.GetHeader(
                     "X-Goog-Upload-Header-Content-Length"),
                 testing::Optional(expected_size));
+
+    ASSERT_TRUE(resource_request.headers.HasHeader("Authorization"));
+    ASSERT_THAT(
+        resource_request.headers.GetHeader("Authorization"),
+        testing::Optional(std::string("Bearer ") + expected_access_token));
   }
 
  protected:
@@ -218,9 +224,10 @@ TEST_F(ResumableUploadRequestBaseTest,
       CreateFile("my_file_name.foo", "file_data"), 9, false, "histogram_suffix",
       TRAFFIC_ANNOTATION_FOR_TESTS, base::DoNothing(), base::DoNothing(), false,
       base::SingleThreadTaskRunner::GetCurrentDefault());
+  request->set_access_token("test-token");
   request->SetMetadataRequestHeaders(&resource_request);
 
-  VerifyMetadataRequestHeaders(std::move(resource_request), "9");
+  VerifyMetadataRequestHeaders(std::move(resource_request), "9", "test-token");
 }
 
 TEST_F(ResumableUploadRequestBaseTest,
@@ -231,9 +238,10 @@ TEST_F(ResumableUploadRequestBaseTest,
       CreateFile("my_file_name.foo", "file_data"), 9, false, "histogram_suffix",
       TRAFFIC_ANNOTATION_FOR_TESTS, base::DoNothing(), base::DoNothing(), false,
       base::SingleThreadTaskRunner::GetCurrentDefault());
+  request->set_access_token("test-token");
   request->SetMetadataRequestHeaders(&resource_request);
 
-  VerifyMetadataRequestHeaders(std::move(resource_request), "9");
+  VerifyMetadataRequestHeaders(std::move(resource_request), "9", "test-token");
 }
 
 TEST_F(ResumableUploadRequestBaseTest,
@@ -244,9 +252,10 @@ TEST_F(ResumableUploadRequestBaseTest,
       CreateFile("my_file_name.foo", "file_data"), 9, false, "histogram_suffix",
       TRAFFIC_ANNOTATION_FOR_TESTS, base::DoNothing(), base::DoNothing(), false,
       base::SingleThreadTaskRunner::GetCurrentDefault());
+  request->set_access_token("test-token");
   request->SetMetadataRequestHeaders(&resource_request);
 
-  VerifyMetadataRequestHeaders(std::move(resource_request), "9");
+  VerifyMetadataRequestHeaders(std::move(resource_request), "9", "test-token");
 }
 
 TEST_F(ResumableUploadRequestBaseTest,
@@ -257,9 +266,10 @@ TEST_F(ResumableUploadRequestBaseTest,
       CreatePage("print_data"), "histogram_suffix",
       TRAFFIC_ANNOTATION_FOR_TESTS, base::DoNothing(), base::DoNothing(), false,
       base::SingleThreadTaskRunner::GetCurrentDefault());
+  request->set_access_token("test-token");
   request->SetMetadataRequestHeaders(&resource_request);
 
-  VerifyMetadataRequestHeaders(std::move(resource_request), "10");
+  VerifyMetadataRequestHeaders(std::move(resource_request), "10", "test-token");
 }
 
 class ResumableUploadStringRequestTest : public ResumableUploadRequestBaseTest {
@@ -275,9 +285,10 @@ TEST_F(ResumableUploadStringRequestTest,
       ConnectorUploadRequest::STRING, "histogram_suffix",
       TRAFFIC_ANNOTATION_FOR_TESTS, base::DoNothing(), base::DoNothing(), false,
       base::SingleThreadTaskRunner::GetCurrentDefault());
+  request->set_access_token("test-token");
   request->SetMetadataRequestHeaders(&resource_request);
 
-  VerifyMetadataRequestHeaders(std::move(resource_request), "11");
+  VerifyMetadataRequestHeaders(std::move(resource_request), "11", "test-token");
 }
 
 TEST_F(ResumableUploadStringRequestTest,
@@ -290,9 +301,11 @@ TEST_F(ResumableUploadStringRequestTest,
       "histogram_suffix", TRAFFIC_ANNOTATION_FOR_TESTS, base::DoNothing(),
       base::DoNothing(), false,
       base::SingleThreadTaskRunner::GetCurrentDefault());
+  request->set_access_token("test-token");
   request->SetMetadataRequestHeaders(&resource_request);
 
-  VerifyMetadataRequestHeaders(std::move(resource_request), "8", "image/png");
+  VerifyMetadataRequestHeaders(std::move(resource_request), "8", "test-token",
+                               "image/png");
 }
 
 class ResumableUploadSendMetadataRequestTest
@@ -309,6 +322,7 @@ INSTANTIATE_TEST_SUITE_P(,
 TEST_P(ResumableUploadSendMetadataRequestTest, SendsCorrectRequest) {
   base::RunLoop run_loop;
   std::string metadata_content_type;
+  std::string auth_header;
   std::string method;
   std::string body;
   GURL url;
@@ -317,6 +331,9 @@ TEST_P(ResumableUploadSendMetadataRequestTest, SendsCorrectRequest) {
       base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
         metadata_content_type =
             request.headers.GetHeader(net::HttpRequestHeaders::kContentType)
+                .value_or(std::string());
+        auth_header =
+            request.headers.GetHeader(net::HttpRequestHeaders::kAuthorization)
                 .value_or(std::string());
         method = request.method;
         url = request.url;
@@ -329,10 +346,12 @@ TEST_P(ResumableUploadSendMetadataRequestTest, SendsCorrectRequest) {
   auto mock_request = CreateRequest<MockResumableUploadRequestBase>(
       ScanRequestUploadResult::kSuccess, std::move(callback), base::DoNothing(),
       false);
+  mock_request->set_access_token("test-token");
   mock_request->Start();
 
   ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
   EXPECT_EQ(metadata_content_type, "application/json");
+  EXPECT_EQ(auth_header, "Bearer test-token");
   EXPECT_EQ(method, "POST");
   EXPECT_EQ(body, "metadata\r\n");
   EXPECT_EQ(url, GURL("https://google.com"));
