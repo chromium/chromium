@@ -28962,6 +28962,21 @@
             ]
         }
     ],
+    "WebSerialWiredDevicesAndroid": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20260217",
+                    "enable_features": [
+                        "WebSerialWiredDevicesAndroid"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebUIBundledCodeCache": [
         {
             "platforms": [
