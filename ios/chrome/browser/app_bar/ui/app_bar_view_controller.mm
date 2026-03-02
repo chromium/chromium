@@ -75,6 +75,8 @@ UIImage* CustomAppBarSymbol(NSString* symbol_name) {
   BOOL _isTabGridVisible;
   // Whether the tab groups page in the tab grid is currently visible.
   BOOL _isTabGroupsPageVisible;
+  // Whether a tab group is currently being shown in the tab grid.
+  BOOL _isTabGroupVisible;
   // Context menus for the App Bar buttons.
   UIMenu* _assistantButtonMenu;
   UIMenu* _openNewTabButtonMenu;
@@ -148,7 +150,15 @@ UIImage* CustomAppBarSymbol(NSString* symbol_name) {
     return;
   }
   _isTabGroupsPageVisible = tabGroupsPageVisible;
-  [self updateNewTabButtonForTabGroupsPageVisibility];
+  [self updateNewTabButtonForTabGroupsVisibility];
+}
+
+- (void)setTabGroupVisible:(BOOL)tabGroupVisible {
+  if (tabGroupVisible == _isTabGroupVisible) {
+    return;
+  }
+  _isTabGroupVisible = tabGroupVisible;
+  [self updateNewTabButtonForTabGroupsVisibility];
 }
 
 #pragma mark - Private
@@ -249,10 +259,10 @@ UIImage* CustomAppBarSymbol(NSString* symbol_name) {
   return button;
 }
 
-// Updates the new tab button for whether the tab groups page in the tab grid is
-// showing.
-- (void)updateNewTabButtonForTabGroupsPageVisibility {
-  if (_isTabGroupsPageVisible) {
+// Updates the new tab button for whether the tab groups page in the tab grid or
+// a tab group is visible.
+- (void)updateNewTabButtonForTabGroupsVisibility {
+  if (_isTabGroupsPageVisible || _isTabGroupVisible) {
     _openNewTabButton.menu = _openNewTabButtonMenu;
     _openNewTabButton.showsMenuAsPrimaryAction = YES;
     return;

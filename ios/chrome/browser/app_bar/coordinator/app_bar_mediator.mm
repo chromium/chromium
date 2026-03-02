@@ -278,6 +278,7 @@
   [self.consumer updateTabCount:tabCount];
   [self.consumer setTabGridVisible:_tabGridState.tabGridVisible];
   [self.consumer setTabGroupsPageVisible:_currentPage == TabGridPageTabGroups];
+  [self.consumer setTabGroupVisible:_tabGridState.visibleTabGroup];
 
   [self.consumer setMenu:[self createContextMenuForAssistantButton]
            forButtonType:AppBarButtonTypeAssistant];
@@ -375,6 +376,21 @@
   return webStateListCount != webStateList->count();
 }
 
+// Adds a new tab to the current tab group.
+- (void)addNewTabInCurrentTabGroup {
+  if (!self.currentTabGroup) {
+    return;
+  }
+
+  GURL URL(kChromeUINewTabURL);
+  UrlLoadParams params = UrlLoadParams::InNewTab(URL);
+  params.in_incognito = _incognitoState.incognitoContentVisible;
+  params.load_in_group = true;
+  params.tab_group = self.currentTabGroup->GetWeakPtr();
+  _URLLoader->Load(params);
+  [self updateConsumer];
+}
+
 // Returns the context menu for the Assistant button.
 // TODO(crbug.com/484000556) Implement this menu.
 - (UIMenu*)createContextMenuForAssistantButton {
@@ -383,12 +399,32 @@
 
 // Returns the context menu for the New Tab button.
 - (UIMenu*)createContextMenuForNewTabButton {
-  UIMenu* menu;
   BOOL isTabGroupsPageVisible = _currentPage == TabGridPageTabGroups;
+  BOOL isTabGroupVisible = _tabGridState.visibleTabGroup;
 
+  __weak __typeof(self) weakSelf = self;
+
+  UIAction* newTabAction = [UIAction
+      actionWithTitle:l10n_util::GetNSString(IDS_IOS_DIAMOND_PROTOTYPE_NEW_TAB)
+                image:DefaultSymbolWithConfiguration(kPlusSymbol, nil)
+           identifier:nil
+              handler:^(UIAction*) {
+                [weakSelf createNewTabFromView:nil];
+              }];
+
+  // Context menu for when a tab group is open in the tab grid.
+  if (isTabGroupVisible) {
+    UIAction* newTabInCurrentGroupAction =
+        [self.regularActionFactory actionToAddNewTabInGroupWithBlock:^{
+          [weakSelf addNewTabInCurrentTabGroup];
+        }];
+
+    return
+        [UIMenu menuWithChildren:@[ newTabAction, newTabInCurrentGroupAction ]];
+  }
+
+  // Context menu for when the tab groups page is visible in the tab grid.
   if (isTabGroupsPageVisible) {
-    __weak __typeof(self) weakSelf = self;
-
     UIAction* newTabGroupAction = [UIAction
         actionWithTitle:l10n_util::GetNSString(
                             IDS_IOS_APP_BAR_CONTEXT_MENU_NEW_TAB_GROUP)
@@ -398,23 +434,13 @@
                 handler:^(UIAction*) {
                   [weakSelf createNewTabGroupFromView:nil];
                 }];
-    UIAction* newTabAction = [UIAction
-        actionWithTitle:l10n_util::GetNSString(
-                            IDS_IOS_DIAMOND_PROTOTYPE_NEW_TAB)
-                  image:DefaultSymbolWithConfiguration(kPlusSymbol, nil)
-             identifier:nil
-                handler:^(UIAction*) {
-                  [weakSelf createNewTabFromView:nil];
-                }];
 
-    menu = [UIMenu menuWithChildren:@[ newTabGroupAction, newTabAction ]];
-  } else {
-    // TODO(crbug.com/484000878): Add unique context menus for within tab groups
-    // and outside of the tab grid.
-    menu = nil;
+    return [UIMenu menuWithChildren:@[ newTabGroupAction, newTabAction ]];
   }
 
-  return menu;
+  // TODO(crbug.com/484000878): Add a context menu that appears while browsing
+  // (outside of the tab grid).
+  return nil;
 }
 
 // Returns the context menu for the Tab Grid button.

@@ -26,6 +26,9 @@ typedef NS_ENUM(NSUInteger, AppBarButtonType) {
 // Sets whether the tab groups page in the tab grid is visible.
 - (void)setTabGroupsPageVisible:(BOOL)tabGroupsPageVisible;
 
+// Sets whether a tab group is being shown in the tab grid.
+- (void)setTabGroupVisible:(BOOL)tabGroupVisible;
+
 // Sets the context menu for the App Bar button with `buttonType`.
 - (void)setMenu:(UIMenu*)menu forButtonType:(AppBarButtonType)buttonType;
 
