@@ -147,13 +147,18 @@ public class EventForwarder {
         mConvertTrackpadEventsToMouse = convertTrackpadEventsToMouse;
         mUseBufferedInput = useBufferedInput;
         mVelocityTracker = VelocityTracker.obtain();
-        sEventForwarders.put(nativeEventForwarder, this);
+        var oldValue = sEventForwarders.put(nativeEventForwarder, this);
+        assert oldValue == null;
     }
 
     @CalledByNative
-    private void destroy() {
-        sEventForwarders.remove(mNativeEventForwarder);
-        mNativeEventForwarder = 0;
+    @VisibleForTesting
+    public void destroy() {
+        if (mNativeEventForwarder != 0) {
+            var oldValue = sEventForwarders.remove(mNativeEventForwarder);
+            assert oldValue == this;
+            mNativeEventForwarder = 0;
+        }
     }
 
     private boolean hasTouchEventOffset() {
@@ -937,6 +942,11 @@ public class EventForwarder {
                         timeMs,
                         /* preventBoosting= */ true,
                         isTouchpadEvent);
+    }
+
+    @CalledByNative
+    public static @Nullable EventForwarder getJavaObject(long nativeEventForwarder) {
+        return sEventForwarders.get(nativeEventForwarder);
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)

@@ -71,6 +71,7 @@ public class EventForwarderTest {
         MotionEvent rightClickEvent = MotionEventTestUtils.getTrackRightClickEvent();
         eventForwarder.onTouchEvent(rightClickEvent);
         verifyNativeMouseEventSent(NATIVE_EVENT_FORWARDER_ID, rightClickEvent, eventForwarder, 1);
+        eventForwarder.destroy();
     }
 
     @Test
@@ -93,6 +94,7 @@ public class EventForwarderTest {
         eventForwarder.onTouchEvent(rightClickReleaseEvent);
         verifyNativeMouseEventSent(
                 NATIVE_EVENT_FORWARDER_ID, rightClickReleaseEvent, eventForwarder, 1);
+        eventForwarder.destroy();
     }
 
     @Test
@@ -104,6 +106,7 @@ public class EventForwarderTest {
                         MotionEvent.ACTION_MOVE, MotionEvent.BUTTON_PRIMARY);
         eventForwarder.onTouchEvent(clickAndDragEvent);
         verifyNativeMouseEventSent(NATIVE_EVENT_FORWARDER_ID, clickAndDragEvent, eventForwarder, 1);
+        eventForwarder.destroy();
     }
 
     @Test
@@ -114,6 +117,7 @@ public class EventForwarderTest {
                 MotionEventTestUtils.getTrackpadEvent(MotionEvent.ACTION_HOVER_MOVE, 0);
         eventForwarder.onHoverEvent(hoverEvent);
         verifyNativeMouseEventSent(NATIVE_EVENT_FORWARDER_ID, hoverEvent, eventForwarder, 1);
+        eventForwarder.destroy();
     }
 
     @Test
@@ -154,6 +158,7 @@ public class EventForwarderTest {
                         /* gestureClassification= */ 0,
                         /* isTouchHandleEvent= */ false,
                         /* isLatestEventTimeResampled= */ false);
+        eventForwarder.destroy();
     }
 
     @Test
@@ -196,6 +201,7 @@ public class EventForwarderTest {
                         /* gestureClassification= */ 0,
                         /* isTouchHandleEvent= */ false,
                         /* isLatestEventTimeResampled= */ true);
+        eventForwarder.destroy();
     }
 
     @Test
@@ -222,6 +228,7 @@ public class EventForwarderTest {
         verify(mNativeMock, never())
                 .onMouseEvent(
                         anyLong(), any(MotionEvent.class), anyLong(), anyInt(), anyInt(), anyInt());
+        eventForwarder.destroy();
     }
 
     @Test
@@ -233,6 +240,7 @@ public class EventForwarderTest {
         verify(mNativeMock, never())
                 .onMouseEvent(
                         anyLong(), any(MotionEvent.class), anyLong(), anyInt(), anyInt(), anyInt());
+        eventForwarder.destroy();
     }
 
     @Test
@@ -288,6 +296,7 @@ public class EventForwarderTest {
         verify(mNativeMock, never())
                 .onMouseEvent(
                         anyLong(), any(MotionEvent.class), anyLong(), anyInt(), anyInt(), anyInt());
+        eventForwarder.destroy();
     }
 
     @Test
@@ -342,6 +351,7 @@ public class EventForwarderTest {
                         eq(EventForwarder.getMouseEventActionButton(expectedEvent)),
                         eq(MotionEvent.TOOL_TYPE_MOUSE));
         MotionEventTestUtils.assertEquals(captor.getValue(), expectedEvent);
+        eventForwarder.destroy();
     }
 
     @Test
@@ -414,6 +424,7 @@ public class EventForwarderTest {
                         eq(MotionEvent.TOOL_TYPE_MOUSE));
 
         MotionEventTestUtils.assertEquals(captor.getValue(), transformed);
+        eventForwarder.destroy();
     }
 
     @Test
@@ -468,6 +479,7 @@ public class EventForwarderTest {
                         eq(moveEvent.getToolType(0)));
         MotionEventTestUtils.assertEquals(captor.getAllValues().get(0), expectedEvent1);
         MotionEventTestUtils.assertEquals(captor.getAllValues().get(1), expectedEvent2);
+        eventForwarder.destroy();
     }
 
     @Test
@@ -490,6 +502,7 @@ public class EventForwarderTest {
         eventForwarder.onCapturedPointerEvent(scrollEvent, Surface.ROTATION_0);
         verify(mNativeMock, times(1))
                 .onGenericMotionEvent(anyLong(), any(MotionEvent.class), anyLong(), anyLong());
+        eventForwarder.destroy();
     }
 
     private void verifyNativeMouseEventSent(
@@ -561,5 +574,6 @@ public class EventForwarderTest {
                         eq(expectedHtml),
                         eq(expectedUrl));
         histograms.assertExpected();
+        eventForwarder.destroy();
     }
 }

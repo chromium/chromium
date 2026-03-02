@@ -125,7 +125,8 @@ ScopedJavaLocalRef<jobject> ViewAndroid::GetEventForwarder() {
         << "The view tree path already has an event forwarder.";
     event_forwarder_.reset(new EventForwarder(this));
   }
-  return event_forwarder_->GetJavaObject();
+  return event_forwarder_->GetOrCreateJavaObject(
+      base::android::AttachCurrentThread());
 }
 
 void ViewAndroid::AddChild(ViewAndroid* child) {
