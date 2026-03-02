@@ -1007,10 +1007,8 @@ bool OmniboxContextMenuController::IsCommandIdEnabled(int command_id) const {
     return false;
   }
 
-  const omnibox::ToolMode aim_tool_mode = omnibox_popup_ui->composebox_handler()
-                                              ->input_state_model()
-                                              ->GetInputState()
-                                              .active_tool;
+  const omnibox::ToolMode aim_tool_mode =
+      omnibox_popup_ui->composebox_handler()->GetInputState().active_tool;
 
   auto* session_handle = omnibox_popup_ui->GetOrCreateContextualSessionHandle();
   std::vector<contextual_search::FileInfo> file_infos;

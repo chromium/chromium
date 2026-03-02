@@ -757,9 +757,9 @@ void ContextualTasksComposeboxHandler::ContinueCreateAndSendQueryMessage(
     create_client_to_aim_request_info->query_start_time = base::Time::Now();
 
     create_client_to_aim_request_info->active_tool =
-        input_state_model()->GetInputState().active_tool;
+        GetInputState().active_tool;
     create_client_to_aim_request_info->active_model =
-        input_state_model()->GetInputState().active_model;
+        GetInputState().active_model;
 
     if (auto active_tab_context_id = GetActiveTabContextId();
         active_tab_context_id.has_value()) {

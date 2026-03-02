@@ -210,9 +210,9 @@ void ComposeboxHandler::OnThumbnailRemoved() {
 void ComposeboxHandler::ClearFiles(bool should_block_auto_suggested_tabs) {
   ContextualSearchboxHandler::ClearFiles(should_block_auto_suggested_tabs);
   // Reset the AIM tool mode to not include file upload if it currently does.
-  if (input_state_model()->GetInputState().active_tool ==
+  if (GetInputState().active_tool ==
       omnibox::ToolMode::TOOL_MODE_IMAGE_GEN_UPLOAD) {
-    input_state_model()->setActiveTool(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
+    input_state_model_->setActiveTool(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
   }
 }
 
@@ -246,7 +246,7 @@ void ComposeboxHandler::SubmitQuery(
     std::map<std::string, std::string> additional_params) {
   if (auto* metrics_recorder = GetMetricsRecorder()) {
     // Record AIM tool and model mode on query submission.
-    const auto& input_state = input_state_model()->GetInputState();
+    const auto& input_state = GetInputState();
     metrics_recorder->RecordModesOnSubmission(
         mojo::EnumTraits<composebox_query::mojom::ToolMode,
                          omnibox::ToolMode>::ToMojom(input_state.active_tool),
