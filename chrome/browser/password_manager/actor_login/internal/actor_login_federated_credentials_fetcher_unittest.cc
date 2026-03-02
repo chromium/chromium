@@ -106,7 +106,7 @@ TEST_F(ActorLoginFederatedCredentialsFetcherTest, GetCredentialsSuccess) {
   const auto& [credentials, status] = future.Get();
   ASSERT_EQ(credentials.size(), 1u);
   EXPECT_EQ(credentials[0].type, CredentialType::kFederated);
-  EXPECT_EQ(credentials[0].username, u"Display Name idp");
+  EXPECT_EQ(credentials[0].username, u"test@example.com");
   EXPECT_EQ(credentials[0].source_site_or_app, u"idp");
   EXPECT_EQ(credentials[0].request_origin, request_origin);
   EXPECT_EQ(credentials[0].display_origin, u"example.com");

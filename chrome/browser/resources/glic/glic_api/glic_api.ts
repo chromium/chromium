@@ -2142,13 +2142,19 @@ export declare interface Credential {
   id: number;
   // The username of the credential. Unique for a given sourceSiteOrApp. It can
   // be empty if, for example, the credential is stored as a password only.
+  // For federated credentials, this is the user's email, if used by the
+  // identity provider, otherwise the account display identifier.
   username: string;
-  // The original website or application for which this credential was saved
-  // for.
+  // The original website or application for which this credential was saved.
+  // For federated credentials, this is the site of the identity provider
+  // formatted for display.
   sourceSiteOrApp: string;
   // The origin for which this credential was requested.
   requestOrigin?: string;
   // The optional icon for the credential, encoded as a PNG image.
+  // Not provided for federated credentials.
+  // TODO(https://crbug.com/488443317): Consider providing icons for federated
+  // credentials.
   getIcon?(): Promise<Blob>;
   // The login method for this credential.
   type?: CredentialType;
