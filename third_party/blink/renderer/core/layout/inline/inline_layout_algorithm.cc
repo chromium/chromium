@@ -1492,8 +1492,7 @@ const LayoutResult* InlineLayoutAlgorithm::Layout() {
           if (constraint_space.GetLineClampData().IsClampByLines()) {
             *lines_until_clamp_ = *lines_until_clamp_ - 1;
           } else {
-            DCHECK(
-                constraint_space.GetLineClampData().IsMeasureUntilBfcOffset());
+            DCHECK(constraint_space.GetLineClampData().IsCountLines());
             *lines_until_clamp_ = *lines_until_clamp_ + 1;
           }
         }

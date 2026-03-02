@@ -836,23 +836,29 @@ inline const LayoutResult* BlockLayoutAlgorithm::Layout(
     // chain so we can properly compute the line-clamp container block size if
     // we clamp inside it.
     if (line_clamp_data_.data.IsMeasureUntilBfcOffset()) {
-      MinMaxSizes block_min_max_sizes;
-      if (ChildAvailableSize().block_size != kIndefiniteSize) {
-        block_min_max_sizes.min_size = block_min_max_sizes.max_size =
-            ChildAvailableSize().block_size + BorderPadding().BlockSum();
-      } else {
-        block_min_max_sizes = ComputeInitialMinMaxBlockSizes(
-            constraint_space, Node(), BorderPadding());
-      }
+      MinMaxSizes block_min_max_sizes = ComputeInitialMinMaxBlockSizes(
+          constraint_space, Node(), BorderPadding());
 
-      DCHECK(constraint_space.GetLineClampAncestorChain());
-      LayoutUnit end_margin =
-          ComputeMarginsForSelf(constraint_space, Style()).block_end;
-      line_clamp_data_.ancestor_chain =
-          MakeGarbageCollected<LineClampAncestorChain>(
-              container_builder_.BfcBlockOffset(), BorderPadding().block_end,
-              end_margin, block_min_max_sizes,
-              constraint_space.GetLineClampAncestorChain());
+      const bool is_fixed_block_size =
+          ChildAvailableSize().block_size != kIndefiniteSize ||
+          Node().ShouldApplyBlockSizeContainment() ||
+          block_min_max_sizes.min_size == block_min_max_sizes.max_size;
+
+      if (is_fixed_block_size) {
+        // If the block size is fixed, we won't ever clamp inside this box,
+        // since that couldnt possibly reduce the line-clamp container's height.
+        // But our ancestors still need to know the number of lines in the box.
+        line_clamp_data_.data.state = LineClampData::kCountLines;
+      } else {
+        DCHECK(constraint_space.GetLineClampAncestorChain());
+        LayoutUnit end_margin =
+            ComputeMarginsForSelf(constraint_space, Style()).block_end;
+        line_clamp_data_.ancestor_chain =
+            MakeGarbageCollected<LineClampAncestorChain>(
+                container_builder_.BfcBlockOffset(), BorderPadding().block_end,
+                end_margin, block_min_max_sizes,
+                constraint_space.GetLineClampAncestorChain());
+      }
     }
   }
 
@@ -1589,7 +1595,7 @@ bool BlockLayoutAlgorithm::TryReuseFragmentsFromCache(
     DCHECK(result.line_count <= max_lines);
     DCHECK(line_clamp_data_.data.IsClampByLines());
     line_clamp_data_.data.lines_until_clamp -= result.line_count;
-  } else if (line_clamp_data_.data.IsMeasureUntilBfcOffset()) {
+  } else if (line_clamp_data_.data.IsCountLines()) {
     line_clamp_data_.data.lines_until_clamp += result.line_count;
   }
 
@@ -4094,7 +4100,7 @@ bool BlockLineClampData::UpdateAfterLayout(
   const PhysicalFragment& fragment = layout_result->GetPhysicalFragment();
 
   int old_lines_until_clamp = 0;
-  if (data.IsClampByLines() || data.IsMeasureUntilBfcOffset()) {
+  if (data.IsClampByLines() || data.IsCountLines()) {
     old_lines_until_clamp = data.lines_until_clamp;
     if (!fragment.IsFormattingContextRoot() && !ignore_further_lines) {
       data.lines_until_clamp = layout_result->LinesUntilClamp();

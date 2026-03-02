@@ -129,22 +129,22 @@ struct BlockLineClampData {
 
   // If set, the box was clamped, and this is the previous inflow position after
   // the last line or box before clamp. Can only be set if
-  // data.state == kClampByLines.
+  // `data.IsClampByLines()` or `data.state == kClampAfterLayoutObject`.
   std::optional<PreviousInflowPosition> previous_inflow_position_when_clamped;
 
   // If set, any lines added by any further layout results are ignored when
   // decreasing the number of lines until clamp. Used when we know that the
   // remaining lines in this block box would not exist if we weren't
-  // ellipsizing. Can only be set if data.state == kClampByLines.
+  // ellipsizing. Can only be set when `data.IsClampByLines()`.
   bool ignore_further_lines = false;
 
   // The last LayoutObject encountered since the last line.
-  // Can only be set if data.state == kMeasureLinesUntilBfcOffset.
+  // Can only be set when `data.IsMeasureUntilBfcOffset()`.
   const LayoutObject* last_layout_object = nullptr;
 
   // The chain of ancestor data needed to compute the size of the line-clamp
   // container corresponding to each clamp point.
-  // Can only be set if data.state == kMeasureLinesUntilBfcOffset.
+  // Can only be set when `data.IsMeasureUntilBfcOffset()`.
   const LineClampAncestorChain* ancestor_chain = nullptr;
 };
 

@@ -29,25 +29,51 @@ struct LineClampData {
 
   enum State {
     kDisabled,
+
+    // Clamps after a given number of lines.
     kClampByLines,
+
+    // Clamps just after the end of a given layout object.
     kClampAfterLayoutObject,
+
+    // Doesn't clamp. Instead it counts the number of lines upwards until the
+    // clamp BFC offset is reached, at which point it relayouts to clamp.
     kMeasureLinesUntilBfcOffset,
+
+    // Doesn't clamp. Instead it just counts the number of lines upwards. Used
+    // when this box can't clamp, but its ancestors use
+    // `kMeasureLinesUntilBfcOffset`.
+    kCountLines,
+
+    // Combines `kClampByLines` and `kMeasureLinesUntilBfcOffset`. Clamps after
+    // a number of lines, unless the BFC offset is reached before that point, in
+    // which case it relayouts with `kClampByLines`.
     kClampByLinesWithBfcOffset,
   };
 
   bool IsLineClampContext() const { return state != kDisabled; }
 
+  // Returns true if we're clamping after a given number of lines.
   bool IsClampByLines() const {
     return state == kClampByLines || state == kClampByLinesWithBfcOffset;
   }
+
+  // Returns true if we're measuring the BFC offset to relayout there.
   bool IsMeasureUntilBfcOffset() const {
     return state == kMeasureLinesUntilBfcOffset ||
            state == kClampByLinesWithBfcOffset;
   }
 
+  // Returns true if we're counting the number of lines in this box upwards.
+  bool IsCountLines() const {
+    return state == kMeasureLinesUntilBfcOffset || state == kCountLines;
+  }
+
+  // If we're clamping by lines, returns the number of lines until clamp.
+  // Otherwise, if `show_measured_lines` is true, it also returns the number of
+  // lines counted upwards so far, if we are counting lines.
   std::optional<int> LinesUntilClamp(bool show_measured_lines = false) const {
-    if (IsClampByLines() ||
-        (show_measured_lines && state == kMeasureLinesUntilBfcOffset)) {
+    if (IsClampByLines() || (show_measured_lines && IsCountLines())) {
       return lines_until_clamp;
     }
     return std::optional<int>();
@@ -71,6 +97,7 @@ struct LineClampData {
     }
     switch (state) {
       case kClampByLines:
+      case kCountLines:
         return lines_until_clamp == other.lines_until_clamp;
       case kClampAfterLayoutObject:
         return clamp_after_layout_object == other.clamp_after_layout_object;
@@ -83,18 +110,13 @@ struct LineClampData {
     }
   }
 
-  // If state == kClampByLines or kClampByLinesWithBfcOffset, the number of
-  // lines until the clamp point. A value of 1 indicates the current line should
-  // be clamped. May go negative.
-  // With state == kMeasureLinesUntilBfcOffset, the number of lines found in the
-  // BFC so far.
+  // When `IsClampByLines()`, the number of lines until the clamp point. A value
+  // of 1 indicates the current line should be clamped. May go negative.
+  // When `IsCountLines()`, the number of lines found in the BFC so far.
   int lines_until_clamp = 0;
 
   // The BFC offset where the current block container should clamp.
-  // (Might not be the same BFC offset as other block containers in the same
-  // BFC, depending on the bottom bmp).
-  // Only valid if state == kMeasureLinesUntilBfcOffset or
-  // kClampByLinesWithBfcOffset.
+  // Only valid when `IsMeasureUntilBfcOffset()`.
   LayoutUnit clamp_bfc_offset;
 
   // A LayoutObject immediately after which the container should clamp.
@@ -110,7 +132,7 @@ struct LineClampData {
   // for a different LayoutObject during the LineClampData's lifetime. So using
   // it for pointer equality should not run into false positives.
   //
-  // Only valid if state == kClampAfterLayoutObject.
+  // Only valid when `state == kClampAfterLayoutObject`.
   UntracedMember<const LayoutObject> clamp_after_layout_object;
 
   State state = kDisabled;

@@ -28,6 +28,7 @@ CORE_EXPORT LineClampData::LineClampData(const LineClampData& o)
     case kDisabled:
       break;
     case kClampByLines:
+    case kCountLines:
       lines_until_clamp = o.lines_until_clamp;
       break;
     case kClampAfterLayoutObject:
@@ -50,6 +51,7 @@ CORE_EXPORT LineClampData& LineClampData::operator=(const LineClampData& o) {
     case kDisabled:
       break;
     case kClampByLines:
+    case kCountLines:
       lines_until_clamp = o.lines_until_clamp;
       break;
     case kClampAfterLayoutObject:
