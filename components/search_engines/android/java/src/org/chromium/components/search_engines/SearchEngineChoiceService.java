@@ -162,7 +162,10 @@ public class SearchEngineChoiceService {
 
         isDefaultBrowserPromoSuppressed(); // Initialize `mIsDefaultBrowserPromoSuppressed`.
 
-        mDelegate = null;
+        if (mDelegate != null) {
+            mDelegate.destroy();
+            mDelegate = null;
+        }
     }
 
     /**

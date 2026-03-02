@@ -106,4 +106,7 @@ public abstract class SearchEngineCountryDelegate {
      */
     @MainThread
     public void notifyDeviceChoiceEvent(@DeviceChoiceEventType int eventType) {}
+
+    @MainThread
+    public void destroy() {}
 }
