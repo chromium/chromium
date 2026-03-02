@@ -146,7 +146,7 @@ public class Snackbar {
     private @Nullable String mActionText;
     private @Nullable Object mActionData;
     private int mBackgroundColor;
-    private int mTextApperanceResId;
+    private int mTextAppearanceResId;
     private boolean mDefaultLines = true;
     private int mDurationMs;
     private @Nullable Drawable mProfileImage;
@@ -256,7 +256,7 @@ public class Snackbar {
      * appearance.
      */
     public Snackbar setTextAppearance(int resId) {
-        mTextApperanceResId = resId;
+        mTextAppearanceResId = resId;
         return this;
     }
 
@@ -313,7 +313,7 @@ public class Snackbar {
 
     /** If method returns zero, then default text appearance for snackbar will be used. */
     int getTextAppearance() {
-        return mTextApperanceResId;
+        return mTextAppearanceResId;
     }
 
     /**

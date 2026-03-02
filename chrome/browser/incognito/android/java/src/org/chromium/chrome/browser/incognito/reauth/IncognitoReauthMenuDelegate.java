@@ -109,7 +109,7 @@ class IncognitoReauthMenuDelegate implements ListMenu.Delegate {
     private MVCListAdapter.ListItem buildListItemByMenuItemType(@MenuItemType int type) {
         switch (type) {
             case MenuItemType.CLOSE_INCOGNITO_TABS:
-                return buildMenuListItemWithCustomApperance(
+                return buildMenuListItemWithCustomAppearance(
                         /* titleId= */ R.string.menu_close_all_incognito_tabs,
                         /* menuId= */ 0,
                         /* startIconId= */ R.drawable.btn_close,
@@ -119,7 +119,7 @@ class IncognitoReauthMenuDelegate implements ListMenu.Delegate {
                                 .TextAppearance_TextLarge_Primary_Baseline_Light,
                         /* textEllipsizedAtEnd= */ true);
             case MenuItemType.SETTINGS:
-                return buildMenuListItemWithCustomApperance(
+                return buildMenuListItemWithCustomAppearance(
                         /* titleId= */ R.string.menu_settings,
                         /* menuId= */ 0,
                         /* startIconId= */ R.drawable.settings_cog,
@@ -156,7 +156,7 @@ class IncognitoReauthMenuDelegate implements ListMenu.Delegate {
      *     view width.
      * @return ListItem Representing an item with text or icon.
      */
-    private static MVCListAdapter.ListItem buildMenuListItemWithCustomApperance(
+    private static MVCListAdapter.ListItem buildMenuListItemWithCustomAppearance(
             @StringRes int titleId,
             @IdRes int menuId,
             @DrawableRes int startIconId,
