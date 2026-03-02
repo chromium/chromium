@@ -60,11 +60,11 @@ public class EducationalTipBottomSheetListContainerView extends LinearLayout {
                 listItemView.setIcon(educationalTip.getCardImage());
                 listItemView.setOnClickListener(
                         view -> {
-                            educationalTip.onCardClicked();
                             if (mDismissBottomSheetRunnable != null) {
-                                // Bottom sheet should be dismissed after an item is clicked.
+                                // Bottom sheet should be dismissed before an item is clicked.
                                 mDismissBottomSheetRunnable.run();
                             }
+                            educationalTip.onCardClicked();
                         });
             }
             // TODO(crbug.com/469425754): Consider passing a Position enum to the list item view

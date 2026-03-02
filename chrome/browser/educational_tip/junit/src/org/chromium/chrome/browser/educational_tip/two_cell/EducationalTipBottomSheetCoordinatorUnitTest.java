@@ -11,6 +11,7 @@ import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.educational_tip.two_cell.EducationalTipBottomSheetProperties.BOTTOM_SHEET_DESCRIPTION;
 import static org.chromium.chrome.browser.educational_tip.two_cell.EducationalTipBottomSheetProperties.BOTTOM_SHEET_LIST_ITEMS;
+import static org.chromium.chrome.browser.educational_tip.two_cell.EducationalTipBottomSheetProperties.BOTTOM_SHEET_LIST_ITEMS_ON_CLICK;
 import static org.chromium.chrome.browser.educational_tip.two_cell.EducationalTipBottomSheetProperties.BOTTOM_SHEET_TITLE;
 
 import android.content.Context;
@@ -96,6 +97,25 @@ public class EducationalTipBottomSheetCoordinatorUnitTest {
                 model.get(BOTTOM_SHEET_LIST_ITEMS),
                 mListOfEducationalTipBottomSheetItem);
         verify(mBottomSheetController).requestShowContent(any(), /* animate= */ eq(true));
+    }
+
+    @Test
+    @SmallTest
+    public void testDismissBottomSheet() {
+        EducationalTipBottomSheetCoordinator educationalTipBottomSheetCoordinator =
+                new EducationalTipBottomSheetCoordinator(
+                        mActionDelegate, mEducationalTipCardProviderSupplier);
+        PropertyModel model = educationalTipBottomSheetCoordinator.getModelForTesting();
+
+        // 1. Verify dismissal with animation.
+        educationalTipBottomSheetCoordinator.dismissBottomSheet(true);
+        verify(mBottomSheetController).hideContent(any(), eq(true));
+
+        // 2. Verify dismissal without animation (triggered by item click).
+        Runnable dismissalRunnable = model.get(BOTTOM_SHEET_LIST_ITEMS_ON_CLICK);
+        Assert.assertNotNull(dismissalRunnable);
+        dismissalRunnable.run();
+        verify(mBottomSheetController).hideContent(any(), eq(false));
     }
 
     private List<EducationalTipBottomSheetItem> createListOfEducationalTipBottomSheetItem() {

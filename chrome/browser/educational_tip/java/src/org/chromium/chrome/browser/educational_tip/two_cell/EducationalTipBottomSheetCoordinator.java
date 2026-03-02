@@ -58,7 +58,8 @@ public class EducationalTipBottomSheetCoordinator {
         PropertyModelChangeProcessor.create(
                 mModel, contentView, EducationalTipBottomSheetViewBinder::bind);
 
-        mModel.set(BOTTOM_SHEET_LIST_ITEMS_ON_CLICK, this::dismissBottomSheet);
+        mModel.set(
+                BOTTOM_SHEET_LIST_ITEMS_ON_CLICK, () -> dismissBottomSheet(/* animate= */ false));
     }
 
     public void showBottomSheet() {
@@ -73,8 +74,8 @@ public class EducationalTipBottomSheetCoordinator {
         mBottomSheetController.requestShowContent(mBottomSheetContent, /* animate= */ true);
     }
 
-    public void dismissBottomSheet() {
-        mBottomSheetController.hideContent(mBottomSheetContent, /* animate= */ true);
+    public void dismissBottomSheet(boolean animate) {
+        mBottomSheetController.hideContent(mBottomSheetContent, animate);
     }
 
     PropertyModel getModelForTesting() {
