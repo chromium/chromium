@@ -72,7 +72,6 @@ SessionStorageSqlite::~SessionStorageSqlite() {
 }
 
 DbStatus SessionStorageSqlite::Open(
-    PassKey,
     const base::FilePath& database_path,
     const std::optional<base::trace_event::MemoryAllocatorDumpGuid>&
         memory_dump_id) {

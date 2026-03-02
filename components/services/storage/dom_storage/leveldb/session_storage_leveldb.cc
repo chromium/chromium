@@ -150,7 +150,6 @@ SessionStorageLevelDB::SessionStorageLevelDB(PassKey) {}
 SessionStorageLevelDB::~SessionStorageLevelDB() = default;
 
 DbStatus SessionStorageLevelDB::Open(
-    PassKey,
     const base::FilePath& directory,
     const std::optional<base::trace_event::MemoryAllocatorDumpGuid>&
         memory_dump_id) {

@@ -66,11 +66,9 @@ class SessionStorageAreaImplTest : public base::test::WithFeatureOverride,
         test_namespace_id1_(base::Uuid::GenerateRandomV4().AsLowercaseString()),
         test_namespace_id2_(
             base::Uuid::GenerateRandomV4().AsLowercaseString()) {
-    // Create an in-memory database.
-    database_ = AsyncDomStorageDatabase::Open(
-        StorageType::kSessionStorage,
-        /*database_path=*/base::FilePath(),
-        /*memory_dump_id=*/std::nullopt, base::DoNothing());
+    // Create an in-memory database and wait for it to open.
+    OpenAsyncDomStorageDatabaseInMemorySync(StorageType::kSessionStorage,
+                                            &database_);
 
     // Create a map with one key/value pair in the database.
     scoped_refptr<DomStorageDatabase::SharedMapLocator> map_locator =

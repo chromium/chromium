@@ -184,64 +184,6 @@ TEST_P(AsyncDomStorageDatabaseTest,
                               expected_metadata_after_delete);
 }
 
-TEST_P(AsyncDomStorageDatabaseTest, EnqueuePendingTasksWhileOpening) {
-  // Define test values to write to the database.
-  const blink::StorageKey kStorageKey =
-      blink::StorageKey::CreateFromStringForTesting("https://a-fake-url.test");
-
-  const DomStorageDatabase::MapMetadata kInitialMapMetadata[] = {
-      {
-          .map_locator{kStorageKey},
-          .last_modified{base::Time::Now() - base::Seconds(12)},
-          .total_size{104},
-      },
-  };
-
-  // Open an in-memory database.
-  base::test::TestFuture<DbStatus> open_status_future;
-  std::unique_ptr<AsyncDomStorageDatabase> database =
-      AsyncDomStorageDatabase::Open(
-          StorageType::kLocalStorage, /*database_path=*/base::FilePath(),
-          /*memory_dump_id=*/std::nullopt, open_status_future.GetCallback());
-
-  // Immediately start using the database, which will enqueue pending tasks
-  // while opening.
-  DomStorageDatabase::Metadata cloned_metadata(
-      CloneMapMetadataVector(kInitialMapMetadata));
-
-  base::test::TestFuture<DbStatus> write_status_future;
-  database->PutMetadata(std::move(cloned_metadata),
-                        write_status_future.GetCallback());
-
-  // Start the task to read metadata from the database.
-  base::test::TestFuture<StatusOr<DomStorageDatabase::Metadata>>
-      metadata_future;
-  database->ReadAllMetadata(metadata_future.GetCallback());
-
-  const DbStatus& open_status = open_status_future.Get();
-  const DbStatus& write_status = write_status_future.Get();
-  StatusOr<DomStorageDatabase::Metadata> metadata = metadata_future.Take();
-
-  EXPECT_TRUE(open_status.ok()) << open_status.ToString();
-  EXPECT_TRUE(write_status.ok()) << write_status.ToString();
-  ASSERT_TRUE(metadata.has_value()) << metadata.error().ToString();
-
-  std::vector<DomStorageDatabase::MapMetadata> expected_map_metadata;
-  if (IsSqliteEnabled()) {
-    // Copy `kInitialMapMetadata`, inserting the expected map ID.
-    expected_map_metadata.push_back(
-        {.map_locator{kStorageKey, /*map_id=*/1},
-         .last_modified = kInitialMapMetadata[0].last_modified,
-         .total_size = kInitialMapMetadata[0].total_size});
-  } else {
-    // LevelDB does not create map IDs, associating maps by storage key only.
-    expected_map_metadata.push_back(CloneMapMetadata(kInitialMapMetadata[0]));
-  }
-
-  ExpectEqualsMapMetadataSpan(metadata->map_metadata, expected_map_metadata);
-  EXPECT_EQ(metadata->next_map_id, std::nullopt);
-}
-
 TEST_P(AsyncDomStorageDatabaseTest, MapLocatorToDebugStringWithoutSessions) {
   DomStorageDatabase::MapLocator map_locator{"session_id1", kFirstStorageKey,
                                              /*map_id=*/216};

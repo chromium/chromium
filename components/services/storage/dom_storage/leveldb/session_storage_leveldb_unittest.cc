@@ -130,10 +130,9 @@ void SessionStorageLevelDBTest::OpenInMemory(
   auto instance = std::make_unique<SessionStorageLevelDB>(
       DomStorageDatabaseFactory::CreatePassKeyForTesting());
 
-  DbStatus status =
-      instance->Open(DomStorageDatabaseFactory::CreatePassKeyForTesting(),
-                     /*directory=*/base::FilePath(),
-                     /*memory_dump_id=*/std::nullopt);
+  DbStatus status = instance->Open(
+      /*directory=*/base::FilePath(),
+      /*memory_dump_id=*/std::nullopt);
 
   ASSERT_TRUE(status.ok()) << status.ToString();
   *result = std::move(instance);

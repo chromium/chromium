@@ -159,7 +159,6 @@ LocalStorageLevelDB::LocalStorageLevelDB(PassKey) {}
 LocalStorageLevelDB::~LocalStorageLevelDB() = default;
 
 DbStatus LocalStorageLevelDB::Open(
-    PassKey,
     const base::FilePath& directory,
     const std::optional<base::trace_event::MemoryAllocatorDumpGuid>&
         memory_dump_id) {

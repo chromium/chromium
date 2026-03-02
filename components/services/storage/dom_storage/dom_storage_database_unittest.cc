@@ -55,8 +55,7 @@ class DomStorageDatabaseTest : public testing::Test {
 
   void OpenLocalStorageLevelDB(std::unique_ptr<LocalStorageLevelDB>* result) {
     auto instance = std::make_unique<LocalStorageLevelDB>(GetPassKey());
-    DbStatus status = instance->Open(GetPassKey(),
-                                     /*directory=*/base::FilePath(),
+    DbStatus status = instance->Open(/*directory=*/base::FilePath(),
                                      /*memory_dump_id=*/std::nullopt);
     ASSERT_TRUE(status.ok()) << status.ToString();
     *result = std::move(instance);
@@ -64,9 +63,9 @@ class DomStorageDatabaseTest : public testing::Test {
 
   void OpenLocalStorageSqlite(std::unique_ptr<LocalStorageSqlite>* result) {
     auto instance = std::make_unique<LocalStorageSqlite>(GetPassKey());
-    DbStatus status = instance->Open(GetPassKey(),
-                                     /*database_path=*/base::FilePath(),
-                                     /*memory_dump_id=*/std::nullopt);
+    DbStatus status = instance->Open(
+        /*database_path=*/base::FilePath(),
+        /*memory_dump_id=*/std::nullopt);
     ASSERT_TRUE(status.ok()) << status.ToString();
     *result = std::move(instance);
   }
@@ -74,18 +73,18 @@ class DomStorageDatabaseTest : public testing::Test {
   void OpenSessionStorageLevelDB(
       std::unique_ptr<SessionStorageLevelDB>* result) {
     auto instance = std::make_unique<SessionStorageLevelDB>(GetPassKey());
-    DbStatus status = instance->Open(GetPassKey(),
-                                     /*directory=*/base::FilePath(),
-                                     /*memory_dump_id=*/std::nullopt);
+    DbStatus status = instance->Open(
+        /*directory=*/base::FilePath(),
+        /*memory_dump_id=*/std::nullopt);
     ASSERT_TRUE(status.ok()) << status.ToString();
     *result = std::move(instance);
   }
 
   void OpenSessionStorageSqlite(std::unique_ptr<SessionStorageSqlite>* result) {
     auto instance = std::make_unique<SessionStorageSqlite>(GetPassKey());
-    DbStatus status = instance->Open(GetPassKey(),
-                                     /*database_path=*/base::FilePath(),
-                                     /*memory_dump_id=*/std::nullopt);
+    DbStatus status = instance->Open(
+        /*database_path=*/base::FilePath(),
+        /*memory_dump_id=*/std::nullopt);
     ASSERT_TRUE(status.ok()) << status.ToString();
     *result = std::move(instance);
   }

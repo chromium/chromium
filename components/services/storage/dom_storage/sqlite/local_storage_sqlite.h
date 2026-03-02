@@ -39,7 +39,7 @@ class LocalStorageSqlite : public DomStorageDatabase {
   using PassKey = base::PassKey<DomStorageDatabaseFactory>;
 
  public:
-  // Use `DomStorageDatabaseFactory::Open()` to construct a
+  // Use `DomStorageDatabaseFactory::Create()` to construct a
   // base::SequenceBound<DomStorageDatabase>.
   explicit LocalStorageSqlite(PassKey);
   ~LocalStorageSqlite() override;
@@ -47,12 +47,10 @@ class LocalStorageSqlite : public DomStorageDatabase {
   LocalStorageSqlite(const LocalStorageSqlite&) = delete;
   LocalStorageSqlite& operator=(const LocalStorageSqlite&) = delete;
 
-  DbStatus Open(PassKey,
-                const base::FilePath& database_path,
-                const std::optional<base::trace_event::MemoryAllocatorDumpGuid>&
-                    memory_dump_id);
-
   // The `DomStorageDatabase` interface:
+  DbStatus Open(const base::FilePath& database_path,
+                const std::optional<base::trace_event::MemoryAllocatorDumpGuid>&
+                    memory_dump_id) override;
   StatusOr<std::map<Key, Value>> ReadMapKeyValues(
       MapLocator map_locator) override;
   DbStatus UpdateMaps(std::vector<MapBatchUpdate> map_updates) override;

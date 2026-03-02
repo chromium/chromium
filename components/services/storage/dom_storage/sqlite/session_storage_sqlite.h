@@ -50,7 +50,7 @@ class SessionStorageSqlite : public DomStorageDatabase {
   using PassKey = base::PassKey<DomStorageDatabaseFactory>;
 
  public:
-  // Use `DomStorageDatabaseFactory::Open()` to construct a
+  // Use `DomStorageDatabaseFactory::Create()` to construct a
   // base::SequenceBound<DomStorageDatabase>.
   explicit SessionStorageSqlite(PassKey);
   ~SessionStorageSqlite() override;
@@ -58,12 +58,10 @@ class SessionStorageSqlite : public DomStorageDatabase {
   SessionStorageSqlite(const SessionStorageSqlite&) = delete;
   SessionStorageSqlite& operator=(const SessionStorageSqlite&) = delete;
 
-  DbStatus Open(PassKey,
-                const base::FilePath& database_path,
-                const std::optional<base::trace_event::MemoryAllocatorDumpGuid>&
-                    memory_dump_id);
-
   // The `DomStorageDatabase` interface:
+  DbStatus Open(const base::FilePath& database_path,
+                const std::optional<base::trace_event::MemoryAllocatorDumpGuid>&
+                    memory_dump_id) override;
   StatusOr<std::map<Key, Value>> ReadMapKeyValues(
       MapLocator map_locator) override;
   DbStatus UpdateMaps(std::vector<MapBatchUpdate> map_updates) override;

@@ -72,22 +72,18 @@ class SessionStorageLevelDB : public DomStorageDatabase {
   using PassKey = base::PassKey<DomStorageDatabaseFactory>;
 
  public:
-  // Use `DomStorageDatabaseFactory::Open()` to construct a
+  // Use `DomStorageDatabaseFactory::Create()` to construct a
   // `base::SequenceBound<DomStorageDatabase>`.
   explicit SessionStorageLevelDB(PassKey);
   ~SessionStorageLevelDB() override;
-
-  // Opens an on-disk or in-memory LevelDB and returns the result. To create an
-  // in-memory database, provide an empty `directory`.
-  DbStatus Open(PassKey,
-                const base::FilePath& directory,
-                const std::optional<base::trace_event::MemoryAllocatorDumpGuid>&
-                    memory_dump_id);
 
   SessionStorageLevelDB(const SessionStorageLevelDB&) = delete;
   SessionStorageLevelDB& operator=(const SessionStorageLevelDB&) = delete;
 
   // Implement the `DomStorageDatabase` interface:
+  DbStatus Open(const base::FilePath& directory,
+                const std::optional<base::trace_event::MemoryAllocatorDumpGuid>&
+                    memory_dump_id) override;
   StatusOr<std::map<Key, Value>> ReadMapKeyValues(
       MapLocator map_locator) override;
   DbStatus UpdateMaps(std::vector<MapBatchUpdate> map_updates) override;

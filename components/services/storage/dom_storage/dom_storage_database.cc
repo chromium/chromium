@@ -28,11 +28,11 @@ namespace {
 // Returns true if the SQLite backend should be used for DOMStorage.
 // `kDomStorageSqlite` enables SQLite for both in-memory and on-disk databases.
 // `kDomStorageSqliteInMemory` enables SQLite only for in-memory databases.
-bool ShouldUseSqliteBackend(const base::FilePath& database_path) {
+bool ShouldUseSqliteBackend(bool is_in_memory) {
   if (base::FeatureList::IsEnabled(kDomStorageSqlite)) {
     return true;
   }
-  if (database_path.empty()) {
+  if (is_in_memory) {
     return base::FeatureList::IsEnabled(kDomStorageSqliteInMemory);
   }
   return false;
@@ -55,36 +55,6 @@ base::FilePath GetSessionStorageDatabasePath(
     return storage_partition_dir.AppendASCII("SessionStorage");
   }
   return storage_partition_dir.AppendASCII("Session Storage");
-}
-
-scoped_refptr<base::SequencedTaskRunner> GetTaskRunnerForDb(
-    const base::FilePath& database_path) {
-  if (database_path.empty()) {
-    // For the in-memory case, blocking shutdown is only important to avoid
-    // leaking the SequenceBound on shutdown (and triggering ASAN failures).
-    return base::ThreadPool::CreateSequencedTaskRunner(
-        {base::WithBaseSyncPrimitives(),
-         base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
-  }
-
-  //  This will always return the same task runner for a given `database_path`.
-  return base::ThreadPool::CreateSequencedTaskRunnerForResource(
-      {base::MayBlock(), base::WithBaseSyncPrimitives(),
-       base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
-      database_path);
-}
-
-// Runs `callback` after casting `TDatabase` to `DomStorageDatabase`.
-template <typename TDatabase>
-void OnDatabaseOpened(DomStorageDatabaseFactory::OpenCallback callback,
-                      StatusOr<base::SequenceBound<TDatabase>> database) {
-  if (!database.has_value()) {
-    std::move(callback).Run(base::unexpected(std::move(database.error())));
-    return;
-  }
-  base::SequenceBound<DomStorageDatabase> dom_storage_database =
-      *std::move(database);
-  std::move(callback).Run(std::move(dom_storage_database));
 }
 
 }  // namespace
@@ -219,39 +189,26 @@ base::FilePath DomStorageDatabase::GetPath(
 }
 
 // static
-void DomStorageDatabaseFactory::Open(
+base::SequenceBound<DomStorageDatabase> DomStorageDatabaseFactory::Create(
     StorageType storage_type,
-    const base::FilePath& database_path,
-    const std::optional<base::trace_event::MemoryAllocatorDumpGuid>&
-        memory_dump_id,
-    OpenCallback callback) {
-  scoped_refptr<base::SequencedTaskRunner> blocking_task_runner =
-      GetTaskRunnerForDb(database_path);
-
+    bool is_in_memory,
+    scoped_refptr<base::SequencedTaskRunner> blocking_task_runner) {
   switch (storage_type) {
     case StorageType::kLocalStorage: {
-      if (ShouldUseSqliteBackend(database_path)) {
-        return CreateSequenceBoundDomStorageDatabase<LocalStorageSqlite>(
-            std::move(blocking_task_runner), database_path, memory_dump_id,
-            base::BindOnce(&OnDatabaseOpened<LocalStorageSqlite>,
-                           std::move(callback)));
+      if (ShouldUseSqliteBackend(is_in_memory)) {
+        return base::SequenceBound<LocalStorageSqlite>(
+            std::move(blocking_task_runner), PassKey());
       }
-      return CreateSequenceBoundDomStorageDatabase<LocalStorageLevelDB>(
-          std::move(blocking_task_runner), database_path, memory_dump_id,
-          base::BindOnce(&OnDatabaseOpened<LocalStorageLevelDB>,
-                         std::move(callback)));
+      return base::SequenceBound<LocalStorageLevelDB>(
+          std::move(blocking_task_runner), PassKey());
     }
     case StorageType::kSessionStorage: {
-      if (ShouldUseSqliteBackend(database_path)) {
-        return CreateSequenceBoundDomStorageDatabase<SessionStorageSqlite>(
-            std::move(blocking_task_runner), database_path, memory_dump_id,
-            base::BindOnce(&OnDatabaseOpened<SessionStorageSqlite>,
-                           std::move(callback)));
+      if (ShouldUseSqliteBackend(is_in_memory)) {
+        return base::SequenceBound<SessionStorageSqlite>(
+            std::move(blocking_task_runner), PassKey());
       }
-      return CreateSequenceBoundDomStorageDatabase<SessionStorageLevelDB>(
-          std::move(blocking_task_runner), database_path, memory_dump_id,
-          base::BindOnce(&OnDatabaseOpened<SessionStorageLevelDB>,
-                         std::move(callback)));
+      return base::SequenceBound<SessionStorageLevelDB>(
+          std::move(blocking_task_runner), PassKey());
     }
   }
   NOTREACHED();
@@ -278,59 +235,26 @@ void DomStorageDatabaseFactory::Destroy(const base::FilePath& database_path,
       FROM_HERE, std::move(destroy_database_callback), std::move(callback));
 }
 
-template <typename TDatabase>
-void DomStorageDatabaseFactory::CreateSequenceBoundDomStorageDatabase(
-    scoped_refptr<base::SequencedTaskRunner> blocking_task_runner,
-    const base::FilePath& database_path,
-    const std::optional<base::trace_event::MemoryAllocatorDumpGuid>&
-        memory_dump_id,
-    base::OnceCallback<void(StatusOr<base::SequenceBound<TDatabase>> database)>
-        callback) {
-  auto database = std::make_unique<base::SequenceBound<TDatabase>>(
-      blocking_task_runner, PassKey());
-
-  // Subtle: We bind `database` as an unmanaged pointer during the async opening
-  // operation so that it leaks in case the bound callback below never gets a
-  // chance to run (because scheduler shutdown happens first).
-  //
-  // This is because the callback below is posted to
-  // SequencedTaskRunner::GetCurrentDefault(), which may not itself be
-  // shutdown-blocking; so if shutdown completes before the task runs, the
-  // callback below is destroyed along with any of its owned arguments.
-  // Meanwhile, SequenceBound destruction posts a task to its bound TaskRunner,
-  // which in this case is one which runs shutdown-blocking tasks.
-  //
-  // The net result of all of this is that if the SequenceBound were an owned
-  // argument, it might attempt to post a shutdown-blocking task after shutdown
-  // has completed, which is not allowed and will DCHECK. Leaving the object
-  // temporarily unmanaged during this window of potential failure avoids such a
-  // DCHECK, and if shutdown does not happen during that window, the object's
-  // ownership will finally be left to the caller's discretion.
-  //
-  // See https://crbug.com/1174179.
-  auto* database_ptr = database.release();
-  ANNOTATE_LEAKING_OBJECT_PTR(database_ptr);
-
-  database_ptr->AsyncCall(&TDatabase::Open)
-      .WithArgs(PassKey(), database_path, memory_dump_id)
-      .Then(base::BindOnce(
-          [](base::SequenceBound<TDatabase>* database_ptr,
-             base::OnceCallback<void(
-                 StatusOr<base::SequenceBound<TDatabase>> database)> callback,
-             DbStatus status) {
-            auto database = base::WrapUnique(database_ptr);
-            if (status.ok()) {
-              std::move(callback).Run(std::move(*database));
-            } else {
-              std::move(callback).Run(base::unexpected(std::move(status)));
-            }
-          },
-          database_ptr, std::move(callback)));
-}
-
 base::PassKey<DomStorageDatabaseFactory>
 DomStorageDatabaseFactory::CreatePassKeyForTesting() {
   return base::PassKey<DomStorageDatabaseFactory>();
+}
+
+scoped_refptr<base::SequencedTaskRunner> GetTaskRunnerForDb(
+    const base::FilePath& database_path) {
+  if (database_path.empty()) {
+    // For the in-memory case, blocking shutdown is only important to avoid
+    // leaking the SequenceBound on shutdown (and triggering ASAN failures).
+    return base::ThreadPool::CreateSequencedTaskRunner(
+        {base::WithBaseSyncPrimitives(),
+         base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
+  }
+
+  //  This will always return the same task runner for a given `database_path`.
+  return base::ThreadPool::CreateSequencedTaskRunnerForResource(
+      {base::MayBlock(), base::WithBaseSyncPrimitives(),
+       base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
+      database_path);
 }
 
 DbStatus PurgeOrigins(DomStorageDatabase& database,

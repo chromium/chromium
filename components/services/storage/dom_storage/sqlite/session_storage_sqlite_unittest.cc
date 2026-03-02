@@ -106,9 +106,9 @@ void SessionStorageSqliteTest::OpenOnDisk(
   std::unique_ptr<SessionStorageSqlite> instance =
       std::make_unique<SessionStorageSqlite>(GetPassKey());
 
-  DbStatus status = instance->Open(GetPassKey(),
-                                   /*database_path=*/database_path,
-                                   /*memory_dump_id=*/std::nullopt);
+  DbStatus status = instance->Open(
+      /*database_path=*/database_path,
+      /*memory_dump_id=*/std::nullopt);
 
   ASSERT_TRUE(status.ok()) << status.ToString();
   *result = std::move(instance);
@@ -119,9 +119,9 @@ void SessionStorageSqliteTest::OpenInMemory(
   std::unique_ptr<SessionStorageSqlite> instance =
       std::make_unique<SessionStorageSqlite>(GetPassKey());
 
-  DbStatus status = instance->Open(GetPassKey(),
-                                   /*database_path=*/base::FilePath(),
-                                   /*memory_dump_id=*/std::nullopt);
+  DbStatus status = instance->Open(
+      /*database_path=*/base::FilePath(),
+      /*memory_dump_id=*/std::nullopt);
 
   ASSERT_TRUE(status.ok()) << status.ToString();
   *result = std::move(instance);
@@ -184,9 +184,9 @@ TEST_F(SessionStorageSqliteTest, VersionTooNew) {
 
   // Opening the database with the wrong version must fail.
   database = std::make_unique<SessionStorageSqlite>(GetPassKey());
-  DbStatus status = database->Open(GetPassKey(),
-                                   /*database_path=*/database_path,
-                                   /*memory_dump_id=*/std::nullopt);
+  DbStatus status = database->Open(
+      /*database_path=*/database_path,
+      /*memory_dump_id=*/std::nullopt);
   EXPECT_TRUE(status.IsNotFound());
 }
 
