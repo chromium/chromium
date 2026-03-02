@@ -45,6 +45,10 @@ namespace content {
 class SyntheticTrialSyncer;
 }
 
+namespace smart_restart {
+class SmartRestartMetricsObserver;
+}  // namespace smart_restart
+
 class ChromeBrowserMainParts : public content::BrowserMainParts {
  public:
   static std::unique_ptr<content::BrowserMainParts> Create(
@@ -216,6 +220,12 @@ class ChromeBrowserMainParts : public content::BrowserMainParts {
   // created.
   // Must be deleted before `browser_process_`.
   std::unique_ptr<ProfileInitManager> profile_init_manager_;
+
+#if !BUILDFLAG(IS_ANDROID)
+  // Observer that records metrics related to "Smart Restart" opportunities.
+  std::unique_ptr<smart_restart::SmartRestartMetricsObserver>
+      smart_restart_metrics_observer_;
+#endif
 };
 
 #endif  // CHROME_BROWSER_CHROME_BROWSER_MAIN_H_

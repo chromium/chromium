@@ -2000,4 +2000,11 @@ BASE_FEATURE(kUnicornChromeActivityReporting,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if !BUILDFLAG(IS_ANDROID)
+// A feature to enable smart restart metrics collection. The collected metrics
+// will be used to make informed decisions about the future of the smart restart
+// feature.
+BASE_FEATURE(kSmartRestartMetrics, base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_ANDROID)
+
 }  // namespace features

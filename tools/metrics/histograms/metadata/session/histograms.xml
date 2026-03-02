@@ -122,6 +122,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Session.LockedDuration" units="ms" expires_after="2026-10-01">
+  <owner>victortan@chromium.org</owner>
+  <owner>chrome-analysis-team@google.com</owner>
+  <summary>
+    The duration the screen was locked (OS-level lock) while Chrome was running.
+    Recorded when the screen is unlocked or the session ends.
+  </summary>
+</histogram>
+
+<histogram name="Session.LockedDuration.WithUpdate" units="ms"
+    expires_after="2026-10-01">
+  <owner>victortan@chromium.org</owner>
+  <owner>chrome-analysis-team@google.com</owner>
+  <summary>
+    The duration the screen was locked (OS-level lock) while Chrome was running
+    AND an update was pending (UpgradeDetector). Recorded when the screen is
+    unlocked or the session ends.
+  </summary>
+</histogram>
+
 <histogram name="Session.OpenedTabCounts" units="operations"
     expires_after="2026-07-05">
   <owner>rohitrao@chromium.org</owner>
@@ -1200,6 +1220,31 @@ chromium-metrics-reviews@google.com.
     The time needed to write iOS session webState data to a file. It's recorded
     every time the file is written to storage, which happens on page loads, tab
     changes and app backgrounding.
+  </summary>
+</histogram>
+
+<histogram name="Session.ZeroWindowDuration" units="ms"
+    expires_after="2026-10-01">
+  <owner>victortan@chromium.org</owner>
+  <owner>chrome-analysis-team@google.com</owner>
+  <summary>
+    The duration Chrome was running with zero open browser windows (specifically
+    TYPE_NORMAL). Recorded when a new window is opened or Chrome quits.
+
+    This metric is only recorded on macOS.
+  </summary>
+</histogram>
+
+<histogram name="Session.ZeroWindowDuration.WithUpdate" units="ms"
+    expires_after="2026-10-01">
+  <owner>victortan@chromium.org</owner>
+  <owner>chrome-analysis-team@google.com</owner>
+  <summary>
+    The duration Chrome was running with zero open browser windows (specifically
+    TYPE_NORMAL) AND an update was pending. Recorded when a new window is opened
+    or Chrome quits.
+
+    This metric is only recorded on macOS.
   </summary>
 </histogram>
 

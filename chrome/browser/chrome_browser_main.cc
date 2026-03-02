@@ -158,6 +158,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/publishers/publisher_host_factory_impl.h"
 #include "chrome/browser/headless/chrome_browser_main_extra_parts_headless.h"
+#include "chrome/browser/lifetime/smart_restart_metrics_observer.h"
 #include "chrome/browser/profiles/delete_profile_helper.h"
 #include "chrome/browser/resource_coordinator/tab_manager.h"
 #include "chrome/browser/resources_integrity.h"
@@ -1643,6 +1644,15 @@ void ChromeBrowserMainParts::PostBrowserStart() {
   // We setup to observe to the initial page load here to defer running
   // task posted via PostAfterStartupTask until its complete.
   AfterStartupTaskUtils::StartMonitoringStartup();
+
+#if !BUILDFLAG(IS_ANDROID)
+  // Initialize the observer for smart restart metrics on desktop.
+  if (base::FeatureList::IsEnabled(features::kSmartRestartMetrics)) {
+    smart_restart_metrics_observer_ =
+        std::make_unique<smart_restart::SmartRestartMetricsObserver>(
+            UpgradeDetector::GetInstance());
+  }
+#endif
 }
 
 int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
