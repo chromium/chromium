@@ -48,19 +48,7 @@ void SetConsentFilePermissionIfNeeded(const base::FilePath& consent_file) {
 #endif
 }
 
-}  // namespace
-
-// static
-base::SequencedTaskRunner*
-GoogleUpdateSettings::CollectStatsConsentTaskRunner() {
-  // TODO(fdoray): Use LazyThreadPoolSequencedTaskRunner::GetRaw() here instead
-  // of .Get().get() when it's added to the API, http://crbug.com/40524407.
-  return g_collect_stats_consent_task_runner.Get().get();
-}
-
-// static
-bool GoogleUpdateSettings::GetCollectStatsConsentFromDir(
-    const base::FilePath& consent_dir) {
+bool GetCollectStatsConsentFromDir(const base::FilePath& consent_dir) {
   if (!base::DirectoryExists(consent_dir)) {
     return false;
   }
@@ -75,6 +63,16 @@ bool GoogleUpdateSettings::GetCollectStatsConsentFromDir(
     GetPosixClientId().assign(tmp_guid);
   }
   return consented;
+}
+
+}  // namespace
+
+// static
+base::SequencedTaskRunner*
+GoogleUpdateSettings::CollectStatsConsentTaskRunner() {
+  // TODO(fdoray): Use LazyThreadPoolSequencedTaskRunner::GetRaw() here instead
+  // of .Get().get() when it's added to the API, http://crbug.com/40524407.
+  return g_collect_stats_consent_task_runner.Get().get();
 }
 
 // static
@@ -160,5 +158,12 @@ int GoogleUpdateSettings::GetLastRunTime() {
 
 // static
 bool GoogleUpdateSettings::SetLastRunTime() {
+  return false;
+}
+
+// static
+bool GoogleUpdateSettings::GetCollectStatsConsentDefault(
+    bool* stats_consent_default) {
+  // We never know the default status of the consent button on POSIX platforms.
   return false;
 }
