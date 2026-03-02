@@ -128,10 +128,6 @@ TEST(ChannelLayoutTest, ChannelLayoutConfig_basic_constructor) {
   auto bitstream_layout = ChannelLayoutConfig(CHANNEL_LAYOUT_BITSTREAM, 0);
   EXPECT_EQ(bitstream_layout.channel_layout(), CHANNEL_LAYOUT_BITSTREAM);
   EXPECT_EQ(0, bitstream_layout.channels());
-
-  auto downmix_layout = ChannelLayoutConfig(CHANNEL_LAYOUT_5_1_4_DOWNMIX, 6);
-  EXPECT_EQ(downmix_layout.channel_layout(), CHANNEL_LAYOUT_5_1_4_DOWNMIX);
-  EXPECT_EQ(6, downmix_layout.channels());
 }
 
 TEST(ChannelLayoutTest, ChannelLayoutConfig_FromLayout) {
@@ -158,11 +154,6 @@ TEST(ChannelLayoutTest, ChannelLayoutConfig_FromLayout) {
       ChannelLayoutConfig::FromLayout<CHANNEL_LAYOUT_BITSTREAM>();
   EXPECT_EQ(CHANNEL_LAYOUT_BITSTREAM, bitstream_layout.channel_layout());
   EXPECT_EQ(0, bitstream_layout.channels());
-
-  auto downmix_layout =
-      ChannelLayoutConfig::FromLayout<CHANNEL_LAYOUT_5_1_4_DOWNMIX>();
-  EXPECT_EQ(CHANNEL_LAYOUT_5_1_4_DOWNMIX, downmix_layout.channel_layout());
-  EXPECT_EQ(6, downmix_layout.channels());
 }
 
 TEST(ChannelLayoutTest, ChannelLayoutConfig_FromLayoutRuntime) {
@@ -194,18 +185,12 @@ TEST(ChannelLayoutTest, ChannelLayoutConfig_FromLayoutRuntime) {
 
 TEST(ChannelLayoutTest, ChannelLayoutConfig_death_tests) {
   EXPECT_DEATH(ChannelLayoutConfig(CHANNEL_LAYOUT_DISCRETE, 0), "");
-  EXPECT_DEATH(ChannelLayoutConfig(CHANNEL_LAYOUT_DISCRETE, -1), "");
-  EXPECT_DEATH(ChannelLayoutConfig(CHANNEL_LAYOUT_DISCRETE,
-                                   media::limits::kMaxChannels + 1),
-               "");
 
   EXPECT_DEATH(ChannelLayoutConfig(CHANNEL_LAYOUT_MONO, 2), "");
 
   EXPECT_DEATH(ChannelLayoutConfig(CHANNEL_LAYOUT_STEREO, 1), "");
 
   EXPECT_DEATH(ChannelLayoutConfig(CHANNEL_LAYOUT_BITSTREAM, 1), "");
-
-  EXPECT_DEATH(ChannelLayoutConfig(CHANNEL_LAYOUT_5_1_4_DOWNMIX, 3), "");
 }
 
 #endif  // GTEST_HAS_DEATH_TEST

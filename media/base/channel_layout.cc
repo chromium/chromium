@@ -177,21 +177,13 @@ constexpr auto kChannelMaskToLayoutMap = []() {
 
 int ComputeChannelCount(ChannelLayout channel_layout, int channels) {
   if (channel_layout == CHANNEL_LAYOUT_DISCRETE) {
-    CHECK_GT(channels, 0);
-    CHECK_LE(channels, limits::kMaxChannels);
+    CHECK_NE(0, channels);
 
     return channels;
   } else if (channel_layout == CHANNEL_LAYOUT_5_1_4_DOWNMIX && channels != 0) {
-    // `channels` should really only be 6 here, but we might end up with the
-    // original 5.1.4 channel count. For now, handle this gracefully, and force
-    // the value down to 6. Eventually, we should remove this special case
-    // altogether.
-    CHECK(channels == 6 || channels == 10);
-
-    // TODO(crbug.com/486962136): Track whether this condition arises in the
-    // wild, and remove this branch entirely.
-    CHECK_NE(channels, 10, base::NotFatalUntil::M151);
-    return 6;
+    // For CHANNEL_LAYOUT_5_1_4_DOWNMIX we can set a custom number of channels,
+    // but we are not forced to.
+    return channels;
   }
   const int calculated_channel_count =
       ChannelLayoutToChannelCount(channel_layout);
