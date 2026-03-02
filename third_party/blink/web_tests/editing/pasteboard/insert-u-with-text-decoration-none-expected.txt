@@ -19,6 +19,6 @@ After insertion:
 |   contenteditable=""
 |   "hello "
 |   <span>
-|     style="text-decoration-line: line-through;"
+|     style="text-decoration: line-through;"
 |     "world<#selection-caret>"
 |   " WebKit"

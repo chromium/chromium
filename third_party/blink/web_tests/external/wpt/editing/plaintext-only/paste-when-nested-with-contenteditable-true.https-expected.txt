@@ -10,6 +10,6 @@ This is a testharness.js-based test.
 [FAIL] pasting in contenteditable="true" in contenteditable="plaintext-only" and contenteditable="false": beforeinput
   assert_true: beforeinput.dataTransfer should have the styled text as text/html expected true got false
 [FAIL] pasting in contenteditable="true" in contenteditable="plaintext-only" and contenteditable="false": innerHTML
-  assert_equals: expected "<div contenteditable=\\"plaintext-only\\"><div contenteditable=\\"false\\"><div contenteditable=\\"true\\"><b>abc</b></div></div></div>" but got "<div contenteditable=\\"plaintext-only\\"><div contenteditable=\\"false\\"><div contenteditable=\\"true\\"><b style=\\"white-space-collapse: collapse;\\">abc</b></div></div></div>"
+  assert_equals: expected "<div contenteditable=\\"plaintext-only\\"><div contenteditable=\\"false\\"><div contenteditable=\\"true\\"><b>abc</b></div></div></div>" but got "<div contenteditable=\\"plaintext-only\\"><div contenteditable=\\"false\\"><div contenteditable=\\"true\\"><b style=\\"white-space: normal;\\">abc</b></div></div></div>"
 Harness: the test ran to completion.
 

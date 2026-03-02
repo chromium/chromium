@@ -730,6 +730,26 @@ bool CSSPropertyValueSet::PropertyMatches(
   return PropertyAt(found_property_index).Value() == property_value;
 }
 
+bool CSSPropertyValueSet::ShorthandPropertyMatches(
+    CSSPropertyID shorthand_id,
+    const CSSPropertyValueSet& style) const {
+  StylePropertySerializer serializer(style);
+  String serialized_shorthand = serializer.SerializeShorthand(shorthand_id);
+  return !serialized_shorthand.empty() &&
+         serialized_shorthand == SerializeShorthand(*this, shorthand_id);
+}
+
+bool CSSPropertyValueSet::ShorthandPropertyMatches(
+    CSSPropertyID shorthand_id,
+    const CSSStyleDeclaration& style) const {
+  if (auto* abstract_prop_set =
+          DynamicTo<AbstractPropertySetCSSStyleDeclaration>(style)) {
+    return ShorthandPropertyMatches(shorthand_id,
+                                    abstract_prop_set->GetPropertyValueSet());
+  }
+  return false;
+}
+
 void MutableCSSPropertyValueSet::RemoveEquivalentProperties(
     const CSSPropertyValueSet* style) {
   Vector<CSSPropertyID> properties_to_remove;
@@ -755,6 +775,28 @@ void MutableCSSPropertyValueSet::RemoveEquivalentProperties(
     }
   }
   // FIXME: This should use mass removal.
+  for (CSSPropertyID id : properties_to_remove) {
+    RemoveProperty(id);
+  }
+}
+
+void MutableCSSPropertyValueSet::RemoveEquivalentPropertiesPreservingShorthands(
+    const CSSStyleDeclaration* style) {
+  HashSet<CSSPropertyID> properties_to_remove;
+  for (const CSSPropertyValue& property : property_vector_) {
+    auto shorthand_id = property.ShorthandID();
+    if (shorthand_id != CSSPropertyID::kInvalid) {
+      if (!properties_to_remove.Contains(shorthand_id) &&
+          ShorthandPropertyMatches(shorthand_id, *style)) {
+        properties_to_remove.insert(shorthand_id);
+      }
+      continue;
+    }
+    if (style->CssPropertyMatches(property.PropertyID(), property.Value())) {
+      properties_to_remove.insert(property.PropertyID());
+    }
+  }
+  // TODO(crbug.com/483903178): This should use mass removal.
   for (CSSPropertyID id : properties_to_remove) {
     RemoveProperty(id);
   }

@@ -13,7 +13,7 @@ After cut and paste:
 | "hello "
 | <span>
 |   class="test"
-|   style="background-color: transparent;"
+|   style="background: transparent;"
 |   "world"
 | " "
 | "WebKit<#selection-caret>"

@@ -160,6 +160,15 @@ class CORE_EXPORT CSSPropertyValueSet
 
   bool PropertyMatches(CSSPropertyID, const CSSValue&) const;
 
+  // ShorthandPropertyMatches() returns true if the shorthand property
+  // serializes to the same text as the given style's value for that shorthand,
+  // which is a sufficient (but not necessary) condition for the two to be
+  // considered equivalent for cascade purposes.
+  bool ShorthandPropertyMatches(CSSPropertyID shorthand_id,
+                                const CSSPropertyValueSet& style) const;
+  bool ShorthandPropertyMatches(CSSPropertyID shorthand_id,
+                                const CSSStyleDeclaration& style) const;
+
   void Trace(Visitor*) const;
   void TraceAfterDispatch(blink::Visitor* visitor) const {}
 
@@ -357,8 +366,16 @@ class CORE_EXPORT MutableCSSPropertyValueSet : public CSSPropertyValueSet {
   bool RemoveProperty(const T& property, String* return_text = nullptr);
   bool RemovePropertiesInSet(base::span<const CSSProperty* const> set);
   bool RemovePropertiesAffectedByAll();
+  // TODO (crbug.com/488310961): We may want to refactor these functions
+  // including the logic about shorthand.
   void RemoveEquivalentProperties(const CSSPropertyValueSet*);
   void RemoveEquivalentProperties(const CSSStyleDeclaration*);
+  // Instead of comparing isolated longhand properties,
+  // RemoveEquivalentPropertiesPreservingShorthands evaluates a serialized
+  // shorthand so it's only removed if all its associated longhand properties
+  // are equivalent.
+  void RemoveEquivalentPropertiesPreservingShorthands(
+      const CSSStyleDeclaration*);
 
   void MergeAndOverrideOnConflict(const CSSPropertyValueSet*);
 

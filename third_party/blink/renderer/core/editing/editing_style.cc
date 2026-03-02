@@ -2041,7 +2041,7 @@ MutableCSSPropertyValueSet* GetPropertiesNotIn(
   MutableCSSPropertyValueSet* result =
       style_with_redundant_properties->MutableCopy();
 
-  result->RemoveEquivalentProperties(base_style);
+  result->RemoveEquivalentPropertiesPreservingShorthands(base_style);
 
   const CSSValue* base_text_decorations_in_effect =
       base_style->GetPropertyCSSValueInternal(

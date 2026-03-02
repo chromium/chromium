@@ -68,6 +68,11 @@ void AbstractPropertySetCSSStyleDeclaration::setCSSText(
   mutation_scope.EnqueueMutationRecord();
 }
 
+const CSSPropertyValueSet&
+AbstractPropertySetCSSStyleDeclaration::GetPropertyValueSet() const {
+  return PropertySet();
+}
+
 String AbstractPropertySetCSSStyleDeclaration::getPropertyValue(
     const String& property_name) {
   CSSPropertyID property_id =
