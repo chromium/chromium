@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+namespace partition_alloc::internal {
+
 void fct() {
   int buf[10];
   // Expected rewrite:
@@ -11,3 +13,5 @@ void fct() {
   // Usage as a buffer, ptr should become a span.
   ptr[2] = 3;
 }
+
+}  // namespace partition_alloc::internal

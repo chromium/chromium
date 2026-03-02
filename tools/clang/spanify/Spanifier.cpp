@@ -3830,28 +3830,33 @@ class Spanifier {
 
 }  // namespace
 
+static llvm::cl::OptionCategory g_spanifier_category(
+    "spanifier: changes"
+    " 1- |T* var| to |base::span<T> var|."
+    " 2- |raw_ptr<T> var| to |base::raw_span<T> var|");
+
+static llvm::cl::opt<Project> g_project_opt(
+    "project",
+    llvm::cl::desc("The project to run on."),
+    llvm::cl::values(
+        clEnumValN(Project::kChrome, "chrome", "The Chrome browser."),
+        clEnumValN(Project::kPartitionAlloc,
+                   "partition_alloc",
+                   "The PartitionAlloc project."),
+        clEnumValN(Project::kDawn, "dawn", "The Dawn project."),
+        clEnumValN(Project::kSkia, "skia", "The Skia project."),
+        clEnumValN(Project::kAngle, "angle", "The Angle project.")),
+    llvm::cl::init(Project::kChrome),
+    llvm::cl::cat(g_spanifier_category));
+
 int main(int argc, const char* argv[]) {
   llvm::InitializeNativeTarget();
   llvm::InitializeNativeTargetAsmParser();
-  llvm::cl::OptionCategory category(
-      "spanifier: changes"
-      " 1- |T* var| to |base::span<T> var|."
-      " 2- |raw_ptr<T> var| to |base::raw_span<T> var|");
-
-  g_project = llvm::cl::opt<Project>(
-      "project", llvm::cl::desc("The project to run on."),
-      llvm::cl::values(
-          clEnumValN(Project::kChrome, "chrome", "The Chrome browser."),
-          clEnumValN(Project::kPartitionAlloc, "partition_alloc",
-                     "The PartitionAlloc project."),
-          clEnumValN(Project::kDawn, "dawn", "The Dawn project."),
-          clEnumValN(Project::kSkia, "skia", "The Skia project."),
-          clEnumValN(Project::kAngle, "angle", "The Angle project.")),
-      llvm::cl::init(Project::kChrome), llvm::cl::cat(category));
-
   llvm::Expected<clang::tooling::CommonOptionsParser> options =
-      clang::tooling::CommonOptionsParser::create(argc, argv, category);
+      clang::tooling::CommonOptionsParser::create(argc, argv,
+                                                  g_spanifier_category);
   assert(static_cast<bool>(options));  // Should not return an error.
+  g_project = g_project_opt;
   clang::tooling::ClangTool tool(options->getCompilations(),
                                  options->getSourcePathList());
 

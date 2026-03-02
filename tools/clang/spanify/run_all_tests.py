@@ -66,7 +66,7 @@ def RunScriptsAsPipedCommands(*scripts_cmds):
     return 0
 
 
-def _ApplyTool(scripts_dir, spanify_dir, test_dir, actual_files):
+def _ApplyTool(scripts_dir, spanify_dir, test_dir, actual_files, project):
     try:
         # Stage the test files in the git index. If they aren't staged, then
         # run_tool.py will skip them when applying replacements.
@@ -77,17 +77,15 @@ def _ApplyTool(scripts_dir, spanify_dir, test_dir, actual_files):
         # run_tool.py ... | extract_edits.py | apply_edits.py ...
         returncode = RunScriptsAsPipedCommands(
             # 1. run_tool.py
-            [os.path.join(scripts_dir, "run_tool.py"),
-                "--tool", "spanify",
-                "-p", test_dir
-                # Omit --project flag for now as it's not supported by the tool yet.
+            [
+                os.path.join(scripts_dir, "run_tool.py"), "--tool", "spanify",
+                "-p", test_dir, f'--tool-arg=--project={project}'
             ] + actual_files,
             # 2. extract_edits.py (from spanify_dir)
             [os.path.join(spanify_dir, "extract_edits.py")],
             # 3. apply_edits.py
-            [os.path.join(scripts_dir, "apply_edits.py"),
-                "-p", test_dir] + actual_files
-        )
+            [os.path.join(scripts_dir, "apply_edits.py"), "-p", test_dir] +
+            actual_files)
 
         if returncode != 0:
             return returncode
@@ -145,7 +143,8 @@ def RunTestsForProject(spanify_dir, scripts_dir, src_dir, project):
     old_cwd = os.getcwd()
     os.chdir(test_dir)
     try:
-        exitcode = _ApplyTool(scripts_dir, spanify_dir, test_dir, actual_files)
+        exitcode = _ApplyTool(scripts_dir, spanify_dir, test_dir, actual_files,
+                              project)
     finally:
         os.chdir(old_cwd)
 
