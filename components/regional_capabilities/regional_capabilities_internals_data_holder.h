@@ -5,10 +5,13 @@
 #ifndef COMPONENTS_REGIONAL_CAPABILITIES_REGIONAL_CAPABILITIES_INTERNALS_DATA_HOLDER_H_
 #define COMPONENTS_REGIONAL_CAPABILITIES_REGIONAL_CAPABILITIES_INTERNALS_DATA_HOLDER_H_
 
+#include <optional>
+
 #include "base/containers/flat_map.h"
 
 namespace regional_capabilities {
 
+enum class SearchEngineChoiceScreenConditions;
 class CountryAccessKey;
 class RegionalCapabilitiesService;
 
@@ -26,7 +29,7 @@ class InternalsDataHolder final {
 
   bool operator==(const InternalsDataHolder& other) const;
 
-  // Returns the wrapped country ID, usable in test code only.
+  // Returns the wrapped internals data, usable in test code only.
   const base::flat_map<std::string, std::string>& GetForTesting() const;
 
   // Returns the wrapped internals data.
@@ -39,6 +42,11 @@ class InternalsDataHolder final {
   // `//c/regional_capabilities:country_access_reason`'s visibility list.
   const base::flat_map<std::string, std::string>& GetRestricted(
       CountryAccessKey) const;
+
+  // Sets a choice screen eligibility value, to be displayed as being the one
+  // recorded for the current profile.
+  void SetRecordedEligibility(
+      std::optional<SearchEngineChoiceScreenConditions> eligibility);
 
  private:
   base::flat_map<std::string, std::string> data_;

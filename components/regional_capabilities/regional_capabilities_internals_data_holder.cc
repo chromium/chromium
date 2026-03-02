@@ -7,6 +7,7 @@
 #include "base/check_is_test.h"
 #include "base/notreached.h"
 #include "components/regional_capabilities/access/country_access_reason.h"
+#include "components/regional_capabilities/regional_capabilities_metrics.h"
 #include "components/regional_capabilities/regional_capabilities_service.h"
 #include "components/webui/regional_capabilities_internals/constants.h"
 
@@ -70,6 +71,15 @@ const base::flat_map<std::string, std::string>&
 InternalsDataHolder::GetForTesting() const {
   CHECK_IS_TEST();
   return data_;
+}
+
+void InternalsDataHolder::SetRecordedEligibility(
+    std::optional<SearchEngineChoiceScreenConditions> eligibility) {
+  if (eligibility.has_value()) {
+    data_.insert_or_assign(kRecordedEligibilityKey, ToString(*eligibility));
+  } else {
+    data_.insert_or_assign(kRecordedEligibilityKey, "No recorded eligibility");
+  }
 }
 
 }  // namespace regional_capabilities

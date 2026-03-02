@@ -9,8 +9,10 @@
 #import "components/regional_capabilities/access/country_access_reason.h"
 #import "components/regional_capabilities/regional_capabilities_internals_data_holder.h"
 #import "components/regional_capabilities/regional_capabilities_service.h"
+#import "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #import "components/webui/regional_capabilities_internals/constants.h"
 #import "ios/chrome/browser/regional_capabilities/model/regional_capabilities_service_factory.h"
+#import "ios/chrome/browser/search_engines/model/search_engine_choice_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/web/public/webui/web_ui_ios_controller.h"
 #import "ios/web/public/webui/web_ui_ios_data_source.h"
@@ -32,6 +34,13 @@ RegionalCapabilitiesInternalsUI::RegionalCapabilitiesInternalsUI(
   regional_capabilities::InternalsDataHolder internals_data_holder =
       ios::RegionalCapabilitiesServiceFactory::GetForProfile(profile)
           ->GetInternalsData();
+
+  search_engines::SearchEngineChoiceService* search_engine_choice_service =
+      ios::SearchEngineChoiceServiceFactory::GetForProfile(profile);
+  internals_data_holder.SetRecordedEligibility(
+      search_engine_choice_service
+          ->recorded_profile_load_choice_screen_eligibility());
+
   for (const auto& [key, value] :
        internals_data_holder.GetRestricted(CountryAccessKey(
            CountryAccessReason::
