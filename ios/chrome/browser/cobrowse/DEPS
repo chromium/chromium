@@ -1,0 +1,6 @@
+include_rules = [
+  # keep-sorted start
+  "+ios/chrome/browser/assistant/coordinator",
+  "+ios/chrome/browser/assistant/ui",
+  # keep-sorted end
+]

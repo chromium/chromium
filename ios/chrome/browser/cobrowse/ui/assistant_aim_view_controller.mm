@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/assistant/aim/ui/assistant_aim_view_controller.h"
+#import "ios/chrome/browser/cobrowse/ui/assistant_aim_view_controller.h"
 
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 

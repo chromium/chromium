@@ -2,10 +2,10 @@ include_rules = [
   # keep-sorted start
   "+ios/chrome/browser/ai_prototyping/coordinator",
   "+ios/chrome/browser/app_bar/coordinator",
-  "+ios/chrome/browser/assistant/aim/coordinator",
   "+ios/chrome/browser/assistant/coordinator",
   "+ios/chrome/browser/authentication/account_menu",
   "+ios/chrome/browser/authentication/ui_bundled",
+  "+ios/chrome/browser/cobrowse/coordinator",
   "+ios/chrome/browser/feature_engagement/model",
   "+ios/chrome/browser/history/ui_bundled",
   "+ios/chrome/browser/incognito_interstitial/ui_bundled",

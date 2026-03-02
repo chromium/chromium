@@ -8,9 +8,9 @@ source_set("coordinator") {
     "assistant_aim_coordinator.mm",
   ]
   deps = [
-    "//ios/chrome/browser/assistant/aim/ui",
     "//ios/chrome/browser/assistant/coordinator:commands",
     "//ios/chrome/browser/assistant/ui",
+    "//ios/chrome/browser/cobrowse/ui",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/public/commands",

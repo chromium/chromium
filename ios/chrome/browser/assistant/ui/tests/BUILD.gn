@@ -11,7 +11,6 @@ source_set("unit_tests") {
   deps = [
     "//base",
     "//base/test:test_support",
-    "//ios/chrome/browser/assistant/aim/ui",
     "//ios/chrome/browser/assistant/ui",
     "//testing/gtest",
     "//third_party/ocmock",
