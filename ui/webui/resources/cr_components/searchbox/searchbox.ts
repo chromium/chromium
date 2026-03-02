@@ -941,20 +941,23 @@ export class SearchboxElement extends SearchboxElementBase implements
       if (this.multiLineEnabled && e.shiftKey) {
         return;
       }
+      e.preventDefault();
       const array: HTMLElement[] = [this.$.matches, this.$.input];
-      if (array.includes(e.target as HTMLElement)) {
-        if (this.lastQueriedInput_ !== null &&
-            this.lastQueriedInput_.trimStart() === this.result_.input) {
-          if (this.selectedMatch_) {
-            this.navigateToMatch_(this.selectedMatchIndex_, e);
-          }
-        } else {
-          // User typed and pressed 'Enter' too quickly. Ignore this for now
-          // because the matches are stale. Navigate to the default match (if
-          // one exists) once the up-to-date matches arrive.
-          this.lastIgnoredEnterEvent_ = e;
-          e.preventDefault();
+      if (!array.includes(e.target as HTMLElement)) {
+        return;
+      }
+      const currentInput = this.result_?.input;
+      const lastQueriedInput = this.lastQueriedInput_?.trimStart();
+      if (currentInput !== undefined && lastQueriedInput !== undefined &&
+          lastQueriedInput === currentInput) {
+        if (this.selectedMatch_) {
+          this.navigateToMatch_(this.selectedMatchIndex_, e);
         }
+      } else {
+        // User typed and pressed 'Enter' too quickly. Ignore this for now
+        // because the matches are stale. Navigate to the default match (if
+        // one exists) once the up-to-date matches arrive.
+        this.lastIgnoredEnterEvent_ = e;
       }
       return;
     }
