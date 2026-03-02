@@ -238,6 +238,7 @@ public class EdgeToEdgeInstrumentationTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/455479243")
     public void testRotationToPortrait_WhileOptedIntoE2E() {
         activateFeatureToEdge();
         rotate(Configuration.ORIENTATION_LANDSCAPE);
