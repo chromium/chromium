@@ -18,6 +18,7 @@ public final class TestUtils {
         return new EntityType(
                 EntityTypeName.VEHICLE,
                 /* isReadOnly= */ false,
+                /* isEnabled= */ true,
                 /* typeNameAsString= */ "Vehicle",
                 /* typeNameAsMetricsString= */ "Vehicle",
                 /* addEntityTypeString= */ "Add Vehicle",
@@ -30,6 +31,7 @@ public final class TestUtils {
         return new EntityType(
                 EntityTypeName.PASSPORT,
                 /* isReadOnly= */ false,
+                /* isEnabled= */ true,
                 /* typeNameAsString= */ "Passport",
                 /* typeNameAsMetricsString= */ "Passport",
                 /* addEntityTypeString= */ "Add passport",

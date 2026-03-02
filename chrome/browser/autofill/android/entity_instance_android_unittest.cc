@@ -32,8 +32,8 @@ class EntityInstanceAndroidTest : public testing::Test {
 
 TEST_F(EntityInstanceAndroidTest, ToEntityInstance_BasicConversion) {
   EntityType entity_type(EntityTypeName::kPassport);
-  EntityTypeAndroid entity_type_android(entity_type);
-
+  EntityTypeAndroid entity_type_android(entity_type,
+                                        /*is_enabled=*/true);
   AttributeType attribute_type(AttributeTypeName::kPassportName);
   AttributeTypeAndroid passport_name_attribute_type_android(attribute_type);
 
@@ -62,8 +62,8 @@ TEST_F(EntityInstanceAndroidTest, ToEntityInstance_BasicConversion) {
 // the new entity.
 TEST_F(EntityInstanceAndroidTest, ToEntityInstance_ReuseExistingAttribute) {
   EntityType entity_type(EntityTypeName::kPassport);
-  EntityTypeAndroid entity_type_android(entity_type);
-
+  EntityTypeAndroid entity_type_android(entity_type,
+                                        /*is_enabled=*/true);
   AttributeType attribute_type(AttributeTypeName::kPassportName);
   AttributeTypeAndroid password_name_attribute_type_android(attribute_type);
 
@@ -104,9 +104,10 @@ TEST_F(EntityInstanceAndroidTest, ToEntityInstance_ReuseExistingAttribute) {
 // new entity. Otherwise the attribute is copied from the original entity.
 TEST_F(EntityInstanceAndroidTest, ToEntityInstance_UpdateExistingAttribute) {
   EntityType entity_type(EntityTypeName::kPassport);
-  EntityTypeAndroid entity_type_android(entity_type);
-
-  // First create an attribute for an existing entity with a
+  EntityTypeAndroid entity_type_android(
+      entity_type,
+      /*is_enabled=*/true);  // First create an attribute for an existing entity
+                             // with a
   // value differently from what is received from Java. Meaning it is different
   // than what will be set in `EntityInstanceAndroid`. In a real world scenario,
   // this means the entity coming from Java will have the attribute modified by

@@ -30,7 +30,8 @@ struct EntityInstanceAndroid {
       JNIEnv* env,
       const jni_zero::JavaRef<jobject>& j_entity_instance);
 
-  explicit EntityInstanceAndroid(const EntityInstance& entity_instance);
+  explicit EntityInstanceAndroid(const EntityInstance& entity_instance,
+                                 bool is_enabled);
   EntityInstanceAndroid(EntityTypeAndroid entity_type,
                         std::string guid,
                         EntityInstance::RecordType record_type,

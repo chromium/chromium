@@ -121,7 +121,10 @@ EntityDataManagerAndroid::GetEntityInstance(JNIEnv* env,
     return nullptr;
   }
 
-  return EntityInstanceAndroid::Create(env, EntityInstanceAndroid(*entity));
+  return EntityInstanceAndroid::Create(
+      env, EntityInstanceAndroid(
+               *entity, entity->type().enabled(
+                            entity_data_manager_->GetVariationCountryCode())));
 }
 
 void EntityDataManagerAndroid::RemoveEntityInstance(JNIEnv* env,
@@ -179,7 +182,9 @@ std::vector<EntityTypeAndroid> EntityDataManagerAndroid::GetWritableEntityTypes(
   std::vector<EntityTypeAndroid> entity_types;
   for (EntityType entity_type : autofill::GetWritableEntityTypes(
            entity_data_manager_->GetVariationCountryCode())) {
-    entity_types.emplace_back(EntityTypeAndroid(entity_type));
+    entity_types.emplace_back(
+        entity_type,
+        entity_type.enabled(entity_data_manager_->GetVariationCountryCode()));
   }
   return entity_types;
 }
@@ -190,8 +195,9 @@ EntityDataManagerAndroid::GetSortedEntityTypesForListDisplay(
   std::vector<EntityType> all_types =
       base::ToVector(DenseSet<EntityType>::all());
   std::ranges::sort(all_types, EntityType::ListOrder);
-  return base::ToVector(all_types, [](const EntityType& type) {
-    return EntityTypeAndroid(type);
+  return base::ToVector(all_types, [this](const EntityType& type) {
+    return EntityTypeAndroid(
+        type, type.enabled(entity_data_manager_->GetVariationCountryCode()));
   });
 }
 

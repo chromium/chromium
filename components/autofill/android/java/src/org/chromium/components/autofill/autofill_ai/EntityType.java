@@ -21,8 +21,10 @@ import java.util.List;
 public class EntityType {
     // This maps to a C++ enum which defines the name/type of the entity.
     private final @EntityTypeName int mTypeName;
-    // When `isReadOnly` is true, this entity type does not allow adding, deleting or editing.
+    // When true, this entity type does not allow adding, deleting or editing.
     private final boolean mIsReadOnly;
+    // When true, this entity type is enabled.
+    private final boolean mIsEnabled;
     // Used to sort entity types and groups and as title of each entity group in the list of
     // entities.
     private final String mTypeNameAsString;
@@ -41,6 +43,7 @@ public class EntityType {
     public EntityType(
             @EntityTypeName int typeName,
             boolean isReadOnly,
+            boolean isEnabled,
             @JniType("std::u16string") String typeNameAsString,
             @JniType("std::string") String typeNameAsMetricsString,
             @JniType("std::string") String addEntityTypeString,
@@ -50,6 +53,7 @@ public class EntityType {
                     List<AttributeType> attributeTypes) {
         mTypeName = typeName;
         mIsReadOnly = isReadOnly;
+        mIsEnabled = isEnabled;
         mTypeNameAsString = typeNameAsString;
         mTypeNameAsMetricsString = typeNameAsMetricsString;
         mAddEntityTypeString = addEntityTypeString;
@@ -63,8 +67,14 @@ public class EntityType {
         return mTypeName;
     }
 
+    @CalledByNative
     public boolean isReadOnly() {
         return mIsReadOnly;
+    }
+
+    @CalledByNative
+    public boolean isEnabled() {
+        return mIsEnabled;
     }
 
     public String getTypeNameAsString() {
