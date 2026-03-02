@@ -16,7 +16,6 @@
 #include "base/containers/lru_cache.h"
 #include "base/functional/bind.h"
 #include "base/memory/memory_pressure_listener.h"
-#include "base/memory/memory_pressure_monitor.h"
 #include "base/memory/raw_ptr.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/ip_address.h"

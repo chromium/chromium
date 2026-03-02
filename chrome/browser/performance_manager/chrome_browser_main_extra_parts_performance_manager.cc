@@ -10,7 +10,6 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/memory/memory_pressure_monitor.h"
 #include "base/memory/weak_ptr.h"
 #include "base/power_monitor/battery_state_sampler.h"
 #include "base/power_monitor/power_monitor_buildflags.h"
@@ -37,6 +36,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/sessions/session_restore.h"
 #include "chrome/common/chrome_features.h"
+#include "components/memory_pressure/multi_source_memory_pressure_monitor.h"
 #include "components/performance_manager/decorators/page_aggregator.h"
 #include "components/performance_manager/embedder/graph_features.h"
 #include "components/performance_manager/embedder/performance_manager_lifetime.h"
@@ -434,7 +434,7 @@ void ChromeBrowserMainExtraPartsPerformanceManager::PostCreateThreads() {
 
 void ChromeBrowserMainExtraPartsPerformanceManager::PostBrowserStart() {
   // The MemoryPressureMonitor might not be available in some tests.
-  if (base::MemoryPressureMonitor::Get()) {
+  if (memory_pressure::MultiSourceMemoryPressureMonitor::Get()) {
     if (memory::EnterpriseMemoryLimitPrefObserver::PlatformIsSupported()) {
       memory_limit_pref_observer_ =
           std::make_unique<memory::EnterpriseMemoryLimitPrefObserver>(

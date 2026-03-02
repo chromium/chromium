@@ -21,7 +21,6 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/memory/memory_pressure_monitor.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_functions.h"
@@ -359,8 +358,8 @@ void SetFileUrlPathAliasForIpcFuzzer() {
 }
 #endif
 
-std::unique_ptr<base::MemoryPressureMonitor> CreateMemoryPressureMonitor(
-    const base::CommandLine& command_line) {
+std::unique_ptr<memory_pressure::MultiSourceMemoryPressureMonitor>
+CreateMemoryPressureMonitor(const base::CommandLine& command_line) {
   // Behavior of browser tests should not depend on things outside of their
   // control (like the amount of memory on the system running the tests).
   if (command_line.HasSwitch(switches::kBrowserTest))

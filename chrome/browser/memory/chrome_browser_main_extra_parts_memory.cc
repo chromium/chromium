@@ -8,10 +8,10 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/memory/memory_pressure_monitor.h"
 #include "build/build_config.h"
 #include "components/heap_profiling/in_process/browser_process_snapshot_controller.h"
 #include "components/heap_profiling/in_process/mojom/snapshot_controller.mojom.h"
+#include "components/memory_pressure/multi_source_memory_pressure_monitor.h"
 #include "content/public/browser/browser_child_process_host.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/child_process_host.h"
@@ -62,17 +62,16 @@ void ChromeBrowserMainExtraPartsMemory::PostCreateThreads() {
 
 void ChromeBrowserMainExtraPartsMemory::PostBrowserStart() {
   // The MemoryPressureMonitor might not be available in some tests.
-  if (base::MemoryPressureMonitor::Get()) {
 #if BUILDFLAG(IS_CHROMEOS)
+  if (auto* monitor =
+          memory_pressure::MultiSourceMemoryPressureMonitor::Get()) {
     if (base::SysInfo::IsRunningOnChromeOS()) {
       cros_evaluator_ =
           std::make_unique<ash::memory::SystemMemoryPressureEvaluator>(
-              static_cast<memory_pressure::MultiSourceMemoryPressureMonitor*>(
-                  base::MemoryPressureMonitor::Get())
-                  ->CreateVoter());
+              monitor->CreateVoter());
     }
-#endif
   }
+#endif
 }
 
 void ChromeBrowserMainExtraPartsMemory::PostMainMessageLoopRun() {

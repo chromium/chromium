@@ -118,11 +118,7 @@ void ChromeBrowserMainPartsLinux::PreProfileInit() {
 
 #if BUILDFLAG(USE_DBUS) && !BUILDFLAG(IS_CHROMEOS)
 void ChromeBrowserMainPartsLinux::PostBrowserStart() {
-  // static_cast is safe because this is the only implementation of
-  // MemoryPressureMonitor.
-  auto* monitor =
-      static_cast<memory_pressure::MultiSourceMemoryPressureMonitor*>(
-          base::MemoryPressureMonitor::Get());
+  auto* monitor = memory_pressure::MultiSourceMemoryPressureMonitor::Get();
   if (monitor &&
       base::FeatureList::IsEnabled(features::kLinuxLowMemoryMonitor)) {
     monitor->SetSystemEvaluator(

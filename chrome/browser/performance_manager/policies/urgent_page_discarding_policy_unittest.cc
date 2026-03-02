@@ -14,7 +14,6 @@
 #include "chrome/browser/performance_manager/policies/discard_eligibility_policy.h"
 #include "chrome/browser/performance_manager/policies/policy_features.h"
 #include "chrome/browser/performance_manager/test_support/page_discarding_utils.h"
-#include "components/memory_pressure/fake_memory_pressure_monitor.h"
 #include "components/performance_manager/decorators/page_aggregator.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

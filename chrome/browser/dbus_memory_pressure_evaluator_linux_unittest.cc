@@ -9,7 +9,6 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/memory_pressure_listener.h"
-#include "base/memory/memory_pressure_monitor.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"

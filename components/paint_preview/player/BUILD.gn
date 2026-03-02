@@ -37,7 +37,6 @@ source_set("unit_tests") {
     ":player",
     "//base",
     "//base/test:test_support",
-    "//components/memory_pressure:test_support",
     "//components/paint_preview/browser",
     "//components/paint_preview/common",
     "//components/paint_preview/common/proto",

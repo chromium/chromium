@@ -16,7 +16,6 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/memory/memory_pressure_monitor.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_macros.h"

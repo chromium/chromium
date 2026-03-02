@@ -33,7 +33,6 @@ class Env;
 namespace base {
 class CommandLine;
 class HighResolutionTimerManager;
-class MemoryPressureMonitor;
 class SingleThreadTaskRunner;
 class SystemMonitor;
 }  // namespace base
@@ -55,6 +54,10 @@ class SystemMessageWindowWin;
 class DeviceMonitorLinux;
 #endif
 }  // namespace media
+
+namespace memory_pressure {
+class MultiSourceMemoryPressureMonitor;
+}
 
 namespace midi {
 class MidiService;
@@ -332,7 +335,8 @@ class CONTENT_EXPORT BrowserMainLoop {
 
   // Members initialized in |PreCreateThreads()| -------------------------------
   // Torn down in ShutdownThreadsAndCleanUp.
-  std::unique_ptr<base::MemoryPressureMonitor> memory_pressure_monitor_;
+  std::unique_ptr<memory_pressure::MultiSourceMemoryPressureMonitor>
+      memory_pressure_monitor_;
 
   // Members initialized in |CreateThreads()| ----------------------------------
   std::unique_ptr<BrowserProcessIOThread> io_thread_;

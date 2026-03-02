@@ -18565,8 +18565,7 @@
                     "disable_features": [
                         "MemoryCacheChangeStrongReferencePruneDelay",
                         "MemoryCacheStrongReference",
-                        "SuppressMemoryListeners",
-                        "SuppressMemoryMonitor"
+                        "SuppressMemoryListeners"
                     ]
                 }
             ]
@@ -23215,12 +23214,10 @@
                 {
                     "name": "Enabled_Win_Cros",
                     "params": {
-                        "suppress_memory_listeners_mask": "0000000200000200000000000000000000000000000000000",
-                        "suppress_memory_monitor_mask": "00000000020200"
+                        "suppress_memory_listeners_mask": "0000000200000200000000000000000000000000000000000"
                     },
                     "enable_features": [
-                        "SuppressMemoryListeners",
-                        "SuppressMemoryMonitor"
+                        "SuppressMemoryListeners"
                     ]
                 }
             ]

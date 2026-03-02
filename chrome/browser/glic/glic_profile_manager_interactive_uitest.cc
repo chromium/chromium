@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/memory_pressure_monitor.h"
 #include "base/scoped_observation.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_process.h"

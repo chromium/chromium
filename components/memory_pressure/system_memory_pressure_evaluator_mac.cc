@@ -17,7 +17,6 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/mac/mac_util.h"
-#include "base/memory/memory_pressure_monitor.h"
 #include "base/path_service.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"

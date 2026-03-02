@@ -76,16 +76,3 @@ source_set("unit_tests") {
     sources += [ "system_memory_pressure_evaluator_fuchsia_unittest.cc" ]
   }
 }
-
-static_library("test_support") {
-  testonly = true
-  sources = [
-    "fake_memory_pressure_monitor.cc",
-    "fake_memory_pressure_monitor.h",
-  ]
-
-  public_deps = [
-    ":memory_pressure",
-    "//base",
-  ]
-}

@@ -8,6 +8,7 @@
 #include "base/base64.h"
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
+#include "base/memory/memory_pressure_listener_registry.h"
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/strings/string_split.h"
@@ -101,7 +102,6 @@
 #include "components/guest_view/browser/test_guest_view_manager.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
-#include "components/memory_pressure/fake_memory_pressure_monitor.h"
 #include "content/public/browser/devtools_agent_host_client.h"
 #include "content/public/test/browser_test_utils.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -432,17 +432,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, MAYBE_AutoAttachToUnloadedTab) {
 
   Browser* new_browser = chrome::FindBrowserWithTab(tab_waiter.Wait());
 
-  memory_pressure::test::FakeMemoryPressureMonitor fake_memory_pressure_monitor;
-  fake_memory_pressure_monitor.SetAndNotifyMemoryPressure(
+  base::MemoryPressureListenerRegistry::SimulatePressureNotification(
       base::MEMORY_PRESSURE_LEVEL_CRITICAL);
-  // Wait for async memory notifications to be delivered to Performance
-  // Manager on the main thread.
-  // TODO(crbug.com/436324601): Remove once memory pressure notifications
-  // are synchronous.
-  base::RunLoop run_loop;
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, run_loop.QuitClosure());
-  run_loop.Run();
 
   keep_alive.reset();
   profile_keep_alive.reset();

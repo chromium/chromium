@@ -5,7 +5,6 @@
 #include "chrome/browser/memory/enterprise_memory_limit_pref_observer.h"
 
 #include "base/functional/bind.h"
-#include "base/memory/memory_pressure_monitor.h"
 #include "build/build_config.h"
 #include "chrome/browser/resource_coordinator/utils.h"
 #include "chrome/common/pref_names.h"
@@ -25,11 +24,9 @@ EnterpriseMemoryLimitPrefObserver::EnterpriseMemoryLimitPrefObserver(
     PrefService* pref_service)
     : pref_service_(pref_service) {
   DCHECK(pref_service_);
-  DCHECK(base::MemoryPressureMonitor::Get());
+  DCHECK(memory_pressure::MultiSourceMemoryPressureMonitor::Get());
   evaluator_ = std::make_unique<EnterpriseMemoryLimitEvaluator>(
-      static_cast<memory_pressure::MultiSourceMemoryPressureMonitor*>(
-          base::MemoryPressureMonitor::Get())
-          ->CreateVoter());
+      memory_pressure::MultiSourceMemoryPressureMonitor::Get()->CreateVoter());
 
   pref_change_registrar_.Init(pref_service_);
   pref_change_registrar_.Add(

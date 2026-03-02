@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/views/tabs/tab_strip_action_container.h"
 
 #include "base/feature_list.h"
-#include "base/memory/memory_pressure_monitor.h"
 #include "base/path_service.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"

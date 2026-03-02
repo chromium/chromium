@@ -895,7 +895,6 @@ source_set("unit_tests") {
     "//components/favicon/core/test:test_support",
     "//components/history/core/test",
     "//components/history_embeddings/core",
-    "//components/memory_pressure:test_support",
     "//components/ntp_tiles",
     "//components/omnibox/common",
     "//components/open_from_clipboard:test_support",

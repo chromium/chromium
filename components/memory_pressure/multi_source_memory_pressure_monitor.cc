@@ -5,9 +5,7 @@
 #include "components/memory_pressure/multi_source_memory_pressure_monitor.h"
 
 #include "base/check_op.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/memory/memory_pressure_monitor.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -18,25 +16,11 @@
 #include "components/memory_pressure/system_memory_pressure_evaluator.h"
 
 namespace memory_pressure {
-namespace {
-BASE_FEATURE(kSuppressMemoryMonitor,
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-);
 
-BASE_FEATURE_PARAM(std::string,
-                   kSuppressMemoryMonitorMask,
-                   &kSuppressMemoryMonitor,
-                   "suppress_memory_monitor_mask",
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-                   "00020000020020"
-#else
-                   ""
-#endif
-);
+namespace {
+
+MultiSourceMemoryPressureMonitor* g_monitor = nullptr;
+
 }  // namespace
 
 MultiSourceMemoryPressureMonitor::MultiSourceMemoryPressureMonitor()
@@ -44,7 +28,10 @@ MultiSourceMemoryPressureMonitor::MultiSourceMemoryPressureMonitor()
       dispatch_callback_(base::BindRepeating(
           &base::MemoryPressureListener::NotifyMemoryPressure)),
       aggregator_(this),
-      level_reporter_(current_pressure_level_) {}
+      level_reporter_(current_pressure_level_) {
+  CHECK(!g_monitor);
+  g_monitor = this;
+}
 
 MultiSourceMemoryPressureMonitor::~MultiSourceMemoryPressureMonitor() {
   // Destroy system evaluator early while the remaining members of this class
@@ -53,32 +40,19 @@ MultiSourceMemoryPressureMonitor::~MultiSourceMemoryPressureMonitor() {
   // delegate_->OnMemoryPressureLevelChanged() gets indirectly called during
   // ~SystemMemoryPressureEvaluator().
   system_evaluator_.reset();
+
+  CHECK_EQ(g_monitor, this);
+  g_monitor = nullptr;
+}
+
+// static
+MultiSourceMemoryPressureMonitor* MultiSourceMemoryPressureMonitor::Get() {
+  return g_monitor;
 }
 
 void MultiSourceMemoryPressureMonitor::MaybeStartPlatformVoter() {
   system_evaluator_ =
       SystemMemoryPressureEvaluator::CreateDefaultSystemEvaluator(this);
-}
-
-base::MemoryPressureLevel
-MultiSourceMemoryPressureMonitor::GetCurrentPressureLevel(
-    base::MemoryPressureMonitorTag tag) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (base::FeatureList::IsEnabled(kSuppressMemoryMonitor)) {
-    auto mask = kSuppressMemoryMonitorMask.Get();
-    const size_t tag_index = static_cast<size_t>(tag);
-    // Ignore pressure level only if the caller is suppressed. This is
-    // the case if its tag is present in the mask, and if the value is not '0'.
-    // A value of '1' suppresses moderate pressure, and a value of '2'
-    // supressess moderate and critical levels.
-    if (tag_index < mask.size() &&
-        (mask[tag_index] == '2' ||
-         (mask[tag_index] == '1' &&
-          current_pressure_level_ == base::MEMORY_PRESSURE_LEVEL_MODERATE))) {
-      return base::MEMORY_PRESSURE_LEVEL_NONE;
-    }
-  }
-  return current_pressure_level_;
 }
 
 std::unique_ptr<MemoryPressureVoter>
