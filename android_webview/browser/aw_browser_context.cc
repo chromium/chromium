@@ -578,9 +578,6 @@ void AwBrowserContext::ConfigureNetworkContextParams(
           : network::mojom::CookieAccessDelegateType::ALWAYS_LEGACY;
 
   context_params->initial_ssl_config = network::mojom::SSLConfig::New();
-  // Allow SHA-1 to be used for locally-installed trust anchors, as WebView
-  // should behave like the Android system would.
-  context_params->initial_ssl_config->sha1_local_anchors_enabled = true;
 
   // WebView supports Certificate Transparency from Android B via Android's CT
   // policy. (http://crbug.com/921750).
