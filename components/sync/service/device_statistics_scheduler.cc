@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/task/sequenced_task_runner.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -37,7 +36,7 @@ DeviceStatisticsScheduler::DeviceStatisticsScheduler(
   CHECK(pref_service_);
   CHECK(identity_manager_);
 
-  StartTracker();
+  ScheduleNextRun();
 }
 
 DeviceStatisticsScheduler::~DeviceStatisticsScheduler() = default;
@@ -48,33 +47,65 @@ void DeviceStatisticsScheduler::RegisterProfilePrefs(
   registry->RegisterTimePref(kLastAttemptedToRecordPref, base::Time());
 }
 
-void DeviceStatisticsScheduler::StartTracker() {
-  if (!delegate_->IsDeviceStatisticsMetricReportingEnabled()) {
-    return;
+base::Time DeviceStatisticsScheduler::ComputeEarliestAllowedTimeToRun() const {
+  const base::Time now = base::Time::Now();
+  // Ensure the "last recorded" timestamp is not in the future.
+  const base::Time last_recorded_at =
+      std::min(pref_service_->GetTime(kLastAttemptedToRecordPref), now);
+
+  // The metrics should be recorded once per calendar day, so the next possible
+  // time is midnight on the day after the last recording.
+  base::Time earliest_allowed =
+      last_recorded_at.is_null()
+          ? now
+          : (last_recorded_at + base::Days(1)).LocalMidnight();
+
+  if (earliest_allowed > now) {
+    // Recording has already happened today. Wait (somewhat arbitrarily) until
+    // noon on the following day to record again. This avoids recording twice in
+    // immediate succession if the previous recording happened just before
+    // midnight.
+    earliest_allowed += base::Hours(12);
   }
 
+  // If metrics reporting is disabled, try again one day from now at the
+  // earliest.
+  if (!delegate_->IsDeviceStatisticsMetricReportingEnabled()) {
+    earliest_allowed = std::max(earliest_allowed, now + base::Days(1));
+  }
+
+  // It shouldn't happen in practice that the refresh tokens still aren't fully
+  // loaded at this point. But if it does, try again in a little while.
   if (!identity_manager_->AreRefreshTokensLoaded()) {
-    // It shouldn't happen in practice that the account info (refresh tokens)
-    // still aren't fully loaded at this point. But if it does, attempt starting
-    // the tracker again in a little while.
     // TODO(crbug.com/465716865): Reconsider whether repeatedly re-trying makes
     // sense.
-    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(&DeviceStatisticsScheduler::StartTracker,
-                       weak_factory_.GetWeakPtr()),
-        base::Seconds(5));
-    return;
+    earliest_allowed = std::max(earliest_allowed, now + base::Seconds(5));
   }
 
-  // Only record metrics once per day.
-  const base::Time last_recorded_at =
-      pref_service_->GetTime(kLastAttemptedToRecordPref);
+  return earliest_allowed;
+}
+
+void DeviceStatisticsScheduler::ScheduleNextRun() {
+  CHECK(!next_run_timer_.IsRunning());
+  CHECK(!tracker_);
+
+  // Note: `ComputeEarliestAllowedTimeToRun()` may be in the past, in which case
+  // `Run` will get posted immediately.
+  next_run_timer_.Start(
+      FROM_HERE, ComputeEarliestAllowedTimeToRun(),
+      base::BindOnce(&DeviceStatisticsScheduler::Run, base::Unretained(this)));
+}
+
+void DeviceStatisticsScheduler::Run() {
+  CHECK(!tracker_);
+
   const base::Time now = base::Time::Now();
-  const bool can_issue_requests =
-      last_recorded_at.is_null() ||
-      last_recorded_at.LocalMidnight() < now.LocalMidnight();
-  if (!can_issue_requests) {
+
+  if (ComputeEarliestAllowedTimeToRun() > now) {
+    // This shouldn't usually happen, since runs get scheduled for the time when
+    // they'll be allowed. It could happen e.g. if the metrics opt-in changed,
+    // or if there's something wrong with the device clock.
+    ScheduleNextRun();
     return;
   }
 
@@ -89,12 +120,14 @@ void DeviceStatisticsScheduler::StartTracker() {
       delegate_->GetCurrentDeviceCacheGuidsForDeviceStatistics());
 
   // `Unretained` is safe because `this` owns the `tracker_`.
-  tracker_->Start(base::BindOnce(&DeviceStatisticsScheduler::TrackerDone,
+  tracker_->Start(base::BindOnce(&DeviceStatisticsScheduler::RunDone,
                                  base::Unretained(this)));
 }
 
-void DeviceStatisticsScheduler::TrackerDone() {
+void DeviceStatisticsScheduler::RunDone() {
   tracker_.reset();
+
+  ScheduleNextRun();
 }
 
 }  // namespace syncer

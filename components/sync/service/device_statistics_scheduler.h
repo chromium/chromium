@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
+#include "base/timer/wall_clock_timer.h"
 #include "url/gurl.h"
 
 namespace signin {
@@ -58,8 +58,11 @@ class DeviceStatisticsScheduler {
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
  private:
-  void StartTracker();
-  void TrackerDone();
+  base::Time ComputeEarliestAllowedTimeToRun() const;
+
+  void ScheduleNextRun();
+  void Run();
+  void RunDone();
 
   const raw_ptr<Delegate> delegate_;
   const raw_ptr<PrefService> pref_service_;
@@ -67,9 +70,11 @@ class DeviceStatisticsScheduler {
 
   const GURL sync_server_url_;
 
-  std::unique_ptr<DeviceStatisticsTracker> tracker_;
+  // Timer to schedule the next metrics recording run. Not running while a run
+  // is ongoing (i.e. `tracker_` is non-null).
+  base::WallClockTimer next_run_timer_;
 
-  base::WeakPtrFactory<DeviceStatisticsScheduler> weak_factory_{this};
+  std::unique_ptr<DeviceStatisticsTracker> tracker_;
 };
 
 }  // namespace syncer

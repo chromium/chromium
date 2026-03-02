@@ -37,6 +37,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/android_info.h"
+#endif  // BUILDFLAG(IS_ANDROID)
+
 namespace {
 
 using bookmarks_helper::GetBookmarkModel;
@@ -735,6 +739,16 @@ class SingleClientDeviceInfoWithDeviceStatisticsSyncTest
 
  private:
   void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
+    // Note: On Android 10 (API level 29), setting the metrics consent override
+    // causes the test setup to time out, see crbug.com/483394870. The tests
+    // that rely on this are similarly short-circuited.
+#if BUILDFLAG(IS_ANDROID)
+    if (base::android::android_info::sdk_int() <
+        base::android::android_info::SDK_VERSION_R) {
+      return;
+    }
+#endif  // BUILDFLAG(IS_ANDROID)
+
     // Note: The `MetricsConsentOverride` must be set *after*
     // `g_browser_process` has been initialized, but *before* the KeyedServices
     // have been created (since SyncService creation kicks off the metrics
@@ -814,6 +828,16 @@ IN_PROC_BROWSER_TEST_P(SingleClientDeviceInfoWithDeviceStatisticsSyncTest,
 #endif
 IN_PROC_BROWSER_TEST_P(SingleClientDeviceInfoWithDeviceStatisticsSyncTest,
                        MAYBE_ShouldRecordDeviceStatisticsMetrics) {
+  // Note: On Android 10 (API level 29), setting the metrics consent override
+  // causes the test setup to time out, see crbug.com/483394870, so this test
+  // cannot run.
+#if BUILDFLAG(IS_ANDROID)
+  if (base::android::android_info::sdk_int() <
+      base::android::android_info::SDK_VERSION_R) {
+    return;
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+
   base::HistogramTester histograms;
 
   ASSERT_TRUE(SetupClients());
