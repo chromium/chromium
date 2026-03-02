@@ -14,6 +14,10 @@
 #include "net/net_buildflags.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_constants.h"
 
+#if BUILDFLAG(IS_APPLE)
+#include "net/base/network_change_notifier_apple_buildflags.h"
+#endif  // BUILDFLAG(IS_APPLE)
+
 #if BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
 #endif
@@ -342,7 +346,12 @@ BASE_FEATURE(kTruncateBodyToContentLength, base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_APPLE)
 BASE_FEATURE(kUseNetworkPathMonitorForNetworkChangeNotifier,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+#ifdef COMPILE_OLD_NOTIFIER_IMPL
+             base::FEATURE_DISABLED_BY_DEFAULT
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT
+#endif  // COMPILE_OLD_NOTIFIER_IMPL
+);
 #endif  // BUILDFLAG(IS_APPLE)
 
 #if BUILDFLAG(IS_WIN)

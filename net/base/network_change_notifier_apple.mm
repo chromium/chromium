@@ -24,6 +24,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "net/base/features.h"
+#include "net/base/network_change_notifier_apple_buildflags.h"
 #include "net/base/network_interfaces_getifaddrs.h"
 #include "net/dns/dns_config_service.h"
 #include "net/log/net_log.h"
@@ -31,12 +32,6 @@
 #if BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_IOS_TVOS)
 #import <CoreTelephony/CTTelephonyNetworkInfo.h>
 #endif
-
-#if BUILDFLAG(IS_MAC) || !defined(__IPHONE_17_4) || \
-    __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_4
-#define COMPILE_OLD_NOTIFIER_IMPL 1
-#endif  // BUILDFLAG(IS_MAC) || !defined(__IPHONE_17_4) ||
-        // __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_4
 
 namespace net {
 
