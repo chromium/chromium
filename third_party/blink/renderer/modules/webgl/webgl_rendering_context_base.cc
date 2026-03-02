@@ -8895,21 +8895,23 @@ CanvasSnapshotProvider* WebGLRenderingContextBase::
     return snapshot_provider;
   }
 
-  std::unique_ptr<CanvasSnapshotProvider> temp;
+  bool create_accelerated_provider = false;
   if (type_ == CacheType::kVideo) {
     viz::RasterContextProvider* raster_context_provider = nullptr;
     if (auto wrapper = SharedGpuContext::ContextProviderWrapper()) {
       raster_context_provider =
           wrapper->ContextProvider().RasterContextProvider();
     }
-    if (ShouldCreateAcceleratedImages(raster_context_provider)) {
-      temp = CanvasNon2DResourceProviderSharedImage::Create(
-          info.size, info.format, info.alpha_type, info.color_space,
-          SharedGpuContext::ContextProviderWrapper(),
-          gpu::SHARED_IMAGE_USAGE_DISPLAY_READ);
-    } else {
-      temp = CanvasNon2DSnapshotProviderBitmap::Create(info);
-    }
+    create_accelerated_provider =
+        ShouldCreateAcceleratedImages(raster_context_provider);
+  }
+
+  std::unique_ptr<CanvasSnapshotProvider> temp;
+  if (create_accelerated_provider) {
+    temp = CanvasNon2DResourceProviderSharedImage::Create(
+        info.size, info.format, info.alpha_type, info.color_space,
+        SharedGpuContext::ContextProviderWrapper(),
+        gpu::SHARED_IMAGE_USAGE_DISPLAY_READ);
   } else {
     temp = CanvasNon2DSnapshotProviderBitmap::Create(info);
   }
