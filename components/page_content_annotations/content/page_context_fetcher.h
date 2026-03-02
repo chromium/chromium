@@ -209,6 +209,8 @@ class FetchPageProgressListener {
  public:
   virtual ~FetchPageProgressListener() = default;
   virtual void BeginScreenshot() {}
+  virtual void ScreenshotCaptured(const SkBitmap& bitmap) {}
+  virtual void ScreenshotRedacted(const SkBitmap& bitmap) {}
   virtual void EndScreenshot(std::optional<std::string> error) {}
   virtual void BeginAPC() {}
   virtual void EndAPC(std::optional<std::string> error) {}
@@ -220,6 +222,9 @@ using FetchPageContextResultCallback =
 using GetScreenshotServiceCallback =
     base::RepeatingCallback<PageContentScreenshotService*(
         content::BrowserContext*)>;
+
+// Encodes a screenshot according to the enabled feature flags.
+std::optional<std::vector<uint8_t>> EncodeScreenshot(const SkBitmap& bitmap);
 
 // Coordinates fetching multiple types of page context.
 class PageContextFetcher : public content::WebContentsObserver {
@@ -265,7 +270,8 @@ class PageContextFetcher : public content::WebContentsObserver {
   void OnScreenshotTimeout();
 
   void ReceivedEncodedScreenshot(
-      base::expected<std::vector<uint8_t>, std::string> screenshot_data);
+      base::expected<std::pair<std::vector<uint8_t>, SkBitmap>, std::string>
+          screenshot_data);
 
   void ReceivedInnerText(
       std::unique_ptr<content_extraction::InnerTextResult> result);

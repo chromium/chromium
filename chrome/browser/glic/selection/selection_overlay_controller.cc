@@ -5,12 +5,15 @@
 #include "chrome/browser/glic/selection/selection_overlay_controller.h"
 
 #include "base/strings/to_string.h"
+#include "base/task/thread_pool.h"
+#include "chrome/browser/page_content_annotations/multi_source_page_context_fetcher.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "content/public/browser/render_view_host.h"
+#include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkPaint.h"
 #include "third_party/skia/include/effects/SkDashPathEffect.h"
@@ -45,6 +48,37 @@ std::ostream& operator<<(std::ostream& os, OverlayBaseController::State value) {
 }
 
 namespace glic {
+
+namespace {
+
+class SelectionOverlayFetchPageProgressListener
+    : public page_content_annotations::FetchPageProgressListener {
+ public:
+  using ScreenshotCallback = base::OnceCallback<void(const SkBitmap&)>;
+
+  SelectionOverlayFetchPageProgressListener(
+      ScreenshotCallback screenshot_ready_callback,
+      ScreenshotCallback screenshot_redacted_callback)
+      : screenshot_ready_callback_(std::move(screenshot_ready_callback)),
+        screenshot_redacted_callback_(std::move(screenshot_redacted_callback)) {
+  }
+
+  ~SelectionOverlayFetchPageProgressListener() override = default;
+
+  void ScreenshotCaptured(const SkBitmap& bitmap) override {
+    std::move(screenshot_ready_callback_).Run(bitmap);
+  }
+
+  void ScreenshotRedacted(const SkBitmap& bitmap) override {
+    std::move(screenshot_redacted_callback_).Run(bitmap);
+  }
+
+ private:
+  ScreenshotCallback screenshot_ready_callback_;
+  ScreenshotCallback screenshot_redacted_callback_;
+};
+
+}  // namespace
 
 DEFINE_USER_DATA(SelectionOverlayController);
 
@@ -111,31 +145,64 @@ void SelectionOverlayController::InitializeOverlay() {
 }
 
 void SelectionOverlayController::StartScreenshotFlow() {
-  content::RenderWidgetHostView* view = tab_->GetContents()
-                                            ->GetPrimaryMainFrame()
-                                            ->GetRenderViewHost()
-                                            ->GetWidget()
-                                            ->GetView();
-  // Side panel is now fully closed, take screenshot and open overlay.
-  view->CopyFromSurface(
-      /*src_rect=*/gfx::Rect(), /*output_size=*/gfx::Size(), base::TimeDelta(),
-      base::BindOnce(&SelectionOverlayController::OnScreenshotTaken,
+  page_content_annotations::FetchPageContextOptions options;
+  options.screenshot_options =
+      page_content_annotations::ScreenshotOptions::ViewportOnly(
+          /*paint_preview_options=*/std::nullopt);
+  options.annotated_page_content_options =
+      optimization_guide::DefaultAIPageContentOptions(
+          /*on_critical_path=*/true);
+  auto progress_listener =
+      std::make_unique<SelectionOverlayFetchPageProgressListener>(
+          base::BindOnce(&SelectionOverlayController::OnScreenshotTaken,
+                         weak_factory_.GetWeakPtr()),
+          base::BindOnce(&SelectionOverlayController::OnScreenshotRedacted,
+                         weak_factory_.GetWeakPtr()));
+  page_content_annotations::FetchPageContext(
+      *tab_->GetContents(), options, std::move(progress_listener),
+      base::BindOnce(&SelectionOverlayController::PageAnnotationReady,
                      weak_factory_.GetWeakPtr()));
 }
 
 void SelectionOverlayController::NotifyOverlayClosing() {}
 
-void SelectionOverlayController::OnScreenshotTaken(
-    const content::CopyFromSurfaceResult& result) {
-  const SkBitmap& bitmap = result.has_value() ? result->bitmap : SkBitmap();
+void SelectionOverlayController::OnScreenshotTaken(const SkBitmap& bitmap) {
   InitializeScreenshot(
       bitmap, base::BindOnce(&SelectionOverlayController::SetScreenshot,
                              weak_factory_.GetWeakPtr(), bitmap));
 }
 
+void SelectionOverlayController::OnScreenshotRedacted(const SkBitmap& bitmap) {
+  redacted_screenshot_ = bitmap;
+}
+
+void SelectionOverlayController::PageAnnotationReady(
+    page_content_annotations::FetchPageContextResultCallbackArg fetch_result) {
+  if (!fetch_result.has_value()) {
+    RequestSyncClose(DismissalSource::kErrorScreenshotCreationFailed);
+    return;
+  }
+
+  page_content_annotations::FetchPageContextResult& page_context =
+      **fetch_result;
+
+  if (!page_context.annotated_page_content_result.has_value() ||
+      !page_context.screenshot_result.has_value()) {
+    RequestSyncClose(DismissalSource::kErrorScreenshotCreationFailed);
+    return;
+  }
+
+  page_context.annotated_page_content_result->proto
+      .mutable_gemini_in_chrome_page_metadata()
+      ->mutable_screenshot_info()
+      ->set_has_selection_region_in_screenshot(true);
+
+  ai_page_content_ =
+      std::move(page_context.annotated_page_content_result->proto);
+}
+
 void SelectionOverlayController::SetScreenshot(const SkBitmap& screenshot,
                                                SkBitmap rgb_screenshot) {
-  initial_screenshot_ = screenshot;
   initial_rgb_screenshot_ = std::move(rgb_screenshot);
   screenshot_available_ = true;
   InitializeOverlay();
@@ -215,32 +282,18 @@ void SelectionOverlayController::Reset() {
   receiver_.reset();
   page_.reset();
   initial_rgb_screenshot_.reset();
-  initial_screenshot_.reset();
+  redacted_screenshot_.reset();
   screenshot_available_ = false;
   encoded_.reset();
   selected_regions_.clear();
 }
 
 void SelectionOverlayController::RenderRegions() {
-  if (initial_screenshot_.empty()) {
+  if (redacted_screenshot_.empty()) {
     return;
   }
 
-  SkBitmap deep_copy_bitmap;
-  // TODO(http://b/485358530): Record proper histograms for the error case.
-  // Allocate memory for the deep copy.
-  if (!deep_copy_bitmap.tryAllocPixels(initial_screenshot_.info())) {
-    LOG(ERROR) << "Alloc failure";
-    return;
-  }
-
-  SkCanvas canvas(deep_copy_bitmap);
-  canvas.drawImage(initial_screenshot_.asImage(), 0, 0);
-  SkPaint paint;
-  const SkScalar intervals[] = {5.0f, 5.0f};
-  paint.setStyle(SkPaint::kStroke_Style);
-  paint.setStrokeWidth(2.0f);
-
+  std::vector<SkRect> regions;
   // TODO(http://b/452032491): Reconsider what happens if the regions overlap.
   // TODO(http://b/452032491): Currently this class is only used once per
   // selection and only one region is supported, so it is fine to always loop
@@ -248,20 +301,55 @@ void SelectionOverlayController::RenderRegions() {
   for (const auto& [id, region] : selected_regions_) {
     SkRect rect_on_canvas = gfx::RectFToSkRect(region->region);
     if (!rect_on_canvas.isEmpty() &&
-        initial_screenshot_.bounds().contains(rect_on_canvas)) {
-      paint.setColor(SK_ColorMAGENTA);
-      paint.setPathEffect(SkDashPathEffect::Make(intervals, 0.0f));
-      canvas.drawRect(rect_on_canvas, paint);
-      paint.setPathEffect(SkDashPathEffect::Make(intervals, -5.0f));
-      paint.setColor(SK_ColorCYAN);
-      canvas.drawRect(rect_on_canvas, paint);
+        redacted_screenshot_.bounds().contains(rect_on_canvas)) {
+      regions.push_back(rect_on_canvas);
     } else {
       // TODO(http://b/485358530): Record proper histograms for the error case.
       LOG(ERROR) << "Invalid region selected " << region->region.ToString();
     }
   }
 
-  encoded_ = gfx::JPEGCodec::Encode(deep_copy_bitmap, 40);
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+      base::BindOnce(
+          [](const SkBitmap& bitmap, std::vector<SkRect> regions) {
+            SkBitmap deep_copy_bitmap;
+            std::optional<std::vector<uint8_t>> result;
+            // TODO(http://b/485358530): Record proper histograms for the error
+            // case. Allocate memory for the deep copy.
+            if (!deep_copy_bitmap.tryAllocPixels(bitmap.info())) {
+              LOG(ERROR) << "Alloc failure";
+              return result;
+            }
+
+            SkCanvas canvas(deep_copy_bitmap);
+            canvas.drawImage(bitmap.asImage(), 0, 0);
+            SkPaint paint;
+            const SkScalar intervals[] = {5.0f, 5.0f};
+            paint.setStyle(SkPaint::kStroke_Style);
+            paint.setStrokeWidth(2.0f);
+
+            for (const auto& region : regions) {
+              paint.setColor(SK_ColorMAGENTA);
+              paint.setPathEffect(SkDashPathEffect::Make(intervals, 0.0f));
+              canvas.drawRect(region, paint);
+              paint.setPathEffect(SkDashPathEffect::Make(intervals, -5.0f));
+              paint.setColor(SK_ColorCYAN);
+              canvas.drawRect(region, paint);
+            }
+
+            result =
+                page_content_annotations::EncodeScreenshot(deep_copy_bitmap);
+            return result;
+          },
+          redacted_screenshot_, std::move(regions)),
+      base::BindOnce(&SelectionOverlayController::RegionsRendererd,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void SelectionOverlayController::RegionsRendererd(
+    std::optional<std::vector<uint8_t>> encoded) {
+  encoded_ = encoded;
 }
 
 }  // namespace glic

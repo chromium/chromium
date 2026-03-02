@@ -239,6 +239,31 @@ void RecordPdfRequestState(bool is_pdf_document, bool pdf_found) {
 
 }  // namespace
 
+// static
+std::optional<std::vector<uint8_t>> EncodeScreenshot(const SkBitmap& bitmap) {
+  std::optional<std::vector<uint8_t>> encoded;
+  switch (GetScreenshotImageType()) {
+    case ScreenshotImageType::kJpeg:
+      encoded = gfx::JPEGCodec::Encode(bitmap, GetScreenshotJpegQuality());
+      break;
+    case ScreenshotImageType::kPng:
+      if (ShouldPngScreenshotBeLowQuality()) {
+        encoded = gfx::PNGCodec::FastEncodeBGRASkBitmap(
+            bitmap, /*discard_transparency=*/true);
+      } else {
+        encoded = gfx::PNGCodec::EncodeBGRASkBitmap(
+            bitmap, /*discard_transparency=*/true);
+      }
+      break;
+    case ScreenshotImageType::kWebp:
+      encoded = gfx::WebpCodec::Encode(bitmap, GetScreenshotWebPQuality());
+      break;
+    default:
+      break;
+  }
+  return encoded;
+}
+
 PageContextFetcher::PageContextFetcher(
     GetScreenshotServiceCallback get_screenshot_service_callback,
     std::unique_ptr<FetchPageProgressListener> progress_listener)
@@ -475,6 +500,9 @@ void PageContextFetcher::ReceivedViewportBitmapOrError(
     screenshot_capture_done_ = true;
     base::UmaHistogramTimes("Glic.PageContextFetcher.GetScreenshot",
                             elapsed_timer_.Elapsed());
+    if (progress_listener_) {
+      progress_listener_->ScreenshotCaptured(*bitmap);
+    }
     RedactAndEncodeScreenshotIfNeeded();
   } else {
     ReceivedEncodedScreenshot(base::unexpected(bitmap_result.error()));
@@ -493,31 +521,14 @@ void PageContextFetcher::RedactAndEncodeScreenshot(
              SkColor4f redaction_color) {
             SkBitmap redacted_bitmap = RedactScreenshotOnWorkerThread(
                 bitmap, visible_bounding_boxes_for_redaction, redaction_color);
-            std::optional<std::vector<uint8_t>> encoded;
-            switch (GetScreenshotImageType()) {
-              case ScreenshotImageType::kJpeg:
-                encoded = gfx::JPEGCodec::Encode(redacted_bitmap,
-                                                 GetScreenshotJpegQuality());
-                break;
-              case ScreenshotImageType::kPng:
-                if (ShouldPngScreenshotBeLowQuality()) {
-                  encoded = gfx::PNGCodec::FastEncodeBGRASkBitmap(
-                      redacted_bitmap, /*discard_transparency=*/true);
-                } else {
-                  encoded = gfx::PNGCodec::EncodeBGRASkBitmap(
-                      redacted_bitmap, /*discard_transparency=*/true);
-                }
-                break;
-              case ScreenshotImageType::kWebp:
-                encoded = gfx::WebpCodec::Encode(redacted_bitmap,
-                                                 GetScreenshotWebPQuality());
-                break;
-              default:
-                break;
-            }
-            base::expected<std::vector<uint8_t>, std::string> reply;
+            std::optional<std::vector<uint8_t>> encoded =
+                EncodeScreenshot(redacted_bitmap);
+            base::expected<std::pair<std::vector<uint8_t>, SkBitmap>,
+                           std::string>
+                reply;
             if (encoded) {
-              reply.emplace(std::move(encoded.value()));
+              reply.emplace(
+                  std::make_pair(std::move(encoded.value()), redacted_bitmap));
             } else {
               reply = base::unexpected("JPEGCodec failed to encode");
             }
@@ -591,7 +602,8 @@ void PageContextFetcher::OnScreenshotTimeout() {
 }
 
 void PageContextFetcher::ReceivedEncodedScreenshot(
-    base::expected<std::vector<uint8_t>, std::string> screenshot_data) {
+    base::expected<std::pair<std::vector<uint8_t>, SkBitmap>, std::string>
+        screenshot_data) {
   // This function can be called multiple times, for timeout behavior. Early
   // exit if it's already been called.
   if (screenshot_done_) {
@@ -602,7 +614,7 @@ void PageContextFetcher::ReceivedEncodedScreenshot(
   capture_count_lock_ = {};
   if (screenshot_data.has_value()) {
     pending_result_->screenshot_result.value().screenshot_data =
-        std::move(screenshot_data.value());
+        std::move(screenshot_data.value().first);
     switch (GetScreenshotImageType()) {
       case ScreenshotImageType::kJpeg:
         pending_result_->screenshot_result.value().mime_type = "image/jpeg";
@@ -619,6 +631,7 @@ void PageContextFetcher::ReceivedEncodedScreenshot(
     base::UmaHistogramTimes("Glic.PageContextFetcher.GetEncodedScreenshot",
                             elapsed);
     if (progress_listener_) {
+      progress_listener_->ScreenshotRedacted(screenshot_data.value().second);
       progress_listener_->EndScreenshot(std::nullopt);
     }
   } else {
