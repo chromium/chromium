@@ -94,6 +94,16 @@ void UpdateRequestResult(UserMediaRequest* request,
             "WebRTC.UserMediaRequest.GetUserMedia.Extension.Result2", result);
         return;
       } else {
+        if (request->Audio() && !request->Video()) {
+          base::UmaHistogramEnumeration(
+              "WebRTC.UserMediaRequest.GetUserMedia.AudioCapture.Result2",
+              result);
+        }
+        if (!request->Audio() && request->Video()) {
+          base::UmaHistogramEnumeration(
+              "WebRTC.UserMediaRequest.GetUserMedia.VideoCapture.Result2",
+              result);
+        }
         base::UmaHistogramEnumeration(
             "WebRTC.UserMediaRequest.GetUserMedia.DeviceCapture.Result2",
             result);

@@ -2016,7 +2016,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.UserMediaRequest.{RequestType}.Result2"
-    enum="MediaStreamRequestResult" expires_after="2026-11-26">
+    enum="MediaStreamRequestResult" expires_after="2027-02-26">
   <owner>tovep@chromium.org</owner>
   <owner>agpalak@chromium.org</owner>
   <owner>rtc-meet-in-chrome@google.com</owner>
@@ -2029,8 +2029,10 @@ chromium-metrics-reviews@google.com.
   <token key="RequestType">
     <variant name="GetAllScreensMedia"/>
     <variant name="GetDisplayMedia"/>
+    <variant name="GetUserMedia.AudioCapture"/>
     <variant name="GetUserMedia.DeviceCapture"/>
     <variant name="GetUserMedia.Extension"/>
+    <variant name="GetUserMedia.VideoCapture"/>
   </token>
 </histogram>
 
