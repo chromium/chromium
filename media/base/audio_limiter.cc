@@ -99,8 +99,9 @@ void AudioLimiter::FeedInput(const AudioBus& input, int num_frames) {
   std::vector<float> interleaved_input;
   interleaved_input.resize(num_frames * frame_size);
 
-  input.ToInterleaved<Float32SampleTypeTraitsNoClip>(num_frames,
-                                                     interleaved_input.data());
+  // Use "partial" here since `input` might contain more than `num_frames`.
+  input.ToInterleavedPartial<Float32SampleTypeTraitsNoClip>(0u,
+                                                            interleaved_input);
 
   // Sanitize the input, removing unusual values. This is a destructive
   // operation which changes the nature of the audio signal, but it avoids
