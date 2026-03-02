@@ -24,9 +24,8 @@ class InputStreamUnittest {
     private InputStreamUnittest() {}
 
     @CalledByNative
-    @Nullable
     @JniType("std::unique_ptr<embedder_support::InputStream>")
-    static InputStream getNullStream() {
+    static @Nullable InputStream getNullStream() {
         return null;
     }
 

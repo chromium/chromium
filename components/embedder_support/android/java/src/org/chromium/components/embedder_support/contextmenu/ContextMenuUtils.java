@@ -75,10 +75,10 @@ public final class ContextMenuUtils {
 
         /** Builder for creating {@link HeaderInfo} instances. */
         public static final class Builder {
-            @Nullable private CharSequence mTitle;
-            @Nullable private GURL mUrl;
-            @Nullable private GURL mSecondaryUrl;
-            @Nullable private GURL mTertiaryUrl;
+            private @Nullable CharSequence mTitle;
+            private @Nullable GURL mUrl;
+            private @Nullable GURL mSecondaryUrl;
+            private @Nullable GURL mTertiaryUrl;
 
             /**
              * Sets the title to be displayed.

@@ -135,8 +135,7 @@ public class PageContentProtoViewStructureBuilderTest {
         return outViewStructure;
     }
 
-    @Nullable
-    private TestViewStructure getViewWithSubstring(
+    private @Nullable TestViewStructure getViewWithSubstring(
             TestViewStructure viewStructure, String substring) {
         if (viewStructure.getText() != null
                 && viewStructure.getText().toString().contains(substring)) {

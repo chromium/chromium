@@ -198,8 +198,7 @@ public class PageContentProtoViewStructureBuilder implements VirtualStructurePro
         viewRoot.asyncCommit();
     }
 
-    @Nullable
-    private static Selection getSelectionInfo(FrameData frameData) {
+    private static @Nullable Selection getSelectionInfo(FrameData frameData) {
         if (frameData.hasFrameInteractionInfo()) {
             var frameInteractionInfo = frameData.getFrameInteractionInfo();
             if (frameInteractionInfo.hasSelection()) {

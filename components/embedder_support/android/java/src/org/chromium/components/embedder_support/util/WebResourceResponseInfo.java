@@ -60,21 +60,18 @@ public class WebResourceResponseInfo {
     }
 
     @CalledByNative
-    @Nullable
     @JniType("std::optional<std::string>")
-    public String getMimeType() {
+    public @Nullable String getMimeType() {
         return mMimeType;
     }
 
     @CalledByNative
-    @Nullable
     @JniType("std::optional<std::string>")
-    public String getCharset() {
+    public @Nullable String getCharset() {
         return mCharset;
     }
 
-    @Nullable
-    public InputStream getData() {
+    public @Nullable InputStream getData() {
         return mData;
     }
 
@@ -85,8 +82,7 @@ public class WebResourceResponseInfo {
 
     @CalledByNative
     @JniType("std::unique_ptr<embedder_support::InputStream>")
-    @Nullable
-    private InputStream transferStreamToNative() {
+    private @Nullable InputStream transferStreamToNative() {
         // Only allow to call transferStreamToNative once per object, because this method
         // transfers ownership of the stream and once the unique_ptr<InputStream>
         // is deleted it also closes the original java input stream. This
@@ -106,8 +102,7 @@ public class WebResourceResponseInfo {
 
     @CalledByNative
     @JniType("std::optional<std::string>")
-    @Nullable
-    public String getReasonPhrase() {
+    public @Nullable String getReasonPhrase() {
         return mReasonPhrase;
     }
 

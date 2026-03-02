@@ -76,7 +76,7 @@ public class ContentView extends FrameLayout
     public static final int DEFAULT_MEASURE_SPEC =
             MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
 
-    @Nullable private WebContents mWebContents;
+    private @Nullable WebContents mWebContents;
     private boolean mIsObscuredForAccessibility;
     private final ObserverList<OnHierarchyChangeListener> mHierarchyChangeListeners =
             new ObserverList<>();
@@ -84,11 +84,11 @@ public class ContentView extends FrameLayout
             new ObserverList<>();
     private final ObserverList<OnDragListener> mOnDragListeners = new ObserverList<>();
     private ViewEventSink mViewEventSink;
-    @Nullable private Supplier<PointerIcon> mStylusWritingIconSupplier;
+    private @Nullable Supplier<PointerIcon> mStylusWritingIconSupplier;
 
     // TODO(b/422918648): Remove this.
-    @Nullable private MotionEvent mPendingTwoFingerSwipeDownEvent;
-    @Nullable private VirtualStructureProvider mVirtualStructureProvider;
+    private @Nullable MotionEvent mPendingTwoFingerSwipeDownEvent;
+    private @Nullable VirtualStructureProvider mVirtualStructureProvider;
 
     private final ObserverList<View.OnHoverListener> mHoverListeners = new ObserverList<>();
 
@@ -549,8 +549,7 @@ public class ContentView extends FrameLayout
         return super.onResolvePointerIcon(event, pointerIndex);
     }
 
-    @Nullable
-    private EventForwarder getEventForwarder() {
+    private @Nullable EventForwarder getEventForwarder() {
         return webContentsAttached() ? mWebContents.getEventForwarder() : null;
     }
 

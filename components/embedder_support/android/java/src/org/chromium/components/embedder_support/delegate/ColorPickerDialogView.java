@@ -33,10 +33,10 @@ import org.chromium.ui.widget.ButtonCompat;
 @NullMarked
 public class ColorPickerDialogView extends AlertDialog implements OnColorChangedListener {
     // Callbacks to handle user interactions (picking a color, switching views, and closing dialog).
-    @Nullable private Callback<Integer> mCustomColorPickedCallback;
-    @Nullable private Callback<@Nullable Void> mViewSwitchedCallback;
-    @Nullable private Callback<Boolean> mMakeChoiceCallback;
-    @Nullable private Callback<Integer> mDialogDismissedCallback;
+    private @Nullable Callback<Integer> mCustomColorPickedCallback;
+    private @Nullable Callback<@Nullable Void> mViewSwitchedCallback;
+    private @Nullable Callback<Boolean> mMakeChoiceCallback;
+    private @Nullable Callback<Integer> mDialogDismissedCallback;
 
     // GridView of the suggested colors from the web dev (or the default list if empty).
     private final ColorPickerSuggestionsView mSuggestionsView;
