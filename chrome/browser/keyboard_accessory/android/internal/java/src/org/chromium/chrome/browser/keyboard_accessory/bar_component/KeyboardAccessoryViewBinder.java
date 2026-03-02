@@ -292,8 +292,7 @@ class KeyboardAccessoryViewBinder {
             TraceEvent.end("BarItemChipViewHolder#bind");
         }
 
-        @StyleRes
-        private static int selectStyleForSuggestion(
+        private static @StyleRes int selectStyleForSuggestion(
                 Context context, @BarItem.Type int barItemType) {
             if (ChromeFeatureList.isEnabled(
                     ChromeFeatureList.AUTOFILL_ENABLE_KEYBOARD_ACCESSORY_CHIP_REDESIGN)) {
@@ -396,8 +395,7 @@ class KeyboardAccessoryViewBinder {
             textView.setLayoutParams(params);
         }
 
-        @StyleRes
-        private static int selectStyleForSuggestion(
+        private static @StyleRes int selectStyleForSuggestion(
                 Context context, @BarItem.Type int barItemType) {
             switch (barItemType) {
                 case BarItem.Type.ACTION_BUTTON:
