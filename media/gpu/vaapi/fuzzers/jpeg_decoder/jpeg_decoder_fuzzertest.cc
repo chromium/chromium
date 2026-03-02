@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stddef.h>
 #include <stdint.h>
 #include <string.h>
@@ -107,14 +102,14 @@ media::JpegParseResult ConvertToJpegParseResult(
       std::min(std::size(parse_result.dc_table),
                base::checked_cast<size_t>(proto_parse_result.dc_table_size()));
   for (size_t i = 0; i < num_dc_tables; i++) {
-    parse_result.dc_table[i] =
+    UNSAFE_TODO(parse_result.dc_table[i]) =
         ConvertToJpegHuffmanTable(proto_parse_result.dc_table()[i]);
   }
   const size_t num_ac_tables =
       std::min(std::size(parse_result.ac_table),
                base::checked_cast<size_t>(proto_parse_result.ac_table_size()));
   for (size_t i = 0; i < num_ac_tables; i++) {
-    parse_result.ac_table[i] =
+    UNSAFE_TODO(parse_result.ac_table[i]) =
         ConvertToJpegHuffmanTable(proto_parse_result.ac_table()[i]);
   }
 
@@ -125,10 +120,11 @@ media::JpegParseResult ConvertToJpegParseResult(
   for (size_t i = 0; i < num_q_tables; i++) {
     const media::fuzzing::JpegQuantizationTable& input_q_table =
         proto_parse_result.q_table()[i];
-    parse_result.q_table[i].valid = input_q_table.valid();
-    const size_t value_min_size = std::min(
-        std::size(parse_result.q_table[i].value), input_q_table.value().size());
-    base::span(parse_result.q_table[i].value)
+    UNSAFE_TODO(parse_result.q_table[i]).valid = input_q_table.valid();
+    const size_t value_min_size =
+        std::min(std::size(UNSAFE_TODO(parse_result.q_table[i].value)),
+                 input_q_table.value().size());
+    base::span(UNSAFE_TODO(parse_result.q_table[i]).value)
         .first(value_min_size)
         .copy_from_nonoverlapping(
             base::as_byte_span(input_q_table.value()).first(value_min_size));

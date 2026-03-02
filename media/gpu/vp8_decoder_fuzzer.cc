@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/gpu/vp8_decoder.h"
 
 #include <stddef.h>
@@ -50,11 +45,12 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   if (!size) {
     return 0;
   }
+  // SAFETY: LibFuzzer guarantees that `data` is valid for `size` bytes.
+  auto data_span = UNSAFE_BUFFERS(base::span(data, size));
 
   media::VP8Decoder decoder(std::make_unique<FakeVP8Accelerator>());
   auto external_memory =
-      std::make_unique<media::ExternalMemoryAdapterForTesting>(
-          base::span(data, size));
+      std::make_unique<media::ExternalMemoryAdapterForTesting>(data_span);
   scoped_refptr<media::DecoderBuffer> decoder_buffer =
       media::DecoderBuffer::FromExternalMemory(std::move(external_memory));
   decoder.SetStream(1, decoder_buffer);

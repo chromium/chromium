@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #ifndef MEDIA_GPU_MACROS_H_
 #define MEDIA_GPU_MACROS_H_
 
 #include <array>
 
+#include "base/compiler_specific.h"
 #include "base/containers/auto_spanification_helper.h"
 #include "base/logging.h"
 
@@ -34,20 +30,20 @@ namespace media {
 // Copy the memory between arrays with checking the array size.
 template <typename T, size_t N>
 inline void SafeArrayMemcpy(T (&to)[N], const T (&from)[N]) {
-  memcpy(to, from, sizeof(T[N]));
+  UNSAFE_TODO(memcpy(to, from, sizeof(T[N])));
 }
 
 // Copy the memory between arrays while ensuring the same size.
 template <typename T, size_t N>
 inline void SafeArrayMemcpy(T (&to)[N], const std::array<T, N>& from) {
-  memcpy(to, from.data(), sizeof(T[N]));
+  UNSAFE_TODO(memcpy(to, from.data(), sizeof(T[N])));
 }
 
 // Copy the memory between arrays while ensuring the same size.
 template <typename T, size_t N, size_t M>
 inline void SafeArrayMemcpy(T (&to)[N][M],
                             const std::array<std::array<T, M>, N>& from) {
-  memcpy(to, from.data(), sizeof(T[N][M]));
+  UNSAFE_TODO(memcpy(to, from.data(), sizeof(T[N][M])));
 }
 
 }  // namespace media
