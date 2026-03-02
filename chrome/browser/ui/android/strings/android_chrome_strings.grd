@@ -518,6 +518,9 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
       <message name="IDS_SITE_SEARCH_LIST_MENU_ACTIVATE" desc="Option in site search list menu. User can click the 'Activate' option to activate the selected option.">
         Activate
       </message>
+      <message name="IDS_SITE_SEARCH_LIST_MENU_DEACTIVATE" desc="Option in site search list menu. User can click the 'Deactivate' option to deactivate the search engine.">
+        Deactivate
+      </message>
       <message name="IDS_SITE_SEARCH_LIST_MENU_DELETE" desc="Option in site search list menu. User can click the 'Delete' option to remove the search engine.">
         Delete
       </message>
