@@ -545,43 +545,44 @@ public class ContentSettingsResources {
                         0);
 
             case ContentSettingsType.SENSORS:
-                int sensorsPermissionTitle = R.string.motion_sensors_permission_title;
-                int sensorsAllowedDescription =
-                        R.string.website_settings_category_motion_sensors_allowed;
-                int sensorsBlockedDescription =
-                        R.string.website_settings_category_motion_sensors_blocked;
+                boolean extraSensorClassesEnabled =
+                        FeatureList.isNativeInitialized()
+                                && DeviceFeatureMap.isEnabled(
+                                        DeviceFeatureList.GENERIC_SENSOR_EXTRA_CLASSES);
+                int sensorsPermissionTitle =
+                        extraSensorClassesEnabled
+                                ? R.string.motion_and_light_sensors_permission_title
+                                : R.string.motion_sensors_permission_title;
+                int sensorsAllowed =
+                        extraSensorClassesEnabled
+                                ? R.string.website_settings_motion_and_light_sensors_allow
+                                : R.string.website_settings_motion_sensors_allow;
+                int sensorsBlocked =
+                        extraSensorClassesEnabled
+                                ? R.string.website_settings_motion_and_light_sensors_block
+                                : R.string.website_settings_motion_sensors_block;
                 int sensorsScreenreaderAnnouncement =
-                        R.string.website_settings_category_motion_sensors_a11y;
-                try {
-                    if (FeatureList.isNativeInitialized()
-                            && DeviceFeatureMap.isEnabled(
-                                    DeviceFeatureList.GENERIC_SENSOR_EXTRA_CLASSES)) {
-                        sensorsPermissionTitle = R.string.sensors_permission_title;
-                        sensorsAllowedDescription =
-                                R.string.website_settings_category_sensors_allowed;
-                        sensorsBlockedDescription =
-                                R.string.website_settings_category_sensors_blocked;
-                        sensorsScreenreaderAnnouncement =
-                                R.string.website_settings_category_sensors_a11y;
-                    }
-                } catch (IllegalArgumentException e) {
-                    // We can hit this in tests that use the @Features annotation, as it calls
-                    // FeatureList.setTestFeatures() with a map that should not need to contain
-                    // DeviceFeatureList.GENERIC_SENSOR_EXTRA_CLASSES.
-                }
+                        extraSensorClassesEnabled
+                                ? R.string.website_settings_motion_and_light_sensors_a11y
+                                : R.string.website_settings_motion_sensors_a11y;
+                int sensorsBlockedDescription =
+                        extraSensorClassesEnabled
+                                ? R.string
+                                        .website_settings_motion_and_light_sensors_block_description
+                                : R.string.website_settings_motion_sensors_block_description;
+
                 return new ResourceItem(
                                 R.drawable.settings_sensors,
                                 sensorsPermissionTitle,
                                 ContentSetting.ALLOW,
                                 ContentSetting.BLOCK,
-                                sensorsAllowedDescription,
-                                sensorsBlockedDescription,
+                                0,
+                                0,
                                 sensorsScreenreaderAnnouncement,
                                 R.drawable.sensors_off_24px,
-                                R.string.website_settings_motion_sensors_allow,
-                                R.string.website_settings_motion_sensors_block)
-                        .setDisabledDescriptionText(
-                                R.string.website_settings_motion_sensors_block_description);
+                                sensorsAllowed,
+                                sensorsBlocked)
+                        .setDisabledDescriptionText(sensorsBlockedDescription);
 
             case ContentSettingsType.SERIAL_CHOOSER_DATA:
                 return new ResourceItem(

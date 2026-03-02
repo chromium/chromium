@@ -101,10 +101,10 @@ base::span<const PageInfoUI::PermissionUIInfo> GetContentSettingsUIInfo() {
       {
           ContentSettingsType::SENSORS,
           base::FeatureList::IsEnabled(features::kGenericSensorExtraClasses)
-              ? IDS_SITE_SETTINGS_TYPE_SENSORS
+              ? IDS_SITE_SETTINGS_TYPE_MOTION_AND_LIGHT_SENSORS
               : IDS_SITE_SETTINGS_TYPE_MOTION_SENSORS,
           base::FeatureList::IsEnabled(features::kGenericSensorExtraClasses)
-              ? IDS_SITE_SETTINGS_TYPE_SENSORS_MID_SENTENCE
+              ? IDS_SITE_SETTINGS_TYPE_MOTION_AND_LIGHT_SENSORS_MID_SENTENCE
               : IDS_SITE_SETTINGS_TYPE_MOTION_SENSORS_MID_SENTENCE,
       },
       {ContentSettingsType::USB_GUARD, IDS_SITE_SETTINGS_TYPE_USB_DEVICES,

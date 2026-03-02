@@ -94,8 +94,8 @@
   <message name="IDS_MOTION_SENSORS_PERMISSION_TITLE" desc="Title of the permission to use device's motion sensors (accelerometer, gyroscope, magnetometer) [CHAR_LIMIT=32]">
     Motion sensors
   </message>
-  <message name="IDS_SENSORS_PERMISSION_TITLE" desc="Title of the permission to use device's sensors [CHAR_LIMIT=32]">
-    Motion or light sensors
+  <message name="IDS_MOTION_AND_LIGHT_SENSORS_PERMISSION_TITLE" desc="Title of the permission to use device's sensors [CHAR_LIMIT=32]">
+    Motion and light sensors
   </message>
   <message name="IDS_NFC_PERMISSION_TITLE" desc="Title of the permission to use NFC [CHAR_LIMIT=32]">
     NFC devices
@@ -914,26 +914,8 @@
 
   <!-- Motion/Light sensors -->
 
-  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_SENSORS_ALLOWED" desc="Summary text explaining that sites are allowed to use device's sensors and that it is the recommended setting.">
-    Allow sites to access sensors (recommended)
-  </message>
-  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_SENSORS_BLOCKED" desc="Summary text explaining that access to sensors is being blocked on some sites.">
-    Block sites from accessing sensors
-  </message>
-  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_SENSORS_A11Y" desc="The screen reader announcement describing a toggle with two states, controling whether sites can request permission to access sensors. It is important to keep this string as two full sentences terminated by a period.">
-    When on, sites can use your device’s sensors. When off, sites can’t use sensors.
-  </message>
-  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_MOTION_SENSORS_ALLOWED" desc="Label text shown in settings; explaining that the current toggle state will allow websites to access the device's motion sensors (accelerometer, gyroscope, magnetometer).">
-    Allow sites to access motion sensors (recommended)
-  </message>
-  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_MOTION_SENSORS_BLOCKED" desc="Label text shown in settings; explaining that the current toggle state will prevent websites from accessing the device's motion sensors (accelerometer, gyroscope, magnetometer).">
-    Block sites from accessing motion sensors
-  </message>
-  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_MOTION_SENSORS_A11Y" desc="The screen reader announcement describing a toggle with two states, controling whether sites can request permission to access motion sensors. It is important to keep this string as two full sentences terminated by a period.">
+  <message name="IDS_WEBSITE_SETTINGS_MOTION_SENSORS_A11Y" desc="The screen reader announcement describing a toggle with two states, controling whether sites can request permission to access motion sensors. It is important to keep this string as two full sentences terminated by a period.">
     When on, sites can use your device’s motion sensors. When off, sites can’t use motion sensors.
-  </message>
-  <message name="IDS_WEBSITE_SETTINGS_MOTION_SENSORS_PAGE_DESCRIPTION" desc="Description of the motion sensors content setting.">
-    Sites usually use your device's motion sensors for features like virtual reality or fitness tracking
   </message>
   <message name="IDS_WEBSITE_SETTINGS_MOTION_SENSORS_ALLOW" desc="Primary text corresponding to the allow button in the motion sensors permission radio buttons group.">
     Sites can use motion sensors
@@ -943,6 +925,25 @@
   </message>
   <message name="IDS_WEBSITE_SETTINGS_MOTION_SENSORS_BLOCK_DESCRIPTION" desc="Description of block motion sensors permission.">
     Features that need motion sensors won't work
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_MOTION_SENSORS_PAGE_DESCRIPTION" desc="Description of the motion sensors content setting.">
+    Sites usually use your device's motion sensors for features like virtual reality or fitness tracking
+  </message>
+
+  <message name="IDS_WEBSITE_SETTINGS_MOTION_AND_LIGHT_SENSORS_A11Y" desc="The screen reader announcement describing a toggle with two states, controling whether sites can request permission to access sensors. It is important to keep this string as two full sentences terminated by a period.">
+    When on, sites can use your device’s motion and light sensors. When off, sites can’t use sensors.
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_MOTION_AND_LIGHT_SENSORS_ALLOW" desc="Primary text corresponding to the allow button in the motion sensors permission radio buttons group.">
+    Sites can use motion and light sensors
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_MOTION_AND_LIGHT_SENSORS_BLOCK" desc="Primary text corresponding to the block button in the motion sensors permission radio buttons group.">
+    Don't allow sites to use motion or light sensors
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_MOTION_AND_LIGHT_SENSORS_BLOCK_DESCRIPTION" desc="Description of block motion sensors permission.">
+    Features that need motion or light sensors won't work
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_MOTION_AND_LIGHT_SENSORS_PAGE_DESCRIPTION" desc="Description of the motion sensors content setting.">
+    Sites usually use your device's motion and light sensors for features like virtual reality or fitness tracking
   </message>
 
   <!-- NFC -->

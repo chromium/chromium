@@ -3591,18 +3591,6 @@ void AddSiteSettingsStrings(content::WebUIDataSource* html_source,
        IDS_SETTINGS_SITE_SETTINGS_MIDI_ALLOWED_EXCEPTIONS},
       {"siteSettingsMidiBlockedExceptions",
        IDS_SETTINGS_SITE_SETTINGS_MIDI_BLOCKED_EXCEPTIONS},
-      {"siteSettingsMotionSensorsDescription",
-       IDS_SETTINGS_SITE_SETTINGS_MOTION_SENSORS_DESCRIPTION},
-      {"siteSettingsMotionSensorsAllowed",
-       IDS_SETTINGS_SITE_SETTINGS_MOTION_SENSORS_ALLOWED},
-      {"siteSettingsMotionSensorsBlocked",
-       IDS_SETTINGS_SITE_SETTINGS_MOTION_SENSORS_BLOCKED},
-      {"siteSettingsMotionSensorsBlockedSubLabel",
-       IDS_SETTINGS_SITE_SETTINGS_MOTION_SENSORS_BLOCKED_SUB_LABEL},
-      {"siteSettingsMotionSensorsAllowedExceptions",
-       IDS_SETTINGS_SITE_SETTINGS_MOTION_SENSORS_ALLOWED_EXCEPTIONS},
-      {"siteSettingsMotionSensorsBlockedExceptions",
-       IDS_SETTINGS_SITE_SETTINGS_MOTION_SENSORS_BLOCKED_EXCEPTIONS},
       {"siteSettingsNotificationsAllowed",
        IDS_SETTINGS_SITE_SETTINGS_NOTIFICATIONS_ALLOWED},
       {"siteSettingsNotificationsPartial",
@@ -3872,13 +3860,37 @@ void AddSiteSettingsStrings(content::WebUIDataSource* html_source,
 
   // These ones cannot be constexpr because we need to check base::FeatureList.
   static webui::LocalizedString kSensorsLocalizedStrings[] = {
+      {"siteSettingsSensorsDescription",
+       base::FeatureList::IsEnabled(features::kGenericSensorExtraClasses)
+           ? IDS_SETTINGS_SITE_SETTINGS_MOTION_AND_LIGHT_SENSORS_DESCRIPTION
+           : IDS_SETTINGS_SITE_SETTINGS_MOTION_SENSORS_DESCRIPTION},
+      {"siteSettingsSensorsAllowed",
+       base::FeatureList::IsEnabled(features::kGenericSensorExtraClasses)
+           ? IDS_SETTINGS_SITE_SETTINGS_MOTION_AND_LIGHT_SENSORS_ALLOWED
+           : IDS_SETTINGS_SITE_SETTINGS_MOTION_SENSORS_ALLOWED},
+      {"siteSettingsSensorsBlocked",
+       base::FeatureList::IsEnabled(features::kGenericSensorExtraClasses)
+           ? IDS_SETTINGS_SITE_SETTINGS_MOTION_AND_LIGHT_SENSORS_BLOCKED
+           : IDS_SETTINGS_SITE_SETTINGS_MOTION_SENSORS_BLOCKED},
+      {"siteSettingsSensorsBlockedSubLabel",
+       base::FeatureList::IsEnabled(features::kGenericSensorExtraClasses)
+           ? IDS_SETTINGS_SITE_SETTINGS_MOTION_AND_LIGHT_SENSORS_BLOCKED_SUB_LABEL
+           : IDS_SETTINGS_SITE_SETTINGS_MOTION_SENSORS_BLOCKED_SUB_LABEL},
+      {"siteSettingsSensorsAllowedExceptions",
+       base::FeatureList::IsEnabled(features::kGenericSensorExtraClasses)
+           ? IDS_SETTINGS_SITE_SETTINGS_MOTION_AND_LIGHT_SENSORS_ALLOWED_EXCEPTIONS
+           : IDS_SETTINGS_SITE_SETTINGS_MOTION_SENSORS_ALLOWED_EXCEPTIONS},
+      {"siteSettingsSensorsBlockedExceptions",
+       base::FeatureList::IsEnabled(features::kGenericSensorExtraClasses)
+           ? IDS_SETTINGS_SITE_SETTINGS_MOTION_AND_LIGHT_SENSORS_BLOCKED_EXCEPTIONS
+           : IDS_SETTINGS_SITE_SETTINGS_MOTION_SENSORS_BLOCKED_EXCEPTIONS},
       {"siteSettingsSensors",
        base::FeatureList::IsEnabled(features::kGenericSensorExtraClasses)
-           ? IDS_SITE_SETTINGS_TYPE_SENSORS
+           ? IDS_SITE_SETTINGS_TYPE_MOTION_AND_LIGHT_SENSORS
            : IDS_SITE_SETTINGS_TYPE_MOTION_SENSORS},
       {"siteSettingsSensorsMidSentence",
        base::FeatureList::IsEnabled(features::kGenericSensorExtraClasses)
-           ? IDS_SITE_SETTINGS_TYPE_SENSORS_MID_SENTENCE
+           ? IDS_SITE_SETTINGS_TYPE_MOTION_AND_LIGHT_SENSORS_MID_SENTENCE
            : IDS_SITE_SETTINGS_TYPE_MOTION_SENSORS_MID_SENTENCE},
   };
   html_source->AddLocalizedStrings(kSensorsLocalizedStrings);

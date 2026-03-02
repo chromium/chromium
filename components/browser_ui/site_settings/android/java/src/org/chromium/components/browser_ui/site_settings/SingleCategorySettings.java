@@ -45,6 +45,7 @@ import androidx.preference.PreferenceScreen;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.FeatureList;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
@@ -87,6 +88,8 @@ import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.BrowserContextHandle;
+import org.chromium.device.DeviceFeatureList;
+import org.chromium.device.DeviceFeatureMap;
 import org.chromium.ui.listmenu.ListMenu;
 import org.chromium.ui.listmenu.ListMenuHost;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
@@ -1188,7 +1191,13 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
         } else if (mCategory.getType() == SiteSettingsCategory.Type.MICROPHONE) {
             return R.string.website_settings_mic_page_description;
         } else if (mCategory.getType() == SiteSettingsCategory.Type.SENSORS) {
-            return R.string.website_settings_motion_sensors_page_description;
+            boolean extraSensorClassesEnabled =
+                    FeatureList.isNativeInitialized()
+                            && DeviceFeatureMap.isEnabled(
+                                    DeviceFeatureList.GENERIC_SENSOR_EXTRA_CLASSES);
+            return extraSensorClassesEnabled
+                    ? R.string.website_settings_motion_and_light_sensors_page_description
+                    : R.string.website_settings_motion_sensors_page_description;
         } else if (mCategory.getType() == SiteSettingsCategory.Type.NFC) {
             return R.string.website_settings_nfc_page_description;
         } else if (mCategory.getType() == SiteSettingsCategory.Type.USB) {

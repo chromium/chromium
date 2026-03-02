@@ -376,8 +376,8 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       id: Id.SENSORS,
       label: 'siteSettingsSensors',
       icon: 'privacy:sensors',
-      enabledLabel: 'siteSettingsMotionSensorsAllowed',
-      disabledLabel: 'siteSettingsMotionSensorsBlocked',
+      enabledLabel: 'siteSettingsSensorsAllowed',
+      disabledLabel: 'siteSettingsSensorsBlocked',
     },
     {
       route: routes.SITE_SETTINGS_SERIAL_PORTS,
