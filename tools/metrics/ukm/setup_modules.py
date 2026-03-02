@@ -42,8 +42,9 @@ setup_modules_path = chromium_src_path.joinpath('tools', 'metrics',
 sys.path.append(str(setup_modules_path))
 import setup_modules_lib
 
-# Pop the path again to not interfere with actual modules setup.
-sys.path.pop()
+# Restore the path to an extent that it's possible, so
+# that it doesn't interfere with actual modules setup.
+sys.path.remove(str(setup_modules_path))
 
 # Actually set up the modules using setup_modules_lib.
 setup_modules_lib.setup_modules(str(chromium_src_path))
