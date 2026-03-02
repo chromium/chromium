@@ -20,6 +20,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/numerics/safe_math.h"
 #include "base/run_loop.h"
+#include "base/types/expected.h"
 #include "chrome/browser/ash/file_system_provider/fake_extension_provider.h"
 #include "chrome/browser/ash/file_system_provider/fake_provided_file_system.h"
 #include "chrome/browser/ash/file_system_provider/service.h"
@@ -56,7 +57,11 @@ class EventLogger {
   virtual ~EventLogger() = default;
 
   void OnRead(int result) { results_.push_back(result); }
-  void OnGetLength(int64_t result) { results_.push_back(result); }
+  void OnGetLength(base::expected<int64_t, net::Error> result) {
+    results_.push_back(result.has_value()
+                           ? result.value()
+                           : static_cast<int64_t>(result.error()));
+  }
 
   base::WeakPtr<EventLogger> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();

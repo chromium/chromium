@@ -7,6 +7,9 @@
 #include <string>
 #include <utility>
 
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
+#include "base/run_loop.h"
 #include "base/types/expected.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
@@ -41,12 +44,28 @@ base::expected<std::string, net::Error> ReadFromReader(FileStreamReader& reader,
   return result;
 }
 
-int64_t GetLengthFromReader(FileStreamReader* reader) {
+base::expected<int64_t, net::Error> GetLengthFromReader(
+    FileStreamReader* reader) {
   EXPECT_NE(nullptr, reader);
-  net::TestInt64CompletionCallback callback;
 
-  int rv = reader->GetLength(callback.callback());
-  return callback.GetResult(rv);
+  base::expected<int64_t, net::Error> result;
+  base::RunLoop run_loop;
+  int64_t rv = reader->GetLength(base::BindOnce(
+      [](base::expected<int64_t, net::Error>* out_result,
+         base::OnceClosure quit_closure,
+         base::expected<int64_t, net::Error> length) {
+        *out_result = length;
+        std::move(quit_closure).Run();
+      },
+      &result, run_loop.QuitClosure()));
+  if (rv != net::ERR_IO_PENDING) {
+    if (rv < 0) {
+      return base::unexpected(static_cast<net::Error>(rv));
+    }
+    return rv;
+  }
+  run_loop.Run();
+  return result;
 }
 
 int WriteStringToWriter(FileStreamWriter* writer, const std::string& data) {

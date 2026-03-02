@@ -91,8 +91,7 @@ int LocalFileStreamReader::Read(net::IOBuffer* buf,
   return net::ERR_IO_PENDING;
 }
 
-int64_t LocalFileStreamReader::GetLength(
-    net::Int64CompletionOnceCallback callback) {
+int64_t LocalFileStreamReader::GetLength(GetLengthCallback callback) {
   bool posted = task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE, base::BindOnce(&DoGetFileInfo, file_path_),
       base::BindOnce(&LocalFileStreamReader::DidGetFileInfoForGetLength,
@@ -149,9 +148,9 @@ void LocalFileStreamReader::OnScopedFileAccessRequested(
 void LocalFileStreamReader::DidVerifyForOpen(
     net::CompletionOnceCallback callback,
     file_access::ScopedFileAccess scoped_file_access,
-    int64_t get_length_result) {
-  if (get_length_result < 0) {
-    std::move(callback).Run(static_cast<int>(get_length_result));
+    base::expected<int64_t, net::Error> get_length_result) {
+  if (!get_length_result.has_value()) {
+    std::move(callback).Run(get_length_result.error());
     return;
   }
 
@@ -224,18 +223,23 @@ void LocalFileStreamReader::DidOpenForRead(net::IOBuffer* buf,
 }
 
 void LocalFileStreamReader::DidGetFileInfoForGetLength(
-    net::Int64CompletionOnceCallback callback,
+    GetLengthCallback callback,
     base::FileErrorOr<base::File::Info> result) {
-  std::move(callback).Run([&]() -> int64_t {
-    ASSIGN_OR_RETURN(const auto& file_info, result, net::FileErrorToNetError);
-    if (file_info.is_directory) {
-      return net::ERR_FILE_NOT_FOUND;
-    }
-    if (!VerifySnapshotTime(expected_modification_time_, file_info)) {
-      return net::ERR_UPLOAD_FILE_CHANGED;
-    }
-    return file_info.size;
-  }());
+  if (!result.has_value()) {
+    std::move(callback).Run(
+        base::unexpected(net::FileErrorToNetError(result.error())));
+    return;
+  }
+  const auto& file_info = result.value();
+  if (file_info.is_directory) {
+    std::move(callback).Run(base::unexpected(net::ERR_FILE_NOT_FOUND));
+    return;
+  }
+  if (!VerifySnapshotTime(expected_modification_time_, file_info)) {
+    std::move(callback).Run(base::unexpected(net::ERR_UPLOAD_FILE_CHANGED));
+    return;
+  }
+  std::move(callback).Run(file_info.size);
 }
 
 void LocalFileStreamReader::OnRead(

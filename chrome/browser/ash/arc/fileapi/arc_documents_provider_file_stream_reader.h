@@ -42,14 +42,14 @@ class ArcDocumentsProviderFileStreamReader : public storage::FileStreamReader {
   int Read(net::IOBuffer* buffer,
            int buffer_length,
            net::CompletionOnceCallback callback) override;
-  int64_t GetLength(net::Int64CompletionOnceCallback callback) override;
+  int64_t GetLength(GetLengthCallback callback) override;
 
  private:
   void OnResolveToContentUrl(const GURL& content_url);
   void RunPendingRead(scoped_refptr<net::IOBuffer> buffer,
                       int buffer_length,
                       net::CompletionOnceCallback callback);
-  void RunPendingGetLength(net::Int64CompletionOnceCallback callback);
+  void RunPendingGetLength(GetLengthCallback callback);
 
   const int64_t offset_;
   bool content_url_resolved_;

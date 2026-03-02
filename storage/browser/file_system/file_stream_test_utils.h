@@ -21,7 +21,8 @@ base::expected<std::string, net::Error> ReadFromReader(FileStreamReader& reader,
 
 // Returns the length of the file if it could be successfully retrieved,
 // otherwise a net error.
-int64_t GetLengthFromReader(FileStreamReader* reader);
+base::expected<int64_t, net::Error> GetLengthFromReader(
+    FileStreamReader* reader);
 
 // Writes `data` to `writer`, an initialized FileStreamWriter. Returns net::OK
 // if successful, otherwise a net error.

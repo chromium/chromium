@@ -10,7 +10,9 @@
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "net/base/completion_once_callback.h"
+#include "net/base/net_errors.h"
 #include "storage/browser/file_system/file_stream_reader.h"
 #include "storage/browser/file_system/obfuscated_file_util_memory_delegate.h"
 
@@ -45,12 +47,12 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) MemoryFileStreamReader
   int Read(net::IOBuffer* buf,
            int buf_len,
            net::CompletionOnceCallback callback) override;
-  int64_t GetLength(net::Int64CompletionOnceCallback callback) override;
+  int64_t GetLength(GetLengthCallback callback) override;
 
  private:
   void OnReadCompleted(net::CompletionOnceCallback callback, int result);
-  void OnGetLengthCompleted(net::Int64CompletionOnceCallback callback,
-                            int64_t result);
+  void OnGetLengthCompleted(GetLengthCallback callback,
+                            base::expected<int64_t, net::Error> result);
 
   base::WeakPtr<ObfuscatedFileUtilMemoryDelegate> memory_file_util_;
 

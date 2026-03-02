@@ -45,7 +45,7 @@ class ArcContentFileSystemFileStreamReader : public storage::FileStreamReader {
   int Read(net::IOBuffer* buffer,
            int buffer_length,
            net::CompletionOnceCallback callback) override;
-  int64_t GetLength(net::Int64CompletionOnceCallback callback) override;
+  int64_t GetLength(GetLengthCallback callback) override;
 
  private:
   using CloseStatus = file_system_operation_runner_util::CloseStatus;
@@ -63,7 +63,7 @@ class ArcContentFileSystemFileStreamReader : public storage::FileStreamReader {
               std::optional<size_t> result);
 
   // Called when GetFileSize() completes.
-  void OnGetFileSize(net::Int64CompletionOnceCallback callback, int64_t size);
+  void OnGetFileSize(GetLengthCallback callback, int64_t size);
 
   // Called when opening file session completes.
   void OnOpenFileSession(scoped_refptr<net::IOBuffer> buf,

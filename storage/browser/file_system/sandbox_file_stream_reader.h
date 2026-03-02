@@ -15,7 +15,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "net/base/completion_once_callback.h"
+#include "net/base/net_errors.h"
 #include "storage/browser/blob/shareable_file_reference.h"
 #include "storage/browser/file_system/file_stream_reader.h"
 #include "storage/browser/file_system/file_system_operation_runner.h"
@@ -54,7 +56,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) SandboxFileStreamReader
   int Read(net::IOBuffer* buf,
            int buf_len,
            net::CompletionOnceCallback callback) override;
-  int64_t GetLength(net::Int64CompletionOnceCallback callback) override;
+  int64_t GetLength(GetLengthCallback callback) override;
 
  private:
   friend class FileStreamReader;
@@ -69,7 +71,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) SandboxFileStreamReader
                                 const base::FilePath& platform_path,
                                 scoped_refptr<ShareableFileReference> file_ref);
   void DidCreateSnapshotForGetLength(
-      net::Int64CompletionOnceCallback callback,
+      GetLengthCallback callback,
       base::File::Error file_error,
       const base::File::Info& file_info,
       const base::FilePath& platform_path,
@@ -77,7 +79,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) SandboxFileStreamReader
   void CreateFileReader(const base::FilePath& platform_path);
 
   void OnRead(net::CompletionOnceCallback callback, int rv);
-  void OnGetLength(net::Int64CompletionOnceCallback callback, int64_t rv);
+  void OnGetLength(GetLengthCallback callback,
+                   base::expected<int64_t, net::Error> rv);
 
   scoped_refptr<FileSystemContext> file_system_context_;
   FileSystemURL url_;

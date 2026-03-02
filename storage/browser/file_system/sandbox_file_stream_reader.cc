@@ -50,8 +50,7 @@ int SandboxFileStreamReader::Read(net::IOBuffer* buf,
                      std::move(callback)));
 }
 
-int64_t SandboxFileStreamReader::GetLength(
-    net::Int64CompletionOnceCallback callback) {
+int64_t SandboxFileStreamReader::GetLength(GetLengthCallback callback) {
   if (file_reader_)
     return file_reader_->GetLength(std::move(callback));
 
@@ -103,7 +102,7 @@ void SandboxFileStreamReader::DidCreateSnapshotForRead(
 }
 
 void SandboxFileStreamReader::DidCreateSnapshotForGetLength(
-    net::Int64CompletionOnceCallback callback,
+    GetLengthCallback callback,
     base::File::Error file_error,
     const base::File::Info& file_info,
     const base::FilePath& platform_path,
@@ -113,7 +112,8 @@ void SandboxFileStreamReader::DidCreateSnapshotForGetLength(
   has_pending_create_snapshot_ = false;
 
   if (file_error != base::File::FILE_OK) {
-    std::move(callback).Run(net::FileErrorToNetError(file_error));
+    std::move(callback).Run(
+        base::unexpected(net::FileErrorToNetError(file_error)));
     return;
   }
 
@@ -128,7 +128,7 @@ void SandboxFileStreamReader::DidCreateSnapshotForGetLength(
       &SandboxFileStreamReader::OnGetLength, weak_factory_.GetWeakPtr(),
       std::move(callback_pair.first)));
   if (rv != net::ERR_IO_PENDING)
-    std::move(callback_pair.second).Run(rv);
+    std::move(callback_pair.second).Run(base::unexpected(net::ERR_FAILED));
 }
 
 void SandboxFileStreamReader::CreateFileReader(
@@ -153,9 +153,9 @@ void SandboxFileStreamReader::OnRead(net::CompletionOnceCallback callback,
 }
 
 void SandboxFileStreamReader::OnGetLength(
-    net::Int64CompletionOnceCallback callback,
-    int64_t rv) {
-  std::move(callback).Run(rv);
+    GetLengthCallback callback,
+    base::expected<int64_t, net::Error> rv) {
+  std::move(callback).Run(std::move(rv));
 }
 
 }  // namespace storage

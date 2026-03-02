@@ -13,6 +13,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/thread_annotations.h"
+#include "base/types/expected.h"
 #include "build/build_config.h"
 #include "components/services/quarantine/quarantine.h"
 #include "content/browser/file_system_access/features.h"
@@ -72,20 +73,25 @@ class HashCalculator : public base::RefCounted<HashCalculator> {
         source_url, 0, storage::kMaximumLength, base::Time());
     int64_t length =
         reader_->GetLength(base::BindOnce(&HashCalculator::GotLength, this));
-    if (length == net::ERR_IO_PENDING)
+    if (length == net::ERR_IO_PENDING) {
       return;
-    GotLength(length);
+    }
+    if (length < 0) {
+      GotLength(base::unexpected(static_cast<net::Error>(length)));
+    } else {
+      GotLength(length);
+    }
   }
 
-  void GotLength(int64_t length) {
+  void GotLength(base::expected<int64_t, net::Error> length) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    if (length < 0) {
-      std::move(callback_).Run(storage::NetErrorToFileError(length),
+    if (!length.has_value()) {
+      std::move(callback_).Run(storage::NetErrorToFileError(length.error()),
                                std::string(), -1);
       return;
     }
 
-    file_size_ = length;
+    file_size_ = length.value();
     ReadMore();
   }
 

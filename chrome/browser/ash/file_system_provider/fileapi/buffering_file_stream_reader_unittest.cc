@@ -17,6 +17,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/types/expected.h"
 #include "chrome/browser/ash/fileapi/file_system_backend.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/base/io_buffer.h"
@@ -73,7 +74,7 @@ class FakeFileStreamReader : public storage::FileStreamReader {
     return net::ERR_IO_PENDING;
   }
 
-  int64_t GetLength(net::Int64CompletionOnceCallback callback) override {
+  int64_t GetLength(GetLengthCallback callback) override {
     DCHECK_EQ(net::OK, return_error_);
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), kFileSize));
@@ -348,14 +349,15 @@ TEST_F(FileSystemProviderBufferingFileStreamReaderTest, GetLength) {
           new FakeFileStreamReader(nullptr, net::OK)),
       kPreloadingBufferLength, kFileSize);
 
-  std::vector<int64_t> get_length_log;
-  const int64_t result =
-      reader.GetLength(base::BindOnce(&LogValue<int64_t>, &get_length_log));
+  std::vector<base::expected<int64_t, net::Error>> get_length_log;
+  const int64_t result = reader.GetLength(base::BindOnce(
+      &LogValue<base::expected<int64_t, net::Error>>, &get_length_log));
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(net::ERR_IO_PENDING, result);
   ASSERT_EQ(1u, get_length_log.size());
-  EXPECT_EQ(kFileSize, get_length_log[0]);
+  ASSERT_TRUE(get_length_log[0].has_value());
+  EXPECT_EQ(kFileSize, get_length_log[0].value());
 }
 
 }  // namespace ash::file_system_provider

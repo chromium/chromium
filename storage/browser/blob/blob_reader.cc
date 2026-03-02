@@ -18,6 +18,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
+#include "base/types/expected.h"
 #include "components/file_access/scoped_file_access.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
@@ -424,15 +425,17 @@ bool BlobReader::ResolveFileItemLength(const BlobDataItem& item,
   return true;
 }
 
-void BlobReader::DidGetFileItemLength(size_t index, int64_t result) {
+void BlobReader::DidGetFileItemLength(
+    size_t index,
+    base::expected<int64_t, net::Error> result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Do nothing if we have encountered an error.
   if (net_error_)
     return;
 
-  if (result < 0) {
-    InvalidateCallbacksAndDone(result, std::move(size_callback_));
+  if (!result.has_value()) {
+    InvalidateCallbacksAndDone(result.error(), std::move(size_callback_));
     return;
   }
 
@@ -440,7 +443,7 @@ void BlobReader::DidGetFileItemLength(size_t index, int64_t result) {
   DCHECK_LT(index, items.size());
   const BlobDataItem& item = *items.at(index);
   uint64_t length;
-  if (!ResolveFileItemLength(item, result, &length)) {
+  if (!ResolveFileItemLength(item, result.value(), &length)) {
     InvalidateCallbacksAndDone(net::ERR_FAILED, std::move(size_callback_));
     return;
   }

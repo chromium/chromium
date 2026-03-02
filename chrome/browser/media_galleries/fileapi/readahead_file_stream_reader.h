@@ -29,7 +29,7 @@ class ReadaheadFileStreamReader : public storage::FileStreamReader {
   int Read(net::IOBuffer* buf,
            int buf_len,
            net::CompletionOnceCallback callback) override;
-  int64_t GetLength(net::Int64CompletionOnceCallback callback) override;
+  int64_t GetLength(GetLengthCallback callback) override;
 
  private:
   // Returns the number of bytes consumed from the internal cache into |sink|.

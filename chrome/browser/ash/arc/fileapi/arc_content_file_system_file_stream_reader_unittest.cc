@@ -14,6 +14,7 @@
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/ash/arc/fileapi/arc_file_system_operation_runner.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
@@ -23,6 +24,7 @@
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/base/io_buffer.h"
+#include "net/base/net_errors.h"
 #include "net/base/test_completion_callback.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -262,9 +264,10 @@ TEST_F(ArcContentFileSystemFileStreamReaderTest, GetLength) {
     ArcContentFileSystemFileStreamReader reader(GURL(kArcUrlFile),
                                                 /*offset=*/0);
 
-    net::TestInt64CompletionCallback callback;
-    EXPECT_EQ(static_cast<int64_t>(strlen(kData)),
-              callback.GetResult(reader.GetLength(callback.callback())));
+    base::test::TestFuture<base::expected<int64_t, net::Error>> future;
+    reader.GetLength(future.GetCallback());
+    ASSERT_TRUE(future.Get().has_value());
+    EXPECT_EQ(static_cast<int64_t>(strlen(kData)), future.Get().value());
   }
   base::RunLoop().RunUntilIdle();
 }
@@ -283,8 +286,9 @@ TEST_F(ArcContentFileSystemFileStreamReaderTest, GetLengthError) {
   {
     ArcContentFileSystemFileStreamReader reader(
         GURL("content://org.chromium.foo/error"), /*offset=*/0);
-    net::TestInt64CompletionCallback callback;
-    EXPECT_LT(callback.GetResult(reader.GetLength(callback.callback())), 0);
+    base::test::TestFuture<base::expected<int64_t, net::Error>> future;
+    reader.GetLength(future.GetCallback());
+    EXPECT_FALSE(future.Get().has_value());
   }
   base::RunLoop().RunUntilIdle();
 }

@@ -83,7 +83,7 @@ int ArcContentFileSystemFileStreamReader::Read(
 }
 
 int64_t ArcContentFileSystemFileStreamReader::GetLength(
-    net::Int64CompletionOnceCallback callback) {
+    GetLengthCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   file_system_operation_runner_util::GetFileSizeOnIOThread(
       arc_url_,
@@ -133,13 +133,15 @@ void ArcContentFileSystemFileStreamReader::OnRead(
 }
 
 void ArcContentFileSystemFileStreamReader::OnGetFileSize(
-    net::Int64CompletionOnceCallback callback,
+    GetLengthCallback callback,
     int64_t size) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   if (size < 0) {
     CloseInternal(CloseStatus::kStatusError);
+    std::move(callback).Run(base::unexpected(net::ERR_FAILED));
+    return;
   }
-  std::move(callback).Run(size < 0 ? net::ERR_FAILED : size);
+  std::move(callback).Run(size);
 }
 
 void ArcContentFileSystemFileStreamReader::OnOpenFileSession(

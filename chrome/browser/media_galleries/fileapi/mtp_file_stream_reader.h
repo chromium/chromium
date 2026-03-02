@@ -38,7 +38,7 @@ class MTPFileStreamReader : public storage::FileStreamReader {
   int Read(net::IOBuffer* buf,
            int buf_len,
            net::CompletionOnceCallback callback) override;
-  int64_t GetLength(net::Int64CompletionOnceCallback callback) override;
+  int64_t GetLength(GetLengthCallback callback) override;
 
  private:
   void FinishValidateMediaHeader(
@@ -67,7 +67,7 @@ class MTPFileStreamReader : public storage::FileStreamReader {
   int64_t current_offset_;
   const base::Time expected_modification_time_;
   net::CompletionOnceCallback read_callback_;
-  net::Int64CompletionOnceCallback get_length_callback_;
+  GetLengthCallback get_length_callback_;
 
   bool media_header_validated_;
 

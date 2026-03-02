@@ -129,7 +129,7 @@ class FakeFileStreamReader : public FileStreamReader {
     return net::ERR_IO_PENDING;
   }
 
-  int64_t GetLength(net::Int64CompletionOnceCallback size_callback) override {
+  int64_t GetLength(GetLengthCallback size_callback) override {
     // When async_task_runner_ is not set, return synchronously.
     if (!async_task_runner_.get()) {
       if (net_error_ == net::OK) {
@@ -144,7 +144,8 @@ class FakeFileStreamReader : public FileStreamReader {
     } else {
       async_task_runner_->PostTask(
           FROM_HERE, base::BindOnce(std::move(size_callback),
-                                    static_cast<int64_t>(net_error_)));
+                                    base::unexpected(
+                                        static_cast<net::Error>(net_error_))));
     }
     return net::ERR_IO_PENDING;
   }

@@ -18,9 +18,11 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/types/expected.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "net/base/completion_once_callback.h"
+#include "net/base/net_errors.h"
 #include "services/network/public/cpp/data_pipe_to_source_stream.h"
 #include "storage/browser/blob/blob_storage_constants.h"
 
@@ -204,7 +206,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobReader {
   bool ResolveFileItemLength(const BlobDataItem& item,
                              int64_t total_length,
                              uint64_t* output_length);
-  void DidGetFileItemLength(size_t index, int64_t result);
+  void DidGetFileItemLength(size_t index,
+                            base::expected<int64_t, net::Error> result);
   void DidCountSize();
 
   // For reading the blob.

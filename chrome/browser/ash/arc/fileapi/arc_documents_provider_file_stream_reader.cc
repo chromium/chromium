@@ -54,7 +54,7 @@ int ArcDocumentsProviderFileStreamReader::Read(
 }
 
 int64_t ArcDocumentsProviderFileStreamReader::GetLength(
-    net::Int64CompletionOnceCallback callback) {
+    GetLengthCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   if (!content_url_resolved_) {
     pending_operations_.emplace_back(base::BindOnce(
@@ -104,7 +104,7 @@ void ArcDocumentsProviderFileStreamReader::RunPendingRead(
 }
 
 void ArcDocumentsProviderFileStreamReader::RunPendingGetLength(
-    net::Int64CompletionOnceCallback callback) {
+    GetLengthCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK(content_url_resolved_);
   // Create two copies of |callback| though it can still only called at most
@@ -116,7 +116,8 @@ void ArcDocumentsProviderFileStreamReader::RunPendingGetLength(
           ? underlying_reader_->GetLength(std::move(split_callback.first))
           : net::ERR_FILE_NOT_FOUND;
   if (result != net::ERR_IO_PENDING)
-    std::move(split_callback.second).Run(result);
+    std::move(split_callback.second)
+        .Run(base::unexpected(net::ERR_FILE_NOT_FOUND));
 }
 
 }  // namespace arc

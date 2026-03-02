@@ -63,8 +63,7 @@ int BufferingFileStreamReader::Read(net::IOBuffer* buffer,
   return net::ERR_IO_PENDING;
 }
 
-int64_t BufferingFileStreamReader::GetLength(
-    net::Int64CompletionOnceCallback callback) {
+int64_t BufferingFileStreamReader::GetLength(GetLengthCallback callback) {
   const int64_t result = file_stream_reader_->GetLength(std::move(callback));
   DCHECK_EQ(net::ERR_IO_PENDING, result);
 

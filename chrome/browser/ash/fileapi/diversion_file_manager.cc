@@ -328,7 +328,7 @@ class DiversionFileManager::Worker : public storage::FileStreamReader,
   int Read(net::IOBuffer* buf,
            int buf_len,
            net::CompletionOnceCallback callback) override;
-  int64_t GetLength(net::Int64CompletionOnceCallback callback) override;
+  int64_t GetLength(GetLengthCallback callback) override;
 
   // storage::FileStreamWriter overrides.
   int Write(net::IOBuffer* buf,
@@ -376,16 +376,18 @@ int DiversionFileManager::Worker::Read(net::IOBuffer* buf,
   return net::ERR_IO_PENDING;
 }
 
-int64_t DiversionFileManager::Worker::GetLength(
-    net::Int64CompletionOnceCallback callback) {
+int64_t DiversionFileManager::Worker::GetLength(GetLengthCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   CHECK_EQ(role_, Role::kReader);
 
-  static constexpr auto reply = [](net::Int64CompletionOnceCallback callback,
+  static constexpr auto reply = [](GetLengthCallback callback,
                                    const Tmpfile& tmpfile, int ignored) {
-    std::move(callback).Run((tmpfile.net_error < 0)
-                                ? static_cast<int64_t>(tmpfile.net_error)
-                                : tmpfile.file_size);
+    if (tmpfile.net_error < 0) {
+      std::move(callback).Run(
+          base::unexpected(static_cast<net::Error>(tmpfile.net_error)));
+    } else {
+      std::move(callback).Run(tmpfile.file_size);
+    }
   };
 
   entry_->Enqueue(

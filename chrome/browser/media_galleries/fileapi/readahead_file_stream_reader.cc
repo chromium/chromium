@@ -53,8 +53,7 @@ int ReadaheadFileStreamReader::Read(net::IOBuffer* buf,
   return result;
 }
 
-int64_t ReadaheadFileStreamReader::GetLength(
-    net::Int64CompletionOnceCallback callback) {
+int64_t ReadaheadFileStreamReader::GetLength(GetLengthCallback callback) {
   return source_->GetLength(std::move(callback));
 }
 

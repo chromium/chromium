@@ -69,24 +69,23 @@ void MemoryFileStreamReader::OnReadCompleted(
   std::move(callback).Run(result);
 }
 
-int64_t MemoryFileStreamReader::GetLength(
-    net::Int64CompletionOnceCallback callback) {
+int64_t MemoryFileStreamReader::GetLength(GetLengthCallback callback) {
   task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(
           [](base::WeakPtr<ObfuscatedFileUtilMemoryDelegate> util,
-             const base::FilePath& path,
-             base::Time expected_modification_time) -> int64_t {
+             const base::FilePath& path, base::Time expected_modification_time)
+              -> base::expected<int64_t, net::Error> {
             if (!util)
-              return net::ERR_FILE_NOT_FOUND;
+              return base::unexpected(net::ERR_FILE_NOT_FOUND);
             base::File::Info file_info;
             if (util->GetFileInfo(path, &file_info) != base::File::FILE_OK) {
-              return net::ERR_FILE_NOT_FOUND;
+              return base::unexpected(net::ERR_FILE_NOT_FOUND);
             }
 
             if (!FileStreamReader::VerifySnapshotTime(
                     expected_modification_time, file_info)) {
-              return net::ERR_UPLOAD_FILE_CHANGED;
+              return base::unexpected(net::ERR_UPLOAD_FILE_CHANGED);
             }
 
             return file_info.size;
@@ -101,9 +100,9 @@ int64_t MemoryFileStreamReader::GetLength(
 }
 
 void MemoryFileStreamReader::OnGetLengthCompleted(
-    net::Int64CompletionOnceCallback callback,
-    int64_t result) {
-  std::move(callback).Run(result);
+    GetLengthCallback callback,
+    base::expected<int64_t, net::Error> result) {
+  std::move(callback).Run(std::move(result));
 }
 
 }  // namespace storage

@@ -8,11 +8,14 @@
 #include <string_view>
 
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 #include "net/base/test_completion_callback.h"
@@ -98,22 +101,18 @@ TYPED_TEST_P(FileStreamReaderTypedTest, Empty) {
   ASSERT_TRUE(data_or_error.has_value());
   EXPECT_THAT(data_or_error.value(), testing::IsEmpty());
 
-  net::TestInt64CompletionCallback callback;
-  int64_t length_result = reader->GetLength(callback.callback());
-  if (length_result == net::ERR_IO_PENDING)
-    length_result = callback.WaitForResult();
-  ASSERT_EQ(0, length_result);
+  auto length_result = GetLengthFromReader(reader.get());
+  ASSERT_TRUE(length_result.has_value());
+  ASSERT_EQ(0, length_result.value());
 }
 
 TYPED_TEST_P(FileStreamReaderTypedTest, GetLengthNormal) {
   std::unique_ptr<FileStreamReader> reader(
       this->CreateFileReader(std::string(this->kTestFileName), 0,
                              this->test_file_modification_time()));
-  net::TestInt64CompletionCallback callback;
-  int64_t result = reader->GetLength(callback.callback());
-  if (result == net::ERR_IO_PENDING)
-    result = callback.WaitForResult();
-  ASSERT_EQ(static_cast<int64_t>(this->kTestData.size()), result);
+  auto result = GetLengthFromReader(reader.get());
+  ASSERT_TRUE(result.has_value());
+  ASSERT_EQ(static_cast<int64_t>(this->kTestData.size()), result.value());
 }
 
 TYPED_TEST_P(FileStreamReaderTypedTest, GetLengthAfterModified) {
@@ -122,31 +121,25 @@ TYPED_TEST_P(FileStreamReaderTypedTest, GetLengthAfterModified) {
   std::unique_ptr<FileStreamReader> reader(
       this->CreateFileReader(std::string(this->kTestFileName), 0,
                              this->test_file_modification_time()));
-  net::TestInt64CompletionCallback callback1;
-  int64_t result = reader->GetLength(callback1.callback());
-  if (result == net::ERR_IO_PENDING)
-    result = callback1.WaitForResult();
-  ASSERT_EQ(net::ERR_UPLOAD_FILE_CHANGED, result);
+  auto result = GetLengthFromReader(reader.get());
+  ASSERT_FALSE(result.has_value());
+  ASSERT_EQ(net::ERR_UPLOAD_FILE_CHANGED, result.error());
 
   // With nullptr expected modification time this should work.
   reader =
       this->CreateFileReader(std::string(this->kTestFileName), 0, base::Time());
-  net::TestInt64CompletionCallback callback2;
-  result = reader->GetLength(callback2.callback());
-  if (result == net::ERR_IO_PENDING)
-    result = callback2.WaitForResult();
-  ASSERT_EQ(static_cast<int64_t>(this->kTestData.size()), result);
+  result = GetLengthFromReader(reader.get());
+  ASSERT_TRUE(result.has_value());
+  ASSERT_EQ(static_cast<int64_t>(this->kTestData.size()), result.value());
 }
 
 TYPED_TEST_P(FileStreamReaderTypedTest, GetLengthWithOffset) {
   std::unique_ptr<FileStreamReader> reader(this->CreateFileReader(
       std::string(this->kTestFileName), 3, base::Time()));
-  net::TestInt64CompletionCallback callback;
-  int64_t result = reader->GetLength(callback.callback());
-  if (result == net::ERR_IO_PENDING)
-    result = callback.WaitForResult();
+  auto result = GetLengthFromReader(reader.get());
   // Initial offset does not affect the result of GetLength.
-  ASSERT_EQ(static_cast<int64_t>(this->kTestData.size()), result);
+  ASSERT_TRUE(result.has_value());
+  ASSERT_EQ(static_cast<int64_t>(this->kTestData.size()), result.value());
 }
 
 TYPED_TEST_P(FileStreamReaderTypedTest, ReadNormal) {
