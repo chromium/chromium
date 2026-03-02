@@ -32,7 +32,7 @@ class ViewVisibleInActiveWidgetNotifierTest : public ChromeViewsTestBase {
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
     widget_ =
-        CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
+        CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
     widget_->SetContentsView(
         views::Builder<views::Label>(
             std::make_unique<views::Label>(u"Random Label"))
