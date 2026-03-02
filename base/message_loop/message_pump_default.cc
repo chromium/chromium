@@ -60,28 +60,16 @@ void MessagePumpDefault::Run(Delegate* delegate) {
       before = base::TimeTicks::Now();
     }
 
-    if (next_work_info.delayed_run_time.is_max()) {
-      if (ShouldBusyLoop()) {
-        bool signaled = BusyWaitOnEvent(before);
-        if (!signaled) {
-          event_.Wait();
-        }
-      } else {
-        event_.Wait();
-      }
-    } else {
-      // Not handling shorter sleeps to keep the code as simple as possible.
-      if (ShouldBusyLoop() &&
-          next_work_info.remaining_delay() > max_busy_loop_time_) {
-        bool signaled = BusyWaitOnEvent(before);
-        if (!signaled) {
-          next_work_info.recent_now = base::TimeTicks::Now();
-          event_.TimedWait(next_work_info.remaining_delay());
-        }
-      } else {
+    if (ShouldBusyLoop()) {
+      bool signaled = BusyWaitOnEvent(before, next_work_info.remaining_delay());
+      if (!signaled) {
+        next_work_info.recent_now = base::TimeTicks::Now();
         event_.TimedWait(next_work_info.remaining_delay());
       }
+    } else {
+      event_.TimedWait(next_work_info.remaining_delay());
     }
+
     if (may_busy_loop) {
       RecordWaitTime(base::TimeTicks::Now() - before);
     }
@@ -135,7 +123,10 @@ bool MessagePumpDefault::ShouldBusyLoop() const {
           wait_time_exponential_moving_average_ < max_busy_loop_time_);
 }
 
-bool MessagePumpDefault::BusyWaitOnEvent(base::TimeTicks before) {
+bool MessagePumpDefault::BusyWaitOnEvent(base::TimeTicks before,
+                                         base::TimeDelta next_work_delay) {
+  base::TimeDelta max_busy_loop_time =
+      std::min(max_busy_loop_time_, next_work_delay);
   bool signaled = false;
   {
     TRACE_EVENT(TRACE_DISABLED_BY_DEFAULT("base"), "BusyWait",
@@ -145,7 +136,7 @@ bool MessagePumpDefault::BusyWaitOnEvent(base::TimeTicks before) {
     do {
       signaled = event_.TimedWait(base::TimeDelta());
     } while (!signaled &&
-             (base::TimeTicks::Now() - before) < max_busy_loop_time_);
+             (base::TimeTicks::Now() - before) < max_busy_loop_time);
   }
   return signaled;
 }

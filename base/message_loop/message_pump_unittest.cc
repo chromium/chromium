@@ -199,6 +199,20 @@ class MessagePumpTest : public ::testing::TestWithParam<MessagePumpType> {
 
 }  // namespace
 
+TEST(MessagePumpTest, NextWorkInfoRemainingDelay) {
+  MessagePump::Delegate::NextWorkInfo info;
+  info.recent_now = TimeTicks::Now();
+
+  info.delayed_run_time = TimeTicks::Max();
+  EXPECT_EQ(info.remaining_delay(), TimeDelta::Max());
+
+  info.delayed_run_time = info.recent_now + Milliseconds(10);
+  EXPECT_EQ(info.remaining_delay(), Milliseconds(10));
+
+  info.recent_now -= Milliseconds(5);
+  EXPECT_EQ(info.remaining_delay(), Milliseconds(15));
+}
+
 TEST_P(MessagePumpTest, QuitStopsWork) {
   testing::InSequence sequence;
   testing::StrictMock<MockMessagePumpDelegate> delegate(GetParam());
@@ -463,6 +477,48 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 // On iOS, MessagePumpDefault is not used.
 #if !BUILDFLAG(IS_IOS)
+
+TEST(MessagePumpDefaultTest, BusyWaitOnEvent) {
+  MessagePumpDefault message_pump;
+
+  // Test that it respects next_work_delay even if it's smaller than
+  // max_busy_loop_time_.
+  // Very large, to make the test less flaky.
+  TimeDelta max_busy_loop_time = Milliseconds(100);
+  message_pump.SetBusyLoop(max_busy_loop_time);
+
+  TimeTicks before = TimeTicks::Now();
+  TimeDelta next_work_delay = Milliseconds(2);
+
+  bool signaled = message_pump.BusyWaitOnEvent(before, next_work_delay);
+  ASSERT_FALSE(signaled);
+  TimeDelta busy_loop_duration = TimeTicks::Now() - before;
+  EXPECT_LT(busy_loop_duration, max_busy_loop_time);
+  EXPECT_GE(busy_loop_duration, next_work_delay);
+
+  // Does not busy loop for more than required.
+  max_busy_loop_time = Milliseconds(2);
+  next_work_delay = Milliseconds(100);
+  message_pump.SetBusyLoop(max_busy_loop_time);
+  signaled = message_pump.BusyWaitOnEvent(before, next_work_delay);
+  ASSERT_FALSE(signaled);
+  busy_loop_duration = TimeTicks::Now() - before;
+  EXPECT_GE(busy_loop_duration, max_busy_loop_time);
+  EXPECT_LT(busy_loop_duration, next_work_delay);
+
+  // Test that it stops if signaled.
+  max_busy_loop_time = Milliseconds(50);
+  next_work_delay = Milliseconds(100);
+  message_pump.SetBusyLoop(max_busy_loop_time);
+  before = TimeTicks::Now();
+  message_pump.ScheduleWork();
+  signaled = message_pump.BusyWaitOnEvent(before, next_work_delay);
+  EXPECT_TRUE(signaled);
+  // Could expect it to be smaller, since it should return immediately, but this
+  // is to avoid flakiness.
+  EXPECT_LT(TimeTicks::Now() - before, max_busy_loop_time);
+}
+
 TEST(MessagePumpDefaultTest, BusyLoop) {
   MessagePumpDefault message_pump;
 

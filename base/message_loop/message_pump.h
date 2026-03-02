@@ -52,11 +52,13 @@ class BASE_EXPORT MessagePump {
 
     struct NextWorkInfo {
       // Helper to extract a TimeDelta for pumps that need a
-      // timeout-till-next-task.
+      // timeout-till-next-task. Returns base::TimeDelta::Max() if the next
+      // delay is infinite.
       TimeDelta remaining_delay() const {
-        DCHECK(!delayed_run_time.is_null() && !delayed_run_time.is_max());
+        DCHECK(!delayed_run_time.is_null());
         DCHECK_GE(TimeTicks::Now(), recent_now);
-        return delayed_run_time - recent_now;
+        return delayed_run_time.is_max() ? TimeDelta::Max()
+                                         : delayed_run_time - recent_now;
       }
 
       // Helper to verify if the next task is ready right away.

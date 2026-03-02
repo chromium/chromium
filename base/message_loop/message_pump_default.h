@@ -32,11 +32,9 @@ class BASE_EXPORT MessagePumpDefault : public MessagePump {
   // Visible for testing.
   void RecordWaitTime(base::TimeDelta wait_time);
   bool ShouldBusyLoop() const;
+  bool BusyWaitOnEvent(base::TimeTicks before, base::TimeDelta next_work_delay);
 
  private:
-  // Returns whether the event was signaled.
-  bool BusyWaitOnEvent(base::TimeTicks before);
-
   // This flag is set to false when Run should return.
   bool keep_running_;
 
