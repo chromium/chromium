@@ -13,6 +13,7 @@
 #include "ui/base/clipboard/clipboard_monitor.h"
 #include "ui/base/clipboard/clipboard_observer.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
+#include "ui/base/clipboard/test/clipboard_test_util.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "ui/android/ui_javatest_jni_headers/ClipboardAndroidTestSupport_jni.h"
@@ -65,9 +66,8 @@ static bool JNI_ClipboardAndroidTestSupport_NativeClipboardContains(
   std::string expected_text =
       base::android::ConvertJavaStringToUTF8(env, j_text);
 
-  std::string contents;
-  clipboard->ReadAsciiText(ClipboardBuffer::kCopyPaste,
-                           /* data_dst = */ nullptr, &contents);
+  std::string contents = ui::clipboard_test_util::ReadAsciiText(
+      clipboard, ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr);
   if (expected_text != contents) {
     LOG(ERROR) << "Clipboard contents do not match. Expected: " << expected_text
                << " Actual: " << contents;

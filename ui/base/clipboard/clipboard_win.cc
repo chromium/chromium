@@ -606,16 +606,6 @@ std::u16string ClipboardWin::ReadTextInternal(
   return result;
 }
 
-// |data_dst| is not used. It's only passed to be consistent with other
-// platforms.
-void ClipboardWin::ReadAsciiText(ClipboardBuffer buffer,
-                                 const DataTransferEndpoint* data_dst,
-                                 std::string* result) const {
-  CHECK(result);
-  *result = ReadAsciiTextInternal(buffer, base::OptionalFromPtr(data_dst),
-                                  GetClipboardWindow());
-}
-
 // static
 // |data_dst| is not used, but is kept as it may be used in the future.
 std::string ClipboardWin::ReadAsciiTextInternal(

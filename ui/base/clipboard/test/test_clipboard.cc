@@ -150,28 +150,33 @@ void TestClipboard::ReadAvailableTypes(
 void TestClipboard::ReadText(ClipboardBuffer buffer,
                              const DataTransferEndpoint* data_dst,
                              std::u16string* result) const {
-  if (!IsReadAllowed(GetStore(buffer).data_src, data_dst)) {
-    return;
-  }
-
-  std::string result8;
-  ReadAsciiText(buffer, data_dst, &result8);
-  *result = base::UTF8ToUTF16(result8);
-}
-
-// TODO(crbug.com/40704509): |data_dst| should be supported.
-void TestClipboard::ReadAsciiText(ClipboardBuffer buffer,
-                                  const DataTransferEndpoint* data_dst,
-                                  std::string* result) const {
   const DataStore& store = GetStore(buffer);
   if (!IsReadAllowed(store.data_src, data_dst)) {
     return;
   }
 
-  result->clear();
   auto it = store.data.find(ClipboardFormatType::PlainTextType());
-  if (it != store.data.end())
-    *result = it->second;
+  if (it != store.data.end()) {
+    *result = base::UTF8ToUTF16(it->second);
+  }
+}
+
+void TestClipboard::ReadAsciiText(
+    ClipboardBuffer buffer,
+    const std::optional<DataTransferEndpoint>& data_dst,
+    ReadAsciiTextCallback callback) const {
+  const DataStore& store = GetStore(buffer);
+  if (!IsReadAllowed(store.data_src, base::OptionalToPtr(data_dst))) {
+    std::move(callback).Run("");
+    return;
+  }
+
+  std::string result;
+  auto it = store.data.find(ClipboardFormatType::PlainTextType());
+  if (it != store.data.end()) {
+    result = it->second;
+  }
+  std::move(callback).Run(std::move(result));
 }
 
 void TestClipboard::ReadHTML(

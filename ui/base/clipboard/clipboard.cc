@@ -437,15 +437,6 @@ void Clipboard::ReadText(ClipboardBuffer buffer,
   std::move(callback).Run(std::move(result));
 }
 
-void Clipboard::ReadAsciiText(
-    ClipboardBuffer buffer,
-    const std::optional<DataTransferEndpoint>& data_dst,
-    ReadAsciiTextCallback callback) const {
-  std::string result;
-  ReadAsciiText(buffer, base::OptionalToPtr(data_dst), &result);
-  std::move(callback).Run(std::move(result));
-}
-
 void Clipboard::ReadBookmark(
     const std::optional<DataTransferEndpoint>& data_dst,
     ReadBookmarkCallback callback) const {

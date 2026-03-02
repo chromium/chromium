@@ -80,13 +80,19 @@ void ClipboardAura::CheckClipboardForChanges() {
 
   current_change_token_ = change_token;
 
-  protocol::ClipboardEvent event;
-  std::string data;
   ui::DataTransferEndpoint data_dst = ui::DataTransferEndpoint(
       ui::EndpointType::kDefault, {.notify_if_restricted = false});
-  clipboard->ReadAsciiText(ui::ClipboardBuffer::kCopyPaste, &data_dst, &data);
+  clipboard->ReadAsciiText(ui::ClipboardBuffer::kCopyPaste, std::move(data_dst),
+                           base::BindOnce(&ClipboardAura::OnReadAsciiText,
+                                          weak_factory_.GetWeakPtr()));
+}
+
+void ClipboardAura::OnReadAsciiText(std::string data) {
+  DCHECK(thread_checker_.CalledOnValidThread());
+
+  protocol::ClipboardEvent event;
   event.set_mime_type(kMimeTypeTextUtf8);
-  event.set_data(data);
+  event.set_data(std::move(data));
 
   client_clipboard_->InjectClipboardEvent(event);
 }

@@ -794,22 +794,6 @@ void ClipboardOzone::ReadText(ClipboardBuffer buffer,
       reinterpret_cast<char*>(clipboard_data.data()), clipboard_data.size()));
 }
 
-void ClipboardOzone::ReadAsciiText(ClipboardBuffer buffer,
-                                   const DataTransferEndpoint* data_dst,
-                                   std::string* result) const {
-  DCHECK(CalledOnValidThread());
-
-  auto clipboard_data = async_clipboard_ozone_->ReadClipboardDataAndWait(
-      buffer, kMimeTypePlainText);
-
-  if (!IsReadAllowed(GetSource(buffer), data_dst, clipboard_data)) {
-    return;
-  }
-
-  RecordRead(ClipboardFormatMetric::kText);
-  result->assign(clipboard_data.begin(), clipboard_data.end());
-}
-
 void ClipboardOzone::ReadBookmark(const DataTransferEndpoint* data_dst,
                                   std::u16string* title,
                                   std::string* url) const {

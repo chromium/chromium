@@ -604,20 +604,22 @@ void ClipboardAndroid::ReadText(ClipboardBuffer buffer,
                                 std::u16string* result) const {
   DCHECK(CalledOnValidThread());
   DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
-  std::string utf8;
-  ReadAsciiText(buffer, data_dst, &utf8);
-  *result = base::UTF8ToUTF16(utf8);
+  RecordRead(ClipboardFormatMetric::kText);
+  *result = base::UTF8ToUTF16(
+      GetClipboardMap().Get(ClipboardFormatType::PlainTextType()));
 }
 
 // |data_dst| is not used. It's only passed to be consistent with other
 // platforms.
-void ClipboardAndroid::ReadAsciiText(ClipboardBuffer buffer,
-                                     const DataTransferEndpoint* data_dst,
-                                     std::string* result) const {
+void ClipboardAndroid::ReadAsciiText(
+    ClipboardBuffer buffer,
+    const std::optional<DataTransferEndpoint>& data_dst,
+    ReadAsciiTextCallback callback) const {
   DCHECK(CalledOnValidThread());
   DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
   RecordRead(ClipboardFormatMetric::kText);
-  *result = GetClipboardMap().Get(ClipboardFormatType::PlainTextType());
+  std::move(callback).Run(
+      GetClipboardMap().Get(ClipboardFormatType::PlainTextType()));
 }
 
 // |src_url| isn't really used. It is only implemented in Windows.

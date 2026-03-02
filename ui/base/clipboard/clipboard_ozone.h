@@ -85,9 +85,6 @@ class ClipboardOzone : public Clipboard {
   void ReadText(ClipboardBuffer buffer,
                 const DataTransferEndpoint* data_dst,
                 std::u16string* result) const override;
-  void ReadAsciiText(ClipboardBuffer buffer,
-                     const DataTransferEndpoint* data_dst,
-                     std::string* result) const override;
   void ReadBookmark(const DataTransferEndpoint* data_dst,
                     std::u16string* title,
                     std::string* url) const override;

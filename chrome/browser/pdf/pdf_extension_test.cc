@@ -122,6 +122,7 @@
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_monitor.h"
 #include "ui/base/clipboard/clipboard_observer.h"
+#include "ui/base/clipboard/test/clipboard_test_util.h"
 #include "ui/base/clipboard/test/test_clipboard.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
@@ -2487,9 +2488,8 @@ class PDFExtensionClipboardTest : public PDFExtensionComboBoxTest,
     ui::ClipboardMonitor::GetInstance()->RemoveObserver(this);
 
     auto* clipboard = ui::Clipboard::GetForCurrentThread();
-    std::string clipboard_data;
-    clipboard->ReadAsciiText(clipboard_buffer, /* data_dst=*/nullptr,
-                             &clipboard_data);
+    std::string clipboard_data = ui::clipboard_test_util::ReadAsciiText(
+        clipboard, clipboard_buffer, /* data_dst=*/nullptr);
     EXPECT_EQ(expected, clipboard_data);
   }
 

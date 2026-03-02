@@ -9,6 +9,7 @@
 
 #include <memory>
 
+#include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -50,12 +51,15 @@ class ClipboardAura : public Clipboard {
 
  private:
   void CheckClipboardForChanges();
+  void OnReadAsciiText(std::string data);
 
   base::ThreadChecker thread_checker_;
   std::unique_ptr<protocol::ClipboardStub> client_clipboard_;
   base::RepeatingTimer clipboard_polling_timer_;
   ui::ClipboardSequenceNumberToken current_change_token_;
   base::TimeDelta polling_interval_;
+
+  base::WeakPtrFactory<ClipboardAura> weak_factory_{this};
 };
 
 }  // namespace remoting

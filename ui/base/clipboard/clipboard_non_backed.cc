@@ -660,15 +660,17 @@ void ClipboardNonBacked::ReadText(ClipboardBuffer buffer,
 #endif
 }
 
-void ClipboardNonBacked::ReadAsciiText(ClipboardBuffer buffer,
-                                       const DataTransferEndpoint* data_dst,
-                                       std::string* result) const {
+void ClipboardNonBacked::ReadAsciiText(
+    ClipboardBuffer buffer,
+    const std::optional<DataTransferEndpoint>& data_dst,
+    ReadAsciiTextCallback callback) const {
   DCHECK(CalledOnValidThread());
 
   const ClipboardInternal& clipboard_internal = GetInternalClipboard(buffer);
 
-  if (!clipboard_internal.IsReadAllowed(data_dst,
+  if (!clipboard_internal.IsReadAllowed(base::OptionalToPtr(data_dst),
                                         ClipboardInternalFormat::kText)) {
+    std::move(callback).Run("");
     return;
   }
 
@@ -677,7 +679,9 @@ void ClipboardNonBacked::ReadAsciiText(ClipboardBuffer buffer,
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   RecordRead(ClipboardFormatMetric::kText);
-  clipboard_internal.ReadAsciiText(result);
+  std::string result;
+  clipboard_internal.ReadAsciiText(&result);
+  std::move(callback).Run(std::move(result));
 
 #if BUILDFLAG(IS_CHROMEOS)
   ClipboardMonitor::GetInstance()->NotifyClipboardDataRead();

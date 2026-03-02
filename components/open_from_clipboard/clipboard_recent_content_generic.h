@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_OPEN_FROM_CLIPBOARD_CLIPBOARD_RECENT_CONTENT_GENERIC_H_
 #define COMPONENTS_OPEN_FROM_CLIPBOARD_CLIPBOARD_RECENT_CONTENT_GENERIC_H_
 
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/open_from_clipboard/clipboard_recent_content.h"
 #include "url/gurl.h"
@@ -26,16 +27,6 @@ class ClipboardRecentContentGeneric : public ClipboardRecentContent {
 
   ~ClipboardRecentContentGeneric() override;
 
-  // Returns clipboard content as URL, if it has a compatible type,
-  // is recent enough, has not been suppressed and will not trigger a system
-  // notification that the clipboard has been accessed.
-  std::optional<GURL> GetRecentURLFromClipboard();
-
-  // Returns clipboard content as text, if it has a compatible type,
-  // is recent enough, has not been suppressed and will not trigger a system
-  // notification that the clipboard has been accessed.
-  std::optional<std::u16string> GetRecentTextFromClipboard();
-
   // Return if system's clipboard contains an image that will not trigger a
   // system notification that the clipboard has been accessed.
   bool HasRecentImageFromClipboard();
@@ -55,6 +46,12 @@ class ClipboardRecentContentGeneric : public ClipboardRecentContent {
  private:
   // Returns true if the URL is appropriate to be suggested.
   static bool IsAppropriateSuggestion(const GURL& url);
+
+  void OnReadURLAsAsciiText(GetRecentURLCallback callback,
+                            std::string gurl_string);
+  void OnReadText(GetRecentURLCallback callback, std::u16string gurl_string16);
+
+  base::WeakPtrFactory<ClipboardRecentContentGeneric> weak_factory_{this};
 };
 
 #endif  // COMPONENTS_OPEN_FROM_CLIPBOARD_CLIPBOARD_RECENT_CONTENT_GENERIC_H_

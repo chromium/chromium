@@ -38,6 +38,7 @@
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
+#include "ui/base/clipboard/test/clipboard_test_util.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/data_transfer_policy/data_transfer_policy_controller.h"
 #include "ui/base/data_transfer_policy/mock_data_transfer_policy_controller.h"
@@ -792,12 +793,11 @@ TEST_F(DragDropControllerTest, DragLeavesClipboardAloneTest) {
   base::RunLoop().RunUntilIdle();
 
   // Verify the clipboard contents haven't changed
-  std::string result;
   EXPECT_TRUE(cb->IsFormatAvailable(ui::ClipboardFormatType::PlainTextType(),
                                     ui::ClipboardBuffer::kCopyPaste,
                                     /* data_dst = */ nullptr));
-  cb->ReadAsciiText(ui::ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr,
-                    &result);
+  std::string result = ui::clipboard_test_util::ReadAsciiText(
+      cb, ui::ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr);
   EXPECT_EQ(clip_str, result);
   // Destroy the clipboard here because ash doesn't delete it.
   // crbug.com/158150.

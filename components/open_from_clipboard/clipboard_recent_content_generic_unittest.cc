@@ -16,6 +16,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/open_from_clipboard/clipboard_recent_content_features.h"
@@ -73,6 +75,8 @@ const char kChromeUIScheme[] = "chrome";
 
 class ClipboardRecentContentGenericTest : public testing::Test {
  protected:
+  base::test::TaskEnvironment task_environment_;
+
   void SetUp() override {
     // Make sure "chrome" as standard scheme for non chrome embedder.
     std::vector<std::string> standard_schemes = url::GetStandardSchemes();
@@ -130,8 +134,11 @@ TEST_F(ClipboardRecentContentGenericTest, RecognizesURLs) {
   for (size_t i = 0; i < std::size(test_data); ++i) {
     test_clipboard_->WriteText(test_data[i].clipboard);
     test_clipboard_->SetLastModifiedTime(now - base::Seconds(10));
-    EXPECT_EQ(test_data[i].expected_get_recent_url_value,
-              recent_content.GetRecentURLFromClipboard().has_value())
+
+    base::test::TestFuture<std::optional<GURL>> future;
+    recent_content.GetRecentURLFromClipboard(future.GetCallback());
+    std::optional<GURL> url = future.Take();
+    EXPECT_EQ(test_data[i].expected_get_recent_url_value, url.has_value())
         << "for input " << test_data[i].clipboard;
   }
 }
@@ -146,11 +153,21 @@ TEST_F(ClipboardRecentContentGenericTest,
   std::string text = "http://example.com/";
   test_clipboard_->WriteText(text);
   test_clipboard_->SetLastModifiedTime(now - base::Minutes(9));
-  EXPECT_TRUE(recent_content.GetRecentURLFromClipboard().has_value());
+
+  {
+    base::test::TestFuture<std::optional<GURL>> future;
+    recent_content.GetRecentURLFromClipboard(future.GetCallback());
+    EXPECT_TRUE(future.Take().has_value());
+  }
+
   // If the last modified time is 10 minutes ago, the URL shouldn't be
   // suggested.
   test_clipboard_->SetLastModifiedTime(now - base::Minutes(11));
-  EXPECT_FALSE(recent_content.GetRecentURLFromClipboard().has_value());
+  {
+    base::test::TestFuture<std::optional<GURL>> future;
+    recent_content.GetRecentURLFromClipboard(future.GetCallback());
+    EXPECT_FALSE(future.Take().has_value());
+  }
 }
 
 TEST_F(ClipboardRecentContentGenericTest, OlderContentNotSuggestedLowerLimit) {
@@ -162,7 +179,11 @@ TEST_F(ClipboardRecentContentGenericTest, OlderContentNotSuggestedLowerLimit) {
   std::string text = "http://example.com/";
   test_clipboard_->WriteText(text);
   test_clipboard_->SetLastModifiedTime(now - base::Minutes(2));
-  EXPECT_FALSE(recent_content.GetRecentURLFromClipboard().has_value());
+  {
+    base::test::TestFuture<std::optional<GURL>> future;
+    recent_content.GetRecentURLFromClipboard(future.GetCallback());
+    EXPECT_FALSE(future.Take().has_value());
+  }
 }
 
 TEST_F(ClipboardRecentContentGenericTest, GetClipboardContentAge) {
@@ -184,20 +205,41 @@ TEST_F(ClipboardRecentContentGenericTest, SuppressClipboardContent) {
   std::string text = "http://example.com/";
   test_clipboard_->WriteText(text);
   test_clipboard_->SetLastModifiedTime(now - base::Seconds(10));
-  EXPECT_TRUE(recent_content.GetRecentURLFromClipboard().has_value());
-  EXPECT_TRUE(recent_content.GetRecentTextFromClipboard().has_value());
+
+  {
+    base::test::TestFuture<std::optional<GURL>> future;
+    recent_content.GetRecentURLFromClipboard(future.GetCallback());
+    EXPECT_TRUE(future.Take().has_value());
+  }
+  {
+    base::test::TestFuture<std::optional<std::u16string>> future;
+    recent_content.GetRecentTextFromClipboard(future.GetCallback());
+    EXPECT_TRUE(future.Take().has_value());
+  }
   EXPECT_FALSE(recent_content.HasRecentImageFromClipboard());
 
   // After suppressing it, it shouldn't be suggested.
   recent_content.SuppressClipboardContent();
-  EXPECT_FALSE(recent_content.GetRecentURLFromClipboard().has_value());
+  {
+    base::test::TestFuture<std::optional<GURL>> future;
+    recent_content.GetRecentURLFromClipboard(future.GetCallback());
+    EXPECT_FALSE(future.Take().has_value());
+  }
 
   // If the clipboard changes, even if to the same thing again, the content
   // should be suggested again.
   test_clipboard_->WriteText(text);
   test_clipboard_->SetLastModifiedTime(now);
-  EXPECT_TRUE(recent_content.GetRecentURLFromClipboard().has_value());
-  EXPECT_TRUE(recent_content.GetRecentTextFromClipboard().has_value());
+  {
+    base::test::TestFuture<std::optional<GURL>> future;
+    recent_content.GetRecentURLFromClipboard(future.GetCallback());
+    EXPECT_TRUE(future.Take().has_value());
+  }
+  {
+    base::test::TestFuture<std::optional<std::u16string>> future;
+    recent_content.GetRecentTextFromClipboard(future.GetCallback());
+    EXPECT_TRUE(future.Take().has_value());
+  }
   EXPECT_FALSE(recent_content.HasRecentImageFromClipboard());
 }
 
@@ -208,13 +250,20 @@ TEST_F(ClipboardRecentContentGenericTest, GetRecentTextFromClipboard) {
   std::string text = "  Foo Bar   ";
   test_clipboard_->WriteText(text);
   test_clipboard_->SetLastModifiedTime(now - base::Seconds(10));
-  EXPECT_TRUE(recent_content.GetRecentTextFromClipboard().has_value());
-  EXPECT_FALSE(recent_content.GetRecentURLFromClipboard().has_value());
+
+  {
+    base::test::TestFuture<std::optional<std::u16string>> future;
+    recent_content.GetRecentTextFromClipboard(future.GetCallback());
+    std::optional<std::u16string> text_result = future.Take();
+    EXPECT_TRUE(text_result.has_value());
+    EXPECT_STREQ("Foo Bar", base::UTF16ToUTF8(text_result.value()).c_str());
+  }
+  {
+    base::test::TestFuture<std::optional<GURL>> future;
+    recent_content.GetRecentURLFromClipboard(future.GetCallback());
+    EXPECT_FALSE(future.Take().has_value());
+  }
   EXPECT_FALSE(recent_content.HasRecentImageFromClipboard());
-  EXPECT_STREQ(
-      "Foo Bar",
-      base::UTF16ToUTF8(recent_content.GetRecentTextFromClipboard().value())
-          .c_str());
 }
 
 TEST_F(ClipboardRecentContentGenericTest, ClearClipboardContent) {
@@ -224,17 +273,29 @@ TEST_F(ClipboardRecentContentGenericTest, ClearClipboardContent) {
   std::string text = "http://example.com/";
   test_clipboard_->WriteText(text);
   test_clipboard_->SetLastModifiedTime(now - base::Seconds(10));
-  EXPECT_TRUE(recent_content.GetRecentURLFromClipboard().has_value());
+  {
+    base::test::TestFuture<std::optional<GURL>> future;
+    recent_content.GetRecentURLFromClipboard(future.GetCallback());
+    EXPECT_TRUE(future.Take().has_value());
+  }
 
   // After clear it, it shouldn't be suggested.
   recent_content.ClearClipboardContent();
-  EXPECT_FALSE(recent_content.GetRecentURLFromClipboard().has_value());
+  {
+    base::test::TestFuture<std::optional<GURL>> future;
+    recent_content.GetRecentURLFromClipboard(future.GetCallback());
+    EXPECT_FALSE(future.Take().has_value());
+  }
 
   // If the clipboard changes, even if to the same thing again, the content
   // should be suggested again.
   test_clipboard_->WriteText(text);
   test_clipboard_->SetLastModifiedTime(now);
-  EXPECT_TRUE(recent_content.GetRecentURLFromClipboard().has_value());
+  {
+    base::test::TestFuture<std::optional<GURL>> future;
+    recent_content.GetRecentURLFromClipboard(future.GetCallback());
+    EXPECT_TRUE(future.Take().has_value());
+  }
 }
 
 TEST_F(ClipboardRecentContentGenericTest, HasRecentImageFromClipboard) {
@@ -246,12 +307,21 @@ TEST_F(ClipboardRecentContentGenericTest, HasRecentImageFromClipboard) {
   test_clipboard_->WriteBitmap(bitmap);
   test_clipboard_->SetLastModifiedTime(now - base::Seconds(10));
   EXPECT_TRUE(recent_content.HasRecentImageFromClipboard());
-  EXPECT_FALSE(recent_content.GetRecentURLFromClipboard().has_value());
-  EXPECT_FALSE(recent_content.GetRecentTextFromClipboard().has_value());
-  recent_content.GetRecentImageFromClipboard(
-      base::BindLambdaForTesting([&bitmap](std::optional<gfx::Image> image) {
-        EXPECT_TRUE(gfx::BitmapsAreEqual(image->AsBitmap(), bitmap));
-      }));
+  {
+    base::test::TestFuture<std::optional<GURL>> future;
+    recent_content.GetRecentURLFromClipboard(future.GetCallback());
+    EXPECT_FALSE(future.Take().has_value());
+  }
+  {
+    base::test::TestFuture<std::optional<std::u16string>> future;
+    recent_content.GetRecentTextFromClipboard(future.GetCallback());
+    EXPECT_FALSE(future.Take().has_value());
+  }
+  base::test::TestFuture<std::optional<gfx::Image>> future;
+  recent_content.GetRecentImageFromClipboard(future.GetCallback());
+  std::optional<gfx::Image> image = future.Take();
+  EXPECT_TRUE(image.has_value());
+  EXPECT_TRUE(gfx::BitmapsAreEqual(image->AsBitmap(), bitmap));
 }
 
 TEST_F(ClipboardRecentContentGenericTest, HasRecentContentFromClipboard_URL) {

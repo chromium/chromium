@@ -168,20 +168,23 @@ void ClipboardIOS::ReadText(ClipboardBuffer buffer,
 
 // |data_dst| is not used. It's only passed to be consistent with other
 // platforms.
-void ClipboardIOS::ReadAsciiText(ClipboardBuffer buffer,
-                                 const DataTransferEndpoint* data_dst,
-                                 std::string* result) const {
+void ClipboardIOS::ReadAsciiText(
+    ClipboardBuffer buffer,
+    const std::optional<DataTransferEndpoint>& data_dst,
+    ReadAsciiTextCallback callback) const {
   DCHECK(CalledOnValidThread());
   DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
   RecordRead(ClipboardFormatMetric::kText);
 
+  std::string result;
   NSData* data = GetDataWithTypeFromPasteboard(
       GetPasteboard(), ClipboardFormatType::PlainTextType().ToNSString());
   if (data) {
     NSString* contents = [[NSString alloc] initWithData:data
                                                encoding:NSUTF8StringEncoding];
-    result->assign(base::SysNSStringToUTF8(contents));
+    result.assign(base::SysNSStringToUTF8(contents));
   }
+  std::move(callback).Run(std::move(result));
 }
 
 // |data_dst| is not used. It's only passed to be consistent with other

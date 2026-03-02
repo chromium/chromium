@@ -204,7 +204,7 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
   virtual void ReadAsciiText(
       ClipboardBuffer buffer,
       const std::optional<DataTransferEndpoint>& data_dst,
-      ReadAsciiTextCallback callback) const;
+      ReadAsciiTextCallback callback) const = 0;
 
   // Reads HTML from the clipboard, if available. If the HTML fragment requires
   // context to parse, |fragment_start| and |fragment_end| are indexes into
@@ -261,9 +261,6 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
   virtual void ReadText(ClipboardBuffer buffer,
                         const DataTransferEndpoint* data_dst,
                         std::u16string* result) const = 0;
-  virtual void ReadAsciiText(ClipboardBuffer buffer,
-                             const DataTransferEndpoint* data_dst,
-                             std::string* result) const = 0;
   virtual void ReadBookmark(const DataTransferEndpoint* data_dst,
                             std::u16string* title,
                             std::string* url) const = 0;
