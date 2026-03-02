@@ -423,6 +423,31 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="InitialWebUI.NewWindow{CreationSource}.BrowserWindowToReloadButton.FirstPaintGap"
+    units="ms" expires_after="2026-07-05">
+  <owner>mych@chromium.org</owner>
+  <owner>chrome-webium-product-eng@google.com</owner>
+  <summary>
+    Records the delay between the native browser window's first presentation
+    (paint) and the Reload Button first paint in a new window. {CreationSource}
+
+    This is a direct, session-linked measurement of the delta, unlike the
+    separately logged `.FirstPaint` metrics. Used to quantify the rendering lag.
+
+    This is only recorded for desktop platforms when the InitialWebUIMetrics is
+    enabled.
+  </summary>
+  <token key="CreationSource">
+    <variant name=".AllSources" summary="Aggregated across all sources"/>
+    <variant name=".BrowserInitiated"
+        summary="Triggered by browser action, e.g. shortcut or menu"/>
+    <variant name=".DragToNewWindow"
+        summary="Triggered by dragging a tab to a new window"/>
+    <variant name=".SessionRestore" summary="Triggered by session restore"/>
+  </token>
+</histogram>
+
+<histogram
     name="InitialWebUI.NewWindow{CreationSource}.ReloadButton.{PaintType}.{StartPoint}"
     units="ms" expires_after="2026-07-05">
   <owner>mych@chromium.org</owner>
@@ -574,6 +599,45 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the time from {Scenario} browser application startup to the first
     presentation of the browser window onto the screen{StartupTemperature}.
+
+    This metric is mutually exclusive by scenarios.
+
+    This is only recorded for desktop platforms when the InitialWebUIMetrics
+    feature is enabled.
+  </summary>
+  <token key="Scenario">
+    <variant name="" summary="standard"/>
+    <variant name=".FirstRun" summary="first run"/>
+    <variant name=".SessionRestore"
+        summary="session restored (without showing the Profile Picker)"/>
+  </token>
+  <token key="StartupTemperature">
+    <variant name="" summary=""/>
+    <variant name=".Temperature.ColdStartup"
+        summary=", where startup was cold (mostly hard faults). Only
+                 available on Windows."/>
+    <variant name=".Temperature.Other"
+        summary=", where startup temperature was undetermined"/>
+    <variant name=".Temperature.WarmStartup"
+        summary=", where startup was warm (almost no hard faults). Only
+                 available on Windows."/>
+  </token>
+</histogram>
+
+<histogram
+    name="InitialWebUI.Startup{Scenario}.BrowserWindowToReloadButton.FirstPaintGap{StartupTemperature}"
+    units="ms" expires_after="2026-07-05">
+  <owner>mych@chromium.org</owner>
+  <owner>chrome-webium-product-eng@google.com</owner>
+  <summary>
+    Records the delay between the native browser window's first presentation
+    (paint) and the Reload Button first paint during {Scenario} startup
+    {StartupTemperature}
+
+    This is a direct, session-linked measurement of the delta, unlike the
+    separately logged `.FirstPaint` metrics. Used to quantify the rendering lag
+    of the WebUI process relative to the native UI creation during heavy
+    resource contention at startup.
 
     This metric is mutually exclusive by scenarios.
 

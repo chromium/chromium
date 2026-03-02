@@ -42,6 +42,11 @@ void InitialWebUIWindowMetricsManager::OnBrowserWindowFirstPresentation(
     return;
   }
 
+  if (!browser_window_first_paint_time_.has_value()) {
+    browser_window_first_paint_time_ = timestamp;
+    RecordPaintDeltaIfAvailable();
+  }
+
   if (!is_startup_first_paint_recorded && !skip_startup_metrics_for_testing_) {
     is_startup_first_paint_recorded = true;
     is_new_window_first_paint_recorded_ = true;
@@ -72,6 +77,11 @@ void InitialWebUIWindowMetricsManager::OnReloadButtonFirstPaint(
   static bool is_startup_first_paint_recorded = false;
   if (!waap_service_) {
     return;
+  }
+
+  if (!reload_button_first_paint_time_.has_value()) {
+    reload_button_first_paint_time_ = timestamp;
+    RecordPaintDeltaIfAvailable();
   }
 
   if (!is_startup_first_paint_recorded && !skip_startup_metrics_for_testing_) {
@@ -109,4 +119,35 @@ void InitialWebUIWindowMetricsManager::OnReloadButtonFirstContentfulPaint(
 
 void InitialWebUIWindowMetricsManager::SkipStartupForTesting() {
   skip_startup_metrics_for_testing_ = true;
+}
+
+void InitialWebUIWindowMetricsManager::RecordPaintDeltaIfAvailable() {
+  if (!waap_service_ || !browser_window_first_paint_time_.has_value() ||
+      !reload_button_first_paint_time_.has_value()) {
+    return;
+  }
+
+  base::TimeDelta delta =
+      *reload_button_first_paint_time_ - *browser_window_first_paint_time_;
+
+  // We only care about positive deltas.
+  if (delta.is_negative()) {
+    return;
+  }
+
+  // Handle Startup metrics only once per process.
+  static bool process_startup_delta_recorded = false;
+  if (!process_startup_delta_recorded && !skip_startup_metrics_for_testing_) {
+    process_startup_delta_recorded = true;
+    startup_delta_recorded_ = true;
+    waap_service_->OnStartupBrowserWindowToReloadButtonFirstPaintGap(
+        *browser_window_first_paint_time_, *reload_button_first_paint_time_);
+  } else if (!new_window_delta_recorded_ &&
+             new_window_start_time_.has_value()) {
+    // Handle New Window metrics once per window.
+    new_window_delta_recorded_ = true;
+    waap_service_->OnNewWindowBrowserWindowToReloadButtonFirstPaintGap(
+        creation_source_, *browser_window_first_paint_time_,
+        *reload_button_first_paint_time_);
+  }
 }
