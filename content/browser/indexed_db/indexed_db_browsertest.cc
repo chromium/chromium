@@ -41,13 +41,17 @@
 #include "components/services/storage/privileged/mojom/indexed_db_control.mojom-test-utils.h"
 #include "components/services/storage/privileged/mojom/indexed_db_control_test.mojom.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
+#include "components/services/storage/public/cpp/filesystem/filesystem_proxy.h"
 #include "components/services/storage/public/mojom/storage_usage_info.mojom.h"
+#include "components/services/storage/sandboxed_vfs_delegate.h"
+#include "components/services/storage/sandboxed_vfs_file_impl.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/browser_main_loop.h"
 #include "content/browser/indexed_db/indexed_db_leveldb_coding.h"
 #include "content/browser/indexed_db/instance/bucket_context.h"
 #include "content/browser/indexed_db/instance/leveldb/backing_store.h"
 #include "content/browser/indexed_db/instance/leveldb/cleanup_scheduler.h"
+#include "content/browser/indexed_db/instance/sqlite/database_connection.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -65,12 +69,15 @@
 #include "content/public/test/no_renderer_crashes_assertion.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/shell/browser/shell.h"
+#include "content/shell/browser/shell_browser_context.h"
+#include "content/shell/browser/shell_content_browser_client.h"
 #include "content/test/content_browser_test_utils_internal.h"
 #include "net/base/net_errors.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "sql/database.h"
+#include "sql/sandboxed_vfs.h"
 #include "sql/statement.h"
 #include "sql/test/test_helpers.h"
 #include "storage/browser/blob/blob_storage_context.h"
@@ -345,6 +352,109 @@ class IndexedDBIncognitoTest
 
  protected:
   raw_ptr<Shell> shell_ = nullptr;
+};
+
+// See IndexedDBBrowserTestWithSqliteErrorInjector.
+class SqliteFileWithErrors : public storage::SandboxedVfsFileImpl {
+ public:
+  // Map from values that should fail to be written to the error code that
+  // should be returned.
+  static base::NoDestructor<std::map<std::string, int>> fail_values;
+
+  SqliteFileWithErrors(base::File file,
+                       base::FilePath file_path,
+                       sql::SandboxedVfsFileType file_type,
+                       sql::SandboxedVfs* vfs)
+      : storage::SandboxedVfsFileImpl(std::move(file),
+                                      std::move(file_path),
+                                      file_type,
+                                      vfs) {}
+  ~SqliteFileWithErrors() override = default;
+
+  int Write(const void* buffer, int size, sqlite3_int64 offset) override {
+    auto text = std::string_view(reinterpret_cast<const char*>(buffer), size);
+    for (const auto& [fail_value, error_code] : *(fail_values.get())) {
+      if (text.contains(fail_value)) {
+        return error_code;
+      }
+    }
+    return SandboxedVfsFileImpl::Write(buffer, size, offset);
+  }
+
+  // This part only exists because the base `SandboxedVfsFileImpl` doesn't
+  // implement them, and crashes on them. See unixFetch in //third_party/sqlite
+  // for documentation of these two methods. We can skip implementing them by
+  // simply returning SQLITE_OK and setting `result` to null.
+  int Fetch(sqlite3_int64 offset, int size, void** result) override {
+    *result = nullptr;
+    return SQLITE_OK;
+  }
+  int Unfetch(sqlite3_int64 offset, void* fetch_result) override {
+    return SQLITE_IOERR;
+  }
+};
+
+// static
+base::NoDestructor<std::map<std::string, int>>
+    SqliteFileWithErrors::fail_values;
+
+// See IndexedDBBrowserTestWithSqliteErrorInjector.
+class VfsDelegateWithErrors : public storage::SandboxedVfsDelegate {
+ public:
+  explicit VfsDelegateWithErrors(
+      std::unique_ptr<storage::FilesystemProxy> filesystem)
+      : SandboxedVfsDelegate(std::move(filesystem)) {}
+  ~VfsDelegateWithErrors() override = default;
+
+  // storage::SandboxedVfsDelegate:
+  sql::SandboxedVfsFile* RetrieveSandboxedVfsFile(
+      base::File file,
+      base::FilePath file_path,
+      sql::SandboxedVfsFileType file_type,
+      sql::SandboxedVfs* vfs) override {
+    return new SqliteFileWithErrors(std::move(file), std::move(file_path),
+                                    file_type, vfs);
+  }
+};
+
+// This test fixture allows injecting errors into the SQLite VFS layer to test
+// various failure modes. It replaces `MockFailureSingleton` that is used for
+// LevelDB.
+//
+// It uses `SandboxedVfsDelegate` even though we don't need sandboxing, because
+// it's the easiest way to reuse existing production code that implements a
+// SQLite VFS in C++.
+//
+// TODO(crbug.com/488755563): This doesn't work on Fuchsia. Understand why and
+// fix if possible.
+class IndexedDBBrowserTestWithSqliteErrorInjector
+    : public IndexedDBBrowserTestBase {
+ public:
+  IndexedDBBrowserTestWithSqliteErrorInjector()
+      : IndexedDBBrowserTestBase(/*use_sqlite=*/true) {}
+
+  void SetUp() override {
+#if BUILDFLAG(IS_FUCHSIA)
+    GTEST_SKIP() << "TODO(crbug.com/488755563): test doesn't work on Fuchsia";
+#else
+    IndexedDBBrowserTestBase::SetUp();
+#endif
+  }
+
+  void SetUpOnMainThread() override {
+    IndexedDBBrowserTestBase::SetUpOnMainThread();
+
+    const char* kVfsName = "sqlite_with_errors";
+    sqlite::DatabaseConnection::OverrideVfsNameForTesting(kVfsName);
+    base::FilePath path =
+        ShellContentBrowserClient::Get()->browser_context()->GetPath();
+    sql::SandboxedVfs::Register(
+        kVfsName,
+        std::make_unique<VfsDelegateWithErrors>(
+            std::make_unique<storage::FilesystemProxy>(
+                storage::FilesystemProxy::UNRESTRICTED, path)),
+        /*make_default=*/false);
+  }
 };
 
 IN_PROC_BROWSER_TEST_P(IndexedDBIncognitoTest, CursorTest) {
@@ -1037,6 +1147,7 @@ IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTest, DeleteBucketDataIncognito) {
 }
 
 IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTest, DiskFullOnCommit) {
+  // See below for SQLite port of this test.
   DISABLED_FOR_SQLITE_PENDING_FAILURE_INJECTION();
   // Ignore several preceding transactions:
   // * The test calls deleteDatabase() which opens the backing store:
@@ -1047,6 +1158,13 @@ IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTest, DiskFullOnCommit) {
   const int call_num = 1;
   FailOperation(FailClass::LEVELDB_TRANSACTION, FailMethod::COMMIT_DISK_FULL,
                 instance_num, call_num);
+  SimpleTest(GetTestUrl("indexeddb", "disk_full_on_commit.html"));
+}
+
+IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTestWithSqliteErrorInjector,
+                       DiskFullOnCommit) {
+  SqliteFileWithErrors::fail_values.get()->emplace("valueThatTriggersFailure",
+                                                   SQLITE_FULL);
   SimpleTest(GetTestUrl("indexeddb", "disk_full_on_commit.html"));
 }
 

@@ -282,6 +282,9 @@ class CONTENT_EXPORT DatabaseConnection {
   // Changes the size at which blobs are chunked.
   static void OverrideMaxBlobSizeForTesting(base::ByteSize size);
 
+  // Overrides the VFS used for databases.
+  static void OverrideVfsNameForTesting(const char* vfs_name);
+
  private:
   friend class BackingStoreSqliteTest;
   FRIEND_TEST_ALL_PREFIXES(DatabaseConnectionTest, TooNew);
