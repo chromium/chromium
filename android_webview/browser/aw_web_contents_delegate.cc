@@ -106,12 +106,12 @@ void AwWebContentsDelegate::FindReply(WebContents* web_contents,
                                       const gfx::Rect& selection_rect,
                                       int active_match_ordinal,
                                       bool final_update) {
-  AwContents* aw_contents = AwContents::FromWebContents(web_contents);
-  if (!aw_contents)
-    return;
+  CHECK(web_contents);
+  FindHelper* find_helper = FindHelper::FromWebContents(web_contents);
 
-  aw_contents->GetFindHelper()->HandleFindReply(
-      request_id, number_of_matches, active_match_ordinal, final_update);
+  CHECK(find_helper);
+  find_helper->HandleFindReply(request_id, number_of_matches,
+                               active_match_ordinal, final_update);
 }
 
 void AwWebContentsDelegate::RunFileChooser(

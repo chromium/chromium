@@ -14,7 +14,7 @@ using content::WebContents;
 namespace android_webview {
 
 FindHelper::FindHelper(WebContents* web_contents)
-    : web_contents_(web_contents) {}
+    : content::WebContentsUserData<FindHelper>(*web_contents) {}
 
 FindHelper::~FindHelper() {
 }
@@ -25,7 +25,7 @@ void FindHelper::SetListener(Listener* listener) {
 
 void FindHelper::FindAllAsync(const std::u16string& search_string) {
   // Stop any ongoing asynchronous request.
-  web_contents_->StopFinding(content::STOP_FIND_ACTION_KEEP_SELECTION);
+  GetWebContents().StopFinding(content::STOP_FIND_ACTION_KEEP_SELECTION);
 
   async_find_started_ = true;
 
@@ -39,8 +39,8 @@ void FindHelper::FindAllAsync(const std::u16string& search_string) {
   options->match_case = false;
   options->new_session = true;
 
-  web_contents_->Find(current_request_id_, search_string, std::move(options),
-                      /*skip_delay=*/false);
+  GetWebContents().Find(current_request_id_, search_string, std::move(options),
+                        /*skip_delay=*/false);
 }
 
 void FindHelper::HandleFindReply(int request_id,
@@ -67,12 +67,12 @@ void FindHelper::FindNext(bool forward) {
   options->match_case = false;
   options->new_session = false;
 
-  web_contents_->Find(current_request_id_, last_search_string_,
-                      std::move(options), /*skip_delay=*/false);
+  GetWebContents().Find(current_request_id_, last_search_string_,
+                        std::move(options), /*skip_delay=*/false);
 }
 
 void FindHelper::ClearMatches() {
-  web_contents_->StopFinding(content::STOP_FIND_ACTION_CLEAR_SELECTION);
+  GetWebContents().StopFinding(content::STOP_FIND_ACTION_CLEAR_SELECTION);
 
   async_find_started_ = false;
   last_search_string_.clear();
@@ -84,7 +84,7 @@ bool FindHelper::MaybeHandleEmptySearch(const std::u16string& search_string) {
   if (!search_string.empty())
     return false;
 
-  web_contents_->StopFinding(content::STOP_FIND_ACTION_CLEAR_SELECTION);
+  GetWebContents().StopFinding(content::STOP_FIND_ACTION_CLEAR_SELECTION);
   NotifyResults(0, 0, true);
   return true;
 }
@@ -132,5 +132,7 @@ void FindHelper::NotifyResults(int active_ordinal,
   if (listener_)
     listener_->OnFindResultReceived(active_ordinal, match_count, finished);
 }
+
+WEB_CONTENTS_USER_DATA_KEY_IMPL(FindHelper);
 
 }  // namespace android_webview

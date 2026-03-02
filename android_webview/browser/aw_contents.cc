@@ -421,8 +421,10 @@ AwContents::~AwContents() {
 
   web_contents_->RemoveUserData(kAwContentsUserDataKey);
   AwContentsClientBridge::Dissociate(web_contents_.get());
-  if (find_helper_.get())
-    find_helper_->SetListener(NULL);
+  if (FindHelper* find_helper =
+          FindHelper::FromWebContents(web_contents_.get())) {
+    find_helper->SetListener(nullptr);
+  }
   if (icon_helper_.get())
     icon_helper_->SetListener(NULL);
   base::subtle::Atomic32 instance_count =
@@ -839,11 +841,13 @@ void AwContents::ClearCache(JNIEnv* env, bool include_disk_files) {
 
 FindHelper* AwContents::GetFindHelper() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!find_helper_.get()) {
-    find_helper_ = std::make_unique<FindHelper>(web_contents_.get());
-    find_helper_->SetListener(this);
+  FindHelper* find_helper = FindHelper::FromWebContents(web_contents_.get());
+  if (!find_helper) {
+    FindHelper::CreateForWebContents(web_contents_.get());
+    find_helper = FindHelper::FromWebContents(web_contents_.get());
+    find_helper->SetListener(this);
   }
-  return find_helper_.get();
+  return find_helper;
 }
 
 bool AwContents::IsJavaScriptAllowed() {
