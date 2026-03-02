@@ -209,13 +209,15 @@ void VerticalDraggedTabsContainer::InitializeDragStartAnimation(
   // Duration of the animation for dragged views to become contiguous.
   static constexpr base::TimeDelta kDragStartAnimationDuration =
       base::Milliseconds(200);
+  base::TimeDelta drag_start_animation_duration =
+      gfx::Animation::RichAnimationDuration(kDragStartAnimationDuration);
   static constexpr gfx::Tween::Type kStartDragAnimationTweenType =
       gfx::Tween::Type::EASE_IN_OUT;
 
   const auto& drag_handler = GetDragHandler();
   base::TimeDelta drag_time_elapsed =
       base::TimeTicks::Now() - controller.GetSessionData().drag_start_time;
-  if (drag_time_elapsed >= kDragStartAnimationDuration) {
+  if (drag_time_elapsed >= drag_start_animation_duration) {
     return;
   }
 
@@ -259,8 +261,7 @@ void VerticalDraggedTabsContainer::InitializeDragStartAnimation(
   }
 
   drag_start_animation_.SetTweenType(kStartDragAnimationTweenType);
-  drag_start_animation_.SetSlideDuration(
-      gfx::Animation::RichAnimationDuration(kDragStartAnimationDuration));
+  drag_start_animation_.SetSlideDuration(drag_start_animation_duration);
 
   // Set the animations value to be proportional according to the time that
   // elapsed since the drag started. This makes the transition between
@@ -268,7 +269,7 @@ void VerticalDraggedTabsContainer::InitializeDragStartAnimation(
   drag_start_animation_.Reset(gfx::Tween::CalculateValue(
       kStartDragAnimationTweenType,
       drag_time_elapsed.InMillisecondsF() /
-          kDragStartAnimationDuration.InMilliseconds()));
+          drag_start_animation_duration.InMilliseconds()));
   drag_start_animation_.Show();
 }
 
