@@ -77,14 +77,17 @@ class DefaultBrowserManagerTest : public testing::Test {
                   TestingBrowserProcess::GetGlobal(),
                   std::move(fake_shell_delegate),
                   base::BindLambdaForTesting(
-                      [&]() { return static_cast<Profile*>(&profile_); }));
+                      [&]() { return static_cast<Profile*>(profile_.get()); }));
             }));
+
+    profile_ = std::make_unique<TestingProfile>();
 
     TestingBrowserProcess::GetGlobal()->SetUpGlobalFeaturesForTesting(
         /*profile_manager=*/false);
   }
 
   void TearDown() override {
+    profile_.reset();
     fake_shell_delegate_ptr_ = nullptr;
     TestingBrowserProcess::GetGlobal()->TearDownGlobalFeaturesForTesting();
   }
@@ -104,7 +107,7 @@ class DefaultBrowserManagerTest : public testing::Test {
 
   ui::UserDataFactory::ScopedOverride global_feature_override_;
   raw_ptr<FakeShellDelegate> fake_shell_delegate_ptr_;
-  TestingProfile profile_;
+  std::unique_ptr<TestingProfile> profile_;
 };
 
 TEST_F(DefaultBrowserManagerTest, GetDefaultBrowserState) {
