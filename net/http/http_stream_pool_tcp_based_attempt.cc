@@ -355,9 +355,8 @@ HttpStreamPool::TcpBasedAttemptSlot::TakeAttempt(TcpBasedAttempt* raw_attempt) {
     NOTREACHED();
   };
 
-  UpdateIsSlow();
-
   std::unique_ptr<TcpBasedAttempt> attempt = take_attempt();
+  UpdateIsSlow();
   // Reset slot to avoid dangling pointer.
   attempt->ResetSlot();
   return attempt;
@@ -440,6 +439,9 @@ void HttpStreamPool::TcpBasedAttemptSlot::UpdateIsSlow() {
 }
 
 bool HttpStreamPool::TcpBasedAttemptSlot::CalculateIsSlow() const {
+  if (empty()) {
+    return false;
+  }
   if (ipv4_attempt_ && !ipv4_attempt_->is_slow()) {
     return false;
   }

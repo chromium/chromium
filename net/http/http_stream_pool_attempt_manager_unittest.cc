@@ -50,6 +50,7 @@
 #include "net/http/http_stream_pool.h"
 #include "net/http/http_stream_pool_group.h"
 #include "net/http/http_stream_pool_handle.h"
+#include "net/http/http_stream_pool_tcp_based_attempt.h"
 #include "net/http/http_stream_pool_test_util.h"
 #include "net/http/http_stream_request.h"
 #include "net/log/net_log_with_source.h"
@@ -1407,7 +1408,63 @@ TEST_F(HttpStreamPoolAttemptManagerTest, IPEndPointSlow) {
   ASSERT_EQ(pool().TotalActiveStreamCount(), 1u);
 }
 
-// Tests that when endpoints are slow, other endpoints are attempted.
+// Tests that an empty slot is not considered slow.
+TEST_F(HttpStreamPoolAttemptManagerTest, TcpBasedAttemptSlotEmptyIsNotSlow) {
+  HttpStreamPool::TcpBasedAttemptSlot slot;
+  EXPECT_TRUE(slot.empty());
+  EXPECT_FALSE(slot.IsSlow());
+
+  slot.UpdateIsSlow();
+  EXPECT_FALSE(slot.IsSlow());
+}
+
+// Tests that IsSlow() remains consistent when an attempt is taken from a slot.
+TEST_F(HttpStreamPoolAttemptManagerTest, CalculateIsSlowAfterFastAttemptFails) {
+  // Set the max stream sockets per group to 1 to force the second attempt into
+  // the same slot as the first attempt when it falls back.
+  constexpr size_t kMaxPerGroup = 1;
+  pool().set_max_stream_sockets_per_group_for_testing(kMaxPerGroup);
+
+  base::WeakPtr<FakeServiceEndpointRequest> endpoint_request =
+      resolver()->AddFakeRequest();
+
+  // Make the first attempt (IPv6) stalled.
+  auto data1 = std::make_unique<SequencedSocketData>();
+  data1->set_connect_data(MockConnect(ASYNC, ERR_IO_PENDING));
+  socket_factory()->AddSocketDataProvider(data1.get());
+
+  // Make the second attempt (IPv4) fail asynchronously.
+  auto data2 = std::make_unique<SequencedSocketData>();
+  data2->set_connect_data(MockConnect(ASYNC, ERR_CONNECTION_FAILED));
+  socket_factory()->AddSocketDataProvider(data2.get());
+
+  StreamRequester requester;
+  HttpStreamRequest* request = requester.RequestStream(pool());
+
+  endpoint_request->add_endpoint(ServiceEndpointBuilder()
+                                     .add_v6("2001:db8::1")
+                                     .add_v4("192.0.2.1")
+                                     .endpoint());
+  endpoint_request->CallOnServiceEndpointRequestFinished(OK);
+
+  AttemptManager* manager =
+      pool().GetGroupForTesting(requester.GetStreamKey())->attempt_manager();
+
+  // The first attempt should have started and occupied the only slot.
+  ASSERT_EQ(manager->TcpBasedAttemptSlotCount(), 1u);
+  ASSERT_FALSE(request->completed());
+
+  // Fast forward by the connection attempt delay.
+  // This makes the first attempt (IPv6) slow. Because max stream sockets per
+  // group is 1, the manager will start the fallback attempt (IPv4) in the same
+  // slot. The fallback attempt will fail asynchronously because of
+  // ERR_CONNECTION_FAILED, and will be extracted from the slot.
+  // This triggers a call to `UpdateIsSlow()`. Prior to crbug.com/484352875,
+  // this incorrectly evaluated the slot's "slow" status and triggered a DCHECK.
+  // This test ensures the DCHECK is not hit.
+  FastForwardBy(HttpStreamPool::GetConnectionAttemptDelay());
+}
+
 TEST_F(HttpStreamPoolAttemptManagerTest, IPEndPointsSlow) {
   base::WeakPtr<FakeServiceEndpointRequest> endpoint_request =
       resolver()->AddFakeRequest();
