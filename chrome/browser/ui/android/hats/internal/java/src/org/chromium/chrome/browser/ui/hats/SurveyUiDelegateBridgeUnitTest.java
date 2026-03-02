@@ -61,9 +61,9 @@ public class SurveyUiDelegateBridgeUnitTest {
 
         mActivity = Robolectric.buildActivity(Activity.class).get();
         mWindow =
-                new ActivityWindowAndroid(
+                ActivityWindowAndroid.create(
                         mActivity,
-                        false,
+                        /* listenToActivityState= */ false,
                         IntentRequestTracker.createFromActivity(mActivity),
                         mInsetObserver,
                         /* trackOcclusion= */ true);

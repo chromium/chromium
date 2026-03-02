@@ -111,9 +111,9 @@ public class CreatorActivity extends SnackbarActivity {
 
         IntentRequestTracker intentRequestTracker = IntentRequestTracker.createFromActivity(this);
         mWindowAndroid =
-                new ActivityWindowAndroid(
+                ActivityWindowAndroid.create(
                         this,
-                        false,
+                        /* listenToActivityState= */ false,
                         intentRequestTracker,
                         getInsetObserver(),
                         /* trackOcclusion= */ true);

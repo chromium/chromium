@@ -205,7 +205,7 @@ public class SigninAndHistorySyncActivity extends FullscreenSigninAndHistorySync
 
     @Override
     protected ActivityWindowAndroid createWindowAndroid() {
-        return new ActivityWindowAndroid(
+        return ActivityWindowAndroid.create(
                 this,
                 /* listenToActivityState= */ true,
                 getIntentRequestTracker(),

@@ -74,7 +74,7 @@ public class HistoryActivity extends SnackbarActivity {
                                     view, getEdgeToEdgeSupplier());
         }
         mWindowAndroid =
-                new ActivityWindowAndroid(
+                ActivityWindowAndroid.create(
                         this,
                         /* listenToActivityState= */ true,
                         IntentRequestTracker.createFromActivity(this),

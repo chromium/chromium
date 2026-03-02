@@ -358,7 +358,7 @@ public class DocumentPictureInPictureActivity extends AsyncInitializationActivit
 
     @Override
     protected ActivityWindowAndroid createWindowAndroid() {
-        return new ActivityWindowAndroid(
+        return ActivityWindowAndroid.create(
                 this,
                 /* listenToActivityState= */ true,
                 getIntentRequestTracker(),

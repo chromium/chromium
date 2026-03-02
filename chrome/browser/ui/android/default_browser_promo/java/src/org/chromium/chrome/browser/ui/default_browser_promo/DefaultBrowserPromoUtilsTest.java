@@ -126,9 +126,9 @@ public class DefaultBrowserPromoUtilsTest {
     public void setUp() {
         mActivity = Robolectric.buildActivity(Activity.class).get();
         mWindowAndroid =
-                new ActivityWindowAndroid(
+                ActivityWindowAndroid.create(
                         mActivity,
-                        false,
+                        /* listenToActivityState= */ false,
                         IntentRequestTracker.createFromActivity(mActivity),
                         mInsetObserver,
                         /* trackOcclusion= */ true);

@@ -69,7 +69,7 @@ public class DeviceLockActivity extends SynchronousInitializationActivity
         mFrameLayout = new FrameLayout(this);
         setContentView(mFrameLayout);
         mWindowAndroid =
-                new ActivityWindowAndroid(
+                ActivityWindowAndroid.create(
                         this,
                         /* listenToActivityState= */ true,
                         IntentRequestTracker.createFromActivity(this),

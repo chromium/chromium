@@ -177,7 +177,7 @@ public class OverlayPanelManagerTest {
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             mActivity = activityTestRule.getActivity();
-                            return new ActivityWindowAndroid(
+                            return ActivityWindowAndroid.create(
                                     mActivity,
                                     /* listenToActivityState= */ true,
                                     IntentRequestTracker.createFromActivity(mActivity),

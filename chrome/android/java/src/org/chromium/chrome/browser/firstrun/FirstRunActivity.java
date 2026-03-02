@@ -859,7 +859,7 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
 
     @Override
     protected ActivityWindowAndroid createWindowAndroid() {
-        return new ActivityWindowAndroid(
+        return ActivityWindowAndroid.create(
                 this,
                 /* listenToActivityState= */ true,
                 getIntentRequestTracker(),

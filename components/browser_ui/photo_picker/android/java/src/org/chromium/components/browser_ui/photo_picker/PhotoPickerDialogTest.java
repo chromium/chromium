@@ -142,7 +142,7 @@ public class PhotoPickerDialogTest
         mWindowAndroid =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
-                            return new ActivityWindowAndroid(
+                            return ActivityWindowAndroid.create(
                                     mActivityTestRule.getActivity(),
                                     /* listenToActivityState= */ true,
                                     IntentRequestTracker.createFromActivity(

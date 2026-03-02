@@ -18,6 +18,7 @@ import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.permissions.ActivityAndroidPermissionDelegate;
 
 import java.lang.ref.WeakReference;
 import java.util.function.Supplier;
@@ -62,6 +63,7 @@ public class ChromeWindow extends ActivityWindowAndroid {
         super(
                 activity,
                 /* listenToActivityState= */ true,
+                new ActivityAndroidPermissionDelegate(new WeakReference<>(activity)),
                 sKeyboardVisibilityDelegateFactory.create(
                         new WeakReference<>(activity), manualFillingComponentSupplier),
                 /* activityTopResumedSupported= */ true,

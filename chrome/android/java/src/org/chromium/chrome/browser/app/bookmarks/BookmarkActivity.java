@@ -81,7 +81,7 @@ public class BookmarkActivity extends SnackbarActivity {
                         /* context= */ this,
                         /* componentName= */ parentComponent);
         mWindowAndroid =
-                new ActivityWindowAndroid(
+                ActivityWindowAndroid.create(
                         this,
                         /* listenToActivityState= */ true,
                         IntentRequestTracker.createFromActivity(this),
