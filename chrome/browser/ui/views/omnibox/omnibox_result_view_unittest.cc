@@ -72,7 +72,7 @@ class OmniboxResultViewTest : public ChromeViewsTestBase {
 
     // Create a widget and assign bounds to support calls to HitTestPoint.
     widget_ =
-        CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
+        CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
 
     omnibox_controller_ = std::make_unique<OmniboxController>(
         std::make_unique<TestOmniboxClient>());

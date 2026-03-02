@@ -489,7 +489,7 @@ void OmniboxViewViewsTest::SetUp() {
 
   // We need a widget so OmniboxView can be correctly focused and unfocused.
   widget_ =
-      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   widget_->Show();
 
   AutocompleteClassifierFactory::GetInstance()->SetTestingFactoryAndUse(
@@ -1763,7 +1763,7 @@ TEST_F(OmniboxViewViewsSteadyStateElisionsTest,
   // Create a different Widget that will take focus away from the test widget
   // containing our test Omnibox.
   std::unique_ptr<views::Widget> other_widget =
-      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   other_widget->Show();
   ExpectFullUrlDisplayed();
 
