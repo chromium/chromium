@@ -253,7 +253,7 @@ static constexpr std::string_view kTcpServerExchangePacketWithTcpScript = R"(
   });
 )";
 
-const std::string kMulticastFunctionsScript = R"(
+constexpr std::string_view kMulticastFunctionsScript = R"(
     const assertEq = (actual, expected) => {
       if (actual !== expected) {
         throw `Expected ${JSON.stringify(expected)},
@@ -1161,7 +1161,7 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppMulticastTest,
   content::RenderFrameHost* app_frame =
       InstallAndOpenIsolatedWebApp(/*with_pna=*/true, /*with_multicast=*/true);
 
-  std::string script = kMulticastFunctionsScript + R"(
+  std::string script = std::string(kMulticastFunctionsScript) + R"(
 
     (async () => {
       const kRequiredDatagrams = 35;
@@ -1208,7 +1208,7 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppMulticastTest,
   content::RenderFrameHost* app_frame =
       InstallAndOpenIsolatedWebApp(/*with_pna=*/true, /*with_multicast=*/true);
 
-  std::string script = kMulticastFunctionsScript + R"(
+  std::string script = std::string(kMulticastFunctionsScript) + R"(
     (async () => {
       const kRequiredDatagrams = 35;
       const kRequiredBytes = kRequiredDatagrams * (kRequiredDatagrams + 1) / 2;

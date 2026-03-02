@@ -1,0 +1,64 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//extensions/buildflags/buildflags.gni")
+
+assert(!is_android)
+
+source_set("direct_sockets") {
+  sources = [ "chrome_direct_sockets_delegate.h" ]
+  public_deps = [ "//content/public/browser" ]
+}
+
+source_set("impl") {
+  sources = [ "chrome_direct_sockets_delegate.cc" ]
+  public_deps = [ ":direct_sockets" ]
+  deps = [
+    "//chrome/browser/content_settings:content_settings_factory",
+    "//components/content_settings/core/browser",
+    "//components/webapps/isolated_web_apps:scheme",
+    "//content/public/common",
+    "//extensions/buildflags",
+  ]
+  if (enable_extensions) {
+    deps += [
+      "//extensions/browser",
+      "//extensions/common/api",
+    ]
+  }
+}
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [ "direct_sockets_apitest.cc" ]
+  deps = [
+    ":direct_sockets",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/browser/web_applications",
+    "//chrome/browser/web_applications:web_applications_test_support",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+    "//components/content_settings/core/browser",
+    "//content/public/browser",
+    "//content/public/common",
+    "//content/test:test_support",
+    "//extensions/buildflags",
+    "//net:test_support",
+    "//services/network/public/mojom",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+  if (enable_extensions) {
+    deps += [
+      "//extensions/browser",
+      "//extensions/common",
+      "//extensions/common/api",
+    ]
+  }
+}

@@ -5,20 +5,24 @@
 #include "chrome/browser/direct_sockets/chrome_direct_sockets_delegate.h"
 
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/profiles/profile.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/webapps/isolated_web_apps/scheme.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/socket_permission_request.h"
+#include "extensions/buildflags/buildflags.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "extensions/browser/process_map.h"
 #include "extensions/common/api/sockets/sockets_manifest_data.h"
+#endif
 
 namespace {
 
 using ProtocolType = content::DirectSocketsDelegate::ProtocolType;
 using RequestDetails = content::DirectSocketsDelegate::RequestDetails;
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 bool ValidateAddressAndPortForChromeApp(const extensions::Extension* extension,
                                         const RequestDetails& request) {
   switch (request.protocol) {
@@ -50,6 +54,7 @@ bool ValidateAddressAndPortForChromeApp(const extensions::Extension* extension,
                                   request.address, request.port});
   }
 }
+#endif
 
 bool ValidateAddressAndPortForIwa(const RequestDetails& request) {
   switch (request.protocol) {
@@ -82,6 +87,7 @@ bool IsContentSettingAllowedForUrl(content::BrowserContext* browser_context,
 bool ChromeDirectSocketsDelegate::ValidateRequest(
     content::RenderFrameHost& rfh,
     const RequestDetails& request) {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   // If we're running an extension, follow the chrome.sockets.* permission
   // model.
   if (const extensions::Extension* extension =
@@ -90,6 +96,7 @@ bool ChromeDirectSocketsDelegate::ValidateRequest(
                   rfh.GetProcess()->GetDeprecatedID())) {
     return ValidateAddressAndPortForChromeApp(extension, request);
   }
+#endif
 
   const GURL& url = rfh.GetMainFrame()->GetLastCommittedURL();
   if (!IsContentSettingAllowedForUrl(rfh.GetBrowserContext(), url,
@@ -125,12 +132,14 @@ bool ChromeDirectSocketsDelegate::ValidateRequestForServiceWorker(
 void ChromeDirectSocketsDelegate::RequestPrivateNetworkAccess(
     content::RenderFrameHost& rfh,
     base::OnceCallback<void(bool)> callback) {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   // No additional rules for Chrome Apps.
   if (extensions::ProcessMap::Get(rfh.GetBrowserContext())
           ->Contains(rfh.GetProcess()->GetDeprecatedID())) {
     std::move(callback).Run(/*allow_access=*/true);
     return;
   }
+#endif
 
   // TODO(crbug.com/368266657): Show a permission prompt for DS-PNA &
   // ponder whether this requires transient activation.
