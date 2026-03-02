@@ -54,7 +54,7 @@ public final class PrivacySandboxDebouncedOnClickTest {
         mButtonRid = rid;
         mFakeDialog =
                 new PrivacySandboxDebouncedOnClickImpl(
-                        "ProtectedAudienceMeasurementNoticeModal"
+                        "ThreeAdsAPIsNoticeModal"
                                 + PrivacySandboxDialogUtils.getSurfaceTypeAsString(
                                         SurfaceType.BR_APP));
     }

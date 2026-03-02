@@ -16,7 +16,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.version_info.VersionInfo;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.embedder_support.delegate.WebContentsDelegateAndroid;
 import org.chromium.components.embedder_support.view.ContentView;
@@ -36,7 +35,6 @@ import java.util.Locale;
 @NullMarked
 public class PrivacySandboxDialogController {
     private static @Nullable WeakReference<Dialog> sDialog;
-    private static boolean sDisableEEANoticeForTesting;
     private static boolean sShowMoreButtonForTesting;
     private static @Nullable Runnable sOnDialogDismissedRunnable;
 
@@ -47,8 +45,7 @@ public class PrivacySandboxDialogController {
         }
         @PromptType
         int promptType = new PrivacySandboxBridge(profile).getRequiredPromptType(surfaceType);
-        if (promptType != PromptType.M1_NOTICE_EEA
-                && promptType != PromptType.M1_NOTICE_ROW
+        if (promptType != PromptType.M1_NOTICE_ROW
                 && promptType != PromptType.M1_NOTICE_RESTRICTED) {
             return false;
         }
@@ -109,14 +106,6 @@ public class PrivacySandboxDialogController {
         switch (promptType) {
             case PromptType.NONE:
                 return false;
-            case PromptType.M1_NOTICE_EEA:
-                showNoticeEEA(
-                        activity,
-                        privacySandboxBridge,
-                        surfaceType,
-                        profile,
-                        activityWindowAndroid);
-                return true;
             case PromptType.M1_NOTICE_ROW:
                 dialog =
                         new PrivacySandboxDialogNoticeROW(
@@ -151,40 +140,6 @@ public class PrivacySandboxDialogController {
         }
     }
 
-    /** Shows the NoticeEEA dialog. */
-    public static void showNoticeEEA(
-            Activity activity,
-            PrivacySandboxBridge privacySandboxBridge,
-            @SurfaceType int surfaceType,
-            Profile profile,
-            ActivityWindowAndroid activityWindowAndroid) {
-        if (!sDisableEEANoticeForTesting) {
-            Dialog dialog;
-            if (ChromeFeatureList.isEnabled(
-                    ChromeFeatureList.PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS)) {
-                dialog =
-                        new PrivacySandboxDialogNoticeEeaV2(
-                                activity,
-                                privacySandboxBridge,
-                                surfaceType,
-                                profile,
-                                activityWindowAndroid);
-            } else {
-                dialog =
-                        new PrivacySandboxDialogNoticeEEA(
-                                activity, privacySandboxBridge, surfaceType);
-            }
-            dialog.setOnDismissListener(
-                    d -> {
-                        if (sOnDialogDismissedRunnable != null) {
-                            sOnDialogDismissedRunnable.run();
-                        }
-                    });
-            dialog.show();
-            sDialog = new WeakReference<>(dialog);
-        }
-    }
-
     public static void setOnDialogDismissRunnable(Runnable runnable) {
         sOnDialogDismissedRunnable = runnable;
     }
@@ -192,11 +147,6 @@ public class PrivacySandboxDialogController {
     @VisibleForTesting
     static @Nullable Dialog getDialog() {
         return sDialog != null ? sDialog.get() : null;
-    }
-
-    @VisibleForTesting
-    static void disableEEANotice(boolean disable) {
-        sDisableEEANoticeForTesting = disable;
     }
 
     @VisibleForTesting
