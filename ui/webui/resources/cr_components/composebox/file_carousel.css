@@ -70,3 +70,11 @@
 :host([enable-scrolling]) .file-carousel-container::-webkit-scrollbar-button {
   display: none;
 }
+
+:host(.top) {
+  --file-chip-padding-right: 12px;
+}
+
+:host(.top) .file-carousel-container {
+  margin-inline-end: var(--context-carousel-inline-end-spacing, 0);
+}
