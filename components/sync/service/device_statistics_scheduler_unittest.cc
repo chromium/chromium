@@ -5,10 +5,12 @@
 #include "components/sync/service/device_statistics_scheduler.h"
 
 #include "base/functional/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/sync/base/features.h"
 #include "components/sync/service/device_statistics_request.h"
 #include "components/sync/service/device_statistics_tracker.h"
 #include "components/sync/test/fake_device_statistics_request.h"
@@ -42,6 +44,7 @@ class DeviceStatisticsSchedulerTest
   }
 
  protected:
+  base::test::ScopedFeatureList features_{kSyncRecordDeviceStatisticsMetrics};
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   TestingPrefServiceSimple pref_service_;
@@ -63,10 +66,8 @@ TEST_F(DeviceStatisticsSchedulerTest, DoesNotStartTrackerIfPrefIsRecent) {
                                       GURL("https://example.com/"));
 
   // Give the scheduler a chance to start the tracker.
-  base::RunLoop run_loop;
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, run_loop.QuitClosure());
-  run_loop.Run();
+  task_environment_.FastForwardBy(
+      kSyncRecordDeviceStatisticsMetricsDelay.Get());
 
   EXPECT_TRUE(fake_requests_.empty());
 }
@@ -83,10 +84,8 @@ TEST_F(DeviceStatisticsSchedulerTest, StartsTrackerIfPrefIsUnset) {
                                       GURL("https://example.com/"));
 
   // Give the scheduler a chance to start the tracker.
-  base::RunLoop run_loop;
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, run_loop.QuitClosure());
-  run_loop.Run();
+  task_environment_.FastForwardBy(
+      kSyncRecordDeviceStatisticsMetricsDelay.Get());
 
   EXPECT_EQ(fake_requests_.size(), 2u);
 }
@@ -104,10 +103,8 @@ TEST_F(DeviceStatisticsSchedulerTest, StartsTrackerIfPrefIsOld) {
                                       GURL("https://example.com/"));
 
   // Give the scheduler a chance to start the tracker.
-  base::RunLoop run_loop;
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, run_loop.QuitClosure());
-  run_loop.Run();
+  task_environment_.FastForwardBy(
+      kSyncRecordDeviceStatisticsMetricsDelay.Get());
 
   EXPECT_EQ(fake_requests_.size(), 2u);
 }
@@ -130,8 +127,9 @@ TEST_F(DeviceStatisticsSchedulerTest, StartsTrackerPeriodically) {
                                       GURL("https://example.com/"));
 
   // Since the last metrics emission was on the previous day, the new run should
-  // start immediately (in a posted task).
-  task_environment_.FastForwardBy(base::Seconds(1));
+  // start as soon as the startup delay passes.
+  task_environment_.FastForwardBy(
+      kSyncRecordDeviceStatisticsMetricsDelay.Get());
 
   ASSERT_EQ(fake_requests_.size(), 1u);
   fake_requests_[primary.gaia]->SimulateSuccess({});

@@ -420,8 +420,6 @@ class SyncServiceImpl : public SyncService,
       base::OnceCallback<void(std::map<DataType, LocalDataDescription>)>
           callback);
 
-  void StartDeviceStatisticsScheduler();
-
   // This profile's SyncClient.
   const std::unique_ptr<SyncClient> sync_client_;
 

@@ -6,10 +6,12 @@
 
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/time.h"
 #include "components/sync/service/device_statistics_request.h"
 #include "components/sync/service/device_statistics_tracker.h"
@@ -28,7 +30,8 @@ DeviceStatisticsScheduler::DeviceStatisticsScheduler(
     PrefService* pref_service,
     signin::IdentityManager* identity_manager,
     const GURL& sync_server_url)
-    : delegate_(delegate),
+    : creation_time_(base::Time::Now()),
+      delegate_(delegate),
       pref_service_(pref_service),
       identity_manager_(identity_manager),
       sync_server_url_(sync_server_url) {
@@ -36,7 +39,9 @@ DeviceStatisticsScheduler::DeviceStatisticsScheduler(
   CHECK(pref_service_);
   CHECK(identity_manager_);
 
-  ScheduleNextRun();
+  if (base::FeatureList::IsEnabled(kSyncRecordDeviceStatisticsMetrics)) {
+    ScheduleNextRun();
+  }
 }
 
 DeviceStatisticsScheduler::~DeviceStatisticsScheduler() = default;
@@ -49,6 +54,7 @@ void DeviceStatisticsScheduler::RegisterProfilePrefs(
 
 base::Time DeviceStatisticsScheduler::ComputeEarliestAllowedTimeToRun() const {
   const base::Time now = base::Time::Now();
+
   // Ensure the "last recorded" timestamp is not in the future.
   const base::Time last_recorded_at =
       std::min(pref_service_->GetTime(kLastAttemptedToRecordPref), now);
@@ -82,10 +88,16 @@ base::Time DeviceStatisticsScheduler::ComputeEarliestAllowedTimeToRun() const {
     earliest_allowed = std::max(earliest_allowed, now + base::Seconds(5));
   }
 
+  // At browser startup, wait some time before recording for the first time.
+  earliest_allowed =
+      std::max(earliest_allowed,
+               creation_time_ + kSyncRecordDeviceStatisticsMetricsDelay.Get());
+
   return earliest_allowed;
 }
 
 void DeviceStatisticsScheduler::ScheduleNextRun() {
+  CHECK(base::FeatureList::IsEnabled(kSyncRecordDeviceStatisticsMetrics));
   CHECK(!next_run_timer_.IsRunning());
   CHECK(!tracker_);
 
