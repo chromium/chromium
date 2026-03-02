@@ -182,21 +182,24 @@ void LocalFileStreamWriter::InitiateSeek(base::OnceClosure main_operation) {
   }
 }
 
-void LocalFileStreamWriter::DidSeek(base::OnceClosure main_operation,
-                                    int64_t result) {
+void LocalFileStreamWriter::DidSeek(
+    base::OnceClosure main_operation,
+    base::expected<int64_t, net::Error> result) {
   DCHECK(has_pending_operation_);
 
   if (CancelIfRequested())
     return;
 
-  if (result != initial_offset_) {
-    // TODO(kinaba) add a more specific error code.
-    result = net::ERR_FAILED;
+  if (!result.has_value()) {
+    has_pending_operation_ = false;
+    std::move(write_callback_).Run(result.error());
+    return;
   }
 
-  if (result < 0) {
+  if (result.value() != initial_offset_) {
+    // TODO(kinaba) add a more specific error code.
     has_pending_operation_ = false;
-    std::move(write_callback_).Run(static_cast<int>(result));
+    std::move(write_callback_).Run(net::ERR_FAILED);
     return;
   }
 

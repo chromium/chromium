@@ -63,10 +63,10 @@ class URLRequestTestJobBackedByFile : public URLRequestJob {
   // Called before OnSeekComplete, only called if the request advanced to the
   // point the file was opened, without being canceled.
   virtual void OnOpenComplete(int result);
-  // Called at most once.  On success, |result| is the non-negative offset into
-  // the file that the request will read from.  On seek failure, it's a negative
-  // net:Error code.
-  virtual void OnSeekComplete(int64_t result);
+  // Called at most once. On success, |result| contains the non-negative offset
+  // into the file that the request will read from. On seek failure, it contains
+  // a net::Error code.
+  virtual void OnSeekComplete(base::expected<int64_t, net::Error> result);
   // Called once per read attempt.  |buf| contains the read data, if any.
   // |result| is the number of read bytes.  0 (net::OK) indicates EOF, negative
   // numbers indicate it's a net::Error code.
@@ -117,7 +117,7 @@ class URLRequestTestJobBackedByFile : public URLRequestJob {
 
   // Callback after seeking to the beginning of |byte_range_| in the file
   // on a background thread.
-  void DidSeek(int64_t result);
+  void DidSeek(base::expected<int64_t, net::Error> result);
 
   // Callback after data is asynchronously read from the file into |buf|.
   void DidRead(scoped_refptr<IOBuffer> buf,

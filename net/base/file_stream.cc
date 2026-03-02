@@ -74,7 +74,7 @@ bool FileStream::IsOpen() const {
   return context_->IsOpen();
 }
 
-int FileStream::Seek(int64_t offset, Int64CompletionOnceCallback callback) {
+int FileStream::Seek(int64_t offset, SeekCallback callback) {
   if (!IsOpen())
     return ERR_UNEXPECTED;
 

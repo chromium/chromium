@@ -185,12 +185,13 @@ void LocalFileStreamReader::DidOpenFileStream(
   }
 }
 
-void LocalFileStreamReader::DidSeekFileStream(int64_t seek_result) {
-  if (seek_result < 0) {
-    std::move(callback_).Run(static_cast<int>(seek_result));
+void LocalFileStreamReader::DidSeekFileStream(
+    base::expected<int64_t, net::Error> seek_result) {
+  if (!seek_result.has_value()) {
+    std::move(callback_).Run(seek_result.error());
     return;
   }
-  if (seek_result != initial_offset_) {
+  if (seek_result.value() != initial_offset_) {
     std::move(callback_).Run(net::ERR_REQUEST_RANGE_NOT_SATISFIABLE);
     return;
   }

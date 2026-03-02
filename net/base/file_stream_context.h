@@ -34,9 +34,11 @@
 #include "base/message_loop/message_pump_for_io.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_runner.h"
+#include "base/types/expected.h"
 #include "build/build_config.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/file_stream.h"
+#include "net/base/net_errors.h"
 
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 #include <errno.h>
@@ -99,7 +101,7 @@ class FileStream::Context {
   void Close(CompletionOnceCallback callback);
 
   // Seeks |offset| bytes from the start of the file.
-  void Seek(int64_t offset, Int64CompletionOnceCallback callback);
+  void Seek(int64_t offset, FileStream::SeekCallback callback);
 
   void GetFileInfo(base::File::Info* file_info,
                    CompletionOnceCallback callback);
@@ -147,12 +149,15 @@ class FileStream::Context {
 
   void CloseAndDelete();
 
-  Int64CompletionOnceCallback IntToInt64(CompletionOnceCallback callback);
-
-  // Called when Open() or Seek() completes. |result| contains the result or a
-  // network error code.
-  void OnAsyncCompleted(Int64CompletionOnceCallback callback,
+  // Called when Open(), Close(), GetFileInfo(), or Flush() completes.
+  // |result| contains the result or a network error code.
+  void OnAsyncCompleted(CompletionOnceCallback callback,
                         const IOResult& result);
+
+  // Called when Seek() completes. Creates a base::expected result from the
+  // IOResult and runs the callback.
+  void OnSeekCompleted(FileStream::SeekCallback callback,
+                       const IOResult& result);
 
   ////////////////////////////////////////////////////////////////////////////
   // Platform-dependent methods implemented in

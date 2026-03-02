@@ -233,15 +233,15 @@ int UploadFileElementReader::DoOpenComplete(int result) {
 int UploadFileElementReader::DoSeek() {
   next_state_ = State::GET_FILE_INFO;
   return file_stream_->Seek(
-      range_offset_,
-      base::BindOnce(
-          [](base::WeakPtr<UploadFileElementReader> weak_this, int64_t result) {
-            if (!weak_this)
-              return;
-            weak_this->OnIOComplete(result >= 0 ? OK
-                                                : static_cast<int>(result));
-          },
-          weak_ptr_factory_.GetWeakPtr()));
+      range_offset_, base::BindOnce(
+                         [](base::WeakPtr<UploadFileElementReader> weak_this,
+                            base::expected<int64_t, net::Error> result) {
+                           if (!weak_this) {
+                             return;
+                           }
+                           weak_this->OnIOComplete(result.error_or(OK));
+                         },
+                         weak_ptr_factory_.GetWeakPtr()));
 }
 
 int UploadFileElementReader::DoGetFileInfo(int result) {

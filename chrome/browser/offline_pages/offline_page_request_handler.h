@@ -201,7 +201,7 @@ class OfflinePageRequestHandler {
 
   // All the work related to serving from the archive file.
   void DidOpenForServing(int result);
-  void DidSeekForServing(int64_t result);
+  void DidSeekForServing(base::expected<int64_t, net::Error> result);
   void DidReadForServing(scoped_refptr<net::IOBuffer> buf,
                          base::expected<base::ByteSize, net::Error> result);
   void NotifyReadRawDataComplete(int result);

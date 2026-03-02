@@ -703,16 +703,17 @@ void OfflinePageRequestHandler::DidOpenForServing(int result) {
       0, base::BindOnce(&OfflinePageRequestHandler::DidSeekForServing,
                         weak_ptr_factory_.GetWeakPtr()));
   if (seek_result != net::ERR_IO_PENDING)
-    DidSeekForServing(net::ERR_REQUEST_RANGE_NOT_SATISFIABLE);
+    DidSeekForServing(base::unexpected(net::ERR_REQUEST_RANGE_NOT_SATISFIABLE));
 }
 
-void OfflinePageRequestHandler::DidSeekForServing(int64_t result) {
-  DCHECK_LE(result, 0);
-
-  if (result < 0) {
-    delegate_->NotifyStartError(net::ERR_REQUEST_RANGE_NOT_SATISFIABLE);
+void OfflinePageRequestHandler::DidSeekForServing(
+    base::expected<int64_t, net::Error> result) {
+  if (!result.has_value()) {
+    delegate_->NotifyStartError(result.error());
     return;
   }
+
+  CHECK_EQ(result.value(), 0);
 
   delegate_->NotifyHeadersComplete(GetCurrentOfflinePage().file_size);
 }

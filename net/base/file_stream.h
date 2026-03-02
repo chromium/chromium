@@ -44,6 +44,11 @@ class NET_EXPORT FileStream {
   // error code: Open(), Close(), Flush(), GetFileInfo(), ConnectNamedPipe().
   using ErrorCallback = base::OnceCallback<void(net::Error)>;
 
+  // Callback type for Seek() - returns either the new file position on success
+  // or a net::Error on failure.
+  using SeekCallback =
+      base::OnceCallback<void(base::expected<int64_t, net::Error>)>;
+
   // Uses |task_runner| for asynchronous operations.
   explicit FileStream(const scoped_refptr<base::TaskRunner>& task_runner);
 
@@ -93,7 +98,7 @@ class NET_EXPORT FileStream {
   // position relative to the start of the file.  Otherwise, an error code is
   // returned. It is invalid to request any asynchronous operations while there
   // is an in-flight asynchronous operation.
-  virtual int Seek(int64_t offset, Int64CompletionOnceCallback callback);
+  virtual int Seek(int64_t offset, SeekCallback callback);
 
   // Call this method to read data from the current stream position
   // asynchronously. Up to buf_len bytes will be copied into buf.  (In

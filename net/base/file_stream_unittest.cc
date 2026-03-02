@@ -28,6 +28,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
+#include "base/test/test_future.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_restrictions.h"
@@ -167,7 +168,7 @@ TEST_F(FileStreamTest, OpenExplicitCloseOrphaned) {
 // Test the use of FileStream with a file handle provided at construction.
 TEST_F(FileStreamTest, UseFileHandle) {
   TestReadWriteCallback rw_callback;
-  TestInt64CompletionCallback callback64;
+  base::test::TestFuture<base::expected<int64_t, net::Error>> seek_future;
   // 1. Test reading with a file handle.
   ASSERT_TRUE(base::WriteFile(temp_file_path(), kTestData));
   int flags = base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_READ |
@@ -177,9 +178,11 @@ TEST_F(FileStreamTest, UseFileHandle) {
   // Seek to the beginning of the file and read.
   auto read_stream = std::make_unique<FileStream>(
       std::move(file1), base::SingleThreadTaskRunner::GetCurrentDefault());
-  ASSERT_THAT(read_stream->Seek(0, callback64.callback()),
+  ASSERT_THAT(read_stream->Seek(0, seek_future.GetCallback()),
               IsError(ERR_IO_PENDING));
-  ASSERT_EQ(0, callback64.WaitForResult());
+  auto seek_result = seek_future.Take();
+  ASSERT_TRUE(seek_result.has_value());
+  ASSERT_EQ(0, seek_result.value());
   // Read into buffer and compare.
   scoped_refptr<IOBufferWithSize> read_buffer =
       base::MakeRefCounted<IOBufferWithSize>(kTestData.size());
@@ -198,9 +201,11 @@ TEST_F(FileStreamTest, UseFileHandle) {
 
   auto write_stream = std::make_unique<FileStream>(
       std::move(file2), base::SingleThreadTaskRunner::GetCurrentDefault());
-  ASSERT_THAT(write_stream->Seek(0, callback64.callback()),
+  ASSERT_THAT(write_stream->Seek(0, seek_future.GetCallback()),
               IsError(ERR_IO_PENDING));
-  ASSERT_EQ(0, callback64.WaitForResult());
+  seek_result = seek_future.Take();
+  ASSERT_TRUE(seek_result.has_value());
+  ASSERT_EQ(0, seek_result.value());
   scoped_refptr<IOBuffer> write_buffer = CreateTestDataBuffer();
   result = rw_callback.GetResult(write_stream->Write(
       write_buffer.get(), write_buffer->size(), rw_callback.callback()));
@@ -217,15 +222,16 @@ TEST_F(FileStreamTest, UseFileHandle) {
 
 TEST_F(FileStreamTest, UseClosedStream) {
   int rv = 0;
-  TestInt64CompletionCallback callback64;
+  base::test::TestFuture<base::expected<int64_t, net::Error>> seek_future;
 
   FileStream stream(base::SingleThreadTaskRunner::GetCurrentDefault());
 
   EXPECT_FALSE(stream.IsOpen());
 
   // Try seeking...
-  rv = stream.Seek(5, callback64.callback());
-  EXPECT_THAT(callback64.GetResult(rv), IsError(ERR_UNEXPECTED));
+  rv = stream.Seek(5, seek_future.GetCallback());
+  EXPECT_NE(ERR_IO_PENDING, rv);
+  EXPECT_THAT(rv, IsError(ERR_UNEXPECTED));
 
   // Try reading...
   TestReadWriteCallback rw_callback;
@@ -313,12 +319,13 @@ TEST_F(FileStreamTest, Read_FromOffset) {
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
   EXPECT_THAT(callback.WaitForResult(), IsOk());
 
-  TestInt64CompletionCallback callback64;
+  base::test::TestFuture<base::expected<int64_t, net::Error>> seek_future;
   const int64_t kOffset = 3;
-  rv = stream.Seek(kOffset, callback64.callback());
+  rv = stream.Seek(kOffset, seek_future.GetCallback());
   ASSERT_THAT(rv, IsError(ERR_IO_PENDING));
-  int64_t new_offset = callback64.WaitForResult();
-  EXPECT_EQ(kOffset, new_offset);
+  auto seek_result = seek_future.Take();
+  ASSERT_TRUE(seek_result.has_value());
+  EXPECT_EQ(kOffset, seek_result.value());
 
   uint64_t total_bytes_read = 0;
 
@@ -414,12 +421,13 @@ TEST_F(FileStreamTest, Write_FromOffset) {
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
   EXPECT_THAT(callback.WaitForResult(), IsOk());
 
-  TestInt64CompletionCallback callback64;
+  base::test::TestFuture<base::expected<int64_t, net::Error>> seek_future;
   const int64_t kOffset = kTestData.size();
-  rv = stream.Seek(kOffset, callback64.callback());
+  rv = stream.Seek(kOffset, seek_future.GetCallback());
   ASSERT_THAT(rv, IsError(ERR_IO_PENDING));
-  int64_t new_offset = callback64.WaitForResult();
-  EXPECT_EQ(kTestData.size(), new_offset);
+  auto seek_result = seek_future.Take();
+  ASSERT_TRUE(seek_result.has_value());
+  EXPECT_EQ(kTestData.size(), seek_result.value());
 
   uint64_t total_bytes_written = 0;
 
@@ -517,11 +525,12 @@ TEST_F(FileStreamTest, BasicWriteRead) {
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
   EXPECT_THAT(callback.WaitForResult(), IsOk());
 
-  TestInt64CompletionCallback callback64;
-  rv = stream->Seek(file_size.value(), callback64.callback());
+  base::test::TestFuture<base::expected<int64_t, net::Error>> seek_future;
+  rv = stream->Seek(file_size.value(), seek_future.GetCallback());
   ASSERT_THAT(rv, IsError(ERR_IO_PENDING));
-  int64_t offset = callback64.WaitForResult();
-  EXPECT_EQ(offset, file_size.value());
+  auto seek_result = seek_future.Take();
+  ASSERT_TRUE(seek_result.has_value());
+  EXPECT_EQ(seek_result.value(), file_size.value());
 
   uint64_t total_bytes_written = 0;
 
@@ -544,10 +553,11 @@ TEST_F(FileStreamTest, BasicWriteRead) {
 
   EXPECT_EQ(kTestData.size(), total_bytes_written);
 
-  rv = stream->Seek(0, callback64.callback());
+  rv = stream->Seek(0, seek_future.GetCallback());
   ASSERT_THAT(rv, IsError(ERR_IO_PENDING));
-  offset = callback64.WaitForResult();
-  EXPECT_EQ(0, offset);
+  seek_result = seek_future.Take();
+  ASSERT_TRUE(seek_result.has_value());
+  EXPECT_EQ(0, seek_result.value());
 
   uint64_t total_bytes_read = 0;
 
@@ -650,11 +660,14 @@ class TestWriteReadCompletionCallback {
       *total_bytes_read_ += total_bytes_read;
       *data_read_ += data_read;
     } else {  // We're done writing all data.  Start reading the data.
-      TestInt64CompletionCallback callback64;
-      EXPECT_THAT(stream_->Seek(0, callback64.callback()),
+      base::test::TestFuture<base::expected<int64_t, net::Error>> seek_future;
+      EXPECT_THAT(stream_->Seek(0, seek_future.GetCallback()),
                   IsError(ERR_IO_PENDING));
-      {
-        EXPECT_LE(0, callback64.WaitForResult());
+      EXPECT_TRUE(seek_future.Wait(base::RunLoop::Type::kNestableTasksAllowed));
+      if (seek_future.IsReady()) {
+        auto seek_result = seek_future.Take();
+        EXPECT_TRUE(seek_result.has_value());
+        EXPECT_EQ(0, seek_result.value());
       }
     }
 
@@ -689,10 +702,12 @@ TEST_F(FileStreamTest, WriteRead) {
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
   EXPECT_THAT(open_callback.WaitForResult(), IsOk());
 
-  TestInt64CompletionCallback callback64;
-  EXPECT_THAT(stream->Seek(file_size.value(), callback64.callback()),
+  base::test::TestFuture<base::expected<int64_t, net::Error>> seek_future;
+  EXPECT_THAT(stream->Seek(file_size.value(), seek_future.GetCallback()),
               IsError(ERR_IO_PENDING));
-  EXPECT_EQ(file_size.value(), callback64.WaitForResult());
+  auto seek_result = seek_future.Take();
+  ASSERT_TRUE(seek_result.has_value());
+  EXPECT_EQ(file_size.value(), seek_result.value());
 
   int total_bytes_written = 0;
   int total_bytes_read = 0;
@@ -805,10 +820,12 @@ TEST_F(FileStreamTest, WriteClose) {
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
   EXPECT_THAT(open_callback.WaitForResult(), IsOk());
 
-  TestInt64CompletionCallback callback64;
-  EXPECT_THAT(stream->Seek(file_size.value(), callback64.callback()),
+  base::test::TestFuture<base::expected<int64_t, net::Error>> seek_future;
+  EXPECT_THAT(stream->Seek(file_size.value(), seek_future.GetCallback()),
               IsError(ERR_IO_PENDING));
-  EXPECT_EQ(file_size, callback64.WaitForResult());
+  auto seek_result = seek_future.Take();
+  ASSERT_TRUE(seek_result.has_value());
+  EXPECT_EQ(file_size, seek_result.value());
 
   int total_bytes_written = 0;
   {

@@ -146,7 +146,8 @@ void URLRequestTestJobBackedByFile::GetResponseInfo(HttpResponseInfo* info) {
 
 void URLRequestTestJobBackedByFile::OnOpenComplete(int result) {}
 
-void URLRequestTestJobBackedByFile::OnSeekComplete(int64_t result) {}
+void URLRequestTestJobBackedByFile::OnSeekComplete(
+    base::expected<int64_t, net::Error> result) {}
 
 void URLRequestTestJobBackedByFile::OnReadComplete(IOBuffer* buf, int result) {}
 
@@ -212,7 +213,7 @@ void URLRequestTestJobBackedByFile::DidOpen(net::Error result) {
 
   if (range_parse_result_ != OK ||
       !byte_range_.ComputeBounds(meta_info_.file_size)) {
-    DidSeek(ERR_REQUEST_RANGE_NOT_SATISFIABLE);
+    DidSeek(base::unexpected(ERR_REQUEST_RANGE_NOT_SATISFIABLE));
     return;
   }
 
@@ -226,7 +227,7 @@ void URLRequestTestJobBackedByFile::DidOpen(net::Error result) {
                       base::BindOnce(&URLRequestTestJobBackedByFile::DidSeek,
                                      weak_ptr_factory_.GetWeakPtr()));
     if (rv != ERR_IO_PENDING)
-      DidSeek(ERR_REQUEST_RANGE_NOT_SATISFIABLE);
+      DidSeek(base::unexpected(ERR_REQUEST_RANGE_NOT_SATISFIABLE));
   } else {
     // We didn't need to call stream_->Seek() at all, so we pass to DidSeek()
     // the value that would mean seek success. This way we skip the code
@@ -235,11 +236,13 @@ void URLRequestTestJobBackedByFile::DidOpen(net::Error result) {
   }
 }
 
-void URLRequestTestJobBackedByFile::DidSeek(int64_t result) {
-  DCHECK(result < 0 || result == byte_range_.first_byte_position());
+void URLRequestTestJobBackedByFile::DidSeek(
+    base::expected<int64_t, net::Error> result) {
+  DCHECK(!result.has_value() ||
+         result.value() == byte_range_.first_byte_position());
 
   OnSeekComplete(result);
-  if (result < 0) {
+  if (!result.has_value()) {
     NotifyStartError(ERR_REQUEST_RANGE_NOT_SATISFIABLE);
     return;
   }

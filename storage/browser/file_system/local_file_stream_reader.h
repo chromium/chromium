@@ -68,7 +68,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) LocalFileStreamReader
                         base::expected<int64_t, net::Error> get_length_result);
   void DidOpenFileStream(file_access::ScopedFileAccess /*scoped_file_access*/,
                          net::Error result);
-  void DidSeekFileStream(int64_t seek_result);
+  void DidSeekFileStream(base::expected<int64_t, net::Error> seek_result);
   void DidOpenForRead(net::IOBuffer* buf,
                       int buf_len,
                       net::CompletionOnceCallback callback,

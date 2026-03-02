@@ -59,7 +59,7 @@ int FileStream::Context::Read(IOBuffer* in_buf,
       base::BindOnce(&Context::ReadFileImpl, base::Unretained(this), buf,
                      buf_len),
       base::BindOnce(&Context::OnAsyncCompleted, base::Unretained(this),
-                     IntToInt64(std::move(callback))));
+                     std::move(callback)));
   DCHECK(posted);
 
   async_in_progress_ = true;
@@ -77,7 +77,7 @@ int FileStream::Context::Write(IOBuffer* in_buf,
       base::BindOnce(&Context::WriteFileImpl, base::Unretained(this), buf,
                      buf_len),
       base::BindOnce(&Context::OnAsyncCompleted, base::Unretained(this),
-                     IntToInt64(std::move(callback))));
+                     std::move(callback)));
   DCHECK(posted);
 
   async_in_progress_ = true;

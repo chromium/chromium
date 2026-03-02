@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/task/task_runner.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
@@ -26,13 +27,6 @@
 
 namespace net {
 
-namespace {
-
-void CallInt64ToInt(CompletionOnceCallback callback, int64_t result) {
-  std::move(callback).Run(static_cast<int>(result));
-}
-
-}  // namespace
 
 FileStream::Context::IOResult::IOResult()
     : result(OK),
@@ -107,25 +101,25 @@ void FileStream::Context::Close(CompletionOnceCallback callback) {
       FROM_HERE,
       base::BindOnce(&Context::CloseFileImpl, base::Unretained(this)),
       base::BindOnce(&Context::OnAsyncCompleted, base::Unretained(this),
-                     IntToInt64(std::move(callback))));
+                     std::move(callback)));
   DCHECK(posted);
 
   async_in_progress_ = true;
 }
 
 void FileStream::Context::Seek(int64_t offset,
-                               Int64CompletionOnceCallback callback) {
+                               FileStream::SeekCallback callback) {
   DCHECK(!async_in_progress_);
 
   if (offset < 0) {
-    std::move(callback).Run(net::ERR_INVALID_ARGUMENT);
+    std::move(callback).Run(base::unexpected(net::ERR_INVALID_ARGUMENT));
     return;
   }
 
   bool posted = task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&Context::SeekFileImpl, base::Unretained(this), offset),
-      base::BindOnce(&Context::OnAsyncCompleted, base::Unretained(this),
+      base::BindOnce(&Context::OnSeekCompleted, base::Unretained(this),
                      std::move(callback)));
   DCHECK(posted);
 
@@ -139,7 +133,7 @@ void FileStream::Context::GetFileInfo(base::File::Info* file_info,
       base::BindOnce(&Context::GetFileInfoImpl, base::Unretained(this),
                      base::Unretained(file_info)),
       base::BindOnce(&Context::OnAsyncCompleted, base::Unretained(this),
-                     IntToInt64(std::move(callback))));
+                     std::move(callback)));
 
   async_in_progress_ = true;
 }
@@ -151,7 +145,7 @@ void FileStream::Context::Flush(CompletionOnceCallback callback) {
       FROM_HERE,
       base::BindOnce(&Context::FlushFileImpl, base::Unretained(this)),
       base::BindOnce(&Context::OnAsyncCompleted, base::Unretained(this),
-                     IntToInt64(std::move(callback))));
+                     std::move(callback)));
   DCHECK(posted);
 
   async_in_progress_ = true;
@@ -234,7 +228,7 @@ void FileStream::Context::OnOpenCompleted(CompletionOnceCallback callback,
   }
 #endif
 
-  OnAsyncCompleted(IntToInt64(std::move(callback)), open_result.error_code);
+  OnAsyncCompleted(std::move(callback), open_result.error_code);
 }
 
 void FileStream::Context::CloseAndDelete() {
@@ -250,12 +244,7 @@ void FileStream::Context::CloseAndDelete() {
   }
 }
 
-Int64CompletionOnceCallback FileStream::Context::IntToInt64(
-    CompletionOnceCallback callback) {
-  return base::BindOnce(&CallInt64ToInt, std::move(callback));
-}
-
-void FileStream::Context::OnAsyncCompleted(Int64CompletionOnceCallback callback,
+void FileStream::Context::OnAsyncCompleted(CompletionOnceCallback callback,
                                            const IOResult& result) {
   // Reset this before Run() as Run() may issue a new async operation. Also it
   // should be reset before Close() because it shouldn't run if any async
@@ -264,7 +253,25 @@ void FileStream::Context::OnAsyncCompleted(Int64CompletionOnceCallback callback,
   if (orphaned_) {
     CloseAndDelete();
   } else {
-    std::move(callback).Run(result.result);
+    std::move(callback).Run(base::checked_cast<int>(result.result));
+  }
+}
+
+void FileStream::Context::OnSeekCompleted(FileStream::SeekCallback callback,
+                                          const IOResult& result) {
+  // Reset this before Run() as Run() may issue a new async operation. Also it
+  // should be reset before Close() because it shouldn't run if any async
+  // operation is in progress.
+  async_in_progress_ = false;
+  if (orphaned_) {
+    CloseAndDelete();
+  } else {
+    if (result.result < 0) {
+      std::move(callback).Run(
+          base::unexpected(static_cast<net::Error>(result.result)));
+    } else {
+      std::move(callback).Run(result.result);
+    }
   }
 }
 

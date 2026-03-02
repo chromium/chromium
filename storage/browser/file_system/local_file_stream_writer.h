@@ -58,7 +58,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) LocalFileStreamWriter
   // Seeks to |initial_offset_| and proceeds to |main_operation| if it succeeds.
   // If failed, the error code is returned by calling |error_callback|.
   void InitiateSeek(base::OnceClosure main_operation);
-  void DidSeek(base::OnceClosure main_operation, int64_t result);
+  void DidSeek(base::OnceClosure main_operation,
+               base::expected<int64_t, net::Error> result);
 
   // Passed as the |main_operation| of InitiateOpen() function.
   void ReadyToWrite(net::IOBuffer* buf, int buf_len);
