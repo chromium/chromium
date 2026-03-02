@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/barrier_callback.h"
+#include "base/check_is_test.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/scoped_observation.h"
@@ -525,8 +526,18 @@ bool ExtensionInstallPolicyServiceImpl::MustRemainDisabled(
 #endif  // !BUILDFLAG(ENABLE_EXTENSIONS)
 }
 
+void ExtensionInstallPolicyServiceImpl::SetExtensionsForTesting(
+    std::optional<std::set<ExtensionIdAndVersion>> extensions) {
+  CHECK_IS_TEST();
+  extensions_for_testing_ = std::move(extensions);
+}
+
 std::set<ExtensionIdAndVersion>
 ExtensionInstallPolicyServiceImpl::GetExtensions() {
+  if (extensions_for_testing_.has_value()) {
+    CHECK_IS_TEST();
+    return *extensions_for_testing_;
+  }
   extensions::ExtensionRegistry* extension_registry =
       extensions::ExtensionRegistry::Get(&profile_.get());
   if (!extension_registry) {

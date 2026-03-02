@@ -92,6 +92,9 @@ class ExtensionInstallPolicyServiceImpl
       const extensions::Extension* extension,
       extensions::disable_reason::DisableReason* reason) const override;
 
+  void SetExtensionsForTesting(
+      std::optional<std::set<ExtensionIdAndVersion>> extensions);
+
   // PolicyTypeToFetch::ExtensionsProvider:
   std::set<ExtensionIdAndVersion> GetExtensions() override;
 
@@ -129,6 +132,7 @@ class ExtensionInstallPolicyServiceImpl
 
   base::ObserverList<ExtensionInstallPolicyService::Observer> observers_;
   raw_ref<Profile> profile_;
+  std::optional<std::set<ExtensionIdAndVersion>> extensions_for_testing_;
 
   base::flat_map<CloudPolicyManager*,
                  std::unique_ptr<ClientInitializationWaiter>>
