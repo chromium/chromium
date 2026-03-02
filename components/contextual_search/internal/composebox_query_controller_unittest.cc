@@ -758,6 +758,52 @@ TEST_F(ComposeboxQueryControllerTest, UploadImageFileRequestSuccess) {
 }
 
 TEST_F(ComposeboxQueryControllerTest,
+       UploadImageFileRequestSuccessWithFileName) {
+  // Act: Start the session.
+  controller().InitializeIfNeeded();
+
+  // Assert: Validate cluster info request and state changes.
+  WaitForClusterInfo();
+
+  // Act: Start the file upload flow.
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  std::unique_ptr<lens::ContextualInputData> input_data =
+      std::make_unique<lens::ContextualInputData>();
+  input_data->primary_content_type = lens::MimeType::kImage;
+  input_data->context_input = std::vector<lens::ContextualInput>();
+  // Use CreateJPGBytes helper
+  std::vector<uint8_t> image_bytes = CreateJPGBytes(100, 100);
+  input_data->context_input->push_back(
+      lens::ContextualInput(image_bytes, lens::MimeType::kImage));
+  input_data->file_name = "test_image.jpg";
+
+  lens::ImageEncodingOptions image_options{.max_size = 1000000,
+                                           .max_height = 1000,
+                                           .max_width = 1000,
+                                           .compression_quality = 30};
+
+  controller().StartFileUploadFlow(file_token, std::move(input_data),
+                                   image_options);
+
+  // Assert: Validate file upload request and status changes.
+  WaitForFileUpload(file_token, lens::MimeType::kImage);
+
+  // Assert: Check that the file name is correctly set in the file info.
+  auto* file_info = controller().GetFileInfoForTesting(file_token);
+  ASSERT_TRUE(file_info);
+  EXPECT_EQ(file_info->file_name, "test_image.jpg");
+
+  // Validate the file upload request payload.
+  EXPECT_EQ(controller()
+                .last_sent_file_upload_request()
+                ->objects_request()
+                .image_data()
+                .image_metadata()
+                .file_name(),
+            "test_image.jpg");
+}
+
+TEST_F(ComposeboxQueryControllerTest,
        UploadFileRemainsActiveAfterClusterInfoExpiration) {
   CreateController(
       /*send_lns_surface=*/false,

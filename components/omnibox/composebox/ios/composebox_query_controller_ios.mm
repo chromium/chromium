@@ -20,6 +20,7 @@ void ComposeboxQueryControllerIOS::CreateImageUploadRequest(
     lens::LensOverlayRequestId request_id,
     const std::vector<uint8_t>& image_data,
     std::optional<lens::ImageEncodingOptions> image_options,
+    std::optional<std::string> file_name,
     RequestBodyProtoCreatedCallback callback) {
   CHECK(image_options.has_value());
   // On iOS, we use UIImage for decoding and resizing.
@@ -45,5 +46,5 @@ void ComposeboxQueryControllerIOS::CreateImageUploadRequest(
       base::BindOnce(&ComposeboxQueryController::
                          CreateFileUploadRequestProtoWithImageDataAndContinue,
                      request_id, CreateClientContext(), ref_counted_logs,
-                     std::move(callback)));
+                     std::move(callback), file_name));
 }
