@@ -135,12 +135,12 @@
     [MeasureAs=WindowPageXOffset, Replaceable] readonly attribute double pageXOffset;
     [MeasureAs=WindowScrollY, Replaceable] readonly attribute double scrollY;
     [MeasureAs=WindowPageYOffset, Replaceable] readonly attribute double pageYOffset;
-    [ImplementedAs=scrollTo, CallWith=ScriptState] Promise<undefined> scroll(optional ScrollToOptions options = {});
-    [ImplementedAs=scrollTo, CallWith=ScriptState] Promise<undefined> scroll(unrestricted double x, unrestricted double y);
-    [CallWith=ScriptState] Promise<undefined> scrollTo(optional ScrollToOptions options = {});
-    [CallWith=ScriptState] Promise<undefined> scrollTo(unrestricted double x, unrestricted double y);
-    [CallWith=ScriptState] Promise<undefined> scrollBy(optional ScrollToOptions options = {});
-    [CallWith=ScriptState] Promise<undefined> scrollBy(unrestricted double x, unrestricted double y);
+    [ImplementedAs=scrollTo, CallWith=ScriptState] Promise<ScrollResult> scroll(optional ScrollToOptions options = {});
+    [ImplementedAs=scrollTo, CallWith=ScriptState] Promise<ScrollResult> scroll(unrestricted double x, unrestricted double y);
+    [CallWith=ScriptState] Promise<ScrollResult> scrollTo(optional ScrollToOptions options = {});
+    [CallWith=ScriptState] Promise<ScrollResult> scrollTo(unrestricted double x, unrestricted double y);
+    [CallWith=ScriptState] Promise<ScrollResult> scrollBy(optional ScrollToOptions options = {});
+    [CallWith=ScriptState] Promise<ScrollResult> scrollBy(unrestricted double x, unrestricted double y);
 
     // Visual Viewport API
     // https://github.com/WICG/ViewportAPI
