@@ -122,7 +122,7 @@ const base::FeatureParam<DevToolsFreestylerUserTier>
         &devtools_freestyler_user_tier_options};
 
 // Whether the DevTools AI Code Generation is enabled.
-BASE_FEATURE(kDevToolsAiCodeGeneration, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kDevToolsAiCodeGeneration, base::FEATURE_ENABLED_BY_DEFAULT);
 const base::FeatureParam<std::string> kDevToolsAiCodeGenerationModelId{
     &kDevToolsAiCodeGeneration, "aida_model_id",
     /*default_value=*/""};
