@@ -456,6 +456,15 @@ export class SettingsAutofillAiAddOrEditDialogElement extends
       return '';
     }
 
+    if (loadTimeData.getBoolean('enableAutofillAiWalletPrivatePasses')) {
+      // Show footer only when it is a new entity and type supports Wallet
+      // storage. This is sufficient because the entities stored in Wallet are
+      // not editable from the settings.
+      return this.i18n(
+          'saveInfoToWalletSettingsAccountNotice',
+          this.i18n('googleWalletTitle'), this.userEmail_);
+    }
+
     // Show footer only when it is a new entity and type supports Wallet
     // storage. This is sufficient because the entities stored in Wallet are not
     // editable from the settings.
