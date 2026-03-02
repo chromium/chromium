@@ -28,6 +28,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/menu_source_type.mojom-shared.h"
 #include "ui/events/event_constants.h"
+#include "ui/views/view_utils.h"
 
 namespace glic {
 namespace {
@@ -42,7 +43,7 @@ class GlicButtonTest : public InProcessBrowserTest {
 
  protected:
   glic::TabStripGlicButton* glic_button() {
-    return static_cast<glic::TabStripGlicButton*>(
+    return views::AsViewClass<glic::TabStripGlicButton>(
         glic::GlicButtonInterface::FromBrowser(browser()));
   }
 

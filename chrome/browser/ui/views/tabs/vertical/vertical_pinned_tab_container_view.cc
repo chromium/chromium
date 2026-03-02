@@ -22,6 +22,7 @@
 #include "ui/views/layout/proposed_layout.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/view_utils.h"
 
 namespace {
 constexpr int kTabPadding = 4;
@@ -212,7 +213,7 @@ VerticalPinnedTabContainerView::GetLinkDropIndexForCollapsed(
     } else if (child_node->type() == TabCollectionNode::Type::SPLIT) {
       // If landing in the middle of the split, let the split view decide
       // which tab to replace.
-      auto* split_view = static_cast<VerticalSplitTabView*>(view);
+      auto* split_view = views::AsViewClass<VerticalSplitTabView>(view);
       gfx::Point loc_in_split =
           views::View::ConvertPointToTarget(this, split_view, loc_in_container);
       return split_view->GetLinkDropIndex(loc_in_split);
@@ -263,7 +264,7 @@ VerticalPinnedTabContainerView::GetLinkDropIndexForExpanded(
     } else if (child_node->type() == TabCollectionNode::Type::SPLIT) {
       // If landing in the middle of the split, let the split view decide
       // which tab to replace.
-      auto* split_view = static_cast<VerticalSplitTabView*>(view);
+      auto* split_view = views::AsViewClass<VerticalSplitTabView>(view);
       gfx::Point loc_in_split =
           views::View::ConvertPointToTarget(this, split_view, loc_in_container);
       return split_view->GetLinkDropIndex(loc_in_split);

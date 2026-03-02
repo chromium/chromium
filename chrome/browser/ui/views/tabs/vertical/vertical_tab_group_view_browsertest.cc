@@ -23,6 +23,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event_constants.h"
+#include "ui/views/view_utils.h"
 
 class VerticalTabGroupViewTest
     : public VerticalTabsBrowserTestMixin<InProcessBrowserTest> {
@@ -106,7 +107,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabGroupViewTest,
           ->GetChildNodeOfType(TabCollectionNode::Type::GROUP)
           ->children()[0]
           .get();
-  VerticalTabView* tab = static_cast<VerticalTabView*>(tab_node->view());
+  VerticalTabView* tab = views::AsViewClass<VerticalTabView>(tab_node->view());
   // Verify the tab in the group is visible.
   EXPECT_TRUE(tab->GetVisible());
 
@@ -129,7 +130,8 @@ IN_PROC_BROWSER_TEST_F(VerticalTabGroupViewTest,
       unpinned_collection_node()->GetChildNodeOfType(
           TabCollectionNode::Type::GROUP);
   VerticalTabGroupHeaderView* group_header =
-      static_cast<VerticalTabGroupView*>(group_node->view())->group_header();
+      views::AsViewClass<VerticalTabGroupView>(group_node->view())
+          ->group_header();
   EXPECT_EQ(group_header->collapse_icon_for_testing()
                 ->GetImageModel()
                 .GetVectorIcon()
@@ -157,7 +159,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabGroupViewTest,
           ->GetChildNodeOfType(TabCollectionNode::Type::GROUP)
           ->children()[0]
           .get();
-  VerticalTabView* tab = static_cast<VerticalTabView*>(tab_node->view());
+  VerticalTabView* tab = views::AsViewClass<VerticalTabView>(tab_node->view());
   const tabs::TabInterface* tab_interface = GetTabInterfaceForNode(tab_node);
   // Verify the tab in the group is visible and active.
   EXPECT_TRUE(tab->GetVisible());
@@ -267,7 +269,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabGroupViewTest, AttentionIndicator) {
 
   TabCollectionNode* tab_node =
       root_node()->children()[1]->children()[1]->children()[0].get();
-  VerticalTabView* tab = static_cast<VerticalTabView*>(tab_node->view());
+  VerticalTabView* tab = views::AsViewClass<VerticalTabView>(tab_node->view());
   // Verify the tab in the group is visible.
   EXPECT_TRUE(tab->GetVisible());
 
@@ -283,7 +285,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabGroupViewTest, AttentionIndicator) {
       ->attention_indicator()
       ->SetHasAttention(true);
   VerticalTabGroupHeaderView* const tab_group_header =
-      static_cast<VerticalTabGroupHeaderView*>(
+      views::AsViewClass<VerticalTabGroupHeaderView>(
           BrowserElementsViews::From(browser())->GetView(
               kTabGroupHeaderElementId));
   EXPECT_TRUE(base::test::RunUntil([&]() {

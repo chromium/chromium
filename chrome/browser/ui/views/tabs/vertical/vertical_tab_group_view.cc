@@ -42,6 +42,7 @@
 #include "ui/views/layout/proposed_layout.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
@@ -226,9 +227,9 @@ views::Widget* VerticalTabGroupView::ShowGroupEditorBubble(
   // When the tab strip is collapsed, anchor to the group header, otherwise
   // anchor to the editor bubble button.
   views::View* anchor_view =
-      is_tab_strip_collapsed
-          ? static_cast<views::View*>(group_header_)
-          : static_cast<views::View*>(group_header_->editor_bubble_button());
+      is_tab_strip_collapsed ? views::AsViewClass<views::View>(group_header_)
+                             : views::AsViewClass<views::View>(
+                                   group_header_->editor_bubble_button());
   return collection_node_->GetController()->ShowGroupEditorBubble(
       GetTabGroupFromNode(collection_node_)->id(), anchor_view,
       stop_context_menu_propagation);
@@ -431,7 +432,7 @@ VerticalTabGroupView::GetLinkDropIndex(const gfx::Point& loc_in_group) {
     } else if (child_node->type() == TabCollectionNode::Type::SPLIT) {
       // If landing in the middle of the split, let the split view decide which
       // tab to replace.
-      auto* split_view = static_cast<VerticalSplitTabView*>(view);
+      auto* split_view = views::AsViewClass<VerticalSplitTabView>(view);
       gfx::Point loc_in_split =
           views::View::ConvertPointToTarget(this, split_view, loc_in_group);
       return split_view->GetLinkDropIndex(loc_in_split);

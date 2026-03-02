@@ -72,7 +72,8 @@ TabContainerImpl::RemoveTabDelegate::RemoveTabDelegate(
 void TabContainerImpl::RemoveTabDelegate::AnimationEnded(
     const gfx::Animation* animation) {
   StopObserving();
-  tab_container()->OnTabCloseAnimationCompleted(static_cast<Tab*>(slot_view()));
+  tab_container()->OnTabCloseAnimationCompleted(
+      views::AsViewClass<Tab>(slot_view()));
 }
 
 void TabContainerImpl::RemoveTabDelegate::AnimationCanceled(
@@ -926,7 +927,7 @@ std::optional<BrowserRootView::DropIndex> TabContainerImpl::GetDropIndex(
     }
 
     if (view->GetTabSlotViewType() == TabSlotView::ViewType::kTab) {
-      Tab* const tab = static_cast<Tab*>(view);
+      Tab* const tab = views::AsViewClass<Tab>(view);
       // Closing tabs should be skipped.
       if (tab->closing()) {
         continue;
@@ -984,7 +985,8 @@ std::optional<BrowserRootView::DropIndex> TabContainerImpl::GetDropIndex(
         }
       }
     } else {
-      TabGroupHeader* const group_header = static_cast<TabGroupHeader*>(view);
+      TabGroupHeader* const group_header =
+          views::AsViewClass<TabGroupHeader>(view);
       const int first_tab_index =
           controller_->GetFirstTabInGroup(group_header->group().value())
               .value();

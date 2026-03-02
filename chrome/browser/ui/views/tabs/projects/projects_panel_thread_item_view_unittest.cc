@@ -13,6 +13,7 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/test/views_test_base.h"
+#include "ui/views/view_utils.h"
 
 namespace {
 
@@ -39,7 +40,7 @@ TEST_F(ProjectsPanelThreadItemViewTest, DisplaysIconAndTitle) {
   ASSERT_EQ(3u, thread_item_view->children().size());
 
   views::ImageView* image_view =
-      static_cast<views::ImageView*>(thread_item_view->children()[1]);
+      views::AsViewClass<views::ImageView>(thread_item_view->children()[1]);
   EXPECT_TRUE(image_view);
 
   // Check that the image view has the correct icon.
@@ -53,7 +54,7 @@ TEST_F(ProjectsPanelThreadItemViewTest, DisplaysIconAndTitle) {
             image_view->GetImageModel());
 
   views::Label* label =
-      static_cast<views::Label*>(thread_item_view->children()[2]);
+      views::AsViewClass<views::Label>(thread_item_view->children()[2]);
   EXPECT_TRUE(label);
   EXPECT_EQ(base::UTF8ToUTF16(thread.title), label->GetText());
 }

@@ -30,6 +30,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/test/views_test_base.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
@@ -52,8 +53,8 @@ void PopulateExchangeDataForGroup(ui::OSExchangeData& data,
 }
 
 MATCHER_P(IsForTabGroup, expected_tab_group, "") {
-  auto* label =
-      static_cast<ProjectsPanelTabGroupsItemView*>(arg)->title_for_testing();
+  auto* label = views::AsViewClass<ProjectsPanelTabGroupsItemView>(arg)
+                    ->title_for_testing();
   return expected_tab_group.title() == label->GetText();
 }
 
@@ -103,7 +104,7 @@ class ProjectsPanelTabGroupsViewTest : public ChromeViewsTestBase {
     // message.
     EXPECT_EQ(2u, tab_groups_view_->children().size());
     // Index 0 is the "Create new tab group" button.
-    views::Label* no_tabs_label = static_cast<views::Label*>(
+    views::Label* no_tabs_label = views::AsViewClass<views::Label>(
         tab_groups_view_->no_tab_groups_view_for_testing()->children()[1]);
     EXPECT_EQ(
         u"Organize your tabs by grouping them together and label them with a "

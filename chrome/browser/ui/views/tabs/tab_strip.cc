@@ -1977,7 +1977,7 @@ Tab* TabStrip::GetTabAt(const gfx::Point& point) {
     view = view->parent();
   }
 
-  return view && view->GetID() == VIEW_ID_TAB ? static_cast<Tab*>(view)
+  return view && view->GetID() == VIEW_ID_TAB ? views::AsViewClass<Tab>(view)
                                               : nullptr;
 }
 
@@ -2436,8 +2436,8 @@ void TabStrip::TabContextMenuController::ShowContextMenuForViewImpl(
     ui::mojom::MenuSourceType source_type) {
   // We are only intended to be installed as a context-menu handler for tabs, so
   // this cast should be safe.
-  CHECK(views::IsViewClass<Tab>(source)) << "The source must be a Tab class.";
-  Tab* const tab = static_cast<Tab*>(source);
+  Tab* const tab = views::AsViewClass<Tab>(source);
+  CHECK(tab) << "The source must be a Tab class.";
   if (tab->closing()) {
     return;
   }

@@ -449,10 +449,10 @@ RecentActivityRowView* RecentActivityBubbleDialogView::GetRowForTesting(int n) {
   CHECK(n < (tab_activity_size + group_activity_size));
 
   if (n < tab_activity_size) {
-    return static_cast<RecentActivityRowView*>(
+    return views::AsViewClass<RecentActivityRowView>(
         tab_activity_container()->children().at(n));
   }
-  return static_cast<RecentActivityRowView*>(
+  return views::AsViewClass<RecentActivityRowView>(
       group_activity_container()->children().at(n - tab_activity_size));
 }
 

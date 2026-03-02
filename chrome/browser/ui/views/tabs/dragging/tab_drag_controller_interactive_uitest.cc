@@ -98,6 +98,7 @@
 #include "ui/views/controls/native/native_view_host.h"
 #include "ui/views/test/widget_activation_waiter.h"
 #include "ui/views/view.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
 
@@ -4767,7 +4768,7 @@ namespace {
 bool WebContentsIsFastResized(BrowserWindowInterface* browser) {
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
   ContentsWebView* contents_web_view =
-      static_cast<ContentsWebView*>(browser_view->GetContentsView());
+      views::AsViewClass<ContentsWebView>(browser_view->GetContentsView());
   return contents_web_view->holder()->fast_resize();
 }
 

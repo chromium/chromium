@@ -101,6 +101,7 @@
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_targeter.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/tooltip_manager.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/frame_view.h"
@@ -579,7 +580,8 @@ bool Tab::OnMousePressed(const ui::MouseEvent& event) {
     // the location of the event may no longer be valid. Create a copy of the
     // event in the parents coordinate, which won't change, and recreate an
     // event after changing so the coordinates are correct.
-    ui::MouseEvent event_in_parent(event, static_cast<View*>(this), parent());
+    ui::MouseEvent event_in_parent(event, views::AsViewClass<View>(this),
+                                   parent());
     if (event.IsShiftDown() && IsSelectionModifierDown(event)) {
       controller_->AddSelectionFromAnchorTo(this);
     } else if (event.IsShiftDown()) {
@@ -595,7 +597,7 @@ bool Tab::OnMousePressed(const ui::MouseEvent& event) {
       base::RecordAction(UserMetricsAction("SwitchTab_Click"));
     }
     ui::MouseEvent cloned_event(event_in_parent, parent(),
-                                static_cast<View*>(this));
+                                views::AsViewClass<View>(this));
 
     if (!closing()) {
       controller_->MaybeStartDrag(this, cloned_event, original_selection);
@@ -725,7 +727,7 @@ void Tab::OnGestureEvent(ui::GestureEvent* event) {
       DCHECK_EQ(1, event->details().touch_points());
 
       // See comment in OnMousePressed() as to why we copy the event.
-      ui::GestureEvent event_in_parent(*event, static_cast<View*>(this),
+      ui::GestureEvent event_in_parent(*event, views::AsViewClass<View>(this),
                                        parent());
       ui::ListSelectionModel original_selection =
           controller_->GetSelectionModel();
@@ -735,7 +737,7 @@ void Tab::OnGestureEvent(ui::GestureEvent* event) {
       gfx::Point loc(event->location());
       views::View::ConvertPointToScreen(this, &loc);
       ui::GestureEvent cloned_event(event_in_parent, parent(),
-                                    static_cast<View*>(this));
+                                    views::AsViewClass<View>(this));
 
       if (!closing()) {
 #if BUILDFLAG(IS_WIN)

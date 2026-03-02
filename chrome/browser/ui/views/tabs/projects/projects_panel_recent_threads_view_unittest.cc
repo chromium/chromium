@@ -11,6 +11,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/test/views_test_base.h"
+#include "ui/views/view_utils.h"
 
 namespace {
 
@@ -40,7 +41,7 @@ const contextual_tasks::Thread& GetThread3() {
 }
 
 MATCHER_P(IsForThread, expected_thread, "") {
-  auto* label = static_cast<views::Label*>(arg->children()[2]);
+  auto* label = views::AsViewClass<views::Label>(arg->children()[2]);
   return base::UTF8ToUTF16(expected_thread.title) == label->GetText();
 }
 
@@ -70,7 +71,7 @@ TEST_F(ProjectsPanelRecentThreadsViewTest, PopulatesThreadsList) {
 
   // Verify that the labels are set correctly.
   for (size_t i = 0; i < threads.size(); ++i) {
-    auto* thread_item_view = static_cast<ProjectsPanelThreadItemView*>(
+    auto* thread_item_view = views::AsViewClass<ProjectsPanelThreadItemView>(
         recent_threads_view->children()[i]);
     EXPECT_THAT(thread_item_view, IsForThread(threads[i]));
   }
@@ -89,7 +90,7 @@ TEST_F(ProjectsPanelRecentThreadsViewTest, SetThreadsUpdatesList) {
   EXPECT_EQ(2u, recent_threads_view->children().size());
 
   for (size_t i = 0; i < new_threads.size(); ++i) {
-    auto* thread_item_view = static_cast<ProjectsPanelThreadItemView*>(
+    auto* thread_item_view = views::AsViewClass<ProjectsPanelThreadItemView>(
         recent_threads_view->children()[i]);
     EXPECT_THAT(thread_item_view, IsForThread(new_threads[i]));
   }

@@ -35,6 +35,7 @@
 #include "components/tabs/public/tab_collection_types.h"
 #include "components/tabs/public/tab_group.h"
 #include "components/tabs/public/tab_interface.h"
+#include "ui/views/view_utils.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
@@ -243,7 +244,8 @@ void VerticalTabStripController::ToggleTabGroupCollapsedState(
 void VerticalTabStripController::ShowGroupEditorBubble(
     const TabCollectionNode* group_node) {
   auto* group_header_view =
-      static_cast<VerticalTabGroupView*>(group_node->view())->group_header();
+      views::AsViewClass<VerticalTabGroupView>(group_node->view())
+          ->group_header();
   group_header_view->ShowContextMenuForViewImpl(
       group_header_view, gfx::Point(), ui::mojom::MenuSourceType::kNone);
 }

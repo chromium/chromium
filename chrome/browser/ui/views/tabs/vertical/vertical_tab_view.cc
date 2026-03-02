@@ -67,6 +67,7 @@
 #include "ui/views/layout/proposed_layout.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/view_utils.h"
 
 #if BUILDFLAG(ENABLE_GLIC)
 #include "chrome/browser/glic/browser_ui/tab_underline_view.h"
@@ -608,8 +609,9 @@ gfx::Rect VerticalTabView::GetChildBounds(const gfx::Rect& container,
     preferred_width = container.width() - config.padding;
     // The only expandable view is the views::Label. Just get the line height to
     // make calculating bounds cheaper.
-    CHECK(views::IsViewClass<views::Label>(config.view));
-    preferred_height = static_cast<views::Label*>(config.view)->GetLineHeight();
+    views::Label* label = views::AsViewClass<views::Label>(config.view);
+    CHECK(label);
+    preferred_height = label->GetLineHeight();
   } else {
     const gfx::Size preferred_size = config.view->GetPreferredSize();
     preferred_width = preferred_size.width();

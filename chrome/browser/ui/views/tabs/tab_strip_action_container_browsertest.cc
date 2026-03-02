@@ -65,6 +65,7 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/animation/slide_animation.h"
+#include "ui/views/view_utils.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/private_ai/private_ai_service.h"
@@ -143,7 +144,7 @@ class TabStripActionContainerBrowserTest : public InProcessBrowserTest {
 
  protected:
   glic::TabStripGlicButton* GlicNudgeButton() {
-    return static_cast<glic::TabStripGlicButton*>(
+    return views::AsViewClass<glic::TabStripGlicButton>(
         tab_strip_action_container()->GetGlicButton());
   }
 

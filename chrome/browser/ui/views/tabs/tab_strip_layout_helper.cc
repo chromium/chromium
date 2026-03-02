@@ -27,6 +27,7 @@
 #include "tab_container_controller.h"
 #include "ui/gfx/range/range.h"
 #include "ui/views/view_model.h"
+#include "ui/views/view_utils.h"
 
 struct TabStripLayoutHelper::TabSlot {
   static TabStripLayoutHelper::TabSlot CreateForTabSlotView(TabSlotView* view,
@@ -59,7 +60,7 @@ std::vector<Tab*> TabStripLayoutHelper::GetTabs() const {
   std::vector<Tab*> tabs;
   for (const TabSlot& slot : slots_) {
     if (slot.type == TabSlotView::ViewType::kTab) {
-      tabs.push_back(static_cast<Tab*>(slot.view));
+      tabs.push_back(views::AsViewClass<Tab>(slot.view));
     }
   }
 
@@ -334,8 +335,8 @@ int TabStripLayoutHelper::GetSlotInsertionIndexForNewTab(
   // matches, the tab goes to the right of the header to keep it
   // contiguous.
   if (slots_[slot_index].type == TabSlotView::ViewType::kTabGroupHeader &&
-      static_cast<const TabGroupHeader*>(slots_[slot_index].view)->group() ==
-          group) {
+      views::AsViewClass<const TabGroupHeader>(slots_[slot_index].view)
+              ->group() == group) {
     return slot_index + 1;
   }
 
@@ -398,7 +399,7 @@ int TabStripLayoutHelper::GetSlotIndexForGroupHeader(
     tab_groups::TabGroupId group) const {
   const auto it = std::ranges::find_if(slots_, [group](const auto& slot) {
     return slot.type == TabSlotView::ViewType::kTabGroupHeader &&
-           static_cast<TabGroupHeader*>(slot.view)->group() == group;
+           views::AsViewClass<TabGroupHeader>(slot.view)->group() == group;
   });
   CHECK(it != slots_.end());
   return it - slots_.begin();

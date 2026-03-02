@@ -194,7 +194,7 @@ VerticalUnpinnedTabContainerView::GetLinkDropIndex(
     }
 
     if (child_node->type() == TabCollectionNode::Type::GROUP) {
-      auto* group_view = static_cast<VerticalTabGroupView*>(view);
+      auto* group_view = views::AsViewClass<VerticalTabGroupView>(view);
       if (group_view->IsCollapsed()) {
         gfx::Point loc_in_group = views::View::ConvertPointToTarget(
             this, group_view, loc_in_container);
@@ -225,7 +225,7 @@ VerticalUnpinnedTabContainerView::GetLinkDropIndex(
     } else if (child_node->type() == TabCollectionNode::Type::SPLIT) {
       // If landing in the middle of the split, let the split view decide which
       // tab to replace.
-      auto* split_view = static_cast<VerticalSplitTabView*>(view);
+      auto* split_view = views::AsViewClass<VerticalSplitTabView>(view);
       gfx::Point loc_in_split =
           views::View::ConvertPointToTarget(this, split_view, loc_in_container);
       return split_view->GetLinkDropIndex(loc_in_split);

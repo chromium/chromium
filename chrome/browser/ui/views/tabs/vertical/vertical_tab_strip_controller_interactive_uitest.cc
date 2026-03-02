@@ -29,6 +29,7 @@
 #include "ui/menus/simple_menu_model.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/interaction/interactive_views_test.h"
+#include "ui/views/view_utils.h"
 
 namespace {
 
@@ -469,7 +470,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripControllerInteractiveUiTest,
                 ->vertical_tab_strip_region_view_for_testing()
                 ->GetTabStripView();
         VerticalTabStripView* vertical_tab_strip_view =
-            static_cast<VerticalTabStripView*>(tab_strip_view);
+            views::AsViewClass<VerticalTabStripView>(tab_strip_view);
         vertical_tab_strip_view->unpinned_tabs_scroll_view_for_testing()
             ->ScrollByOffset({0, -100});
       }),

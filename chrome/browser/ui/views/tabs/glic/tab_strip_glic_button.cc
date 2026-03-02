@@ -44,6 +44,7 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/view_utils.h"
 
 namespace glic {
 
@@ -285,7 +286,8 @@ TabStripGlicButton::TabStripGlicButton(
 
   UpdateIcon();
   OnLabelVisibilityChanged();
-  auto* image_view = static_cast<views::ImageView*>(image_container_view());
+  auto* image_view =
+      views::AsViewClass<views::ImageView>(image_container_view());
   image_view->SetImageSize({kIconSize, kIconSize});
   image_view->SetPaintToLayer();
   image_view->layer()->SetFillsBoundsOpaquely(false);

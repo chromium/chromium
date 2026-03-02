@@ -23,6 +23,7 @@
 #include "ui/views/background.h"
 #include "ui/views/controls/scrollbar/base_scroll_bar_thumb.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/view_utils.h"
 
 namespace {
 
@@ -122,13 +123,13 @@ VerticalTabStripScrollBar::~VerticalTabStripScrollBar() = default;
 
 void VerticalTabStripScrollBar::OnMouseEntered(const ui::MouseEvent& event) {
   VerticalTabStripScrollBar::Thumb* thumb =
-      static_cast<VerticalTabStripScrollBar::Thumb*>(GetThumb());
+      views::AsViewClass<VerticalTabStripScrollBar::Thumb>(GetThumb());
   thumb->Show();
 }
 
 void VerticalTabStripScrollBar::OnMouseExited(const ui::MouseEvent& event) {
   VerticalTabStripScrollBar::Thumb* thumb =
-      static_cast<VerticalTabStripScrollBar::Thumb*>(GetThumb());
+      views::AsViewClass<VerticalTabStripScrollBar::Thumb>(GetThumb());
   thumb->StartHideCountdown();
 }
 

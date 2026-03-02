@@ -38,6 +38,7 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/view_utils.h"
 
 namespace {
 constexpr gfx::Insets kNoTabsInteriorMargins = gfx::Insets::VH(0, 8);
@@ -271,7 +272,7 @@ void ProjectsPanelTabGroupsView::WriteDragDataForView(
     views::View* sender,
     const gfx::Point& press_pt,
     ui::OSExchangeData* data) {
-  auto* item = static_cast<ProjectsPanelTabGroupsItemView*>(sender);
+  auto* item = views::AsViewClass<ProjectsPanelTabGroupsItemView>(sender);
   gfx::ImageSkia drag_image = item->GetDragImage();
   if (!drag_image.isNull() && !drag_image.size().IsEmpty()) {
     data->provider().SetDragImage(drag_image, press_pt.OffsetFromOrigin());

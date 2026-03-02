@@ -17,6 +17,7 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/interaction_test_util.h"
 #include "ui/views/controls/menu/menu_item_view.h"
+#include "ui/views/view_utils.h"
 
 namespace base::test {
 
@@ -99,7 +100,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripBottomContainerInteractiveUiTest,
           [&new_tab_button_center,
            &point_above_new_tab_button](views::View* region_view) {
             auto* vt_region_view =
-                static_cast<VerticalTabStripRegionView*>(region_view);
+                views::AsViewClass<VerticalTabStripRegionView>(region_view);
 
             gfx::Point pt_center = new_tab_button_center;
             views::View::ConvertPointFromScreen(vt_region_view, &pt_center);

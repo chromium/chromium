@@ -27,6 +27,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/view.h"
+#include "ui/views/view_utils.h"
 
 class TabCollectionNodeBrowserTest
     : public VerticalTabsBrowserTestMixin<InProcessBrowserTest> {
@@ -330,7 +331,7 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest,
 
   // The pinned_node_scroll_view's contents should have no children.
   ASSERT_TRUE(views::IsViewClass<views::ScrollView>(pinned_node_scroll_view));
-  ASSERT_EQ(static_cast<views::ScrollView*>(pinned_node_scroll_view)
+  ASSERT_EQ(views::AsViewClass<views::ScrollView>(pinned_node_scroll_view)
                 ->contents()
                 ->children()
                 .size(),
@@ -339,7 +340,7 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest,
   // The unpinned_node_scroll_view's contents should have two children, the two
   // tab views.
   ASSERT_TRUE(views::IsViewClass<views::ScrollView>(unpinned_node_scroll_view));
-  ASSERT_EQ(static_cast<views::ScrollView*>(unpinned_node_scroll_view)
+  ASSERT_EQ(views::AsViewClass<views::ScrollView>(unpinned_node_scroll_view)
                 ->contents()
                 ->children()
                 .size(),

@@ -44,6 +44,7 @@
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/widget.h"
 
@@ -463,7 +464,7 @@ IN_PROC_BROWSER_TEST_F(
               editor_bubble->GetRootView()));
   ASSERT_NE(nullptr, focus_button_view);
   views::LabelButton* const focus_button =
-      static_cast<views::LabelButton*>(focus_button_view);
+      views::AsViewClass<views::LabelButton>(focus_button_view);
   EXPECT_EQ(focus_button->GetText(),
             l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_FOCUS_GROUP));
 
@@ -491,7 +492,7 @@ IN_PROC_BROWSER_TEST_F(
               editor_bubble2->GetRootView()));
   ASSERT_NE(nullptr, unfocus_button_view);
   views::LabelButton* const unfocus_button =
-      static_cast<views::LabelButton*>(unfocus_button_view);
+      views::AsViewClass<views::LabelButton>(unfocus_button_view);
   EXPECT_EQ(
       unfocus_button->GetText(),
       l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_UNFOCUS_GROUP));

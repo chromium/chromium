@@ -1279,7 +1279,7 @@ TEST_F(TabContainerTest,
 }
 
 TEST_F(TabContainerTest, ZOrder_MixedScenario) {
-  auto* container_impl = static_cast<TabContainerImpl*>(tab_container_);
+  auto* container_impl = views::AsViewClass<TabContainerImpl>(tab_container_);
   Tab* pinned_tab =
       AddTab(0, std::nullopt, TabActive::kActive, TabPinned::kPinned);
   tab_groups::TabGroupId group = tab_groups::TabGroupId::GenerateNew();
@@ -1333,7 +1333,7 @@ TEST_F(TabContainerTest, ZOrder_MixedScenario) {
 }
 
 TEST_F(TabContainerTest, ZOrder_TabGroup) {
-  auto* container_impl = static_cast<TabContainerImpl*>(tab_container_);
+  auto* container_impl = views::AsViewClass<TabContainerImpl>(tab_container_);
   Tab* regular_tab = AddTab(0);
   tab_groups::TabGroupId group = tab_groups::TabGroupId::GenerateNew();
   Tab* grouped_tab = AddTab(1, group);
@@ -1365,7 +1365,7 @@ TEST_F(TabContainerTest, ZOrder_TabGroup) {
 }
 
 TEST_F(TabContainerTest, ZOrder_PinnedTab) {
-  auto* container_impl = static_cast<TabContainerImpl*>(tab_container_);
+  auto* container_impl = views::AsViewClass<TabContainerImpl>(tab_container_);
   Tab* pinned_tab =
       AddTab(0, std::nullopt, TabActive::kInactive, TabPinned::kPinned);
   Tab* regular_tab = AddTab(1);
@@ -1400,7 +1400,7 @@ TEST_F(TabContainerTest, ZOrder_PinnedTab) {
 }
 
 TEST_F(TabContainerTest, ZOrder_HoveredTabIsAfterNormalTab) {
-  auto* container_impl = static_cast<TabContainerImpl*>(tab_container_);
+  auto* container_impl = views::AsViewClass<TabContainerImpl>(tab_container_);
   Tab* tab1 = AddTab(0);
   Tab* tab2 = AddTab(1);
   container_impl->CompleteAnimationAndLayout();
@@ -1424,7 +1424,7 @@ TEST_F(TabContainerTest, ZOrder_HoveredTabIsAfterNormalTab) {
 }
 
 TEST_F(TabContainerTest, ZOrder_ActiveTabIsLast) {
-  auto* container_impl = static_cast<TabContainerImpl*>(tab_container_);
+  auto* container_impl = views::AsViewClass<TabContainerImpl>(tab_container_);
   AddTab(0);
   AddTab(1, std::nullopt, TabActive::kActive);
   AddTab(2);
@@ -1436,7 +1436,7 @@ TEST_F(TabContainerTest, ZOrder_ActiveTabIsLast) {
 }
 
 TEST_F(TabContainerTest, ZOrderCacheUpdatesAfterCRUDOperations) {
-  auto* container_impl = static_cast<TabContainerImpl*>(tab_container_);
+  auto* container_impl = views::AsViewClass<TabContainerImpl>(tab_container_);
   container_impl->CompleteAnimationAndLayout();
   container_impl->UpdateZOrderCacheForTesting();
   EXPECT_EQ(container_impl->GetZOrderCacheForTesting().size(), 0u);

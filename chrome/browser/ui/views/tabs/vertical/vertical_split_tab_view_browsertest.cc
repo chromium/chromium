@@ -31,7 +31,7 @@ IN_PROC_BROWSER_TEST_F(VerticalSplitTabViewTest, ProposedLayout_Unbounded) {
                     ->view();
   EXPECT_TRUE(views::IsViewClass<VerticalSplitTabView>(split));
   VerticalSplitTabView* split_tab_view =
-      static_cast<VerticalSplitTabView*>(split);
+      views::AsViewClass<VerticalSplitTabView>(split);
 
   auto children = split_tab_view->children();
   EXPECT_EQ(children.size(), 2u);
@@ -62,7 +62,7 @@ IN_PROC_BROWSER_TEST_F(VerticalSplitTabViewTest, ProposedLayout_LargeBounds) {
                     ->view();
   EXPECT_TRUE(views::IsViewClass<VerticalSplitTabView>(split));
   VerticalSplitTabView* split_tab_view =
-      static_cast<VerticalSplitTabView*>(split);
+      views::AsViewClass<VerticalSplitTabView>(split);
 
   auto children = split_tab_view->children();
   EXPECT_EQ(children.size(), 2u);
@@ -100,7 +100,7 @@ IN_PROC_BROWSER_TEST_F(VerticalSplitTabViewTest, ProposedLayout_LimitedBounds) {
                     ->view();
   EXPECT_TRUE(views::IsViewClass<VerticalSplitTabView>(split));
   VerticalSplitTabView* split_tab_view =
-      static_cast<VerticalSplitTabView*>(split);
+      views::AsViewClass<VerticalSplitTabView>(split);
 
   auto children = split_tab_view->children();
   EXPECT_EQ(children.size(), 2u);
