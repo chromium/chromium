@@ -331,28 +331,12 @@ TEST_F(AimEligibilityServiceTest, IsCobrowseEligible) {
   EXPECT_FALSE(aim_eligibility_service_->IsCobrowseEligible());
 }
 
-TEST_F(AimEligibilityServiceTest, FetchEligibility_FeatureEnabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      omnibox::kAimCoBrowseAutomatedFetchRequestEnabled);
-
+TEST_F(AimEligibilityServiceTest, FetchEligibility) {
   test_url_loader_factory_.pending_requests()->clear();
   aim_eligibility_service_->FetchEligibility(
-      AimEligibilityService::RequestSource::kCoBrowseAimUrlDetection);
+      AimEligibilityService::RequestSource::kAimUrlNavigation);
 
   EXPECT_EQ(test_url_loader_factory_.NumPending(), 1);
-}
-
-TEST_F(AimEligibilityServiceTest, FetchEligibility_FeatureDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      omnibox::kAimCoBrowseAutomatedFetchRequestEnabled);
-
-  test_url_loader_factory_.pending_requests()->clear();
-  aim_eligibility_service_->FetchEligibility(
-      AimEligibilityService::RequestSource::kCoBrowseAimUrlDetection);
-
-  EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
 }
 
 TEST_F(AimEligibilityServiceTest, IsCobrowseEligible_FeatureDisabled) {
@@ -432,20 +416,18 @@ TEST_F(AimEligibilityServiceTest, FullVersionListHeader_Disabled) {
 
 TEST_F(AimEligibilityServiceTest, CoBrowseUserAgentSuffix) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {omnibox::kAimServerEligibilitySendCoBrowseUserAgentSuffixEnabled,
-       omnibox::kAimCoBrowseAutomatedFetchRequestEnabled},
-      {});
+  feature_list.InitAndEnableFeature(
+      omnibox::kAimServerEligibilitySendCoBrowseUserAgentSuffixEnabled);
 
   AimEligibilityService::Configuration config;
   config.user_agent_with_cobrowse_suffix = "UA with Suffix";
   CreateService(config);
 
-  // 1. Trigger a request with source kCoBrowseAimUrlDetection. Header SHOULD be
+  // 1. Trigger a request with source kAimUrlNavigation. Header SHOULD be
   // present.
   test_url_loader_factory_.pending_requests()->clear();
   aim_eligibility_service_->FetchEligibility(
-      AimEligibilityService::RequestSource::kCoBrowseAimUrlDetection);
+      AimEligibilityService::RequestSource::kAimUrlNavigation);
 
   ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
   const network::ResourceRequest& request =

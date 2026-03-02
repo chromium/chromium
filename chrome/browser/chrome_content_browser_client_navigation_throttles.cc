@@ -9,6 +9,7 @@
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "chrome/browser/actor/actor_navigation_throttle.h"
+#include "chrome/browser/autocomplete/aim_eligibility_refresh_navigation_throttle.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/custom_handlers/chrome_protocol_handler_navigation_throttle.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
@@ -456,6 +457,11 @@ void CreateAndAddChromeThrottlesForNavigation(
       registry);
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) ||
         // BUILDFLAG(IS_CHROMEOS)
+
+  // AimEligibilityRefreshNavigationThrottle must be registered before
+  // ContextualTasksNavigationThrottle so it can detect AIM URL navigations
+  // before ContextualTasksNavigationThrottle intercepts them.
+  AimEligibilityRefreshNavigationThrottle::MaybeCreateAndAdd(registry);
 
 #if !BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks) ||
