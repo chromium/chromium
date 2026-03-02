@@ -22,7 +22,7 @@ TEST(ClipboardUtilitiesTest, URLToImageMarkupNonASCII) {
   // It has the UTF-8 encoding 0xC3 0xA7, but Blink interprets 8-bit string
   // literals as Latin-1 in most cases.
   String markup_with_non_ascii =
-      URLToImageMarkup(KURL(NullURL(),
+      URLToImageMarkup(KURL(NullUrl(),
                             "http://test.example/fran\xe7"
                             "ais.png"),
                        "Fran\xe7"
@@ -45,7 +45,7 @@ TEST(ClipboardUtilitiesTest, URLToImageMarkupEmbeddedNull) {
       "<img src=\"http://test.example/%00.png\" alt=\"\0\"/>";
   EXPECT_EQ(String(base::span_from_cstring(kExpectedOutputWithNull)),
             URLToImageMarkup(
-                KURL(NullURL(), String(base::span_from_cstring(kURLWithNull))),
+                KURL(NullUrl(), String(base::span_from_cstring(kURLWithNull))),
                 String(base::span_from_cstring(kTitleWithNull))));
 }
 

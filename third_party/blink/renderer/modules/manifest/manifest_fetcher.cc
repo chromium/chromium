@@ -93,7 +93,7 @@ void ManifestFetcher::DidFail(uint64_t, const ResourceError& error) {
 }
 
 void ManifestFetcher::DidFailRedirectCheck(uint64_t identifier) {
-  DidFail(identifier, ResourceError::Failure(NullURL()));
+  DidFail(identifier, ResourceError::Failure(NullUrl()));
 }
 
 void ManifestFetcher::Trace(Visitor* visitor) const {

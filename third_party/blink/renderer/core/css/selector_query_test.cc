@@ -79,7 +79,7 @@ TEST(SelectorQueryTest, NotMatchingPseudoElement) {
   HeapVector<CSSSelector> arena;
   base::span<CSSSelector> selector_vector = CSSParser::ParseSelector(
       MakeGarbageCollected<CSSParserContext>(
-          *document, NullURL(), true /* origin_clean */, Referrer()),
+          *document, NullUrl(), true /* origin_clean */, Referrer()),
       CSSNestingType::kNone, /*parent_rule_for_nesting=*/nullptr, nullptr,
       "span::before", arena);
   CSSSelectorList* selector_list =
@@ -90,7 +90,7 @@ TEST(SelectorQueryTest, NotMatchingPseudoElement) {
 
   selector_vector = CSSParser::ParseSelector(
       MakeGarbageCollected<CSSParserContext>(
-          *document, NullURL(), true /* origin_clean */, Referrer()),
+          *document, NullUrl(), true /* origin_clean */, Referrer()),
       CSSNestingType::kNone, /*parent_rule_for_nesting=*/nullptr, nullptr,
       "span", arena);
   selector_list = CSSSelectorList::AdoptSelectorVector(selector_vector);
@@ -114,7 +114,7 @@ TEST(SelectorQueryTest, LastOfTypeNotFinishedParsing) {
   HeapVector<CSSSelector> arena;
   base::span<CSSSelector> selector_vector = CSSParser::ParseSelector(
       MakeGarbageCollected<CSSParserContext>(
-          *document, NullURL(), true /* origin_clean */, Referrer()),
+          *document, NullUrl(), true /* origin_clean */, Referrer()),
       CSSNestingType::kNone, /*parent_rule_for_nesting=*/nullptr, nullptr,
       "p:last-of-type", arena);
   CSSSelectorList* selector_list =

@@ -370,7 +370,7 @@ ServiceWorkerContainer::registerServiceWorker(
 
   scoped_refptr<const SecurityOrigin> document_origin =
       execution_context->GetSecurityOrigin();
-  KURL page_url = KURL(NullURL(), document_origin->ToString());
+  KURL page_url = KURL(NullUrl(), document_origin->ToString());
   if (!SchemeRegistry::ShouldTreatURLSchemeAsAllowingServiceWorkers(
           page_url.Protocol())) {
     resolver->Reject(ServiceWorkerErrorForUpdate::AsJSException(
@@ -528,7 +528,7 @@ ServiceWorkerContainer::getRegistration(ScriptState* script_state,
 
   scoped_refptr<const SecurityOrigin> document_origin =
       execution_context->GetSecurityOrigin();
-  KURL page_url = KURL(NullURL(), document_origin->ToString());
+  KURL page_url = KURL(NullUrl(), document_origin->ToString());
   if (!SchemeRegistry::ShouldTreatURLSchemeAsAllowingServiceWorkers(
           page_url.Protocol())) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
@@ -591,7 +591,7 @@ ServiceWorkerContainer::getRegistrations(ScriptState* script_state) {
 
   scoped_refptr<const SecurityOrigin> document_origin =
       execution_context->GetSecurityOrigin();
-  KURL page_url = KURL(NullURL(), document_origin->ToString());
+  KURL page_url = KURL(NullUrl(), document_origin->ToString());
   if (!SchemeRegistry::ShouldTreatURLSchemeAsAllowingServiceWorkers(
           page_url.Protocol())) {
     resolver->Reject(MakeGarbageCollected<DOMException>(

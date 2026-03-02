@@ -788,7 +788,7 @@ v8::MaybeLocal<v8::Promise> HostImportModuleWithPhaseDynamically(
         ToCoreString(script_state->GetIsolate(),
                      v8::Local<v8::String>::Cast(v8_referrer_resource_url));
     if (!referrer_resource_url_str.empty())
-      referrer_resource_url = KURL(NullURL(), referrer_resource_url_str);
+      referrer_resource_url = KURL(NullUrl(), referrer_resource_url_str);
   }
 
   ModuleRequest module_request(

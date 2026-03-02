@@ -102,7 +102,7 @@ PaintWorkletGlobalScope* PaintWorkletGlobalScope::Create(
     WorkerReportingProxy& reporting_proxy) {
   auto* global_scope = MakeGarbageCollected<PaintWorkletGlobalScope>(
       frame, std::move(creation_params), reporting_proxy);
-  global_scope->ScriptController()->Initialize(NullURL());
+  global_scope->ScriptController()->Initialize(NullUrl());
   MainThreadDebugger::Instance(global_scope->GetIsolate())
       ->ContextCreated(global_scope->ScriptController()->GetScriptState(),
                        global_scope->GetFrame(),

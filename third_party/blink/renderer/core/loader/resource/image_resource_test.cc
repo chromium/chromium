@@ -253,7 +253,7 @@ TEST_F(ImageResourceTest, MultipartImage) {
   // Send the multipart response. No image or data buffer is created. Note that
   // the response must be routed through ResourceLoader to ensure the load is
   // flagged as multipart.
-  ResourceResponse multipart_response(NullURL());
+  ResourceResponse multipart_response(NullUrl());
   multipart_response.SetMimeType(AtomicString("multipart/x-mixed-replace"));
   multipart_response.SetHttpHeaderField(
       http_names::kContentType,
@@ -341,7 +341,7 @@ TEST_F(ImageResourceTest, BitmapMultipartImage) {
       ImageResource::Create(resource_request, nullptr /* world */);
   fetcher->StartLoad(image_resource);
 
-  ResourceResponse multipart_response(NullURL());
+  ResourceResponse multipart_response(NullUrl());
   multipart_response.SetMimeType(AtomicString("multipart/x-mixed-replace"));
   multipart_response.SetHttpHeaderField(
       http_names::kContentType,
@@ -435,7 +435,7 @@ TEST_F(ImageResourceTest, CancelWithImageAndFinishObserver) {
                                     fetcher->GetTaskRunner().get());
 
   // Send the image response.
-  ResourceResponse resource_response(NullURL());
+  ResourceResponse resource_response(NullUrl());
   resource_response.SetMimeType(AtomicString("image/jpeg"));
   resource_response.SetExpectedContentLength(sizeof(kJpegImage));
   image_resource->ResponseReceived(resource_response);
@@ -455,14 +455,14 @@ TEST_F(ImageResourceTest, CancelWithImageAndFinishObserver) {
 }
 
 TEST_F(ImageResourceTest, DecodedDataRemainsWhileHasClients) {
-  ImageResource* image_resource = ImageResource::CreateForTest(NullURL());
+  ImageResource* image_resource = ImageResource::CreateForTest(NullUrl());
   image_resource->NotifyStartLoad();
 
   auto* observer = MakeGarbageCollected<MockImageResourceObserver>(
       image_resource->GetContent());
 
   // Send the image response.
-  ResourceResponse resource_response(NullURL());
+  ResourceResponse resource_response(NullUrl());
   resource_response.SetMimeType(AtomicString("multipart/x-mixed-replace"));
   image_resource->ResponseReceived(resource_response);
 
@@ -494,7 +494,7 @@ TEST_F(ImageResourceTest, DecodedDataRemainsWhileHasClients) {
 }
 
 TEST_F(ImageResourceTest, UpdateBitmapImages) {
-  ImageResource* image_resource = ImageResource::CreateForTest(NullURL());
+  ImageResource* image_resource = ImageResource::CreateForTest(NullUrl());
   image_resource->NotifyStartLoad();
 
   auto* observer = MakeGarbageCollected<MockImageResourceObserver>(
@@ -502,7 +502,7 @@ TEST_F(ImageResourceTest, UpdateBitmapImages) {
 
   // Send the image response.
 
-  ResourceResponse resource_response(NullURL());
+  ResourceResponse resource_response(NullUrl());
   resource_response.SetMimeType(AtomicString("image/jpeg"));
   resource_response.SetExpectedContentLength(sizeof(kJpegImage));
   image_resource->ResponseReceived(resource_response);
@@ -959,7 +959,7 @@ TEST_F(ImageResourceTest, PeriodicFlushTest) {
       image_resource->GetContent());
 
   // Send the image response.
-  ResourceResponse resource_response(NullURL());
+  ResourceResponse resource_response(NullUrl());
   resource_response.SetMimeType(AtomicString("image/jpeg"));
   resource_response.SetExpectedContentLength(sizeof(kJpegImage2));
   image_resource->ResponseReceived(resource_response);
@@ -1027,12 +1027,12 @@ TEST_F(ImageResourceTest, PeriodicFlushTest) {
 }
 
 TEST_F(ImageResourceTest, DeferredInvalidation) {
-  ImageResource* image_resource = ImageResource::CreateForTest(NullURL());
+  ImageResource* image_resource = ImageResource::CreateForTest(NullUrl());
   auto* obs = MakeGarbageCollected<MockImageResourceObserver>(
       image_resource->GetContent());
 
   // Image loaded.
-  ReceiveResponse(image_resource, NullURL(), "image/jpeg",
+  ReceiveResponse(image_resource, NullUrl(), "image/jpeg",
                   base::as_chars(base::span(kJpegImage)));
   EXPECT_EQ(obs->ImageChangedCount(), 2);
   EXPECT_EQ(obs->Defer(), ImageResourceObserver::CanDeferInvalidation::kNo);

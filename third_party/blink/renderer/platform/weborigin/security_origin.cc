@@ -553,7 +553,7 @@ String SecurityOrigin::ToTokenForFastCheck() const {
 
 scoped_refptr<SecurityOrigin> SecurityOrigin::CreateFromString(
     const String& origin_string) {
-  return SecurityOrigin::Create(KURL(NullURL(), origin_string));
+  return SecurityOrigin::Create(KURL(NullUrl(), origin_string));
 }
 
 scoped_refptr<SecurityOrigin> SecurityOrigin::CreateFromValidTuple(

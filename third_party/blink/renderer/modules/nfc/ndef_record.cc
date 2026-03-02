@@ -249,7 +249,7 @@ NDEFRecord* CreateUrlRecord(const ScriptState* script_state,
       isolate, GetPayloadDataOrUndefined(isolate, record), exception_state);
   if (exception_state.HadException())
     return nullptr;
-  if (!KURL(NullURL(), url).IsValid()) {
+  if (!KURL(NullUrl(), url).IsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kSyntaxError,
                                       "Cannot parse data for url record.");
     return nullptr;

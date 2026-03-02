@@ -129,7 +129,7 @@ class V8ScriptRunnerTest : public testing::Test {
 
   ScriptResource* CreateEmptyResource(v8::Isolate* isolate) {
     ScriptResource* resource =
-        ScriptResource::CreateForTest(isolate, NullURL(), Utf8Encoding());
+        ScriptResource::CreateForTest(isolate, NullUrl(), Utf8Encoding());
     return resource;
   }
 

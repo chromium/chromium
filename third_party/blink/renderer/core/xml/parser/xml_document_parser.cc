@@ -670,7 +670,7 @@ static void* OpenFunc(const char* uri) {
   DCHECK(document);
   CHECK(IsMainThread());
 
-  KURL url(NullURL(), uri);
+  KURL url(NullUrl(), uri);
 
   // If the document has no ExecutionContext, it's detached. Detached documents
   // aren't allowed to fetch.

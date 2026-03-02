@@ -458,7 +458,7 @@ ArchiveResource* MHTMLParser::ParseNextPart(
   // if it is.  The specs mentions 5 ways to resolve a URL:
   // http://tools.ietf.org/html/rfc2557#section-5
   // IE and Firefox (UNMht) seem to generate only absolute URLs.
-  KURL location = KURL(NullURL(), mime_header.ContentLocation());
+  KURL location = KURL(NullUrl(), mime_header.ContentLocation());
   return MakeGarbageCollected<ArchiveResource>(
       content_buffer, location, mime_header.ContentID(),
       AtomicString(mime_header.ContentType()),
@@ -485,7 +485,7 @@ KURL MHTMLParser::ConvertContentIDToURI(const String& content_id) {
   StringBuilder uri_builder;
   uri_builder.Append("cid:");
   uri_builder.Append(content_id, 1, content_id.length() - 2);
-  return KURL(NullURL(), uri_builder.ToString());
+  return KURL(NullUrl(), uri_builder.ToString());
 }
 
 }  // namespace blink

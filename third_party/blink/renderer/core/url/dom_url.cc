@@ -40,7 +40,7 @@ namespace blink {
 
 // static
 DOMURL* DOMURL::Create(const String& url, ExceptionState& exception_state) {
-  return MakeGarbageCollected<DOMURL>(PassKey(), url, NullURL(),
+  return MakeGarbageCollected<DOMURL>(PassKey(), url, NullUrl(),
                                       exception_state);
 }
 
@@ -105,7 +105,7 @@ DOMURL* DOMURL::parse(const String& str, const String& base) {
 
 // static
 bool DOMURL::canParse(const String& url) {
-  return KURL(NullURL(), url).IsValid();
+  return KURL(NullUrl(), url).IsValid();
 }
 
 // static

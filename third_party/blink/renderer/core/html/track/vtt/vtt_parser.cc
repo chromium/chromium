@@ -244,7 +244,7 @@ VTTParser::ParseState VTTParser::CollectRegionSettings(const String& line) {
 VTTParser::ParseState VTTParser::CollectStyleSheet(const String& line) {
   if (line.empty() || line.contains("-->")) {
     auto* parser_context = MakeGarbageCollected<CSSParserContext>(
-        *document_, NullURL(), true /* origin_clean */, Referrer(),
+        *document_, NullUrl(), true /* origin_clean */, Referrer(),
         Utf8Encoding(), ResourceFetchRestriction::kOnlyDataUrls);
     auto* style_sheet_contents =
         MakeGarbageCollected<StyleSheetContents>(parser_context);

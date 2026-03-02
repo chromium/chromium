@@ -45,7 +45,7 @@ void URLInputType::CountUsage() {
 }
 
 bool URLInputType::TypeMismatchFor(const String& value) const {
-  return !value.empty() && !KURL(NullURL(), value).IsValid();
+  return !value.empty() && !KURL(NullUrl(), value).IsValid();
 }
 
 bool URLInputType::TypeMismatch() const {

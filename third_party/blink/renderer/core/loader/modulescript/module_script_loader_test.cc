@@ -238,7 +238,7 @@ void ModuleScriptLoaderTest::InitializeForWorklet() {
   creation_params->parent_context_token = GetFrame().GetLocalFrameToken();
   global_scope_ = MakeGarbageCollected<FakeWorkletGlobalScope>(
       std::move(creation_params), *reporting_proxy_, &GetFrame());
-  global_scope_->ScriptController()->Initialize(NullURL());
+  global_scope_->ScriptController()->Initialize(NullUrl());
   modulator_ = MakeGarbageCollected<ModuleScriptLoaderTestModulator>(
       global_scope_->ScriptController()->GetScriptState());
 }

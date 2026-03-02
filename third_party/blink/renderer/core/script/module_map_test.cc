@@ -353,7 +353,7 @@ void ModuleMapTest::TearDown() {
 }
 
 TEST_F(ModuleMapTest, sequentialRequests) {
-  KURL url(NullURL(), "https://example.com/foo.js");
+  KURL url(NullUrl(), "https://example.com/foo.js");
 
   TestSequentialRequest(url, ModuleGraphLevel::kTopLevelModuleFetch,
                         ModuleImportPhase::kEvaluation,
@@ -361,7 +361,7 @@ TEST_F(ModuleMapTest, sequentialRequests) {
 }
 
 TEST_F(ModuleMapTest, concurrentRequestsShouldJoin) {
-  KURL url(NullURL(), "https://example.com/foo.js");
+  KURL url(NullUrl(), "https://example.com/foo.js");
 
   TestConcurrentRequestsShouldJoin(url, ModuleGraphLevel::kTopLevelModuleFetch,
                                    ModuleImportPhase::kEvaluation,
@@ -369,7 +369,7 @@ TEST_F(ModuleMapTest, concurrentRequestsShouldJoin) {
 }
 
 TEST_F(ModuleMapTest, WasmSourcePhaseSequentialRequests) {
-  KURL url(NullURL(), "https://example.com/foo.wasm");
+  KURL url(NullUrl(), "https://example.com/foo.wasm");
 
   TestSequentialRequest(url, ModuleGraphLevel::kDependentModuleFetch,
                         ModuleImportPhase::kSource,
@@ -377,7 +377,7 @@ TEST_F(ModuleMapTest, WasmSourcePhaseSequentialRequests) {
 }
 
 TEST_F(ModuleMapTest, WasmSourcePhaseConcurrentRequestsShouldJoin) {
-  KURL url(NullURL(), "https://example.com/foo.wasm");
+  KURL url(NullUrl(), "https://example.com/foo.wasm");
 
   TestConcurrentRequestsShouldJoin(url, ModuleGraphLevel::kDependentModuleFetch,
                                    ModuleImportPhase::kSource,

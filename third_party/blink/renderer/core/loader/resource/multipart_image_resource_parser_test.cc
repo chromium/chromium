@@ -91,7 +91,7 @@ TEST(MultipartResponseTest, FindBoundary) {
 }
 
 TEST(MultipartResponseTest, NoStartBoundary) {
-  ResourceResponse response(NullURL());
+  ResourceResponse response(NullUrl());
   response.SetMimeType(AtomicString("multipart/x-mixed-replace"));
   response.SetHttpHeaderField(AtomicString("Foo"), AtomicString("Bar"));
   response.SetHttpHeaderField(http_names::kContentType,
@@ -120,7 +120,7 @@ TEST(MultipartResponseTest, NoStartBoundary) {
 }
 
 TEST(MultipartResponseTest, NoEndBoundary) {
-  ResourceResponse response(NullURL());
+  ResourceResponse response(NullUrl());
   response.SetMimeType(AtomicString("multipart/x-mixed-replace"));
   response.SetHttpHeaderField(AtomicString("Foo"), AtomicString("Bar"));
   response.SetHttpHeaderField(http_names::kContentType,
@@ -147,7 +147,7 @@ TEST(MultipartResponseTest, NoEndBoundary) {
 }
 
 TEST(MultipartResponseTest, NoStartAndEndBoundary) {
-  ResourceResponse response(NullURL());
+  ResourceResponse response(NullUrl());
   response.SetMimeType(AtomicString("multipart/x-mixed-replace"));
   response.SetHttpHeaderField(AtomicString("Foo"), AtomicString("Bar"));
   response.SetHttpHeaderField(http_names::kContentType,
@@ -175,7 +175,7 @@ TEST(MultipartResponseTest, NoStartAndEndBoundary) {
 
 TEST(MultipartResponseTest, MalformedBoundary) {
   // Some servers send a boundary that is prefixed by "--".  See bug 5786.
-  ResourceResponse response(NullURL());
+  ResourceResponse response(NullUrl());
   response.SetMimeType(AtomicString("multipart/x-mixed-replace"));
   response.SetHttpHeaderField(AtomicString("Foo"), AtomicString("Bar"));
   response.SetHttpHeaderField(http_names::kContentType,
@@ -226,7 +226,7 @@ void VariousChunkSizesTest(base::span<const TestChunk> chunks,
       "--bound--";                   // 101-109
   const auto data = base::span_from_cstring(kData);
 
-  ResourceResponse response(NullURL());
+  ResourceResponse response(NullUrl());
   response.SetMimeType(AtomicString("multipart/x-mixed-replace"));
   MockClient* client = MakeGarbageCollected<MockClient>();
   Vector<char> boundary;
@@ -321,7 +321,7 @@ TEST(MultipartResponseTest, BreakInData) {
 }
 
 TEST(MultipartResponseTest, SmallChunk) {
-  ResourceResponse response(NullURL());
+  ResourceResponse response(NullUrl());
   response.SetMimeType(AtomicString("multipart/x-mixed-replace"));
   response.SetHttpHeaderField(http_names::kContentType,
                               AtomicString("text/plain"));
@@ -359,7 +359,7 @@ TEST(MultipartResponseTest, SmallChunk) {
 
 TEST(MultipartResponseTest, MultipleBoundaries) {
   // Test multiple boundaries back to back
-  ResourceResponse response(NullURL());
+  ResourceResponse response(NullUrl());
   response.SetMimeType(AtomicString("multipart/x-mixed-replace"));
   MockClient* client = MakeGarbageCollected<MockClient>();
   Vector<char> boundary;
@@ -378,7 +378,7 @@ TEST(MultipartResponseTest, MultipleBoundaries) {
 }
 
 TEST(MultipartResponseTest, EatLeadingLF) {
-  ResourceResponse response(NullURL());
+  ResourceResponse response(NullUrl());
   response.SetMimeType(AtomicString("multipart/x-mixed-replace"));
   MockClient* client = MakeGarbageCollected<MockClient>();
   Vector<char> boundary;
@@ -414,7 +414,7 @@ TEST(MultipartResponseTest, EatLeadingLF) {
 }
 
 TEST(MultipartResponseTest, EatLeadingCRLF) {
-  ResourceResponse response(NullURL());
+  ResourceResponse response(NullUrl());
   response.SetMimeType(AtomicString("multipart/x-mixed-replace"));
   MockClient* client = MakeGarbageCollected<MockClient>();
   Vector<char> boundary;

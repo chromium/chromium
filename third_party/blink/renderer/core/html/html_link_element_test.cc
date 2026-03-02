@@ -29,7 +29,7 @@ TEST_F(HTMLLinkElementTest, EmptyHrefAttribute) {
       "<link rel=\"icon\" type=\"image/ico\" href=\"\" />"
       "</head>");
   auto* link_element = To<HTMLLinkElement>(GetDocument().head()->firstChild());
-  EXPECT_EQ(NullURL(), link_element->Href());
+  EXPECT_EQ(NullUrl(), link_element->Href());
 }
 
 // This tests whether Web Monetization counter is properly triggered.

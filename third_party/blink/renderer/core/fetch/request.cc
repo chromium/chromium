@@ -1336,7 +1336,7 @@ mojom::blink::FetchAPIRequestPtr Request::CreateFetchAPIRequest() const {
 
   if (!request_->ReferrerString().empty()) {
     fetch_api_request->referrer =
-        mojom::blink::Referrer::New(KURL(NullURL(), request_->ReferrerString()),
+        mojom::blink::Referrer::New(KURL(NullUrl(), request_->ReferrerString()),
                                     request_->GetReferrerPolicy());
     DCHECK(fetch_api_request->referrer->url.IsValid());
   }

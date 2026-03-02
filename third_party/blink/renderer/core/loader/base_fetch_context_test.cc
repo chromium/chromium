@@ -195,7 +195,7 @@ TEST_P(BaseFetchContextTest, CanRequest) {
       network::mojom::ContentSecurityPolicySource::kHTTP,
       *(execution_context_->GetSecurityOrigin())));
 
-  KURL url(NullURL(), "http://baz.test");
+  KURL url(NullUrl(), "http://baz.test");
   ResourceRequest resource_request(url);
   resource_request.SetRequestContext(mojom::blink::RequestContextType::IMAGE);
   resource_request.SetRequestorOrigin(GetSecurityOrigin());
@@ -224,7 +224,7 @@ TEST_P(BaseFetchContextTest, CheckCSPForRequest) {
       network::mojom::ContentSecurityPolicySource::kHTTP,
       *(execution_context_->GetSecurityOrigin())));
 
-  KURL url(NullURL(), "http://baz.test");
+  KURL url(NullUrl(), "http://baz.test");
 
   ResourceLoaderOptions options(nullptr /* world */);
 
@@ -234,13 +234,13 @@ TEST_P(BaseFetchContextTest, CheckCSPForRequest) {
                 network::mojom::RequestDestination::kScript,
                 network::mojom::RequestMode::kCors, url, options,
                 ReportingDisposition::kReport,
-                KURL(NullURL(), "http://www.redirecting.com/"),
+                KURL(NullUrl(), "http://www.redirecting.com/"),
                 ResourceRequest::RedirectStatus::kFollowedRedirect));
   EXPECT_EQ(1u, policy->violation_reports_sent_.size());
 }
 
 TEST_P(BaseFetchContextTest, CanRequestWhenDetached) {
-  KURL url(NullURL(), "http://www.example.com/");
+  KURL url(NullUrl(), "http://www.example.com/");
   ResourceRequest request(url);
   request.SetRequestorOrigin(GetSecurityOrigin());
   ResourceRequest keepalive_request(url);
@@ -260,8 +260,8 @@ TEST_P(BaseFetchContextTest, CanRequestWhenDetached) {
                 ReportingDisposition::kSuppressReporting, std::nullopt));
 
   ResourceRequest::RedirectInfo redirect_info(
-      KURL(NullURL(), "http://www.redirecting.com/"),
-      KURL(NullURL(), "http://www.redirecting.com/"));
+      KURL(NullUrl(), "http://www.redirecting.com/"),
+      KURL(NullUrl(), "http://www.redirecting.com/"));
   EXPECT_EQ(std::nullopt,
             fetch_context_->CanRequest(
                 ResourceType::kRaw, request, url,
@@ -312,8 +312,8 @@ TEST_P(BaseFetchContextTest, UACSSTest) {
   options.initiator_info.name = fetch_initiator_type_names::kUacss;
 
   ResourceRequest::RedirectInfo redirect_info(
-      KURL(NullURL(), "http://www.redirecting.com/"),
-      KURL(NullURL(), "http://www.redirecting.com/"));
+      KURL(NullUrl(), "http://www.redirecting.com/"),
+      KURL(NullUrl(), "http://www.redirecting.com/"));
   EXPECT_EQ(ResourceRequestBlockedReason::kOther,
             fetch_context_->CanRequest(
                 ResourceType::kScript, resource_request, test_url, options,
@@ -347,8 +347,8 @@ TEST_P(BaseFetchContextTest, UACSSTest_BypassCSP) {
   options.initiator_info.name = fetch_initiator_type_names::kUacss;
 
   ResourceRequest::RedirectInfo redirect_info(
-      KURL(NullURL(), "http://www.redirecting.com/"),
-      KURL(NullURL(), "http://www.redirecting.com/"));
+      KURL(NullUrl(), "http://www.redirecting.com/"),
+      KURL(NullUrl(), "http://www.redirecting.com/"));
   EXPECT_EQ(std::nullopt,
             fetch_context_->CanRequest(
                 ResourceType::kImage, resource_request, data_url, options,
@@ -360,7 +360,7 @@ TEST_P(BaseFetchContextTest, CanRequestSVGImage) {
   base::test::ScopedCommandLine scoped_command_line;
   ScopedRemoveDataUrlInSvgUseForTest runtime_flag(true);
 
-  KURL url(NullURL(), "data:image/svg+xml,blah");
+  KURL url(NullUrl(), "data:image/svg+xml,blah");
   ResourceRequest resource_request(url);
   resource_request.SetRequestContext(mojom::blink::RequestContextType::IMAGE);
   resource_request.SetRequestorOrigin(GetSecurityOrigin());

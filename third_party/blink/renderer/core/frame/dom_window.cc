@@ -546,7 +546,7 @@ String DOMWindow::CrossDomainAccessErrorMessage(
   // there isn't anything else to show other than "null" for its origin.
   KURL target_url = local_dom_window
                         ? local_dom_window->Url()
-                        : KURL(NullURL(), target_origin->ToString());
+                        : KURL(NullUrl(), target_origin->ToString());
   using SandboxFlags = network::mojom::blink::WebSandboxFlags;
   if (GetFrame()->GetSecurityContext()->IsSandboxed(SandboxFlags::kOrigin) ||
       accessing_window->IsSandboxed(SandboxFlags::kOrigin)) {

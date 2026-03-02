@@ -39,16 +39,16 @@ TEST_F(DocumentModulatorImplTest, ResolveModuleSpecifier) {
   // algorithm:"
   EXPECT_TRUE(modulator_
                   ->ResolveModuleSpecifier("https://example.com/apples.js",
-                                           NullURL(),
+                                           NullUrl(),
                                            /*failure_reason=*/nullptr)
                   .IsValid());
 
   KURL resolved = modulator_->ResolveModuleSpecifier(
-      "http:example.com\\pears.mjs", NullURL(), /*failure_reason=*/nullptr);
+      "http:example.com\\pears.mjs", NullUrl(), /*failure_reason=*/nullptr);
   EXPECT_TRUE(resolved.IsValid());
   EXPECT_EQ("http://example.com/pears.mjs", resolved.GetString());
 
-  KURL base_url(NullURL(), "https://example.com");
+  KURL base_url(NullUrl(), "https://example.com");
   EXPECT_TRUE(modulator_
                   ->ResolveModuleSpecifier("//example.com/", base_url,
                                            /*failure_reason=*/nullptr)
@@ -68,7 +68,7 @@ TEST_F(DocumentModulatorImplTest, ResolveModuleSpecifier) {
   EXPECT_TRUE(modulator_
                   ->ResolveModuleSpecifier(
                       "data:text/javascript,export default 'grapes';",
-                      NullURL(), /*failure_reason=*/nullptr)
+                      NullUrl(), /*failure_reason=*/nullptr)
                   .IsValid());
   EXPECT_TRUE(
       modulator_
@@ -82,31 +82,31 @@ TEST_F(DocumentModulatorImplTest, ResolveModuleSpecifier) {
   EXPECT_TRUE(
       modulator_
           ->ResolveModuleSpecifier("javascript:export default 'artichokes';",
-                                   NullURL(), /*failure_reason=*/nullptr)
+                                   NullUrl(), /*failure_reason=*/nullptr)
           .IsValid());
   EXPECT_TRUE(
       modulator_
           ->ResolveModuleSpecifier("data:text/plain,export default 'kale';",
-                                   NullURL(), /*failure_reason=*/nullptr)
+                                   NullUrl(), /*failure_reason=*/nullptr)
           .IsValid());
   EXPECT_TRUE(modulator_
-                  ->ResolveModuleSpecifier("about:legumes", NullURL(),
+                  ->ResolveModuleSpecifier("about:legumes", NullUrl(),
                                            /*failure_reason=*/nullptr)
                   .IsValid());
   EXPECT_TRUE(modulator_
                   ->ResolveModuleSpecifier("wss://example.com/celery",
-                                           NullURL(),
+                                           NullUrl(),
                                            /*failure_reason=*/nullptr)
                   .IsValid());
 
   // "The following are not valid module specifiers according to the above
   // algorithm:"
   EXPECT_FALSE(modulator_
-                   ->ResolveModuleSpecifier("https://f:b/c", NullURL(),
+                   ->ResolveModuleSpecifier("https://f:b/c", NullUrl(),
                                             /*failure_reason=*/nullptr)
                    .IsValid());
   EXPECT_FALSE(modulator_
-                   ->ResolveModuleSpecifier("pumpkins.js", NullURL(),
+                   ->ResolveModuleSpecifier("pumpkins.js", NullUrl(),
                                             /*failure_reason=*/nullptr)
                    .IsValid());
 

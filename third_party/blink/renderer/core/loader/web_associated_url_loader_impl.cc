@@ -289,7 +289,7 @@ void WebAssociatedURLLoaderImpl::ClientAdapter::DidFail(
 
 void WebAssociatedURLLoaderImpl::ClientAdapter::DidFailRedirectCheck(
     uint64_t identifier) {
-  DidFail(identifier, ResourceError::Failure(NullURL()));
+  DidFail(identifier, ResourceError::Failure(NullUrl()));
 }
 
 void WebAssociatedURLLoaderImpl::ClientAdapter::EnableErrorNotifications() {

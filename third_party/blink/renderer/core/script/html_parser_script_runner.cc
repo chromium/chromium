@@ -561,7 +561,7 @@ void HTMLParserScriptRunner::ProcessScriptElementInternal(
     // FIXME: Align trace event name and function name.
     TRACE_EVENT1("blink", "HTMLParserScriptRunner::execute", "data",
                  GetTraceArgsForScriptElement(*document_, script_start_position,
-                                              NullURL()));
+                                              NullUrl()));
     DCHECK(script_loader->IsParserInserted());
 
     // <spec>... If the active speculative HTML parser is null and the

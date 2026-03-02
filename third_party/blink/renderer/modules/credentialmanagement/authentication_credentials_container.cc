@@ -1484,7 +1484,7 @@ ScriptPromise<IDLNullable<Credential>> AuthenticationCredentialsContainer::get(
   Vector<KURL> providers;
   if (options->hasFederated() && options->federated()->hasProviders()) {
     for (const auto& provider : options->federated()->providers()) {
-      KURL url = KURL(NullURL(), provider);
+      KURL url = KURL(NullUrl(), provider);
       if (url.IsValid()) {
         providers.push_back(std::move(url));
       }

@@ -116,7 +116,7 @@ class VideoPainterTest : public PaintControllerPaintTestBase {
   void SetUp() override {
     EnableCompositing();
     PaintControllerPaintTestBase::SetUp();
-    GetDocument().SetURL(KURL(NullURL(), "https://example.com/"));
+    GetDocument().SetURL(KURL(NullUrl(), "https://example.com/"));
   }
 
   bool HasLayerAttached(const cc::Layer& layer) {

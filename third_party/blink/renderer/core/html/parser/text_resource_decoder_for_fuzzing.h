@@ -28,7 +28,7 @@ class TextResourceDecoderForFuzzing : public TextResourceDecoder {
       case TextResourceDecoderOptions::kUseAllAutoDetection:
         return TextResourceDecoderOptions::CreateWithAutoDetection(
             FuzzedContentType(fuzzed_data), FuzzedEncoding(fuzzed_data),
-            TextEncoding(), NullURL());
+            TextEncoding(), NullUrl());
 
       case TextResourceDecoderOptions::kUseContentAndBOMBasedDetection:
         return TextResourceDecoderOptions(FuzzedContentType(fuzzed_data),

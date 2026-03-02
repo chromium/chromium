@@ -3673,8 +3673,9 @@ void LocalFrame::SaveImageAt(const gfx::Point& window_point) {
     return;
 
   String url = To<Element>(*node).ImageSourceURL();
-  if (!KURL(NullURL(), url).ProtocolIsData())
+  if (!KURL(NullUrl(), url).ProtocolIsData()) {
     return;
+  }
 
   auto params = mojom::blink::DownloadURLParams::New();
   params->is_context_menu_save = true;

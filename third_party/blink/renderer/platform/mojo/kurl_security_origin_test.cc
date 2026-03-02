@@ -47,7 +47,7 @@ TEST(KURLSecurityOriginStructTraitsTest, Basic) {
   };
 
   for (const char* test_case : serialize_cases) {
-    KURL input(NullURL(), test_case);
+    KURL input(NullUrl(), test_case);
     KURL output;
     EXPECT_TRUE(remote->BounceUrl(input, &output));
 
@@ -69,7 +69,7 @@ TEST(KURLSecurityOriginStructTraitsTest, Basic) {
   {
     const std::string url =
         std::string("http://example.org/").append(url::kMaxURLChars + 1, 'a');
-    KURL input(NullURL(), url.c_str());
+    KURL input(NullUrl(), url.c_str());
     KURL output;
     EXPECT_TRUE(remote->BounceUrl(input, &output));
     EXPECT_TRUE(output.IsEmpty());

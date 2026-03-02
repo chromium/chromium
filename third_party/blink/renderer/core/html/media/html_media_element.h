@@ -534,7 +534,7 @@ class CORE_EXPORT HTMLMediaElement
       invisible_to_app_ = visibility == SourceVisibility::kInvisibleToApp;
     }
     const KURL& GetSourceIfVisible() const {
-      return invisible_to_app_ ? NullURL() : src_;
+      return invisible_to_app_ ? NullUrl() : src_;
     }
     const KURL& GetSource() const { return src_; }
 

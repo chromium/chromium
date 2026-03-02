@@ -267,7 +267,7 @@ TEST_F(WorkletModuleResponsesMapTest, InvalidURL) {
   EXPECT_EQ(ClientImpl::Result::kFailed, client1->GetResult());
   EXPECT_FALSE(client1->HasParams());
 
-  const KURL kNullURL = NullURL();
+  const KURL kNullURL = NullUrl();
   ASSERT_TRUE(kNullURL.IsNull());
   ClientImpl* client2 = MakeGarbageCollected<ClientImpl>();
   Fetch(kNullURL, client2);

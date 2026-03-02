@@ -120,7 +120,7 @@ class GlobalFileSystemAccessTest : public PageTestBase {
   }
 
   void Navigate(const String& destinationUrl) {
-    const KURL& url = KURL(NullURL(), destinationUrl);
+    const KURL& url = KURL(NullUrl(), destinationUrl);
     auto navigation_params =
         WebNavigationParams::CreateWithEmptyHTMLForTesting(url);
     GetDocument().GetFrame()->Loader().CommitNavigation(

@@ -1057,7 +1057,7 @@ function main(metadata) {
       }
     } else if (const auto* style = DynamicTo<HTMLStyleElement>(element)) {
       if (CSSStyleSheet* sheet = style->sheet()) {
-        SerializeCSSStyleSheet(*sheet, NullURL());
+        SerializeCSSStyleSheet(*sheet, NullUrl());
       }
     } else if (const auto* plugin = DynamicTo<HTMLPlugInElement>(&element)) {
       if (plugin->IsImageType() && plugin->ImageLoader()) {

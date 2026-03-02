@@ -69,7 +69,7 @@ class CORE_EXPORT ModulePendingScript : public PendingScript {
   bool IsExternal() const override { return is_external_; }
   bool WasCanceled() const override { return false; }
 
-  KURL UrlForTracing() const override { return NullURL(); }
+  KURL UrlForTracing() const override { return NullUrl(); }
 
   void DisposeInternal() override;
 

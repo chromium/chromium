@@ -544,12 +544,12 @@ TEST_F(DocumentLoaderSimTest, FramePolicyIntegrityOnNavigationCommit) {
 
 TEST_P(DocumentLoaderTest, CommitsDeferredOnSameOriginNavigation) {
   const KURL& requestor_url =
-      KURL(NullURL(), "https://www.example.com/foo.html");
+      KURL(NullUrl(), "https://www.example.com/foo.html");
   WebViewImpl* web_view_impl =
       web_view_helper_.InitializeAndLoad("https://example.com/foo.html");
 
   const KURL& same_origin_url =
-      KURL(NullURL(), "https://www.example.com/bar.html");
+      KURL(NullUrl(), "https://www.example.com/bar.html");
   std::unique_ptr<WebNavigationParams> params =
       WebNavigationParams::CreateWithEmptyHTMLForTesting(same_origin_url);
   params->requestor_origin = WebSecurityOrigin::Create(WebURL(requestor_url));
@@ -562,12 +562,12 @@ TEST_P(DocumentLoaderTest, CommitsDeferredOnSameOriginNavigation) {
 
 TEST_P(DocumentLoaderTest, CommitsDeferredOnDifferentOriginNavigation) {
   const KURL& requestor_url =
-      KURL(NullURL(), "https://www.example.com/foo.html");
+      KURL(NullUrl(), "https://www.example.com/foo.html");
   WebViewImpl* web_view_impl =
       web_view_helper_.InitializeAndLoad("https://example.com/foo.html");
 
   const KURL& other_origin_url =
-      KURL(NullURL(), "https://www.another.com/bar.html");
+      KURL(NullUrl(), "https://www.another.com/bar.html");
   std::unique_ptr<WebNavigationParams> params =
       WebNavigationParams::CreateWithEmptyHTMLForTesting(other_origin_url);
   params->requestor_origin = WebSecurityOrigin::Create(WebURL(requestor_url));
@@ -580,12 +580,12 @@ TEST_P(DocumentLoaderTest, CommitsDeferredOnDifferentOriginNavigation) {
 
 TEST_P(DocumentLoaderTest, CommitsDeferredOnDifferentPortNavigation) {
   const KURL& requestor_url =
-      KURL(NullURL(), "https://www.example.com:8000/foo.html");
+      KURL(NullUrl(), "https://www.example.com:8000/foo.html");
   WebViewImpl* web_view_impl =
       web_view_helper_.InitializeAndLoad("https://example.com:8000/foo.html");
 
   const KURL& different_port_url =
-      KURL(NullURL(), "https://www.example.com:8080/bar.html");
+      KURL(NullUrl(), "https://www.example.com:8080/bar.html");
   std::unique_ptr<WebNavigationParams> params =
       WebNavigationParams::CreateWithEmptyHTMLForTesting(different_port_url);
   params->requestor_origin = WebSecurityOrigin::Create(WebURL(requestor_url));
@@ -598,11 +598,11 @@ TEST_P(DocumentLoaderTest, CommitsDeferredOnDifferentPortNavigation) {
 
 TEST_P(DocumentLoaderTest, CommitsNotDeferredOnDataURLNavigation) {
   const KURL& requestor_url =
-      KURL(NullURL(), "https://www.example.com/foo.html");
+      KURL(NullUrl(), "https://www.example.com/foo.html");
   WebViewImpl* web_view_impl =
       web_view_helper_.InitializeAndLoad("https://example.com/foo.html");
 
-  const KURL& data_url = KURL(NullURL(), "data:,Hello%2C%20World!");
+  const KURL& data_url = KURL(NullUrl(), "data:,Hello%2C%20World!");
   std::unique_ptr<WebNavigationParams> params =
       WebNavigationParams::CreateWithEmptyHTMLForTesting(data_url);
   params->requestor_origin = WebSecurityOrigin::Create(WebURL(requestor_url));
@@ -615,11 +615,11 @@ TEST_P(DocumentLoaderTest, CommitsNotDeferredOnDataURLNavigation) {
 
 TEST_P(DocumentLoaderTest, NavigationToAboutBlank) {
   const KURL& requestor_url =
-      KURL(NullURL(), "https://subdomain.example.com/foo.html");
+      KURL(NullUrl(), "https://subdomain.example.com/foo.html");
   WebViewImpl* web_view_impl =
       web_view_helper_.InitializeAndLoad("https://example.com/foo.html");
 
-  const KURL& about_blank_url = KURL(NullURL(), "about:blank");
+  const KURL& about_blank_url = KURL(NullUrl(), "about:blank");
   std::unique_ptr<WebNavigationParams> params =
       std::make_unique<WebNavigationParams>();
   params->url = about_blank_url;
@@ -636,12 +636,12 @@ TEST_P(DocumentLoaderTest, NavigationToAboutBlank) {
 
 TEST_P(DocumentLoaderTest, SameOriginNavigation) {
   const KURL& requestor_url =
-      KURL(NullURL(), "https://www.example.com/foo.html");
+      KURL(NullUrl(), "https://www.example.com/foo.html");
   WebViewImpl* web_view_impl =
       web_view_helper_.InitializeAndLoad("https://example.com/foo.html");
 
   const KURL& same_origin_url =
-      KURL(NullURL(), "https://www.example.com/bar.html");
+      KURL(NullUrl(), "https://www.example.com/bar.html");
   std::unique_ptr<WebNavigationParams> params =
       WebNavigationParams::CreateWithEmptyHTMLForTesting(same_origin_url);
   params->requestor_origin = WebSecurityOrigin::Create(WebURL(requestor_url));
@@ -665,12 +665,12 @@ TEST_P(DocumentLoaderTest, SameOriginNavigation) {
 
 TEST_P(DocumentLoaderTest, SameOriginNavigation_WithStorageAccess) {
   const KURL& requestor_url =
-      KURL(NullURL(), "https://www.example.com/foo.html");
+      KURL(NullUrl(), "https://www.example.com/foo.html");
   WebViewImpl* web_view_impl =
       web_view_helper_.InitializeAndLoad("https://example.com/foo.html");
 
   const KURL& same_origin_url =
-      KURL(NullURL(), "https://www.example.com/bar.html");
+      KURL(NullUrl(), "https://www.example.com/bar.html");
   std::unique_ptr<WebNavigationParams> params =
       WebNavigationParams::CreateWithEmptyHTMLForTesting(same_origin_url);
   params->requestor_origin = WebSecurityOrigin::Create(WebURL(requestor_url));
@@ -697,12 +697,12 @@ TEST_P(DocumentLoaderTest, SameOriginNavigation_WithStorageAccess) {
 
 TEST_P(DocumentLoaderTest, CrossOriginNavigation) {
   const KURL& requestor_url =
-      KURL(NullURL(), "https://www.example.com/foo.html");
+      KURL(NullUrl(), "https://www.example.com/foo.html");
   WebViewImpl* web_view_impl =
       web_view_helper_.InitializeAndLoad("https://example.com/foo.html");
 
   const KURL& other_origin_url =
-      KURL(NullURL(), "https://www.another.com/bar.html");
+      KURL(NullUrl(), "https://www.another.com/bar.html");
   std::unique_ptr<WebNavigationParams> params =
       WebNavigationParams::CreateWithEmptyHTMLForTesting(other_origin_url);
   params->requestor_origin = WebSecurityOrigin::Create(WebURL(requestor_url));
@@ -731,12 +731,12 @@ TEST_P(DocumentLoaderTest, CrossOriginNavigation) {
 
 TEST_P(DocumentLoaderTest, StorageKeyFromNavigationParams) {
   const KURL& requestor_url =
-      KURL(NullURL(), "https://www.example.com/foo.html");
+      KURL(NullUrl(), "https://www.example.com/foo.html");
   WebViewImpl* web_view_impl =
       web_view_helper_.InitializeAndLoad("https://example.com/foo.html");
 
   const KURL& other_origin_url =
-      KURL(NullURL(), "https://www.another.com/bar.html");
+      KURL(NullUrl(), "https://www.another.com/bar.html");
   std::unique_ptr<WebNavigationParams> params =
       WebNavigationParams::CreateWithEmptyHTMLForTesting(other_origin_url);
   params->requestor_origin = WebSecurityOrigin::Create(WebURL(requestor_url));
@@ -758,12 +758,12 @@ TEST_P(DocumentLoaderTest, StorageKeyFromNavigationParams) {
 
 TEST_P(DocumentLoaderTest, StorageKeyCrossSiteFromNavigationParams) {
   const KURL& requestor_url =
-      KURL(NullURL(), "https://www.example.com/foo.html");
+      KURL(NullUrl(), "https://www.example.com/foo.html");
   WebViewImpl* web_view_impl =
       web_view_helper_.InitializeAndLoad("https://example.com/foo.html");
 
   const KURL& other_origin_url =
-      KURL(NullURL(), "https://www.another.com/bar.html");
+      KURL(NullUrl(), "https://www.another.com/bar.html");
   std::unique_ptr<WebNavigationParams> params =
       WebNavigationParams::CreateWithEmptyHTMLForTesting(other_origin_url);
   params->requestor_origin = WebSecurityOrigin::Create(WebURL(requestor_url));
@@ -968,7 +968,7 @@ TEST_P(DocumentLoaderTest, EmbeddedCredentialsNavigation) {
 TEST_P(DocumentLoaderTest, VisitedLinkSalt) {
   // Generate the constants.
   const uint64_t kSalt = base::RandUint64();
-  const KURL& kUrl = KURL(NullURL(), "https://www.example.com/foo.html");
+  const KURL& kUrl = KURL(NullUrl(), "https://www.example.com/foo.html");
 
   // Load a blank slate.
   WebViewImpl* web_view_impl =

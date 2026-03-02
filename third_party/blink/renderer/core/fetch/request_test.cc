@@ -222,7 +222,7 @@ TEST(ServiceWorkerRequestTest, FromAndToFetchAPIRequest) {
     fetch_api_request->headers.insert(String(header.key), String(header.value));
   }
   fetch_api_request->referrer =
-      mojom::blink::Referrer::New(KURL(NullURL(), referrer), kReferrerPolicy);
+      mojom::blink::Referrer::New(KURL(NullUrl(), referrer), kReferrerPolicy);
   const auto fetch_api_request_headers = fetch_api_request->headers;
 
   Request* request =

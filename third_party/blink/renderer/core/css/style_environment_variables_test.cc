@@ -74,7 +74,7 @@ class StyleEnvironmentVariablesTest : public PageTestBase {
   }
 
   void SimulateNavigation() {
-    const KURL& url = KURL(NullURL(), "https://www.example.com");
+    const KURL& url = KURL(NullUrl(), "https://www.example.com");
     GetDocument().GetFrame()->Loader().CommitNavigation(
         WebNavigationParams::CreateWithEmptyHTMLForTesting(url),
         nullptr /* extra_data */);

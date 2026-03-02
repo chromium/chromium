@@ -44,7 +44,7 @@ struct PLATFORM_EXPORT Referrer {
   Referrer(const String& referrer,
            network::mojom::ReferrerPolicy referrer_policy)
       : referrer(referrer), referrer_policy(referrer_policy) {
-    DCHECK(referrer == NoReferrer() || KURL(NullURL(), referrer).IsValid());
+    DCHECK(referrer == NoReferrer() || KURL(NullUrl(), referrer).IsValid());
   }
   Referrer();
   // We use these strings instead of "no-referrer" and "client" in the spec.

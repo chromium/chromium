@@ -945,7 +945,7 @@ TEST(KURLTest, ThreadSafesStaticKurlGetters) {
   EXPECT_FALSE(blank_url.IsEmpty());
   KURL srcdoc_url = SrcdocURL();
   EXPECT_FALSE(srcdoc_url.IsEmpty());
-  KURL null_url = NullURL();
+  KURL null_url = NullUrl();
   EXPECT_TRUE(null_url.IsNull());
 
   auto thread = NonMainThread::CreateThread(
@@ -959,7 +959,7 @@ TEST(KURLTest, ThreadSafesStaticKurlGetters) {
                                       EXPECT_FALSE(blank_url.IsEmpty());
                                       KURL srcdoc_url = SrcdocURL();
                                       EXPECT_FALSE(srcdoc_url.IsEmpty());
-                                      KURL null_url = NullURL();
+                                      KURL null_url = NullUrl();
                                       EXPECT_TRUE(null_url.IsNull());
                                     }));
 

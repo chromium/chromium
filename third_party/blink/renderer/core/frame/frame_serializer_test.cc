@@ -108,7 +108,7 @@ class FrameSerializerTest
   }
 
   void RegisterErrorURL(const char* file, int status_code) {
-    ResourceError error = ResourceError::Failure(NullURL());
+    ResourceError error = ResourceError::Failure(NullUrl());
 
     WebURLResponse response;
     response.SetMimeType("text/html");

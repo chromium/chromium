@@ -34,7 +34,7 @@ class FrameTest : public PageTestBase {
   }
 
   void Navigate(const String& destinationUrl, bool user_activated) {
-    const KURL& url = KURL(NullURL(), destinationUrl);
+    const KURL& url = KURL(NullUrl(), destinationUrl);
     auto navigation_params =
         WebNavigationParams::CreateWithEmptyHTMLForTesting(url);
     if (user_activated)

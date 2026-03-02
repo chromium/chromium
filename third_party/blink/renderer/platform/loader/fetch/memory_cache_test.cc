@@ -285,7 +285,7 @@ TEST_F(MemoryCacheTest, ResourceMapIsolation) {
   EXPECT_EQ(resource1, MemoryCache::Get()->ResourceForURL(
                            url, MemoryCache::Get()->DefaultCacheIdentifier()));
   EXPECT_EQ(resource2, MemoryCache::Get()->ResourceForURL(url, "foo"));
-  EXPECT_EQ(nullptr, MemoryCache::Get()->ResourceForURLForTesting(NullURL()));
+  EXPECT_EQ(nullptr, MemoryCache::Get()->ResourceForURLForTesting(NullUrl()));
 
   auto* resource3 = MakeGarbageCollected<FakeResource>("http://test/resource",
                                                        ResourceType::kRaw);

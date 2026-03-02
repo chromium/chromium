@@ -192,7 +192,7 @@ TEST(TextResourceDecoderTest, DoNotAutoDetectISO2022JP) {
       std::make_unique<TextResourceDecoder>(
           TextResourceDecoderOptions::CreateWithAutoDetection(
               TextResourceDecoderOptions::kHTMLContent, Utf8Encoding(),
-              UnknownEncoding(), NullURL()));
+              UnknownEncoding(), NullUrl()));
   // ISO-2022-JP escape sequences.
   const unsigned char kISO2022JP[] = {0x1b, 0x24, 0x42, 0x30, 0x42,
                                       0x30, 0x44, 0x1b, 0x28, 0x42};

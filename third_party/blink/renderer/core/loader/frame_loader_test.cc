@@ -259,7 +259,7 @@ class FrameLoaderTest : public testing::Test {
 TEST_F(FrameLoaderTest, PolicyContainerIsStoredOnCommitNavigation) {
   WebViewImpl* web_view_impl = web_view_helper_.Initialize();
 
-  const KURL& url = KURL(NullURL(), "https://www.example.com/bar.html");
+  const KURL& url = KURL(NullUrl(), "https://www.example.com/bar.html");
   std::unique_ptr<WebNavigationParams> params =
       WebNavigationParams::CreateWithEmptyHTMLForTesting(url);
   MockPolicyContainerHost mock_policy_container_host;

@@ -1218,7 +1218,7 @@ CSSStyleSheet* StyleEngine::ParseSheet(
     TextPosition start_position,
     RenderBlockingBehavior render_blocking_behavior) {
   CSSStyleSheet* style_sheet = nullptr;
-  style_sheet = CSSStyleSheet::CreateInline(element, NullURL(), start_position,
+  style_sheet = CSSStyleSheet::CreateInline(element, NullUrl(), start_position,
                                             GetDocument().Encoding());
   style_sheet->Contents()->SetRenderBlocking(render_blocking_behavior);
   style_sheet->Contents()->ParseString(text);

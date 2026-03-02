@@ -18,7 +18,7 @@ static const TextEncoding DefaultEncodingForUrlAndContentType(
     const char* content_type) {
   auto page_holder = std::make_unique<DummyPageHolder>(gfx::Size(0, 0));
   Document& document = page_holder->GetDocument();
-  document.SetURL(KURL(NullURL(), url));
+  document.SetURL(KURL(NullUrl(), url));
   return BuildTextResourceDecoder(document.GetFrame(), document.Url(),
                                   AtomicString(content_type), g_null_atom)
       ->Encoding();

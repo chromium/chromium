@@ -268,7 +268,7 @@ const KURL& DocumentInit::GetCookieUrl() const {
     // KURL::IsEmpty.
     //
     // [1] https://html.spec.whatwg.org/#cookie-averse-document-object
-    const KURL& kCookieAverseUrl = NullURL();
+    const KURL& kCookieAverseUrl = NullUrl();
 
     return kCookieAverseUrl;
   }

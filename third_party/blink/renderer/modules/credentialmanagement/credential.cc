@@ -31,7 +31,7 @@ KURL Credential::ParseStringAsURLOrThrow(const String& url,
                                          ExceptionState& exception_state) {
   if (url.empty())
     return KURL();
-  KURL parsed_url = KURL(NullURL(), url);
+  KURL parsed_url = KURL(NullUrl(), url);
   if (!parsed_url.IsValid()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kSyntaxError,

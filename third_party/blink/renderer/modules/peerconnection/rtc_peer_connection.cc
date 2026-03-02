@@ -344,7 +344,7 @@ webrtc::PeerConnectionInterface::RTCConfiguration ParseConfiguration(
     }
 
     for (const String& url_string : url_strings) {
-      KURL url(NullURL(), url_string);
+      KURL url(NullUrl(), url_string);
       if (!url.IsValid()) {
         exception_state->ThrowDOMException(
             DOMExceptionCode::kSyntaxError,

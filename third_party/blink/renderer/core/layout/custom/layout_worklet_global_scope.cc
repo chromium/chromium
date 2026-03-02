@@ -33,7 +33,7 @@ LayoutWorkletGlobalScope* LayoutWorkletGlobalScope::Create(
   auto* global_scope = MakeGarbageCollected<LayoutWorkletGlobalScope>(
       frame, std::move(creation_params), reporting_proxy,
       pending_layout_registry);
-  global_scope->ScriptController()->Initialize(NullURL());
+  global_scope->ScriptController()->Initialize(NullUrl());
   MainThreadDebugger::Instance(global_scope->GetIsolate())
       ->ContextCreated(global_scope->ScriptController()->GetScriptState(),
                        global_scope->GetFrame(),

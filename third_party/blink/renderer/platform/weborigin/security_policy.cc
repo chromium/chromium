@@ -93,7 +93,7 @@ Referrer SecurityPolicy::GenerateReferrer(
   if (referrer == Referrer::NoReferrer() || referrer.empty())
     return Referrer(Referrer::NoReferrer(), referrer_policy_no_default);
 
-  KURL referrer_url = KURL(NullURL(), referrer).UrlStrippedForUseAsReferrer();
+  KURL referrer_url = KURL(NullUrl(), referrer).UrlStrippedForUseAsReferrer();
 
   if (!referrer_url.IsValid())
     return Referrer(Referrer::NoReferrer(), referrer_policy_no_default);

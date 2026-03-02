@@ -87,7 +87,7 @@ ResourceRequestHead::WebBundleTokenParams::CloneHandle() const {
 const base::TimeDelta ResourceRequestHead::default_timeout_interval_ =
     base::TimeDelta::Max();
 
-ResourceRequestHead::ResourceRequestHead() : ResourceRequestHead(NullURL()) {}
+ResourceRequestHead::ResourceRequestHead() : ResourceRequestHead(NullUrl()) {}
 
 ResourceRequestHead::ResourceRequestHead(const KURL& url)
     : url_(url),
@@ -174,7 +174,7 @@ void ResourceRequestBody::SetStreamBody(
   stream_body_ = std::move(stream_body);
 }
 
-ResourceRequest::ResourceRequest() : ResourceRequestHead(NullURL()) {}
+ResourceRequest::ResourceRequest() : ResourceRequestHead(NullUrl()) {}
 
 ResourceRequest::ResourceRequest(const String& url_string)
     : ResourceRequestHead(KURL(url_string)) {}

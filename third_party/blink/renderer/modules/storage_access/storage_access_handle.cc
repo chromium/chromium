@@ -405,7 +405,7 @@ void StorageAccessHandle::revokeObjectURL(
   GetSupplementable()->CountUse(
       WebFeature::
           kStorageAccessAPI_requestStorageAccess_BeyondCookies_revokeObjectURL_Use);
-  KURL resolved_url(NullURL(), url);
+  KURL resolved_url(NullUrl(), url);
   GetSupplementable()->GetExecutionContext()->RemoveURLFromMemoryCache(
       resolved_url);
   public_url_manager->Revoke(resolved_url);

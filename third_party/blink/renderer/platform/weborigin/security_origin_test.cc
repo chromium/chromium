@@ -114,7 +114,7 @@ TEST_F(SecurityOriginTest, LocalAccess) {
 }
 
 TEST_F(SecurityOriginTest, IsNullURLSecure) {
-  EXPECT_FALSE(network::IsUrlPotentiallyTrustworthy(GURL(NullURL())));
+  EXPECT_FALSE(network::IsUrlPotentiallyTrustworthy(GURL(NullUrl())));
 }
 
 TEST_F(SecurityOriginTest, CanAccess) {

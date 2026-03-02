@@ -139,7 +139,7 @@ Document* XSLTProcessor::CreateDocumentFromSource(
   if (!source_node->GetExecutionContext())
     return nullptr;
 
-  KURL url = NullURL();
+  KURL url = NullUrl();
   Document* owner_document = &source_node->GetDocument();
   if (owner_document == source_node)
     url = owner_document->Url();

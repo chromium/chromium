@@ -131,7 +131,7 @@ bool LinkLoader::LoadLink(const LinkLoadParameters& params,
                                     PreloadHelper::kLinkCalledFromMarkup);
 
   PreloadHelper::PreloadIfNeeded(
-      params, document, NullURL(), PreloadHelper::kLinkCalledFromMarkup,
+      params, document, NullUrl(), PreloadHelper::kLinkCalledFromMarkup,
       nullptr /* viewport_description */,
       client_->IsLinkCreatedByParser() ? kParserInserted : kNotParserInserted,
       pending_preload_);

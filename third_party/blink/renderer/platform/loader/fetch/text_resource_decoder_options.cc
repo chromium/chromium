@@ -19,7 +19,7 @@ TextResourceDecoderOptions::TextResourceDecoderOptions(
 
 TextResourceDecoderOptions TextResourceDecoderOptions::CreateUTF8Decode() {
   return TextResourceDecoderOptions(kAlwaysUseUTF8ForText, kPlainTextContent,
-                                    Utf8Encoding(), AtomicString(), NullURL());
+                                    Utf8Encoding(), AtomicString(), NullUrl());
 }
 
 TextResourceDecoderOptions

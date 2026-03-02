@@ -171,9 +171,7 @@ class ServiceWorkerContainerTest : public PageTestBase {
     return ToScriptStateForMainWorld(GetDocument().GetFrame());
   }
 
-  void SetPageURL(const String& url) {
-    NavigateTo(KURL(NullURL(), url));
-  }
+  void SetPageURL(const String& url) { NavigateTo(KURL(NullUrl(), url)); }
 
   void TestRegisterRejected(const String& script_url,
                             const String& scope,

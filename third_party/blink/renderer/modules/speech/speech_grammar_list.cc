@@ -53,7 +53,7 @@ void SpeechGrammarList::addFromString(const String& string, double weight) {
   String url_string =
       StrCat({"data:application/xml,", EncodeWithURLEscapeSequences(string)});
   grammars_.push_back(
-      SpeechGrammar::Create(KURL(NullURL(), url_string), weight));
+      SpeechGrammar::Create(KURL(NullUrl(), url_string), weight));
 }
 
 SpeechGrammarList::SpeechGrammarList() = default;
