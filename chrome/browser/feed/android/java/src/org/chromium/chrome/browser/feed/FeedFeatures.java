@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.feed;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import org.chromium.base.CommandLine;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.LocaleUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
@@ -36,7 +37,9 @@ public final class FeedFeatures {
      *     enterprise policy, or by flag. The value returned should not be cached as it may change.
      */
     public static boolean isFeedEnabled(Profile profile) {
-        return FeedServiceBridge.isEnabled() && isFeedEnabledByDSE(profile);
+        return (!ChromeFeatureList.sNtpSimplification.isEnabled() || !DeviceInfo.isDesktop())
+                && FeedServiceBridge.isEnabled()
+                && isFeedEnabledByDSE(profile);
     }
 
     /**
