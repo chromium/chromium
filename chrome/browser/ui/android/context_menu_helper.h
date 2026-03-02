@@ -52,12 +52,6 @@ class ContextMenuHelper
 
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject(JNIEnv* env) const;
 
-  // A weak reference to the Java object. The Java object will be kept alive by
-  // a static map in the Java code. ScopedJavaGlobalRef would scale poorly with
-  // a large number of WebContents as each entry would consume a slot in the
-  // finite global ref table.
-  JavaObjectWeakGlobalRef java_obj_;
-
   content::ContextMenuParams context_menu_params_;
 
 #if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)

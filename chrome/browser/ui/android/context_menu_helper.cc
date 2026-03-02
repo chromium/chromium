@@ -38,10 +38,9 @@ using base::android::ScopedJavaLocalRef;
 ContextMenuHelper::ContextMenuHelper(content::WebContents* web_contents)
     : content::WebContentsUserData<ContextMenuHelper>(*web_contents) {
   JNIEnv* env = base::android::AttachCurrentThread();
-  java_obj_ = JavaObjectWeakGlobalRef(
-      env, Java_ContextMenuHelper_create(env, reinterpret_cast<int64_t>(this),
-                                         web_contents->GetJavaWebContents()));
-  DCHECK(!java_obj_.is_uninitialized());
+  auto java_obj = Java_ContextMenuHelper_create(
+      env, reinterpret_cast<int64_t>(this), web_contents->GetJavaWebContents());
+  CHECK(!java_obj.is_null());
 }
 
 ContextMenuHelper::~ContextMenuHelper() {
@@ -100,7 +99,8 @@ void ContextMenuHelper::SetPopulatorFactory(
 
 ScopedJavaLocalRef<jobject> ContextMenuHelper::GetJavaObject(
     JNIEnv* env) const {
-  auto java_obj = java_obj_.get(env);
+  auto java_obj = Java_ContextMenuHelper_getJavaObject(
+      env, reinterpret_cast<int64_t>(this));
   CHECK(!java_obj.is_null());
   return java_obj;
 }

@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.contextmenu;
 
+import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
@@ -44,8 +45,7 @@ public class ContextMenuHelper {
 
     // Using ScopedJavaGlobalRef in the owning C++ object to keep the Java object alive consumes an
     // entry per instance in the finite global ref table. This scales poorly with a large number of
-    // WebContents. As a workaround, the C++ owner uses a JavaObjectWeakGlobalRef and an entry is
-    // kept in the a static map of the native pointer to Java objects to prevent garbage collection.
+    // WebContents. As a workaround, use this map to keep track of the ContextMenuHelper instances.
     private static final Map<Long, ContextMenuHelper> sContextMenuHelperMap = new HashMap<>();
 
     private final WebContents mWebContents;
@@ -254,6 +254,11 @@ public class ContextMenuHelper {
             float topContentOffsetPx) {
         setPopulatorFactory(populatorFactory);
         showContextMenu(params, renderFrameHost, view, topContentOffsetPx);
+    }
+
+    @CalledByNative
+    private static ContextMenuHelper getJavaObject(long nativeContextMenuHelper) {
+        return assertNonNull(sContextMenuHelperMap.get(nativeContextMenuHelper));
     }
 
     @NativeMethods
