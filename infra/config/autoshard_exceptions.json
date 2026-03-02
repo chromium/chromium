@@ -70,11 +70,11 @@
                 "try_builder": "linux-chromeos-rel"
             },
             "ash_unittests": {
-                "shards": 4,
+                "shards": 3,
                 "try_builder": "linux-chromeos-rel"
             },
             "browser_tests": {
-                "shards": 141,
+                "shards": 151,
                 "try_builder": "linux-chromeos-rel"
             },
             "components_unittests": {
@@ -86,7 +86,7 @@
                 "try_builder": "linux-chromeos-rel"
             },
             "interactive_ui_tests": {
-                "shards": 22,
+                "shards": 13,
                 "try_builder": "linux-chromeos-rel"
             },
             "sync_integration_tests": {
@@ -171,14 +171,6 @@
             }
         }
     },
-    "chromium.mac": {
-        "mac15-arm64-rel-tests": {
-            "interactive_ui_tests": {
-                "shards": 9,
-                "try_builder": "mac15-arm64-rel"
-            }
-        }
-    },
     "chromium.memory": {
         "Linux ASan LSan Tests (1)": {
             "components_unittests": {
@@ -190,7 +182,7 @@
                 "try_builder": "linux_chromium_asan_rel_ng"
             },
             "interactive_ui_tests": {
-                "shards": 94,
+                "shards": 102,
                 "try_builder": "linux_chromium_asan_rel_ng"
             },
             "sync_integration_tests": {
