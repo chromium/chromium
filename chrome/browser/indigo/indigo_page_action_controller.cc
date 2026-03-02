@@ -4,6 +4,7 @@
 
 #include "chrome/browser/indigo/indigo_page_action_controller.h"
 
+#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -12,11 +13,15 @@
 #include "base/metrics/user_metrics_action.h"
 #include "base/notimplemented.h"
 #include "chrome/browser/indigo/indigo_alpha_rpc.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/page_action/page_action_controller.h"
 #include "chrome/common/chrome_features.h"
+#include "components/optimization_guide/core/hints/optimization_guide_decider.h"
+#include "components/optimization_guide/core/hints/optimization_guide_decision.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/storage_partition.h"
@@ -26,6 +31,10 @@
 
 namespace indigo {
 
+namespace {
+const char kForceIndigoSwitch[] = "force-indigo";
+}  // namespace
+
 DEFINE_USER_DATA(IndigoPageActionController);
 
 IndigoPageActionController::IndigoPageActionController(
@@ -33,7 +42,16 @@ IndigoPageActionController::IndigoPageActionController(
     page_actions::PageActionController& page_action_controller)
     : tabs::ContentsObservingTabFeature(tab_interface),
       page_action_controller_(page_action_controller),
+      optimization_guide_(OptimizationGuideKeyedServiceFactory::GetForProfile(
+          Profile::FromBrowserContext(
+              tab_interface.GetContents()->GetBrowserContext()))),
       scoped_unowned_user_data_(tab_interface.GetUnownedUserDataHost(), *this) {
+  CHECK(base::FeatureList::IsEnabled(features::kIndigo));
+
+  if (optimization_guide_) {
+    optimization_guide_->RegisterOptimizationTypes(
+        {optimization_guide::proto::OptimizationType::INDIGO});
+  }
   UpdateEntryPointsState();
 }
 
@@ -83,13 +101,64 @@ void IndigoPageActionController::InvokeAction() {
           tab().GetBrowserWindowInterface()->GetWeakPtr()));
 }
 
+void IndigoPageActionController::DidFinishNavigation(
+    content::NavigationHandle* navigation_handle) {
+  ContentsObservingTabFeature::DidFinishNavigation(navigation_handle);
+
+  // Only care about navigations where the URL seems to have changed, excluding
+  // the URL fragment. Notably we _do_ care about navigation within a
+  // single-page application.
+  if (!navigation_handle->HasCommitted() ||
+      !navigation_handle->IsInPrimaryMainFrame() ||
+      navigation_handle->GetPreviousPrimaryMainFrameURL().EqualsIgnoringRef(
+          navigation_handle->GetURL())) {
+    return;
+  }
+
+  optimization_guide_decision_ =
+      optimization_guide::OptimizationGuideDecision::kUnknown;
+  UpdateEntryPointsState();
+
+  if (optimization_guide_) {
+    const GURL& url = navigation_handle->GetURL();
+    optimization_guide_->CanApplyOptimization(
+        url, optimization_guide::proto::OptimizationType::INDIGO,
+        base::BindOnce(&IndigoPageActionController::OnOptimizationGuideDecision,
+                       weak_ptr_factory_.GetWeakPtr(), url));
+  }
+}
+
 void IndigoPageActionController::UpdateEntryPointsState() {
   CHECK(base::FeatureList::IsEnabled(features::kIndigo));
 
-  page_action_controller_->Show(kActionIndigo);
-  page_action_controller_->ShowSuggestionChip(kActionIndigo);
+  const bool should_show =
+      optimization_guide_decision_ ==
+          optimization_guide::OptimizationGuideDecision::kTrue ||
+      base::CommandLine::ForCurrentProcess()->HasSwitch(kForceIndigoSwitch);
+  if (should_show == is_shown_) {
+    return;
+  }
 
-  base::RecordAction(base::UserMetricsAction("Indigo.PageAction.Show"));
+  if (should_show) {
+    page_action_controller_->Show(kActionIndigo);
+    page_action_controller_->ShowSuggestionChip(kActionIndigo);
+    base::RecordAction(base::UserMetricsAction("Indigo.PageAction.Show"));
+  } else {
+    page_action_controller_->Hide(kActionIndigo);
+  }
+  is_shown_ = should_show;
+}
+
+void IndigoPageActionController::OnOptimizationGuideDecision(
+    const GURL& url,
+    optimization_guide::OptimizationGuideDecision decision,
+    const optimization_guide::OptimizationMetadata& metadata) {
+  // If the answer comes after another navigation, ignore it.
+  if (!url.EqualsIgnoringRef(tab().GetContents()->GetLastCommittedURL())) {
+    return;
+  }
+  optimization_guide_decision_ = decision;
+  UpdateEntryPointsState();
 }
 
 }  // namespace indigo

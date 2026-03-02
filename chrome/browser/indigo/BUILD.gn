@@ -13,6 +13,7 @@ source_set("indigo") {
   public_deps = [
     "//base",
     "//chrome/browser/ui/tabs",
+    "//components/optimization_guide/core",
     "//components/tabs:public",
     "//url",
   ]
@@ -29,9 +30,12 @@ source_set("impl") {
   deps = [
     ":indigo",
     "//base",
+    "//chrome/browser/optimization_guide",
+    "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/actions:actions_headers",
     "//chrome/browser/ui/views/page_action",
     "//chrome/common:chrome_features",
+    "//components/optimization_guide/core",
     "//content/public/browser",
     "//services/network/public/cpp",
     "//services/network/public/mojom",
@@ -40,12 +44,18 @@ source_set("impl") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "indigo_alpha_rpc_unittest.cc" ]
+  sources = [
+    "indigo_alpha_rpc_unittest.cc",
+    "indigo_page_action_controller_unittest.cc",
+  ]
   deps = [
     ":impl",
     ":indigo",
     "//base/test:test_support",
+    "//chrome/browser/optimization_guide:test_support",
+    "//chrome/browser/ui/views/page_action:test_support",
     "//chrome/common:chrome_features",
+    "//chrome/test:test_support",
     "//services/network:test_support",
     "//services/network/public/cpp",
     "//testing/gmock",

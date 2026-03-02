@@ -392,6 +392,10 @@ enum OptimizationType {
   // Provides information about whether the PSP hosts are eligible for Pix
   // payments.
   PIX_PSP_ALLOWLIST = 120;
+  // Provides information about whether the page is eligible for Indigo.
+  // Note: this enumerator name doesn't currently match the Google internal
+  // repository, but will be renamed to match later on.
+  INDIGO = 121;
 }
 
 // Presents semantics for how page load URLs should be matched.

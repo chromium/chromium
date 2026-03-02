@@ -5,10 +5,19 @@
 #ifndef CHROME_BROWSER_INDIGO_INDIGO_PAGE_ACTION_CONTROLLER_H_
 #define CHROME_BROWSER_INDIGO_INDIGO_PAGE_ACTION_CONTROLLER_H_
 
+#include <optional>
+
 #include "base/memory/raw_ref.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/tabs/contents_observing_tab_feature.h"
+#include "components/optimization_guide/core/hints/optimization_guide_decision.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
+
+namespace optimization_guide {
+class OptimizationGuideDecider;
+class OptimizationMetadata;
+}  // namespace optimization_guide
 
 namespace page_actions {
 class PageActionController;
@@ -37,17 +46,41 @@ class IndigoPageActionController : public tabs::ContentsObservingTabFeature {
 
   void InvokeAction();
 
+  // content::WebContentsObserver:
+  void DidFinishNavigation(
+      content::NavigationHandle* navigation_handle) override;
+
  private:
   // Updates the visibility and states of all entry points.
   void UpdateEntryPointsState();
+
+  // Called when optimization guide has decided whether this feature should be
+  // enabled for the page.
+  void OnOptimizationGuideDecision(
+      const GURL& url,
+      optimization_guide::OptimizationGuideDecision decision,
+      const optimization_guide::OptimizationMetadata&);
 
   // `page_action_controller_` is owned by the same `TabFeatures` that owns
   // `this`. Since `page_action_controller_` is initialized before `this` and
   // destroyed after, it is safe to hold as a `raw_ref`.
   const raw_ref<page_actions::PageActionController> page_action_controller_;
 
+  // Owned by the profile, which outlives this object.
+  const raw_ptr<optimization_guide::OptimizationGuideDecider>
+      optimization_guide_;
+
+  // The optimization guide's opinion about whether this page is eligible for
+  // Indigo (or kUnknown if not determined).
+  optimization_guide::OptimizationGuideDecision optimization_guide_decision_ =
+      optimization_guide::OptimizationGuideDecision::kUnknown;
+
+  // If true, the Indigo page action is currently shown.
+  bool is_shown_ = false;
+
   ui::ScopedUnownedUserData<IndigoPageActionController>
       scoped_unowned_user_data_;
+  base::WeakPtrFactory<IndigoPageActionController> weak_ptr_factory_{this};
 };
 
 }  // namespace indigo
