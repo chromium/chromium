@@ -863,32 +863,35 @@ std::vector<ui::FileInfo> ClipboardWin::ReadFilenamesInternal(
 
 // |data_dst| is not used. It's only passed to be consistent with other
 // platforms.
-void ClipboardWin::ReadBookmark(const DataTransferEndpoint* data_dst,
-                                std::u16string* title,
-                                std::string* url) const {
+void ClipboardWin::ReadBookmark(
+    const std::optional<DataTransferEndpoint>& data_dst,
+    ReadBookmarkCallback callback) const {
   RecordRead(ClipboardFormatMetric::kBookmark);
-  if (title)
-    title->clear();
 
-  if (url)
-    url->clear();
+  std::u16string title;
+  std::string url;
 
   // Acquire the clipboard.
   ScopedClipboard clipboard;
-  if (!clipboard.Acquire(GetClipboardWindow()))
+  if (!clipboard.Acquire(GetClipboardWindow())) {
+    std::move(callback).Run(std::move(title), GURL(url));
     return;
+  }
 
   HANDLE data = GetClipboardDataWithLimit(
       ClipboardFormatType::UrlType().ToFormatEtc().cfFormat);
-  if (!data)
+  if (!data) {
+    std::move(callback).Run(std::move(title), GURL(url));
     return;
+  }
 
   std::u16string bookmark(static_cast<const char16_t*>(::GlobalLock(data)),
                           ::GlobalSize(data) / sizeof(char16_t));
   ::GlobalUnlock(data);
   TrimAfterNull(&bookmark);
 
-  *url = base::UTF16ToUTF8(bookmark);
+  url = base::UTF16ToUTF8(bookmark);
+  std::move(callback).Run(std::move(title), GURL(url));
 }
 
 // static

@@ -156,6 +156,14 @@ class OmniboxViewViews
   void OnPaint(gfx::Canvas* canvas) override;
   void ExecuteCommand(int command_id, int event_flags) override;
   void OnInputMethodChanged() override;
+  void ShowContextMenuForViewImpl(
+      views::View* source,
+      const gfx::Point& point,
+      ui::mojom::MenuSourceType source_type) override;
+  void ShowContextMenuForViewImplComplete(views::View* source,
+                                          const gfx::Point& point,
+                                          ui::mojom::MenuSourceType source_type,
+                                          std::u16string text);
   void AddedToWidget() override;
   void RemovedFromWidget() override;
   std::u16string GetLabelForCommandId(int command_id) const override;
@@ -218,6 +226,7 @@ class OmniboxViewViews
   // for details). The function invokes OnBefore/AfterPossibleChange() as
   // necessary.
   void OnOmniboxPaste();
+  void OnOmniboxPasteComplete(std::u16string text);
 
   // Handle keyword hint tab-to-search and tabbing through dropdown results.
   bool HandleEarlyTabActions(const ui::KeyEvent& event);
@@ -447,6 +456,9 @@ class OmniboxViewViews
   // "Google https://google.com location from bookmark", or
   // "cats are liquid search suggestion".
   std::u16string friendly_suggestion_text_;
+
+  // Cached clipboard text for paste-and-go.
+  std::u16string clipboard_text_;
 
   // The number of added labelling characters before editable text begins.
   // For example,  "Google https://google.com location from history",

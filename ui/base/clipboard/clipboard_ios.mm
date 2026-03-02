@@ -327,27 +327,30 @@ void ClipboardIOS::ReadFilenames(
 
 // |data_dst| is not used. It's only passed to be consistent with other
 // platforms.
-void ClipboardIOS::ReadBookmark(const DataTransferEndpoint* data_dst,
-                                std::u16string* title,
-                                std::string* url) const {
+void ClipboardIOS::ReadBookmark(
+    const std::optional<DataTransferEndpoint>& data_dst,
+    ReadBookmarkCallback callback) const {
   DCHECK(CalledOnValidThread());
   RecordRead(ClipboardFormatMetric::kBookmark);
 
+  std::string url;
   NSData* url_data = GetDataWithTypeFromPasteboard(
       GetPasteboard(), ClipboardFormatType::UrlType().ToNSString());
   if (url_data) {
     NSString* contents = [[NSString alloc] initWithData:url_data
                                                encoding:NSUTF8StringEncoding];
-    url->assign(base::SysNSStringToUTF8(contents));
+    url.assign(base::SysNSStringToUTF8(contents));
   }
 
+  std::u16string title;
   NSData* title_data =
       GetDataWithTypeFromPasteboard(GetPasteboard(), kUTTypeUrlName);
   if (title_data) {
     NSString* contents = [[NSString alloc] initWithData:title_data
                                                encoding:NSUTF8StringEncoding];
-    title->assign(base::SysNSStringToUTF16(contents));
+    title.assign(base::SysNSStringToUTF16(contents));
   }
+  std::move(callback).Run(std::move(title), GURL(url));
 }
 
 // |data_dst| is not used. It's only passed to be consistent with other

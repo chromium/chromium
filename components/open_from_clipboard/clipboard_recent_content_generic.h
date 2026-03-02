@@ -50,6 +50,7 @@ class ClipboardRecentContentGeneric : public ClipboardRecentContent {
   void OnReadURLAsAsciiText(GetRecentURLCallback callback,
                             std::string gurl_string);
   void OnReadText(GetRecentURLCallback callback, std::u16string gurl_string16);
+  void OnReadURL(GetRecentURLCallback callback, std::u16string title, GURL url);
 
   base::WeakPtrFactory<ClipboardRecentContentGeneric> weak_factory_{this};
 };

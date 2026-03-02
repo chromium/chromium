@@ -721,8 +721,15 @@ void OmniboxViewViews::ExecuteCommand(int command_id, int event_flags) {
   switch (command_id) {
     // These commands don't invoke the popup via OnBefore/AfterPossibleChange().
     case IDC_PASTE_AND_GO:
-      controller()->edit_model()->PasteAndGo(
-          GetClipboardText(/*notify_if_restricted=*/true));
+      GetClipboardText(
+          /*notify_if_restricted=*/true,
+          base::BindOnce(
+              [](base::WeakPtr<OmniboxViewViews> self, std::u16string text) {
+                if (self) {
+                  self->controller()->edit_model()->PasteAndGo(text);
+                }
+              },
+              weak_factory_.GetWeakPtr()));
       return;
     case IDC_EDIT_SEARCH_ENGINES:
     case IDC_SHOW_FULL_URLS:
@@ -754,6 +761,25 @@ void OmniboxViewViews::ExecuteCommand(int command_id, int event_flags) {
       OnAfterPossibleChange(true);
       return;
   }
+}
+
+void OmniboxViewViews::ShowContextMenuForViewImpl(
+    views::View* source,
+    const gfx::Point& point,
+    ui::mojom::MenuSourceType source_type) {
+  GetClipboardText(
+      /*notify_if_restricted=*/false,
+      base::BindOnce(&OmniboxViewViews::ShowContextMenuForViewImplComplete,
+                     weak_factory_.GetWeakPtr(), source, point, source_type));
+}
+
+void OmniboxViewViews::ShowContextMenuForViewImplComplete(
+    views::View* source,
+    const gfx::Point& point,
+    ui::mojom::MenuSourceType source_type,
+    std::u16string text) {
+  clipboard_text_ = text;
+  Textfield::ShowContextMenuForViewImpl(source, point, source_type);
 }
 
 void OmniboxViewViews::OnInputMethodChanged() {
@@ -891,8 +917,13 @@ void OmniboxViewViews::UpdateAccessibleTextSelection() {
 }
 
 void OmniboxViewViews::OnOmniboxPaste() {
-  const std::u16string text(GetClipboardText(/*notify_if_restricted=*/true));
+  GetClipboardText(
+      /*notify_if_restricted=*/true,
+      base::BindOnce(&OmniboxViewViews::OnOmniboxPasteComplete,
+                     weak_factory_.GetWeakPtr()));
+}
 
+void OmniboxViewViews::OnOmniboxPasteComplete(std::u16string text) {
   if (text.empty() ||
       // When the fakebox is focused, ignore pasted whitespace because if the
       // fakebox is hidden and there's only whitespace in the omnibox, it's
@@ -1358,8 +1389,7 @@ std::u16string OmniboxViewViews::GetLabelForCommandId(int command_id) const {
   )
     return l10n_util::GetStringUTF16(IDS_PASTE_AND_GO_EMPTY);
 
-  const std::u16string clipboard_text =
-      GetClipboardText(/*notify_if_restricted=*/false);
+  const std::u16string clipboard_text = clipboard_text_;
 
   if (clipboard_text.empty()) {
     return l10n_util::GetStringUTF16(IDS_PASTE_AND_GO_EMPTY);
@@ -1823,8 +1853,7 @@ bool OmniboxViewViews::IsCommandIdEnabled(int command_id) const {
     }
 #endif
 
-    return controller()->edit_model()->CanPasteAndGo(
-        GetClipboardText(/*notify_if_restricted=*/false));
+    return controller()->edit_model()->CanPasteAndGo(clipboard_text_);
   }
 
   // These menu items are only shown when they are valid.

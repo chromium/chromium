@@ -700,14 +700,16 @@ void ClipboardAndroid::ReadFilenames(
   RecordRead(ClipboardFormatMetric::kFilenames);
   std::move(callback).Run(GetClipboardMap().GetFilenames());
 }
-// 'data_dst' and 'title' are not used. It's only passed to be consistent with
+// 'data_dst' is not used. It's only passed to be consistent with
 // other platforms.
-void ClipboardAndroid::ReadBookmark(const DataTransferEndpoint* data_dst,
-                                    std::u16string* title,
-                                    std::string* url) const {
+void ClipboardAndroid::ReadBookmark(
+    const std::optional<DataTransferEndpoint>& data_dst,
+    ReadBookmarkCallback callback) const {
   DCHECK(CalledOnValidThread());
   RecordRead(ClipboardFormatMetric::kBookmark);
-  *url = GetClipboardMap().Get(ClipboardFormatType::UrlType());
+  std::move(callback).Run(
+      std::u16string(),
+      GURL(GetClipboardMap().Get(ClipboardFormatType::UrlType())));
 }
 
 // |data_dst| is not used. It's only passed to be consistent with other

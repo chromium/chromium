@@ -794,15 +794,6 @@ void ClipboardOzone::ReadText(ClipboardBuffer buffer,
       reinterpret_cast<char*>(clipboard_data.data()), clipboard_data.size()));
 }
 
-void ClipboardOzone::ReadBookmark(const DataTransferEndpoint* data_dst,
-                                  std::u16string* title,
-                                  std::string* url) const {
-  DCHECK(CalledOnValidThread());
-  // TODO(msisov): This was left NOTIMPLEMENTED() in all the Linux platforms.
-  // |data_dst| should be supported for DLP when ReadBookmark() is implemented.
-  NOTIMPLEMENTED();
-}
-
 bool ClipboardOzone::IsSelectionBufferAvailable() const {
   return async_clipboard_ozone_->IsSelectionBufferAvailable();
 }

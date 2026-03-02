@@ -9,6 +9,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
@@ -19,6 +20,12 @@
 using base::ASCIIToUTF16;
 
 namespace {
+
+std::u16string GetClipboardTextSync(bool notify_if_restricted) {
+  base::test::TestFuture<std::u16string> future;
+  GetClipboardText(notify_if_restricted, future.GetCallback());
+  return future.Take();
+}
 
 class ClipboardUtilsTest : public PlatformTest {
  public:
@@ -52,7 +59,7 @@ TEST_F(ClipboardUtilsTest, GetClipboardText) {
     ui::ScopedClipboardWriter clipboard_writer(ui::ClipboardBuffer::kCopyPaste);
     clipboard_writer.WriteText(kPlainText);
   }
-  EXPECT_EQ(kPlainText, GetClipboardText(/*notify_if_restricted=*/false));
+  EXPECT_EQ(kPlainText, GetClipboardTextSync(/*notify_if_restricted=*/false));
 
   // Can we pull a string consists of white-space?
   const std::u16string kSpace6(u"      ");
@@ -61,11 +68,12 @@ TEST_F(ClipboardUtilsTest, GetClipboardText) {
     ui::ScopedClipboardWriter clipboard_writer(ui::ClipboardBuffer::kCopyPaste);
     clipboard_writer.WriteText(kSpace6);
   }
-  EXPECT_EQ(kSpace1, GetClipboardText(/*notify_if_restricted=*/false));
+  EXPECT_EQ(kSpace1, GetClipboardTextSync(/*notify_if_restricted=*/false));
 
   // Does an empty clipboard get empty text?
   clipboard->Clear(ui::ClipboardBuffer::kCopyPaste);
-  EXPECT_EQ(std::u16string(), GetClipboardText(/*notify_if_restricted=*/false));
+  EXPECT_EQ(std::u16string(),
+            GetClipboardTextSync(/*notify_if_restricted=*/false));
 
 // Bookmark clipboard apparently not supported on Linux.
 // See TODO on ClipboardText.BookmarkTest.
@@ -77,7 +85,7 @@ TEST_F(ClipboardUtilsTest, GetClipboardText) {
     clipboard_writer.WriteBookmark(kTitle, kURL);
   }
   EXPECT_EQ(ASCIIToUTF16(kURL),
-            GetClipboardText(/*notify_if_restricted=*/false));
+            GetClipboardTextSync(/*notify_if_restricted=*/false));
 
   // Do we pull text in preference to a bookmark?
   {
@@ -85,7 +93,7 @@ TEST_F(ClipboardUtilsTest, GetClipboardText) {
     clipboard_writer.WriteText(kPlainText);
     clipboard_writer.WriteBookmark(kTitle, kURL);
   }
-  EXPECT_EQ(kPlainText, GetClipboardText(/*notify_if_restricted=*/false));
+  EXPECT_EQ(kPlainText, GetClipboardTextSync(/*notify_if_restricted=*/false));
 #endif
 
   // Do we get nothing if there is neither text nor a bookmark?
@@ -94,7 +102,7 @@ TEST_F(ClipboardUtilsTest, GetClipboardText) {
     ui::ScopedClipboardWriter clipboard_writer(ui::ClipboardBuffer::kCopyPaste);
     clipboard_writer.WriteHTML(kMarkup, kURL);
   }
-  EXPECT_TRUE(GetClipboardText(/*notify_if_restricted=*/false).empty());
+  EXPECT_TRUE(GetClipboardTextSync(/*notify_if_restricted=*/false).empty());
 }
 
 TEST_F(ClipboardUtilsTest, TruncateLongText) {
@@ -104,7 +112,8 @@ TEST_F(ClipboardUtilsTest, TruncateLongText) {
     ui::ScopedClipboardWriter clipboard_writer(ui::ClipboardBuffer::kCopyPaste);
     clipboard_writer.WriteText(almost_long_text);
   }
-  EXPECT_EQ(almost_long_text, GetClipboardText(/*notify_if_restricted=*/false));
+  EXPECT_EQ(almost_long_text,
+            GetClipboardTextSync(/*notify_if_restricted=*/false));
 
   const std::u16string long_text =
       base::ASCIIToUTF16(std::string(kMaxClipboardTextLength + 1, '.'));
@@ -112,7 +121,8 @@ TEST_F(ClipboardUtilsTest, TruncateLongText) {
     ui::ScopedClipboardWriter clipboard_writer(ui::ClipboardBuffer::kCopyPaste);
     clipboard_writer.WriteText(long_text);
   }
-  EXPECT_EQ(almost_long_text, GetClipboardText(/*notify_if_restricted=*/false));
+  EXPECT_EQ(almost_long_text,
+            GetClipboardTextSync(/*notify_if_restricted=*/false));
 }
 
 }  // namespace

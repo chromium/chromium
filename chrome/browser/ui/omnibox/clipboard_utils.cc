@@ -41,7 +41,8 @@ bool CanGetClipboardText() {
   return false;
 }
 
-std::u16string GetClipboardText(bool notify_if_restricted) {
+void GetClipboardText(bool notify_if_restricted,
+                      GetClipboardTextCallback callback) {
   // Try text format.
   ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
   ui::DataTransferEndpoint data_dst =
@@ -50,10 +51,15 @@ std::u16string GetClipboardText(bool notify_if_restricted) {
   if (clipboard->IsFormatAvailable(ui::ClipboardFormatType::PlainTextType(),
                                    ui::ClipboardBuffer::kCopyPaste,
                                    &data_dst)) {
-    std::u16string text;
-    clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste, &data_dst, &text);
-    text = text.substr(0, kMaxClipboardTextLength);
-    return omnibox::SanitizeTextForPaste(text);
+    clipboard->ReadText(
+        ui::ClipboardBuffer::kCopyPaste, data_dst,
+        base::BindOnce(
+            [](GetClipboardTextCallback callback, std::u16string text) {
+              text = text.substr(0, kMaxClipboardTextLength);
+              std::move(callback).Run(omnibox::SanitizeTextForPaste(text));
+            },
+            std::move(callback)));
+    return;
   }
 
   // Try bookmark format.
@@ -66,14 +72,21 @@ std::u16string GetClipboardText(bool notify_if_restricted) {
   if (clipboard->IsFormatAvailable(ui::ClipboardFormatType::UrlType(),
                                    ui::ClipboardBuffer::kCopyPaste,
                                    &data_dst)) {
-    std::string url_str;
-    clipboard->ReadBookmark(&data_dst, nullptr, &url_str);
-    // pass resulting url string through GURL to normalize
-    GURL url(url_str);
-    if (url.is_valid()) {
-      return omnibox::StripJavascriptSchemas(base::UTF8ToUTF16(url.spec()));
-    }
+    clipboard->ReadBookmark(
+        data_dst,
+        base::BindOnce(
+            [](GetClipboardTextCallback callback, std::u16string title,
+               GURL url) {
+              if (url.is_valid()) {
+                std::move(callback).Run(omnibox::StripJavascriptSchemas(
+                    base::UTF8ToUTF16(url.spec())));
+              } else {
+                std::move(callback).Run(std::u16string());
+              }
+            },
+            std::move(callback)));
+    return;
   }
 
-  return std::u16string();
+  std::move(callback).Run(std::u16string());
 }

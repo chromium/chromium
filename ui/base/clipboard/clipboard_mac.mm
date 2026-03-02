@@ -437,25 +437,21 @@ void ClipboardMac::ReadFilenames(
 
 // |data_dst| is not used. It's only passed to be consistent with other
 // platforms.
-void ClipboardMac::ReadBookmark(const DataTransferEndpoint* data_dst,
-                                std::u16string* title,
-                                std::string* url) const {
+void ClipboardMac::ReadBookmark(
+    const std::optional<DataTransferEndpoint>& data_dst,
+    ReadBookmarkCallback callback) const {
   DCHECK(CalledOnValidThread());
   RecordRead(ClipboardFormatMetric::kBookmark);
   NSPasteboard* pb = GetPasteboard();
 
-  if (title) {
-    NSString* contents = [pb stringForType:kUTTypeUrlName];
-    *title = base::SysNSStringToUTF16(contents);
+  std::u16string title =
+      base::SysNSStringToUTF16([pb stringForType:kUTTypeUrlName]);
+  NSString* url_string = [pb stringForType:NSPasteboardTypeURL];
+  std::string url;
+  if (url_string) {
+    url = base::SysNSStringToUTF8(url_string);
   }
-
-  if (url) {
-    NSString* url_string = [pb stringForType:NSPasteboardTypeURL];
-    if (!url_string)
-      url->clear();
-    else
-      url->assign(base::SysNSStringToUTF8(url_string));
-  }
+  std::move(callback).Run(std::move(title), GURL(url));
 }
 
 // |data_dst| is not used. It's only passed to be consistent with other

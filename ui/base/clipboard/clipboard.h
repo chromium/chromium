@@ -243,9 +243,10 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
       ReadFilenamesCallback callback) const = 0;
 
   // Reads a bookmark from the clipboard, if available.
-  // |title| or |url| may be null.
+  // `title` and `url` will both be empty if the clipboard does not contain a
+  // bookmark.
   virtual void ReadBookmark(const std::optional<DataTransferEndpoint>& data_dst,
-                            ReadBookmarkCallback callback) const;
+                            ReadBookmarkCallback callback) const = 0;
 
   // Reads data from the clipboard with the given format type. Stores result
   // as a byte vector.
@@ -261,9 +262,6 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
   virtual void ReadText(ClipboardBuffer buffer,
                         const DataTransferEndpoint* data_dst,
                         std::u16string* result) const = 0;
-  virtual void ReadBookmark(const DataTransferEndpoint* data_dst,
-                            std::u16string* title,
-                            std::string* url) const = 0;
 
   // Returns an estimate of the time the clipboard was last updated.  If the
   // time is unknown, returns Time::Time().

@@ -23,24 +23,14 @@ namespace bookmarks {
 namespace {
 
 #if !BUILDFLAG(IS_APPLE)
-std::unique_ptr<BookmarkNodeData> FromClipboardReadResult(std::string result) {
-  auto data = std::make_unique<BookmarkNodeData>();
-  if (!result.empty()) {
-    if (data->ReadFromPickle(
-            base::PickleIterator::WithData(base::as_byte_span(result)))) {
-      CHECK(data->is_valid());
-      return data;
-    }
-  }
-
-  std::u16string title;
-  std::string url;
-  ui::Clipboard::GetForCurrentThread()->ReadBookmark(
-      /* data_dst = */ nullptr, &title, &url);
-  if (!url.empty()) {
+std::unique_ptr<BookmarkNodeData> FromClipboardBookmarkReadResult(
+    std::unique_ptr<BookmarkNodeData> data,
+    std::u16string title,
+    GURL url) {
+  if (url.is_valid()) {
     BookmarkNodeData::Element element;
     element.is_url = true;
-    element.url = GURL(url);
+    element.url = url;
     element.title = title;
 
     data->elements.clear();
@@ -51,10 +41,34 @@ std::unique_ptr<BookmarkNodeData> FromClipboardReadResult(std::string result) {
   return nullptr;
 }
 
+void OnReadBookmarkFromClipboardComplete(
+    base::OnceCallback<void(std::unique_ptr<BookmarkNodeData>)> callback,
+    std::unique_ptr<BookmarkNodeData> data,
+    std::u16string title,
+    GURL url) {
+  std::move(callback).Run(
+      FromClipboardBookmarkReadResult(std::move(data), title, url));
+}
+
 void OnReadDataFromClipboardComplete(
     base::OnceCallback<void(std::unique_ptr<BookmarkNodeData>)> callback,
     std::string result) {
-  std::move(callback).Run(FromClipboardReadResult(std::move(result)));
+  auto data = std::make_unique<BookmarkNodeData>();
+  if (!result.empty() &&
+      data->ReadFromPickle(
+          base::PickleIterator::WithData(base::as_byte_span(result)))) {
+    CHECK(data->is_valid());
+    std::move(callback).Run(std::move(data));
+    return;
+  }
+
+  // If `ReadFromPickle` failed, `data` might have `profile_path_` set (see
+  // `BookmarkNodeData::ReadFromPickle`). We want to preserve it when falling
+  // back to `ReadBookmark`.
+  ui::Clipboard::GetForCurrentThread()->ReadBookmark(
+      /*data_dst=*/std::nullopt,
+      base::BindOnce(&OnReadBookmarkFromClipboardComplete, std::move(callback),
+                     std::move(data)));
 }
 #endif  // !BUILDFLAG(IS_APPLE)
 

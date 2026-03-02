@@ -9,6 +9,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/history/history_service_factory.h"
@@ -296,6 +297,11 @@ class TypedNavigationUpgradeThrottleBrowserTest
         ui::ClipboardBuffer::kCopyPaste);
     SetClipboardText(base::UTF8ToUTF16(hostname));
     EXPECT_TRUE(chrome::ExecuteCommand(browser(), IDC_PASTE));
+
+    // Wait for the asynchronous paste to complete.
+    ASSERT_TRUE(base::test::RunUntil(
+        [&]() { return omnibox()->GetText() == base::UTF8ToUTF16(hostname); }));
+
     WaitForAutocompleteControllerDone();
     // Hit enter and wait for the navigation(s).
     content::TestNavigationObserver navigation_observer(contents,

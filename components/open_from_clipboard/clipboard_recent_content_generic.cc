@@ -72,10 +72,10 @@ void ClipboardRecentContentGeneric::GetRecentURLFromClipboard(
       ui::EndpointType::kDefault, {.notify_if_restricted = false});
 
 #if BUILDFLAG(IS_ANDROID)
-  std::string gurl_string;
-  ui::Clipboard::GetForCurrentThread()->ReadBookmark(&data_dst, nullptr,
-                                                     &gurl_string);
-  OnReadURLAsAsciiText(std::move(callback), std::move(gurl_string));
+  ui::Clipboard::GetForCurrentThread()->ReadBookmark(
+      std::move(data_dst),
+      base::BindOnce(&ClipboardRecentContentGeneric::OnReadURL,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
 #else
   ui::Clipboard::GetForCurrentThread()->ReadAsciiText(
       ui::ClipboardBuffer::kCopyPaste, std::move(data_dst),
@@ -94,23 +94,13 @@ void ClipboardRecentContentGeneric::OnReadURLAsAsciiText(
   // as a URL.  (Otherwise gurl will happily try to convert
   // "http://example.com extra words" into "http://example.com%20extra%20words",
   // which is not likely to be a useful or intended destination.)
+  GURL url;
   if (!gurl_string.empty() &&
       gurl_string.find_first_of(base::kWhitespaceASCII) == std::string::npos) {
-    GURL url(gurl_string);
-    if (url.is_valid() && IsAppropriateSuggestion(url)) {
-      std::move(callback).Run(std::move(url));
-      return;
-    }
+    url = GURL(gurl_string);
   }
 
-  // Fall back to unicode / UTF16, as some URLs may use international domain
-  // names, not punycode.
-  ui::DataTransferEndpoint data_dst = ui::DataTransferEndpoint(
-      ui::EndpointType::kDefault, {.notify_if_restricted = false});
-  ui::Clipboard::GetForCurrentThread()->ReadText(
-      ui::ClipboardBuffer::kCopyPaste, std::move(data_dst),
-      base::BindOnce(&ClipboardRecentContentGeneric::OnReadText,
-                     weak_factory_.GetWeakPtr(), std::move(callback)));
+  OnReadURL(std::move(callback), u"", std::move(url));
 }
 
 void ClipboardRecentContentGeneric::OnReadText(GetRecentURLCallback callback,
@@ -266,4 +256,22 @@ bool ClipboardRecentContentGeneric::IsAppropriateSuggestion(const GURL& url) {
 
   // Not a scheme we're allowed to return.
   return false;
+}
+
+void ClipboardRecentContentGeneric::OnReadURL(GetRecentURLCallback callback,
+                                              std::u16string title,
+                                              GURL url) {
+  if (url.is_valid() && IsAppropriateSuggestion(url)) {
+    std::move(callback).Run(std::move(url));
+    return;
+  }
+
+  // Fall back to unicode / UTF16, as some URLs may use international domain
+  // names, not punycode.
+  ui::DataTransferEndpoint data_dst = ui::DataTransferEndpoint(
+      ui::EndpointType::kDefault, {.notify_if_restricted = false});
+  ui::Clipboard::GetForCurrentThread()->ReadText(
+      ui::ClipboardBuffer::kCopyPaste, std::move(data_dst),
+      base::BindOnce(&ClipboardRecentContentGeneric::OnReadText,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
 }

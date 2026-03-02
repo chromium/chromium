@@ -859,16 +859,17 @@ void ClipboardNonBacked::ReadFilenames(
 #endif
 }
 
-void ClipboardNonBacked::ReadBookmark(const DataTransferEndpoint* data_dst,
-                                      std::u16string* title,
-                                      std::string* url) const {
+void ClipboardNonBacked::ReadBookmark(
+    const std::optional<DataTransferEndpoint>& data_dst,
+    ReadBookmarkCallback callback) const {
   DCHECK(CalledOnValidThread());
 
   const ClipboardInternal& clipboard_internal =
       GetInternalClipboard(ClipboardBuffer::kCopyPaste);
 
-  if (!clipboard_internal.IsReadAllowed(data_dst,
+  if (!clipboard_internal.IsReadAllowed(base::OptionalToPtr(data_dst),
                                         ClipboardInternalFormat::kBookmark)) {
+    std::move(callback).Run(std::u16string(), GURL());
     return;
   }
 
@@ -877,7 +878,10 @@ void ClipboardNonBacked::ReadBookmark(const DataTransferEndpoint* data_dst,
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   RecordRead(ClipboardFormatMetric::kBookmark);
-  clipboard_internal.ReadBookmark(title, url);
+  std::u16string title;
+  std::string url;
+  clipboard_internal.ReadBookmark(&title, &url);
+  std::move(callback).Run(std::move(title), GURL(url));
 
 #if BUILDFLAG(IS_CHROMEOS)
   ClipboardMonitor::GetInstance()->NotifyClipboardDataRead();

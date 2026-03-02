@@ -278,21 +278,21 @@ void TestClipboard::ReadFilenames(
 }
 
 // TODO(crbug.com/40704509): |data_dst| should be supported.
-void TestClipboard::ReadBookmark(const DataTransferEndpoint* data_dst,
-                                 std::u16string* title,
-                                 std::string* url) const {
+void TestClipboard::ReadBookmark(
+    const std::optional<DataTransferEndpoint>& data_dst,
+    ReadBookmarkCallback callback) const {
   const DataStore& store = GetDefaultStore();
-  if (!IsReadAllowed(store.data_src, data_dst)) {
+  if (!IsReadAllowed(store.data_src, base::OptionalToPtr(data_dst))) {
+    std::move(callback).Run(std::u16string(), GURL());
     return;
   }
 
-  if (url) {
-    auto it = store.data.find(ClipboardFormatType::UrlType());
-    if (it != store.data.end())
-      *url = it->second;
+  std::string url;
+  auto it = store.data.find(ClipboardFormatType::UrlType());
+  if (it != store.data.end()) {
+    url = it->second;
   }
-  if (title)
-    *title = base::UTF8ToUTF16(store.url_title);
+  std::move(callback).Run(base::UTF8ToUTF16(store.url_title), GURL(url));
 }
 
 void TestClipboard::ReadData(
