@@ -6,14 +6,17 @@
 
 #include <vector>
 
+#include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
 #include "chrome/browser/actor/android/actor_task_android.h"
+#include "chrome/browser/profiles/profile.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/actor/android/jni_headers/ActorKeyedServiceFactory_jni.h"
 #include "chrome/browser/actor/android/jni_headers/ActorKeyedService_jni.h"
-#include "chrome/browser/profiles/profile.h"
 
 using base::android::AttachCurrentThread;
 using base::android::JavaRef;
@@ -80,7 +83,12 @@ ActorKeyedServiceAndroid::GetActiveTasks(JNIEnv* env) {
     j_tasks.push_back(ActorTaskAndroid::GetForTask(const_cast<ActorTask*>(task))
                           ->GetJavaObject());
   }
-  return base::android::ToJavaArrayOfObjects(env, j_tasks);
+  // TODO(crbug.com/489134045): Try using JniType to convert this array.
+  return base::android::ToTypedJavaArrayOfObjects(
+      env, j_tasks,
+      base::android::GetClass(env,
+                              "org/chromium/chrome/browser/actor/ActorTask")
+          .obj());
 }
 
 int32_t ActorKeyedServiceAndroid::GetActiveTasksCount(JNIEnv* env) {

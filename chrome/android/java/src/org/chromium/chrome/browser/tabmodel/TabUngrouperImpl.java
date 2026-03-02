@@ -23,6 +23,7 @@ import org.chromium.components.browser_ui.widget.ActionConfirmationResult;
 import org.chromium.components.data_sharing.member_role.MemberRole;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -122,6 +123,12 @@ public class TabUngrouperImpl implements TabUngrouper {
         }
 
         @Override
+        public List<Integer> getOngoingActorTasks() {
+            // Intentionally returning an empty list to skip this check.
+            return Collections.emptyList();
+        }
+
+        @Override
         public void onPlaceholderTabsCreated(List<Tab> placeholderTabs) {
             // Intentional no-op as there is no possibility to undo this operation so the tabs do
             // not need to be tracked.
@@ -144,6 +151,13 @@ public class TabUngrouperImpl implements TabUngrouper {
             } else {
                 mActionConfirmationManager.processUngroupTabAttempt(adaptedCallback);
             }
+        }
+
+        @Override
+        public void showActorTaskDeletionConfirmationDialog(
+                Callback<@ActionConfirmationResult Integer> onResult) {
+            assert false : "Ungroup tab does not support actor task deletion dialogs.";
+            onResult.onResult(ActionConfirmationResult.IMMEDIATE_CONTINUE);
         }
 
         @Override

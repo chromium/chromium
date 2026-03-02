@@ -13,6 +13,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.actor.ActorServiceTabUtils;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabGroupUtils;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabGroupUtils.GroupsPendingDestroy;
 import org.chromium.chrome.browser.tab.Tab;
@@ -123,6 +124,18 @@ public class TabRemoverImpl implements TabRemover {
         }
 
         @Override
+        public List<Integer> getOngoingActorTasks() {
+            List<Tab> tabsToClose =
+                    mOriginalTabClosureParams.isAllTabs
+                            ? TabModelUtils.convertTabListToListOfTabs(
+                                    mTabGroupModelFilter.getTabModel())
+                            : mOriginalTabClosureParams.tabs;
+
+            return ActorServiceTabUtils.getOngoingActorTasks(
+                    mTabGroupModelFilter.getTabModel(), tabsToClose);
+        }
+
+        @Override
         public void onPlaceholderTabsCreated(List<Tab> placeholderTabs) {
             mPlaceholderTabs = placeholderTabs;
         }
@@ -139,12 +152,24 @@ public class TabRemoverImpl implements TabRemover {
                                 : mActionConfirmationManager.willSkipCloseTabAttempt();
                 listener.willPerformActionOrShowDialog(DialogType.SYNC, willSkipDialog);
             }
-            var adaptedCallback = adaptSyncOnResultCallback(onResult, listener);
+            var adaptedCallback = adaptOnResultCallback(onResult, listener, DialogType.SYNC);
             if (isTabGroup) {
                 mActionConfirmationManager.processDeleteGroupAttempt(adaptedCallback);
             } else {
                 mActionConfirmationManager.processCloseTabAttempt(adaptedCallback);
             }
+        }
+
+        @Override
+        public void showActorTaskDeletionConfirmationDialog(Callback<Integer> onResult) {
+            @Nullable TabModelActionListener listener = takeListener();
+            if (listener != null) {
+                listener.willPerformActionOrShowDialog(
+                        DialogType.ACTOR_TASK, /* willSkipDialog= */ false);
+            }
+
+            var adaptedCallback = adaptOnResultCallback(onResult, listener, DialogType.ACTOR_TASK);
+            mActionConfirmationManager.processActorTaskDeletionAttempt(adaptedCallback);
         }
 
         @Override
@@ -206,9 +231,10 @@ public class TabRemoverImpl implements TabRemover {
             };
         }
 
-        private Callback<@ActionConfirmationResult Integer> adaptSyncOnResultCallback(
+        private Callback<@ActionConfirmationResult Integer> adaptOnResultCallback(
                 Callback<@ActionConfirmationResult Integer> callback,
-                @Nullable TabModelActionListener listener) {
+                @Nullable TabModelActionListener listener,
+                @DialogType int dialogType) {
             return (@ActionConfirmationResult Integer result) -> {
                 boolean isImmediateContinue = result == ActionConfirmationResult.IMMEDIATE_CONTINUE;
                 // Sync dialogs interrupt the flow and as such undo operations after the dialog is
@@ -217,8 +243,8 @@ public class TabRemoverImpl implements TabRemover {
                 callback.onResult(result);
                 if (listener != null) {
                     @DialogType
-                    int dialogType = isImmediateContinue ? DialogType.NONE : DialogType.SYNC;
-                    listener.onConfirmationDialogResult(dialogType, result);
+                    int resultDialogType = isImmediateContinue ? DialogType.NONE : dialogType;
+                    listener.onConfirmationDialogResult(resultDialogType, result);
                 }
             };
         }
@@ -245,6 +271,12 @@ public class TabRemoverImpl implements TabRemover {
         }
 
         @Override
+        public List<Integer> getOngoingActorTasks() {
+            // Intentionally returning an empty list to skip this check.
+            return Collections.emptyList();
+        }
+
+        @Override
         public void onPlaceholderTabsCreated(List<Tab> placeholderTabs) {
             // Intentional no-op as there is no possibility to undo this operation so the tabs do
             // not need to be tracked.
@@ -253,6 +285,14 @@ public class TabRemoverImpl implements TabRemover {
         @Override
         public void showTabGroupDeletionConfirmationDialog(Callback<Integer> onResult) {
             assert false : "removeTab does not support tab group deletion dialogs.";
+
+            // This behavior is a safe default even if the assert trips.
+            onResult.onResult(ActionConfirmationResult.IMMEDIATE_CONTINUE);
+        }
+
+        @Override
+        public void showActorTaskDeletionConfirmationDialog(Callback<Integer> onResult) {
+            assert false : "removeTab does not support actor task deletion dialogs.";
 
             // This behavior is a safe default even if the assert trips.
             onResult.onResult(ActionConfirmationResult.IMMEDIATE_CONTINUE);

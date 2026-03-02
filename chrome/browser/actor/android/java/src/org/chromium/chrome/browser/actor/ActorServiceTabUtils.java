@@ -26,7 +26,7 @@ public class ActorServiceTabUtils {
      * @param tabs The list of {@link Tab}s to check for active tasks.
      * @return A list of active task IDs.
      */
-    public static List<@ActorTaskId Integer> getOnGoingActorTasks(
+    public static List<@ActorTaskId Integer> getOngoingActorTasks(
             @Nullable TabModel tabModel, @Nullable List<Tab> tabs) {
         if (tabModel == null || tabs == null || tabs.isEmpty()) return Collections.emptyList();
         Profile profile = tabModel.getProfile();

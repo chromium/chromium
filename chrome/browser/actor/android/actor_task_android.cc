@@ -40,7 +40,7 @@ ActorTaskAndroid* ActorTaskAndroid::GetForTask(ActorTask* task) {
 ActorTaskAndroid::ActorTaskAndroid(ActorTask* task) : task_(task) {
   JNIEnv* env = base::android::AttachCurrentThread();
   java_obj_.Reset(env, Java_ActorTask_Constructor(
-                           env, reinterpret_cast<int64_t>(task_.get()),
+                           env, reinterpret_cast<int64_t>(this),
                            task_->id().GetUnsafeValue(),
                            ConvertUTF8ToJavaString(env, task_->title())));
 }
