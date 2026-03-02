@@ -181,13 +181,13 @@ class NET_EXPORT UDPSocketPosix {
   int AllowAddressSharingForMulticast();
 
   // Joins the multicast group.
-  // |group_address| is the group address to join, could be either
+  // `group_address` is the group address to join, could be either
   // an IPv4 or IPv6 address.
   // Returns a net error code.
   int JoinGroup(const IPAddress& group_address) const;
 
   // Leaves the multicast group.
-  // |group_address| is the group address to leave, could be either
+  // `group_address` is the group address to leave, could be either
   // an IPv4 or IPv6 address. If the socket hasn't joined the group,
   // it will be ignored.
   // It's optional to leave the multicast group before destroying
@@ -195,7 +195,24 @@ class NET_EXPORT UDPSocketPosix {
   // Returns a net error code.
   int LeaveGroup(const IPAddress& group_address) const;
 
-  // Sets interface to use for multicast. If |interface_index| set to 0,
+  // Joins a source-specific multicast (SSM) group as defined in RFC 4607.
+  // `group_address` must be in the SSM range (232.0.0.0/8 for IPv4 or
+  // ff3x::/32 for IPv6).
+  // `source_address` specifies the unicast source to receive traffic from.
+  // Both addresses must be the same IP version.
+  // Uses IGMPv3 (IPv4) or MLDv2 (IPv6) protocol operations.
+  // Returns a net error code.
+  int JoinSourceGroup(const IPAddress& group_address,
+                      const IPAddress& source_address) const;
+
+  // Leaves a source-specific multicast (SSM) group.
+  // `group_address` and `source_address` must match a previous JoinSourceGroup
+  // call. Both addresses must be the same IP version.
+  // Returns a net error code.
+  int LeaveSourceGroup(const IPAddress& group_address,
+                       const IPAddress& source_address) const;
+
+  // Sets interface to use for multicast. If `interface_index` set to 0,
   // default interface is used.
   // Should be called before Bind().
   // Returns a net error code.
@@ -375,6 +392,14 @@ class NET_EXPORT UDPSocketPosix {
   // Applies |socket_options_| to |socket_|. Should be called before
   // Bind().
   int SetMulticastOptions();
+
+  // Helper for JoinSourceGroup/LeaveSourceGroup. Performs the setsockopt call
+  // with the specified `option` (MCAST_JOIN_SOURCE_GROUP or
+  // MCAST_LEAVE_SOURCE_GROUP).
+  int SetSourceGroupMembership(const IPAddress& group_address,
+                               const IPAddress& source_address,
+                               int option) const;
+
   int DoBind(const IPEndPoint& address);
   // Binds to a random port on |address|.
   int RandomBind(const IPAddress& address);

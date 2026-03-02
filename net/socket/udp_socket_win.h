@@ -317,6 +317,23 @@ class NET_EXPORT UDPSocketWin : public base::win::ObjectWatcher::Delegate {
   // Return a net error code.
   int LeaveGroup(const IPAddress& group_address) const;
 
+  // Joins a source-specific multicast (SSM) group as defined in RFC 4607.
+  // |group_address| must be in the SSM range (232.0.0.0/8 for IPv4 or
+  // ff3x::/32 for IPv6).
+  // |source_address| specifies the unicast source to receive traffic from.
+  // Both addresses must be the same IP version.
+  // Uses IGMPv3 (IPv4) or MLDv2 (IPv6) protocol operations.
+  // Returns a net error code.
+  int JoinSourceGroup(const IPAddress& group_address,
+                      const IPAddress& source_address) const;
+
+  // Leaves a source-specific multicast (SSM) group.
+  // |group_address| and |source_address| must match a previous JoinSourceGroup
+  // call. Both addresses must be the same IP version.
+  // Returns a net error code.
+  int LeaveSourceGroup(const IPAddress& group_address,
+                       const IPAddress& source_address) const;
+
   // Sets interface to use for multicast. If |interface_index| set to 0,
   // default interface is used.
   // Should be called before Bind().
@@ -470,6 +487,14 @@ class NET_EXPORT UDPSocketWin : public base::win::ObjectWatcher::Delegate {
   // Applies |socket_options_| to |socket_|. Should be called before
   // Bind().
   int SetMulticastOptions();
+
+  // Helper for JoinSourceGroup/LeaveSourceGroup. Performs the setsockopt call
+  // with the specified |option| (MCAST_JOIN_SOURCE_GROUP or
+  // MCAST_LEAVE_SOURCE_GROUP).
+  int SetSourceGroupMembership(const IPAddress& group_address,
+                               const IPAddress& source_address,
+                               int option) const;
+
   int DoBind(const IPEndPoint& address);
 
   // Configures opened `socket_` depending on whether it uses nonblocking IO.

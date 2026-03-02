@@ -27,6 +27,7 @@
 #include "net/base/net_errors.h"
 #include "net/base/network_interfaces.h"
 #include "net/base/port_util.h"
+#include "net/base/sockaddr_storage.h"
 #include "net/base/test_completion_callback.h"
 #include "net/log/net_log_event_type.h"
 #include "net/log/net_log_source.h"
@@ -44,10 +45,14 @@
 #include "testing/platform_test.h"
 
 #if !BUILDFLAG(IS_WIN)
+#include <ifaddrs.h>
+#include <net/if.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
 #else
 #include <winsock2.h>
+
+#include <iphlpapi.h>
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
@@ -71,6 +76,14 @@ using testing::Not;
 namespace net {
 
 namespace {
+
+// Whether Source-Specific Multicast (SSM) is expected to work on this platform.
+#if defined(MCAST_JOIN_SOURCE_GROUP) && !BUILDFLAG(IS_ANDROID) && \
+    !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_FUCHSIA)
+constexpr bool kExpectSSMToWork = true;
+#else
+constexpr bool kExpectSSMToWork = false;
+#endif
 
 // Creates an address from ip address and port and writes it to |*address|.
 bool CreateUDPAddress(const std::string& ip_str,
@@ -834,7 +847,7 @@ TEST_F(UDPSocketTest, MAYBE_SharedMulticastAddress) {
 
   // Setup second receiving socket.
   UDPServerSocket socket2(nullptr, NetLogSource());
-  socket2.AllowAddressSharingForMulticast(), IsOk();
+  socket2.AllowAddressSharingForMulticast();
   ASSERT_THAT(socket2.SetMulticastInterface(interfaces[0].interface_index),
               IsOk());
   ASSERT_THAT(socket2.Listen(receive_address), IsOk());
@@ -2131,6 +2144,346 @@ TEST_F(UDPSocketTest, LimitConnectMultithreaded) {
   threads.clear();
 
   EXPECT_EQ(0, GetGlobalUDPSocketCountForTesting());
+}
+
+// Helper to get addresses of a specific family from network interfaces.
+// Returns addresses suitable for use as SSM source addresses.
+// For IPv6, filters out link-local addresses (fe80::) which don't work
+// reliably with SSM on some platforms.
+std::vector<IPAddress> GetLocalAddresses(AddressFamily family) {
+  std::vector<IPAddress> addresses;
+  NetworkInterfaceList interfaces;
+  if (!GetNetworkList(&interfaces, INCLUDE_HOST_SCOPE_VIRTUAL_INTERFACES)) {
+    return addresses;
+  }
+  const size_t expected_size = (family == ADDRESS_FAMILY_IPV4)
+                                   ? IPAddress::kIPv4AddressSize
+                                   : IPAddress::kIPv6AddressSize;
+  for (const auto& iface : interfaces) {
+    if (iface.address.size() == expected_size) {
+      // Skip link-local addresses for IPv6 as they don't work with SSM.
+      if (family == ADDRESS_FAMILY_IPV6 && iface.address.IsLinkLocal()) {
+        continue;
+      }
+      addresses.push_back(iface.address);
+    }
+  }
+  return addresses;
+}
+
+// Tests for Source-Specific Multicast (SSM)
+
+TEST_F(UDPSocketTest, JoinSourceGroupIPv4) {
+  IPAddress source_address;
+  if constexpr (BUILDFLAG(IS_MAC)) {
+    // macOS requires routable source addresses for SSM.
+    std::vector<IPAddress> addresses = GetLocalAddresses(ADDRESS_FAMILY_IPV4);
+    if (addresses.empty()) {
+      GTEST_SKIP() << "No IPv4 address found for this test on macOS";
+    }
+    source_address = addresses[0];
+  } else {
+    // Non-macOS platforms: use documentation address (RFC 5737)
+    EXPECT_TRUE(source_address.AssignFromIPLiteral("192.0.2.1"));
+  }
+
+  UDPSocket socket(DatagramSocket::DEFAULT_BIND, nullptr, NetLogSource());
+
+  IPEndPoint local_address(IPAddress::IPv4AllZeros(), 0);
+  EXPECT_THAT(socket.Open(ADDRESS_FAMILY_IPV4), IsOk());
+  EXPECT_THAT(socket.Bind(local_address), IsOk());
+
+  IPAddress group_address;
+  EXPECT_TRUE(group_address.AssignFromIPLiteral("232.1.1.1"));
+
+  int rv = socket.JoinSourceGroup(group_address, source_address);
+  if (kExpectSSMToWork) {
+    EXPECT_THAT(rv, IsOk());
+    EXPECT_THAT(socket.LeaveSourceGroup(group_address, source_address), IsOk());
+  } else {
+    EXPECT_EQ(ERR_NOT_IMPLEMENTED, rv);
+  }
+}
+
+TEST_F(UDPSocketTest, JoinSourceGroupIPv6) {
+  IPAddress source_address;
+  if constexpr (BUILDFLAG(IS_MAC)) {
+    // macOS requires routable source addresses for SSM.
+    std::vector<IPAddress> addresses = GetLocalAddresses(ADDRESS_FAMILY_IPV6);
+    if (addresses.empty()) {
+      GTEST_SKIP() << "No IPv6 address found for this test on macOS";
+    }
+    source_address = addresses[0];
+  } else {
+    // Non-macOS platforms: use documentation address (RFC 3849)
+    EXPECT_TRUE(source_address.AssignFromIPLiteral("2001:db8::1"));
+  }
+
+  UDPSocket socket(DatagramSocket::DEFAULT_BIND, nullptr, NetLogSource());
+
+  IPEndPoint local_address(IPAddress::IPv6AllZeros(), 0);
+  EXPECT_THAT(socket.Open(ADDRESS_FAMILY_IPV6), IsOk());
+  EXPECT_THAT(socket.Bind(local_address), IsOk());
+
+  IPAddress group_address;
+  EXPECT_TRUE(group_address.AssignFromIPLiteral("ff3e::1234"));
+
+  int rv = socket.JoinSourceGroup(group_address, source_address);
+  if (kExpectSSMToWork) {
+    EXPECT_THAT(rv, IsOk());
+    EXPECT_THAT(socket.LeaveSourceGroup(group_address, source_address), IsOk());
+  } else {
+    EXPECT_EQ(ERR_NOT_IMPLEMENTED, rv);
+  }
+}
+
+TEST_F(UDPSocketTest, JoinSourceGroupNotConnected) {
+  UDPSocket socket(DatagramSocket::DEFAULT_BIND, nullptr, NetLogSource());
+
+  EXPECT_THAT(socket.Open(ADDRESS_FAMILY_IPV4), IsOk());
+
+  IPAddress group_address;
+  EXPECT_TRUE(group_address.AssignFromIPLiteral("232.1.1.1"));
+
+  IPAddress source_address;
+  EXPECT_TRUE(source_address.AssignFromIPLiteral("192.0.2.1"));
+
+  EXPECT_THAT(socket.JoinSourceGroup(group_address, source_address),
+              IsError(ERR_SOCKET_NOT_CONNECTED));
+}
+
+TEST_F(UDPSocketTest, JoinSourceGroupIPv6NotConnected) {
+  UDPSocket socket(DatagramSocket::DEFAULT_BIND, nullptr, NetLogSource());
+
+  EXPECT_THAT(socket.Open(ADDRESS_FAMILY_IPV6), IsOk());
+
+  IPAddress group_address;
+  EXPECT_TRUE(group_address.AssignFromIPLiteral("ff3e::1234"));
+
+  IPAddress source_address;
+  EXPECT_TRUE(source_address.AssignFromIPLiteral("2001:db8::1"));
+
+  EXPECT_THAT(socket.JoinSourceGroup(group_address, source_address),
+              IsError(ERR_SOCKET_NOT_CONNECTED));
+}
+
+TEST_F(UDPSocketTest, LeaveSourceGroupNotConnected) {
+  UDPSocket socket(DatagramSocket::DEFAULT_BIND, nullptr, NetLogSource());
+
+  EXPECT_THAT(socket.Open(ADDRESS_FAMILY_IPV4), IsOk());
+
+  IPAddress group_address;
+  EXPECT_TRUE(group_address.AssignFromIPLiteral("232.1.1.1"));
+
+  IPAddress source_address;
+  EXPECT_TRUE(source_address.AssignFromIPLiteral("192.0.2.1"));
+
+  EXPECT_THAT(socket.LeaveSourceGroup(group_address, source_address),
+              IsError(ERR_SOCKET_NOT_CONNECTED));
+}
+
+TEST_F(UDPSocketTest, LeaveSourceGroupIPv6NotConnected) {
+  UDPSocket socket(DatagramSocket::DEFAULT_BIND, nullptr, NetLogSource());
+
+  EXPECT_THAT(socket.Open(ADDRESS_FAMILY_IPV6), IsOk());
+
+  IPAddress group_address;
+  EXPECT_TRUE(group_address.AssignFromIPLiteral("ff3e::1234"));
+
+  IPAddress source_address;
+  EXPECT_TRUE(source_address.AssignFromIPLiteral("2001:db8::1"));
+
+  EXPECT_THAT(socket.LeaveSourceGroup(group_address, source_address),
+              IsError(ERR_SOCKET_NOT_CONNECTED));
+}
+
+TEST_F(UDPSocketTest, JoinSourceGroupMismatchedIPVersions) {
+  UDPSocket socket(DatagramSocket::DEFAULT_BIND, nullptr, NetLogSource());
+
+  IPEndPoint local_address(IPAddress::IPv4AllZeros(), 0);
+  EXPECT_THAT(socket.Open(ADDRESS_FAMILY_IPV4), IsOk());
+  EXPECT_THAT(socket.Bind(local_address), IsOk());
+
+  IPAddress group_address;
+  EXPECT_TRUE(group_address.AssignFromIPLiteral("232.1.1.1"));  // IPv4
+
+  IPAddress source_address;
+  EXPECT_TRUE(source_address.AssignFromIPLiteral("2001:db8::1"));  // IPv6
+
+  // Should fail because IP versions don't match
+  EXPECT_THAT(socket.JoinSourceGroup(group_address, source_address),
+              IsError(ERR_INVALID_ARGUMENT));
+}
+
+TEST_F(UDPSocketTest, JoinSourceGroupMultipleSourcesIPv4) {
+  if (!kExpectSSMToWork) {
+    GTEST_SKIP() << "SSM not supported on this platform";
+  }
+
+  IPAddress source1;
+  IPAddress source2;
+  if constexpr (BUILDFLAG(IS_MAC)) {
+    // macOS requires routable source addresses for SSM.
+    std::vector<IPAddress> addresses = GetLocalAddresses(ADDRESS_FAMILY_IPV4);
+    if (addresses.size() < 2) {
+      GTEST_SKIP() << "Need at least 2 IPv4 addresses for this test on macOS";
+    }
+    source1 = addresses[0];
+    source2 = addresses[1];
+  } else {
+    // Non-macOS platforms: use documentation addresses (RFC 5737)
+    EXPECT_TRUE(source1.AssignFromIPLiteral("192.0.2.1"));
+    EXPECT_TRUE(source2.AssignFromIPLiteral("192.0.2.2"));
+  }
+
+  UDPSocket socket(DatagramSocket::DEFAULT_BIND, nullptr, NetLogSource());
+  IPEndPoint local_address(IPAddress::IPv4AllZeros(), 0);
+  EXPECT_THAT(socket.Open(ADDRESS_FAMILY_IPV4), IsOk());
+  EXPECT_THAT(socket.Bind(local_address), IsOk());
+
+  IPAddress group_address;
+  EXPECT_TRUE(group_address.AssignFromIPLiteral("232.1.1.1"));
+
+  // Join same group from two different sources
+  EXPECT_THAT(socket.JoinSourceGroup(group_address, source1), IsOk());
+  EXPECT_THAT(socket.JoinSourceGroup(group_address, source2), IsOk());
+
+  // Leave both
+  EXPECT_THAT(socket.LeaveSourceGroup(group_address, source1), IsOk());
+  EXPECT_THAT(socket.LeaveSourceGroup(group_address, source2), IsOk());
+}
+
+TEST_F(UDPSocketTest, LeaveSourceGroupNotJoined) {
+  UDPSocket socket(DatagramSocket::DEFAULT_BIND, nullptr, NetLogSource());
+
+  IPEndPoint local_address(IPAddress::IPv4AllZeros(), 0);
+  EXPECT_THAT(socket.Open(ADDRESS_FAMILY_IPV4), IsOk());
+  EXPECT_THAT(socket.Bind(local_address), IsOk());
+
+  IPAddress group_address;
+  EXPECT_TRUE(group_address.AssignFromIPLiteral("232.1.1.1"));
+
+  IPAddress source_address;
+  EXPECT_TRUE(source_address.AssignFromIPLiteral("192.0.2.1"));
+
+  // Try to leave a group we never joined - behavior may vary by platform
+  // but should not crash
+  socket.LeaveSourceGroup(group_address, source_address);
+}
+
+TEST_F(UDPSocketTest, JoinSourceGroupMultipleSourcesIPv6) {
+  if (!kExpectSSMToWork) {
+    GTEST_SKIP() << "SSM not supported on this platform";
+  }
+
+  IPAddress source1;
+  IPAddress source2;
+  if constexpr (BUILDFLAG(IS_MAC)) {
+    // macOS requires routable source addresses for SSM.
+    std::vector<IPAddress> addresses = GetLocalAddresses(ADDRESS_FAMILY_IPV6);
+    if (addresses.size() < 2) {
+      GTEST_SKIP() << "Need at least 2 IPv6 addresses for this test on macOS";
+    }
+    source1 = addresses[0];
+    source2 = addresses[1];
+  } else {
+    // Non-macOS platforms: use documentation addresses (RFC 3849)
+    EXPECT_TRUE(source1.AssignFromIPLiteral("2001:db8::1"));
+    EXPECT_TRUE(source2.AssignFromIPLiteral("2001:db8::2"));
+  }
+
+  UDPSocket socket(DatagramSocket::DEFAULT_BIND, nullptr, NetLogSource());
+  IPEndPoint local_address(IPAddress::IPv6AllZeros(), 0);
+  EXPECT_THAT(socket.Open(ADDRESS_FAMILY_IPV6), IsOk());
+  EXPECT_THAT(socket.Bind(local_address), IsOk());
+
+  IPAddress group_address;
+  EXPECT_TRUE(group_address.AssignFromIPLiteral("ff3e::1234"));
+
+  // Join same group from two different sources
+  EXPECT_THAT(socket.JoinSourceGroup(group_address, source1), IsOk());
+  EXPECT_THAT(socket.JoinSourceGroup(group_address, source2), IsOk());
+
+  // Leave both
+  EXPECT_THAT(socket.LeaveSourceGroup(group_address, source1), IsOk());
+  EXPECT_THAT(socket.LeaveSourceGroup(group_address, source2), IsOk());
+}
+
+// Helper to check if multi-NIC is available for testing.
+// Uses net::GetNetworkList() for cross-platform interface enumeration.
+// GetNetworkList() already excludes loopback interfaces.
+bool HasMultipleNetworkInterfaces() {
+  NetworkInterfaceList interfaces;
+  if (!GetNetworkList(&interfaces, INCLUDE_HOST_SCOPE_VIRTUAL_INTERFACES)) {
+    return false;
+  }
+  return interfaces.size() >= 2;
+}
+
+// Multi-NIC SSM Test for IPv4: Verifies SSM works on systems with multiple interfaces.
+TEST_F(UDPSocketTest, SSMSourceFilteringMultiNICIPv4) {
+  if (!kExpectSSMToWork) {
+    GTEST_SKIP() << "SSM not supported on this platform";
+  }
+  if (!HasMultipleNetworkInterfaces()) {
+    GTEST_SKIP() << "Multi-NIC not available";
+  }
+
+  std::vector<IPAddress> addresses = GetLocalAddresses(ADDRESS_FAMILY_IPV4);
+  if (addresses.size() < 2) {
+    GTEST_SKIP() << "Need at least 2 IPv4 addresses for this test";
+  }
+  IPAddress source_address1 = addresses[0];
+  IPAddress source_address2 = addresses[1];
+
+  UDPSocket socket(DatagramSocket::DEFAULT_BIND, nullptr, NetLogSource());
+  IPEndPoint local_address(IPAddress::IPv4AllZeros(), 0);
+  EXPECT_THAT(socket.Open(ADDRESS_FAMILY_IPV4), IsOk());
+  EXPECT_THAT(socket.Bind(local_address), IsOk());
+
+  IPAddress group_address;
+  EXPECT_TRUE(group_address.AssignFromIPLiteral("232.1.1.1"));
+
+  // Join group from two different sources
+  EXPECT_THAT(socket.JoinSourceGroup(group_address, source_address1), IsOk());
+  EXPECT_THAT(socket.JoinSourceGroup(group_address, source_address2), IsOk());
+
+  // Clean up
+  EXPECT_THAT(socket.LeaveSourceGroup(group_address, source_address1), IsOk());
+  EXPECT_THAT(socket.LeaveSourceGroup(group_address, source_address2), IsOk());
+}
+
+// Multi-NIC SSM Test for IPv6: Verifies SSM works on systems with multiple interfaces.
+TEST_F(UDPSocketTest, SSMSourceFilteringMultiNICIPv6) {
+  if (!kExpectSSMToWork) {
+    GTEST_SKIP() << "SSM not supported on this platform";
+  }
+  if (!HasMultipleNetworkInterfaces()) {
+    GTEST_SKIP() << "Multi-NIC not available";
+  }
+
+  std::vector<IPAddress> addresses = GetLocalAddresses(ADDRESS_FAMILY_IPV6);
+  if (addresses.size() < 2) {
+    GTEST_SKIP() << "Need at least 2 IPv6 addresses for this test";
+  }
+  IPAddress source_address1 = addresses[0];
+  IPAddress source_address2 = addresses[1];
+
+  UDPSocket socket(DatagramSocket::DEFAULT_BIND, nullptr, NetLogSource());
+  IPEndPoint local_address(IPAddress::IPv6AllZeros(), 0);
+  EXPECT_THAT(socket.Open(ADDRESS_FAMILY_IPV6), IsOk());
+  EXPECT_THAT(socket.Bind(local_address), IsOk());
+
+  IPAddress group_address;
+  EXPECT_TRUE(group_address.AssignFromIPLiteral("ff3e::1234"));
+
+  // Join group from two different sources
+  EXPECT_THAT(socket.JoinSourceGroup(group_address, source_address1), IsOk());
+  EXPECT_THAT(socket.JoinSourceGroup(group_address, source_address2), IsOk());
+
+  // Clean up
+  EXPECT_THAT(socket.LeaveSourceGroup(group_address, source_address1), IsOk());
+  EXPECT_THAT(socket.LeaveSourceGroup(group_address, source_address2), IsOk());
 }
 
 }  // namespace net

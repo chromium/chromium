@@ -54,6 +54,7 @@
 #include "net/socket/socket_options.h"
 #include "net/socket/socket_tag.h"
 #include "net/socket/udp_net_log_parameters.h"
+#include "net/base/network_interfaces.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -67,6 +68,9 @@
 #endif  // BUILDFLAG(IS_APPLE)
 
 #if BUILDFLAG(IS_MAC)
+#include <ifaddrs.h>
+
+#include "base/files/scoped_file.h"
 #include "base/mac/mac_util.h"
 #endif  // BUILDFLAG(IS_MAC)
 
@@ -81,6 +85,117 @@ constexpr int kPortEnd = 65535;
 int GetSocketFDHash(int fd) {
   return fd ^ 1595649551;
 }
+
+#if BUILDFLAG(IS_MAC)
+// macOS: Resolves interface index for SSM operations (both IPv4 and IPv6).
+// Returns the interface index for routing to `destination_address`, or 0 if
+// not found. Uses a temporary UDP socket with connect() to determine the
+// outgoing interface via the kernel's routing table.
+uint32_t GetInterfaceForDestination(const IPAddress& destination_address) {
+  int family = destination_address.IsIPv4() ? AF_INET : AF_INET6;
+  base::ScopedFD sock(socket(family, SOCK_DGRAM, 0));
+  if (!sock.is_valid()) {
+    return 0;
+  }
+
+  // Connect to destination to determine the outgoing interface.
+  // This doesn't send any traffic - it just sets up the routing.
+  SockaddrStorage storage;
+  if (!IPEndPoint(destination_address, 1)
+           .ToSockAddr(storage.addr(), &storage.addr_len) ||
+      connect(sock.get(), storage.addr(), storage.addr_len) != 0) {
+    return 0;
+  }
+
+  SockaddrStorage local_storage;
+  if (getsockname(sock.get(), local_storage.addr(), &local_storage.addr_len) !=
+      0) {
+    return 0;
+  }
+
+  IPEndPoint local_endpoint;
+  if (!local_endpoint.FromSockAddr(local_storage.addr(),
+                                   local_storage.addr_len)) {
+    return 0;
+  }
+
+  // Get network interfaces list and find the one matching local address.
+  NetworkInterfaceList interfaces;
+  if (!GetNetworkList(&interfaces, INCLUDE_HOST_SCOPE_VIRTUAL_INTERFACES)) {
+    return 0;
+  }
+
+  for (const auto& iface : interfaces) {
+    if (iface.address == local_endpoint.address()) {
+      return iface.interface_index;
+    }
+  }
+
+  return 0;
+}
+#endif  // BUILDFLAG(IS_MAC)
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_FUCHSIA)
+// Helper for IPv4 SSM. Sets sin_len on macOS, no-op on Linux.
+group_source_req CreateIPv4SourceGroupRequest(const IPAddress& group_address,
+                                              const IPAddress& source_address,
+                                              uint32_t interface_index) {
+  group_source_req mreq = {};
+  mreq.gsr_interface = interface_index;
+
+  sockaddr_in* group = reinterpret_cast<sockaddr_in*>(&mreq.gsr_group);
+  group->sin_family = AF_INET;
+#if BUILDFLAG(IS_MAC)
+  group->sin_len = sizeof(sockaddr_in);
+#endif
+  group->sin_addr = ToInAddr(group_address);
+
+  sockaddr_in* source = reinterpret_cast<sockaddr_in*>(&mreq.gsr_source);
+  source->sin_family = AF_INET;
+#if BUILDFLAG(IS_MAC)
+  source->sin_len = sizeof(sockaddr_in);
+#endif
+  source->sin_addr = ToInAddr(source_address);
+
+  return mreq;
+}
+
+// Helper to populate a group_source_req struct for IPv6 SSM operations.
+group_source_req CreateIPv6SourceGroupRequest(const IPAddress& group_address,
+                                              const IPAddress& source_address,
+                                              uint32_t interface_index) {
+  group_source_req mreq = {};
+  mreq.gsr_interface = interface_index;
+
+  sockaddr_in6* group = reinterpret_cast<sockaddr_in6*>(&mreq.gsr_group);
+  group->sin6_family = AF_INET6;
+#if BUILDFLAG(IS_MAC)
+  group->sin6_len = sizeof(sockaddr_in6);
+#endif
+  group->sin6_addr = ToIn6Addr(group_address);
+
+  sockaddr_in6* source = reinterpret_cast<sockaddr_in6*>(&mreq.gsr_source);
+  source->sin6_family = AF_INET6;
+#if BUILDFLAG(IS_MAC)
+  source->sin6_len = sizeof(sockaddr_in6);
+#endif
+  source->sin6_addr = ToIn6Addr(source_address);
+
+  return mreq;
+}
+
+// Creates a group_source_req for either IPv4 or IPv6 based on the address type.
+group_source_req CreateSourceGroupRequest(const IPAddress& group_address,
+                                          const IPAddress& source_address,
+                                          uint32_t interface_index) {
+  if (group_address.IsIPv4()) {
+    return CreateIPv4SourceGroupRequest(group_address, source_address,
+                                        interface_index);
+  }
+  return CreateIPv6SourceGroupRequest(group_address, source_address,
+                                      interface_index);
+}
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_FUCHSIA)
 
 }  // namespace
 
@@ -1038,6 +1153,67 @@ int UDPSocketPosix::LeaveGroup(const IPAddress& group_address) const {
     default:
       NOTREACHED() << "Invalid address family";
   }
+}
+
+int UDPSocketPosix::SetSourceGroupMembership(const IPAddress& group_address,
+                                             const IPAddress& source_address,
+                                             int option) const {
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS) || BUILDFLAG(IS_FUCHSIA)
+  return ERR_NOT_IMPLEMENTED;
+#else
+  uint32_t interface_index = multicast_interface_;
+#if BUILDFLAG(IS_MAC)
+  // macOS currently requires explicit interface index for IGMPv3/MLDv2.
+  // Try to determine the interface; if it fails, pass 0 and let the kernel
+  // handle it (in case macOS adds automatic interface selection in the future).
+  if (interface_index == 0) {
+    interface_index = GetInterfaceForDestination(source_address);
+  }
+#endif
+
+  int expected_family = group_address.IsIPv4() ? AF_INET : AF_INET6;
+  if (addr_family_ != expected_family) {
+    return ERR_ADDRESS_INVALID;
+  }
+
+  group_source_req mreq =
+      CreateSourceGroupRequest(group_address, source_address, interface_index);
+  int proto = group_address.IsIPv4() ? IPPROTO_IP : IPPROTO_IPV6;
+  int rv = setsockopt(socket_, proto, option, &mreq, sizeof(mreq));
+  return rv < 0 ? MapSystemError(errno) : OK;
+#endif
+}
+
+int UDPSocketPosix::JoinSourceGroup(const IPAddress& group_address,
+                                    const IPAddress& source_address) const {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  if (!is_connected()) {
+    return ERR_SOCKET_NOT_CONNECTED;
+  }
+  // Validate that both addresses are the same IP version.
+  if (group_address.size() != source_address.size()) {
+    return ERR_INVALID_ARGUMENT;
+  }
+
+  return SetSourceGroupMembership(group_address, source_address,
+                                  MCAST_JOIN_SOURCE_GROUP);
+}
+
+int UDPSocketPosix::LeaveSourceGroup(const IPAddress& group_address,
+                                     const IPAddress& source_address) const {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  if (!is_connected()) {
+    return ERR_SOCKET_NOT_CONNECTED;
+  }
+  // Validate that both addresses are the same IP version.
+  if (group_address.size() != source_address.size()) {
+    return ERR_INVALID_ARGUMENT;
+  }
+
+  return SetSourceGroupMembership(group_address, source_address,
+                                  MCAST_LEAVE_SOURCE_GROUP);
 }
 
 int UDPSocketPosix::SetMulticastInterface(uint32_t interface_index) {

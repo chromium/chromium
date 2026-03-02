@@ -44,6 +44,58 @@
 
 namespace net {
 
+namespace {
+
+// Helper to populate a group_source_req struct for IPv4 SSM operations.
+group_source_req CreateIPv4SourceGroupRequest(const IPAddress& group_address,
+                                              const IPAddress& source_address,
+                                              uint32_t interface_index) {
+  group_source_req mreq = {};
+  mreq.gsr_interface = interface_index;
+
+  sockaddr_in* group = reinterpret_cast<sockaddr_in*>(&mreq.gsr_group);
+  group->sin_family = AF_INET;
+  group->sin_addr = ToInAddr(group_address);
+
+  sockaddr_in* source = reinterpret_cast<sockaddr_in*>(&mreq.gsr_source);
+  source->sin_family = AF_INET;
+  source->sin_addr = ToInAddr(source_address);
+
+  return mreq;
+}
+
+// Helper to populate a group_source_req struct for IPv6 SSM operations.
+group_source_req CreateIPv6SourceGroupRequest(const IPAddress& group_address,
+                                              const IPAddress& source_address,
+                                              uint32_t interface_index) {
+  group_source_req mreq = {};
+  mreq.gsr_interface = interface_index;
+
+  sockaddr_in6* group = reinterpret_cast<sockaddr_in6*>(&mreq.gsr_group);
+  group->sin6_family = AF_INET6;
+  group->sin6_addr = ToIn6Addr(group_address);
+
+  sockaddr_in6* source = reinterpret_cast<sockaddr_in6*>(&mreq.gsr_source);
+  source->sin6_family = AF_INET6;
+  source->sin6_addr = ToIn6Addr(source_address);
+
+  return mreq;
+}
+
+// Creates a group_source_req for either IPv4 or IPv6 based on the address type.
+group_source_req CreateSourceGroupRequest(const IPAddress& group_address,
+                                          const IPAddress& source_address,
+                                          uint32_t interface_index) {
+  if (group_address.IsIPv4()) {
+    return CreateIPv4SourceGroupRequest(group_address, source_address,
+                                        interface_index);
+  }
+  return CreateIPv6SourceGroupRequest(group_address, source_address,
+                                      interface_index);
+}
+
+}  // namespace
+
 // This class encapsulates all the state that has to be preserved as long as
 // there is a network IO operation in progress. If the owner UDPSocketWin
 // is destroyed while an operation is in progress, the Core is detached and it
@@ -1351,6 +1403,55 @@ int UDPSocketWin::LeaveGroup(const IPAddress& group_address) const {
   }
 }
 
+int UDPSocketWin::SetSourceGroupMembership(const IPAddress& group_address,
+                                           const IPAddress& source_address,
+                                           int option) const {
+  int expected_family = group_address.IsIPv4() ? AF_INET : AF_INET6;
+  if (addr_family_ != expected_family) {
+    return ERR_ADDRESS_INVALID;
+  }
+
+  group_source_req mreq =
+      CreateSourceGroupRequest(group_address, source_address,
+                               multicast_interface_);
+  int proto = group_address.IsIPv4() ? IPPROTO_IP : IPPROTO_IPV6;
+  int rv = setsockopt(socket_, proto, option,
+                      reinterpret_cast<const char*>(&mreq), sizeof(mreq));
+  return rv ? MapSystemError(WSAGetLastError()) : OK;
+}
+
+int UDPSocketWin::JoinSourceGroup(const IPAddress& group_address,
+                                  const IPAddress& source_address) const {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  if (!is_connected()) {
+    return ERR_SOCKET_NOT_CONNECTED;
+  }
+  // Validate that both addresses are the same IP version.
+  if (group_address.size() != source_address.size()) {
+    return ERR_INVALID_ARGUMENT;
+  }
+
+  return SetSourceGroupMembership(group_address, source_address,
+                                  MCAST_JOIN_SOURCE_GROUP);
+}
+
+int UDPSocketWin::LeaveSourceGroup(const IPAddress& group_address,
+                                   const IPAddress& source_address) const {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  if (!is_connected()) {
+    return ERR_SOCKET_NOT_CONNECTED;
+  }
+  // Validate that both addresses are the same IP version.
+  if (group_address.size() != source_address.size()) {
+    return ERR_INVALID_ARGUMENT;
+  }
+
+  return SetSourceGroupMembership(group_address, source_address,
+                                  MCAST_LEAVE_SOURCE_GROUP);
+}
+
 int UDPSocketWin::SetMulticastInterface(uint32_t interface_index) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (is_connected()) {
@@ -1536,7 +1637,7 @@ int DscpManager::PrepareForSend(const IPEndPoint& remote_address) {
     return ERR_INVALID_HANDLE;  // The closest net error to try again later.
   }
 
-  if (configured_.find(remote_address) != configured_.end()) {
+  if (configured_.contains(remote_address)) {
     return OK;
   }
 
