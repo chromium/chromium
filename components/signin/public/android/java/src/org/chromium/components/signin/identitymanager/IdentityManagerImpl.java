@@ -12,7 +12,6 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
-import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -20,6 +19,9 @@ import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.google_apis.gaia.CoreAccountId;
 import org.chromium.google_apis.gaia.GoogleServiceAuthError;
+
+import java.util.Arrays;
+import java.util.List;
 
 /** IdentityManager provides access to native IdentityManager's public API to java components. */
 @NullMarked
@@ -29,7 +31,6 @@ public class IdentityManagerImpl implements IdentityManager {
     private final ProfileOAuth2TokenServiceDelegate mProfileOAuth2TokenServiceDelegate;
 
     private final ObserverList<Observer> mObservers = new ObserverList<>();
-    private @Nullable Callback<CoreAccountInfo> mRefreshTokenUpdateObserver;
 
     /** Called by native to create an instance of IdentityManager. */
     @CalledByNative
@@ -115,6 +116,22 @@ public class IdentityManagerImpl implements IdentityManager {
         }
     }
 
+    /** Provides the information of all accounts that have refresh tokens. */
+    @Override
+    public List<AccountInfo> getExtendedAccountInfoForAccountsWithRefreshToken() {
+        final var accounts =
+                IdentityManagerImplJni.get()
+                        .getExtendedAccountInfoForAccountsWithRefreshToken(mNativeIdentityManager);
+        assert accounts != null;
+        return Arrays.asList(accounts);
+    }
+
+    /** Returns whether all accounts are loaded. */
+    @Override
+    public boolean areRefreshTokensLoaded() {
+        return IdentityManagerImplJni.get().areRefreshTokensLoaded(mNativeIdentityManager);
+    }
+
     /**
      * Called for all types of changes to the primary account such as - primary account set/cleared
      * or sync consent granted/revoked in C++.
@@ -129,8 +146,16 @@ public class IdentityManagerImpl implements IdentityManager {
     /** Called when the refresh token of the give account gets updated. */
     @CalledByNative
     private void onRefreshTokenUpdatedForAccount(CoreAccountInfo coreAccountInfo) {
-        if (mRefreshTokenUpdateObserver != null) {
-            mRefreshTokenUpdateObserver.onResult(coreAccountInfo);
+        for (Observer observer : mObservers) {
+            observer.onRefreshTokenUpdatedForAccount(coreAccountInfo);
+        }
+    }
+
+    /** Called when all refresh tokens are loaded. */
+    @CalledByNative
+    private void onRefreshTokensLoaded() {
+        for (Observer observer : mObservers) {
+            observer.onRefreshTokensLoaded();
         }
     }
 
@@ -139,16 +164,6 @@ public class IdentityManagerImpl implements IdentityManager {
         for (Observer observer : mObservers) {
             observer.onAccountsCookieDeletedByUserAction();
         }
-    }
-
-    /** Provides the information of all accounts that have refresh tokens. */
-    @VisibleForTesting
-    public CoreAccountInfo[] getAccountsWithRefreshTokens() {
-        return IdentityManagerImplJni.get().getAccountsWithRefreshTokens(mNativeIdentityManager);
-    }
-
-    public void setRefreshTokenUpdateObserverForTests(Callback<CoreAccountInfo> callback) {
-        mRefreshTokenUpdateObserver = callback;
     }
 
     /** Can be called by native code to convert from Java to the corresponding C++ object. */
@@ -177,11 +192,13 @@ public class IdentityManagerImpl implements IdentityManager {
         @Nullable AccountInfo findExtendedAccountInfoByEmailAddress(
                 long nativeIdentityManager, String email);
 
-        @JniType("std::vector<CoreAccountInfo>")
-        CoreAccountInfo[] getAccountsWithRefreshTokens(long nativeIdentityManager);
+        @JniType("std::vector<AccountInfo>")
+        AccountInfo[] getExtendedAccountInfoForAccountsWithRefreshToken(long nativeIdentityManager);
 
         void refreshAccountInfoIfStale(long nativeIdentityManager);
 
         boolean isClearPrimaryAccountAllowed(long nativeIdentityManager);
+
+        boolean areRefreshTokensLoaded(long nativeIdentityManager);
     }
 }

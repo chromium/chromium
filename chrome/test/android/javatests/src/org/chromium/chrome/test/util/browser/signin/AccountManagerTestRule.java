@@ -107,7 +107,9 @@ public class AccountManagerTestRule implements TestRule {
      * FakeAccountManagerFacade#blockGetAccounts()}.
      */
     public FakeAccountManagerFacade.UpdateBlocker blockGetAccountsUpdate() {
-        return mFakeAccountManagerFacade.blockGetAccounts();
+        mFakeIdentityManager.setAreRefreshTokensLoaded(false);
+        return mFakeAccountManagerFacade.blockGetAccounts(
+                () -> mFakeIdentityManager.setAreRefreshTokensLoaded(true));
     }
 
     /**
@@ -116,7 +118,9 @@ public class AccountManagerTestRule implements TestRule {
      * FakeAccountManagerFacade#blockGetAccountsAndPopulateCache()}.
      */
     public FakeAccountManagerFacade.UpdateBlocker blockGetAccountsUpdateAndPopulateCache() {
-        return mFakeAccountManagerFacade.blockGetAccountsAndPopulateCache();
+        mFakeIdentityManager.setAreRefreshTokensLoaded(false);
+        return mFakeAccountManagerFacade.blockGetAccountsAndPopulateCache(
+                () -> mFakeIdentityManager.setAreRefreshTokensLoaded(true));
     }
 
     /**

@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.signin;
 
 import androidx.test.filters.MediumTest;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -14,7 +15,6 @@ import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -28,7 +28,6 @@ import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestUtil;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
-import org.chromium.components.signin.identitymanager.IdentityManagerImpl;
 import org.chromium.components.signin.test.util.TestAccounts;
 
 import java.util.Arrays;
@@ -41,16 +40,18 @@ import java.util.Set;
  * <p>When a user signs in or when a signed in user adds a new accounts, the refresh token should
  * also be updated within {@link IdentityManager}. This is essential for having the accounts in
  * cookie jar and the device accounts consistent.
+ *
+ * <p>TODO(crbug.com/487537456): Merge this suite into @{link SigninManagerIntegrationTest}.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class AccountsReloadingTest {
-    private static class Observer implements Callback<CoreAccountInfo> {
+    private static class Observer implements IdentityManager.Observer {
         private final Set<CoreAccountInfo> mAccountsUpdated = new HashSet<>();
         private int mCallCount;
 
         @Override
-        public void onResult(CoreAccountInfo coreAccountInfo) {
+        public void onRefreshTokenUpdatedForAccount(CoreAccountInfo coreAccountInfo) {
             mAccountsUpdated.add(coreAccountInfo);
             ++mCallCount;
         }
@@ -66,20 +67,22 @@ public class AccountsReloadingTest {
 
     private final Observer mObserver = new Observer();
 
-    private IdentityManagerImpl mIdentityManager;
+    private IdentityManager mIdentityManager;
 
     @Before
     public void setUp() {
         mActivityTestRule.startOnBlankPage();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mIdentityManager =
-                            (IdentityManagerImpl)
-                                    IdentityServicesProvider.get()
-                                            .getIdentityManager(
-                                                    ProfileManager.getLastUsedRegularProfile());
-                    mIdentityManager.setRefreshTokenUpdateObserverForTests(mObserver);
+                    var profile = ProfileManager.getLastUsedRegularProfile();
+                    mIdentityManager = IdentityServicesProvider.get().getIdentityManager(profile);
+                    mIdentityManager.addObserver(mObserver);
                 });
+    }
+
+    @After
+    public void tearDown() {
+        ThreadUtils.runOnUiThreadBlocking(() -> mIdentityManager.removeObserver(mObserver));
     }
 
     @Test

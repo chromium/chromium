@@ -29,6 +29,7 @@ public class FakeIdentityManager implements IdentityManager {
     private @Nullable CoreAccountInfo mPrimaryAccount;
     private boolean mIsOnExtendedAccountInfoUpdatedBlocked;
     private boolean mIsClearPrimaryAccountAllowed;
+    private boolean mAreRefreshTokensLoaded = true;
 
     @Override
     public void addObserver(Observer observer) {
@@ -76,6 +77,16 @@ public class FakeIdentityManager implements IdentityManager {
     @MainThread
     @Override
     public void invalidateAccessToken(String accessToken) {}
+
+    @Override
+    public List<AccountInfo> getExtendedAccountInfoForAccountsWithRefreshToken() {
+        return new ArrayList<>(mExtendedAccountInfos.values());
+    }
+
+    @Override
+    public boolean areRefreshTokensLoaded() {
+        return mAreRefreshTokensLoaded;
+    }
 
     /**
      * Sets the extended account info. This account info is returned on future calls to {@link
@@ -127,6 +138,10 @@ public class FakeIdentityManager implements IdentityManager {
                         mPrimaryAccount = null;
                     }
                 });
+    }
+
+    public void setAreRefreshTokensLoaded(boolean areRefreshTokensLoaded) {
+        mAreRefreshTokensLoaded = areRefreshTokensLoaded;
     }
 
     public void setIsClearPrimaryAccountAllowed(boolean isAllowed) {

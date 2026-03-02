@@ -12,6 +12,8 @@ import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.google_apis.gaia.CoreAccountId;
 
+import java.util.List;
+
 /** IdentityManager provides access to native IdentityManager's public API to java components. */
 @NullMarked
 public interface IdentityManager {
@@ -20,6 +22,13 @@ public interface IdentityManager {
      * is a subset of native's IdentityManager::Observer.
      */
     interface Observer {
+
+        /** Called when all accounts are loaded. */
+        default void onRefreshTokensLoaded() {}
+
+        /** Called when the given account is updated. */
+        default void onRefreshTokenUpdatedForAccount(CoreAccountInfo coreAccountInfo) {}
+
         /**
          * Called for all types of changes to the primary account such as - primary account
          * set/cleared or sync consent granted/revoked in C++.
@@ -29,8 +38,8 @@ public interface IdentityManager {
         default void onPrimaryAccountChanged(PrimaryAccountChangeEvent eventDetails) {}
 
         /**
-         * Called when the Gaia cookie has been deleted explicitly by a user action, e.g. from
-         * the settings.
+         * Called when the Gaia cookie has been deleted explicitly by a user action, e.g. from the
+         * settings.
          */
         default void onAccountsCookieDeletedByUserAction() {}
 
@@ -70,6 +79,17 @@ public interface IdentityManager {
      * found, return a null value.
      */
     @Nullable AccountInfo findExtendedAccountInfoByEmailAddress(String email);
+
+    /**
+     * Returns an array of all accounts with refresh tokens.
+     *
+     * <p>Note: Returns an empty array if refresh tokens are not yet fully loaded. Use {@link
+     * #areRefreshTokensLoaded()} to verify the loading state before calling this method.
+     */
+    List<AccountInfo> getExtendedAccountInfoForAccountsWithRefreshToken();
+
+    /** Returns true if all accounts are loaded. */
+    boolean areRefreshTokensLoaded();
 
     /** Refreshes extended {@link AccountInfo} with image for all accounts with a refresh token. */
     // TODO(crbug.com/365057341): This doesn't need to be exposed in Java. Move this logic to

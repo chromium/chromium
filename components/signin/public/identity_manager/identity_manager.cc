@@ -630,6 +630,12 @@ void IdentityManager::OnRefreshTokensLoaded() {
   for (auto& observer : observer_list_) {
     observer.OnRefreshTokensLoaded();
   }
+#if BUILDFLAG(IS_ANDROID)
+  if (java_identity_manager_) {
+    Java_IdentityManagerImpl_onRefreshTokensLoaded(
+        base::android::AttachCurrentThread(), java_identity_manager_);
+  }
+#endif
 }
 
 void IdentityManager::OnEndBatchChanges() {

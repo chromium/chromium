@@ -122,12 +122,13 @@ public class SigninTestRule implements TestRule {
 
     /** See {@link FakeAccountManagerFacade#blockGetAccounts}. */
     public FakeAccountManagerFacade.UpdateBlocker blockGetAccountsUpdate() {
-        return mFakeAccountManagerFacade.blockGetAccounts();
+        return mFakeAccountManagerFacade.blockGetAccounts(/* postUnblockCallback= */ null);
     }
 
     /** See {@link FakeAccountManagerFacade#blockGetAccountsAndPopulateCache}. */
     public FakeAccountManagerFacade.UpdateBlocker blockGetAccountsUpdateAndPopulateCache() {
-        return mFakeAccountManagerFacade.blockGetAccountsAndPopulateCache();
+        return mFakeAccountManagerFacade.blockGetAccountsAndPopulateCache(
+                /* postUnblockCallback= */ null);
     }
 
     /**
