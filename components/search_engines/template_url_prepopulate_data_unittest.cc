@@ -604,15 +604,13 @@ TEST_F(TemplateURLPrepopulateDataTest, GetEngineTypeForAllPrepopulatedEngines) {
     std::unique_ptr<TemplateURLData> data =
         TemplateURLDataFromPrepopulatedEngine(*engine);
 
-    if (engine == &TemplateURLPrepopulateData::yahoo_jp &&
-        engine->migrate_to_id != 0) {
+    if (engine == &TemplateURLPrepopulateData::yahoo_jp) {
       // This is checking the deprecated version of Yahoo, for which we would be
       // using the post-migration SearchEngineType.
-      // TODO(crbug.com/446637115): Remove the redundant `migrate_to_id` check
-      // when the updated data rolls out.
+      ASSERT_EQ(engine->type, SEARCH_ENGINE_YAHOO);
       EXPECT_EQ(SEARCH_ENGINE_YAHOO_JP,
                 TemplateURL(*data).GetEngineType(SearchTermsData()));
-      return;
+      continue;
     }
 
     EXPECT_EQ(engine->type,
@@ -631,15 +629,13 @@ TEST_F(TemplateURLPrepopulateDataTest,
     std::unique_ptr<TemplateURLData> data =
         TemplateURLDataFromPrepopulatedEngine(*engine);
 
-    if (engine->type == SEARCH_ENGINE_YAHOO_JP &&
-        engine != &TemplateURLPrepopulateData::yahoo_jp) {
+    if (engine == &TemplateURLPrepopulateData::yahoo_jp_next) {
       // This is checking the post-migration version of Yahoo, but as migration
       // is disabled, the returned SearchEngineType would be the old one.
-      // TODO(crbug.com/446637115): Update the test with the exact engine when
-      // the updated data rolls out.
+      ASSERT_EQ(engine->type, SEARCH_ENGINE_YAHOO_JP);
       EXPECT_EQ(SEARCH_ENGINE_YAHOO,
                 TemplateURL(*data).GetEngineType(SearchTermsData()));
-      return;
+      continue;
     }
 
     EXPECT_EQ(engine->type,
