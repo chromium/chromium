@@ -246,4 +246,104 @@ TEST_F(ClipboardChangeEventTest,
                                     clipboard_change_event_handler, false);
 }
 
+// Regression test: FocusedFrameChanged() must not crash when the execution
+// context has been destroyed (e.g. during frame detachment). This reproduces
+// the null dereference crash in MaybeDispatchClipboardChangeEvent() reported
+// in crbug.com/1771962050.
+//
+// The real crash path is: Frame::Detach() -> DomWindow()->FrameDestroyed()
+// (which calls NotifyContextDestroyed(), making GetExecutionContext() return
+// null) -> FocusController::FrameDetached() -> SetFocusedFrame(nullptr) ->
+// NotifyFocusChangedObservers() -> FocusedFrameChanged() ->
+// MaybeDispatchClipboardChangeEvent() -> null dereference.
+TEST_F(ClipboardChangeEventTest, NoCrashWhenFocusChangedAfterContextDestroyed) {
+  ExecutionContext* execution_context = GetFrame().DomWindow();
+  GetFrame().GetSystemClipboard()->OnClipboardDataChanged({"text/plain"}, 1);
+
+  SetSecureOrigin(execution_context);
+  // Page is not focused so that DidUpdateData() sets
+  // fire_clipboardchange_on_focus_ = true.
+  SetPageFocus(false);
+
+  auto* clipboard_change_event_controller =
+      MakeGarbageCollected<ClipboardChangeEventController>(
+          *GetFrame().DomWindow()->navigator(), &GetDocument());
+
+  // Trigger clipboard change while unfocused. OnClipboardChanged() calls
+  // MaybeDispatchClipboardChangeEvent() which sees no focus and sets
+  // fire_clipboardchange_on_focus_ = true.
+  clipboard_change_event_controller->DidUpdateData();
+  test::RunPendingTasks();
+
+  // Simulate frame detachment by calling FrameDestroyed() directly on the
+  // DomWindow. This calls NotifyContextDestroyed(), making
+  // GetExecutionContext() return null (unit tests may call FrameDestroyed()
+  // manually per the code comments in LocalDOMWindow).
+  GetFrame().DomWindow()->FrameDestroyed();
+
+  // Calling FocusedFrameChanged() with a destroyed context must not crash.
+  // Before the fix: null dereference at *To<LocalDOMWindow>(context) in
+  // MaybeDispatchClipboardChangeEvent() because fire_clipboardchange_on_focus_
+  // is true and GetExecutionContext() returns null.
+  clipboard_change_event_controller->FocusedFrameChanged();
+}
+
+// Regression test: DidUpdateData() (via OnClipboardChanged) must not crash
+// when the execution context has been destroyed during frame detachment.
+TEST_F(ClipboardChangeEventTest,
+       NoCrashWhenClipboardChangedAfterContextDestroyed) {
+  ExecutionContext* execution_context = GetFrame().DomWindow();
+  GetFrame().GetSystemClipboard()->OnClipboardDataChanged({"text/plain"}, 1);
+
+  SetSecureOrigin(execution_context);
+  SetPageFocus(true);
+
+  auto* clipboard_change_event_controller =
+      MakeGarbageCollected<ClipboardChangeEventController>(
+          *GetFrame().DomWindow()->navigator(), &GetDocument());
+
+  // Simulate frame detachment.
+  GetFrame().DomWindow()->FrameDestroyed();
+
+  // OnClipboardChanged() already has a null check, so this should not crash.
+  clipboard_change_event_controller->DidUpdateData();
+  test::RunPendingTasks();
+}
+
+// Regression test: MaybeDispatchClipboardChangeEvent must not crash during
+// page teardown when fire_clipboardchange_on_focus_ is true. This simulates
+// the exact crash path through Page::WillBeDestroyed() -> Frame::Detach() ->
+// FocusController::FrameDetached() -> NotifyFocusChangedObservers().
+TEST_F(ClipboardChangeEventTest,
+       NoCrashDuringTeardownWithPendingFocusDispatch) {
+  ExecutionContext* execution_context = GetFrame().DomWindow();
+  GetFrame().GetSystemClipboard()->OnClipboardDataChanged({"text/plain"}, 1);
+
+  SetSecureOrigin(execution_context);
+  // First set page focused to establish the focused frame in FocusController
+  // (FocusHasChanged sets focused_frame_ = main_frame when focused is true).
+  SetPageFocus(true);
+
+  auto* clipboard_change_event_controller =
+      MakeGarbageCollected<ClipboardChangeEventController>(
+          *GetFrame().DomWindow()->navigator(), &GetDocument());
+
+  // Unfocus the page. This does NOT clear focused_frame_ (only updates
+  // is_active_ and is_focused_ flags). hasFocus() will now return false.
+  SetPageFocus(false);
+
+  // Trigger clipboard change while unfocused to set
+  // fire_clipboardchange_on_focus_ = true.
+  clipboard_change_event_controller->DidUpdateData();
+  test::RunPendingTasks();
+
+  // Do NOT call FrameDestroyed() — let PageTestBase::TearDown() destroy the
+  // page naturally. During teardown: Page::WillBeDestroyed() -> Frame::Detach()
+  // -> DomWindow()->FrameDestroyed() (context destroyed) ->
+  // FocusController::FrameDetached() -> SetFocusedFrame(nullptr) (because
+  // focused_frame_ == main_frame) -> NotifyFocusChangedObservers() ->
+  // FocusedFrameChanged() -> MaybeDispatchClipboardChangeEvent().
+  // Before the fix: crashes with null dereference.
+}
+
 }  // namespace blink
