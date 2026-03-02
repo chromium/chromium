@@ -38,6 +38,9 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/search_engines/settings/extensions/ExtensionSearchEngineAdapter.java",
     "java/src/org/chromium/chrome/browser/search_engines/settings/extensions/ExtensionSearchEngineCoordinator.java",
     "java/src/org/chromium/chrome/browser/search_engines/settings/extensions/ExtensionSearchEngineMediator.java",
+    "java/src/org/chromium/chrome/browser/search_engines/settings/inactive_shortcut/InactiveShortcutAdapter.java",
+    "java/src/org/chromium/chrome/browser/search_engines/settings/inactive_shortcut/InactiveShortcutCoordinator.java",
+    "java/src/org/chromium/chrome/browser/search_engines/settings/inactive_shortcut/InactiveShortcutMediator.java",
   ]
 
   srcjar_deps = [ ":jni_headers" ]
@@ -140,6 +143,7 @@ robolectric_library("junit") {
     "junit/src/org/chromium/chrome/browser/search_engines/settings/custom_site_search/AddSearchEngineDialogCoordinatorUnitTest.java",
     "junit/src/org/chromium/chrome/browser/search_engines/settings/custom_site_search/CustomSiteSearchMediatorUnitTest.java",
     "junit/src/org/chromium/chrome/browser/search_engines/settings/extensions/ExtensionSearchEngineMediatorUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/search_engines/settings/inactive_shortcut/InactiveShortcutMediatorUnitTest.java",
   ]
   deps = [
     ":java",
