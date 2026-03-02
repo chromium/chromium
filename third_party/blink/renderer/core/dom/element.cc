@@ -10316,10 +10316,11 @@ PseudoElement* Element::UpdatePseudoElement(
           !PseudoElementLayoutObjectIsNeeded(
               pseudo_id, element->GetComputedStyle(), this)) {
         generate_pseudo = false;
-        // If the content property is relying on attr() we should add the
-        // originating element's ComputedStyle to the pseudo-element style
-        // cache, so that when attribute value changes it will force style
-        // invalidation.
+        // If the content property is relying on attr(), we add the
+        // pseudo-element's ComputedStyle to the originating element's style
+        // cache, so that when the attribute value changes we will cause a
+        // pseudo-element update via
+        // ComputedStyle::Difference::kPseudoElementStyle.
         if (element->GetComputedStyle() &&
             element->GetComputedStyle()->HasAttrFunction() &&
             !GetComputedStyle()->GetCachedPseudoElementStyle(pseudo_id,
@@ -10383,9 +10384,10 @@ bool Element::SetAssociatedPseudoElement(
       pseudo_element->StyleForLayoutObject(style_recalc_context);
   if (!PseudoElementLayoutObjectIsNeeded(pseudo_id, pseudo_style, this)) {
     data_ = RareData()->SetPseudoElement(pseudo_id, nullptr, pseudo_argument);
-    // If the content property is relying on attr() we should add the
-    // originating element's ComputedStyle to the pseudo-element style cache, so
-    // that when attribute value changes it will force style invalidation.
+    // If the content property is relying on attr(), we add the pseudo-element's
+    // ComputedStyle to the originating element's style cache, so that when the
+    // attribute value changes we will cause a pseudo-element update via
+    // ComputedStyle::Difference::kPseudoElementStyle.
     if (pseudo_style && pseudo_style->HasAttrFunction() &&
         !GetComputedStyle()->GetCachedPseudoElementStyle(pseudo_id,
                                                          g_null_atom)) {
