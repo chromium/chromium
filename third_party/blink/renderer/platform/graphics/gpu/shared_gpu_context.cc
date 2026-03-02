@@ -306,7 +306,12 @@ bool SharedGpuContext::NativeMappableSharedImagesSupportedForCanvas2D() {
         .value();
   }
 
-  return MaySupportImageChromium() && Canvas2dImageChromiumEnabled();
+#if BUILDFLAG(IS_APPLE)
+  // Native mappable SIs are supported if canvas2D SIs are backed by IOSurfaces.
+  return Canvas2DSharedImagesBackedByIOSurface();
+#else
+  return false;
+#endif
 }
 
 void SharedGpuContext::
