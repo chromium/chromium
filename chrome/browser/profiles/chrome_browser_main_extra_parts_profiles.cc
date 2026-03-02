@@ -313,6 +313,7 @@
 #include "chrome/browser/search_resumption/start_suggest_service_factory.h"
 #include "chrome/browser/signin/android/signin_bridge_factory.h"
 #include "chrome/browser/signin/signin_manager_android_factory.h"
+#include "chrome/browser/ui/android/android_profile_browser_collection_service_factory.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/proto/discount_infos_db_content.pb.h"  // nogncheck
 #include "components/commerce/core/proto/merchant_signal_db_content.pb.h"
@@ -689,6 +690,7 @@ void ChromeBrowserMainExtraPartsProfiles::
   AiDataKeyedServiceFactory::GetInstance();
   AimEligibilityServiceFactory::GetInstance();
 #if BUILDFLAG(IS_ANDROID)
+  AndroidProfileBrowserCollectionServiceFactory::GetInstance();
   AndroidSmsOtpBackendFactory::GetInstance();
 #endif
   AnnouncementNotificationServiceFactory::GetInstance();
