@@ -136,6 +136,7 @@ class ScriptState;
 class ScriptValue;
 class ScrollIntoViewOptions;
 class ScrollMarkerGroupData;
+class ScrollResult;
 class ScrollMarkerPseudoElement;
 class ScrollToOptions;
 class SetHTMLOptions;
@@ -562,20 +563,20 @@ class CORE_EXPORT Element : public ContainerNode {
   virtual int scrollWidth();
   virtual int scrollHeight();
 
-  ScriptPromise<IDLUndefined> scrollIntoView(
+  ScriptPromise<ScrollResult> scrollIntoView(
       ScriptState* script_state,
       const V8UnionBooleanOrScrollIntoViewOptions* arg);
-  ScriptPromise<IDLUndefined> scrollIntoView(ScriptState* script_state,
+  ScriptPromise<ScrollResult> scrollIntoView(ScriptState* script_state,
                                              bool align_to_top = true);
-  ScriptPromise<IDLUndefined> scrollBy(ScriptState* script_state,
+  ScriptPromise<ScrollResult> scrollBy(ScriptState* script_state,
                                        double x,
                                        double y);
-  ScriptPromise<IDLUndefined> scrollBy(ScriptState* script_state,
+  ScriptPromise<ScrollResult> scrollBy(ScriptState* script_state,
                                        const ScrollToOptions*);
-  ScriptPromise<IDLUndefined> scrollTo(ScriptState* script_state,
+  ScriptPromise<ScrollResult> scrollTo(ScriptState* script_state,
                                        double x,
                                        double y);
-  ScriptPromise<IDLUndefined> scrollTo(ScriptState* script_state,
+  ScriptPromise<ScrollResult> scrollTo(ScriptState* script_state,
                                        const ScrollToOptions*);
 
   void scrollIntoViewForTesting(
@@ -585,7 +586,7 @@ class CORE_EXPORT Element : public ContainerNode {
   void scrollToForTesting(double x, double y);
 
   bool ScrollTo(const ScrollToOptions*,
-                ScriptPromiseResolver<IDLUndefined>* = nullptr);
+                ScriptPromiseResolver<ScrollResult>* = nullptr);
 
   // Returns the bounds of this Element, unclipped, in the coordinate space of
   // the local root's widget. That is, in the outermost main frame, this will
@@ -2158,13 +2159,13 @@ class CORE_EXPORT Element : public ContainerNode {
   bool HasSiblingBoxPseudoElements() const;
 
   bool ScrollLayoutBoxBy(const ScrollToOptions*,
-                         ScriptPromiseResolver<IDLUndefined>*);
+                         ScriptPromiseResolver<ScrollResult>*);
   bool ScrollLayoutBoxTo(const ScrollToOptions*,
-                         ScriptPromiseResolver<IDLUndefined>*);
+                         ScriptPromiseResolver<ScrollResult>*);
   bool ScrollFrameBy(const ScrollToOptions*,
-                     ScriptPromiseResolver<IDLUndefined>*);
+                     ScriptPromiseResolver<ScrollResult>*);
   bool ScrollFrameTo(const ScrollToOptions*,
-                     ScriptPromiseResolver<IDLUndefined>*);
+                     ScriptPromiseResolver<ScrollResult>*);
 
   bool HasElementFlag(ElementFlags mask) const;
   void SetElementFlag(ElementFlags, bool value = true);

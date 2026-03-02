@@ -44,6 +44,7 @@
 #include "cc/input/snap_selection_strategy.h"
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_scroll_result.h"
 #include "third_party/blink/renderer/core/animation/scroll_timeline.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/dom/scroll_marker_group_pseudo_element.h"
@@ -411,7 +412,7 @@ bool ScrollableArea::SetProgrammaticScrollOffset(
     const ScrollOffset& offset,
     cc::ScrollSourceType source_type,
     mojom::blink::ScrollBehavior behavior,
-    ScriptPromiseResolver<IDLUndefined>* resolver) {
+    ScriptPromiseResolver<ScrollResult>* resolver) {
   RegisterPromiseResolver(resolver);
   return SetScrollOffsetInternal(offset,
                                  mojom::blink::ScrollType::kProgrammatic,
@@ -657,7 +658,7 @@ mojom::blink::ScrollBehavior ScrollableArea::V8EnumToScrollBehavior(
 }
 
 void ScrollableArea::RegisterPromiseResolver(
-    ScriptPromiseResolver<IDLUndefined>* resolver) {
+    ScriptPromiseResolver<ScrollResult>* resolver) {
   if (promise_resolver_) {
     promise_resolver_->Resolve();
   }
