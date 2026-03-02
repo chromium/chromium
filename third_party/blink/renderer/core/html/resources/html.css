@@ -1096,13 +1096,13 @@ select:-internal-list-box:focus option:checked:disabled {
     select:-internal-list-box:not(:focus) option:checked:enabled:active {
         background-color: -internal-auto-base(
             light-dark(#cecece, #545454),
-            color-mix(in lab, currentColor 10%, transparent));
+            color-mix(currentColor 10%, transparent));
     }
     select:-internal-list-box option:checked:disabled:hover,
     select:-internal-list-box option:checked:disabled:active {
         background-color: -internal-auto-base(
             light-dark(#cecece, #545454),
-            color-mix(in lab, currentColor 50%, transparent));
+            color-mix(currentColor 50%, transparent));
     }
 }
 @supports not blink-feature(CustomizableSelectListbox) {
@@ -1117,7 +1117,7 @@ select:-internal-list-box:disabled option:checked,
 select:-internal-list-box option:checked:disabled,
 select:-internal-list-box option:checked:disabled:hover {
     @supports blink-feature(CustomizableSelectListbox) {
-        color: -internal-auto-base(light-dark(gray, #aaa), color-mix(in lab, currentColor 50%, transparent));
+        color: -internal-auto-base(light-dark(gray, #aaa), color-mix(currentColor 50%, transparent));
     }
     @supports not blink-feature(CustomizableSelectListbox) {
         color: light-dark(gray, #aaa);
@@ -1149,7 +1149,7 @@ select:-internal-list-box:focus-visible option:-internal-multi-select-focus {
 
 @supports blink-feature(CustomizableSelectListbox) {
     select option:enabled:hover {
-        background-color: -internal-auto-base(initial, color-mix(in lab, currentColor 10%, transparent));
+        background-color: -internal-auto-base(initial, color-mix(currentColor 10%, transparent));
     }
 }
 @supports not blink-feature(CustomizableSelectListbox) {
@@ -1229,7 +1229,7 @@ select[disabled]>option {
     @supports blink-feature(CustomizableSelectListbox) {
         color: -internal-auto-base(
             light-dark(GrayText, #aaa),
-            color-mix(in lab, currentColor 50%, transparent));
+            color-mix(currentColor 50%, transparent));
     }
     @supports not blink-feature(CustomizableSelectListbox) {
         color: light-dark(GrayText, #aaa);
@@ -1974,27 +1974,27 @@ select:not(:-internal-list-box) {
 
 @supports not blink-feature(CustomizableSelectMultiplePopup) {
   select:not(:-internal-list-box):not([multiple]):enabled:hover {
-    background-color: -internal-auto-base(Field, color-mix(in lab, currentColor 10%, transparent));
+    background-color: -internal-auto-base(Field, color-mix(currentColor 10%, transparent));
   }
   select:not(:-internal-list-box):not([multiple]):enabled:active {
-    background-color: -internal-auto-base(Field, color-mix(in lab, currentColor 20%, transparent));
+    background-color: -internal-auto-base(Field, color-mix(currentColor 20%, transparent));
   }
   select:not(:-internal-list-box):not([multiple]):disabled {
     opacity: -internal-auto-base(0.7, unset);
-    color: -internal-auto-base(light-dark(GrayText, #aaa), color-mix(in srgb, currentColor 50%, transparent));
+    color: -internal-auto-base(light-dark(GrayText, #aaa), color-mix(currentColor 50%, transparent));
     border-color: -internal-auto-base(rgba(118, 118, 118, 0.3), inherit);
   }
 }
 @supports blink-feature(CustomizableSelectMultiplePopup) {
   select:not(:-internal-list-box):enabled:hover {
-    background-color: -internal-auto-base(Field, color-mix(in lab, currentColor 10%, transparent));
+    background-color: -internal-auto-base(Field, color-mix(currentColor 10%, transparent));
   }
   select:not(:-internal-list-box):enabled:active {
-    background-color: -internal-auto-base(Field, color-mix(in lab, currentColor 20%, transparent));
+    background-color: -internal-auto-base(Field, color-mix(currentColor 20%, transparent));
   }
   select:not(:-internal-list-box):disabled {
     opacity: -internal-auto-base(0.7, unset);
-    color: -internal-auto-base(light-dark(GrayText, #aaa), color-mix(in srgb, currentColor 50%, transparent));
+    color: -internal-auto-base(light-dark(GrayText, #aaa), color-mix(currentColor 50%, transparent));
     border-color: -internal-auto-base(rgba(118, 118, 118, 0.3), inherit);
   }
 }
@@ -2067,24 +2067,24 @@ select:not(:-internal-list-box)[multiple] option {
 }
 
 select:not(:-internal-list-box) option:enabled:hover {
-  background-color: color-mix(in lab, currentColor 10%, transparent);
+  background-color: color-mix(currentColor 10%, transparent);
 }
 select:not(:-internal-list-box) option:enabled:active {
-  background-color: color-mix(in lab, currentColor 20%, transparent);
+  background-color: color-mix(currentColor 20%, transparent);
 }
 select:not(:-internal-list-box) option:disabled {
-  color: -internal-auto-base(inherit, color-mix(in lab, currentColor 50%, transparent));
+  color: -internal-auto-base(inherit, color-mix(currentColor 50%, transparent));
 }
 select:not(:-internal-list-box)[multiple] option:disabled {
 /* This rule applies appearance:base styles to the appearance:auto
  * <select multiple size=1>. Without it, disabled options would not appear disabled. */
-  color: color-mix(in lab, currentColor 50%, transparent);
+  color: color-mix(currentColor 50%, transparent);
 }
 @supports blink-feature(CustomizableSelectListbox) {
   /* :-internal-list-box is needed here in order to get precedence over this
    * selector: select:-internal-list-box option:enabled:hover */
   select:-internal-list-box option:enabled:active {
-    background-color: color-mix(in lab, currentColor 20%, transparent);
+    background-color: color-mix(currentColor 20%, transparent);
   }
 }
 
@@ -2378,10 +2378,10 @@ select:-internal-select-has-slotted-button::-internal-select-button-slot {
     }
 
     menuitem:enabled:hover {
-      background-color: color-mix(in lab, currentColor 10%, transparent);
+      background-color: color-mix(currentColor 10%, transparent);
     }
     menuitem:disabled {
-      color: color-mix(in lab, currentColor 50%, transparent);
+      color: color-mix(currentColor 50%, transparent);
     }
   }
 }
