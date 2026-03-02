@@ -1399,9 +1399,13 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameTexturesToGLTexture(
   const bool si_usable_by_gles2_interface =
       shared_image->GetTextureTarget() != 0;
 
-  // Copying shared image using GL directly require shared image to be either
-  // single plane or external sampler, and should be usable by GL.
-  if (si_format_has_single_texture && si_usable_by_gles2_interface) {
+  // Copying the shared image to the destination texture via a direct
+  // texture-to-texture copy requires being able to obtain a client-side GL
+  // texture for the shared image, which in turn requires that the shared image
+  // be either single-plane or use external sampler and that it be usable by GL.
+  bool can_obtain_texture_from_shared_image =
+      si_format_has_single_texture && si_usable_by_gles2_interface;
+  if (can_obtain_texture_from_shared_image) {
     CopySharedImageToTexture(
         destination_gl, video_frame->coded_size(), video_frame->visible_rect(),
         shared_image.get(), video_frame->acquire_sync_token(), target, texture,
