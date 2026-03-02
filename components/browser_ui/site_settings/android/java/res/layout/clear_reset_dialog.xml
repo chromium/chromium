@@ -5,11 +5,6 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<!--
-TODO(crbug.com/40252583) - The layout may be simplified using
-TextViewWithCompoundDrawables.
--->
-
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -24,30 +19,30 @@ TextViewWithCompoundDrawables.
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
-    <TextView
+    <org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables
         android:id="@+id/signed_out_text"
         android:layout_marginTop="16dp"
-        app:drawableStartCompat="@drawable/ic_person_24dp"
-        android:drawablePadding="12dp"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:drawablePadding="12dp"
+        app:drawableStartCompat="@drawable/ic_person_24dp" />
 
-    <TextView
+    <org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables
         android:id="@+id/offline_text"
         android:layout_marginTop="12dp"
-        app:drawableStartCompat="@drawable/ic_offline_pin_fill_24dp"
-        android:tint="@color/default_icon_color_secondary_baseline"
-        android:drawablePadding="12dp"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:drawablePadding="12dp"
+        app:chromeDrawableTint="@macro/default_icon_color_secondary"
+        app:drawableStartCompat="@drawable/ic_offline_pin_fill_24dp" />
 
-    <TextView
+    <org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables
         android:id="@+id/ad_personalization_text"
         android:layout_marginTop="12dp"
         android:text="@string/webstorage_clear_data_dialog_site_settings_remove_site_ad_personalization"
-        app:drawableStartCompat="@drawable/ic_data_personalization_20dp"
-        android:drawablePadding="16dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:visibility="gone"/>
+        android:drawablePadding="16dp"
+        android:visibility="gone"
+        app:drawableStartCompat="@drawable/ic_data_personalization_20dp" />
 </LinearLayout>

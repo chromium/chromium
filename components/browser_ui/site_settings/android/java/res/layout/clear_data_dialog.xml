@@ -5,13 +5,14 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<RelativeLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_marginStart="16dp"
     android:layout_marginEnd="16dp"
+    android:orientation="vertical"
     android:paddingStart="24dp"
     android:paddingEnd="24dp">
 
@@ -21,69 +22,29 @@ found in the LICENSE file.
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp" />
 
-    <RelativeLayout
-        android:id="@+id/signed_out"
+    <org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables
+        android:id="@+id/signed_out_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@android:id/message"
-        android:layout_marginTop="16dp">
-        <ImageView
-            android:id="@+id/signed_out_icon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:src="@drawable/ic_person_24dp"
-            android:importantForAccessibility="no" />
-        <TextView
-            android:id="@+id/signed_out_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@android:id/message"
-            android:layout_toEndOf="@id/signed_out_icon"
-            android:layout_marginStart="12dp" />
-    </RelativeLayout>
+        android:layout_marginTop="16dp"
+        android:drawablePadding="12dp"
+        app:drawableStartCompat="@drawable/ic_person_24dp" />
 
-    <RelativeLayout
-        android:id="@+id/offline"
+    <org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables
+        android:id="@+id/offline_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/signed_out"
-        android:layout_marginTop="12dp">
-        <ImageView
-            android:id="@+id/offline_icon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:src="@drawable/ic_offline_pin_fill_24dp"
-            android:tint="@color/default_icon_color_secondary_baseline"
-            android:importantForAccessibility="no" />
-        <TextView
-            android:id="@+id/offline_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_toEndOf="@id/offline_icon"
-            android:layout_marginStart="12dp" />
-    </RelativeLayout>
+        android:layout_marginTop="12dp"
+        android:drawablePadding="12dp"
+        app:chromeDrawableTint="@macro/default_icon_color_secondary"
+        app:drawableStartCompat="@drawable/ic_offline_pin_fill_24dp" />
 
-    <RelativeLayout
-        android:id="@+id/ad_personalization"
+    <org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables
+        android:id="@+id/ad_personalization_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/offline"
-        android:layout_marginTop="12dp">
-        <ImageView
-            android:id="@+id/ad_personalization_icon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:src="@drawable/ic_data_personalization_20dp"
-            android:importantForAccessibility="no" />
-        <TextView
-            android:id="@+id/ad_personalization_text"
-            android:text="@string/webstorage_clear_data_dialog_site_settings_remove_site_ad_personalization"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_toEndOf="@id/ad_personalization_icon"
-            android:layout_marginStart="16dp" />
-    </RelativeLayout>
-</RelativeLayout>
+        android:layout_marginTop="12dp"
+        android:drawablePadding="16dp"
+        android:text="@string/webstorage_clear_data_dialog_site_settings_remove_site_ad_personalization"
+        app:drawableStartCompat="@drawable/ic_data_personalization_20dp" />
+</LinearLayout>
