@@ -13,6 +13,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -227,6 +228,30 @@ TEST_F(MediaFoundationRendererTest, DirectCompositionHandle) {
   mf_renderer_->GetDCompSurface(get_dcomp_surface_cb.Get());
 
   task_environment_.RunUntilIdle();
+}
+
+TEST_F(MediaFoundationRendererTest, SetOutputRect_ErrorCases) {
+  base::HistogramTester histogram_tester;
+  base::MockCallback<MediaFoundationRendererExtension::SetOutputRectCB>
+      set_output_rect_cb;
+
+  AddStream(DemuxerStream::AUDIO, /*encrypted=*/true);
+  AddStream(DemuxerStream::VIDEO, /*encrypted=*/true);
+
+  EXPECT_CALL(set_cdm_cb_, Run(true));
+  EXPECT_CALL(renderer_init_cb_, Run(HasStatusCode(PIPELINE_OK)));
+  EXPECT_CALL(set_output_rect_cb, Run(true));
+
+  mf_renderer_->Initialize(&media_resource_, &renderer_client_,
+                           renderer_init_cb_.Get());
+  mf_renderer_->SetCdm(&cdm_context_, set_cdm_cb_.Get());
+  mf_renderer_->SetOutputRect(gfx::Rect(0, 0, 100, 100),
+                              set_output_rect_cb.Get());
+
+  task_environment_.RunUntilIdle();
+
+  histogram_tester.ExpectBucketCount(
+      "Media.MediaFoundationRenderer.SetOutputRect.Hresult", S_OK, 1);
 }
 
 TEST_F(MediaFoundationRendererTest, IgnoreSubsequentErrorsAfterFirstError) {

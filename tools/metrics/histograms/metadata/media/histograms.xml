@@ -5527,6 +5527,16 @@ chromium-metrics-reviews@google.com.
   <token key="ResultReason" variants="RenderedVideoFrameDetectionResultReason"/>
 </histogram>
 
+<histogram name="Media.MediaFoundationRenderer.SetOutputRect.Hresult"
+    enum="Hresult" expires_after="2026-12-09">
+  <owner>sangbaekpark@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Recorded when the MediaFoundationRenderer hits an error when trying to set
+    output rectangle.
+  </summary>
+</histogram>
+
 <histogram name="Media.MediaHistory.DatabaseExists" enum="Boolean"
     expires_after="2026-05-17">
   <owner>evliu@google.com</owner>

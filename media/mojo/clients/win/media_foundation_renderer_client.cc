@@ -320,7 +320,6 @@ void MediaFoundationRendererClient::OnSetOutputRectDone(
     // Fatal error or hardware context reset should've already been handled in
     // MediaFoundationRenderer. Ignore other errors as video can possibly be
     // seen but displayed incorrectly against the video output area.
-    // TODO(crbug.com/488378483): Add UMA to check how often this happens.
     return;
   }
 

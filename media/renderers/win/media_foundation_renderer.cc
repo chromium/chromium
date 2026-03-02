@@ -68,6 +68,9 @@ constexpr uint32_t kGpuBitmaskOther = 0x001 << 3;
 
 constexpr uint32_t kMakeGpuNonActive = 4;
 
+static constexpr char kSetOutputRectHresultUmaName[] =
+    "Media.MediaFoundationRenderer.SetOutputRect.Hresult";
+
 // Reported to UMA. Do NOT change or reuse existing values.
 enum class GpuOrDisplayCount {
   kUnknown = 0,
@@ -1089,8 +1092,9 @@ void MediaFoundationRenderer::SetOutputRect(const gfx::Rect& output_rect,
                       output_rect.height(), SWP_NOACTIVATE)) {
     // DRM_E_TEE_INVALID_HWDRM_STATE error is not expected here since the
     // SetWindowPos API itself does not interact with video and HWDRM state.
-    DLOG(ERROR) << "Failed to SetWindowPos: "
-                << PrintHr(HRESULT_FROM_WIN32(GetLastError()));
+    HRESULT hr = HRESULT_FROM_WIN32(GetLastError());
+    DLOG(ERROR) << "Failed to SetWindowPos: " << PrintHr(hr);
+    base::UmaHistogramSparse(kSetOutputRectHresultUmaName, hr);
     std::move(callback).Run(false);
     return;
   }
@@ -1109,6 +1113,7 @@ void MediaFoundationRenderer::SetOutputRect(const gfx::Rect& output_rect,
   HRESULT hr = UpdateVideoStream(output_rect.size());
   if (FAILED(hr)) {
     DVLOG_FUNC(1) << "Failed to update video stream: " << PrintHr(hr);
+    base::UmaHistogramSparse(kSetOutputRectHresultUmaName, hr);
     if (hr == DRM_E_TEE_INVALID_HWDRM_STATE) {
       // Fail early to handle hardware context reset cases, which can cause
       // MediaEngine to enter a bad state and fail all subsequent calls.
@@ -1119,6 +1124,7 @@ void MediaFoundationRenderer::SetOutputRect(const gfx::Rect& output_rect,
     return;
   }
 
+  base::UmaHistogramSparse(kSetOutputRectHresultUmaName, S_OK);
   std::move(callback).Run(true);
 }
 
