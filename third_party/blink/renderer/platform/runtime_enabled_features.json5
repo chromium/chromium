@@ -3445,6 +3445,14 @@
       public: true,
     },
     {
+      // When the start-of-line position cannot be determined (e.g., because
+      // the caret is in an empty inline element with no layout information),
+      // fall back to the start of the enclosing block rather than the start
+      // of the entire editable root. See https://crbug.com/41053053.
+      name: "LogicalStartOfLineBlockFallback",
+      status: "stable",
+    },
+    {
       name: "LoginElement",
       depends_on: ["FedCm"],
       status: "experimental",

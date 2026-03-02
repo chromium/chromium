@@ -271,6 +271,24 @@ static PositionWithAffinityTemplate<Strategy> LogicalStartOfLineAlgorithm(
       StartPositionForLine<Strategy, LogicalOrdering>(c);
 
   if (ContainerNode* editable_root = HighestEditableRoot(c.GetPosition())) {
+    if (vis_pos.IsNull() &&
+        RuntimeEnabledFeatures::LogicalStartOfLineBlockFallbackEnabled()) {
+      // When the start-of-line position cannot be determined (e.g., because the
+      // caret is in an empty inline element with no layout information), fall
+      // back to the start of the enclosing block rather than the start of the
+      // entire editable root. See https://crbug.com/41053053.
+      Node* node = c.GetPosition().ComputeContainerNode();
+      while (node && node != editable_root) {
+        if (node->GetLayoutObject() &&
+            node->GetLayoutObject()->IsLayoutBlock()) {
+          return PositionWithAffinityTemplate<Strategy>(
+              PositionTemplate<Strategy>::FirstPositionInNode(*node));
+        }
+        node = Strategy::Parent(*node);
+      }
+      return PositionWithAffinityTemplate<Strategy>(
+          PositionTemplate<Strategy>::FirstPositionInNode(*editable_root));
+    }
     if (!editable_root->contains(
             vis_pos.GetPosition().ComputeContainerNode())) {
       return PositionWithAffinityTemplate<Strategy>(

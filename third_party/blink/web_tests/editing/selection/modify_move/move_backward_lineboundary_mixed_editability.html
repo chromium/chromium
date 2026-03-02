@@ -1,0 +1,41 @@
+<!doctype html>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<!-- https://crbug.com/41053053 -->
+<p>Tests that pressing Home (move backward by lineboundary) stays within
+the same paragraph when contenteditable=false elements are at the start
+and end of the line.</p>
+<div contenteditable id="sample">
+<p id="p1">first paragraph</p>
+<p id="p2"><a contenteditable="false">ref1</a> editable text <a contenteditable="false">ref2</a><span id="span"></span></p>
+<p id="p3">third paragraph</p>
+</div>
+<div id="log"></div>
+<script>
+test(function() {
+    var selection = window.getSelection();
+    var span = document.getElementById('span');
+    // Place caret inside the empty span at the end of the second paragraph.
+    selection.collapse(span, 0);
+    selection.modify('move', 'backward', 'lineboundary');
+
+    var p2 = document.getElementById('p2');
+    assert_true(p2.contains(selection.anchorNode),
+        'anchorNode should be inside p2, got: ' + selection.anchorNode +
+        ' (parent: ' + selection.anchorNode.parentNode + ')');
+}, 'Home key with contenteditable=false at both ends of paragraph');
+
+test(function() {
+    var selection = window.getSelection();
+    var p2 = document.getElementById('p2');
+    // The text node " editable text " is the second child of p2.
+    var editableText = p2.firstChild.nextSibling;
+    // Place caret in the editable text.
+    selection.collapse(editableText, 5);
+    selection.modify('move', 'backward', 'lineboundary');
+
+    assert_true(p2.contains(selection.anchorNode),
+        'anchorNode should be inside p2, got: ' + selection.anchorNode +
+        ' (parent: ' + selection.anchorNode.parentNode + ')');
+}, 'Home key from editable text with non-editable element at line start');
+</script>

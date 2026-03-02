@@ -1212,4 +1212,71 @@ TEST_F(VisibleUnitsLineTest, InSameLineWithBidiReordering) {
   EXPECT_EQ(true, InSameLine(p1, p2));
 }
 
+// https://crbug.com/41053053
+// Home key should move caret to start of current line, not overshoot into
+// previous paragraph, when contenteditable=false elements are at both the
+// start and end of a paragraph.
+TEST_F(VisibleUnitsLineTest,
+       LogicalStartOfLineWithNonEditableAtBothEndsOfParagraph) {
+  LoadAhem();
+  InsertStyleElement("div { font: 10px/1 Ahem; width: 800px; }");
+  SetBodyContent(
+      "<div contenteditable id='div'>"
+      "<p id='p1'>first paragraph</p>"
+      "<p id='p2'><a contenteditable='false'>ref1</a>"
+      " editable text "
+      "<a contenteditable='false'>ref2</a><span id='span'></span></p>"
+      "<p id='p3'>third paragraph</p>"
+      "</div>");
+  UpdateAllLifecyclePhasesForTest();
+
+  // Place caret at the end of the second paragraph (inside the empty span).
+  Element* p2 = GetElementById("p2");
+  Element* span = GetElementById("span");
+  const PositionWithAffinity caret_at_end(Position(span, 0),
+                                          TextAffinity::kDownstream);
+
+  // LogicalStartOfLine should return a position at the start of <p2>,
+  // not overshoot into <p1>.
+  const VisiblePosition result =
+      LogicalStartOfLine(CreateVisiblePosition(caret_at_end));
+  ASSERT_TRUE(result.IsValid());
+
+  const Position& result_pos = result.DeepEquivalent();
+  EXPECT_TRUE(p2->contains(result_pos.ComputeContainerNode()))
+      << "Expected position in p2, but got: " << result_pos;
+}
+
+TEST_F(VisibleUnitsLineTest,
+       LogicalStartOfLineWithNonEditableAtStartOfParagraph) {
+  LoadAhem();
+  InsertStyleElement("div { font: 10px/1 Ahem; width: 800px; }");
+  SetBodyContent(
+      "<div contenteditable id='div'>"
+      "<p id='p1'>first paragraph</p>"
+      "<p id='p2'><a contenteditable='false'>ref1</a>"
+      " editable text "
+      "<a contenteditable='false'>ref2</a></p>"
+      "<p id='p3'>third paragraph</p>"
+      "</div>");
+  UpdateAllLifecyclePhasesForTest();
+
+  // Place caret in the editable text between the two non-editable anchors.
+  Element* p2 = GetElementById("p2");
+  // The text node " editable text " is the second child of p2.
+  Node* editable_text = p2->firstChild()->nextSibling();
+  ASSERT_TRUE(editable_text);
+  ASSERT_TRUE(editable_text->IsTextNode());
+  const PositionWithAffinity caret_in_text(Position(editable_text, 5),
+                                           TextAffinity::kDownstream);
+
+  const VisiblePosition result =
+      LogicalStartOfLine(CreateVisiblePosition(caret_in_text));
+  ASSERT_TRUE(result.IsValid());
+
+  const Position& result_pos = result.DeepEquivalent();
+  EXPECT_TRUE(p2->contains(result_pos.ComputeContainerNode()))
+      << "Expected position in p2, but got: " << result_pos;
+}
+
 }  // namespace blink
