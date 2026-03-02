@@ -220,6 +220,16 @@ public class InactiveShortcutMediatorUnitTest {
     }
 
     @Test
+    public void testActivateClicked() {
+        mMediator = new InactiveShortcutMediator(mContext, mModelList, mProfile);
+        TemplateUrl templateUrl = createMockTemplateUrl("keyword", "shortName");
+
+        mMediator.onMenuItemClicked(R.string.site_search_list_menu_activate, templateUrl);
+
+        verify(mTemplateUrlService).activateSearchEngine("keyword");
+    }
+
+    @Test
     public void testMakeDefaultClicked() {
         mMediator = new InactiveShortcutMediator(mContext, mModelList, mProfile);
         TemplateUrl templateUrl = createMockTemplateUrl("keyword", "shortName");

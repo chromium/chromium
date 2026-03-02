@@ -503,6 +503,27 @@ public class TemplateUrlService {
                         searchUrl);
     }
 
+    /**
+     * Activates the search engine with the given keyword.
+     *
+     * @param keyword The keyword of the search engine to be activated.
+     */
+    public void activateSearchEngine(String keyword) {
+        ThreadUtils.assertOnUiThread();
+        TemplateUrlServiceJni.get().activateSearchEngine(mNativeTemplateUrlServiceAndroid, keyword);
+    }
+
+    /**
+     * Deactivates the search engine with the given keyword.
+     *
+     * @param keyword The keyword of the search engine to be deactivated.
+     */
+    public void deactivateSearchEngine(String keyword) {
+        ThreadUtils.assertOnUiThread();
+        TemplateUrlServiceJni.get()
+                .deactivateSearchEngine(mNativeTemplateUrlServiceAndroid, keyword);
+    }
+
     @NativeMethods
     public interface Natives {
         void load(long nativeTemplateUrlServiceAndroid);
@@ -594,5 +615,11 @@ public class TemplateUrlService {
         TemplateUrl getDefaultSearchEngine(long nativeTemplateUrlServiceAndroid);
 
         String[] getImageUrlAndPostContent(long nativeTemplateUrlServiceAndroid);
+
+        void activateSearchEngine(
+                long nativeTemplateUrlServiceAndroid, @JniType("std::u16string") String keyword);
+
+        void deactivateSearchEngine(
+                long nativeTemplateUrlServiceAndroid, @JniType("std::u16string") String keyword);
     }
 }

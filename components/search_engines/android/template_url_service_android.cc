@@ -653,4 +653,22 @@ TemplateUrlServiceAndroid::GetImageUrlAndPostContent(JNIEnv* env) {
   return base::android::ToJavaArrayOfStrings(env, output);
 }
 
+void TemplateUrlServiceAndroid::ActivateSearchEngine(
+    JNIEnv* env,
+    const std::u16string& keyword) {
+  TemplateURL* turl = template_url_service_->GetTemplateURLForKeyword(keyword);
+  if (turl) {
+    template_url_service_->SetIsActiveTemplateURL(turl, true);
+  }
+}
+
+void TemplateUrlServiceAndroid::DeactivateSearchEngine(
+    JNIEnv* env,
+    const std::u16string& keyword) {
+  TemplateURL* turl = template_url_service_->GetTemplateURLForKeyword(keyword);
+  if (turl) {
+    template_url_service_->SetIsActiveTemplateURL(turl, false);
+  }
+}
+
 DEFINE_JNI(TemplateUrlService)

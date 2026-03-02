@@ -201,7 +201,7 @@ public class InactiveShortcutMediator implements TemplateUrlService.TemplateUrlS
     @VisibleForTesting
     void onMenuItemClicked(int textId, TemplateUrl url) {
         if (textId == R.string.site_search_list_menu_activate) {
-            // TODO: Activate search engine
+            mTemplateUrlService.activateSearchEngine(url.getKeyword());
         } else if (textId == R.string.site_search_list_menu_make_default) {
             mTemplateUrlService.setSearchEngine(url.getKeyword());
         } else if (textId == R.string.site_search_list_menu_delete) {

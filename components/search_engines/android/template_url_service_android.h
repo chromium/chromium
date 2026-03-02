@@ -153,6 +153,12 @@ class TemplateUrlServiceAndroid : public TemplateURLServiceObserver {
   base::android::ScopedJavaLocalRef<jobjectArray> GetImageUrlAndPostContent(
       JNIEnv* env);
 
+  // Activates the search engine with the given keyword.
+  void ActivateSearchEngine(JNIEnv* env, const std::u16string& keyword);
+
+  // Deactivates the search engine with the given keyword.
+  void DeactivateSearchEngine(JNIEnv* env, const std::u16string& keyword);
+
  private:
   FRIEND_TEST_ALL_PREFIXES(TemplateUrlServiceAndroidUnitTest,
                            FilterUserSelectableTemplateUrls);

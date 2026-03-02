@@ -378,3 +378,25 @@ TEST_F(TemplateUrlServiceAndroidUnitTest, FilterTemplateUrlsByCategory) {
     EXPECT_EQ(result[0], t_extension);
   }
 }
+
+TEST_F(TemplateUrlServiceAndroidUnitTest, ActivateAndDeactivateSearchEngine) {
+  const std::u16string keyword = u"chromium";
+  TemplateURLData data;
+  data.SetShortName(u"Activate Test");
+  data.SetKeyword(keyword);
+  data.SetURL("http://chromium.org/search/activate");
+  template_url_service().Add(std::make_unique<TemplateURL>(data));
+  EXPECT_EQ(
+      template_url_service().GetTemplateURLForKeyword(keyword)->is_active(),
+      TemplateURLData::ActiveStatus::kUnspecified);
+
+  template_url_service_android().ActivateSearchEngine(env(), keyword);
+  EXPECT_EQ(
+      template_url_service().GetTemplateURLForKeyword(keyword)->is_active(),
+      TemplateURLData::ActiveStatus::kTrue);
+
+  template_url_service_android().DeactivateSearchEngine(env(), keyword);
+  EXPECT_EQ(
+      template_url_service().GetTemplateURLForKeyword(keyword)->is_active(),
+      TemplateURLData::ActiveStatus::kFalse);
+}
