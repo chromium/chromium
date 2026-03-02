@@ -19,19 +19,38 @@ class TabInterface;
 
 namespace autofill {
 
-// Interface for `actor::ExecutionEngine` to communicate with Autofill
-// functionality.
+// Interface for the actor tooling to communicate with Autofill functionality
+// for form filling.
+//
+// Each instance of this interface is associated with a single high level
+// request from the actor to fill forms, though that request may be for multiple
+// fills across multiple types of data and form sections.
 class ActorFormFillingService {
  public:
   virtual ~ActorFormFillingService() = default;
 
-  // Creates a filling proposal for each of the "actor form"s defined in
-  // `fill_requests` and calls callback with it.
-  // Here an "actor form" is the union of one or more sections of a `FormData`
-  // and the section is identified by the `FieldGlobalId` of an arbitrary
-  // field inside that section.
+  // Represents a request from the actor to fill one or more form sections.
+  //
+  // The RequestedData identifies the 'type' of data to fill (e.g., shipping
+  // address, billing address, or credit card). Each FieldGlobalId in the vector
+  // identifies a 'trigger' field in a form section that the actor wants to
+  // fill. Multiple trigger fields are supported to allow the actor to indicate
+  // that these form sections should be filled with the same data (i.e., that
+  // they are part of the same overall form).
   using FillRequest = std::pair<ActorFormFillingRequest::RequestedData,
                                 std::vector<FieldGlobalId>>;
+
+  // Retrieves Autofill suggestions for a set of fill requests from the actor.
+  //
+  // For each FillRequest, Autofill data will be retrieved based on the
+  // RequestedData type and the trigger fields identified by the
+  // FieldGlobalIds. The suggestions are returned via the callback, in the same
+  // order as the FillRequests. If an error occurs, the callback will be invoked
+  // with an ActorFormFillingError.
+  //
+  // The returned suggestions are expected to be shown to the user in a UX,
+  // from which the user will make selections (one per fill request). The
+  // selected suggestions should subsequently be passed to FillSuggestions().
   virtual void GetSuggestions(
       const tabs::TabInterface& tab,
       base::span<const FillRequest> fill_requests,
@@ -39,8 +58,12 @@ class ActorFormFillingService {
           void(base::expected<std::vector<ActorFormFillingRequest>,
                               ActorFormFillingError>)> callback) = 0;
 
-  // Attempts to fill `chosen_suggestions` and notifies `callback` with the
-  // result.
+  // Attempts to fill the `chosen_suggestions` into their corresponding form
+  // sections. The suggestions must have been obtained from a prior call to
+  // GetSuggestions().
+  //
+  // If successful, the callback will be invoked with a void value. If an error
+  // occurs, the callback will be invoked with an ActorFormFillingError.
   virtual void FillSuggestions(
       const tabs::TabInterface& tab,
       base::span<const ActorFormFillingSelection> chosen_suggestions,
@@ -65,7 +88,7 @@ class ActorFormFillingService {
   virtual void ClearFormPreview(const tabs::TabInterface& tab,
                                 int form_index) = 0;
 
-  // Fills the with the given `selection` .
+  // Fills the form with the given `selection` .
   // `form_index` corresponds to the vector of ActorFormFillingRequests
   // retrieved by GetSuggestions().
   virtual void FillForm(const tabs::TabInterface& tab,
