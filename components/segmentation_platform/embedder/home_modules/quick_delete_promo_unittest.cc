@@ -7,7 +7,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/segmentation_platform/embedder/home_modules/card_selection_signals.h"
 #include "components/segmentation_platform/embedder/home_modules/constants.h"
-#include "components/segmentation_platform/embedder/home_modules/home_modules_card_registry.h"
+#include "components/segmentation_platform/embedder/home_modules/home_modules_card_registry_android.h"
 #include "components/segmentation_platform/embedder/home_modules/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

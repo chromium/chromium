@@ -162,7 +162,7 @@ SegmentationPlatformServiceFactory::BuildServiceInstanceForBrowserContext(
   auto tab_fetcher = std::make_unique<processing::LocalTabHandler>(
       session_sync_service, profile);
   auto home_modules_card_registry =
-      std::make_unique<home_modules::HomeModulesCardRegistry>(
+      home_modules::HomeModulesCardRegistry::Create(
           profile->GetPrefs(), g_browser_process->local_state());
 
   InitializeUkmDatabaseIfNeeded(profile);

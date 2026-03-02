@@ -8,7 +8,6 @@
 #include <string_view>
 #include <vector>
 
-#include "base/check_is_test.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/field_trial_params.h"
@@ -183,8 +182,6 @@ std::vector<std::unique_ptr<Config>> GetSegmentationPlatformConfig(
   if (home_modules_card_registry) {
     configs.emplace_back(home_modules::EphemeralHomeModuleBackend::GetConfig(
         home_modules_card_registry));
-  } else {
-    CHECK_IS_TEST();
   }
 
 #if BUILDFLAG(ENABLE_COMPOSE)

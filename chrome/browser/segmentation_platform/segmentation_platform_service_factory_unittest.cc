@@ -631,21 +631,18 @@ TEST_F(SegmentationPlatformServiceFactoryTest, EphemeralHomeModuleBackend) {
   home_modules::HomeModulesCardRegistry* registry =
       SegmentationPlatformServiceFactory::GetHomeModulesCardRegistry(
           profile_->profile.get());
+
+#if BUILDFLAG(IS_ANDROID)
   ASSERT_TRUE(registry);
   // Update this test when adding new cards with inputs.
   // Each card's feature flag should be enabled by test framework for this
   // integration test.
-#if BUILDFLAG(IS_ANDROID)
   ASSERT_EQ(7u, registry->get_all_cards_by_priority().size());
-#else
-  EXPECT_TRUE(registry->get_all_cards_by_priority().empty());
-#endif  // BUILDFLAG(IS_ANDROID)
 
   PredictionOptions prediction_options;
   prediction_options.on_demand_execution = true;
 
   auto input_context = base::MakeRefCounted<InputContext>();
-#if BUILDFLAG(IS_ANDROID)
   input_context->metadata_args.emplace(
       "auxiliary_search_available", processing::ProcessedValue::FromFloat(0));
   input_context->metadata_args.emplace(
@@ -667,12 +664,15 @@ TEST_F(SegmentationPlatformServiceFactoryTest, EphemeralHomeModuleBackend) {
       processing::ProcessedValue::FromFloat(0));
   input_context->metadata_args.emplace(
       "is_eligible_to_tips_opt_in", processing::ProcessedValue::FromFloat(0));
-#endif  // BUILDFLAG(IS_ANDROID)
 
   // No cards are added, the model fetches no results and fails.
   ExpectGetAnnotatedNumericResult(
       kEphemeralHomeModuleBackendKey, prediction_options, input_context,
       /*expected_status=*/segmentation_platform::PredictionStatus::kSucceeded);
+#else
+  // Desktop platforms do not support HomeModulesCardRegistry.
+  EXPECT_FALSE(registry);
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 TEST_F(SegmentationPlatformServiceFactoryTest, TestFedCmUserModel) {

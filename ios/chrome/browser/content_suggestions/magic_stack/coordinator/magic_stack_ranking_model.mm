@@ -29,7 +29,7 @@
 #import "components/segmentation_platform/embedder/home_modules/autofill_passwords_ephemeral_module.h"
 #import "components/segmentation_platform/embedder/home_modules/constants.h"
 #import "components/segmentation_platform/embedder/home_modules/enhanced_safe_browsing_ephemeral_module.h"
-#import "components/segmentation_platform/embedder/home_modules/home_modules_card_registry.h"
+#import "components/segmentation_platform/embedder/home_modules/home_modules_card_registry_ios.h"
 #import "components/segmentation_platform/embedder/home_modules/lens_ephemeral_module.h"
 #import "components/segmentation_platform/embedder/home_modules/save_passwords_ephemeral_module.h"
 #import "components/segmentation_platform/embedder/home_modules/send_tab_notification_promo.h"
@@ -690,7 +690,7 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
         card = _priceTrackingPromoMediator.priceTrackingPromoConfigToShow;
         break;
       }
-    } else if (segmentation_platform::home_modules::HomeModulesCardRegistry::
+    } else if (segmentation_platform::home_modules::HomeModulesCardRegistryIOS::
                    IsEphemeralTipsModuleLabel(label) &&
                areTipsCardsEnabled) {
       TipIdentifier tipIdentifier = TipIdentifierForOutputLabel(label);

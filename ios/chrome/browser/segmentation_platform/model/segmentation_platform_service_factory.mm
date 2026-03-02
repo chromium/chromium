@@ -135,7 +135,7 @@ std::unique_ptr<KeyedService> BuildSegmentationPlatformService(
   params->profile_prefs = profile->GetPrefs();
 
   auto home_modules_card_registry =
-      std::make_unique<home_modules::HomeModulesCardRegistry>(
+      home_modules::HomeModulesCardRegistry::Create(
           profile->GetPrefs(), GetApplicationContext()->GetLocalState());
   params->configs =
       GetSegmentationPlatformConfig(home_modules_card_registry.get());

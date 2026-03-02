@@ -58,7 +58,7 @@ static void JNI_HomeModulesRankingHelper_GetClassificationResult(
   segmentation_platform::PredictionOptions native_prediction_options =
       segmentation_platform::PredictionOptionsAndroid::
           ToNativePredictionOptions(env, prediction_options);
-  registry->get_rank_fecther_helper()->GetHomeModulesRank(
+  registry->get_rank_fetcher_helper()->GetHomeModulesRank(
       service, native_prediction_options, native_input_context,
       base::BindOnce(&RunGetClassificationResultCallback,
                      ScopedJavaGlobalRef<jobject>(callback)));
