@@ -40,6 +40,35 @@ content::RenderFrameHost* GetLocalRoot(content::RenderFrameHost* rfh) {
   return local_root;
 }
 
+LoginStatusResult FromFederatedLoginResult(
+    content::webid::FederatedLoginResult result) {
+  switch (result) {
+    case content::webid::FederatedLoginResult::kSuccess:
+      return LoginStatusResult::kSuccessFederated;
+    case content::webid::FederatedLoginResult::kContinuation:
+      return LoginStatusResult::kErrorFederatedContinuation;
+    case content::webid::FederatedLoginResult::kAccountNotLoggedIn:
+      return LoginStatusResult::kErrorFederatedAccountNotLoggedIn;
+    case content::webid::FederatedLoginResult::kAccountIsSignUp:
+      return LoginStatusResult::kErrorFederatedAccountIsSignUp;
+    case content::webid::FederatedLoginResult::kAccountNotAvailable:
+      return LoginStatusResult::kErrorFederatedAccountNotAvailable;
+    case content::webid::FederatedLoginResult::kIdpReturnedError:
+      return LoginStatusResult::kErrorFederatedIdpReturnedError;
+    case content::webid::FederatedLoginResult::kIdpNetworkError:
+      return LoginStatusResult::kErrorFederatedIdpNetworkError;
+    case content::webid::FederatedLoginResult::kTokenRequestAborted:
+      return LoginStatusResult::kErrorFederatedTokenRequestAborted;
+    case content::webid::FederatedLoginResult::kFrameNotActive:
+      return LoginStatusResult::kErrorFederatedFrameNotActive;
+    case content::webid::FederatedLoginResult::kExpectedAccountNotPresent:
+      return LoginStatusResult::kErrorFederatedExpectedAccountNotPresent;
+    case content::webid::FederatedLoginResult::kTimeout:
+      return LoginStatusResult::kErrorFederatedTimeout;
+  }
+  NOTREACHED();
+}
+
 }  // namespace
 
 ActorLoginSiwgController::ActorLoginSiwgController(
@@ -95,17 +124,7 @@ void ActorLoginSiwgController::OnFederatedLoginResultReceived(
   if (!on_finished_callback_) {
     return;
   }
-  if (result == content::webid::FederatedLoginResult::kSuccess) {
-    std::move(on_finished_callback_)
-        // TODO(crbug.com/478799141): add new status for SiwG success.
-        .Run(LoginStatusResult::kSuccessUsernameAndPasswordFilled);
-  } else if (result == content::webid::FederatedLoginResult::kContinuation) {
-    // TODO(crbug.com/481685277): handle the continuation case.
-  } else {
-    std::move(on_finished_callback_)
-        // TODO(crbug.com/478799141): add new status for SiwG failure.
-        .Run(base::unexpected(ActorLoginError::kFillingNotAllowed));
-  }
+  std::move(on_finished_callback_).Run(FromFederatedLoginResult(result));
 }
 
 void ActorLoginSiwgController::OnPageContentReceived(

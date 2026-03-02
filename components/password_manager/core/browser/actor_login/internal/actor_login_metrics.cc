@@ -74,6 +74,48 @@ void RecordAttemptLoginResult(const LoginStatusResultOrError& result_or_error) {
       case LoginStatusResult::kErrorDeviceReauthFailed:
         RecordAttemptLoginResult(AttemptLoginResult::kErrorDeviceReauthFailed);
         break;
+      case LoginStatusResult::kSuccessFederated:
+        RecordAttemptLoginResult(AttemptLoginResult::kSuccessFederated);
+        break;
+      case LoginStatusResult::kErrorFederatedContinuation:
+        RecordAttemptLoginResult(
+            AttemptLoginResult::kErrorFederatedContinuation);
+        break;
+      case LoginStatusResult::kErrorFederatedAccountNotLoggedIn:
+        RecordAttemptLoginResult(
+            AttemptLoginResult::kErrorFederatedAccountNotLoggedIn);
+        break;
+      case LoginStatusResult::kErrorFederatedAccountIsSignUp:
+        RecordAttemptLoginResult(
+            AttemptLoginResult::kErrorFederatedAccountIsSignUp);
+        break;
+      case LoginStatusResult::kErrorFederatedAccountNotAvailable:
+        RecordAttemptLoginResult(
+            AttemptLoginResult::kErrorFederatedAccountNotAvailable);
+        break;
+      case LoginStatusResult::kErrorFederatedIdpReturnedError:
+        RecordAttemptLoginResult(
+            AttemptLoginResult::kErrorFederatedIdpReturnedError);
+        break;
+      case LoginStatusResult::kErrorFederatedIdpNetworkError:
+        RecordAttemptLoginResult(
+            AttemptLoginResult::kErrorFederatedIdpNetworkError);
+        break;
+      case LoginStatusResult::kErrorFederatedTokenRequestAborted:
+        RecordAttemptLoginResult(
+            AttemptLoginResult::kErrorFederatedTokenRequestAborted);
+        break;
+      case LoginStatusResult::kErrorFederatedFrameNotActive:
+        RecordAttemptLoginResult(
+            AttemptLoginResult::kErrorFederatedFrameNotActive);
+        break;
+      case LoginStatusResult::kErrorFederatedExpectedAccountNotPresent:
+        RecordAttemptLoginResult(
+            AttemptLoginResult::kErrorFederatedExpectedAccountNotPresent);
+        break;
+      case LoginStatusResult::kErrorFederatedTimeout:
+        RecordAttemptLoginResult(AttemptLoginResult::kErrorFederatedTimeout);
+        break;
     }
     return;
   }

@@ -211,8 +211,7 @@ TEST_F(ActorLoginSiwgControllerTest, ButtonFound_ClickSucceeded) {
 
   // 4. Verify Success callback.
   EXPECT_CALL(finished_callback,
-              Run(base::test::ValueIs(
-                  LoginStatusResult::kSuccessUsernameAndPasswordFilled)))
+              Run(base::test::ValueIs(LoginStatusResult::kSuccessFederated)))
       .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
 
   // Trigger the flow manually from OnPageContentReceived since capturing relies

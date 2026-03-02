@@ -44,7 +44,18 @@ enum class AttemptLoginResult {
   kErrorInvalidTabInterface = 9,
   kErrorDeviceReauthRequired = 10,
   kErrorDeviceReauthFailed = 11,
-  kMaxValue = kErrorDeviceReauthFailed,
+  kSuccessFederated = 12,
+  kErrorFederatedContinuation = 13,
+  kErrorFederatedAccountNotLoggedIn = 14,
+  kErrorFederatedAccountIsSignUp = 15,
+  kErrorFederatedAccountNotAvailable = 16,
+  kErrorFederatedIdpReturnedError = 17,
+  kErrorFederatedIdpNetworkError = 18,
+  kErrorFederatedTokenRequestAborted = 19,
+  kErrorFederatedFrameNotActive = 20,
+  kErrorFederatedExpectedAccountNotPresent = 21,
+  kErrorFederatedTimeout = 22,
+  kMaxValue = kErrorFederatedTimeout,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/password/enums.xml:ActorLoginAttemptLoginResult)
 

@@ -526,6 +526,17 @@ void ActorLoginCredentialFiller::OnFillingDone() {
     case LoginStatusResult::kErrorNoSigninForm:
     case LoginStatusResult::kErrorDeviceReauthRequired:
     case LoginStatusResult::kErrorDeviceReauthFailed:
+    case LoginStatusResult::kSuccessFederated:
+    case LoginStatusResult::kErrorFederatedContinuation:
+    case LoginStatusResult::kErrorFederatedAccountNotLoggedIn:
+    case LoginStatusResult::kErrorFederatedAccountIsSignUp:
+    case LoginStatusResult::kErrorFederatedAccountNotAvailable:
+    case LoginStatusResult::kErrorFederatedIdpReturnedError:
+    case LoginStatusResult::kErrorFederatedIdpNetworkError:
+    case LoginStatusResult::kErrorFederatedTokenRequestAborted:
+    case LoginStatusResult::kErrorFederatedFrameNotActive:
+    case LoginStatusResult::kErrorFederatedExpectedAccountNotPresent:
+    case LoginStatusResult::kErrorFederatedTimeout:
       NOTREACHED();
   }
 

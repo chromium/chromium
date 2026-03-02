@@ -135,6 +135,31 @@ enum class LoginStatusResult {
   kErrorDeviceReauthRequired,
   // Returned if the device re-authentication fails.
   kErrorDeviceReauthFailed,
+
+  // Attempt login statuses using federated credentials.
+  //
+  // Federated login was successful.
+  kSuccessFederated,
+  // Encountered continuation flow.
+  kErrorFederatedContinuation,
+  // Federated login failed because the account is not logged in.
+  kErrorFederatedAccountNotLoggedIn,
+  // Federated login failed because the account is a sign-up.
+  kErrorFederatedAccountIsSignUp,
+  // Federated login failed because the account is not available.
+  kErrorFederatedAccountNotAvailable,
+  // Federated login failed because the IdP returned an error.
+  kErrorFederatedIdpReturnedError,
+  // Federated login failed because of a network error.
+  kErrorFederatedIdpNetworkError,
+  // Federated login failed because the token request was aborted.
+  kErrorFederatedTokenRequestAborted,
+  // Federated login failed because the frame is not active.
+  kErrorFederatedFrameNotActive,
+  // Federated login failed because the expected account is not present.
+  kErrorFederatedExpectedAccountNotPresent,
+  // Federated login failed because of a timeout.
+  kErrorFederatedTimeout,
 };
 
 using LoginStatusResultOrError =
