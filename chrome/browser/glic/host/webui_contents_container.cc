@@ -19,11 +19,19 @@
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
+#if !BUILDFLAG(IS_ANDROID)
+#include "components/web_modal/web_contents_modal_dialog_manager.h"
+#endif
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_ui.h"
+#include "printing/buildflags/buildflags.h"
 #include "ui/views/controls/webview/webview.h"
+
+#if BUILDFLAG(ENABLE_PRINTING)
+#include "chrome/browser/printing/printing_init.h"
+#endif
 
 namespace glic {
 
@@ -50,6 +58,15 @@ WebUIContentsContainer::WebUIContentsContainer(Profile* profile,
   Observe(web_contents_.get());
   web_contents_->SetPageBaseBackgroundColor(SK_ColorTRANSPARENT);
   web_contents_->SetSupportsDraggableRegions(true);
+
+#if !BUILDFLAG(IS_ANDROID)
+  web_modal::WebContentsModalDialogManager::CreateForWebContents(
+      web_contents_.get());
+#endif
+
+#if BUILDFLAG(ENABLE_PRINTING)
+  printing::InitializePrintingForWebContents(web_contents_.get());
+#endif
 
   web_contents_->GetController().LoadURLWithParams(
       content::NavigationController::LoadURLParams(
@@ -82,6 +99,13 @@ void WebUIContentsContainer::DidFinishNavigation(
       !navigation_handle->HasCommitted()) {
     return;
   }
+
+#if BUILDFLAG(ENABLE_PRINTING)
+  printing::InitializePrintingForWebContents(web_contents_.get());
+#endif
+
+  host_->OnWebContentsNavigated();
+
   // Re-attach to the (possibly new) GlicUI.
   if (auto* glic_ui = GlicUI::From(web_contents_.get())) {
     glic_ui->AttachToHost(host_);

@@ -97,6 +97,8 @@ class GlicSidePanelUi
   void OnBrowserWindowDeactivated(BrowserWindowInterface* bwi);
   // Focuses on embedder's webcontens.
   void SetFocusDelayed();
+  void SetModalDialogDelegate(
+      web_modal::WebContentsModalDialogManagerDelegate* delegate);
 
   GlicSidePanelCoordinator* GetGlicSidePanelCoordinator() const;
   base::CallbackListSubscription panel_visibility_subscription_;

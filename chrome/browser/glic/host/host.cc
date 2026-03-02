@@ -264,6 +264,12 @@ void Host::Reload() {
   }
 }
 
+void Host::OnWebContentsNavigated() {
+  if (delegate_) {
+    delegate_->OnReload();
+  }
+}
+
 void Host::CreateContents(bool initially_hidden) {
   if (contents_) {
     return;

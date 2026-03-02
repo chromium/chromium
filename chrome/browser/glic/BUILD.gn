@@ -421,6 +421,7 @@ source_set("impl") {
       "//chrome/browser/ui/views/frame/",
       "//chrome/browser/ui/views/interaction",
       "//chrome/browser/ui/views/side_panel",
+      "//components/web_modal",
     ]
   } else {  # is_android
     deps += [
@@ -601,6 +602,7 @@ source_set("browser_tests") {
   deps = [
     ":glic",
     ":impl",
+    "//chrome/app:command_ids",
     "//chrome/browser/background/glic",
     "//chrome/browser/glic/actor",
     "//chrome/browser/glic/common",

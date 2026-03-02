@@ -37,8 +37,12 @@
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "content/public/browser/web_contents.h"
 #else
+#include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/printing/print_view_manager.h"
 #include "chrome/browser/ui/browser_commands.h"
 #endif
+
+#include "chrome/common/chrome_features.h"
 
 namespace glic {
 
@@ -725,6 +729,30 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
                                     GlicSidePanelCoordinator::State::kClosed));
 #endif
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
+                       PrintAfterReloadDoesNotCrash) {
+  auto* instance = OpenGlicForActiveTab();
+  ASSERT_TRUE(instance);
+
+  // Trigger a reload.
+  auto* glic_service =
+      GlicKeyedServiceFactory::GetGlicKeyedService(GetProfile());
+  glic_service->Reload(
+      instance->host().webui_contents()->GetPrimaryMainFrame());
+
+  // Wait for the reload to complete.
+  ASSERT_TRUE(content::WaitForLoadStop(instance->host().webui_contents()));
+
+  content::WebContents* glic_contents = instance->host().webui_contents();
+  auto* print_view_manager =
+      printing::PrintViewManager::FromWebContents(glic_contents);
+  print_view_manager->PrintNow(glic_contents->GetPrimaryMainFrame());
+
+  // If we reached here without crashing, the test passes.
+}
+#endif
 
 class GlicInstanceCoordinatorHibernationTest
     : public GlicInstanceCoordinatorBrowserTest {

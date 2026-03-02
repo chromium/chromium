@@ -231,6 +231,9 @@ class Host : public GlicSharingManagerProvider {
   // Reload the web contents.
   void Reload();
 
+  // Called when the WebUI web contents has navigated.
+  void OnWebContentsNavigated();
+
   // Creates the web contents that will own the Glic WebUI.
   // `initially_hidden` value is only relevant when
   // `kGlicGuestContentsVisibilityState` flag is enabled, otherwise the default
