@@ -112,10 +112,6 @@ public class GeolocationHeaderUnitTest {
         GeolocationHeader.setAppPermissionsForTesting(/* hasCoarse= */ true, /* hasFine= */ true);
         // This is to reset `sCurrentLocationRequested`.
         GeolocationHeader.stopListeningForLocationUpdates();
-        when(mWebsitePreferenceBridgeJniMock.getPermissionSettingForOrigin(
-                        any(BrowserContextHandle.class), eq(ContentSettingsType.GEOLOCATION),
-                        anyString(), anyString()))
-                .thenReturn(ContentSetting.ALLOW);
         setSiteGeolocationPermissions(
                 /* approximate= */ ContentSetting.ALLOW, /* precise= */ ContentSetting.ALLOW);
         when(mWebsitePreferenceBridgeJniMock.isDSEOrigin(
@@ -182,10 +178,6 @@ public class GeolocationHeaderUnitTest {
 
     @Test
     public void testPrimeLocationForGeoHeaderDseAutograntOff() {
-        when(mWebsitePreferenceBridgeJniMock.getPermissionSettingForOrigin(
-                        any(BrowserContextHandle.class), eq(ContentSettingsType.GEOLOCATION),
-                        anyString(), anyString()))
-                .thenReturn(ContentSetting.ASK);
         setSiteGeolocationPermissions(
                 /* approximate= */ ContentSetting.ASK, /* precise= */ ContentSetting.ASK);
         GeolocationHeader.primeLocationForGeoHeaderIfEnabled(mProfileMock, mTemplateUrlServiceMock);
