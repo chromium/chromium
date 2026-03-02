@@ -693,9 +693,8 @@ ContextImplDml::CreateTensorImpl(
   //
   // Safe to use ContextImplDml* because this context owns the buffer
   // being connected and that context cannot destruct before the buffer.
-  return base::MakeRefCounted<TensorImplDml>(std::move(receiver),
-                                             std::move(buffer), AsWeakPtr(),
-                                             std::move(tensor_info));
+  return base::MakeRefCounted<TensorImplDml>(
+      std::move(receiver), std::move(buffer), *this, std::move(tensor_info));
 }
 
 base::expected<scoped_refptr<WebNNTensorImpl>, mojom::ErrorPtr>
@@ -715,9 +714,9 @@ ContextImplDml::CreateTensorFromSharedImageImpl(
                                         "Failed to create tensor."));
   }
 
-  return base::MakeRefCounted<TensorImplDml>(
-      std::move(receiver), std::move(representation), AsWeakPtr(),
-      std::move(tensor_info));
+  return base::MakeRefCounted<TensorImplDml>(std::move(receiver),
+                                             std::move(representation), *this,
+                                             std::move(tensor_info));
 }
 
 void ContextImplDml::ReadTensor(

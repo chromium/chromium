@@ -25,12 +25,12 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) TensorImplDml final
  public:
   TensorImplDml(mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
                 Microsoft::WRL::ComPtr<ID3D12Resource> buffer,
-                base::WeakPtr<WebNNContextImpl> context,
+                WebNNContextImpl& context,
                 mojom::TensorInfoPtr tensor_info);
 
   TensorImplDml(mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
                 RepresentationPtr representation,
-                base::WeakPtr<WebNNContextImpl> context,
+                WebNNContextImpl& context,
                 mojom::TensorInfoPtr tensor_info);
 
   TensorImplDml(const TensorImplDml&) = delete;

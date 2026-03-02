@@ -6,6 +6,7 @@
 #define SERVICES_WEBNN_WEBNN_TENSOR_IMPL_H_
 
 #include "base/component_export.h"
+#include "base/memory/raw_ref.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "mojo/public/cpp/base/big_buffer.h"
@@ -20,7 +21,15 @@ namespace webnn {
 
 class WebNNContextImpl;
 
-// GPU process implementation of the MLTensor interface exposed to script.
+// GPU process implementation of the `MLTensor` interface. While this class is
+// reference-counted a `WebNNTensorImpl` is guaranteed not to outlive the
+// `WebNNContextImpl` that created it because references are only held by the
+// context itself or by tasks scheduled to its `gpu::Scheduler` sequence which
+// is shut down when the context is destroyed.
+//
+// This invariant is checked by the `raw_ref<WebNNContextImpl>` member, which
+// will trigger dangling pointer warnings in debug builds and safe crashes in
+// release builds.
 class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNTensorImpl
     : public WebNNObjectImpl<mojom::WebNNTensor,
                              blink::WebNNTensorToken,
@@ -30,11 +39,11 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNTensorImpl
       std::unique_ptr<gpu::WebNNTensorRepresentation, OnTaskRunnerDeleter>;
 
   WebNNTensorImpl(mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
-                  base::WeakPtr<WebNNContextImpl> context,
+                  WebNNContextImpl& context,
                   mojom::TensorInfoPtr tensor_info);
 
   WebNNTensorImpl(mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
-                  base::WeakPtr<WebNNContextImpl> context,
+                  WebNNContextImpl& context,
                   mojom::TensorInfoPtr tensor_info,
                   RepresentationPtr representation);
 
@@ -108,7 +117,8 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNTensorImpl
   // handled by `ImportTensorInternal()`.
   virtual bool ImportTensorImpl(ScopedAccessPtr access) = 0;
 
-  base::WeakPtr<WebNNContextImpl> context_;
+  // The `WebNNContextImpl` which owns and will outlive this object.
+  const base::raw_ref<WebNNContextImpl> context_;
 
   // The shared image representation used to access the contents from shared
   // image. Only valid when usage has WebGPUInterop.

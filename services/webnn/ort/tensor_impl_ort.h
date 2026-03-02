@@ -19,7 +19,7 @@ namespace webnn::ort {
 class TensorImplOrt final : public WebNNTensorImpl {
  public:
   TensorImplOrt(mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
-                base::WeakPtr<WebNNContextImpl> context,
+                WebNNContextImpl& context,
                 mojom::TensorInfoPtr tensor_info,
                 size_t size,
                 ScopedOrtValue tensor,
@@ -27,7 +27,7 @@ class TensorImplOrt final : public WebNNTensorImpl {
                 scoped_refptr<DeviceAllocator> device_allocator);
 
   TensorImplOrt(mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
-                base::WeakPtr<WebNNContextImpl> context,
+                WebNNContextImpl& context,
                 mojom::TensorInfoPtr tensor_info,
                 RepresentationPtr representation,
                 size_t size,

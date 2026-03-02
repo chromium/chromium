@@ -27,18 +27,18 @@ class API_AVAILABLE(macos(12.3)) TensorImplCoreml final
  public:
   static base::expected<scoped_refptr<WebNNTensorImpl>, mojom::ErrorPtr> Create(
       mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
-      base::WeakPtr<WebNNContextImpl> context,
+      WebNNContextImpl& context,
       mojom::TensorInfoPtr tensor_info);
 
   static base::expected<scoped_refptr<WebNNTensorImpl>, mojom::ErrorPtr> Create(
       mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
-      base::WeakPtr<WebNNContextImpl> context,
+      WebNNContextImpl& context,
       mojom::TensorInfoPtr tensor_info,
       RepresentationPtr representation);
 
   TensorImplCoreml(
       mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
-      base::WeakPtr<WebNNContextImpl> context,
+      WebNNContextImpl& context,
       mojom::TensorInfoPtr tensor_info,
       scoped_refptr<QueueableResourceState<BufferContent>> buffer_state,
       RepresentationPtr representation,

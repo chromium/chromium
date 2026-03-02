@@ -135,7 +135,7 @@ ContextImplTflite::CreateTensorImpl(
         mojom::Error::New(mojom::Error::Code::kNotSupportedError,
                           "Creation of constant tensors is not supported."));
   }
-  return TensorImplTflite::Create(std::move(receiver), AsWeakPtr(),
+  return TensorImplTflite::Create(std::move(receiver), *this,
                                   std::move(tensor_info));
 }
 

@@ -97,7 +97,7 @@ ContextImplCoreml::CreateTensorImpl(
         mojom::Error::New(mojom::Error::Code::kNotSupportedError,
                           "Creation of constant tensors is not supported."));
   }
-  return TensorImplCoreml::Create(std::move(receiver), AsWeakPtr(),
+  return TensorImplCoreml::Create(std::move(receiver), *this,
                                   std::move(tensor_info));
 }
 
@@ -106,7 +106,7 @@ ContextImplCoreml::CreateTensorFromSharedImageImpl(
     mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
     mojom::TensorInfoPtr tensor_info,
     WebNNTensorImpl::RepresentationPtr representation) {
-  return TensorImplCoreml::Create(std::move(receiver), AsWeakPtr(),
+  return TensorImplCoreml::Create(std::move(receiver), *this,
                                   std::move(tensor_info),
                                   std::move(representation));
 }

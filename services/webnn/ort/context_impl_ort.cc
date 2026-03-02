@@ -445,7 +445,7 @@ ContextImplOrt::CreateTensorImpl(
   CHECK(base::IsValueInRangeForNumericType<int>(size));
 
   return base::MakeRefCounted<TensorImplOrt>(
-      std::move(receiver), AsWeakPtr(), std::move(tensor_info), size,
+      std::move(receiver), *this, std::move(tensor_info), size,
       std::move(tensor), can_access_on_cpu, device_allocator_);
 }
 
@@ -520,7 +520,7 @@ ContextImplOrt::CreateTensorFromSharedImageImpl(
   CHECK(tensor.get());
 
   return base::MakeRefCounted<TensorImplOrt>(
-      std::move(receiver), AsWeakPtr(), std::move(tensor_info),
+      std::move(receiver), *this, std::move(tensor_info),
       std::move(representation), buffer_size, std::move(tensor));
 }
 

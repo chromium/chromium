@@ -26,7 +26,7 @@ namespace webnn::tflite {
 base::expected<scoped_refptr<WebNNTensorImpl>, mojom::ErrorPtr>
 TensorImplTflite::Create(
     mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
-    base::WeakPtr<WebNNContextImpl> context,
+    WebNNContextImpl& context,
     mojom::TensorInfoPtr tensor_info) {
   size_t size = tensor_info->descriptor.PackedByteLength();
   // Invalid values are rejected in GraphBuilder.
@@ -37,19 +37,17 @@ TensorImplTflite::Create(
       base::MakeRefCounted<QueueableResourceState<BufferContent>>(
           std::move(buffer_content));
   return base::MakeRefCounted<TensorImplTflite>(
-      std::move(receiver), std::move(context), std::move(tensor_info),
+      std::move(receiver), context, std::move(tensor_info),
       std::move(buffer_state), base::PassKey<TensorImplTflite>());
 }
 
 TensorImplTflite::TensorImplTflite(
     mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
-    base::WeakPtr<WebNNContextImpl> context,
+    WebNNContextImpl& context,
     mojom::TensorInfoPtr tensor_info,
     scoped_refptr<QueueableResourceState<BufferContent>> buffer_state,
     base::PassKey<TensorImplTflite>)
-    : WebNNTensorImpl(std::move(receiver),
-                      std::move(context),
-                      std::move(tensor_info)),
+    : WebNNTensorImpl(std::move(receiver), context, std::move(tensor_info)),
       buffer_state_(std::move(buffer_state)) {}
 
 TensorImplTflite::~TensorImplTflite() = default;

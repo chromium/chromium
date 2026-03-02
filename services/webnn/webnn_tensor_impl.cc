@@ -18,30 +18,30 @@ namespace webnn {
 
 WebNNTensorImpl::WebNNTensorImpl(
     mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
-    base::WeakPtr<WebNNContextImpl> context,
+    WebNNContextImpl& context,
     mojom::TensorInfoPtr tensor_info)
     : WebNNObjectImpl<mojom::WebNNTensor,
                       blink::WebNNTensorToken,
                       mojo::AssociatedReceiver<mojom::WebNNTensor>>(
           std::move(receiver),
-          context->scheduler_task_runner(),
-          context->owning_task_runner()),
-      context_(std::move(context)),
+          context.scheduler_task_runner(),
+          context.owning_task_runner()),
+      context_(context),
       descriptor_(std::move(tensor_info->descriptor)),
       usage_(std::move(tensor_info->usage)) {}
 
 WebNNTensorImpl::WebNNTensorImpl(
     mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
-    base::WeakPtr<WebNNContextImpl> context,
+    WebNNContextImpl& context,
     mojom::TensorInfoPtr tensor_info,
     RepresentationPtr representation)
     : WebNNObjectImpl<mojom::WebNNTensor,
                       blink::WebNNTensorToken,
                       mojo::AssociatedReceiver<mojom::WebNNTensor>>(
           std::move(receiver),
-          context->scheduler_task_runner(),
-          context->owning_task_runner()),
-      context_(std::move(context)),
+          context.scheduler_task_runner(),
+          context.owning_task_runner()),
+      context_(context),
       representation_(std::move(representation)),
       descriptor_(std::move(tensor_info->descriptor)),
       usage_(std::move(tensor_info->usage)) {}

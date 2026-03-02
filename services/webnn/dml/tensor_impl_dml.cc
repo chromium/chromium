@@ -16,20 +16,18 @@ namespace webnn::dml {
 TensorImplDml::TensorImplDml(
     mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
     Microsoft::WRL::ComPtr<ID3D12Resource> buffer,
-    base::WeakPtr<WebNNContextImpl> context,
+    WebNNContextImpl& context,
     mojom::TensorInfoPtr tensor_info)
-    : WebNNTensorImpl(std::move(receiver),
-                      std::move(context),
-                      std::move(tensor_info)),
+    : WebNNTensorImpl(std::move(receiver), context, std::move(tensor_info)),
       buffer_(std::move(buffer)) {}
 
 TensorImplDml::TensorImplDml(
     mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
     RepresentationPtr representation,
-    base::WeakPtr<WebNNContextImpl> context,
+    WebNNContextImpl& context,
     mojom::TensorInfoPtr tensor_info)
     : WebNNTensorImpl(std::move(receiver),
-                      std::move(context),
+                      context,
                       std::move(tensor_info),
                       std::move(representation)),
       buffer_(representation_->GetD3D12Buffer()) {}
@@ -37,17 +35,13 @@ TensorImplDml::TensorImplDml(
 TensorImplDml::~TensorImplDml() = default;
 
 void TensorImplDml::ReadTensorImpl(ReadTensorCallback callback) {
-  WebNNContextImpl* context_impl = context_.get();
-  CHECK(context_impl);
-  static_cast<ContextImplDml*>(context_impl)
-      ->ReadTensor(this, std::move(callback));
+  static_cast<ContextImplDml&>(context_.get())
+      .ReadTensor(this, std::move(callback));
 }
 
 void TensorImplDml::WriteTensorImpl(mojo_base::BigBuffer src_buffer) {
-  WebNNContextImpl* context_impl = context_.get();
-  CHECK(context_impl);
-  static_cast<ContextImplDml*>(context_impl)
-      ->WriteTensor(this, std::move(src_buffer));
+  static_cast<ContextImplDml&>(context_.get())
+      .WriteTensor(this, std::move(src_buffer));
 }
 
 void TensorImplDml::SetLastSubmissionFenceValue(
@@ -82,7 +76,7 @@ bool TensorImplDml::BeginAccessWebNN(
 
 scoped_refptr<gfx::D3DSharedFence> TensorImplDml::EndAccessWebNN() {
   CommandQueue* command_queue =
-      static_cast<ContextImplDml*>(context_.get())->GetCommandQueue();
+      static_cast<ContextImplDml&>(context_.get()).GetCommandQueue();
 
   // If WebNN executed no commands using this tensor, the caller's command queue
   // will wait on the last wait fence provided.
