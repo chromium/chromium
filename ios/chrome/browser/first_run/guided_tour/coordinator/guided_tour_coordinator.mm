@@ -7,6 +7,7 @@
 #import "base/notreached.h"
 #import "ios/chrome/browser/bubble/ui_bundled/guided_tour/guided_tour_bubble_view_controller_presenter.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
@@ -17,6 +18,7 @@
 namespace {
 // Corner radius of the spotlight cutouts.
 const CGFloat kNTPTabGridButtonSpotlightCornerRadius = 7.0f;
+const CGFloat kNTPAppBarTabGridButtonSpotlightCornerRadius = 14.0f;
 const CGFloat kNTPTabGridPageControlCornerRadius = 13.0f;
 }  // namespace
 
@@ -81,6 +83,12 @@ const CGFloat kNTPTabGridPageControlCornerRadius = 13.0f;
 // Returns the view to which the bubble view will be anchored.
 - (UIView*)anchorView {
   if (_step == GuidedTourStep::kNTP) {
+    if (IsChromeNextIaEnabled()) {
+      UIButton* tabSwitcherButton =
+          static_cast<UIButton*>([LayoutGuideCenterForBrowser(nil)
+              referencedViewUnderName:kTabSwitcherGuide]);
+      return tabSwitcherButton;
+    }
     LegacyToolbarButton* tabSwitcherButton = static_cast<LegacyToolbarButton*>(
         [LayoutGuideCenterForBrowser(self.browser)
             referencedViewUnderName:kTabSwitcherGuide]);
@@ -158,7 +166,10 @@ const CGFloat kNTPTabGridPageControlCornerRadius = 13.0f;
 
 // The corner radius of the spotlight cutout for this Bubble View.
 - (CGFloat)backgroundCutoutCornerRadius {
-  return _step == GuidedTourStep::kNTP ? kNTPTabGridButtonSpotlightCornerRadius
+  CGFloat NTPTabGridButtonSpotlightCornerRadius =
+      IsChromeNextIaEnabled() ? kNTPAppBarTabGridButtonSpotlightCornerRadius
+                              : kNTPTabGridButtonSpotlightCornerRadius;
+  return _step == GuidedTourStep::kNTP ? NTPTabGridButtonSpotlightCornerRadius
                                        : kNTPTabGridPageControlCornerRadius;
 }
 

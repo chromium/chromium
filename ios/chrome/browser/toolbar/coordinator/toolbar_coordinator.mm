@@ -161,7 +161,7 @@
       startDispatchingToTarget:self
                    forProtocol:@protocol(FakeboxFocuser)];
 
-  if (IsBestOfAppGuidedTourEnabled()) {
+  if (IsBestOfAppGuidedTourEnabled() && !IsChromeNextIaEnabled()) {
     [self.browser->GetCommandDispatcher()
         startDispatchingToTarget:self
                      forProtocol:@protocol(GuidedTourCommands)];
@@ -763,20 +763,14 @@
 #pragma mark - GuidedTourCommands
 
 - (void)highlightViewInStep:(GuidedTourStep)step {
-  if (IsChromeNextIaEnabled()) {
-    // TODO(crbug.com/483995303): implement this.
-    NOTREACHED() << "Not implemented yet";
-  }
+  CHECK(!IsChromeNextIaEnabled());
   for (id<GuidedTourCommands> coordinator in self.coordinators) {
     [coordinator highlightViewInStep:step];
   }
 }
 
 - (void)stepCompleted:(GuidedTourStep)step {
-  if (IsChromeNextIaEnabled()) {
-    // TODO(crbug.com/483995303): implement this.
-    NOTREACHED() << "Not implemented yet";
-  }
+  CHECK(!IsChromeNextIaEnabled());
   for (id<GuidedTourCommands> coordinator in self.coordinators) {
     [coordinator stepCompleted:step];
   }

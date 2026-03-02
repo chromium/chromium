@@ -17,6 +17,9 @@
 // View controller for the app bar.
 @interface AppBarViewController : UIViewController <AppBarConsumer>
 
+// Unhides the spotlight anchor view if `shouldShow`.
+- (void)toggleSpotlightView:(BOOL)shouldShow;
+
 // The mutator.
 @property(nonatomic, weak) id<AppBarMutator> mutator;
 // This view controller's LayoutGuideCenter.

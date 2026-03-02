@@ -14,10 +14,15 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/guided_tour_commands.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_grid_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_groups_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
+
+@interface AppBarCoordinator () <GuidedTourCommands>
+@end
 
 @implementation AppBarCoordinator {
   AppBarContainerViewController* _containerViewController;
@@ -78,6 +83,12 @@
 
   _containerViewController = [[AppBarContainerViewController alloc] init];
   [_containerViewController setAppBar:_viewController];
+
+  if (IsBestOfAppGuidedTourEnabled()) {
+    [_regularBrowser->GetCommandDispatcher()
+        startDispatchingToTarget:self
+                     forProtocol:@protocol(GuidedTourCommands)];
+  }
 }
 
 - (void)stop {
@@ -99,6 +110,20 @@
   [_mediator setIncognitoWebStateList:incognitoBrowser
                                           ? incognitoBrowser->GetWebStateList()
                                           : nullptr];
+}
+
+#pragma mark - GuidedTourCommands
+
+- (void)highlightViewInStep:(GuidedTourStep)step {
+  if (step == GuidedTourStep::kNTP) {
+    [_viewController toggleSpotlightView:YES];
+  }
+}
+
+- (void)stepCompleted:(GuidedTourStep)step {
+  if (step == GuidedTourStep::kNTP) {
+    [_viewController toggleSpotlightView:NO];
+  }
 }
 
 @end

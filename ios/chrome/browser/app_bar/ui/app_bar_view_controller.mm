@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/intents/model/intents_donation_helper.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_grid_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/buildflags.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
@@ -37,6 +38,9 @@ const CGFloat kButtonShadowOpacity = 0.2;
 const CGFloat kButtonShadowOffset = 1;
 // The duration of the animation to update the TabGrid button.
 const CGFloat kTabGridAnimationDuration = 0.25;
+// Spacing between tab grid button and the tab grid spotlight view anchor.
+const CGFloat kSpotlightViewHorizontalInset = 12;
+const CGFloat kSpotlightViewVerticalInset = 2;
 
 // Returns the configuration for all the symbols.
 UIImageSymbolConfiguration* AppBarSymbolConfiguration() {
@@ -79,6 +83,7 @@ UIImage* CustomAppBarSymbol(NSString* symbol_name) {
   UIMenu* _assistantButtonMenu;
   UIMenu* _openNewTabButtonMenu;
   UIMenu* _tabGridButtonMenu;
+  UIView* _spotlightView;
 }
 
 - (void)updateForAngle:(CGFloat)angle {
@@ -119,6 +124,13 @@ UIImage* CustomAppBarSymbol(NSString* symbol_name) {
   ]];
 
   [self.layoutGuideCenter referenceView:view underName:kAppBarGuide];
+}
+
+#pragma mark - Public
+
+- (void)toggleSpotlightView:(BOOL)shouldShow {
+  CHECK(IsBestOfAppGuidedTourEnabled());
+  _spotlightView.hidden = !shouldShow;
 }
 
 #pragma mark - AppBarConsumer
@@ -237,6 +249,22 @@ UIImage* CustomAppBarSymbol(NSString* symbol_name) {
   [self updateTabCount:_tabCount];
   [button addSubview:_tabCountLabel];
   AddSameCenterConstraints(_tabCountLabel, button.imageView);
+
+  if (IsBestOfAppGuidedTourEnabled()) {
+    _spotlightView = [[UIView alloc] init];
+    _spotlightView.translatesAutoresizingMaskIntoConstraints = NO;
+    _spotlightView.userInteractionEnabled = NO;
+    [button addSubview:_spotlightView];
+    AddSameConstraintsToSidesWithInsets(
+        _spotlightView, button,
+        LayoutSides::kTop | LayoutSides::kTrailing | LayoutSides::kLeading |
+            LayoutSides::kBottom,
+        NSDirectionalEdgeInsetsMake(
+            kSpotlightViewVerticalInset, kSpotlightViewHorizontalInset,
+            kSpotlightViewVerticalInset, kSpotlightViewHorizontalInset));
+    [self.layoutGuideCenter referenceView:_spotlightView
+                                underName:kTabSwitcherGuide];
+  }
 
   return button;
 }
