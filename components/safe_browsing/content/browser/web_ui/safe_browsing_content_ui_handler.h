@@ -82,6 +82,8 @@ class SafeBrowsingContentUIHandler : public content::WebUIMessageHandler,
   void RegisterMessages() override;
 
   // SafeBrowsingUIHandler::
+  void RegisterMessage(std::string_view name,
+                       MessageCallback callback) override;
   void ResolveCallback(const base::ValueView callback_id,
                        const base::ValueView response) override;
   PrefService* user_prefs() override;

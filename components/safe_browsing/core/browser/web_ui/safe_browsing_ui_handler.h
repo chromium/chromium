@@ -23,6 +23,8 @@ namespace safe_browsing {
 class WebUIInfoSingleton;
 class WebUIInfoSingletonEventObserver;
 
+using MessageCallback = base::RepeatingCallback<void(const base::ListValue&)>;
+
 class SafeBrowsingUIHandler {
  public:
   SafeBrowsingUIHandler(
@@ -128,6 +130,14 @@ class SafeBrowsingUIHandler {
 
   // Clears the current tailored verdict override.
   void ClearTailoredVerdictOverride(const base::ListValue& args);
+
+  // Registers all the messages from the DOM to which the handler class intends
+  // to listen.
+  void RegisterMessages();
+
+  // Registers the message and callback with the WebUI.
+  virtual void RegisterMessage(std::string_view name,
+                               MessageCallback callback) = 0;
 
   // Resolves Javascript requests initiated with returned promises.
   virtual void ResolveCallback(const base::ValueView callback_id,
