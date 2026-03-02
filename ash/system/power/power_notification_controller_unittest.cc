@@ -220,8 +220,7 @@ class PowerNotificationControllerWithBatterySaverTest
       : PowerNotificationControllerTest(
             {{features::kBatterySaver,
               {{features::kBatterySaverNotificationBehavior.name,
-                UNSAFE_TODO(features::kBatterySaverNotificationBehavior
-                                .options[GetParam()])
+                features::kBatterySaverNotificationBehavior.options[GetParam()]
                     .name}}}},
             {}) {}
 

@@ -144,8 +144,7 @@ class BatterySaverControllerNotificationTest
     scoped_feature_list_.reset();
     base::FieldTrialParams parameters;
     parameters[features::kBatterySaverNotificationBehavior.name] =
-        UNSAFE_TODO(features::kBatterySaverNotificationBehavior.options[arm])
-            .name;
+        features::kBatterySaverNotificationBehavior.options[arm].name;
     scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
     scoped_feature_list_->InitAndEnableFeatureWithParameters(
         features::kBatterySaver, parameters);
