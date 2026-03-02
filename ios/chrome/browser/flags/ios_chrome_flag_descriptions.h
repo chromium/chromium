@@ -381,6 +381,9 @@ extern const char kFeedSwipeInProductHelpDescription[];
 extern const char kForceStartupSigninPromoName[];
 extern const char kForceStartupSigninPromoDescription[];
 
+extern const char kFullscreenRefactoringName[];
+extern const char kFullscreenRefactoringDescription[];
+
 extern const char kFullscreenScrollThresholdName[];
 extern const char kFullscreenScrollThresholdDescription[];
 

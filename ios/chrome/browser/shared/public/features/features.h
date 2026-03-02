@@ -964,4 +964,10 @@ BASE_DECLARE_FEATURE(kDisableU18FeedbackIos);
 // Returns true if the DisableU18FeedbackIos feature is enabled.
 bool IsDisableU18FeedbackIosEnabled();
 
+// Enables the FullscreenRefactoring feature.
+BASE_DECLARE_FEATURE(kFullscreenRefactoring);
+
+// Returns true if the FullscreenRefactoring feature is enabled.
+bool IsFullscreenRefactoringEnabled();
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

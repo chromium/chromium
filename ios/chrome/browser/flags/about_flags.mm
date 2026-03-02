@@ -2752,6 +2752,9 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
     {"disable-u18-feedback-ios", flag_descriptions::kDisableU18FeedbackIosName,
      flag_descriptions::kDisableU18FeedbackIosDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kDisableU18FeedbackIos)},
+    {"fullscreen-refactoring", flag_descriptions::kFullscreenRefactoringName,
+     flag_descriptions::kFullscreenRefactoringDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kFullscreenRefactoring)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

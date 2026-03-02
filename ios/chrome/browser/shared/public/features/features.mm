@@ -1150,3 +1150,9 @@ BASE_FEATURE(kDisableU18FeedbackIos, base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsDisableU18FeedbackIosEnabled() {
   return base::FeatureList::IsEnabled(kDisableU18FeedbackIos);
 }
+
+BASE_FEATURE(kFullscreenRefactoring, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsFullscreenRefactoringEnabled() {
+  return base::FeatureList::IsEnabled(kFullscreenRefactoring);
+}
