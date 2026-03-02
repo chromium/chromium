@@ -10,8 +10,6 @@ source_set("js_sandbox") {
     "js_sandbox_isolate.h",
     "js_sandbox_isolate_callback.cc",
     "js_sandbox_isolate_callback.h",
-    "js_sandbox_memory_budget.cc",
-    "js_sandbox_memory_budget.h",
     "js_sandbox_message_port.cc",
     "js_sandbox_message_port.h",
     "message_event.cc",

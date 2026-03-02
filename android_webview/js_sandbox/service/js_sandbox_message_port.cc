@@ -4,7 +4,6 @@
 
 #include "android_webview/js_sandbox/service/js_sandbox_message_port.h"
 
-#include <algorithm>
 #include <string>
 #include <utility>
 
@@ -16,8 +15,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
-#include "base/logging.h"
-#include "base/numerics/safe_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -39,20 +36,6 @@
 #include "android_webview/js_sandbox/js_sandbox_jni_headers/JsSandboxMessagePort_jni.h"
 
 namespace android_webview {
-
-namespace {
-
-// Given a logical message size, return an adjusted memory size accounting for
-// overheads.
-size_t MemoryAllocationSize(size_t size) {
-  // An empty message still has some overhead. If we specify a size of 1, it
-  // will be rounded up to a whole allocation page size, which is a minimally
-  // defensive minimum.
-  return std::max(size, size_t{1});
-}
-
-}  // namespace
-
 gin::ObjectTemplateBuilder JsSandboxMessagePort::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {
   return gin::Wrappable<JsSandboxMessagePort>::GetObjectTemplateBuilder(isolate)
@@ -96,22 +79,18 @@ JsSandboxMessagePort::~JsSandboxMessagePort() {
   Close();
 }
 
-void JsSandboxMessagePort::HandleString(JNIEnv* env,
-                                        std::string string,
-                                        int64_t size) {
+void JsSandboxMessagePort::HandleString(JNIEnv* env, std::string string) {
   // TODO(crbug.com/450579523): Post tasks via control thread, so that the tasks
   // are cancellable (like evaluateJavaScriptAsync).
   js_sandbox_isolate_->GetIsolateTaskRunner()->PostTask(
       FROM_HERE,
       base::BindOnce(&JsSandboxMessagePort::HandleStringOnIsolateThread,
-                     base::Unretained(this), std::move(string),
-                     base::checked_cast<size_t>(size)));
+                     base::Unretained(this), std::move(string)));
 }
 
 void JsSandboxMessagePort::HandleArrayBuffer(
     JNIEnv* env,
-    const base::android::JavaRef<jbyteArray>& j_array_buffer,
-    int64_t size) {
+    const base::android::JavaRef<jbyteArray>& j_array_buffer) {
   base::android::ScopedJavaGlobalRef<jbyteArray> j_array_buffer_global(
       j_array_buffer);
   // TODO(crbug.com/450579523): Post tasks via control thread, so that the tasks
@@ -119,8 +98,7 @@ void JsSandboxMessagePort::HandleArrayBuffer(
   js_sandbox_isolate_->GetIsolateTaskRunner()->PostTask(
       FROM_HERE,
       base::BindOnce(&JsSandboxMessagePort::HandleArrayBufferOnIsolateThread,
-                     base::Unretained(this), std::move(j_array_buffer_global),
-                     base::checked_cast<size_t>(size)));
+                     base::Unretained(this), std::move(j_array_buffer_global)));
 }
 
 void JsSandboxMessagePort::PostMessage(gin::Arguments* args) {
@@ -196,35 +174,7 @@ void JsSandboxMessagePort::Close() {
   Java_JsSandboxMessagePort_close(env, j_js_sandbox_message_port_);
 }
 
-bool JsSandboxMessagePort::TryAllocateMemoryBudget(JNIEnv* env, int64_t size) {
-  CHECK_GE(size, 0);
-  if (base::as_unsigned(size) > SIZE_MAX) {
-    return false;
-  }
-
-  // TODO(b/435619571):
-  //  This doesn't attempt any garbage collection if the allocation fails, and
-  //  cannot easily do so due us not being on the isolate thread yet. This could
-  //  lead to unnecessary crashes if there are, for example, externally
-  //  allocated arraybuffers that are no longer reachable that could be
-  //  reclaimed. It's unclear how much of a problem this will be in practice,
-  //  because V8 should theoretically perform proactive GCs, even for external
-  //  memory allocations. However, this may not be perfect.
-  //
-  //  We could consider multiple strategies if this is a problem, including more
-  //  aggressive GCs, reserving a separate memory budget, or trying to block
-  //  this synchronous call on a cross-thread garbage collection if desperate.
-  if (!js_sandbox_isolate_->GetMemoryBudget()->Allocate(
-          MemoryAllocationSize(base::checked_cast<size_t>(size)))) {
-    js_sandbox_isolate_->ExternalMemoryLimitExceeded();
-    return false;
-  }
-
-  return true;
-}
-
-void JsSandboxMessagePort::HandleStringOnIsolateThread(std::string string,
-                                                       size_t size) {
+void JsSandboxMessagePort::HandleStringOnIsolateThread(std::string string) {
   v8::Isolate* isolate = js_sandbox_isolate_->GetIsolate();
   v8::HandleScope handle_scope(isolate);
   v8::Local<v8::Context> context =
@@ -240,12 +190,6 @@ void JsSandboxMessagePort::HandleStringOnIsolateThread(std::string string,
       isolate->GetCppHeap()->GetAllocationHandle(), isolate, v8_string);
   v8::Local<v8::Value> argv[] = {event->GetWrapper(isolate).ToLocalChecked()};
 
-  // Release the memory held by the 'string' parameter.
-  // Swapping with a temporary empty string forces deallocation
-  // of the buffer originally held by 'string'.
-  std::string().swap(string);
-  js_sandbox_isolate_->GetMemoryBudget()->Free(MemoryAllocationSize(size));
-
   v8::Local<v8::Function> onmessage = onmessage_.Get(isolate);
   if (onmessage.IsEmpty()) {
     return;
@@ -256,8 +200,7 @@ void JsSandboxMessagePort::HandleStringOnIsolateThread(std::string string,
 }
 
 void JsSandboxMessagePort::HandleArrayBufferOnIsolateThread(
-    base::android::ScopedJavaGlobalRef<jbyteArray> j_array_buffer,
-    size_t size) {
+    base::android::ScopedJavaGlobalRef<jbyteArray> j_array_buffer) {
   JNIEnv* env = base::android::AttachCurrentThread();
   v8::Isolate* isolate = js_sandbox_isolate_->GetIsolate();
   v8::HandleScope handle_scope(isolate);
@@ -272,10 +215,6 @@ void JsSandboxMessagePort::HandleArrayBufferOnIsolateThread(
   void* buffer_data = v8_array_buffer->GetBackingStore()->Data();
   env->GetByteArrayRegion(j_array_buffer.obj(), 0, length,
                           static_cast<int8_t*>(buffer_data));
-
-  // Release the global reference to the Java byte array.
-  j_array_buffer.Reset();
-  js_sandbox_isolate_->GetMemoryBudget()->Free(MemoryAllocationSize(size));
 
   MessageEvent* event = cppgc::MakeGarbageCollected<MessageEvent>(
       isolate->GetCppHeap()->GetAllocationHandle(), isolate, v8_array_buffer);
