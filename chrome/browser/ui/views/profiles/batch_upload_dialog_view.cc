@@ -256,8 +256,8 @@ void BatchUploadDialogView::AllowWebViewInput(bool allow) {
     return;
   }
 
-  scoped_ignore_events_ =
-      web_view_->GetWebContents()->IgnoreInputEvents(std::nullopt);
+  scoped_ignore_events_ = web_view_->GetWebContents()->IgnoreInputEvents(
+      std::nullopt, /*should_ignore_a11y_input=*/true);
 }
 
 void BatchUploadDialogView::OnPrimaryAccountChanged(
