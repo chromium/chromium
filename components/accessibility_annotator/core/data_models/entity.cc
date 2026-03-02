@@ -61,6 +61,13 @@ NationalId::NationalId(NationalId&& other) = default;
 NationalId& NationalId::operator=(const NationalId& other) = default;
 NationalId& NationalId::operator=(NationalId&& other) = default;
 
+Vehicle::Vehicle() = default;
+Vehicle::~Vehicle() = default;
+Vehicle::Vehicle(const Vehicle& other) = default;
+Vehicle::Vehicle(Vehicle&& other) = default;
+Vehicle& Vehicle::operator=(const Vehicle& other) = default;
+Vehicle& Vehicle::operator=(Vehicle&& other) = default;
+
 Entity::Entity() = default;
 Entity::~Entity() = default;
 Entity::Entity(const Entity& other) = default;
@@ -76,7 +83,8 @@ EntityType Entity::GetType() const {
           [](const Shipment&) { return EntityType::kShipment; },
           [](const DriverLicense&) { return EntityType::kDriverLicense; },
           [](const Passport&) { return EntityType::kPassport; },
-          [](const NationalId&) { return EntityType::kNationalId; }),
+          [](const NationalId&) { return EntityType::kNationalId; },
+          [](const Vehicle&) { return EntityType::kVehicle; }),
       specifics);
 }
 

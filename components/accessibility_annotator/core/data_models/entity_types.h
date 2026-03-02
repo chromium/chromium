@@ -17,7 +17,8 @@ enum class EntityType {
   kDriverLicense,
   kPassport,
   kNationalId,
-  kMaxValue = kNationalId,
+  kVehicle,
+  kMaxValue = kVehicle,
 };
 
 using EntityTypeEnumSet =

@@ -9,7 +9,7 @@
 
 namespace accessibility_annotator {
 
-TEST(EntityTest, Flight) {
+TEST(AccessibilityAnnotatorEntityTest, Flight) {
   Entity entity;
   Flight& flight = entity.specifics.emplace<Flight>();
   flight.flight_number = "UA123";
@@ -18,15 +18,19 @@ TEST(EntityTest, Flight) {
   base::Time departure;
   ASSERT_TRUE(base::Time::FromString("2026-02-10T11:47:48Z", &departure));
   flight.departure_date = departure;
+  base::Time arrival;
+  ASSERT_TRUE(base::Time::FromString("2026-02-10T15:47:48Z", &arrival));
+  flight.arrival_date = arrival;
 
   ASSERT_EQ(entity.GetType(), EntityType::kFlight);
   EXPECT_EQ(flight.flight_number, "UA123");
   EXPECT_EQ(flight.departure_airport, "SFO");
   EXPECT_EQ(flight.arrival_airport, "JFK");
   EXPECT_EQ(flight.departure_date, departure);
+  EXPECT_EQ(flight.arrival_date, arrival);
 }
 
-TEST(EntityTest, Order) {
+TEST(AccessibilityAnnotatorEntityTest, Order) {
   Entity entity;
   Order& order = entity.specifics.emplace<Order>();
   order.id = "ORDER123";
@@ -37,10 +41,11 @@ TEST(EntityTest, Order) {
   order.merchant_name = "Google Store";
   order.merchant_domain = GURL("https://store.google.com");
   order.grand_total = "$100.00";
-  order.products.emplace_back();
-  order.products.back().name = "Test Product";
-  order.products.back().quantity = 1;
-  order.products.back().description = "A product for testing.";
+  Order::ItemDescription product;
+  product.name = "Test Product";
+  product.quantity = 1;
+  product.description = "A test product";
+  order.products.push_back(product);
 
   ASSERT_EQ(entity.GetType(), EntityType::kOrder);
   EXPECT_EQ(order.id, "ORDER123");
@@ -52,10 +57,10 @@ TEST(EntityTest, Order) {
   ASSERT_EQ(order.products.size(), 1u);
   EXPECT_EQ(order.products[0].name, "Test Product");
   EXPECT_EQ(order.products[0].quantity, 1);
-  EXPECT_EQ(order.products[0].description, "A product for testing.");
+  EXPECT_EQ(order.products[0].description, "A test product");
 }
 
-TEST(EntityTest, Shipment) {
+TEST(AccessibilityAnnotatorEntityTest, Shipment) {
   Entity entity;
   Shipment& shipment = entity.specifics.emplace<Shipment>();
   shipment.tracking_number = "TRACK123";
@@ -77,7 +82,7 @@ TEST(EntityTest, Shipment) {
   EXPECT_EQ(shipment.estimated_delivery_date, delivery_date);
 }
 
-TEST(EntityTest, DriverLicense) {
+TEST(AccessibilityAnnotatorEntityTest, DriverLicense) {
   Entity entity;
   DriverLicense& license = entity.specifics.emplace<DriverLicense>();
   license.name = "John Doe";
@@ -87,19 +92,17 @@ TEST(EntityTest, DriverLicense) {
   ASSERT_TRUE(base::Time::FromString("2020-01-01T00:00:00Z", &issue_date));
   license.expiration_date = expiration_date;
   license.issue_date = issue_date;
-  license.country = "USA";
-  license.region = "CA";
+  license.state = "CA";
 
   ASSERT_EQ(entity.GetType(), EntityType::kDriverLicense);
   EXPECT_EQ(license.name, "John Doe");
   EXPECT_EQ(license.number, "12345");
   EXPECT_EQ(license.expiration_date, expiration_date);
   EXPECT_EQ(license.issue_date, issue_date);
-  EXPECT_EQ(license.country, "USA");
-  EXPECT_EQ(license.region, "CA");
+  EXPECT_EQ(license.state, "CA");
 }
 
-TEST(EntityTest, Passport) {
+TEST(AccessibilityAnnotatorEntityTest, Passport) {
   Entity entity;
   Passport& passport = entity.specifics.emplace<Passport>();
   passport.name = "Jane Doe";
@@ -119,7 +122,7 @@ TEST(EntityTest, Passport) {
   EXPECT_EQ(passport.issuing_country, "USA");
 }
 
-TEST(EntityTest, NationalId) {
+TEST(AccessibilityAnnotatorEntityTest, NationalId) {
   Entity entity;
   NationalId& national_id = entity.specifics.emplace<NationalId>();
   national_id.name = "Sam Smith";
@@ -137,6 +140,27 @@ TEST(EntityTest, NationalId) {
   EXPECT_EQ(national_id.expiration_date, expiration_date);
   EXPECT_EQ(national_id.issue_date, issue_date);
   EXPECT_EQ(national_id.issuing_country, "USA");
+}
+
+TEST(AccessibilityAnnotatorEntityTest, Vehicle) {
+  Entity entity;
+  Vehicle& vehicle = entity.specifics.emplace<Vehicle>();
+  vehicle.make = "Toyota";
+  vehicle.model = "Camry";
+  vehicle.year = 2020;
+  vehicle.owner = "John Doe";
+  vehicle.plate_number = "XYZ 123";
+  vehicle.plate_state = "CA";
+  vehicle.vin = "1234567890ABCDEFG";
+
+  ASSERT_EQ(entity.GetType(), EntityType::kVehicle);
+  EXPECT_EQ(vehicle.make, "Toyota");
+  EXPECT_EQ(vehicle.model, "Camry");
+  EXPECT_EQ(vehicle.year, 2020);
+  EXPECT_EQ(vehicle.owner, "John Doe");
+  EXPECT_EQ(vehicle.plate_number, "XYZ 123");
+  EXPECT_EQ(vehicle.plate_state, "CA");
+  EXPECT_EQ(vehicle.vin, "1234567890ABCDEFG");
 }
 
 }  // namespace accessibility_annotator

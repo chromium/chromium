@@ -30,6 +30,7 @@ struct Flight {
   std::string departure_airport;
   std::string arrival_airport;
   base::Time departure_date;
+  base::Time arrival_date;
 };
 
 struct Order {
@@ -90,8 +91,7 @@ struct DriverLicense {
   std::string number;
   base::Time expiration_date;
   base::Time issue_date;
-  std::string country;
-  std::string region;
+  std::string state;
 };
 
 struct Passport {
@@ -124,9 +124,31 @@ struct NationalId {
   std::string issuing_country;
 };
 
+struct Vehicle {
+  Vehicle();
+  ~Vehicle();
+  Vehicle(const Vehicle& other);
+  Vehicle(Vehicle&& other);
+  Vehicle& operator=(const Vehicle& other);
+  Vehicle& operator=(Vehicle&& other);
+
+  std::string make;
+  std::string model;
+  int year = 0;
+  std::string owner;
+  std::string plate_number;
+  std::string plate_state;
+  std::string vin;
+};
+
 struct Entity {
-  using EntitySpecifics = std::
-      variant<Flight, Order, Shipment, DriverLicense, Passport, NationalId>;
+  using EntitySpecifics = std::variant<Flight,
+                                       Order,
+                                       Shipment,
+                                       DriverLicense,
+                                       Passport,
+                                       NationalId,
+                                       Vehicle>;
 
   Entity();
   ~Entity();
