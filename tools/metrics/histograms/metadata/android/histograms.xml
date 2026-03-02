@@ -2026,16 +2026,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.DragDrop.Image.UriCreatedInterval" units="ms"
-    expires_after="2025-09-07">
-  <owner>shuyng@google.com</owner>
-  <owner>clank-large-form-factors@google.com</owner>
-  <summary>
-    Records the interval between two back-to-back image drags. This is used to
-    evaluate the duration to preserve the image data. Android only.
-  </summary>
-</histogram>
-
 <histogram name="Android.DragDrop.TabOrGroup.MaxInstanceFailureCount"
     units="failures" expires_after="2026-05-05">
   <owner>aishwaryarj@google.com</owner>

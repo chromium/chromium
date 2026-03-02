@@ -53,7 +53,6 @@ public class DropDataProviderImplTest {
     @After
     public void tearDown() {
         mDropDataProviderImpl.clearCache();
-        mDropDataProviderImpl.clearLastUriCreatedTimestampForTesting();
     }
 
     @Test
@@ -65,8 +64,6 @@ public class DropDataProviderImplTest {
                 "image/jpeg",
                 mDropDataProviderImpl.getType(uri));
         assertImageSizeRecorded(/* expectedCnt= */ 1);
-        // Android.DragDrop.Image.UriCreatedInterval is not recorded for the first created Uri.
-        assertImageUriCreatedIntervalRecorded(/* expectedCnt= */ 0);
 
         uri = mDropDataProviderImpl.cache(IMAGE_DATA_B, EXTENSION_B, IMAGE_FILENAME_B);
         Assert.assertEquals(
@@ -74,7 +71,6 @@ public class DropDataProviderImplTest {
                 "image/gif",
                 mDropDataProviderImpl.getType(uri));
         assertImageSizeRecorded(/* expectedCnt= */ 2);
-        assertImageUriCreatedIntervalRecorded(/* expectedCnt= */ 1);
 
         uri = mDropDataProviderImpl.cache(IMAGE_DATA_C, EXTENSION_C, IMAGE_FILENAME_C);
         Assert.assertEquals(
@@ -82,7 +78,6 @@ public class DropDataProviderImplTest {
                 "image/png",
                 mDropDataProviderImpl.getType(uri));
         assertImageSizeRecorded(/* expectedCnt= */ 3);
-        assertImageUriCreatedIntervalRecorded(/* expectedCnt= */ 2);
     }
 
     @Test
@@ -171,12 +166,9 @@ public class DropDataProviderImplTest {
         mDropDataProviderImpl.onDragEnd(true);
         ShadowLooper.idleMainLooper(1, TimeUnit.MILLISECONDS);
         mDropDataProviderImpl.openFile(new DropDataContentProvider(), uri);
-        // Android.DragDrop.Image.UriCreatedInterval is not recorded for the first created Uri.
-        assertImageUriCreatedIntervalRecorded(/* expectedCnt= */ 0);
 
         // Next image drag starts before the previous image expires.
         mDropDataProviderImpl.cache(IMAGE_DATA_B, EXTENSION_B, IMAGE_FILENAME_B);
-        assertImageUriCreatedIntervalRecorded(/* expectedCnt= */ 1);
         assertImageFirstExpiredOpenFileRecorded(/* expectedCnt= */ 0);
 
         // #openFile is called from the drop target app with the expired uri.
@@ -200,13 +192,6 @@ public class DropDataProviderImplTest {
 
     private void assertImageSizeRecorded(int expectedCnt) {
         final String histogram = "Android.DragDrop.Image.Size";
-        final String errorMsg = "<" + histogram + "> is not recorded properly.";
-        Assert.assertEquals(
-                errorMsg, expectedCnt, RecordHistogram.getHistogramTotalCountForTesting(histogram));
-    }
-
-    private void assertImageUriCreatedIntervalRecorded(int expectedCnt) {
-        final String histogram = "Android.DragDrop.Image.UriCreatedInterval";
         final String errorMsg = "<" + histogram + "> is not recorded properly.";
         Assert.assertEquals(
                 errorMsg, expectedCnt, RecordHistogram.getHistogramTotalCountForTesting(histogram));

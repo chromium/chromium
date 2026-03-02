@@ -107,7 +107,6 @@ public class DropDataProviderImpl {
     private long mOpenFileLastAccessTime;
     private @Nullable Uri mLastUri;
     private long mLastUriClearedTimestamp;
-    private long mLastUriCreatedTimestamp;
     private boolean mLastUriRecorded;
     private final DropPipeDataWriter mDropPipeDataWriter = new DropPipeDataWriter();
 
@@ -133,8 +132,6 @@ public class DropDataProviderImpl {
      * Cache the passed-in image data of Drag and Drop. It is expected for filename to be non-empty.
      */
     public Uri cache(byte[] imageBytes, String encodingFormat, String filename) {
-        long elapsedRealtime = SystemClock.elapsedRealtime();
-        long lastUriCreatedTimestamp = mLastUriCreatedTimestamp;
         String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(encodingFormat);
         Uri newUri = generateUri();
 
@@ -142,7 +139,6 @@ public class DropDataProviderImpl {
             // Clear out any old data.
             clearCacheData();
             // Set new data.
-            mLastUriCreatedTimestamp = elapsedRealtime;
             this.mImageBytes = imageBytes;
             mImageFilename = filename;
             mMimeType = mimeType;
@@ -151,11 +147,6 @@ public class DropDataProviderImpl {
             mContentProviderUri = newUri;
         }
 
-        if (lastUriCreatedTimestamp > 0) {
-            long duration = elapsedRealtime - lastUriCreatedTimestamp;
-            RecordHistogram.deprecatedRecordMediumTimesHistogram(
-                    "Android.DragDrop.Image.UriCreatedInterval", duration);
-        }
         int sizeInKB = imageBytes.length / BYTES_PER_KILOBYTE;
         RecordHistogram.recordCustomCountHistogram(
                 "Android.DragDrop.Image.Size", sizeInKB, 1, 100_000, 50);
@@ -407,12 +398,6 @@ public class DropDataProviderImpl {
     Handler getHandlerForTesting() {
         synchronized (LOCK) {
             return mHandler;
-        }
-    }
-
-    void clearLastUriCreatedTimestampForTesting() {
-        synchronized (LOCK) {
-            mLastUriCreatedTimestamp = 0;
         }
     }
 }
