@@ -98,7 +98,8 @@ void PasswordSyncTokenVerifierTest::SetUp() {
 
 void PasswordSyncTokenVerifierTest::CreatePasswordSyncTokenVerifier() {
   DestroyPasswordSyncTokenVerifier();
-  verifier_ = std::make_unique<PasswordSyncTokenVerifier>(primary_profile_);
+  verifier_ = std::make_unique<PasswordSyncTokenVerifier>(
+      TestingBrowserProcess::GetGlobal()->local_state(), primary_profile_);
 }
 
 void PasswordSyncTokenVerifierTest::DestroyPasswordSyncTokenVerifier() {

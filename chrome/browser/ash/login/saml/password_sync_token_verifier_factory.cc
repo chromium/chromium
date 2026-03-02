@@ -9,6 +9,7 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/login/saml/password_sync_token_verifier.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile_selections.h"
@@ -50,6 +51,10 @@ PasswordSyncTokenVerifierFactory::~PasswordSyncTokenVerifierFactory() = default;
 std::unique_ptr<KeyedService>
 PasswordSyncTokenVerifierFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
+  // NOTE: Allow g_browser_process here as this class is initialized lazily with
+  // base::NoDestructor.
+  PrefService* local_state = g_browser_process->local_state();
+
   Profile* profile = Profile::FromBrowserContext(context);
   user_manager::User* user = ProfileHelper::Get()->GetUserByProfile(profile);
 
@@ -58,7 +63,7 @@ PasswordSyncTokenVerifierFactory::BuildServiceInstanceForBrowserContext(
       !user->using_saml()) {
     return nullptr;
   }
-  return std::make_unique<PasswordSyncTokenVerifier>(profile);
+  return std::make_unique<PasswordSyncTokenVerifier>(local_state, profile);
 }
 
 }  // namespace ash

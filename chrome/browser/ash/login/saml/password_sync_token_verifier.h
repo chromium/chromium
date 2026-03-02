@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/saml/password_sync_token_fetcher.h"
@@ -16,6 +17,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "net/base/backoff_entry.h"
 
+class PrefService;
 class Profile;
 
 namespace user_manager {
@@ -34,7 +36,8 @@ class PasswordSyncTokenVerifier : public KeyedService,
   // returned invalid data.
   static const net::BackoffEntry::Policy kFetchTokenRetryBackoffPolicy;
 
-  explicit PasswordSyncTokenVerifier(Profile* primary_profile);
+  // `local_state` must be non-null and must outlive `this`.
+  PasswordSyncTokenVerifier(PrefService* local_state, Profile* primary_profile);
   ~PasswordSyncTokenVerifier() override;
 
   PasswordSyncTokenVerifier(const PasswordSyncTokenVerifier&) = delete;
@@ -64,6 +67,8 @@ class PasswordSyncTokenVerifier : public KeyedService,
   void RecheckAfter(base::TimeDelta delay);
   // Init sync token.
   void CreateTokenAsync();
+
+  const raw_ref<PrefService> local_state_;
 
   const raw_ptr<Profile> primary_profile_;
   const raw_ptr<const user_manager::User> primary_user_;
