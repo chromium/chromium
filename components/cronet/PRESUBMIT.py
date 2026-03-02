@@ -28,3 +28,14 @@ def CheckUnittestsOnCommit(input_api, output_api):
                          'cronet'),
             files_to_check=['.*test\\.py$'],
             files_to_skip=[]))
+
+
+def CheckChangeOnCommit(input_api, output_api):
+    return [
+        *input_api.canned_checks.CheckPatchFormatted(
+            input_api,
+            output_api,
+            check_python=True,
+            result_factory=output_api.PresubmitError),
+        *input_api.canned_checks.CheckGNFormatted(input_api, output_api)
+    ]
