@@ -238,7 +238,13 @@ class ASH_EXPORT LoginDataDispatcher : public LoginScreenModel {
   void NotifyFocusPod(const AccountId& account_id) override;
 
  private:
-  base::ObserverList<Observer>::Unchecked observers_;
+  // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
+  base::ObserverList<
+      Observer,
+      /*check_empty=*/false,
+      /*reentrancy=*/
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>::Unchecked
+      observers_;
 };
 
 }  // namespace ash
