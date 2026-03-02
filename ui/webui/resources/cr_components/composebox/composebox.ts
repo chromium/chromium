@@ -342,6 +342,7 @@ export class ComposeboxElement extends I18nMixinLit
   protected accessor showContextMenuDescription_: boolean =
       this.contextMenuDescriptionEnabled_;
   protected accessor isOmniboxInCompactMode_: boolean = false;
+  protected autoActiveTabUploadingTitle_: string = '';
   protected dragAndDropHandler_: DragAndDropHandler;
   private showTypedSuggest_: boolean =
       loadTimeData.getBoolean('composeboxShowTypedSuggest');
@@ -1016,18 +1017,19 @@ export class ComposeboxElement extends I18nMixinLit
   }
 
   private updateAutoSuggestedTabContext_(tab: TabInfo|null) {
-    // TODO(crbug.com/488088325): Fix deletion logic so autoActiveTab is
-    // correctly deleted on tab switch. Cannot rely on tabId here.
     const shouldDeleteAutomaticActiveTab = this.automaticActiveTab_ &&
-        (!tab || this.automaticActiveTab_.tabId !== tab.tabId);
+        (!tab || this.automaticActiveTab_.url !== tab.url);
     if (shouldDeleteAutomaticActiveTab) {
+      this.autoActiveTabUploadingTitle_ = '';
       this.deleteFile(this.automaticActiveTab_!.uuid);
       this.automaticActiveTab_ = null;
 
       // TODO(crbug.com/482150500): Correctly query for url based suggestions
       // when delayed tab is present. Right now, while url-based suggestions are
       // not set-up, clear the autocomplete matches.
-      this.queryAutocomplete_(/* clearMatches= */ true);
+      if (!tab) {
+        this.queryAutocomplete_(/* clearMatches= */ true);
+      }
     }
 
     if (tab) {
@@ -1036,6 +1038,14 @@ export class ComposeboxElement extends I18nMixinLit
       if (this.automaticActiveTab_ &&
           tab.url === this.automaticActiveTab_.url &&
           tab.tabId === this.automaticActiveTab_.tabId) {
+        return;
+      }
+
+      // If an autochip is currently being uploaded but carousel attachment has
+      // not been created yet, allow updates to its title. Absence of this
+      // chip means that there is no currently no auto active tab uploading.
+      if (this.autoActiveTabUploadingTitle_) {
+        this.autoActiveTabUploadingTitle_ = tab.title;
         return;
       }
 
@@ -1083,12 +1093,20 @@ export class ComposeboxElement extends I18nMixinLit
   private async addTabContextHandleCallback_(
       tabUpload: TabUpload, replaceAutoActiveTabToken: boolean = false) {
     try {
+      this.autoActiveTabUploadingTitle_ =
+          replaceAutoActiveTabToken ? tabUpload.title : '';
+
       const token = await this.searchboxHandler_.addTabContext(
           tabUpload.tabId, tabUpload.delayUpload);
 
       const attachment: ComposeboxFile = {
         uuid: token,
-        name: tabUpload.title,
+        // Adding a tab is asynchronous. For auto active tabs, a title update
+        // might be received after the upload process has been started. In order
+        // to prevent adding duplicate chips from this update, simply update the
+        // title of the initial upload instead.
+        name: replaceAutoActiveTabToken ? this.autoActiveTabUploadingTitle_ :
+                                          tabUpload.title,
         dataUrl: null,
         objectUrl: null,
         type: 'tab',
@@ -1105,6 +1123,7 @@ export class ComposeboxElement extends I18nMixinLit
       if (replaceAutoActiveTabToken) {
         this.automaticActiveTab_ =
             Object.assign(attachment, {uuid: attachment.uuid});
+        this.autoActiveTabUploadingTitle_ = '';
       }
       this.focusInput();
 
