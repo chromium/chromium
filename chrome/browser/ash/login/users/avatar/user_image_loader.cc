@@ -23,7 +23,6 @@
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/image_downloader/image_downloader_impl.h"
 #include "chrome/browser/ash/login/helper.h"
-#include "chrome/browser/browser_process.h"
 #include "components/user_manager/user_image/user_image.h"
 #include "google_apis/credentials_mode.h"
 #include "ipc/constants.mojom.h"
@@ -482,7 +481,8 @@ void StartWithFilePathAnimated(
 
 // Used to load user images from GURL, specifically in the case of
 // retrieving images from the cloud.
-void StartWithGURLAnimated(const GURL& default_image_url,
+void StartWithGURLAnimated(network::mojom::URLLoaderFactory* url_loader_factory,
+                           const GURL& default_image_url,
                            LoadedCallback loaded_cb) {
   constexpr net::NetworkTrafficAnnotationTag kNetworkTrafficAnnotationTag =
       net::DefineNetworkTrafficAnnotation("user_image_downloader", R"(
@@ -519,8 +519,9 @@ void StartWithGURLAnimated(const GURL& default_image_url,
           network::SimpleURLLoader::RETRY_ON_NAME_NOT_RESOLVED);
 
   auto* loader_ptr = loader.get();
+  CHECK(url_loader_factory);
   loader_ptr->DownloadToString(
-      g_browser_process->shared_url_loader_factory().get(),
+      url_loader_factory,
       base::BindOnce(&OnImageDownloaded, std::move(loader),
                      std::move(loaded_cb)),
       network::SimpleURLLoader::kMaxBoundedStringDownloadSize);

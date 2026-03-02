@@ -204,6 +204,7 @@ class UserManagerTest : public testing::Test {
     user_image_manager_registry_ =
         std::make_unique<ash::UserImageManagerRegistry>(
             TestingBrowserProcess::GetGlobal()->local_state(),
+            TestingBrowserProcess::GetGlobal()->shared_url_loader_factory(),
             user_manager_.get());
     // Initialize `UserManager` after `UserImageManagerRegistry` creation to
     // follow initialization order in

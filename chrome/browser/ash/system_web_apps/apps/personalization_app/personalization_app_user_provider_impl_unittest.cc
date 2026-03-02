@@ -313,7 +313,9 @@ class PersonalizationAppUserProviderImplTest : public testing::Test {
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
       user_manager_{std::make_unique<ash::FakeChromeUserManager>()};
   UserImageManagerRegistry user_image_manager_registry_{
-      TestingBrowserProcess::GetGlobal()->local_state(), user_manager_.Get()};
+      TestingBrowserProcess::GetGlobal()->local_state(),
+      TestingBrowserProcess::GetGlobal()->shared_url_loader_factory(),
+      user_manager_.Get()};
   TestingProfileManager profile_manager_{TestingBrowserProcess::GetGlobal()};
   data_decoder::test::InProcessDataDecoder data_decoder_;
   content::TestWebUI web_ui_;

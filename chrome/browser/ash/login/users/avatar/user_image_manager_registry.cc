@@ -13,6 +13,7 @@
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_type.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace ash {
 namespace {
@@ -26,11 +27,12 @@ UserImageManagerRegistry* UserImageManagerRegistry::Get() {
 
 UserImageManagerRegistry::UserImageManagerRegistry(
     PrefService* local_state,
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
     user_manager::UserManager* user_manager)
-    : UserImageManagerRegistry(
-          local_state,
-          user_manager,
-          std::make_unique<UserImageLoaderDelegateImpl>()) {}
+    : UserImageManagerRegistry(local_state,
+                               user_manager,
+                               std::make_unique<UserImageLoaderDelegateImpl>(
+                                   std::move(shared_url_loader_factory))) {}
 
 UserImageManagerRegistry::UserImageManagerRegistry(
     PrefService* local_state,

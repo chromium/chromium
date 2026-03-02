@@ -40,7 +40,6 @@ static_library("avatar") {
     "//ash/constants",
     "//ash/public/cpp",
     "//chrome/app:generated_resources",
-    "//chrome/browser:browser_process",
     "//chrome/browser/ash/image_downloader",
     "//chrome/browser/ash/login/users/default_user_image",
     "//chrome/browser/ash/profiles",

@@ -15,11 +15,15 @@
 
 namespace base {
 class SequencedTaskRunner;
-}
+}  // namespace base
+
+namespace network::mojom {
+class URLLoaderFactory;
+}  // namespace network::mojom
 
 namespace user_manager {
 class UserImage;
-}
+}  // namespace user_manager
 
 // Helper functions that read, decode and optionally resize an image on a
 // background thread. The image is returned in the form of a UserImage.
@@ -60,7 +64,9 @@ void StartWithFilePathAnimated(
 
 // Loads the default image fetched from |default_image_url|. If the image is
 // animated, encode with WebP encoder, otherwise encode with PNG encoder.
-void StartWithGURLAnimated(const GURL& default_image_url,
+// `url_loader_factory` must be non-null, and can be deleted after this returns.
+void StartWithGURLAnimated(network::mojom::URLLoaderFactory* url_loader_factory,
+                           const GURL& default_image_url,
                            LoadedCallback loaded_cb);
 
 }  // namespace user_image_loader

@@ -16,6 +16,10 @@
 class AccountId;
 class PrefService;
 
+namespace network {
+class SharedURLLoaderFactory;
+}  // namespace network
+
 namespace user_manager {
 class UserManager;
 }  // namespace user_manager
@@ -35,8 +39,11 @@ class UserImageManagerRegistry : public user_manager::UserManager::Observer {
 
   // Given user_manager's lifetime needs to outlive this instance.
   // `local_state` must be non-null and must outlive `this`.
-  UserImageManagerRegistry(PrefService* local_state,
-                           user_manager::UserManager* user_manager);
+  // `shared_url_loader_factory` may be null in unit tests.
+  UserImageManagerRegistry(
+      PrefService* local_state,
+      scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
+      user_manager::UserManager* user_manager);
 
   // Constructor to inject a test version of `UserImageLoaderDelegate`.
   // `local_state` must be non-null and must outlive `this`.

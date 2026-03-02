@@ -151,7 +151,8 @@ void BrowserProcessPlatformPart::InitializeUserManager() {
           browser_policy_connector_ash()->GetMinimumVersionPolicyHandler());
   user_image_manager_registry_ =
       std::make_unique<ash::UserImageManagerRegistry>(
-          g_browser_process->local_state(), user_manager_.get());
+          g_browser_process->local_state(),
+          g_browser_process->shared_url_loader_factory(), user_manager_.get());
   multi_user_sign_in_policy_controller_ =
       std::make_unique<user_manager::MultiUserSignInPolicyController>(
           local_state, user_manager_.get());
