@@ -41,7 +41,6 @@ namespace web_app {
 class WebApp;
 class FinalizeUpdateJob;
 class WebAppProvider;
-class WithAppResources;
 
 // An finalizer for the installation process, represents the last step.
 // Takes WebAppInstallInfo as input, writes data to disk (e.g icons, shortcuts)
@@ -67,9 +66,6 @@ class WebAppInstallFinalizer {
   // Virtual for testing.
   // TODO(https://crbug.com/445700226): Move to a job, and remove copies.
   virtual void FinalizeUpdate(const WebAppInstallInfo& web_app_info,
-                              InstallFinalizedCallback callback);
-  virtual void FinalizeUpdate(WithAppResources* lock,
-                              const WebAppInstallInfo& web_app_info,
                               InstallFinalizedCallback callback);
 
   void SetProvider(base::PassKey<WebAppProvider>, WebAppProvider& provider);

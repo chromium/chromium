@@ -8,24 +8,15 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/jobs/finalize_install_job.h"
-#include "chrome/browser/web_applications/locks/with_app_resources.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 
 namespace web_app {
 
-class Lock;
 class IwaVersion;
 class WebAppProvider;
 class WebAppScope;
-class WebAppRegistrar;
-class WebAppSyncBridge;
-class WebAppInstallManager;
-class WebAppIconManager;
-class WebAppTranslationManager;
-class OsIntegrationManager;
-class WebAppOriginAssociationManager;
 struct OriginAssociations;
 
 // An finalizer job for updates in the installation process.
@@ -36,9 +27,7 @@ struct OriginAssociations;
 // triggered by web_app_install_finalizer until refactoring is complete.
 class FinalizeUpdateJob {
  public:
-  FinalizeUpdateJob(Lock* lock,
-                    WithAppResources* lock_with_app_resources,
-                    WebAppProvider& provider,
+  FinalizeUpdateJob(WebAppProvider& provider,
                     const WebAppInstallInfo& web_app_info);
   ~FinalizeUpdateJob();
 
@@ -46,14 +35,6 @@ class FinalizeUpdateJob {
 
  private:
   friend class WebAppInstallFinalizer;
-
-  WebAppRegistrar& registrar() const;
-  WebAppSyncBridge& sync_bridge() const;
-  WebAppInstallManager& install_manager() const;
-  WebAppIconManager& icon_manager() const;
-  WebAppTranslationManager& translation_manager() const;
-  OsIntegrationManager& os_integration_manager() const;
-  WebAppOriginAssociationManager& origin_association_manager() const;
 
   using CommitCallback = base::OnceCallback<void(bool success)>;
 
@@ -67,9 +48,6 @@ class FinalizeUpdateJob {
       bool success);
 
   void OnUpdateHooksFinished();
-
-  void RunCallbackAndResetLock(webapps::AppId app_id,
-                               webapps::InstallResultCode code);
 
   // Returns a value indicating whether the file handlers registered with the OS
   // should be updated. Used to avoid unnecessary updates. TODO(estade): why
@@ -100,8 +78,6 @@ class FinalizeUpdateJob {
                           CommitCallback commit_callback,
                           bool success);
 
-  raw_ptr<Lock> lock_ = nullptr;
-  raw_ptr<WithAppResources> lock_with_app_resources_ = nullptr;
   const raw_ref<WebAppProvider> provider_;
 
   WebAppInstallInfo web_app_info_;
