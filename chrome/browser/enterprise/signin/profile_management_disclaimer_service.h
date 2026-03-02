@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ENTERPRISE_SIGNIN_PROFILE_MANAGEMENT_DISCLAIMER_SERVICE_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -96,12 +97,13 @@ class ProfileManagementDisclaimerService
     std::unique_ptr<ManagedProfileCreationController>
         profile_creation_controller;
 
-    signin_metrics::AccessPoint access_point =
-        signin_metrics::AccessPoint::kUnknown;
     base::WeakPtr<Profile> profile_to_continue_in;
     CoreAccountId account_id;
     bool profile_creation_required_by_policy = false;
     bool cancelable = true;
+
+    // The access point always has a value if the account_id is set.
+    std::optional<signin_metrics::AccessPoint> access_point;
 
     // Callbacks to be executed the user chooses which profile to be managed and
     // whether management is required by policy. The first parameter is the
