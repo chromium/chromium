@@ -37,6 +37,9 @@ BocaReceiverUI::BocaReceiverUI(content::WebUI* web_ui)
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       web_ui->GetWebContents()->GetBrowserContext(), kBocaReceiverHost);
   source->SetDefaultResource(IDR_ASH_BOCA_RECEIVER_UI_INDEX_HTML);
+  source->AddResourcePath("system_assets/app_icon.png",
+                          IDR_ASH_BOCA_RECEIVER_UI_ICON_256);
+  source->AddResourcePath("favicon.ico", IDR_ASH_BOCA_RECEIVER_UI_FAVICON);
   source->AddResourcePaths(kAshBocaReceiverUiResources);
   web_ui->AddRequestableScheme(content::kChromeUIUntrustedScheme);
   source->OverrideContentSecurityPolicy(

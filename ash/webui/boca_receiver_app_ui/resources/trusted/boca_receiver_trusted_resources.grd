@@ -12,6 +12,11 @@
     <includes>
       <include name="IDR_ASH_BOCA_RECEIVER_UI_INDEX_HTML" file="index.html" type="BINDATA" />
       <include name="IDR_ASH_BOCA_RECEIVER_UI_STYLE_CSS" file="style.css" type="BINDATA" />
+      <include name="IDR_ASH_BOCA_RECEIVER_UI_ICON_16" file="assets/icon_16.png" type="BINDATA" />
+      <include name="IDR_ASH_BOCA_RECEIVER_UI_ICON_32" file="assets/icon_32.png" type="BINDATA" />
+      <include name="IDR_ASH_BOCA_RECEIVER_UI_ICON_48" file="assets/icon_48.png" type="BINDATA" />
+      <include name="IDR_ASH_BOCA_RECEIVER_UI_ICON_256" file="assets/icon_256.png" type="BINDATA" />
+      <include name="IDR_ASH_BOCA_RECEIVER_UI_FAVICON" file="assets/favicon.ico" type="BINDATA" />
     </includes>
   </release>
 </grit>
