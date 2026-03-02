@@ -40,6 +40,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.appearance.settings.AppearanceSettingsFragment;
 import org.chromium.chrome.browser.autofill.options.AutofillOptionsFragment;
 import org.chromium.chrome.browser.autofill.options.AutofillOptionsFragment.AutofillOptionsReferrer;
+import org.chromium.chrome.browser.autofill.options.AutofillOptionsMediator;
 import org.chromium.chrome.browser.autofill.settings.SettingsNavigationHelper;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -629,6 +630,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
         addPreferenceIfAbsent(PREF_AUTOFILL_SECTION);
         addPreferenceIfAbsent(PREF_AUTOFILL_OPTIONS);
         Preference autofillOptionsPreference = findPreference(PREF_AUTOFILL_OPTIONS);
+        autofillOptionsPreference.setTitle(AutofillOptionsMediator.getFragmentTitle(getContext()));
         autofillOptionsPreference.setFragment(null);
         autofillOptionsPreference.setOnPreferenceClickListener(
                 preference -> {

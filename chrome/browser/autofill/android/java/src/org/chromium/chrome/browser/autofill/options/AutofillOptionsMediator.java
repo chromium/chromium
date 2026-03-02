@@ -59,7 +59,7 @@ import java.util.function.Supplier;
  * (in either direction).
  */
 @NullMarked
-class AutofillOptionsMediator implements ModalDialogProperties.Controller {
+public class AutofillOptionsMediator implements ModalDialogProperties.Controller {
     private static final String NON_PACKAGE_NAME = "package:not.a.package.so.all.providers.show";
 
     @VisibleForTesting
@@ -125,7 +125,7 @@ class AutofillOptionsMediator implements ModalDialogProperties.Controller {
         mActivity = activity;
         mModel =
                 new PropertyModel.Builder(AutofillOptionsProperties.ALL_KEYS)
-                        .with(FRAGMENT_TITLE, getFragmentTitle())
+                        .with(FRAGMENT_TITLE, getFragmentTitle(context))
                         .with(ON_THIRD_PARTY_TOGGLE_CHANGED, this::onThirdPartyToggleChanged)
                         .with(ON_AUTOFILL_AI_SETTING_TOGGLED, this::onAutofillAiSettingToggled)
                         .with(
@@ -157,10 +157,19 @@ class AutofillOptionsMediator implements ModalDialogProperties.Controller {
         return mModel;
     }
 
-    private String getFragmentTitle() {
+    /**
+     * Returns the fragment's title to display depending on the enabled state of Autofill AI.
+     *
+     * <p>TODO: crbug.com/467563385 - Make the method private and the class package-private once the
+     * feature is launched.
+     *
+     * @param context The application context to use to construct the fragment's title.
+     * @return The fragment's title.
+     */
+    public static String getFragmentTitle(Context context) {
         return isAutofillAiEnabled()
-                ? mContext.getString(R.string.autofill_settings_title)
-                : mContext.getString(R.string.autofill_options_title);
+                ? context.getString(R.string.autofill_settings_title)
+                : context.getString(R.string.autofill_options_title);
     }
 
     private boolean isAutofillAiVisible(@AutofillOptionsReferrer int referrer) {
@@ -169,7 +178,7 @@ class AutofillOptionsMediator implements ModalDialogProperties.Controller {
         return referrer != AutofillOptionsReferrer.DEEP_LINK_TO_SETTINGS && isAutofillAiEnabled();
     }
 
-    private boolean isAutofillAiEnabled() {
+    private static boolean isAutofillAiEnabled() {
         // LINT.IfChange(AutofillEnabledCheckMediator)
         return ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA);
         // LINT.ThenChange(AutofillEnabledCheckFragment)
