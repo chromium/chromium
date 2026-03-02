@@ -40,7 +40,11 @@ DeviceStatisticsScheduler::DeviceStatisticsScheduler(
   CHECK(identity_manager_);
 
   if (base::FeatureList::IsEnabled(kSyncRecordDeviceStatisticsMetrics)) {
-    ScheduleNextRun();
+    if (identity_manager_->AreRefreshTokensLoaded()) {
+      ScheduleNextRun();
+    } else {
+      identity_manager_observation_.Observe(identity_manager_);
+    }
   }
 }
 
@@ -50,6 +54,12 @@ DeviceStatisticsScheduler::~DeviceStatisticsScheduler() = default;
 void DeviceStatisticsScheduler::RegisterProfilePrefs(
     PrefRegistrySimple* registry) {
   registry->RegisterTimePref(kLastAttemptedToRecordPref, base::Time());
+}
+
+void DeviceStatisticsScheduler::OnRefreshTokensLoaded() {
+  identity_manager_observation_.Reset();
+
+  ScheduleNextRun();
 }
 
 base::Time DeviceStatisticsScheduler::ComputeEarliestAllowedTimeToRun() const {
@@ -80,14 +90,6 @@ base::Time DeviceStatisticsScheduler::ComputeEarliestAllowedTimeToRun() const {
     earliest_allowed = std::max(earliest_allowed, now + base::Days(1));
   }
 
-  // It shouldn't happen in practice that the refresh tokens still aren't fully
-  // loaded at this point. But if it does, try again in a little while.
-  if (!identity_manager_->AreRefreshTokensLoaded()) {
-    // TODO(crbug.com/465716865): Reconsider whether repeatedly re-trying makes
-    // sense.
-    earliest_allowed = std::max(earliest_allowed, now + base::Seconds(5));
-  }
-
   // At browser startup, wait some time before recording for the first time.
   earliest_allowed =
       std::max(earliest_allowed,
@@ -100,6 +102,7 @@ void DeviceStatisticsScheduler::ScheduleNextRun() {
   CHECK(base::FeatureList::IsEnabled(kSyncRecordDeviceStatisticsMetrics));
   CHECK(!next_run_timer_.IsRunning());
   CHECK(!tracker_);
+  CHECK(identity_manager_->AreRefreshTokensLoaded());
 
   // Note: `ComputeEarliestAllowedTimeToRun()` may be in the past, in which case
   // `Run` will get posted immediately.
@@ -111,9 +114,10 @@ void DeviceStatisticsScheduler::ScheduleNextRun() {
 void DeviceStatisticsScheduler::Run() {
   CHECK(!tracker_);
 
+  const base::Time earliest_allowed = ComputeEarliestAllowedTimeToRun();
   const base::Time now = base::Time::Now();
 
-  if (ComputeEarliestAllowedTimeToRun() > now) {
+  if (earliest_allowed > now) {
     // This shouldn't usually happen, since runs get scheduled for the time when
     // they'll be allowed. It could happen e.g. if the metrics opt-in changed,
     // or if there's something wrong with the device clock.
