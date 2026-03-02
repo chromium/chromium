@@ -165,7 +165,7 @@ class EntityEditorMediator {
                     mAttributeFields.put(attributeType, countryItem.model);
                     break;
                 case DataType.DATE:
-                    editorFields.add(getDateDropdown(attributeType));
+                    editorFields.add(getDateDropdown(mEntityInstance, attributeType));
                     break;
                 default:
                     assert false
@@ -208,12 +208,20 @@ class EntityEditorMediator {
                         .build());
     }
 
-    private EditorItem getDateDropdown(AttributeType attributeType) {
+    private EditorItem getDateDropdown(EntityInstance entityInstance, AttributeType attributeType) {
+        @Nullable AttributeInstance attribute = entityInstance.getAttribute(attributeType);
+        String attributeValue = "";
+        if (attribute != null) {
+            assert attribute.getAttributeValue() instanceof AttributeInstance.DateValue;
+            attributeValue =
+                    ((AttributeInstance.DateValue) attribute.getAttributeValue()).toString();
+        }
         return new EditorItem(
                 DATE,
                 new PropertyModel.Builder(DATE_ALL_KEYS)
                         .with(LABEL, attributeType.getTypeNameAsString())
                         .with(IS_REQUIRED, false)
+                        .with(VALUE, attributeValue)
                         .build(),
                 /* isFullLine= */ true);
     }

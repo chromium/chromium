@@ -71,6 +71,10 @@ public class AttributeInstance {
             mDate = parseDate(date);
         }
 
+        public DateValue(@Nullable LocalDate date) {
+            mDate = date;
+        }
+
         private @Nullable LocalDate parseDate(String date) {
             if (TextUtils.isEmpty(date)) {
                 return null;
@@ -136,6 +140,10 @@ public class AttributeInstance {
     @CalledByNative
     public AttributeInstance(AttributeType attributeType, @JniType("std::u16string") String value) {
         this(attributeType, new StringValue(value));
+    }
+
+    public AttributeInstance(AttributeType attributeType, @Nullable LocalDate date) {
+        this(attributeType, new DateValue(date));
     }
 
     public AttributeInstance(AttributeType attributeType, AttributeValue attributeValue) {

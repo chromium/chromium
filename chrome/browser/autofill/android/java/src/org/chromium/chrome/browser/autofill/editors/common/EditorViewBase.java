@@ -11,6 +11,7 @@ import static org.chromium.chrome.browser.autofill.editors.common.EditorComponen
 import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.ItemType.NOTICE;
 import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.ItemType.TEXT_INPUT;
 import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.isDropdownField;
+import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.VALUE;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -590,9 +591,8 @@ public abstract class EditorViewBase extends AlwaysDismissedDialog
                 }
             case DATE:
                 {
-                    // TODO: crbug.com/467563819 - Set the initial date value.
                     DateFieldView dateField =
-                            new DateFieldView(getStyledContext(), /* value= */ "");
+                            new DateFieldView(getStyledContext(), editorItem.model.get(VALUE));
                     mDateFieldMCPs.add(
                             PropertyModelChangeProcessor.create(
                                     editorItem.model,

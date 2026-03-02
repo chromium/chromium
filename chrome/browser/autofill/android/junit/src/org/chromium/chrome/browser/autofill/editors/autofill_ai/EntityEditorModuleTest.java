@@ -76,7 +76,6 @@ import org.chromium.ui.modelutil.ListModel;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.List;
 
 @RunWith(BaseRobolectricTestRunner.class)
@@ -134,21 +133,22 @@ public class EntityEditorModuleTest {
             new EntityInstance.Builder(PASSPORT_TYPE)
                     .setGUID("guid")
                     .setRecordType(RecordType.LOCAL)
-                    .setModifiedDate(LocalDate.now(ZoneId.systemDefault()))
+                    .setModifiedDate(LocalDate.of(2026, 2, 15))
                     .setUseCount(0)
                     .addAttribute(
                             new AttributeInstance(
                                     PASSPORT_NUMBER_ATTRIBUTE_TYPE, /* value= */ "AA123456"))
                     .addAttribute(
                             new AttributeInstance(
-                                    PASSPORT_ISSUE_DATE_TYPE, /* value= */ "2026-02-15"))
+                                    PASSPORT_ISSUE_DATE_TYPE,
+                                    /* date= */ LocalDate.of(2026, 2, 15)))
                     .build();
 
     private static final EntityInstance NEW_LOCAL_PASSPORT =
             new EntityInstance.Builder(PASSPORT_TYPE)
                     .setGUID("")
                     .setRecordType(RecordType.LOCAL)
-                    .setModifiedDate(LocalDate.now(ZoneId.systemDefault()))
+                    .setModifiedDate(LocalDate.of(2026, 2, 15))
                     .setUseCount(0)
                     .build();
 
@@ -156,7 +156,7 @@ public class EntityEditorModuleTest {
             new EntityInstance.Builder(PASSPORT_TYPE)
                     .setGUID("guid")
                     .setRecordType(RecordType.SERVER_WALLET)
-                    .setModifiedDate(LocalDate.now(ZoneId.systemDefault()))
+                    .setModifiedDate(LocalDate.of(2026, 2, 15))
                     .setUseCount(0)
                     .addAttribute(
                             new AttributeInstance(
@@ -342,7 +342,7 @@ public class EntityEditorModuleTest {
                 new EntityInstance.Builder(PASSPORT_TYPE)
                         .setGUID("guid")
                         .setRecordType(RecordType.LOCAL)
-                        .setModifiedDate(LocalDate.now(ZoneId.systemDefault()))
+                        .setModifiedDate(LocalDate.of(2026, 2, 15))
                         .setUseCount(0)
                         .addAttribute(
                                 new AttributeInstance(
@@ -403,8 +403,12 @@ public class EntityEditorModuleTest {
                 /* fieldType= */ FieldType.PASSPORT_NUMBER,
                 /* label= */ "Passport number",
                 /* value= */ "AA123456");
-        verifyDateFieldContent(editorFields.get(3), /* label= */ "Issue date");
-        verifyDateFieldContent(editorFields.get(4), /* label= */ "Expiration date");
+        verifyDateFieldContent(
+                editorFields.get(3),
+                /* label= */ "Issue date",
+                /* value= */ LocalDate.of(2026, 2, 15).toString());
+        verifyDateFieldContent(
+                editorFields.get(4), /* label= */ "Expiration date", /* value= */ "");
     }
 
     private void verifyTextFieldContent(
@@ -429,10 +433,11 @@ public class EntityEditorModuleTest {
         assertEquals(value, item.model.get(VALUE));
     }
 
-    private void verifyDateFieldContent(EditorItem item, String label) {
+    private void verifyDateFieldContent(EditorItem item, String label, String value) {
         assertEquals(DATE, item.type);
         assertFalse(item.model.get(IS_REQUIRED));
         assertEquals(label, item.model.get(LABEL));
+        assertEquals(value, item.model.get(VALUE));
     }
 
     private void verifySourceNotice(ListModel<EditorItem> editorFields, String expectedNoticeText) {
