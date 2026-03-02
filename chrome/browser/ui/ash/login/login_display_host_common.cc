@@ -238,6 +238,7 @@ LoginDisplayHostCommon::LoginDisplayHostCommon(
                   KeepAliveRestartOption::DISABLED),
       kiosk_app_menu_controller_(local_state),
       login_ui_pref_controller_(std::make_unique<LoginUIPrefController>(
+          local_state,
           update_geolocation_usage_allowed)),
       wizard_context_(std::make_unique<WizardContext>()),
       // TODO(crbug.com/446058312): OobeMetricsHelper ctor should take a

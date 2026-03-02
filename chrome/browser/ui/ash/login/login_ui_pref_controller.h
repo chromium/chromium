@@ -5,8 +5,11 @@
 #ifndef CHROME_BROWSER_UI_ASH_LOGIN_LOGIN_UI_PREF_CONTROLLER_H_
 #define CHROME_BROWSER_UI_ASH_LOGIN_LOGIN_UI_PREF_CONTROLLER_H_
 
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "components/prefs/pref_change_registrar.h"
+
+class PrefService;
 
 namespace ash {
 
@@ -16,7 +19,9 @@ class LoginUIPrefController {
   // that are coming from the owner user and/or device policies.
   // `session_state` specifies whether it's the first (primary user) or
   // subsequent (secondary user) login.
-  explicit LoginUIPrefController(bool update_geolocation_usage_allowed);
+  // `local_state` must be non-null and must outlive `this`.
+  LoginUIPrefController(PrefService* local_state,
+                        bool update_geolocation_usage_allowed);
   LoginUIPrefController(const LoginUIPrefController&) = delete;
   LoginUIPrefController& operator=(const LoginUIPrefController&) = delete;
   ~LoginUIPrefController();
@@ -36,6 +41,8 @@ class LoginUIPrefController {
 
   // Apply "ash.device.geolocation_allowed" preference on the login screen.
   void UpdateGeolocationUsageAllowed();
+
+  const raw_ref<PrefService> local_state_;
 
   PrefChangeRegistrar pref_change_registrar_;
 

@@ -7,11 +7,11 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/geolocation_access_level.h"
 #include "ash/system/privacy_hub/privacy_hub_controller.h"
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/system/input_device_settings.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/geolocation/system_location_provider.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -20,10 +20,11 @@
 namespace ash {
 
 LoginUIPrefController::LoginUIPrefController(
+    PrefService* local_state,
     bool update_geolocation_usage_allowed)
-    : update_geolocation_usage_allowed_(update_geolocation_usage_allowed) {
-  PrefService* prefs = g_browser_process->local_state();
-  pref_change_registrar_.Init(prefs);
+    : local_state_(CHECK_DEREF(local_state)),
+      update_geolocation_usage_allowed_(update_geolocation_usage_allowed) {
+  pref_change_registrar_.Init(&local_state_.get());
   pref_change_registrar_.Add(
       prefs::kOwnerPrimaryMouseButtonRight,
       base::BindRepeating(&LoginUIPrefController::UpdatePrimaryMouseButtonRight,
@@ -45,13 +46,13 @@ LoginUIPrefController::LoginUIPrefController(
             weak_factory_.GetWeakPtr()));
   }
 
-  if (prefs->GetAllPrefStoresInitializationStatus() ==
+  if (local_state_->GetAllPrefStoresInitializationStatus() ==
       PrefService::INITIALIZATION_STATUS_WAITING) {
-    prefs->AddPrefInitObserver(
+    local_state_->AddPrefInitObserver(
         base::BindOnce(&LoginUIPrefController::InitOwnerPreferences,
                        weak_factory_.GetWeakPtr()));
   } else {
-    InitOwnerPreferences(prefs->GetAllPrefStoresInitializationStatus() !=
+    InitOwnerPreferences(local_state_->GetAllPrefStoresInitializationStatus() !=
                          PrefService::INITIALIZATION_STATUS_ERROR);
   }
 }
@@ -60,20 +61,17 @@ LoginUIPrefController::~LoginUIPrefController() = default;
 
 void LoginUIPrefController::UpdatePrimaryMouseButtonRight() {
   system::InputDeviceSettings::Get()->SetPrimaryButtonRight(
-      g_browser_process->local_state()->GetBoolean(
-          prefs::kOwnerPrimaryMouseButtonRight));
+      local_state_->GetBoolean(prefs::kOwnerPrimaryMouseButtonRight));
 }
 
 void LoginUIPrefController::UpdatePrimaryPointingStickButtonRight() {
   system::InputDeviceSettings::Get()->SetPointingStickPrimaryButtonRight(
-      g_browser_process->local_state()->GetBoolean(
-          prefs::kOwnerPrimaryPointingStickButtonRight));
+      local_state_->GetBoolean(prefs::kOwnerPrimaryPointingStickButtonRight));
 }
 
 void LoginUIPrefController::UpdateTapToClickEnabled() {
   system::InputDeviceSettings::Get()->SetTapToClick(
-      g_browser_process->local_state()->GetBoolean(
-          prefs::kOwnerTapToClickEnabled));
+      local_state_->GetBoolean(prefs::kOwnerTapToClickEnabled));
 }
 
 void LoginUIPrefController::UpdateGeolocationUsageAllowed() {
@@ -81,8 +79,7 @@ void LoginUIPrefController::UpdateGeolocationUsageAllowed() {
   // `SystemLocationProvider` global instance.
   SystemLocationProvider::GetInstance()->SetGeolocationAccessLevel(
       static_cast<GeolocationAccessLevel>(
-          g_browser_process->local_state()->GetInteger(
-              ash::prefs::kDeviceGeolocationAllowed)));
+          local_state_->GetInteger(ash::prefs::kDeviceGeolocationAllowed)));
 }
 
 void LoginUIPrefController::InitOwnerPreferences(bool success) {
