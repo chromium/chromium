@@ -4,7 +4,6 @@
 import './composebox_file_inputs.js';
 import './composebox_lens_search.js';
 import './composebox_tool_chip.js';
-import './context_menu_entrypoint.js';
 import './contextual_entrypoint_and_menu.js';
 import './contextual_entrypoint_button.js';
 import './composebox_dropdown.js';
