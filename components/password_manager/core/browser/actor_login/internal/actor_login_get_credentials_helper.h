@@ -31,7 +31,7 @@ class ActorLoginGetCredentialsHelper {
   struct FetchResult {
     FetchResult();
     FetchResult(std::vector<Credential> credentials,
-                std::unique_ptr<ActorLoginCredentialsFetcher::Status> status);
+                ActorLoginCredentialsFetcher::Status status);
     FetchResult(const FetchResult&) = delete;
     FetchResult& operator=(const FetchResult&) = delete;
     FetchResult(FetchResult&&);
@@ -39,10 +39,13 @@ class ActorLoginGetCredentialsHelper {
     ~FetchResult();
 
     std::vector<Credential> credentials;
-    std::unique_ptr<ActorLoginCredentialsFetcher::Status> status;
+    ActorLoginCredentialsFetcher::Status status;
   };
 
   void OnAllFetchesCompleted(std::vector<FetchResult> results);
+
+  // Checks if the results contain an error or simply no credentials.
+  CredentialsOrError GetErrorOrNoCredentials(std::vector<FetchResult> results);
 
   std::vector<Credential> MergeCredentials(std::vector<FetchResult> results);
 

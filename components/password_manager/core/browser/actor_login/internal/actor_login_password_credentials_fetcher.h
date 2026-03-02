@@ -34,24 +34,6 @@ class ActorLoginPasswordCredentialsFetcher
     : public ActorLoginCredentialsFetcher,
       public password_manager::FormFetcher::Consumer {
  public:
-  // Status specific to password credentials fetching.
-  class Status : public ActorLoginCredentialsFetcher::Status {
-   public:
-    enum class Outcome {
-      kSuccess,
-      kFillingNotAllowed,
-    };
-
-    explicit Status(Outcome outcome) : outcome_(outcome) {}
-
-    std::optional<ActorLoginError> GetGlobalError() const override;
-
-    Outcome outcome() const { return outcome_; }
-
-   private:
-    Outcome outcome_;
-  };
-
   ActorLoginPasswordCredentialsFetcher(
       const url::Origin& origin,
       password_manager::PasswordManagerClient* client,

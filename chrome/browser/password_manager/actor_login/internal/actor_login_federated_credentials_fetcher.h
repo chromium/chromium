@@ -24,14 +24,6 @@ namespace actor_login {
 class ActorLoginFederatedCredentialsFetcher
     : public ActorLoginCredentialsFetcher {
  public:
-  // Status specific to federated credentials fetching.
-  class FederatedFetcherStatus : public ActorLoginCredentialsFetcher::Status {
-   public:
-    FederatedFetcherStatus() = default;
-
-    std::optional<ActorLoginError> GetGlobalError() const override;
-  };
-
   using IdentityCredentialSourceCallback =
       base::RepeatingCallback<content::webid::IdentityCredentialSource*()>;
 

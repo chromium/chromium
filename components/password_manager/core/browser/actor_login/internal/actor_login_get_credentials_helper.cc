@@ -35,8 +35,8 @@ ActorLoginGetCredentialsHelper::ActorLoginGetCredentialsHelper(
     fetcher->Fetch(base::BindOnce(
         [](base::RepeatingCallback<void(FetchResult)> barrier,
            std::vector<Credential> credentials,
-           std::unique_ptr<ActorLoginCredentialsFetcher::Status> status) {
-          barrier.Run({std::move(credentials), std::move(status)});
+           ActorLoginCredentialsFetcher::Status status) {
+          barrier.Run({std::move(credentials), status});
         },
         barrier_callback));
   }
@@ -48,7 +48,7 @@ ActorLoginGetCredentialsHelper::FetchResult::FetchResult() = default;
 
 ActorLoginGetCredentialsHelper::FetchResult::FetchResult(
     std::vector<Credential> credentials,
-    std::unique_ptr<ActorLoginCredentialsFetcher::Status> status)
+    ActorLoginCredentialsFetcher::Status status)
     : credentials(std::move(credentials)), status(std::move(status)) {}
 
 ActorLoginGetCredentialsHelper::FetchResult::FetchResult(FetchResult&&) =
@@ -61,26 +61,30 @@ ActorLoginGetCredentialsHelper::FetchResult::~FetchResult() = default;
 
 void ActorLoginGetCredentialsHelper::OnAllFetchesCompleted(
     std::vector<FetchResult> results) {
-  for (const FetchResult& result : results) {
-    // To keep the same behavior as the previous implementation, check the
-    // global error to return `kFillingNotAllowed` error.
-    // TODO(crbug.com/478799141): In the future, we should only report an error
-    // if all fetchers return an error. Fetcher-specific errors should be logged
-    // in MQLS.
-    if (result.status) {
-      std::optional<ActorLoginError> error = result.status->GetGlobalError();
-      if (error.has_value()) {
-        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-            FROM_HERE, base::BindOnce(std::move(callback_),
-                                      base::unexpected(error.value())));
-        return;
-      }
-    }
-  }
+  bool fetched_credentials = std::ranges::any_of(
+      results,
+      [](const FetchResult& result) { return !result.credentials.empty(); });
 
+  if (!fetched_credentials) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback_),
+                                  GetErrorOrNoCredentials(std::move(results))));
+    return;
+  }
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback_),
                                 MergeCredentials(std::move(results))));
+}
+
+CredentialsOrError ActorLoginGetCredentialsHelper::GetErrorOrNoCredentials(
+    std::vector<FetchResult> results) {
+  for (const FetchResult& result : results) {
+    if (result.status ==
+        ActorLoginCredentialsFetcher::Status::kFillingNotAllowed) {
+      return base::unexpected(ActorLoginError::kFillingNotAllowed);
+    }
+  }
+  return std::vector<Credential>();
 }
 
 std::vector<Credential> ActorLoginGetCredentialsHelper::MergeCredentials(

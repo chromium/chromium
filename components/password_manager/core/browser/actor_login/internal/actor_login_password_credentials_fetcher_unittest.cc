@@ -242,7 +242,7 @@ class ActorLoginPasswordCredentialsFetcherTest : public ::testing::Test {
 
 TEST_F(ActorLoginPasswordCredentialsFetcherTest, Success) {
   base::test::TestFuture<std::vector<Credential>,
-                         std::unique_ptr<ActorLoginCredentialsFetcher::Status>>
+                         ActorLoginCredentialsFetcher::Status>
       future;
   auto fetcher = std::make_unique<ActorLoginPasswordCredentialsFetcher>(
       url::Origin::Create(GURL("https://example.com")), client(),
@@ -252,11 +252,7 @@ TEST_F(ActorLoginPasswordCredentialsFetcherTest, Success) {
   ASSERT_TRUE(future.Wait());
   const auto& [credentials, status] = future.Get();
   EXPECT_TRUE(credentials.empty());
-  EXPECT_FALSE(status->GetGlobalError().has_value());
-  EXPECT_EQ(
-      static_cast<ActorLoginPasswordCredentialsFetcher::Status*>(status.get())
-          ->outcome(),
-      ActorLoginPasswordCredentialsFetcher::Status::Outcome::kSuccess);
+  EXPECT_EQ(status, ActorLoginCredentialsFetcher::Status::kSuccess);
 
   // Check the reported logs.
   GetCredentialsDetails expected_details;
@@ -277,7 +273,7 @@ TEST_F(ActorLoginPasswordCredentialsFetcherTest, FiltersByDomain) {
       CreatePasswordForm("https://bar.com", u"bar_username", u"bar_password"));
 
   base::test::TestFuture<std::vector<Credential>,
-                         std::unique_ptr<ActorLoginCredentialsFetcher::Status>>
+                         ActorLoginCredentialsFetcher::Status>
       future;
   auto fetcher = std::make_unique<ActorLoginPasswordCredentialsFetcher>(
       url::Origin::Create(GURL("https://foo.com")), client(),
@@ -289,7 +285,6 @@ TEST_F(ActorLoginPasswordCredentialsFetcherTest, FiltersByDomain) {
 
   ASSERT_TRUE(future.Wait());
   const auto& [credentials, status] = future.Get();
-  EXPECT_FALSE(status->GetGlobalError().has_value());
   ASSERT_EQ(credentials.size(), 1u);
   EXPECT_EQ(credentials[0].username, u"foo_username");
   EXPECT_EQ(credentials[0].type, kPassword);
@@ -322,7 +317,7 @@ TEST_F(ActorLoginPasswordCredentialsFetcherTest, FromAllStores) {
       CreatePasswordForm("https://foo.com", u"bar_username", u"bar_password"));
 
   base::test::TestFuture<std::vector<Credential>,
-                         std::unique_ptr<ActorLoginCredentialsFetcher::Status>>
+                         ActorLoginCredentialsFetcher::Status>
       future;
   auto fetcher = std::make_unique<ActorLoginPasswordCredentialsFetcher>(
       url::Origin::Create(GURL("https://foo.com")), client(),
@@ -331,7 +326,6 @@ TEST_F(ActorLoginPasswordCredentialsFetcherTest, FromAllStores) {
 
   ASSERT_TRUE(future.Wait());
   const auto& [credentials, status] = future.Get();
-  EXPECT_FALSE(status->GetGlobalError().has_value());
   ASSERT_EQ(credentials.size(), 2u);
 
   std::vector<std::u16string> usernames;
@@ -371,7 +365,7 @@ TEST_F(ActorLoginPasswordCredentialsFetcherTest,
       .WillRepeatedly(WithArg<1>(&PostResponse<true>));
 
   base::test::TestFuture<std::vector<Credential>,
-                         std::unique_ptr<ActorLoginCredentialsFetcher::Status>>
+                         ActorLoginCredentialsFetcher::Status>
       future;
   auto fetcher = std::make_unique<ActorLoginPasswordCredentialsFetcher>(
       kOrigin, client(), password_manager(), mqls_logger());
@@ -390,7 +384,6 @@ TEST_F(ActorLoginPasswordCredentialsFetcherTest,
 
   ASSERT_TRUE(future.Wait());
   const auto& [credentials, status] = future.Get();
-  EXPECT_FALSE(status->GetGlobalError().has_value());
   ASSERT_EQ(credentials.size(), 1u);
   EXPECT_EQ(credentials[0].username, u"foo_username");
   EXPECT_TRUE(credentials[0].immediatelyAvailableToLogin);
@@ -446,7 +439,7 @@ TEST_F(ActorLoginPasswordCredentialsFetcherTest, FieldsAreNotVisible) {
       .WillRepeatedly(base::test::RunOnceCallbackRepeatedly<1>(false));
 
   base::test::TestFuture<std::vector<Credential>,
-                         std::unique_ptr<ActorLoginCredentialsFetcher::Status>>
+                         ActorLoginCredentialsFetcher::Status>
       future;
   auto fetcher = std::make_unique<ActorLoginPasswordCredentialsFetcher>(
       kOrigin, client(), password_manager(), mqls_logger());
@@ -465,7 +458,6 @@ TEST_F(ActorLoginPasswordCredentialsFetcherTest, FieldsAreNotVisible) {
 
   ASSERT_TRUE(future.Wait());
   const auto& [credentials, status] = future.Get();
-  EXPECT_FALSE(status->GetGlobalError().has_value());
   ASSERT_EQ(credentials.size(), 1u);
   EXPECT_EQ(credentials[0].username, u"foo_username");
   EXPECT_FALSE(credentials[0].immediatelyAvailableToLogin);
@@ -502,7 +494,7 @@ TEST_F(ActorLoginPasswordCredentialsFetcherTest, IgnoresFormInFencedFrame) {
   EXPECT_CALL(driver(), IsNestedWithinFencedFrame).WillOnce(Return(true));
 
   base::test::TestFuture<std::vector<Credential>,
-                         std::unique_ptr<ActorLoginCredentialsFetcher::Status>>
+                         ActorLoginCredentialsFetcher::Status>
       future;
   auto fetcher = std::make_unique<ActorLoginPasswordCredentialsFetcher>(
       kOrigin, client(), password_manager(), mqls_logger());
@@ -516,7 +508,6 @@ TEST_F(ActorLoginPasswordCredentialsFetcherTest, IgnoresFormInFencedFrame) {
 
   ASSERT_TRUE(future.Wait());
   const auto& [credentials, status] = future.Get();
-  EXPECT_FALSE(status->GetGlobalError().has_value());
   ASSERT_EQ(credentials.size(), 1u);
   EXPECT_EQ(credentials[0].username, u"foo_username");
   EXPECT_FALSE(credentials[0].immediatelyAvailableToLogin);
@@ -546,7 +537,7 @@ TEST_F(ActorLoginPasswordCredentialsFetcherTest,
       .WillRepeatedly(base::test::RunOnceCallbackRepeatedly<1>(true));
 
   base::test::TestFuture<std::vector<Credential>,
-                         std::unique_ptr<ActorLoginCredentialsFetcher::Status>>
+                         ActorLoginCredentialsFetcher::Status>
       future;
   auto fetcher = std::make_unique<ActorLoginPasswordCredentialsFetcher>(
       kOrigin, client(), password_manager(), mqls_logger());
@@ -560,7 +551,6 @@ TEST_F(ActorLoginPasswordCredentialsFetcherTest,
 
   ASSERT_TRUE(future.Wait());
   const auto& [credentials, status] = future.Get();
-  EXPECT_FALSE(status->GetGlobalError().has_value());
   ASSERT_EQ(credentials.size(), 1u);
   EXPECT_TRUE(credentials[0].immediatelyAvailableToLogin);
 }
@@ -588,7 +578,7 @@ TEST_F(ActorLoginPasswordCredentialsFetcherTest,
       .WillByDefault(Return(true));
 
   base::test::TestFuture<std::vector<Credential>,
-                         std::unique_ptr<ActorLoginCredentialsFetcher::Status>>
+                         ActorLoginCredentialsFetcher::Status>
       future;
   auto fetcher = std::make_unique<ActorLoginPasswordCredentialsFetcher>(
       kOrigin, client(), password_manager(), mqls_logger());
@@ -600,7 +590,6 @@ TEST_F(ActorLoginPasswordCredentialsFetcherTest,
 
   ASSERT_TRUE(future.Wait());
   const auto& [credentials, status] = future.Get();
-  EXPECT_FALSE(status->GetGlobalError().has_value());
   ASSERT_EQ(credentials.size(), 1u);
   EXPECT_FALSE(credentials[0].immediatelyAvailableToLogin);
 }
@@ -623,7 +612,7 @@ TEST_F(ActorLoginPasswordCredentialsFetcherTest, NestedFrameWithSameOrigin) {
       .WillByDefault(Return(false));
 
   base::test::TestFuture<std::vector<Credential>,
-                         std::unique_ptr<ActorLoginCredentialsFetcher::Status>>
+                         ActorLoginCredentialsFetcher::Status>
       future;
 
   auto fetcher = std::make_unique<ActorLoginPasswordCredentialsFetcher>(
@@ -636,7 +625,6 @@ TEST_F(ActorLoginPasswordCredentialsFetcherTest, NestedFrameWithSameOrigin) {
 
   ASSERT_TRUE(future.Wait());
   const auto& [credentials, status] = future.Get();
-  EXPECT_FALSE(status->GetGlobalError().has_value());
   ASSERT_EQ(credentials.size(), 1u);
   EXPECT_TRUE(credentials[0].immediatelyAvailableToLogin);
 }
@@ -667,7 +655,7 @@ TEST_F(ActorLoginPasswordCredentialsFetcherTest, IgnoresSameSiteNestedFrame) {
       .WillByDefault(Return(false));
 
   base::test::TestFuture<std::vector<Credential>,
-                         std::unique_ptr<ActorLoginCredentialsFetcher::Status>>
+                         ActorLoginCredentialsFetcher::Status>
       future;
   auto fetcher = std::make_unique<ActorLoginPasswordCredentialsFetcher>(
       kOrigin, client(), password_manager(), mqls_logger());
@@ -680,7 +668,6 @@ TEST_F(ActorLoginPasswordCredentialsFetcherTest, IgnoresSameSiteNestedFrame) {
 
   ASSERT_TRUE(future.Wait());
   const auto& [credentials, status] = future.Get();
-  EXPECT_FALSE(status->GetGlobalError().has_value());
   ASSERT_EQ(credentials.size(), 1u);
   EXPECT_FALSE(credentials[0].immediatelyAvailableToLogin);
 
@@ -726,7 +713,7 @@ TEST_F(ActorLoginPasswordCredentialsFetcherTest,
       .WillByDefault(Return(false));
 
   base::test::TestFuture<std::vector<Credential>,
-                         std::unique_ptr<ActorLoginCredentialsFetcher::Status>>
+                         ActorLoginCredentialsFetcher::Status>
       future;
 
   auto fetcher = std::make_unique<ActorLoginPasswordCredentialsFetcher>(
@@ -739,7 +726,6 @@ TEST_F(ActorLoginPasswordCredentialsFetcherTest,
 
   ASSERT_TRUE(future.Wait());
   const auto& [credentials, status] = future.Get();
-  EXPECT_FALSE(status->GetGlobalError().has_value());
   ASSERT_EQ(credentials.size(), 1u);
   EXPECT_FALSE(credentials[0].immediatelyAvailableToLogin);
 }
@@ -760,7 +746,7 @@ TEST_F(ActorLoginPasswordCredentialsFetcherTest,
   AddFormManager(CreateFormManager());
   form_fetcher()->SetBestMatches({exact_match, affiliated_match, psl_match});
   base::test::TestFuture<std::vector<Credential>,
-                         std::unique_ptr<ActorLoginCredentialsFetcher::Status>>
+                         ActorLoginCredentialsFetcher::Status>
       future;
 
   auto fetcher = std::make_unique<ActorLoginPasswordCredentialsFetcher>(
@@ -774,7 +760,6 @@ TEST_F(ActorLoginPasswordCredentialsFetcherTest,
 
   ASSERT_TRUE(future.Wait());
   const auto& [credentials, status] = future.Get();
-  EXPECT_FALSE(status->GetGlobalError().has_value());
   ASSERT_EQ(credentials.size(), 3u);
 }
 
@@ -789,7 +774,7 @@ TEST_F(ActorLoginPasswordCredentialsFetcherTest, NoApprovedCredentials) {
   form_fetcher()->SetBestMatches({affiliated_match, psl_match});
 
   base::test::TestFuture<std::vector<Credential>,
-                         std::unique_ptr<ActorLoginCredentialsFetcher::Status>>
+                         ActorLoginCredentialsFetcher::Status>
       future;
   auto fetcher = std::make_unique<ActorLoginPasswordCredentialsFetcher>(
       kOrigin, client(), password_manager(), mqls_logger());
@@ -803,7 +788,6 @@ TEST_F(ActorLoginPasswordCredentialsFetcherTest, NoApprovedCredentials) {
 
   ASSERT_TRUE(future.Wait());
   const auto& [credentials, status] = future.Get();
-  EXPECT_FALSE(status->GetGlobalError().has_value());
   ASSERT_EQ(credentials.size(), 2u);
 }
 
@@ -820,7 +804,7 @@ TEST_F(ActorLoginPasswordCredentialsFetcherTest,
   form_fetcher()->SetBestMatches({affiliated_match, psl_match});
 
   base::test::TestFuture<std::vector<Credential>,
-                         std::unique_ptr<ActorLoginCredentialsFetcher::Status>>
+                         ActorLoginCredentialsFetcher::Status>
       future;
   auto fetcher = std::make_unique<ActorLoginPasswordCredentialsFetcher>(
       kOrigin, client(), password_manager(), mqls_logger());
@@ -834,7 +818,6 @@ TEST_F(ActorLoginPasswordCredentialsFetcherTest,
 
   ASSERT_TRUE(future.Wait());
   const auto& [credentials, status] = future.Get();
-  EXPECT_FALSE(status->GetGlobalError().has_value());
   ASSERT_EQ(credentials.size(), 2u);
 }
 
@@ -847,7 +830,7 @@ TEST_F(ActorLoginPasswordCredentialsFetcherTest, IgnoresGroupedMatches) {
   form_fetcher()->SetBestMatches({grouped_match});
 
   base::test::TestFuture<std::vector<Credential>,
-                         std::unique_ptr<ActorLoginCredentialsFetcher::Status>>
+                         ActorLoginCredentialsFetcher::Status>
       future;
   auto fetcher = std::make_unique<ActorLoginPasswordCredentialsFetcher>(
       kOrigin, client(), password_manager(), mqls_logger());
@@ -861,7 +844,6 @@ TEST_F(ActorLoginPasswordCredentialsFetcherTest, IgnoresGroupedMatches) {
 
   ASSERT_TRUE(future.Wait());
   const auto& [credentials, status] = future.Get();
-  EXPECT_FALSE(status->GetGlobalError().has_value());
   ASSERT_TRUE(credentials.empty());
 }
 
@@ -893,7 +875,7 @@ TEST_F(ActorLoginPasswordCredentialsFetcherTest,
   form_fetcher()->SetBestMatches({exact_match, affiliated_match, psl_match});
 
   base::test::TestFuture<std::vector<Credential>,
-                         std::unique_ptr<ActorLoginCredentialsFetcher::Status>>
+                         ActorLoginCredentialsFetcher::Status>
       future;
   auto fetcher = std::make_unique<ActorLoginPasswordCredentialsFetcher>(
       kOrigin, client(), password_manager(), mqls_logger());
@@ -907,7 +889,6 @@ TEST_F(ActorLoginPasswordCredentialsFetcherTest,
 
   ASSERT_TRUE(future.Wait());
   const auto& [credentials, status] = future.Get();
-  EXPECT_FALSE(status->GetGlobalError().has_value());
   ASSERT_EQ(credentials.size(), 3u);
   EXPECT_EQ(credentials[0].username, u"exact_username");
   EXPECT_FALSE(credentials[0].has_persistent_permission);
@@ -938,7 +919,7 @@ TEST_F(ActorLoginPasswordCredentialsFetcherTest, FillingNotAllowed) {
   EXPECT_CALL(*client(), IsFillingEnabled(kOrigin.GetURL()))
       .WillOnce(Return(false));
   base::test::TestFuture<std::vector<Credential>,
-                         std::unique_ptr<ActorLoginCredentialsFetcher::Status>>
+                         ActorLoginCredentialsFetcher::Status>
       future;
   GetCredentialsDetails expected_details;
   expected_details.set_outcome(
@@ -955,14 +936,7 @@ TEST_F(ActorLoginPasswordCredentialsFetcherTest, FillingNotAllowed) {
   ASSERT_TRUE(future.Wait());
   const auto& [credentials, status] = future.Get();
   EXPECT_TRUE(credentials.empty());
-  ASSERT_TRUE(status->GetGlobalError().has_value());
-  EXPECT_EQ(status->GetGlobalError().value(),
-            ActorLoginError::kFillingNotAllowed);
-  EXPECT_EQ(
-      static_cast<ActorLoginPasswordCredentialsFetcher::Status*>(status.get())
-          ->outcome(),
-      ActorLoginPasswordCredentialsFetcher::Status::Outcome::
-          kFillingNotAllowed);
+  EXPECT_EQ(status, ActorLoginCredentialsFetcher::Status::kFillingNotAllowed);
 }
 
 }  // namespace actor_login

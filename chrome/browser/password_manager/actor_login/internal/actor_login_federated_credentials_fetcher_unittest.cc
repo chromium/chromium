@@ -92,7 +92,7 @@ TEST_F(ActorLoginFederatedCredentialsFetcherTest, GetCredentialsSuccess) {
       .WillOnce(base::test::RunOnceCallback<1>(std::move(accounts)));
 
   base::test::TestFuture<std::vector<Credential>,
-                         std::unique_ptr<ActorLoginCredentialsFetcher::Status>>
+                         ActorLoginCredentialsFetcher::Status>
       future;
   url::Origin request_origin = url::Origin::Create(GURL("https://example.com"));
   ActorLoginFederatedCredentialsFetcher fetcher(
@@ -114,7 +114,7 @@ TEST_F(ActorLoginFederatedCredentialsFetcherTest, GetCredentialsSuccess) {
   EXPECT_EQ(credentials[0].federation_detail->idp_origin,
             url::Origin::Create(GURL("https://idp.com")));
   EXPECT_TRUE(credentials[0].immediatelyAvailableToLogin);
-  EXPECT_FALSE(status->GetGlobalError().has_value());
+  EXPECT_EQ(status, ActorLoginCredentialsFetcher::Status::kSuccess);
 }
 
 TEST_F(ActorLoginFederatedCredentialsFetcherTest, FeatureDisabled) {
@@ -125,7 +125,7 @@ TEST_F(ActorLoginFederatedCredentialsFetcherTest, FeatureDisabled) {
   EXPECT_CALL(mock_identity_source_, GetIdentityCredentialSuggestions).Times(0);
 
   base::test::TestFuture<std::vector<Credential>,
-                         std::unique_ptr<ActorLoginCredentialsFetcher::Status>>
+                         ActorLoginCredentialsFetcher::Status>
       future;
   ActorLoginFederatedCredentialsFetcher fetcher(
       url::Origin::Create(GURL("https://example.com")),
@@ -138,7 +138,7 @@ TEST_F(ActorLoginFederatedCredentialsFetcherTest, FeatureDisabled) {
   ASSERT_TRUE(future.Wait());
   const auto& [credentials, status] = future.Get();
   EXPECT_TRUE(credentials.empty());
-  EXPECT_FALSE(status->GetGlobalError().has_value());
+  EXPECT_EQ(status, ActorLoginCredentialsFetcher::Status::kSuccess);
 }
 
 TEST_F(ActorLoginFederatedCredentialsFetcherTest, NoAccounts) {
@@ -150,7 +150,7 @@ TEST_F(ActorLoginFederatedCredentialsFetcherTest, NoAccounts) {
       .WillOnce(base::test::RunOnceCallback<1>(std::nullopt));
 
   base::test::TestFuture<std::vector<Credential>,
-                         std::unique_ptr<ActorLoginCredentialsFetcher::Status>>
+                         ActorLoginCredentialsFetcher::Status>
       future;
   ActorLoginFederatedCredentialsFetcher fetcher(
       url::Origin::Create(GURL("https://example.com")),
@@ -163,7 +163,7 @@ TEST_F(ActorLoginFederatedCredentialsFetcherTest, NoAccounts) {
   ASSERT_TRUE(future.Wait());
   const auto& [credentials, status] = future.Get();
   EXPECT_TRUE(credentials.empty());
-  EXPECT_FALSE(status->GetGlobalError().has_value());
+  EXPECT_EQ(status, ActorLoginCredentialsFetcher::Status::kSuccess);
 }
 
 TEST_F(ActorLoginFederatedCredentialsFetcherTest, NoSource) {
@@ -172,7 +172,7 @@ TEST_F(ActorLoginFederatedCredentialsFetcherTest, NoSource) {
       password_manager::features::kActorLoginFederatedLoginSupport);
 
   base::test::TestFuture<std::vector<Credential>,
-                         std::unique_ptr<ActorLoginCredentialsFetcher::Status>>
+                         ActorLoginCredentialsFetcher::Status>
       future;
   ActorLoginFederatedCredentialsFetcher fetcher(
       url::Origin::Create(GURL("https://example.com")),
@@ -185,7 +185,7 @@ TEST_F(ActorLoginFederatedCredentialsFetcherTest, NoSource) {
   ASSERT_TRUE(future.Wait());
   const auto& [credentials, status] = future.Get();
   EXPECT_TRUE(credentials.empty());
-  EXPECT_FALSE(status->GetGlobalError().has_value());
+  EXPECT_EQ(status, ActorLoginCredentialsFetcher::Status::kSuccess);
 }
 
 }  // namespace actor_login

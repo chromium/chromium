@@ -138,20 +138,6 @@ std::vector<Credential> ConstructCredentialsList(
 }
 }  // namespace
 
-std::optional<ActorLoginError>
-ActorLoginPasswordCredentialsFetcher::Status::GetGlobalError() const {
-  // `kFillingNotAllowed` is part of the general `ActorLoginError`, so the
-  // fetcher needs to report it.
-  // TODO(crbug.com/478799141): Remove this once we stop returning filling not
-  // allowed as an overall error.
-  switch (outcome_) {
-    case Outcome::kSuccess:
-      return std::nullopt;
-    case Outcome::kFillingNotAllowed:
-      return ActorLoginError::kFillingNotAllowed;
-  }
-}
-
 ActorLoginPasswordCredentialsFetcher::ActorLoginPasswordCredentialsFetcher(
     const url::Origin& origin,
     password_manager::PasswordManagerClient* client,
@@ -191,7 +177,7 @@ void ActorLoginPasswordCredentialsFetcher::Fetch(FetchResultCallback callback) {
         FROM_HERE,
         base::BindOnce(
             std::move(callback_), std::vector<Credential>(),
-            std::make_unique<Status>(Status::Outcome::kFillingNotAllowed)));
+            ActorLoginCredentialsFetcher::Status::kFillingNotAllowed));
     return;
   }
 
@@ -269,7 +255,7 @@ void ActorLoginPasswordCredentialsFetcher::OnFetchCompleted() {
   }
 
   std::move(callback_).Run(std::move(credentials),
-                           std::make_unique<Status>(Status::Outcome::kSuccess));
+                           ActorLoginCredentialsFetcher::Status::kSuccess);
 }
 
 void ActorLoginPasswordCredentialsFetcher::BuildGetCredentialsOutcome(

@@ -23,35 +23,23 @@ namespace actor_login {
 
 namespace {
 
-class FakeStatus : public ActorLoginCredentialsFetcher::Status {
- public:
-  explicit FakeStatus(std::optional<ActorLoginError> error) : error_(error) {}
-  std::optional<ActorLoginError> GetGlobalError() const override {
-    return error_;
-  }
-
- private:
-  std::optional<ActorLoginError> error_;
-};
-
 class FakeCredentialsFetcher : public ActorLoginCredentialsFetcher {
  public:
   explicit FakeCredentialsFetcher(
       std::vector<Credential> credentials,
-      std::optional<ActorLoginError> error = std::nullopt)
-      : credentials_(std::move(credentials)), error_(error) {}
+      ActorLoginCredentialsFetcher::Status status =
+          ActorLoginCredentialsFetcher::Status::kSuccess)
+      : credentials_(std::move(credentials)), status_(status) {}
 
   void Fetch(FetchResultCallback callback) override {
-    std::unique_ptr<Status> status =
-        error_ ? std::make_unique<FakeStatus>(error_) : nullptr;
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), std::move(credentials_),
-                                  std::move(status)));
+                                  std::move(status_)));
   }
 
  private:
   std::vector<Credential> credentials_;
-  std::optional<ActorLoginError> error_;
+  ActorLoginCredentialsFetcher::Status status_;
 };
 
 }  // namespace
@@ -64,7 +52,8 @@ class ActorLoginGetCredentialsHelperTest : public ::testing::Test {
   base::test::TaskEnvironment task_environment_;
 };
 
-TEST_F(ActorLoginGetCredentialsHelperTest, GetCredentialsEmpty) {
+TEST_F(ActorLoginGetCredentialsHelperTest,
+       TwoFetchers_BothReturnEmptyCredentials_ReturnsEmptyCredentials) {
   base::test::TestFuture<CredentialsOrError> future;
   std::vector<std::unique_ptr<ActorLoginCredentialsFetcher>> fetchers;
   fetchers.push_back(
@@ -80,7 +69,8 @@ TEST_F(ActorLoginGetCredentialsHelperTest, GetCredentialsEmpty) {
   EXPECT_TRUE(future.Get().value().empty());
 }
 
-TEST_F(ActorLoginGetCredentialsHelperTest, GetCredentialsFromMultipleFetchers) {
+TEST_F(ActorLoginGetCredentialsHelperTest,
+       TwoFetchers_BothReturnDifferentCredentials_ReturnsAllCredentials) {
   std::vector<Credential> credentials1;
   Credential user1;
   user1.type = CredentialType::kPassword;
@@ -106,7 +96,7 @@ TEST_F(ActorLoginGetCredentialsHelperTest, GetCredentialsFromMultipleFetchers) {
 }
 
 TEST_F(ActorLoginGetCredentialsHelperTest,
-       GetCredentialsMergesCredentialsForSameUsername) {
+       OneFetcher_ReturnsMultipleCredentials_MergesOnSameUsername) {
   std::vector<Credential> credentials;
   Credential password_credential;
   password_credential.type = CredentialType::kPassword;
@@ -128,8 +118,9 @@ TEST_F(ActorLoginGetCredentialsHelperTest,
   EXPECT_THAT(future.Get().value(), testing::ElementsAre(federated_credential));
 }
 
-TEST_F(ActorLoginGetCredentialsHelperTest,
-       GetCredentialsOnlyMergesOnSameUsername) {
+TEST_F(
+    ActorLoginGetCredentialsHelperTest,
+    OneFetcher_ReturnsMultipleCredentials_MergesOnSameUsernameAndKeepsOtherUsernames) {
   std::vector<Credential> credentials;
   // User 1: Password only
   Credential user1_password;
@@ -166,7 +157,7 @@ TEST_F(ActorLoginGetCredentialsHelperTest,
 }
 
 TEST_F(ActorLoginGetCredentialsHelperTest,
-       GetCredentialsMergesCredentialsFromDifferentFetchers) {
+       TwoFetchers_BothReturnCredentials_MergesOnSameUsername) {
   // Fetcher 1 has Password for "user1"
   std::vector<Credential> credentials1;
   Credential user1_password;
@@ -192,7 +183,8 @@ TEST_F(ActorLoginGetCredentialsHelperTest,
   EXPECT_THAT(future.Get().value(), testing::ElementsAre(user1_federated));
 }
 
-TEST_F(ActorLoginGetCredentialsHelperTest, GetCredentialsMergesPermissions) {
+TEST_F(ActorLoginGetCredentialsHelperTest,
+       TwoFetchers_BothReturnCredentials_MergesPermissionsForSameUsername) {
   std::vector<Credential> credentials;
   Credential user1_no_permission;
   user1_no_permission.username = u"user1";
@@ -216,7 +208,9 @@ TEST_F(ActorLoginGetCredentialsHelperTest, GetCredentialsMergesPermissions) {
   EXPECT_TRUE(future.Get().value()[0].has_persistent_permission);
 }
 
-TEST_F(ActorLoginGetCredentialsHelperTest, GetCredentialsSinglePermission) {
+TEST_F(
+    ActorLoginGetCredentialsHelperTest,
+    OneFetcher_ReturnsMultipleCredentials_OnePermission_ReturnsOnlyCredentialWithPermission) {
   std::vector<Credential> credentials;
   Credential user1;
   user1.username = u"user1";
@@ -239,7 +233,9 @@ TEST_F(ActorLoginGetCredentialsHelperTest, GetCredentialsSinglePermission) {
   EXPECT_THAT(future.Get().value(), testing::ElementsAre(user1));
 }
 
-TEST_F(ActorLoginGetCredentialsHelperTest, GetCredentialsMultiplePermissions) {
+TEST_F(
+    ActorLoginGetCredentialsHelperTest,
+    OneFetcher_ReturnsMultipleCredentials_MultiplePermissions_DropsAllPermissions) {
   std::vector<Credential> credentials;
   Credential user1;
   user1.username = u"user1";
@@ -267,21 +263,18 @@ TEST_F(ActorLoginGetCredentialsHelperTest, GetCredentialsMultiplePermissions) {
 
 // This test case only makes sense as long as we treat "filling not allowed" in
 // the password fetcher as a global error.
-TEST_F(ActorLoginGetCredentialsHelperTest,
-       GetCredentialsReturnsErrorIfFetcherReturnsGlobalError) {
-  std::vector<Credential> credentials;
-  Credential user1;
-  user1.type = CredentialType::kPassword;
-  user1.username = u"user1";
-  credentials.push_back(user1);
-
+TEST_F(
+    ActorLoginGetCredentialsHelperTest,
+    TwoFetchers_OneReturnsFillingNotAllowed_OneReturnsEmptyCredentials_ReturnsError) {
   base::test::TestFuture<CredentialsOrError> future;
   // First fetcher returns success.
   // Second fetcher returns error.
   std::vector<std::unique_ptr<ActorLoginCredentialsFetcher>> fetchers;
-  fetchers.push_back(std::make_unique<FakeCredentialsFetcher>(credentials));
+  fetchers.push_back(
+      std::make_unique<FakeCredentialsFetcher>(std::vector<Credential>()));
   fetchers.push_back(std::make_unique<FakeCredentialsFetcher>(
-      std::vector<Credential>(), ActorLoginError::kFillingNotAllowed));
+      std::vector<Credential>(),
+      ActorLoginCredentialsFetcher::Status::kFillingNotAllowed));
 
   auto helper = std::make_unique<ActorLoginGetCredentialsHelper>(
       std::move(fetchers), future.GetCallback());
@@ -291,7 +284,34 @@ TEST_F(ActorLoginGetCredentialsHelperTest,
   EXPECT_EQ(future.Get().error(), ActorLoginError::kFillingNotAllowed);
 }
 
-TEST_F(ActorLoginGetCredentialsHelperTest, GetCredentialsRanksCredentials) {
+TEST_F(
+    ActorLoginGetCredentialsHelperTest,
+    TwoFetchers_OneReturnsFillingNotAllowed_OneReturnsCredentials_ReturnsCredentials) {
+  std::vector<Credential> credentials;
+  Credential user1;
+  user1.type = CredentialType::kPassword;
+  user1.username = u"user1";
+  credentials.push_back(user1);
+
+  base::test::TestFuture<CredentialsOrError> future;
+  // First fetcher returns success with credentials.
+  // Second fetcher returns error.
+  std::vector<std::unique_ptr<ActorLoginCredentialsFetcher>> fetchers;
+  fetchers.push_back(std::make_unique<FakeCredentialsFetcher>(credentials));
+  fetchers.push_back(std::make_unique<FakeCredentialsFetcher>(
+      std::vector<Credential>(),
+      ActorLoginCredentialsFetcher::Status::kFillingNotAllowed));
+
+  auto helper = std::make_unique<ActorLoginGetCredentialsHelper>(
+      std::move(fetchers), future.GetCallback());
+
+  ASSERT_TRUE(future.Wait());
+  ASSERT_TRUE(future.Get().has_value());
+  EXPECT_THAT(future.Get().value(), testing::UnorderedElementsAre(user1));
+}
+
+TEST_F(ActorLoginGetCredentialsHelperTest,
+       OneFetcher_ReturnsMultipleCredentials_RanksCredentials) {
   std::vector<Credential> credentials;
   Credential user1;
   user1.type = CredentialType::kPassword;

@@ -20,12 +20,6 @@ constexpr char kSupportedIdentityProvider[] =
     "https://accounts.google.com/gsi/fedcm.json";
 }  // namespace
 
-std::optional<ActorLoginError>
-ActorLoginFederatedCredentialsFetcher::FederatedFetcherStatus::GetGlobalError()
-    const {
-  return std::nullopt;
-}
-
 ActorLoginFederatedCredentialsFetcher::ActorLoginFederatedCredentialsFetcher(
     const url::Origin& request_origin,
     IdentityCredentialSourceCallback get_source_callback)
@@ -44,7 +38,7 @@ void ActorLoginFederatedCredentialsFetcher::Fetch(
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback_), std::vector<Credential>(),
-                       std::make_unique<FederatedFetcherStatus>()));
+                       ActorLoginCredentialsFetcher::Status::kSuccess));
     return;
   }
 
@@ -53,7 +47,7 @@ void ActorLoginFederatedCredentialsFetcher::Fetch(
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback_), std::vector<Credential>(),
-                       std::make_unique<FederatedFetcherStatus>()));
+                       ActorLoginCredentialsFetcher::Status::kSuccess));
     return;
   }
 
@@ -72,7 +66,7 @@ void ActorLoginFederatedCredentialsFetcher::OnGetIdentityCredentialSuggestions(
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback_), std::vector<Credential>(),
-                       std::make_unique<FederatedFetcherStatus>()));
+                       ActorLoginCredentialsFetcher::Status::kSuccess));
     return;
   }
   std::vector<Credential> result;
@@ -101,8 +95,9 @@ void ActorLoginFederatedCredentialsFetcher::OnGetIdentityCredentialSuggestions(
     result.push_back(std::move(credential));
   }
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback_), std::move(result),
-                                std::make_unique<FederatedFetcherStatus>()));
+      FROM_HERE,
+      base::BindOnce(std::move(callback_), std::move(result),
+                     ActorLoginCredentialsFetcher::Status::kSuccess));
 }
 
 }  // namespace actor_login
