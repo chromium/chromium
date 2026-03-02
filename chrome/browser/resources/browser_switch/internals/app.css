@@ -42,6 +42,7 @@ table {
   border-radius: var(--cr-card-border-radius);
   border: 1px solid var(--cr-separator-color);
   overflow: hidden;
+  max-width: 800px;
 }
 
 pre,
@@ -54,6 +55,7 @@ td {
   border: none;
   padding: 6px 10px;
   text-align: center;
+  overflow-wrap: break-word;
 }
 
 tr:not(:last-child) > td {
@@ -66,7 +68,7 @@ td:not(:last-child) {
 }
 
 th {
-  background: var(--cr-card-background-color);
+  background: var(--table-header);
   border-bottom: 1px solid var(--cr-separator-color);
   color: var(--cr-primary-text-color);
 }
@@ -132,53 +134,42 @@ a[href] {
 }
 
 .container {
-  margin: 24px;
+  margin: 0 24px;
 }
 
-.row-container {
+.description-container {
+  margin-bottom: 24px;
+}
+
+.url-checker-row cr-input {
+  max-width: 800px;
+}
+
+.sitelists-container {
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-between;
+  gap: 24px;
+  margin: 24px 0;
 }
 
-.url-card-container,
-.cr-left-card-container,
-.card {
-  box-shadow: var(--cr-card-shadow);
-  background-color: var(--cr-card-background-color);
-  border-radius: var(--cr-card-border-radius);
+.sitelists-container > section {
+  align-items: stretch;
   display: flex;
   flex-direction: column;
-  padding: var(--cr-section-padding);
-  margin-bottom: 24px;
-  margin-right: 5px;
+  flex: 1;
+  justify-content: flex-start;
+  min-width: 450px;
 }
 
-.url-card-container {
-  flex-basis: calc(276px / var(--cr-centered-card-width-percentage));
-  max-width: 276px;
-}
-
-.cr-left-card-container {
-  flex-basis: calc(500px / var(--cr-centered-card-width-percentage));
-  min-width: 300px;
-  max-width: 476px;
+.xml-config-row > section[hidden] {
+  display: none;
 }
 
 .card {
-  flex-basis: calc(var(--cr-centered-card-max-width)
-  / var(--cr-centered-card-width-percentage));
-  justify-content: center;
-  align-items: center;
-}
-
-.card-text {
-  margin-inline-end: 24px;
-  margin-inline-start: 24px;
-}
-
-section.cr-left-card-container th {
-  background: var(--table-header);
+  background-color: var(--cr-card-background-color);
+  border-radius: var(--cr-card-border-radius);
+  box-shadow: var(--cr-card-shadow);
+  padding: var(--cr-section-padding);
 }
 
 header {

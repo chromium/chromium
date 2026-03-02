@@ -21,8 +21,8 @@ export function getHtml(this: AppElement) {
 </header>
 
 <div class="container">
-  <div class="card">
-    <p class="card-text">
+  <div class="description-container">
+    <p>
       $i18n{switchInternalDescription}
     </p>
   </div>
@@ -37,70 +37,31 @@ export function getHtml(this: AppElement) {
 </div>
 
 <div class="container" ?hidden="${!this.isBrowserSwitcherEnabled_}">
-  <div class="row-container">
-    <section class="url-card-container">
-      <h2>$i18n{urlCheckerTitle}</h2>
+  <!-- Row 1: URL Checker -->
+  <div class="url-checker-row">
+    <h2>$i18n{urlCheckerTitle}</h2>
+    <label>$i18n{urlCheckerDesc}</label>
+    <cr-input
+        type="text"
+        .value="${this.urlCheckerInput_}"
+        @input="${this.onUrlCheckerInputInput_}"
+        placeholder="http://example.com/">
+    </cr-input>
+    <ul>
+      ${this.urlCheckerOutput_.map(item => html`
+        <li>${item}</li>
+      `)}
+    </ul>
+  </div>
 
-      <label>$i18n{urlCheckerDesc}</label>
-      <label>
-        <cr-input
-            type="text"
-            .value="${this.urlCheckerInput_}"
-            @input="${this.onUrlCheckerInputInput_}"
-            placeholder="http://example.com/">
-        </cr-input>
-      </label>
-
-      <ul>
-        ${this.urlCheckerOutput_.map(item => html`
-          <li>${item}</li>
-        `)}
-      </ul>
-    </section>
-    <section class="cr-left-card-container">
-      <h2 class="tooltip">
-        $i18n{xmlTitle}
-        <span class="right">$i18n{xmlDesc}</span>
-      </h2>
-
-      <table>
-        <tr>
-          <th>$i18n{xmlSource}</th>
-          <th>URL</th>
-        </tr>
-        ${this.xmlSiteLists_.map(item => html`
-          <tr>
-            <td>${item.policyName}</td>
-            <td class="url">${item.url}</td>
-          </tr>
-        `)}
-      </table>
-
-      ${this.xmlSiteLists_.length ? html`
-        <p>
-          ${!this.lastFetch_ ? html`
-            $i18n{sitelistNotFetched}
-          ` : html`
-            ${this.getXmlSitelistsLastDownloadLabel()}
-          `}
-        </p>
-        ${this.nextFetch_ ? html`
-          <p>${this.getXmlSitelistsNextDownloadLabel()}</p>
-        ` : ''}
-        <p>
-          <cr-button @click="${this.refreshXml}">
-            $i18n{sitelistDownloadButton}
-          </cr-button>
-        </p>
-      ` : ''}
-    </section>
-    <section class="cr-left-card-container">
+  <!-- Row 2: Sitelists -->
+  <div class="sitelists-container">
+    <section class="card">
       <h2 class="tooltip">
         $i18n{forceOpenTitle}
         <span class="right">$i18n{forceOpenDescription}</span>
       </h2>
       <h4>$i18nRaw{forceOpenParagraph1}</h4>
-
       <p>$i18n{forceOpenParagraph2}</p>
       <table>
         <tr>
@@ -124,7 +85,7 @@ export function getHtml(this: AppElement) {
         `)}
       </table>
     </section>
-    <section class="cr-left-card-container">
+    <section class="card">
       <h2 class="tooltip">
         $i18n{ignoreTitle}
         <span class="right">$i18n{ignoreDescription}</span>
@@ -150,6 +111,45 @@ export function getHtml(this: AppElement) {
           </tr>
         `)}
       </table>
+    </section>
+  </div>
+
+  <!-- Row 3: XML Config -->
+  <div class="xml-config-row" ?hidden="${!this.showXmlRow}">
+    <section class="card">
+      <h2 class="tooltip">
+        $i18n{xmlTitle}
+        <span class="right">$i18n{xmlDesc}</span>
+      </h2>
+      <table>
+        <tr>
+          <th>$i18n{xmlSource}</th>
+          <th>URL</th>
+        </tr>
+        ${this.xmlSiteLists_.map(item => html`
+          <tr>
+            <td>${item.policyName}</td>
+            <td class="url">${item.url}</td>
+          </tr>
+        `)}
+      </table>
+      ${this.xmlSiteLists_.length ? html`
+        <p>
+          ${!this.lastFetch_ ? html`
+            $i18n{sitelistNotFetched}
+          ` : html`
+            ${this.getXmlSitelistsLastDownloadLabel()}
+          `}
+        </p>
+        ${this.nextFetch_ ? html`
+          <p>${this.getXmlSitelistsNextDownloadLabel()}</p>
+        ` : ''}
+        <p>
+          <cr-button @click="${this.refreshXml}">
+            $i18n{sitelistDownloadButton}
+          </cr-button>
+        </p>
+      ` : ''}
     </section>
   </div>
 </div>

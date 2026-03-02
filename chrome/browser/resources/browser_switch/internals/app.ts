@@ -84,6 +84,10 @@ export class AppElement extends AppElementBase {
     }
   }
 
+  get showXmlRow(): boolean {
+    return this.xmlSiteLists_.some(item => item.url !== this.i18n('notConfigured'));
+  }
+
   getRuleBrowserName(rule: string) {
     return rule.startsWith('!') ? getBrowserName() : getAltBrowserName();
   }
