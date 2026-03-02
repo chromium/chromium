@@ -64,7 +64,7 @@ uint32_t DetermineGroups(const FieldTypeSet& types);
 bool IsSupportedFormType(uint32_t groups);
 
 // Returns the histogram suffix corresponding to the given `bitmask`.
-std::string GetSuffixForProfileFormType(uint32_t bitmask);
+std::string_view GetSuffixForProfileFormType(uint32_t bitmask);
 
 // Truncates a string to the nearest UTF-8 character that will leave
 // the string less than or equal to the specified byte size.

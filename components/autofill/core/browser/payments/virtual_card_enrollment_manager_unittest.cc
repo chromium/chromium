@@ -428,9 +428,9 @@ TEST_F(VirtualCardEnrollmentManagerTest, StrikeDatabase_BubbleAccepted) {
   histogram_tester.ExpectBucketCount(
       "Autofill.StrikeDatabase.StrikesPresentWhenVirtualCardEnrolled", 1, 1);
   histogram_tester.ExpectBucketCount(
-      "Autofill.VirtualCardEnrollmentStrikeDatabase." +
-          VirtualCardEnrollmentSourceToMetricSuffix(
-              VirtualCardEnrollmentSource::kDownstream),
+      base::StrCat({"Autofill.VirtualCardEnrollmentStrikeDatabase.",
+                    VirtualCardEnrollmentSourceToMetricSuffix(
+                        VirtualCardEnrollmentSource::kDownstream)}),
       VirtualCardEnrollmentStrikeDatabaseEvent::
           VIRTUAL_CARD_ENROLLMENT_STRIKE_DATABASE_STRIKES_CLEARED,
       1);
@@ -456,9 +456,9 @@ TEST_F(VirtualCardEnrollmentManagerTest, StrikeDatabase_BubbleCanceled) {
             1);
 
   histogram_tester.ExpectBucketCount(
-      "Autofill.VirtualCardEnrollmentStrikeDatabase." +
-          VirtualCardEnrollmentSourceToMetricSuffix(
-              VirtualCardEnrollmentSource::kDownstream),
+      base::StrCat({"Autofill.VirtualCardEnrollmentStrikeDatabase.",
+                    VirtualCardEnrollmentSourceToMetricSuffix(
+                        VirtualCardEnrollmentSource::kDownstream)}),
       VirtualCardEnrollmentStrikeDatabaseEvent::
           VIRTUAL_CARD_ENROLLMENT_STRIKE_DATABASE_STRIKE_LOGGED,
       1);
@@ -555,9 +555,9 @@ TEST_F(VirtualCardEnrollmentManagerTest,
               i + 1);
 
     histogram_tester.ExpectBucketCount(
-        "Autofill.VirtualCardEnrollmentStrikeDatabase." +
-            VirtualCardEnrollmentSourceToMetricSuffix(
-                VirtualCardEnrollmentSource::kDownstream),
+        base::StrCat({"Autofill.VirtualCardEnrollmentStrikeDatabase.",
+                      VirtualCardEnrollmentSourceToMetricSuffix(
+                          VirtualCardEnrollmentSource::kDownstream)}),
         VirtualCardEnrollmentStrikeDatabaseEvent::
             VIRTUAL_CARD_ENROLLMENT_STRIKE_DATABASE_STRIKE_LOGGED,
         i + 1);
@@ -907,14 +907,15 @@ TEST_P(VirtualCardEnrollmentManagerParamTest,
               network_image.AsImageSkia()));
     }
     histogram_tester.ExpectUniqueSample(
-        "Autofill.VirtualCard.GetDetailsForEnrollment.Result." +
-            VirtualCardEnrollmentSourceToMetricSuffix(source()),
+        base::StrCat({"Autofill.VirtualCard.GetDetailsForEnrollment.Result.",
+                      VirtualCardEnrollmentSourceToMetricSuffix(source())}),
         /*sample=*/true, make_image_present ? 1 : 2);
     histogram_tester.ExpectBucketCount(
-        "Autofill.VirtualCard.GetDetailsForEnrollment.Latency." +
-            VirtualCardEnrollmentSourceToMetricSuffix(source()) +
-            PaymentsRpcResultToMetricsSuffix(
-                payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess),
+        base::StrCat({"Autofill.VirtualCard.GetDetailsForEnrollment.Latency.",
+                      VirtualCardEnrollmentSourceToMetricSuffix(source()),
+                      PaymentsRpcResultToMetricsSuffix(
+                          payments::PaymentsAutofillClient::PaymentsRpcResult::
+                              kSuccess)}),
         /*sample=*/5, make_image_present ? 1 : 2);
 
     // Avoid dangling pointers to artwork.

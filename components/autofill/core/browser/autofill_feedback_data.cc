@@ -19,7 +19,7 @@ namespace {
 // feedback report.
 constexpr base::TimeDelta kAutofillEventTimeLimit = base::Minutes(3);
 
-std::string FillDataTypeToStr(FillDataType type) {
+std::string_view FillDataTypeToStr(FillDataType type) {
   switch (type) {
     case FillDataType::kUndefined:
       return "Undefined";

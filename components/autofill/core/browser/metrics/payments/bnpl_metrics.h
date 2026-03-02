@@ -67,11 +67,11 @@ enum class SelectBnplIssuerDialogResult {
 // LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:SelectBnplIssuerDialogResult)
 
 // Returns the histogram suffix corresponding to the given issuer_id.
-std::string GetHistogramSuffixFromIssuerId(
+std::string_view GetHistogramSuffixFromIssuerId(
     autofill::BnplIssuer::IssuerId issuer_id);
 
 // Converts a BnplFlowResult enum to its string representation.
-std::string ConvertBnplFlowResultToString(BnplFlowResult result);
+std::string_view ConvertBnplFlowResultToString(BnplFlowResult result);
 
 // LINT.IfChange(BnplFormEvent)
 

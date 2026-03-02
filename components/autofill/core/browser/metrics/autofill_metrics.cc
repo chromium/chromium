@@ -95,7 +95,7 @@ constexpr auto kStructuredAddressTypeToNameMap =
          {ADDRESS_HOME_APT_NUM, "ApartmentNumber"},
          {ADDRESS_HOME_SUBPREMISE, "SubPremise"}});
 
-const std::string GetImageTypeString(
+const std::string_view GetImageTypeString(
     AutofillImageFetcherBase::ImageType image_type) {
   switch (image_type) {
     case AutofillImageFetcherBase::ImageType::kCreditCardArtImage:
@@ -321,10 +321,10 @@ std::string_view AutofillMetrics::GetDialogTypeStringForLogging(
 void AutofillMetrics::LogUnmaskPromptEvent(UnmaskPromptEvent event,
                                            bool has_valid_nickname,
                                            CreditCard::RecordType card_type) {
-  base::UmaHistogramEnumeration("Autofill.UnmaskPrompt" +
-                                    GetHistogramStringForCardType(card_type) +
-                                    ".Events",
-                                event, NUM_UNMASK_PROMPT_EVENTS);
+  base::UmaHistogramEnumeration(
+      base::StrCat({"Autofill.UnmaskPrompt",
+                    GetHistogramStringForCardType(card_type), ".Events"}),
+      event, NUM_UNMASK_PROMPT_EVENTS);
   if (has_valid_nickname) {
     base::UmaHistogramEnumeration("Autofill.UnmaskPrompt.Events.WithNickname",
                                   event, NUM_UNMASK_PROMPT_EVENTS);
@@ -1377,7 +1377,8 @@ void AutofillMetrics::LogImageFetchResult(
     AutofillImageFetcherBase::ImageType image_type,
     bool succeeded) {
   base::UmaHistogramBoolean(
-      "Autofill.ImageFetcher." + GetImageTypeString(image_type) + ".Result",
+      base::StrCat({"Autofill.ImageFetcher.", GetImageTypeString(image_type),
+                    ".Result"}),
       succeeded);
 }
 
@@ -1385,10 +1386,10 @@ void AutofillMetrics::LogImageFetchResult(
 void AutofillMetrics::LogImageFetchOverallResult(
     AutofillImageFetcherBase::ImageType image_type,
     bool succeeded) {
-  base::UmaHistogramBoolean("Autofill.ImageFetcher." +
-                                GetImageTypeString(image_type) +
-                                ".OverallResultOnBrowserStart",
-                            succeeded);
+  base::UmaHistogramBoolean(
+      base::StrCat({"Autofill.ImageFetcher.", GetImageTypeString(image_type),
+                    ".OverallResultOnBrowserStart"}),
+      succeeded);
 }
 
 // static
@@ -1455,36 +1456,29 @@ void AutofillMetrics::LogAutocompletePredictionCollisionTypes(
       FieldType::MAX_VALID_FIELD_TYPE);
 }
 
-const std::string PaymentsRpcResultToMetricsSuffix(PaymentsRpcResult result) {
-  std::string result_suffix;
-
+const std::string_view PaymentsRpcResultToMetricsSuffix(
+    PaymentsRpcResult result) {
   switch (result) {
     case PaymentsRpcResult::kSuccess:
-      result_suffix = ".Success";
-      break;
+      return ".Success";
     case PaymentsRpcResult::kTryAgainFailure:
     case PaymentsRpcResult::kPermanentFailure:
-      result_suffix = ".Failure";
-      break;
+      return ".Failure";
     case PaymentsRpcResult::kNetworkError:
-      result_suffix = ".NetworkError";
-      break;
+      return ".NetworkError";
     case PaymentsRpcResult::kVcnRetrievalTryAgainFailure:
     case PaymentsRpcResult::kVcnRetrievalPermanentFailure:
-      result_suffix = ".VcnRetrievalFailure";
-      break;
+      return ".VcnRetrievalFailure";
     case PaymentsRpcResult::kClientSideTimeout:
-      result_suffix = ".ClientSideTimeout";
-      break;
+      return ".ClientSideTimeout";
     case PaymentsRpcResult::kNone:
       NOTREACHED();
   }
-
-  return result_suffix;
+  return "";
 }
 
 // static
-std::string AutofillMetrics::GetHistogramStringForCardType(
+std::string_view AutofillMetrics::GetHistogramStringForCardType(
     std::variant<PaymentsRpcCardType, CreditCard::RecordType> card_type) {
   if (std::holds_alternative<PaymentsRpcCardType>(card_type)) {
     switch (std::get<PaymentsRpcCardType>(card_type)) {

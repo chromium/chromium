@@ -39,8 +39,8 @@ bool IsSynthesizedType(FieldType field_type, AddressCountryCode country_code);
 // Returns the formatting expression corresponding to the provided parameters.
 // If the expression can't be found or the country is empty, it attempts to look
 // for a legacy expression. Returns an empty string if none can be found.
-std::u16string GetFormattingExpression(FieldType field_type,
-                                       AddressCountryCode country_code);
+std::u16string_view GetFormattingExpression(FieldType field_type,
+                                            AddressCountryCode country_code);
 
 // Parses the given `value` using a custom parsing process (if available) for
 // the corresponding `field_type` and `country_code`. If the country is empty or

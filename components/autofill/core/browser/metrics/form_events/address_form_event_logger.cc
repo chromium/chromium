@@ -156,8 +156,8 @@ void AddressFormEventLogger::OnLog(const std::string& name,
                                    const FormStructure& form) const {
   uint32_t groups = data_util::DetermineGroups(form);
   base::UmaHistogramEnumeration(
-      name + data_util::GetSuffixForProfileFormType(groups), event,
-      NUM_FORM_EVENTS);
+      base::StrCat({name, data_util::GetSuffixForProfileFormType(groups)}),
+      event, NUM_FORM_EVENTS);
   if (data_util::ContainsAddress(groups) &&
       (data_util::ContainsPhone(groups) || data_util::ContainsEmail(groups))) {
     base::UmaHistogramEnumeration(name + ".AddressPlusContact", event,

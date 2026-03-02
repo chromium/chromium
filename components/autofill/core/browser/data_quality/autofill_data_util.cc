@@ -307,7 +307,7 @@ bool IsSupportedFormType(uint32_t groups) {
              2;
 }
 
-std::string GetSuffixForProfileFormType(uint32_t bitmask) {
+std::string_view GetSuffixForProfileFormType(uint32_t bitmask) {
   switch (bitmask) {
     case kAddress | kEmail | kPhone:
     case kName | kAddress | kEmail | kPhone:

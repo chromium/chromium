@@ -36,8 +36,8 @@ void LogVirtualCardEnrollmentBubbleShownMetric(
     VirtualCardEnrollmentBubbleSource source,
     bool is_reshow) {
   base::UmaHistogramBoolean(
-      "Autofill.VirtualCardEnrollBubble.Shown." +
-          VirtualCardEnrollmentBubbleSourceToMetricSuffix(source),
+      base::StrCat({"Autofill.VirtualCardEnrollBubble.Shown.",
+                    VirtualCardEnrollmentBubbleSourceToMetricSuffix(source)}),
       is_reshow);
 }
 
@@ -47,9 +47,9 @@ void LogVirtualCardEnrollmentBubbleResultMetric(
     bool is_reshow,
     bool previously_declined) {
   std::string base_histogram_name =
-      "Autofill.VirtualCardEnrollBubble.Result." +
-      VirtualCardEnrollmentBubbleSourceToMetricSuffix(source) +
-      (is_reshow ? ".Reshows" : ".FirstShow");
+      base::StrCat({"Autofill.VirtualCardEnrollBubble.Result.",
+                    VirtualCardEnrollmentBubbleSourceToMetricSuffix(source),
+                    (is_reshow ? ".Reshows" : ".FirstShow")});
   base::UmaHistogramEnumeration(base_histogram_name, result);
 
   base::UmaHistogramEnumeration(
@@ -79,9 +79,9 @@ void LogGetDetailsForEnrollmentRequestLatency(
     payments::PaymentsAutofillClient::PaymentsRpcResult result,
     base::TimeDelta latency) {
   base::UmaHistogramMediumTimes(
-      "Autofill.VirtualCard.GetDetailsForEnrollment.Latency." +
-          VirtualCardEnrollmentSourceToMetricSuffix(source) +
-          PaymentsRpcResultToMetricsSuffix(result),
+      base::StrCat({"Autofill.VirtualCard.GetDetailsForEnrollment.Latency.",
+                    VirtualCardEnrollmentSourceToMetricSuffix(source),
+                    PaymentsRpcResultToMetricsSuffix(result)}),
       latency);
 }
 
@@ -112,9 +112,10 @@ void LogVirtualCardEnrollmentLinkClickedMetric(
     VirtualCardEnrollmentLinkType link_type,
     VirtualCardEnrollmentBubbleSource source) {
   base::UmaHistogramBoolean(
-      "Autofill.VirtualCardEnroll.LinkClicked." +
-          VirtualCardEnrollmentBubbleSourceToMetricSuffix(source) + "." +
-          VirtualCardEnrollmentLinkTypeToMetricSuffix(link_type),
+      base::StrCat({"Autofill.VirtualCardEnroll.LinkClicked.",
+                    VirtualCardEnrollmentBubbleSourceToMetricSuffix(source),
+                    ".",
+                    VirtualCardEnrollmentLinkTypeToMetricSuffix(link_type)}),
       true);
 }
 
@@ -122,8 +123,8 @@ void LogVirtualCardEnrollmentStrikeDatabaseEvent(
     VirtualCardEnrollmentSource source,
     VirtualCardEnrollmentStrikeDatabaseEvent strike_event) {
   base::UmaHistogramEnumeration(
-      "Autofill.VirtualCardEnrollmentStrikeDatabase." +
-          VirtualCardEnrollmentSourceToMetricSuffix(source),
+      base::StrCat({"Autofill.VirtualCardEnrollmentStrikeDatabase.",
+                    VirtualCardEnrollmentSourceToMetricSuffix(source)}),
       strike_event);
 }
 
@@ -138,8 +139,8 @@ void LogVirtualCardEnrollBubbleCardArtAvailable(
     bool card_art_available,
     VirtualCardEnrollmentSource source) {
   base::UmaHistogramBoolean(
-      "Autofill.VirtualCardEnroll.CardArtImageAvailable." +
-          VirtualCardEnrollmentSourceToMetricSuffix(source),
+      base::StrCat({"Autofill.VirtualCardEnroll.CardArtImageAvailable.",
+                    VirtualCardEnrollmentSourceToMetricSuffix(source)}),
       card_art_available);
 }
 
@@ -202,7 +203,7 @@ void LogVirtualCardEnrollmentConfirmationViewResult(
       base::StrCat({base_histogram_name, is_card_enrolled_name}), result);
 }
 
-std::string VirtualCardEnrollmentBubbleSourceToMetricSuffix(
+std::string_view VirtualCardEnrollmentBubbleSourceToMetricSuffix(
     VirtualCardEnrollmentBubbleSource source) {
   switch (source) {
     case VirtualCardEnrollmentBubbleSource::
@@ -220,7 +221,7 @@ std::string VirtualCardEnrollmentBubbleSourceToMetricSuffix(
   }
 }
 
-const std::string VirtualCardEnrollmentLinkTypeToMetricSuffix(
+std::string_view VirtualCardEnrollmentLinkTypeToMetricSuffix(
     VirtualCardEnrollmentLinkType link_type) {
   switch (link_type) {
     case VirtualCardEnrollmentLinkType::
@@ -233,7 +234,7 @@ const std::string VirtualCardEnrollmentLinkTypeToMetricSuffix(
   }
 }
 
-const std::string VirtualCardEnrollmentSourceToMetricSuffix(
+std::string_view VirtualCardEnrollmentSourceToMetricSuffix(
     VirtualCardEnrollmentSource source) {
   switch (source) {
     case VirtualCardEnrollmentSource::kUpstream:

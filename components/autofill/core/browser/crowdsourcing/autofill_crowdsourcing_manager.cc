@@ -320,7 +320,7 @@ size_t CountActiveFieldsInForms(const std::vector<FormData>& forms) {
 
 std::string FieldTypeToString(uint32_t type) {
   return base::StrCat(
-      {base::NumberToString(type), std::string("/"),
+      {base::NumberToString(type), "/",
        FieldTypeToStringView(ToSafeFieldType(type, UNKNOWN_TYPE))});
 }
 
@@ -480,7 +480,7 @@ bool ShouldThrottleUpload(FormSignature form_signature,
   // event pref to set the appropriate bit.
   const bool is_first_upload_for_event = ((value & mask) == 0);
   if (is_first_upload_for_event) {
-    ScopedDictPrefUpdate update(pref_service, std::string(preference));
+    ScopedDictPrefUpdate update(pref_service, preference);
     update->Set(key, value | mask);
   }
 

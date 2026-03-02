@@ -167,17 +167,17 @@ void LogVirtualCardEnrollmentConfirmationViewResult(
 
 // Helper function used to convert VirtualCardEnrollmentBubbleSource enum to
 // name suffix.
-std::string VirtualCardEnrollmentBubbleSourceToMetricSuffix(
+std::string_view VirtualCardEnrollmentBubbleSourceToMetricSuffix(
     VirtualCardEnrollmentBubbleSource source);
 
 // Helper function used to convert VirtualCardEnrollmentSource enum to
 // name suffix.
-const std::string VirtualCardEnrollmentSourceToMetricSuffix(
+std::string_view VirtualCardEnrollmentSourceToMetricSuffix(
     VirtualCardEnrollmentSource source);
 
 // Helper function used to convert VirtualCardEnrollmentLinkType enum to
 // name suffix.
-const std::string VirtualCardEnrollmentLinkTypeToMetricSuffix(
+std::string_view VirtualCardEnrollmentLinkTypeToMetricSuffix(
     VirtualCardEnrollmentLinkType link_type);
 
 }  // namespace autofill

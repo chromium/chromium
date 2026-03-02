@@ -15,7 +15,7 @@ namespace autofill::autofill_metrics {
 
 using IssuerId = autofill::BnplIssuer::IssuerId;
 
-std::string GetHistogramSuffixFromIssuerId(IssuerId issuer_id) {
+std::string_view GetHistogramSuffixFromIssuerId(IssuerId issuer_id) {
   switch (issuer_id) {
     case IssuerId::kBnplAffirm:
       return "Affirm";
@@ -29,7 +29,7 @@ std::string GetHistogramSuffixFromIssuerId(IssuerId issuer_id) {
   NOTREACHED();
 }
 
-std::string ConvertBnplFlowResultToString(BnplFlowResult result) {
+std::string_view ConvertBnplFlowResultToString(BnplFlowResult result) {
   switch (result) {
     case BnplFlowResult::kSuccess:
       return "Success";

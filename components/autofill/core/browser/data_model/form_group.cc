@@ -114,11 +114,10 @@ LogBuffer& operator<<(LogBuffer& buffer, const FormGroup& form_group) {
     }
     LogBuffer rendered_value;
     rendered_value << Tag{"span"} << Attrib{"style", "white-space: pre"}
-                   << base::StrCat(
-                          {base::UTF16ToUTF8(value), " (",
-                           std::string(VerificationStatusToStringView(
-                               form_group.GetVerificationStatus(type))),
-                           ")"})
+                   << base::StrCat({base::UTF16ToUTF8(value), " (",
+                                    VerificationStatusToStringView(
+                                        form_group.GetVerificationStatus(type)),
+                                    ")"})
                    << CTag{"span"};
     buffer << Tr{} << type_string << std::move(rendered_value);
   }

@@ -169,7 +169,7 @@ void LogOtpInputDialogNewOtpRequested(CreditCard::RecordType card_type,
 
 // Generate the OTP auth type string according to the challenge option type.
 // This is used as a helper function for LogOtp methods.
-std::string GetOtpAuthType(CardUnmaskChallengeOptionType type);
+std::string_view GetOtpAuthType(CardUnmaskChallengeOptionType type);
 
 // Card unmasking risk-based authentication-related metrics.
 // Risk-based authentication-related events.

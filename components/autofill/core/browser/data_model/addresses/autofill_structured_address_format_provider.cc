@@ -14,7 +14,7 @@ namespace autofill {
 
 namespace {
 
-std::u16string GetHomeStreetAddressPattern(std::string_view country_code) {
+std::u16string_view GetHomeStreetAddressPattern(std::string_view country_code) {
   static constexpr auto kHomeStreetAddressCountryMap = base::MakeFixedFlatMap<
       std::string_view, std::u16string_view>(
       {{"BR",
@@ -33,7 +33,7 @@ std::u16string GetHomeStreetAddressPattern(std::string_view country_code) {
 
   if (auto it = kHomeStreetAddressCountryMap.find(country_code);
       it != kHomeStreetAddressCountryMap.end()) {
-    return std::u16string(it->second);
+    return it->second;
   }
 
   // Use the format for US/UK as the default.
@@ -41,14 +41,14 @@ std::u16string GetHomeStreetAddressPattern(std::string_view country_code) {
          u"${ADDRESS_HOME_FLOOR;FL } ${ADDRESS_HOME_APT_NUM;APT }";
 }
 
-std::u16string GetFullNamePattern(bool name_has_cjk_characteristics) {
+std::u16string_view GetFullNamePattern(bool name_has_cjk_characteristics) {
   if (name_has_cjk_characteristics) {
     return u"${NAME_LAST}${NAME_FIRST}";
   }
   return u"${NAME_FIRST} ${NAME_MIDDLE} ${NAME_LAST}";
 }
 
-std::u16string GetAlternativeFullNamePattern(
+std::u16string_view GetAlternativeFullNamePattern(
     bool name_has_cjk_characteristics) {
   if (name_has_cjk_characteristics) {
     return u"${ALTERNATIVE_FAMILY_NAME} ${ALTERNATIVE_GIVEN_NAME}";
@@ -69,7 +69,7 @@ StructuredAddressesFormatProvider::GetInstance() {
   return g_expression_provider.get();
 }
 
-std::u16string StructuredAddressesFormatProvider::GetPattern(
+std::u16string_view StructuredAddressesFormatProvider::GetPattern(
     FieldType type,
     std::string_view country_code,
     const ContextInfo& info) const {

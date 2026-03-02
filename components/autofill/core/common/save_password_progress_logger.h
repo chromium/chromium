@@ -276,7 +276,8 @@ class SavePasswordProgressLogger {
   static std::string ScrubElementID(std::string element_id);
 
   // Translates the StringID values into the corresponding strings.
-  static std::string GetStringFromID(SavePasswordProgressLogger::StringID id);
+  static std::string_view GetStringFromID(
+      SavePasswordProgressLogger::StringID id);
 
  protected:
   // Sends `log` immediately for display.

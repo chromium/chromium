@@ -880,7 +880,7 @@ class AutofillMetrics {
   // Returns the histogram string for the passed in
   // `payments::PaymentsAutofillClient::PaymentsRpcCardType` or
   // `CreditCard::RecordType`, starting with a period.
-  static std::string GetHistogramStringForCardType(
+  static std::string_view GetHistogramStringForCardType(
       std::variant<payments::PaymentsAutofillClient::PaymentsRpcCardType,
                    CreditCard::RecordType> card_type);
 
@@ -929,7 +929,7 @@ int GetFieldTypeUserEditStatusMetric(
 std::string GetCreditCardTypeSuffix(
     payments::PaymentsAutofillClient::PaymentsRpcCardType card_type);
 
-const std::string PaymentsRpcResultToMetricsSuffix(
+const std::string_view PaymentsRpcResultToMetricsSuffix(
     payments::PaymentsAutofillClient::PaymentsRpcResult result);
 
 }  // namespace autofill

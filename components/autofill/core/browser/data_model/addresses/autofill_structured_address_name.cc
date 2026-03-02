@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_name.h"
 
+#include <string>
 #include <utility>
 
 #include "base/i18n/case_conversion.h"
@@ -267,8 +268,8 @@ std::u16string NameFull::GetFormatString() const {
   auto* pattern_provider = StructuredAddressesFormatProvider::GetInstance();
   CHECK(pattern_provider);
   // TODO(crbug.com/40275657): Add i18n support for name format strings.
-  return pattern_provider->GetPattern(GetStorageType(), /*country_code=*/"",
-                                      info);
+  return std::u16string(pattern_provider->GetPattern(
+      GetStorageType(), /*country_code=*/"", info));
 }
 
 NameFull::~NameFull() = default;
@@ -366,8 +367,8 @@ std::u16string AlternativeFullName::GetFormatString() const {
   auto* pattern_provider = StructuredAddressesFormatProvider::GetInstance();
   CHECK(pattern_provider);
   // TODO(crbug.com/40275657): Add i18n support for name format strings.
-  return pattern_provider->GetPattern(GetStorageType(), /*country_code=*/"",
-                                      info);
+  return std::u16string(pattern_provider->GetPattern(
+      GetStorageType(), /*country_code=*/"", info));
 }
 
 }  // namespace autofill
