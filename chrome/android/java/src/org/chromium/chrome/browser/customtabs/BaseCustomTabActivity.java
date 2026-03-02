@@ -1715,21 +1715,13 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
     @Nullable
     @BrowserWindowType
     Integer getSupportedBrowserWindowType() {
-        // PWA
-        if (mIntentDataProvider.getActivityType() == ActivityType.WEBAPP) {
-            return BrowserWindowType.APP;
-        }
+        // TODO (crbug.com/486858979): Temporarily removed TWA and PWA support to avoid crashes.
 
         @CustomTabsUiType int type = mIntentDataProvider.getUiType();
         switch (type) {
             // Popups
             case CustomTabsUiType.POPUP:
                 return BrowserWindowType.POPUP;
-            // PWA and TWA
-            case CustomTabsUiType.MINIMAL_UI_WEBAPP:
-            /* fallthrough */
-            case CustomTabsUiType.TRUSTED_WEB_ACTIVITY:
-                return BrowserWindowType.APP;
             default:
                 break;
         }

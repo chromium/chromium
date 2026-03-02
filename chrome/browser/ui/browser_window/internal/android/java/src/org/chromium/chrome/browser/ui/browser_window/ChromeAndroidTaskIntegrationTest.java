@@ -35,6 +35,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
@@ -148,6 +149,7 @@ public class ChromeAndroidTaskIntegrationTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/486858979: Temporarily disabled to avoid crashes.")
     public void startWebappActivity_createsChromeAndroidTask() {
         // Act.
         mWebappActivityTestRule.startWebappActivity();
@@ -160,6 +162,7 @@ public class ChromeAndroidTaskIntegrationTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/486858979: Temporarily disabled to avoid crashes.")
     public void startTwa_createsChromeAndroidTask() throws Exception {
         // Act.
         CustomTabActivityTypeTestUtils.launchActivity(
@@ -218,6 +221,7 @@ public class ChromeAndroidTaskIntegrationTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/486858979: Temporarily disabled to avoid crashes.")
     public void startWebappActivity_chromeAndroidTaskAndTabModelHaveSameSessionId() {
         // Arrange.
         mWebappActivityTestRule.startWebappActivity();
@@ -239,6 +243,7 @@ public class ChromeAndroidTaskIntegrationTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/486858979: Temporarily disabled to avoid crashes.")
     public void startTwa_chromeAndroidTaskAndTabModelHaveSameSessionId() throws Exception {
         // Arrange.
         CustomTabActivityTypeTestUtils.launchActivity(
