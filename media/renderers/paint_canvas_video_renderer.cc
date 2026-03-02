@@ -1415,11 +1415,18 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameTexturesToGLTexture(
     SynchronizeVideoFrameRead(std::move(video_frame), destination_gl,
                               raster_context_provider->ContextSupport());
     return true;
-  }
+  } else if (SupportsOneCopyUploadToGLTexture(
+                 video_frame->format(), shared_image->GetTextureTarget(),
+                 target, internal_format, type, level, dst_alpha_type)) {
+    // Do a service-side copy from the SharedImage to the destination texture
+    // via Skia wrapping the destination texture in an SkSurface. Note that
+    // this relies on the service-side GL implementation using a Ganesh/GL
+    // context. Currently this assumption is satisfied as the passthrough
+    // decoder always uses a Ganesh/GL context.
+    // TODO(crbug.com/40064510): Eliminate this reliance to enable one-copy
+    // upload to work for Graphite *without* depending on being able to create a
+    // Ganesh/GL context.
 
-  if (SupportsOneCopyUploadToGLTexture(
-          video_frame->format(), shared_image->GetTextureTarget(), target,
-          internal_format, type, level, dst_alpha_type)) {
     // Trigger resource allocation for dst texture to back SkSurface.
     // Dst texture size should equal to video frame visible rect.
     BindAndTexImage2D(destination_gl, target, texture, internal_format, format,
