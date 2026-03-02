@@ -6,6 +6,7 @@ import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import type {AutocompleteMatch, PageHandlerRemote as SearchboxPageHandlerRemote} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {ToolMode} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 
@@ -44,6 +45,10 @@ export class ComposeboxMatchElement extends CrLitElement {
       //========================================================================
 
       match: {type: Object},
+      overrideClampLineNum: {
+        type: Number,
+        reflect: true,
+      },
 
       /**
        * Index of the match in the autocomplete result. Used to inform embedder
@@ -61,6 +66,7 @@ export class ComposeboxMatchElement extends CrLitElement {
   }
 
   accessor match: AutocompleteMatch = createAutocompleteMatch();
+  accessor overrideClampLineNum: number = -1;
 
   accessor matchIndex: number = -1;
   accessor toolMode: ToolMode = ToolMode.kUnspecified;
@@ -99,35 +105,66 @@ export class ComposeboxMatchElement extends CrLitElement {
     }
   }
 
+  // Cannot render match content by modifying DOM until after `updated`.
+  // Previously, `computeContent` was called in the `textContainer`
+  // `html` file. This caused several Lit rendering errors, as logged by the
+  // console.
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+    if (changedProperties.has('match')) {
+      this.computeContents_();
+    }
+  }
+
   // This is needed since --webkit-box is deprecated and line-clamp does not
   // work in CSS without it.
   private clampDeepSearchContents_() {
-    if (this.toolMode !== ToolMode.kDeepSearch) {
+    if (this.overrideClampLineNum > 0 &&
+        this.toolMode !== ToolMode.kDeepSearch) {
       return;
     }
+
+    // Get the suggestion textbox and update its contents
+    // to be the full match text at first.
     const textContainer = this.$.textContainer;
-    // Always start with the full text to correctly calculate overflow.
     textContainer.textContent = this.match.contents;
 
-    const maxHeight = LINE_HEIGHT_PX * MAX_DEEP_SEARCH_LINES;
-    if (textContainer.scrollHeight <= maxHeight) {
+    const clampLineNum = this.overrideClampLineNum > 0 ?
+        this.overrideClampLineNum :
+        MAX_DEEP_SEARCH_LINES;
+
+    // See padding in window text container.
+    const style = window.getComputedStyle(textContainer);
+    const padding =
+        parseFloat(style.paddingTop) + parseFloat(style.paddingBottom);
+
+    // Max height must include padding since scrollHeight might.
+    const textMaxHeight = LINE_HEIGHT_PX * clampLineNum + padding;
+
+    // Exit if no need to elide text since is within max height
+    // for x lines.
+    if (textContainer.scrollHeight <= textMaxHeight) {
       return;
     }
 
-    // Text is overflowing, so clamp it by removing words until the contents
-    // fit in 2 lines.
     const words = this.match.contents.split(' ');
     while (words.length > 0) {
       words.pop();
+      // Update the html textbox to the new truncated version.
       textContainer.textContent = words.join(' ') + '...';
-      if (textContainer.scrollHeight <= maxHeight) {
+
+      // Check against the height that includes padding.
+      // Exit if no need to elide text since is within max height
+      // for x lines.
+      if (textContainer.scrollHeight <= textMaxHeight) {
         break;
       }
     }
   }
 
-  protected computeContents_(): string {
-    return this.match.contents;
+  protected computeContents_(): void {
+    const textContainer = this.$.textContainer;
+    textContainer.textContent = this.match.contents;
   }
 
   protected computeRemoveButtonAriaLabel_(): string {

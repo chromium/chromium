@@ -23,6 +23,7 @@ export function getHtml(this: ComposeboxDropdownElement) {
             .match="${item}"
             .matchIndex="${index}"
             .toolMode="${this.toolMode}"
+            .overrideClampLineNum="${this.overrideClampLineNum}"
             ?selected="${this.isSelected_(item)}"
             ?is-last="${this.isLastMatch_(index)}"
             ?hidden="${this.hideVerbatimMatch_(index) ||

@@ -26,6 +26,7 @@ export function getHtml(this: ContextualTasksComposeboxElement) {
           role="listbox"
           .result="${this.zeroStateSuggestions_}"
           .maxSuggestions="${5}"
+          .overrideClampLineNum="${3}"
           ?hidden="${!this.showSuggestions_}">
       </cr-composebox-dropdown>
       ${this.showSuggestionsActivityLink_ && this.showSuggestions_ ? html`
@@ -74,6 +75,7 @@ export function getHtml(this: ContextualTasksComposeboxElement) {
           role="listbox"
           .result="${this.zeroStateSuggestions_}"
           .maxSuggestions="${5}"
+          .overrideClampLineNum="${3}"
           ?hidden="${!this.showSuggestions_}">
       </cr-composebox-dropdown>
       ${this.showSuggestionsActivityLink_ && this.showSuggestions_ ? html`
