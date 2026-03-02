@@ -126,9 +126,9 @@ std::string LensSearchboxHandler::AutocompleteIconToResourceName(
     const gfx::VectorIcon& icon) const {
   // The default icon for contextual suggestions is the subdirectory arrow right
   // icon. For the Lens searchbox, we want to stay consistent with the search
-  // loupe instead.
+  // spark loupe instead.
   if (icon.name == omnibox::kSubdirectoryArrowRightIcon.name) {
-    return searchbox_internal::kSearchIconResourceName;
+    return searchbox_internal::kSearchSparkIconResourceName;
   }
 
   return SearchboxHandler::AutocompleteIconToResourceName(icon);

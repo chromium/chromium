@@ -37,7 +37,7 @@ class WebUIDataSource;
 namespace searchbox_internal {
 // Internal constants for icon resource paths shared by SearchboxHandler and its
 // subclasses.
-extern const char* kSearchIconResourceName;
+extern const char* kSearchSparkIconResourceName;
 }  // namespace searchbox_internal
 
 // Base class for browser-side handlers that handle bi-directional communication

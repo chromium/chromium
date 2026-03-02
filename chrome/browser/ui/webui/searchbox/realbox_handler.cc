@@ -97,9 +97,9 @@ std::string RealboxHandler::AutocompleteIconToResourceName(
     const gfx::VectorIcon& icon) const {
   // The default icon for contextual suggestions is the subdirectory arrow right
   // icon. For the Lens composebox and realbox, we want to stay consistent with
-  // the search loupe instead.
+  // the search spark loupe instead.
   if (icon.name == omnibox::kSubdirectoryArrowRightIcon.name) {
-    return searchbox_internal::kSearchIconResourceName;
+    return searchbox_internal::kSearchSparkIconResourceName;
   }
 
   return SearchboxHandler::AutocompleteIconToResourceName(icon);
