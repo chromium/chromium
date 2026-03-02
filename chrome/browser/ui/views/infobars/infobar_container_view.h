@@ -36,12 +36,21 @@ class InfoBarContainerView : public views::AccessiblePaneView,
   void PlatformSpecificAddInfoBar(infobars::InfoBar* infobar,
                                   size_t position) override;
   void PlatformSpecificRemoveInfoBar(infobars::InfoBar* infobar) override;
+  void PlatformSpecificWillRemoveInfoBar(infobars::InfoBar* infobar) override;
+  void PlatformSpecificInfoBarShown(infobars::InfoBar* infobar) override;
 
  private:
   // This view draws the shadow over the web contents below the
   // lowest infobar. A separate view with a layer is used so it can
   // draw outside the bounds of |this|.
   raw_ptr<views::View> content_shadow_;
+
+  // True when the focused view was inside this container at the moment an
+  // infobar removal started. Used to restore focus back to the infobar region
+  // when the next infobar is shown (e.g. a queued infobar being promoted), so
+  // focus does not jump to page contents and screen reader users are made aware
+  // of the newly surfaced infobar.
+  bool restore_focus_on_next_shown_ = false;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_INFOBARS_INFOBAR_CONTAINER_VIEW_H_

@@ -102,6 +102,7 @@ void InfoBarContainer::OnInfoBarAdded(InfoBar* infobar) {
 
 void InfoBarContainer::OnInfoBarRemoved(InfoBar* infobar, bool animate) {
   CHECK(scoped_observation_.IsObserving());
+  PlatformSpecificWillRemoveInfoBar(infobar);
   infobar->Hide(manager()->animations_enabled() && animate);
 }
 
@@ -131,6 +132,7 @@ void InfoBarContainer::AddInfoBar(InfoBar* infobar,
   infobar->set_container(this);
   CHECK(manager());
   infobar->Show(manager()->animations_enabled() && animate);
+  PlatformSpecificInfoBarShown(infobar);
 
   // Record the infobar being displayed.
   DCHECK_NE(InfoBarDelegate::INVALID, infobar->GetIdentifier());

@@ -160,5 +160,66 @@ void InfoBarContainerView::PlatformSpecificRemoveInfoBar(
   RemoveChildView(static_cast<InfoBarView*>(infobar));
 }
 
+void InfoBarContainerView::PlatformSpecificWillRemoveInfoBar(
+    infobars::InfoBar* infobar) {
+  // If there are no pending infobars to surface, there's no need to track
+  // focus for restoration, as no new infobar will immediately appear.
+  if (!HasPendingInfoBars()) {
+    restore_focus_on_next_shown_ = false;
+    return;
+  }
+
+  auto* focus_manager = GetFocusManager();
+  if (!focus_manager) {
+    restore_focus_on_next_shown_ = false;
+    return;
+  }
+
+  // Determine the currently focused view. In environments where the window
+  // might not be fully active (e.g., Wayland during tests or under certain
+  // window manager states), `GetFocusedView()` returns null. In these cases,
+  // we must fall back to `GetStoredFocusView()` which tracks the view that
+  // *will* receive focus when the widget becomes active.
+  views::View* focused_view = focus_manager->GetFocusedView();
+  if (!focused_view) {
+    focused_view = focus_manager->GetStoredFocusView();
+  }
+
+  // Only restore focus to the next infobar if the focus currently resides
+  // within the infobar being removed. This prevents stealing focus from
+  // unrelated UI elements when a background infobar is dismissed.
+  restore_focus_on_next_shown_ =
+      static_cast<InfoBarView*>(infobar)->Contains(focused_view);
+}
+
+void InfoBarContainerView::PlatformSpecificInfoBarShown(
+    infobars::InfoBar* infobar) {
+  auto* info_bar_view = static_cast<InfoBarView*>(infobar);
+  CHECK(info_bar_view);
+
+  if (!restore_focus_on_next_shown_) {
+    return;
+  }
+
+  // Reset the flag to ensure focus is only restored once per removal event.
+  restore_focus_on_next_shown_ = false;
+
+  // Prefer focusing the dismiss button if available, as it's the most common
+  // interactive element. If the infobar lacks a dismiss button, fall back to
+  // focusing the entire infobar view to maintain accessibility context.
+  views::View* view_to_focus =
+      info_bar_view->GetViewByElementId(InfoBarView::kDismissButtonElementId);
+  if (!view_to_focus) {
+    view_to_focus = info_bar_view;
+  }
+
+  views::Widget* widget = GetWidget();
+  if (widget && !widget->IsActive() && GetFocusManager()) {
+    GetFocusManager()->SetStoredFocusView(view_to_focus);
+  } else {
+    view_to_focus->RequestFocus();
+  }
+}
+
 BEGIN_METADATA(InfoBarContainerView)
 END_METADATA

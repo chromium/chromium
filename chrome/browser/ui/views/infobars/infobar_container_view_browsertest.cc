@@ -28,7 +28,9 @@
 #include "components/infobars/core/infobar_manager.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/animation/animation_test_api.h"
 #include "ui/views/view_utils.h"
+#include "url/gurl.h"
 
 namespace {
 
@@ -61,7 +63,7 @@ class PriorityInfoBarDelegate : public ConfirmInfoBarDelegate {
 }  // namespace
 
 class InfoBarContainerViewBrowserTest : public InProcessBrowserTest {
- public:
+ protected:
   InfoBarContainerViewBrowserTest() = default;
 
   InfoBarContainerView* GetInfoBarContainer() {
@@ -108,7 +110,7 @@ class InfoBarContainerViewBrowserTest : public InProcessBrowserTest {
 // Tests for standard (non-prioritized) behavior.
 //
 class InfoBarContainerStandardTest : public InfoBarContainerViewBrowserTest {
- public:
+ protected:
   InfoBarContainerStandardTest() {
     feature_list_.InitAndDisableFeature(
         infobars::features::kInfobarPrioritization);
@@ -179,7 +181,7 @@ IN_PROC_BROWSER_TEST_F(InfoBarContainerStandardTest,
 // Tests for priority-based behavior.
 //
 class InfoBarContainerPriorityTest : public InfoBarContainerViewBrowserTest {
- public:
+ protected:
   InfoBarContainerPriorityTest() {
     // These caps match the design doc's defaults.
     feature_list_.InitAndEnableFeatureWithParameters(
@@ -187,6 +189,13 @@ class InfoBarContainerPriorityTest : public InfoBarContainerViewBrowserTest {
         {{"max_visible_critical", "2"},
          {"max_visible_default", "1"},
          {"max_visible_low", "1"}});
+  }
+
+  // Helper to get the currently focused or stored view. On Wayland, the focused
+  // view may be null. In that case, we return the stored view.
+  views::View* GetFocusedOrStoredView(views::FocusManager* focus_manager) {
+    views::View* focused_view = focus_manager->GetFocusedView();
+    return focused_view ? focused_view : focus_manager->GetStoredFocusView();
   }
 };
 
@@ -309,13 +318,84 @@ IN_PROC_BROWSER_TEST_F(InfoBarContainerPriorityTest,
   EXPECT_EQ("Critical", GetVisibleInfoBarMessages()[0]);
 }
 
+IN_PROC_BROWSER_TEST_F(InfoBarContainerPriorityTest,
+                       PromotionRestoresFocusWhenFocusWasInInfobars) {
+  // Disable animations to avoid flaky tests related to focus management.
+  auto animation_mode_reset = gfx::AnimationTestApi::SetRichAnimationRenderMode(
+      gfx::Animation::RichAnimationRenderMode::FORCE_DISABLED);
+
+  infobars::InfoBar* first = AddInfoBar(
+      infobars::InfoBarDelegate::InfobarPriority::kDefault, "Default 1");
+  AddInfoBar(infobars::InfoBarDelegate::InfobarPriority::kDefault,
+             "Default 2 (Queued)");
+
+  views::FocusManager* focus_manager = GetInfoBarContainer()->GetFocusManager();
+  ASSERT_TRUE(focus_manager);
+
+  InfoBarContainerView* container = GetInfoBarContainer();
+
+  auto* close_button = static_cast<InfoBarView*>(first)->GetViewByElementId(
+      InfoBarView::kDismissButtonElementId);
+  ASSERT_TRUE(close_button);
+
+  close_button->RequestFocus();
+
+  focus_manager = close_button->GetFocusManager();
+  ASSERT_TRUE(focus_manager);
+
+  EXPECT_EQ(close_button, GetFocusedOrStoredView(focus_manager));
+  ASSERT_TRUE(container->Contains(GetFocusedOrStoredView(focus_manager)));
+
+  GetInfoBarManager()->RemoveInfoBar(first);
+
+  std::vector<std::string> visible = GetVisibleInfoBarMessages();
+  ASSERT_EQ(1u, visible.size());
+  EXPECT_EQ("Default 2 (Queued)", visible[0]);
+
+  EXPECT_TRUE(container->Contains(GetFocusedOrStoredView(focus_manager)));
+}
+
+IN_PROC_BROWSER_TEST_F(InfoBarContainerPriorityTest,
+                       PromotionDoesNotStealFocusWhenFocusWasOutsideInfobars) {
+  infobars::InfoBar* first = AddInfoBar(
+      infobars::InfoBarDelegate::InfobarPriority::kDefault, "Default 1");
+  AddInfoBar(infobars::InfoBarDelegate::InfobarPriority::kDefault,
+             "Default 2 (Queued)");
+
+  InfoBarContainerView* container = GetInfoBarContainer();
+  ASSERT_TRUE(container);
+
+  // Put focus in web contents (outside infobars).
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(contents);
+  contents->Focus();
+
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  ASSERT_TRUE(browser_view);
+  views::FocusManager* focus_manager =
+      browser_view->GetWidget()->GetFocusManager();
+  ASSERT_TRUE(focus_manager);
+
+  EXPECT_FALSE(container->Contains(GetFocusedOrStoredView(focus_manager)));
+
+  // Remove visible infobar -> queued one promoted.
+  GetInfoBarManager()->RemoveInfoBar(first);
+
+  std::vector<std::string> visible = GetVisibleInfoBarMessages();
+  ASSERT_EQ(1u, visible.size());
+  EXPECT_EQ("Default 2 (Queued)", visible[0]);
+
+  EXPECT_FALSE(container->Contains(GetFocusedOrStoredView(focus_manager)));
+}
+
 //
 // Tests for split tab behavior, parameterized by whether prioritization is
 // enabled.
 //
 class InfoBarContainerSplitTabTest : public InfoBarContainerViewBrowserTest,
                                      public testing::WithParamInterface<bool> {
- public:
+ protected:
   InfoBarContainerSplitTabTest() {
     std::vector<base::test::FeatureRef> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;

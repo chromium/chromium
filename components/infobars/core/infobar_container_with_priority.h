@@ -42,6 +42,8 @@ class InfoBarContainerWithPriority : public InfoBarContainer {
   // InfoBarContainer overrides:
   void ChangeInfoBarManager(InfoBarManager* infobar_manager) override;
 
+  bool HasPendingInfoBars() const { return !pending_infobars_.empty(); }
+
  protected:
   // InfoBarContainer overrides:
   void OnInfoBarAdded(InfoBar* infobar) override;
