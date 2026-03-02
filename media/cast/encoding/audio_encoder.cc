@@ -327,9 +327,10 @@ class AudioEncoder::OpusImpl final : public AudioEncoder::ImplBase {
                                  int num_samples) final {
     DCHECK_EQ(audio_bus->channels(), num_channels_);
     base::span<float> dest =
-        buffer_.subspan(buffer_fill_offset * num_channels_);
-    audio_bus->ToInterleavedPartial<Float32SampleTypeTraits>(
-        source_offset, num_samples, dest.data());
+        buffer_.subspan(buffer_fill_offset * num_channels_,
+                        static_cast<size_t>(num_samples * num_channels_));
+    audio_bus->ToInterleavedPartial<Float32SampleTypeTraits>(source_offset,
+                                                             dest);
   }
 
   base::HeapArray<uint8_t> EncodeFromFilledBuffer() final {
