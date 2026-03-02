@@ -306,7 +306,12 @@ const CGFloat kClearButtonWidthAndHeight = 40;
   tab_groups::TabGroupColorId colorID =
       static_cast<tab_groups::TabGroupColorId>(_selectedButton.tag);
 
-  UIColor* defaultColor = tab_groups::ColorForTabGroupColorId(colorID);
+  UIColor* defaultColor;
+  if (IsTabGroupColorOnSurfaceEnabled()) {
+    defaultColor = [TabGroupColorPalette commonColor:colorID];
+  } else {
+    defaultColor = tab_groups::ColorForTabGroupColorId(colorID);
+  }
   _dotView = [self groupDotViewWithColor:defaultColor];
   _tabGroupTextField = [self configuredTabGroupNameTextFieldInput];
 
@@ -481,7 +486,11 @@ const CGFloat kClearButtonWidthAndHeight = 40;
   [_selectedButton setSelected:YES];
   tab_groups::TabGroupColorId colorID =
       static_cast<tab_groups::TabGroupColorId>(_selectedButton.tag);
-  [_dotView setBackgroundColor:tab_groups::ColorForTabGroupColorId(colorID)];
+  if (IsTabGroupColorOnSurfaceEnabled()) {
+    [_dotView setBackgroundColor:[TabGroupColorPalette commonColor:colorID]];
+  } else {
+    [_dotView setBackgroundColor:tab_groups::ColorForTabGroupColorId(colorID)];
+  }
 }
 
 // Creates all the available color buttons.

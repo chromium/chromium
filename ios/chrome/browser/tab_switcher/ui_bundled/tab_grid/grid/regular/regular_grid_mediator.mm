@@ -28,6 +28,7 @@
 #import "ios/chrome/browser/shared/public/commands/quick_delete_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_grid_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/util/color_palette/tab_group_color_palette.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_browser_agent.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_collection_consumer.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/activity_label_data.h"
@@ -580,8 +581,12 @@ using ScopedTabGroupSyncObservation =
     return nil;
   }
 
-  UIColor* groupColor =
-      tab_groups::ColorForTabGroupColorId(tabGroup->GetColor());
+  UIColor* groupColor;
+  if (IsTabGroupColorOnSurfaceEnabled()) {
+    groupColor = [TabGroupColorPalette commonColor:tabGroup->GetColor()];
+  } else {
+    groupColor = tab_groups::ColorForTabGroupColorId(tabGroup->GetColor());
+  }
   return
       [self.regularDelegate facePileProviderForGroupID:collaborationID.value()
                                             groupColor:groupColor];

@@ -46,6 +46,8 @@
 #import "ios/chrome/browser/shared/public/commands/shared_tab_group_last_tab_closed_alert_command.h"
 #import "ios/chrome/browser/shared/public/commands/tab_strip_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_strip_last_tab_dragged_alert_command.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/util/color_palette/tab_group_color_palette.h"
 #import "ios/chrome/browser/tab_switcher/tab_strip/coordinator/tab_strip_mediator_delegate.h"
 #import "ios/chrome/browser/tab_switcher/tab_strip/coordinator/tab_strip_mediator_utils.h"
 #import "ios/chrome/browser/tab_switcher/tab_strip/ui/swift.h"
@@ -144,8 +146,13 @@ TabStripItemData* CreateTabItemData(
     const TabGroupRange range = group->range();
     data.isFirstTabInGroup = range.range_begin() == index;
     data.isLastTabInGroup = range.range_end() == index + 1;
-    data.groupStrokeColor =
-        tab_groups::ColorForTabGroupColorId(group->GetColor());
+    if (IsTabGroupColorOnSurfaceEnabled()) {
+      data.groupStrokeColor =
+          [TabGroupColorPalette commonColor:group->GetColor()];
+    } else {
+      data.groupStrokeColor =
+          tab_groups::ColorForTabGroupColorId(group->GetColor());
+    }
   }
   data.hasNotificationDot =
       dirty_tabs.contains(web_state->GetUniqueIdentifier().identifier());
@@ -157,8 +164,13 @@ TabStripItemData* CreateGroupItemData(
     const TabGroup* group,
     std::set<tab_groups::LocalTabGroupID> dirty_groups) {
   TabStripItemData* data = [[TabStripItemData alloc] init];
-  data.groupStrokeColor =
-      tab_groups::ColorForTabGroupColorId(group->GetColor());
+  if (IsTabGroupColorOnSurfaceEnabled()) {
+    data.groupStrokeColor =
+        [TabGroupColorPalette commonColor:group->GetColor()];
+  } else {
+    data.groupStrokeColor =
+        tab_groups::ColorForTabGroupColorId(group->GetColor());
+  }
   data.hasNotificationDot = dirty_groups.contains(group->tab_group_id());
   return data;
 }
@@ -1411,7 +1423,12 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
   if (collaborationID->empty()) {
     return nil;
   }
-  UIColor* groupColor = tab_groups::ColorForTabGroupColorId(group->GetColor());
+  UIColor* groupColor;
+  if (IsTabGroupColorOnSurfaceEnabled()) {
+    groupColor = [TabGroupColorPalette commonColor:group->GetColor()];
+  } else {
+    groupColor = tab_groups::ColorForTabGroupColorId(group->GetColor());
+  }
   return [self.delegate facePileProviderForGroupID:collaborationID.value()
                                         groupColor:groupColor];
 }

@@ -35,6 +35,7 @@ source_set("regular") {
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/util/color_palette:group_color",
     "//ios/chrome/browser/snapshots/model",
     "//ios/chrome/browser/tab_switcher/tab_grid/base_grid/coordinator",
     "//ios/chrome/browser/tab_switcher/tab_grid/base_grid/coordinator:mediator",
