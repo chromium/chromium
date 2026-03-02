@@ -8902,7 +8902,14 @@ CanvasSnapshotProvider* WebGLRenderingContextBase::
       raster_context_provider =
           wrapper->ContextProvider().RasterContextProvider();
     }
-    temp = CreateSnapshotProviderForVideo(info, raster_context_provider);
+    if (!ShouldCreateAcceleratedImages(raster_context_provider)) {
+      temp = CanvasNon2DSnapshotProviderBitmap::Create(info);
+    } else {
+      temp = CanvasNon2DResourceProviderSharedImage::Create(
+          info.size, info.format, info.alpha_type, info.color_space,
+          SharedGpuContext::ContextProviderWrapper(),
+          gpu::SHARED_IMAGE_USAGE_DISPLAY_READ);
+    }
   } else {
     temp = CanvasNon2DSnapshotProviderBitmap::Create(info);
   }
