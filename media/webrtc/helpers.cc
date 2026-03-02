@@ -133,9 +133,6 @@ CreateWebRtcAudioProcessingModule(
   }
 
   webrtc::AudioProcessing::Config apm_config;
-  apm_config.pipeline.multi_channel_render = true;
-  apm_config.pipeline.multi_channel_capture =
-      settings.multi_channel_capture_processing;
   apm_config.pipeline.capture_downmix_method =
       kWebRtcApmDownmixMethodParam.Get();
   apm_config.noise_suppression.enabled = settings.noise_suppression;
