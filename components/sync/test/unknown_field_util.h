@@ -17,9 +17,20 @@ namespace syncer::test {
 void AddUnknownFieldToProto(::google::protobuf::MessageLite& proto,
                             std::string unknown_field_value);
 
+// Adds an unknown enum field to the given `proto`.
+void AddUnknownEnumFieldToProto(::google::protobuf::MessageLite& proto,
+                                int field_number,
+                                int value);
+
 // Returns the unknown field value from the given `proto`.
 std::string GetUnknownFieldValueFromProto(
     const ::google::protobuf::MessageLite& proto);
+
+// Returns the unknown enum field value from the given `proto` for the given
+// `field_number`, or -1 if not found.
+int GetUnknownEnumFieldValueFromProto(
+    const ::google::protobuf::MessageLite& proto,
+    int field_number);
 
 // Matcher helpers for tests.
 MATCHER_P(HasUnknownField, unknown_field_value, "") {

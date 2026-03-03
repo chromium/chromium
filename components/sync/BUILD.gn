@@ -276,6 +276,7 @@ source_set("unit_tests") {
     "service/sync_user_settings_impl_unittest.cc",
     "service/syncable_service_based_data_type_controller_unittest.cc",
     "service/trusted_vault_synthetic_field_trial_unittest.cc",
+    "test/unknown_field_util_unittest.cc",
   ]
 
   configs += [ "//build/config:precompiled_headers" ]
@@ -288,6 +289,7 @@ source_set("unit_tests") {
   deps = [
     ":sync",
     ":test_support",
+    ":test_support_proto",
     "//base",
     "//base/test:test_support",
     "//components/gcm_driver:test_support",

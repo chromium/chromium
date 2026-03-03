@@ -55,7 +55,13 @@ sync_pb::SkillSpecifics SkillToSpecifics(
   specifics.set_last_update_time_windows_epoch_micros(
       ToWindowsEpochMicros(skill.last_update_time));
   specifics.set_schema_version(kSchemaVersion);
-  specifics.set_skill_source(skill.source);
+
+  // Do not override the skill source if it is unknown. This skill may be
+  // created by a newer version of the client, so it's better to preserve the
+  // server value.
+  if (skill.source != sync_pb::SKILL_SOURCE_UNKNOWN) {
+    specifics.set_skill_source(skill.source);
+  }
   return specifics;
 }
 
@@ -277,8 +283,12 @@ SkillsSyncBridge::TrimAllSupportedFieldsFromRemoteSpecifics(
   trimmed_specifics.clear_creation_time_windows_epoch_micros();
   trimmed_specifics.clear_last_update_time_windows_epoch_micros();
   trimmed_specifics.clear_schema_version();
-  trimmed_specifics.clear_skill_source();
   trimmed_specifics.clear_source_skill_id();
+
+  // Note that in case of an unknown skill source, it's not stored in the
+  // `skill_source` field but rather in unknown fields, and hence it's still
+  // preserved after trimming (even after clear_skill_source() call).
+  trimmed_specifics.clear_skill_source();
 
   if (trimmed_specifics.has_simple_skill()) {
     trimmed_specifics.mutable_simple_skill()->clear_prompt();

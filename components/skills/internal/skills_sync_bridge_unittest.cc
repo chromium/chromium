@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/base64.h"
 #include "base/run_loop.h"
 #include "base/test/protobuf_matchers.h"
 #include "base/test/task_environment.h"
@@ -40,6 +41,7 @@ using ::testing::Pair;
 using ::testing::Pointee;
 using ::testing::Return;
 using ::testing::ReturnRef;
+using ::testing::SaveArgByMove;
 using ::testing::UnorderedElementsAre;
 using ::testing::WithArgs;
 
@@ -75,6 +77,17 @@ syncer::EntityData CreateSkillEntityData(
   *entity_data.specifics.mutable_skill() =
       CreateSkillSpecifics(std::move(prompt), std::move(description));
   return entity_data;
+}
+
+syncer::EntityData CreateSkillEntityDataWithUnknownSource(
+    int unknown_source_value) {
+  syncer::EntityData remote_entity_data = CreateSkillEntityData();
+  remote_entity_data.specifics.mutable_skill()->clear_skill_source();
+
+  syncer::test::AddUnknownEnumFieldToProto(
+      *remote_entity_data.specifics.mutable_skill(),
+      sync_pb::SkillSpecifics::kSkillSourceFieldNumber, unknown_source_value);
+  return remote_entity_data;
 }
 
 std::vector<syncer::EntityData> ExtractEntityDataFromBatch(
@@ -605,6 +618,96 @@ TEST_F(SkillsSyncBridgeTest, ShouldDeleteAllDataOnDisableSync) {
 
   EXPECT_THAT(GetAllLocalDataFromStore(), IsEmpty());
   EXPECT_THAT(skills, IsEmpty());
+}
+
+TEST_F(SkillsSyncBridgeTest,
+       ShouldConvertUnknownSkillSourceToUnknownEnumValue) {
+  const std::string kSkillId =
+      base::Uuid::GenerateRandomV4().AsLowercaseString();
+  const int kUnknownSourceValue = 456;
+
+  syncer::EntityData remote_entity_data =
+      CreateSkillEntityDataWithUnknownSource(kUnknownSourceValue);
+  remote_entity_data.specifics.mutable_skill()->set_guid(kSkillId);
+  ASSERT_EQ(remote_entity_data.specifics.skill().skill_source(),
+            sync_pb::SKILL_SOURCE_UNKNOWN);
+  ASSERT_FALSE(remote_entity_data.specifics.skill().unknown_fields().empty());
+
+  Skill skill(kSkillId, "name", "icon", "prompt");
+  skill.source = sync_pb::SKILL_SOURCE_UNKNOWN;
+
+  // The new unknown skill source should be converted to an unknown enum value.
+  EXPECT_CALL(mock_skills_service(),
+              AddOrUpdateSkillFromSync(kSkillId, _, _, _, _, _, _, _,
+                                       sync_pb::SKILL_SOURCE_UNKNOWN))
+      .WillOnce(Return(&skill));
+  ASSERT_EQ(ApplySingleUpdate(syncer::EntityChange::CreateAdd(
+                /*storage_key=*/remote_entity_data.specifics.skill().guid(),
+                std::move(remote_entity_data))),
+            std::nullopt);
+}
+
+TEST_F(SkillsSyncBridgeTest, ShouldPreserveUnknownSkillSourceOnTrim) {
+  const int kUnknownSourceValue = 456;
+
+  syncer::EntityData remote_entity_data =
+      CreateSkillEntityDataWithUnknownSource(kUnknownSourceValue);
+  ASSERT_EQ(remote_entity_data.specifics.skill().skill_source(),
+            sync_pb::SKILL_SOURCE_UNKNOWN);
+  ASSERT_FALSE(remote_entity_data.specifics.skill().unknown_fields().empty());
+
+  // Verify that trimming the specifics preserves the unknown source value.
+  sync_pb::EntitySpecifics entity_specifics_with_unknown_source_only;
+  syncer::test::AddUnknownEnumFieldToProto(
+      *entity_specifics_with_unknown_source_only.mutable_skill(),
+      sync_pb::SkillSpecifics::kSkillSourceFieldNumber, kUnknownSourceValue);
+
+  sync_pb::EntitySpecifics trimmed_specifics =
+      bridge().TrimAllSupportedFieldsFromRemoteSpecifics(
+          remote_entity_data.specifics);
+  EXPECT_EQ(syncer::test::GetUnknownEnumFieldValueFromProto(
+                trimmed_specifics.skill(),
+                sync_pb::SkillSpecifics::kSkillSourceFieldNumber),
+            kUnknownSourceValue);
+}
+
+TEST_F(SkillsSyncBridgeTest, ShouldPreserveUnknownSkillSourceOnCommit) {
+  const std::string kSkillId =
+      base::Uuid::GenerateRandomV4().AsLowercaseString();
+  const int kUnknownSourceValue = 456;
+
+  syncer::EntityData remote_entity_data =
+      CreateSkillEntityDataWithUnknownSource(kUnknownSourceValue);
+  remote_entity_data.specifics.mutable_skill()->set_guid(kSkillId);
+  ASSERT_EQ(remote_entity_data.specifics.skill().skill_source(),
+            sync_pb::SKILL_SOURCE_UNKNOWN);
+  ASSERT_FALSE(remote_entity_data.specifics.skill().unknown_fields().empty());
+
+  auto skill = std::make_unique<Skill>(kSkillId, "name", "icon", "prompt");
+  skill->source = sync_pb::SKILL_SOURCE_UNKNOWN;
+
+  // Simulate a local update with the unknown source value in trimmed specifics.
+  ON_CALL(mock_skills_service(), GetSkillById(kSkillId))
+      .WillByDefault(Return(skill.get()));
+
+  sync_pb::EntitySpecifics entity_specifics_with_unknown_source_only;
+  syncer::test::AddUnknownEnumFieldToProto(
+      *entity_specifics_with_unknown_source_only.mutable_skill(),
+      sync_pb::SkillSpecifics::kSkillSourceFieldNumber, kUnknownSourceValue);
+  ON_CALL(mock_processor(), GetPossiblyTrimmedRemoteSpecifics(kSkillId))
+      .WillByDefault(ReturnRef(entity_specifics_with_unknown_source_only));
+
+  std::unique_ptr<syncer::EntityData> entity_data_for_commit;
+  EXPECT_CALL(mock_processor(), Put(kSkillId, _, _))
+      .WillOnce(SaveArgByMove<1>(&entity_data_for_commit));
+  bridge().OnSkillUpdated(kSkillId, SkillsService::UpdateSource::kLocal,
+                          /*is_position_changed=*/false);
+
+  ASSERT_TRUE(entity_data_for_commit);
+  EXPECT_EQ(syncer::test::GetUnknownEnumFieldValueFromProto(
+                entity_data_for_commit->specifics.skill(),
+                sync_pb::SkillSpecifics::kSkillSourceFieldNumber),
+            kUnknownSourceValue);
 }
 
 }  // namespace
