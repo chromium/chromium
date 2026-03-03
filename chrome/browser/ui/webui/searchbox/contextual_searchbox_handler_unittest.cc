@@ -1560,7 +1560,7 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest, GetTabPreview_Success) {
 class ContextualSearchboxHandlerFileUploadStatusTest
     : public ContextualSearchboxHandlerTest,
       public testing::WithParamInterface<
-          composebox_query::mojom::FileUploadStatus> {};
+          composebox_query::mojom::ContextUploadStatus> {};
 
 TEST_P(ContextualSearchboxHandlerFileUploadStatusTest,
        OnFileUploadStatusChanged) {
@@ -1579,7 +1579,7 @@ TEST_P(ContextualSearchboxHandlerFileUploadStatusTest,
   const auto expected_status = GetParam();
   contextual_search::FileUploadStatus status_cpp;
   EXPECT_TRUE((mojo::EnumTraits<
-               composebox_query::mojom::FileUploadStatus,
+               composebox_query::mojom::ContextUploadStatus,
                contextual_search::FileUploadStatus>::FromMojom(expected_status,
                                                                &status_cpp)));
   base::UnguessableToken token = base::UnguessableToken::Create();
@@ -1594,11 +1594,11 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     ContextualSearchboxHandlerFileUploadStatusTest,
     testing::Values(
-        composebox_query::mojom::FileUploadStatus::kNotUploaded,
-        composebox_query::mojom::FileUploadStatus::kProcessing,
-        composebox_query::mojom::FileUploadStatus::kValidationFailed,
-        composebox_query::mojom::FileUploadStatus::kUploadStarted,
-        composebox_query::mojom::FileUploadStatus::kUploadSuccessful,
-        composebox_query::mojom::FileUploadStatus::kUploadFailed,
-        composebox_query::mojom::FileUploadStatus::kUploadExpired,
-        composebox_query::mojom::FileUploadStatus::kUploadReplaced));
+        composebox_query::mojom::ContextUploadStatus::kNotUploaded,
+        composebox_query::mojom::ContextUploadStatus::kProcessing,
+        composebox_query::mojom::ContextUploadStatus::kValidationFailed,
+        composebox_query::mojom::ContextUploadStatus::kUploadStarted,
+        composebox_query::mojom::ContextUploadStatus::kUploadSuccessful,
+        composebox_query::mojom::ContextUploadStatus::kUploadFailed,
+        composebox_query::mojom::ContextUploadStatus::kUploadExpired,
+        composebox_query::mojom::ContextUploadStatus::kUploadReplaced));

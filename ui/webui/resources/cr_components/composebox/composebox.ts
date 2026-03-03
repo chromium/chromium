@@ -16,7 +16,7 @@ import '//resources/cr_components/localized_link/localized_link.js';
 import '//resources/cr_components/search/animated_glow.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 
-import {GlowAnimationState, ComposeboxContextAddedMethod} from '//resources/cr_components/search/constants.js';
+import {ComposeboxContextAddedMethod, GlowAnimationState} from '//resources/cr_components/search/constants.js';
 import {DragAndDropHandler} from '//resources/cr_components/search/drag_drop_handler.js';
 import type {DragAndDropHost} from '//resources/cr_components/search/drag_drop_host.js';
 import {getInstance as getAnnouncerInstance} from '//resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
@@ -30,7 +30,7 @@ import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {AutocompleteMatch, AutocompleteResult, FileAttachment, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, SearchContext, SelectedFileInfo, TabAttachment, TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {ToolMode} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import type {FileUploadErrorType, InputState} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
+import type {ContextUploadErrorType, InputState} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import {ModelMode} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import type {BigBuffer} from '//resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
@@ -45,7 +45,7 @@ import type {PageHandlerRemote} from './composebox.mojom-webui.js';
 import type {ComposeboxDropdownElement} from './composebox_dropdown.js';
 import type {ComposeboxFileInputsElement} from './composebox_file_inputs.js';
 import {ComposeboxProxyImpl} from './composebox_proxy.js';
-import {FileUploadStatus, InputType, ToolMode as ComposeboxToolMode} from './composebox_query.mojom-webui.js';
+import {ContextUploadStatus, InputType, ToolMode as ComposeboxToolMode} from './composebox_query.mojom-webui.js';
 import type {ComposeboxVoiceSearchElement} from './composebox_voice_search.js';
 import type {ContextualEntrypointAndMenuElement} from './contextual_entrypoint_and_menu.js';
 import type {ErrorScrimElement} from './error_scrim.js';
@@ -953,7 +953,7 @@ export class ComposeboxElement extends I18nMixinLit
             },
             bigBuffer);
       } catch (e) {
-        const err = e as FileUploadErrorType;
+        const err = e as ContextUploadErrorType;
         if (FILE_VALIDATION_ERRORS_MAP.has(err)) {
           this.errorMessage_ = this.i18n(FILE_VALIDATION_ERRORS_MAP.get(err)!);
         }
@@ -967,7 +967,7 @@ export class ComposeboxElement extends I18nMixinLit
         objectUrl: file.type.includes('image') ? URL.createObjectURL(file) :
                                                  null,
         type: file.type,
-        status: FileUploadStatus.kNotUploaded,
+        status: ContextUploadStatus.kNotUploaded,
         url: null,
         tabId: null,
         isDeletable: true,
@@ -991,8 +991,8 @@ export class ComposeboxElement extends I18nMixinLit
       dataUrl: fileInfo.imageDataUrl ?? null,
       objectUrl: null,
       type: fileInfo.imageDataUrl ? 'image' : 'pdf',
-      status: fileInfo.imageDataUrl ? FileUploadStatus.kUploadSuccessful :
-                                      FileUploadStatus.kNotUploaded,
+      status: fileInfo.imageDataUrl ? ContextUploadStatus.kUploadSuccessful :
+                                      ContextUploadStatus.kNotUploaded,
       url: null,
       tabId: null,
       isDeletable: fileInfo.isDeletable,
@@ -1011,7 +1011,7 @@ export class ComposeboxElement extends I18nMixinLit
       dataUrl: thumbnail,
       objectUrl: thumbnail,
       type: 'injectedinput',
-      status: FileUploadStatus.kUploadSuccessful,
+      status: ContextUploadStatus.kUploadSuccessful,
       url: null,
       tabId: null,
       isDeletable: true,
@@ -1115,7 +1115,7 @@ export class ComposeboxElement extends I18nMixinLit
         dataUrl: null,
         objectUrl: null,
         type: 'tab',
-        status: FileUploadStatus.kNotUploaded,
+        status: ContextUploadStatus.kNotUploaded,
         url: tabUpload.url,
         tabId: tabUpload.tabId,
         isDeletable: true,
@@ -1134,7 +1134,7 @@ export class ComposeboxElement extends I18nMixinLit
       this.focusInput();
 
     } catch (e) {
-      const err = e as FileUploadErrorType;
+      const err = e as ContextUploadErrorType;
       if (FILE_VALIDATION_ERRORS_MAP.has(err)) {
         this.errorMessage_ = this.i18n(FILE_VALIDATION_ERRORS_MAP.get(err)!);
       }
@@ -1766,8 +1766,8 @@ export class ComposeboxElement extends I18nMixinLit
   }
 
   private onContextualInputStatusChanged_(
-      token: UnguessableToken, status: FileUploadStatus,
-      errorType: FileUploadErrorType|null) {
+      token: UnguessableToken, status: ContextUploadStatus,
+      errorType: ContextUploadErrorType|null) {
     // If error message is updated, then the returned file is stale and removed
     // from carousel. File is removed from carousel on `kUploadReplaced` as
     // well despite no error message being returned (special case).
@@ -1785,11 +1785,11 @@ export class ComposeboxElement extends I18nMixinLit
       // `kUploadExpired`), just without setting `errorMessage_`.
       // This means for `kUploadReplaced`, we do not fetch suggestions,
       // etc.
-      if (file.status === FileUploadStatus.kUploadReplaced) {
+      if (file.status === ContextUploadStatus.kUploadReplaced) {
         this.pendingUploads_.delete(file.uuid);
         this.fileUploadsComplete = this.pendingUploads_.size === 0;
         return;
-      } else if (file.status === FileUploadStatus.kUploadSuccessful) {
+      } else if (file.status === ContextUploadStatus.kUploadSuccessful) {
         // At this point, due to the error message handling above (for
         // `kValidationFailed`, `kUploadExpired`, and `kUploadFailed`),
         // if kUploadSuccessful, the file upload is complete.
@@ -1800,8 +1800,8 @@ export class ComposeboxElement extends I18nMixinLit
         const announcer = getAnnouncerInstance();
         announcer.announce(this.i18n('composeboxFileUploadCompleteText'));
       } else if (
-          file.status === FileUploadStatus.kProcessing ||
-          file.status === FileUploadStatus.kProcessingSuggestSignalsReady) {
+          file.status === ContextUploadStatus.kProcessing ||
+          file.status === ContextUploadStatus.kProcessingSuggestSignalsReady) {
         // `NotUploaded`, `UploadStarted` come before and after `kProcessing`
         //  respectively, so we only need to add to `pendingUploads_` when in a
         //  type of processing state.
@@ -1810,13 +1810,13 @@ export class ComposeboxElement extends I18nMixinLit
 
       // Fetch contextual suggestions for processingSuggestSignalsReady
       // non-images:
-      if (status === FileUploadStatus.kProcessingSuggestSignalsReady &&
+      if (status === ContextUploadStatus.kProcessingSuggestSignalsReady &&
           this.showZps && !file.type.includes('image')) {
         // Query autocomplete to get contextual suggestions for files.
         this.queryAutocomplete_(/* clearMatches= */ true);
       }
       // For image files:
-      if (status === FileUploadStatus.kProcessingSuggestSignalsReady &&
+      if (status === ContextUploadStatus.kProcessingSuggestSignalsReady &&
           file.type.includes('image')) {
         // If we're in create image mode, update the aim tool mode.
         if (this.activeToolMode_ === ComposeboxToolMode.kImageGen) {
@@ -1830,7 +1830,7 @@ export class ComposeboxElement extends I18nMixinLit
       }
 
       // Query autocomplete to get contextual suggestions for tabs.
-      if (status === FileUploadStatus.kProcessing &&
+      if (status === ContextUploadStatus.kProcessing &&
           file.type.includes('tab')) {
         this.queryAutocomplete_(/* clearMatches= */ true);
       }
@@ -2017,16 +2017,16 @@ export class ComposeboxElement extends I18nMixinLit
   }
 
   private updateFileStatus_(
-      token: UnguessableToken, status: FileUploadStatus,
-      errorType: FileUploadErrorType|null) {
+      token: UnguessableToken, status: ContextUploadStatus,
+      errorType: ContextUploadErrorType|null) {
     let errorMessage = null;
     let file = this.files_.get(token);
     if (file) {
       if ([
-            FileUploadStatus.kValidationFailed,
-            FileUploadStatus.kUploadFailed,
-            FileUploadStatus.kUploadExpired,
-            FileUploadStatus.kUploadReplaced,
+            ContextUploadStatus.kValidationFailed,
+            ContextUploadStatus.kUploadFailed,
+            ContextUploadStatus.kUploadExpired,
+            ContextUploadStatus.kUploadReplaced,
           ].includes(status)) {
         this.files_.delete(token);
 
@@ -2035,7 +2035,7 @@ export class ComposeboxElement extends I18nMixinLit
               ([id, _]) => id !== file!.tabId));
         }
         switch (status) {
-          case FileUploadStatus.kValidationFailed:
+          case ContextUploadStatus.kValidationFailed:
             if (errorType) {
               errorMessage = this.i18n(
                   FILE_VALIDATION_ERRORS_MAP.get(errorType) ??
@@ -2044,13 +2044,13 @@ export class ComposeboxElement extends I18nMixinLit
               errorMessage = this.i18n('composeboxFileUploadValidationFailed');
             }
             break;
-          case FileUploadStatus.kUploadFailed:
+          case ContextUploadStatus.kUploadFailed:
             errorMessage = this.i18n('composeboxFileUploadFailed');
             break;
-          case FileUploadStatus.kUploadExpired:
+          case ContextUploadStatus.kUploadExpired:
             errorMessage = this.i18n('composeboxFileUploadExpired');
             break;
-          case FileUploadStatus.kUploadReplaced:
+          case ContextUploadStatus.kUploadReplaced:
             // Update `composebox.ts` with the status since
             // this should not return an error message for this
             // 'non-uploaded' terminal file state, meaning
@@ -2080,7 +2080,7 @@ export class ComposeboxElement extends I18nMixinLit
           type: '',
           // Override this since first upload status is this or processing.
           // Need this or processing in order to show tab spinner.
-          status: FileUploadStatus.kUploadStarted,
+          status: ContextUploadStatus.kUploadStarted,
           url: null,
           tabId: null,
           isDeletable: true,
@@ -2219,7 +2219,7 @@ export class ComposeboxElement extends I18nMixinLit
       objectUrl: null,
       dataUrl: fileAttachment.imageDataUrl ?? null,
       type: fileAttachment.mimeType,
-      status: pendingStatus ?? FileUploadStatus.kNotUploaded,
+      status: pendingStatus ?? ContextUploadStatus.kNotUploaded,
       url: null,
       tabId: null,
       isDeletable: true,

@@ -9,7 +9,7 @@ import {BrowserProxyImpl} from 'chrome://contextual-tasks/contextual_tasks_brows
 import type {ComposeboxFile} from 'chrome://resources/cr_components/composebox/common.js';
 import {PageCallbackRouter as ComposeboxPageCallbackRouter, PageHandlerRemote as ComposeboxPageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
 import {ComposeboxProxyImpl} from 'chrome://resources/cr_components/composebox/composebox_proxy.js';
-import {FileUploadStatus} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
+import {ContextUploadStatus} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
 import {GlowAnimationState} from 'chrome://resources/cr_components/search/constants.js';
 import {createAutocompleteMatch, createAutocompleteResultForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -182,7 +182,7 @@ suite('ContextualTasksComposeboxTest', () => {
 
         searchboxCallbackRouterRemote.onContextualInputStatusChanged(
             FAKE_TOKEN_STRING,
-            FileUploadStatus.kProcessingSuggestSignalsReady,
+            ContextUploadStatus.kProcessingSuggestSignalsReady,
             /*error_type=*/ null,
         );
 
@@ -207,7 +207,7 @@ suite('ContextualTasksComposeboxTest', () => {
         // Simulate tab upload success.
         searchboxCallbackRouterRemote.onContextualInputStatusChanged(
             FAKE_TOKEN_STRING,
-            FileUploadStatus.kUploadSuccessful,
+            ContextUploadStatus.kUploadSuccessful,
             /*error_type=*/ null,
         );
 
@@ -254,7 +254,7 @@ suite('ContextualTasksComposeboxTest', () => {
 
         searchboxCallbackRouterRemote.onContextualInputStatusChanged(
             FAKE_TOKEN_STRING,
-            FileUploadStatus.kNotUploaded,
+            ContextUploadStatus.kNotUploaded,
             /*error_type=*/ null,
         );
 
@@ -270,7 +270,7 @@ suite('ContextualTasksComposeboxTest', () => {
 
         searchboxCallbackRouterRemote.onContextualInputStatusChanged(
             FAKE_TOKEN_STRING,
-            FileUploadStatus.kProcessing,
+            ContextUploadStatus.kProcessing,
             /*error_type=*/ null,
         );
 
@@ -291,7 +291,7 @@ suite('ContextualTasksComposeboxTest', () => {
 
         searchboxCallbackRouterRemote.onContextualInputStatusChanged(
             FAKE_TOKEN_STRING_2,
-            FileUploadStatus.kProcessingSuggestSignalsReady,
+            ContextUploadStatus.kProcessingSuggestSignalsReady,
             /*error_type=*/ null,
         );
 
@@ -326,7 +326,7 @@ suite('ContextualTasksComposeboxTest', () => {
     await microtasksFinished();
 
     searchboxCallbackRouterRemote.onContextualInputStatusChanged(
-        token, FileUploadStatus.kUploadSuccessful, null);
+        token, ContextUploadStatus.kUploadSuccessful, null);
 
     await searchboxCallbackRouterRemote.$.flushForTesting();
     await composebox.updateComplete;
@@ -383,11 +383,11 @@ suite('ContextualTasksComposeboxTest', () => {
             token2, new File(['foo2'], 'foo2.jpg', {type: 'image/png'}),
             composebox, mockSearchboxPageHandler, 1);
         searchboxCallbackRouterRemote.onContextualInputStatusChanged(
-            token1, FileUploadStatus.kUploadSuccessful, null);
+            token1, ContextUploadStatus.kUploadSuccessful, null);
         await searchboxCallbackRouterRemote.$.flushForTesting();
 
         searchboxCallbackRouterRemote.onContextualInputStatusChanged(
-            token2, FileUploadStatus.kUploadSuccessful, null);
+            token2, ContextUploadStatus.kUploadSuccessful, null);
         await searchboxCallbackRouterRemote.$.flushForTesting();
 
         await composebox.updateComplete;
@@ -423,7 +423,7 @@ suite('ContextualTasksComposeboxTest', () => {
             composebox, mockSearchboxPageHandler, 1);
 
         searchboxCallbackRouterRemote.onContextualInputStatusChanged(
-            token2, FileUploadStatus.kUploadSuccessful, null);
+            token2, ContextUploadStatus.kUploadSuccessful, null);
         await searchboxCallbackRouterRemote.$.flushForTesting();
         await composebox.updateComplete;
         await microtasksFinished();
@@ -905,7 +905,7 @@ suite('ContextualTasksComposeboxTest', () => {
     // Other processing state should result in not ready to submit.
     searchboxCallbackRouterRemote.onContextualInputStatusChanged(
         FAKE_TOKEN_STRING,
-        FileUploadStatus.kProcessingSuggestSignalsReady,
+        ContextUploadStatus.kProcessingSuggestSignalsReady,
         /*error_type=*/ null,
     );
 
@@ -923,7 +923,7 @@ suite('ContextualTasksComposeboxTest', () => {
 
     searchboxCallbackRouterRemote.onContextualInputStatusChanged(
         FAKE_TOKEN_STRING,
-        FileUploadStatus.kUploadSuccessful,
+        ContextUploadStatus.kUploadSuccessful,
         /*error_type=*/ null,
     );
 
@@ -968,7 +968,7 @@ suite('ContextualTasksComposeboxTest', () => {
         // Other processing state should result in not ready to submit.
         searchboxCallbackRouterRemote.onContextualInputStatusChanged(
             FAKE_TOKEN_STRING,
-            FileUploadStatus.kProcessingSuggestSignalsReady,
+            ContextUploadStatus.kProcessingSuggestSignalsReady,
             /*error_type=*/ null,
         );
 
@@ -987,7 +987,7 @@ suite('ContextualTasksComposeboxTest', () => {
             'Context menu button should be disabled while uploading');
         searchboxCallbackRouterRemote.onContextualInputStatusChanged(
             FAKE_TOKEN_STRING,
-            FileUploadStatus.kUploadSuccessful,
+            ContextUploadStatus.kUploadSuccessful,
             /*error_type=*/ null,
         );
 

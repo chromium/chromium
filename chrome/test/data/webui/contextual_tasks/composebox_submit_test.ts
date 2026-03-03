@@ -13,7 +13,7 @@ import {BrowserProxyImpl} from 'chrome://contextual-tasks/contextual_tasks_brows
 import type {ComposeboxFile} from 'chrome://resources/cr_components/composebox/common.js';
 import {PageCallbackRouter as ComposeboxPageCallbackRouter, PageHandlerRemote as ComposeboxPageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
 import {ComposeboxProxyImpl} from 'chrome://resources/cr_components/composebox/composebox_proxy.js';
-import {FileUploadStatus, ToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
+import {ContextUploadStatus, ToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
 import {WindowProxy} from 'chrome://resources/cr_components/composebox/window_proxy.js';
 import {GlowAnimationState} from 'chrome://resources/cr_components/search/constants.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -372,7 +372,7 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
 
     searchboxCallbackRouterRemote.onContextualInputStatusChanged(
         FAKE_TOKEN_STRING,
-        FileUploadStatus.kProcessingSuggestSignalsReady,
+        ContextUploadStatus.kProcessingSuggestSignalsReady,
         /*error_type=*/ null,
     );
     await microtasksFinished();
@@ -386,7 +386,7 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
         'Files should not be finished uploading');
     searchboxCallbackRouterRemote.onContextualInputStatusChanged(
         FAKE_TOKEN_STRING,
-        FileUploadStatus.kUploadStarted,
+        ContextUploadStatus.kUploadStarted,
         /*error_type=*/ null,
     );
     await microtasksFinished();
@@ -401,7 +401,7 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
 
     searchboxCallbackRouterRemote.onContextualInputStatusChanged(
         FAKE_TOKEN_STRING,
-        FileUploadStatus.kProcessing,
+        ContextUploadStatus.kProcessing,
         /*error_type=*/ null,
     );
 
@@ -418,7 +418,7 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
 
     searchboxCallbackRouterRemote.onContextualInputStatusChanged(
         FAKE_TOKEN_STRING,
-        FileUploadStatus.kUploadSuccessful,
+        ContextUploadStatus.kUploadSuccessful,
         /*error_type=*/ null,
     );
     await searchboxCallbackRouterRemote.$.flushForTesting();
@@ -462,7 +462,7 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
 
     searchboxCallbackRouterRemote.onContextualInputStatusChanged(
         FAKE_TOKEN_STRING,
-        FileUploadStatus.kProcessingSuggestSignalsReady,
+        ContextUploadStatus.kProcessingSuggestSignalsReady,
         /*error_type=*/ null,
     );
     composebox.input_ = 'test';
@@ -501,7 +501,7 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
         'Query is not submitted via submitQuery_() after first upload');
 
     searchboxCallbackRouterRemote.onContextualInputStatusChanged(
-        FAKE_TOKEN_STRING, FileUploadStatus.kUploadReplaced, null);
+        FAKE_TOKEN_STRING, ContextUploadStatus.kUploadReplaced, null);
 
     await searchboxCallbackRouterRemote.$.flushForTesting();
     await microtasksFinished();
@@ -528,7 +528,7 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
         /*expectedInitialFilesCount=*/ 0);
     searchboxCallbackRouterRemote.onContextualInputStatusChanged(
         FAKE_TOKEN_STRING_2,
-        FileUploadStatus.kProcessing,
+        ContextUploadStatus.kProcessing,
         /*error_type=*/ null,
     );
 
@@ -557,7 +557,7 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
 
     searchboxCallbackRouterRemote.onContextualInputStatusChanged(
         FAKE_TOKEN_STRING_2,
-        FileUploadStatus.kUploadReplaced,
+        ContextUploadStatus.kUploadReplaced,
         /*error_type=*/ null,
     );
 
@@ -587,7 +587,7 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
         composebox, mockSearchboxPageHandler);
     searchboxCallbackRouterRemote.onContextualInputStatusChanged(
         FAKE_TOKEN_STRING,
-        FileUploadStatus.kProcessingSuggestSignalsReady,
+        ContextUploadStatus.kProcessingSuggestSignalsReady,
         /*error_type=*/ null,
     );
 
@@ -630,7 +630,7 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
         'Query is not submitted via submitQuery_()');
 
     searchboxCallbackRouterRemote.onContextualInputStatusChanged(
-        FAKE_TOKEN_STRING, FileUploadStatus.kUploadSuccessful, null);
+        FAKE_TOKEN_STRING, ContextUploadStatus.kUploadSuccessful, null);
 
     await searchboxCallbackRouterRemote.$.flushForTesting();
     await composebox.updateComplete;
@@ -679,7 +679,7 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
 
     searchboxCallbackRouterRemote.onContextualInputStatusChanged(
         FAKE_TOKEN_STRING,
-        FileUploadStatus.kProcessingSuggestSignalsReady,
+        ContextUploadStatus.kProcessingSuggestSignalsReady,
         /*error_type=*/ null,
     );
 
@@ -724,7 +724,7 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
     // Simulate tab upload success.
     searchboxCallbackRouterRemote.onContextualInputStatusChanged(
         FAKE_TOKEN_STRING,
-        FileUploadStatus.kUploadSuccessful,
+        ContextUploadStatus.kUploadSuccessful,
         /*error_type=*/ null,
     );
     await microtasksFinished();
@@ -762,7 +762,7 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
     // Other processing state should result in not ready to submit.
     searchboxCallbackRouterRemote.onContextualInputStatusChanged(
         FAKE_TOKEN_STRING,
-        FileUploadStatus.kProcessingSuggestSignalsReady,
+        ContextUploadStatus.kProcessingSuggestSignalsReady,
         /*error_type=*/ null,
     );
 
@@ -779,7 +779,7 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
 
     searchboxCallbackRouterRemote.onContextualInputStatusChanged(
         FAKE_TOKEN_STRING,
-        FileUploadStatus.kUploadSuccessful,
+        ContextUploadStatus.kUploadSuccessful,
         /*error_type=*/ null,
     );
 
@@ -866,7 +866,7 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
         mockSearchboxPageHandler);
 
     searchboxCallbackRouterRemote.onContextualInputStatusChanged(
-        token, FileUploadStatus.kProcessing, null);
+        token, ContextUploadStatus.kProcessing, null);
 
     await searchboxCallbackRouterRemote.$.flushForTesting();
     await composebox.updateComplete;
@@ -893,7 +893,7 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
         'Submit container should still have pointer-events on,\
               even when disabled.');
     searchboxCallbackRouterRemote.onContextualInputStatusChanged(
-        token, FileUploadStatus.kUploadFailed, null);
+        token, ContextUploadStatus.kUploadFailed, null);
     await composebox.updateComplete;
     await composebox.updateComplete;
 
@@ -922,7 +922,7 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
         mockSearchboxPageHandler);
 
     searchboxCallbackRouterRemote.onContextualInputStatusChanged(
-        token, FileUploadStatus.kProcessing, null);
+        token, ContextUploadStatus.kProcessing, null);
     await composebox.updateComplete;
     await composebox.updateComplete;
     await microtasksFinished();
@@ -948,7 +948,7 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
         'Submit container should still have pointer-events on,\
               even when disabled.');
     searchboxCallbackRouterRemote.onContextualInputStatusChanged(
-        token, FileUploadStatus.kValidationFailed, null);
+        token, ContextUploadStatus.kValidationFailed, null);
 
     await searchboxCallbackRouterRemote.$.flushForTesting();
     await composebox.updateComplete;
@@ -977,7 +977,7 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
         mockSearchboxPageHandler);
 
     searchboxCallbackRouterRemote.onContextualInputStatusChanged(
-        token, FileUploadStatus.kProcessing, null);
+        token, ContextUploadStatus.kProcessing, null);
     await composebox.updateComplete;
     await composebox.updateComplete;
     await microtasksFinished();
@@ -1003,7 +1003,7 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
         'Submit container should still have pointer-events on,\
               even when disabled.');
     searchboxCallbackRouterRemote.onContextualInputStatusChanged(
-        token, FileUploadStatus.kUploadExpired, null);
+        token, ContextUploadStatus.kUploadExpired, null);
     await composebox.updateComplete;
     await composebox.updateComplete;
     await microtasksFinished();
@@ -1031,7 +1031,7 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
         mockSearchboxPageHandler);
 
     searchboxCallbackRouterRemote.onContextualInputStatusChanged(
-        token, FileUploadStatus.kProcessingSuggestSignalsReady, null);
+        token, ContextUploadStatus.kProcessingSuggestSignalsReady, null);
 
     await searchboxCallbackRouterRemote.$.flushForTesting();
     await composebox.updateComplete;

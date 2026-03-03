@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {$$} from 'chrome://new-tab-page/new_tab_page.js';
-import {FileUploadErrorType} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
+import {ContextUploadErrorType} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -57,7 +57,7 @@ suite('NewTabPageComposeboxContextMenuTest', () => {
       createComposeboxElement(testProxy);
       // Set the promise to reject to simulate a failure.
       testProxy.searchboxHandler.setResultMapperFor(ADD_TAB_CONTEXT_FN, () => {
-        return Promise.reject(FileUploadErrorType.kBrowserProcessingError);
+        return Promise.reject(ContextUploadErrorType.kBrowserProcessingError);
       });
 
       // Assert no files.

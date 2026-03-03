@@ -42,11 +42,11 @@ mojom("mojo_bindings") {
           cpp = "::omnibox::InputState"
         },
         {
-          mojom = "composebox_query.mojom.FileUploadStatus"
+          mojom = "composebox_query.mojom.ContextUploadStatus"
           cpp = "::contextual_search::FileUploadStatus"
         },
         {
-          mojom = "composebox_query.mojom.FileUploadErrorType"
+          mojom = "composebox_query.mojom.ContextUploadErrorType"
           cpp = "::contextual_search::FileUploadErrorType"
         },
       ]

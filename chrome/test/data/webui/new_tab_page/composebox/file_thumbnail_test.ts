@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {ComposeboxFileThumbnailElement} from 'chrome://new-tab-page/lazy_load.js';
-import {FileUploadStatus} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
+import {ContextUploadStatus} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -23,7 +23,7 @@ suite('NewTabPageComposeboxFileThumbnailTest', () => {
     fileThumbnailElement.file = createComposeboxFile(1, {
       type: 'image/jpeg',
       objectUrl: 'data:foo',
-      status: FileUploadStatus.kUploadStarted,
+      status: ContextUploadStatus.kUploadStarted,
     });
     await microtasksFinished();
 

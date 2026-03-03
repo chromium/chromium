@@ -49,20 +49,20 @@ struct EnumTraits<composebox_query::mojom::InputType, omnibox::InputType> {
 
 template <>
 
-struct EnumTraits<composebox_query::mojom::FileUploadStatus,
+struct EnumTraits<composebox_query::mojom::ContextUploadStatus,
                   contextual_search::FileUploadStatus> {
-  static composebox_query::mojom::FileUploadStatus ToMojom(
+  static composebox_query::mojom::ContextUploadStatus ToMojom(
       contextual_search::FileUploadStatus input);
-  static bool FromMojom(composebox_query::mojom::FileUploadStatus input,
+  static bool FromMojom(composebox_query::mojom::ContextUploadStatus input,
                         contextual_search::FileUploadStatus* output);
 };
 
 template <>
-struct EnumTraits<composebox_query::mojom::FileUploadErrorType,
+struct EnumTraits<composebox_query::mojom::ContextUploadErrorType,
                   contextual_search::FileUploadErrorType> {
-  static composebox_query::mojom::FileUploadErrorType ToMojom(
+  static composebox_query::mojom::ContextUploadErrorType ToMojom(
       contextual_search::FileUploadErrorType input);
-  static bool FromMojom(composebox_query::mojom::FileUploadErrorType input,
+  static bool FromMojom(composebox_query::mojom::ContextUploadErrorType input,
                         contextual_search::FileUploadErrorType* output);
 };
 
