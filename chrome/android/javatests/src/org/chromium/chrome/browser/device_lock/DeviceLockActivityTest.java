@@ -10,18 +10,23 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.os.Bundle;
 
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.filters.MediumTest;
 import androidx.test.runner.lifecycle.Stage;
 
 import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.util.ApplicationTestUtils;
@@ -32,9 +37,6 @@ import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher
 import org.chromium.google_apis.gaia.CoreAccountId;
 import org.chromium.google_apis.gaia.GaiaId;
 import org.chromium.ui.base.IntentRequestTracker;
-import org.chromium.ui.base.WindowAndroid.IntentCallback;
-
-import java.lang.ref.WeakReference;
 
 /** Tests for the {@link DeviceLockActivity}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -43,60 +45,15 @@ import java.lang.ref.WeakReference;
                 "ActivityScenario tests should run separately, ActivityScenarioRule does "
                         + "not support #launchActivityForResult")
 public class DeviceLockActivityTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Mock private IntentRequestTracker mIntentRequestTracker;
+
     private DeviceLockActivity mDeviceLockActivity;
     private ActivityScenario<DeviceLockActivity> mActivityScenario;
 
-    @After
-    public void tearDown() {
-        mActivityScenario.close();
-    }
-
-    @Test
-    @MediumTest
-    public void testDeviceLockReady_finishesActivityWithResultOk() {
-        launchActivity();
-        onView(withText(R.string.device_lock_description)).check(matches(isDisplayed()));
-
-        mDeviceLockActivity.onDeviceLockReady();
-        assertEquals("Activity should be finished", true, mDeviceLockActivity.isFinishing());
-        assertEquals(
-                "Setting a device lock should set activity result to OK",
-                Activity.RESULT_OK,
-                mActivityScenario.getResult().getResultCode());
-        ApplicationTestUtils.waitForActivityState(mDeviceLockActivity, Stage.DESTROYED);
-    }
-
-    @Test
-    @MediumTest
-    public void testDeviceLockRefused_finishesActivityWithResultCanceled() {
-        launchActivity();
-        onView(withText(R.string.device_lock_description)).check(matches(isDisplayed()));
-
-        mDeviceLockActivity.onDeviceLockRefused();
-
-        assertEquals("Activity should be finished", true, mDeviceLockActivity.isFinishing());
-        assertEquals(
-                "Refusing a device lock should set activity result to CANCELED",
-                Activity.RESULT_CANCELED,
-                mActivityScenario.getResult().getResultCode());
-        ApplicationTestUtils.waitForActivityState(mDeviceLockActivity, Stage.DESTROYED);
-    }
-
-    @Test
-    @MediumTest
-    public void testOnActivityResult_passesActivityResultToWindowAndroid() {
-        launchActivity();
-        MockIntentRequestTracker mockIntentRequestTracker = new MockIntentRequestTracker();
-        mDeviceLockActivity.setIntentRequestTrackerForTesting(mockIntentRequestTracker);
-
-        int testRequestCode = 1;
-        Intent data = new Intent();
-        mDeviceLockActivity.onActivityResult(testRequestCode, Activity.RESULT_OK, data);
-
-        assertTrue(mockIntentRequestTracker.mOnActivityResultCalled);
-    }
-
-    public void launchActivity() {
+    @Before
+    public void setUp() {
         Intent intent =
                 DeviceLockActivity.createIntent(
                         ContextUtils.getApplicationContext(),
@@ -109,31 +66,51 @@ public class DeviceLockActivityTest {
         ApplicationTestUtils.waitForActivityState(mDeviceLockActivity, Stage.RESUMED);
     }
 
-    private static class MockIntentRequestTracker implements IntentRequestTracker {
-        boolean mOnActivityResultCalled;
-
-        MockIntentRequestTracker() {}
-
-        @Override
-        public boolean onActivityResult(int requestCode, int resultCode, Intent data) {
-            mOnActivityResultCalled = true;
-            return true;
+    @After
+    public void tearDown() {
+        if (mActivityScenario != null) {
+            mActivityScenario.close();
         }
+    }
 
-        @Override
-        public WeakReference<Activity> getActivity() {
-            return null;
-        }
+    @Test
+    @MediumTest
+    public void testDeviceLockReady_finishesActivityWithResultOk() {
+        onView(withText(R.string.device_lock_description)).check(matches(isDisplayed()));
 
-        @Override
-        public void saveInstanceState(Bundle bundle) {}
+        mDeviceLockActivity.onDeviceLockReady();
+        assertTrue("Activity should be finished", mDeviceLockActivity.isFinishing());
+        assertEquals(
+                "Setting a device lock should set activity result to OK",
+                Activity.RESULT_OK,
+                mActivityScenario.getResult().getResultCode());
+        ApplicationTestUtils.waitForActivityState(mDeviceLockActivity, Stage.DESTROYED);
+    }
 
-        @Override
-        public void restoreInstanceState(Bundle bundle) {}
+    @Test
+    @MediumTest
+    public void testDeviceLockRefused_finishesActivityWithResultCanceled() {
+        onView(withText(R.string.device_lock_description)).check(matches(isDisplayed()));
 
-        @Override
-        public int showCancelableIntent(Intent intent, IntentCallback callback, Integer errorId) {
-            return 0;
-        }
+        mDeviceLockActivity.onDeviceLockRefused();
+
+        assertTrue("Activity should be finished", mDeviceLockActivity.isFinishing());
+        assertEquals(
+                "Refusing a device lock should set activity result to CANCELED",
+                Activity.RESULT_CANCELED,
+                mActivityScenario.getResult().getResultCode());
+        ApplicationTestUtils.waitForActivityState(mDeviceLockActivity, Stage.DESTROYED);
+    }
+
+    @Test
+    @MediumTest
+    public void testOnActivityResult_passesActivityResultToWindowAndroid() {
+        mDeviceLockActivity.setIntentRequestTrackerForTesting(mIntentRequestTracker);
+
+        int testRequestCode = 1;
+        Intent data = new Intent();
+        mDeviceLockActivity.onActivityResult(testRequestCode, Activity.RESULT_OK, data);
+
+        verify(mIntentRequestTracker).onActivityResult(testRequestCode, Activity.RESULT_OK, data);
     }
 }

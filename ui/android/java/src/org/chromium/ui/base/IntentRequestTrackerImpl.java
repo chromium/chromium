@@ -13,7 +13,8 @@ import android.content.IntentSender;
 import android.os.Bundle;
 import android.util.SparseArray;
 
-import org.chromium.base.Callback;
+import androidx.annotation.StringRes;
+
 import org.chromium.base.ContextUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -89,7 +90,7 @@ public final class IntentRequestTrackerImpl implements IntentRequestTracker {
      *     to be tracked.
      * @return an instance of the class.
      */
-    public static IntentRequestTrackerImpl createFromActivity(Activity activity) {
+    public static IntentRequestTracker createFromActivity(Activity activity) {
         return new IntentRequestTrackerImpl(new ActivityIntentRequestTrackerDelegate(activity));
     }
 
@@ -112,15 +113,18 @@ public final class IntentRequestTrackerImpl implements IntentRequestTracker {
         mDelegate = delegate;
     }
 
-    /* package */ int showCancelableIntent(
-            PendingIntent intent, @Nullable IntentCallback callback, @Nullable Integer errorId) {
+    @Override
+    public int showCancelableIntent(
+            PendingIntent intent,
+            @Nullable IntentCallback onIntentCompletion,
+            @Nullable @StringRes Integer errorId) {
         int requestCode = generateNextRequestCode();
 
         if (!mDelegate.startIntentSenderForResult(intent.getIntentSender(), requestCode)) {
             return START_INTENT_FAILURE;
         }
 
-        storeCallbackData(requestCode, callback, errorId);
+        storeIntentCompletionData(requestCode, onIntentCompletion, errorId);
         return requestCode;
     }
 
@@ -133,28 +137,18 @@ public final class IntentRequestTrackerImpl implements IntentRequestTracker {
             return START_INTENT_FAILURE;
         }
 
-        storeCallbackData(requestCode, callback, errorId);
+        storeIntentCompletionData(requestCode, callback, errorId);
         return requestCode;
     }
 
-    /* package */ int showCancelableIntent(
-            Callback<Integer> intentTrigger,
-            @Nullable IntentCallback callback,
-            @Nullable Integer errorId) {
-        int requestCode = generateNextRequestCode();
-
-        intentTrigger.onResult(requestCode);
-
-        storeCallbackData(requestCode, callback, errorId);
-        return requestCode;
-    }
-
-    /* package */ void cancelIntent(int requestCode) {
+    @Override
+    public void cancelIntent(int requestCode) {
         mDelegate.finishActivity(requestCode);
     }
 
-    /* package */ boolean removeIntentCallback(IntentCallback callback) {
-        int requestCode = mOutstandingIntents.indexOfValue(callback);
+    @Override
+    public boolean removeIntentCallback(IntentCallback onIntentCompletion) {
+        int requestCode = mOutstandingIntents.indexOfValue(onIntentCompletion);
         if (requestCode < 0) return false;
         mOutstandingIntents.remove(requestCode);
         mIntentErrors.remove(requestCode);
@@ -206,9 +200,11 @@ public final class IntentRequestTrackerImpl implements IntentRequestTracker {
         return requestCode;
     }
 
-    private void storeCallbackData(
-            int requestCode, @Nullable IntentCallback callback, @Nullable Integer errorId) {
-        mOutstandingIntents.put(requestCode, callback);
+    private void storeIntentCompletionData(
+            int requestCode,
+            @Nullable IntentCallback onIntentCompletion,
+            @Nullable Integer errorId) {
+        mOutstandingIntents.put(requestCode, onIntentCompletion);
         mIntentErrors.put(
                 requestCode,
                 errorId == null ? null : ContextUtils.getApplicationContext().getString(errorId));
