@@ -87,6 +87,10 @@ class LazyNow;
 namespace blink {
 namespace scheduler {
 
+// When within 500ms of a committed load, busy loop more aggressively.
+BASE_FEATURE(kBusyLoopAggressiveAfterCommittedLoad,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When scrolling and the main thread is not expected to be blocking, decrease
 // its thread priority, so as not to contend with the actually display critical
 // threads.
@@ -2292,6 +2296,10 @@ void MainThreadSchedulerImpl::DidCommitProvisionalLoad(
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("renderer.scheduler"),
                "MainThreadSchedulerImpl::DidCommitProvisionalLoad");
   main_thread_only().has_navigated = true;
+  if (base::FeatureList::IsEnabled(kBusyLoopOnRendererMain) &&
+      base::FeatureList::IsEnabled(kBusyLoopAggressiveAfterCommittedLoad)) {
+    main_thread_only().last_committed_load_time = NowTicks();
+  }
 
   // If this either isn't a history inert commit or it's a reload then we must
   // reset the task cost estimators.
@@ -2926,6 +2934,10 @@ void MainThreadSchedulerImpl::MaybeUpdatePolicyOnTaskCompleted(
     }
   }
 
+  if (!main_thread_only().last_committed_load_time.is_null()) {
+    needs_policy_update = true;
+  }
+
   RenderingPrioritizationState old_state =
       main_thread_only().main_frame_prioritization_state;
   UpdateRenderingPrioritizationStateOnTaskCompleted(queue, task_timing);
@@ -3170,6 +3182,19 @@ void MainThreadSchedulerImpl::MaybeSetBusyLoop() {
     }
   } else {
     busy_loop_scale_factor = 0.5f;
+  }
+
+  // The ordering of conditionals and the resetting of
+  // `last_committed_load_time` are used to avoid adding calls to
+  // TimeTicks::Now() in the path of all tasks.
+  if (busy_loop_scale_factor != 0.f &&
+      !main_thread_only().last_committed_load_time.is_null()) {
+    if (NowTicks() - main_thread_only().last_committed_load_time <
+        base::Milliseconds(500)) {
+      busy_loop_scale_factor = 1.5;
+    } else {
+      main_thread_only().last_committed_load_time = base::TimeTicks();
+    }
   }
 
   base::MessagePump* message_pump = main_thread_only().message_pump;

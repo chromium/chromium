@@ -90,6 +90,7 @@ FORWARD_DECLARE_TEST(MainThreadSchedulerImplTest,
 }  // namespace main_thread_scheduler_impl_unittest
 
 PLATFORM_EXPORT BASE_DECLARE_FEATURE(kLowerPriorityForCompositorGestures);
+PLATFORM_EXPORT BASE_DECLARE_FEATURE(kBusyLoopAggressiveAfterCommittedLoad);
 
 class AgentGroupSchedulerImpl;
 class CPUTimeBudgetPool;
@@ -861,6 +862,13 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
 
     // Multiplier to apply to the message busy loop maximum duration
     float busy_loop_scale_factor = 0.f;
+
+    // When busy looping is enabled, and the feature
+    // kBusyLoopAggressiveAfterCommittedLoad is enabled, holds the time of the
+    // last commit (unless it's too far in the past). When `is_null()`, this
+    // either means that the feature is not enabled, or the commit is too far in
+    // the past.
+    base::TimeTicks last_committed_load_time;
   };
 
   struct AnyThread {

@@ -4843,6 +4843,57 @@ TEST_P(BusyLoopOnRendererMainTest, BusyLoopLessWhenCompositorGesture) {
   });
 }
 
+namespace {
+
+::testing::AssertionResult Report(UseCase use_case,
+                                  float expected_scale_factor,
+                                  float scale_factor) {
+  if (scale_factor == expected_scale_factor) {
+    return ::testing::AssertionSuccess();
+  }
+  return ::testing::AssertionFailure()
+         << "scale factor is " << scale_factor << ", "
+         << "expected " << expected_scale_factor << " "
+         << "for use case " << UseCaseToString(use_case).value;
+}
+
+}  // namespace
+
+TEST_P(BusyLoopOnRendererMainTest, BusyLoopAggressiveAfterCommittedLoad) {
+  if (!IsFeatureEnabled() || !Is120HzDisplay()) {
+    GTEST_SKIP() << "The BusyLoopLessWhenCompositorGesture feature only impacts"
+                 << "clients that busy loop.";
+  }
+
+  auto expect_regular_factor = [](UseCase use_case, float scale_factor) {
+    const float expected_scale_factor = use_case == UseCase::kNone ? .5f : 1.f;
+    return Report(use_case, scale_factor, expected_scale_factor);
+  };
+
+  auto expect_boosted_factor = [](UseCase use_case, float scale_factor) {
+    return Report(use_case, scale_factor, 1.5f);
+  };
+
+  feature_list_.Reset();
+  feature_list_.InitWithFeatures(
+      {kBusyLoopOnRendererMain, kBusyLoopAggressiveAfterCommittedLoad}, {});
+
+  CheckScaleFactor(expect_regular_factor);
+
+  // Close to a provisional load, factor is increased.
+  scheduler_->DidCommitProvisionalLoad(false, false, true);
+  CheckScaleFactor(expect_boosted_factor);
+
+  // It persists for some time.
+  scheduler_->DidCommitProvisionalLoad(false, false, true);
+  test_task_runner_->FastForwardBy(base::Milliseconds(100));
+  CheckScaleFactor(expect_boosted_factor);
+
+  // Back to the normal factor since it's been too long.
+  test_task_runner_->FastForwardBy(base::Seconds(1));
+  CheckScaleFactor(expect_regular_factor);
+}
+
 }  // namespace main_thread_scheduler_impl_unittest
 }  // namespace scheduler
 }  // namespace blink
