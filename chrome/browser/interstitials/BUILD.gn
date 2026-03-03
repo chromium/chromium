@@ -1,0 +1,77 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//components/safe_browsing/buildflags.gni")
+import("//extensions/buildflags/buildflags.gni")
+
+source_set("interstitials") {
+  sources = [
+    "chrome_settings_page_helper.h",
+    "enterprise_util.h",
+  ]
+
+  public_deps = [
+    "//chrome/browser/safe_browsing",
+    "//components/safe_browsing/core/browser/db:v4_protocol_manager_util",
+    "//components/safe_browsing/core/common",
+    "//components/safe_browsing/core/common/proto:realtimeapi_proto",
+    "//components/security_interstitials/content:security_interstitial_page",
+  ]
+
+  # safe_browsing includes interstitials headers but can't have interstitials
+  # as a dep (cycle: interstitials → safe_browsing → interstitials).
+  allow_circular_includes_from =
+      [ "//chrome/browser/safe_browsing:safe_browsing" ]
+}
+
+source_set("impl") {
+  sources = [
+    "chrome_settings_page_helper.cc",
+    "enterprise_util.cc",
+  ]
+
+  public_deps = [
+    ":interstitials",
+    "//chrome/browser:browser_public_dependencies",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//components/enterprise/connectors/core",
+    "//components/prefs",
+    "//components/safe_browsing/content/browser",
+    "//components/safe_browsing/core/common:features",
+    "//components/sessions",
+    "//content/public/browser",
+  ]
+
+  if (!is_android) {
+    deps += [ "//chrome/browser/ui" ]
+  }
+
+  if (enable_extensions) {
+    deps += [ "//chrome/browser/extensions" ]
+  }
+}
+
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "security_interstitial_page_test_utils.cc",
+    "security_interstitial_page_test_utils.h",
+  ]
+
+  public_deps = [
+    "//components/security_interstitials/content:security_interstitial_page",
+    "//content/public/browser",
+  ]
+
+  deps = [
+    "//base",
+    "//components/security_interstitials/core",
+    "//content/test:test_support",
+  ]
+}

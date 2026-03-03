@@ -521,10 +521,6 @@ static_library("browser") {
     "icon_manager.h",
     "idle/idle_detection_permission_context.cc",
     "idle/idle_detection_permission_context.h",
-    "interstitials/chrome_settings_page_helper.cc",
-    "interstitials/chrome_settings_page_helper.h",
-    "interstitials/enterprise_util.cc",
-    "interstitials/enterprise_util.h",
     "invalidation/profile_invalidation_provider_factory.cc",
     "invalidation/profile_invalidation_provider_factory.h",
     "language/accept_languages_service_factory.cc",
@@ -1436,6 +1432,11 @@ static_library("browser") {
     # TODO(crbug.com/486309771): Remove this circular dependency when
     # chrome_metrics_service_accessor.h gets extracted into its own target.
     "//chrome/browser/gpu:impl",
+
+    # TODO(crbug.com/489125036): Remove this circular dependency when
+    # enterprise/connectors/reporting/reporting_event_router_factory.h gets
+    # extracted into its own target.
+    "//chrome/browser/interstitials:impl",
     "//chrome/browser/media/webrtc",
     "//chrome/browser/navigation_predictor:impl",
 
@@ -1634,6 +1635,7 @@ static_library("browser") {
     ":chrome_content_browser_client_parts",
     "//chrome/browser/google",
     "//chrome/browser/headless",
+    "//chrome/browser/interstitials",
     "//chrome/browser/obsolete_system",
     "//chrome/browser/profiles",
     "//chrome/browser/ui/tabs:tab_enums",
@@ -1763,6 +1765,7 @@ static_library("browser") {
     "//chrome/browser/history",
     "//chrome/browser/image_decoder",
     "//chrome/browser/image_fetcher",
+    "//chrome/browser/interstitials:impl",
     "//chrome/browser/k_anonymity_service",
     "//chrome/browser/k_anonymity_service:impl",
     "//chrome/browser/lifetime:termination_notification",
@@ -8887,8 +8890,6 @@ static_library("test_support") {
     "download/download_test_file_activity_observer.h",
     "history/history_test_utils.cc",
     "history/history_test_utils.h",
-    "interstitials/security_interstitial_page_test_utils.cc",
-    "interstitials/security_interstitial_page_test_utils.h",
     "media/mock_media_engagement_service.cc",
     "media/mock_media_engagement_service.h",
     "media/webrtc/fake_desktop_media_list.cc",
@@ -8928,6 +8929,7 @@ static_library("test_support") {
   public_deps = [
     ":browser",
     "//chrome/browser/autofill:test_support",
+    "//chrome/browser/interstitials:test_support",
     "//chrome/browser/media/webrtc",
     "//chrome/browser/notifications",
     "//chrome/browser/predictors:test_support",
