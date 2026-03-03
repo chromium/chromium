@@ -1,5 +1,4 @@
+file://chrome/browser/ui/waap/OWNERS
+
 per-file *.mojom=set noparent
 per-file *.mojom=file://ipc/SECURITY_OWNERS
-
-pauljensen@google.com
-xtlsheep@google.com
