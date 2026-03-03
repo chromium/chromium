@@ -1301,7 +1301,7 @@ void LayerPropertiesUpdater::UpdateWheelEventRegion(
 #if BUILDFLAG(IS_ANDROID)
 void LayerPropertiesUpdater::UpdateXrTargetRegion(
     const HitTestData& hit_test_data) {
-  xr_hit_test_order_.AppendVector(hit_test_data.xr_regions);
+  xr_hit_test_order_.append_range(hit_test_data.xr_regions);
 }
 #endif
 

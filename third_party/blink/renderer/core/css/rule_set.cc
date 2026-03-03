@@ -225,7 +225,7 @@ void RuleData::MovedToDifferentRuleSet(const Vector<uint16_t>& old_backing,
                                        Vector<uint16_t>& new_backing,
                                        unsigned new_position) {
   unsigned new_pos = new_backing.size();
-  new_backing.AppendSpan(
+  new_backing.append_range(
       base::span(old_backing).subspan(bloom_hash_pos_, bloom_hash_size_));
   bloom_hash_pos_ = new_pos;
   position_ = new_position;

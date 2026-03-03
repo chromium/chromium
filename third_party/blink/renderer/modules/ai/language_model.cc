@@ -972,7 +972,7 @@ void LanguageModel::ResolvePromiseOnComplete(
 
     // Then add tool call contents.
     ExceptionState exception_state(script_state->GetIsolate());
-    messages.AppendVector(ConvertMojoToolCallsToMessages(
+    messages.append_range(ConvertMojoToolCallsToMessages(
         script_state, pending_tool_calls_, exception_state));
     pending_tool_calls_.clear();
     if (exception_state.HadException()) {
