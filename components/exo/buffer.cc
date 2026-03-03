@@ -11,7 +11,6 @@
 #include <string_view>
 #include <utility>
 
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -55,9 +54,6 @@
 
 namespace exo {
 namespace {
-
-BASE_FEATURE(kExoAlwaysUseColorSpaceFromShardImage,
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // The amount of time before we wait for release queries using
 // GetQueryObjectuivEXT(GL_QUERY_RESULT_EXT).
@@ -639,11 +635,6 @@ std::optional<viz::TransferableResource> Buffer::ProduceTransferableResource(
   }
 #endif  // BUILDFLAG(USE_ARC_PROTECTED_MEDIA)
 
-  viz::TransferableResource::MetadataOverride overrides;
-  if (!base::FeatureList::IsEnabled(kExoAlwaysUseColorSpaceFromShardImage)) {
-    overrides.color_space = color_space;
-  }
-
   // Zero-copy means using the contents texture directly.
   if (use_zero_copy_) {
     // This binds the latest contents of this buffer to |contents_texture|.
@@ -656,6 +647,7 @@ std::optional<viz::TransferableResource> Buffer::ProduceTransferableResource(
       contents_texture->UpdateSharedImage(std::move(acquire_fence));
     }
 
+    viz::TransferableResource::MetadataOverride overrides;
     overrides.is_overlay_candidate = is_overlay_candidate_;
     auto resource = viz::TransferableResource::Make(
         contents_texture_->shared_image(),
@@ -696,7 +688,7 @@ std::optional<viz::TransferableResource> Buffer::ProduceTransferableResource(
   auto resource = viz::TransferableResource::Make(
       texture->shared_image(),
       viz::TransferableResource::ResourceSource::kExoBuffer,
-      texture_->sync_token(), overrides);
+      texture_->sync_token());
 
   // The mailbox texture will be released when no longer used by the
   // compositor.
