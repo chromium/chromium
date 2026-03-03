@@ -17,7 +17,9 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "base/system/system_monitor.h"
+#include "base/thread_annotations.h"
 #include "base/timer/timer.h"
 #include "base/types/strong_alias.h"
 #include "build/build_config.h"
@@ -137,12 +139,18 @@ class CONTENT_EXPORT MediaDevicesManager
   // Performs a possibly cached device enumeration for the requested device
   // types and reports the results to `callback`.
   // The enumeration results passed to `callback` are guaranteed to be valid
-  // only for the types specified in |requested_types|.
+  // only for the types specified in `requested_types`.
   // Note that this function is not reentrant, so if `callback` needs to perform
   // another call to EnumerateDevices, it must do so by posting a task to the
   // IO thread.
+  //
+  // `request_id` is used for logging purposes to trace the lifecycle of a
+  // specific request. It defaults to 0 so that internal background calls are
+  // grouped under request_id 0 in logs. Callers that need to be uniquely
+  // tracked should provide a unique ID.
   void EnumerateDevices(const BoolDeviceTypes& requested_types,
-                        EnumerationCallback callback);
+                        EnumerationCallback callback,
+                        uint64_t request_id = 0);
 
   // Performs a possibly cached device enumeration for the requested device
   // types and reports the results to `callback`.
@@ -151,9 +159,15 @@ class CONTENT_EXPORT MediaDevicesManager
   // Note that this function is not reentrant, so if `callback` needs to perform
   // another call to EnumerateDevices, it must do so by posting a task to the
   // IO thread. The devices will be ordered to match user preference.
+  //
+  // `request_id` is used for logging purposes to trace the lifecycle of a
+  // specific request. It defaults 0 so that internal background calls are
+  // grouped under request_id 0 in logs. Callers that need to be uniquely
+  // tracked should provide a unique ID.
   void EnumerateAndRankDevices(GlobalRenderFrameHostId render_frame_host_id,
                                const BoolDeviceTypes& requested_types,
-                               EnumerationCallback callback);
+                               EnumerationCallback callback,
+                               uint64_t request_id = 0);
 
   // Performs a possibly cached device enumeration for the requested device
   // types and reports the results to `callback`. The enumeration results are
@@ -164,6 +178,11 @@ class CONTENT_EXPORT MediaDevicesManager
   // by each device are returned in `callback`. These video formats are in
   // no particular order and may contain duplicate entries. The devices will be
   // ordered to match user preference.
+  //
+  // This function is the primary entry point for JavaScript APIs (e.g.,
+  // navigator.mediaDevices.enumerateDevices). It automatically generates and
+  // assigns a unique request ID to track the lifecycle of the user-initiated
+  // request through the asynchronous enumeration process.
   void EnumerateAndRankDevices(GlobalRenderFrameHostId render_frame_host_id,
                                const BoolDeviceTypes& requested_types,
                                bool request_video_input_capabilities,
@@ -189,10 +208,11 @@ class CONTENT_EXPORT MediaDevicesManager
 
   // Tries to start device monitoring. If successful, enables caching of
   // enumeration results for the device types supported by the monitor.
-  void StartMonitoring();
+  void StartMonitoring(uint64_t request_id = 0);
 
   // Attempts to start device monitoring for audio and/or video.
-  void StartMonitoring(DeviceStartMonitoringMode start_monitoring_mode);
+  void StartMonitoring(uint64_t request_id,
+                       DeviceStartMonitoringMode start_monitoring_mode);
 
   // Stops device monitoring and disables caching for all device types.
   void StopMonitoring();
@@ -323,6 +343,9 @@ class CONTENT_EXPORT MediaDevicesManager
 
     EnumerationState& operator=(EnumerationState&& other);
 
+    // A tracking ID used for diagnostic logging. Matches the request_id
+    // generated when the enumerateDevices request was first initiated.
+    uint64_t request_id = 0;
     bool video_input_capabilities_requested = false;
     bool audio_input_capabilities_requested = false;
     EnumerateDevicesCallback completion_cb;
@@ -333,10 +356,13 @@ class CONTENT_EXPORT MediaDevicesManager
   };
 
   // Manually sets a caching policy for a given device type.
-  void SetCachePolicy(MediaDeviceType type, CachePolicy policy);
+  void SetCachePolicy(MediaDeviceType type,
+                      CachePolicy policy,
+                      uint64_t request_id = 0);
 
   // Helpers to handle enumeration results for a renderer process.
   void CheckPermissionsForEnumerateDevices(
+      uint64_t request_id,
       GlobalRenderFrameHostId render_frame_host_id,
       const BoolDeviceTypes& requested_types,
       bool request_video_input_capabilities,
@@ -344,6 +370,7 @@ class CONTENT_EXPORT MediaDevicesManager
       EnumerateDevicesCallback callback,
       const MediaDeviceSaltAndOrigin& salt_and_origin);
   void OnPermissionsCheckDone(
+      uint64_t request_id,
       GlobalRenderFrameHostId render_frame_host_id,
       const MediaDevicesManager::BoolDeviceTypes& requested_types,
       bool request_video_input_capabilities,
@@ -352,6 +379,7 @@ class CONTENT_EXPORT MediaDevicesManager
       const MediaDeviceSaltAndOrigin& salt_and_origin,
       const MediaDevicesManager::BoolDeviceTypes& has_permissions);
   void OnDevicesEnumerated(
+      uint64_t request_id,
       GlobalRenderFrameHostId render_frame_host_id,
       const MediaDevicesManager::BoolDeviceTypes& requested_types,
       bool request_video_input_capabilities,
@@ -361,6 +389,7 @@ class CONTENT_EXPORT MediaDevicesManager
       const MediaDevicesManager::BoolDeviceTypes& has_permissions,
       const MediaDeviceEnumeration& enumeration);
   void GetAudioInputCapabilities(
+      uint64_t request_id,
       bool request_video_input_capabilities,
       bool request_audio_input_capabilities,
       EnumerateDevicesCallback callback,
@@ -377,21 +406,24 @@ class CONTENT_EXPORT MediaDevicesManager
       const blink::WebMediaDeviceInfoArray& translated_device_infos);
 
   // Helpers to issue low-level device enumerations.
-  void DoEnumerateDevices(MediaDeviceType type);
-  void EnumerateAudioDevices(bool is_input);
+  void DoEnumerateDevices(uint64_t request_id, MediaDeviceType type);
+  void EnumerateAudioDevices(uint64_t request_id, bool is_input);
 
   // Callback for VideoCaptureManager::EnumerateDevices.
   void VideoInputDevicesEnumerated(
+      uint64_t request_id,
       media::mojom::DeviceEnumerationResult result_code,
       const media::VideoCaptureDeviceDescriptors& descriptors);
 
   // Callback for AudioSystem::GetDeviceDescriptions.
   void AudioDevicesEnumerated(
+      uint64_t request_id,
       MediaDeviceType type,
       media::AudioDeviceDescriptions device_descriptions);
 
   // Helpers to handle enumeration results.
-  void DevicesEnumerated(MediaDeviceType type,
+  void DevicesEnumerated(uint64_t request_id,
+                         MediaDeviceType type,
                          const blink::WebMediaDeviceInfoArray& snapshot);
   void UpdateSnapshot(MediaDeviceType type,
                       const blink::WebMediaDeviceInfoArray& new_snapshot,
@@ -494,9 +526,15 @@ class CONTENT_EXPORT MediaDevicesManager
   std::map<uint32_t, EnumerationState> enumeration_states_;
   uint32_t next_enumeration_state_id_ = 0;
 
+  // Identifier used to trace the lifecycle of this specific enumeration
+  // request in logs. Only accessed on the IO thread.
+  uint64_t next_enumeration_request_id_ GUARDED_BY_CONTEXT(sequence_checker_) =
+      0;
+
   mojo::UniqueReceiverSet<blink::mojom::MediaDevicesDispatcherHost>
       dispatcher_hosts_;
 
+  SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<MediaDevicesManager> weak_factory_{this};
 };
 

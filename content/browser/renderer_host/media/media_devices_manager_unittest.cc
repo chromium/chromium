@@ -1803,7 +1803,7 @@ TEST_F(MediaDevicesManagerTest, StartAndStopMonitoringWithModes) {
 
   // Monitor video only.
   media_devices_manager_->StartMonitoring(
-      MediaDevicesManager::DeviceStartMonitoringMode::kStartVideo);
+      0, MediaDevicesManager::DeviceStartMonitoringMode::kStartVideo);
   EXPECT_EQ(GetCachePolicy(MediaDeviceType::kMediaAudioInput),
             MediaDevicesManager::CachePolicy::NO_CACHE);
   EXPECT_EQ(GetCachePolicy(MediaDeviceType::kMediaAudioOutput),
@@ -1813,7 +1813,7 @@ TEST_F(MediaDevicesManagerTest, StartAndStopMonitoringWithModes) {
 
   // Monitor audio only on top of the video monitoring.
   media_devices_manager_->StartMonitoring(
-      MediaDevicesManager::DeviceStartMonitoringMode::kStartAudio);
+      0, MediaDevicesManager::DeviceStartMonitoringMode::kStartAudio);
   EXPECT_EQ(GetCachePolicy(MediaDeviceType::kMediaAudioInput),
             MediaDevicesManager::CachePolicy::SYSTEM_MONITOR);
   EXPECT_EQ(GetCachePolicy(MediaDeviceType::kMediaAudioOutput),
@@ -1843,7 +1843,7 @@ TEST_F(MediaDevicesManagerTest, StartAndStopMonitoringWithModes) {
 
   // Start audio and video monitoring.
   media_devices_manager_->StartMonitoring(
-      MediaDevicesManager::DeviceStartMonitoringMode::kStartAudioAndVideo);
+      0, MediaDevicesManager::DeviceStartMonitoringMode::kStartAudioAndVideo);
   EXPECT_EQ(GetCachePolicy(MediaDeviceType::kMediaAudioInput),
             MediaDevicesManager::CachePolicy::SYSTEM_MONITOR);
   EXPECT_EQ(GetCachePolicy(MediaDeviceType::kMediaAudioOutput),
@@ -1876,7 +1876,7 @@ TEST_F(MediaDevicesManagerTest, StopMonitoringReleaseVideoChangedObserver) {
   // disconnect video source provider timer.
   auto system_monitor = std::make_unique<base::SystemMonitor>();
   media_devices_manager_->StartMonitoring(
-      MediaDevicesManager::DeviceStartMonitoringMode::kStartVideo);
+      0, MediaDevicesManager::DeviceStartMonitoringMode::kStartVideo);
 
   // Create VideoCaptureDevicesChangedObserver manually.
   InitVideoCaptureDevicesChangedObserver();
