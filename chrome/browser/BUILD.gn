@@ -255,8 +255,6 @@ static_library("browser") {
     "browsing_data/navigation_entry_remover.h",
     "browsing_data/site_data_size_collector.cc",
     "browsing_data/site_data_size_collector.h",
-    "browsing_topics/browsing_topics_service_factory.cc",
-    "browsing_topics/browsing_topics_service_factory.h",
     "chained_back_navigation_tracker.cc",
     "chained_back_navigation_tracker.h",
     "child_process_host_flags.h",
@@ -1415,6 +1413,7 @@ static_library("browser") {
     # c/b/undo/bookmark_undo_service_factory.h
     # c/b/policy/profile_policy_connector.h
     "//chrome/browser/bookmarks:impl",
+    "//chrome/browser/browsing_topics:impl",
     "//chrome/browser/commerce:impl",
     "//chrome/browser/content_settings:content_settings_factory_impl",
     "//chrome/browser/content_settings:content_settings_util_impl",
@@ -1697,6 +1696,8 @@ static_library("browser") {
     "//chrome/browser/bookmarks:impl",
     "//chrome/browser/breadcrumbs",
     "//chrome/browser/browsing_data:constants",
+    "//chrome/browser/browsing_topics",
+    "//chrome/browser/browsing_topics:impl",
     "//chrome/browser/btm",
     "//chrome/browser/btm:impl",
     "//chrome/browser/chooser_controller",
@@ -8331,6 +8332,7 @@ static_library("browser_public_dependencies") {
     # and thus their public dependencies are shared.
     "//base",
     "//chrome/app/vector_icons",
+    "//chrome/browser/browsing_topics",
     "//chrome/browser/optimization_guide:optimization_guide_on_device_model_installer",
     "//chrome/browser/ui:ui_public_dependencies",
     "//chrome/common",

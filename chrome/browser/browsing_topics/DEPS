@@ -1,0 +1,15 @@
+include_rules = [
+  "-chrome/browser",
+  "+chrome/browser/browsing_topics",
+  "+chrome/browser/history",
+  "+chrome/browser/optimization_guide",
+  "+chrome/browser/privacy_sandbox",
+  "+chrome/browser/profiles",
+]
+
+specific_include_rules = {
+  ".*browsertest\.cc": [
+    "+chrome/browser/content_settings",
+    "+chrome/browser/ui",
+  ],
+}

@@ -1,0 +1,86 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//components/optimization_guide/features.gni")
+
+source_set("browsing_topics") {
+  public = [ "browsing_topics_service_factory.h" ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+  ]
+}
+
+source_set("impl") {
+  sources = [ "browsing_topics_service_factory.cc" ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    ":browsing_topics",
+    "//chrome/browser/history",
+    "//chrome/browser/optimization_guide",
+    "//chrome/browser/privacy_sandbox",
+    "//components/browsing_topics",
+    "//components/content_settings/browser",
+    "//components/history/core/browser",
+    "//components/keyed_service/core",
+    "//components/optimization_guide:machine_learning_tflite_buildflags",
+    "//components/optimization_guide/core",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/privacy_sandbox",
+    "//content/public/browser",
+    "//services/network/public/cpp",
+    "//third_party/blink/public/common",
+  ]
+}
+
+if (!is_android) {
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [
+      "browsing_topics_internals_browsertest.cc",
+      "browsing_topics_service_browsertest.cc",
+    ]
+    deps = [
+      ":browsing_topics",
+      "//base",
+      "//base/test:test_support",
+      "//chrome/browser",
+      "//chrome/browser/history",
+      "//chrome/browser/optimization_guide",
+      "//chrome/browser/optimization_guide:test_support",
+      "//chrome/browser/privacy_sandbox",
+      "//chrome/browser/privacy_sandbox:test_support",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui",
+      "//chrome/test:test_support",
+      "//components/browsing_topics",
+      "//components/browsing_topics:test_support",
+      "//components/content_settings/browser",
+      "//components/content_settings/core/browser",
+      "//components/keyed_service/content",
+      "//components/optimization_guide/core",
+      "//components/optimization_guide/core:test_support",
+      "//components/optimization_guide/proto:optimization_guide_proto",
+      "//components/prefs",
+      "//components/privacy_sandbox",
+      "//components/privacy_sandbox/privacy_sandbox_attestations",
+      "//components/strings:components_strings",
+      "//components/ukm:test_support",
+      "//content/public/browser",
+      "//content/public/common",
+      "//content/test:test_support",
+      "//net:test_support",
+      "//services/metrics/public/cpp:ukm_builders",
+      "//services/network/public/cpp",
+      "//testing/gmock",
+      "//third_party/blink/public/common",
+      "//third_party/re2",
+      "//ui/base",
+    ]
+  }
+}
