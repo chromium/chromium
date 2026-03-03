@@ -141,7 +141,10 @@ bool GLTextureImageBackingFactory::IsSupported(
   // running on top of GL. For the case WebGL fallback (GrContextType::kNone)
   // this usages aren't actually relevant but WebGL still adds them so ignore.
   if (gr_context_type != GrContextType::kGL &&
-      gr_context_type != GrContextType::kNone) {
+      gr_context_type != GrContextType::kNone &&
+      (gr_context_type != GrContextType::kGraphiteDawn ||
+       gl::GetGLImplementation() != gl::kGLImplementationEGLANGLE ||
+       gl::GetANGLEImplementation() != gl::ANGLEImplementation::kOpenGL)) {
     SharedImageUsageSet unsupported_usages =
         SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_DISPLAY_WRITE |
         SHARED_IMAGE_USAGE_RASTER_READ | SHARED_IMAGE_USAGE_RASTER_WRITE;

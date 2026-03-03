@@ -61,6 +61,10 @@ class GLTextureImageBacking : public ClearTrackingSharedImageBacking {
       SharedImageManager* manager,
       MemoryTypeTracker* tracker,
       scoped_refptr<SharedContextState> context_state) override;
+  std::unique_ptr<SkiaGraphiteImageRepresentation> ProduceSkiaGraphite(
+      SharedImageManager* manager,
+      MemoryTypeTracker* tracker,
+      scoped_refptr<SharedContextState> context_state) override;
   std::unique_ptr<VideoImageRepresentation> ProduceVideo(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker,

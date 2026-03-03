@@ -247,6 +247,11 @@ std::vector<wgpu::FeatureName> GetRequiredFeatures(
   }
 #endif
 
+  if (backend_type == wgpu::BackendType::OpenGLES &&
+      gl::GetANGLEImplementation() == gl::ANGLEImplementation::kOpenGL) {
+    features.push_back(wgpu::FeatureName::ANGLETextureSharing);
+  }
+
   constexpr wgpu::FeatureName kOptionalFeatures[] = {
       wgpu::FeatureName::BGRA8UnormStorage,
       wgpu::FeatureName::BufferMapExtendedUsages,

@@ -33,6 +33,7 @@
 #include "third_party/skia/include/private/chromium/GrPromiseImageTexture.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/gpu_memory_buffer_handle.h"
+#include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_version_info.h"
 #include "ui/gl/progress_reporter.h"
 
@@ -223,6 +224,18 @@ TEST_F(GLTextureImageBackingFactoryTest, InvalidUsageWithGraphite) {
     supported = backing_factory_->CanCreateSharedImage(
         graphite_invalid_usage, format, size, /*thread_safe=*/false,
         gfx::EMPTY_BUFFER, GrContextType::kGraphiteDawn, {});
+    if (gl::GetGLImplementation() == gl::kGLImplementationEGLANGLE &&
+        gl::GetANGLEImplementation() == gl::ANGLEImplementation::kOpenGL) {
+      EXPECT_TRUE(supported)
+          << CreateLabelForSharedImageUsage(graphite_invalid_usage);
+    } else {
+      EXPECT_FALSE(supported)
+          << CreateLabelForSharedImageUsage(graphite_invalid_usage);
+    }
+
+    supported = backing_factory_->CanCreateSharedImage(
+        graphite_invalid_usage, format, size, /*thread_safe=*/false,
+        gfx::EMPTY_BUFFER, GrContextType::kVulkan, {});
     EXPECT_FALSE(supported)
         << CreateLabelForSharedImageUsage(graphite_invalid_usage);
   }
