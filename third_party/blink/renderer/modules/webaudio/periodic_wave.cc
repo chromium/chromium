@@ -102,8 +102,9 @@ PeriodicWave* PeriodicWave::Create(BaseAudioContext& context,
 
   PeriodicWave* periodic_wave =
       MakeGarbageCollected<PeriodicWave>(context.sampleRate());
-  periodic_wave->impl()->CreateBandLimitedTables(
-      real.data(), imag.data(), real.size(), disable_normalization);
+  periodic_wave->impl()->CreateBandLimitedTables(base::span<const float>(real),
+                                                 base::span<const float>(imag),
+                                                 disable_normalization);
   return periodic_wave;
 }
 
@@ -408,10 +409,10 @@ unsigned PeriodicWaveImpl::NumberOfPartialsForRange(
 // Convert into time-domain wave buffers.  One table is created for each range
 // for non-aliasing playback at different playback rates.  Thus, higher ranges
 // have more high-frequency partials culled out.
-void PeriodicWaveImpl::CreateBandLimitedTables(const float* real_data,
-                                               const float* imag_data,
-                                               unsigned number_of_components,
-                                               bool disable_normalization) {
+void PeriodicWaveImpl::CreateBandLimitedTables(
+    base::span<const float> real_data,
+    base::span<const float> imag_data,
+    bool disable_normalization) {
   // The default scale factor for when normalization is disabled.
   float normalization_scale = 0.5;
 
@@ -419,7 +420,8 @@ void PeriodicWaveImpl::CreateBandLimitedTables(const float* real_data,
   unsigned half_size = fft_size / 2;
   unsigned i;
 
-  number_of_components = std::min(number_of_components, half_size);
+  unsigned number_of_components =
+      std::min(static_cast<unsigned>(real_data.size()), half_size);
 
   band_limited_tables_.reserve(NumberOfRanges());
 
@@ -437,11 +439,11 @@ void PeriodicWaveImpl::CreateBandLimitedTables(const float* real_data,
     // arrays.  Need to scale the data by fftSize to remove the scaling that the
     // inverse IFFT would do.
     float scale = fft_size;
-    vector_math::Vsmul(
-        real_data, 1, &scale, real.Data(), 1, number_of_components);
+    vector_math::Vsmul(real_data.data(), 1, &scale, real.Data(), 1,
+                       number_of_components);
     scale = -scale;
-    vector_math::Vsmul(
-        imag_data, 1, &scale, imag.Data(), 1, number_of_components);
+    vector_math::Vsmul(imag_data.data(), 1, &scale, imag.Data(), 1,
+                       number_of_components);
 
     // Find the starting bin where we should start culling.  We need to clear
     // out the highest frequencies to band-limit the waveform.
@@ -496,12 +498,10 @@ void PeriodicWaveImpl::GenerateBasicWaveform(int shape) {
 
   AudioFloatArray real(half_size);
   AudioFloatArray imag(half_size);
-  float* real_p = real.Data();
-  float* imag_p = imag.Data();
 
   // Clear DC and Nyquist.
-  real_p[0] = 0;
-  imag_p[0] = 0;
+  real[0] = 0;
+  imag[0] = 0;
 
   for (unsigned n = 1; n < half_size; ++n) {
     float pi_factor = 2 / (n * kPiFloat);
@@ -562,11 +562,11 @@ void PeriodicWaveImpl::GenerateBasicWaveform(int shape) {
         NOTREACHED();
     }
 
-    UNSAFE_TODO(real_p[n]) = 0;
-    UNSAFE_TODO(imag_p[n]) = b;
+    real[n] = 0;
+    imag[n] = b;
   }
 
-  CreateBandLimitedTables(real_p, imag_p, half_size, false);
+  CreateBandLimitedTables(real.as_span(), imag.as_span(), false);
 }
 
 }  // namespace blink

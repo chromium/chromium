@@ -144,9 +144,8 @@ class PeriodicWaveImpl final : public GarbageCollected<PeriodicWaveImpl> {
   unsigned NumberOfPartialsForRange(unsigned range_index) const;
 
   // Creates tables based on numberOfComponents Fourier coefficients.
-  void CreateBandLimitedTables(const float* real,
-                               const float* imag,
-                               unsigned number_of_components,
+  void CreateBandLimitedTables(base::span<const float> real,
+                               base::span<const float> imag,
                                bool disable_normalization);
   Vector<std::unique_ptr<AudioFloatArray>> band_limited_tables_;
 
