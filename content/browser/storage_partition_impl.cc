@@ -22,6 +22,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/functional/concurrent_closures.h"
 #include "base/location.h"
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -2870,6 +2871,29 @@ void StoragePartitionImpl::DeletionHelperDone(base::OnceClosure callback) {
   }
 }
 
+// A destructor guard that ensures Disarm() is called. Bind into closures that
+// must be called rather than silently dropped.
+class TaskCompletionGuard {
+ public:
+  TaskCompletionGuard() = default;
+  ~TaskCompletionGuard() {
+    // TODO(https://crbug.com/487338371): ChromeBrowsingDataRemoverDelegate
+    // fires fire-and-forget RemoveWithFilter calls for IWA storage partitions
+    // that can be abandoned during browser shutdown. Fix that and upgrade to a
+    // CHECK.
+    LOG_IF(WARNING, !disarmed_)
+        << "Task completion closure was destroyed without being called";
+  }
+
+  TaskCompletionGuard(const TaskCompletionGuard&) = delete;
+  TaskCompletionGuard& operator=(const TaskCompletionGuard&) = delete;
+
+  void Disarm() { disarmed_ = true; }
+
+ private:
+  bool disarmed_ = false;
+};
+
 base::OnceClosure
 StoragePartitionImpl::DataDeletionHelper::CreateTaskCompletionClosure(
     TracingDataType data_type) {
@@ -2882,9 +2906,10 @@ StoragePartitionImpl::DataDeletionHelper::CreateTaskCompletionClosure(
   TRACE_EVENT_BEGIN("browsing_data", "StoragePartitionImpl",
                     perfetto::NamedTrack("StoragePartitionImpl", ++tracing_id),
                     "data_type", static_cast<int>(data_type));
-  return base::BindOnce(
-      &StoragePartitionImpl::DataDeletionHelper::OnTaskComplete,
-      base::Unretained(this), data_type, tracing_id);
+  return base::BindOnce(&DataDeletionHelper::OnTaskComplete,
+                        base::Unretained(this), data_type, tracing_id)
+      .Then(base::BindOnce(&TaskCompletionGuard::Disarm,
+                           std::make_unique<TaskCompletionGuard>()));
 }
 
 void StoragePartitionImpl::DataDeletionHelper::OnTaskComplete(

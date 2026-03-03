@@ -73,6 +73,18 @@ class GpuDiskCacheTest : public testing::Test {
     return future.Get();
   }
 
+  // Creates a cache whose backend will fail to initialize (by placing a file
+  // where the cache directory would be).
+  scoped_refptr<GpuDiskCache> CreateCacheWithFailingBackend() {
+    EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
+    base::FilePath invalid_path = temp_dir_.GetPath().AppendASCII("not_a_dir");
+    EXPECT_TRUE(base::WriteFile(invalid_path, "x"));
+    handle_ =
+        factory()->GetCacheHandle(GpuDiskCacheType::kGlShaders, invalid_path);
+    return factory()->Create(handle_, base::DoNothing(), base::DoNothing(),
+                             disk_cache::ResetHandling::kNeverReset);
+  }
+
   base::test::TaskEnvironment task_environment_;
   base::ScopedTempDir temp_dir_;
   raw_ptr<GpuDiskCacheFactory> factory_;
@@ -331,6 +343,44 @@ TEST_F(GpuDiskCacheTest, DestroyedCallbackCalledMultipleInstance) {
   cache_2 = nullptr;
   run_loop.Run();
   EXPECT_TRUE(destroyed);
+}
+
+// Verifies that ClearByCache completes even when the disk cache backend fails
+// to initialize.
+TEST_F(GpuDiskCacheTest, ClearByCacheCompletesWhenCacheCreationFails) {
+  scoped_refptr<GpuDiskCache> cache = CreateCacheWithFailingBackend();
+  ASSERT_TRUE(cache.get() != nullptr);
+
+  // Start a clear operation. The clear helper will call SetAvailableCallback
+  // and pend because the cache is not yet available. When the async backend
+  // creation fails, the pending callback fires and completes the clear.
+  base::RunLoop run_loop;
+  factory()->ClearByCache(cache, base::Time(), base::Time::Max(),
+                          run_loop.QuitClosure());
+  run_loop.Run();
+}
+
+// Verifies that SetAvailableCallback returns the error immediately when cache
+// creation has already failed (i.e., the failure arrived before the clear
+// operation started).
+TEST_F(GpuDiskCacheTest, SetAvailableCallbackReturnsErrorAfterCreationFailure) {
+  scoped_refptr<GpuDiskCache> cache = CreateCacheWithFailingBackend();
+  ASSERT_TRUE(cache.get() != nullptr);
+
+  // Wait for the async backend creation failure to arrive.
+  net::TestCompletionCallback available_cb;
+  int rv = cache->SetAvailableCallback(available_cb.callback());
+  ASSERT_EQ(net::ERR_IO_PENDING, rv);
+  ASSERT_NE(net::OK, available_cb.WaitForResult());
+
+  // SetAvailableCallback should now return the error immediately.
+  bool clear_completed = false;
+  factory()->ClearByCache(cache, base::Time(), base::Time::Max(),
+                          base::BindLambdaForTesting([&clear_completed]() {
+                            clear_completed = true;
+                          }));
+
+  EXPECT_TRUE(clear_completed);
 }
 
 }  // namespace gpu

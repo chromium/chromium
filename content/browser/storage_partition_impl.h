@@ -573,7 +573,6 @@ class CONTENT_EXPORT StoragePartitionImpl
 
  private:
   class DataDeletionHelper;
-  class QuotaManagedDataDeletionHelper;
   class ServiceWorkerCookieAccessObserver;
   class ServiceWorkerTrustTokenAccessObserver;
   class ServiceWorkerSharedDictionaryAccessObserver;

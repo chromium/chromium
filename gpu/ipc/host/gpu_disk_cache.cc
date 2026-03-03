@@ -8,6 +8,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
@@ -424,10 +425,12 @@ void GpuDiskCacheClearHelper::DoClearGpuCache(int rv) {
         op_type_ = DELETE_CACHE;
         break;
       case DELETE_CACHE:
-        rv = cache_->Clear(
-            delete_begin_, delete_end_,
-            base::BindOnce(&GpuDiskCacheClearHelper::DoClearGpuCache,
-                           weak_ptr_factory_.GetWeakPtr()));
+        if (rv == net::OK) {
+          rv = cache_->Clear(
+              delete_begin_, delete_end_,
+              base::BindOnce(&GpuDiskCacheClearHelper::DoClearGpuCache,
+                             weak_ptr_factory_.GetWeakPtr()));
+        }
         op_type_ = TERMINATE;
         break;
       case TERMINATE:
@@ -534,7 +537,8 @@ scoped_refptr<GpuDiskCache> GpuDiskCacheFactory::Get(
 scoped_refptr<GpuDiskCache> GpuDiskCacheFactory::Create(
     const GpuDiskCacheHandle& handle,
     const BlobLoadedForCacheCallback& blob_loaded_cb,
-    CacheDestroyedCallback cache_destroyed_cb) {
+    CacheDestroyedCallback cache_destroyed_cb,
+    disk_cache::ResetHandling reset_handling) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(Get(handle) == nullptr);
 
@@ -544,13 +548,14 @@ scoped_refptr<GpuDiskCache> GpuDiskCacheFactory::Create(
   }
   return GetOrCreateByPath(
       it->second, base::BindRepeating(blob_loaded_cb, handle),
-      base::BindOnce(std::move(cache_destroyed_cb), handle));
+      base::BindOnce(std::move(cache_destroyed_cb), handle), reset_handling);
 }
 
 scoped_refptr<GpuDiskCache> GpuDiskCacheFactory::GetOrCreateByPath(
     const base::FilePath& path,
     const GpuDiskCache::BlobLoadedCallback& blob_loaded_cb,
-    base::OnceClosure cache_destroyed_cb) {
+    base::OnceClosure cache_destroyed_cb,
+    disk_cache::ResetHandling reset_handling) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   auto iter = gpu_cache_map_.find(path);
   if (iter != gpu_cache_map_.end())
@@ -559,7 +564,7 @@ scoped_refptr<GpuDiskCache> GpuDiskCacheFactory::GetOrCreateByPath(
   auto cache = base::WrapRefCounted(new GpuDiskCache(
       this, path, blob_loaded_cb, std::move(cache_destroyed_cb)));
 
-  cache->Init();
+  cache->Init(reset_handling);
   return cache;
 }
 
@@ -661,11 +666,13 @@ GpuDiskCache::GpuDiskCache(GpuDiskCacheFactory* factory,
 }
 
 GpuDiskCache::~GpuDiskCache() {
+  CHECK(!available_callback_)
+      << "GpuDiskCache destroyed with a pending available_callback_";
   factory_->RemoveFromCache(cache_path_);
   std::move(cache_destroyed_cb_).Run();
 }
 
-void GpuDiskCache::Init() {
+void GpuDiskCache::Init(disk_cache::ResetHandling reset_handling) {
   if (is_initialized_) {
     NOTREACHED();  // can't initialize disk cache twice.
   }
@@ -674,7 +681,7 @@ void GpuDiskCache::Init() {
   disk_cache::BackendResult rv = disk_cache::CreateCacheBackend(
       net::SHADER_CACHE, net::CACHE_BACKEND_DEFAULT,
       /*file_operations=*/nullptr, cache_path_, GetDefaultGpuDiskCacheSize(),
-      disk_cache::ResetHandling::kResetOnError,
+      reset_handling,
       /*net_log=*/nullptr, /*cache_encryption_delegate=*/nullptr,
       base::BindOnce(&GpuDiskCache::CacheCreatedCallback, this));
 
@@ -684,8 +691,9 @@ void GpuDiskCache::Init() {
 }
 
 void GpuDiskCache::Cache(const std::string& key, const std::string& blob) {
-  if (!cache_available_)
+  if (cache_state_ != CacheState::kAvailable) {
     return;
+  }
 
   auto shim = std::make_unique<GpuDiskCacheEntry>(this, key, blob);
   shim->Cache();
@@ -707,15 +715,19 @@ int GpuDiskCache::Clear(base::Time begin_time,
 }
 
 base::expected<int32_t, net::Error> GpuDiskCache::Size(SizeCallback callback) {
-  if (!cache_available_) {
+  if (cache_state_ != CacheState::kAvailable) {
     return base::unexpected(net::ERR_FAILED);
   }
   return backend_->GetEntryCount(std::move(callback));
 }
 
 int GpuDiskCache::SetAvailableCallback(net::CompletionOnceCallback callback) {
-  if (cache_available_)
+  if (cache_state_ == CacheState::kAvailable) {
     return net::OK;
+  }
+  if (cache_state_ == CacheState::kFailed) {
+    return net::ERR_FAILED;
+  }
   available_callback_ = std::move(callback);
   return net::ERR_IO_PENDING;
 }
@@ -723,6 +735,10 @@ int GpuDiskCache::SetAvailableCallback(net::CompletionOnceCallback callback) {
 void GpuDiskCache::CacheCreatedCallback(disk_cache::BackendResult result) {
   if (result.net_error != net::OK) {
     LOG(ERROR) << "Gpu Cache Creation failed: " << result.net_error;
+    cache_state_ = CacheState::kFailed;
+    if (available_callback_) {
+      std::move(available_callback_).Run(result.net_error);
+    }
     return;
   }
   backend_ = std::move(result.backend);
@@ -742,7 +758,7 @@ void GpuDiskCache::ReadComplete() {
   // The cache is considered available after we have finished reading any
   // of the old cache values off disk. This prevents a potential race where we
   // are reading from disk and execute a cache clear at the same time.
-  cache_available_ = true;
+  cache_state_ = CacheState::kAvailable;
   if (available_callback_)
     std::move(available_callback_).Run(net::OK);
 }

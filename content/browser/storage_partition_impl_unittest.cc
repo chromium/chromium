@@ -863,7 +863,10 @@ class StoragePartitionShaderClearTest : public testing::Test {
         GetGpuDiskCacheFactorySingleton()->Create(handle, base::DoNothing());
   }
 
-  ~StoragePartitionShaderClearTest() override { cache_ = nullptr; }
+  ~StoragePartitionShaderClearTest() override {
+    cache_ = nullptr;
+    DestroyGpuDiskCacheFactorySingletonForTesting();
+  }
 
   void InitCache() {
     net::TestCompletionCallback available_cb;
