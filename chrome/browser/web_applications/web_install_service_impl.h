@@ -98,6 +98,13 @@ class WebInstallServiceImpl
                           InstallCallback callback) override;
 
  private:
+  // Shared implementation for Install() and InstallFromElement().
+  // `triggered_from_element` controls metrics routing and whether the
+  // permission prompt is bypassed (the <install> element handles permission
+  // via its own UI).
+  void InstallInternal(blink::mojom::InstallOptionsPtr options,
+                       InstallCallback callback,
+                       bool triggered_from_element);
   WebInstallServiceImpl(
       content::RenderFrameHost& render_frame_host,
       mojo::PendingReceiver<blink::mojom::WebInstallService> receiver);
@@ -169,8 +176,6 @@ class WebInstallServiceImpl
   blink::mojom::InstallOptionsPtr install_options_;
   const content::GlobalRenderFrameHostId frame_routing_id_;
   GURL last_committed_url_;
-  // True if install was triggered from <install> element rather than JS API.
-  bool triggered_from_element_ = false;
   // Active data retrievers. They are destroyed when this service is destroyed
   // or when their callback completes.
   absl::flat_hash_set<std::unique_ptr<WebAppDataRetriever>> data_retrievers_;

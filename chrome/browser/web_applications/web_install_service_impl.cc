@@ -190,6 +190,21 @@ void WebInstallServiceImpl::IsInstalled(blink::mojom::InstallOptionsPtr options,
 
 void WebInstallServiceImpl::Install(blink::mojom::InstallOptionsPtr options,
                                     InstallCallback callback) {
+  InstallInternal(std::move(options), std::move(callback),
+                  /*triggered_from_element=*/false);
+}
+
+void WebInstallServiceImpl::InstallFromElement(
+    blink::mojom::InstallOptionsPtr options,
+    InstallCallback callback) {
+  InstallInternal(std::move(options), std::move(callback),
+                  /*triggered_from_element=*/true);
+}
+
+void WebInstallServiceImpl::InstallInternal(
+    blink::mojom::InstallOptionsPtr options,
+    InstallCallback callback,
+    bool triggered_from_element) {
   // Create source ids for UKM logging.
   ukm::SourceId requesting_page_source_id =
       options ? render_frame_host().GetPageUkmSourceId()
@@ -251,18 +266,18 @@ void WebInstallServiceImpl::Install(blink::mojom::InstallOptionsPtr options,
         }
         std::move(callback).Run(install_result, manifest_id_result);
       },
-      std::move(callback), triggered_from_element_, requesting_page_source_id,
+      std::move(callback), triggered_from_element, requesting_page_source_id,
       installed_app_source_id);
 
   web_app::WebInstallServiceType install_type =
       options ? web_app::WebInstallServiceType::kBackgroundDocument
               : web_app::WebInstallServiceType::kCurrentDocument;
   base::UmaHistogramEnumeration(
-      triggered_from_element_ ? kInstallElementTypeUma : kInstallApiTypeUma,
+      triggered_from_element ? kInstallElementTypeUma : kInstallApiTypeUma,
       install_type);
   base::UmaHistogramEnumeration(
       base::StrCat({"WebApp.WebInstallService.",
-                    triggered_from_element_ ? "Element" : "Api",
+                    triggered_from_element ? "Element" : "Api",
                     ".InstallType"}),
       install_type);
 
@@ -314,10 +329,10 @@ void WebInstallServiceImpl::Install(blink::mojom::InstallOptionsPtr options,
 
   // Skip requesting permission in two cases:
   // 1. The install URL matches the current document URL (user is installing
-  //    the page they're on, even if using background install syntax).
-  // 2. Install triggered from the <install> element (permission is handled
-  //    by the element itself). In both cases, the install dialog is shown.
-  if (triggered_from_element_ || install_target == last_committed_url_) {
+  //    the page they're currently on, just using background install syntax).
+  // 2. Install triggered from the <install> element.
+  // In both cases, the install dialog is always shown.
+  if (triggered_from_element || install_target == last_committed_url_) {
     OnPermissionDecided(
         std::move(callback_with_metrics),
         std::vector<content::PermissionResult>({content::PermissionResult(
@@ -339,13 +354,6 @@ void WebInstallServiceImpl::Install(blink::mojom::InstallOptionsPtr options,
   RequestWebInstallPermission(base::BindOnce(
       &WebInstallServiceImpl::OnPermissionDecided,
       weak_ptr_factory_.GetWeakPtr(), std::move(callback_with_metrics)));
-}
-
-void WebInstallServiceImpl::InstallFromElement(
-    blink::mojom::InstallOptionsPtr options,
-    InstallCallback callback) {
-  triggered_from_element_ = true;
-  Install(std::move(options), std::move(callback));
 }
 
 void WebInstallServiceImpl::OnInstallNotSupportedDialogClosed(

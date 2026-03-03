@@ -665,4 +665,80 @@ IN_PROC_BROWSER_TEST_F(InstallElementBrowserTest, InvalidInstallUrl) {
   WaitForDismissEvent(kInstallElementId);
 }
 
+///////////////////////////////////////////////////////////////////////////////
+// Regression tests for interactions between <install> element and JS API.
+///////////////////////////////////////////////////////////////////////////////
+
+// Test fixture that enables both the <install> element and the
+// navigator.install() JS API, so we can test interactions between them on the
+// same document (same WebInstallServiceImpl instance).
+class InstallElementAndApiInteractionBrowserTest
+    : public InstallElementBrowserTest {
+ public:
+  InstallElementAndApiInteractionBrowserTest() {
+    additional_features_.InitWithFeatures(
+        {blink::features::kWebAppInstallation}, {});
+  }
+
+ private:
+  base::test::ScopedFeatureList additional_features_;
+};
+
+// Regression test for crbug.com/487568011: triggered_from_element was set by
+// InstallFromElement() but never reset, causing subsequent Install() calls via
+// navigator.install() on the same document to bypass the permissions-policy and
+// permission prompt checks.
+IN_PROC_BROWSER_TEST_F(InstallElementAndApiInteractionBrowserTest,
+                       InstallApiRespectsPermissionsAfterElementInstall) {
+  // Navigate to a page with <install> elements.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server()->GetURL(kInstallElementPageStartUrl)));
+
+  auto auto_accept = SetAutoAcceptPWAInstallConfirmationForTesting();
+
+  // Set the <install> element's installurl to a another test page.
+  const GURL element_install_url =
+      https_server()->GetURL(kCustomIdPageInstallUrl);
+  ASSERT_TRUE(SetButtonInstallUrl(element_install_url));
+
+  // Step 1: Click the <install> element. This calls InstallFromElement() on the
+  // browser-side WebInstallServiceImpl instance for this document, which passes
+  // triggered_from_element = true.
+  {
+    ui_test_utils::BrowserCreatedObserver browser_created_observer;
+    ASSERT_TRUE(ClickElementWithId(kInstallElementId));
+    Browser* web_app_browser = browser_created_observer.Wait();
+    WaitForPromptActionEvent(kInstallElementId);
+    ASSERT_TRUE(AppBrowserController::IsWebApp(web_app_browser));
+  }
+
+  // Step 2: From the SAME page (same WebInstallServiceImpl instance), call
+  // navigator.install(url, manifest_id) via JS. This uses the Install() Mojo
+  // method, NOT InstallFromElement(). The permission check should NOT be
+  // bypassed by the sticky triggered_from_element_ flag from step 1.
+  const GURL api_install_url =
+      https_server()->GetURL(kNoCustomIdPageInstallUrl);
+  const GURL api_manifest_id = https_server()->GetURL(kNoCustomIdPageId);
+
+  // Block the WEB_APP_INSTALLATION permission so that if the logic to prompt
+  // for permission is correctly reached, it will be denied. With the sticky
+  // state bug, the permission check would've been skipped entirely and the
+  // install would've succeeded.
+  BlockWebInstallPermission(api_install_url);
+
+  auto result = content::EvalJs(
+      web_contents(), "navigator.install('" + api_install_url.spec() + "', '" +
+                          api_manifest_id.spec() +
+                          "')"
+                          ".then(result => 'success')"
+                          ".catch(error => error.name)");
+
+  // The Install API call should fail because the WEB_APP_INSTALLATION
+  // permission was blocked. With the sticky state bug,
+  // triggered_from_element_ would still be true from step 1, causing
+  // Install() to skip all permission checks and auto-grant, resulting in
+  // 'success' instead.
+  EXPECT_EQ("AbortError", result.ExtractString());
+}
+
 }  // namespace web_app
