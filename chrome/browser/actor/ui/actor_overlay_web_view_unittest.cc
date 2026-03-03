@@ -128,8 +128,7 @@ class ActorOverlayWebViewMagicCursorEnabledTest
     : public ActorOverlayWebViewTestBase {
  public:
   void SetUp() override {
-    feature_list_.InitAndEnableFeature(
-        features::kGlicActorUiOverlayMagicCursor);
+    feature_list_.InitAndEnableFeature(features::kGlicActorUiMagicCursor);
     ActorOverlayWebViewTestBase::SetUp();
   }
 };
@@ -179,8 +178,7 @@ class ActorOverlayWebViewMagicCursorDisabledTest
     : public ActorOverlayWebViewTestBase {
  public:
   void SetUp() override {
-    feature_list_.InitAndDisableFeature(
-        features::kGlicActorUiOverlayMagicCursor);
+    feature_list_.InitAndDisableFeature(features::kGlicActorUiMagicCursor);
     ActorOverlayWebViewTestBase::SetUp();
   }
 };

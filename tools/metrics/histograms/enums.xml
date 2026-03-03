@@ -14790,6 +14790,7 @@ from previous Chrome versions.
   <int value="130059719" label="ThreadedPreloadScanner:disabled"/>
   <int value="130939792" label="FilesJsModules:disabled"/>
   <int value="131042807" label="IsolatedWebAppManagedAllowlist:enabled"/>
+  <int value="131188289" label="GlicActorUiMagicCursor:enabled"/>
   <int value="131881947" label="D3DVsync:enabled"/>
   <int value="132560299"
       label="OmniboxUIExperimentHideSteadyStateUrlScheme:disabled"/>
@@ -20319,6 +20320,7 @@ from previous Chrome versions.
   <int value="2005344314" label="AutofillEnableServerIban:disabled"/>
   <int value="2005475213" label="CrostiniContainerless:enabled"/>
   <int value="2005614493" label="tab-management-experiment-type-dill"/>
+  <int value="2006364154" label="GlicActorUiMagicCursor:disabled"/>
   <int value="2006374447" label="EnableAIRewriterAPI:enabled"/>
   <int value="2006413281"
       label="ContextualSuggestionsAlternateCardLayout:enabled"/>

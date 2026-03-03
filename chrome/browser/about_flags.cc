@@ -10762,7 +10762,7 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kGlicActorAutofill)},
     {"glic-actor-cursor", flag_descriptions::kGlicActorCursorName,
      flag_descriptions::kGlicActorCursorDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kGlicActorUiOverlayMagicCursor)},
+     FEATURE_VALUE_TYPE(features::kGlicActorUiMagicCursor)},
     {"glic-detached", flag_descriptions::kGlicDetachedName,
      flag_descriptions::kGlicDetachedDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kGlicDetached)},

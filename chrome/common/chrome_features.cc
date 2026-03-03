@@ -312,20 +312,21 @@ BASE_FEATURE(kGlicHandoffButtonResetFocusAndHoverStatus,
 BASE_FEATURE(kGlicHandoffButtonHideWhenOmniboxPopupOpened,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// If enabled, the magic cursor in the actor overlay is shown.
-BASE_FEATURE(kGlicActorUiOverlayMagicCursor, base::FEATURE_DISABLED_BY_DEFAULT);
+// If enabled, the magic cursor is shown during actuation for mouse movements
+// and clicks.
+BASE_FEATURE(kGlicActorUiMagicCursor, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Default: 0.667 pixels per millisecond
-const base::FeatureParam<double> kGlicActorUiOverlayMagicCursorSpeed{
-    &kGlicActorUiOverlayMagicCursor, "magic-cursor-speed-px-per-ms", 0.667};
+// Default: 1.5 pixels per millisecond
+const base::FeatureParam<double> kGlicActorUiMagicCursorSpeed{
+    &kGlicActorUiMagicCursor, "magic-cursor-speed-px-per-ms", 1.5};
 
 // Default: 50ms
-const base::FeatureParam<int> kGlicActorUiOverlayMagicCursorMinDuration{
-    &kGlicActorUiOverlayMagicCursor, "magic-cursor-min-duration-ms", 50};
+const base::FeatureParam<int> kGlicActorUiMagicCursorMinDuration{
+    &kGlicActorUiMagicCursor, "magic-cursor-min-duration-ms", 50};
 
-// Default: 675ms
-const base::FeatureParam<int> kGlicActorUiOverlayMagicCursorMaxDuration{
-    &kGlicActorUiOverlayMagicCursor, "magic-cursor-max-duration-ms", 675};
+// Default: 300ms
+const base::FeatureParam<int> kGlicActorUiMagicCursorMaxDuration{
+    &kGlicActorUiMagicCursor, "magic-cursor-max-duration-ms", 300};
 
 // If enabled, tool execution is split into separate Validate and Execute steps.
 // The Validate step initializes the tool in the renderer and returns the

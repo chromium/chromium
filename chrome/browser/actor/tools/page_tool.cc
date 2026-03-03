@@ -202,7 +202,7 @@ PageTool::~PageTool() = default;
 void PageTool::Validate(ToolCallback callback) {
   if (!base::FeatureList::IsEnabled(
           features::kGlicActorSplitValidateAndExecute) ||
-      !base::FeatureList::IsEnabled(features::kGlicActorUiOverlayMagicCursor)) {
+      !base::FeatureList::IsEnabled(features::kGlicActorUiMagicCursor)) {
     // No browser-side validation yet.
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), MakeOkResult()));
@@ -310,7 +310,7 @@ mojom::ActionResultPtr PageTool::TimeOfUseValidation(
 
   if (base::FeatureList::IsEnabled(
           features::kGlicActorSplitValidateAndExecute) &&
-      base::FeatureList::IsEnabled(features::kGlicActorUiOverlayMagicCursor)) {
+      base::FeatureList::IsEnabled(features::kGlicActorUiMagicCursor)) {
     CHECK(has_tool_been_initialized_);
     RenderFrameHost* initialized_frame =
         target_document_.AsRenderFrameHostIfValid();
@@ -444,7 +444,7 @@ void PageTool::Invoke(ToolCallback callback) {
 
   if (base::FeatureList::IsEnabled(
           features::kGlicActorSplitValidateAndExecute) &&
-      base::FeatureList::IsEnabled(features::kGlicActorUiOverlayMagicCursor)) {
+      base::FeatureList::IsEnabled(features::kGlicActorUiMagicCursor)) {
     CHECK(has_tool_been_initialized_);
     if (!chrome_render_frame_.is_bound()) {
       std::move(invoke_callback_)
@@ -488,7 +488,7 @@ void PageTool::Invoke(ToolCallback callback) {
   }
   if (base::FeatureList::IsEnabled(
           features::kGlicActorSplitValidateAndExecute) &&
-      base::FeatureList::IsEnabled(features::kGlicActorUiOverlayMagicCursor)) {
+      base::FeatureList::IsEnabled(features::kGlicActorUiMagicCursor)) {
     chrome_render_frame_->ExecuteTool(
         task_id(), base::BindOnce(&PageTool::FinishInvoke,
                                   weak_ptr_factory_.GetWeakPtr()));

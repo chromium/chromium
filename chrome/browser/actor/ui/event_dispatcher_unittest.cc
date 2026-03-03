@@ -384,7 +384,7 @@ class EventDispatcherRendererResolvedTest : public EventDispatcherTest {
     scoped_feature_list_.Reset();
     scoped_feature_list_.InitWithFeatures(
         {features::kGlicActorSplitValidateAndExecute,
-         features::kGlicActorUiOverlayMagicCursor},
+         features::kGlicActorUiMagicCursor},
         {});
   }
 };

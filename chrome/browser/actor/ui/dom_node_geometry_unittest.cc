@@ -31,7 +31,7 @@ class ActorUiDomNodeGeometryTest : public testing::Test {
   ActorUiDomNodeGeometryTest() {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kGlicActorUi,
-                              features::kGlicActorUiOverlayMagicCursor},
+                              features::kGlicActorUiMagicCursor},
         /*disabled_features=*/{});
   }
 
