@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+
+<textarea id="test" rows="8" cols="40"></textarea>
+
+<script>
+  function setValAndFocus(text) {
+    const textarea = document.getElementById('test');
+    textarea.value = text;
+    textarea.focus();
+    textarea.setSelectionRange(0, 0);
+    return textarea;
+  }
+
+  function ctrlRightArrow() {
+    if (!window.eventSender) {
+      assert_unreached("This test requires eventSender.");
+    }
+    eventSender.keyDown('ArrowRight', ['ctrlKey']);
+  }
+
+  test(() => {
+    const ta = setValAndFocus("abc{\n");
+
+    // Standard behavior check -  No whitespace before punctuation.
+    ctrlRightArrow();
+    assert_equals(ta.selectionStart, 3, "Standard behavior check failed");
+  }, "Standard behavior without preceding whitespace");
+
+  test(() => {
+    const ta = setValAndFocus("    {\n");
+
+    // should stop at the punctuation { - offset 4
+    ctrlRightArrow();
+    assert_equals(ta.selectionStart, 4, "Should stop at punctuation");
+    assert_equals(ta.selectionEnd, 4);
+
+    // should move to next line - offset 5
+    ctrlRightArrow();
+    assert_equals(ta.selectionStart, 5, "Should move to newline");
+    assert_equals(ta.selectionEnd, 5);
+  }, "Stop at punctuation following whitespace before newline");
+
+  test(() => {
+    const ta = setValAndFocus("    {{{{\n");
+
+    // should stop at the first punctuation  - offset 4
+    ctrlRightArrow();
+    assert_equals(ta.selectionStart, 4, "Should stop at start of punctuation block");
+
+    // should skip the whole block and stop before newline - offset 8
+    ctrlRightArrow();
+    assert_equals(ta.selectionStart, 8, "Should skip punctuation block");
+  }, "Verify behavior with multiple punctuation marks");
+
+  test(() => {
+    const ta = setValAndFocus("\n  {\n");
+
+    // should skip first line and stop at punctuation - offset 3
+    ctrlRightArrow();
+    assert_equals(ta.selectionStart, 3, "Should skip first line and stop at punctuation");
+
+    // should move to next line - offset 4
+    ctrlRightArrow();
+    assert_equals(ta.selectionStart, 4, "Should move to newline");
+  }, "Verify behavior with leading newline and whitespace");
+</script>

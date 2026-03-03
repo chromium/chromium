@@ -903,4 +903,109 @@ TEST_F(VisibleUnitsWordTest, MiddleOfWord) {
       DoMiddleOfWord("<p>This is a <span>^testin|g</span> sentence.</p>"));
 }
 
+TEST_F(VisibleUnitsWordTest, NextWordSkipSpacesPunctuationFollowedByLineBreak) {
+  // On Windows, caret navigation should treat punctuation following whitespace
+  // as a word boundary, even if immediately followed by a line break. This test
+  // covers the fix for issues.chromium.org/issues/481087619.
+
+  InsertStyleElement("p { white-space: pre; }");
+
+  // 1. Verify caret stops at punctuation preceded by space, then moves to next
+  // line.
+  EXPECT_EQ("<p>    |{\n</p>", DoNextWordSkippingSpaces("<p>|    {\n</p>"));
+  EXPECT_EQ("<p>    {|\n</p>", DoNextWordSkippingSpaces("<p>    |{\n</p>"));
+
+  // Verify movement from end of previous line to punctuation, then to next
+  // line.
+  EXPECT_EQ("<p>foo\n    |{\n</p>",
+            DoNextWordSkippingSpaces("<p>foo|\n    {\n</p>"));
+  EXPECT_EQ("<p>foo\n    {|\n</p>",
+            DoNextWordSkippingSpaces("<p>foo\n    |{\n</p>"));
+
+  // 2. Verify skipping newline and whitespace to reach punctuation.
+  EXPECT_EQ("<p>\n   |.</p>", DoNextWordSkippingSpaces("<p>|\n   .</p>"));
+
+  // 3. Verify standard behavior: skip newline to reach punctuation immediately.
+  EXPECT_EQ("<p>\n|.</p>", DoNextWordSkippingSpaces("<p>|\n.</p>"));
+
+  // 4. Verify stopping at punctuation boundaries within text.
+  EXPECT_EQ("<p>foo|{bar}</p>", DoNextWordSkippingSpaces("<p>f|oo{bar}</p>"));
+  EXPECT_EQ("<p>foo{|bar}</p>", DoNextWordSkippingSpaces("<p>foo|{bar}</p>"));
+  EXPECT_EQ("<p>foo{bar|}</p>", DoNextWordSkippingSpaces("<p>foo{|bar}</p>"));
+
+  // 5. Verify stopping at every punctuation  separated by space.
+  EXPECT_EQ("<p>foo|{ { bar} }</p>",
+            DoNextWordSkippingSpaces("<p>f|oo{ { bar} }</p>"));
+  EXPECT_EQ("<p>foo{ |{ bar} }</p>",
+            DoNextWordSkippingSpaces("<p>foo|{ { bar} }</p>"));
+  EXPECT_EQ("<p>foo{ { |bar} }</p>",
+            DoNextWordSkippingSpaces("<p>foo{ |{ bar} }</p>"));
+  EXPECT_EQ("<p>foo{ { bar|} }</p>",
+            DoNextWordSkippingSpaces("<p>foo{ { |bar} }</p>"));
+  EXPECT_EQ("<p>foo{ { bar} |}</p>",
+            DoNextWordSkippingSpaces("<p>foo{ { bar|} }</p>"));
+
+  // 6. Verify navigation across multiple lines with text and punctuation.
+  EXPECT_EQ("<p>{|\nhello\n}</p>",
+            DoNextWordSkippingSpaces("<p>|{\nhello\n}</p>"));
+  EXPECT_EQ("<p>{\n|hello\n}</p>",
+            DoNextWordSkippingSpaces("<p>{|\nhello\n}</p>"));
+  EXPECT_EQ("<p>{\nhello|\n}</p>",
+            DoNextWordSkippingSpaces("<p>{\nhe|llo\n}</p>"));
+  EXPECT_EQ("<p>{\nhello\n|}</p>",
+            DoNextWordSkippingSpaces("<p>{\nhello|\n}</p>"));
+
+  // 7. Verify stopping at start of punctuation block, then moving to line end.
+  EXPECT_EQ(
+      "<p>\n     |{{{{\n    world\n    }}}}</p>",
+      DoNextWordSkippingSpaces("<p>\n  |   {{{{\n    world\n    }}}}</p>"));
+  EXPECT_EQ(
+      "<p>\n     {{{{|\n    world\n    }}}}</p>",
+      DoNextWordSkippingSpaces("<p>\n     |{{{{\n    world\n    }}}}</p>"));
+
+  // 8. Verify skipping punctuation group in bulk and moving to the line end.
+  EXPECT_EQ(
+      "<p>\n    {{{{|\n    world\n    }}}}</p>",
+      DoNextWordSkippingSpaces("<p>\n    {|{{{\n    world\n    }}}}</p>"));
+  EXPECT_EQ(
+      "<p>\n     {{{{|\n    world\n    }}}}</p>",
+      DoNextWordSkippingSpaces("<p>\n     {{|{{\n    world\n    }}}}</p>"));
+
+  // 9. Verify skipping mixed punctuation group in bulk and moving to the line
+  // end.
+  EXPECT_EQ(
+      "<p>\n    {{..{{|\n    world\n    }}..}}</p>",
+      DoNextWordSkippingSpaces("<p>\n    {|{..{{\n    world\n    }}..}}</p>"));
+  EXPECT_EQ(
+      "<p>\n    {{..{{\n    world\n    }}..}}|</p>",
+      DoNextWordSkippingSpaces("<p>\n    {{..{{\n    world\n    }|}..}}</p>"));
+
+  // 10. Verify handling of tabs (\t) as whitespace before punctuation.
+  EXPECT_EQ("<p>\t\t|{\n</p>", DoNextWordSkippingSpaces("<p>|\t\t{\n</p>"));
+  EXPECT_EQ("<p>\t\t|{\n\t\t\t\thello\n\t\t}</p>",
+            DoNextWordSkippingSpaces("<p>|\t\t{\n\t\t\t\thello\n\t\t}</p>"));
+  EXPECT_EQ("<p>\t\t{|\n\t\t\t\thello\n\t\t}</p>",
+            DoNextWordSkippingSpaces("<p>\t\t|{\n\t\t\t\thello\n\t\t}</p>"));
+  EXPECT_EQ("<p>\t\t{\n\t\t\t\t|hello\n\t\t}</p>",
+            DoNextWordSkippingSpaces("<p>\t\t{|\n\t\t\t\thello\n\t\t}</p>"));
+  EXPECT_EQ("<p>\t\t{\n\t\t\t\t|hello\n\t\t}</p>",
+            DoNextWordSkippingSpaces("<p>\t\t{\n\t|\t\t\thello\n\t\t}</p>"));
+  EXPECT_EQ("<p>\t\t{\n\t\t\t\thello|\n\t\t}</p>",
+            DoNextWordSkippingSpaces("<p>\t\t{\n\t\t\t\t|hello\n\t\t}</p>"));
+  EXPECT_EQ("<p>\t\t{\n\t\t\t\thello|\n\t\t}</p>",
+            DoNextWordSkippingSpaces("<p>\t\t{\n\t\t\t\the|llo\n\t\t}</p>"));
+  EXPECT_EQ("<p>\t\t{\n\t\t\t\thello\n\t\t|}</p>",
+            DoNextWordSkippingSpaces("<p>\t\t{\n\t\t\t\thello|\n\t\t}</p>"));
+
+  // 11. Verify non-ascii.
+  EXPECT_EQ("<p>    |¿\n</p>", DoNextWordSkippingSpaces("<p>|    ¿\n</p>"));
+  EXPECT_EQ("<p>    hello |¿\n</p>",
+            DoNextWordSkippingSpaces("<p>    h|ello ¿\n</p>"));
+  EXPECT_EQ("<p>\n|¿\n</p>", DoNextWordSkippingSpaces("<p>|\n¿\n</p>"));
+  EXPECT_EQ("<p>hello|¿world</p>",
+            DoNextWordSkippingSpaces("<p>|hello¿world</p>"));
+  EXPECT_EQ("<p>hello¿|world</p>",
+            DoNextWordSkippingSpaces("<p>hello|¿world</p>"));
+}
+
 }  // namespace blink

@@ -6519,6 +6519,11 @@
       name: "WindowDefaultStatus",
     },
     {
+      // Fixes an issue where Ctrl+Right Arrow skips punctuation before a newline.
+      name: "WordSkipSpacesPunctuationFix",
+      status: "stable",
+    },
+    {
       name: "WordSpacingWhiteSpacePre",
       status: "stable",
     },

@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/core/editing/visible_position.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/character.h"
 #include "third_party/blink/renderer/platform/text/text_boundaries.h"
 #include "third_party/blink/renderer/platform/text/text_break_iterator.h"
@@ -129,9 +130,21 @@ PositionInFlatTree NextWordPositionInternal(
       bool found_space_before_punct = false;
       for (int runner = it->following(offset); runner != kTextBreakDone;
            runner = it->following(runner)) {
+        const bool has_pending_punctuation =
+            platform_word_behavior_ == PlatformWordBehavior::kWordSkipSpaces &&
+            punct_runner >= 0 && found_space_before_punct;
+
         // Move after line break
-        if (IsLineBreak(text[runner]))
+        if (IsLineBreak(text[runner])) {
+          // Windows: Return accumulated punctuation boundary if it was
+          // preceded by whitespace, even if immediately followed by a line
+          // break.
+          if (RuntimeEnabledFeatures::WordSkipSpacesPunctuationFixEnabled() &&
+              has_pending_punctuation) {
+            return SkipWhitespaceIfNeeded(text, punct_runner);
+          }
           return SkipWhitespaceIfNeeded(text, runner);
+        }
         // Accumulate punctuation/surrogate pair runs.
         if (static_cast<unsigned>(runner) < text.length() &&
             IsWordBoundary(text[runner])) {
@@ -155,8 +168,7 @@ PositionInFlatTree NextWordPositionInternal(
         // preceded by whitespace. This fixes asymmetric word navigation where
         // forward/backward movement would stop at different positions for
         // patterns like "word ..." or "word !!!"
-        if (platform_word_behavior_ == PlatformWordBehavior::kWordSkipSpaces &&
-            punct_runner >= 0 && found_space_before_punct) {
+        if (has_pending_punctuation) {
           return SkipWhitespaceIfNeeded(text, punct_runner);
         }
         // We stop searching in the following conditions:
