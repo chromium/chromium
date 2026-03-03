@@ -286,6 +286,11 @@ def _configure_gemini_cli(home_dir: pathlib.Path,
     else:
         settings_json = {}
 
+    settings_json.setdefault('general', {})
+    # Retry flaky connection timeouts, which happen on occasion when running
+    # prompt eval tests.
+    settings_json['general']['retryFetchErrors'] = True
+
     settings_json.setdefault('telemetry', {})
     settings_json['telemetry']['enabled'] = True
     settings_json['telemetry']['outfile'] = str(telemetry_outfile)

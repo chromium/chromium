@@ -163,12 +163,16 @@ class ConfigureGeminiCliUnittest(fake_filesystem_unittest.TestCase):
         self.assertTrue(os.path.exists(settings_file))
         with open(settings_file, 'r', encoding='utf-8') as f:
             settings = json.load(f)
-        self.assertEqual(settings, {
-            'telemetry': {
-                'enabled': True,
-                'outfile': str(telemetry_outfile),
-            },
-        })
+        self.assertEqual(
+            settings, {
+                'general': {
+                    'retryFetchErrors': True,
+                },
+                'telemetry': {
+                    'enabled': True,
+                    'outfile': str(telemetry_outfile),
+                },
+            })
 
     def test_updates_existing_settings_file(self):
         """Tests that an existing settings file is updated."""
@@ -186,11 +190,46 @@ class ConfigureGeminiCliUnittest(fake_filesystem_unittest.TestCase):
             settings = json.load(f)
         self.assertEqual(
             settings, {
+                'general': {
+                    'retryFetchErrors': True,
+                },
                 'other_setting': 'value',
                 'telemetry': {
                     'enabled': True,
                     'outfile': str(telemetry_outfile)
                 }
+            })
+
+    def test_updates_existing_general_settings(self):
+        """Tests that existing general settings are updated."""
+        home_dir = pathlib.Path('/fake/home')
+        telemetry_outfile = pathlib.Path('/fake/telemetry.json')
+        gemini_dir = home_dir / '.gemini'
+        os.makedirs(gemini_dir)
+        settings_file = gemini_dir / 'settings.json'
+        with open(settings_file, 'w', encoding='utf-8') as f:
+            json.dump(
+                {
+                    'general': {
+                        'retryFetchErrors': False,
+                        'someOtherSetting': True,
+                    },
+                }, f)
+
+        gemini_provider._configure_gemini_cli(home_dir, telemetry_outfile)
+
+        with open(settings_file, 'r', encoding='utf-8') as f:
+            settings = json.load(f)
+        self.assertEqual(
+            settings, {
+                'general': {
+                    'retryFetchErrors': True,
+                    'someOtherSetting': True,
+                },
+                'telemetry': {
+                    'enabled': True,
+                    'outfile': str(telemetry_outfile),
+                },
             })
 
     def test_updates_existing_telemetry_settings(self):
@@ -213,12 +252,16 @@ class ConfigureGeminiCliUnittest(fake_filesystem_unittest.TestCase):
 
         with open(settings_file, 'r', encoding='utf-8') as f:
             settings = json.load(f)
-        self.assertEqual(settings, {
-            'telemetry': {
-                'enabled': True,
-                'outfile': str(telemetry_outfile),
-            },
-        })
+        self.assertEqual(
+            settings, {
+                'general': {
+                    'retryFetchErrors': True,
+                },
+                'telemetry': {
+                    'enabled': True,
+                    'outfile': str(telemetry_outfile),
+                },
+            })
 
     def test_creates_trusted_folders_file(self):
         """Tests that a new trusted folders file is created."""
