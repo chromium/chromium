@@ -128,6 +128,8 @@ std::string_view EntityRecordTypeToMetricsString(
       return "Local";
     case EntityInstance::RecordType::kServerWallet:
       return "ServerWallet";
+    case EntityInstance::RecordType::kAccessibilityAnnotator:
+      return "AccessibilityAnnotator";
   }
   NOTREACHED();
 }

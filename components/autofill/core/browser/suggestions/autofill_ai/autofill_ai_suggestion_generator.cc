@@ -314,6 +314,7 @@ std::vector<const EntityInstance*> DedupedEntitiesForSuggestions(
       case EntityInstance::RecordType::kServerWallet:
         return true;
       case EntityInstance::RecordType::kLocal:
+      case EntityInstance::RecordType::kAccessibilityAnnotator:
         return false;
     }
     NOTREACHED();

@@ -164,6 +164,8 @@ optimization_guide::proto::AutofillAiEntityStorageType GetStorageType(
       return optimization_guide::proto::AUTOFILL_AI_ENTITY_STORAGE_TYPE_LOCAL;
     case EntityInstance::RecordType::kServerWallet:
       return optimization_guide::proto::AUTOFILL_AI_ENTITY_STORAGE_TYPE_WALLET;
+    case EntityInstance::RecordType::kAccessibilityAnnotator:
+      return optimization_guide::proto::AUTOFILL_AI_ENTITY_STORAGE_TYPE_UNKNOWN;
   }
 }
 

@@ -172,6 +172,7 @@ std::optional<EntityInstance::RecordType> ToSafeRecordType(
               static_cast<EntityInstance::RecordType>(underlying_record_type)) {
     case EntityInstance::RecordType::kLocal:
     case EntityInstance::RecordType::kServerWallet:
+    case EntityInstance::RecordType::kAccessibilityAnnotator:
       return record_type;
   }
   return std::nullopt;

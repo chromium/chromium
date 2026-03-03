@@ -56,6 +56,8 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.IfChange(Autofill.Ai.EntityRecordType) -->
 
 <variants name="Autofill.Ai.EntityRecordType">
+  <variant name=".AccessibilityAnnotator"
+      summary="Emitted for Accessibility Annotator entities only."/>
   <variant name=".Local" summary="Emitted for local entities only."/>
   <variant name=".ServerWallet"
       summary="Emitted for Wallet server entities only."/>

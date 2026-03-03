@@ -91,6 +91,9 @@ bool ShouldUploadEntityChange(const EntityInstanceChange& change) {
       return !IsMaskedStorageSupported(
           change.data_model().type(),
           EntityInstance::RecordType::kServerWallet);
+    case EntityInstance::RecordType::kAccessibilityAnnotator:
+      // Accessibility annotator entities are not uploaded as AUTOFILL_VALUABLE.
+      return false;
   }
   NOTREACHED();
 }
