@@ -54,4 +54,7 @@ public interface SafetyHubModuleDelegate {
      * @param context used to launch the promo in.
      */
     void launchSigninPromo(Context context);
+
+    /** Called when the delegate is no longer needed. */
+    void destroy();
 }

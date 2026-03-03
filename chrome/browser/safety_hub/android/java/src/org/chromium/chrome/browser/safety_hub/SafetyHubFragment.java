@@ -76,7 +76,7 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
     private final SettableMonotonicObservableSupplier<String> mPageTitle =
             ObservableSuppliers.createMonotonic();
 
-    private SafetyHubModuleDelegate mDelegate;
+    private @Nullable SafetyHubModuleDelegate mDelegate;
     private @Nullable CallbackController mCallbackController;
     private List<SafetyHubModuleMediator> mModuleMediators;
     private @Nullable SafetyHubBrowserStateModuleMediator mBrowserStateModuleMediator;
@@ -100,7 +100,7 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
     private void setUpModuleMediators() {
         SafetyHubFetchService safetyHubFetchService =
                 SafetyHubFetchServiceFactory.getForProfile(getProfile());
-
+        assert mDelegate != null;
         SafetyHubModuleMediator updateCheckModuleMediator =
                 new SafetyHubUpdateCheckModuleMediator(
                         findPreference(PREF_UPDATE), this, mDelegate, safetyHubFetchService);
@@ -316,6 +316,11 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
         if (mBrowserStateModuleMediator != null) {
             mBrowserStateModuleMediator.destroy();
             mBrowserStateModuleMediator = null;
+        }
+
+        if (mDelegate != null) {
+            mDelegate.destroy();
+            mDelegate = null;
         }
     }
 
