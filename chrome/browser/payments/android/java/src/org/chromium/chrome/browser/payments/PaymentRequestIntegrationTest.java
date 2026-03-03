@@ -88,22 +88,23 @@ public class PaymentRequestIntegrationTest {
     private boolean mWaitForUpdatedDetails;
     private boolean mIsUserGestureShow;
     private PaymentRequestWebContentsData mPaymentRequestWebContentsData;
+    private WebContentsImpl mWebContentsImpl;
 
     @Before
     public void setUp() {
         WebContentsImplJni.setInstanceForTesting(mWebContentsJniMock);
-        WebContentsImpl webContentsImpl =
+        mWebContentsImpl =
                 Mockito.spy(
                         WebContentsImpl.create(NATIVE_WEB_CONTENTS_ANDROID, mNavigationController));
         // We don't mock the WebContentsObserverProxy, so mock the observer behaviour.
-        Mockito.doNothing().when(webContentsImpl).addObserver(Mockito.any());
-        webContentsImpl.initializeForTesting();
+        Mockito.doNothing().when(mWebContentsImpl).addObserver(Mockito.any());
+        mWebContentsImpl.initializeForTesting();
 
         ProfileJni.setInstanceForTesting(mProfileJniMock);
 
         PersonalDataManagerFactory.setInstanceForTesting(mPersonalDataManager);
 
-        mPaymentRequestWebContentsData = new PaymentRequestWebContentsData(webContentsImpl);
+        mPaymentRequestWebContentsData = new PaymentRequestWebContentsData(mWebContentsImpl);
         PaymentRequestWebContentsData.setInstanceForTesting(mPaymentRequestWebContentsData);
 
         PaymentRequestWebContentsDataJni.setInstanceForTesting(mWebContentsDataJniMock);
@@ -128,6 +129,7 @@ public class PaymentRequestIntegrationTest {
 
     @After
     public void tearDown() {
+        mWebContentsImpl.destroy();
         PaymentRequestService.resetShowingPaymentRequestForTest();
         PaymentAppService.getInstance().resetForTest();
     }

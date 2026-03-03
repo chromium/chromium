@@ -243,9 +243,8 @@ WebContentsAndroid::WebContentsAndroid(WebContentsImpl* web_contents)
       navigation_controller_(&(web_contents->GetController())) {
   GetAllocatedWebContentsAndroids().insert(this);
   JNIEnv* env = AttachCurrentThread();
-  obj_ = JavaObjectWeakGlobalRef(
-      env, Java_WebContentsImpl_create(env, reinterpret_cast<intptr_t>(this),
-                                       navigation_controller_.GetJavaObject()));
+  Java_WebContentsImpl_create(env, reinterpret_cast<intptr_t>(this),
+                              navigation_controller_.GetJavaObject());
 }
 
 WebContentsAndroid::~WebContentsAndroid() {
@@ -257,7 +256,7 @@ WebContentsAndroid::~WebContentsAndroid() {
     observer.WebContentsAndroidDestroyed(this);
 
   JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> java_obj = obj_.get(env);
+  ScopedJavaLocalRef<jobject> java_obj = GetJavaObject();
   CHECK(!java_obj.is_null());
   Java_WebContentsImpl_clearNativePtr(env, java_obj);
 }
@@ -265,9 +264,8 @@ WebContentsAndroid::~WebContentsAndroid() {
 base::android::ScopedJavaLocalRef<jobject>
 WebContentsAndroid::GetJavaObject() {
   JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> obj = obj_.get(env);
-  CHECK(!obj.is_null());
-  return obj;
+  return Java_WebContentsImpl_getJavaObject(env,
+                                            reinterpret_cast<intptr_t>(this));
 }
 
 void WebContentsAndroid::CaptureContentAsBitmapForTesting(

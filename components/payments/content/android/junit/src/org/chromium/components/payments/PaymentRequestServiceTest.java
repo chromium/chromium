@@ -89,17 +89,18 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
     private PaymentAppServiceDelegate mPaymentAppServiceDelegate;
     private JourneyLogger mJourneyLogger;
     private PaymentRequestWebContentsData mPaymentRequestWebContentsData;
+    private WebContentsImpl mWebContentsImpl;
 
     @Before
     public void setUp() {
         WebContentsImplJni.setInstanceForTesting(mWebContentsJniMock);
-        WebContentsImpl webContentsImpl =
+        mWebContentsImpl =
                 Mockito.spy(
                         WebContentsImpl.create(NATIVE_WEB_CONTENTS_ANDROID, mNavigationController));
         // We don't mock the WebContentsObserverProxy, so mock the observer behaviour.
-        Mockito.doNothing().when(webContentsImpl).addObserver(Mockito.any());
-        webContentsImpl.initializeForTesting();
-        mPaymentRequestWebContentsData = new PaymentRequestWebContentsData(webContentsImpl);
+        Mockito.doNothing().when(mWebContentsImpl).addObserver(Mockito.any());
+        mWebContentsImpl.initializeForTesting();
+        mPaymentRequestWebContentsData = new PaymentRequestWebContentsData(mWebContentsImpl);
         PaymentRequestWebContentsData.setInstanceForTesting(mPaymentRequestWebContentsData);
 
         PaymentRequestWebContentsDataJni.setInstanceForTesting(mWebContentsDataJniMock);
@@ -172,6 +173,7 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
 
     @After
     public void tearDown() {
+        mWebContentsImpl.destroy();
         PaymentRequestService.resetShowingPaymentRequestForTest();
     }
 

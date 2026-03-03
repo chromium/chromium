@@ -98,10 +98,9 @@ public class WebContentsImpl
                 WindowEventObserver {
     private static final String TAG = "WebContentsImpl";
 
-    // Using ScopedJavaGlobalRef in the owning C++ object to keep the Java object alive consumes an
-    // entry per instance in the finite global ref table. This scales poorly with a large number of
-    // WebContents. As a workaround, the C++ owner uses a JavaObjectWeakGlobalRef and an entry is
-    // kept in the a static map of the native pointer to Java objects to prevent garbage collection.
+    // Map from native web contents pointer to WebContentsImpl to allow scaling of unlimited web
+    // contents objects.
+    // ScopedGlobalRef tables are finite.
     private static final Map<Long, WebContentsImpl> sWebContentsMap = new HashMap<>();
 
     private static final String PARCEL_VERSION_KEY = "version";
@@ -219,7 +218,8 @@ public class WebContentsImpl
         assert nativeWebContentsAndroid != 0;
         mNativeWebContentsAndroid = nativeWebContentsAndroid;
         mNavigationController = navigationController;
-        sWebContentsMap.put(mNativeWebContentsAndroid, this);
+        var oldValue = sWebContentsMap.put(mNativeWebContentsAndroid, this);
+        assert oldValue == null;
     }
 
     @CalledByNative
@@ -227,6 +227,11 @@ public class WebContentsImpl
     public static WebContentsImpl create(
             long nativeWebContentsAndroid, NavigationController navigationController) {
         return new WebContentsImpl(nativeWebContentsAndroid, navigationController);
+    }
+
+    @CalledByNative
+    public static @Nullable WebContentsImpl getJavaObject(long nativeWebContents) {
+        return sWebContentsMap.get(nativeWebContents);
     }
 
     @Override
@@ -397,6 +402,9 @@ public class WebContentsImpl
         }
 
         if (mNativeWebContentsAndroid != 0) {
+            sWebContentsMap.remove(mNativeWebContentsAndroid);
+            mNativeWebContentsAndroid = 0;
+
             WebContentsImplJni.get().destroyWebContents(mNativeWebContentsAndroid);
         }
     }
