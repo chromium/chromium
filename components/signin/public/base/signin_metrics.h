@@ -176,8 +176,7 @@ enum class AccessPoint : int {
   // kContentArea = 14, no longer used.
   kFullscreenSigninPromo = 15,
   kRecentTabs = 16,
-  // This should never have been used to get signin URL.
-  kUnknown = 17,
+  // kUnknown = 17, no longer used.
   kPasswordBubble = 18,
   kAutofillDropdown = 19,
   // kNtpContentSuggestions = 20, no longer used.

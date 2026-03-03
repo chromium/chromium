@@ -201,9 +201,9 @@ public class HistorySyncHelperTest {
                 .thenReturn(Set.of(UserSelectableType.HISTORY, UserSelectableType.TABS));
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
-                        "Signin.HistorySyncOptIn.AlreadyOptedIn", SigninAccessPoint.UNKNOWN);
+                        "Signin.HistorySyncOptIn.AlreadyOptedIn", SigninAccessPoint.WEB_SIGNIN);
 
-        mHistorySyncHelper.recordHistorySyncNotShown(SigninAccessPoint.UNKNOWN);
+        mHistorySyncHelper.recordHistorySyncNotShown(SigninAccessPoint.WEB_SIGNIN);
 
         histogramWatcher.assertExpected();
     }
@@ -213,9 +213,9 @@ public class HistorySyncHelperTest {
     public void testRecordHistorySyncNotShown_userNotOptedIn() {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
-                        "Signin.HistorySyncOptIn.Skipped", SigninAccessPoint.UNKNOWN);
+                        "Signin.HistorySyncOptIn.Skipped", SigninAccessPoint.WEB_SIGNIN);
 
-        mHistorySyncHelper.recordHistorySyncNotShown(SigninAccessPoint.UNKNOWN);
+        mHistorySyncHelper.recordHistorySyncNotShown(SigninAccessPoint.WEB_SIGNIN);
 
         histogramWatcher.assertExpected();
     }

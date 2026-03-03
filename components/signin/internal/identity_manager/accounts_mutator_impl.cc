@@ -111,7 +111,7 @@ void AccountsMutatorImpl::InvalidateRefreshTokenForPrimaryAccount(
   AddOrUpdateAccount(primary_account_info.gaia, primary_account_info.email,
                      GaiaConstants::kInvalidRefreshToken,
                      primary_account_info.is_under_advanced_protection,
-                     signin_metrics::AccessPoint::kUnknown, source);
+                     std::nullopt, source);
 #endif
 }
 

@@ -191,8 +191,6 @@ void ProfileManagementDisclaimerService::
   if (account_id.empty()) {
     return;
   }
-  // We should always know the access point that triggered the profile creation.
-  CHECK_NE(access_point, signin_metrics::AccessPoint::kUnknown);
 
   if (!AllowDisclaimer(access_point)) {
     return;

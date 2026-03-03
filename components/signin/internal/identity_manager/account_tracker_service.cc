@@ -756,11 +756,7 @@ CoreAccountId AccountTrackerService::SeedAccountInfo(
   AccountInfo account_info;
   account_info.gaia = gaia;
   account_info.email = email;
-  if (access_point == signin_metrics::AccessPoint::kUnknown) {
-    account_info.access_point = std::optional<signin_metrics::AccessPoint>();
-  } else {
-    account_info.access_point = access_point;
-  }
+  account_info.access_point = access_point;
   CoreAccountId account_id = SeedAccountInfo(account_info);
 
   DVLOG(1) << "AccountTrackerService::SeedAccountInfo"

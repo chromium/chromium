@@ -46,8 +46,6 @@ GURL GetEmbeddedPromoURL(signin_metrics::AccessPoint access_point,
                          bool auto_close) {
   CHECK_LE(static_cast<int>(access_point),
            static_cast<int>(signin_metrics::AccessPoint::kMaxValue));
-  CHECK_NE(static_cast<int>(access_point),
-           static_cast<int>(signin_metrics::AccessPoint::kUnknown));
   CHECK_LE(static_cast<int>(reason),
            static_cast<int>(signin_metrics::Reason::kMaxValue));
   CHECK_NE(static_cast<int>(reason),
@@ -148,7 +146,7 @@ std::optional<signin_metrics::AccessPoint> GetAccessPointForEmbeddedPromoURL(
   std::string value;
   if (!net::GetValueForKeyInQuery(url, kSignInPromoQueryKeyAccessPoint,
                                   &value)) {
-    return signin_metrics::AccessPoint::kUnknown;
+    return std::nullopt;
   }
 
   int access_point_value = -1;

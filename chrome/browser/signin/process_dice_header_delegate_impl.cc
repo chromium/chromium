@@ -244,7 +244,7 @@ bool ProcessDiceHeaderDelegateImpl::AttemptSettingPrimaryAccount(
 // signin to browser is cleaned-up.
 void ProcessDiceHeaderDelegateImpl::AttemptChromeSignin(
     CoreAccountId account_id) {
- CHECK(!account_id.empty());
+  CHECK(!account_id.empty());
 
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(&profile_.get());

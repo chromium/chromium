@@ -217,7 +217,6 @@ void HistorySyncOptinService::OnPrimaryAccountChanged(
     case signin_metrics::AccessPoint::kAvatarBubbleSignIn:
     case signin_metrics::AccessPoint::kUserManager:
     case signin_metrics::AccessPoint::kFullscreenSigninPromo:
-    case signin_metrics::AccessPoint::kUnknown:
     case signin_metrics::AccessPoint::kAutofillDropdown:
     case signin_metrics::AccessPoint::kResigninInfobar:
     case signin_metrics::AccessPoint::kMachineLogon:

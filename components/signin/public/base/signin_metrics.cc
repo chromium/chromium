@@ -75,7 +75,6 @@ std::optional<AccessPoint> AccessPointFromInt(int value) {
     case AccessPoint::kUserManager:
     case AccessPoint::kFullscreenSigninPromo:
     case AccessPoint::kRecentTabs:
-    case AccessPoint::kUnknown:
     case AccessPoint::kPasswordBubble:
     case AccessPoint::kAutofillDropdown:
     case AccessPoint::kResigninInfobar:
@@ -525,10 +524,6 @@ void RecordSigninUserActionForAccessPoint(AccessPoint access_point) {
       base::RecordAction(
           base::UserMetricsAction("Signin_Signin_FromRecentTabs"));
       break;
-    case AccessPoint::kUnknown:
-      base::RecordAction(
-          base::UserMetricsAction("Signin_Signin_FromUnknownAccessPoint"));
-      break;
     case AccessPoint::kPasswordBubble:
       base::RecordAction(
           base::UserMetricsAction("Signin_Signin_FromPasswordBubble"));
@@ -846,7 +841,6 @@ void RecordSigninImpressionUserActionForAccessPoint(AccessPoint access_point) {
           "Signin_Impression_FromCredentialExchangeImport"));
       break;
     case AccessPoint::kExtensions:
-    case AccessPoint::kUnknown:
     case AccessPoint::kMachineLogon:
     case AccessPoint::kForcedSignin:
     case AccessPoint::kWebSignin:

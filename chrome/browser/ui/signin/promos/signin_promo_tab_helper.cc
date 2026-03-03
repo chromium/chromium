@@ -117,9 +117,7 @@ void SigninPromoTabHelper::OnErrorStateOfRefreshTokenUpdatedForAccount(
   // clicking the sign in promo.
   std::optional<signin_metrics::AccessPoint> account_info_access_point =
       identity_manager->FindExtendedAccountInfo(account_info).access_point;
-  if (account_info_access_point.value_or(
-          signin_metrics::AccessPoint::kUnknown) !=
-      state_->access_point_.value_or(signin_metrics::AccessPoint::kUnknown)) {
+  if (account_info_access_point != state_->access_point_) {
     Reset();
     return;
   }

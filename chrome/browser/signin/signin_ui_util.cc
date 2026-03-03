@@ -254,7 +254,6 @@ void ShowSigninPromptFromPromo(Profile* profile,
 #if BUILDFLAG(IS_CHROMEOS)
   NOTREACHED();
 #elif BUILDFLAG(ENABLE_DICE_SUPPORT)
-  CHECK_NE(signin_metrics::AccessPoint::kUnknown, access_point);
   CHECK(!profile->IsOffTheRecord());
 
   signin::IdentityManager* identity_manager =
@@ -275,7 +274,6 @@ void SignInFromSingleAccountPromo(Profile* profile,
                                   const CoreAccountInfo& account,
                                   signin_metrics::AccessPoint access_point) {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  DCHECK_NE(signin_metrics::AccessPoint::kUnknown, access_point);
   DCHECK(!profile->IsOffTheRecord());
 
   signin::IdentityManager* identity_manager =
@@ -344,7 +342,6 @@ void EnableSyncFromMultiAccountPromo(Profile* profile,
                                      signin_metrics::AccessPoint access_point,
                                      bool is_default_promo_account) {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  DCHECK_NE(signin_metrics::AccessPoint::kUnknown, access_point);
   DCHECK(!profile->IsOffTheRecord());
 
   signin::IdentityManager* identity_manager =

@@ -881,7 +881,7 @@ chromium-metrics-reviews@google.com.
   <int value="14" label="(obsolete) Content area"/>
   <int value="15" label="Fullscreen Signin promo shown on start-up"/>
   <int value="16" label="Tabs from other devices"/>
-  <int value="17" label="Unknown"/>
+  <int value="17" label="(obsolete) Unknown"/>
   <int value="18" label="Password save bubble"/>
   <int value="19" label="Autofill dropdown"/>
   <int value="20" label="(obsolete) NTP Content Suggestions"/>

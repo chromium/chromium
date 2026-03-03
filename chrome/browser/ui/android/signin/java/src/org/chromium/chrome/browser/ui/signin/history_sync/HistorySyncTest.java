@@ -80,7 +80,7 @@ public class HistorySyncTest {
 
     @Rule public final SigninTestRule mSigninTestRule = new SigninTestRule();
 
-    private static final @SigninAccessPoint int SIGNIN_ACCESS_POINT = SigninAccessPoint.UNKNOWN;
+    private static final @SigninAccessPoint int SIGNIN_ACCESS_POINT = SigninAccessPoint.WEB_SIGNIN;
     private static final int MINOR_MODE_RESTRICTIONS_FETCH_DEADLINE_MS = 1000;
     private static final HistorySyncConfig CONFIG = new HistorySyncConfig("Title", "Subtitle");
 

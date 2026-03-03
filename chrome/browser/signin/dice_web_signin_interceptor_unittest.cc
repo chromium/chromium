@@ -2251,7 +2251,7 @@ TEST_F(DiceWebSigninInterceptorTest,
       .Times(0);
   interceptor()->MaybeInterceptWebSignin(web_contents(),
                                          account_info.GetAccountId(),
-                                         signin_metrics::AccessPoint::kUnknown,
+                                         signin_metrics::AccessPoint::kSettings,
                                          /*is_new_account=*/true,
                                          /*is_sync_signin=*/false);
   // Delegate was not called yet.
@@ -2263,6 +2263,8 @@ TEST_F(DiceWebSigninInterceptorTest,
       SigninInterceptionHeuristicOutcome::kAbortAccountInfoNotCompatible;
   EXPECT_EQ(interceptor()->is_interception_in_progress(),
             SigninInterceptionHeuristicOutcomeIsSuccess(expected_outcome));
+  histogram_tester.ExpectUniqueSample("Signin.Intercept.HeuristicOutcome",
+                                      expected_outcome, 1);
 }
 
 TEST_F(DiceWebSigninInterceptorTest, NoInterceptionIfPrimaryAccountAlreadySet) {

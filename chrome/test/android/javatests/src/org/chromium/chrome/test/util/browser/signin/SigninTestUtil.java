@@ -101,7 +101,7 @@ public final class SigninTestUtil {
                                     .getSigninManager(ProfileManager.getLastUsedRegularProfile());
                     signinManager.signin(
                             coreAccountInfo,
-                            SigninAccessPoint.UNKNOWN,
+                            SigninAccessPoint.WEB_SIGNIN,
                             new SigninManager.SignInCallback() {
                                 @Override
                                 public void onSignInComplete() {
@@ -144,7 +144,8 @@ public final class SigninTestUtil {
                     SigninManager signinManager =
                             IdentityServicesProvider.get()
                                     .getSigninManager(ProfileManager.getLastUsedRegularProfile());
-                    signinManager.turnOnSyncForTesting(coreAccountInfo, SigninAccessPoint.UNKNOWN);
+                    signinManager.turnOnSyncForTesting(
+                            coreAccountInfo, SigninAccessPoint.WEB_SIGNIN);
                     Assert.assertEquals(coreAccountInfo, getPrimaryAccount(ConsentLevel.SYNC));
                 });
     }
@@ -164,7 +165,7 @@ public final class SigninTestUtil {
                                     .getSigninManager(ProfileManager.getLastUsedRegularProfile());
                     signinManager.signin(
                             coreAccountInfo,
-                            SigninAccessPoint.UNKNOWN,
+                            SigninAccessPoint.WEB_SIGNIN,
                             new SigninManager.SignInCallback() {
                                 @Override
                                 public void onSignInComplete() {

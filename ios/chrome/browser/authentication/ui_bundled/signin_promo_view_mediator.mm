@@ -80,7 +80,6 @@ bool IsSupportedAccessPoint(signin_metrics::AccessPoint access_point) {
     case signin_metrics::AccessPoint::kAvatarBubbleSignIn:
     case signin_metrics::AccessPoint::kUserManager:
     case signin_metrics::AccessPoint::kFullscreenSigninPromo:
-    case signin_metrics::AccessPoint::kUnknown:
     case signin_metrics::AccessPoint::kPasswordBubble:
     case signin_metrics::AccessPoint::kAutofillDropdown:
     case signin_metrics::AccessPoint::kResigninInfobar:
@@ -178,7 +177,6 @@ void RecordImpressionsTilSigninButtonsHistogramForAccessPoint(
     case signin_metrics::AccessPoint::kAvatarBubbleSignIn:
     case signin_metrics::AccessPoint::kUserManager:
     case signin_metrics::AccessPoint::kFullscreenSigninPromo:
-    case signin_metrics::AccessPoint::kUnknown:
     case signin_metrics::AccessPoint::kPasswordBubble:
     case signin_metrics::AccessPoint::kAutofillDropdown:
     case signin_metrics::AccessPoint::kResigninInfobar:
@@ -280,7 +278,6 @@ void RecordImpressionsTilXButtonHistogramForAccessPoint(
     case signin_metrics::AccessPoint::kAvatarBubbleSignIn:
     case signin_metrics::AccessPoint::kUserManager:
     case signin_metrics::AccessPoint::kFullscreenSigninPromo:
-    case signin_metrics::AccessPoint::kUnknown:
     case signin_metrics::AccessPoint::kPasswordBubble:
     case signin_metrics::AccessPoint::kAutofillDropdown:
     case signin_metrics::AccessPoint::kResigninInfobar:
@@ -371,7 +368,6 @@ const char* DisplayedCountPreferenceKey(
     case signin_metrics::AccessPoint::kAvatarBubbleSignIn:
     case signin_metrics::AccessPoint::kUserManager:
     case signin_metrics::AccessPoint::kFullscreenSigninPromo:
-    case signin_metrics::AccessPoint::kUnknown:
     case signin_metrics::AccessPoint::kPasswordBubble:
     case signin_metrics::AccessPoint::kAutofillDropdown:
     case signin_metrics::AccessPoint::kResigninInfobar:
@@ -461,7 +457,6 @@ const char* AlreadySeenSigninViewPreferenceKey(
     case signin_metrics::AccessPoint::kAvatarBubbleSignIn:
     case signin_metrics::AccessPoint::kUserManager:
     case signin_metrics::AccessPoint::kFullscreenSigninPromo:
-    case signin_metrics::AccessPoint::kUnknown:
     case signin_metrics::AccessPoint::kPasswordBubble:
     case signin_metrics::AccessPoint::kAutofillDropdown:
     case signin_metrics::AccessPoint::kResigninInfobar:

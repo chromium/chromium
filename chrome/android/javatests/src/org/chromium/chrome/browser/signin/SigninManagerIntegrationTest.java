@@ -469,11 +469,11 @@ public class SigninManagerIntegrationTest {
     public void testSignIn_SignInCompletedHistogramRecorded() {
         var signinHistogram =
                 HistogramWatcher.newSingleRecordWatcher(
-                        "Signin.SignIn.Completed", SigninAccessPoint.UNKNOWN);
+                        "Signin.SignIn.Completed", SigninAccessPoint.WEB_SIGNIN);
 
         mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
 
         signinHistogram.assertExpected(
-                "Signin should be recorded with unknown as the access point.");
+                "Signin should be recorded with WEB_SIGNIN as the access point.");
     }
 }

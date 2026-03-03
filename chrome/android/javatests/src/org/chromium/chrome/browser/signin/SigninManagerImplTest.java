@@ -126,7 +126,7 @@ public class SigninManagerImplTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         mSigninManager.signin(
-                                TestAccounts.ACCOUNT1, SigninAccessPoint.UNKNOWN, callback));
+                                TestAccounts.ACCOUNT1, SigninAccessPoint.WEB_SIGNIN, callback));
 
         // Signin should be complete and callback should be invoked.
         verify(callback).onSignInComplete();
@@ -269,7 +269,8 @@ public class SigninManagerImplTest {
         AtomicInteger callCount = new AtomicInteger(0);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mSigninManager.signin(TestAccounts.ACCOUNT1, SigninAccessPoint.UNKNOWN, null);
+                    mSigninManager.signin(
+                            TestAccounts.ACCOUNT1, SigninAccessPoint.WEB_SIGNIN, null);
                     mSigninManager.runAfterOperationInProgress(callCount::incrementAndGet);
                     assertEquals(0, callCount.get());
                 });

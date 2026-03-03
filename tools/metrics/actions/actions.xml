@@ -45915,10 +45915,11 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Signin_Signin_FromUnknownAccessPoint">
+  <obsolete>kUnknown AccessPoint has been removed.</obsolete>
   <owner>gogerald@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
-    signin_metrics::AccessPoint::kUnknown.
+    signin_metrics::AccessPoint::kUnknown (obsolete).
   </description>
 </action>
 

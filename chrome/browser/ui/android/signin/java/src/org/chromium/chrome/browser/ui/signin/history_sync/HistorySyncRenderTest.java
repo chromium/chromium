@@ -192,7 +192,7 @@ public class HistorySyncRenderTest {
                                             mActivityTestRule
                                                     .getActivity()
                                                     .getString(R.string.history_sync_subtitle)),
-                                    SigninAccessPoint.UNKNOWN,
+                                    SigninAccessPoint.WEB_SIGNIN,
                                     /* showEmailInFooter= */ false,
                                     /* shouldSignOutOnDecline= */ false,
                                     null);
