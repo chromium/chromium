@@ -87,7 +87,8 @@ import java.util.concurrent.TimeoutException;
 
 /** Integration tests of showing a NTP with Start surface UI at startup. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@Restriction({Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE})
+// Restrict to Phones and Tablets because Desktop Android does not show NTP at startup.
+@Restriction({Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE, DeviceFormFactor.PHONE_OR_TABLET})
 @EnableFeatures({ChromeFeatureList.START_SURFACE_RETURN_TIME})
 // TODO(https://crbug.com/454091341): Enable this feature on this test suite.
 @Features.DisableFeatures({ChromeFeatureList.ANDROID_COMPOSEPLATE})
