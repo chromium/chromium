@@ -25,7 +25,7 @@ enum TabOrganizationFeature {
   [Default] kNone = 0,
   kSelector = 1,
   kAutoTabGroups = 2,
-  kDeclutter = 3,
+  kDeclutter = 3, // Deprecated
 };
 
 enum TabOrganizationError {
@@ -233,12 +233,6 @@ struct TabsRemovedInfo {
   array<RecentlyClosedTab> recently_closed_tabs;
 };
 
-// Information about unused tabs, inclusive of stale and duplicate tabs.
-struct UnusedTabInfo {
-  array<Tab> stale_tabs;
-  map<string, array<Tab>> duplicate_tabs;
-};
-
 // Used by the WebUI page to bootstrap bidirectional communication.
 interface PageHandlerFactory {
   // The WebUI calls this method when the page is first initialized.
@@ -254,11 +248,6 @@ interface PageHandler {
   // Close the tab hosting this WebUI.
   CloseWebUiTab();
 
-  // Bulk close multiple tabs as part of the declutter workflow. All tabs with
-  // either an id in tab_ids should be closed. All tabs but the oldest with a
-  // url in urls should be closed.
-  DeclutterTabs(array<int32> tab_ids, array<url.mojom.Url> urls);
-
   // Accept the tab organization, updated with the specified tab list.
   AcceptTabOrganization(int32 session_id,
                         int32 organization_id,
@@ -272,25 +261,11 @@ interface PageHandler {
                         int32 organization_id,
                         mojo_base.mojom.String16 name);
 
-  // Exclude the given tab from the stale tabs list.
-  ExcludeFromStaleTabs(int32 tab_id);
-
-  // Exclude all tabs with the given URL from the duplicate tabs list.
-  ExcludeFromDuplicateTabs(url.mojom.Url url);
-
   // Get window and tab data for the current profile.
   GetProfileData() => (ProfileData profile_data);
 
-  // Get all tabs that are considered stale based on their last active time,
-  // and tabs that are duplicates of other tabs based on partial URL match
-  // (excludes fragments).
-  GetUnusedTabs() => (UnusedTabInfo tabs);
-
   // Get the currently active section of the tab search bubble.
   GetTabSearchSection() => (TabSearchSection section);
-
-  // Get the currently active tab organization feature.
-  GetTabOrganizationFeature() => (TabOrganizationFeature feature);
 
   // Get the current tab organization session info.
   GetTabOrganizationSession() => (TabOrganizationSession session);
@@ -326,10 +301,6 @@ interface PageHandler {
   // Save a user's preference for the state of the expandable 'Recently Closed'
   // list section.
   SaveRecentlyClosedExpandedPref(bool expanded);
-
-  // Set the user preference for which feature the tab organization selector
-  // should display when next shown.
-  SetOrganizationFeature(TabOrganizationFeature feature);
 
   // Force trigger the tab group tutorial.
   StartTabGroupTutorial();
@@ -391,20 +362,12 @@ interface Page {
   // Called when the top level bubble tab should change.
   TabSearchSectionChanged(TabSearchSection section);
 
-  // Called when the feature shown by the tab organization selector should
-  // change.
-  TabOrganizationFeatureChanged(TabOrganizationFeature feature);
-
   // Called when state of whether the first run experience should be shown
   // changes.
   ShowFREChanged(bool show);
 
   // Called when the tab organization feature should be enabled/disabled.
   TabOrganizationEnabledChanged(bool enabled);
-
-  // Called when the list of tabs considered stale based on their last active
-  // time, or duplicate based on partial URL match, has changed.
-  UnusedTabsChanged(UnusedTabInfo tabs);
 
   // Called when the tab corresponding to this WebUI, if any, has become newly
   // unsplit.
