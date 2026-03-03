@@ -69,14 +69,6 @@ class IdentityUtilsTest : public testing::Test {
         kTestEmail, ConsentLevel::kSignin);
   }
 
-  void SetExplicitBrowserSigninPref(bool value) {
-    pref_service_.SetBoolean(prefs::kExplicitBrowserSignin, value);
-  }
-
-  bool GetExplicitBrowserSigninPref() {
-    return pref_service_.GetBoolean(prefs::kExplicitBrowserSignin);
-  }
-
   IdentityManager* identity_manager() {
     return identity_test_env_.identity_manager();
   }
