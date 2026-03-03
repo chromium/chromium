@@ -93,7 +93,6 @@ void SpeechRecognitionDispatcherHost::Start(
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
   if (params->audio_forwarder.is_valid()) {
-    CHECK_GT(params->channel_count, 0);
     if (params->channel_count <= 0) {
       mojo::ReportBadMessage("Channel count must be positive.");
       return;
