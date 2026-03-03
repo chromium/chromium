@@ -131,12 +131,6 @@ class SyncUserSettingsImplTest : public testing::Test {
   void SetSyncAccountState(SyncPrefs::SyncAccountState sync_account_state) {
     ON_CALL(delegate_, GetSyncAccountStateForPrefs)
         .WillByDefault(Return(sync_account_state));
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-    if (sync_account_state ==
-        SyncPrefs::SyncAccountState::kSignedInWithoutSyncConsent) {
-      pref_service_.SetBoolean(prefs::kExplicitBrowserSignin, true);
-    }
-#endif
   }
 
   std::unique_ptr<SyncUserSettingsImpl> MakeSyncUserSettings(
