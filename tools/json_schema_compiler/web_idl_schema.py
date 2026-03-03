@@ -427,25 +427,24 @@ class Type():
         elif referenced_type.GetClass() == 'Callback':
           properties = Operation(referenced_type).process()
         elif referenced_type.GetClass() == 'Typedef':
-          # For now, we only use Typedefs to allow for referencing types which
-          # are defined in another schema file. These act almost like a forward
-          # declaration and we extract the "namespaced" type name to use from
-          # the extended attribute on the Typedef.
-          # TODO(crbug.com/486928682): Eventually it would be good to follow the
-          # way Blink does this, by having shared types use globally unique
-          # names and be defined in their own files. Then all the relevant type
-          # files for an API schema could also be passed to the IDL parser and
-          # our `referenced_type` code above could search through those.
-          shared_type_name = GetExtendedAttributeValue(referenced_type,
-                                                       'ExternalExtensionType')
-          if shared_type_name is None:
-            raise SchemaCompilerError(
-                'Typedefs can only be used for declaring shared Types'
-                ' referencing Types defined in other API namespaces, but one'
-                ' was found which was missing the required'
-                ' "ExternalExtensionType=" extended attribute.',
-                referenced_type)
-          properties['$ref'] = shared_type_name
+          # Typedefs can be used for declaring shared Types referencing Types
+          # defined in other API namespaces, or for defining local aliases
+          # with specific extended attributes like [instanceOf].
+          if shared_type_name := GetExtendedAttributeValue(
+              referenced_type, 'ExternalExtensionType'):
+            # TODO(crbug.com/486928682): Eventually it would be good to follow
+            # the way Blink does this, by having shared types use globally
+            # unique names and be defined in their own files. Then all the
+            # relevant type files for an API schema could also be passed to the
+            # IDL parser and our `referenced_type` code above could search
+            # through those.
+            properties['$ref'] = shared_type_name
+          else:
+            # If it's not an external type, we process the underlying type of
+            # the typedef and apply any extended attributes from the typedef
+            # itself.
+            typedef_type_node = referenced_type.GetOneOf('Type')
+            properties.update(Type(typedef_type_node).Process())
 
         else:
           raise SchemaCompilerError(

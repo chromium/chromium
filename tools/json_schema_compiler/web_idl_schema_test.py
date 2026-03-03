@@ -1344,19 +1344,29 @@ class WebIdlSchemaTest(unittest.TestCase):
     self.assertEqual('LocalType', schema['types'][0]['id'])
 
   # Tests that a Typedef in a schema without the ExternalExtensionType extended
-  # attribute throws an error.
-  def testTypedefMissingExternalExtensionTypeExtendedAttribute(self):
-    expected_error_regex = (
-        r'.* Error processing node Typedef\(BasicsExampleType\): Typedefs can'
-        r' only be used for declaring shared Types referencing Types defined in'
-        r' other API namespaces, but one was found which was missing the'
-        r' required "ExternalExtensionType=" extended attribute.')
-    self.assertRaisesRegex(
-        SchemaCompilerError,
-        expected_error_regex,
-        web_idl_schema.Load,
-        'test/web_idl/typedef_missing_extended_attribute.idl',
-    )
+  # attribute is processed as a local alias of the underlying type.
+  def testTypedefAliases(self):
+    idl = web_idl_schema.Load('test/web_idl/typedef_alias.idl')
+    self.assertEqual(1, len(idl))
+    schema = idl[0]
+
+    # takesFileAlias(FileAlias file)
+    # FileAlias is a typedef of object with [instanceOf=File]
+    file_alias_params = getFunctionParameters(schema, 'takesFileAlias')
+    self.assertEqual(
+        {
+            'name': 'file',
+            'type': 'object',
+            'additionalProperties': {
+                'type': 'any'
+            },
+            'isInstanceOf': 'File'
+        }, file_alias_params[0])
+
+    # takesLongAlias(LongAlias count)
+    # LongAlias is a typedef of long
+    long_alias_params = getFunctionParameters(schema, 'takesLongAlias')
+    self.assertEqual({'name': 'count', 'type': 'integer'}, long_alias_params[0])
 
   # Tests Manifest keys defined on a partial 'ExtensionManifest' dictionary are
   # extracted and put into the manifest keys details and not into the Types.
