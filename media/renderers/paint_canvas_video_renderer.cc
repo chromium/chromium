@@ -629,14 +629,15 @@ VideoPixelFormatAsSkYUVAInfoValues(VideoPixelFormat format) {
   }
 }
 
-// Checks support before attempting one copy upload to GL texture.
-bool SupportsOneCopyUploadToGLTexture(VideoPixelFormat video_frame_format,
-                                      uint32_t shared_image_target,
-                                      unsigned int dst_target,
-                                      unsigned int dst_internal_format,
-                                      unsigned int dst_type,
-                                      int dst_level,
-                                      SkAlphaType dst_alpha_type) {
+// Checks support before attempting a service-side copy of a SharedImage to a
+// GL texture via Skia.
+bool CanCopySharedImageToGLTextureViaSkia(VideoPixelFormat video_frame_format,
+                                          uint32_t shared_image_target,
+                                          unsigned int dst_target,
+                                          unsigned int dst_internal_format,
+                                          unsigned int dst_type,
+                                          int dst_level,
+                                          SkAlphaType dst_alpha_type) {
   // NOTE: The direct upload path is not supported on Android (see comment on
   // CopyVideoFrameTexturesToGLTexture()).
   // TODO(crbug.com/40075313): Enable on Android.
@@ -1415,7 +1416,7 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameTexturesToGLTexture(
     SynchronizeVideoFrameRead(std::move(video_frame), destination_gl,
                               raster_context_provider->ContextSupport());
     return true;
-  } else if (SupportsOneCopyUploadToGLTexture(
+  } else if (CanCopySharedImageToGLTextureViaSkia(
                  video_frame->format(), shared_image->GetTextureTarget(),
                  target, internal_format, type, level, dst_alpha_type)) {
     // Do a service-side copy from the SharedImage to the destination texture
