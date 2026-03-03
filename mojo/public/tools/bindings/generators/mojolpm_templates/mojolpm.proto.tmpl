@@ -132,7 +132,7 @@ message {{struct_name}}_ProtoStruct {
 {%-         if pf|is_primary_nullable_value_kind_packed_field %}
 {%-           set original_field = pf.original_field %}
 {%-           set kind = original_field.kind %}
-{%-           set name = original_field.name %}
+{%-           set name = original_field.name|camel_to_under %}
   {{kind|proto_field_type}} m_{{name}} = {{name|proto_id(kind)}};
 {%-         endif %}
 {%-       else %}
