@@ -19,6 +19,10 @@ OverlayBrowserAgentBase::~OverlayBrowserAgentBase() = default;
 
 #pragma mark - Protected
 
+void OverlayBrowserAgentBase::ClearInstallers() {
+  installer_storages_.clear();
+}
+
 void OverlayBrowserAgentBase::AddInstaller(
     std::unique_ptr<OverlayRequestCallbackInstaller> installer,
     OverlayModality modality) {

@@ -35,6 +35,11 @@ class OverlayBrowserAgentBase {
   void AddInstaller(std::unique_ptr<OverlayRequestCallbackInstaller> installer,
                     OverlayModality modality);
 
+  // Clears all callback installers. Should be called by subclasses in their
+  // destructor if they own objects referenced by the installers, to ensure
+  // installers are destroyed before those objects.
+  void ClearInstallers();
+
   // Returns the aggregate request support for all callback installers added
   // for `modality`.
   const OverlayRequestSupport* GetRequestSupport(OverlayModality modality);

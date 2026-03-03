@@ -16,7 +16,11 @@ InfobarOverlayBrowserAgent::InfobarOverlayBrowserAgent(Browser* browser)
       BrowserUserData(browser),
       overlay_visibility_observer_(browser, this) {}
 
-InfobarOverlayBrowserAgent::~InfobarOverlayBrowserAgent() = default;
+InfobarOverlayBrowserAgent::~InfobarOverlayBrowserAgent() {
+  // Clear installers before destroying interaction_handlers_, since
+  // installers hold raw_ptr to interaction handlers owned by this class.
+  ClearInstallers();
+}
 
 #pragma mark Public
 
