@@ -1114,6 +1114,8 @@ INSTANTIATE_TEST_SUITE_P(
 //    tab is not scheduled. So, the prerender is never unblocked. Skip the test
 //    as it is not testable.
 // - `PrerenderInBackground_*`: Ditto.
+// - `PreloadingTriggeringOutcomeForStartingPrerenderBeforeDestruction`: See the
+// test.
 class PrerenderBrowserTestFallbackDisabled : public PrerenderBrowserTest {
  public:
   PrerenderBrowserTestFallbackDisabled()
@@ -9045,8 +9047,13 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
 // Test that when the running prerender is destroyed due to the activation of
 // another already prerendered page, other pending prerender's outcome is
 // recorded as `kTriggeredButPending`.
+//
+// Rationale for `PrerenderBrowserTestFallbackDisabled`: This test triggers
+// multiple prerenders. It's hard to control both prefetch/prerender states, as
+// they progress asynchronously. The aspect to be tested is unrelated to
+// prefetch ahead of prerender.
 IN_PROC_BROWSER_TEST_F(
-    PrerenderBrowserTest,
+    PrerenderBrowserTestFallbackDisabled,
     PreloadingTriggeringOutcomeForStartingPrerenderBeforeDestruction) {
   net::test_server::ControllableHttpResponse response2(
       embedded_test_server(), "/empty.html?prerender2");
