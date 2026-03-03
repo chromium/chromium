@@ -186,11 +186,11 @@ void PendingInvalidations::RescheduleSiblingInvalidationsAsDescendants(
   auto pending_invalidations_iterator =
       pending_invalidation_map_.find(&element);
   if (pending_invalidations_iterator == pending_invalidation_map_.end() ||
-      pending_invalidations_iterator->value.Siblings().empty()) {
+      pending_invalidations_iterator->value->Siblings().empty()) {
     return;
   }
   NodeInvalidationSets& pending_invalidations =
-      pending_invalidations_iterator->value;
+      *pending_invalidations_iterator->value;
 
   InvalidationLists invalidation_lists;
   for (const auto& invalidation_set : pending_invalidations.Siblings()) {
@@ -214,11 +214,12 @@ NodeInvalidationSets& PendingInvalidations::EnsurePendingInvalidations(
     ContainerNode& node) {
   auto it = pending_invalidation_map_.find(&node);
   if (it != pending_invalidation_map_.end()) {
-    return it->value;
+    return *it->value;
   }
   PendingInvalidationMap::AddResult add_result =
-      pending_invalidation_map_.insert(&node, NodeInvalidationSets());
-  return add_result.stored_value->value;
+      pending_invalidation_map_.insert(
+          &node, std::make_unique<NodeInvalidationSets>());
+  return *add_result.stored_value->value;
 }
 
 }  // namespace blink
