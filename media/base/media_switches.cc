@@ -1040,6 +1040,10 @@ BASE_FEATURE(kEnableAudioMonitoringOnAndroid,
 BASE_FEATURE(kContextMenuPictureInPictureAndroid,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables fullscreen video Picture-in-Picture on Android.
+BASE_FEATURE(kFullscreenVideoPictureInPicture,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enables the use of a Surface (ANativeWindow) as the input for the
 // NdkVideoEncodeAccelerator on Android.
 BASE_FEATURE(kSurfaceInputForAndroidVEA, base::FEATURE_DISABLED_BY_DEFAULT);

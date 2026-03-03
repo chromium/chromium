@@ -13051,6 +13051,11 @@ const FeatureEntry kFeatureEntries[] = {
     {"ntp-mvc-refactor", flag_descriptions::kNtpMvcRefactorName,
      flag_descriptions::kNtpMvcRefactorDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kNtpMvcRefactor)},
+
+    {"fullscreen-video-picture-in-picture",
+     flag_descriptions::kFullscreenVideoPictureInPictureName,
+     flag_descriptions::kFullscreenVideoPictureInPictureDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(media::kFullscreenVideoPictureInPicture)},
 #endif
 
 #if BUILDFLAG(IS_ANDROID)

@@ -10967,6 +10967,21 @@
             ]
         }
     ],
+    "FullscreenVideoPictureInPicture": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "FullscreenVideoPictureInPicture"
+                    ]
+                }
+            ]
+        }
+    ],
     "FusedLocationProviderTuning": [
         {
             "platforms": [

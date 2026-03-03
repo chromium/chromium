@@ -5467,6 +5467,11 @@ inline constexpr char kFullscreenInsetsApiMigrationOnAutomotiveDescription[] =
     "Migration from View#setSystemUiVisibility to WindowInsetsController on "
     "automotive.";
 
+inline constexpr char kFullscreenVideoPictureInPictureName[] =
+    "Fullscreen Video Picture-in-Picture";
+inline constexpr char kFullscreenVideoPictureInPictureDescription[] =
+    "Enables fullscreen video Picture-in-Picture on Android.";
+
 inline constexpr char kGridTabSwitcherSurfaceColorUpdateName[] =
     "Grid tab switcher surface color update";
 inline constexpr char kGridTabSwitcherSurfaceColorUpdateDescription[] =
