@@ -151,18 +151,20 @@ v8_inspector::V8DebuggerId GetDebuggerIdForContext(
 
 String AdTracker::AdScriptAncestry::ToString() const {
   if (ancestry_chain.empty() || !root_script_filterlist_rule.IsValid()) {
-    return "";
+    return String();
   }
 
   StringBuilder builder;
-  builder.AppendFormat("Debug info: adscript '%s' ",
-                       ancestry_chain[0].name.Ascii().c_str());
+  builder.Append("Debug info: adscript '");
+  builder.Append(ancestry_chain[0].name);
+  builder.Append("' ");
   for (size_t i = 1; i < ancestry_chain.size(); ++i) {
-    builder.AppendFormat("(loaded by '%s') ",
-                         ancestry_chain[i].name.Ascii().c_str());
+    builder.Append("(loaded by '");
+    builder.Append(ancestry_chain[i].name);
+    builder.Append("') ");
   }
-  builder.AppendFormat("matched ad filterlist rule: %s",
-                       root_script_filterlist_rule.ToString().c_str());
+  builder.Append("matched ad filterlist rule: ");
+  builder.Append(String::FromUTF8(root_script_filterlist_rule.ToString()));
   return builder.ReleaseString();
 }
 
