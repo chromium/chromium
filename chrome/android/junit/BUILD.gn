@@ -1315,6 +1315,7 @@ if (is_android) {
       "//base:holder_java",
       "//chrome/android:chrome_java",
       "//chrome/browser/settings:search_java",
+      "//chrome/browser/tab:java",
       "//chrome/browser/tab_group_suggestion:java",
       "//chrome/test/android:chrome_java_transit",
       "//components/sensitive_content:sensitive_content_features_java",

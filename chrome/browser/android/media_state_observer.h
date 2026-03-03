@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
+#include "chrome/browser/tab/media_state.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -23,15 +24,6 @@ class MediaStateObserver
       public content::WebContentsUserData<MediaStateObserver>,
       public MediaStreamCaptureIndicator::Observer {
  public:
-  // Values defined in Tab.java and must be kept in sync.
-  enum MediaState {
-    NONE = 0,
-    MUTED = 1,
-    AUDIBLE = 2,
-    RECORDING = 3,
-    SHARING = 4,
-  };
-
   explicit MediaStateObserver(content::WebContents* web_contents);
   ~MediaStateObserver() override;
 
@@ -79,7 +71,7 @@ class MediaStateObserver
   bool is_audio_muted_ = false;
   bool is_audible_ = false;
 
-  MediaState media_state_ = NONE;
+  tabs::MediaState media_state_ = tabs::MediaState::kNone;
 
   // Subscription to be notified when the recently audible state has changed.
   const base::CallbackListSubscription recently_audible_subscription_;

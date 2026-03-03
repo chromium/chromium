@@ -218,6 +218,7 @@ source_set("tab") {
     "collection_save_forwarder.h",
     "collection_storage_observer.h",
     "collection_storage_package.h",
+    "media_state.h",
     "payload.h",
     "payload_util.h",
     "restore_entity_tracker.h",
@@ -308,5 +309,8 @@ source_set("unit_tests") {
 }
 
 java_cpp_enum("enums_java") {
-  sources = [ "tab_storage_type.h" ]
+  sources = [
+    "media_state.h",
+    "tab_storage_type.h",
+  ]
 }

@@ -2879,7 +2879,7 @@ class TabImpl implements Tab {
         if (mMediaState == mediaState) return;
         mMediaState = mediaState;
         RecordHistogram.recordEnumeratedHistogram(
-                "Tab.Android.MediaState", mediaState, MediaState.COUNT);
+                "Tab.Android.MediaState", mediaState, MediaState.MAX_VALUE + 1);
         if (ChromeFeatureList.sMediaIndicatorsAndroid.isEnabled()) {
             for (TabObserver observer : mObservers) {
                 observer.onMediaStateChanged(this, mediaState);

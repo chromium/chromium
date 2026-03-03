@@ -35,7 +35,7 @@ import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
 import org.chromium.chrome.browser.compositor.overlays.strip.TabLoadTracker.TabLoadTrackerCallback;
 import org.chromium.chrome.browser.compositor.overlays.strip.TabStripIphController.IphType;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.tab.Tab.MediaState;
+import org.chromium.chrome.browser.tab.MediaState;
 import org.chromium.chrome.browser.user_education.IphCommand;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.feature_engagement.FeatureConstants;

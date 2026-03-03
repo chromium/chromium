@@ -33,7 +33,7 @@ import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.quick_delete.QuickDeleteAnimationGradientDrawable;
-import org.chromium.chrome.browser.tab.Tab.MediaState;
+import org.chromium.chrome.browser.tab.MediaState;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tab_ui.TabThumbnailView;
 import org.chromium.chrome.browser.tab_ui.TabThumbnailView.ThumbnailViewState;

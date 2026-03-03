@@ -28,7 +28,7 @@ import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutTab;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneOverlayLayer;
-import org.chromium.chrome.browser.tab.Tab.MediaState;
+import org.chromium.chrome.browser.tab.MediaState;
 import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;

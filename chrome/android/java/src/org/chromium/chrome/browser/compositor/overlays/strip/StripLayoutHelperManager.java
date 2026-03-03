@@ -84,9 +84,9 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.share.ShareDelegate;
+import org.chromium.chrome.browser.tab.MediaState;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.Tab.LoadUrlResult;
-import org.chromium.chrome.browser.tab.Tab.MediaState;
 import org.chromium.chrome.browser.tab.TabClosingSource;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -1932,10 +1932,10 @@ public class StripLayoutHelperManager
      * @param defaultTint The default tint to use.
      */
     public @ColorInt int getMediaIndicatorTintColor(
-            @Tab.MediaState int mediaState, @ColorInt int defaultTint) {
-        if (mediaState == Tab.MediaState.RECORDING) {
+            @MediaState int mediaState, @ColorInt int defaultTint) {
+        if (mediaState == MediaState.RECORDING) {
             return mContext.getColor(R.color.tab_recording_media_color);
-        } else if (mediaState == Tab.MediaState.SHARING) {
+        } else if (mediaState == MediaState.SHARING) {
             return mContext.getColor(R.color.tab_sharing_media_color);
         }
         return defaultTint;

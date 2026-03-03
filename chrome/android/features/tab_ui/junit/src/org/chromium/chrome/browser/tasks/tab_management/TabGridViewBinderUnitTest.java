@@ -59,7 +59,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.tab.Tab.MediaState;
+import org.chromium.chrome.browser.tab.MediaState;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData.PriceDrop;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider.TabFavicon;

@@ -35,8 +35,8 @@ import org.chromium.chrome.browser.compositor.overlays.strip.TabLoadTracker.TabL
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
 import org.chromium.chrome.browser.layouts.components.VirtualView;
+import org.chromium.chrome.browser.tab.MediaState;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.Tab.MediaState;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;

@@ -27,10 +27,8 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
-import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
 
 /**
  * Tab is a visual/functional unit that encapsulates the content (not just web site content from
@@ -48,31 +46,6 @@ public interface Tab extends TabLifecycle {
         int PAGE_LOAD_FAILED = 0;
         int DEFAULT_PAGE_LOAD = 1;
     }
-
-    /** Tracks the media indicator state of the tab. */
-    // LINT.IfChange(AndroidTabMediaState)
-    @IntDef({
-        MediaState.NONE,
-        MediaState.MUTED,
-        MediaState.AUDIBLE,
-        MediaState.RECORDING,
-        MediaState.SHARING,
-        MediaState.MAX_VALUE,
-        MediaState.COUNT,
-    })
-    @Target(ElementType.TYPE_USE)
-    @Retention(RetentionPolicy.SOURCE)
-    @interface MediaState {
-        int NONE = 0;
-        int MUTED = 1;
-        int AUDIBLE = 2;
-        int RECORDING = 3;
-        int SHARING = 4;
-        int MAX_VALUE = SHARING;
-        int COUNT = MAX_VALUE + 1;
-    }
-
-    // LINT.ThenChange(//tools/metrics/histograms/metadata/tab/enums.xml:AndroidTabMediaState)
 
     /** The result of the loadUrl. */
     class LoadUrlResult {

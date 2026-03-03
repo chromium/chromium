@@ -32,7 +32,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.media.MediaCaptureDevicesDispatcherAndroid;
-import org.chromium.chrome.browser.tab.Tab.MediaState;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeProvider;
 import org.chromium.components.browser_ui.util.AutomotiveUtils;
 import org.chromium.components.browser_ui.util.DimensionCompat;
