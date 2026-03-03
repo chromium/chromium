@@ -1228,7 +1228,7 @@ TEST_F(TileDisplayLayerImplTest, AppendQuadsAppendsDebugBordersForOomTile) {
   ++it;
   EXPECT_EQ((*it)->material, viz::DrawQuad::Material::kSolidColor);
   EXPECT_EQ(viz::SolidColorDrawQuad::MaterialCast(*it)->color,
-            raw_layer->safe_opaque_background_color());
+            DebugColors::DefaultCheckerboardColor());
 }
 
 // Verifies that AppendQuads() appends debug borders for a not-ready tile when
@@ -1284,7 +1284,7 @@ TEST_F(TileDisplayLayerImplTest,
   ++it;
   EXPECT_EQ((*it)->material, viz::DrawQuad::Material::kSolidColor);
   EXPECT_EQ(viz::SolidColorDrawQuad::MaterialCast(*it)->color,
-            raw_layer->safe_opaque_background_color());
+            DebugColors::DefaultCheckerboardColor());
 }
 
 TEST_F(TileDisplayLayerImplTest, TileResourceIsOOM) {
