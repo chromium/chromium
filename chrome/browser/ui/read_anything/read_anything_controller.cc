@@ -190,6 +190,12 @@ void ReadAnythingController::OnEntryShown(
   if (active_service_) {
     active_service_->OnReadAnythingShown();
   }
+
+  if (is_presentation_transitioning_) {
+    is_presentation_transitioning_ = false;
+  } else {
+    entry_shown_timestamp_ = base::TimeTicks::Now();
+  }
 }
 
 void ReadAnythingController::OnEntryHidden() {
@@ -199,6 +205,21 @@ void ReadAnythingController::OnEntryHidden() {
   if (active_service_) {
     active_service_->OnReadAnythingHidden();
     active_service_ = nullptr;
+  }
+
+  // Only record the shown duration if RM was successfully shown. If the
+  // timestamp is null, the UI was closed or switched before it fully loaded.
+  if (!is_presentation_transitioning_ && !entry_shown_timestamp_.is_null()) {
+    base::UmaHistogramCustomTimes(
+        "Accessibility.ReadAnything.ShownDurationMax1Day",
+        base::TimeTicks::Now() - entry_shown_timestamp_,
+        /*min=*/base::Seconds(1),
+        /*max=*/base::Hours(24),
+        /*buckets=*/100);
+
+    // Reset the timestamp to null to avoid polluting data if the next RM show
+    // request is closed before it's fully shown.
+    entry_shown_timestamp_ = base::TimeTicks();
   }
 }
 
@@ -315,6 +336,7 @@ void ReadAnythingController::ShowImmersiveUI(ReadAnythingOpenTrigger trigger) {
   }
 
   if (GetPresentationState() == PresentationState::kInSidePanel) {
+    is_presentation_transitioning_ = true;
     SidePanelUI* side_panel_ui = GetSidePanelUI();
     CHECK(side_panel_ui);
     side_panel_ui->Close(SidePanelEntry::PanelType::kContent,
@@ -334,6 +356,7 @@ void ReadAnythingController::ShowImmersiveUI(ReadAnythingOpenTrigger trigger) {
 
 void ReadAnythingController::ShowSidePanelUI(SidePanelOpenTrigger trigger) {
   if (GetPresentationState() == PresentationState::kInImmersiveOverlay) {
+    is_presentation_transitioning_ = true;
     CloseImmersiveUI();
     // Ensure we got the web_ui_wrapper_ back from the immersive overlay if one
     // ever existed.

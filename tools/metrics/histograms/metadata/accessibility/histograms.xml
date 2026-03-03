@@ -3331,6 +3331,20 @@ even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
+<histogram name="Accessibility.ReadAnything.ShownDurationMax1Day" units="ms"
+    expires_after="2027-01-01">
+  <owner>gusmartin@google.com</owner>
+  <owner>chrome-irm-devs@google.com</owner>
+  <summary>
+    Records how long Reading Mode overlay was active, regardless of whether it
+    was shown in the side panel or in the immersive view. Recorded when the
+    feature is hidden or closed (capped at 24 hours). Difference with
+    SidePanel.ReadAnything.ShownDuration is that this metric records sessions
+    for immersive view also (Only records if
+    read-anything-immersive-reading-mode is enabled).
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.ReadAnything.ShowTriggered"
     enum="ReadAnythingOpenTrigger" expires_after="2027-01-01">
   <owner>gusmartin@google.com</owner>

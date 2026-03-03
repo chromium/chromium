@@ -236,6 +236,14 @@ class ReadAnythingController : public tabs::ContentsObservingTabFeature {
   bool has_shown_ui_ = false;
   bool should_recreate_web_ui_ = false;
 
+  // Timestamp of when the Reading Mode overlay begins to be shown.
+  base::TimeTicks entry_shown_timestamp_;
+
+  // Returns if we are in the process of switching the Reading Mode Overlay.
+  // Used to ensure we keep transitions between RM UI states ( Immersive -> SP
+  // and vice-versa) as part of the same RM session.
+  bool is_presentation_transitioning_ = false;
+
   base::ObserverList<Observer> observers_;
   base::ObserverList<ReadAnythingImmersiveActivationObserver>
       immersive_activation_observers_;
