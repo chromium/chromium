@@ -8806,11 +8806,14 @@ void RenderFrameHostImpl::ExerciseAccessibilityForTest() {
   // as for some clusterfuzz runs.
   static int g_max_ax_tree_exercise_iterations = 3;  // Avoid timeouts.
   static int count = 0;
+  const int ax_tree_size = browser_accessibility_manager_->ax_tree()->size();
+  int max_ax_tree_exercise_iterations =
+      ax_tree_size >= 1500 ? 1 : g_max_ax_tree_exercise_iterations;
   if (browser_accessibility_manager_->GetBrowserAccessibilityRoot()
               ->GetChildCount() > 0 &&
       !browser_accessibility_manager_->GetBrowserAccessibilityRoot()
            ->GetBoolAttribute(ax::mojom::BoolAttribute::kBusy) &&
-      ++count <= g_max_ax_tree_exercise_iterations) {
+      ++count <= max_ax_tree_exercise_iterations) {
     base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
     if (command_line->HasSwitch(::switches::kForceRendererAccessibility) &&
         !command_line->HasSwitch(switches::kTraceStartupOwner)) {
