@@ -8,7 +8,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.isEmptyString;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import static org.chromium.chrome.browser.autofill.editors.common.date_field.DateFieldProperties.DATE_ALL_KEYS;
 import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.IS_REQUIRED;
@@ -76,6 +78,30 @@ public class DateFieldViewTest {
         assertNotNull(labelView);
         assertEquals(View.VISIBLE, labelView.getVisibility());
         assertEquals("Test Label", labelView.getText());
+    }
+
+    @Test
+    public void testNotRequiredField() {
+        PropertyModel model =
+                new PropertyModel.Builder(DATE_ALL_KEYS)
+                        .with(IS_REQUIRED, false)
+                        .with(LABEL, "Date field label")
+                        .with(VALUE, "")
+                        .build();
+        mDateFieldView = new DateFieldView(mActivity, model);
+        assertFalse(mDateFieldView.isRequired());
+    }
+
+    @Test
+    public void testRequiredField() {
+        PropertyModel model =
+                new PropertyModel.Builder(DATE_ALL_KEYS)
+                        .with(IS_REQUIRED, true)
+                        .with(LABEL, "Date field label")
+                        .with(VALUE, "")
+                        .build();
+        mDateFieldView = new DateFieldView(mActivity, model);
+        assertTrue(mDateFieldView.isRequired());
     }
 
     @Test

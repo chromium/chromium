@@ -220,7 +220,7 @@ public class DateFieldView extends LinearLayout implements FieldView {
 
     @Override
     public boolean isRequired() {
-        return false;
+        return mPropertyModel.get(IS_REQUIRED);
     }
 
     @Override
