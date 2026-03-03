@@ -9,6 +9,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/variations/scoped_variations_ids_provider.h"
 #include "content/browser/preloading/preload_pipeline_info_impl.h"
 #include "content/browser/preloading/preloading.h"
 #include "content/browser/preloading/preloading_confidence.h"
@@ -91,11 +92,36 @@ void CommitPrerenderNavigation(PrerenderHost& host) {
 
 class PrerenderHostRegistryTest : public RenderViewHostImplTestHarness {
  public:
-  PrerenderHostRegistryTest() = default;
+  PrerenderHostRegistryTest()
+      : scoped_variations_ids_provider_(
+            variations::test::ScopedVariationsIdsProvider(
+                variations::VariationsIdsProvider::Mode::kUseSignedInState)) {}
   ~PrerenderHostRegistryTest() override = default;
 
   void SetUp() override {
     RenderViewHostImplTestHarness::SetUp();
+
+    scoped_feature_list_prerender2_fallback_.InitWithFeaturesAndParameters(
+        {
+            {
+                features::kPrerender2FallbackPrefetchSpecRules,
+                {
+                    {
+                        features::
+                            kPrerender2FallbackPrefetchUseBlockUntilHeadTimetout
+                                .name,
+                        "false",
+                    },
+                    {
+                        features::kPrerender2FallbackPrefetchSchedulerPolicy
+                            .name,
+                        "NotUse",
+                    },
+                },
+            },
+        },
+        {});
+
     web_contents_delegate_ =
         std::make_unique<test::ScopedPrerenderWebContentsDelegate>(*contents());
     contents()->NavigateAndCommit(GURL("https://example.com/"));
@@ -297,9 +323,14 @@ class PrerenderHostRegistryTest : public RenderViewHostImplTestHarness {
 
  private:
   test::ScopedPrerenderFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_prerender2_fallback_;
   base::HistogramTester histogram_tester_;
   std::unique_ptr<test::ScopedPrerenderWebContentsDelegate>
       web_contents_delegate_;
+  // Prevent `DCHECK(g_instance)` failure in
+  // `VariationsIdsProvider::GetInstance()` via
+  // `PrefetchContainer::MakeInitialResourceRequest()`.
+  variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_;
 };
 
 TEST_F(PrerenderHostRegistryTest, CreateAndStartHost_SpeculationRule) {
