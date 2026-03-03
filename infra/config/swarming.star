@@ -7,6 +7,7 @@
 They are actually shared with a bunch other projects.
 """
 
+load("@chromium-luci//branches.star", "branches")
 load("@chromium-luci//swarming.star", "swarming")
 load("//project.star", "ACTIVE_MILESTONES")
 
@@ -37,6 +38,14 @@ swarming.task_accounts(
         # this.
         "ios-isolated-tester@chops-service-accounts.iam.gserviceaccount.com",
     ],
+)
+
+# Let fleet ops folks delete bots from all chromium pools in the course of their
+# fleet/hardware duties.
+branches.binding(
+    roles = ["role/swarming.poolOwner"],
+    realm = "@root",
+    groups = ["mdb/chrome-peep-fleet-operations-fte-team"],
 )
 
 # LED users that can trigger tasks in *any* realm in *any* pool.
