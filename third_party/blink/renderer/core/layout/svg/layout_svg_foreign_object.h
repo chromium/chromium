@@ -59,6 +59,10 @@ class LayoutSVGForeignObject final : public LayoutSVGBlock {
     NOT_DESTROYED();
     return true;
   }
+  bool IsReplacedNormalFlowStackingContext(const ComputedStyle&) const final {
+    NOT_DESTROYED();
+    return true;
+  }
   bool IsChildAllowed(LayoutObject* child,
                       const ComputedStyle& style) const override;
   gfx::RectF ObjectBoundingBox() const override;

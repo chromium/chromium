@@ -604,8 +604,9 @@ PaintResult PaintLayerPainter::PaintChildren(
 
   PaintLayerPaintOrderIterator iterator(&paint_layer_, children_to_visit);
   while (PaintLayer* child = iterator.Next()) {
-    if (child->IsReplacedNormalFlowStacking())
+    if (child->IsReplacedNormalFlowStackingContext()) {
       continue;
+    }
 
     if (!layout_object.IsViewTransitionRoot() &&
         ViewTransitionUtils::IsViewTransitionRoot(child->GetLayoutObject())) {

@@ -2308,6 +2308,22 @@ TEST_P(PaintLayerTest, HitTestInfiniteHitTestAreaSmallScaleTransform) {
   }
 }
 
+TEST_P(PaintLayerTest, ReplacedNormalFlowStackingForeignObjectIsNotStacked) {
+  SetBodyInnerHTML(R"HTML(
+    <svg width="200" height="200">
+      <foreignObject id="foreignObject" width="100" height="100"></foreignObject>
+    </svg>
+  )HTML");
+
+  PaintLayer* foreign_object = GetPaintLayerByElementId("foreignObject");
+  LayoutBoxModelObject& layout_object = foreign_object->GetLayoutObject();
+
+  EXPECT_TRUE(foreign_object->IsReplacedNormalFlowStackingContext());
+  EXPECT_TRUE(layout_object.IsStackingContext());
+  EXPECT_FALSE(layout_object.IsStacked());
+  EXPECT_TRUE(layout_object.HasLayer());
+}
+
 TEST_P(PaintLayerTest, AddLayerNeedsRepaintAndCullRectUpdate) {
   SetBodyInnerHTML(R"HTML(
     <div id="parent" style="opacity: 0.9">

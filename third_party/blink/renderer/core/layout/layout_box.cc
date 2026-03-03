@@ -501,7 +501,11 @@ LayoutBox::~LayoutBox() = default;
 
 PaintLayerType LayoutBox::LayerTypeRequired() const {
   NOT_DESTROYED();
-  if (IsStacked() || HasHiddenBackface()) {
+  if (IsStacked() || HasHiddenBackface() ||
+      // A normal flow replaced stacking context is not stacked by itself,
+      // but needs a PaintLayer to manage stacked children.
+      (RuntimeEnabledFeatures::StackingContextIsNotStackedEnabled() &&
+       IsReplacedNormalFlowStackingContext(StyleRef()))) {
     return kNormalPaintLayer;
   }
 

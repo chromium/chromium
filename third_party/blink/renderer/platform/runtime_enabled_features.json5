@@ -5297,6 +5297,12 @@
       base_feature: "none",
     },
     {
+      // Kill switch for falsifying IsStacked() for non-stacked
+      // stacking contexts. https://crbug.com/40208685
+      name: "StackingContextIsNotStacked",
+      status: "stable",
+    },
+    {
       // See https://github.com/w3c/csswg-drafts/issues/9398
       name: "StandardizedBrowserZoom",
       status: "stable",

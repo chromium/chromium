@@ -629,11 +629,12 @@ PaintLayer* PaintLayer::ContainingLayer() const {
 }
 
 PaintLayer::PaintingContainerType PaintLayer::GetPaintingContainerType() const {
-  // TODO(crbug.com/40208685): Remove this condition after we make IsStacked()
-  // correct (returning false) for IsReplacedNormalFlowStacking().
-  if (IsReplacedNormalFlowStacking()) {
-    return PaintingContainerType::kParent;
+  if (!RuntimeEnabledFeatures::StackingContextIsNotStackedEnabled()) {
+    if (IsReplacedNormalFlowStackingContext()) {
+      return PaintingContainerType::kParent;
+    }
   }
+
   if (GetLayoutObject().IsStacked()) {
     return PaintingContainerType::kStackingContext;
   }
@@ -1321,7 +1322,7 @@ PaintLayer* PaintLayer::HitTestLayer(
 
   // We can only reach an SVG foreign object's PaintLayer from
   // LayoutSVGForeignObject::NodeAtFloatPoint (because
-  // IsReplacedNormalFlowStacking() true for LayoutSVGForeignObject),
+  // IsReplacedNormalFlowStackingContext() true for LayoutSVGForeignObject),
   // where the hit_test_rect has already been transformed to local coordinates.
   bool use_transform = false;
   if (!layout_object.IsSVGForeignObject() &&
@@ -1804,8 +1805,13 @@ bool PaintLayer::HitTestFragmentWithPhase(
   return true;
 }
 
-bool PaintLayer::IsReplacedNormalFlowStacking() const {
-  return GetLayoutObject().IsSVGForeignObject();
+bool PaintLayer::IsReplacedNormalFlowStackingContext() const {
+  if (!RuntimeEnabledFeatures::StackingContextIsNotStackedEnabled()) {
+    return GetLayoutObject().IsSVGForeignObject();
+  }
+
+  return GetLayoutObject().IsReplacedNormalFlowStackingContext(
+      GetLayoutObject().StyleRef());
 }
 
 PaintLayer* PaintLayer::HitTestChildren(
@@ -1847,8 +1853,9 @@ PaintLayer* PaintLayer::HitTestChildren(
   auto hit_test_child =
       [&](PaintLayer* child_layer, bool overflow_controls_only,
           const HitTestRecursionData& recursion_data) -> bool {
-    if (child_layer->IsReplacedNormalFlowStacking())
+    if (child_layer->IsReplacedNormalFlowStackingContext()) {
       return false;
+    }
 
     bool is_scoped_transition_pseudo =
         !GetLayoutObject().IsViewTransitionRoot() &&
