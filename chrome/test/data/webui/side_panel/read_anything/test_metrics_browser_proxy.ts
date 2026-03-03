@@ -31,6 +31,7 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy implements
       'recordTime',
       'recordVoiceSpeed',
       'recordVoiceType',
+      'recordCount',
     ]);
   }
 
@@ -108,5 +109,9 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy implements
 
   recordExtensionState() {
     this.methodCalled('recordExtensionState');
+  }
+
+  recordCount(umaName: string, count: number) {
+    this.methodCalled('recordCount', umaName, count);
   }
 }

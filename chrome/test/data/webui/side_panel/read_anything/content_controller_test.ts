@@ -1240,5 +1240,28 @@ suite('ContentController', () => {
 
           assertFalse(!!nodeStore.getDomNode(axId));
         });
+
+    test('logs link matches', () => {
+      container.replaceChildren();
+      const anchor1 = document.createElement('a');
+      anchor1.href = url;
+      anchor1.textContent = 'First Link';
+      container.appendChild(anchor1);
+
+      const anchor2 = document.createElement('a');
+      anchor2.href = url;
+      anchor2.textContent = 'Second Link';
+      container.appendChild(anchor2);
+
+      chrome.readingMode.axTreeAnchors = {
+        [url]:
+            [{axId: 100, name: 'First Link'}, {axId: 200, name: 'Second Link'}],
+      };
+
+      contentController.updateAnchorsForReadability(container);
+
+      // 4 status calls.
+      assertEquals(4, metrics.getCallCount('recordCount'));
+    });
   });
 });

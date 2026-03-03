@@ -142,6 +142,7 @@ export interface MetricsBrowserProxy {
   recordVoiceSpeed(index: number): void;
   recordVoiceType(voiceType: ReadAnythingVoiceType): void;
   recordExtensionState(): void;
+  recordCount(umaName: string, count: number): void;
 }
 
 export class MetricsBrowserProxyImpl implements MetricsBrowserProxy {
@@ -224,6 +225,10 @@ export class MetricsBrowserProxyImpl implements MetricsBrowserProxy {
 
   recordExtensionState(): void {
     chrome.readingMode.logExtensionState();
+  }
+
+  recordCount(umaName: string, count: number) {
+    chrome.metricsPrivate.recordCount(umaName, count);
   }
 
   static getInstance(): MetricsBrowserProxy {

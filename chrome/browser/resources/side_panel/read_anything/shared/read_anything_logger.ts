@@ -19,6 +19,13 @@ export enum SpeechControls {
   PREVIOUS = 'PreviousButton',
 }
 
+export enum LinkStatus {
+  SUCCESS = 'Success',
+  NO_HREF = 'NoHref',
+  NO_MATCH = 'NoMatch',
+  TOO_MANY_MATCHES = 'TooManyMatches',
+}
+
 // Handles the business logic for logging.
 export class ReadAnythingLogger {
   private metrics: MetricsBrowserProxy = MetricsBrowserProxyImpl.getInstance();
@@ -163,6 +170,12 @@ export class ReadAnythingLogger {
     if (chrome.readingMode.isLineFocusEnabled) {
       this.metrics.recordLineFocusToggled(enabled);
     }
+  }
+
+  logLinkStatusCount(status: LinkStatus, count: number) {
+    const umaName =
+        'Accessibility.ReadAnything.Readability.PageLinks' + status + 'Count';
+    this.metrics.recordCount(umaName, count);
   }
 
   static getInstance(): ReadAnythingLogger {

@@ -65,4 +65,4 @@ export {getTextNodeOffsets} from './shared/dom_queries.js';
 export {getNewIndex, isActivationKey, isArrow, isBackwardArrow, isForwardArrow, isHorizontalArrow, isVerticalArrow} from './shared/keyboard_util.js';
 export type {MetricsBrowserProxy} from './shared/metrics_browser_proxy.js';
 export {MetricsBrowserProxyImpl, ReadAloudSettingsChange, ReadAnythingNewPage, ReadAnythingSettingsChange, ReadAnythingSpeechError, ReadAnythingVoiceType} from './shared/metrics_browser_proxy.js';
-export {ReadAnythingLogger, SpeechControls, TimeFrom} from './shared/read_anything_logger.js';
+export {LinkStatus, ReadAnythingLogger, SpeechControls, TimeFrom} from './shared/read_anything_logger.js';
