@@ -19,6 +19,8 @@ import org.chromium.build.annotations.NullMarked;
 public class EntityInstanceWithLabels {
     // The entity ID.
     private final String mGuid;
+    // The type of the entity.
+    private final EntityType mType;
     // The label to be displayed in the UI surface, for example "Vehicle".
     private final String mEntityInstanceLabel;
     // The sublabel to be displayed in the UI surface, for example "Fiat".
@@ -29,10 +31,12 @@ public class EntityInstanceWithLabels {
     @CalledByNative
     public EntityInstanceWithLabels(
             @JniType("std::string") String guid,
+            @JniType("autofill::EntityTypeAndroid") EntityType entityType,
             @JniType("std::u16string") String entityInstanceLabel,
             @JniType("std::u16string") String entityInstanceSubLabel,
             boolean storedInWallet) {
         mGuid = guid;
+        mType = entityType;
         mEntityInstanceLabel = entityInstanceLabel;
         mEntityInstanceSubLabel = entityInstanceSubLabel;
         mStoredInWallet = storedInWallet;
@@ -46,6 +50,11 @@ public class EntityInstanceWithLabels {
     @CalledByNative
     public @JniType("std::u16string") String getEntityInstanceLabel() {
         return mEntityInstanceLabel;
+    }
+
+    @CalledByNative
+    public @JniType("autofill::EntityTypeAndroid") EntityType getEntityType() {
+        return mType;
     }
 
     @CalledByNative

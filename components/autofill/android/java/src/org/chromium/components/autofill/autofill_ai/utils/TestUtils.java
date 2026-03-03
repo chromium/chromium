@@ -4,10 +4,15 @@
 
 package org.chromium.components.autofill.autofill_ai.utils;
 
+import org.chromium.components.autofill.autofill_ai.EntityInstance;
+import org.chromium.components.autofill.autofill_ai.EntityInstanceWithLabels;
 import org.chromium.components.autofill.autofill_ai.EntityType;
 import org.chromium.components.autofill.autofill_ai.EntityTypeName;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Collections;
+import java.util.UUID;
 
 public final class TestUtils {
 
@@ -38,5 +43,30 @@ public final class TestUtils {
                 /* editEntityTypeString= */ "Edit passport",
                 /* deleteEntityTypeString= */ "Delete passport",
                 /* attributeTypes= */ Collections.emptyList());
+    }
+
+    public static EntityType getNationalIdEntityType() {
+        return new EntityType(
+                EntityTypeName.NATIONAL_ID_CARD,
+                /* isReadOnly= */ false,
+                /* isEnabled= */ true,
+                /* typeNameAsString= */ "National ID",
+                /* typeNameAsMetricsString= */ "NationalId",
+                /* addEntityTypeString= */ "Add National ID",
+                /* editEntityTypeString= */ "Edit National ID",
+                /* deleteEntityTypeString= */ "Delete National ID",
+                /* attributeTypes= */ Collections.emptyList());
+    }
+
+    public static EntityInstanceWithLabels buildEntityInstanceWithLabels(
+            EntityType entityType, String label, String subLabel) {
+        EntityInstance entityInstance =
+                new EntityInstance.Builder(entityType)
+                        .setGUID(UUID.randomUUID().toString())
+                        .setModifiedDate(LocalDate.now(ZoneId.systemDefault()))
+                        .setUseCount(0)
+                        .build();
+        return new EntityInstanceWithLabels(
+                entityInstance.getGUID(), entityType, label, subLabel, /* storedInWallet= */ true);
     }
 }

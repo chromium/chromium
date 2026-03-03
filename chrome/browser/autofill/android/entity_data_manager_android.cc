@@ -169,7 +169,11 @@ EntityDataManagerAndroid::GetEntitiesWithLabels(JNIEnv* env) {
 
     for (const auto [entity, label] : base::zip(entities_of_type, labels)) {
       entities_with_labels.emplace_back(
-          entity->guid().value(), entity->type().GetNameForI18n(),
+          entity->guid().value(),
+          EntityTypeAndroid(
+              type,
+              type.enabled(entity_data_manager_->GetVariationCountryCode())),
+          entity->type().GetNameForI18n(),
           base::JoinString(label, kLabelSeparator),
           entity->record_type() == EntityInstance::RecordType::kServerWallet);
     }

@@ -9,6 +9,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
+#include "chrome/browser/autofill/android/entity_type_android.h"
 #include "third_party/jni_zero/jni_zero.h"
 
 namespace autofill {
@@ -16,6 +17,7 @@ namespace autofill {
 // The C++ counterpart to the Java class of the same name.
 struct EntityInstanceWithLabels {
   EntityInstanceWithLabels(std::string guid,
+                           EntityTypeAndroid entity_type,
                            std::u16string entity_instance_label,
                            std::u16string entity_instance_sublabel,
                            bool stored_in_wallet);
@@ -26,6 +28,7 @@ struct EntityInstanceWithLabels {
   EntityInstanceWithLabels& operator=(EntityInstanceWithLabels&&);
 
   std::string guid;
+  EntityTypeAndroid entity_type;
   std::u16string entity_instance_label;
   std::u16string entity_instance_sublabel;
   bool stored_in_wallet;

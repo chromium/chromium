@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.autofill.options.autofill_ai;
+package org.chromium.chrome.browser.autofill.autofill_ai;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.empty;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -22,17 +24,18 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManager;
-import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManagerFactory;
-import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManagerJni;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.autofill.autofill_ai.AutofillAiOptInStatus;
 import org.chromium.components.autofill.autofill_ai.EntityInstance;
 import org.chromium.components.autofill.autofill_ai.EntityInstanceWithLabels;
 import org.chromium.components.autofill.autofill_ai.EntityType;
+import org.chromium.components.autofill.autofill_ai.utils.TestUtils;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 /** Unit tests for {@link EntityDataManager}. */
@@ -44,8 +47,6 @@ public class EntityDataManagerTest {
     @Mock private EntityDataManager.Natives mEntityDataManagerJniMock;
     @Mock private Profile mProfile;
     @Mock private EntityInstance mEntityInstance;
-    @Mock private EntityType mEntityType;
-    @Mock private EntityInstanceWithLabels mEntityInstanceWithLabels;
 
     private EntityDataManager mEntityDataManager;
     private static final long NATIVE_PTR = 12345L;
@@ -90,24 +91,83 @@ public class EntityDataManagerTest {
 
     @Test
     public void testGetEntitiesWithLabels() {
-        List<EntityInstanceWithLabels> entities = Arrays.asList(mEntityInstanceWithLabels);
+        List<EntityInstanceWithLabels> entities =
+                Arrays.asList(
+                        TestUtils.buildEntityInstanceWithLabels(
+                                TestUtils.getVehicleEntityType(), "label", "sublabel"));
         when(mEntityDataManagerJniMock.getEntitiesWithLabels(NATIVE_PTR)).thenReturn(entities);
         assertEquals(entities, mEntityDataManager.getEntitiesWithLabels());
     }
 
     @Test
     public void testGetWritableEntityTypes() {
-        List<EntityType> types = Arrays.asList(mEntityType);
+        List<EntityType> types = Arrays.asList(TestUtils.getVehicleEntityType());
         when(mEntityDataManagerJniMock.getWritableEntityTypes(NATIVE_PTR)).thenReturn(types);
         assertEquals(types, mEntityDataManager.getWritableEntityTypes());
     }
 
     @Test
     public void testGetSortedEntityTypesForListDisplay() {
-        List<EntityType> types = Arrays.asList(mEntityType);
+        List<EntityType> types = Arrays.asList(TestUtils.getVehicleEntityType());
         when(mEntityDataManagerJniMock.getSortedEntityTypesForListDisplay(NATIVE_PTR))
                 .thenReturn(types);
         assertEquals(types, mEntityDataManager.getSortedEntityTypesForListDisplay());
+    }
+
+    @Test
+    public void testGetInstancesToList() {
+        EntityType type1 = TestUtils.getVehicleEntityType();
+        EntityType type2 = TestUtils.getPassportEntityType();
+        EntityType type3 = TestUtils.getNationalIdEntityType();
+
+        EntityInstanceWithLabels instance1 =
+                TestUtils.buildEntityInstanceWithLabels(type1, "Vehicle", "");
+        EntityInstanceWithLabels instance2 =
+                TestUtils.buildEntityInstanceWithLabels(type2, "Passport", "");
+        EntityInstanceWithLabels instance3 =
+                TestUtils.buildEntityInstanceWithLabels(type1, "National ID", "");
+
+        // Native returns types in order [type2, type1, type3]
+        when(mEntityDataManagerJniMock.getSortedEntityTypesForListDisplay(NATIVE_PTR))
+                .thenReturn(Arrays.asList(type2, type1, type3));
+        // Native returns instances in order [instance1, instance2, instance3]
+        when(mEntityDataManagerJniMock.getEntitiesWithLabels(NATIVE_PTR))
+                .thenReturn(Arrays.asList(instance1, instance2, instance3));
+
+        LinkedHashMap<EntityType, List<EntityInstanceWithLabels>> result =
+                mEntityDataManager.getInstancesToList();
+
+        // Check size
+        assertEquals(3, result.size());
+
+        // Check order of keys
+        assertEquals(List.of(type2, type1, type3), new ArrayList<>(result.keySet()));
+
+        // Check values for type2
+        assertEquals(1, result.get(type2).size());
+        assertEquals(instance2, result.get(type2).get(0));
+
+        // Check values for type1 (should be sorted alphabetically: A then B)
+        assertEquals(List.of(instance3, instance1), result.get(type1));
+
+        // Check values for type3 (should be empty)
+        assertThat(result.get(type3), empty());
+    }
+
+    @Test
+    public void testGetInstancesToList_NoInstances() {
+        EntityType type1 = TestUtils.getVehicleEntityType();
+        when(mEntityDataManagerJniMock.getSortedEntityTypesForListDisplay(NATIVE_PTR))
+                .thenReturn(Arrays.asList(type1));
+        when(mEntityDataManagerJniMock.getEntitiesWithLabels(NATIVE_PTR))
+                .thenReturn(Collections.emptyList());
+
+        LinkedHashMap<EntityType, List<EntityInstanceWithLabels>> result =
+                mEntityDataManager.getInstancesToList();
+
+        assertEquals(1, result.size());
+        assertTrue(result.containsKey(type1));
+        assertTrue(result.get(type1).isEmpty());
     }
 
     @Test

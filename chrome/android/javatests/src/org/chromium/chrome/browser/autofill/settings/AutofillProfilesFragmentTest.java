@@ -1026,6 +1026,7 @@ public class AutofillProfilesFragmentTest {
         EntityInstanceWithLabels entity1 =
                 new EntityInstanceWithLabels(
                         "guid1",
+                        TestUtils.getVehicleEntityType(),
                         /* entityInstanceLabel= */ "Vehicle",
                         /* entityInstanceSubLabel= */ "Mercedez",
                         /* storedInWallet= */ false);
@@ -1033,6 +1034,7 @@ public class AutofillProfilesFragmentTest {
         EntityInstanceWithLabels entity2 =
                 new EntityInstanceWithLabels(
                         "guid2",
+                        TestUtils.getPassportEntityType(),
                         /*entityName*/ "Passport",
                         /* entityInstanceSubLabel= */ "Germany",
                         /* storedInWallet= */ false);
@@ -1095,6 +1097,7 @@ public class AutofillProfilesFragmentTest {
         EntityInstanceWithLabels entity1 =
                 new EntityInstanceWithLabels(
                         "guid1",
+                        TestUtils.getVehicleEntityType(),
                         /* entityInstanceLabel= */ "Vehicle",
                         /* entityInstanceSubLabel= */ "Mercedez",
                         /* storedInWallet= */ false);
@@ -1132,6 +1135,7 @@ public class AutofillProfilesFragmentTest {
         EntityInstanceWithLabels entity1 =
                 new EntityInstanceWithLabels(
                         "guid1",
+                        TestUtils.getVehicleEntityType(),
                         /* entityInstanceLabel= */ "Vehicle",
                         /* entityInstanceSubLabel= */ "Mercedez",
                         /* storedInWallet= */ false);
