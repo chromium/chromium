@@ -7,16 +7,20 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
-#include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "ui/views/widget/widget_observer.h"
+
+class GlobalBrowserCollection;
 
 namespace views {
 class Widget;
 }
 
-class RelaunchNotificationControllerPlatformImpl : public views::WidgetObserver,
-                                                   public BrowserListObserver {
+class RelaunchNotificationControllerPlatformImpl
+    : public views::WidgetObserver,
+      public BrowserCollectionObserver {
  public:
   RelaunchNotificationControllerPlatformImpl();
 
@@ -56,14 +60,14 @@ class RelaunchNotificationControllerPlatformImpl : public views::WidgetObserver,
   // views::WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override;
 
-  // BrowserListObserver:
-  void OnBrowserSetLastActive(Browser* browser) override;
+  // BrowserCollectionObserver:
+  void OnBrowserActivated(BrowserWindowInterface* browser) override;
 
  private:
   // Shows the notification in |browser| for a relaunch that will take place
   // at |deadline|. If |is_notification_style_ap_required| the relaunch required
   // notification is shown with Advanced Protection string and icon.
-  void ShowRequiredNotification(Browser* browser,
+  void ShowRequiredNotification(BrowserWindowInterface* browser,
                                 base::Time deadline,
                                 bool is_notification_style_ap_required);
 
@@ -83,6 +87,9 @@ class RelaunchNotificationControllerPlatformImpl : public views::WidgetObserver,
 
   // The last relaunch deadline if the relaunch notification has_shown_.
   base::Time last_relaunch_deadline_;
+
+  base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
+      browser_collection_observation_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_RELAUNCH_NOTIFICATION_RELAUNCH_NOTIFICATION_CONTROLLER_PLATFORM_IMPL_DESKTOP_H_

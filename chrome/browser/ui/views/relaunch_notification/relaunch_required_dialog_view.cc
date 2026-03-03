@@ -11,14 +11,14 @@
 #include "base/metrics/user_metrics_action.h"
 #include "build/branding_buildflags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/base/base_window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
@@ -39,13 +39,13 @@
 
 // static
 views::Widget* RelaunchRequiredDialogView::Show(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     base::Time deadline,
     bool ap_style,
     base::RepeatingClosure on_accept) {
   views::Widget* widget = constrained_window::CreateBrowserModalDialogViews(
       new RelaunchRequiredDialogView(deadline, ap_style, std::move(on_accept)),
-      browser->window()->GetNativeWindow());
+      browser->GetWindow()->GetNativeWindow());
   widget->Show();
   return widget;
 }

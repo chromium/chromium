@@ -14,9 +14,8 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/autofill/test/test_autofill_bubble_handler.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/translate/partial_translate_bubble_model.h"
@@ -31,6 +30,7 @@
 #endif  //  !BUILDFLAG(IS_ANDROID)
 
 class LocationBarTesting;
+class GlobalBrowserCollection;
 class OmniboxView;
 
 namespace qrcode_generator {
@@ -55,7 +55,8 @@ class SharingHubBubbleView;
 // contains a valid LocationBar, all other getters return NULL.
 // However, some of them can be preset to a specific value.
 // See BrowserWithTestWindowTest for an example of using this class.
-class TestBrowserWindow : public BrowserWindow, public BrowserListObserver {
+class TestBrowserWindow : public BrowserWindow,
+                          public BrowserCollectionObserver {
  public:
   TestBrowserWindow();
   TestBrowserWindow(const TestBrowserWindow&) = delete;
@@ -307,8 +308,8 @@ class TestBrowserWindow : public BrowserWindow, public BrowserListObserver {
     bool HasSecurityStateChanged() override;
   };
 
-  // BrowserListObserver:
-  void OnBrowserAdded(Browser* browser) override;
+  // BrowserCollectionObserver:
+  void OnBrowserCreated(BrowserWindowInterface* browser) override;
 
   autofill::TestAutofillBubbleHandler autofill_bubble_handler_;
   TestLocationBar location_bar_;
@@ -322,8 +323,8 @@ class TestBrowserWindow : public BrowserWindow, public BrowserListObserver {
   bool is_tab_strip_editable_ = true;
   bool is_tab_modal_popup_deprecated_ = false;
 
-  base::ScopedObservation<BrowserList, BrowserListObserver>
-      browser_list_observer_{this};
+  base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
+      browser_collection_observation_{this};
   raw_ptr<Browser> browser_;
   base::OnceClosure close_callback_;
 };

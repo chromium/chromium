@@ -10,7 +10,7 @@
 #include "chrome/browser/ui/views/relaunch_notification/relaunch_required_timer.h"
 #include "ui/views/window/dialog_delegate.h"
 
-class Browser;
+class BrowserWindowInterface;
 namespace views {
 class Widget;
 }  // namespace views
@@ -23,7 +23,7 @@ class RelaunchRequiredDialogView : public views::DialogDelegateView {
   // Shows the dialog in |browser| for a relaunch that will be forced at
   // |deadline|. |on_accept| is run if the user accepts the prompt to restart.
   // If |ap_style|, the dialog uses Advanced Protection string and icon.
-  static views::Widget* Show(Browser* browser,
+  static views::Widget* Show(BrowserWindowInterface* browser,
                              base::Time deadline,
                              bool ap_style,
                              base::RepeatingClosure on_accept);

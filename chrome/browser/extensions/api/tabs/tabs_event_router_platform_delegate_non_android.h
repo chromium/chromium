@@ -14,9 +14,9 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/extensions/api/tabs/tabs_api.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_observer.h"
-#include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/browser_tab_strip_tracker.h"
 #include "chrome/browser/ui/browser_tab_strip_tracker_delegate.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "extensions/browser/event_router.h"
@@ -29,6 +29,8 @@ namespace resource_coordinator {
 class TabLifecycleUnitSource;
 }
 
+class GlobalBrowserCollection;
+
 namespace extensions {
 class TabsEventRouter;
 
@@ -38,7 +40,7 @@ class TabsEventRouter;
 class TabsEventRouterPlatformDelegate
     : public TabStripModelObserver,
       public BrowserTabStripTrackerDelegate,
-      public BrowserListObserver,
+      public BrowserCollectionObserver,
       public resource_coordinator::LifecycleUnitObserver {
  public:
   TabsEventRouterPlatformDelegate(TabsEventRouter& router, Profile& profile);
@@ -53,9 +55,9 @@ class TabsEventRouterPlatformDelegate
   // BrowserTabStripTrackerDelegate:
   bool ShouldTrackBrowser(BrowserWindowInterface* browser) override;
 
-  // BrowserListObserver:
-  void OnBrowserSetLastActive(Browser* browser) override;
-  void OnBrowserAdded(Browser* browser) override;
+  // BrowserCollectionObserver:
+  void OnBrowserActivated(BrowserWindowInterface* browser) override;
+  void OnBrowserCreated(BrowserWindowInterface* browser) override;
 
   // TabStripModelObserver:
   void OnTabStripModelChanged(
@@ -103,6 +105,9 @@ class TabsEventRouterPlatformDelegate
   base::ScopedObservation<resource_coordinator::TabLifecycleUnitSource,
                           resource_coordinator::LifecycleUnitObserver>
       tab_source_scoped_observation_{this};
+
+  base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
+      browser_collection_observation_{this};
 };
 
 }  // namespace extensions

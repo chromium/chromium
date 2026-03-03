@@ -25,10 +25,10 @@
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit_source.h"
 #include "chrome/browser/resource_coordinator/utils.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/recently_audible_helper.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -66,7 +66,8 @@ TabsEventRouterPlatformDelegate::TabsEventRouterPlatformDelegate(
       browser_tab_strip_tracker_(this, this) {
   DCHECK(!profile.IsOffTheRecord());
 
-  BrowserList::AddObserver(this);
+  browser_collection_observation_.Observe(
+      GlobalBrowserCollection::GetInstance());
   browser_tab_strip_tracker_.Init();
 
   // Track any existing browsers. The `browser_tab_strip_tracker_` does this for
@@ -74,7 +75,7 @@ TabsEventRouterPlatformDelegate::TabsEventRouterPlatformDelegate(
   // TabListInterface.
   ForEachCurrentAndNewBrowserWindowInterfaceOrderedByActivation(
       [this](BrowserWindowInterface* browser) {
-        OnBrowserAdded(browser->GetBrowserForMigrationOnly());
+        OnBrowserCreated(browser);
         return true;  // Keep iterating.
       });
 
@@ -82,24 +83,24 @@ TabsEventRouterPlatformDelegate::TabsEventRouterPlatformDelegate(
       resource_coordinator::GetTabLifecycleUnitSource());
 }
 
-TabsEventRouterPlatformDelegate::~TabsEventRouterPlatformDelegate() {
-  BrowserList::RemoveObserver(this);
-}
+TabsEventRouterPlatformDelegate::~TabsEventRouterPlatformDelegate() = default;
 
 bool TabsEventRouterPlatformDelegate::ShouldTrackBrowser(
     BrowserWindowInterface* browser) {
   return router_->ShouldTrackBrowser(*browser);
 }
 
-void TabsEventRouterPlatformDelegate::OnBrowserSetLastActive(Browser* browser) {
+void TabsEventRouterPlatformDelegate::OnBrowserActivated(
+    BrowserWindowInterface* browser) {
   TabsWindowsAPI* tabs_window_api = TabsWindowsAPI::Get(&(*profile_));
   if (tabs_window_api) {
     tabs_window_api->windows_event_router()->OnActiveWindowChanged(
-        browser ? BrowserExtensionWindowController::From(browser) : nullptr);
+        BrowserExtensionWindowController::From(browser));
   }
 }
 
-void TabsEventRouterPlatformDelegate::OnBrowserAdded(Browser* browser) {
+void TabsEventRouterPlatformDelegate::OnBrowserCreated(
+    BrowserWindowInterface* browser) {
   if (ShouldTrackBrowser(browser)) {
     TabListInterface* tab_list = TabListInterface::From(browser);
     CHECK(tab_list);

@@ -10,9 +10,9 @@
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/views/relaunch_notification/relaunch_recommended_bubble_view.h"
 #include "chrome/browser/ui/views/relaunch_notification/relaunch_required_dialog_view.h"
 #include "ui/views/widget/widget.h"
@@ -41,11 +41,7 @@ RelaunchNotificationControllerPlatformImpl::
 RelaunchNotificationControllerPlatformImpl::
     ~RelaunchNotificationControllerPlatformImpl() {
   DCHECK(!widget_);
-  if (on_visible_) {
-    BrowserList::RemoveObserver(this);
-  }
   CHECK(!WidgetObserver::IsInObserverList());
-  CHECK(!BrowserListObserver::IsInObserverList());
 }
 
 void RelaunchNotificationControllerPlatformImpl::NotifyRelaunchRecommended(
@@ -90,7 +86,8 @@ void RelaunchNotificationControllerPlatformImpl::NotifyRelaunchRequired(
   // If the instance is not already waiting for one to become active from a
   // previous call, start observing now.
   if (!on_visible_) {
-    BrowserList::AddObserver(this);
+    browser_collection_observation_.Observe(
+        GlobalBrowserCollection::GetInstance());
   }
 
   is_notification_style_ap_required_ = is_notification_style_ap_required;
@@ -107,7 +104,7 @@ void RelaunchNotificationControllerPlatformImpl::CloseRelaunchNotification() {
     widget_ = nullptr;
   }
   if (on_visible_) {
-    BrowserList::RemoveObserver(this);
+    browser_collection_observation_.Reset();
     on_visible_.Reset();
     last_relaunch_deadline_ = base::Time();
   }
@@ -144,14 +141,14 @@ void RelaunchNotificationControllerPlatformImpl::OnWidgetDestroying(
   widget_ = nullptr;
 }
 
-void RelaunchNotificationControllerPlatformImpl::OnBrowserSetLastActive(
-    Browser* browser) {
+void RelaunchNotificationControllerPlatformImpl::OnBrowserActivated(
+    BrowserWindowInterface* browser) {
   // Ignore non-tabbed browsers.
-  if (!browser->is_type_normal()) {
+  if (browser->GetType() != BrowserWindowInterface::TYPE_NORMAL) {
     return;
   }
 
-  BrowserList::RemoveObserver(this);
+  browser_collection_observation_.Reset();
 
   base::Time new_deadline =
       has_shown_ ? last_relaunch_deadline_ : std::move(on_visible_).Run();
@@ -165,7 +162,7 @@ void RelaunchNotificationControllerPlatformImpl::OnBrowserSetLastActive(
 }
 
 void RelaunchNotificationControllerPlatformImpl::ShowRequiredNotification(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     base::Time deadline,
     bool is_notification_style_ap_required) {
   widget_ = RelaunchRequiredDialogView::Show(
