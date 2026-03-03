@@ -23,8 +23,7 @@ class BrowserWindowInterface;
 
 // Manages the default browser dialog, ensuring it is shown on all appropriate
 // browser windows and handling user interactions.
-class DefaultBrowserBubbleDialogManager : public BrowserCollectionObserver,
-                                          public DefaultBrowserSurfaceManager {
+class DefaultBrowserBubbleDialogManager : public DefaultBrowserSurfaceManager {
  public:
   DefaultBrowserBubbleDialogManager();
   ~DefaultBrowserBubbleDialogManager() override;
@@ -35,33 +34,21 @@ class DefaultBrowserBubbleDialogManager : public BrowserCollectionObserver,
       const DefaultBrowserBubbleDialogManager&) = delete;
 
   // DefaultBrowserSurfaceManager:
-  void Show(
-      std::unique_ptr<default_browser::DefaultBrowserController> controller,
-      bool can_pin_to_taskbar) override;
-  void CloseAll() override;
-  default_browser::DefaultBrowserEntrypointType GetEntrypointType()
-      const override;
+  default_browser::DefaultBrowserEntrypointType GetEntrypointType() const final;
+
+  // DefaultBrowserSurfaceManager:
+  void ShowForBrowser(BrowserWindowInterface* browser) final;
+  void CloseForBrowser(BrowserWindowInterface* browser) final;
+  void CloseAllPromptInstances() final;
 
  private:
   void OnAccept();
   void OnDismiss();
 
-  // BrowserCollectionObserver
-  void OnBrowserCreated(BrowserWindowInterface* browser) override;
-  void OnBrowserClosed(BrowserWindowInterface* browser) override;
-
-  bool can_pin_to_taskbar_ = false;
-
-  std::unique_ptr<default_browser::DefaultBrowserController>
-      default_browser_controller_;
-
   // A map of browser windows to the dialog widgets that are shown for them.
   // The widget is owned by the browser window.
   std::map<raw_ptr<BrowserWindowInterface>, std::unique_ptr<views::Widget>>
       dialog_widgets_;
-
-  base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
-      browser_collection_observation_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_STARTUP_DEFAULT_BROWSER_PROMPT_DEFAULT_BROWSER_BUBBLE_DIALOG_MANAGER_H_

@@ -50,16 +50,9 @@ using CloseReason = DefaultBrowserPromptManager::CloseReason;
 DefaultBrowserInfoBarManager::DefaultBrowserInfoBarManager() = default;
 DefaultBrowserInfoBarManager::~DefaultBrowserInfoBarManager() = default;
 
-void DefaultBrowserInfoBarManager::Show(
-    std::unique_ptr<default_browser::DefaultBrowserController> controller,
-    bool can_pin_to_taskbar) {
-  can_pin_to_taskbar_ = can_pin_to_taskbar;
+void DefaultBrowserInfoBarManager::Show(bool can_pin_to_taskbar) {
+  DefaultBrowserSurfaceManager::Show(can_pin_to_taskbar);
 
-  default_browser_controller_ = std::move(controller);
-  default_browser_controller_->OnShown();
-
-  browser_collection_observation_.Observe(
-      GlobalBrowserCollection::GetInstance());
   browser_tab_strip_tracker_ =
       std::make_unique<BrowserTabStripTracker>(this, this);
   // This will trigger a call to `OnTabStripModelChanged`, which will create
@@ -67,23 +60,14 @@ void DefaultBrowserInfoBarManager::Show(
   browser_tab_strip_tracker_->Init();
 }
 
-void DefaultBrowserInfoBarManager::CloseAll() {
-  can_pin_to_taskbar_ = false;
-  user_initiated_info_bar_close_pending_.reset();
-
-  browser_collection_observation_.Reset();
-  browser_tab_strip_tracker_.reset();
-
-  for (const auto& infobars_entry : infobars_) {
-    infobars_entry.second->owner()->RemoveObserver(this);
-    infobars_entry.second->RemoveSelf();
-  }
-
-  infobars_.clear();
+void DefaultBrowserInfoBarManager::ShowForBrowser(
+    BrowserWindowInterface* browser) {
+  // The BrowserTabStripTracker will handle showing infobars for both existing
+  // and newly created browsers, so we don't need to do anything here.
 }
 
-void DefaultBrowserInfoBarManager::OnBrowserClosed(
-    BrowserWindowInterface* /*browser*/) {
+void DefaultBrowserInfoBarManager::CloseForBrowser(
+    BrowserWindowInterface* browser) {
   if (user_initiated_info_bar_close_pending_.has_value()) {
     return;
   }
@@ -92,9 +76,9 @@ void DefaultBrowserInfoBarManager::OnBrowserClosed(
   // user hasn't interacted with the infobar yet, we record this as IGNORED.
   bool all_tracked_browser_windows_closed = true;
   GlobalBrowserCollection::GetInstance()->ForEach(
-      [&all_tracked_browser_windows_closed,
-       this](BrowserWindowInterface* browser) {
-        if (ShouldTrackBrowser(browser)) {
+      [&all_tracked_browser_windows_closed, this,
+       browser](BrowserWindowInterface* bwi) {
+        if (bwi != browser && IsBrowserValidForShowing(bwi)) {
           all_tracked_browser_windows_closed = false;
         }
         return all_tracked_browser_windows_closed;
@@ -106,15 +90,26 @@ void DefaultBrowserInfoBarManager::OnBrowserClosed(
 
   // Reset the observers.
   browser_tab_strip_tracker_.reset();
-  browser_collection_observation_.Reset();
 
-  default_browser_controller_->OnIgnored();
-  default_browser_controller_.reset();
+  HandleIgnore();
 
   base::RecordAction(base::UserMetricsAction("DefaultBrowserInfoBar_Ignore"));
   UMA_HISTOGRAM_ENUMERATION("DefaultBrowser.InfoBar.UserInteraction",
                             IGNORE_INFO_BAR_PER_SESSION,
                             NUM_INFO_BAR_USER_INTERACTION_TYPES);
+}
+
+void DefaultBrowserInfoBarManager::CloseAllPromptInstances() {
+  user_initiated_info_bar_close_pending_.reset();
+
+  browser_tab_strip_tracker_.reset();
+
+  for (const auto& infobars_entry : infobars_) {
+    infobars_entry.second->owner()->RemoveObserver(this);
+    infobars_entry.second->RemoveSelf();
+  }
+
+  infobars_.clear();
 }
 
 void DefaultBrowserInfoBarManager::CreateInfoBarForWebContents(
@@ -125,7 +120,7 @@ void DefaultBrowserInfoBarManager::CreateInfoBarForWebContents(
 
   infobars::InfoBar* infobar = DefaultBrowserInfoBarDelegate::Create(
       infobars::ContentInfoBarManager::FromWebContents(web_contents), profile,
-      can_pin_to_taskbar_);
+      can_pin_to_taskbar());
 
   if (infobar == nullptr) {
     // Infobar may be null if `InfoBarManager::ShouldShowInfoBar` returns false,
@@ -145,9 +140,7 @@ void DefaultBrowserInfoBarManager::CreateInfoBarForWebContents(
 
 bool DefaultBrowserInfoBarManager::ShouldTrackBrowser(
     BrowserWindowInterface* browser) {
-  return browser->GetType() == BrowserWindowInterface::TYPE_NORMAL &&
-         !browser->GetProfile()->IsIncognitoProfile() &&
-         !browser->GetProfile()->IsGuestSession();
+  return IsBrowserValidForShowing(browser);
 }
 
 void DefaultBrowserInfoBarManager::OnTabStripModelChanged(
@@ -196,11 +189,9 @@ void DefaultBrowserInfoBarManager::OnAccept() {
 
   user_initiated_info_bar_close_pending_ = CloseReason::kAccept;
 
-  // The controller will be destroyed once the callback is executed.
-  default_browser_controller_->OnAccepted(
-      base::DoNothingWithBoundArgs(std::move(default_browser_controller_)));
+  HandleAccept();
 
-  if (can_pin_to_taskbar_) {
+  if (can_pin_to_taskbar()) {
 #if BUILDFLAG(IS_WIN)
     // Attempt the pin to taskbar in parallel with bringing up the Windows
     // settings UI. Serializing the operations is an option, but since the user
@@ -217,8 +208,7 @@ void DefaultBrowserInfoBarManager::OnAccept() {
 }
 
 void DefaultBrowserInfoBarManager::OnDismiss() {
-  default_browser_controller_->OnDismissed();
-  default_browser_controller_.reset();
+  HandleDismiss();
 
   base::RecordAction(base::UserMetricsAction("DefaultBrowserInfoBar_Dismiss"));
   UMA_HISTOGRAM_ENUMERATION("DefaultBrowser.InfoBar.UserInteraction",

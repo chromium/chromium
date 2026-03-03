@@ -156,10 +156,7 @@ void DefaultBrowserPromptManager::ShowPrompts(bool can_pin_to_taskbar) {
   }
   CHECK(prompt_surface_manager_);
 
-  prompt_surface_manager_->Show(
-      default_browser::DefaultBrowserManager::CreateControllerFor(
-          prompt_surface_manager_->GetEntrypointType()),
-      can_pin_to_taskbar);
+  prompt_surface_manager_->Show(can_pin_to_taskbar);
 }
 
 void DefaultBrowserPromptManager::CloseAllPrompts(CloseReason close_reason) {

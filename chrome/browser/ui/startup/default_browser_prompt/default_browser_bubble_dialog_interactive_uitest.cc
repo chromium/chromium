@@ -105,11 +105,7 @@ class DefaultBrowserDialogManagerInteractiveTest
  protected:
   void ShowDialogManager() {
     manager_ = std::make_unique<DefaultBrowserBubbleDialogManager>();
-    manager_->Show(
-        std::make_unique<default_browser::DefaultBrowserController>(
-            std::make_unique<default_browser::FakeDefaultBrowserSetter>(),
-            default_browser::DefaultBrowserEntrypointType::kBubbleDialog),
-        /*can_pin_to_taskbar=*/false);
+    manager_->Show(/*can_pin_to_taskbar=*/false);
   }
 
   void CloseDialogs() { manager_->CloseAll(); }

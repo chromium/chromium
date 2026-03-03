@@ -25,43 +25,15 @@
 #include "chrome/installer/util/shell_util.h"
 #endif
 
-namespace {
-
-bool IsBrowserValidForShowingDialog(BrowserWindowInterface* browser) {
-  return browser->GetType() == BrowserWindowInterface::TYPE_NORMAL &&
-         !browser->GetProfile()->IsIncognitoProfile() &&
-         !browser->GetProfile()->IsGuestSession();
-}
-
-}  // namespace
-
 DefaultBrowserBubbleDialogManager::DefaultBrowserBubbleDialogManager() =
     default;
 
 DefaultBrowserBubbleDialogManager::~DefaultBrowserBubbleDialogManager() =
     default;
 
-void DefaultBrowserBubbleDialogManager::Show(
-    std::unique_ptr<default_browser::DefaultBrowserController> controller,
-    bool can_pin_to_taskbar) {
-  CloseAll();
-  can_pin_to_taskbar_ = can_pin_to_taskbar;
-
-  default_browser_controller_ = std::move(controller);
-  default_browser_controller_->OnShown();
-
-  auto* global_browser_collection = GlobalBrowserCollection::GetInstance();
-  global_browser_collection->ForEach([this](BrowserWindowInterface* bwi) {
-    this->OnBrowserCreated(bwi);
-    return true;
-  });
-
-  browser_collection_observation_.Observe(global_browser_collection);
-}
-
-void DefaultBrowserBubbleDialogManager::OnBrowserCreated(
+void DefaultBrowserBubbleDialogManager::ShowForBrowser(
     BrowserWindowInterface* browser) {
-  if (!IsBrowserValidForShowingDialog(browser)) {
+  if (!IsBrowserValidForShowing(browser)) {
     return;
   }
 
@@ -74,14 +46,14 @@ void DefaultBrowserBubbleDialogManager::OnBrowserCreated(
       browser_view->toolbar_button_provider()->GetAppMenuButton();
 
   dialog_widgets_[browser] = default_browser::ShowDefaultBrowserBubbleDialog(
-      anchor_view, can_pin_to_taskbar_,
+      anchor_view, can_pin_to_taskbar(),
       base::BindOnce(&DefaultBrowserBubbleDialogManager::OnAccept,
                      base::Unretained(this)),
       base::BindOnce(&DefaultBrowserBubbleDialogManager::OnDismiss,
                      base::Unretained(this)));
 }
 
-void DefaultBrowserBubbleDialogManager::OnBrowserClosed(
+void DefaultBrowserBubbleDialogManager::CloseForBrowser(
     BrowserWindowInterface* browser) {
   if (auto widget = dialog_widgets_.extract(browser)) {
     widget.mapped().reset();
@@ -89,7 +61,7 @@ void DefaultBrowserBubbleDialogManager::OnBrowserClosed(
 }
 
 void DefaultBrowserBubbleDialogManager::OnAccept() {
-  if (can_pin_to_taskbar_) {
+  if (can_pin_to_taskbar()) {
 #if BUILDFLAG(IS_WIN)
     // Attempt the pin to taskbar in parallel with bringing up the Windows
     // settings UI. Serializing the operations is an option, but since the user
@@ -103,25 +75,21 @@ void DefaultBrowserBubbleDialogManager::OnAccept() {
     NOTREACHED();
 #endif  // BUILDFLAG(IS_WIN)
   }
-  default_browser_controller_->OnAccepted(
-      base::DoNothingWithBoundArgs(std::move(default_browser_controller_)));
+  HandleAccept();
 
   DefaultBrowserPromptManager::GetInstance()->CloseAllPrompts(
       DefaultBrowserPromptManager::CloseReason::kAccept);
 }
 
 void DefaultBrowserBubbleDialogManager::OnDismiss() {
-  default_browser_controller_->OnDismissed();
-  default_browser_controller_.reset();
+  HandleDismiss();
 
   DefaultBrowserPromptManager::GetInstance()->CloseAllPrompts(
       DefaultBrowserPromptManager::CloseReason::kDismiss);
 }
 
-void DefaultBrowserBubbleDialogManager::CloseAll() {
-  can_pin_to_taskbar_ = false;
+void DefaultBrowserBubbleDialogManager::CloseAllPromptInstances() {
   dialog_widgets_.clear();
-  browser_collection_observation_.Reset();
 }
 
 default_browser::DefaultBrowserEntrypointType

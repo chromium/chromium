@@ -53,6 +53,7 @@ source_set("impl") {
     "default_browser_prompt.cc",
     "default_browser_prompt_manager.cc",
     "default_browser_prompt_prefs.cc",
+    "default_browser_surface_manager.cc",
   ]
 
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
