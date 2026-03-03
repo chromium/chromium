@@ -97,7 +97,11 @@ void ImplementationBase::GenSyncToken(GLbyte* sync_token) {
   SyncToken sync_token_data(gpu_control_->GetNamespaceID(),
                             gpu_control_->GetCommandBufferID(), fence_sync);
   sync_token_data.SetVerifyFlush();
-  UNSAFE_TODO(memcpy(sync_token, &sync_token_data, sizeof(sync_token_data)));
+  // SAFETY: The caller must ensure `sync_token` points to
+  // `sizeof(sync_token_data)` bytes.
+  UNSAFE_TODO(base::span(sync_token, sizeof(sync_token_data))
+                  .copy_from(base::span(sync_token_data.GetConstData(),
+                                        sizeof(sync_token_data))));
 }
 
 void ImplementationBase::GenUnverifiedSyncToken(GLbyte* sync_token) {
@@ -114,7 +118,11 @@ void ImplementationBase::GenUnverifiedSyncToken(GLbyte* sync_token) {
   // Copy the data over after setting the data to ensure alignment.
   SyncToken sync_token_data(gpu_control_->GetNamespaceID(),
                             gpu_control_->GetCommandBufferID(), fence_sync);
-  UNSAFE_TODO(memcpy(sync_token, &sync_token_data, sizeof(sync_token_data)));
+  // SAFETY: The caller must ensure `sync_token` points to
+  // `sizeof(sync_token_data)` bytes.
+  UNSAFE_TODO(base::span(sync_token, sizeof(sync_token_data))
+                  .copy_from(base::span(sync_token_data.GetConstData(),
+                                        sizeof(sync_token_data))));
 }
 
 void ImplementationBase::VerifySyncTokens(GLbyte** sync_tokens, GLsizei count) {
@@ -122,7 +130,13 @@ void ImplementationBase::VerifySyncTokens(GLbyte** sync_tokens, GLsizei count) {
   for (GLsizei i = 0; i < count; ++i) {
     if (UNSAFE_TODO(sync_tokens[i])) {
       SyncToken sync_token;
-      UNSAFE_TODO(memcpy(&sync_token, sync_tokens[i], sizeof(sync_token)));
+      // SAFETY: The API passes an array of sync-token pointers; this branch
+      // handles only non-null entries. Each entry points to one sync-token
+      // blob, and SyncToken is guaranteed to fit (see sync_token.h
+      // static_assert), so this fixed-size copy is bounded.
+      UNSAFE_TODO(
+          base::span(sync_token.GetData(), sizeof(sync_token))
+              .copy_from(base::span(sync_tokens[i], sizeof(sync_token))));
 
       if (sync_token.HasData() && !sync_token.verified_flush()) {
         if (!GetVerifiedSyncTokenForIPC(sync_token, &sync_token)) {
@@ -136,8 +150,11 @@ void ImplementationBase::VerifySyncTokens(GLbyte** sync_tokens, GLsizei count) {
 
       // Set verify bit on empty sync tokens too.
       sync_token.SetVerifyFlush();
-
-      UNSAFE_TODO(memcpy(sync_tokens[i], &sync_token, sizeof(sync_token)));
+      // SAFETY: Same reasoning as above; writing back exactly sizeof(SyncToken)
+      // bytes to the same non-null sync-token blob.
+      UNSAFE_TODO(base::span(sync_tokens[i], sizeof(sync_token))
+                      .copy_from(base::span(sync_token.GetConstData(),
+                                            sizeof(sync_token))));
     }
   }
 
@@ -152,7 +169,10 @@ void ImplementationBase::WaitSyncToken(const GLbyte* sync_token_data) {
 
   // Copy the data over before data access to ensure alignment.
   SyncToken sync_token, verified_sync_token;
-  UNSAFE_TODO(memcpy(&sync_token, sync_token_data, sizeof(SyncToken)));
+  // SAFETY: The caller must ensure `sync_token_data` points to
+  // `sizeof(sync_token)` bytes.
+  UNSAFE_TODO(base::span(sync_token.GetData(), sizeof(SyncToken))
+                  .copy_from(base::span(sync_token_data, sizeof(SyncToken))));
 
   if (!sync_token.HasData())
     return;
@@ -308,7 +328,11 @@ bool ImplementationBase::GetBucketContents(uint32_t bucket_id,
         }
       }
       uint32_t size_to_copy = std::min(size, buffer.size());
-      UNSAFE_TODO(memcpy(&(*data)[offset], buffer.address(), size_to_copy));
+      // SAFETY: `size_to_copy` is bounded by both remaining destination bytes
+      // (`size`) and available source bytes (`buffer.size()`), and `offset`
+      // tracks bytes already copied into `data`.
+      base::as_writable_bytes(base::span(*data).subspan(offset, size_to_copy))
+          .copy_from(buffer.as_byte_span().first(size_to_copy));
       offset += size_to_copy;
       size -= size_to_copy;
       buffer.Release();
@@ -369,7 +393,7 @@ bool ImplementationBase::GetBucketAsString(uint32_t bucket_id,
   if (data.empty()) {
     return false;
   }
-  str->assign(&data[0], UNSAFE_TODO(&data[0] + data.size() - 1));
+  str->assign(data.begin(), data.end() - 1);
   return true;
 }
 
