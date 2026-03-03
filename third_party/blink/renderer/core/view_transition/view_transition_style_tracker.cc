@@ -910,7 +910,7 @@ bool ViewTransitionStyleTracker::HasContainmentBoundary(
     if (Element* element = DynamicTo<Element>(node)) {
       if (element != element_ &&
           element->GetComputedStyle()->ViewTransitionScope() ==
-              EViewTransitionScope::kAuto) {
+              EViewTransitionScope::kAll) {
         return true;
       }
     }

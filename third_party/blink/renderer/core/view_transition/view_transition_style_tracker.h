@@ -260,7 +260,7 @@ class ViewTransitionStyleTracker
 
   bool NeedsSnapshotForCapture() const;
 
-  // Determines if there is an element with view-transition-scope: auto between
+  // Determines if there is an element with view-transition-scope: all between
   // the child's node and the root node (non-inclusive). The check needs to be
   // more exhaustive than checking paint layers since v-t-s can be on elements
   // that do not create a paint layer, as well as elements with

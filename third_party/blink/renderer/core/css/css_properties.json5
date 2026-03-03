@@ -6555,7 +6555,7 @@
       property_methods: ["CSSValueFromComputedStyleInternal"],
       inherited: false,
       field_template: "keyword",
-      keywords: ["none", "auto"],
+      keywords: ["none", "all"],
       typedom_types: ["Keyword"],
       default_value: "none",
       runtime_flag: "ScopedViewTransitions",

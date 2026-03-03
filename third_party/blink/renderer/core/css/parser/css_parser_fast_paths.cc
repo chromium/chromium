@@ -1445,7 +1445,7 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
       return value_id == CSSValueID::kNone ||
              value_id == CSSValueID::kNonScalingStroke;
     case CSSPropertyID::kViewTransitionScope:
-      return value_id == CSSValueID::kNone || value_id == CSSValueID::kAuto;
+      return value_id == CSSValueID::kNone || value_id == CSSValueID::kAll;
     case CSSPropertyID::kVisibility:
       return value_id == CSSValueID::kVisible ||
              value_id == CSSValueID::kHidden ||
