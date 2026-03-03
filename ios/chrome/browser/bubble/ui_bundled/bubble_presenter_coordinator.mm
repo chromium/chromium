@@ -68,6 +68,8 @@
                        infobarModal:infobarModalPresenter];
 
   _presenter.delegate = self.bubblePresenterDelegate;
+  _presenter.geminiHandler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), BWGCommands);
 
   [self.browser->GetCommandDispatcher()
       startDispatchingToTarget:self

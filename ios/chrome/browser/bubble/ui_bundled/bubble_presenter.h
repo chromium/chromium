@@ -59,6 +59,9 @@ class DeviceSwitcherResultDispatcher;
 @property(nonatomic, weak) id<PageActionMenuEntryPointCommands>
     pageActionMenuEntryPointHandler;
 
+// Command handler for dispatching Gemini commands.
+@property(nonatomic, weak) id<BWGCommands> geminiHandler;
+
 // The view controller that presents the bubbles.
 @property(nonatomic, weak) UIViewController* rootViewController;
 

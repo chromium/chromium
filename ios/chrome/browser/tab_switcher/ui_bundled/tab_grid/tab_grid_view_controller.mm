@@ -1308,6 +1308,9 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
         constraintEqualToAnchor:self.topToolbar.bottomAnchor],
     self.swipeToIncognitoIPHBottomConstraint
   ]];
+  [self.geminiHandler
+      hideFloatyIfInvokedAnimated:NO
+                       fromSource:gemini::FloatyUpdateSource::GestureIph];
   [self.swipeToIncognitoIPH startAnimation];
 }
 
@@ -2062,6 +2065,10 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 - (void)gestureInProductHelpView:(GestureInProductHelpView*)view
             didDismissWithReason:(IPHDismissalReasonType)reason {
   [self.delegate tabGridDidDismissSwipeToIncognitoIPHWithReason:reason];
+  [self.geminiHandler
+      updateFloatyVisibilityIfEligibleAnimated:NO
+                                    fromSource:gemini::FloatyUpdateSource::
+                                                   GestureIph];
 }
 
 - (void)gestureInProductHelpView:(GestureInProductHelpView*)view

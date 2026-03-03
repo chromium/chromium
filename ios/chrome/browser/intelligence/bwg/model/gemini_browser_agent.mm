@@ -636,6 +636,7 @@ bool GeminiBrowserAgent::ShouldSourceReshowFloaty(
     case gemini::FloatyUpdateSource::Alert:
     case gemini::FloatyUpdateSource::Banner:
     case gemini::FloatyUpdateSource::Keyboard:
+    case gemini::FloatyUpdateSource::GestureIph:
       return true;
   }
 }
