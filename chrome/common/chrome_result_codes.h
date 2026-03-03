@@ -135,11 +135,15 @@ enum ResultCode {
       partition_alloc::kTerminateOnCommitFailureExitCode,
   // LINT.ThenChange(/base/allocator/partition_allocator/src/partition_alloc/page_allocator.h:CHROME_RESULT_CODE_TERMINATED_BY_OTHER_PROCESS_ON_COMMIT_FAILURE)
 
+  // The isolated browser process launched but it was not possible to wait on
+  // the exit of the process, so the browser must exit. This should not happen.
+  CHROME_RESULT_CODE_INVALID_ISOLATED_BROWSER_PROCESS,
+
   // Last return code (keep this last).
   CHROME_RESULT_CODE_CHROME_LAST_CODE
 };
 
-static_assert(CHROME_RESULT_CODE_CHROME_LAST_CODE == 40,
+static_assert(CHROME_RESULT_CODE_CHROME_LAST_CODE == 41,
               "Please make sure the enum values are in sync with enums.xml");
 
 // Returns true if the result code should be treated as a normal exit code i.e.

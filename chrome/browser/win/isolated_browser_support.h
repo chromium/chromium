@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_WIN_ISOLATED_BROWSER_SUPPORT_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/process/process.h"
 #include "base/types/expected.h"
@@ -25,20 +26,20 @@ class IsolatedBrowser {
   // Attempt to launch an isolated browser process with the command line
   // `command_line`. If successful, an `IsolatedBrowser` is returned, if not
   // then an HRESULT containing the error launching the process.
-  static base::expected<std::unique_ptr<IsolatedBrowser>, HRESULT> Launch(
+  static base::expected<IsolatedBrowser, HRESULT> Launch(
       const base::CommandLine& command_line);
 
-  IsolatedBrowser(IsolatedBrowser&& other) = delete;
-  IsolatedBrowser& operator=(IsolatedBrowser&& other) = delete;
+  IsolatedBrowser(IsolatedBrowser&& other);
+  IsolatedBrowser& operator=(IsolatedBrowser&& other);
   IsolatedBrowser(const IsolatedBrowser&) = delete;
   IsolatedBrowser& operator=(const IsolatedBrowser&) = delete;
 
   ~IsolatedBrowser();
 
-  // Wait for exit of the isolated browser process, and return its exit code.
-  // This should typically be then returned as the exit code of the calling
-  // process.
-  int WaitForExit() const;
+  // Wait for exit of the isolated browser process, and return its `exit_code`,
+  // if it was possible to obtain it. This should typically be then returned as
+  // the exit code of the calling process.
+  std::optional<int> WaitForExit() const;
 
  private:
   IsolatedBrowser(base::Process process, base::win::ScopedHandle job);
@@ -47,10 +48,10 @@ class IsolatedBrowser {
   // process, ensuring that if the launcher terminates then any isolated browser
   // also does. This means that the isolated browser can guarantee that its
   // lifetime always exceeds the lifetime of its parent process.
-  const base::win::ScopedHandle job_;
+  base::win::ScopedHandle job_;
 
   // Handle to the isolated browser process, returned from the elevated service.
-  const base::Process process_;
+  base::Process process_;
 };
 
 // Returns true if the platform configuration indicates that the browser should

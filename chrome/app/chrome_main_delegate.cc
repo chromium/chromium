@@ -1152,7 +1152,11 @@ std::optional<int> ChromeMainDelegate::BasicStartupComplete() {
       chrome::IsIsolationEnabled(command_line)) {
     const auto isolated_process = chrome::IsolatedBrowser::Launch(command_line);
     if (isolated_process.has_value()) {
-      return isolated_process.value()->WaitForExit();
+      const auto exit_code = isolated_process->WaitForExit();
+      if (exit_code) {
+        return *exit_code;
+      }
+      return CHROME_RESULT_CODE_INVALID_ISOLATED_BROWSER_PROCESS;
     }
   }
 
