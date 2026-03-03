@@ -41,9 +41,13 @@ class SignoutConfirmationUI
    public:
     // Called when the `handler_` is set and ready to be used.
     // TODO(crbug.com/469344442): This method is only used in tests.
-    // Once an alterinative observer is used for the tests that need this,
+    // Once an alternative observer is used for the tests that need this,
     // remove this method (and observer).
     virtual void OnSignoutConfirmationUIHandlerReady() = 0;
+
+    // Called when the SignoutConfirmationUI is being destroyed.
+    virtual void OnSignoutConfirmationUIDestroying(
+        SignoutConfirmationUI* ui) = 0;
   };
 
   explicit SignoutConfirmationUI(content::WebUI* web_ui);

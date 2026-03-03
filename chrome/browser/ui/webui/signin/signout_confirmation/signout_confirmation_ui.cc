@@ -51,7 +51,11 @@ SignoutConfirmationUI::SignoutConfirmationUI(content::WebUI* web_ui)
   web_ui->AddMessageHandler(std::move(plural_string_handler));
 }
 
-SignoutConfirmationUI::~SignoutConfirmationUI() = default;
+SignoutConfirmationUI::~SignoutConfirmationUI() {
+  for (Observer& observer : observers_) {
+    observer.OnSignoutConfirmationUIDestroying(this);
+  }
+}
 
 WEB_UI_CONTROLLER_TYPE_IMPL(SignoutConfirmationUI)
 

@@ -5412,6 +5412,7 @@ if (!is_android) {
         deps += [
           "//chrome/browser/profiles/batch_upload:test_support",
           "//chrome/browser/ui/webui/signin/signout_confirmation",
+          "//chrome/browser/ui/webui/signin/signout_confirmation:test_support",
           "//components/sync_bookmarks",
         ]
       }

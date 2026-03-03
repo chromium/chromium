@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "chrome/browser/ui/webui/signin/signout_confirmation/signout_confirmation_ui.h"
+#include "chrome/browser/ui/webui/signin/signout_confirmation/test_signout_confirmation_handler_waiter.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome_signout_confirmation_prompt.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -170,34 +171,6 @@ void VerifyUnsyncedDataCountHistograms(
   }
 }
 
-class TestSignoutConfirmationUIObserver
-    : public SignoutConfirmationUI::Observer {
- public:
-  explicit TestSignoutConfirmationUIObserver(
-      SignoutConfirmationUI* signout_confirmation_ui)
-      : signout_confirmation_ui_(signout_confirmation_ui) {
-    CHECK(signout_confirmation_ui);
-    signout_confirmation_ui_observation_.Observe(signout_confirmation_ui);
-  }
-  ~TestSignoutConfirmationUIObserver() override = default;
-
-  // SignoutConfirmationUI::Observer override:
-  void OnSignoutConfirmationUIHandlerReady() override { run_loop_.Quit(); }
-
-  void WaitForHandler() {
-    if (signout_confirmation_ui_->IsHandlerReadyForTesting()) {
-      return;
-    }
-    run_loop_.Run();
-  }
-
- private:
-  base::RunLoop run_loop_;
-  base::ScopedObservation<SignoutConfirmationUI,
-                          SignoutConfirmationUI::Observer>
-      signout_confirmation_ui_observation_{this};
-  raw_ptr<SignoutConfirmationUI> signout_confirmation_ui_;
-};
 }  // namespace
 
 class SigninViewControllerBrowserTestBase : public SigninBrowserTestBase {
@@ -235,8 +208,9 @@ class SigninViewControllerBrowserTestBase : public SigninBrowserTestBase {
             signin_view_controller->GetModalDialogWebContentsForTesting());
     // TODO(crbug.com/469344442): Explore using a standard widget observer
     // checking for the widget's visibility, instead of custom ui observer.
-    TestSignoutConfirmationUIObserver handler_observer(signout_confirmation_ui);
-    handler_observer.WaitForHandler();
+    TestSignoutConfirmationHandlerWaiter handler_observer(
+        signout_confirmation_ui);
+    handler_observer.Wait();
 
     return signout_confirmation_ui;
   }

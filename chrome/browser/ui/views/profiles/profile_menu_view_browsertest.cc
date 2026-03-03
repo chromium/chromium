@@ -146,6 +146,7 @@
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 #include "chrome/browser/ui/webui/signin/signout_confirmation/signout_confirmation_ui.h"
+#include "chrome/browser/ui/webui/signin/signout_confirmation/test_signout_confirmation_handler_waiter.h"
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 namespace {
@@ -582,6 +583,12 @@ class ProfileMenuViewSignoutTest : public ProfileMenuViewTestBase,
       if (!signout_ui) {
         return false;
       }
+
+      // TODO(crbug.com/469344442): Explore using a standard widget observer
+      // checking for the widget's visibility, instead of custom ui observer.
+      TestSignoutConfirmationHandlerWaiter handler_observer(signout_ui);
+      handler_observer.Wait();
+
       // Click "Sign Out Anyway".
       signout_ui->AcceptDialogForTesting();
     }

@@ -47,6 +47,15 @@ source_set("signout_confirmation_impl") {
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }
 
+static_library("test_support") {
+  sources = [
+    "test_signout_confirmation_handler_waiter.cc",
+    "test_signout_confirmation_handler_waiter.h",
+  ]
+
+  deps = [ ":signout_confirmation" ]
+}
+
 mojom("mojo_bindings") {
   sources = [ "signout_confirmation.mojom" ]
   webui_module_path = "/"
