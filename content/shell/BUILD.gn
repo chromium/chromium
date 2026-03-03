@@ -138,7 +138,6 @@ static_library("content_shell_app") {
         "app/ios/shell_app_scene_delegate_tvos.mm",
       ]
     }
-    deps += [ "//components/crash/core/common:reporter_running_ios" ]
 
     # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
     # enable the diagnostic by removing this line.
