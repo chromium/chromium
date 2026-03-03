@@ -1280,7 +1280,6 @@ TEST_F(AddressDataManagerTest, AutofillSyncToggleNotAvailableWithSigninPromos) {
   base::test::ScopedFeatureList feature_list{
       syncer::kReplaceSyncPromosWithSignInPromos};
 
-  prefs_->SetBoolean(::prefs::kExplicitBrowserSignin, true);
   EXPECT_FALSE(address_data_manager().IsAutofillSyncToggleAvailable());
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
