@@ -124,6 +124,7 @@ class ProjectsPanelView : public views::View,
                                    views::MenuButton& button);
   void OnTabGroupMoved(const base::Uuid& group_guid, int new_index);
   void OnCreateNewTabGroupButtonPressed();
+  void OnThreadButtonPressed(const std::string& thread_server_id);
 
   const raw_ptr<BrowserWindowInterface> browser_;
   raw_ptr<actions::ActionItem> root_action_item_ = nullptr;

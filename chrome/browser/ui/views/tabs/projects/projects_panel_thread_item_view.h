@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TABS_PROJECTS_PROJECTS_PANEL_THREAD_ITEM_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_TABS_PROJECTS_PROJECTS_PANEL_THREAD_ITEM_VIEW_H_
 
+#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/view.h"
 
@@ -21,7 +23,12 @@ class ProjectsPanelThreadItemView : public views::Button {
   METADATA_HEADER(ProjectsPanelThreadItemView, views::Button)
 
  public:
-  explicit ProjectsPanelThreadItemView(const contextual_tasks::Thread& task);
+  using ThreadPressedCallback =
+      base::RepeatingCallback<void(const std::string&)>;
+
+  explicit ProjectsPanelThreadItemView(
+      const contextual_tasks::Thread& task,
+      ThreadPressedCallback pressed_callback = base::DoNothing());
   ProjectsPanelThreadItemView(const ProjectsPanelThreadItemView&) = delete;
   ProjectsPanelThreadItemView& operator=(const ProjectsPanelThreadItemView&) =
       delete;

@@ -27,7 +27,8 @@ inline constexpr gfx::Insets kChatTypeIconMargins = gfx::Insets(4);
 }  // namespace
 
 ProjectsPanelThreadItemView::ProjectsPanelThreadItemView(
-    const contextual_tasks::Thread& thread)
+    const contextual_tasks::Thread& thread,
+    ThreadPressedCallback pressed_callback)
     : chat_type_icon_(vector_icons::kChatSparkIcon) {
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetInteriorMargin(projects_panel::kListItemMargins)
@@ -70,6 +71,12 @@ ProjectsPanelThreadItemView::ProjectsPanelThreadItemView(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
                                views::MaximumFlexSizeRule::kScaleToMaximum));
+
+  SetCallback(base::BindRepeating(
+      [](ThreadPressedCallback callback, const std::string& server_id) {
+        std::move(callback).Run(server_id);
+      },
+      std::move(pressed_callback), thread.server_id));
 
   SetProperty(views::kElementIdentifierKey,
               kProjectsPanelThreadListItemViewElementId);

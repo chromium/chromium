@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/tabs/projects/projects_panel_thread_item_view.h"
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/mock_callback.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/ui/views/tabs/projects/layout_constants.h"
 #include "components/contextual_tasks/public/contextual_task.h"
@@ -12,14 +13,17 @@
 #include "ui/color/color_id.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/test/button_test_api.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/view_utils.h"
 
 namespace {
 
-contextual_tasks::Thread CreateThread(const std::string& title) {
+contextual_tasks::Thread CreateThread(
+    const std::string& title,
+    std::optional<const std::string> server_id = std::nullopt) {
   return contextual_tasks::Thread(contextual_tasks::ThreadType::kAiMode,
-                                  /*server_id=*/"", title,
+                                  server_id.value_or(""), title,
                                   /*conversation_turn_id=*/"");
 }
 
@@ -73,4 +77,21 @@ TEST_F(ProjectsPanelThreadItemViewTest, DisplaysGeminiIconAndTitle) {
   const views::Label* label = thread_item_view->title_for_testing();
   EXPECT_TRUE(label);
   EXPECT_EQ(base::UTF8ToUTF16(gemini_thread.title), label->GetText());
+}
+
+TEST_F(ProjectsPanelThreadItemViewTest, TriggersCallbackOnPressed) {
+  const std::string server_id = "test_server_id";
+  const auto thread = CreateThread("Thread 1", server_id);
+
+  base::MockCallback<ProjectsPanelThreadItemView::ThreadPressedCallback>
+      mock_callback;
+  auto thread_item_view = std::make_unique<ProjectsPanelThreadItemView>(
+      thread, mock_callback.Get());
+
+  EXPECT_CALL(mock_callback, Run(server_id)).Times(1);
+
+  ui::MouseEvent event(ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
+                       base::TimeTicks(), ui::EF_LEFT_MOUSE_BUTTON,
+                       ui::EF_LEFT_MOUSE_BUTTON);
+  views::test::ButtonTestApi(thread_item_view.get()).NotifyClick(event);
 }

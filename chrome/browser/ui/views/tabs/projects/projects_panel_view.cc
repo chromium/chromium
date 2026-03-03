@@ -194,8 +194,9 @@ ProjectsPanelView::ProjectsPanelView(BrowserWindowInterface* browser,
     views::ScrollView* threads_scroll_view =
         content_container_->AddChildView(std::make_unique<views::ScrollView>(
             views::ScrollView::ScrollWithLayers::kEnabled));
-    auto threads_view = std::make_unique<ProjectsPanelRecentThreadsView>(
-        panel_controller_->GetThreads());
+    auto threads_view =
+        std::make_unique<ProjectsPanelRecentThreadsView>(base::BindRepeating(
+            &ProjectsPanelView::OnThreadButtonPressed, base::Unretained(this)));
     threads_view_ = threads_scroll_view->SetContents(std::move(threads_view));
     SetScrollViewProperties(*threads_scroll_view);
   }
@@ -440,6 +441,12 @@ void ProjectsPanelView::OnCreateNewTabGroupButtonPressed() {
             ->ExecuteCommand(IDC_CREATE_NEW_TAB_GROUP);
       },
       weak_ptr_factory_.GetWeakPtr());
+  ClosePanel();
+}
+
+void ProjectsPanelView::OnThreadButtonPressed(
+    const std::string& thread_server_id) {
+  panel_controller_->OpenThread(thread_server_id);
   ClosePanel();
 }
 

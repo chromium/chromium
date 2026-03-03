@@ -12,25 +12,22 @@
 #include "ui/views/layout/box_layout.h"
 
 ProjectsPanelRecentThreadsView::ProjectsPanelRecentThreadsView(
-    const std::vector<contextual_tasks::Thread>& threads)
-    : threads_(threads) {
+    ThreadPressedCallback thread_button_callback)
+    : thread_button_callback_(std::move(thread_button_callback)) {
   SetLayoutManager(std::make_unique<views::BoxLayout>())
       ->SetOrientation(views::BoxLayout::Orientation::kVertical);
-  UpdateListUi();
 }
 
 ProjectsPanelRecentThreadsView::~ProjectsPanelRecentThreadsView() = default;
 
 void ProjectsPanelRecentThreadsView::SetThreads(
     const std::vector<contextual_tasks::Thread>& threads) {
-  threads_ = threads;
-  UpdateListUi();
-}
-
-void ProjectsPanelRecentThreadsView::UpdateListUi() {
+  item_views_.clear();
   RemoveAllChildViews();
-  for (const auto& thread : *threads_) {
-    AddChildView(std::make_unique<ProjectsPanelThreadItemView>(thread));
+  for (const auto& thread : threads) {
+    item_views_.push_back(
+        AddChildView(std::make_unique<ProjectsPanelThreadItemView>(
+            thread, thread_button_callback_)));
   }
 }
 

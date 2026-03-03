@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TABS_PROJECTS_PROJECTS_PANEL_RECENT_THREADS_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_TABS_PROJECTS_PROJECTS_PANEL_RECENT_THREADS_VIEW_H_
 
+#include "base/functional/callback_helpers.h"
+#include "chrome/browser/ui/views/tabs/projects/projects_panel_thread_item_view.h"
 #include "ui/views/view.h"
 
 namespace contextual_tasks {
@@ -15,8 +17,11 @@ class ProjectsPanelRecentThreadsView : public views::View {
   METADATA_HEADER(ProjectsPanelRecentThreadsView, views::View)
 
  public:
+  using ThreadPressedCallback =
+      ProjectsPanelThreadItemView::ThreadPressedCallback;
+
   explicit ProjectsPanelRecentThreadsView(
-      const std::vector<contextual_tasks::Thread>& thread);
+      ThreadPressedCallback thread_button_callback = base::DoNothing());
   ProjectsPanelRecentThreadsView(const ProjectsPanelRecentThreadsView&) =
       delete;
   ProjectsPanelRecentThreadsView& operator=(
@@ -26,11 +31,13 @@ class ProjectsPanelRecentThreadsView : public views::View {
   // Updates the threads shown in the list.
   void SetThreads(const std::vector<contextual_tasks::Thread>& threads);
 
- private:
-  // Updates the list UI with the current threads.
-  void UpdateListUi();
+  const std::vector<ProjectsPanelThreadItemView*> item_views_for_testing() {
+    return item_views_;
+  }
 
-  raw_ref<const std::vector<contextual_tasks::Thread>> threads_;
+ private:
+  std::vector<ProjectsPanelThreadItemView*> item_views_;
+  ThreadPressedCallback thread_button_callback_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_PROJECTS_PROJECTS_PANEL_RECENT_THREADS_VIEW_H_
