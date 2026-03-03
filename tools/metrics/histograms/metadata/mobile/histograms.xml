@@ -66,6 +66,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="SystemNotificationAgeType">
+  <variant name=".Actor" summary="Actor"/>
   <variant name=".ClickToCall" summary="Click To Call"/>
   <variant name=".PriceDropChromeManaged"
       summary="Chrome Managed Price Drop Alerts"/>
@@ -731,6 +732,7 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.IfChange(NotificationChannelId) -->
 
   <token key="NotificationChannelId">
+    <variant name="Actor"/>
     <variant name="Announcement"/>
     <variant name="Bluetooth"/>
     <variant name="Browser"/>

@@ -43,7 +43,7 @@ public class ChromeChannelDefinitions extends ChannelDefinitions {
      * set of channels returned by {@link #getStartupChannelIds()} or {@link #getLegacyChannelIds()}
      * changes.
      */
-    static final int CHANNELS_VERSION = 6;
+    static final int CHANNELS_VERSION = 7;
 
     private static class LazyHolder {
         private static final ChromeChannelDefinitions sInstance = new ChromeChannelDefinitions();
@@ -71,6 +71,7 @@ public class ChromeChannelDefinitions extends ChannelDefinitions {
     // LINT.IfChange(ChannelId)
     @StringDef({
         ChannelId.BROWSER,
+        ChannelId.ACTOR,
         ChannelId.COLLABORATION,
         ChannelId.DOWNLOADS,
         ChannelId.INCOGNITO,
@@ -100,6 +101,7 @@ public class ChromeChannelDefinitions extends ChannelDefinitions {
     @Retention(RetentionPolicy.SOURCE)
     public @interface ChannelId {
         String BROWSER = "browser";
+        String ACTOR = "actor";
         String COLLABORATION = "collaboration";
         String DOWNLOADS = "downloads";
         String INCOGNITO = "incognito";
@@ -133,8 +135,12 @@ public class ChromeChannelDefinitions extends ChannelDefinitions {
         String TIPS = "tips";
     }
 
-    // LINT.ThenChange(//tools/metrics/histograms/metadata/mobile/histograms.xml:NotificationChannelId)
-    // LINT.ThenChange(//chrome/browser/notifications/android/java/src/org/chromium/chrome/browser/notifications/NotificationUmaTracker.java:NotificationChannelId)
+    // clang-format off
+    // LINT.ThenChange(
+    //   //tools/metrics/histograms/metadata/mobile/histograms.xml:NotificationChannelId,
+    //   //chrome/browser/notifications/android/java/src/org/chromium/chrome/browser/notifications/NotificationUmaTracker.java:NotificationChannelId
+    // )
+    // clang-format on
 
     @StringDef({ChannelGroupId.GENERAL, ChannelGroupId.SITES})
     @Retention(RetentionPolicy.SOURCE)
@@ -172,6 +178,14 @@ public class ChromeChannelDefinitions extends ChannelDefinitions {
                             NotificationManager.IMPORTANCE_LOW,
                             ChannelGroupId.GENERAL));
             startup.add(ChannelId.BROWSER);
+
+            map.put(
+                    ChannelId.ACTOR,
+                    PredefinedChannel.create(
+                            ChannelId.ACTOR,
+                            R.string.notification_category_actor,
+                            NotificationManager.IMPORTANCE_HIGH,
+                            ChannelGroupId.GENERAL));
 
             map.put(
                     ChannelId.COLLABORATION,
