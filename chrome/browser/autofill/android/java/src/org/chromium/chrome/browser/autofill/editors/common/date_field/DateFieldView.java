@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.autofill.editors.common.date_field;
 
+import static org.chromium.chrome.browser.autofill.editors.common.dropdown_field.DropdownFieldProperties.DROPDOWN_CALLBACK;
 import static org.chromium.chrome.browser.autofill.editors.common.dropdown_field.DropdownFieldProperties.DROPDOWN_HINT;
 import static org.chromium.chrome.browser.autofill.editors.common.dropdown_field.DropdownFieldProperties.DROPDOWN_KEY_VALUE_LIST;
 import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.IS_REQUIRED;
@@ -44,6 +45,7 @@ import java.util.Locale;
  */
 @NullMarked
 public class DateFieldView extends LinearLayout implements FieldView {
+    private final PropertyModel mPropertyModel;
     private final LinearLayout mSpinnerGroup;
     private final TextView mLabel;
     private final DropdownFieldView mMonthDropdown;
@@ -51,9 +53,11 @@ public class DateFieldView extends LinearLayout implements FieldView {
     private final DropdownFieldView mYearDropdown;
     private final TextView mErrorMessage;
 
-    public DateFieldView(Context context, String value) {
+    public DateFieldView(Context context, PropertyModel propertyModel) {
         super(context);
         setOrientation(LinearLayout.VERTICAL);
+
+        mPropertyModel = propertyModel;
 
         mLabel = new TextView(context, null, 0, R.style.TextAppearance_TextMediumThick_Primary);
         mLabel.setVisibility(View.GONE);
@@ -73,15 +77,15 @@ public class DateFieldView extends LinearLayout implements FieldView {
 
         mSpinnerGroup = new LinearLayout(context);
         mSpinnerGroup.setOrientation(LinearLayout.HORIZONTAL);
+
+        final String value = mPropertyModel.get(VALUE);
         @Nullable LocalDate date = new AttributeInstance.DateValue(value).getDate();
         final String monthValue = date == null ? "" : String.valueOf(date.getMonthValue());
         PropertyModel monthModel =
                 new PropertyModel.Builder(DropdownFieldProperties.DROPDOWN_ALL_KEYS)
                         .with(DROPDOWN_KEY_VALUE_LIST, getMonthDropdownValues())
-                        .with(
-                                DROPDOWN_HINT,
-                                context.getString(
-                                        R.string.autofill_ai_entity_editor_date_field_month_label))
+                        .with(DROPDOWN_HINT, getMonthDropdownHint(context))
+                        .with(DROPDOWN_CALLBACK, this::onDropdownItemSelected)
                         .with(IS_REQUIRED, false)
                         .with(LABEL, "")
                         .with(VALUE, monthValue)
@@ -90,10 +94,8 @@ public class DateFieldView extends LinearLayout implements FieldView {
         PropertyModel dayModel =
                 new PropertyModel.Builder(DropdownFieldProperties.DROPDOWN_ALL_KEYS)
                         .with(DROPDOWN_KEY_VALUE_LIST, getDayDropdownValues())
-                        .with(
-                                DROPDOWN_HINT,
-                                context.getString(
-                                        R.string.autofill_ai_entity_editor_date_field_day_label))
+                        .with(DROPDOWN_HINT, getDayDropdownHint(context))
+                        .with(DROPDOWN_CALLBACK, this::onDropdownItemSelected)
                         .with(IS_REQUIRED, false)
                         .with(LABEL, "")
                         .with(VALUE, dayValue)
@@ -103,8 +105,7 @@ public class DateFieldView extends LinearLayout implements FieldView {
         // [X - 90; X + 15] range where X is the current year. The entity attribute's date value can
         // exceed this range. In this case, the year value is used as a hint.
         String yearValue = "";
-        String yearHint =
-                context.getString(R.string.autofill_ai_entity_editor_date_field_year_label);
+        String yearHint = getYearDropdownHint(context);
         if (date != null) {
             if (yearWithinLimits(date.getYear())) {
                 yearValue = String.valueOf(date.getYear());
@@ -116,6 +117,7 @@ public class DateFieldView extends LinearLayout implements FieldView {
                 new PropertyModel.Builder(DropdownFieldProperties.DROPDOWN_ALL_KEYS)
                         .with(DROPDOWN_KEY_VALUE_LIST, getYearDropdownValues())
                         .with(DROPDOWN_HINT, yearHint)
+                        .with(DROPDOWN_CALLBACK, this::onDropdownItemSelected)
                         .with(IS_REQUIRED, false)
                         .with(LABEL, "")
                         .with(VALUE, yearValue)
@@ -177,6 +179,13 @@ public class DateFieldView extends LinearLayout implements FieldView {
                         .getDimensionPixelSize(R.dimen.editor_dialog_section_large_spacing));
     }
 
+    /**
+     * @return The PropertyModel that the DropdownFieldView represents.
+     */
+    public PropertyModel getFieldModel() {
+        return mPropertyModel;
+    }
+
     public void setLabel(String label, boolean isRequired) {
         mLabel.setVisibility(View.VISIBLE);
         mLabel.setText(isRequired ? label + FieldView.REQUIRED_FIELD_INDICATOR : label);
@@ -219,6 +228,35 @@ public class DateFieldView extends LinearLayout implements FieldView {
         return true;
     }
 
+    private void onDropdownItemSelected(String unused) {
+        @Nullable String monthValue = mMonthDropdown.getFieldModel().get(VALUE);
+        @Nullable String dayValue = mDayDropdown.getFieldModel().get(VALUE);
+        @Nullable String yearValue = mYearDropdown.getFieldModel().get(VALUE);
+        if (TextUtils.isEmpty(monthValue)
+                && TextUtils.isEmpty(dayValue)
+                && TextUtils.isEmpty(yearValue)) {
+            // First case: the user has completely reset the date field. Propagate an empty value to
+            // the model.
+            mPropertyModel.set(VALUE, "");
+            return;
+        }
+        if (yearValue == null
+                && !getYearDropdownHint(getContext())
+                        .equals(mYearDropdown.getFieldModel().get(DROPDOWN_HINT))) {
+            // Year is a special case because the dropdown's hint can be the initial date's year
+            // when that year does not fall within the range. The dropdown's VALUE property will be
+            // `null` in that case.
+            yearValue = mYearDropdown.getFieldModel().get(DROPDOWN_HINT);
+        }
+        @Nullable LocalDate date =
+                new AttributeInstance.DateValue(dayValue, monthValue, yearValue).getDate();
+        if (date != null) {
+            // Second case: the user has selected a valid date. Propagate it to the model. Partially
+            // valid dates are never propagated to the model.
+            mPropertyModel.set(VALUE, date.toString());
+        }
+    }
+
     private List<DropdownKeyValue> getMonthDropdownValues() {
         List<DropdownKeyValue> monthList = new ArrayList<>();
         for (int month = 1; month <= 12; month++) {
@@ -244,7 +282,7 @@ public class DateFieldView extends LinearLayout implements FieldView {
 
     private static List<DropdownKeyValue> getDayDropdownValues() {
         List<DropdownKeyValue> dayList = new ArrayList();
-        for (int day = 1; day < 31; day++) {
+        for (int day = 1; day <= 31; day++) {
             dayList.add(new DropdownKeyValue(String.valueOf(day), String.valueOf(day)));
         }
         return dayList;
@@ -280,6 +318,21 @@ public class DateFieldView extends LinearLayout implements FieldView {
 
     private static LocalDate getCurrentDate() {
         return LocalDate.now(ZoneId.systemDefault());
+    }
+
+    @VisibleForTesting
+    static String getMonthDropdownHint(Context context) {
+        return context.getString(R.string.autofill_ai_entity_editor_date_field_month_label);
+    }
+
+    @VisibleForTesting
+    static String getDayDropdownHint(Context context) {
+        return context.getString(R.string.autofill_ai_entity_editor_date_field_day_label);
+    }
+
+    @VisibleForTesting
+    static String getYearDropdownHint(Context context) {
+        return context.getString(R.string.autofill_ai_entity_editor_date_field_year_label);
     }
 
     DropdownFieldView getMonthPickerForTest() {
