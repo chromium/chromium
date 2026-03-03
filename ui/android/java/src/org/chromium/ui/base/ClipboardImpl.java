@@ -26,6 +26,7 @@ import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContentUriUtils;
@@ -50,6 +51,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 /** Simple proxy that provides C++ code with an access pathway to the Android clipboard. */
 @JNINamespace("ui")
@@ -71,6 +73,10 @@ public class ClipboardImpl extends Clipboard
 
     // This mime type annotates that clipboard contains a PNG image.
     private static final String PNG_MIME_TYPE = "image/png";
+
+    // LINT.IfChange(kMimeTypeDataTransferCustomData)
+    private static final String CHROME_WEB_CUSTOM_DATA_MIME_TYPE = "chromium/x-web-custom-data";
+    // LINT.ThenChange(/ui/base/clipboard/clipboard_constants.h:kMimeTypeDataTransferCustomData)
 
     private static @Nullable Boolean sSkipImageMimeTypeCheckForTesting;
 
@@ -414,6 +420,90 @@ public class ClipboardImpl extends Clipboard
     @Override
     void setHTMLText(final String html, final String text) {
         setPrimaryClipNoException(ClipData.newHtmlText("html", text, html));
+    }
+
+    @Override
+    protected void setClipboardText(
+            @JniType("std::map<std::string, std::string>") Map<String, String> textData) {
+        ArrayList<ClipData> clipDataList = new ArrayList<>();
+        String html = textData.get(ClipDescription.MIMETYPE_TEXT_HTML);
+        String text = textData.get(ClipDescription.MIMETYPE_TEXT_PLAIN);
+        String webCustomData = textData.get(CHROME_WEB_CUSTOM_DATA_MIME_TYPE);
+        // Add standard MIME types to the list first, ensuring correct order.
+        if (html != null && text != null) {
+            clipDataList.add(ClipData.newHtmlText("html", text, html));
+        } else if (text != null) {
+            clipDataList.add(ClipData.newPlainText("text", text));
+        }
+        // Add custom MIME types to the list.
+        if (webCustomData != null) {
+            setCustomClipData(clipDataList, CHROME_WEB_CUSTOM_DATA_MIME_TYPE, webCustomData);
+        }
+        setClipboardData(clipDataList);
+    }
+
+    private void setCustomClipData(List<ClipData> list, String mimeType, String data) {
+        var customData = new PersistableBundle();
+        customData.putString(mimeType, data);
+        ClipDescription customDescription = new ClipDescription("data", new String[] {mimeType});
+        customDescription.setExtras(customData);
+        ClipData customClip = new ClipData(customDescription, new ClipData.Item(""));
+        list.add(customClip);
+    }
+
+    private void setClipboardData(List<ClipData> data) {
+        if (data == null || data.isEmpty()) {
+            clear();
+            return;
+        }
+        ArrayList<String> mergedMimeTypes = new ArrayList<>();
+        ArrayList<ClipData.Item> mergedItems = new ArrayList<>();
+        PersistableBundle mergedExtras = new PersistableBundle();
+        for (ClipData clip : data) {
+            ClipDescription desc = clip.getDescription();
+            if (desc.getExtras() != null) {
+                mergedExtras.putAll(desc.getExtras());
+            }
+            for (int i = 0; i < desc.getMimeTypeCount(); i++) {
+                mergedMimeTypes.add(desc.getMimeType(i));
+            }
+            for (int i = 0; i < clip.getItemCount(); i++) {
+                mergedItems.add(clip.getItemAt(i));
+            }
+        }
+        // Reconstruct the single unified ClipData to push to Clipboard.
+        ClipDescription finalDesc =
+                new ClipDescription("data", mergedMimeTypes.toArray(new String[0]));
+        if (!mergedExtras.isEmpty()) {
+            finalDesc.setExtras(mergedExtras);
+        }
+        ClipData finalClip = new ClipData(finalDesc, mergedItems.get(0));
+        for (int i = 1; i < mergedItems.size(); i++) {
+            finalClip.addItem(mergedItems.get(i));
+        }
+
+        setPrimaryClipNoException(finalClip);
+    }
+
+    @Override
+    protected boolean hasClipboardDataForMimeType(@JniType("std::string") String mimeType) {
+        ClipDescription description = mClipboardManager.getPrimaryClipDescription();
+        return description != null && description.hasMimeType(mimeType);
+    }
+
+    @Override
+    protected @JniType("std::optional<std::string>") @Nullable String getCustomClipData(
+            @JniType("std::string") String customMimeType) {
+        ClipData clipData = mClipboardManager.getPrimaryClip();
+        if (clipData == null || !hasClipboardDataForMimeType(customMimeType)) {
+            return null;
+        }
+        ClipDescription description = clipData.getDescription();
+        PersistableBundle extras = description.getExtras();
+        if (extras != null && extras.containsKey(customMimeType)) {
+            return extras.getString(customMimeType);
+        }
+        return null;
     }
 
     @Override

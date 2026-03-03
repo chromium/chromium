@@ -14,6 +14,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
@@ -23,6 +24,8 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.url.GURL;
+
+import java.util.Map;
 
 /** Simple proxy that provides C++ code with an access pathway to the Android clipboard. */
 @JNINamespace("ui")
@@ -295,6 +298,39 @@ public class Clipboard {
     @VisibleForTesting
     void setHTMLText(final String html, final String text) {
         Log.w(TAG, "Clipboard service isn't available");
+    }
+
+    /**
+     * Writes content to the clipboard with multiple MIME types.
+     *
+     * @param textData The map of MIME types to their String data.
+     */
+    @CalledByNative
+    protected void setClipboardText(
+            @JniType("std::map<std::string, std::string>") Map<String, String> textData) {
+        Log.w(TAG, "setClipboardText is a no-op because Clipboard service isn't available");
+    }
+
+    /**
+     * Check if the given mimeType is within the Clipboard.
+     *
+     * @param mimeType The MIME type to be checked.
+     */
+    @CalledByNative
+    protected boolean hasClipboardDataForMimeType(@JniType("std::string") String mimeType) {
+        return false;
+    }
+
+    /**
+     * Gets the custom data for a specific custom MIME type.
+     *
+     * @param customMimeType The custom MIME type to get data for.
+     * @return The data as a String, or null if not found.
+     */
+    @CalledByNative
+    protected @JniType("std::optional<std::string>") @Nullable String getCustomClipData(
+            @JniType("std::string") String customMimeType) {
+        return null;
     }
 
     /**
