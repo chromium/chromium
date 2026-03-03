@@ -35,6 +35,7 @@
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_manager.h"
 #include "components/autofill/core/common/aliases.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/password_manager/core/browser/password_autofill_manager.h"
 #include "components/password_manager/core/browser/password_counter.h"
@@ -138,6 +139,7 @@ bool IsAutofillCustomCommandId(
     AutofillContextMenuManager::CommandId command_id) {
   static constexpr auto kAutofillCommands = base::MakeFixedFlatSet<int>({
       IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PLUS_ADDRESS,
+      IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AT_MEMORY,
       IDC_CONTENT_CONTEXT_AUTOFILL_FEEDBACK,
       IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SELECT_PASSWORD,
       IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_IMPORT_PASSWORDS,
@@ -206,6 +208,7 @@ AutofillContextMenuManager::~AutofillContextMenuManager() = default;
 
 void AutofillContextMenuManager::AppendItems() {
   MaybeAddAutofillManualFallbackItems();
+  MaybeAddAutofillAtMemoryItem();
   MaybeAddAutofillFeedbackItem();
 }
 
@@ -237,6 +240,11 @@ void AutofillContextMenuManager::ExecuteCommand(int command_id) {
   if (command_id == IDC_CONTENT_CONTEXT_AUTOFILL_FEEDBACK) {
     ExecuteAutofillFeedbackCommand(autofill_driver->GetFrameToken(),
                                    autofill_driver->GetAutofillManager());
+    return;
+  }
+
+  if (command_id == IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AT_MEMORY) {
+    ExecuteFallbackForAtMemoryCommand(*autofill_driver);
     return;
   }
 
@@ -296,6 +304,34 @@ void AutofillContextMenuManager::MaybeAddAutofillFeedbackItem() {
 
     menu_model_->AddSeparator(ui::NORMAL_SEPARATOR);
   }
+}
+
+void AutofillContextMenuManager::MaybeAddAutofillAtMemoryItem() {
+  if (!base::FeatureList::IsEnabled(features::kAutofillAtMemory)) {
+    return;
+  }
+
+  if (!ShouldShowAutofillContextMenu(params_)) {
+    return;
+  }
+
+  content::RenderFrameHost* rfh = delegate_->GetRenderFrameHost();
+  if (!rfh) {
+    return;
+  }
+
+  ContentAutofillDriver* autofill_driver =
+      ContentAutofillDriver::GetForRenderFrameHost(rfh);
+  if (!autofill_driver || !autofill_driver->CanShowAutofillUi()) {
+    return;
+  }
+
+  menu_model_->AddItemWithStringIdAndIcon(
+      IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AT_MEMORY,
+      IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AT_MEMORY,
+      ui::ImageModel::FromVectorIcon(vector_icons::kSearchIcon, ui::kColorIcon,
+                                     kContextMenuIconSize));
+  menu_model_->AddSeparator(ui::NORMAL_SEPARATOR);
 }
 
 void AutofillContextMenuManager::MaybeAddAutofillManualFallbackItems() {
@@ -459,6 +495,13 @@ void AutofillContextMenuManager::
                                   IsPasswordFormField(*password_manager_driver,
                                                       params_));
   }
+}
+
+void AutofillContextMenuManager::ExecuteFallbackForAtMemoryCommand(
+    AutofillDriver& driver) {
+  driver.RendererShouldTriggerSuggestions(
+      {driver.GetFrameToken(), FieldRendererId(params_.field_renderer_id)},
+      AutofillSuggestionTriggerSource::kAtMemory);
 }
 
 void AutofillContextMenuManager::ExecuteAutofillFeedbackCommand(

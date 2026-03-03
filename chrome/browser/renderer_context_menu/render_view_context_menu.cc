@@ -545,13 +545,14 @@ const std::map<int, int>& GetIdcToUmaMap(UmaEnumIdLookupType type) {
        {IDC_CONTENT_CONTEXT_ARCHIVE_GLIC, 158},
        {IDC_CONTENT_CONTEXT_INSPECTELEMENT_WITH_GEMINI, 159},
        {IDC_CONTENT_CONTEXT_INSPECTELEMENT_WITH_DEVTOOLS, 160},
+       {IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AT_MEMORY, 161},
        // To add new items:
        //   - Add one more line above this comment block, using the UMA value
        //     from the line below this comment block.
        //   - Increment the UMA value in that latter line.
        //   - Add the new item to the RenderViewContextMenuItem enum in
        //     tools/metrics/histograms/metadata/ui/enums.xml.
-       {0, 161}});
+       {0, 162}});
   // LINT.ThenChange(//tools/metrics/histograms/metadata/ui/enums.xml:RenderViewContextMenuItem)
 
   // LINT.IfChange(ContextMenuOptionDesktop)
@@ -2832,18 +2833,18 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
     return false;
   }
 
-  {
-    bool enabled = false;
-    if (RenderViewContextMenuBase::IsCommandIdKnown(id, &enabled)) {
-      return enabled;
-    }
-  }
-
   // If the command makes network requests and the frame does not have untrusted
   // network access, the command is disabled.
   if (IsCommandGatedByFencedFrameUntrustedNetworkStatus(id) &&
       IsUntrustedNetworkDisabled()) {
     return false;
+  }
+
+  {
+    bool enabled = false;
+    if (RenderViewContextMenuBase::IsCommandIdKnown(id, &enabled)) {
+      return enabled;
+    }
   }
 
   CoreTabHelper* core_tab_helper =

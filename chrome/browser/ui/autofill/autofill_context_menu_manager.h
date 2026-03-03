@@ -71,6 +71,9 @@ class AutofillContextMenuManager : public RenderViewContextMenuObserver {
   // suggest.
   void MaybeAddAutofillManualFallbackItems();
 
+  // Adds the @memory manual fallback item if the feature is enabled.
+  void MaybeAddAutofillAtMemoryItem();
+
   // Checks if the plus address context menu entry can be shown for the
   // currently focused field.
   bool ShouldAddPlusAddressManualFallbackItem(
@@ -109,6 +112,10 @@ class AutofillContextMenuManager : public RenderViewContextMenuObserver {
   // Triggers the feedback flow for Autofill command.
   void ExecuteAutofillFeedbackCommand(const LocalFrameToken& frame_token,
                                       AutofillManager& manager);
+
+  // Triggers @memory search popup on the field that the context menu was
+  // opened on.
+  void ExecuteFallbackForAtMemoryCommand(AutofillDriver& driver);
 
   // Triggers Plus Address suggestions on the field that the context menu was
   // opened on.

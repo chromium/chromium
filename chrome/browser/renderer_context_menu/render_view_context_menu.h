@@ -605,7 +605,10 @@ class RenderViewContextMenu
 
            // Image loading commands.
            IDC_CONTENT_CONTEXT_LOAD_IMAGE,
-           IDC_CONTENT_CONTEXT_OPEN_ORIGINAL_IMAGE_NEW_TAB});
+           IDC_CONTENT_CONTEXT_OPEN_ORIGINAL_IMAGE_NEW_TAB,
+
+           // Autofill commands.
+           IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AT_MEMORY});
   // LINT.ThenChange(//chrome/app/chrome_command_ids.h:ChromeCommandIds)
 
   base::WeakPtrFactory<RenderViewContextMenu> weak_pointer_factory_{this};

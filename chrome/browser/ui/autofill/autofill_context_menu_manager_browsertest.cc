@@ -171,6 +171,21 @@ MATCHER_P3(OnlyPasswordsFallbackAdded,
   return arg->GetItemCount() == current_context_menu_position;
 }
 
+// Checks if the context menu model contains the @memory manual fallback entries
+// with correct UI strings. `arg` must be of type `ui::SimpleMenuModel`.
+MATCHER(AtMemoryFallbackAdded, "") {
+  for (size_t i = 0; i < arg->GetItemCount(); i++) {
+    if (arg->GetCommandIdAt(i) ==
+        IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AT_MEMORY) {
+      EXPECT_EQ(arg->GetLabelAt(i),
+                l10n_util::GetStringUTF16(
+                    IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AT_MEMORY));
+      return true;
+    }
+  }
+  return false;
+}
+
 // Generates a ContextMenuParams for the Autofill context menu options.
 content::ContextMenuParams CreateContextMenuParams(
     std::optional<autofill::FormRendererId> form_renderer_id = std::nullopt,
@@ -1101,6 +1116,37 @@ IN_PROC_BROWSER_TEST_F(PlusAddressContextMenuManagerTest,
   EXPECT_EQ(user_action_tester_.GetActionCount(
                 kUserActionPlusAddressesFallbackSelected),
             1);
+}
+
+class AtMemoryContextMenuManagerTest
+    : public BaseAutofillContextMenuManagerTest {
+ public:
+  AtMemoryContextMenuManagerTest() {
+    scoped_feature_list_.InitAndEnableFeature(features::kAutofillAtMemory);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(AtMemoryContextMenuManagerTest, AddAtMemoryFallback) {
+  autofill_context_menu_manager()->AppendItems();
+  EXPECT_THAT(menu_model(), AtMemoryFallbackAdded());
+}
+
+IN_PROC_BROWSER_TEST_F(AtMemoryContextMenuManagerTest,
+                       ExecuteAtMemoryFallbackCommand) {
+  autofill_context_menu_manager()->AppendItems();
+
+  EXPECT_CALL(
+      *driver(),
+      RendererShouldTriggerSuggestions(
+          FieldGlobalId{LocalFrameToken(main_rfh()->GetFrameToken().value()),
+                        FieldRendererId(0)},
+          AutofillSuggestionTriggerSource::kAtMemory));
+
+  autofill_context_menu_manager()->ExecuteCommand(
+      IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AT_MEMORY);
 }
 
 }  // namespace
