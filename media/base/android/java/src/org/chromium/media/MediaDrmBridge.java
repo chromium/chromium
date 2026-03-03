@@ -66,7 +66,7 @@ import java.util.UUID;
 @SuppressLint("WrongConstant")
 @NullMarked
 public class MediaDrmBridge {
-    private static final String TAG = "media";
+    private static final String TAG = "MediaDrmBridge";
     private static final String SECURITY_LEVEL = "securityLevel";
     private static final String CURRENT_HDCP_LEVEL = "hdcpLevel";
     private static final String SERVER_CERTIFICATE = "serviceCertificate";
