@@ -2349,26 +2349,26 @@ ExtensionFunction::ResponseAction TabsUpdateFunction::Run() {
 #endif
 
   if (params->update_properties.pinned) {
-    // TODO(https://crbug.com/447211263): Support on desktop android.
-#if !BUILDFLAG(IS_ANDROID)
-    Browser* browser = window->GetBrowser();
-    TabStripModel* tab_strip = browser->tab_strip_model();
-#endif
-
-    // Bug fix for crbug.com/1197888. Don't let the extension update the tab if
-    // the user is dragging tabs.
-    if (!ExtensionTabUtil::IsTabStripEditable()) {
-      return RespondNow(Error(ExtensionTabUtil::kTabStripNotEditableError));
-    }
-
-    // TODO(https://crbug.com/447211263): Support on desktop android.
-#if !BUILDFLAG(IS_ANDROID)
     bool pinned = *params->update_properties.pinned;
-    tab_strip->SetTabPinned(tab_index, pinned);
 
-    // Update the tab index because it may move when being pinned.
-    tab_index = tab_strip->GetIndexOfWebContents(contents);
-#endif
+    if (target_tab->IsPinned() != pinned) {
+      // Bug fix for crbug.com/1197888. Don't let the extension update the tab
+      // if the user is dragging tabs.
+      if (!ExtensionTabUtil::IsTabStripEditable()) {
+        return RespondNow(Error(ExtensionTabUtil::kTabStripNotEditableError));
+      }
+
+      ::tabs::TabHandle target_handle = target_tab->GetHandle();
+
+      if (pinned) {
+        tab_list->PinTab(target_handle);
+      } else {
+        tab_list->UnpinTab(target_handle);
+      }
+
+      // Update the tab index because it may move when being pinned.
+      tab_index = tab_list->GetIndexOfTab(target_handle);
+    }
   }
 
   // TODO(rafaelw): handle setting remaining tab properties:
