@@ -61,10 +61,12 @@ function runTest() {
   }, 'Draw transform should account for the current transform matrix with translation');
 
   promise_test(async function(t) {
-    t.add_cleanup(() => {
+    t.add_cleanup(async () => {
       canvas.style.zoom = '';
+      await waitOneFrame();
     });
     canvas.style.zoom = '1.5';
+    await waitOneFrame();
     let draw_transform = canvas.getContext('2d').drawElementImage(element, 10, 10);
     let expected = new DOMMatrix().translateSelf(10, 10);
     assert_array_equals(draw_transform.toFloat64Array(), expected.toFloat64Array());
@@ -112,12 +114,13 @@ function runTest() {
   }, 'Draw transform should account for canvas pixel scale');
 
   promise_test(async function(t) {
-    t.add_cleanup(() => {
+    t.add_cleanup(async () => {
       canvas.width = 100;
       canvas.height = 100;
       canvas.style.zoom = '';
       canvas.getContext('2d').reset();
       element.style.transformOrigin = '0 0';
+      await waitOneFrame();
     });
     canvas.width = 200;
     canvas.height = 50;
@@ -126,6 +129,7 @@ function runTest() {
     canvas.getContext('2d').rotate(Math.PI / 4);
     element.style.transformOrigin = '5px 5px';
     element.style.transformOrigin = '5px 5px';
+    await waitOneFrame();
     let draw_transform = canvas.getContext('2d').drawElementImage(element, 13, -9);
     let expected = new DOMMatrix()
       .translateSelf(-5, -5)

@@ -932,15 +932,15 @@ void HTMLCanvasElement::ResetLayer() {
   }
 }
 
-gfx::Vector2dF HTMLCanvasElement::PhysicalPixelToCanvasGridScaleFactor() {
-  if (!GetDocument().View()) {
-    return {1., 1.};
-  }
+void HTMLCanvasElement::TakeGridScaleFactorSnapshot() {
+  CHECK(GetDocument().Lifecycle().GetState() == DocumentLifecycle::kInPaint);
 
-  GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint(
-      DocumentUpdateReason::kCanvasDrawElementImage);
-  if (!GetLayoutBox()) {
-    return {1., 1.};
+  grid_scale_factor_snapshot_ = {1.f, 1.f};
+  if (!RuntimeEnabledFeatures::CanvasDrawElementEnabled()) {
+    return;
+  }
+  if (!GetDocument().View() || !GetLayoutBox()) {
+    return;
   }
 
   // As a special case, if the canvas is sized to its devicePixelContentBox,
@@ -953,7 +953,7 @@ gfx::Vector2dF HTMLCanvasElement::PhysicalPixelToCanvasGridScaleFactor() {
                       GetLayoutBox()->ContentLogicalHeight()),
           *GetLayoutBox(), GetLayoutBox()->StyleRef());
   if (canvas_size == device_pixel_content_box) {
-    return gfx::Vector2dF(1., 1.);
+    return;
   }
 
   PhysicalRect content_rect;
@@ -962,8 +962,9 @@ gfx::Vector2dF HTMLCanvasElement::PhysicalPixelToCanvasGridScaleFactor() {
   } else {
     content_rect = GetLayoutBox()->PhysicalContentBoxRect();
   }
-  return gfx::Vector2dF(canvas_size.width() / content_rect.Width().ToFloat(),
-                        canvas_size.height() / content_rect.Height().ToFloat());
+  grid_scale_factor_snapshot_ = {
+      canvas_size.width() / content_rect.Width().ToFloat(),
+      canvas_size.height() / content_rect.Height().ToFloat()};
 }
 
 namespace {
@@ -1007,7 +1008,10 @@ DOMMatrix* HTMLCanvasElement::getElementTransform(
   // T_css = S_canvas_to_css * T_canvas * S_canvas_to_css-1
   gfx::Vector2dF physical_to_canvas_grid =
       PhysicalPixelToCanvasGridScaleFactor();
-  float physical_to_css = 1.0f / element->ComputedStyleRef().EffectiveZoom();
+  float physical_to_css = 1.0f;
+  if (element->GetComputedStyle()) {
+    physical_to_css = 1.0f / element->ComputedStyleRef().EffectiveZoom();
+  }
   float canvas_grid_to_css_x = physical_to_css / physical_to_canvas_grid.x();
   float canvas_grid_to_css_y = physical_to_css / physical_to_canvas_grid.y();
   result->scaleSelf(canvas_grid_to_css_x, canvas_grid_to_css_y);
