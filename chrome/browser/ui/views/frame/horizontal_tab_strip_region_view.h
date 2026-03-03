@@ -18,10 +18,6 @@
 
 class BrowserView;
 
-namespace ash {
-class TabScrubber;
-}
-
 namespace views {
 class ActionViewController;
 class Button;
@@ -71,12 +67,6 @@ class HorizontalTabStripRegionView final : public TabStripRegionView {
     return reserved_grab_handle_space_;
   }
 
-#if BUILDFLAG(IS_CHROMEOS)
-  ash::TabScrubber* get_tab_scrubber_for_testing() {
-    return tab_scrubber_.get();
-  }
-#endif
-
   // views::View:
   // The TabSearchButton and NewTabButton may need to be rendered above the
   // TabStrip, but FlexLayout needs the children to be stored in the correct
@@ -86,9 +76,6 @@ class HorizontalTabStripRegionView final : public TabStripRegionView {
   // Calls the parent Layout, but in some cases may also need to manually
   // position the TabSearchButton to layer over the TabStrip.
   void Layout(PassKey) override;
-
-  void AddedToWidget() override;
-  void RemovedFromWidget() override;
 
   // views::AccessiblePaneView:
   void ChildPreferredSizeChanged(views::View* child) override;
@@ -174,10 +161,6 @@ class HorizontalTabStripRegionView final : public TabStripRegionView {
 
   std::unique_ptr<TabSearchPositionMetricsLogger>
       tab_search_position_metrics_logger_;
-
-#if BUILDFLAG(IS_CHROMEOS)
-  std::unique_ptr<ash::TabScrubber> tab_scrubber_;
-#endif
 
   std::unique_ptr<views::ActionViewController> action_view_controller_;
 

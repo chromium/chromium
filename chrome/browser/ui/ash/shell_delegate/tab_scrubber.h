@@ -8,8 +8,11 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller.h"
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_observer.h"
 #include "ui/events/event_handler.h"
 
@@ -24,9 +27,13 @@ class Point;
 
 namespace ash {
 
+class BrowserDelegate;
+
 // Class to enable quick tab switching via horizontal X finger swipes (see
 // kFingerCount definition).
-class TabScrubber : public ui::EventHandler, public TabStripObserver {
+class TabScrubber : public ui::EventHandler,
+                    public BrowserController::Observer,
+                    public TabStripObserver {
  public:
   static constexpr int kFingerCount = 3;
 
@@ -35,8 +42,8 @@ class TabScrubber : public ui::EventHandler, public TabStripObserver {
   TabScrubber(const TabScrubber&) = delete;
   TabScrubber& operator=(const TabScrubber&) = delete;
 
-  explicit TabScrubber(BrowserView* browser_view);
-  ~TabScrubber() override;
+  // Returns a the single instance of a TabScrubber.
+  static TabScrubber* GetInstance();
 
   // Returns the starting position (in tabstrip coordinates) of a swipe starting
   // in the tab at |index| and traveling in |direction|.
@@ -47,29 +54,33 @@ class TabScrubber : public ui::EventHandler, public TabStripObserver {
   int highlighted_tab() const { return highlighted_tab_; }
   bool IsActivationPending();
 
-  static void SetEnabled(bool enabled);
-  static bool GetEnabledForTesting();
+  void SetEnabled(bool enabled);
 
   // Synthesize an ScrollEvent given a x offset (in DIPs).
   // `is_fling_scroll_event` is set to true when the scroll event should be
   // fling scroll event.
   void SynthesizedScrollEvent(float x_offset, bool is_fling_scroll_event);
 
-  // Returns true if it does finish the ongoing scrubbing.
-  bool FinishScrub(bool activate);
-
  private:
   friend class TabScrubberTest;
 
+  TabScrubber();
+  ~TabScrubber() override;
+
   // ui::EventHandler overrides:
   void OnScrollEvent(ui::ScrollEvent* event) override;
+
+  // BrowserListObserver overrides:
+  void OnBrowserClosed(BrowserDelegate* browser) override;
 
   // TabStripObserver overrides.
   void OnTabAdded(int index) override;
   void OnTabMoved(int from_index, int to_index) override;
   void OnTabRemoved(int index) override;
 
-  void BeginScrub(float x_offset);
+  void BeginScrub(BrowserView* browser_view, float x_offset);
+  // Returns true if it does finish the ongoing scrubbing.
+  bool FinishScrub(bool activate);
 
   void ScheduleFinishScrubIfNeeded();
 
@@ -82,9 +93,16 @@ class TabScrubber : public ui::EventHandler, public TabStripObserver {
 
   void UpdateHighlightedTab(Tab* new_tab, int new_index);
 
-  const raw_ptr<BrowserView> browser_view_;
+  bool GetEnabledForTesting() const { return enabled_; }
+
+  base::ScopedObservation<BrowserController, BrowserController::Observer>
+      browser_controller_observation_{this};
+
   // Are we currently scrubbing?.
   bool scrubbing_ = false;
+  // The last browser we used for scrubbing, NULL if |scrubbing_| is false and
+  // there is no pending work.
+  raw_ptr<BrowserDelegate> browser_ = nullptr;
   // The TabStrip of the active browser we're scrubbing.
   raw_ptr<TabStrip> tab_strip_ = nullptr;
   // The current accumulated x and y positions of a swipe, in the coordinates
@@ -109,7 +127,7 @@ class TabScrubber : public ui::EventHandler, public TabStripObserver {
   // scrub. If not |enabled_|, tab scrubber ignores events. Should be disabled
   // when clashing interactions can occur, like window cycle list scrolling
   // gesture.
-  static bool enabled_;
+  bool enabled_ = true;
 };
 
 }  // namespace ash
