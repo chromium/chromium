@@ -49,10 +49,10 @@ select:not(:-internal-list-box):not([multiple]):not(:-internal-list-box):not([mu
   background-color: -internal-auto-base(ButtonFace, transparent);
 }
 select:not(:-internal-list-box):not([multiple]):enabled:hover {
-  background-color: -internal-auto-base(ButtonFace, color-mix(in lab, currentColor 10%, transparent));
+  background-color: -internal-auto-base(ButtonFace, color-mix(currentColor 10%, transparent));
 }
 select:not(:-internal-list-box):not([multiple]):enabled:active {
-  background-color: -internal-auto-base(ButtonFace, color-mix(in lab, currentColor 20%, transparent));
+  background-color: -internal-auto-base(ButtonFace, color-mix(currentColor 20%, transparent));
 }
 
 @supports blink-feature(CustomizableSelectMultiplePopup) {
@@ -60,9 +60,9 @@ select:not(:-internal-list-box):not([multiple]):enabled:active {
     background-color: -internal-auto-base(ButtonFace, transparent);
   }
   select:not(:-internal-list-box)[multiple]:enabled:hover {
-    background-color: -internal-auto-base(ButtonFace, color-mix(in lab, currentColor 10%, transparent));
+    background-color: -internal-auto-base(ButtonFace, color-mix(currentColor 10%, transparent));
   }
   select:not(:-internal-list-box)[multiple]:enabled:active {
-    background-color: -internal-auto-base(ButtonFace, color-mix(in lab, currentColor 20%, transparent));
+    background-color: -internal-auto-base(ButtonFace, color-mix(currentColor 20%, transparent));
   }
 }
