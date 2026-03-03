@@ -80,6 +80,9 @@ class SelectionOverlayController
   void DismissOverlay(selection::DismissOverlayReason reason) override;
   void AdjustRegion(selection::SelectedRegionPtr target) override;
   void DeleteRegion(const base::UnguessableToken& id) override;
+  void ClosePreselectionBubble() override;
+  void AddBackgroundBlur() override;
+  void SetLiveBlur(bool enabled) override;
 
  private:
   void OnScreenshotTaken(const SkBitmap& bitmap);

@@ -51,6 +51,14 @@ namespace glic {
 
 namespace {
 
+gfx::RectF GetRectForRegion(const SkBitmap& image, const gfx::RectF& region) {
+  double x_scale = image.width();
+  double y_scale = image.height();
+  return gfx::RectF((region.x() - 0.5 * region.width()) * x_scale,
+                    (region.y() - 0.5 * region.height()) * y_scale,
+                    region.width() * x_scale, region.height() * y_scale);
+}
+
 class SelectionOverlayFetchPageProgressListener
     : public page_content_annotations::FetchPageProgressListener {
  public:
@@ -279,6 +287,18 @@ void SelectionOverlayController::DeleteRegion(
   }
 }
 
+void SelectionOverlayController::ClosePreselectionBubble() {
+  ClosePreselectionBubbleImpl();
+}
+
+void SelectionOverlayController::AddBackgroundBlur() {
+  AddBackgroundBlurImpl();
+}
+
+void SelectionOverlayController::SetLiveBlur(bool enabled) {
+  SetLiveBlurImpl(enabled);
+}
+
 void SelectionOverlayController::Reset() {
   receiver_.reset();
   page_.reset();
@@ -295,20 +315,25 @@ void SelectionOverlayController::RenderRegions() {
   }
 
   std::vector<SkRect> regions;
+  std::vector<selection::SelectedRegionPtr> regions_mojo;
   // TODO(http://b/452032491): Reconsider what happens if the regions overlap.
   // TODO(http://b/452032491): Currently this class is only used once per
   // selection and only one region is supported, so it is fine to always loop
   // through all the regions. Revisit once we expand the selections.
   for (const auto& [id, region] : selected_regions_) {
-    SkRect rect_on_canvas = gfx::RectFToSkRect(region->region);
+    SkRect rect_on_canvas = gfx::RectFToSkRect(
+        GetRectForRegion(redacted_screenshot_, region->region));
     if (!rect_on_canvas.isEmpty() &&
         redacted_screenshot_.bounds().contains(rect_on_canvas)) {
       regions.push_back(rect_on_canvas);
+      regions_mojo.push_back(region.Clone());
     } else {
       // TODO(http://b/485358530): Record proper histograms for the error case.
       LOG(ERROR) << "Invalid region selected " << region->region.ToString();
     }
   }
+
+  page_->SetPostRegionSelections(std::move(regions_mojo));
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},

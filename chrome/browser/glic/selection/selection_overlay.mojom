@@ -45,6 +45,16 @@ interface SelectionOverlayPageHandler {
 
   // The user deletes a selected region. No-op if `id` does not match.
   DeleteRegion(mojo_base.mojom.UnguessableToken id);
+
+  // When called, the C++ coordinator closes the preselection toast bubble.
+  ClosePreselectionBubble();
+
+  // When this method is called, the C++ coordinator will add a blur to the
+  // tab contents.
+  AddBackgroundBlur();
+
+  // Enables/disables the live blurring of the background
+  SetLiveBlur(bool enabled);
 };
 
 // `chrome-untrusted://glic/selection-overlay/` WebUI page handler that receives
@@ -55,4 +65,7 @@ interface SelectionOverlayPage {
   // used for anything else than the selection overlay.
   ScreenshotReceived(
       skia.mojom.BitmapMappedFromTrustedProcess screenshot);
+
+  // Sets post selection regions to be rendered as selected on the page.
+  SetPostRegionSelections(array<SelectedRegion> regions);
 };
