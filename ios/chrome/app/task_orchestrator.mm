@@ -7,6 +7,8 @@
 #import <map>
 #import <string>
 
+#import "base/metrics/histogram_functions.h"
+#import "ios/chrome/app/task_scheduling_outcome.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
@@ -73,6 +75,8 @@ struct SceneInfo {
 - (BOOL)shouldDropTaskRequest:(TaskRequest*)task {
   NSString* taskGaiaID = task.gaiaID;
   if (!taskGaiaID) {
+    base::UmaHistogramEnumeration("IOS.TaskOrchestrator.TaskSchedulingOutcome",
+                                  TaskSchedulingOutcome::kScheduled);
     return NO;
   }
 
@@ -80,10 +84,14 @@ struct SceneInfo {
   for (TaskRequest* pendingTask in sceneInfo.pending_tasks) {
     NSString* pendingGaiaID = pendingTask.gaiaID;
     if (pendingGaiaID && ![pendingGaiaID isEqualToString:taskGaiaID]) {
-      // TODO(crbug.com/462018636): Record metrics when this happens.
+      base::UmaHistogramEnumeration(
+          "IOS.TaskOrchestrator.TaskSchedulingOutcome",
+          TaskSchedulingOutcome::kDroppedGaiaMismatch);
       return YES;
     }
   }
+  base::UmaHistogramEnumeration("IOS.TaskOrchestrator.TaskSchedulingOutcome",
+                                TaskSchedulingOutcome::kScheduled);
   return NO;
 }
 

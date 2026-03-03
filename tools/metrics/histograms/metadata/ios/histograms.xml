@@ -7451,6 +7451,13 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.TaskOrchestrator.TaskSchedulingOutcome"
+    enum="IOSTaskOrchestratorTaskSchedulingOutcome" expires_after="2026-09-03">
+  <owner>fedegermi@google.com</owner>
+  <owner>sdefresnem@google.com</owner>
+  <summary>Records the outcome of scheduling a task request.</summary>
+</histogram>
+
 <histogram name="IOS.TextSelection.EntityDetection.DetectedEntityType"
     enum="TextSelectionDetectedEntityType" expires_after="2025-08-10">
   <owner>rajendrant@chromium.org</owner>

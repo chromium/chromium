@@ -1771,6 +1771,15 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Voice Over Swipe"/>
 </enum>
 
+<!-- LINT.IfChange(IOSTaskOrchestratorTaskSchedulingOutcome) -->
+
+<enum name="IOSTaskOrchestratorTaskSchedulingOutcome">
+  <int value="0" label="Scheduled"/>
+  <int value="1" label="Dropped due to Gaia ID mismatch"/>
+</enum>
+
+<!-- LINT.ThenChange(//ios/chrome/app/task_orchestrator.h:TaskSchedulingOutcome) -->
+
 <!-- LINT.IfChange(IOSThemeSyncInitialState) -->
 
 <enum name="IOSThemeSyncInitialState">

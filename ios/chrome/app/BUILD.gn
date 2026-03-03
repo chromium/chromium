@@ -81,6 +81,7 @@ source_set("tasks_handling_header") {
     "task_orchestrator.h",
     "task_request+testing.h",
     "task_request.h",
+    "task_scheduling_outcome.h",
   ]
 
   frameworks = [ "Foundation.framework" ]
