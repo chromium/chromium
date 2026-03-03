@@ -11,6 +11,7 @@ import("//build/timestamp.gni")
 import("//build/util/lastchange.gni")
 import("//build/util/process_version.gni")
 import("//chrome/installer/installers.gni")
+import("//chrome/installer/linux/common/key.gni")
 import("//chrome/version.gni")
 import("//components/optimization_guide/features.gni")
 import("//third_party/angle/gni/angle.gni")
@@ -269,10 +270,6 @@ action("deb_repo_package") {
   } else {
     package = "chromium-browser-repo"
   }
-
-  # Assume PGP_KEY_VERSION=1 for now.
-  # Ideally this would be extracted via exec_script or passed from GN.
-  pgp_key_version = "1"
 
   outputs = [ "$root_out_dir/${package}_${pgp_key_version}_all.deb" ]
 
