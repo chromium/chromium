@@ -32,7 +32,7 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) SqliteBackendImpl : public Backend {
   // This value is to be incremented when the database schema used by this class
   // evolves in a non-backwards compatible way. When this number changes all
   // existing databases will be cleared on the first call to `Bind()`.
-  static constexpr int kCurrentUserVersion = 2;
+  static constexpr int kCurrentUserVersion = 3;
 
   static std::unique_ptr<Backend> Bind(PendingBackend pending_backend,
                                        Client client);
@@ -79,7 +79,7 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) SqliteBackendImpl : public Backend {
   // extended result code in case of error.
   base::expected<void, int> InsertImpl(base::span<const uint8_t> key,
                                        base::span<const uint8_t> content,
-                                       EntryMetadata metadata)
+                                       int64_t input_signature)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   // Returns the `TransactionError` corresponding to a SQLite extended result

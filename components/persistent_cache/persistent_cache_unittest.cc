@@ -20,6 +20,7 @@
 #include "base/test/gmock_expected_support.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "base/time/time.h"
 #include "base/types/expected.h"
 #include "components/persistent_cache/backend_storage.h"
 #include "components/persistent_cache/backend_type.h"
@@ -256,8 +257,8 @@ TEST_P(PersistentCacheTest, MetadataIsRetrievable) {
 
   auto [cache_name, cache] = OpenCache();
 
-  int64_t seconds_since_epoch =
-      base::Time::Now().InMillisecondsSinceUnixEpoch() / 1000;
+  base::TimeDelta delta_since_epoch =
+      base::Time::Now().ToDeltaSinceWindowsEpoch();
 
   EXPECT_THAT(cache->Insert(base::as_bytes(kKey),
                             base::byte_span_from_cstring("1"), metadata),
@@ -269,10 +270,11 @@ TEST_P(PersistentCacheTest, MetadataIsRetrievable) {
                   AllOf(Field(&EntryMetadata::input_signature,
                               metadata.input_signature),
                         Field(&EntryMetadata::write_timestamp,
-                              AllOf(Ge(seconds_since_epoch),
+                              AllOf(Ge(delta_since_epoch.InMicroseconds()),
                                     // The test is supposed to time out before
                                     // it takes this long to insert a value.
-                                    Le(seconds_since_epoch + 30))))))));
+                                    Le((delta_since_epoch + base::Seconds(30))
+                                           .InMicroseconds()))))))));
 }
 
 TEST_P(PersistentCacheTest, OverwritingChangesMetadata) {
