@@ -107,7 +107,7 @@ class PermissionsManager : public KeyedService {
     kPolicy,
   };
 
-  class Observer {
+  class Observer : public base::CheckedObserver {
    public:
     // Called when `user_permissions_` have been updated for an extension.
     virtual void OnUserPermissionsSettingsChanged(
@@ -147,6 +147,9 @@ class PermissionsManager : public KeyedService {
     virtual void OnHostAccessRequestDismissedByUser(
         const ExtensionId& extension_id,
         const url::Origin& origin) {}
+
+   protected:
+    ~Observer() override = default;
   };
 
   explicit PermissionsManager(content::BrowserContext* browser_context);
@@ -400,7 +403,7 @@ class PermissionsManager : public KeyedService {
   // Notifies `observers_` that site access requests were cleared on `tab_id`.
   void NotifyHostAccessRequestsCleared(int tab_id);
 
-  base::ObserverList<Observer>::Unchecked observers_;
+  base::ObserverList<Observer> observers_;
 
   // The associated browser context.
   const raw_ptr<content::BrowserContext> browser_context_;

@@ -20,7 +20,7 @@ namespace extensions {
 class ContentScriptLoadWaiter : public UserScriptLoader::Observer {
  public:
   explicit ContentScriptLoadWaiter(UserScriptLoader* loader);
-  ~ContentScriptLoadWaiter();
+  ~ContentScriptLoadWaiter() override;
   ContentScriptLoadWaiter(const ContentScriptLoadWaiter& other) = delete;
   ContentScriptLoadWaiter& operator=(const ContentScriptLoadWaiter& other) =
       delete;

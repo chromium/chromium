@@ -18,6 +18,7 @@
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "content/public/browser/render_process_host_creation_observer.h"
 #include "extensions/common/mojom/host_id.mojom.h"
 #include "extensions/common/user_script.h"
@@ -52,11 +53,14 @@ class UserScriptLoader : public content::RenderProcessHostCreationObserver {
       base::OnceCallback<void(UserScriptLoader* loader,
                               const std::optional<std::string>& error)>;
 
-  class Observer {
+  class Observer : public base::CheckedObserver {
    public:
     virtual void OnScriptsLoaded(UserScriptLoader* loader,
                                  content::BrowserContext* browser_context) = 0;
     virtual void OnUserScriptLoaderDestroyed(UserScriptLoader* loader) = 0;
+
+   protected:
+    ~Observer() override = default;
   };
 
   // Parses the includes out of `script` and returns them in `includes`.
@@ -209,7 +213,7 @@ class UserScriptLoader : public content::RenderProcessHostCreationObserver {
   mojom::HostID host_id_;
 
   // The associated observers.
-  base::ObserverList<Observer>::Unchecked observers_;
+  base::ObserverList<Observer> observers_;
 
   // A list of callbacks associated with script updates that are queued for the
   // next script load (if one is already in progress). These callbacks are moved

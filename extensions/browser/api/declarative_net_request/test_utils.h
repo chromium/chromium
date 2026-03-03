@@ -146,7 +146,7 @@ class WarningServiceObserver : public WarningService::Observer {
  public:
   WarningServiceObserver(WarningService* warning_service,
                          const ExtensionId& extension_id);
-  ~WarningServiceObserver();
+  ~WarningServiceObserver() override;
   WarningServiceObserver(const WarningServiceObserver&) = delete;
   WarningServiceObserver& operator=(const WarningServiceObserver&) = delete;
 

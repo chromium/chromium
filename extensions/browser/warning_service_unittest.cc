@@ -29,7 +29,7 @@ class TestWarningService : public WarningService {
 
 class MockObserver : public WarningService::Observer {
  public:
-  virtual ~MockObserver() {}
+  ~MockObserver() override = default;
   MOCK_METHOD1(ExtensionWarningsChanged, void(const ExtensionIdSet&));
 };
 

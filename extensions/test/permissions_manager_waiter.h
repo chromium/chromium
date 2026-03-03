@@ -21,7 +21,7 @@ class PermissionsManagerWaiter : public PermissionsManager::Observer {
   PermissionsManagerWaiter(const PermissionsManagerWaiter&) = delete;
   const PermissionsManagerWaiter& operator=(const PermissionsManagerWaiter&) =
       delete;
-  ~PermissionsManagerWaiter();
+  ~PermissionsManagerWaiter() override;
 
   // Waits until permissions change.
   void WaitForUserPermissionsSettingsChange();

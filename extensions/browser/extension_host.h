@@ -282,7 +282,7 @@ class ExtensionHost : public DeferredStartRenderHost,
   // Whether the close handler has been previously invoked.
   bool called_close_handler_ = false;
 
-  base::ObserverList<ExtensionHostObserver>::Unchecked observer_list_;
+  base::ObserverList<ExtensionHostObserver> observer_list_;
 
   base::WeakPtrFactory<ExtensionHost> weak_ptr_factory_{this};
 };

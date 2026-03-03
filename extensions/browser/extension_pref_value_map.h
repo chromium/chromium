@@ -11,6 +11,7 @@
 #include <string>
 
 #include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "extensions/common/api/types.h"
 #include "extensions/common/extension_id.h"
@@ -64,7 +65,7 @@ class ExtensionPrefValueMap : public KeyedService {
   using ChromeSettingScope = extensions::api::types::ChromeSettingScope;
 
   // Observer interface for monitoring ExtensionPrefValueMap.
-  class Observer {
+  class Observer : public base::CheckedObserver {
    public:
     // Called when the value for the given `key` set by one of the extensions
     // changes. This does not necessarily mean that the effective value has
@@ -77,7 +78,7 @@ class ExtensionPrefValueMap : public KeyedService {
     virtual void OnExtensionPrefValueMapDestruction() = 0;
 
    protected:
-    virtual ~Observer() {}
+    ~Observer() override = default;
   };
 
   ExtensionPrefValueMap();
@@ -210,7 +211,7 @@ class ExtensionPrefValueMap : public KeyedService {
   // be done in the destructor. This bit tracks whether it has been done yet.
   bool destroyed_;
 
-  base::ObserverList<Observer, true>::Unchecked observers_;
+  base::ObserverList<Observer, true> observers_;
 };
 
 #endif  // EXTENSIONS_BROWSER_EXTENSION_PREF_VALUE_MAP_H_

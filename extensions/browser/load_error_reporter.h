@@ -10,6 +10,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "base/task/single_thread_task_runner.h"
 #include "extensions/buildflags/buildflags.h"
 
@@ -32,9 +33,9 @@ namespace extensions {
 // report errors that are specific to a particular extension.
 class LoadErrorReporter {
  public:
-  class Observer {
+  class Observer : public base::CheckedObserver {
    public:
-    virtual ~Observer() = default;
+    ~Observer() override = default;
 
     // Called when an unpacked extension fails to load.
     virtual void OnLoadFailure(content::BrowserContext* browser_context,
@@ -86,7 +87,7 @@ class LoadErrorReporter {
   std::vector<std::u16string> errors_;
   bool enable_noisy_errors_;
 
-  base::ObserverList<Observer>::Unchecked observers_;
+  base::ObserverList<Observer> observers_;
 };
 
 }  // namespace extensions

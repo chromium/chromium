@@ -11,6 +11,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "extensions/browser/extension_registry.h"
@@ -32,10 +33,13 @@ namespace extensions {
 // them. This class must be used on the UI thread only.
 class WarningService : public KeyedService, public ExtensionRegistryObserver {
  public:
-  class Observer {
+  class Observer : public base::CheckedObserver {
    public:
     virtual void ExtensionWarningsChanged(
         const ExtensionIdSet& affected_extensions) = 0;
+
+   protected:
+    ~Observer() override = default;
   };
 
   // `browser_context` may be NULL for testing. In this case, be sure to not
@@ -93,7 +97,7 @@ class WarningService : public KeyedService, public ExtensionRegistryObserver {
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       extension_registry_observation_{this};
 
-  base::ObserverList<Observer>::Unchecked observer_list_;
+  base::ObserverList<Observer> observer_list_;
 };
 
 }  // namespace extensions

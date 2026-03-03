@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 
+#include "base/observer_list_types.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
 #include "ui/gfx/image/image_skia.h"
@@ -31,7 +32,7 @@ class Extension;
 // (represented here as a BrowserContext), InstallTrackers are as well.
 // Instances of InstallObserver are passed the appropriate BrowserContext so
 // that a single InstallObserver can observe multiple InstallTrackers.
-class InstallObserver {
+class InstallObserver : public base::CheckedObserver {
  public:
   struct ExtensionInstallParams {
     ExtensionInstallParams(
@@ -92,7 +93,7 @@ class InstallObserver {
   virtual void OnShutdown() {}
 
  protected:
-  virtual ~InstallObserver() = default;
+  ~InstallObserver() override = default;
 };
 
 }  // namespace extensions

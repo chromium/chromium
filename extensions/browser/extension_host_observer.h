@@ -9,12 +9,14 @@
 
 #include <string>
 
+#include "base/observer_list_types.h"
+
 namespace extensions {
 class ExtensionHost;
 
-class ExtensionHostObserver {
+class ExtensionHostObserver : public base::CheckedObserver {
  public:
-  virtual ~ExtensionHostObserver() {}
+  ~ExtensionHostObserver() override = default;
 
   // TODO(kalman): Why do these all return const ExtensionHosts? It seems
   // perfectly reasonable for an Observer implementation to mutate any

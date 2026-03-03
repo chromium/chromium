@@ -102,7 +102,7 @@ class InstallTracker : public KeyedService, public ExtensionRegistryObserver {
   // pointer is nulled in Shutdown().
   raw_ptr<content::BrowserContext> browser_context_;
 
-  base::ObserverList<InstallObserver>::Unchecked observers_;
+  base::ObserverList<InstallObserver> observers_;
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       extension_registry_observation_{this};

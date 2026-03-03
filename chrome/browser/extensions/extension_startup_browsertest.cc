@@ -69,7 +69,7 @@ class ManifestContentScriptWaiter
     : public extensions::UserScriptLoader::Observer {
  public:
   ManifestContentScriptWaiter() = default;
-  ~ManifestContentScriptWaiter() = default;
+  ~ManifestContentScriptWaiter() override = default;
   ManifestContentScriptWaiter(const ManifestContentScriptWaiter& other) =
       delete;
   ManifestContentScriptWaiter& operator=(
