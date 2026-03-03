@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_web_contents_listener.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
+#include "chrome/browser/ui/tabs/tab_network_state.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -342,6 +343,18 @@ std::optional<base::ByteSize> TabUIHelper::GetDiscardedMemorySavings() {
                    memory_saver::GetDiscardedMemorySavings(web_contents))
              : std::nullopt;
 }
+
+TabNetworkState TabUIHelper::GetTabNetworkState() {
+  return TabNetworkStateForWebContents(tab().GetContents());
+}
+
+#if !BUILDFLAG(IS_ANDROID)
+void TabUIHelper::NotifyTabUIChanged(base::PassKey<Browser> pass_key) {
+  // Notify subscribers because data might have updated since the browser is
+  // batching updates.
+  tab_ui_change_callbacks_.Notify();
+}
+#endif
 
 void TabUIHelper::OnTabPinnedStatusChange(tabs::TabInterface* tab_interface,
                                           bool new_pinned_state) {

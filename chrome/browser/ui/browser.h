@@ -33,6 +33,7 @@
 #include "chrome/browser/ui/browser_window/public/desktop_browser_window_capabilities_delegate.h"
 #include "chrome/browser/ui/browser_window_deleter.h"
 #include "chrome/browser/ui/chrome_web_modal_dialog_manager_delegate.h"
+#include "chrome/browser/ui/tabs/tab_change_type.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/unload_controller.h"
@@ -1224,6 +1225,10 @@ class Browser : public TabStripModelObserver,
   // Returns true if a `FindBarController` exists for this browser.
   // TODO(crbug.com/423956131): Remove this function.
   bool HasFindBarController();
+
+  // Notifies the tab UI that it should update when the browser schedule or
+  // process UI updates.
+  void NotifyTabUIChanged(int tab_index, TabChangeType change_type);
 
   // Data members /////////////////////////////////////////////////////////////
 

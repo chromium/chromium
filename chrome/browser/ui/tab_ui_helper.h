@@ -12,8 +12,15 @@
 #include "base/byte_size.h"
 #include "base/callback_list.h"
 #include "base/functional/callback_forward.h"
+#include "base/types/pass_key.h"
 #include "chrome/browser/ui/tabs/contents_observing_tab_feature.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+class Browser;
+#endif
+
+enum class TabNetworkState;
 
 namespace content {
 class NavigationEntry;
@@ -104,6 +111,12 @@ class TabUIHelper : public tabs::ContentsObservingTabFeature {
   bool was_active_at_least_once_for_testing() const {
     return was_active_at_least_once_;
   }
+
+  TabNetworkState GetTabNetworkState();
+
+#if !BUILDFLAG(IS_ANDROID)
+  void NotifyTabUIChanged(base::PassKey<Browser> pass_key);
+#endif
 
  private:
   void OnTabPinnedStatusChange(tabs::TabInterface* tab_interface,
