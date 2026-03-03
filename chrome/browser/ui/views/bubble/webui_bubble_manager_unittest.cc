@@ -84,7 +84,7 @@ class WebUIBubbleManagerTest : public ChromeViewsTestBase {
 
 TEST_F(WebUIBubbleManagerTest, CreateWebUIBubbleDialogWithAnchorProvided) {
   std::unique_ptr<views::Widget> anchor_widget =
-      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET,
                        views::Widget::InitParams::TYPE_WINDOW);
   auto bubble_manager = WebUIBubbleManager::Create<TestWebUIController>(
       anchor_widget->GetContentsView(), browser_window_interface(),

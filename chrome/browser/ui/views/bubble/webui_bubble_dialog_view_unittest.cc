@@ -60,7 +60,7 @@ class WebUIBubbleDialogViewTest : public ChromeViewsTestBase,
     profile_ = std::make_unique<TestingProfile>();
 
     anchor_widget_ =
-        CreateTestWidget(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+        CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET,
                          Widget::InitParams::TYPE_WINDOW);
     anchor_widget_->Show();
     contents_wrapper_ = std::make_unique<TestWebUIContentsWrapper>(
