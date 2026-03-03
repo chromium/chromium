@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_DEVTOOLS_PROTOCOL_EMULATION_HANDLER_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/containers/flat_map.h"
 #include "base/functional/callback_helpers.h"
@@ -15,6 +16,7 @@
 #include "content/browser/devtools/protocol/protocol.h"
 #include "services/device/public/cpp/compute_pressure/buildflags.h"
 #include "services/device/public/mojom/pressure_update.mojom-shared.h"
+#include "services/device/public/mojom/screen_orientation_lock_types.mojom-shared.h"
 #include "services/device/public/mojom/sensor.mojom-shared.h"
 #include "services/device/public/mojom/sensor_provider.mojom-shared.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
@@ -111,7 +113,9 @@ class EmulationHandler : public DevToolsDomainHandler,
       std::unique_ptr<protocol::Page::Viewport> viewport,
       std::unique_ptr<protocol::Emulation::DisplayFeature> display_feature,
       std::unique_ptr<protocol::Emulation::DevicePosture> device_posture,
-      std::optional<std::string> scrollbar_type) override;
+      std::optional<std::string> scrollbar_type,
+      std::optional<bool> screen_orientation_lock_emulation) override;
+
   Response ClearDeviceMetricsOverride() override;
 
   Response SetVisibleSize(int width, int height) override;
@@ -210,10 +214,24 @@ class EmulationHandler : public DevToolsDomainHandler,
       pressure_overrides_;
 #endif  // BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
 
+  // Called by ScreenOrientationProvider when orientation lock state changes
+  // during DevTools emulation.
+  void OnOrientationLockChanged(
+      bool locked,
+      std::optional<device::mojom::ScreenOrientationLockType> orientation);
+
+  // Enable/disable screen orientation lock emulation on the provider.
+  void UpdateScreenOrientationEmulation(bool enabled);
+
   // True when SetDevicePostureOverride() has been called.
   bool device_posture_emulation_enabled_ = false;
 
+  // True when screen orientation lock emulation is enabled.
+  bool screen_orientation_lock_emulation_enabled_ = false;
+
   raw_ptr<RenderFrameHostImpl> host_;
+
+  std::unique_ptr<Emulation::Frontend> frontend_;
 
   base::ScopedClosureRunner capture_handle_;
 };

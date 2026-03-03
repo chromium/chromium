@@ -230,6 +230,10 @@ class WebTestControlHost : public WebContentsObserver,
   void SetPopupBlockingEnabled(bool block_popups) override;
   void LoadURLForFrame(const GURL& url, const std::string& frame_name) override;
   void SimulateScreenOrientationChanged() override;
+  void SimulateScreenOrientationLockChanged(
+      const blink::LocalFrameToken& frame_token,
+      bool locked,
+      device::mojom::ScreenOrientationLockType orientation) override;
   void SetPermission(const std::string& name,
                      blink::mojom::PermissionStatus status,
                      const GURL& origin,

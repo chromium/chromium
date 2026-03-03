@@ -419,4 +419,118 @@ TEST_F(ScreenOrientationProviderTest, ProviderReportsNotSupported) {
                    ->IsOrientationLockSupported());
 }
 
+// DevTools emulation enables orientation lock without a platform delegate.
+TEST_F(ScreenOrientationProviderTest, DevToolsEmulationEnablesLock) {
+  // Ensure no ScreenOrientationDelegate is set -- lock would normally fail.
+  ScreenOrientationProvider::SetDelegate(nullptr);
+  auto* provider = contents()->GetScreenOrientationProviderForTesting();
+  ASSERT_FALSE(provider->IsOrientationLockSupported());
+
+  // Enable DevTools emulation.
+  provider->SetDevToolsEmulationEnabled(true);
+  EXPECT_TRUE(provider->IsOrientationLockSupported());
+
+  // Lock should succeed immediately.
+  std::optional<ScreenOrientationLockResult> result;
+  CallLockAndGetResult(
+      device::mojom::ScreenOrientationLockType::PORTRAIT_PRIMARY, &result);
+  EXPECT_EQ(ScreenOrientationLockResult::SCREEN_ORIENTATION_LOCK_RESULT_SUCCESS,
+            *result);
+
+  // Disable emulation.
+  provider->SetDevToolsEmulationEnabled(false);
+  EXPECT_FALSE(provider->IsOrientationLockSupported());
+}
+
+// DevTools emulation lock fires the callback.
+TEST_F(ScreenOrientationProviderTest, DevToolsEmulationCallbackOnLock) {
+  ScreenOrientationProvider::SetDelegate(nullptr);
+  auto* provider = contents()->GetScreenOrientationProviderForTesting();
+  provider->SetDevToolsEmulationEnabled(true);
+
+  bool callback_locked = false;
+  std::optional<device::mojom::ScreenOrientationLockType> callback_orientation;
+
+  provider->SetOrientationLockChangedCallback(base::BindRepeating(
+      [](bool* out_locked,
+         std::optional<device::mojom::ScreenOrientationLockType>*
+             out_orientation,
+         bool locked,
+         std::optional<device::mojom::ScreenOrientationLockType> orientation) {
+        *out_locked = locked;
+        *out_orientation = orientation;
+      },
+      &callback_locked, &callback_orientation));
+
+  // Lock should trigger callback with locked=true.
+  std::optional<ScreenOrientationLockResult> result;
+  CallLockAndGetResult(
+      device::mojom::ScreenOrientationLockType::LANDSCAPE_PRIMARY, &result);
+  EXPECT_EQ(ScreenOrientationLockResult::SCREEN_ORIENTATION_LOCK_RESULT_SUCCESS,
+            *result);
+  EXPECT_TRUE(callback_locked);
+  EXPECT_EQ(device::mojom::ScreenOrientationLockType::LANDSCAPE_PRIMARY,
+            callback_orientation);
+
+  // Unlock should trigger callback with locked=false.
+  CallUnlock();
+  EXPECT_FALSE(callback_locked);
+  EXPECT_FALSE(callback_orientation.has_value());
+}
+
+// Disabling DevTools emulation auto-unlocks and fires callback.
+TEST_F(ScreenOrientationProviderTest, DevToolsEmulationDisableUnlocks) {
+  ScreenOrientationProvider::SetDelegate(nullptr);
+  auto* provider = contents()->GetScreenOrientationProviderForTesting();
+  provider->SetDevToolsEmulationEnabled(true);
+
+  bool callback_locked = true;
+  provider->SetOrientationLockChangedCallback(base::BindRepeating(
+      [](bool* out_locked, bool locked,
+         std::optional<device::mojom::ScreenOrientationLockType>) {
+        *out_locked = locked;
+      },
+      &callback_locked));
+
+  // Lock orientation.
+  std::optional<ScreenOrientationLockResult> result;
+  CallLockAndGetResult(
+      device::mojom::ScreenOrientationLockType::PORTRAIT_PRIMARY, &result);
+  EXPECT_EQ(ScreenOrientationLockResult::SCREEN_ORIENTATION_LOCK_RESULT_SUCCESS,
+            *result);
+  EXPECT_TRUE(callback_locked);
+
+  // Disabling emulation should auto-unlock and fire callback.
+  provider->SetDevToolsEmulationEnabled(false);
+  EXPECT_FALSE(callback_locked);
+}
+
+// DevTools emulation still falls back to delegate when delegate exists.
+TEST_F(ScreenOrientationProviderTest, DevToolsEmulationWithDelegate) {
+  FakeScreenOrientationDelegate delegate(/*supported=*/true,
+                                         /*full_screen_required=*/false);
+  auto* provider = contents()->GetScreenOrientationProviderForTesting();
+
+  // Even without emulation, lock is supported via delegate.
+  EXPECT_TRUE(provider->IsOrientationLockSupported());
+
+  // With emulation enabled, lock still works (emulation path takes priority).
+  provider->SetDevToolsEmulationEnabled(true);
+  EXPECT_TRUE(provider->IsOrientationLockSupported());
+
+  // Navigate to a site.
+  const GURL url("http://www.google.com");
+  controller().LoadURL(url, Referrer(), ui::PAGE_TRANSITION_TYPED,
+                       std::string());
+
+  std::optional<ScreenOrientationLockResult> result;
+  CallLockAndGetResult(
+      device::mojom::ScreenOrientationLockType::LANDSCAPE_PRIMARY, &result);
+  // Emulation path succeeds immediately (doesn't go through delegate).
+  EXPECT_EQ(ScreenOrientationLockResult::SCREEN_ORIENTATION_LOCK_RESULT_SUCCESS,
+            *result);
+  // Delegate was NOT called since emulation path handles it.
+  EXPECT_EQ(0, delegate.lock_count());
+}
+
 }  // namespace content

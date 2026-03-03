@@ -16,6 +16,7 @@ import "third_party/blink/public/mojom/webpreferences/web_preferences.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
 import "third_party/blink/public/mojom/tokens/tokens.mojom";
+import "services/device/public/mojom/screen_orientation_lock_types.mojom";
 
 struct WebTestRunTestConfiguration {
   // The current working directory.
@@ -243,6 +244,12 @@ interface WebTestControlHost {
   // Simulate an orientation change in the browser process for the layout tests
   // that request fullscreen on screen orientation change.
   SimulateScreenOrientationChanged();
+
+  // Simulate a screen orientation lock state change in the browser process.
+  SimulateScreenOrientationLockChanged(
+      blink.mojom.LocalFrameToken frame_token,
+      bool locked,
+      device.mojom.ScreenOrientationLockType orientation);
 
   // Sets the permission for |name| to |status| when queried or requested in
   // |origin| from |embedding_origin|.

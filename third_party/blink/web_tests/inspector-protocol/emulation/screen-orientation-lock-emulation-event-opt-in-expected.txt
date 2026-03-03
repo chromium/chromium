@@ -1,0 +1,15 @@
+Tests Emulation.screenOrientationLockChanged event emission and opt-in.
+Without opt-in:
+Event count: 0
+With opt-in:
+Lock event: {
+    locked : true
+    orientation : {
+        angle : 90
+        type : landscapePrimary
+    }
+}
+Unlock event: {
+    locked : false
+}
+

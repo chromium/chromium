@@ -44,6 +44,7 @@
 #include "content/browser/preloading/prerender/prerender_final_status.h"
 #include "content/browser/renderer_host/navigator.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
+#include "content/browser/screen_orientation/screen_orientation_provider.h"
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_thread.h"

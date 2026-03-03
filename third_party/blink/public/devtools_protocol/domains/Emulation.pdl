@@ -306,6 +306,12 @@ domain Emulation
         # classic (occupying space within the layout) or overlay, depending
         # on the platform. Note: if `mobile` is `true`, the default scrollbar type is `overlay`.
         default
+      # If set to true, enables screen orientation lock emulation, which
+      # intercepts screen.orientation.lock() calls from the page and reports
+      # orientation changes via screenOrientationLockChanged events. This is
+      # useful for emulating mobile device orientation lock behavior in
+      # responsive design mode.
+      experimental optional boolean screenOrientationLockEmulation
 
   # Start reporting the given posture value to the Device Posture API.
   # This override can also be set in setDeviceMetricsOverride().
@@ -529,6 +535,16 @@ domain Emulation
 
   # Notification sent after the virtual time budget for the current VirtualTimePolicy has run out.
   experimental event virtualTimeBudgetExpired
+
+  # Fired when a page calls screen.orientation.lock() or screen.orientation.unlock()
+  # while device emulation is enabled. This allows the DevTools frontend to update the
+  # emulated device orientation accordingly.
+  experimental event screenOrientationLockChanged
+    parameters
+      # Whether the screen orientation is currently locked.
+      boolean locked
+      # The orientation lock type requested by the page. Only set when locked is true.
+      optional ScreenOrientation orientation
 
   # Enum of image types that can be disabled.
   experimental type DisabledImageType extends string

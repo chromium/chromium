@@ -54,6 +54,7 @@
 #include "printing/page_number.h"
 #include "printing/page_range.h"
 #include "printing/print_settings.h"
+#include "services/device/public/mojom/screen_orientation_lock_types.mojom-shared.h"
 #include "services/network/public/mojom/cors.mojom.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
@@ -279,6 +280,8 @@ class TestRunnerBindings final : public gin::Wrappable<TestRunnerBindings> {
   void ClearTrustTokenState(v8::Local<v8::Function> callback);
   void CopyImageThen(int x, int y, v8::Local<v8::Function> callback);
   void DisableMockScreenOrientation();
+  void SimulateScreenOrientationLockChanged(bool locked,
+                                            const std::string& orientation);
   void DispatchBeforeInstallPromptEvent(
       const std::vector<std::string>& event_platforms,
       v8::Local<v8::Function> callback);
@@ -596,6 +599,8 @@ gin::ObjectTemplateBuilder TestRunnerBindings::GetObjectTemplateBuilder(
                  &TestRunnerBindings::DisableAutoResizeMode)
       .SetMethod("disableMockScreenOrientation",
                  &TestRunnerBindings::DisableMockScreenOrientation)
+      .SetMethod("simulateScreenOrientationLockChanged",
+                 &TestRunnerBindings::SimulateScreenOrientationLockChanged)
       // Sets up a WebDocumentSubresourceFilterImpl to disallow subsequent
       // subresource loads within the current document with the given path
       // |suffixes|. The filter is created and injected even if |suffixes| is
@@ -1472,6 +1477,35 @@ void TestRunnerBindings::DisableMockScreenOrientation() {
     return;
   }
   runner_->DisableMockScreenOrientation(GetWebFrame()->View());
+}
+
+void TestRunnerBindings::SimulateScreenOrientationLockChanged(
+    bool locked,
+    const std::string& orientation) {
+  if (!frame_) {
+    return;
+  }
+
+  device::mojom::ScreenOrientationLockType lock_type =
+      device::mojom::ScreenOrientationLockType::DEFAULT;
+  if (orientation == "portrait-primary") {
+    lock_type = device::mojom::ScreenOrientationLockType::PORTRAIT_PRIMARY;
+  } else if (orientation == "portrait-secondary") {
+    lock_type = device::mojom::ScreenOrientationLockType::PORTRAIT_SECONDARY;
+  } else if (orientation == "landscape-primary") {
+    lock_type = device::mojom::ScreenOrientationLockType::LANDSCAPE_PRIMARY;
+  } else if (orientation == "landscape-secondary") {
+    lock_type = device::mojom::ScreenOrientationLockType::LANDSCAPE_SECONDARY;
+  } else if (orientation == "portrait") {
+    lock_type = device::mojom::ScreenOrientationLockType::PORTRAIT;
+  } else if (orientation == "landscape") {
+    lock_type = device::mojom::ScreenOrientationLockType::LANDSCAPE;
+  } else if (orientation == "any") {
+    lock_type = device::mojom::ScreenOrientationLockType::ANY;
+  }
+
+  frame_->GetWebTestControlHostRemote()->SimulateScreenOrientationLockChanged(
+      frame_->GetWebFrame()->GetLocalFrameToken(), locked, lock_type);
 }
 
 void TestRunnerBindings::SetDisallowedSubresourcePathSuffixes(

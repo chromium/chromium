@@ -27,6 +27,7 @@
 #include "content/browser/renderer_host/input/touch_emulator_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
+#include "content/browser/screen_orientation/screen_orientation_provider.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/url_constants.h"
@@ -158,6 +159,7 @@ void EmulationHandler::SetRenderer(int process_host_id,
 }
 
 void EmulationHandler::Wire(UberDispatcher* dispatcher) {
+  frontend_ = std::make_unique<Emulation::Frontend>(dispatcher->channel());
   Emulation::Dispatcher::wire(dispatcher, this);
 }
 
@@ -169,6 +171,10 @@ Response EmulationHandler::Disable() {
   user_agent_ = std::string();
   if (device_emulation_enabled_) {
     device_emulation_enabled_ = false;
+    if (screen_orientation_lock_emulation_enabled_) {
+      screen_orientation_lock_emulation_enabled_ = false;
+      UpdateScreenOrientationEmulation(false);
+    }
     UpdateDeviceEmulationState();
   }
   if (focus_emulation_enabled_)
@@ -657,7 +663,8 @@ Response EmulationHandler::SetDeviceMetricsOverride(
     std::unique_ptr<protocol::Page::Viewport> viewport,
     std::unique_ptr<protocol::Emulation::DisplayFeature> display_feature,
     std::unique_ptr<protocol::Emulation::DevicePosture> device_posture,
-    std::optional<std::string> scrollbar_type) {
+    std::optional<std::string> scrollbar_type,
+    std::optional<bool> screen_orientation_lock_emulation) {
   const static int max_size = 10000000;
   const static double max_scale = 10;
   const static int max_orientation_angle = 360;
@@ -808,6 +815,13 @@ Response EmulationHandler::SetDeviceMetricsOverride(
     }
   }
 
+  bool enable_orientation_lock =
+      screen_orientation_lock_emulation.value_or(false);
+  if (enable_orientation_lock != screen_orientation_lock_emulation_enabled_) {
+    screen_orientation_lock_emulation_enabled_ = enable_orientation_lock;
+    UpdateScreenOrientationEmulation(enable_orientation_lock);
+  }
+
   if (device_emulation_enabled_ && params == device_emulation_params_) {
     // Renderer should answer after size was changed, so that the response is
     // only sent to the client once updates were applied.
@@ -839,6 +853,10 @@ Response EmulationHandler::ClearDeviceMetricsOverride() {
   GetWebContents()->ClearDeviceEmulationSize();
   device_emulation_enabled_ = false;
   device_emulation_params_ = blink::DeviceEmulationParams();
+  if (screen_orientation_lock_emulation_enabled_) {
+    screen_orientation_lock_emulation_enabled_ = false;
+    UpdateScreenOrientationEmulation(false);
+  }
   UpdateDeviceEmulationState();
   // Renderer should answer after emulation was disabled, so that the response
   // is only sent to the client once updates were applied.
@@ -1260,6 +1278,77 @@ void EmulationHandler::ApplyNetworkOverridesForDownload(
   ApplyOverrides(&headers, &user_agent_overridden, &accept_language_overridden);
   for (net::HttpRequestHeaders::Iterator it(headers); it.GetNext();) {
     parameters->add_request_header(it.name(), it.value());
+  }
+}
+
+void EmulationHandler::UpdateScreenOrientationEmulation(bool enabled) {
+  WebContentsImpl* web_contents = GetWebContents();
+  if (!web_contents) {
+    return;
+  }
+  ScreenOrientationProvider* provider =
+      web_contents->GetScreenOrientationProvider();
+  if (!provider) {
+    return;
+  }
+  provider->SetDevToolsEmulationEnabled(enabled);
+  if (enabled) {
+    provider->SetOrientationLockChangedCallback(base::BindRepeating(
+        &EmulationHandler::OnOrientationLockChanged, base::Unretained(this)));
+  } else {
+    provider->SetOrientationLockChangedCallback(
+        ScreenOrientationProvider::OrientationLockChangedCallback());
+  }
+}
+
+void EmulationHandler::OnOrientationLockChanged(
+    bool locked,
+    std::optional<device::mojom::ScreenOrientationLockType> orientation) {
+  if (!frontend_) {
+    return;
+  }
+
+  if (locked && orientation.has_value()) {
+    std::string type;
+    int angle = 0;
+    switch (orientation.value()) {
+      case device::mojom::ScreenOrientationLockType::PORTRAIT_PRIMARY:
+        type = Emulation::ScreenOrientation::TypeEnum::PortraitPrimary;
+        angle = 0;
+        break;
+      case device::mojom::ScreenOrientationLockType::PORTRAIT_SECONDARY:
+        type = Emulation::ScreenOrientation::TypeEnum::PortraitSecondary;
+        angle = 180;
+        break;
+      case device::mojom::ScreenOrientationLockType::LANDSCAPE_PRIMARY:
+        type = Emulation::ScreenOrientation::TypeEnum::LandscapePrimary;
+        angle = 90;
+        break;
+      case device::mojom::ScreenOrientationLockType::LANDSCAPE_SECONDARY:
+        type = Emulation::ScreenOrientation::TypeEnum::LandscapeSecondary;
+        angle = 270;
+        break;
+      case device::mojom::ScreenOrientationLockType::PORTRAIT:
+        type = Emulation::ScreenOrientation::TypeEnum::PortraitPrimary;
+        angle = 0;
+        break;
+      case device::mojom::ScreenOrientationLockType::LANDSCAPE:
+        type = Emulation::ScreenOrientation::TypeEnum::LandscapePrimary;
+        angle = 90;
+        break;
+      default:
+        type = Emulation::ScreenOrientation::TypeEnum::PortraitPrimary;
+        angle = 0;
+        break;
+    }
+    auto screen_orientation = Emulation::ScreenOrientation::Create()
+                                  .SetType(type)
+                                  .SetAngle(angle)
+                                  .Build();
+    frontend_->ScreenOrientationLockChanged(locked,
+                                            std::move(screen_orientation));
+  } else {
+    frontend_->ScreenOrientationLockChanged(locked);
   }
 }
 

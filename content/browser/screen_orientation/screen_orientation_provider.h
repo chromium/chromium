@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/render_frame_host_receiver_set.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -61,6 +62,23 @@ class CONTENT_EXPORT ScreenOrientationProvider
       device::mojom::ScreenOrientationLockType lock,
       display::mojom::ScreenOrientation orientation);
 
+  // Enable/disable DevTools emulation mode for orientation lock.
+  // When enabled, LockOrientation() succeeds even without a platform delegate.
+  void SetDevToolsEmulationEnabled(bool enabled);
+
+  // Callback type for notifying DevTools when orientation lock state changes.
+  using OrientationLockChangedCallback = base::RepeatingCallback<void(
+      bool locked,
+      std::optional<device::mojom::ScreenOrientationLockType> orientation)>;
+  void SetOrientationLockChangedCallback(
+      OrientationLockChangedCallback callback);
+
+  // Hook used by web test infrastructure to mirror renderer-side orientation
+  // lock state changes to DevTools emulation callbacks.
+  void NotifyOrientationLockChanged(
+      bool locked,
+      std::optional<device::mojom::ScreenOrientationLockType> orientation);
+
   // WebContentsObserver
   void DidToggleFullscreenModeForTab(bool entered_fullscreen,
                                      bool will_cause_resize) override;
@@ -93,6 +111,13 @@ class CONTENT_EXPORT ScreenOrientationProvider
       pending_lock_orientation_;
 
   LockOrientationCallback pending_callback_;
+
+  // Whether DevTools device emulation is active, allowing orientation lock
+  // even without a platform delegate.
+  bool devtools_emulation_enabled_ = false;
+
+  // Callback to notify DevTools of orientation lock state changes.
+  OrientationLockChangedCallback lock_changed_callback_;
 
   RenderFrameHostReceiverSet<device::mojom::ScreenOrientation> receivers_;
 };
