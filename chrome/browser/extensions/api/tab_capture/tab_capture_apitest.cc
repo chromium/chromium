@@ -202,7 +202,7 @@ IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, ActiveTabPermission) {
 // events to the onStatusChange listener.  The test loads a page that toggles
 // fullscreen mode, using the Fullscreen Javascript API, in response to mouse
 // clicks. The fullscreen API requires a user gesture.
-// TODO(crbug.com/427298135): Port to desktop Android. Currently times out
+// TODO(crbug.com/489494749): Port to desktop Android. Currently times out
 // without useful stack or logs.
 IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, FullscreenEvents) {
   AddExtensionToCommandLineAllowlist();
