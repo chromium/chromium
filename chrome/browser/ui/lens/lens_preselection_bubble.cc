@@ -98,7 +98,8 @@ void LensPreselectionBubble::Init() {
   if (lens::IsLensOverlayContextualSearchboxEnabled()) {
     auto button = views::CreateVectorImageButtonWithNativeTheme(
         base::RepeatingClosure(), kHelpMenuIcon, 20,
-        kColorLensOverlayToastForeground, kColorLensOverlayToastForeground);
+        kColorLensOverlayToastForeground, kColorLensOverlayToastForeground,
+        kColorLensOverlayToastForeground);
     views::HighlightPathGenerator::Install(
         button.get(),
         std::make_unique<views::CircleHighlightPathGenerator>(gfx::Insets()));
