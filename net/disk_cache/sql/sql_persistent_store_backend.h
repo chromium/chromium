@@ -328,9 +328,9 @@ class SqlPersistentStore::Backend {
   Error DeleteBlobsByResIds(const std::vector<ResId>& res_ids);
   // Deletes a single resource entry from the `resources` table by its `res_id`.
   Error DeleteResourceByResId(ResId res_id);
-  // Deletes a single resource entry from the `resources` table by its `res_id`
-  // and returns the `bytes_usage` of the deleted entry.
-  Int64OrError DeleteResourceByResIdReturnUsage(ResId res_id);
+  // Deletes a single live resource entry from the `resources` table by its
+  // `res_id` and returns the `bytes_usage` of the deleted entry.
+  Int64OrError DeleteLiveResourceByResIdReturnUsage(ResId res_id);
   // Deletes multiple resource entries from the `resources` table by their
   // `res_id`s.
   Error DeleteResourcesByResIds(const std::vector<ResId>& res_ids);

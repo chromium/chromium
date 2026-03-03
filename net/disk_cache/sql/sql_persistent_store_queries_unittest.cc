@@ -151,7 +151,7 @@ TEST_F(SqlPersistentStoreQueriesTest, AllQueriesHaveValidPlan) {
            {Query::kDeleteResourceByResIds_DeleteFromResources,
             "`--SEARCH resources USING "
             "INTEGER PRIMARY KEY (rowid=?)"},
-           {Query::kDeleteResourceByResIds_DeleteFromResourcesReturnUsage,
+           {Query::kDeleteLiveResourceByResIdReturnUsage,
             "`--SEARCH resources USING "
             "INTEGER PRIMARY KEY (rowid=?)"},
            {Query::kUpdateEntryLastUsedByKey_UpdateResourceLastUsed,

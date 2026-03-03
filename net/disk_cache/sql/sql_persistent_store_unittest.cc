@@ -5285,6 +5285,33 @@ TEST_F(SqlPersistentStoreTest, ResumePendingEvictionInternalNotFound) {
   EXPECT_FALSE(store_->HasPendingEviction());
 }
 
+// Regression test for crbug.com/488877236.
+TEST_F(SqlPersistentStoreTest, ResumePendingEvictionDoomedEntry) {
+  const int64_t kMaxBytes = 100 * 1024;
+  CreateStore(kMaxBytes);
+  ASSERT_EQ(Init(), SqlPersistentStore::Error::kOk);
+
+  const int kEntrySize = 1024;
+  const int kNumEntries = 100;
+  std::vector<SqlPersistentStore::ResId> res_ids;
+  PopulateCache(kNumEntries, kEntrySize, &res_ids);
+
+  // Setup pause.
+  StartAndPauseEviction();
+
+  // Doom an entry that is likely to be next in eviction.
+  CacheEntryKey existing_key;
+  int index;
+  FindNextEntryToEvict(kNumEntries, existing_key, index);
+  ASSERT_EQ(DoomEntry(existing_key, res_ids[index]),
+            SqlPersistentStore::Error::kOk);
+
+  // Resume eviction. This would have previously triggered the DCHECK failure
+  // because the entry count was double-decremented.
+  ASSERT_EQ(StartEviction({}, false), SqlPersistentStore::Error::kOk);
+  EXPECT_FALSE(store_->HasPendingEviction());
+}
+
 TEST_F(SqlPersistentStoreTest,
        ResumeEvictionWithMultipleShardsBiasedToShardZero) {
   // Add another task runner to enable multiple shards.
