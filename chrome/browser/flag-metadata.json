@@ -9014,6 +9014,12 @@
     "expiry_milestone": 170
   },
   {
+    "name": "summarizer-api-performance-preference",
+    "owners": [
+      "//chrome/browser/ai/OWNERS", "builtin-ai-team@google.com", "jaeone@google.com" ],
+    "expiry_milestone": 159
+  },
+  {
     "name": "supervised-user-block-interstitial-v3",
     "owners": [
       "ddac@google.com",

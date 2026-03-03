@@ -10392,6 +10392,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(blink::features::kAIProofreadingAPI),
      flag_descriptions::kAIAPIsForGeminiNanoLinks},
 
+    {"summarizer-api-performance-preference",
+     flag_descriptions::kSummarizerAPIWithPerformancePreferenceName,
+     flag_descriptions::kSummarizerAPIWithPerformancePreferenceDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(blink::features::kAISummarizationPerformancePreference),
+     flag_descriptions::kSummarizerAPIWithPerformancePreferenceLink},
+
     {"on-device-model-litert-lm-backend",
      flag_descriptions::kOnDeviceModelLitertLmBackendName,
      flag_descriptions::kOnDeviceModelLitertLmBackendDescription, kOsDesktop,
