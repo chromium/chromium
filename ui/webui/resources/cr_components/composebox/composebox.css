@@ -114,7 +114,7 @@
 }
 
 :host([searchbox-next-enabled]) #input::placeholder {
-  font-size: var(--cr-composebox-input-placeholder-font-size, 18px);
+  font-size: var(--cr-composebox-input-placeholder-font-size, 16px);
   font-weight: 400;
 }
 
