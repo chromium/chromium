@@ -202,8 +202,11 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Success"/>
   <int value="1" label="Empty response"/>
   <int value="2" label="Partial failure"/>
-  <int value="3" label="Server error"/>
+  <int value="3" label="Server error (Deprecated)"/>
   <int value="4" label="Network error"/>
+  <int value="5" label="Server HTTP error (5xx)"/>
+  <int value="6" label="Client HTTP error (4xx)"/>
+  <int value="7" label="Protocol (violation) error"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/sync/engine/update_handler.h:NudgedUpdateResult) -->

@@ -44,13 +44,25 @@ class UpdateHandler {
     // GetUpdates request succeeded.
     kDownloadPartialFailure = 2,
 
-    // The whole GetUpdates request failed due to a server error.
-    kDownloadRequestServerError = 3,
+    // Deprecated: was split into kDownloadRequestServerError and
+    // kDownloadRequestClientError.
+    // kDownloadRequestServerErrorDeprecated = 3,
 
     // The whole GetUpdates request failed due to a network error.
     kDownloadRequestNetworkError = 4,
 
-    kMaxValue = kDownloadRequestNetworkError,
+    // The whole GetUpdates request failed due to a server HTTP error (excluding
+    // HTTP
+    // 4xx).
+    kDownloadRequestServerHttpError = 5,
+
+    // The whole GetUpdates request failed due to a client HTTP error (4xx).
+    kDownloadRequestClientHttpError = 6,
+
+    // There was a protocol (violation) error during the GetUpdates request.
+    kDownloadRequestProtocolError = 7,
+
+    kMaxValue = kDownloadRequestProtocolError,
   };
   // LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:NudgedUpdateResult)
 

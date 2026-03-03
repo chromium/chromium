@@ -91,10 +91,17 @@ UpdateHandler::NudgedUpdateResult SyncerErrorToNudgedUpdateResult(
     case SyncerError::Type::kNetworkError:
       return UpdateHandler::NudgedUpdateResult::kDownloadRequestNetworkError;
     case SyncerError::Type::kHttpError:
+      if (error.GetHttpErrorOrDie() >= 400 && error.GetHttpErrorOrDie() < 500) {
+        return UpdateHandler::NudgedUpdateResult::
+            kDownloadRequestClientHttpError;
+      }
+      // In practice, this error should be for the 5xx HTTP errors but record it
+      // for any non-4xx HTTP error.
+      return UpdateHandler::NudgedUpdateResult::kDownloadRequestServerHttpError;
     case SyncerError::Type::kProtocolError:
     case SyncerError::Type::kProtocolViolationError:
       // Return server error for all non-network errors.
-      return UpdateHandler::NudgedUpdateResult::kDownloadRequestServerError;
+      return UpdateHandler::NudgedUpdateResult::kDownloadRequestProtocolError;
     case SyncerError::Type::kSuccess:
       NOTREACHED();
   }
