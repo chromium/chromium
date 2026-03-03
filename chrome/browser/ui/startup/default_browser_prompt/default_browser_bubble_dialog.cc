@@ -23,9 +23,11 @@ namespace {
 
 std::unique_ptr<views::ImageView> CreateTitleImage() {
   auto title_image = std::make_unique<views::ImageView>();
-  title_image->SetImage(ui::ImageModel::FromImage(
-      ui::ResourceBundle::GetSharedInstance().GetImageNamed(
-          IDR_PRODUCT_LOGO_64)));
+  title_image->SetImage(ui::ImageModel::FromResourceId(IDR_PRODUCT_LOGO_128));
+
+  // The design spec calls for 67.5px but since gfx::Size has to be integer
+  // based, rounding up here.
+  title_image->SetImageSize(gfx::Size(68, 68));
   title_image->SetHorizontalAlignment(views::ImageView::Alignment::kCenter);
   title_image->SetBorder(
       views::CreateEmptyBorder(gfx::Insets::TLBR(0, 0, 16, 0)));
