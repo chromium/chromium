@@ -225,22 +225,60 @@ public class DateFieldView extends LinearLayout implements FieldView {
 
     @Override
     public boolean validate() {
-        return true;
+        return isEmptyDateSelected() || (getSelectedDate() != null);
     }
 
     private void onDropdownItemSelected(String unused) {
-        @Nullable String monthValue = mMonthDropdown.getFieldModel().get(VALUE);
-        @Nullable String dayValue = mDayDropdown.getFieldModel().get(VALUE);
-        @Nullable String yearValue = mYearDropdown.getFieldModel().get(VALUE);
-        if (TextUtils.isEmpty(monthValue)
-                && TextUtils.isEmpty(dayValue)
-                && TextUtils.isEmpty(yearValue)) {
+        if (isEmptyDateSelected()) {
+            assert validate() : "An empty date is valid";
             // First case: the user has completely reset the date field. Propagate an empty value to
             // the model.
             mPropertyModel.set(VALUE, "");
             return;
         }
-        if (yearValue == null
+
+        @Nullable LocalDate date = getSelectedDate();
+        if (date != null) {
+            assert validate() : "A non-null date is valid";
+            // Second case: the user has selected a valid date. Propagate it to the model. Partially
+            // valid dates are never propagated to the model.
+            mPropertyModel.set(VALUE, date.toString());
+            return;
+        }
+        assert !validate()
+                : "The date is invalid if it can't be contructed from the selected items";
+    }
+
+    /**
+     * The date picker is considered empty if all 3 dropdowns are initialized with the hint values.
+     * The only special case is when the initial date is out of range: an empty date can't be
+     * selected in this case.
+     *
+     * @return True if the date picker is empty.
+     */
+    private boolean isEmptyDateSelected() {
+        if (!getYearDropdownHint(getContext())
+                .equals(mYearDropdown.getFieldModel().get(DROPDOWN_HINT))) {
+            // An empty date can't be selected if initial date was out of range.
+            return false;
+        }
+
+        // The dropdown field `VALUE` is empty if the hint is selected.
+        return TextUtils.isEmpty(mMonthDropdown.getFieldModel().get(VALUE))
+                && TextUtils.isEmpty(mDayDropdown.getFieldModel().get(VALUE))
+                && TextUtils.isEmpty(mYearDropdown.getFieldModel().get(VALUE));
+    }
+
+    /**
+     * Try to construct the date from the selected dropdown values. The returned date can be `null`
+     * in the following cases: 1. A hint is selected in any of the dropdowns. 2. An invalid date
+     * combination (like February 31st) is selected.
+     */
+    private @Nullable LocalDate getSelectedDate() {
+        @Nullable String monthValue = mMonthDropdown.getFieldModel().get(VALUE);
+        @Nullable String dayValue = mDayDropdown.getFieldModel().get(VALUE);
+        @Nullable String yearValue = mYearDropdown.getFieldModel().get(VALUE);
+        if (TextUtils.isEmpty(yearValue)
                 && !getYearDropdownHint(getContext())
                         .equals(mYearDropdown.getFieldModel().get(DROPDOWN_HINT))) {
             // Year is a special case because the dropdown's hint can be the initial date's year
@@ -248,13 +286,8 @@ public class DateFieldView extends LinearLayout implements FieldView {
             // `null` in that case.
             yearValue = mYearDropdown.getFieldModel().get(DROPDOWN_HINT);
         }
-        @Nullable LocalDate date =
-                new AttributeInstance.DateValue(dayValue, monthValue, yearValue).getDate();
-        if (date != null) {
-            // Second case: the user has selected a valid date. Propagate it to the model. Partially
-            // valid dates are never propagated to the model.
-            mPropertyModel.set(VALUE, date.toString());
-        }
+        // This call returns `null` if the date combination is invalid (like February 31st).
+        return new AttributeInstance.DateValue(dayValue, monthValue, yearValue).getDate();
     }
 
     private List<DropdownKeyValue> getMonthDropdownValues() {

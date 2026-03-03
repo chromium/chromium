@@ -125,6 +125,7 @@ public class DateFieldViewTest {
     @Test
     public void testEmptyInitialValue() {
         mDateFieldView = new DateFieldView(mActivity, getDateFieldModel(null));
+        assertTrue(mDateFieldView.validate());
         assertEquals(
                 mActivity.getString(R.string.autofill_ai_entity_editor_date_field_month_label),
                 mDateFieldView.getMonthPickerForTest().getDropdown().getSelectedItem());
@@ -139,6 +140,7 @@ public class DateFieldViewTest {
     @Test
     public void testNonEmptyInitialValue() {
         mDateFieldView = new DateFieldView(mActivity, getDateFieldModel(LocalDate.of(2026, 2, 15)));
+        assertTrue(mDateFieldView.validate());
         assertEquals(
                 DateFieldView.getMonthName(mActivity, /* month= */ 2),
                 mDateFieldView.getMonthPickerForTest().getDropdown().getSelectedItem());
@@ -149,6 +151,7 @@ public class DateFieldViewTest {
     @Test
     public void testInitialValueNotInRange() {
         mDateFieldView = new DateFieldView(mActivity, getDateFieldModel(LocalDate.of(1800, 1, 1)));
+        assertTrue(mDateFieldView.validate());
         assertEquals(
                 DateFieldView.getMonthName(mActivity, /* month= */ 1),
                 mDateFieldView.getMonthPickerForTest().getDropdown().getSelectedItem());
@@ -162,7 +165,10 @@ public class DateFieldViewTest {
     @Test
     public void testSetValue() {
         mDateFieldView = new DateFieldView(mActivity, getDateFieldModel(null));
+        assertTrue(mDateFieldView.validate());
+
         mDateFieldView.setValue(LocalDate.of(2026, 3, 16).toString());
+        assertTrue(mDateFieldView.validate());
         assertEquals(
                 DateFieldView.getMonthName(mActivity, /* month= */ 3),
                 mDateFieldView.getMonthPickerForTest().getDropdown().getSelectedItem());
@@ -173,7 +179,11 @@ public class DateFieldViewTest {
     @Test
     public void testSetValueNotInRange() {
         mDateFieldView = new DateFieldView(mActivity, getDateFieldModel(LocalDate.of(2026, 2, 15)));
+        assertTrue(mDateFieldView.validate());
+
         mDateFieldView.setValue(LocalDate.of(1810, 12, 12).toString());
+        // The date is invalid because 1810 is not within the range and it wasn't the initial year.
+        assertFalse(mDateFieldView.validate());
         assertEquals(
                 DateFieldView.getMonthName(mActivity, /* month= */ 12),
                 mDateFieldView.getMonthPickerForTest().getDropdown().getSelectedItem());
@@ -189,7 +199,13 @@ public class DateFieldViewTest {
     @Test
     public void testInitialAndUpdatedValuesNotInRange() {
         mDateFieldView = new DateFieldView(mActivity, getDateFieldModel(LocalDate.of(1800, 2, 15)));
+        assertTrue(mDateFieldView.validate());
+
         mDateFieldView.setValue(LocalDate.of(1810, 11, 11).toString());
+        // The date is invalid because 1810 is not within the range and it wasn't the initial year.
+        // The DateField selects the hint in the year dropdown, which is 1800 in this case cause the
+        // initial date was not in the range.
+        assertTrue(mDateFieldView.validate());
         assertEquals(
                 DateFieldView.getMonthName(mActivity, /* month= */ 11),
                 mDateFieldView.getMonthPickerForTest().getDropdown().getSelectedItem());
@@ -205,6 +221,7 @@ public class DateFieldViewTest {
     @Test
     public void testSetErrorMessage() {
         mDateFieldView = new DateFieldView(mActivity, getDateFieldModel(LocalDate.of(2026, 2, 15)));
+        assertTrue(mDateFieldView.validate());
 
         TextView errorMessage = mDateFieldView.findViewById(R.id.date_field_error_message);
         assertEquals(View.GONE, errorMessage.getVisibility());
@@ -220,8 +237,10 @@ public class DateFieldViewTest {
     @Test
     public void testSetValidDate() {
         mDateFieldView = new DateFieldView(mActivity, getDateFieldModel(null));
+        assertTrue(mDateFieldView.validate());
 
         LocalDate currentDate = LocalDate.of(2026, 8, 31);
+        assertTrue(mDateFieldView.validate());
         setDropdownValue(
                 mDateFieldView.getMonthPickerForTest(),
                 DateFieldView.getMonthName(mActivity, currentDate.getMonthValue()));
@@ -241,21 +260,25 @@ public class DateFieldViewTest {
     @Test
     public void testSetInvalidDate() {
         mDateFieldView = new DateFieldView(mActivity, getDateFieldModel(null));
+        assertTrue(mDateFieldView.validate());
 
         // Set the date to February 31st, which is always invalid.
         setDropdownValue(
                 mDateFieldView.getMonthPickerForTest(),
                 DateFieldView.getMonthName(mActivity, /* month= */ 2));
         // Only the month value is selected, the overall date is not complete yet.
+        assertFalse(mDateFieldView.validate());
         assertThat(mDateFieldView.getFieldModel().get(VALUE), isEmptyString());
 
         setDropdownValue(mDateFieldView.getDayPickerForTest(), "31");
         // Only the moth and day values are selected, the overall date is not complete yet.
+        assertFalse(mDateFieldView.validate());
         assertThat(mDateFieldView.getFieldModel().get(VALUE), isEmptyString());
 
         // Make sure that invalid dates are not propagated to the model. They should be handled by
         // the data validation logic.
         setDropdownValue(mDateFieldView.getYearPickerForTest(), "2026");
+        assertFalse(mDateFieldView.validate());
         assertThat(mDateFieldView.getFieldModel().get(VALUE), isEmptyString());
     }
 
@@ -263,6 +286,7 @@ public class DateFieldViewTest {
     public void testChangeValidToInvalidDate() {
         LocalDate currentDate = LocalDate.of(2026, 8, 31);
         mDateFieldView = new DateFieldView(mActivity, getDateFieldModel(currentDate));
+        assertTrue(mDateFieldView.validate());
         assertEquals(currentDate.toString(), mDateFieldView.getFieldModel().get(VALUE));
 
         // Set the date to February 31st, which is always invalid.
@@ -270,16 +294,19 @@ public class DateFieldViewTest {
                 mDateFieldView, /* month= */ 2, /* day= */ 31, /* year= */ currentDate.getYear());
         // Make sure that the date is not propagated to the model because it's invalid. The old
         // value should be preserved.
+        assertFalse(mDateFieldView.validate());
         assertEquals(currentDate.toString(), mDateFieldView.getFieldModel().get(VALUE));
     }
 
     @Test
     public void testChangeInvalidToValidDate() {
         mDateFieldView = new DateFieldView(mActivity, getDateFieldModel(null));
+        assertTrue(mDateFieldView.validate());
 
         // Set the date to February 31st, which is always invalid.
         setDropdownDate(mDateFieldView, /* month= */ 2, /* day= */ 31, /* year= */ 2026);
         // Make sure that the date is not propagated to the model because it's invalid.
+        assertFalse(mDateFieldView.validate());
         assertThat(mDateFieldView.getFieldModel().get(VALUE), isEmptyString());
 
         LocalDate currentDate = LocalDate.of(2026, 8, 31);
@@ -290,6 +317,7 @@ public class DateFieldViewTest {
                 currentDate.getDayOfMonth(),
                 currentDate.getYear());
         // Make sure that the date is propagated to the model.
+        assertTrue(mDateFieldView.validate());
         assertEquals(currentDate.toString(), mDateFieldView.getFieldModel().get(VALUE));
     }
 
@@ -297,23 +325,27 @@ public class DateFieldViewTest {
     public void testResetToEmptyDate() {
         LocalDate currentDate = LocalDate.of(2026, 8, 31);
         mDateFieldView = new DateFieldView(mActivity, getDateFieldModel(currentDate));
+        assertTrue(mDateFieldView.validate());
         assertEquals(currentDate.toString(), mDateFieldView.getFieldModel().get(VALUE));
 
         setDropdownValue(
                 mDateFieldView.getMonthPickerForTest(),
                 DateFieldView.getMonthDropdownHint(mActivity));
         // Only the month is reset, the change should not be propagated to the model.
+        assertFalse(mDateFieldView.validate());
         assertEquals(currentDate.toString(), mDateFieldView.getFieldModel().get(VALUE));
 
         setDropdownValue(
                 mDateFieldView.getDayPickerForTest(), DateFieldView.getDayDropdownHint(mActivity));
         // Only the month and the day are reset, the change should not be propagated to the model.
+        assertFalse(mDateFieldView.validate());
         assertEquals(currentDate.toString(), mDateFieldView.getFieldModel().get(VALUE));
 
         setDropdownValue(
                 mDateFieldView.getYearPickerForTest(),
                 DateFieldView.getYearDropdownHint(mActivity));
         // Make sure that a completely reset date is propagated to the model.
+        assertTrue(mDateFieldView.validate());
         assertThat(mDateFieldView.getFieldModel().get(VALUE), isEmptyString());
     }
 }
