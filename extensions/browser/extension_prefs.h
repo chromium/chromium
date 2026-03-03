@@ -955,7 +955,7 @@ class ExtensionPrefs : public KeyedService {
   base::ObserverList<
       ExtensionPrefsObserver,
       /*check_empty=*/false,
-      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>::Unchecked
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>
       observer_list_;
 };
 

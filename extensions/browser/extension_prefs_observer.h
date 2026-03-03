@@ -5,6 +5,7 @@
 #ifndef EXTENSIONS_BROWSER_EXTENSION_PREFS_OBSERVER_H_
 #define EXTENSIONS_BROWSER_EXTENSION_PREFS_OBSERVER_H_
 
+#include "base/observer_list_types.h"
 #include "base/time/time.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/common/extension_id.h"
@@ -13,7 +14,7 @@ namespace extensions {
 
 class ExtensionPrefs;
 
-class ExtensionPrefsObserver {
+class ExtensionPrefsObserver : public base::CheckedObserver {
  public:
   // Called when the reasons for an extension being disabled have changed.
   virtual void OnExtensionDisableReasonsChanged(
@@ -62,6 +63,9 @@ class ExtensionPrefsObserver {
   // call "prefs->RemoveObserver(this)", whether directly or indirectly (e.g.
   // via ScopedObservation::Reset).
   virtual void OnExtensionPrefsWillBeDestroyed(ExtensionPrefs* prefs) {}
+
+ protected:
+  ~ExtensionPrefsObserver() override = default;
 };
 
 // An ExtensionPrefsObserver that's part of the GetEarlyExtensionPrefsObservers

@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
@@ -47,7 +48,7 @@ namespace extensions {
 // Note that `IconImage` is not thread safe.
 class IconImage : public ExtensionRegistryObserver {
  public:
-  class Observer {
+  class Observer : public base::CheckedObserver {
    public:
     // Invoked when a new image rep for an additional scale factor
     // is loaded and added to `image`.
@@ -58,7 +59,7 @@ class IconImage : public ExtensionRegistryObserver {
     virtual void OnExtensionIconImageDestroyed(IconImage* image) {}
 
    protected:
-    virtual ~Observer() {}
+    ~Observer() override = default;
   };
 
   // `context` is required by the underlying implementation to retrieve the
@@ -130,7 +131,7 @@ class IconImage : public ExtensionRegistryObserver {
   base::ObserverList<
       Observer,
       /*check_empty=*/false,
-      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>::Unchecked
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>
       observers_;
 
   raw_ptr<Source, DanglingUntriaged> source_;  // Owned by ImageSkia storage.

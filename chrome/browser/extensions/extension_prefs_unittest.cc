@@ -1318,7 +1318,7 @@ TEST_F(ExtensionPrefsSimpleTest, DisableReasonsObserverTest) {
     explicit Observer(ExtensionPrefs* prefs) {
       scoped_observation_.Observe(prefs);
     }
-    ~Observer() = default;
+    ~Observer() override = default;
 
     MOCK_METHOD(void,
                 OnExtensionDisableReasonsChanged,
