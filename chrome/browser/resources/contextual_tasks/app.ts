@@ -611,6 +611,9 @@ export class ContextualTasksAppElement extends CrLitElement {
 
     if (!isAiPage) {
       // If this is not an AI page, show the ghost loader.
+      // Update the isAiPage_ property so the ghost loader doesn't jump when
+      // the property is updated later.
+      this.isAiPage_ = isAiPage;
       this.setIsGhostLoaderVisible(true);
     } else if (this.enableBasicMode_ && wasAiPage) {
       // Since this is a navigation from one AI page to another,
