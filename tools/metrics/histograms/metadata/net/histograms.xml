@@ -2877,7 +2877,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.DNS.HTTPSSVC.RecordHttps.{secure}.ExpectNoerror.Parsable"
-    enum="BooleanValid" expires_after="2026-04-05">
+    enum="BooleanValid" expires_after="2027-03-02">
   <owner>bashi@chromium.org</owner>
   <owner>davidben@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
@@ -3814,7 +3814,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Net.HttpStreamPool.JobControllerRequestCompleteTime2.{Protocol}"
-    units="ms" expires_after="2026-04-12">
+    units="ms" expires_after="2027-03-02">
   <owner>bashi@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
@@ -4293,7 +4293,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.NetworkTransaction.SessionSource3.{Protocol}"
-    enum="NetworkSessionSource" expires_after="2026-04-12">
+    enum="NetworkSessionSource" expires_after="2027-03-02">
   <owner>bashi@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
