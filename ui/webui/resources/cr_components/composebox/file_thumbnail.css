@@ -114,7 +114,7 @@
   width: var(--file-chip-thumbnail-full-size, 16px);
 }
 
-.injected-input-thumbnail {
+.injected-input-img-thumbnail {
   padding: 0;
 }
 
@@ -135,6 +135,13 @@
   color: var(--color-composebox-pdf-chip-icon-border);
   height: var(--pdf-icon-size, 100%);
   width: var(--pdf-icon-size, 100%);
+}
+
+.injected-input-icon {
+  box-sizing: border-box;
+  color: var(--aim-icon-color);
+  height: var(--injected-input-icon-size, 24px);
+  width: var(--injected-input-icon-size, 24px);
 }
 
 .chip-overlay {
