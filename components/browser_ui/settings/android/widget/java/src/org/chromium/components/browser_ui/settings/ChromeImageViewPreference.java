@@ -48,10 +48,10 @@ public class ChromeImageViewPreference extends Preference {
     @DrawableRes private int mImageRes;
 
     /** The color resource ID for tinting of ImageView widget. */
-    @ColorRes private int mColorRes;
+    private @ColorRes int mColorRes;
 
     /** The color resource ID for tinting of the view's background. */
-    @ColorRes private @Nullable Integer mBackgroundColorRes;
+    private @Nullable @ColorRes Integer mBackgroundColorRes;
 
     /** The string to use for the ImageView widget content description. */
     private @Nullable CharSequence mContentDescription;

@@ -102,7 +102,7 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
     private final RecyclerView mItemsRecyclerView;
     private final BookmarkBar mBookmarkBarView;
     private @StyleRes int mCurrentTextStyleRes = R.style.TextAppearance_TextMedium_Primary_Baseline;
-    @ColorRes private int mCurrentIconTintRes = R.color.default_icon_color_tint_list;
+    private @ColorRes int mCurrentIconTintRes = R.color.default_icon_color_tint_list;
     @DrawableRes private int mCurrentBackgroundId;
 
     // The popup window that displays the contents of a bookmark folder. Instantiated in {@code

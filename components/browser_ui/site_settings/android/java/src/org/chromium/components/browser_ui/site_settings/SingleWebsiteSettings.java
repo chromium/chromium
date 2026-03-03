@@ -241,7 +241,7 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
     @ContentSettingsType.EnumType private int mHighlightedPermission = ContentSettingsType.DEFAULT;
 
     /** The highlight color. */
-    @ColorRes private int mHighlightColor;
+    private @ColorRes int mHighlightColor;
 
     // The callback to be run after this site is reset.
     private @Nullable Observer mWebsiteSettingsObserver;

@@ -39,7 +39,7 @@ public class ChromeButtonPreference extends ChromeBasePreference {
     private @Nullable CharSequence mText;
 
     /** The color resource ID for tinting of the view's background. */
-    @ColorRes private @Nullable Integer mBackgroundColorRes;
+    private @Nullable @ColorRes Integer mBackgroundColorRes;
 
     /** The string to use for the Button widget content description. */
     private @Nullable CharSequence mContentDescription;

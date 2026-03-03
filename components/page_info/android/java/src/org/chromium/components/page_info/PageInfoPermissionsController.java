@@ -78,7 +78,7 @@ public class PageInfoPermissionsController extends PageInfoPreferenceSubpageCont
     private boolean mDataIsStale;
     private @Nullable SingleWebsiteSettings mSubPage;
     @ContentSettingsType.EnumType private final int mHighlightedPermission;
-    @ColorRes private final int mHighlightColor;
+    private final @ColorRes int mHighlightColor;
 
     public PageInfoPermissionsController(
             PageInfoMainController mainController,
