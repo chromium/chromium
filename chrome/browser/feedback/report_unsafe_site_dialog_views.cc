@@ -47,7 +47,7 @@ class ReportUnsafeSiteDialogView : public WebUIBubbleDialogView {
     set_parent_window(
         platform_util::GetViewForWindow(browser->window()->GetNativeWindow()));
     set_close_on_deactivate(false);
-    SetShowCloseButton(true);
+    SetShowCloseButton(false);
     SetProperty(views::kElementIdentifierKey,
                 ReportUnsafeSiteDialogViews::kReportUnsafeSiteDialogId);
     web_view()->SetProperty(views::kElementIdentifierKey,
