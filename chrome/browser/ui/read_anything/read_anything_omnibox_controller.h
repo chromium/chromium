@@ -87,6 +87,10 @@ class ReadAnythingOmniboxController : public content::WebContentsObserver,
   // Stops any running timers.
   void StopTimers();
 
+  // If the omnibox chip is irrelevant now. e.g. because the tab is no longer
+  // active or RM is already open.
+  bool IsIrrelevant();
+
   // The time when CheckIfShouldSuggestReadingMode was triggered.
   base::TimeTicks candidate_check_triggered_time_ms_;
 

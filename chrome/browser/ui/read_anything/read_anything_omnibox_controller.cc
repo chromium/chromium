@@ -124,6 +124,10 @@ void ReadAnythingOmniboxController::OnDestroyed() {
 }
 
 void ReadAnythingOmniboxController::PrimaryPageChanged(content::Page& page) {
+  if (IsIrrelevant()) {
+    return;
+  }
+
   UpdateIgnored(GetCurrentPageActionState().showing);
   if (!read_anything::ReadAnythingEntryPointController::
           CheckIfShouldSuggestReadingModeNaive(
@@ -139,6 +143,11 @@ void ReadAnythingOmniboxController::DidStopLoading() {
 }
 
 void ReadAnythingOmniboxController::DebounceCheckSuggestion() {
+  if (IsIrrelevant()) {
+    return;
+  }
+
+  candidate_check_triggered_time_ms_ = base::TimeTicks::Now();
   if (!check_suggestion_debouncer_) {
     check_suggestion_debouncer_ = std::make_unique<base::OneShotTimer>();
   }
@@ -150,11 +159,10 @@ void ReadAnythingOmniboxController::DebounceCheckSuggestion() {
 }
 
 void ReadAnythingOmniboxController::CheckIfShouldSuggestReadingMode() {
-  if (!tab_->IsActivated()) {
+  if (IsIrrelevant()) {
     return;
   }
 
-  candidate_check_triggered_time_ms_ = base::TimeTicks::Now();
   read_anything::ReadAnythingEntryPointController::
       CheckIfShouldSuggestReadingMode(
           tab_->GetBrowserWindowInterface(),
@@ -169,7 +177,7 @@ void ReadAnythingOmniboxController::OnShouldSuggestReadingModeResult(
   // entry point is hidden when the tab is closed, but a closed tab should
   // count as "ignored".
   was_last_checked_page_distillable_ = should_show;
-  if (!tab_->IsActivated()) {
+  if (IsIrrelevant()) {
     return;
   }
 
@@ -178,7 +186,7 @@ void ReadAnythingOmniboxController::OnShouldSuggestReadingModeResult(
 
 void ReadAnythingOmniboxController::UpdateVisibility(bool should_show) {
   // Don't show the entrypoint if the tab is no longer active.
-  if (!tab_->IsActivated()) {
+  if (IsIrrelevant()) {
     return;
   }
 
@@ -235,4 +243,10 @@ void ReadAnythingOmniboxController::StopTimers() {
   if (check_suggestion_debouncer_ && check_suggestion_debouncer_->IsRunning()) {
     check_suggestion_debouncer_->Stop();
   }
+}
+
+bool ReadAnythingOmniboxController::IsIrrelevant() {
+  return !tab_->IsActivated() ||
+         read_anything::ReadAnythingEntryPointController::IsUIShowing(
+             tab_->GetBrowserWindowInterface());
 }
