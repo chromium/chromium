@@ -84,6 +84,11 @@ AccessibilityAnnotationSyncBridge::ApplyIncrementalSyncChanges(
       std::move(batch),
       base::BindOnce(&AccessibilityAnnotationSyncBridge::OnDataTypeStoreCommit,
                      weak_ptr_factory_.GetWeakPtr()));
+  if (!entity_changes.empty()) {
+    for (Observer& observer : observers_) {
+      observer.OnAccessibilityAnnotationChanged();
+    }
+  }
   return std::nullopt;
 }
 

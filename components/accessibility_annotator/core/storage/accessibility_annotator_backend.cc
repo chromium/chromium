@@ -28,6 +28,7 @@ AccessibilityAnnotatorBackend::AccessibilityAnnotatorBackend(
   accessibility_annotation_sync_bridge_ =
       std::make_unique<AccessibilityAnnotationSyncBridge>(
           std::move(processor), data_type_store_factory);
+  sync_bridge_observation_.Observe(accessibility_annotation_sync_bridge_.get());
 }
 
 AccessibilityAnnotatorBackend::~AccessibilityAnnotatorBackend() = default;
@@ -45,6 +46,15 @@ base::WeakPtr<syncer::DataTypeControllerDelegate>
 AccessibilityAnnotatorBackend::GetAccessibilityAnnotationControllerDelegate() {
   return accessibility_annotation_sync_bridge_->change_processor()
       ->GetControllerDelegate();
+}
+
+void AccessibilityAnnotatorBackend::OnAccessibilityAnnotationChanged() {
+  // TODO(crbug.com/486856790): Implement logic to handle changed annotations.
+}
+
+void AccessibilityAnnotatorBackend::
+    OnAccessibilityAnnotationSyncBridgeLoaded() {
+  // TODO(crbug.com/486856790): Implement logic to handle sync bridge loaded.
 }
 
 }  // namespace accessibility_annotator

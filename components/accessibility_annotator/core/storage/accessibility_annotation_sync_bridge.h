@@ -32,12 +32,16 @@ class AccessibilityAnnotationSyncBridge : public syncer::DataTypeSyncBridge {
    public:
     Observer() = default;
     ~Observer() override = default;
-    // TODO(crbug.com/486856790): Add observer methods for
-    // adding/removing/updating annotations.
+
+    // Invoked when the accessibility annotations are changed in the
+    // local DataTypeStore by the sync bridge.
+    // TODO(crbug.com/486856790): Consider more granular notifications once
+    // incremental sync is supported.
+    virtual void OnAccessibilityAnnotationChanged() {}
 
     // Invoked when the store containing the accessibility annotations is
     // loaded.
-    virtual void OnAccessibilityAnnotationSyncBridgeLoaded() = 0;
+    virtual void OnAccessibilityAnnotationSyncBridgeLoaded() {}
   };
 
   explicit AccessibilityAnnotationSyncBridge(

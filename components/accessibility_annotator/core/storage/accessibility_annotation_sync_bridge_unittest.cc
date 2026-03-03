@@ -28,6 +28,8 @@ class MockObserver : public AccessibilityAnnotationSyncBridge::Observer {
   ~MockObserver() override = default;
 
   MOCK_METHOD(void, OnAccessibilityAnnotationSyncBridgeLoaded, (), (override));
+
+  MOCK_METHOD(void, OnAccessibilityAnnotationChanged, (), (override));
 };
 
 class AccessibilityAnnotationSyncBridgeTest : public testing::Test {
@@ -134,6 +136,32 @@ TEST_F(AccessibilityAnnotationSyncBridgeTest, ReadAllDataOnStartup) {
       bridge()->GetAllAnnotations();
   ASSERT_EQ(annotations.size(), 1u);
   EXPECT_EQ(annotations[0].id(), "1");
+}
+
+TEST_F(AccessibilityAnnotationSyncBridgeTest,
+       ObserverAddedOnIncrementalChanges) {
+  testing::StrictMock<MockObserver> observer;
+  bridge()->AddObserver(&observer);
+
+  EXPECT_CALL(observer, OnAccessibilityAnnotationChanged());
+
+  ASSERT_TRUE(AddAccessibilityAnnotation("1"));
+
+  bridge()->RemoveObserver(&observer);
+}
+
+TEST_F(AccessibilityAnnotationSyncBridgeTest,
+       ObserverRemovedOnIncrementalChanges) {
+  ASSERT_TRUE(AddAccessibilityAnnotation("1"));
+
+  testing::StrictMock<MockObserver> observer;
+  bridge()->AddObserver(&observer);
+
+  EXPECT_CALL(observer, OnAccessibilityAnnotationChanged());
+
+  ASSERT_TRUE(DeleteAccessibilityAnnotation("1"));
+
+  bridge()->RemoveObserver(&observer);
 }
 
 }  // namespace
