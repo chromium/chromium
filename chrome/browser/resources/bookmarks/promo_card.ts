@@ -82,7 +82,7 @@ export class PromoCardElement extends PromoCardElementBase {
 
   // Trigger update on the list.
   private propagateShouldShowPromo_(shouldShow: boolean) {
-    this.fire('on-should-show-promo-card', {shouldShowPromoCard: shouldShow});
+    this.fire('should-show-promo-card', {shouldShowPromoCard: shouldShow});
   }
 }
 

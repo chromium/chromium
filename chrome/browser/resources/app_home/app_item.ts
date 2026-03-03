@@ -222,7 +222,7 @@ export class AppItemElement extends CrLitElement {
     event.stopPropagation();
   }
 
-  protected openStorePage_() {
+  protected onStorePageClick_() {
     if (!this.appInfo.storePageUrl) {
       return;
     }

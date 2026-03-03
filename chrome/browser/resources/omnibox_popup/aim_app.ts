@@ -96,7 +96,7 @@ export class OmniboxAimAppElement extends CrLitElement {
     }
   }
 
-  protected onContextualEntryPointClicked_(
+  protected onContextMenuEntrypointClick_(
       e: CustomEvent<{x: number, y: number}>) {
     e.preventDefault();
     const point = {

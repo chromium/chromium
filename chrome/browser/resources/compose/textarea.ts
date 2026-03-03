@@ -111,7 +111,7 @@ export class ComposeTextareaElement extends CrLitElement {
     this.value = this.$.input.value;
   }
 
-  protected onChangeTextArea_() {
+  protected onTextAreaChange_() {
     if (this.$.input.value === '') {
       this.$.input.placeholder = this.placeholderText_;
     } else {

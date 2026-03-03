@@ -7,6 +7,7 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {AppElement} from './app.js';
 
 export function getHtml(this: AppElement) {
+  // clang-format off
   return html`<!--_html_template_start_-->
 <cr-toolbar page-name="$i18n{title}" ?show-search="${this.showSearch_}"
     always-show-logo>
@@ -65,7 +66,7 @@ export function getHtml(this: AppElement) {
         <localized-link slot="description"
             .localizedString=
                 "${this.i18nAdvanced('appManagementNotificationsDescription')}"
-            @link-clicked="${this.openNotificationsSystemSettings_}">
+            @link-clicked="${this.onNotificationsSystemSettingsLinkClicked_}">
         </localized-link>
       ` : ''}
       </app-management-permission-item>
@@ -112,4 +113,5 @@ export function getHtml(this: AppElement) {
   </div>
 </div>
 <!--_html_template_end_-->`;
+  // clang-format on
 }

@@ -22,13 +22,13 @@ export function getHtml(this: AccessCodeCastElement) {
         <c2c-passcode-input aria-label="${this.inputLabel}"
             ?disabled="${!this.canCast}" id="codeInput" length="6"
             .value="${this.accessCode}"
-            @value-changed="${this.onAccessCodeChanged}">
+            @value-changed="${this.onValueChanged}">
         </c2c-passcode-input>
       </div>
       <div class="space-1"></div>
       ${this.qrScannerEnabled ? html`
         <div class="center-content">
-          <cr-button @click="${this.switchToQrInput}"
+          <cr-button @click="${this.onQrInputClick}"
               class="center text-button">
             <cr-icon class="button-image" icon="cr:videocam"></cr-icon>
             $i18n{useCamera}
@@ -52,20 +52,20 @@ export function getHtml(this: AccessCodeCastElement) {
   </div>
   <div slot="button-container" id="buttons">
 <if expr="not is_win">
-      <cr-button @click="${this.cancelButtonPressed}">
+      <cr-button @click="${this.onCancelClick}">
         $i18n{cancel}
       </cr-button>
 </if>
-      <cr-button id="castButton" @click="${this.addSinkAndCast}"
+      <cr-button id="castButton" @click="${this.onCastClick}"
           class="action-button" ?disabled="${this.submitDisabled}">
         $i18n{cast}
       </cr-button>
-      <cr-button id="backButton" @click="${this.switchToCodeInput}"
+      <cr-button id="backButton" @click="${this.onBackClick}"
           class="action-button">
         $i18n{back}
       </cr-button>
 <if expr="is_win">
-      <cr-button @click="${this.cancelButtonPressed}">
+      <cr-button @click="${this.onCancelClick}">
         $i118n{cancel}
       </cr-button>
 </if>

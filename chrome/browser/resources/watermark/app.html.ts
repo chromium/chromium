@@ -9,6 +9,7 @@ import {FONT_SIZE_MAX, FONT_SIZE_MIN, type WatermarkAppElement} from './app.js';
 // TODO(crbug.com/434714853): Replace with i18n strings
 
 export function getHtml(this: WatermarkAppElement) {
+  // clang-format off
   return html`
     <div class="controls-card">
       <div class="card-header">
@@ -31,21 +32,21 @@ export function getHtml(this: WatermarkAppElement) {
               type="number"
               min="${FONT_SIZE_MIN}"
               max="${FONT_SIZE_MAX}"
-              @keydown="${this.onFontSizeInputKeyDown_}"
-              @value-changed="${this.onFontSizeChanged_}">
+              @keydown="${this.onFontSizeInputKeydown_}"
+              @value-changed="${this.onFontSizeValueChanged_}">
           </cr-input>
           <div class="spinner-buttons">
             <button
               class="spinner-btn up"
               ?disabled="${this.fontSize_ >= FONT_SIZE_MAX}"
-              @click="${this.onIncrementFontSize_}"
-              @mousedown="${this.onFontSizeInputMouseDown_}">
+              @click="${this.onIncrementFontSizeClick_}"
+              @mousedown="${this.onFontSizeInputMousedown_}">
             </button>
             <button
               class="spinner-btn down"
               ?disabled="${this.fontSize_ <= FONT_SIZE_MIN}"
-              @click="${this.onDecrementFontSize_}"
-              @mousedown="${this.onFontSizeInputMouseDown_}">
+              @click="${this.onDecrementFontSizeClick_}"
+              @mousedown="${this.onFontSizeInputMousedown_}">
             </button>
           </div>
         </div>
@@ -64,7 +65,7 @@ export function getHtml(this: WatermarkAppElement) {
               min="0" max="100"
               .value="${this.outlineOpacity_}"
               .ticks="${this.opacityTicks_}"
-              @cr-slider-value-changed="${this.onOutlineOpacityChanged_}">
+              @cr-slider-value-changed="${this.onOutlineOpacityCrSliderValueChanged_}">
           </cr-slider>
           <span class="slider-percentage">${this.outlineOpacity_}%</span>
         </div>
@@ -77,11 +78,12 @@ export function getHtml(this: WatermarkAppElement) {
               min="0" max="100"
               .value="${this.fillOpacity_}"
               .ticks="${this.opacityTicks_}"
-              @cr-slider-value-changed="${this.onFillOpacityChanged_}">
+              @cr-slider-value-changed="${this.onFillOpacityCrSliderValueChanged_}">
           </cr-slider>
           <span class="slider-percentage">${this.fillOpacity_}%</span>
         </div>
       </div>
     </div>
   `;
+  // clang-format on
 }

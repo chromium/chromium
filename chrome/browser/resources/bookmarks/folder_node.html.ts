@@ -16,15 +16,15 @@ export function getHtml(this: BookmarksFolderNodeElement) {
     aria-level="${this.getAriaLevel_()}"
     aria-owns="descendants"
     tabindex="${this.getTabIndex_()}"
-    @click="${this.selectFolder_}"
-    @dblclick="${this.toggleFolder_}"
-    @contextmenu="${this.onContextMenu_}"
+    @click="${this.onFolderClick_}"
+    @dblclick="${this.onFolderDblclick_}"
+    @contextmenu="${this.onContextmenu_}"
     ?selected="${this.isSelectedFolder_}"
     aria-selected="${this.isSelectedFolder_}">
   <div id="inner-container">
     ${this.hasChildFolder_ ? html`
       <cr-icon-button id="arrow" iron-icon="cr:arrow-drop-down"
-          @click="${this.toggleFolder_}" @mousedown="${this.preventDefault_}"
+          @click="${this.onArrowClick_}" @mousedown="${this.onArrowMousedown_}"
           tabindex="-1" ?is-open="${this.isOpen}" noink aria-hidden="true">
       </cr-icon-button>` : ''}
     <div class="folder-icon icon-folder-open"

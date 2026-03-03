@@ -8,30 +8,30 @@ import type {InfobarInternalsAppElement} from './app.js';
 
 export function getHtml(this: InfobarInternalsAppElement) {
   return html`<!--_html_template_start_-->
-    <div class="container">
-      <h1>Infobar Trigger Page</h1>
-      <table class="infobar-table">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Description</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${this.infobars.map(infobar => html`
-            <tr>
-              <td>${infobar.name}</td>
-              <td class="description">${infobar.description}</td>
-              <td>
-                <button data-type="${infobar.type}" @click="${this.onTrigger}">
-                  Trigger
-                </button>
-              </td>
-            </tr>
-          `)}
-        </tbody>
-      </table>
-    </div>
-    <!--_html_template_end_-->`;
+<div class="container">
+  <h1>Infobar Trigger Page</h1>
+  <table class="infobar-table">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${this.infobars.map(infobar => html`
+        <tr>
+          <td>${infobar.name}</td>
+          <td class="description">${infobar.description}</td>
+          <td>
+            <button data-type="${infobar.type}" @click="${this.onTriggerClick}">
+              Trigger
+            </button>
+          </td>
+        </tr>
+      `)}
+    </tbody>
+  </table>
+</div>
+<!--_html_template_end_-->`;
 }

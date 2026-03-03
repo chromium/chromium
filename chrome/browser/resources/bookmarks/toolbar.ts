@@ -118,7 +118,7 @@ export class BookmarksToolbarElement extends BookmarksToolbarElementBase {
     commandManager.handle(Command.DELETE, selection);
   }
 
-  protected onClearSelectionClick_() {
+  protected onClearSelectedItems_() {
     const commandManager = BookmarksCommandManagerElement.getInstance();
     assert(
         commandManager.canExecute(Command.DESELECT_ALL, this.selectedItems_));

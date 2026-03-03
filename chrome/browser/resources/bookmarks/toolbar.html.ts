@@ -26,7 +26,7 @@ export function getHtml(this: BookmarksToolbarElement) {
 <cr-toolbar-selection-overlay ?show="${this.showSelectionOverlay}"
     cancel-label="$i18n{cancel}"
     selection-label="${this.getItemsSelectedString_()}"
-    @clear-selected-items="${this.onClearSelectionClick_}">
+    @clear-selected-items="${this.onClearSelectedItems_}">
   <cr-button @click="${this.onDeleteSelectionClick_}"
       ?disabled="${!this.canDeleteSelection_()}">
     $i18n{delete}

@@ -475,7 +475,7 @@ export class ManagementUiElement extends ManagementUiElementBase {
         `chrome://settings?search=${encodeURIComponent(query)}`;
   }
 
-  protected onTapBack_() {
+  protected onBackClick_() {
     if (history.length > 1) {
       history.back();
     } else {

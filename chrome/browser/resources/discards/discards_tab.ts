@@ -469,12 +469,12 @@ export class DiscardsTabElement extends DiscardsTabElementBase {
    * Event handler that toggles the auto discardable flag on an item.
    * @param e The event.
    */
-  protected toggleAutoDiscardable_(e: Event) {
+  protected onToggleAutoDiscardableClick_(e: Event) {
     // Uses dataset['id'] and dataset['isAutoDiscardable'] instead of
     // dataset['index'] to avoid the following scenario:
     // 1. The callback in updateTableImpl_() is called to update this.tabInfos_.
-    // 2. toggleAutoDiscardable_() is called, then index and this.tabInfos_
-    //    would not match.
+    // 2. onToggleAutoDiscardableClick_() is called, then index and
+    //    this.tabInfos_ would not match.
     // 3. render() is called.
     const item = e.currentTarget as HTMLElement;
     const id = Number(item.dataset['id']);
@@ -484,13 +484,13 @@ export class DiscardsTabElement extends DiscardsTabElementBase {
   }
 
   /** Event handler that loads a tab. */
-  protected loadTab_(e: Event) {
+  protected onLoadTabClick_(e: Event) {
     const id = Number((e.currentTarget as HTMLElement).dataset['id']);
     this.discardsDetailsProvider_!.loadById(id);
   }
 
   /** Event handler that discards a given tab urgently. */
-  protected urgentDiscardTab_(e: Event) {
+  protected onUrgentDiscardTabClick_(e: Event) {
     const id = Number((e.currentTarget as HTMLElement).dataset['id']);
     this.discardsDetailsProvider_!
         .discardById(id, LifecycleUnitDiscardReason.URGENT)
@@ -498,7 +498,7 @@ export class DiscardsTabElement extends DiscardsTabElementBase {
   }
 
   /** Event handler that discards a given tab proactively. */
-  protected proactiveDiscardTab_(e: Event) {
+  protected onProactiveDiscardTabClick_(e: Event) {
     const id = Number((e.currentTarget as HTMLElement).dataset['id']);
     this.discardsDetailsProvider_!
         .discardById(id, LifecycleUnitDiscardReason.PROACTIVE)
@@ -506,7 +506,7 @@ export class DiscardsTabElement extends DiscardsTabElementBase {
   }
 
   /** Event handler that freezes a tab. */
-  protected freezeTab_(e: Event) {
+  protected onFreezeTabClick_(e: Event) {
     const id = Number((e.currentTarget as HTMLElement).dataset['id']);
     this.discardsDetailsProvider_!.freezeById(id);
   }
@@ -519,15 +519,15 @@ export class DiscardsTabElement extends DiscardsTabElementBase {
   }
 
   /** Event handler that discards the next discardable tab urgently. */
-  protected discardUrgentNow_(_e: Event) {
+  protected onDiscardUrgentNowClick_(_e: Event) {
     this.discardImpl_();
   }
 
-  protected toggleBatterySaverMode_(_e: Event) {
+  protected onToggleBatterySaverModeClick_(_e: Event) {
     this.discardsDetailsProvider_!.toggleBatterySaverMode();
   }
 
-  protected refreshPerformanceTabCpuMeasurements_(_e: Event) {
+  protected onRefreshPerformanceTabCpuMeasurementsClick_(_e: Event) {
     this.discardsDetailsProvider_!.refreshPerformanceTabCpuMeasurements();
   }
 }

@@ -122,15 +122,15 @@ export class ContextualTasksInternalsAppElement extends CrLitElement {
         this.onLogMessageAdded_.bind(this));
   }
 
-  protected onTabSelectionModeChanged_() {
+  protected onTabSelectionModeChange_() {
     this.tabSelectionMode_ = this.$.tabSelectionModeSelect.value;
   }
 
-  protected onMinModelScoreChanged_() {
+  protected onMinModelScoreCrSliderValueChanged_() {
     this.minModelScore_ = this.$.minModelScoreSlider.value;
   }
 
-  protected onQueryChanged_(e: CustomEvent<{value: string}>) {
+  protected onQueryValueChanged_(e: CustomEvent<{value: string}>) {
     this.query_ = e.detail.value;
   }
 

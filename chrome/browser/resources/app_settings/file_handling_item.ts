@@ -110,7 +110,7 @@ export class FileHandlingItemElement extends FileHandlingItemBase {
     }
   }
 
-  protected launchDialog_(e: CustomEvent): void {
+  protected onTypeListLinkClicked_(e: CustomEvent): void {
     // A place holder href with the value "#" is used to have a compliant link.
     // This prevents the browser from navigating the window to "#"
     e.detail.event.preventDefault();
@@ -121,7 +121,7 @@ export class FileHandlingItemElement extends FileHandlingItemBase {
         this.app.type, AppManagementUserAction.FILE_HANDLING_OVERFLOW_SHOWN);
   }
 
-  protected onCloseButtonClicked_() {
+  protected onCloseButtonClick_() {
     this.shadowRoot.querySelector<CrDialogElement>('#dialog')!.close();
   }
 

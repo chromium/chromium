@@ -201,7 +201,7 @@ export class AppElement extends AppElementBase {
         });
   }
 
-  refreshXml() {
+  protected onRefreshXmlClick() {
     getProxy().refreshXml();
   }
 

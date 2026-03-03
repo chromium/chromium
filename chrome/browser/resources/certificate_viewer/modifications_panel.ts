@@ -168,7 +168,7 @@ export class ModificationsPanelElement extends ModificationsPanelElementBase {
     this.$.trustStateSelect.focus();
   }
 
-  protected onConstraintKeyPress_(event: KeyboardEvent): void {
+  protected onConstraintKeypress_(event: KeyboardEvent): void {
     if (event.key !== 'Enter') {
       return;
     }

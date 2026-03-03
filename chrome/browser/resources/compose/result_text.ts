@@ -147,13 +147,13 @@ export class ComposeResultTextElement extends CrLitElement {
     this.wordStreamer_.setCharsPerTickForTesting(5);
   }
 
-  protected onFocusIn_() {
+  protected onFocusin_() {
     this.fire('set-result-focus', true);
 
     this.initialText_ = this.textInput.text;
   }
 
-  protected onFocusOut_() {
+  protected onFocusout_() {
     this.fire('set-result-focus', false);
 
     const currentText = this.$.resultText.innerText;

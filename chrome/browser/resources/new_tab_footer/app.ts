@@ -265,7 +265,7 @@ export class NewTabFooterAppElement extends NewTabFooterAppElementBase {
         this.ntpType_ === NewTabPageType.kFirstPartyWebUI;
   }
 
-  protected onContextMenu_(e: MouseEvent) {
+  protected onContextmenu_(e: MouseEvent) {
     this.handler_.showContextMenu({x: e.clientX, y: e.clientY});
     recordClick(FooterElement.CONTEXT_MENU);
   }

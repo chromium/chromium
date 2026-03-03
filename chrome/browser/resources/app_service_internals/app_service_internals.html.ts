@@ -11,7 +11,7 @@ export function getHtml(this: AppServiceInternalsElement) {
   return html`<!--_html_template_start_-->
 <h1>App Service Internals</h1>
 
-<button @click="${this.save_}">Save as .txt</button>
+<button @click="${this.onSaveClick_}">Save as .txt</button>
 
 <ul>
   <li>

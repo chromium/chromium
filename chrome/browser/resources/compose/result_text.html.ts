@@ -13,14 +13,14 @@ export function getHtml(this: ComposeResultTextElement) {
   <div id="resultText" class="result-text"
       ?hidden="${this.textInput.streamingEnabled}"
       contenteditable="plaintext-only"
-      @focusin="${this.onFocusIn_}"
-      @focusout="${this.onFocusOut_}"
+      @focusin="${this.onFocusin_}"
+      @focusout="${this.onFocusout_}"
       aria-label="$i18n{resultText}"></div>
   <div id="partialResultText" class="result-text"
       ?hidden="${!this.textInput.streamingEnabled}"
       contenteditable="${this.partialTextCanEdit_()}"
-      @focusin="${this.onFocusIn_}"
-      @focusout="${this.onFocusOut_}">${this.displayedChunks_.map(
+      @focusin="${this.onFocusin_}"
+      @focusout="${this.onFocusout_}">${this.displayedChunks_.map(
           item => html`<span>${item.text}</span>`)}</div>
 </div>
 <!--_html_template_end_-->`;

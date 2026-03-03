@@ -27,7 +27,7 @@ export function getHtml(this: AppItemElement) {
 <cr-action-menu id="menu" @mousedown="${this.onMenuMousedown_}"
     @click="${this.onMenuClick_}">
   <button id="showStorePage" class="dropdown-item"
-      @click="${this.openStorePage_}"
+      @click="${this.onStorePageClick_}"
       ?hidden="${this.isWebStoreLinkHidden_()}">
     $i18n{viewInWebStore}
   </button>

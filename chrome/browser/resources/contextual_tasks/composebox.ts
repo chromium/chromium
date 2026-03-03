@@ -356,14 +356,14 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
         !this.userDismissedTooltip_;
   }
 
-  protected onTooltipDismissed_() {
+  protected onOnboardingTooltipDismissed_() {
     this.userDismissedTooltip_ = true;
     this.onboardingTooltipIsVisible_ = false;
     this.stopObservingResize_();
     this.clearTooltipImpressionTimer_();
   }
 
-  protected onSuggestionsResultReceived_(e: CustomEvent<AutocompleteResult>) {
+  protected onSuggestionsResultChanged_(e: CustomEvent<AutocompleteResult>) {
     this.isLoading_ = false;
     this.zeroStateSuggestions_ = e.detail;
   }
@@ -392,11 +392,11 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
     composebox.animationState = GlowAnimationState.EXPANDING;
   }
 
-  protected handleImageUpload_() {
+  protected onOpenImageUpload_() {
     this.pageHandler_.handleFileUpload(true);
   }
 
-  protected handleFileUpload_() {
+  protected onOpenFileUpload_() {
     this.pageHandler_.handleFileUpload(false);
   }
 

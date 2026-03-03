@@ -102,7 +102,7 @@ export class FilterDialogElement extends CrLitElement {
     this.$.dialog.close();
   }
 
-  protected onPointerDown(e: PointerEvent) {
+  protected onPointerdown(e: PointerEvent) {
     if (e.target === this.$.dialog) {
       this.$.dialog.close();
     }

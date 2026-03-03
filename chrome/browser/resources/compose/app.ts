@@ -483,7 +483,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
     this.apiProxy_.logCancelEdit();
   }
 
-  protected onClose_(e: Event) {
+  protected onCloseClick_(e: Event) {
     switch ((e.target as HTMLElement).id) {
       case 'firstRunCloseButton':
         this.apiProxy_.closeUi(CloseReason.kFirstRunCloseButton);
@@ -525,7 +525,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
     }
   }
 
-  protected onSubmit_() {
+  protected onSubmitClick_() {
     this.isSubmitEnabled_ = this.$.textarea.validate();
     if (!this.isSubmitEnabled_) {
       this.$.textarea.focusInput();
@@ -542,7 +542,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
     this.lastTriggerElement_ = TriggerElement.SUBMIT_INPUT;
   }
 
-  protected onSubmitEdit_() {
+  protected onSubmitEditClick_() {
     this.isEditSubmitEnabled_ = this.$.editTextarea.validate();
     if (!this.isEditSubmitEnabled_) {
       this.$.editTextarea.focusInput();
@@ -560,7 +560,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
     this.lastTriggerElement_ = TriggerElement.SUBMIT_INPUT;
   }
 
-  protected onAccept_() {
+  protected onAcceptClick_() {
     this.apiProxy_.acceptComposeResult().then((success: boolean) => {
       if (success) {
         this.apiProxy_.closeUi(CloseReason.kInsertButton);
@@ -574,7 +574,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
     }
   }
 
-  protected onModifierChanged_() {
+  protected onModifierChange_() {
     const selectedModifier =
       Number(this.$.modifierMenu.value) as StyleModifier;
     this.rewrite_(selectedModifier);
@@ -605,7 +605,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
     this.saveComposeAppState_();
   }
 
-  protected openModifierMenuOnKeyDown_(e: KeyboardEvent) {
+  protected onModifierMenuKeydown_(e: KeyboardEvent) {
     // On Windows and Linux, ArrowDown and ArrowUp key events directly change
     // the menu selection, which fires the `select` on-change event without
     // showing what selection was made.
@@ -919,7 +919,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
     }
   }
 
-  protected async onErrorGoBackButton_() {
+  protected async onErrorGoBackButtonClick_() {
     try {
       const state = await this.apiProxy_.recoverFromErrorState();
       // This button should only be enabled following application of a modifier,
@@ -1012,7 +1012,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
     this.editedInput_ = e.detail.value;
   }
 
-  protected onOutputCompleteChanged_(e: CustomEvent<{value: boolean}>) {
+  protected onIsOutputCompleteChanged_(e: CustomEvent<{value: boolean}>) {
     this.outputComplete_ = e.detail.value;
   }
 

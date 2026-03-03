@@ -25,7 +25,7 @@ export function getHtml(this: ContextualTasksOnboardingTooltipElement) {
         </div>
       </div>
       <div id="buttons">
-        <cr-button class="action-button" @click="${this.onTooltipClose_}">
+        <cr-button class="action-button" @click="${this.onTooltipCloseClick_}">
           $i18n{onboardingAcceptButton}
         </cr-button>
       </div>

@@ -111,7 +111,7 @@ export function getHtml(this: DatabaseTabElement) {
 <div class="add-origin-container">
   <cr-input id="addOriginInput" label="Add Origin"
       value="${this.newOrigin_}"
-      @value-changed="${this.onNewOriginChanged_}"
+      @value-changed="${this.onNewOriginValueChanged_}"
       @keydown="${this.onOriginKeydown_}" placeholder="https://example.org"
       ?invalid="${!this.isEmptyOrValidOrigin_(this.newOrigin_)}"
       error-message="The origin must be a valid URL without a path."

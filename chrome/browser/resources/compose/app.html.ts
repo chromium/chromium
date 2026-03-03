@@ -19,7 +19,7 @@ export function getHtml(this: ComposeAppElement) {
     </div>
     <h1>$i18n{firstRunTitle}</h1>
     <cr-icon-button id="firstRunCloseButton" class="close-button"
-      iron-icon="cr:close" @click="${this.onClose_}"
+      iron-icon="cr:close" @click="${this.onCloseClick_}"
       aria-label="$i18n{close}">
     </cr-icon-button>
   </div>
@@ -47,7 +47,7 @@ export function getHtml(this: ComposeAppElement) {
   <div id="freMsbbHeading">
     <h1>$i18n{freMsbbTitle}</h1>
     <cr-icon-button id="closeButtonMSBB" class="close-button"
-      iron-icon="cr:close" @click="${this.onClose_}">
+      iron-icon="cr:close" @click="${this.onCloseClick_}">
     </cr-icon-button>
   </div>
 
@@ -69,7 +69,7 @@ export function getHtml(this: ComposeAppElement) {
   <div id="heading">
     <h1>$i18n{dialogTitle}</h1>
     <cr-icon-button id="closeButton" class="close-button" iron-icon="cr:close"
-        @click="${this.onClose_}" aria-label="$i18n{close}">
+        @click="${this.onCloseClick_}" aria-label="$i18n{close}">
     </cr-icon-button>
   </div>
 
@@ -121,7 +121,7 @@ export function getHtml(this: ComposeAppElement) {
             <compose-result-text id="resultText"
                 .textInput="${this.responseText_}"
                 ?is-output-complete="${this.outputComplete_}"
-                @is-output-complete-changed="${this.onOutputCompleteChanged_}"
+                @is-output-complete-changed="${this.onIsOutputCompleteChanged_}"
                 ?has-output="${this.hasOutput_}"
                 @has-output-changed="${this.onHasOutputChanged_}"
                 ?has-partial-output="${this.hasPartialOutput_}"
@@ -135,8 +135,8 @@ export function getHtml(this: ComposeAppElement) {
               <select class="md-select" id="modifierMenu"
                   .value="${this.selectedModifier_}"
                   aria-label="$i18n{modifierMenuLabel}"
-                  @change="${this.onModifierChanged_}"
-                  @keydown="${this.openModifierMenuOnKeyDown_}">
+                  @change="${this.onModifierChange_}"
+                  @keydown="${this.onModifierMenuKeydown_}">
                 ${this.modifierOptions_.map(item => html`
                   <option value="${item.value}" ?disabled="${item.isDefault}"
                       ?selected="${item.isDefault}">
@@ -182,7 +182,7 @@ export function getHtml(this: ComposeAppElement) {
         </div>
       </div>
       <cr-button id="submitButton" class="action-button"
-          @click="${this.onSubmit_}"
+          @click="${this.onSubmitClick_}"
           ?disabled="${!this.isSubmitEnabled_}">
         <cr-icon slot="prefix-icon" icon="compose:compose"></cr-icon>
         $i18n{submitButton}
@@ -210,7 +210,7 @@ export function getHtml(this: ComposeAppElement) {
         </cr-feedback-buttons>
       </div>
       <cr-button id="acceptButton" class="action-button"
-          @click="${this.onAccept_}">
+          @click="${this.onAcceptClick_}">
         ${this.acceptButtonText_()}
       </cr-button>
     </div>
@@ -226,7 +226,7 @@ export function getHtml(this: ComposeAppElement) {
           >$i18nRaw{errorPermissionDenied}</span>
       </div>
       <cr-button id="errorGoBackButton" class="action-button"
-          @click="${this.onErrorGoBackButton_}"
+          @click="${this.onErrorGoBackButtonClick_}"
           ?hidden="${!this.isBackFromErrorAvailable_()}">
         <cr-icon aria-hidden="true" slot="prefix-icon" icon="compose:undo">
         </cr-icon>
@@ -249,7 +249,7 @@ export function getHtml(this: ComposeAppElement) {
           </cr-button>
         </if>
         <cr-button id="submitEditButton" class="action-button"
-            @click="${this.onSubmitEdit_}"
+            @click="${this.onSubmitEditClick_}"
             ?disabled="${!this.isEditSubmitEnabled_}">
           $i18n{editUpdateButton}
         </cr-button>

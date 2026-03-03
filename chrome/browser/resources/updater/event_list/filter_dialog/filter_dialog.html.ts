@@ -11,7 +11,7 @@ export function getHtml(this: FilterDialogElement) {
   return html`
 <!--_html_template_start_-->
 <dialog id="dialog" @close="${this.onClose}"
-    @cancel="${this.onCancel}" @pointerdown="${this.onPointerDown}">
+    @cancel="${this.onCancel}" @pointerdown="${this.onPointerdown}">
   <slot></slot>
 </dialog>
 <!--_html_template_end_-->`;

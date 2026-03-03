@@ -448,7 +448,7 @@ export class DatabaseTabElement extends DatabaseTabElementBase {
     return value === -1 ? 'N/A' : value.toString();
   }
 
-  protected onNewOriginChanged_(e: CustomEvent<{value: string}>) {
+  protected onNewOriginValueChanged_(e: CustomEvent<{value: string}>) {
     this.newOrigin_ = e.detail.value;
   }
 }

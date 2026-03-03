@@ -90,7 +90,7 @@ export class ContextualTasksOnboardingTooltipElement extends CrLitElement {
     }
   }
 
-  protected onTooltipClose_(e: Event) {
+  protected onTooltipCloseClick_(e: Event) {
     e.stopPropagation();
     BrowserProxyImpl.getInstance().handler.onboardingTooltipDismissed();
     this.hide();

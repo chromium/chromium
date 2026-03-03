@@ -11,7 +11,7 @@ export function getHtml(this: DownloadsItemElement) {
   return html`<!--_html_template_start_-->
 <div id="date" role="heading" aria-level="2">${this.computeDate_()}</div>
 
-<div id="content" @dragstart="${this.onDragStart_}"
+<div id="content" @dragstart="${this.onDragstart_}"
     class="${this.computeClass_()}" focus-row-container>
   <div id="main-content">
     <div id="file-icon-wrapper" class="icon-wrapper" role="img"

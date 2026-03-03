@@ -15,7 +15,7 @@ export function getHtml(this: OmniboxAimAppElement) {
       ?disable-caret-color-animation="${this.disableCaretColorAnimation_}"
       ?disable-composebox-animation="${this.disableComposeboxAnimation_}"
       ?disable-voice-search-animation="${true}"
-      @context-menu-entrypoint-click="${this.onContextualEntryPointClicked_}"
+      @context-menu-entrypoint-click="${this.onContextMenuEntrypointClick_}"
       @close-composebox="${this.onCloseComposebox_}"
       @composebox-submit="${this.onComposeboxSubmit_}"
       .showMenuOnClick="${false}"

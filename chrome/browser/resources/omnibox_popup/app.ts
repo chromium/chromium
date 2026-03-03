@@ -360,7 +360,7 @@ export class OmniboxPopupAppElement extends I18nMixinLit
     this.refreshRecentTabForChip_();
   }
 
-  protected onResultRepaint_() {
+  protected onDropdownDomChange_() {
     const metricsReporter = MetricsReporterImpl.getInstance();
     metricsReporter.measure('ResultChanged')
         .then(
@@ -551,7 +551,7 @@ export class OmniboxPopupAppElement extends I18nMixinLit
     this.hasSecondarySide = e.detail.value;
   }
 
-  protected onContextualEntryPointClicked_(
+  protected onContextMenuEntrypointClick_(
       e: CustomEvent<{x: number, y: number}>) {
     e.preventDefault();
     const point = {
@@ -570,11 +570,11 @@ export class OmniboxPopupAppElement extends I18nMixinLit
     }
   }
 
-  protected onLensSearchChipClicked_() {
+  protected onLensSearchClick_() {
     this.pageHandler_.openLensSearch();
   }
 
-  protected addTabContext_(e: CustomEvent<{
+  protected onAddTabContext_(e: CustomEvent<{
     id: number,
     title: string,
     url: Url,

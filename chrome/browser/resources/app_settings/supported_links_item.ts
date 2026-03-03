@@ -195,7 +195,7 @@ export class SupportedLinksItemElement extends SupportedLinksItemElementBase {
 
   /* Supported links list dialog functions ************************************/
 
-  protected launchDialog_(e: CustomEvent<{event: Event}>): void {
+  protected onLinkClicked_(e: CustomEvent<{event: Event}>): void {
     // A place holder href with the value "#" is used to have a compliant link.
     // This prevents the browser from navigating the window to "#"
     e.detail.event.preventDefault();
@@ -213,7 +213,7 @@ export class SupportedLinksItemElement extends SupportedLinksItemElementBase {
 
   /* Preferred app state change dialog and related functions ******************/
 
-  protected async onSupportedLinkPrefChanged_(
+  protected async onSupportedLinkPrefSelectedChanged_(
       event: CustomEvent<{value: string}>): Promise<void> {
     const preference = event.detail.value as PreferenceType;
     const previous = this.getCurrentPreferredApp_() as PreferenceType;
@@ -245,7 +245,7 @@ export class SupportedLinksItemElement extends SupportedLinksItemElementBase {
     this.setAppAsPreferredApp_(preference);
   }
 
-  protected onOverlappingDialogClosed_(): void {
+  protected onOverlappingDialogClose_(): void {
     this.showOverlappingAppsDialog_ = false;
 
     const overlapDialog = castExists(

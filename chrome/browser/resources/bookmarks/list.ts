@@ -397,8 +397,9 @@ export class BookmarksListElement extends BookmarksListElementBase {
     return this.selectedItems_.has(id);
   }
 
-  protected updateShouldShowPromoCard_(e: Event) {
-    this.shouldShowPromoCard_ = (e as CustomEvent).detail.shouldShowPromoCard;
+  protected onShouldShowPromoCard_(
+      e: CustomEvent<{shouldShowPromoCard: boolean}>) {
+    this.shouldShowPromoCard_ = e.detail.shouldShowPromoCard;
   }
 
   setDisplayedIdsForTesting(ids: string[]) {

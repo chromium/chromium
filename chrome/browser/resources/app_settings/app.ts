@@ -143,8 +143,8 @@ export class AppElement extends AppElementBase {
     return this.app_.publisherId.startsWith('isolated-app://');
   }
 
-  protected openNotificationsSystemSettings_(e: CustomEvent<{event: Event}>):
-      void {
+  protected onNotificationsSystemSettingsLinkClicked_(
+      e: CustomEvent<{event: Event}>): void {
     // A place holder href with the value "#" is used to have a compliant link.
     // This prevents the browser from navigating the window to "#"
     e.detail.event.preventDefault();

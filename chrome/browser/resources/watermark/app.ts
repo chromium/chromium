@@ -111,7 +111,7 @@ export class WatermarkAppElement extends CrLitElement {
     this.pageHandler_.showNotificationToast();
   }
 
-  protected onFontSizeInputMouseDown_(event: Event) {
+  protected onFontSizeInputMousedown_(event: Event) {
     // To prevent focus loss on the input when the button is clicked.
     event.preventDefault();
   }
@@ -125,7 +125,7 @@ export class WatermarkAppElement extends CrLitElement {
     this.sendStyleToBackend_();
   }
 
-  protected onIncrementFontSize_(_event: Event) {
+  protected onIncrementFontSizeClick_(_event: Event) {
     this.$.fontSizeInput.focus();
 
     const parsedValue = parseInt(this.$.fontSizeInput.value, 10);
@@ -133,7 +133,7 @@ export class WatermarkAppElement extends CrLitElement {
     this.updateFontSizeValue_(parsedValue, newValue);
   }
 
-  protected onDecrementFontSize_(_event: Event) {
+  protected onDecrementFontSizeClick_(_event: Event) {
     this.$.fontSizeInput.focus();
 
     const parsedValue = parseInt(this.$.fontSizeInput.value, 10);
@@ -141,7 +141,7 @@ export class WatermarkAppElement extends CrLitElement {
     this.updateFontSizeValue_(parsedValue, newValue);
   }
 
-  protected onFontSizeChanged_() {
+  protected onFontSizeValueChanged_() {
     const parsedValue = parseInt(this.$.fontSizeInput.value, 10);
 
     if (isNaN(parsedValue)) {
@@ -165,7 +165,7 @@ export class WatermarkAppElement extends CrLitElement {
   }
 
   // To prevent special floating point chars such as e or '.'
-  protected onFontSizeInputKeyDown_(event: KeyboardEvent) {
+  protected onFontSizeInputKeydown_(event: KeyboardEvent) {
     const allowedNumericKeys =
         ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
     const allowedControlKeys = [
@@ -184,12 +184,12 @@ export class WatermarkAppElement extends CrLitElement {
     }
   }
 
-  protected onFillOpacityChanged_() {
+  protected onFillOpacityCrSliderValueChanged_() {
     this.fillOpacity_ = Math.round(this.$.fillOpacitySlider.value);
     this.sendStyleToBackend_();
   }
 
-  protected onOutlineOpacityChanged_() {
+  protected onOutlineOpacityCrSliderValueChanged_() {
     this.outlineOpacity_ = Math.round(this.$.outlineOpacitySlider.value);
     this.sendStyleToBackend_();
   }

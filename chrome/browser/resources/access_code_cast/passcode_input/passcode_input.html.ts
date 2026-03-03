@@ -13,9 +13,9 @@ export function getHtml(this: PasscodeInputElement) {
   <input id="inputElement" aria-label="${this.ariaLabel}" autocomplete="off"
       class="hidden-input" .maxLength="${this.length}"
       ?disabled="${this.disabled}" spellcheck="false"
-      type="text" @blur="${this.handleOnBlur}" @click="${this.renderSelection}"
-      @keyup="${this.renderSelection}" @select="${this.renderSelection}"
-      @input="${this.handleOnInput}" @focus="${this.handleOnFocus}">
+      type="text" @blur="${this.onBlur}" @click="${this.onSelectionClick}"
+      @keyup="${this.onSelectionKeyup}" @select="${this.onSelectionSelect}"
+      @input="${this.onInput}" @focus="${this.onFocus}">
   <div class="char-box-container" aria-hidden="true">
     ${this.charDisplayBoxes.map((item, index) => html`
       <div id="char-box-${index}"

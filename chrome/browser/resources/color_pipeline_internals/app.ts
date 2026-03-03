@@ -84,7 +84,7 @@ export class ColorPipelineInternalsAppElement extends CrLitElement {
     event.preventDefault();
   }
 
-  protected onSelectorActivate_(event: CustomEvent<{selected: string}>) {
+  protected onSelectorIronActivate_(event: CustomEvent<{selected: string}>) {
     const url = event.detail.selected;
     this.$.menu.selected = url;
     const idx = url.lastIndexOf('#');
@@ -112,7 +112,7 @@ export class ColorPipelineInternalsAppElement extends CrLitElement {
         ` border: 1px solid var(${foreground});`;
   }
 
-  protected updateColorInfo_(e: MouseEvent) {
+  protected onColorMouseenter_(e: MouseEvent) {
     const el = e.target as HTMLElement;
     this.currentColor_ = el.querySelector('p')!.innerText;
 
@@ -151,7 +151,7 @@ export class ColorPipelineInternalsAppElement extends CrLitElement {
     }
   }
 
-  protected clearColorInfo_() {
+  protected onColorMouseleave_() {
     this.currentColor_ = '';
   }
 }

@@ -10,16 +10,16 @@ export function getHtml(this: DiscardsTabElement) {
   //clang-format off
   return html`<!--_html_template_start_-->
 <div id="discards">
-  <div is="action-link" @click="${this.discardUrgentNow_}">
+  <div is="action-link" @click="${this.onDiscardUrgentNowClick_}">
     [Urgent discard a tab now]
   </div>
-  <div is="action-link" @click="${this.toggleBatterySaverMode_}">
+  <div is="action-link" @click="${this.onToggleBatterySaverModeClick_}">
     [Toggle battery saver mode]
   </div>
   ${
       this.isPerformanceInterventionDemoModeEnabled_ ? html`
     <div is="action-link"
-        @click="${this.refreshPerformanceTabCpuMeasurements_}">
+        @click="${this.onRefreshPerformanceTabCpuMeasurementsClick_}">
       [Trigger Performance CPU intervention]
     </div>
   ` :
@@ -156,7 +156,7 @@ export function getHtml(this: DiscardsTabElement) {
             <div is="action-link" class="is-auto-discardable-link"
                 data-id="${item.id}"
                 data-is-auto-discardable="${item.isAutoDiscardable}"
-                @click="${this.toggleAutoDiscardable_}">
+                @click="${this.onToggleAutoDiscardableClick_}">
               [Toggle]
             </div>
           </td>
@@ -165,21 +165,21 @@ export function getHtml(this: DiscardsTabElement) {
           </td>
           <td class="actions-cell">
             <div is="action-link" data-id="${item.id}"
-                @click="${this.loadTab_}"
+                @click="${this.onLoadTabClick_}"
                 ?disabled="${!this.canLoadViaUi_(item)}">
                 [Load]</div>
             <div is="action-link" data-id="${item.id}"
-                @click="${this.urgentDiscardTab_}"
+                @click="${this.onUrgentDiscardTabClick_}"
                 ?disabled="${!this.canDiscardViaUi_(item)}">
               [Urgent Discard]
             </div>
             <div is="action-link" data-id="${item.id}"
-                @click="${this.proactiveDiscardTab_}"
+                @click="${this.onProactiveDiscardTabClick_}"
                 ?disabled="${!this.canDiscardViaUi_(item)}">
               [Proactive Discard]
             </div>
             <div is="action-link" data-id="${item.id}"
-                @click="${this.freezeTab_}"
+                @click="${this.onFreezeTabClick_}"
                 ?disabled="${!this.canFreezeViaUi_(item)}">
               [Freeze]
             </div>

@@ -13,7 +13,7 @@ export function getHtml(this: NewTabFooterAppElement) {
 Container for housing the items in the center of the footer that are
 separated from each other by a divider.
 -->
-<div id="container" @contextmenu="${this.onContextMenu_}">
+<div id="container" @contextmenu="${this.onContextmenu_}">
   <div id="spacer"></div>
   <div id="infoContainer">
   ${this.managementNotice_ ?

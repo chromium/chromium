@@ -23,7 +23,7 @@ export function getHtml(this: ColorPipelineInternalsAppElement) {
     <div role="navigation">
       <h2>Navigation</h2>
       <cr-menu-selector id="menu" selectable="a" attr-for-selected="href"
-          @iron-activate="${this.onSelectorActivate_}"
+          @iron-activate="${this.onSelectorIronActivate_}"
           @click="${this.onLinkClick_}"
           selected-attribute="selected">
         ${this.sections_.map(section => html`
@@ -55,8 +55,8 @@ export function getHtml(this: ColorPipelineInternalsAppElement) {
             <div class="entry"
                 ?hidden="${!this.entryFilter_(entry)}"
                 style="${this.getEntryStyle_(entry)}"
-                @mouseenter="${this.updateColorInfo_}"
-                @mouseleave="${this.clearColorInfo_}">
+                @mouseenter="${this.onColorMouseenter_}"
+                @mouseleave="${this.onColorMouseleave_}">
                 <p>${this.getEntryName_(entry)}</p>
             </div>
           `)}

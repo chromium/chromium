@@ -1160,7 +1160,7 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
     this.getMoreActionsMenu().close();
   }
 
-  protected onDragStart_(e: Event) {
+  protected onDragstart_(e: Event) {
     e.preventDefault();
     this.mojoHandler_!.drag(this.dataId_());
   }

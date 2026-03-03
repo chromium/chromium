@@ -14,7 +14,8 @@ export function getHtml(this: ContextualTasksInternalsAppElement) {
   <div class="container">
     <span class="mode-label">Tab selection mode: </span>
     <select id="tabSelectionModeSelect" class="md-select"
-        value="${this.tabSelectionMode_}" @change="${this.onTabSelectionModeChanged_}">
+        value="${this.tabSelectionMode_}"
+        @change="${this.onTabSelectionModeChange_}">
       <option value="kEmbeddingsMatch">Embeddings Match</option>
       <option value="kMultiSignalScoring">Multi Signal Scoring</option>
       <option value="kStaticSignalsOnly">Static Signals Scoring</option>
@@ -23,19 +24,18 @@ export function getHtml(this: ContextualTasksInternalsAppElement) {
   <div class="container">
     <span class="slider-percentage">Min model score: ${this.minModelScore_}</span>
     <cr-slider id="minModelScoreSlider" aria-label="Min model score"
-        min="0" max="1.0"
-        .value="${this.minModelScore_}"
-        @cr-slider-value-changed="${this.onMinModelScoreChanged_}">
+        min="0" max="1.0" .value="${this.minModelScore_}"
+        @cr-slider-value-changed="${this.onMinModelScoreCrSliderValueChanged_}">
     </cr-slider>
   </div>
 </div>
 <cr-textarea type="text" id="textInput" label=""
-    placeholder="Type query here..."
-    .value="${this.query_}" @value-changed="${this.onQueryChanged_}">
+    placeholder="Type query here..." .value="${this.query_}"
+    @value-changed="${this.onQueryValueChanged_}">
 </cr-textarea>
 <cr-button class="action-button" ?disabled="${this.isQueryPending_}"
     @click="${this.onSubmitClick_}">
-    Submit
+  Submit
 </cr-button>
 <div class="container">
   <div>Relevant Tabs:</div>

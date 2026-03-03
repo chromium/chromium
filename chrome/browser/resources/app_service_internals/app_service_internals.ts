@@ -89,7 +89,7 @@ export class AppServiceInternalsElement extends CrLitElement {
     selected.scrollIntoView();
   }
 
-  protected save_() {
+  protected onSaveClick_() {
     const fileParts: string[] = [];
     fileParts.push('App List\n');
     fileParts.push('========\n\n');

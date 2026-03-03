@@ -12,7 +12,7 @@ export function getHtml(this: BookmarksListElement) {
 <if expr="not is_chromeos">
   <promo-card id="promoCard" class="card"
       ?hidden="${!this.shouldShowPromoCard_}"
-      @on-should-show-promo-card="${this.updateShouldShowPromoCard_}">
+      @should-show-promo-card="${this.onShouldShowPromoCard_}">
   </promo-card>
 </if>
 <cr-lazy-list id="list" class="card"

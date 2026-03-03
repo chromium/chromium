@@ -44,7 +44,7 @@ export function getHtml(this: ContextualTasksComposeboxElement) {
         >
       ${this.showOnboardingTooltip_ ? html`
         <contextual-tasks-onboarding-tooltip id="onboardingTooltip"
-            @onboarding-tooltip-dismissed="${this.onTooltipDismissed_}">
+            @onboarding-tooltip-dismissed="${this.onOnboardingTooltipDismissed_}">
         </contextual-tasks-onboarding-tooltip>
       ` : ''}
       <cr-composebox
@@ -62,9 +62,9 @@ export function getHtml(this: ContextualTasksComposeboxElement) {
           .lensButtonTriggersOverlay="${true}"
           .enableCarouselScrolling="${true}"
           .isFollowupQuery="${!this.isZeroState}"
-          @result-changed="${this.onSuggestionsResultReceived_}"
-          @open-image-upload="${this.handleImageUpload_}"
-          @open-file-upload="${this.handleFileUpload_}"
+          @result-changed="${this.onSuggestionsResultChanged_}"
+          @open-image-upload="${this.onOpenImageUpload_}"
+          @open-file-upload="${this.onOpenFileUpload_}"
           @show-suggestion-activity-link=
               "${this.onShowSuggestionActivityLink_}">
       </cr-composebox>

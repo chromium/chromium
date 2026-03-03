@@ -145,7 +145,7 @@ export function getHtml(this: AppElement) {
           <p>${this.getXmlSitelistsNextDownloadLabel()}</p>
         ` : ''}
         <p>
-          <cr-button @click="${this.refreshXml}">
+          <cr-button @click="${this.onRefreshXmlClick}">
             $i18n{sitelistDownloadButton}
           </cr-button>
         </p>

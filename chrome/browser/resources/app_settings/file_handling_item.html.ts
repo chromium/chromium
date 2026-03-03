@@ -7,6 +7,7 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {FileHandlingItemElement} from './file_handling_item.js';
 
 export function getHtml(this: FileHandlingItemElement) {
+  // clang-format off
   return html`<!--_html_template_start_-->
 <div id="file-handling-item">
   <app-management-toggle-row
@@ -19,7 +20,7 @@ export function getHtml(this: FileHandlingItemElement) {
   <p>
     <localized-link id="type-list"
       .localizedString="${this.userVisibleTypesLabel_()}"
-      @link-clicked="${this.launchDialog_}">
+      @link-clicked="${this.onTypeListLinkClicked_}">
     </localized-link>
   </p>
   <localized-link id="learn-more"
@@ -36,11 +37,12 @@ ${this.showOverflowDialog ? html`
       ${this.userVisibleTypes_()}
     </div>
     <div slot="button-container">
-      <cr-button class="action-button" @click="${this.onCloseButtonClicked_}">
+      <cr-button class="action-button" @click="${this.onCloseButtonClick_}">
         $i18n{close}
       </cr-button>
     </div>
   </cr-dialog>
 ` : ''}
 <!--_html_template_end_-->`;
+  // clang-format on
 }

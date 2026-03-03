@@ -39,7 +39,7 @@ export class InfobarInternalsAppElement extends CrLitElement {
         ({infobars}) => this.infobars = infobars);
   }
 
-  protected onTrigger(e: Event) {
+  protected onTriggerClick(e: Event) {
     const target = e.currentTarget as HTMLElement;
     const typeStr = target.dataset['type'];
     assert(typeStr);

@@ -19,7 +19,7 @@ export function getHtml(this: ManagementUiElement) {
     <div class="card">
       <section ?hidden="${!this.managed_}" class="page-subtitle">
         <cr-icon-button class="icon-arrow-back" id="closeButton"
-            @click="${this.onTapBack_}" aria-label="$i18n{backButton}">
+            @click="${this.onBackClick_}" aria-label="$i18n{backButton}">
         </cr-icon-button>
         <h2 class="cr-title-text">${this.subtitle_}</h2>
       </section>
