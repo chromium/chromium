@@ -294,15 +294,13 @@ class SettingsOverriddenExplicitChoiceDialogInteractiveUiTest
 };
 
 IN_PROC_BROWSER_TEST_F(SettingsOverriddenExplicitChoiceDialogInteractiveUiTest,
-                       ChoosingPreviousSettingRestoresPrevious) {
+                       WhenPreviouslyGoogleChoosingPreviousRestoresGoogle) {
   RunTestSequence(InstrumentTab(kWebContentsId),
                   SetNewSearchProvider(DefaultSearch::kUseDefault),
                   LoadExtensionOverridingSearch(), PerformSearchFromOmnibox(),
-                  WaitForDialogToShow(),
-                  // Ensure navigation hasn't happened yet.
-                  CheckActiveUrl(GURL("about:blank")),
-                  // Select previous search setting.
-                  PressButton(kPreviousSettingButtonId),
+                  WaitForDialogToShow(), CheckActiveUrl(GURL("about:blank")),
+                  ScreenshotDialog(), PressButton(kPreviousSettingButtonId),
+                  // Click Save.
                   PressButton(kSaveButtonId),
                   WaitForHide(kSettingsOverriddenDialogId),
                   // Verify navigation proceeds to the default search URL
@@ -311,16 +309,16 @@ IN_PROC_BROWSER_TEST_F(SettingsOverriddenExplicitChoiceDialogInteractiveUiTest,
                   CheckWebContentsNavigateToGoogle());
 }
 
-IN_PROC_BROWSER_TEST_F(SettingsOverriddenExplicitChoiceDialogInteractiveUiTest,
-                       ChoosingNewSettingSearchesWithExtension) {
+IN_PROC_BROWSER_TEST_F(
+    SettingsOverriddenExplicitChoiceDialogInteractiveUiTest,
+    WhenPreviouslyNonGoogleChoosingPreviousRestoresNonGoogle) {
   RunTestSequence(
       InstrumentTab(kWebContentsId),
       SetNewSearchProvider(DefaultSearch::kUseNonGoogleFromDefaultList),
       LoadExtensionOverridingSearch(), PerformSearchFromOmnibox(),
-      WaitForDialogToShow(),
-      // Ensure navigation hasn't happened yet.
-      CheckActiveUrl(GURL("about:blank")),
-      // Select new search setting.
+      WaitForDialogToShow(), CheckActiveUrl(GURL("about:blank")),
+      ScreenshotDialog(),
+      // Select previous search setting.
       PressButton(kNewSettingButtonId), PressButton(kSaveButtonId),
       WaitForHide(kSettingsOverriddenDialogId),
       // Verify navigation proceeds to the extension's search URL.
@@ -328,36 +326,11 @@ IN_PROC_BROWSER_TEST_F(SettingsOverriddenExplicitChoiceDialogInteractiveUiTest,
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsOverriddenExplicitChoiceDialogInteractiveUiTest,
-                       ScreenshotPreviouslyGoogle) {
-  RunTestSequence(InstrumentTab(kWebContentsId),
-                  SetNewSearchProvider(DefaultSearch::kUseDefault),
-                  LoadExtensionOverridingSearch(), PerformSearchFromOmnibox(),
-                  WaitForDialogToShow(), ScreenshotDialog());
-}
-
-IN_PROC_BROWSER_TEST_F(SettingsOverriddenExplicitChoiceDialogInteractiveUiTest,
-                       ScreenshotPreviouslyNonGoogle) {
-  RunTestSequence(
-      InstrumentTab(kWebContentsId),
-      SetNewSearchProvider(DefaultSearch::kUseNonGoogleFromDefaultList),
-      LoadExtensionOverridingSearch(), PerformSearchFromOmnibox(),
-      WaitForDialogToShow(), ScreenshotDialog());
-}
-
-IN_PROC_BROWSER_TEST_F(SettingsOverriddenExplicitChoiceDialogInteractiveUiTest,
-                       ScreenshotPreviouslyOldExtension) {
+                       WhenPreviouslyOldExtension) {
   RunTestSequence(SetNewSearchProvider(DefaultSearch::kUseNewSearch),
                   LoadExtensionOverridingSearch(), PerformSearchFromOmnibox(),
-                  WaitForDialogToShow(), ScreenshotDialog());
-}
-
-IN_PROC_BROWSER_TEST_F(SettingsOverriddenExplicitChoiceDialogInteractiveUiTest,
-                       ScreenshotRtlLayout) {
-  base::i18n::SetRTLForTesting(true);
-  RunTestSequence(InstrumentTab(kWebContentsId),
-                  SetNewSearchProvider(DefaultSearch::kUseDefault),
-                  LoadExtensionOverridingSearch(), PerformSearchFromOmnibox(),
-                  WaitForDialogToShow(), ScreenshotDialog());
+                  WaitForDialogToShow(), CheckActiveUrl(GURL("about:blank")),
+                  ScreenshotDialog());
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsOverriddenExplicitChoiceDialogInteractiveUiTest,
@@ -554,6 +527,15 @@ IN_PROC_BROWSER_TEST_F(SettingsOverriddenExplicitChoiceDialogInteractiveUiTest,
 
       // Finish the dialog to clean up.
       PressButton(kSaveButtonId), WaitForHide(kSettingsOverriddenDialogId));
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsOverriddenExplicitChoiceDialogInteractiveUiTest,
+                       RtlLayout) {
+  base::i18n::SetRTLForTesting(true);
+  RunTestSequence(InstrumentTab(kWebContentsId),
+                  SetNewSearchProvider(DefaultSearch::kUseDefault),
+                  LoadExtensionOverridingSearch(), PerformSearchFromOmnibox(),
+                  WaitForDialogToShow(), ScreenshotDialog());
 }
 
 }  // namespace
