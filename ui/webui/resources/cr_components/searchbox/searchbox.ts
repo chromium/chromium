@@ -12,8 +12,7 @@ import '//resources/cr_components/composebox/recent_tab_chip.js';
 import '//resources/cr_components/search/animated_glow.js';
 
 import type {ContextualUpload, TabUpload, TabUploadOrigin} from '//resources/cr_components/composebox/common.js';
-import {recordContextAdditionMethod} from '//resources/cr_components/composebox/common.js';
-import {GlifAnimationState} from '//resources/cr_components/composebox/common.js';
+import {GlifAnimationState, recordContextAdditionMethod} from '//resources/cr_components/composebox/common.js';
 import type {ContextualEntrypointAndMenuElement} from '//resources/cr_components/composebox/contextual_entrypoint_and_menu.js';
 import type {RecentTabChipElement} from '//resources/cr_components/composebox/recent_tab_chip.js';
 import {ComposeboxContextAddedMethod, GlowAnimationState} from '//resources/cr_components/search/constants.js';
@@ -40,6 +39,7 @@ import {getHtml} from './searchbox.html.js';
 import {SearchboxBrowserProxy} from './searchbox_browser_proxy.js';
 import type {SearchboxDropdownElement} from './searchbox_dropdown.js';
 import type {SearchboxIconElement} from './searchbox_icon.js';
+import {waitForLazyRender} from './utils.js';
 
 // LINT.IfChange(GhostLoaderTagName)
 const LENS_GHOST_LOADER_TAG_NAME = 'cr-searchbox-ghost-loader';
@@ -405,18 +405,6 @@ export class SearchboxElement extends SearchboxElementBase implements
       this.inputState_.activeModel = ModelMode.kUnspecified;
     }
 
-    if (this.cyclingPlaceholders) {
-      const {config} = await this.pageHandler_.getPlaceholderConfig();
-      const texts = config.texts;
-      assert(texts[0]);
-      this.placeholderText = texts[0];
-      this.placeholderCycler_ = new PlaceholderTextCycler(
-          this.$.input, texts,
-          Number(config.changeTextAnimationInterval.microseconds / 1000n),
-          Number(config.fadeTextAnimationDuration.microseconds / 1000n));
-      this.placeholderCycler_.start();
-    }
-
     if (this.ntpRealboxNextEnabled) {
       this.dragAndDropHandler =
           new DragAndDropHandler(this, this.dragAndDropEnabled_);
@@ -479,6 +467,20 @@ export class SearchboxElement extends SearchboxElementBase implements
     performance.measure('realbox-creation', 'realbox-creation-start');
     if (this.multiLineEnabled) {
       this.initialInputScrollHeight_ = this.$.input.scrollHeight;
+    }
+
+    if (this.cyclingPlaceholders) {
+      waitForLazyRender().then(async () => {
+        const {config} = await this.pageHandler_.getPlaceholderConfig();
+        const texts = config.texts;
+        assert(texts[0]);
+        this.placeholderText = texts[0];
+        this.placeholderCycler_ = new PlaceholderTextCycler(
+            this.$.input, texts,
+            Number(config.changeTextAnimationInterval.microseconds / 1000n),
+            Number(config.fadeTextAnimationDuration.microseconds / 1000n));
+        this.placeholderCycler_.start();
+      });
     }
   }
 
