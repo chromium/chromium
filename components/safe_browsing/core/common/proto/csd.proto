@@ -2787,8 +2787,13 @@ message ExtensionTelemetryReportRequest {
         optional string url = 2;
         // The type of access that was performed.
         optional AccessType access_type = 3;
-        // The timestamp of the DOM access in microseconds.
-        optional int64 timestamp_us = 4;
+        // Deprecated: use timestamp_ms instead.
+        optional int64 timestamp_us = 4 [deprecated = true];
+        // The number of times this DOM access was performed.
+        optional uint32 count = 5;
+        // The timestamp of the latest API call (in milliseconds from the Unix
+        // epoch).
+        optional int64 timestamp_ms = 6;
       }
       repeated DOMAccess dom_accesses = 1;
     }
@@ -2802,11 +2807,20 @@ message ExtensionTelemetryReportRequest {
         // The name of the API used to inject the script.
         optional string api_name = 1;
         // The arguments passed to the API.
-        optional string args = 2;
+        optional string args = 2 [deprecated = true];
         // The URL of the page where the script was injected.
         optional string url = 3;
-        // The timestamp of the script injection in microseconds.
-        optional int64 timestamp_us = 4;
+        // Deprecated: use timestamp_ms instead.
+        optional int64 timestamp_us = 4 [deprecated = true];
+        // The arguments passed to the API.
+        repeated string args_list = 5;
+        // The URL extracted from the arguments, if any.
+        optional string arg_url = 6;
+        // The number of times this script injection was performed.
+        optional uint32 count = 7;
+        // The timestamp of the latest API call (in milliseconds from the Unix
+        // epoch).
+        optional int64 timestamp_ms = 8;
       }
       repeated ScriptInjection script_injections = 1;
     }
