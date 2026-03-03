@@ -45,7 +45,7 @@ TabStripSceneLayer::TabStripSceneLayer(JNIEnv* env,
       left_padding_layer_(cc::slim::SolidColorLayer::Create()),
       right_padding_layer_(cc::slim::SolidColorLayer::Create()),
       glic_button_(cc::slim::UIResourceLayer::Create()),
-      glic_button_background_(cc::slim::UIResourceLayer::Create()),
+      glic_button_background_(cc::slim::SolidColorLayer::Create()),
       glic_button_text_(cc::slim::UIResourceLayer::Create()),
       glic_button_keyboard_focus_ring_(cc::slim::UIResourceLayer::Create()),
       model_selector_button_(cc::slim::UIResourceLayer::Create()),
@@ -318,17 +318,16 @@ void TabStripSceneLayer::UpdateNewTabButton(
 //   edge to the button's end.
 //                           (Note: this is implicitly handled by the total
 //                           `button_width`).
-//   d = background_size.height(): The height of the background resource, which
-//   dictates the total height of the button. e = button_width: The total
-//   dynamic width of the button, calculated to wrap the icon, text, and all
-//   paddings.
+//   d = button_height: The total height of the button.
+//   e = button_width: The total dynamic width of the button, calculated to wrap
+//   the icon, text, and all paddings.
 void TabStripSceneLayer::UpdateGlicButton(
     JNIEnv* env,
     int32_t resource_id,
-    int32_t bg_resource_id,
     float x,
     float y,
     float button_width,
+    float button_height,
     bool visible,
     bool should_apply_hover_highlight,
     int32_t tint,
@@ -339,33 +338,33 @@ void TabStripSceneLayer::UpdateGlicButton(
     int32_t keyboard_focus_ring_color,
     int32_t text_texture_id,
     float button_start_padding,
-    float icon_text_padding) {
+    float icon_text_padding,
+    float corner_radius) {
   DCHECK(resource_manager_);
   ui::Resource* icon_resource =
       resource_manager_->GetStaticResourceWithTint(resource_id, tint);
-  ui::Resource* background_resource =
-      resource_manager_->GetStaticResourceWithTint(bg_resource_id,
-                                                   background_tint, true);
   ui::Resource* text_resource = resource_manager_->GetResource(
       ui::ANDROID_RESOURCE_TYPE_DYNAMIC, text_texture_id);
   ui::Resource* keyboard_focus_ring_drawable =
       resource_manager_->GetStaticResourceWithTint(
           keyboard_focus_ring_resource_id, keyboard_focus_ring_color, true);
 
-  gfx::Size background_size = background_resource->size();
+  gfx::Size background_size(std::round(button_width),
+                            std::round(button_height));
   gfx::Size icon_size = icon_resource->size();
   gfx::Size text_size = text_resource ? text_resource->size() : gfx::Size();
   gfx::Size ring_size = keyboard_focus_ring_drawable->size();
 
   // 1. Background
-  glic_button_background_->SetUIResourceId(
-      background_resource->ui_resource()->id());
-  glic_button_background_->SetBounds(
-      gfx::Size(std::round(button_width), background_size.height()));
+  glic_button_background_->SetBackgroundColor(
+      SkColor4f::FromColor(background_tint));
+  glic_button_background_->SetBounds(background_size);
   glic_button_background_->SetPosition(
       gfx::PointF(std::round(x), std::round(y)));
   glic_button_background_->SetHideLayerAndSubtree(!visible);
   glic_button_background_->SetOpacity(button_alpha);
+  glic_button_background_->SetRoundedCorner(
+      gfx::RoundedCornersF(corner_radius));
 
   // 2. Icon
   float icon_x_pos;

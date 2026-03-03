@@ -604,7 +604,7 @@ public class TabStripSceneLayerTest {
                 .updateGlicButton(
                         eq(1L),
                         anyInt(),
-                        anyInt(),
+                        anyFloat(),
                         anyFloat(),
                         anyFloat(),
                         anyFloat(),
@@ -619,6 +619,7 @@ public class TabStripSceneLayerTest {
                                 MaterialColors.getColor(
                                         mContext, R.attr.colorPrimary, /* defaultValue= */ 0)),
                         anyInt(),
+                        anyFloat(),
                         anyFloat(),
                         anyFloat());
     }

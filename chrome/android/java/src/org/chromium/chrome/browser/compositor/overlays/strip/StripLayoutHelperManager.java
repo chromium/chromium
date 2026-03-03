@@ -201,6 +201,7 @@ public class StripLayoutHelperManager
     private static final float GLIC_ICON_WIDTH_DP = 24.f;
     private static final float GLIC_ICON_TEXT_PADDING_DP = 4.f;
     private static final float GLIC_BUTTON_END_PADDING_DP = 10.f;
+    private static final float GLIC_BUTTON_CORNER_RADIUS = 12.f;
     private static final float GLIC_BUTTON_HOVER_BACKGROUND_PRESSED_OPACITY = 0.24f;
     private static final float GLIC_BUTTON_HOVER_BACKGROUND_DEFAULT_OPACITY = 0.16f;
 
@@ -761,7 +762,6 @@ public class StripLayoutHelperManager
                         keyboardFocusHandler,
                         R.drawable.ic_spark_24dp,
                         BUTTON_CLICK_SLOP_DP);
-        mGlicButton.setBackgroundResourceId(R.drawable.bg_circle_tab_strip_button);
         mGlicButton.setDrawY(BUTTON_BACKGROUND_Y_OFFSET_DP);
         mGlicButton.setVisible(false);
 
@@ -2031,6 +2031,10 @@ public class StripLayoutHelperManager
 
     public float getGlicIconTextPadding() {
         return GLIC_ICON_TEXT_PADDING_DP;
+    }
+
+    public float getGlicButtonCornerRadius() {
+        return GLIC_BUTTON_CORNER_RADIUS;
     }
 
     private boolean shouldMsbBeVisible() {
