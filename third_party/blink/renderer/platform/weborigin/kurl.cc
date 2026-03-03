@@ -69,7 +69,7 @@ void AssertProtocolIsGood(const StringView protocol) {
 
 // Note: You must ensure that |spec| is a valid canonicalized URL before calling
 // this function.
-std::string_view AsURLChar8Subtle(const StringView& spec) {
+std::string_view AsUrlChar8Subtle(const StringView& spec) {
   DCHECK(spec.Is8Bit());
   // Span8() really return characters in Latin-1, but because we
   // canonicalize URL strings, we know that everything before the fragment
@@ -175,19 +175,19 @@ bool ProtocolIsJavaScript(const StringView& url) {
   return ProtocolIs(url, url::kJavaScriptScheme);
 }
 
-const KURL& BlankURL() {
+const KURL& BlankUrl() {
   DEFINE_THREAD_SAFE_STATIC_LOCAL(KURL, blank_url,
                                   (AtomicString(url::kAboutBlankURL)));
   return blank_url;
 }
 
-const KURL& SrcdocURL() {
+const KURL& SrcdocUrl() {
   DEFINE_THREAD_SAFE_STATIC_LOCAL(KURL, srcdoc_url,
                                   (AtomicString(url::kAboutSrcdocURL)));
   return srcdoc_url;
 }
 
-bool KURL::IsAboutURL(const char* allowed_path) const {
+bool KURL::IsAboutUrl(const char* allowed_path) const {
   if (!ProtocolIsAbout())
     return false;
 
@@ -204,12 +204,12 @@ bool KURL::IsAboutURL(const char* allowed_path) const {
   return GURL::IsAboutPath(path_utf8.AsStringView(), allowed_path);
 }
 
-bool KURL::IsAboutBlankURL() const {
-  return IsAboutURL(url::kAboutBlankPath);
+bool KURL::IsAboutBlankUrl() const {
+  return IsAboutUrl(url::kAboutBlankPath);
 }
 
-bool KURL::IsAboutSrcdocURL() const {
-  return IsAboutURL(url::kAboutSrcdocPath);
+bool KURL::IsAboutSrcdocUrl() const {
+  return IsAboutUrl(url::kAboutSrcdocPath);
 }
 
 const KURL& NullUrl() {
@@ -237,7 +237,7 @@ KURL::KURL() : is_valid_(false), protocol_is_in_http_family_(false) {}
 KURL::KURL(const StringView& url) {
   if (!url.IsNull()) {
     Init(NullUrl(), url, nullptr);
-    AssertStringSpecIsASCII();
+    AssertStringSpecIsAscii();
   } else {
     // WebCore expects us to preserve the nullness of strings when this
     // constructor is used. In all other cases, it expects a non-null
@@ -251,14 +251,14 @@ KURL::KURL(const StringView& url) {
 KURL::KURL(const GURL& gurl) {
   Init(NullUrl() /* base */, String(gurl.spec()) /* relative */,
        nullptr /* query_encoding */);
-  AssertStringSpecIsASCII();
+  AssertStringSpecIsAscii();
 }
 
 // Constructs a new URL given a base URL and a possibly relative input URL.
 // This assumes UTF-8 encoding.
 KURL::KURL(const KURL& base, const StringView& relative) {
   Init(base, relative, nullptr);
-  AssertStringSpecIsASCII();
+  AssertStringSpecIsAscii();
 }
 
 // Constructs a new URL given a base URL and a possibly relative input URL.
@@ -267,7 +267,7 @@ KURL::KURL(const KURL& base,
            const StringView& relative,
            const TextEncoding& encoding) {
   Init(base, relative, &encoding.EncodingForFormSubmission());
-  AssertStringSpecIsASCII();
+  AssertStringSpecIsAscii();
 }
 
 KURL::KURL(const AtomicString& canonical_string,
@@ -278,11 +278,11 @@ KURL::KURL(const AtomicString& canonical_string,
       parsed_(parsed),
       string_(canonical_string) {
   InitProtocolMetadata();
-  InitInnerURL();
+  InitInnerUrl();
   // For URLs with non-ASCII hostnames canonical_string will be in punycode.
   // We can't check has_idna2008_deviation_character_ without decoding punycode.
   // here.
-  AssertStringSpecIsASCII();
+  AssertStringSpecIsAscii();
 }
 
 KURL::KURL(const KURL& other)
@@ -330,7 +330,7 @@ bool KURL::ProtocolIsJavaScript() const {
   return ComponentStringView(parsed_.scheme) == url::kJavaScriptScheme;
 }
 
-bool KURL::ProtocolIsInHTTPFamily() const {
+bool KURL::ProtocolIsInHttpFamily() const {
   return protocol_is_in_http_family_;
 }
 
@@ -355,7 +355,7 @@ StringView KURL::LastPathComponent() const {
 
   url::Component file;
   if (string_.Is8Bit()) {
-    url::ExtractFileName(AsURLChar8Subtle(string_), path, &file);
+    url::ExtractFileName(AsUrlChar8Subtle(string_), path, &file);
   } else {
     url::ExtractFileName(string_.View16(), path, &file);
   }
@@ -382,7 +382,7 @@ uint16_t KURL::Port() const {
     return 0;
   DCHECK(!string_.IsNull());
   int port = string_.Is8Bit()
-                 ? url::ParsePort(AsURLChar8Subtle(string_), parsed_.port)
+                 ? url::ParsePort(AsUrlChar8Subtle(string_), parsed_.port)
                  : url::ParsePort(string_.View16(), parsed_.port);
   DCHECK_NE(port, url::PORT_UNSPECIFIED);  // Checked port.len <= 0 already.
   DCHECK_NE(port, url::PORT_INVALID);      // Checked is_valid_ already.
@@ -457,16 +457,16 @@ StringView KURL::GetPath() const {
 
 namespace {
 
-bool IsASCIITabOrNewline(UChar ch) {
+bool IsAsciiTabOrNewline(UChar ch) {
   return ch == '\t' || ch == '\r' || ch == '\n';
 }
 
 // See https://url.spec.whatwg.org/#concept-basic-url-parser:
 // 3. Remove all ASCII tab or newline from |input|.
 //
-// Matches url::RemoveURLWhitespace.
-String RemoveURLWhitespace(const String& input) {
-  return input.RemoveCharacters(IsASCIITabOrNewline);
+// Matches url::RemoveUrlWhitespace.
+String RemoveUrlWhitespace(const String& input) {
+  return input.RemoveCharacters(IsAsciiTabOrNewline);
 }
 
 }  // namespace
@@ -584,7 +584,7 @@ StringView FindHostPart(const StringView& host, bool is_special) {
 }  // namespace
 
 void KURL::SetHost(const String& input) {
-  String host = RemoveURLWhitespace(input);
+  String host = RemoveUrlWhitespace(input);
   StringView truncated_host = FindHostPart(host, IsStandard());
   StringUtf8Adaptor host_utf8(truncated_host);
   url::Replacements<char> replacements;
@@ -597,7 +597,7 @@ void KURL::SetHostAndPort(const String& input) {
   // compatibility. See https://url.spec.whatwg.org/#host-state for what we
   // theoretically should be doing.
 
-  String orig_host_and_port = RemoveURLWhitespace(input);
+  String orig_host_and_port = RemoveUrlWhitespace(input);
   StringView host_and_port = FindHostPart(orig_host_and_port, IsStandard());
 
   // This logic for handling IPv6 addresses is adapted from ParseServerInfo in
@@ -654,7 +654,7 @@ void KURL::RemovePort() {
 }
 
 bool KURL::SetPort(const String& input) {
-  String port = RemoveURLWhitespace(input);
+  String port = RemoveUrlWhitespace(input);
   StringView parsed_port = ParsePortFromString(port);
   if (parsed_port.empty()) {
     return false;
@@ -721,7 +721,7 @@ void KURL::SetFragmentIdentifier(const String& input) {
   if (input.IsNull() && !parsed_.ref.is_valid())
     return;
 
-  String fragment = RemoveURLWhitespace(input);
+  String fragment = RemoveUrlWhitespace(input);
   StringUtf8Adaptor fragment_utf8(fragment);
 
   url::Replacements<char> replacements;
@@ -740,7 +740,7 @@ void KURL::RemoveFragmentIdentifier() {
 }
 
 void KURL::SetQuery(const String& input) {
-  String query = RemoveURLWhitespace(input);
+  String query = RemoveUrlWhitespace(input);
   StringUtf8Adaptor query_utf8(query);
   url::Replacements<char> replacements;
   if (query.IsNull()) {
@@ -765,7 +765,7 @@ void KURL::SetQuery(const String& input) {
 void KURL::SetPath(const String& input) {
   // Empty paths will be canonicalized to "/", so we don't have to worry
   // about calling ClearPath().
-  String path = RemoveURLWhitespace(input);
+  String path = RemoveUrlWhitespace(input);
   StringUtf8Adaptor path_utf8(path);
   url::Replacements<char> replacements;
   replacements.SetPathStr(CharactersOrEmpty(path_utf8));
@@ -778,7 +778,7 @@ String DecodeUrlEscapeSequences(const StringView& string, DecodeUrlMode mode) {
   return StringImpl::Create8BitIfPossible(unescaped.view());
 }
 
-String EncodeWithURLEscapeSequences(const StringView& not_encoded_string) {
+String EncodeWithUrlEscapeSequences(const StringView& not_encoded_string) {
   std::string utf8 = Utf8Encoding().Encode(
       not_encoded_string, UnencodableHandling::kNoUnencodables);
   String escaped(base::span(url::UriComponentEncoder(utf8).view()));
@@ -811,7 +811,7 @@ bool KURL::IsHierarchical() const {
 bool KURL::IsStandard() const {
   if (string_.IsNull() || parsed_.scheme.is_empty())
     return false;
-  return string_.Is8Bit() ? url::IsStandard(AsURLChar8Subtle(string_).substr(
+  return string_.Is8Bit() ? url::IsStandard(AsUrlChar8Subtle(string_).substr(
                                 parsed_.scheme.begin, parsed_.scheme.len))
                           : url::IsStandard(string_.View16().substr(
                                 parsed_.scheme.begin, parsed_.scheme.len));
@@ -865,7 +865,7 @@ unsigned KURL::PathAfterLastSlash() const {
     return parsed_.CountCharactersBefore(url::Parsed::PATH, false);
   url::Component filename;
   if (string_.Is8Bit()) {
-    url::ExtractFileName(AsURLChar8Subtle(string_), parsed_.path, &filename);
+    url::ExtractFileName(AsUrlChar8Subtle(string_), parsed_.path, &filename);
   } else {
     url::ExtractFileName(string_.View16(), parsed_.path, &filename);
   }
@@ -879,7 +879,7 @@ bool ProtocolIs(const StringView& url, const char* protocol) {
   if (url.IsNull())
     return false;
   if (url.Is8Bit()) {
-    return url::FindAndCompareScheme(AsURLChar8Subtle(url), protocol, nullptr);
+    return url::FindAndCompareScheme(AsUrlChar8Subtle(url), protocol, nullptr);
   }
   return url::FindAndCompareScheme(std::u16string_view(url.Span16()), protocol,
                                    nullptr);
@@ -933,11 +933,11 @@ void KURL::Init(const KURL& base,
   }
 
   InitProtocolMetadata();
-  InitInnerURL();
-  AssertStringSpecIsASCII();
+  InitInnerUrl();
+  AssertStringSpecIsAscii();
 }
 
-void KURL::InitInnerURL() {
+void KURL::InitInnerUrl() {
   if (!is_valid_) {
     inner_url_.reset();
     return;
@@ -972,7 +972,7 @@ void KURL::InitProtocolMetadata() {
   DCHECK_EQ(protocol_, protocol_.DeprecatedLower());
 }
 
-void KURL::AssertStringSpecIsASCII() {
+void KURL::AssertStringSpecIsAscii() {
   // //url canonicalizes to 7-bit ASCII, using punycode and percent-escapes.
   // This means that even though KURL itself might sometimes contain 16-bit
   // strings, it is still safe to reuse the `url::Parsed' object from the
@@ -1044,7 +1044,7 @@ void KURL::ReplaceComponents(const url::Replacements<CHAR>& replacements,
     parsed_ = new_parsed;
     string_ = AtomicString(base::as_byte_span(output.view()));
     InitProtocolMetadata();
-    AssertStringSpecIsASCII();
+    AssertStringSpecIsAscii();
   }
 }
 

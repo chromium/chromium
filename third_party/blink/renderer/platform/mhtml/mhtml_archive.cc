@@ -272,8 +272,9 @@ bool MHTMLArchive::CanLoadArchive(const KURL& url) {
   // sandboxing enforcement on MHTML pages.
   if (std::ranges::contains(url::GetLocalSchemes(), url.Protocol().Ascii()))
     return true;
-  if (url.ProtocolIsInHTTPFamily())
+  if (url.ProtocolIsInHttpFamily()) {
     return true;
+  }
 #if BUILDFLAG(IS_ANDROID)
   if (url.ProtocolIs("content"))
     return true;

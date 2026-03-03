@@ -407,9 +407,10 @@ DocumentFragment* CreateFragmentFromMarkup(
   fragment->ParseHTML(markup, fake_body, /*registry*/ nullptr,
                       parser_content_policy);
 
-  if (!base_url.empty() && base_url != BlankURL() &&
-      base_url != document.BaseURL())
+  if (!base_url.empty() && base_url != BlankUrl() &&
+      base_url != document.BaseURL()) {
     CompleteURLs(*fragment, base_url);
+  }
 
   return fragment;
 }

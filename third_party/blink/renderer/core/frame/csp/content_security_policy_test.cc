@@ -785,7 +785,7 @@ TEST_F(ContentSecurityPolicyTest, CSPBypassDisabledWhenSchemeIsPrivileged) {
   const KURL base;
   CreateExecutionContext();
   execution_context->GetSecurityContext().SetSecurityOrigin(secure_origin);
-  execution_context->SetURL(BlankURL());
+  execution_context->SetURL(BlankUrl());
   csp->BindToDelegate(execution_context->GetContentSecurityPolicyDelegate());
   csp->AddPolicies(ParseContentSecurityPolicies(
       "script-src http://example.com", ContentSecurityPolicyType::kEnforce,

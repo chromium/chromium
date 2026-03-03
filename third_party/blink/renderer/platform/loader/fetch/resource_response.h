@@ -469,7 +469,7 @@ class PLATFORM_EXPORT ResourceResponse final {
       // This flag should only be set for http(s) resources, because others
       // would end up blocked in the browser process anyway (see
       // code_cache_host_impl.cc).
-      CHECK(CurrentRequestUrl().ProtocolIsInHTTPFamily());
+      CHECK(CurrentRequestUrl().ProtocolIsInHttpFamily());
     }
     should_use_source_hash_for_js_code_cache_ =
         should_use_source_hash_for_js_code_cache;

@@ -174,7 +174,7 @@ bool PaymentsValidators::IsValidMethodFormat(v8::Isolate* isolate,
     return false;
 
   // TODO(http://crbug.com/1200225): Align this with the specification.
-  return url.ProtocolIsInHTTPFamily() &&
+  return url.ProtocolIsInHttpFamily() &&
          network::IsUrlPotentiallyTrustworthy(GURL(url));
 }
 

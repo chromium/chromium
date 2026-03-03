@@ -142,7 +142,7 @@ bool MultiBufferDataSource::media_has_played() const {
 
 bool MultiBufferDataSource::AssumeFullyBuffered() const {
   DCHECK(url_data_);
-  return !url_data_->url().ProtocolIsInHTTPFamily();
+  return !url_data_->url().ProtocolIsInHttpFamily();
 }
 
 void MultiBufferDataSource::SetReader(

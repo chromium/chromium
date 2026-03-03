@@ -285,7 +285,7 @@ TEST(KURLTest, DecodeURLEscapeSequences) {
   EXPECT_EQ(invalid_expected, invalid);
 }
 
-TEST(KURLTest, EncodeWithURLEscapeSequences) {
+TEST(KURLTest, EncodeWithUrlEscapeSequences) {
   struct EncodeCase {
     const char* input;
     const char* output;
@@ -307,7 +307,7 @@ TEST(KURLTest, EncodeWithURLEscapeSequences) {
   for (size_t i = 0; i < std::size(encode_cases); i++) {
     String input(encode_cases[i].input);
     String expected_output(encode_cases[i].output);
-    String output = EncodeWithURLEscapeSequences(input);
+    String output = EncodeWithUrlEscapeSequences(input);
     EXPECT_EQ(expected_output, output);
   }
 
@@ -315,23 +315,23 @@ TEST(KURLTest, EncodeWithURLEscapeSequences) {
   String input(base::span_from_cstring("\x00\x01"));
   String reference("%00%01");
 
-  String output = EncodeWithURLEscapeSequences(input);
+  String output = EncodeWithUrlEscapeSequences(input);
   EXPECT_EQ(reference, output);
 
   // Also test that it gets converted to UTF-8 properly.
   UChar wide_input_helper[] = {0x4f60, 0x597d};
   String wide_input{base::span(wide_input_helper)};
   String wide_reference("%E4%BD%A0%E5%A5%BD");
-  String wide_output = EncodeWithURLEscapeSequences(wide_input);
+  String wide_output = EncodeWithUrlEscapeSequences(wide_input);
   EXPECT_EQ(wide_reference, wide_output);
 
   // Encoding should not NFC-normalize the string.
   // Contain a combining character ('e' + COMBINING OGONEK).
   String combining(String::FromUTF8("\x65\xCC\xA8"));
-  EXPECT_EQ(EncodeWithURLEscapeSequences(combining), "e%CC%A8");
+  EXPECT_EQ(EncodeWithUrlEscapeSequences(combining), "e%CC%A8");
   // Contain a precomposed character corresponding to |combining|.
   String precomposed(String::FromUTF8("\xC4\x99"));
-  EXPECT_EQ(EncodeWithURLEscapeSequences(precomposed), "%C4%99");
+  EXPECT_EQ(EncodeWithUrlEscapeSequences(precomposed), "%C4%99");
 }
 
 TEST(KURLTest, AbsoluteRemoveWhitespace) {
@@ -540,7 +540,7 @@ TEST(KURLTest, Valid_HTTP_FTP_URLsHaveHosts) {
   KURL kurl("foo://www.google.com/");
   EXPECT_TRUE(kurl.SetProtocol("http"));
   EXPECT_TRUE(kurl.ProtocolIs("http"));
-  EXPECT_TRUE(kurl.ProtocolIsInHTTPFamily());
+  EXPECT_TRUE(kurl.ProtocolIsInHttpFamily());
   EXPECT_TRUE(kurl.IsValid());
 
   EXPECT_TRUE(kurl.SetProtocol("https"));
@@ -781,10 +781,10 @@ TEST(KURLTest, DeepCopyInnerURL) {
   const char kInnerURL[] = "http://www.google.com/temporary";
   const KURL src(kUrl);
   EXPECT_TRUE(src.GetString() == kUrl);
-  EXPECT_TRUE(src.InnerURL()->GetString() == kInnerURL);
+  EXPECT_TRUE(src.InnerUrl()->GetString() == kInnerURL);
   const KURL dest = src;
   EXPECT_TRUE(dest.GetString() == kUrl);
-  EXPECT_TRUE(dest.InnerURL()->GetString() == kInnerURL);
+  EXPECT_TRUE(dest.InnerUrl()->GetString() == kInnerURL);
 }
 
 TEST(KURLTest, LastPathComponent) {
@@ -845,12 +845,12 @@ TEST(KURLTest, PathAfterLastSlash) {
   EXPECT_EQ(22u, invalid_utf8.PathAfterLastSlash());
 }
 
-TEST(KURLTest, ProtocolIsInHTTPFamily) {
+TEST(KURLTest, ProtocolIsInHttpFamily) {
   const KURL url1("http://host/path/to/file.txt");
-  EXPECT_TRUE(url1.ProtocolIsInHTTPFamily());
+  EXPECT_TRUE(url1.ProtocolIsInHttpFamily());
 
   const KURL invalid_utf8("http://a@9%aa%:/path/to/file.txt");
-  EXPECT_FALSE(invalid_utf8.ProtocolIsInHTTPFamily());
+  EXPECT_FALSE(invalid_utf8.ProtocolIsInHttpFamily());
 }
 
 TEST(KURLTest, ProtocolIs) {
@@ -941,9 +941,9 @@ TEST(KURLTest, ThreadSafesStaticKurlGetters) {
 
   // Take references to the static KURLs, so that each has two references to
   // its internal StringImpl, rather than one.
-  KURL blank_url = BlankURL();
+  KURL blank_url = BlankUrl();
   EXPECT_FALSE(blank_url.IsEmpty());
-  KURL srcdoc_url = SrcdocURL();
+  KURL srcdoc_url = SrcdocUrl();
   EXPECT_FALSE(srcdoc_url.IsEmpty());
   KURL null_url = NullUrl();
   EXPECT_TRUE(null_url.IsNull());
@@ -955,9 +955,9 @@ TEST(KURLTest, ThreadSafesStaticKurlGetters) {
                                       // again, from the background thread,
                                       // which should succeed without thread
                                       // verifier checks firing.
-                                      KURL blank_url = BlankURL();
+                                      KURL blank_url = BlankUrl();
                                       EXPECT_FALSE(blank_url.IsEmpty());
-                                      KURL srcdoc_url = SrcdocURL();
+                                      KURL srcdoc_url = SrcdocUrl();
                                       EXPECT_FALSE(srcdoc_url.IsEmpty());
                                       KURL null_url = NullUrl();
                                       EXPECT_TRUE(null_url.IsNull());
@@ -1270,10 +1270,10 @@ class KURLTestTraits {
     return blink::KURL(blink::String::FromUTF8(s));
   }
 
-  static bool IsAboutBlank(const UrlType& url) { return url.IsAboutBlankURL(); }
+  static bool IsAboutBlank(const UrlType& url) { return url.IsAboutBlankUrl(); }
 
   static bool IsAboutSrcdoc(const UrlType& url) {
-    return url.IsAboutSrcdocURL();
+    return url.IsAboutSrcdocUrl();
   }
 
   // Only static members.

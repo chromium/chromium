@@ -4604,7 +4604,7 @@ mojom::blink::ColorScheme StyleEngine::AdjustAboutBlankColorScheme(
   // See https://issues.chromium.org/issues/40190899
 
   const bool likely_user_initiated_aboutblank =
-      GetDocument().IsInMainFrame() && GetDocument().Url().IsAboutBlankURL() &&
+      GetDocument().IsInMainFrame() && GetDocument().Url().IsAboutBlankUrl() &&
       !GetDocument().GetPage()->OpenedByDOM();
   if (preferred_color_scheme_ == mojom::blink::PreferredColorScheme::kDark &&
       likely_user_initiated_aboutblank) {

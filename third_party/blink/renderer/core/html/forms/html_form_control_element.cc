@@ -298,7 +298,7 @@ bool HTMLFormControlElement::IsDisabledFormControl() const {
   // saved page formats.
   if (GetDocument().Fetcher()->Archive()) {
     if (base::FeatureList::IsEnabled(blink::features::kMHTML_Improvements)) {
-      if (GetDocument().Url().ProtocolIsInHTTPFamily()) {
+      if (GetDocument().Url().ProtocolIsInHttpFamily()) {
         return true;
       }
     } else {

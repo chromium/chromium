@@ -99,7 +99,7 @@ static void PreconnectHost(LocalFrame* local_frame, PreloadRequest* request) {
   DCHECK(request);
   DCHECK(request->IsPreconnect());
   KURL host(request->BaseURL(), request->ResourceURL());
-  if (!host.IsValid() || !host.ProtocolIsInHTTPFamily()) {
+  if (!host.IsValid() || !host.ProtocolIsInHttpFamily()) {
     return;
   }
   WebPrescientNetworking* web_prescient_networking =

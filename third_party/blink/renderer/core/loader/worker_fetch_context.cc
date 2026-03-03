@@ -222,8 +222,9 @@ void WorkerFetchContext::PrepareRequest(
 
 void WorkerFetchContext::AddAdditionalRequestHeaders(ResourceRequest& request) {
   // The remaining modifications are only necessary for HTTP and HTTPS.
-  if (!request.Url().IsEmpty() && !request.Url().ProtocolIsInHTTPFamily())
+  if (!request.Url().IsEmpty() && !request.Url().ProtocolIsInHttpFamily()) {
     return;
+  }
 
   // TODO(crbug.com/1315612): WARNING: This bypasses the permissions policy.
   // Unfortunately, workers lack a permissions policy and to derive proper hints

@@ -130,9 +130,9 @@ enum class OpenWindowUrlScheme {
 
 void RecordOpenWindowUrlScheme(const KURL& url) {
   OpenWindowUrlScheme scheme = OpenWindowUrlScheme::kUnknown;
-  if (url.IsAboutBlankURL()) {
+  if (url.IsAboutBlankUrl()) {
     scheme = OpenWindowUrlScheme::kAboutBlank;
-  } else if (url.IsAboutSrcdocURL()) {
+  } else if (url.IsAboutSrcdocUrl()) {
     scheme = OpenWindowUrlScheme::kAboutSrcDoc;
   } else if (url.ProtocolIs(url::kBlobScheme)) {
     scheme = OpenWindowUrlScheme::kBlob;

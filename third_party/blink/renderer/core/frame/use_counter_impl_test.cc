@@ -154,7 +154,7 @@ TEST_P(UseCounterImplBrowserReportTest, ReportOnlyHTTPFamily) {
           GetFrame()->Client());
 
   EXPECT_EQ(!dummy_client->observed_features().empty(),
-            url.ProtocolIsInHTTPFamily());
+            url.ProtocolIsInHttpFamily());
 }
 
 TEST_F(UseCounterImplTest, RecordingExtensions) {

@@ -269,8 +269,9 @@ void PumpPendingRequestsForFrameToLoad(WebLocalFrame* frame) {
 void FillNavigationParamsResponse(WebNavigationParams* params) {
   KURL kurl(params->url);
   // Empty documents and srcdoc will be handled by DocumentLoader.
-  if (DocumentLoader::WillLoadUrlAsEmpty(kurl) || kurl.IsAboutSrcdocURL())
+  if (DocumentLoader::WillLoadUrlAsEmpty(kurl) || kurl.IsAboutSrcdocUrl()) {
     return;
+  }
   URLLoaderMockFactory::GetSingletonInstance()->FillNavigationParamsResponse(
       params);
 
@@ -895,7 +896,7 @@ void TestWebFrameClient::CommitNavigation(
   auto params = WebNavigationParams::CreateFromInfo(*info);
 
   KURL url = info->url_request.Url();
-  if (url.IsAboutSrcdocURL()) {
+  if (url.IsAboutSrcdocUrl()) {
     params->fallback_base_url = info->requestor_base_url;
     TestWebFrameHelper::FillStaticResponseForSrcdocNavigation(frame_,
                                                               params.get());

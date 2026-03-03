@@ -783,7 +783,7 @@ AttributionSrcLoader::ReportingOriginForUrlIfValid(
       attribution_reporting::SuitableOrigin::Create(
           security_origin->ToUrlOrigin());
 
-  if (!url.ProtocolIsInHTTPFamily() || !reporting_origin) {
+  if (!url.ProtocolIsInHttpFamily() || !reporting_origin) {
     maybe_log_audit_issue(
         AttributionReportingIssueType::kUntrustworthyReportingOrigin,
         security_origin.get());

@@ -145,7 +145,7 @@ void WebLanguageDetectionDetails::RecordAcceptLanguageAndXmlHtmlLangMetric(
   const Document* document = web_document.ConstUnwrap<Document>();
 
   // We only record UMA metrics where URLs are in http family.
-  if (!document->Url().ProtocolIsInHTTPFamily()) {
+  if (!document->Url().ProtocolIsInHttpFamily()) {
     return;
   }
 

@@ -256,8 +256,9 @@ SpeculationRule* ParseSpeculationRule(JSONObject* input,
       // Let parsedURL be the result of parsing urlString with baseURL.
       // If parsedURL is failure, then continue.
       KURL parsed_url(base_url_to_parse, url_string);
-      if (!parsed_url.IsValid() || !parsed_url.ProtocolIsInHTTPFamily())
+      if (!parsed_url.IsValid() || !parsed_url.ProtocolIsInHttpFamily()) {
         continue;
+      }
 
       urls.push_back(std::move(parsed_url));
     }

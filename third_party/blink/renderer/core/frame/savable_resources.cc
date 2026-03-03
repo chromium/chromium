@@ -75,9 +75,10 @@ void GetSavableResourceLinkForElement(Element* element,
   // Ignore those URLs which are not standard protocols. Because FTP
   // protocol does no have cache mechanism, we will skip all
   // sub-resources if they use FTP protocol.
-  if (!element_url.ProtocolIsInHTTPFamily() &&
-      !element_url.ProtocolIs(url::kFileScheme))
+  if (!element_url.ProtocolIsInHttpFamily() &&
+      !element_url.ProtocolIs(url::kFileScheme)) {
     return;
+  }
 
   result->AppendResourceLink(element_url);
 }

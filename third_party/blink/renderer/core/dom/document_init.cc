@@ -91,7 +91,7 @@ bool DocumentInit::IsSrcdocDocument() const {
 }
 
 bool DocumentInit::IsAboutBlankDocument() const {
-  return window_ && url_.IsAboutBlankURL();
+  return window_ && url_.IsAboutBlankUrl();
 }
 
 const KURL& DocumentInit::FallbackBaseURL() const {
@@ -262,7 +262,7 @@ const KURL& DocumentInit::GetCookieUrl() const {
   //
   // TODO(https://crbug.com/1176291): Correctly inherit the `cookie_url` from
   // the initiator.
-  if (cookie_url.IsAboutBlankURL()) {
+  if (cookie_url.IsAboutBlankUrl()) {
     // Signify a cookie-averse document [1] with an null URL.  See how
     // CookiesJar::GetCookies and other methods check `cookie_url` against
     // KURL::IsEmpty.

@@ -41,7 +41,7 @@ bool ShouldHaveAnchorElementMetricsSender(Document& document) {
       base::FeatureList::IsEnabled(features::kNavigationPredictor);
   const KURL& url = document.Url();
   return is_feature_enabled && document.IsInOutermostMainFrame() &&
-         url.IsValid() && url.ProtocolIsInHTTPFamily() &&
+         url.IsValid() && url.ProtocolIsInHttpFamily() &&
          document.GetExecutionContext() &&
          document.GetExecutionContext()->IsSecureContext();
 }
@@ -119,9 +119,9 @@ void AnchorElementMetricsSender::MaybeReportClickedMetricsOnClick(
   DCHECK(base::FeatureList::IsEnabled(features::kNavigationPredictor));
   Document* top_document = GetSupplementable();
   CHECK(top_document);
-  if (!anchor_element.Href().ProtocolIsInHTTPFamily() ||
-      !top_document->Url().ProtocolIsInHTTPFamily() ||
-      !anchor_element.GetDocument().Url().ProtocolIsInHTTPFamily()) {
+  if (!anchor_element.Href().ProtocolIsInHttpFamily() ||
+      !top_document->Url().ProtocolIsInHttpFamily() ||
+      !anchor_element.GetDocument().Url().ProtocolIsInHttpFamily()) {
     return;
   }
   if (!AssociateInterface()) {

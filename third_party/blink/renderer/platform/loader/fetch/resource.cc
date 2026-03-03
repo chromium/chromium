@@ -470,9 +470,10 @@ static base::TimeDelta FreshnessLifetime(const ResourceResponse& response,
 #endif
 
   // Cache other non-http / non-filesystem resources liberally.
-  if (!response.CurrentRequestUrl().ProtocolIsInHTTPFamily() &&
-      !response.CurrentRequestUrl().ProtocolIs("filesystem"))
+  if (!response.CurrentRequestUrl().ProtocolIsInHttpFamily() &&
+      !response.CurrentRequestUrl().ProtocolIs("filesystem")) {
     return base::TimeDelta::Max();
+  }
 
   // RFC2616 13.2.4
   std::optional<base::TimeDelta> max_age_value = response.CacheControlMaxAge();

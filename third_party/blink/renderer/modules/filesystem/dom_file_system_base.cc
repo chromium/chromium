@@ -121,7 +121,7 @@ KURL DOMFileSystemBase::CreateFileSystemURL(const String& full_path) const {
     result.Append(kExternalPathPrefix);
     result.Append(filesystem_root_url_.GetPath());
     // Remove the extra leading slash.
-    result.Append(EncodeWithURLEscapeSequences(full_path.Substring(1)));
+    result.Append(EncodeWithUrlEscapeSequences(full_path.Substring(1)));
     return KURL(result.ToString());
   }
 
@@ -132,7 +132,7 @@ KURL DOMFileSystemBase::CreateFileSystemURL(const String& full_path) const {
   KURL url = filesystem_root_url_;
   // Remove the extra leading slash.
   url.SetPath(StrCat(
-      {url.GetPath(), EncodeWithURLEscapeSequences(full_path.Substring(1))}));
+      {url.GetPath(), EncodeWithUrlEscapeSequences(full_path.Substring(1))}));
   return url;
 }
 

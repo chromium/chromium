@@ -192,10 +192,10 @@ class PLATFORM_EXPORT KURL {
   // This includes at least about:blank and about:srcdoc.
   bool ProtocolIsAbout() const { return ProtocolIs("about"); }
   bool ProtocolIsJavaScript() const;
-  bool ProtocolIsInHTTPFamily() const;
+  bool ProtocolIsInHttpFamily() const;
   bool IsLocalFile() const;
-  bool IsAboutBlankURL() const;   // Is about:blank, ignoring query/ref strings.
-  bool IsAboutSrcdocURL() const;  // Is about:srcdoc, ignoring query/ref
+  bool IsAboutBlankUrl() const;   // Is about:blank, ignoring query/ref strings.
+  bool IsAboutSrcdocUrl() const;  // Is about:srcdoc, ignoring query/ref
                                   // strings..
 
   bool SetProtocol(const String&);
@@ -238,7 +238,7 @@ class PLATFORM_EXPORT KURL {
 
   const url::Parsed& GetParsed() const { return parsed_; }
 
-  const KURL* InnerURL() const { return inner_url_.get(); }
+  const KURL* InnerUrl() const { return inner_url_.get(); }
 
   bool PotentiallyDanglingMarkup() const {
     return parsed_.potentially_dangling_markup;
@@ -258,7 +258,7 @@ class PLATFORM_EXPORT KURL {
             const StringView& relative,
             const TextEncoding* query_encoding);
 
-  bool IsAboutURL(const char* allowed_path) const;
+  bool IsAboutUrl(const char* allowed_path) const;
 
   StringView ComponentStringView(const url::Component&) const;
   String ComponentString(const url::Component&) const;
@@ -270,11 +270,11 @@ class PLATFORM_EXPORT KURL {
   void ReplaceComponents(const url::Replacements<CHAR>&,
                          bool preserve_validity = false);
 
-  void InitInnerURL();
+  void InitInnerUrl();
   void InitProtocolMetadata();
 
   // Asserts that `string_` is an ASCII string in DCHECK builds.
-  void AssertStringSpecIsASCII();
+  void AssertStringSpecIsAscii();
 
   // URL Standard: https://url.spec.whatwg.org/#include-credentials
   bool IncludesCredentials() const {
@@ -313,8 +313,8 @@ PLATFORM_EXPORT std::ostream& operator<<(std::ostream&, const KURL&);
 
 PLATFORM_EXPORT bool EqualIgnoringFragmentIdentifier(const KURL&, const KURL&);
 
-PLATFORM_EXPORT const KURL& BlankURL();
-PLATFORM_EXPORT const KURL& SrcdocURL();
+PLATFORM_EXPORT const KURL& BlankUrl();
+PLATFORM_EXPORT const KURL& SrcdocUrl();
 PLATFORM_EXPORT const KURL& NullUrl();
 
 // Functions to do URL operations on strings.
@@ -342,7 +342,7 @@ using DecodeUrlMode = url::DecodeUrlMode;
 PLATFORM_EXPORT String DecodeUrlEscapeSequences(const StringView&,
                                                 DecodeUrlMode mode);
 
-PLATFORM_EXPORT String EncodeWithURLEscapeSequences(const StringView&);
+PLATFORM_EXPORT String EncodeWithUrlEscapeSequences(const StringView&);
 
 // Checks an arbitrary string for invalid escape sequences.
 //

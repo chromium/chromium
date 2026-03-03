@@ -51,7 +51,7 @@ bool NavigatorBeacon::CanSendBeacon(ExecutionContext* context,
     return false;
   }
   // For now, only support HTTP and related.
-  if (!url.ProtocolIsInHTTPFamily()) {
+  if (!url.ProtocolIsInHttpFamily()) {
     exception_state.ThrowTypeError("Beacons are only supported over HTTP(S).");
     return false;
   }

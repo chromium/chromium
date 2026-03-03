@@ -930,7 +930,7 @@ void FrameFetchContext::AddReducedAcceptLanguageIfNecessary(
     return;
   }
 
-  if (!request.Url().ProtocolIsInHTTPFamily()) {
+  if (!request.Url().ProtocolIsInHttpFamily()) {
     return;
   }
 

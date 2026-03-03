@@ -951,7 +951,7 @@ Document* Document::Create(Document& document) {
       DocumentInit::Create()
           .WithExecutionContext(document.GetExecutionContext())
           .WithAgent(document.GetAgent())
-          .WithURL(BlankURL()));
+          .WithURL(BlankUrl()));
 }
 
 Document* Document::CreateForTest(ExecutionContext& execution_context) {
@@ -1107,7 +1107,7 @@ Document::Document(const DocumentInit& initializer,
     UpdateBaseURL();
   }
   should_record_sandboxed_srcdoc_baseurl_metrics_ =
-      urlForBinding().IsAboutSrcdocURL() && !fallback_base_url_.IsNull() &&
+      urlForBinding().IsAboutSrcdocUrl() && !fallback_base_url_.IsNull() &&
       dom_window_->IsSandboxed(network::mojom::blink::WebSandboxFlags::kOrigin);
 
   InitDNSPrefetch();
@@ -1203,7 +1203,7 @@ void Document::SetCompatibilityMode(CompatibilityMode mode) {
 
   if (mode == kQuirksMode) {
     UseCounter::Count(*this, WebFeature::kQuirksModeDocument);
-    if (urlForBinding().IsAboutBlankURL()) {
+    if (urlForBinding().IsAboutBlankUrl()) {
       UseCounter::Count(*this, WebFeature::kQuirksModeAboutBlankDocument);
     }
   } else if (mode == kLimitedQuirksMode) {
@@ -3747,7 +3747,7 @@ void Document::open(LocalDOMWindow* entered_window,
   // for this document with the entered window's url.
   if (dom_window_ && entered_window) {
     KURL new_url = entered_window->Url();
-    if (new_url.IsAboutBlankURL()) {
+    if (new_url.IsAboutBlankUrl()) {
       // When updating the URL to about:blank due to a document.open() call,
       // the opened document should also end up with the same base URL as the
       // opener about:blank document. Propagate the fallback information here
@@ -3762,7 +3762,7 @@ void Document::open(LocalDOMWindow* entered_window,
     // If an about:srcdoc frame .open()s another frame, then we don't set the
     // url, and we leave the value of `is_srcdoc_document` untouched. Otherwise
     // we should reset `is_srcdoc_document_`.
-    if (!new_url.IsAboutSrcdocURL()) {
+    if (!new_url.IsAboutSrcdocUrl()) {
       is_srcdoc_document_ = false;
       SetURL(new_url);
     }
@@ -4936,11 +4936,11 @@ KURL Document::urlForBinding() const {
   if (!Url().IsNull()) {
     return Url();
   }
-  return BlankURL();
+  return BlankUrl();
 }
 
 void Document::SetURL(const KURL& url) {
-  KURL new_url = url.IsEmpty() ? BlankURL() : url;
+  KURL new_url = url.IsEmpty() ? BlankUrl() : url;
   if (new_url == url_)
     return;
 
@@ -5056,7 +5056,7 @@ KURL Document::FallbackBaseURL() const {
 
   // [spec] 2. If document's URL matches about:blank and document's about base
   //           URL is non-null, then return document's about base URL.
-  if (urlForBinding().IsAboutBlankURL()) {
+  if (urlForBinding().IsAboutBlankUrl()) {
     if (!fallback_base_url_.IsEmpty()) {
       // Note: if we get here, it's not worth worrying if
       // same_origin_parent->BaseURL() exists and matches fallback_base_url_,
@@ -5073,7 +5073,7 @@ KURL Document::FallbackBaseURL() const {
 const KURL& Document::BaseURL() const {
   if (!base_url_.IsNull())
     return base_url_;
-  return BlankURL();
+  return BlankUrl();
 }
 
 void Document::SetBaseURLOverride(const KURL& url) {
@@ -5598,7 +5598,7 @@ Document* Document::CloneDocumentWithoutChildren() const {
           .WithExecutionContext(execution_context_.Get())
           .WithAgent(GetAgent())
           .WithURL(Url())
-          .WithFallbackBaseURL(Url().IsAboutBlankURL() ? fallback_base_url_
+          .WithFallbackBaseURL(Url().IsAboutBlankUrl() ? fallback_base_url_
                                                        : NullUrl());
   if (IsA<XMLDocument>(this)) {
     if (IsXHTMLDocument())
@@ -7106,7 +7106,7 @@ ScriptPromise<IDLBoolean> Document::hasPrivateToken(
   // satisfy either of these requirements.
   KURL issuer_url = KURL(issuer);
   auto issuer_origin = SecurityOrigin::Create(issuer_url);
-  if (!issuer_url.ProtocolIsInHTTPFamily() ||
+  if (!issuer_url.ProtocolIsInHttpFamily() ||
       !issuer_origin->IsPotentiallyTrustworthy()) {
     exception_state.ThrowTypeError(
         "hasPrivateToken: Private Token issuer origins must be both HTTP(S) "
@@ -7209,7 +7209,7 @@ ScriptPromise<IDLBoolean> Document::hasRedemptionRecord(
   // satisfy either of these requirements.
   KURL issuer_url = KURL(issuer);
   auto issuer_origin = SecurityOrigin::Create(issuer_url);
-  if (!issuer_url.ProtocolIsInHTTPFamily() ||
+  if (!issuer_url.ProtocolIsInHttpFamily() ||
       !issuer_origin->IsPotentiallyTrustworthy()) {
     exception_state.ThrowTypeError(
         "hasRedemptionRecord: Private Token issuer origins must be both "
@@ -8050,7 +8050,7 @@ void Document::FinishedParsing() {
   fetcher_->ClearPreloads(ResourceFetcher::kClearSpeculativeMarkupPreloads);
 
   if (IsInOutermostMainFrame() && !IsInitialEmptyDocument() &&
-      Url().ProtocolIsInHTTPFamily()) {
+      Url().ProtocolIsInHttpFamily()) {
     // Record histograms of SVGImage.
     base::UmaHistogramCounts100(
         "Blink.Layout.SVGImage.Count.InOutermostMainFrame",
@@ -8169,7 +8169,7 @@ Vector<IconURL> Document::IconURLs(int icon_types_mask) {
   Vector<IconURL> icon_urls;
   if (first_favicon.icon_type_ != mojom::blink::FaviconIconType::kInvalid) {
     icon_urls.push_back(first_favicon);
-  } else if (url_.ProtocolIsInHTTPFamily() &&
+  } else if (url_.ProtocolIsInHttpFamily() &&
              icon_types_mask & 1 << static_cast<int>(
                                    mojom::blink::FaviconIconType::kFavicon)) {
     IconURL default_favicon = IconURL::DefaultFavicon(url_);
@@ -9056,13 +9056,13 @@ Document& Document::EnsureTemplateDocument() {
         DocumentInit::Create()
             .WithExecutionContext(execution_context_.Get())
             .WithAgent(GetAgent())
-            .WithURL(BlankURL()));
+            .WithURL(BlankUrl()));
   } else {
     template_document_ = MakeGarbageCollected<Document>(
         DocumentInit::Create()
             .WithExecutionContext(execution_context_.Get())
             .WithAgent(GetAgent())
-            .WithURL(BlankURL()));
+            .WithURL(BlankUrl()));
   }
 
   template_document_->template_document_host_ = this;  // balanced in dtor.

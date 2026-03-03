@@ -1259,7 +1259,7 @@ PendingScript* ScriptLoader::TakePendingScript(
   CHECK(prepared_pending_script_);
 
   // Record usage histograms per script tag.
-  if (element_->GetDocument().Url().ProtocolIsInHTTPFamily()) {
+  if (element_->GetDocument().Url().ProtocolIsInHttpFamily()) {
     base::UmaHistogramEnumeration("Blink.Script.SchedulingType",
                                   scheduling_type);
   }

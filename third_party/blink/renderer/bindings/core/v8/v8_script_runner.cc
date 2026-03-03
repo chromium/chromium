@@ -604,7 +604,7 @@ ScriptEvaluationResult V8ScriptRunner::CompileAndRunScript(
     V8CodeCache::ProduceCacheOptions produce_cache_options;
     v8::ScriptCompiler::NoCacheReason no_cache_reason;
     Page* page = frame != nullptr ? frame->GetPage() : nullptr;
-    const bool is_http = classic_script->SourceUrl().ProtocolIsInHTTPFamily();
+    const bool is_http = classic_script->SourceUrl().ProtocolIsInHttpFamily();
     const bool might_generate_crowdsourced_compile_hints =
         is_http && page != nullptr &&
         page->GetV8CrowdsourcedCompileHintsProducer().MightGenerateData();

@@ -54,8 +54,9 @@ void InspectorIssueReporter::DomContentLoadedEventFired(LocalFrame* frame) {
     return;
 
   auto url = document->Url();
-  if (url.IsEmpty() || url.IsAboutBlankURL())
+  if (url.IsEmpty() || url.IsAboutBlankUrl()) {
     return;
+  }
 
   if (document->InNoQuirksMode())
     return;

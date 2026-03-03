@@ -170,7 +170,7 @@ SecurePaymentConfirmationHelper::ParseSecurePaymentConfirmationData(
             "field.");
         return nullptr;
       }
-      if (!logo_url.ProtocolIsInHTTPFamily() && !logo_url.ProtocolIsData()) {
+      if (!logo_url.ProtocolIsInHttpFamily() && !logo_url.ProtocolIsData()) {
         exception_state.ThrowTypeError(
             "The \"secure-payment-confirmation\" method requires that each "
             "entry in \"paymentEntitiesLogos\" has a URL whose scheme is one "

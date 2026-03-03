@@ -534,7 +534,7 @@ bool ShouldAllowScriptURL(const String& url) {
   }
 
   KURL kurl(url);
-  return kurl.ProtocolIsData() || kurl.ProtocolIsInHTTPFamily() ||
+  return kurl.ProtocolIsData() || kurl.ProtocolIsInHttpFamily() ||
          kurl.ProtocolIs("blob") || kurl.IsEmpty();
 }
 

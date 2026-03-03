@@ -28,7 +28,7 @@ namespace blink {
 
 namespace {
 bool IsKnownProtocolForPresentationUrl(const KURL& url) {
-  return url.ProtocolIsInHTTPFamily() || url.ProtocolIs("cast") ||
+  return url.ProtocolIsInHttpFamily() || url.ProtocolIs("cast") ||
          url.ProtocolIs("cast-dial");
 }
 }  // anonymous namespace
@@ -70,7 +70,7 @@ PresentationRequest* PresentationRequest::Create(
       return nullptr;
     }
 
-    if (parsed_url.ProtocolIsInHTTPFamily() &&
+    if (parsed_url.ProtocolIsInHttpFamily() &&
         MixedContentChecker::IsMixedContent(
             execution_context->GetSecurityOrigin(), parsed_url)) {
       exception_state.ThrowSecurityError(

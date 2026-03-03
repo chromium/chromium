@@ -80,7 +80,7 @@ class ClipboardTest : public PageTestBase {
 
   void WriteHtmlToClipboard(const String& html, V8TestingScope& scope) {
     scope.GetFrame().GetSystemClipboard()->WriteHTML(
-        html, BlankURL(), SystemClipboard::kCannotSmartReplace);
+        html, BlankUrl(), SystemClipboard::kCannotSmartReplace);
   }
 
  protected:

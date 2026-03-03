@@ -975,8 +975,8 @@ String JoinPath(const Vector<StringView>& tokens) {
 String GetRelativeScriptUrl(const KURL& document_url, const KURL& script_url) {
   // TODO: Make this behave more like
   // https://html.spec.whatwg.org/multipage/semantics.html#the-base-element
-  if (!document_url.ProtocolIsInHTTPFamily() ||
-      !script_url.ProtocolIsInHTTPFamily() ||
+  if (!document_url.ProtocolIsInHttpFamily() ||
+      !script_url.ProtocolIsInHttpFamily() ||
       !SecurityOrigin::AreSameOrigin(document_url, script_url)) {
     return String();
   }

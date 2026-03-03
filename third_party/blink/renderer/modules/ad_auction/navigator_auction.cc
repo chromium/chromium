@@ -1810,7 +1810,7 @@ ConvertDirectFromSellerSignalsFromV8ToMojo(
       // the URL doesn't match.
       const KURL subresource_url(StrCat(
           {direct_from_seller_signals_prefix.GetString(), "?perBuyerSignals=",
-           EncodeWithURLEscapeSequences(buyer->ToString())
+           EncodeWithUrlEscapeSequences(buyer->ToString())
                .Replace("/", "%2F")}));
       mojom::blink::DirectFromSellerSignalsSubresourcePtr maybe_mojo_bundle =
           TryToBuildDirectFromSellerSignalsSubresource(

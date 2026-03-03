@@ -816,7 +816,7 @@ void DocumentSpeculationRules::AddLinkBasedSpeculationCandidates(
             mojom::blink::SpeculationAction action,
             SpeculationRuleSet* rule_set,
             const HeapVector<Member<SpeculationRule>>& speculation_rules) {
-          if (!link->HrefURL().ProtocolIsInHTTPFamily()) {
+          if (!link->HrefURL().ProtocolIsInHttpFamily()) {
             return;
           }
 

@@ -70,7 +70,7 @@ bool ConvertTrustTokenToMojomAndCheckPermissions(
         // ensure these origins serialize to unique values);
         // 2. potentially trustworthy (a security requirement).
         KURL parsed_url = KURL(issuer);
-        if (!parsed_url.ProtocolIsInHTTPFamily()) {
+        if (!parsed_url.ProtocolIsInHttpFamily()) {
           exception_state->ThrowTypeError(
               StrCat({"privateToken: operation type 'send-redemption-record' "
                       "requires that the 'issuers' fields' members parse to "

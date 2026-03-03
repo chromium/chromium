@@ -107,8 +107,9 @@ bool SendBeaconCommon(const ScriptState& state,
 void PingLoader::SendLinkAuditPing(LocalFrame* frame,
                                    const KURL& ping_url,
                                    const KURL& destination_url) {
-  if (!ping_url.ProtocolIsInHTTPFamily())
+  if (!ping_url.ProtocolIsInHttpFamily()) {
     return;
+  }
 
   ResourceRequest request(ping_url);
   request.SetHttpMethod(http_names::kPOST);

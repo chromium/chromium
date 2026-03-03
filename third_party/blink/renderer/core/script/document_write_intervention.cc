@@ -127,8 +127,9 @@ bool MaybeDisallowFetchForDocWrittenScript(FetchParameters& params,
 
   probe::DocumentWriteFetchScript(&document);
 
-  if (!params.Url().ProtocolIsInHTTPFamily())
+  if (!params.Url().ProtocolIsInHttpFamily()) {
     return false;
+  }
 
   // Avoid blocking same origin scripts, as they may be used to render main
   // page content, whereas cross-origin scripts inserted via document.write

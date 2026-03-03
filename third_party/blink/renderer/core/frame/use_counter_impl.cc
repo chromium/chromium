@@ -148,12 +148,12 @@ void UseCounterImpl::DidCommitLoad(const LocalFrame* frame) {
     context_ = kExtensionContext;
   } else if (url.ProtocolIs("file")) {
     context_ = kFileContext;
-  } else if (url.ProtocolIsInHTTPFamily() ||
+  } else if (url.ProtocolIsInHttpFamily() ||
              CommonSchemeRegistry::IsIsolatedAppScheme(protocol)) {
     // Isolated Apps use the same frames as regular web pages, thus IWA feature
     // usage is recorded in the same way as feature usage for normal frames.
     context_ = kDefaultContext;
-  } else if (url.IsAboutBlankURL() || url.IsAboutSrcdocURL()) {
+  } else if (url.IsAboutBlankUrl() || url.IsAboutSrcdocUrl()) {
     context_ = kAboutBlankOrSrcdoc;
   } else {
     // UseCounter is disabled for all other URL schemes.
@@ -340,7 +340,7 @@ void UseCounterImpl::ReportTotalTakenTime(const LocalFrame* frame,
   }
   const auto* document = frame->GetDocument();
   if (document->IsInitialEmptyDocument() ||
-      !document->Url().ProtocolIsInHTTPFamily()) {
+      !document->Url().ProtocolIsInHttpFamily()) {
     return;
   }
 

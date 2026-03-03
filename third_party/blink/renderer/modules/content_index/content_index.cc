@@ -48,8 +48,9 @@ String ValidateDescription(const ContentDescription& description,
       return "Invalid icon URL provided";
     KURL icon_url =
         registration->GetExecutionContext()->CompleteURL(icon->src());
-    if (!icon_url.ProtocolIsInHTTPFamily())
+    if (!icon_url.ProtocolIsInHttpFamily()) {
       return "Invalid icon URL protocol";
+    }
   }
 
   KURL launch_url =

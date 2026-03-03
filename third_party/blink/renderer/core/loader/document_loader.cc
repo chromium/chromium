@@ -587,7 +587,7 @@ DocumentLoader::DocumentLoader(
       had_sticky_activation_(params_->is_user_activated),
       is_browser_initiated_(params_->is_browser_initiated),
       was_discarded_(params_->was_discarded),
-      loading_srcdoc_(url_.IsAboutSrcdocURL()),
+      loading_srcdoc_(url_.IsAboutSrcdocUrl()),
       fallback_base_url_(params_->fallback_base_url),
       loading_url_as_empty_document_(!params_->is_static_data &&
                                      WillLoadUrlAsEmpty(url_)),
@@ -1076,7 +1076,7 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
   last_navigation_had_trusted_initiator_ =
       !initiator_origin || (initiator_origin->IsSameOriginWith(
                                 frame_->DomWindow()->GetSecurityOrigin()) &&
-                            Url().ProtocolIsInHTTPFamily());
+                            Url().ProtocolIsInHttpFamily());
 
   last_navigation_had_transient_user_activation_ =
       has_transient_user_activation;
@@ -1962,8 +1962,9 @@ bool DocumentLoader::WillLoadUrlAsEmpty(const KURL& url) {
   // However, about:srcdoc is only used as a marker for non-existent
   // url of iframes with srcdoc attribute, which have possibly non-empty
   // content of the srcdoc attribute used as document's html.
-  if (url.IsAboutSrcdocURL())
+  if (url.IsAboutSrcdocUrl()) {
     return false;
+  }
   return SchemeRegistry::ShouldLoadURLSchemeAsEmptyDocument(url.Protocol());
 }
 
@@ -1991,7 +1992,7 @@ void DocumentLoader::StartLoadingInternal() {
   state_ = kProvisional;
 
   if (url_.IsEmpty() && commit_reason_ != CommitReason::kInitialization)
-    url_ = BlankURL();
+    url_ = BlankUrl();
 
   if (loading_url_as_empty_document_) {
     InitializeEmptyResponse();
@@ -2142,7 +2143,7 @@ void DocumentLoader::StartLoadingResponse() {
   if (!frame_ || !body_loader_)
     return;
 
-  if (!url_.ProtocolIsInHTTPFamily()) {
+  if (!url_.ProtocolIsInHttpFamily()) {
     body_loader_->StartLoadingBody(this);
     return;
   }
@@ -2289,8 +2290,9 @@ void DocumentLoader::DidCommitNavigation() {
 
 Frame* DocumentLoader::CalculateOwnerFrame() {
   // For "about:srcdoc", the parent is the owner frame.
-  if (url_.IsAboutSrcdocURL())
+  if (url_.IsAboutSrcdocUrl()) {
     return frame_->Tree().Parent();
+  }
 
   // Consider the parent or the opener for 1) about:blank" (including
   // "about:mumble" - see https://crbug.com/1220186) and 2) the initial empty
@@ -2400,7 +2402,7 @@ scoped_refptr<SecurityOrigin> DocumentLoader::CalculateOrigin(
     //
     // Note: Sandboxed about:srcdoc iframe without "allow-same-origin" aren't
     // allowed to load user's file, even if its parent can.
-    if (url_.IsAboutSrcdocURL()) {
+    if (url_.IsAboutSrcdocUrl()) {
       // We should only have a sandboxed, srcdoc frame without an owner
       // document if isolated-sandboxed-iframes is enabled. Only cases that
       // would normally inherit the origin need to be handled here, and a
@@ -2464,7 +2466,7 @@ scoped_refptr<SecurityOrigin> DocumentLoader::CalculateOrigin(
   }
 
   if (origin->IsOpaque()) {
-    KURL url = url_.IsEmpty() ? BlankURL() : url_;
+    KURL url = url_.IsEmpty() ? BlankUrl() : url_;
     if (SecurityOrigin::Create(url)->IsPotentiallyTrustworthy()) {
       origin->SetOpaqueOriginIsPotentiallyTrustworthy(true);
     }
@@ -2567,7 +2569,7 @@ bool DocumentLoader::IsSameOriginInitiator() const {
   return requestor_origin_ &&
          requestor_origin_->IsSameOriginWith(
              SecurityOrigin::Create(Url()).get()) &&
-         Url().ProtocolIsInHTTPFamily();
+         Url().ProtocolIsInHttpFamily();
 }
 
 void DocumentLoader::InitializeWindow(Document* owner_document) {
@@ -3082,7 +3084,7 @@ void DocumentLoader::CommitNavigation() {
 
   // This must be called after DidInstallNewDocument which sets the content
   // language for the document.
-  if (url_.ProtocolIsInHTTPFamily()) {
+  if (url_.ProtocolIsInHttpFamily()) {
     RecordAcceptLanguageAndContentLanguageMetric();
     RecordParentAndChildContentLanguageMetric();
   }
@@ -3099,7 +3101,7 @@ void DocumentLoader::CommitNavigation() {
   // painted or 500ms have passed, whichever comes first. We require that this
   // be an html document served via http.
   if (base::FeatureList::IsEnabled(blink::features::kPaintHolding) &&
-      IsA<HTMLDocument>(document) && Url().ProtocolIsInHTTPFamily()) {
+      IsA<HTMLDocument>(document) && Url().ProtocolIsInHttpFamily()) {
     document->SetDeferredCompositorCommitIsAllowed(true);
   } else {
     document->SetDeferredCompositorCommitIsAllowed(false);
@@ -3184,7 +3186,7 @@ void DocumentLoader::CommitNavigation() {
   // is available by tracking the execution context's lifetime.
   ProfilerGroup::InitializeIfEnabled(frame_->DomWindow());
 
-  if (Url().ProtocolIsInHTTPFamily() && frame_->IsOutermostMainFrame() &&
+  if (Url().ProtocolIsInHttpFamily() && frame_->IsOutermostMainFrame() &&
       ShouldEmitNewNavigationHistogram(navigation_type_)) {
     base::UmaHistogramTimes(
         "Blink.DocumentLoader.CommitNavigationToStartLoadingResponse.Time"
@@ -3289,7 +3291,7 @@ void DocumentLoader::CreateParserPostCommit() {
   }
 
   if (frame_ && body_loader_ && !loading_main_document_from_mhtml_archive_ &&
-      !loading_url_as_empty_document_ && url_.ProtocolIsInHTTPFamily() &&
+      !loading_url_as_empty_document_ && url_.ProtocolIsInHttpFamily() &&
       !is_static_data_ && frame_->IsMainFrame() &&
       !document->IsPrefetchOnly() && MimeType() == "text/html") {
     parser_->SetIsPreloading(true);
@@ -3313,7 +3315,7 @@ void DocumentLoader::CreateParserPostCommit() {
   // The parser may have collected preloads in the background, flush them now.
   parser_->FlushPendingPreloads();
 
-  if (Url().ProtocolIsInHTTPFamily() && frame_->IsOutermostMainFrame() &&
+  if (Url().ProtocolIsInHttpFamily() && frame_->IsOutermostMainFrame() &&
       ShouldEmitNewNavigationHistogram(navigation_type_)) {
     base::UmaHistogramTimes(
         "Blink.DocumentLoader.CreateParserPostCommit.Time"
@@ -3927,7 +3929,7 @@ const mojom::RendererContentSettingsPtr& DocumentLoader::GetContentSettings() {
 }
 
 void DocumentLoader::ReportTotalTakenTimeToUpdateSubresourceLoadMetrics() {
-  if (Url().ProtocolIsInHTTPFamily() && frame_->IsOutermostMainFrame() &&
+  if (Url().ProtocolIsInHttpFamily() && frame_->IsOutermostMainFrame() &&
       ShouldEmitNewNavigationHistogram(navigation_type_)) {
     base::UmaHistogramMicrosecondsTimes(
         "Blink.DocumentLoader.TotalTakenTimeToUpdateSubresourceLoadMetrics2."

@@ -364,8 +364,8 @@ void TraverseTreeForFrameworks(Document& document,
 void DetectJavascriptFrameworksOnLoad(Document& document) {
   LocalFrame* const frame = document.GetFrame();
   if (!frame || !frame->IsOutermostMainFrame() ||
-      !document.Url().ProtocolIsInHTTPFamily() ||
-      !document.BaseURL().ProtocolIsInHTTPFamily()) {
+      !document.Url().ProtocolIsInHttpFamily() ||
+      !document.BaseURL().ProtocolIsInHttpFamily()) {
     return;
   }
 

@@ -178,7 +178,7 @@ ScriptResource::ScriptResource(
         ScriptStreamer::NotStreamingReason::kDisabledByFeatureList);
   } else if (streaming_allowed == kNoStreaming) {
     DisableStreaming(ScriptStreamer::NotStreamingReason::kStreamingDisabled);
-  } else if (!Url().ProtocolIsInHTTPFamily() &&
+  } else if (!Url().ProtocolIsInHttpFamily() &&
              !script_streaming_for_non_http_enabled) {
     DisableStreaming(ScriptStreamer::NotStreamingReason::kNotHTTP);
   }
@@ -411,8 +411,8 @@ void ScriptResource::ResponseReceived(const ResourceResponse& response) {
   cached_metadata_handler_ = nullptr;
   // Currently we support the metadata caching only for HTTP family and any
   // schemes defined by SchemeRegistry as requiring a hash check.
-  bool http_family = GetResourceRequest().Url().ProtocolIsInHTTPFamily() &&
-                     response.CurrentRequestUrl().ProtocolIsInHTTPFamily();
+  bool http_family = GetResourceRequest().Url().ProtocolIsInHttpFamily() &&
+                     response.CurrentRequestUrl().ProtocolIsInHttpFamily();
   bool code_cache_with_hashing_supported =
       SchemeRegistry::SchemeSupportsCodeCacheWithHashing(
           GetResourceRequest().Url().Protocol()) &&
@@ -468,7 +468,7 @@ void ScriptResource::ResponseBodyReceived(
   CHECK_EQ(streaming_state_, StreamingState::kWaitingForDataPipe);
 
   // Checked in the constructor.
-  CHECK(Url().ProtocolIsInHTTPFamily() ||
+  CHECK(Url().ProtocolIsInHttpFamily() ||
         base::FeatureList::IsEnabled(features::kScriptStreamingForNonHTTP));
   CHECK(base::FeatureList::IsEnabled(features::kScriptStreaming));
 

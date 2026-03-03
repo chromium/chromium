@@ -29,7 +29,7 @@ namespace blink {
 namespace {
 
 bool ShouldSkipFetchingUrl(const KURL& url) {
-  return !url.IsValid() || url.IsAboutBlankURL() || url.IsAboutSrcdocURL();
+  return !url.IsValid() || url.IsAboutBlankUrl() || url.IsAboutSrcdocUrl();
 }
 
 }  // namespace

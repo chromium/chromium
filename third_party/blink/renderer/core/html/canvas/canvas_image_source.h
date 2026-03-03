@@ -84,7 +84,7 @@ class CORE_EXPORT CanvasImageSource {
       const RespectImageOrientationEnum respect_orientation) const {
     return ElementSize(default_object_size, respect_orientation);
   }
-  virtual const KURL& SourceURL() const { return BlankURL(); }
+  virtual const KURL& SourceURL() const { return BlankUrl(); }
   virtual bool IsOpaque() const { return false; }
   virtual bool IsAccelerated() const = 0;
 

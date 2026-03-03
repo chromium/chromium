@@ -186,7 +186,7 @@ bool IsInitialEmptyDocument(const Document& document) {
     return false;
 
   // No contents and not a child document, return true if about::blank.
-  return document.Url().IsAboutBlankURL();
+  return document.Url().IsAboutBlankUrl();
 }
 
 // Return true if display locked or inside slot recalc, false otherwise.

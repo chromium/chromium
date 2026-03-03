@@ -159,7 +159,7 @@ bool AllowedByNosniff::MimeTypeAsScript(UseCounter& use_counter,
                                         const ResourceResponse& response,
                                         MimeTypeCheck mime_type_check_mode) {
   // The content type is really only meaningful for `http:`-family schemes.
-  if (!response.CurrentRequestUrl().ProtocolIsInHTTPFamily()) {
+  if (!response.CurrentRequestUrl().ProtocolIsInHttpFamily()) {
     StringView last_path_component =
         response.CurrentRequestUrl().LastPathComponent();
     if (last_path_component.ends_with(".js") ||

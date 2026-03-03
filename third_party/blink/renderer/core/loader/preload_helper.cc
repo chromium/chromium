@@ -353,7 +353,7 @@ void PreloadHelper::PreconnectIfNeeded(
     return;
   }
   if (params.rel.IsPreconnect() && params.href.IsValid() &&
-      params.href.ProtocolIsInHTTPFamily()) {
+      params.href.ProtocolIsInHttpFamily()) {
     UseCounter::Count(document, WebFeature::kLinkRelPreconnect);
     if (caller == kLinkCalledFromHeader)
       UseCounter::Count(document, WebFeature::kLinkHeaderPreconnect);

@@ -1100,7 +1100,7 @@ function main(metadata) {
   }
 
   void SerializeCSSFile(Document& document, const KURL& url) {
-    if (!url.IsValid() || !url.ProtocolIsInHTTPFamily()) {
+    if (!url.IsValid() || !url.ProtocolIsInHttpFamily()) {
       return;
     }
 

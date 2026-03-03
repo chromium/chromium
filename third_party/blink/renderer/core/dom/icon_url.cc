@@ -33,7 +33,7 @@
 namespace blink {
 
 IconURL IconURL::DefaultFavicon(const KURL& document_url) {
-  DCHECK(document_url.ProtocolIsInHTTPFamily());
+  DCHECK(document_url.ProtocolIsInHttpFamily());
   KURL url;
   bool could_set_protocol = url.SetProtocol(document_url.Protocol());
   DCHECK(could_set_protocol);

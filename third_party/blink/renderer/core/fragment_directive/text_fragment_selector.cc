@@ -14,7 +14,7 @@ namespace {
 // Escapes special chars that can be part of text fragment directive, including
 // hyphen (-), ampersand (&), and comma (,).
 String EscapeSelectorSpecialCharacters(const String& target_text) {
-  String escaped_str = EncodeWithURLEscapeSequences(target_text);
+  String escaped_str = EncodeWithUrlEscapeSequences(target_text);
   escaped_str.Replace("-", "%2D");
   return escaped_str;
 }

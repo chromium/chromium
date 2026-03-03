@@ -61,7 +61,7 @@ TEST_F(NavigationApiTest, NavigateEventCtrlClick) {
   ASSERT_FALSE(client.BeginNavigationCalled());
 
   // Emulate a navigation as started by a ctrl+click.
-  FrameLoadRequest request(nullptr, ResourceRequest(BlankURL()));
+  FrameLoadRequest request(nullptr, ResourceRequest(BlankUrl()));
   request.SetNavigationPolicy(kNavigationPolicyNewBackgroundTab);
   web_view_helper.LocalMainFrame()->GetFrame()->Loader().StartNavigation(
       request);

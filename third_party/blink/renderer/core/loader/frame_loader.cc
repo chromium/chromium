@@ -817,7 +817,7 @@ void FrameLoader::StartNavigation(FrameLoadRequest& request,
 
   DCHECK(Client()->HasWebView());
   // Check for non-escaped new lines in the url.
-  if (url.PotentiallyDanglingMarkup() && url.ProtocolIsInHTTPFamily()) {
+  if (url.PotentiallyDanglingMarkup() && url.ProtocolIsInHttpFamily()) {
     Deprecation::CountDeprecation(
         origin_window, WebFeature::kCanRequestURLHTTPContainingNewline);
     return;
@@ -985,7 +985,7 @@ static void FillStaticResponseIfNeeded(WebNavigationParams* params,
 
   const KURL& url = params->url;
   // See WebNavigationParams for special case explanations.
-  if (url.IsAboutSrcdocURL()) {
+  if (url.IsAboutSrcdocUrl()) {
     CHECK(params->body_loader);
     // Originally, this branch was responsible for retrieving the value of the
     // srcdoc attribute and turning it into a body loader when committing a
@@ -1228,7 +1228,7 @@ void FrameLoader::CommitNavigation(
 
   if (!navigation_params->is_synchronous_commit_for_bug_778318 ||
       (!navigation_params->url.IsEmpty() &&
-       !KURL(navigation_params->url).IsAboutBlankURL())) {
+       !KURL(navigation_params->url).IsAboutBlankUrl())) {
     // The new document is not the synchronously committed about:blank document,
     // so lose the initial empty document status.
     // Note 1: The actual initial empty document commit (with commit_reason set

@@ -73,7 +73,7 @@ void RenderBlockingElementLinkMap::RemoveTargetElementFromElementLinkMap(
 
   element_link_map->erase(target_element_id);
   element_link_map->erase(
-      AtomicString(EncodeWithURLEscapeSequences(target_element_id)));
+      AtomicString(EncodeWithUrlEscapeSequences(target_element_id)));
   if (element_link_map->empty()) {
     on_blocking_elements_empty_.Run(level);
   }

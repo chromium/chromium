@@ -42,7 +42,7 @@ void NavigateLocalAdsFrames(LocalFrame* frame) {
     if (auto* child_local_frame = DynamicTo<LocalFrame>(child)) {
       if (child_local_frame->IsAdFrame()) {
         FrameLoadRequest request(frame->DomWindow(),
-                                 ResourceRequest(BlankURL()));
+                                 ResourceRequest(BlankUrl()));
         child_local_frame->Navigate(request, WebFrameLoadType::kStandard);
       }
     }

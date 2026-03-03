@@ -278,7 +278,7 @@ bool LargestContentfulPaintCalculator::
     // Set cross-origin flag of the image.
     if (auto* window = window_performance_->DomWindow()) {
       auto image_url = timing->Url();
-      if (!image_url.IsEmpty() && image_url.ProtocolIsInHTTPFamily() &&
+      if (!image_url.IsEmpty() && image_url.ProtocolIsInHttpFamily() &&
           window->GetFrame()->IsOutermostMainFrame()) {
         auto image_origin = SecurityOrigin::Create(image_url);
         if (!image_origin->IsSameOriginWith(window->GetSecurityOrigin())) {

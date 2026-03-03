@@ -193,7 +193,7 @@ uint32_t AnchorElementId(const HTMLAnchorElementBase& element) {
 mojom::blink::AnchorElementMetricsPtr CreateAnchorElementMetrics(
     const HTMLAnchorElementBase& anchor_element) {
   const KURL anchor_href = anchor_element.Href();
-  if (!anchor_href.ProtocolIsInHTTPFamily()) {
+  if (!anchor_href.ProtocolIsInHttpFamily()) {
     return nullptr;
   }
 

@@ -95,7 +95,7 @@ bool WouldTaintCanvasOrigin(CanvasImageSource* image_source) {
   // this logic isn't needed, CanvasImageSource::SourceURL() isn't needed, and
   // this function can just be image_source->WouldTaintOrigin().
   const KURL& source_url = image_source->SourceURL();
-  const bool has_url = (source_url.IsValid() && !source_url.IsAboutBlankURL());
+  const bool has_url = (source_url.IsValid() && !source_url.IsAboutBlankUrl());
   if (has_url && source_url.ProtocolIsData()) {
     return false;
   }

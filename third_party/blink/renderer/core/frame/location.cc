@@ -85,7 +85,7 @@ inline const KURL& Location::Url() const {
   if (!url.IsValid()) {
     // Use "about:blank" while the page is still loading (before we have a
     // frame).
-    return BlankURL();
+    return BlankUrl();
   }
 
   return url;

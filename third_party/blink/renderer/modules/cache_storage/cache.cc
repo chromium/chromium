@@ -82,7 +82,7 @@ bool HasJavascriptMimeType(const Response* response) {
 void ValidateRequestForPut(const Request* request,
                            ExceptionState& exception_state) {
   const KURL& url = request->url();
-  if (!url.ProtocolIsInHTTPFamily() &&
+  if (!url.ProtocolIsInHttpFamily() &&
       !CommonSchemeRegistry::IsIsolatedAppScheme(url.Protocol().Ascii())) {
     exception_state.ThrowTypeError(
         StrCat({"Request scheme '", url.Protocol(), "' is unsupported"}));

@@ -241,7 +241,7 @@ void HTMLFencedFrameElement::setConfig(FencedFrameConfig* config) {
   if (config_) {
     NavigateToConfig();
   } else {
-    Navigate(BlankURL());
+    Navigate(BlankUrl());
   }
 }
 

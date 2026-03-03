@@ -543,7 +543,7 @@ AnchorElementInteractionTracker::FirstAnchorElementIncludingSelf(Node* node) {
 KURL AnchorElementInteractionTracker::GetHrefEligibleForPreloading(
     const HTMLAnchorElementBase& anchor) {
   KURL url = anchor.Href();
-  if (!url.ProtocolIsInHTTPFamily()) {
+  if (!url.ProtocolIsInHttpFamily()) {
     return KURL();
   }
   if (base::FeatureList::IsEnabled(

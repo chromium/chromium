@@ -43,7 +43,7 @@ KURL SanitizeBaseUrl(const KURL& raw_base_url,
   // 2. If muted errors is true, then set baseURL to about:blank.
   // [spec text]
   if (sanitize_script_errors == SanitizeScriptErrors::kSanitize) {
-    return BlankURL();
+    return BlankUrl();
   }
 
   return raw_base_url;

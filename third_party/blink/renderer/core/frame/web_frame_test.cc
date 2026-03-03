@@ -12075,8 +12075,8 @@ TEST_F(WebFrameTest, EmptyJavascriptFrameUrl) {
 
   LocalFrame* child = To<LocalFrame>(
       helper.GetWebView()->GetPage()->MainFrame()->Tree().FirstChild());
-  EXPECT_EQ(BlankURL(), child->GetDocument()->Url());
-  EXPECT_EQ(BlankURL(), child->Loader().GetDocumentLoader()->Url());
+  EXPECT_EQ(BlankUrl(), child->GetDocument()->Url());
+  EXPECT_EQ(BlankUrl(), child->Loader().GetDocumentLoader()->Url());
 }
 
 class TestResourcePriorityWebFrameClient

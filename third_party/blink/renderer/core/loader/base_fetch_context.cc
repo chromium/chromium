@@ -323,7 +323,7 @@ BaseFetchContext::CanRequestInternal(
     return ResourceRequestBlockedReason::kMixedContent;
   }
 
-  if (url.PotentiallyDanglingMarkup() && url.ProtocolIsInHTTPFamily()) {
+  if (url.PotentiallyDanglingMarkup() && url.ProtocolIsInHttpFamily()) {
     CountDeprecation(WebFeature::kCanRequestURLHTTPContainingNewline);
     return ResourceRequestBlockedReason::kOther;
   }

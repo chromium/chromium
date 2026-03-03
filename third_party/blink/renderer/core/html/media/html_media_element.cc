@@ -394,7 +394,7 @@ bool HTMLMediaElement::IsHLSURL(const KURL& url) {
   if (url.IsNull() || url.IsEmpty())
     return false;
 
-  if (!url.IsLocalFile() && !url.ProtocolIsInHTTPFamily()) {
+  if (!url.IsLocalFile() && !url.ProtocolIsInHttpFamily()) {
     return false;
   }
 

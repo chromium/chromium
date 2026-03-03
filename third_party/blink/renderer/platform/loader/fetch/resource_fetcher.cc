@@ -781,7 +781,7 @@ ResourceLoadPriority ResourceFetcher::AdjustImagePriority(
   }
 
   // Only records HTTP family URLs (e.g. Exclude data URLs).
-  if (resource_request.Url().ProtocolIsInHTTPFamily()) {
+  if (resource_request.Url().ProtocolIsInHttpFamily()) {
     MaybeRecordBoostImagePriorityReason(priority_so_far != new_priority,
                                         is_potentially_lcp_element,
                                         is_small_image);
@@ -2574,7 +2574,7 @@ void ResourceFetcher::HandleLoaderError(Resource* resource,
   PendingResourceTimingInfo info = resource_timing_info_map_.Take(resource);
 
   if (!info.is_null()) {
-    if (resource->GetResourceRequest().Url().ProtocolIsInHTTPFamily() ||
+    if (resource->GetResourceRequest().Url().ProtocolIsInHttpFamily() ||
         (resource->GetResourceRequest().GetWebBundleTokenParams() &&
          resource->GetResourceRequest()
              .GetWebBundleTokenParams()
@@ -3253,7 +3253,7 @@ void ResourceFetcher::StartSpeculativeImageDecodes() {
 
 void ResourceFetcher::MaybeRecordLCPPSubresourceMetrics(
     const KURL& document_url) {
-  if (!document_url.IsValid() || !document_url.ProtocolIsInHTTPFamily()) {
+  if (!document_url.IsValid() || !document_url.ProtocolIsInHttpFamily()) {
     return;
   }
 

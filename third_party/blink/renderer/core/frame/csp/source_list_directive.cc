@@ -57,7 +57,7 @@ CSPCheckResult CSPSourceListAllows(
   // schemes, including custom schemes, must be explicitly listed in a source
   // list.
   if (source_list.allow_star) {
-    if (url.ProtocolIsInHTTPFamily() ||
+    if (url.ProtocolIsInHttpFamily() ||
         (!url.Protocol().empty() &&
          EqualIgnoringASCIICase(url.Protocol(), self_source.scheme))) {
       return CSPCheckResult::Allowed();

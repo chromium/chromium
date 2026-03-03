@@ -167,8 +167,8 @@ void NavigationApi::InitializeForNewWindow(
   // previous window and use the same update algorithm as same-document
   // navigations.
   if (commit_reason != CommitReason::kRegular ||
-      (current.Url() == BlankURL() && !IsBackForwardLoadType(load_type)) ||
-      (current.Url().IsAboutSrcdocURL() && !IsBackForwardLoadType(load_type))) {
+      (current.Url() == BlankUrl() && !IsBackForwardLoadType(load_type)) ||
+      (current.Url().IsAboutSrcdocUrl() && !IsBackForwardLoadType(load_type))) {
     if (previous && !previous->entries_.empty() &&
         window_->GetSecurityOrigin()->IsSameOriginWith(
             previous->window_->GetSecurityOrigin())) {

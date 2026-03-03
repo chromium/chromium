@@ -425,7 +425,7 @@ HTMLDocumentParser::HTMLDocumentParser(Document& document,
   if (sync_policy == kAllowDeferredParsing &&
       document.IsInOutermostMainFrame() &&
       base::TimeTicks::IsHighResolution() &&
-      document.Url().ProtocolIsInHTTPFamily()) {
+      document.Url().ProtocolIsInHttpFamily()) {
     metrics_reporter_ = std::make_unique<HTMLParserMetrics>(
         document.UkmSourceID(), document.UkmRecorder());
   }

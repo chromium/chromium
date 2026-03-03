@@ -248,8 +248,9 @@ void ViewportDescription::ReportMobilePageStats(
 
   // Avoid chrome:// pages like the new-tab page (on Android new tab is
   // non-http).
-  if (!main_frame->GetDocument()->Url().ProtocolIsInHTTPFamily())
+  if (!main_frame->GetDocument()->Url().ProtocolIsInHttpFamily()) {
     return;
+  }
 
   if (!IsSpecifiedByAuthor()) {
     RecordViewportTypeMetric(main_frame->GetDocument()->IsMobileDocument()

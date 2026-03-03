@@ -1310,7 +1310,7 @@ void InspectorPageAgent::WindowOpen(const KURL& url,
                                     const AtomicString& window_name,
                                     const WebWindowFeatures& window_features,
                                     bool user_gesture) {
-  GetFrontend()->windowOpen(url.IsEmpty() ? BlankURL() : url, window_name,
+  GetFrontend()->windowOpen(url.IsEmpty() ? BlankUrl() : url, window_name,
                             GetEnabledWindowFeatures(window_features),
                             user_gesture);
   GetFrontend()->flush();

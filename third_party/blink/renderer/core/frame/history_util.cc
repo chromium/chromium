@@ -29,7 +29,7 @@ bool CanChangeToUrlForHistoryApi(const KURL& url,
 
   // "If targetURL's scheme is an HTTP(S) scheme, then return true. (Differences
   // in path, query, and fragment are allowed for http: and https: URLs.)"
-  if (url.ProtocolIsInHTTPFamily()) {
+  if (url.ProtocolIsInHttpFamily()) {
     return true;
   }
 

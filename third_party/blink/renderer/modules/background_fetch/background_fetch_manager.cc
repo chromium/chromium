@@ -101,7 +101,7 @@ bool ShouldBlockDanglingMarkup(const KURL& request_url) {
   // https://github.com/whatwg/fetch/pull/519
   // https://github.com/whatwg/fetch/issues/546
   return request_url.PotentiallyDanglingMarkup() &&
-         request_url.ProtocolIsInHTTPFamily();
+         request_url.ProtocolIsInHttpFamily();
 }
 
 scoped_refptr<BlobDataHandle> ExtractBlobHandle(

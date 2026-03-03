@@ -2814,7 +2814,7 @@ void WebLocalFrameImpl::CommitNavigation(
     if (navigation_params->is_synchronous_commit_for_bug_778318 &&
         // Explicitly check for about:blank or about:srcdoc to prevent things
         // like about:mumble propagating the base url.
-        (url.IsAboutBlankURL() || url.IsAboutSrcdocURL())) {
+        (url.IsAboutBlankUrl() || url.IsAboutSrcdocUrl())) {
       navigation_params->fallback_base_url =
           GetFrame()->GetDocument()->BaseURL();
     }

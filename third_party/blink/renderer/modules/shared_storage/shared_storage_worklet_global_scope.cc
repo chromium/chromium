@@ -1212,7 +1212,7 @@ void SharedStorageWorkletGlobalScope::OnModuleScriptDownloaded(
   // schemes.
   ScriptCachedMetadataHandler* cached_metadata_handler = nullptr;
 
-  if (script_source_url.ProtocolIsInHTTPFamily()) {
+  if (script_source_url.ProtocolIsInHttpFamily()) {
     std::unique_ptr<CachedMetadataSender> sender = CachedMetadataSender::Create(
         resource_response, mojom::blink::CodeCacheType::kJavascript,
         GetSecurityOrigin());

@@ -263,8 +263,8 @@ void DynamicModuleResolver::ResolveDynamically(
     if (!url.IsValid()) {
       error_message = StrCat({"Failed to resolve module specifier '",
                               module_request.specifier, "'"});
-      if (referrer_info.BaseURL().IsAboutBlankURL() &&
-          base_url.IsAboutBlankURL()) {
+      if (referrer_info.BaseURL().IsAboutBlankUrl() &&
+          base_url.IsAboutBlankUrl()) {
         error_message =
             StrCat({error_message,
                     ". The base URL is about:blank because import() is called "

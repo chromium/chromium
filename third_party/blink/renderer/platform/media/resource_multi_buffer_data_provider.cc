@@ -276,7 +276,7 @@ void ResourceMultiBufferDataProvider::DidReceiveResponse(
   // received a response from HTTP/HTTPS protocol or the request was
   // successful (in particular range request). So we only verify the partial
   // response for HTTP and HTTPS protocol.
-  if (destination_url_data->url().ProtocolIsInHTTPFamily()) {
+  if (destination_url_data->url().ProtocolIsInHttpFamily()) {
     bool partial_response = (response.HttpStatusCode() == kHttpPartialContent);
     bool ok_response = (response.HttpStatusCode() == kHttpOK);
 
