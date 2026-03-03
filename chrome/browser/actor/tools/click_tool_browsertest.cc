@@ -583,7 +583,7 @@ class ActorClickToolPDFBrowserTest
       public ::testing::WithParamInterface<bool> {
  public:
   ActorClickToolPDFBrowserTest() {
-    if (BypaassTOUValidationForGuestView()) {
+    if (BypassTOUValidationForGuestView()) {
       feature_list_.InitWithFeatures({kActorBypassTOUValidationForGuestView},
                                      {chrome_pdf::features::kPdfOopif});
     } else {
@@ -595,7 +595,7 @@ class ActorClickToolPDFBrowserTest
 
   ~ActorClickToolPDFBrowserTest() override = default;
 
-  bool BypaassTOUValidationForGuestView() { return GetParam(); }
+  bool BypassTOUValidationForGuestView() { return GetParam(); }
 
   void SetUpOnMainThread() override {
     ActorToolsTest::SetUpOnMainThread();
@@ -624,7 +624,8 @@ IN_PROC_BROWSER_TEST_P(ActorClickToolPDFBrowserTest, Click) {
         if (!pdf_helper) {
           return false;
         }
-        return pdf_helper->IsDocumentLoadComplete();
+        return pdf_helper->IsDocumentLoadComplete() &&
+               web_contents()->IsDocumentOnLoadCompletedInPrimaryMainFrame();
       }),
       "PDF Loaded");
 
@@ -634,7 +635,7 @@ IN_PROC_BROWSER_TEST_P(ActorClickToolPDFBrowserTest, Click) {
         MakeClickRequest(*active_tab(), gfx::Point(650, 25));
     ActResultFuture future;
     actor_task().Act(ToRequestList(action), future.GetCallback());
-    if (BypaassTOUValidationForGuestView()) {
+    if (BypassTOUValidationForGuestView()) {
       // This should always pass the first time.
       ExpectOkResult(future);
       break;
