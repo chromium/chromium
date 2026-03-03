@@ -59,7 +59,7 @@ void ExtensionsMenuEntryViewTest::SetUp() {
 
   widget_ = std::make_unique<views::Widget>();
   views::Widget::InitParams init_params(
-      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+      views::Widget::InitParams::CLIENT_OWNS_WIDGET,
       views::Widget::InitParams::TYPE_POPUP);
 #if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_MAC)
   // This was copied from BookmarkBarViewTest:
