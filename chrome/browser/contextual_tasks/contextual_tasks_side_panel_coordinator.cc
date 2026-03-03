@@ -7,12 +7,16 @@
 #include <optional>
 #include <utility>
 
+#include "base/check.h"
 #include "base/check_is_test.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "base/no_destructor.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
 #include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
@@ -75,6 +79,44 @@
 #include "ui/views/controls/webview/webview.h"
 
 namespace {
+
+// LINT.IfChange(GetContextualTasksArmShortName)
+std::string GetContextualTasksArmShortName() {
+  using contextual_tasks::ExpandButtonOption;
+  ExpandButtonOption expand_button = contextual_tasks::GetExpandButtonOption();
+  bool open_on_link = contextual_tasks::kOpenSidePanelOnLinkClicked.Get();
+  bool lens_enabled = contextual_tasks::GetEnableLensInContextualTasks();
+  bool tab_auto_chip = contextual_tasks::GetIsTabAutoSuggestionChipEnabled();
+
+  if (expand_button == ExpandButtonOption::kSidePanelExpandButton) {
+    if (open_on_link && lens_enabled && tab_auto_chip) {
+      return "Arm 1";
+    }
+    if (!open_on_link && lens_enabled && tab_auto_chip) {
+      return "Arm 2";
+    }
+    if (open_on_link && !lens_enabled && tab_auto_chip) {
+      return "Arm 3";
+    }
+    if (open_on_link && lens_enabled && !tab_auto_chip) {
+      return "Arm 4";
+    }
+  } else if (expand_button == ExpandButtonOption::kToolbarCloseButton) {
+    if (open_on_link && lens_enabled && tab_auto_chip) {
+      return "Arm 5";
+    }
+    if (open_on_link && !lens_enabled && tab_auto_chip) {
+      return "Arm 6";
+    }
+    if (open_on_link && lens_enabled && !tab_auto_chip) {
+      return "Arm 7";
+    }
+  }
+
+  return "Default";
+}
+// LINT.ThenChange(chrome/browser/about_flags.cc)
+
 inline constexpr int kSidePanelPreferredDefaultWidth = 440;
 
 std::unique_ptr<content::WebContents> CreateWebContents(
@@ -239,9 +281,25 @@ void ContextualTasksSidePanelCoordinator::Show(
         HatsServiceFactory::GetForProfile(browser_window_->GetProfile(),
                                           /* create_if_necessary = */ true);
     if (hats_service) {
+      std::string experiment_id = GetContextualTasksArmShortName();
+
       hats_service->LaunchDelayedSurvey(
           kHatsSurveyTriggerNextPanel, 90000, {},
-          {{"Experiment ID", "4R1Q1L4GennVNwyF88Ccc6"}});
+          {{"Experiment ID", experiment_id},
+           {"ContextualTasksExpandButtonOptions",
+            contextual_tasks::GetExpandButtonOption() ==
+                    contextual_tasks::ExpandButtonOption::kSidePanelExpandButton
+                ? "side-panel-expand-button"
+                : "toolbar-close-button"},
+           {"ContextualTasksOpenSidePanelOnLinkClicked",
+            contextual_tasks::kOpenSidePanelOnLinkClicked.Get() ? "true"
+                                                                : "false"},
+           {"ContextualTasksEnableLensInContextualTasks",
+            contextual_tasks::GetEnableLensInContextualTasks() ? "true"
+                                                               : "false"},
+           {"ContextualTasksTabAutoSuggestionChipEnabled",
+            contextual_tasks::GetIsTabAutoSuggestionChipEnabled() ? "true"
+                                                                  : "false"}});
     }
   }
   pref_service_->SetInteger(prefs::kContextualTasksNextPanelOpenCount,
