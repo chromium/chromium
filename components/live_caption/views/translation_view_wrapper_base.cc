@@ -34,6 +34,7 @@
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/view.h"
+#include "ui/views/view_utils.h"
 
 namespace captions {
 namespace {
