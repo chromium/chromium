@@ -14,6 +14,8 @@
 #include "base/check_op.h"
 #include "base/containers/span.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/ref_counted_memory.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
@@ -283,14 +285,6 @@ base::expected<void, int> SqliteBackendImpl::InsertImpl(
     base::span<const uint8_t> key,
     base::span<const uint8_t> content,
     EntryMetadata metadata) {
-  // Performance tests show that unconditional use of a transaction is faster
-  // even for single connections where contention with another reader/writer
-  // isn't a concern.
-  sql::Transaction transaction(&*db_);
-  if (!transaction.Begin()) {
-    return base::unexpected(db_->GetErrorCode());
-  }
-
   if (sql::Statement stm(db_->GetCachedStatement(
           SQL_FROM_HERE,
           "REPLACE INTO entries (key, content, input_signature, "
@@ -298,27 +292,17 @@ base::expected<void, int> SqliteBackendImpl::InsertImpl(
           "VALUES (?, ?, ?, strftime(\'%s\', \'now\'))"));
       stm.is_valid()) {
     stm.BindBlob(0, key);
-    stm.BindBlobForStreaming(1, content.size());
+    // SAFETY: SQLite reads from `content` while in scope. Internally,
+    // sql::Statement clears its bindings upon destruction, guaranteeing it
+    // cannot hold a dangling reference once this block ends.
+    stm.BindBlob(1,
+                 base::MakeRefCounted<base::RefCountedStaticMemory>(content));
     stm.BindInt64(2, metadata.input_signature);
-    if (!stm.Run()) {
-      return base::unexpected(db_->GetErrorCode());
+    if (stm.Run()) {
+      return base::ok();
     }
-  } else {
-    return base::unexpected(db_->GetErrorCode());
   }
-
-  const auto row_id = db_->GetLastInsertRowId();
-  if (auto blob_handle = db_->GetStreamingBlob("entries", "content", row_id,
-                                               /*readonly=*/false);
-      !blob_handle.has_value() || !blob_handle->Write(0, content)) {
-    return base::unexpected(db_->GetErrorCode());
-  }
-
-  if (!transaction.Commit()) {
-    return base::unexpected(db_->GetErrorCode());
-  }
-
-  return base::ok();
+  return base::unexpected(db_->GetErrorCode());
 }
 
 // static
