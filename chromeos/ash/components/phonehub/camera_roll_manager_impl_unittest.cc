@@ -322,9 +322,8 @@ class CameraRollManagerImplTest : public testing::Test {
   FakeMessageSender fake_message_sender_;
   std::unique_ptr<secure_channel::FakeConnectionManager>
       fake_connection_manager_;
-  raw_ptr<FakeCameraRollDownloadManager, DanglingUntriaged>
-      fake_camera_roll_download_manager_;
   std::unique_ptr<CameraRollManagerImpl> camera_roll_manager_;
+  raw_ptr<FakeCameraRollDownloadManager> fake_camera_roll_download_manager_;
   FakeObserver fake_observer_;
 
   bool android_storage_permission_granted_ = true;
