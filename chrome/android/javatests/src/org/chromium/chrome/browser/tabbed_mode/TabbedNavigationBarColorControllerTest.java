@@ -46,6 +46,7 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.MaxAndroidSdkLevel;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.TestAnimations.EnableAnimations;
@@ -125,7 +126,6 @@ public class TabbedNavigationBarColorControllerTest {
     @Test
     @SmallTest
     @DisabledTest(message = "crbug.com/419391905")
-    @DisableFeatures(ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN)
     public void testToggleOverview() {
         assertEquals(
                 "Navigation bar should match the tab background before entering overview mode.",
@@ -151,39 +151,38 @@ public class TabbedNavigationBarColorControllerTest {
 
     @Test
     @SmallTest
-    @DisableFeatures(ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN)
     // TODO(crbug.com/428056054): Do not read color from system window bars on B+.
     @DisableIf.Build(
             sdk_is_greater_than = Build.VERSION_CODES.VANILLA_ICE_CREAM,
             message = "crbug.com/428056054")
-    public void testToggleIncognito() {
-        assertEquals(
-                "Navigation bar should match the tab background on normal tabs.",
-                mActivityTestRule.getActivityTab().getBackgroundColor(),
-                mWindow.getNavigationBarColor());
-
+    public void testToggleIncognitoLegacy() {
         IncognitoNewTabPageStation incognitoNtp = mPage.openNewIncognitoTabOrWindowFast();
 
-        assertEquals(
-                "Navigation bar should be dark_elev_3 on incognito tabs.",
-                mDarkNavigationColor,
-                incognitoNtp.getActivity().getWindow().getNavigationBarColor());
+        assertWindowNavBarIsTransparentOrMatchesColor(
+                incognitoNtp.getActivity().getWindow(), mDarkNavigationColor);
 
         if (!incognitoNtp.getActivity().isIncognitoWindow()) {
             RegularNewTabPageStation regularNtp = incognitoNtp.openNewTabOrWindowFast();
-
-            assertEquals(
-                    "Navigation bar should match the tab background after switching back to normal"
-                            + " tab.",
-                    mActivityTestRule.getActivityTab().getBackgroundColor(),
-                    regularNtp.getActivity().getWindow().getNavigationBarColor());
+            assertWindowNavBarIsTransparentOrMatchesColor(
+                    regularNtp.getActivity().getWindow(),
+                    mActivityTestRule.getActivityTab().getBackgroundColor());
         }
+    }
+
+    // By default, the window navbar will match the tab's background color. However, when drawing
+    // edge-to-edge, the window navbar will be transparent, and allow tab contents to display
+    // directly. Either is acceptable, and depends on device navbar settings (3-button vs gesture)
+    // that are not explicitly exposed by Android.
+    private static void assertWindowNavBarIsTransparentOrMatchesColor(
+            Window window, @ColorInt int color) {
+        boolean hasTransparentNavBar = window.getNavigationBarColor() == Color.TRANSPARENT;
+        boolean navBarColorMatchesColor = window.getNavigationBarColor() == color;
+        assertTrue(hasTransparentNavBar || navBarColorMatchesColor);
     }
 
     @Test
     @MediumTest
     @DisabledTest(message = "crbug.com/1381509")
-    @DisableFeatures(ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN)
     public void testToggleFullscreen() throws TimeoutException {
         assertEquals(
                 "Navigation bar should be colorSurface before entering fullscreen mode.",
@@ -217,12 +216,8 @@ public class TabbedNavigationBarColorControllerTest {
 
     @Test
     @MediumTest
-    @DisableFeatures(ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN)
-    // TODO(crbug.com/428056054): Do not read color from system window bars on B+.
-    @DisableIf.Build(
-            sdk_is_greater_than = Build.VERSION_CODES.VANILLA_ICE_CREAM,
-            message = "crbug.com/428056054")
-    public void testSetNavigationBarScrimFraction() {
+    @MaxAndroidSdkLevel(29)
+    public void testSetNavigationBarScrimFractionPreEdgeToEdge() {
         assertEquals(
                 "Navigation bar should match the tab background on normal tabs.",
                 mActivityTestRule.getActivityTab().getBackgroundColor(),
@@ -264,7 +259,6 @@ public class TabbedNavigationBarColorControllerTest {
     @MediumTest
     @EnableFeatures({
         ChromeFeatureList.NAV_BAR_COLOR_ANIMATION,
-        ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN
     })
     @DisableFeatures(ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE)
     @EnableAnimations
@@ -283,7 +277,6 @@ public class TabbedNavigationBarColorControllerTest {
         ChromeFeatureList.NAV_BAR_COLOR_ANIMATION,
         ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE
     })
-    @DisableFeatures(ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN)
     @EnableAnimations
     @Restriction({DeviceFormFactor.PHONE, DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     @MinAndroidSdkLevel(Build.VERSION_CODES.R)
@@ -294,7 +287,6 @@ public class TabbedNavigationBarColorControllerTest {
     // Disable the dedicated feature flag.
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN})
     @DisableFeatures(ChromeFeatureList.NAV_BAR_COLOR_ANIMATION)
     public void testNavBarColorAnimationsFeatureFlagDisabled() {
         Assume.assumeTrue(
