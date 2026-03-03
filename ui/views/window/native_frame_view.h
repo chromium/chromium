@@ -35,9 +35,9 @@ class VIEWS_EXPORT NativeFrameView : public FrameView {
   gfx::Size GetMinimumSize() const override;
   gfx::Size GetMaximumSize() const override;
 
- private:
+ protected:
   // Our containing frame.
-  raw_ptr<Widget> widget_;
+  const raw_ptr<Widget> widget_;
 };
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, NativeFrameView, FrameView)

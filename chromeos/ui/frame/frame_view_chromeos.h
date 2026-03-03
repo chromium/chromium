@@ -14,7 +14,7 @@
 #include "ui/views/view.h"
 #include "ui/views/view_targeter.h"
 #include "ui/views/widget/widget.h"
-#include "ui/views/window/frame_view.h"
+#include "ui/views/window/native_frame_view.h"
 
 namespace display {
 class DisplayObserver;
@@ -24,9 +24,9 @@ enum class TabletState;
 
 namespace chromeos {
 
-class FrameViewChromeOS : public views::FrameView,
+class FrameViewChromeOS : public views::NativeFrameView,
                           public display::DisplayObserver {
-  METADATA_HEADER(FrameViewChromeOS, views::FrameView)
+  METADATA_HEADER(FrameViewChromeOS, views::NativeFrameView)
 
  public:
   explicit FrameViewChromeOS(views::Widget* widget);
@@ -34,7 +34,7 @@ class FrameViewChromeOS : public views::FrameView,
   FrameViewChromeOS& operator=(const FrameViewChromeOS&) = delete;
   ~FrameViewChromeOS() override;
 
-  // views::FrameView:
+  // views::NativeFrameView:
   gfx::Rect GetBoundsForClientView() const override;
   gfx::Rect GetWindowBoundsForClientBounds(
       const gfx::Rect& client_bounds) const override;
@@ -44,8 +44,6 @@ class FrameViewChromeOS : public views::FrameView,
   void UpdateWindowTitle() override;
   void SizeConstraintsChanged() override;
   views::View::Views GetChildrenInZOrder() override;
-  gfx::Size CalculatePreferredSize(
-      const views::SizeBounds& available_size) const override;
   void Layout(PassKey) override;
   gfx::Size GetMinimumSize() const override;
   gfx::Size GetMaximumSize() const override;
@@ -68,7 +66,6 @@ class FrameViewChromeOS : public views::FrameView,
   // views::FrameView:
   bool DoesIntersectRect(const views::View* target,
                          const gfx::Rect& rect) const override;
-  const raw_ptr<views::Widget> widget_;
 
   // View which contains the title and window controls.
   raw_ptr<HeaderView> header_view_ = nullptr;

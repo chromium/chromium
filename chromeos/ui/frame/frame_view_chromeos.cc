@@ -20,7 +20,7 @@
 #include "ui/views/view.h"
 #include "ui/views/view_targeter.h"
 #include "ui/views/widget/widget.h"
-#include "ui/views/window/frame_view.h"
+#include "ui/views/window/native_frame_view.h"
 
 namespace chromeos {
 
@@ -61,7 +61,8 @@ bool FrameViewChromeOS::OverlayView::DoesIntersectRect(
 BEGIN_METADATA(FrameViewChromeOS, OverlayView)
 END_METADATA
 
-FrameViewChromeOS::FrameViewChromeOS(views::Widget* widget) : widget_(widget) {
+FrameViewChromeOS::FrameViewChromeOS(views::Widget* widget)
+    : views::NativeFrameView(widget) {
   DCHECK(widget_);
 
   auto header_view = std::make_unique<HeaderView>(widget_, this);
@@ -136,15 +137,6 @@ views::View::Views FrameViewChromeOS::GetChildrenInZOrder() {
   return header_view_->GetFrameHeader()->GetAdjustedChildrenInZOrder(this);
 }
 
-gfx::Size FrameViewChromeOS::CalculatePreferredSize(
-    const views::SizeBounds& available_size) const {
-  gfx::Size pref = widget_->client_view()->GetPreferredSize(available_size);
-  gfx::Rect bounds(0, 0, pref.width(), pref.height());
-  return widget_->non_client_view()
-      ->GetWindowBoundsForClientBounds(bounds)
-      .size();
-}
-
 void FrameViewChromeOS::Layout(PassKey) {
   LayoutSuperclass<views::FrameView>(this);
   if (!GetFrameEnabled())
@@ -178,7 +170,7 @@ gfx::Size FrameViewChromeOS::GetMaximumSize() const {
 }
 
 void FrameViewChromeOS::OnThemeChanged() {
-  FrameView::OnThemeChanged();
+  views::NativeFrameView::OnThemeChanged();
   UpdateDefaultFrameColors();
 }
 
