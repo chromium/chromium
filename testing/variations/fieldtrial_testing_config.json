@@ -26553,7 +26553,7 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20260217",
+                    "name": "Enabled_20260302",
                     "enable_features": [
                         "WebSerialWiredDevicesAndroid"
                     ]
