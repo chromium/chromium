@@ -190,7 +190,8 @@ bool VideoFrameLayout::FitsInContiguousBufferOfSize(size_t data_size) const {
     return false;
   }
 
-  for (const auto& plane : planes_) {
+  for (size_t plane_idx = 0; plane_idx < planes_.size(); ++plane_idx) {
+    const auto& plane = planes_[plane_idx];
     if (plane.offset > data_size || plane.size > data_size) {
       return false;
     }
@@ -199,6 +200,14 @@ bool VideoFrameLayout::FitsInContiguousBufferOfSize(size_t data_size) const {
     base::CheckedNumeric<size_t> plane_end = plane.size;
     plane_end += plane.offset;
     if (!plane_end.IsValid() || plane_end.ValueOrDie() > data_size) {
+      return false;
+    }
+
+    size_t rows = VideoFrame::Rows(plane_idx, format_, coded_size_.height());
+    // Offset + stride * rows: furthermost byte that can be reasonably read
+    // during copying or conversion of the plane.
+    auto read_end = base::CheckMul(plane.stride, rows) + plane.offset;
+    if (!read_end.IsValid() || read_end.ValueOrDie() > data_size) {
       return false;
     }
   }

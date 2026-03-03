@@ -488,7 +488,7 @@ struct SharedMemoryVideoFrameData {
 
   // Stride and offsets for each plane. Offsets are relative to the start
   // of |frame_data|.
-  array<int32> strides;
+  array<uint32> strides;
   array<uint32> offsets;
 };
 

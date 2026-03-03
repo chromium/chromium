@@ -318,8 +318,8 @@ TEST(VideoFrameLayout, FitsInContiguousBufferOfSize) {
   auto coded_size = gfx::Size(320, 180);
 
   std::vector<size_t> strides = {384, 192, 192};
-  std::vector<size_t> offsets = {0, 200, 300};
-  std::vector<size_t> sizes = {200, 100, 100};
+  std::vector<size_t> offsets = {0, 70000, 90000};
+  std::vector<size_t> sizes = {70000, 20000, 20000};
   std::vector<ColorPlaneLayout> planes(strides.size());
   for (size_t i = 0; i < strides.size(); i++) {
     planes[i].stride = strides[i];
