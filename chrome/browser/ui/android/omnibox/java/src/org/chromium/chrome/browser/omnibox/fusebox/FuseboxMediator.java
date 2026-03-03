@@ -146,6 +146,10 @@ public class FuseboxMediator implements FuseboxAttachmentChangeListener {
         mModel.set(
                 FuseboxProperties.POPUP_ATTACH_TAB_PICKER_VISIBLE,
                 ChromeFeatureList.sChromeItemPickerUi.isEnabled());
+        mModel.set(FuseboxProperties.POPUP_TOOL_AI_MODE_VISIBLE, true);
+        mModel.set(FuseboxProperties.POPUP_TOOL_AI_MODE_ENABLED, true);
+        mModel.set(FuseboxProperties.POPUP_ATTACH_CAMERA_VISIBLE, true);
+        mModel.set(FuseboxProperties.POPUP_ATTACH_GALLERY_VISIBLE, true);
     }
 
     public void destroy() {
@@ -166,8 +170,6 @@ public class FuseboxMediator implements FuseboxAttachmentChangeListener {
         mModel.set(
                 FuseboxProperties.POPUP_ATTACH_FILE_VISIBLE,
                 mComposeboxQueryControllerBridge.isPdfUploadEligible());
-        mModel.set(FuseboxProperties.POPUP_TOOL_AI_MODE_VISIBLE, true);
-        mModel.set(FuseboxProperties.POPUP_TOOL_AI_MODE_ENABLED, true);
         mModel.set(
                 FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_VISIBLE,
                 mComposeboxQueryControllerBridge.isCreateImagesEligible()
