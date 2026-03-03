@@ -18,6 +18,10 @@ enum class AIPrototypingFeature : NSInteger;
 // tabs: Array of dictionaries with keys "id", "title", "url".
 - (void)updateTabList:(NSArray<NSDictionary*>*)tabs;
 
+// Updates the raw bytes (in Base64 representation) of the PageContext proto.
+- (void)updateRawBytes:(NSString*)rawBytes
+            forFeature:(AIPrototypingFeature)feature;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_AI_PROTOTYPING_UI_AI_PROTOTYPING_CONSUMER_H_

@@ -27,6 +27,12 @@ enum class AIPrototypingFeature : NSInteger;
 // Enable submit buttons, and style them accordingly.
 - (void)enableSubmitButtons;
 
+@optional
+
+// Updates the view controller with the raw bytes (in base64) of the
+// PageContext proto, if supported.
+- (void)updateRawBytes:(NSString*)rawBytes;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_AI_PROTOTYPING_UI_AI_PROTOTYPING_VIEW_CONTROLLER_PROTOCOL_H_

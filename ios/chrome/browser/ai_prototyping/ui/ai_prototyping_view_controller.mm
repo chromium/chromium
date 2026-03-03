@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ai_prototyping/ui/ai_prototyping_view_controller.h"
 
 #import "ios/chrome/browser/ai_prototyping/ui/ai_prototyping_actuation_view_controller.h"
+#import "ios/chrome/browser/ai_prototyping/ui/ai_prototyping_apc_view_controller.h"
 #import "ios/chrome/browser/ai_prototyping/ui/ai_prototyping_calendar_view_controller.h"
 #import "ios/chrome/browser/ai_prototyping/ui/ai_prototyping_consumer.h"
 #import "ios/chrome/browser/ai_prototyping/ui/ai_prototyping_freeform_view_controller.h"
@@ -44,6 +45,8 @@
                 initForFeature:AIPrototypingFeature::kSmartTabGrouping],
             [[AIPrototypingCalendarViewController alloc]
                 initForFeature:AIPrototypingFeature::kEnhancedCalendar],
+            [[AIPrototypingAPCViewController alloc]
+                initForFeature:AIPrototypingFeature::kAPC],
             _actuationViewController, nil];
   }
   return self;
@@ -83,6 +86,19 @@
     if (viewController.feature == feature) {
       [viewController enableSubmitButtons];
       [viewController updateResponseField:result];
+      break;
+    }
+  }
+}
+
+- (void)updateRawBytes:(NSString*)rawBytes
+            forFeature:(AIPrototypingFeature)feature {
+  for (UIViewController<AIPrototypingViewControllerProtocol>* viewController in
+           _menuPages) {
+    if (viewController.feature == feature) {
+      if ([viewController respondsToSelector:@selector(updateRawBytes:)]) {
+        [viewController updateRawBytes:rawBytes];
+      }
       break;
     }
   }

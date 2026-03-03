@@ -33,6 +33,8 @@ enum class AIPrototypingFeature : NSInteger {
   kSmartTabGrouping,
   // Represents the actuation tools feature.
   kActuationTools,
+  // Represents the APC extraction feature.
+  kAPC,
 };
 
 #endif  // IOS_CHROME_BROWSER_AI_PROTOTYPING_UTILS_AI_PROTOTYPING_CONSTANTS_H_

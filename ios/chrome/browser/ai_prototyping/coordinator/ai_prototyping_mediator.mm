@@ -6,6 +6,7 @@
 
 #import <string>
 
+#import "base/base64.h"
 #import "base/functional/bind.h"
 #import "base/json/json_reader.h"
 #import "base/logging.h"
@@ -13,6 +14,7 @@
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
+#import "base/task/thread_pool.h"
 #import "base/values.h"
 #import "components/optimization_guide/optimization_guide_buildflags.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
@@ -35,6 +37,7 @@
 #import "ios/chrome/browser/intelligence/enhanced_calendar/model/enhanced_calendar_service_impl.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/ios_smart_tab_grouping_request_wrapper.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
+#import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper_config.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/tab_organization_request_wrapper.h"
 #import "ios/chrome/browser/intelligence/smart_tab_grouping/model/smart_tab_grouping_service_impl.h"
 #import "ios/chrome/browser/intelligence/smart_tab_grouping/utils/smart_tab_grouping_utils.h"
@@ -615,6 +618,88 @@
   if ([self.consumer respondsToSelector:@selector(updateTabList:)]) {
     [self.consumer updateTabList:tabs];
   }
+}
+
+// Executes the APC extraction for the active WebState using
+// `PageContextWrapper`. The resulting `PageContext` proto is serialized to disk
+// in a background thread, and the file path is displayed in the prototyping
+// menu.
+- (void)executeAPCExtractionWithRichExtraction:(BOOL)useRichExtraction {
+  web::WebState* activeWebState = _webStateList->GetActiveWebState();
+  if (!activeWebState) {
+    [self.consumer updateQueryResult:@"Error: No active web state."
+                          forFeature:AIPrototypingFeature::kAPC];
+    return;
+  }
+
+  PageContextWrapperConfig config = PageContextWrapperConfigBuilder()
+                                        .SetUseRichExtraction(useRichExtraction)
+                                        .Build();
+
+  __weak __typeof(self) weakSelf = self;
+  auto completion = base::BindOnce(^(
+      PageContextWrapperCallbackResponse response) {
+    if (!response.has_value()) {
+      [weakSelf.consumer
+          updateQueryResult:@"Error: Failed to populate PageContext."
+                 forFeature:AIPrototypingFeature::kAPC];
+      return;
+    }
+
+    std::unique_ptr<optimization_guide::proto::PageContext> page_context =
+        std::move(response.value());
+
+    std::string serialized_proto = page_context->SerializeAsString();
+
+    auto write_to_disk_task = base::BindOnce(
+        [](std::unique_ptr<optimization_guide::proto::PageContext> context) {
+          return SaveSerializedPageContextToDisk(*context);
+        },
+        std::move(page_context));
+
+    auto save_to_disk_callback =
+        base::BindOnce(^(SavePageContextResult result) {
+          NSMutableString* outputStr = [NSMutableString string];
+          if (result.success) {
+            [outputStr
+                appendString:@"Instructions:\nFollow the directions at "
+                             @"go/readableapc to view the extracted APC.\n\n"];
+            [outputStr
+                appendFormat:@"Proto saved to:\n%@\n\n",
+                             base::SysUTF8ToNSString(result.file_path.value())];
+          } else {
+            [outputStr appendString:@"Warning: Failed to save to disk.\n\n"];
+          }
+
+          [outputStr appendString:@"Proto Base64 Bytes:\n"];
+
+          // Encode the serialized proto to base64 to prevent corruption when
+          // displayed in the UI.
+          std::string base64_encoded = base::Base64Encode(serialized_proto);
+          NSString* base64Str = base::SysUTF8ToNSString(base64_encoded);
+          [outputStr appendString:base64Str];
+
+          [weakSelf.consumer updateQueryResult:outputStr
+                                    forFeature:AIPrototypingFeature::kAPC];
+          if ([weakSelf.consumer
+                  respondsToSelector:@selector(updateRawBytes:forFeature:)]) {
+            [weakSelf.consumer updateRawBytes:base64Str
+                                   forFeature:AIPrototypingFeature::kAPC];
+          }
+        });
+
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+        std::move(write_to_disk_task), std::move(save_to_disk_callback));
+  });
+
+  _pageContextWrapper =
+      [[PageContextWrapper alloc] initWithWebState:activeWebState
+                                            config:config
+                                completionCallback:std::move(completion)];
+
+  _pageContextWrapper.shouldGetAnnotatedPageContent = YES;
+  [_pageContextWrapper populatePageContextFieldsAsync];
 }
 
 @end

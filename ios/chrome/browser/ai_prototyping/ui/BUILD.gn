@@ -6,6 +6,8 @@ source_set("ui") {
   sources = [
     "ai_prototyping_actuation_view_controller.h",
     "ai_prototyping_actuation_view_controller.mm",
+    "ai_prototyping_apc_view_controller.h",
+    "ai_prototyping_apc_view_controller.mm",
     "ai_prototyping_calendar_view_controller.h",
     "ai_prototyping_calendar_view_controller.mm",
     "ai_prototyping_consumer.h",

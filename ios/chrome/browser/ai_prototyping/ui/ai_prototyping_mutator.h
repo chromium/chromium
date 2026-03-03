@@ -53,6 +53,9 @@ enum TabOrganizationRequest_TabOrganizationModelStrategy : int;
 // Requests a list of current tabs.
 - (void)listTabs;
 
+// Executes an APC extraction request.
+- (void)executeAPCExtractionWithRichExtraction:(BOOL)useRichExtraction;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_AI_PROTOTYPING_UI_AI_PROTOTYPING_MUTATOR_H_
