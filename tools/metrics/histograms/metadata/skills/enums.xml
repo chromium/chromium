@@ -64,6 +64,7 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Used 1st Party Skill"/>
   <int value="1" label="Used User-Created Skill"/>
   <int value="2" label="Used Derived from 1st Party (Remixed) Skill"/>
+  <int value="3" label="Unknown"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/skills/public/skills_metrics.h:SkillsInvokeAction) -->

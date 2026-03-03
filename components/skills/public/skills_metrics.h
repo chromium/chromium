@@ -39,7 +39,8 @@ enum class SkillsInvokeAction {
   kFirstParty = 0,
   kUserCreated = 1,
   kDerivedFromFirstParty = 2,
-  kMaxValue = kDerivedFromFirstParty,
+  kUnknown = 3,
+  kMaxValue = kUnknown,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/skills/enums.xml:SkillsInvokeAction)
 
