@@ -63,6 +63,8 @@ extern const base::FeatureParam<int> kAutofillDocumentFormScanPeriodMs = {
 BASE_FEATURE(kAutofillThrottleDocumentFormScanForceFirstScanIos,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kAutofillTrackPasswordFieldsIos, base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kAutofillThrottleFilteredDocumentFormScanIos,
              base::FEATURE_DISABLED_BY_DEFAULT);
 // Minimal period of time between the filtered document form scanning batches.

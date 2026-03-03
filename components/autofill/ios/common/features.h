@@ -92,6 +92,10 @@ extern const base::FeatureParam<int> kAutofillDocumentFormScanPeriodMs;
 // batching.
 BASE_DECLARE_FEATURE(kAutofillThrottleDocumentFormScanForceFirstScanIos);
 
+// Track password fields mutations to determine if an input had been a password
+// in its lifetime. It is used as a killswitch.
+BASE_DECLARE_FEATURE(kAutofillTrackPasswordFieldsIos);
+
 // Throttles the filtered document form scanning done for taking a snapshot of
 // specific forms on the spot. Throttles with scheduled batches.
 BASE_DECLARE_FEATURE(kAutofillThrottleFilteredDocumentFormScanIos);

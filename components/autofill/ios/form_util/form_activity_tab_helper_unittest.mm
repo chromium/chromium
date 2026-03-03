@@ -11,6 +11,7 @@
 #import "base/test/bind.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
+#import "base/test/scoped_feature_list.h"
 #import "base/test/with_feature_override.h"
 #import "base/time/time.h"
 #import "base/unguessable_token.h"
@@ -159,9 +160,103 @@ class FormActivityTabHelperTest : public AutofillTestWithWebState {
     EXPECT_EQ(params, expected_activity_params);
   }
 
+  // Returns the value of `__gCrHasBeenPassword` symbol for the specified HTML
+  // element
+  id GetHasBeenPasswordForElement(NSString* element_id) {
+    NSString* script =
+        [NSString stringWithFormat:@"document.getElementById('%@')[Symbol.for('"
+                                   @"__gCrHasBeenPassword')]",
+                                   element_id];
+    return ExecuteJavaScript(script);
+  }
+
   base::HistogramTester histogram_tester_;
   std::unique_ptr<TestFormActivityObserver> observer_;
 };
+
+// Tests that a password input element added dynamically is marked as has been
+// password.
+TEST_F(FormActivityTabHelperTest, TestPasswordSymbolSetOnNewElement) {
+  base::test::ScopedFeatureList feature_list(kAutofillTrackPasswordFieldsIos);
+
+  // Load an empty page so main_frame exists.
+  LoadHtml(@"<div />");
+
+  web::WebFramesManager* frames_manager =
+      autofill::AutofillJavaScriptFeature::GetInstance()->GetWebFramesManager(
+          web_state());
+  web::WebFrame* main_frame = frames_manager->GetMainWebFrame();
+  ASSERT_TRUE(main_frame);
+
+  autofill::FormHandlersJavaScriptFeature::GetInstance()->TrackFormMutations(
+      main_frame, /*mutation_tracking_delay=*/200);
+
+  // Adds a password input in the page to see if the mutation callback
+  // will set the attribute correctly.
+  ExecuteJavaScript(
+      @"document.body.innerHTML = '<input type=\"password\" id=\"pw\"/>';");
+
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
+    return [GetHasBeenPasswordForElement(@"pw") isEqual:@YES];
+  }));
+}
+
+// Tests that an input is marked as has been password when the type changes to
+// password.
+TEST_F(FormActivityTabHelperTest, TestPasswordSymbolSetOnTypeChange) {
+  base::test::ScopedFeatureList feature_list(kAutofillTrackPasswordFieldsIos);
+
+  LoadHtml(@"<input type='text' id='user'/>"
+            "<input type='email' id='email'/>"
+            "<input type='password' id='pw'/>");
+
+  web::WebFramesManager* frames_manager =
+      autofill::AutofillJavaScriptFeature::GetInstance()->GetWebFramesManager(
+          web_state());
+  web::WebFrame* main_frame = frames_manager->GetMainWebFrame();
+  ASSERT_TRUE(main_frame);
+
+  autofill::FormHandlersJavaScriptFeature::GetInstance()->TrackFormMutations(
+      main_frame, /*mutation_tracking_delay=*/200);
+
+  // Loading the page should have set the attribute since the input is a
+  // password.
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
+    return [GetHasBeenPasswordForElement(@"pw") isEqual:@YES];
+  }));
+
+  // Change the type to text to simulate `Show Password`.
+  ExecuteJavaScript(@"document.getElementById('pw').type = 'text';"
+                     "document.getElementById('email').remove();");
+
+  // The input still have the attribute set correctly.
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
+    return [GetHasBeenPasswordForElement(@"pw") isEqual:@YES];
+  }));
+}
+
+// Tests that a password input is not marked as has been password if the feature
+// is disabled.
+TEST_F(FormActivityTabHelperTest, TestPasswordSymbolFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kAutofillTrackPasswordFieldsIos);
+
+  LoadHtml(@"<input type='password' id='pw'/>");
+
+  web::WebFramesManager* frames_manager =
+      autofill::AutofillJavaScriptFeature::GetInstance()->GetWebFramesManager(
+          web_state());
+  web::WebFrame* main_frame = frames_manager->GetMainWebFrame();
+  ASSERT_TRUE(main_frame);
+
+  autofill::FormHandlersJavaScriptFeature::GetInstance()->TrackFormMutations(
+      main_frame, /*mutation_tracking_delay=*/200);
+
+  // The Has Been Password symbol is not set since the feature is disabled
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
+    return GetHasBeenPasswordForElement(@"pw") == nil;
+  }));
+}
 
 // Tests that observer is called on form submission using submit control.
 TEST_F(FormActivityTabHelperTest, TestObserverDocumentSubmitted) {

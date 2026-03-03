@@ -94,3 +94,15 @@ export const ID_SYMBOL = window.Symbol.for(UNIQUE_ID_ATTRIBUTE);
  child frame.
  */
 export const CHILD_FRAME_REMOTE_TOKEN_ATTRIBUTE = '__gCrChildFrameRemoteToken';
+
+/**
+ Name of the html attribute used to know whether an input has been a password
+ field in its lifetime.
+ */
+export const HAS_BEEN_PASSWORD_ATTRIBUTE = '__gCrHasBeenPassword';
+
+/**
+ * The JS Symbol object used to set the has been password attribute.
+ */
+export const HAS_BEEN_PASSWORD_SYMBOL =
+    window.Symbol.for(HAS_BEEN_PASSWORD_ATTRIBUTE);
