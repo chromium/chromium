@@ -57,10 +57,9 @@ void AudioChannel::CopyFrom(const AudioChannel* source_channel) {
 
   if (source_channel->IsSilent()) {
     Zero();
-    return;
+  } else {
+    MutableSpan().copy_from(source_channel->Span().first(length()));
   }
-  UNSAFE_TODO(memcpy(MutableData(), source_channel->Data(),
-                     base::CheckMul(sizeof(float), length()).ValueOrDie()));
 }
 
 void AudioChannel::CopyFromRange(const AudioChannel* source_channel,
@@ -79,19 +78,16 @@ void AudioChannel::CopyFromRange(const AudioChannel* source_channel,
   size_t range_length = end_frame - start_frame;
   DCHECK_LE(range_length, length());
 
-  const float* source = source_channel->Data();
-  float* destination = MutableData();
-
-  const size_t safe_length =
-      base::CheckMul(sizeof(float), range_length).ValueOrDie();
   if (source_channel->IsSilent()) {
     if (range_length == length()) {
       Zero();
     } else {
-      UNSAFE_TODO(memset(destination, 0, safe_length));
+      std::ranges::fill(MutableSpan().first(range_length), 0.f);
     }
   } else {
-    UNSAFE_TODO(memcpy(destination, source + start_frame, safe_length));
+    MutableSpan()
+        .first(range_length)
+        .copy_from(source_channel->Span().subspan(start_frame, range_length));
   }
 }
 

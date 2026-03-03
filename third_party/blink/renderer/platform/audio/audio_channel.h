@@ -108,17 +108,11 @@ class PLATFORM_EXPORT AudioChannel final {
 
   // Zeroes out all sample values in buffer.
   void Zero() {
-    if (silent_) {
-      return;
-    }
-
-    silent_ = true;
-
-    if (mem_buffer_.get()) {
-      mem_buffer_->Zero();
-    } else {
-      UNSAFE_TODO(memset(raw_pointer_, 0,
-                         base::CheckMul(sizeof(float), length_).ValueOrDie()));
+    if (!silent_) {
+      std::ranges::fill(MutableSpan(), 0.f);
+      // Set silent flag after calling `MutableSpan()` so that it is not cleared
+      // again.
+      silent_ = true;
     }
   }
 
