@@ -151,9 +151,6 @@ extern const char kBWGPreciseLocationDescription[];
 extern const char kBWGPromoConsentName[];
 extern const char kBWGPromoConsentDescription[];
 
-extern const char kBeginCursorAtPointTentativeFixName[];
-extern const char kBeginCursorAtPointTentativeFixDescription[];
-
 extern const char kBestFeaturesScreenInFirstRunName[];
 extern const char kBestFeaturesScreenInFirstRunDescription[];
 

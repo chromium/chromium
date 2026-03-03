@@ -3945,21 +3945,6 @@
             ]
         }
     ],
-    "BeginCursorAtPointTentativeFix": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "BeginCursorAtPointTentativeFix"
-                    ]
-                }
-            ]
-        }
-    ],
     "BiometricAuthPwdFillAndroid": [
         {
             "platforms": [

@@ -11,9 +11,6 @@
 const base::NotFatalUntil kOmniboxRefactoringNotFatalUntil =
     base::NotFatalUntil::M200;
 
-// A tentative fix for crbug.com/361003475.
-BASE_DECLARE_FEATURE(kBeginCursorAtPointTentativeFix);
-
 // Returns whether rich autocompletion is enabled.
 bool IsRichAutocompletionEnabled();
 

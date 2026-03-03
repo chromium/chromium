@@ -246,13 +246,6 @@ const char kBWGPromoConsentDescription[] =
     "Whether the promo consent flow is composed of a single or a double screen "
     "view.";
 
-const char kBeginCursorAtPointTentativeFixName[] =
-    "Begin cursor at point tentative fix";
-const char kBeginCursorAtPointTentativeFixDescription[] =
-    "A tentative fix for crbug.com/361003475. When enabled, it prevents a call "
-    "to "
-    "setSelectedTextRange.";
-
 const char kBestFeaturesScreenInFirstRunName[] =
     "Display Best Features screen in the FRE";
 const char kBestFeaturesScreenInFirstRunDescription[] =

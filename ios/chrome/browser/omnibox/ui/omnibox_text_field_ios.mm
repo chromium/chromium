@@ -530,11 +530,6 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
 - (void)beginFloatingCursorAtPoint:(CGPoint)point {
   // Exit preedit because it blocks the view of the textfield.
   [self exitPreEditState];
-  // Remove selection and put the caret at the end of the string.
-  if (!base::FeatureList::IsEnabled(kBeginCursorAtPointTentativeFix)) {
-    self.selectedTextRange = [self textRangeFromPosition:self.endOfDocument
-                                              toPosition:self.endOfDocument];
-  }
   [super beginFloatingCursorAtPoint:point];
 }
 

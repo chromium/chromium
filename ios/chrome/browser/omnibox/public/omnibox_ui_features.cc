@@ -12,9 +12,6 @@ bool IsRichAutocompletionEnabled() {
   return base::FeatureList::IsEnabled(omnibox::kRichAutocompletion);
 }
 
-BASE_FEATURE(kBeginCursorAtPointTentativeFix,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kOmniboxZPSOnClobber, base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsZPSOnClobberEnabled() {
