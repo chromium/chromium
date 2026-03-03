@@ -58,11 +58,22 @@ public interface PersistentStoreMigrationManager {
     /** Called when a shadow store has caught up to the authoritative store. */
     void onShadowStoreCaughtUp();
 
+    /**
+     * Called when an authoritative store has been initialized.
+     *
+     * @param type The type of store that was initialized.
+     */
+    void onAuthoritativeStoreInitialized(@StoreType int type);
+
     /** Whether the shadow store is caught up. */
     boolean isShadowStoreCaughtUp();
 
-    /** Whether the shadow store should be razed for the given window before a load occurs. */
-    boolean shouldRazeShadowStoreForWindow();
+    /**
+     * Whether the given store should be razed for the current window before a load occurs.
+     *
+     * @param isAuthoritative Whether the store to be razed is authoritative for the window.
+     */
+    boolean shouldRazeStoreForWindow(boolean isAuthoritative);
 
     /**
      * Called upon the permanent destruction of a window's persisted shadow store data, such as upon

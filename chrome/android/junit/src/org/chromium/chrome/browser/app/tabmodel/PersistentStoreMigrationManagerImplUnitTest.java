@@ -357,14 +357,14 @@ public class PersistentStoreMigrationManagerImplUnitTest {
 
     @Test
     public void testShouldRazeShadowStoreForWindow() {
-        assertTrue(mManager.shouldRazeShadowStoreForWindow());
+        assertTrue(mManager.shouldRazeStoreForWindow(/* isAuthoritative= */ false));
 
         mManager.onShadowStoreCreated(StoreType.TAB_STATE_STORE);
         mManager.onShadowStoreCaughtUp();
-        assertFalse(mManager.shouldRazeShadowStoreForWindow());
+        assertFalse(mManager.shouldRazeStoreForWindow(/* isAuthoritative= */ false));
 
         mManager.onShadowStoreRazed();
-        assertTrue(mManager.shouldRazeShadowStoreForWindow());
+        assertTrue(mManager.shouldRazeStoreForWindow(/* isAuthoritative= */ false));
     }
 
     @Test
@@ -385,7 +385,33 @@ public class PersistentStoreMigrationManagerImplUnitTest {
         assertEquals(StoreType.TAB_STATE_STORE, mManager.getShadowStoreType());
 
         // 3. Verify that the shadow store should be razed.
-        assertTrue(mManager.shouldRazeShadowStoreForWindow());
+        assertTrue(mManager.shouldRazeStoreForWindow(/* isAuthoritative= */ false));
+    }
+
+    @Test
+    public void testOnAuthoritativeStoreInitialized() {
+        assertFalse(
+                ChromeSharedPreferences.getInstance().contains(CURRENT_AUTHORITATIVE_STORE_KEY_1));
+
+        mManager.onAuthoritativeStoreInitialized(StoreType.TAB_STATE_STORE);
+
+        assertTrue(
+                ChromeSharedPreferences.getInstance().contains(CURRENT_AUTHORITATIVE_STORE_KEY_1));
+        assertEquals(
+                StoreType.TAB_STATE_STORE,
+                ChromeSharedPreferences.getInstance()
+                        .readInt(CURRENT_AUTHORITATIVE_STORE_KEY_1, StoreType.INVALID));
+    }
+
+    @Test
+    public void testShouldRazeStoreForWindow_Authoritative() {
+        assertTrue(mManager.shouldRazeStoreForWindow(/* isAuthoritative= */ true));
+
+        mManager.onAuthoritativeStoreInitialized(StoreType.TAB_STATE_STORE);
+        assertFalse(mManager.shouldRazeStoreForWindow(/* isAuthoritative= */ true));
+
+        mManager.onWindowCleared();
+        assertTrue(mManager.shouldRazeStoreForWindow(/* isAuthoritative= */ true));
     }
 
     @Test

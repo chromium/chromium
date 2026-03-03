@@ -31,49 +31,6 @@ import org.chromium.chrome.browser.tabwindow.TabWindowManager;
  */
 @NullMarked
 public class TabPersistentStoreFactory {
-    // A migration manager which always assumes no migration is required.
-    private static final PersistentStoreMigrationManager sDefaultManager =
-            new PersistentStoreMigrationManager() {
-                @Override
-                public @StoreType int getAuthoritativeStoreType() {
-                    return (isTabStorageEnabled() && isStorageAuthoritative())
-                            ? StoreType.TAB_STATE_STORE
-                            : StoreType.LEGACY;
-                }
-
-                @Override
-                public @StoreType int getShadowStoreType() {
-                    return (isTabStorageEnabled() && !isStorageAuthoritative())
-                            ? StoreType.TAB_STATE_STORE
-                            : StoreType.INVALID;
-                }
-
-                @Override
-                public void onShadowStoreCreated(@StoreType int storeType) {}
-
-                @Override
-                public void onShadowStoreCaughtUp() {}
-
-                @Override
-                public boolean isShadowStoreCaughtUp() {
-                    return true;
-                }
-
-                @Override
-                public boolean shouldRazeShadowStoreForWindow() {
-                    return false;
-                }
-
-                @Override
-                public void onShadowStoreRazed() {}
-
-                @Override
-                public void onAllStoresRazed() {}
-
-                @Override
-                public void onWindowCleared() {}
-            };
-
     /**
      * Builds an authoritative {@link TabPersistentStore}.
      *
@@ -101,7 +58,9 @@ public class TabPersistentStoreFactory {
             String windowTag,
             CipherFactory cipherFactory,
             boolean recordLegacyTabCountMetrics) {
-        if (migrationManager == null) migrationManager = sDefaultManager;
+        if (migrationManager == null) {
+            migrationManager = new DefaultPersistentStoreMigrationManager(windowTag);
+        }
 
         @StoreType int storeType = migrationManager.getAuthoritativeStoreType();
         if (storeType == StoreType.LEGACY) {
@@ -239,7 +198,10 @@ public class TabPersistentStoreFactory {
             @Nullable CipherFactory cipherFactory,
             AccumulatingTabCreator regularShadowTabCreator,
             String orchestratorTag) {
-        if (migrationManager == null) migrationManager = sDefaultManager;
+        if (migrationManager == null) {
+            migrationManager = new DefaultPersistentStoreMigrationManager(windowTag);
+        }
+
         @StoreType int shadowStoreType = migrationManager.getShadowStoreType();
         if (shadowStoreType != StoreType.TAB_STATE_STORE) return null;
         assert isTabStorageEnabled();
