@@ -25,8 +25,8 @@ class OSExchangeData;
 
 namespace views {
 class ActionViewController;
+class Button;
 class Label;
-class LabelButton;
 }  // namespace views
 
 class ProjectsPanelNoTabGroupsView;
@@ -82,7 +82,7 @@ class ProjectsPanelTabGroupsView : public views::View,
 
   std::optional<gfx::Rect> GetDropIndicatorBoundsForTesting() const;
 
-  const std::vector<ProjectsPanelTabGroupsItemView*> item_views_for_testing() {
+  std::vector<ProjectsPanelTabGroupsItemView*> item_views_for_testing() const {
     return item_views_;
   }
 
@@ -90,7 +90,7 @@ class ProjectsPanelTabGroupsView : public views::View,
     return no_tab_groups_view_;
   }
 
-  views::LabelButton* create_new_tab_group_button_for_testing() {
+  views::Button* create_new_tab_group_button_for_testing() {
     return create_new_tab_group_button_;
   }
 
@@ -135,7 +135,7 @@ class ProjectsPanelTabGroupsView : public views::View,
       more_button_callback_;
   TabGroupMovedCallback tab_group_moved_callback_;
   raw_ptr<views::Label> title_ = nullptr;
-  raw_ptr<views::LabelButton> create_new_tab_group_button_ = nullptr;
+  raw_ptr<views::Button> create_new_tab_group_button_ = nullptr;
   raw_ptr<ProjectsPanelNoTabGroupsView> no_tab_groups_view_ = nullptr;
   std::vector<ProjectsPanelTabGroupsItemView*> item_views_;
 

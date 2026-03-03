@@ -40,6 +40,12 @@ inline constexpr gfx::Insets kListItemTitleMargins =
 // The padding around a list.
 inline constexpr gfx::Insets kListPadding = gfx::Insets::VH(0, 4);
 
+// The size of the Tab groups icon.
+inline constexpr int kTabGroupIconSize = 12;
+
+// The margins for the Tab groups icon.
+inline constexpr auto kTabGroupIconMargins = gfx::Insets(6);
+
 // Minimum width of the projects panel.
 inline constexpr int kProjectsPanelMinWidth = 240;
 

@@ -51,12 +51,6 @@ constexpr gfx::Insets kShareIconMargins =
                       4,
                       4);
 
-// The size of the Tab groups icon.
-constexpr int kTabGroupIconSize = 12;
-
-// The margins for the Tab groups icon.
-constexpr auto kTabGroupsIconMargins = gfx::Insets(6);
-
 // Height and width of shared Tab group icon and more button icon.
 constexpr int kTrailingIconSize = 16;
 
@@ -83,7 +77,8 @@ ProjectsPanelTabGroupsItemView::ProjectsPanelTabGroupsItemView(
   projects_panel::ConfigureInkDropForButton(this);
 
   tab_group_icon_ = AddChildView(std::make_unique<views::ImageView>());
-  tab_group_icon_->SetProperty(views::kMarginsKey, kTabGroupsIconMargins);
+  tab_group_icon_->SetProperty(views::kMarginsKey,
+                               projects_panel::kTabGroupIconMargins);
 
   auto group_title = tab_groups::TabGroupMenuUtils::GetMenuTextForGroup(group);
   title_ = AddChildView(std::make_unique<views::Label>(group_title));
@@ -217,7 +212,7 @@ void ProjectsPanelTabGroupsItemView::OnThemeChanged() {
   ui::ColorId color_id = GetTabGroupContextMenuColorId(tab_group_color_id_);
   tab_group_icon_->SetImage(ui::ImageModel::FromVectorIcon(
       *tab_group_vector_icon_, GetColorProvider()->GetColor(color_id),
-      kTabGroupIconSize));
+      projects_panel::kTabGroupIconSize));
 }
 
 void ProjectsPanelTabGroupsItemView::OnMouseEntered(

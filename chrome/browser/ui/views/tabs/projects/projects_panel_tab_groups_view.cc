@@ -28,14 +28,17 @@
 #include "ui/compositor/paint_recorder.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/text_constants.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
 #include "ui/views/button_drag_utils.h"
-#include "ui/views/controls/button/label_button.h"
+#include "ui/views/controls/button/button.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
+#include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/flex_layout.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
@@ -43,19 +46,39 @@
 namespace {
 constexpr gfx::Insets kNoTabsInteriorMargins = gfx::Insets::VH(0, 8);
 
-class ProjectsPanelNewTabGroupButton : public views::LabelButton {
-  METADATA_HEADER(ProjectsPanelNewTabGroupButton, views::LabelButton)
+class ProjectsPanelNewTabGroupButton : public views::Button {
+  METADATA_HEADER(ProjectsPanelNewTabGroupButton, views::Button)
 
  public:
   explicit ProjectsPanelNewTabGroupButton(base::RepeatingClosure callback)
-      : views::LabelButton(
-            std::move(callback),
-            l10n_util::GetStringUTF16(IDS_CREATE_NEW_TAB_GROUP)) {
-    SetImageModel(views::Button::STATE_NORMAL,
-                  ui::ImageModel::FromVectorIcon(
-                      kCreateNewTabGroupIcon, kColorProjectsPanelButtonIcon));
-    SetHorizontalAlignment(gfx::ALIGN_LEFT);
+      : views::Button(std::move(callback)) {
+    SetLayoutManager(std::make_unique<views::FlexLayout>())
+        ->SetInteriorMargin(projects_panel::kListItemMargins)
+        .SetOrientation(views::LayoutOrientation::kHorizontal)
+        .SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
+
+    auto* icon = AddChildView(std::make_unique<views::ImageView>());
+    icon->SetProperty(views::kMarginsKey, projects_panel::kTabGroupIconMargins);
+    icon->SetImage(ui::ImageModel::FromVectorIcon(
+        kCreateNewTabGroupIcon, kColorProjectsPanelButtonIcon,
+        projects_panel::kTabGroupIconSize));
+
+    auto* title = AddChildView(std::make_unique<views::Label>(
+        l10n_util::GetStringUTF16(IDS_CREATE_NEW_TAB_GROUP)));
+    title->SetTextStyle(views::style::STYLE_BODY_3);
+    title->SetHorizontalAlignment(gfx::ALIGN_TO_HEAD);
+    title->SetBackgroundColor(SK_ColorTRANSPARENT);
+    title->SetProperty(views::kMarginsKey,
+                       projects_panel::kListItemTitleMargins);
+    title->SetProperty(
+        views::kFlexBehaviorKey,
+        views::FlexSpecification(views::LayoutOrientation::kHorizontal,
+                                 views::MinimumFlexSizeRule::kScaleToMinimum,
+                                 views::MaximumFlexSizeRule::kUnbounded));
+
     projects_panel::ConfigureInkDropForButton(this);
+    GetViewAccessibility().SetName(
+        l10n_util::GetStringUTF16(IDS_CREATE_NEW_TAB_GROUP));
   }
   ProjectsPanelNewTabGroupButton(const ProjectsPanelNewTabGroupButton&) =
       delete;
