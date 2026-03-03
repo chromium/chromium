@@ -1141,7 +1141,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 mTabModelSelectorSupplier,
                 mModalDialogManagerSupplier,
                 // TODO(agrieve): See if this can be changed to a NonNullObservableSupplier.
-                (MonotonicObservableSupplier<Integer>) mTabStripVisibilitySupplier);
+                (MonotonicObservableSupplier<Integer>) mTabStripVisibilitySupplier,
+                () -> toggleGlic());
     }
 
     @Override

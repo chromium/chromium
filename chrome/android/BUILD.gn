@@ -1133,6 +1133,7 @@ if (_is_default_toolchain) {
       "//chrome/browser/facilitated_payments/ui/android/internal:junit",
       "//chrome/browser/feed/android:junit",
       "//chrome/browser/flags:flags_junit_tests",
+      "//chrome/browser/glic/android:junit",
       "//chrome/browser/hub:junit",
       "//chrome/browser/hub/internal:junit",
       "//chrome/browser/incognito:incognito_junit_tests",

@@ -44,6 +44,7 @@ android_library("java") {
     "//chrome/browser/settings:java",
     "//chrome/browser/tab:java",
     "//chrome/browser/ui/android/toolbar:java",
+    "//chrome/browser/ui/browser_window/public/android:java",
     "//chrome/browser/user_education:java",
     "//components/browser_ui/settings/android:java",
     "//components/browser_ui/styles/android:java",
@@ -76,24 +77,22 @@ source_set("android") {
 }
 
 robolectric_library("junit") {
-  sources =
-      [ "java/src/org/chromium/chrome/browser/glic/GlicSettingsUnitTest.java" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/glic/GlicSettingsUnitTest.java",
+    "java/src/org/chromium/chrome/browser/glic/GlicToolbarButtonControllerTest.java",
+  ]
   deps = [
     ":java",
     ":java_resources",
     "//base:base_java",
     "//base:base_junit_test_support",
-    "//build/android:build_java",
-    "//chrome/app:java_strings_grd",
     "//chrome/browser/profiles/android:java",
-    "//chrome/browser/settings:java",
-    "//chrome/browser/ui/android/theme:java",
+    "//chrome/browser/tab:java",
+    "//chrome/browser/ui/android/toolbar:java",
     "//components/browser_ui/settings/android:java",
     "//components/prefs/android:java",
-    "//components/signin/public/android:java",
     "//components/user_prefs/android:java",
     "//content/public/android:content_full_java",
-    "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_fragment_fragment_java",
     "//third_party/androidx:androidx_lifecycle_lifecycle_common_jvm_java",
     "//third_party/androidx:androidx_preference_preference_java",
