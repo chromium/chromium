@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/test/gtest_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
@@ -23,6 +24,7 @@
 #include "components/skills/features.h"
 #include "components/skills/internal/skills_downloader.h"
 #include "components/skills/internal/skills_service_impl.h"
+#include "components/skills/public/skills_metrics.h"
 #include "components/skills/public/skills_service.h"
 #include "components/sync/model/data_type_store_service.h"
 #include "content/public/test/browser_test.h"
@@ -125,6 +127,7 @@ class SkillsPageInteractiveUITest : public InteractiveBrowserTest,
 
  protected:
   network::TestURLLoaderFactory test_url_loader_factory_;
+  base::HistogramTester histogram_tester_;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -220,6 +223,11 @@ IN_PROC_BROWSER_TEST_P(SkillsPageInteractiveUITest, YourSkillsPage) {
       ClickElement(kSkillsPageElementId, kAddButtonQuery),
       InstrumentNonTabWebView(kSkillsDialogElementId,
                               skills::SkillsDialogView::kSkillsDialogElementId),
+      Do([this]() {
+        histogram_tester_.ExpectUniqueSample(
+            "Skills.Dialog.Creation.ManagementPage.Blank.Action",
+            skills::SkillsDialogAction::kOpened, 1);
+      }),
       // Create a new skill.
       WaitForElementExists(kSkillsDialogElementId, kNameInputQuery),
       ExecuteJsAt(kSkillsDialogElementId, kNameInputQuery,
@@ -236,6 +244,11 @@ IN_PROC_BROWSER_TEST_P(SkillsPageInteractiveUITest, YourSkillsPage) {
       WaitForElementEnabled(kSkillsDialogElementId, kSaveButtonQuery),
       MoveMouseTo(kSkillsDialogElementId, kSaveButtonQuery), ClickMouse(),
       WaitForHide(skills::SkillsDialogView::kSkillsDialogElementId),
+      Do([this]() {
+        histogram_tester_.ExpectBucketCount(
+            "Skills.Dialog.Creation.ManagementPage.Blank.Action",
+            skills::SkillsDialogAction::kSaved, 1);
+      }),
       WaitForElementExists(kSkillsPageElementId, kNewSkillCardQuery),
       Screenshot(kSkillsPageElementId,
                  /*screenshot_name=*/screenshot_name,

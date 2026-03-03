@@ -6,6 +6,8 @@
 
 #include "chrome/browser/skills/skills_ui_tab_controller_interface.h"
 #include "components/skills/public/skill.h"
+#include "components/skills/public/skills_metrics.h"
+#include "components/sync/protocol/skill_specifics.pb.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
@@ -24,7 +26,8 @@ void SkillsDialogLauncher::TriggerDialog(tabs::TabInterface* tab,
   }
 
   if (auto* controller = SkillsUiTabControllerInterface::From(tab)) {
-    controller->ShowDialog(std::move(skill));
+    SkillsDialogEntryPoint entrypoint = ResolveEntryPointForWebClient(&skill);
+    controller->ShowDialog(std::move(skill), entrypoint);
     std::move(callback).Run(true);
   }
 }

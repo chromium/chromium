@@ -66,7 +66,8 @@ class SkillsDialogHandlerTest : public testing::Test {
     web_ui_.set_web_contents(web_contents_.get());
     handler_ = std::make_unique<TestSkillsDialogHandler>(
         receiver_.BindNewPipeAndPassReceiver(), web_ui_.GetWebContents(),
-        &mock_opt_guide_service_, mock_skill_, mock_delegate_.GetWeakPtr());
+        &mock_opt_guide_service_, mock_skill_, entrypoint_,
+        mock_delegate_.GetWeakPtr());
   }
 
   // Helper to mock the Optimization Guide server response
@@ -125,6 +126,8 @@ class SkillsDialogHandlerTest : public testing::Test {
   std::unique_ptr<content::WebContents> web_contents_;
   content::TestWebUI web_ui_;
   MockOptimizationGuideKeyedService mock_opt_guide_service_;
+  SkillsDialogEntryPoint entrypoint_ =
+      SkillsDialogEntryPoint::kWebClientPrefilled;
   Skill mock_skill_;
   NiceMock<MockSkillsDialogDelegate> mock_delegate_;
   mojo::Remote<mojom::DialogHandler> receiver_;
@@ -169,7 +172,8 @@ TEST_F(SkillsDialogHandlerTest, RefineSkill_NoService_LogsServiceUnavailable) {
   // Create a handler with a nullptr for Optimization Guide
   auto orphan_handler = std::make_unique<TestSkillsDialogHandler>(
       receiver_.BindNewPipeAndPassReceiver(), web_contents_.get(), nullptr,
-      mock_skill_, mock_delegate_.GetWeakPtr());
+      mock_skill_, SkillsDialogEntryPoint::kWebClientPrefilled,
+      mock_delegate_.GetWeakPtr());
 
   RunRefineSkillAndExpectError(orphan_handler.get(), "test prompt",
                                skills::SkillsRefineResult::kServiceUnavailable);
@@ -202,8 +206,9 @@ TEST_F(SkillsDialogHandlerTest, CloseDialog_LogsCancelled) {
   EXPECT_CALL(mock_delegate_, CloseDialog()).Times(1);
   handler_->CloseDialog();
 
-  histogram_tester_.ExpectBucketCount("Skills.Dialog.Creation.Action",
-                                      SkillsDialogAction::kCancelled, 1);
+  histogram_tester_.ExpectBucketCount(
+      "Skills.Dialog.Creation.WebClient.Prefilled.Action",
+      SkillsDialogAction::kCancelled, 1);
 }
 
 TEST_F(SkillsDialogHandlerTest, RefineSkill_LogsMetric) {
@@ -214,8 +219,9 @@ TEST_F(SkillsDialogHandlerTest, RefineSkill_LogsMetric) {
 
   handler_->RefineSkill(std::move(skill), callback.Get());
 
-  histogram_tester_.ExpectBucketCount("Skills.Dialog.Creation.Action",
-                                      SkillsDialogAction::kRefined, 1);
+  histogram_tester_.ExpectBucketCount(
+      "Skills.Dialog.Creation.WebClient.Prefilled.Action",
+      SkillsDialogAction::kRefined, 1);
 }
 
 TEST_F(SkillsDialogHandlerTest, SubmitSkill_LogsSavedAndSuccess) {
@@ -229,8 +235,9 @@ TEST_F(SkillsDialogHandlerTest, SubmitSkill_LogsSavedAndSuccess) {
   handler_->SubmitSkill(skill, callback.Get());
 
   // Metric Check
-  histogram_tester_.ExpectBucketCount("Skills.Dialog.Creation.Action",
-                                      SkillsDialogAction::kSaved, 1);
+  histogram_tester_.ExpectBucketCount(
+      "Skills.Dialog.Creation.WebClient.Prefilled.Action",
+      SkillsDialogAction::kSaved, 1);
   histogram_tester_.ExpectUniqueSample("Skills.Save.Result",
                                        skills::SkillsSaveResult::kSuccess, 1);
 }
@@ -246,6 +253,7 @@ TEST_F(SkillsDialogHandlerTest, SubmitSkill_LogsUiContextLostWhenDialogClosed) {
   auto orphan_handler = std::make_unique<TestSkillsDialogHandler>(
       receiver_.BindNewPipeAndPassReceiver(), web_contents_.get(),
       &mock_opt_guide_service_, mock_skill_,
+      SkillsDialogEntryPoint::kWebClientPrefilled,
       base::WeakPtr<MockSkillsDialogDelegate>());
 
   // Attempt to submit the skill.
@@ -267,7 +275,8 @@ TEST_F(SkillsDialogHandlerTest, GetInitialSkillReturnsCorrectData) {
   receiver_.reset();
   handler_ = std::make_unique<TestSkillsDialogHandler>(
       receiver_.BindNewPipeAndPassReceiver(), web_contents_.get(),
-      &mock_opt_guide_service_, test_skill, mock_delegate_.GetWeakPtr());
+      &mock_opt_guide_service_, test_skill,
+      SkillsDialogEntryPoint::kWebClientPrefilled, mock_delegate_.GetWeakPtr());
 
   // Call the API using a lambda as the callback.
   skills::Skill received_skill;

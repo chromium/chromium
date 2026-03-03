@@ -6,6 +6,8 @@
 #define COMPONENTS_SKILLS_PUBLIC_SKILLS_METRICS_H_
 
 #include <cstddef>
+
+#include "components/skills/public/skill.h"
 namespace skills {
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -104,26 +106,51 @@ enum class SkillsManagementError {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/skills/enums.xml:SkillsManagementError)
 
+// LINT.IfChange(SkillsDialogEntryPoint)
+enum class SkillsDialogEntryPoint {
+  kUnknown = 0,
+  kWebClientBlank = 1,           // + button in skill preview menu
+  kWebClientPrefilled = 2,       // Save as a skill
+  kWebClientRemix = 3,           // Edit a 1P skill
+  kManagementPageBlank = 4,      // Add new skill
+  kManagementPagePrefilled = 5,  // Edit existing skill
+  kManagementPageRemix = 6,      // Edit 1P skill
+  kMaxValue = kManagementPageRemix,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/skills/histograms.xml:SkillsDialogEntryPointAndState)
+
+// Determines if the dialog should open in edit mode vs. creation mode
+// based on whether the skill is new, a 1P template, or an existing user skill.
+bool IsEditMode(const skills::Skill* skill);
+
+SkillsDialogEntryPoint ResolveEntryPointForWebClient(
+    const skills::Skill* skill);
+
+SkillsDialogEntryPoint ResolveEntryPointForManagementPage(
+    const skills::Skill* skill);
+
 // TODO(crbug.com/477385216): Update to use an enum for creation mode.
-// Records user interactions within the Skills Creation or Edit dialogs
-void RecordSkillsDialogAction(SkillsDialogAction action, bool is_edit_mode);
+// Records user interactions within the Skills Creation or Edit dialogs.
+void RecordSkillsDialogAction(SkillsDialogAction action,
+                              SkillsDialogEntryPoint entrypoint,
+                              bool is_edit_mode);
 
 // Records the execution of a skill and its type.
 void RecordSkillsInvokeAction(SkillsInvokeAction action);
 
 // Records the terminal outcome (success or specific error) of attempting to
-// invoke a skill. This is logged after the client attempts to open the panel
-// and trigger the skill execution.
+// invoke a skill. This is logged after the client attempts to open the
+// panel and trigger the skill execution.
 void RecordSkillsInvokeResult(SkillsInvokeResult result);
 
 // Records the terminal outcome of an attempt to save a new skill or update
-// an existing one. This captures backend availability, database write status,
-// and UI context state.
+// an existing one. This captures backend availability, database write
+// status, and UI context state.
 void RecordSkillsSaveResult(SkillsSaveResult result);
 
 // Records the terminal outcome of a skill prompt refinement request. This
-// captures the success or failure of the Optimization Guide ML model execution
-// and response parsing.
+// captures the success or failure of the Optimization Guide ML model
+// execution and response parsing.
 void RecordSkillsRefineResult(SkillsRefineResult result);
 
 // Records the current total number of skills the user possesses.
@@ -131,8 +158,8 @@ void RecordSkillsRefineResult(SkillsRefineResult result);
 // the user's status throughout the session.
 void RecordUserSkillCount(size_t skill_count);
 
-// Records the result of a first-party skill list download attempt from static
-// content server link.
+// Records the result of a first-party skill list download attempt from
+// static content server link.
 void RecordSkillsFetchResult(SkillsFetchResult result);
 
 // Records the HTTP response code received when downloading skills.

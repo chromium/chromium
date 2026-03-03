@@ -81,6 +81,8 @@ source_set("unit_tests") {
     "//chrome/test:test_support",
     "//components/optimization_guide/core:test_support",
     "//components/skills/mocks",
+    "//components/skills/public",
+    "//components/skills/public:metrics",
     "//components/skills/public:mojo_bindings",
     "//content/public/browser",
     "//content/test:test_support",

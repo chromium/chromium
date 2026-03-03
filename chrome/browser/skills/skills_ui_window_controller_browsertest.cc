@@ -169,7 +169,8 @@ IN_PROC_BROWSER_TEST_F(SkillsUiWindowControllerBrowserTest,
   skills::Skill initial_skill(/*id=*/"",
                               /*name=*/"",
                               /*icon=*/"", "Skill Prompt");
-  tab_controller()->ShowDialog(std::move(initial_skill));
+  tab_controller()->ShowDialog(std::move(initial_skill),
+                               SkillsDialogEntryPoint::kWebClientPrefilled);
 
   // Get WebContents to inject JS.
   content::WebContents* web_contents = GetDialogWebContents();

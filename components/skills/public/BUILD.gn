@@ -16,22 +16,32 @@ mojom("mojo_bindings") {
       ]
       traits_headers = [ "skills_mojom_traits.h" ]
       traits_sources = [ "skills_mojom_traits.cc" ]
-      traits_public_deps = [ ":public" ]
+      traits_public_deps = [ ":skill" ]
     },
   ]
   public_deps = [ "//mojo/public/mojom/base" ]
 }
 
-source_set("public") {
+source_set("skill") {
   sources = [
     "skill.cc",
     "skill.h",
+  ]
+  public_deps = [
+    "//base",
+    "//components/sync/protocol",
+  ]
+}
+
+source_set("public") {
+  sources = [
     "skills_service.cc",
     "skills_service.h",
   ]
 
   public_deps = [
     ":metrics",
+    ":skill",
     "//base",
     "//components/keyed_service/core",
     "//components/skills/internal:downloader",
@@ -46,18 +56,39 @@ source_set("metrics") {
     "skills_metrics.h",
   ]
 
-  public_deps = [ "//base" ]
+  public_deps = [
+    ":skill",
+    "//base",
+  ]
+}
+
+if (is_ios) {
+  bundle_data("skills_metrics_test_bundle_data") {
+    testonly = true
+    sources = [ "//tools/metrics/histograms/metadata/skills/histograms.xml" ]
+
+    outputs = [ "{{bundle_resources_dir}}/{{source_root_relative_dir}}/{{source_file_part}}" ]
+  }
 }
 
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "skill_unittest.cc" ]
+  sources = [
+    "skill_unittest.cc",
+    "skills_metrics_unittest.cc",
+  ]
 
   deps = [
     ":public",
     "//base/test:test_support",
   ]
+
+  data = [ "//tools/metrics/histograms/metadata/skills/histograms.xml" ]
+
+  if (is_ios) {
+    deps += [ ":skills_metrics_test_bundle_data" ]
+  }
 
   visibility = [ "//components/skills:unit_tests" ]
 }

@@ -81,15 +81,15 @@ void SkillsUiTabController::OnTabWillDetach(
   }
 }
 
-void SkillsUiTabController::ShowDialog(Skill skill) {
+void SkillsUiTabController::ShowDialog(Skill skill,
+                                       SkillsDialogEntryPoint entrypoint) {
   if (dialog_widget_) {
     // Dialog is already open.
     return;
   }
   // TODO(crbug.com/477385216): Update to use an enum for creation mode.
-  RecordSkillsDialogAction(SkillsDialogAction::kOpened,
-                           /*is_edit_mode=*/!skill.id.empty());
-
+  RecordSkillsDialogAction(SkillsDialogAction::kOpened, entrypoint,
+                           /*is_edit_mode=*/IsEditMode(&skill));
   current_skill_ = skill;
 
   content::WebContents* contents = tab_->GetContents();
@@ -112,7 +112,7 @@ void SkillsUiTabController::ShowDialog(Skill skill) {
                               ->GetController()
                               ->GetAs<skills::SkillsUI>()) {
       skills_ui->InitializeDialog(weak_ptr_factory_.GetWeakPtr(),
-                                  std::move(skill));
+                                  std::move(skill), entrypoint);
     }
   }
   dialog_delegate_->SetInitiallyFocusedView(dialog_view->web_view());

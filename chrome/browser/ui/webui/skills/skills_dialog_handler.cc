@@ -41,11 +41,13 @@ SkillsDialogHandler::SkillsDialogHandler(
     content::WebContents* web_contents,
     OptimizationGuideKeyedService* optimization_guide_keyed_service,
     skills::Skill initial_skill,
+    SkillsDialogEntryPoint entrypoint,
     base::WeakPtr<SkillsDialogDelegate> delegate)
     : receiver_(this, std::move(receiver)),
       web_contents_(CHECK_DEREF(web_contents)),
       optimization_guide_keyed_service_(optimization_guide_keyed_service),
       initial_skill_(std::move(initial_skill)),
+      entrypoint_(entrypoint),
       delegate_(delegate),
       profile_(CHECK_DEREF(
           Profile::FromBrowserContext(web_contents->GetBrowserContext()))) {}
@@ -96,8 +98,8 @@ void SkillsDialogHandler::SubmitSkill(
     return;
   }
   // TODO(crbug.com/477385216): Update to use an enum for creation mode.
-  RecordSkillsDialogAction(SkillsDialogAction::kSaved,
-                           /*is_edit_mode=*/!initial_skill_.id.empty());
+  RecordSkillsDialogAction(SkillsDialogAction::kSaved, entrypoint_,
+                           /*is_edit_mode=*/IsEditMode(&initial_skill_));
   // Triggers toast
   delegate_->OnSkillSaved(response->id);
   delegate_->CloseDialog();
@@ -107,8 +109,8 @@ void SkillsDialogHandler::SubmitSkill(
 
 void SkillsDialogHandler::CloseDialog() {
   // TODO(crbug.com/477385216): Update to use an enum for creation mode.
-  RecordSkillsDialogAction(SkillsDialogAction::kCancelled,
-                           /*is_edit_mode=*/!initial_skill_.id.empty());
+  RecordSkillsDialogAction(SkillsDialogAction::kCancelled, entrypoint_,
+                           /*is_edit_mode=*/IsEditMode(&initial_skill_));
   if (delegate_) {
     delegate_->CloseDialog();
   }
@@ -164,8 +166,8 @@ void SkillsDialogHandler::RefineSkill(
     const skills::Skill& skill,
     DialogHandler::RefineSkillCallback callback) {
   // TODO(crbug.com/477385216): Update to use an enum for creation mode.
-  RecordSkillsDialogAction(SkillsDialogAction::kRefined,
-                           /*is_edit_mode=*/!initial_skill_.id.empty());
+  RecordSkillsDialogAction(SkillsDialogAction::kRefined, entrypoint_,
+                           /*is_edit_mode=*/IsEditMode(&initial_skill_));
   auto wrapped_callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
       std::move(callback), std::nullopt);
 

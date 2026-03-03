@@ -5,12 +5,15 @@
 #include "chrome/browser/ui/webui/skills/skills_page_handler.h"
 
 #include "base/check_deref.h"
+#include "base/types/optional_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/skills/skills_service_factory.h"
 #include "chrome/browser/skills/skills_ui_window_controller.h"
+#include "chrome/browser/ui/webui/skills/skills.mojom-shared.h"
 #include "components/skills/public/skill.h"
 #include "components/skills/public/skill.mojom.h"
 #include "components/skills/public/skills_metrics.h"
+#include "components/sync/protocol/skill_specifics.pb.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
@@ -84,7 +87,9 @@ void SkillsPageHandler::OpenSkillsDialog(
   // TODO(b/475599531): Pass in dialog type.
   if (auto* tab_controller = SkillsUiTabControllerInterface::From(
           tabs::TabInterface::GetFromContents(&web_contents_.get()))) {
-    tab_controller->ShowDialog(skill.value_or(skills::Skill()));
+    tab_controller->ShowDialog(
+        skill.value_or(skills::Skill()),
+        ResolveEntryPointForManagementPage(base::OptionalToPtr(skill)));
   } else {
     RecordSkillsManagementError(SkillsManagementError::kTabControllerDNE);
   }

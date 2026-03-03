@@ -96,28 +96,33 @@ class SkillsUiTabControllerBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest,
                        ShowDialogOpensWidget) {
   EXPECT_FALSE(IsDialogVisible());
-  histogram_tester_.ExpectBucketCount("Skills.Dialog.Creation.Action",
-                                      SkillsDialogAction::kOpened, 0);
+  histogram_tester_.ExpectBucketCount(
+      "Skills.Dialog.Creation.WebClient.Prefilled.Action",
+      SkillsDialogAction::kOpened, 0);
   skills::Skill test_skill("", "skill_name", "icon", "Test Prompt");
-  skills_ui_tab_controller()->ShowDialog(std::move(test_skill));
+  skills_ui_tab_controller()->ShowDialog(
+      std::move(test_skill), SkillsDialogEntryPoint::kWebClientPrefilled);
 
   EXPECT_TRUE(IsDialogVisible());
   EXPECT_NE(nullptr, GetDialogWebContents());
-  histogram_tester_.ExpectBucketCount("Skills.Dialog.Creation.Action",
-                                      SkillsDialogAction::kOpened, 1);
+  histogram_tester_.ExpectBucketCount(
+      "Skills.Dialog.Creation.WebClient.Prefilled.Action",
+      SkillsDialogAction::kOpened, 1);
 }
 
 // Verify calling ShowDialog twice doesn't open two dialogs.
 IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest, PreventDoubleOpen) {
   skills::Skill test_skill("id", "skill_name", "icon", "Test Prompt");
-  skills_ui_tab_controller()->ShowDialog(std::move(test_skill));
+  skills_ui_tab_controller()->ShowDialog(
+      std::move(test_skill), SkillsDialogEntryPoint::kWebClientPrefilled);
 
   views::Widget* first_widget = GetDialogWidget();
   ASSERT_TRUE(first_widget);
 
   // Try to open again immediately.
   skills::Skill test_skill2("id2", "skill_name2", "icon", "Test Prompt");
-  skills_ui_tab_controller()->ShowDialog(std::move(test_skill2));
+  skills_ui_tab_controller()->ShowDialog(
+      std::move(test_skill2), SkillsDialogEntryPoint::kWebClientPrefilled);
 
   // Widget should be exactly the same instance.
   views::Widget* second_widget = GetDialogWidget();
@@ -129,7 +134,8 @@ IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest, PreventDoubleOpen) {
 IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest,
                        CloseDialogDestroysWidget) {
   skills::Skill test_skill("id", "skill_name", "icon", "Test Prompt");
-  skills_ui_tab_controller()->ShowDialog(std::move(test_skill));
+  skills_ui_tab_controller()->ShowDialog(
+      std::move(test_skill), SkillsDialogEntryPoint::kWebClientPrefilled);
   EXPECT_TRUE(IsDialogVisible());
 
   // Trigger the close.
@@ -144,7 +150,8 @@ IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest,
                        NativeCloseCleansUpState) {
   // Open dialog.
   skills::Skill test_skill("id", "name", "icon", "prompt");
-  skills_ui_tab_controller()->ShowDialog(std::move(test_skill));
+  skills_ui_tab_controller()->ShowDialog(
+      std::move(test_skill), SkillsDialogEntryPoint::kWebClientPrefilled);
 
   views::Widget* widget = GetDialogWidget();
   ASSERT_TRUE(widget);
@@ -163,7 +170,8 @@ IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest,
 
   // Verify we can reopen (implies internal state was reset).
   skills::Skill test_skill2("id2", "name2", "icon2", "prompt2");
-  skills_ui_tab_controller()->ShowDialog(std::move(test_skill2));
+  skills_ui_tab_controller()->ShowDialog(
+      std::move(test_skill2), SkillsDialogEntryPoint::kWebClientPrefilled);
   EXPECT_TRUE(IsDialogVisible());
 }
 
@@ -171,7 +179,8 @@ IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest,
 // (Regression test for the destruction race condition).
 IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest, TabCloseDoesNotCrash) {
   skills::Skill test_skill("id", "name", "icon", "prompt");
-  skills_ui_tab_controller()->ShowDialog(std::move(test_skill));
+  skills_ui_tab_controller()->ShowDialog(
+      std::move(test_skill), SkillsDialogEntryPoint::kWebClientPrefilled);
   EXPECT_TRUE(IsDialogVisible());
 
   // Close the tab.
@@ -186,7 +195,8 @@ IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest, TabCloseDoesNotCrash) {
 IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest, DialogIsTabScoped) {
   auto* controller_a = skills_ui_tab_controller();
   skills::Skill test_skill("id", "skill_name", "icon", "Test Prompt");
-  controller_a->ShowDialog(std::move(test_skill));
+  controller_a->ShowDialog(std::move(test_skill),
+                           SkillsDialogEntryPoint::kWebClientPrefilled);
   EXPECT_TRUE(IsDialogVisible());
 
   // Open a new Tab B and switch to it.
@@ -200,7 +210,8 @@ IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest, DialogIsTabScoped) {
   // Controller B shouldn't have a dialog open.
   // Verify this by calling ShowDialog and ensuring it does open one.
   skills::Skill test_skill2("id2", "skill_name2", "icon", "Test Prompt");
-  controller_b->ShowDialog(std::move(test_skill2));
+  controller_b->ShowDialog(std::move(test_skill2),
+                           SkillsDialogEntryPoint::kWebClientPrefilled);
 
   EXPECT_TRUE(IsDialogVisible());
 
@@ -217,7 +228,8 @@ IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest, VerifyWebUIPlumbing) {
 
   // Show the dialog.
   skills::Skill test_skill("id", "skill_name", "icon", "Test Prompt");
-  skills_ui_tab_controller()->ShowDialog(std::move(test_skill));
+  skills_ui_tab_controller()->ShowDialog(
+      std::move(test_skill), SkillsDialogEntryPoint::kWebClientPrefilled);
 
   // Dig down to find the SkillsUI.
   // The controller holds the delegate -> which holds WebContents -> which holds
@@ -247,14 +259,16 @@ IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest,
   // creation.
   glic::GlicEnabling::SetBypassEnablementChecksForTesting(true);
   skills::Skill test_skill("", "name", "icon", "prompt");
-  skills_ui_tab_controller()->ShowDialog(std::move(test_skill));
+  skills_ui_tab_controller()->ShowDialog(
+      std::move(test_skill), SkillsDialogEntryPoint::kWebClientPrefilled);
 
   content::WebContents* web_contents = GetDialogWebContents();
   ASSERT_TRUE(web_contents);
   ASSERT_TRUE(content::WaitForLoadStop(web_contents));
 
-  histogram_tester_.ExpectBucketCount("Skills.Dialog.Creation.Action",
-                                      SkillsDialogAction::kCancelled, 0);
+  histogram_tester_.ExpectBucketCount(
+      "Skills.Dialog.Creation.WebClient.Prefilled.Action",
+      SkillsDialogAction::kCancelled, 0);
 
   // Setup Listener.
   base::test::TestFuture<void> close_future;
@@ -279,8 +293,9 @@ IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest,
   ASSERT_TRUE(close_future.Wait());
   EXPECT_FALSE(IsDialogVisible());
 
-  histogram_tester_.ExpectBucketCount("Skills.Dialog.Creation.Action",
-                                      SkillsDialogAction::kCancelled, 1);
+  histogram_tester_.ExpectBucketCount(
+      "Skills.Dialog.Creation.WebClient.Prefilled.Action",
+      SkillsDialogAction::kCancelled, 1);
   glic::GlicEnabling::SetBypassEnablementChecksForTesting(false);
 }
 
@@ -298,7 +313,8 @@ IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest,
   skills::Skill test_skill("test-id", kTestName, kTestIcon, kTestPrompt);
 
   // Open the dialog.
-  skills_ui_tab_controller()->ShowDialog(std::move(test_skill));
+  skills_ui_tab_controller()->ShowDialog(
+      std::move(test_skill), SkillsDialogEntryPoint::kWebClientPrefilled);
   EXPECT_TRUE(IsDialogVisible());
 
   //  Get the WebContents and wait for it to load.
@@ -354,7 +370,8 @@ IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest,
   glic::GlicEnabling::SetBypassEnablementChecksForTesting(true);
 
   skills::Skill test_skill("id", "name", "icon", "prompt");
-  skills_ui_tab_controller()->ShowDialog(std::move(test_skill));
+  skills_ui_tab_controller()->ShowDialog(
+      std::move(test_skill), SkillsDialogEntryPoint::kWebClientPrefilled);
 
   content::WebContents* dialog_contents = GetDialogWebContents();
   ASSERT_TRUE(dialog_contents);

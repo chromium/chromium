@@ -124,6 +124,7 @@ source_set("interactive_ui_tests") {
     "//chrome/browser/glic:mojo_bindings",
     "//chrome/browser/glic/test_support",
     "//components/skills:features",
+    "//components/skills/public",
     "//testing/gmock",
     "//testing/gtest",
   ]

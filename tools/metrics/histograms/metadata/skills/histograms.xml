@@ -22,18 +22,40 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
-<histogram name="Skills.Dialog.{DialogType}.Action" enum="SkillsDialogAction"
-    expires_after="2027-02-01">
+<!-- LINT.IfChange(SkillsDialogEntryPointAndState) -->
+
+<variants name="SkillsDialogEntryPointAndState">
+  <variant name="" summary="all entry points (aggregate)"/>
+  <variant name=".ManagementPage.Blank"
+      summary="the Management Page (+ Add button, empty fields)"/>
+  <variant name=".ManagementPage.Prefilled"
+      summary="the Management Page (editing a user skill)"/>
+  <variant name=".ManagementPage.Remix"
+      summary="the Management Page (editing a 1P template)"/>
+  <variant name=".Unknown" summary="an Unknown entry point"/>
+  <variant name=".WebClient.Blank"
+      summary="the WebClient (+ button, empty fields)"/>
+  <variant name=".WebClient.Prefilled"
+      summary="the WebClient (save as skill / editing user skill)"/>
+  <variant name=".WebClient.Remix"
+      summary="the WebClient (editing a 1P template)"/>
+</variants>
+
+<!-- LINT.ThenChange(//components/skills/public/skills_metrics.h:SkillsDialogEntryPoint) -->
+
+<histogram name="Skills.Dialog.{DialogType}{EntryPointAndState}.Action"
+    enum="SkillsDialogAction" expires_after="2027-02-01">
   <owner>michelleabreo@google.com</owner>
   <owner>skills-eng@google.com</owner>
   <summary>
     Records user actions (e.g., Save, Cancel, Refine) specifically within the
-    Skills {DialogType} dialog.
+    Skills {DialogType} dialog. Invoked from {EntryPointAndState}.
   </summary>
   <token key="DialogType">
     <variant name="Creation" summary="Creation dialog for new skills"/>
     <variant name="Edit" summary="Edit dialog for existing skills"/>
   </token>
+  <token key="EntryPointAndState" variants="SkillsDialogEntryPointAndState"/>
 </histogram>
 
 <histogram name="Skills.Downloader.FirstParty.FetchResult"
