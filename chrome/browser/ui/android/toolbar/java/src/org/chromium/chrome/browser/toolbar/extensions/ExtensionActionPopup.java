@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.toolbar.extensions;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -18,6 +17,7 @@ import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.version_info.VersionInfo;
 import org.chromium.build.NullUtil;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.ui.extensions.ExtensionActionPopupContents;
 import org.chromium.components.embedder_support.view.ContentView;
@@ -25,11 +25,17 @@ import org.chromium.components.thinwebview.ThinWebView;
 import org.chromium.components.thinwebview.ThinWebViewConstraints;
 import org.chromium.components.thinwebview.ThinWebViewFactory;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.base.ActivityKeyboardVisibilityDelegate;
+import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.permissions.ActivityAndroidPermissionDelegate;
 import org.chromium.ui.widget.AnchoredPopupWindow;
 import org.chromium.ui.widget.ViewRectProvider;
+
+import java.lang.ref.WeakReference;
 
 /**
  * Manages the display of an extension action's popup UI.
@@ -44,8 +50,8 @@ import org.chromium.ui.widget.ViewRectProvider;
  */
 @NullMarked
 class ExtensionActionPopup implements Destroyable {
-    /** The context to use for creating views. */
-    private final Context mContext;
+    /** The activity to use for creating views. */
+    private final Activity mActivity;
 
     /** The ID of the extension action this popup is associated with. */
     private final String mActionId;
@@ -59,13 +65,16 @@ class ExtensionActionPopup implements Destroyable {
     /** The PopupWindow that is displayed on the screen, anchored to a view. */
     private final AnchoredPopupWindow mPopupWindow;
 
+    /** The window of the popup. */
+    private final ActivityWindowAndroid mPopupWindowAndroid;
+
     /** The content view of the popup. */
     private final ContentView mContentView;
 
     /**
      * Constructs an ExtensionActionPopup.
      *
-     * @param context The {@link Context} to use for creating views.
+     * @param activity The {@link Activity} to use for creating views.
      * @param windowAndroid The {@link WindowAndroid} for the current activity.
      * @param anchorView The {@link View} to which the popup will be anchored.
      * @param actionId The ID of the extension action.
@@ -75,18 +84,18 @@ class ExtensionActionPopup implements Destroyable {
      *     calling its {@code destroy()} method.
      */
     public ExtensionActionPopup(
-            Context context,
+            Activity activity,
             WindowAndroid windowAndroid,
             View anchorView,
             String actionId,
             ExtensionActionPopupContents contents) {
-        mContext = context;
+        mActivity = activity;
         mActionId = actionId;
         mContents = contents;
 
         WebContents webContents = contents.getWebContents();
 
-        mContentView = ContentView.createContentView(context, webContents);
+        mContentView = ContentView.createContentView(activity, webContents);
 
         webContents.setDelegates(
                 VersionInfo.getProductVersion(),
@@ -95,18 +104,31 @@ class ExtensionActionPopup implements Destroyable {
                 windowAndroid,
                 WebContents.createDefaultInternalsHolder());
 
+        mPopupWindowAndroid =
+                new ActivityWindowAndroid(
+                        activity,
+                        /* listenToActivityState= */ true,
+                        new ActivityAndroidPermissionDelegate(new WeakReference(mActivity)),
+                        new ActivityKeyboardVisibilityDelegate(new WeakReference(mActivity)),
+                        /* activityTopResumedSupported= */ false,
+                        NullUtil.assumeNonNull(windowAndroid.getIntentRequestTracker()),
+                        /* insetObserver= */ null,
+                        /* trackOcclusion= */ true) {
+                    @Override
+                    public @Nullable ModalDialogManager getModalDialogManager() {
+                        return windowAndroid.getModalDialogManager();
+                    }
+                };
+
         mThinWebView =
                 ThinWebViewFactory.create(
-                        context,
-                        new ThinWebViewConstraints(),
-                        NullUtil.assumeNonNull(windowAndroid.getIntentRequestTracker()));
+                        activity, new ThinWebViewConstraints(), mPopupWindowAndroid);
         mThinWebView.attachWebContents(webContents, mContentView, null);
 
-        View decorView = ((Activity) anchorView.getContext()).getWindow().getDecorView();
         mPopupWindow =
                 new AnchoredPopupWindow(
-                        context,
-                        decorView,
+                        activity,
+                        activity.getWindow().getDecorView(),
                         new ColorDrawable(Color.WHITE),
                         mThinWebView.getView(),
                         new ViewRectProvider(anchorView));
@@ -115,7 +137,7 @@ class ExtensionActionPopup implements Destroyable {
         mPopupWindow.setOutsideTouchable(true);
         mPopupWindow.setAllowNonTouchableSize(true);
 
-        Resources resources = mContext.getResources();
+        Resources resources = mActivity.getResources();
         mPopupWindow.setElevation(
                 resources.getDimensionPixelSize(R.dimen.extension_action_popup_elevation));
 
@@ -133,6 +155,7 @@ class ExtensionActionPopup implements Destroyable {
     public void destroy() {
         mPopupWindow.dismiss();
         mThinWebView.destroy();
+        mPopupWindowAndroid.destroy();
         mContents.destroy();
     }
 
@@ -165,7 +188,7 @@ class ExtensionActionPopup implements Destroyable {
             }
 
             mPopupWindow.setDesiredContentSize(
-                    ViewUtils.dpToPx(mContext, width), ViewUtils.dpToPx(mContext, height));
+                    ViewUtils.dpToPx(mActivity, width), ViewUtils.dpToPx(mActivity, height));
         }
 
         @Override

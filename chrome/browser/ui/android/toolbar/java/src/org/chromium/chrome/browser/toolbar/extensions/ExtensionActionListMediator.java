@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.toolbar.extensions;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.view.View;
@@ -338,9 +339,15 @@ class ExtensionActionListMediator implements Destroyable {
             return;
         }
 
+        Activity activity = mWindowAndroid.getActivity().get();
+        if (activity == null) {
+            contents.destroy();
+            return;
+        }
+
         assert mActionState instanceof ActionState.Idle;
         ExtensionActionPopup popup =
-                new ExtensionActionPopup(mContext, mWindowAndroid, buttonView, actionId, contents);
+                new ExtensionActionPopup(activity, mWindowAndroid, buttonView, actionId, contents);
         popup.loadInitialPage();
         popup.addOnDismissListener(this::closePopup);
         mActionState = new ActionState.PopupActive(popup, actionId);
