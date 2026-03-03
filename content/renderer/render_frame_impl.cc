@@ -602,7 +602,8 @@ blink::mojom::CommonNavigationParamsPtr MakeCommonNavigationParams(
   // because it is loaded immediately by the FrameLoader.
   blink::mojom::NavigationType navigation_type =
       blink::mojom::NavigationType::DIFFERENT_DOCUMENT;
-  if (info->navigation_type == blink::kWebNavigationTypeReload) {
+  if (info->navigation_type == blink::kWebNavigationTypeReload ||
+      info->navigation_type == blink::kWebNavigationTypeFormResubmittedReload) {
     if (load_flags & net::LOAD_BYPASS_CACHE)
       navigation_type = blink::mojom::NavigationType::RELOAD_BYPASSING_CACHE;
     else

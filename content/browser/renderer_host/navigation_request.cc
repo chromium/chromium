@@ -6159,6 +6159,8 @@ void NavigationRequest::OnWillProcessResponseChecksComplete(
           common_params_->has_possibly_filtered_user_gesture;
       resource_request->mode = network::mojom::RequestMode::kNavigate;
       resource_request->transition_type = common_params_->transition;
+      resource_request->is_reload_navigation =
+          NavigationTypeUtils::IsReload(common_params_->navigation_type);
       resource_request->trusted_params =
           network::ResourceRequest::TrustedParams();
       resource_request->trusted_params->isolation_info = GetIsolationInfo();

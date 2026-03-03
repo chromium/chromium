@@ -89,6 +89,7 @@ class CORE_EXPORT Request final : public ScriptWrappable, public Body {
   String integrity() const;
   bool keepalive() const;
   bool isHistoryNavigation() const;
+  bool isReloadNavigation() const;
   AbortSignal* signal() const { return signal_.Get(); }
   V8RequestDuplex duplex() const;
   V8IPAddressSpace targetAddressSpace() const;

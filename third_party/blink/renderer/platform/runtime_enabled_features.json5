@@ -4587,6 +4587,10 @@
       status: "stable",
     },
     {
+      name: "RequestIsReloadNavigation",
+      status: "experimental",
+    },
+    {
       name: "RequestMainFrameAfterFirstVideoFrame",
       status: "experimental",
     },

@@ -48,6 +48,8 @@ message CacheRequest {
   required string method = 1;
   repeated CacheHeaderMap headers = 2;
   optional string fragment = 3;
+  optional bool is_reload_navigation = 4;
+  optional bool is_history_navigation = 5;
 }
 
 message CacheResponse {

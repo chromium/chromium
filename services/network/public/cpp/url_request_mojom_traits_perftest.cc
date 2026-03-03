@@ -82,6 +82,7 @@ network::ResourceRequest CreateResourceRequest() {
   request.do_not_prompt_for_login = true;
   request.is_outermost_main_frame = true;
   request.transition_type = 0;
+  request.is_reload_navigation = false;
   request.previews_state = 0;
   request.upgrade_if_insecure = true;
   request.is_revalidating = false;

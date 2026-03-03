@@ -365,6 +365,9 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
   static int32_t transition_type(const network::ResourceRequest& request) {
     return request.transition_type;
   }
+  static bool is_reload_navigation(const network::ResourceRequest& request) {
+    return request.is_reload_navigation;
+  }
   static int32_t previews_state(const network::ResourceRequest& request) {
     return request.previews_state;
   }

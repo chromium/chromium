@@ -159,6 +159,9 @@ class CORE_EXPORT FetchRequestData final
   bool IsHistoryNavigation() const { return is_history_navigation_; }
   void SetIsHistoryNavigation(bool b) { is_history_navigation_ = b; }
 
+  bool IsReloadNavigation() const { return is_reload_navigation_; }
+  void SetIsReloadNavigation(bool b) { is_reload_navigation_ = b; }
+
   network::mojom::blink::URLLoaderFactory* URLLoaderFactory() const {
     return url_loader_factory_.is_bound() ? url_loader_factory_.get() : nullptr;
   }
@@ -266,6 +269,7 @@ class CORE_EXPORT FetchRequestData final
   bool ad_auction_headers_ = false;
   bool shared_storage_writable_ = false;
   bool is_history_navigation_ = false;
+  bool is_reload_navigation_ = false;
   network::mojom::AttributionReportingEligibility
       attribution_reporting_eligibility_ =
           network::mojom::AttributionReportingEligibility::kUnset;

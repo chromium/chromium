@@ -176,6 +176,7 @@ FetchRequestData* CreateCopyOfFetchRequestDataForFetch(
   request->SetAdAuctionHeaders(original->AdAuctionHeaders());
   request->SetSharedStorageWritable(original->SharedStorageWritable());
   request->SetIsHistoryNavigation(original->IsHistoryNavigation());
+  request->SetIsReloadNavigation(original->IsReloadNavigation());
   if (original->URLLoaderFactory()) {
     mojo::PendingRemote<network::mojom::blink::URLLoaderFactory> factory_clone;
     original->URLLoaderFactory()->Clone(
@@ -442,8 +443,8 @@ Request* Request::CreateRequestWithRequestOrString(
     if (request->Mode() == network::mojom::RequestMode::kNavigate)
       request->SetMode(network::mojom::RequestMode::kSameOrigin);
 
-    // TODO(yhirano): Implement the following substep:
     // "Unset |request|'s reload-navigation flag."
+    request->SetIsReloadNavigation(false);
 
     // "Unset |request|'s history-navigation flag."
     request->SetIsHistoryNavigation(false);
@@ -1245,6 +1246,10 @@ bool Request::isHistoryNavigation() const {
   return request_->IsHistoryNavigation();
 }
 
+bool Request::isReloadNavigation() const {
+  return request_->IsReloadNavigation();
+}
+
 Request* Request::clone(ScriptState* script_state,
                         ExceptionState& exception_state) {
   if (IsBodyLocked() || IsBodyUsed()) {
@@ -1315,6 +1320,7 @@ mojom::blink::FetchAPIRequestPtr Request::CreateFetchAPIRequest() const {
   fetch_api_request->redirect_mode = request_->Redirect();
   fetch_api_request->integrity = request_->Integrity();
   fetch_api_request->is_history_navigation = request_->IsHistoryNavigation();
+  fetch_api_request->is_reload = request_->IsReloadNavigation();
   fetch_api_request->destination = request_->Destination();
   fetch_api_request->request_initiator = request_->Origin();
   fetch_api_request->url = KURL(request_->Url());

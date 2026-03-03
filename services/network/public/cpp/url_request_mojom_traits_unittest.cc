@@ -98,6 +98,7 @@ TEST(URLRequestMojomTraitsTest, Roundtrips_ResourceRequest) {
   original.do_not_prompt_for_login = true;
   original.is_outermost_main_frame = true;
   original.transition_type = 0;
+  original.is_reload_navigation = true;
   original.previews_state = 0;
   original.upgrade_if_insecure = true;
   original.is_revalidating = false;

@@ -30,6 +30,7 @@ std::string SerializeFetchRequestToString(
   if (request.integrity)
     request_proto.set_integrity(request.integrity.value());
   request_proto.set_keepalive(request.keepalive);
+  request_proto.set_is_reload_navigation(request.is_reload);
   request_proto.set_is_history_navigation(request.is_history_navigation);
   request_proto.set_target_address_space(
       static_cast<int>(request.target_address_space));
@@ -56,7 +57,7 @@ blink::mojom::FetchAPIRequestPtr DeserializeFetchRequestFromString(
       GURL(request_proto.referrer().url()),
 
       Referrer::ConvertToPolicy(request_proto.referrer().policy()));
-  request_ptr->is_reload = request_proto.is_reload();
+  request_ptr->is_reload = request_proto.is_reload_navigation();
   request_ptr->credentials_mode = static_cast<network::mojom::CredentialsMode>(
       request_proto.credentials_mode());
   request_ptr->cache_mode =

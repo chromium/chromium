@@ -1473,6 +1473,8 @@ chromium-metrics-reviews@google.com.
   <int value="64" label="expected_public_keys"/>
   <int value="65" label="permissions_policy"/>
   <int value="66" label="client_side_content_decoding_enabled"/>
+  <int value="67" label="allow_unsafe_redirect_schemes (deprecated)"/>
+  <int value="68" label="is_reload_navigation"/>
 </enum>
 
 <!-- LINT.ThenChange(//services/network/prefetch_matches.cc:FieldsForUma) -->

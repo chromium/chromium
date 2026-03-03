@@ -359,6 +359,7 @@ bool ResourceRequest::EqualsForTesting(const ResourceRequest& request) const {
          do_not_prompt_for_login == request.do_not_prompt_for_login &&
          is_outermost_main_frame == request.is_outermost_main_frame &&
          transition_type == request.transition_type &&
+         is_reload_navigation == request.is_reload_navigation &&
          previews_state == request.previews_state &&
          upgrade_if_insecure == request.upgrade_if_insecure &&
          is_revalidating == request.is_revalidating &&

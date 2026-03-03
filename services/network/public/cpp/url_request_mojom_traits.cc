@@ -204,6 +204,7 @@ bool StructTraits<
   out->do_not_prompt_for_login = data.do_not_prompt_for_login();
   out->is_outermost_main_frame = data.is_outermost_main_frame();
   out->transition_type = data.transition_type();
+  out->is_reload_navigation = data.is_reload_navigation();
   out->previews_state = data.previews_state();
   out->upgrade_if_insecure = data.upgrade_if_insecure();
   out->is_revalidating = data.is_revalidating();

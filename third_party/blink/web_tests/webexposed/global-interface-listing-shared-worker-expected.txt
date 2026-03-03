@@ -1679,6 +1679,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter headers
 [Worker]     getter integrity
 [Worker]     getter isHistoryNavigation
+[Worker]     getter isReloadNavigation
 [Worker]     getter keepalive
 [Worker]     getter method
 [Worker]     getter mode

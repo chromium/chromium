@@ -70,6 +70,7 @@ enum ReferrerPolicy {
     [RuntimeEnabled=LocalNetworkAccessPermissionPolicy] readonly attribute IPAddressSpace targetAddressSpace;
 
     [MeasureAs=RequestIsHistoryNavigation] readonly attribute boolean isHistoryNavigation;
+    [RuntimeEnabled=RequestIsReloadNavigation] readonly attribute boolean isReloadNavigation;
     [RaisesException, CallWith=ScriptState, NewObject] Request clone();
 
     [RuntimeEnabled=FetchRetry] RetryOptions? getRetryOptions();

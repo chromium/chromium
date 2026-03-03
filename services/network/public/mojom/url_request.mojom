@@ -433,6 +433,10 @@ struct URLRequest {
   // about this.
   int32 transition_type;
 
+  // Whether this navigation is a reload (e.g., location.reload(), F5).
+  // Used to populate Request.isReloadNavigation for Service Workers.
+  bool is_reload_navigation;
+
   // Whether or not to request a Preview version of the resource or let the
   // browser decide.
   // Note: this is an enum of type PreviewsState.

@@ -85,9 +85,7 @@ blink::mojom::FetchAPIRequestPtr TypeConverter<
   output->redirect_mode = input.redirect_mode;
   output->destination =
       static_cast<network::mojom::RequestDestination>(input.destination);
-  output->is_reload = ui::PageTransitionCoreTypeIs(
-      static_cast<ui::PageTransition>(input.transition_type),
-      ui::PAGE_TRANSITION_RELOAD);
+  output->is_reload = input.is_reload_navigation;
   output->integrity = input.fetch_integrity;
   output->priority = input.priority;
   output->fetch_window_id = input.fetch_window_id;
