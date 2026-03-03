@@ -219,7 +219,7 @@ inline constexpr char kBWGPageContentSharingURL[] =
 inline constexpr char kBWGExtensionsURL[] = "https://gemini.google.com/apps";
 
 // Gets the hosts/domains that are shown in chrome://chrome-urls.
-inline constexpr std::array<std::string_view, 21> kChromeHostURLs = {
+inline constexpr std::array<std::string_view, 22> kChromeHostURLs = {
     commerce::kChromeUICommerceInternalsHost,
     kChromeUIChromeURLsHost,
     kChromeUICreditsHost,
@@ -234,6 +234,7 @@ inline constexpr std::array<std::string_view, 21> kChromeHostURLs = {
     kChromeUINewTabHost,
     kChromeUINTPTilesInternalsHost,
     kChromeUIPasswordManagerInternalsHost,
+    kChromeUIPrefsInternalsHost,
     kChromeUISignInInternalsHost,
     kChromeUISyncInternalsHost,
     kChromeUITermsHost,

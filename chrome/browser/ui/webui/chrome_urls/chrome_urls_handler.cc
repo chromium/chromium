@@ -34,6 +34,7 @@ base::span<const base::cstring_view> WebUIHostsWithoutConfigs() {
           content::kChromeUIBlobInternalsHost,
           content::kChromeUIDinoHost,
           chrome::kChromeUIExtensionsInternalsHost,
+          chrome::kChromeUIPrefsInternalsHost,
       });
   return base::span(kHostsWithoutConfigs);
 }
