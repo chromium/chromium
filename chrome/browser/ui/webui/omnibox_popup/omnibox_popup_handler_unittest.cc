@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_ui.h"
 #include "chrome/browser/ui/webui/searchbox/searchbox_test_utils.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller_test_support.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "content/public/test/test_web_ui.h"
@@ -18,34 +19,6 @@
 #include "ui/gfx/geometry/point.h"
 
 namespace {
-
-class TestEmbedder final : public TopChromeWebUIController::Embedder {
- public:
-  TestEmbedder() = default;
-  ~TestEmbedder() = default;
-
-  void ShowUI() override {}
-  void CloseUI() override {}
-  void HideContextMenu() override {}
-
-  void ShowContextMenu(gfx::Point point,
-                       std::unique_ptr<ui::MenuModel> menu_model) override {
-    context_menu_shown_ = true;
-  }
-
-  bool context_menu_shown() const { return context_menu_shown_; }
-
-  base::WeakPtr<TestEmbedder> GetWeakPtr() {
-    return weak_factory_.GetWeakPtr();
-  }
-
- private:
-  bool context_menu_shown_ = false;
-
-  base::WeakPtrFactory<TestEmbedder> weak_factory_{this};
-};
-
-}  // namespace
 
 class OmniboxPopupHandlerTest : public ChromeRenderViewHostTestHarness {
  public:
@@ -89,3 +62,5 @@ TEST_F(OmniboxPopupHandlerTest, ShowContextMenu) {
   handler_->ShowContextMenu(gfx::Point());
   EXPECT_TRUE(embedder_->context_menu_shown());
 }
+
+}  // namespace

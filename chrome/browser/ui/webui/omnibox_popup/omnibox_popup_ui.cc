@@ -242,37 +242,26 @@ void OmniboxPopupUI::CreatePageHandler(
 }
 
 void OmniboxPopupUI::BindInterface(
+    mojo::PendingReceiver<omnibox_popup_aim::mojom::PageHandlerFactory>
+        receiver) {
+  aim_page_factory_receiver_.reset();
+  aim_page_factory_receiver_.Bind(std::move(receiver));
+}
+
+void OmniboxPopupUI::CreatePageHandler(
+    mojo::PendingRemote<omnibox_popup_aim::mojom::Page> page,
+    mojo::PendingReceiver<omnibox_popup_aim::mojom::PageHandler> receiver) {
+  popup_aim_handler_ = std::make_unique<OmniboxPopupAimHandler>(
+      std::move(receiver), std::move(page), web_ui()->GetWebContents());
+  popup_aim_handler_->set_embedder(embedder());
+}
+
+void OmniboxPopupUI::BindInterface(
     mojo::PendingReceiver<composebox::mojom::PageHandlerFactory> receiver) {
   if (composebox_page_factory_receiver_.is_bound()) {
     composebox_page_factory_receiver_.reset();
   }
   composebox_page_factory_receiver_.Bind(std::move(receiver));
-}
-
-contextual_search::ContextualSearchSessionHandle*
-OmniboxPopupUI::GetOrCreateContextualSessionHandle() {
-  if (!shared_session_handle_) {
-    auto* contextual_search_service =
-        ContextualSearchServiceFactory::GetForProfile(profile_);
-    if (contextual_search_service) {
-      shared_session_handle_ = contextual_search_service->CreateSession(
-          omnibox::CreateQueryControllerConfigParams(),
-          contextual_search::ContextualSearchSource::kOmnibox,
-          lens::LensOverlayInvocationSource::kOmniboxContextualQuery);
-      // TODO(crbug.com/469875271): Determine what to do with the return value
-      // of this call, or move this call to a different location.
-      shared_session_handle_->CheckSearchContentSharingSettings(
-          profile_->GetPrefs());
-    }
-  }
-  return shared_session_handle_.get();
-}
-
-void OmniboxPopupUI::BindInterface(
-    mojo::PendingReceiver<omnibox_popup_aim::mojom::PageHandlerFactory>
-        receiver) {
-  aim_page_factory_receiver_.reset();
-  aim_page_factory_receiver_.Bind(std::move(receiver));
 }
 
 void OmniboxPopupUI::CreatePageHandler(
@@ -294,10 +283,21 @@ void OmniboxPopupUI::CreatePageHandler(
   composebox_handler_->SetPage(std::move(pending_searchbox_page));
 }
 
-void OmniboxPopupUI::CreatePageHandler(
-    mojo::PendingRemote<omnibox_popup_aim::mojom::Page> page,
-    mojo::PendingReceiver<omnibox_popup_aim::mojom::PageHandler> receiver) {
-  popup_aim_handler_ = std::make_unique<OmniboxPopupAimHandler>(
-      std::move(receiver), std::move(page), web_ui()->GetWebContents());
-  popup_aim_handler_->set_embedder(embedder());
+contextual_search::ContextualSearchSessionHandle*
+OmniboxPopupUI::GetOrCreateContextualSessionHandle() {
+  if (!shared_session_handle_) {
+    auto* contextual_search_service =
+        ContextualSearchServiceFactory::GetForProfile(profile_);
+    if (contextual_search_service) {
+      shared_session_handle_ = contextual_search_service->CreateSession(
+          omnibox::CreateQueryControllerConfigParams(),
+          contextual_search::ContextualSearchSource::kOmnibox,
+          lens::LensOverlayInvocationSource::kOmniboxContextualQuery);
+      // TODO(crbug.com/469875271): Determine what to do with the return value
+      // of this call, or move this call to a different location.
+      shared_session_handle_->CheckSearchContentSharingSettings(
+          profile_->GetPrefs());
+    }
+  }
+  return shared_session_handle_.get();
 }

@@ -58,18 +58,12 @@ class OmniboxPopupUI : public TopChromeWebUIController,
   OmniboxPopupUI& operator=(const OmniboxPopupUI&) = delete;
   ~OmniboxPopupUI() override;
 
-  // Instantiates the implementor of the
-  // omnibox_popup_aim::mojom::PageHandlerFactory mojo interface passing the
-  // pending receiver that will be internally bound.
-  void BindInterface(
-      mojo::PendingReceiver<omnibox_popup_aim::mojom::PageHandlerFactory>
-          receiver);
-
   // Instantiates the implementor of the searchbox::mojom::PageHandler mojo
   // interface passing the pending receiver that will be internally bound.
   void BindInterface(content::RenderFrameHost* host,
                      mojo::PendingReceiver<searchbox::mojom::PageHandler>
                          pending_page_handler);
+  WebuiOmniboxHandler* omnibox_handler() { return omnibox_handler_.get(); }
 
   // omnibox_popup::mojom::PageHandlerFactory:
   void BindInterface(
@@ -78,20 +72,23 @@ class OmniboxPopupUI : public TopChromeWebUIController,
       mojo::PendingRemote<omnibox_popup::mojom::Page> page,
       mojo::PendingReceiver<omnibox_popup::mojom::PageHandler> receiver)
       override;
-
-  // Instantiates the implementor of the
-  // composebox::mojom::PageHandlerFactory mojo interface passing the
-  // pending receiver that will be internally bound.
-  void BindInterface(
-      mojo::PendingReceiver<composebox::mojom::PageHandlerFactory> receiver);
+  OmniboxPopupHandler* popup_handler() { return popup_handler_.get(); }
 
   // omnibox_popup_aim::mojom::PageHandlerFactory:
+  void BindInterface(
+      mojo::PendingReceiver<omnibox_popup_aim::mojom::PageHandlerFactory>
+          receiver);
   void CreatePageHandler(
       mojo::PendingRemote<omnibox_popup_aim::mojom::Page> page,
       mojo::PendingReceiver<omnibox_popup_aim::mojom::PageHandler> receiver)
       override;
+  OmniboxPopupAimHandler* popup_aim_handler() {
+    return popup_aim_handler_.get();
+  }
 
   // composebox::mojom::PageHandlerFactory:
+  void BindInterface(
+      mojo::PendingReceiver<composebox::mojom::PageHandlerFactory> receiver);
   void CreatePageHandler(
       mojo::PendingRemote<composebox::mojom::Page> pending_page,
       mojo::PendingReceiver<composebox::mojom::PageHandler>
@@ -99,12 +96,6 @@ class OmniboxPopupUI : public TopChromeWebUIController,
       mojo::PendingRemote<searchbox::mojom::Page> pending_searchbox_page,
       mojo::PendingReceiver<searchbox::mojom::PageHandler>
           pending_searchbox_handler) override;
-
-  WebuiOmniboxHandler* omnibox_handler() { return omnibox_handler_.get(); }
-  OmniboxPopupHandler* popup_handler() { return popup_handler_.get(); }
-  OmniboxPopupAimHandler* popup_aim_handler() {
-    return popup_aim_handler_.get();
-  }
   ComposeboxHandler* composebox_handler() { return composebox_handler_.get(); }
 
   static constexpr std::string_view GetWebUIName() { return "OmniboxPopup"; }
@@ -115,23 +106,24 @@ class OmniboxPopupUI : public TopChromeWebUIController,
   GetOrCreateContextualSessionHandle();
 
  private:
+  raw_ptr<Profile> profile_;
+
   // Must outlive `omnibox_handler_` and `composebox_handler_`.
   std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
       shared_session_handle_;
   std::unique_ptr<WebuiOmniboxHandler> omnibox_handler_;
-  raw_ptr<Profile> profile_;
-
-  std::unique_ptr<OmniboxPopupAimHandler> popup_aim_handler_;
 
   std::unique_ptr<OmniboxPopupHandler> popup_handler_;
+  mojo::Receiver<omnibox_popup::mojom::PageHandlerFactory>
+      popup_page_factory_receiver_{this};
+
+  std::unique_ptr<OmniboxPopupAimHandler> popup_aim_handler_;
+  mojo::Receiver<omnibox_popup_aim::mojom::PageHandlerFactory>
+      aim_page_factory_receiver_{this};
 
   std::unique_ptr<ComposeboxHandler> composebox_handler_;
   mojo::Receiver<composebox::mojom::PageHandlerFactory>
       composebox_page_factory_receiver_{this};
-  mojo::Receiver<omnibox_popup::mojom::PageHandlerFactory>
-      popup_page_factory_receiver_{this};
-  mojo::Receiver<omnibox_popup_aim::mojom::PageHandlerFactory>
-      aim_page_factory_receiver_{this};
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

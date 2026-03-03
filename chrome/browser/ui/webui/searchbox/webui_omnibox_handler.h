@@ -56,9 +56,6 @@ class WebuiOmniboxHandler : public ContextualSearchboxHandler,
                      bool delay_upload,
                      AddTabContextCallback) override;
 
-  void OnShowAiModeButtonPrefChanged();
-  void OnContentSharingPolicyChanged();
-
   void StepSelection(OmniboxPopupSelection::Direction direction,
                      OmniboxPopupSelection::Step step);
   void OpenCurrentSelection(WindowOpenDisposition disposition);
@@ -88,21 +85,16 @@ class WebuiOmniboxHandler : public ContextualSearchboxHandler,
   // OmniboxEditModel::Observer:
   void OnSelectionChanged(OmniboxPopupSelection old_selection,
                           OmniboxPopupSelection selection) override;
+  void OnKeywordStateChanged(bool is_keyword_selected) override;
+  void OnCharTyped(base::TimeTicks timestamp) override;
   void OnMatchIconUpdated(size_t index) override {}
   void OnContentsChanged() override {}
-  void OnKeywordStateChanged(bool is_keyword_selected) override;
-  void OnCharTyped(base::TimeTicks timstamp) override;
-
-  // `AimEligibilityService` callback.
-  void OnAimEligibilityChanged();
 
   // TabStripModelObserver:
   void OnTabStripModelChanged(
       TabStripModel* tab_strip_model,
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override;
-
-  void OnNavigationFinished(content::NavigationHandle* navigation_handle);
 
  private:
   // Delegate to observe WebContents.
@@ -124,16 +116,21 @@ class WebuiOmniboxHandler : public ContextualSearchboxHandler,
   // ContextualSearchboxHandler:
   int GetContextMenuMaxTabSuggestions() override;
 
+  void OnShowAiModeButtonPrefChanged();
+  void OnContentSharingPolicyChanged();
+  void OnAimEligibilityChanged();
+  void OnNavigationFinished(content::NavigationHandle* navigation_handle);
+
   WebContentsObserver web_contents_observer_;
 
   // Observe `OmniboxEditModel` for updates that require updating the views.
   base::ScopedObservation<OmniboxEditModel, OmniboxEditModel::Observer>
       edit_model_observation_{this};
 
-  raw_ptr<MetricsReporter> metrics_reporter_;
   PrefChangeRegistrar pref_change_registrar_;
-
   base::CallbackListSubscription aim_eligibility_subscription_;
+
+  raw_ptr<MetricsReporter> metrics_reporter_;
 
   base::WeakPtrFactory<WebuiOmniboxHandler> weak_ptr_factory_{this};
 };

@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/webui/new_tab_footer/mock_new_tab_footer_document.h"
 #include "chrome/browser/ui/webui/new_tab_footer/new_tab_footer.mojom.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller_test_support.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "components/search/ntp_features.h"
@@ -27,32 +28,6 @@
 #include "ui/base/models/menu_model.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
-
-class TestEmbedder final : public TopChromeWebUIController::Embedder {
- public:
-  TestEmbedder() = default;
-  ~TestEmbedder() = default;
-
-  void ShowUI() override {}
-  void CloseUI() override {}
-  void HideContextMenu() override {}
-
-  void ShowContextMenu(gfx::Point point,
-                       std::unique_ptr<ui::MenuModel> menu_model) override {
-    context_menu_shown_ = true;
-  }
-
-  bool context_menu_shown() const { return context_menu_shown_; }
-
-  base::WeakPtr<TestEmbedder> GetWeakPtr() {
-    return weak_factory_.GetWeakPtr();
-  }
-
- private:
-  bool context_menu_shown_;
-
-  base::WeakPtrFactory<TestEmbedder> weak_factory_{this};
-};
 
 class NewTabFooterHandlerBrowserTest : public extensions::ExtensionBrowserTest {
  public:
