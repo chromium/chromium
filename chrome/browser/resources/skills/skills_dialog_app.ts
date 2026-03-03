@@ -33,10 +33,17 @@ import {getHtml} from './skills_dialog_app.html.js';
 import {SkillsDialogBrowserProxy} from './skills_dialog_browser_proxy.js';
 
 const DEFAULT_EMOJI: string = '⚡';
-export const MAX_PROMPT_CHAR_COUNT = 20000;
+export const MAX_PROMPT_CHAR_COUNT =
+    loadTimeData.getInteger('MAX_PROMPT_CHAR_COUNT');
 const REFINE_SKILL_TIMEOUT_MS = 5000;
 
 let windowProxyInstance: WindowProxy|null = null;
+
+export enum PromptError {
+  NONE = 0,
+  REFINE = 1,
+  CHAR_LIMIT = 2,
+}
 
 export interface WindowProxy {
   setTimeout(handler: TimerHandler, timeout?: number): number;
@@ -70,7 +77,7 @@ export interface SkillsDialogAppElement {
     instructionsText: HTMLTextAreaElement,
     nameLoaderContainer: HTMLElement,
     nameText: CrInputElement,
-    refineErrorMessage: HTMLElement,
+    errorMessage: HTMLElement,
     saveButton: CrButtonElement,
     saveErrorContainer: HTMLElement,
     textareaWrapper: HTMLElement,
@@ -98,7 +105,7 @@ export class SkillsDialogAppElement extends CrLitElement {
       canRedoRefine_: {type: Boolean},
       shouldShowErrorPage_: {type: Boolean},
       signedInEmail_: {type: String},
-      hasRefineError_: {type: Boolean},
+      promptError_: {type: Number},
       isRefineLoading_: {type: Boolean},
       isAutoGenerationLoading_: {type: Boolean},
       hasSaveError_: {type: Boolean},
@@ -125,7 +132,7 @@ export class SkillsDialogAppElement extends CrLitElement {
   protected accessor shouldShowErrorPage_: boolean =
       !loadTimeData.getBoolean('isGlicEnabled');
   protected accessor signedInEmail_: string = '';
-  protected accessor hasRefineError_: boolean = false;
+  protected accessor promptError_: PromptError = PromptError.NONE;
   protected accessor isRefineLoading_: boolean = false;
   protected accessor isAutoGenerationLoading_: boolean = false;
   protected accessor hasSaveError_: boolean = false;
@@ -139,6 +146,10 @@ export class SkillsDialogAppElement extends CrLitElement {
   protected get isSaveButtonDisabled() {
     return !this.skill_.name || !this.skill_.prompt ||
         this.skill_.name.length === 0 || this.skill_.prompt.length === 0;
+  }
+
+  protected hasPromptError_(): boolean {
+    return this.promptError_ !== PromptError.NONE;
   }
 
   /** Initializes dialog. */
@@ -201,6 +212,17 @@ export class SkillsDialogAppElement extends CrLitElement {
 
   override updated(changedProperties: PropertyValues) {
     super.updated(changedProperties as PropertyValues<this>);
+
+    if (changedProperties.has('skill_')) {
+      this.promptError_ = this.skill_.prompt.length >= MAX_PROMPT_CHAR_COUNT ?
+          PromptError.CHAR_LIMIT :
+          PromptError.NONE;
+
+      // Only check overflow if the textarea is currently in the DOM
+      if (!this.isRefineLoading_) {
+        this.checkTextareaOverflow_();
+      }
+    }
 
     // If the loading state changed, the textarea might have been removed from
     // the DOM.
@@ -311,11 +333,8 @@ export class SkillsDialogAppElement extends CrLitElement {
     this.canRedoRefine_ = false;
     this.originalPrompt_ = '';
     this.refinedPrompt_ = '';
-    this.hasRefineError_ = false;
 
     this.skill_ = {...this.skill_, prompt: newValue};
-
-    this.checkTextareaOverflow_();
   }
 
   protected onUndoClick_() {
@@ -325,10 +344,8 @@ export class SkillsDialogAppElement extends CrLitElement {
 
     this.canUndoRefine_ = false;
     this.canRedoRefine_ = true;
-    this.hasRefineError_ = false;
 
     this.updateComplete.then(() => {
-      this.checkTextareaOverflow_();
       this.instructionsTextarea_.focus();
     });
   }
@@ -338,10 +355,8 @@ export class SkillsDialogAppElement extends CrLitElement {
 
     this.canUndoRefine_ = true;
     this.canRedoRefine_ = false;
-    this.hasRefineError_ = false;
 
     this.updateComplete.then(() => {
-      this.checkTextareaOverflow_();
       this.instructionsTextarea_.focus();
     });
   }
@@ -359,13 +374,12 @@ export class SkillsDialogAppElement extends CrLitElement {
     };
 
     this.isRefineLoading_ = true;
-    this.hasRefineError_ = false;
 
     // Race the request against the timeout
     return this.requestRefinedSkillWithTimeout_(skillToRefine)
         .then(({refinedSkill}) => {
           // If the server returned null, do not overwrite the current state.
-          if (refinedSkill && !this.hasRefineError_) {
+          if (refinedSkill && this.promptError_ !== PromptError.REFINE) {
             // Only update if we have a valid result.
             this.skill_ = {
               ...this.skill_,
@@ -379,7 +393,7 @@ export class SkillsDialogAppElement extends CrLitElement {
           }
         })
         .catch(() => {
-          this.hasRefineError_ = true;
+          this.promptError_ = PromptError.REFINE;
         })
         .finally(() => {
           this.isRefineLoading_ = false;

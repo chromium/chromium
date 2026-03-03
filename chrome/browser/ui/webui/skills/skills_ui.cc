@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/skills/skills_ui.h"
 
+#include "base/i18n/number_formatting.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
@@ -19,9 +20,12 @@
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/webui/webui_util.h"
 
 namespace skills {
+
+constexpr int kMaxPromptCharCount = 20000;
 
 SkillsUI::SkillsUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
   Profile* profile = Profile::FromWebUI(web_ui);
@@ -31,6 +35,7 @@ SkillsUI::SkillsUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
   source->AddResourcePath("dialog", IDR_SKILLS_SKILLS_DIALOG_HTML);
   bool isGlicEnabled = glic::GlicEnabling::IsEnabledForProfile(profile);
   source->AddBoolean("isGlicEnabled", isGlicEnabled);
+  source->AddInteger("MAX_PROMPT_CHAR_COUNT", kMaxPromptCharCount);
   static constexpr webui::LocalizedString kStrings[] = {
       {"cancel", IDS_CANCEL},
       {"edit", IDS_EDIT2},
@@ -76,6 +81,10 @@ SkillsUI::SkillsUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
   };
 
   source->AddLocalizedStrings(kStrings);
+  source->AddString(
+      "charLimitError",
+      l10n_util::GetStringFUTF16(IDS_SKILLS_DIALOG_CHAR_LIMIT_ERROR,
+                                 base::FormatNumber(kMaxPromptCharCount)));
 }
 
 void SkillsUI::InitializeDialog(base::WeakPtr<SkillsDialogDelegate> delegate,

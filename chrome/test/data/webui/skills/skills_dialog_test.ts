@@ -5,11 +5,12 @@
 import 'chrome://skills/skills_dialog_app.js';
 
 import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import type {Skill} from 'chrome://skills/skill.mojom-webui.js';
 import {SkillSource} from 'chrome://skills/skill.mojom-webui.js';
 import {DialogHandlerRemote} from 'chrome://skills/skills.mojom-webui.js';
-import {WindowProxyImpl} from 'chrome://skills/skills_dialog_app.js';
+import {MAX_PROMPT_CHAR_COUNT, WindowProxyImpl} from 'chrome://skills/skills_dialog_app.js';
 import type {SkillsDialogAppElement, WindowProxy} from 'chrome://skills/skills_dialog_app.js';
 import {SkillsDialogBrowserProxy} from 'chrome://skills/skills_dialog_browser_proxy.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -44,6 +45,9 @@ suite('SkillsDialogAppPage', function() {
   let testWindowProxy: TestWindowProxy;
 
   setup(async function() {
+    loadTimeData.overrideValues({
+      MAX_PROMPT_CHAR_COUNT: 20000,
+    });
     dialogHandler = TestMock.fromClass(DialogHandlerRemote);
     SkillsDialogBrowserProxy.setInstance(
         {handler: dialogHandler} as SkillsDialogBrowserProxy);
@@ -543,7 +547,7 @@ suite('SkillsDialogAppPage', function() {
     const refineBtn = skillsDialogApp.$.iconRefine;
     // Query these elements dynamically in assertion to ensure freshness
     const textareaWrapper = skillsDialogApp.$.textareaWrapper;
-    const errorMessage = skillsDialogApp.$.refineErrorMessage;
+    const errorMessage = skillsDialogApp.$.errorMessage;
 
     // 1. Setup Input
     await updateInstructions('Start text');
@@ -565,7 +569,7 @@ suite('SkillsDialogAppPage', function() {
 
     // Helper functions to get fresh DOM elements
     const textareaWrapper = skillsDialogApp.$.textareaWrapper;
-    const errorMessage = skillsDialogApp.$.refineErrorMessage;
+    const errorMessage = skillsDialogApp.$.errorMessage;
 
     // 1. Setup Input and Trigger Error
     await updateInstructions('Start');
@@ -643,7 +647,7 @@ suite('SkillsDialogAppPage', function() {
   test('LateResponseDoesNotOverwriteError', async function() {
     const refineBtn = skillsDialogApp.$.iconRefine;
     const textareaWrapper = skillsDialogApp.$.textareaWrapper;
-    const errorMessage = skillsDialogApp.$.refineErrorMessage;
+    const errorMessage = skillsDialogApp.$.errorMessage;
 
     // 1. Setup Initial State
     await updateInstructions('Original Text');
@@ -891,5 +895,24 @@ suite('SkillsDialogAppPage', function() {
         skillsDialogApp.shadowRoot.querySelector('#nameLoaderContainer');
     assertEquals(null, loader);
     assertEquals('Pre-existing Name', skillsDialogApp.$.nameText.value);
+  });
+
+  test('CharLimitErrorDisplaysCorrectly', async function() {
+    await updateName('test skill');
+
+    // 1. At or over limit: disabled.
+    const longPrompt = 'a'.repeat(MAX_PROMPT_CHAR_COUNT);
+    await updateInstructions(longPrompt);
+
+    // Check error message visibility
+    const charLimitErrorMessage = skillsDialogApp.$.errorMessage;
+    assertTrue(!!charLimitErrorMessage);
+    assertFalse(charLimitErrorMessage.hidden);
+    assertTrue(skillsDialogApp.$.textareaWrapper.hasAttribute('error'));
+
+    // 2. Under limit again: enabled.
+    await updateInstructions('a');
+    assertTrue(charLimitErrorMessage.hidden);
+    assertFalse(skillsDialogApp.$.textareaWrapper.hasAttribute('error'));
   });
 });

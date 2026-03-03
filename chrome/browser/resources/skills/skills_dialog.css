@@ -263,14 +263,15 @@ textarea::placeholder {
   font-weight: 400;
 }
 
-#refineErrorMessage {
+#errorMessage {
   display: flex;
   align-items: center;
   gap: 4px;
   margin-top: 8px;
+  padding-left: 10px;
 }
 
-#refineErrorMessage a {
+#errorMessage a {
   color: inherit;
   text-decoration: underline;
   cursor: pointer;
