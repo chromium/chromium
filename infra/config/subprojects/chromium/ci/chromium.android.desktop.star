@@ -295,7 +295,7 @@ ci.thin_tester(
                     "--emulator-debug-tags=all",
                 ],
                 swarming = targets.swarming(
-                    shards = 20,
+                    shards = 50,
                 ),
             ),
             "chrome_public_test_apk": targets.mixin(
