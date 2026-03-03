@@ -1310,6 +1310,8 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3102312643185441063">Uzkrājumu konts</translation>
 <translation id="3103188521861412364">Akcijas un obligācijas</translation>
 <translation id="3105172416063519923">Līdzekļa ID:</translation>
+<translation id="3105223248029915046">Uz maksājumu plāniem attiecas piemērotības prasības.
+Lai paslēptu vēlākas maksāšanas iespējas, pārejiet uz <ph name="BEGIN_LINK" />maksājumu iestatījumiem<ph name="END_LINK" />.</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />Pārbaudīt droša DNS servera konfigurāciju<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Vidējā paplāte</translation>
 <translation id="3109061346635850169">Sejas un ķermeņa kopšana</translation>
@@ -2353,7 +2355,6 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="4750671009706599284">šo tālruni</translation>
 <translation id="4750917950439032686">Jūsu informācija (piemēram, paroles vai kredītkaršu numuri) ir privāta, kad tā tiek nosūtīta uz šo vietni.</translation>
 <translation id="4751249061288707459">Piekrišanas pēdējās atjaunināšanas reize:</translation>
-<translation id="4751476147751820511">Kustību vai gaismas sensori</translation>
 <translation id="4754461935447132332">Nav atļauts nedrošām vietnēm</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
 <translation id="4757740693289347881">Kods nav derīgs</translation>
@@ -3669,7 +3670,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="6850286078059909152">Teksta krāsa</translation>
 <translation id="6852204201400771460">Vai atkārtoti ielādēt lietotni?</translation>
 <translation id="6854691830678097752">Ātrākiem norēķiniem saglabājiet šo CVC kodu savā kontā (<ph name="ACCOUNT_EMAIL" />).</translation>
-<translation id="6855951327659224749">Notīriet veidlapu, lai izmantotu vēlākas maksāšanas iespēju</translation>
+<translation id="6855951327659224749">Notīriet veidlapu, lai maksātu vēlāk</translation>
 <translation id="6857776781123259569">Pārvaldīt paroles…</translation>
 <translation id="6858034839887287663">A2x4</translation>
 <translation id="6860888819347870819">Drīkst pieprasīt atļauju aktivizēt režīmu “Attēls attēlā”</translation>
@@ -4358,6 +4359,7 @@ Papildu informācija:
 <translation id="7908648876066812348">Notiek virtuālās kartes aktivizēšana</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, lai iestatījumos pārietu uz Chrome drošības pārbaudes lapu, nospiediet tabulēšanas taustiņu un pēc tam — taustiņu Enter.</translation>
 <translation id="791107458486222637">Rezultāta atsaukšanas atcelšana</translation>
+<translation id="7911651285409665023">Aizvērt un atgriezties cilnē “<ph name="TAB_TITLE" />”</translation>
 <translation id="7912924955815015552">Importētas no Safari</translation>
 <translation id="791551905239004656">Zīmēšana un krāsošana</translation>
 <translation id="7916162853251942238">Fleksogrāfijas pamatne</translation>
@@ -5210,7 +5212,6 @@ Papildu informācija:
 <translation id="987264212798334818">Vispārīgi</translation>
 <translation id="988159990683914416">Attīstītāja konstrukcija</translation>
 <translation id="989988560359834682">Rediģēt adresi</translation>
-<translation id="991413375315957741">kustību un gaismas sensori</translation>
 <translation id="991936891556421157">Apavi</translation>
 <translation id="992110854164447044">Virtuāla karte paslēpj jūsu faktisko karti, lai efektīvāk aizsargātu jūs pret iespējamu krāpšanu. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="992115559265932548"><ph name="MICROSOFT_ACTIVE_DIRECTORY" /></translation>

@@ -66,7 +66,6 @@
 <translation id="1677097821151855053">Soubory cookie a další data webů slouží k tomu, aby si vás web zapamatoval, například pro účely přihlášení nebo personalizace reklam. Chcete-li spravovat cookies pro všechny weby, přejděte do <ph name="BEGIN_LINK" />Nastavení<ph name="END_LINK" />.</translation>
 <translation id="1679305402657584804">Weby můžou žádat o použití zařízení NFC</translation>
 <translation id="1686785653877010442">Weby obvykle zasílají oznámení, kterými vás informují o mimořádných zprávách nebo zprávách v chatu.</translation>
-<translation id="169515064810179024">Blokovat webům přístup k senzorům pohybu</translation>
 <translation id="1703666494654169921">Nepovolovat webům používání zařízení nebo dat pro virtuální realitu</translation>
 <translation id="1704230497453185209">Nepovolovat webům přehrávat zvuk</translation>
 <translation id="1717218214683051432">Pohybová čidla</translation>
@@ -235,7 +234,6 @@ Pokročilá ochrana spravuje tato nastavení Chromu:
 <translation id="3232293466644486101">Vymazat údaje o prohlížení…</translation>
 <translation id="3242646949159196181">Když je tato možnost zapnutá, weby mohou přehrávat zvuk. Když je vypnutá, weby zvuk přehrávat nemohou.</translation>
 <translation id="3273479183583863618">Poklesy cen na kartách</translation>
-<translation id="3277252321222022663">Povolit webům přístup k senzorům (doporučeno)</translation>
 <translation id="3285500645985761267">Povolit souvisejícím webům sledovat vaši aktivitu ve skupině</translation>
 <translation id="3295019059349372795">Kapitola 11: Smaragdové město v zemi Oz</translation>
 <translation id="3295602654194328831">Skrýt informace</translation>
@@ -371,7 +369,6 @@ Pokročilá ochrana spravuje tato nastavení Chromu:
 <translation id="4672315773691449562">Klepněte na aplikaci Prohlížeč a potom na Chrome</translation>
 <translation id="4676059169848868271">Pokud aplikaci <ph name="APP_NAME" /> chcete umožnit používat sledování rukou, zapněte sledování rukou také v <ph name="BEGIN_LINK" />nastavení systému<ph name="END_LINK" />.</translation>
 <translation id="4688045258817337666">Správa karet</translation>
-<translation id="4751476147751820511">Senzory pohybu nebo světla</translation>
 <translation id="4755971844837804407">Když je tato možnost zapnutá, weby vám mohou zobrazovat jakékoliv reklamy. Když je vypnutá, weby nemohou zobrazovat rušivé ani zavádějící reklamy.</translation>
 <translation id="4779083564647765204">Lupa</translation>
 <translation id="4807122856660838973">Zapnout Bezpečné prohlížení</translation>
@@ -398,7 +395,6 @@ Pokročilá ochrana spravuje tato nastavení Chromu:
 <translation id="5001526427543320409">Soubory cookie třetích stran</translation>
 <translation id="5007392906805964215">Zkontrolovat</translation>
 <translation id="5039804452771397117">Povolit</translation>
-<translation id="5048398596102334565">Povolit webům přístup k senzorům pohybu (doporučeno)</translation>
 <translation id="5048841907079026162">Spravujte své údaje o procházení</translation>
 <translation id="5050380848339752099">Tento web chce sdílet informace s aplikací mimo anonymní režim.</translation>
 <translation id="5063480226653192405">Použití</translation>
@@ -686,7 +682,6 @@ Pokročilá ochrana spravuje tato nastavení Chromu:
 <translation id="8088603949666785339">Další možnosti v <ph name="BANNER_TITLE" /></translation>
 <translation id="8112925981674547014">Zobrazení karet v seznamu aplikací</translation>
 <translation id="8116925261070264013">Ztlumeno</translation>
-<translation id="8117244575099414087">Když je tato možnost zapnutá, weby mohou používat senzory zařízení. Když je vypnutá, weby senzory používat nemohou.</translation>
 <translation id="813082847718468539">Zobrazit informace o webu</translation>
 <translation id="8131740175452115882">Potvrdit</translation>
 <translation id="8148160259207090265">Tohle nastavení zůstane zapnuté, dokud budete mít v nastavení Androidu zapnutou pokročilou ochranu.</translation>
@@ -762,7 +757,6 @@ Pokročilá ochrana spravuje tato nastavení Chromu:
 <translation id="8801657293260363985">V8 je modul prohlížeče Chrome pro JavaScript a WebAssembly používaný ke zlepšení výkonu webů</translation>
 <translation id="8803526663383843427">Když je tato funkce zapnutá</translation>
 <translation id="8805385115381080995">Procházení je rychlejší, protože je méně pravděpodobné, že vás web požádá o ověření, že jste skutečná osoba</translation>
-<translation id="8816026460808729765">Blokovat webům přístup k senzorům</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8874790741333031443">Zkuste dočasně povolit soubory cookie třetích stran – budete při procházení méně chráněni, ale funkce webu budou s větší pravděpodobností fungovat správně.</translation>
 <translation id="8889294078294184559">Při dalším procházení může Chrome na požádání jinému webu sdělit, že vás předchozí web ověřil jako pravděpodobně skutečného uživatele</translation>

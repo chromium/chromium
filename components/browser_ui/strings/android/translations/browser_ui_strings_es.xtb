@@ -66,7 +66,6 @@
 <translation id="1677097821151855053">Las cookies y otros datos de los sitios se usan para recordarte. Así, podrás iniciar sesión o ver anuncios personalizados, entre otras cosas. Para gestionar las cookies de todos los sitios, ve a <ph name="BEGIN_LINK" />Configuración<ph name="END_LINK" />.</translation>
 <translation id="1679305402657584804">Los sitios pueden solicitar permiso para usar dispositivos NFC</translation>
 <translation id="1686785653877010442">Los sitios suelen enviar notificaciones para informarte sobre las últimas noticias o mensajes de chat.</translation>
-<translation id="169515064810179024">No permitir que los sitios accedan a los sensores de movimiento</translation>
 <translation id="1703666494654169921">No permitir que los sitios usen datos ni dispositivos de realidad virtual</translation>
 <translation id="1704230497453185209">No permitir que los sitios reproduzcan sonido</translation>
 <translation id="1717218214683051432">Sensores de movimiento</translation>
@@ -235,7 +234,6 @@ Protección Avanzada controla estos ajustes de Chrome:
 <translation id="3232293466644486101">Eliminar datos de navegación...</translation>
 <translation id="3242646949159196181">Cuando esta opción está activada, los sitios pueden reproducir sonido. Si está desactivada, los sitios no pueden reproducir sonido.</translation>
 <translation id="3273479183583863618">Bajadas de precio en pestañas</translation>
-<translation id="3277252321222022663">Permitir que los sitios accedan a los sensores (recomendado)</translation>
 <translation id="3285500645985761267">Permitir que los sitios relacionados vean tu actividad en el grupo</translation>
 <translation id="3295019059349372795">Capítulo 11: La maravillosa Ciudad Esmeralda de Oz</translation>
 <translation id="3295602654194328831">Ocultar información</translation>
@@ -371,7 +369,6 @@ Protección Avanzada controla estos ajustes de Chrome:
 <translation id="4672315773691449562">Toca Aplicación de navegador y, a continuación, Chrome</translation>
 <translation id="4676059169848868271">Para que <ph name="APP_NAME" /> pueda usar el seguimiento de manos, actívalo también en la <ph name="BEGIN_LINK" />configuración del sistema<ph name="END_LINK" />.</translation>
 <translation id="4688045258817337666">Gestionar las tarjetas</translation>
-<translation id="4751476147751820511">Sensores de luz o movimiento</translation>
 <translation id="4755971844837804407">Cuando esta opción está activada, los sitios pueden mostrarte cualquier anuncio. Si está desactivada, los sitios no pueden mostrar anuncios invasivos o engañosos.</translation>
 <translation id="4779083564647765204">Zoom</translation>
 <translation id="4807122856660838973">Activar Navegación segura</translation>
@@ -398,7 +395,6 @@ Protección Avanzada controla estos ajustes de Chrome:
 <translation id="5001526427543320409">Cookies de terceros</translation>
 <translation id="5007392906805964215">Ver</translation>
 <translation id="5039804452771397117">Permitir</translation>
-<translation id="5048398596102334565">Permitir que los sitios accedan a los sensores de movimiento (recomendado)</translation>
 <translation id="5048841907079026162">Gestiona tus datos de navegación</translation>
 <translation id="5050380848339752099">Este sitio va a compartir información con una aplicación fuera del modo Incógnito.</translation>
 <translation id="5063480226653192405">Uso</translation>
@@ -686,7 +682,6 @@ Protección Avanzada controla estos ajustes de Chrome:
 <translation id="8088603949666785339">Más opciones en el <ph name="BANNER_TITLE" /></translation>
 <translation id="8112925981674547014">Ver pestañas en tu lista de aplicaciones</translation>
 <translation id="8116925261070264013">Silenciado</translation>
-<translation id="8117244575099414087">Cuando esta opción está activada, los sitios pueden usar los sensores de tu dispositivo. Si está desactivada, los sitios no pueden usar los sensores.</translation>
 <translation id="813082847718468539">Ver información del sitio</translation>
 <translation id="8131740175452115882">Confirmar</translation>
 <translation id="8148160259207090265">Este ajuste permanecerá activo siempre que tengas activada la Protección Avanzada en los ajustes de Android.</translation>
@@ -762,7 +757,6 @@ Protección Avanzada controla estos ajustes de Chrome:
 <translation id="8801657293260363985">V8 es el motor de Chrome para JavaScript y WebAssembly que se usa para mejorar el rendimiento de los sitios</translation>
 <translation id="8803526663383843427">Cuando está activada</translation>
 <translation id="8805385115381080995">La navegación es más rápida porque es menos probable que un sitio te pida que verifiques que eres una persona real</translation>
-<translation id="8816026460808729765">No permitir que los sitios accedan a los sensores</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8874790741333031443">Prueba a permitir temporalmente las cookies de terceros, lo que disminuirá la protección al navegar, pero aumentará la probabilidad de que las opciones de los sitios funcionen como se espera.</translation>
 <translation id="8889294078294184559">A medida que sigas navegando, los sitios podrán realizar comprobaciones con Chrome y verificar, con un sitio que hayas visitado anteriormente, que es probable que seas una persona real</translation>

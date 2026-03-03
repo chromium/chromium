@@ -237,6 +237,7 @@
 <translation id="3509308970982693815">Моля, затворете всички прозорци на Chromium и опитайте отново.</translation>
 <translation id="3522404737534491619">За да споделите прозореца си, разрешете записването на екрана за Chromium в System Settings</translation>
 <translation id="3530103706039034513"><ph name="EXISTING_USER" /> вече е в профила си.  За да бъде сърфирането ви отделно, влезте в Chromium със свой собствен потребителски профил като <ph name="USER_EMAIL_ADDRESS" />.</translation>
+<translation id="3531741627422851418">QR код за изтегляне на браузъра Chromium на мобилни устройства</translation>
 <translation id="3561853857681580870">За да споделите екрана си, разрешете записването на екрана за Chromium в System Settings.</translation>
 <translation id="3588112919289558122">Подобрената защита изключва оптимизирането на JavaScript за сайтовете, които Chromium не разпознава</translation>
 <translation id="3597003331831379823">Настройването с администраторски права не бе изпълнено успешно. <ph name="METAINSTALLER_ERROR" /></translation>

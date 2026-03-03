@@ -167,6 +167,7 @@
 <translation id="1621067168122174824">充電テストを実行</translation>
 <translation id="1622402072367425417">輝く泡</translation>
 <translation id="1626590945318984973">このショートカットは使用できません。ファンクション キーと <ph name="META_KEY" /> キーを使わない新しいショートカットを押してください。</translation>
+<translation id="163774412591892664">デバイスは、デバイスの位置情報にアクセス可能な管理者によって無効にされました。</translation>
 <translation id="1639239467298939599">読み込んでいます</translation>
 <translation id="1641857168437328880">ドキュメント フィーダー（片面）</translation>
 <translation id="1642396894598555413">自転車</translation>
@@ -1723,6 +1724,7 @@
 <translation id="8584654835905316966"><ph name="DEVICE_NAME" /> でバージョン <ph name="VERSION" /> へのファームウェアのインストールを完了するには、再起動が必要です。その際、コンピュータに再起動の画面が複数回表示されることがありますが、これは正常な動作です。</translation>
 <translation id="8593058461203131755">メディアを一時停止する</translation>
 <translation id="8620617069779373398">ローミング状態</translation>
+<translation id="8624524972189162859">デバイスは、デバイスの位置情報にアクセス可能な <ph name="DOMAIN_NAME" /> の管理者によって無効にされました。</translation>
 <translation id="8626489604350149811"><ph name="APN_NAME" /> に対するその他の操作</translation>
 <translation id="86356131183441916">ライトパープル</translation>
 <translation id="8647595191512746911">音声文字起こし</translation>

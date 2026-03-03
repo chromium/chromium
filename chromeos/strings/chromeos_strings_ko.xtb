@@ -167,6 +167,7 @@
 <translation id="1621067168122174824">충전 테스트 실행</translation>
 <translation id="1622402072367425417">빛나는 버블</translation>
 <translation id="1626590945318984973">단축키를 사용할 수 없습니다. 기능 키와 <ph name="META_KEY" /> 키를 사용하지 않고 새로운 단축키를 누르세요.</translation>
+<translation id="163774412591892664">관리자가 기기를 사용 중지했으며 기기의 위치에 액세스할 수 있습니다.</translation>
 <translation id="1639239467298939599">로드 중</translation>
 <translation id="1641857168437328880">서류 급지(단면)</translation>
 <translation id="1642396894598555413">자전거</translation>
@@ -1723,6 +1724,7 @@
 <translation id="8584654835905316966"><ph name="DEVICE_NAME" /> 버전 <ph name="VERSION" />의 펌웨어 설치를 완료하려면 기기를 다시 시작해야 합니다. 컴퓨터가 여러 번 재부팅되는 것처럼 보일 수 있습니다. 이는 예상되는 동작입니다.</translation>
 <translation id="8593058461203131755">미디어를 일시중지합니다</translation>
 <translation id="8620617069779373398">로밍 상태</translation>
+<translation id="8624524972189162859"><ph name="DOMAIN_NAME" /> 관리자가 기기를 사용 중지했으며 기기의 위치에 액세스할 수 있습니다.</translation>
 <translation id="8626489604350149811"><ph name="APN_NAME" />의 작업 더보기</translation>
 <translation id="86356131183441916">연한 보라색</translation>
 <translation id="8647595191512746911">오디오 스크립트 작성</translation>

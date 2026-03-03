@@ -1611,6 +1611,7 @@
 <translation id="3575121482199441727">এই ছাইটটোৰ বাবে অনুমতি দিয়ক</translation>
 <translation id="3575168918110434329">A4x7</translation>
 <translation id="3575589330755445706">পথৰ নামৰ বিকল্প বাছনি কৰা হৈছে</translation>
+<translation id="3576315803647905285">গৃহীত ৰূপ দিয়ক</translation>
 <translation id="3576616784287504635"><ph name="SITE" />ত এম্বেড কৰি ৰখা পৃষ্ঠাত কোৱা হৈছে</translation>
 <translation id="3577473026931028326">কিবা ভুল হ’ল। পুনৰ চেষ্টা কৰক।</translation>
 <translation id="3577902790357386792">জিমনাষ্টিক</translation>
@@ -2353,7 +2354,6 @@
 <translation id="4750671009706599284">এই ফ’নটো</translation>
 <translation id="4750917950439032686">আপোনাৰ তথ্য (উদাহৰণ স্বৰুপে পাছৱৰ্ড বা ক্ৰেডিট কাৰ্ডৰ নম্বৰ) এই ছাইটলৈ পঠিওৱাৰ পিছতো ব্যক্তিগত হৈ থাকিব।</translation>
 <translation id="4751249061288707459">অন্তিম বাৰ আপডে’ট কৰা সন্মতি:</translation>
-<translation id="4751476147751820511">গতি বা পোহৰ ধৰা পেলাব পৰা ছেন্সৰ</translation>
 <translation id="4754461935447132332">অসুৰক্ষিত ছাইটসমূহৰ বাবে অনুমতি নাই</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
 <translation id="4757740693289347881">ক’ডটো অমান্য</translation>
@@ -2633,6 +2633,7 @@
 <translation id="5190835502935405962">বুকমাৰ্কৰ বাৰ</translation>
 <translation id="5191315092027169558">আপোনাৰ প্ৰ’ফাইল <ph name="DOMAIN" />এ পৰিচালনা কৰে</translation>
 <translation id="51918995459521422"><ph name="ORIGIN" />এ একাধিক ফাইল ডাউনল'ড কৰিব খোজে</translation>
+<translation id="5199121357983849992">আইডি কাৰ্ড ছেভ কৰিবনে?</translation>
 <translation id="5200063972779787617">একাউণ্টত ঠিকনা ছেভ কৰক</translation>
 <translation id="5201306358585911203">এই পৃষ্ঠাটোত অন্তর্ভুক্ত অন্য এটা পৃষ্ঠায়ে এয়া জনায়</translation>
 <translation id="5203716867500274632">আমাৰ প্ৰশাসকে আপোনাৰ সমগ্ৰ ChromeOS ডিভাইচত তলত দিয়া বস্তু আপোনাৰ পূৰ্বৱৰ্তী আৰু বৰ্তমানৰ ছেশ্বনসমূহ মাজত ছিংক কৰাটো সক্ষম কৰিছে:</translation>
@@ -2681,6 +2682,7 @@
 <translation id="5266128565379329178">ওপৰৰ অংশত সংযুক্ত কৰক</translation>
 <translation id="5269225904387178860">তলৰ অংশ চতুর্ভূজ আকাৰত পাঞ্চ কৰক</translation>
 <translation id="5271381225185906340">"<ph name="DATA_CONTROLS_RESTRICTION" />"ৰ বাবে "<ph name="DATA_CONTROLS_ATTRIBUTE" />" এটা সমৰ্থিত চৰ্ত নহয়</translation>
+<translation id="527191520368130807">অধিক ভাল কৰক</translation>
 <translation id="5273658854610202413">সাৱধানবাণী: এই নীতিটো PolicyDictionaryMultipleSourceMergeList নীতিত নিৰ্দিষ্ট কৰা ধৰণে একত্ৰিত হোৱা নাই কাৰণ এইটো একত্ৰিত কৰিব পৰা অভিধানৰ নীতিসমূহৰ অংশ নহয়।</translation>
 <translation id="5278778426231952189">এতিয়াই আপল’ড কৰক</translation>
 <translation id="5279286380302340275">ডাউনল’ডসমূহ পৰিচালনা কৰক</translation>
@@ -3580,6 +3582,7 @@
 <translation id="6698097747703777657">আপোনাৰ ক’ডটো পোৱা নাই নেকি? <ph name="BEGIN_LINK" />নতুন ক’ড পাওক<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">সৃষ্টি কৰাৰ সময়:</translation>
 <translation id="6698769547327354196">Chromeত Pix অফ কৰিবলৈ, আপোনাৰ <ph name="BEGIN_LINK1" />পৰিশোধৰ ছেটিঙ<ph name="END_LINK1" />লৈ যাওক</translation>
+<translation id="669903922988126943">আপোনাৰ তথ্য ছেভ কৰক আৰু Googleৰ সমগ্ৰ প্ৰ’ডাক্টত ফৰ্ম পূৰ কৰাৰ দৰে কামবোৰ দ্ৰুততাৰে কৰক। আপুনি <ph name="ACCOUNT" />ৰ বাবে <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />ত <ph name="MANAGE_INFO_LINK" /> কৰিব পাৰে।</translation>
 <translation id="67007264085648978">সময় স্ক্ৰাবাৰ</translation>
 <translation id="6702851555558236418">অডিঅ’ আৰু সংগীতৰ ছফ্টৱেৰ</translation>
 <translation id="6702919718839027939">উপস্থাপন ম’ড</translation>
@@ -4070,6 +4073,7 @@
 <translation id="746412105358554870">JavaScript অপ্টিমাইজেশ্বন আৰু সুৰক্ষা</translation>
 <translation id="7465036432780054056"><ph name="EMBEDDED_URL" />এ আপুনি <ph name="TOP_LEVEL_URL" /> চোৱা বুলি জানিব</translation>
 <translation id="7465963048299965912">১০ x ১৩ ইঞ্চি</translation>
+<translation id="7467332121947433617">আইডি কাৰ্ড আপডে’ট কৰিবনে?</translation>
 <translation id="7469935732330206581">ফৰ্মখন সুৰক্ষিত নহয়</translation>
 <translation id="7470854469646445678">প্ৰতিলিপি কৰাৰ কাৰণ দিয়ক (আৱশ্যকীয়)</translation>
 <translation id="7471007961486718967">স্থানান্তৰণ কৰাৰ কাৰণ দিয়ক (আৱশ্যকীয়)</translation>
@@ -4091,6 +4095,7 @@
 <translation id="7499188644237027195">আপুনি Chromeত ক্ৰয় কৰিলে, eWallet আৰু Pixক বিকল্প হিচাপে দেখা পাওক</translation>
 <translation id="7500917112031739411">গোট অনুসৰি দেখুৱাওক</translation>
 <translation id="7501663406926337752">খুলিবলৈ লোৱা ছাইটটো আপোনাৰ প্ৰতিষ্ঠানে ফ্লেগ কৰিছে</translation>
+<translation id="7502044688973049724">আপোনাৰ তথ্য পৰিচালনা কৰক</translation>
 <translation id="7507075214339298899">এনভেল’প #৯</translation>
 <translation id="7508255263130623398">উভতোৱা নীতিৰ ডিভাইচ আইডি খালী বা বর্তমান আইডি সৈতে অমিল</translation>
 <translation id="7508577201115425418">নথি আৰু প্ৰিণ্ট কৰাৰ সেৱা</translation>
@@ -5143,6 +5148,7 @@
 <translation id="9191834167571392248">বাওঁফালে তলৰ অংশত পাঞ্চ কৰক</translation>
 <translation id="9192361865877479444">মেটেল (Matte)</translation>
 <translation id="9192947025498305328">প্ৰাকৃতিক সৌন্দৰ্য সম্পৰ্কীয় প্ৰ’ডাক্ট</translation>
+<translation id="9193018794001479794">বিস্তৃত কৰক</translation>
 <translation id="9195969368671142407">যেতিয়া আপোনাৰ প্ৰতিষ্ঠানে আপোনাৰ Google একাউণ্টত ছেভ কৰাটো সীমিত কৰে, আপুনি টেবৰ গোটসমূহ শ্বেয়াৰ কৰিব বা সেইবোৰত যোগদান কৰিব নোৱাৰে</translation>
 <translation id="9198613052465150219">আপোনাৰ Google একাউণ্টৰ <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />ত অন্য ব্ৰাউজিং ইতিহাস থাকিব পাৰে</translation>
 <translation id="9199905725844810519">প্ৰিণ্ট কৰাটো অৱৰোধ কৰা হৈছে</translation>
@@ -5209,7 +5215,6 @@
 <translation id="987264212798334818">সাধাৰণ</translation>
 <translation id="988159990683914416">বিকাশকৰ্তাৰ বিল্ড</translation>
 <translation id="989988560359834682">ঠিকনা সম্পাদনা কৰক</translation>
-<translation id="991413375315957741">গতি অথবা পোহৰ ধৰা পেলাব পৰা ছেন্সৰ</translation>
 <translation id="991936891556421157">ফুটৱেৰ</translation>
 <translation id="992110854164447044">এখন ভাৰ্চুৱেল কাৰ্ডে আপোনাক সম্ভাব্য প্ৰতাৰণাৰ পৰা সুৰক্ষিত কৰাত সহায় কৰিবলৈ আপোনাৰ প্ৰকৃত কাৰ্ডৰ পৰিচয় লুকুৱায়। <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="992256792861109788">গুলপীয়া</translation>

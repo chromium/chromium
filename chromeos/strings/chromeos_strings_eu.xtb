@@ -167,6 +167,7 @@
 <translation id="1621067168122174824">Abiarazi kargatzeko prozesuaren proba</translation>
 <translation id="1622402072367425417">burbuila distiratsuekin</translation>
 <translation id="1626590945318984973">Lasterbidea ez dago erabilgarri. Sakatu beste lasterbide bat funtzio- eta <ph name="META_KEY" /> teklarik erabili gabe.</translation>
+<translation id="163774412591892664">Administratzaileak gailua desgaitu du eta haren kokapena atzi dezake.</translation>
 <translation id="1639239467298939599">Kargatzen</translation>
 <translation id="1641857168437328880">Dokumentu-elikatzailea (alde bakarrekoa)</translation>
 <translation id="1642396894598555413">bizikletak</translation>
@@ -1723,6 +1724,7 @@ Transkripzio horiek lortzeko, deskargatu transkripzio-eredua (gehienez ere 100 
 <translation id="8584654835905316966">Berrabiaraztea beharrezkoa da <ph name="DEVICE_NAME" /> gailuan <ph name="VERSION" /> bertsioko firmwarea instalatzeko. Baliteke behin baino gehiagotan berrabiaraztea ordenagailua. Portaera hori normala da.</translation>
 <translation id="8593058461203131755">pausatu multimedia-edukia</translation>
 <translation id="8620617069779373398">Ibiltaritza-egoera</translation>
+<translation id="8624524972189162859"><ph name="DOMAIN_NAME" /> zerbitzuaren administratzaileak gailua desgaitu du eta haren kokapena atzi dezake.</translation>
 <translation id="8626489604350149811"><ph name="APN_NAME" /> APNarekin erlazionatutako ekintza gehiago</translation>
 <translation id="86356131183441916">More argia</translation>
 <translation id="8647595191512746911">Audio-transkripzioa</translation>

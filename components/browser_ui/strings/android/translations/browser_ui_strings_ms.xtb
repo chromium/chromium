@@ -66,7 +66,6 @@
 <translation id="1677097821151855053">Kuki dan data tapak lain digunakan untuk mengingat anda, misalnya untuk log anda masuk atau memperibadikan iklan. Untuk mengurus kuki bagi semua tapak, lihat <ph name="BEGIN_LINK" />Tetapan<ph name="END_LINK" />.</translation>
 <translation id="1679305402657584804">Laman boleh meminta untuk menggunakan peranti NFC</translation>
 <translation id="1686785653877010442">Biasanya laman menghantar pemberitahuan untuk memberitahu anda tentang berita mutakhir atau mesej sembang.</translation>
-<translation id="169515064810179024">Sekat tapak daripada mengakses penderia gerakan</translation>
 <translation id="1703666494654169921">Jangan benarkan laman menggunakan peranti atau data realiti maya</translation>
 <translation id="1704230497453185209">Jangan benarkan laman memainkan bunyi</translation>
 <translation id="1717218214683051432">Penderia gerakan</translation>
@@ -235,7 +234,6 @@ Perlindungan Lanjutan mengawal tetapan Chrome ini:
 <translation id="3232293466644486101">Padamkan data semakan imbas…</translation>
 <translation id="3242646949159196181">Apabila dihidupkan, laman dapat memainkan bunyi. Apabila dimatikan, laman tidak dapat memainkan bunyi.</translation>
 <translation id="3273479183583863618">Penurunan harga pada tab</translation>
-<translation id="3277252321222022663">Benarkan tapak mengakses penderia (disyorkan)</translation>
 <translation id="3285500645985761267">Benarkan laman berkaitan melihat aktiviti anda dalam kumpulan</translation>
 <translation id="3295019059349372795">Bab 11: Oz, Kota Zamrud yang Menakjubkan</translation>
 <translation id="3295602654194328831">Sembunyikan Maklumat</translation>
@@ -371,7 +369,6 @@ Perlindungan Lanjutan mengawal tetapan Chrome ini:
 <translation id="4672315773691449562">Ketik apl Penyemak imbas kemudian ketik Chrome</translation>
 <translation id="4676059169848868271">Untuk membenarkan <ph name="APP_NAME" /> menggunakan penjejakan tangan, hidupkan penjejakan tangan dalam <ph name="BEGIN_LINK" />tetapan sistem<ph name="END_LINK" />.</translation>
 <translation id="4688045258817337666">Urus kad anda</translation>
-<translation id="4751476147751820511">Penderia gerakan atau cahaya</translation>
 <translation id="4755971844837804407">Apabila dihidupkan, laman dapat memaparkan sebarang iklan kepada anda. Apabila dimatikan, laman tidak dapat memaparkan iklan yang mengganggu atau mengelirukan.</translation>
 <translation id="4779083564647765204">Zum</translation>
 <translation id="4807122856660838973">Hidupkan Penyemakan Imbas Selamat</translation>
@@ -398,7 +395,6 @@ Perlindungan Lanjutan mengawal tetapan Chrome ini:
 <translation id="5001526427543320409">Kuki pihak ketiga</translation>
 <translation id="5007392906805964215">Semak</translation>
 <translation id="5039804452771397117">Benarkan</translation>
-<translation id="5048398596102334565">Benarkan tapak mengakses penderia gerakan (disyorkan)</translation>
 <translation id="5048841907079026162">Urus data semakan imbas anda</translation>
 <translation id="5050380848339752099">Laman ini akan berkongsi maklumat dengan apl di luar mod Inkognito.</translation>
 <translation id="5063480226653192405">Penggunaan</translation>
@@ -686,7 +682,6 @@ Perlindungan Lanjutan mengawal tetapan Chrome ini:
 <translation id="8088603949666785339">Lagi pilihan dalam <ph name="BANNER_TITLE" /></translation>
 <translation id="8112925981674547014">Lihat tab dalam senarai apl anda</translation>
 <translation id="8116925261070264013">Diredam</translation>
-<translation id="8117244575099414087">Apabila dihidupkan, laman dapat menggunakan penderia peranti anda. Apabila dimatikan, laman tidak dapat menggunakan penderia.</translation>
 <translation id="813082847718468539">Lihat maklumat tapak</translation>
 <translation id="8131740175452115882">Sahkan</translation>
 <translation id="8148160259207090265">Tetapan ini kekal dihidupkan selagi anda menghidupkan Perlindungan Lanjutan dalam Tetapan Android.</translation>
@@ -762,7 +757,6 @@ Perlindungan Lanjutan mengawal tetapan Chrome ini:
 <translation id="8801657293260363985">V8 ialah JavaScript Chrome dan enjin WebAssembly yang digunakan untuk meningkatkan prestasi laman</translation>
 <translation id="8803526663383843427">Apabila dihidupkan</translation>
 <translation id="8805385115381080995">Penyemakan imbas akan menjadi lebih pantas kerana laman kurang berkemungkinan untuk meminta anda mengesahkan anda orang sebenar</translation>
-<translation id="8816026460808729765">Sekat tapak daripada mengakses penderia</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8874790741333031443">Cuba berikan kebenaran sementara untuk kuki pihak ketiga yang boleh mengurangkan perlindungan penyemakan imbas tetapi ciri laman lebih berkemungkinan untuk berfungsi seperti yang dijangka.</translation>
 <translation id="8889294078294184559">Sementara anda terus menyemak imbas, laman boleh menyemak dengan Chrome dan membuat pengesahan dengan laman yang telah anda lawati sebelum ini bahawa anda berkemungkinan merupakan orang yang sebenar</translation>

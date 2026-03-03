@@ -230,6 +230,7 @@
 <translation id="1358187717814494928">Създаване на таблица</translation>
 <translation id="1358223345833465883">Вашата търсеща машина в Chromium</translation>
 <translation id="1359836962251219822">Кухня и трапезария</translation>
+<translation id="136059610328993645">Информацията ви се запазва в Google Wallet за <ph name="ACCOUNT" />. Можете да използвате продукта в услугите на Google с цел по-бързо попълване на формуляри.</translation>
 <translation id="1360955481084547712">Отворете нов прозорец в режим „инкогнито“, за да сърфирате частно</translation>
 <translation id="1361528602584216624"><ph name="TRANSACTION_LIMIT" /> R$ лимит за Pix</translation>
 <translation id="1363015776076529485">Списъкът с начини на плащане, които могат да бъдат избрани за продължаване на плащането, е отворен на пълната височина.</translation>
@@ -252,6 +253,7 @@
 <translation id="1392813880755413602">Презентация във формат OpenDocument</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> не изпрати данни.</translation>
 <translation id="1393071644879491291">Хакерите, използващи сайта, който опитахте да посетите, може да ви подведат да инсталирате софтуер или да разкриете информация за себе си, като например пароли, телефон или номера на кредитни карти. Chrome настоятелно препоръчва да се върнете към безопасната страница. <ph name="BEGIN_LEARN_MORE_LINK" />Научете повече за това предупреждение<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="1402151528875251561">Показване на историята в страничния панел</translation>
 <translation id="1405567553485452995">светлозелено</translation>
 <translation id="1406370515365284486">Начините ви на плащане пак ще бъдат запазени</translation>
 <translation id="1406500794671479665">Потвърждава се...</translation>
@@ -1308,6 +1310,8 @@
 <translation id="3102312643185441063">Депозит</translation>
 <translation id="3103188521861412364">Акции и облигации</translation>
 <translation id="3105172416063519923">ID на актива:</translation>
+<translation id="3105223248029915046">Плановете за плащане зависят от това дали отговаряте на условията.
+За да скриете опциите за плащане по-късно, отворете <ph name="BEGIN_LINK" />настройките за плащане<ph name="END_LINK" /></translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />Проверете конфигурацията за защитения DNS<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Средна тава</translation>
 <translation id="3109061346635850169">Грижа за лицето и тялото</translation>
@@ -1450,6 +1454,7 @@
 <translation id="33073482541490531">Паролата, която току-що използвахте, е разкрита при нарушение на сигурността на данните. Мениджърът на паролите ви препоръчва да я промените сега.</translation>
 <translation id="3307649904964670439">Бутон за персонализиране на Chrome. Активирайте, за да персонализирате облика на браузъра си</translation>
 <translation id="3308006649705061278">Организационна единица (OU)</translation>
+<translation id="3310946375819654151">Chrome се опитва да попълни поверителната ви информация в(ъв) <ph name="APP_NAME" />.</translation>
 <translation id="3312952471765023168">Качването е успешно</translation>
 <translation id="3318016344440038475">Телевизионни комедии</translation>
 <translation id="3324687287337751929">4 x 6 инча</translation>
@@ -1740,6 +1745,7 @@
 <translation id="3752181611900535304">Адресът да се запази ли в профила?</translation>
 <translation id="3752543821772132562">Пренебрегнато, защото <ph name="POLICY_NAME" /> не е зададено.</translation>
 <translation id="3754210790023674521">Изход от „Картина в картината“</translation>
+<translation id="3754664361823138853">&amp;Отваряне на страницата „История“</translation>
 <translation id="3759461132968374835">Наскоро не сте съобщавали за сривове. Тези, възникнали при деактивирано изпращане на сигнали за сривове, не се показват тук.</translation>
 <translation id="3760561303380396507">Искате ли да използвате Windows Hello вместо код за проверка?</translation>
 <translation id="3761171036307311438">Име върху картата:</translation>
@@ -2351,7 +2357,6 @@
 <translation id="4750671009706599284">този телефон</translation>
 <translation id="4750917950439032686">Информацията ви (например пароли или номера на кредитни карти) е частна, когато се изпраща до този сайт.</translation>
 <translation id="4751249061288707459">Последно актуализиране на съгласието:</translation>
-<translation id="4751476147751820511">Сензори за движение или светлина</translation>
 <translation id="4754461935447132332">Не е разрешено за незащитени сайтове</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
 <translation id="4757740693289347881">Кодът е невалиден</translation>
@@ -2751,6 +2756,7 @@
 <translation id="5385966243497224160">Не може да се визуализира URL адрес без HTTPS</translation>
 <translation id="5386426401304769735">Веригата от сертификати за този сайт съдържа сертификат, подписан с SHA-1.</translation>
 <translation id="5391010642126249196">Посетено от вас</translation>
+<translation id="5391306025131596142">&amp;Отваряне на страницата „История“</translation>
 <translation id="539203134595252721">Тенис на маса</translation>
 <translation id="5392506727170022660">Метал (полугланциран)</translation>
 <translation id="5394069166371280357">Семейни телевизионни предавания</translation>
@@ -3545,6 +3551,7 @@
 <translation id="6655085656059574817">Когато профилът ви е свързан, можете да плащате по-бързо чрез <ph name="BNPL_ISSUER_NAME" />. Имате възможност да прекратите връзката с услугата, като посетите <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /></translation>
 <translation id="6656935431494847393">Включва информация като резервации на полети и данни за превозното средство</translation>
 <translation id="6657585470893396449">Парола</translation>
+<translation id="6659156657345021268">Информацията ви се запазва само на устройството ви. Ще имате възможност да я запазите в Wallet следващия път, когато попълвате формуляр, за който е приложима.</translation>
 <translation id="6659246032834639189">Тази цена е ниска</translation>
 <translation id="6660413144148052430">местоположение</translation>
 <translation id="6662457027866368246">Първа ролка</translation>
@@ -4354,6 +4361,7 @@
 <translation id="7908648876066812348">Виртуалната карта се включва</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това Enter, за да отворите страницата за проверка на безопасността в Chrome от настройките</translation>
 <translation id="791107458486222637">Резултатът се възстановява</translation>
+<translation id="7911651285409665023">Затваряне и връщане към „<ph name="TAB_TITLE" />“</translation>
 <translation id="7912924955815015552">Импортирани от Safari</translation>
 <translation id="791551905239004656">Рисуване и оцветяване</translation>
 <translation id="7916162853251942238">Флексопечат</translation>
@@ -4950,6 +4958,7 @@
 <translation id="8894794286471754040">Дългата страна напред</translation>
 <translation id="8897221284075091877">За да поискате да видите това съдържание, продължете с профила си в Google</translation>
 <translation id="8897428486789851669">Плуване</translation>
+<translation id="8898854704577986668">Показване на историята в страничния панел</translation>
 <translation id="8899807382908246773">Натрапчиви реклами</translation>
 <translation id="8903921497873541725">Увеличаване на мащаба</translation>
 <translation id="8903998444169664879">Потвърдете самоличността си, за да промените настройките си за плащане</translation>
@@ -5205,7 +5214,6 @@
 <translation id="987264212798334818">Общи</translation>
 <translation id="988159990683914416">Компилирана програма за програмисти</translation>
 <translation id="989988560359834682">Редактиране на адреса</translation>
-<translation id="991413375315957741">сензори за движение или светлина</translation>
 <translation id="991936891556421157">Обувки и обувни артикули</translation>
 <translation id="992110854164447044">Виртуалната карта скрива действителната ви, за да ви защити от потенциална измама. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="992115559265932548"><ph name="MICROSOFT_ACTIVE_DIRECTORY" /></translation>

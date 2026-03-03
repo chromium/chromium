@@ -27,6 +27,7 @@
 <translation id="126567311906253476">Gdy logujesz się w usługach Google takich jak Gmail czy YouTube, używając konta <ph name="USER_EMAIL" />, możesz za pomocą tego samego konta automatycznie logować się w Chromium</translation>
 <translation id="1290883685122687410">Błąd konfiguracji: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1315551408014407711">Skonfiguruj nowy profil w Chromium</translation>
+<translation id="132092532143527429">Wypróbuj z Gemini w Chromium</translation>
 <translation id="1324107359134968521">Aby można było przeglądać urządzenia Bluetooth, Chromium musi mieć dostęp do Bluetootha. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">Wykryj język</translation>
 <translation id="1330742950061766891">Użyj zalecanych ustawień przeglądarki Chromium</translation>
@@ -606,6 +607,7 @@ Chromium nie może odzyskać ustawień.</translation>
 <translation id="7622753900276619808">Teraz masz do dyspozycji więcej funkcji w Chromium</translation>
 <translation id="7624307931717240213">Informacji używamy, aby ulepszyć tę usługę. Przeczytaj politykę prywatności i warunki korzystania z usługi.</translation>
 <translation id="7649070708921625228">Pomoc</translation>
+<translation id="7650134251917003571">Pobierz aplikację Chromium</translation>
 <translation id="7656340475565475526">Pozwól Chromium przeglądać strony za Ciebie</translation>
 <translation id="7658239707568436148">Anuluj</translation>
 <translation id="7686590090926151193">Chromium nie jest domyślną przeglądarką</translation>

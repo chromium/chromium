@@ -66,7 +66,6 @@
 <translation id="1677097821151855053">Cookie dan data situs lainnya digunakan untuk mengingat Anda, misalnya untuk login atau personalisasi iklan. Untuk mengelola cookie semua situs, lihat <ph name="BEGIN_LINK" />Setelan<ph name="END_LINK" />.</translation>
 <translation id="1679305402657584804">Situs dapat meminta untuk menggunakan perangkat NFC</translation>
 <translation id="1686785653877010442">Situs biasanya mengirim notifikasi untuk memberi tahu Anda tentang berita terbaru atau pesan chat.</translation>
-<translation id="169515064810179024">Memblokir situs agar tidak mengakses sensor gerakan</translation>
 <translation id="1703666494654169921">Jangan izinkan situs menggunakan perangkat atau data virtual reality</translation>
 <translation id="1704230497453185209">Jangan izinkan situs memutar suara</translation>
 <translation id="1717218214683051432">Sensor gerakan</translation>
@@ -235,7 +234,6 @@ Perlindungan Lanjutan mengontrol setelan Chrome berikut:
 <translation id="3232293466644486101">Hapus data penjelajahan…</translation>
 <translation id="3242646949159196181">Jika diaktifkan, situs dapat memutar suara. Jika dinonaktifkan, situs tidak dapat memutar suara.</translation>
 <translation id="3273479183583863618">Penurunan harga di tab</translation>
-<translation id="3277252321222022663">Mengizinkan situs untuk mengakses sensor (disarankan)</translation>
 <translation id="3285500645985761267">Izinkan situs terkait melihat aktivitas Anda di grup</translation>
 <translation id="3295019059349372795">Bab 11: Oz, Kota Zamrud yang Menakjubkan</translation>
 <translation id="3295602654194328831">Sembunyikan Info</translation>
@@ -371,7 +369,6 @@ Perlindungan Lanjutan mengontrol setelan Chrome berikut:
 <translation id="4672315773691449562">Ketuk Aplikasi browser, lalu ketuk Chrome</translation>
 <translation id="4676059169848868271">Untuk mengizinkan <ph name="APP_NAME" /> menggunakan pelacakan tangan, aktifkan juga pelacakan tangan di <ph name="BEGIN_LINK" />setelan sistem<ph name="END_LINK" />.</translation>
 <translation id="4688045258817337666">Mengelola kartu</translation>
-<translation id="4751476147751820511">Sensor gerakan atau cahaya</translation>
 <translation id="4755971844837804407">Jika diaktifkan, situs dapat menampilkan iklan apa pun kepada Anda. Jika dinonaktifkan, situs tidak dapat menampilkan iklan yang mengganggu atau menyesatkan.</translation>
 <translation id="4779083564647765204">Zoom</translation>
 <translation id="4807122856660838973">Aktifkan Safe Browsing</translation>
@@ -398,7 +395,6 @@ Perlindungan Lanjutan mengontrol setelan Chrome berikut:
 <translation id="5001526427543320409">Cookie pihak ketiga</translation>
 <translation id="5007392906805964215">Tinjau</translation>
 <translation id="5039804452771397117">Izinkan</translation>
-<translation id="5048398596102334565">Mengizinkan situs mengakses sensor gerakan (disarankan)</translation>
 <translation id="5048841907079026162">Kelola data penjelajahan Anda</translation>
 <translation id="5050380848339752099">Situs ini akan membagikan informasi ke aplikasi di luar mode Samaran.</translation>
 <translation id="5063480226653192405">Penggunaan</translation>
@@ -686,7 +682,6 @@ Perlindungan Lanjutan mengontrol setelan Chrome berikut:
 <translation id="8088603949666785339">Opsi lainnya di <ph name="BANNER_TITLE" /></translation>
 <translation id="8112925981674547014">Lihat tab di daftar aplikasi Anda</translation>
 <translation id="8116925261070264013">Dinonaktifkan</translation>
-<translation id="8117244575099414087">Jika diaktifkan, situs dapat menggunakan sensor perangkat. Jika dinonaktifkan, situs tidak dapat menggunakan sensor.</translation>
 <translation id="813082847718468539">Lihat informasi situs</translation>
 <translation id="8131740175452115882">Konfirmasi</translation>
 <translation id="8148160259207090265">Setelan ini akan tetap aktif selama Perlindungan Lanjutan diaktifkan di Setelan Android.</translation>
@@ -762,7 +757,6 @@ Perlindungan Lanjutan mengontrol setelan Chrome berikut:
 <translation id="8801657293260363985">V8 adalah mesin WebAssembly dan JavaScript Chrome yang digunakan untuk meningkatkan performa situs</translation>
 <translation id="8803526663383843427">Saat aktif</translation>
 <translation id="8805385115381080995">Penjelajahan lebih cepat karena situs cenderung tidak meminta Anda untuk memverifikasi bahwa Anda adalah orang sungguhan</translation>
-<translation id="8816026460808729765">Memblokir situs agar tidak mengakses sensor</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8874790741333031443">Coba izinkan cookie pihak ketiga untuk sementara. Jika demikian, Anda akan mendapatkan lebih sedikit perlindungan terhadap penjelajahan, tetapi fitur situs cenderung berfungsi seperti yang diharapkan.</translation>
 <translation id="8889294078294184559">Saat Anda terus menjelajah, situs dapat mengonfirmasi ke Chrome dan memverifikasi dengan situs sebelumnya yang telah Anda buka bahwa Anda kemungkinan adalah orang sungguhan</translation>

@@ -167,6 +167,7 @@
 <translation id="1621067168122174824">Jalankan pengujian Pengisian Daya</translation>
 <translation id="1622402072367425417">gelembung bersinar</translation>
 <translation id="1626590945318984973">Pintasan tidak tersedia. Tekan pintasan baru tanpa menggunakan tombol fungsi dan <ph name="META_KEY" />.</translation>
+<translation id="163774412591892664">Administrator menonaktifkan perangkat Anda dan dapat mengakses lokasinya.</translation>
 <translation id="1639239467298939599">Memuat</translation>
 <translation id="1641857168437328880">Pengumpan Dokumen (Satu Sisi)</translation>
 <translation id="1642396894598555413">sepeda</translation>
@@ -1723,6 +1724,7 @@ Download model transkripsi (hingga 100 MB) untuk mendapatkan transkripsi ini.</t
 <translation id="8584654835905316966">Perangkat harus dimulai ulang untuk menyelesaikan penginstalan firmware untuk <ph name="DEVICE_NAME" /> ke versi <ph name="VERSION" />. Komputer Anda mungkin terlihat dimulai ulang beberapa kali. Namun, perilaku ini normal.</translation>
 <translation id="8593058461203131755">jeda media</translation>
 <translation id="8620617069779373398">Status roaming</translation>
+<translation id="8624524972189162859">Administrator <ph name="DOMAIN_NAME" /> Anda menonaktifkan perangkat Anda dan dapat mengakses lokasinya.</translation>
 <translation id="8626489604350149811">Tindakan lainnya untuk <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Ungu muda</translation>
 <translation id="8647595191512746911">Transkripsi audio</translation>

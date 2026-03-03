@@ -1310,6 +1310,8 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3102312643185441063">Spořicí účet</translation>
 <translation id="3103188521861412364">Akcie a dluhopisy</translation>
 <translation id="3105172416063519923">ID díla:</translation>
+<translation id="3105223248029915046">Platební tarify jsou závislé na způsobilosti.
+Pokud chcete možnosti uhrazení na splátky skrýt, přejděte na <ph name="BEGIN_LINK" />nastavení plateb<ph name="END_LINK" /></translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />Zkontrolovat konfiguraci zabezpečeného DNS<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Prostřední zásobník</translation>
 <translation id="3109061346635850169">Péče o obličej a tělo</translation>
@@ -2351,7 +2353,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="4750671009706599284">tento telefon</translation>
 <translation id="4750917950439032686">Vaše údaje (například hesla nebo čísla platebních karet) jsou při odesílání na tento web soukromé.</translation>
 <translation id="4751249061288707459">Poslední aktualizace souhlasu:</translation>
-<translation id="4751476147751820511">Senzory pohybu nebo světla</translation>
 <translation id="4754461935447132332">Není povoleno u nezabezpečených webů</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
 <translation id="4757740693289347881">Kód je neplatný</translation>
@@ -2631,6 +2632,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="5190835502935405962">Lišta záložek</translation>
 <translation id="5191315092027169558">Váš profil spravuje doména <ph name="DOMAIN" /></translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> se pokouší stáhnout několik souborů</translation>
+<translation id="5199121357983849992">Uložit průkaz totožnosti?</translation>
 <translation id="5200063972779787617">Uložení adresy do účtu</translation>
 <translation id="5201306358585911203">Stránka vložená na této stránce říká</translation>
 <translation id="5203716867500274632">Administrátor povolil synchronizaci následujících položek mezi předchozími a aktuálními relacemi na vašich zařízeních se systémem ChromeOS:</translation>
@@ -4068,6 +4070,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="746412105358554870">Optimalizace a zabezpečení JavaScriptu</translation>
 <translation id="7465036432780054056"><ph name="EMBEDDED_URL" /> bude vědět, že jste navštívili web <ph name="TOP_LEVEL_URL" />.</translation>
 <translation id="7465963048299965912">10 × 13″</translation>
+<translation id="7467332121947433617">Aktualizovat průkaz totožnosti?</translation>
 <translation id="7469935732330206581">Formulář není zabezpečený</translation>
 <translation id="7470854469646445678">Uveďte důvod kopírování (povinné)</translation>
 <translation id="7471007961486718967">Uveďte důvod přenosu (povinné)</translation>
@@ -4354,6 +4357,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7908648876066812348">Zapínání virtuální karty</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, stisknutím klávesy Tab a poté Enter přejdete na stránku bezpečnostní kontroly Chromu v nastavení</translation>
 <translation id="791107458486222637">Opakování výsledku</translation>
+<translation id="7911651285409665023">Zavřít a vrátit se na kartu <ph name="TAB_TITLE" /></translation>
 <translation id="7912924955815015552">Importováno z prohlížeče Safari</translation>
 <translation id="791551905239004656">Kreslení a vybarvování</translation>
 <translation id="7916162853251942238">Flexotisková báze</translation>
@@ -5206,7 +5210,6 @@ Další podrobnosti:
 <translation id="987264212798334818">Všeobecné</translation>
 <translation id="988159990683914416">Vývojářské sestavení</translation>
 <translation id="989988560359834682">Upravit adresu</translation>
-<translation id="991413375315957741">senzory pohybu nebo světla</translation>
 <translation id="991936891556421157">Obuv</translation>
 <translation id="992110854164447044">Virtuální karta skryje vaši skutečnou kartu a chrání vás před případným podvodem. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="992115559265932548"><ph name="MICROSOFT_ACTIVE_DIRECTORY" /></translation>

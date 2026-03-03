@@ -679,6 +679,7 @@
 <translation id="1453561711872398978">ส่ง<ph name="BEGIN_LINK" />บันทึกการแก้ไขข้อบกพร่อง<ph name="END_LINK" /> (แนะนำ)</translation>
 <translation id="1454223536435069390">จับ&amp;ภาพหน้าจอ</translation>
 <translation id="145432137617179457">ภาษาที่ใช้การตรวจตัวสะกดได้</translation>
+<translation id="1455009947184333152">ลบทักษะแล้ว</translation>
 <translation id="1455119378540982311">ขนาดหน้าต่างที่กำหนดล่วงหน้า</translation>
 <translation id="1456849775870359518">แท็บจะเปิดขึ้นอีกครั้ง</translation>
 <translation id="146000042969587795">เฟรมนี้ถูกป้องกันเนื่องจากมีเนื้อหาบางอย่างที่ไม่ปลอดภัย</translation>
@@ -1022,6 +1023,7 @@
 <translation id="1671525612731130246">เลือกบัญชีไดรฟ์</translation>
 <translation id="1671749176392751693">อนุญาตให้ใช้ตัวระบุเนื้อหาที่มีการคุ้มครอง</translation>
 <translation id="1673137583248014546"><ph name="URL" /> ต้องการดูยี่ห้อและรุ่นของคีย์ความปลอดภัย</translation>
+<translation id="1673855466663721679">แสดงบุ๊กมาร์กในแผงด้านข้าง</translation>
 <translation id="1674073353928166410">เปิดทั้งหมด (<ph name="URL_COUNT" />) ในหน้าต่างที่ไม่ระบุตัวตน</translation>
 <translation id="1674142805528405174">เครื่องมือจัดการรหัสผ่านบน Google สามารถอัปเดตบัญชีของคุณด้วยรหัสผ่านที่รัดกุมซึ่งบันทึกไว้ให้คุณในบัญชี <ph name="EMAIL" /></translation>
 <translation id="1674945585974615438">ปิดใช้เครื่องมือเพิ่มประสิทธิภาพ JavaScript ในเว็บไซต์ที่ไม่คุ้นเคยโดยอัตโนมัติ</translation>
@@ -1332,6 +1334,7 @@
 <translation id="1886996562706621347">อนุญาตให้ไซต์แจ้งขอเป็นเครื่องจัดการเริ่มต้นสำหรับโปรโตคอล (แนะนำ)</translation>
 <translation id="1887210448491286312">หยุดแคสต์แท็บไปยัง <ph name="DEVICE_NAME" /></translation>
 <translation id="1887442540531652736">ข้อผิดพลาดในการลงชื่อเข้าใช้</translation>
+<translation id="1888692623866312036">ทักษะที่บันทึกไว้</translation>
 <translation id="1890026367080681123">ไปที่การตั้งค่าเนื้อหาที่ฝัง</translation>
 <translation id="189035593835762169">ข้อกำหนดและเงื่อนไข</translation>
 <translation id="1891362123137972260">พื้นที่ดิสก์เกือบเต็มแล้ว โปรดเพิ่มพื้นที่ว่างในดิสก์</translation>
@@ -1839,6 +1842,7 @@
 <translation id="2232751457155581899">เว็บไซต์ขอติดตามตำแหน่งของกล้องได้</translation>
 <translation id="2233502537820838181">&amp;ข้อมูลเพิ่มเติม</translation>
 <translation id="223356358902285214">กิจกรรมบนเว็บและแอป</translation>
+<translation id="2234031676056123135">ปรับแต่งทางลัด</translation>
 <translation id="2234065144797002621">ลำห้วย</translation>
 <translation id="2234208862050358325">ใช้ปุ่ม 1, 2, 3, q, e, a, s, d เพื่อเลื่อนเคอร์เซอร์</translation>
 <translation id="2234827758954819389">คู่มือความเป็นส่วนตัว</translation>
@@ -3097,10 +3101,12 @@
 <translation id="3048589239114571785">เล่น (k)</translation>
 <translation id="3048742847101793553">องค์กรบล็อกไฟล์นี้เนื่องจากสแกนไม่สำเร็จ</translation>
 <translation id="3048917188684939573">บันทึกการแคสต์และอุปกรณ์</translation>
+<translation id="3049356453907822148">เพิ่มทักษะใหม่</translation>
 <translation id="3051250416341590778">ขนาดการแสดงผล</translation>
 <translation id="3053013834507634016">การใช้คีย์ใบรับรอง </translation>
 <translation id="3053273573829329829">เปิดใช้ PIN ของผู้ใช้</translation>
 <translation id="3053274730492362225">ไม่ต้องกะพริบ</translation>
+<translation id="3057938290530993634">แตะค้างไว้เพื่อปักหมุดเว็บไซต์ที่เข้าชมบ่อยที่สุดเพื่อให้เข้าถึงได้ง่ายในครั้งถัดไป</translation>
 <translation id="3058498974290601450">คุณเปิดการซิงค์ได้ทุกเมื่อในการตั้งค่า</translation>
 <translation id="3060952009917586498">เปลี่ยนภาษาของอุปกรณ์ ปัจจุบันใช้ภาษา<ph name="LANGUAGE" /></translation>
 <translation id="3060987956645097882">เราเริ่มการเชื่อมต่อกับโทรศัพท์ไม่ได้ ตรวจสอบว่าโทรศัพท์อยู่ใกล้ๆ ปลดล็อกอยู่ และเปิดบลูทูธกับ Wi-Fi ไว้</translation>
@@ -3257,6 +3263,7 @@
 <translation id="3182749001423093222">ตรวจตัวสะกด</translation>
 <translation id="3183139917765991655">ตัวนำเข้าโปรไฟล์</translation>
 <translation id="3183143381919926261">เครือข่ายอินเทอร์เน็ตมือถือ</translation>
+<translation id="3183428991752322898">ล้างแป้นพิมพ์ลัด</translation>
 <translation id="3183700187146209259">ติดตั้งซอฟต์แวร์เครื่องสแกนไม่ได้</translation>
 <translation id="3183750649832309748">องค์กร <ph name="ACCOUNT_MANAGER" /> จะดูข้อมูลบางอย่างได้ ซึ่งรวมถึง</translation>
 <translation id="3183944777708523606">การจัดตำแหน่งจอภาพ</translation>
@@ -3346,6 +3353,7 @@
 <translation id="3247649647204519958">จากที่นี่ คุณจะดูและจัดการสิทธิ์ของส่วนขยายสำหรับเว็บไซต์ที่กำลังเข้าชมได้</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - ข้อผิดพลาดของเครือข่าย</translation>
 <translation id="3248902735035392926">ความปลอดภัยเป็นสิ่งสำคัญ โปรดใช้เวลาสักครู่เพื่อ<ph name="BEGIN_LINK" />ตรวจสอบส่วนขยายตอนนี้เลย<ph name="END_LINK" /></translation>
+<translation id="3250374026663843838">จัดการทักษะของคุณ</translation>
 <translation id="3251119461199395237">การซิงค์ไฟล์</translation>
 <translation id="3251759466064201842">&lt;ไม่ใช่ส่วนหนึ่งของใบรับรอง&gt;</translation>
 <translation id="3252169590975855820">คุณเข้าถึงรหัสผ่านนี้ได้ในเครื่องมือจัดการรหัสผ่านบน Google</translation>
@@ -3442,6 +3450,7 @@
 <translation id="3312883087018430408">หากต้องการค้นหาเว็บไซต์ใดโดยเฉพาะหรือบางส่วนของ Chrome ให้พิมพ์ทางลัดของเว็บไซต์นั้นหรือส่วนนั้นในแถบที่อยู่ แล้วตามด้วยแป้นพิมพ์ลัดที่ต้องการ เช่น หากต้องการค้นหาเฉพาะบุ๊กมาร์ก ให้พิมพ์ @bookmarks จากนั้นกด Tab หรือ Space</translation>
 <translation id="3313622045786997898">ค่าลายเซ็นใบรับรอง</translation>
 <translation id="3313950410573257029">ตรวจสอบการเชื่อมต่อ</translation>
+<translation id="3314239811356311272">&amp;เปิดการจัดการบุ๊กมาร์ก</translation>
 <translation id="3315158641124845231">ซ่อน <ph name="PRODUCT_NAME" /></translation>
 <translation id="3317459757438853210">สองด้าน</translation>
 <translation id="3317521105713541270">สร้างกลุ่ม</translation>
@@ -3648,6 +3657,7 @@
 <translation id="3453597230179205517">การเข้าถึงตำแหน่งถูกบล็อก</translation>
 <translation id="3453612417627951340">ต้องขออนุมัติก่อน</translation>
 <translation id="3454213325559396544">นี่เป็นการอัปเดตซอฟต์แวร์และความปลอดภัยอัตโนมัติครั้งสุดท้ายสำหรับ <ph name="DEVICE_TYPE" /> เครื่องนี้ โปรดอัปเกรดเป็นรุ่นที่ใหม่กว่าเพื่อรับการอัปเดตในอนาคต</translation>
+<translation id="3454276058453724464">{FILE_LIMIT,plural, =1{อัปโหลดไฟล์ .pdf 1 รายการเพื่อใช้กับคำถาม}other{อัปโหลดไฟล์ .pdf สูงสุด # รายการเพื่อใช้กับคำถาม}}</translation>
 <translation id="3454818737556063691">ย้าย 1 ไฟล์ไปที่ <ph name="CLOUD_PROVIDER" /> เพื่อเปิดใช่ไหม</translation>
 <translation id="3455436146814891176">ซิงค์รหัสผ่านการเข้ารหัส</translation>
 <translation id="345693547134384690">เปิด&amp;รูปภาพในแท็บใหม่</translation>
@@ -5020,6 +5030,7 @@
 <translation id="4364567974334641491"><ph name="APP_NAME" /> กำลังแชร์หน้าต่าง</translation>
 <translation id="4364830672918311045">แสดงการแจ้งเตือน</translation>
 <translation id="4367971618859387374">ชื่อที่แสดง</translation>
+<translation id="4368888793624522796">กลุ่มแท็บย้ายไปแล้ว</translation>
 <translation id="4368960422722232719">แสดงการใช้งานหน่วยความจำในการ์ดตัวอย่างเมื่อวางเมาส์เหนือแท็บ</translation>
 <translation id="4369151461324628035">ไม่อนุญาตให้เว็บไซต์เชื่อมต่อกับอุปกรณ์ในเครือข่ายภายในของคุณ</translation>
 <translation id="4369215744064167350">คำขอเว็บไซต์ได้รับการอนุมัติแล้ว</translation>
@@ -5175,6 +5186,7 @@
 <translation id="4469324811108161144">หมายเหตุบักทึกอักขระได้สูงสุด <ph name="CHARACTER_LIMIT" /> ตัว</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> แก้ไขไฟล์ใน <ph name="FOLDERNAME" /> ได้</translation>
 <translation id="4470957202018033307">ค่ากำหนดพื้นที่เก็บข้อมูลภายนอก</translation>
+<translation id="4471250205822310967">โอเวอร์เลย์การเลือกของ Gemini</translation>
 <translation id="4471354919263203780">กำลังดาวน์โหลดไฟล์การจดจำคำพูด... <ph name="PERCENT" />%</translation>
 <translation id="4472194221638903160">จัดกลุ่มแท็บด้วย AI</translation>
 <translation id="4472298120638043495">คุณใช้ภาษาของบัญชี Google ที่ต้องการได้ (<ph name="NEW_LOCALE_FROM_GAIA" />)</translation>
@@ -5408,6 +5420,7 @@
 <translation id="4634575639321169635">ตั้งค่าอุปกรณ์นี้สำหรับการทำงานหรือใช้ส่วนตัว</translation>
 <translation id="4635072447747973225">ถอนการติดตั้ง Crostini</translation>
 <translation id="4635398712689569051">ผู้ใช้ที่เป็นผู้มาเยือนไม่สามารถใช้ <ph name="PAGE_NAME" /></translation>
+<translation id="4635975718422788482">{FILE_LIMIT,plural, =1{อัปโหลดรูปภาพ 1 รายการเพื่อใช้กับคำถาม}other{อัปโหลดรูปภาพสูงสุด # รายการเพื่อใช้กับคำถาม}}</translation>
 <translation id="4636187126182557415">ค่ากำหนดของระบบ</translation>
 <translation id="4636930964841734540">ข้อมูล</translation>
 <translation id="4637083375689622795">การทำงานเพิ่มเติม <ph name="EMAIL" /></translation>
@@ -6250,6 +6263,7 @@
 <translation id="5215502535566372932">เลือกประเทศ</translation>
 <translation id="5216674789212441076">แปลคำบรรยายสดโดยอัตโนมัติ ระบบจะส่งคำบรรยายแทนเสียงไปยัง Google เพื่อแปลภาษา</translation>
 <translation id="5216951551945455224">{NUM_TABS,plural, =1{หยุดแชร์แท็บกับ Gemini}other{หยุดแชร์ # แท็บกับ Gemini}}</translation>
+<translation id="5217883660859035687">เรากำลังย้ายกลุ่มแท็บเพื่อให้บุ๊กมาร์กของคุณมีพื้นที่มากขึ้น</translation>
 <translation id="5220011581825921581">ค้นหา + ลูกศรขึ้น</translation>
 <translation id="5221516927483787768">แคสต์ <ph name="HOST_NAME" /> ไม่ได้</translation>
 <translation id="5221834113325601057">ยกเว้นแท็บออกจากรายการแล้ว</translation>
@@ -6500,6 +6514,7 @@
 <translation id="539882584649709174">ช่วยคุณเขียนข้อความแบบสั้นสำหรับสิ่งต่างๆ บนเว็บ เช่น รีวิว</translation>
 <translation id="5400196580536813396">ไม่ได้รับอนุญาตให้ค้นหาหรือใช้เครื่องพิมพ์ที่อุปกรณ์ของคุณเข้าถึงได้</translation>
 <translation id="5400836586163650660">สีเทา</translation>
+<translation id="5400933848253186401">สรุปด้วย Gemini</translation>
 <translation id="5402367795255837559">เบรลล์</translation>
 <translation id="5402815541704507626">ดาวน์โหลดอัปเดตโดยใช้อินเทอร์เน็ตมือถือ</translation>
 <translation id="5404557844330880551">ดูข้อมูลเพิ่มเติมเกี่ยวกับการเปรียบเทียบผลิตภัณฑ์</translation>
@@ -6930,6 +6945,7 @@
 <translation id="5697832193891326782">เครื่องมือเลือกอีโมจิ</translation>
 <translation id="5698136107297470317">คุณกำลังจะลบข้อมูล<ph name="BRAND" /></translation>
 <translation id="5698878456427040674">ตรวจสอบว่าระบบรองรับบัญชีที่เลือกหรือไม่</translation>
+<translation id="5698900765010620315">ธีมมืดคอนทราสต์ต่ำ</translation>
 <translation id="5699227710146832453">จาก</translation>
 <translation id="570043786759263127">แอปและบริการของ Google Play</translation>
 <translation id="5700761515355162635">อนุญาตคุกกี้ของบุคคลที่สามแล้ว</translation>
@@ -6973,7 +6989,6 @@
 <translation id="5734697361979786483">เพิ่มพื้นที่แชร์ไฟล์</translation>
 <translation id="573520097779121706">ใช้ปุ่ม 7, 8, 9, u, o, j, k, l เพื่อเลื่อนเคอร์เซอร์</translation>
 <translation id="5736092224453113618">{NUM_FILES,plural, =0{ข้อมูลนี้หรืออุปกรณ์ของคุณไม่เป็นไปตามนโยบายความปลอดภัยบางประการขององค์กร โปรดสอบถามผู้ดูแลระบบเกี่ยวกับสิ่งที่ต้องแก้ไข}=1{ไฟล์นี้หรืออุปกรณ์ของคุณไม่เป็นไปตามนโยบายความปลอดภัยบางประการขององค์กร โปรดสอบถามผู้ดูแลระบบเกี่ยวกับสิ่งที่ต้องแก้ไข}other{ไฟล์เหล่านี้ไม่เป็นไปตามนโยบายความปลอดภัยบางประการขององค์กร โปรดสอบถามผู้ดูแลระบบเกี่ยวกับสิ่งที่ต้องแก้ไข}}</translation>
-<translation id="5736345781200955827">สร้าง บันทึก และจัดการรหัสผ่านเพื่อให้ลงชื่อเข้าใช้เว็บไซต์และแอปโดยใช้ Chrome ได้ง่าย</translation>
 <translation id="5738093759615225354">คุณต้องมีพาสคีย์นี้เพื่อลงชื่อเข้าใช้คอมพิวเตอร์</translation>
 <translation id="5738386565827477765">อุปกรณ์เสียง</translation>
 <translation id="5739017626473506901">ลงชื่อเข้าใช้เพื่อช่วย <ph name="USER_NAME" /> เพิ่มบัญชีโรงเรียน</translation>
@@ -8311,6 +8326,7 @@
 <translation id="6663190258859265334">Powerwash <ph name="DEVICE_TYPE" /> และเปลี่ยนกลับไปใช้เวอร์ชันก่อนหน้า</translation>
 <translation id="6664774537677393800">เกิดข้อผิดพลาดขณะเปิดโปรไฟล์ของคุณ โปรดออกจากระบบแล้วลงชื่อเข้าใช้อีกครั้ง</translation>
 <translation id="6665874326033183068">ป่า</translation>
+<translation id="6666560794795912543">แสดงบุ๊กมาร์กในแผงด้านข้าง</translation>
 <translation id="6667086124612170548">ไฟล์ใหญ่เกินไปสำหรับอุปกรณ์นี้</translation>
 <translation id="6667092961374478614">การค้นพบได้ของ<ph name="FEATURE_NAME" /></translation>
 <translation id="6667187897999649121">เฉพาะตอนนี้ คุณจะแชร์รหัสผ่านกับสมาชิกในครอบครัวได้เท่านั้น <ph name="BEGIN_LINK" />สร้างกลุ่มครอบครัว<ph name="END_LINK" />ที่มีสมาชิกได้สูงสุด 6 คนและใช้ประโยชน์จากผลิตภัณฑ์และการสมัครใช้บริการใน Google ได้มากขึ้น</translation>
@@ -9771,6 +9787,7 @@
 <translation id="7660146600670077843">คลิกขวาที่แท็บแล้วเลือก "เพิ่มแท็บไปยังกลุ่มใหม่"</translation>
 <translation id="7661451191293163002">ไม่สามารถรับใบรับรองการลงทะเบียน</translation>
 <translation id="7662283695561029522">แตะเพื่อกำหนดค่า</translation>
+<translation id="7662535435481776002">ธีมสว่างคอนทราสต์ต่ำ</translation>
 <translation id="7663719505383602579">เครื่องรับ: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7663774460282684730">แป้นพิมพ์ลัดที่ใช้งานได้</translation>
 <translation id="7663859337051362114">เพิ่มโปรไฟล์ eSIM</translation>
@@ -11903,6 +11920,7 @@
 <translation id="9061521313218438086">หาก Chrome พบรหัสผ่านของคุณในการละเมิดข้อมูลสาธารณะ เครื่องมือจัดการรหัสผ่านบน Google จะเสนอให้คุณเปลี่ยนรหัสผ่าน หากลงชื่อเข้าใช้</translation>
 <translation id="9061694916020926968">คุณต้องลงชื่อเข้าใช้บัญชี Google เพื่อใช้ Steam สําหรับ Chromebook (เบต้า) ลงชื่อเข้าใช้แล้วลองอีกครั้ง</translation>
 <translation id="9062468308252555888">14x</translation>
+<translation id="9062873887761404531">ล้างทางลัดการนำทาง</translation>
 <translation id="9063208415146866933">เกิดข้อผิดพลาดในบรรทัดที่ <ph name="ERROR_LINE_START" /> ถึง <ph name="ERROR_LINE_END" /></translation>
 <translation id="9064275926664971810">เปิดใช้การป้อนอัตโนมัติเพื่อกรอกฟอร์มด้วยการคลิกเพียงครั้งเดียว</translation>
 <translation id="9065203028668620118">แก้ไข</translation>

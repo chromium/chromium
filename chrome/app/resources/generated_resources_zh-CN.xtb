@@ -6505,6 +6505,7 @@
 <translation id="539882584649709174">帮助您在网络上撰写评价等简短文字</translation>
 <translation id="5400196580536813396">不得查找或使用您的设备可访问的打印机</translation>
 <translation id="5400836586163650660">灰色</translation>
+<translation id="5400933848253186401">使用 Gemini 总结</translation>
 <translation id="5402367795255837559">盲文</translation>
 <translation id="5402815541704507626">使用移动数据网络下载更新</translation>
 <translation id="5404557844330880551">详细了解如何比较商品</translation>
@@ -6979,7 +6980,6 @@
 <translation id="5734697361979786483">添加文件共享</translation>
 <translation id="573520097779121706">使用 7、8、9、u、o、j、k、l 键可移动光标</translation>
 <translation id="5736092224453113618">{NUM_FILES,plural, =0{这些数据或您的设备不符合贵组织的某些安全政策。请与您的管理员联系，了解需要修正哪些方面。}=1{此文件或您的设备不符合贵组织的某些安全政策。请与您的管理员联系，了解需要修正哪些方面。}other{这些文件不符合贵组织的某些安全政策。请与您的管理员联系，了解需要修正哪些方面。}}</translation>
-<translation id="5736345781200955827">您可创建、保存和管理您的密码，以便使用 Chrome 轻松登录网站和应用</translation>
 <translation id="5738093759615225354">您需要使用此通行密钥才能登录计算机</translation>
 <translation id="5738386565827477765">音频设备</translation>
 <translation id="5739017626473506901">请登录以帮助<ph name="USER_NAME" />添加学校账号</translation>
@@ -11830,7 +11830,7 @@
 <translation id="9011262023858991985">正在投放此标签页</translation>
 <translation id="9011393886518328654">版本说明</translation>
 <translation id="9012013036616593083">目前无法使用 Gemini，请稍后重试。</translation>
-<translation id="9012122671773859802">随着鼠标指针的移动连续移动屏幕</translation>
+<translation id="9012122671773859802">鼠标指针移动时，画面随之移动</translation>
 <translation id="9012585441087414258">防范已知危险的网站、下载内容和扩展程序。如果发现某个网页有可疑之处，系统会将相应网址连同少量网页内容发送到“Google 安全浏览”功能进行检查。</translation>
 <translation id="9013037634206938463">安装 Linux 需要 <ph name="INSTALL_SIZE" /> 的可用空间。如需增加可用空间，请从您的设备中删除文件。</translation>
 <translation id="9014206344398081366">ChromeVox 教程</translation>

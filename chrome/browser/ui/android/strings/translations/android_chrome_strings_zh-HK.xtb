@@ -178,7 +178,6 @@
 <translation id="1750238553597293878">繼續使用 Google 帳戶中的密碼</translation>
 <translation id="17513872634828108">開啟分頁</translation>
 <translation id="1753744496844366747">Aa</translation>
-<translation id="1755203724116202818">為評估廣告成效，網站之間會分享特定類型的資料，例如使用者是否在瀏覽網站後購物。</translation>
 <translation id="1760873718737761808">{FILE_COUNT,plural, =1{頁面，清單中有 1 個頁面}other{頁面，清單中有 # 個頁面}}</translation>
 <translation id="1771929606532798550">你的 Chrome 使用情況資料會傳送給 Google，但不會連繫你的身分\n\nChrome 當機時，當機詳情可能會包括部分個人資料\n\n如果你將記錄同步到 Google 帳戶，數據可能亦會包括所瀏覽網址的資料</translation>
 <translation id="1778457539567749232">標示為未讀取</translation>
@@ -320,6 +319,7 @@
 <translation id="2385605401818128172">你可以檢查傳送大量通知的網站，並禁止這些網站日後再傳送通知</translation>
 <translation id="2386938421315164605">隱藏和取消隱藏主題</translation>
 <translation id="2390510615457643724">要再次下載「<ph name="FILE_NAME" />」(<ph name="FILE_SIZE" />) 嗎？</translation>
+<translation id="2392369802118427583">啟用</translation>
 <translation id="2397175985681716533"><ph name="TAB_TITLE" />，錄緊媒體嘅無痕式分頁</translation>
 <translation id="2410754283952462441">選擇帳戶</translation>
 <translation id="2411239243988279592"><ph name="TAB_TITLE" />，揀咗播緊音訊嘅分頁</translation>
@@ -465,7 +465,6 @@
 <translation id="2951071800649516099">將網頁新增至閱讀清單，以便稍後瀏覽</translation>
 <translation id="2954586176076923855">將網址列移至頂部</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> 個未讀網頁}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> 個未讀網頁}}</translation>
-<translation id="2965758440484146185">輕按 [固定此捷徑]</translation>
 <translation id="2972109037780336501">自動移除權限</translation>
 <translation id="2976550651269220761">部分 Chrome 資料尚未儲存至 Google 帳戶。\n請稍候幾分鐘後再登出。如果你現在登出，系統將刪除此資料。</translation>
 <translation id="2977350910003566746">根據上次打開嘅日期排序</translation>
@@ -480,7 +479,6 @@
 <translation id="2992473221983447149">圖片說明</translation>
 <translation id="2996291259634659425">建立密碼短語</translation>
 <translation id="2996809686854298943">請提供網址</translation>
-<translation id="3008916997590006706">輕按 [儲存]，下次登入時就能輕鬆取用密碼</translation>
 <translation id="3024215143424744261">閱讀模式偏好設定已關閉</translation>
 <translation id="3026955690410463085">加入連結</translation>
 <translation id="3027644380269727216">根據您在網站上的活動推薦。此設定已開啟。</translation>
@@ -508,6 +506,7 @@
 <translation id="3122883569442693641">更多詳情</translation>
 <translation id="3123734510202723619">公告</translation>
 <translation id="3134385238404760368">最近沒有開啟分頁</translation>
+<translation id="3135655388926735587">輕按 [最近開啟的分頁]</translation>
 <translation id="314939179385989105">Chrome 首頁</translation>
 <translation id="3158667104057012316">根據手動次序排序</translation>
 <translation id="3159335509547415276">瞭解被封鎖的帳戶</translation>
@@ -570,7 +569,6 @@
 <translation id="3444179773590444986">要就網站深色主題提供意見嗎？</translation>
 <translation id="3448874648066942074">使用 AI 撮要頁面內容</translation>
 <translation id="3452832259067974318">為保障您的私隱，Chrome 不會在此欄位自動填入您的密碼。</translation>
-<translation id="3467081767799433066">廣告評估功能讓各個應用程式分享特定類型的資料 (例如使用者是否在瀏覽網站後購物)，以瞭解廣告成效。</translation>
 <translation id="3474624961160222204">以「<ph name="NAME" />」的身分繼續</translation>
 <translation id="3478363558367712427">您可以選擇搜尋引擎</translation>
 <translation id="3482805106082349287">使用鍵盤、語音、無痕模式或鏡頭搜尋</translation>
@@ -853,6 +851,7 @@
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 個密碼被盜用}other{# 個密碼被盜用}}</translation>
 <translation id="4641919525231168205">前往下一頁</translation>
 <translation id="4642472735733036929">已停止追蹤價格</translation>
+<translation id="4649493483932335039">查看最近開啟的分頁</translation>
 <translation id="465657074423018424">「安全瀏覽」功能可保護您免受欺詐網站的威脅。如果您停用此功能，在瀏覽及輸入密碼時請提高警覺。</translation>
 <translation id="4662373422909645029">暱稱不可包含數字</translation>
 <translation id="4663756553811254707">已刪除 <ph name="NUMBER_OF_BOOKMARKS" /> 個書籤</translation>
@@ -892,7 +891,6 @@
 <translation id="4763480195061959176">影片</translation>
 <translation id="4766313118839197559">密碼會儲存至此裝置上的「密碼管理工具」。</translation>
 <translation id="4766678251456904326">將帳戶新增至裝置</translation>
-<translation id="4767947714785277816">我們即將推出名為「廣告成效評估」的全新廣告私隱功能。Chrome 只會在網站和應用程式間分享非常有限的資料 (例如向使用者放送廣告的時段)，以協助評估廣告成效。</translation>
 <translation id="4769095993849849966">新檔案名稱</translation>
 <translation id="4769632191812288342">你將獲得標準保護功能</translation>
 <translation id="4773122030389014189">分享「<ph name="GROUP_NAME" />」分頁群組</translation>
@@ -928,7 +926,6 @@
 <translation id="4885273946141277891">Chrome 實例的數量已超出上限。</translation>
 <translation id="4890973535105146893">Google 帳戶中沒有儲存密碼</translation>
 <translation id="4905823827770127520">加入頁面的連結</translation>
-<translation id="4908601375231458049">自訂分頁群組，然後輕觸「完成」</translation>
 <translation id="4908869848243824489">Google 探索</translation>
 <translation id="4910889077668685004">付款應用程式</translation>
 <translation id="4911042367886397055"><ph name="USER_NAME" />，歡迎回來！</translation>
@@ -1114,7 +1111,6 @@
 <translation id="572328651809341494">最近開啟的分頁</translation>
 <translation id="5728072125198221967">連結的 Google 服務</translation>
 <translation id="5734658507307260911"><ph name="TAB_TITLE" />，播緊音訊嘅固定無痕式分頁</translation>
-<translation id="5736345781200955827">建立、儲存及管理密碼，方便使用 Chrome 登入網站和應用程式</translation>
 <translation id="5744751019568455640">你可以揀以下嘅聲音嚟讀出網頁內容。如果你鍾意呢款聲音想我繼續用，只需要㩒一下聲音名稱就得。</translation>
 <translation id="574845902699630049">以<ph name="OWNER_FULL_NAME" />的身分分享</translation>
 <translation id="5749068826913805084">Chrome 需要儲存空間的存取權才能下載檔案。</translation>
@@ -1192,7 +1188,7 @@
 <translation id="6040143037577758943">關閉</translation>
 <translation id="604124094241169006">自動</translation>
 <translation id="6042308850641462728">更多選項</translation>
-<translation id="6047066316630165190">開啟方格分頁切換工具</translation>
+<translation id="6047066316630165190">開啟網格分頁切換工具</translation>
 <translation id="604996488070107836">發生不明錯誤，因此無法下載 <ph name="FILE_NAME" />。</translation>
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">請在這裡控制您的報導和活動</translation>
@@ -1266,7 +1262,7 @@
 <translation id="6301526076346731664">開啟 Developer Tools</translation>
 <translation id="630308129961693966">選擇網址列位置</translation>
 <translation id="6303969859164067831">登出並停用同步功能</translation>
-<translation id="6305257382500066042">立即體驗</translation>
+<translation id="6305257382500066042">立即試用</translation>
 <translation id="6307241780749477694">你必須驗證身分，才能取得此裝置上的所有密碼</translation>
 <translation id="6309082029962045994"><ph name="TAB_TITLE" />，複選咗播緊音訊嘅固定分頁</translation>
 <translation id="6312687380483398334">網絡應用程式 (安靜模式)</translation>
@@ -1341,7 +1337,6 @@
 <translation id="6556501700899673703">Lexend</translation>
 <translation id="6560414384669816528">使用「搜狗」搜尋內容</translation>
 <translation id="656065428026159829">查看更多</translation>
-<translation id="6564820424018738527">Android 裝置可能會有類似的設定。如果 Chrome 和 Android 裝置已開啟廣告評估設定，廣告商或可在你瀏覽的網站和使用的應用程式中評估廣告成效。</translation>
 <translation id="6565959834589222080">有可用的 Wi-Fi 時使用 Wi-Fi</translation>
 <translation id="6569373978618239158">您將會在開啟新分頁時看到「<ph name="SITE_NAME" />」的內容。您追蹤的網站會儲存在 Google 帳戶中。您可在「探索」設定中管理已儲存的網站。</translation>
 <translation id="657177046675873214">如要將書籤同步到所有裝置，請在設定中開啟「書籤」</translation>
@@ -1553,7 +1548,6 @@
 <translation id="7291910923717764901">已為此頁面新增圖片描述</translation>
 <translation id="7293429513719260019">選取語言</translation>
 <translation id="7298319215489933099"><ph name="TAB_TITLE" />，揀咗分享緊內容嘅固定分頁</translation>
-<translation id="7304072650267745798">Android 裝置可能會有類似的設定。如果 Chrome 和 Android 裝置已開啟此設定，廣告商或者就能在您瀏覽的網站和使用的應用程式上評估廣告成效。</translation>
 <translation id="7311244614769792472">找不到任何結果</translation>
 <translation id="7313188324932846546">輕按即可設定同步</translation>
 <translation id="7314734791127433392">無法檢查密碼</translation>
@@ -1570,6 +1564,7 @@
 <translation id="7363349185727752629">私隱選項指南</translation>
 <translation id="7364103838544876661">用嚟刪除瀏覽資料嘅其他選項</translation>
 <translation id="7365073365123878797">如要開始在「Google 密碼管理工具」儲存並使用密碼，請更新 Google Play 服務</translation>
+<translation id="7368009310682364976">查看最近開啟的分頁</translation>
 <translation id="7368927539449986686">編輯站內搜尋</translation>
 <translation id="7375125077091615385">類型：</translation>
 <translation id="7376560087009844242">使用「輕觸搜尋」時，加入網頁上的更多文字可能會找到更相關的結果。您可隨時前往<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />調整設定。</translation>
@@ -1687,6 +1682,7 @@
 <translation id="7824665136384946951">你的機構已關閉「安全瀏覽」功能</translation>
 <translation id="7826342993930002256">Chrome 是你的隨身幫手</translation>
 <translation id="7844171778363018843">沒有選取要同步處理的資料</translation>
+<translation id="784453721355882533">試用 Chrome 版 Gemini 以取得答案、要點等內容。</translation>
 <translation id="7846161022626028328">發生錯誤，請再試一次。</translation>
 <translation id="7846296061357476882">Google 服務</translation>
 <translation id="784652447248278262">當前視窗</translation>
@@ -1696,6 +1692,7 @@
 <translation id="7853202427316060426">活動</translation>
 <translation id="7859988229622350291">永遠不要翻譯</translation>
 <translation id="7866213166286285359">翻譯這裡的頁面</translation>
+<translation id="7873610418439765081">試用 Chrome 版 Gemini，透過「更多選項」按鈕取得答案、要點等內容。</translation>
 <translation id="7875915731392087153">建立電郵</translation>
 <translation id="7876243839304621966">全部移除</translation>
 <translation id="7886917304091689118">正在 Chrome 中執行</translation>
@@ -1746,6 +1743,7 @@
 <translation id="8062594758852531064">延伸預先載入模式：</translation>
 <translation id="8063895661287329888">無法加入書籤。</translation>
 <translation id="8066816452984416180">快速將此頁面加入書籤。如要編輯此捷徑，請按住捷徑按鈕。</translation>
+<translation id="8072436850275034464">你可以在任何使用 Chrome 的裝置上重新開啟最近關閉的分頁</translation>
 <translation id="8073388330009372546">在新分頁中開啟圖片</translation>
 <translation id="8076492880354921740">分頁</translation>
 <translation id="8078096376109663956">只分享文字</translation>
@@ -1854,7 +1852,7 @@
 <translation id="8458341576712814616">快捷字詞</translation>
 <translation id="8458413889418591446">如要快速重溫你瀏覽過的網站，可同步記錄和分頁</translation>
 <translation id="84594714173170813">繼續使用 Google 帳戶中的 Chrome 資料</translation>
-<translation id="8460008946585880786">將一個分頁拖曳到另一個分頁上</translation>
+<translation id="8460008946585880786">將一個分頁拖放到另一個上</translation>
 <translation id="8460448946170646641">查看重要的私隱和安全控制項</translation>
 <translation id="8460932807646981183">管理搜尋引擎和站內搜尋</translation>
 <translation id="8473863474539038330">地址及其他資料</translation>

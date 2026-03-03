@@ -30,6 +30,7 @@
 <translation id="1011431628606634753">變更「Google 密碼管理工具」的復原 PIN</translation>
 <translation id="1012794136286421601">系統正在同步處理您的文件、試算表、簡報和繪圖檔案。開啟「Google 雲端硬碟」應用程式即可上網或離線存取您的檔案。</translation>
 <translation id="1012876632442809908">USB-C 裝置 (前方連接埠)</translation>
+<translation id="10146536653536065">安裝「<ph name="EXTENSION_NAME" />」</translation>
 <translation id="1015041505466489552">TrackPoint</translation>
 <translation id="1015318665228971643">修改資料夾名稱</translation>
 <translation id="1015578595646638936">{NUM_DAYS,plural, =1{今天是更新 <ph name="DEVICE_TYPE" /> 的最後一天}other{請在 {NUM_DAYS} 天內更新 <ph name="DEVICE_TYPE" />}}</translation>
@@ -1024,7 +1025,7 @@
 <translation id="1671525612731130246">選擇「雲端硬碟」帳戶</translation>
 <translation id="1671749176392751693">允許受保護內容識別碼</translation>
 <translation id="1673137583248014546"><ph name="URL" /> 要求查看「安全密鑰」的品牌和型號</translation>
-<translation id="1673855466663721679">在側邊面板中顯示書籤</translation>
+<translation id="1673855466663721679">在側面板顯示書籤</translation>
 <translation id="1674073353928166410">在無痕式視窗中開啟所有書籤 (<ph name="URL_COUNT" /> 個)</translation>
 <translation id="1674142805528405174">「Google 密碼管理工具」可以為帳戶改用安全度高的密碼，並儲存在 <ph name="EMAIL" /> 帳戶中。</translation>
 <translation id="1674945585974615438">在不熟悉的網站自動停用 JavaScript 優化工具</translation>
@@ -2846,6 +2847,7 @@
 <translation id="2881076733170862447">當您點擊擴充程式時</translation>
 <translation id="2882301808122022326">Omaha 回應</translation>
 <translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" /> 即將重新啟動並重新設定。</translation>
+<translation id="2883143988769190738">此擴充程式要求以下權限：</translation>
 <translation id="2884070497102362193">測試電池、CPU、記憶體、連接性等等</translation>
 <translation id="2885129935310217435">已有相同名稱的按鈕，請選擇其他名稱。</translation>
 <translation id="2885378588091291677">工作管理員</translation>
@@ -3462,7 +3464,7 @@
 <translation id="3312883087018430408">如要搜尋特定網站或 Chrome，請在網址列中輸入相關的快捷字詞，然後按下您偏好的鍵盤快速鍵。舉例來說，如果只要搜尋書籤，請輸入「@bookmarks」，然後按下 Tab 鍵或空白鍵。</translation>
 <translation id="3313622045786997898">憑證簽署值</translation>
 <translation id="3313950410573257029">檢查連線狀態</translation>
-<translation id="3314239811356311272">開啟書籤管理員</translation>
+<translation id="3314239811356311272">開啟「書籤管理員」</translation>
 <translation id="3315158641124845231">隱藏 <ph name="PRODUCT_NAME" /></translation>
 <translation id="3317459757438853210">雙面</translation>
 <translation id="3317521105713541270">建立群組</translation>
@@ -3669,7 +3671,7 @@
 <translation id="3453597230179205517">禁止存取位置</translation>
 <translation id="3453612417627951340">需要授權</translation>
 <translation id="3454213325559396544">這是此 <ph name="DEVICE_TYPE" /> 最後一次自動更新軟件和安全性。如要取得後續更新，請升級為較新的型號。</translation>
-<translation id="3454276058453724464">{FILE_LIMIT,plural, =1{提問時上傳 1 個 PDF 檔案}other{提問時最多只能上傳 # 個 PDF 檔案}}</translation>
+<translation id="3454276058453724464">{FILE_LIMIT,plural, =1{上載 1 個 .pdf 檔以助處理問題}other{上載最多 # 個 .pdf 檔以助處理問題}}</translation>
 <translation id="3454818737556063691">要將 1 個檔案移到 <ph name="CLOUD_PROVIDER" /> 開啟嗎？</translation>
 <translation id="3455436146814891176">同步加密密碼</translation>
 <translation id="345693547134384690">在新分頁中開啟圖片(&amp;I)</translation>
@@ -5039,7 +5041,7 @@
 <translation id="4364567974334641491"><ph name="APP_NAME" /> 正在共用視窗。</translation>
 <translation id="4364830672918311045">顯示通知</translation>
 <translation id="4367971618859387374">顯示名稱</translation>
-<translation id="4368888793624522796">分頁群組已移至新位置</translation>
+<translation id="4368888793624522796">分頁群組已移動</translation>
 <translation id="4368960422722232719">在分頁懸停預覽資訊卡上顯示記憶體用量</translation>
 <translation id="4369151461324628035">不允許網站連線至區域網絡上的任何裝置</translation>
 <translation id="4369215744064167350">已核准網站要求</translation>
@@ -5429,7 +5431,7 @@
 <translation id="4634575639321169635">將此裝置設定為工作或個人使用</translation>
 <translation id="4635072447747973225">解除安裝 Crostini</translation>
 <translation id="4635398712689569051">訪客使用者無法瀏覽「<ph name="PAGE_NAME" />」。</translation>
-<translation id="4635975718422788482">{FILE_LIMIT,plural, =1{提問時上傳 1 個圖像}other{提問時最多只能上傳 # 個圖像}}</translation>
+<translation id="4635975718422788482">{FILE_LIMIT,plural, =1{上載 1 張圖片以助處理問題}other{上載最多 # 張圖片以助處理問題}}</translation>
 <translation id="4636187126182557415">系統偏好設定</translation>
 <translation id="4636930964841734540">資料</translation>
 <translation id="4637083375689622795">更多操作，<ph name="EMAIL" /></translation>
@@ -6272,7 +6274,7 @@
 <translation id="5215502535566372932">選取國家/地區</translation>
 <translation id="5216674789212441076">自動翻譯即時字幕。字幕會傳送至 Google 進行翻譯。</translation>
 <translation id="5216951551945455224">{NUM_TABS,plural, =1{停止與 Gemini 分享分頁}other{停止與 Gemini 分享 # 個分頁}}</translation>
-<translation id="5217883660859035687">我們正在移動分頁群組，讓書籤有更多空間。</translation>
+<translation id="5217883660859035687">正在移動分頁群組，為書籤騰出更多空間。</translation>
 <translation id="5220011581825921581">搜尋鍵 + 向上箭咀鍵</translation>
 <translation id="5221516927483787768">無法投放 <ph name="HOST_NAME" /></translation>
 <translation id="5221834113325601057">喺清單度排除咗分頁</translation>
@@ -6523,6 +6525,7 @@
 <translation id="539882584649709174">協助在網絡上撰寫評論等短篇文字</translation>
 <translation id="5400196580536813396">不得尋找或使用能存取你裝置的打印機</translation>
 <translation id="5400836586163650660">灰色</translation>
+<translation id="5400933848253186401">使用 Gemini 撮要</translation>
 <translation id="5402367795255837559">點字</translation>
 <translation id="5402815541704507626">使用流動數據下載更新</translation>
 <translation id="5404557844330880551">進一步了解點樣比較產品</translation>
@@ -6929,6 +6932,7 @@
 <translation id="5677928146339483299">已封鎖</translation>
 <translation id="5678550637669481956">已授與「<ph name="VOLUME_NAME" />」的讀取和寫入權限。</translation>
 <translation id="5678821117681811450">正在傳送至「<ph name="WEB_DRIVE" />」</translation>
+<translation id="5678888125599911373">你可以在任何使用 Chrome 的裝置上重新開啟最近關閉的分頁</translation>
 <translation id="5678955352098267522">讀取您在 <ph name="WEBSITE_1" /> 上的資料</translation>
 <translation id="5679785611070310751">此 Chromebook 在 <ph name="MONTH_AND_YEAR" />後不會再收到安全性和軟件更新。請盡快改用新 Chromebook，以獲得最新的安全和軟件更新。須遵守優惠條款。</translation>
 <translation id="5680050361008726776">要移除「<ph name="ESIM_PROFILE_NAME" />」嗎？</translation>
@@ -6953,7 +6957,7 @@
 <translation id="5697832193891326782">Emoji 點選器</translation>
 <translation id="5698136107297470317">你即將刪除「<ph name="BRAND" />」的資料</translation>
 <translation id="5698878456427040674">請確認系統是否支援所選帳戶。</translation>
-<translation id="5698900765010620315">低對比深色</translation>
+<translation id="5698900765010620315">低對比度深色主題</translation>
 <translation id="5699227710146832453">來自：</translation>
 <translation id="570043786759263127">Google Play 應用程式和服務</translation>
 <translation id="5700761515355162635">已允許使用第三方 Cookie</translation>
@@ -6997,7 +7001,6 @@
 <translation id="5734697361979786483">新增檔案共用</translation>
 <translation id="573520097779121706">按下 7、8、9、u、o、j、k、l 鍵可移動游標</translation>
 <translation id="5736092224453113618">{NUM_FILES,plural, =0{此項資料或您的裝置不符合您機構的部分安全政策規定。請向您的管理員查詢，瞭解需要修正的項目。}=1{此檔案或您的裝置不符合您機構的部分安全政策規定。請向您的管理員查詢，瞭解需要修正的項目。}other{這些檔案不符合您機構的部分安全政策規定。請向您的管理員查詢，瞭解需要修正的項目。}}</translation>
-<translation id="5736345781200955827">建立、儲存及管理密碼，方便使用 Chrome 登入網站和應用程式</translation>
 <translation id="5738093759615225354">您需要使用此密鑰，才能在電腦上登入帳戶</translation>
 <translation id="5738386565827477765">音響裝置</translation>
 <translation id="5739017626473506901">需要登入才能為 <ph name="USER_NAME" /> 新增學校帳戶</translation>
@@ -7973,6 +7976,7 @@
 <translation id="6410257289063177456">圖片檔</translation>
 <translation id="6410328738210026208">變更版本並執行 Powerwash</translation>
 <translation id="6410390304316730527">「安全瀏覽」能保護您免受攻擊，攻擊者可能會誘使您採取一些危險的行動，例如安裝惡意軟件或洩漏您的個人資料 (包括密碼、電話號碼或信用卡資料)。如關閉「安全瀏覽」，請在瀏覽不熟悉或信譽不佳的網站時提高警覺。</translation>
+<translation id="6410390446958964276">登入後，你可以在所有裝置上使用 Google 帳戶所儲存的主題、設定和其他資料</translation>
 <translation id="6411135999030237579">按住即可自動重複按鍵動作</translation>
 <translation id="6414618057231176439">選取要安裝的 <ph name="VM_NAME" /> 版本。</translation>
 <translation id="641469293210305670">安裝更新內容和應用程式</translation>
@@ -8335,7 +8339,7 @@
 <translation id="6663190258859265334">在 <ph name="DEVICE_TYPE" /> 上執行 Powerwash 並返回先前的版本。</translation>
 <translation id="6664774537677393800">開啟您的設定檔時發生錯誤，請先登出，然後再次登入。</translation>
 <translation id="6665874326033183068">狂野</translation>
-<translation id="6666560794795912543">在側邊面板中顯示書籤</translation>
+<translation id="6666560794795912543">在側面板顯示書籤</translation>
 <translation id="6667086124612170548">檔案太大，無法下載至此裝置</translation>
 <translation id="6667092961374478614">「<ph name="FEATURE_NAME" />」可偵測度</translation>
 <translation id="6667187897999649121">目前只能與家庭成員分享密碼。你可<ph name="BEGIN_LINK" />建立家庭群組<ph name="END_LINK" /> (最多 6 位成員)，讓 Google 的產品和訂閱服務發揮更多價值。</translation>
@@ -9796,7 +9800,7 @@
 <translation id="7660146600670077843">在分頁上按一下右鍵，並選取「將分頁加入新群組」</translation>
 <translation id="7661451191293163002">無法取得註冊憑證。</translation>
 <translation id="7662283695561029522">輕觸即可設定</translation>
-<translation id="7662535435481776002">低對比淺色</translation>
+<translation id="7662535435481776002">低對比度淺色主題</translation>
 <translation id="7663719505383602579">接收端：<ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7663774460282684730">可以使用鍵盤快速鍵</translation>
 <translation id="7663859337051362114">新增 eSIM 卡設定檔</translation>
@@ -10374,6 +10378,7 @@
 <translation id="8038111231936746805">(預設)</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{正在將 1 個檔案複製至 <ph name="CLOUD_PROVIDER" />}other{正在將 {NUM_OF_FILES} 個檔案複製至 <ph name="CLOUD_PROVIDER" />}}</translation>
 <translation id="8039525676147630657">ChromeOS 版本更新後，此 Chrome 應用程式就會停止運作。請儲存要保留的所有應用程式資料。如要瞭解可用的選項，請聯絡應用程式開發人員或 IT 支援團隊。</translation>
+<translation id="804060420274176929">在 iOS 上提醒我</translation>
 <translation id="8041089156583427627">提供意見</translation>
 <translation id="8041093619605951337">高興</translation>
 <translation id="8041267120753677077">串流播放手機應用程式內容</translation>
@@ -11904,6 +11909,7 @@
 <translation id="9043264199499366189">訂閱 ChromeOS Flex 系統事件</translation>
 <translation id="9043767139743235992">聯絡 Google 殘疾支援團隊</translation>
 <translation id="9044646465488564462">無法連線至網絡：<ph name="DETAILS" /></translation>
+<translation id="9044838301401489071">你需要等待工作暫停或完成，才能與此分頁互動</translation>
 <translation id="9045160989383249058">閱讀清單已移動至新的側面板。按這裡即可試用。</translation>
 <translation id="9048745018038487540">選取所有字型</translation>
 <translation id="9050666287014529139">複雜密碼</translation>

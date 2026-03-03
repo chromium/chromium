@@ -1310,6 +1310,8 @@
 <translation id="3102312643185441063">შემნახველი</translation>
 <translation id="3103188521861412364">ფასიანი ქაღალდები და ობლიგაციები</translation>
 <translation id="3105172416063519923">საინვენტარო ID:</translation>
+<translation id="3105223248029915046">გადახდის გეგმები ექვემდებარება დასაშვებობას.
+მოგვიანებით გადახდის ვარიანტების დასამალად გახსენით <ph name="BEGIN_LINK" />გადახდის პარამეტრები<ph name="END_LINK" /></translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />დაცული DNS-ის კონფიგურაციის შემოწმება<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">შუა ლანგარი</translation>
 <translation id="3109061346635850169">სახისა და სხეულის მოვლა</translation>
@@ -2355,7 +2357,6 @@
 <translation id="4750671009706599284">ეს ტელეფონი</translation>
 <translation id="4750917950439032686">თქვენი ინფორმაცია (მაგალითად, პაროლები ან საკრედიტო ბარათების ნომრები) ამ საიტზე კონფიდენციალურად გაიგზავნება.</translation>
 <translation id="4751249061288707459">თანხმობის ბოლო განახლება:</translation>
-<translation id="4751476147751820511">მოძრაობის ან განათების სენსორები</translation>
 <translation id="4754461935447132332">დაუშვებელია დაუცველი საიტებისთვის</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
 <translation id="4757740693289347881">კოდი არასწორია</translation>
@@ -2635,6 +2636,7 @@
 <translation id="5190835502935405962">სანიშნეების ზოლი</translation>
 <translation id="5191315092027169558">თქვენს პროფილს მართავს <ph name="DOMAIN" /></translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> ითხოვს რამდენიმე ფაილის ჩამოტვირთვას</translation>
+<translation id="5199121357983849992">შეინახავთ პირადობის მოწმობას?</translation>
 <translation id="5200063972779787617">ანგარიშში მისამართის შენახვა</translation>
 <translation id="5201306358585911203">ამ გვერდში ჩაშენებული გვერდი იუწყება:</translation>
 <translation id="5203716867500274632">თქვენმა ადმინისტრატორმა დაუშვა, რომ თქვენი ChromeOS მოწყობილობის წინა და მიმდინარე სესიებს შორის სინქრონიზებული იყოს შემდეგი კონტენტი:</translation>
@@ -4073,6 +4075,7 @@
 <translation id="746412105358554870">JavaScript ოპტიმიზაცია და უსაფრთხოება</translation>
 <translation id="7465036432780054056"><ph name="EMBEDDED_URL" />-ს ეცოდინება, <ph name="TOP_LEVEL_URL" /> რომ მოინახულეთ</translation>
 <translation id="7465963048299965912">10 x 13 დუიმი</translation>
+<translation id="7467332121947433617">განაახლებთ პირადობის მოწმობას?</translation>
 <translation id="7469935732330206581">ფორმა არ არის დაცული</translation>
 <translation id="7470854469646445678">მიუთითეთ კოპირების მიზეზი (სავალდებულო)</translation>
 <translation id="7471007961486718967">მიუთითეთ გადაცემის მიზეზი (სავალდებულო)</translation>
@@ -4359,6 +4362,7 @@
 <translation id="7908648876066812348">მიმდინარეობს ვირტუალური ბარათის გააქტიურება</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, პარამეტრებში Chrome-ის უსაფრთხოების შემოწმების გვერდზე გადასასვლელად დააჭირეთ კლავიშს Tab, შემდეგ კი Enter-ს</translation>
 <translation id="791107458486222637">შედეგების ხელახლა გენერირება</translation>
+<translation id="7911651285409665023">დახურვა და „<ph name="TAB_TITLE" />“-ზე დაბრუნება</translation>
 <translation id="7912924955815015552">იმპორტირებულია Safari-დან</translation>
 <translation id="791551905239004656">ხატვა და გაფერადება</translation>
 <translation id="7916162853251942238">ფლექსოგრაფიული ბაზა</translation>
@@ -5211,7 +5215,6 @@
 <translation id="987264212798334818">ზოგადი</translation>
 <translation id="988159990683914416">დეველოპერის კონსტრუქცია</translation>
 <translation id="989988560359834682">მისამართის რედაქტირება</translation>
-<translation id="991413375315957741">მოძრაობის ან განათების სენსორები</translation>
 <translation id="991936891556421157">ფეხსაცმელი</translation>
 <translation id="992110854164447044">ვირტუალური ბარათი დამალავს თქვენს რეალურ ბარათს, რაც დაგიცავთ თაღლითობის პოტენციური შემთხვევებისგან. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="992115559265932548"><ph name="MICROSOFT_ACTIVE_DIRECTORY" /></translation>

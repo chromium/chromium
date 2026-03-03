@@ -230,6 +230,7 @@
 <translation id="1358187717814494928">Парақ жасау</translation>
 <translation id="1358223345833465883">Chromium-дегі іздеу жүйеңіз</translation>
 <translation id="1359836962251219822">Асүй және тамақ әзірлеу</translation>
+<translation id="136059610328993645">Ақпаратыңыз <ph name="ACCOUNT" /> аккаунтындағы Google Wallet-ке сақталады. Оны Google қызметтерінде пайдаланып, үлгілерді жылдамырақ толтыруға болады.</translation>
 <translation id="1360955481084547712">Жеке шолу үшін жаңа инкогнито терезесінде ашыңыз.</translation>
 <translation id="1361528602584216624">Pix бекіткен шектік сома R$ <ph name="TRANSACTION_LIMIT" /></translation>
 <translation id="1363015776076529485">Төлемді жалғастыру үшін таңдауға болатын төлеу әдістері толықтай ашылды.</translation>
@@ -252,6 +253,7 @@
 <translation id="1392813880755413602">OpenDocument презентациясы</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> ешқандай дерек жібермеді.</translation>
 <translation id="1393071644879491291">Сіз кіргелі жатқан сайттағы шабуылдаушылар бағдарламалық құралды алдап орнатқызуы мүмкін немесе құпия сөздер, телефон не несиелік карта нөмірлері сияқты ақпаратты алдап алуы мүмкін. Chrome міндетті түрде қауіпсіздікке оралуды ұсынады. <ph name="BEGIN_LEARN_MORE_LINK" />Бұл ескерту туралы толық ақпарат<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="1402151528875251561">Тарихты бүйірлік панельден көрсету</translation>
 <translation id="1405567553485452995">Ашық жасыл</translation>
 <translation id="1406370515365284486">Төлеу әдістеріңіз сақтала береді.</translation>
 <translation id="1406500794671479665">Расталуда…</translation>
@@ -1308,6 +1310,8 @@
 <translation id="3102312643185441063">Жинақ шоты</translation>
 <translation id="3103188521861412364">Акциялар мен облигациялар</translation>
 <translation id="3105172416063519923">Актив идентификаторы:</translation>
+<translation id="3105223248029915046">Төлем жоспарлары талаптарға сай болуы керек.
+Кейін төлеу опцияларын жасыру үшін <ph name="BEGIN_LINK" />төлем параметрлеріне<ph name="END_LINK" /> өтіңіз.</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />DNS конфигурациясын тексеріп көріңіз.<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Ортаңғы науа</translation>
 <translation id="3109061346635850169">Бет пен дене күтімі</translation>
@@ -1449,6 +1453,7 @@
 <translation id="33073482541490531">Сіз жаңа ғана қолданған құпия сөз деректердің қолды болуы салдарынан жария етілді. Password Manager оны дереу өзгертуді ұсынады.</translation>
 <translation id="3307649904964670439">"Chrome-ды реттеу" түймесі, браузер көрінісін реттеу үшін белсендіріңіз</translation>
 <translation id="3308006649705061278">Ұйымдық бірлік (OU)</translation>
+<translation id="3310946375819654151">Chrome браузері <ph name="APP_NAME" /> сайтында құпия ақпаратыңызды толтырғалы жатыр.</translation>
 <translation id="3312952471765023168">Сәтті жүктеп салынды</translation>
 <translation id="3318016344440038475">Телекомедиялар</translation>
 <translation id="3324687287337751929">4 x 6 дюйм</translation>
@@ -1739,6 +1744,7 @@
 <translation id="3752181611900535304">Мекенжайды аккаунтқа сақтау керек пе?</translation>
 <translation id="3752543821772132562">Еленбеген, себебі <ph name="POLICY_NAME" /> орнатылмаған.</translation>
 <translation id="3754210790023674521">"Суреттегі сурет" режимінен шығу</translation>
+<translation id="3754664361823138853">Тарих бетін &amp;ашу</translation>
 <translation id="3759461132968374835">Жақында хабарланған жаңылыстар жоқ. Жаңылыс туралы хабарлау өшірілген кезде орын алған жаңылыстар мұнда көрсетілмейді.</translation>
 <translation id="3760561303380396507">CVC орнына Windows Hello қолданасыз ба?</translation>
 <translation id="3761171036307311438">Карта иесінің аты-жөні:</translation>
@@ -2350,7 +2356,6 @@
 <translation id="4750671009706599284">осы телефон</translation>
 <translation id="4750917950439032686">Бұл сайтқа жіберілетін жеке ақпаратыңыз (мысалы, құпия сөздер не несиелік карта нөмірлері) құпия сақталады.</translation>
 <translation id="4751249061288707459">Соңғы жаңартылған келісім:</translation>
-<translation id="4751476147751820511">Қозғалыс не жарық датчиктері</translation>
 <translation id="4754461935447132332">Қауіпсіз емес сайттар үшін рұқсат етілмеген.</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
 <translation id="4757740693289347881">Код жарамсыз.</translation>
@@ -2750,6 +2755,7 @@
 <translation id="5385966243497224160">HTTPS емес URL мекенжайын алдын ала көру мүмкін емес</translation>
 <translation id="5386426401304769735">Осы сайтқа арналған сертификат тізбегінде SHA-1 көмегімен қолтаңба қойылған сертификат бар.</translation>
 <translation id="5391010642126249196">Кірген уақытыңыз:</translation>
+<translation id="5391306025131596142">Тарих бетін &amp;ашу</translation>
 <translation id="539203134595252721">Үстел теннисі</translation>
 <translation id="5392506727170022660">Металл (жартылай жылтыр)</translation>
 <translation id="5394069166371280357">Отбасылық телешоулар</translation>
@@ -3544,6 +3550,7 @@
 <translation id="6655085656059574817">Аккаунтыңызды байланыстырып қойсаңыз, <ph name="BNPL_ISSUER_NAME" /> арқылы жылдам төлей аласыз. Бірақ ажырату үшін <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /> сайтына өтуіңіз керек.</translation>
 <translation id="6656935431494847393">Рейс брондау және көлік туралы ақпарат сияқты мәліметтер кіреді.</translation>
 <translation id="6657585470893396449">Құпия сөз</translation>
+<translation id="6659156657345021268">Ақпаратыңыз тек құрылғыңызға сақталады. Келесі жолы тиісті үлгіні толтырған кезде, оны Wallet-ке сақтай аласыз.</translation>
 <translation id="6659246032834639189">Бұл баға төмен.</translation>
 <translation id="6660413144148052430">орын</translation>
 <translation id="6662457027866368246">Бірінші орам</translation>
@@ -4352,6 +4359,7 @@
 <translation id="7908648876066812348">Виртуалдық карта қосылып жатыр</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, параметрлердегі Chrome қауіпсіздік тексерісі бетіне өту үшін Tab, содан кейін Enter пернесін басыңыз.</translation>
 <translation id="791107458486222637">Нәтиже қайталанып жатыр.</translation>
+<translation id="7911651285409665023">Жабу және "<ph name="TAB_TITLE" />" қойындысына оралу</translation>
 <translation id="7912924955815015552">Safari браузерінен импортталған</translation>
 <translation id="791551905239004656">Сурет салу және бояу</translation>
 <translation id="7916162853251942238">Флексографиялық база</translation>
@@ -4948,6 +4956,7 @@
 <translation id="8894794286471754040">Алдымен ұзын шеті</translation>
 <translation id="8897221284075091877">Бұл контентті көруге рұқсат сұрау үшін Google аккаунтыңызды әрі қарай пайдалана беріңіз.</translation>
 <translation id="8897428486789851669">Жүзу</translation>
+<translation id="8898854704577986668">Тарихты бүйірлік панельден көрсету</translation>
 <translation id="8899807382908246773">Мазалайтын жарнамалар</translation>
 <translation id="8903921497873541725">Үлкейту</translation>
 <translation id="8903998444169664879">Төлем параметрлерін өзгерту үшін жеке басыңызды растаңыз.</translation>
@@ -5202,7 +5211,6 @@
 <translation id="987264212798334818">Жалпы</translation>
 <translation id="988159990683914416">Әзірлеуші жасақтамасы</translation>
 <translation id="989988560359834682">Мекенжайды өзгерту</translation>
-<translation id="991413375315957741">қозғалыс не жарық датчиктері</translation>
 <translation id="991936891556421157">Аяқ киім</translation>
 <translation id="992110854164447044">Виртуалдық карта сізді ықтимал алаяқтықтан қорғау үшін қолданыстағы картаңызды жасырады. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="992115559265932548"><ph name="MICROSOFT_ACTIVE_DIRECTORY" /></translation>

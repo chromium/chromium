@@ -230,6 +230,7 @@
 <translation id="1358187717814494928">Créer une feuille de calcul</translation>
 <translation id="1358223345833465883">Votre moteur de recherche dans Chromium</translation>
 <translation id="1359836962251219822">Cuisine et salle à manger</translation>
+<translation id="136059610328993645">Vos informations sont enregistrées dans Google Portefeuille pour <ph name="ACCOUNT" />. Vous pouvez les utiliser dans les services Google pour remplir les formulaires plus rapidement.</translation>
 <translation id="1360955481084547712">Ouvrez une nouvelle fenêtre en mode de navigation privée pour naviguer de manière privée</translation>
 <translation id="1361528602584216624">Limite par Pix <ph name="TRANSACTION_LIMIT" /> R$</translation>
 <translation id="1363015776076529485">Fenêtre des modes de paiement pouvant être sélectionnés pour procéder au paiement, ouverte à pleine hauteur.</translation>
@@ -252,6 +253,7 @@
 <translation id="1392813880755413602">Présentation OpenDocument</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> n'a envoyé aucune donnée.</translation>
 <translation id="1393071644879491291">Des pirates informatiques qui se trouvent sur le site que vous avez essayé de visiter pourraient tenter de vous inciter à installer un logiciel ou à révéler des renseignements tels que vos mots de passe ou vos numéros de téléphone ou de cartes de crédit. Chrome vous recommande fortement de revenir à une page sûre. <ph name="BEGIN_LEARN_MORE_LINK" />En savoir plus sur cet avertissement<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="1402151528875251561">Afficher l'historique dans le panneau latéral</translation>
 <translation id="1405567553485452995">Vert clair</translation>
 <translation id="1406370515365284486">Vos modes de paiement resteront enregistrés</translation>
 <translation id="1406500794671479665">Vérification en cours…</translation>
@@ -1308,6 +1310,8 @@
 <translation id="3102312643185441063">Épargne</translation>
 <translation id="3103188521861412364">Actions et obligations</translation>
 <translation id="3105172416063519923">Identifiant de ressource :</translation>
+<translation id="3105223248029915046">Les forfaits de paiement sont assujettis à des critères d'admissibilité.
+Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LINK" />paramètres des paiements<ph name="END_LINK" /></translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />Vérifier la configuration du serveur DNS sécurisé<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Plateau du milieu</translation>
 <translation id="3109061346635850169">Soins du visage et du corps</translation>
@@ -1450,6 +1454,7 @@
 <translation id="33073482541490531">Le mot de passe que vous venez d'utiliser a été trouvé dans un cas de violation de données. Le Gestionnaire de mots de passe vous recommande de modifier ce mot de passe maintenant.</translation>
 <translation id="3307649904964670439">Bouton Personnaliser Chrome, activez-le pour personnaliser l'apparence de votre navigateur</translation>
 <translation id="3308006649705061278">Unité organisationnelle (« OU »)</translation>
+<translation id="3310946375819654151">Chrome tente de remplir vos infos sensibles dans <ph name="APP_NAME" />.</translation>
 <translation id="3312952471765023168">Téléversement réussi</translation>
 <translation id="3318016344440038475">Séries télévisées comiques</translation>
 <translation id="3324687287337751929">4 po x 6 po</translation>
@@ -1740,6 +1745,7 @@
 <translation id="3752181611900535304">Enregistrer l'adresse dans le compte?</translation>
 <translation id="3752543821772132562">Ignorée, car <ph name="POLICY_NAME" /> n'est pas définie.</translation>
 <translation id="3754210790023674521">Quitter le mode d'incrustation d'image</translation>
+<translation id="3754664361823138853">&amp;Ouvrir la page de l'historique</translation>
 <translation id="3759461132968374835">Aucune erreur n'a été signalée récemment. Les erreurs n'apparaissent ici que lorsque l'envoi de rapports d'erreur est activé.</translation>
 <translation id="3760561303380396507">Utiliser Windows Hello au lieu du code CVC?</translation>
 <translation id="3761171036307311438">Nom figurant sur la carte :</translation>
@@ -2351,7 +2357,6 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="4750671009706599284">ce téléphone</translation>
 <translation id="4750917950439032686">Vos données (par exemple, vos mots de passe ou vos numéros de carte de crédit) sont privées lorsqu'elles sont envoyées à ce site.</translation>
 <translation id="4751249061288707459">Dernière mise à jour du consentement :</translation>
-<translation id="4751476147751820511">Capteurs de mouvement ou de luminosité</translation>
 <translation id="4754461935447132332">Non autorisé pour les sites non sécurisés</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
 <translation id="4757740693289347881">Le code est incorrect</translation>
@@ -2751,6 +2756,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="5385966243497224160">Impossible de consulter l'aperçu d'une URL non-HTTPS</translation>
 <translation id="5386426401304769735">La chaîne de certificat pour ce site contient un certificat qui a été signé avec SHA-1.</translation>
 <translation id="5391010642126249196">Vous avez visité cette page</translation>
+<translation id="5391306025131596142">&amp;Ouvrir la page de l'historique</translation>
 <translation id="539203134595252721">Tennis de table</translation>
 <translation id="5392506727170022660">Métal (semi-brillant)</translation>
 <translation id="5394069166371280357">Émissions télévisées familiales</translation>
@@ -3545,6 +3551,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="6655085656059574817">Si votre compte est associé, vous pouvez payer plus rapidement avec <ph name="BNPL_ISSUER_NAME" />, mais vous pouvez le dissocier en accédant à <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /></translation>
 <translation id="6656935431494847393">Comprend des informations telles que les réservations de vols et les informations sur les véhicules</translation>
 <translation id="6657585470893396449">Mot de passe</translation>
+<translation id="6659156657345021268">Vos informations sont enregistrées uniquement sur votre appareil. Vous aurez la possibilité de les enregistrer dans Portefeuille la prochaine fois que vous remplirez un formulaire pertinent.</translation>
 <translation id="6659246032834639189">Ce prix est bas</translation>
 <translation id="6660413144148052430">Position</translation>
 <translation id="6662457027866368246">Premier rouleau</translation>
@@ -4353,6 +4360,7 @@ Détails supplémentaires :
 <translation id="7908648876066812348">Activation de la carte virtuelle en cours…</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur la touche Tabulation, puis sur la touche Entrée pour accéder à la page de la Vérification de sécurité de Chrome dans les paramètres</translation>
 <translation id="791107458486222637">Rétablissement du résultat en cours…</translation>
+<translation id="7911651285409665023">Fermer et revenir à « <ph name="TAB_TITLE" /> »</translation>
 <translation id="7912924955815015552">Importés de Safari</translation>
 <translation id="791551905239004656">Dessin et coloriage</translation>
 <translation id="7916162853251942238">Flexo Base</translation>
@@ -4949,6 +4957,7 @@ Détails supplémentaires :
 <translation id="8894794286471754040">Bord long en premier</translation>
 <translation id="8897221284075091877">Pour demander à voir ce contenu, continue avec ton compte Google</translation>
 <translation id="8897428486789851669">Natation</translation>
+<translation id="8898854704577986668">Afficher l'historique dans le panneau latéral</translation>
 <translation id="8899807382908246773">Annonces intrusives</translation>
 <translation id="8903921497873541725">Zoom avant</translation>
 <translation id="8903998444169664879">Confirmez votre identité pour modifier vos paramètres des paiements</translation>
@@ -5203,7 +5212,6 @@ Détails supplémentaires :
 <translation id="987264212798334818">Généralités</translation>
 <translation id="988159990683914416">Version de développeur</translation>
 <translation id="989988560359834682">Modifier l'adresse</translation>
-<translation id="991413375315957741">Capteurs de mouvement ou de luminosité</translation>
 <translation id="991936891556421157">Chaussures</translation>
 <translation id="992110854164447044">Une carte virtuelle masque votre carte réelle pour vous protéger de fraudes potentielles. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="992115559265932548"><ph name="MICROSOFT_ACTIVE_DIRECTORY" /></translation>

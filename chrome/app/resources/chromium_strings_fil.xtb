@@ -29,6 +29,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="126567311906253476">Kapag nagsa-sign in sa mga serbisyo ng Google tulad ng Gmail o YouTube gamit ang <ph name="USER_EMAIL" />, puwede kang awtomatikong mag-sign in sa Chromium gamit ang parehong account</translation>
 <translation id="1290883685122687410">Error sa pag-set up: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1315551408014407711">I-set up ang iyong bagong profile sa Chromium</translation>
+<translation id="132092532143527429">Subukan sa Gemini sa Chromium</translation>
 <translation id="1324107359134968521">Kailangan ng Chromium ng access sa Bluetooth para i-explore ang 
  mga Bluetooth device. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">I-detect ang wika</translation>
@@ -611,6 +612,7 @@ Hindi mabawi ng Chromium ang iyong mga setting.</translation>
 <translation id="7622753900276619808">Mayroon ka na ngayong mas maraming feature na available sa Chromium</translation>
 <translation id="7624307931717240213">Ginagamit namin ang impormasyon para pahusayin ang serbisyong ito. Tingnan ang Patakaran sa Privacy at Mga Tuntunin ng Serbisyo.</translation>
 <translation id="7649070708921625228">Tulong</translation>
+<translation id="7650134251917003571">Kunin ang Chromium App</translation>
 <translation id="7656340475565475526">Hayaan ang Chromium na mag-browse para sa iyo</translation>
 <translation id="7658239707568436148">Kanselahin</translation>
 <translation id="7686590090926151193">Hindi Chromium ang iyong default na browser</translation>

@@ -66,7 +66,6 @@
 <translation id="1677097821151855053">Defnyddir cwcis a data gwefan eraill i'ch cofio, er enghraifft i'ch mewngofnodi neu i bersonoleiddio hysbysebion. I reoli cwcis ar gyfer pob gwefan, gweler <ph name="BEGIN_LINK" />Gosodiadau<ph name="END_LINK" />.</translation>
 <translation id="1679305402657584804">Gall gwefannau ofyn am gael defnyddio dyfeisiau NFC</translation>
 <translation id="1686785653877010442">Mae gwefannau fel arfer yn anfon hysbysiadau i roi gwybod i chi am newyddion yn torri neu negeseuon sgwrsio.</translation>
-<translation id="169515064810179024">Rhwystro gwefannau rhag cael mynediad at synwyryddion symudiad</translation>
 <translation id="1703666494654169921">Peidio â chaniatáu i wefannau ddefnyddio dyfeisiau neu ddata rhithwirionedd</translation>
 <translation id="1704230497453185209">Peidio â chaniatáu i wefannau chwarae sain</translation>
 <translation id="1717218214683051432">Synwyryddion symudiad</translation>
@@ -235,7 +234,6 @@ Mae Advanced Protection yn rheoli'r gosodiadau Chrome hyn:
 <translation id="3232293466644486101">Dileu data pori…</translation>
 <translation id="3242646949159196181">Pan fydd wedi'i droi ymlaen, gall gwefannau chwarae sain. Pan fydd wedi'i ddiffodd, ni all gwefannau chwarae sain.</translation>
 <translation id="3273479183583863618">Gostyngiadau pris ar dabiau</translation>
-<translation id="3277252321222022663">Caniatáu i wefannau gael mynediad at synwyryddion (argymhellir)</translation>
 <translation id="3285500645985761267">Caniatáu i wefannau cysylltiedig weld eich gweithgarwch yn y grŵp</translation>
 <translation id="3295019059349372795">Pennod 11: Dinas Emrallt Rhyfeddol Oz</translation>
 <translation id="3295602654194328831">Cuddio Gwybodaeth</translation>
@@ -371,7 +369,6 @@ Mae Advanced Protection yn rheoli'r gosodiadau Chrome hyn:
 <translation id="4672315773691449562">Tapiwch Ap porwr yna tapiwch Chrome</translation>
 <translation id="4676059169848868271">I adael i <ph name="APP_NAME" /> ddefnyddio olrhain dwylo, trowch olrhain dwylo ymlaen hefyd yn y <ph name="BEGIN_LINK" />gosodiadau system<ph name="END_LINK" />.</translation>
 <translation id="4688045258817337666">Rheoli eich cardiau</translation>
-<translation id="4751476147751820511">Synwyryddion ystumiau/goleuadau</translation>
 <translation id="4755971844837804407">Pan fydd wedi'i droi ymlaen, gall gwefannau ddangos unrhyw hysbyseb i chi. Pan fydd wedi'i ddiffodd, ni all gwefannau ddangos hysbysebion ymwthiol neu gamarweiniol.</translation>
 <translation id="4779083564647765204">Chwyddo</translation>
 <translation id="4807122856660838973">Troi Pori'n Ddiogel ymlaen</translation>
@@ -398,7 +395,6 @@ Mae Advanced Protection yn rheoli'r gosodiadau Chrome hyn:
 <translation id="5001526427543320409">Cwcis trydydd parti</translation>
 <translation id="5007392906805964215">Adolygu</translation>
 <translation id="5039804452771397117">Caniatáu</translation>
-<translation id="5048398596102334565">Caniatáu i wefannau gael mynediad at synwyryddion symudiad (argymhellir)</translation>
 <translation id="5048841907079026162">Rheoli eich data pori</translation>
 <translation id="5050380848339752099">Mae'r wefan hon ar fin rhannu gwybodaeth ag ap y tu allan i'r modd Anhysbys.</translation>
 <translation id="5063480226653192405">Defnydd</translation>
@@ -686,7 +682,6 @@ Mae Advanced Protection yn rheoli'r gosodiadau Chrome hyn:
 <translation id="8088603949666785339">Rhagor o opsiynau yn y <ph name="BANNER_TITLE" /></translation>
 <translation id="8112925981674547014">Gweld tabiau yn eich rhestr apiau</translation>
 <translation id="8116925261070264013">Wedi'i ddistewi</translation>
-<translation id="8117244575099414087">Pan fydd wedi'i droi ymlaen, gall gwefannau ddefnyddio synwyryddion eich dyfais. Pan fydd wedi'i ddiffodd, ni all gwefannau ddefnyddio synwyryddion.</translation>
 <translation id="813082847718468539">Gweld gwybodaeth am y wefan</translation>
 <translation id="8131740175452115882">Cadarnhau</translation>
 <translation id="8148160259207090265">Mae'r gosodiad hwn yn parhau i fod ymlaen cyhyd â bod gennych Advanced Protection wedi'i droi ymlaen yng Ngosodiadau Android.</translation>
@@ -762,7 +757,6 @@ Mae Advanced Protection yn rheoli'r gosodiadau Chrome hyn:
 <translation id="8801657293260363985">V8 yw injan JavaScript a WebAssembly Chrome a ddefnyddir i wella perfformiad gwefan</translation>
 <translation id="8803526663383843427">Pan fydd ymlaen</translation>
 <translation id="8805385115381080995">Mae pori yn gyflymach oherwydd bod gwefan yn llai tebygol o ofyn i chi gadarnhau eich bod yn berson go iawn</translation>
-<translation id="8816026460808729765">Rhwystro gwefannau rhag cael mynediad at synwyryddion</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8874790741333031443">Rhowch gynnig ar ganiatáu cwcis trydydd parti dros dro, sy'n golygu llai o amddiffyniad pori ond mae nodweddion y wefan yn fwy tebygol o weithio fel y disgwyl.</translation>
 <translation id="8889294078294184559">Wrth i chi barhau i bori, gall gwefannau wirio gyda Chrome a chadarnhau gyda gwefan flaenorol rydych wedi ymweld â hi eich bod yn debygol o fod yn berson go iawn</translation>

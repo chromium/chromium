@@ -66,7 +66,6 @@
 <translation id="1677097821151855053">Webkoekies en ander werfdata word gebruik om jou te onthou, byvoorbeeld om jou aan te meld of om advertensies te personaliseer. Sien <ph name="BEGIN_LINK" />Instellings<ph name="END_LINK" /> om webkoekies vir alle werwe te bestuur.</translation>
 <translation id="1679305402657584804">Werwe kan vra om NFC-toestelle te gebruik</translation>
 <translation id="1686785653877010442">Werwe stuur gewoonlik kennisgewings om jou in te lig oor brekende nuus of kletsboodskappe.</translation>
-<translation id="169515064810179024">Blokkeer werwe om toegang tot bewegingsensors te kry</translation>
 <translation id="1703666494654169921">Moenie werwe toelaat om virtuelerealiteittoestelle of data te gebruik nie</translation>
 <translation id="1704230497453185209">Moenie werwe toelaat om klank te speel nie</translation>
 <translation id="1717218214683051432">Bewegingsensors</translation>
@@ -235,7 +234,6 @@ Gevorderde Beskerming beheer hierdie Chrome-instellings:
 <translation id="3232293466644486101">Vee blaaierdata uit …</translation>
 <translation id="3242646949159196181">Wanneer dit aan is, kan werwe klank speel. Wanneer dit af is, kan werwe nie klank speel nie.</translation>
 <translation id="3273479183583863618">Prysdalings op oortjies</translation>
-<translation id="3277252321222022663">Laat werwe toegang tot sensors toe (aanbeveel)</translation>
 <translation id="3285500645985761267">Laat verwante werwe toe om jou aktiwiteit in die groep te sien</translation>
 <translation id="3295019059349372795">Hoofstuk 11: Die Wonderlike Smaragstad van Oz</translation>
 <translation id="3295602654194328831">Versteek inligting</translation>
@@ -371,7 +369,6 @@ Gevorderde Beskerming beheer hierdie Chrome-instellings:
 <translation id="4672315773691449562">Tik op Blaaierapp en tik dan op Chrome</translation>
 <translation id="4676059169848868271">Om <ph name="APP_NAME" /> toe te laat om handnasporing te gebruik, moet jy ook handnasporing in <ph name="BEGIN_LINK" />stelselinstellings<ph name="END_LINK" /> aanskakel.</translation>
 <translation id="4688045258817337666">Bestuur jou kaarte</translation>
-<translation id="4751476147751820511">Beweging- of ligsensors</translation>
 <translation id="4755971844837804407">Wanneer dit aan is, kan werwe enige advertensie vir jou wys. Wanneer dit af is, kan werwe nie indringerige of misleidende advertensies wys nie.</translation>
 <translation id="4779083564647765204">Zoem</translation>
 <translation id="4807122856660838973">Skakel Veiligblaai aan</translation>
@@ -398,7 +395,6 @@ Gevorderde Beskerming beheer hierdie Chrome-instellings:
 <translation id="5001526427543320409">Derdepartywebkoekies</translation>
 <translation id="5007392906805964215">Gaan na</translation>
 <translation id="5039804452771397117">Laat toe</translation>
-<translation id="5048398596102334565">Laat werwe toegang tot bewegingsensors toe (aanbeveel)</translation>
 <translation id="5048841907079026162">Bestuur jou blaaierdata</translation>
 <translation id="5050380848339752099">Hierdie werf is op die punt om inligting met 'n app buite Incognitomodus te deel.</translation>
 <translation id="5063480226653192405">Gebruik</translation>
@@ -686,7 +682,6 @@ Gevorderde Beskerming beheer hierdie Chrome-instellings:
 <translation id="8088603949666785339">Meer opsies in die <ph name="BANNER_TITLE" /></translation>
 <translation id="8112925981674547014">Bekyk oortjies in jou applys</translation>
 <translation id="8116925261070264013">Gedemp</translation>
-<translation id="8117244575099414087">Wanneer dit aan is, kan werwe jou toestel se sensors gebruik. Wanneer dit af is, kan werwe nie sensors gebruik nie.</translation>
 <translation id="813082847718468539">Bekyk werfinligting</translation>
 <translation id="8131740175452115882">Bevestig</translation>
 <translation id="8148160259207090265">Hierdie instelling bly aan solank jy Gevorderde Beskerming in Android-instellings aangeskakel hou.</translation>
@@ -762,7 +757,6 @@ Gevorderde Beskerming beheer hierdie Chrome-instellings:
 <translation id="8801657293260363985">V8 is Chrome se JavaScript- en WebAssembly-enjin wat gebruik word om werf se werkverrigting te verbeter</translation>
 <translation id="8803526663383843427">As dit aan is</translation>
 <translation id="8805385115381080995">Jy kan vinniger blaai omdat die kans kleiner is dat ’n werf jou sal vra om te verifieer dat jy ’n regte persoon is</translation>
-<translation id="8816026460808729765">Blokkeer werwe om toegang tot sensors kry</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8874790741333031443">Probeer om derdepartywebkoekies tydelik toe te laat, wat minder blaaibeskerming beteken, maar werfkenmerke is meer geneig om te werk soos verwag word.</translation>
 <translation id="8889294078294184559">Terwyl jy aanhou blaai, kan werwe met Chrome kontroleer en met ’n vorige werf wat jy besoek het verifieer dat jy waarskynlik ’n regte persoon is</translation>

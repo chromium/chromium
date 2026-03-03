@@ -29,6 +29,7 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="126567311906253476">Als je met <ph name="USER_EMAIL" /> inlogt bij Google-services zoals Gmail of YouTube, kun je met hetzelfde account automatisch inloggen bij Chromium</translation>
 <translation id="1290883685122687410">Configuratiefout: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1315551408014407711">Je nieuwe Chromium-profiel instellen</translation>
+<translation id="132092532143527429">Probeer het met Gemini in Chromium</translation>
 <translation id="1324107359134968521">Chromium heeft bluetooth-toegang nodig om bluetooth-apparaten te verkennen. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">Taal herkennen</translation>
 <translation id="1330742950061766891">Door Chromium aanbevolen browserinstellingen gebruiken</translation>
@@ -240,6 +241,7 @@ Dit heeft geen gevolgen voor bookmarks, geschiedenis en opgeslagen wachtwoorden.
 <translation id="3509308970982693815">Sluit alle Chromium-vensters en probeer het opnieuw.</translation>
 <translation id="3522404737534491619">Als je je venster wilt delen, sta je schermopname voor Chromium toe in Systeeminstellingen</translation>
 <translation id="3530103706039034513"><ph name="EXISTING_USER" /> is al ingelogd.  Als je je browsegegevens gescheiden wilt houden, log je in Chromium in op je eigen profiel bij als <ph name="USER_EMAIL_ADDRESS" />.</translation>
+<translation id="3531741627422851418">QR-code om de Chromium-browser te downloaden op mobiele apparaten</translation>
 <translation id="3561853857681580870">Als je je scherm wilt delen, sta je schermopname voor Chromium toe in Systeeminstellingen.</translation>
 <translation id="3588112919289558122">Geoptimaliseerde beveiliging zet JavaScript-optimalisatie uit voor sites die Chromium niet herkent</translation>
 <translation id="3597003331831379823">Kan configuratie met rechten op hoger niveau niet uitvoeren. <ph name="METAINSTALLER_ERROR" /></translation>
@@ -609,6 +611,7 @@ Chromium kan je instellingen niet herstellen.</translation>
 <translation id="7622753900276619808">Er zijn nu meer functies beschikbaar voor je in Chromium</translation>
 <translation id="7624307931717240213">We gebruiken informatie om deze service te verbeteren. Bekijk het Privacybeleid en de Servicevoorwaarden.</translation>
 <translation id="7649070708921625228">Hulp</translation>
+<translation id="7650134251917003571">De Chromium-app downloaden</translation>
 <translation id="7656340475565475526">Laat Chromium voor je browsen</translation>
 <translation id="7658239707568436148">Annuleren</translation>
 <translation id="7686590090926151193">Chromium is niet je standaardbrowser</translation>

@@ -66,7 +66,6 @@
 <translation id="1677097821151855053">Kolačići i drugi podaci web lokacije se koriste da vas web lokacija zapamti, naprimjer radi vaše prijave ili personaliziranja oglasa. Da upravljate kolačićima za sve web lokacije, pogledajte <ph name="BEGIN_LINK" />Postavke<ph name="END_LINK" />.</translation>
 <translation id="1679305402657584804">Web lokacije mogu zatražiti da koriste NFC uređaje</translation>
 <translation id="1686785653877010442">Web lokacije obično šalju obavještenja o najnovijim vijestima ili porukama chata.</translation>
-<translation id="169515064810179024">Blokiraj web lokacijama pristup senzorima pokreta</translation>
 <translation id="1703666494654169921">Nemoj dozvoliti web lokacijama korištenje uređaja ili podataka virtuelne realnosti</translation>
 <translation id="1704230497453185209">Nemoj dozvoliti web lokacijama reproduciranje zvuka</translation>
 <translation id="1717218214683051432">Senzori pokreta</translation>
@@ -235,7 +234,6 @@ Napredna zaštita upravlja ovim postavkama Chromea:
 <translation id="3232293466644486101">Izbrišite podatke pregledanja…</translation>
 <translation id="3242646949159196181">Kada je postavka uključena, web lokacije mogu reproducirati zvuk. Kada je postavka isključena, web lokacije ne mogu reproducirati zvuk.</translation>
 <translation id="3273479183583863618">Padovi cijena na karticama</translation>
-<translation id="3277252321222022663">Dozvolite web lokacijama pristup senzorima (preporučeno)</translation>
 <translation id="3285500645985761267">Dozvolite srodnim web lokacijama da vide vašu aktivnost u grupi</translation>
 <translation id="3295019059349372795">Poglavlje 11: Smaragdni grad Oz</translation>
 <translation id="3295602654194328831">Sakrij informacije</translation>
@@ -371,7 +369,6 @@ Napredna zaštita upravlja ovim postavkama Chromea:
 <translation id="4672315773691449562">Dodir na aplikaciju Preglednik, a zatim na Chrome</translation>
 <translation id="4676059169848868271">Da dozvolite aplikaciji <ph name="APP_NAME" /> da koristi praćenje ruku, također uključite praćenje ruku u <ph name="BEGIN_LINK" />postavkama sistema<ph name="END_LINK" />.</translation>
 <translation id="4688045258817337666">Upravljajte karticama</translation>
-<translation id="4751476147751820511">Senzori pokreta ili svjetla</translation>
 <translation id="4755971844837804407">Kada je postavka uključena, web lokacije vam mogu prikazivati bilo koje oglase. Kada je postavka isključena, web lokacije ne mogu prikazivati ometajuće ni obmanjujuće oglase.</translation>
 <translation id="4779083564647765204">Uvećaj</translation>
 <translation id="4807122856660838973">Uključite Sigurno pregledanje</translation>
@@ -398,7 +395,6 @@ Napredna zaštita upravlja ovim postavkama Chromea:
 <translation id="5001526427543320409">Kolačići treće strane</translation>
 <translation id="5007392906805964215">Pregled</translation>
 <translation id="5039804452771397117">Dozvoli</translation>
-<translation id="5048398596102334565">Dozvoli web lokacijama pristup senzorima pokreta (preporučeno)</translation>
 <translation id="5048841907079026162">Upravljajte podacima pregledanja</translation>
 <translation id="5050380848339752099">Ova web lokacija će podijeliti informacije s aplikacijom izvan anonimnog načina rada.</translation>
 <translation id="5063480226653192405">Korištenje</translation>
@@ -686,7 +682,6 @@ Napredna zaštita upravlja ovim postavkama Chromea:
 <translation id="8088603949666785339">Više opcija u baneru <ph name="BANNER_TITLE" /></translation>
 <translation id="8112925981674547014">Prikaži kartice na listi aplikacija</translation>
 <translation id="8116925261070264013">Isključen zvuk</translation>
-<translation id="8117244575099414087">Kada je postavka uključena, web lokacije mogu koristiti senzore uređaja. Kada je postavka isključena, web lokacije ne mogu koristiti senzore.</translation>
 <translation id="813082847718468539">Prikaz informacija o web lokaciji</translation>
 <translation id="8131740175452115882">Potvrdi</translation>
 <translation id="8148160259207090265">Ova postavka ostaje uključena sve dok je Napredna zaštita uključena u Postavkama Androida.</translation>
@@ -762,7 +757,6 @@ Napredna zaštita upravlja ovim postavkama Chromea:
 <translation id="8801657293260363985">V8 je Chromeov pokretač programskih jezika JavaScript i WebAssembly koji se koristi za poboljšanje performansi web lokacija</translation>
 <translation id="8803526663383843427">Kada je uključeno</translation>
 <translation id="8805385115381080995">Pregledanje je brže jer je malo vjerovatno da će web lokacija tražiti da potvrdite da ste stvarna osoba</translation>
-<translation id="8816026460808729765">Blokiranje web lokacijama pristup senzorima</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8874790741333031443">Pokušajte privremeno dozvoliti kolačiće treće strane, što podrazumijeva manju zaštitu prilikom pregledanja, ali i veću vjerovatnost da će funkcije web lokacije funkcionirati prema očekivanjima.</translation>
 <translation id="8889294078294184559">Kako nastavljate pregledati, web lokacije mogu provjeravati u Chromeu i s prethodnom web lokacijom koju ste posjetili potvrditi da ste stvarna osoba</translation>

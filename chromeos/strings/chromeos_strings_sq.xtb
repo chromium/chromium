@@ -167,6 +167,7 @@
 <translation id="1621067168122174824">Ekzekuto testin e karikimit</translation>
 <translation id="1622402072367425417">flluska që shkëlqejnë</translation>
 <translation id="1626590945318984973">Shkurtorja nuk ofrohet. Shtyp një shkurtore të re pa përdorur tastet e funksioneve dhe tastin "<ph name="META_KEY" />".</translation>
+<translation id="163774412591892664">Administratori yt e çaktivizoi pajisjen tënde dhe mund të qaset te vendndodhja e saj.</translation>
 <translation id="1639239467298939599">Po ngarkohet...</translation>
 <translation id="1641857168437328880">Furnizuesi i dokumentit (një anë)</translation>
 <translation id="1642396894598555413">biçikleta</translation>
@@ -1723,6 +1724,7 @@ Shkarko modelin e transkriptimit (deri në 100 MB) për të marrë këto transk
 <translation id="8584654835905316966">Kërkohet rinisja për të përfunduar instalimin e firmuerit për <ph name="DEVICE_NAME" /> në versionin <ph name="VERSION" />. Kompjuteri yt mund të rindizet disa herë. Kjo sjellje është e pritshme.</translation>
 <translation id="8593058461203131755">vendose median në pauzë</translation>
 <translation id="8620617069779373398">Statusi në roaming</translation>
+<translation id="8624524972189162859">Administratori yt i <ph name="DOMAIN_NAME" /> e çaktivizoi pajisjen tënde dhe mund të qaset te vendndodhja e saj.</translation>
 <translation id="8626489604350149811">Më shumë veprime për <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Vjollcë e çelur</translation>
 <translation id="8647595191512746911">Transkriptimi i audios</translation>

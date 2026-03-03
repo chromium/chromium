@@ -668,6 +668,7 @@
 <translation id="3476450923187944815">Få tilgang til passordene dine i andre apper.</translation>
 <translation id="3485558910355485767">Nytt inkognitovindu</translation>
 <translation id="3488501490964659223">Faner ble lukket, og nettlesingsdata ble slettet. Du ble logget av</translation>
+<translation id="3490396108106323715">Del den aktive fanen</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /> om foreslått innhold</translation>
 <translation id="349446645805573740">Velg hvor du vil lagre «<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />»</translation>
 <translation id="3504377992102007712">Innstillinger</translation>
@@ -694,6 +695,7 @@
 <translation id="3565012355885596568">Kunne ikke laste inn bilder</translation>
 <translation id="3565930036634619844">Fane. <ph name="TAB_INDEX" /> av <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3567168891086460374">Lagre annerledes</translation>
+<translation id="3572503683475187385">Den aktive fanen deles med Gemini når du starter en ny chat. Når du deler en fane med Gemini, sendes innholdet og nettadressen til Google. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">I Google-kontoen din</translation>
 <translation id="3575234738189584619">Søk med Lens</translation>
 <translation id="3575426792457739946">På denne listen finner du alle innlastede profiler.</translation>
@@ -737,6 +739,7 @@
 <translation id="3751873026576444885">Slutt å søke på skjermen med Google Lens</translation>
 <translation id="3753408171347588045">Sporer priser</translation>
 <translation id="3753618528540214374">Viridian tema</translation>
+<translation id="3759491607478608474">Del innholdet i den aktive fanen med Gemini for å få mer relevante svar</translation>
 <translation id="3762232513783804601">Laget for iPaden din</translation>
 <translation id="3768725474733206671">Åpne sist lukkede fane på nytt</translation>
 <translation id="3779810277399252432">Ingen internettilkobling.</translation>
@@ -984,6 +987,7 @@
 <translation id="4650125387981512669">Fortsett som <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4651927776207937667">{count,plural, =1{Skjul etter 1 minutt}other{Skjul etter {count} minutter}}</translation>
 <translation id="4652817563047461855">Sørg for at passordene dine er trygge, finn ut om de har vært utsatt for sikkerhetsbrudd, og få råd om å beskytte deg på nettet. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
+<translation id="4653053602672040238">Slå på fanedeling</translation>
 <translation id="4658335131052370646">Lagre</translation>
 <translation id="466307903888586355">Organisasjonen din blokkerer lagring av filer</translation>
 <translation id="4668929960204016307">,</translation>
@@ -1297,6 +1301,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="5718049162805123412">Du bør endre disse nå</translation>
 <translation id="5721040778297053709">Plasser kredittkortet i denne rammen</translation>
 <translation id="572328651809341494">Nylige faner</translation>
+<translation id="5724590854763964497">Som standard deles den aktive fanen når du starter en ny chat. Når faner deles, sendes innholdet og nettadressene til Google, men de brukes ikke til å forbedre generative AI-modeller. Du kan endre denne innstillingen når som helst.</translation>
 <translation id="5724941645893276623">For å surfe privat på nettet, legg til en ny fane</translation>
 <translation id="5728072125198221967">Sammenknyttede Google-tjenester</translation>
 <translation id="5728700505257787410">Det oppsto et problem ved pålogging til kontoen din.</translation>
@@ -1964,6 +1969,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="8059533439631660104">Skjuler delen.</translation>
 <translation id="8061584726507121204">Logg</translation>
 <translation id="8064946459644399612">Ny fane-sideinnstillingene dine er tatt i bruk</translation>
+<translation id="8065556469005366939">Få mer relevante svar ved å dele fanene dine</translation>
 <translation id="8069394452933076548">Velg når faner som ikke er brukt nylig, skal flyttes til inaktiv-fanen.</translation>
 <translation id="8073670137947914548">Nedlastingen er fullført</translation>
 <translation id="8076492880354921740">Faner</translation>
@@ -2132,6 +2138,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="8660600697590740984">Lens-bildet du har kopiert</translation>
 <translation id="866266761389616183">Å nei!</translation>
 <translation id="8663764600409216912">Du bruker passord som virker vanskelige å gjette</translation>
+<translation id="8664992138761940052">Som standard deles den aktive fanen når du starter en ny chat. Når faner deles, sendes innholdet og nettadressene til Google Du kan endre denne innstillingen når som helst.</translation>
 <translation id="8668210798914567634">Denne siden er lagret i leselisten din.</translation>
 <translation id="8672642291731179042">Oversett sider</translation>
 <translation id="8672733398999596205">Slå på alle</translation>

@@ -167,6 +167,7 @@
 <translation id="1621067168122174824">Esegui test ricarica</translation>
 <translation id="1622402072367425417">bolle luminose</translation>
 <translation id="1626590945318984973">Scorciatoia non disponibile. Premi una nuova scorciatoia senza utilizzare i tasti funzione e <ph name="META_KEY" />.</translation>
+<translation id="163774412591892664">L'amministratore ha disattivato il tuo dispositivo e può accedere alla sua posizione.</translation>
 <translation id="1639239467298939599">Caricamento</translation>
 <translation id="1641857168437328880">Alimentatore di documenti (solo fronte)</translation>
 <translation id="1642396894598555413">biciclette</translation>
@@ -1723,6 +1724,7 @@ Scarica il modello di trascrizione (fino a 100 MB) per ottenere queste trascrizi
 <translation id="8584654835905316966">Per completare l'installazione del firmware per <ph name="DEVICE_NAME" /> alla versione <ph name="VERSION" /> è necessario eseguire il riavvio. Potrebbe sembrare che il computer si riavvii più volte. Si tratta di un comportamento normale.</translation>
 <translation id="8593058461203131755">metti in pausa i contenuti multimediali</translation>
 <translation id="8620617069779373398">Stato roaming</translation>
+<translation id="8624524972189162859">L'amministratore di <ph name="DOMAIN_NAME" /> ha disattivato il tuo dispositivo e può accedere alla sua posizione.</translation>
 <translation id="8626489604350149811">Altre azioni per <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Viola chiaro</translation>
 <translation id="8647595191512746911">Trascrizione audio</translation>

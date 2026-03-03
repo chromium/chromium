@@ -66,7 +66,6 @@
 <translation id="1677097821151855053">Stránky si vás pomocou súborov cookie a ďalších údajov webov zapamätajú, napríklad vás pomocou nich prihlásia alebo prispôsobia reklamy. Ak chcete spravovať súbory cookie pre všetky weby, prejdite do <ph name="BEGIN_LINK" />Nastavení<ph name="END_LINK" />.</translation>
 <translation id="1679305402657584804">Weby môžu žiadať o povolenie používať zariadenia s technológiou NFC</translation>
 <translation id="1686785653877010442">Weby zvyčajne odosielajú upozornenia, aby vás informovali o mimoriadnych alebo četových správach.</translation>
-<translation id="169515064810179024">Brániť webom v prístupe k senzorom pohybu</translation>
 <translation id="1703666494654169921">Nepovoliť webom používať zariadenia alebo údaje virtuálnej reality</translation>
 <translation id="1704230497453185209">Nepovoliť webom prehrávať zvuk</translation>
 <translation id="1717218214683051432">Senzory pohybu</translation>
@@ -235,7 +234,6 @@ Rozšírená ochrana ovláda tieto nastavenia Chromu:
 <translation id="3232293466644486101">Odstrániť dáta prehliadania…</translation>
 <translation id="3242646949159196181">Keď je táto možnosť zapnutá, weby môžu prehrávať zvuk. Keď je táto možnosť vypnutá, weby nemôžu prehrávať zvuk.</translation>
 <translation id="3273479183583863618">Poklesy cien na kartách</translation>
-<translation id="3277252321222022663">Povoliť webom prístup k senzorom (odporúčané)</translation>
 <translation id="3285500645985761267">Povoliť súvisiacim webom zobrazovať si vašu aktivitu v skupine</translation>
 <translation id="3295019059349372795">11. kapitola: Nádherné smaragdové mesto</translation>
 <translation id="3295602654194328831">Skryť informácie</translation>
@@ -371,7 +369,6 @@ Rozšírená ochrana ovláda tieto nastavenia Chromu:
 <translation id="4672315773691449562">Klepnite na Prehliadač a potom na Chrome</translation>
 <translation id="4676059169848868271">Ak chcete povoliť aplikácii <ph name="APP_NAME" /> sledovať ruky, zapnite sledovanie rúk aj v <ph name="BEGIN_LINK" />nastaveniach systému<ph name="END_LINK" />.</translation>
 <translation id="4688045258817337666">Správa kariet</translation>
-<translation id="4751476147751820511">Senzory pohybu alebo svetla</translation>
 <translation id="4755971844837804407">Keď je táto možnosť zapnutá, weby vám môžu zobrazovať ľubovoľné reklamy. Keď je táto možnosť vypnutá, weby nemôžu zobrazovať obťažujúce ani zavádzajúce reklamy.</translation>
 <translation id="4779083564647765204">Lupa</translation>
 <translation id="4807122856660838973">Zapnúť Bezpečné prehliadanie</translation>
@@ -398,7 +395,6 @@ Rozšírená ochrana ovláda tieto nastavenia Chromu:
 <translation id="5001526427543320409">Súbory cookie tretích strán</translation>
 <translation id="5007392906805964215">Prezrieť</translation>
 <translation id="5039804452771397117">Povoliť</translation>
-<translation id="5048398596102334565">Povoliť webom prístup k senzorom pohybu (odporúčané)</translation>
 <translation id="5048841907079026162">Správa údajov prehliadania</translation>
 <translation id="5050380848339752099">Tento web chce zdieľať informácie s aplikáciou mimo režimu inkognito.</translation>
 <translation id="5063480226653192405">Použitie</translation>
@@ -686,7 +682,6 @@ Rozšírená ochrana ovláda tieto nastavenia Chromu:
 <translation id="8088603949666785339">Ďalšie možnosti nájdete v banneri <ph name="BANNER_TITLE" /></translation>
 <translation id="8112925981674547014">Zobrazovať karty v zozname aplikácií</translation>
 <translation id="8116925261070264013">Vypnuté</translation>
-<translation id="8117244575099414087">Keď je táto možnosť zapnutá, weby môžu používať senzory vášho zariadenia. Keď je táto možnosť vypnutá, weby nemôžu používať senzory.</translation>
 <translation id="813082847718468539">Zobraziť informácie o webe</translation>
 <translation id="8131740175452115882">Potvrdiť</translation>
 <translation id="8148160259207090265">Toto nastavenie zostane zapnuté, kým budete mať v nastaveniach Androidu zapnutú rozšírenú ochranu.</translation>
@@ -762,7 +757,6 @@ Rozšírená ochrana ovláda tieto nastavenia Chromu:
 <translation id="8801657293260363985">V8 je nástroj skriptov JavaScript a WebAssembly v Chrome, ktorý zlepšuje výkon webov</translation>
 <translation id="8803526663383843427">Keď je funkcia zapnutá</translation>
 <translation id="8805385115381080995">Prehliadanie je rýchlejšie, pretože daný web vás pravdepodobne nepožiada o overenie, že ste skutočná osoba</translation>
-<translation id="8816026460808729765">Brániť webom v prístupe k senzorom</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8874790741333031443">Vyskúšajte dočasne povoliť súbory cookie tretích strán, čo znamená nižšiu ochranu pri prehliadaní, ale funkcie webu budú s väčšou pravdepodobnosťou fungovať podľa očakávaní.</translation>
 <translation id="8889294078294184559">Pri ďalšom prehliadaní môžu weby pomocou Chromu overiť informácie z predchádzajúceho navštíveného webu, že ste zrejme skutočná osoba</translation>

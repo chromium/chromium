@@ -30,6 +30,7 @@
 <translation id="1011431628606634753">Altere o PIN de recuperação do Gestor de Palavras-passe da Google</translation>
 <translation id="1012794136286421601">Os seus ficheiros de Docs, Folhas, Slides e Desenhos estão a ser sincronizados. Abra a app Google Drive para aceder aos ficheiros online ou offline.</translation>
 <translation id="1012876632442809908">Dispositivo USB-C (porta frontal)</translation>
+<translation id="10146536653536065">Instale "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="1015041505466489552">TrackPoint</translation>
 <translation id="1015318665228971643">Editar nome da pasta</translation>
 <translation id="1015578595646638936">{NUM_DAYS,plural, =1{Último dia para atualizar o <ph name="DEVICE_TYPE" />}other{Atualize o <ph name="DEVICE_TYPE" /> dentro de {NUM_DAYS} dias}}</translation>
@@ -2834,6 +2835,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2881076733170862447">Quando clica na extensão</translation>
 <translation id="2882301808122022326">Resposta de Omaha</translation>
 <translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" /> é reiniciado e reposto momentaneamente</translation>
+<translation id="2883143988769190738">Esta extensão pede as seguintes autorizações:</translation>
 <translation id="2884070497102362193">Teste a bateria, a CPU, a memória, a conetividade e muito mais</translation>
 <translation id="2885129935310217435">Existe um botão com o mesmo nome. Escolha outro.</translation>
 <translation id="2885378588091291677">Gestor de tarefas</translation>
@@ -6519,6 +6521,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="539882584649709174">Ajuda a escrever texto de formato curto para itens na Web, como críticas</translation>
 <translation id="5400196580536813396">Sem autorização para procurar ou usar impressoras acessíveis ao seu dispositivo</translation>
 <translation id="5400836586163650660">Cinzento</translation>
+<translation id="5400933848253186401">Resumir com o Gemini</translation>
 <translation id="5402367795255837559">Braille</translation>
 <translation id="5402815541704507626">Transferir a atualização através de dados móveis</translation>
 <translation id="5404557844330880551">Saiba mais sobre a comparação de produtos</translation>
@@ -6928,6 +6931,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5677928146339483299">Bloqueado</translation>
 <translation id="5678550637669481956">Autorização para ler e escrever em <ph name="VOLUME_NAME" /> concedidas.</translation>
 <translation id="5678821117681811450">A enviar para <ph name="WEB_DRIVE" /></translation>
+<translation id="5678888125599911373">Pode reabrir separadores que tenha fechado recentemente onde quer que esteja a usar o Chrome</translation>
 <translation id="5678955352098267522">Ler os seus dados em <ph name="WEBSITE_1" /></translation>
 <translation id="5679785611070310751">Vai deixar de receber atualizações de segurança para este Chromebook a <ph name="MONTH_AND_YEAR" />. Está na altura de atualizar para obter a segurança e o software mais recentes. Aplicam-se os termos da oferta.</translation>
 <translation id="5680050361008726776">Quer remover "<ph name="ESIM_PROFILE_NAME" />"?</translation>
@@ -6996,7 +7000,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5734697361979786483">Adicionar partilha de ficheiros</translation>
 <translation id="573520097779121706">Use as teclas 7, 8, 9, u, o, j, k e l para mover o cursor</translation>
 <translation id="5736092224453113618">{NUM_FILES,plural, =0{Estes dados ou o dispositivo não cumprem algumas das políticas de segurança da sua organização. Contacte o seu administrador para saber o que é preciso corrigir.}=1{Este ficheiro ou o seu dispositivo não cumpre algumas das políticas de segurança da sua organização. Contacte o seu administrador para saber o que é preciso corrigir.}other{Estes ficheiros não cumprem algumas das políticas de segurança da sua organização. Contacte o seu administrador para saber o que é preciso corrigir.}}</translation>
-<translation id="5736345781200955827">Crie, guarde e faça a gestão das suas palavras-passe para poder iniciar sessão facilmente nos sites e apps com o Chrome</translation>
 <translation id="5738093759615225354">Precisa desta token de acesso para iniciar sessão no seu computador</translation>
 <translation id="5738386565827477765">Dispositivo de áudio</translation>
 <translation id="5739017626473506901">Inicie sessão para ajudar <ph name="USER_NAME" /> a adicionar uma conta escolar.</translation>
@@ -10377,6 +10380,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8038111231936746805">(predefinição)</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{A copiar 1 ficheiro para o <ph name="CLOUD_PROVIDER" />}other{A copiar {NUM_OF_FILES} ficheiros para o <ph name="CLOUD_PROVIDER" />}}</translation>
 <translation id="8039525676147630657">Esta app do Chrome vai deixar de funcionar após a atualização da versão do ChromeOS. Guarde os dados da app que quer manter. Para saber mais sobre as opções disponíveis, contacte o programador da app ou a sua equipa de apoio técnico de TI.</translation>
+<translation id="804060420274176929">Lembrar-me no iOS</translation>
 <translation id="8041089156583427627">Enviar feedback</translation>
 <translation id="8041093619605951337">Feliz</translation>
 <translation id="8041267120753677077">Faça stream das apps do telemóvel</translation>
@@ -11911,6 +11915,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="9043264199499366189">Subscrever eventos do sistema ChromeOS Flex</translation>
 <translation id="9043767139743235992">Contacte o apoio técnico da Google para pessoas com deficiência</translation>
 <translation id="9044646465488564462">Não foi possível ligar à rede: <ph name="DETAILS" /></translation>
+<translation id="9044838301401489071">Não pode interagir com este separador até que a tarefa seja pausada ou concluída</translation>
 <translation id="9045160989383249058">A sua lista de leitura foi movida para o novo painel lateral. Experimente-a aqui.</translation>
 <translation id="9048745018038487540">Selecionar todos os tipos de letra</translation>
 <translation id="9050666287014529139">Frase de acesso</translation>

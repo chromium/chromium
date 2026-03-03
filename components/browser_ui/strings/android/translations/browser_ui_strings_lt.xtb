@@ -66,7 +66,6 @@
 <translation id="1677097821151855053">Slapukai ir kiti svetainės duomenys naudojami siekiant jus prisiminti, pvz., prisijungiant ar suasmeninant skelbimus. Norėdami tvarkyti visų svetainių slapukus, žr. skiltį <ph name="BEGIN_LINK" />„Nustatymai“<ph name="END_LINK" />.</translation>
 <translation id="1679305402657584804">Svetainės gali prašyti leidimo naudoti NFC įrenginius</translation>
 <translation id="1686785653877010442">Svetainės paprastai siunčia pranešimus informuodamos apie karščiausias naujienas ar pokalbių pranešimus.</translation>
-<translation id="169515064810179024">Svetainės užblokuotos, kad nepasiektų judesio jutiklių</translation>
 <translation id="1703666494654169921">Neleisti svetainėms naudoti virtualiosios realybės įrenginių ar duomenų</translation>
 <translation id="1704230497453185209">Neleisti svetainėms leisti garso</translation>
 <translation id="1717218214683051432">Judesių jutikliai</translation>
@@ -235,7 +234,6 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.
 <translation id="3232293466644486101">Ištrinti naršymo duomenis…</translation>
 <translation id="3242646949159196181">Įjungus svetainėse galima leisti garsą. Išjungus svetainėse negalima leisti garso.</translation>
 <translation id="3273479183583863618">Sumažintos kainos skirtukuose</translation>
-<translation id="3277252321222022663">Leidžiama svetainėms pasiekti jutiklius (rekomenduojama)</translation>
 <translation id="3285500645985761267">Leisti susijusioms svetainėms peržiūrėti jūsų veiklą grupėje</translation>
 <translation id="3295019059349372795">11 skyrius. Nuostabusis Smaragdo miestas</translation>
 <translation id="3295602654194328831">Slėpti informaciją</translation>
@@ -371,7 +369,6 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.
 <translation id="4672315773691449562">Palieskite „Naršyklės programą“, tada palieskite „Chrome“</translation>
 <translation id="4676059169848868271">Jei leidžiate „<ph name="APP_NAME" />“ naudoti rankų stebėjimą, <ph name="BEGIN_LINK" />sistemos nustatymuose<ph name="END_LINK" /> taip pat įjunkite rankų stebėjimą.</translation>
 <translation id="4688045258817337666">Tvarkykite savo korteles</translation>
-<translation id="4751476147751820511">Judesio arba šviesos jutikliai</translation>
 <translation id="4755971844837804407">Įjungus svetainėse gali būti rodomas jums bet koks skelbimas. Išjungus svetainėse negalima rodyti nepageidaujamų ar klaidinančių skelbimų.</translation>
 <translation id="4779083564647765204">Keisti mastelį</translation>
 <translation id="4807122856660838973">Įjunkite Saugų naršymą</translation>
@@ -398,7 +395,6 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.
 <translation id="5001526427543320409">Trečiųjų šalių slapukai</translation>
 <translation id="5007392906805964215">Peržiūrėti</translation>
 <translation id="5039804452771397117">Leisti</translation>
-<translation id="5048398596102334565">Leidžiama svetainėms pasiekti judesio jutiklius (rekomenduojama)</translation>
 <translation id="5048841907079026162">Valdykite savo naršymo duomenis</translation>
 <translation id="5050380848339752099">Šioje svetainėje ketinama bendrinti informaciją su programa ne inkognito režimu.</translation>
 <translation id="5063480226653192405">Naudojimas</translation>
@@ -686,7 +682,6 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.
 <translation id="8088603949666785339">Daugiau parinkčių skiltyje „<ph name="BANNER_TITLE" />“</translation>
 <translation id="8112925981674547014">Peržiūrėti skirtukus programų sąraše</translation>
 <translation id="8116925261070264013">Išjungta</translation>
-<translation id="8117244575099414087">Įjungus svetainėse gali būti naudojami įrenginio jutikliai. Išjungus svetainėse negalima naudoti jutiklių.</translation>
 <translation id="813082847718468539">Žiūrėti svetainės informaciją</translation>
 <translation id="8131740175452115882">Patvirtinti</translation>
 <translation id="8148160259207090265">Šis nustatymas bus įjungtas tol, kol „Android“ nustatymuose įjungta Papildoma apsauga.</translation>
@@ -762,7 +757,6 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.
 <translation id="8801657293260363985">V8 yra „Chrome“ „JavaScript“ ir „WebAssembly“ variklis, naudojamas svetainės našumui pagerinti</translation>
 <translation id="8803526663383843427">Kada įjungta</translation>
 <translation id="8805385115381080995">Naršymo procesas greitesnis, nes mažiau tikėtina, kad bus prašoma patvirtinti, jos esate realus asmuo</translation>
-<translation id="8816026460808729765">Svetainės blokuojamos, kad nepasiektų jutiklių</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8874790741333031443">Pabandykite laikinai leisti trečiųjų šalių slapukus: tai reiškia, kad naršydami būsite mažiau apsaugoti, bet labiau tikėtina, kad svetainės funkcijos tinkamai veiks.</translation>
 <translation id="8889294078294184559">Jums naršant toliau, svetainės gali tikrinti sistemoje „Chrome“ ir iš ankstesnės svetainės, kurioje lankėtės, patvirtinti, kad tikriausiai esate realus asmuo</translation>

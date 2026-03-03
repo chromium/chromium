@@ -1310,6 +1310,8 @@
 <translation id="3102312643185441063">Economii</translation>
 <translation id="3103188521861412364">Acțiuni și obligațiuni</translation>
 <translation id="3105172416063519923">ID articol:</translation>
+<translation id="3105223248029915046">Planurile de plată se supun condițiilor de eligibilitate.
+Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LINK" />setările pentru plăți<ph name="END_LINK" />.</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />să verifici configurația DNS-ului securizat;<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Tava din mijloc</translation>
 <translation id="3109061346635850169">Îngrijirea feței și a corpului</translation>
@@ -2355,7 +2357,6 @@
 <translation id="4750671009706599284">acest telefon</translation>
 <translation id="4750917950439032686">Informațiile tale (de exemplu, parolele și numerele cardurilor de credit) sunt private când sunt trimise la acest site.</translation>
 <translation id="4751249061288707459">Ultima actualizare a consimțământului:</translation>
-<translation id="4751476147751820511">Senzori de mișcare sau de lumină</translation>
 <translation id="4754461935447132332">Nu sunt permise pentru site-uri nesecurizate</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
 <translation id="4757740693289347881">Codul este nevalid</translation>
@@ -4360,6 +4361,7 @@ Detalii suplimentare:
 <translation id="7908648876066812348">Se activează cardul virtual</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, apasă pe Tab, apoi pe Enter pentru a accesa pagina Verificarea de siguranță din Chrome din setări</translation>
 <translation id="791107458486222637">Repetă</translation>
+<translation id="7911651285409665023">Închide și revino la <ph name="TAB_TITLE" /></translation>
 <translation id="7912924955815015552">Importate din Safari</translation>
 <translation id="791551905239004656">Desenat și colorat</translation>
 <translation id="7916162853251942238">Bază Flexo</translation>
@@ -5213,7 +5215,6 @@ Detalii suplimentare:
 <translation id="987264212798334818">General</translation>
 <translation id="988159990683914416">Versiune de programare</translation>
 <translation id="989988560359834682">Editați adresa</translation>
-<translation id="991413375315957741">Senzori de mișcare sau de lumină</translation>
 <translation id="991936891556421157">Încălțăminte</translation>
 <translation id="992110854164447044">Cardul virtual îți ascunde cardul fizic pentru a te proteja împotriva fraudelor. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="992115559265932548"><ph name="MICROSOFT_ACTIVE_DIRECTORY" /></translation>

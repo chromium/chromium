@@ -239,6 +239,7 @@
 <translation id="3509308970982693815">‏يُرجى إغلاق جميع نوافذ Chromium وإعادة المحاولة.</translation>
 <translation id="3522404737534491619">‏لمشاركة النافذة، يجب السماح بتسجيل الشاشة في Chromium ضِمن "إعدادات النظام" (System Settings)</translation>
 <translation id="3530103706039034513">‏سبق أن تم تسجيل الدخول إلى حساب "<ph name="EXISTING_USER" />".  للحصول على تجربة تصفّح منفصلة، سجِّل الدخول إلى Chromium في ملفك الشخصي باستخدام العنوان <ph name="USER_EMAIL_ADDRESS" />.</translation>
+<translation id="3531741627422851418">‏يُرجى مسح رمز الاستجابة السريعة ضوئيًا لتنزيل متصفّح Chromium على الأجهزة الجوّالة</translation>
 <translation id="3561853857681580870">‏لمشاركة شاشتك، يجب السماح بتسجيل الشاشة في Chromium ضِمن "إعدادات النظام" (System Settings).</translation>
 <translation id="3588112919289558122">‏يؤدي تفعيل ميزة "الحماية المحسّنة" إلى إيقاف ميزة تحسين JavaScript للمواقع الإلكترونية التي لا يتعرّف عليها Chromium</translation>
 <translation id="3597003331831379823">تعذَّر إجراء عملية الإعداد باستخدام أذونات مميزة وعالية المستوى. <ph name="METAINSTALLER_ERROR" /></translation>

@@ -1310,6 +1310,8 @@
 <translation id="3102312643185441063">普通預金</translation>
 <translation id="3103188521861412364">株式、債券</translation>
 <translation id="3105172416063519923">アセット ID:</translation>
+<translation id="3105223248029915046">お支払いプランは、ご利用条件を満たしていることが条件となります。
+後払いオプションを非表示にするには、<ph name="BEGIN_LINK" />お支払い設定<ph name="END_LINK" />に移動してください</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />セキュア DNS の設定を確認する<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">中央トレイ</translation>
 <translation id="3109061346635850169">フェイス、ボディケア</translation>
@@ -2355,7 +2357,6 @@
 <translation id="4750671009706599284">このスマートフォン</translation>
 <translation id="4750917950439032686">お客様がこのサイトに送信した情報（パスワード、クレジット カード番号など）が第三者に見られることはありません。</translation>
 <translation id="4751249061288707459">同意の最終更新日:</translation>
-<translation id="4751476147751820511">モーション センサーまたは光センサー</translation>
 <translation id="4754461935447132332">セキュアでないサイトでは許可されていません</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
 <translation id="4757740693289347881">コードが無効です</translation>
@@ -4361,6 +4362,7 @@
 <translation id="7908648876066812348">仮想カードを有効にしています</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押すと、Chrome 設定の安全チェックページに移動します</translation>
 <translation id="791107458486222637">結果をやり直しています</translation>
+<translation id="7911651285409665023">閉じて「<ph name="TAB_TITLE" />」に戻る</translation>
 <translation id="7912924955815015552">Safari からのインポート</translation>
 <translation id="791551905239004656">お絵かき、塗り絵</translation>
 <translation id="7916162853251942238">フレキソベース</translation>
@@ -5213,7 +5215,6 @@
 <translation id="987264212798334818">全般</translation>
 <translation id="988159990683914416">Developer Build</translation>
 <translation id="989988560359834682">住所の編集</translation>
-<translation id="991413375315957741">モーション センサーまたは光センサー</translation>
 <translation id="991936891556421157">フットウェア</translation>
 <translation id="992110854164447044">仮想カードを使用すると、実際のカードを非表示にして、不正行為から保護できます。<ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="992115559265932548"><ph name="MICROSOFT_ACTIVE_DIRECTORY" /></translation>

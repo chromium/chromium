@@ -230,6 +230,7 @@
 <translation id="1358187717814494928">시트 만들기</translation>
 <translation id="1358223345833465883">Chromium의 검색엔진</translation>
 <translation id="1359836962251219822">주방 및 식당</translation>
+<translation id="136059610328993645">정보가 <ph name="ACCOUNT" />의 Google 월렛에 저장됩니다. Google 서비스 전반에서 이 기능을 사용하여 양식을 더 빠르게 작성할 수 있습니다.</translation>
 <translation id="1360955481084547712">비공개로 탐색하려면 새로운 시크릿 창을 여세요.</translation>
 <translation id="1361528602584216624">Pix당 한도 R$ <ph name="TRANSACTION_LIMIT" /></translation>
 <translation id="1363015776076529485">결제를 진행하기 위해 선택할 수 있는 결제 수단이 전체 높이로 열렸습니다.</translation>
@@ -252,6 +253,7 @@
 <translation id="1392813880755413602">OpenDocument 프레젠테이션</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" />에서 전송한 데이터가 없습니다.</translation>
 <translation id="1393071644879491291">방문하려고 한 사이트의 공격자가 속임수를 써서 소프트웨어를 설치하거나 비밀번호, 전화번호, 신용카드 번호 등을 공개하도록 유도할 수 있습니다. Chrome에서는 안전한 위치로 돌아갈 것을 적극 권장합니다. <ph name="BEGIN_LEARN_MORE_LINK" />이 경고에 대해 자세히 알아보기<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="1402151528875251561">측면 패널에 방문 기록 표시</translation>
 <translation id="1405567553485452995">연한 녹색</translation>
 <translation id="1406370515365284486">결제 수단은 그대로 저장됩니다.</translation>
 <translation id="1406500794671479665">확인 중...</translation>
@@ -1308,6 +1310,8 @@
 <translation id="3102312643185441063">저축예금</translation>
 <translation id="3103188521861412364">주식 및 채권</translation>
 <translation id="3105172416063519923">애셋 ID:</translation>
+<translation id="3105223248029915046">요금제는 자격 요건을 충족해야 이용할 수 있습니다.
+후불 결제 옵션을 숨기려면 <ph name="BEGIN_LINK" />결제 설정<ph name="END_LINK" />으로 이동하세요.</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />보안 DNS 구성 확인<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">중간 트레이</translation>
 <translation id="3109061346635850169">페이스 및 바디 케어</translation>
@@ -1450,6 +1454,7 @@
 <translation id="33073482541490531">방금 사용한 비밀번호가 정보 유출로 인해 노출된 것으로 확인됩니다. 비밀번호 관리자에서 지금 바로 비밀번호를 변경하시기를 바랍니다.</translation>
 <translation id="3307649904964670439">Chrome 맞춤설정 버튼, 브라우저 테마를 맞춤설정하려면 활성화하세요.</translation>
 <translation id="3308006649705061278">조직 구성 단위(OU)</translation>
+<translation id="3310946375819654151">Chrome이 <ph name="APP_NAME" />에서 민감한 정보를 입력하려고 합니다.</translation>
 <translation id="3312952471765023168">업로드 완료</translation>
 <translation id="3318016344440038475">TV 코미디</translation>
 <translation id="3324687287337751929">4x6인치</translation>
@@ -1740,6 +1745,7 @@
 <translation id="3752181611900535304">계정에 주소를 저장하시겠습니까?</translation>
 <translation id="3752543821772132562"><ph name="POLICY_NAME" />가 설정되지 않아 무시되었습니다.</translation>
 <translation id="3754210790023674521">PIP 모드 종료</translation>
+<translation id="3754664361823138853">방문 기록 페이지 열기(&amp;O)</translation>
 <translation id="3759461132968374835">최근에 보고된 비정상 종료가 없습니다. 비정상 종료 보고를 사용 중지했을 때 발생한 비정상 종료는 여기에 표시되지 않습니다.</translation>
 <translation id="3760561303380396507">CVC 대신 Windows Hello를 사용하시겠습니까?</translation>
 <translation id="3761171036307311438">카드명의자:</translation>
@@ -2351,7 +2357,6 @@
 <translation id="4750671009706599284">이 휴대전화</translation>
 <translation id="4750917950439032686">비밀번호나 신용카드 번호 등의 정보는 비공개 상태로 이 사이트에 전송됩니다.</translation>
 <translation id="4751249061288707459">동의 최종 업데이트:</translation>
-<translation id="4751476147751820511">모션 또는 조도 센서</translation>
 <translation id="4754461935447132332">안전하지 않은 사이트에서 허용되지 않음</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
 <translation id="4757740693289347881">코드가 잘못되었습니다.</translation>
@@ -2751,6 +2756,7 @@
 <translation id="5385966243497224160">HTTPS가 아닌 URL은 미리 볼 수 없음</translation>
 <translation id="5386426401304769735">이 사이트의 인증서 체인은 SHA-1을 사용하여 서명된 인증서를 포함합니다.</translation>
 <translation id="5391010642126249196">방문함</translation>
+<translation id="5391306025131596142">방문 기록 페이지 열기(&amp;O)</translation>
 <translation id="539203134595252721">탁구</translation>
 <translation id="5392506727170022660">금속(반광택)</translation>
 <translation id="5394069166371280357">가족용 TV 프로그램</translation>
@@ -3545,6 +3551,7 @@
 <translation id="6655085656059574817">계정을 연결한 상태로 유지하면 <ph name="BNPL_ISSUER_NAME" /> 서비스를 통해 더 빠르게 결제할 수 있으며, <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" />에서 연결을 해제할 수도 있습니다.</translation>
 <translation id="6656935431494847393">항공편 예약 및 차량 정보와 같은 정보가 포함됩니다.</translation>
 <translation id="6657585470893396449">비밀번호</translation>
+<translation id="6659156657345021268">정보는 기기에만 저장됩니다. 다음에 관련 양식을 작성할 때 월렛에 저장할 수 있습니다.</translation>
 <translation id="6659246032834639189">낮은 가격</translation>
 <translation id="6660413144148052430">위치</translation>
 <translation id="6662457027866368246">1번째 롤</translation>
@@ -4353,6 +4360,7 @@
 <translation id="7908648876066812348">가상 카드 사용 설정 중</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab과 Enter를 차례로 눌러 설정의 Chrome 안전 확인 페이지로 이동</translation>
 <translation id="791107458486222637">결과 재실행</translation>
+<translation id="7911651285409665023">닫고 '<ph name="TAB_TITLE" />'(으)로 돌아가기</translation>
 <translation id="7912924955815015552">Safari에서 가져온 북마크</translation>
 <translation id="791551905239004656">그리기 및 컬러링</translation>
 <translation id="7916162853251942238">Flexo 베이스</translation>
@@ -4949,6 +4957,7 @@
 <translation id="8894794286471754040">긴쪽 먼저</translation>
 <translation id="8897221284075091877">이 콘텐츠를 보도록 요청하려면 Google 계정으로 계속 진행하세요.</translation>
 <translation id="8897428486789851669">수영</translation>
+<translation id="8898854704577986668">측면 패널에 방문 기록 표시</translation>
 <translation id="8899807382908246773">방해가 되는 광고</translation>
 <translation id="8903921497873541725">확대</translation>
 <translation id="8903998444169664879">결제 설정을 변경하려면 본인 인증을 진행하세요.</translation>
@@ -5203,7 +5212,6 @@
 <translation id="987264212798334818">일반</translation>
 <translation id="988159990683914416">개발자 빌드</translation>
 <translation id="989988560359834682">주소 수정</translation>
-<translation id="991413375315957741">움직임 감지 또는 조도 센서</translation>
 <translation id="991936891556421157">신발</translation>
 <translation id="992110854164447044">가상 카드는 실제 카드를 숨겨서 사기당할 위험을 줄여줍니다. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="992115559265932548"><ph name="MICROSOFT_ACTIVE_DIRECTORY" /></translation>

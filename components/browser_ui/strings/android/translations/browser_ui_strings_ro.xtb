@@ -66,7 +66,6 @@
 <translation id="1677097821151855053">Cookie-urile și alte date ale site-urilor sunt folosite pentru a te reține, de exemplu, pentru a te conecta sau pentru a personaliza anunțuri. Pentru a gestiona cookie-urile pentru toate site-urile, consultă <ph name="BEGIN_LINK" />Setări<ph name="END_LINK" />.</translation>
 <translation id="1679305402657584804">Site-urile pot solicita permisiunea de a folosi dispozitive NFC</translation>
 <translation id="1686785653877010442">De obicei, site-urile trimit notificări ca să te informeze cu privire la știri de ultimă oră sau mesaje din chat.</translation>
-<translation id="169515064810179024">Împiedică site-urile să acceseze senzorii de mișcare</translation>
 <translation id="1703666494654169921">Nu permite site-urilor să folosească dispozitive de realitate virtuală sau date conexe</translation>
 <translation id="1704230497453185209">Nu permite site-urilor să redea sunet</translation>
 <translation id="1717218214683051432">Senzori de mișcare</translation>
@@ -235,7 +234,6 @@ Protecția avansată gestionează următoarele setări Chrome:
 <translation id="3232293466644486101">Șterge datele de navigare…</translation>
 <translation id="3242646949159196181">Când opțiunea este activată, site-urile pot reda sunet. Când opțiunea este dezactivată, site-urile nu pot reda sunet.</translation>
 <translation id="3273479183583863618">Scăderi de preț în file</translation>
-<translation id="3277252321222022663">Permite accesul site-urilor la senzori (recomandat)</translation>
 <translation id="3285500645985761267">Permite site-urilor conexe să-ți vadă activitatea în grup</translation>
 <translation id="3295019059349372795">Capitolul 11: Minunatul Oraș de Smarald Oz</translation>
 <translation id="3295602654194328831">Ascunde informațiile</translation>
@@ -371,7 +369,6 @@ Protecția avansată gestionează următoarele setări Chrome:
 <translation id="4672315773691449562">Atinge aplicația Browser, apoi atinge Chrome</translation>
 <translation id="4676059169848868271">Pentru a permite aplicației <ph name="APP_NAME" /> să folosească urmărirea mâinilor, activează urmărirea mâinilor și în <ph name="BEGIN_LINK" />setările de sistem<ph name="END_LINK" />.</translation>
 <translation id="4688045258817337666">Gestionează-ți cardurile</translation>
-<translation id="4751476147751820511">Senzori de mișcare sau de lumină</translation>
 <translation id="4755971844837804407">Când opțiunea este activată, site-urile îți pot afișa orice anunț. Când opțiunea este dezactivată, site-urile nu pot afișa anunțuri deranjante sau înșelătoare.</translation>
 <translation id="4779083564647765204">Zoom</translation>
 <translation id="4807122856660838973">Activează Navigarea sigură</translation>
@@ -398,7 +395,6 @@ Protecția avansată gestionează următoarele setări Chrome:
 <translation id="5001526427543320409">Cookie-uri terță parte</translation>
 <translation id="5007392906805964215">Examinează</translation>
 <translation id="5039804452771397117">Permite</translation>
-<translation id="5048398596102334565">Permite accesul site-urilor la senzorii de mișcare (recomandat)</translation>
 <translation id="5048841907079026162">Gestionează datele de navigare</translation>
 <translation id="5050380848339752099">Site-ul este pe cale să permită accesul la informații unei aplicații în afara modului incognito.</translation>
 <translation id="5063480226653192405">Utilizare</translation>
@@ -686,7 +682,6 @@ Protecția avansată gestionează următoarele setări Chrome:
 <translation id="8088603949666785339">Mai multe opțiuni în <ph name="BANNER_TITLE" /></translation>
 <translation id="8112925981674547014">Vezi filele în lista de aplicații</translation>
 <translation id="8116925261070264013">Cu sunetul dezactivat</translation>
-<translation id="8117244575099414087">Când opțiunea este activată, site-urile pot folosi senzorii dispozitivului. Când opțiunea este dezactivată, site-urile nu pot folosi senzori.</translation>
 <translation id="813082847718468539">Afișează informațiile privind site-ul</translation>
 <translation id="8131740175452115882">Confirmați</translation>
 <translation id="8148160259207090265">Această setare rămâne activată atât timp cât Protecția avansată este activată în Setările Android.</translation>
@@ -762,7 +757,6 @@ Protecția avansată gestionează următoarele setări Chrome:
 <translation id="8801657293260363985">V8 este motorul JavaScript și WebAssembly din Chrome, folosit pentru a îmbunătăți performanța site-ului</translation>
 <translation id="8803526663383843427">Când opțiunea este activată</translation>
 <translation id="8805385115381080995">Navigarea este mai rapidă deoarece este mai puțin probabil ca un site să îți solicite să confirmi că ești o persoană reală</translation>
-<translation id="8816026460808729765">Blochează întotdeauna accesul site-urilor la senzori</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8874790741333031443">Încearcă să permiți temporar cookie-urile terță parte, ceea ce înseamnă mai puțină protecție pentru navigare, dar există șanse mai mari ca funcțiile site-urilor să funcționeze conform așteptărilor.</translation>
 <translation id="8889294078294184559">În timp ce navighezi, site-urile pot să solicite informații de la Chrome și să confirme cu ajutorul unui site pe care l-ai accesat anterior că ești o persoană reală</translation>

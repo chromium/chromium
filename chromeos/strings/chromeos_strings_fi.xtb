@@ -167,6 +167,7 @@
 <translation id="1621067168122174824">Suorita lataustesti</translation>
 <translation id="1622402072367425417">hohtavat kuplat</translation>
 <translation id="1626590945318984973">Pikanäppäin ei ole käytettävissä. Paina uutta pikanäppäintä ilman toiminto‑ ja <ph name="META_KEY" />-näppäimiä.</translation>
+<translation id="163774412591892664">Järjestelmänvalvoja on poistanut laitteen käytöstä ja voi päästä sen sijaintiin.</translation>
 <translation id="1639239467298939599">Ladataan</translation>
 <translation id="1641857168437328880">Syöttölaite (yksipuolinen)</translation>
 <translation id="1642396894598555413">polkupyörät</translation>
@@ -1723,6 +1724,7 @@ Lataa transkriptiomalli (enintään 100 Mt), niin saat nämä transkriptiot.</t
 <translation id="8584654835905316966">Laiteohjelmiston (<ph name="DEVICE_NAME" />) asennuksen viimeisteleminen versioon <ph name="VERSION" /> edellyttää uudelleenkäynnistystä. Tietokoneesi saattaa käynnistyä uudelleen useita kertoja. Tämä on normaalia.</translation>
 <translation id="8593058461203131755">keskeytä media</translation>
 <translation id="8620617069779373398">Roaming-tila</translation>
+<translation id="8624524972189162859">Järjestelmänvalvoja (<ph name="DOMAIN_NAME" />) on poistanut laitteen käytöstä ja voi päästä sen sijaintiin.</translation>
 <translation id="8626489604350149811"><ph name="APN_NAME" />: lisää toimintoja</translation>
 <translation id="86356131183441916">Vaaleanvioletti</translation>
 <translation id="8647595191512746911">Audiotranskriptio</translation>

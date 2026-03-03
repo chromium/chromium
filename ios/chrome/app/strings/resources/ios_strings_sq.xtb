@@ -58,6 +58,7 @@
 <translation id="1204075260022434100">{count,plural, =1{Faqeshënuesi u ruajt te "{title}" në llogarinë tënde, {email}}other{{count} faqeshënues u ruajtën te "{title}" në llogarinë tënde, {email}}}</translation>
 <translation id="1207493287814084192">17:30</translation>
 <translation id="1217294226280635614">Pamja e ndarë</translation>
+<translation id="1218730690561976633">Aktivizo/çaktivizo verifikimin e përdoruesit për plotësimin automatik të përmirësuar</translation>
 <translation id="1219674500290482172">Është e pamundur lidhja me internetin.</translation>
 <translation id="1223498995510244364">Përmblidh</translation>
 <translation id="1227113644794103810">Skedat joaktive</translation>
@@ -193,6 +194,7 @@
 <translation id="1657011748321897393">Ndarja dështoi për shkak se nuk je i lidhur në rrjet.</translation>
 <translation id="1668001730617725852">Hape në një grup të ri skedash</translation>
 <translation id="1674504678466460478">Nga <ph name="SOURCE_LANGUAGE" /> në <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="1678855624321223424">Bazuar në politikat e organizatës sate, ky skedar mund të përmbajë informacione delikate</translation>
 <translation id="168389590065701766">Tani mund të hapësh "Lenten e Google" nga shiriti i adresave dhe të kërkosh gjithçka që sheh</translation>
 <translation id="1689333818294560261">Pseudonimi</translation>
 <translation id="169048873465870056">Të hiqet skeda dhe të fshihet grupi?</translation>
@@ -599,6 +601,7 @@
 <translation id="3174662312949010067">Fjalëkalimet e ruajtura mund t'i përdorësh edhe në pajisjet e tua të tjera.</translation>
 <translation id="3177338796769255211">Identifikohu për të marrë faqeshënuesit etj. në të gjitha pajisjet e tua</translation>
 <translation id="3181954750937456830">"Shfletimi i sigurt" (të mbron ty dhe pajisjen tënde nga sajtet e rrezikshme)</translation>
+<translation id="3183362380688692618">Grupi i ri i skedave...</translation>
 <translation id="3186796054637504691">Pastro të dhënat e historikut dhe të uebsajteve</translation>
 <translation id="3190736958609431397">Anulo monitorimin</translation>
 <translation id="3208260410153224535">Organizata jote ka e çaktivizuar identifikimin. Faqeshënuesit e rinj, fjalëkalimet etj. do të ruhen vetëm në këtë pajisje.</translation>
@@ -1116,6 +1119,7 @@
 <translation id="507187271399539513">{count,plural, =1{{position} nga {count} mënyrë pagese}other{{position} nga {count} mënyra pagese}}</translation>
 <translation id="5075939510584558547">Ruaj pa enkriptim</translation>
 <translation id="5076534614343816664">Monitorimi i çmimeve</translation>
+<translation id="507762438756999615">Skedari nuk mund të ndahet për shkak të politikave të organizatës sate</translation>
 <translation id="5078303485429639424">Aktivizo njoftimet për "<ph name="FEATURE_NAME" />"</translation>
 <translation id="5079950360618752063">Përdor fjalëkalimin e sugjeruar</translation>
 <translation id="5083464117946352670">Madhësia nuk mund të përcaktohet.</translation>
@@ -1969,6 +1973,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="8059533439631660104">Mbyll seksionin.</translation>
 <translation id="8061584726507121204">Historiku</translation>
 <translation id="8064946459644399612">U zbatuan preferencat e tua për faqen e "Skedës së re"</translation>
+<translation id="8065136076319366194">Ruajtja nuk rekomandohet</translation>
 <translation id="8065556469005366939">Merr përgjigje më të përshtatshme duke ndarë skedat e tua</translation>
 <translation id="8069394452933076548">Zgjidh se kur zhvendosen te seksioni i skedave joaktive skedat që nuk janë përdorur së fundi.</translation>
 <translation id="8073670137947914548">Shkarkimi përfundoi</translation>
@@ -1991,6 +1996,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="8131740175452115882">Konfirmo</translation>
 <translation id="8132598642024322408">Tani <ph name="PRICE" />, ishte <ph name="PREVIOUS_PRICE" />.</translation>
 <translation id="813370552429173916">Përdor një fjalëkalim unik për çdo sajt ose aplikacion. Nëse dikush zbulon një fjalëkalim të ripërdorur, ai mund të përdoret për të marrë qasje te llogaritë e tua të tjera. Kliko për të hapur sajtin e uebit dhe për t'i ndryshuar tani.</translation>
+<translation id="8133810265969517544">Ndarja nuk rekomandohet</translation>
 <translation id="8135556271852808840">{count,plural, =1{{count} skedë e mbyllur}other{{count} skeda të mbyllura}}</translation>
 <translation id="8135643032449715400">{COUNT,plural, =1{1 tjetër}other{# të tjera}}</translation>
 <translation id="8150167929304790980">Emri i plotë</translation>
@@ -2240,6 +2246,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="8976414606286374109">Kartat ruhen në "Llogarinë tënde të Google".</translation>
 <translation id="8981454092730389528">Kontrollet e aktivitetit të Google</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, sajt i gozhduar</translation>
+<translation id="8990960056509724223">Skedari nuk mund të ruhej për shkak të politikave të organizatës sate</translation>
 <translation id="8998289560386111590">Nuk ofrohet në pajisjen tënde</translation>
 <translation id="9000532564152265066">Të gjitha skedat</translation>
 <translation id="9003677638446136377">Kontrollo sërish</translation>

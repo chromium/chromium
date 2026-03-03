@@ -1310,6 +1310,8 @@
 <translation id="3102312643185441063">ସେଭିଂସ</translation>
 <translation id="3103188521861412364">ଷ୍ଟକ ଏବଂ ବଣ୍ଡଗୁଡ଼ିକ</translation>
 <translation id="3105172416063519923">ଆସେଟ୍ ID:</translation>
+<translation id="3105223248029915046">ପେମେଣ୍ଟ ପ୍ଲାନଗୁଡ଼ିକ ଯୋଗ୍ୟତାର ଅଧୀନ ଅଟେ।
+ପରେ ପେମେଣ୍ଟ କରନ୍ତୁ ବିକଳ୍ପଗୁଡ଼ିକୁ ଲୁଚାଇବା ପାଇଁ <ph name="BEGIN_LINK" />ପେମେଣ୍ଟ ସେଟିଂସ<ph name="END_LINK" />କୁ ଯାଆନ୍ତୁ</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />ସୁରକ୍ଷିତ DNS କନଫିଗରେସନ୍ ଯାଞ୍ଚ କରାଯାଉଛି<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">ମଧ୍ୟମ ଟ୍ରେ</translation>
 <translation id="3109061346635850169">ଫେସ ଏବଂ ବଡି କେୟାର</translation>
@@ -2352,7 +2354,6 @@
 <translation id="4750671009706599284">ଏହି ଫୋନ</translation>
 <translation id="4750917950439032686">ଅପଣଙ୍କର ସୂଚନା (ଉଦାହରଣ ସ୍ୱରୂପ, ପାସ୍‍ୱର୍ଡ କିମ୍ବା କ୍ରେଡିଟ୍ କାର୍ଡ ନମ୍ବର) ଏହି ସାଇଟ୍‍କୁ ଯେତେବେଳେ ପଠାଯାଏ, ସେତେବେଳେ ବ୍ୟକ୍ତିଗତ ଥାଏ।</translation>
 <translation id="4751249061288707459">ଗତ ଥର ସମ୍ମତି ଅପଡେଟ କରାଯାଇଥିବା ତାରିଖ:</translation>
-<translation id="4751476147751820511">ମୋସନ୍ କିମ୍ବା ଲାଇଟ୍ ସେନ୍ସର୍</translation>
 <translation id="4754461935447132332">ଅସୁରକ୍ଷିତ ସାଇଟଗୁଡ଼ିକ ପାଇଁ ଅନୁମତି ଦିଆଯାଇନାହିଁ</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
 <translation id="4757740693289347881">କୋଡ ଅବୈଧ ଅଟେ</translation>
@@ -4355,6 +4356,7 @@
 <translation id="7908648876066812348">ଭର୍ଚୁଆଲ କାର୍ଡ ଚାଲୁ କରାଯାଉଛି</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, ସେଟିଂସରେ Chrome ସୁରକ୍ଷା ଯାଞ୍ଚ ପୃଷ୍ଠାକୁ ଯିବା ପାଇଁ Tab ତା'ପରେ Enter ଦବାନ୍ତୁ</translation>
 <translation id="791107458486222637">ଫଳାଫଳ ରିଡୁ କରାଯାଉଛି</translation>
+<translation id="7911651285409665023">ବନ୍ଦ କରି "<ph name="TAB_TITLE" />"କୁ ଫେରନ୍ତୁ</translation>
 <translation id="7912924955815015552">Safariରୁ ଇମ୍ପୋର୍ଟ କରାଯାଇଛି</translation>
 <translation id="791551905239004656">ଡ୍ରଇଂ ଏବଂ କଲରିଂ</translation>
 <translation id="7916162853251942238">ଫ୍ଲେକ୍ସୋ ବେସ</translation>
@@ -5206,7 +5208,6 @@
 <translation id="987264212798334818">ସାଧାରଣ</translation>
 <translation id="988159990683914416">ଡେଭେଲପର୍ ବିଲ୍ଡ</translation>
 <translation id="989988560359834682">ଠିକଣା ଏଡିଟ୍ କରନ୍ତୁ</translation>
-<translation id="991413375315957741">ମୋସନ୍ କିମ୍ବା ଲାଇଟ୍ ସେନ୍ସରଗୁଡ଼ିକ</translation>
 <translation id="991936891556421157">ଜୋତା</translation>
 <translation id="992110854164447044">ଆପଣଙ୍କୁ ସମ୍ଭାବ୍ୟ ଠକାମୀରୁ ସୁରକ୍ଷିତ ରଖିବାରେ ସାହାଯ୍ୟ କରିବା ପାଇଁ ଏକ ଭର୍ଚୁଆଲ କାର୍ଡ ଆପଣଙ୍କ ପ୍ରକୃତ କାର୍ଡକୁ ଲୁଚାଇ ରଖିଥାଏ। <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="992256792861109788">ଗୋଲାପି</translation>

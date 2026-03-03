@@ -668,6 +668,7 @@
 <translation id="3476450923187944815">Akses kata laluan anda merentasi apl lain.</translation>
 <translation id="3485558910355485767">Tetingkap Inkognito Baharu</translation>
 <translation id="3488501490964659223">Tab telah ditutup dan data semakan imbas dipadamkan. Anda telah dilog keluar</translation>
+<translation id="3490396108106323715">Kongsi tab semasa</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /> tentang kandungan yang disyorkan</translation>
 <translation id="349446645805573740">Pilih tempat untuk menyimpan "<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />"</translation>
 <translation id="3504377992102007712">Tetapan</translation>
@@ -694,6 +695,7 @@
 <translation id="3565012355885596568">Tidak dapat memuatkan imej</translation>
 <translation id="3565930036634619844">Tab. <ph name="TAB_INDEX" /> daripada <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3567168891086460374">Simpan cara lain</translation>
+<translation id="3572503683475187385">Tab semasa dikongsi dengan Gemini apabila anda memulakan sembang baharu. Apabila anda berkongsi tab dengan Gemini, kandungan dan URL tab tersebut akan dihantar kepada Google. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">Dalam Google Account anda</translation>
 <translation id="3575234738189584619">Cari dengan Lens</translation>
 <translation id="3575426792457739946">Senarai ini mengandungi semua profil yang dimuatkan.</translation>
@@ -737,6 +739,7 @@
 <translation id="3751873026576444885">Berhenti membuat carian skrin anda dengan Google Lens</translation>
 <translation id="3753408171347588045">Menjejaki harga</translation>
 <translation id="3753618528540214374">Tema viridian</translation>
+<translation id="3759491607478608474">Kongsi kandungan tab semasa dengan Gemini untuk mendapatkan jawapan yang lebih berkaitan</translation>
 <translation id="3762232513783804601">Dibina untuk iPad Anda</translation>
 <translation id="3768725474733206671">Buka Semula Tab Terakhir Ditutup</translation>
 <translation id="3779810277399252432">Tiada sambungan Internet.</translation>
@@ -984,6 +987,7 @@
 <translation id="4650125387981512669">Teruskan sebagai <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4651927776207937667">{count,plural, =1{Sembunyikan selepas 1 minit}other{Sembunyikan selepas {count} minit}}</translation>
 <translation id="4652817563047461855">Pastikan kata laluan anda selamat, pastikan jika kata laluan anda telah terjejas dan dapatkan nasihat untuk melindungi diri anda dalam talian. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
+<translation id="4653053602672040238">Hidupkan perkongsian tab</translation>
 <translation id="4658335131052370646">Simpan</translation>
 <translation id="466307903888586355">Penyimpanan fail disekat oleh organisasi anda</translation>
 <translation id="4668929960204016307">,</translation>
@@ -1297,6 +1301,7 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="5718049162805123412">Anda patut menukar kata laluan ini sekarang</translation>
 <translation id="5721040778297053709">Letakkan kad kredit dalam bingkai ini</translation>
 <translation id="572328651809341494">Tab terbaharu</translation>
+<translation id="5724590854763964497">Secara lalai, tab semasa anda dikongsi apabila anda memulakan sembang baharu. Apabila tab dikongsi, kandungan dan URL tab tersebut akan dihantar kepada Google tetapi tidak akan digunakan untuk meningkatkan model AI generatif. Anda boleh mengubah tetapan ini pada bila-bila masa.</translation>
 <translation id="5724941645893276623">Untuk menyemak imbas web secara sulit, tambah tab baharu</translation>
 <translation id="5728072125198221967">Perkhidmatan Google terpaut</translation>
 <translation id="5728700505257787410">Maaf, terdapat masalah untuk log masuk ke akaun anda.</translation>
@@ -1964,6 +1969,7 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="8059533439631660104">Meruntuhkan bahagian.</translation>
 <translation id="8061584726507121204">Sejarah</translation>
 <translation id="8064946459644399612">Pilihan halaman Tab Baharu anda telah digunakan</translation>
+<translation id="8065556469005366939">Dapatkan jawapan yang lebih berkaitan dengan berkongsi tab anda</translation>
 <translation id="8069394452933076548">Pilih waktu untuk mengalihkan tab yang tidak digunakan baru-baru ini kepada bahagian tab tidak aktif.</translation>
 <translation id="8073670137947914548">Muat turun selesai</translation>
 <translation id="8076492880354921740">Tab</translation>
@@ -2132,6 +2138,7 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="8660600697590740984">Imej yang disalin Lens</translation>
 <translation id="866266761389616183">Oh, tidak!</translation>
 <translation id="8663764600409216912">Anda menggunakan kata laluan yang kelihatan sukar diteka</translation>
+<translation id="8664992138761940052">Secara lalai, tab semasa anda dikongsi apabila anda memulakan sembang baharu. Apabila tab dikongsi, kandungan dan URL tab tersebut akan dihantar kepada Google. Anda boleh mengubah tetapan ini pada bila-bila masa.</translation>
 <translation id="8668210798914567634">Halaman ini telah disimpan pada Senarai Bacaan anda.</translation>
 <translation id="8672642291731179042">Terjemahkan halaman</translation>
 <translation id="8672733398999596205">Dayakan Semua</translation>

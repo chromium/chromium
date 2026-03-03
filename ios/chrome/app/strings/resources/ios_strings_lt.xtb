@@ -668,6 +668,7 @@
 <translation id="3476450923187944815">Pasiekite slaptažodžius kitose programose.</translation>
 <translation id="3485558910355485767">Naujas inkognito langas</translation>
 <translation id="3488501490964659223">Skirtukai uždaryti ir naršymo duomenys ištrinti. Buvote atjungti</translation>
+<translation id="3490396108106323715">Dabartinio skirtuko bendrinimas</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /> apie siūlomą turinį</translation>
 <translation id="349446645805573740">Pasirinkite, kur norite išsaugoti <ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" /></translation>
 <translation id="3504377992102007712">Nustatymai</translation>
@@ -694,6 +695,7 @@
 <translation id="3565012355885596568">Nepavyko įkelti vaizdų</translation>
 <translation id="3565930036634619844">Skirtukas. <ph name="TAB_INDEX" /> iš <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3567168891086460374">Išsaugoti kitu būdu</translation>
+<translation id="3572503683475187385">Pradėjus naują pokalbį, dabartinis skirtukas bendrinamas su „Gemini“. Kai bendrinate skirtuką su „Gemini“, jo turinys ir URL siunčiami „Google“. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">„Google“ paskyroje</translation>
 <translation id="3575234738189584619">Paieška naudojant „Lens“</translation>
 <translation id="3575426792457739946">Šiame sąraše yra visi įkelti profiliai.</translation>
@@ -737,6 +739,7 @@
 <translation id="3751873026576444885">Sustabdyti paiešką ekrane naudojant „Google Lens“</translation>
 <translation id="3753408171347588045">Kainos stebimos</translation>
 <translation id="3753618528540214374">Mėlynai žalia tema</translation>
+<translation id="3759491607478608474">Bendrinkite dabartinio skirtuko turinį su „Gemini“, kad gautumėte aktualesnius atsakymus</translation>
 <translation id="3762232513783804601">Sukurta specialiai „iPad“</translation>
 <translation id="3768725474733206671">Iš naujo atidaryti pastarąjį uždarytą skirtuką</translation>
 <translation id="3779810277399252432">Nėra interneto ryšio.</translation>
@@ -984,6 +987,7 @@
 <translation id="4650125387981512669">Tęsti kaip <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4651927776207937667">{count,plural, =1{Slėpti po vienos minutės}one{Slėpti po {count} minutės}few{Slėpti po {count} minučių}many{Slėpti po {count} minutės}other{Slėpti po {count} minučių}}</translation>
 <translation id="4652817563047461855">Įsitikinkite, kad slaptažodžiai saugūs, sužinokite, ar jie nebuvo pažeisti, ir gaukite patarimų, kaip apsisaugoti internete. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
+<translation id="4653053602672040238">Skirtuko bendrinimo įjungimas</translation>
 <translation id="4658335131052370646">Išsaugoti</translation>
 <translation id="466307903888586355">Failų išsaugojimą užblokavo jūsų organizacija</translation>
 <translation id="4668929960204016307">,</translation>
@@ -1297,6 +1301,7 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="5718049162805123412">Turėtumėte pakeisti juos dabar</translation>
 <translation id="5721040778297053709">Kredito kortelė turėtų būti rodoma šiame rėmelyje</translation>
 <translation id="572328651809341494">Naujausi skirtukai</translation>
+<translation id="5724590854763964497">Pagal numatytuosius nustatymus dabartinis skirtukas bendrinamas, kai pradedate naują pokalbį. Kai skirtukai bendrinami, jų turinys ir URL siunčiami „Google“, bet nenaudojami generatyvinio DI modeliams tobulinti. Galite bet kada pakeisti šį nustatymą.</translation>
 <translation id="5724941645893276623">Norėdami žiniatinklyje naršyti privačiai, pridėkite naują skirtuką</translation>
 <translation id="5728072125198221967">Susietos „Google“ paslaugos</translation>
 <translation id="5728700505257787410">Apgailestaujame, prisijungiant prie paskyros kilo problema.</translation>
@@ -1964,6 +1969,7 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="8059533439631660104">Sutraukia skiltį.</translation>
 <translation id="8061584726507121204">Istorija</translation>
 <translation id="8064946459644399612">Pritaikytos naujo skirtuko puslapio nuostatos</translation>
+<translation id="8065556469005366939">Gaukite aktualesnių atsakymų bendrindami skirtukus</translation>
 <translation id="8069394452933076548">Pasirinkite, kada pastaruoju metu nenaudojami skirtukai bus perkelti į neaktyvių skirtukų skiltį.</translation>
 <translation id="8073670137947914548">Atsisiuntimas užbaigtas</translation>
 <translation id="8076492880354921740">Skirtukai</translation>
@@ -2132,6 +2138,7 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="8660600697590740984">Nukopijuotas „Lens“ vaizdas</translation>
 <translation id="866266761389616183">Oi!</translation>
 <translation id="8663764600409216912">Naudojate slaptažodžius, kuriuos turėtų būti sunku atspėti</translation>
+<translation id="8664992138761940052">Pagal numatytuosius nustatymus dabartinis skirtukas bendrinamas, kai pradedate naują pokalbį. Kai skirtukai bendrinami, jų puslapių turinys ir URL siunčiami „Google“. Galite bet kada pakeisti šį nustatymą.</translation>
 <translation id="8668210798914567634">Puslapis išsaugotas skaitymo sąraše.</translation>
 <translation id="8672642291731179042">Versti puslapius</translation>
 <translation id="8672733398999596205">Įgalinti viską</translation>

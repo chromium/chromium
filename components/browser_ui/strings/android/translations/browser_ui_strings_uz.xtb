@@ -66,7 +66,6 @@
 <translation id="1677097821151855053">Saytga kirish uchun yoki reklamani moslashtirish uchun ishlatiladigan cookie fayllari va boshqa sayt maʼlumotlari. Barcha saytlar uchun cookie fayllarni boshqarish uchun <ph name="BEGIN_LINK" />Cookie sozlamalari<ph name="END_LINK" /> sahifasini oching.</translation>
 <translation id="1679305402657584804">Saytlar NFC qurilmalardan foydalanishga ruxsat soʻrashi mumkin</translation>
 <translation id="1686785653877010442">Odatda, saytlar muhim yangiliklar yoki chat xabarlari haqida sizga bildirish uchun bildirishnomalar yuboradi.</translation>
-<translation id="169515064810179024">Saytlarga harakat sensorlaridan foydalanishni taqiqlash</translation>
 <translation id="1703666494654169921">Saytlarga virtual reallik qurilmalari yoki maʼlumotlardan foydalanishni taqiqlash</translation>
 <translation id="1704230497453185209">Saytlarga tovush ijro qilishni taqiqlash</translation>
 <translation id="1717218214683051432">Harakat sensorlari</translation>
@@ -235,7 +234,6 @@ Quyidagi Chrome sozlamalari Kuchaytirilgan himoya boshqaruvida:
 <translation id="3232293466644486101">Brauzer maʼlumotlarini oʻchirish…</translation>
 <translation id="3242646949159196181">Yoqilsa, saytlar tovush ijro eta oladi. Oʻchirilsa, ijro eta olmaydi.</translation>
 <translation id="3273479183583863618">Varaqlarda narx pasayishi</translation>
-<translation id="3277252321222022663">Saytlarga sensorlardan foydalanish uchun ruxsat berish (tavsiya etiladi)</translation>
 <translation id="3285500645985761267">Aloqador saytlarga guruhdagi faoliyatni koʻrishga ruxsat berish</translation>
 <translation id="3295019059349372795">11-bob: Oz mamlakatining zumrad shahri</translation>
 <translation id="3295602654194328831">Ma’lumotlarni yashirish</translation>
@@ -371,7 +369,6 @@ Quyidagi Chrome sozlamalari Kuchaytirilgan himoya boshqaruvida:
 <translation id="4672315773691449562">Brauzer ilovasi ustiga bosib, Chrome bandini tanlang</translation>
 <translation id="4676059169848868271"><ph name="APP_NAME" /> ilovasi qoʻllar holatini kuzatishi uchun <ph name="BEGIN_LINK" />tizim sozlamalari<ph name="END_LINK" /> orqali bu parametrni yoqing.</translation>
 <translation id="4688045258817337666">Kartalarni boshqarish</translation>
-<translation id="4751476147751820511">Harakat va yorug‘lik sensorlari</translation>
 <translation id="4755971844837804407">Yoqilsa, saytlar sizga reklama koʻrsatishi mumkin. Oʻchirilsa, yoqimsiz yoki befoyda reklamalar koʻrsatilmaydi.</translation>
 <translation id="4779083564647765204">Masshtab</translation>
 <translation id="4807122856660838973">Saytlarni xavfsiz kezish rejimini yoqish</translation>
@@ -398,7 +395,6 @@ Quyidagi Chrome sozlamalari Kuchaytirilgan himoya boshqaruvida:
 <translation id="5001526427543320409">Tashqi cookie fayllar</translation>
 <translation id="5007392906805964215">Tekshirish</translation>
 <translation id="5039804452771397117">Ruxsat berish</translation>
-<translation id="5048398596102334565">Saytlarga harakat sensorlaridan foydalanish uchun ruxsat berish (tavsiya etiladi)</translation>
 <translation id="5048841907079026162">Brauzer maʼlumotlarini boshqaring</translation>
 <translation id="5050380848339752099">Bu sayt inkognito oynasidan tashqaridagi ilova bilan axborot ulashmoqchi.</translation>
 <translation id="5063480226653192405">Sarfi</translation>
@@ -686,7 +682,6 @@ Quyidagi Chrome sozlamalari Kuchaytirilgan himoya boshqaruvida:
 <translation id="8088603949666785339"><ph name="BANNER_TITLE" />: boshqa amallar</translation>
 <translation id="8112925981674547014">Ilovalar roʻyxatida varaqlarni ochish</translation>
 <translation id="8116925261070264013">Ovozsiz</translation>
-<translation id="8117244575099414087">Yoqilsa, saytlar qurilmangiz sensoridan foydalana oladi. Oʻchirilsa, ulardan foydalana olmaydi.</translation>
 <translation id="813082847718468539">Sayt haqidagi ma’lumotlar</translation>
 <translation id="8131740175452115882">Tasdiqlash</translation>
 <translation id="8148160259207090265">Android sozlamalarida Kuchaytirilgan himoya yoniqligida mazkur sozlama faol qoladi.</translation>
@@ -762,7 +757,6 @@ Quyidagi Chrome sozlamalari Kuchaytirilgan himoya boshqaruvida:
 <translation id="8801657293260363985">V8 — Chromeda saytlar unumdorligini oshiradigan JavaScript va WebAssembly tizimi hisoblanadi</translation>
 <translation id="8803526663383843427">Qachon yoqilgan</translation>
 <translation id="8805385115381080995">Saytlar shaxsni tasdiqlashni kamroq soʻraydi va shu sababli brauzerdagi ishdan kamroq chalgʻiysiz</translation>
-<translation id="8816026460808729765">Saytlarga sensorlardan foydalanishni taqiqlash</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8874790741333031443">Tashqi cookie fayllarga vaqtincha ruxsat bering, bunda himoya pasayadi, lekin sayt funksiyalari kutilganidek ishlaydi.</translation>
 <translation id="8889294078294184559">Keyin ochiladigan boshqa saytlar brauzerdan bu axborotni soʻrashi mumkin.</translation>

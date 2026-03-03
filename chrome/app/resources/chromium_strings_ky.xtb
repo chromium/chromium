@@ -241,6 +241,7 @@ Bluetooth түзмөктөрүн изилдөө үчүн Bluetooth'ду пайд
 <translation id="3509308970982693815">Бардык Chromium терезелерин жаап, дагы аракет кылып көрүңүз.</translation>
 <translation id="3522404737534491619">Терезени бөлүшүү үчүн Тутумдун параметрлеринен Chromium'га экрандан видео жаздырып алууга уруксат бериңиз.</translation>
 <translation id="3530103706039034513"><ph name="EXISTING_USER" /> мурунтан эле кирип турат.  Сиз серептеген нерселерди ажыратуу үчүн <ph name="USER_EMAIL_ADDRESS" /> катары өз профилиңизден Chromium'га кириңиз.</translation>
+<translation id="3531741627422851418">Chromium серепчисин мобилдик түзмөктөргө жүктөп алуу үчүн QR коду</translation>
 <translation id="3561853857681580870">Экранды бөлүшүү үчүн Тутумдун параметрлеринен Chromium'га экрандан видео жаздырып алууга уруксат бериңиз.</translation>
 <translation id="3588112919289558122">Мыктылап коргоо Chromium тааныбаган сайттар үчүн JavaScript'ти оптималдаштырууну өчүрөт</translation>
 <translation id="3597003331831379823">Жогорулатылган артыкчылыктар менен туураланбай калды. <ph name="METAINSTALLER_ERROR" /></translation>

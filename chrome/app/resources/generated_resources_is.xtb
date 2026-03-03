@@ -1043,6 +1043,7 @@ Heimildir sem þú hefur þegar veitt forritum kunna að gilda á þessum reikni
 <translation id="1682696837763999627">Stór músarbendill</translation>
 <translation id="1682867089915960590">Viltu kveikja á skoðun með textabendli?</translation>
 <translation id="1686550358074589746">Kveikja á bendingainnslætti</translation>
+<translation id="1686684082159608623">Stjórnandinn þinn lokaði á uppfærslu á þessu forriti og það virkar hugsanlega ekki sem skyldi</translation>
 <translation id="1686785653877010442">Vefsvæði senda yfirleitt tilkynningar til að láta þig vita af nýjustu fréttum eða spjallskilaboðum.</translation>
 <translation id="168715261339224929">Kveiktu á samstillingu til að fá aðgang að bókamerkjunum þínum í öllum tækjum.</translation>
 <translation id="1688935057616748272">Sláðu inn staf</translation>
@@ -6534,6 +6535,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="539882584649709174">Hjálpar þér að skrifa stutta texta á vefnum, t.d. umsagnir</translation>
 <translation id="5400196580536813396">Ekki heimilt að leita að eða nota prentara sem tækið þitt hefur aðgang að</translation>
 <translation id="5400836586163650660">Grár</translation>
+<translation id="5400933848253186401">Taka saman með Gemini</translation>
 <translation id="5402367795255837559">Blindraletur</translation>
 <translation id="5402815541704507626">Sækja uppfærslu með farsímagögnum</translation>
 <translation id="5404557844330880551">Nánar um samanburð á vörum</translation>
@@ -7011,7 +7013,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5734697361979786483">Bæta samnýttri skráageymslu við</translation>
 <translation id="573520097779121706">Notaðu lyklana 7, 8, 9, u, o, j, k og l til að hreyfa bendilinn</translation>
 <translation id="5736092224453113618">{NUM_FILES,plural, =0{Þessi gögn eða tækið þitt stenst ekki tilteknar öryggisreglur fyrirtækisins. Hafðu samband við stjórnandann til að fá upplýsingar um hvað þarf að lagfæra.}=1{Þetta skrá eða tækið þitt stenst ekki tilteknar öryggisreglur fyrirtækisins. Hafðu samband við stjórnandann til að fá upplýsingar um hvað þarf að lagfæra.}one{Þessar skrár standast ekki tilteknar öryggisreglur fyrirtækisins. Hafðu samband við stjórnandann til að fá upplýsingar um hvað þarf að lagfæra.}other{Þessar skrár standast ekki tilteknar öryggisreglur fyrirtækisins. Hafðu samband við stjórnandann til að fá upplýsingar um hvað þarf að lagfæra.}}</translation>
-<translation id="5736345781200955827">Búðu til, vistaðu og stjórnaðu aðgangsorðunum þínum til að skrá þig inn á vefsvæði og forrit á einfaldan hátt með því að nota Chrome</translation>
 <translation id="5738093759615225354">Þú þarft þennan aðgangslykil til að skrá þig inn í tölvuna þína</translation>
 <translation id="5738386565827477765">Hljómtæki</translation>
 <translation id="5739017626473506901">Skráðu þig inn til að hjálpa <ph name="USER_NAME" /> að bæta við skólareikningi</translation>

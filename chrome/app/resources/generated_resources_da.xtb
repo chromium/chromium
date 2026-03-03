@@ -681,6 +681,7 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
     fejlretningslogger<ph name="END_LINK" /> (anbefales)</translation>
 <translation id="1454223536435069390">T&amp;ag screenshot</translation>
 <translation id="145432137617179457">Stavekontrolsprog</translation>
+<translation id="1455009947184333152">Færdigheden er slettet</translation>
 <translation id="1455119378540982311">Forindstillede vinduestørrelse</translation>
 <translation id="1456849775870359518">Dine faner åbnes igen</translation>
 <translation id="146000042969587795">Denne ramme blev blokeret, da den indeholder usikkert indhold.</translation>
@@ -1345,6 +1346,7 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="1886996562706621347">Tillad, at websites må bede om at håndtere protokoller som standard (anbefales)</translation>
 <translation id="1887210448491286312">Stop med at caste fanen til <ph name="DEVICE_NAME" /></translation>
 <translation id="1887442540531652736">Loginfejl</translation>
+<translation id="1888692623866312036">Gemt færdighed</translation>
 <translation id="1890026367080681123">Gå til indstillingerne for indlejret indhold</translation>
 <translation id="189035593835762169">Vilkår og betingelser</translation>
 <translation id="1891362123137972260">Der er næsten ikke mere diskplads. Frigør plads.</translation>
@@ -1852,6 +1854,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2232751457155581899">Websites kan anmode om tilladelse til at registrere din kameraposition</translation>
 <translation id="2233502537820838181">&amp;Flere oplysninger</translation>
 <translation id="223356358902285214">Web- og appaktivitet</translation>
+<translation id="2234031676056123135">Tilpas dine genveje</translation>
 <translation id="2234065144797002621">Å</translation>
 <translation id="2234208862050358325">Brug tasterne 1, 2, 3, q, e, a, s, d til at flytte markøren</translation>
 <translation id="2234827758954819389">Privatlivsguide</translation>
@@ -3113,10 +3116,12 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3048589239114571785">Afspil (k)</translation>
 <translation id="3048742847101793553">Din organisation har blokeret denne fil, fordi scanningen mislykkedes.</translation>
 <translation id="3048917188684939573">Cast- og enhedslogs</translation>
+<translation id="3049356453907822148">Tilføj en ny færdighed</translation>
 <translation id="3051250416341590778">Skærmstørrelse</translation>
 <translation id="3053013834507634016">Brug af certifikatnøgle</translation>
 <translation id="3053273573829329829">Aktivér brugerens pinkode</translation>
 <translation id="3053274730492362225">Blink ikke</translation>
+<translation id="3057938290530993634">Hold fingeren på feltet for at fastgøre dine mest besøgte websites, så du nemt kan tilgå dem næste gang</translation>
 <translation id="3058498974290601450">Du kan til enhver tid aktivere synkronisering i indstillingerne</translation>
 <translation id="3060952009917586498">Skift enhedens sprog Det nuværende sprog er <ph name="LANGUAGE" />.</translation>
 <translation id="3060987956645097882">Vi kunne ikke oprette forbindelse til din telefon. Sørg for, at din telefon er i nærheden, at den er låst op, og at Bluetooth og Wi-Fi er aktiveret.</translation>
@@ -3273,6 +3278,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3182749001423093222">Stavekontrol</translation>
 <translation id="3183139917765991655">Profilimport</translation>
 <translation id="3183143381919926261">Mobildatanetværk</translation>
+<translation id="3183428991752322898">Ryd tastaturgenvej</translation>
 <translation id="3183700187146209259">Scannersoftwaren kan ikke installeres</translation>
 <translation id="3183750649832309748">Din organisation, <ph name="ACCOUNT_MANAGER" />, kan se visse oplysninger, herunder</translation>
 <translation id="3183944777708523606">Skærmopstilling</translation>
@@ -3364,6 +3370,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3247649647204519958">Her kan du se og administrere udvidelsestilladelser for det website, du besøger</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> – netværksfejl</translation>
 <translation id="3248902735035392926">Sikkerhed er vigtigt. Brug et øjeblik på at <ph name="BEGIN_LINK" />tjekke dine udvidelser<ph name="END_LINK" /> nu</translation>
+<translation id="3250374026663843838">Administrer din færdighed</translation>
 <translation id="3251119461199395237">Filsynkronisering</translation>
 <translation id="3251759466064201842">&lt;Ikke en del af certifikatet&gt;</translation>
 <translation id="3252169590975855820">Du kan få adgang til den i Google Adgangskodeadministrator</translation>
@@ -5196,6 +5203,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4469324811108161144">Noter kan indeholde op til <ph name="CHARACTER_LIMIT" /> tegn</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> kan redigere filer i <ph name="FOLDERNAME" /></translation>
 <translation id="4470957202018033307">Præferencer for ekstern lagerplads</translation>
+<translation id="4471250205822310967">Markeringsoverlejring til Gemini</translation>
 <translation id="4471354919263203780">Downloader talegenkendelsesfiler... <ph name="PERCENT" /> %</translation>
 <translation id="4472194221638903160">Gruppér faner med AI</translation>
 <translation id="4472298120638043495">Du kan bruge dit foretrukne sprog fra din Google-konto (<ph name="NEW_LOCALE_FROM_GAIA" />)</translation>
@@ -6525,6 +6533,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="539882584649709174">Hjælper dig med at skrive tekst i kort format til nettet, f.eks. anmeldelser</translation>
 <translation id="5400196580536813396">Har ikke tilladelse til at søge efter eller anvende printere, der er tilgængelige for din enhed</translation>
 <translation id="5400836586163650660">Grå</translation>
+<translation id="5400933848253186401">Opsummer med Gemini</translation>
 <translation id="5402367795255837559">Braille</translation>
 <translation id="5402815541704507626">Download opdateringen ved brug af mobildata</translation>
 <translation id="5404557844330880551">Få flere oplysninger om sammenligning af produkter</translation>
@@ -7001,7 +7010,6 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="5734697361979786483">Tilføj fildeling</translation>
 <translation id="573520097779121706">Brug tasterne 7, 8, 9, u, o, j, k, l til at flytte markøren</translation>
 <translation id="5736092224453113618">{NUM_FILES,plural, =0{Disse data eller din enhed overholder ikke alle din organisations sikkerhedspolitikker. Spørg din administrator, hvad der skal rettes.}=1{Denne fil eller din enhed overholder ikke alle din organisations sikkerhedspolitikker. Spørg din administrator, hvad der skal rettes.}one{Denne fil overholder ikke alle din organisations sikkerhedspolitikker. Spørg din administrator, hvad der skal rettes.}other{Disse filer overholder ikke alle din organisations sikkerhedspolitikker. Spørg din administrator, hvad der skal rettes.}}</translation>
-<translation id="5736345781200955827">Opret, gem og administrer dine adgangskoder, så du nemt kan logge ind på websites og i apps ved hjælp af Chrome</translation>
 <translation id="5738093759615225354">Du skal bruge denne adgangsnøgle for at logge ind på din computer</translation>
 <translation id="5738386565827477765">Lydenhed</translation>
 <translation id="5739017626473506901">Log ind for at hjælpe <ph name="USER_NAME" /> med at tilføje en skolekonto</translation>
@@ -11939,6 +11947,7 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser, enhed
 <translation id="9061521313218438086">Hvis Chrome registrerer, at én af dine adgangskoder er blevet lækket i forbindelse med et offentligt brud på datasikkerheden, kan Google Adgangskodeadministrator tilbyde at ændre din adgangskode for dig, hvis du er logget ind.</translation>
 <translation id="9061694916020926968">Du skal være logget ind på en Google-konto for at bruge Steam til Chromebook (beta). Log ind, og prøv igen.</translation>
 <translation id="9062468308252555888">14x</translation>
+<translation id="9062873887761404531">Ryd navigationsgenvej</translation>
 <translation id="9063208415146866933">Der er fejl på linje <ph name="ERROR_LINE_START" /> til <ph name="ERROR_LINE_END" /></translation>
 <translation id="9064275926664971810">Aktivér AutoFyld for at udfylde formularer med et enkelt klik</translation>
 <translation id="9065203028668620118">Rediger</translation>

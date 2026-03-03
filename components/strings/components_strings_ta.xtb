@@ -1310,6 +1310,8 @@
 <translation id="3102312643185441063">சேமிப்புக் கணக்கு</translation>
 <translation id="3103188521861412364">பங்குகள் மற்றும் பத்திரங்கள்</translation>
 <translation id="3105172416063519923">பண்பு ஐடி:</translation>
+<translation id="3105223248029915046">பேமெண்ட் திட்டங்கள் தகுதிநிலைக்கு உட்பட்டவை.
+பிறகு பணம் செலுத்துவதற்கான விருப்பங்களை மறைக்க, <ph name="BEGIN_LINK" />பேமெண்ட் அமைப்புகளுக்குச்<ph name="END_LINK" /> செல்லவும்</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />உங்களின் பாதுகாப்பான DNS உள்ளமைவைச் சரிபாருங்கள்<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">நடு டிரே</translation>
 <translation id="3109061346635850169">முகம் மற்றும் உடல் பராமரிப்பு</translation>
@@ -2351,7 +2353,6 @@
 <translation id="4750671009706599284">இந்த மொபைல்</translation>
 <translation id="4750917950439032686">உங்கள் தகவலை (எடுத்துக்காட்டு: கடவுச்சொற்கள் அல்லது கிரெடிட் கார்டு எண்கள்) இந்தத் தளத்திற்கு அனுப்பும் போது, தனிப்பட்டதாக இருக்கும்.</translation>
 <translation id="4751249061288707459">ஒப்புதல் கடைசியாகப் புதுப்பிக்கப்பட்டது:</translation>
-<translation id="4751476147751820511">நகர்வு அல்லது ஒளி உணர்விகள்</translation>
 <translation id="4754461935447132332">பாதுகாப்பற்ற தளங்களில் அனுமதிக்கப்படாது</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
 <translation id="4757740693289347881">குறியீடு தவறாக உள்ளது</translation>
@@ -4355,6 +4356,7 @@
 <translation id="7908648876066812348">விர்ச்சுவல் கார்டை இயக்குகிறது</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, அமைப்புகளில் உள்ள Chrome பாதுகாப்புச் சரிபார்ப்பு பக்கத்திற்குச் செல்ல, Tab பட்டனை அழுத்திவிட்டு Enter பட்டனை அழுத்தவும்</translation>
 <translation id="791107458486222637">மீண்டும்செய்கிறது</translation>
+<translation id="7911651285409665023">மூடிவிட்டு "<ph name="TAB_TITLE" />"க்குச் செல்லுதல்</translation>
 <translation id="7912924955815015552">Safariயில் இருந்து இறக்கப்பட்டவை</translation>
 <translation id="791551905239004656">படம் வரைதல் மற்றும் வண்ணம் தீட்டுதல்</translation>
 <translation id="7916162853251942238">ஃபிளெக்ஸோ பேஸ்</translation>
@@ -5208,7 +5210,6 @@
 <translation id="987264212798334818">பொது</translation>
 <translation id="988159990683914416">டெவெலப்பர் கட்டமைப்பு</translation>
 <translation id="989988560359834682">முகவரியைத் திருத்து</translation>
-<translation id="991413375315957741">மோஷன் அல்லது ஒளி சென்சார்கள்</translation>
 <translation id="991936891556421157">காலணிகள்</translation>
 <translation id="992110854164447044">மோசடி அபாயங்களில் இருந்து பாதுகாக்க உங்கள் அசல் கார்டை விர்ச்சுவல் கார்டு மறைக்கிறது. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="992115559265932548"><ph name="MICROSOFT_ACTIVE_DIRECTORY" /></translation>

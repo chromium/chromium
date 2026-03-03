@@ -1311,6 +1311,8 @@
 <translation id="3102312643185441063">সেভিংস</translation>
 <translation id="3103188521861412364">স্টক ও বন্ড</translation>
 <translation id="3105172416063519923">সম্পদ আইডি:</translation>
+<translation id="3105223248029915046">পেমেন্ট প্ল্যান উপযুক্ততার উপর নির্ভর করে।
+পরে পেমেন্ট করার বিকল্প লুকাতে, <ph name="BEGIN_LINK" />পেমেন্ট সেটিংসে<ph name="END_LINK" /> যান</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />নিরাপদ DNS কনফিগারেশন চেক করে দেখা হচ্ছে<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">মাঝের ট্রে</translation>
 <translation id="3109061346635850169">মুখ ও দেহের যত্ন</translation>
@@ -2356,7 +2358,6 @@
 <translation id="4750671009706599284">এই ফোন</translation>
 <translation id="4750917950439032686">আপনার তথ্য (উদাহরণস্বরূপ, পাসওয়ার্ড বা ক্রেডিট কার্ড নম্বর) যখন এই সাইটে পাঠানো হয় তখন সেটি ব্যক্তিগত থাকে।</translation>
 <translation id="4751249061288707459">সম্মতি শেষ আপডেট হয়েছে:</translation>
-<translation id="4751476147751820511">মোশন বা হালকা সেন্সর</translation>
 <translation id="4754461935447132332">শুধুমাত্র সুরক্ষিত সাইটের ক্ষেত্রেই অনুমতি দেওয়া আছে</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
 <translation id="4757740693289347881">কোডটি ভুল</translation>
@@ -4360,6 +4361,7 @@
 <translation id="7908648876066812348">ভার্চুয়াল কার্ডের সুবিধা চালু করা হচ্ছে</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, প্রথমে Tab, তারপরে Enter প্রেস করে সেটিংসে Chrome-এর 'নিরাপত্তা সংক্রান্ত পরীক্ষা' ফিচারে যান</translation>
 <translation id="791107458486222637">ফলাফল আবার যোগ করা হচ্ছে</translation>
+<translation id="7911651285409665023">বন্ধ করুন এবং "<ph name="TAB_TITLE" />"-এ ফিরে যান</translation>
 <translation id="7912924955815015552">Safari থেকে আমদানি করা</translation>
 <translation id="791551905239004656">আঁকা ও রঙ করা</translation>
 <translation id="7916162853251942238">ফ্লেক্সো বেস</translation>
@@ -5212,7 +5214,6 @@
 <translation id="987264212798334818">সাধারণ</translation>
 <translation id="988159990683914416">ডেভেলপার বিল্ড</translation>
 <translation id="989988560359834682">ঠিকানা সম্পাদনা করুন</translation>
-<translation id="991413375315957741">মোশন বা লাইট সেন্সর</translation>
 <translation id="991936891556421157">জুতো</translation>
 <translation id="992110854164447044">আপনাকে সম্ভাব্য জালিয়াতির হাত থেকে রক্ষা করতে, ভার্চুয়াল কার্ড আসল কার্ডটি লুকায়। <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="992115559265932548"><ph name="MICROSOFT_ACTIVE_DIRECTORY" /></translation>

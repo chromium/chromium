@@ -668,6 +668,7 @@
 <translation id="3476450923187944815">存取其他應用程式的密碼。</translation>
 <translation id="3485558910355485767">新增無痕式視窗</translation>
 <translation id="3488501490964659223">已關閉分頁並刪除瀏覽資料。系統已將你登出</translation>
+<translation id="3490396108106323715">分享目前分頁</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />進一步瞭解<ph name="END_LINK" />建議的內容</translation>
 <translation id="349446645805573740">請選擇「<ph name="FILENAME" />」<ph name="BEGIN_BOLD" /><ph name="END_BOLD" />的儲存位置</translation>
 <translation id="3504377992102007712">設定</translation>
@@ -694,6 +695,7 @@
 <translation id="3565012355885596568">無法載入圖片</translation>
 <translation id="3565930036634619844">分頁。<ph name="NUMBER_OF_TABS" /> 個分頁入面嘅第 <ph name="TAB_INDEX" /> 個。</translation>
 <translation id="3567168891086460374">儲存其他方式</translation>
+<translation id="3572503683475187385">發起新對話時，系統會與 Gemini 分享目前分頁。與 Gemini 分享分頁時，分頁內容和網址會傳送至 Google。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">在你的 Google 帳戶中</translation>
 <translation id="3575234738189584619">用「智能鏡頭」搜尋</translation>
 <translation id="3575426792457739946">此清單包含所有已載入的個人檔案。</translation>
@@ -737,6 +739,7 @@
 <translation id="3751873026576444885">停止使用「Google 智能鏡頭」搜尋畫面內容</translation>
 <translation id="3753408171347588045">正在追蹤價格</translation>
 <translation id="3753618528540214374">鉻綠色主題</translation>
+<translation id="3759491607478608474">與 Gemini 分享目前分頁內容，以取得更相關的答案</translation>
 <translation id="3762232513783804601">專為 iPad 而設</translation>
 <translation id="3768725474733206671">重新開啟最近關閉的分頁</translation>
 <translation id="3779810277399252432">沒有互聯網連線。</translation>
@@ -984,6 +987,7 @@
 <translation id="4650125387981512669">以「<ph name="FIRST_RUN_ACCOUNT_NAME" />」的身分繼續</translation>
 <translation id="4651927776207937667">{count,plural, =1{1分鐘後隱藏}other{{count} 分鐘後隱藏}}</translation>
 <translation id="4652817563047461855">確保密碼安全、檢查密碼是否被盜用，並提供可確保網上安全的建議。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
+<translation id="4653053602672040238">開啟分頁分享功能</translation>
 <translation id="4658335131052370646">儲存</translation>
 <translation id="466307903888586355">你的機構不允許儲存檔案</translation>
 <translation id="4668929960204016307">，</translation>
@@ -1297,6 +1301,7 @@
 <translation id="5718049162805123412">您應立即變更這些密碼</translation>
 <translation id="5721040778297053709">將信用卡放在框內</translation>
 <translation id="572328651809341494">最近開啟的分頁</translation>
+<translation id="5724590854763964497">根據預設，當你開始新對話，系統就會共用你當前的分頁。共用分頁時，分頁內容和網址會傳送至 Google，但不會用於改善生成式 AI 模型。你可隨時變更此設定。</translation>
 <translation id="5724941645893276623">如要以無痕模式瀏覽網頁，請開啟新分頁</translation>
 <translation id="5728072125198221967">連結的 Google 服務</translation>
 <translation id="5728700505257787410">抱歉，登入您的帳戶時發生問題。</translation>
@@ -1964,6 +1969,7 @@
 <translation id="8059533439631660104">收起嗰個部分。</translation>
 <translation id="8061584726507121204">記錄</translation>
 <translation id="8064946459644399612">已套用「新分頁」偏好設定</translation>
+<translation id="8065556469005366939">分享分頁以取得更相關的答案</translation>
 <translation id="8069394452933076548">針對最近未使用的分頁，選擇何時要移至閒置分頁部分。</translation>
 <translation id="8073670137947914548">下載完畢</translation>
 <translation id="8076492880354921740">分頁</translation>
@@ -2132,6 +2138,7 @@
 <translation id="8660600697590740984">透過「智能鏡頭」複製的圖片</translation>
 <translation id="866266761389616183">糟糕！</translation>
 <translation id="8663764600409216912">您目前使用的密碼不容易讓人猜中</translation>
+<translation id="8664992138761940052">根據預設，當你開始新對話，系統就會共用你當前的分頁。共用分頁時，系統會將分頁內容和網址傳送給 Google。你可隨時變更此設定。</translation>
 <translation id="8668210798914567634">此網頁已儲存至您的閱讀清單。</translation>
 <translation id="8672642291731179042">翻譯網頁</translation>
 <translation id="8672733398999596205">全部啟用</translation>

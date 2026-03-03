@@ -167,6 +167,7 @@
 <translation id="1621067168122174824">ବ୍ୟାଟେରୀ ଚାର୍ଜ ଟେଷ୍ଟ ଚଲାନ୍ତୁ</translation>
 <translation id="1622402072367425417">ଗ୍ଲୋଇଂ ବବଲ</translation>
 <translation id="1626590945318984973">ସର୍ଟକଟ ଉପଲବ୍ଧ ନାହିଁ। ଫଙ୍କସନ ଏବଂ <ph name="META_KEY" /> କୀଗୁଡ଼ିକୁ ବ୍ୟବହାର ନକରି ଏକ ନୂଆ ସର୍ଟକଟ ଦବାନ୍ତୁ।</translation>
+<translation id="163774412591892664">ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟର ଆପଣଙ୍କ ଡିଭାଇସକୁ ଅକ୍ଷମ କରିଛନ୍ତି ଏବଂ ଏହାର ଲୋକେସନକୁ ଆକ୍ସେସ କରିପାରିବେ।</translation>
 <translation id="1639239467298939599">ଲୋଡ୍ ହେଉଛି</translation>
 <translation id="1641857168437328880">ଡକ୍ୟୁମେଣ୍ଟ ଫିଡର୍ (ଗୋଟିଏ-ପାର୍ଶ୍ୱ)</translation>
 <translation id="1642396894598555413">ବାଇସାଇକେଲଗୁଡ଼ିକ</translation>
@@ -1723,6 +1724,7 @@
 <translation id="8584654835905316966"><ph name="VERSION" />ଭର୍ସନରେ <ph name="DEVICE_NAME" /> ପାଇଁ ଫାର୍ମୱେର ଇନଷ୍ଟଲେସନ ସମ୍ପୂର୍ଣ୍ଣ କରିବାକୁ ଏହାକୁ ରିଷ୍ଟାର୍ଟ କରିବା ଆବଶ୍ୟକ। ଆପଣଙ୍କ କମ୍ପ୍ୟୁଟର ଅନେକ ଥର ରିବୁଟ ହୋଇପାରେ। ଏହି ଆଚରଣ ଆଶା କରାଯାଏ।</translation>
 <translation id="8593058461203131755">ମିଡିଆକୁ ବିରତ କରନ୍ତୁ</translation>
 <translation id="8620617069779373398">ରୋମିଂ ସ୍ଥିତି</translation>
+<translation id="8624524972189162859">ଆପଣଙ୍କ <ph name="DOMAIN_NAME" /> ଆଡମିନିଷ୍ଟ୍ରେଟର ଆପଣଙ୍କ ଡିଭାଇସକୁ ଅକ୍ଷମ କରିଛନ୍ତି ଏବଂ ଏହାର ଲୋକେସନକୁ ଆକ୍ସେସ କରିପାରିବେ।</translation>
 <translation id="8626489604350149811"><ph name="APN_NAME" /> ପାଇଁ ଅଧିକ ପଦକ୍ଷେପ</translation>
 <translation id="86356131183441916">ହାଲୁକା ବାଇଗଣୀ</translation>
 <translation id="8647595191512746911">ଅଡିଓ ଟ୍ରାନ୍ସକ୍ରିପସନ</translation>

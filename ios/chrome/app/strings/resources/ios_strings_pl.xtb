@@ -668,6 +668,7 @@
 <translation id="3476450923187944815">Uzyskaj dostęp do swoich haseł w innych aplikacjach.</translation>
 <translation id="3485558910355485767">Nowe okno incognito</translation>
 <translation id="3488501490964659223">Karty zostały zamknięte, a dane przeglądania usunięte. Nastąpiło wylogowanie</translation>
+<translation id="3490396108106323715">Udostępnij bieżącą kartę</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Dowiedz się więcej<ph name="END_LINK" /> o proponowanej treści</translation>
 <translation id="349446645805573740">Wybierz, gdzie zapisać plik „<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />”</translation>
 <translation id="3504377992102007712">Ustawienia</translation>
@@ -694,6 +695,7 @@
 <translation id="3565012355885596568">Nie udało się załadować obrazów</translation>
 <translation id="3565930036634619844">Karta. <ph name="TAB_INDEX" /> z <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3567168891086460374">Zapisz w inny sposób</translation>
+<translation id="3572503683475187385">Gdy rozpoczynasz nowy czat, bieżąca karta jest udostępniana Gemini. Gdy udostępniasz kartę Gemini, jej zawartość i adres URL są wysyłane do Google. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">Na Twoim koncie Google</translation>
 <translation id="3575234738189584619">Szukaj za pomocą Obiektywu</translation>
 <translation id="3575426792457739946">Ta lista zawiera wszystkie wczytane profile.</translation>
@@ -737,6 +739,7 @@
 <translation id="3751873026576444885">Zatrzymaj wyszukiwanie na ekranie za pomocą Obiektywu Google</translation>
 <translation id="3753408171347588045">Monitorowanie cen</translation>
 <translation id="3753618528540214374">Motyw turkusowy</translation>
+<translation id="3759491607478608474">Udostępnij Gemini zawartość bieżącej karty, aby otrzymywać trafniejsze odpowiedzi</translation>
 <translation id="3762232513783804601">Dla Twojego iPada</translation>
 <translation id="3768725474733206671">Otwórz ostatnio zamkniętą kartę</translation>
 <translation id="3779810277399252432">Brak połączenia z internetem.</translation>
@@ -984,6 +987,7 @@
 <translation id="4650125387981512669">Kontynuuj jako <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4651927776207937667">{count,plural, =1{Ukrywaj po minucie}few{Ukrywaj po {count} minutach}many{Ukrywaj po {count} minutach}other{Ukrywaj po {count} minuty}}</translation>
 <translation id="4652817563047461855">Upewnij się, że Twoje hasła są bezpieczne, dowiedz się, czy nie zostały przejęte, i poznaj porady, jak lepiej chronić się online. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
+<translation id="4653053602672040238">Włącz udostępnianie kart</translation>
 <translation id="4658335131052370646">Zapisz</translation>
 <translation id="466307903888586355">Zapisywanie plików zostało zablokowane przez Twoją organizację</translation>
 <translation id="4668929960204016307">,</translation>
@@ -1297,6 +1301,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="5718049162805123412">Należy je teraz zmienić</translation>
 <translation id="5721040778297053709">Umieść kartę kredytową w tej ramce</translation>
 <translation id="572328651809341494">Ostatnie karty</translation>
+<translation id="5724590854763964497">Gdy rozpoczynasz nowy czat, domyślnie udostępniana jest bieżąca karta. Gdy karty są udostępniane, ich zawartość i adresy URL są wysyłane do Google, ale nie będą używane do ulepszania modeli generatywnej AI. W każdej chwili możesz zmienić to ustawienie.</translation>
 <translation id="5724941645893276623">Aby przeglądać strony internetowe prywatnie, dodaj nową kartę</translation>
 <translation id="5728072125198221967">Połączone usługi Google</translation>
 <translation id="5728700505257787410">Niestety, wystąpił problem z zalogowaniem się na konto.</translation>
@@ -1964,6 +1969,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="8059533439631660104">Zwija sekcję.</translation>
 <translation id="8061584726507121204">Historia</translation>
 <translation id="8064946459644399612">Zastosowano ustawienia strony nowej karty</translation>
+<translation id="8065556469005366939">Udostępnij karty, aby otrzymywać trafniejsze odpowiedzi</translation>
 <translation id="8069394452933076548">Wybierz, kiedy nieużywane karty mają być przenoszone do sekcji kart nieaktywnych.</translation>
 <translation id="8073670137947914548">Pobieranie zakończone</translation>
 <translation id="8076492880354921740">Karty</translation>
@@ -2132,6 +2138,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="8660600697590740984">Wyszukaj skopiowany obraz za pomocą Obiektywu</translation>
 <translation id="866266761389616183">Kurza twarz!</translation>
 <translation id="8663764600409216912">Używasz haseł, które są trudne do odgadnięcia</translation>
+<translation id="8664992138761940052">Gdy rozpoczynasz nowy czat, domyślnie udostępniana jest bieżąca karta. Gdy karty są udostępniane, ich zawartość i adresy URL są wysyłane do Google. W każdej chwili możesz zmienić to ustawienie.</translation>
 <translation id="8668210798914567634">Ta strona została zapisana na Twojej liście Do przeczytania.</translation>
 <translation id="8672642291731179042">Tłumacz strony</translation>
 <translation id="8672733398999596205">Włącz wszystkie</translation>

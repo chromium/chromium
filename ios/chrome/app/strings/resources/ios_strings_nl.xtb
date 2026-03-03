@@ -668,6 +668,7 @@
 <translation id="3476450923187944815">Krijg toegang tot je wachtwoorden in andere apps.</translation>
 <translation id="3485558910355485767">Nieuw incognitovenster</translation>
 <translation id="3488501490964659223">Tabbladen zijn gesloten en browsegegevens zijn verwijderd. Je bent uitgelogd.</translation>
+<translation id="3490396108106323715">Huidig tabblad delen</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /> over voorgestelde content</translation>
 <translation id="349446645805573740">Kies waar je <ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" /> wilt opslaan</translation>
 <translation id="3504377992102007712">Instellingen</translation>
@@ -694,6 +695,7 @@
 <translation id="3565012355885596568">Kan afbeeldingen niet laden</translation>
 <translation id="3565930036634619844">Tabblad. <ph name="TAB_INDEX" /> van <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3567168891086460374">Op een andere manier opslaan</translation>
+<translation id="3572503683475187385">Het huidige tabblad wordt gedeeld met Gemini als je een nieuwe chat start. Als je een tabblad deelt met Gemini, worden de bijbehorende content en URL naar Google gestuurd. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">In je Google-account</translation>
 <translation id="3575234738189584619">Zoeken met Lens</translation>
 <translation id="3575426792457739946">Deze lijst bevat alle geladen profielen.</translation>
@@ -737,6 +739,7 @@
 <translation id="3751873026576444885">Zoeken op je scherm met Google Lens stoppen</translation>
 <translation id="3753408171347588045">Je volgt prijzen</translation>
 <translation id="3753618528540214374">Viridiaan thema</translation>
+<translation id="3759491607478608474">Deel de content van het huidige tabblad met Gemini om relevantere antwoorden te krijgen</translation>
 <translation id="3762232513783804601">Ontworpen voor je iPad</translation>
 <translation id="3768725474733206671">Laatst gesloten tabblad opnieuw openen</translation>
 <translation id="3779810277399252432">Geen internetverbinding.</translation>
@@ -984,6 +987,7 @@
 <translation id="4650125387981512669">Doorgaan als <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4651927776207937667">{count,plural, =1{Verbergen na 1 minuut}other{Verbergen na {count} minuten}}</translation>
 <translation id="4652817563047461855">Zorg dat je wachtwoorden veilig zijn, ga na of ze zijn gehackt en krijg advies om je online te beschermen. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
+<translation id="4653053602672040238">Tabblad delen aanzetten</translation>
 <translation id="4658335131052370646">Opslaan</translation>
 <translation id="466307903888586355">Bestanden opslaan wordt geblokkeerd door je organisatie</translation>
 <translation id="4668929960204016307">,</translation>
@@ -1297,6 +1301,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="5718049162805123412">Je moet deze nu wijzigen</translation>
 <translation id="5721040778297053709">Plaats de creditcard in dit kader</translation>
 <translation id="572328651809341494">Recente tabbladen</translation>
+<translation id="5724590854763964497">Je huidige tabblad wordt standaard gedeeld als je een nieuw gesprek start. Als tabbladen worden gedeeld, worden de bijbehorende content en URL's naar Google gestuurd. Ze worden niet gebruikt om generatieve AI-modellen te verbeteren. Je kunt deze instelling op elk moment aanpassen.</translation>
 <translation id="5724941645893276623">Voeg een nieuw tabblad toe als je privé wilt browsen</translation>
 <translation id="5728072125198221967">Gekoppelde Google-services</translation>
 <translation id="5728700505257787410">Er is een probleem opgetreden met het inloggen op je account.</translation>
@@ -1964,6 +1969,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="8059533439631660104">Hiermee wordt het gedeelte samengevouwen.</translation>
 <translation id="8061584726507121204">Geschiedenis</translation>
 <translation id="8064946459644399612">Je voorkeuren voor de pagina Nieuw tabblad toegepast</translation>
+<translation id="8065556469005366939">Krijg relevantere antwoorden door je tabbladen te delen</translation>
 <translation id="8069394452933076548">Kies wanneer tabbladen die je niet recent hebt gebruikt, naar het gedeelte voor inactieve tabbladen worden verplaatst.</translation>
 <translation id="8073670137947914548">Downloaden is voltooid</translation>
 <translation id="8076492880354921740">Tabbladen</translation>
@@ -2132,6 +2138,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="8660600697590740984">Afbeelding gekopieerd door Lens</translation>
 <translation id="866266761389616183">Helaas</translation>
 <translation id="8663764600409216912">Je gebruikt wachtwoorden die moeilijk te raden zijn</translation>
+<translation id="8664992138761940052">Je huidige tabblad wordt standaard gedeeld als je een nieuw gesprek start. Wanneer tabbladen worden gedeeld, worden de bijbehorende paginacontent en URL's naar Google gestuurd. Je kunt deze instelling op elk moment aanpassen.</translation>
 <translation id="8668210798914567634">Deze pagina is opgeslagen in je leeslijst.</translation>
 <translation id="8672642291731179042">Pagina's vertalen</translation>
 <translation id="8672733398999596205">Alles aanzetten</translation>

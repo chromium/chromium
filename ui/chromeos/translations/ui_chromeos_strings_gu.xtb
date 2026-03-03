@@ -100,6 +100,7 @@
 <translation id="1761091787730831947"><ph name="VM_NAME" /> સાથે શેર કરો</translation>
 <translation id="1773212559869067373">પ્રમાણીકરણ પ્રમાણપત્રને સ્થાનિક રૂપે નકારવામાં આવ્યું છે</translation>
 <translation id="1775381402323441512">વીડિયોની માહિતી</translation>
+<translation id="1787208118234640571">બેલ્જિયન</translation>
 <translation id="180035236176489073">આ ફાઇલો ઍક્સેસ કરવા માટે તમારું ઑનલાઇન હોવું જરૂરી છે.</translation>
 <translation id="1807938677607439181">બધી ફાઇલો</translation>
 <translation id="1810764548349082891">કોઈ પ્રીવ્યૂ ઉપલબ્ધ નથી</translation>
@@ -113,9 +114,11 @@
 <translation id="1853795129690976061">આ ફોલ્ડર Linux સાથે શેર થાય છે</translation>
 <translation id="1864756863218646478">ફાઇલ શોધી શકાઈ નથી.</translation>
 <translation id="1877377730633446520">આ લગભગ <ph name="REQUIRED_SPACE" /> વાપરશે. તમારી પાસે હાલમાં <ph name="FREE_SPACE" /> ઉપલબ્ધ છે.</translation>
+<translation id="18790189037341066">નૉર્વેજિયન</translation>
 <translation id="1884013283844450420"><ph name="NETWORK_COUNT" />માંથી નેટવર્ક <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, કનેક્ટ કરો</translation>
 <translation id="1920670151694390848">મલયાલમ લિપ્યંતર</translation>
 <translation id="1920798810075583923">તરબૂચ</translation>
+<translation id="1922341967219151064">યુક્રેનિયન</translation>
 <translation id="1924372192547904021"><ph name="DRIVE_NAME" />ને ફોર્મેટ કરી</translation>
 <translation id="1942765061641586207">છબી રિઝોલ્યુશન</translation>
 <translation id="1972984168337863910">ફાઇલોના પ્રતિસાદની પૅનલ મોટી કરો</translation>
@@ -124,15 +127,19 @@
 <translation id="2004942826429452291">ફાઇલો ક્લાઉડમાં અને આ Chromebookમાં સ્ટોર કરવામાં આવશે.</translation>
 <translation id="2009067268969781306">ડ્રાઇવને ફોર્મેટ કરવાથી તેના પર સ્ટોર કરેલો બધો ડેટા ડિલીટ થઈ જશે. આ છેલ્લા ફેરફારને રદ કરી શકાતો નથી.</translation>
 <translation id="2025955442973426285">ટિગ્રિન્યા</translation>
+<translation id="2029385776150020336">યુએસ એક્સટેન્ડેડ</translation>
 <translation id="2037845485764049925">રશિયન</translation>
 <translation id="2044023416777079300">મૉડેમ રજિસ્ટર કરેલું નથી</translation>
 <translation id="2046702855113914483">રામેન - જાપાનના એક પ્રકારના નૂડલ</translation>
+<translation id="2070397826966158357">એસ્ટોનિયન</translation>
 <translation id="2070909990982335904">ડૉટથી પ્રારંભ થતા નામો સિસ્ટમ માટે આરક્ષિત છે. કૃપા કરી બીજું નામ પસંદ કરો.</translation>
 <translation id="2079545284768500474">છેલ્લો ફેરફાર રદ કરો</translation>
 <translation id="2084108471225856927">ઉપકરણ સેટિંગ</translation>
 <translation id="2084809735218147718">સાંકેતિક ભાષામાં આભાર વ્યક્ત કરતી વ્યક્તિ</translation>
 <translation id="2088690981887365033">VPN નેટવર્ક</translation>
+<translation id="2096167581623663959">ડચ</translation>
 <translation id="209653272837065803">ફાઇલોને સિંક કરવાનું ચાલુ રાખવા માટે પર્યાપ્ત સ્ટોરેજ સ્પેસ નથી</translation>
+<translation id="2101288073618388449">મોંગોલિયન</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> આઇટમ ડિલીટ કરવામાં આવશે અને તમે તેમને રિસ્ટોર કરી શકશો નહીં.</translation>
 <translation id="2122305276694332719">છુપાવેલા નેટવર્ક સાથે ઑટોમૅટિક રીતે કનેક્ટ કરવાથી અન્ય લોકો તમારું ડિવાઇસ અને અન્ય નેટવર્ક સેટિંગ જોઈ શકે છે અને તે માટે સુઝાવ આપેલો નથી.</translation>
 <translation id="2125607626296734455">ખમેર</translation>
@@ -200,6 +207,7 @@
 <translation id="2587195714949534472"><ph name="FILE_NAME" />ને સિંક કરવાની તૈયારી કરી રહ્યાં છીએ...</translation>
 <translation id="2602810353103180630"><ph name="NETWORK_COUNT" />માંથી નેટવર્ક <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, સિગ્નલની પ્રબળતા <ph name="SIGNAL_STRENGTH" />%, તમારા વ્યવસ્થાપક દ્વારા બ્લૉક કરવામાં આવ્યું છે, વિગતો</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> વીડિયો</translation>
+<translation id="2619043364735935227">યુકે Dvorak</translation>
 <translation id="2620090360073999360">આ સમયે Google ડ્રાઇવ પર જઈ શકાતું નથી.</translation>
 <translation id="2621713457727696555">સુરક્ષિત</translation>
 <translation id="2638942478653899953">Google ડ્રાઇવ પર પહોંચી શકાયું નથી. કૃપા કરીને <ph name="BEGIN_LINK" />લૉગ આઉટ કરો<ph name="END_LINK" /> અને પાછા લૉગ ઇન કરો.</translation>
@@ -207,8 +215,12 @@
 <translation id="2653059201992392941">તમારા <ph name="RETRIES" /> પ્રયાસ બાકી છે.</translation>
 <translation id="2663066752008346276">બર્મીઝ/મ્યાનમાર, Myansan કીબોર્ડ સાથે</translation>
 <translation id="2664412712123763093">ફાઇલનું સ્થાન</translation>
+<translation id="2672394942808662069">કેનેડિયન બહુભાષીય</translation>
+<translation id="2707357721402813583">આઇરિશ</translation>
+<translation id="2708477391501452176">ફ્રેન્ચ BÉPO</translation>
 <translation id="2719020180254996569"><ph name="NETWORK_COUNT" />માંથી નેટવર્ક <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, વિગતો</translation>
 <translation id="2724954091494693138">ટર્કિશ, F-કીબોર્ડ સાથે</translation>
+<translation id="2728450421877450246">ફ્રેન્ચ</translation>
 <translation id="2732288874651063549"><ph name="VM_NAME" /> શેરિંગ મેનેજ કરો</translation>
 <translation id="2732839045120506979">વિયેતનામીઝ VNI</translation>
 <translation id="2735623501230989521">Parallels ડેસ્કટૉપને <ph name="FOLDER_NAME" /> ફોલ્ડરમાંની ફાઇલોને ઍક્સેસ કરવાની પરવાનગી આપો</translation>
@@ -216,16 +228,19 @@
 <translation id="2771816809568414714">ચીઝ</translation>
 <translation id="2802583107108007218">આ પ્રતિબંધો વિશે વધુ જાણો</translation>
 <translation id="2803375539583399270">PIN દાખલ કરો</translation>
+<translation id="2817444452774702982">જ્યોર્જિયન</translation>
 <translation id="2819519502129272135">ફાઇલ સિંક બંધ કરેલું છે</translation>
 <translation id="2820957248982571256">સ્કૅન કરી રહ્યાં છીએ…</translation>
 <translation id="2830077785865012357">ચાઇનીઝ ઝુયિન</translation>
 <translation id="2843806747483486897">ડિફૉલ્ટ બદલો...</translation>
 <translation id="2873951654529031587">ટ્રેશ</translation>
+<translation id="2887314858867008269">યુએસ Colemak</translation>
 <translation id="2887525882758501333">PDF દસ્તાવેજ</translation>
 <translation id="2888807692577297075">કોઈ આઇટમ્સ &lt;b&gt;"<ph name="SEARCH_STRING" />"&lt;/b&gt; થી મેળ ખાતી નથી</translation>
 <translation id="2894654529758326923">માહિતી</translation>
 <translation id="2904378509913846215">"<ph name="FILENAME" />" નામનું કોઈ ફોલ્ડર પહેલેથી અસ્તિત્વમાં છે. શું તમે તેને, તમે ખસેડી રહ્યાં છો તે ફોલ્ડર વડે બદલવા માગો છો?</translation>
 <translation id="290843123675549676">મરાઠી</translation>
+<translation id="2939595088421183401">સ્લોવેનિયન</translation>
 <translation id="2943503720238418293">વધુ ટૂંકા નામનો ઉપયોગ કરો</translation>
 <translation id="2949781154072577687"><ph name="DRIVE_NAME" />ને ફોર્મેટ કરી રહ્યાં છીએ…</translation>
 <translation id="2951236788251446349">જેલીફીશ</translation>
@@ -243,6 +258,7 @@
 <translation id="3067790092342515856">Windows ફાઇલો</translation>
 <translation id="3083975830683400843">Chromebits</translation>
 <translation id="3085752524577180175">SOCKS હોસ્ટ</translation>
+<translation id="3091469289665833668">રોમાનિયન</translation>
 <translation id="3104793765551262433"><ph name="NETWORK_COUNT" />માંથી <ph name="NETWORK_INDEX" /> નેટવર્ક, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, સિગ્નલની પ્રબળતા <ph name="SIGNAL_STRENGTH" />%, તમારા વ્યવસ્થાપક દ્વારા બ્લૉક કરવામાં આવ્યું છે, વિગતો</translation>
 <translation id="3113592018909187986">તમારો 1 પ્રયાસ બાકી છે. જ્યાં સુધી તમે નવો પિન સેટઅપ નહીં કરો, ત્યાં સુધી તમે આ નેટવર્કનો ઉપયોગ કરી શકશો નહીં.</translation>
 <translation id="3124404833828281817">વિચારમગ્ન વ્યક્તિ</translation>
@@ -261,6 +277,7 @@
 <translation id="3255159654094949700">અરબી</translation>
 <translation id="326396468955264502"><ph name="NUMBER_OF_FILES" /> ફાઇલ ખસેડી શકાઈ નથી કારણ કે તે એનક્રિપ્ટેડ છે.</translation>
 <translation id="3264582393905923483">સંદર્ભ</translation>
+<translation id="3269333278563769269">પોર્ટુગીઝ</translation>
 <translation id="3272909651715601089">"<ph name="PATH" />" ખોલી શક્યા નથી</translation>
 <translation id="3280431534455935878">તૈયારી કરી રહ્યાં છીએ</translation>
 <translation id="3280719573299097127">તમે કોઈ મીટર્ડ નેટવર્ક પર છો. ફાઇલ સિંકની પ્રક્રિયા થોભાવવામાં આવી છે.</translation>
@@ -282,6 +299,8 @@
 <translation id="3408072735282270043"><ph name="NETWORK_NAME" /> સક્રિય કરો</translation>
 <translation id="3408236822532681288">જર્મન (જર્મની), નીઓ 2 કીબોર્ડ સાથે</translation>
 <translation id="3414856743105198592">દૂર કરવા યોગ્ય મીડિયાને ફોર્મેટ કરવાથી તમામ ડેટા ભૂંસાઈ જાય છે. શું તમે ચાલુ રાખવા ઈચ્છો છો?</translation>
+<translation id="3430687179542180192">કેનેડિયન ફ્રેન્ચ</translation>
+<translation id="3436358745602312794">ટર્કિશ-F</translation>
 <translation id="3437801641691368414">બનાવ્યાનો સમય</translation>
 <translation id="343907260260897561">ઝટપટ કૅમેરા</translation>
 <translation id="3455931012307786678">એસ્ટોનિયન</translation>
@@ -299,9 +318,11 @@
 <translation id="3553048479571901246"><ph name="APP_NAME" /> વડે ફાઇલો ખોલવા માટે, પહેલા તેમને Windowsના ફાઇલ ફોલ્ડરમાં કૉપિ કરો.</translation>
 <translation id="3556731189587832921">અંગ્રેજી (યુએસ), આંતરરાષ્ટ્રીય PC કીબોર્ડ સાથે</translation>
 <translation id="3557414470514932909"><ph name="FILE_NAME" /> ટ્રેશમાં ખસેડી રહ્યાં છીએ</translation>
+<translation id="3560848236447534728">આર્મેનિયન ફોનેટિક</translation>
 <translation id="3567221313191587603">ફાઇલ પસંદ કરો અને તમારી ફાઇલોને ઑફલાઇન ઍક્સેસ કરવા માટે, <ph name="OFFLINE_CHECKBOX_NAME" />ને ટૉગલ કરવાની સુવિધા ચાલુ કરો.</translation>
 <translation id="3587482841069643663">બધા</translation>
 <translation id="3592251141500063301"><ph name="FILE_NAME" />ને ઑફલાઇન ઉપલબ્ધ કરાવી શકાતી નથી</translation>
+<translation id="3599083260824681324">જાપાનીઝ</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
 <translation id="3616113530831147358">ઑડિઓ</translation>
 <translation id="3619115746895587757">કૅપુચિનો</translation>
@@ -329,14 +350,17 @@
 <translation id="3811494700605067549">1 ફાઇલ પસંદ કરી</translation>
 <translation id="3817579325494460411">પ્રદાન કરેલ નથી</translation>
 <translation id="3819448694985509187">ખોટો પિન. તમારો 1 પ્રયાસ બાકી છે.</translation>
+<translation id="3826081788392587762">ફૅરોએસે</translation>
 <translation id="3830674330436234648">કોઇ પ્લેબેક ઉપલબ્ધ નથી.</translation>
 <translation id="3839045880592694915">તમારા મોબાઇલ ઑપરેટર દ્વારા તમારા મૉડેમને કનેક્ટ કરવાની મંજૂરી નથી. વધુ વિગતો માટે તમારા મોબાઇલ ઑપરેટરનો સંપર્ક કરો.</translation>
 <translation id="385051799172605136">પાછળ</translation>
 <translation id="3858860766373142691">નામ</translation>
+<translation id="3874963587970919929">યુએસ</translation>
 <translation id="3899991606604168269">ફ્રેન્ચ (કેનેડા), બહુભાષીય કીબોર્ડ સાથે</translation>
 <translation id="3901991538546252627"><ph name="NAME" /> થી કનેક્ટ કરી રહ્યું છે</translation>
 <translation id="3906232975181435906">મોબાઇલ પ્રોફાઇલ ઇન્સ્ટૉલ કરી રહ્યાં છીએ, <ph name="NETWORK_NAME" />ના <ph name="NETWORK_COUNT" />માંથી <ph name="NETWORK_INDEX" /> નેટવર્ક</translation>
 <translation id="3924145049010392604">Meta</translation>
+<translation id="3934861075411093298">જર્મન Neo 2</translation>
 <translation id="3943857333388298514">પેસ્ટ કરો</translation>
 <translation id="3950820424414687140">સાઇન ઇન</translation>
 <translation id="3952872973865944257">તેલુગુ ફોનેટિક</translation>
@@ -349,9 +373,11 @@
 <translation id="4002066346123236978">શીર્ષક</translation>
 <translation id="4017788180641807848">અંગ્રેજી (યુએસ), વર્કમેન કીબોર્ડ સાથે</translation>
 <translation id="4040753847560036377">ખોટો PUK</translation>
+<translation id="4043426908238742491">યુકે</translation>
 <translation id="4057991113334098539">સક્રિય કરી રહ્યું છે</translation>
 <translation id="4092890906744441904">આઇરિશ</translation>
 <translation id="4101601646343868113">તમારા મોબાઇલ નેટવર્કમાં સાઇન ઇન કરો અને કન્ફર્મ કરો કે તમારો મોબાઇલ ડેટા પ્લાન સક્રિય છે</translation>
+<translation id="4103534645423593971">લાતવિયન</translation>
 <translation id="4124731372776320263">1 Drive ફાઇલ સિંક કરી રહ્યાં છીએ</translation>
 <translation id="4124935795427217608">યુનિકોર્ન - એક કાલ્પનિક પાંખવાળો ઘોડો</translation>
 <translation id="4131235941541910880">તમને જરૂર ન હોય તેવી આઇટમ ટ્રેશમાં ખસેડો</translation>
@@ -445,9 +471,12 @@
 <translation id="4789067489790477934">Parallels ડેસ્કટૉપને તમારી Google Driveમાંની ફાઇલોને ઍક્સેસ કરવાની પરવાનગી આપો. ફેરફારો તમારા બીજા ડિવાઇસ સાથે સિંક થશે.</translation>
 <translation id="4790766916287588578">હિન્દી, ઇનસ્ક્રિપ્ટ કીબોર્ડ સાથે</translation>
 <translation id="4801956050125744859">બંનેને રાખો</translation>
+<translation id="4802185962157240723">હંગેરિયન</translation>
 <translation id="4804827417948292437">એવોકેડો</translation>
 <translation id="4805966553127040832"><ph name="COUNT" /> આઇટમ રિસ્ટોર કરી રહ્યાં છીએ</translation>
+<translation id="4823376603577118337">બ્રાઝિલિયન</translation>
 <translation id="4826849268470072925">તમિળ ITRANS</translation>
+<translation id="4838707632718400841">ડેનિશ</translation>
 <translation id="4843566743023903107">Chromebases</translation>
 <translation id="4850886885716139402">જુઓ</translation>
 <translation id="4862885579661885411">ફાઇલોના સેટિંગ</translation>
@@ -477,6 +506,7 @@
 <translation id="5010406651457630570">કમ્પ્યુટર</translation>
 <translation id="5011233892417813670">Chromebook</translation>
 <translation id="5024856940085636730">ઑપરેશનમાં અપેક્ષિત કરતાં વધુ સમય લાગી રહ્યો છે. શું તમે તેને નિરસ્ત કરવા માગો છો?</translation>
+<translation id="5036141350290856713">રશિયન ફોનેટિક</translation>
 <translation id="5036159836254554629">Parallels ડેસ્કટૉપ સાથે શેર કરવાને મેનેજ કરો</translation>
 <translation id="5038625366300922036">વધુ જુઓ...</translation>
 <translation id="5044852990838351217">આર્મેનિયન</translation>
@@ -500,6 +530,7 @@
        ઉપયોગમાં રહેલા તમારા ડિવાઇસને દૂર કરવાથી ડેટાનું નુકસાન થઈ શકે છે. ક્રિયા પૂર્ણ થાય ત્યાં સુધી કૃપા કરીને રાહ જુઓ, તે પછી Files ઍપનો ઉપયોગ કરીને ડિવાઇસને કાઢી નાખો.</translation>
 <translation id="5163869187418756376">શેરિંગ નિષ્ફળ થયું. તમારું કનેક્શન તપાસો અને થોડીવાર પછી ફરી પ્રયાસ કરો.</translation>
 <translation id="5177526793333269655">થંબનેલ દૃશ્ય</translation>
+<translation id="5178355323709925287">બલ્ગેરિયન ફોનેટિક</translation>
 <translation id="5181896909298187506">તાજેતરની કોઈ ફાઇલ નથી</translation>
 <translation id="5194713942430106590">કૉલમને ચઢતા ક્રમમાં સૉર્ટ કરવા માટે ક્લિક કરો.</translation>
 <translation id="5211614973734216083">ફૅરોઇઝ</translation>
@@ -547,15 +578,18 @@
 <translation id="5534520101572674276">કદની ગણના કરી રહ્યું છે</translation>
 <translation id="554153475311314364">ગ્રીક લિપ્યંતર</translation>
 <translation id="5554171655917412781"><ph name="SELECTED_FOLDERS_COUNT" /> ફોલ્ડર પસંદ કર્યા</translation>
+<translation id="5568003358606822240">ચેક QWERTY</translation>
 <translation id="5580591966435005537">વર્ચ્યુઅલ મશીન</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5583664733673201137">વિરામચિહ્નની પહોળાઈ પૂર્ણ છે</translation>
 <translation id="5596627076506792578">વધુ વિકલ્પો</translation>
 <translation id="5602622065581044566">બલ્ગેરિયન, ફોનેટિક કીબોર્ડ સાથે</translation>
+<translation id="5604409170937514933">સ્વીડિશ</translation>
 <translation id="560739212255190568">તમારા ઍડમિને નીચેના પ્રૉક્સીને લાગુ કરવા ઉપરાંત પ્રૉક્સી ઓવરરાઇડના નિયમો સેટ કર્યા છે</translation>
 <translation id="5618330573454123917">આ ફાઇલ Macintosh સૉફ્ટવેરનો ઉપયોગ કરતા કમ્પ્યુટર માટે ડિઝાઇન કરવામાં આવી છે. ChromeOS પર ચાલતા તમારા ડિવાઇસ સાથે આ સુસંગત નથી. ChromeOS પર ફાઇલો ખોલવા વિશે <ph name="BEGIN_LINK_HELP" />વધુ જાણો<ph name="END_LINK_HELP" />.</translation>
 <translation id="5625294776298156701">તમિળ, તમિળ99 કીબોર્ડ સાથે</translation>
 <translation id="5633226425545095130">આ આઇટમ ખસેડવાથી, શેર કરેલું '<ph name="DESTINATION_NAME" />' નામનું ફોલ્ડર જોઈ શકતા પ્રત્યેક વ્યક્તિ સાથે તેને શેર કરશે.</translation>
+<translation id="5646106346566990960">ટર્કિશ</translation>
 <translation id="5649768706273821470">સાંભળો</translation>
 <translation id="5650895901941743674">તમારું APN કન્ફિગ્યુરેશન ચેક કરો</translation>
 <translation id="5669691691057771421">નવો PIN દાખલ કરો</translation>
@@ -565,9 +599,11 @@
 <translation id="5691596662111998220">ઊફ્ફ, <ph name="FILE_NAME" /> હવે અસ્તિત્વમાં નથી.</translation>
 <translation id="5698411045597658393"><ph name="NETWORK_NAME" />, અનલૉક કરો</translation>
 <translation id="5700087501958648444">ઑડિઓ માહિતી</translation>
+<translation id="5718459114973371204">મેસેડોનિયન</translation>
 <translation id="5720028165859493293"><ph name="FILE_NAME" /> ટ્રેશમાં ખસેડી</translation>
 <translation id="5724172041621205163">થાઇ, Pattachote કીબોર્ડ સાથે</translation>
 <translation id="57383366388012121">ગયો મહિનો</translation>
+<translation id="5744221903031815187">સ્વિસ</translation>
 <translation id="575175778971367197">અત્યારે આ ફાઇલ સિંક કરી શકાતી નથી</translation>
 <translation id="5760252553414789727"><ph name="SELECTED_FILES_COUNT" /> આઇટમ પસંદ કરી</translation>
 <translation id="5763377084591234761">જર્મન (સ્વિટ્ઝર્લૅન્ડ)</translation>
@@ -597,8 +633,10 @@
 <translation id="5948255720516436063"><ph name="NETWORK_COUNT" />માંથી <ph name="NETWORK_INDEX" /> નેટવર્ક, <ph name="NETWORK_NAME" />, ડિવાઇસનું સેટઅપ કર્યા પછી સક્રિય કરો</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> આઇટમ</translation>
 <translation id="5957366693331451795">Chromeboxes</translation>
+<translation id="5959163675722155317">યુએસ આંતરરાષ્ટ્રીય</translation>
 <translation id="5982621672636444458">સૉર્ટ કરવા માટેના વિકલ્પો</translation>
 <translation id="6011074160056912900">ઇથરનેટ નેટવર્ક</translation>
+<translation id="6023337265947005432">ચેક</translation>
 <translation id="603895874132768835">જ્યાં સુધી તમે નવો પિન સેટઅપ નહીં કરો, ત્યાં સુધી તમે આ નેટવર્કનો ઉપયોગ કરી શકશો નહીં</translation>
 <translation id="6040143037577758943">બંધ કરો</translation>
 <translation id="6055907707645252013"><ph name="NETWORK_TYPE" /> નેટવર્ક, કનેક્ટ કરેલું નથી</translation>
@@ -615,6 +653,7 @@
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, નેટવર્ક નથી</translation>
 <translation id="6146563240635539929">વીડિયો</translation>
 <translation id="6150853954427645995">આ ફાઇલને ઑફલાઇન ઉપયોગ માટે સાચવવા, પાછા ઓનલાઇન થાઓ, ફાઇલને રાઇટ-ક્લિક કરો અને <ph name="OFFLINE_CHECKBOX_NAME" /> વિકલ્પ પસંદ કરો.</translation>
+<translation id="6162247388574239985">લિથુઆનિયન</translation>
 <translation id="6164412158936057769">પતંગિયાઓ</translation>
 <translation id="6165508094623778733">વધુ જાણો</translation>
 <translation id="6170470584681422115">સેન્ડવિચ</translation>
@@ -624,6 +663,7 @@
 <translation id="6198252989419008588">PIN બદલો</translation>
 <translation id="6199801702437275229">સ્થાન માહિતી માટે રાહ જોઈ રહ્યું છે...</translation>
 <translation id="6205710420833115353">કેટલાક ઑપરેશન્સમાં અપેક્ષિત કરતાં વધુ સમય લાગી રહ્યો છે. શું તમે તેમને નિરસ્ત કરવા માગો છો?</translation>
+<translation id="6214593504928642973">સર્બિયન</translation>
 <translation id="6220423280121890987">પંજાબી</translation>
 <translation id="6224240818060029162">ડેનિશ</translation>
 <translation id="6224253798271602650"><ph name="DRIVE_NAME" />ને ફોર્મેટ કરો</translation>
@@ -650,17 +690,22 @@
 <translation id="6394388407447716302">ફક્ત વાંચવા માટે</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> આઇટમ</translation>
 <translation id="6407769893376380348"><ph name="FILE_NAME" /> ખસેડી શકાયું નથી કારણ કે તે એન્ક્રિપ્ટેડ છે.</translation>
+<translation id="6417922483715629770">જર્મન</translation>
+<translation id="6421174876526901486">હીબ્રુ</translation>
 <translation id="642282551015776456">આ નામનો ઉપયોગ ફોલ્ડર નામની કોઈ ફાઇલ તરીકે થઈ શકશે નહીં</translation>
 <translation id="6423031066725912715">વિયેતનામીઝ, TCVN કીબોર્ડ સાથે</translation>
 <translation id="6430271654280079150">તમારો 1 પ્રયાસ બાકી છે.</translation>
 <translation id="643243556292470964">ડિલીટ કરેલી ફાઇલો હવે ટ્રેશમાં ખસેડવામાં આવી છે</translation>
 <translation id="6438480100790416671">સ્ટોરેજ સ્પેસ ચેક કરી રહ્યું છે…</translation>
 <translation id="6451527188465304418">તમારી સંસ્થાની સુરક્ષા પૉલિસીઓના પાલન સામે ફાઇલ ચેક કરી રહ્યાં છીએ...</translation>
+<translation id="6480474281747138552">યુએસ પ્રોગ્રામર Dvorak</translation>
+<translation id="6483241221370343062">બહેતર બનાવો</translation>
 <translation id="6485131920355264772">સ્થાન માહિતી પુનર્પ્રાપ્ત કરવામાં નિષ્ફળ</translation>
 <translation id="6495925982925244349"><ph name="NETWORK_COUNT" />માંથી નેટવર્ક <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, સિગ્નલની સશક્તતા <ph name="SIGNAL_STRENGTH" />%, તમારા વ્યવસ્થાપક દ્વારા મેનેજ કરવામાં આવે છે, વિગતો</translation>
 <translation id="649877868557234318"><ph name="FILE_NAME" />ને <ph name="FOLDER_NAME" />માં એક્સટ્રેક્ટ કરી રહ્યાં છીએ</translation>
 <translation id="6499681088828539489">શેર કરેલ નેટવર્ક માટે પ્રૉક્સીને મંજૂરી ન આપો</translation>
 <translation id="6503285896705205014">ઍડમિનિસ્ટ્રેટર પૉલિસી અનુસાર <ph name="COUNT" /> ફાઇલ કૉપિ કરવાનું બ્લૉક કરેલું છે</translation>
+<translation id="652312300422421604">રશિયન</translation>
 <translation id="6528513914570774834">આ ઉપકરણના અન્ય વપરાશકર્તાઓને આ નેટવર્ક વાપરવાની મંજૂરી આપો</translation>
 <translation id="6549689063733911810">તાજેતરનું</translation>
 <translation id="6558280019477628686">એક ભૂલ આવી. અમુક આઇટમ કદાચ ડિલીટ કરી શકાઈ નથી.</translation>
@@ -675,6 +720,7 @@
 <translation id="6650726141019353908">ગુલાબી પતંગિયું</translation>
 <translation id="6657585470893396449">પાસવર્ડ</translation>
 <translation id="6658865850469097484">30 દિવસ કરતાં વધુ દિવસથી ટ્રેશમાં રહેલી ફાઇલોને ઑટોમૅટિક રીતે ડિલીટ કરવામાં આવશે.</translation>
+<translation id="6660283757324568684">સ્વિસ ફ્રેંચ</translation>
 <translation id="6673674183150363784">ફ્રેન્ચ (ફ્રાન્સ), Bépo કીબોર્ડ સાથે</translation>
 <translation id="670380500182402678">બધી બદલો</translation>
 <translation id="6710022688720561421">રોબોટ</translation>
@@ -698,6 +744,7 @@
 <translation id="6861394552169064235">ફારસી</translation>
 <translation id="6862635236584086457">આ ફોલ્ડરમાં સાચવેલી તમામ ફાઇલોનું ઑટોમૅટિક રીતે ઑનલાઇન બૅકઅપ લેવાય છે</translation>
 <translation id="6864328437977279120">સંસ્કૃત</translation>
+<translation id="6870343452066868538">લેટિન અમેરિકન</translation>
 <translation id="6874758081814639712">તાઈ ચી કરી રહેલી વ્યક્તિ</translation>
 <translation id="6876155724392614295">બાઇક</translation>
 <translation id="6878261347041253038">દેવનાગરી કીબોર્ડ (ધ્વન્યાત્મક)</translation>
@@ -709,6 +756,7 @@
 <translation id="6935521024859866267">ઊલટું</translation>
 <translation id="6943836128787782965">HTTP નિષ્ફળ ગયું</translation>
 <translation id="6949408524333579394">સર્બિયન લિપ્યંતર</translation>
+<translation id="6950304227892369683">બેલારુશિયન</translation>
 <translation id="69548399407432279">ગયા વર્ષના</translation>
 <translation id="6960565108681981554">સક્રિય કરેલું નથી. તમારા મોબાઇલ ઑપરેટરનો સંપર્ક કરો.</translation>
 <translation id="696203921837389374">મોબાઇલ ડેટા પર સિંક કરવાનું ચાલુ કરો</translation>
@@ -717,6 +765,7 @@
 <translation id="6973630695168034713">ફોલ્ડર્સ</translation>
 <translation id="6976795442547527108">સિંહ</translation>
 <translation id="6979158407327259162">Google Drive</translation>
+<translation id="6987318887406266229">ગ્રીક</translation>
 <translation id="6989942356279143254">સ્વીડિશ</translation>
 <translation id="6990081529015358884">તમારી પાસે સ્થાન નથી</translation>
 <translation id="6993826899923627728">આ આઇટમ તમારા ટ્રેશમાં છે</translation>
@@ -731,6 +780,7 @@
 <translation id="7048024426273850086"><ph name="NETWORK_COUNT" />માંથી નેટવર્ક <ph name="NETWORK_INDEX" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, સિગ્નલની સશક્તતા <ph name="SIGNAL_STRENGTH" />%, ફોનની બૅટરી <ph name="BATTERY_STATUS" />%, કનેક્ટ કરો</translation>
 <translation id="7070804685954057874">પ્રત્યક્ષ ઇનપુટ</translation>
 <translation id="7075931588889865715">થાઇ, TIS 820-2531 કીબોર્ડ સાથે</translation>
+<translation id="7080126840087683316">સ્પેનિશ</translation>
 <translation id="708278670402572152">સ્કૅનિંગ ચાલુ કરવા માટે ડિસ્કનેક્ટ કરો</translation>
 <translation id="7086590977277044826">તમિળ, ઇનસ્ક્રિપ્ટ કીબોર્ડ સાથે</translation>
 <translation id="7088615885725309056">જૂનું</translation>
@@ -741,12 +791,15 @@
 <translation id="7135561821015524160">કન્નડ ફોનેટિક</translation>
 <translation id="714034171374937760">Chromebase</translation>
 <translation id="7162080671816799010">સર્વરની ઓળખના પ્રમાણીકરણને માન્ય કરવા માટે 'વિષયના વૈકલ્પિક નામનો મેળ' અથવા 'ડોમેન સફિક્સનો મેળ' ખૂટે છે</translation>
+<translation id="7163653800467169701">ઇટાલિયન</translation>
 <translation id="7165320105431587207">નેટવર્ક ગોઠવવામાં નિષ્ફળ</translation>
 <translation id="7170041865419449892">પહોંચ બહાર</translation>
 <translation id="7179579940054351344"><ph name="NON_RESTRICTED_DESTINATIONS" /> સિવાયની બધી વેબસાઇટ અને URLs દ્વારા ફાઇલનો ઍક્સેસ</translation>
 <translation id="7180611975245234373">રિફ્રેશ કરો</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">ફાઇલના રૂપમાં સાચવો</translation>
+<translation id="7192364647705823015">ક્રોએશિયન</translation>
+<translation id="7224162581405244205">આઇસલેન્ડિક</translation>
 <translation id="7229570126336867161">EVDOની જરૂર છે</translation>
 <translation id="7230898482850090046">તમારા ઍડમિનિસ્ટ્રેટરે તમને "સિમ કાર્ડ લૉક કરો" સેટિંગ બંધ કરવાની વિનંતી કરી છે</translation>
 <translation id="7238097264433196391">ડ્રાઇવનું નામ</translation>
@@ -773,6 +826,7 @@
 <translation id="7417453074306512035">ઇથિઓપિક કીબોર્ડ</translation>
 <translation id="7417705661718309329">Google નકશો</translation>
 <translation id="7419668828140929293">"<ph name="FILENAME" />" રિસ્ટોર કરી રહ્યાં છીએ</translation>
+<translation id="7435577899926900307">યુએસ Dvorak</translation>
 <translation id="7458955835361612701">તાજેતરની કોઈ છબી નથી</translation>
 <translation id="7469894403370665791">આ નેટવર્કમાં ઑટોમૅટિક રીતે કનેક્ટ કરો</translation>
 <translation id="7486315294984620427">ફાઇલોને Parallels Desktopમાં મૂકવા માટે, ફાઇલને Windows ફાઇલોમાં ખસેડવી આવશ્યક છે.</translation>
@@ -811,8 +865,10 @@
 <translation id="7724603315864178912">કાપો</translation>
 <translation id="7732111077498238432">નેટવર્ક પૉલિસી દ્વારા નિયંત્રિત છે</translation>
 <translation id="7736003208887389532">શું આ ફાઇલો કાયમ માટે ડિલીટ કરીએ?</translation>
+<translation id="7737249716250841853">હંગેરિયન QWERTY</translation>
 <translation id="7740287852186792672">શોધ પરિણામો</translation>
 <translation id="7748626145866214022">ક્રિયા બાર પર વધુ વિકલ્પો ઉપલબ્ધ છે. ક્રિયા બાર પર ફોકસ કરવા માટે Alt + A દબાવો.</translation>
+<translation id="7758806833942383902">કતલાન</translation>
 <translation id="7760449188139285140">ચાઇનીઝ વુબી</translation>
 <translation id="7765158879357617694">સ્થાન</translation>
 <translation id="7774365994322694683">પક્ષી</translation>
@@ -822,6 +878,7 @@
 <translation id="7794058097940213561">ઉપકરણને ફોર્મેટ કરો</translation>
 <translation id="7799329977874311193">HTML દસ્તાવેજ</translation>
 <translation id="7801354353640549019">Chromebooks</translation>
+<translation id="7804303447453320114">કઝાક</translation>
 <translation id="7805768142964895445">સ્થિતિ</translation>
 <translation id="7806708061868529807">હીબ્રુ</translation>
 <translation id="78104721049218340">થાઇ, Kedmanee કીબોર્ડ સાથે</translation>
@@ -831,9 +888,11 @@
 <translation id="7839804798877833423">આ ફાઇલોને મેળવવામાં લગભગ <ph name="FILE_SIZE" /> મોબાઇલ ડેટાનો ઉપયોગ થશે.</translation>
 <translation id="7846076177841592234">પસંદગી રદ કરો</translation>
 <translation id="7857117644404132472">અપવાદ ઉમેરો</translation>
+<translation id="7859924767769322048">કોરિયન</translation>
 <translation id="7868774406711971383">પોલિશ</translation>
 <translation id="7874321682039004450">ફિલિપિનો</translation>
 <translation id="78946041517601018">શેર કરેલી ડ્રાઇવ</translation>
+<translation id="7901567919203965902">US Workman આંતરરાષ્ટ્રીય</translation>
 <translation id="7903984238293908205">કટકાન</translation>
 <translation id="7908793776359722643">વિભાગને ફૉર્મેટ કરવાથી તેમાં સ્ટોર કરેલો બધો ડેટા કાઢી નાખવામાં આવશે. આ ક્રિયા રદ કરી શકાતી નથી.</translation>
 <translation id="7911118814695487383">Linux</translation>
@@ -895,6 +954,7 @@
 <translation id="8336153091935557858">ગઈ કાલે <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">સમાન નામની ફાઇલ અથવા ડિરેક્ટરી પહેલાથી જ અસ્તિત્વમાં છે.</translation>
 <translation id="83651606385705612"><ph name="VM_NAME" />ને <ph name="FOLDER_NAME" /> ફોલ્ડરમાંની ફાઇલોને ઍક્સેસ કરવાની પરવાનગી આપો</translation>
+<translation id="837225070446042993">US Workman</translation>
 <translation id="8372369524088641025">ખરાબ WEP કી</translation>
 <translation id="8372852072747894550">ગ્રીક</translation>
 <translation id="8377269993083688872">ઇમેઇલ લેઆઉટ</translation>
@@ -923,6 +983,7 @@
 <translation id="8512483403832814140">ગમે ત્યારે</translation>
 <translation id="853494022971700746">ફ્રેન્ચ (ફ્રાન્સ)</translation>
 <translation id="8540608333167683902"><ph name="NETWORK_COUNT" />માંથી નેટવર્ક <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, સિગ્નલની સશક્તતા <ph name="SIGNAL_STRENGTH" />%, વિગતો</translation>
+<translation id="8543218582821188600">કેનેડિયન અંગ્રેજી</translation>
 <translation id="8545476925160229291">અંગ્રેજી (યુએસ)</translation>
 <translation id="854655314928502177">વેબ પ્રૉક્સીની ઑટો ખોજ URL:</translation>
 <translation id="8547747809824590510">તમારા ઍડમિન દ્વારા પ્રૉક્સી ઓવરરાઇડના નિયમો સેટ કરવામાં આવ્યા છે</translation>
@@ -937,6 +998,7 @@
 <translation id="8600173386174225982">ફાઇલ સૂચિને થંબનેલ દૃશ્યમાં બદલી છે.</translation>
 <translation id="8601932370724196034">Crostini છબી ફાઇલ</translation>
 <translation id="8609695766746872526">આઇસલેન્ડિક</translation>
+<translation id="86185366481240448">સ્લોવૅક</translation>
 <translation id="8630384863424041081">તમારો સિમ કાર્ડ પિન અથવા તમારા મોબાઇલ ઑપરેટર દ્વારા પ્રદાન કરેલો ડિફૉલ્ટ પિન દાખલ કરો. સપોર્ટ માટે તમારા મોબાઇલ ઑપરેટરનો સંપર્ક કરો.</translation>
 <translation id="863903787380594467">ખોટો પિન. તમારા <ph name="RETRIES" /> પ્રયાસ બાકી છે.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - પોર્ટ</translation>
@@ -965,6 +1027,7 @@
 <translation id="8873014196523807561">આ આઇટમને રિસ્ટોર કરવા માટે, તેમને કોઈ નવા ફોલ્ડર પર ખેંચો. આ આઇટમમાંથી અમુક આઇટમ માટેના ઑરિજિનલ ફોલ્ડર ડિલીટ કરવામાં આવ્યા છે.</translation>
 <translation id="8874184842967597500">કનેક્ટ નથી</translation>
 <translation id="8876368061475701452">કતારમાં</translation>
+<translation id="8902208737522818687">US આંતરરાષ્ટ્રીય (PC)</translation>
 <translation id="8903931173357132290">સ્નાતક</translation>
 <translation id="8912078710089354287">પૂંછડી હલાવી રહેલો કૂતરો</translation>
 <translation id="8949925099261528566">કનેક્ટ કર્યું, કોઈ ઇન્ટરનેટ નથી</translation>
@@ -1007,11 +1070,13 @@
 <translation id="931652069802536959">નેટવર્ક પૉલિસી દ્વારા બ્લૉક કરેલું છે</translation>
 <translation id="938470336146445890">કૃપા કરીને એક વપરાશકર્તા  પ્રમાણપત્ર ઇન્સ્ટોલ કરો.</translation>
 <translation id="939736085109172342">નવું ફોલ્ડર</translation>
+<translation id="941005944931359847">બલ્ગેરિયન</translation>
 <translation id="943972244133411984">ફેરફાર કરનાર</translation>
 <translation id="945522503751344254">પ્રતિસાદ મોકલો</translation>
 <translation id="947144732524271678"><ph name="FROM_ENTRY_NAME" /> થી <ph name="TO_ENTRY_NAME" /> સુધીની <ph name="ENTRY_COUNT" /> એન્ટ્રીની શ્રેણી પસંદ કરી.</translation>
 <translation id="954194396377670556">ઍડમિનિસ્ટ્રેટર પૉલિસી આમ કરતા અટકાવે છે:</translation>
 <translation id="965477715979482472">અંગ્રેજી (દક્ષિણ આફ્રિકા)</translation>
+<translation id="97351090361893336">ફિનિશ</translation>
 <translation id="976666271385981812"><ph name="NUMBER_OF_ITEMS" /> આઇટમ ટ્રેશમાં ખસેડી રહ્યાં છીએ</translation>
 <translation id="981121421437150478">ઑફલાઇન</translation>
 <translation id="988685240266037636">"<ph name="FILE_NAME" />" નામની ફાઇલ પહેલાંથી અસ્તિત્વમાં છે. શું તમે તેને બદલવા માગો છો?</translation>

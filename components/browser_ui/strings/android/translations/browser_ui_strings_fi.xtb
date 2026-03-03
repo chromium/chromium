@@ -66,7 +66,6 @@
 <translation id="1677097821151855053">Evästeillä ja muulla sivustodatalla tunnistetaan sinut, jotta voit esimerkiksi kirjautua sisään tai nähdä personoituja mainoksia. Jos haluat ylläpitää kaikkien sivustojen evästeitä, siirry <ph name="BEGIN_LINK" />Asetuksiin<ph name="END_LINK" />.</translation>
 <translation id="1679305402657584804">Sivustot voivat pyytää lupaa käyttää NFC-laitteita</translation>
 <translation id="1686785653877010442">Sivustoilta lähetetään yleensä ilmoituksia esimerkiksi tuoreista uutisista tai chat-viesteistä.</translation>
-<translation id="169515064810179024">Estä sivustoja käyttämästä liiketunnistimien lukemia</translation>
 <translation id="1703666494654169921">Älä salli sivustojen käyttää virtuaalitodellisuuslaitteita tai ‑dataa</translation>
 <translation id="1704230497453185209">Älä salli sivustojen toistaa ääntä</translation>
 <translation id="1717218214683051432">Liiketunnistimet</translation>
@@ -235,7 +234,6 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="3232293466644486101">Poista selausdata…</translation>
 <translation id="3242646949159196181">Kun tämä on päällä, sivustot voivat toistaa ääntä. Kun tämä on pois päältä, sivustot eivät voi toistaa ääntä.</translation>
 <translation id="3273479183583863618">Hinnanalennukset avoimilla välilehdillä</translation>
-<translation id="3277252321222022663">Anna sivustojen käyttää tunnistimia (suositus)</translation>
 <translation id="3285500645985761267">Salli toisiinsa liittyvien sivustojen nähdä toimintasi ryhmässä</translation>
 <translation id="3295019059349372795">Luku 11: Ozin ihastuttava smaragdikaupunki</translation>
 <translation id="3295602654194328831">Piilota tiedot</translation>
@@ -371,7 +369,6 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="4672315773691449562">Valitse Selainsovellus ja sitten Chrome</translation>
 <translation id="4676059169848868271">Salli, että <ph name="APP_NAME" /> voi seurata käsien liikettä, laittamalla käsien liikkeen seuranta päälle myös <ph name="BEGIN_LINK" />järjestelmäasetuksista<ph name="END_LINK" />.</translation>
 <translation id="4688045258817337666">Korttien ylläpito</translation>
-<translation id="4751476147751820511">Liike- tai valotunnistimet</translation>
 <translation id="4755971844837804407">Kun tämä on päällä, sivustot voivat näyttää sinulle mitä tahansa mainoksia. Kun tämä on pois päältä, sivustoilla ei voi näkyä häiritseviä tai harhaanjohtavia mainoksia.</translation>
 <translation id="4779083564647765204">Lähennä</translation>
 <translation id="4807122856660838973">Laita Selaussuoja päälle</translation>
@@ -398,7 +395,6 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="5001526427543320409">Kolmannen osapuolen evästeet</translation>
 <translation id="5007392906805964215">Tarkista</translation>
 <translation id="5039804452771397117">Salli</translation>
-<translation id="5048398596102334565">Anna sivustojen käyttää liiketunnistimien lukemia (suositus)</translation>
 <translation id="5048841907079026162">Hallinnoi selausdataasi</translation>
 <translation id="5050380848339752099">Tämä sivusto aikoo jakaa tietoja sovellukselle incognito-tilan ulkopuolella.</translation>
 <translation id="5063480226653192405">Käyttö</translation>
@@ -686,7 +682,6 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="8088603949666785339">Lisää vaihtoehtoja: <ph name="BANNER_TITLE" /></translation>
 <translation id="8112925981674547014">Näytä välilehdet sovelluslistassa</translation>
 <translation id="8116925261070264013">Mykistetty</translation>
-<translation id="8117244575099414087">Kun tämä on päällä, sivustot voivat käyttää laitteesi antureita. Kun tämä on pois päältä, sivustot eivät voi käyttää antureita.</translation>
 <translation id="813082847718468539">Näytä sivuston tiedot</translation>
 <translation id="8131740175452115882">Vahvista</translation>
 <translation id="8148160259207090265">Tämä asetus pysyy päällä niin kauan kuin Lisäsuojaus on päällä Android-asetuksissa.</translation>
@@ -762,7 +757,6 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="8801657293260363985">V8 on Chromen JavaScript- ja WebAssembly-moottori, jota käytetään sivuston suorituskyvyn parantamiseen</translation>
 <translation id="8803526663383843427">Toiminnon ollessa päällä</translation>
 <translation id="8805385115381080995">Selaaminen on nopeampaa, koska sivusto ei todennäköisesti pyydä sinua vahvistamaan, että olet oikea ihminen</translation>
-<translation id="8816026460808729765">Estä sivustoja käyttämästä tunnistimia</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8874790741333031443">Kokeile sallia kolmannen osapuolen evästeet väliaikaisesti. Selauksen suojaus ei tällöin ole niin vahva, mutta sivuston ominaisuudet toimivat todennäköisemmin oikein.</translation>
 <translation id="8889294078294184559">Kun jatkat selaamista, sivustot voivat Chromen avulla tarkistaa edelliseltä avaamasi sivustolta, että olet todennäköisesti oikea ihminen.</translation>

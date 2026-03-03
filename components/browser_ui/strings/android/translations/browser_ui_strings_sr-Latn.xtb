@@ -66,7 +66,6 @@
 <translation id="1677097821151855053">Kolačići i drugi podaci o sajtovima se koriste da biste bili zapamćeni, na primer, radi prijavljivanja ili personalizovanja oglasa. Da biste upravljali kolačićima za sve sajtove, pogledajte <ph name="BEGIN_LINK" />Podešavanja<ph name="END_LINK" />.</translation>
 <translation id="1679305402657584804">Sajtovi mogu da traže da koriste NFC uređaje</translation>
 <translation id="1686785653877010442">Sajtovi obično šalju obaveštenja da bi vas obavestili o udarnim vestima ili porukama četa.</translation>
-<translation id="169515064810179024">Ne dozvoljavaj sajtovima da pristupaju senzorima za pokret</translation>
 <translation id="1703666494654169921">Ne dozvoljavaj sajtovima da koriste uređaje i podatke virtuelne realnosti</translation>
 <translation id="1704230497453185209">Ne dozvoljavaj sajtovima da puštaju zvuk</translation>
 <translation id="1717218214683051432">Senzori pokreta</translation>
@@ -235,7 +234,6 @@ Napredna zaštita kontroliše ova Chrome podešavanja:
 <translation id="3232293466644486101">Izbriši podatke pregledanja…</translation>
 <translation id="3242646949159196181">Kada je uključeno, sajtovi mogu da puštaju zvuk. Kada je isključeno, sajtovi ne mogu da puštaju zvuk.</translation>
 <translation id="3273479183583863618">Sniženja na karticama</translation>
-<translation id="3277252321222022663">Dozvoli sajtovima da pristupaju senzorima (preporučeno)</translation>
 <translation id="3285500645985761267">Dozvolite srodnim sajtovima da vide vaše aktivnosti u grupi</translation>
 <translation id="3295019059349372795">11. poglavlje: Čudesni Smaragdni grad Oza</translation>
 <translation id="3295602654194328831">Sakrij informacije</translation>
@@ -371,7 +369,6 @@ Napredna zaštita kontroliše ova Chrome podešavanja:
 <translation id="4672315773691449562">Dodirnite aplikaciju Pregledač, pa Chrome</translation>
 <translation id="4676059169848868271">Da biste dozvolili da <ph name="APP_NAME" /> koristi praćenje ruku, uključite i praćenje ruku u <ph name="BEGIN_LINK" />podešavanjima sistema<ph name="END_LINK" />.</translation>
 <translation id="4688045258817337666">Upravljajte karticama</translation>
-<translation id="4751476147751820511">Senzori za pokret ili svetlo</translation>
 <translation id="4755971844837804407">Kada je uključeno, sajtovi mogu da vam prikažu bilo koji oglas. Kada je isključeno, sajtovi ne mogu da prikazuju oglase koji ometaju ili obmanjujuće oglase.</translation>
 <translation id="4779083564647765204">Zumiranje</translation>
 <translation id="4807122856660838973">Uključite Bezbedno pregledanje</translation>
@@ -398,7 +395,6 @@ Napredna zaštita kontroliše ova Chrome podešavanja:
 <translation id="5001526427543320409">Kolačići treće strane</translation>
 <translation id="5007392906805964215">Pregledaj</translation>
 <translation id="5039804452771397117">Dozvoli</translation>
-<translation id="5048398596102334565">Dozvoli sajtovima da pristupaju senzorima za pokret (preporučeno)</translation>
 <translation id="5048841907079026162">Upravljajte podacima pregledanja</translation>
 <translation id="5050380848339752099">Ovaj sajt će deliti informacije sa aplikacijom izvan režima bez arhiviranja.</translation>
 <translation id="5063480226653192405">Korišćenje</translation>
@@ -686,7 +682,6 @@ Napredna zaštita kontroliše ova Chrome podešavanja:
 <translation id="8088603949666785339">Još opcija u <ph name="BANNER_TITLE" /></translation>
 <translation id="8112925981674547014">Kartice prikaza na listi aplikacija</translation>
 <translation id="8116925261070264013">Zvuk je isključen</translation>
-<translation id="8117244575099414087">Kada je uključeno, sajtovi mogu da koriste senzore uređaja. Kada je isključeno, sajtovi ne mogu da koriste senzore.</translation>
 <translation id="813082847718468539">Pogledajte informacije o sajtu</translation>
 <translation id="8131740175452115882">Potvrdi</translation>
 <translation id="8148160259207090265">Ovo podešavanje ostaje uključeno dok je Napredna zaštita uključena u podešavanjima Android-a.</translation>
@@ -762,7 +757,6 @@ Napredna zaštita kontroliše ova Chrome podešavanja:
 <translation id="8801657293260363985">V8 je Chrome alatka za JavaScript i WebAssembly koja se koristi za poboljšanje performansi sajta</translation>
 <translation id="8803526663383843427">Kada je uključeno</translation>
 <translation id="8805385115381080995">Pregledanje je brže jer je manja verovatnoća da će sajt zatražiti da potvrdite da ste stvarna osoba</translation>
-<translation id="8816026460808729765">Ne dozvoljavaj sajtovima da pristupaju senzorima</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8874790741333031443">Probajte privremeno da dozvolite kolačiće treće strane, što znači slabiju zaštitu pregledanja, ali veću verovatnoću da će funkcije sajta raditi na očekivani način.</translation>
 <translation id="8889294078294184559">Dok nastavljate sa pregledanjem, sajtovi mogu da proveravaju u Chrome-u i da od prethodnog sajta koji ste posetili dobiju potvrdu da ste verovatno stvarna osoba</translation>

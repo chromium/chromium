@@ -66,7 +66,6 @@
 <translation id="1677097821151855053">예를 들어 로그인하거나 광고를 맞춤설정하기 위해 정보를 저장하는 데 쿠키와 기타 사이트 데이터가 사용됩니다. 모든 사이트의 쿠키를 관리하려면 <ph name="BEGIN_LINK" />설정<ph name="END_LINK" />을 참조하세요.</translation>
 <translation id="1679305402657584804">사이트에서 NFC 기기 사용을 요청할 수 있음</translation>
 <translation id="1686785653877010442">사이트에서는 보통 속보 또는 채팅 메시지에 관한 알림을 전송합니다.</translation>
-<translation id="169515064810179024">사이트에서 움직임 감지 센서에 액세스하지 못하도록 차단</translation>
 <translation id="1703666494654169921">사이트에서 가상 현실 기기 또는 데이터를 사용하도록 허용하지 않음</translation>
 <translation id="1704230497453185209">사이트에서 소리를 재생하도록 허용하지 않음</translation>
 <translation id="1717218214683051432">움직임 감지 센서</translation>
@@ -235,7 +234,6 @@
 <translation id="3232293466644486101">인터넷 사용 기록 삭제…</translation>
 <translation id="3242646949159196181">사용 설정하면 사이트에서 소리를 재생할 수 있습니다. 사용 중지하면 사이트에서 소리를 재생할 수 없습니다.</translation>
 <translation id="3273479183583863618">탭에 가격 인하 표시</translation>
-<translation id="3277252321222022663">사이트의 센서 액세스 허용(권장)</translation>
 <translation id="3285500645985761267">관련 사이트에서 내 그룹 활동을 볼 수 있도록 허용</translation>
 <translation id="3295019059349372795">11장: 오즈의 멋진 에메랄드 도시</translation>
 <translation id="3295602654194328831">정보 숨기기</translation>
@@ -371,7 +369,6 @@
 <translation id="4672315773691449562">브라우저 앱을 탭한 다음 Chrome을 탭합니다</translation>
 <translation id="4676059169848868271"><ph name="APP_NAME" />에서 손 추적을 사용하려면 <ph name="BEGIN_LINK" />시스템 설정<ph name="END_LINK" />에서도 손 추적을 사용 설정하세요.</translation>
 <translation id="4688045258817337666">카드 관리</translation>
-<translation id="4751476147751820511">모션 또는 조도 센서</translation>
 <translation id="4755971844837804407">사용 설정하면 사이트에서 모든 광고를 표시할 수 있습니다. 사용 중지하면 사이트에서 방해가 되거나 사용자를 현혹하는 광고를 표시할 수 없습니다.</translation>
 <translation id="4779083564647765204">확대/축소</translation>
 <translation id="4807122856660838973">세이프 브라우징 사용 설정</translation>
@@ -398,7 +395,6 @@
 <translation id="5001526427543320409">서드 파티 쿠키</translation>
 <translation id="5007392906805964215">검토</translation>
 <translation id="5039804452771397117">허용</translation>
-<translation id="5048398596102334565">사이트의 움직임 감지 센서 액세스 허용(권장)</translation>
 <translation id="5048841907079026162">인터넷 사용 기록 관리</translation>
 <translation id="5050380848339752099">이 사이트에서 시크릿 모드 외부의 앱을 사용하여 정보를 공유하려고 합니다.</translation>
 <translation id="5063480226653192405">사용</translation>
@@ -686,7 +682,6 @@
 <translation id="8088603949666785339"><ph name="BANNER_TITLE" /> 옵션 더보기</translation>
 <translation id="8112925981674547014">앱 목록의 탭 보기</translation>
 <translation id="8116925261070264013">음소거됨</translation>
-<translation id="8117244575099414087">사용 설정하면 사이트에서 기기의 센서를 사용할 수 있습니다. 사용 중지하면 사이트에서 센서를 사용할 수 없습니다.</translation>
 <translation id="813082847718468539">사이트 정보 보기</translation>
 <translation id="8131740175452115882">확인</translation>
 <translation id="8148160259207090265">Android 설정에서 고급 보호가 사용 설정되어 있는 한 이 설정도 계속 유지됩니다.</translation>
@@ -762,7 +757,6 @@
 <translation id="8801657293260363985">V8은 사이트 속도를 개선하는 데 사용되는 Chrome의 JavaScript 및 WebAssembly 엔진입니다.</translation>
 <translation id="8803526663383843427">켜졌을 때</translation>
 <translation id="8805385115381080995">사이트에서 내가 실제 사람임을 확인할 가능성이 줄어들기 때문에 브라우징이 더 빨라집니다.</translation>
-<translation id="8816026460808729765">사이트에서 센서에 액세스하지 못하도록 차단</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8874790741333031443">서드 파티 쿠키를 일시적으로 허용해 보세요. 인터넷 사용 시 보안은 취약해지지만 사이트 기능이 예상대로 작동할 가능성은 높아집니다.</translation>
 <translation id="8889294078294184559">브라우징을 계속하면 사이트에서 Chrome을 통해 이를 확인하고 이전에 방문한 적이 있는 이전 사이트로 내가 실제 사람인지 확인할 수 있습니다.</translation>

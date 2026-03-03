@@ -66,7 +66,6 @@
 <translation id="1677097821151855053">Informasjonskapsler og andre nettstedsdata brukes til å huske deg, for eksempel for å logge deg på eller for å vise deg personlig tilpassede annonser. For å administrere informasjonskapsler for alle nettsteder, se <ph name="BEGIN_LINK" />Innstillinger<ph name="END_LINK" />.</translation>
 <translation id="1679305402657584804">Nettsteder kan be om å få bruke NFC-enheter</translation>
 <translation id="1686785653877010442">Nettsteder sender vanligvis varsler for å informere deg om siste nytt eller chatmeldinger.</translation>
-<translation id="169515064810179024">Blokkér nettsteder fra å få tilgang til bevegelsessensorer</translation>
 <translation id="1703666494654169921">Ikke la nettsteder bruke virtuell virkelighet-enheter eller -data</translation>
 <translation id="1704230497453185209">Ikke la nettsteder spille av lyd</translation>
 <translation id="1717218214683051432">Bevegelsessensorer</translation>
@@ -235,7 +234,6 @@ Avansert beskyttelse styrer disse Chrome-innstillingene:
 <translation id="3232293466644486101">Slett nettlesingsdata…</translation>
 <translation id="3242646949159196181">Når dette er på, kan nettsteder spille av lyd. Når dette er av, kan ikke nettsteder spille av lyd.</translation>
 <translation id="3273479183583863618">Avslag på faner</translation>
-<translation id="3277252321222022663">Gi nettsteder tilgang til sensorer (anbefalt)</translation>
 <translation id="3285500645985761267">Tillat relaterte nettsteder å se aktiviteten din i gruppen</translation>
 <translation id="3295019059349372795">Kapittel 11: Den vidunderlige smaragdbyen Oz</translation>
 <translation id="3295602654194328831">Skjul informasjonen</translation>
@@ -371,7 +369,6 @@ Avansert beskyttelse styrer disse Chrome-innstillingene:
 <translation id="4672315773691449562">Trykk på Nettleserapp og deretter på Chrome</translation>
 <translation id="4676059169848868271">For å la <ph name="APP_NAME" /> bruke håndsporing, slå på håndsporing i <ph name="BEGIN_LINK" />systeminnstillingene<ph name="END_LINK" /> også.</translation>
 <translation id="4688045258817337666">Administrer kortene dine</translation>
-<translation id="4751476147751820511">Bevegelses- eller lyssensorer</translation>
 <translation id="4755971844837804407">Når dette er på, kan nettsteder vise deg alle slags annonser. Når dette er av, kan ikke nettsteder vise forstyrrende eller villedende annonser.</translation>
 <translation id="4779083564647765204">Zoom</translation>
 <translation id="4807122856660838973">Slå på Safe Browsing</translation>
@@ -398,7 +395,6 @@ Avansert beskyttelse styrer disse Chrome-innstillingene:
 <translation id="5001526427543320409">Tredjeparts informasjonskapsler</translation>
 <translation id="5007392906805964215">Se gjennom</translation>
 <translation id="5039804452771397117">Tillat</translation>
-<translation id="5048398596102334565">Gi nettsteder tilgang til bevegelsessensorer (anbefalt)</translation>
 <translation id="5048841907079026162">Administrer nettlesingsdataene dine</translation>
 <translation id="5050380848339752099">Dette nettstedet er i ferd med å dele informasjon med en app utenfor Inkognitomodus.</translation>
 <translation id="5063480226653192405">Bruk</translation>
@@ -686,7 +682,6 @@ Avansert beskyttelse styrer disse Chrome-innstillingene:
 <translation id="8088603949666785339">Flere alternativer i <ph name="BANNER_TITLE" /></translation>
 <translation id="8112925981674547014">Vis faner på applisten</translation>
 <translation id="8116925261070264013">Kuttet lyd</translation>
-<translation id="8117244575099414087">Når dette er på, kan nettsteder bruke sensorene på enheten din. Når dette er av, kan ikke nettsteder bruke sensorer.</translation>
 <translation id="813082847718468539">Vis nettstedsinformasjon</translation>
 <translation id="8131740175452115882">Bekreft</translation>
 <translation id="8148160259207090265">Denne innstillingen forblir på så lenge du har Avansert beskyttelse slått på i Android-innstillingene.</translation>
@@ -762,7 +757,6 @@ Avansert beskyttelse styrer disse Chrome-innstillingene:
 <translation id="8801657293260363985">V8 er JavaScript- og WebAssembly-motoren som Chrome bruker til å forbedre nettstedsytelsen</translation>
 <translation id="8803526663383843427">Når funksjonen er på</translation>
 <translation id="8805385115381080995">Surfing går raskere fordi det er mindre sannsynlig at nettsteder ber deg om å bekrefte at du er en ekte person</translation>
-<translation id="8816026460808729765">Blokkér nettsteder fra å få tilgang til sensorer</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8874790741333031443">Prøv å tillate informasjonskapsler fra tredjeparter midlertidig. Det innebærer mindre beskyttelse under surfing, men øker sannsynligheten for at nettstedsfunksjoner virker som forventet.</translation>
 <translation id="8889294078294184559">Når du fortsetter å surfe, kan nettsteder kontrollere denne informasjonen i Chrome og få bekreftet av nettsteder du har besøkt tidligere, at du sannsynligvis er en ekte person</translation>

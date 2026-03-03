@@ -167,6 +167,7 @@
 <translation id="1621067168122174824">Laat loop laaitoets</translation>
 <translation id="1622402072367425417">gloeiende borrels</translation>
 <translation id="1626590945318984973">Kortpad nie beskikbaar nie. Druk ’n nuwe kortpad sonder om funksie- en <ph name="META_KEY" />-sleutels te gebruik.</translation>
+<translation id="163774412591892664">Jou admin het jou toestel gedeaktiveer en kan toegang tot die ligging daarvan kry.</translation>
 <translation id="1639239467298939599">Laai tans</translation>
 <translation id="1641857168437328880">Dokumentvoerder (een kant)</translation>
 <translation id="1642396894598555413">fietse</translation>
@@ -1723,6 +1724,7 @@ Laai die transkripsiemodel (tot 100 MB) af om hierdie transkripsies te kry.</tr
 <translation id="8584654835905316966">’n Herbegin is nodig om die installering van fermware vir <ph name="DEVICE_NAME" /> na weergawe <ph name="VERSION" /> te voltooi. Dit kan voorkom asof jou rekenaar baie keer herselflaai. Hierdie optrede word verwag.</translation>
 <translation id="8593058461203131755">onderbreek media</translation>
 <translation id="8620617069779373398">Swerfstatus</translation>
+<translation id="8624524972189162859">Jou <ph name="DOMAIN_NAME" />-administrateur het jou toestel gedeaktiveer en kan toegang tot die ligging daarvan kry.</translation>
 <translation id="8626489604350149811">Meer handelinge vir <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Ligpers</translation>
 <translation id="8647595191512746911">Oudiotranskripsie</translation>

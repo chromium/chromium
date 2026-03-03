@@ -167,6 +167,7 @@
 <translation id="1621067168122174824">ทดสอบการชาร์จแบตเตอรี่</translation>
 <translation id="1622402072367425417">ลูกโป่งเรืองแสง</translation>
 <translation id="1626590945318984973">แป้นพิมพ์ลัดไม่พร้อมใช้งาน กดแป้นพิมพ์ลัดใหม่โดยไม่ใช้ฟังก์ชันและแป้น<ph name="META_KEY" /></translation>
+<translation id="163774412591892664">ผู้ดูแลระบบปิดใช้อุปกรณ์ของคุณและเข้าถึงตำแหน่งของอุปกรณ์ได้</translation>
 <translation id="1639239467298939599">กำลังโหลด</translation>
 <translation id="1641857168437328880">ตัวป้อนเอกสาร (ด้านเดียว)</translation>
 <translation id="1642396894598555413">จักรยาน</translation>
@@ -1723,6 +1724,7 @@
 <translation id="8584654835905316966">ต้องรีสตาร์ทเพื่อติดตั้งเฟิร์มแวร์สำหรับ <ph name="DEVICE_NAME" /> เป็นเวอร์ชัน <ph name="VERSION" /> ให้เสร็จสมบูรณ์ คอมพิวเตอร์อาจดูเหมือนรีบูตหลายครั้ง ลักษณะการทำงานนี้เป็นสิ่งที่คาดไว้อยู่แล้ว</translation>
 <translation id="8593058461203131755">หยุดสื่อชั่วคราว</translation>
 <translation id="8620617069779373398">สถานะการโรมมิ่ง</translation>
+<translation id="8624524972189162859">ผู้ดูแลระบบ <ph name="DOMAIN_NAME" /> ปิดใช้อุปกรณ์ของคุณและเข้าถึงตำแหน่งของอุปกรณ์ได้</translation>
 <translation id="8626489604350149811">การดำเนินการเพิ่มเติมสำหรับ <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">ม่วงอ่อน</translation>
 <translation id="8647595191512746911">การถอดเสียงเป็นคำ</translation>

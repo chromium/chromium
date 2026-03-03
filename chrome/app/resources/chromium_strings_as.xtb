@@ -29,6 +29,7 @@
 <translation id="126567311906253476"><ph name="USER_EMAIL" />ৰ জৰিয়তে Gmail বা Youtubeৰ দৰে Google সেৱাসমূহত ছাইন ইন কৰাৰ সময়ত, আপুনি একেটা একাউণ্ট ব্যৱহাৰ কৰি স্বয়ংক্ৰিয়ভাৱে Chromiumত ছাইন ইন কৰিব পাৰে</translation>
 <translation id="1290883685122687410">ছেটআপ সম্পৰ্কীয় আসোঁৱাহ: <ph name="METAINSTALLER_EXIT_CODE" />। <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1315551408014407711">আপোনাৰ নতুন Chromium প্ৰ'ফাইল ছেট আপ কৰক</translation>
+<translation id="132092532143527429">Chromiumত Gemini ব্যৱহাৰ কৰি চাওক</translation>
 <translation id="1324107359134968521">Chromiumক ব্লুটুথ ডিভাইচসমূহ অন্বেষণ কৰিবলৈ 
  ব্লুটুথ এক্সেছৰ আৱশ্যক। <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">ভাষা চিনাক্ত কৰক</translation>
@@ -611,6 +612,7 @@ Chromiumএ আপোনাৰ ছেটিংসমূহ পুনৰুদ্
 <translation id="7622753900276619808">Chromiumত এতিয়া আপোনাৰ বাবে অধিক সুবিধা উপলব্ধ</translation>
 <translation id="7624307931717240213">আমি এই সেৱাটো উন্নত কৰিবলৈ তথ্য ব্যৱহাৰ কৰোঁ। গোপনীয়তাৰ নীতি আৰু সেৱাৰ চৰ্তাৱলী চাওক।</translation>
 <translation id="7649070708921625228">সহায়</translation>
+<translation id="7650134251917003571">Chromium এপ্‌টো লাভ কৰক</translation>
 <translation id="7656340475565475526">Chromiumক আপোনাৰ বাবে ব্ৰাউজ কৰিবলৈ দিয়ক</translation>
 <translation id="7658239707568436148">বাতিল কৰক</translation>
 <translation id="7686590090926151193">Chromium আপোনাৰ ডিফ'ল্ট ব্ৰাউজাৰ নহয়</translation>

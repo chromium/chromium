@@ -679,6 +679,7 @@
 <translation id="1453561711872398978"><ph name="BEGIN_LINK" />デバッグログ<ph name="END_LINK" />を送信する（推奨）</translation>
 <translation id="1454223536435069390">スクリーンショットを撮る(&amp;A)</translation>
 <translation id="145432137617179457">スペルチェックの言語</translation>
+<translation id="1455009947184333152">スキルを削除しました</translation>
 <translation id="1455119378540982311">プリセットのウィンドウ サイズ</translation>
 <translation id="1456849775870359518">タブが再度開きます</translation>
 <translation id="146000042969587795">このフレームにはセキュリティで保護されていないコンテンツが含まれているためブロックされました。</translation>
@@ -1330,6 +1331,7 @@
 <translation id="1886996562706621347">サイトからのプロトコルのデフォルト ハンドラとしての登録要求を許可する（推奨）</translation>
 <translation id="1887210448491286312"><ph name="DEVICE_NAME" /> へのタブのキャストを停止する</translation>
 <translation id="1887442540531652736">ログインエラー</translation>
+<translation id="1888692623866312036">スキルを保存しました</translation>
 <translation id="1890026367080681123">埋め込みコンテンツの設定に移動します</translation>
 <translation id="189035593835762169">利用規約</translation>
 <translation id="1891362123137972260">ディスクの空き領域が非常に少なくなっています。空き容量を増やしてください。</translation>
@@ -1836,6 +1838,7 @@
 <translation id="2232751457155581899">サイトがカメラ位置の追跡を要求できるようにする</translation>
 <translation id="2233502537820838181">詳細情報(&amp;M)</translation>
 <translation id="223356358902285214">ウェブとアプリのアクティビティ</translation>
+<translation id="2234031676056123135">ショートカットをカスタマイズ</translation>
 <translation id="2234065144797002621">小川</translation>
 <translation id="2234208862050358325">1、2、3、Q、E、A、S、D キーを使用してカーソルを動かす</translation>
 <translation id="2234827758954819389">プライバシー ガイド</translation>
@@ -3092,10 +3095,12 @@
 <translation id="3048589239114571785">再生（K）</translation>
 <translation id="3048742847101793553">このファイルはスキャンに失敗したため、組織でブロックされました。</translation>
 <translation id="3048917188684939573">キャストとデバイスのログ</translation>
+<translation id="3049356453907822148">新しいスキルを追加</translation>
 <translation id="3051250416341590778">表示サイズ</translation>
 <translation id="3053013834507634016">証明書キーの用途</translation>
 <translation id="3053273573829329829">ユーザー PIN を有効にする</translation>
 <translation id="3053274730492362225">点滅なし</translation>
+<translation id="3057938290530993634">長押しすると、よくアクセスするウェブサイトが固定され、次回から簡単にアクセスできます</translation>
 <translation id="3058498974290601450">同期は設定でいつでもオンにできます。</translation>
 <translation id="3060952009917586498">デバイスの言語を変更します。現在の言語は <ph name="LANGUAGE" /> です。</translation>
 <translation id="3060987956645097882">スマートフォンとの接続を確立できませんでした。Bluetooth 搭載のスマートフォンが近くにあり、Wi-Fi がオンになっていて、ロックも解除されていることを確認してください。</translation>
@@ -3252,6 +3257,7 @@
 <translation id="3182749001423093222">スペルチェック</translation>
 <translation id="3183139917765991655">プロフィール インポーター</translation>
 <translation id="3183143381919926261">モバイルデータ ネットワーク</translation>
+<translation id="3183428991752322898">キーボード ショートカットを消去</translation>
 <translation id="3183700187146209259">スキャナ ソフトウェアをインストールできません</translation>
 <translation id="3183750649832309748">あなたの組織（<ph name="ACCOUNT_MANAGER" />）は次の情報を見ることができます</translation>
 <translation id="3183944777708523606">モニターの配置</translation>
@@ -3341,6 +3347,7 @@
 <translation id="3247649647204519958">ここでは、表示しているサイトに対する拡張機能の権限を確認、管理できます</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - ネットワーク エラー</translation>
 <translation id="3248902735035392926">安全性に問題がないか、<ph name="BEGIN_LINK" />拡張機能を確認<ph name="END_LINK" />しましょう</translation>
+<translation id="3250374026663843838">スキルを管理</translation>
 <translation id="3251119461199395237">ファイルの同期</translation>
 <translation id="3251759466064201842">&lt;証明書に含まれていません&gt;</translation>
 <translation id="3252169590975855820">Google パスワード マネージャーからアクセスできます</translation>
@@ -5170,6 +5177,7 @@
 <translation id="4469324811108161144">メモは <ph name="CHARACTER_LIMIT" /> 文字以下で入力してください。</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> は「<ph name="FOLDERNAME" />」のファイルを編集できます</translation>
 <translation id="4470957202018033307">外部ストレージの設定</translation>
+<translation id="4471250205822310967">Gemini 選択オーバーレイ</translation>
 <translation id="4471354919263203780">音声認識ファイルをダウンロードしています... <ph name="PERCENT" />%</translation>
 <translation id="4472194221638903160">AI でタブをグループ化</translation>
 <translation id="4472298120638043495">Google アカウントの言語（<ph name="NEW_LOCALE_FROM_GAIA" />）を使用できます</translation>
@@ -6495,6 +6503,7 @@
 <translation id="539882584649709174">ウェブでのクチコミなどの短文の作成をサポートします</translation>
 <translation id="5400196580536813396">デバイスにアクセスできるプリンタの検索と使用を許可しないサイト</translation>
 <translation id="5400836586163650660">グレー</translation>
+<translation id="5400933848253186401">Gemini で要約</translation>
 <translation id="5402367795255837559">点字</translation>
 <translation id="5402815541704507626">モバイルデータ接続でのアップデートのダウンロード</translation>
 <translation id="5404557844330880551">商品比較の詳細</translation>
@@ -6970,7 +6979,6 @@
 <translation id="5734697361979786483">ファイル共有を追加</translation>
 <translation id="573520097779121706">7、8、9、U、O、J、K、L キーを使用してカーソルを動かす</translation>
 <translation id="5736092224453113618">{NUM_FILES,plural, =0{このデータまたはお使いのデバイスは、組織のセキュリティ ポリシーの一部に違反しています。修正が必要な箇所を管理者にご確認ください。}=1{このファイルまたはお使いのデバイスは、組織のセキュリティ ポリシーの一部に違反しています。修正が必要な箇所を管理者にご確認ください。}other{これらのファイルは、組織のセキュリティ ポリシーの一部に違反しています。修正が必要な箇所を管理者にご確認ください。}}</translation>
-<translation id="5736345781200955827">パスワードを作成、保存、管理して、Chrome でサイトやアプリに簡単にログインできるようにします</translation>
 <translation id="5738093759615225354">パソコンにログインするには、このパスキーが必要です</translation>
 <translation id="5738386565827477765">オーディオ機器</translation>
 <translation id="5739017626473506901">ログインして、<ph name="USER_NAME" /> さんの学校アカウントの追加を許可してください</translation>
@@ -11901,6 +11909,7 @@
 <translation id="9061521313218438086">一般に報告されているデータ侵害でパスワードが検出された場合、Google パスワード マネージャーによってログイン時にパスワードの変更を促すメッセージが表示されます。</translation>
 <translation id="9061694916020926968">Steam for Chromebook（ベータ版）を使用するには、Google アカウントにログインする必要があります。ログインしてから、もう一度お試しください。</translation>
 <translation id="9062468308252555888">14 倍</translation>
+<translation id="9062873887761404531">ナビゲーション ショートカットを消去</translation>
 <translation id="9063208415146866933"><ph name="ERROR_LINE_START" />～<ph name="ERROR_LINE_END" /> 行目にエラーがあります</translation>
 <translation id="9064275926664971810">フォームにワンクリックで自動入力できるようにします</translation>
 <translation id="9065203028668620118">編集</translation>

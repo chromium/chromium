@@ -167,6 +167,7 @@
 <translation id="1621067168122174824">הפעלה של בדיקת טעינה</translation>
 <translation id="1622402072367425417">בועות זוהרות</translation>
 <translation id="1626590945318984973">מקש הקיצור לא זמין. צריך להקיש על מקש קיצור חדש בלי להשתמש במקשי הפונקציות ובמקש <ph name="META_KEY" />.</translation>
+<translation id="163774412591892664">האדמין השבית את המכשיר שלך ויכול לגשת למיקום שלו.</translation>
 <translation id="1639239467298939599">בטעינה</translation>
 <translation id="1641857168437328880">הכנסת מסמכים (צד אחד)</translation>
 <translation id="1642396894598555413">אופניים</translation>
@@ -1723,6 +1724,7 @@
 <translation id="8584654835905316966">נדרשת הפעלה מחדש כדי להשלים את התקנת הקושחה של <ph name="DEVICE_NAME" /> לגרסה <ph name="VERSION" />. יכול להיות שייראה כאילו המחשב מופעל מחדש כמה פעמים. זו התנהגות רגילה.</translation>
 <translation id="8593058461203131755">השהיית המדיה</translation>
 <translation id="8620617069779373398">סטטוס נדידה</translation>
+<translation id="8624524972189162859">האדמין של <ph name="DOMAIN_NAME" /> השבית את המכשיר שלך ויכול לגשת למיקום שלו.</translation>
 <translation id="8626489604350149811">עוד פעולות לגבי <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">סגול בהיר</translation>
 <translation id="8647595191512746911">תמלול האודיו</translation>

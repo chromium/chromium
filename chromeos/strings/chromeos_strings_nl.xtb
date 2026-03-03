@@ -167,6 +167,7 @@ Generatieve AI is experimenteel, in vroege ontwikkeling en op dit moment beperkt
 <translation id="1621067168122174824">Batterijlading testen</translation>
 <translation id="1622402072367425417">gloeiende bubbels</translation>
 <translation id="1626590945318984973">Sneltoets niet beschikbaar. Druk op een nieuwe sneltoets zonder de functie- en <ph name="META_KEY" />-toetsen te gebruiken.</translation>
+<translation id="163774412591892664">Je beheerder heeft je apparaat uitgezet en heeft toegang tot de locatie.</translation>
 <translation id="1639239467298939599">Laden</translation>
 <translation id="1641857168437328880">Documentfeeder (enkelzijdig)</translation>
 <translation id="1642396894598555413">fietsen</translation>
@@ -1723,6 +1724,7 @@ Download het transcriptiemodel (maximaal 100 MB) om deze transcripties te krijg
 <translation id="8584654835905316966">Start je computer opnieuw op om de installatie van firmware voor <ph name="DEVICE_NAME" /> naar versie <ph name="VERSION" /> af te ronden. Je computer lijkt misschien een paar keer opnieuw op te starten. Dit is normaal.</translation>
 <translation id="8593058461203131755">media pauzeren</translation>
 <translation id="8620617069779373398">Roamingstatus</translation>
+<translation id="8624524972189162859">Je <ph name="DOMAIN_NAME" />-beheerder heeft je apparaat uitgezet en heeft toegang tot de locatie.</translation>
 <translation id="8626489604350149811">Meer acties voor <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Lichtpaars</translation>
 <translation id="8647595191512746911">Audiotranscriptie</translation>

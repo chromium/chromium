@@ -241,6 +241,7 @@
 <translation id="3509308970982693815">Затворите све Chromium прозоре и покушајте поново.</translation>
 <translation id="3522404737534491619">Да бисте делили прозор, дозволите снимање екрана за Chromium у подешавањима система</translation>
 <translation id="3530103706039034513">Корисник <ph name="EXISTING_USER" /> је већ пријављен.  Да би вам прегледање било раздвојено, пријавите се у Chromium преко свог профила као <ph name="USER_EMAIL_ADDRESS" />.</translation>
+<translation id="3531741627422851418">QR кôд за преузимање Chromium прегледача на мобилним уређајима</translation>
 <translation id="3561853857681580870">Да бисте делили екран, дозволите снимање екрана за Chromium у подешавањима система.</translation>
 <translation id="3588112919289558122">Побољшана заштита искључује оптимизацију JavaScript-а за сајтове које Chromium не препознаје</translation>
 <translation id="3597003331831379823">Покретање подешавања са пуним привилегијама није успело. <ph name="METAINSTALLER_ERROR" /></translation>

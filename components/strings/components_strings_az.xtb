@@ -1310,6 +1310,8 @@
 <translation id="3102312643185441063">Əmanət hesabı</translation>
 <translation id="3103188521861412364">Səhmlər və İstiqrazlar</translation>
 <translation id="3105172416063519923">Aktiv ID:</translation>
+<translation id="3105223248029915046">Ödəniş planları uyğunluqdan asılıdır.
+Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəniş ayarlarına<ph name="END_LINK" /> keçin</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />Təhlükəsiz DNS konfiqurasiyası yoxlanılır<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Orta Qab</translation>
 <translation id="3109061346635850169">Üz və Bədənə Qulluq</translation>
@@ -2351,7 +2353,6 @@
 <translation id="4750671009706599284">bu telefon</translation>
 <translation id="4750917950439032686">Bu saytda göndərildiyi zaman məlumatınız (məsələn, parol və ya kredit kartı nömrəsi) gizli saxlanır.</translation>
 <translation id="4751249061288707459">Razılıq son dəfə bu vaxt güncəllənib:</translation>
-<translation id="4751476147751820511">Hərəkət və ışıq sensorları</translation>
 <translation id="4754461935447132332">Güvənsiz saytlar üçün icazə verilmir</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
 <translation id="4757740693289347881">Kod etibarsızdır</translation>
@@ -4355,6 +4356,7 @@
 <translation id="7908648876066812348">Virtual kart aktiv edilir</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab, sonra Enter düyməsinə basaraq ayarlarda Chrome təhlükəsizlik yoxlanışı səhifəsinə keçin</translation>
 <translation id="791107458486222637">Təkrarlanır</translation>
+<translation id="7911651285409665023">Bağlayın və "<ph name="TAB_TITLE" />" başlığına qayıdın</translation>
 <translation id="7912924955815015552">Safari-dən import edildi</translation>
 <translation id="791551905239004656">Rəsm və Rəngləmə</translation>
 <translation id="7916162853251942238">Fleksoqrafiya bazası</translation>
@@ -5207,7 +5209,6 @@
 <translation id="987264212798334818">Ümumi</translation>
 <translation id="988159990683914416">Developer Build</translation>
 <translation id="989988560359834682">Ünvana düzəliş edin</translation>
-<translation id="991413375315957741">hərəkət və işıq sensorları</translation>
 <translation id="991936891556421157">Ayaqqabı</translation>
 <translation id="992110854164447044">Virtual kart sizi potensial dələduzluqdan qorumaq üçün faktiki kartınızı gizlədir. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="992115559265932548"><ph name="MICROSOFT_ACTIVE_DIRECTORY" /></translation>

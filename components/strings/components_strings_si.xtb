@@ -1310,6 +1310,8 @@
 <translation id="3102312643185441063">ඉතිරි කිරීම්</translation>
 <translation id="3103188521861412364">කොටස් සහ බැඳුම්කර</translation>
 <translation id="3105172416063519923">වත්කම් ID:</translation>
+<translation id="3105223248029915046">ගෙවීම් සැලසුම් සුදුසුකම් ලැබීමට යටත් වේ.
+පසුව ගෙවීමේ විකල්ප සැඟවීමට, <ph name="BEGIN_LINK" />ගෙවීම් සැකසීම්<ph name="END_LINK" /> වෙත යන්න</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />සුරක්‍ෂිත DNS වින්‍යාසය පරීක්‍ෂා කිරීම<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Middle Tray</translation>
 <translation id="3109061346635850169">මුහුණ සහ ශරීර රැකවරණය</translation>
@@ -2355,7 +2357,6 @@
 <translation id="4750671009706599284">මෙම දුරකථනය</translation>
 <translation id="4750917950439032686">ඔබගේ තොරතුරු (උදාහරණයක් ලෙස, මුරපද හෝ ණය කාඩ්පත් අංක) මෙම අඩවිය වෙත යවන විට රහසිගත වේ.</translation>
 <translation id="4751249061288707459">කැමැත්ත අවසන් වරට යාවත්කාලීන කළේ:</translation>
-<translation id="4751476147751820511">චලිත හෝ ආලෝක සංවේදක</translation>
 <translation id="4754461935447132332">ආරක්ෂිත-නොවන අඩවි සඳහා ඉඩ නොදේ</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
 <translation id="4757740693289347881">කේතය අවලංගුයි</translation>
@@ -4359,6 +4360,7 @@
 <translation id="7908648876066812348">අතථ්‍ය කාඩ්පත ක්‍රියාත්මක කිරීම</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, සැකසීම් තුළ Chrome සුරක්ෂිත පිරික්සුම් පිටුවට යාමට පටිත්ත සහ එන්ටර් ඔබන්න</translation>
 <translation id="791107458486222637">ප්‍රතිඵලය නැවත සිදු කිරීම</translation>
+<translation id="7911651285409665023">වසා "<ph name="TAB_TITLE" />" වෙත ආපසු යන්න</translation>
 <translation id="7912924955815015552">Safari වෙතින් ආයාත කරන ලදි</translation>
 <translation id="791551905239004656">ඇඳීම සහ වර්ණ ගැන්වීම</translation>
 <translation id="7916162853251942238">ෆ්ලෙක්සෝ පදනම</translation>
@@ -5210,7 +5212,6 @@
 <translation id="987264212798334818">සාමාන්‍ය</translation>
 <translation id="988159990683914416">සංවර්ධක නිකුතුව</translation>
 <translation id="989988560359834682">ලිපිනය සංස්කරණය කරන්න</translation>
-<translation id="991413375315957741">චලන හෝ ආලෝක සංවේදක</translation>
 <translation id="991936891556421157">පාවහන්</translation>
 <translation id="992110854164447044">විය හැකි වංචාවෙන් ඔබව ආරක්ෂා කිරීමට උදවු කිරීමට අතථ්‍ය කාඩ්පතක් ඔබගේ සැබෑ කාඩ්පත සඟවයි. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="992115559265932548"><ph name="MICROSOFT_ACTIVE_DIRECTORY" /></translation>

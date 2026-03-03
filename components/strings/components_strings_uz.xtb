@@ -1394,7 +1394,6 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="3218388919950135939">Faqatgina yetkazilishi mumkin zararlarni tushunsangiz, <ph name="BEGIN_LINK" />ushbu xavfli saytga<ph name="END_LINK" /> kirishingiz mumkin.</translation>
 <translation id="3219056262712778751">Video notanish xato sababli yuklanmadi</translation>
 <translation id="3220264767789936523">Rasmiy kiyimlar</translation>
-<translation id="3222634016790917333">Axborotingiz saqlanmoqda</translation>
 <translation id="3223287115535306850">Ilova yuklanishi belgisi</translation>
 <translation id="3223425961342298674">Joylashuv axborotiga kirishga ruxsat berilmagan</translation>
 <translation id="3225919329040284222">Serverdagi sertifikat ba’zi saytlardagi yuqori darajali havfsizlik ichki parametrlariga mos kelmaydi.</translation>
@@ -2354,7 +2353,6 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="4750671009706599284">shu telefon</translation>
 <translation id="4750917950439032686">Bu saytga shaxsiy ma’lumotlaringiz (parollar yoki bank kartalar kabi) xavfsiz uzatiladi.</translation>
 <translation id="4751249061288707459">Oxirgi rozilik yangilanishi:</translation>
-<translation id="4751476147751820511">Harakat va yorug‘lik sensorlari</translation>
 <translation id="4754461935447132332">Himoyalanmagan saytlarda ruxsat etilmaydi</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
 <translation id="4757740693289347881">Kod yaroqsiz</translation>
@@ -5216,7 +5214,6 @@ Batafsil axborot:
 <translation id="987264212798334818">Umumiy</translation>
 <translation id="988159990683914416">Dasturchilar yig‘masi</translation>
 <translation id="989988560359834682">Manzilni o‘zgartirish</translation>
-<translation id="991413375315957741">harakat va yorugʻlik sensorlari</translation>
 <translation id="991936891556421157">Oyoq kiyimlari</translation>
 <translation id="992110854164447044">Virtual karta haqiqiy kartani ehtimoliy firibgarlikdan himoya qilish maqsadida berkitadi. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="992115559265932548"><ph name="MICROSOFT_ACTIVE_DIRECTORY" /></translation>

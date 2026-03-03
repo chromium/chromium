@@ -66,7 +66,6 @@
 <translation id="1677097821151855053">系統會使用 Cookie 和其他網站資料記住您的身分，例如登入帳戶或個人化廣告。如要管理所有網站的 Cookie，請參閱「<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />」。</translation>
 <translation id="1679305402657584804">網站可要求使用 NFC 裝置</translation>
 <translation id="1686785653877010442">網站通常會傳送通知，讓你掌握突發新聞或即時通訊訊息。</translation>
-<translation id="169515064810179024">禁止網站存取動作感應器</translation>
 <translation id="1703666494654169921">不允許網站使用虛擬實境﻿裝置或資料</translation>
 <translation id="1704230497453185209">不允許網站播放音效</translation>
 <translation id="1717218214683051432">動作感應器</translation>
@@ -235,7 +234,6 @@
 <translation id="3232293466644486101">刪除瀏覽資料…</translation>
 <translation id="3242646949159196181">開咗之後，網站可以播放音效。閂咗之後，網站唔可以播放音效。</translation>
 <translation id="3273479183583863618">在分頁上啟用減價通知</translation>
-<translation id="3277252321222022663">允許網站存取感應器 (建議)</translation>
 <translation id="3285500645985761267">允許相關網站查看您在群組中的活動</translation>
 <translation id="3295019059349372795">第 11 章：奧茲國的奇妙翡翠城</translation>
 <translation id="3295602654194328831">隱藏資料</translation>
@@ -371,7 +369,6 @@
 <translation id="4672315773691449562">㩒一下 [瀏覽器應用程式] 同 [Chrome]</translation>
 <translation id="4676059169848868271">如要允許「<ph name="APP_NAME" />」追蹤手勢，請同時在<ph name="BEGIN_LINK" />系統設定<ph name="END_LINK" />中開啟手勢追蹤功能。</translation>
 <translation id="4688045258817337666">管理資訊卡</translation>
-<translation id="4751476147751820511">動態或光線感應器</translation>
 <translation id="4755971844837804407">開咗之後，網站可以向你顯示任何廣告。閂咗之後，網站唔可以顯示滋擾性或者誤導廣告。</translation>
 <translation id="4779083564647765204">縮放</translation>
 <translation id="4807122856660838973">開啟「安全瀏覽」功能</translation>
@@ -398,7 +395,6 @@
 <translation id="5001526427543320409">第三方 Cookie</translation>
 <translation id="5007392906805964215">查看</translation>
 <translation id="5039804452771397117">允許</translation>
-<translation id="5048398596102334565">允許網站存取動作感應器 (建議)</translation>
 <translation id="5048841907079026162">管理瀏覽資料</translation>
 <translation id="5050380848339752099">此網站即將退出無痕模式並與外部應用程式分享資料。</translation>
 <translation id="5063480226653192405">使用狀況</translation>
@@ -686,7 +682,6 @@
 <translation id="8088603949666785339"><ph name="BANNER_TITLE" />嘅其他選項</translation>
 <translation id="8112925981674547014">在應用程式清單中查看分頁</translation>
 <translation id="8116925261070264013">已設為靜音的網站</translation>
-<translation id="8117244575099414087">開咗之後，網站可以使用裝置嘅感應器。閂咗之後，網站唔可以使用感應器。</translation>
 <translation id="813082847718468539">檢視網站資料</translation>
 <translation id="8131740175452115882">確定</translation>
 <translation id="8148160259207090265">只要在 Android 設定中啟用「進階保護功能」，此設定就會保持開啟。</translation>
@@ -762,7 +757,6 @@
 <translation id="8801657293260363985">V8 是 Chrome 的 JavaScript 和 WebAssembly 引擎，可提升網站效能</translation>
 <translation id="8803526663383843427">開啟時</translation>
 <translation id="8805385115381080995">降低網站要求驗證您是真人的機率，讓瀏覽體驗更快速</translation>
-<translation id="8816026460808729765">禁止網站存取感應器</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8874790741333031443">請嘗試暫時允許使用第三方 Cookie，這代表瀏覽保護程度較低，但網站功能較容易如期運作。</translation>
 <translation id="8889294078294184559">您隨後瀏覽的網站可從 Chrome 取得前一個網站提供的資料，確認您應該是真人</translation>

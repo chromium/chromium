@@ -668,6 +668,7 @@
 <translation id="3476450923187944815">Подставляйте пароли в других приложениях.</translation>
 <translation id="3485558910355485767">Новое окно в режиме инкогнито</translation>
 <translation id="3488501490964659223">Вкладки были закрыты, а данные о работе в браузере удалены. Вы вышли из аккаунта.</translation>
+<translation id="3490396108106323715">Поделиться текущей вкладкой</translation>
 <translation id="3493531032208478708">Подробнее <ph name="BEGIN_LINK" />о рекомендованном контенте<ph name="END_LINK" />…</translation>
 <translation id="349446645805573740">Выберите, где сохранить файл <ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />.</translation>
 <translation id="3504377992102007712">Настройки</translation>
@@ -694,6 +695,7 @@
 <translation id="3565012355885596568">Не удалось загрузить изображения</translation>
 <translation id="3565930036634619844">Номер вкладки: <ph name="TAB_INDEX" /> из <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3567168891086460374">Другой способ</translation>
+<translation id="3572503683475187385">Когда вы начинаете новый чат, у Gemini появляется доступ к открытой вкладке. Когда вы делитесь вкладкой с Gemini, ее содержимое и URL отправляются в Google. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">В аккаунте Google</translation>
 <translation id="3575234738189584619">Искать с помощью Объектива</translation>
 <translation id="3575426792457739946">В списке указаны все загруженные профили.</translation>
@@ -737,6 +739,7 @@
 <translation id="3751873026576444885">Остановить поиск по экрану через Google Объектив</translation>
 <translation id="3753408171347588045">Отслеживание цен</translation>
 <translation id="3753618528540214374">Голубовато-зеленая тема</translation>
+<translation id="3759491607478608474">Чтобы получать более подходящие ответы, предоставьте Gemini доступ к контенту текущей вкладки.</translation>
 <translation id="3762232513783804601">Создан специально для iPad</translation>
 <translation id="3768725474733206671">Открыть последнюю закрытую вкладку</translation>
 <translation id="3779810277399252432">Нет доступа к Интернету</translation>
@@ -984,6 +987,7 @@
 <translation id="4650125387981512669">Продолжить как <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4651927776207937667">{count,plural, =1{Скрывать через 1 минуту}one{Скрывать через {count} минуту}few{Скрывать через {count} минуты}many{Скрывать через {count} минут}other{Скрывать через {count} минуты}}</translation>
 <translation id="4652817563047461855">Убедитесь, что пароли в безопасности и не были раскрыты, а также узнайте, как защитить свои данные в интернете. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
+<translation id="4653053602672040238">Предоставить доступ к вкладке</translation>
 <translation id="4658335131052370646">Сохранить</translation>
 <translation id="466307903888586355">Сохранение файлов заблокировано вашей организацией.</translation>
 <translation id="4668929960204016307">,</translation>
@@ -1297,6 +1301,7 @@
 <translation id="5718049162805123412">Смените их прямо сейчас</translation>
 <translation id="5721040778297053709">Поместите банковскую карту в эту рамку.</translation>
 <translation id="572328651809341494">Недавние вкладки</translation>
+<translation id="5724590854763964497">По умолчанию доступ к текущей вкладке открывается, когда вы начинаете новый чат. Содержимое и URL вкладок, которыми вы делитесь, отправляются в Google, но не используются для улучшения моделей генеративного ИИ. Этот параметр можно изменить в любой момент.</translation>
 <translation id="5724941645893276623">Чтобы посещать веб-страницы анонимно, откройте новую вкладку.</translation>
 <translation id="5728072125198221967">Связанные сервисы Google</translation>
 <translation id="5728700505257787410">Не удалось войти в аккаунт.</translation>
@@ -1964,6 +1969,7 @@
 <translation id="8059533439631660104">Сворачивает раздел.</translation>
 <translation id="8061584726507121204">История</translation>
 <translation id="8064946459644399612">Настройки страницы быстрого доступа применены.</translation>
+<translation id="8065556469005366939">Доступ к вкладкам позволяет получать более точные ответы</translation>
 <translation id="8069394452933076548">Выберите, когда неиспользуемые вкладки перемещаются в список неактивных.</translation>
 <translation id="8073670137947914548">Скачивание завершено</translation>
 <translation id="8076492880354921740">Вкладки</translation>
@@ -2132,6 +2138,7 @@
 <translation id="8660600697590740984">Поиск по скопированному изображению с помощью Объектива</translation>
 <translation id="866266761389616183">Опаньки…</translation>
 <translation id="8663764600409216912">Вы используете надежные пароли</translation>
+<translation id="8664992138761940052">По умолчанию доступ к текущей вкладке открывается, когда вы начинаете новый чат. Когда вы делитесь вкладками, их содержимое и URL отправляются в Google. Этот параметр можно изменить в любой момент.</translation>
 <translation id="8668210798914567634">Страница сохранена в список для чтения.</translation>
 <translation id="8672642291731179042">Переводить страницы</translation>
 <translation id="8672733398999596205">Включить все</translation>

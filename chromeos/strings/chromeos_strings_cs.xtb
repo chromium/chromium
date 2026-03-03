@@ -167,6 +167,7 @@
 <translation id="1621067168122174824">Spustit test nabití</translation>
 <translation id="1622402072367425417">zářící bubliny</translation>
 <translation id="1626590945318984973">Zkratka není k dispozici. Stiskněte novou zkratku bez funkčních a kláves a bez klávesy <ph name="META_KEY" />.</translation>
+<translation id="163774412591892664">Administrátor vaše zařízení deaktivoval a může sledovat jeho polohu.</translation>
 <translation id="1639239467298939599">Načítání</translation>
 <translation id="1641857168437328880">Podavač dokumentů (jednostranných)</translation>
 <translation id="1642396894598555413">jízdní kola</translation>
@@ -1723,6 +1724,7 @@ Pokud přepisy chcete získat, stáhněte si pro ně model (až 100 MB).</trans
 <translation id="8584654835905316966">K dokončení aktualizace firmwaru zařízení <ph name="DEVICE_NAME" /> na verzi <ph name="VERSION" /> je potřeba restart. Počítač se může restartovat několikrát. Jedná se o očekávané chování.</translation>
 <translation id="8593058461203131755">pozastavit médium</translation>
 <translation id="8620617069779373398">Stav roamingu</translation>
+<translation id="8624524972189162859">Administrátor organizace <ph name="DOMAIN_NAME" /> vaše zařízení deaktivoval a může sledovat jeho polohu.</translation>
 <translation id="8626489604350149811">Další akce pro <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Světle fialová</translation>
 <translation id="8647595191512746911">Přepis zvuku</translation>

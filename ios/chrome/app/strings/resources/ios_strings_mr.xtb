@@ -668,6 +668,7 @@
 <translation id="3476450923187944815">इतर सर्व अ‍ॅप्सवर तुमचे पासवर्ड अ‍ॅक्सेस करा.</translation>
 <translation id="3485558910355485767">नवीन गुप्त विंडो</translation>
 <translation id="3488501490964659223">टॅब बंद केले गेले होते आणि ब्राउझिंग डेटा हटवला गेला होता. तुम्हाला साइन आउट केले गेले होते</translation>
+<translation id="3490396108106323715">सद्य टॅब शेअर करा</translation>
 <translation id="3493531032208478708">सूचित केलेल्या आशयविषयी <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="349446645805573740">"<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />" कुठे सेव्ह करायची आहे ते निवडा</translation>
 <translation id="3504377992102007712">सेटिंग्ज</translation>
@@ -694,6 +695,7 @@
 <translation id="3565012355885596568">इमेज लोड करता आल्या नाहीत</translation>
 <translation id="3565930036634619844">टॅब. <ph name="NUMBER_OF_TABS" /> पैकी <ph name="TAB_INDEX" /> क्रमांकाचा टॅब.</translation>
 <translation id="3567168891086460374">दुसऱ्या पद्धतीने सेव्ह करा</translation>
+<translation id="3572503683475187385">तुम्ही नवीन चॅट सुरू करता, तेव्हा सद्य टॅब Gemini सोबत शेअर केला जातो. तुम्ही Gemini सोबत टॅब शेअर करता, तेव्हा त्यांमधील आशय आणि URL या गोष्टी Google ला पाठवल्या जातात. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">तुमच्या Google खाते मध्ये</translation>
 <translation id="3575234738189584619">Lens वापरून शोधा</translation>
 <translation id="3575426792457739946">या सूचीमध्ये सर्व लोड केलेल्या प्रोफाइल आहेत.</translation>
@@ -737,6 +739,7 @@
 <translation id="3751873026576444885">Google Lens वापरून तुमची स्क्रीन शोधणे थांबवा</translation>
 <translation id="3753408171347588045">किमतींचा माग ठेवत आहे</translation>
 <translation id="3753618528540214374">विरिडियन थीम</translation>
+<translation id="3759491607478608474">आणखी सुसंबद्ध उत्तरे मिळवण्यासाठी Gemini सोबत सद्य टॅबचा आशय शेअर करा</translation>
 <translation id="3762232513783804601">तुमच्या iPad साठी तयार केलेले</translation>
 <translation id="3768725474733206671">शेवटी बंद केलेला टॅब पुन्हा उघडा</translation>
 <translation id="3779810277399252432">कोणतेही इंटरनेट कनेक्शन नाही.</translation>
@@ -984,6 +987,7 @@
 <translation id="4650125387981512669"><ph name="FIRST_RUN_ACCOUNT_NAME" /> म्हणून पुढे सुरू ठेवा</translation>
 <translation id="4651927776207937667">{count,plural, =1{१ मिनिटानंतर लपवा}other{{count} मिनिटांनंतर लपवा}}</translation>
 <translation id="4652817563047461855">तुमचे पासवर्ड सुरक्षित असल्याची खात्री करा, ते धोक्यात असल्यास शोधा आणि ऑनलाइन असताना स्वतःचे संरक्षण करण्यात मदत करण्यासाठी सल्ला मिळवा. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
+<translation id="4653053602672040238">टॅब शेअरिंग सुरू करा</translation>
 <translation id="4658335131052370646">सेव्ह करा</translation>
 <translation id="466307903888586355">फाइल सेव्ह करणे तुमच्या संस्थेने ब्लॉक केले आहे</translation>
 <translation id="4668929960204016307">,</translation>
@@ -1297,6 +1301,7 @@
 <translation id="5718049162805123412">तुम्ही ते आता बदलले पाहिजेत</translation>
 <translation id="5721040778297053709">या फ्रेममध्ये क्रेडिट कार्ड बसवा</translation>
 <translation id="572328651809341494">अलीकडील टॅब</translation>
+<translation id="5724590854763964497">तुम्ही नवीन चॅट सुरू करता, तेव्हा बाय डीफॉल्ट तुमचा सद्य टॅब शेअर केला जातो. टॅब शेअर केले जातात, तेव्हा त्यांमधील आशय आणि URLs या गोष्टी Google ला पाठवल्या जातात, पण त्या जनरेटिव्ह AI मॉडेलमध्ये सुधारणा करण्यासाठी वापरल्या जाणार नाहीत. तुम्ही हे सेटिंग कधीही बदलू शकता.</translation>
 <translation id="5724941645893276623">वेब खाजगीरीत्‍या ब्राउझ करण्यासाठी नवीन टॅब जोडा</translation>
 <translation id="5728072125198221967">लिंक केलेल्या Google सेवा</translation>
 <translation id="5728700505257787410">क्षमस्व, आपल्या खात्यामध्ये साइन इन करताना काहीतरी समस्या आली.</translation>
@@ -1965,6 +1970,7 @@
 <translation id="8059533439631660104">विभाग संकुचित करा.</translation>
 <translation id="8061584726507121204">इतिहास</translation>
 <translation id="8064946459644399612">तुमची नवीन टॅब पेजसंबंधित प्राधान्ये लागू केली आहेत</translation>
+<translation id="8065556469005366939">तुमचे टॅब शेअर करून आणखी सुसंबद्ध उत्तरे मिळवा</translation>
 <translation id="8069394452933076548">अलीकडे वापरलेले टॅब इनॅक्टिव्ह टॅब विभागात कधी हलवले जातील ते निवडा.</translation>
 <translation id="8073670137947914548">डाउनलोड पूर्ण झाले</translation>
 <translation id="8076492880354921740">टॅब</translation>
@@ -2133,6 +2139,7 @@
 <translation id="8660600697590740984">कॉपी केलेली Lens इमेज</translation>
 <translation id="866266761389616183">अरेरे!</translation>
 <translation id="8663764600409216912">तुम्ही असे पासवर्ड वापरत आहात ज्यांचा अंदाज लावणे कठीण आहे</translation>
+<translation id="8664992138761940052">तुम्ही नवीन चॅट सुरू करता, तेव्हा बाय डीफॉल्ट तुमचा सद्य टॅब शेअर केला जातो. टॅब शेअर केले जातात, तेव्हा त्यांमधील आशय आणि URLs Google ला पाठवल्या जातात. तुम्ही हे सेटिंग कधीही बदलू शकता.</translation>
 <translation id="8668210798914567634">हे पेज तुमच्या वाचन सूचीमध्ये सेव्ह केले गेले आहे.</translation>
 <translation id="8672642291731179042">पेजचे भाषांतर करा</translation>
 <translation id="8672733398999596205">सर्व सुरू करा</translation>

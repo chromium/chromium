@@ -1315,6 +1315,8 @@
 <translation id="3102312643185441063">စုငွေ</translation>
 <translation id="3103188521861412364">စတော့၊ ငွေချေးစာချုပ်</translation>
 <translation id="3105172416063519923">ပိုင်ဆိုင်မှုပြ ID-</translation>
+<translation id="3105223248029915046">ငွေပေးချေမှုအစီအစဉ်များသည် သတ်မှတ်ချက်ပြည့်မီမှုပေါ် မူတည်သည်။
+‘နောက်မှပေး’ ရွေးစရာများကို ဖျောက်ရန် <ph name="BEGIN_LINK" />ငွေပေးချေမှု ဆက်တင်များ<ph name="END_LINK" /> သို့ သွားပါ</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />လုံခြုံသည့် DNS စီစဉ်သတ်မှတ်ချက်ကို စစ်ဆေးနေသည်<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">အလယ်ဗန်း</translation>
 <translation id="3109061346635850169">မျက်နှာ၊ ကိုယ်ခန္ဓာ ပြုစုကုသခြင်း</translation>
@@ -2356,7 +2358,6 @@
 <translation id="4750671009706599284">ဤဖုန်း</translation>
 <translation id="4750917950439032686">သင့်အချက်အလက်များ (ဥပမာ - စကားဝှက်များ သို့မဟုတ် ခရက်တစ်ကတ်နံပါတ်များ) ကို ဤဝဘ်ဆိုက်သို့ ပို့ချိန်တွင် လျှို့ဝှက်သီးသန့်အဖြစ် ထားရှိပါသည်။</translation>
 <translation id="4751249061288707459">သဘောတူညီချက် နောက်ဆုံးအပ်ဒိတ်လုပ်ချိန်-</translation>
-<translation id="4751476147751820511">လှုပ်ရှားမှု သို့မဟုတ် အလင်းအာရုံခံကိရိယာများ</translation>
 <translation id="4754461935447132332">မလုံခြုံသော ဝဘ်ဆိုက်များအတွက် ခွင့်မပြုပါ</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
 <translation id="4757740693289347881">ကုဒ် မမှန်ပါ</translation>
@@ -4360,6 +4361,7 @@
 <translation id="7908648876066812348">ပကတိအသွင်ကတ်ကို ဖွင့်နေသည်</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />၊ ‘တဘ်’ နှိပ်ပြီးနောက် Enter နှိပ်၍ ဆက်တင်များရှိ Chrome လုံခြုံရေး စစ်ဆေးမှု စာမျက်နှာသို့ သွားပါ</translation>
 <translation id="791107458486222637">ရလဒ် ပြန်လုပ်နေသည်</translation>
+<translation id="7911651285409665023">ပိတ်ပြီး “<ph name="TAB_TITLE" />” သို့ ပြန်သွားရန်</translation>
 <translation id="7912924955815015552">Safari မှ ထည့်သွင်းထားသည်</translation>
 <translation id="791551905239004656">ပုံဆွဲခြင်း၊ ဆေးရောင်ခြယ်ခြင်း</translation>
 <translation id="7916162853251942238">Flexo Base</translation>
@@ -5213,7 +5215,6 @@
 <translation id="987264212798334818">အထွေထွေ</translation>
 <translation id="988159990683914416">ပြုစုသူ၏ တည်ဆောက်မှု</translation>
 <translation id="989988560359834682">လိပ်စာ တည်းဖြတ်ရန်</translation>
-<translation id="991413375315957741">လှုပ်ရှားမှု (သို့) အလင်းအာရုံခံကိရိယာများ</translation>
 <translation id="991936891556421157">ဖိနပ်</translation>
 <translation id="992110854164447044">လိမ်လည်ခံရခြင်းမှ ကာကွယ်ပေးနိုင်ရန်အတွက် ပကတိအသွင်ကတ်သည် သင့်ကတ်အစစ်ကို ဖျောက်ပေးသည်။ <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="992115559265932548"><ph name="MICROSOFT_ACTIVE_DIRECTORY" /></translation>

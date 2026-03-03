@@ -66,7 +66,6 @@
 <translation id="1677097821151855053">Cookies en andere sitegegevens worden gebruikt om je te onthouden, bijvoorbeeld voor inloggen of gepersonaliseerde advertenties. Ga naar <ph name="BEGIN_LINK" />Instellingen<ph name="END_LINK" /> om de cookies voor alle sites te beheren.</translation>
 <translation id="1679305402657584804">Sites kunnen vragen of ze NFC-apparaten mogen gebruiken</translation>
 <translation id="1686785653877010442">Sites sturen meestal meldingen om je op de hoogte te houden van actueel nieuws of nieuwe chatberichten.</translation>
-<translation id="169515064810179024">Sites geen toegang tot bewegingssensoren geven</translation>
 <translation id="1703666494654169921">Niet toestaan dat sites virtualreality-apparaten of -gegevens gebruiken</translation>
 <translation id="1704230497453185209">Niet toestaan dat sites geluid afspelen</translation>
 <translation id="1717218214683051432">Bewegingssensoren</translation>
@@ -235,7 +234,6 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:
 <translation id="3232293466644486101">Browsegegevens verwijderen…</translation>
 <translation id="3242646949159196181">Als deze optie aanstaat, kunnen sites geluid afspelen. Staat de optie uit, dan kunnen sites geen geluid afspelen.</translation>
 <translation id="3273479183583863618">Prijsdalingen op tabbladen</translation>
-<translation id="3277252321222022663">Sites toegang geven tot sensoren (aanbevolen)</translation>
 <translation id="3285500645985761267">Toestaan dat gerelateerde sites je activiteit in de groep zien</translation>
 <translation id="3295019059349372795">Hoofdstuk 11: De prachtige Smaragden Stad van Oz</translation>
 <translation id="3295602654194328831">Informatie verbergen</translation>
@@ -371,7 +369,6 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:
 <translation id="4672315773691449562">Tik op Browser-app en daarna op Chrome</translation>
 <translation id="4676059169848868271">Als je <ph name="APP_NAME" /> handen volgen wilt laten gebruiken, zet je handen volgen ook aan via de <ph name="BEGIN_LINK" />systeeminstellingen<ph name="END_LINK" />.</translation>
 <translation id="4688045258817337666">Je kaarten beheren</translation>
-<translation id="4751476147751820511">Bewegings- of lichtsensoren</translation>
 <translation id="4755971844837804407">Als deze optie aanstaat, kunnen sites elke advertentie aan je tonen. Staat de optie uit, dan kunnen sites geen opdringerige of misleidende advertenties tonen.</translation>
 <translation id="4779083564647765204">Zoom</translation>
 <translation id="4807122856660838973">Safe Browsing aanzetten</translation>
@@ -398,7 +395,6 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:
 <translation id="5001526427543320409">Cookies van derden</translation>
 <translation id="5007392906805964215">Bekijken</translation>
 <translation id="5039804452771397117">Toestaan</translation>
-<translation id="5048398596102334565">Sites toegang geven tot bewegingssensoren (aanbevolen)</translation>
 <translation id="5048841907079026162">Je browsegegevens beheren</translation>
 <translation id="5050380848339752099">Deze site staat op het punt buiten de incognitomodus informatie met een app te delen.</translation>
 <translation id="5063480226653192405">Gebruik</translation>
@@ -686,7 +682,6 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:
 <translation id="8088603949666785339">Meer opties in de <ph name="BANNER_TITLE" /></translation>
 <translation id="8112925981674547014">Tabbladen bekijken in je app-lijst</translation>
 <translation id="8116925261070264013">Geluid uit</translation>
-<translation id="8117244575099414087">Als deze optie aanstaat, kunnen sites de sensoren van je apparaat gebruiken. Staat de optie uit, dan kunnen sites geen sensoren gebruiken.</translation>
 <translation id="813082847718468539">Sitegegevens bekijken</translation>
 <translation id="8131740175452115882">Bevestigen</translation>
 <translation id="8148160259207090265">Deze instelling blijft aanstaan zolang je Geavanceerde beveiliging hebt aangezet in de Android-instellingen.</translation>
@@ -762,7 +757,6 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:
 <translation id="8801657293260363985">V8 is de JavaScript- en WebAssembly-engine van Chrome die wordt gebruikt om de sitesprestaties te verbeteren</translation>
 <translation id="8803526663383843427">Als dit aanstaat</translation>
 <translation id="8805385115381080995">Je kunt sneller browsen omdat een site je minder vaak vraagt te verifiëren dat je een echte persoon bent</translation>
-<translation id="8816026460808729765">Sites geen toegang tot sensoren geven</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8874790741333031443">Sta cookies van derden tijdelijk toe. Dit betekent dat je minder browserbeveiliging hebt, maar dat sitefuncties waarschijnlijk wel werken zoals verwacht.</translation>
 <translation id="8889294078294184559">Terwijl je browst, kunnen sites via Chrome checken en met een eerder bezochte site verifiëren dat je waarschijnlijk een echte persoon bent</translation>

@@ -1613,6 +1613,7 @@
 <translation id="3575121482199441727">Разрешить для этого сайта</translation>
 <translation id="3575168918110434329">A4x7</translation>
 <translation id="3575589330755445706">Выбран вариант "Улица"</translation>
+<translation id="3576315803647905285">Сделать формальнее</translation>
 <translation id="3576616784287504635">Подтвердите действие на странице <ph name="SITE" /></translation>
 <translation id="3577473026931028326">Произошла ошибка. Повторите попытку.</translation>
 <translation id="3577902790357386792">Гимнастика</translation>
@@ -2356,7 +2357,6 @@
 <translation id="4750671009706599284">этот смартфон</translation>
 <translation id="4750917950439032686">Информация, которую вы сообщаете этому сайту (например, пароли и номера банковских карт), защищена.</translation>
 <translation id="4751249061288707459">Последнее обновление данных о согласии:</translation>
-<translation id="4751476147751820511">Датчики движения и освещенности</translation>
 <translation id="4754461935447132332">Запрещено для незащищенных сайтов</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
 <translation id="4757740693289347881">Недопустимый код.</translation>
@@ -2636,6 +2636,7 @@
 <translation id="5190835502935405962">Панель закладок</translation>
 <translation id="5191315092027169558">Вашим профилем управляет <ph name="DOMAIN" /></translation>
 <translation id="51918995459521422">Сайт <ph name="ORIGIN" /> запрашивает разрешение на скачивание нескольких файлов.</translation>
+<translation id="5199121357983849992">Сохранить информацию об удостоверении личности?</translation>
 <translation id="5200063972779787617">Сохранить адрес в аккаунте</translation>
 <translation id="5201306358585911203">Подтвердите действие</translation>
 <translation id="5203716867500274632">Администратор включил синхронизацию следующих параметров между предыдущим и текущим сеансами на ваших устройствах с ChromeOS:</translation>
@@ -2684,6 +2685,7 @@
 <translation id="5266128565379329178">Скрепление сверху</translation>
 <translation id="5269225904387178860">Четыре отверстия снизу</translation>
 <translation id="5271381225185906340">условие "<ph name="DATA_CONTROLS_ATTRIBUTE" />" не поддерживается для "<ph name="DATA_CONTROLS_RESTRICTION" />".</translation>
+<translation id="527191520368130807">Доработать</translation>
 <translation id="5273658854610202413">Внимание! Это правило не объединено в соответствии с правилом PolicyDictionaryMultipleSourceMergeList, так как оно не относится к словарю.</translation>
 <translation id="5278778426231952189">Загрузить сейчас</translation>
 <translation id="5279286380302340275">Открыть список скачанных файлов</translation>
@@ -3584,6 +3586,7 @@
 <translation id="6698097747703777657">Не пришел код? <ph name="BEGIN_LINK" />Получить новый<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">Создано:</translation>
 <translation id="6698769547327354196">Чтобы отключить Pix в Chrome, перейдите в <ph name="BEGIN_LINK1" />платежные настройки<ph name="END_LINK1" />.</translation>
+<translation id="669903922988126943">Сохраните информацию, чтобы быстрее выполнять действия, например заполнять формы в продуктах Google. Вы можете <ph name="MANAGE_INFO_LINK" /> в приложении "<ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />" для аккаунта <ph name="ACCOUNT" />.</translation>
 <translation id="67007264085648978">Ползунок времени</translation>
 <translation id="6702851555558236418">ПО для работы со звуком и музыкой</translation>
 <translation id="6702919718839027939">Режим презентации</translation>
@@ -4075,6 +4078,7 @@
 <translation id="746412105358554870">Оптимизация и безопасность JavaScript</translation>
 <translation id="7465036432780054056">Сайт "<ph name="EMBEDDED_URL" />" получит информацию о том, что вы посетили страницу "<ph name="TOP_LEVEL_URL" />".</translation>
 <translation id="7465963048299965912">10 x 13 дюймов</translation>
+<translation id="7467332121947433617">Изменить информацию об удостоверении личности?</translation>
 <translation id="7469935732330206581">Форма не защищена</translation>
 <translation id="7470854469646445678">Укажите, зачем вы хотите скопировать файл (обязательно)</translation>
 <translation id="7471007961486718967">Укажите, зачем вы хотите передать файл (обязательно)</translation>
@@ -4096,6 +4100,7 @@
 <translation id="7499188644237027195">При покупках в Chrome вы можете воспользоваться электронным кошельком или системой Pix</translation>
 <translation id="7500917112031739411">Отсортировать по группам</translation>
 <translation id="7501663406926337752">Сайт, который вы хотите открыть, запрещен вашей организацией</translation>
+<translation id="7502044688973049724">управлять своими данными</translation>
 <translation id="7507075214339298899">Конверт 9</translation>
 <translation id="7508255263130623398">Возвращенный идентификатор устройства пуст или не соответствует имеющемуся</translation>
 <translation id="7508577201115425418">Полиграфические услуги</translation>
@@ -5148,6 +5153,7 @@
 <translation id="9191834167571392248">Отверстие в левом нижнем углу</translation>
 <translation id="9192361865877479444">Металл (матовый)</translation>
 <translation id="9192947025498305328">Экологически чистая косметика</translation>
+<translation id="9193018794001479794">Дополнить</translation>
 <translation id="9195969368671142407">Это значит, что вы не можете делиться группами вкладок и присоединяться к ним.</translation>
 <translation id="9198613052465150219">В вашем аккаунте Google также могут храниться другие данные истории браузера. Вы найдете их на странице <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />.</translation>
 <translation id="9199905725844810519">Печать заблокирована</translation>
@@ -5214,7 +5220,6 @@
 <translation id="987264212798334818">Общие</translation>
 <translation id="988159990683914416">Сборка для разработчиков</translation>
 <translation id="989988560359834682">Изменение адреса</translation>
-<translation id="991413375315957741">датчики движения и освещенности</translation>
 <translation id="991936891556421157">Обувь</translation>
 <translation id="992110854164447044">Виртуальная карта помогает скрыть ваши данные от мошенников. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="992115559265932548"><ph name="MICROSOFT_ACTIVE_DIRECTORY" /></translation>

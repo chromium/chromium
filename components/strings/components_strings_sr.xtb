@@ -1310,6 +1310,8 @@
 <translation id="3102312643185441063">Штедни рачун</translation>
 <translation id="3103188521861412364">Акције и обвезнице</translation>
 <translation id="3105172416063519923">ИД елемента:</translation>
+<translation id="3105223248029915046">Планови плаћања подлежу условима.
+Да бисте сакрили опције за касније плаћање, идите у <ph name="BEGIN_LINK" />подешавања плаћања<ph name="END_LINK" /></translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />да проверите конфигурацију безбедног DNS-а<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Средња фиока</translation>
 <translation id="3109061346635850169">Нега лица и тела</translation>
@@ -2355,7 +2357,6 @@
 <translation id="4750671009706599284">овог телефона</translation>
 <translation id="4750917950439032686">Информације (на пример, лозинке или бројеви кредитних картица) су приватне када се шаљу овом сајту.</translation>
 <translation id="4751249061288707459">Последње ажурирање сагласности:</translation>
-<translation id="4751476147751820511">Сензори за покрет или светло</translation>
 <translation id="4754461935447132332">Није дозвољено за небезбедне сајтове</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
 <translation id="4757740693289347881">Кôд је неважећи</translation>
@@ -4359,6 +4360,7 @@
 <translation id="7908648876066812348">Виртуелна картица се укључује</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, притисните Tab, па Enter да бисте отишли на страницу Chrome провере безбедности у подешавањима</translation>
 <translation id="791107458486222637">Резултат се понавља</translation>
+<translation id="7911651285409665023">Затвори и врати се на картицу <ph name="TAB_TITLE" /></translation>
 <translation id="7912924955815015552">Увоз из прегледача Safari</translation>
 <translation id="791551905239004656">Цртање и бојење</translation>
 <translation id="7916162853251942238">Flexo база</translation>
@@ -5212,7 +5214,6 @@
 <translation id="987264212798334818">Опште</translation>
 <translation id="988159990683914416">Верзија за програмере</translation>
 <translation id="989988560359834682">Измена адресе</translation>
-<translation id="991413375315957741">сензори за покрет или светло</translation>
 <translation id="991936891556421157">Обућа</translation>
 <translation id="992110854164447044">Виртуелна картица крије вашу стварну картицу да би вас заштитила од потенцијалне преваре. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="992115559265932548"><ph name="MICROSOFT_ACTIVE_DIRECTORY" /></translation>

@@ -1311,6 +1311,8 @@
 <translation id="3102312643185441063">Ашчадны рахунак</translation>
 <translation id="3103188521861412364">Акцыі і аблігацыі</translation>
 <translation id="3105172416063519923">Ідэнтыфікатар аб’екта ўласнасці:</translation>
+<translation id="3105223248029915046">Тарыфныя планы даступныя пры адпаведнасці патрабаванням.
+Каб схаваць параметры аплаты ў растэрміноўку, адкрыйце <ph name="BEGIN_LINK" />налады аплаты<ph name="END_LINK" /></translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />Праверыць канфігурацыю абароненай DNS<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Сярэдні латок</translation>
 <translation id="3109061346635850169">Догляд твару і цела</translation>
@@ -2355,7 +2357,6 @@
 <translation id="4750671009706599284">гэты тэлефон</translation>
 <translation id="4750917950439032686">Ваша інфармацыя (напрыклад, паролі або нумары крэдытных картак) пры адпраўцы на гэты сайт застаецца прыватнай.</translation>
 <translation id="4751249061288707459">Апошняе абнаўленне даных аб згодзе:</translation>
-<translation id="4751476147751820511">Датчыкі руху або святла</translation>
 <translation id="4754461935447132332">Забаронена на сайтах, якія не з’яўляюцца бяспечнымі</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
 <translation id="4757740693289347881">Няправільны код</translation>
@@ -4359,6 +4360,7 @@
 <translation id="7908648876066812348">Віртуальная картка падключаецца</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб перайсці на старонку праверкі бяспекі Chrome у наладах, націсніце Tab, затым Увод.</translation>
 <translation id="791107458486222637">Вынік будзе атрыманы паўторна</translation>
+<translation id="7911651285409665023">Закрыць і вярнуцца на ўкладку "<ph name="TAB_TITLE" />"</translation>
 <translation id="7912924955815015552">Імпартаваныя з Safari</translation>
 <translation id="791551905239004656">Рысаванне і размалёўванне</translation>
 <translation id="7916162853251942238">Аснова для флексаграфічнага друку</translation>
@@ -5211,7 +5213,6 @@
 <translation id="987264212798334818">Агульныя</translation>
 <translation id="988159990683914416">Зборка для распрацоўшчыкаў</translation>
 <translation id="989988560359834682">Рэдагаваць адрас</translation>
-<translation id="991413375315957741">датчыкі руху або святла</translation>
 <translation id="991936891556421157">Абутак</translation>
 <translation id="992110854164447044">Каб абараніць вас ад патэнцыяльнага махлярства, замест захаванай вамі карткі будзе паказвацца віртуальная. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="992256792861109788">Ружовы</translation>

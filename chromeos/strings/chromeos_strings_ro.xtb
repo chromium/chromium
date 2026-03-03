@@ -167,6 +167,7 @@
 <translation id="1621067168122174824">Rulează testul Încărcare</translation>
 <translation id="1622402072367425417">bule strălucitoare</translation>
 <translation id="1626590945318984973">Comanda rapidă nu este disponibilă. Introdu o nouă comandă rapidă fără să folosești tastele de funcții și <ph name="META_KEY" />.</translation>
+<translation id="163774412591892664">Administratorul ți-a dezactivat dispozitivul și îi poate accesa locația.</translation>
 <translation id="1639239467298939599">Se încarcă</translation>
 <translation id="1641857168437328880">Alimentator de documente (o singură față)</translation>
 <translation id="1642396894598555413">biciclete</translation>
@@ -1723,6 +1724,7 @@ Descarcă modelul de transcriere (până la 100 MB) pentru a obține aceste tran
 <translation id="8584654835905316966">Este necesară o repornire pentru a finaliza instalarea firmware-ului pentru <ph name="DEVICE_NAME" /> la versiunea <ph name="VERSION" />. Poate părea că computerul repornește de câteva ori. Acest comportament este normal.</translation>
 <translation id="8593058461203131755">întrerupe conținutul media</translation>
 <translation id="8620617069779373398">Stare roaming</translation>
+<translation id="8624524972189162859">Administratorul <ph name="DOMAIN_NAME" /> ți-a dezactivat dispozitivul și îi poate accesa locația.</translation>
 <translation id="8626489604350149811">Mai multe acțiuni pentru <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Mov deschis</translation>
 <translation id="8647595191512746911">Transcriere audio</translation>

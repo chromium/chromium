@@ -66,7 +66,6 @@
 <translation id="1677097821151855053">Plików cookie i innych danych stron używamy, żeby Cię zapamiętać, na przykład w celu logowania czy personalizowania reklam. Plikami cookie wszystkich stron możesz zarządzać w <ph name="BEGIN_LINK" />Ustawieniach<ph name="END_LINK" />.</translation>
 <translation id="1679305402657584804">Strony mogą prosić o zgodę na używanie urządzeń NFC</translation>
 <translation id="1686785653877010442">Witryny zazwyczaj wysyłają powiadomienia o aktualnościach lub wiadomościach czatu.</translation>
-<translation id="169515064810179024">Blokuj stronom dostęp do czujników ruchu</translation>
 <translation id="1703666494654169921">Nie zezwalaj witrynom na używanie urządzeń ani danych rzeczywistości wirtualnej</translation>
 <translation id="1704230497453185209">Nie zezwalaj witrynom na odtwarzanie dźwięków</translation>
 <translation id="1717218214683051432">Czujniki ruchu</translation>
@@ -235,7 +234,6 @@ Zaawansowana ochrona kontroluje te ustawienia Chrome:
 <translation id="3232293466644486101">Usuń dane przeglądania…</translation>
 <translation id="3242646949159196181">Gdy ta opcja jest włączona, strony internetowe mogą odtwarzać dźwięk. Gdy jest wyłączona, nie mogą tego robić.</translation>
 <translation id="3273479183583863618">Obniżki cen na kartach</translation>
-<translation id="3277252321222022663">Zezwalaj stronom na dostęp do czujników (zalecane)</translation>
 <translation id="3285500645985761267">Zezwalaj powiązanym witrynom na dostęp do danych o Twojej aktywności w grupie</translation>
 <translation id="3295019059349372795">Rozdział 11: Szmaragdowe Miasto</translation>
 <translation id="3295602654194328831">Ukryj informacje</translation>
@@ -371,7 +369,6 @@ Zaawansowana ochrona kontroluje te ustawienia Chrome:
 <translation id="4672315773691449562">Kliknij Przeglądarka, a potem Chrome</translation>
 <translation id="4676059169848868271">Aby umożliwić <ph name="APP_NAME" /> śledzenie rąk, włącz tę opcję w <ph name="BEGIN_LINK" />ustawieniach systemu<ph name="END_LINK" />.</translation>
 <translation id="4688045258817337666">Zarządzanie kartami</translation>
-<translation id="4751476147751820511">Czujniki ruchu lub światła</translation>
 <translation id="4755971844837804407">Gdy ta opcja jest włączona, strony internetowe mogą wyświetlać dowolne reklamy. Gdy jest wyłączona, strony nie mogą wyświetlać reklam uciążliwych ani wprowadzających w błąd.</translation>
 <translation id="4779083564647765204">Powiększ</translation>
 <translation id="4807122856660838973">Włącz Bezpieczne przeglądanie</translation>
@@ -398,7 +395,6 @@ Zaawansowana ochrona kontroluje te ustawienia Chrome:
 <translation id="5001526427543320409">Pliki cookie innych firm</translation>
 <translation id="5007392906805964215">Sprawdź</translation>
 <translation id="5039804452771397117">Zezwalaj</translation>
-<translation id="5048398596102334565">Zezwalaj stronom na dostęp do czujników ruchu (zalecane)</translation>
 <translation id="5048841907079026162">Zarządzaj danymi przeglądania</translation>
 <translation id="5050380848339752099">Ta strona zamierza udostępnić informacje aplikacji poza trybem incognito.</translation>
 <translation id="5063480226653192405">Wykorzystanie</translation>
@@ -686,7 +682,6 @@ Zaawansowana ochrona kontroluje te ustawienia Chrome:
 <translation id="8088603949666785339">Więcej opcji w banerze <ph name="BANNER_TITLE" /></translation>
 <translation id="8112925981674547014">Karty Widok na liście aplikacji</translation>
 <translation id="8116925261070264013">Wyciszone</translation>
-<translation id="8117244575099414087">Gdy ta opcja jest włączona, strony internetowe mogą używać czujników urządzenia. Gdy jest wyłączona, strony nie mogą używać czujników.</translation>
 <translation id="813082847718468539">Wyświetl informacje o witrynie</translation>
 <translation id="8131740175452115882">Potwierdź</translation>
 <translation id="8148160259207090265">To ustawienie pozostanie włączone tak długo, jak długo masz włączoną Ochronę zaawansowaną w ustawieniach Androida.</translation>
@@ -762,7 +757,6 @@ Zaawansowana ochrona kontroluje te ustawienia Chrome:
 <translation id="8801657293260363985">V8 to mechanizm JavaScript i WebAssembly w Chrome używany do zwiększania wydajności witryny</translation>
 <translation id="8803526663383843427">Kiedy funkcja jest włączona</translation>
 <translation id="8805385115381080995">Przeglądanie działa szybciej, bo witryny rzadziej proszą o potwierdzenie, że jesteś prawdziwą osobą.</translation>
-<translation id="8816026460808729765">Blokuj stronom dostęp do czujników</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8874790741333031443">Spróbuj tymczasowo zezwolić na pliki cookie innych firm – oznacza to słabszą ochronę podczas przeglądania, ale jest większa szansa na to, że funkcje witryny będą działać zgodnie z oczekiwaniami.</translation>
 <translation id="8889294078294184559">Witryny, które przeglądasz, mogą sprawdzać te informacje w Chrome i uzyskiwać potwierdzenie z wcześniej odwiedzonej witryny, że prawdopodobnie jesteś prawdziwą osobą.</translation>

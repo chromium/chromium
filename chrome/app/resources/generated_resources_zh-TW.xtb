@@ -679,6 +679,7 @@
 <translation id="1453561711872398978">傳送<ph name="BEGIN_LINK" />偵錯記錄<ph name="END_LINK" /> (建議)</translation>
 <translation id="1454223536435069390">擷取螢幕畫面(&amp;A)</translation>
 <translation id="145432137617179457">拼字檢查支援的語言</translation>
+<translation id="1455009947184333152">已刪除技能</translation>
 <translation id="1455119378540982311">預設視窗大小</translation>
 <translation id="1456849775870359518">你的分頁會重新開啟</translation>
 <translation id="146000042969587795">此框架由於包含不安全的內容，已被封鎖。</translation>
@@ -1333,6 +1334,7 @@
 <translation id="1886996562706621347">允許網站要求成為通訊協定的預設處理常式 (建議)</translation>
 <translation id="1887210448491286312">停止將分頁投放到「<ph name="DEVICE_NAME" />」</translation>
 <translation id="1887442540531652736">登入錯誤</translation>
+<translation id="1888692623866312036">已儲存技能</translation>
 <translation id="1890026367080681123">前往嵌入的內容設定</translation>
 <translation id="189035593835762169">條款及細則</translation>
 <translation id="1891362123137972260">磁碟空間嚴重不足，請釋出磁碟空間。</translation>
@@ -1840,6 +1842,7 @@
 <translation id="2232751457155581899">網站可要求追蹤你的攝影機位置</translation>
 <translation id="2233502537820838181">更多資訊(&amp;M)</translation>
 <translation id="223356358902285214">網路和應用程式活動</translation>
+<translation id="2234031676056123135">自訂快速鍵</translation>
 <translation id="2234065144797002621">溪流</translation>
 <translation id="2234208862050358325">按下 1、2、3、q、e、a、s、d 鍵移動游標</translation>
 <translation id="2234827758954819389">隱私權指南</translation>
@@ -3098,10 +3101,12 @@
 <translation id="3048589239114571785">播放 (K 鍵)</translation>
 <translation id="3048742847101793553">這個檔案掃描失敗，因此遭到貴機構封鎖。</translation>
 <translation id="3048917188684939573">投放與裝置記錄</translation>
+<translation id="3049356453907822148">新增技能</translation>
 <translation id="3051250416341590778">顯示大小</translation>
 <translation id="3053013834507634016">憑證金鑰用途</translation>
 <translation id="3053273573829329829">啟用使用者 PIN 碼</translation>
 <translation id="3053274730492362225">不閃爍</translation>
+<translation id="3057938290530993634">按住即可釘選最常造訪的網站，方便下次存取</translation>
 <translation id="3058498974290601450">你隨時可以在設定中開啟同步功能</translation>
 <translation id="3060952009917586498">變更裝置語言。目前語言為<ph name="LANGUAGE" />。</translation>
 <translation id="3060987956645097882">無法與你的手機建立連線。請確認你的手機在附近，且已解鎖及開啟藍牙和 Wi-Fi。</translation>
@@ -3258,6 +3263,7 @@
 <translation id="3182749001423093222">拼字檢查</translation>
 <translation id="3183139917765991655">設定檔匯入工具</translation>
 <translation id="3183143381919926261">行動數據網路</translation>
+<translation id="3183428991752322898">清除鍵盤快速鍵</translation>
 <translation id="3183700187146209259">無法安裝掃描器軟體</translation>
 <translation id="3183750649832309748">貴機構 (<ph name="ACCOUNT_MANAGER" />) 將可查看部分資訊，包括：</translation>
 <translation id="3183944777708523606">顯示器排列位置</translation>
@@ -3346,6 +3352,7 @@
 <translation id="3247649647204519958">你可以在這裡查看及管理擴充功能在目前網站上的權限</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - 網路錯誤</translation>
 <translation id="3248902735035392926">安全至上。現在就花點時間<ph name="BEGIN_LINK" />檢查擴充功能<ph name="END_LINK" />吧</translation>
+<translation id="3250374026663843838">管理技能</translation>
 <translation id="3251119461199395237">檔案同步處理</translation>
 <translation id="3251759466064201842">&lt;不是憑證的一部分&gt;</translation>
 <translation id="3252169590975855820">你可以透過 Google 密碼管理工具使用這組密碼</translation>
@@ -5177,6 +5184,7 @@
 <translation id="4469324811108161144">附註最多可以儲存 <ph name="CHARACTER_LIMIT" /> 個半形字元。</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> 可以編輯「<ph name="FOLDERNAME" />」中的檔案</translation>
 <translation id="4470957202018033307">外部儲存空間偏好設定</translation>
+<translation id="4471250205822310967">Gemini 選取疊加</translation>
 <translation id="4471354919263203780">正在下載語音辨識檔案...<ph name="PERCENT" />%</translation>
 <translation id="4472194221638903160">使用 AI 將分頁加入群組</translation>
 <translation id="4472298120638043495">你可以使用偏好的 Google 帳戶語言 (<ph name="NEW_LOCALE_FROM_GAIA" />)</translation>
@@ -6501,6 +6509,7 @@
 <translation id="539882584649709174">協助在網路上撰寫評論等簡短內容</translation>
 <translation id="5400196580536813396">不得尋找或使用能存取你裝置的印表機</translation>
 <translation id="5400836586163650660">灰</translation>
+<translation id="5400933848253186401">運用 Gemini 摘錄重點</translation>
 <translation id="5402367795255837559">點字</translation>
 <translation id="5402815541704507626">使用行動數據下載更新</translation>
 <translation id="5404557844330880551">進一步瞭解產品比較</translation>
@@ -6975,7 +6984,6 @@
 <translation id="5734697361979786483">新增檔案共用區</translation>
 <translation id="573520097779121706">按下 7、8、9、u、o、j、k、l 鍵移動游標</translation>
 <translation id="5736092224453113618">{NUM_FILES,plural, =0{這項資料或裝置不符合貴機構的部分安全性政策規定。請洽詢管理員，瞭解需要修正的項目。}=1{這個檔案或裝置不符合貴機構的部分安全性政策規定。請洽詢管理員，瞭解需要修正的項目。}other{這些檔案不符合貴機構的部分安全性政策規定。請洽詢管理員，瞭解需要修正的項目。}}</translation>
-<translation id="5736345781200955827">建立、儲存及管理密碼，用 Chrome 即可輕鬆登入網站和應用程式</translation>
 <translation id="5738093759615225354">你必須有這個密碼金鑰，才能登入 Windows 電腦</translation>
 <translation id="5738386565827477765">音訊裝置</translation>
 <translation id="5739017626473506901">登入以協助<ph name="USER_NAME" />新增學校帳戶</translation>
@@ -9132,7 +9140,7 @@
 <translation id="7225082563376899794">填入密碼時使用 Windows Hello 驗證</translation>
 <translation id="7225179976675429563">找不到網路類型</translation>
 <translation id="7226163413959353072">AI 助理可提供重點摘要、說明概念、尋找答案等</translation>
-<translation id="7227235818314667565">管理分享的群組</translation>
+<translation id="7227235818314667565">管理共用設定</translation>
 <translation id="7227458944009118910">下列應用程式也可以處理通訊協定連結。其他應用程式則會要求授權。</translation>
 <translation id="7228056665272655255">如要設定指紋，請讓孩子輕觸鍵盤右上角的指紋感應器。孩子的指紋資料會安全地儲存在這部「<ph name="DEVICE_TYPE" />」上，絕不會外洩。</translation>
 <translation id="7228523857728654909">螢幕鎖定和登入</translation>
@@ -11906,6 +11914,7 @@
 <translation id="9061521313218438086">如果 Chrome 發現你的密碼曾在公開資料侵害事件中外洩，Google 密碼管理工具可能會在你登入時建議變更密碼。</translation>
 <translation id="9061694916020926968">需要登入 Google 帳戶才能使用 Steam for Chromebook (Beta 版)。請登入帳戶，然後再試一次。</translation>
 <translation id="9062468308252555888">14 倍</translation>
+<translation id="9062873887761404531">清除導覽快速鍵</translation>
 <translation id="9063208415146866933">第 <ph name="ERROR_LINE_START" /> 至第 <ph name="ERROR_LINE_END" /> 行有錯誤</translation>
 <translation id="9064275926664971810">啟用自動填入功能，輕鬆一按即可填妥表單</translation>
 <translation id="9065203028668620118">編輯</translation>

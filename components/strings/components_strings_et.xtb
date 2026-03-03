@@ -230,6 +230,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="1358187717814494928">Loo arvutustabel</translation>
 <translation id="1358223345833465883">Teie otsingumootor Chromiumis</translation>
 <translation id="1359836962251219822">Kööginõud ja söögiriistad</translation>
+<translation id="136059610328993645">Teie teave salvestatakse Google Walletisse kontole <ph name="ACCOUNT" />. Saate seda kasutada Google'i teenustes, et vorme kiiremini täita.</translation>
 <translation id="1360955481084547712">Privaatselt sirvimiseks avage uus inkognito aken</translation>
 <translation id="1361528602584216624">Limiit Pixi kohta <ph name="TRANSACTION_LIMIT" /> R$</translation>
 <translation id="1363015776076529485">Saadaolevad makseviisid, mida saab maksmise jätkamiseks valida, on avatud täiskõrgusel.</translation>
@@ -252,6 +253,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="1392813880755413602">OpenDocumenti esitlus</translation>
 <translation id="139305205187523129">Host <ph name="HOST_NAME" /> ei saatnud andmeid.</translation>
 <translation id="1393071644879491291">Saidil, mida proovisite külastada, võivad ründajad meelitada teid tarkvara installima või näiteks paroole, telefoni- või krediitkaardinumbreid avaldama. Chrome soovitab tungivalt turvalisse keskkonda naasta. <ph name="BEGIN_LEARN_MORE_LINK" />Lisateave selle hoiatuse kohta<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="1402151528875251561">Kuva ajalugu külgpaneelil</translation>
 <translation id="1405567553485452995">Heleroheline</translation>
 <translation id="1406370515365284486">Teie makseviisid jäävad salvestatuks.</translation>
 <translation id="1406500794671479665">Kinnitamine ...</translation>
@@ -1308,6 +1310,8 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="3102312643185441063">Hoiukonto</translation>
 <translation id="3103188521861412364">Aktsiad ja võlakirjad</translation>
 <translation id="3105172416063519923">Vara ID:</translation>
+<translation id="3105223248029915046">Maksegraafikutele kehtivad sobilikkuse nõuded.
+Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph name="END_LINK" />.</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />Turvalise DNS-i seadistuse kontrollimine<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Keskmine salv</translation>
 <translation id="3109061346635850169">Näo- ja kehahooldus</translation>
@@ -1450,6 +1454,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="33073482541490531">Äsja kasutatud parool leiti andmetega seotud rikkumisest. Paroolihaldur soovitab kohe seda parooli muuta.</translation>
 <translation id="3307649904964670439">Nupp Chrome'i kohandamine, aktiveerige nupp, et kohandada oma brauseri välimust</translation>
 <translation id="3308006649705061278">Organisatsiooniüksus (OU)</translation>
+<translation id="3310946375819654151">Chrome proovib rakenduses <ph name="APP_NAME" /> sisestada teie delikaatset teavet.</translation>
 <translation id="3312952471765023168">Üleslaadimine õnnestus</translation>
 <translation id="3318016344440038475">Telekomöödiad</translation>
 <translation id="3324687287337751929">4 × 6 tolli</translation>
@@ -1740,6 +1745,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="3752181611900535304">Kas salvestada aadress kontole?</translation>
 <translation id="3752543821772132562">Eirati, sest reegel <ph name="POLICY_NAME" /> on seadistamata.</translation>
 <translation id="3754210790023674521">Välju režiimist Pilt pildis</translation>
+<translation id="3754664361823138853">&amp;Ava ajaloo leht</translation>
 <translation id="3759461132968374835">Hiljuti teatatud krahhe ei ole. Siin ei ilmu krahhid, mis toimusid siis, kui krahhide aruandlus oli keelatud.</translation>
 <translation id="3760561303380396507">Kas kasutada CVC asemel Windows Hello autentimist?</translation>
 <translation id="3761171036307311438">Kaardil olev nimi:</translation>
@@ -2351,7 +2357,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="4750671009706599284">selle telefoniga</translation>
 <translation id="4750917950439032686">Teie teave (nt paroolid või krediitkaardi numbrid) on sellele saidile saates privaatne.</translation>
 <translation id="4751249061288707459">Nõusoleku viimase värskendamise aeg:</translation>
-<translation id="4751476147751820511">Liikumis- või valgusandurid</translation>
 <translation id="4754461935447132332">Pole ebaturvaliste saitide puhul lubatud</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
 <translation id="4757740693289347881">Kood on kehtetu</translation>
@@ -2751,6 +2756,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="5385966243497224160">Mitte-HTTPS-i URL-i eelvaadet ei saa kuvada</translation>
 <translation id="5386426401304769735">Selle saidi sertifikaadiahel sisaldab sertifikaati, mis on allkirjastatud SHA-1-ga.</translation>
 <translation id="5391010642126249196">Külastasite</translation>
+<translation id="5391306025131596142">&amp;Ava ajaloo leht</translation>
 <translation id="539203134595252721">Lauatennis</translation>
 <translation id="5392506727170022660">Metall (poolmatt)</translation>
 <translation id="5394069166371280357">Peredele suunatud telesaated</translation>
@@ -3545,6 +3551,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6655085656059574817">Konto lingituna hoidmine võimaldab teenusega <ph name="BNPL_ISSUER_NAME" /> kiiremini maksta, aga kui soovite linkimise tühistada, minge saidile <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" />.</translation>
 <translation id="6656935431494847393">Sisaldab teavet, nagu lennubroneeringud ja sõiduki teave.</translation>
 <translation id="6657585470893396449">Parool</translation>
+<translation id="6659156657345021268">Teie teave salvestatakse ainult teie seadmesse. Teil on võimalus see Walletisse salvestada järgmine kord, kui täidate asjakohase vormi.</translation>
 <translation id="6659246032834639189">See hind on madal</translation>
 <translation id="6660413144148052430">asukoht</translation>
 <translation id="6662457027866368246">Esimene rull</translation>
@@ -4354,6 +4361,7 @@ Lisateave:
 <translation id="7908648876066812348">Virtuaalkaardi sisselülitamine</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />. Vajutage tabulaatorit, seejärel sisestusklahvi, et minna seadetes Chrome'i ohutuskontrollilehele</translation>
 <translation id="791107458486222637">Tulemuse uuesti tegemine</translation>
+<translation id="7911651285409665023">Sule ja naase lehele „<ph name="TAB_TITLE" />“</translation>
 <translation id="7912924955815015552">Imporditud Safarist</translation>
 <translation id="791551905239004656">Joonistamine ja värvimine</translation>
 <translation id="7916162853251942238">Fleksotrükk</translation>
@@ -4950,6 +4958,7 @@ Lisateave:
 <translation id="8894794286471754040">Pikem serv enne</translation>
 <translation id="8897221284075091877">Et taotleda selle sisu nägemist, liigu oma Google'i kontole</translation>
 <translation id="8897428486789851669">Ujumine</translation>
+<translation id="8898854704577986668">Kuva ajalugu külgpaneelil</translation>
 <translation id="8899807382908246773">Sekkuvad reklaamid</translation>
 <translation id="8903921497873541725">Suurendab</translation>
 <translation id="8903998444169664879">Makseseadete muutmiseks kinnitage oma isik.</translation>
@@ -5205,7 +5214,6 @@ Lisateave:
 <translation id="987264212798334818">Üldine</translation>
 <translation id="988159990683914416">Arendaja järk</translation>
 <translation id="989988560359834682">Aadressi muutmine</translation>
-<translation id="991413375315957741">liikumis- või valgusandurid</translation>
 <translation id="991936891556421157">Jalatsid</translation>
 <translation id="992110854164447044">Virtuaalkaart peidab teie päriskaardi, et teid võimalike pettuste eest kaitsta. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="992115559265932548"><ph name="MICROSOFT_ACTIVE_DIRECTORY" /></translation>

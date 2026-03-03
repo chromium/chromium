@@ -66,7 +66,6 @@
 <translation id="1677097821151855053">Cookies and other site data are used to remember you, for example, to sign you in or to personalise ads. To manage cookies for all sites, see <ph name="BEGIN_LINK" />Settings<ph name="END_LINK" />.</translation>
 <translation id="1679305402657584804">Sites can ask to use NFC devices</translation>
 <translation id="1686785653877010442">Sites usually send notifications to let you know about breaking news or chat messages.</translation>
-<translation id="169515064810179024">Block sites from accessing motion sensors</translation>
 <translation id="1703666494654169921">Don't allow sites to use virtual reality devices or data</translation>
 <translation id="1704230497453185209">Don't allow sites to play sound</translation>
 <translation id="1717218214683051432">Motion sensors</translation>
@@ -235,7 +234,6 @@ Advanced Protection controls these Chrome settings:
 <translation id="3232293466644486101">Delete browsing data…</translation>
 <translation id="3242646949159196181">When on, sites can play sound. When off, sites can't play sound.</translation>
 <translation id="3273479183583863618">Price drops on tabs</translation>
-<translation id="3277252321222022663">Allow sites to access sensors (recommended)</translation>
 <translation id="3285500645985761267">Allow related sites to see your activity in the group</translation>
 <translation id="3295019059349372795">Chapter 11: The Wonderful Emerald City of Oz</translation>
 <translation id="3295602654194328831">Hide info</translation>
@@ -371,7 +369,6 @@ Advanced Protection controls these Chrome settings:
 <translation id="4672315773691449562">Tap Browser app, then tap Chrome</translation>
 <translation id="4676059169848868271">To let <ph name="APP_NAME" /> use hand tracking, also turn on hand tracking in <ph name="BEGIN_LINK" />system settings<ph name="END_LINK" />.</translation>
 <translation id="4688045258817337666">Manage your cards</translation>
-<translation id="4751476147751820511">Motion or light sensors</translation>
 <translation id="4755971844837804407">When on, sites can show any ad to you. When off, sites can't show intrusive or misleading ads.</translation>
 <translation id="4779083564647765204">Zoom</translation>
 <translation id="4807122856660838973">Turn on Safe Browsing</translation>
@@ -398,7 +395,6 @@ Advanced Protection controls these Chrome settings:
 <translation id="5001526427543320409">Third-party cookies</translation>
 <translation id="5007392906805964215">Review</translation>
 <translation id="5039804452771397117">Allow</translation>
-<translation id="5048398596102334565">Allow sites to access motion sensors (recommended)</translation>
 <translation id="5048841907079026162">Manage your browsing data</translation>
 <translation id="5050380848339752099">This site is about to share information with an app outside of Incognito mode.</translation>
 <translation id="5063480226653192405">Usage</translation>
@@ -686,7 +682,6 @@ Advanced Protection controls these Chrome settings:
 <translation id="8088603949666785339">More options in the <ph name="BANNER_TITLE" /></translation>
 <translation id="8112925981674547014">View tabs in your app list</translation>
 <translation id="8116925261070264013">Muted</translation>
-<translation id="8117244575099414087">When on, sites can use your device's sensors. When off, sites can't use sensors.</translation>
 <translation id="813082847718468539">View site information</translation>
 <translation id="8131740175452115882">Confirm</translation>
 <translation id="8148160259207090265">This setting remains on as long as you have Advanced Protection turned on in Android Settings.</translation>
@@ -762,7 +757,6 @@ Advanced Protection controls these Chrome settings:
 <translation id="8801657293260363985">V8 is Chrome’s JavaScript and WebAssembly engine used to improve site performance</translation>
 <translation id="8803526663383843427">When on</translation>
 <translation id="8805385115381080995">Browsing is faster because a site is less likely to ask you to verify that you're a real person</translation>
-<translation id="8816026460808729765">Block sites from accessing sensors</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8874790741333031443">Try temporarily allowing third-party cookies, which means less browsing protection but site features are more likely to work as expected.</translation>
 <translation id="8889294078294184559">As you keep browsing, sites can check with Chrome and verify with a previous site that you've visited that you're likely a real person</translation>

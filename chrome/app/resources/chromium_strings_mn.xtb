@@ -29,6 +29,7 @@
 <translation id="126567311906253476"><ph name="USER_EMAIL" />-р Gmail эсвэл YouTube зэрэг Google-н үйлчилгээнд нэвтрэх үед та тухайн бүртгэлээр Chromium-д автоматаар нэвтрэх боломжтой</translation>
 <translation id="1290883685122687410">Тохируулгын алдаа: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1315551408014407711">Chromium-н шинэ профайлаа тохируулах</translation>
+<translation id="132092532143527429">Chromium дахь Gemini-р туршиж үзэх</translation>
 <translation id="1324107359134968521">Chromium-д Bluetooth төхөөрөмжүүдийг судлахад 
  Bluetooth-н хандалт шаардлагатай. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">Хэл илрүүлэх</translation>
@@ -605,6 +606,7 @@
 <translation id="7622753900276619808">Та одоо Chromium-н бусад онцлогийг ашиглах боломжтой боллоо</translation>
 <translation id="7624307931717240213">Бид энэ үйлчилгээг сайжруулахад мэдээллийг ашигладаг. Нууцлалын бодлого, Үйлчилгээний нөхцөлийг харна уу.</translation>
 <translation id="7649070708921625228">Тусламж</translation>
+<translation id="7650134251917003571">Chromium аппыг авах</translation>
 <translation id="7656340475565475526">Chromium-д танд зориулж үзэхийг зөвшөөрөх</translation>
 <translation id="7658239707568436148">Болих</translation>
 <translation id="7686590090926151193">Chromium таны өгөгдмөл хөтөч биш юм</translation>

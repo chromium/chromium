@@ -1397,7 +1397,6 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="3218388919950135939">Ekki opna <ph name="BEGIN_LINK" />þetta ótrausta vefsvæði<ph name="END_LINK" /> nema þú skiljir áhættuna sem fylgir því.</translation>
 <translation id="3219056262712778751">Vídeó týndist vegna óþekktrar villu</translation>
 <translation id="3220264767789936523">Formlegur klæðnaður</translation>
-<translation id="3222634016790917333">Vistar upplýsingarnar þínar</translation>
 <translation id="3223287115535306850">Hleðslutákn forritaræsingar</translation>
 <translation id="3223425961342298674">Staðsetning ekki leyfð</translation>
 <translation id="3225919329040284222">Þjónninn framvísaði vottorði sem samsvarar ekki innbyggðum væntingum. Þessar væntingar eru hafðar með fyrir tiltekin mjög örugg vefsvæði í því skyni að vernda þig.</translation>
@@ -1911,6 +1910,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="4031179711345676612">Hljóðnemi er leyfður</translation>
 <translation id="4036753017940930924">Lóðir og land</translation>
 <translation id="403724377879219932">Getur beðið um aðgang að öðrum tækjum á staðarnetinu þínu</translation>
+<translation id="4038863931942689384"><ph name="ATTRIBUTE_VALUE" />, nýtt</translation>
 <translation id="4039506337798853114">Til að sýna bendilinn skaltu ýta á |<ph name="ACCELERATOR" />|</translation>
 <translation id="4042597221652780603">Áætluð</translation>
 <translation id="4045070493270310437">Opna flipa aftur</translation>
@@ -2359,7 +2359,6 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="4750671009706599284">þessum síma</translation>
 <translation id="4750917950439032686">Upplýsingarnar þínar (t.d. aðgangsorð eða kreditkortanúmer) eru lokaðar þegar þær eru sendar á þetta vefsvæði.</translation>
 <translation id="4751249061288707459">Samþykki síðast uppfært:</translation>
-<translation id="4751476147751820511">Hreyfi- eða birtuskynjarar</translation>
 <translation id="4754461935447132332">Ekki heimilað fyrir vefsvæði sem eru ekki örugg</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
 <translation id="4757740693289347881">Ógildur kóði</translation>
@@ -2798,6 +2797,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
           <ph name="END_LIST" /></translation>
 <translation id="5434803328547504573">Vistaðu þetta CVC-númer í Google-veski (<ph name="ACCOUNT_EMAIL" />) til að flýta fyrir greiðslu</translation>
 <translation id="5436307623797390637">Forrit í tæki</translation>
+<translation id="5441409130426352029"><ph name="ATTRIBUTE_VALUE" />, áður <ph name="PREVIOUS_VALUE" /></translation>
 <translation id="5443468954631487277">Öfug röð, snýr upp</translation>
 <translation id="5447235695608032700">Leyfa <ph name="SITE" /> að nota upplýsingar sem það hefur vistað um þig</translation>
 <translation id="5447973833955560753">Endurheimtaraðgangsorð</translation>
@@ -5222,7 +5222,6 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="987264212798334818">Almennt</translation>
 <translation id="988159990683914416">Forritarasmíði</translation>
 <translation id="989988560359834682">Breyta heimilisfangi</translation>
-<translation id="991413375315957741">hreyfi- eða birtuskynjara</translation>
 <translation id="991936891556421157">Skófatnaður</translation>
 <translation id="992110854164447044">Sýndarkort felur raunverulega kortið þitt og hjálpar þannig til við að koma í veg fyrir svik. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="992115559265932548"><ph name="MICROSOFT_ACTIVE_DIRECTORY" /></translation>

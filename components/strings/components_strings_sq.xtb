@@ -1310,6 +1310,8 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3102312643185441063">Kursimi</translation>
 <translation id="3103188521861412364">Aksionet dhe obligacionet</translation>
 <translation id="3105172416063519923">ID-ja e elementit:</translation>
+<translation id="3105223248029915046">Planet e pagesave janë objekt i kualifikueshmërisë.
+Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />cilësimet e pagesës<ph name="END_LINK" /></translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />Po kontrollon konfigurimin e DNS-së së sigurt<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Tabakaja e mesit</translation>
 <translation id="3109061346635850169">Kujdesi për fytyrën dhe trupin</translation>
@@ -1395,7 +1397,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3218388919950135939">Vizito <ph name="BEGIN_LINK" />këtë sajt të pasigurt<ph name="END_LINK" /> vetëm nëse je i sigurt që i kupton rreziqet.</translation>
 <translation id="3219056262712778751">Videoja humbi për shkak të një gabimi të panjohur</translation>
 <translation id="3220264767789936523">Veshje formale</translation>
-<translation id="3222634016790917333">Informacionet e tua po ruhen</translation>
 <translation id="3223287115535306850">Ikona e ngarkimit për hapjen e aplikacionit</translation>
 <translation id="3223425961342298674">Vendndodhja nuk lejohet</translation>
 <translation id="3225919329040284222">Serveri paraqiti një certifikatë që nuk përputhet me pritshmëritë e integruara. Këto pritshmëri përfshihen për uebsajte të caktuara të sigurisë së lartë, me qëllim që të të mbrojnë.</translation>
@@ -1909,6 +1910,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4031179711345676612">Mikrofoni lejohet</translation>
 <translation id="4036753017940930924">Parcela dhe toka</translation>
 <translation id="403724377879219932">Mund të kërkojë të qaset në pajisjet e tjera në rrjetin tënd lokal</translation>
+<translation id="4038863931942689384"><ph name="ATTRIBUTE_VALUE" />, i ri</translation>
 <translation id="4039506337798853114">Për të shfaqur kursorin, shtyp |<ph name="ACCELERATOR" />|</translation>
 <translation id="4042597221652780603">E përafërt</translation>
 <translation id="4045070493270310437">Rihap skedat</translation>
@@ -2357,7 +2359,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4750671009706599284">këtë telefon</translation>
 <translation id="4750917950439032686">Informacionet e tua (p.sh. fjalëkalimet ose numrat e kartave të kreditit) janë private kur dërgohen në këtë sajt.</translation>
 <translation id="4751249061288707459">Përditësimi i fundit i pëlqimit:</translation>
-<translation id="4751476147751820511">Sensorët e lëvizjes ose të dritës</translation>
 <translation id="4754461935447132332">Nuk lejohet për sajtet e pasigurta</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
 <translation id="4757740693289347881">Kodi është i pavlefshëm</translation>
@@ -2796,6 +2797,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
           <ph name="END_LIST" /></translation>
 <translation id="5434803328547504573">Për përfundim më të shpejtë të blerjes, ruaje këtë kod CVC te "Portofoli i Google" (<ph name="ACCOUNT_EMAIL" />)</translation>
 <translation id="5436307623797390637">Aplikacionet në pajisje</translation>
+<translation id="5441409130426352029"><ph name="ATTRIBUTE_VALUE" />, ishte <ph name="PREVIOUS_VALUE" /></translation>
 <translation id="5443468954631487277">Renditja e kundërt e kthyer lart</translation>
 <translation id="5447235695608032700">Lejo që <ph name="SITE" /> të përdorë informacionet e ruajtura për ty</translation>
 <translation id="5447973833955560753">Fjalëkalimi i rikuperimit</translation>
@@ -4365,6 +4367,7 @@ Detaje shtesë:
 <translation id="7908648876066812348">Karta virtuale po aktivizohet</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, shtyp "Tab" dhe më pas "Enter" për të shkuar te faqja e kontrollit të sigurisë të Chrome te cilësimet</translation>
 <translation id="791107458486222637">Po ribëhen rezultatet</translation>
+<translation id="7911651285409665023">Mbyll dhe kthehu te "<ph name="TAB_TITLE" />"</translation>
 <translation id="7912924955815015552">Importuar nga Safari</translation>
 <translation id="791551905239004656">Vizatim dhe ngjyrosje</translation>
 <translation id="7916162853251942238">Baza fleksografike</translation>
@@ -5218,7 +5221,6 @@ Detaje shtesë:
 <translation id="987264212798334818">Të përgjithshme</translation>
 <translation id="988159990683914416">Ndërtimi i zhvilluesit</translation>
 <translation id="989988560359834682">Redakto adresën</translation>
-<translation id="991413375315957741">sensorët e lëvizjes ose të dritës</translation>
 <translation id="991936891556421157">Këpucë</translation>
 <translation id="992110854164447044">Një kartë virtuale fsheh kartën tënde fizike për të të mbrojtur nga mashtrimi i mundshëm. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="992115559265932548"><ph name="MICROSOFT_ACTIVE_DIRECTORY" /></translation>

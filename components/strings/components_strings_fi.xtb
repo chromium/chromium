@@ -1310,6 +1310,8 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="3102312643185441063">Säästötili</translation>
 <translation id="3103188521861412364">Osakkeet ja joukkolainat</translation>
 <translation id="3105172416063519923">Laitteen tunnus:</translation>
+<translation id="3105223248029915046">Maksusopimukset edellyttävät kelpoisuutta.
+Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LINK" />maksuasetuksiin<ph name="END_LINK" /></translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />Tarkista suojatun DNS:n määritykset<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Keskilokero</translation>
 <translation id="3109061346635850169">Kasvojen ja vartalon hoito</translation>
@@ -2356,7 +2358,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="4750671009706599284">tämä puhelin</translation>
 <translation id="4750917950439032686">Salasanat, luottokorttinumerot ja muut tietosi pysyvät yksityisinä, kun ne lähetetään tälle sivustolle.</translation>
 <translation id="4751249061288707459">Suostumus päivitetty viimeksi:</translation>
-<translation id="4751476147751820511">Liike- tai valotunnistimet</translation>
 <translation id="4754461935447132332">Sallittu vain turvallisilla sivustoilla</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
 <translation id="4757740693289347881">Koodi on virheellinen</translation>
@@ -2636,6 +2637,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="5190835502935405962">Kirjanmerkkipalkki</translation>
 <translation id="5191315092027169558"><ph name="DOMAIN" /> ylläpitää profiiliasi</translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> haluaa ladata useita tiedostoja</translation>
+<translation id="5199121357983849992">Tallennetaanko henkilötodistus?</translation>
 <translation id="5200063972779787617">Tallenna osoite tilille</translation>
 <translation id="5201306358585911203">Viesti tälle sivulle upotetulta sivulta</translation>
 <translation id="5203716867500274632">Järjestelmänvalvojasi on sallinut seuraavan synkronoinnin ChromeOS-laitteillasi aiemman ja nykyisen istunnon välillä:</translation>
@@ -4075,6 +4077,7 @@ Lisätietoja:
 <translation id="746412105358554870">JavaScript-optimointi ja ‑suojaus</translation>
 <translation id="7465036432780054056"><ph name="EMBEDDED_URL" /> saa tietää, että kävit täällä: <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7465963048299965912">10 x 13 tuumaa</translation>
+<translation id="7467332121947433617">Päivitetäänkö henkilötodistus?</translation>
 <translation id="7469935732330206581">Lomake ei ole suojattu</translation>
 <translation id="7470854469646445678">Lisää kopioinnin syy (pakollinen)</translation>
 <translation id="7471007961486718967">Lisää siirron syy (pakollinen)</translation>
@@ -4361,6 +4364,7 @@ Lisätietoja:
 <translation id="7908648876066812348">Virtuaalikorttia laitetaan päälle</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, siirry Chromen turvatarkistussivulle asetuksista painamalla sarkainta ja sitten Enter</translation>
 <translation id="791107458486222637">Toistetaan tulosta</translation>
+<translation id="7911651285409665023">Sulje ja palaa välilehteen "<ph name="TAB_TITLE" />"</translation>
 <translation id="7912924955815015552">Tuotu Safarista</translation>
 <translation id="791551905239004656">Piirtäminen ja värittäminen</translation>
 <translation id="7916162853251942238">Flexo-pohja</translation>
@@ -5214,7 +5218,6 @@ Lisätietoja:
 <translation id="987264212798334818">Yleistä</translation>
 <translation id="988159990683914416">Kehittäjän koontiversio</translation>
 <translation id="989988560359834682">Osoitteen muokkaus</translation>
-<translation id="991413375315957741">liike- tai valotunnistimet</translation>
 <translation id="991936891556421157">Jalkineet</translation>
 <translation id="992110854164447044">Virtuaalinen kortti piilottaa käyttämäsi kortin ja saat paremman suojauksen mahdollisia petoksia vastaan. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="992115559265932548"><ph name="MICROSOFT_ACTIVE_DIRECTORY" /></translation>

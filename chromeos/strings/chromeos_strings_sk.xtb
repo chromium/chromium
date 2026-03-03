@@ -167,6 +167,7 @@
 <translation id="1621067168122174824">Spustiť test nabitia</translation>
 <translation id="1622402072367425417">žiariace bubliny</translation>
 <translation id="1626590945318984973">Skratka nie je k dispozícii. Stlačte novú skratku bez použitia funkčných klávesov a klávesov <ph name="META_KEY" />.</translation>
+<translation id="163774412591892664">Správca deaktivoval vaše zariadenie a má prístup k jeho polohe.</translation>
 <translation id="1639239467298939599">Načítava sa</translation>
 <translation id="1641857168437328880">Podávač dokumentov (jednostranný)</translation>
 <translation id="1642396894598555413">bicykle</translation>
@@ -1723,6 +1724,7 @@ Ak chcete mať tieto prepisy k dispozícii, stiahnite si model prepisov (až 10
 <translation id="8584654835905316966">Dokončenie inštalácie firmvéru zariadenia <ph name="DEVICE_NAME" /> na verziu <ph name="VERSION" /> vyžaduje reštart. Váš počítač sa môže niekoľkokrát reštartovať. Toto správanie je očakávané.</translation>
 <translation id="8593058461203131755">pozastavenie médií</translation>
 <translation id="8620617069779373398">Stav roamingu</translation>
+<translation id="8624524972189162859">Správca domény <ph name="DOMAIN_NAME" /> deaktivoval vaše zariadenie a má prístup k jeho polohe.</translation>
 <translation id="8626489604350149811">Ďalšie akcie pre aplikáciu <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Svetlopurpurová</translation>
 <translation id="8647595191512746911">Prepis zvuku</translation>

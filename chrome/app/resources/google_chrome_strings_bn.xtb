@@ -74,6 +74,7 @@
 <translation id="1698376642261615901">Google Chrome হল একটি ওয়েব ব্রাউজার যা ওয়েব পৃষ্ঠাগুলি এবং অ্যাপগুলিকে বিদ্যুৎ গতিতে চালনা করে৷ এটি দ্রুত, সুস্থির এবং সহজেই ব্যবহারযোগ্য৷ Google Chrome-এ অন্তর্গঠিত ম্যালওয়ার এবং ফিশিং সুরক্ষার সাথে আরও নিরাপদে ওয়েব ব্রাউজ করুন৷</translation>
 <translation id="1713301662689114961">{0,plural, =1{Chrome ১ ঘণ্টার মধ্যে আবার লঞ্চ হবে}one{Chrome # ঘণ্টার মধ্যে আবার লঞ্চ হবে}other{Chrome # ঘণ্টার মধ্যে আবার লঞ্চ হবে}}</translation>
 <translation id="1722488837206509557">এর ফলে আপনি উপলভ্য ডিভাইসগুলি থেকে বেছে নিতে পারবেন এবং সেগুলিতে কন্টেন্ট দেখাতে পারবেন।</translation>
+<translation id="177180974022074201">Chrome-এ Gemini-র মাধ্যমে ব্যবহার করে দেখুন</translation>
 <translation id="1786003790898721085">আপনার <ph name="TARGET_DEVICE_NAME" />-এর Chrome-এ সাইন-ইন করেছেন কিনা তা দেখে নিন এবং তারপরে আবার পাঠানোর চেষ্টা করুন।</translation>
 <translation id="1786044937610313874">Chrome-এ শর্টকাট খুলবে</translation>
 <translation id="178701303897325119">এই এক্সটেনশন আর কাজ করবে না। পরিবর্তে, Chrome আপনাকে এটি সরিয়ে দেওয়ার সাজেশন দেয়।</translation>
@@ -530,6 +531,7 @@
 <translation id="6481963882741794338">পছন্দমতো অভিজ্ঞতা এবং অন্যান্য সুবিধা পেতে Google-এর সব পরিষেবাগুলি সাথে Chrome লিঙ্ক করুন</translation>
 <translation id="648319183876919572">উন্নত Safe Browsing আপনাকে বিপজ্জনক ওয়েবসাইট, ডাউনলোড থেকে আরও সুরক্ষা দেয়</translation>
 <translation id="6489302989675808168">চালু আছে • Chrome এই এক্সটেনশনের সোর্স যাচাই করতে পারে না</translation>
+<translation id="6491330562720922580">মোবাইল ডিভাইসে Chrome ব্রাউজার ডাউনলোড করার QR কোড</translation>
 <translation id="6493527311031785448">Google Chrome <ph name="AUTHENTICATION_PURPOSE" />-এর চেষ্টা করছে</translation>
 <translation id="6497147134301593682">Chrome অটোমেটিক বন্ধ হয়ে গেছে</translation>
 <translation id="6506909944137591434">আপনার আশেপাশের জায়গার একটি 3D ম্যাপ তৈরি করার জন্য Chrome-এর ক্যামেরা অ্যাক্সেসের অনুমতি প্রয়োজন</translation>
