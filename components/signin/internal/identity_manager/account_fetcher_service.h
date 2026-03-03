@@ -120,25 +120,12 @@ class AccountFetcherService : public ProfileOAuth2TokenServiceObserver {
  private:
   void RefreshAllAccountInfo(bool only_fetch_if_invalid);
 
-#if BUILDFLAG(IS_ANDROID)
-  // Called on all account state changes. Decides whether to fetch new child
-  // status information or reset old values that aren't valid now.
-  void UpdateChildInfo();
-#endif
-
   void MaybeEnableNetworkFetches();
 
   // Virtual so that tests can override the network fetching behaviour.
   // Further the two fetches are managed by a different refresh logic and
   // thus, can not be combined.
   void StartFetchingUserInfo(const CoreAccountId& account_id);
-#if BUILDFLAG(IS_ANDROID)
-  void StartFetchingChildInfo(const CoreAccountId& account_id);
-
-  // Resets the child status to false if it is true. If there is more than one
-  // account in a profile, only the main account can be a child.
-  void ResetChildInfo();
-#endif
 
   void StartFetchingAccountCapabilities(
       const CoreAccountInfo& core_account_info);
