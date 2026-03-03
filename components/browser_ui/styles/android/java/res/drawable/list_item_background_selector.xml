@@ -5,29 +5,37 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<selector xmlns:android="http://schemas.android.com/apk/res/android">
-  <item android:state_hovered="true">
-    <shape android:shape="rectangle">
-      <solid android:color="@color/color_on_surface_with_alpha_8" />
-    </shape>
-  </item>
-  <item android:state_focused="true">
-    <shape android:shape="rectangle">
-      <solid android:color="@android:color/transparent" />
-      <corners android:radius="?attr/popupBgCornerRadius" />
-      <stroke
-        android:color="@macro/default_control_color_active"
-        android:width="@dimen/focused_outline_stroke_width" />
-    </shape>
-  </item>
-  <item android:state_pressed="true">
-    <shape android:shape="rectangle">
-      <solid android:color="@color/color_on_surface_with_alpha_12" />
-    </shape>
-  </item>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+  <!-- Layer 0: Background Fill (Hovered/Pressed states) -->
   <item>
-    <shape android:shape="rectangle">
-      <solid android:color="@android:color/transparent" />
-    </shape>
+    <selector>
+      <item android:state_pressed="true">
+        <shape android:shape="rectangle">
+          <solid android:color="@color/color_on_surface_with_alpha_12" />
+        </shape>
+      </item>
+      <item android:state_hovered="true">
+        <shape android:shape="rectangle">
+          <solid android:color="@color/color_on_surface_with_alpha_8" />
+        </shape>
+      </item>
+      <item android:drawable="@android:color/transparent" />
+    </selector>
   </item>
-</selector>
+
+  <!-- Layer 1: Focus Ring (Drawn on top if focused) -->
+  <item>
+    <selector>
+      <item android:state_focused="true">
+        <shape android:shape="rectangle">
+          <solid android:color="@android:color/transparent" />
+          <corners android:radius="?attr/popupBgCornerRadius" />
+          <stroke
+            android:color="@macro/default_control_color_active"
+            android:width="@dimen/focused_outline_stroke_width" />
+        </shape>
+      </item>
+      <item android:drawable="@android:color/transparent" />
+    </selector>
+  </item>
+</layer-list>
