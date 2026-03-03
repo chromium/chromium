@@ -8,6 +8,7 @@
 #include <Foundation/Foundation.h>
 
 #include "base/check_is_test.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
@@ -60,9 +61,6 @@ class COMPONENT_EXPORT(ENTERPRISE_PLATFORM_AUTH) URLSessionURLLoader
 
   void SetPriority(net::RequestPriority priority,
                    int32_t intra_priority_value) override;
-
-  static constexpr char kTestServerResponseBody[] =
-      "This is a test response body";
 
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.

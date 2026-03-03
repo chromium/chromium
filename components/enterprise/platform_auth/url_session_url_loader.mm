@@ -103,10 +103,13 @@ void URLSessionURLLoader::CreateAndStartForTesting(  // IN-TEST
   URLSessionURLLoader* url_loader = new URLSessionURLLoader();
 
   url_session_test_util::ResponseConfig config;
-  config.body = kTestServerResponseBody;
+  config.body = url_session_test_util::kTestBody;
   if (request.request_initiator.has_value()) {
-    config.headers = {{"Access-Control-Allow-Origin",
-                       request.request_initiator.value().Serialize()}};
+    config.headers.emplace_back("Access-Control-Allow-Origin",
+                                request.request_initiator.value().Serialize());
+  }
+  for (const auto& header : url_session_test_util::kTestServerResponseHeaders) {
+    config.headers.emplace_back(header);
   }
   url_loader->SetAttachProtocolCallbackForTesting(  // IN-TEST
       base::BindOnce(url_session_test_util::AttachProtocolToSessionForTesting,

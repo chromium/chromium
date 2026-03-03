@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
+#include "base/json/json_reader.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -21,6 +22,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/enterprise/platform_auth/extensible_enterprise_sso_policy_handler.h"
@@ -55,7 +57,9 @@ using url_session_test_util::ResponseConfig;
 
 namespace {
 
-constexpr char kLoginWebsiteDomain[] = "foo.bar.example";
+constexpr char kDomain1[] = "foo.bar.example";
+constexpr char kDomain2[] = "example.bar.foo";
+constexpr char kDomain3[] = "example.net";
 
 ScopedPropList HostsToPropRef(const std::vector<std::string>& hosts) {
   base::apple::ScopedCFTypeRef<CFMutableArrayRef> res(
@@ -124,7 +128,7 @@ class ExtensibleEnterpriseSsoOktaBrowserTest : public InProcessBrowserTest {
     https_server_.RegisterRequestHandler(base::BindRepeating(
         &ExtensibleEnterpriseSsoOktaBrowserTest::HandleRequest,
         base::Unretained(this)));
-    https_server_.SetCertHostnames({kLoginWebsiteDomain});
+    https_server_.SetCertHostnames({kDomain1, kDomain2, kDomain3});
 
     ASSERT_TRUE(https_server_.Start());
   }
@@ -180,7 +184,7 @@ class ExtensibleEnterpriseSsoOktaBrowserTest : public InProcessBrowserTest {
   }
 
   void CheckSSORequest(bool expect_response,
-                       std::string_view hostname = kLoginWebsiteDomain,
+                       std::string_view hostname = kDomain1,
                        Browser* target_browser = nullptr) {
     if (!target_browser) {
       target_browser = browser();
@@ -195,23 +199,59 @@ class ExtensibleEnterpriseSsoOktaBrowserTest : public InProcessBrowserTest {
             R"(
             fetch($1, {
               method: 'POST',
-              body: JSON.stringify({data: 'data'})
+              body: $2,
+              headers: {
+                "Accept": "application/json; okta-version=1.0.0",
+                "Cache-Control": "no-cache",
+                "Content-Type": "application/json",
+                "Pragma": "no-cache",
+                "Priority": "u=1, i",
+                "X-Okta-User-Agent-Extended": "okta-auth-js/7.14.0 okta-signin-widget-7.37.0",
+              }
             })
             .then(response => {
               if (response.ok) {
-                return response.text();
+                return response.json();
               }
-              return "FAILURE: " + response.status;
+              return { "error": "FAILURE", "status": response.status };
             })
-            .catch(error => "NETWORK_ERROR: " + error.message);
+            .catch(error => {
+                return { "error": "NETWORK_ERROR", "message": error.message };
+            });
         )",
-            CreateSsoRequest(hostname)));
+            CreateSsoRequest(hostname), url_session_test_util::kTestBody));
 
     if (expect_response) {
-      EXPECT_EQ(URLSessionURLLoader::kTestServerResponseBody, result);
+      auto expected_value =
+          base::JSONReader::Read(url_session_test_util::kTestBody,
+                                 base::JSONParserOptions::JSON_PARSE_RFC);
+
+      ASSERT_TRUE(expected_value.has_value())
+          << "kTestServerResponseBody is not valid JSON!";
+      EXPECT_EQ(*expected_value, result.ExtractDict());
     } else {
-      EXPECT_NE(URLSessionURLLoader::kTestServerResponseBody, result);
+      EXPECT_NE(result, *base::JSONReader::Read(
+                            url_session_test_util::kTestBody,
+                            base::JSONParserOptions::JSON_PARSE_RFC));
+
+      const base::DictValue& result_dict = result.ExtractDict();
+      EXPECT_TRUE(result_dict.Find("error"));
     }
+  }
+
+  void SetBlocklistPolicy(std::initializer_list<std::string> idps) {
+    policy::PolicyMap policies;
+    base::ListValue blocklist;
+
+    for (const auto& val : idps) {
+      blocklist.Append(val);
+    }
+
+    policies.Set(policy::key::kExtensibleEnterpriseSSOBlocklist,
+                 policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_MACHINE,
+                 policy::POLICY_SOURCE_PLATFORM,
+                 base::Value(std::move(blocklist)), nullptr);
+    policy_provider_.UpdateChromePolicy(policies);
   }
 
   Config GetConfig() {
@@ -222,7 +262,7 @@ class ExtensibleEnterpriseSsoOktaBrowserTest : public InProcessBrowserTest {
         HostsToPropRef(configured_hosts_));
   }
 
-  std::vector<std::string> configured_hosts_{kLoginWebsiteDomain};
+  std::vector<std::string> configured_hosts_{kDomain1};
   base::RepeatingClosure config_update_callback_;
   base::test::ScopedFeatureList feature_list_{enterprise_auth::kOktaSSO};
   std::optional<PlatformAuthPolicyObserver> platform_auth_policy_observer_;
@@ -249,8 +289,7 @@ IN_PROC_BROWSER_TEST_F(ExtensibleEnterpriseSsoOktaBrowserTest,
   ASSERT_TRUE(incognito_browser);
 
   // The SSO proxying should not occur in an Incognito window.
-  CheckSSORequest(/*expect_response=*/false, kLoginWebsiteDomain,
-                  incognito_browser);
+  CheckSSORequest(/*expect_response=*/false, kDomain1, incognito_browser);
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensibleEnterpriseSsoOktaBrowserTest,
@@ -260,8 +299,125 @@ IN_PROC_BROWSER_TEST_F(ExtensibleEnterpriseSsoOktaBrowserTest,
   ASSERT_TRUE(guest_browser);
 
   // The SSO proxying should not occur in a Guest window.
-  CheckSSORequest(/*expect_response=*/false, kLoginWebsiteDomain,
-                  guest_browser);
+  CheckSSORequest(/*expect_response=*/false, kDomain1, guest_browser);
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensibleEnterpriseSsoOktaBrowserTest, Unmanaged) {
+  policy::ScopedManagementServiceOverrideForTesting platform_management(
+      policy::ManagementServiceFactory::GetForPlatform(),
+      policy::EnterpriseManagementAuthority::NONE);
+
+  // Reset the policy observer.
+  PrefService* prefs = g_browser_process->local_state();
+  ASSERT_TRUE(prefs);
+  platform_auth_policy_observer_.emplace(prefs);
+
+  CheckSSORequest(false);
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensibleEnterpriseSsoOktaBrowserTest,
+                       BlocklistPolicyOkta) {
+  SetBlocklistPolicy({kOktaIdentityProvider});
+  CheckSSORequest(false);
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensibleEnterpriseSsoOktaBrowserTest,
+                       BlocklistPolicyAll) {
+  SetBlocklistPolicy({kAllIdentityProviders});
+  CheckSSORequest(false);
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensibleEnterpriseSsoOktaBrowserTest,
+                       BlocklistPolicyEmpty) {
+  SetBlocklistPolicy({});
+  CheckSSORequest(true);
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensibleEnterpriseSsoOktaBrowserTest,
+                       BlocklistPolicyEntra) {
+  SetBlocklistPolicy({kMicrosoftIdentityProvider});
+  CheckSSORequest(true);
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensibleEnterpriseSsoOktaBrowserTest,
+                       NotConfiguredHost) {
+  configured_hosts_ = {};
+
+  // Reset the policy observer to trigger update.
+  PrefService* prefs = g_browser_process->local_state();
+  ASSERT_TRUE(prefs);
+  platform_auth_policy_observer_.emplace(prefs);
+
+  CheckSSORequest(false);
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensibleEnterpriseSsoOktaBrowserTest,
+                       ListensForConfigChanges) {
+  configured_hosts_ = {};
+  config_update_callback_.Run();
+  base::test::RunUntil([&]() {
+    return g_browser_process->local_state()
+        ->GetList(prefs::kExtensibleEnterpriseSSOConfiguredHosts)
+        .empty();
+  });
+
+  // First the SSO shouldn't work because no hosts are configured.
+  CheckSSORequest(false);
+
+  // Update the configured host.
+  configured_hosts_ = {kDomain1};
+  config_update_callback_.Run();
+  base::test::RunUntil([&]() {
+    return !g_browser_process->local_state()
+                ->GetList(prefs::kExtensibleEnterpriseSSOConfiguredHosts)
+                .empty();
+  });
+
+  // Now the configured host is kConfiguredHost and the SSO should work.
+  CheckSSORequest(true);
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensibleEnterpriseSsoOktaBrowserTest,
+                       ConfigUpdateWhileSsoDisabled) {
+  configured_hosts_ = {};
+  config_update_callback_.Run();
+  base::test::RunUntil([&]() {
+    return g_browser_process->local_state()
+        ->GetList(prefs::kExtensibleEnterpriseSSOConfiguredHosts)
+        .empty();
+  });
+  CheckSSORequest(false);
+
+  // Disable the SSO by setting the policy.
+  SetBlocklistPolicy({kAllIdentityProviders});
+
+  // Fix the configured hosts and enable SSO again.
+  configured_hosts_ = {kDomain1};
+
+  // Enable SSO again, this should trigger update of the configured hosts.
+  SetBlocklistPolicy({});
+  base::test::RunUntil([&]() {
+    return !g_browser_process->local_state()
+                ->GetList(prefs::kExtensibleEnterpriseSSOConfiguredHosts)
+                .empty();
+  });
+
+  CheckSSORequest(true);
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensibleEnterpriseSsoOktaBrowserTest,
+                       MultipleConfiguredHosts) {
+  configured_hosts_ = {kDomain1, kDomain2};
+  config_update_callback_.Run();
+  base::test::RunUntil([&]() {
+    return g_browser_process->local_state()
+               ->GetList(prefs::kExtensibleEnterpriseSSOConfiguredHosts)
+               .size() == 2;
+  });
+
+  CheckSSORequest(true, kDomain1);
+  CheckSSORequest(true, kDomain2);
+  CheckSSORequest(false, kDomain3);
 }
 
 }  // namespace enterprise_auth
