@@ -49,6 +49,7 @@ crbug.com/339041663 external/wpt/css/css-break/flexbox/multi-line-row-flex-fragm
 # Times out
 http/tests/inspector-protocol/runtime/serialization-options.js [ Skip ]
 external/wpt/html/select/options-length-too-large.html [ Skip ]
+crbug.com/483201850 http/tests/persistent-origin-trials/meta-tag-origin-trial.https.php [ Skip ]
 
 # This test is skipped because it currently times out. This is due to the fact
 # that inline-block elements are now included in the accessibility tree and
@@ -93,7 +94,6 @@ crbug.com/453103188 external/wpt/wasm/core/simd/simd_f32x4_arith.wast.js.html [ 
 crbug.com/453144946 external/wpt/wasm/core/simd/simd_f64x2_arith.wast.js.html [ Failure Pass ]
 crbug.com/485900039 fast/canvas/canvas-composite-alpha.html [ Failure Pass ]
 crbug.com/486067683 fast/compositor-wheel-scroll-latching/non-animated-scroll/subpixel-accumulation.html [ Failure Pass ]
-crbug.com/483201850 http/tests/persistent-origin-trials/meta-tag-origin-trial.https.php [ Failure Pass ]
 
 # Flaky on Linux
 crbug.com/485661981 external/wpt/hr-time/clamped-time-origin-isolated.https.html [ Failure Pass ]
