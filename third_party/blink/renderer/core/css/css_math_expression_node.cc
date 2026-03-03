@@ -721,6 +721,12 @@ bool CanEagerlySimplify(const CSSMathExpressionOperation::Operands& operands) {
   return true;
 }
 
+bool IsNoneKeywordLiteral(const CSSMathExpressionNode* exp_node) {
+  return exp_node->IsKeywordLiteral() &&
+         DynamicTo<CSSMathExpressionKeywordLiteral>(exp_node)->GetValue() ==
+             CSSValueID::kNone;
+}
+
 std::optional<CSSMathExpressionNode*> MaybeSimplifyComparisonFunction(
     const CSSMathExpressionOperation::Operands& operands) {
   DCHECK_EQ(operands.size(), 3u);
@@ -728,20 +734,20 @@ std::optional<CSSMathExpressionNode*> MaybeSimplifyComparisonFunction(
   const CSSMathExpressionNode* val = operands[1];
   const CSSMathExpressionNode* max = operands[2];
   // clamp(MIN, none, MAX) is not allowed
-  if (val->IsKeywordLiteral()) {
+  if (IsNoneKeywordLiteral(val)) {
     return nullptr;
   }
   // clamp(none, VAL, none) is equivalent to just calc(VAL)
-  if (min->IsKeywordLiteral() && max->IsKeywordLiteral()) {
+  if (IsNoneKeywordLiteral(min) && IsNoneKeywordLiteral(max)) {
     return val->Copy();
   }
   // clamp(none, VAL, MAX) is equivalent to min(VAL, MAX)
-  if (min->IsKeywordLiteral()) {
+  if (IsNoneKeywordLiteral(min)) {
     return CSSMathExpressionOperation::CreateComparisonFunction(
         {val->Copy(), max->Copy()}, CSSMathOperator::kMin);
   }
   // clamp(MIN, VAL, none) is equivalent to max(MIN, VAL)
-  if (max->IsKeywordLiteral()) {
+  if (IsNoneKeywordLiteral(max)) {
     return CSSMathExpressionOperation::CreateComparisonFunction(
         {min->Copy(), val->Copy()}, CSSMathOperator::kMax);
   }
@@ -2243,7 +2249,7 @@ inline bool CanArithmeticOperationBeSimplified(
 }
 
 bool IsClampKeywordLiteral(const CSSMathExpressionNode* exp_node) {
-  return exp_node->IsKeywordLiteral() &&
+  return IsNoneKeywordLiteral(exp_node) &&
          DynamicTo<CSSMathExpressionKeywordLiteral>(exp_node)->GetContext() ==
              CSSMathExpressionKeywordLiteral::Context::kClamp;
 }
