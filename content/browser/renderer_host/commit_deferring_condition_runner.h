@@ -11,8 +11,9 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
-#include "content/browser/preloading/prerender/prerender_commit_deferring_condition.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/commit_deferring_condition.h"
+#include "content/public/browser/frame_tree_node_id.h"
 
 namespace content {
 

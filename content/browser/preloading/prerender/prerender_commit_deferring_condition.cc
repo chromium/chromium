@@ -95,6 +95,7 @@ PrerenderCommitDeferringCondition::WillCommitNavigation(
   // navigation commits.
   done_closure_ = std::move(resume);
   defer_start_time_ = base::TimeTicks::Now();
+  observation_.Observe(&prerender_host);
   return Result::kDefer;
 }
 
@@ -138,6 +139,15 @@ void PrerenderCommitDeferringCondition::DidFinishNavigation(
     RecordPrerenderActivationCommitDeferTime(
         delta, prerender_host.trigger_type(),
         prerender_host.embedder_histogram_suffix());
+  }
+}
+
+void PrerenderCommitDeferringCondition::OnHostDestroyed(
+    PrerenderFinalStatus status) {
+  observation_.Reset();
+  if (done_closure_) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(done_closure_));
   }
 }
 
