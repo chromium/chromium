@@ -59,10 +59,16 @@ reviewer.
   <variant name="Tngd" summary="Scheme Tngd that supports eWallet payflow."/>
 </variants>
 
+<variants name="PixFrameType">
+  <variant name="Iframe" summary="the transaction initiated in the iframe"/>
+  <variant name="MainFrame"
+      summary="the transaction initiated in the main frame"/>
+</variants>
+
 <variants name="PurchaseActionResult">
-  <variant name="Abandoned" summary="Abandoned InitiatePurchaseAction call"/>
-  <variant name="Failed" summary="Failed InitiatePurchaseAction call"/>
-  <variant name="Succeeded" summary="Successful InitiatePurchaseAction call"/>
+  <variant name="Abandoned" summary="an abandoned InitiatePurchaseAction call"/>
+  <variant name="Failed" summary="a failed InitiatePurchaseAction call"/>
+  <variant name="Succeeded" summary="a successful InitiatePurchaseAction call"/>
 </variants>
 
 <histogram
@@ -637,6 +643,27 @@ reviewer.
     [Frequency] Logged once per Pix payflow. Pix payflow is triggered at most
     once per page load.
   </summary>
+</histogram>
+
+<histogram name="FacilitatedPayments.Pix.Transaction.{FrameType}.{Result}"
+    enum="Boolean" expires_after="2027-02-01">
+  <owner>longsheng@google.com</owner>
+  <owner>siashah@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Logs the result of the Pix purchase action and breaks it down by the type of
+    the frame that initiated the transaction. This log represents {Result} for
+    {FrameType}. [Frequency] Logged at most once per Pix payflow. Pix payflow is
+    triggered at most once per page load. [Trigger] User copies the Pix code,
+    goes through the steps to complete the transaction, and at the end Chrome
+    receives the result of the transaction.
+
+    Note: A `Succeeded` result doesn't indicate that the transaction was
+    successful. It only means that the payments backend was contacted, and a
+    response was received.
+  </summary>
+  <token key="FrameType" variants="PixFrameType"/>
+  <token key="Result" variants="PurchaseActionResult"/>
 </histogram>
 
 <histogram name="FacilitatedPayments.Pix.Transaction.{Result}.Latency"

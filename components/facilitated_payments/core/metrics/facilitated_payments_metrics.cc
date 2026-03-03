@@ -411,6 +411,15 @@ void LogPixTransactionResultAndLatency(PurchaseActionResult result,
       duration);
 }
 
+void LogPixTransactionResultPerFrameType(bool pix_code_is_in_iframe,
+                                         PurchaseActionResult result) {
+  base::UmaHistogramBoolean(
+      base::StrCat({"FacilitatedPayments.Pix.Transaction",
+                    pix_code_is_in_iframe ? ".Iframe" : ".MainFrame", ".",
+                    GetPurchaseActionResultString(result)}),
+      /*sample=*/true);
+}
+
 void LogEwalletInitiatePurchaseActionResultAndLatency(
     PurchaseActionResult result,
     base::TimeDelta duration,

@@ -75,6 +75,17 @@ SecurePayload CreateSecurePayload() {
   return secure_payload;
 }
 
+std::string GetPurchaseActionResultString(PurchaseActionResult result) {
+  switch (result) {
+    case PurchaseActionResult::kResultOk:
+      return "Succeeded";
+    case PurchaseActionResult::kCouldNotInvoke:
+      return "Failed";
+    case PurchaseActionResult::kResultCanceled:
+      return "Abandoned";
+  }
+}
+
 }  // namespace
 
 class PixManagerTest : public testing::Test {
@@ -772,6 +783,54 @@ TEST_P(PixManagerTestWithAccountLinkingEnabled,
 }
 
 TEST_P(PixManagerTestWithAccountLinkingEnabled,
+       IsIframeStateUpdatedOnConsecutiveCalls) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kEnableIframeForPix);
+  payments_data_manager_->AddMaskedBankAccountForTest(
+      CreatePixBankAccount(/*instrument_id=*/1));
+  GURL main_frame_url("https://merchant.com/");
+  GURL iframe_url("https://trusted-psp.com/");
+  url::Origin origin = url::Origin::Create(main_frame_url);
+
+  EXPECT_CALL(*optimization_guide_decider_,
+              CanApplyOptimization(
+                  testing::Eq(iframe_url),
+                  testing::Eq(optimization_guide::proto::PIX_PSP_ALLOWLIST),
+                  testing::Matcher<optimization_guide::OptimizationMetadata*>(
+                      testing::Eq(nullptr))))
+      .Times(1)
+      .WillOnce(testing::Return(
+          optimization_guide::OptimizationGuideDecision::kTrue));
+
+  // Expect IsAvailable to be called only on the first trigger.
+  EXPECT_CALL(GetApiClient(), IsAvailable(testing::_)).Times(1);
+
+  // First call: with iframe. `pix_code_is_in_iframe_` should become true.
+  pix_manager_->OnPixCodeCopiedToClipboard(
+      main_frame_url, iframe_url, origin, PixCodeRustValidationResult::kDynamic,
+      "00020126370014br.gov.bcb.pix2515www.example.com6304EA3F",
+      ukm::UkmRecorder::GetNewSourceID());
+  EXPECT_TRUE(pix_manager_->pix_code_is_in_iframe_);
+
+  // Second call: without iframe. `pix_code_is_in_iframe_` should be updated to
+  // false.
+  pix_manager_->OnPixCodeCopiedToClipboard(
+      main_frame_url, std::nullopt, origin,
+      PixCodeRustValidationResult::kDynamic, "pix_code",
+      ukm::UkmRecorder::GetNewSourceID());
+  task_environment_.RunUntilIdle();
+  EXPECT_FALSE(pix_manager_->pix_code_is_in_iframe_);
+
+  // Third call: with iframe again. `pix_code_is_in_iframe_` should be updated
+  // to true.
+  pix_manager_->OnPixCodeCopiedToClipboard(
+      main_frame_url, iframe_url, origin, PixCodeRustValidationResult::kDynamic,
+      "pix_code", ukm::UkmRecorder::GetNewSourceID());
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(pix_manager_->pix_code_is_in_iframe_);
+}
+
+TEST_P(PixManagerTestWithAccountLinkingEnabled,
        TestPayFlowCanBeTriggeredOnlyOncePerPageLoad) {
   payments_data_manager_->AddMaskedBankAccountForTest(
       CreatePixBankAccount(/*instrument_id=*/1));
@@ -1254,6 +1313,98 @@ TEST_P(PixManagerTestWithAccountLinkingEnabled,
                       ".Latency"}),
         /*sample=*/2000,
         /*expected_count=*/1);
+  }
+}
+
+TEST_P(PixManagerTestWithAccountLinkingEnabled, LogTransactionResultForIframe) {
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kEnableIframeForPix);
+
+  GURL url("https://merchant.com/");
+  GURL iframe_url("https://trusted-psp.com/");
+  url::Origin origin = url::Origin::Create(url);
+
+  // Mock PSP allowlist check result.
+  EXPECT_CALL(*optimization_guide_decider_,
+              CanApplyOptimization(
+                  testing::Eq(iframe_url),
+                  testing::Eq(optimization_guide::proto::PIX_PSP_ALLOWLIST),
+                  testing::Matcher<optimization_guide::OptimizationMetadata*>(
+                      testing::Eq(nullptr))))
+      .Times(1)
+      .WillOnce(testing::Return(
+          optimization_guide::OptimizationGuideDecision::kTrue));
+
+  // Simulate Pix code being copied.
+  pix_manager_->OnPixCodeCopiedToClipboard(
+      url, iframe_url, origin, PixCodeRustValidationResult::kDynamic,
+      "00020126370014br.gov.bcb.pix2515www.example.com6304EA3F",
+      ukm::UkmRecorder::GetNewSourceID());
+
+  for (PurchaseActionResult result :
+       {PurchaseActionResult::kResultOk, PurchaseActionResult::kCouldNotInvoke,
+        PurchaseActionResult::kResultCanceled}) {
+    pix_manager_->OnPurchaseActionResult(
+        /*start_time=*/base::TimeTicks::Now(), result);
+
+    histogram_tester.ExpectUniqueSample(
+        base::StrCat({"FacilitatedPayments.Pix.Transaction.MainFrame.",
+                      GetPurchaseActionResultString(result)}),
+        /*sample=*/false,
+        /*expected_bucket_count=*/0);
+    histogram_tester.ExpectUniqueSample(
+        base::StrCat({"FacilitatedPayments.Pix.Transaction.Iframe.",
+                      GetPurchaseActionResultString(result)}),
+        /*sample=*/true,
+        /*expected_bucket_count=*/1);
+  }
+}
+
+TEST_P(PixManagerTestWithAccountLinkingEnabled,
+       LogTransactionResultForMainFrame) {
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kEnableIframeForPix);
+
+  GURL url("https://merchant.com/");
+  url::Origin origin = url::Origin::Create(url);
+
+  // Mock merchant allowlist check result.
+  EXPECT_CALL(
+      *optimization_guide_decider_,
+      CanApplyOptimization(
+          testing::Eq(url),
+          testing::Eq(
+              optimization_guide::proto::PIX_MERCHANT_ORIGINS_ALLOWLIST),
+          testing::Matcher<optimization_guide::OptimizationMetadata*>(
+              testing::Eq(nullptr))))
+      .Times(1)
+      .WillOnce(testing::Return(
+          optimization_guide::OptimizationGuideDecision::kTrue));
+
+  // Simulate Pix code being copied.
+  pix_manager_->OnPixCodeCopiedToClipboard(
+      url, std::nullopt, origin, PixCodeRustValidationResult::kDynamic,
+      "00020126370014br.gov.bcb.pix2515www.example.com6304EA3F",
+      ukm::UkmRecorder::GetNewSourceID());
+
+  for (PurchaseActionResult result :
+       {PurchaseActionResult::kResultOk, PurchaseActionResult::kCouldNotInvoke,
+        PurchaseActionResult::kResultCanceled}) {
+    pix_manager_->OnPurchaseActionResult(
+        /*start_time=*/base::TimeTicks::Now(), result);
+
+    histogram_tester.ExpectUniqueSample(
+        base::StrCat({"FacilitatedPayments.Pix.Transaction.MainFrame.",
+                      GetPurchaseActionResultString(result)}),
+        /*sample=*/true,
+        /*expected_bucket_count=*/1);
+    histogram_tester.ExpectUniqueSample(
+        base::StrCat({"FacilitatedPayments.Pix.Transaction.Iframe.",
+                      GetPurchaseActionResultString(result)}),
+        /*sample=*/true,
+        /*expected_bucket_count=*/0);
   }
 }
 

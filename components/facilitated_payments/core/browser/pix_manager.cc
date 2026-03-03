@@ -71,6 +71,7 @@ PixManager::~PixManager() {
 
 void PixManager::Reset() {
   has_payflow_started_ = false;
+  pix_code_is_in_iframe_ = false;
   ukm_source_id_ = 0;
   initiate_payment_request_details_ =
       std::make_unique<FacilitatedPaymentsInitiatePaymentRequestDetails>();
@@ -86,6 +87,7 @@ void PixManager::OnPixCodeCopiedToClipboard(
     std::optional<PixCodeRustValidationResult> rust_validation_result,
     std::string pix_code,
     ukm::SourceId ukm_source_id) {
+  pix_code_is_in_iframe_ = iframe_url.has_value();
   if (has_payflow_started_) {
     return;
   }
@@ -106,7 +108,7 @@ void PixManager::OnPixCodeCopiedToClipboard(
   }
   // If the copy event happened inside an iframe, check whether the iframe URL
   // is allowlisted. Otherwise, check whether the main frame URL is allowlisted.
-  if (iframe_url.has_value()) {
+  if (pix_code_is_in_iframe_) {
     LogPixCodeCopiedInIframe();
     if (!IsIframeUrlAllowlisted(iframe_url.value())) {
       // The iframe URL is not part of the allowlist, ignore the copy event.
@@ -420,6 +422,7 @@ void PixManager::OnPurchaseActionResult(base::TimeTicks start_time,
   LogInitiatePurchaseActionResultUkm(result, ukm_source_id_);
   LogPixTransactionResultAndLatency(
       result, base::TimeTicks::Now() - pix_code_copied_timestamp_);
+  LogPixTransactionResultPerFrameType(pix_code_is_in_iframe_, result);
 }
 
 void PixManager::OnUiScreenEvent(UiEvent ui_event_type) {

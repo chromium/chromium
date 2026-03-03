@@ -377,6 +377,11 @@ void LogPixInitiatePurchaseActionResultAndLatency(PurchaseActionResult result,
 void LogPixTransactionResultAndLatency(PurchaseActionResult result,
                                        base::TimeDelta duration);
 
+// Logs the result of the Pix transaction, broken down by whether the purchase
+// action was invoked in the iframe or main frame.
+void LogPixTransactionResultPerFrameType(bool pix_code_is_in_iframe,
+                                         PurchaseActionResult result);
+
 // Log the result and latency for the InitiatePurchaseAction call made to the
 // payments platform (client) during eWallet payflow.
 void LogEwalletInitiatePurchaseActionResultAndLatency(

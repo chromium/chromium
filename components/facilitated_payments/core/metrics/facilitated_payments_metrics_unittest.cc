@@ -252,6 +252,25 @@ TEST(FacilitatedPaymentsMetricsTest, LogPixTransactionResultAndLatency) {
   }
 }
 
+TEST(FacilitatedPaymentsMetricsTest, LogPixTransactionResultPerFrameType) {
+  for (PurchaseActionResult result :
+       {PurchaseActionResult::kResultOk, PurchaseActionResult::kCouldNotInvoke,
+        PurchaseActionResult::kResultCanceled}) {
+    for (bool pix_code_is_in_iframe : {true, false}) {
+      base::HistogramTester histogram_tester;
+
+      LogPixTransactionResultPerFrameType(pix_code_is_in_iframe, result);
+
+      histogram_tester.ExpectUniqueSample(
+          base::StrCat({"FacilitatedPayments.Pix.Transaction",
+                        pix_code_is_in_iframe ? ".Iframe" : ".MainFrame", ".",
+                        GetPurchaseActionResultString(result)}),
+          /*sample=*/true,
+          /*expected_bucket_count=*/1);
+    }
+  }
+}
+
 TEST(FacilitatedPaymentsMetricsTest, LogPixAccountLinkingPromptShown) {
   base::HistogramTester histogram_tester;
 

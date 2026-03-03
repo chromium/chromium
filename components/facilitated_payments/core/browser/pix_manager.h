@@ -114,6 +114,8 @@ class PixManager {
       PixManagerTestWithAccountLinkingEnabled,
       CopyTrigger_InIframe_ExperimentIdPopulatedInInitiatePaymentRequest);
   FRIEND_TEST_ALL_PREFIXES(PixManagerTestWithAccountLinkingEnabled,
+                           IsIframeStateUpdatedOnConsecutiveCalls);
+  FRIEND_TEST_ALL_PREFIXES(PixManagerTestWithAccountLinkingEnabled,
                            DismissPrompt);
   FRIEND_TEST_ALL_PREFIXES(
       PixManagerTestWithAccountLinkingEnabled,
@@ -136,6 +138,10 @@ class PixManager {
                            LogInitiatePurchaseActionResultAndLatency);
   FRIEND_TEST_ALL_PREFIXES(PixManagerTestWithAccountLinkingEnabled,
                            LogTransactionResultAndLatency);
+  FRIEND_TEST_ALL_PREFIXES(PixManagerTestWithAccountLinkingEnabled,
+                           LogTransactionResultForIframe);
+  FRIEND_TEST_ALL_PREFIXES(PixManagerTestWithAccountLinkingEnabled,
+                           LogTransactionResultForMainFrame);
   FRIEND_TEST_ALL_PREFIXES(PixManagerTestWithAccountLinkingEnabled,
                            NoPaymentsDataManager_PixFlowsAbandoned);
   FRIEND_TEST_ALL_PREFIXES(PixManagerTestWithAccountLinkingEnabled,
@@ -357,6 +363,11 @@ class PixManager {
   // payflow like Pix code detection, copy button click, and copy button
   // double-click.
   bool has_payflow_started_ = false;
+
+  // Whether the Pix code was copied within an iframe. This state is used
+  // to categorize transaction result logging by frame type (Iframe vs.
+  // MainFrame).
+  bool pix_code_is_in_iframe_ = false;
 
   // Utility process validator for Pix code strings.
   data_decoder::DataDecoder utility_process_validator_;
