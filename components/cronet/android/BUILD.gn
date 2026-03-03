@@ -194,9 +194,9 @@ source_set("cronet_static") {
     "//components/cronet:request_context_config_proto",
     "//components/prefs",
     "//net",
-    "//third_party/boringssl",
     "//third_party/zlib",
     "//url",
+    "//third_party/boringssl"
   ]
   sources = [
     "//components/cronet/android/completion_once_callback_adapter.cc",
@@ -573,7 +573,6 @@ android_library("cronet_impl_native_java") {
     "java/src/org/chromium/net/impl/BidirectionalStreamNetworkException.java",
     "java/src/org/chromium/net/impl/CompletionOnceCallback.java",
     "java/src/org/chromium/net/impl/CronetAdaptiveNetworkBidirectionalStream.java",
-    "java/src/org/chromium/net/impl/CronetAdaptiveRequestContext.java",
     "java/src/org/chromium/net/impl/CronetBidirectionalStream.java",
     "java/src/org/chromium/net/impl/CronetLibraryLoader.java",
     "java/src/org/chromium/net/impl/CronetRequestCommon.java",
@@ -1479,7 +1478,6 @@ android_library("cronet_javatests") {
     "test/javatests/src/org/chromium/net/httpflags/BaseFeatureTest.java",
     "test/javatests/src/org/chromium/net/httpflags/HttpFlagsLoaderTest.java",
     "test/javatests/src/org/chromium/net/httpflags/ResolvedFlagsTest.java",
-    "test/javatests/src/org/chromium/net/impl/AdaptiveBidirectionalStreamTest.java",
     "test/javatests/src/org/chromium/net/impl/AndroidHttpEngineBuilderWrapperTest.java",
     "test/javatests/src/org/chromium/net/impl/CronetAdaptiveNetworkBidirectionalStreamTest.java",
     "test/javatests/src/org/chromium/net/impl/CronetLoggerTest.java",
