@@ -17,7 +17,6 @@
 #include "components/feature_engagement/public/tracker.h"
 #include "components/global_media_controls/public/media_item_manager.h"
 #include "components/media_message_center/media_notification_view.h"
-#include "components/media_message_center/media_notification_view_impl.h"
 #include "components/media_router/browser/media_router.h"
 #include "components/media_router/browser/media_router_factory.h"
 #include "components/strings/grit/components_strings.h"
@@ -32,8 +31,7 @@
 #include "services/media_session/public/cpp/util.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
-
-using Metadata = media_message_center::MediaNotificationViewImpl::Metadata;
+#include "ui/gfx/image/image_skia.h"
 
 namespace {
 

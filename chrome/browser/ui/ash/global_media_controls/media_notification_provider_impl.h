@@ -17,7 +17,7 @@
 #include "components/global_media_controls/public/media_item_ui_observer.h"
 #include "components/global_media_controls/public/media_item_ui_observer_set.h"
 #include "components/global_media_controls/public/supplemental_device_picker_producer.h"
-#include "components/media_message_center/media_notification_view_impl.h"
+#include "components/media_message_center/notification_theme.h"
 
 class CastMediaNotificationProducerKeyedService;
 class Profile;

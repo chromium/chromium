@@ -17,6 +17,7 @@ struct VectorIcon;
 
 namespace media_session {
 struct MediaMetadata;
+struct MediaPosition;
 }  // namespace media_session
 
 namespace media_message_center {

@@ -436,7 +436,6 @@ test("components_unittests") {
     deps += [
       "//components/fullscreen_control:unit_tests",
       "//components/global_media_controls:unit_tests",
-      "//components/media_message_center:unit_tests",
       "//components/ui_devtools:unit_tests",
       "//components/user_education/views:unit_tests",
       "//components/user_education/webui:unit_tests",

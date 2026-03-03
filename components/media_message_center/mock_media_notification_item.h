@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_MEDIA_MESSAGE_CENTER_MOCK_MEDIA_NOTIFICATION_ITEM_H_
 #define COMPONENTS_MEDIA_MESSAGE_CENTER_MOCK_MEDIA_NOTIFICATION_ITEM_H_
 
+#include "base/unguessable_token.h"
 #include "components/media_message_center/media_notification_item.h"
 #include "testing/gmock/include/gmock/gmock.h"
 

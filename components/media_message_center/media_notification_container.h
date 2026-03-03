@@ -7,7 +7,9 @@
 
 #include "base/component_export.h"
 #include "base/containers/flat_set.h"
+#include "base/time/time.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
+#include "third_party/skia/include/core/SkColor.h"
 
 namespace gfx {
 class ImageSkia;
