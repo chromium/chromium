@@ -2577,7 +2577,7 @@
     'accessibility_service': ['hirokisato+watch@chromium.org',
                               'katie+watch@chromium.org'],
     'actor': ['mfoltz+watch-actor@chromium.org'],
-    'actor_ui': ['chrstne+watch@google.com', 'kenok+watch@google.com', 'aashnas+watch@google.com', 'boujane+watch@google.com',
+    'actor_ui': ['chrstne+watch@google.com', 'aashnas+watch@google.com', 'boujane+watch@google.com',
       'kmg+watch@google.com'
     ],
     'ad_tracker': ['jkarlin@chromium.org', 'yaoxia@chromium.org'],
