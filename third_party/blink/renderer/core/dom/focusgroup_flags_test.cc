@@ -399,11 +399,11 @@ TEST_F(FocusgroupFlagsTest, ValidTokenListStringIncludesNowrap) {
   ASSERT_GE(messages.size(), 1u);
 
   // Without the grid feature, grid-only tokens are filtered out. The expected
-  // list is: inline, block, wrap, no-memory, nowrap.
+  // list is: inline, block, wrap, nomemory, nowrap.
   EXPECT_TRUE(messages[0].contains("inline"));
   EXPECT_TRUE(messages[0].contains("block"));
   EXPECT_TRUE(messages[0].contains("wrap"));
-  EXPECT_TRUE(messages[0].contains("no-memory"));
+  EXPECT_TRUE(messages[0].contains("nomemory"));
   EXPECT_TRUE(messages[0].contains("nowrap"));
 
   // Grid-only tokens must not appear.
@@ -434,6 +434,26 @@ TEST_F(FocusgroupFlagsTest, ValidTokenListStringIncludesGridTokens) {
   EXPECT_TRUE(messages[0].contains("row-flow"));
   EXPECT_TRUE(messages[0].contains("col-flow"));
   EXPECT_TRUE(messages[0].contains("nowrap"));
+}
+
+TEST_F(FocusgroupFlagsTest, NomemoryModifierSetsFlag) {
+  ScopedFocusgroupForTest focusgroup_scope(true);
+
+  auto* element = MakeGarbageCollected<HTMLDivElement>(GetDocument());
+  GetDocument().body()->appendChild(element);
+
+  ClearConsoleMessages();
+  FocusgroupData result =
+      ParseFocusgroup(element, AtomicString("toolbar nomemory"));
+
+  EXPECT_EQ(result.behavior, FocusgroupBehavior::kToolbar);
+  EXPECT_TRUE(result.flags & FocusgroupFlags::kNoMemory);
+  // Toolbar defaults to inline-only axis.
+  EXPECT_TRUE(result.flags & FocusgroupFlags::kInline);
+  EXPECT_FALSE(result.flags & FocusgroupFlags::kBlock);
+
+  auto messages = CopyConsoleMessages();
+  EXPECT_EQ(messages.size(), 0u);
 }
 
 }  // namespace blink::focusgroup

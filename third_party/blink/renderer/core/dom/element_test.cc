@@ -1056,8 +1056,8 @@ TEST_F(ElementTest, ParseFocusgroupAttrOptOutNone) {
 TEST_F(ElementTest, ParseFocusgroupAttrNoMemoryToken) {
   Document& document = GetDocument();
   SetBodyContent(R"HTML(
-    <div id=a focusgroup="toolbar no-memory"></div>
-    <div id=b focusgroup="listbox inline no-memory"></div>
+    <div id=a focusgroup="toolbar nomemory"></div>
+    <div id=b focusgroup="listbox inline nomemory"></div>
   )HTML");
 
   auto* a = document.getElementById(AtomicString("a"));
@@ -1065,14 +1065,14 @@ TEST_F(ElementTest, ParseFocusgroupAttrNoMemoryToken) {
   ASSERT_TRUE(a);
   ASSERT_TRUE(b);
 
-  // Toolbar default axis (inline) plus no-memory.
+  // Toolbar default axis (inline) plus nomemory.
   EXPECT_EQ(
       a->GetFocusgroupData(),
       FocusgroupData(FocusgroupBehavior::kToolbar,
                      FocusgroupFlags::kInline | FocusgroupFlags::kNoMemory));
   EXPECT_TRUE(focusgroup::IsActualFocusgroup(a->GetFocusgroupData()));
 
-  // Explicit inline axis only + no-memory.
+  // Explicit inline axis only + nomemory.
   EXPECT_EQ(
       b->GetFocusgroupData(),
       FocusgroupData(FocusgroupBehavior::kListbox,
@@ -1225,7 +1225,7 @@ TEST_F(ElementTest, FocusgroupFlagsToString) {
       static_cast<FocusgroupFlags>(FocusgroupFlags::kBlock |
                                    FocusgroupFlags::kNoMemory)};
   EXPECT_EQ(
-      "toolbar:(block|no-memory)",
+      "toolbar:(block|nomemory)",
       focusgroup::FocusgroupDataToStringForTesting(toolbar_no_memory_data));
 }
 
