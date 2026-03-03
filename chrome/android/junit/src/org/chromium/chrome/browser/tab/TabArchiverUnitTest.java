@@ -4,9 +4,11 @@
 
 package org.chromium.chrome.browser.tab;
 
+import static org.mockito.AdditionalMatchers.not;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
@@ -36,6 +38,7 @@ import org.chromium.chrome.browser.tabmodel.TabRemover;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModelSelector;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.url.GURL;
 
 import java.util.Collections;
 import java.util.concurrent.TimeUnit;
@@ -44,6 +47,9 @@ import java.util.concurrent.TimeUnit;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class TabArchiverUnitTest {
+    private static final GURL TEST_GURL = new GURL("https://www.google.com");
+    private static final GURL TEST_GURL_2 = new GURL("https://www.example.com");
+
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.LENIENT);
 
     private @Mock TabGroupModelFilter mArchivedTabGroupModelFilter;
@@ -64,6 +70,7 @@ public class TabArchiverUnitTest {
     @Before
     public void setUp() {
         when(mIncognitoProfile.isOffTheRecord()).thenReturn(true);
+        TabIdManager.resetInstanceForTesting();
 
         // Testing setup is:
         // 50 regular tabs, 10 incognito tabs.
@@ -150,5 +157,38 @@ public class TabArchiverUnitTest {
         verify(mArchivedTabCreator).createFrozenTab(any(), anyInt(), anyInt());
         verify(mTabRemover).closeTabs(any(), anyBoolean());
         verify(mIncogTabRemover, never()).closeTabs(any(), anyBoolean());
+    }
+
+    @Test
+    public void testArchiveAndRemoveTabs_TabIdAlreadyArchived_SameUrl() {
+        MockTab tab = (MockTab) mTabModelSelector.getModel(/* incognito= */ false).getTabAt(0);
+        tab.setGurlOverrideForTesting(TEST_GURL);
+
+        MockTab archivedTab = new MockTab(tab.getId(), mProfile);
+        archivedTab.setGurlOverrideForTesting(TEST_GURL);
+        when(mArchivedTabModel.getTabById(tab.getId())).thenReturn(archivedTab);
+
+        mTabArchiver.archiveAndRemoveTabs(
+                mTabModelSelector.getTabGroupModelFilter(/* isIncognito= */ false),
+                Collections.singletonList(tab));
+
+        verify(mArchivedTabCreator, never()).createFrozenTab(any(), anyInt(), anyInt());
+    }
+
+    @Test
+    public void testArchiveAndRemoveTabs_TabIdAlreadyArchived_DifferentUrl() {
+        MockTab tab = (MockTab) mTabModelSelector.getModel(/* incognito= */ false).getTabAt(0);
+        tab.setGurlOverrideForTesting(TEST_GURL);
+
+        MockTab archivedTab = new MockTab(tab.getId(), mProfile);
+        archivedTab.setGurlOverrideForTesting(TEST_GURL_2);
+        when(mArchivedTabModel.getTabById(tab.getId())).thenReturn(archivedTab);
+
+        mTabArchiver.archiveAndRemoveTabs(
+                mTabModelSelector.getTabGroupModelFilter(/* isIncognito= */ false),
+                Collections.singletonList(tab));
+
+        verify(mArchivedTabCreator, times(1))
+                .createFrozenTab(any(), not(eq(tab.getId())), anyInt());
     }
 }

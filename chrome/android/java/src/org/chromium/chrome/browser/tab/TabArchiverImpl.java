@@ -269,9 +269,19 @@ public class TabArchiverImpl implements TabArchiver {
                 continue;
             }
 
+            // If a tab with the same ID already exists in the archived tab model, generate a new
+            // tab ID. See crbug.com/489143371.
+            int tabId = tab.getId();
+            Tab existingArchivedTab = mArchivedTabGroupModelFilter.getTabModel().getTabById(tabId);
+            if (existingArchivedTab != null) {
+                // Do not add tab if the existing archived tab has the same URL.
+                if (existingArchivedTab.getUrl().equals(tab.getUrl())) continue;
+                tabId = TabIdManager.getInstance().generateValidId(Tab.INVALID_TAB_ID);
+            }
+
             TabState tabState = prepareTabState(tab);
             Tab archivedTab =
-                    mArchivedTabCreator.createFrozenTab(tabState, tab.getId(), INVALID_TAB_INDEX);
+                    mArchivedTabCreator.createFrozenTab(tabState, tabId, INVALID_TAB_INDEX);
             archivedTabs.add(archivedTab);
             singleTabsToClose.add(tab);
         }
