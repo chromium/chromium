@@ -56,8 +56,13 @@ GlicMediaLinkHelper::ExtractTimeFromQueryIfExists(const GURL& target) {
     return {};
   }
 
-  if (!t_string.length()) {
+  if (t_string.empty()) {
     return {};
+  }
+
+  // Handle optional 's' suffix.
+  if (t_string.back() == 's') {
+    t_string.pop_back();
   }
 
   unsigned int t = 0;
@@ -143,31 +148,16 @@ bool GlicMediaLinkHelper::YouTubeHelper(const GURL& target) {
   if (!net::GetValueForKeyInQuery(target, "v", &target_v)) {
     return false;
   }
-  if (committed_v != target_v || committed_v.length() == 0) {
+  if (committed_v != target_v || committed_v.empty()) {
     return false;
   }
 
-  // This should be refactored to use the `IfExists` methods, but for now we
-  // don't want to break working code.
-
-  // Make sure that the target specifies a t=.
-  std::string t_string;
-  if (!net::GetValueForKeyInQuery(target, "t", &t_string)) {
-    return false;
-  }
-
-  if (!t_string.length()) {
-    return false;
-  }
-
-  unsigned int t = 0;
-  if (!base::StringToUint(t_string, &t)) {
-    return false;
-  }
-
-  if (auto* media_session = GetMediaSessionIfExists()) {
-    media_session->SeekTo(base::Seconds(t));
-    return true;
+  // If there is a `t=` parameter in `target`, then use it.
+  if (auto maybe_time = ExtractTimeFromQueryIfExists(target)) {
+    if (auto* media_session = GetMediaSessionIfExists()) {
+      media_session->SeekTo(*maybe_time);
+      return true;
+    }
   }
 
   return false;

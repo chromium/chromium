@@ -435,6 +435,13 @@ TEST_F(GlicMediaLinkHelperStaticTest, ExtractTimeFromQueryIfExists) {
   GURL url_fractional_time("https://www.youtube.com/watch?v=123&t=30.5");
   time = GlicMediaLinkHelper::ExtractTimeFromQueryIfExists(url_fractional_time);
   EXPECT_FALSE(time.has_value());
+
+  // Test case with the "t" parameter that includes 's' at the end.
+  GURL url_time_with_seconds("https://www.youtube.com/watch?v=123&t=30s");
+  time =
+      GlicMediaLinkHelper::ExtractTimeFromQueryIfExists(url_time_with_seconds);
+  ASSERT_TRUE(time.has_value());
+  EXPECT_EQ(*time, base::Seconds(30));
 }
 
 }  // namespace
