@@ -9,6 +9,7 @@ import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_E
 import androidx.test.filters.MediumTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
+import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -18,6 +19,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
@@ -59,6 +61,7 @@ public class FullscreenVideoPictureInPictureControllerTest {
     // TODO(peconn): Add a test for exit on Tab Reparenting.
     private static final String TEST_PATH = "/chrome/test/data/media/bigbuck-player.html";
     private static final String VIDEO_ID = "video";
+    private static final long PIP_TIMEOUT_MS = 10000L;
 
     @Rule
     public FreshCtaTransitTestRule mActivityTestRule =
@@ -166,14 +169,14 @@ public class FullscreenVideoPictureInPictureControllerTest {
     /** Tests that PiP is left when a new Tab is created in the foreground. */
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1429112")
     public void testExitOnNewForegroundTab() throws Throwable {
         testExitOn(
                 new Runnable() {
                     @Override
                     public void run() {
                         try {
-                            mActivityTestRule.loadUrlInNewTab("https://www.example.com/");
+                            mActivityTestRule.loadUrlInNewTab(
+                                    mActivityTestRule.getTestServer().getURL(TEST_PATH));
                         } catch (Exception e) {
                             throw new RuntimeException();
                         }
@@ -215,16 +218,64 @@ public class FullscreenVideoPictureInPictureControllerTest {
     /** Tests that we can resume PiP after it has been cancelled. */
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1429112")
     public void testReenterPip() throws Throwable {
         enterFullscreen();
         triggerAutoPiPAndWait();
+        exitPipAndFullscreenAndWait();
 
         mActivityTestRule.resumeMainActivityFromLauncher();
-        CriteriaHelper.pollUiThread(() -> !mActivity.getLastPictureInPictureModeForTesting());
 
-        enterFullscreen(false);
+        // Open a new tab and wait for it to load.
+        mActivityTestRule.loadUrlInNewTab(mActivityTestRule.getTestServer().getURL(TEST_PATH));
+
+        // Wait for the new tab to be active and ready.
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Tab tab = mActivityTestRule.getActivityTab();
+                    return tab != null && tab.getWebContents() != null && !tab.isClosing();
+                },
+                "New tab should be active and ready",
+                PIP_TIMEOUT_MS,
+                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+
+        enterFullscreen(true);
         triggerAutoPiPAndWait();
+    }
+
+    private void exitPipAndFullscreenAndWait() throws Throwable {
+        AsyncInitializationActivity.interceptMoveTaskToBackForTesting();
+        JavaScriptUtils.executeJavaScript(getWebContents(), "document.exitFullscreen()");
+
+        CriteriaHelper.pollUiThread(
+                () -> !getWebContents().hasActiveEffectivelyFullscreenVideo(),
+                "Engine should not have fullscreen video",
+                PIP_TIMEOUT_MS,
+                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+
+        final Tab tab = mActivityTestRule.getActivityTab();
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    Criteria.checkThat(
+                            tab.getWebContents().getFullscreenVideoSize(), Matchers.nullValue());
+                },
+                PIP_TIMEOUT_MS,
+                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+
+        CriteriaHelper.pollUiThread(
+                AsyncInitializationActivity::wasMoveTaskToBackInterceptedForTesting,
+                "Chrome should have attempted dismissal after exitFullscreen",
+                PIP_TIMEOUT_MS,
+                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+
+        // Since we intercept moveTaskToBack, the framework won't automatically send the signal.
+        mActivity.onPictureInPictureModeChanged(false, mActivity.getResources().getConfiguration());
+
+        // Wait for Chrome to acknowledge PiP exit.
+        CriteriaHelper.pollUiThread(
+                () -> !mActivity.getLastPictureInPictureModeForTesting(),
+                "Chrome should have acknowledged PiP exit",
+                PIP_TIMEOUT_MS,
+                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
     }
 
     private WebContents getWebContents() {
@@ -236,7 +287,13 @@ public class FullscreenVideoPictureInPictureControllerTest {
                 () ->
                         InstrumentationRegistry.getInstrumentation()
                                 .callActivityOnUserLeaving(mActivity));
-        CriteriaHelper.pollUiThread(mActivity::getLastPictureInPictureModeForTesting);
+
+        // Wait for Chrome to process the callback.
+        CriteriaHelper.pollUiThread(
+                mActivity::getLastPictureInPictureModeForTesting,
+                "Chrome should have acknowledged PiP mode",
+                PIP_TIMEOUT_MS,
+                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
     }
 
     private void enterFullscreen() throws Throwable {
@@ -258,7 +315,20 @@ public class FullscreenVideoPictureInPictureControllerTest {
                         /* shouldScrollIntoView= */ false));
 
         // We use the web contents fullscreen heuristic.
-        CriteriaHelper.pollUiThread(getWebContents()::hasActiveEffectivelyFullscreenVideo);
+        CriteriaHelper.pollUiThread(
+                getWebContents()::hasActiveEffectivelyFullscreenVideo,
+                PIP_TIMEOUT_MS,
+                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+
+        // It can take a while for the fullscreen video to register.
+        final Tab tab = mActivityTestRule.getActivityTab();
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    Criteria.checkThat(
+                            tab.getWebContents().getFullscreenVideoSize(), Matchers.notNullValue());
+                },
+                PIP_TIMEOUT_MS,
+                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
     }
 
     private void testExitOn(Runnable runnable) throws Throwable {
@@ -270,7 +340,10 @@ public class FullscreenVideoPictureInPictureControllerTest {
         runnable.run();
 
         CriteriaHelper.pollUiThread(
-                AsyncInitializationActivity::wasMoveTaskToBackInterceptedForTesting);
+                AsyncInitializationActivity::wasMoveTaskToBackInterceptedForTesting,
+                "Failed to move task to the background.",
+                PIP_TIMEOUT_MS,
+                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
         // This logic would run if we hadn't intercepted moveTaskToBack (which is how PiP gets
         // exited), so run it now just in case.
         mActivity.onPictureInPictureModeChanged(false, mActivity.getResources().getConfiguration());

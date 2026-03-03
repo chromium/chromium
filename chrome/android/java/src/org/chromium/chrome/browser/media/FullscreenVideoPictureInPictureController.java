@@ -333,6 +333,10 @@ public class FullscreenVideoPictureInPictureController {
         webContents.setHasPersistentVideo(true);
 
         final Tab activityTab = mActivityTabProvider.get();
+        if (activityTab == null) {
+            Log.i(TAG, "Activity tab is null, not entering Picture-in-picture");
+            return;
+        }
 
         // We don't want InfoBars displaying while in PiP, they cover too much content.
         assumeNonNull(getInfoBarContainerForTab(activityTab)).setHidden(true);
@@ -340,8 +344,15 @@ public class FullscreenVideoPictureInPictureController {
         mOnLeavePipCallbacks.add(
                 () -> {
                     Log.i(TAG, "Running Picture-in-picture exit callbacks");
-                    webContents.setHasPersistentVideo(false);
-                    assumeNonNull(getInfoBarContainerForTab(activityTab)).setHidden(false);
+                    if (!webContents.isDestroyed()) {
+                        webContents.setHasPersistentVideo(false);
+                    }
+                    if (!activityTab.isDestroyed()) {
+                        InfoBarContainer container = getInfoBarContainerForTab(activityTab);
+                        if (container != null) {
+                            container.setHidden(false);
+                        }
+                    }
                 });
 
         // Setup observers to dismiss the Activity on events that should end PiP.  In auto-enter
