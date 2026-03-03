@@ -9,22 +9,22 @@ import {assertNotReached} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 
 import {ContentSettingsType} from '../../content_settings_types.mojom-webui.js';
-import type {ActorTaskPauseReason as ActorTaskPauseReasonMojo, ActorTaskStopReason as ActorTaskStopReasonMojo, CaptureRegionObserver, CaptureRegionResult as CaptureRegionResultMojo, OpenSettingsOptions as OpenSettingsOptionsMojo, PinCandidate as PinCandidateMojo, PinCandidatesObserver, ScrollToSelector as ScrollToSelectorMojo, SkillSource as MojomSkillSource, SkillsWebClientEvent as MojomSkillsWebClientEvent, TabDataHandlerInterface, TabDataMojoType, WebClientHandlerInterface} from '../../glic.mojom-webui.js';
-import {CaptureRegionErrorReason as CaptureRegionErrorReasonMojo, CaptureRegionObserverReceiver, PinCandidatesObserverReceiver, ResponseStopCause as ResponseStopCauseMojo, SettingsPageField as SettingsPageFieldMojo, TabDataHandlerReceiver, WebClientReceiver} from '../../glic.mojom-webui.js';
-import type {ActorTaskPauseReason, ActorTaskStopReason, CancelActionsResult, CaptureRegionErrorReason, ConversationInfo, CreateSkillRequest, DraggableArea, FormFillingResponse, GetPinCandidatesOptions, Journal, MicrophoneStatus, OnResponseStoppedDetails, OpenSettingsOptions, PinTabsOptions, Screenshot, ScrollToParams, Skill, SkillSource, SkillsWebClientEvent, TabContextOptions, TaskOptions, UnpinTabsOptions, UpdateSkillRequest, WebClientMode, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../../glic_api/glic_api.js';
+import type {CaptureRegionObserver, CaptureRegionResult as CaptureRegionResultMojo, OpenSettingsOptions as OpenSettingsOptionsMojo, PinCandidate as PinCandidateMojo, PinCandidatesObserver, ScrollToSelector as ScrollToSelectorMojo, TabDataHandlerInterface, TabDataMojoType, WebClientHandlerInterface} from '../../glic.mojom-webui.js';
+import {CaptureRegionErrorReason as CaptureRegionErrorReasonMojo, CaptureRegionObserverReceiver, PinCandidatesObserverReceiver, ResponseStopCause as ResponseStopCauseMojo, SettingsPageField as SettingsPageFieldMojo, SkillSource as SkillSourceMojo, TabDataHandlerReceiver, WebClientReceiver} from '../../glic.mojom-webui.js';
+import type {ActorTaskPauseReason, ActorTaskStopReason, CancelActionsResult, ConversationInfo, CreateSkillRequest, DraggableArea, FormFillingResponse, GetPinCandidatesOptions, Journal, MicrophoneStatus, OnResponseStoppedDetails, OpenSettingsOptions, PinTabsOptions, Screenshot, ScrollToParams, Skill, SkillsWebClientEvent, TabContextOptions, TaskOptions, UnpinTabsOptions, UpdateSkillRequest, WebClientMode, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../../glic_api/glic_api.js';
 import {CaptureScreenshotErrorReason, CreateTaskErrorReason, PerformActionsErrorReason, ResponseStopCause, ScrollToErrorReason} from '../../glic_api/glic_api.js';
 import {replaceProperties} from '../conversions.js';
+import {enumFromClient, enumToClient} from '../enum_conversions.js';
 import {ResponseExtras} from '../post_message_transport.js';
 import type {PostMessageRequestSender} from '../post_message_transport.js';
 import type {HostRequestTypes, RequestRequestType, RequestResponseType, ResumeActorTaskResultPrivate, RgbaImage, TabContextResultPrivate, TransferableException, WebClientInitialStatePrivate} from '../request_types.js';
 import {ErrorWithReasonImpl, exceptionFromTransferable} from '../request_types.js';
 
-import {bitmapN32ToRGBAImage, byteArrayFromClient, captureRegionResultToClient, conversationInfoFromClient, focusedTabDataToClient, formFactorToClient, getArrayBufferFromBigBuffer, getPinCandidatesOptionsFromClient, hostCapabilitiesToClient, idFromClient, idToClient, microphoneStatusToMojo, optionalFromClient, optionalToClient, panelStateToClient, pinTabsOptionsToMojo, platformToClient, resumeActorTaskResultToClient, tabContextOptionsFromClient, tabContextToClient, tabDataToClient, taskOptionsToMojo, timeDeltaFromClient, unpinTabsOptionsToMojo, urlFromClient, urlToClient, webClientModeToMojo, zeroStateSuggestionsToClient} from './conversions.js';
+import {bitmapN32ToRGBAImage, byteArrayFromClient, captureRegionResultToClient, conversationInfoFromClient, focusedTabDataToClient, getArrayBufferFromBigBuffer, getPinCandidatesOptionsFromClient, hostCapabilitiesToClient, idFromClient, idToClient, microphoneStatusToMojo, optionalFromClient, optionalToClient, panelStateToClient, pinTabsOptionsToMojo, resumeActorTaskResultToClient, tabContextOptionsFromClient, tabContextToClient, tabDataToClient, taskOptionsToMojo, timeDeltaFromClient, unpinTabsOptionsToMojo, urlFromClient, urlToClient, webClientModeToMojo, zeroStateSuggestionsToClient} from './conversions.js';
 import type {GatedSender} from './gated_sender.js';
 import type {ApiHostEmbedder, GlicApiHost} from './glic_api_host.js';
 import {DetailedWebClientState} from './glic_api_host.js';
 import {WebClientImpl} from './host_to_client.js';
-
 
 // Turn everything except void into a promise.
 type Promisify<T> = T extends void ? void : Promise<T>;
@@ -112,8 +112,8 @@ export class HostMessageHandler implements HostMessageHandlerInterface {
           build: chromeVersion[2] || 0,
           patch: chromeVersion[3] || 0,
         },
-        platform: platformToClient(platform),
-        formFactor: formFactorToClient(initialState.formFactor),
+        platform: enumToClient(platform),
+        formFactor: enumToClient(initialState.formFactor),
         loggingEnabled: loadTimeData.getBoolean('loggingEnabled'),
         maxInFlightRequests: loadTimeData.getInteger('maxInFlightRequests'),
         sendResponsesForAllRequests:
@@ -172,7 +172,8 @@ export class HostMessageHandler implements HostMessageHandlerInterface {
       highlightField: SettingsPageFieldMojo.kNone,
     };
     if (request.options?.highlightField) {
-      optionsMojo.highlightField = request.options?.highlightField as number;
+      optionsMojo.highlightField =
+          enumFromClient(request.options?.highlightField);
     }
     this.handler.openGlicSettingsPage(optionsMojo);
   }
@@ -333,15 +334,14 @@ export class HostMessageHandler implements HostMessageHandlerInterface {
       Promise<{result: CancelActionsResult}> {
     const cancelResult = await this.handler.cancelActions(request.taskId);
     return {
-      result: cancelResult.result as number as CancelActionsResult,
+      result: enumToClient(cancelResult.result),
     };
   }
 
   glicBrowserStopActorTask(
       request: {taskId: number, stopReason: ActorTaskStopReason}): void {
-    const actorTaskStopReason =
-        request.stopReason as number as ActorTaskStopReasonMojo;
-    this.handler.stopActorTask(request.taskId, actorTaskStopReason);
+    this.handler.stopActorTask(
+        request.taskId, enumFromClient(request.stopReason));
   }
 
   glicBrowserPauseActorTask(request: {
@@ -349,10 +349,9 @@ export class HostMessageHandler implements HostMessageHandlerInterface {
     pauseReason: ActorTaskPauseReason,
     tabId: string,
   }): void {
-    const actorTaskPauseReason =
-        request.pauseReason as number as ActorTaskPauseReasonMojo;
     this.handler.pauseActorTask(
-        request.taskId, actorTaskPauseReason, idFromClient(request.tabId));
+        request.taskId, enumFromClient(request.pauseReason),
+        idFromClient(request.tabId));
   }
 
   async glicBrowserResumeActorTask(
@@ -400,7 +399,8 @@ export class HostMessageHandler implements HostMessageHandlerInterface {
       icon: request.request.icon ?? '',
       prompt: request.request.prompt,
       description: request.request.description ?? '',
-      source: request.request.source as number as MojomSkillSource,
+      source:
+          enumFromClient(request.request.source) ?? SkillSourceMojo.kUnknown,
     };
     return await this.handler.createSkill(mojoRequest);
   }
@@ -428,7 +428,7 @@ export class HostMessageHandler implements HostMessageHandlerInterface {
         sourceSkillId: optionalFromClient(mojoSkill.sourceSkillId) || undefined,
         preview: {
           ...mojoSkill.preview,
-          source: mojoSkill.preview.source as number as SkillSource,
+          source: enumToClient(mojoSkill.preview.source),
         },
       },
     };
@@ -437,8 +437,7 @@ export class HostMessageHandler implements HostMessageHandlerInterface {
   glicBrowserRecordSkillsWebClientEvent(request: {
     event: SkillsWebClientEvent,
   }): void {
-    this.handler.recordSkillsWebClientEvent(
-        request.event as number as MojomSkillsWebClientEvent);
+    this.handler.recordSkillsWebClientEvent(enumFromClient(request.event));
   }
 
   async glicBrowserCreateActorTab(request: {
@@ -762,7 +761,7 @@ export class HostMessageHandler implements HostMessageHandlerInterface {
     };
     const {errorReason} = (await this.handler.scrollTo(mojoParams));
     if (errorReason !== null) {
-      throw new ErrorWithReasonImpl('scrollTo', errorReason as number);
+      throw new ErrorWithReasonImpl('scrollTo', enumToClient(errorReason));
     }
     return {};
   }
@@ -1009,8 +1008,7 @@ export class CaptureRegionObserverImpl implements CaptureRegionObserver {
       // Use `sendWhenActive` to ensure the error is delivered, even if the
       // panel is currently inactive.
       this.sender.sendWhenActive('glicWebClientCaptureRegionUpdate', {
-        reason: (reason ?? CaptureRegionErrorReasonMojo.kUnknown) as number as
-            CaptureRegionErrorReason,
+        reason: enumToClient(reason ?? CaptureRegionErrorReasonMojo.kUnknown),
         observationId: this.observationId,
       });
       this.destroy();

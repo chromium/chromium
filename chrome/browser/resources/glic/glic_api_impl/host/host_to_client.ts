@@ -8,8 +8,7 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 
 import type {PageMetadata as PageMetadataMojo} from '../../ai_page_content_metadata.mojom-webui.js';
 import type {ActorTaskState as ActorTaskStateMojo, AdditionalContext as AdditionalContextMojo, FocusedTabData as FocusedTabDataMojo, InvokeOptions as InvokeOptionsMojo, OpenPanelInfo as OpenPanelInfoMojo, PanelOpeningData as PanelOpeningDataMojo, PanelState as PanelStateMojo, Skill as SkillMojo, SkillPreview as SkillPreviewMojo, TabData as TabDataMojo, WebClientInterface, ZeroStateSuggestionsOptions as ZeroStateSuggestionsOptionsMojo, ZeroStateSuggestionsV2 as ZeroStateSuggestionsV2Mojo} from '../../glic.mojom-webui.js';
-import type * as api from '../../glic_api/glic_api.js';
-import type {SkillSource} from '../../glic_api/glic_api.js';
+import {enumToClient} from '../enum_conversions.js';
 
 import type {NavigationConfirmationRequest as NavigationConfirmationRequestMojo, NavigationConfirmationResponse as NavigationConfirmationResponseMojo, SelectAutofillSuggestionsDialogRequest as SelectAutofillSuggestionsDialogRequestMojo, SelectAutofillSuggestionsDialogResponse as SelectAutofillSuggestionsDialogResponseMojo, SelectCredentialDialogRequest as SelectCredentialDialogRequestMojo, SelectCredentialDialogResponse as SelectCredentialDialogResponseMojo, UserConfirmationDialogRequest as UserConfirmationDialogRequestMojo, UserConfirmationDialogResponse as UserConfirmationDialogResponseMojo} from './../../actor_webui.mojom-webui.js';
 import {ResponseExtras} from './../post_message_transport.js';
@@ -199,12 +198,11 @@ export class WebClientImpl implements WebClientInterface {
   notifySkillPreviewsChanged(skillPreviews: SkillPreviewMojo[]): void {
     this.sender.sendLatestWhenActive(
         'glicWebClientNotifySkillPreviewsChanged', {
-          skillPreviews:
-              skillPreviews.map(s => ({
-                                  ...s,
-                                  source: s.source as number as SkillSource,
-                                  isContextual: false,
-                                })),
+          skillPreviews: skillPreviews.map(s => ({
+                                             ...s,
+                                             source: enumToClient(s.source),
+                                             isContextual: false,
+                                           })),
         });
   }
 
@@ -215,7 +213,7 @@ export class WebClientImpl implements WebClientInterface {
           contextualSkillPreviews:
               skillPreviews.map(s => ({
                                   ...s,
-                                  source: s.source as number as SkillSource,
+                                  source: enumToClient(s.source),
                                   isContextual: true,
                                 })),
         });
@@ -226,7 +224,7 @@ export class WebClientImpl implements WebClientInterface {
         'glicWebClientNotifySkillPreviewChanged', {
           skillPreview: {
             ...skillPreview,
-            source: skillPreview.source as number as SkillSource,
+            source: enumToClient(skillPreview.source),
           },
         },
         [],
@@ -247,7 +245,7 @@ export class WebClientImpl implements WebClientInterface {
             ...skill,
             preview: {
               ...skill.preview,
-              source: skill.preview.source as number as SkillSource,
+              source: enumToClient(skill.preview.source),
             },
             sourceSkillId: optionalToClient(skill.sourceSkillId),
           },
@@ -265,7 +263,7 @@ export class WebClientImpl implements WebClientInterface {
   }
 
   notifyActorTaskStateChanged(taskId: number, state: ActorTaskStateMojo): void {
-    const clientState = state as number as api.ActorTaskState;
+    const clientState = enumToClient(state);
     this.sender.requestNoResponse(
         'glicWebClientNotifyActorTaskStateChanged',
         {taskId, state: clientState});
