@@ -14,6 +14,7 @@ source_set("indigo") {
     "//base",
     "//chrome/browser/ui/tabs",
     "//components/optimization_guide/core",
+    "//components/signin/public/identity_manager",
     "//components/tabs:public",
     "//url",
   ]
@@ -32,10 +33,12 @@ source_set("impl") {
     "//base",
     "//chrome/browser/optimization_guide",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/signin",
     "//chrome/browser/ui/actions:actions_headers",
     "//chrome/browser/ui/views/page_action",
     "//chrome/common:chrome_features",
     "//components/optimization_guide/core",
+    "//components/signin/public/identity_manager",
     "//content/public/browser",
     "//services/network/public/cpp",
     "//services/network/public/mojom",
@@ -62,4 +65,8 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//url",
   ]
+
+  if (is_chromeos) {
+    deps += [ "//chromeos/ash/components/network:test_support" ]
+  }
 }

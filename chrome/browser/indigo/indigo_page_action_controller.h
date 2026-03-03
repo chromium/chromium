@@ -9,8 +9,10 @@
 
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ui/tabs/contents_observing_tab_feature.h"
 #include "components/optimization_guide/core/hints/optimization_guide_decision.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
 
@@ -31,7 +33,8 @@ namespace indigo {
 
 // Manages the Indigo page action and its various entry points, ensuring they
 // are correctly displayed.
-class IndigoPageActionController : public tabs::ContentsObservingTabFeature {
+class IndigoPageActionController : public tabs::ContentsObservingTabFeature,
+                                   public signin::IdentityManager::Observer {
  public:
   DECLARE_USER_DATA(IndigoPageActionController);
 
@@ -50,6 +53,11 @@ class IndigoPageActionController : public tabs::ContentsObservingTabFeature {
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
 
+  // signin::IdentityManager::Observer:
+  void OnPrimaryAccountChanged(
+      const signin::PrimaryAccountChangeEvent& event_details) override;
+  void OnExtendedAccountInfoUpdated(const AccountInfo& info) override;
+
  private:
   // Updates the visibility and states of all entry points.
   void UpdateEntryPointsState();
@@ -61,6 +69,10 @@ class IndigoPageActionController : public tabs::ContentsObservingTabFeature {
       optimization_guide::OptimizationGuideDecision decision,
       const optimization_guide::OptimizationMetadata&);
 
+  // Returns whether the profile is known to belong to a primary account which
+  // has the capabilities required to use this feature.
+  bool CanUseModelExecutionFeatures() const;
+
   // `page_action_controller_` is owned by the same `TabFeatures` that owns
   // `this`. Since `page_action_controller_` is initialized before `this` and
   // destroyed after, it is safe to hold as a `raw_ref`.
@@ -70,6 +82,9 @@ class IndigoPageActionController : public tabs::ContentsObservingTabFeature {
   const raw_ptr<optimization_guide::OptimizationGuideDecider>
       optimization_guide_;
 
+  // Owned by the profile, which outlives this object.
+  const raw_ptr<signin::IdentityManager> identity_manager_;
+
   // The optimization guide's opinion about whether this page is eligible for
   // Indigo (or kUnknown if not determined).
   optimization_guide::OptimizationGuideDecision optimization_guide_decision_ =
@@ -77,6 +92,10 @@ class IndigoPageActionController : public tabs::ContentsObservingTabFeature {
 
   // If true, the Indigo page action is currently shown.
   bool is_shown_ = false;
+
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
+      identity_manager_observation_{this};
 
   ui::ScopedUnownedUserData<IndigoPageActionController>
       scoped_unowned_user_data_;
