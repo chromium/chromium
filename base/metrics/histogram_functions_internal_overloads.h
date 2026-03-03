@@ -45,68 +45,6 @@ BASE_EXPORT void UmaHistogramExactLinear(const char* name,
                                          int exclusive_max);
 // LINT.ThenChange(/base/metrics/histogram_functions.h:UmaHistogramExactLinear)
 
-// LINT.IfChange(UmaHistogramEnumeration)
-template <typename T>
-void UmaHistogramEnumeration(const std::string& name, T sample) {
-  static_assert(std::is_enum_v<T>, "T is not an enum.");
-  // kMaxValue is the max value in enum, so bucket count is one more than that.
-  // This also ensures that an enumeration that doesn't define kMaxValue fails
-  // with a semi-useful error ("no member named 'kMaxValue' in ...").
-  constexpr auto kBucketCount = static_cast<int>(T::kMaxValue) + 1;
-  constexpr auto kBucketCountMax =
-      static_cast<int>(LinearHistogram::kBucketCount_MAX);
-  // Note: UmaHistogramExactLinear() adds 1 to the bucket count for the overflow
-  // bucket, so kBucketCount must be less than kBucketCount_MAX.
-  static_assert(kBucketCount < kBucketCountMax,
-                "Enumeration's kMaxValue is out of range of "
-                "LinearHistogram::kBucketCount_MAX. Use a sparse histogram "
-                "instead.");
-  DCHECK_LE(static_cast<uintmax_t>(sample),
-            static_cast<uintmax_t>(T::kMaxValue));
-  return UmaHistogramExactLinear(name, static_cast<int>(sample),
-                                 static_cast<int>(T::kMaxValue) + 1);
-}
-
-template <typename T>
-void UmaHistogramEnumeration(const char* name, T sample) {
-  static_assert(std::is_enum_v<T>, "T is not an enum.");
-  // kMaxValue is the max value in enum, so bucket count is one more than that.
-  // This also ensures that an enumeration that doesn't define kMaxValue fails
-  // with a semi-useful error ("no member named 'kMaxValue' in ...").
-  constexpr auto kBucketCount = static_cast<int>(T::kMaxValue) + 1;
-  constexpr auto kBucketCountMax =
-      static_cast<int>(LinearHistogram::kBucketCount_MAX);
-  // Note: UmaHistogramExactLinear() adds 1 to the bucket count for the overflow
-  // bucket, so kBucketCount must be less than kBucketCount_MAX.
-  static_assert(kBucketCount < kBucketCountMax,
-                "Enumeration's kMaxValue is out of range of "
-                "LinearHistogram::kBucketCount_MAX. Use a sparse histogram "
-                "instead.");
-  DCHECK_LE(static_cast<uintmax_t>(sample),
-            static_cast<uintmax_t>(T::kMaxValue));
-  return UmaHistogramExactLinear(name, static_cast<int>(sample),
-                                 static_cast<int>(T::kMaxValue) + 1);
-}
-
-template <typename T>
-void UmaHistogramEnumeration(const std::string& name, T sample, T enum_size) {
-  static_assert(std::is_enum_v<T>, "T is not an enum.");
-  DCHECK_LE(static_cast<uintmax_t>(enum_size), static_cast<uintmax_t>(INT_MAX));
-  DCHECK_LT(static_cast<uintmax_t>(sample), static_cast<uintmax_t>(enum_size));
-  return UmaHistogramExactLinear(name, static_cast<int>(sample),
-                                 static_cast<int>(enum_size));
-}
-
-template <typename T>
-void UmaHistogramEnumeration(const char* name, T sample, T enum_size) {
-  static_assert(std::is_enum_v<T>, "T is not an enum.");
-  DCHECK_LE(static_cast<uintmax_t>(enum_size), static_cast<uintmax_t>(INT_MAX));
-  DCHECK_LT(static_cast<uintmax_t>(sample), static_cast<uintmax_t>(enum_size));
-  return UmaHistogramExactLinear(name, static_cast<int>(sample),
-                                 static_cast<int>(enum_size));
-}
-// LINT.ThenChange(/base/metrics/histogram_functions.h:UmaHistogramEnumeration)
-
 // LINT.IfChange(UmaHistogramBoolean)
 BASE_EXPORT void UmaHistogramBoolean(const std::string& name, bool sample);
 BASE_EXPORT void UmaHistogramBoolean(const char* name, bool sample);

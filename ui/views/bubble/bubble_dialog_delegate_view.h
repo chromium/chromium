@@ -569,7 +569,7 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
     // - "Bubble.{bubble_name}.{histogram_name}" for a specific bubble
     //   subclass, if `bubble_name` is set.
     template <typename Value>
-    void LogMetric(void (*uma_func)(std::string_view, Value),
+    void LogMetric(void (*uma_func)(const std::string&, Value),
                    std::string_view histogram_name,
                    Value value) const;
 

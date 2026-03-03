@@ -960,7 +960,7 @@ BubbleDialogDelegate::BubbleUmaLogger::GetBubbleName() const {
 
 template <typename Value>
 void BubbleDialogDelegate::BubbleUmaLogger::LogMetric(
-    void (*uma_func)(std::string_view, Value),
+    void (*uma_func)(const std::string&, Value),
     std::string_view histogram_name,
     Value value) const {
   if (!base::FeatureList::IsEnabled(::features::kBubbleMetricsApi)) {
@@ -989,7 +989,7 @@ void BubbleDialogDelegate::BubbleUmaLogger::LogMetric(
 
 // Instantiate template function to be able to use in views_unittests.
 template VIEWS_EXPORT void BubbleDialogDelegate::BubbleUmaLogger::LogMetric<
-    base::TimeDelta>(void (*uma_func)(std::string_view, base::TimeDelta),
+    base::TimeDelta>(void (*uma_func)(const std::string&, base::TimeDelta),
                      std::string_view histogram_name,
                      base::TimeDelta value) const;
 
