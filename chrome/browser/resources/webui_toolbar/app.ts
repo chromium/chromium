@@ -48,7 +48,7 @@ export class ToolbarAppElement extends CrLitElement {
       loadTimeData.getBoolean('enableLocationBar');
   protected accessor navigationControlsState_: NavigationControlsState = {
     reloadControlState: {
-      isDevtoolsConnected: false,
+      canShowMenu: false,
       isNavigationLoading: false,
       isContextMenuVisible: false,
     },

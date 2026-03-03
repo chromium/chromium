@@ -303,7 +303,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest, Accessibility) {
                                     ax::mojom::StringAttribute::kDescription));
   EXPECT_EQ(0, reload.GetIntAttribute(ax::mojom::IntAttribute::kHasPopup));
 
-  // Verify enabling menu is reflected in HasPopup attribute.
+  // Verify enabling devtools is reflected in HasPopup attribute.
   webui_toolbar_view->GetReloadControl()->SetDevToolsStatus(true);
   content::WaitForAccessibilityTreeToChange(web_view->GetWebContents());
   content::WaitForAccessibilityTreeToContainNodeWithName(
@@ -313,6 +313,39 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest, Accessibility) {
   ASSERT_TRUE(reload_node);
   EXPECT_EQ(2, reload_node->GetData().GetIntAttribute(
                    ax::mojom::IntAttribute::kHasPopup));
+  EXPECT_EQ("Reload this page, hold to see more options",
+            reload_node->GetData().GetStringAttribute(
+                ax::mojom::StringAttribute::kDescription));
+
+  // Verify that setting mode to kStop is reflected in HasPopup attribute.
+  webui_toolbar_view->GetReloadControl()->ChangeMode(ReloadControl::Mode::kStop,
+                                                     true);
+  content::WaitForAccessibilityTreeToChange(web_view->GetWebContents());
+  content::WaitForAccessibilityTreeToContainNodeWithName(
+      web_view->GetWebContents(), "Reload");
+  reload_node =
+      content::FindAccessibilityNode(web_view->GetWebContents(), find_criteria);
+  ASSERT_TRUE(reload_node);
+  EXPECT_EQ(0, reload_node->GetData().GetIntAttribute(
+                   ax::mojom::IntAttribute::kHasPopup));
+  EXPECT_EQ("Stop loading this page",
+            reload_node->GetData().GetStringAttribute(
+                ax::mojom::StringAttribute::kDescription));
+
+  // Verify it works when returning to kReload mode.
+  webui_toolbar_view->GetReloadControl()->ChangeMode(
+      ReloadControl::Mode::kReload, true);
+  content::WaitForAccessibilityTreeToChange(web_view->GetWebContents());
+  content::WaitForAccessibilityTreeToContainNodeWithName(
+      web_view->GetWebContents(), "Reload");
+  reload_node =
+      content::FindAccessibilityNode(web_view->GetWebContents(), find_criteria);
+  ASSERT_TRUE(reload_node);
+  EXPECT_EQ(2, reload_node->GetData().GetIntAttribute(
+                   ax::mojom::IntAttribute::kHasPopup));
+  EXPECT_EQ("Reload this page, hold to see more options",
+            reload_node->GetData().GetStringAttribute(
+                ax::mojom::StringAttribute::kDescription));
 }
 
 IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
@@ -1053,11 +1086,11 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewSplitTabsBrowserTest,
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return tab_strip_model->GetActiveTab()->IsSplit(); }));
 
-  // Now split. aria-haspopup should be 'menu'.
+  // Now split. aria-haspopup should be 'true'.
   // The state update is async from the browser back to the WebUI.
   EXPECT_TRUE(base::test::RunUntil([&]() {
     return content::EvalJs(web_contents, kGetAriaHasPopup).ExtractString() ==
-           "menu";
+           "true";
   }));
 }
 

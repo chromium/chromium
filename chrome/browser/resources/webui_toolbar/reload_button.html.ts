@@ -12,7 +12,7 @@ export function getHtml(this: ReloadButtonAppElement) {
       this.state.isNavigationLoading ? 'icon-clear' : 'icon-refresh'}"
     title="${this.tooltip}"
     aria-label="${this.accName_}"
-    aria-haspopup="${this.state.isDevtoolsConnected}"
+    aria-haspopup="${this.state.canShowMenu}"
     is-menu-open="${this.state.isContextMenuVisible}"
     @pointerdown="${this.onReloadButtonPointerdown_}"
     @pointerup="${this.onReloadButtonPointerup_}"

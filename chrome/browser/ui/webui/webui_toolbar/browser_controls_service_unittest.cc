@@ -161,6 +161,7 @@ TEST_F(BrowserControlsServiceStopLoadTest, StopLoad) {
   histogram_tester().ExpectUniqueTimeSample(kInputToStopMouseReleaseHistogram,
                                             duration, 1);
 }
+
 }  // namespace
 
 }  // namespace browser_controls_api

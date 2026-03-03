@@ -97,7 +97,8 @@ void WebUIReloadControl::ExecuteCommand(int command_id, int event_flags) {
 
 void WebUIReloadControl::UpdateState() {
   auto state = toolbar_ui_api::mojom::ReloadControlState::New();
-  state->is_devtools_connected = is_dev_tools_connected_;
+  state->can_show_menu =
+      is_dev_tools_connected_ && (mode_ == ReloadControl::Mode::kReload);
   state->is_navigation_loading = (mode_ == ReloadControl::Mode::kStop);
   state->is_context_menu_visible = menu_runner_->IsRunning();
   webui_toolbar_web_view_->OnReloadControlStateChanged(std::move(state));

@@ -55,7 +55,7 @@ export class ReloadButtonAppElement extends CrLitElement {
   }
 
   protected accessor state: ReloadControlState = {
-    isDevtoolsConnected: false,
+    canShowMenu: false,
     isNavigationLoading: false,
     isContextMenuVisible: false,
   };
@@ -111,9 +111,8 @@ export class ReloadButtonAppElement extends CrLitElement {
       this.tooltip = loadTimeData.getString(
           this.state.isNavigationLoading ?
               RELOAD_BUTTON_TOOLTIP_STOP :
-              (this.state.isContextMenuVisible ?
-                   RELOAD_BUTTON_TOOLTIP_RELOAD_WITH_MENU :
-                   RELOAD_BUTTON_TOOLTIP_RELOAD));
+              (this.state.canShowMenu ? RELOAD_BUTTON_TOOLTIP_RELOAD_WITH_MENU :
+                                        RELOAD_BUTTON_TOOLTIP_RELOAD));
     }
   }
 
@@ -142,7 +141,7 @@ export class ReloadButtonAppElement extends CrLitElement {
       // When the long press is triggered and handled, mark `isLongPressed_`
       // as true, so that it won't be treated as a normal click.
       this.isLongPressed_ = true;
-      if (this.state.isDevtoolsConnected) {
+      if (this.state.canShowMenu) {
         BrowserProxyImpl.getInstance().toolbarUIHandler.showContextMenu(
             ContextMenuType.kReload, this.contextMenuPosition(),
             MenuSourceType.kLongPress);
@@ -222,7 +221,7 @@ export class ReloadButtonAppElement extends CrLitElement {
   }
 
   protected onContextmenu_(e: PointerEvent) {
-    if (this.state.isDevtoolsConnected) {
+    if (this.state.canShowMenu) {
       BrowserProxyImpl.getInstance().toolbarUIHandler.showContextMenu(
           ContextMenuType.kReload, this.contextMenuPosition(),
           MenuSourceType.kMouse);

@@ -25,7 +25,7 @@ enum ToolbarButtonType {
 };
 
 struct ReloadControlState {
-  bool is_devtools_connected;
+  bool can_show_menu;
   bool is_navigation_loading;
   bool is_context_menu_visible;
 };

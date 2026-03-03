@@ -177,14 +177,13 @@ TEST_F(ToolbarUIServiceTest, TestOnNavigationStatusChangedNotLoading) {
 
 // Tests that calling OnNavigationControlsStateChanged() calls the page with the
 // correct state.
-TEST_F(ToolbarUIServiceTest, TestOnDevToolsStatusChangedToConnected) {
-  ASSERT_FALSE(observer()->state->reload_control_state->is_devtools_connected);
+TEST_F(ToolbarUIServiceTest, TestOnCanShowMenuChangedToTrue) {
+  ASSERT_FALSE(observer()->state->reload_control_state->can_show_menu);
 
-  navigation_controls_state()->reload_control_state->is_devtools_connected =
-      true;
+  navigation_controls_state()->reload_control_state->can_show_menu = true;
   PushNavigationControlsStateUpdate();
 
-  ASSERT_TRUE(observer()->state->reload_control_state->is_devtools_connected);
+  ASSERT_TRUE(observer()->state->reload_control_state->can_show_menu);
 }
 
 // Tests that multiple observers receive updates.
