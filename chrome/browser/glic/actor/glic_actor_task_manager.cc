@@ -67,7 +67,9 @@ tabs::TabInterface* GetCrashedTab(actor::ActorTask& task) {
     }
 
     content::WebContents* contents = tab->GetContents();
-    CHECK(contents);
+    if (!contents) {
+      continue;
+    }
     if (contents->IsCrashed()) {
       return tab;
     }
@@ -276,7 +278,10 @@ void GlicActorTaskManager::ReloadCrashedTab(tabs::TabInterface& crashed_tab,
   // Task. If they are multiple tabs that crashed we might want to figure out
   // how to deal with that.
   content::WebContents* contents = crashed_tab.GetContents();
-  CHECK(contents);
+  if (!contents) {
+    std::move(callback).Run();
+    return;
+  }
   CHECK(contents->IsCrashed());
 
   actor_keyed_service_->GetJournal().Log(

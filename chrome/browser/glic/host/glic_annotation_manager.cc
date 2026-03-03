@@ -253,7 +253,10 @@ void GlicAnnotationManager::ScrollTo(
 
   content::WebContents* focused_contents =
       focused_tab_data.focus()->GetContents();
-  CHECK(focused_contents);
+  if (!focused_contents) {
+    std::move(wrapped_callback).Run(mojom::ScrollToErrorReason::kNoFocusedTab);
+    return;
+  }
   if (base::FeatureList::IsEnabled(features::kGlicDefaultTabContextSetting)) {
     if (!host->IsContextAccessIndicatorEnabled()) {
       std::move(wrapped_callback)

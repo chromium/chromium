@@ -240,7 +240,7 @@ bool ContextSharingBorderViewControllerImpl::IsGlicWindowShowing() const {
 
 bool ContextSharingBorderViewControllerImpl::IsTabInCurrentView(
     const content::WebContents* tab) const {
-  return contents_web_view_->web_contents() == tab;
+  return tab && contents_web_view_->web_contents() == tab;
 }
 
 bool ContextSharingBorderViewControllerImpl::ShouldShowBorderAnimation() {

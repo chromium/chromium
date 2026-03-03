@@ -858,8 +858,10 @@ void GlicMetrics::SetDelegateForTesting(std::unique_ptr<Delegate> delegate) {
 }
 
 void GlicMetrics::DidRequestContextFromTab(tabs::TabInterface& tab) {
-  last_tab_context_source_id_ =
-      tab.GetContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
+  if (content::WebContents* contents = tab.GetContents()) {
+    last_tab_context_source_id_ =
+        contents->GetPrimaryMainFrame()->GetPageUkmSourceId();
+  }
 }
 
 void GlicMetrics::SetWebClientMode(mojom::WebClientMode mode) {

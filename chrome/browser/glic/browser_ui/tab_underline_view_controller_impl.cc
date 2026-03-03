@@ -113,7 +113,7 @@ void TabUnderlineViewControllerImpl::OnFocusedTabChanged(
   tabs::TabInterface* tab = focused_tab_data.focus();
   auto* previous_focus = glic_current_focused_contents_.get();
 
-  if (tab) {
+  if (tab && tab->GetContents()) {
     glic_current_focused_contents_ = tab->GetContents()->GetWeakPtr();
   } else {
     glic_current_focused_contents_.reset();
@@ -122,7 +122,9 @@ void TabUnderlineViewControllerImpl::OnFocusedTabChanged(
 
   base::WeakPtr<content::WebContents> underline_contents;
   if (auto* tab_interface = GetTabInterface()) {
-    underline_contents = tab_interface->GetContents()->GetWeakPtr();
+    if (auto* contents = tab_interface->GetContents()) {
+      underline_contents = contents->GetWeakPtr();
+    }
   } else {
     return;
   }

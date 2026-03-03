@@ -251,6 +251,9 @@ glic::mojom::TabDataPtr CreateTabData(tabs::TabInterface* tab) {
     return nullptr;
   }
   content::WebContents* web_contents = tab->GetContents();
+  if (!web_contents) {
+    return nullptr;
+  }
 
   SkBitmap favicon;
   auto* favicon_driver =
