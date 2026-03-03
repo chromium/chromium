@@ -32,6 +32,17 @@ class Profile;
 class ProfileAttributesEntry;
 class SkBitmap;
 
+// Type of avatar icon returned by
+// ProfileAttributesEntry::GetAvatarIconWithType() and
+// StateProvider::GetAvatarIcon().
+enum class AvatarIconType {
+  // The default placeholder silhouette (a pre-rasterized bitmap that cannot
+  // be re-colored by the view framework on state changes).
+  kPlaceholder,
+  // Any other icon (GAIA picture, account image, vector icon, etc.).
+  kNonPlaceholder,
+};
+
 namespace profiles {
 
 enum class AvatarVisibilityAgainstBackground {

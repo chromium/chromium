@@ -150,6 +150,8 @@ std::pair<gfx::Image, AvatarIconType> GetProfileAvatarImage(
   // instead of (or on top of) IdentityManager. Only then we can rely on |entry|
   // being up to date (as the storage also observes IdentityManager so there's
   // no guarantee on the order of notifications).
+  // Early-return here (rather than relying on GetAvatarIconWithType()) to avoid
+  // using a potentially stale |entry| for the GAIA picture check.
   if (entry->IsUsingGAIAPicture() && entry->GetGAIAPicture()) {
     return {*entry->GetGAIAPicture(), AvatarIconType::kNonPlaceholder};
   }
@@ -168,19 +170,13 @@ std::pair<gfx::Image, AvatarIconType> GetProfileAvatarImage(
   }
 
   // At this point, no GAIA picture or account image overrides the avatar,
-  // so the icon type depends solely on the avatar index.
-  // TODO(crbug.com/487495473): Propagate returning AvatarIconType from
-  // ProfileAttributesEntry::GetAvatarIcon() instead of checking the index here.
-  const AvatarIconType icon_type =
-      entry->GetAvatarIconIndex() == profiles::GetPlaceholderAvatarIndex()
-          ? AvatarIconType::kPlaceholder
-          : AvatarIconType::kNonPlaceholder;
-  return {entry->GetAvatarIcon(
-              preferred_size, /*use_high_res_file=*/true,
-              GetPlaceholderAvatarIconParamsDependingOnTheme(
-                  ThemeServiceFactory::GetForProfile(&profile),
-                  /*background_color_id=*/kColorToolbar, color_provider)),
-          icon_type};
+  // so the icon type is determined by
+  // ProfileAttributesEntry::GetAvatarIconWithType().
+  return entry->GetAvatarIconWithType(
+      preferred_size, /*use_high_res_file=*/true,
+      GetPlaceholderAvatarIconParamsDependingOnTheme(
+          ThemeServiceFactory::GetForProfile(&profile),
+          /*background_color_id=*/kColorToolbar, color_provider));
 }
 
 ui::ImageModel GetAvatarImageWithDottedRing(

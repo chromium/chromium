@@ -1434,6 +1434,77 @@ TEST_F(ProfileAttributesStorageTest, AvatarIconIndex) {
 
 // High res avatar downloading is only supported on desktop.
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+// Verifies that GetAvatarIconWithType() returns the correct AvatarIconType
+// for each branch: GAIA picture, placeholder avatar, and non-placeholder
+// avatar.
+TEST_F(ProfileAttributesStorageTest, GetAvatarIconWithType) {
+  const size_t kPlaceholderIndex = profiles::GetPlaceholderAvatarIndex();
+  // Pick any non-placeholder modern avatar index.
+  const size_t kNonPlaceholderIndex = profiles::GetModernAvatarIconStartIndex();
+  ASSERT_NE(kPlaceholderIndex, kNonPlaceholderIndex);
+
+  base::FilePath profile_path = GetProfilePath("path_icon_type");
+  ProfileAttributesInitParams params;
+  params.profile_path = profile_path;
+  params.profile_name = u"name_icon_type";
+  params.icon_index = kPlaceholderIndex;
+  EXPECT_CALL(observer(), OnProfileAdded(profile_path)).Times(1);
+  storage()->AddProfile(std::move(params));
+  VerifyAndResetCallExpectations();
+
+  ProfileAttributesEntry* entry =
+      storage()->GetProfileAttributesWithPath(profile_path);
+  ASSERT_NE(entry, nullptr);
+
+  // Placeholder avatar index → kPlaceholder.
+  {
+    auto [image, icon_type] = entry->GetAvatarIconWithType();
+    EXPECT_FALSE(image.IsEmpty());
+    EXPECT_EQ(AvatarIconType::kPlaceholder, icon_type);
+  }
+
+  // Non-placeholder avatar index → kNonPlaceholder.
+  EXPECT_CALL(observer(), OnProfileAvatarChanged(profile_path)).Times(1);
+  entry->SetAvatarIconIndex(kNonPlaceholderIndex);
+  VerifyAndResetCallExpectations();
+  {
+    auto [image, icon_type] = entry->GetAvatarIconWithType();
+    EXPECT_FALSE(image.IsEmpty());
+    EXPECT_EQ(AvatarIconType::kNonPlaceholder, icon_type);
+  }
+
+  // GAIA picture overrides everything → kNonPlaceholder.
+  EXPECT_CALL(observer(), OnProfileAvatarChanged(profile_path)).Times(1);
+  entry->SetAvatarIconIndex(kPlaceholderIndex);
+  VerifyAndResetCallExpectations();
+  gfx::Image gaia_image(gfx::test::CreateImage(256, 256));
+  EXPECT_CALL(observer(), OnProfileAvatarChanged(profile_path))
+      .Times(testing::AtLeast(1));
+  entry->SetGAIAPicture("GAIA_IMAGE_URL_WITH_SIZE_1", gaia_image);
+  entry->SetIsUsingGAIAPicture(true);
+  VerifyAndResetCallExpectations();
+  {
+    auto [image, icon_type] = entry->GetAvatarIconWithType();
+    EXPECT_FALSE(image.IsEmpty());
+    EXPECT_EQ(AvatarIconType::kNonPlaceholder, icon_type);
+    EXPECT_TRUE(gfx::test::AreImagesEqual(gaia_image, image));
+  }
+
+  // IsUsingGAIAPicture() is true but the picture hasn't downloaded yet (null).
+  // Should fall through to the avatar-index-based icon (placeholder here).
+  EXPECT_CALL(observer(), OnProfileAvatarChanged(profile_path))
+      .Times(testing::AtLeast(1));
+  entry->SetGAIAPicture(std::string(), gfx::Image());
+  VerifyAndResetCallExpectations();
+  ASSERT_TRUE(entry->IsUsingGAIAPicture());
+  ASSERT_EQ(nullptr, entry->GetGAIAPicture());
+  {
+    auto [image, icon_type] = entry->GetAvatarIconWithType();
+    EXPECT_FALSE(image.IsEmpty());
+    EXPECT_EQ(AvatarIconType::kPlaceholder, icon_type);
+  }
+}
+
 TEST_F(ProfileAttributesStorageTest, DownloadHighResAvatarTest) {
   storage()->set_disable_avatar_download_for_testing(false);
 

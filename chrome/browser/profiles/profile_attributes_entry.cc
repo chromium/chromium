@@ -360,17 +360,30 @@ gfx::Image ProfileAttributesEntry::GetAvatarIcon(
     int size_for_placeholder_avatar,
     bool use_high_res_file,
     const PlaceholderAvatarIconParams& icon_params) const {
+  return GetAvatarIconWithType(size_for_placeholder_avatar, use_high_res_file,
+                               icon_params)
+      .first;
+}
+
+std::pair<gfx::Image, AvatarIconType>
+ProfileAttributesEntry::GetAvatarIconWithType(
+    int size_for_placeholder_avatar,
+    bool use_high_res_file,
+    const PlaceholderAvatarIconParams& icon_params) const {
   if (IsUsingGAIAPicture()) {
-    const gfx::Image* image = GetGAIAPicture();
-    if (image)
-      return *image;
+    // The picture may be null if it has not finished downloading yet; in that
+    // case fall through to return the avatar-index-based icon below.
+    if (const gfx::Image* image = GetGAIAPicture()) {
+      return {*image, AvatarIconType::kNonPlaceholder};
+    }
   }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
   // TODO(crbug.com/40138086): After launch, remove the treatment of placeholder
   // avatars from GetHighResAvatar() and from any other places.
   if (GetAvatarIconIndex() == profiles::GetPlaceholderAvatarIndex()) {
-    return GetPlaceholderAvatarIcon(size_for_placeholder_avatar, icon_params);
+    return {GetPlaceholderAvatarIcon(size_for_placeholder_avatar, icon_params),
+            AvatarIconType::kPlaceholder};
   }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 
@@ -378,9 +391,9 @@ gfx::Image ProfileAttributesEntry::GetAvatarIcon(
   // Use the high resolution version of the avatar if it exists. Mobile doesn't
   // need the high resolution version so no need to fetch it.
   if (use_high_res_file) {
-    const gfx::Image* image = GetHighResAvatar();
-    if (image)
-      return *image;
+    if (const gfx::Image* image = GetHighResAvatar()) {
+      return {*image, AvatarIconType::kNonPlaceholder};
+    }
   }
 #endif
 
@@ -392,13 +405,15 @@ gfx::Image ProfileAttributesEntry::GetAvatarIcon(
     // already have high enough resolution.
     const int win_resource_id =
         profiles::GetOldDefaultAvatar2xIconResourceIDAtIndex(icon_index);
-    return ui::ResourceBundle::GetSharedInstance().GetNativeImageNamed(
-        win_resource_id);
+    return {ui::ResourceBundle::GetSharedInstance().GetNativeImageNamed(
+                win_resource_id),
+            AvatarIconType::kNonPlaceholder};
   }
 #endif
   int resource_id = profiles::GetDefaultAvatarIconResourceIDAtIndex(icon_index);
-  return ui::ResourceBundle::GetSharedInstance().GetNativeImageNamed(
-      resource_id);
+  return {
+      ui::ResourceBundle::GetSharedInstance().GetNativeImageNamed(resource_id),
+      AvatarIconType::kNonPlaceholder};
 }
 
 bool ProfileAttributesEntry::GetBackgroundStatus() const {

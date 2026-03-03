@@ -10,6 +10,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <utility>
 
 #include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
@@ -132,6 +133,12 @@ class ProfileAttributesEntry {
   // Consider adding a |shape| parameter and get rid of
   // profiles::GetSizedAvatarIcon().
   gfx::Image GetAvatarIcon(
+      int size_for_placeholder_avatar = kDefaultSizeForPlaceholderAvatar,
+      bool use_high_res_file = true,
+      const profiles::PlaceholderAvatarIconParams& icon_params = {}) const;
+  // Same as GetAvatarIcon(), but also returns an AvatarIconType indicating
+  // whether the returned image is a placeholder silhouette.
+  std::pair<gfx::Image, AvatarIconType> GetAvatarIconWithType(
       int size_for_placeholder_avatar = kDefaultSizeForPlaceholderAvatar,
       bool use_high_res_file = true,
       const profiles::PlaceholderAvatarIconParams& icon_params = {}) const;
