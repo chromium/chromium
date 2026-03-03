@@ -28,6 +28,7 @@
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/permissions/active_tab_permission_granter.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/switches.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
@@ -42,6 +43,8 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #endif
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -95,17 +98,13 @@ IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, StartTabCapture) {
       << message_;
 }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Tests API behaviors, including info queries, and constraints violations.
-// TODO(crbug.com/427298135): Port to desktop Android when chrome.tabs is more
-// fully supported.
 IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, ApiTests) {
   AddExtensionToCommandLineAllowlist();
   ASSERT_TRUE(RunExtensionTest("tab_capture/api_tests",
                                {.extension_url = "api_tests.html"}))
       << message_;
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Tests that tab capture video frames can be received in a VIDEO element.
 // TODO(crbug.com/216820236): This test is flaky.
