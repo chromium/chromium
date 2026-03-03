@@ -45,7 +45,7 @@ std::unique_ptr<views::Widget> CreateWidget(content::WebContents& parent,
   // TODO(b:292184832): Create with own buttons
 
   views::Widget::InitParams params(
-      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+      views::Widget::InitParams::CLIENT_OWNS_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW);
   params.shadow_type = views::Widget::InitParams::ShadowType::kDrop;
   const gfx::Rect& rect = parent.GetViewBounds();
