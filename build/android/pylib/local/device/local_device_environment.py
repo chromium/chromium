@@ -220,8 +220,8 @@ class LocalDeviceEnvironment(environment.Environment):
         with d.GboardPreferences() as gboard_prefs:
           # Disable the stylus.
           gboard_prefs.SetBoolean('enable_scribe', False)
-          # Always show the soft keyboard in phone/tablet, never on desktop.
-          gboard_prefs.SetBoolean('pk_always_show_vk', not d.is_desktop)
+          # Always show the soft keyboards.
+          gboard_prefs.SetBoolean('pk_always_show_vk', True)
 
     self.parallel_devices.pMap(prepare_device)
 

@@ -1369,8 +1369,8 @@ def _EnsureSystemSettings(device):
     with device.GboardPreferences() as gboard_prefs:
       # Disable the stylus.
       gboard_prefs.SetBoolean('enable_scribe', False)
-      # Always show the soft keyboard in phone/tablet, never on desktop.
-      gboard_prefs.SetBoolean('pk_always_show_vk', not device.is_desktop)
+      # Always show the soft keyboards.
+      gboard_prefs.SetBoolean('pk_always_show_vk', True)
 
 
 def _EnableNetwork(device):
