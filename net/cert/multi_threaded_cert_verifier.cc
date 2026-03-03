@@ -52,8 +52,6 @@ int GetFlagsForConfig(const CertVerifier::Config& config) {
     flags |= CertVerifyProc::VERIFY_REV_CHECKING_ENABLED;
   if (config.require_rev_checking_local_anchors)
     flags |= CertVerifyProc::VERIFY_REV_CHECKING_REQUIRED_LOCAL_ANCHORS;
-  if (config.enable_sha1_local_anchors)
-    flags |= CertVerifyProc::VERIFY_ENABLE_SHA1_LOCAL_ANCHORS;
 
   return flags;
 }

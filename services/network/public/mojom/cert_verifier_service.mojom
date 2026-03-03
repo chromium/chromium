@@ -24,7 +24,6 @@ struct RequestParams {
 struct CertVerifierConfig {
   bool enable_rev_checking;
   bool require_rev_checking_local_anchors;
-  bool enable_sha1_local_anchors;
 };
 
 // Allows the CertVerifierService to connect a new URLLoaderFactory if its

@@ -74,8 +74,6 @@ net::CertVerifier::Config MojoSSLConfigToCertVerifierConfig(
   net_config.enable_rev_checking = mojo_config->rev_checking_enabled;
   net_config.require_rev_checking_local_anchors =
       mojo_config->rev_checking_required_local_anchors;
-  net_config.enable_sha1_local_anchors =
-      mojo_config->sha1_local_anchors_enabled;
 
   return net_config;
 }

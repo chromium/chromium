@@ -265,8 +265,6 @@ TEST_F(MultiThreadedCertVerifierTest, ConvertsConfigToFlags) {
        CertVerifyProc::VERIFY_REV_CHECKING_ENABLED},
       {&CertVerifier::Config::require_rev_checking_local_anchors,
        CertVerifyProc::VERIFY_REV_CHECKING_REQUIRED_LOCAL_ANCHORS},
-      {&CertVerifier::Config::enable_sha1_local_anchors,
-       CertVerifyProc::VERIFY_ENABLE_SHA1_LOCAL_ANCHORS},
   };
   for (const auto& test_config : kTestConfig) {
     CertVerifier::Config config;

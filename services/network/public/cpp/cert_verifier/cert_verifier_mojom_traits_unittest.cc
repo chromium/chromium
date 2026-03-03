@@ -51,7 +51,6 @@ TEST(CertVerifierMojomTraitsTest, ConfigTrue) {
   net::CertVerifier::Config config;
   config.enable_rev_checking = true;
   config.require_rev_checking_local_anchors = true;
-  config.enable_sha1_local_anchors = true;
 
   net::CertVerifier::Config out_config;
 

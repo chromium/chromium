@@ -49,10 +49,6 @@ struct StructTraits<cert_verifier::mojom::CertVerifierConfigDataView,
       const net::CertVerifier::Config& config) {
     return config.require_rev_checking_local_anchors;
   }
-  static bool enable_sha1_local_anchors(
-      const net::CertVerifier::Config& config) {
-    return config.enable_sha1_local_anchors;
-  }
 
   static bool Read(cert_verifier::mojom::CertVerifierConfigDataView data,
                    net::CertVerifier::Config* config);

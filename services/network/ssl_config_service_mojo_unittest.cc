@@ -318,19 +318,6 @@ TEST_F(NetworkServiceSSLConfigServiceTest,
   RunCertConversionTests(*mojo_config, expected_net_config);
 }
 
-TEST_F(NetworkServiceSSLConfigServiceTest, Sha1LocalAnchorsEnabled) {
-  net::CertVerifier::Config expected_net_config;
-  // Use the opposite of the default value.
-  expected_net_config.enable_sha1_local_anchors =
-      !expected_net_config.enable_sha1_local_anchors;
-
-  mojom::SSLConfigPtr mojo_config = mojom::SSLConfig::New();
-  mojo_config->sha1_local_anchors_enabled =
-      expected_net_config.enable_sha1_local_anchors;
-
-  RunCertConversionTests(*mojo_config, expected_net_config);
-}
-
 TEST_F(NetworkServiceSSLConfigServiceTest, SSLVersion) {
   struct VersionTable {
     mojom::SSLVersion mojo_ssl_version;

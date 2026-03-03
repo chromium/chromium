@@ -1514,13 +1514,8 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestHTTPSExpiredCertGoBackUsingCommand) {
   ssl_test_util::CheckUnauthenticatedState(tab, AuthState::NONE);
 }
 
-// Visits a page that uses a SHA-1 leaf certificate, which should be rejected
-// by default.
-IN_PROC_BROWSER_TEST_F(SSLUITest, SHA1IsDefaultDisabled) {
-  EXPECT_FALSE(last_ssl_config_.sha1_local_anchors_enabled);
-  EXPECT_FALSE(CreateDefaultNetworkContextParams()
-                   ->initial_ssl_config->sha1_local_anchors_enabled);
-
+// Visits a page that uses a SHA-1 leaf certificate, which should be rejected.
+IN_PROC_BROWSER_TEST_F(SSLUITest, SHA1IsNotAllowed) {
   ASSERT_TRUE(https_server_sha1_.Start());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_server_sha1_.GetURL("/ssl/google.html")));

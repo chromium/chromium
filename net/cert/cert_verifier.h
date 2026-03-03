@@ -62,10 +62,6 @@ class NET_EXPORT CertVerifier {
     // non-public trust anchor. A revocation error, such as a failure to
     // obtain fresh revocation information, is treated as a hard failure.
     bool require_rev_checking_local_anchors = false;
-
-    // Enable support for SHA-1 signatures if the constructed chain terminates
-    // in a locally-installed, non-public trust anchor.
-    bool enable_sha1_local_anchors = false;
   };
 
   class Request {
