@@ -22,13 +22,13 @@ namespace blink {
 CSSTokenizer::CSSTokenizer(StringView string, wtf_size_t offset)
     : input_(string) {
   // According to the spec, we should perform preprocessing here.
-  // See: https://drafts.csswg.org/css-syntax/#input-preprocessing
+  // See: https://www.w3.org/TR/css-syntax-3/#input-preprocessing
   //
   // However, we can skip this step since:
   // * We're using HTML spaces (which accept \r and \f as a valid white space)
   // * Do not count white spaces
-  // * CSSTokenizerInputStream::NextInputChar() replaces NULLs for replacement
-  //   characters
+  // * CSSTokenizerInputStream::NextInputChar() replaces NULLs and lone
+  //   surrogates with replacement characters
   input_.Advance(offset);
 }
 
@@ -655,6 +655,16 @@ StringView CSSTokenizer::ConsumeName() {
   // Slow path for non-UTF-8 and tokens near the end of the string.
   for (; size < buffer.length(); ++size) {
     UChar cc = buffer[size];
+    if (IsSurrogate(cc)) {
+      // Valid surrogate pairs can stay on the fast path.
+      if (IsLeadingSurrogate(cc) && ((size + 1) < buffer.length()) &&
+          IsTrailingSurrogate(buffer[size + 1])) {
+        ++size;
+        continue;
+      }
+      // Lone surrogate needs replacement via the slow path.
+      return RegisterString(blink::ConsumeName(input_));
+    }
     if (!IsNameCodePoint(cc)) {
       // End of this token, but not end of the string.
       if (cc == '\0' || cc == '\\') {

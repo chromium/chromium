@@ -66,6 +66,21 @@ inline bool TwoCharsAreValidEscape(UChar first, UChar second) {
   return first == '\\' && !IsCSSNewLine(second);
 }
 
+// Returns true if |cc| is a UTF-16 surrogate code unit (U+D800–U+DFFF).
+inline bool IsSurrogate(UChar cc) {
+  return cc >= 0xD800 && cc <= 0xDFFF;
+}
+
+// Returns true if |cc| is a UTF-16 leading (high) surrogate (U+D800–U+DBFF).
+inline bool IsLeadingSurrogate(UChar cc) {
+  return cc >= 0xD800 && cc <= 0xDBFF;
+}
+
+// Returns true if |cc| is a UTF-16 trailing (low) surrogate (U+DC00–U+DFFF).
+inline bool IsTrailingSurrogate(UChar cc) {
+  return cc >= 0xDC00 && cc <= 0xDFFF;
+}
+
 // Consumes a single whitespace, if the stream is currently looking at a
 // whitespace. Note that \r\n counts as a single whitespace, as we don't do
 // input preprocessing as a separate step.

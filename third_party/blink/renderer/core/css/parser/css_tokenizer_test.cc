@@ -277,6 +277,35 @@ TEST(CSSTokenizerTest, IdentToken) {
               Ident("ab" + FromUChar32(0xFFFD) + "c"));
   TEST_TOKENS(String(base::span_from_cstring("ab\0c")),
               Ident("ab" + FromUChar32(0xFFFD) + "c"));
+  // Lone surrogates are replaced with U+FFFD per CSS input preprocessing.
+  TEST_TOKENS(FromUChar32(0xD800), Ident(FromUChar32(0xFFFD)));
+  TEST_TOKENS("foo" + FromUChar32(0xD800), Ident("foo" + FromUChar32(0xFFFD)));
+  TEST_TOKENS(FromUChar32(0xD800) + "foo", Ident(FromUChar32(0xFFFD) + "foo"));
+  TEST_TOKENS("f" + FromUChar32(0xD800) + "oo",
+              Ident("f" + FromUChar32(0xFFFD) + "oo"));
+  TEST_TOKENS(FromUChar32(0xDBFF), Ident(FromUChar32(0xFFFD)));
+  TEST_TOKENS(FromUChar32(0xDC00), Ident(FromUChar32(0xFFFD)));
+  TEST_TOKENS(FromUChar32(0xDFFF), Ident(FromUChar32(0xFFFD)));
+  // Valid surrogate pairs (supplementary characters) are preserved.
+  TEST_TOKENS(FromUChar32(0x10000), Ident(FromUChar32(0x10000)));
+  TEST_TOKENS(FromUChar32(0x1F600), Ident(FromUChar32(0x1F600)));  // 😀
+  TEST_TOKENS("foo" + FromUChar32(0x1F600),
+              Ident("foo" + FromUChar32(0x1F600)));
+  TEST_TOKENS(FromUChar32(0x1F600) + "foo",
+              Ident(FromUChar32(0x1F600) + "foo"));
+  TEST_TOKENS(FromUChar32(0x10FFFF), Ident(FromUChar32(0x10FFFF)));
+  // Long identifiers (>16 chars) with lone surrogates.
+  TEST_TOKENS("abcdefghijklmnopqr" + FromUChar32(0xD800),
+              Ident("abcdefghijklmnopqr" + FromUChar32(0xFFFD)));
+  TEST_TOKENS("abcdefghijklmnopqr" + FromUChar32(0xDC00),
+              Ident("abcdefghijklmnopqr" + FromUChar32(0xFFFD)));
+  TEST_TOKENS("abcdefghijklmnopqr" + FromUChar32(0xD800) + "suffix",
+              Ident("abcdefghijklmnopqr" + FromUChar32(0xFFFD) + "suffix"));
+  // Long identifiers with valid surrogate pairs.
+  TEST_TOKENS("abcdefghijklmnopqr" + FromUChar32(0x1F600),
+              Ident("abcdefghijklmnopqr" + FromUChar32(0x1F600)));
+  TEST_TOKENS("abcdefghijklmnopqr" + FromUChar32(0x1F600) + "suffix",
+              Ident("abcdefghijklmnopqr" + FromUChar32(0x1F600) + "suffix"));
 }
 
 TEST(CSSTokenizerTest, FunctionToken) {

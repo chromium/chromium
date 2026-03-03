@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_PARSER_CSS_TOKENIZER_INPUT_STREAM_H_
 
 #include "base/compiler_specific.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_idioms.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -19,17 +20,38 @@ class CSSTokenizerInputStream {
   CSSTokenizerInputStream(const CSSTokenizerInputStream&) = delete;
   CSSTokenizerInputStream& operator=(const CSSTokenizerInputStream&) = delete;
 
-  // Gets the char in the stream replacing NUL characters with a unicode
-  // replacement character. Will return (NUL) kEndOfFileMarker when at the
-  // end of the stream.
+  // Gets the char in the stream replacing NUL characters and lone surrogates
+  // with a unicode replacement character, per CSS input preprocessing:
+  // https://www.w3.org/TR/css-syntax-3/#input-preprocessing
+  // Will return (NUL) kEndOfFileMarker when at the end of the stream.
   UChar NextInputChar() const {
     if (offset_ >= string_length_) {
       return '\0';
     }
+
+    // "Replace any U+0000 NULL or surrogate code points in input with U+FFFD
+    // REPLACEMENT CHARACTER"
+    // "surrogate code points" refers to standalone surrogates in this scenario
+    // (e.g. a leading without a subsequent trailing and vice versa).
     UChar result = string_[offset_];
-    return result ? result : 0xFFFD;
+    if (!result ||
+        (IsLeadingSurrogate(result) &&
+         !IsTrailingSurrogate(PeekWithoutReplacement(1))) ||
+        (IsTrailingSurrogate(result) &&
+         !IsLeadingSurrogate(PeekPreviousCharWithoutReplacement()))) {
+      return 0xFFFD;
+    }
+    return result;
   }
 
+  // Gets the previous char in the stream without replacement. Returns NUL if
+  // at the beginning of the stream.
+  UChar PeekPreviousCharWithoutReplacement() const {
+    if (offset_ == 0) {
+      return '\0';
+    }
+    return string_[offset_ - 1];
+  }
   // Gets the char at lookaheadOffset from the current stream position. Will
   // return NUL (kEndOfFileMarker) if the stream position is at the end.
   // NOTE: This may *also* return NUL if there's one in the input! Never
