@@ -455,16 +455,18 @@ commit][direct-commit] a change, bypassing the commit queue and all safety nets.
 
 Occasionally changes that pass the [commit queue][commit-queue] and get
 submitted into Chromium will later be reverted. If this happens to your change,
-don't be discouraged! This can be a common part of the Chromium development
+**don't be discouraged**! This can be a common part of the Chromium development
 cycle and happens for a variety of reasons, including a conflict with an
 unanticipated change or tests not covered on the commit queue.
 
 If this happens to your change, you're encouraged to pursue a reland. When doing
 so, following these basic steps can streamline the re-review process:
-- **Create the reland**: Click the `CREATE RELAND` button on the original change
+- **Create the reland**: Click the `Create Reland` button on the original change
   in Gerrit. This will create a new change whose diff is identical to the
   original, but has a small paper-trail in the commit message that leads back to
-  the original. This can be useful for sheriffs when debugging regressions.
+  the original. This can be useful for gardeners when debugging regressions. If
+  you encounter an error with that button, try the `Revert` button on the revert
+  CL instead; functionally they should be identical.
 - **Append the fix**: If the reland requires file modifications not present in
   the original change, simply upload these fixes in a subsequent patchset to the
   reland change. By comparing the first patchset with the latest, this gives
