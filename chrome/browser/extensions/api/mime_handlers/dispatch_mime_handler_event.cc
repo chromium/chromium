@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/api/streams_private/streams_private_api.h"
+#include "chrome/browser/extensions/api/mime_handlers/dispatch_mime_handler_event.h"
 
 #include <utility>
 
@@ -26,9 +26,9 @@
 #include "pdf/pdf_features.h"
 #endif  // BUILDFLAG(ENABLE_PDF)
 
-namespace extensions {
+namespace extensions::mime_handlers {
 
-void StreamsPrivateAPI::SendExecuteMimeTypeHandlerEvent(
+void SendExecuteMimeTypeHandlerEvent(
     const ExtensionId& extension_id,
     const std::string& stream_id,
     bool embedded,
@@ -94,4 +94,4 @@ void StreamsPrivateAPI::SendExecuteMimeTypeHandlerEvent(
       ->AddStream(stream_id, std::move(stream_container), frame_tree_node_id);
 }
 
-}  // namespace extensions
+}  // namespace extensions::mime_handlers

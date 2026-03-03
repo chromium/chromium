@@ -12,7 +12,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/unguessable_token.h"
 #include "base/uuid.h"
-#include "chrome/browser/extensions/api/streams_private/streams_private_api.h"
+#include "chrome/browser/extensions/api/mime_handlers/dispatch_mime_handler_event.h"
 #include "chrome/browser/plugins/plugin_utils.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -224,7 +224,7 @@ void PluginResponseInterceptorURLLoaderThrottle::WillProcessResponse(
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(
-          &extensions::StreamsPrivateAPI::SendExecuteMimeTypeHandlerEvent,
+          &extensions::mime_handlers::SendExecuteMimeTypeHandlerEvent,
           extension_id, stream_id, embedded, frame_tree_node_id_,
           std::move(transferrable_loader), response_url, internal_id));
 
