@@ -332,8 +332,7 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, PasskeysSubpage) {
 #endif
 
 #if BUILDFLAG(IS_MAC)
-// TODO(crbug.com/486228089): Fix consistent failures and enable test.
-IN_PROC_BROWSER_TEST_F(SettingsTest, DISABLED_PasskeyEditDialog) {
+IN_PROC_BROWSER_TEST_F(SettingsTest, PasskeyEditDialog) {
   RunTest("settings/passkey_edit_dialog_test.js", "mocha.run()");
 }
 #endif

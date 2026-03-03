@@ -133,7 +133,7 @@ function isShowingError(page: HTMLElement): boolean {
   return !!page.shadowRoot!.querySelector<HTMLElement>('#error');
 }
 
-suite('PasskeysSubpage', function() {
+suite('PasskeysEditDialog', function() {
   let browserProxy: TestPasskeysBrowserProxy;
   let page: SettingsPasskeysSubpageElement;
 
@@ -142,36 +142,6 @@ suite('PasskeysSubpage', function() {
     PasskeysBrowserProxyImpl.setInstance(browserProxy);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     page = document.createElement('settings-passkeys-subpage');
-  });
-
-  test('Delete', async function() {
-    const passkeys: [Passkey] = [
-      {
-        credentialId: '1',
-        relyingPartyId: 'rpid.com',
-        userName: 'user',
-        userDisplayName: 'displayName',
-      },
-    ];
-    browserProxy.setNextPasskeys(passkeys);
-    document.body.appendChild(page);
-    await flushTasks();
-    assertEquals(browserProxy.getCallCount('enumerate'), 1);
-
-
-    assertDeepEquals(getUsernamesFromList(page), [passkeys[0].userName]);
-
-    clickDots(page, 0);
-
-    browserProxy.whenCalled('delete').then((name: string) => {
-      assertEquals(name, passkeys[0].credentialId);
-    });
-    browserProxy.setNextPasskeys([]);
-    clickButton(page, 'delete');
-    await flushTasks();
-    assertEquals(browserProxy.getCallCount('delete'), 1);
-
-    assertDeepEquals(getUsernamesFromList(page), []);
   });
 
   test('cancelClickedEditDialog', async function() {
@@ -186,7 +156,7 @@ suite('PasskeysSubpage', function() {
     browserProxy.setNextPasskeys(passkeys);
     document.body.appendChild(page);
     await flushTasks();
-    assertEquals(browserProxy.getCallCount('enumerate'), 1);
+    assertEquals(1, browserProxy.getCallCount('enumerate'));
 
     assertFalse(isShowingError(page));
     assertDeepEquals(getUsernamesFromList(page), [passkeys[0].userName]);
@@ -205,7 +175,7 @@ suite('PasskeysSubpage', function() {
     clickDialogButton(dialog, 'cancel');
     await flushTasks();
 
-    assertEquals(browserProxy.getCallCount('edit'), 0);
+    assertEquals(0, browserProxy.getCallCount('edit'));
 
     assertDeepEquals(
         getUsernamesFromList(page), passkeys.map(cred => cred.userName));
@@ -231,7 +201,7 @@ suite('PasskeysSubpage', function() {
     browserProxy.setNextPasskeys(passkeys);
     document.body.appendChild(page);
     await flushTasks();
-    assertEquals(browserProxy.getCallCount('enumerate'), 1);
+    assertEquals(1, browserProxy.getCallCount('enumerate'));
 
     assertFalse(isShowingError(page));
     assertDeepEquals(getUsernamesFromList(page), [passkeys[0].userName]);
@@ -273,7 +243,9 @@ suite('PasskeysSubpage', function() {
     browserProxy.setNextPasskeys(passkeys);
     document.body.appendChild(page);
     await flushTasks();
-    assertEquals(browserProxy.getCallCount('enumerate'), 1);
+    assertEquals(
+        1, browserProxy.getCallCount('enumerate'),
+        'Enumerate should have been called once');
 
     assertFalse(isShowingError(page));
     assertDeepEquals(getUsernamesFromList(page), [passkeys[0].userName]);
@@ -292,12 +264,15 @@ suite('PasskeysSubpage', function() {
 
     browserProxy.setNextPasskeys(passkeys);
     setInputField(dialog, '');
+    await flushTasks();
     clickDialogButton(dialog, 'actionButton');
     await flushTasks();
 
-    assertEquals(getErrorMessage(dialog), 'Enter your username');
+    assertEquals('Enter your username', getErrorMessage(dialog));
 
-    assertEquals(browserProxy.getCallCount('edit'), 0);
+    assertEquals(
+        0, browserProxy.getCallCount('edit'),
+        'Edit should not have been called');
     assertDeepEquals(
         getUsernamesFromList(page), passkeys.map(cred => cred.userName));
   });
