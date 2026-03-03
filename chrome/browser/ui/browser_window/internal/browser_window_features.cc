@@ -117,7 +117,6 @@
 #include "chrome/browser/ui/views/side_panel/bookmarks/bookmarks_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/comments/comments_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/extensions/extension_side_panel_manager.h"
-#include "chrome/browser/ui/views/side_panel/glic/glic_legacy_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/history/history_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/history_clusters/history_clusters_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/reading_list/reading_list_side_panel_coordinator.h"
@@ -724,12 +723,6 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
   if (CommentsSidePanelCoordinator::IsSupported()) {
     comments_side_panel_coordinator_ =
         std::make_unique<CommentsSidePanelCoordinator>(browser_view->browser());
-  }
-  if (!glic::GlicEnabling::IsMultiInstanceEnabled() &&
-      glic::GlicKeyedService::Get(browser_view->GetProfile())) {
-    glic_side_panel_coordinator_ =
-        std::make_unique<glic::GlicLegacySidePanelCoordinator>(
-            browser_view->browser());
   }
 
   if (base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks)) {

@@ -15,7 +15,6 @@
 namespace glic {
 class GlicButtonController;
 class GlicIphController;
-class GlicLegacySidePanelCoordinator;
 }  // namespace glic
 
 namespace tabs {
@@ -289,10 +288,6 @@ class BrowserWindowFeatures {
 
   ExtensionInstalledWatcher* extension_installed_watcher() {
     return extension_installed_watcher_.get();
-  }
-
-  glic::GlicLegacySidePanelCoordinator* glic_side_panel_coordinator() {
-    return glic_side_panel_coordinator_.get();
   }
 
   glic::GlicIphController* glic_iph_controller() {
@@ -675,8 +670,6 @@ class BrowserWindowFeatures {
       actor_task_list_bubble_controller_;
   std::unique_ptr<glic::GlicButtonController> glic_button_controller_;
   std::unique_ptr<glic::GlicIphController> glic_iph_controller_;
-  std::unique_ptr<glic::GlicLegacySidePanelCoordinator>
-      glic_side_panel_coordinator_;
 
   std::unique_ptr<contextual_tasks::ActiveTaskContextProvider>
       contextual_tasks_active_task_context_provider_;
