@@ -119,7 +119,7 @@ IN_PROC_BROWSER_TEST_F(ReportUnsafeSiteDialogInteractiveUiTest, UrlInDialog) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   RunTestSequence(
       ExecuteReportUnsafeSiteCommand(), WaitForDialog(),
-      CheckJsResultAt(
+      WaitForJsResultAt(
           kDialogWebviewId,
           {"report-unsafe-site-app", ".url-input-container", "input"},
           "(el) => el.value", ::testing::Eq(formatted_origin)),
