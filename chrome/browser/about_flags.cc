@@ -4293,6 +4293,18 @@ const FeatureEntry::FeatureVariation kAndroidTipsNotificationsVariations[] = {
      kAndroidTipsNotificationsResetFeatureTipShown, nullptr},
 };
 
+const FeatureEntry::FeatureParam kAndroidTipsNotificationsV2EcosystemLockIn[] =
+    {{"ecosystem_lock_in", "true"}};
+const FeatureEntry::FeatureParam
+    kAndroidTipsNotificationsV2UtilityAndOrganization[] = {
+        {"utility_and_organization", "true"}};
+const FeatureEntry::FeatureVariation kAndroidTipsNotificationsV2Variations[] = {
+    {" - Ecosystem Lock In", kAndroidTipsNotificationsV2EcosystemLockIn,
+     nullptr},
+    {" - Utility and Organization",
+     kAndroidTipsNotificationsV2UtilityAndOrganization, nullptr},
+};
+
 const FeatureEntry::FeatureParam kRobustWindowManagementBulkCloseEnabled[] = {
     {"bulk_close", "true"}};
 const FeatureEntry::FeatureVariation kRobustWindowManagementVariations[] = {
@@ -10143,8 +10155,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"android-tips-notifications-v2",
      flag_descriptions::kAndroidTipsNotificationsV2Name,
      flag_descriptions::kAndroidTipsNotificationsV2Description, kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         segmentation_platform::features::kAndroidTipsNotificationsV2)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         segmentation_platform::features::kAndroidTipsNotificationsV2,
+         kAndroidTipsNotificationsV2Variations,
+         "AndroidTipsNotificationsV2")},
 
     {"chrome-finds", flag_descriptions::kChromeFindsName,
      flag_descriptions::kChromeFindsDescription, kOsAndroid,

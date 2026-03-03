@@ -182,6 +182,21 @@ extern const base::FeatureParam<bool> kEnableGoogleLensTip;
 // The control param for the Bottom Omnibox tip.
 extern const base::FeatureParam<bool> kEnableBottomOmniboxTip;
 
+// The prioritization of tips notifications based on ecosystem lock-in.
+extern const base::FeatureParam<bool> kEcosystemLockIn;
+// The prioritization of tips notifications based on utility and organization.
+extern const base::FeatureParam<bool> kUtilityAndOrganization;
+// The control param for the Password Autofill tip.
+extern const base::FeatureParam<bool> kEnablePasswordAutofillTip;
+// The control param for the Signin tip.
+extern const base::FeatureParam<bool> kEnableSigninTip;
+// The control param for the Create Tab Groups tip.
+extern const base::FeatureParam<bool> kEnableCreateTabGroupsTip;
+// The control param for the Customize MVT tip.
+extern const base::FeatureParam<bool> kEnableCustomizeMVTTip;
+// The control param for the Recent Tabs tip.
+extern const base::FeatureParam<bool> kEnableRecentTabsTip;
+
 }  // namespace segmentation_platform::features
 
 #endif  // COMPONENTS_SEGMENTATION_PLATFORM_PUBLIC_FEATURES_H_

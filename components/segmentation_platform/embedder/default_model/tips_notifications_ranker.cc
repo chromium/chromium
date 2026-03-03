@@ -139,12 +139,38 @@ std::vector<int> GetTipsPriorityRankingList() {
   std::vector<int> tips_list;
   // Define the priority ranking based on the feature param.
   // First in the list represents highest priority and last is lowest.
-  if (base::FeatureList::IsEnabled(features::kAndroidTipsNotificationsV2)) {
-    tips_list.emplace_back(TipsNotificationsRanker::kPasswordAutofillTipIdx);
-    tips_list.emplace_back(TipsNotificationsRanker::kSigninTipIdx);
-    tips_list.emplace_back(TipsNotificationsRanker::kCreateTabGroupsTipIdx);
-    tips_list.emplace_back(TipsNotificationsRanker::kCustomizeMVTTipIdx);
-    tips_list.emplace_back(TipsNotificationsRanker::kRecentTabsTipIdx);
+  if (features::kEcosystemLockIn.Get()) {
+    if (features::kEnableSigninTip.Get()) {
+      tips_list.emplace_back(TipsNotificationsRanker::kSigninTipIdx);
+    }
+    if (features::kEnablePasswordAutofillTip.Get()) {
+      tips_list.emplace_back(TipsNotificationsRanker::kPasswordAutofillTipIdx);
+    }
+    if (features::kEnableRecentTabsTip.Get()) {
+      tips_list.emplace_back(TipsNotificationsRanker::kRecentTabsTipIdx);
+    }
+    if (features::kEnableCustomizeMVTTip.Get()) {
+      tips_list.emplace_back(TipsNotificationsRanker::kCustomizeMVTTipIdx);
+    }
+    if (features::kEnableCreateTabGroupsTip.Get()) {
+      tips_list.emplace_back(TipsNotificationsRanker::kCreateTabGroupsTipIdx);
+    }
+  } else if (features::kUtilityAndOrganization.Get()) {
+    if (features::kEnableRecentTabsTip.Get()) {
+      tips_list.emplace_back(TipsNotificationsRanker::kRecentTabsTipIdx);
+    }
+    if (features::kEnableCustomizeMVTTip.Get()) {
+      tips_list.emplace_back(TipsNotificationsRanker::kCustomizeMVTTipIdx);
+    }
+    if (features::kEnableCreateTabGroupsTip.Get()) {
+      tips_list.emplace_back(TipsNotificationsRanker::kCreateTabGroupsTipIdx);
+    }
+    if (features::kEnableSigninTip.Get()) {
+      tips_list.emplace_back(TipsNotificationsRanker::kSigninTipIdx);
+    }
+    if (features::kEnablePasswordAutofillTip.Get()) {
+      tips_list.emplace_back(TipsNotificationsRanker::kPasswordAutofillTipIdx);
+    }
   }
 
   if (features::kTrustAndSafety.Get()) {
