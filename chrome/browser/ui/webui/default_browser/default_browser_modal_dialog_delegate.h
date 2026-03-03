@@ -11,6 +11,10 @@
 
 class Profile;
 
+namespace views {
+class Widget;
+}
+
 namespace default_browser {
 
 // The "Modal" entrypoint for the Windows Default Browser. This dialog
@@ -26,9 +30,9 @@ class DefaultBrowserModalDialog : public ui::WebDialogDelegate {
   // The modal have two variants, one with the Windows Settings illustration and
   // the other without it. When `use_settings_illustration` is true, the modal
   // will display the Windows Settings illustration.
-  static void Show(Profile* profile,
-                   gfx::NativeView parent,
-                   bool use_settings_illustration);
+  static views::Widget* Show(Profile* profile,
+                             gfx::NativeView parent,
+                             bool use_settings_illustration);
 
   explicit DefaultBrowserModalDialog(bool use_settings_illustration);
   ~DefaultBrowserModalDialog() override;

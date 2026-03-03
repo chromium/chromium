@@ -15,6 +15,7 @@
 #include "chrome/browser/default_browser/default_browser_manager.h"
 #include "chrome/browser/ui/startup/default_browser_prompt/default_browser_bubble_dialog_manager.h"
 #include "chrome/browser/ui/startup/default_browser_prompt/default_browser_infobar_manager.h"
+#include "chrome/browser/ui/startup/default_browser_prompt/default_browser_modal_dialog_manager.h"
 #include "chrome/browser/ui/startup/default_browser_prompt/default_browser_surface_manager.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/pref_names.h"
@@ -152,6 +153,16 @@ void DefaultBrowserPromptManager::ShowPrompts(bool can_pin_to_taskbar) {
     case DefaultBrowserPromptSurface::kBubbleDialog:
       prompt_surface_manager_ =
           std::make_unique<DefaultBrowserBubbleDialogManager>();
+      break;
+    case DefaultBrowserPromptSurface::kModalDialogWithSettingsIllustration:
+      prompt_surface_manager_ =
+          std::make_unique<default_browser::DefaultBrowserModalDialogManager>(
+              /*use_settings_illustration=*/true);
+      break;
+    case DefaultBrowserPromptSurface::kModalDialogWithoutSettingsIllustration:
+      prompt_surface_manager_ =
+          std::make_unique<default_browser::DefaultBrowserModalDialogManager>(
+              /*use_settings_illustration=*/false);
       break;
   }
   CHECK(prompt_surface_manager_);

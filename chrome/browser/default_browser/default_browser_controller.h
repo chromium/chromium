@@ -31,7 +31,11 @@ enum class DefaultBrowserEntrypointType {
   kChangeDetectedNotification = 2,
   // Bubble dialog anchored to app menu button.
   kBubbleDialog = 3,
-  kMaxValue = kBubbleDialog,
+  // Modal dialog with settings illustration.
+  kModalDialogWithSettingsIllustration = 4,
+  // Modal dialog without settings illustration.
+  kModalDialogWithoutSettingsIllustration = 5,
+  kMaxValue = kModalDialogWithoutSettingsIllustration,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/ui/histograms.xml:DefaultBrowserEntrypointType)
 

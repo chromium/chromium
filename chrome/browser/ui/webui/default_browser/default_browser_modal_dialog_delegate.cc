@@ -11,6 +11,7 @@
 #include "net/base/url_util.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
 namespace default_browser {
@@ -19,12 +20,12 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(DefaultBrowserModalDialog,
                                       kDefaultBrowserModalDialogId);
 
 // static
-void DefaultBrowserModalDialog::Show(Profile* profile,
-                                     gfx::NativeView parent,
-                                     bool use_settings_illustration) {
-  chrome::ShowWebDialog(
+views::Widget* DefaultBrowserModalDialog::Show(Profile* profile,
+                                               gfx::NativeView parent,
+                                               bool use_settings_illustration) {
+  return views::Widget::GetWidgetForNativeWindow(chrome::ShowWebDialog(
       parent, profile,
-      new DefaultBrowserModalDialog(use_settings_illustration));
+      new DefaultBrowserModalDialog(use_settings_illustration)));
 }
 
 DefaultBrowserModalDialog::DefaultBrowserModalDialog(

@@ -1,0 +1,75 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/ui/startup/default_browser_prompt/default_browser_modal_dialog_manager.h"
+
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
+#include "chrome/browser/default_browser/default_browser_controller.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
+#include "chrome/browser/ui/webui/default_browser/default_browser_modal_dialog_delegate.h"
+#include "ui/accessibility/platform/ax_platform_tree_manager_delegate.h"
+#include "ui/views/widget/widget.h"
+
+namespace default_browser {
+
+DefaultBrowserModalDialogManager::DefaultBrowserModalDialogManager(
+    bool use_settings_illustration)
+    : use_settings_illustration_(use_settings_illustration) {}
+
+DefaultBrowserModalDialogManager::~DefaultBrowserModalDialogManager() = default;
+
+void DefaultBrowserModalDialogManager::ShowForBrowser(
+    BrowserWindowInterface* browser) {
+  auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
+  CHECK(browser_view);
+
+  gfx::NativeView parent_view = gfx::NativeView();
+  if (views::Widget* widget = views::Widget::GetWidgetForNativeWindow(
+          browser_view->GetNativeWindow())) {
+    parent_view = widget->GetNativeView();
+  }
+
+  views::Widget* widget = DefaultBrowserModalDialog::Show(
+      browser->GetProfile(), parent_view, use_settings_illustration_);
+  if (widget) {
+    dialog_widgets_[browser] = widget->GetWeakPtr();
+  }
+}
+
+void DefaultBrowserModalDialogManager::CloseForBrowser(
+    BrowserWindowInterface* browser) {
+  if (auto widget = dialog_widgets_.extract(browser)) {
+    if (widget.mapped()) {
+      widget.mapped()->CloseWithReason(
+          views::Widget::ClosedReason::kUnspecified);
+    }
+  }
+}
+
+void DefaultBrowserModalDialogManager::CloseAllPromptInstances() {
+  for (const auto& [browser, widget] : dialog_widgets_) {
+    if (widget) {
+      widget->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
+    }
+  }
+  dialog_widgets_.clear();
+}
+
+default_browser::DefaultBrowserEntrypointType
+DefaultBrowserModalDialogManager::GetEntrypointType() const {
+  return use_settings_illustration_
+             ? default_browser::DefaultBrowserEntrypointType::
+                   kModalDialogWithSettingsIllustration
+             : default_browser::DefaultBrowserEntrypointType::
+                   kModalDialogWithoutSettingsIllustration;
+}
+
+}  // namespace default_browser

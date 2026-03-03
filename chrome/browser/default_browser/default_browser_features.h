@@ -10,7 +10,12 @@
 
 namespace default_browser {
 
-enum class DefaultBrowserPromptSurface { kInfobar, kBubbleDialog };
+enum class DefaultBrowserPromptSurface {
+  kInfobar = 0,
+  kBubbleDialog = 1,
+  kModalDialogWithSettingsIllustration = 2,
+  kModalDialogWithoutSettingsIllustration = 3,
+};
 
 // Returns whether the default browser framework feature flag is enabled.
 bool IsDefaultBrowserFrameworkEnabled();

@@ -48,15 +48,15 @@ class DefaultBrowserSurfaceManager : public BrowserCollectionObserver {
 
   bool can_pin_to_taskbar() const { return can_pin_to_taskbar_; }
 
- protected:
-  // Helper function to determine if a browser window is suitable for showing a
-  // prompt. Excludes incognito, guest, and non-normal browser windows.
-  bool IsBrowserValidForShowing(BrowserWindowInterface* browser);
-
   // Methods for derived classes to handle user interactions via the controller.
   void HandleAccept();
   void HandleDismiss();
   void HandleIgnore();
+
+ protected:
+  // Helper function to determine if a browser window is suitable for showing a
+  // prompt. Excludes incognito, guest, and non-normal browser windows.
+  bool IsBrowserValidForShowing(BrowserWindowInterface* browser);
 
  private:
   // Abstract methods to be implemented by subclasses to handle UI operations.

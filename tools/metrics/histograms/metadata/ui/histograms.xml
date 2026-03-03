@@ -61,6 +61,10 @@ chromium-metrics-reviews@google.com.
   <variant name="ChangeDetectedNotification"
       summary="the change detected Os notification"/>
   <variant name="InfoBar" summary="the startup infobar"/>
+  <variant name="ModalDialogWithoutSettingsIllustration"
+      summary="the modal dialog without settings illustration"/>
+  <variant name="ModalDialogWithSettingsIllustration"
+      summary="the modal dialog with settings illustration"/>
   <variant name="SettingsPage" summary="the settings page"/>
 </variants>
 

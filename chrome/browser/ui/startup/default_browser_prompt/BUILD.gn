@@ -10,6 +10,7 @@ source_set("default_browser_prompt") {
     ":impl",
     ":interactive_ui_tests",
     ":unit_tests",
+    "//chrome/browser/ui/webui/default_browser:default_browser_modal",
   ]
 
   public = [
@@ -23,6 +24,7 @@ source_set("default_browser_prompt") {
     "default_browser_bubble_dialog.h",
     "default_browser_bubble_dialog_manager.h",
     "default_browser_infobar_manager.h",
+    "default_browser_modal_dialog_manager.h",
     "default_browser_surface_manager.h",
   ]
 
@@ -50,6 +52,7 @@ source_set("impl") {
     "default_browser_bubble_dialog_manager.cc",
     "default_browser_infobar_delegate.cc",
     "default_browser_infobar_manager.cc",
+    "default_browser_modal_dialog_manager.cc",
     "default_browser_prompt.cc",
     "default_browser_prompt_manager.cc",
     "default_browser_prompt_prefs.cc",
@@ -72,6 +75,7 @@ source_set("impl") {
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/browser/ui/views/frame:toolbar_button_provider",
+    "//chrome/browser/ui/webui/default_browser:default_browser_modal",
     "//components/infobars/content",
     "//components/infobars/core",
     "//components/omnibox/browser",
@@ -118,6 +122,7 @@ source_set("interactive_ui_tests") {
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
   sources = [
     "default_browser_bubble_dialog_interactive_uitest.cc",
+    "default_browser_modal_dialog_manager_interactive_uitest.cc",
     "default_browser_prompt_interactive_uitest.cc",
   ]
   deps = [
@@ -134,6 +139,7 @@ source_set("interactive_ui_tests") {
     "//chrome/browser/ui/startup",
     "//chrome/browser/ui/toolbar",
     "//chrome/browser/ui/views/infobars",
+    "//chrome/browser/ui/webui/default_browser:default_browser_modal",
     "//chrome/common",
     "//chrome/common:constants",
     "//chrome/common:non_code_constants",

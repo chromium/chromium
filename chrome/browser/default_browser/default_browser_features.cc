@@ -35,6 +35,10 @@ constexpr inline auto kDefaultBrowserPromptSurfaceOptions =
     std::to_array<base::FeatureParam<DefaultBrowserPromptSurface>::Option>({
         {DefaultBrowserPromptSurface::kInfobar, "infobar"},
         {DefaultBrowserPromptSurface::kBubbleDialog, "bubble_dialog"},
+        {DefaultBrowserPromptSurface::kModalDialogWithSettingsIllustration,
+         "modal_dialog_with_settings_illustration"},
+        {DefaultBrowserPromptSurface::kModalDialogWithoutSettingsIllustration,
+         "modal_dialog_without_settings_illustration"},
     });
 
 BASE_FEATURE(kDefaultBrowserFramework, base::FEATURE_DISABLED_BY_DEFAULT);

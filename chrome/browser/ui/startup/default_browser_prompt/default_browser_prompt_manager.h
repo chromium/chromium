@@ -31,6 +31,10 @@ class DefaultBrowserPromptManager {
   // Returns true if the prompt was shown, false if not.
   bool MaybeShowPrompt();
 
+  DefaultBrowserSurfaceManager* GetPromptSurfaceManager() {
+    return prompt_surface_manager_.get();
+  }
+
   void ShowPrompts(bool can_pin_to_taskbar);
   void CloseAllPrompts(CloseReason close_reason);
 

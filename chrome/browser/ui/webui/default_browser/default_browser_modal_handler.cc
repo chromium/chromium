@@ -11,7 +11,8 @@
 #include "base/functional/callback_helpers.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/default_browser/default_browser_controller.h"
-#include "chrome/browser/default_browser/default_browser_manager.h"
+#include "chrome/browser/ui/startup/default_browser_prompt/default_browser_prompt_manager.h"
+#include "chrome/browser/ui/startup/default_browser_prompt/default_browser_surface_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -19,23 +20,16 @@
 DefaultBrowserModalHandler::DefaultBrowserModalHandler(
     content::WebUI* web_ui,
     mojo::PendingReceiver<default_browser_modal::mojom::PageHandler> receiver)
-    : web_ui_(web_ui), receiver_(this, std::move(receiver)) {
-  controller_ = default_browser::DefaultBrowserManager::CreateControllerFor(
-      default_browser::DefaultBrowserEntrypointType::kSettingsPage);
-  if (controller_) {
-    controller_->OnShown();
-  }
-}
+    : web_ui_(web_ui), receiver_(this, std::move(receiver)) {}
 
-DefaultBrowserModalHandler::~DefaultBrowserModalHandler() {
-  if (controller_) {
-    controller_->OnIgnored();
-  }
-}
+DefaultBrowserModalHandler::~DefaultBrowserModalHandler() = default;
 
 void DefaultBrowserModalHandler::Cancel() {
-  if (auto controller = std::exchange(controller_, nullptr)) {
-    controller->OnDismissed();
+  auto* prompt_manager = DefaultBrowserPromptManager::GetInstance();
+  if (auto* surface_manager = prompt_manager->GetPromptSurfaceManager()) {
+    surface_manager->HandleDismiss();
+    prompt_manager->CloseAllPrompts(
+        DefaultBrowserPromptManager::CloseReason::kDismiss);
   }
 
   if (web_ui_ && web_ui_->GetWebContents()) {
@@ -44,8 +38,11 @@ void DefaultBrowserModalHandler::Cancel() {
 }
 
 void DefaultBrowserModalHandler::Confirm() {
-  if (auto controller = std::exchange(controller_, nullptr)) {
-    controller->OnAccepted(base::DoNothingWithBoundArgs(std::move(controller)));
+  auto* prompt_manager = DefaultBrowserPromptManager::GetInstance();
+  if (auto* surface_manager = prompt_manager->GetPromptSurfaceManager()) {
+    surface_manager->HandleAccept();
+    prompt_manager->CloseAllPrompts(
+        DefaultBrowserPromptManager::CloseReason::kAccept);
   }
 
   if (web_ui_ && web_ui_->GetWebContents()) {
