@@ -2748,6 +2748,14 @@ inline constexpr char kSchedulerConfiguration[] =
 inline constexpr char kAppListLocalState[] = "app_list.local_state";
 inline constexpr char kAppListPreferredOrder[] = "app_list.preferred_order";
 
+// Boolean pref recording whether cookie and data would be used only for
+// essential purposes.
+inline constexpr char kEssentialSearchEnabled[] = "essential_search_enabled";
+// Boolean pref recording the last applied value for kEssentialSearchEnabled
+// prefs.
+inline constexpr char kLastEssentialSearchValue[] =
+    "last_essential_search_value";
+
 //-----------------------------------------------------------------------------
 // Language related Prefs
 //-----------------------------------------------------------------------------

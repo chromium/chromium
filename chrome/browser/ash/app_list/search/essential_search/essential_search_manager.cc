@@ -4,13 +4,13 @@
 
 #include "chrome/browser/ash/app_list/search/essential_search/essential_search_manager.h"
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/check_is_test.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_list/search/essential_search/socs_cookie_fetcher.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/pref_names.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
@@ -65,7 +65,7 @@ EssentialSearchManager::EssentialSearchManager(Profile* primary_profile)
   pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
   pref_change_registrar_->Init(primary_profile_->GetPrefs());
   pref_change_registrar_->Add(
-      prefs::kEssentialSearchEnabled,
+      ash::prefs::kEssentialSearchEnabled,
       base::BindRepeating(&EssentialSearchManager::MaybeFetchSocsCookie,
                           weak_ptr_factory_.GetWeakPtr()));
 
@@ -109,7 +109,7 @@ void EssentialSearchManager::MaybeFetchSocsCookie() {
   }
 
   PrefService* prefs = primary_profile_->GetPrefs();
-  if (prefs->GetBoolean(prefs::kEssentialSearchEnabled)) {
+  if (prefs->GetBoolean(ash::prefs::kEssentialSearchEnabled)) {
     // If the policy is enabled, cancel all active requests then fetch SOCS
     // cookie.
     MaybeDisableSearchSuggest();
@@ -120,7 +120,7 @@ void EssentialSearchManager::MaybeFetchSocsCookie() {
     return;
   }
 
-  if (prefs->GetBoolean(prefs::kLastEssentialSearchValue)) {
+  if (prefs->GetBoolean(ash::prefs::kLastEssentialSearchValue)) {
     // If the policy was disabled, remove SOCS cookie from the user's profile.
     RemoveSocsCookie();
     return;
@@ -131,7 +131,7 @@ void EssentialSearchManager::MaybeDisableSearchSuggest() {
   // Disable search suggest if last kEssentialSearchEnabled value was false
   // (until SOCS is fetched)
   if (!primary_profile_->GetPrefs()->GetBoolean(
-          prefs::kLastEssentialSearchValue)) {
+          ash::prefs::kLastEssentialSearchValue)) {
     temporary_disable_search_suggest_ = true;
     return;
   }
@@ -198,8 +198,8 @@ void EssentialSearchManager::OnCookieDeleted(
   }
 
   // Update kLastEssentialSearchValue to avoid deleting SOCS cookie again.
-  primary_profile_->GetPrefs()->SetBoolean(prefs::kLastEssentialSearchValue,
-                                           false);
+  primary_profile_->GetPrefs()->SetBoolean(
+      ash::prefs::kLastEssentialSearchValue, false);
 }
 
 void EssentialSearchManager::OnCookieFetched(const std::string& cookie_header) {
@@ -252,10 +252,10 @@ void EssentialSearchManager::OnCookieAddedToUserProfile(
   RefetchAfter(kOneDay);
   retry_backoff_.InformOfRequest(true);
   PrefService* prefs = primary_profile_->GetPrefs();
-  if (prefs->GetBoolean(prefs::kEssentialSearchEnabled)) {
+  if (prefs->GetBoolean(ash::prefs::kEssentialSearchEnabled)) {
     // If the kEssentialSearchEnabled policy is still enabled, mark
     // kLastEssentialSearchValue as enabled.
-    prefs->SetBoolean(prefs::kLastEssentialSearchValue, true);
+    prefs->SetBoolean(ash::prefs::kLastEssentialSearchValue, true);
   } else {
     // This would be triggered in case the policy got disabled while storing the
     // cookie.

@@ -390,16 +390,6 @@ inline constexpr char kContextualSearchWasFullyPrivacyEnabled[] =
     "search.contextual_search_fully_opted_in";
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_CHROMEOS)
-// Boolean pref recording whether cookie and data would be used only for
-// essential purposes.
-inline constexpr char kEssentialSearchEnabled[] = "essential_search_enabled";
-// Boolean pref recording the last applied value for kEssentialSearchEnabled
-// prefs.
-inline constexpr char kLastEssentialSearchValue[] =
-    "last_essential_search_value";
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 #if BUILDFLAG(IS_MAC)
 // Boolean that indicates whether the browser should put up a confirmation
 // window when the user is attempting to quit. Only on Mac.

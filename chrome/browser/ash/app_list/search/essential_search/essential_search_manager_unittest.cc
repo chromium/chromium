@@ -4,12 +4,12 @@
 
 #include "chrome/browser/ash/app_list/search/essential_search/essential_search_manager.h"
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -115,7 +115,7 @@ TEST_F(EssentialSearchManagerTest, OnCookieFetchedSucceed) {
                                                   signin::ConsentLevel::kSync);
   // Enable EssentialSearchEnabled policy
   profile_->GetTestingPrefService()->SetManagedPref(
-      prefs::kEssentialSearchEnabled, base::Value(true));
+      ash::prefs::kEssentialSearchEnabled, base::Value(true));
 
   CreateEssentialSearchManager();
 
@@ -137,7 +137,7 @@ TEST_F(EssentialSearchManagerTest, PolicyDisabledWhileUserInSession) {
                                                   signin::ConsentLevel::kSync);
   // Enable EssentialSearchEnabled policy
   profile_->GetTestingPrefService()->SetManagedPref(
-      prefs::kEssentialSearchEnabled, base::Value(true));
+      ash::prefs::kEssentialSearchEnabled, base::Value(true));
 
   CreateEssentialSearchManager();
 
@@ -158,7 +158,7 @@ TEST_F(EssentialSearchManagerTest, PolicyDisabledWhileUserInSession) {
 
   // Disable EssentialSearchEnabled policy
   profile_->GetTestingPrefService()->SetManagedPref(
-      prefs::kEssentialSearchEnabled, base::Value(false));
+      ash::prefs::kEssentialSearchEnabled, base::Value(false));
 
   // Wait for cookie deletion.
   deletion_loop.Run();
@@ -173,7 +173,7 @@ TEST_F(EssentialSearchManagerTest, PolicyDisabledWhileFetchingCookie) {
                                                   signin::ConsentLevel::kSync);
   // Simulate policy being disabled while fetching the cookie.
   profile_->GetTestingPrefService()->SetManagedPref(
-      prefs::kEssentialSearchEnabled, base::Value(false));
+      ash::prefs::kEssentialSearchEnabled, base::Value(false));
 
   CreateEssentialSearchManager();
 

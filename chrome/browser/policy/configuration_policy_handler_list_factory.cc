@@ -911,7 +911,7 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     base::Value::Type::BOOLEAN },
 #if BUILDFLAG(IS_CHROMEOS)
   { key::kEssentialSearchEnabled,
-    prefs::kEssentialSearchEnabled,
+    ash::prefs::kEssentialSearchEnabled,
     base::Value::Type::BOOLEAN },
   { key::kIsolatedWebAppUserInstallationEnabled,
     prefs::kIsolatedWebAppUserInstallationEnabled,
