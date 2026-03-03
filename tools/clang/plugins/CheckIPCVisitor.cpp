@@ -230,8 +230,8 @@ bool CheckIPCVisitor::CheckType(QualType type, CheckDetails* details) const {
     }
 
     if (auto* record = dyn_cast<RecordType>(type)) {
-      if (auto* spec = dyn_cast<ClassTemplateSpecializationDecl>(
-              record->getOriginalDecl())) {
+      if (auto* spec =
+              dyn_cast<ClassTemplateSpecializationDecl>(record->getDecl())) {
         const TemplateArgumentList& args = spec->getTemplateArgs();
         for (unsigned i = 0; i != args.size(); ++i) {
           if (!CheckTemplateArgument(args[i], details)) {

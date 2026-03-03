@@ -1015,8 +1015,8 @@ bool FindBadConstructsConsumer::HasPublicDtorCallback(
     return false;
   }
 
-  CXXRecordDecl* record = dyn_cast<CXXRecordDecl>(
-      base->getType()->getAs<RecordType>()->getOriginalDecl());
+  CXXRecordDecl* record =
+      dyn_cast<CXXRecordDecl>(base->getType()->getAs<RecordType>()->getDecl());
   SourceLocation unused;
   return None != CheckRecordForRefcountIssue(record, unused);
 }
@@ -1132,7 +1132,7 @@ void FindBadConstructsConsumer::CheckRefCountedDtors(
     // The record with the problem will always be the last record
     // in the path, since it is the record that stopped the search.
     const CXXRecordDecl* problem_record = dyn_cast<CXXRecordDecl>(
-        it->back().Base->getType()->getAs<RecordType>()->getOriginalDecl());
+        it->back().Base->getType()->getAs<RecordType>()->getDecl());
 
     issue = CheckRecordForRefcountIssue(problem_record, loc);
 
@@ -1399,7 +1399,7 @@ void FindBadConstructsConsumer::CheckConstructingSpanFromStringLiteral(
   }
 
   value_expr = value_expr->IgnoreParens();
-  if (auto* lit_expr = clang::dyn_cast<clang::StringLiteral>(value_expr)) {
+  if (clang::isa<clang::StringLiteral>(value_expr)) {
     ReportIfSpellingLocNotIgnored(loc, diag_span_from_string_literal_);
     ReportIfSpellingLocNotIgnored(loc, diag_note_span_from_string_literal1_);
   }

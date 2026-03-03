@@ -163,7 +163,7 @@ class TypePredicate {
 
     // Clean-up: this lambda is called automatically at the scope exit.
     const auto clean_up =
-        llvm::make_scope_exit([this, &visited, &raw_type, &root, &match] {
+        llvm::scope_exit([this, &visited, &raw_type, &root, &match] {
           if (root) {
             delete visited;
           }

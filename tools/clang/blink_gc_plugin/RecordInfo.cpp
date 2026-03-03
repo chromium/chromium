@@ -162,8 +162,7 @@ void RecordInfo::walkBases() {
       if (!type)
         base = GetDependentTemplatedDecl(*it.getType());
       else {
-        base = cast_or_null<CXXRecordDecl>(
-            type->getOriginalDecl()->getDefinition());
+        base = cast_or_null<CXXRecordDecl>(type->getDecl()->getDefinition());
         if (base)
           queue.push_back(base);
       }

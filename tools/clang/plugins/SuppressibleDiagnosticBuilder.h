@@ -21,7 +21,6 @@ class SuppressibleDiagnosticBuilder : public clang::DiagnosticBuilder {
                                 unsigned diagnostic_id,
                                 bool suppressed)
       : DiagnosticBuilder(diagnostics->Report(loc, diagnostic_id)),
-        diagnostics_(diagnostics),
         suppressed_(suppressed) {}
 
   ~SuppressibleDiagnosticBuilder() {
@@ -33,7 +32,6 @@ class SuppressibleDiagnosticBuilder : public clang::DiagnosticBuilder {
   }
 
  private:
-  clang::DiagnosticsEngine* const diagnostics_;
   const bool suppressed_;
 };
 
