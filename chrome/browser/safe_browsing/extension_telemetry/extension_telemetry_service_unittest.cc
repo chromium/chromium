@@ -19,6 +19,7 @@
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/cookies_get_signal.h"
+#include "chrome/browser/safe_browsing/extension_telemetry/dom_access_signal.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_uploader.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/search_hijacking_detector.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/tabs_execute_script_signal.h"
@@ -433,6 +434,37 @@ TEST_F(ExtensionTelemetryServiceTest, ProcessesSignalForEnterprise) {
   EXPECT_EQ(info->install_timestamp_msec(),
             GetLastUpdateTime(extension_prefs_, kExtensionId[0])
                 .InMillisecondsSinceUnixEpoch());
+}
+
+TEST_F(ExtensionTelemetryServiceTest, ProcessesDOMAccessSignalForEnterprise) {
+  // Enable enterprise telemetry.
+  enterprise_connectors::test::SetOnSecurityEventReporting(
+      /*prefs=*/prefs(),
+      /*enabled=*/true,
+      /*enabled_event_names=*/{},
+      /*enabled_opt_in_events=*/
+      {{enterprise_connectors::kExtensionTelemetryEvent, {"*"}}});
+
+  // Re-create telemetry service so it initializes the enterprise processors.
+  telemetry_service_ = CreateTelemetryService(&profile_);
+
+  // Add a DOM access signal.
+  auto signal = std::make_unique<DOMAccessSignal>(
+      kExtensionId[0], "Document.cookie", "http://www.example.com",
+      DOMAccessSignal::DOMAccess::READ, base::Time::Now());
+  telemetry_service_->AddSignal(std::move(signal));
+
+  // Verify that the signal is correctly recorded in the enterprise report.
+  std::unique_ptr<TelemetryReport> report = GetTelemetryReportForEnterprise();
+  ASSERT_NE(report, nullptr);
+  ASSERT_EQ(report->reports_size(), 1);
+  const auto& extension_report = report->reports(0);
+  ASSERT_EQ(extension_report.signals_size(), 1);
+  const auto& signal_info = extension_report.signals(0);
+  ASSERT_TRUE(signal_info.has_dom_access_info());
+  EXPECT_EQ(signal_info.dom_access_info().dom_accesses_size(), 1);
+  EXPECT_EQ(signal_info.dom_access_info().dom_accesses(0).api_name(),
+            "Document.cookie");
 }
 
 TEST_F(ExtensionTelemetryServiceTest, DiscardsInvalidSignal) {

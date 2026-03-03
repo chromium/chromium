@@ -10227,6 +10227,8 @@ test("unit_tests") {
       "../browser/safe_browsing/extension_telemetry/declarative_net_request_action_signal_processor_unittest.cc",
       "../browser/safe_browsing/extension_telemetry/declarative_net_request_action_signal_unittest.cc",
       "../browser/safe_browsing/extension_telemetry/declarative_net_request_signal_processor_unittest.cc",
+      "../browser/safe_browsing/extension_telemetry/dom_access_signal_processor_unittest.cc",
+      "../browser/safe_browsing/extension_telemetry/dom_access_signal_unittest.cc",
       "../browser/safe_browsing/extension_telemetry/extension_js_callstacks_unittest.cc",
       "../browser/safe_browsing/extension_telemetry/extension_telemetry_config_manager_unittest.cc",
       "../browser/safe_browsing/extension_telemetry/extension_telemetry_file_processor_unittest.cc",

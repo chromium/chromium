@@ -34,6 +34,7 @@
 #include "chrome/browser/safe_browsing/extension_telemetry/cookies_get_signal_processor.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/declarative_net_request_action_signal_processor.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/declarative_net_request_signal_processor.h"
+#include "chrome/browser/safe_browsing/extension_telemetry/dom_access_signal_processor.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_js_callstacks.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_signal.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_config_manager.h"
@@ -435,14 +436,6 @@ GetExtensionTelemetryEventRouter(Profile* profile) {
 }
 #endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 
-// Returns true if the signal type should be collected for enterprise telemetry.
-bool CollectForEnterprise(ExtensionSignalType type) {
-  return type == ExtensionSignalType::kCookiesGet ||
-         type == ExtensionSignalType::kCookiesGetAll ||
-         type == ExtensionSignalType::kRemoteHostContacted ||
-         type == ExtensionSignalType::kTabsApi;
-}
-
 }  // namespace
 
 // Adds extension installation mode and managed status to extension telemetry
@@ -692,12 +685,13 @@ void ExtensionTelemetryService::AddSignal(
     std::unique_ptr<ExtensionSignal> signal) {
   ExtensionSignalType signal_type = signal->GetType();
 
-  if (esb_enabled_) {
+  if (esb_enabled_ && signal_subscribers_.contains(signal_type)) {
     RecordSignalType(signal_type);
     AddSignalHelper(*signal, extension_store_, signal_subscribers_);
   }
 
-  if (enterprise_enabled_ && CollectForEnterprise(signal_type)) {
+  if (enterprise_enabled_ &&
+      enterprise_signal_subscribers_.contains(signal_type)) {
     RecordSignalTypeForEnterprise(signal_type);
     AddSignalHelper(*signal, enterprise_extension_store_,
                     enterprise_signal_subscribers_);
@@ -1551,6 +1545,9 @@ void ExtensionTelemetryService::
   enterprise_signal_processors_.emplace(
       ExtensionSignalType::kTabsApi,
       std::make_unique<TabsApiSignalProcessor>());
+  enterprise_signal_processors_.emplace(
+      ExtensionSignalType::kDOMAccess,
+      std::make_unique<DOMAccessSignalProcessor>());
 
   // Create subscriber lists for each telemetry signal type.
   // Map the signal processors to the signals that they consume.
@@ -1570,6 +1567,9 @@ void ExtensionTelemetryService::
   std::vector<raw_ptr<ExtensionSignalProcessor, VectorExperimental>>
       enterprise_subscribers_for_tabs_api = {
           enterprise_signal_processors_[ExtensionSignalType::kTabsApi].get()};
+  std::vector<raw_ptr<ExtensionSignalProcessor, VectorExperimental>>
+      enterprise_subscribers_for_dom_access = {
+          enterprise_signal_processors_[ExtensionSignalType::kDOMAccess].get()};
 
   enterprise_signal_subscribers_.emplace(
       ExtensionSignalType::kCookiesGet,
@@ -1583,6 +1583,9 @@ void ExtensionTelemetryService::
   enterprise_signal_subscribers_.emplace(
       ExtensionSignalType::kTabsApi,
       std::move(enterprise_subscribers_for_tabs_api));
+  enterprise_signal_subscribers_.emplace(
+      ExtensionSignalType::kDOMAccess,
+      std::move(enterprise_subscribers_for_dom_access));
 }
 
 ExtensionTelemetryService::OffstoreExtensionFileDataContext::
