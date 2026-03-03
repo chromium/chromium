@@ -4,6 +4,8 @@
 
 #include "gpu/command_buffer/service/dawn_platform.h"
 
+#include <mutex>
+
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/metrics/histogram.h"
@@ -67,10 +69,19 @@ class AsyncJobHandle : public dawn::platform::JobHandle {
       : job_handle_(std::move(job_handle)) {}
   ~AsyncJobHandle() override = default;
 
-  void Cancel() override { job_handle_.Cancel(); }
-  void Join() override { job_handle_.Join(); }
+  // Chromium's JobHandle can either be cancelled or joined, but not both (it
+  // crashes if you try to |Join| after |Cancel|). The Dawn platform's JobHandle
+  // allows both to be called without error, so we wrap it here and avoid
+  // calling them more than once.
+  void Cancel() override {
+    std::call_once(once_flag_, [&]() { job_handle_.Cancel(); });
+  }
+  void Join() override {
+    std::call_once(once_flag_, [&]() { job_handle_.Join(); });
+  }
 
  private:
+  std::once_flag once_flag_;
   base::JobHandle job_handle_;
 };
 
