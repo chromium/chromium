@@ -809,5 +809,167 @@ TEST_F(H264DecoderTest, SetStreamRetry) {
   ASSERT_TRUE(decoder_->Flush());
 }
 
+TEST_F(H264DecoderTest, ModifyReferencePicList_CompactionTime) {
+  // Seed the decoder DPB and `curr_pic_` with a long term ref pic.
+  scoped_refptr<H264Picture> ref_pic = base::MakeRefCounted<H264Picture>();
+  ref_pic->pic_num = 11;
+  ref_pic->long_term_pic_num = 11;
+  ref_pic->long_term = true;
+  ref_pic->ref = true;
+  decoder_->SetCurrPicForTesting(ref_pic);
+  decoder_->StoreDPBPicForTesting(ref_pic);
+
+  // Prime the reference pic list with pictures {#10, #11, #12}
+  H264Picture::Vector temp_ref_pic_list0;
+  H264Picture::Vector temp_ref_pic_list1;
+  for (int ltpn = 10; ltpn < 13; ltpn++) {
+    scoped_refptr<H264Picture> pic = base::MakeRefCounted<H264Picture>();
+    pic->long_term = true;
+    pic->ref = true;
+    pic->long_term_pic_num = ltpn;
+    temp_ref_pic_list0.push_back(pic);
+  }
+
+  H264SliceHeader slice_hdr;
+  // Resize the list to the size requested in the slice header.
+  // Note that per 8.2.4.2 it's possible for num_ref_idx_lX_active_minus1 to
+  // indicate there should be more ref pics on list than we constructed.
+  // Those superfluous ones should be treated as non-reference and will be
+  // initialized to nullptr, which must be handled by clients.
+  // `temp_ref_pic_list_0` has 3 elements, and add an extra null.
+  slice_hdr.num_ref_idx_l0_active_minus1 = 3;
+  slice_hdr.ref_pic_list_modification_flag_l0 = true;
+
+  // We want to bring pic 11 to the front now.
+  slice_hdr.ref_list_l0_modifications[0].modification_of_pic_nums_idc = 2;
+  slice_hdr.ref_list_l0_modifications[0].long_term_pic_num = 11;
+
+  // modification code "3" means "end of modification code list".
+  slice_hdr.ref_list_l0_modifications[1].modification_of_pic_nums_idc = 3;
+
+  ASSERT_TRUE(decoder_->ModifyReferencePicListsForTesting(
+      &slice_hdr, &temp_ref_pic_list0, &temp_ref_pic_list1));
+
+  ASSERT_EQ(temp_ref_pic_list0.size(), 4u);
+  ASSERT_EQ(temp_ref_pic_list0[0]->long_term_pic_num, 11);
+  ASSERT_EQ(temp_ref_pic_list0[1]->long_term_pic_num, 10);
+  ASSERT_EQ(temp_ref_pic_list0[2]->long_term_pic_num, 12);
+  ASSERT_EQ(temp_ref_pic_list0[3], nullptr);
+}
+
+TEST_F(H264DecoderTest, ModifyReferencePicList_CompactionWithNullEntry) {
+  // Seed the decoder DPB and `curr_pic_` with a long term ref pic.
+  scoped_refptr<H264Picture> ref_pic = base::MakeRefCounted<H264Picture>();
+  ref_pic->pic_num = 11;
+  ref_pic->long_term_pic_num = 11;
+  ref_pic->long_term = true;
+  ref_pic->ref = true;
+  decoder_->SetCurrPicForTesting(ref_pic);
+  decoder_->StoreDPBPicForTesting(ref_pic);
+
+  // Prime the reference pic list with pictures {#10, #11, #12, #13}
+  H264Picture::Vector temp_ref_pic_list0;
+  H264Picture::Vector temp_ref_pic_list1;
+  for (int ltpn = 10; ltpn < 14; ltpn++) {
+    scoped_refptr<H264Picture> pic = base::MakeRefCounted<H264Picture>();
+    pic->long_term = true;
+    pic->ref = true;
+    pic->long_term_pic_num = ltpn;
+    temp_ref_pic_list0.push_back(pic);
+  }
+
+  // remove entry #12
+  temp_ref_pic_list0[2] = nullptr;
+
+  H264SliceHeader slice_hdr;
+  // Resize the list to the size requested in the slice header.
+  // Note that per 8.2.4.2 it's possible for num_ref_idx_lX_active_minus1 to
+  // indicate there should be more ref pics on list than we constructed.
+  // Those superfluous ones should be treated as non-reference and will be
+  // initialized to nullptr, which must be handled by clients.
+  // `temp_ref_pic_list_0` has 4 elements, plus an extra null at the end.
+  slice_hdr.num_ref_idx_l0_active_minus1 = 4;
+  slice_hdr.ref_pic_list_modification_flag_l0 = true;
+
+  // We want to bring pic 11 to the front now.
+  slice_hdr.ref_list_l0_modifications[0].modification_of_pic_nums_idc = 2;
+  slice_hdr.ref_list_l0_modifications[0].long_term_pic_num = 11;
+
+  // modification code "3" means "end of modification code list".
+  slice_hdr.ref_list_l0_modifications[1].modification_of_pic_nums_idc = 3;
+
+  ASSERT_TRUE(decoder_->ModifyReferencePicListsForTesting(
+      &slice_hdr, &temp_ref_pic_list0, &temp_ref_pic_list1));
+
+  // The null entry is treated as an entry, and is shifted accordingly.
+  ASSERT_EQ(temp_ref_pic_list0.size(), 5u);
+  ASSERT_EQ(temp_ref_pic_list0[0]->long_term_pic_num, 11);
+  ASSERT_EQ(temp_ref_pic_list0[1]->long_term_pic_num, 10);
+  ASSERT_EQ(temp_ref_pic_list0[2], nullptr);
+  ASSERT_EQ(temp_ref_pic_list0[3]->long_term_pic_num, 13);
+  ASSERT_EQ(temp_ref_pic_list0[4], nullptr);
+}
+
+TEST_F(H264DecoderTest,
+       ModifyReferencePicList_CompactionWithInterspersedNullsAndDuplicates) {
+  // Seed the decoder DPB and `curr_pic_` with a long term ref pic.
+  scoped_refptr<H264Picture> ref_pic = base::MakeRefCounted<H264Picture>();
+  ref_pic->pic_num = 11;
+  ref_pic->long_term_pic_num = 11;
+  ref_pic->long_term = true;
+  ref_pic->ref = true;
+  decoder_->SetCurrPicForTesting(ref_pic);
+  decoder_->StoreDPBPicForTesting(ref_pic);
+
+  // Prime the reference pic list with pictures {#10, #11, #12, #13}
+  H264Picture::Vector temp_ref_pic_list0;
+  H264Picture::Vector temp_ref_pic_list1;
+  std::vector<int> ltpns = {10, -1, 11, 12, 13, -1, 18};
+
+  for (int ltpn : ltpns) {
+    if (ltpn == -1) {
+      temp_ref_pic_list0.push_back(nullptr);
+    } else {
+      scoped_refptr<H264Picture> pic = base::MakeRefCounted<H264Picture>();
+      pic->long_term = true;
+      pic->ref = true;
+      pic->long_term_pic_num = ltpn;
+      temp_ref_pic_list0.push_back(pic);
+    }
+  }
+
+  H264SliceHeader slice_hdr;
+  // Resize the list to the size requested in the slice header.
+  // Note that per 8.2.4.2 it's possible for num_ref_idx_lX_active_minus1 to
+  // indicate there should be more ref pics on list than we constructed.
+  // Those superfluous ones should be treated as non-reference and will be
+  // initialized to nullptr, which must be handled by clients.
+  slice_hdr.num_ref_idx_l0_active_minus1 = ltpns.size();
+  slice_hdr.ref_pic_list_modification_flag_l0 = true;
+
+  // We want to bring pic 11 to the front now.
+  slice_hdr.ref_list_l0_modifications[0].modification_of_pic_nums_idc = 2;
+  slice_hdr.ref_list_l0_modifications[0].long_term_pic_num = 11;
+
+  // modification code "3" means "end of modification code list".
+  slice_hdr.ref_list_l0_modifications[1].modification_of_pic_nums_idc = 3;
+
+  ASSERT_TRUE(decoder_->ModifyReferencePicListsForTesting(
+      &slice_hdr, &temp_ref_pic_list0, &temp_ref_pic_list1));
+
+  // The null entries are treated as entries, and is shifted accordingly. The
+  // duplicate '11' ltpns are removed.
+  ASSERT_EQ(temp_ref_pic_list0.size(), 8u);
+
+  ASSERT_EQ(temp_ref_pic_list0[0]->long_term_pic_num, 11);
+  ASSERT_EQ(temp_ref_pic_list0[1]->long_term_pic_num, 10);
+  ASSERT_EQ(temp_ref_pic_list0[2], nullptr);
+  ASSERT_EQ(temp_ref_pic_list0[3]->long_term_pic_num, 12);
+  ASSERT_EQ(temp_ref_pic_list0[4]->long_term_pic_num, 13);
+  ASSERT_EQ(temp_ref_pic_list0[5], nullptr);
+  ASSERT_EQ(temp_ref_pic_list0[6]->long_term_pic_num, 18);
+  ASSERT_EQ(temp_ref_pic_list0[7], nullptr);
+}
+
 }  // namespace
 }  // namespace media

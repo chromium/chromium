@@ -226,6 +226,12 @@ class MEDIA_GPU_EXPORT H264Decoder : public AcceleratedVideoDecoder {
                                              const H264SliceHeader& slice_hdr,
                                              H264Picture* pic);
 
+  void SetCurrPicForTesting(scoped_refptr<H264Picture> pic) { curr_pic_ = pic; }
+  void StoreDPBPicForTesting(scoped_refptr<H264Picture> p);
+  bool ModifyReferencePicListsForTesting(const H264SliceHeader* slice_hdr,
+                                         H264Picture::Vector* ref_pic_list0,
+                                         H264Picture::Vector* ref_pic_list1);
+
  private:
   // Internal state of the decoder.
   enum class State {
