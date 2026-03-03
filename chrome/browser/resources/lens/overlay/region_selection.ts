@@ -7,19 +7,15 @@ import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {BrowserProxyImpl} from './browser_proxy.js';
-import type {BrowserProxy} from './browser_proxy.js';
 import {getFallbackTheme, getShaderLayerColorHexes, GLIF_HEX_COLORS} from './color_utils.js';
 import {CenterRotatedBox_CoordinateType} from './geometry.mojom-webui.js';
 import type {CenterRotatedBox} from './geometry.mojom-webui.js';
 import type {OverlayTheme} from './lens.mojom-webui.js';
-import {UserAction} from './lens.mojom-webui.js';
-import {INVOCATION_SOURCE} from './lens_overlay_app.js';
-import {recordLensOverlayInteraction} from './metrics_utils.js';
 import type {PostSelectionBoundingBox} from './post_selection_renderer.js';
 import {getTemplate} from './region_selection.html.js';
 import {ScreenshotBitmapBrowserProxyImpl} from './screenshot_bitmap_browser_proxy.js';
 import {renderScreenshot} from './screenshot_utils.js';
+import {RegionSource, SelectionOverlayBaseHandler} from './selection_overlay_base_handler.js';
 import {focusShimmerOnRegion, type GestureEvent, GestureState, getRelativeCoordinate, ShimmerControlRequester, unfocusShimmer} from './selection_utils.js';
 import type {Point} from './selection_utils.js';
 
@@ -140,7 +136,8 @@ export class RegionSelectionElement extends RegionSelectionElementBase {
   // Whether keyboard selection should be displayed.
   declare private displayKeyboardSelection: boolean;
 
-  private browserProxy: BrowserProxy = BrowserProxyImpl.getInstance();
+  private baseHandler: SelectionOverlayBaseHandler =
+      SelectionOverlayBaseHandler.getInstance();
 
   private readonly gradientRegionStrokeEnabled: boolean =
       loadTimeData.getBoolean('enableGradientRegionStroke');
@@ -205,9 +202,8 @@ export class RegionSelectionElement extends RegionSelectionElementBase {
     const isClick = event.state === GestureState.STARTING;
     const box = this.getNormalizedCenterRotatedBoxFromGesture(event);
     const region = this.getPostSelectionRegion(event);
-    const interaction =
-        isClick ? UserAction.kTapRegionSelection : UserAction.kRegionSelection;
-    this.issueRequest(isClick, box, region, interaction);
+    const interaction = isClick ? RegionSource.CLICK : RegionSource.SELECTION;
+    this.issueRequest(box, region, interaction);
     return true;
   }
 
@@ -217,19 +213,17 @@ export class RegionSelectionElement extends RegionSelectionElementBase {
       return false;
     }
 
-    this.issueRequest(/*isClick=*/ false,
-                      fullscreenNormalizedCenterRotatedBox(),
-                      fullscreenPostSelectionRegion(),
-                      UserAction.kFullScreenshotRegionSelection);
+    this.issueRequest(
+        fullscreenNormalizedCenterRotatedBox(), fullscreenPostSelectionRegion(),
+        RegionSource.KEYBOARD);
     return true;
   }
 
   private issueRequest(
-      isClick: boolean, box: CenterRotatedBox, region: PostSelectionBoundingBox,
-      interaction: UserAction) {
-    recordLensOverlayInteraction(INVOCATION_SOURCE, interaction);
+      box: CenterRotatedBox, region: PostSelectionBoundingBox,
+      source: RegionSource) {
     // Issue the Lens request.
-    this.browserProxy.handler.issueLensRegionRequest(box, isClick);
+    this.baseHandler.adjustRegionSelected(box.box, source);
 
     // Relinquish control from the shimmer.
     unfocusShimmer(this, ShimmerControlRequester.MANUAL_REGION);

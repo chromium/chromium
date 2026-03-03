@@ -6,7 +6,7 @@ import {assert} from '//resources/js/assert.js';
 import type {BigBuffer} from '//resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
 import type {BitmapMappedFromTrustedProcess} from '//resources/mojo/skia/public/mojom/bitmap.mojom-webui.js';
 
-import {BrowserProxyImpl} from './browser_proxy.js';
+import {SelectionOverlayBaseHandler} from './selection_overlay_base_handler.js';
 
 /**
  * @fileoverview A browser proxy for receiving the viewport screenshot from the
@@ -36,14 +36,12 @@ export class ScreenshotBitmapBrowserProxyImpl implements
   private onOverlayReshownCallbacks: OverlayReshownCallback[] = [];
 
   constructor() {
-    this.screenshotListenerId =
-        BrowserProxyImpl.getInstance()
-            .callbackRouter.screenshotDataReceived.addListener(
-                this.screenshotDataReceived.bind(this));
+    this.screenshotListenerId = SelectionOverlayBaseHandler.getInstance()
+                                    .addScreenshotDataReceivedListener(
+                                        this.screenshotDataReceived.bind(this));
     this.onOverlayReshownListenerId =
-        BrowserProxyImpl.getInstance()
-            .callbackRouter.onOverlayReshown.addListener(
-                this.onOverlayReshown.bind(this));
+        SelectionOverlayBaseHandler.getInstance().addOnOverlayReshownListener(
+            this.onOverlayReshown.bind(this));
   }
 
   static getInstance(): ScreenshotBitmapBrowserProxy {

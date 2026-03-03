@@ -7,11 +7,11 @@ import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {BrowserProxyImpl} from './browser_proxy.js';
 import {getFallbackTheme, getShaderLayerColorRgbas, modifyRgbaTransparency} from './color_utils.js';
 import {CubicBezier} from './cubic_bezier.js';
 import type {OverlayTheme} from './lens.mojom-webui.js';
 import {getTemplate} from './overlay_shimmer_canvas.html.js';
+import {SelectionOverlayBaseHandler} from './selection_overlay_base_handler.js';
 import type {OverlayShimmerFocusedRegion, OverlayShimmerUnfocusRegion, Point} from './selection_utils.js';
 import {ShimmerControlRequester} from './selection_utils.js';
 import {Wiggle} from './wiggle.js';
@@ -362,8 +362,8 @@ export class OverlayShimmerCanvasElement extends PolymerElement {
         });
 
     this.listenerIds = [
-      BrowserProxyImpl.getInstance()
-          .callbackRouter.notifyResultsPanelOpened.addListener(() => {
+      SelectionOverlayBaseHandler.getInstance()
+          .addNotifyResultsPanelOpenedListener(() => {
             this.areResultsShowing = true;
           }),
     ];
@@ -374,7 +374,7 @@ export class OverlayShimmerCanvasElement extends PolymerElement {
     this.eventTracker_.removeAll();
     this.listenerIds.forEach(
         id => assert(
-            BrowserProxyImpl.getInstance().callbackRouter.removeListener(id)));
+            SelectionOverlayBaseHandler.getInstance().removeListener(id)));
     this.listenerIds = [];
 
     // Stop updating the sparkles if they are currently updating.

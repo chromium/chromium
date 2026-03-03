@@ -6,19 +6,16 @@ import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
 import {assert, assertInstanceof, assertNotReached} from '//resources/js/assert.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
+import type {RectF} from '//resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {BrowserProxyImpl} from './browser_proxy.js';
-import type {BrowserProxy} from './browser_proxy.js';
 import {GLIF_HEX_COLORS} from './color_utils.js';
 import {CenterRotatedBox_CoordinateType} from './geometry.mojom-webui.js';
 import type {CenterRotatedBox} from './geometry.mojom-webui.js';
-import {UserAction} from './lens.mojom-webui.js';
-import {INVOCATION_SOURCE} from './lens_overlay_app.js';
-import {recordLensOverlayInteraction} from './metrics_utils.js';
 import {getTemplate} from './post_selection_renderer.html.js';
 import {ScreenshotBitmapBrowserProxyImpl} from './screenshot_bitmap_browser_proxy.js';
 import {renderScreenshot} from './screenshot_utils.js';
+import {RegionSource, SelectionOverlayBaseHandler} from './selection_overlay_base_handler.js';
 import {focusShimmerOnRegion, ShimmerControlRequester, unfocusShimmer} from './selection_utils.js';
 import type {GestureEvent} from './selection_utils.js';
 import {toPercent, toPixels} from './values_converter.js';
@@ -167,7 +164,8 @@ export class PostSelectionRendererElement extends
   // The original bounds from the start of a drag or slider change.
   private originalBounds:
       PostSelectionBoundingBox = {left: 0, top: 0, width: 0, height: 0};
-  private browserProxy: BrowserProxy = BrowserProxyImpl.getInstance();
+  private baseHandler: SelectionOverlayBaseHandler =
+      SelectionOverlayBaseHandler.getInstance();
   private resizeObserver: ResizeObserver = new ResizeObserver(() => {
     this.handleResize();
   });
@@ -216,11 +214,11 @@ export class PostSelectionRendererElement extends
     this.resizeObserver.observe(this);
     // Set up listener to listen to events from C++.
     this.listenerIds = [
-      this.browserProxy.callbackRouter.clearAllSelections.addListener(
+      this.baseHandler.addClearAllSelectionsListener(
           this.clearSelection.bind(this)),
-      this.browserProxy.callbackRouter.clearRegionSelection.addListener(
+      this.baseHandler.addClearRegionSelectionListener(
           this.clearRegionSelection.bind(this)),
-      this.browserProxy.callbackRouter.setPostRegionSelection.addListener(
+      this.baseHandler.addSetPostRegionSelectionListener(
           this.setSelection.bind(this)),
     ];
   }
@@ -229,8 +227,7 @@ export class PostSelectionRendererElement extends
     super.disconnectedCallback();
     this.eventTracker_.removeAll();
     this.resizeObserver.unobserve(this);
-    this.listenerIds.forEach(
-        id => assert(this.browserProxy.callbackRouter.removeListener(id)));
+    this.listenerIds.forEach(id => assert(this.baseHandler.removeListener(id)));
     this.listenerIds = [];
   }
 
@@ -344,8 +341,9 @@ export class PostSelectionRendererElement extends
   handleGestureEnd() {
     if (this.areBoundsChanging()) {
       // Issue Lens request for new bounds
-      BrowserProxyImpl.getInstance().handler.issueLensRegionRequest(
-          this.getNormalizedCenterRotatedBox(), /*is_click=*/ false);
+      this.baseHandler.adjustRegionSelected(
+          this.getNormalizedCenterRotatedBox().box,
+          RegionSource.SELECTION_CHANGE);
 
       // Check for selectable text
       this.dispatchEvent(new CustomEvent('detect-text-in-region', {
@@ -353,9 +351,6 @@ export class PostSelectionRendererElement extends
         composed: true,
         detail: this.getNormalizedCenterRotatedBox(),
       }));
-
-      recordLensOverlayInteraction(
-          INVOCATION_SOURCE, UserAction.kRegionSelectionChange);
     }
 
     this.originalBounds = {left: 0, top: 0, width: 0, height: 0};
@@ -544,12 +539,12 @@ export class PostSelectionRendererElement extends
     }
   }
 
-  private setSelection(region: CenterRotatedBox) {
-    const normalizedTop = region.box.y - (region.box.height / 2);
-    const normalizedLeft = region.box.x - (region.box.width / 2);
+  private setSelection(region: RectF) {
+    const normalizedTop = region.y - (region.height / 2);
+    const normalizedLeft = region.x - (region.width / 2);
 
     this.setDimensions(
-        normalizedTop, normalizedLeft, region.box.height, region.box.width);
+        normalizedTop, normalizedLeft, region.height, region.width);
     this.originalBounds = {left: 0, top: 0, width: 0, height: 0};
 
     this.rerender();
