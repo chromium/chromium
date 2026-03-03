@@ -8596,27 +8596,6 @@
             ]
         }
     ],
-    "DeviceBoundSessionsStandardLaunch": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20260130",
-                    "params": {
-                        "RequireOriginTrialTokens": "false",
-                        "SchemaVersion": "3"
-                    },
-                    "enable_features": [
-                        "DeviceBoundSessions",
-                        "DeviceBoundSessionsFederatedRegistration",
-                        "PersistDeviceBoundSessions"
-                    ]
-                }
-            ]
-        }
-    ],
     "DexFixer": [
         {
             "platforms": [
