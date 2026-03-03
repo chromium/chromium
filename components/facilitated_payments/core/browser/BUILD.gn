@@ -29,6 +29,7 @@ static_library("browser") {
     "pix_account_linking_manager.h",
     "pix_manager.cc",
     "pix_manager.h",
+    "pix_manager_test_api.h",
     "strike_databases/payment_link_suggestion_strike_database.h",
   ]
 
