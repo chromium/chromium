@@ -9,6 +9,7 @@
 #include <string_view>
 
 #include "base/memory/raw_ptr.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/segmentation_platform/embedder/home_modules/card_selection_info.h"
 #include "components/segmentation_platform/embedder/home_modules/constants.h"
@@ -26,18 +27,23 @@ class EnhancedSafeBrowsingEphemeralModule : public CardSelectionInfo {
         profile_prefs_(profile_prefs) {}
   ~EnhancedSafeBrowsingEphemeralModule() override = default;
 
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
+
   // Returns `true` if the given label corresponds to an
   // `EnhancedSafeBrowsingEphemeralModule` variation.
   static bool IsModuleLabel(std::string_view label);
 
   // Returns `true` if the `EnhancedSafeBrowsingEphemeralModule` should be
-  // enabled, considering the given impression count.
-  static bool IsEnabled(int impression_count);
+  // enabled.
+  static bool IsEnabled(PrefService* profile_prefs);
 
   // `CardSelectionInfo` overrides.
   std::map<SignalKey, FeatureQuery> GetInputs() override;
   ShowResult ComputeCardResult(
       const CardSelectionSignals& signals) const override;
+  void OnShow(PrefService* profile_prefs, PrefService* local_state) override;
+  void OnInteract(PrefService* profile_prefs,
+                  PrefService* local_state) override;
 
  private:
   raw_ptr<PrefService> profile_prefs_;

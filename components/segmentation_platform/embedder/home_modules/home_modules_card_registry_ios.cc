@@ -35,9 +35,6 @@ namespace segmentation_platform::home_modules {
 
 namespace {
 
-// Impression counter for the Enhanced Safe Browsing ephemeral module.
-const char kEnhancedSafeBrowsingEphemeralModuleImpressionCounterPref[] =
-    "ephemeral_pref_counter.enhanced_safe_browsing_ephemeral_module_counter";
 // Impression counter for the Save Passwords ephemeral module.
 const char kSavePasswordsEphemeralModuleImpressionCounterPref[] =
     "ephemeral_pref_counter.save_passwords_ephemeral_module_counter";
@@ -95,9 +92,7 @@ void AddCardForTip(TipIdentifier tip,
       break;
     }
     case TipIdentifier::kEnhancedSafeBrowsing: {
-      int impression_count = prefs->GetInteger(
-          kEnhancedSafeBrowsingEphemeralModuleImpressionCounterPref);
-      if (EnhancedSafeBrowsingEphemeralModule::IsEnabled(impression_count)) {
+      if (EnhancedSafeBrowsingEphemeralModule::IsEnabled(prefs)) {
         cards.push_back(
             std::make_unique<EnhancedSafeBrowsingEphemeralModule>(prefs));
       }
@@ -204,14 +199,11 @@ void HomeModulesCardRegistryIOS::RegisterProfilePrefs(
   PriceTrackingNotificationPromo::RegisterProfilePrefs(registry);
   AddressBarPositionEphemeralModule::RegisterProfilePrefs(registry);
   AutofillPasswordsEphemeralModule::RegisterProfilePrefs(registry);
+  EnhancedSafeBrowsingEphemeralModule::RegisterProfilePrefs(registry);
   registry->RegisterIntegerPref(kSendTabPromoImpressionCounterPref, 0);
-  registry->RegisterIntegerPref(
-      kEnhancedSafeBrowsingEphemeralModuleImpressionCounterPref, 0);
   registry->RegisterIntegerPref(
       kSavePasswordsEphemeralModuleImpressionCounterPref, 0);
   registry->RegisterIntegerPref(kLensEphemeralModuleImpressionCounterPref, 0);
-  registry->RegisterBooleanPref(
-      kEnhancedSafeBrowsingEphemeralModuleInteractedPref, false);
   registry->RegisterBooleanPref(kSavePasswordsEphemeralModuleInteractedPref,
                                 false);
   registry->RegisterBooleanPref(kLensEphemeralModuleInteractedPref, false);
@@ -247,13 +239,7 @@ void HomeModulesCardRegistryIOS::NotifyCardShown(const char* card_name) {
 
   // TODO(crbug.com/489042527): Remove the legacy if/else block below when
   // all cards have been migrated to the new `OnShow()` lifecycle hook.
-  if (strcmp(card_name, kEnhancedSafeBrowsingEphemeralModule) == 0) {
-    int freshness_impression_count = profile_prefs_->GetInteger(
-        kEnhancedSafeBrowsingEphemeralModuleImpressionCounterPref);
-    profile_prefs_->SetInteger(
-        kEnhancedSafeBrowsingEphemeralModuleImpressionCounterPref,
-        freshness_impression_count + 1);
-  } else if (strcmp(card_name, kSavePasswordsEphemeralModule) == 0) {
+  if (strcmp(card_name, kSavePasswordsEphemeralModule) == 0) {
     int freshness_impression_count = profile_prefs_->GetInteger(
         kSavePasswordsEphemeralModuleImpressionCounterPref);
     profile_prefs_->SetInteger(
@@ -299,10 +285,7 @@ void HomeModulesCardRegistryIOS::NotifyCardInteracted(const char* card_name) {
 
   // TODO(crbug.com/489042527): Remove the legacy if/else block below when
   // all cards have been migrated to the new `OnInteract()` lifecycle hook.
-  if (strcmp(card_name, kEnhancedSafeBrowsingEphemeralModule) == 0) {
-    profile_prefs_->SetBoolean(
-        kEnhancedSafeBrowsingEphemeralModuleInteractedPref, true);
-  } else if (strcmp(card_name, kSavePasswordsEphemeralModule) == 0) {
+  if (strcmp(card_name, kSavePasswordsEphemeralModule) == 0) {
     profile_prefs_->SetBoolean(kSavePasswordsEphemeralModuleInteractedPref,
                                true);
   } else if (strcmp(card_name, kLensEphemeralModule) == 0) {

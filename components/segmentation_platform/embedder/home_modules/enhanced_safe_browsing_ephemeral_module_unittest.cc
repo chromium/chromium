@@ -23,7 +23,9 @@ class EnhancedSafeBrowsingEphemeralModuleTest : public testing::Test {
   ~EnhancedSafeBrowsingEphemeralModuleTest() override = default;
 
   void SetUp() override {
-    HomeModulesCardRegistry::RegisterProfilePrefs(pref_service_.registry());
+    Test::SetUp();
+    EnhancedSafeBrowsingEphemeralModule::RegisterProfilePrefs(
+        pref_service_.registry());
     // Enable the feature flag for ephemeral modules.
     scoped_feature_list_.InitAndEnableFeature(
         features::kSegmentationPlatformEphemeralCardRanker);
@@ -199,14 +201,56 @@ TEST_F(EnhancedSafeBrowsingEphemeralModuleTest,
   EXPECT_EQ(EphemeralHomeModuleRank::kNotShown, result.position);
 }
 
-// Validates that `IsEnabled(…)` returns true when under the impression limit
+// Validates that `IsEnabled()` returns true when under the impression limit
 // and false otherwise.
-TEST_F(EnhancedSafeBrowsingEphemeralModuleTest, TestIsEnabled) {
-  EXPECT_TRUE(EnhancedSafeBrowsingEphemeralModule::IsEnabled(0));
-  EXPECT_TRUE(EnhancedSafeBrowsingEphemeralModule::IsEnabled(1));
-  EXPECT_TRUE(EnhancedSafeBrowsingEphemeralModule::IsEnabled(2));
-  EXPECT_FALSE(EnhancedSafeBrowsingEphemeralModule::IsEnabled(3));
-  EXPECT_FALSE(EnhancedSafeBrowsingEphemeralModule::IsEnabled(4));
+TEST_F(EnhancedSafeBrowsingEphemeralModuleTest,
+       IsEnabledReturnsFalseWhenImpressionLimitReached) {
+  auto card =
+      std::make_unique<EnhancedSafeBrowsingEphemeralModule>(&pref_service_);
+
+  EXPECT_TRUE(EnhancedSafeBrowsingEphemeralModule::IsEnabled(&pref_service_));
+
+  // 1 impression.
+  card->OnShow(&pref_service_, nullptr);
+  EXPECT_TRUE(EnhancedSafeBrowsingEphemeralModule::IsEnabled(&pref_service_));
+
+  // 2 impressions.
+  card->OnShow(&pref_service_, nullptr);
+  EXPECT_TRUE(EnhancedSafeBrowsingEphemeralModule::IsEnabled(&pref_service_));
+
+  // 3 impressions (limit reached).
+  card->OnShow(&pref_service_, nullptr);
+  EXPECT_FALSE(EnhancedSafeBrowsingEphemeralModule::IsEnabled(&pref_service_));
+}
+
+// Validates that interacting with the module prevents it from being shown
+// again.
+TEST_F(EnhancedSafeBrowsingEphemeralModuleTest,
+       ComputeCardResultDoesNotShowModuleAfterInteraction) {
+  auto card =
+      std::make_unique<EnhancedSafeBrowsingEphemeralModule>(&pref_service_);
+
+  AllCardSignals signals = CreateAllCardSignals(
+      card.get(), {
+                      /* kLacksEnhancedSafeBrowsing */ 1,
+                      /* kIsNewUser */ 0,
+                      /* kEnhancedSafeBrowsingAllowedByEnterprisePolicy */ 1,
+                  });
+
+  CardSelectionSignals selection_signals(&signals,
+                                         kEnhancedSafeBrowsingEphemeralModule);
+
+  // Initially, the card should be shown.
+  CardSelectionInfo::ShowResult result =
+      card->ComputeCardResult(selection_signals);
+  EXPECT_EQ(EphemeralHomeModuleRank::kTop, result.position);
+
+  // Simulate a user interaction.
+  card->OnInteract(&pref_service_, nullptr);
+
+  // The card should no longer be shown.
+  result = card->ComputeCardResult(selection_signals);
+  EXPECT_EQ(EphemeralHomeModuleRank::kNotShown, result.position);
 }
 
 }  // namespace segmentation_platform::home_modules

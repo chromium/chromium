@@ -9,6 +9,8 @@
 #include <vector>
 
 #include "base/containers/fixed_flat_set.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
 #include "components/segmentation_platform/embedder/home_modules/ephemeral_module_utils.h"
 #include "components/segmentation_platform/embedder/home_modules/tips_manager/constants.h"
 #include "components/segmentation_platform/embedder/home_modules/tips_manager/signal_constants.h"
@@ -21,6 +23,15 @@
 namespace segmentation_platform::home_modules {
 
 namespace {
+
+// Impression counter for the Enhanced Safe Browsing ephemeral module.
+const char kEnhancedSafeBrowsingEphemeralModuleImpressionCounterPref[] =
+    "ephemeral_pref_counter.enhanced_safe_browsing_ephemeral_module_counter";
+
+// Interaction counter for the Enhanced Safe Browsing ephemeral module.
+const char kEnhancedSafeBrowsingEphemeralModuleInteractedPref[] =
+    "ephemeral_pref_interacted."
+    "enhanced_safe_browsing_ephemeral_module_interacted";
 
 // Defines the signals that must all evaluate to true for
 // `EnhancedSafeBrowsingEphemeralModule` to be shown.
@@ -39,13 +50,23 @@ constexpr auto kDisqualifyingSignals =
 }  // namespace
 
 // static
+void EnhancedSafeBrowsingEphemeralModule::RegisterProfilePrefs(
+    PrefRegistrySimple* registry) {
+  registry->RegisterIntegerPref(
+      kEnhancedSafeBrowsingEphemeralModuleImpressionCounterPref, 0);
+  registry->RegisterBooleanPref(
+      kEnhancedSafeBrowsingEphemeralModuleInteractedPref, false);
+}
+
+// static
 bool EnhancedSafeBrowsingEphemeralModule::IsModuleLabel(
     std::string_view label) {
   return label == kEnhancedSafeBrowsingEphemeralModule;
 }
 
 // static
-bool EnhancedSafeBrowsingEphemeralModule::IsEnabled(int impression_count) {
+bool EnhancedSafeBrowsingEphemeralModule::IsEnabled(
+    PrefService* profile_prefs) {
   std::optional<CardSelectionInfo::ShowResult> forced_result =
       GetForcedEphemeralModuleShowResult();
 
@@ -58,7 +79,26 @@ bool EnhancedSafeBrowsingEphemeralModule::IsEnabled(int impression_count) {
     return forced_result.value().position == EphemeralHomeModuleRank::kTop;
   }
 
+  int impression_count = profile_prefs->GetInteger(
+      kEnhancedSafeBrowsingEphemeralModuleImpressionCounterPref);
+
   return impression_count < kTipsEphemeralCardModuleMaxImpressionCount;
+}
+
+void EnhancedSafeBrowsingEphemeralModule::OnShow(PrefService* profile_prefs,
+                                                 PrefService* local_state) {
+  int freshness_impression_count = profile_prefs->GetInteger(
+      kEnhancedSafeBrowsingEphemeralModuleImpressionCounterPref);
+
+  profile_prefs->SetInteger(
+      kEnhancedSafeBrowsingEphemeralModuleImpressionCounterPref,
+      freshness_impression_count + 1);
+}
+
+void EnhancedSafeBrowsingEphemeralModule::OnInteract(PrefService* profile_prefs,
+                                                     PrefService* local_state) {
+  profile_prefs->SetBoolean(kEnhancedSafeBrowsingEphemeralModuleInteractedPref,
+                            true);
 }
 
 // Defines the input signals required by this module.
