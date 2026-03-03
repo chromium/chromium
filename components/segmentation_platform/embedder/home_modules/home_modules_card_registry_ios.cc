@@ -9,6 +9,7 @@
 
 #include "components/segmentation_platform/embedder/home_modules/home_modules_card_registry_ios.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <vector>
@@ -35,9 +36,6 @@ namespace segmentation_platform::home_modules {
 
 namespace {
 
-// Impression counter for the Lens ephemeral module.
-const char kLensEphemeralModuleImpressionCounterPref[] =
-    "ephemeral_pref_counter.lens_ephemeral_module_counter";
 // Impression counter for the Send Tab ephemeral module.
 const char kSendTabPromoImpressionCounterPref[] =
     "ephemeral_pref_counter.send_tab_promo_counter";
@@ -59,9 +57,7 @@ void AddCardForTip(TipIdentifier tip,
     case TipIdentifier::kLensSearch:
     case TipIdentifier::kLensShop:
     case TipIdentifier::kLensTranslate: {
-      int impression_count =
-          prefs->GetInteger(kLensEphemeralModuleImpressionCounterPref);
-      if (LensEphemeralModule::IsEnabled(impression_count)) {
+      if (LensEphemeralModule::IsEnabled(prefs)) {
         cards.push_back(std::make_unique<LensEphemeralModule>(prefs));
       }
       break;
@@ -196,15 +192,8 @@ void HomeModulesCardRegistryIOS::RegisterProfilePrefs(
   AutofillPasswordsEphemeralModule::RegisterProfilePrefs(registry);
   EnhancedSafeBrowsingEphemeralModule::RegisterProfilePrefs(registry);
   SavePasswordsEphemeralModule::RegisterProfilePrefs(registry);
+  LensEphemeralModule::RegisterProfilePrefs(registry);
   registry->RegisterIntegerPref(kSendTabPromoImpressionCounterPref, 0);
-  registry->RegisterIntegerPref(kLensEphemeralModuleImpressionCounterPref, 0);
-  registry->RegisterBooleanPref(kLensEphemeralModuleInteractedPref, false);
-  registry->RegisterBooleanPref(
-      kLensEphemeralModuleSearchVariationInteractedPref, false);
-  registry->RegisterBooleanPref(kLensEphemeralModuleShopVariationInteractedPref,
-                                false);
-  registry->RegisterBooleanPref(
-      kLensEphemeralModuleTranslateVariationInteractedPref, false);
   registry->RegisterIntegerPref(
       kDefaultBrowserPromoEphemeralModuleImpressionCounterPref, 0);
 }
@@ -223,7 +212,9 @@ void HomeModulesCardRegistryIOS::NotifyCardShown(const char* card_name) {
   // For unmigrated cards, `OnShow()` is empty, so this is a no-op.
   // Execution continues to the legacy blocks below.
   for (const auto& card : get_all_cards_by_priority()) {
-    if (strcmp(card->card_name(), card_name) == 0) {
+    const auto& labels = card->OutputLabels();
+    if (strcmp(card->card_name(), card_name) == 0 ||
+        (std::find(labels.begin(), labels.end(), card_name) != labels.end())) {
       card->OnShow(profile_prefs_, local_state_prefs_);
       break;
     }
@@ -231,15 +222,7 @@ void HomeModulesCardRegistryIOS::NotifyCardShown(const char* card_name) {
 
   // TODO(crbug.com/489042527): Remove the legacy if/else block below when
   // all cards have been migrated to the new `OnShow()` lifecycle hook.
-  if (strcmp(card_name, kLensEphemeralModule) == 0 ||
-      strcmp(card_name, kLensEphemeralModuleSearchVariation) == 0 ||
-      strcmp(card_name, kLensEphemeralModuleShopVariation) == 0 ||
-      strcmp(card_name, kLensEphemeralModuleTranslateVariation) == 0) {
-    int freshness_impression_count =
-        profile_prefs_->GetInteger(kLensEphemeralModuleImpressionCounterPref);
-    profile_prefs_->SetInteger(kLensEphemeralModuleImpressionCounterPref,
-                               freshness_impression_count + 1);
-  } else if (strcmp(card_name, kSendTabNotificationPromo) == 0) {
+  if (strcmp(card_name, kSendTabNotificationPromo) == 0) {
     int impression_count =
         profile_prefs_->GetInteger(kSendTabPromoImpressionCounterPref);
     profile_prefs_->SetInteger(kSendTabPromoImpressionCounterPref,
@@ -260,28 +243,13 @@ void HomeModulesCardRegistryIOS::NotifyCardShown(const char* card_name) {
 }
 
 void HomeModulesCardRegistryIOS::NotifyCardInteracted(const char* card_name) {
-  // For unmigrated cards, `OnInteract()` is empty, so this is a no-op.
-  // Execution continues to the legacy blocks below.
   for (const auto& card : get_all_cards_by_priority()) {
-    if (strcmp(card->card_name(), card_name) == 0) {
+    const auto& labels = card->OutputLabels();
+    if (strcmp(card->card_name(), card_name) == 0 ||
+        (std::find(labels.begin(), labels.end(), card_name) != labels.end())) {
       card->OnInteract(profile_prefs_, local_state_prefs_);
       break;
     }
-  }
-
-  // TODO(crbug.com/489042527): Remove the legacy if/else block below when
-  // all cards have been migrated to the new `OnInteract()` lifecycle hook.
-  if (strcmp(card_name, kLensEphemeralModule) == 0) {
-    profile_prefs_->SetBoolean(kLensEphemeralModuleInteractedPref, true);
-  } else if (strcmp(card_name, kLensEphemeralModuleSearchVariation) == 0) {
-    profile_prefs_->SetBoolean(
-        kLensEphemeralModuleSearchVariationInteractedPref, true);
-  } else if (strcmp(card_name, kLensEphemeralModuleShopVariation) == 0) {
-    profile_prefs_->SetBoolean(kLensEphemeralModuleShopVariationInteractedPref,
-                               true);
-  } else if (strcmp(card_name, kLensEphemeralModuleTranslateVariation) == 0) {
-    profile_prefs_->SetBoolean(
-        kLensEphemeralModuleTranslateVariationInteractedPref, true);
   }
 }
 

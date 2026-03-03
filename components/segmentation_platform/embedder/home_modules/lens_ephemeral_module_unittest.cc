@@ -23,7 +23,8 @@ class LensEphemeralModuleTest : public testing::Test {
   ~LensEphemeralModuleTest() override = default;
 
   void SetUp() override {
-    HomeModulesCardRegistry::RegisterProfilePrefs(pref_service_.registry());
+    Test::SetUp();
+    LensEphemeralModule::RegisterProfilePrefs(pref_service_.registry());
     // Enable the feature flag for ephemeral modules.
     scoped_feature_list_.InitAndEnableFeature(
         features::kSegmentationPlatformEphemeralCardRanker);
@@ -314,14 +315,57 @@ TEST_F(
   EXPECT_EQ(EphemeralHomeModuleRank::kNotShown, result.position);
 }
 
-// Validates that `IsEnabled(…)` returns true when under the impression limit
-// and false otherwise.
-TEST_F(LensEphemeralModuleTest, TestIsEnabled) {
-  EXPECT_TRUE(LensEphemeralModule::IsEnabled(0));
-  EXPECT_TRUE(LensEphemeralModule::IsEnabled(1));
-  EXPECT_TRUE(LensEphemeralModule::IsEnabled(2));
-  EXPECT_FALSE(LensEphemeralModule::IsEnabled(3));
-  EXPECT_FALSE(LensEphemeralModule::IsEnabled(4));
+// Validates that `IsEnabled()` returns true when under the impression limit and
+// false otherwise.
+TEST_F(LensEphemeralModuleTest,
+       IsEnabledReturnsFalseWhenImpressionLimitReached) {
+  auto card = std::make_unique<LensEphemeralModule>(&pref_service_);
+
+  EXPECT_TRUE(LensEphemeralModule::IsEnabled(&pref_service_));
+
+  // 1 impression.
+  card->OnShow(&pref_service_, nullptr);
+  EXPECT_TRUE(LensEphemeralModule::IsEnabled(&pref_service_));
+
+  // 2 impressions.
+  card->OnShow(&pref_service_, nullptr);
+  EXPECT_TRUE(LensEphemeralModule::IsEnabled(&pref_service_));
+
+  // 3 impressions (limit reached).
+  card->OnShow(&pref_service_, nullptr);
+  EXPECT_FALSE(LensEphemeralModule::IsEnabled(&pref_service_));
+}
+
+// Validates that interacting with the module prevents it from being shown
+// again.
+TEST_F(LensEphemeralModuleTest,
+       ComputeCardResultDoesNotShowModuleAfterInteraction) {
+  auto card = std::make_unique<LensEphemeralModule>(&pref_service_);
+
+  AllCardSignals signals = CreateAllCardSignals(
+      card.get(), {
+                      /* kOpenedShoppingWebsite */ 1,
+                      /* kOpenedWebsiteInAnotherLanguage */ 0,
+                      /* kUsedGoogleTranslation */ 0,
+                      /* kIsNewUser */ 0,
+                      /* kLensNotUsedRecently */ 1,
+                      /* kLensAllowedByEnterprisePolicy */ 1,
+                  });
+
+  CardSelectionSignals selection_signals(&signals, kLensEphemeralModule);
+
+  // Initially, the card should be shown (Shop variation).
+  CardSelectionInfo::ShowResult result =
+      card->ComputeCardResult(selection_signals);
+  EXPECT_EQ(EphemeralHomeModuleRank::kTop, result.position);
+  EXPECT_EQ(kLensEphemeralModuleShopVariation, result.result_label);
+
+  // Simulate a user interaction.
+  card->OnInteract(&pref_service_, nullptr);
+
+  // The card should no longer be shown.
+  result = card->ComputeCardResult(selection_signals);
+  EXPECT_EQ(EphemeralHomeModuleRank::kNotShown, result.position);
 }
 
 }  // namespace segmentation_platform::home_modules

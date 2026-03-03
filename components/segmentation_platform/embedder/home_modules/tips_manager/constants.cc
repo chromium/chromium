@@ -70,16 +70,4 @@ constexpr char kTotalOccurrences[] = "total_occurrences";
 constexpr char kTipsSignalHistory[] =
     "segmentation_platform.tips.signal_history";
 
-const char kLensEphemeralModuleInteractedPref[] =
-    "ephemeral_pref_interacted.lens_ephemeral_module_interacted";
-const char kLensEphemeralModuleSearchVariationInteractedPref[] =
-    "ephemeral_pref_interacted."
-    "lens_ephemeral_module_search_variation_interacted";
-const char kLensEphemeralModuleShopVariationInteractedPref[] =
-    "ephemeral_pref_interacted."
-    "lens_ephemeral_module_shop_variation_interacted";
-const char kLensEphemeralModuleTranslateVariationInteractedPref[] =
-    "ephemeral_pref_interacted."
-    "lens_ephemeral_module_translate_variation_interacted";
-
 }  // namespace segmentation_platform

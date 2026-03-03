@@ -8,6 +8,8 @@
 #include <optional>
 
 #include "base/containers/fixed_flat_set.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
 #include "components/segmentation_platform/embedder/home_modules/ephemeral_module_utils.h"
 #include "components/segmentation_platform/embedder/home_modules/tips_manager/constants.h"
 #include "components/segmentation_platform/embedder/home_modules/tips_manager/signal_constants.h"
@@ -20,6 +22,23 @@
 namespace segmentation_platform::home_modules {
 
 namespace {
+
+// Impression counter for the Lens ephemeral module.
+const char kLensEphemeralModuleImpressionCounterPref[] =
+    "ephemeral_pref_counter.lens_ephemeral_module_counter";
+
+// Interaction counters for the Lens ephemeral module variations.
+const char kLensEphemeralModuleInteractedPref[] =
+    "ephemeral_pref_interacted.lens_ephemeral_module_interacted";
+const char kLensEphemeralModuleSearchVariationInteractedPref[] =
+    "ephemeral_pref_interacted."
+    "lens_ephemeral_module_search_variation_interacted";
+const char kLensEphemeralModuleShopVariationInteractedPref[] =
+    "ephemeral_pref_interacted."
+    "lens_ephemeral_module_shop_variation_interacted";
+const char kLensEphemeralModuleTranslateVariationInteractedPref[] =
+    "ephemeral_pref_interacted."
+    "lens_ephemeral_module_translate_variation_interacted";
 
 // Defines the signals that, for a given `TipIdentifier`, must all evaluate
 // to true for the corresponding `LensEphemeralModule` to be shown.
@@ -106,13 +125,25 @@ bool SatisfiesSupplementalSignals(TipIdentifier identifier,
 }  // namespace
 
 // static
+void LensEphemeralModule::RegisterProfilePrefs(PrefRegistrySimple* registry) {
+  registry->RegisterIntegerPref(kLensEphemeralModuleImpressionCounterPref, 0);
+  registry->RegisterBooleanPref(kLensEphemeralModuleInteractedPref, false);
+  registry->RegisterBooleanPref(
+      kLensEphemeralModuleSearchVariationInteractedPref, false);
+  registry->RegisterBooleanPref(kLensEphemeralModuleShopVariationInteractedPref,
+                                false);
+  registry->RegisterBooleanPref(
+      kLensEphemeralModuleTranslateVariationInteractedPref, false);
+}
+
+// static
 bool LensEphemeralModule::IsModuleLabel(std::string_view label) {
   return kLensEphemeralModuleVariationLabels.contains(label) ||
          label == kLensEphemeralModule;
 }
 
 // static
-bool LensEphemeralModule::IsEnabled(int impression_count) {
+bool LensEphemeralModule::IsEnabled(PrefService* profile_prefs) {
   std::optional<CardSelectionInfo::ShowResult> forced_result =
       GetForcedEphemeralModuleShowResult();
 
@@ -125,7 +156,35 @@ bool LensEphemeralModule::IsEnabled(int impression_count) {
     return forced_result.value().position == EphemeralHomeModuleRank::kTop;
   }
 
+  int impression_count =
+      profile_prefs->GetInteger(kLensEphemeralModuleImpressionCounterPref);
+
   return impression_count < kTipsEphemeralCardModuleMaxImpressionCount;
+}
+
+void LensEphemeralModule::OnShow(PrefService* profile_prefs,
+                                 PrefService* local_state) {
+  int freshness_impression_count =
+      profile_prefs->GetInteger(kLensEphemeralModuleImpressionCounterPref);
+
+  profile_prefs->SetInteger(kLensEphemeralModuleImpressionCounterPref,
+                            freshness_impression_count + 1);
+}
+
+void LensEphemeralModule::OnInteract(PrefService* profile_prefs,
+                                     PrefService* local_state) {
+  // Mark all Lens module variations as interacted, as the user can only ever
+  // interact with the Lens ephemeral module once.
+  //
+  // TODO(crbug.com/489151049): Remove variation-specific prefs and use only
+  // `kLensEphemeralModuleInteractedPref`.
+  profile_prefs->SetBoolean(kLensEphemeralModuleInteractedPref, true);
+  profile_prefs->SetBoolean(kLensEphemeralModuleSearchVariationInteractedPref,
+                            true);
+  profile_prefs->SetBoolean(kLensEphemeralModuleShopVariationInteractedPref,
+                            true);
+  profile_prefs->SetBoolean(
+      kLensEphemeralModuleTranslateVariationInteractedPref, true);
 }
 
 std::vector<std::string> LensEphemeralModule::OutputLabels() {
