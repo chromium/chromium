@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -389,7 +390,7 @@ void CrostiniHandler::OnCanEnableArcAdbSideloading(
   LogEvent(CrostiniSettingsEvent::kEnableAdbSideloading);
 
   PrefService* prefs = g_browser_process->local_state();
-  prefs->SetBoolean(prefs::kEnableAdbSideloadingRequested, true);
+  prefs->SetBoolean(::prefs::kEnableAdbSideloadingRequested, true);
   prefs->CommitPendingWrite();
 
   // TODO(crbug.com/479113713): Use better reason and description.
@@ -414,7 +415,7 @@ void CrostiniHandler::OnCanDisableArcAdbSideloading(
   LogEvent(CrostiniSettingsEvent::kDisableAdbSideloading);
 
   PrefService* prefs = g_browser_process->local_state();
-  prefs->SetBoolean(prefs::kFactoryResetRequested, true);
+  prefs->SetBoolean(ash::prefs::kFactoryResetRequested, true);
   prefs->CommitPendingWrite();
 
   chromeos::PowerManagerClient::Get()->RequestRestart(

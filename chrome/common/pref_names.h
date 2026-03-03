@@ -3159,19 +3159,6 @@ inline constexpr char kDiskCacheSize[] = "browser.disk_cache_size";
 inline constexpr char kPerformanceTracingEnabled[] =
     "feedback.performance_tracing_enabled";
 
-// Indicates that factory reset was requested from options page or reset screen.
-inline constexpr char kFactoryResetRequested[] = "FactoryResetRequested";
-
-// Indicates that when a factory reset is requested by setting
-// |kFactoryResetRequested|, the user should only have the option to powerwash
-// and cannot cancel the dialog otherwise.
-inline constexpr char kForceFactoryReset[] = "ForceFactoryReset";
-
-// Presence of this value indicates that a TPM firmware update has been
-// requested. The value indicates the requested update mode.
-inline constexpr char kFactoryResetTPMFirmwareUpdateMode[] =
-    "FactoryResetTPMFirmwareUpdateMode";
-
 // Indicates that debugging features were requested from oobe screen.
 inline constexpr char kDebuggingFeaturesRequested[] =
     "DebuggingFeaturesRequested";

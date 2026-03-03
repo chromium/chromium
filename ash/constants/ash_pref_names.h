@@ -2761,6 +2761,19 @@ inline constexpr char kEssentialSearchEnabled[] = "essential_search_enabled";
 inline constexpr char kLastEssentialSearchValue[] =
     "last_essential_search_value";
 
+// Indicates that factory reset was requested from options page or reset screen.
+inline constexpr char kFactoryResetRequested[] = "FactoryResetRequested";
+
+// Presence of this value indicates that a TPM firmware update has been
+// requested. The value indicates the requested update mode.
+inline constexpr char kFactoryResetTPMFirmwareUpdateMode[] =
+    "FactoryResetTPMFirmwareUpdateMode";
+
+// Indicates that when a factory reset is requested by setting
+// |kFactoryResetRequested|, the user should only have the option to powerwash
+// and cannot cancel the dialog otherwise.
+inline constexpr char kForceFactoryReset[] = "ForceFactoryReset";
+
 //-----------------------------------------------------------------------------
 // Language related Prefs
 //-----------------------------------------------------------------------------

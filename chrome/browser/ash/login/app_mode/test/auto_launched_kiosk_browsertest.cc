@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "apps/test/app_window_waiter.h"
+#include "ash/constants/ash_pref_names.h"
 #include "base/auto_reset.h"
 #include "base/callback_list.h"
 #include "base/check_deref.h"
@@ -35,7 +36,6 @@
 #include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/ash/login/reset_screen_handler.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
@@ -291,8 +291,8 @@ class AutoLaunchedKioskPowerWashRequestedTest
   ~AutoLaunchedKioskPowerWashRequestedTest() override = default;
 
   void SetUpLocalState() override {
-    g_browser_process->local_state()->SetBoolean(prefs::kFactoryResetRequested,
-                                                 true);
+    g_browser_process->local_state()->SetBoolean(
+        ash::prefs::kFactoryResetRequested, true);
   }
 
   LocalStateMixin local_state_mixin_{&mixin_host_, this};

@@ -7,6 +7,7 @@
 #include <optional>
 #include <utility>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/functional/bind.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -67,7 +68,7 @@ std::optional<AdbSideloadingAllowanceMode> GetAdbSideloadingDevicePolicyMode(
 // static
 void AdbSideloadingAllowanceModePolicyHandler::RegisterPrefs(
     PrefRegistrySimple* registry) {
-  registry->RegisterBooleanPref(prefs::kForceFactoryReset, false);
+  registry->RegisterBooleanPref(ash::prefs::kForceFactoryReset, false);
   registry->RegisterBooleanPref(
       prefs::kAdbSideloadingDisallowedNotificationShown, false);
   registry->RegisterTimePref(
@@ -250,7 +251,7 @@ void AdbSideloadingAllowanceModePolicyHandler::
 
   // Set this right away to ensure the user is forced to powerwash on next
   // start even if they ignore the notification and do not click the button
-  local_state_->SetBoolean(prefs::kForceFactoryReset, true);
+  local_state_->SetBoolean(ash::prefs::kForceFactoryReset, true);
   local_state_->CommitPendingWrite();
 
   adb_sideloading_policy_change_notification_->Show(

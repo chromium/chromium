@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/login_accelerators.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller.h"
 #include "base/check_deref.h"
@@ -545,7 +546,7 @@ void LoginDisplayHostCommon::OnPowerwashAllowedCallback(
   if (tpm_firmware_update_mode.has_value()) {
     // Force the TPM firmware update option to be enabled.
     local_state_->SetInteger(
-        ::prefs::kFactoryResetTPMFirmwareUpdateMode,
+        ash::prefs::kFactoryResetTPMFirmwareUpdateMode,
         static_cast<int>(tpm_firmware_update_mode.value()));
   }
   StartWizard(ResetView::kScreenId);

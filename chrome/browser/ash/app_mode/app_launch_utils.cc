@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "base/check.h"
 #include "base/command_line.h"
@@ -19,7 +20,6 @@
 #include "chrome/browser/ash/app_mode/kiosk_controller.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/user_manager/user_manager.h"
@@ -96,7 +96,7 @@ bool ShouldAutoLaunchKioskApp(const base::CommandLine& command_line,
   }
 
   // We shouldn't auto launch kiosk app if powerwash screen should be shown.
-  if (local_state.GetBoolean(prefs::kFactoryResetRequested)) {
+  if (local_state.GetBoolean(ash::prefs::kFactoryResetRequested)) {
     return false;
   }
 

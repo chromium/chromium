@@ -146,7 +146,8 @@ bool IsLazyWebUILoadingEnabled(const PrefService& local_state) {
   }
 
   // Policy override.
-  if (local_state.IsManagedPreference(prefs::kLoginScreenWebUILazyLoading)) {
+  if (local_state.IsManagedPreference(
+          ash::prefs::kLoginScreenWebUILazyLoading)) {
     return local_state.GetBoolean(ash::prefs::kLoginScreenWebUILazyLoading);
   }
 
@@ -314,7 +315,7 @@ void LoginDisplayHostMojo::SetUsers(const user_manager::UserList& users) {
   // This has to happen after login-prompt-visible, as some reset dialog
   // features (TPM firmware update) depend on system services running, which
   // is in turn blocked on the 'login-prompt-visible' signal.
-  if (local_state_->GetBoolean(::prefs::kFactoryResetRequested)) {
+  if (local_state_->GetBoolean(ash::prefs::kFactoryResetRequested)) {
     StartWizard(ResetView::kScreenId);
   } else if (local_state_->GetBoolean(::prefs::kDebuggingFeaturesRequested)) {
     StartWizard(EnableDebuggingScreenView::kScreenId);

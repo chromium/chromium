@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_accelerators.h"
 #include "ash/public/cpp/login_screen.h"
@@ -22,7 +23,6 @@
 #include "chrome/browser/ash/tpm/tpm_firmware_update.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/webui/ash/login/reset_screen_handler.h"
-#include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
@@ -173,9 +173,9 @@ ResetScreen::~ResetScreen() {
 
 // static
 void ResetScreen::RegisterPrefs(PrefRegistrySimple* registry) {
-  registry->RegisterBooleanPref(prefs::kFactoryResetRequested, false);
+  registry->RegisterBooleanPref(ash::prefs::kFactoryResetRequested, false);
   registry->RegisterIntegerPref(
-      prefs::kFactoryResetTPMFirmwareUpdateMode,
+      ash::prefs::kFactoryResetTPMFirmwareUpdateMode,
       static_cast<int>(tpm_firmware_update::Mode::kNone));
 }
 
@@ -209,15 +209,16 @@ void ResetScreen::ShowImpl() {
 
   // Set availability of TPM firmware update.
   const bool tpm_firmware_update_requested =
-      local_state_->HasPrefPath(prefs::kFactoryResetTPMFirmwareUpdateMode);
+      local_state_->HasPrefPath(ash::prefs::kFactoryResetTPMFirmwareUpdateMode);
   if (tpm_firmware_update_requested) {
     // If an update has been requested previously, rely on the earlier update
     // availability test to initialize the dialog. This avoids a race condition
     // where the powerwash dialog gets shown immediately after reboot before the
     // init job to determine update availability has completed.
     view_->SetIsTpmFirmwareUpdateAvailable(true);
-    SetTpmFirmwareUpdateMode(static_cast<tpm_firmware_update::Mode>(
-        local_state_->GetInteger(prefs::kFactoryResetTPMFirmwareUpdateMode)));
+    SetTpmFirmwareUpdateMode(
+        static_cast<tpm_firmware_update::Mode>(local_state_->GetInteger(
+            ash::prefs::kFactoryResetTPMFirmwareUpdateMode)));
   } else {
     // If a TPM firmware update hasn't previously been requested, check the
     // system to see whether to offer the checkbox to update TPM firmware. Note
@@ -234,8 +235,8 @@ void ResetScreen::ShowImpl() {
 
   // Clear prefs so the reset screen isn't triggered again the next time the
   // device is about to show the login screen.
-  local_state_->ClearPref(prefs::kFactoryResetRequested);
-  local_state_->ClearPref(prefs::kFactoryResetTPMFirmwareUpdateMode);
+  local_state_->ClearPref(ash::prefs::kFactoryResetRequested);
+  local_state_->ClearPref(ash::prefs::kFactoryResetTPMFirmwareUpdateMode);
   local_state_->CommitPendingWrite();
 
   view_->Show();
@@ -340,13 +341,13 @@ void ResetScreen::OnPowerwash() {
 }
 
 void ResetScreen::OnRestart() {
-  local_state_->SetBoolean(prefs::kFactoryResetRequested, true);
+  local_state_->SetBoolean(ash::prefs::kFactoryResetRequested, true);
   if (is_tpm_firmware_update_checked_) {
     local_state_->SetInteger(
-        prefs::kFactoryResetTPMFirmwareUpdateMode,
+        ash::prefs::kFactoryResetTPMFirmwareUpdateMode,
         static_cast<int>(tpm_firmware_update::Mode::kPowerwash));
   } else {
-    local_state_->ClearPref(prefs::kFactoryResetTPMFirmwareUpdateMode);
+    local_state_->ClearPref(ash::prefs::kFactoryResetTPMFirmwareUpdateMode);
   }
   local_state_->CommitPendingWrite();
 
