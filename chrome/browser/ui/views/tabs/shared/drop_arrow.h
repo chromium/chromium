@@ -28,6 +28,8 @@ class DropArrow : public views::WidgetObserver {
   enum class Direction {
     kDown,
     kUp,
+    kLeft,
+    kRight,
   };
 
   // Returns the bounds for the drop arrow at `index`. `direction` is set to

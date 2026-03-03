@@ -333,6 +333,8 @@
       </if>
       <structure type="chrome_scaled_image" name="IDR_TAB_DROP_DOWN" file="tab_drop_down.png" />
       <structure type="chrome_scaled_image" name="IDR_TAB_DROP_UP" file="tab_drop_up.png" />
+      <structure type="chrome_scaled_image" name="IDR_TAB_DROP_LEFT" file="tab_drop_left.png" />
+      <structure type="chrome_scaled_image" name="IDR_TAB_DROP_RIGHT" file="tab_drop_right.png" />
       <if expr="not is_android">
           <structure type="chrome_scaled_image" name="IDR_TAB_GROUPS_ON_IOS_ICON" file="common/tab_groups_on_ios.png" />
       </if>

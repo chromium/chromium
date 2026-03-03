@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/notreached.h"
 #include "chrome/grit/theme_resources.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -16,8 +17,18 @@
 namespace {
 
 int GetDropArrowImageResourceId(DropArrow::Direction direction) {
-  return direction == DropArrow::Direction::kUp ? IDR_TAB_DROP_UP
-                                                : IDR_TAB_DROP_DOWN;
+  switch (direction) {
+    case DropArrow::Direction::kUp:
+      return IDR_TAB_DROP_UP;
+    case DropArrow::Direction::kDown:
+      return IDR_TAB_DROP_DOWN;
+    case DropArrow::Direction::kLeft:
+      return IDR_TAB_DROP_LEFT;
+    case DropArrow::Direction::kRight:
+      return IDR_TAB_DROP_RIGHT;
+    default:
+      NOTREACHED();
+  }
 }
 
 }  // namespace
