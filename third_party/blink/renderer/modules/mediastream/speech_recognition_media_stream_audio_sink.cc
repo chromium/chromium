@@ -147,11 +147,11 @@ SpeechRecognitionMediaStreamAudioSink::ConvertToAudioDataS16(
 
     channel_mixer_->Transform(&audio_bus, monaural_audio_bus_.get());
     monaural_audio_bus_->ToInterleaved<media::SignedInt16SampleTypeTraits>(
-        monaural_audio_bus_->frames(), &signed_buffer->data[0]);
+        signed_buffer->data);
   } else {
     signed_buffer->data.resize(audio_bus.frames() * audio_bus.channels());
     audio_bus.ToInterleaved<media::SignedInt16SampleTypeTraits>(
-        audio_bus.frames(), &signed_buffer->data[0]);
+        signed_buffer->data);
   }
 
   return signed_buffer;

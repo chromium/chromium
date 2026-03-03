@@ -12,6 +12,7 @@
 #include <string>
 #include <utility>
 
+#include "base/memory/aligned_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
@@ -195,7 +196,7 @@ class PLATFORM_EXPORT WebRtcAudioSink : public WebMediaStreamAudioSink {
 
   // Buffer used for converting into the required signed 16-bit integer
   // interleaved samples.
-  std::unique_ptr<int16_t[]> interleaved_data_;
+  base::AlignedHeapArray<int16_t> interleaved_data_;
 
   base::TimeTicks last_estimated_capture_time_;
 

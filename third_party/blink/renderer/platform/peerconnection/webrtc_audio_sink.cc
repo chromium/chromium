@@ -120,7 +120,9 @@ void WebRtcAudioSink::OnSetFormat(const media::AudioParameters& params) {
   fifo_.Reset(params_.frames_per_buffer());
   const int num_pcm16_data_elements =
       params_.frames_per_buffer() * params_.channels();
-  interleaved_data_.reset(new int16_t[num_pcm16_data_elements]);
+
+  interleaved_data_ = base::AlignedUninit<int16_t>(
+      num_pcm16_data_elements, media::AudioBus::kChannelAlignment);
 }
 
 void WebRtcAudioSink::DeliverRebufferedAudio(const media::AudioBus& audio_bus,
@@ -134,14 +136,14 @@ void WebRtcAudioSink::DeliverRebufferedAudio(const media::AudioBus& audio_bus,
   static_assert(sizeof(interleaved_data_[0]) == 2,
                 "ToInterleaved expects 2 bytes.");
   audio_bus.ToInterleaved<media::SignedInt16SampleTypeTraits>(
-      audio_bus.frames(), interleaved_data_.get());
+      interleaved_data_);
 
   const base::TimeTicks estimated_capture_time =
       last_estimated_capture_time_ + media::AudioTimestampHelper::FramesToTime(
                                          frame_delay, params_.sample_rate());
 
   num_preferred_channels_ = adapter_->DeliverPCMToWebRtcSinks(
-      interleaved_data_.get(), params_.sample_rate(), audio_bus.channels(),
+      interleaved_data_.data(), params_.sample_rate(), audio_bus.channels(),
       audio_bus.frames(), estimated_capture_time);
 }
 
