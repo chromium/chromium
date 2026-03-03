@@ -9,6 +9,8 @@
 #include <vector>
 
 #include "base/containers/fixed_flat_set.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
 #include "components/segmentation_platform/embedder/home_modules/ephemeral_module_utils.h"
 #include "components/segmentation_platform/embedder/home_modules/tips_manager/constants.h"
 #include "components/segmentation_platform/embedder/home_modules/tips_manager/signal_constants.h"
@@ -21,6 +23,15 @@
 namespace segmentation_platform::home_modules {
 
 namespace {
+
+// Impression counter for the Autofill Passwords ephemeral module.
+const char kAutofillPasswordsEphemeralModuleImpressionCounterPref[] =
+    "ephemeral_pref_counter.autofill_passwords_ephemeral_module_counter";
+
+// Interaction counter for the Autofill Passwords ephemeral module.
+const char kAutofillPasswordsEphemeralModuleInteractedPref[] =
+    "ephemeral_pref_interacted."
+    "autofill_passwords_ephemeral_module_interacted";
 
 // Defines the signals that must all evaluate to true for
 // `AutofillPasswordsEphemeralModule` to be shown.
@@ -39,12 +50,21 @@ constexpr auto kDisqualifyingSignals =
 }  // namespace
 
 // static
+void AutofillPasswordsEphemeralModule::RegisterProfilePrefs(
+    PrefRegistrySimple* registry) {
+  registry->RegisterIntegerPref(
+      kAutofillPasswordsEphemeralModuleImpressionCounterPref, 0);
+  registry->RegisterBooleanPref(kAutofillPasswordsEphemeralModuleInteractedPref,
+                                false);
+}
+
+// static
 bool AutofillPasswordsEphemeralModule::IsModuleLabel(std::string_view label) {
   return label == kAutofillPasswordsEphemeralModule;
 }
 
 // static
-bool AutofillPasswordsEphemeralModule::IsEnabled(int impression_count) {
+bool AutofillPasswordsEphemeralModule::IsEnabled(PrefService* profile_prefs) {
   std::optional<CardSelectionInfo::ShowResult> forced_result =
       GetForcedEphemeralModuleShowResult();
 
@@ -57,7 +77,26 @@ bool AutofillPasswordsEphemeralModule::IsEnabled(int impression_count) {
     return forced_result.value().position == EphemeralHomeModuleRank::kTop;
   }
 
+  int impression_count = profile_prefs->GetInteger(
+      kAutofillPasswordsEphemeralModuleImpressionCounterPref);
+
   return impression_count < kTipsEphemeralCardModuleMaxImpressionCount;
+}
+
+void AutofillPasswordsEphemeralModule::OnShow(PrefService* profile_prefs,
+                                              PrefService* local_state) {
+  int freshness_impression_count = profile_prefs->GetInteger(
+      kAutofillPasswordsEphemeralModuleImpressionCounterPref);
+
+  profile_prefs->SetInteger(
+      kAutofillPasswordsEphemeralModuleImpressionCounterPref,
+      freshness_impression_count + 1);
+}
+
+void AutofillPasswordsEphemeralModule::OnInteract(PrefService* profile_prefs,
+                                                  PrefService* local_state) {
+  profile_prefs->SetBoolean(kAutofillPasswordsEphemeralModuleInteractedPref,
+                            true);
 }
 
 // Defines the input signals required by this module.

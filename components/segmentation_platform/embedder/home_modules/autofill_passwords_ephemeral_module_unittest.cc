@@ -23,7 +23,9 @@ class AutofillPasswordsEphemeralModuleTest : public testing::Test {
   ~AutofillPasswordsEphemeralModuleTest() override = default;
 
   void SetUp() override {
-    HomeModulesCardRegistry::RegisterProfilePrefs(pref_service_.registry());
+    Test::SetUp();
+    AutofillPasswordsEphemeralModule::RegisterProfilePrefs(
+        pref_service_.registry());
     // Enable the feature flag for ephemeral modules.
     scoped_feature_list_.InitAndEnableFeature(
         features::kSegmentationPlatformEphemeralCardRanker);
@@ -201,12 +203,54 @@ TEST_F(AutofillPasswordsEphemeralModuleTest,
 
 // Validates that `IsEnabled(…)` returns true when under the impression limit
 // and false otherwise.
-TEST_F(AutofillPasswordsEphemeralModuleTest, TestIsEnabled) {
-  EXPECT_TRUE(AutofillPasswordsEphemeralModule::IsEnabled(0));
-  EXPECT_TRUE(AutofillPasswordsEphemeralModule::IsEnabled(1));
-  EXPECT_TRUE(AutofillPasswordsEphemeralModule::IsEnabled(2));
-  EXPECT_FALSE(AutofillPasswordsEphemeralModule::IsEnabled(3));
-  EXPECT_FALSE(AutofillPasswordsEphemeralModule::IsEnabled(4));
+TEST_F(AutofillPasswordsEphemeralModuleTest,
+       IsEnabledReturnsFalseWhenImpressionLimitReached) {
+  auto card =
+      std::make_unique<AutofillPasswordsEphemeralModule>(&pref_service_);
+
+  EXPECT_TRUE(AutofillPasswordsEphemeralModule::IsEnabled(&pref_service_));
+
+  // 1 impression.
+  card->OnShow(&pref_service_, nullptr);
+  EXPECT_TRUE(AutofillPasswordsEphemeralModule::IsEnabled(&pref_service_));
+
+  // 2 impressions.
+  card->OnShow(&pref_service_, nullptr);
+  EXPECT_TRUE(AutofillPasswordsEphemeralModule::IsEnabled(&pref_service_));
+
+  // 3 impressions (limit reached).
+  card->OnShow(&pref_service_, nullptr);
+  EXPECT_FALSE(AutofillPasswordsEphemeralModule::IsEnabled(&pref_service_));
+}
+
+// Validates that interacting with the module prevents it from being shown
+// again.
+TEST_F(AutofillPasswordsEphemeralModuleTest,
+       ComputeCardResultDoesNotShowModuleAfterInteraction) {
+  auto card =
+      std::make_unique<AutofillPasswordsEphemeralModule>(&pref_service_);
+
+  AllCardSignals signals = CreateAllCardSignals(
+      card.get(), {
+                      /* kDidNotUsePasswordAutofill */ 1,
+                      /* kIsNewUser */ 0,
+                      /* kPasswordManagerAllowedByEnterprisePolicy */ 1,
+                  });
+
+  CardSelectionSignals selection_signals(&signals,
+                                         kAutofillPasswordsEphemeralModule);
+
+  // Initially, the card should be shown.
+  CardSelectionInfo::ShowResult result =
+      card->ComputeCardResult(selection_signals);
+  EXPECT_EQ(EphemeralHomeModuleRank::kTop, result.position);
+
+  // Simulate a user interaction.
+  card->OnInteract(&pref_service_, nullptr);
+
+  // The card should no longer be shown.
+  result = card->ComputeCardResult(selection_signals);
+  EXPECT_EQ(EphemeralHomeModuleRank::kNotShown, result.position);
 }
 
 }  // namespace segmentation_platform::home_modules

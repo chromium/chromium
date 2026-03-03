@@ -100,9 +100,6 @@ extern const char kTipsSignalHistory[];
 
 // Pref names
 
-// Whether or not the Autofill Passwords ephemeral module has been interacted
-// with.
-extern const char kAutofillPasswordsEphemeralModuleInteractedPref[];
 // Whether or not the Enhanced Safe Browsing ephemeral module has been
 // interacted with.
 extern const char kEnhancedSafeBrowsingEphemeralModuleInteractedPref[];
