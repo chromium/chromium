@@ -2662,11 +2662,6 @@ INSTANTIATE_TEST_SUITE_P(/* no prefix */,
                          testing::Bool());
 
 IN_PROC_BROWSER_TEST_P(AutoSpeculationRulesPrerenderBrowserTest, Metrics) {
-  if (IsPrerender2FallbackPrefetchSpecRulesEnabled()) {
-    // TODO(crbug.com/375330756): Test enabled case.
-    GTEST_SKIP();
-  }
-
   const GURL kInitialUrl = GetInitialUrl();
   const GURL kPrerenderingUrl = GetPrerenderedUrl();
 
@@ -2705,7 +2700,11 @@ IN_PROC_BROWSER_TEST_P(AutoSpeculationRulesPrerenderBrowserTest, Metrics) {
         test_ukm_recorder()->GetEntries(Preloading_Prediction::kEntryName,
                                         test::kPreloadingPredictionUkmMetrics);
     EXPECT_EQ(prediction_ukm_entries.size(), 1u);
-    EXPECT_EQ(attempt_ukm_entries.size(), 1u);
+    if (IsPrerender2FallbackPrefetchSpecRulesEnabled()) {
+      EXPECT_EQ(attempt_ukm_entries.size(), 2u);
+    } else {
+      EXPECT_EQ(attempt_ukm_entries.size(), 1u);
+    }
 
     auto prerender_page_load_ukm_entries =
         test_ukm_recorder()->GetEntriesByName(
@@ -2716,14 +2715,36 @@ IN_PROC_BROWSER_TEST_P(AutoSpeculationRulesPrerenderBrowserTest, Metrics) {
     EXPECT_EQ(activation_id, prediction_ukm_entries.back().source_id);
     EXPECT_EQ(activation_id, attempt_ukm_entries.back().source_id);
 
-    ExpectPreloadingAttemptUkm({attempt_ukm_entry_builder().BuildEntry(
-        activation_id, PreloadingType::kPrerender,
-        PreloadingEligibility::kEligible, PreloadingHoldbackStatus::kAllowed,
-        PreloadingTriggeringOutcome::kSuccess,
-        PreloadingFailureReason::kUnspecified,
-        /*accurate=*/true,
-        /*ready_time=*/kMockElapsedTime,
-        blink::mojom::SpeculationEagerness::kImmediate)});
+    if (IsPrerender2FallbackPrefetchSpecRulesEnabled()) {
+      ExpectPreloadingAttemptUkm(
+          {attempt_ukm_entry_builder().BuildEntry(
+               activation_id, PreloadingType::kPrefetch,
+               PreloadingEligibility::kEligible,
+               PreloadingHoldbackStatus::kAllowed,
+               PreloadingTriggeringOutcome::kSuccess,
+               PreloadingFailureReason::kUnspecified,
+               /*accurate=*/true,
+               /*ready_time=*/kMockElapsedTime,
+               blink::mojom::SpeculationEagerness::kImmediate),
+           attempt_ukm_entry_builder().BuildEntry(
+               activation_id, PreloadingType::kPrerender,
+               PreloadingEligibility::kEligible,
+               PreloadingHoldbackStatus::kAllowed,
+               PreloadingTriggeringOutcome::kSuccess,
+               PreloadingFailureReason::kUnspecified,
+               /*accurate=*/true,
+               /*ready_time=*/kMockElapsedTime,
+               blink::mojom::SpeculationEagerness::kImmediate)});
+    } else {
+      ExpectPreloadingAttemptUkm({attempt_ukm_entry_builder().BuildEntry(
+          activation_id, PreloadingType::kPrerender,
+          PreloadingEligibility::kEligible, PreloadingHoldbackStatus::kAllowed,
+          PreloadingTriggeringOutcome::kSuccess,
+          PreloadingFailureReason::kUnspecified,
+          /*accurate=*/true,
+          /*ready_time=*/kMockElapsedTime,
+          blink::mojom::SpeculationEagerness::kImmediate)});
+    }
 
     ExpectPreloadingPredictionUkm({prediction_ukm_entry_builder().BuildEntry(
         ukm_source_id,
@@ -2734,11 +2755,6 @@ IN_PROC_BROWSER_TEST_P(AutoSpeculationRulesPrerenderBrowserTest, Metrics) {
 
 IN_PROC_BROWSER_TEST_P(AutoSpeculationRulesPrerenderBrowserTestWithHoldback,
                        Metrics) {
-  if (IsPrerender2FallbackPrefetchSpecRulesEnabled()) {
-    // TODO(crbug.com/375330756): Test enabled case.
-    GTEST_SKIP();
-  }
-
   const GURL kInitialUrl = GetInitialUrl();
   const GURL kPrerenderingUrl = GetPrerenderedUrl();
 
@@ -2770,7 +2786,11 @@ IN_PROC_BROWSER_TEST_P(AutoSpeculationRulesPrerenderBrowserTestWithHoldback,
         test_ukm_recorder()->GetEntries(Preloading_Prediction::kEntryName,
                                         test::kPreloadingPredictionUkmMetrics);
     EXPECT_EQ(prediction_ukm_entries.size(), 1u);
-    EXPECT_EQ(attempt_ukm_entries.size(), 1u);
+    if (IsPrerender2FallbackPrefetchSpecRulesEnabled()) {
+      EXPECT_EQ(attempt_ukm_entries.size(), 2u);
+    } else {
+      EXPECT_EQ(attempt_ukm_entries.size(), 1u);
+    }
 
     auto prerender_page_load_ukm_entries =
         test_ukm_recorder()->GetEntriesByName(
@@ -2781,14 +2801,36 @@ IN_PROC_BROWSER_TEST_P(AutoSpeculationRulesPrerenderBrowserTestWithHoldback,
     EXPECT_EQ(prediction_ukm_entries.back().source_id, next_page_id);
     EXPECT_EQ(attempt_ukm_entries.back().source_id, next_page_id);
 
-    ExpectPreloadingAttemptUkm({attempt_ukm_entry_builder().BuildEntry(
-        next_page_id, PreloadingType::kPrerender,
-        PreloadingEligibility::kEligible, PreloadingHoldbackStatus::kHoldback,
-        PreloadingTriggeringOutcome::kUnspecified,
-        PreloadingFailureReason::kUnspecified,
-        /*accurate=*/true,
-        /*ready_time=*/std::nullopt,
-        blink::mojom::SpeculationEagerness::kImmediate)});
+    if (IsPrerender2FallbackPrefetchSpecRulesEnabled()) {
+      ExpectPreloadingAttemptUkm(
+          {attempt_ukm_entry_builder().BuildEntry(
+               next_page_id, PreloadingType::kPrefetch,
+               PreloadingEligibility::kEligible,
+               PreloadingHoldbackStatus::kAllowed,
+               PreloadingTriggeringOutcome::kSuccess,
+               PreloadingFailureReason::kUnspecified,
+               /*accurate=*/true,
+               /*ready_time=*/kMockElapsedTime,
+               blink::mojom::SpeculationEagerness::kImmediate),
+           attempt_ukm_entry_builder().BuildEntry(
+               next_page_id, PreloadingType::kPrerender,
+               PreloadingEligibility::kEligible,
+               PreloadingHoldbackStatus::kHoldback,
+               PreloadingTriggeringOutcome::kUnspecified,
+               PreloadingFailureReason::kUnspecified,
+               /*accurate=*/true,
+               /*ready_time=*/std::nullopt,
+               blink::mojom::SpeculationEagerness::kImmediate)});
+    } else {
+      ExpectPreloadingAttemptUkm({attempt_ukm_entry_builder().BuildEntry(
+          next_page_id, PreloadingType::kPrerender,
+          PreloadingEligibility::kEligible, PreloadingHoldbackStatus::kHoldback,
+          PreloadingTriggeringOutcome::kUnspecified,
+          PreloadingFailureReason::kUnspecified,
+          /*accurate=*/true,
+          /*ready_time=*/std::nullopt,
+          blink::mojom::SpeculationEagerness::kImmediate)});
+    }
 
     ExpectPreloadingPredictionUkm({prediction_ukm_entry_builder().BuildEntry(
         ukm_source_id,
