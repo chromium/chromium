@@ -93,7 +93,8 @@ class CORE_EXPORT CSSParserToken {
         unit_(0),                // Don't care.
         value_is_inline_(false),
         value_is_8bit_(false),  // Don't care.
-        padding_(0)             // Don't care.
+        padding_(0),            // Don't care.
+        value_length_(0)        // For security.
   {}
 
   // The resulting CSSParserToken may hold a reference to the data in value.
@@ -131,6 +132,9 @@ class CORE_EXPORT CSSParserToken {
     return static_cast<CSSParserTokenType>(type_);
   }
   StringView Value() const {
+#if DCHECK_IS_ON()
+    DCHECK(has_value_);
+#endif
     return value_is_8bit_ ? StringView(Span8()) : StringView(Span16());
   }
 
@@ -224,6 +228,9 @@ class CORE_EXPORT CSSParserToken {
       value_data_char_raw_ = string.Bytes();
       value_is_inline_ = false;
     }
+#if DCHECK_IS_ON()
+    has_value_ = true;
+#endif
   }
   bool ValueDataCharRawEqual(const CSSParserToken& other) const;
   const void* ValueDataCharRaw() const {
@@ -271,8 +278,15 @@ class CORE_EXPORT CSSParserToken {
   // tightly with the rest of this object for a smaller object size.
   unsigned value_is_8bit_ : 1;
 
+#if DCHECK_IS_ON()
+  unsigned has_value_ : 1 = false;
+
+  // These are free bits. You may take from them if you need.
+  [[maybe_unused]] unsigned padding_ : 11;
+#else
   // These are free bits. You may take from them if you need.
   [[maybe_unused]] unsigned padding_ : 12;
+#endif
 
   unsigned value_length_;
   union {
