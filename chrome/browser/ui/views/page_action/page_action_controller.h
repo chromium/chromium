@@ -17,6 +17,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/timer/timer.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/views/page_action/chip_selector.h"
@@ -390,6 +391,8 @@ class PageActionControllerImpl : public PageActionController,
   base::OnceCallbackList<void(PageActionController&)>
       on_will_destroy_callback_list_;
   std::unique_ptr<ChipSelector> chip_selector_;
+  base::RetainingOneShotTimer anchored_message_timeout_;
+  std::optional<actions::ActionId> active_anchored_message_;
 
   base::WeakPtrFactory<PageActionControllerImpl> weak_factory_{this};
 };
