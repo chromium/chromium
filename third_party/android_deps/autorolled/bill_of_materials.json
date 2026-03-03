@@ -540,6 +540,11 @@
         "version": "1.9.0-SNAPSHOT"
     },
     {
+        "name": "graphics-core",
+        "group": "androidx.graphics",
+        "version": "1.0.4"
+    },
+    {
         "name": "graphics-path",
         "group": "androidx.graphics",
         "version": "1.1.0-SNAPSHOT"
@@ -558,6 +563,71 @@
         "name": "gridlayout",
         "group": "androidx.gridlayout",
         "version": "1.1.0"
+    },
+    {
+        "name": "ink-authoring",
+        "group": "androidx.ink",
+        "version": "1.1.0-SNAPSHOT"
+    },
+    {
+        "name": "ink-authoring-android",
+        "group": "androidx.ink",
+        "version": "1.1.0-SNAPSHOT"
+    },
+    {
+        "name": "ink-brush",
+        "group": "androidx.ink",
+        "version": "1.1.0-SNAPSHOT"
+    },
+    {
+        "name": "ink-brush-android",
+        "group": "androidx.ink",
+        "version": "1.1.0-SNAPSHOT"
+    },
+    {
+        "name": "ink-geometry",
+        "group": "androidx.ink",
+        "version": "1.1.0-SNAPSHOT"
+    },
+    {
+        "name": "ink-geometry-android",
+        "group": "androidx.ink",
+        "version": "1.1.0-SNAPSHOT"
+    },
+    {
+        "name": "ink-nativeloader",
+        "group": "androidx.ink",
+        "version": "1.1.0-SNAPSHOT"
+    },
+    {
+        "name": "ink-nativeloader-android",
+        "group": "androidx.ink",
+        "version": "1.1.0-SNAPSHOT"
+    },
+    {
+        "name": "ink-rendering",
+        "group": "androidx.ink",
+        "version": "1.1.0-SNAPSHOT"
+    },
+    {
+        "name": "ink-rendering-android",
+        "group": "androidx.ink",
+        "version": "1.1.0-SNAPSHOT"
+    },
+    {
+        "name": "ink-strokes",
+        "group": "androidx.ink",
+        "version": "1.1.0-SNAPSHOT"
+    },
+    {
+        "name": "ink-strokes-android",
+        "group": "androidx.ink",
+        "version": "1.1.0-SNAPSHOT"
+    },
+    {
+        "name": "input-motionprediction",
+        "group": "androidx.input",
+        "version": "1.0.0"
     },
     {
         "name": "interpolator",
@@ -861,6 +931,11 @@
     },
     {
         "name": "pdf-document-service",
+        "group": "androidx.pdf",
+        "version": "1.0.0-SNAPSHOT"
+    },
+    {
+        "name": "pdf-ink",
         "group": "androidx.pdf",
         "version": "1.0.0-SNAPSHOT"
     },
@@ -1812,12 +1887,12 @@
     {
         "name": "checker-qual",
         "group": "org.checkerframework",
-        "version": "3.53.1"
+        "version": "3.54.0"
     },
     {
         "name": "checker-util",
         "group": "org.checkerframework",
-        "version": "3.53.1"
+        "version": "3.54.0"
     },
     {
         "name": "animal-sniffer-annotations",
