@@ -63,6 +63,33 @@ struct FrameBufferPool::FrameBuffer {
   base::TimeTicks last_use_time;
 };
 
+namespace {
+
+BytesArray AllocateMemory(size_t min_size,
+                          bool zero_initialize,
+                          bool force_error) {
+  if (force_error) {
+    return {};
+  }
+
+  uint8_t* data = nullptr;
+  const bool result =
+      zero_initialize
+          ? base::UncheckedCalloc(1u, min_size, reinterpret_cast<void**>(&data))
+          : base::UncheckedMalloc(min_size, reinterpret_cast<void**>(&data));
+
+  // Unclear why, but the docs indicate both that `data` will be null on
+  // failure, and also that the return value must not be discarded.
+  if (!result || !data) {
+    return {};
+  }
+
+  // SAFETY: We have just allocated `min_size` of memory for `data`.
+  return UNSAFE_BUFFERS(BytesArray::FromOwningPointer(data, min_size));
+}
+
+}  // namespace
+
 FrameBufferPool::FrameBufferPool(bool zero_initialize_memory)
     : zero_initialize_memory_(zero_initialize_memory),
       tick_clock_(base::DefaultTickClock::GetInstance()) {}
@@ -98,35 +125,15 @@ base::span<uint8_t> FrameBufferPool::GetFrameBuffer(size_t min_size,
   frame_buffer->held_by_library = true;
   if (frame_buffer->data.size() < min_size) {
     // Free the existing |data| first so that the memory can be reused,
-    // if possible. Note that the new array is purposely not initialized.
+    // if possible.
     frame_buffer->data = {};
+    frame_buffer->data = AllocateMemory(min_size, zero_initialize_memory_,
+                                        force_allocation_error_);
 
-    uint8_t* data = nullptr;
-    if (!force_allocation_error_) {
-      bool result = false;
-      if (zero_initialize_memory_) {
-        result = base::UncheckedCalloc(1u, min_size,
-                                       reinterpret_cast<void**>(&data));
-      } else {
-        result =
-            base::UncheckedMalloc(min_size, reinterpret_cast<void**>(&data));
-      }
-
-      // Unclear why, but the docs indicate both that `data` will be null on
-      // failure, and also that the return value must not be discarded.
-      if (!result) {
-        data = nullptr;
-      }
-    }
-
-    if (!data) {
+    if (frame_buffer->data.empty()) {
       frame_buffers_.erase(it);
       return {};
     }
-
-    // SAFETY: We have just allocated `min_size` of memory for `data`.
-    frame_buffer->data =
-        UNSAFE_BUFFERS(BytesArray::FromOwningPointer(data, min_size));
   }
 
   // Provide the client with a private identifier.
@@ -158,17 +165,10 @@ base::span<uint8_t> FrameBufferPool::AllocateAlphaPlaneForFrameBuffer(
   DCHECK(IsUsedLocked(frame_buffer));
   if (frame_buffer->alpha_data.size() < min_size) {
     // Free the existing |alpha_data| first so that the memory can be reused,
-    // if possible. Note that the new array is purposely not initialized.
+    // if possible.
     frame_buffer->alpha_data = {};
-    uint8_t* data = nullptr;
-    if (force_allocation_error_ ||
-        !base::UncheckedMalloc(min_size, reinterpret_cast<void**>(&data)) ||
-        !data) {
-      return {};
-    }
-    // SAFETY: We have just allocated `min_size` of memory for `data`.
-    frame_buffer->alpha_data =
-        UNSAFE_BUFFERS(BytesArray::FromOwningPointer(data, min_size));
+    frame_buffer->alpha_data = AllocateMemory(min_size, zero_initialize_memory_,
+                                              force_allocation_error_);
   }
   return frame_buffer->alpha_data;
 }

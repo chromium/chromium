@@ -131,6 +131,14 @@ TEST(FrameBufferPool, DoesClearAllocations) {
     nonzero |= !!buf[i];
   }
   EXPECT_FALSE(nonzero);
+
+  auto alpha_buf = pool->AllocateAlphaPlaneForFrameBuffer(kBufferSize, priv1);
+  nonzero = false;
+  for (size_t i = 0; i < kBufferSize; i++) {
+    nonzero |= !!alpha_buf[i];
+  }
+  EXPECT_FALSE(nonzero);
+
   pool->Shutdown();
 }
 
