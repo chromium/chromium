@@ -24,6 +24,7 @@ enum TabOrganizationRequest_TabOrganizationModelStrategy : int;
 - (void)executeFreeformServerQuery:(NSString*)query
                 systemInstructions:(NSString*)systemInstructions
                 includePageContext:(BOOL)includePageContext
+                    richExtraction:(BOOL)richExtraction
                       uploadToMQLS:(BOOL)uploadToMQLS
                   storePageContext:(BOOL)storePageContext
                        temperature:(float)temperature

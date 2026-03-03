@@ -38,6 +38,7 @@ struct SavePageContextResult {
 
 PageContextWrapper* CreatePageContextWrapper(
     web::WebState* web_state,
+    bool rich_extraction,
     base::OnceCallback<void(PageContextWrapperCallbackResponse)>
         completion_callback);
 

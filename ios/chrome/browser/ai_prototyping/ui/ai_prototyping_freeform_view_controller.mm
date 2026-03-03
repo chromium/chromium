@@ -29,6 +29,7 @@ using optimization_guide::proto::BlingPrototypingRequest_ModelEnum_Name;
   UITextField* _systemInstructionsField;
   UITextField* _queryField;
   UISwitch* _includePageContextSwitch;
+  UISwitch* _richExtractionSwitch;
   UISwitch* _uploadMQLSSwitch;
   UISwitch* _storePageContextSwitch;
   UISlider* _temperatureSlider;
@@ -99,6 +100,25 @@ using optimization_guide::proto::BlingPrototypingRequest_ModelEnum_Name;
   switchContainer.axis = UILayoutConstraintAxisHorizontal;
   switchContainer.spacing = kButtonStackViewSpacing;
   switchContainer.alignment = UIStackViewAlignmentCenter;
+
+  // Rich extraction switch.
+  _richExtractionSwitch = [[UISwitch alloc] init];
+  _richExtractionSwitch.translatesAutoresizingMaskIntoConstraints = NO;
+  _richExtractionSwitch.on = YES;
+
+  UILabel* richExtractionSwitchLabel = [[UILabel alloc] init];
+  richExtractionSwitchLabel.translatesAutoresizingMaskIntoConstraints = NO;
+  richExtractionSwitchLabel.numberOfLines = 0;
+  richExtractionSwitchLabel.text = @"Extract with APC v2";
+
+  UIStackView* richExtractionSwitchContainer =
+      [[UIStackView alloc] initWithArrangedSubviews:@[
+        _richExtractionSwitch, richExtractionSwitchLabel
+      ]];
+  richExtractionSwitchContainer.translatesAutoresizingMaskIntoConstraints = NO;
+  richExtractionSwitchContainer.axis = UILayoutConstraintAxisHorizontal;
+  richExtractionSwitchContainer.spacing = kButtonStackViewSpacing;
+  richExtractionSwitchContainer.alignment = UIStackViewAlignmentCenter;
 
   // MQLS upload switch.
   _uploadMQLSSwitch = [[UISwitch alloc] init];
@@ -248,9 +268,9 @@ using optimization_guide::proto::BlingPrototypingRequest_ModelEnum_Name;
 
   UIStackView* stackView = [[UIStackView alloc] initWithArrangedSubviews:@[
     label, systemInstructionsFieldContainer, queryFieldContainer,
-    _modelPickerButton, switchContainer, uploadMQLSSwitchContainer,
-    storePageContextSwitchContainer, temperatureContainer, buttonStackView,
-    _responseContainer
+    _modelPickerButton, switchContainer, richExtractionSwitchContainer,
+    uploadMQLSSwitchContainer, storePageContextSwitchContainer,
+    temperatureContainer, buttonStackView, _responseContainer
   ]];
   stackView.translatesAutoresizingMaskIntoConstraints = NO;
   stackView.axis = UILayoutConstraintAxisVertical;
@@ -301,6 +321,7 @@ using optimization_guide::proto::BlingPrototypingRequest_ModelEnum_Name;
   [self.mutator executeFreeformServerQuery:_queryField.text
                         systemInstructions:_systemInstructionsField.text
                         includePageContext:_includePageContextSwitch.isOn
+                            richExtraction:_richExtractionSwitch.isOn
                               uploadToMQLS:_uploadMQLSSwitch.isOn
                           storePageContext:_storePageContextSwitch.isOn
                                temperature:_temperatureSlider.value

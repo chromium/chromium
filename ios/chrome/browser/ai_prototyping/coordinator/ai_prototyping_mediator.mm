@@ -152,6 +152,7 @@
 - (void)executeFreeformServerQuery:(NSString*)query
                 systemInstructions:(NSString*)systemInstructions
                 includePageContext:(BOOL)includePageContext
+                    richExtraction:(BOOL)richExtraction
                       uploadToMQLS:(BOOL)uploadToMQLS
                   storePageContext:(BOOL)storePageContext
                        temperature:(float)temperature
@@ -215,9 +216,9 @@
           });
 
   // Populate the PageContext proto and then execute the query.
-  _pageContextWrapper =
-      CreatePageContextWrapper(_webStateList->GetActiveWebState(),
-                               std::move(page_context_completion_callback));
+  _pageContextWrapper = CreatePageContextWrapper(
+      _webStateList->GetActiveWebState(), richExtraction,
+      std::move(page_context_completion_callback));
   PopulatePageContext(_pageContextWrapper, _webStateList->GetActiveWebState());
 }
 
