@@ -20561,6 +20561,21 @@
             ]
         }
     ],
+    "RejectWeakCiphertext": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "RejectWeakCiphertext"
+                    ]
+                }
+            ]
+        }
+    ],
     "RemotePageMetadataAndroid": [
         {
             "platforms": [
