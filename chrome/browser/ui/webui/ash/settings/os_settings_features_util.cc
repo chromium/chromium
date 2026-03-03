@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/ash/settings/os_settings_features_util.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/edusumer/graduation_utils.h"
 #include "base/check.h"
 #include "base/check_deref.h"
@@ -15,7 +16,6 @@
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/experiences/arc/arc_features.h"
 #include "chromeos/ash/experiences/arc/arc_util.h"
@@ -96,6 +96,6 @@ bool IsKioskModeActive(const user_manager::User& user) {
 bool IsKioskOldA11ySettingsRedirectionEnabled(const user_manager::User& user) {
   return user.is_logged_in() && user.IsKioskType() &&
          !CHECK_DEREF(user.GetProfilePrefs())
-              .GetBoolean(prefs::kKioskTroubleshootingToolsEnabled);
+              .GetBoolean(ash::prefs::kKioskTroubleshootingToolsEnabled);
 }
 }  // namespace ash::settings

@@ -6,10 +6,10 @@
 
 #include <algorithm>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ref.h"
 #include "base/metrics/histogram_functions.h"
-#include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
@@ -63,14 +63,14 @@ void NetworkConnectivityMetricsService::NetworkConnectionStateChanged(
 }
 
 void NetworkConnectivityMetricsService::LogNetworkDrops(int network_drops) {
-  prefs::ScopedDictionaryPrefUpdate update(&local_state_.get(),
-                                           prefs::kKioskMetrics);
+  ::prefs::ScopedDictionaryPrefUpdate update(&local_state_.get(),
+                                             ash::prefs::kKioskMetrics);
 
   update->SetInteger(kKioskNetworkDrops, network_drops);
 }
 
 void NetworkConnectivityMetricsService::ReportPreviousSessionNetworkDrops() {
-  const auto& metrics_dict = local_state_->GetDict(prefs::kKioskMetrics);
+  const auto& metrics_dict = local_state_->GetDict(ash::prefs::kKioskMetrics);
   const auto* network_drops_value = metrics_dict.Find(kKioskNetworkDrops);
   if (!network_drops_value) {
     LogNetworkDrops(0);

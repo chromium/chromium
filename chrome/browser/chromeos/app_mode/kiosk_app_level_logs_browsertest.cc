@@ -5,6 +5,7 @@
 #include <optional>
 #include <string>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/strings/stringprintf.h"
@@ -15,7 +16,6 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/prefs/pref_service.h"
@@ -101,7 +101,7 @@ class KioskAppLevelLogsTestBase : public MixinBasedInProcessBrowserTest {
 
   void SetKioskAppLevelLogCollectionPolicy(bool enable) {
     profile()->GetPrefs()->SetBoolean(
-        prefs::kKioskApplicationLogCollectionEnabled, enable);
+        ash::prefs::kKioskApplicationLogCollectionEnabled, enable);
   }
 
   void ExpectMessageInKioskLogs(const std::string message) {

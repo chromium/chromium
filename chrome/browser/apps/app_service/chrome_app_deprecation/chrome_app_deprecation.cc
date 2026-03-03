@@ -7,6 +7,7 @@
 #include <cstddef>
 #include <unordered_set>
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/system_notification_builder.h"
 #include "ash/style/system_dialog_delegate_view.h"
 #include "base/containers/fixed_flat_set.h"
@@ -19,7 +20,6 @@
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/components/kiosk/kiosk_utils.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -498,7 +498,8 @@ DeprecationStatus HandleKioskSessionApp(const extensions::Extension& app,
     return DeprecationStatus::kLaunchAllowed;
   }
 
-  if (profile->GetPrefs()->GetBoolean(prefs::kKioskChromeAppsForceAllowed)) {
+  if (profile->GetPrefs()->GetBoolean(
+          ash::prefs::kKioskChromeAppsForceAllowed)) {
     ReportMetric(DeprecationCheckOutcome::kKioskModeAllowedByAdminPolicy);
     return DeprecationStatus::kLaunchAllowed;
   }

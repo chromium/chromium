@@ -4,6 +4,7 @@
 
 #include <string_view>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/check_deref.h"
 #include "chrome/browser/ash/app_mode/kiosk_controller.h"
 #include "chrome/browser/ash/app_mode/test/kiosk_mixin.h"
@@ -14,7 +15,6 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -77,7 +77,7 @@ void NotifyKioskGuestAdded(content::WebContents* guest_web_contents) {
 content::WebContents* OpenUrlInBrowser(GURL page_url) {
   // Enable troubleshooting tools to be able to open a browser in kiosk mode.
   ash::kiosk::test::CurrentProfile().GetPrefs()->SetBoolean(
-      prefs::kKioskTroubleshootingToolsEnabled, true);
+      ash::prefs::kKioskTroubleshootingToolsEnabled, true);
 
   Browser::CreateParams params =
       Browser::CreateParams(Browser::Type::TYPE_NORMAL,

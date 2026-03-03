@@ -4,7 +4,7 @@
 
 #include "chrome/browser/chromeos/app_mode/kiosk_policies.h"
 
-#include "chrome/common/pref_names.h"
+#include "ash/constants/ash_pref_names.h"
 
 namespace chromeos {
 
@@ -14,7 +14,7 @@ KioskPolicies::KioskPolicies(PrefService* pref_service)
 }
 
 bool KioskPolicies::IsWindowCreationAllowed() const {
-  return pref_service_->GetBoolean(prefs::kNewWindowsInKioskAllowed);
+  return pref_service_->GetBoolean(ash::prefs::kNewWindowsInKioskAllowed);
 }
 
 }  // namespace chromeos

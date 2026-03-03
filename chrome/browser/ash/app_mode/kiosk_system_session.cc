@@ -9,6 +9,7 @@
 #include <string>
 
 #include "ash/accessibility/accessibility_controller.h"
+#include "ash/constants/ash_pref_names.h"
 #include "base/check.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -139,7 +140,7 @@ void KioskSystemSession::OnGuestAdded(
 void KioskSystemSession::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(
-      prefs::kKioskActiveWiFiCredentialsScopeChangeEnabled, false);
+      ash::prefs::kKioskActiveWiFiCredentialsScopeChangeEnabled, false);
 }
 
 Profile* KioskSystemSession::profile() const {

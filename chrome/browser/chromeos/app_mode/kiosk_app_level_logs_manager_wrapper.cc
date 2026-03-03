@@ -6,12 +6,12 @@
 
 #include <memory>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_app_level_logs_manager.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 
 namespace chromeos {
@@ -45,7 +45,7 @@ void KioskAppLevelLogsManagerWrapper::Init(Profile* profile) {
 
   pref_change_registrar_.Init(profile_->GetPrefs());
   pref_change_registrar_.Add(
-      prefs::kKioskApplicationLogCollectionEnabled,
+      ash::prefs::kKioskApplicationLogCollectionEnabled,
       base::BindRepeating(&KioskAppLevelLogsManagerWrapper::OnPolicyChanged,
                           weak_factory_.GetWeakPtr()));
   OnPolicyChanged();
@@ -61,7 +61,7 @@ void KioskAppLevelLogsManagerWrapper::DisableLogging() {
 
 void KioskAppLevelLogsManagerWrapper::OnPolicyChanged() {
   if (profile_->GetPrefs()->GetBoolean(
-          prefs::kKioskApplicationLogCollectionEnabled)) {
+          ash::prefs::kKioskApplicationLogCollectionEnabled)) {
     EnableLogging();
   } else {
     DisableLogging();

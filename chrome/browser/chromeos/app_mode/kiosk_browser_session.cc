@@ -10,6 +10,7 @@
 #include <optional>
 #include <string>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
 #include "base/location.h"
@@ -21,7 +22,6 @@
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/common/pref_names.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -201,20 +201,22 @@ std::unique_ptr<KioskBrowserSession> KioskBrowserSession::CreateForTesting(
 
 void KioskBrowserSession::RegisterLocalStatePrefs(
     PrefRegistrySimple* registry) {
-  registry->RegisterDictionaryPref(prefs::kKioskMetrics);
+  registry->RegisterDictionaryPref(ash::prefs::kKioskMetrics);
 }
 
 void KioskBrowserSession::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
-  registry->RegisterBooleanPref(prefs::kNewWindowsInKioskAllowed, false);
-  registry->RegisterBooleanPref(prefs::kKioskTroubleshootingToolsEnabled,
+  registry->RegisterBooleanPref(ash::prefs::kNewWindowsInKioskAllowed, false);
+  registry->RegisterBooleanPref(ash::prefs::kKioskTroubleshootingToolsEnabled,
                                 false);
-  registry->RegisterListPref(prefs::kKioskBrowserPermissionsAllowedForOrigins,
-                             PrefRegistrySimple::NO_REGISTRATION_FLAGS);
-  registry->RegisterBooleanPref(prefs::kKioskWebAppOfflineEnabled, true);
-  registry->RegisterBooleanPref(prefs::kKioskChromeAppsForceAllowed, false);
-  registry->RegisterBooleanPref(prefs::kKioskApplicationLogCollectionEnabled,
+  registry->RegisterListPref(
+      ash::prefs::kKioskBrowserPermissionsAllowedForOrigins,
+      PrefRegistrySimple::NO_REGISTRATION_FLAGS);
+  registry->RegisterBooleanPref(ash::prefs::kKioskWebAppOfflineEnabled, true);
+  registry->RegisterBooleanPref(ash::prefs::kKioskChromeAppsForceAllowed,
                                 false);
+  registry->RegisterBooleanPref(
+      ash::prefs::kKioskApplicationLogCollectionEnabled, false);
 }
 
 void KioskBrowserSession::InitForChromeAppKiosk(const std::string& app_id) {

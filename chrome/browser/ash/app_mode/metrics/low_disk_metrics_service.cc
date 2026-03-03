@@ -6,9 +6,9 @@
 
 #include <algorithm>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
-#include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "components/prefs/pref_service.h"
 #include "services/preferences/public/cpp/dictionary_value_update.h"
@@ -69,13 +69,13 @@ void LowDiskMetricsService::LowDiskSpace(
 
 void LowDiskMetricsService::UpdateCurrentSessionLowDiskSeverity(
     KioskLowDiskSeverity severity) {
-  prefs::ScopedDictionaryPrefUpdate update(&local_state_.get(),
-                                           prefs::kKioskMetrics);
+  ::prefs::ScopedDictionaryPrefUpdate update(&local_state_.get(),
+                                             ash::prefs::kKioskMetrics);
   update->SetInteger(kKioskLowDiskSeverity, static_cast<int>(severity));
 }
 
 void LowDiskMetricsService::ReportPreviousSessionLowDiskSeverity() {
-  const auto& metrics_dict = local_state_->GetDict(prefs::kKioskMetrics);
+  const auto& metrics_dict = local_state_->GetDict(ash::prefs::kKioskMetrics);
 
   const auto* severity_value = metrics_dict.Find(kKioskLowDiskSeverity);
   if (!severity_value) {

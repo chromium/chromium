@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/chromeos/app_mode/kiosk_policies.h"
+
 #include <memory>
 
-#include "chrome/browser/chromeos/app_mode/kiosk_policies.h"
-#include "chrome/common/pref_names.h"
+#include "ash/constants/ash_pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -23,7 +24,7 @@ class KioskPoliciesTest : public testing::Test {
 
   void TearDown() override {
     // Clean up all preferenses that we use in tests.
-    GetPrefs()->ClearPref(prefs::kNewWindowsInKioskAllowed);
+    GetPrefs()->ClearPref(ash::prefs::kNewWindowsInKioskAllowed);
   }
 
   bool IsWindowCreationAllowed() const {
@@ -44,12 +45,12 @@ TEST_F(KioskPoliciesTest, kNewWindowsInKioskAllowedNotSet) {
 }
 
 TEST_F(KioskPoliciesTest, kNewWindowsInKioskAllowedSetFalse) {
-  GetPrefs()->SetBoolean(prefs::kNewWindowsInKioskAllowed, false);
+  GetPrefs()->SetBoolean(ash::prefs::kNewWindowsInKioskAllowed, false);
   EXPECT_FALSE(IsWindowCreationAllowed());
 }
 
 TEST_F(KioskPoliciesTest, kNewWindowsInKioskAllowedSetTrue) {
-  GetPrefs()->SetBoolean(prefs::kNewWindowsInKioskAllowed, true);
+  GetPrefs()->SetBoolean(ash::prefs::kNewWindowsInKioskAllowed, true);
   EXPECT_TRUE(IsWindowCreationAllowed());
 }
 

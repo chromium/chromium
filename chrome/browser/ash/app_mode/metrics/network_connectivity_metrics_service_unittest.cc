@@ -4,10 +4,10 @@
 
 #include "chrome/browser/ash/app_mode/metrics/network_connectivity_metrics_service.h"
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/check_deref.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state.h"
@@ -35,7 +35,7 @@ class NetworkConnectivityMetricsServiceTest : public testing::Test {
   }
   void TearDown() override {
     TestingBrowserProcess::GetGlobal()->GetTestingLocalState()->RemoveUserPref(
-        prefs::kKioskMetrics);
+        ash::prefs::kKioskMetrics);
   }
   NetworkStateHandler* network_state_handler() {
     return NetworkHandler::Get()->network_state_handler();
@@ -45,7 +45,7 @@ class NetworkConnectivityMetricsServiceTest : public testing::Test {
   std::optional<int> GetNetworkDropsFromLocalState() {
     return TestingBrowserProcess::GetGlobal()
         ->local_state()
-        ->GetDict(prefs::kKioskMetrics)
+        ->GetDict(ash::prefs::kKioskMetrics)
         .FindInt(kKioskNetworkDrops);
   }
 

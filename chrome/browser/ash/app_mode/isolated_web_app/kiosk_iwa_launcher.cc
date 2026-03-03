@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -23,7 +24,6 @@
 #include "chrome/browser/web_applications/isolated_web_apps/runtime_data/chrome_iwa_runtime_data_provider.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
-#include "chrome/common/pref_names.h"
 #include "components/account_id/account_id.h"
 #include "components/webapps/common/web_app_id.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -133,7 +133,7 @@ void KioskIwaLauncher::OnInstallComplete(
 
 void KioskIwaLauncher::CheckAppInstallState() {
   const bool offline_launch_allowed =
-      profile()->GetPrefs()->GetBoolean(::prefs::kKioskWebAppOfflineEnabled);
+      profile()->GetPrefs()->GetBoolean(ash::prefs::kKioskWebAppOfflineEnabled);
   if (IsIsolatedWebAppInstalled() && offline_launch_allowed) {
     NotifyAppPrepared();
     return;

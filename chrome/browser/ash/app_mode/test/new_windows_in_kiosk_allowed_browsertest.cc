@@ -8,6 +8,7 @@
 #include <string_view>
 #include <tuple>
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "base/check_deref.h"
@@ -31,7 +32,6 @@
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -57,7 +57,7 @@ namespace {
 constexpr const char* kTestUrlParams[] = {"", "https://www.test.com"};
 
 bool GetPolicyValueInPrefs(Profile& profile) {
-  return profile.GetPrefs()->GetBoolean(prefs::kNewWindowsInKioskAllowed);
+  return profile.GetPrefs()->GetBoolean(ash::prefs::kNewWindowsInKioskAllowed);
 }
 
 // Returns the app name for the given web `app`. This is the name

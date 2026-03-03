@@ -25,7 +25,6 @@
 #include "chrome/browser/permissions/quiet_notification_permission_ui_config.h"
 #include "chrome/browser/permissions/quiet_notification_permission_ui_state.h"
 #include "chrome/common/chrome_features.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -53,6 +52,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "ash/constants/ash_pref_names.h"
 #include "chrome/browser/ash/app_mode/kiosk_cryptohome_remover.h"
 #include "chrome/browser/ash/app_mode/web_app/kiosk_web_app_manager.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
@@ -134,7 +134,7 @@ class PermissionRequestManagerTest
 #if BUILDFLAG(IS_CHROMEOS)
   void SetKioskBrowserPermissionsAllowedForOrigins(const std::string& origin) {
     profile()->GetPrefs()->SetList(
-        prefs::kKioskBrowserPermissionsAllowedForOrigins,
+        ash::prefs::kKioskBrowserPermissionsAllowedForOrigins,
         base::ListValue().Append(std::move(origin)));
   }
 

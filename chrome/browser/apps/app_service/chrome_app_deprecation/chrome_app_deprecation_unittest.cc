@@ -7,6 +7,7 @@
 #include <memory>
 #include <string_view>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -18,7 +19,6 @@
 #include "chrome/browser/apps/app_service/chrome_app_deprecation/proto/chrome_app_deprecation.pb.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
-#include "chrome/common/pref_names.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension_builder.h"
@@ -233,8 +233,8 @@ TEST_F(ChromeAppDeprecationKioskTest, EnabledFeatureFlag) {
 TEST_F(ChromeAppDeprecationKioskTest, DisabledFeatureFlagDefaultPolicy) {
   scoped_feature_list_.InitAndDisableFeature(kAllowChromeAppsInKioskSessions);
   ASSERT_FALSE(base::FeatureList::IsEnabled(kAllowChromeAppsInKioskSessions));
-  ASSERT_FALSE(
-      profile()->GetPrefs()->GetBoolean(prefs::kKioskChromeAppsForceAllowed));
+  ASSERT_FALSE(profile()->GetPrefs()->GetBoolean(
+      ash::prefs::kKioskChromeAppsForceAllowed));
 
   EXPECT_EQ(HandleDeprecation(app_->id(), profile()),
             DeprecationStatus::kLaunchBlocked);
@@ -248,9 +248,10 @@ TEST_F(ChromeAppDeprecationKioskTest, DisabledFeatureFlagOverridenByPolicy) {
   scoped_feature_list_.InitAndDisableFeature(kAllowChromeAppsInKioskSessions);
   ASSERT_FALSE(base::FeatureList::IsEnabled(kAllowChromeAppsInKioskSessions));
 
-  profile()->GetPrefs()->SetBoolean(prefs::kKioskChromeAppsForceAllowed, true);
-  ASSERT_TRUE(
-      profile()->GetPrefs()->GetBoolean(prefs::kKioskChromeAppsForceAllowed));
+  profile()->GetPrefs()->SetBoolean(ash::prefs::kKioskChromeAppsForceAllowed,
+                                    true);
+  ASSERT_TRUE(profile()->GetPrefs()->GetBoolean(
+      ash::prefs::kKioskChromeAppsForceAllowed));
 
   EXPECT_EQ(HandleDeprecation(app_->id(), profile()),
             DeprecationStatus::kLaunchAllowed);

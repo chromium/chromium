@@ -10,6 +10,7 @@
 #include <string>
 #include <string_view>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/test_future.h"
@@ -20,7 +21,6 @@
 #include "chrome/browser/ash/app_mode/test/kiosk_mixin.h"
 #include "chrome/browser/ash/app_mode/test/kiosk_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chromeos/ash/components/dbus/shill/fake_shill_simulated_result.h"
 #include "chromeos/ash/components/network/network_configuration_handler.h"
@@ -117,7 +117,7 @@ class KioskNetworkStateObserverTest
 
   void UpdateActiveWiFiCredentialsScopeChangePolicy(bool enable) {
     kiosk::test::CurrentProfile().GetPrefs()->SetBoolean(
-        prefs::kKioskActiveWiFiCredentialsScopeChangeEnabled, enable);
+        ash::prefs::kKioskActiveWiFiCredentialsScopeChangeEnabled, enable);
   }
 
   void AddNetworkService(WiFiServiceInfo info) {

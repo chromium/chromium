@@ -8,9 +8,9 @@
 #include <string>
 #include <vector>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/dbus/shill/shill_service_client.h"
 #include "chromeos/ash/components/network/network_configuration_handler.h"
 #include "chromeos/ash/components/network/network_handler.h"
@@ -46,7 +46,7 @@ KioskNetworkStateObserver::KioskNetworkStateObserver(PrefService* pref_service)
   CHECK(pref_service_);
   pref_change_registrar_.Init(pref_service);
   pref_change_registrar_.Add(
-      prefs::kKioskActiveWiFiCredentialsScopeChangeEnabled,
+      ash::prefs::kKioskActiveWiFiCredentialsScopeChangeEnabled,
       base::BindRepeating(
           &KioskNetworkStateObserver::PolicyChanged,
           // It is safe to use `base::Unretained` since this class
@@ -62,7 +62,7 @@ KioskNetworkStateObserver::~KioskNetworkStateObserver() = default;
 
 bool KioskNetworkStateObserver::IsPolicyEnabled() const {
   return pref_service_->GetBoolean(
-      prefs::kKioskActiveWiFiCredentialsScopeChangeEnabled);
+      ash::prefs::kKioskActiveWiFiCredentialsScopeChangeEnabled);
 }
 
 void KioskNetworkStateObserver::SetWifiExposureAttemptCallbackForTesting(

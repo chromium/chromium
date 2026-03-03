@@ -9,6 +9,7 @@
 #include <memory>
 #include <optional>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "base/unguessable_token.h"
@@ -35,7 +36,6 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -270,7 +270,8 @@ TEST_F(KioskWebAppServiceLauncherTest,
 TEST_F(
     KioskWebAppServiceLauncherTest,
     ShouldInvokeInitializeNetworkWhenAppIsSuccessfullyInstalledButNotOfflineEnabled) {
-  profile()->GetPrefs()->SetBoolean(::prefs::kKioskWebAppOfflineEnabled, false);
+  profile()->GetPrefs()->SetBoolean(ash::prefs::kKioskWebAppOfflineEnabled,
+                                    false);
   InstallApp();
 
   EXEC_AND_WAIT_FOR_CALL(launcher().Initialize(), delegate(),

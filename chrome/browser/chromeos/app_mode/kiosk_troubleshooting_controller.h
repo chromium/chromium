@@ -15,7 +15,7 @@ namespace chromeos {
 // This class determines if the kiosk troubleshooting tools can be used.
 
 // `AreKioskTroubleshootingToolsEnabled` depends on the dynamically refreshed
-// `prefs::kKioskTroubleshootingToolsEnabled` policy.
+// `ash::prefs::kKioskTroubleshootingToolsEnabled` policy.
 // If the policy gets disabled during the active kiosk session,
 // `KioskBrowserSession` should be shutdown to prevent active troubleshooting
 // tools from being displayed.
@@ -30,18 +30,18 @@ class KioskTroubleshootingController {
       const KioskTroubleshootingController&) = delete;
   virtual ~KioskTroubleshootingController();
 
-  // Returns `false` if `prefs::kKioskTroubleshootingToolsEnabled` preference is
-  // not found in the pref service, otherwise returns its value.
+  // Returns `false` if `ash::prefs::kKioskTroubleshootingToolsEnabled`
+  // preference is not found in the pref service, otherwise returns its value.
   bool AreKioskTroubleshootingToolsEnabled() const;
 
  private:
-  // This function is called once `prefs::kKioskTroubleshootingToolsEnabled`
-  // preference is updated.
+  // This function is called once
+  // `ash::prefs::kKioskTroubleshootingToolsEnabled` preference is updated.
   void PolicyChanged();
 
   const raw_ptr<PrefService> pref_service_;
-  // Register `prefs::kKioskTroubleshootingToolsEnabled` preference to support
-  // dynamic refresh.
+  // Register `ash::prefs::kKioskTroubleshootingToolsEnabled` preference to
+  // support dynamic refresh.
   PrefChangeRegistrar pref_change_registrar_;
   base::OnceClosure shutdown_kiosk_browser_session_callback_;
 };

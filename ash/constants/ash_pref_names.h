@@ -2775,6 +2775,50 @@ inline constexpr char kFactoryResetTPMFirmwareUpdateMode[] =
 inline constexpr char kForceFactoryReset[] = "ForceFactoryReset";
 
 //-----------------------------------------------------------------------------
+// Kiosk related Prefs
+//-----------------------------------------------------------------------------
+
+// A boolean pref to change the kiosk active WiFi credentials scope from in
+// session level to the device level.
+inline constexpr char kKioskActiveWiFiCredentialsScopeChangeEnabled[] =
+    "kiosk_active_wifi_credentials_scope_change_enabled";
+
+// A boolean pref which determines whether kiosk application level logs would be
+// collected and stored.
+inline constexpr char kKioskApplicationLogCollectionEnabled[] =
+    "kiosk_application_log_collection_enabled";
+
+// Pref name for providing additional urls which can access browser permissions
+// already available to the kiosk web apps.
+inline constexpr char kKioskBrowserPermissionsAllowedForOrigins[] =
+    "policy.kiosk_browser_permissions_allowed_for_origins";
+
+// A boolean pref which determines whether Chrome Apps are allowed in Kiosk
+// sessions.
+inline constexpr char kKioskChromeAppsForceAllowed[] =
+    "kiosk_chrome_apps_force_allowed";
+
+// A dictionary containing kiosk metrics latest session related information.
+// For example, kiosk session start times, number of network drops.
+// This setting resides in local state.
+inline constexpr char kKioskMetrics[] = "kiosk-metrics";
+
+// A boolean pref which determines whether kiosk troubleshooting tools are
+// enabled.
+inline constexpr char kKioskTroubleshootingToolsEnabled[] =
+    "kiosk_troubleshooting_tools_enabled";
+
+// Pref name to toggle the network prompt at web app kiosk launch when the
+// device is offline and the web app is not offline enabled.
+inline constexpr char kKioskWebAppOfflineEnabled[] =
+    "policy.kiosk_web_app_offline_enabled";
+
+// A boolean pref which determines whether a Web Kiosk can open more than one
+// browser window.
+inline constexpr char kNewWindowsInKioskAllowed[] =
+    "new_windows_in_kiosk_allowed";
+
+//-----------------------------------------------------------------------------
 // Language related Prefs
 //-----------------------------------------------------------------------------
 

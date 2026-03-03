@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
@@ -19,7 +20,6 @@
 #include "chrome/browser/chromeos/app_mode/kiosk_web_app_install_util.h"
 #include "chrome/browser/extensions/extension_special_storage_policy.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
-#include "chrome/common/pref_names.h"
 #include "components/account_id/account_id.h"
 #include "components/webapps/common/web_app_id.h"
 #include "url/origin.h"
@@ -88,7 +88,8 @@ void KioskWebAppServiceLauncher::CheckAppInstallState() {
       CHECK_DEREF(profile()), GetCurrentApp()->install_url());
 
   if (state != chromeos::WebKioskInstallState::kInstalled ||
-      !profile()->GetPrefs()->GetBoolean(::prefs::kKioskWebAppOfflineEnabled)) {
+      !profile()->GetPrefs()->GetBoolean(
+          ash::prefs::kKioskWebAppOfflineEnabled)) {
     delegate_->InitializeNetwork();
     return;
   }

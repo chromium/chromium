@@ -6,9 +6,9 @@
 
 #include <memory>
 
+#include "ash/constants/ash_pref_names.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/policy/device_local_account/device_local_account_type.h"
 #include "components/prefs/pref_service.h"
@@ -53,7 +53,7 @@ class KioskAppLevelLogsManagerWrapperTest
 
   void SetKioskApplicationLogCollectionPolicy(bool value) {
     profile().GetPrefs()->SetBoolean(
-        prefs::kKioskApplicationLogCollectionEnabled, value);
+        ash::prefs::kKioskApplicationLogCollectionEnabled, value);
   }
 
   bool IsPolicyEnabled() { return GetParam(); }

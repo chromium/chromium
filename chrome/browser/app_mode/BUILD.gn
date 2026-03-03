@@ -23,6 +23,9 @@ source_set("app_mode") {
   ]
 
   if (is_chromeos) {
-    deps += [ "//chromeos/components/kiosk" ]
+    deps += [
+      "//ash/constants",
+      "//chromeos/components/kiosk",
+    ]
   }
 }

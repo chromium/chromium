@@ -16,8 +16,8 @@ class KioskPolicies {
   explicit KioskPolicies(PrefService* pref_service);
   ~KioskPolicies() = default;
 
-  // Returns `false` if `prefs::kNewWindowsInKioskAllowed` preference is not
-  // found in the pref service, otherwise returns its value.
+  // Returns `false` if `ash::prefs::kNewWindowsInKioskAllowed` preference is
+  // not found in the pref service, otherwise returns its value.
   bool IsWindowCreationAllowed() const;
 
  private:

@@ -34,6 +34,7 @@
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "ash/constants/ash_pref_names.h"
 #include "chrome/browser/ash/app_mode/isolated_web_app/kiosk_iwa_data.h"
 #include "chrome/browser/ash/app_mode/isolated_web_app/kiosk_iwa_manager.h"
 #include "chrome/browser/ash/app_mode/web_app/kiosk_web_app_data.h"
@@ -197,16 +198,16 @@ DeviceServiceImpl::DeviceServiceImpl(
   Profile* const profile = GetProfile(host);
   pref_change_registrar_.Init(profile->GetPrefs());
   pref_change_registrar_.Add(
-      prefs::kWebAppInstallForceList,
+      ::prefs::kWebAppInstallForceList,
       base::BindRepeating(&DeviceServiceImpl::OnDisposingIfNeeded,
                           base::Unretained(this)));
   pref_change_registrar_.Add(
-      prefs::kIsolatedWebAppInstallForceList,
+      ::prefs::kIsolatedWebAppInstallForceList,
       base::BindRepeating(&DeviceServiceImpl::OnDisposingIfNeeded,
                           base::Unretained(this)));
 #if BUILDFLAG(IS_CHROMEOS)
   pref_change_registrar_.Add(
-      prefs::kKioskBrowserPermissionsAllowedForOrigins,
+      ash::prefs::kKioskBrowserPermissionsAllowedForOrigins,
       base::BindRepeating(&DeviceServiceImpl::OnDisposingIfNeeded,
                           base::Unretained(this)));
 #endif  // BUILDFLAG(IS_CHROMEOS)

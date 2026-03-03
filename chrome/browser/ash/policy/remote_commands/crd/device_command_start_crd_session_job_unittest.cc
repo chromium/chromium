@@ -8,6 +8,7 @@
 #include <optional>
 #include <utility>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/check_deref.h"
 #include "base/json/json_writer.h"
 #include "base/memory/raw_ptr.h"
@@ -330,19 +331,19 @@ class DeviceCommandStartCrdSessionJobTest : public ash::DeviceSettingsTestBase {
 
   void SetKioskTroubleshootingPolicyValue(bool enabled) {
     ASSERT_TRUE(profile_);
-    profile_->GetPrefs()->SetBoolean(prefs::kKioskTroubleshootingToolsEnabled,
-                                     enabled);
+    profile_->GetPrefs()->SetBoolean(
+        ash::prefs::kKioskTroubleshootingToolsEnabled, enabled);
   }
 
   void SetDeviceAllowEnterpriseRemoteAccessPolicyValue(bool enabled) {
     TestingBrowserProcess::GetGlobal()->local_state()->SetBoolean(
-        prefs::kDeviceAllowEnterpriseRemoteAccessConnections, enabled);
+        ::prefs::kDeviceAllowEnterpriseRemoteAccessConnections, enabled);
   }
 
   void SetRemoteAccessHostAllowEnterpriseRemoteSupportConnections(
       bool enabled) {
     TestingBrowserProcess::GetGlobal()->local_state()->SetBoolean(
-        prefs::kRemoteAccessHostAllowEnterpriseRemoteSupportConnections,
+        ::prefs::kRemoteAccessHostAllowEnterpriseRemoteSupportConnections,
         enabled);
   }
 

@@ -4,8 +4,8 @@
 
 #include "chrome/browser/chromeos/app_mode/kiosk_troubleshooting_controller.h"
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/logging.h"
-#include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 
 namespace chromeos {
@@ -18,7 +18,7 @@ KioskTroubleshootingController::KioskTroubleshootingController(
           std::move(shutdown_kiosk_browser_session_callback)) {
   pref_change_registrar_.Init(pref_service);
   pref_change_registrar_.Add(
-      prefs::kKioskTroubleshootingToolsEnabled,
+      ash::prefs::kKioskTroubleshootingToolsEnabled,
       base::BindRepeating(&KioskTroubleshootingController::PolicyChanged,
                           base::Unretained(this)));
 }
@@ -27,7 +27,8 @@ KioskTroubleshootingController::~KioskTroubleshootingController() = default;
 
 bool KioskTroubleshootingController::AreKioskTroubleshootingToolsEnabled()
     const {
-  return pref_service_->GetBoolean(prefs::kKioskTroubleshootingToolsEnabled);
+  return pref_service_->GetBoolean(
+      ash::prefs::kKioskTroubleshootingToolsEnabled);
 }
 
 void KioskTroubleshootingController::PolicyChanged() {

@@ -63,6 +63,7 @@
         // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "ash/constants/ash_pref_names.h"
 #include "base/test/scoped_command_line.h"
 #include "chrome/browser/ash/app_mode/kiosk_cryptohome_remover.h"
 #include "chrome/browser/ash/app_mode/web_app/kiosk_web_app_manager.h"
@@ -179,8 +180,8 @@ class DeviceAPIServiceTest {
       content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents,
                                                                  url);
     }
-#else   //!(BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
-        //! BUILDFLAG(IS_CHROMEOS))
+#else  // !(BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+       //   BUILDFLAG(IS_CHROMEOS))
     content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents,
                                                                url);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
@@ -264,7 +265,7 @@ class DeviceAPIServiceWebAppTest : public DeviceAPIServiceTest,
     allowed_origins.Append(kTrustedUrl);
     allowed_origins.Append(kKioskAppInstallUrl);
     profile()->GetTestingPrefService()->SetManagedPref(
-        prefs::kManagedDeviceAttributesAllowedForOrigins,
+        ::prefs::kManagedDeviceAttributesAllowedForOrigins,
         std::move(allowed_origins));
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -345,13 +346,13 @@ class DeviceAPIServiceIwaTest
 
   void SetAllowedOrigin(const std::string& origin) {
     profile()->GetTestingPrefService()->SetManagedPref(
-        prefs::kManagedDeviceAttributesAllowedForOrigins,
+        ::prefs::kManagedDeviceAttributesAllowedForOrigins,
         base::ListValue().Append(origin));
   }
 
   void SetBlockedOrigin(const std::string& origin) {
     profile()->GetTestingPrefService()->SetManagedPref(
-        prefs::kManagedDeviceAttributesBlockedForOrigins,
+        ::prefs::kManagedDeviceAttributesBlockedForOrigins,
         base::ListValue().Append(origin));
   }
 
@@ -561,25 +562,25 @@ class DeviceAPIServiceParamTest
 
   void SetAllowedOrigin(const std::string& origin) {
     profile()->GetTestingPrefService()->SetManagedPref(
-        prefs::kManagedDeviceAttributesAllowedForOrigins,
+        ::prefs::kManagedDeviceAttributesAllowedForOrigins,
         base::ListValue().Append(origin));
   }
 
   void AllowOriginsByDefault() {
     profile()->GetTestingPrefService()->SetManagedPref(
-        prefs::kManagedDefaultDeviceAttributesSetting,
+        ::prefs::kManagedDefaultDeviceAttributesSetting,
         base::Value(kAllowSetting));
   }
 
   void BlockOriginsByDefault() {
     profile()->GetTestingPrefService()->SetManagedPref(
-        prefs::kManagedDefaultDeviceAttributesSetting,
+        ::prefs::kManagedDefaultDeviceAttributesSetting,
         base::Value(kBlockSetting));
   }
 
   void SetKioskBrowserPermissionsAllowedForOrigins(const std::string& origin) {
     profile()->GetPrefs()->SetList(
-        prefs::kKioskBrowserPermissionsAllowedForOrigins,
+        ash::prefs::kKioskBrowserPermissionsAllowedForOrigins,
         base::ListValue().Append(std::move(origin)));
   }
 
@@ -629,7 +630,7 @@ class DeviceAPIServiceRegularUserTest : public DeviceAPIServiceWebAppTest {
 
   void RemoveAllowedOrigin() {
     profile()->GetTestingPrefService()->SetManagedPref(
-        prefs::kManagedDeviceAttributesAllowedForOrigins, base::ListValue());
+        ::prefs::kManagedDeviceAttributesAllowedForOrigins, base::ListValue());
   }
 
   void TearDown() override {
@@ -677,13 +678,13 @@ class DeviceAPIServiceRegularUserIwaTest : public DeviceAPIServiceIwaTest {
 
   void AllowOriginsByDefault() {
     profile()->GetTestingPrefService()->SetManagedPref(
-        prefs::kManagedDefaultDeviceAttributesSetting,
+        ::prefs::kManagedDefaultDeviceAttributesSetting,
         base::Value(kAllowSetting));
   }
 
   void BlockOriginsByDefault() {
     profile()->GetTestingPrefService()->SetManagedPref(
-        prefs::kManagedDefaultDeviceAttributesSetting,
+        ::prefs::kManagedDefaultDeviceAttributesSetting,
         base::Value(kBlockSetting));
   }
 

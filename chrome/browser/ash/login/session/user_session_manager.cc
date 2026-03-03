@@ -390,7 +390,7 @@ bool IsKioskProfile(Profile* profile) {
 
 bool AreKioskTroubleshootingToolsEnabled(Profile* profile) {
   return profile->GetPrefs()->GetBoolean(
-      ::prefs::kKioskTroubleshootingToolsEnabled);
+      ash::prefs::kKioskTroubleshootingToolsEnabled);
 }
 
 bool CanPerformEarlyRestart(Profile* profile) {
