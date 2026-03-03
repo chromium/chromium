@@ -121,6 +121,31 @@ class TemplateUrlServiceAndroid : public TemplateURLServiceObserver {
                        const std::u16string& keyword,
                        const std::string& search_url);
 
+  // Returns true if the value of |new_name| is a valid search engine name to
+  // use.
+  bool IsSearchEngineNameValid(JNIEnv* env, const std::u16string& new_name);
+
+  // Returns true if the value of |new_keyword| is a valid keyword for a new
+  // search engine.
+  bool IsSearchEngineKeywordValidToAdd(JNIEnv* env,
+                                       const std::u16string& new_keyword);
+
+  // Returns true if the value of |new_keyword| is a valid keyword for an
+  // existing search engine.
+  bool IsSearchEngineKeywordValidToEdit(JNIEnv* env,
+                                        const std::u16string& new_keyword,
+                                        const std::u16string& current_keyword);
+
+  // Returns true if the value of |new_url| is a valid search engine URL for
+  // adding a new search engine.
+  bool IsSearchEngineUrlValidToAdd(JNIEnv* env, const std::string& new_url);
+
+  // Returns true if the value of |new_url| is a valid search engine URL for
+  // editing an existing search engine.
+  bool IsSearchEngineUrlValidToEdit(JNIEnv* env,
+                                    const std::string& new_url,
+                                    const std::u16string& current_keyword);
+
   // Adds a custom search engine, sets |jkeyword| as its short_name and keyword,
   // and sets its date_created as |age_in_days| days before the current time.
   base::android::ScopedJavaLocalRef<jstring> AddSearchEngineForTesting(

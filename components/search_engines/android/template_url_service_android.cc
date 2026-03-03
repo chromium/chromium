@@ -33,6 +33,7 @@
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/util.h"
 #include "components/search_provider_logos/switches.h"
+#include "components/url_formatter/url_fixer.h"
 #include "net/base/url_util.h"
 #include "third_party/omnibox_proto/chrome_aim_entry_point.pb.h"
 #include "third_party/omnibox_proto/model_mode.pb.h"
@@ -505,6 +506,46 @@ bool TemplateUrlServiceAndroid::AddSearchEngine(
     return false;
   }
   return true;
+}
+
+bool TemplateUrlServiceAndroid::IsSearchEngineNameValid(
+    JNIEnv* env,
+    const std::u16string& name) {
+  return IsSearchEngineNameValidToUse(name);
+}
+
+bool TemplateUrlServiceAndroid::IsSearchEngineKeywordValidToAdd(
+    JNIEnv* env,
+    const std::u16string& new_keyword) {
+  return IsSearchEngineKeywordValidToUse(new_keyword, template_url_service_,
+                                         /*existing_url=*/nullptr);
+}
+
+bool TemplateUrlServiceAndroid::IsSearchEngineKeywordValidToEdit(
+    JNIEnv* env,
+    const std::u16string& new_keyword,
+    const std::u16string& current_keyword) {
+  const TemplateURL* existing_url =
+      template_url_service_->GetTemplateURLForKeyword(current_keyword);
+  return IsSearchEngineKeywordValidToUse(new_keyword, template_url_service_,
+                                         existing_url);
+}
+
+bool TemplateUrlServiceAndroid::IsSearchEngineUrlValidToAdd(
+    JNIEnv* env,
+    const std::string& new_url) {
+  return IsSearchEngineURLValidToUse(new_url, template_url_service_,
+                                     /*existing_url=*/nullptr);
+}
+
+bool TemplateUrlServiceAndroid::IsSearchEngineUrlValidToEdit(
+    JNIEnv* env,
+    const std::string& new_url,
+    const std::u16string& current_keyword) {
+  const TemplateURL* existing_url =
+      template_url_service_->GetTemplateURLForKeyword(current_keyword);
+  return IsSearchEngineURLValidToUse(new_url, template_url_service_,
+                                     existing_url);
 }
 
 base::android::ScopedJavaLocalRef<jstring>
