@@ -17,6 +17,7 @@
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_animator.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/scoped_fullscreen_disabler.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_link_opening_delegate.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_link_opening_handler.h"
@@ -93,6 +94,9 @@ const CGFloat kFloatyShownOpacity = 1.0;
 
 // Opacity for a hidden floaty.
 const CGFloat kFloatyHiddenOpacity = 0.0;
+
+// The timeout for the fullscreen disabler.
+const double kFullscreenDisablerTimeoutSeconds = 3.0;
 
 // Used to check if floaty visibility updates are part of a UIView dismissal or
 // presentation.
@@ -217,6 +221,10 @@ GeminiBrowserAgent::~GeminiBrowserAgent() {
     fullscreen_controller_ = nullptr;
   }
 
+  if (IsGeminiCopresenceWithFullscreenDisablerEnabled()) {
+    ResetFullscreenDisabler();
+  }
+
   StopObserving();
 }
 
@@ -310,15 +318,21 @@ CGFloat GeminiBrowserAgent::GetFloatyOffsetFromFullscreenController(
 }
 
 void GeminiBrowserAgent::InvokeFloaty(GeminiConfiguration* config) {
+  if (!IsGeminiCopresenceEnabled()) {
+    web::WebState* web_state = browser_->GetWebStateList()->GetActiveWebState();
+    BwgTabHelper* gemini_tab_helper = GetActiveTabHelper(web_state);
+    ios::provider::StartBwgOverlay(config);
+    gemini_tab_helper->SetBwgUiShowing(true);
+    return;
+  }
+
+  PrepareFloatyToBeShown();
   web::WebState* web_state = browser_->GetWebStateList()->GetActiveWebState();
   BwgTabHelper* gemini_tab_helper = GetActiveTabHelper(web_state);
   ios::provider::StartBwgOverlay(config);
   gemini_tab_helper->SetBwgUiShowing(true);
-  if (IsGeminiCopresenceEnabled()) {
-    fullscreen_controller_->ExitFullscreen();
-    last_shown_view_state_ = ios::provider::GetCurrentGeminiViewState();
-    is_floaty_invoked_ = true;
-  }
+  last_shown_view_state_ = ios::provider::GetCurrentGeminiViewState();
+  is_floaty_invoked_ = true;
 }
 
 void GeminiBrowserAgent::ForceShowFloatyIfInvoked() {
@@ -516,10 +530,14 @@ void GeminiBrowserAgent::SetLastShownViewState(
   }
 
   if (view_state == ios::provider::GeminiViewState::kExpanded) {
+    PrepareFloatyToBeShown();
     RecordFloatyCollapsedToExpanded();
     RecordFloatyMinimizedTime(elapsed_minimized_floaty_time_);
     elapsed_minimized_floaty_time_ = base::TimeTicks();
   } else if (view_state == ios::provider::GeminiViewState::kCollapsed) {
+    if (IsGeminiCopresenceWithFullscreenDisablerEnabled()) {
+      ResetFullscreenDisabler();
+    }
     RecordFloatyExpandedToCollapsed();
     elapsed_minimized_floaty_time_ = base::TimeTicks::Now();
   }
@@ -574,6 +592,10 @@ void GeminiBrowserAgent::DismissFloaty() {
     gemini_tab_helper->SetBwgUiShowing(false);
   }
 
+  if (IsGeminiCopresenceWithFullscreenDisablerEnabled()) {
+    ResetFullscreenDisabler();
+  }
+
   // If the floaty is temporarily hidden i.e. as part of a view controller being
   // shown underneath the Gemini floaty, don't clean up and reset internal
   // Gemini properties. Clean up should occur if a user taps the floaty to
@@ -596,6 +618,28 @@ void GeminiBrowserAgent::DismissFloaty() {
   }
 }
 
+bool GeminiBrowserAgent::ShouldSourceReshowFloaty(
+    gemini::FloatyUpdateSource source) const {
+  switch (source) {
+    case gemini::FloatyUpdateSource::Unknown:
+    case gemini::FloatyUpdateSource::ContextMenu:
+    case gemini::FloatyUpdateSource::WebContextMenu:
+      return false;
+    case gemini::FloatyUpdateSource::ViewTransition:
+    case gemini::FloatyUpdateSource::WebNavigation:
+    case gemini::FloatyUpdateSource::TabGrid:
+    case gemini::FloatyUpdateSource::ForcedFromScroll:
+    case gemini::FloatyUpdateSource::Overlay:
+    case gemini::FloatyUpdateSource::IneligibleSite:
+    case gemini::FloatyUpdateSource::ForcedFromQueryResponse:
+    case gemini::FloatyUpdateSource::Snackbar:
+    case gemini::FloatyUpdateSource::Alert:
+    case gemini::FloatyUpdateSource::Banner:
+    case gemini::FloatyUpdateSource::Keyboard:
+      return true;
+  }
+}
+
 void GeminiBrowserAgent::HideFloatyIfInvoked(
     bool animated,
     gemini::FloatyUpdateSource source) {
@@ -608,7 +652,11 @@ void GeminiBrowserAgent::HideFloatyIfInvoked(
   UpdateActiveTabHelperWithPresentedSource(source, /*is_presented=*/true);
 
   bool was_temporarily_hidden = IsFloatyTemporarilyHidden();
-  active_hiding_sources_.insert(source);
+
+  if (ShouldSourceReshowFloaty(source)) {
+    active_hiding_sources_.insert(source);
+  }
+
   if (was_temporarily_hidden) {
     return;
   }
@@ -667,7 +715,7 @@ void GeminiBrowserAgent::ShowFloatyIfInvoked(
 
   // Exit fullscreen to prepare floaty for incoming response stream.
   if (source == gemini::FloatyUpdateSource::ForcedFromQueryResponse) {
-    fullscreen_controller_->ExitFullscreen();
+    PrepareFloatyToBeShown();
   }
 
   base::WeakPtr<GeminiBrowserAgent> weak_ptr = weak_factory_.GetWeakPtr();
@@ -831,6 +879,38 @@ void GeminiBrowserAgent::FullscreenViewportInsetRangeChanged(
 }
 
 #pragma mark - Private
+
+void GeminiBrowserAgent::PrepareFloatyToBeShown() {
+  web::WebState* web_state = browser_->GetWebStateList()->GetActiveWebState();
+  if (!fullscreen_controller_ || !web_state) {
+    return;
+  }
+
+  if (!IsGeminiCopresenceWithFullscreenDisablerEnabled()) {
+    fullscreen_controller_->ExitFullscreen();
+    return;
+  }
+
+  CRWWebViewScrollViewProxy* scroll_view_proxy =
+      web_state->GetWebViewProxy().scrollViewProxy;
+  CGPoint current_offset = scroll_view_proxy.contentOffset;
+  [scroll_view_proxy setContentOffset:current_offset animated:NO];
+  fullscreen_disabler_ =
+      std::make_unique<ScopedFullscreenDisabler>(fullscreen_controller_);
+  fullscreen_disabler_timer_.Start(
+      FROM_HERE, base::Seconds(kFullscreenDisablerTimeoutSeconds),
+      base::BindOnce(&GeminiBrowserAgent::ResetFullscreenDisabler,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void GeminiBrowserAgent::ResetFullscreenDisabler() {
+  if (!fullscreen_disabler_) {
+    return;
+  }
+
+  fullscreen_disabler_timer_.Stop();
+  fullscreen_disabler_.reset();
+}
 
 void GeminiBrowserAgent::PresentFloatyWithState(
     UIViewController* base_view_controller,

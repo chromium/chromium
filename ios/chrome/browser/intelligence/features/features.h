@@ -291,6 +291,10 @@ double GetGeminiCopresenceResponseReadyInterval();
 bool IsGeminiCopresenceZeroStateWithChatHistoryEnabled();
 extern const char kGeminiCopresenceZeroStateWithChatHistory[];
 
+// Returns true if the fullscreen disabler is enabled with Gemini Copresence.
+bool IsGeminiCopresenceWithFullscreenDisablerEnabled();
+extern const char kGeminiCopresenceWithFullscreenDisabler[];
+
 // Feature flag for Gemini Dynamic Resizing.
 BASE_DECLARE_FEATURE(kGeminiResponseViewDynamicResizing);
 

@@ -1793,6 +1793,10 @@ const CGFloat kTopDynamicIslandInset = 24;
   self.visibilityState = BrowserViewVisibilityState::kVisible;
   self.toolbarCoordinator.secondaryToolbarViewController.view
       .accessibilityElementsHidden = NO;
+  [self.geminiHandler
+      updateFloatyVisibilityIfEligibleAnimated:NO
+                                    fromSource:gemini::FloatyUpdateSource::
+                                                   ViewTransition];
 }
 
 #pragma mark - FullscreenUIElement methods

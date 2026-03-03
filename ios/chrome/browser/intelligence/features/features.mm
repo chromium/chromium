@@ -464,6 +464,19 @@ bool IsGeminiCopresenceZeroStateWithChatHistoryEnabled() {
   return base::GetFieldTrialParamByFeatureAsBool(
       kGeminiCopresence, kGeminiCopresenceZeroStateWithChatHistory, false);
 }
+
+const char kGeminiCopresenceWithFullscreenDisabler[] =
+    "GeminiCopresenceWithFullscreenDisabler";
+
+bool IsGeminiCopresenceWithFullscreenDisablerEnabled() {
+  if (!IsGeminiCopresenceEnabled()) {
+    return false;
+  }
+
+  return base::GetFieldTrialParamByFeatureAsBool(
+      kGeminiCopresence, kGeminiCopresenceWithFullscreenDisabler, false);
+}
+
 BASE_FEATURE(kGeminiResponseViewDynamicResizing,
              base::FEATURE_DISABLED_BY_DEFAULT);
 

@@ -35,6 +35,7 @@ namespace optimization_guide::proto {
 class PageContext;
 }  // namespace optimization_guide::proto
 
+class ScopedFullscreenDisabler;
 @class BWGLinkOpeningHandler;
 @class GeminiPageStateChangeHandler;
 @class BWGSessionHandler;
@@ -202,6 +203,16 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
   // the floaty state will be as if a floaty was never shown.
   bool ShouldShowFloatyForSource(gemini::FloatyUpdateSource source);
 
+  // Prepares the floaty to be shown by exiting fullscreen and stopping scroll
+  // animation. Not called every time the floaty is shown since there are
+  // instances where scrolling should be allowed when a floaty is shown.
+  void PrepareFloatyToBeShown();
+
+  // Resets the fullscreen disabler. Needs to be called each time
+  // PrepareFloatyToBeShown() is called or the floaty may permanently disable
+  // fullscreen mode. Called when the floaty is dismissed or collapsed.
+  void ResetFullscreenDisabler();
+
   // Creates a `GeminiPageContext` for the current web state.
   GeminiPageContext* CreateGeminiPageContext(
       ios::provider::GeminiPageContextComputationState computation_state,
@@ -218,6 +229,11 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
 
   // Returns true if the floaty is only hidden by the keyboard.
   bool IsOnlyHiddenByKeyboard() const;
+
+  // Returns true if the source expects the floaty to re-show after hiding it.
+  // New sources must be added to the switch statement depending on if we
+  // expect the source to re-show the floaty after hiding it.
+  bool ShouldSourceReshowFloaty(gemini::FloatyUpdateSource source) const;
 
   // The gateway for bridging internal protocols.
   __strong id<BWGGatewayProtocol> bwg_gateway_ = nullptr;
@@ -301,6 +317,15 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
 
   // Timer to force page context generation if page load takes too long.
   base::OneShotTimer page_context_timeout_timer_;
+
+  // Scoped fullscreen disabler.
+  std::unique_ptr<ScopedFullscreenDisabler> fullscreen_disabler_;
+
+  // Timer to reset the fullscreen disabler. Re-enabling fullscreen should be
+  // handled in floaty interaction logic such as the floaty being collapsed or
+  // dismissed. For any reason, if an exit point doesn't re-enable fullscreen,
+  // this timer will reset the fullscreen disabler after a short delay.
+  base::OneShotTimer fullscreen_disabler_timer_;
 
   // Weak pointer factory.
   base::WeakPtrFactory<GeminiBrowserAgent> weak_factory_{this};

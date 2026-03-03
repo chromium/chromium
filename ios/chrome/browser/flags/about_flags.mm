@@ -1259,12 +1259,17 @@ const FeatureEntry::FeatureParam kGeminiCopresenceResponseReadyIntervalParam[] =
 const FeatureEntry::FeatureParam
     kGeminiCopresenceZeroStateWithChatHistoryParam[] = {
         {kGeminiCopresenceZeroStateWithChatHistory, "true"}};
+const FeatureEntry::FeatureParam
+    kGeminiCopresenceWithFullscreenDisablerParam[] = {
+        {kGeminiCopresenceWithFullscreenDisabler, "true"}};
 
 const FeatureEntry::FeatureVariation kGeminiCopresenceVariations[] = {
     {"Response Ready Interval", kGeminiCopresenceResponseReadyIntervalParam,
      nullptr},
     {"Zero State with Chat History",
      kGeminiCopresenceZeroStateWithChatHistoryParam, nullptr},
+    {"With Fullscreen Disabler", kGeminiCopresenceWithFullscreenDisablerParam,
+     nullptr},
 };
 
 const char kFRESignInHeaderTextUpdateParamName[] =

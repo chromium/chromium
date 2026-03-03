@@ -11060,6 +11060,11 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "GeminiCopresenceResponseReadyInterval": "7.0",
+                        "GeminiCopresenceWithFullscreenDisabler": "true",
+                        "GeminiCopresenceZeroStateWithChatHistory": "true"
+                    },
                     "enable_features": [
                         "GeminiCopresence",
                         "GeminiResponseViewDynamicResizing"
