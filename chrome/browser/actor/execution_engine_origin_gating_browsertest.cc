@@ -367,6 +367,51 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
       "Actor.NavigationGating.PermissionGranted", false, 1);
 }
 
+class ExecutionEngineOriginGatingExplicitGrantBrowserTest
+    : public ExecutionEngineOriginGatingBrowserTest {
+ public:
+  ExecutionEngineOriginGatingExplicitGrantBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        kGlicCrossOriginNavigationGating,
+        {{"allow_implicit_tool_origin_grants", "false"},
+         {"confirm_navigation_to_new_origins", "true"}});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingExplicitGrantBrowserTest,
+                       ImplicitGrantDisabled) {
+  const GURL start_url =
+      embedded_https_test_server().GetURL("example.com", "/actor/blank.html");
+  const GURL destination_url =
+      embedded_https_test_server().GetURL("foo.com", "/actor/blank.html");
+
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
+  OpenGlicAndCreateTask();
+
+  RunTestSequence(CreateMockWebClientRequest(
+      content::JsReplace(kHandleNavigationConfirmationTempl, false)));
+
+  std::unique_ptr<ToolRequest> navigate =
+      MakeNavigateRequest(*active_tab(), destination_url.spec());
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(navigate), result.GetCallback());
+
+  // Since implicit grant is disabled, it should try to prompt and get denied.
+  ExpectErrorResult(result,
+                    mojom::ActionResultCode::kTriggeredNavigationBlocked);
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ExecutionEngineOriginGatingExplicitGrantBrowserTest,
+                         testing::Bool(),
+                         [](auto& info) {
+                           return info.param ? "MultiInstance"
+                                             : "SingleInstance";
+                         });
+
 IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
                        ConfirmBlockedOriginWithUser_Granted) {
   base::HistogramTester histogram_tester;

@@ -49,6 +49,8 @@ BASE_DECLARE_FEATURE_PARAM(bool, kGlicNavigationGatingUseSiteNotOrigin);
 // Controls whether a hardcoded block list is enabled for the static block list.
 // TODO(crbug.com/453660392): Remove flag once Component Updater rollout starts.
 BASE_DECLARE_FEATURE_PARAM(bool, kGlicIncludeHardcodedBlockListEntries);
+// Controls whether tool requests can implicitly allow new origins.
+BASE_DECLARE_FEATURE_PARAM(bool, kGlicAllowImplicitToolOriginGrants);
 
 // Controls whether chrome records UMA metrics for navigations by sending the
 // `NavigationConfirmationRequest` and recording the response.

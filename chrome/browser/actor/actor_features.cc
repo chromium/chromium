@@ -75,6 +75,11 @@ BASE_FEATURE_PARAM(bool,
                    &kGlicCrossOriginNavigationGating,
                    "include_hardcoded_block_list_entries",
                    true);
+BASE_FEATURE_PARAM(bool,
+                   kGlicAllowImplicitToolOriginGrants,
+                   &kGlicCrossOriginNavigationGating,
+                   "allow_implicit_tool_origin_grants",
+                   true);
 
 BASE_FEATURE(kGlicRecordNavigationConfirmationRequestMetrics,
              base::FEATURE_DISABLED_BY_DEFAULT);

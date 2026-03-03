@@ -692,7 +692,8 @@ void ExecutionEngine::Act(std::vector<std::unique_ptr<ToolRequest>>&& actions,
     if (action->GetTabHandle() != tabs::TabHandle::Null()) {
       acting_tab_handles.insert(action->GetTabHandle().raw_value());
     }
-    if (IsNavigationGatingEnabled()) {
+    if (IsNavigationGatingEnabled() &&
+        kGlicAllowImplicitToolOriginGrants.Get()) {
       if (std::optional<url::Origin> maybe_origin =
               action->AssociatedOriginGrant();
           maybe_origin) {
