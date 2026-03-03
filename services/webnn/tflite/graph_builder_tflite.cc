@@ -4647,18 +4647,27 @@ auto GraphBuilderTflite::SerializeExpand(const mojom::Expand& expand)
       SerializeOutputTensorInfo(expand.output_operand_id);
 
   // Serialize the expanded shape to tflite tensor with output dimensions.
+  return SerializeBroadcastToOperation(input_tensor_info.index,
+                                       output_tensor_info.dimensions,
+                                       output_tensor_info.index);
+}
+
+auto GraphBuilderTflite::SerializeBroadcastToOperation(
+    TensorIndex input_tensor_index,
+    base::span<const int32_t> output_dimensions,
+    TensorIndex output_tensor_index)
+    -> base::expected<OperatorOffset, std::string> {
   const int32_t output_rank =
-      base::checked_cast<int32_t>(output_tensor_info.dimensions.size());
-  ASSIGN_OR_RETURN(
-      const TensorIndex new_shape_tensor_index,
-      SerializeTensorWithBuffer<int32_t>(output_tensor_info.dimensions,
-                                         std::array<int32_t, 1>{output_rank}));
+      base::checked_cast<int32_t>(output_dimensions.size());
+  ASSIGN_OR_RETURN(const TensorIndex new_shape_tensor_index,
+                   SerializeTensorWithBuffer<int32_t>(
+                       output_dimensions, std::array<int32_t, 1>{output_rank}));
 
   const OperatorCodeIndex operator_code_index = GetOperatorCodeIndex(
       ::tflite::BuiltinOperator_BROADCAST_TO, /*version=*/2);
-  const std::array<TensorIndex, 2> op_inputs = {input_tensor_info.index,
+  const std::array<TensorIndex, 2> op_inputs = {input_tensor_index,
                                                 new_shape_tensor_index};
-  const std::array<TensorIndex, 1> op_outputs = {output_tensor_info.index};
+  const std::array<TensorIndex, 1> op_outputs = {output_tensor_index};
   return ::tflite::CreateOperator(
       builder_, operator_code_index,
       builder_.CreateVector<TensorIndex>(op_inputs),
@@ -5000,51 +5009,35 @@ auto GraphBuilderTflite::SerializeGemm(const mojom::Gemm& gemm)
       is_emulated_c_expression ? std::nullopt
                                : CanFuseQuantizeAndGetOutput(gemm);
   const bool fuse_dequantize = quantized_output.has_value();
-  ASSIGN_OR_RETURN(const TensorInfo& a_tensor_info,
-                   SerializeInputTensorInfo(
-                       gemm.a_operand_id,
-                       /*quantize_params=*/0,
-                       /*operation_supports_float16=*/false, fuse_dequantize));
-  TensorIndex a_tensor_index = a_tensor_info.index;
-  // The permutation transpose first or second 2-D tensor.
-  static constexpr std::array<uint32_t, 2> permutation = {1u, 0u};
-  if (gemm.a_transpose) {
-    ASSIGN_OR_RETURN(a_tensor_index,
-                     InsertTransposeOperation(a_tensor_info, permutation));
-  }
-  // TODO(crbug.com/372932099): Avoid executing alpha * A * B if gemma.alpha ==
-  // 0.0f.
-  if (gemm.alpha != 1.0f) {
-    ASSIGN_OR_RETURN(const TensorIndex alpha_tensor_index,
-                     SerializeTensorWithBuffer<float>(
-                         /*buffer=*/std::array<float, 1>{gemm.alpha},
-                         /*dimensions=*/{}));
-    const TensorIndex output_tensor_index_of_mul = SerializeTemporaryTensor(
-        a_tensor_info.dimensions, a_tensor_info.data_type);
-    operators_.emplace_back(SerializeBinaryOperation(
-        ::tflite::BuiltinOperator_MUL, a_tensor_index, alpha_tensor_index,
-        output_tensor_index_of_mul));
-    a_tensor_index = output_tensor_index_of_mul;
-  }
 
-  // The WebNN Gemm follows the expression `alpha * A * B + beta * C`, where
-  // A is a 2-D tensor with shape [M, K], B is a 2-D tensor with shape [K,
-  // N] by default options, but Tflite Fully Connected's input and filter
-  // shapes are [batch, input_channels] and [output_channels,
-  // input_channels], so the Transpose operator need to be inserted before
-  // Gemm When bTranspose option is false.
-  ASSIGN_OR_RETURN(const TensorInfo& b_tensor_info,
-                   SerializeInputTensorInfo(
-                       gemm.b_operand_id,
-                       /*quantize_params=*/0,
-                       /*operation_supports_float16=*/false, fuse_dequantize));
-  TensorIndex b_tensor_index = b_tensor_info.index;
-  if (!gemm.b_transpose) {
-    ASSIGN_OR_RETURN(b_tensor_index,
-                     InsertTransposeOperation(b_tensor_info, permutation));
+  std::optional<TensorIndex> c_expression_index;
+  if (gemm.c_operand_id) {
+    // Serialize the C operand whether or not it is used because the final model
+    // must include all of the expected input tensors.
+    ASSIGN_OR_RETURN(
+        const TensorInfo c_tensor_info,
+        SerializeInputTensorInfo(*gemm.c_operand_id,
+                                 /*quantize_params=*/0,
+                                 /*operation_supports_float16=*/false,
+                                 fuse_dequantize));
+    CHECK(context_properties_.data_type_limits.gemm_c.Supports(
+        GetOperand(*gemm.c_operand_id).descriptor));
+    if (gemm.beta != 0.0f) {
+      c_expression_index = c_tensor_info.index;
+      if (gemm.beta != 1.0f) {
+        ASSIGN_OR_RETURN(const TensorIndex beta_tensor_index,
+                         SerializeTensorWithBuffer<float>(
+                             /*buffer=*/std::array<float, 1>{gemm.beta},
+                             /*dimensions=*/{}));
+        const TensorIndex output_tensor_index_of_mul = SerializeTemporaryTensor(
+            c_tensor_info.dimensions, c_tensor_info.data_type);
+        operators_.emplace_back(SerializeBinaryOperation(
+            ::tflite::BuiltinOperator_MUL, *c_expression_index,
+            beta_tensor_index, output_tensor_index_of_mul));
+        c_expression_index = output_tensor_index_of_mul;
+      }
+    }
   }
-  std::vector<TensorIndex> fully_connected_inputs = {a_tensor_index,
-                                                     b_tensor_index};
 
   TensorIndex output_tensor_index;
   std::vector<int32_t> output_tensor_dimensions;
@@ -5059,33 +5052,79 @@ auto GraphBuilderTflite::SerializeGemm(const mojom::Gemm& gemm)
     output_tensor_dimensions = std::move(output_tensor_info.dimensions);
     output_tensor_type = output_tensor_info.data_type;
   }
-  std::optional<TensorIndex> c_tensor_index;
-  if (gemm.c_operand_id && gemm.beta != 0.0f) {
-    CHECK(context_properties_.data_type_limits.gemm_c.Supports(
-        GetOperand(gemm.c_operand_id.value()).descriptor));
-    ASSIGN_OR_RETURN(
-        const TensorInfo& c_tensor_info,
-        SerializeInputTensorInfo(*gemm.c_operand_id,
-                                 /*quantize_params=*/0,
-                                 /*operation_supports_float16=*/false,
-                                 fuse_dequantize));
-    c_tensor_index = c_tensor_info.index;
-    if (gemm.beta != 1.0f) {
-      ASSIGN_OR_RETURN(const TensorIndex beta_tensor_index,
-                       SerializeTensorWithBuffer<float>(
-                           /*buffer=*/std::array<float, 1>{gemm.beta},
-                           /*dimensions=*/{}));
-      const TensorIndex output_tensor_index_of_mul = SerializeTemporaryTensor(
-          c_tensor_info.dimensions, c_tensor_info.data_type);
-      operators_.emplace_back(SerializeBinaryOperation(
-          ::tflite::BuiltinOperator_MUL, c_tensor_info.index, beta_tensor_index,
-          output_tensor_index_of_mul));
-      c_tensor_index = output_tensor_index_of_mul;
+
+  // Serialize the A operand whether or not it is used because the final model
+  // must include all of the expected input tensors.
+  ASSIGN_OR_RETURN(const TensorInfo& a_tensor_info,
+                   SerializeInputTensorInfo(
+                       gemm.a_operand_id,
+                       /*quantize_params=*/0,
+                       /*operation_supports_float16=*/false, fuse_dequantize));
+  TensorIndex a_tensor_index = a_tensor_info.index;
+
+  // The WebNN Gemm follows the expression `alpha * A * B + beta * C`, where
+  // A is a 2-D tensor with shape [M, K], B is a 2-D tensor with shape [K,
+  // N] by default options, but Tflite Fully Connected's input and filter
+  // shapes are [batch, input_channels] and [output_channels,
+  // input_channels], so the Transpose operator need to be inserted before
+  // Gemm When bTranspose option is false.
+  // Serialize the B operand whether or not it is used because the final model
+  // must include all of the expected input tensors.
+  ASSIGN_OR_RETURN(const TensorInfo& b_tensor_info,
+                   SerializeInputTensorInfo(
+                       gemm.b_operand_id,
+                       /*quantize_params=*/0,
+                       /*operation_supports_float16=*/false, fuse_dequantize));
+  TensorIndex b_tensor_index = b_tensor_info.index;
+
+  // Avoid executing alpha * A * B if gemm.alpha == 0.0f.
+  if (gemm.alpha == 0.0f) {
+    if (c_expression_index) {
+      // The WebNN Gemm follows the expression `alpha * A * B + beta * C`.
+      // When alpha is 0, the expression is simplified to `beta * C`.
+      return SerializeBroadcastToOperation(
+          *c_expression_index, output_tensor_dimensions, output_tensor_index);
     }
 
-    if (!is_emulated_c_expression) {
-      fully_connected_inputs.push_back(*c_tensor_index);
-    }
+    // No C term (or beta is 0), just return a zero tensor of the output
+    // shape. Use BROADCAST_TO to fill the output with zeros.
+    ASSIGN_OR_RETURN(const TensorIndex zero_tensor_index,
+                     SerializeTensorWithBuffer<float>(
+                         /*buffer=*/std::array<float, 1>{0.0f},
+                         /*dimensions=*/{}));
+    return SerializeBroadcastToOperation(
+        zero_tensor_index, output_tensor_dimensions, output_tensor_index);
+  }
+
+  // The permutation transpose first or second 2-D tensor.
+  static constexpr std::array<uint32_t, 2> permutation = {1u, 0u};
+  if (gemm.a_transpose) {
+    ASSIGN_OR_RETURN(a_tensor_index,
+                     InsertTransposeOperation(a_tensor_info, permutation));
+  }
+
+  if (gemm.alpha != 1.0f) {
+    ASSIGN_OR_RETURN(const TensorIndex alpha_tensor_index,
+                     SerializeTensorWithBuffer<float>(
+                         /*buffer=*/std::array<float, 1>{gemm.alpha},
+                         /*dimensions=*/{}));
+    const TensorIndex output_tensor_index_of_mul = SerializeTemporaryTensor(
+        a_tensor_info.dimensions, a_tensor_info.data_type);
+    operators_.emplace_back(SerializeBinaryOperation(
+        ::tflite::BuiltinOperator_MUL, a_tensor_index, alpha_tensor_index,
+        output_tensor_index_of_mul));
+    a_tensor_index = output_tensor_index_of_mul;
+  }
+
+  if (!gemm.b_transpose) {
+    ASSIGN_OR_RETURN(b_tensor_index,
+                     InsertTransposeOperation(b_tensor_info, permutation));
+  }
+  std::vector<TensorIndex> fully_connected_inputs = {a_tensor_index,
+                                                     b_tensor_index};
+
+  if (c_expression_index && !is_emulated_c_expression) {
+    fully_connected_inputs.push_back(*c_expression_index);
   }
 
   // Add the `beta * C` subexpression if it's not fused into FULLY_CONNECTED
@@ -5108,8 +5147,8 @@ auto GraphBuilderTflite::SerializeGemm(const mojom::Gemm& gemm)
     CHECK(!fuse_dequantize);
     operators_.push_back(operator_offset);
     operator_offset = SerializeBinaryOperation(
-        ::tflite::BuiltinOperator_ADD, addition_c_tensor_index, *c_tensor_index,
-        output_tensor_index);
+        ::tflite::BuiltinOperator_ADD, addition_c_tensor_index,
+        *c_expression_index, output_tensor_index);
   }
   return operator_offset;
 }
