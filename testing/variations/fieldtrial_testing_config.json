@@ -4210,24 +4210,6 @@
             ]
         }
     ],
-    "BoostThreadsPriority": [
-        {
-            "platforms": [
-                "windows",
-                "chromeos",
-                "linux",
-                "mac"
-            ],
-            "experiments": [
-                {
-                    "name": "IOThreadInteractive",
-                    "enable_features": [
-                        "IOThreadInteractiveThreadType"
-                    ]
-                }
-            ]
-        }
-    ],
     "BorealisProvision": [
         {
             "platforms": [
@@ -26233,6 +26215,30 @@
             "experiments": [
                 {
                     "name": "num_stddev_delay_clamp:5,num_stddev_delay_outlier:2,num_stddev_size_outlier:2,estimate_noise_when_congested:false,_20230118_BETA"
+                }
+            ]
+        }
+    ],
+    "WebRTC-MediaTaskQueuePriorities": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AomVpxUsePresentationThreadType",
+                        "IOThreadInteractiveThreadType",
+                        "UseHighPriorityThreadGroup",
+                        "WebRtcUseMediaThreadTypes"
+                    ]
                 }
             ]
         }
