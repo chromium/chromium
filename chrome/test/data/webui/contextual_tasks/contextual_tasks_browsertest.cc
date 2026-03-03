@@ -40,13 +40,16 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, MAYBE_App) {
   RunTest("contextual_tasks/app_test.js", "mocha.run();");
 }
 
-// TODO(crbug.com/480689282): Test disabled because it is flaky.
-IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, DISABLED_Composebox) {
+IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, Composebox) {
   RunTest("contextual_tasks/composebox_test.js", "mocha.run();");
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, Composebox_MiscInputs) {
   RunTest("contextual_tasks/composebox_misc_inputs_test.js", "mocha.run();");
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, Composebox_Submit) {
+  RunTest("contextual_tasks/composebox_submit_test.js", "mocha.run();");
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, PostMessageHandler) {
