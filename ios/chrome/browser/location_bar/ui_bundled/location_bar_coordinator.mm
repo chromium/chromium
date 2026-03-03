@@ -135,7 +135,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   // Service for local and profile preferences.
   raw_ptr<PrefService> _prefService;
   // Tracker for feature events.
-  raw_ptr<feature_engagement::Tracker, DanglingUntriaged> _tracker;
+  raw_ptr<feature_engagement::Tracker> _tracker;
 }
 // Whether the coordinator is started.
 @property(nonatomic, assign, getter=isStarted) BOOL started;
@@ -476,6 +476,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   _locationBarModel = nullptr;
   _locationBarModelDelegate = nullptr;
   _prefService = nullptr;
+  _tracker = nullptr;
 
   _badgeFullscreenUIUpdater = nullptr;
   _incognitoBadgeFullscreenUIUpdater = nullptr;
