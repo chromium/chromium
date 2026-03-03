@@ -1,0 +1,43 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("heavy_ad_intervention") {
+  sources = [
+    "heavy_ad_service_factory.cc",
+    "heavy_ad_service_factory.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+  ]
+
+  deps = [
+    "//components/heavy_ad_intervention",
+    "//content/public/browser",
+  ]
+}
+
+if (!is_android) {
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [ "heavy_ad_helper_browsertest.cc" ]
+
+    deps = [
+      ":heavy_ad_intervention",
+      "//chrome/browser:browser_process",
+      "//chrome/browser/ui",
+      "//chrome/test:test_support",
+      "//components/heavy_ad_intervention",
+      "//components/strings:components_strings_grit",
+      "//content/public/browser",
+      "//content/test:test_support",
+      "//net:test_support",
+      "//testing/gtest",
+      "//ui/base",
+      "//url",
+    ]
+  }
+}

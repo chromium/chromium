@@ -312,6 +312,7 @@ source_set("profiles_extra_parts_impl") {
     "//chrome/browser/feature_engagement",
     "//chrome/browser/file_system_access",
     "//chrome/browser/glic",
+    "//chrome/browser/heavy_ad_intervention",
     "//chrome/browser/history",
     "//chrome/browser/k_anonymity_service",
     "//chrome/browser/lookalikes",

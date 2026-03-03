@@ -4,7 +4,6 @@
 
 #include "chrome/browser/heavy_ad_intervention/heavy_ad_service_factory.h"
 
-#include "chrome/browser/profiles/profile.h"
 #include "components/heavy_ad_intervention/heavy_ad_service.h"
 #include "content/public/browser/browser_context.h"
 

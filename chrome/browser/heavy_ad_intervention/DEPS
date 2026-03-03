@@ -1,0 +1,19 @@
+include_rules = [
+  "-chrome/browser",
+  "+chrome/browser/heavy_ad_intervention",
+  "+chrome/browser/profiles",
+  "+components/heavy_ad_intervention",
+  "+content/public/browser",
+]
+
+specific_include_rules = {
+  "heavy_ad_helper_browsertest\.cc": [
+    "+chrome/browser/browser_process.h",
+    "+chrome/browser/ui/browser.h",
+    "+chrome/test",
+    "+components/strings/grit/components_strings.h",
+    "+content/public/test",
+    "+net/dns/mock_host_resolver.h",
+    "+ui/base/l10n/l10n_util.h",
+  ],
+}
