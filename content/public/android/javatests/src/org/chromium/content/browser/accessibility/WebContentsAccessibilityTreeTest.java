@@ -301,6 +301,12 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    public void test_ariaBreadcrumb() {
+        performAriaTest("aria-breadcrumb.html");
+    }
+
+    @Test
+    @SmallTest
     public void test_ariaBrailleLabel() {
         performAriaTest("aria-braillelabel.html");
     }

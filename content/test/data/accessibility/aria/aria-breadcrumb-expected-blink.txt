@@ -1,0 +1,17 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++navigation name='Breadcrumb'
+++++++++list
+++++++++++listItem
+++++++++++++listMarker name='1. '
+++++++++++++++staticText ignored
+++++++++++++link name='Breadcrumb Pattern'
+++++++++++++++staticText name='Breadcrumb Pattern'
+++++++++++++++++inlineTextBox name='Breadcrumb Pattern'
+++++++++++listItem
+++++++++++++listMarker name='2. '
+++++++++++++++staticText ignored
+++++++++++++link visited name='Breadcrumb Example'
+++++++++++++++staticText visited name='Breadcrumb Example'
+++++++++++++++++inlineTextBox name='Breadcrumb Example'

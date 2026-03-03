@@ -497,6 +497,12 @@ data/accessibility/aria/aria-brailleroledescription-expected-blink.txt
 data/accessibility/aria/aria-brailleroledescription-expected-mac.txt
 data/accessibility/aria/aria-brailleroledescription-expected-win.txt
 data/accessibility/aria/aria-brailleroledescription.html
+data/accessibility/aria/aria-breadcrumb-expected-android-external.txt
+data/accessibility/aria/aria-breadcrumb-expected-android.txt
+data/accessibility/aria/aria-breadcrumb-expected-blink.txt
+data/accessibility/aria/aria-breadcrumb-expected-mac.txt
+data/accessibility/aria/aria-breadcrumb-expected-win.txt
+data/accessibility/aria/aria-breadcrumb.html
 data/accessibility/aria/aria-busy-expected-android-assist-data.txt
 data/accessibility/aria/aria-busy-expected-android-external.txt
 data/accessibility/aria/aria-busy-expected-android.txt
