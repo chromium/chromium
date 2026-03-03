@@ -6,9 +6,9 @@ package org.chromium.base;
 
 import org.chromium.build.annotations.NullMarked;
 
-/** Delegate interface for Password Echo Split settings. */
+/** Delegate interface for Password Echo settings. */
 @NullMarked
-public interface PasswordEchoSplitSettingDelegate {
+public interface PasswordEchoSettingDelegate {
     /** Registers a callback to be invoked when the password echo settings change. */
     void registerCallback(Runnable callback);
 
