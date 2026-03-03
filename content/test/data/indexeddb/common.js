@@ -183,13 +183,11 @@ function promiseOpenDb(
     const openRequest = optionalVersion !== undefined ?
         indexedDB.open(dbName, optionalVersion) :
         indexedDB.open(dbName);
-    openRequest.onerror = () => {
-      const e = new Error('Error opening database ${dbName}');
-      unexepectedErrorCallback(e);
+    openRequest.onerror = (e) => {
+      unexpectedErrorCallback(e);
       reject(e);
     };
-    openRequest.onblocked = () => {
-      const e = new Error('Opening database ${dbName}');
+    openRequest.onblocked = (e) => {
       unexpectedBlockedCallback(e);
       reject(e);
     };
@@ -200,7 +198,7 @@ function promiseOpenDb(
         optionalUpgradeCallback(db, txn);
       };
     }
-    openRequest.onsuccess = () => {
+    openRequest.onsuccess = (event) => {
       db = event.target.result;
       resolve(db);
     };

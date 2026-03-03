@@ -321,6 +321,11 @@ void BucketContext::ForceClose(bool doom, const std::string& message) {
     skip_closing_sequence_ = true;
   }
 
+  if (doom) {
+    // This ensures `this` will be deleted.
+    receivers_.Clear();
+  }
+
   // Initiate deletion if appropriate.
   RunTasks();
 }

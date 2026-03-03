@@ -93,19 +93,26 @@ StorageArea* GlobalStorageAccessHandle::GetLocalStorageArea() {
   return local_storage_area_;
 }
 
+void GlobalStorageAccessHandle::ConnectIDBFactory(
+    mojo::PendingReceiver<mojom::blink::IDBFactory> pending) {
+  HeapMojoRemote<mojom::blink::StorageAccessHandle>& remote = GetRemote();
+  if (remote && remote.is_connected()) {
+    remote->BindIndexedDB(std::move(pending));
+  }
+}
+
 IDBFactory* GlobalStorageAccessHandle::GetIDBFactory() {
   if (!idb_factory_) {
     if (!GetSupplementable()->GetSecurityOrigin()->CanAccessDatabase()) {
       return nullptr;
     }
-    HeapMojoRemote<mojom::blink::StorageAccessHandle>& remote = GetRemote();
-    if (!remote) {
+    if (!GetRemote()) {
       return nullptr;
     }
-    mojo::PendingRemote<mojom::blink::IDBFactory> indexed_db_remote;
-    remote->BindIndexedDB(indexed_db_remote.InitWithNewPipeAndPassReceiver());
     idb_factory_ = MakeGarbageCollected<IDBFactory>(GetSupplementable());
-    idb_factory_->SetRemote(std::move(indexed_db_remote));
+    idb_factory_->SetRemoteConnector(
+        blink::BindRepeating(&GlobalStorageAccessHandle::ConnectIDBFactory,
+                             WrapWeakPersistent(this)));
   }
   return idb_factory_;
 }

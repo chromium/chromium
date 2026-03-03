@@ -447,6 +447,9 @@ void IndexedDBContextImpl::DeleteBucketData(const BucketLocator& bucket_locator,
 void IndexedDBContextImpl::DidForceCloseForDeleteBucketData(
     const storage::BucketLocator& bucket_locator,
     DeleteBucketDataCallback callback) {
+  // The `BucketContext` should have initiated its own deletion by now.
+  CHECK(!bucket_contexts_.contains(bucket_locator.id));
+
   if (in_memory()) {
     bucket_set_.erase(bucket_locator);
     bucket_size_map_.erase(bucket_locator);

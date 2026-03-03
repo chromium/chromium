@@ -64,6 +64,9 @@ class StorageBucket final : public ScriptWrappable,
   void Trace(Visitor*) const override;
 
  private:
+  void ConnectIDBFactory(
+      mojo::PendingReceiver<mojom::blink::IDBFactory> pending);
+
   void DidRequestPersist(ScriptPromiseResolver<IDLBoolean>* resolver,
                          bool persisted,
                          bool success);

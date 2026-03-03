@@ -1551,6 +1551,32 @@ IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTest, ForceCloseEventTest) {
   EXPECT_EQ(expected_title16, title_watcher.WaitAndGetTitle());
 }
 
+// Regression test for crbug.com/340398745 where two different `BucketContext`s
+// tried to use the same data directory.
+IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTest, ForceCloseReopen) {
+  // Use IDB in the simplest way possible.
+  GURL test_url = GetTestUrl("indexeddb", "database_test.html");
+  SimpleTest(test_url);
+  // Forcibly close the bucket and delete the data while the page is still
+  // active.
+  DeleteBucketData(
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(test_url)));
+  // Use IDB again through the same IDBFactory (`window.indexedDB`). This
+  // re-creates the backing store.
+  EXPECT_TRUE(ExecJs(shell(), "test()"));
+
+  // Run the test again in a different window. This creates a new connection to
+  // what should be the same bucket/backing store. Note that in the original bug
+  // report (against the LevelDB backend), just refreshing was enough to trigger
+  // the bug. For SQLite, this has to be a parallel window, because as of the
+  // time of writing this test, reloading the page will immediately delete the
+  // DatabaseConnection and then a new one will be created for the new page.
+  Shell* window2 =
+      Shell::CreateNewWindow(shell()->web_contents()->GetBrowserContext(),
+                             GURL("about:blank"), nullptr, gfx::Size());
+  SimpleTest(test_url, window2);
+}
+
 IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTest, ShutdownWithRequests) {
   SimpleTest(GetTestUrl("indexeddb", "shutdown_with_requests.html"));
 }

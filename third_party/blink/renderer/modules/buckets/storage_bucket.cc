@@ -156,12 +156,18 @@ ScriptPromise<IDLNullable<IDLDOMHighResTimeStamp>> StorageBucket::expires(
   return promise;
 }
 
+void StorageBucket::ConnectIDBFactory(
+    mojo::PendingReceiver<mojom::blink::IDBFactory> pending) {
+  if (remote_ && remote_.is_connected()) {
+    remote_->GetIdbFactory(std::move(pending));
+  }
+}
+
 IDBFactory* StorageBucket::indexedDB() {
   if (!idb_factory_) {
     idb_factory_ = MakeGarbageCollected<IDBFactory>(GetExecutionContext());
-    mojo::PendingRemote<mojom::blink::IDBFactory> remote_factory;
-    remote_->GetIdbFactory(remote_factory.InitWithNewPipeAndPassReceiver());
-    idb_factory_->SetRemote(std::move(remote_factory));
+    idb_factory_->SetRemoteConnector(blink::BindRepeating(
+        &StorageBucket::ConnectIDBFactory, WrapWeakPersistent(this)));
   }
   return idb_factory_.Get();
 }

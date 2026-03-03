@@ -54,6 +54,9 @@ class GlobalStorageAccessHandle final
   void Trace(Visitor* visitor) const override;
 
  private:
+  void ConnectIDBFactory(
+      mojo::PendingReceiver<mojom::blink::IDBFactory> pending);
+
   HeapMojoRemote<mojom::blink::StorageAccessHandle> remote_;
   Member<StorageArea> session_storage_area_;
   Member<StorageArea> local_storage_area_;

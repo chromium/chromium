@@ -90,10 +90,12 @@ void IDBFactory::Trace(Visitor* visitor) const {
   visitor->Trace(weak_factory_);
 }
 
-void IDBFactory::SetRemote(
-    mojo::PendingRemote<mojom::blink::IDBFactory> remote) {
-  DCHECK(!remote_);
-  remote_.Bind(std::move(remote), GetTaskRunner());
+void IDBFactory::SetRemoteConnector(
+    base::RepeatingCallback<
+        void(mojo::PendingReceiver<mojom::blink::IDBFactory>)> callback) {
+  CHECK(!remote_connector_);
+  remote_connector_ = std::move(callback);
+  GetRemote();
 }
 
 ExecutionContext* IDBFactory::GetValidContext(ScriptState* script_state) {
@@ -112,11 +114,20 @@ ExecutionContext* IDBFactory::GetValidContext(ScriptState* script_state) {
 }
 
 HeapMojoRemote<mojom::blink::IDBFactory>& IDBFactory::GetRemote() {
+  // The remote will get disconnected when the associated bucket is deleted. In
+  // this case we need to re-bind.
+  if (remote_ && !remote_.is_connected()) {
+    remote_.reset();
+  }
+
   if (!remote_) {
-    mojo::PendingRemote<mojom::blink::IDBFactory> remote;
-    GetExecutionContext()->GetBrowserInterfaceBroker().GetInterface(
-        remote.InitWithNewPipeAndPassReceiver());
-    SetRemote(std::move(remote));
+    auto pending_receiver = remote_.BindNewPipeAndPassReceiver(GetTaskRunner());
+    if (remote_connector_) {
+      remote_connector_.Run(std::move(pending_receiver));
+    } else {
+      GetExecutionContext()->GetBrowserInterfaceBroker().GetInterface(
+          std::move(pending_receiver));
+    }
   }
   return remote_;
 }

@@ -53,7 +53,14 @@ IDBFactoryClient::IDBFactoryClient(IDBOpenDBRequest* request)
 }
 
 IDBFactoryClient::~IDBFactoryClient() {
-  Detach();
+  if (!request_) {
+    return;
+  }
+  // This path is reachable when the backend force-deletes the bucket while a
+  // request (such as `Open()`) is in flight, dropping the `IDBFactoryClient`
+  // pipe. Match the error that would be returned if the request had made it
+  // into the `ConnectionCoordinator` before the bucket was forcibly deleted.
+  Error(mojom::blink::IDBException::kAbortError, u"The connection was closed.");
 }
 
 void IDBFactoryClient::Detach() {

@@ -63,7 +63,9 @@ class MODULES_EXPORT IDBFactory final
   explicit IDBFactory(ExecutionContext* context);
   ~IDBFactory() override;
 
-  void SetRemote(mojo::PendingRemote<mojom::blink::IDBFactory>);
+  void SetRemoteConnector(
+      base::RepeatingCallback<
+          void(mojo::PendingReceiver<mojom::blink::IDBFactory>)> callback);
 
   // Implement the IDBFactory IDL
   IDBOpenDBRequest* open(ScriptState*, const String& name, ExceptionState&);
@@ -122,10 +124,9 @@ class MODULES_EXPORT IDBFactory final
                                            const String& name,
                                            ExceptionState&,
                                            bool);
-  void DeleteDatabaseInternalImpl(
-      IDBOpenDBRequest* request,
-      const String& name,
-      bool force_close);
+  void DeleteDatabaseInternalImpl(IDBOpenDBRequest* request,
+                                  const String& name,
+                                  bool force_close);
 
   void GetDatabaseInfoImpl(
       ScriptPromiseResolver<IDLSequence<IDBDatabaseInfo>>*);
@@ -148,6 +149,11 @@ class MODULES_EXPORT IDBFactory final
   // Holds requests that were paused while `allowed_` is being fetched. These
   // will all be invoked in order when `allowed_` is decided.
   Vector<base::OnceClosure> callbacks_waiting_on_permission_decision_;
+
+  // When non-null, overrides the normal means of binding `remote_`. This exists
+  // because `this` self-heals its connection.
+  base::RepeatingCallback<void(mojo::PendingReceiver<mojom::blink::IDBFactory>)>
+      remote_connector_;
 
   HeapMojoRemote<mojom::blink::IDBFactory> remote_;
 
