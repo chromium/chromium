@@ -41,6 +41,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/sessions/content/session_tab_helper.h"
+#include "components/tabs/public/split_tab_data.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/translate/core/browser/language_state.h"
 #include "components/translate/core/common/language_detection_details.h"
@@ -79,7 +80,6 @@
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
-#include "components/tabs/public/split_tab_data.h"
 #include "components/webapps/isolated_web_apps/scheme.h"
 #endif
 
@@ -492,6 +492,21 @@ bool GetTabHandleById(int tab_id,
   }
   *tab_handle_out = tab_list->GetTab(index)->GetHandle();
   return true;
+}
+
+// Returns all tabs that are in the split indicated by `split_id` within the
+// specified `tab_list`.
+std::vector<::tabs::TabHandle> GetTabsInSplit(
+    const split_tabs::SplitTabId& split_id,
+    TabListInterface& tab_list) {
+  std::vector<::tabs::TabHandle> split_tabs;
+  for (::tabs::TabInterface* tab : tab_list.GetAllTabs()) {
+    if (tab->GetSplit() == split_id) {
+      split_tabs.push_back(tab->GetHandle());
+    }
+  }
+
+  return split_tabs;
 }
 
 }  // namespace
@@ -2208,9 +2223,6 @@ ExtensionFunction::ResponseAction TabsHighlightFunction::Run() {
   }
 
   std::set<::tabs::TabHandle> tabs;
-#if !BUILDFLAG(IS_ANDROID)
-  TabStripModel* tab_strip = window_controller->GetBrowser()->tab_strip_model();
-#endif
   for (int index : tab_indices) {
     // Make sure the index is in range.
     if (index < 0 || index >= tab_list->GetTabCount()) {
@@ -2222,26 +2234,16 @@ ExtensionFunction::ResponseAction TabsHighlightFunction::Run() {
     CHECK(tab);
     tabs.insert(tab->GetHandle());
 
-    // TODO(https://crbug.com/480192698): When split tabs are available on
-    // android, port this logic.
-#if !BUILDFLAG(IS_ANDROID)
     // Extend selection for any split tabs.
-    std::optional<split_tabs::SplitTabId> split_id =
-        tab_strip->GetSplitForTab(index);
+    std::optional<split_tabs::SplitTabId> split_id = tab->GetSplit();
     if (!split_id.has_value()) {
       continue;
     }
 
     // All the tabs in a split should be contiguous.
-    std::vector<::tabs::TabInterface*> split_tabs =
-        tab_strip->GetSplitData(split_id.value())->ListTabs();
-    size_t start = tab_strip->GetIndexOfTab(split_tabs[0]);
-    for (size_t i = start; i < start + split_tabs.size(); ++i) {
-      ::tabs::TabInterface* split_tab = tab_list->GetTab(i);
-      CHECK(split_tab);
-      tabs.insert(split_tab->GetHandle());
-    }
-#endif  // !BUILDFLAG(IS_ANDROID)
+    std::vector<::tabs::TabHandle> split_tabs =
+        GetTabsInSplit(*split_id, *tab_list);
+    tabs.insert(split_tabs.begin(), split_tabs.end());
   }
 
   // We just checked all the indices above (of which active_tab_index is a
@@ -2497,24 +2499,20 @@ bool TabsUpdateFunction::UpdateHighlightedTab(
 
   // Get the list of tabs affected by this update call. This is the specified
   // tab, along with any other tabs in that tab's split.
-  std::set<::tabs::TabHandle> affected_tabs;
+  std::vector<::tabs::TabHandle> affected_tabs;
   std::optional<split_tabs::SplitTabId> split_id = target_tab.GetSplit();
   if (split_id) {
-    for (::tabs::TabInterface* tab : tab_list.GetAllTabs()) {
-      if (tab->GetSplit() == split_id) {
-        affected_tabs.insert(tab->GetHandle());
-      }
-    }
+    affected_tabs = GetTabsInSplit(*split_id, tab_list);
   } else {
-    affected_tabs.insert(target_tab.GetHandle());
+    affected_tabs.push_back(target_tab.GetHandle());
   }
 
   // Add or remove the affected tabs from the split.
   if (highlighted) {
     selected_tabs.insert(affected_tabs.begin(), affected_tabs.end());
   } else {
-    for (auto& tab : affected_tabs) {
-      selected_tabs.erase(tab);
+    for (auto& affected_tab : affected_tabs) {
+      selected_tabs.erase(affected_tab);
     }
   }
 
@@ -2999,10 +2997,6 @@ ExtensionFunction::ResponseAction TabsGroupFunction::Run() {
   // after all tabs are moved so that any callbacks are resolved. The set will
   // dedupe any duplicate tabs.
   std::set<::tabs::TabHandle> tab_handles;
-  // TODO(https://crbug.com/447211263): Support on desktop android.
-#if !BUILDFLAG(IS_ANDROID)
-  TabStripModel* tab_strip = target_window->GetBrowser()->tab_strip_model();
-#endif
   for (int tab_id : tab_ids) {
     ::tabs::TabHandle tab_handle;
     if (!GetTabHandleById(tab_id, *browser_context(),
@@ -3011,7 +3005,6 @@ ExtensionFunction::ResponseAction TabsGroupFunction::Run() {
       return RespondNow(Error(std::move(error)));
     }
 
-#if !BUILDFLAG(IS_ANDROID)
     if (tab_handles.count(tab_handle)) {
       continue;
     }
@@ -3021,17 +3014,12 @@ ExtensionFunction::ResponseAction TabsGroupFunction::Run() {
 
     const std::optional<split_tabs::SplitTabId> split_id = tab->GetSplit();
     if (split_id.has_value()) {
-      const std::vector<::tabs::TabInterface*> split_tabs =
-          tab_strip->GetSplitData(split_id.value())->ListTabs();
-      for (::tabs::TabInterface* split_tab : split_tabs) {
-        tab_handles.insert(split_tab->GetHandle());
-      }
+      const std::vector<::tabs::TabHandle> split_tabs =
+          GetTabsInSplit(*split_id, *tab_list);
+      tab_handles.insert(split_tabs.begin(), split_tabs.end());
     } else {
       tab_handles.insert(tab_handle);
     }
-#else
-    tab_handles.insert(tab_handle);
-#endif
   }
 
   // Get the remaining group metadata and add the tabs to the group.
@@ -3109,25 +3097,13 @@ bool TabsUngroupFunction::UngroupTab(int tab_id, std::string* error) {
   CHECK(tab);
   tabs.insert(tab->GetHandle());
 
-  // TODO(https://crbug.com/480192698): When split tabs are available on
-  // android, port this logic.
-#if !BUILDFLAG(IS_ANDROID)
   // Extend selection for any split tabs.
-  TabStripModel* tab_strip = window->GetBrowser()->tab_strip_model();
-  std::optional<split_tabs::SplitTabId> split_id =
-      tab_strip->GetSplitForTab(tab_index);
+  std::optional<split_tabs::SplitTabId> split_id = tab->GetSplit();
   if (split_id.has_value()) {
-    // All the tabs in a split should be contiguous.
-    std::vector<::tabs::TabInterface*> split_tabs =
-        tab_strip->GetSplitData(split_id.value())->ListTabs();
-    size_t start = tab_strip->GetIndexOfTab(split_tabs[0]);
-    for (size_t i = start; i < start + split_tabs.size(); ++i) {
-      ::tabs::TabInterface* split_tab = tab_list->GetTab(i);
-      CHECK(split_tab);
-      tabs.insert(split_tab->GetHandle());
-    }
+    std::vector<::tabs::TabHandle> split_tabs =
+        GetTabsInSplit(*split_id, *tab_list);
+    tabs.insert(split_tabs.begin(), split_tabs.end());
   }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
   tab_list->Ungroup(tabs);
   return true;
