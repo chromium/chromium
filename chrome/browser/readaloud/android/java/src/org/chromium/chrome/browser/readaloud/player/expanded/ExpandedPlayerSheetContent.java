@@ -26,7 +26,6 @@ import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.readaloud.ReadAloudFeatures;
 import org.chromium.chrome.browser.readaloud.player.Colors;
 import org.chromium.chrome.browser.readaloud.player.InteractionHandler;
 import org.chromium.chrome.browser.readaloud.player.PlayerProperties;
@@ -289,11 +288,7 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
             mModeSelectorButton.setContentDescription(mContext.getString(R.string.readaloud_playback_mode_selector_classic));
             chromeNowPlaying.setText(
                     mContext.getString(R.string.readaloud_chrome_now_playing_audio_overview));
-            if (ReadAloudFeatures.isAudioOverviewsFeedbackAllowed()) {
-                showFeedbackButtons();
-            } else {
-              hideFeedbackButtons();
-            }
+            showFeedbackButtons();
             hideMoreOptions();
         } else {
             mIsModeActive = false;

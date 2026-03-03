@@ -229,7 +229,6 @@ BASE_DECLARE_FEATURE(kPwaRestoreUi);
 BASE_DECLARE_FEATURE(kPwaRestoreUiAtStartup);
 BASE_DECLARE_FEATURE(kReadAloud);
 BASE_DECLARE_FEATURE(kReadAloudAudioOverviews);
-BASE_DECLARE_FEATURE(kReadAloudAudioOverviewsFeedback);
 BASE_DECLARE_FEATURE(kReadAloudIPHMenuButtonHighlightCCT);
 BASE_DECLARE_FEATURE(kReadAloudPlayback);
 BASE_DECLARE_FEATURE(kReadAloudServerExperiments);

@@ -398,7 +398,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kPwaRestoreUiAtStartup,
     &kReadAloud,
     &kReadAloudAudioOverviews,
-    &kReadAloudAudioOverviewsFeedback,
     &kReadAloudIPHMenuButtonHighlightCCT,
     &kReadAloudPlayback,
     &kRecentlyClosedTabsAndWindows,
@@ -739,7 +738,6 @@ BASE_FEATURE(kPwaRestoreUi, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kPwaRestoreUiAtStartup, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kReadAloud, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kReadAloudAudioOverviews, base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kReadAloudAudioOverviewsFeedback, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kReadAloudIPHMenuButtonHighlightCCT, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kReadAloudPlayback, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kReadAloudServerExperiments, base::FEATURE_DISABLED_BY_DEFAULT);

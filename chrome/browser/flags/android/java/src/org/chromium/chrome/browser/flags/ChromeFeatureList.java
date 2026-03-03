@@ -561,8 +561,6 @@ public abstract class ChromeFeatureList {
     public static final String QUIET_NOTIFICATION_PROMPTS = "QuietNotificationPrompts";
     public static final String READALOUD = "ReadAloud";
     public static final String READALOUD_AUDIO_OVERVIEWS = "ReadAloudAudioOverviews";
-    public static final String READALOUD_AUDIO_OVERVIEWS_FEEDBACK =
-            "ReadAloudAudioOverviewsFeedback";
     public static final String READALOUD_IPH_MENU_BUTTON_HIGHLIGHT_CCT =
             "ReadAloudIPHMenuButtonHighlightCCT";
     public static final String READALOUD_PLAYBACK = "ReadAloudPlayback";
