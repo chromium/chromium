@@ -947,6 +947,13 @@ void ClientSideDetectionHost::PrimaryPageChanged(content::Page& page) {
   weak_factory_.InvalidateWeakPtrs();
 
   if (base::FeatureList::IsEnabled(kClientSideDetectionNewObservers)) {
+    if (did_first_visually_non_empty_paint_ ^ on_first_contentful_paint_) {
+      auto value = did_first_visually_non_empty_paint_
+                       ? CSDObserverCalled::kDidFirstVisuallyNonEmptyPaint
+                       : CSDObserverCalled::kOnFirstContentfulPaint;
+      base::UmaHistogramEnumeration(
+          "SBClientPhishing.SingleObserverCalledOnNewPage", value);
+    }
     did_first_visually_non_empty_paint_ = false;
     on_first_contentful_paint_ = false;
     trigger_model_request_sent_as_force_request_ = false;

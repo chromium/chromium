@@ -1496,6 +1496,17 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
+<histogram name="SBClientPhishing.SingleObserverCalledOnNewPage"
+    enum="CSDObserverCalled" expires_after="2027-03-02">
+  <owner>andysjlim@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the single observer that was fired when there is a new page loading
+    and the other observer CSD listens to has not been called. This is only
+    called when one of the observers is fired and not the other.
+  </summary>
+</histogram>
+
 <histogram name="SBClientPhishing.TimeSinceLastReportAtLimit" units="ms"
     expires_after="2027-02-22">
   <owner>andysjlim@chromium.org</owner>

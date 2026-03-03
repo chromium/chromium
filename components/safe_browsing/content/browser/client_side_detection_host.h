@@ -77,6 +77,14 @@ class ClientSideDetectionHost
     kMaxValue = kSkippedTriggerModelsPingSentAsForceRequest,
   };
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class CSDObserverCalled {
+    kOnFirstContentfulPaint = 0,
+    kDidFirstVisuallyNonEmptyPaint = 1,
+    kMaxValue = kDidFirstVisuallyNonEmptyPaint,
+  };
+
   // A callback via which the client of this component indicates whether the
   // primary account is signed in.
   using PrimaryAccountSignedIn = base::RepeatingCallback<bool()>;

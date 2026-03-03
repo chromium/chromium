@@ -231,6 +231,11 @@ chromium-metrics-reviews@google.com.
       label="Repeat visit, SMS referring app, Autofill server heuristic"/>
 </enum>
 
+<enum name="CSDObserverCalled">
+  <int value="0" label="OnFirstContentfulPaint"/>
+  <int value="1" label="DidFirstVisuallyNonEmptyPaint"/>
+</enum>
+
 <enum name="IntelligentScanVerdict">
   <int value="0" label="Unspecified"/>
   <int value="1" label="Intelligent scan verdict safe"/>
