@@ -8,10 +8,17 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.verify;
 
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -25,6 +32,10 @@ import java.util.Set;
 /** Tests for {@link AutocompleteInput}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class AutocompleteInputUnitTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Mock private Callback<Integer> mToolModeCallback;
+
     private final AutocompleteInput mInput = new AutocompleteInput();
 
     private void verifyCacheablePageClasses(Set<Integer> allowedPageClasses) {
@@ -327,12 +338,31 @@ public class AutocompleteInputUnitTest {
     }
 
     @Test
-    public void toolMode() {
-        assertEquals(ToolMode.TOOL_MODE_UNSPECIFIED_VALUE, mInput.getToolMode());
+    public void testGetToolMode() {
+        assertEquals(
+                ToolMode.TOOL_MODE_UNSPECIFIED_VALUE,
+                mInput.getToolModeSupplier().get().intValue());
         mInput.setRequestType(AutocompleteRequestType.IMAGE_GENERATION);
-        assertEquals(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE, mInput.getToolMode());
+        assertEquals(
+                ToolMode.TOOL_MODE_IMAGE_GEN_VALUE, mInput.getToolModeSupplier().get().intValue());
         mInput.setHasAttachments(true);
         assertEquals(
-                ToolMode.TOOL_MODE_IMAGE_GEN_UPLOAD_VALUE, mInput.getToolMode());
+                ToolMode.TOOL_MODE_IMAGE_GEN_UPLOAD_VALUE,
+                mInput.getToolModeSupplier().get().intValue());
+    }
+
+    @Test
+    public void testToolModeObservations() {
+        mInput.getToolModeSupplier().addSyncObserverAndCallIfNonNull(mToolModeCallback);
+        verify(mToolModeCallback).onResult(ToolMode.TOOL_MODE_UNSPECIFIED_VALUE);
+
+        mInput.setRequestType(AutocompleteRequestType.IMAGE_GENERATION);
+        verify(mToolModeCallback).onResult(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE);
+
+        mInput.setHasAttachments(true);
+        verify(mToolModeCallback).onResult(ToolMode.TOOL_MODE_IMAGE_GEN_UPLOAD_VALUE);
+
+        mInput.reset();
+        verify(mToolModeCallback, atLeastOnce()).onResult(ToolMode.TOOL_MODE_UNSPECIFIED_VALUE);
     }
 }

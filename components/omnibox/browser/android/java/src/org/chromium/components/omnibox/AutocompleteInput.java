@@ -68,6 +68,8 @@ public class AutocompleteInput implements UserData {
     private final SettableNonNullObservableSupplier<@AutocompleteRequestType Integer>
             mRequestTypeSupplier =
                     ObservableSuppliers.createNonNull(AutocompleteRequestType.SEARCH);
+    private final SettableNonNullObservableSupplier<Integer> mToolModeSupplier =
+            ObservableSuppliers.createNonNull(ToolMode.TOOL_MODE_UNSPECIFIED_VALUE);
     private final SettableNullableObservableSupplier<String> mCurrentKeyword =
             ObservableSuppliers.createNullable();
 
@@ -175,6 +177,7 @@ public class AutocompleteInput implements UserData {
     /** Set the AutocompleteRequestType */
     public AutocompleteInput setRequestType(@AutocompleteRequestType int type) {
         mRequestTypeSupplier.set(type);
+        updateToolMode();
         return this;
     }
 
@@ -226,15 +229,9 @@ public class AutocompleteInput implements UserData {
         return mRequestTypeSupplier.get() == AutocompleteRequestType.SEARCH;
     }
 
-    /** Returns the Autocomplete Tool to use to fulfill the Request. */
-    public /* ToolMode */ int getToolMode() {
-        return switch (mRequestTypeSupplier.get()) {
-            case AutocompleteRequestType.IMAGE_GENERATION ->
-                    mHasAttachments
-                            ? ToolMode.TOOL_MODE_IMAGE_GEN_UPLOAD_VALUE
-                            : ToolMode.TOOL_MODE_IMAGE_GEN_VALUE;
-            default -> ToolMode.TOOL_MODE_UNSPECIFIED_VALUE;
-        };
+    /** Returns a supplier for the Autocomplete Tool that is currently selected. */
+    public NonNullObservableSupplier</* ToolMode */ Integer> getToolModeSupplier() {
+        return mToolModeSupplier;
     }
 
     /**
@@ -305,6 +302,7 @@ public class AutocompleteInput implements UserData {
 
     public void setHasAttachments(boolean hasAttachments) {
         mHasAttachments = hasAttachments;
+        updateToolMode();
     }
 
     public AutocompleteInput setSelection(int rangeStart, int rangeEnd) {
@@ -352,6 +350,7 @@ public class AutocompleteInput implements UserData {
         mUrlFocusTime = 0;
         mSuggestionsListScrolled = false;
         mSuppressAutomaticSuggestionsUntilUserStartsTyping = false;
+        updateToolMode();
 
         return this;
     }
@@ -385,5 +384,17 @@ public class AutocompleteInput implements UserData {
             boolean suppress) {
         mSuppressAutomaticSuggestionsUntilUserStartsTyping = suppress;
         return this;
+    }
+
+    private void updateToolMode() {
+        int mode =
+                switch (mRequestTypeSupplier.get()) {
+                    case AutocompleteRequestType.IMAGE_GENERATION ->
+                            mHasAttachments
+                                    ? ToolMode.TOOL_MODE_IMAGE_GEN_UPLOAD_VALUE
+                                    : ToolMode.TOOL_MODE_IMAGE_GEN_VALUE;
+                    default -> ToolMode.TOOL_MODE_UNSPECIFIED_VALUE;
+                };
+        mToolModeSupplier.set(mode);
     }
 }

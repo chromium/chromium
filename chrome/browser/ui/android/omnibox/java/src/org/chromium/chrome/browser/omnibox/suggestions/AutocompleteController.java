@@ -115,7 +115,7 @@ public class AutocompleteController {
                         null,
                         input.getPageUrl().getSpec(),
                         input.getPageClassification(),
-                        input.getToolMode(),
+                        input.getToolModeSupplier().get(),
                         preventInlineAutocomplete,
                         OmniboxFeatures.sOmniboxSiteSearch.isEnabled(),
                         input.allowExactKeywordMatch(),
@@ -184,7 +184,7 @@ public class AutocompleteController {
                         input.getUserText(),
                         input.getPageUrl().getSpec(),
                         input.getPageClassification(),
-                        input.getToolMode(),
+                        input.getToolModeSupplier().get(),
                         input.getPageTitle());
     }
 
