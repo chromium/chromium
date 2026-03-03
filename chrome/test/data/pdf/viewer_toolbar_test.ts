@@ -240,8 +240,7 @@ const tests = [
 
     toolbar.twoUpViewEnabled = false;
     await microtasksFinished();
-    const button =
-        toolbar.shadowRoot.querySelector<HTMLElement>('#two-page-view-button')!;
+    const button = toolbar.$.twoPageViewButton;
     assertCheckboxMenuButton(toolbar, button, false);
 
     let whenChanged = eventToPromise('two-up-view-changed', toolbar);
@@ -321,19 +320,16 @@ const tests = [
 
   async function testPresentButton() {
     const toolbar = createToolbar();
-    const button =
-        toolbar.shadowRoot.querySelector<HTMLElement>('#present-button');
-    chrome.test.assertTrue(!!button);
 
-    chrome.test.assertFalse(toolbar.$['present-button'].disabled);
+    chrome.test.assertFalse(toolbar.$.presentButton.disabled);
     const whenFired = eventToPromise('present-click', toolbar);
-    button.click();
+    toolbar.$.presentButton.click();
     await whenFired;
 
     // The present button should be disabled if the PDF Viewer is embedded.
     toolbar.embeddedViewer = true;
     await microtasksFinished();
-    chrome.test.assertTrue(toolbar.$['present-button'].disabled);
+    chrome.test.assertTrue(toolbar.$.presentButton.disabled);
     chrome.test.succeed();
   },
 

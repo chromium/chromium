@@ -57,8 +57,8 @@ export interface ViewerToolbarElement {
   $: {
     sidenavToggle: HTMLButtonElement,
     menu: CrActionMenuElement,
-    'present-button': HTMLButtonElement,
-    'two-page-view-button': HTMLButtonElement,
+    presentButton: HTMLButtonElement,
+    twoPageViewButton: HTMLButtonElement,
   };
 }
 

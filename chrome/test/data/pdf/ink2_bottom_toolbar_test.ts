@@ -7,7 +7,7 @@ import type {InkColorSelectorElement, InkSizeSelectorElement, ViewerBottomToolba
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {assertAnnotationBrush, assertSelectedSize, clickDropdownButton, getBrushSelector, getColorButtons, getRequiredElement, getSizeButtons, setGetAnnotationBrushReply, setupMockMetricsPrivate, setupTestMockPluginForInk} from './test_util.js';
+import {assertAnnotationBrush, assertSelectedSize, clickDropdownButton, getBrush, getBrushSelector, getColorButtons, getRequiredElement, getSizeButtons, setGetAnnotationBrushReply, setupMockMetricsPrivate, setupTestMockPluginForInk} from './test_util.js';
 
 const viewer = document.body.querySelector('pdf-viewer')!;
 const mockPlugin = setupTestMockPluginForInk();
@@ -166,7 +166,9 @@ chrome.test.runTests([
     // Switch to eraser.
     setGetAnnotationBrushReply(mockPlugin, AnnotationBrushType.ERASER);
     const bottomToolbar = getBottomToolbar();
-    getBrushSelector(bottomToolbar).$.eraser.click();
+    const eraser =
+        getBrush(getBrushSelector(bottomToolbar), AnnotationBrushType.ERASER);
+    eraser.click();
     await microtasksFinished();
 
     assertAnnotationBrush(mockPlugin, {
@@ -191,7 +193,9 @@ chrome.test.runTests([
         mockPlugin, AnnotationBrushType.HIGHLIGHTER, /*size=*/ 8,
         /*color=*/ {r: 242, g: 139, b: 130});
     const bottomToolbar = getBottomToolbar();
-    getBrushSelector(bottomToolbar).$.highlighter.click();
+    const highlighter = getBrush(
+        getBrushSelector(bottomToolbar), AnnotationBrushType.HIGHLIGHTER);
+    highlighter.click();
     await microtasksFinished();
 
     assertAnnotationBrush(mockPlugin, {

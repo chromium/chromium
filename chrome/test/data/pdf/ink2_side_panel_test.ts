@@ -6,7 +6,7 @@ import {AnnotationBrushType, AnnotationMode, UserAction} from 'chrome-extension:
 import type {InkColorSelectorElement, InkSizeSelectorElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {assertAnnotationBrush, assertSelectedSize, getBrushSelector, getColorButtons, getRequiredElement, getSizeButtons, setGetAnnotationBrushReply, setupMockMetricsPrivate, setupTestMockPluginForInk} from './test_util.js';
+import {assertAnnotationBrush, assertSelectedSize, getBrush, getBrushSelector, getColorButtons, getRequiredElement, getSizeButtons, setGetAnnotationBrushReply, setupMockMetricsPrivate, setupTestMockPluginForInk} from './test_util.js';
 
 const viewer = document.body.querySelector('pdf-viewer')!;
 const mockPlugin = setupTestMockPluginForInk();
@@ -86,7 +86,9 @@ chrome.test.runTests([
 
     // Switch to eraser.
     setGetAnnotationBrushReply(mockPlugin, AnnotationBrushType.ERASER);
-    getBrushSelector(getSidePanel()).$.eraser.click();
+    const eraser =
+        getBrush(getBrushSelector(getSidePanel()), AnnotationBrushType.ERASER);
+    eraser.click();
     await microtasksFinished();
 
     assertAnnotationBrush(mockPlugin, {
@@ -111,7 +113,9 @@ chrome.test.runTests([
     setGetAnnotationBrushReply(
         mockPlugin, AnnotationBrushType.HIGHLIGHTER, /*size=*/ 8,
         /*color=*/ {r: 242, g: 139, b: 130});
-    getBrushSelector(getSidePanel()).$.highlighter.click();
+    const highlighter = getBrush(
+        getBrushSelector(getSidePanel()), AnnotationBrushType.HIGHLIGHTER);
+    highlighter.click();
     await microtasksFinished();
 
     assertAnnotationBrush(mockPlugin, {

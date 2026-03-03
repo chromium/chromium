@@ -131,7 +131,7 @@ import {AnnotationMode} from '../constants.js';
 </cr-progress>
 
 <cr-action-menu id="menu" @open-changed="${this.onMoreOpenChanged_}">
-  <button id="two-page-view-button" class="dropdown-item"
+  <button id="twoPageViewButton" class="dropdown-item"
       @click="${this.onTwoPageViewClick_}" role="checkbox"
       aria-checked="${this.getAriaChecked_(this.twoUpViewEnabled)}">
     <span class="check-container">
@@ -155,7 +155,7 @@ import {AnnotationMode} from '../constants.js';
 
   <hr>
 
-  <button id="present-button" class="dropdown-item"
+  <button id="presentButton" class="dropdown-item"
       @click="${this.onPresentClick_}"
       ?disabled="${!this.presentationModeAvailable_()}">
     <span class="check-container" aria-hidden="true"></span>

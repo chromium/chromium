@@ -14,7 +14,6 @@ import {record, UserAction} from '../metrics.js';
 
 import {getCss} from './ink_brush_selector.css.js';
 import {getHtml} from './ink_brush_selector.html.js';
-import type {SelectableIconButtonElement} from './selectable_icon_button.js';
 
 export const BRUSH_TYPES: AnnotationBrushType[] = [
   AnnotationBrushType.PEN,
@@ -22,13 +21,6 @@ export const BRUSH_TYPES: AnnotationBrushType[] = [
   AnnotationBrushType.ERASER,
 ];
 
-export interface InkBrushSelectorElement {
-  $: {
-    eraser: SelectableIconButtonElement,
-    highlighter: SelectableIconButtonElement,
-    pen: SelectableIconButtonElement,
-  };
-}
 
 export class InkBrushSelectorElement extends CrLitElement {
   static get is() {

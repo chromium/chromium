@@ -704,6 +704,15 @@ export function getBrushSelector(parentElement: HTMLElement):
   return getRequiredElement(parentElement, 'ink-brush-selector');
 }
 
+export function getBrush(
+    selector: InkBrushSelectorElement,
+    type: AnnotationBrushType): SelectableIconButtonElement {
+  const brush = selector.shadowRoot.querySelector<SelectableIconButtonElement>(
+      `#${type}`);
+  chrome.test.assertTrue(!!brush);
+  return brush;
+}
+
 
 /**
  * Helper to get a non-empty list of brush size buttons.

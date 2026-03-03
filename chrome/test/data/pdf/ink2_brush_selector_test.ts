@@ -6,7 +6,7 @@ import {AnnotationBrushType, UserAction} from 'chrome-extension://mhjfbmdgcfjbbp
 import type {InkBrushSelectorElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {setupMockMetricsPrivate} from './test_util.js';
+import {getBrush, setupMockMetricsPrivate} from './test_util.js';
 
 const mockMetricsPrivate = setupMockMetricsPrivate();
 
@@ -27,7 +27,7 @@ function createSelector(): InkBrushSelectorElement {
  */
 function assertBrushIcons(
     selector: InkBrushSelectorElement, selectedBrushType: AnnotationBrushType) {
-  const eraserIcon = selector.$.eraser.icon;
+  const eraserIcon = getBrush(selector, AnnotationBrushType.ERASER).icon;
   chrome.test.assertTrue(!!eraserIcon);
   chrome.test.assertEq(
       selectedBrushType === AnnotationBrushType.ERASER ?
@@ -35,7 +35,8 @@ function assertBrushIcons(
           'pdf-ink:ink-eraser',
       eraserIcon);
 
-  const highlighterIcon = selector.$.highlighter.icon;
+  const highlighterIcon =
+      getBrush(selector, AnnotationBrushType.HIGHLIGHTER).icon;
   chrome.test.assertTrue(!!highlighterIcon);
   chrome.test.assertEq(
       selectedBrushType === AnnotationBrushType.HIGHLIGHTER ?
@@ -43,7 +44,7 @@ function assertBrushIcons(
           'pdf-ink:ink-highlighter',
       highlighterIcon);
 
-  const penIcon = selector.$.pen.icon;
+  const penIcon = getBrush(selector, AnnotationBrushType.PEN).icon;
   chrome.test.assertTrue(!!penIcon);
   chrome.test.assertEq(
       selectedBrushType === AnnotationBrushType.PEN ? 'pdf-ink:ink-pen-fill' :
@@ -59,16 +60,17 @@ function assertBrushIcons(
  */
 function assertSelectedBrush(
     selector: InkBrushSelectorElement, selectedBrushType: AnnotationBrushType) {
-  const eraserSelected = selector.$.eraser.checked;
+  const eraserSelected = getBrush(selector, AnnotationBrushType.ERASER).checked;
   chrome.test.assertEq(
       selectedBrushType === AnnotationBrushType.ERASER, eraserSelected);
 
-  const highlighterSelected = selector.$.highlighter.checked;
+  const highlighterSelected =
+      getBrush(selector, AnnotationBrushType.HIGHLIGHTER).checked;
   chrome.test.assertEq(
       selectedBrushType === AnnotationBrushType.HIGHLIGHTER,
       highlighterSelected);
 
-  const penSelected = selector.$.pen.checked;
+  const penSelected = getBrush(selector, AnnotationBrushType.PEN).checked;
   chrome.test.assertEq(
       selectedBrushType === AnnotationBrushType.PEN, penSelected);
 }
@@ -78,11 +80,12 @@ chrome.test.runTests([
     mockMetricsPrivate.reset();
 
     const selector = createSelector();
-    selector.$.pen.click();
+    getBrush(selector, AnnotationBrushType.PEN).click();
     await microtasksFinished();
 
     assertBrushIcons(selector, AnnotationBrushType.PEN);
-    chrome.test.assertEq(selector.$.pen.label, 'Pen');
+    chrome.test.assertEq(
+        getBrush(selector, AnnotationBrushType.PEN).label, 'Pen');
     assertSelectedBrush(selector, AnnotationBrushType.PEN);
     mockMetricsPrivate.assertCount(UserAction.SELECT_INK2_BRUSH_PEN, 0);
     chrome.test.succeed();
@@ -91,11 +94,13 @@ chrome.test.runTests([
     mockMetricsPrivate.reset();
 
     const selector = createSelector();
-    selector.$.highlighter.click();
+    getBrush(selector, AnnotationBrushType.HIGHLIGHTER).click();
     await microtasksFinished();
 
     assertBrushIcons(selector, AnnotationBrushType.HIGHLIGHTER);
-    chrome.test.assertEq(selector.$.highlighter.label, 'Highlighter');
+    chrome.test.assertEq(
+        getBrush(selector, AnnotationBrushType.HIGHLIGHTER).label,
+        'Highlighter');
     assertSelectedBrush(selector, AnnotationBrushType.HIGHLIGHTER);
     mockMetricsPrivate.assertCount(UserAction.SELECT_INK2_BRUSH_HIGHLIGHTER, 1);
     chrome.test.succeed();
@@ -104,11 +109,12 @@ chrome.test.runTests([
     mockMetricsPrivate.reset();
 
     const selector = createSelector();
-    selector.$.eraser.click();
+    getBrush(selector, AnnotationBrushType.ERASER).click();
     await microtasksFinished();
 
     assertBrushIcons(selector, AnnotationBrushType.ERASER);
-    chrome.test.assertEq(selector.$.eraser.label, 'Eraser');
+    chrome.test.assertEq(
+        getBrush(selector, AnnotationBrushType.ERASER).label, 'Eraser');
     assertSelectedBrush(selector, AnnotationBrushType.ERASER);
     mockMetricsPrivate.assertCount(UserAction.SELECT_INK2_BRUSH_ERASER, 1);
     chrome.test.succeed();
@@ -117,14 +123,15 @@ chrome.test.runTests([
     mockMetricsPrivate.reset();
 
     const selector = createSelector();
-    selector.$.eraser.click();
+    getBrush(selector, AnnotationBrushType.ERASER).click();
     await microtasksFinished();
 
-    selector.$.pen.click();
+    getBrush(selector, AnnotationBrushType.PEN).click();
     await microtasksFinished();
 
     assertBrushIcons(selector, AnnotationBrushType.PEN);
-    chrome.test.assertEq(selector.$.pen.label, 'Pen');
+    chrome.test.assertEq(
+        getBrush(selector, AnnotationBrushType.PEN).label, 'Pen');
     assertSelectedBrush(selector, AnnotationBrushType.PEN);
     mockMetricsPrivate.assertCount(UserAction.SELECT_INK2_BRUSH_ERASER, 1);
     mockMetricsPrivate.assertCount(UserAction.SELECT_INK2_BRUSH_PEN, 1);
