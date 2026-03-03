@@ -51,6 +51,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
@@ -354,6 +355,7 @@ public class CollaborationIntegrationTest {
 
     @Test
     @MediumTest
+    @DisableIf.Device(DeviceFormFactor.TABLET_OR_DESKTOP) // crbug.com/489072280
     public void testCollaborationCreateFlow() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         final AtomicBoolean createCalled = new AtomicBoolean();
