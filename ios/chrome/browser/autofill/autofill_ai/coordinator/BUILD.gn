@@ -8,7 +8,6 @@ source_set("coordinator") {
     "autofill_ai_save_entity_coordinator.mm",
     "autofill_ai_save_entity_mediator.h",
     "autofill_ai_save_entity_mediator.mm",
-    "autofill_ai_save_entity_mutator.h",
   ]
   deps = [
     "//components/autofill/core/browser",

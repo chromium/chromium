@@ -6,14 +6,30 @@ source_set("ui") {
   sources = [
     "autofill_ai_constants.mm",
     "autofill_ai_save_entity_consumer.h",
+    "autofill_ai_save_entity_mutator.h",
     "autofill_ai_save_entity_table_view_controller.h",
     "autofill_ai_save_entity_table_view_controller.mm",
   ]
   deps = [
-    "//components/autofill/core/browser",
-    "//ios/chrome/browser/autofill/autofill_ai/public",
+    "//components/strings",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/autofill/ui_bundled/address_editor/cells",
+    "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/ui/table_view",
     "//ios/chrome/browser/shared/ui/table_view:utils",
+    "//ios/chrome/common/ui/colors",
   ]
   frameworks = [ "UIKit.framework" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "autofill_ai_save_entity_table_view_controller_unittest.mm" ]
+  deps = [
+    ":ui",
+    "//components/autofill/core/browser:test_support",
+    "//ios/chrome/browser/shared/ui/table_view:utils",
+    "//ios/chrome/browser/shared/ui/table_view/cells",
+    "//testing/gtest",
+  ]
 }
