@@ -3,10 +3,21 @@
 // found in the LICENSE file.
 
 import type {SelectCredentialDialogRequest, Subscriber} from '/glic/glic_api/glic_api.js';
-import {UserGrantedPermissionDuration} from '/glic/glic_api/glic_api.js';
+import {CredentialType, UserGrantedPermissionDuration} from '/glic/glic_api/glic_api.js';
 
 import {client, logMessage} from '../client.js';
 import {$} from '../page_element_types.js';
+
+function credentialTypeAsString(credType: CredentialType): string {
+  switch (credType) {
+    case CredentialType.PASSWORD:
+      return 'Password';
+    case CredentialType.FEDERATED:
+      return 'Federated';
+    default:
+      return 'Unknown type';
+  }
+}
 
 function convertUint8ArrayToBase64(uint8Array: Uint8Array): string {
   let binaryString = '';
@@ -101,6 +112,34 @@ function pickCredential(once: boolean) {
   $.credentialSelection.style.display = 'none';
 }
 
+function updateSelectedCredentialDetails() {
+  if (!lastCredentialRequest) {
+    return;
+  }
+
+  const select = $.selectCredential;
+  const selectedCredential = lastCredentialRequest.credentials.find((cred) => {
+    return `${cred.id}` === select.value;
+  });
+  if (!selectedCredential) {
+    return;
+  }
+
+  $.selectedCredentialUsername.innerText = selectedCredential.username;
+  $.selectedCredentialSource.innerText = selectedCredential.sourceSiteOrApp;
+  $.selectedCredentialRequestOrigin.innerText =
+      selectedCredential.requestOrigin!;
+  if (selectedCredential.getIcon) {
+    selectedCredential.getIcon().then((imageBlob) => {
+      $.selectedCredentialIcon.src = URL.createObjectURL(imageBlob);
+    });
+  } else {
+    $.selectedCredentialIcon.src = '';
+  }
+  $.selectedCredentialType.innerText =
+      credentialTypeAsString(selectedCredential.type!);
+}
+
 function showCredentialPicker(request: SelectCredentialDialogRequest) {
   const select = $.selectCredential;
   select.innerHTML = '';
@@ -112,9 +151,16 @@ function showCredentialPicker(request: SelectCredentialDialogRequest) {
   });
 
   lastCredentialRequest = request;
+
+  updateSelectedCredentialDetails();
+
   $.credentialSelection.style.display = 'block';
   client.browser?.interruptActorTask?.(request.taskId);
 }
+
+$.selectCredential.addEventListener('change', () => {
+  updateSelectedCredentialDetails();
+});
 
 $.credentialOnce.addEventListener('click', () => {
   pickCredential(true);
