@@ -6,9 +6,11 @@ import 'chrome://updater/event_list/event_list.js';
 
 import type {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import type {EventListElement} from 'chrome://updater/event_list/event_list.js';
 import type {EventListItemElement} from 'chrome://updater/event_list/event_list_item.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
 import {microtasksFinished, whenCheck} from 'chrome://webui-test/test_util.js';
 
 suite('EventListElement', () => {
@@ -26,6 +28,7 @@ suite('EventListElement', () => {
 
   setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    PluralStringProxyImpl.setInstance(new TestPluralStringProxy());
     element = document.createElement('event-list');
     clearFilters();
     document.body.appendChild(element);
