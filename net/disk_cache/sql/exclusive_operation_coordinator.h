@@ -6,6 +6,7 @@
 #define NET_DISK_CACHE_SQL_EXCLUSIVE_OPERATION_COORDINATOR_H_
 
 #include <atomic>
+#include <cstdint>
 #include <map>
 #include <memory>
 #include <optional>
@@ -78,9 +79,10 @@ class NET_EXPORT_PRIVATE ExclusiveOperationCoordinator {
   // other exclusive operations are pending or running, no new normal
   // operations will start.
   //
-  // Note: An exclusive operation that is currently running is NOT considered a
-  // "pending task" by `GetHasPendingTaskFlag()`.
-  void PostOrRunExclusiveOperation(OperationCallback operation);
+  // If `low_priority` is false, this operation is considered a "pending task"
+  // by `GetHasPendingTaskFlag()` while it is waiting in the queue.
+  void PostOrRunExclusiveOperation(OperationCallback operation,
+                                   bool low_priority = false);
 
   // Posts a normal operation. If no exclusive operations are pending or
   // running, the operation is executed immediately. Otherwise, it is queued
@@ -88,20 +90,19 @@ class NET_EXPORT_PRIVATE ExclusiveOperationCoordinator {
   // operation will be serialized with other normal operations that have the
   // same `key`.
   //
-  // Note: A normal operation that is currently running IS considered a
-  // "pending task" by `GetHasPendingTaskFlag()`.
+  // If `low_priority` is false, this operation is considered a "pending task"
+  // by `GetHasPendingTaskFlag()` while it is waiting in the queue.
   void PostOrRunNormalOperation(const CacheEntryKey& key,
-                                OperationCallback operation);
+                                OperationCallback operation,
+                                bool low_priority = false);
 
   // Returns a flag that indicates whether there are any "pending" tasks.
-  // A "pending" task is defined as:
-  // - Any normal operation (whether running or waiting).
-  // - Any *waiting* exclusive operation (i.e. not the one currently running).
+  // A task is considered "pending" if it has been posted but has not yet
+  // started running, and `low_priority` was false when it was posted.
   //
-  // Crucially, a single running exclusive operation is NOT considered pending.
-  // This flag is used during the execution of an `ExclusiveOperation` (e.g.,
-  // eviction) to detect if any other tasks have been posted, allowing the
-  // operation to potentially abort or adjust its behavior.
+  // This flag can be used to detect if any pending tasks have been posted,
+  // allowing an operation (e.g., eviction) to potentially abort or adjust its
+  // behavior.
   //
   // Note: This flag is shared with operations via `RefCountedData` so they can
   // check it without holding a reference to the coordinator. Since
@@ -112,12 +113,6 @@ class NET_EXPORT_PRIVATE ExclusiveOperationCoordinator {
     return has_pending_task_;
   }
 
-  // Forces `GetHasPendingTaskFlag()` to return false as long as the returned
-  // `ScopedClosureRunner` is alive. This is used when posting an
-  // ExclusiveOperation to wait for all pending tasks to complete, preventing
-  // `has_pending_task_` from being set to true which might trigger unwanted
-  // side effects (e.g. aborting an eviction logic).
-  base::ScopedClosureRunner KeepHasPendingTaskFlagUnsetForTesting();
 
  private:
   using NormalOperationsQueueMap =
@@ -144,9 +139,14 @@ class NET_EXPORT_PRIVATE ExclusiveOperationCoordinator {
       const std::optional<CacheEntryKey>& key,
       std::vector<base::OnceClosure>& runnable_ops);
 
-  // Updates the `has_pending_task_` flag based on the current state of the
-  // queue.
-  void UpdateHasPendingTaskFlag();
+  // Increments `pending_task_count_` and updates `has_pending_task_` if
+  // `low_priority` is false. Returns a `ScopedClosureRunner` that will
+  // decrement the count when it goes out of scope.
+  base::ScopedClosureRunner MaybeIncrementPendingTaskCount(bool low_priority);
+
+  // Decrements `pending_task_count_` and updates `has_pending_task_` if
+  // the count reaches 0. This is called when a pending task starts running.
+  void DecrementPendingTaskCount();
 
   // A queue of operation "phases". Each element is either a
   // `NormalOperationsQueueMap` (a batch of normal operations) or a single
@@ -161,10 +161,9 @@ class NET_EXPORT_PRIVATE ExclusiveOperationCoordinator {
   // See `GetHasPendingTaskFlag()` for details.
   scoped_refptr<base::RefCountedData<std::atomic_bool>> has_pending_task_;
 
-  // A counter used by tests to forcibly keep `has_pending_task_` false.
-  // When this count is greater than 0, `UpdateHasPendingTaskFlag` will
-  // always set `has_pending_task_` to false.
-  int keep_has_pending_task_unset_count_ = 0;
+  // The number of pending tasks in the queue. Does not include running tasks
+  // or tasks posted with `low_priority=true`.
+  int64_t pending_task_count_ = 0;
 
   base::WeakPtrFactory<ExclusiveOperationCoordinator> weak_factory_{this};
 };

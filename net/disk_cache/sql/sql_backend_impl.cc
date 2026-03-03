@@ -1453,31 +1453,27 @@ int SqlBackendImpl::FlushQueueForTest(CompletionOnceCallback callback) {
   // `FlushQueueForTest` posts an exclusive operation to wait for all queued
   // operations to complete. However, if this operation sets the "has pending
   // task" flag, it would pause the eviction process (which checks this flag)
-  // that we might be waiting for. To avoid this, hold the
-  // `decrement_keep_has_pending_task_unset_count` until the operation is
-  // executed.
-  auto decrement_keep_has_pending_task_unset_count =
-      exclusive_operation_coordinator_
-          .KeepHasPendingTaskFlagUnsetForTesting();  // IN-TEST
-  exclusive_operation_coordinator_.PostOrRunExclusiveOperation(base::BindOnce(
-      [](std::vector<scoped_refptr<base::SequencedTaskRunner>>
-             background_task_runners,
-         CompletionOnceCallback callback,
-         base::ScopedClosureRunner decrement_keep_has_pending_task_unset_count,
-         std::unique_ptr<ExclusiveOperationCoordinator::OperationHandle>
-             handle) {
-        auto barrier_closure = base::BarrierClosure(
-            background_task_runners.size(),
-            base::BindOnce(std::move(callback), net::OK)
-                .Then(OnceClosureWithBoundArgs(std::move(handle))));
-        for (auto& runner : background_task_runners) {
-          runner->PostTaskAndReply(
-              // Post a no-op task to the background runner.
-              FROM_HERE, base::BindOnce([]() {}), barrier_closure);
-        }
-      },
-      background_task_runners_, std::move(callback),
-      std::move(decrement_keep_has_pending_task_unset_count)));
+  // that we might be waiting for. To avoid this, post the operation with
+  // `low_priority=true`.
+  exclusive_operation_coordinator_.PostOrRunExclusiveOperation(
+      base::BindOnce(
+          [](std::vector<scoped_refptr<base::SequencedTaskRunner>>
+                 background_task_runners,
+             CompletionOnceCallback callback,
+             std::unique_ptr<ExclusiveOperationCoordinator::OperationHandle>
+                 handle) {
+            auto barrier_closure = base::BarrierClosure(
+                background_task_runners.size(),
+                base::BindOnce(std::move(callback), net::OK)
+                    .Then(OnceClosureWithBoundArgs(std::move(handle))));
+            for (auto& runner : background_task_runners) {
+              runner->PostTaskAndReply(
+                  // Post a no-op task to the background runner.
+                  FROM_HERE, base::BindOnce([]() {}), barrier_closure);
+            }
+          },
+          background_task_runners_, std::move(callback)),
+      /*low_priority=*/true);
 
   return net::ERR_IO_PENDING;
 }

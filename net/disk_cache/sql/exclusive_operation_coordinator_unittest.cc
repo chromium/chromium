@@ -361,82 +361,134 @@ TEST_F(ExclusiveOperationCoordinatorTest, HasPendingTaskFlagBehavior) {
   auto& flag = coordinator_.GetHasPendingTaskFlag();
   EXPECT_FALSE(flag->data.load());
 
-  // Post Exclusive Operation 1.
-  std::unique_ptr<OperationHandle> e1_handle;
+  // Operation 1
+  std::unique_ptr<OperationHandle> handle1;
   coordinator_.PostOrRunExclusiveOperation(
-      base::BindLambdaForTesting([&](std::unique_ptr<OperationHandle> handle) {
-        e1_handle = std::move(handle);
+      base::BindLambdaForTesting([&](std::unique_ptr<OperationHandle> h) {
+        handle1 = std::move(h);
+        EXPECT_FALSE(flag->data.load());
       }));
-  // Running exclusive op does NOT set the flag.
-  EXPECT_TRUE(e1_handle);
+  EXPECT_TRUE(handle1);
+  // No operations are waiting.
   EXPECT_FALSE(flag->data.load());
 
-  // Post Normal Operation 1.
-  // It should be queued behind E1.
-  std::unique_ptr<OperationHandle> n1_handle;
+  // Operation 2
+  std::unique_ptr<OperationHandle> handle2;
   coordinator_.PostOrRunNormalOperation(
       CacheEntryKey("key1"),
-      base::BindLambdaForTesting([&](std::unique_ptr<OperationHandle> handle) {
-        n1_handle = std::move(handle);
+      base::BindLambdaForTesting([&](std::unique_ptr<OperationHandle> h) {
+        handle2 = std::move(h);
+        EXPECT_FALSE(flag->data.load());
       }));
-  // Queue is now [E1, N1]. Size > 1, so flag should be true.
-  EXPECT_FALSE(n1_handle);
+  EXPECT_FALSE(handle2);
+  // Operation 2 is waiting.
   EXPECT_TRUE(flag->data.load());
 
-  // Finish E1. N1 should start.
-  e1_handle.reset();
-  EXPECT_TRUE(n1_handle);
-  // Queue is now [N1]. Front is Normal, so flag should be true.
+  handle1.reset();
+  EXPECT_TRUE(handle2);
+  // No operations are waiting.
+  EXPECT_FALSE(flag->data.load());
+
+  // Operation 3
+  std::unique_ptr<OperationHandle> handle3;
+  coordinator_.PostOrRunExclusiveOperation(
+      base::BindLambdaForTesting([&](std::unique_ptr<OperationHandle> h) {
+        handle3 = std::move(h);
+        EXPECT_TRUE(flag->data.load());
+      }));
+  EXPECT_FALSE(handle3);
+  // Operation 3 is waiting.
   EXPECT_TRUE(flag->data.load());
 
-  // Finish N1. Queue empty.
-  n1_handle.reset();
+  // Operation 4
+  std::unique_ptr<OperationHandle> handle4;
+  coordinator_.PostOrRunExclusiveOperation(
+      base::BindLambdaForTesting([&](std::unique_ptr<OperationHandle> h) {
+        handle4 = std::move(h);
+        EXPECT_FALSE(flag->data.load());
+      }));
+  EXPECT_FALSE(handle4);
+  // Operation 3 and 4 are waiting.
+  EXPECT_TRUE(flag->data.load());
+
+  handle2.reset();
+  EXPECT_TRUE(handle3);
+  EXPECT_FALSE(handle4);
+  // Operation 4 is waiting.
+  EXPECT_TRUE(flag->data.load());
+
+  handle3.reset();
+  EXPECT_TRUE(handle4);
+  // No operations are waiting.
+  EXPECT_FALSE(flag->data.load());
+
+  handle4.reset();
+  // No operations are waiting.
   EXPECT_FALSE(flag->data.load());
 }
 
-TEST_F(ExclusiveOperationCoordinatorTest,
-       KeepHasPendingTaskFlagUnsetForTestingBehavior) {
+TEST_F(ExclusiveOperationCoordinatorTest, LowPriorityNormalTaskBehavior) {
   auto& flag = coordinator_.GetHasPendingTaskFlag();
   EXPECT_FALSE(flag->data.load());
 
-  // Use the scoped runner to keep the flag unset.
-  std::optional<base::ScopedClosureRunner> runner;
-  runner.emplace(coordinator_.KeepHasPendingTaskFlagUnsetForTesting());
+  // Operation 1
+  std::unique_ptr<OperationHandle> handle1;
+  coordinator_.PostOrRunExclusiveOperation(base::BindLambdaForTesting(
+      [&](std::unique_ptr<OperationHandle> h) { handle1 = std::move(h); }));
 
-  // Post Normal Operation.
-  std::unique_ptr<OperationHandle> n1_handle;
-  coordinator_.PostOrRunNormalOperation(
-      CacheEntryKey("key1"),
-      base::BindLambdaForTesting([&](std::unique_ptr<OperationHandle> handle) {
-        n1_handle = std::move(handle);
-      }));
-
-  // N1 is running. Normally this would make the flag true.
-  // But because of the runner, it should be false.
-  EXPECT_TRUE(n1_handle);
+  EXPECT_TRUE(handle1);
   EXPECT_FALSE(flag->data.load());
 
-  // Add another one to be sure.
-  std::unique_ptr<OperationHandle> n2_handle;
+  // Operation 2
+  std::unique_ptr<OperationHandle> handle2;
   coordinator_.PostOrRunNormalOperation(
       CacheEntryKey("key1"),
-      base::BindLambdaForTesting([&](std::unique_ptr<OperationHandle> handle) {
-        n2_handle = std::move(handle);
-      }));
-  // Queue has pending tasks.
-  EXPECT_FALSE(n2_handle);
+      base::BindLambdaForTesting(
+          [&](std::unique_ptr<OperationHandle> h) { handle2 = std::move(h); }),
+      /*low_priority=*/true);
+
+  EXPECT_FALSE(handle2);
+  // Only a low priority operation 2 is waiting.
   EXPECT_FALSE(flag->data.load());
 
-  // Destroy the runner.
-  runner.reset();
+  handle1.reset();
+  EXPECT_TRUE(handle2);
+  EXPECT_FALSE(flag->data.load());
 
-  // Now the flag should reflect the true state (true).
-  EXPECT_TRUE(flag->data.load());
+  handle2.reset();
+  EXPECT_FALSE(flag->data.load());
+}
 
-  // Clean up
-  n1_handle.reset();
-  n2_handle.reset();
-  // Queue empty.
+TEST_F(ExclusiveOperationCoordinatorTest, LowPriorityExclusiveTaskBehavior) {
+  auto& flag = coordinator_.GetHasPendingTaskFlag();
+  EXPECT_FALSE(flag->data.load());
+
+  // Operation 1
+  std::unique_ptr<OperationHandle> handle1;
+  coordinator_.PostOrRunNormalOperation(
+      CacheEntryKey("key1"),
+      base::BindLambdaForTesting(
+          [&](std::unique_ptr<OperationHandle> h) { handle1 = std::move(h); }));
+
+  EXPECT_TRUE(handle1);
+  EXPECT_FALSE(flag->data.load());
+
+  // Operation 2
+  std::unique_ptr<OperationHandle> handle2;
+  coordinator_.PostOrRunExclusiveOperation(
+      base::BindLambdaForTesting(
+          [&](std::unique_ptr<OperationHandle> h) { handle2 = std::move(h); }),
+      /*low_priority=*/true);
+
+  EXPECT_FALSE(handle2);
+  // Only a low priority operation 2 is waiting.
+  EXPECT_FALSE(flag->data.load());
+
+  handle1.reset();
+  EXPECT_TRUE(handle2);
+  EXPECT_FALSE(flag->data.load());
+
+  handle2.reset();
   EXPECT_FALSE(flag->data.load());
 }
 
