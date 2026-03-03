@@ -319,9 +319,10 @@ void TestGLES2Interface::GenSyncTokenCHROMIUM(GLbyte* sync_token) {
   // of CommandBufferProxyImpl.
   if (context_lost_)
     return;
-  gpu::SyncToken sync_token_data(gpu::CommandBufferNamespace::GPU_IO,
-                                 gpu::CommandBufferId(),
-                                 next_insert_fence_sync_++);
+  gpu::SyncToken sync_token_data(
+      gpu::CommandBufferNamespace::GPU_IO,
+      gpu::CommandBufferId::FromUnsafeValue(test_command_buffer_id_),
+      next_insert_fence_sync_++);
   sync_token_data.SetVerifyFlush();
   UNSAFE_TODO(memcpy(sync_token, &sync_token_data, sizeof(sync_token_data)));
 }

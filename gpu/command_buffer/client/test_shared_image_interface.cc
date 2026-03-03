@@ -20,6 +20,7 @@
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/common/shared_image_capabilities.h"
+#include "gpu/ipc/common/command_buffer_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/gpu_fence.h"
 #include "ui/gfx/gpu_memory_buffer_handle.h"
@@ -371,7 +372,9 @@ SyncToken TestSharedImageInterface::GenVerifiedSyncToken() {
   base::AutoLock locked(lock_);
   most_recent_generated_token_ =
       SyncToken(CommandBufferNamespace::GPU_IO,
-                     CommandBufferId(), ++release_id_);
+                CommandBufferId::FromUnsafeValue(static_cast<uint64_t>(
+                    GpuChannelReservedRoutes::kSharedImageInterface)),
+                ++release_id_);
   VerifySyncToken(most_recent_generated_token_);
   return most_recent_generated_token_;
 }
@@ -380,7 +383,9 @@ SyncToken TestSharedImageInterface::GenUnverifiedSyncToken() {
   base::AutoLock locked(lock_);
   most_recent_generated_token_ =
       SyncToken(CommandBufferNamespace::GPU_IO,
-                     CommandBufferId(), ++release_id_);
+                CommandBufferId::FromUnsafeValue(static_cast<uint64_t>(
+                    GpuChannelReservedRoutes::kSharedImageInterface)),
+                ++release_id_);
   return most_recent_generated_token_;
 }
 

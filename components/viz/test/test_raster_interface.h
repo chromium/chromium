@@ -158,6 +158,7 @@ class TestRasterInterface : public gpu::raster::RasterInterface {
   gpu::Capabilities caps_;
   base::OnceClosure context_lost_callback_;
   raw_ptr<TestContextSupport> test_support_ = nullptr;
+  const uint64_t test_command_buffer_id_ = 2u;
 
   bool context_lost_ = false;
   uint64_t next_insert_fence_sync_ = 1;
