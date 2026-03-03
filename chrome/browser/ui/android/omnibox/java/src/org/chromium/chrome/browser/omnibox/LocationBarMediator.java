@@ -203,7 +203,6 @@ class LocationBarMediator
     private final CallbackController mCallbackController = new CallbackController();
     private final OverrideUrlLoadingDelegate mOverrideUrlLoadingDelegate;
     private final LocaleManager mLocaleManager;
-    private final List<Runnable> mDeferredNativeRunnables = new ArrayList<>();
     private final OneshotSupplier<TemplateUrlService> mTemplateUrlServiceSupplier;
     private final Context mContext;
     private final BackKeyBehaviorDelegate mBackKeyBehavior;
@@ -411,7 +410,6 @@ class LocationBarMediator
         mVoiceRecognitionHandler.destroy();
         mVoiceRecognitionHandler = null;
         mLocationBarDataProvider.removeObserver(this);
-        mDeferredNativeRunnables.clear();
         mUrlFocusChangeListeners.clear();
         if (mPageZoomIndicatorCoordinator != null) {
             mPageZoomIndicatorCoordinator.setOnDismissCallbacks(null);
@@ -490,10 +488,6 @@ class LocationBarMediator
 
         onPrimaryColorChanged();
 
-        for (Runnable deferredRunnable : mDeferredNativeRunnables) {
-            mLocationBarLayout.post(deferredRunnable);
-        }
-        mDeferredNativeRunnables.clear();
         updateButtonVisibility();
     }
 
@@ -1063,32 +1057,20 @@ class LocationBarMediator
             mCurrentInput.getRequestTypeSupplier().removeObserver(mAutocompleteRequestTypeObserver);
         }
 
-        session.setSessionActive(true);
+        session.activate(
+                mProfileSupplier,
+                () -> {
+                    if (mAutocompleteCoordinator == null) return;
+                    mAutocompleteCoordinator.beginInput(session);
+                    mFuseboxCoordinator.beginInput(session);
+                });
+
         mCurrentInput = session.getAutocompleteInput();
         mCurrentInput.getRequestTypeSupplier().addSyncObserver(mAutocompleteRequestTypeObserver);
 
         UrlBarData data = UrlBarData.forNonUrlText(mCurrentInput.getUserText());
         mUrlCoordinator.setUrlBarData(
                 data, UrlBar.ScrollType.NO_SCROLL, mCurrentInput.getSelection());
-
-        // URL bar is now focused with the user text. This may be still a bit early for the
-        // Autocomplete and Compose to kick in.
-        beginOrResumeInputWithNative(session);
-    }
-
-    private void beginOrResumeInputWithNative(FuseboxSessionState session) {
-        if (!mNativeInitialized) {
-            mDeferredNativeRunnables.add(() -> beginOrResumeInputWithNative(session));
-            if (mAutocompleteCoordinator == null) return;
-            mAutocompleteCoordinator.serveCachedZeroSuggest(session.getAutocompleteInput());
-            return;
-        }
-
-        if (mAutocompleteCoordinator == null) return;
-        if (!session.isSessionActive()) return;
-        session.setProfile(mProfileSupplier.get());
-        mAutocompleteCoordinator.beginInput(session);
-        mFuseboxCoordinator.beginInput(session);
     }
 
     /** Ends the current Omnibox input session. */
@@ -1098,7 +1080,7 @@ class LocationBarMediator
         mFuseboxCoordinator.endInput();
         mCurrentInput.getRequestTypeSupplier().removeObserver(mAutocompleteRequestTypeObserver);
         var state = FuseboxSessionState.from(mLocationBarDataProvider);
-        if (state != null) state.setSessionActive(false);
+        if (state != null) state.deactivate();
         mCurrentInput = null;
     }
 

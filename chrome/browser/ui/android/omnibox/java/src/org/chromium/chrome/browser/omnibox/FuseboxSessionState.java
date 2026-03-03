@@ -8,6 +8,8 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.UserData;
 import org.chromium.base.UserDataHost;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.OneShotCallback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.fusebox.ComposeboxQueryControllerBridge;
@@ -35,6 +37,7 @@ public class FuseboxSessionState implements UserData {
     private @Nullable Profile mProfile;
     private @Nullable ComposeboxQueryControllerBridge mComposeBoxQueryControllerBridge;
     private @Nullable FuseboxAttachmentModelList mFuseboxAttachmentModelList;
+    private @Nullable OneShotCallback<Profile> mPendingProfileCallback;
     private boolean mIsActive;
 
     /**
@@ -98,57 +101,78 @@ public class FuseboxSessionState implements UserData {
     }
 
     /**
-     * Marks the session as active or inactive. When session is marked as inactive, the autocomplete
-     * input is reset.
+     * Marks the session as active.
      *
-     * @param isActive Whether the session should be active.
+     * <p>When a session is marked as active, it will asynchronously acquire a {@link Profile} and
+     * initialize all required session controllers. The caller may supply an optional {@link
+     * Runnable} to be notified when the session is fully set up.
+     *
+     * @param profileSupplier The supplier for the {@link Profile} object.
+     * @param onFullyActivated Optional runnable to be invoked when the session is fully activated.
      */
-    public void setSessionActive(boolean isActive) {
-        if (mIsActive == isActive) return;
-        mIsActive = isActive;
-        if (isActive) {
-            mAutocompleteInput.setUrlFocusTime(System.currentTimeMillis());
-            // Use current URL if the Retention is active, the input is not already set, and the URL
-            // should be user-visible.
-            if (OmniboxFeatures.shouldRetainOmniboxOnFocus()
-                    && mAutocompleteInput.getUserText().isEmpty()
-                    && UrlBarData.shouldShowUrl(mAutocompleteInput.getPageUrl(), false)) {
-                var editUrl = UrlUtilities.stripScheme(mAutocompleteInput.getPageUrl().getSpec());
-                mAutocompleteInput.setUserText(editUrl).setSelection(0, Integer.MAX_VALUE);
-            }
-        } else {
-            mAutocompleteInput.reset();
-            setProfile(null);
+    public void activate(
+            MonotonicObservableSupplier<Profile> profileSupplier,
+            @Nullable Runnable onFullyActivated) {
+        if (mIsActive) {
+            // This session is being re-activated. It has already been fully initialized so simply
+            // emit the event.
+            if (onFullyActivated != null) onFullyActivated.run();
+            return;
         }
+
+        mIsActive = true;
+        mAutocompleteInput.setUrlFocusTime(System.currentTimeMillis());
+        // Use current URL if the Retention is active, the input is not already set, and the URL
+        // should be user-visible.
+        if (OmniboxFeatures.shouldRetainOmniboxOnFocus()
+                && mAutocompleteInput.getUserText().isEmpty()
+                && UrlBarData.shouldShowUrl(mAutocompleteInput.getPageUrl(), false)) {
+            var editUrl = UrlUtilities.stripScheme(mAutocompleteInput.getPageUrl().getSpec());
+            mAutocompleteInput.setUserText(editUrl).setSelection(0, Integer.MAX_VALUE);
+        }
+
+        // Stop here if we're already waiting for profile.
+        // This makes sense in scenarios where session object goes through a full cycle
+        // (active -> inactive -> active again) before Profile becomes available, to avoid
+        // requesting multiple session controllers.
+        if (mPendingProfileCallback != null) return;
+
+        mPendingProfileCallback =
+                new OneShotCallback<Profile>(
+                        profileSupplier, p -> setUpSessionControllers(p, onFullyActivated));
     }
 
     /**
-     * Apply or reset profile to be used with the current Fusebox session.
+     * Marks the session as inactive.
      *
-     * @param profile The profile the session is activated for; must be supplied to activate the
-     *     session.
+     * <p>When session is marked as inactive, the autocomplete input is reset.
      */
-    public void setProfile(@Nullable Profile profile) {
-        if (mProfile == profile) return;
+    public void deactivate() {
+        if (!mIsActive) return;
 
-        // Profile has changed. This typically means either
-        // - profile was applied and we want to construct session objects, or
-        // - profile was removed and we want to destroy them.
-        // Technically this also supports profile swap, but that scenario shouldn't ever happen.
+        mAutocompleteInput.reset();
+        tearDownSessionControllers();
+        mIsActive = false;
+    }
+
+    /**
+     * Set up session controllers for the supplied profile.
+     *
+     * @param profile The profile the session is activated for.
+     * @param onFullyActivated Optional runnable to be invoked when the session is fully activated.
+     */
+    private void setUpSessionControllers(Profile profile, @Nullable Runnable onFullyActivated) {
+        // Record the event that we're not waiting for profile anymore.
+        mPendingProfileCallback = null;
+
+        // If the session became inactive while we wait for the profile - don't accept the new
+        // profile.
+        if (!mIsActive) return;
+
+        // The only valid transition is no profile -> profile. Must not create duplicate
+        // controllers.
+        assert (mProfile == null);
         mProfile = profile;
-
-        if (mFuseboxAttachmentModelList != null) {
-            mFuseboxAttachmentModelList.destroy();
-            mFuseboxAttachmentModelList = null;
-        }
-
-        if (mComposeBoxQueryControllerBridge != null) {
-            mComposeBoxQueryControllerBridge.destroy();
-            mComposeBoxQueryControllerBridge = null;
-        }
-
-        // Abort now if we're not creating session controllers.
-        if (mProfile == null || !mIsActive) return;
 
         mComposeBoxQueryControllerBridge =
                 ComposeboxQueryControllerBridge.createForProfile(mProfile);
@@ -160,6 +184,23 @@ public class FuseboxSessionState implements UserData {
             mFuseboxAttachmentModelList.setComposeboxQueryControllerBridge(
                     mComposeBoxQueryControllerBridge);
         }
+
+        if (onFullyActivated != null) onFullyActivated.run();
+    }
+
+    /** Tear down session controllers. */
+    private void tearDownSessionControllers() {
+        if (mFuseboxAttachmentModelList != null) {
+            mFuseboxAttachmentModelList.destroy();
+            mFuseboxAttachmentModelList = null;
+        }
+
+        if (mComposeBoxQueryControllerBridge != null) {
+            mComposeBoxQueryControllerBridge.destroy();
+            mComposeBoxQueryControllerBridge = null;
+        }
+
+        mProfile = null;
     }
 
     /**
