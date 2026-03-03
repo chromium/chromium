@@ -543,6 +543,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.app") {
     "src/org/chromium/chrome/browser/app/flags/ChromeCachedFlagsTest.java",
     "src/org/chromium/chrome/browser/app/metrics/TabbedActivityLaunchCauseMetricsTest.java",
     "src/org/chromium/chrome/browser/app/tab_activity_glue/TabletPhoneLayoutChangeTest.java",
+    "src/org/chromium/chrome/browser/app/tabmodel/ActiveTabCacheTest.java",
     "src/org/chromium/chrome/browser/app/tabmodel/AllTabObserverTest.java",
     "src/org/chromium/chrome/browser/app/tabmodel/ArchivedTabModelOrchestratorTest.java",
     "src/org/chromium/chrome/browser/app/tabmodel/ArchivedTabsTest.java",
