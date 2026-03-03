@@ -682,8 +682,10 @@ void BrowserActions::InitializeBrowserActions() {
                 [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                    actions::ActionInvocationContext context) {
                   auto* controller = ProjectsPanelStateController::From(bwi);
-                  controller->SetProjectsVisible(
-                      !controller->IsProjectsPanelVisible());
+                  if (controller) {
+                    controller->SetProjectsVisible(
+                        !controller->IsProjectsPanelVisible());
+                  }
                 },
                 bwi))
             .SetActionId(kActionToggleProjectsPanel)

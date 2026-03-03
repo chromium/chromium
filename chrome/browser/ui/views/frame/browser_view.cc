@@ -1014,12 +1014,17 @@ BrowserView::BrowserView(Browser* browser)
     horizontal_tab_strip_region_view_->InitializeTabStrip();
   }
 
-  if (tab_groups::IsProjectsPanelFeatureEnabled()) {
+  auto* const projects_panel_state_controller =
+      ProjectsPanelStateController::From(browser_);
+  if (projects_panel_state_controller) {
     auto projects_panel_container = std::make_unique<ProjectsPanelView>(
         browser_.get(), browser_->GetActions()->root_action_item());
-
     projects_panel_container_ =
         AddChildView(std::move(projects_panel_container));
+    projects_panel_subscription_ =
+        projects_panel_state_controller->RegisterOnStateChanged(
+            base::BindRepeating(&BrowserView::OnProjectsPanelStateChanged,
+                                base::Unretained(this)));
   }
 
   // Create do-nothing view for the sake of controlling the z-order of the find
@@ -1064,13 +1069,6 @@ BrowserView::BrowserView(Browser* browser)
 
   if (GetFocusManager()) {
     focus_manager_observation_.Observe(GetFocusManager());
-  }
-
-  if (tab_groups::IsProjectsPanelFeatureEnabled()) {
-    projects_panel_subscription_ =
-        ProjectsPanelStateController::From(browser_)->RegisterOnStateChanged(
-            base::BindRepeating(&BrowserView::OnProjectsPanelStateChanged,
-                                base::Unretained(this)));
   }
 
 #if BUILDFLAG(IS_CHROMEOS)
