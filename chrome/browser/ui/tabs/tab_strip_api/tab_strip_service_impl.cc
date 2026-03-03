@@ -130,11 +130,10 @@ mojom::TabStripService::GetTabResult TabStripServiceImpl::GetTab(
   for (unsigned int i = 0; i < tabs.size(); ++i) {
     auto& handle = tabs.at(i);
     if (tab_id == handle.raw_value()) {
-      auto renderer_data = tab_strip_model_adapter_->GetTabRendererData(i);
       const ui::ColorProvider& color_provider =
           tab_strip_model_adapter_->GetColorProvider();
       tab_result = tabs_api::converters::BuildMojoTab(
-          handle, renderer_data, color_provider,
+          handle.Get(), color_provider,
           tab_strip_model_adapter_->GetTabStates(handle));
     }
   }
@@ -184,12 +183,10 @@ mojom::TabStripService::CreateTabAtResult TabStripServiceImpl::CreateTabAt(
         "Could not find the index of the newly created tab"));
   }
 
-  auto renderer_data =
-      tab_strip_model_adapter_->GetTabRendererData(tab_index.value());
   const ui::ColorProvider& color_provider =
       tab_strip_model_adapter_->GetColorProvider();
   auto mojo_tab = tabs_api::converters::BuildMojoTab(
-      tab_handle, renderer_data, color_provider,
+      tab_handle.Get(), color_provider,
       tab_strip_model_adapter_->GetTabStates(tab_handle));
   return mojo_tab->Clone();
 }

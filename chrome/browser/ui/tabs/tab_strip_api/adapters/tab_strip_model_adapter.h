@@ -38,7 +38,6 @@ class TabStripModelAdapter {
   virtual void RemoveCollectionObserver(
       tabs::TabCollectionObserver* collection_observer) = 0;
   virtual std::vector<tabs::TabHandle> GetTabs() const = 0;
-  virtual TabRendererData GetTabRendererData(int index) const = 0;
   virtual converters::TabStates GetTabStates(tabs::TabHandle) const = 0;
   virtual const ui::ColorProvider& GetColorProvider() const = 0;
   virtual void CloseTab(size_t tab_index) = 0;

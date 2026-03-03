@@ -29,10 +29,6 @@ std::vector<tabs::TabHandle> ToyTabStripModelAdapter::GetTabs() const {
   return tab_strip_->GetTabs();
 }
 
-TabRendererData ToyTabStripModelAdapter::GetTabRendererData(int index) const {
-  return TabRendererData();
-}
-
 tabs_api::converters::TabStates ToyTabStripModelAdapter::GetTabStates(
     tabs::TabHandle handle) const {
   return {

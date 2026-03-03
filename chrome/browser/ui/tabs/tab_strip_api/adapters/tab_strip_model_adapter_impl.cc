@@ -53,11 +53,6 @@ std::vector<tabs::TabHandle> TabStripModelAdapterImpl::GetTabs() const {
   return tabs;
 }
 
-TabRendererData TabStripModelAdapterImpl::GetTabRendererData(int index) const {
-  return TabRendererData::FromTabInterface(
-      tab_strip_model_->GetTabAtIndex(index));
-}
-
 converters::TabStates TabStripModelAdapterImpl::GetTabStates(
     tabs::TabHandle handle) const {
   CHECK(handle.Get() != nullptr);

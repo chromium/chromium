@@ -28,7 +28,6 @@ class ToyTabStripModelAdapter : public TabStripModelAdapter {
   void RemoveCollectionObserver(
       tabs::TabCollectionObserver* collection_observer) override;
   std::vector<tabs::TabHandle> GetTabs() const override;
-  TabRendererData GetTabRendererData(int index) const override;
   tabs_api::converters::TabStates GetTabStates(
       tabs::TabHandle handle) const override;
   const ui::ColorProvider& GetColorProvider() const override;

@@ -22,7 +22,7 @@ mojom::ContainerPtr TabWalker::Walk() {
   CHECK(contents);
   const ui::ColorProvider& provider = contents->GetColorProvider();
   mojom::TabPtr mojo_tab = converters::BuildMojoTab(
-      target_->GetHandle(), TabRendererData::FromTabInterface(target_),
+      target_,
       // TODO(crbug.com/438632110): this is dup code with the adapter. See if
       // we can combine state computation.
       provider,

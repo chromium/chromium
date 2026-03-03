@@ -18,8 +18,7 @@ struct TabStates {
   bool is_selected;
 };
 
-tabs_api::mojom::TabPtr BuildMojoTab(tabs::TabHandle handle,
-                                     const TabRendererData& data,
+tabs_api::mojom::TabPtr BuildMojoTab(tabs::TabInterface* tab,
                                      const ui::ColorProvider& color_provider,
                                      const TabStates& states);
 

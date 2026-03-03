@@ -30,7 +30,6 @@ class TabStripModelAdapterImpl : public TabStripModelAdapter {
   void RemoveCollectionObserver(
       tabs::TabCollectionObserver* collection_observer) override;
   std::vector<tabs::TabHandle> GetTabs() const override;
-  TabRendererData GetTabRendererData(int index) const override;
   converters::TabStates GetTabStates(tabs::TabHandle) const override;
   const ui::ColorProvider& GetColorProvider() const override;
   void CloseTab(size_t tab_index) override;

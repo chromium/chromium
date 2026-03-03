@@ -26,11 +26,9 @@ mojom::OnTabsCreatedEventPtr ToEvent(
   auto tab_created = tabs_api::mojom::TabCreatedContainer::New();
   tab_created->position = tabs_api::Position(
       position.index, adapter->GetPathForCollection(position.parent_handle));
-  auto renderer_data =
-      adapter->GetTabRendererData(adapter->GetIndexForHandle(handle).value());
   const ui::ColorProvider& provider = adapter->GetColorProvider();
   auto mojo_tab = tabs_api::converters::BuildMojoTab(
-      handle, renderer_data, provider, adapter->GetTabStates(handle));
+      handle.Get(), provider, adapter->GetTabStates(handle));
 
   tab_created->tab = std::move(mojo_tab);
   event->tabs.emplace_back(std::move(tab_created));
@@ -117,10 +115,10 @@ mojom::OnDataChangedEventPtr ToEvent(
   auto tabs = adapter->GetTabs();
   if (index < tabs.size()) {
     auto& handle = tabs.at(index);
-    auto renderer_data = adapter->GetTabRendererData(index);
     const ui::ColorProvider& color_provider = adapter->GetColorProvider();
+
     auto mojo_tab = tabs_api::converters::BuildMojoTab(
-        handle, renderer_data, color_provider, adapter->GetTabStates(handle));
+        handle.Get(), color_provider, adapter->GetTabStates(handle));
     event->data = mojom::Data::NewTab(std::move(mojo_tab));
   }
 
@@ -166,12 +164,10 @@ std::vector<Event> ToEvent(const TabStripSelectionChange& selection,
       continue;
     }
     auto event = mojom::OnDataChangedEvent::New();
-    auto renderer_data = adapter->GetTabRendererData(
-        adapter->GetIndexForHandle(affected_tab).value());
     const ui::ColorProvider& color_provider = adapter->GetColorProvider();
-    auto mojo_tab = tabs_api::converters::BuildMojoTab(
-        affected_tab, renderer_data, color_provider,
-        adapter->GetTabStates(affected_tab));
+    auto mojo_tab =
+        tabs_api::converters::BuildMojoTab(affected_tab.Get(), color_provider,
+                                           adapter->GetTabStates(affected_tab));
     event->data = mojom::Data::NewTab(std::move(mojo_tab));
     events.push_back(std::move(event));
   }

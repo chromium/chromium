@@ -17,6 +17,9 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_api/adapters/browser_adapter.h"
+#include "chrome/browser/ui/tabs/tab_strip_api/adapters/browser_adapter_impl.h"
+#include "chrome/browser/ui/tabs/tab_strip_api/adapters/tab_strip_model_adapter_impl.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/observation/tab_strip_api_batched_observer.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service_mojo_handler.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -271,6 +274,210 @@ class TabStripServiceImplBrowserTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<TabStripServiceMojoHandler> tab_strip_service_mojo_handler_;
 };
+
+class TabStripServiceDirectBrowserTest : public InProcessBrowserTest {
+ public:
+  TabStripServiceDirectBrowserTest() {
+    feature_list_.InitWithFeatures({features::kTabStripBrowserApi}, {});
+  }
+
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    service_ = std::make_unique<tabs_api::TabStripServiceImpl>(
+        std::make_unique<tabs_api::BrowserAdapterImpl>(browser()),
+        std::make_unique<tabs_api::TabStripModelAdapterImpl>(
+            browser()->tab_strip_model(),
+            base::NumberToString(browser()->GetSessionID().id())));
+  }
+
+  void TearDownOnMainThread() override { service_.reset(); }
+
+ protected:
+  TabStripModel* GetTabStripModel() { return browser()->tab_strip_model(); }
+
+  base::test::ScopedFeatureList feature_list_;
+  std::unique_ptr<tabs_api::TabStripServiceImpl> service_;
+};
+
+IN_PROC_BROWSER_TEST_F(TabStripServiceDirectBrowserTest, CreateNewTab) {
+  TabStripModel* model = GetTabStripModel();
+
+  ASSERT_EQ(1, model->count());
+
+  auto result = service_->CreateTabAt(std::nullopt, std::nullopt);
+  ASSERT_TRUE(result.has_value());
+  ASSERT_EQ(2, model->count());
+
+  tabs::TabHandle created_handle = model->GetTabAtIndex(1)->GetHandle();
+  ASSERT_EQ(base::NumberToString(created_handle.raw_value()),
+            result.value()->id.Id());
+  ASSERT_EQ(tabs_api::NodeId::Type::kContent, result.value()->id.Type());
+}
+
+IN_PROC_BROWSER_TEST_F(TabStripServiceDirectBrowserTest, GetTabs) {
+  auto result = service_->GetTabs();
+
+  ASSERT_TRUE(result.has_value());
+  const auto& window = result.value();
+  ASSERT_TRUE(window->data->is_window());
+  ASSERT_EQ(1u, window->children.size());
+
+  const auto& tab_strip = window->children[0];
+  ASSERT_TRUE(tab_strip->data->is_tab_strip());
+
+  // Root collection has Pinned and Unpinned collections.
+  ASSERT_EQ(2u, tab_strip->children.size());
+  ASSERT_TRUE(tab_strip->children[0]->data->is_pinned_tabs());
+  ASSERT_TRUE(tab_strip->children[1]->data->is_unpinned_tabs());
+
+  const auto& unpinned_tabs = tab_strip->children[1];
+  // The browser starts with 1 tab by default in the unpinned collection.
+  ASSERT_EQ(1u, unpinned_tabs->children.size());
+  ASSERT_TRUE(unpinned_tabs->children[0]->data->is_tab());
+
+  auto handle = GetTabStripModel()->GetTabAtIndex(0)->GetHandle();
+  ASSERT_EQ(base::NumberToString(handle.raw_value()),
+            unpinned_tabs->children[0]->data->get_tab()->id.Id());
+  ASSERT_EQ(tabs_api::NodeId::Type::kContent,
+            unpinned_tabs->children[0]->data->get_tab()->id.Type());
+}
+
+IN_PROC_BROWSER_TEST_F(TabStripServiceDirectBrowserTest, GetTab) {
+  auto handle = GetTabStripModel()->GetTabAtIndex(0)->GetHandle();
+  tabs_api::NodeId tab_id(tabs_api::NodeId::Type::kContent,
+                          base::NumberToString(handle.raw_value()));
+  auto result = service_->GetTab(tab_id);
+
+  ASSERT_TRUE(result.has_value());
+  ASSERT_EQ(result.value()->id.Id(), base::NumberToString(handle.raw_value()));
+  ASSERT_EQ(result.value()->id.Type(), tabs_api::NodeId::Type::kContent);
+}
+
+IN_PROC_BROWSER_TEST_F(TabStripServiceDirectBrowserTest, GetTab_NotFound) {
+  tabs_api::NodeId tab_id(tabs_api::NodeId::Type::kContent, "666");
+
+  auto result = service_->GetTab(tab_id);
+
+  ASSERT_FALSE(result.has_value());
+  ASSERT_EQ(result.error()->code, mojo_base::mojom::Code::kNotFound);
+}
+
+IN_PROC_BROWSER_TEST_F(TabStripServiceDirectBrowserTest, CloseTabs) {
+  // Add a tab so we can close it without closing the browser.
+  auto create_result = service_->CreateTabAt(std::nullopt, std::nullopt);
+  ASSERT_TRUE(create_result.has_value());
+  ASSERT_EQ(2, GetTabStripModel()->count());
+
+  auto result = service_->CloseTabs({create_result.value()->id});
+
+  ASSERT_TRUE(result.has_value());
+  ASSERT_EQ(1, GetTabStripModel()->count());
+}
+
+IN_PROC_BROWSER_TEST_F(TabStripServiceDirectBrowserTest, ActivateTab) {
+  auto tab1_handle = GetTabStripModel()->GetTabAtIndex(0)->GetHandle();
+
+  auto create_result = service_->CreateTabAt(std::nullopt, std::nullopt);
+  auto tab2_handle = GetTabStripModel()->GetTabAtIndex(1)->GetHandle();
+
+  // New tab should be activated.
+  ASSERT_EQ(GetTabStripModel()->GetActiveTab()->GetHandle(), tab2_handle);
+
+  tabs_api::NodeId tab1_id(tabs_api::NodeId::Type::kContent,
+                           base::NumberToString(tab1_handle.raw_value()));
+
+  auto result = service_->ActivateTab(tab1_id);
+  ASSERT_TRUE(result.has_value());
+
+  ASSERT_EQ(GetTabStripModel()->GetActiveTab()->GetHandle(), tab1_handle);
+}
+
+IN_PROC_BROWSER_TEST_F(TabStripServiceDirectBrowserTest, ActivateTab_NotFound) {
+  tabs_api::NodeId tab_id(tabs_api::NodeId::Type::kContent, "111");
+
+  auto result = service_->ActivateTab(tab_id);
+
+  ASSERT_FALSE(result.has_value());
+  ASSERT_EQ(result.error()->code, mojo_base::mojom::Code::kNotFound);
+}
+
+IN_PROC_BROWSER_TEST_F(TabStripServiceDirectBrowserTest, SetSelectedTabs) {
+  auto tab1_handle = GetTabStripModel()->GetTabAtIndex(0)->GetHandle();
+  auto create_result = service_->CreateTabAt(std::nullopt, std::nullopt);
+
+  tabs_api::NodeId tab1_id(tabs_api::NodeId::Type::kContent,
+                           base::NumberToString(tab1_handle.raw_value()));
+  tabs_api::NodeId tab2_id = create_result.value()->id;
+
+  // tab2 is currently active and selected.
+  ASSERT_TRUE(GetTabStripModel()->GetTabAtIndex(1)->IsActivated());
+
+  auto result = service_->SetSelectedTabs({tab1_id}, tab1_id);
+  ASSERT_TRUE(result.has_value());
+
+  ASSERT_TRUE(GetTabStripModel()->GetTabAtIndex(0)->IsActivated());
+  ASSERT_TRUE(GetTabStripModel()->GetTabAtIndex(0)->IsSelected());
+  ASSERT_FALSE(GetTabStripModel()->GetTabAtIndex(1)->IsActivated());
+  ASSERT_FALSE(GetTabStripModel()->GetTabAtIndex(1)->IsSelected());
+}
+
+IN_PROC_BROWSER_TEST_F(TabStripServiceDirectBrowserTest,
+                       SetSelectedTabs_MultipleSelection) {
+  // Browser starts with 1 tab. Add 3 more for a total of 4.
+  auto create_tab_result = service_->CreateTabAt(std::nullopt, std::nullopt);
+  ASSERT_TRUE(create_tab_result.has_value());
+  create_tab_result = service_->CreateTabAt(std::nullopt, std::nullopt);
+  ASSERT_TRUE(create_tab_result.has_value());
+  create_tab_result = service_->CreateTabAt(std::nullopt, std::nullopt);
+  ASSERT_TRUE(create_tab_result.has_value());
+
+  ASSERT_EQ(4, GetTabStripModel()->count());
+
+  std::vector<tabs_api::NodeId> selection;
+  for (int i = 0; i < 4; ++i) {
+    selection.push_back(tabs_api::NodeId::FromTabHandle(
+        GetTabStripModel()->GetTabAtIndex(i)->GetHandle()));
+  }
+
+  tabs_api::NodeId active_id = selection.back();
+
+  auto result = service_->SetSelectedTabs(selection, active_id);
+  ASSERT_TRUE(result.has_value());
+
+  for (int i = 0; i < 4; ++i) {
+    ASSERT_TRUE(GetTabStripModel()->GetTabAtIndex(i)->IsSelected());
+  }
+  ASSERT_TRUE(GetTabStripModel()->GetTabAtIndex(3)->IsActivated());
+}
+
+IN_PROC_BROWSER_TEST_F(TabStripServiceDirectBrowserTest, MoveTab) {
+  // Add 2 more tabs for a total of 3.
+  auto create_tab_result = service_->CreateTabAt(std::nullopt, std::nullopt);
+  ASSERT_TRUE(create_tab_result.has_value());
+  create_tab_result = service_->CreateTabAt(std::nullopt, std::nullopt);
+  ASSERT_TRUE(create_tab_result.has_value());
+
+  auto handle_to_move = GetTabStripModel()->GetTabAtIndex(0)->GetHandle();
+  tabs_api::NodeId to_move_id(tabs_api::NodeId::Type::kContent,
+                              base::NumberToString(handle_to_move.raw_value()));
+
+  // Move tab 0 to index 2.
+  auto result = service_->MoveNode(to_move_id, tabs_api::Position(2));
+  ASSERT_TRUE(result.has_value());
+
+  ASSERT_EQ(GetTabStripModel()->GetTabAtIndex(2)->GetHandle(), handle_to_move);
+}
+
+IN_PROC_BROWSER_TEST_F(TabStripServiceDirectBrowserTest, MoveTab_OutOfRange) {
+  auto handle = GetTabStripModel()->GetTabAtIndex(0)->GetHandle();
+  tabs_api::NodeId tab_id(tabs_api::NodeId::Type::kContent,
+                          base::NumberToString(handle.raw_value()));
+
+  auto result = service_->MoveNode(tab_id, tabs_api::Position(9001));
+
+  ASSERT_FALSE(result.has_value());
+  ASSERT_EQ(result.error()->code, mojo_base::mojom::Code::kInvalidArgument);
+}
 
 IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, SynchronousObserver) {
   ReallyVerySimpleSyncObserver observer;

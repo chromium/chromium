@@ -8,25 +8,40 @@ source_set("converters") {
     "tab_converters.h",
   ]
 
+  # Remove this once tab_ui_helper.cc is modularized.
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
+    "//base",
     "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/browser/ui/tabs/alert:tab_alert",
     "//chrome/browser/ui/tabs/alert:tab_alert_enum",
     "//components/browser_apis/tab_strip:mojom",
-    "//components/browser_apis/tab_strip/types",
+    "//components/tabs:public",
+    "//ui/color",
   ]
 }
 
-source_set("unit_tests") {
+source_set("browser_tests") {
   testonly = true
 
-  sources = [ "tab_converters_unittest.cc" ]
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "tab_converters_browsertest.cc" ]
 
   deps = [
     ":converters",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ui",
     "//chrome/browser/ui/tabs:tab_strip",
-    "//components/browser_apis/tab_strip:mojom",
+    "//chrome/browser/ui/tabs/alert:tab_alert",
+    "//chrome/test:test_support",
     "//components/browser_apis/tab_strip/types",
+    "//components/tabs:public",
+    "//content/test:test_support",
     "//testing/gtest",
+    "//ui/color",
+    "//url",
   ]
 }
