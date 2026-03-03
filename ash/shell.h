@@ -137,7 +137,7 @@ class ColorPaletteController;
 class ControlVHistogramRecorder;
 class CoralController;
 class CoralDelegate;
-class CrosDisplayConfig;
+class CrosDisplayConfigImpl;
 class DarkLightModeControllerImpl;
 class DesksController;
 class DetachableBaseHandler;
@@ -495,7 +495,7 @@ class ASH_EXPORT Shell : public SessionObserver,
   ColorPaletteController* color_palette_controller() {
     return color_palette_controller_.get();
   }
-  CrosDisplayConfig* cros_display_config() {
+  CrosDisplayConfigImpl* cros_display_config() {
     return cros_display_config_.get();
   }
   ::wm::CursorManager* cursor_manager() { return cursor_manager_.get(); }
@@ -1078,7 +1078,7 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<CalendarController> calendar_controller_;
   std::unique_ptr<CameraEffectsController> camera_effects_controller_;
   std::unique_ptr<ColorPaletteController> color_palette_controller_;
-  std::unique_ptr<CrosDisplayConfig> cros_display_config_;
+  std::unique_ptr<CrosDisplayConfigImpl> cros_display_config_;
   std::unique_ptr<curtain::SecurityCurtainController>
       security_curtain_controller_;
   std::unique_ptr<DarkLightModeControllerImpl> dark_light_mode_controller_;

@@ -5,7 +5,8 @@
 #include "chrome/browser/apps/app_discovery_service/recommended_arc_apps/recommend_apps_fetcher.h"
 
 #include "ash/constants/ash_switches.h"
-#include "ash/public/ash_interfaces.h"
+#include "ash/display/cros_display_config.h"
+#include "ash/shell.h"
 #include "base/command_line.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
@@ -50,12 +51,8 @@ std::unique_ptr<RecommendAppsFetcher> RecommendAppsFetcher::Create(
                                                       fake_apps_count);
   }
 
-  mojo::PendingRemote<crosapi::mojom::CrosDisplayConfigController>
-      display_config;
-  ash::BindCrosDisplayConfigController(
-      display_config.InitWithNewPipeAndPassReceiver());
   return std::make_unique<RecommendAppsFetcherImpl>(
-      delegate, std::move(display_config),
+      delegate, ash::Shell::Get()->cros_display_config(),
       profile->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess()
           .get());

@@ -10,9 +10,11 @@
 #include <string>
 #include <vector>
 
+#include "ash/shell_observer.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/apps/app_discovery_service/recommended_arc_apps/device_configuration.pb.h"
@@ -20,9 +22,12 @@
 #include "chromeos/ash/experiences/arc/arc_features_parser.h"
 #include "chromeos/crosapi/mojom/cros_display_config.mojom.h"
 #include "extensions/browser/api/system_display/display_info_provider.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
+
+namespace ash {
+class CrosDisplayConfig;
+class Shell;
+}  // namespace ash
 
 namespace gpu {
 struct GPUInfo;
@@ -59,7 +64,8 @@ class RecommendAppsFetcherDelegate;
 // 11. system_available_feature
 // 12. native_platform
 // 13. gl_extension
-class RecommendAppsFetcherImpl : public RecommendAppsFetcher {
+class RecommendAppsFetcherImpl : public RecommendAppsFetcher,
+                                 public ash::ShellObserver {
  public:
   class ScopedGpuInfoForTest {
    public:
@@ -69,8 +75,7 @@ class RecommendAppsFetcherImpl : public RecommendAppsFetcher {
 
   RecommendAppsFetcherImpl(
       RecommendAppsFetcherDelegate* delegate,
-      mojo::PendingRemote<crosapi::mojom::CrosDisplayConfigController>
-          display_config,
+      ash::CrosDisplayConfig* cros_display_config,
       network::mojom::URLLoaderFactory* url_loader_factory);
 
   RecommendAppsFetcherImpl(const RecommendAppsFetcherImpl&) = delete;
@@ -88,6 +93,9 @@ class RecommendAppsFetcherImpl : public RecommendAppsFetcher {
   void set_arc_features_getter_for_testing(const ArcFeaturesGetter& getter) {
     arc_features_getter_ = getter;
   }
+
+  // ash::ShellObserver:
+  void OnShellDestroying() override;
 
  private:
   // Populate the required device config info.
@@ -155,8 +163,14 @@ class RecommendAppsFetcherImpl : public RecommendAppsFetcher {
 
   ArcFeaturesGetter arc_features_getter_;
 
-  mojo::Remote<crosapi::mojom::CrosDisplayConfigController>
-      cros_display_config_;
+  raw_ptr<ash::CrosDisplayConfig> cros_display_config_;
+
+  // TODO(crbug.com/485123493): Remove the observation and OnShellDestroying
+  // override once profiles (and thus RecommendAppsFetcherImpl) get destroyed
+  // before ash::Shell.
+  base::ScopedObservation<ash::Shell, ash::ShellObserver> shell_observation_{
+      this};
+
   base::WeakPtrFactory<RecommendAppsFetcherImpl> weak_ptr_factory_{this};
 };
 

@@ -9,7 +9,9 @@
 #include <vector>
 
 #include "ash/public/cpp/night_light_controller.h"
+#include "ash/shell_observer.h"
 #include "ash/webui/settings/public/constants/setting.mojom-forward.h"
+#include "base/scoped_observation.h"
 #include "base/values.h"
 #include "chrome/browser/ash/system/pointer_device_observer.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/device/inputs_section.h"
@@ -21,6 +23,11 @@
 #include "ui/events/devices/input_device_event_observer.h"
 
 class PrefService;
+
+namespace ash {
+class CrosDisplayConfig;
+class Shell;
+}  // namespace ash
 
 namespace content {
 class WebUIDataSource;
@@ -35,13 +42,17 @@ class DeviceSection : public OsSettingsSection,
                       public system::PointerDeviceObserver::Observer,
                       public ui::InputDeviceEventObserver,
                       public NightLightController::Observer,
-                      public crosapi::mojom::CrosDisplayConfigObserver {
+                      public crosapi::mojom::CrosDisplayConfigObserver,
+                      public ash::ShellObserver {
  public:
   DeviceSection(Profile* profile,
                 SearchTagRegistry* search_tag_registry,
                 CupsPrintersManager* printers_manager,
                 PrefService* pref_service);
   ~DeviceSection() override;
+
+  // ash::ShellObserver:
+  void OnShellDestroying() override;
 
   // OsSettingsSection:
   void AddLoadTimeData(content::WebUIDataSource* html_source) override;
@@ -86,12 +97,17 @@ class DeviceSection : public OsSettingsSection,
   void AddDeviceDisplayStrings(content::WebUIDataSource* html_source) const;
 
   system::PointerDeviceObserver pointer_device_observer_;
-  mojo::Remote<crosapi::mojom::CrosDisplayConfigController>
-      cros_display_config_;
   InputsSection inputs_subsection_;
   PrintingSection printing_subsection_;
-  mojo::AssociatedReceiver<crosapi::mojom::CrosDisplayConfigObserver>
-      cros_display_config_observer_receiver_{this};
+  raw_ptr<ash::CrosDisplayConfig> cros_display_config_ = nullptr;
+  base::ScopedObservation<ash::CrosDisplayConfig,
+                          crosapi::mojom::CrosDisplayConfigObserver>
+      cros_display_config_observation_{this};
+  // TODO(crbug.com/485123493): Remove the observation and OnShellDestroying
+  // override once profiles (and thus DeviceSection) get destroyed
+  // before ash::Shell.
+  base::ScopedObservation<ash::Shell, ash::ShellObserver> shell_observation_{
+      this};
 };
 
 }  // namespace ash::settings

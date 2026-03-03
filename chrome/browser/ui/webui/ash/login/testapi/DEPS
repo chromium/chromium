@@ -21,3 +21,10 @@ include_rules = [
   "+chrome/browser/ui/ash/login",
   "+chrome/browser/ui/webui/ash/login",
 ]
+
+specific_include_rules = {
+  "oobe_test_api_handler\\.cc": [
+    "+ash/display/cros_display_config.h",
+    "+ash/shell.h",
+  ],
+}

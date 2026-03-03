@@ -7,22 +7,26 @@
 
 #include <memory>
 
+#include "ash/display/cros_display_config.h"
+#include "ash/shell_observer.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "chromeos/crosapi/mojom/cros_display_config.mojom.h"
 #include "extensions/browser/display_info_provider_base.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/bindings/remote.h"
+
+namespace ash {
+class Shell;
+}  // namespace ash
 
 namespace extensions {
 
 class DisplayInfoProviderChromeOS
     : public DisplayInfoProviderBase,
+      public ash::ShellObserver,
       public crosapi::mojom::CrosDisplayConfigObserver {
  public:
-  explicit DisplayInfoProviderChromeOS(
-      mojo::PendingRemote<crosapi::mojom::CrosDisplayConfigController>
-          display_config);
+  DisplayInfoProviderChromeOS();
 
   DisplayInfoProviderChromeOS(const DisplayInfoProviderChromeOS&) = delete;
   DisplayInfoProviderChromeOS& operator=(const DisplayInfoProviderChromeOS&) =
@@ -61,6 +65,9 @@ class DisplayInfoProviderChromeOS
   void StartObserving() override;
   void StopObserving() override;
 
+  // ash::ShellObserver:
+  void OnShellDestroying() override;
+
   // crosapi::mojom::CrosDisplayConfigObserver
   void OnDisplayConfigChanged() override;
 
@@ -82,10 +89,12 @@ class DisplayInfoProviderChromeOS
                             crosapi::mojom::TouchCalibrationPtr calibration,
                             ErrorCallback callback);
 
-  mojo::Remote<crosapi::mojom::CrosDisplayConfigController>
-      cros_display_config_;
-  mojo::AssociatedReceiver<crosapi::mojom::CrosDisplayConfigObserver>
-      cros_display_config_observer_receiver_{this};
+  raw_ptr<ash::CrosDisplayConfig> cros_display_config_;
+  base::ScopedObservation<ash::Shell, ash::ShellObserver> shell_observation_{
+      this};
+  base::ScopedObservation<ash::CrosDisplayConfig,
+                          crosapi::mojom::CrosDisplayConfigObserver>
+      cros_display_config_observation_{this};
   std::string touch_calibration_target_id_;
   base::WeakPtrFactory<DisplayInfoProviderChromeOS> weak_ptr_factory_{this};
 };

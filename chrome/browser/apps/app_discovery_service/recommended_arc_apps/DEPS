@@ -1,0 +1,5 @@
+include_rules = [
+  "+ash/display/cros_display_config.h",
+  "+ash/shell.h",
+  "+ash/shell_observer.h",
+]

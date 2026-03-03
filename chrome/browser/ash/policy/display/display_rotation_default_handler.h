@@ -13,6 +13,10 @@
 #include "chromeos/crosapi/mojom/cros_display_config.mojom-forward.h"
 #include "ui/display/display.h"
 
+namespace ash {
+class CrosDisplayConfig;
+}  // namespace ash
+
 namespace policy {
 
 // Implements DisplayRotationDefault device policy.
@@ -39,10 +43,9 @@ class DisplayRotationDefaultHandler : public DisplaySettingsPolicyHandler {
   // DisplaySettingsPolicyHandler
   const char* SettingName() override;
   void OnSettingUpdate() override;
-  void ApplyChanges(
-      crosapi::mojom::CrosDisplayConfigController* cros_display_config,
-      const std::vector<crosapi::mojom::DisplayUnitInfoPtr>& info_list)
-      override;
+  void ApplyChanges(ash::CrosDisplayConfig& cros_display_config,
+                    const std::vector<crosapi::mojom::DisplayUnitInfoPtr>&
+                        info_list) override;
 
  private:
   bool policy_enabled_ = false;

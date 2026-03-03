@@ -3,14 +3,15 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/extensions/system_display/display_info_provider_chromeos.h"
-#include "base/task/single_thread_task_runner.h"
 
 #include <stdint.h>
+
 #include <cmath>
 
-#include "ash/public/ash_interfaces.h"
-
+#include "ash/display/cros_display_config.h"
+#include "ash/shell.h"
 #include "base/functional/bind.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/extensions/system_display/display_info_provider.h"
 #include "chrome/browser/extensions/system_display/display_info_provider_utils.h"
 #include "extensions/common/api/system_display.h"
@@ -86,12 +87,19 @@ void LogErrorResult(crosapi::mojom::DisplayConfigResult result) {
 
 }  // namespace
 
-DisplayInfoProviderChromeOS::DisplayInfoProviderChromeOS(
-    mojo::PendingRemote<crosapi::mojom::CrosDisplayConfigController>
-        display_config)
-    : cros_display_config_(std::move(display_config)) {}
+DisplayInfoProviderChromeOS::DisplayInfoProviderChromeOS()
+    : cros_display_config_(ash::Shell::Get()->cros_display_config()) {
+  CHECK(cros_display_config_);
+  shell_observation_.Observe(ash::Shell::Get());
+}
 
 DisplayInfoProviderChromeOS::~DisplayInfoProviderChromeOS() = default;
+
+void DisplayInfoProviderChromeOS::OnShellDestroying() {
+  shell_observation_.Reset();
+  cros_display_config_observation_.Reset();
+  cros_display_config_ = nullptr;
+}
 
 void DisplayInfoProviderChromeOS::SetDisplayProperties(
     const std::string& display_id_str,
@@ -105,7 +113,7 @@ void DisplayInfoProviderChromeOS::SetDisplayProperties(
   }
 
   // Process the 'isUnified' property.
-  if (properties.is_unified) {
+  if (properties.is_unified && cros_display_config_) {
     auto layout_info = crosapi::mojom::DisplayLayoutInfo::New();
     layout_info->layout_mode = *properties.is_unified
                                    ? crosapi::mojom::DisplayLayoutMode::kUnified
@@ -197,20 +205,25 @@ void DisplayInfoProviderChromeOS::SetDisplayProperties(
     config_properties->display_mode = std::move(mojo_display_mode);
   }
 
-  cros_display_config_->SetDisplayProperties(
-      display_id_str, std::move(config_properties),
-      crosapi::mojom::DisplayConfigSource::kUser,
-      base::BindOnce(
-          [](ErrorCallback callback,
-             crosapi::mojom::DisplayConfigResult result) {
-            std::move(callback).Run(GetStringResult(result));
-          },
-          std::move(callback)));
+  if (cros_display_config_) {
+    cros_display_config_->SetDisplayProperties(
+        display_id_str, std::move(config_properties),
+        crosapi::mojom::DisplayConfigSource::kUser,
+        base::BindOnce(
+            [](ErrorCallback callback,
+               crosapi::mojom::DisplayConfigResult result) {
+              std::move(callback).Run(GetStringResult(result));
+            },
+            std::move(callback)));
+  }
 }
 
 void DisplayInfoProviderChromeOS::SetDisplayLayout(
     const DisplayLayoutList& layout_list,
     ErrorCallback callback) {
+  if (!cros_display_config_) {
+    return;
+  }
   auto layout_info = crosapi::mojom::DisplayLayoutInfo::New();
   // Generate the new list of layouts.
   std::vector<crosapi::mojom::DisplayLayoutPtr> display_layouts;
@@ -236,37 +249,45 @@ void DisplayInfoProviderChromeOS::CallSetDisplayLayoutInfo(
     crosapi::mojom::DisplayLayoutInfoPtr cur_info) {
   // Copy the existing layout_mode.
   layout_info->layout_mode = cur_info->layout_mode;
-  cros_display_config_->SetDisplayLayoutInfo(
-      std::move(layout_info),
-      base::BindOnce(
-          [](ErrorCallback callback,
-             crosapi::mojom::DisplayConfigResult result) {
-            std::move(callback).Run(GetStringResult(result));
-          },
-          std::move(callback)));
+  if (cros_display_config_) {
+    cros_display_config_->SetDisplayLayoutInfo(
+        std::move(layout_info),
+        base::BindOnce(
+            [](ErrorCallback callback,
+               crosapi::mojom::DisplayConfigResult result) {
+              std::move(callback).Run(GetStringResult(result));
+            },
+            std::move(callback)));
+  }
 }
 
 void DisplayInfoProviderChromeOS::EnableUnifiedDesktop(bool enable) {
-  cros_display_config_->SetUnifiedDesktopEnabled(enable);
+  if (cros_display_config_) {
+    cros_display_config_->SetUnifiedDesktopEnabled(enable);
+  }
 }
 
 void DisplayInfoProviderChromeOS::GetAllDisplaysInfo(
     bool single_unified,
     base::OnceCallback<void(DisplayUnitInfoList result)> callback) {
-  cros_display_config_->GetDisplayLayoutInfo(base::BindOnce(
-      &DisplayInfoProviderChromeOS::CallGetDisplayUnitInfoList,
-      weak_ptr_factory_.GetWeakPtr(), single_unified, std::move(callback)));
+  if (cros_display_config_) {
+    cros_display_config_->GetDisplayLayoutInfo(base::BindOnce(
+        &DisplayInfoProviderChromeOS::CallGetDisplayUnitInfoList,
+        weak_ptr_factory_.GetWeakPtr(), single_unified, std::move(callback)));
+  }
 }
 
 void DisplayInfoProviderChromeOS::CallGetDisplayUnitInfoList(
     bool single_unified,
     base::OnceCallback<void(DisplayUnitInfoList result)> callback,
     crosapi::mojom::DisplayLayoutInfoPtr layout) {
-  cros_display_config_->GetDisplayUnitInfoList(
-      single_unified,
-      base::BindOnce(&DisplayInfoProviderChromeOS::OnGetDisplayUnitInfoList,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(layout),
-                     std::move(callback)));
+  if (cros_display_config_) {
+    cros_display_config_->GetDisplayUnitInfoList(
+        single_unified,
+        base::BindOnce(&DisplayInfoProviderChromeOS::OnGetDisplayUnitInfoList,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(layout),
+                       std::move(callback)));
+  }
 }
 
 void DisplayInfoProviderChromeOS::OnGetDisplayUnitInfoList(
@@ -285,40 +306,50 @@ void DisplayInfoProviderChromeOS::OnGetDisplayUnitInfoList(
 
 void DisplayInfoProviderChromeOS::GetDisplayLayout(
     base::OnceCallback<void(DisplayLayoutList)> callback) {
-  cros_display_config_->GetDisplayLayoutInfo(
-      base::BindOnce(&OnGetDisplayLayoutResult, std::move(callback)));
+  if (cros_display_config_) {
+    cros_display_config_->GetDisplayLayoutInfo(
+        base::BindOnce(&OnGetDisplayLayoutResult, std::move(callback)));
+  }
 }
 
 bool DisplayInfoProviderChromeOS::OverscanCalibrationStart(
     const std::string& id) {
-  cros_display_config_->OverscanCalibration(
-      id, crosapi::mojom::DisplayConfigOperation::kStart, std::nullopt,
-      base::BindOnce(&LogErrorResult));
+  if (cros_display_config_) {
+    cros_display_config_->OverscanCalibration(
+        id, crosapi::mojom::DisplayConfigOperation::kStart, std::nullopt,
+        base::BindOnce(&LogErrorResult));
+  }
   return true;
 }
 
 bool DisplayInfoProviderChromeOS::OverscanCalibrationAdjust(
     const std::string& id,
     const system_display::Insets& delta) {
-  cros_display_config_->OverscanCalibration(
-      id, crosapi::mojom::DisplayConfigOperation::kAdjust, GetInsets(delta),
-      base::BindOnce(&LogErrorResult));
+  if (cros_display_config_) {
+    cros_display_config_->OverscanCalibration(
+        id, crosapi::mojom::DisplayConfigOperation::kAdjust, GetInsets(delta),
+        base::BindOnce(&LogErrorResult));
+  }
   return true;
 }
 
 bool DisplayInfoProviderChromeOS::OverscanCalibrationReset(
     const std::string& id) {
-  cros_display_config_->OverscanCalibration(
-      id, crosapi::mojom::DisplayConfigOperation::kReset, std::nullopt,
-      base::BindOnce(&LogErrorResult));
+  if (cros_display_config_) {
+    cros_display_config_->OverscanCalibration(
+        id, crosapi::mojom::DisplayConfigOperation::kReset, std::nullopt,
+        base::BindOnce(&LogErrorResult));
+  }
   return true;
 }
 
 bool DisplayInfoProviderChromeOS::OverscanCalibrationComplete(
     const std::string& id) {
-  cros_display_config_->OverscanCalibration(
-      id, crosapi::mojom::DisplayConfigOperation::kComplete, std::nullopt,
-      base::BindOnce(&LogErrorResult));
+  if (cros_display_config_) {
+    cros_display_config_->OverscanCalibration(
+        id, crosapi::mojom::DisplayConfigOperation::kComplete, std::nullopt,
+        base::BindOnce(&LogErrorResult));
+  }
   return true;
 }
 
@@ -363,20 +394,22 @@ void DisplayInfoProviderChromeOS::CallTouchCalibration(
     crosapi::mojom::DisplayConfigOperation op,
     crosapi::mojom::TouchCalibrationPtr calibration,
     ErrorCallback callback) {
-  cros_display_config_->TouchCalibration(
-      id, op, std::move(calibration),
-      base::BindOnce(
-          [](ErrorCallback callback,
-             crosapi::mojom::DisplayConfigResult result) {
-            if (!callback) {
-              return;
-            }
-            std::move(callback).Run(
-                result == crosapi::mojom::DisplayConfigResult::kSuccess
-                    ? std::nullopt
-                    : GetStringResult(result));
-          },
-          std::move(callback)));
+  if (cros_display_config_) {
+    cros_display_config_->TouchCalibration(
+        id, op, std::move(calibration),
+        base::BindOnce(
+            [](ErrorCallback callback,
+               crosapi::mojom::DisplayConfigResult result) {
+              if (!callback) {
+                return;
+              }
+              std::move(callback).Run(
+                  result == crosapi::mojom::DisplayConfigResult::kSuccess
+                      ? std::nullopt
+                      : GetStringResult(result));
+            },
+            std::move(callback)));
+  }
 }
 
 void DisplayInfoProviderChromeOS::SetMirrorMode(
@@ -405,30 +438,28 @@ void DisplayInfoProviderChromeOS::SetMirrorMode(
               *info.mirroring_destination_ids);
     }
   }
-  cros_display_config_->SetDisplayLayoutInfo(
-      std::move(display_layout_info),
-      base::BindOnce(
-          [](ErrorCallback callback,
-             crosapi::mojom::DisplayConfigResult result) {
-            std::move(callback).Run(GetStringResult(result));
-          },
-          std::move(callback)));
+  if (cros_display_config_) {
+    cros_display_config_->SetDisplayLayoutInfo(
+        std::move(display_layout_info),
+        base::BindOnce(
+            [](ErrorCallback callback,
+               crosapi::mojom::DisplayConfigResult result) {
+              std::move(callback).Run(GetStringResult(result));
+            },
+            std::move(callback)));
+  }
 }
 
 void DisplayInfoProviderChromeOS::StartObserving() {
   DisplayInfoProvider::StartObserving();
-
-  mojo::PendingAssociatedRemote<crosapi::mojom::CrosDisplayConfigObserver>
-      observer;
-  cros_display_config_observer_receiver_.Bind(
-      observer.InitWithNewEndpointAndPassReceiver());
-  cros_display_config_->AddObserver(std::move(observer));
+  if (cros_display_config_) {
+    cros_display_config_observation_.Observe(cros_display_config_);
+  }
 }
 
 void DisplayInfoProviderChromeOS::StopObserving() {
+  cros_display_config_observation_.Reset();
   DisplayInfoProvider::StopObserving();
-
-  cros_display_config_observer_receiver_.reset();
 }
 
 void DisplayInfoProviderChromeOS::OnDisplayConfigChanged() {
@@ -436,12 +467,7 @@ void DisplayInfoProviderChromeOS::OnDisplayConfigChanged() {
 }
 
 std::unique_ptr<DisplayInfoProvider> CreateChromeDisplayInfoProvider() {
-  mojo::PendingRemote<crosapi::mojom::CrosDisplayConfigController>
-      display_config;
-  ash::BindCrosDisplayConfigController(
-      display_config.InitWithNewPipeAndPassReceiver());
-  return std::make_unique<DisplayInfoProviderChromeOS>(
-      std::move(display_config));
+  return std::make_unique<DisplayInfoProviderChromeOS>();
 }
 
 }  // namespace extensions
