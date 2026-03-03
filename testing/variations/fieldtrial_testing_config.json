@@ -8563,7 +8563,7 @@
                     "name": "Enabled",
                     "params": {
                         "RequireOriginTrialTokens": "false",
-                        "SchemaVersion": "3"
+                        "SchemaVersion": "4"
                     },
                     "enable_features": [
                         "DeviceBoundSessions",
