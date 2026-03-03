@@ -4,6 +4,7 @@
 import {CaptureRegionErrorReason, FormFactor, HostCapability, InvocationSource, MetricUserInputReactionType, PanelStateKind, Platform, ResponseStopCause, ScrollToErrorReason, SkillSource, WebClientMode} from '/glic/glic_api/glic_api.js';
 import type {CancelActionsResult, CaptureRegionResult, FocusedTabData, GetPinCandidatesOptions, GlicBrowserHost, OpenPanelInfo, PageMetadata, PanelOpeningData, ScrollToError, TabData, UserConfirmationDialogRequest, UserProfileInfo, ZeroStateSuggestionsV2} from '/glic/glic_api/glic_api.js';
 
+
 import {ApiTestError, ApiTestFixtureBase, assertDefined, assertEquals, assertFalse, assertNotEquals, assertRejects, assertTrue, assertUndefined, checkDefined, mapObservable, observeSequence, readStream, runUntil, sleep, testMain, waitFor, WebClient} from './browser_test_base.js';
 import type {SequencedSubscriber} from './browser_test_base.js';
 
@@ -2767,7 +2768,7 @@ class ApiTests extends ApiTestFixtureBase {
       case HostCapability.INVOKE:
         return 'INVOKE';
       default:
-        return 'NEW_ENUM_NOT_IMPLEMENTED';
+        throw new Error(`Unhandled capability: ${capability}`);
     }
   }
 }
