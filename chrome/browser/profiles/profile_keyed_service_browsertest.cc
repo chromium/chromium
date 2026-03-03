@@ -30,6 +30,7 @@
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/supervised_user/core/common/features.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
@@ -210,6 +211,7 @@ class ProfileKeyedServiceBrowserTest : public InProcessBrowserTest {
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
           switches::kSyncEnableBookmarksInTransportMode,
           contextual_tasks::kContextualTasks,
+          supervised_user::kSupervisedUserUseUrlFilteringService,
         },
         {});
     // clang-format on
@@ -556,6 +558,7 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceGuestBrowserTest,
     "PrinterEventTracker",
     "SharesheetService",
     "SupervisedUserService",
+    "SupervisedUserUrlFilteringService",
     "SystemWebAppManager",
     "VirtualKeyboardAPI",
     "VolumeManagerFactory",

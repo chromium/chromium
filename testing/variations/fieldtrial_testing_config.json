@@ -16583,6 +16583,7 @@
     "NoOpParentalControlsV2": [
         {
             "platforms": [
+                "chromeos",
                 "ios",
                 "linux",
                 "mac",
