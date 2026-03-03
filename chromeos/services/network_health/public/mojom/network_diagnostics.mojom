@@ -270,7 +270,8 @@ enum GoogleServicesConnectivityProblemType {
   kNoNetworkError = 8,
 };
 
-// Problem types for proxy-specific connection errors (proxy is always present).
+// Problem types for proxy-specific connection errors (reported only when a
+// proxy is configured on the device).
 // NextMinVersion: 1, NextIndex: 2
 [Stable, Extensible]
 enum GoogleServicesConnectivityProxyProblemType {
