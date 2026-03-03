@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_PICTURE_IN_PICTURE_UI_PICTURE_IN_PICTURE_VIEW_CONTROLLER_H_
 #define IOS_CHROME_BROWSER_PICTURE_IN_PICTURE_UI_PICTURE_IN_PICTURE_VIEW_CONTROLLER_H_
 
+#import "ios/chrome/browser/picture_in_picture/public/picture_in_picture_constants.h"
 #import "ios/chrome/common/ui/button_stack/button_stack_view_controller.h"
 
 @class PictureInPictureConfiguration;
@@ -23,7 +24,9 @@
 // Designated initializer.
 - (instancetype)initWithTitle:(NSString*)title
            primaryButtonTitle:(NSString*)primaryButtonTitle
-                     videoURL:(NSURL*)videoURL NS_DESIGNATED_INITIALIZER;
+                     videoURL:(NSURL*)videoURL
+                      feature:(PictureInPictureFeature)feature
+    NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithConfiguration:(ButtonStackConfiguration*)configuration
     NS_UNAVAILABLE;

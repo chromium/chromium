@@ -4,12 +4,16 @@
 
 #import "ios/chrome/browser/picture_in_picture/coordinator/picture_in_picture_mediator.h"
 
+#import "base/metrics/histogram_functions.h"
+#import "base/strings/strcat.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/default_browser/promo/public/features.h"
 #import "ios/chrome/browser/picture_in_picture/public/picture_in_picture_configuration.h"
+#import "ios/chrome/browser/picture_in_picture/public/picture_in_picture_constants.h"
 
 @implementation PictureInPictureMediator {
   PictureInPictureConfiguration* _configuration;
+  int _primaryButtonTapCount;
 }
 
 - (instancetype)initWithConfiguration:
@@ -19,6 +23,16 @@
     _configuration = configuration;
   }
   return self;
+}
+
+#pragma mark - Public
+
+- (void)recordPrimaryButtonTapCount {
+  base::UmaHistogramCounts10000(
+      base::StrCat({"IOS.PictureInPicture.",
+                    PictureInPictureFeatureToString(_configuration.feature),
+                    ".PrimaryButtonTapCount"}),
+      _primaryButtonTapCount);
 }
 
 #pragma mark - PictureInPictureMutator
@@ -34,6 +48,7 @@
 #pragma mark - ButtonStackActionDelegate
 
 - (void)didTapPrimaryActionButton {
+  _primaryButtonTapCount++;
   switch (_configuration.feature) {
     case PictureInPictureFeature::kDefaultBrowser:
       OpenIOSDefaultBrowserSettingsPage(IsDefaultAppsPictureInPictureVariant());

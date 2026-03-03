@@ -146,6 +146,14 @@ chromium-metrics-reviews@google.com.
                version number."/>
 </variants>
 
+<!-- LINT.IfChange(PictureInPictureFeature) -->
+
+<variants name="PictureInPictureFeature">
+  <variant name="DefaultBrowser" summary="Default Browser Instructions"/>
+</variants>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/picture_in_picture/public/picture_in_picture_constants.h:PictureInPictureFeature) -->
+
 <!-- LINT.IfChange(PromosManagerPromo) -->
 
 <variants name="PromosManagerPromo">
@@ -5316,6 +5324,54 @@ chromium-metrics-reviews@google.com.
     milliseconds. This includes directory creation and file writing. Time is not
     logged for failures
   </summary>
+</histogram>
+
+<histogram name="IOS.PictureInPicture.{Feature}.AppRestoration"
+    enum="PictureInPictureAppRestoration" expires_after="2027-01-28">
+  <owner>cheickcisse@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    Logs the app restoration method (e.g. via the PiP's full-screen button or
+    manually reopening the app) for a given Picture in Picture feature. Logged
+    when the app is restored from the background while a Picture in Picture
+    window is active.
+  </summary>
+  <token key="Feature" variants="PictureInPictureFeature"/>
+</histogram>
+
+<histogram name="IOS.PictureInPicture.{Feature}.DismissalReason"
+    enum="PictureInPictureDismissalReason" expires_after="2027-01-28">
+  <owner>cheickcisse@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    Logs the session dismissal reason for a given Picture in Picture feature.
+    Logged when the Picture in Picture session is dismissed.
+  </summary>
+  <token key="Feature" variants="PictureInPictureFeature"/>
+</histogram>
+
+<histogram name="IOS.PictureInPicture.{Feature}.PrimaryButtonTapCount"
+    units="count" expires_after="2027-01-28">
+  <owner>cheickcisse@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    Logs the number of times the user tapped the primary action button in the
+    fullscreen video player within the app for a given Picture in Picture
+    feature. Logged when the Picture in Picture coordinator is dismissed.
+  </summary>
+  <token key="Feature" variants="PictureInPictureFeature"/>
+</histogram>
+
+<histogram name="IOS.PictureInPicture.{Feature}.SessionDuration" units="ms"
+    expires_after="2027-01-28">
+  <owner>cheickcisse@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    Logs the duration of a Picture in Picture session for a given feature.
+    Logged when the Picture in Picture session successfully ends (e.g. when
+    closed by the user or app was restored).
+  </summary>
+  <token key="Feature" variants="PictureInPictureFeature"/>
 </histogram>
 
 <histogram name="IOS.PostDefaultAbandonmentPromo.UserAction"

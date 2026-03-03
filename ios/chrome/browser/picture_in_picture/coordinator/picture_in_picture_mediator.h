@@ -23,6 +23,9 @@
 // Unavailable initializer.
 - (instancetype)init NS_UNAVAILABLE;
 
+// Records the primary button tap count.
+- (void)recordPrimaryButtonTapCount;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_PICTURE_IN_PICTURE_COORDINATOR_PICTURE_IN_PICTURE_MEDIATOR_H_

@@ -2073,6 +2073,28 @@ chromium-metrics-reviews@google.com.
       label="Bottom Sheet couldn't be presented for various reasons"/>
 </enum>
 
+<!-- LINT.IfChange(PictureInPictureAppRestoration) -->
+
+<enum name="PictureInPictureAppRestoration">
+  <int value="0"
+      label="Manual App Restoration (e.g. app switcher, home screen...)"/>
+  <int value="1" label="Picture in Picture Fullscreen Button"/>
+</enum>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/picture_in_picture/public/picture_in_picture_constants.h:PictureInPictureAppRestoration) -->
+
+<!-- LINT.IfChange(PictureInPictureSessionDismissalReason) -->
+
+<enum name="PictureInPictureDismissalReason">
+  <int value="0" label="Not Supported"/>
+  <int value="1" label="Manual App Restoration"/>
+  <int value="2" label="In-App Close Button"/>
+  <int value="3" label="In-App Swipe to Close"/>
+  <int value="4" label="Picture in Picture Close Button"/>
+</enum>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/picture_in_picture/public/picture_in_picture_constants.h:PictureInPictureDismissalReason) -->
+
 <!-- LINT.IfChange(ProfileNotificationRequestCreationFailureReason) -->
 
 <enum name="ProfileNotificationRequestCreationFailureReason">

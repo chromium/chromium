@@ -8,6 +8,8 @@
 #import <AVKit/AVKit.h>
 
 #import "base/functional/bind.h"
+#import "base/metrics/histogram_functions.h"
+#import "base/strings/strcat.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/time/time.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
@@ -32,6 +34,8 @@ NSString* const kKeyPathTimeControlStatus = @"timeControlStatus";
   NSString* _primaryButtonTitle;
   // The URL of the video.
   NSURL* _videoURL;
+  // The feature for picture in picture.
+  PictureInPictureFeature _feature;
   // The player view for picture in picture.
   UIView* _playerView;
   // The player for picture in picture.
@@ -42,16 +46,22 @@ NSString* const kKeyPathTimeControlStatus = @"timeControlStatus";
   AVPictureInPictureController* _pipController;
   // The player layer for picture in picture.
   AVPlayerLayer* _playerLayer;
-  // The boolean flag for the initial picture in picture start.
-  BOOL _initialPictureInPictureStart;
-
-  // The boolean flag for restored from picture in picture.
-  BOOL _restoredFromPip;
+  // Flag set to true if the picture in picture should auto start.
+  BOOL _shouldAutoStartPictureInPicture;
+  // Flag set to true if the app was restored to foreground by the user tapping
+  // on the fullscreen button within the picture in picture window.
+  BOOL _restoredFromPictureInPicture;
+  // Flag set to true if the app was restored to foreground by the user
+  // manually reopening the app or by the picture in picture fullscreen button.
+  BOOL _appWasRestored;
+  // The time when picture in picture started.
+  base::TimeTicks _pipStartTime;
 }
 
 - (instancetype)initWithTitle:(NSString*)title
            primaryButtonTitle:(NSString*)primaryButtonTitle
-                     videoURL:(NSURL*)videoURL {
+                     videoURL:(NSURL*)videoURL
+                      feature:(PictureInPictureFeature)feature {
   ButtonStackConfiguration* buttonConfiguration =
       [[ButtonStackConfiguration alloc] init];
   buttonConfiguration.primaryActionString = primaryButtonTitle;
@@ -59,7 +69,7 @@ NSString* const kKeyPathTimeControlStatus = @"timeControlStatus";
     _title = title;
     _primaryButtonTitle = primaryButtonTitle;
     _videoURL = videoURL;
-    _initialPictureInPictureStart = YES;
+    _shouldAutoStartPictureInPicture = YES;
   }
   return self;
 }
@@ -84,6 +94,7 @@ NSString* const kKeyPathTimeControlStatus = @"timeControlStatus";
 
 - (void)dismissIfNotPipRestore {
   __weak __typeof(self) weakSelf = self;
+  _appWasRestored = YES;
   // Defer execution to allow
   // `restoreUserInterfaceForPictureInPictureStopWithCompletionHandler` to fire
   // first. This lets us distinguish a manual launch (which dismisses
@@ -148,14 +159,19 @@ NSString* const kKeyPathTimeControlStatus = @"timeControlStatus";
 
 // Handles the app restore after picture in picture.
 - (void)handleAppRestore {
-  if (_restoredFromPip) {
+  if (_restoredFromPictureInPicture) {
+    [self recordAppRestoration:PictureInPictureAppRestoration::
+                                   kPictureInPictureFullscreenButton];
     return;
   }
 
   if (_pipController.isPictureInPictureActive) {
+    [self recordAppRestoration:PictureInPictureAppRestoration::kManual];
     _playerView.alpha = 0.0f;
     [_pipController stopPictureInPicture];
     [_playerView removeFromSuperview];
+    [self recordDismissalReason:PictureInPictureDismissalReason::
+                                    kManualAppRestoration];
     [_handler dismissPictureInPicture];
   }
 }
@@ -195,20 +211,61 @@ NSString* const kKeyPathTimeControlStatus = @"timeControlStatus";
 - (void)triggerFeatureDestination {
   switch (_player.timeControlStatus) {
     case AVPlayerTimeControlStatusPlaying:
-      // If this is not the initial picture in picture start, return
-      // without triggering the feature destination.
-      if (!_initialPictureInPictureStart) {
+      if (_pipController.isPictureInPictureActive) {
+        // Do nothing if picture in picture is currently active.
         return;
       }
-      _initialPictureInPictureStart = NO;
+
+      // If this is not the initial picture in picture start, return
+      // without triggering the feature destination.
+      if (!_shouldAutoStartPictureInPicture) {
+        return;
+      }
 
       // Trigger feature destination.
       [_mutator startDestination];
+      _shouldAutoStartPictureInPicture = NO;
       break;
     case AVPlayerTimeControlStatusPaused:
     case AVPlayerTimeControlStatusWaitingToPlayAtSpecifiedRate:
       break;
   }
+}
+
+// Records the app restoration.
+- (void)recordAppRestoration:(PictureInPictureAppRestoration)appRestoration {
+  base::UmaHistogramEnumeration(
+      base::StrCat({"IOS.PictureInPicture.",
+                    PictureInPictureFeatureToString(_feature),
+                    ".AppRestoration"}),
+      appRestoration);
+}
+
+// Records the session duration.
+- (void)recordSessionDuration:(base::TimeDelta)sessionDuration {
+  base::UmaHistogramLongTimes(
+      base::StrCat({"IOS.PictureInPicture.",
+                    PictureInPictureFeatureToString(_feature),
+                    ".SessionDuration"}),
+      sessionDuration);
+}
+
+// Records the start successful.
+- (void)recordStartSuccessful:(BOOL)success {
+  base::UmaHistogramBoolean(
+      base::StrCat({"IOS.PictureInPicture.",
+                    PictureInPictureFeatureToString(_feature),
+                    ".StartSuccessful"}),
+      success);
+}
+
+// Records the dismissal reason.
+- (void)recordDismissalReason:(PictureInPictureDismissalReason)dismissalReason {
+  base::UmaHistogramEnumeration(
+      base::StrCat({"IOS.PictureInPicture.",
+                    PictureInPictureFeatureToString(_feature),
+                    ".DismissalReason"}),
+      dismissalReason);
 }
 
 #pragma mark - AVPictureInPictureControllerDelegate
@@ -217,19 +274,41 @@ NSString* const kKeyPathTimeControlStatus = @"timeControlStatus";
     (AVPictureInPictureController*)pictureInPictureController {
 }
 
+- (void)pictureInPictureControllerDidStartPictureInPicture:
+    (AVPictureInPictureController*)pictureInPictureController {
+  _restoredFromPictureInPicture = NO;
+  _appWasRestored = NO;
+  _pipStartTime = base::TimeTicks::Now();
+  [self recordStartSuccessful:YES];
+}
+
+- (void)pictureInPictureController:
+            (AVPictureInPictureController*)pictureInPictureController
+    failedToStartPictureInPictureWithError:(NSError*)error {
+  [self recordStartSuccessful:NO];
+}
+
 - (void)pictureInPictureControllerWillStopPictureInPicture:
     (AVPictureInPictureController*)pictureInPictureController {
 }
 
 - (void)pictureInPictureControllerDidStopPictureInPicture:
     (AVPictureInPictureController*)pictureInPictureController {
+  [self recordSessionDuration:base::TimeTicks::Now() - _pipStartTime];
+  // If this method was called without an app restore, record a close
+  // interaction.
+  if (!_appWasRestored) {
+    [self recordDismissalReason:PictureInPictureDismissalReason::
+                                    kPictureInPictureCloseButton];
+    [_handler dismissPictureInPicture];
+  }
 }
 
 - (void)pictureInPictureController:
             (AVPictureInPictureController*)pictureInPictureController
     restoreUserInterfaceForPictureInPictureStopWithCompletionHandler:
         (void (^)(BOOL restored))completionHandler {
-  _restoredFromPip = YES;
+  _restoredFromPictureInPicture = YES;
   completionHandler(YES);
 }
 

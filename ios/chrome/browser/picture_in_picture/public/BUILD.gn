@@ -7,5 +7,6 @@ source_set("public") {
     "picture_in_picture_configuration.h",
     "picture_in_picture_configuration.mm",
     "picture_in_picture_constants.h",
+    "picture_in_picture_constants.mm",
   ]
 }

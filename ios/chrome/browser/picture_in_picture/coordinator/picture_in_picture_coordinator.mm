@@ -6,6 +6,8 @@
 
 #import <AVKit/AVKit.h>
 
+#import "base/metrics/histogram_functions.h"
+#import "base/strings/strcat.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/default_browser/promo/public/features.h"
 #import "ios/chrome/browser/picture_in_picture/coordinator/picture_in_picture_mediator.h"
@@ -14,6 +16,10 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/picture_in_picture_commands.h"
+
+@interface PictureInPictureCoordinator () <
+    UIAdaptivePresentationControllerDelegate>
+@end
 
 @implementation PictureInPictureCoordinator {
   PictureInPictureViewController* _viewController;
@@ -41,7 +47,8 @@
     // Picture in picture is not supported, open the feature's destination
     // directly.
     [self openFeatureDestination];
-    [self dismiss];
+    [self recordDismissalReason:PictureInPictureDismissalReason::kNotSupported];
+    [_handler dismissPictureInPicture];
     return;
   }
 
@@ -50,7 +57,8 @@
   _viewController = [[PictureInPictureViewController alloc]
            initWithTitle:_configuration.title
       primaryButtonTitle:_configuration.primaryButtonTitle
-                videoURL:_configuration.videoURL];
+                videoURL:_configuration.videoURL
+                 feature:_configuration.feature];
 
   _handler = HandlerForProtocol(self.browser->GetCommandDispatcher(),
                                 PictureInPictureCommands);
@@ -63,12 +71,14 @@
   _viewController.handler = _handler;
   _navigationController = [[UINavigationController alloc]
       initWithRootViewController:_viewController];
+  _navigationController.presentationController.delegate = self;
   [self.baseViewController presentViewController:_navigationController
                                         animated:YES
                                       completion:nil];
 }
 
 - (void)stop {
+  [_mediator recordPrimaryButtonTapCount];
   [_navigationController.presentingViewController
       dismissViewControllerAnimated:YES
                          completion:nil];
@@ -87,6 +97,8 @@
 
 // Dismisses the picture-in-picture view controller.
 - (void)dismiss {
+  [self
+      recordDismissalReason:PictureInPictureDismissalReason::kInAppCloseButton];
   [_handler dismissPictureInPicture];
 }
 
@@ -97,6 +109,23 @@
       OpenIOSDefaultBrowserSettingsPage(IsDefaultAppsPictureInPictureVariant());
       break;
   }
+}
+
+- (void)recordDismissalReason:(PictureInPictureDismissalReason)dismissalReason {
+  base::UmaHistogramEnumeration(
+      base::StrCat({"IOS.PictureInPicture.",
+                    PictureInPictureFeatureToString(_configuration.feature),
+                    ".DismissalReason"}),
+      dismissalReason);
+}
+
+#pragma mark - UIAdaptivePresentationControllerDelegate
+
+- (void)presentationControllerDidDismiss:
+    (UIPresentationController*)presentationController {
+  [self recordDismissalReason:PictureInPictureDismissalReason::
+                                  kInAppSwipeToClose];
+  [_handler dismissPictureInPicture];
 }
 
 @end
