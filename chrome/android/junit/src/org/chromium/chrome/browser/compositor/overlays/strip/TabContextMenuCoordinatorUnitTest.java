@@ -11,6 +11,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
@@ -78,6 +79,7 @@ import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter.MergeNotificationType;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils.TabGroupCreationCallback;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -308,6 +310,7 @@ public class TabContextMenuCoordinatorUnitTest {
                         () -> mTabModel,
                         mTabGroupModelFilter,
                         mBottomSheetCoordinator,
+                        mTabGroupCreationCallback,
                         mMultiInstanceManager,
                         ObservableSuppliers.createMonotonic(mShareDelegate));
         mTabContextMenuCoordinator =
@@ -326,7 +329,36 @@ public class TabContextMenuCoordinatorUnitTest {
     @Test
     @Feature("Tab Strip Context Menu")
     @EnableFeatures(ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
-    @SuppressWarnings("DirectInvocationOnMock")
+    public void testAddToNewTabGroup() {
+        mOnItemClickedCallback.onClick(
+                R.id.add_to_new_tab_group,
+                new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)),
+                COLLABORATION_ID,
+                /* listViewTouchTracker= */ null);
+        verify(mTabGroupModelFilter, times(1)).createSingleTabGroup(mTab1);
+        verify(mTabGroupCreationCallback, times(1)).onTabGroupCreated(TAB_GROUP_ID);
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
+    @EnableFeatures(ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
+    public void testAddToNewTabGroup_multipleTabs() {
+        mOnItemClickedCallback.onClick(
+                R.id.add_to_new_tab_group,
+                new AnchorInfo(TAB_ID, List.of(TAB_ID, TAB_ID_2)),
+                COLLABORATION_ID,
+                /* listViewTouchTracker= */ null);
+        verify(mTabGroupModelFilter, times(1))
+                .mergeListOfTabsToGroup(
+                        eq(List.of(mTab1, mTab2)),
+                        eq(mTab1),
+                        eq(MergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP));
+        verify(mTabGroupCreationCallback, times(1)).onTabGroupCreated(TAB_GROUP_ID);
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
+    @EnableFeatures(ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
     public void testListMenuItems_tabInGroup() {
         var modelList = new ModelList();
         mTabContextMenuCoordinator.configureMenuItemsForTesting(
