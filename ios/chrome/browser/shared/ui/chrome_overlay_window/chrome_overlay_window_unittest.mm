@@ -6,6 +6,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/apple/foundation_util.h"
 #import "ios/chrome/browser/shared/ui/chrome_overlay_window/chrome_overlay_container_view.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
@@ -20,8 +21,17 @@ class ChromeOverlayWindowTest : public PlatformTest {
  protected:
   void SetUp() override {
     PlatformTest::SetUp();
-    window_ =
-        [[ChromeOverlayWindow alloc] initWithFrame:CGRectMake(0, 0, 400, 500)];
+
+    UIWindowScene* scene = nil;
+    for (UIScene* connectedScene in UIApplication.sharedApplication
+             .connectedScenes) {
+      scene = base::apple::ObjCCast<UIWindowScene>(connectedScene);
+      if (scene) {
+        break;
+      }
+    }
+    window_ = [[ChromeOverlayWindow alloc] initWithWindowScene:scene];
+    window_.frame = CGRectMake(0, 0, 400, 500);
   }
 
   ChromeOverlayWindow* window_;

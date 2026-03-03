@@ -25,6 +25,15 @@
   UserInterfaceStyleRecorder* _userInterfaceStyleRecorder;
 }
 
+- (instancetype)initWithWindowScene:(UIWindowScene*)windowScene {
+  self = [super initWithWindowScene:windowScene];
+  if (self) {
+    [self setUp];
+  }
+  return self;
+}
+
+// TODO(crbug.com/489089329): initWithFrame: is deprecated. Remove this code.
 - (instancetype)initWithFrame:(CGRect)frame {
   self = [super initWithFrame:frame];
   if (self) {
