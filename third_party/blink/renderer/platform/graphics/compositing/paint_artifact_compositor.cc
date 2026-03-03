@@ -214,6 +214,11 @@ bool PaintArtifactCompositor::NeedsCompositedScrolling(
     // have an opaque background and composited, not compositing the negative
     // z-index contents won't cause any problem because they (with possible
     // wrong rendering) are obscured by the opaque background.
+    if (RuntimeEnabledFeatures::CanvasDrawElementEnabled() &&
+        scroll_translation.ScrollNode()->GetCompositedScrollingPreference() ==
+            CompositedScrollingPreference::kNotPreferred) {
+      return false;
+    }
     return lcd_text_preference_ != LCDTextPreference::kStronglyPreferred;
   }
   return it->value.is_composited;

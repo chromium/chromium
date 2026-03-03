@@ -44,9 +44,22 @@ void BoxPainter::RecordScrollHitTestData(
   }
 
   // Scroll hit test data are only needed for compositing. This flag is used for
-  // printing and drag images which do not need hit testing.
-  if (paint_info.ShouldOmitCompositingInfo())
-    return;
+  // printing and drag images which do not need hit testing. An exception is
+  // content under <canvas>, which disables compositing but which needs scroll
+  // hit test data.
+  if (paint_info.ShouldOmitCompositingInfo()) {
+    bool painting_canvas_child = false;
+    if (RuntimeEnabledFeatures::CanvasDrawElementEnabled()) {
+      if (auto* element = DynamicTo<Element>(layout_box_.GetNode())) {
+        if (element->IsInCanvasSubtree()) {
+          painting_canvas_child = true;
+        }
+      }
+    }
+    if (!painting_canvas_child) {
+      return;
+    }
+  }
 
   // If an object is not visible, it does not scroll.
   const ComputedStyle& style = layout_box_.StyleRef();

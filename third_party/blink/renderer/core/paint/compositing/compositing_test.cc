@@ -3936,4 +3936,122 @@ TEST_P(CompositingSimTest, CanvasDrawElementLayers) {
   EXPECT_FALSE(CcLayerByDOMElementId("grandchild_a_bdf"));
 }
 
+TEST_P(CompositingSimTest, CanvasDrawElementLayersWithWillChange) {
+  ScopedCanvasDrawElementForTest forced_canvas_draw_element_feature(true);
+
+  InitializeWithHTML(R"HTML(
+    <!DOCTYPE html>
+    <style>
+      #target {
+        width: 100px;
+        height: 100px;
+        background: lightblue;
+      }
+      #willchange {
+        width: 100px;
+        height: 100px;
+        will-change: transform;
+        background: blue;
+      }
+    </style>
+    <canvas id="canvas" width="200" height="200" layoutsubtree>
+      <div id="target">
+        <div id="willchange"></div>
+      </div>
+    </canvas>
+  )HTML");
+  Compositor().BeginFrame();
+
+  // Direct children of canvas get a layer.
+  EXPECT_TRUE(CcLayerByDOMElementId("target"));
+  EXPECT_TRUE(paint_artifact_compositor()->GetCanvasChildPaintRecord(
+      GetElementById("target")->GetDomNodeId()));
+
+  // Composited content under canvas, other than direct children, is disabled.
+  EXPECT_FALSE(CcLayerByDOMElementId("willchange"));
+  EXPECT_FALSE(paint_artifact_compositor()->GetCanvasChildPaintRecord(
+      GetElementById("willchange")->GetDomNodeId()));
+}
+
+TEST_P(CompositingSimTest, CanvasDrawElementLayersWithScrolling) {
+  ScopedCanvasDrawElementForTest forced_canvas_draw_element_feature(true);
+
+  InitializeWithHTML(R"HTML(
+    <!DOCTYPE html>
+    <style>
+      #target {
+        width: 100px;
+        height: 100px;
+        background: lightblue;
+      }
+      #scroller {
+        width: 100px;
+        height: 100px;
+        overflow-y: scroll;
+        background: blue;
+      }
+      #scrolled {
+        width: 50px;
+        height: 500px;
+        background: darkblue;
+      }
+    </style>
+    <canvas id="canvas" width="200" height="200" layoutsubtree>
+      <div id="target">
+        <div id="scroller">
+          <div id="scrolled"></div>
+        </div>
+      </div>
+    </canvas>
+  )HTML");
+  Compositor().BeginFrame();
+
+  // Direct children of canvas get a layer.
+  auto* target_layer = CcLayerByDOMElementId("target");
+  EXPECT_TRUE(target_layer);
+  EXPECT_TRUE(paint_artifact_compositor()->GetCanvasChildPaintRecord(
+      GetElementById("target")->GetDomNodeId()));
+
+  // Composited content under canvas, other than direct children, is disabled.
+  EXPECT_FALSE(CcLayerByDOMElementId("scroller"));
+  auto* scroller_element = GetElementById("scroller");
+  EXPECT_FALSE(paint_artifact_compositor()->GetCanvasChildPaintRecord(
+      scroller_element->GetDomNodeId()));
+  EXPECT_FALSE(CcLayerByDOMElementId("scrolled"));
+  EXPECT_FALSE(paint_artifact_compositor()->GetCanvasChildPaintRecord(
+      GetElementById("scrolled")->GetDomNodeId()));
+
+  // The scroller should have a main-thread scroll hit test region in the
+  // target's layer.
+  EXPECT_FALSE(target_layer->main_thread_scroll_hit_test_region().IsEmpty());
+  EXPECT_EQ(gfx::Rect(gfx::Rect(0, 0, 100, 100)),
+            target_layer->main_thread_scroll_hit_test_region().bounds());
+
+  // Adding will-change: transform should not change things; scroll layers
+  // should still not be created.
+  scroller_element->setAttribute(html_names::kStyleAttr,
+                                 AtomicString("will-change: transform"));
+  Compositor().BeginFrame();
+
+  // Direct children of canvas get a layer.
+  target_layer = CcLayerByDOMElementId("target");
+  EXPECT_TRUE(target_layer);
+  EXPECT_TRUE(paint_artifact_compositor()->GetCanvasChildPaintRecord(
+      GetElementById("target")->GetDomNodeId()));
+
+  // Composited content under canvas, other than direct children, is disabled.
+  EXPECT_FALSE(CcLayerByDOMElementId("scroller"));
+  EXPECT_FALSE(paint_artifact_compositor()->GetCanvasChildPaintRecord(
+      scroller_element->GetDomNodeId()));
+  EXPECT_FALSE(CcLayerByDOMElementId("scrolled"));
+  EXPECT_FALSE(paint_artifact_compositor()->GetCanvasChildPaintRecord(
+      GetElementById("scrolled")->GetDomNodeId()));
+
+  // The scroller should have a main-thread scroll hit test region in the
+  // target's layer.
+  EXPECT_FALSE(target_layer->main_thread_scroll_hit_test_region().IsEmpty());
+  EXPECT_EQ(gfx::Rect(gfx::Rect(0, 0, 100, 100)),
+            target_layer->main_thread_scroll_hit_test_region().bounds());
+}
+
 }  // namespace blink
