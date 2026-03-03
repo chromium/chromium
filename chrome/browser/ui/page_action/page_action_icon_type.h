@@ -23,7 +23,7 @@ enum class PageActionIconType {
   // DEPRECATED: kLocalCardMigration = 7,
   kManagePasswords = 8,
   kPaymentsOfferNotification = 9,
-  kPriceTracking = 10,
+  // DEPRECATED: kPriceTracking = 10,
   kPwaInstall = 11,
   // DEPRECATED: kQRCodeGenerator = 12,
   // DEPRECATED: kReaderMode = 13,
@@ -68,7 +68,6 @@ static_assert(static_cast<int>(PageActionIconType::kIntentPicker) == 6);
 static_assert(static_cast<int>(PageActionIconType::kManagePasswords) == 8);
 static_assert(
     static_cast<int>(PageActionIconType::kPaymentsOfferNotification) == 9);
-static_assert(static_cast<int>(PageActionIconType::kPriceTracking) == 10);
 static_assert(static_cast<int>(PageActionIconType::kPwaInstall) == 11);
 static_assert(static_cast<int>(PageActionIconType::kAutofillAddress) == 14);
 static_assert(static_cast<int>(PageActionIconType::kSaveCard) == 15);

@@ -3756,8 +3756,6 @@ static_library("ui") {
       "views/commerce/price_tracking_bubble_dialog_view.h",
       "views/commerce/price_tracking_email_dialog_view.cc",
       "views/commerce/price_tracking_email_dialog_view.h",
-      "views/commerce/price_tracking_icon_view.cc",
-      "views/commerce/price_tracking_icon_view.h",
       "views/commerce/price_tracking_view.cc",
       "views/commerce/price_tracking_view.h",
       "views/commerce/shopping_collection_iph_view.cc",

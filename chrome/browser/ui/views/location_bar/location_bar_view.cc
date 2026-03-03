@@ -502,7 +502,6 @@ void LocationBarView::Init() {
     // icons and determine a way to handle simultaneous icon animations.
     params.types_enabled.push_back(PageActionIconType::kDiscounts);
     params.types_enabled.push_back(PageActionIconType::kPriceInsights);
-    params.types_enabled.push_back(PageActionIconType::kPriceTracking);
 
     if (optimization_guide::features::ShouldEnableOptimizationGuideIconView()) {
       params.types_enabled.push_back(PageActionIconType::kOptimizationGuide);

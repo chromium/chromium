@@ -113,11 +113,11 @@ CommerceUiTabHelper::CommerceUiTabHelper(
   auto* tracker = feature_engagement::TrackerFactory::GetForBrowserContext(
       web_contents()->GetBrowserContext());
 
+  // TODO(https://crbug.com/485198191): Remove price tracking page action
+  // controller legacy code.
   price_tracking_controller_ =
       std::make_unique<PriceTrackingPageActionController>(
-          GetPageActionControllerNotificationCallback(base::BindRepeating(
-              &CommerceUiTabHelper::UpdatePriceTrackingIconView,
-              weak_ptr_factory_.GetWeakPtr())),
+          GetPageActionControllerNotificationCallback(base::DoNothing()),
           shopping_service_, image_fetcher_, tracker);
 
   discounts_page_action_controller_ =
@@ -233,7 +233,6 @@ void CommerceUiTabHelper::TriggerUpdateForIconView() {
           shopping_service_->GetAccountChecker())) {
     UpdatePriceInsightsIconView();
   }
-  UpdatePriceTrackingIconView();
 }
 
 void CommerceUiTabHelper::UpdatePriceInsightsIconView() {
@@ -349,7 +348,6 @@ void CommerceUiTabHelper::MaybeComputePageActionToExpand() {
   }
 
   UpdateDiscountsIconView();
-  UpdatePriceTrackingIconView();
   UpdatePriceInsightsIconView();
 
   if (ShouldShowDiscountsIconView()) {
@@ -441,14 +439,6 @@ bool CommerceUiTabHelper::IsPriceTracking() {
 
 const std::vector<DiscountInfo>& CommerceUiTabHelper::GetDiscounts() {
   return discounts_page_action_controller_->GetDiscounts();
-}
-
-void CommerceUiTabHelper::UpdatePriceTrackingIconView() {
-  if (IsPageActionMigrated(PageActionIconType::kPriceTracking)) {
-    return;
-  }
-
-  UpdatePageActionIconView(PageActionIconType::kPriceTracking);
 }
 
 void CommerceUiTabHelper::MakeShoppingInsightsSidePanelAvailable() {
@@ -605,11 +595,6 @@ void CommerceUiTabHelper::ComputePageActionToExpand() {
     }
   }
 
-  if (price_tracking_controller_->WantsExpandedUi()) {
-    page_action_to_expand_ = PageActionIconType::kPriceTracking;
-    MaybeRecordShoppingInformationUKM(PageActionIconType::kPriceTracking);
-    return;
-  }
   MaybeRecordShoppingInformationUKM(std::nullopt);
 }
 
@@ -735,9 +720,6 @@ void CommerceUiTabHelper::MaybeRecordShoppingInformationUKM(
     } else if (page_action_type == PageActionIconType::kPriceInsights) {
       promoted_feature =
           static_cast<int64_t>(ShoppingContextualFeature::kPriceInsights);
-    } else if (page_action_type == PageActionIconType::kPriceTracking) {
-      promoted_feature =
-          static_cast<int64_t>(ShoppingContextualFeature::kPriceTracking);
     } else {
       NOTREACHED();
     }

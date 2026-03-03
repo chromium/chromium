@@ -1126,7 +1126,6 @@ const FeatureEntry::FeatureParam kPageActionsMigrationParams[] = {
     {"manage_passwords", "true"},
     {"mandatory_reauth", "true"},
     {"price_insights", "true"},
-    {"price_tracking", "true"},
     {"reading_mode", "true"},
     {"save_payments", "true"},
     {"sharing_hub", "true"},

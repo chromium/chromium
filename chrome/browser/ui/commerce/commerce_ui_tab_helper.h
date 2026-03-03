@@ -181,8 +181,6 @@ class CommerceUiTabHelper : public tabs::ContentsObservingTabFeature {
   // coordinator.
   views::View* GetDiscountsIconView();
 
-  void UpdatePriceTrackingIconView();
-
   void UpdatePriceInsightsIconView();
 
   void TriggerUpdateForIconView();

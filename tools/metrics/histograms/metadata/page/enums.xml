@@ -259,7 +259,7 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="(Deprecated) Local Card Migration"/>
   <int value="8" label="Manage Passwords"/>
   <int value="9" label="Payments Offer Notification"/>
-  <int value="10" label="Price Tracking"/>
+  <int value="10" label="(Deprecated) Price Tracking"/>
   <int value="11" label="PWA Install"/>
   <int value="12" label="(Deprecated) QR Code Generator"/>
   <int value="13" label="(Deprecated) Reader Mode"/>
