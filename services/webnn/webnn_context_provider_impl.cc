@@ -339,7 +339,7 @@ void WebNNContextProviderImpl::CreateWebNNContext(
         std::move(read_tensor_producer), std::move(read_tensor_consumer),
         command_buffer_id, std::move(gpu_sequence),
         std::move(owning_task_runner), std::move(receiver), std::move(remote),
-        std::move(callback));
+        std::move(callback), params.is_incognito, std::move(memory_tracker));
     return;
   }
 #endif  // BUILDFLAG(WEBNN_USE_LITERT)
@@ -460,7 +460,9 @@ void WebNNContextProviderImpl::CreateLiteRtContext(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     mojo::PendingReceiver<mojom::WebNNContext> receiver,
     mojo::PendingRemote<mojom::WebNNContext> remote,
-    CreateWebNNContextCallback callback) {
+    CreateWebNNContextCallback callback,
+    bool is_incognito,
+    scoped_refptr<gpu::MemoryTracker> memory_tracker) {
   gpu_sequence.reset();
   gpu_sequence = std::make_unique<ScopedGpuSequence>(
       *scheduler_, task_runner, command_buffer_id,
@@ -468,13 +470,13 @@ void WebNNContextProviderImpl::CreateLiteRtContext(
 
   task_runner->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(&litert::ContextImplLiteRt::Create, std::move(receiver),
-                     AsWeakPtr(), std::move(options),
-                     std::move(write_tensor_consumer),
-                     std::move(read_tensor_producer), std::move(gpu_sequence),
-                     std::move(memory_tracker_), task_runner,
-                     base::Unretained(shared_image_manager_.get()),
-                     main_thread_task_runner_, std::move(scoped_trace)),
+      base::BindOnce(
+          &litert::ContextImplLiteRt::Create, std::move(receiver), AsWeakPtr(),
+          std::move(options), std::move(write_tensor_consumer),
+          std::move(read_tensor_producer), std::move(gpu_sequence),
+          std::move(memory_tracker), task_runner,
+          base::Unretained(shared_image_manager_.get()),
+          main_thread_task_runner_, std::move(scoped_trace), is_incognito),
       base::BindOnce(&WebNNContextProviderImpl::OnCreateWebNNContextImpl,
                      AsWeakPtr(), std::move(callback), std::move(remote),
                      std::move(write_tensor_producer),
@@ -531,7 +533,8 @@ void WebNNContextProviderImpl::OnOrtEnvCreated(
       std::move(write_tensor_producer), std::move(write_tensor_consumer),
       std::move(read_tensor_producer), std::move(read_tensor_consumer),
       command_buffer_id, std::move(gpu_sequence), std::move(task_runner),
-      std::move(receiver), std::move(remote), std::move(callback));
+      std::move(receiver), std::move(remote), std::move(callback), is_incognito,
+      std::move(memory_tracker));
   return;
 #endif  // BUILDFLAG(WEBNN_USE_LITERT)
 

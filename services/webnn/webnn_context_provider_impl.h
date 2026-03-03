@@ -190,7 +190,9 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       mojo::PendingReceiver<mojom::WebNNContext> receiver,
       mojo::PendingRemote<mojom::WebNNContext> remote,
-      CreateWebNNContextCallback callback);
+      CreateWebNNContextCallback callback,
+      bool is_incognito,
+      scoped_refptr<gpu::MemoryTracker> memory_tracker);
 #endif  // BUILDFLAG(WEBNN_USE_LITERT)
 
 #if BUILDFLAG(IS_WIN)
