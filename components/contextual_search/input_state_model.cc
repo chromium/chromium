@@ -526,4 +526,8 @@ std::map<std::string, std::string> InputStateModel::GetAdditionalQueryParams() {
   return additional_params;
 }
 
+const InputState& InputStateModel::GetInputState() const {
+  return state_;
+}
+
 }  // namespace contextual_search
