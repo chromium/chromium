@@ -10969,7 +10969,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderTargetHintBrowserTest,
 }
 
 // Test if the host is abandoned when the renderer page crashes.
-IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, AbandonIfRendererProcessCrashes) {
+IN_PROC_BROWSER_TEST_P(PrerenderBrowserTestFallbackEnabledDisabled,
+                       AbandonIfRendererProcessCrashes) {
   const GURL kInitialUrl = GetUrl("/empty.html");
   const GURL kPrerenderingUrl = GetUrl("/empty.html?prerender");
 
