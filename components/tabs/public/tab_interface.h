@@ -115,21 +115,24 @@ class TabInterface : public SupportsTabHandles {
 
   // Returns the WebContents that is currently associated with this tab.
   //
-  // The returned pointer is guaranteed to be non-null.
+  // Windows/Mac/Linux:
+  // * The returned pointer is guaranteed to be non-null.
+  // * The WebContents object *itself* can be replaced, most notably when a
+  //   background tab's contents are discarded to save memory. Callers who need
+  //   to observe the tab for its entire lifetime should not cache the
+  //   WebContents pointer directly. Instead, they should hold a reference to
+  //   the TabInterface and call GetContents() when needed, or use
+  //   RegisterWillDiscardContents() to be notified of swaps.
   //
-  // However, the WebContents object *itself* can be replaced, most notably
-  // when a background tab's contents are discarded to save memory.
-  // Callers who need to observe the tab for its entire lifetime should not
-  // cache the WebContents pointer directly. Instead, they should hold a
-  // reference to the TabInterface and call GetContents() when needed, or use
-  // RegisterWillDiscardContents() to be notified of swaps.
-  //
-  // Note on Android there are different invariants:
-  // 1. This may return nullptr for tabs that have not loaded in the current
-  //    session. If kLoadAllTabsOnStartup is enabled, this will be non-null for
-  //    all tabs in models with TabModelType::kStandard.
-  // 2. This object will NOT be replaced on Android and discarding or swapping
-  //    contents is not supported.
+  // Android:
+  // * This may return nullptr for tabs that have not loaded in the current
+  //   session. If kLoadAllTabsOnStartup is enabled, this will be non-null for
+  //   all tabs in models with TabModelType::kStandard.
+  // * The WebContents object will never change after being populated.
+  //   Discarding WebContents does not change the WebContents pointer and
+  //   swapping WebContents is not supported. That said, for portability with
+  //   Windows/Mac/Linux, the recommendation is to hold a pointer to the
+  //   TabInterface and call GetContents() when needed as described above.
   virtual content::WebContents* GetContents() const = 0;
 
   // Closes the tab.
