@@ -105,6 +105,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/app/tab_activity_glue/ReparentingTabsTask.java",
   "java/src/org/chromium/chrome/browser/app/tab_activity_glue/ReparentingTask.java",
   "java/src/org/chromium/chrome/browser/app/tab_activity_glue/TabReparentingController.java",
+  "java/src/org/chromium/chrome/browser/app/tabmodel/ActiveTabCache.java",
   "java/src/org/chromium/chrome/browser/app/tabmodel/AllTabObserver.java",
   "java/src/org/chromium/chrome/browser/app/tabmodel/ArchivedTabModelOrchestrator.java",
   "java/src/org/chromium/chrome/browser/app/tabmodel/AsyncTabParamsManagerSingleton.java",
