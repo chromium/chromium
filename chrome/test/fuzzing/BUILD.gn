@@ -142,6 +142,23 @@ if (!is_android) {
         "//third_party/libprotobuf-mutator",
       ]
     }
+
+    domatolpm_fuzzer("geolocation_element_css_fuzzer_grammar") {
+      template_file = "//chrome/test/fuzzing/geolocation_element_css_fuzzer_data/geolocation_element_css_fuzzer.html"
+      grammars = [ "geocssfuzzer://third_party/domato/src/rules/css.txt" ]
+    }
+
+    in_process_fuzzer("geolocation_element_css_fuzzer") {
+      sources = [ "geolocation_element_css_fuzzer.cc" ]
+      deps = [
+        ":geolocation_element_css_fuzzer_grammar",
+        "//chrome/test/fuzzing:in_process_fuzzer_runner",
+        "//components/viz/common",
+        "//content/public/browser",
+        "//testing/libfuzzer/research/domatolpm:domatolpm_context",
+        "//third_party/libprotobuf-mutator",
+      ]
+    }
   }
 
   domatolpm_fuzzer("webcodecs_fuzzer_grammar") {
