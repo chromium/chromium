@@ -110,6 +110,11 @@ class FakeContextualSearchboxHandler : public ContextualSearchboxHandler {
                      bool shift_key) override {}
   void OnThumbnailRemoved() override {}
 
+  contextual_search::ContextualSearchSessionHandle*
+  GetContextualSessionHandle() {
+    return ContextualSearchboxHandler::GetContextualSessionHandle();
+  }
+
   contextual_search::ContextualSearchMetricsRecorder* GetMetricsRecorder() {
     return ContextualSearchboxHandler::GetMetricsRecorder();
   }
@@ -215,6 +220,21 @@ class ContextualSearchboxHandlerTest
     service_ = nullptr;
     ContextualSearchboxHandlerTestHarness::TearDown();
   }
+
+  void SetSessionHandle(
+      std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
+          session_handle) {
+    contextual_session_handle_ = std::move(session_handle);
+  }
+
+  std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
+  TakeSessionHandle() {
+    return std::move(contextual_session_handle_);
+  }
+
+  void ClearQueryController() { query_controller_ = nullptr; }
+
+  contextual_search::ContextualSearchService* service() { return service_; }
 
  protected:
   testing::NiceMock<MockSearchboxPage> mock_searchbox_page_;
@@ -696,6 +716,55 @@ TEST_F(ContextualSearchboxHandlerTest, OnInputStateChanged) {
       "ContextualSearch.Models.NewTabPage",
       composebox_query::mojom::ModelMode::kGeminiRegular, 1);
 }
+
+// Regression test for crbug.com/487773783.
+TEST_F(ContextualSearchboxHandlerTest, ManageObservationOfContextController) {
+  EXPECT_TRUE(
+      handler().context_controller_observation_for_testing().IsObserving());
+  EXPECT_TRUE(
+      handler().context_controller_observation_for_testing().IsObservingSource(
+          &query_controller()));
+
+  auto old_session_handle = TakeSessionHandle();
+  auto* old_query_controller =
+      static_cast<MockQueryController*>(old_session_handle->GetController());
+
+  ClearQueryController();
+
+  auto query_controller_config_params = std::make_unique<
+      contextual_search::ContextualSearchContextController::ConfigParams>();
+  query_controller_config_params->send_lns_surface = false;
+  query_controller_config_params->enable_viewport_images = true;
+  auto new_query_controller_ptr = std::make_unique<MockQueryController>(
+      /*identity_manager=*/nullptr, url_loader_factory(),
+      version_info::Channel::UNKNOWN, "en-US", template_url_service(),
+      fake_variations_client(), std::move(query_controller_config_params));
+  auto* new_query_controller = new_query_controller_ptr.get();
+  auto new_metrics_recorder_ptr =
+      std::make_unique<MockContextualSearchMetricsRecorder>();
+
+  SetSessionHandle(
+      service()->CreateSessionForTesting(std::move(new_query_controller_ptr),
+                                         std::move(new_metrics_recorder_ptr)));
+
+  handler().GetContextualSessionHandle();
+
+  // Verify observation is moved to the new controller.
+  EXPECT_TRUE(
+      handler().context_controller_observation_for_testing().IsObservingSource(
+          new_query_controller));
+  EXPECT_FALSE(
+      handler().context_controller_observation_for_testing().IsObservingSource(
+          old_query_controller));
+
+  auto last_session_handle = TakeSessionHandle();
+  handler().GetContextualSessionHandle();
+
+  // Verify observation is stopped.
+  EXPECT_FALSE(
+      handler().context_controller_observation_for_testing().IsObserving());
+}
+
 TEST_F(ContextualSearchboxHandlerTest, SubmitQueryWithAdditionalParams) {
   // Ensure udm param is always set as an additional param.
   SubmitQueryAndWaitForNavigation();

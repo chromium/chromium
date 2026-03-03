@@ -336,21 +336,22 @@ ContextualSearchboxHandler::ContextualSearchboxHandler(
 contextual_search::ContextualSearchSessionHandle*
 ContextualSearchboxHandler::GetContextualSessionHandle() {
   if (!get_session_callback_) {
+    context_controller_observation_.Reset();
     return nullptr;
   }
 
   auto* session_handle = get_session_callback_.Run();
   auto* context_controller =
       session_handle ? session_handle->GetController() : nullptr;
-  // Remove the old context controller if it's different from the new one.
-  if (context_controller_ && context_controller_.get() != context_controller) {
-    context_controller_->RemoveObserver(this);
-    context_controller_ = nullptr;
-  }
-  // Reset to the new context controller if it is different.
-  if (context_controller && !context_controller_) {
-    context_controller->AddObserver(this);
-    context_controller_ = context_controller->AsWeakPtr();
+
+  if (context_controller) {
+    if (!context_controller_observation_.IsObservingSource(
+            context_controller)) {
+      context_controller_observation_.Reset();
+      context_controller_observation_.Observe(context_controller);
+    }
+  } else {
+    context_controller_observation_.Reset();
   }
   return session_handle;
 }
@@ -360,9 +361,6 @@ ContextualSearchboxHandler::~ContextualSearchboxHandler() {
       webui::GetBrowserWindowInterface(web_contents_);
   if (browser_window_interface) {
     browser_window_interface->GetTabStripModel()->RemoveObserver(this);
-  }
-  if (context_controller_) {
-    context_controller_->RemoveObserver(this);
   }
 }
 
