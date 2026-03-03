@@ -561,7 +561,9 @@ GlicPinnedTabManagerImpl::GetUnsortedPinCandidates() {
             continue;
           }
           auto* web_contents = tab->GetContents();
-          if (!web_contents->GetController().GetLastCommittedEntry()) {
+          // WebContents may be nullptr on Android.
+          if (!web_contents ||
+              !web_contents->GetController().GetLastCommittedEntry()) {
             continue;
           }
           if (!IsValidForSharing(web_contents)) {
