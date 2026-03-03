@@ -8,12 +8,14 @@
 #include <string>
 
 #include "base/component_export.h"
+#include "base/observer_list_types.h"
 #include "base/values.h"
 
 namespace ash {
 
 // Observer class for network configuration events (remove only).
-class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConfigurationObserver {
+class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConfigurationObserver
+    : public base::CheckedObserver {
  public:
   NetworkConfigurationObserver& operator=(const NetworkConfigurationObserver&) =
       delete;
@@ -43,7 +45,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConfigurationObserver {
   virtual void OnShuttingDown();
 
  protected:
-  virtual ~NetworkConfigurationObserver();
+  ~NetworkConfigurationObserver() override;
 };
 
 }  // namespace ash

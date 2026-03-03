@@ -246,7 +246,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConfigurationHandler
   std::multimap<std::string, network_handler::ServiceResultCallback>
       configure_callbacks_;
 
-  base::ObserverList<NetworkConfigurationObserver, true>::Unchecked observers_;
+  base::ObserverList<NetworkConfigurationObserver, true> observers_;
 
   base::WeakPtrFactory<NetworkConfigurationHandler> weak_ptr_factory_{this};
 };

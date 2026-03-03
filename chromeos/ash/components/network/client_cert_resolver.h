@@ -15,6 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
@@ -46,7 +47,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ClientCertResolver
       public NetworkCertLoader::Observer,
       public NetworkPolicyObserver {
  public:
-  class Observer {
+  class Observer : public base::CheckedObserver {
    public:
     Observer& operator=(const Observer&) = delete;
 
@@ -57,7 +58,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ClientCertResolver
     virtual void ResolveRequestCompleted(bool network_properties_changed) = 0;
 
    protected:
-    virtual ~Observer() {}
+    ~Observer() override = default;
   };
 
   ClientCertResolver();
@@ -138,7 +139,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ClientCertResolver
   // instead.
   base::Time Now() const;
 
-  base::ObserverList<Observer, true>::Unchecked observers_;
+  base::ObserverList<Observer, true> observers_;
 
   // Tracks which network configurations ClientCertResolver is aware of, to be
   // able to detect newly created networks for which certificate resolution may

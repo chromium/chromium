@@ -13,6 +13,7 @@
 #include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
 #include "base/values.h"
 #include "chromeos/ash/components/dbus/shill/shill_property_changed_observer.h"
@@ -47,10 +48,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkSmsHandler
   static const char kTextKey[];
   static const char kTimestampKey[];
 
-  class Observer {
+  class Observer : public base::CheckedObserver {
    public:
-    virtual ~Observer() = default;
-
     // Called when a new message arrives. |message| contains the message which
     // is a dictionary value containing entries for kNumberKey, kTextKey, and
     // kTimestampKey.
@@ -59,6 +58,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkSmsHandler
     // Called when a new message arrives from a network with |guid|.
     virtual void MessageReceivedFromNetwork(const std::string& guid,
                                             const TextMessageData& message) {}
+
+   protected:
+    ~Observer() override = default;
   };
 
   NetworkSmsHandler(const NetworkSmsHandler&) = delete;
@@ -132,7 +134,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkSmsHandler
   // last active network accordingly.
   void OnActiveDeviceIccidChanged(const std::string& iccid);
 
-  base::ObserverList<Observer, true>::Unchecked observers_;
+  base::ObserverList<Observer, true> observers_;
   std::unique_ptr<NetworkSmsDeviceHandler> device_handler_;
   std::vector<base::DictValue> received_messages_;
   std::string cellular_device_path_;

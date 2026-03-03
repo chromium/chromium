@@ -11,6 +11,7 @@
 #include "base/lazy_instance.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "base/values.h"
 #include "chromeos/ash/components/proximity_auth/public/mojom/auth_type.mojom.h"
 #include "components/account_id/account_id.h"
@@ -66,7 +67,7 @@ class ScreenlockBridge {
     virtual ~LockHandler() {}
   };
 
-  class Observer {
+  class Observer : public base::CheckedObserver {
    public:
     // Invoked after the screen is locked.
     virtual void OnScreenDidLock() = 0;
@@ -78,7 +79,7 @@ class ScreenlockBridge {
     virtual void OnFocusedUserChanged(const AccountId& account_id) {}
 
    protected:
-    virtual ~Observer() {}
+    ~Observer() override = default;
   };
 
   static ScreenlockBridge* Get();
@@ -113,7 +114,7 @@ class ScreenlockBridge {
 
   // The last focused user's id.
   AccountId focused_account_id_;
-  base::ObserverList<Observer, true>::Unchecked observers_;
+  base::ObserverList<Observer, true> observers_;
 };
 
 }  // namespace proximity_auth
