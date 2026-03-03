@@ -14,6 +14,7 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.ContextUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 
@@ -26,6 +27,9 @@ public class TipsAgent {
         Intent newIntent = IntentHandler.createTrustedOpenNewTabIntent(context, false);
         newIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         newIntent.putExtra(IntentHandler.EXTRA_TIPS_NOTIFICATION_FEATURE_TYPE, featureType);
+        // Use an existing NTP if available to show the feature promo on, tied into the associated
+        // handling switch case statement in ChromeTabbedActivity.java.
+        newIntent.putExtra(WebappConstants.REUSE_URL_MATCHING_TAB_ELSE_NEW_TAB, true);
         IntentHandler.setTabLaunchType(newIntent, TabLaunchType.FROM_TIPS_NOTIFICATIONS);
         context.startActivity(newIntent);
     }

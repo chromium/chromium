@@ -35,6 +35,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lens.LensController;
 import org.chromium.chrome.browser.notifications.scheduler.TipsNotificationsFeatureType;
@@ -417,6 +418,7 @@ public class TipsNotificationsFeaturePromoTest {
         Intent intent = IntentHandler.createTrustedOpenNewTabIntent(mContext, false);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.putExtra(IntentHandler.EXTRA_TIPS_NOTIFICATION_FEATURE_TYPE, featureType);
+        intent.putExtra(WebappConstants.REUSE_URL_MATCHING_TAB_ELSE_NEW_TAB, true);
         IntentHandler.setTabLaunchType(intent, TabLaunchType.FROM_TIPS_NOTIFICATIONS);
 
         return new Pair<>(

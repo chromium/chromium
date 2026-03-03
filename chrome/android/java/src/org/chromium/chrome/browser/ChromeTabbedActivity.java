@@ -2651,6 +2651,26 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                 if (fromAppWidget && UrlConstants.CHROME_DINO_URL.equals(url)) {
                     RecordUserAction.record("QuickActionSearchWidget.StartDinoGame");
                 }
+
+                // Launch the tips promo, tied with the intent extra set in TipsAgent.java.
+                if (fromTipsNotifications != INVALID_TIPS_NOTIFICATION_FEATURE_TYPE) {
+                    mTipsPromoCoordinator =
+                            new TipsPromoCoordinator(
+                                    this,
+                                    mRootUiCoordinator.getBottomSheetController(),
+                                    getQuickDeleteController(),
+                                    createBottomSheetSigninCoordinator(
+                                            new BottomSheetSigninAndHistorySyncCoordinator
+                                                    .Delegate() {},
+                                            SigninAccessPoint.SET_UP_LIST),
+                                    getTabCreator(/* incognito= */ false),
+                                    getWindowAndroid(),
+                                    getCurrentTabModel().isIncognito(),
+                                    getProfileProviderSupplier().get().getOriginalProfile(),
+                                    mLayoutManager,
+                                    fromTipsNotifications);
+                    mTipsPromoCoordinator.showBottomSheet();
+                }
                 break;
             case TabOpenType.BRING_TAB_TO_FRONT:
                 // Hub search will allow archived tabs to be passed through here. In this case, CTA
@@ -2756,24 +2776,6 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                 }
 
                 resultTab = launchIntent(loadUrlParams, externalAppId, true, intent);
-                if (fromTipsNotifications != INVALID_TIPS_NOTIFICATION_FEATURE_TYPE) {
-                    mTipsPromoCoordinator =
-                            new TipsPromoCoordinator(
-                                    this,
-                                    mRootUiCoordinator.getBottomSheetController(),
-                                    getQuickDeleteController(),
-                                    createBottomSheetSigninCoordinator(
-                                            new BottomSheetSigninAndHistorySyncCoordinator
-                                                    .Delegate() {},
-                                            SigninAccessPoint.SET_UP_LIST),
-                                    getTabCreator(/* incognito= */ false),
-                                    getWindowAndroid(),
-                                    getCurrentTabModel().isIncognito(),
-                                    getProfileProviderSupplier().get().getOriginalProfile(),
-                                    mLayoutManager,
-                                    fromTipsNotifications);
-                    mTipsPromoCoordinator.showBottomSheet();
-                }
                 break;
             case TabOpenType.OPEN_NEW_INCOGNITO_TAB:
                 if (!TextUtils.equals(externalAppId, getPackageName())) {
