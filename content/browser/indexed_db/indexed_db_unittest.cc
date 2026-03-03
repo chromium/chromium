@@ -2165,9 +2165,13 @@ TEST_P(IndexedDBTest, CloseThenAddReceiver) {
 
   // Remove the factory binding, and since there is no backing store yet, this
   // should trigger the destruction of the bucket context.
+  base::RunLoop loop;
   factory_remote1.reset();
+  // We unfortunately can't flush the disconnected pipe, but this works as well.
+  context()->FlushBucketSequenceForTesting(bucket_locator, loop.QuitClosure());
+  loop.Run();
 
-  // However, the bucket context still exists for now because shutdown is not
+  // The bucket context still exists for now because shutdown is not
   // synchronous.
   ASSERT_TRUE(context()->BucketContextExists(bucket_locator.id));
 
@@ -2184,6 +2188,7 @@ TEST_P(IndexedDBTest, CloseThenAddReceiver) {
   // Round trip a message through the new mojo pipe to verify that it is set
   // up correctly.
   factory_remote2.FlushForTesting();
+  EXPECT_TRUE(factory_remote2.is_connected());
 
   // It would be nice to re-verify that the new BucketContext is not the same
   // as the old one, but there's no good way to identify them through mojo and

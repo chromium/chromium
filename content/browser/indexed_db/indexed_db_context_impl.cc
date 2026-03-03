@@ -1156,6 +1156,10 @@ void IndexedDBContextImpl::EnsureBucketContext(
       idb_task_runner_,
       base::BindOnce(&IndexedDBContextImpl::DestroyBucketContext,
                      weak_factory_.GetWeakPtr(), bucket_locator));
+  bucket_delegate.on_receiver_bounced = base::BindPostTask(
+      idb_task_runner_,
+      base::BindRepeating(&IndexedDBContextImpl::BindIndexedDB,
+                          weak_factory_.GetWeakPtr(), bucket_locator));
   bucket_delegate.on_content_changed = base::BindPostTask(
       idb_task_runner_,
       base::BindRepeating(&IndexedDBContextImpl::NotifyIndexedDBContentChanged,
