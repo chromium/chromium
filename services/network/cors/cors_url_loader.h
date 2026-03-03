@@ -87,6 +87,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
       scoped_refptr<SharedDictionaryStorage> shared_dictionary_storage,
       raw_ptr<mojom::SharedDictionaryAccessObserver> shared_dictionary_observer,
       NetworkContext* context,
+      std::optional<base::UnguessableToken> network_restrictions_id,
       net::CookieSettingOverrides factory_cookie_setting_overrides,
       net::CookieSettingOverrides devtools_cookie_setting_overrides);
 
@@ -331,6 +332,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
   net::NetLogWithSource net_log_;
 
   const raw_ptr<NetworkContext> context_;
+
+  const std::optional<base::UnguessableToken> network_restrictions_id_;
 
   scoped_refptr<SharedDictionaryStorage> shared_dictionary_storage_;
   scoped_refptr<net::SharedDictionary> shared_dictionary_;

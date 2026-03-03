@@ -728,8 +728,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   // `url` is allowed. See `network_revocation_nonces_` and
   // `network_revocation_exemptions_`.
   bool IsNetworkForNonceAndUrlAllowed(const base::UnguessableToken& nonce,
-                                      const GURL& url) const;
-
+                                      const GURL& url,
+                                      bool is_redirect = false) const;
   // Checks whether host resolution is allowed for `host` given the network
   // restrictions ID `nonce`.
   bool IsHostResolutionForNonceAndHostAllowed(

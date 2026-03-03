@@ -3618,7 +3618,8 @@ void NetworkContext::AddQuicHints(
 
 bool NetworkContext::IsNetworkForNonceAndUrlAllowed(
     const base::UnguessableToken& nonce,
-    const GURL& url) const {
+    const GURL& url,
+    bool is_redirect) const {
   // If network hasn't been revoked for the nonce, it's allowed.
   if (!network_revocation_nonces_.contains(nonce)) {
     return true;
@@ -3636,7 +3637,8 @@ bool NetworkContext::IsNetworkForNonceAndUrlAllowed(
     for (const std::unique_ptr<url_pattern::SimpleUrlPatternMatcher>& pattern :
          allowlisted_patterns) {
       if (pattern->Match(url)) {
-        return true;
+        // Redirects are blocked for URLs allowed through connection allowlists.
+        return !is_redirect;
       }
     }
   }

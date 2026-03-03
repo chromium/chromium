@@ -299,6 +299,7 @@ CorsURLLoader::CorsURLLoader(
     scoped_refptr<SharedDictionaryStorage> shared_dictionary_storage,
     raw_ptr<mojom::SharedDictionaryAccessObserver> shared_dictionary_observer,
     NetworkContext* context,
+    std::optional<base::UnguessableToken> network_restrictions_id,
     net::CookieSettingOverrides factory_cookie_setting_overrides,
     net::CookieSettingOverrides devtools_cookie_setting_overrides)
     : receiver_(this, std::move(loader_receiver)),
@@ -324,6 +325,7 @@ CorsURLLoader::CorsURLLoader(
       net_log_(net::NetLogWithSource::Make(net::NetLog::Get(),
                                            net::NetLogSourceType::URL_REQUEST)),
       context_(context),
+      network_restrictions_id_(network_restrictions_id),
       shared_dictionary_storage_(std::move(shared_dictionary_storage)),
       shared_dictionary_observer_(shared_dictionary_observer),
       factory_cookie_setting_overrides_(factory_cookie_setting_overrides),
@@ -658,6 +660,15 @@ void CorsURLLoader::OnReceiveRedirect(const net::RedirectInfo& redirect_info,
   DCHECK(network_loader_);
   DCHECK(forwarding_client_);
   DCHECK(!deferred_redirect_url_);
+
+  if (redirect_count_ == 0 && network_restrictions_id_) {
+    if (!context_->IsNetworkForNonceAndUrlAllowed(*network_restrictions_id_,
+                                                  request_.url,
+                                                  /*is_redirect=*/true)) {
+      HandleComplete(URLLoaderCompletionStatus(net::ERR_UNSAFE_REDIRECT));
+      return;
+    }
+  }
 
   // If `CORS flag` is set and a CORS check for `request` and `response` returns
   // failure, then return a network error.

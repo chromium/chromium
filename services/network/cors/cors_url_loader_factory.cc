@@ -485,7 +485,7 @@ void CorsURLLoaderFactory::CreateLoaderAndStart(
         cross_origin_embedder_policy_, shared_dictionary_storage,
         shared_dictionary_observer_ ? shared_dictionary_observer_.get()
                                     : nullptr,
-        context_, factory_cookie_setting_overrides_,
+        context_, network_restrictions_id_, factory_cookie_setting_overrides_,
         devtools_cookie_setting_overrides_);
     auto* raw_loader = loader.get();
     OnCorsURLLoaderCreated(std::move(loader));
