@@ -483,6 +483,14 @@ HEADLESS_MODE_PROTOCOL_TEST(RemoveScreenGetScreenDetails,
 
 HEADLESS_MODE_PROTOCOL_TEST(AddRemoveScreen, "shared/add-remove-screen.js")
 
+// Emulation.SetPrimaryScreen is not yet supported on macOS and Windows.
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN)
+HEADLESS_MODE_PROTOCOL_TEST(SetPrimaryScreen, "shared/set-primary-screen.js")
+
+HEADLESS_MODE_PROTOCOL_TEST(SetPrimaryScreenScaled,
+                            "shared/set-primary-screen-scaled.js")
+#endif
+
 HEADLESS_MODE_PROTOCOL_TEST(RangeMouseEventAfterNodeRemoval,
                             "shared/range-mouse-event-after-node-removal.js")
 

@@ -41,6 +41,8 @@ class EmulationHandler : public protocol::Emulation::Backend,
       std::unique_ptr<protocol::Emulation::ScreenInfo>* out_screen_info)
       override;
   protocol::Response RemoveScreen(const protocol::String& screen_id) override;
+  protocol::Response SetPrimaryScreen(
+      const protocol::String& screen_id) override;
 
   void OnInfoBarRemoved(infobars::InfoBar* infobar, bool animate) override;
 

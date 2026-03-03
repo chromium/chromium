@@ -250,6 +250,25 @@ Response EmulationHandler::RemoveScreen(const protocol::String& screen_id) {
   return Response::Success();
 }
 
+Response EmulationHandler::SetPrimaryScreen(const protocol::String& screen_id) {
+  if (!display::Screen::Get()->IsHeadless()) {
+    return Response::ServerError("Method is only available in headless mode");
+  }
+
+  int64_t display_id;
+  if (!base::StringToInt64(screen_id, &display_id)) {
+    return Response::InvalidParams("Invalid screen id: " + screen_id);
+  }
+
+  if (!GetDisplay(display_id)) {
+    return Response::InvalidParams("Unknown screen id: " + screen_id);
+  }
+
+  display::HeadlessScreenManager::Get()->SetPrimaryDisplay(display_id);
+
+  return Response::Success();
+}
+
 infobars::ContentInfoBarManager* EmulationHandler::GetContentInfoBarManager() {
   content::WebContents* web_contents = agent_host_->GetWebContents();
   if (!web_contents) {

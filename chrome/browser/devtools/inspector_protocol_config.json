@@ -28,7 +28,7 @@
             },
             {
                 "domain": "Emulation",
-                "include": ["disable", "setAutomationOverride", "getScreenInfos", "addScreen", "removeScreen"]
+                "include": ["disable", "setAutomationOverride", "getScreenInfos", "addScreen", "removeScreen", "setPrimaryScreen"]
             },
             {
                 "domain": "WindowManager"

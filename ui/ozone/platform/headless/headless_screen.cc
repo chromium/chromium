@@ -172,8 +172,7 @@ void HeadlessScreen::RemoveDisplay(int64_t display_id) {
 }
 
 void HeadlessScreen::SetPrimaryDisplay(int64_t display_id) {
-  // TODO(crbug.com/397350115): Implement.
-  NOTIMPLEMENTED();
+  headless::SetPrimaryDisplay(display_list_, display_id);
 }
 
 const std::vector<Display>& HeadlessScreen::GetAllDisplays() const {
