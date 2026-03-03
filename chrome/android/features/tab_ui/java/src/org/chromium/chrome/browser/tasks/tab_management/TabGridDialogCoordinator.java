@@ -271,7 +271,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                             /* undoBarExplicitTrigger= */ null,
                             mSnackbarManager,
                             TabListEditorCoordinator.UNLIMITED_SELECTION,
-                            false);
+                            /* isSingleContextMode= */ false);
             mTabListCoordinator.setOnLongPressTabItemEventListener(mMediator);
             mTabListCoordinator.registerItemType(
                     UiType.COLLABORATION_ACTIVITY_MESSAGE,
@@ -386,7 +386,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                             /* undoBarExplicitTrigger= */ null,
                             /* componentName= */ null,
                             TabListEditorCoordinator.UNLIMITED_SELECTION,
-                            false);
+                            /* isSingleContextMode= */ false);
         }
 
         return mTabListEditorCoordinator.getController();

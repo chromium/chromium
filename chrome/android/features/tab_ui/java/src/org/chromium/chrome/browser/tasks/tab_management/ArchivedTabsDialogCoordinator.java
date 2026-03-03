@@ -814,7 +814,7 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
                         mUndoBarController,
                         COMPONENT_NAME,
                         TabListEditorCoordinator.UNLIMITED_SELECTION,
-                        false);
+                        /* isSingleContextMode= */ false);
     }
 
     @VisibleForTesting

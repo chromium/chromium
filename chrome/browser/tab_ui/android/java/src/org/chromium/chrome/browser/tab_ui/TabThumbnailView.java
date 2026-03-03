@@ -23,6 +23,7 @@ import android.net.Uri;
 import android.util.AttributeSet;
 import android.widget.ImageView;
 
+import androidx.annotation.IntDef;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.view.ViewCompat;
 
@@ -31,6 +32,9 @@ import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.tab_groups.TabGroupColorId;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 /**
  * A specialized {@link ImageView} that clips a thumbnail to a card shape with varied corner radii.
@@ -49,6 +53,21 @@ public class TabThumbnailView extends ImageView {
     private static final float HEIGHT_PERCENTAGE = 0.45f;
 
     private static @MonotonicNonNull Integer sVerticalOffsetPx;
+
+    /** States for the thumbnail view when fetching or displaying placeholders. */
+    @IntDef({
+        ThumbnailViewState.THUMBNAIL_LOADED,
+        ThumbnailViewState.PLACEHOLDER_LOADED,
+        ThumbnailViewState.LOADING
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface ThumbnailViewState {
+        int THUMBNAIL_LOADED = 0;
+        int PLACEHOLDER_LOADED = 1;
+        int LOADING = 2;
+    }
+
+    private @ThumbnailViewState int mThumbnailViewState = ThumbnailViewState.PLACEHOLDER_LOADED;
 
     /** To prevent {@link TabThumbnailView#updateImage()} from running during inflation. */
     private final boolean mInitialized;
@@ -117,6 +136,11 @@ public class TabThumbnailView extends ImageView {
         updateImage();
     }
 
+    public void setThumbnailViewState(@ThumbnailViewState int state) {
+        mThumbnailViewState = state;
+        updateImage();
+    }
+
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
@@ -173,6 +197,17 @@ public class TabThumbnailView extends ImageView {
 
     private void updateImage() {
         if (!mInitialized) return;
+
+        if (isThumbnailLoading()) {
+            setBackground(mBackgroundDrawable);
+            clearColorFilter();
+            mIconDrawable = null;
+            // Clear the actual image drawable from the ImageView so only background
+            // remains.
+            super.setImageDrawable(null);
+            return;
+        }
+
         // If the drawable is empty, display a placeholder image.
         if (isPlaceholder()) {
             setBackground(mBackgroundDrawable);
@@ -284,6 +319,10 @@ public class TabThumbnailView extends ImageView {
         }
 
         mBackgroundDrawable.setCornerRadii(mRadii);
+    }
+
+    private boolean isThumbnailLoading() {
+        return mThumbnailViewState == ThumbnailViewState.LOADING;
     }
 
     private void resizeIconDrawable() {

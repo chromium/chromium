@@ -221,7 +221,7 @@ public class SelectableTabListEditorTest {
                                     /* undoBarExplicitTrigger= */ null,
                                     /* componentName= */ null,
                                     TabListEditorCoordinator.UNLIMITED_SELECTION,
-                                    false);
+                                    /* isSingleContextMode= */ false);
 
                     mTabListEditorController = mTabListEditorCoordinator.getController();
                     mTabListEditorLayout =

@@ -119,6 +119,17 @@ found in the LICENSE file.
           app:cornerRadiusBottomStart="@dimen/tab_grid_card_thumbnail_corner_radius_bottom"
           app:cornerRadiusBottomEnd="@dimen/tab_grid_card_thumbnail_corner_radius_bottom"/>
 
+        <ProgressBar
+          android:id="@+id/fetch_thumbnail_spinner"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:indeterminate="true"
+          android:visibility="gone"
+          app:layout_constraintTop_toTopOf="@id/tab_thumbnail"
+          app:layout_constraintBottom_toBottomOf="@id/tab_thumbnail"
+          app:layout_constraintStart_toStartOf="@id/tab_thumbnail"
+          app:layout_constraintEnd_toEndOf="@id/tab_thumbnail" />
+
         <!-- Legacy layout for price cards. To be removed in favor of tab_card_label. -->
         <org.chromium.chrome.browser.tasks.tab_management.PriceCardView
           android:id="@+id/price_info_box_outer"

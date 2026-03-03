@@ -137,6 +137,9 @@ public class TabProperties {
     public static final WritableObjectPropertyKey<ThumbnailFetcher> THUMBNAIL_FETCHER =
             new WritableObjectPropertyKey<>(true);
 
+    public static final WritableBooleanPropertyKey SHOW_THUMBNAIL_SPINNER =
+            new WritableBooleanPropertyKey();
+
     public static final WritableObjectPropertyKey<Size> GRID_CARD_SIZE =
             new WritableObjectPropertyKey<>();
 
@@ -215,6 +218,7 @@ public class TabProperties {
                 FAVICON_FETCHER,
                 GRID_CARD_SIZE,
                 THUMBNAIL_FETCHER,
+                SHOW_THUMBNAIL_SPINNER,
                 TITLE,
                 CARD_ALPHA,
                 CARD_ANIMATION_STATUS,

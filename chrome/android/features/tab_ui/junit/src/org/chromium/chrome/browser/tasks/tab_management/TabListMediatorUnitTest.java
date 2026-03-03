@@ -5975,4 +5975,26 @@ public class TabListMediatorUnitTest {
         when(tab.getMediaState()).thenReturn(mediaState);
         mTabObserverCaptor.getValue().onMediaStateChanged(tab, mediaState);
     }
+
+    @Test
+    public void testSetThumbnailSpinnerVisibility() {
+        setUpTabListMediator(TabListMediatorType.TAB_GRID_DIALOG, TabListMode.GRID);
+        initAndAssertAllProperties();
+
+        PropertyModel model = mModelList.get(0).model;
+        org.chromium.ui.modelutil.PropertyObservable.PropertyObserver<
+                        org.chromium.ui.modelutil.PropertyKey>
+                observer =
+                        mock(org.chromium.ui.modelutil.PropertyObservable.PropertyObserver.class);
+        model.addObserver(observer);
+
+        mMediator.setThumbnailSpinnerVisibility(mTab1, true);
+        verify(observer).onPropertyChanged(eq(model), eq(TabProperties.SHOW_THUMBNAIL_SPINNER));
+        assertTrue(model.get(TabProperties.SHOW_THUMBNAIL_SPINNER));
+
+        mMediator.setThumbnailSpinnerVisibility(mTab1, false);
+        verify(observer, times(2))
+                .onPropertyChanged(eq(model), eq(TabProperties.SHOW_THUMBNAIL_SPINNER));
+        assertFalse(model.get(TabProperties.SHOW_THUMBNAIL_SPINNER));
+    }
 }

@@ -1198,4 +1198,15 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
     public TabListModel getTabListModel() {
         return mModelList;
     }
+
+    /**
+     * Sets the visibility of the thumbnail spinner for a specific tab.
+     *
+     * @param tab The tab to update.
+     * @param isVisible Whether the spinner should be visible.
+     */
+    void setThumbnailSpinnerVisibility(Tab tab, boolean isVisible) {
+        assert mMediator != null;
+        mMediator.setThumbnailSpinnerVisibility(tab, isVisible);
+    }
 }

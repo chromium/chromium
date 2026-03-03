@@ -528,6 +528,16 @@ class TabListEditorMediator
                 /* quickMode= */ true);
     }
 
+    @Override
+    public void updateThumbnail(Tab tab) {
+        // No-op.
+    }
+
+    @Override
+    public void setThumbnailSpinnerVisibility(Tab tab, boolean isVisible) {
+        mTabListCoordinator.setThumbnailSpinnerVisibility(tab, isVisible);
+    }
+
     /** Destroy any members that needs clean up. */
     public void destroy() {
         runListDestroyables();

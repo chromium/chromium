@@ -2218,7 +2218,6 @@ class TabListMediator implements TabListNotificationHandler {
                         .with(TabProperties.MEDIA_INDICATOR, getTabGridMediaIndicator(tab))
                         .with(TabProperties.IS_PINNED, tab.getIsPinned())
                         .build();
-
         if (!mActionsOnAllRelatedTabs || isInTabGroup) {
             tabInfo.set(
                     TabProperties.FAVICON_FETCHER,
@@ -3289,6 +3288,17 @@ class TabListMediator implements TabListNotificationHandler {
         // The view element has been removed. We need to bring that back. This is done by just
         // triggering a model update for that index.
         mModelList.update(index, mModelList.get(index));
+    }
+
+    void setThumbnailSpinnerVisibility(Tab tab, boolean isVisible) {
+        assert !mActionsOnAllRelatedTabs && !isTabInTabGroup(tab);
+        int index = mModelList.indexFromTabId(tab.getId());
+        if (index == TabModel.INVALID_TAB_INDEX) return;
+
+        PropertyModel model = mModelList.get(index).model;
+        if (model == null) return;
+
+        model.set(TabProperties.SHOW_THUMBNAIL_SPINNER, isVisible);
     }
 
     private void updateThumbnailFetcher(PropertyModel model, int tabId) {

@@ -98,6 +98,7 @@ public final class TabGridViewBinderUnitTest {
     @Mock private ShoppingPersistedTabDataFetcher mShoppingPersistedTabDataFetcher;
     @Mock private ShoppingPersistedTabData mShoppingPersistedTabData;
     @Mock private TextView mTabTitleView;
+    @Mock private View mSpinner;
 
     @Captor private ArgumentCaptor<Callback<Drawable>> mCallbackCaptor;
 
@@ -131,6 +132,7 @@ public final class TabGridViewBinderUnitTest {
         when(mViewGroup.fastFindViewById(R.id.price_info_box_outer)).thenReturn(mPriceCardView);
         when(mViewGroup.fastFindViewById(R.id.tab_card_label_stub)).thenReturn(mTabCardLabelStub);
         when(mViewGroup.fastFindViewById(R.id.action_button)).thenReturn(mActionButton);
+        when(mViewGroup.fastFindViewById(R.id.fetch_thumbnail_spinner)).thenReturn(mSpinner);
         doAnswer(
                         (ignored) -> {
                             when(mViewGroup.fastFindViewById(R.id.tab_card_label_stub))
@@ -209,6 +211,8 @@ public final class TabGridViewBinderUnitTest {
         verify(mThumbnailView).setImageDrawable(mBitmapDrawable);
         ArgumentCaptor<Matrix> matrixCaptor = ArgumentCaptor.forClass(Matrix.class);
         verify(mThumbnailView).setImageMatrix(matrixCaptor.capture());
+        verify(mThumbnailView)
+                .setThumbnailViewState(TabThumbnailView.ThumbnailViewState.THUMBNAIL_LOADED);
         verifyNoMoreInteractions(mThumbnailView);
 
         // Verify metrics scale + translate.
@@ -285,6 +289,8 @@ public final class TabGridViewBinderUnitTest {
         verify(mThumbnailView).setImageDrawable(mBitmapDrawable);
         ArgumentCaptor<Matrix> matrixCaptor = ArgumentCaptor.forClass(Matrix.class);
         verify(mThumbnailView).setImageMatrix(matrixCaptor.capture());
+        verify(mThumbnailView)
+                .setThumbnailViewState(TabThumbnailView.ThumbnailViewState.THUMBNAIL_LOADED);
         verifyNoMoreInteractions(mThumbnailView);
 
         // Verify metrics scale + translate.
@@ -320,6 +326,8 @@ public final class TabGridViewBinderUnitTest {
         verify(mThumbnailView).setImageDrawable(mBitmapDrawable);
         ArgumentCaptor<Matrix> matrixCaptor = ArgumentCaptor.forClass(Matrix.class);
         verify(mThumbnailView).setImageMatrix(matrixCaptor.capture());
+        verify(mThumbnailView)
+                .setThumbnailViewState(TabThumbnailView.ThumbnailViewState.THUMBNAIL_LOADED);
         verifyNoMoreInteractions(mThumbnailView);
 
         // Verify metrics scale + translate.
@@ -354,6 +362,8 @@ public final class TabGridViewBinderUnitTest {
         verify(mThumbnailView).setImageDrawable(mBitmapDrawable);
         ArgumentCaptor<Matrix> matrixCaptor = ArgumentCaptor.forClass(Matrix.class);
         verify(mThumbnailView).setImageMatrix(matrixCaptor.capture());
+        verify(mThumbnailView)
+                .setThumbnailViewState(TabThumbnailView.ThumbnailViewState.THUMBNAIL_LOADED);
         verifyNoMoreInteractions(mThumbnailView);
 
         // Verify metrics scale + translate.

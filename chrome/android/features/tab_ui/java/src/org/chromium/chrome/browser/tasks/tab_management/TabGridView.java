@@ -35,6 +35,8 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.quick_delete.QuickDeleteAnimationGradientDrawable;
 import org.chromium.chrome.browser.tab.Tab.MediaState;
 import org.chromium.chrome.browser.tab.TabUtils;
+import org.chromium.chrome.browser.tab_ui.TabThumbnailView;
+import org.chromium.chrome.browser.tab_ui.TabThumbnailView.ThumbnailViewState;
 import org.chromium.chrome.browser.tasks.tab_management.TabActionButtonData.TabActionButtonType;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel.AnimationStatus;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
@@ -135,6 +137,17 @@ public class TabGridView extends SelectableItemViewBase<TabListEditorItemSelecti
         scaleAnimator.play(scaleX).with(scaleY);
         mIsAnimating = true;
         scaleAnimator.start();
+    }
+
+    void setThumbnailSpinnerVisibility(boolean isVisible) {
+        View spinner = findViewById(R.id.fetch_thumbnail_spinner);
+        if (spinner == null) return;
+
+        spinner.setVisibility(isVisible ? View.VISIBLE : View.GONE);
+        TabThumbnailView thumbnail = findViewById(R.id.tab_thumbnail);
+        if (thumbnail != null && isVisible) {
+            thumbnail.setThumbnailViewState(ThumbnailViewState.LOADING);
+        }
     }
 
     void hideTabGridCardViewForQuickDelete(

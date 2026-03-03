@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.tab_ui.TabCardThemeUtil;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider.TabFavicon;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider.TabFaviconFetcher;
 import org.chromium.chrome.browser.tab_ui.TabThumbnailView;
+import org.chromium.chrome.browser.tab_ui.TabThumbnailView.ThumbnailViewState;
 import org.chromium.chrome.browser.tasks.tab_management.TabActionButtonData.TabActionButtonType;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.ShoppingPersistedTabDataFetcher;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties;
@@ -233,6 +234,9 @@ class TabGridViewBinder {
             @TabActionButtonType
             int actionButtonType = data != null ? data.type : TabActionButtonType.OVERFLOW;
             ((TabGridView) view).setTabActionButtonDrawable(actionButtonType);
+        } else if (TabProperties.SHOW_THUMBNAIL_SPINNER == propertyKey) {
+            ((TabGridView) view)
+                    .setThumbnailSpinnerVisibility(model.get(TabProperties.SHOW_THUMBNAIL_SPINNER));
         } else if (TabProperties.TAB_CLICK_LISTENER == propertyKey) {
             setNullableClickListener(model.get(TabProperties.TAB_CLICK_LISTENER), view, model);
         } else if (TabProperties.TAB_LONG_CLICK_LISTENER == propertyKey) {
@@ -509,9 +513,12 @@ class TabGridViewBinder {
         // the callback matches the current thumbnail fetcher and grid card size.
         Callback<@Nullable Drawable> callback =
                 result -> {
+                    ((TabGridView) view).setThumbnailSpinnerVisibility(false);
                     if (result != null) {
+                        thumbnail.setThumbnailViewState(ThumbnailViewState.THUMBNAIL_LOADED);
                         TabUtils.setDrawableAndUpdateImageMatrix(thumbnail, result, thumbnailSize);
                     } else {
+                        thumbnail.setThumbnailViewState(ThumbnailViewState.PLACEHOLDER_LOADED);
                         thumbnail.setImageDrawable(null);
                     }
                 };
