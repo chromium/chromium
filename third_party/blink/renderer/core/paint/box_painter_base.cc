@@ -1506,7 +1506,8 @@ void BoxPainterBase::PaintFillLayer(
 
     context.ClipPath(
         clip_shape.GetPath(gfx::RectF(clip_ref_rect), style_.EffectiveZoom(), 1)
-            .GetSkPath());
+            .GetSkPath(),
+        kAntiAliased);
   } else if (fill_layer_info.is_rounded_fill) {
     DCHECK(!bg_paint_context.CanCompositeBackgroundAttachmentFixed());
     clip_to_border.emplace(context, rect, border_rect);
