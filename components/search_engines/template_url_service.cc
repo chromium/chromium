@@ -252,7 +252,7 @@ std::unique_ptr<TemplateURL> UpdateExistingURLWithAccountData(
 // If the TemplateURLData comes from a prepopulated URL available in the current
 // country, update all its fields save for the keyword, short name and id so
 // that they match the internal prepopulated URL. TemplateURLs not coming from
-// a prepopulated URL are not modified.
+// a regional prepopulated URL are not modified.
 TemplateURLData UpdateTemplateURLDataIfPrepopulated(
     const TemplateURLData& data,
     const TemplateURLPrepopulateData::Resolver& prepopulate_data_resolver) {
@@ -261,17 +261,15 @@ TemplateURLData UpdateTemplateURLDataIfPrepopulated(
     return data;
   }
 
-  std::vector<std::unique_ptr<TemplateURLData>> prepopulated_urls =
-      prepopulate_data_resolver.GetPrepopulatedEngines();
+  std::unique_ptr<TemplateURLData> prepopulated_url =
+      prepopulate_data_resolver.GetPrepopulatedEngine(prepopulate_id);
+  if (!prepopulated_url) {
+    return data;
+  }
 
   TemplateURL turl(data);
-  for (const auto& url : prepopulated_urls) {
-    if (url->prepopulate_id == prepopulate_id) {
-      MergeIntoEngineData(&turl, url.get());
-      return *url;
-    }
-  }
-  return data;
+  MergeIntoEngineData(&turl, prepopulated_url.get());
+  return *prepopulated_url;
 }
 
 // Explicitly converts from ActiveStatus enum in sync protos to enum in
