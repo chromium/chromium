@@ -768,11 +768,6 @@ BASE_FEATURE(kRenderDocument, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kRestrictThreadPoolInBackground,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Feature that stops broadcasting the history index and length when
-// CreateRenderViewForRenderManager() is invoked, and instead passes the
-// information in the CreateViewParams, saving some IPC calls.
-BASE_FEATURE(kSetHistoryInfoOnViewCreation, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, sends the spare renderer information when setting the
 // priority of renderers. Currently only Android handles the spare renderer
 // information in priority.

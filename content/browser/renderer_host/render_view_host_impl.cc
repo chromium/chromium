@@ -611,11 +611,9 @@ bool RenderViewHostImpl::CreateRenderView(
   params->blink_page_broadcast =
       page_broadcast_.BindNewEndpointAndPassReceiver();
 
-  if (base::FeatureList::IsEnabled(features::kSetHistoryInfoOnViewCreation)) {
-    params->history_index =
-        frame_tree()->controller().GetLastCommittedEntryIndex();
-    params->history_length = frame_tree()->controller().GetEntryCount();
-  }
+  params->history_index =
+      frame_tree()->controller().GetLastCommittedEntryIndex();
+  params->history_length = frame_tree()->controller().GetEntryCount();
 
   // The renderer process's `blink::WebView` is owned by this lifecycle of
   // the `page_broadcast_` channel.

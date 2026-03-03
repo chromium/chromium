@@ -21202,16 +21202,10 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
     // committing the new NavigationEntry which keeps the "initial" status:
     // #1 was triggered by DiscardNonCommittedEntries().
     // #2 is triggered by NotifyNavigationEntryCommitted().
+    // Only one notification will actually be sent out.
     // Note that this is different from the _Ignore test below, which wouldn't
     // fire the events because the client chooses to ignore the updates.
-    // With "SkipRedundantNavigationStateNotification" enabled, only 1 call will
-    // take place.
-    if (base::FeatureList::IsEnabled(
-            features::kSkipRedundantNavigationStateNotification)) {
-      EXPECT_EQ(1, all_navigation_state_changed_delegate.call_count());
-    } else {
-      EXPECT_EQ(2, all_navigation_state_changed_delegate.call_count());
-    }
+    EXPECT_EQ(1, all_navigation_state_changed_delegate.call_count());
   }
 
   {
@@ -21229,20 +21223,12 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
     EXPECT_EQ(1, controller.GetEntryCount());
     EXPECT_FALSE(controller.GetLastCommittedEntry()->IsInitialEntry());
 
-    // 1 or 2 additional INVALIDATE_TYPE_ALL NavigationStateChanged calls were
-    // triggered (increasing the count to either 2 or 4 depending on whether
-    // "SkipRedundantNavigationStateNotification" is enabled), and they're not
-    // for the initial NavigationEntry.
+    // 2 additional INVALIDATE_TYPE_ALL NavigationStateChanged calls were
+    // triggered (though only 1 notification will be sent, increasing the count
+    // to 2), and they're not for the initial NavigationEntry.
     // #1 was triggered by DiscardNonCommittedEntries().
     // #2 is triggered by NotifyNavigationEntryCommitted().
-    // With "SkipRedundantNavigationStateNotification" enabled, only 1 call will
-    // take place.
-    if (base::FeatureList::IsEnabled(
-            features::kSkipRedundantNavigationStateNotification)) {
-      EXPECT_EQ(2, all_navigation_state_changed_delegate.call_count());
-    } else {
-      EXPECT_EQ(4, all_navigation_state_changed_delegate.call_count());
-    }
+    EXPECT_EQ(2, all_navigation_state_changed_delegate.call_count());
   }
 }
 

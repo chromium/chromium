@@ -644,8 +644,6 @@ NavigationControllerImpl::ScopedDeferredNavigationStateChangeNotifier::
 
 void NavigationControllerImpl::ScopedDeferredNavigationStateChangeNotifier::
     RequestDeferredNotification() {
-  CHECK(base::FeatureList::IsEnabled(
-      features::kSkipRedundantNavigationStateNotification));
   requested_ = true;
 }
 
@@ -4691,9 +4689,7 @@ void NavigationControllerImpl::NotifyNavigationEntryCommitted(
   // That function passes in a pointer for `deferred_notifier`, which tells this
   // function to not send the notification immediately. The notification will be
   // sent when RendererDidNavigate returns.
-  if (deferred_notifier &&
-      base::FeatureList::IsEnabled(
-          features::kSkipRedundantNavigationStateNotification)) {
+  if (deferred_notifier) {
     deferred_notifier->RequestDeferredNotification();
   } else {
     delegate_->NotifyNavigationStateChangedFromController(INVALIDATE_TYPE_ALL);
@@ -4869,9 +4865,7 @@ void NavigationControllerImpl::DiscardNonCommittedEntriesInternal(
   // That function passes in a pointer for `deferred_notifier`, which tells this
   // function to not send the notification immediately. The notification will be
   // sent when RendererDidNavigate returns.
-  if (deferred_notifier &&
-      base::FeatureList::IsEnabled(
-          features::kSkipRedundantNavigationStateNotification)) {
+  if (deferred_notifier) {
     deferred_notifier->RequestDeferredNotification();
     return;
   }

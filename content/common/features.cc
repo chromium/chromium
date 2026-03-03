@@ -674,11 +674,6 @@ BASE_FEATURE(kServiceWorkerWindowClientInitiator,
 BASE_FEATURE(kSkipEarlyCommitPendingForCrashedFrame,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Feature to skip a redundant NotifyNavigationStateChanged call during
-// RendererDidNavigate.
-BASE_FEATURE(kSkipRedundantNavigationStateNotification,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, skips registration of RendererCancellationThrottle and instead
 // keeps navigation cancellation behavior by reusing the requester
 // NavigationClient.
