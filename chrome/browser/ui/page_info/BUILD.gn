@@ -140,5 +140,6 @@ source_set("unit_tests") {
     "//content/test:test_support",
     "//net:test_support",
     "//services/device/public/cpp:test_support",
+    "//services/network/public/cpp",
   ]
 }

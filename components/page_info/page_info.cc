@@ -1427,6 +1427,22 @@ bool PageInfo::ShouldShowPermission(
     }
   }
 
+  // Filter Local Network Access permissions based on split permissions
+  // feature. When enabled, show LOCAL_NETWORK and LOOPBACK_NETWORK.
+  // When disabled, show LOCAL_NETWORK_ACCESS.
+  if (delegate_->IsLocalNetworkAccessSplitPermissionsEnabled()) {
+    // Split permissions enabled: hide the legacy permission
+    if (info.type == ContentSettingsType::LOCAL_NETWORK_ACCESS) {
+      return false;
+    }
+  } else {
+    // Split permissions disabled: hide the new split permissions
+    if (info.type == ContentSettingsType::LOCAL_NETWORK ||
+        info.type == ContentSettingsType::LOOPBACK_NETWORK) {
+      return false;
+    }
+  }
+
   if (info.type == ContentSettingsType::SOUND) {
     // The sound content setting should always show up when the tab has played
     // audio.

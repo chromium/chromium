@@ -46,6 +46,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "media/base/media_switches.h"
+#include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/base/window_open_disposition_utils.h"
 #include "url/origin.h"
@@ -473,6 +474,11 @@ bool ChromePageInfoDelegate::IsHttpsFirstModeEnabled() {
 
 bool ChromePageInfoDelegate::IsIncognitoProfile() {
   return GetProfile()->IsIncognitoProfile();
+}
+
+bool ChromePageInfoDelegate::IsLocalNetworkAccessSplitPermissionsEnabled() {
+  return base::FeatureList::IsEnabled(
+      network::features::kLocalNetworkAccessChecksSplitPermissions);
 }
 
 void ChromePageInfoDelegate::SetSecurityStateForTests(
