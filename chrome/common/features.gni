@@ -45,11 +45,6 @@ declare_args() {
   # Enables usage of notifications via Chrome's MessageCenter.
   enable_chrome_notifications = is_mac || is_win || is_linux
 
-  # Enables inclusion of glic in the build.
-  # NOTE: This flag is currently being removed and shouldn't be used in new
-  # code (See crbug.com/486982086).
-  enable_glic = true
-
   # Skips unmigrated actor files in the build on Android. This is temporary, and
   # will eventually be removed once migration is done. Adding this flag likely
   # means the code needs to be adapted for Android. Once adapted, the final code
@@ -94,7 +89,6 @@ chrome_grit_defines = [
   "enable_printing=$enable_printing",
   "enable_extensions=$enable_extensions",
   "enable_extensions_core=$enable_extensions_core",
-  "enable_glic=$enable_glic",
   "enable_hangout_services_extension=$enable_hangout_services_extension",
   "enable_pdf_ink2=$enable_pdf_ink2",
   "enable_pdf_save_to_drive=$enable_pdf_save_to_drive",
