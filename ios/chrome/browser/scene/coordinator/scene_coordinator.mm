@@ -1713,6 +1713,12 @@ void OnListFamilyMembersResponse(
   configuration.sceneHandler = self;
   configuration.singleSignOnService =
       GetApplicationContext()->GetSingleSignOnService();
+  if (IsDisableU18FeedbackIosEnabled()) {
+    AuthenticationService* authenticationService =
+        AuthenticationServiceFactory::GetForProfile(self.profile);
+    configuration.primaryIdentity = authenticationService->GetPrimaryIdentity(
+        signin::ConsentLevel::kSignin);
+  }
 
   NSError* error;
   ios::provider::StartUserFeedbackFlow(configuration, baseViewController,
