@@ -44,6 +44,7 @@
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_uploader.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/potential_password_theft_signal_processor.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/remote_host_contacted_signal_processor.h"
+#include "chrome/browser/safe_browsing/extension_telemetry/script_injection_signal_processor.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/search_hijacking_detector.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/tabs_api_signal_processor.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/tabs_execute_script_signal_processor.h"
@@ -1548,6 +1549,9 @@ void ExtensionTelemetryService::
   enterprise_signal_processors_.emplace(
       ExtensionSignalType::kDOMAccess,
       std::make_unique<DOMAccessSignalProcessor>());
+  enterprise_signal_processors_.emplace(
+      ExtensionSignalType::kScriptInjection,
+      std::make_unique<ScriptInjectionSignalProcessor>());
 
   // Create subscriber lists for each telemetry signal type.
   // Map the signal processors to the signals that they consume.
@@ -1570,6 +1574,10 @@ void ExtensionTelemetryService::
   std::vector<raw_ptr<ExtensionSignalProcessor, VectorExperimental>>
       enterprise_subscribers_for_dom_access = {
           enterprise_signal_processors_[ExtensionSignalType::kDOMAccess].get()};
+  std::vector<raw_ptr<ExtensionSignalProcessor, VectorExperimental>>
+      enterprise_subscribers_for_script_injection = {
+          enterprise_signal_processors_[ExtensionSignalType::kScriptInjection]
+              .get()};
 
   enterprise_signal_subscribers_.emplace(
       ExtensionSignalType::kCookiesGet,
@@ -1586,6 +1594,9 @@ void ExtensionTelemetryService::
   enterprise_signal_subscribers_.emplace(
       ExtensionSignalType::kDOMAccess,
       std::move(enterprise_subscribers_for_dom_access));
+  enterprise_signal_subscribers_.emplace(
+      ExtensionSignalType::kScriptInjection,
+      std::move(enterprise_subscribers_for_script_injection));
 }
 
 ExtensionTelemetryService::OffstoreExtensionFileDataContext::

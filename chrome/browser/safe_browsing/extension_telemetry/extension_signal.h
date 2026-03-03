@@ -25,7 +25,8 @@ enum class ExtensionSignalType {
   kTabsApi = 7,
   kDeclarativeNetRequestAction = 8,
   kDOMAccess = 9,
-  kMaxValue = kDOMAccess,
+  kScriptInjection = 10,
+  kMaxValue = kScriptInjection,
 };
 
 // An abstract signal. Subclasses provide type-specific functionality to

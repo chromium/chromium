@@ -21,6 +21,7 @@
 #include "chrome/browser/safe_browsing/extension_telemetry/cookies_get_signal.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/dom_access_signal.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_uploader.h"
+#include "chrome/browser/safe_browsing/extension_telemetry/script_injection_signal.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/search_hijacking_detector.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/tabs_execute_script_signal.h"
 #include "chrome/browser/safe_browsing/test_extension_event_observer.h"
@@ -465,6 +466,39 @@ TEST_F(ExtensionTelemetryServiceTest, ProcessesDOMAccessSignalForEnterprise) {
   EXPECT_EQ(signal_info.dom_access_info().dom_accesses_size(), 1);
   EXPECT_EQ(signal_info.dom_access_info().dom_accesses(0).api_name(),
             "Document.cookie");
+}
+
+TEST_F(ExtensionTelemetryServiceTest,
+       ProcessesScriptInjectionSignalForEnterprise) {
+  // Enable enterprise telemetry.
+  enterprise_connectors::test::SetOnSecurityEventReporting(
+      /*prefs=*/prefs(),
+      /*enabled=*/true,
+      /*enabled_event_names=*/{},
+      /*enabled_opt_in_events=*/
+      {{enterprise_connectors::kExtensionTelemetryEvent, {"*"}}});
+
+  // Re-create telemetry service so it initializes the enterprise processors.
+  telemetry_service_ = CreateTelemetryService(&profile_);
+
+  // Add a script injection signal.
+  auto signal = std::make_unique<ScriptInjectionSignal>(
+      kExtensionId[0], "blinkSetAttribute", "http://www.example.com",
+      std::vector<std::string>{"src", "<arg_url>"}, "http://evil.com/js",
+      base::Time::Now());
+  telemetry_service_->AddSignal(std::move(signal));
+
+  // Verify that the signal is correctly recorded in the enterprise report.
+  std::unique_ptr<TelemetryReport> report = GetTelemetryReportForEnterprise();
+  ASSERT_NE(report, nullptr);
+  ASSERT_EQ(report->reports_size(), 1);
+  const auto& extension_report = report->reports(0);
+  ASSERT_EQ(extension_report.signals_size(), 1);
+  const auto& signal_info = extension_report.signals(0);
+  ASSERT_TRUE(signal_info.has_script_injection_info());
+  EXPECT_EQ(signal_info.script_injection_info().script_injections_size(), 1);
+  EXPECT_EQ(signal_info.script_injection_info().script_injections(0).api_name(),
+            "blinkSetAttribute");
 }
 
 TEST_F(ExtensionTelemetryServiceTest, DiscardsInvalidSignal) {
