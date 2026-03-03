@@ -26,6 +26,12 @@
   [self.sceneState.profileState addObserver:self];
   [self.sceneState.profileState addUIBlockerManagerObserver:self];
 
+  [NSNotificationCenter.defaultCenter
+      addObserver:self
+         selector:@selector(maybeUpdateToUIReady)
+             name:UIApplicationDidBecomeActiveNotification
+           object:nil];
+
   // Make sure that the execution stage is updated also if a scene is connected
   // after the ProfileState has reached stage ProfileInitStage::kProfileLoaded
   // or higher.
@@ -72,6 +78,7 @@
   [self.sceneState.profileState removeObserver:self];
   [self.sceneState removeObserver:self];
   [self.sceneState.profileState removeUIBlockerManagerObserver:self];
+  [NSNotificationCenter.defaultCenter removeObserver:self];
 }
 
 - (void)signinDidEnd:(SceneState*)sceneState {
@@ -118,6 +125,10 @@
     return NO;
   }
   if ([self signinStatusInSyncWithPolicy]) {
+    return NO;
+  }
+  if ([[UIApplication sharedApplication] applicationState] !=
+      UIApplicationStateActive) {
     return NO;
   }
   return YES;
