@@ -7,6 +7,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "ash/ash_export.h"
 #include "base/memory/ref_counted_memory.h"
@@ -81,7 +82,7 @@ class ASH_EXPORT ClipboardHistoryItemBuilder {
   // Sets/clears `custom_format_` and `custom_data_` data.
   ClipboardHistoryItemBuilder& SetCustomData(
       const ui::ClipboardFormatType& custom_format,
-      const std::string& custom_data);
+      std::string_view custom_data);
   ClipboardHistoryItemBuilder& ClearCustomData();
 
   // Sets/clears file system data.

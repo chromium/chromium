@@ -294,7 +294,7 @@ proto::TabStrip::Visibility TabStripVisibilityToProto(
 std::string FilePathToProto(const base::FilePath& path) {
   base::Pickle pickle;
   path.WriteToPickle(&pickle);
-  return std::string(pickle.data_as_char(), pickle.size());
+  return std::string(pickle.AsStringView());
 }
 
 std::optional<base::FilePath> ProtoToFilePath(const std::string& bytes) {

@@ -333,7 +333,7 @@ bool ToProto(
   base::Pickle pickle;
   IPC::WriteParam(&pickle, input);
   std::string* bytes = new_instance->mutable_native_bytes();
-  bytes->assign(pickle.data_as_char(), pickle.size());
+  bytes->assign(pickle.AsStringView());
   return true;
 {%-   elif struct|is_typemapped_kind %}
   // TODO(markbrand): ToProto for typemapped struct kind

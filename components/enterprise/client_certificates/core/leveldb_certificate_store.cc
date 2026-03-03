@@ -77,8 +77,7 @@ void SetCertificate(client_certificates_pb::ClientIdentity& proto_identity,
                     net::X509Certificate& certificate) {
   base::Pickle pickle;
   certificate.Persist(&pickle);
-  *proto_identity.mutable_certificate() =
-      std::string(pickle.data_as_char(), pickle.size());
+  *proto_identity.mutable_certificate() = pickle.AsStringView();
 }
 
 }  // namespace

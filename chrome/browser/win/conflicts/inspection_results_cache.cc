@@ -247,6 +247,6 @@ bool WriteInspectionResultsCache(
 
   // TODO(crbug.com/40106434): Investigate if using WriteFileAtomically() in a
   // CONTINUE_ON_SHUTDOWN sequence can cause too many corrupted caches.
-  return base::ImportantFileWriter::WriteFileAtomically(
-      file_path, std::string_view(pickle.data_as_char(), pickle.size()));
+  return base::ImportantFileWriter::WriteFileAtomically(file_path,
+                                                        pickle.AsStringView());
 }

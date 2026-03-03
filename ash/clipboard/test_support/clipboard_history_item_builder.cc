@@ -4,6 +4,7 @@
 
 #include "ash/clipboard/test_support/clipboard_history_item_builder.h"
 
+#include <string_view>
 #include <vector>
 
 #include "ash/clipboard/clipboard_history_item.h"
@@ -196,7 +197,7 @@ ClipboardHistoryItemBuilder& ClipboardHistoryItemBuilder::ClearPng() {
 
 ClipboardHistoryItemBuilder& ClipboardHistoryItemBuilder::SetCustomData(
     const ui::ClipboardFormatType& custom_format,
-    const std::string& custom_data) {
+    std::string_view custom_data) {
   custom_format_ = custom_format;
   custom_data_ = custom_data;
   return *this;
@@ -218,9 +219,8 @@ ClipboardHistoryItemBuilder& ClipboardHistoryItemBuilder::SetFileSystemData(
           {{kFileSystemSourcesType, base::JoinString(source_list, u"\n")}}),
       &custom_data);
 
-  return SetCustomData(
-      ui::ClipboardFormatType::DataTransferCustomType(),
-      std::string(custom_data.data_as_char(), custom_data.size()));
+  return SetCustomData(ui::ClipboardFormatType::DataTransferCustomType(),
+                       custom_data.AsStringView());
 }
 
 ClipboardHistoryItemBuilder& ClipboardHistoryItemBuilder::SetWebSmartPaste(

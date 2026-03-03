@@ -415,9 +415,8 @@ class ClipboardDataBuilder {
   static void WriteData(const ClipboardFormatType& format,
                         base::span<const uint8_t> data) {
     ClipboardData* clipboard_data = GetCurrentData();
-    clipboard_data->SetCustomData(
-        format,
-        std::string(reinterpret_cast<const char*>(data.data()), data.size()));
+    clipboard_data->SetCustomData(format,
+                                  std::string_view(base::as_chars(data)));
   }
 
  private:

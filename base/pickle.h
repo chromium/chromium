@@ -230,12 +230,6 @@ class BASE_EXPORT Pickle {
   // `WithUnownedBuffer()`).
   span<uint8_t> AsWritableBytes();
 
-  // Handy method to simplify calling data() with a reinterpret_cast.
-  // TODO(crbug.com/478784025): Deprecated: use AsStringView() instead.
-  const char* data_as_char() const {
-    return reinterpret_cast<const char*>(data());
-  }
-
   // Handy method to access the underlying data in string_view form.
   std::string_view AsStringView() const { return as_string_view(AsBytes()); }
 

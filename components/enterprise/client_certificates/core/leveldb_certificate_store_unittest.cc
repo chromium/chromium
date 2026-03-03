@@ -67,8 +67,7 @@ void PersistCertificate(client_certificates_pb::ClientIdentity& identity,
   ASSERT_TRUE(certificate);
   base::Pickle pickle;
   certificate->Persist(&pickle);
-  *identity.mutable_certificate() =
-      std::string(pickle.data_as_char(), pickle.size());
+  *identity.mutable_certificate() = pickle.AsStringView();
 }
 
 }  // namespace

@@ -217,7 +217,7 @@ TEST_F(ClipboardNonBackedTest, TextURIList) {
   base::Pickle pickle;
   ui::WriteCustomDataToPickle(custom_data, &pickle);
   data->SetCustomData(ui::ClipboardFormatType::DataTransferCustomType(),
-                      std::string(pickle.data_as_char(), pickle.size()));
+                      pickle.AsStringView());
   clipboard()->WriteClipboardData(std::move(data));
   EXPECT_EQ(std::vector<std::string>({"text/uri-list"}),
             UTF8Types(clipboard_test_util::ReadAvailableTypes(
