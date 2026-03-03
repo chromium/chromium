@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.media;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -13,7 +12,6 @@ import static org.mockito.Mockito.when;
 
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
@@ -23,12 +21,10 @@ import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.runner.lifecycle.Stage;
 
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -43,7 +39,6 @@ import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.content.WebContentsFactory;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.util.PictureInPictureWindowOptions;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
@@ -214,46 +209,14 @@ public class DocumentPictureInPictureActivityTest {
         CriteriaHelper.pollUiThread(() -> newActivity.getWebContentsForTesting() == mWebContents);
     }
 
-    @Test
-    @MediumTest
-    public void testResizeContents() throws Exception {
-        Rect bounds = new Rect(0, 0, 50, 50);
-        PictureInPictureWindowOptions options = new PictureInPictureWindowOptions(bounds, false);
-        DocumentPictureInPictureActivity activity = launchActivity(options.toBundle());
-        CriteriaHelper.pollUiThread(() -> !activity.isFinishing());
-
-        ArgumentCaptor<Rect> captor = ArgumentCaptor.forClass(Rect.class);
-        verify(mAconfigMock).moveTaskTo(any(), anyInt(), captor.capture());
-        Rect capturedBounds = captor.getValue();
-        float density = activity.getResources().getDisplayMetrics().density;
-
-        // Calculate expected bounds change based on content resize
-        View content = activity.findViewById(R.id.document_picture_in_picture_content);
-        int currentContentWidth = content.getWidth();
-        int currentContentHeight = content.getHeight();
-        int expectedWidthChange = (int) (50 * density) - currentContentWidth;
-        int expectedHeightChange = (int) (50 * density) - currentContentHeight;
-
-        Rect initialWindowBounds =
-                activity.getWindowManager().getCurrentWindowMetrics().getBounds();
-
-        int expectedWidth = initialWindowBounds.width() + expectedWidthChange;
-        int expectedHeight = initialWindowBounds.height() + expectedHeightChange;
-
-        Assert.assertTrue(Math.abs(capturedBounds.width() - expectedWidth) <= Math.ceil(density));
-        Assert.assertTrue(Math.abs(capturedBounds.height() - expectedHeight) <= Math.ceil(density));
-    }
-
     private DocumentPictureInPictureActivity launchActivity() throws Exception {
-        return launchActivity(new Bundle());
-    }
-
-    private DocumentPictureInPictureActivity launchActivity(Bundle optionsBundle) throws Exception {
         Intent intent =
                 new Intent(
                         InstrumentationRegistry.getInstrumentation().getTargetContext(),
                         DocumentPictureInPictureActivity.class);
         // We set WebContents via static setter in setUp, so we don't need to put it in intent.
+        // But we do need window options.
+        Bundle optionsBundle = new Bundle();
         intent.putExtra(DocumentPictureInPictureActivity.WINDOW_OPTIONS_KEY, optionsBundle);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 

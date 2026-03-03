@@ -16,7 +16,6 @@ import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 
 import androidx.annotation.CallSuper;
@@ -68,8 +67,6 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ResourceRequestBody;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.ViewAndroidDelegate;
-import org.chromium.ui.display.DisplayAndroid;
-import org.chromium.ui.display.DisplayUtil;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.url.GURL;
 
@@ -322,63 +319,6 @@ public class DocumentPictureInPictureActivity extends AsyncInitializationActivit
                                                 this, mInitiatorTab, this::finish));
             }
         }
-
-        if (mWindowOptions != null && mWindowOptions.windowBounds != null) {
-            contentLayout
-                    .getViewTreeObserver()
-                    .addOnGlobalLayoutListener(
-                            new ViewTreeObserver.OnGlobalLayoutListener() {
-                                @Override
-                                public void onGlobalLayout() {
-                                    resizeContents(
-                                            assumeNonNull(mWindowOptions.windowBounds).width(),
-                                            assumeNonNull(mWindowOptions.windowBounds).height());
-
-                                    contentLayout
-                                            .getViewTreeObserver()
-                                            .removeOnGlobalLayoutListener(this);
-                                }
-                            });
-        }
-    }
-
-    /**
-     * Resizes the contents of the activity to the given DP dimensions.
-     *
-     * <p>This method resizes the contents of the activity to the given DP dimensions by resizing
-     * the window. Note that Android has a minimum size (220dp) & a maximum size (70% of display
-     * size in width and height) for pinned windows, so the requested size may not be respected.
-     */
-    private void resizeContents(int widthDp, int heightDp) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
-            // This method is not supported on API versions below 30.
-            return;
-        }
-
-        FrameLayout contentLayout = findViewById(R.id.document_picture_in_picture_content);
-        DisplayAndroid display = assumeNonNull(getWindowAndroid()).getDisplay();
-        int curContentsWidth = DisplayUtil.pxToDp(display, contentLayout.getWidth());
-        int curContentsHeight = DisplayUtil.pxToDp(display, contentLayout.getHeight());
-
-        if (curContentsWidth == widthDp && curContentsHeight == heightDp) {
-            return;
-        }
-
-        int widthDiff = widthDp - curContentsWidth;
-        int heightDiff = heightDp - curContentsHeight;
-
-        Rect currentWindowBounds =
-                DisplayUtil.convertLocalPxToGlobalDipCoordinates(
-                        display,
-                        new Rect(getWindowManager().getCurrentWindowMetrics().getBounds()));
-
-        MultiWindowUtils.moveActivityToBounds(
-                this,
-                new Rect(
-                        currentWindowBounds.left - widthDiff,
-                        currentWindowBounds.top - heightDiff,
-                        currentWindowBounds.right,
-                        currentWindowBounds.bottom));
     }
 
     @Override
@@ -557,7 +497,7 @@ public class DocumentPictureInPictureActivity extends AsyncInitializationActivit
 
         @Override
         public void setContentsBounds(WebContents source, Rect bounds) {
-            resizeContents(bounds.width(), bounds.height());
+            MultiWindowUtils.moveActivityToBounds(DocumentPictureInPictureActivity.this, bounds);
         }
     }
 
