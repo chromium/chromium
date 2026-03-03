@@ -26,6 +26,7 @@ constexpr char kTextContentKey[] = "textContent";
 constexpr char kTextStyleKey[] = "textStyle";
 constexpr char kHasEmphasisKey[] = "hasEmphasis";
 constexpr char kTextSizeKey[] = "textSize";
+constexpr char kColorKey[] = "color";
 constexpr char kAnchorDataKey[] = "anchorData";
 constexpr char kUrlKey[] = "url";
 constexpr char kRelKey[] = "rel";
@@ -118,6 +119,13 @@ void PopulateTextData(
           ->mutable_text_style()
           ->set_text_size(
               static_cast<optimization_guide::proto::TextSize>(*text_size));
+    }
+
+    if (std::optional<int> color = ReadJsNumber(*text_style, kColorKey)) {
+      destination_node->mutable_content_attributes()
+          ->mutable_text_data()
+          ->mutable_text_style()
+          ->set_color(static_cast<uint32_t>(*color));
     }
   }
 }

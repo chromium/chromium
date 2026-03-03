@@ -3936,6 +3936,54 @@ TEST_P(PageContextWrapperTest, EnforcesOneTimeUse_Populate) {
   EXPECT_CHECK_DEATH([wrapper populatePageContextFieldsAsync]);
 }
 
+// Tests that the page context extracts text color with APCv2.
+TEST_P(PageContextWrapperTest, PopulatePageContext_RichExtraction_Text_Color) {
+  if (!IsRefactored()) {
+    return;
+  }
+
+  auto page_structure =
+      HtmlPage("RichExtraction_Text_Color",
+               RawHtml("<p style=\"color: rgb(0, 255, 0)\">Green Text</p>"));
+
+  std::string main_html = page_helper_->Build(page_structure);
+  web::test::LoadHtml(base::SysUTF8ToNSString(main_html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  PageContextWrapperConfig config =
+      PageContextWrapperConfigBuilder().SetUseRichExtraction(true).Build();
+
+  PageContextWrapperCallbackResponse response = RunPageContextWrapperWithConfig(
+      web_state(), config, ^(PageContextWrapper* wrapper) {
+        wrapper.shouldGetAnnotatedPageContent = YES;
+      });
+
+  ASSERT_TRUE(response.has_value());
+  std::unique_ptr<optimization_guide::proto::PageContext> page_context =
+      std::move(response.value());
+
+  ASSERT_TRUE(page_context);
+  ASSERT_TRUE(page_context->has_annotated_page_content());
+
+  const auto& annotated_page_content = page_context->annotated_page_content();
+  const auto& root_node = annotated_page_content.root_node();
+  ASSERT_EQ(root_node.children_nodes_size(), 1);
+
+  // Check Paragraph
+  const auto& p_node = root_node.children_nodes(0);
+  ASSERT_EQ(p_node.children_nodes_size(), 1);
+  const auto& p_text_node = p_node.children_nodes(0);
+  EXPECT_EQ(p_text_node.content_attributes().text_data().text_content(),
+            "Green Text");
+
+  // Check Color
+  // Green: (0, 255, 0) -> (0 << 24) | (255 << 16) | (0 << 8) | 255
+  // = 0 | 16711680 | 0 | 255 = 16711935
+  ASSERT_TRUE(p_text_node.content_attributes().text_data().has_text_style());
+  EXPECT_EQ(p_text_node.content_attributes().text_data().text_style().color(),
+            16711935u);
+}
+
 INSTANTIATE_TEST_SUITE_P(,
                          PageContextWrapperTest,
                          testing::Bool(),

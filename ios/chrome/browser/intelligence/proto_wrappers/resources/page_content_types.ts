@@ -220,7 +220,7 @@ export enum PageContentTextSize {
 export interface PageContentTextStyle {
   textSize: PageContentTextSize;
   hasEmphasis: boolean;
-  color: number;
+  color?: number;
 }
 
 export interface PageContentTextInfo {

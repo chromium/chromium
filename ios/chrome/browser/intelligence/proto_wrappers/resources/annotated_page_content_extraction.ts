@@ -530,6 +530,43 @@ function extractFrameData(document: Document): PageContentFrameData {
 }
 
 /**
+ * Parses a CSS color string and returns it as a packed RGBA uint32.
+ * Supported formats: rgb(r, g, b), rgba(r, g, b, a).
+ * Returns null if the color string is invalid.
+ *
+ * @param colorString The CSS color string to parse.
+ * @return The packed color value ((r << 24) | (g << 16) | (b << 8) | a).
+ */
+function parseCssColor(colorString: string): number | undefined {
+  if (!colorString) {
+    return undefined;
+  }
+
+  // Handle rgb(r, g, b).
+  const rgbMatch = colorString.match(/^rgb\(\s*(\d+),\s*(\d+),\s*(\d+)\s*\)$/);
+  if (rgbMatch) {
+    const r = parseInt(rgbMatch[1]!, 10);
+    const g = parseInt(rgbMatch[2]!, 10);
+    const b = parseInt(rgbMatch[3]!, 10);
+    // Fully opaque alpha = 255
+    return (((r & 0xFF) << 24) | ((g & 0xFF) << 16) | ((b & 0xFF) << 8) | 0xFF) >>> 0;
+  }
+
+  // Handle rgba(r, g, b, a).
+  const rgbaMatch =
+    colorString.match(/^rgba\(\s*(\d+),\s*(\d+),\s*(\d+),\s*([\d.]+)\s*\)$/);
+  if (rgbaMatch) {
+    const r = parseInt(rgbaMatch[1]!, 10);
+    const g = parseInt(rgbaMatch[2]!, 10);
+    const b = parseInt(rgbaMatch[3]!, 10);
+    const a = Math.round(parseFloat(rgbaMatch[4]!) * 255);
+    return (((r & 0xFF) << 24) | ((g & 0xFF) << 16) | ((b & 0xFF) << 8) | (a & 0xFF)) >>> 0;
+  }
+
+  return undefined;
+}
+
+/**
  * Applies text transform and masking to the text content.
  * Matches Blink's LayoutText::TransformedText() behavior.
  *
@@ -613,6 +650,8 @@ function getAttributesForTextNode(domNode: Node): PageContentAttributes|null {
   const textSize = domNode.ownerDocument ?
     getTextSizeCategory(style.fontSize, domNode.ownerDocument) :
     PageContentTextSize.M;
+  const color = parseCssColor(style.color);
+
   return {
     attributeType: PageContentAttributeType.TEXT,
     annotatedRoles: [],
@@ -622,8 +661,7 @@ function getAttributesForTextNode(domNode: Node): PageContentAttributes|null {
       textStyle: {
         textSize: textSize,
         hasEmphasis,
-        // TODO(crbug.com/474935853): Add text color extraction.
-        color: 0,
+        color,
       },
     },
   };
