@@ -305,9 +305,6 @@ class USER_MANAGER_EXPORT UserManagerImpl : public UserManager {
   // Notifies that user has logged in.
   virtual void NotifyOnLogin();
 
-  // Notifies observers that another user was added to the session.
-  void NotifyUserAddedToSession(const User* added_user);
-
   // Removes a regular or supervised user from the user list.
   // Returns the user if found or NULL otherwise.
   // Also removes the user from the persistent user list.

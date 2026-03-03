@@ -291,8 +291,6 @@ void UserManagerImpl::UserLoggedIn(const AccountId& account_id,
 
     local_state_->CommitPendingWrite();
     NotifyOnLogin();
-  } else {
-    NotifyUserAddedToSession(user);
   }
 }
 
@@ -1635,13 +1633,6 @@ User* UserManagerImpl::RemoveRegularOrSupervisedUserFromList(
     NotifyLocalStateChanged();
   }
   return user;
-}
-
-void UserManagerImpl::NotifyUserAddedToSession(const User* added_user) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  for (auto& observer : session_state_observer_list_) {
-    observer.UserAddedToSession(added_user);
-  }
 }
 
 PrefService* UserManagerImpl::GetLocalState() const {

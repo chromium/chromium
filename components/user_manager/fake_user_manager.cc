@@ -36,9 +36,7 @@ void FakeUserManager::UserLoggedIn(const AccountId& account_id,
       if (!primary_user_) {
         primary_user_ = user.get();
       }
-      if (active_user_) {
-        NotifyUserAddedToSession(user.get());
-      } else {
+      if (!active_user_) {
         active_user_ = user.get();
       }
       break;

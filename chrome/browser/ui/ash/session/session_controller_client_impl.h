@@ -109,7 +109,6 @@ class SessionControllerClientImpl
 
   // user_manager::UserManager::UserSessionStateObserver:
   void ActiveUserChanged(user_manager::User* active_user) override;
-  void UserAddedToSession(const user_manager::User* added_user) override;
 
   // user_manager::UserManager::Observer
   void LocalStateChanged(user_manager::UserManager* user_manager) override;
@@ -118,6 +117,7 @@ class SessionControllerClientImpl
   void OnUserToBeRemoved(const AccountId& account_id) override;
 
   // session_manager::SessionManagerObserver:
+  void OnSessionCreated(const AccountId& account_id) override;
   void OnSessionStateChanged() override;
   void OnUserProfileLoaded(const AccountId& account_id) override;
   void OnUserSessionStartUpTaskCompleted() override;

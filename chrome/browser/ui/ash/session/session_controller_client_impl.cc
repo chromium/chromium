@@ -12,6 +12,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/session/session_controller.h"
 #include "ash/public/cpp/session/session_types.h"
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
@@ -389,11 +390,6 @@ void SessionControllerClientImpl::ActiveUserChanged(User* active_user) {
   SendUserSessionOrder();
 }
 
-void SessionControllerClientImpl::UserAddedToSession(const User* added_user) {
-  SendSessionInfoIfChanged();
-  SendUserSession(*added_user);
-}
-
 void SessionControllerClientImpl::LocalStateChanged(
     user_manager::UserManager* user_manager) {
   SendSessionInfoIfChanged();
@@ -533,6 +529,24 @@ void SessionControllerClientImpl::DoCycleActiveUser(
   }
 
   DoSwitchActiveUser(account_id);
+}
+
+void SessionControllerClientImpl::OnSessionCreated(
+    const AccountId& account_id) {
+  // Since this is called in OnSessionCreated, there should be at least one
+  // session, so there should be the primary session always.
+  auto& primary_session =
+      CHECK_DEREF(session_manager::SessionManager::Get()->GetPrimarySession());
+  if (primary_session.account_id() == account_id) {
+    // TODO(crbug.com/473653626): This check is to keep the historical
+    // behavior, but maybe it is fine to send the user session info for
+    // the primary user session, too. Revisit here to investigate further.
+    return;
+  }
+
+  UserManager* const user_manager = UserManager::Get();
+  SendSessionInfoIfChanged();
+  SendUserSession(CHECK_DEREF(user_manager->FindUser(account_id)));
 }
 
 void SessionControllerClientImpl::OnSessionStateChanged() {

@@ -118,9 +118,6 @@ class USER_MANAGER_EXPORT UserManager {
     // in the future.
     virtual void OnLoginStateUpdated(const User* active_user) {}
 
-    // Called when another user got added to the existing session.
-    virtual void UserAddedToSession(const User* added_user) {}
-
    protected:
     ~UserSessionStateObserver() override = default;
   };
