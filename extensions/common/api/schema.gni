@@ -84,7 +84,7 @@ if (enable_extensions) {
     "mojo_private.webidl",
     "networking_private.webidl",
     "printer_provider_internal.idl",
-    "printer_provider.idl",
+    "printer_provider.webidl",
     "scripts_internal.idl",
     "socket.idl",
     "sockets_tcp_server.idl",
