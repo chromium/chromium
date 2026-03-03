@@ -3297,11 +3297,6 @@ inline constexpr char
 inline constexpr char kDeviceAllowEnterpriseRemoteAccessConnections[] =
     "device_allow_enterprise_remote_access_connections";
 
-// A dictionary containing weekly time intervals to automatically sleep and wake
-// up the device.
-inline constexpr char kDeviceWeeklyScheduledSuspend[] =
-    "device_weekly_scheduled_suspend";
-
 // A boolean pref which determines whether Chrome Apps are allowed in Kiosk
 // sessions.
 inline constexpr char kKioskChromeAppsForceAllowed[] =

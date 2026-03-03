@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/functional/callback_helpers.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_mock_time_message_loop_task_runner.h"
@@ -21,7 +22,6 @@
 #include "chrome/browser/ash/app_mode/test/kiosk_mixin.h"
 #include "chrome/browser/ash/app_mode/test/kiosk_test_utils.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/policy/weekly_time/weekly_time.h"
@@ -49,7 +49,7 @@ base::TimeDelta GetDuration(const base::Time& start,
 // state, simulating a policy change.
 void SetPrefInLocalState(base::ListValue schedule_list) {
   g_browser_process->local_state()->SetList(
-      prefs::kDeviceWeeklyScheduledSuspend, std::move(schedule_list));
+      ash::prefs::kDeviceWeeklyScheduledSuspend, std::move(schedule_list));
 }
 
 // Scoped test helper that is responsible for the following things:
@@ -88,7 +88,7 @@ class ScopedMockTimeScheduledSuspendTestHelper {
     controller->SetClockForTesting(nullptr);
     // Clear the policy so that we don't get dangling timers.
     g_browser_process->local_state()->SetList(
-        prefs::kDeviceWeeklyScheduledSuspend, {});
+        ash::prefs::kDeviceWeeklyScheduledSuspend, {});
   }
 
   void FastForwardTimeTo(const policy::WeeklyTime& weekly_time) {

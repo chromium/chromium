@@ -2748,6 +2748,11 @@ inline constexpr char kSchedulerConfiguration[] =
 inline constexpr char kAppListLocalState[] = "app_list.local_state";
 inline constexpr char kAppListPreferredOrder[] = "app_list.preferred_order";
 
+// A dictionary containing weekly time intervals to automatically sleep and wake
+// up the device.
+inline constexpr char kDeviceWeeklyScheduledSuspend[] =
+    "device_weekly_scheduled_suspend";
+
 // Boolean pref recording whether cookie and data would be used only for
 // essential purposes.
 inline constexpr char kEssentialSearchEnabled[] = "essential_search_enabled";

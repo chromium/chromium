@@ -12,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
@@ -21,7 +22,6 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/ash/app_mode/auto_sleep/weekly_interval_timer.h"
-#include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/policy/weekly_time/weekly_time_interval.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/prefs/pref_service.h"
@@ -103,7 +103,7 @@ DeviceWeeklyScheduledSuspendController::DeviceWeeklyScheduledSuspendController(
           std::make_unique<WeeklyIntervalTimer::Factory>()) {
   pref_change_registrar_.Init(pref_service);
   pref_change_registrar_.Add(
-      prefs::kDeviceWeeklyScheduledSuspend,
+      ash::prefs::kDeviceWeeklyScheduledSuspend,
       base::BindRepeating(&DeviceWeeklyScheduledSuspendController::
                               OnDeviceWeeklyScheduledSuspendUpdate,
                           weak_factory_.GetWeakPtr()));
@@ -179,7 +179,7 @@ void DeviceWeeklyScheduledSuspendController::
   }
   const base::ListValue& policy_config =
       pref_change_registrar_.prefs()->GetList(
-          prefs::kDeviceWeeklyScheduledSuspend);
+          ash::prefs::kDeviceWeeklyScheduledSuspend);
 
   device_suspension_timers_.clear();
 

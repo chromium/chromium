@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/test/task_environment.h"
@@ -19,7 +20,6 @@
 #include "base/values.h"
 #include "chrome/browser/ash/app_mode/auto_sleep/device_weekly_scheduled_suspend_test_policy_builder.h"
 #include "chrome/browser/ash/app_mode/auto_sleep/weekly_interval_timer.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/policy/weekly_time/weekly_time.h"
 #include "chromeos/ash/components/policy/weekly_time/weekly_time_interval.h"
@@ -69,7 +69,7 @@ class DeviceWeeklyScheduledSuspendControllerTest : public testing::Test {
 
   void UpdatePolicyPref(base::ListValue schedule_list) {
     TestingBrowserProcess::GetGlobal()->local_state()->SetList(
-        prefs::kDeviceWeeklyScheduledSuspend, std::move(schedule_list));
+        ash::prefs::kDeviceWeeklyScheduledSuspend, std::move(schedule_list));
   }
 
   void UpdatePolicyAndCheckIntervals(
