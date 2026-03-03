@@ -2295,35 +2295,29 @@ suite('NewTabPageAppTest', () => {
       actionChipshandler.setResultMapperFor('startActionChipsRetrieval', () => {
         actionChipsPageRemote.onActionChipsChanged([
           {
-            title: 'TabContext',
-            subtitle: 'tab-subtitle',
             suggestion: 'tab-suggestion',
             suggestTemplateInfo: {
               typeIcon: IconType.kFavicon,
-              primaryText: null,
-              secondaryText: null,
+              primaryText: {text: 'TabContext', a11yText: null},
+              secondaryText: {text: 'tab-subtitle', a11yText: null},
             },
             tab: fakeTab,
           },
           {
-            title: 'Nano Banana',
-            subtitle: 'image-subtitle',
             suggestion: 'image-suggestion',
             suggestTemplateInfo: {
               typeIcon: IconType.kBanana,
-              primaryText: null,
-              secondaryText: null,
+              primaryText: {text: 'Nano Banana', a11yText: null},
+              secondaryText: {text: 'image-subtitle', a11yText: null},
             },
             tab: null,
           },
           {
-            title: 'DeepSearch',
-            subtitle: 'ds-subtitle',
             suggestion: 'ds-suggestion',
             suggestTemplateInfo: {
               typeIcon: IconType.kGlobeWithSearchLoop,
-              primaryText: null,
-              secondaryText: null,
+              primaryText: {text: 'DeepSearch', a11yText: null},
+              secondaryText: {text: 'ds-subtitle', a11yText: null},
             },
             tab: null,
           },
@@ -2478,13 +2472,11 @@ suite('NewTabPageAppTest', () => {
           const subtitle = 'Help me with this page subtitle';
           const suggestion = 'Help me with this page suggestion';
           actionChipsPageRemote.onActionChipsChanged([{
-            title: 'Deep dive',
-            subtitle: subtitle,
             suggestion: suggestion,
             suggestTemplateInfo: {
               typeIcon: IconType.kSubArrowRight,
-              primaryText: null,
-              secondaryText: null,
+              primaryText: {text: 'Deep dive', a11yText: null},
+              secondaryText: {text: subtitle, a11yText: null},
             },
             tab: {
               tabId: 1,

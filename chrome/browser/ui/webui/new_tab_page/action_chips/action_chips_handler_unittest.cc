@@ -53,6 +53,9 @@
 namespace {
 using ::action_chips::mojom::ActionChip;
 using ::action_chips::mojom::ActionChipPtr;
+using ::action_chips::mojom::CreateFormattedString;
+using ::action_chips::mojom::FormattedString;
+using ::action_chips::mojom::FormattedStringPtr;
 using ::action_chips::mojom::IconType;
 using ::action_chips::mojom::Page;
 using ::action_chips::mojom::SuggestTemplateInfo;
@@ -123,10 +126,10 @@ struct TabInfoFields {
 };
 
 struct ActionChipFields {
-  std::string title;
-  std::string subtitle;
   std::string suggestion;
   IconType icon_type = IconType::kIconTypeUnspecified;
+  std::string primary_text;
+  std::string secondary_text;
   std::optional<TabInfoFields> tab;
 };
 
@@ -143,31 +146,33 @@ ActionChipPtr MakeActionChip(const ActionChipFields& fields) {
                        tab_fields.last_active_time);
   }
   return ActionChip::New(
-      fields.title, fields.subtitle, fields.suggestion,
-      SuggestTemplateInfo::New(fields.icon_type, nullptr, nullptr),
+      fields.suggestion,
+      SuggestTemplateInfo::New(fields.icon_type,
+                               CreateFormattedString(fields.primary_text),
+                               CreateFormattedString(fields.secondary_text)),
       std::move(tab));
 }
 
 ActionChipFields CreateStaticRecentTabChip(const TabInfoFields tab) {
-  return {.title = tab.title,
-          .subtitle = "Ask about this tab",
-          .suggestion = "",
+  return {.suggestion = "",
           .icon_type = IconType::kFavicon,
+          .primary_text = tab.title,
+          .secondary_text = "Ask about this tab",
           .tab = std::move(tab)};
 }
 
 ActionChipFields CreateStaticDeepSearchChip() {
-  return {.title = "Research a topic",
-          .subtitle = "Dive deep into something new",
-          .suggestion = "",
-          .icon_type = IconType::kGlobeWithSearchLoop};
+  return {.suggestion = "",
+          .icon_type = IconType::kGlobeWithSearchLoop,
+          .primary_text = "Research a topic",
+          .secondary_text = "Dive deep into something new"};
 }
 
 ActionChipFields CreateStaticImageGenerationChip() {
-  return {.title = "Create image",
-          .subtitle = "Add an image and reimagine it",
-          .suggestion = "",
-          .icon_type = IconType::kBanana};
+  return {.suggestion = "",
+          .icon_type = IconType::kBanana,
+          .primary_text = "Create image",
+          .secondary_text = "Add an image and reimagine it"};
 }
 
 void CallWithStaticChips(
@@ -485,14 +490,18 @@ TEST_F(
           });
   EXPECT_CALL(*mock_action_chips_generator_, GenerateActionChips(_, _))
       .WillOnce(base::test::RunOnceCallback<1>(MakeActionChipsVector(
-          ActionChip::New("title1", "subtitle1", "suggention1",
-                          SuggestTemplateInfo::New(
-                              IconType::kIconTypeUnspecified, nullptr, nullptr),
-                          nullptr),
-          ActionChip::New("title2", "subtitle2", "suggention2",
-                          SuggestTemplateInfo::New(
-                              IconType::kIconTypeUnspecified, nullptr, nullptr),
-                          nullptr))));
+          ActionChip::New(
+              "suggention1",
+              SuggestTemplateInfo::New(IconType::kIconTypeUnspecified,
+                                       CreateFormattedString("title1"),
+                                       CreateFormattedString("subtitle1")),
+              nullptr),
+          ActionChip::New(
+              "suggention2",
+              SuggestTemplateInfo::New(IconType::kIconTypeUnspecified,
+                                       CreateFormattedString("title2"),
+                                       CreateFormattedString("subtitle2")),
+              nullptr))));
 
   // Act
   handler().StartActionChipsRetrieval();

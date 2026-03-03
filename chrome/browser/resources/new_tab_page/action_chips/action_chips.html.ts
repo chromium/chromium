@@ -35,10 +35,12 @@ export function getHtml(this: ActionChipsElement) {
                         ''}
             </div>
             <div class="action-chip-text-container">
-              ${
-                  !this.isDeepDiveChip_(chip) ?
-                      html`<span class="chip-title">${chip.title}</span>` :
-                      ''}
+              ${!this.isDeepDiveChip_(chip) ?
+                  html`
+                  <span class="chip-title">
+                    ${chip.suggestTemplateInfo?.primaryText?.text ?? ''}
+                  </span>` :
+                  ''}
               <span
                 title="${this.getChipTitle_(chip)}"
                 class="chip-body">
@@ -57,5 +59,5 @@ export function getHtml(this: ActionChipsElement) {
       ` : nothing}
   </div>
   <!--_html_template_end_-->`;
-                  // clang-format on
+  // clang-format on
 }

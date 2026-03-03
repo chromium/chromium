@@ -51,8 +51,6 @@ struct SuggestTemplateInfo {
 
 // The information representing a single action chip.
 struct ActionChip {
-  string title;
-  string subtitle;
   string suggestion;
   SuggestTemplateInfo suggest_template_info;
   // the tab associated with this chip.
