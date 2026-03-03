@@ -11,9 +11,7 @@
 ExtensionsToolbarDesktopViewController::ExtensionsToolbarDesktopViewController(
     Browser* browser,
     ExtensionsToolbarDesktop* extensions_container)
-    : browser_(browser), extensions_container_(extensions_container) {
-  browser_->tab_strip_model()->AddObserver(this);
-}
+    : browser_(browser), extensions_container_(extensions_container) {}
 
 ExtensionsToolbarDesktopViewController::
     ~ExtensionsToolbarDesktopViewController() {
@@ -38,16 +36,4 @@ void ExtensionsToolbarDesktopViewController::
                                views::MaximumFlexSizeRule::kPreferred)
           .WithOrder(ExtensionsToolbarDesktopViewController::
                          kFlexOrderExtensionsButton));
-}
-
-void ExtensionsToolbarDesktopViewController::OnTabStripModelChanged(
-    TabStripModel* tab_strip_model,
-    const TabStripModelChange& change,
-    const TabStripSelectionChange& selection) {
-  if (tab_strip_model->empty() || !selection.active_tab_changed()) {
-    return;
-  }
-
-  extensions::MaybeShowExtensionControlledNewTabPage(browser_,
-                                                     selection.new_contents);
 }

@@ -12,8 +12,7 @@
 class Browser;
 class ExtensionsToolbarDesktop;
 
-class ExtensionsToolbarDesktopViewController final
-    : public TabStripModelObserver {
+class ExtensionsToolbarDesktopViewController final {
  public:
   // Flex behavior precedence for the container's views.
   static constexpr int kFlexOrderExtensionsButton = 1;
@@ -27,7 +26,7 @@ class ExtensionsToolbarDesktopViewController final
       const ExtensionsToolbarDesktopViewController&) = delete;
   const ExtensionsToolbarDesktopViewController& operator=(
       const ExtensionsToolbarDesktopViewController&) = delete;
-  ~ExtensionsToolbarDesktopViewController() override;
+  ~ExtensionsToolbarDesktopViewController();
 
   // Updates the flex layout rules for the extension toolbar container to have
   // views::MinimumFlexSizeRule::kPreferred when WindowControlsOverlay (WCO) is
@@ -37,12 +36,6 @@ class ExtensionsToolbarDesktopViewController final
   void WindowControlsOverlayEnabledChanged(bool enabled);
 
  private:
-  // TabStripModelObserver:
-  void OnTabStripModelChanged(
-      TabStripModel* tab_strip_model,
-      const TabStripModelChange& change,
-      const TabStripSelectionChange& selection) override;
-
   const raw_ptr<Browser> browser_;
 
   raw_ptr<ExtensionsToolbarDesktop> extensions_container_;

@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/extensions/extension_action_view_model.h"
 #include "chrome/browser/ui/extensions/extensions_toolbar_view_model.h"
+#include "chrome/browser/ui/extensions/settings_api_bubble_helpers.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_hover_card_types.h"
@@ -753,6 +754,10 @@ void ExtensionsToolbarDesktop::OnActiveWebContentsChanged(
             FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
     if (request_access_button_) {
       CollapseConfirmation();
+    }
+    if (current_web_contents) {
+      extensions::MaybeShowExtensionControlledNewTabPage(browser_,
+                                                         current_web_contents);
     }
   } else {
     // Navigation
