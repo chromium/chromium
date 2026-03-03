@@ -78,7 +78,7 @@ size_t CalculateRequiredCountsBytes(size_t bucket_count) {
   return bucket_count * kBytesPerBucket;
 }
 
-bool MergeSamplesToExistingHistogram(
+PersistentHistogramAllocator::MergeResult MergeSamplesToExistingHistogram(
     HistogramBase* existing,
     const HistogramBase* histogram,
     std::unique_ptr<HistogramSamples> samples) {
@@ -87,10 +87,11 @@ bool MergeSamplesToExistingHistogram(
   if (existing_type == HistogramType::DUMMY_HISTOGRAM) {
     // Merging into a dummy histogram (e.g. histogram is expired) is a no-op and
     // not considered a failure case.
-    return true;
+    return PersistentHistogramAllocator::MergeResult::kSuccess;
   }
   if (histogram->GetHistogramType() != existing_type) {
-    return false;  // Merge failed due to different histogram types.
+    // Merge failed due to different histogram types.
+    return PersistentHistogramAllocator::MergeResult::kTypeMismatch;
   }
 
   if (existing_type == HistogramType::HISTOGRAM ||
@@ -108,7 +109,8 @@ bool MergeSamplesToExistingHistogram(
     DCHECK(histogram_buckets->HasValidChecksum());
 
     if (existing_buckets->checksum() != histogram_buckets->checksum()) {
-      return false;  // Merge failed due to different buckets.
+      // Merge failed due to different buckets.
+      return PersistentHistogramAllocator::MergeResult::kRangesMismatch;
     }
   }
 
@@ -117,7 +119,11 @@ bool MergeSamplesToExistingHistogram(
   // It's possible for the buckets to differ but their checksums to match due
   // to a collision, in which case AddSamples() will return false, which we
   // propagate to the caller (indicating histogram mismatch).
-  return existing->AddSamples(*samples);
+  if (existing->AddSamples(*samples)) {
+    return PersistentHistogramAllocator::MergeResult::kSuccess;
+  }
+
+  return PersistentHistogramAllocator::MergeResult::kAddFailed;
 }
 
 }  // namespace
@@ -481,7 +487,8 @@ void PersistentHistogramAllocator::FinalizeHistogram(Reference ref,
   }
 }
 
-bool PersistentHistogramAllocator::MergeHistogramDeltaToStatisticsRecorder(
+PersistentHistogramAllocator::MergeResult
+PersistentHistogramAllocator::MergeHistogramDeltaToStatisticsRecorder(
     HistogramBase* histogram) {
   DCHECK(histogram);
 
@@ -490,21 +497,22 @@ bool PersistentHistogramAllocator::MergeHistogramDeltaToStatisticsRecorder(
   // the StatisticsRecorder, which requires acquiring a lock.
   std::unique_ptr<HistogramSamples> samples = histogram->SnapshotDelta();
   if (samples->IsDefinitelyEmpty()) {
-    return true;
+    return PersistentHistogramAllocator::MergeResult::kSuccess;
   }
 
   HistogramBase* existing = GetOrCreateStatisticsRecorderHistogram(histogram);
   if (!existing) {
     // The above should never fail but if it does, no real harm is done.
     // Some metric data will be lost but that is better than crashing.
-    return false;
+    return PersistentHistogramAllocator::MergeResult::kCouldNotCreate;
   }
 
   return MergeSamplesToExistingHistogram(existing, histogram,
                                          std::move(samples));
 }
 
-bool PersistentHistogramAllocator::MergeHistogramFinalDeltaToStatisticsRecorder(
+PersistentHistogramAllocator::MergeResult
+PersistentHistogramAllocator::MergeHistogramFinalDeltaToStatisticsRecorder(
     const HistogramBase* histogram) {
   DCHECK(histogram);
 
@@ -513,14 +521,14 @@ bool PersistentHistogramAllocator::MergeHistogramFinalDeltaToStatisticsRecorder(
   // requires acquiring a lock.
   std::unique_ptr<HistogramSamples> samples = histogram->SnapshotFinalDelta();
   if (samples->IsDefinitelyEmpty()) {
-    return true;
+    return PersistentHistogramAllocator::MergeResult::kSuccess;
   }
 
   HistogramBase* existing = GetOrCreateStatisticsRecorderHistogram(histogram);
   if (!existing) {
     // The above should never fail but if it does, no real harm is done.
     // Some metric data will be lost but that is better than crashing.
-    return false;
+    return PersistentHistogramAllocator::MergeResult::kCouldNotCreate;
   }
 
   return MergeSamplesToExistingHistogram(existing, histogram,

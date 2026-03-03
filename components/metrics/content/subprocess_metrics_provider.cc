@@ -273,7 +273,7 @@ void SubprocessMetricsProvider::MergeHistogramDeltasFromAllocator(
     }
     // We expect histograms to match as subprocesses shouldn't have version skew
     // with the browser process.
-    bool merge_success =
+    base::PersistentHistogramAllocator::MergeResult result =
         allocator_ptr->MergeHistogramDeltaToStatisticsRecorder(histogram.get());
 
     // When merging child process histograms into the parent, we expect the
@@ -281,9 +281,11 @@ void SubprocessMetricsProvider::MergeHistogramDeltasFromAllocator(
     // different types or buckets, which indicates a programming error (i.e.
     // non-matching logging code across browser and child for a histogram). In
     // this case DumpWithoutCrashing() with a crash key with the histogram name.
-    if (!merge_success) {
+    if (result != base::PersistentHistogramAllocator::MergeResult::kSuccess) {
       SCOPED_CRASH_KEY_STRING256("SubprocessMetricsProvider", "histogram",
                                  histogram->histogram_name());
+      SCOPED_CRASH_KEY_NUMBER("SubprocessMetricsProvider", "merge_result",
+                              static_cast<int>(result));
       base::debug::DumpWithoutCrashing();
     }
     ++histogram_count;

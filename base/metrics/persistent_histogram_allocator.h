@@ -266,22 +266,26 @@ class BASE_EXPORT PersistentHistogramAllocator {
   // True, forgetting it otherwise.
   void FinalizeHistogram(Reference ref, bool registered);
 
+  // Results of the merging.
+  enum class MergeResult {
+    kSuccess,
+    kTypeMismatch,
+    kRangesMismatch,
+    kAddFailed,
+    kCouldNotCreate,
+  };
+
   // Merges the data in a persistent histogram with one held globally by the
   // StatisticsRecorder, updating the "logged" samples within the passed
   // object so that repeated merges are allowed. Don't call this on a "global"
   // allocator because histograms created there will already be in the SR.
-  // Returns whether the merge was successful; if false, the histogram did not
-  // have the same shape (different types or buckets), or we couldn't get a
-  // target histogram from the statistic recorder.
-  bool MergeHistogramDeltaToStatisticsRecorder(HistogramBase* histogram);
+  MergeResult MergeHistogramDeltaToStatisticsRecorder(HistogramBase* histogram);
 
   // As above but merge the "final" delta. No update of "logged" samples is
   // done which means it can operate on read-only objects. It's essential,
   // however, not to call this more than once or those final samples will
-  // get recorded again. Returns whether the merge was successful; if false, the
-  // histogram did not have the same shape (different types or buckets), or we
-  // couldn't get a target histogram from the statistic recorder.
-  bool MergeHistogramFinalDeltaToStatisticsRecorder(
+  // get recorded again.
+  MergeResult MergeHistogramFinalDeltaToStatisticsRecorder(
       const HistogramBase* histogram);
 
   // Returns an object that manages persistent-sample-map records for a given
