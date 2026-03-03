@@ -590,7 +590,7 @@ class InputDeviceSettingsProviderTest : public views::ViewsTestBase {
     feature_list_->InitWithFeatures({features::kPeripheralCustomization}, {});
     views::ViewsTestBase::SetUp();
     widget_ =
-        CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
+        CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
     widget_->Show();
     scoped_resetter_ = std::make_unique<
         InputDeviceSettingsController::ScopedResetterForTest>();
