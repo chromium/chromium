@@ -1392,6 +1392,7 @@ const CGFloat kTopDynamicIslandInset = 24;
       }
       [NTPCoordinator constrainNamedGuideForFeedIPH];
     } else {
+      self.browserContentViewController.contentView = view;
       if (IsChromeNextIaEnabled()) {
         if (ios::provider::IsFullscreenSmoothScrollingSupported()) {
           view.translatesAutoresizingMaskIntoConstraints = NO;
@@ -1402,7 +1403,6 @@ const CGFloat kTopDynamicIslandInset = 24;
           view.autoresizingMask = UIViewAutoresizingFlexibleWidth;
         }
       }
-      self.browserContentViewController.contentView = view;
     }
     // Resize horizontal viewport if Smooth Scrolling is on.
     if (ios::provider::IsFullscreenSmoothScrollingSupported()) {
