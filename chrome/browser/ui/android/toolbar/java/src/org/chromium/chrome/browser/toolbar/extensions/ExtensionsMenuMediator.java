@@ -188,34 +188,10 @@ class ExtensionsMenuMediator implements Destroyable, ExtensionsMenuBridge.Observ
         }
     }
 
-    /**
-     * Pulls the list of menu entries from native and updates the action models list. Also updates
-     * the zero state visibility.
-     */
-    private void updateMenuEntries() {
-        mActionModels.clear();
-        List<ExtensionsMenuTypes.MenuEntryState> entries = mMenuBridge.getMenuEntries();
-
-        for (ExtensionsMenuTypes.MenuEntryState entry : entries) {
-            boolean isActionPinned = entry.contextMenuButton.isOn;
-            int contextMenuIcon =
-                    isActionPinned ? R.drawable.ic_keep_24dp : R.drawable.ic_more_vert;
-            PropertyModel model =
-                    new PropertyModel.Builder(ExtensionsMenuItemProperties.ALL_KEYS)
-                            .with(ExtensionsMenuItemProperties.TITLE, entry.actionButton.text)
-                            .with(
-                                    ExtensionsMenuItemProperties.CONTEXT_MENU_BUTTON_ON_CLICK,
-                                    (view) ->
-                                            onContextMenuButtonClicked(
-                                                    (ListMenuButton) view, entry.id))
-                            .with(ExtensionsMenuItemProperties.ICON, entry.actionButton.icon)
-                            .with(
-                                    ExtensionsMenuItemProperties.CONTEXT_MENU_BUTTON_ICON,
-                                    contextMenuIcon)
-                            .build();
-
-            mActionModels.add(new ListItem(0, model));
-        }
+    @Override
+    public void onActionAdded(int actionIndex) {
+        ExtensionsMenuTypes.MenuEntryState entry = mMenuBridge.getMenuEntry(actionIndex);
+        mActionModels.add(actionIndex, createMenuItem(entry));
 
         updateZeroState();
     }
@@ -239,13 +215,6 @@ class ExtensionsMenuMediator implements Destroyable, ExtensionsMenuBridge.Observ
         updateZeroState();
     }
 
-    private boolean isMainPageVisible() {
-        // TODO(crbug.com/473213114): Update this method when site permissions page is implemented.
-
-        // For now, since there is only one page in Coordinator, always return true.
-        return true;
-    }
-
     /**
      * Called when the native side is ready with the menu data, which can happen on mediator
      * construction or by an observer called originated from the native side. Populates the action
@@ -255,6 +224,52 @@ class ExtensionsMenuMediator implements Destroyable, ExtensionsMenuBridge.Observ
     public void onReady() {
         onModelChanged();
         mOnReady.run();
+    }
+
+    /**
+     * Creates a menu item for an extension action.
+     *
+     * @param entry The state of the menu entry to create.
+     * @return The created list item.
+     */
+    private ListItem createMenuItem(ExtensionsMenuTypes.MenuEntryState entry) {
+        boolean isActionPinned = entry.contextMenuButton.isOn;
+        int contextMenuIcon = isActionPinned ? R.drawable.ic_keep_24dp : R.drawable.ic_more_vert;
+        PropertyModel model =
+                new PropertyModel.Builder(ExtensionsMenuItemProperties.ALL_KEYS)
+                        .with(ExtensionsMenuItemProperties.TITLE, entry.actionButton.text)
+                        .with(ExtensionsMenuItemProperties.ICON, entry.actionButton.icon)
+                        .with(
+                                ExtensionsMenuItemProperties.CONTEXT_MENU_BUTTON_ON_CLICK,
+                                (view) ->
+                                        onContextMenuButtonClicked((ListMenuButton) view, entry.id))
+                        .with(
+                                ExtensionsMenuItemProperties.CONTEXT_MENU_BUTTON_ICON,
+                                contextMenuIcon)
+                        .build();
+        return new ListItem(0, model);
+    }
+
+    private boolean isMainPageVisible() {
+        // TODO(crbug.com/473213114): Update this method when site permissions page is implemented.
+
+        // For now, since there is only one page in Coordinator, always return true.
+        return true;
+    }
+
+    /**
+     * Pulls the list of menu entries from native and updates the action models list. Also updates
+     * the zero state visibility.
+     */
+    private void updateMenuEntries() {
+        mActionModels.clear();
+        List<ExtensionsMenuTypes.MenuEntryState> entries = mMenuBridge.getMenuEntries();
+
+        for (ExtensionsMenuTypes.MenuEntryState entry : entries) {
+            mActionModels.add(createMenuItem(entry));
+        }
+
+        updateZeroState();
     }
 
     /** Updates the zero state visibility. */

@@ -85,20 +85,28 @@ ExtensionsMenuDelegateAndroid::GetActionIcon(JNIEnv* env, int action_index) {
   return ConvertToJavaBitmap(icon_model);
 }
 
+base::android::ScopedJavaLocalRef<jobject>
+ExtensionsMenuDelegateAndroid::GetMenuEntry(JNIEnv* env, int action_index) {
+  const auto& action_models = menu_model_->action_models();
+  CHECK_GE(action_index, 0);
+  CHECK_LT(static_cast<size_t>(action_index), action_models.size());
+
+  const auto& action_model = action_models[action_index];
+  extensions::ExtensionId id = action_model->GetId();
+  ExtensionsMenuViewModel::MenuEntryState state =
+      menu_model_->GetMenuEntryState(id, kActionIconSize);
+
+  return Java_MenuEntryState_Constructor(
+      env, id, CreateJavaControlState(env, state.action_button),
+      CreateJavaControlState(env, state.context_menu_button));
+}
+
 std::vector<base::android::ScopedJavaLocalRef<jobject>>
 ExtensionsMenuDelegateAndroid::GetMenuEntries(JNIEnv* env) {
   std::vector<base::android::ScopedJavaLocalRef<jobject>> java_entries;
 
-  for (const auto& action_model : menu_model_->action_models()) {
-    extensions::ExtensionId id = action_model->GetId();
-    ExtensionsMenuViewModel::MenuEntryState state =
-        menu_model_->GetMenuEntryState(id, kActionIconSize);
-
-    base::android::ScopedJavaLocalRef<jobject> j_item =
-        Java_MenuEntryState_Constructor(
-            env, id, CreateJavaControlState(env, state.action_button),
-            CreateJavaControlState(env, state.context_menu_button));
-    java_entries.push_back(std::move(j_item));
+  for (size_t i = 0; i < menu_model_->action_models().size(); ++i) {
+    java_entries.push_back(GetMenuEntry(env, i));
   }
 
   return java_entries;
@@ -139,7 +147,8 @@ void ExtensionsMenuDelegateAndroid::OnPageNavigation() {
 void ExtensionsMenuDelegateAndroid::OnActionAdded(
     ExtensionActionViewModel* action_model,
     int index) {
-  // TODO(crbug.com/473213114)
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_ExtensionsMenuBridge_onActionAdded(env, java_object_, index);
 }
 
 void ExtensionsMenuDelegateAndroid::OnActionRemoved(

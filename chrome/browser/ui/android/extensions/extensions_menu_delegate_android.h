@@ -32,6 +32,8 @@ class ExtensionsMenuDelegateAndroid : public ExtensionsMenuViewModel::Delegate,
   void Destroy(JNIEnv* env);
   base::android::ScopedJavaLocalRef<jobject> GetActionIcon(JNIEnv* env,
                                                            int action_index);
+  base::android::ScopedJavaLocalRef<jobject> GetMenuEntry(JNIEnv* env,
+                                                          int action_index);
   std::vector<base::android::ScopedJavaLocalRef<jobject>> GetMenuEntries(
       JNIEnv* env);
   base::android::ScopedJavaLocalRef<jobject> GetSiteSettings(JNIEnv* env);

@@ -258,6 +258,67 @@ public class ExtensionsMenuMediatorTest {
         assertItemAt(1, "Extension B", null, ICON_MORE);
     }
 
+    /** Tests that adding an extension action to the menu correctly updates the action models. */
+    @Test
+    public void testOnActionAdded() {
+        // Initialize with one item.
+        List<ExtensionsMenuTypes.MenuEntryState> entries = new ArrayList<>();
+        entries.add(
+                ExtensionTestUtils.createSimpleMenuEntry(
+                        "id_a", "Extension A", ICON_RED, /* isPinned= */ false));
+        when(mExtensionsMenuBridgeJniMock.getMenuEntries(anyLong())).thenReturn(entries);
+
+        // Open extensions menu by simulating the native callback triggering onReady.
+        mBridgeCaptor.getValue().onReady();
+        clearInvocations(mMenuPropertyModel);
+
+        assertEquals(1, mActionModels.size());
+
+        // Mock the new entry to be added.
+        ExtensionsMenuTypes.MenuEntryState newEntry =
+                ExtensionTestUtils.createSimpleMenuEntry(
+                        "id_b", "Extension B", ICON_BLUE, /* isPinned= */ false);
+        when(mExtensionsMenuBridgeJniMock.getMenuEntry(anyLong(), eq(1))).thenReturn(newEntry);
+
+        // Simulate the native callback triggered when a new item is added at the end.
+        mBridgeCaptor.getValue().onActionAdded(1);
+
+        // Verify that the new item is added at the correct index.
+        assertEquals(2, mActionModels.size());
+        assertItemAt(0, "Extension A", ICON_RED, ICON_MORE);
+        assertItemAt(1, "Extension B", ICON_BLUE, ICON_MORE);
+        verify(mMenuPropertyModel).set(ExtensionsMenuProperties.IS_ZERO_STATE, false);
+    }
+
+    /**
+     * Tests that adding an extension action to an empty menu correctly updates the action models.
+     */
+    @Test
+    public void testOnActionAdded_ZeroState() {
+        // Initialize with no items.
+        when(mExtensionsMenuBridgeJniMock.getMenuEntries(anyLong())).thenReturn(new ArrayList<>());
+
+        // Open extensions menu by simulating the native callback triggering onReady.
+        mBridgeCaptor.getValue().onReady();
+        clearInvocations(mMenuPropertyModel);
+
+        assertEquals(0, mActionModels.size());
+
+        // Mock the new entry to be added.
+        ExtensionsMenuTypes.MenuEntryState newEntry =
+                ExtensionTestUtils.createSimpleMenuEntry(
+                        "id_a", "Extension A", ICON_RED, /* isPinned= */ false);
+        when(mExtensionsMenuBridgeJniMock.getMenuEntry(anyLong(), eq(0))).thenReturn(newEntry);
+
+        // Simulate the native callback triggered when an item is added to an empty menu.
+        mBridgeCaptor.getValue().onActionAdded(0);
+
+        // Verify that the new item is added and zero state is hidden.
+        assertEquals(1, mActionModels.size());
+        assertItemAt(0, "Extension A", ICON_RED, ICON_MORE);
+        verify(mMenuPropertyModel).set(ExtensionsMenuProperties.IS_ZERO_STATE, false);
+    }
+
     /**
      * Tests that removing an extension action from the menu correctly updates the action models.
      */
