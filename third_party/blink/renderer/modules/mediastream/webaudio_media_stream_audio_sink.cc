@@ -161,7 +161,7 @@ void WebAudioMediaStreamAudioSink::SetClient(
 }
 
 void WebAudioMediaStreamAudioSink::ProvideInput(
-    const std::vector<float*>& audio_data,
+    base::span<const base::span<float>> audio_data,
     int number_of_frames) {
   NON_REENTRANT_SCOPE(provide_input_reentrancy_checker_);
   DCHECK_EQ(number_of_frames, kWebAudioRenderBufferSize);
@@ -178,11 +178,7 @@ void WebAudioMediaStreamAudioSink::ProvideInput(
 
   output_wrapper_->set_frames(number_of_frames);
   for (size_t i = 0; i < audio_data.size(); ++i) {
-    // TODO(crbug.com/375449662): Spanify `audio_data` parameter.
-    output_wrapper_->SetChannelData(
-        static_cast<int>(i),
-        UNSAFE_TODO(base::span(audio_data[i],
-                               base::checked_cast<size_t>(number_of_frames))));
+    output_wrapper_->SetChannelData(static_cast<int>(i), audio_data[i]);
   }
 
   base::AutoLock auto_lock(lock_);

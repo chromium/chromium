@@ -33,8 +33,11 @@
 
 #include <memory>
 #include <utility>
+#include <vector>
 
+#include "base/containers/span.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/audio/audio_source_provider.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -58,7 +61,10 @@ class PLATFORM_EXPORT MediaStreamWebAudioSource final
   void SetClient(AudioSourceProviderClient*) override {}
 
   std::unique_ptr<WebAudioSourceProvider> web_audio_source_provider_;
-  std::vector<float*> web_audio_data_
+
+  // Re-allocate only when the channel count changes to avoid heap
+  // allocations on the real-time audio thread.
+  RAW_PTR_EXCLUSION std::vector<base::span<float>> web_audio_data_
       ALLOW_DISCOURAGED_TYPE("Matches WebAudioSourceProvider::ProvideInput");
 };
 

@@ -71,9 +71,10 @@ TEST_F(WebAudioMediaStreamAudioSinkTest, VerifyDataFlow) {
             /*platform_buffer_duration=*/base::Milliseconds(10));
 
   // Point the std::vector into memory owned by |sink_bus_|.
-  std::vector<float*> audio_data(static_cast<size_t>(sink_bus_->channels()));
+  std::vector<base::span<float>> audio_data(
+      static_cast<size_t>(sink_bus_->channels()));
   for (int i = 0; i < sink_bus_->channels(); ++i) {
-    audio_data[i] = sink_bus_->channel(i).data();
+    audio_data[i] = sink_bus_->channel(i);
   }
 
   // Enable the |source_provider_| by asking for data. This will inject
@@ -177,9 +178,10 @@ TEST_P(WebAudioMediaStreamAudioSinkFifoTest, VerifyFifo) {
   // 2. Sink preparation.
 
   // Point the std::vector into memory owned by |sink_bus_|.
-  std::vector<float*> audio_data(static_cast<size_t>(sink_bus_->channels()));
+  std::vector<base::span<float>> audio_data(
+      static_cast<size_t>(sink_bus_->channels()));
   for (int i = 0; i < sink_bus_->channels(); ++i) {
-    audio_data[i] = sink_bus_->channel(i).data();
+    audio_data[i] = sink_bus_->channel(i);
   }
 
   // FIFO simulating callbacks from AudioContext output.

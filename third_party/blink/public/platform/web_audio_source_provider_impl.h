@@ -9,7 +9,6 @@
 
 #include <memory>
 #include <string>
-#include <vector>
 
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
@@ -67,7 +66,7 @@ class BLINK_PLATFORM_EXPORT WebAudioSourceProviderImpl
 
   // WebAudioSourceProvider implementation.
   void SetClient(WebAudioSourceProviderClient* client) override;
-  void ProvideInput(const std::vector<float*>& audio_data,
+  void ProvideInput(base::span<const base::span<float>> audio_data,
                     int number_of_frames) override;
 
   // RestartableAudioRendererSink implementation.
