@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_PANEL_CONTROLLER_H_
 #define CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_PANEL_CONTROLLER_H_
 
+#include "base/observer_list_types.h"
 #include "components/tabs/public/tab_interface.h"
 #include "third_party/omnibox_proto/chrome_aim_entry_point.pb.h"
 
@@ -28,6 +29,14 @@ class ContextualTask;
 class ContextualTasksPanelController {
  public:
   virtual ~ContextualTasksPanelController() = default;
+
+  class Observer : public base::CheckedObserver {
+   public:
+    virtual void ExpandToFullTabStateChanged() {}
+  };
+
+  virtual void AddObserver(Observer* observer) = 0;
+  virtual void RemoveObserver(Observer* observer) = 0;
 
   // Visibility commands.
   // Show the panel. If |transition_from_tab| is true, trigger the panel content
@@ -83,6 +92,16 @@ class ContextualTasksPanelController {
   // Metrics.
   // Returns the number of active tasks tracked by `this`.
   virtual size_t GetNumberOfActiveTasks() const = 0;
+
+  // Move the side panel WebContents to new tab.
+  virtual void MoveTaskUiToNewTab() = 0;
+
+  // Notify expand to full tab state changed for showing/hiding
+  // ContextualTasksCloseTabButton.
+  virtual void NotifyExpandToFullTabStateChanged() = 0;
+
+  // Whether the side panel can expand to full tab.
+  virtual bool CanExpandToFullTab() const = 0;
 
   // Static.
   static ContextualTasksPanelController* From(BrowserWindowInterface* browser);

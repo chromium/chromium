@@ -38,10 +38,11 @@ class FakeContextualTasksUiService
 class ContextualTasksPixelTestBase : public WebUIComposeBoxPixelTest {
  public:
   void SetUp() override {
-    feature_list_.InitWithFeatures(
-        {contextual_tasks::kContextualTasks,
-         contextual_tasks::kContextualTasksForceEntryPointEligibility},
-        {contextual_tasks::kContextualTasksExpandButton});
+    feature_list_.InitWithFeaturesAndParameters(
+        {{contextual_tasks::kContextualTasks,
+          {{"ContextualTasksExpandButtonOptions", "toolbar-close-button"}}},
+         {contextual_tasks::kContextualTasksForceEntryPointEligibility, {}}},
+        {});
     WebUIComposeBoxPixelTest::SetUp();
   }
 

@@ -59,6 +59,7 @@
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bubble_view.h"
 #include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_button.h"
+#include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_close_tab_button.h"
 #include "chrome/browser/ui/views/extensions/extension_popup.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_coordinator.h"
@@ -593,6 +594,12 @@ void ToolbarView::Init() {
       l10n_util::GetStringUTF16(IDS_APPMENU_TOOLTIP));
   app_menu_button->SetID(VIEW_ID_APP_MENU);
   app_menu_button_ = AddChildView(std::move(app_menu_button));
+
+  if (base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks) &&
+      contextual_tasks::GetExpandButtonOption() ==
+          contextual_tasks::ExpandButtonOption::kToolbarCloseButton) {
+    AddChildView(std::make_unique<ContextualTasksCloseTabButton>(browser_));
+  }
 
   LoadImages();
 

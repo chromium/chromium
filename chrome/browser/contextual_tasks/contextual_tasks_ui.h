@@ -150,6 +150,8 @@ class ContextualTasksUI
   bool IsLensOverlayShowing() const override;
   void OnPageContextEligibilityChecked(bool is_page_context_eligible) override;
   bool IsActiveTabContextSuggestionShowing() const override;
+  void MoveTaskUiToNewTab() override;
+  bool CanExpandToFullTab() const override;
   void PostMessageToWebview(const lens::ClientToAimMessage& message) override;
   contextual_search::ContextualSearchSessionHandle*
   GetOrCreateContextualSessionHandle() override;
@@ -267,6 +269,8 @@ class ContextualTasksUI
 
   // Update the task's details in the WebUI.
   void PushTaskDetailsToPage();
+
+  bool CanExpandToFullTab();
 
   contextual_tasks::ContextualTasksPanelController* GetPanelController();
 
