@@ -3,8 +3,6 @@
 // found in the LICENSE file.
 
 import './auto_tab_groups/auto_tab_groups_page.js';
-import './declutter/declutter_page.js';
-import './tab_organization_selector.js';
 import './tab_search_page.js';
 import 'chrome://resources/cr_elements/cr_tabs/cr_tabs.js';
 import 'chrome://resources/cr_elements/cr_page_selector/cr_page_selector.js';
@@ -37,7 +35,6 @@ export class TabSearchAppElement extends CrLitElement {
       selectedTabSection_: {type: Object},
       tabNames_: {type: Array},
       tabOrganizationEnabled_: {type: Boolean},
-      declutterEnabled_: {type: Boolean},
       availableHeight_: {type: Number},
     };
   }
@@ -53,8 +50,6 @@ export class TabSearchAppElement extends CrLitElement {
   ];
   protected accessor tabOrganizationEnabled_: boolean =
       loadTimeData.getBoolean('tabOrganizationEnabled');
-  protected accessor declutterEnabled_: boolean =
-      loadTimeData.getBoolean('declutterEnabled');
   protected accessor availableHeight_: number = 0;
 
   constructor() {
@@ -141,8 +136,7 @@ export class TabSearchAppElement extends CrLitElement {
 
   protected onCrTabsSelectedChanged_(e: CustomEvent<{value: number}>) {
     this.selectedTabSection_ = this.indexToSection(e.detail.value);
-    if (this.selectedTabSection_ === TabSearchSection.kOrganize &&
-        !this.declutterEnabled_) {
+    if (this.selectedTabSection_ === TabSearchSection.kOrganize) {
       const autoTabGroupsPage =
           this.shadowRoot.querySelector('auto-tab-groups-page')!;
       autoTabGroupsPage.classList.toggle('changed-state', false);

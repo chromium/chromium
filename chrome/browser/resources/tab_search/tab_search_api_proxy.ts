@@ -2,9 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
-
-import type {ProfileData, SwitchToTabInfo, Tab, TabOrganizationFeature, TabOrganizationModelStrategy, TabOrganizationSession, TabSearchSection, UnusedTabInfo, UserFeedback} from './tab_search.mojom-webui.js';
+import type {ProfileData, SwitchToTabInfo, Tab, TabOrganizationModelStrategy, TabOrganizationSession, TabSearchSection, UserFeedback} from './tab_search.mojom-webui.js';
 import {PageCallbackRouter, PageHandlerFactory, PageHandlerRemote} from './tab_search.mojom-webui.js';
 
 /**
@@ -21,8 +19,6 @@ export interface TabSearchApiProxy {
 
   closeWebUiTab(): void;
 
-  declutterTabs(tabIds: number[], urls: Url[]): void;
-
   acceptTabOrganization(sessionId: number, organizationId: number, tabs: Tab[]):
       void;
 
@@ -31,17 +27,9 @@ export interface TabSearchApiProxy {
   renameTabOrganization(
       sessionId: number, organizationId: number, name: string): void;
 
-  excludeFromStaleTabs(tabId: number): void;
-
-  excludeFromDuplicateTabs(url: Url): void;
-
   getProfileData(): Promise<{profileData: ProfileData}>;
 
-  getUnusedTabs(): Promise<{tabs: UnusedTabInfo}>;
-
   getTabSearchSection(): Promise<{section: TabSearchSection}>;
-
-  getTabOrganizationFeature(): Promise<{feature: TabOrganizationFeature}>;
 
   getTabOrganizationSession(): Promise<{session: TabOrganizationSession}>;
 
@@ -69,8 +57,6 @@ export interface TabSearchApiProxy {
   replaceActiveSplitTab(replacementTabId: number): void;
 
   saveRecentlyClosedExpandedPref(expanded: boolean): void;
-
-  setOrganizationFeature(feature: TabOrganizationFeature): void;
 
   startTabGroupTutorial(): void;
 
@@ -110,10 +96,6 @@ export class TabSearchApiProxyImpl implements TabSearchApiProxy {
     this.handler.closeWebUiTab();
   }
 
-  declutterTabs(tabIds: number[], urls: Url[]) {
-    this.handler.declutterTabs(tabIds, urls);
-  }
-
   acceptTabOrganization(
       sessionId: number, organizationId: number, tabs: Tab[]) {
     this.handler.acceptTabOrganization(sessionId, organizationId, tabs);
@@ -128,28 +110,12 @@ export class TabSearchApiProxyImpl implements TabSearchApiProxy {
     this.handler.renameTabOrganization(sessionId, organizationId, name);
   }
 
-  excludeFromStaleTabs(tabId: number) {
-    this.handler.excludeFromStaleTabs(tabId);
-  }
-
-  excludeFromDuplicateTabs(url: Url) {
-    this.handler.excludeFromDuplicateTabs(url);
-  }
-
   getProfileData() {
     return this.handler.getProfileData();
   }
 
-  getUnusedTabs() {
-    return this.handler.getUnusedTabs();
-  }
-
   getTabSearchSection() {
     return this.handler.getTabSearchSection();
-  }
-
-  getTabOrganizationFeature() {
-    return this.handler.getTabOrganizationFeature();
   }
 
   getTabOrganizationSession() {
@@ -211,10 +177,6 @@ export class TabSearchApiProxyImpl implements TabSearchApiProxy {
 
   saveRecentlyClosedExpandedPref(expanded: boolean) {
     this.handler.saveRecentlyClosedExpandedPref(expanded);
-  }
-
-  setOrganizationFeature(feature: TabOrganizationFeature) {
-    this.handler.setOrganizationFeature(feature);
   }
 
   startTabGroupTutorial() {

@@ -153,30 +153,6 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
       {"tipTitle", IDS_TAB_ORGANIZATION_TIP_TITLE},
       {"thumbsDown", IDS_TAB_ORGANIZATION_THUMBS_DOWN},
       {"thumbsUp", IDS_TAB_ORGANIZATION_THUMBS_UP},
-      // Declutter UI strings
-      {"a11yTabExcludedFromList", IDS_DECLUTTER_A11Y_TAB_EXCLUDED},
-      {"closeTabs", IDS_DECLUTTER_CLOSE_TABS},
-      {"declutterCloseTabAriaLabel", IDS_DECLUTTER_CLOSE_TAB_ARIA_LABEL},
-      {"declutterCloseTabTooltip", IDS_DECLUTTER_CLOSE_TAB_TOOLTIP},
-      {"declutterDuplicateBody", IDS_DECLUTTER_DUPLICATE_BODY},
-      {"declutterDuplicateTitle", IDS_DECLUTTER_DUPLICATE_TITLE},
-      {"declutterEmptyBody", IDS_DECLUTTER_EMPTY_BODY},
-      {"declutterEmptyBodyNoDedupe", IDS_DECLUTTER_EMPTY_BODY_NO_DEDUPE},
-      {"declutterEmptyTitle", IDS_DECLUTTER_EMPTY_TITLE},
-      {"declutterInactiveTitle", IDS_DECLUTTER_INACTIVE_TITLE},
-      {"declutterInactiveTitleNoDedupe",
-       IDS_DECLUTTER_INACTIVE_TITLE_NO_DEDUPE},
-      {"declutterTimestamp", IDS_DECLUTTER_TIMESTAMP},
-      {"declutterTitle", IDS_DECLUTTER_TITLE},
-      {"duplicateItemTitleMulti", IDS_DUPLICATE_ITEM_TITLE_MULTI},
-      {"duplicateItemTitleSingle", IDS_DUPLICATE_ITEM_TITLE_SINGLE},
-      // Selector UI strings
-      {"autoTabGroupsSelectorHeading", IDS_AUTO_TAB_GROUPS_SELECTOR_HEADING},
-      {"autoTabGroupsSelectorSubheading",
-       IDS_AUTO_TAB_GROUPS_SELECTOR_SUBHEADING},
-      {"backButtonAriaLabel", IDS_TAB_ORGANIZATION_BACK_BUTTON_ARIA_LABEL},
-      {"declutterSelectorSubheading", IDS_DECLUTTER_SELECTOR_SUBHEADING},
-      {"selectorAriaLabel", IDS_TAB_ORGANIZATION_SELECTOR_ARIA_LABEL},
       // Split view new tab page strings
       {"splitViewEmptyBody", IDS_SPLIT_VIEW_NTP_EMPTY_BODY},
       {"splitViewEmptyTitle", IDS_SPLIT_VIEW_NTP_EMPTY_TITLE},
@@ -210,11 +186,6 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
       base::FeatureList::IsEnabled(features::kTabOrganizationUserInstruction));
 
   source->AddBoolean("showTabOrganizationFRE", ShowTabOrganizationFRE());
-  source->AddBoolean(
-      "declutterEnabled",
-      features::IsTabstripDeclutterEnabled() && !profile->IsIncognitoProfile());
-  source->AddBoolean("dedupeEnabled", features::IsTabstripDedupeEnabled() &&
-                                          !profile->IsIncognitoProfile());
 
   source->AddResourcePath("alert_indicators/tab_media_glic_active.svg",
                           IDR_GLIC_TAB_MEDIA_GLIC_ACTIVE);
@@ -222,12 +193,6 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
   ui::Accelerator accelerator(ui::VKEY_A,
                               ui::EF_SHIFT_DOWN | ui::EF_PLATFORM_ACCELERATOR);
   source->AddString("shortcutText", accelerator.GetShortcutText());
-  // TODO(b/362269642): Once the stale threshold duration is Finch-
-  // configurable, replace the hardcoded 7 below with the value of that
-  // parameter.
-  source->AddString(
-      "declutterInactiveBody",
-      l10n_util::GetStringFUTF16(IDS_DECLUTTER_INACTIVE_BODY, u"7"));
   source->AddString("newTabPageUrl", chrome::kChromeUINewTabURL);
 
   webui::SetupWebUIDataSource(source, kTabSearchResources,
@@ -238,11 +203,6 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
                    profile, chrome::FaviconUrlFormat::kFavicon2));
 
   auto plural_string_handler = std::make_unique<PluralStringHandler>();
-  plural_string_handler->AddLocalizedString(
-      "declutterSelectorHeadingNoDedupe",
-      IDS_DECLUTTER_SELECTOR_HEADING_NO_DEDUPE);
-  plural_string_handler->AddLocalizedString("declutterSelectorHeading",
-                                            IDS_DECLUTTER_SELECTOR_HEADING);
   web_ui->AddMessageHandler(std::move(plural_string_handler));
 
   web_ui->AddMessageHandler(std::make_unique<TabSearchSyncHandler>(profile));
