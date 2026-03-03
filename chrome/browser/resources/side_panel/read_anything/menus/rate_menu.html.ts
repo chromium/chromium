@@ -13,6 +13,7 @@ export function getHtml(this: RateMenuElement) {
   return html`<!--_html_template_start_-->
 <simple-action-menu
     id="menu"
+    class="${this.isImmersiveEnabled_ ? 'immersive-top-level-menu' : ''}"
     label="$i18n{voiceSpeedLabel}"
     .menuItems="${this.options_}"
     event-name="${ToolbarEvent.RATE}"

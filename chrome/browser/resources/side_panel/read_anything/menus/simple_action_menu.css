@@ -63,7 +63,8 @@ cr-action-menu::part(dialog) {
   z-index: 9999;
 }
 
-cr-action-menu[non-modal]::part(dialog) {
+cr-action-menu[non-modal]::part(dialog),
+:host(.immersive-top-level-menu) cr-action-menu::part(dialog) {
   border-radius: var(--cornerRadii-medium-small, 12px);
 }
 

@@ -48,6 +48,9 @@ export class RateMenuElement extends RateMenuElementBase {
 
   accessor settingsPrefs: SettingsPrefs = DEFAULT_SETTINGS;
 
+  protected isImmersiveEnabled_: boolean =
+      chrome.readingMode.isImmersiveEnabled;
+
   protected options_: Array<MenuStateItem<number>> = RATE_OPTIONS.map(rate => {
     return {
       title: loadTimeData.getStringF(
