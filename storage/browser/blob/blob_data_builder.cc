@@ -40,7 +40,7 @@ bool BlobDataBuilder::FutureData::Populate(base::span<const uint8_t> data,
   if (!target.data())
     return false;
   DCHECK_EQ(target.size(), data.size());
-  UNSAFE_TODO(std::memcpy(target.data(), data.data(), data.size()));
+  target.copy_from(data);
   return true;
 }
 

@@ -556,9 +556,11 @@ void BlobReader::ReadBytesItem(const BlobDataItem& item, int bytes_to_read) {
   TRACE_EVENT1("Blob", "BlobReader::ReadBytesItem", "uuid", blob_data_->uuid());
   DCHECK_GE(read_buf_->BytesRemaining(), bytes_to_read);
 
-  UNSAFE_TODO(memcpy(read_buf_->data(),
-                     item.bytes().data() + item.offset() + current_item_offset_,
-                     bytes_to_read));
+  const size_t begin =
+      base::checked_cast<size_t>(item.offset() + current_item_offset_);
+  const size_t count = base::checked_cast<size_t>(bytes_to_read);
+
+  read_buf_->first(count).copy_from(item.bytes().subspan(begin, count));
 
   AdvanceBytesRead(bytes_to_read);
 }
