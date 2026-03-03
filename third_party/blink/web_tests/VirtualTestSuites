@@ -6283,7 +6283,7 @@
     "args": [
       "--enable-features=WebAudioConfigurableRenderQuantum"
     ],
-    "expires": "never"
+    "expires": "Dec 31, 2026"
   },
   {
     "prefix": "single-axis-scroll-containers",
