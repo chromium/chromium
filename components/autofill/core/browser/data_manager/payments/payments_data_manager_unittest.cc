@@ -3385,10 +3385,6 @@ TEST_F(PaymentsDataManagerSyncTransportModeTest,
       /*types=*/{syncer::UserSelectableType::kAutofill,
                  syncer::UserSelectableType::kPayments});
 
-  // The test preferences are not hooked properly into the IdentityManager,
-  // manually set the explicit signin flag.
-  prefs_->SetBoolean(::prefs::kExplicitBrowserSignin, true);
-
   // Server payment methods should be suggested.
   EXPECT_TRUE(
       test_api(payments_data_manager()).ShouldSuggestServerPaymentMethods());
