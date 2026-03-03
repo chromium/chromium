@@ -374,7 +374,9 @@ crbug.com/415830130 [ android android-webview-instrumentation ] Pixel_SolidColor
 [ android android-sm-a137f ] Pixel_SVGHuge [ Slow ]
 [ android android-sm-a236b ] Pixel_SVGHuge [ Slow ]
 # Also applies to Windows arm64.
-[ win qualcomm-0x41333430 ] Pixel_SVGHuge [ Slow ]
+[ win qualcomm-0x41333430 target-cpu-64 ] Pixel_SVGHuge [ Slow ]
+# Also applies to 32-bit Windows
+[ win release target-cpu-32 ] Pixel_SVGHuge [ Slow ]
 # Doesn't hit heartbeat timeouts, but can time out when trying to execute
 # JavaScript after the SVG is loaded.
 [ mac intel release no-asan graphite-disabled ] Pixel_SVGHuge [ Slow ]
