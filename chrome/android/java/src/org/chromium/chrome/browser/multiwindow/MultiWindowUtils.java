@@ -1001,10 +1001,7 @@ public class MultiWindowUtils implements ActivityStateListener {
                     SharedPreferencesManager prefs = ChromeSharedPreferences.getInstance();
                     long startTime = prefs.readLong(ChromePreferenceKeys.MULTI_WINDOW_START_TIME);
                     if (startTime > 0) {
-                        long current = TimeUtils.currentTimeMillis();
                         RecordUserAction.record("Android.MultiWindowMode.Exit2");
-                        RecordHistogram.recordLongTimesHistogram(
-                                "Android.MultiWindowMode.TotalDuration", current - startTime);
                         prefs.writeLong(ChromePreferenceKeys.MULTI_WINDOW_START_TIME, 0);
                     }
                 } else {
