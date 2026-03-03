@@ -99,16 +99,11 @@ class CORE_EXPORT HTMLVideoElement final
   bool IsDefaultPosterImageURL() const;
 
   // Helper for GetSourceImageForCanvas() and other external callers who want a
-  // StaticBitmapImage of the current VideoFrame. If `allow_accelerated_images`
-  // is set to false a software backed CanvasSnapshotProvider will be used to
-  // produce the StaticBitmapImage. If `size` is specified, the image will be
-  // scaled to it, otherwise the image will be in its natural size. If
-  // `reinterpret_as_srgb` is true, then reinterpret the video as thought it
-  // is in sRGB color space.
-  // TODO(crbug.com/40170349): Remove `allow_accelerated_images` after M145 is
-  // stable and all callers are removed.
+  // StaticBitmapImage of the current VideoFrame. If `size` is specified, the
+  // image will be scaled to it, otherwise the image will be in its natural
+  // size. If `reinterpret_as_srgb` is true, then reinterpret the video as
+  // though it is in sRGB color space.
   scoped_refptr<StaticBitmapImage> CreateStaticBitmapImage(
-      bool allow_accelerated_images = true,
       std::optional<gfx::Size> size = std::nullopt,
       bool reinterpret_as_srgb = false);
 
@@ -293,7 +288,6 @@ class CORE_EXPORT HTMLVideoElement final
   std::unique_ptr<CanvasNon2DResourceProviderSharedImage> snapshot_provider_;
   std::optional<CanvasSnapshotProvider::Info> cached_draw_info_;
   sk_sp<SkSurface> sw_draw_surface_;
-  bool allow_accelerated_images_ = true;
   HeapTaskRunnerTimer<HTMLVideoElement> cache_deleting_timer_;
 
   // Paint flags set based on CSS properties, which must be propagated to the

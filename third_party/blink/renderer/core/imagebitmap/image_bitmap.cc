@@ -61,12 +61,6 @@ namespace blink {
 
 namespace {
 
-// Kill switch for behavior change in how StaticBitmapImages are created from
-// HTMLVideoElements.
-// TODO(crbug.com/40170349): Remove after M145.
-BASE_FEATURE(kAcceleratedImagesForResizedVideo,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 gfx::Size ParseDstSize(const ImageBitmapOptions* options,
                        const gfx::Rect& src_rect) {
   int resize_width = 0;
@@ -349,15 +343,10 @@ ImageBitmap::ImageBitmap(ImageElementBase* image,
 ImageBitmap::ImageBitmap(HTMLVideoElement* video,
                          std::optional<gfx::Rect> crop_rect,
                          const ImageBitmapOptions* options) {
-  const bool allow_accelerated_images =
-      base::FeatureList::IsEnabled(kAcceleratedImagesForResizedVideo)
-          ? true
-          : (!options->hasResizeWidth() && !options->hasResizeHeight());
-
   const bool reinterpret_as_srgb =
       (options->colorSpaceConversion() == V8ColorSpaceConversion::Enum::kNone);
-  auto input = video->CreateStaticBitmapImage(
-      allow_accelerated_images, /*size=*/std::nullopt, reinterpret_as_srgb);
+  auto input = video->CreateStaticBitmapImage(/*size=*/std::nullopt,
+                                              reinterpret_as_srgb);
   if (!input) {
     return;
   }

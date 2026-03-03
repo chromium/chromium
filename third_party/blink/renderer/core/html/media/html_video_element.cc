@@ -679,7 +679,6 @@ BASE_FEATURE(kHTMLVideoElementCacheSkSurface,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 scoped_refptr<StaticBitmapImage> HTMLVideoElement::CreateStaticBitmapImage(
-    bool allow_accelerated_images,
     std::optional<gfx::Size> size,
     bool reinterpret_as_srgb) {
   media::PaintCanvasVideoRenderer* video_renderer = nullptr;
@@ -699,14 +698,11 @@ scoped_refptr<StaticBitmapImage> HTMLVideoElement::CreateStaticBitmapImage(
   bool cached_info_matches_required_info =
       cached_draw_info_ &&
       required_provider_info.Matches(cached_draw_info_.value());
-  if (!cached_info_matches_required_info ||
-      allow_accelerated_images != allow_accelerated_images_) {
+  if (!cached_info_matches_required_info) {
     viz::RasterContextProvider* raster_context_provider = nullptr;
-    if (allow_accelerated_images) {
-      if (auto wrapper = SharedGpuContext::ContextProviderWrapper()) {
-        raster_context_provider =
-            wrapper->ContextProvider().RasterContextProvider();
-      }
+    if (auto wrapper = SharedGpuContext::ContextProviderWrapper()) {
+      raster_context_provider =
+          wrapper->ContextProvider().RasterContextProvider();
     }
     snapshot_provider_.reset();
     sw_draw_surface_.reset();
@@ -729,7 +725,6 @@ scoped_refptr<StaticBitmapImage> HTMLVideoElement::CreateStaticBitmapImage(
     }
 
     cached_draw_info_ = required_provider_info;
-    allow_accelerated_images_ = allow_accelerated_images;
   }
   cache_deleting_timer_.StartOneShot(kTemporaryResourceDeletionDelay,
                                      FROM_HERE);

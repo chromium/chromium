@@ -3778,8 +3778,7 @@ void LocalFrame::RequestVideoFrameAtWithBoundsHint(
     size = gfx::Size(width, height);
   }
 
-  auto image =
-      video->CreateStaticBitmapImage(/*allow_accelerated_images=*/true, size);
+  auto image = video->CreateStaticBitmapImage(size);
   if (!image) {
     std::move(callback).Run(SkBitmap(), gfx::Rect());
     return;
