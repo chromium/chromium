@@ -11,7 +11,7 @@ export function getHtml(this: ScopeIconElement) {
   return html`
 <!--_html_template_start_-->
 ${this.scope !== undefined ? html`
-  <cr-icon icon="${this.icon}" title="${this.label}">
+  <cr-icon icon="${this.icon}" title="${this.label}" role="img">
   </cr-icon>
 ` : ''}
 <!--_html_template_end_-->`;
