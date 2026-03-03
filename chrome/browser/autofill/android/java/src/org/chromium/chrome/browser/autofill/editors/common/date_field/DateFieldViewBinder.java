@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.autofill.editors.common.date_field;
 
+import static org.chromium.chrome.browser.autofill.editors.common.date_field.DateFieldProperties.DATE_VALID;
 import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.ERROR_MESSAGE;
 import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.FOCUSED;
 import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.IS_REQUIRED;
@@ -29,6 +30,8 @@ public class DateFieldViewBinder {
             view.setErrorMessage(model.get(ERROR_MESSAGE));
         } else if (key == FOCUSED) {
             // TODO: crbug.com/476755159 - Implement focusability.
+        } else if (key == DATE_VALID) {
+            // Doesn't require binding at the moment.
         } else {
             assert false : "Unhandled update to property:" + key;
         }
