@@ -192,7 +192,9 @@ public class RecentlyClosedEntriesManager {
      */
     @CalledByNative
     public static void getRecentlyClosedWindow(
-            int instanceId, JniOnceCallback<@Nullable RecentlyClosedWindowMetadata> callback) {
+            int instanceId,
+            @JniType("base::OnceCallback<void(const jni_zero::JavaRef<jobject>&)>&&")
+                    JniOnceCallback<@Nullable RecentlyClosedWindowMetadata> callback) {
         // This function requires the kRecentlyClosedTabsAndWindows feature.
         if (!UiUtils.isRecentlyClosedTabsAndWindowsEnabled()) {
             callback.onResult(null);
