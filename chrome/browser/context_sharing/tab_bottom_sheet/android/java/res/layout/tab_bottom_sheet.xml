@@ -4,45 +4,62 @@ Copyright 2026 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
-<LinearLayout
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/tab_bottom_sheet"
     tools:ignore="HardcodedText"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
-    <!-- Handle Bar -->
-    <ImageView
-        android:id="@+id/handle_bar"
-        android:layout_width="wrap_content"
+    <!-- Tab Bottom Sheet Content: Appears when BottomSheet is expanded -->
+    <LinearLayout
+        android:id="@+id/expanded_content_group"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:visibility="visible">
+
+        <!-- Handle Bar -->
+        <ImageView
+            android:id="@+id/handle_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="7dp"
+            android:src="@drawable/drag_handlebar"
+            app:tint="@macro/drag_handle_color"
+            android:importantForAccessibility="no"/>
+
+        <!-- Toolbar Container -->
+        <FrameLayout
+            android:id="@+id/toolbar_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <!-- Web UI Container -->
+        <FrameLayout
+            android:id="@+id/web_ui_container"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:padding="5dp" />
+
+        <!-- Fusebox Container -->
+        <FrameLayout
+            android:id="@+id/fusebox_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="5dp" />
+    </LinearLayout>
+
+    <!-- Actor Control View: Appears when BottomSheet is collapsed -->
+    <FrameLayout
+        android:id="@+id/actor_control_container"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="7dp"
-        android:src="@drawable/drag_handlebar"
-        app:tint="@macro/drag_handle_color"
-        android:importantForAccessibility="no"/>
-
-    <!-- Toolbar Container -->
-    <FrameLayout
-        android:id="@+id/toolbar_container"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
-    <!-- Web UI Container -->
-    <FrameLayout
-        android:id="@+id/web_ui_container"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:padding="5dp" />
-
-    <!-- Fusebox Container -->
-    <FrameLayout
-        android:id="@+id/fusebox_container"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="5dp" />
-
-</LinearLayout>
+        android:layout_gravity="top"
+        android:visibility="gone">
+    </FrameLayout>
+</FrameLayout>
