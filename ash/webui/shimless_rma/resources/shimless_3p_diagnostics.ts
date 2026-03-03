@@ -82,10 +82,6 @@ export class Shimless3pDiagnostics extends Shimless3pDiagnosticsBase {
   constructor() {
     super();
 
-    if (!loadTimeData.getBoolean('3pDiagnosticsEnabled')) {
-      return;
-    }
-
     this.shimlessRmaService.get3pDiagnosticsProvider().then(
         ({provider}: {provider: string|null}) => {
           this.providerName = provider;
@@ -251,8 +247,7 @@ export class Shimless3pDiagnostics extends Shimless3pDiagnosticsBase {
    * app from external storage if app files exist, or launch the installed app.
    */
   launch3pDiagnostics(): void {
-    if (!loadTimeData.getBoolean('3pDiagnosticsEnabled') ||
-        this.hasPendingLaunch) {
+    if (this.hasPendingLaunch) {
       return;
     }
 

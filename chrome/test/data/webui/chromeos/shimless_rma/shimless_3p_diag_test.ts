@@ -6,7 +6,6 @@ import 'chrome://shimless-rma/shimless_rma.js';
 
 import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
-import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_service.js';
@@ -56,7 +55,6 @@ suite('shimless3pDiagTest', function() {
     hasDisabledAllButtons = false;
     isAllButtonsDisabled = false;
 
-    loadTimeData.overrideValues({'3pDiagnosticsEnabled': true});
     service.setGet3pDiagnosticsProviderResult(providerName);
     service.setInstallable3pDiagnosticsAppPath(null);
     service.setInstallLastFound3pDiagnosticsApp(null);
@@ -145,18 +143,6 @@ suite('shimless3pDiagTest', function() {
   test('initialize', async () => {
     await initialize();
     assert(component);
-  });
-
-  // Verify 3p diag is disabled by flag.
-  test('3pDiagIsDisabledByFlag', async () => {
-    loadTimeData.overrideValues({'3pDiagnosticsEnabled': false});
-    await initialize();
-
-    assert(component);
-    component.launch3pDiagnostics();
-
-    await flushTasks();
-    assertFalse(hasDisabledAllButtons);
   });
 
   // If provider is not yet fetched, should not trigger the launch.

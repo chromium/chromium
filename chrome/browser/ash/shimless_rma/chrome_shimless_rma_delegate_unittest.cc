@@ -213,7 +213,6 @@ class ChromeShimlessRmaDelegatePrepareDiagnosticsAppProfileTest
 
     feature_list_.InitWithFeatures(
         {
-            ash::features::kShimlessRMA3pDiagnostics,
             ash::features::kShimlessRMA3pDiagnosticsDevMode,
             ash::features::kShimlessRMA3pDiagnosticsAllowPermissionPolicy,
         },

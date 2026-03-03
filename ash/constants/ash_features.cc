@@ -1730,9 +1730,6 @@ BASE_FEATURE(kShelfAutoHideSeparation, base::FEATURE_DISABLED_BY_DEFAULT);
 // Enables or disables the OS update page in the Shimless RMA flow.
 BASE_FEATURE(kShimlessRMAOsUpdate, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables 3p diagnostics in the Shimless RMA flow.
-BASE_FEATURE(kShimlessRMA3pDiagnostics, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables 3p diagnostics dev mode in the Shimless RMA flow. This will skip some
 // checks to allow developers to use dev-signed extensions for development
 // purpose.
@@ -3096,10 +3093,6 @@ bool IsSettingsAppThemeChangeAnimationEnabled() {
 
 bool IsShimlessRMAOsUpdateEnabled() {
   return base::FeatureList::IsEnabled(kShimlessRMAOsUpdate);
-}
-
-bool IsShimlessRMA3pDiagnosticsEnabled() {
-  return base::FeatureList::IsEnabled(kShimlessRMA3pDiagnostics);
 }
 
 bool IsShimlessRMA3pDiagnosticsDevModeEnabled() {

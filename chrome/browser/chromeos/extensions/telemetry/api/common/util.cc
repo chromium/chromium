@@ -54,15 +54,14 @@ content::WebContents* FindTelemetryExtensionOpenAndSecureAppUi(
   const auto& pattern_set =
       extensions::ExternallyConnectableInfo::Get(extension)->matches;
 
-  if (ash::features::IsShimlessRMA3pDiagnosticsEnabled()) {
-    content::WebContents* contents =
-        ash::shimless_rma::ExternalAppDialog::GetWebContents();
-    if (contents && contents->GetBrowserContext() == context &&
-        IsWebContentsSecureAppUi(pattern_set, contents)) {
-      // In shimless, ExternalAppDialog is always on the top so we can assume it
-      // is always focused.
-      return contents;
-    }
+  content::WebContents* shimless_rma_contents =
+      ash::shimless_rma::ExternalAppDialog::GetWebContents();
+  if (shimless_rma_contents &&
+      shimless_rma_contents->GetBrowserContext() == context &&
+      IsWebContentsSecureAppUi(pattern_set, shimless_rma_contents)) {
+    // In shimless, ExternalAppDialog is always on the top so we can assume it
+    // is always focused.
+    return shimless_rma_contents;
   }
 
   // A focused UI must be:

@@ -155,8 +155,7 @@ void IsExpectedManufacturerForExtensionId(const std::string& extension_id,
 }
 
 bool IsExtensionUsedByShimlessRMA(content::BrowserContext* context) {
-  return ::ash::features::IsShimlessRMA3pDiagnosticsEnabled() &&
-         ::ash::IsShimlessRmaAppBrowserContext(context);
+  return ::ash::IsShimlessRmaAppBrowserContext(context);
 }
 
 bool IsCurrentUserAffiliated() {

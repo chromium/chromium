@@ -101,7 +101,6 @@ void ChromeShimlessRmaDelegate::PrepareDiagnosticsAppBrowserContext(
     const base::FilePath& crx_path,
     const base::FilePath& swbn_path,
     PrepareDiagnosticsAppBrowserContextCallback callback) {
-  CHECK(::ash::features::IsShimlessRMA3pDiagnosticsEnabled());
   PrepareDiagnosticsAppProfile(diagnostics_app_profile_helper_delegete_ptr_,
                                crx_path, swbn_path, std::move(callback));
 }

@@ -528,7 +528,6 @@ void PrepareDiagnosticsAppProfile(
     const base::FilePath& crx_path,
     const base::FilePath& swbn_path,
     ShimlessRmaDelegate::PrepareDiagnosticsAppBrowserContextCallback callback) {
-  CHECK(::ash::features::IsShimlessRMA3pDiagnosticsEnabled());
   GetInstalledDiagnosticsAppOriginInternal() = std::nullopt;
   auto state = std::make_unique<PrepareDiagnosticsAppProfileState>();
   state->delegate = delegate;

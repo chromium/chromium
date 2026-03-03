@@ -140,8 +140,7 @@ void ExternalProtocolHandler::RunExternalProtocolDialog(
     content::WeakDocumentPtr initiator_document,
     const std::u16string& program_name) {
   // Don't launch anything from Shimless RMA app.
-  if (ash::features::IsShimlessRMA3pDiagnosticsEnabled() &&
-      ash::IsShimlessRmaAppBrowserContext(web_contents->GetBrowserContext())) {
+  if (ash::IsShimlessRmaAppBrowserContext(web_contents->GetBrowserContext())) {
     return;
   }
 

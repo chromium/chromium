@@ -150,8 +150,7 @@ void AppServiceProxyAsh::Initialize() {
   publisher_host_ = publisher_host_factory_->CreatePublisherHost(this);
 
   if (!profile_->AsTestingProfile() &&
-      (!::ash::features::IsShimlessRMA3pDiagnosticsEnabled() ||
-       !::ash::IsShimlessRmaAppBrowserContext(profile_))) {
+      !::ash::IsShimlessRmaAppBrowserContext(profile_)) {
     app_platform_metrics_service_ =
         std::make_unique<apps::AppPlatformMetricsService>(profile_);
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
