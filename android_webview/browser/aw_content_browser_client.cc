@@ -317,8 +317,21 @@ void AwContentBrowserClient::ConfigureNetworkContextParams(
   // Pass the mojo::PendingRemote<network::mojom::CookieManager> to
   // android_webview::CookieManager, so it can implement its APIs with this mojo
   // CookieManager.
-  aw_context->GetCookieManager()->SetMojoCookieManager(
-      std::move(cookie_manager_remote));
+  if (base::FeatureList::IsEnabled(
+          features::kWebViewNonBlockingCookieStoreHandoff)) {
+    // New non-blocking path with proper close before handoff.
+    mojo::PendingRemote<network::mojom::CookieStoreReadyCallback>
+        ready_callback;
+    network_context_params->cookie_store_ready_callback =
+        ready_callback.InitWithNewPipeAndPassReceiver();
+
+    aw_context->GetCookieManager()->SetMojoCookieManagerNonBlocking(
+        std::move(cookie_manager_remote), std::move(ready_callback));
+  } else {
+    // Original blocking path (for A/B comparison).
+    aw_context->GetCookieManager()->SetMojoCookieManager(
+        std::move(cookie_manager_remote));
+  }
 }
 
 void AwContentBrowserClient::InitBrowserContextStore() {

@@ -15,6 +15,7 @@
 #include "android_webview/browser/aw_browser_context_store.h"
 #include "android_webview/browser/aw_client_hints_controller_delegate.h"
 #include "android_webview/browser/aw_cookie_access_policy.h"
+#include "android_webview/common/aw_features.h"
 #include "android_webview/common/aw_switches.h"
 #include "base/android/android_info.h"
 #include "base/android/apk_info.h"
@@ -379,12 +380,12 @@ network::mojom::CookieManager* CookieManager::GetMojoCookieManager() {
 void CookieManager::SetMojoCookieManager(
     mojo::PendingRemote<network::mojom::CookieManager> cookie_manager_remote) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  ExecCookieTaskSync(base::BindOnce(&CookieManager::SetMojoCookieManagerAsync,
-                                    base::Unretained(this),
-                                    std::move(cookie_manager_remote)));
+  ExecCookieTaskSync(
+      base::BindOnce(&CookieManager::SetMojoCookieManagerOnCookieThread,
+                     base::Unretained(this), std::move(cookie_manager_remote)));
 }
 
-void CookieManager::SetMojoCookieManagerAsync(
+void CookieManager::SetMojoCookieManagerOnCookieThread(
     mojo::PendingRemote<network::mojom::CookieManager> cookie_manager_remote,
     base::OnceClosure complete) {
   DCHECK(cookie_store_task_runner_->RunsTasksInCurrentSequence());
@@ -393,20 +394,21 @@ void CookieManager::SetMojoCookieManagerAsync(
   // must sometimes flush the mojo_cookie_manager_ instead of cookie_store_).
   DCHECK(!mojo_cookie_manager_.is_bound());
   if (!cookie_store_created_) {
-    SwapMojoCookieManagerAsync(std::move(cookie_manager_remote),
-                               std::move(complete));
+    SwapMojoCookieManagerOnCookieThread(std::move(cookie_manager_remote),
+                                        std::move(complete));
     return;
   }
 
   LOG(WARNING) << "Transferring cookies from provisional CookieManager to "
                   "network service. For issues with the provisional "
                   "CookieManager, see crbug.com/478873476.";
-  GetCookieStore()->FlushStore(base::BindOnce(
-      &CookieManager::SwapMojoCookieManagerAsync, base::Unretained(this),
-      std::move(cookie_manager_remote), std::move(complete)));
+  GetCookieStore()->FlushStore(
+      base::BindOnce(&CookieManager::SwapMojoCookieManagerOnCookieThread,
+                     base::Unretained(this), std::move(cookie_manager_remote),
+                     std::move(complete)));
 }
 
-void CookieManager::SwapMojoCookieManagerAsync(
+void CookieManager::SwapMojoCookieManagerOnCookieThread(
     mojo::PendingRemote<network::mojom::CookieManager> cookie_manager_remote,
     base::OnceClosure complete) {
   DCHECK(cookie_store_task_runner_->RunsTasksInCurrentSequence());
@@ -418,6 +420,125 @@ void CookieManager::SwapMojoCookieManagerAsync(
                      base::Unretained(this)));
   std::move(complete).Run();  // unblock content initialization
   RunPendingCookieTasks();
+}
+
+void CookieManager::SetMojoCookieManagerNonBlocking(
+    mojo::PendingRemote<network::mojom::CookieManager> cookie_manager_remote,
+    mojo::PendingRemote<network::mojom::CookieStoreReadyCallback>
+        ready_callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  // Non-blocking version - post task instead of ExecCookieTaskSync
+  ExecCookieTask(base::BindOnce(
+      &CookieManager::SetMojoCookieManagerNonBlockingOnCookieThread,
+      base::Unretained(this), std::move(cookie_manager_remote),
+      std::move(ready_callback)));
+}
+
+void CookieManager::SetMojoCookieManagerNonBlockingOnCookieThread(
+    mojo::PendingRemote<network::mojom::CookieManager> cookie_manager_remote,
+    mojo::PendingRemote<network::mojom::CookieStoreReadyCallback>
+        ready_callback) {
+  DCHECK(cookie_store_task_runner_->RunsTasksInCurrentSequence());
+  setting_new_mojo_cookie_manager_ = true;
+  DCHECK(!mojo_cookie_manager_.is_bound());
+
+  if (!cookie_store_created_) {
+    // No provisional store was created, can signal ready immediately.
+    OnProvisionalStoreClosed(std::move(cookie_manager_remote),
+                             std::move(ready_callback));
+    return;
+  }
+
+  // Flush the provisional store, then close it and signal ready.
+  GetCookieStore()->FlushStore(
+      base::BindOnce(&CookieManager::CloseProvisionalStoreAndSignalReady,
+                     base::Unretained(this), std::move(cookie_manager_remote),
+                     std::move(ready_callback)));
+}
+
+void CookieManager::CloseProvisionalStoreAndSignalReady(
+    mojo::PendingRemote<network::mojom::CookieManager> cookie_manager_remote,
+    mojo::PendingRemote<network::mojom::CookieStoreReadyCallback>
+        ready_callback) {
+  DCHECK(cookie_store_task_runner_->RunsTasksInCurrentSequence());
+
+  if (pending_provisional_store_operations_ > 0) {
+    // There are pending operations. Save the remotes and wait for them to
+    // complete. The last operation to complete will call
+    // DoCloseProvisionalStoreAndSignalReady.
+    waiting_to_close_provisional_store_ = true;
+    deferred_cookie_manager_remote_ = std::move(cookie_manager_remote);
+    deferred_ready_callback_ = std::move(ready_callback);
+    return;
+  }
+
+  // No pending operations, close immediately.
+  DoCloseProvisionalStoreAndSignalReady(std::move(cookie_manager_remote),
+                                        std::move(ready_callback));
+}
+
+void CookieManager::DoCloseProvisionalStoreAndSignalReady(
+    mojo::PendingRemote<network::mojom::CookieManager> cookie_manager_remote,
+    mojo::PendingRemote<network::mojom::CookieStoreReadyCallback>
+        ready_callback) {
+  DCHECK(cookie_store_task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_EQ(pending_provisional_store_operations_, 0);
+
+  // Close the provisional cookie store. This triggers the destructor which
+  // posts backend_->Close() to the background thread.
+  cookie_store_.reset();
+  cookie_store_created_ = false;
+
+  // Continue to OnProvisionalStoreClosed, which will stop the backend thread.
+  OnProvisionalStoreClosed(std::move(cookie_manager_remote),
+                           std::move(ready_callback));
+}
+
+void CookieManager::OnProvisionalStoreClosed(
+    mojo::PendingRemote<network::mojom::CookieManager> cookie_manager_remote,
+    mojo::PendingRemote<network::mojom::CookieStoreReadyCallback>
+        ready_callback) {
+  DCHECK(cookie_store_task_runner_->RunsTasksInCurrentSequence());
+
+  // Synchronously wait for all pending backend tasks to complete,
+  // including the backend_->Close() posted by ~CookieMonster.
+  base::WaitableEvent backend_drained;
+  cookie_store_backend_thread_.task_runner()->PostTask(
+      FROM_HERE, base::BindOnce(&base::WaitableEvent::Signal,
+                                base::Unretained(&backend_drained)));
+  backend_drained.Wait();
+
+  // Bind the new mojo cookie manager.
+  mojo_cookie_manager_.Bind(std::move(cookie_manager_remote));
+
+  // Signal that the provisional store is closed and it's safe to open the
+  // cookie database in the Network Service.
+  mojo::Remote<network::mojom::CookieStoreReadyCallback> callback_remote(
+      std::move(ready_callback));
+  callback_remote->OnCookieStoreReady();
+
+  setting_new_mojo_cookie_manager_ = false;
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(&CookieManager::ClearClientHintsCachedPerOriginMapIfNeeded,
+                     base::Unretained(this)));
+  RunPendingCookieTasks();
+}
+
+void CookieManager::OnProvisionalStoreOperationComplete() {
+  DCHECK(cookie_store_task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_GT(pending_provisional_store_operations_, 0);
+  pending_provisional_store_operations_--;
+
+  // If we're waiting to close the provisional store and this was the last
+  // pending operation, proceed with closing.
+  if (waiting_to_close_provisional_store_ &&
+      pending_provisional_store_operations_ == 0) {
+    waiting_to_close_provisional_store_ = false;
+    DoCloseProvisionalStoreAndSignalReady(
+        std::move(deferred_cookie_manager_remote_),
+        std::move(deferred_ready_callback_));
+  }
 }
 
 base::android::ScopedJavaLocalRef<jobject>
@@ -512,10 +633,17 @@ void CookieManager::SetCookieHelper(const GURL& host,
         base::BindOnce(net::cookie_util::IsCookieAccessResultInclude)
             .Then(std::move(callback)));
   } else {
+    // Track this operation on the provisional store.
+    pending_provisional_store_operations_++;
+    auto wrapped_callback =
+        base::BindOnce(net::cookie_util::IsCookieAccessResultInclude)
+            .Then(std::move(callback))
+            .Then(base::BindOnce(
+                &CookieManager::OnProvisionalStoreOperationComplete,
+                base::Unretained(this)));
     GetCookieStore()->SetCanonicalCookieAsync(
         std::move(cc), new_host, net::CookieOptions::MakeAllInclusive(),
-        base::BindOnce(net::cookie_util::IsCookieAccessResultInclude)
-            .Then(std::move(callback)));
+        std::move(wrapped_callback));
   }
 }
 
@@ -565,13 +693,19 @@ void CookieManager::GetCookieListAsyncHelper(const GURL& host,
         base::BindOnce(&CookieManager::GetCookieListCompleted,
                        base::Unretained(this), std::move(complete), result));
   } else {
+    // Track this operation on the provisional store.
+    pending_provisional_store_operations_++;
+    auto wrapped_complete = std::move(complete).Then(
+        base::BindOnce(&CookieManager::OnProvisionalStoreOperationComplete,
+                       base::Unretained(this)));
     GetCookieStore()->GetCookieListWithOptionsAsync(
         host, options,
         net::CookiePartitionKeyCollection(net::CookiePartitionKey::FromWire(
             net::SchemefulSite(host),
             net::CookiePartitionKey::AncestorChainBit::kSameSite)),
         base::BindOnce(&CookieManager::GetCookieListCompleted,
-                       base::Unretained(this), std::move(complete), result));
+                       base::Unretained(this), std::move(wrapped_complete),
+                       result));
   }
 }
 
@@ -607,9 +741,14 @@ void CookieManager::RemoveSessionCookiesHelper(
         base::BindOnce(&CookieManager::RemoveCookiesCompleted,
                        base::Unretained(this), std::move(callback)));
   } else {
+    // Track this operation on the provisional store.
+    pending_provisional_store_operations_++;
+    auto wrapped_callback = std::move(callback).Then(
+        base::BindOnce(&CookieManager::OnProvisionalStoreOperationComplete,
+                       base::Unretained(this)));
     GetCookieStore()->DeleteSessionCookiesAsync(
         base::BindOnce(&CookieManager::RemoveCookiesCompleted,
-                       base::Unretained(this), std::move(callback)));
+                       base::Unretained(this), std::move(wrapped_callback)));
   }
 }
 
@@ -648,9 +787,14 @@ void CookieManager::RemoveAllCookiesHelper(
                        base::Unretained(this), std::move(callback)));
   } else {
     // TODO(crbug.com/40609350): Support clearing client hints here as well.
+    // Track this operation on the provisional store.
+    pending_provisional_store_operations_++;
+    auto wrapped_callback = std::move(callback).Then(
+        base::BindOnce(&CookieManager::OnProvisionalStoreOperationComplete,
+                       base::Unretained(this)));
     GetCookieStore()->DeleteAllAsync(
         base::BindOnce(&CookieManager::RemoveCookiesCompleted,
-                       base::Unretained(this), std::move(callback)));
+                       base::Unretained(this), std::move(wrapped_callback)));
   }
 }
 
@@ -668,7 +812,12 @@ void CookieManager::FlushCookieStoreAsyncHelper(base::OnceClosure complete) {
   if (GetMojoCookieManager()) {
     GetMojoCookieManager()->FlushCookieStore(std::move(complete));
   } else {
-    GetCookieStore()->FlushStore(std::move(complete));
+    // Track this operation on the provisional store.
+    pending_provisional_store_operations_++;
+    auto wrapped_complete = std::move(complete).Then(
+        base::BindOnce(&CookieManager::OnProvisionalStoreOperationComplete,
+                       base::Unretained(this)));
+    GetCookieStore()->FlushStore(std::move(wrapped_complete));
   }
 }
 
@@ -688,9 +837,14 @@ void CookieManager::HasCookiesAsyncHelper(bool* result,
         base::BindOnce(&CookieManager::HasCookiesCompleted,
                        base::Unretained(this), std::move(complete), result));
   } else {
-    GetCookieStore()->GetAllCookiesAsync(
-        base::BindOnce(&CookieManager::HasCookiesCompleted,
-                       base::Unretained(this), std::move(complete), result));
+    // Track this operation on the provisional store.
+    pending_provisional_store_operations_++;
+    auto wrapped_complete = std::move(complete).Then(
+        base::BindOnce(&CookieManager::OnProvisionalStoreOperationComplete,
+                       base::Unretained(this)));
+    GetCookieStore()->GetAllCookiesAsync(base::BindOnce(
+        &CookieManager::HasCookiesCompleted, base::Unretained(this),
+        std::move(wrapped_complete), result));
   }
 }
 
@@ -726,8 +880,10 @@ void CookieManager::SetAllowFileSchemeCookiesAsyncHelper(
         base::BindOnce(&CookieManager::SetAllowFileSchemeCookiesCompleted,
                        base::Unretained(this), std::move(complete), allow));
   } else {
-    // If we have neither a Network Service CookieManager nor have created the
-    // CookieStore, we may modify |allow_file_scheme_cookies_|.
+    // No tracking needed here: without a mojo cookie manager, this path
+    // doesn't perform any async cookie store operation. It synchronously
+    // updates allow_file_scheme_cookies_ via
+    // SetAllowFileSchemeCookiesCompleted.
     bool can_change_schemes = !cookie_store_created_;
     SetAllowFileSchemeCookiesCompleted(std::move(complete), allow,
                                        can_change_schemes);

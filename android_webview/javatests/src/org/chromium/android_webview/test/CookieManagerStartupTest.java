@@ -25,11 +25,13 @@ import org.chromium.android_webview.AwBrowserProcess;
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwCookieManager;
 import org.chromium.android_webview.AwWebResourceRequest;
+import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.test.util.CookieUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.ServerCertificate;
@@ -196,5 +198,87 @@ public class CookieManagerStartupTest extends AwParameterizedTest {
                 };
         startChromiumWithClient(contentsClient);
         mActivityTestRule.loadUrlSync(mAwContents, contentsClient.getOnPageFinishedHelper(), url);
+    }
+
+    /**
+     * Test that cookies set before startup persist when using the new non-blocking handoff. This
+     * validates the fix for race conditions that can cause cookie loss.
+     */
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add("disable-partitioned-cookies")
+    @EnableFeatures(AwFeatures.WEBVIEW_NON_BLOCKING_COOKIE_STORE_HANDOFF)
+    public void testStartupWithNonBlockingHandoff() throws Throwable {
+        ThreadUtils.setWillOverrideUiThread();
+        EmbeddedTestServer webServer =
+                EmbeddedTestServer.createAndStartHTTPSServer(
+                        InstrumentationRegistry.getContext(), ServerCertificate.CERT_OK);
+        try {
+            String url = webServer.getURL("/android_webview/test/data/hello_world.html");
+
+            // Set cookies before Chromium starts.
+            AwCookieManager cookieManager = new AwCookieManager();
+            Assert.assertNotNull(cookieManager);
+
+            CookieUtils.clearCookies(InstrumentationRegistry.getInstrumentation(), cookieManager);
+            Assert.assertFalse(cookieManager.hasCookies());
+
+            cookieManager.setAcceptCookie(true);
+            cookieManager.setCookie(url, "nonblocking_test=42");
+
+            // Start Chromium - with the feature flag enabled, the non-blocking path is used.
+            startChromium();
+            mActivityTestRule.loadUrlSync(
+                    mAwContents, mContentsClient.getOnPageFinishedHelper(), url);
+
+            // Verify the cookie set before startup is still present.
+            Assert.assertTrue(cookieManager.getCookie(url).contains("nonblocking_test=42"));
+        } finally {
+            webServer.stopAndDestroyServer();
+        }
+    }
+
+    /**
+     * Test that many cookies set rapidly before startup all persist. This stress-tests the handoff
+     * to catch race conditions.
+     */
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
+    @EnableFeatures(AwFeatures.WEBVIEW_NON_BLOCKING_COOKIE_STORE_HANDOFF)
+    public void testRapidCookieOperationsDuringStartup() throws Throwable {
+        ThreadUtils.setWillOverrideUiThread();
+        EmbeddedTestServer webServer =
+                EmbeddedTestServer.createAndStartHTTPSServer(
+                        InstrumentationRegistry.getContext(), ServerCertificate.CERT_OK);
+        try {
+            String url = webServer.getURL("/android_webview/test/data/hello_world.html");
+
+            AwCookieManager cookieManager = new AwCookieManager();
+            CookieUtils.clearCookies(InstrumentationRegistry.getInstrumentation(), cookieManager);
+            cookieManager.setAcceptCookie(true);
+
+            // Set many cookies before startup.
+            final int numCookies = 50;
+            for (int i = 0; i < numCookies; i++) {
+                cookieManager.setCookie(url, "cookie" + i + "=value" + i);
+            }
+
+            // Start Chromium and wait for initialization.
+            startChromium();
+            mActivityTestRule.loadUrlSync(
+                    mAwContents, mContentsClient.getOnPageFinishedHelper(), url);
+
+            // Verify all cookies are present.
+            String allCookies = cookieManager.getCookie(url);
+            for (int i = 0; i < numCookies; i++) {
+                Assert.assertTrue(
+                        "Cookie cookie" + i + " should be present",
+                        allCookies.contains("cookie" + i + "=value" + i));
+            }
+        } finally {
+            webServer.stopAndDestroyServer();
+        }
     }
 }

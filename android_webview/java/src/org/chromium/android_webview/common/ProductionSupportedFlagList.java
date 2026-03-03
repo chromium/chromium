@@ -1000,6 +1000,12 @@ public final class ProductionSupportedFlagList {
                         + "creation time and used throughout its lifetime. This enables shared "
                         + "memory cookie versioning to reduce IPC overhead."),
         Flag.baseFeature(
+                AwFeatures.WEBVIEW_NON_BLOCKING_COOKIE_STORE_HANDOFF,
+                "When enabled, the provisional cookie store is properly closed before the "
+                        + "Network Service opens the database, fixing race conditions that can "
+                        + "cause cookie loss when cookies are set before WebView is fully "
+                        + "initialized."),
+        Flag.baseFeature(
                 NetworkServiceFeatures.GET_COOKIES_ON_SET,
                 "When enabled, the network service returns all the cookies when setting a new "
                         + "cookie, so that it can be cached."),

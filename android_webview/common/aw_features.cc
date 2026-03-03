@@ -68,6 +68,13 @@ BASE_FEATURE(kWebViewLatchedCookiePolicy, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kWebViewMixedContentAutoupgrades,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, the provisional cookie store is properly closed before the
+// Network Service opens the database, fixing race conditions that can cause
+// cookie loss and CHECK failures when cookies are set before WebView is fully
+// initialized.
+BASE_FEATURE(kWebViewNonBlockingCookieStoreHandoff,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // A Feature used for WebView variations tests. Not used in production. Please
 // do not clean up this stale feature: we intentionally keep this feature flag
 // around for testing purposes.
