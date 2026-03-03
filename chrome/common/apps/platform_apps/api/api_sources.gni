@@ -6,14 +6,12 @@ import("//chrome/common/features.gni")
 
 assert(enable_extensions)
 
-chrome_apps_api_schema_files_ = [
-  "browser.idl",
-  "sync_file_system.idl",
-]
+chrome_apps_api_schema_files_ = [ "sync_file_system.idl" ]
 
 if (is_chromeos) {
   chrome_apps_api_schema_files_ += [
     "arc_apps_private.idl",
+    "browser.idl",
     "media_galleries.idl",
     "enterprise_remote_apps.idl",
   ]

@@ -23,8 +23,6 @@ function_registration("api_registration") {
 
 source_set("api") {
   sources = [
-    "browser/browser_api.cc",
-    "browser/browser_api.h",
     "sync_file_system/sync_file_system_api.cc",
     "sync_file_system/sync_file_system_api.h",
     "sync_file_system/sync_file_system_api_helpers.cc",
@@ -62,6 +60,8 @@ source_set("api") {
     sources += [
       "arc_apps_private/arc_apps_private_api.cc",
       "arc_apps_private/arc_apps_private_api.h",
+      "browser/browser_api.cc",
+      "browser/browser_api.h",
       "browser_context_keyed_service_factories.cc",
       "browser_context_keyed_service_factories.h",
       "enterprise_remote_apps/enterprise_remote_apps_api.cc",

@@ -19,7 +19,8 @@
   },
   "browser": {
     "channel": "stable",
-    "extension_types": ["platform_app"]
+    "extension_types": ["platform_app"],
+    "platforms": ["chromeos"]
   },
   "enterprise.remoteApps": [{
     "channel": "stable",

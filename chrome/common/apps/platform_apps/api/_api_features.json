@@ -13,7 +13,8 @@
   },
   "browser": {
     "dependencies": ["permission:browser"],
-    "contexts": ["privileged_extension"]
+    "contexts": ["privileged_extension"],
+    "platforms": ["chromeos"]
   },
   "enterprise.remoteApps": {
     "dependencies": ["permission:enterprise.remoteApps"],

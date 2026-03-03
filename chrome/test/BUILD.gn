@@ -4824,7 +4824,6 @@ if (!is_android) {
         "../browser/accessibility/embedded_a11y_extension_loader_browsertest.cc",
         "../browser/apps/guest_view/app_view_browsertest.cc",
         "../browser/apps/guest_view/web_view_browsertest.cc",
-        "../browser/apps/platform_apps/api/browser/browser_apitest.cc",
         "../browser/apps/platform_apps/api/sync_file_system/sync_file_system_apitest.cc",
         "../browser/apps/platform_apps/api/sync_file_system/sync_file_system_browsertest.cc",
         "../browser/apps/platform_apps/app_browsertest.cc",
@@ -5101,6 +5100,7 @@ if (!is_android) {
       if (is_chromeos) {
         sources += [
           "../browser/apps/platform_apps/api/arc_apps_private/arc_apps_private_apitest.cc",
+          "../browser/apps/platform_apps/api/browser/browser_apitest.cc",
           "../browser/apps/platform_apps/api/enterprise_remote_apps/enterprise_remote_apps_apitest.cc",
           "../browser/chromeos/extensions/info_private/info_private_apitest.cc",
           "../browser/chromeos/extensions/login_screen/login_screen_i18n_apitest.cc",
