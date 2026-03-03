@@ -1353,7 +1353,6 @@
           'capture_unittests',
           'content_browsertests',
           'content_unittests',
-          'remoting_unittests',
         ],
       },
       'linux_chromium_compile': {

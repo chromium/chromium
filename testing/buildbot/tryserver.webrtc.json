@@ -6,8 +6,7 @@
       "blink_unittests",
       "capture_unittests",
       "content_browsertests",
-      "content_unittests",
-      "remoting_unittests"
+      "content_unittests"
     ]
   },
   "linux_chromium_compile": {
