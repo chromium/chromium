@@ -1,5 +1,5 @@
 prompts:
-  - 'What is the architecture of the current host?'
+  - 'What target_cpu value should I set if I want to compile for the host I am currently on?'
 
 # The provider is our custom Python script.
 providers:
