@@ -131,6 +131,18 @@ NavigationInterceptor::ProcessRequest() {
     return PROCEED;
   }
 
+  if (FrameTreeNode::From(rfh)->is_on_initial_empty_document() &&
+      rfh->GetLastCommittedOrigin().opaque()) {
+    // Navigations out of an initial empty document with an opaque origin
+    // (e.g., target="_blank" which defaults to rel="noopener") cannot support
+    // FedCM because the Relying Party context is opaque.
+    // An initial empty document has an opaque origin ONLY when there is no
+    // opener relationship; if an opener were present (e.g., window.open or
+    // rel="opener"), the origin would have been inherited from the opener
+    // and would not be opaque.
+    return PROCEED;
+  }
+
   if (IdentityRegistry::FromWebContents(
           WebContents::FromRenderFrameHost(rfh)) &&
       FrameTreeNode::From(rfh)->is_on_initial_empty_document()) {
