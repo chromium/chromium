@@ -873,6 +873,56 @@ bool IsAutoplayAllowedByPolicy(content::WebContents* contents,
                                      prefs::kAutoplayAllowlist,
                                      prefs::kAutoplayAllowed);
 }
+
+blink::mojom::AutoplayPolicy DetermineWebContentsAutoplayPolicy(
+    content::WebContents* web_contents,
+    blink::mojom::AutoplayPolicy current_policy) {
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  PrefService* prefs = profile->GetPrefs();
+
+  if (IsAutoplayAllowedByPolicy(web_contents, prefs)) {
+    return blink::mojom::AutoplayPolicy::kNoUserGestureRequired;
+  }
+
+  // If we can show a setting to disable autoplay policy and are currently set
+  // to `kDocumentUserActivationRequired`, return the user preference.
+  if (base::FeatureList::IsEnabled(media::kAutoplayDisableSettings) &&
+      current_policy ==
+          blink::mojom::AutoplayPolicy::kDocumentUserActivationRequired) {
+    return UnifiedAutoplayConfig::ShouldBlockAutoplay(profile)
+               ? blink::mojom::AutoplayPolicy::kDocumentUserActivationRequired
+               : blink::mojom::AutoplayPolicy::kNoUserGestureRequired;
+  }
+
+  // If the domain policy allows autoplay and has delegated that to an iframe,
+  // allow autoplay within the iframe. Only allow a nesting of single depth.
+  if (web_contents->GetPrimaryMainFrame()->IsFeatureEnabled(
+          network::mojom::PermissionsPolicyFeature::kAutoplay) &&
+      IsAutoplayAllowedByPolicy(web_contents->GetOuterWebContents(), prefs)) {
+    return blink::mojom::AutoplayPolicy::kNoUserGestureRequired;
+  }
+
+  // Allow Autoplay if the user provided mic/cam access. This is for cases such
+  // as received-video-call rings occurring before the user interacted with the
+  // page.
+  if (base::FeatureList::IsEnabled(media::kAutoplayBypassForMicCamera)) {
+    const HostContentSettingsMap* const content_settings =
+        HostContentSettingsMapFactory::GetForProfile(profile);
+    const GURL& url = web_contents->GetLastCommittedURL();
+
+    if (content_settings->GetContentSetting(
+            url, url, ContentSettingsType::MEDIASTREAM_MIC) ==
+            CONTENT_SETTING_ALLOW ||
+        content_settings->GetContentSetting(
+            url, url, ContentSettingsType::MEDIASTREAM_CAMERA) ==
+            CONTENT_SETTING_ALLOW) {
+      return blink::mojom::AutoplayPolicy::kNoUserGestureRequired;
+    }
+  }
+
+  return current_policy;
+}
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 blink::mojom::AutoplayPolicy GetAutoplayPolicyForWebContents(
@@ -896,28 +946,7 @@ blink::mojom::AutoplayPolicy GetAutoplayPolicyForWebContents(
   }
 
 #if !BUILDFLAG(IS_ANDROID)
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  PrefService* prefs = profile->GetPrefs();
-
-  // Override autoplay policy used in internal switch in case of enabling
-  // features such as policy, allowlisting or disabling from settings.
-  if (IsAutoplayAllowedByPolicy(web_contents, prefs)) {
-    result = blink::mojom::AutoplayPolicy::kNoUserGestureRequired;
-  } else if (base::FeatureList::IsEnabled(media::kAutoplayDisableSettings) &&
-             result == blink::mojom::AutoplayPolicy::
-                           kDocumentUserActivationRequired) {
-    result = UnifiedAutoplayConfig::ShouldBlockAutoplay(profile)
-                 ? blink::mojom::AutoplayPolicy::kDocumentUserActivationRequired
-                 : blink::mojom::AutoplayPolicy::kNoUserGestureRequired;
-  } else if (web_contents->GetPrimaryMainFrame()->IsFeatureEnabled(
-                 network::mojom::PermissionsPolicyFeature::kAutoplay) &&
-             IsAutoplayAllowedByPolicy(web_contents->GetOuterWebContents(),
-                                       prefs)) {
-    // If the domain policy allows autoplay and has delegated that to an iframe,
-    // allow autoplay within the iframe. Only allow a nesting of single depth.
-    result = blink::mojom::AutoplayPolicy::kNoUserGestureRequired;
-  }
+  result = DetermineWebContentsAutoplayPolicy(web_contents, result);
 #else   // !BUILDFLAG(IS_ANDROID)
   // TWAs don't require a user gesture for unmuted autoplay.
   if (base::FeatureList::IsEnabled(features::kAllowUnmutedAutoplayForTWA)) {

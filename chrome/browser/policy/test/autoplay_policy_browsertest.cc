@@ -5,9 +5,13 @@
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/policy/policy_test_utils.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
 #include "content/public/browser/render_frame_host.h"
@@ -17,6 +21,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "media/base/media_switches.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "url/gurl.h"
 
@@ -374,5 +379,77 @@ IN_PROC_BROWSER_TEST_F(AutoplayPolicyFencedFrameTest,
   // Check that autoplay was allowed by policy.
   NavigateAndCheckAutoplayAllowed(true);
 }
+
+class AutoplayPolicyBypassTest : public AutoplayPolicyTest,
+                                 public testing::WithParamInterface<bool> {
+ public:
+  AutoplayPolicyBypassTest() {
+    if (GetParam()) {
+      scoped_feature_list_.InitAndEnableFeature(
+          media::kAutoplayBypassForMicCamera);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          media::kAutoplayBypassForMicCamera);
+    }
+  }
+
+  void GrantPermission(ContentSettingsType type) {
+    HostContentSettingsMapFactory::GetForProfile(browser()->profile())
+        ->SetContentSettingCustomScope(ContentSettingsPattern::FromURL(
+                                           embedded_test_server()->GetURL("/")),
+                                       ContentSettingsPattern::Wildcard(), type,
+                                       CONTENT_SETTING_ALLOW);
+  }
+
+  void SetAutoplayAllowedPolicy(bool enabled) {
+    PolicyMap policies;
+    SetPolicy(&policies, key::kAutoplayAllowed, base::Value(enabled));
+    UpdateProviderPolicy(policies);
+  }
+
+  void ExpectAutoplay(bool expected) {
+    EXPECT_EQ(expected, TryAutoplay(GetPrimaryMainFrame()));
+    EXPECT_EQ(expected, TryAutoplay(GetChildFrame()));
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(AutoplayPolicyBypassTest,
+                       AutoplayAllowedByCameraPermission) {
+  NavigateToTestPage();
+  ExpectAutoplay(false);
+
+  GrantPermission(ContentSettingsType::MEDIASTREAM_CAMERA);
+
+  NavigateToTestPage();
+  ExpectAutoplay(GetParam());
+}
+
+IN_PROC_BROWSER_TEST_P(AutoplayPolicyBypassTest,
+                       AutoplayAllowedByMicrophonePermission) {
+  NavigateToTestPage();
+  ExpectAutoplay(false);
+
+  GrantPermission(ContentSettingsType::MEDIASTREAM_MIC);
+
+  NavigateToTestPage();
+  ExpectAutoplay(GetParam());
+}
+
+IN_PROC_BROWSER_TEST_P(AutoplayPolicyBypassTest,
+                       AutoplayAllowedByPolicyDespiteNoMicCameraPermission) {
+  NavigateToTestPage();
+  ExpectAutoplay(false);
+
+  SetAutoplayAllowedPolicy(true);
+
+  NavigateToTestPage();
+  ExpectAutoplay(true);
+}
+
+// this `Bool()` is whether the `media::kAutoplayBypassForMicCamera` is enabled.
+INSTANTIATE_TEST_SUITE_P(All, AutoplayPolicyBypassTest, testing::Bool());
 
 }  // namespace policy
