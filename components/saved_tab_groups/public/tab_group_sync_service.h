@@ -182,6 +182,13 @@ class TabGroupSyncService : public KeyedService, public base::SupportsUserData {
                                    std::optional<bool> is_pinned,
                                    std::optional<int> new_index) = 0;
 
+  // Reorders the group with `sync_id` to be before or after the group with
+  // `next_sync_id` or `prev_sync_id`.
+  virtual void ReorderGroupBefore(const base::Uuid& sync_id,
+                                  const base::Uuid& next_sync_id) = 0;
+  virtual void ReorderGroupAfter(const base::Uuid& sync_id,
+                                 const base::Uuid& prev_sync_id) = 0;
+
   // Update bookmark node id of the tab group.
   // This is used to connect/disconnect bookmark folder with a saved tab group.
   virtual void UpdateBookmarkNodeId(

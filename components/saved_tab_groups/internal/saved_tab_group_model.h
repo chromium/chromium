@@ -199,6 +199,11 @@ class SavedTabGroupModel {
   void ReorderGroupLocally(const base::Uuid& id, int new_index);
   void ReorderGroupFromSync(const base::Uuid& id, int new_index);
 
+  // Reorders the group with `id` to be before or after the group with
+  // `next_id` or `prev_id`.
+  void ReorderGroupBefore(const base::Uuid& id, const base::Uuid& next_id);
+  void ReorderGroupAfter(const base::Uuid& id, const base::Uuid& prev_id);
+
   // Update the creator cache guid for all saved groups that have
   // `old_cache_guid`, to `new_cache_guid`.
   std::pair<std::set<base::Uuid>, std::set<base::Uuid>> UpdateLocalCacheGuid(

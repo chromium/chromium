@@ -43,8 +43,32 @@ void ProjectsPanelController::OpenTabGroup(const base::Uuid& group_guid) {
 
 void ProjectsPanelController::MoveTabGroup(const base::Uuid& group_guid,
                                            int new_index) {
-  tab_group_sync_service_->UpdateGroupPosition(group_guid, std::nullopt,
-                                               new_index);
+  if (new_index < 0 || new_index >= static_cast<int>(tab_groups_.size())) {
+    return;
+  }
+
+  auto it = std::ranges::find(tab_groups_, group_guid,
+                              &tab_groups::SavedTabGroup::saved_guid);
+  if (it == tab_groups_.end()) {
+    return;
+  }
+
+  int old_index = std::distance(tab_groups_.begin(), it);
+  if (old_index == new_index) {
+    return;
+  }
+
+  if (new_index < old_index) {
+    // Moving up (to a lower index). Place before the group currently at
+    // new_index.
+    tab_group_sync_service_->ReorderGroupBefore(
+        group_guid, tab_groups_[new_index].saved_guid());
+  } else {
+    // Moving down (to a higher index). Place after the group currently at
+    // new_index.
+    tab_group_sync_service_->ReorderGroupAfter(
+        group_guid, tab_groups_[new_index].saved_guid());
+  }
 }
 
 const std::vector<contextual_tasks::Thread>&

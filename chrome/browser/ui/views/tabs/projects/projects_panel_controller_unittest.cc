@@ -207,16 +207,40 @@ TEST_F(ProjectsPanelControllerTest, OpenTabGroupCallsService) {
   controller->OpenTabGroup(uuid);
 }
 
-TEST_F(ProjectsPanelControllerTest, MoveTabGroupCallsService) {
-  auto controller = GetInitializedController();
-  const base::Uuid uuid = base::Uuid::GenerateRandomV4();
+TEST_F(ProjectsPanelControllerTest, MoveTabGroupUpCallsReorderGroupBefore) {
+  std::vector<tab_groups::SavedTabGroup> groups = {
+      GetGroup(), GetGroup1DayOlder(), GetNewGroup()};
+  EXPECT_CALL(mock_tab_group_sync_service_, GetAllGroups())
+      .WillOnce(testing::Return(groups));
 
+  auto controller = GetInitializedController();
+
+  // Move "New Group" (index 2) to index 0.
+  // Should call ReorderGroupBefore("New Group", "Group 1").
   EXPECT_CALL(mock_tab_group_sync_service_,
-              UpdateGroupPosition(testing::Eq(uuid), testing::Eq(std::nullopt),
-                                  testing::Eq(2)))
+              ReorderGroupBefore(testing::Eq(GetNewGroup().saved_guid()),
+                                 testing::Eq(GetGroup().saved_guid())))
       .Times(1);
 
-  controller->MoveTabGroup(uuid, 2);
+  controller->MoveTabGroup(GetNewGroup().saved_guid(), 0);
+}
+
+TEST_F(ProjectsPanelControllerTest, MoveTabGroupDownCallsReorderGroupAfter) {
+  std::vector<tab_groups::SavedTabGroup> groups = {
+      GetGroup(), GetGroup1DayOlder(), GetNewGroup()};
+  EXPECT_CALL(mock_tab_group_sync_service_, GetAllGroups())
+      .WillOnce(testing::Return(groups));
+
+  auto controller = GetInitializedController();
+
+  // Move "Group 1" (index 0) to index 2.
+  // Should call ReorderGroupAfter("Group 1", "New Group").
+  EXPECT_CALL(mock_tab_group_sync_service_,
+              ReorderGroupAfter(testing::Eq(GetGroup().saved_guid()),
+                                testing::Eq(GetNewGroup().saved_guid())))
+      .Times(1);
+
+  controller->MoveTabGroup(GetGroup().saved_guid(), 2);
 }
 
 TEST_F(ProjectsPanelControllerTest, OpenTabGroupAutofocus) {

@@ -1753,6 +1753,44 @@ TEST_F(TabGroupSyncServiceImplTest, OnTabGroupsReordered) {
   EXPECT_EQ(1, group->position());
 }
 
+TEST_F(TabGroupSyncServiceImplTest, ReorderGroupBefore) {
+  base::Uuid guid1 = group_1_.saved_guid();
+  base::Uuid guid2 = group_2_.saved_guid();
+  base::Uuid guid3 = group_3_.saved_guid();
+
+  // Initial order: [group_1, group_2, group_3]
+
+  EXPECT_CALL(*observer_, OnTabGroupsReordered(Eq(TriggerSource::LOCAL)))
+      .Times(1);
+  tab_group_sync_service_->ReorderGroupBefore(guid3, guid2);
+
+  auto all_groups = tab_group_sync_service_->GetAllGroups();
+  // guid3 should now be before guid2.
+  // [group_1, group_3, group_2]
+  EXPECT_EQ(all_groups[0].saved_guid(), guid1);
+  EXPECT_EQ(all_groups[1].saved_guid(), guid3);
+  EXPECT_EQ(all_groups[2].saved_guid(), guid2);
+}
+
+TEST_F(TabGroupSyncServiceImplTest, ReorderGroupAfter) {
+  base::Uuid guid1 = group_1_.saved_guid();
+  base::Uuid guid2 = group_2_.saved_guid();
+  base::Uuid guid3 = group_3_.saved_guid();
+
+  // Initial order: [group_1, group_2, group_3]
+
+  EXPECT_CALL(*observer_, OnTabGroupsReordered(Eq(TriggerSource::LOCAL)))
+      .Times(1);
+  tab_group_sync_service_->ReorderGroupAfter(guid1, guid2);
+
+  auto all_groups = tab_group_sync_service_->GetAllGroups();
+  // guid1 should now be after guid2.
+  // [group_2, group_1, group_3]
+  EXPECT_EQ(all_groups[0].saved_guid(), guid2);
+  EXPECT_EQ(all_groups[1].saved_guid(), guid1);
+  EXPECT_EQ(all_groups[2].saved_guid(), guid3);
+}
+
 TEST_F(TabGroupSyncServiceImplTest, TabIDMappingIsCleardOnGroupClose) {
   auto group = tab_group_sync_service_->GetGroup(group_1_.saved_guid());
   EXPECT_TRUE(group->local_group_id().has_value());

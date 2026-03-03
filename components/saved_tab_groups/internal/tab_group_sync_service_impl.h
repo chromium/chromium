@@ -90,6 +90,11 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
                            std::optional<bool> is_pinned,
                            std::optional<int> new_index) override;
 
+  void ReorderGroupBefore(const base::Uuid& sync_id,
+                          const base::Uuid& next_sync_id) override;
+  void ReorderGroupAfter(const base::Uuid& sync_id,
+                         const base::Uuid& prev_sync_id) override;
+
   void UpdateBookmarkNodeId(
       const base::Uuid& sync_id,
       std::optional<base::Uuid> bookmark_node_id) override;
