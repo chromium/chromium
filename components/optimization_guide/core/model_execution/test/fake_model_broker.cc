@@ -52,7 +52,7 @@ FakeModelBroker::~FakeModelBroker() = default;
 
 mojo::PendingRemote<mojom::ModelBroker> FakeModelBroker::BindAndPassRemote() {
   mojo::PendingRemote<mojom::ModelBroker> remote;
-  GetOrCreateBrokerState().service_controller().BindBroker(
+  GetOrCreateBrokerState().BindModelBroker(
       remote.InitWithNewPipeAndPassReceiver());
   return remote;
 }

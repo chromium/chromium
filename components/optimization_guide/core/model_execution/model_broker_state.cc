@@ -7,14 +7,30 @@
 #include <cstddef>
 #include <memory>
 
+#include "base/metrics/histogram_functions.h"
+#include "base/trace_event/trace_event.h"
 #include "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"
 #include "components/optimization_guide/core/model_execution/on_device_asset_manager.h"
+#include "components/optimization_guide/core/model_execution/on_device_features.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_access_controller.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_service_controller.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/public/mojom/model_broker.mojom.h"
 
 namespace optimization_guide {
+
+namespace {
+
+void LogEligibilityReason(mojom::OnDeviceFeature feature,
+                          OnDeviceModelEligibilityReason reason) {
+  base::UmaHistogramEnumeration(
+      base::StrCat(
+          {"OptimizationGuide.ModelExecution.OnDeviceModelEligibilityReason.",
+           GetVariantName(feature)}),
+      reason);
+}
+
+}  // namespace
 
 ModelBrokerState::ModelBrokerState(
     PrefService& local_state,
@@ -25,21 +41,25 @@ ModelBrokerState::ModelBrokerState(
     on_device_model::ServiceClient::LaunchFn launch_fn,
     component_updater::ComponentUpdateService* component_update_service)
     : service_client_(std::move(launch_fn)),
-      usage_tracker_(&local_state),
-      performance_classifier_(&local_state, service_client_.GetSafeRef()),
       download_progress_manager_(component_update_service,
                                  {base_delegate->GetComponentId()}),
+      usage_tracker_(&local_state),
+      model_broker_impl_(
+          usage_tracker_,
+          base::BindRepeating(&ModelBrokerState::EnsureInitialization,
+                              base::Unretained(this)),
+          download_progress_manager_.GetAddObserverCallback()),
+      performance_classifier_(&local_state, service_client_.GetSafeRef()),
       component_state_manager_(&local_state,
                                performance_classifier_.GetSafeRef(),
                                usage_tracker_,
                                std::move(base_delegate)),
       service_controller_(
-          std::make_unique<OnDeviceModelAccessController>(local_state),
-          performance_classifier_.GetSafeRef(),
-          component_state_manager_.GetWeakPtr(),
+          service_client_,
           usage_tracker_,
-          service_client_.GetSafeRef(),
-          download_progress_manager_.GetAddObserverCallback()),
+          model_broker_impl_,
+          std::make_unique<OnDeviceModelAccessController>(local_state),
+          component_state_manager_.GetWeakPtr()),
       asset_manager_(local_state,
                      usage_tracker_,
                      component_state_manager_,
@@ -52,7 +72,7 @@ void ModelBrokerState::BindModelBroker(
   if (!features::IsOnDeviceExecutionEnabled()) {
     return;
   }
-  service_controller_.BindBroker(std::move(receiver));
+  model_broker_impl_.BindBroker(std::move(receiver));
 }
 
 std::unique_ptr<OnDeviceSession> ModelBrokerState::StartSession(
@@ -62,7 +82,25 @@ std::unique_ptr<OnDeviceSession> ModelBrokerState::StartSession(
   if (!features::IsOnDeviceExecutionEnabled()) {
     return nullptr;
   }
-  return service_controller_.CreateSession(feature, logger, config_params);
+  TRACE_EVENT("optimization_guide", "ModelBrokerState::StartSession", "feature",
+              base::ToString(feature));
+  // TODO: holte - This should be simplified if we remove integration test
+  // dependencies on the EligibilityReason histogram being logged.
+  OnDeviceModelEligibilityReason reason = GetOnDeviceModelEligibility(feature);
+  LogEligibilityReason(feature, reason);
+  usage_tracker_.OnDeviceEligibleFeatureUsed(feature);
+
+  // Return if we cannot do anything more for right now.
+  if (reason != OnDeviceModelEligibilityReason::kSuccess) {
+    VLOG(1) << "Failed to create Session:" << reason;
+    return nullptr;
+  }
+  // Client should be non-null because GetOnDeviceModelEligibility above
+  // succeeded.
+  return model_broker_impl_.GetSolutionProvider(feature)
+      .local_subscriber()
+      .client()
+      ->CreateSession(config_params, logger);
 }
 
 OnDeviceModelEligibilityReason ModelBrokerState::GetOnDeviceModelEligibility(
@@ -70,7 +108,14 @@ OnDeviceModelEligibilityReason ModelBrokerState::GetOnDeviceModelEligibility(
   if (!features::IsOnDeviceExecutionEnabled()) {
     return OnDeviceModelEligibilityReason::kFeatureNotEnabled;
   }
-  return service_controller_.CanCreateSession(feature);
+  TRACE_EVENT("optimization_guide",
+              "ModelBrokerState::GetOnDeviceModelEligibility", "feature",
+              base::ToString(feature));
+  // Ensure a solution is constructed for this feature, to avoid returning
+  // kUnknown when this is called too early.
+  service_controller_.UpdateSolutionProvider(feature);
+  return model_broker_impl_.GetSolutionProvider(feature).solution().error_or(
+      OnDeviceModelEligibilityReason::kSuccess);
 }
 
 void ModelBrokerState::GetOnDeviceModelEligibilityAsync(
@@ -93,12 +138,15 @@ ModelBrokerState::GetSamplingParamsConfig(mojom::OnDeviceFeature feature) {
     return std::nullopt;
   }
 
-  const auto* adapter = service_controller_.GetAdapter(feature);
-  if (!adapter) {
+  const auto& solution =
+      model_broker_impl_.GetSolutionProvider(feature).solution();
+  if (!solution.has_value()) {
     return std::nullopt;
   }
 
-  return adapter->GetSamplingParamsConfig();
+  // Solution owns the scoped_refptr to the adapter, so the return pointer of
+  // GetAdapter() is always safe to use.
+  return solution.value()->GetAdapter()->GetSamplingParamsConfig();
 }
 
 std::optional<const proto::Any> ModelBrokerState::GetFeatureMetadata(
@@ -107,12 +155,19 @@ std::optional<const proto::Any> ModelBrokerState::GetFeatureMetadata(
     return std::nullopt;
   }
 
-  const auto* adapter = service_controller_.GetAdapter(feature);
-  if (!adapter) {
+  const auto& solution =
+      model_broker_impl_.GetSolutionProvider(feature).solution();
+  if (!solution.has_value()) {
     return std::nullopt;
   }
 
-  return adapter->GetFeatureMetadata();
+  // Solution owns the scoped_refptr to the adapter, so the return pointer of
+  // GetAdapter() is always safe to use.
+  return solution.value()->GetAdapter()->GetFeatureMetadata();
+}
+
+void ModelBrokerState::EnsureInitialization(base::OnceClosure callback) {
+  performance_classifier_.EnsurePerformanceClassAvailable(std::move(callback));
 }
 
 void ModelBrokerState::FinishGetOnDeviceModelEligibility(
@@ -137,8 +192,7 @@ void ModelBrokerState::AddOnDeviceModelAvailabilityChangeObserver(
   if (!features::IsOnDeviceExecutionEnabled()) {
     return;
   }
-  service_controller_.AddOnDeviceModelAvailabilityChangeObserver(feature,
-                                                                 observer);
+  model_broker_impl_.GetSolutionProvider(feature).AddObserver(observer);
 }
 
 void ModelBrokerState::RemoveOnDeviceModelAvailabilityChangeObserver(
@@ -147,8 +201,7 @@ void ModelBrokerState::RemoveOnDeviceModelAvailabilityChangeObserver(
   if (!features::IsOnDeviceExecutionEnabled()) {
     return;
   }
-  service_controller_.RemoveOnDeviceModelAvailabilityChangeObserver(feature,
-                                                                    observer);
+  model_broker_impl_.GetSolutionProvider(feature).RemoveObserver(observer);
 }
 
 on_device_model::Capabilities ModelBrokerState::GetOnDeviceCapabilities() {

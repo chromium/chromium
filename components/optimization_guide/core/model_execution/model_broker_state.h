@@ -79,6 +79,9 @@ class ModelBrokerState final : public OnDeviceCapability {
   on_device_model::Capabilities GetOnDeviceCapabilities() override;
 
  private:
+  // Ensure any delayed initialization tasks are complete, then call `callback`.
+  void EnsureInitialization(base::OnceClosure callback);
+
   void FinishGetOnDeviceModelEligibility(
       mojom::OnDeviceFeature feature,
       const on_device_model::Capabilities& capabilities,
@@ -86,9 +89,10 @@ class ModelBrokerState final : public OnDeviceCapability {
           void(optimization_guide::OnDeviceModelEligibilityReason)> callback);
 
   on_device_model::ServiceClient service_client_;
-  UsageTracker usage_tracker_;
-  PerformanceClassifier performance_classifier_;
   OnDeviceModelDownloadProgressManager download_progress_manager_;
+  UsageTracker usage_tracker_;
+  ModelBrokerImpl model_broker_impl_;
+  PerformanceClassifier performance_classifier_;
   OnDeviceModelComponentStateManager component_state_manager_;
   OnDeviceModelServiceController service_controller_;
   OnDeviceAssetManager asset_manager_;

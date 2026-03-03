@@ -52,7 +52,6 @@ class OnDeviceModelAdaptationMetadata;
 class OnDeviceModelComponentStateManager;
 class OnDeviceModelMetadata;
 class OnDeviceModelAdaptationController;
-class PerformanceClassifier;
 
 class ModelController {
  public:
@@ -72,27 +71,19 @@ class ModelController {
 class OnDeviceModelServiceController final {
  public:
   OnDeviceModelServiceController(
-      std::unique_ptr<OnDeviceModelAccessController> access_controller,
-      base::SafeRef<PerformanceClassifier> performance_classifier,
-      base::WeakPtr<OnDeviceModelComponentStateManager>
-          on_device_component_state_manager,
+      on_device_model::ServiceClient& service_client,
       UsageTracker& usage_tracker,
-      base::SafeRef<on_device_model::ServiceClient> service_client,
-      AddDownloadProgressObserverCallback
-          add_download_progress_observer_callback);
+      ModelBrokerImpl& model_broker_impl,
+      std::unique_ptr<OnDeviceModelAccessController> access_controller,
+      base::WeakPtr<OnDeviceModelComponentStateManager>
+          on_device_component_state_manager);
   ~OnDeviceModelServiceController();
 
-  // Whether an on-device session can be created for `feature`.
-  OnDeviceModelEligibilityReason CanCreateSession(
-      mojom::OnDeviceFeature feature);
+  // Updates model_broker_impl with the latest solution for the given feature.
+  void UpdateSolutionProvider(mojom::OnDeviceFeature feature);
 
-  // Starts a session for `feature`. This will start the service and load the
-  // model if it is not already loaded. The session will handle updating
-  // context, executing input, and sending the response.
-  std::unique_ptr<OnDeviceSession> CreateSession(
-      mojom::OnDeviceFeature feature,
-      base::WeakPtr<OptimizationGuideLogger> logger,
-      const SessionConfigParams& config_params);
+  // Updates model_broker_impl with the latest solution for all features.
+  void UpdateSolutionProviders();
 
   // Sets the language detection model to be used by the ODM service when text
   // safety evaluation is restricted to a specific set of languages.
@@ -111,14 +102,6 @@ class OnDeviceModelServiceController final {
   void MaybeUpdateModelAdaptation(mojom::OnDeviceFeature feature,
                                   MaybeAdaptationMetadata adaptation_metadata);
 
-  // Add/remove observers for notifying on-device model availability changes.
-  void AddOnDeviceModelAvailabilityChangeObserver(
-      mojom::OnDeviceFeature feature,
-      OnDeviceModelAvailabilityObserver* observer);
-  void RemoveOnDeviceModelAvailabilityChangeObserver(
-      mojom::OnDeviceFeature feature,
-      OnDeviceModelAvailabilityObserver* observer);
-
   // Calls `callback` with the capabilities of the current model.
   on_device_model::Capabilities GetCapabilities();
 
@@ -129,24 +112,8 @@ class OnDeviceModelServiceController final {
   // Retrieves the object storing the adaptation metadata for 'feature'.
   MaybeAdaptationMetadata& GetFeatureMetadata(mojom::OnDeviceFeature feature);
 
-  // Get the adapter for a feature. Returns nullptr if no solution is available.
-  // GetFeatureMetadata/GetSamplingParamsConfig in ModelBrokerState depend on
-  // this which gets the adapter from Solution where we hold the scoped_refptr
-  // to the OnDeviceModelFeatureAdapter instance. This will align with Android
-  // implementation.
-  const OnDeviceModelFeatureAdapter* GetAdapter(
-      mojom::OnDeviceFeature feature) {
-    const auto& solution =
-        model_broker_impl_.GetSolutionProvider(feature).solution();
-    return solution.has_value() ? solution.value()->GetAdapter() : nullptr;
-  }
-
   // Returns the selected performance hint.
   proto::OnDeviceModelPerformanceHint GetPerformanceHint();
-
-  void BindBroker(mojo::PendingReceiver<mojom::ModelBroker> receiver) {
-    model_broker_impl_.BindBroker(std::move(receiver));
-  }
 
   const SafetyClient& GetSafetyClientForTesting() const {
     return safety_client_;
@@ -290,14 +257,12 @@ class OnDeviceModelServiceController final {
   // Constructs a solution using the currently available dependencies.
   MaybeSolution GetSolution(mojom::OnDeviceFeature feature);
 
-  void UpdateSolutionProviders();
-  void UpdateSolutionProvider(mojom::OnDeviceFeature feature);
-
-  // This may be null in the destructor, otherwise non-null.
-  std::unique_ptr<OnDeviceModelAccessController> access_controller_;
+  base::raw_ref<on_device_model::ServiceClient> service_client_;
   base::raw_ref<UsageTracker> usage_tracker_;
+  base::raw_ref<ModelBrokerImpl> model_broker_impl_;
 
-  base::SafeRef<on_device_model::ServiceClient> service_client_;
+  std::unique_ptr<OnDeviceModelAccessController> access_controller_;
+
   SafetyClient safety_client_;
 
   AdaptationMetadataMap adaptation_metadata_;
@@ -306,8 +271,6 @@ class OnDeviceModelServiceController final {
   std::optional<BaseModelController> base_model_controller_;
   OnDeviceModelStatus base_model_status_ =
       OnDeviceModelStatus::kNotReadyForUnknownReason;
-
-  ModelBrokerImpl model_broker_impl_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
