@@ -1550,24 +1550,20 @@ scoped_refptr<StaticBitmapImage> VideoFrame::CreateImageFromVideoFrame(
     return nullptr;
   }
 
-  std::optional<CanvasSnapshotProvider::Info> sw_draw_info;
-  CanvasNon2DResourceProviderSharedImage* snapshot_provider_si = nullptr;
-  sk_sp<SkSurface> sw_draw_surface;
-
   if (snapshot_provider->IsExternalBitmapProvider()) {
     auto* snapshot_provider_bitmap =
         static_cast<CanvasNon2DSnapshotProviderBitmap*>(snapshot_provider);
-    sw_draw_info = snapshot_provider_bitmap->Info();
+    sk_sp<SkSurface> draw_surface;
     if (base::FeatureList::IsEnabled(kWebCodecsDrawCacheSkSurface)) {
-      sw_draw_surface = snapshot_provider_bitmap->GetCachedSurface();
+      draw_surface = snapshot_provider_bitmap->GetCachedSurface();
     }
+    return CreateUnacceleratedImageFromVideoFrame(
+        frame, snapshot_provider_bitmap->Info(), draw_surface);
   } else {
-    snapshot_provider_si =
-        static_cast<CanvasNon2DResourceProviderSharedImage*>(snapshot_provider);
+    return CreateAcceleratedImageFromVideoFrame(
+        frame, static_cast<CanvasNon2DResourceProviderSharedImage*>(
+                   snapshot_provider));
   }
-
-  return ::blink::CreateImageFromVideoFrame(
-      frame, snapshot_provider_si, std::move(sw_draw_info), sw_draw_surface);
 }
 
 ScriptPromise<ImageBitmap> VideoFrame::CreateImageBitmap(
