@@ -8,6 +8,8 @@
 #include <libevdev/libevdev.h>
 #include <linux/input.h>
 
+#include <algorithm>
+
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
@@ -43,10 +45,12 @@ namespace ui {
 namespace {
 
 constexpr int kNumTimeBuckets = 13;
-float ClickDurationMetricBuckets[kNumTimeBuckets] = {
-    0.15, 0.16, 0.17, 0.18, 0.19, 0.2, 0.25, 0.3, 0.35, 0.45, 0.55, 0.65, 0.75,
+constexpr std::array<float, kNumTimeBuckets> kClickDurationMetricBuckets = {
+    0.15, 0.16, 0.17, 0.18, 0.19, 0.20, 0.25,
+    0.30, 0.35, 0.45, 0.55, 0.65, 0.75,
 };
-const char* ClickDurationMetricNames[kNumTimeBuckets] = {
+
+constexpr std::array<const char*, kNumTimeBuckets> kClickDurationMetricNames = {
     "Ozone.GestureInterpreterLibevdevCros.TouchpadClick.150ms",
     "Ozone.GestureInterpreterLibevdevCros.TouchpadClick.160ms",
     "Ozone.GestureInterpreterLibevdevCros.TouchpadClick.170ms",
@@ -130,10 +134,9 @@ const int kGestureScrollFingerCount = 2;
 // Number of fingers for swipe gestures.
 const int kGestureSwipeFingerCount = 3;
 
-static constexpr unsigned int kModifierEvdevCodes[] = {
-    KEY_LEFTALT,  KEY_RIGHTALT,  KEY_LEFTMETA,  KEY_RIGHTMETA,
-    KEY_LEFTCTRL, KEY_RIGHTCTRL, KEY_LEFTSHIFT, KEY_RIGHTSHIFT};
-
+static constexpr auto kModifierEvdevCodes = std::to_array<unsigned int>(
+    {KEY_LEFTALT, KEY_RIGHTALT, KEY_LEFTMETA, KEY_RIGHTMETA, KEY_LEFTCTRL,
+     KEY_RIGHTCTRL, KEY_LEFTSHIFT, KEY_RIGHTSHIFT});
 }  // namespace
 
 void GestureInterpreterLibevdevCros::RecordClickMetric(stime_t duration,
@@ -144,7 +147,7 @@ void GestureInterpreterLibevdevCros::RecordClickMetric(stime_t duration,
     return;
   }
   for (time_bucket = 0; time_bucket < kNumTimeBuckets; time_bucket++) {
-    if (duration <= UNSAFE_TODO(ClickDurationMetricBuckets[time_bucket])) {
+    if (duration <= kClickDurationMetricBuckets[time_bucket]) {
       break;
     }
   }
@@ -162,9 +165,8 @@ void GestureInterpreterLibevdevCros::RecordClickMetric(stime_t duration,
   if (move_bucket >= num_move_buckets) {
     return;
   }
-  base::UmaHistogramExactLinear(
-      UNSAFE_TODO(ClickDurationMetricNames[time_bucket]), move_bucket,
-      num_move_buckets);
+  base::UmaHistogramExactLinear(kClickDurationMetricNames[time_bucket],
+                                move_bucket, num_move_buckets);
 }
 
 GestureInterpreterLibevdevCros::GestureInterpreterLibevdevCros(
@@ -247,8 +249,7 @@ void GestureInterpreterLibevdevCros::OnLibEvdevCrosEvent(Evdev* evdev,
   // If the device has keys on it, dispatch any presses/release.
   UNSAFE_TODO(DispatchChangedKeys(evdev->key_state_bitmask, timestamp));
 
-  HardwareState hwstate;
-  UNSAFE_TODO(memset(&hwstate, 0, sizeof(hwstate)));
+  HardwareState hwstate = {};
   hwstate.timestamp = timestamp;
 
   // Mouse.
@@ -265,10 +266,9 @@ void GestureInterpreterLibevdevCros::OnLibEvdevCrosEvent(Evdev* evdev,
 
   // Touch.
   base::FixedArray<FingerState> fingers(Event_Get_Slot_Count(evdev));
-  UNSAFE_TODO(memset(fingers.data(), 0, fingers.memsize()));
   int current_finger = 0;
   for (int i = 0; i < evstate->slot_count; i++) {
-    MtSlotPtr slot = UNSAFE_TODO(&evstate->slots[i]);
+    MtSlotPtr slot = &evstate->slots[i];
     if (slot->tracking_id == -1)
       continue;
     fingers[current_finger].touch_major = slot->touch_major;
