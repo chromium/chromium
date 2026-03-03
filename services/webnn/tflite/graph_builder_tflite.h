@@ -697,10 +697,6 @@ class GraphBuilderTflite final {
       const TensorInfo& output_tensor_info);
   base::expected<OperatorOffset, std::string> SerializeExpand(
       const mojom::Expand& expand);
-  base::expected<OperatorOffset, std::string> SerializeBroadcastToOperation(
-      TensorIndex input_tensor_index,
-      base::span<const int32_t> output_dimensions,
-      TensorIndex output_tensor_index);
   base::expected<OperatorOffset, std::string> SerializeGather(
       const mojom::Gather& gather);
   base::expected<OperatorOffset, std::string> SerializeGatherElements(
