@@ -147,6 +147,7 @@ static_library("login") {
     "//chromeos/ash/components/settings",
     "//chromeos/ash/components/timezone",
     "//chromeos/ash/experiences/settings_ui",
+    "//chromeos/ash/resources:resources_grit",
     "//components/application_locale_storage",
     "//components/captive_portal/core",
     "//components/constrained_window",

@@ -93,6 +93,7 @@
 #include "chromeos/ash/components/settings/cros_settings_provider.h"
 #include "chromeos/ash/components/settings/timezone_settings.h"
 #include "chromeos/ash/components/timezone/timezone_resolver.h"
+#include "chromeos/ash/grit/ash_resources.h"
 #include "components/account_id/account_id.h"
 #include "components/keep_alive_registry/keep_alive_registry.h"
 #include "components/language/core/browser/pref_names.h"
