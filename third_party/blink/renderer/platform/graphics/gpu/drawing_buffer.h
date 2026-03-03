@@ -701,13 +701,9 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   Deque<scoped_refptr<ColorBuffer>> recycled_color_buffer_queue_;
   base::flat_set<scoped_refptr<ColorBuffer>> exported_color_buffers_;
 
-  // In the case of OffscreenCanvas, we do not want to enable the
-  // WebGLImageChromium flag, so we replace all the
-  // RuntimeEnabledFeatures::WebGLImageChromiumEnabled() call with
-  // shouldUseChromiumImage() calls, and set m_chromiumImageUsage to
-  // DisallowChromiumImage in the case of OffscreenCanvas.
+  // Allows the client to override the WebGLImageChromiumEnabled() codepath
+  // being taken.
   ChromiumImageUsage chromium_image_usage_;
-  bool ShouldUseChromiumImage();
 
   bool opengl_flip_y_extension_;
 
