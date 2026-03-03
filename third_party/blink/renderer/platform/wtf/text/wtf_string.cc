@@ -75,12 +75,12 @@ Vector<String> SplitInternal(const String& input,
   String::size_type end_pos;
   while ((end_pos = input.find(separator, start_pos)) != kNotFound) {
     if (allow_empty_entries || start_pos != end_pos) {
-      result.push_back(input.Substring(start_pos, end_pos - start_pos));
+      result.push_back(input.substr(start_pos, end_pos - start_pos));
     }
     start_pos = end_pos + separator_length;
   }
   if (allow_empty_entries || start_pos != input.length()) {
-    result.push_back(input.Substring(start_pos));
+    result.push_back(input.substr(start_pos));
   }
   return result;
 }
@@ -169,6 +169,11 @@ String String::Substring(unsigned pos, unsigned len) const {
   if (!impl_)
     return String();
   return impl_->Substring(pos, len);
+}
+
+String String::substr(size_type pos, size_type len) const {
+  CHECK_LE(pos, length());
+  return impl_ ? impl_->Substring(pos, len) : String();
 }
 
 String String::DeprecatedLower() const {

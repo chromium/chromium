@@ -365,7 +365,25 @@ class WTF_EXPORT String {
   void Truncate(unsigned length);
   void Remove(unsigned start, unsigned length = 1);
 
+  // Returns a substring.
+  //
+  // If `pos` is greater than or equal to the string length, returns an empty
+  // string. If `len` exceeds the length from `pos` to the end of the string,
+  // the substring from `pos` to the end is returned.
+  //
+  // This method exists for historical reasons. For compatibility with
+  // `std::string::substr`, consider using the `substr()` method.
   [[nodiscard]] String Substring(unsigned pos, unsigned len = UINT_MAX) const;
+  // Returns a substring.
+  //
+  // If `pos` is greater than the string length, unlike `std::string::substr`,
+  // it crashes (`std::string::substr` throws an `std::out_of_range` exception).
+  // If `len` exceeds the length from `pos` to the end of the string, the
+  // substring from `pos` to the end is returned.
+  //
+  // This copies the content of the substring. If you don't need to copy the
+  // content, use `StringView(string, pos, len)` instead.
+  [[nodiscard]] String substr(size_type pos, size_type len = npos) const;
   [[nodiscard]] String Left(unsigned len) const { return Substring(0, len); }
   [[nodiscard]] String Right(unsigned len) const {
     return Substring(length() - len, len);

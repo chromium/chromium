@@ -254,6 +254,34 @@ TEST(StringTest, Substring) {
   EXPECT_EQ(u"b", str16.Substring(1, 1));
 }
 
+TEST(StringTest, Substr) {
+  String str8("abc");
+  EXPECT_EQ(u"abc", str8.substr(0));
+  EXPECT_EQ("abc", str8.substr(0));
+  EXPECT_EQ("bc", str8.substr(1));
+  EXPECT_EQ("c", str8.substr(2));
+  EXPECT_EQ("", str8.substr(3));
+  EXPECT_EQ("", str8.substr(3, 1));
+  EXPECT_EQ("ab", str8.substr(0, 2));
+  EXPECT_EQ("abc", str8.substr(0, 3));
+  EXPECT_EQ("abc", str8.substr(0, 4));
+  EXPECT_EQ("b", str8.substr(1, 1));
+  EXPECT_DEATH(static_cast<void>(str8.substr(4)), "");
+
+  String str16(u"abc");
+  EXPECT_EQ("abc", str16.substr(0));
+  EXPECT_EQ(u"abc", str16.substr(0));
+  EXPECT_EQ(u"bc", str16.substr(1));
+  EXPECT_EQ(u"c", str16.substr(2));
+  EXPECT_EQ(u"", str16.substr(3));
+  EXPECT_EQ(u"", str16.substr(3, 1));
+  EXPECT_EQ(u"ab", str16.substr(0, 2));
+  EXPECT_EQ(u"abc", str8.substr(0, 3));
+  EXPECT_EQ(u"abc", str8.substr(0, 4));
+  EXPECT_EQ(u"b", str16.substr(1, 1));
+  EXPECT_DEATH(static_cast<void>(str16.substr(4)), "");
+}
+
 TEST(WTF, SimplifyWhiteSpace) {
   String extra_spaces("  Hello  world  ");
   EXPECT_EQ(String("Hello world"), extra_spaces.SimplifyWhiteSpace());
