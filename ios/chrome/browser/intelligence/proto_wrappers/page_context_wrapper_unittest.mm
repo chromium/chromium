@@ -3448,6 +3448,59 @@ TEST_P(PageContextWrapperTest, PopulatePageContext_RichExtraction_Text_Size) {
   }
 }
 
+// Tests that top layer elements (popovers, dialog modals, fullscreen) are
+// included in the APC tree as generic containers.
+TEST_P(PageContextWrapperTest, PopulatePageContext_GenericContainer_TopLayer) {
+  if (!IsRefactored()) {
+    GTEST_SKIP() << "ApcV2 not supported for the non-refactored APC wrapper";
+  }
+
+  // <dialog> elements shown via showModal() are rendered in the top layer,
+  // making them generic containers that would normally be flattened (no
+  // scrolling, no fixed pos).
+  auto page_structure =
+      HtmlPage("Main", RawHtml("<dialog id='target'>Target</dialog>"));
+  std::string main_html = page_helper_->Build(page_structure);
+  web::test::LoadHtml(base::SysUTF8ToNSString(main_html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  CallJavascript("document.getElementById('target').showModal();");
+
+  PageContextWrapperConfig config =
+      PageContextWrapperConfigBuilder().SetUseRichExtraction(true).Build();
+
+  PageContextWrapperCallbackResponse response = RunPageContextWrapperWithConfig(
+      web_state(), config, ^(PageContextWrapper* wrapper) {
+        wrapper.shouldGetAnnotatedPageContent = YES;
+      });
+
+  ASSERT_TRUE(response.has_value());
+  const auto& apc = response.value()->annotated_page_content();
+
+  // Traverse tree to find the <dialog> node.
+  const auto& root_node = apc.root_node();
+  const optimization_guide::proto::ContentNode* target_node = nullptr;
+
+  // The root node children are usually the un-flattened elements.
+  for (const auto& child : root_node.children_nodes()) {
+    if (child.content_attributes().attribute_type() ==
+        optimization_guide::proto::CONTENT_ATTRIBUTE_CONTAINER) {
+      target_node = &child;
+      break;
+    }
+  }
+
+  ASSERT_TRUE(target_node)
+      << "Dialog node not found as a container in APC tree";
+
+  ASSERT_EQ(target_node->children_nodes_size(), 1);
+  const auto& text_node = target_node->children_nodes(0);
+  EXPECT_EQ(text_node.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_TEXT);
+  EXPECT_EQ(text_node.content_attributes().text_data().text_content(),
+            "Target");
+}
+
 // Tests that Table Row data is extracted correctly.
 TEST_P(PageContextWrapperTest, PopulatePageContext_RichExtraction_TableRow) {
   if (!IsRefactored()) {

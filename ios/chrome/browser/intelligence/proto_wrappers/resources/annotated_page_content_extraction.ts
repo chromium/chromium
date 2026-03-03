@@ -70,6 +70,10 @@ const TAG_H4 = 'H4';
 const TAG_H5 = 'H5';
 const TAG_H6 = 'H6';
 
+// Dialog tags and attributes.
+const TAG_DIALOG = 'DIALOG';
+const ATTRIBUTE_OPEN_DIALOG = 'open';
+
 // Tags that should be rejected during the DOM tree walk.
 const TAGS_TO_REJECT = [
   TAG_STYLE,
@@ -143,6 +147,10 @@ const BASIC_CONTENT_ATTRIBUTES: PageContentAttributes = {
   annotatedRoles: [],
   isAdRelated: false,
 };
+
+// Type alias for accessing webkit-specific fullscreen document properties that
+// are not part of the standard Document interface.
+type WebkitDocument = Document&{webkitFullscreenElement?: Element};
 
 /**
  * Maps a tag name to its corresponding PageContentAnnotatedRole.
@@ -359,6 +367,42 @@ function getAnchorRel(anchorElement: HTMLAnchorElement):
 }
 
 /**
+ * Determines if an element is rendered in the top layer.
+ *
+ * @param element The element to check.
+ * @return True if the element is rendered in the top layer, false otherwise.
+ */
+function isRenderedInTopLayer(element: HTMLElement): boolean {
+  // 1. Open popovers. Use CSS.supports for browsers not supporting
+  // :popover-open.
+  if (CSS.supports('selector(:popover-open)') &&
+      element.matches(':popover-open')) {
+    return true;
+  }
+
+  // 2. Dialogs opened as modals.
+  if (CSS.supports('selector(:modal)')) {
+    if (element.matches(':modal')) {
+      return true;
+    }
+  } else {
+    // Fallback: check if it's an open dialog. Note: Without `:modal` support,
+    // we cannot distinguish between `dialog.show()` (normal document flow) and
+    // `dialog.showModal()` (top layer). This is a best-effort approximation.
+    if (element.tagName === TAG_DIALOG &&
+        element.hasAttribute(ATTRIBUTE_OPEN_DIALOG)) {
+      return true;
+    }
+  }
+
+  // 3. Fullscreen element.
+  const doc = element.ownerDocument;
+  return doc &&
+      (doc.fullscreenElement === element ||
+       (doc as WebkitDocument).webkitFullscreenElement === element);
+}
+
+/**
  * Extracts form specific content attributes from a given DOM element.
  *
  * @param form The form element to process.
@@ -374,7 +418,6 @@ function getFormData(form: HTMLFormElement): PageContentFormData {
   }
   return formData;
 }
-
 
 // TODO(crbug.com/480945289): Complete this function as more data becomes
 // available throughout iterations.
@@ -417,9 +460,12 @@ function isGenericContainer(
     return true;
   }
 
-  // TODO(crbug.com/480945289): Add searches for Top/ViewTransitionLayer,
-  // InteractionInfo (when enabled), and Labels (when enabled).
+  if (isRenderedInTopLayer(element)) {
+    return true;
+  }
 
+  // TODO(crbug.com/480945289): Add searches for InteractionInfo (when enabled),
+  // and Labels (when enabled).
 
   // Scrollable elements act as containers because they create a new
   // visual context for their content, handling overflow.
