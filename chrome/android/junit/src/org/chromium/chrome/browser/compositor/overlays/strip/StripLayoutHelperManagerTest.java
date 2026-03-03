@@ -55,6 +55,7 @@ import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.CallbackUtils;
+import org.chromium.base.MathUtils;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
@@ -1390,6 +1391,32 @@ public class StripLayoutHelperManagerTest {
 
         StripLayoutHelper incognitoHelper = mStripLayoutHelperManager.getStripLayoutHelper(true);
         assertNull(incognitoHelper.getGlicButtonForTesting());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.GLIC)
+    public void testSetGlicButtonText() {
+        initializeTest();
+        assertNotNull("Glic button should be created.", mStripLayoutHelperManager.getGlicButton());
+
+        float initialWidth = mStripLayoutHelperManager.getGlicButton().getWidth();
+        when(mLayerTitleCache.getUpdatedGlicButtonText(any())).thenReturn(123);
+        when(mLayerTitleCache.getTitleWidth(anyBoolean(), any())).thenReturn(100);
+
+        mStripLayoutHelperManager.setGlicButtonText("Glic Text");
+
+        verify(mLayerTitleCache).getUpdatedGlicButtonText("Glic Text");
+        assertTrue(
+                "Glic button width should increase to accommodate text.",
+                mStripLayoutHelperManager.getGlicButton().getWidth() > initialWidth);
+
+        mStripLayoutHelperManager.setGlicButtonText(null);
+
+        assertEquals(
+                "Glic button width should return to original singular icon width.",
+                initialWidth,
+                mStripLayoutHelperManager.getGlicButton().getWidth(),
+                MathUtils.EPSILON);
     }
 
     @Test

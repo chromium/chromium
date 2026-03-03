@@ -74,6 +74,7 @@ public class TabStripSceneLayerTest {
 
     private static final float DP_TO_PX = 1.f;
 
+    private TintedCompositorButton mGlicButton;
     private CompositorButton mModelSelectorButton;
     private TintedCompositorButton mNewTabButton;
     private Context mContext;
@@ -103,6 +104,18 @@ public class TabStripSceneLayerTest {
     private void initializeTest() {
         mTabStripSceneLayer = new TabStripSceneLayer(DP_TO_PX);
         when(mTabStripSceneMock.init(mTabStripSceneLayer)).thenReturn(1L);
+        mGlicButton =
+                new TintedCompositorButton(
+                        mContext,
+                        ButtonType.GLIC,
+                        null,
+                        32.f,
+                        32.f,
+                        mTooltipHandler,
+                        mOnClickHandler,
+                        mKeyboardFocusHandler,
+                        R.drawable.ic_spark_24dp,
+                        8.f);
         mModelSelectorButton =
                 new TintedCompositorButton(
                         mContext,
@@ -114,7 +127,7 @@ public class TabStripSceneLayerTest {
                         mOnClickHandler,
                         mKeyboardFocusHandler,
                         R.drawable.ic_incognito,
-                        12.f);
+                        8.f);
         mNewTabButton =
                 new TintedCompositorButton(
                         mContext,
@@ -143,6 +156,7 @@ public class TabStripSceneLayerTest {
         mStripLayoutTabs = new StripLayoutTab[] {mStripLayoutTab};
         mStripGroupTitles = new StripLayoutGroupTitle[] {mStripGroupTitle};
         when(mStripLayoutHelperManager.getNewTabButton()).thenReturn(mNewTabButton);
+        when(mStripLayoutHelperManager.getGlicButton()).thenReturn(mGlicButton);
         when(mStripLayoutHelperManager.getModelSelectorButton()).thenReturn(mModelSelectorButton);
         when(mStripLayoutTab.getCloseButton()).thenReturn(mCloseButton);
         when(mStripGroupTitle.getKeyboardFocusRingColor())
@@ -579,6 +593,34 @@ public class TabStripSceneLayerTest {
                         eq(
                                 MaterialColors.getColor(
                                         mContext, R.attr.colorPrimary, /* defaultValue= */ 0)));
+    }
+
+    @Test
+    public void testUpdateGlicButton() {
+        mGlicButton.setKeyboardFocused(true);
+        mTabStripSceneLayer.pushButtonsAndBackground(
+                mStripLayoutHelperManager, 0, 0, 0.0f, 0.0f, 0.0f, 0.0f);
+        verify(mTabStripSceneMock, times(1))
+                .updateGlicButton(
+                        eq(1L),
+                        anyInt(),
+                        anyInt(),
+                        anyFloat(),
+                        anyFloat(),
+                        anyFloat(),
+                        anyBoolean(),
+                        anyBoolean(),
+                        anyInt(),
+                        anyInt(),
+                        anyFloat(),
+                        eq(true),
+                        eq(R.drawable.circular_button_keyfocus),
+                        eq(
+                                MaterialColors.getColor(
+                                        mContext, R.attr.colorPrimary, /* defaultValue= */ 0)),
+                        anyInt(),
+                        anyFloat(),
+                        anyFloat());
     }
 
     @Test

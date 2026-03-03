@@ -59,6 +59,7 @@ public class LayerTitleCache {
     private final Map<Token, Title> mGroupTitles = new HashMap<>();
     private final Map<Token, Integer> mSharedAvatarResIds = new HashMap<>();
     private final HashSet<Integer> mTabBubbles = new HashSet<>();
+    private final BitmapDynamicResource mGlicButtonTextRes;
     private final int mFaviconSize;
     private final int mSharedGroupAvatarPaddingPx;
     private final int mBubbleOuterCircleSize;
@@ -107,6 +108,7 @@ public class LayerTitleCache {
                 new TitleBitmapFactory(context, /* incognito= */ false, tabStripHeightPx);
         mDarkTitleBitmapFactory =
                 new TitleBitmapFactory(context, /* incognito= */ true, tabStripHeightPx);
+        mGlicButtonTextRes = new BitmapDynamicResource(View.generateViewId());
         mDefaultFaviconHelper = new DefaultFaviconHelper();
         mBubbleOuterCircleSize =
                 res.getDimensionPixelSize(R.dimen.compositor_tab_title_favicon_bubble_outer_size);
@@ -293,15 +295,41 @@ public class LayerTitleCache {
 
     /**
      * @param incognito Whether or not the tab group is from the Incognito model.
-     * @param titleString The title of the tab group.
+     * @param titleString The title to measure.
      * @return The width in px of the title.
      */
-    public int getGroupTitleWidth(boolean incognito, String titleString) {
+    public int getTitleWidth(boolean incognito, String titleString) {
         if (titleString == null) return 0;
 
         TitleBitmapFactory titleBitmapFactory =
                 incognito ? mDarkTitleBitmapFactory : mStandardTitleBitmapFactory;
-        return titleBitmapFactory.getGroupTitleWidth(titleString);
+        return titleBitmapFactory.getTitleWidth(titleString);
+    }
+
+    /**
+     * Updates the Glic button text texture.
+     *
+     * @param titleString the text to be displayed on the button
+     * @return the resource ID for the generated text bitmap.
+     */
+    public int getUpdatedGlicButtonText(@Nullable String titleString) {
+        if (TextUtils.isEmpty(titleString)) {
+            mResourceManager
+                    .getDynamicResourceLoader()
+                    .unregisterResource(mGlicButtonTextRes.getResId());
+            return Resources.ID_NULL;
+        }
+
+        Bitmap titleBitmap = mStandardTitleBitmapFactory.getButtonTextBitmap(titleString);
+        mGlicButtonTextRes.setBitmap(titleBitmap);
+        if (mResourceManager.getDynamicResourceLoader().getResource(mGlicButtonTextRes.getResId())
+                == null) {
+            mResourceManager
+                    .getDynamicResourceLoader()
+                    .registerResource(mGlicButtonTextRes.getResId(), mGlicButtonTextRes);
+        }
+
+        return mGlicButtonTextRes.getResId();
     }
 
     private void fetchFaviconForTab(final Tab tab) {

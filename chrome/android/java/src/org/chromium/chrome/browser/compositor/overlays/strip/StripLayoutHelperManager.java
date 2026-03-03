@@ -22,6 +22,7 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.os.Handler;
 import android.os.SystemClock;
+import android.text.TextUtils;
 import android.util.FloatProperty;
 import android.view.MotionEvent;
 import android.view.View;
@@ -196,6 +197,10 @@ public class StripLayoutHelperManager
 
     // Glic button constants.
     static final float GLIC_MSB_BUTTON_PADDING_DP = 12.f;
+    private static final float GLIC_BUTTON_START_PADDING_DP = 6.f;
+    private static final float GLIC_ICON_WIDTH_DP = 24.f;
+    private static final float GLIC_ICON_TEXT_PADDING_DP = 4.f;
+    private static final float GLIC_BUTTON_END_PADDING_DP = 10.f;
     private static final float GLIC_BUTTON_HOVER_BACKGROUND_PRESSED_OPACITY = 0.24f;
     private static final float GLIC_BUTTON_HOVER_BACKGROUND_DEFAULT_OPACITY = 0.16f;
 
@@ -259,8 +264,6 @@ public class StripLayoutHelperManager
     private final TabSwitcherLayoutObserver mTabSwitcherLayoutObserver;
     private final View mToolbarControlContainer;
     private final ViewStub mTabHoverCardViewStub;
-    private float mGlicButtonWidth;
-    private float mModelSelectorWidth;
     private float mLastVisibleViewportOffsetY;
     private float mSceneLayerYOffset;
     private float mSceneLayerVisibleHeight; // Used during height transition.
@@ -761,12 +764,9 @@ public class StripLayoutHelperManager
         mGlicButton.setBackgroundResourceId(R.drawable.bg_circle_tab_strip_button);
         mGlicButton.setDrawY(BUTTON_BACKGROUND_Y_OFFSET_DP);
         mGlicButton.setVisible(false);
-        mGlicButtonWidth = BUTTON_BACKGROUND_WIDTH_DP;
 
-        // Model selector button background color.
-        // Default bg color is surface inverse.
-        @ColorInt
-        int backgroundDefaultColor = context.getColor(R.color.model_selector_button_bg_color);
+        // TODO(crbug.com/480736011): Add proper colors and styling
+        @ColorInt int backgroundDefaultColor = context.getColor(R.color.modern_white);
 
         @ColorInt
         int apsBackgroundHoveredColor =
@@ -821,8 +821,6 @@ public class StripLayoutHelperManager
 
         // Button bg size is 32 * 32.
         mModelSelectorButton.setBackgroundResourceId(R.drawable.bg_circle_tab_strip_button);
-
-        mModelSelectorWidth = BUTTON_BACKGROUND_WIDTH_DP;
 
         // Model selector button background color.
         // Default bg color is surface inverse.
@@ -938,6 +936,75 @@ public class StripLayoutHelperManager
 
     private void handleGlicButtonClick() {
         mGlicClickHandler.run();
+    }
+
+    /** Sets the Glic button text and refreshes the layout to accommodate new width. */
+    public void setGlicButtonText(@Nullable String text) {
+        if (mGlicButton == null || TextUtils.equals(mGlicButton.getText(), text)) return;
+        mGlicButton.setText(text);
+
+        LayerTitleCache titleCache = mLayerTitleCacheSupplier.get();
+        if (titleCache != null) {
+            mGlicButton.setTextResourceId(titleCache.getUpdatedGlicButtonText(text));
+        } else {
+            mGlicButton.setTextResourceId(Resources.ID_NULL);
+        }
+
+        updateGlicButtonWidth();
+        updateGlicButtonPosition();
+        updateStripButtons();
+        mUpdateHost.requestUpdate();
+    }
+
+    private void updateGlicButtonWidth() {
+        if (mGlicButton == null) return;
+        String glicButtonText = mGlicButton.getText();
+
+        float width = BUTTON_BACKGROUND_WIDTH_DP;
+        if (!TextUtils.isEmpty(glicButtonText)) {
+            LayerTitleCache titleCache = mLayerTitleCacheSupplier.get();
+            if (titleCache != null) {
+                float textWidthDp =
+                        titleCache.getTitleWidth(/* incognito= */ false, glicButtonText) / mDensity;
+                width =
+                        GLIC_BUTTON_START_PADDING_DP
+                                + GLIC_ICON_WIDTH_DP
+                                + GLIC_ICON_TEXT_PADDING_DP
+                                + textWidthDp
+                                + GLIC_BUTTON_END_PADDING_DP;
+            }
+        }
+        mGlicButton.setWidth(width);
+    }
+
+    private void updateGlicButtonPosition() {
+        if (mGlicButton == null) return;
+
+        mGlicButton.setDrawY(BUTTON_BACKGROUND_Y_OFFSET_DP);
+        mGlicButton.setTouchTargetInsets(null, mTopPadding, null, -mTopPadding);
+
+        boolean isMsbVisible = mModelSelectorButton != null && mModelSelectorButton.isVisible();
+
+        if (!LocalizationUtils.isLayoutRtl()) {
+            mGlicButton.setDrawX(
+                    mWidth
+                            - mRightPadding
+                            - (isMsbVisible
+                                    ? getModelSelectorButtonWidthWithEndPadding()
+                                            + mGlicButton.getWidth()
+                                            + GLIC_MSB_BUTTON_PADDING_DP
+                                    : getGlicButtonWidthWithEndPadding()));
+        } else {
+            mGlicButton.setDrawX(
+                    mLeftPadding
+                            + (isMsbVisible
+                                    ? getModelSelectorButtonWidthWithEndPadding()
+                                            - assumeNonNull(mModelSelectorButton).getWidth()
+                                            - GLIC_MSB_BUTTON_PADDING_DP
+                                    : 0)
+                            + getGlicButtonWidthWithEndPadding()
+                            - mGlicButton.getWidth());
+        }
     }
 
     private void handleModelSelectorButtonClick() {
@@ -1091,30 +1158,7 @@ public class StripLayoutHelperManager
             mOrientation = orientation;
             orientationChanged = true;
         }
-        if (mGlicButton != null) {
-            mGlicButton.setDrawY(BUTTON_BACKGROUND_Y_OFFSET_DP);
-            mGlicButton.setTouchTargetInsets(null, mTopPadding, null, -mTopPadding);
-            if (!LocalizationUtils.isLayoutRtl()) {
-                mGlicButton.setDrawX(
-                        mWidth
-                                - mRightPadding
-                                - (mModelSelectorButton != null && mModelSelectorButton.isVisible()
-                                        ? getModelSelectorButtonWidthWithEndPadding()
-                                                + mGlicButtonWidth
-                                                + GLIC_MSB_BUTTON_PADDING_DP
-                                        : getGlicButtonWidthWithEndPadding()));
-            } else {
-                mGlicButton.setDrawX(
-                        mLeftPadding
-                                + (mModelSelectorButton != null && mModelSelectorButton.isVisible()
-                                        ? getModelSelectorButtonWidthWithEndPadding()
-                                                - mModelSelectorWidth
-                                                - GLIC_MSB_BUTTON_PADDING_DP
-                                        : 0)
-                                + getGlicButtonWidthWithEndPadding()
-                                - mGlicButtonWidth);
-            }
-        }
+        updateGlicButtonPosition();
         if (mModelSelectorButton != null) {
             mModelSelectorButton.setDrawY(BUTTON_BACKGROUND_Y_OFFSET_DP);
             mModelSelectorButton.setTouchTargetInsets(null, mTopPadding, null, -mTopPadding);
@@ -1125,7 +1169,7 @@ public class StripLayoutHelperManager
                 mModelSelectorButton.setDrawX(
                         mLeftPadding
                                 + getModelSelectorButtonWidthWithEndPadding()
-                                - mModelSelectorWidth);
+                                - mModelSelectorButton.getWidth());
             }
         }
 
@@ -1379,7 +1423,8 @@ public class StripLayoutHelperManager
     }
 
     private float getGlicButtonWidthWithEndPadding() {
-        return mGlicButtonWidth + mStripEndPadding;
+        if (mGlicButton == null) return 0.f;
+        return mGlicButton.getWidth() + mStripEndPadding;
     }
 
     /**
@@ -1395,7 +1440,7 @@ public class StripLayoutHelperManager
     }
 
     private float getModelSelectorButtonWidthWithEndPadding() {
-        return mModelSelectorWidth + mStripEndPadding;
+        return BUTTON_BACKGROUND_WIDTH_DP + mStripEndPadding;
     }
 
     /**
@@ -1978,6 +2023,14 @@ public class StripLayoutHelperManager
         if (mGlicButton == null || mIsIncognito) return false;
         return ChromeSharedPreferences.getInstance()
                 .readBoolean(ChromePreferenceKeys.GLIC_BUTTON_PINNED, true);
+    }
+
+    public float getGlicButtonStartPadding() {
+        return GLIC_BUTTON_START_PADDING_DP;
+    }
+
+    public float getGlicIconTextPadding() {
+        return GLIC_ICON_TEXT_PADDING_DP;
     }
 
     private boolean shouldMsbBeVisible() {

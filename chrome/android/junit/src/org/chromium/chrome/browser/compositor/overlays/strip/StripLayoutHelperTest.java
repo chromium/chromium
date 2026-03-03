@@ -5929,7 +5929,7 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.setLayerTitleCache(newTitleCache);
 
         // Verify the observers have been updated as expected.
-        verify(newTitleCache).getGroupTitleWidth(eq(false), eq(expectedTitle));
+        verify(newTitleCache).getTitleWidth(eq(false), eq(expectedTitle));
     }
 
     @Test

@@ -71,6 +71,9 @@ public class CompositorButton extends StripLayoutView {
     private boolean mIsHovered;
     private String mAccessibilityDescriptionIncognito = "";
 
+    private @Nullable String mText;
+    private int mTextResourceId;
+
     private final @Nullable TooltipHandler mTooltipHandler;
 
     // @StripLayoutView the button was embedded in. Null if it's not a child view.
@@ -346,5 +349,33 @@ public class CompositorButton extends StripLayoutView {
      */
     public boolean getShouldApplyHoverBackground() {
         return isHovered() || isPressedFromMouse();
+    }
+
+    /**
+     * @param text The text to be displayed on the button.
+     */
+    public void setText(@Nullable String text) {
+        mText = text;
+    }
+
+    /**
+     * @return The text displayed on the button.
+     */
+    public @Nullable String getText() {
+        return mText;
+    }
+
+    /**
+     * @param textResourceId The resource ID for the generated text bitmap.
+     */
+    public void setTextResourceId(int textResourceId) {
+        mTextResourceId = textResourceId;
+    }
+
+    /**
+     * @return The resource ID for the generated text bitmap.
+     */
+    public int getTextResourceId() {
+        return mTextResourceId;
     }
 }

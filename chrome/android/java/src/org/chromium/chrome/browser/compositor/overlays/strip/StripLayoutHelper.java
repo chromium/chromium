@@ -4340,7 +4340,7 @@ public class StripLayoutHelper
         String titleText =
                 TabGroupTitleUtils.getDisplayableTitle(
                         mContext, mTabGroupModelFilter, groupTitle.getTabGroupId());
-        int widthPx = mLayerTitleCache.getGroupTitleWidth(mIncognito, titleText);
+        int widthPx = mLayerTitleCache.getTitleWidth(mIncognito, titleText);
         float widthDp = widthPx / mContext.getResources().getDisplayMetrics().density;
         float oldWidth = groupTitle.getWidth();
 

@@ -191,6 +191,14 @@ public class TitleBitmapFactory {
         return getTitleBitmap(mGroupTextPaint, mGroupTextHeight, mGroupTextYOffset, title);
     }
 
+    /** Generates a generic button text bitmap using the smaller group text style. */
+    public @Nullable Bitmap getButtonTextBitmap(String title) {
+        // TODO(crbug.com/488156860): Based on UX decision, either reuse group styling and rename
+        // the variables, or create new text styling.
+        mGroupTextPaint.setColor(mTabTextPaint.getColor());
+        return getTitleBitmap(mGroupTextPaint, mGroupTextHeight, mGroupTextYOffset, title);
+    }
+
     /**
      * Generates a title bitmap.
      *
@@ -247,10 +255,10 @@ public class TitleBitmapFactory {
     }
 
     /**
-     * @param titleString The title of the tab group.
+     * @param titleString The title to measure.
      * @return The width in px of the title.
      */
-    public int getGroupTitleWidth(String titleString) {
+    public int getTitleWidth(String titleString) {
         return getTitleWidth(titleString, mGroupTextPaint);
     }
 

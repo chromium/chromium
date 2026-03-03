@@ -91,6 +91,7 @@ class TabStripSceneLayer : public SceneLayer {
                         int32_t bg_resource_id,
                         float x,
                         float y,
+                        float button_width,
                         bool visible,
                         bool should_apply_hover_highlight,
                         int32_t tint,
@@ -98,7 +99,10 @@ class TabStripSceneLayer : public SceneLayer {
                         float button_alpha,
                         bool is_keyboard_focused,
                         int32_t keyboard_focus_ring_resource_id,
-                        int32_t keyboard_focus_ring_color);
+                        int32_t keyboard_focus_ring_color,
+                        int32_t text_texture_id,
+                        float button_start_padding,
+                        float icon_text_padding);
 
   void UpdateModelSelectorButton(JNIEnv* env,
                                  int32_t resource_id,
@@ -250,6 +254,7 @@ class TabStripSceneLayer : public SceneLayer {
 
   scoped_refptr<cc::slim::UIResourceLayer> glic_button_;
   scoped_refptr<cc::slim::UIResourceLayer> glic_button_background_;
+  scoped_refptr<cc::slim::UIResourceLayer> glic_button_text_;
   scoped_refptr<cc::slim::UIResourceLayer> glic_button_keyboard_focus_ring_;
 
   scoped_refptr<cc::slim::UIResourceLayer> model_selector_button_;
