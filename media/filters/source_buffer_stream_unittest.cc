@@ -188,6 +188,8 @@ class SourceBufferStreamTest : public testing::Test {
     stream_->OnStartOfCodedFrameGroup(start_timestamp);
   }
 
+  bool IsRangeListSorted() { return stream_->IsRangeListSortedForTesting(); }
+
   int GetRemovalRangeInMs(int start, int end, int bytes_to_free,
                           int* removal_end) {
     base::TimeDelta removal_end_timestamp = base::Milliseconds(*removal_end);
@@ -5699,6 +5701,50 @@ TEST_F(SourceBufferStreamTest, SignalCodedFrameGroupWithoutCurrentRange) {
   NewCodedFrameGroupAppend("1000D100K 30000D100K");
   SignalStartOfCodedFrameGroup(base::Milliseconds(400));
   SignalStartOfCodedFrameGroup(base::Milliseconds(1000));
+}
+
+TEST_F(SourceBufferStreamTest, OverlappingRangesAfterSplitAndEarlyReturn) {
+  // 1. Append F1 with huge duration.
+  // F1: PTS=1s, duration=25s. (Ends at 26s)
+  SignalStartOfCodedFrameGroup(base::Seconds(1));
+  BufferQueue buffers;
+  scoped_refptr<StreamParserBuffer> f1 =
+      StreamParserBuffer::CopyFrom(kDataA, true, DemuxerStream::VIDEO, 0);
+  f1->set_timestamp(base::Seconds(1));
+  f1->SetDecodeTimestamp(
+      DecodeTimestamp::FromPresentationTime(base::Seconds(1)));
+  f1->set_duration(base::Seconds(25));
+  buffers.push_back(f1);
+  stream_->Append(buffers);
+
+  // 2. Append F2 (keyframe) at PTS=20s.
+  // We append it in a way that it ends up in the same range.
+  // F1 is [1, 26). F2 is at 20.
+  buffers.clear();
+  scoped_refptr<StreamParserBuffer> f2 =
+      StreamParserBuffer::CopyFrom(kDataA, true, DemuxerStream::VIDEO, 0);
+  f2->set_timestamp(base::Seconds(20));
+  f2->SetDecodeTimestamp(
+      DecodeTimestamp::FromPresentationTime(base::Seconds(20)));
+  f2->set_duration(base::Seconds(1));
+  buffers.push_back(f2);
+  stream_->Append(buffers);
+
+  // 3. Append F3 (keyframe) at PTS=2s. This will trigger a split of the
+  // existing range.
+  SignalStartOfCodedFrameGroup(base::Seconds(2));
+  buffers.clear();
+  scoped_refptr<StreamParserBuffer> f3 =
+      StreamParserBuffer::CopyFrom(kDataA, true, DemuxerStream::VIDEO, 0);
+  f3->set_timestamp(base::Seconds(2));
+  f3->SetDecodeTimestamp(
+      DecodeTimestamp::FromPresentationTime(base::Seconds(2)));
+  f3->set_duration(base::Seconds(1));
+  buffers.push_back(f3);
+  stream_->Append(buffers);
+
+  // 4. Check if ranges are sorted.
+  EXPECT_TRUE(IsRangeListSorted());
 }
 
 }  // namespace media
